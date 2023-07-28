@@ -414,20 +414,22 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     if (Part == 0) {
       Value *InitMask = State.get(getOperand(0), 0);
       State.set(this, InitMask, Part);
-    } else {
-      State.set(this, State.get(this, Part - 1), Part);
+      return InitMask;
     }
-    break;
+    Value *V = State.get(this, Part - 1);
+    State.set(this, V, Part);
+    return V;
   }
   case VPInstruction::CSAInitData: {
     if (Part == 0) {
       Type *ElemTyp = getOperand(0)->getUnderlyingValue()->getType();
       Value *InitData = PoisonValue::get(VectorType::get(ElemTyp, State.VF));
       State.set(this, InitData, Part);
-    } else {
-      State.set(this, State.get(this, Part - 1), Part);
+      return InitData;
     }
-    break;
+    Value *V = State.get(this, Part - 1);
+    State.set(this, V, Part);
+    return V;
   }
   case VPInstruction::CSAMaskPhi: {
     if (Part == 0) {
@@ -439,10 +441,11 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
           State.Builder.CreatePHI(InitMask->getType(), 2, "csa.mask.phi");
       MaskPhi->addIncoming(InitMask, PreheaderBB);
       State.set(this, MaskPhi, Part);
-    } else {
-      State.set(this, State.get(this, Part - 1), Part);
+      return MaskPhi;
     }
-    break;
+    Value *V =State.get(this, Part - 1);
+    State.set(this, V, Part);
+    return V;
   }
   case VPInstruction::CSAMaskSel: {
     if (State.DisableRISCVCSA) {
@@ -458,7 +461,7 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
       if (Part == State.UF - 1)
         cast<PHINode>(MaskPhi)->addIncoming(MaskSel, State.CFG.PrevBB);
       State.set(this, MaskSel, Part);
-      break;
+      return MaskSel;
     }
 
     // NewMask can be calculated as (vmsbf(NewMask) & OldMask) | NewMask
@@ -501,7 +504,7 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
       cast<PHINode>(MaskPhi)->addIncoming(NewMask, State.CFG.PrevBB);
 
     State.set(this, NewMask, Part);
-    break;
+    return NewMask;
   }
   case VPInstruction::CSAAnyActive: {
     Value *WidenedCond = State.get(getOperand(0), Part);
@@ -519,9 +522,10 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
         {StartValue, WidenedCond, AllOnesMask, RVL}, nullptr,
         "csa.cond.anyactive");
     State.set(this, AnyActive, Part);
-    break;
+    return AnyActive;
   }
   case VPInstruction::CSAVLPhi: {
+    errs() << "F\n";
     IRBuilder<>::InsertPointGuard Guard(State.Builder);
     State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHI());
     BasicBlock *PreheaderBB = State.CFG.getPreheaderBBFor(this);
@@ -532,7 +536,7 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
         State.Builder.CreatePHI(InitVL->getType(), 2, "csa.vl.phi");
     VLPhi->addIncoming(InitVL, PreheaderBB);
     State.set(this, VLPhi, Part);
-    break;
+    return VLPhi;
   }
   case VPInstruction::CSAVLSel: {
     Value *AnyActive = State.get(getOperand(0), Part);
@@ -546,7 +550,7 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
         State.Builder.CreateSelect(AnyActive, RVL, VLPhi, "csa.vl.sel");
     cast<PHINode>(VLPhi)->addIncoming(VLSel, State.CFG.PrevBB);
     State.set(this, VLSel, Part);
-    break;
+    return VLSel;
   }
   case VPInstruction::BranchOnVFirstCmp: {
     // Create vfirst
@@ -586,7 +590,7 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     CondBr->setSuccessor(0, nullptr);
     Builder.GetInsertBlock()->getTerminator()->eraseFromParent();
 
-    break;
+    return VFirstI;
   }
   // TODO: This case can be removed when support for Call instruction is added
   // to VPlan in upstream. For now it helps catch any use of VPInstruction for
