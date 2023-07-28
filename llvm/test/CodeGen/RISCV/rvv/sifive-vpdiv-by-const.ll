@@ -549,7 +549,6 @@ define <vscale x 4 x i16> @vpsdiv_pow2_nxv4i16(<vscale x 4 x i16> %va, <vscale x
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vrsub.vi v10, v8, 0, v0.t
 ; CHECK-NEXT:    vmv.v.i v11, 0
-; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vmsgt.vi v0, v11, 4, v0.t
 ; CHECK-NEXT:    vmerge.vvm v8, v8, v10, v0
 ; CHECK-NEXT:    ret
@@ -577,7 +576,6 @@ define <vscale x 8 x i8> @vpsdiv_pow2_nxv8i8(<vscale x 8 x i8> %va, <vscale x 8 
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vrsub.vi v10, v8, 0, v0.t
 ; CHECK-NEXT:    vmv.v.i v11, 0
-; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vmsgt.vi v0, v11, 4, v0.t
 ; CHECK-NEXT:    vmerge.vvm v8, v8, v10, v0
 ; CHECK-NEXT:    ret
@@ -605,7 +603,6 @@ define <vscale x 2 x i32> @vpsdiv_pow2_nxv2i32(<vscale x 2 x i32> %va, <vscale x
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vrsub.vi v10, v8, 0, v0.t
 ; CHECK-NEXT:    vmv.v.i v11, 0
-; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vmsgt.vi v0, v11, 4, v0.t
 ; CHECK-NEXT:    vmerge.vvm v8, v8, v10, v0
 ; CHECK-NEXT:    ret

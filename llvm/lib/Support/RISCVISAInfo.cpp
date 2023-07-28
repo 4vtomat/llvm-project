@@ -321,25 +321,38 @@ static StringRef getExtensionType(StringRef Ext) {
   return StringRef();
 }
 
+static std::optional<RISCVExtensionVersion>
+isExperimentalExtension(StringRef Ext) {
 #if SIFIVE_CUSTOMIZATION
-// FIXME: SIFIVE: Binary search like upstream?
-static bool isExperimentalExtension(StringRef Ext) {
-  auto ExtIterator =
-      llvm::find_if(SupportedExperimentalExtensions, FindByName(Ext));
   if (auto ExtInfo = tryDecodeExtWithVersion(Ext)) {
     Ext = ExtInfo->first;
     auto MajorVersion = ExtInfo->second.MajorVersion;
     auto MinorVersion = ExtInfo->second.MinorVersion;
-    auto FindByNameAndVersion = [=](const RISCVSupportedExtension &ExtInfo) {
-      return ExtInfo.Name == Ext && (MajorVersion == ExtInfo.Version.Major) &&
-             (MinorVersion == ExtInfo.Version.Minor);
-    };
 
-    return llvm::any_of(SupportedExperimentalExtensions, FindByNameAndVersion);
+    // Find the range where this extensions exists in the table. The range
+    // may be empty.
+    auto Range = std::equal_range(std::begin(SupportedExperimentalExtensions),
+                                  std::end(SupportedExperimentalExtensions),
+                                  Ext, LessExtName());
+    auto I = std::find_if(Range.first, Range.second,
+                          [&](const RISCVSupportedExtension &ExtInfo) {
+      return MajorVersion == ExtInfo.Version.Major &&
+             MinorVersion == ExtInfo.Version.Minor;
+    });
+
+    if (I == Range.second)
+      return std::nullopt;
+
+    return I->Version;
   }
-
-  return ExtIterator != std::end(SupportedExperimentalExtensions);
 #endif // SIFIVE_CUSTOMIZATION
+
+  auto I =
+      llvm::lower_bound(SupportedExperimentalExtensions, Ext, LessExtName());
+  if (I == std::end(SupportedExperimentalExtensions) || I->Name != Ext)
+    return std::nullopt;
+
+  return I->Version;
 }
 
 #if SIFIVE_CUSTOMIZATION
@@ -362,9 +375,9 @@ getSupportedExtensionVersions(StringRef Ext, bool IsExperimental = false) {
 bool RISCVISAInfo::isSupportedExtensionFeature(StringRef Ext) {
   bool IsExperimental = stripExperimentalPrefix(Ext);
 
-  if (IsExperimental)
 #if SIFIVE_CUSTOMIZATION
-    return isExperimentalExtension(Ext);
+  if (IsExperimental)
+    return !!isExperimentalExtension(Ext);
   else
     return isSupportedExtension(Ext);
 #else
@@ -635,7 +648,7 @@ static Error getExtensionVersion(StringRef Ext, StringRef In, unsigned &Major,
   };
 
   // If experimental extension, require use of current version number number
-  if (isExperimentalExtension(Ext)) {
+  if (auto ExperimentalExtension = isExperimentalExtension(Ext)) {
     if (!EnableExperimentalExtension) {
       std::string Error = "requires '-menable-experimental-extensions' for "
                           "experimental extension '" +
@@ -1075,23 +1088,18 @@ Error RISCVISAInfo::checkDependency() {
         errc::invalid_argument,
         "'zvl*b' requires 'v' or 'zve*' extension to also be specified");
 
-  if ((Exts.count("zvkb") || Exts.count("zvkg") || Exts.count("zvkn") ||
-       Exts.count("zvkned") || Exts.count("zvknha") || Exts.count("zvkns") ||
-       Exts.count("zvks") || Exts.count("zvksed") || Exts.count("zvksh")) &&
+#if SIFIVE_CUSTOMIZATION
+  if ((Exts.count("zvkb") || Exts.count("zvkns")) &&
       !HasVector)
     return createStringError(
         errc::invalid_argument,
         "'zvk*' requires 'v' or 'zve*' extension to also be specified");
 
-  if (Exts.count("zvknhb") && !Exts.count("zve64x"))
-    return createStringError(
-        errc::invalid_argument,
-        "'zvknhb' requires 'v' or 'zve64*' extension to also be specified");
-
   if (Exts.count("smwgd") && !Exts.count("smwg"))
     return createStringError(
         errc::invalid_argument,
         "smwgd requires smwg extension to also be specified");
+#endif // SIFIVE_CUSTOMIZATION
 
   if (Exts.count("zvbb") && !HasVector)
     return createStringError(
@@ -1193,6 +1201,7 @@ static const char *ImpliedExtsZvl512b[] = {"zvl256b"};
 static const char *ImpliedExtsZvl64b[] = {"zvl32b"};
 static const char *ImpliedExtsZvl65536b[] = {"zvl32768b"};
 static const char *ImpliedExtsZvl8192b[] = {"zvl4096b"};
+
 struct ImpliedExtsEntry {
   StringLiteral Name;
   ArrayRef<const char *> Exts;

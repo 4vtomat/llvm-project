@@ -126,8 +126,7 @@ define void @vqrshl_s64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1,
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB2_2
 ; CHECK-NEXT:  .LBB2_4: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v8
-; CHECK-NEXT:    vse64.v v9, (a2)
+; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <1 x i64>, ptr %in_0, align 8
@@ -491,8 +490,7 @@ define void @vqrshlq_s64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB10_2
 ; CHECK-NEXT:  .LBB10_4: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v8
-; CHECK-NEXT:    vse64.v v9, (a2)
+; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x i64>, ptr %in_0, align 8
@@ -1405,8 +1403,7 @@ define void @vrshl_s16(ptr nocapture noundef readonly %in_0, i16 noundef signext
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB32_3
 ; CHECK-NEXT:  .LBB32_6: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v8
-; CHECK-NEXT:    vse16.v v9, (a2)
+; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i16>, ptr %in_0, align 2
@@ -1447,8 +1444,7 @@ define void @vrshl_s32(ptr nocapture noundef readonly %in_0, i32 noundef signext
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB33_3
 ; CHECK-NEXT:  .LBB33_6: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v8
-; CHECK-NEXT:    vse32.v v9, (a2)
+; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x i32>, ptr %in_0, align 4
@@ -1489,8 +1485,7 @@ define void @vrshl_s64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1, 
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB34_3
 ; CHECK-NEXT:  .LBB34_6: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v8
-; CHECK-NEXT:    vse64.v v9, (a2)
+; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <1 x i64>, ptr %in_0, align 8
@@ -1528,8 +1523,7 @@ define void @vrshl_s8(ptr nocapture noundef readonly %in_0, i8 noundef signext %
 ; CHECK-NEXT:    li a0, 128
 ; CHECK-NEXT:    bgeu a1, a0, .LBB35_3
 ; CHECK-NEXT:  .LBB35_6: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v8
-; CHECK-NEXT:    vse8.v v9, (a2)
+; CHECK-NEXT:    vse8.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -1575,8 +1569,7 @@ define void @vrshl_u16(ptr nocapture noundef readonly %in_0, i16 noundef signext
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB36_5
 ; CHECK-NEXT:  .LBB36_8: # %entry
-; CHECK-NEXT:    vmv1r.v v10, v9
-; CHECK-NEXT:    vse16.v v10, (a2)
+; CHECK-NEXT:    vse16.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i16>, ptr %in_0, align 2
@@ -1622,8 +1615,7 @@ define void @vrshl_u32(ptr nocapture noundef readonly %in_0, i32 noundef signext
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB37_5
 ; CHECK-NEXT:  .LBB37_8: # %entry
-; CHECK-NEXT:    vmv1r.v v10, v9
-; CHECK-NEXT:    vse32.v v10, (a2)
+; CHECK-NEXT:    vse32.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x i32>, ptr %in_0, align 4
@@ -1670,8 +1662,7 @@ define void @vrshl_u64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1, 
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB38_5
 ; CHECK-NEXT:  .LBB38_8: # %entry
-; CHECK-NEXT:    vmv1r.v v10, v9
-; CHECK-NEXT:    vse64.v v10, (a2)
+; CHECK-NEXT:    vse64.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <1 x i64>, ptr %in_0, align 8
@@ -1714,8 +1705,7 @@ define void @vrshl_u8(ptr nocapture noundef readonly %in_0, i8 noundef signext %
 ; CHECK-NEXT:    li a0, 128
 ; CHECK-NEXT:    bgeu a1, a0, .LBB39_5
 ; CHECK-NEXT:  .LBB39_8: # %entry
-; CHECK-NEXT:    vmv1r.v v10, v9
-; CHECK-NEXT:    vse8.v v10, (a2)
+; CHECK-NEXT:    vse8.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -1756,8 +1746,7 @@ define void @vrshlq_s16(ptr nocapture noundef readonly %in_0, i16 noundef signex
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB40_3
 ; CHECK-NEXT:  .LBB40_6: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v8
-; CHECK-NEXT:    vse16.v v9, (a2)
+; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i16>, ptr %in_0, align 2
@@ -1798,8 +1787,7 @@ define void @vrshlq_s32(ptr nocapture noundef readonly %in_0, i32 noundef signex
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB41_3
 ; CHECK-NEXT:  .LBB41_6: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v8
-; CHECK-NEXT:    vse32.v v9, (a2)
+; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i32>, ptr %in_0, align 4
@@ -1840,8 +1828,7 @@ define void @vrshlq_s64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1,
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB42_3
 ; CHECK-NEXT:  .LBB42_6: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v8
-; CHECK-NEXT:    vse64.v v9, (a2)
+; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x i64>, ptr %in_0, align 8
@@ -1880,8 +1867,7 @@ define void @vrshlq_s8(ptr nocapture noundef readonly %in_0, i8 noundef signext 
 ; CHECK-NEXT:    li a0, 128
 ; CHECK-NEXT:    bgeu a1, a0, .LBB43_3
 ; CHECK-NEXT:  .LBB43_6: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v8
-; CHECK-NEXT:    vse8.v v9, (a2)
+; CHECK-NEXT:    vse8.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -1927,8 +1913,7 @@ define void @vrshlq_u16(ptr nocapture noundef readonly %in_0, i16 noundef signex
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB44_5
 ; CHECK-NEXT:  .LBB44_8: # %entry
-; CHECK-NEXT:    vmv1r.v v10, v9
-; CHECK-NEXT:    vse16.v v10, (a2)
+; CHECK-NEXT:    vse16.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i16>, ptr %in_0, align 2
@@ -1974,8 +1959,7 @@ define void @vrshlq_u32(ptr nocapture noundef readonly %in_0, i32 noundef signex
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB45_5
 ; CHECK-NEXT:  .LBB45_8: # %entry
-; CHECK-NEXT:    vmv1r.v v10, v9
-; CHECK-NEXT:    vse32.v v10, (a2)
+; CHECK-NEXT:    vse32.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i32>, ptr %in_0, align 4
@@ -2022,8 +2006,7 @@ define void @vrshlq_u64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1,
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB46_5
 ; CHECK-NEXT:  .LBB46_8: # %entry
-; CHECK-NEXT:    vmv1r.v v10, v9
-; CHECK-NEXT:    vse64.v v10, (a2)
+; CHECK-NEXT:    vse64.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x i64>, ptr %in_0, align 8
@@ -2067,8 +2050,7 @@ define void @vrshlq_u8(ptr nocapture noundef readonly %in_0, i8 noundef signext 
 ; CHECK-NEXT:    li a0, 128
 ; CHECK-NEXT:    bgeu a1, a0, .LBB47_5
 ; CHECK-NEXT:  .LBB47_8: # %entry
-; CHECK-NEXT:    vmv1r.v v10, v9
-; CHECK-NEXT:    vse8.v v10, (a2)
+; CHECK-NEXT:    vse8.v v9, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1

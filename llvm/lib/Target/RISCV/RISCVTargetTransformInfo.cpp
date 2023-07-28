@@ -2675,3 +2675,22 @@ bool RISCVTTIImpl::isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
                   C2.NumIVMuls, C2.NumBaseAdds,
                   C2.ScaleCost, C2.ImmCost, C2.SetupCost);
 }
+
+#if SIFIVE_CUSTOMIZATION
+bool RISCVTTIImpl::enableCSAVectorization() const {
+  return ST->hasVInstructions() &&
+         ST->getProcFamily() == RISCVSubtarget::SiFive7;
+}
+
+unsigned RISCVTTIImpl::getCSABodyFactor() const {
+  if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+    return 3;
+  return 1;
+}
+
+unsigned RISCVTTIImpl::getCSAOverheadFactor() const {
+  if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+    return 4;
+  return 1;
+}
+#endif

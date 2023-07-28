@@ -1317,6 +1317,10 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   if (Subtarget.useRVVForFixedLengthVectors())
     setTargetDAGCombine(ISD::BITCAST);
 
+#if SIFIVE_CUSTOMIZATION
+  setTargetDAGCombine(ISD::MUL);
+#endif // SIFIVE_CUSTOMIZATION
+
   setLibcallName(RTLIB::FPEXT_F16_F32, "__extendhfsf2");
   setLibcallName(RTLIB::FPROUND_F32_F16, "__truncsfhf2");
 
@@ -12257,6 +12261,44 @@ static SDValue performXORCombine(SDNode *N, SelectionDAG &DAG,
   return combineSelectAndUseCommutative(N, DAG, /*AllOnes*/ false, Subtarget);
 }
 
+#if SIFIVE_CUSTOMIZATION
+// (mul (and (lshr X, 15), 65537), 65535) -> (bitcast (sra (bitcast X), 15)))
+static SDValue performMULCombine(SDNode *N, SelectionDAG &DAG,
+                                 const RISCVSubtarget &Subtarget) {
+  EVT VT = N->getValueType(0);
+  const TargetLowering &TLI = DAG.getTargetLoweringInfo();
+
+  if (!VT.isFixedLengthVector() || VT.getVectorElementType() != MVT::i32 ||
+      !TLI.isTypeLegal(VT))
+    return SDValue();
+
+  if (N->getOperand(0).getOpcode() != ISD::AND ||
+      N->getOperand(0).getOperand(0).getOpcode() != ISD::SRL)
+    return SDValue();
+
+  SDValue And = N->getOperand(0);
+  SDValue Srl = And.getOperand(0);
+
+  APInt V1, V2, V3;
+  if (!ISD::isConstantSplatVector(N->getOperand(1).getNode(), V1) ||
+      !ISD::isConstantSplatVector(And.getOperand(1).getNode(), V2) ||
+      !ISD::isConstantSplatVector(Srl.getOperand(1).getNode(), V3))
+    return SDValue();
+
+  if (!V1.isMask(16) || V2 != (1ULL | 1ULL << 16) || V3 != 15)
+    return SDValue();
+
+  EVT HalfVT = EVT::getVectorVT(*DAG.getContext(),
+                                EVT::getIntegerVT(*DAG.getContext(), 16),
+                                VT.getVectorElementCount() * 2);
+  SDLoc DL(N);
+  SDValue Cast = DAG.getNode(ISD::BITCAST, DL, HalfVT, Srl.getOperand(0));
+  SDValue Sra =
+      DAG.getNode(ISD::SRA, DL, HalfVT, Cast, DAG.getConstant(15, DL, HalfVT));
+  return DAG.getNode(ISD::BITCAST, DL, VT, Sra);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 // Replace (seteq (i64 (and X, 0xffffffff)), C1) with
 // (seteq (i64 (sext_inreg (X, i32)), C1')) where C1' is C1 sign extended from
 // bit 31. Same for setne. C1' may be cheaper to materialize and the sext_inreg
@@ -13704,12 +13746,6 @@ static SDValue combineVFMADD_VLWithVFNEG_VL(SDNode *N, SelectionDAG &DAG) {
   if (!NegA && !NegB && !NegC)
     return SDValue();
 
-#if SIFIVE_CUSTOMIZATION
-  // Avoid negateFMAOpcode assertion fail.
-  if (NegA == NegB && !NegC)
-    return SDValue();
-#endif // combineVFMADD_VLWithVFNEG_VL
-
   unsigned NewOpcode = negateFMAOpcode(N->getOpcode(), NegA != NegB, NegC);
   if (N->isTargetStrictFPOpcode())
     return DAG.getNode(NewOpcode, SDLoc(N), N->getVTList(),
@@ -14505,6 +14541,12 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     return performORCombine(N, DCI, Subtarget);
   case ISD::XOR:
     return performXORCombine(N, DAG, Subtarget);
+#if SIFIVE_CUSTOMIZATION
+  case ISD::MUL:
+    if (SDValue V = performMULCombine(N, DAG, Subtarget))
+      return V;
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   case ISD::FADD:
   case ISD::UMAX:
   case ISD::UMIN:
@@ -14791,6 +14833,10 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     break;
   }
   case RISCVISD::ADD_VL:
+#if SIFIVE_CUSTOMIZATION
+    if (SDValue Result = combineSelectAndBinOp(N, DAG))
+      return Result;
+#endif // SIFIVE_CUSTOMIZATION
     if (SDValue V = combineBinOp_VLToVWBinOp_VL(N, DCI))
       return V;
     return combineToVWMACC(N, DAG, Subtarget);
@@ -14798,7 +14844,7 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
 #if SIFIVE_CUSTOMIZATION
     if (SDValue Result = combineSelectAndBinOp(N, DAG))
       return Result;
-    return combineBinOp_VLToVWBinOp_VL(N, DCI);   
+    return combineBinOp_VLToVWBinOp_VL(N, DCI);
   case RISCVISD::OR_VL:
   case RISCVISD::XOR_VL:
     return combineSelectAndBinOp(N, DAG);

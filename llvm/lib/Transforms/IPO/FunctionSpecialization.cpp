@@ -96,6 +96,13 @@ static cl::opt<bool> SpecializeLiteralConstant(
     "Enable specialization of functions that take a literal constant as an "
     "argument"));
 
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool> PropagateConstants(
+    "funcspec-propagate-constants", cl::init(false), cl::Hidden,
+    cl::desc(
+        "Propagate constants to clones even if we don't specialize for them"));
+#endif
+
 // Estimates the instruction cost of all the basic blocks in \p WorkList.
 // The successors of such blocks are added to the list as long as they are
 // executable and they have a unique predecessor. \p WorkList represents
@@ -580,7 +587,7 @@ bool FunctionSpecializer::run() {
   SmallVector<Function *> Clones;
   for (unsigned I = 0; I < NSpecs; ++I) {
     Spec &S = AllSpecs[BestSpecs[I]];
-    S.Clone = createSpecialization(S.F, S.Sig);
+    S.Clone = createSpecialization(S.F, S.Sig, S.CallSites); // SIFIVE
 
     // Update the known call sites to call the clone.
     for (CallBase *Call : S.CallSites) {
@@ -776,18 +783,63 @@ bool FunctionSpecializer::isCandidateFunction(Function *F) {
   return true;
 }
 
+#if SIFIVE_CUSTOMIZATION
+Function *FunctionSpecializer::createSpecialization(
+    Function *F,
+    const SpecSig &S,                               // SIFIVE
+    const SmallVectorImpl<CallBase *> &CallSites) { // SIFIVE
+#else
 Function *FunctionSpecializer::createSpecialization(Function *F,
                                                     const SpecSig &S) {
+#endif
   Function *Clone = cloneCandidateFunction(F);
 
   // The original function does not neccessarily have internal linkage, but the
   // clone must.
   Clone->setLinkage(GlobalValue::InternalLinkage);
 
+#if SIFIVE_CUSTOMIZATION
+  // Initialize the lattice state of the arguments of the function clone,
+  // marking the argument on which we specialized the function constant
+  // with the given value.
+  if (!SpecializeLiteralConstant && PropagateConstants) {
+    SmallVector<ArgInfo, 4> Args;
+
+    auto Iter = S.Args.begin();
+    Function::arg_iterator Arg = F->arg_begin();
+    for (auto End = F->arg_end(); Arg != End; ++Arg) {
+      // Copy args over from S.Args.
+      if (Iter != Args.end() && Iter->Formal == &*Arg) {
+        Args.push_back(*Iter);
+        ++Iter;
+        continue;
+      }
+
+      // If all call sites pass the same ConstantInt, add that to the lattice.
+      ConstantInt *UniqueValue = nullptr;
+      for (auto *CS : CallSites) {
+        auto *CI = dyn_cast<ConstantInt>(CS->getArgOperand(Arg->getArgNo()));
+        if (!CI || (UniqueValue && UniqueValue != CI)) {
+          UniqueValue = nullptr;
+          break;
+        }
+        UniqueValue = CI;
+      }
+
+      if (UniqueValue)
+        Args.push_back({&*Arg, UniqueValue});
+    }
+
+    Solver.setLatticeValueForSpecializationArguments(Clone, Args);
+  } else {
+    Solver.setLatticeValueForSpecializationArguments(Clone, S.Args);
+  }
+#else
   // Initialize the lattice state of the arguments of the function clone,
   // marking the argument on which we specialized the function constant
   // with the given value.
   Solver.setLatticeValueForSpecializationArguments(Clone, S.Args);
+#endif // SIFIVE_CUSTOMIZATION
   Solver.markBlockExecutable(&Clone->front());
   Solver.addArgumentTrackedFunction(Clone);
   Solver.addTrackedFunction(Clone);

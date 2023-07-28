@@ -910,12 +910,12 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
     //Allow inlining when call overhead and function size wrt number of params
     //makes inlining beneficial and turn it off for amdgpu target.
     Module *M = CandidateCall.getFunction()->getParent();
-    std::string TargetTriple = M->getTargetTriple();
-    Triple T(TargetTriple);
-    if ((InlineParamSize)
-         && (T.getArchName() != "amdgcn")
-         && (NumParams >= 6)
-         && (FuncSize <= 500))
+    Triple T(M->getTargetTriple());
+    if (InlineParamSize &&
+    	!T.isAMDGCN() &&
+    	(NumParams >= 6) &&
+    	(FuncSize <= 500) &&
+    	(Cost - Threshold <= 150))
        Size = 1;
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -996,12 +996,12 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
     //Allow inlining when call overhead and function size wrt number of params
     //makes inlining beneficial and turn it off for amdgpu target.
     Module *M = Caller->getParent();
-    std::string TargetTriple = M->getTargetTriple();
-    Triple T(TargetTriple);
-    if ((InlineParamSize)
-         && (T.getArchName() != "amdgcn")
-         && (NumParams >= 6)
-         && (FuncSize <= 500))
+    Triple T(M->getTargetTriple());
+    if (InlineParamSize &&
+    	!T.isAMDGCN() &&
+    	(NumParams >= 6) &&
+    	(FuncSize <= 500) &&
+    	(Cost - Threshold <= 150))
        return InlineResult::success();
 #endif // SIFIVE_CUSTOMIZATION
 

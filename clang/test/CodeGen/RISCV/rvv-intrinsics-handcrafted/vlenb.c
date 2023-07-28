@@ -21,19 +21,11 @@ unsigned long test_vlenb(void) {
   return __riscv_vlenb();
 }
 //.
-// RV32: attributes #0 = { nofree noinline nosync nounwind memory(none) vscale_range(2,1024) "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-features"="+32bit,+d,+f,+v,+zicsr,+zve32f,+zve32x,+zve64d,+zve64f,+zve64x,+zvl128b,+zvl32b,+zvl64b" }
-// RV32: attributes #1 = { nofree nosync nounwind memory(none) }
-// RV32: attributes #2 = { mustprogress nofree noinline nosync nounwind willreturn vscale_range(2,1024) "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-features"="+32bit,+d,+f,+v,+zicsr,+zve32f,+zve32x,+zve64d,+zve64f,+zve64x,+zvl128b,+zvl32b,+zvl64b" }
-// RV32: attributes #3 = { mustprogress nocallback nofree nosync nounwind willreturn }
-// RV32: attributes #4 = { mustprogress nofree noinline nosync nounwind willreturn memory(read) vscale_range(2,1024) "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-features"="+32bit,+d,+f,+v,+zicsr,+zve32f,+zve32x,+zve64d,+zve64f,+zve64x,+zvl128b,+zvl32b,+zvl64b" }
-// RV32: attributes #5 = { mustprogress nocallback nofree nosync nounwind willreturn memory(read) }
+// RV32: attributes #0 = { mustprogress nofree noinline nosync nounwind willreturn memory(read) vscale_range(2,1024) "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-features"="+32bit,+d,+f,+v,+zicsr,+zve32f,+zve32x,+zve64d,+zve64f,+zve64x,+zvl128b,+zvl32b,+zvl64b" }
+// RV32: attributes #1 = { mustprogress nocallback nofree nosync nounwind willreturn memory(read) }
 //.
-// RV64: attributes #0 = { nofree noinline nosync nounwind memory(none) vscale_range(2,1024) "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-features"="+64bit,+d,+f,+v,+zicsr,+zve32f,+zve32x,+zve64d,+zve64f,+zve64x,+zvl128b,+zvl32b,+zvl64b" }
-// RV64: attributes #1 = { nofree nosync nounwind memory(none) }
-// RV64: attributes #2 = { mustprogress nofree noinline nosync nounwind willreturn vscale_range(2,1024) "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-features"="+64bit,+d,+f,+v,+zicsr,+zve32f,+zve32x,+zve64d,+zve64f,+zve64x,+zvl128b,+zvl32b,+zvl64b" }
-// RV64: attributes #3 = { mustprogress nocallback nofree nosync nounwind willreturn }
-// RV64: attributes #4 = { mustprogress nofree noinline nosync nounwind willreturn memory(read) vscale_range(2,1024) "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-features"="+64bit,+d,+f,+v,+zicsr,+zve32f,+zve32x,+zve64d,+zve64f,+zve64x,+zvl128b,+zvl32b,+zvl64b" }
-// RV64: attributes #5 = { mustprogress nocallback nofree nosync nounwind willreturn memory(read) }
+// RV64: attributes #0 = { mustprogress nofree noinline nosync nounwind willreturn memory(read) vscale_range(2,1024) "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-features"="+64bit,+d,+f,+v,+zicsr,+zve32f,+zve32x,+zve64d,+zve64f,+zve64x,+zvl128b,+zvl32b,+zvl64b" }
+// RV64: attributes #1 = { mustprogress nocallback nofree nosync nounwind willreturn memory(read) }
 //.
 // RV32: !0 = !{i32 1, !"wchar_size", i32 4}
 // RV32: !1 = !{i32 1, !"target-abi", !"ilp32d"}

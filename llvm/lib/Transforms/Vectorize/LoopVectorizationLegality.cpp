@@ -137,9 +137,6 @@ static cl::opt<bool>
     ForceVectorization("force-vectorization", cl::init(false), cl::Hidden,
                        cl::desc("Force vectorization regardless if "
                                 "vectorization is profitable or not"));
-static cl::opt<bool>
-    DisableCSA("sifive-disable-csa", cl::init(true), cl::Hidden,
-               cl::desc("Control whether CSA loop vectorization is disabled"));
 #endif // SIFIVE_CUSTOMIZATION
 
 static cl::opt<LoopVectorizeHints::ScalableForceKind>
@@ -166,6 +163,11 @@ static cl::opt<LoopVectorizeHints::ScalableForceKind>
 #else
             ));
 #endif // SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool>
+    EnableCSA("sifive-enable-csa", cl::init(true), cl::Hidden,
+              cl::desc("Control whether CSA loop vectorization is enabled"));
+#endif
 
 /// Maximum vectorization interleave count.
 static const unsigned MaxInterleaveFactor = 16;
@@ -1178,7 +1180,9 @@ bool LoopVectorizationLegality::canVectorizeInstrs() {
           continue;
         }
 #if SIFIVE_CUSTOMIZATION
-        if (useVLAVectorizer() && !DisableCSA) {
+        if (useVLAVectorizer() &&
+            ((TTI->enableCSAVectorization() && EnableCSA) ||
+             ForceVectorization)) {
           CSADescriptor CSADesc =
               CSADescriptor::createCSADescriptor(Phi, TheLoop);
           if (CSADesc.isValidCSA()) {

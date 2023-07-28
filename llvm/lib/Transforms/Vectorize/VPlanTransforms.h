@@ -66,6 +66,11 @@ struct VPlanTransforms {
   /// update the original IV's users. This is an optional optimization to reduce
   /// the needs of vector extracts.
   static void optimizeInductions(VPlan &Plan, ScalarEvolution &SE);
+#if SIFIVE_CUSTOMIZATION
+  /// If any user of a WidenGEPRecipe is uniform, provide them a Replicate of
+  /// underlying valueunderlying value to reduce the needs of vector extracts.
+  static void optimizeGEPs(VPlan &Plan);
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Remove redundant EpxandSCEVRecipes in \p Plan's entry block by replacing
   /// them with already existing recipes expanding the same SCEV expression.

@@ -455,11 +455,6 @@ cl::opt<uint64_t> LoopVectorizerVLUpperBound(
     "sifive-loop-vectorizer-clamp-vl", cl::init(0), cl::Hidden,
     cl::desc("Specify the maximum vl of a vectorized loop"));
 
-static cl::opt<bool> DisableRISCVCSA(
-    "sifive-disable-riscv-csa", cl::init(false), cl::Hidden,
-    cl::desc("Control whether the RISCV specific implementation of CSA "
-             "vectorization is disabled."));
-
 cl::opt<bool> SiFiveLoopVectorizerUseVPlanBasedCostModel(
     "sifive-loop-vectorizer-use-vplan-based-cost-model", cl::init(true),
     cl::Hidden, cl::desc("Use VPlan-based cost model"));
@@ -467,6 +462,11 @@ cl::opt<bool> SiFiveLoopVectorizerUseVPlanBasedCostModel(
 cl::opt<bool> SiFiveEnableInterleavedAccess(
     "sifive-loop-vectorizer-enable-interleaved-access", cl::init(true),
     cl::Hidden, cl::desc("Enable interleaved access in RVV VLA vectorization"));
+
+static cl::opt<bool> EnableRISCVCSA(
+    "sifive-enable-riscv-csa", cl::init(true), cl::Hidden,
+    cl::desc("Control whether the RISCV specific implementation of CSA "
+             "vectorization is enabled."));
 #endif // SIFIVE_CUSTOMIZATION
 
 static cl::opt<cl::boolOrDefault> ForceSafeDivisor(
@@ -2998,7 +2998,7 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
 #if SIFIVE_CUSTOMIZATION
     if (Legal->useVLAVectorizer()) {
       for (unsigned Part = 0; Part < UF; ++Part) {
-        Instruction *NewLoad;
+        CallInst *WideLoad;
         Value *GroupMask;
         if (BlockInMask) {
           assert(useMaskedInterleavedAccesses(*TTI) &&
@@ -3021,11 +3021,14 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
             RVL32, ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor));
         Value *Operands[] = {AddrParts[Part], GroupMask, InterleaveRVL};
         Type *Types[] = {VecTy, Operands[0]->getType()};
-        NewLoad = State.Builder.CreateIntrinsic(
+        WideLoad = State.Builder.CreateIntrinsic(
             Intrinsic::vp_load, Types, Operands, nullptr, "wide.masked.load");
 
-        Group->addMetadata(NewLoad);
-        NewLoads.push_back(NewLoad);
+        WideLoad->addParamAttr(
+            0, Attribute::getWithAlignment(WideLoad->getContext(),
+                                           Group->getAlign()));
+        Group->addMetadata(WideLoad);
+        NewLoads.push_back(WideLoad);
       }
 
       // For each member in the group, shuffle out the appropriate data from the
@@ -3203,9 +3206,12 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
       Value *InterleaveRVL = Builder.CreateMul(
           RVL32, ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor));
       Operands = {StoredVal, AddrParts[Part], GroupMask, InterleaveRVL};
-      Instruction *WideStore = State.Builder.CreateIntrinsic(
+      CallInst *WideStore = State.Builder.CreateIntrinsic(
           Intrinsic::vp_store, {VecTy, AddrParts[Part]->getType()}, Operands,
           nullptr);
+      WideStore->addParamAttr(
+          1, Attribute::getWithAlignment(WideStore->getContext(),
+                                         Group->getAlign()));
       Group->addMetadata(WideStore);
     }
     return;
@@ -8705,6 +8711,64 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
   }
 }
 
+#if SIFIVE_CUSTOMIZATION
+static InstructionCost getCSACost(PHINode *Phi, VectorType *&VTy,
+                                  TTI::TargetCostKind CostKind, ElementCount VF,
+                                  LoopVectorizationLegality *Legal,
+                                  const TargetTransformInfo &TTI) {
+  assert(VF.isVector() && Legal->isCSAPhi(Phi) &&
+         "VF must be vector and Phi must be a CSA Phi.");
+  auto *MaskTy = VectorType::get(IntegerType::getInt1Ty(VTy->getContext()), VF);
+  InstructionCost C = 0;
+  if (!EnableRISCVCSA) {
+    // AnyActive
+    C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+    // vp.reduce.or
+    C += TTI.getArithmeticReductionCost(Instruction::Or, VTy, std::nullopt,
+                                        CostKind);
+    // VPVLSel
+    C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+    // MaskUpdate
+    C += TTI.getArithmeticInstrCost(Instruction::Select, MaskTy, CostKind);
+    // Data Update
+    C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+    return C;
+  }
+  // CSAMaskUpdate
+  // UndistCond is a VPMerge and happens on non mask type
+  C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+  // Convert the non masked mask to mask type
+  C += TTI.getArithmeticInstrCost(Instruction::ICmp, MaskTy, CostKind);
+  // ZExt init RVL
+  C += TTI.getArithmeticInstrCost(
+      Instruction::ZExt, IntegerType::getInt32Ty(VTy->getContext()), CostKind);
+  // RISCV_VMSBF
+  IntrinsicCostAttributes CostAttrs(Intrinsic::riscv_vmsbf, VTy,
+                                    {VTy, Type::getInt64Ty(VTy->getContext())});
+  C += TTI.getIntrinsicInstrCost(CostAttrs, CostKind);
+  // VPAnd
+  C += TTI.getArithmeticInstrCost(Instruction::And, MaskTy, CostKind);
+  // NewMask is a VPOr
+  C += TTI.getArithmeticInstrCost(Instruction::Or, MaskTy, CostKind);
+
+  // DataUpdate
+  // VPMerge
+  C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+
+  // The cost returned by the cost model is larger than that of the cycle count
+  // that is returned by MCA for the scalar CSA loop. It is believed that the
+  // main reason for this discrepancy is because MCA models instruction level
+  // parallelism that exists on the target processor. The cost model has
+  // difficulty modeling this since it operates on the IR and not the generated
+  // assembely, so there is no easy way to query the scheduler model to get this
+  // information. As a solution, the cost of the scalar loop could be lowered by
+  // some parallelization factor, or the cost of the vector loop can be
+  // increased by this amount. We opt to increase the vectorized cost as to not
+  // disturb the tuning of non-csa loops. This factor is an empirical value
+  // that can be determined for each target.
+  return C * TTI.getCSABodyFactor();
+}
+#endif
 InstructionCost
 LoopVectorizationCostModel::getInstructionCost(Instruction *I, ElementCount VF,
                                                Type *&VectorTy) {
@@ -8807,7 +8871,12 @@ LoopVectorizationCostModel::getInstructionCost(Instruction *I, ElementCount VF,
                  Instruction::Select, ToVectorTy(Phi->getType(), VF),
                  ToVectorTy(Type::getInt1Ty(Phi->getContext()), VF),
                  CmpInst::BAD_ICMP_PREDICATE, CostKind);
-
+#if SIFIVE_CUSTOMIZATION
+    if (VF.isVector() && Legal->isCSAPhi(Phi)) {
+      auto *VTy = cast<VectorType>(VectorTy);
+      return getCSACost(Phi, VTy, CostKind, VF, Legal, TTI);
+    }
+#endif // SIFIVE_CUSTOMIZATION
     return TTI.getCFInstrCost(Instruction::PHI, CostKind);
   }
   case Instruction::UDiv:
@@ -9361,7 +9430,7 @@ SCEV2ValueTy LoopVectorizationPlanner::executePlan(
   // Perform the actual loop transformation.
 #if SIFIVE_CUSTOMIZATION
   VPTransformState State{BestVF,      BestUF, LI,         DT,
-                         ILV.Builder, &ILV,   &BestVPlan, DisableRISCVCSA};
+                         ILV.Builder, &ILV,   &BestVPlan, EnableRISCVCSA};
   BestVPlan.initializeMasks(State);
 #else
   VPTransformState State{BestVF, BestUF, LI, DT, ILV.Builder, &ILV, &BestVPlan};
@@ -10780,7 +10849,7 @@ addCSAPreprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
     PreheaderVPBB->appendRecipe(VPInitData);
 
     VPInstruction *VPVLPhi = nullptr;
-    if (DisableRISCVCSA) {
+    if (!EnableRISCVCSA) {
       VPVLPhi =
           new VPInstruction(VPInstruction::CSAVLPhi, {}, DL, "csa.vl.phi");
       HeaderVPBB->appendRecipe(VPVLPhi);
@@ -10819,10 +10888,24 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
     VPValue *AllTrueMask = Plan.getOrCreateAllTrueMask();
     VPValue *VPInitScalar = CSAState->getVPInitScalar();
 
+    // The CSA optimization wants to use a condition such that when it is
+    // true, a new value is assigned. However, it is possible that a true lane
+    // in WidenedCond corresponds to selection of the initial value instead.
+    // In that case, we must use the negation of WidenedCond.
+    // i.e. select cond new_val old_val versus select cond.not old_val new_val
+    VPValue *CondToUse = WidenedCond;
+    if (cast<SelectInst>(CSA.second.getAssignment())->getTrueValue() ==
+        CSA.first) {
+      auto VPNotCond = new VPInstruction(VPInstruction::Not, WidenedCond, DL);
+      VPNotCond->insertBefore(
+          Plan.getVPValue(CSA.second.getAssignment())->getDefiningRecipe());
+      CondToUse = VPNotCond;
+    }
+
     VPCSAExtractScalarRecipe *ExtractScalarRecipe= nullptr;
-    if (DisableRISCVCSA) {
+    if (!EnableRISCVCSA) {
       auto *VPAnyActive = new VPInstruction(VPInstruction::CSAAnyActive,
-                                            {WidenedCond, AllTrueMask}, DL,
+                                            {CondToUse, AllTrueMask}, DL,
                                             "csa.cond.anyactive");
       VPAnyActive->insertBefore(
           Plan.getVPValue(CSA.second.getAssignment())->getDefiningRecipe());
@@ -10833,7 +10916,7 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
       VPVLSel->insertAfter(VPAnyActive);
       auto *VPMaskSel = new VPInstruction(
           VPInstruction::CSAMaskSel,
-          {WidenedCond, CSAState->getVPMaskPhi(), Plan.getOrCreateAllTrueMask(),
+          {CondToUse, CSAState->getVPMaskPhi(), Plan.getOrCreateAllTrueMask(),
            Plan.getOrCreateAllFalseMask(), VPAnyActive},
           DL, "csa.mask.sel");
       VPMaskSel->insertAfter(VPVLSel);
@@ -10844,7 +10927,7 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
     } else {
       auto *VPMaskSel = new VPInstruction(
           VPInstruction::CSAMaskSel,
-          {WidenedCond, CSAState->getVPMaskPhi(), Plan.getOrCreateAllTrueMask(),
+          {CondToUse, CSAState->getVPMaskPhi(), Plan.getOrCreateAllTrueMask(),
            Plan.getOrCreateAllFalseMask()},
           DL, "csa.mask.sel");
       VPMaskSel->insertBefore(
@@ -11267,6 +11350,9 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
   Plan->disableValue2VPValue();
 
 #if SIFIVE_CUSTOMIZATION
+  if (Legal->useVLAVectorizer())
+    VPlanTransforms::optimizeGEPs(*Plan);
+
   // Skip optimizeInductions as it has a dependency on canonical IV.
   if (!Legal->isVectorizableUncountable())
 #endif // SIFIVE_CUSTOMIZATION
@@ -12126,6 +12212,8 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
 
           NewSI = Builder.CreateCall(
               VPIntr, {StoredVal, VecPtr, BlockInMaskPart, RVLPart});
+          cast<IntrinsicInst>(NewSI)->addParamAttr(
+              1, Attribute::getWithAlignment(NewSI->getContext(), Alignment));
         } else if (isMaskRequired) {
 #endif // SIFIVE_CUSTOMIZATION
           NewSI = Builder.CreateMaskedStore(StoredVal, VecPtr, Alignment,
@@ -12218,7 +12306,10 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
 
           NewLI = Builder.CreateCall(VPIntr, {VecPtr, BlockInMaskPart, RVLPart},
                                      "vp.op.load");
+          cast<IntrinsicInst>(NewLI)->addParamAttr(
+              0, Attribute::getWithAlignment(NewLI->getContext(), Alignment));
         }
+        State.addMetadata(NewLI, LI);
       } else if (isMaskRequired)
 #endif // SIFIVE_CUSTOMIZATION
         NewLI = Builder.CreateMaskedLoad(

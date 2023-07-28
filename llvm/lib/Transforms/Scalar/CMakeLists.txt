@@ -69,6 +69,7 @@ add_llvm_component_library(LLVMScalarOpts
   Scalarizer.cpp
   ScalarizeMaskedMemIntrin.cpp
   SeparateConstOffsetFromGEP.cpp
+  SiFive_LoopReverse.cpp
   SimpleLoopUnswitch.cpp
   SimplifyCFGPass.cpp
   Sink.cpp

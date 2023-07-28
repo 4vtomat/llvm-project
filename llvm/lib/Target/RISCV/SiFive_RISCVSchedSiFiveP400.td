@@ -166,6 +166,8 @@ def : WriteRes<WriteSHXADD32, [SiFiveP400IntArith]>;
 
 def : WriteRes<WriteSingleBit, [SiFiveP400IntArith]>;
 def : WriteRes<WriteSingleBitImm, [SiFiveP400IntArith]>;
+def : WriteRes<WriteBEXT, [SiFiveP400IntArith]>;
+def : WriteRes<WriteBEXTI, [SiFiveP400IntArith]>;
 }
 
 // Memory

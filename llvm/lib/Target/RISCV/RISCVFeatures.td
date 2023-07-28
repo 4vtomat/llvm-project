@@ -500,7 +500,7 @@ def FeatureStdExtZcmp
                        "'Zcmp' (sequenced instuctions for code-size reduction)",
                        [FeatureStdExtZca]>;
 def HasStdExtZcmp : Predicate<"Subtarget->hasStdExtZcmp() && !Subtarget->hasStdExtC()">,
-                               AssemblerPredicate<(all_of FeatureStdExtZcmp, (not FeatureStdExtC)),
+                               AssemblerPredicate<(all_of FeatureStdExtZcmp), // SIFIVE
                                "'Zcmp' (sequenced instuctions for code-size reduction)">;
 
 def FeatureStdExtZcmt
@@ -1195,6 +1195,11 @@ def TuneDLen128b : SubtargetFeature<"dlen128b", "DLen", "128",
 
 def TuneDLen256b : SubtargetFeature<"dlen256b", "DLen", "256",
                                     "'DLen' (SiFive datapath length) 256">;
+
+def TuneOptimizedVRGatherVCompress
+    : SubtargetFeature<"optimized-vrgather-vrcompress",
+                       "HasOptimizedVRGatherVRCompress", "true",
+                       "VRGather and VRCompress are optimized for single DLEN">;
 
 def TuneSiFive6 : SubtargetFeature<"sifive6", "RISCVProcFamily", "SiFive6",
                                    "SiFive 6-Series processors",

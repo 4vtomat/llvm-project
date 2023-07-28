@@ -116,6 +116,9 @@
 #include "llvm/Transforms/Scalar/Reassociate.h"
 #include "llvm/Transforms/Scalar/SCCP.h"
 #include "llvm/Transforms/Scalar/SROA.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Transforms/Scalar/SiFive_LoopReverse.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Transforms/Scalar/SimpleLoopUnswitch.h"
 #include "llvm/Transforms/Scalar/SimplifyCFG.h"
 #include "llvm/Transforms/Scalar/SpeculativeExecution.h"
@@ -444,6 +447,9 @@ PassBuilder::buildO1FunctionSimplificationPipeline(OptimizationLevel Level,
   invokeLateLoopOptimizationsEPCallbacks(LPM2, Level);
 
   LPM2.addPass(LoopDeletionPass());
+#if SIFIVE_CUSTOMIZATION
+  LPM2.addPass(LoopReversePass());
+#endif // SIFIVE_CUSTOMIZATION
 
   if (EnableLoopInterchange)
     LPM2.addPass(LoopInterchangePass());
@@ -623,6 +629,9 @@ PassBuilder::buildFunctionSimplificationPipeline(OptimizationLevel Level,
   invokeLateLoopOptimizationsEPCallbacks(LPM2, Level);
 
   LPM2.addPass(LoopDeletionPass());
+#if SIFIVE_CUSTOMIZATION
+  LPM2.addPass(LoopReversePass());
+#endif // SIFIVE_CUSTOMIZATION
 
   if (EnableLoopInterchange)
     LPM2.addPass(LoopInterchangePass());
@@ -1386,6 +1395,9 @@ PassBuilder::buildModuleOptimizationPipeline(OptimizationLevel Level,
   //        this may need to be revisited once we run GVN before loop deletion
   //        in the simplification pipeline.
   LPM.addPass(LoopDeletionPass());
+#if SIFIVE_CUSTOMIZATION
+  LPM.addPass(LoopReversePass());
+#endif // SIFIVE_CUSTOMIZATION
   OptimizePM.addPass(createFunctionToLoopPassAdaptor(
       std::move(LPM), /*UseMemorySSA=*/false, /*UseBlockFrequencyInfo=*/false));
 
@@ -1893,6 +1905,9 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
     LPM.addPass(LoopFlattenPass());
   LPM.addPass(IndVarSimplifyPass());
   LPM.addPass(LoopDeletionPass());
+#if SIFIVE_CUSTOMIZATION
+  LPM.addPass(LoopReversePass());
+#endif // SIFIVE_CUSTOMIZATION
   // FIXME: Add loop interchange.
 
   // Unroll small loops and perform peeling.

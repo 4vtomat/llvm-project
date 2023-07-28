@@ -160,7 +160,6 @@ define void @main() {
 ; SUBREG_LIVENESS-NEXT:    lui a0, %hi(__const.main.var_272)
 ; SUBREG_LIVENESS-NEXT:    addi a0, a0, %lo(__const.main.var_272)
 ; SUBREG_LIVENESS-NEXT:    vmv4r.v v28, v24
-; SUBREG_LIVENESS-NEXT:    vmv4r.v v24, v20
 ; SUBREG_LIVENESS-NEXT:    vluxseg2ei8.v v24, (a0), v10, v0.t
 ; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
 ; SUBREG_LIVENESS-NEXT:    lui a0, %hi(.LCPI0_2)

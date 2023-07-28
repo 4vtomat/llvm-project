@@ -448,7 +448,7 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     return V;
   }
   case VPInstruction::CSAMaskSel: {
-    if (State.DisableRISCVCSA) {
+    if (!State.EnableRISCVCSA) {
       Value *WidenedCond = State.get(getOperand(0), Part);
       Value *MaskPhi = State.get(getOperand(1), Part);
       Value *AnyActive = State.get(getOperand(4), Part);
@@ -1395,6 +1395,56 @@ void VPCSAHeaderPHIRecipe::execute(VPTransformState &State) {
     State.set(this, DataPhi, Part);
 }
 
+InstructionCost VPCSAHeaderPHIRecipe::overhead(ElementCount VF,
+                                               VPCostContext &Ctx) const {
+  if (VF.isScalar())
+    return 0;
+
+  InstructionCost C = 0;
+  auto *VectorTy =
+      VectorType::get(getUnderlyingValue()->getType(), VF);
+  auto *MaskTy =
+      VectorType::get(IntegerType::getInt1Ty(VectorTy->getContext()), VF);
+
+  constexpr TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
+  // TODO: When we move to VPlan based CM, the costs of recipes in PH and exit
+  // should be added as overhead to the vector loop automatically. When that 
+  // happens, the generation of overhead for those recipes in this function can
+  // be removed.
+
+  // All True/False Mask
+  C += Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, MaskTy);
+  C += Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, MaskTy);
+
+  // CSAInitMask
+  C += Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
+  // CSAInitData
+  C += Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
+
+  // CSAExtractScalar
+  // StepVector
+  ArrayRef<Value *> Args;
+  IntrinsicCostAttributes CostAttrs(Intrinsic::experimental_stepvector,
+                                    VectorTy, Args);
+  C += Ctx.TTI->getIntrinsicInstrCost(CostAttrs, CostKind);
+  // NegOneSplat
+  C += Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
+  // ActiveIdx
+  C += Ctx.TTI->getArithmeticInstrCost(Instruction::Select, VectorTy, CostKind);
+  // LastIdx
+  C += Ctx.TTI->getMinMaxReductionCost(VectorTy, MaskTy, true,
+                                       FastMathFlags(), CostKind);
+  // ExtractFromVec
+  C += Ctx.TTI->getArithmeticInstrCost(Instruction::ExtractElement, VectorTy,
+                                       CostKind);
+  // LastIdxGeZero
+  C += Ctx.TTI->getArithmeticInstrCost(Instruction::ICmp, VectorTy, CostKind);
+  // ChooseFromVecOrInit
+  C += Ctx.TTI->getArithmeticInstrCost(Instruction::Select,
+                                       VectorTy->getScalarType(), CostKind);
+  return C * Ctx.TTI->getCSAOverheadFactor();
+}
+
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 void VPCSADataUpdateRecipe::print(raw_ostream &O, const Twine &Indent,
                                  VPSlotTracker &SlotTracker) const {
@@ -1406,7 +1456,7 @@ void VPCSADataUpdateRecipe::print(raw_ostream &O, const Twine &Indent,
 #endif
 
 void VPCSADataUpdateRecipe::execute(VPTransformState &State) {
-  if (State.DisableRISCVCSA) {
+  if (!State.EnableRISCVCSA) {
     for (unsigned Part = 0; Part < State.UF; ++Part) {
       Value *AnyActive = State.get(getVPAnyActive(), Part);
       Value *DataUpdate = getVPDataPhi() == getVPTrue()
@@ -1426,22 +1476,26 @@ void VPCSADataUpdateRecipe::execute(VPTransformState &State) {
   }
 
   for (unsigned Part = 0; Part < State.UF; ++Part) {
-    Value *NewMask = State.get(getVPNewMask(), Part);
+    // We can't use the NewMask to update the data. We must use the condition
+    // vector since it is possible that condition vector is all false but
+    // lanes from a prior iteration on 0..RVL are active in NewMask.
+    // Value *Cond = State.get(getVPCond(), Part);
+    Value *Cond = State.get(getVPCond(), Part);
     Value *DataPhi = State.get(getVPDataPhi(), Part);
     Value *UndistData = getVPDataPhi() == getVPTrue()
                               ? State.get(getVPFalse(), Part)
                               : State.get(getVPTrue(), Part);
-    Value *InitRVL =
+    Value *RVL =
         State.Plan->getRVL()
-            ? State.get(State.Plan->getInitRVL(), Part)
+            ? State.get(State.Plan->getRVL(), Part)
             : getRuntimeVF(State.Builder, State.Builder.getInt32Ty(), State.VF);
-    Value *InitRVL32 =
-        State.Builder.CreateZExtOrTrunc(InitRVL, State.Builder.getInt32Ty());
+    Value *RVL32 =
+        State.Builder.CreateZExtOrTrunc(RVL, State.Builder.getInt32Ty());
 
     Value *OldData = Part == 0 ? DataPhi : State.get(this, Part - 1);
     Value *NewData = State.Builder.CreateIntrinsic(
         DataPhi->getType(), Intrinsic::vp_merge,
-        {NewMask, UndistData, OldData, InitRVL32});
+        {Cond, UndistData, OldData, RVL32});
     if (Part == State.UF - 1)
       cast<PHINode>(DataPhi)->addIncoming(NewData, State.CFG.PrevBB);
     State.set(this, NewData, Part);
@@ -1467,10 +1521,13 @@ void VPCSAExtractScalarRecipe::execute(VPTransformState &State) {
   Value *DataSel = State.get(getVPDataSel(), LastPart);
   Value *InitRVL =
       State.Plan->getRVL()
-          ? State.get(State.Plan->getRVL(), 0)
+          ? State.get(State.Plan->getInitRVL(), 0)
           : getRuntimeVF(State.Builder, State.Builder.getInt32Ty(), State.VF);
+  Value *InitRVL32 =
+      State.Builder.CreateZExtOrTrunc(InitRVL, State.Builder.getInt32Ty());
+
   Value *VLToUse =
-      State.DisableRISCVCSA ? State.get(getVPCSAVLSel(), LastPart) : InitRVL;
+      State.EnableRISCVCSA ? InitRVL32 : State.get(getVPCSAVLSel(), LastPart);
   Value *InitScalar = getVPInitScalar()->getLiveInIRValue();
 
   Value *IndexVec = State.Builder.CreateStepVector(

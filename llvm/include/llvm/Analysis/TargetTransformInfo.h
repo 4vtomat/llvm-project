@@ -1722,6 +1722,20 @@ public:
 
   /// @}
 
+#if SIFIVE_CUSTOMIZATION
+  /// \returns true if the loop vectorizer should vectorize conditional
+  /// scalar assignments for the target.
+  bool enableCSAVectorization() const;
+
+  /// \returns the factor that the cost of scalar loop body should be scaled
+  /// down by or the cost of the vector loop should be scaled up by.
+  unsigned getCSABodyFactor() const;
+
+  /// \returns the factor that the cost of the the vector loop overhead should
+  /// be scaled up by.
+  unsigned getCSAOverheadFactor() const;
+#endif // SIFIVE_CUSTOMIZATION
+
 private:
   /// The abstract base class used to type erase specific TTI
   /// implementations.
@@ -2110,6 +2124,11 @@ public:
   getVPLegalizationStrategy(const VPIntrinsic &PI) const = 0;
   virtual bool hasArmWideBranch(bool Thumb) const = 0;
   virtual unsigned getMaxNumArgs() const = 0;
+#if SIFIVE_CUSTOMIZATION
+  virtual bool enableCSAVectorization() const = 0;
+  virtual unsigned getCSABodyFactor() const = 0;
+  virtual unsigned getCSAOverheadFactor() const = 0;
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 template <typename T>
@@ -2869,6 +2888,18 @@ public:
   unsigned getMaxNumArgs() const override {
     return Impl.getMaxNumArgs();
   }
+#if SIFIVE_CUSTOMIZATION
+  bool enableCSAVectorization() const override {
+    return Impl.enableCSAVectorization();
+  }
+
+  unsigned getCSABodyFactor() const override {
+    return Impl.getCSABodyFactor();
+  }
+  unsigned getCSAOverheadFactor() const override {
+    return Impl.getCSAOverheadFactor();
+  }
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 template <typename T>

@@ -80,6 +80,7 @@ static_library("Scalar") {
     "ScalarizeMaskedMemIntrin.cpp",
     "Scalarizer.cpp",
     "SeparateConstOffsetFromGEP.cpp",
+    "SiFive_LoopReverse.cpp",
     "SimpleLoopUnswitch.cpp",
     "SimplifyCFGPass.cpp",
     "Sink.cpp",

@@ -219,6 +219,9 @@
 #include "llvm/Transforms/Scalar/ScalarizeMaskedMemIntrin.h"
 #include "llvm/Transforms/Scalar/Scalarizer.h"
 #include "llvm/Transforms/Scalar/SeparateConstOffsetFromGEP.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Transforms/Scalar/SiFive_LoopReverse.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Transforms/Scalar/SimpleLoopUnswitch.h"
 #include "llvm/Transforms/Scalar/SimplifyCFG.h"
 #include "llvm/Transforms/Scalar/Sink.h"

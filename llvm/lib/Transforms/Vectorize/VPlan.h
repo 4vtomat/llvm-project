@@ -312,9 +312,9 @@ struct VPTransformState {
 #if SIFIVE_CUSTOMIZATION
   VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                    DominatorTree *DT, IRBuilderBase &Builder,
-                   InnerLoopVectorizer *ILV, VPlan *Plan, bool DisableRISCVCSA)
+                   InnerLoopVectorizer *ILV, VPlan *Plan, bool EnableRISCVCSA)
       : VF(VF), UF(UF), LI(LI), DT(DT), Builder(Builder), ILV(ILV), Plan(Plan),
-        LVer(nullptr), DisableRISCVCSA(DisableRISCVCSA) {}
+        LVer(nullptr), EnableRISCVCSA(EnableRISCVCSA) {}
 #else
   VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                    DominatorTree *DT, IRBuilderBase &Builder,
@@ -536,8 +536,8 @@ struct VPTransformState {
 
 #if SIFIVE_CUSTOMIZATION
   /// True if the RISCV specific implementation of CSA vectorization is
-  /// disabled.
-  bool DisableRISCVCSA;
+  /// enabled.
+  bool EnableRISCVCSA;
 #endif // SIFIVE_CUSTOMIZATION
 };
 
@@ -2225,6 +2225,8 @@ public:
 
   void execute(VPTransformState &State) override;
 
+  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const override;
+
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the recipe.
   void print(raw_ostream &O, const Twine &Indent,
@@ -2453,6 +2455,14 @@ public:
     return Op == getAddr() && isConsecutive() &&
            (!isStore() || Op != getStoredValue());
   }
+#if SIFIVE_CUSTOMIZATION
+  bool onlyFirstLaneUsed(const VPValue *Op, unsigned Index) const override {
+    assert(is_contained(operands(), Op) &&
+           "Op must be an operand of the recipe");
+
+    return Op == getAddr() && (isConsecutive() || isStrided()) && Index == 0;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   Instruction &getIngredient() const { return Ingredient; }
 

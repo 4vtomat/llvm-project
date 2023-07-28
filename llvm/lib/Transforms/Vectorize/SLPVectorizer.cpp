@@ -10668,17 +10668,26 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
           IgnoreReorder = IsReverse;
           Type *StrideTy = DL->getIndexType(PO->getType());
           Value *Ptr = IsReverse ? PtrN : Ptr0;
+          // Use the minimum alignment of the gathered loads.
+          Align CommonAlignment = LI->getAlign();
+          for (Value *V : E->Scalars)
+            CommonAlignment =
+                std::min(CommonAlignment, cast<LoadInst>(V)->getAlign());
           if (Stride != 0) {
             // Do not reorder reversed loads, just use -stride instead.
             if (IsReverse)
               Stride = -Stride;
-            NewLI = Builder.CreateIntrinsic(
+            auto *Inst = Builder.CreateIntrinsic(
                 Intrinsic::riscv_masked_strided_load,
                 {VecTy, Ptr0->getType(), StrideTy},
                 {PoisonValue::get(VecTy), Ptr,
                  ConstantInt::get(StrideTy,
                                   Stride * DL->getTypeAllocSize(ScalarTy)),
                  Builder.getTrueVector(VecTy->getElementCount())});
+            Inst->addParamAttr(/*ArgNo=*/1,
+                               Attribute::getWithAlignment(Inst->getContext(),
+                                                           CommonAlignment));
+            NewLI = Inst;
           } else {
             SmallVector<Value *> PointerOps(E->Scalars.size(), nullptr);
             transform(E->Scalars, PointerOps.begin(), [](Value *V) {
@@ -10696,11 +10705,15 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
                     StrideTy,
                     (IsReverse ? -1 : 1) *
                         static_cast<int>(DL->getTypeAllocSize(ScalarTy))));
-            NewLI = Builder.CreateIntrinsic(
+            auto *Inst = Builder.CreateIntrinsic(
                 Intrinsic::riscv_masked_strided_load,
                 {VecTy, Ptr0->getType(), StrideTy},
                 {PoisonValue::get(VecTy), Ptr, NewStride,
                  Builder.getTrueVector(VecTy->getElementCount())});
+            Inst->addParamAttr(/*ArgNo=*/1,
+                               Attribute::getWithAlignment(Inst->getContext(),
+                                                           CommonAlignment));
+            NewLI = Inst;
           }
           // The pointer operand uses an in-tree scalar so we add the new
           // BitCast or LoadInst to ExternalUses list to make sure that an
@@ -10763,13 +10776,21 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
         Value *VecPtr = Builder.CreateBitCast(
             ScalarPtr, VecValue->getType()->getPointerTo(AS));
         Type *StrideTy = DL->getIndexType(VecPtr->getType());
-        Instruction *ST = Builder.CreateIntrinsic(
+        // Use the minimum alignment of the gathered loads.
+        Align CommonAlignment = SI->getAlign();
+        for (Value *V : E->Scalars)
+          CommonAlignment =
+              std::min(CommonAlignment, cast<StoreInst>(V)->getAlign());
+        auto *ST = Builder.CreateIntrinsic(
             Intrinsic::riscv_masked_strided_store,
             {VecTy, VecPtr->getType(), StrideTy},
             {VecValue, VecPtr,
              ConstantInt::get(
                  StrideTy, -static_cast<int>(DL->getTypeAllocSize(ScalarTy))),
              Builder.getTrueVector(VecTy->getElementCount())});
+        ST->addParamAttr(
+            /*ArgNo=*/1,
+            Attribute::getWithAlignment(ST->getContext(), CommonAlignment));
         // The pointer operand uses an in-tree scalar, so add the new BitCast or
         // StoreInst to ExternalUses to make sure that an extract will be
         // generated in the future.
