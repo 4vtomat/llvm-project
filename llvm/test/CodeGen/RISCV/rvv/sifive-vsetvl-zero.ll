@@ -16,7 +16,7 @@ declare <vscale x 1 x double> @llvm.riscv.vfadd.nxv1f64.nxv1f64(
   <vscale x 1 x double>,
   <vscale x 1 x double>,
   <vscale x 1 x double>,
-  i64);
+  i64, i64);
 
 declare <vscale x 1 x double> @llvm.riscv.vle.nxv1f64(
   <vscale x 1 x double>,
@@ -33,8 +33,10 @@ define void @test_vsetvl_avl(<vscale x 1 x double>* %v, i64 signext %avl) nounwi
 ; CHECK-O0-LABEL: test_vsetvl_avl:
 ; CHECK-O0:       # %bb.0:
 ; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, ta, ma
-; CHECK-O0-NEXT:    vle64.v v8, (a0)
-; CHECK-O0-NEXT:    vfadd.vv v8, v8, v8
+; CHECK-O0-NEXT:    # implicit-def: $v9
+; CHECK-O0-NEXT:    vle64.v v9, (a0)
+; CHECK-O0-NEXT:    # implicit-def: $v8
+; CHECK-O0-NEXT:    vfadd.vv v8, v9, v9
 ; CHECK-O0-NEXT:    lui a0, %hi(scratch)
 ; CHECK-O0-NEXT:    addi a0, a0, %lo(scratch)
 ; CHECK-O0-NEXT:    vse64.v v8, (a0)
@@ -62,7 +64,7 @@ define void @test_vsetvl_avl(<vscale x 1 x double>* %v, i64 signext %avl) nounwi
     <vscale x 1 x double> undef,
     <vscale x 1 x double> %vec,
     <vscale x 1 x double> %vec,
-    i64 %gvl)
+    i64 7, i64 %gvl)
 
   %store_addr = bitcast i8* @scratch to <vscale x 1 x double>*
 
@@ -79,8 +81,10 @@ define void @test_vsetvl_zero(<vscale x 1 x double>* %v) nounwind
 ; CHECK-O0-LABEL: test_vsetvl_zero:
 ; CHECK-O0:       # %bb.0:
 ; CHECK-O0-NEXT:    vsetivli zero, 0, e64, m1, ta, ma
-; CHECK-O0-NEXT:    vle64.v v8, (a0)
-; CHECK-O0-NEXT:    vfadd.vv v8, v8, v8
+; CHECK-O0-NEXT:    # implicit-def: $v9
+; CHECK-O0-NEXT:    vle64.v v9, (a0)
+; CHECK-O0-NEXT:    # implicit-def: $v8
+; CHECK-O0-NEXT:    vfadd.vv v8, v9, v9
 ; CHECK-O0-NEXT:    lui a0, %hi(scratch)
 ; CHECK-O0-NEXT:    addi a0, a0, %lo(scratch)
 ; CHECK-O0-NEXT:    vse64.v v8, (a0)
@@ -108,7 +112,7 @@ define void @test_vsetvl_zero(<vscale x 1 x double>* %v) nounwind
     <vscale x 1 x double> undef,
     <vscale x 1 x double> %vec,
     <vscale x 1 x double> %vec,
-    i64 %gvl)
+    i64 7, i64 %gvl)
 
   %store_addr = bitcast i8* @scratch to <vscale x 1 x double>*
 
@@ -125,8 +129,10 @@ define void @test_vsetvlmax(<vscale x 1 x double>* %v) nounwind
 ; CHECK-O0-LABEL: test_vsetvlmax:
 ; CHECK-O0:       # %bb.0:
 ; CHECK-O0-NEXT:    vsetvli a1, zero, e64, m1, ta, ma
-; CHECK-O0-NEXT:    vle64.v v8, (a0)
-; CHECK-O0-NEXT:    vfadd.vv v8, v8, v8
+; CHECK-O0-NEXT:    # implicit-def: $v9
+; CHECK-O0-NEXT:    vle64.v v9, (a0)
+; CHECK-O0-NEXT:    # implicit-def: $v8
+; CHECK-O0-NEXT:    vfadd.vv v8, v9, v9
 ; CHECK-O0-NEXT:    lui a0, %hi(scratch)
 ; CHECK-O0-NEXT:    addi a0, a0, %lo(scratch)
 ; CHECK-O0-NEXT:    vse64.v v8, (a0)
@@ -154,7 +160,7 @@ define void @test_vsetvlmax(<vscale x 1 x double>* %v) nounwind
     <vscale x 1 x double> undef,
     <vscale x 1 x double> %vec,
     <vscale x 1 x double> %vec,
-    i64 %vlmax)
+    i64 7, i64 %vlmax)
 
   %store_addr = bitcast i8* @scratch to <vscale x 1 x double>*
 
@@ -170,9 +176,11 @@ define void @test_gvl_zero(<vscale x 1 x double>* %v) nounwind
 ;
 ; CHECK-O0-LABEL: test_gvl_zero:
 ; CHECK-O0:       # %bb.0:
+; CHECK-O0-NEXT:    # implicit-def: $v9
 ; CHECK-O0-NEXT:    vsetivli zero, 0, e64, m1, ta, ma
-; CHECK-O0-NEXT:    vle64.v v8, (a0)
-; CHECK-O0-NEXT:    vfadd.vv v8, v8, v8
+; CHECK-O0-NEXT:    vle64.v v9, (a0)
+; CHECK-O0-NEXT:    # implicit-def: $v8
+; CHECK-O0-NEXT:    vfadd.vv v8, v9, v9
 ; CHECK-O0-NEXT:    lui a0, %hi(scratch)
 ; CHECK-O0-NEXT:    addi a0, a0, %lo(scratch)
 ; CHECK-O0-NEXT:    vse64.v v8, (a0)
@@ -197,7 +205,7 @@ define void @test_gvl_zero(<vscale x 1 x double>* %v) nounwind
     <vscale x 1 x double> undef,
     <vscale x 1 x double> %vec,
     <vscale x 1 x double> %vec,
-    i64 0)
+    i64 7, i64 0)
 
   %store_addr = bitcast i8* @scratch to <vscale x 1 x double>*
 
