@@ -1432,7 +1432,7 @@ InstructionCost VPCSAHeaderPHIRecipe::overhead(ElementCount VF,
   // ActiveIdx
   C += Ctx.TTI->getArithmeticInstrCost(Instruction::Select, VectorTy, CostKind);
   // LastIdx
-  C += Ctx.TTI->getMinMaxReductionCost(VectorTy, MaskTy, true,
+  C += Ctx.TTI->getMinMaxReductionCost(Intrinsic::smax, VectorTy,
                                        FastMathFlags(), CostKind);
   // ExtractFromVec
   C += Ctx.TTI->getArithmeticInstrCost(Instruction::ExtractElement, VectorTy,
