@@ -938,8 +938,10 @@ void VPWidenRecipe::execute(VPTransformState &State) {
     // Bitcasts are not supported.
     State.setDebugLocFromInst(&I);
     for (unsigned Part = 0; Part < State.UF; ++Part) {
-      llvm::widenPredicatedInstruction(&I, this, *this, State, nullptr, Part);
-      Value *V = State.get(this, Part);
+      Value *V = llvm::widenPredicatedInstruction(&I, this, *this, State,
+                                                  nullptr, Part);
+      State.set(this, V, Part);
+      //Value *V = State.get(this, Part);
       State.addMetadata(V, &I);
     }
     return;
@@ -1056,8 +1058,10 @@ void VPWidenCastRecipe::execute(VPTransformState &State) {
       State.get(getOperand(0), 0)->getType()->isVectorTy() &&
       !isa<BitCastInst>(I) && !isa<FreezeInst>(I)) {
     for (unsigned Part = 0; Part < State.UF; ++Part) {
-      llvm::widenPredicatedInstruction(I, this, *this, State, nullptr, Part);
-      Value *V = State.get(this, Part);
+      Value *V = llvm::widenPredicatedInstruction(I, this, *this, State,
+                                                  nullptr, Part);
+      State.set(this, V, Part);
+      // Value *V = State.get(this, Part);
       State.addMetadata(V, I);
     }
     return;
