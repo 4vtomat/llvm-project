@@ -24,11 +24,11 @@ define float @test1(i64 %n, float* nocapture %x, i64 %incx, float* nocapture %y,
 ; CHECK-NO-HOIST-NEXT:    [[CMP1:%.*]] = icmp ult i64 [[LEFT_025]], [[N]]
 ; CHECK-NO-HOIST-NEXT:    br i1 [[CMP1]], label [[IF_THEN:%.*]], label [[IF_ELSE:%.*]]
 ; CHECK-NO-HOIST:       if.then:
-; CHECK-NO-HOIST-NEXT:    [[TMP6:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vfmul.nxv16f32.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float> [[TMP3]], <vscale x 16 x float> [[TMP5]], i64 [[TMP1]])
-; CHECK-NO-HOIST-NEXT:    [[TMP7:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vfadd.nxv16f32.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float> [[ACCV_028]], <vscale x 16 x float> [[TMP6]], i64 [[TMP1]])
+; CHECK-NO-HOIST-NEXT:    [[TMP6:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vfmul.nxv16f32.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float> [[TMP3]], <vscale x 16 x float> [[TMP5]], i64 7, i64 [[TMP1]])
+; CHECK-NO-HOIST-NEXT:    [[TMP7:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vfadd.nxv16f32.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float> [[ACCV_028]], <vscale x 16 x float> [[TMP6]], i64 7, i64 [[TMP1]])
 ; CHECK-NO-HOIST-NEXT:    br label [[IF_END]]
 ; CHECK-NO-HOIST:       if.else:
-; CHECK-NO-HOIST-NEXT:    [[TMP8:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vfmul.nxv16f32.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float> [[TMP3]], <vscale x 16 x float> [[TMP5]], i64 [[TMP1]])
+; CHECK-NO-HOIST-NEXT:    [[TMP8:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vfmul.nxv16f32.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float> [[TMP3]], <vscale x 16 x float> [[TMP5]], i64 7, i64 [[TMP1]])
 ; CHECK-NO-HOIST-NEXT:    br label [[IF_END]]
 ; CHECK-NO-HOIST:       if.end:
 ; CHECK-NO-HOIST-NEXT:    [[ACCV_1]] = phi <vscale x 16 x float> [ [[TMP7]], [[IF_THEN]] ], [ [[TMP8]], [[IF_ELSE]] ]
@@ -46,7 +46,7 @@ define float @test1(i64 %n, float* nocapture %x, i64 %incx, float* nocapture %y,
 ; CHECK-NO-HOIST-NEXT:    [[TMP11:%.*]] = tail call <vscale x 2 x i32> @llvm.riscv.vmv.v.x.nxv2i32.i64(<vscale x 2 x i32> undef, i32 0, i64 [[TMP10]])
 ; CHECK-NO-HOIST-NEXT:    [[TMP12:%.*]] = bitcast <vscale x 2 x i32> [[TMP11]] to <vscale x 2 x float>
 ; CHECK-NO-HOIST-NEXT:    [[TMP13:%.*]] = tail call i64 @llvm.riscv.vsetvli.i64(i64 [[N]], i64 2, i64 3)
-; CHECK-NO-HOIST-NEXT:    [[TMP14:%.*]] = tail call <vscale x 2 x float> @llvm.riscv.vfredusum.nxv2f32.nxv16f32.i64(<vscale x 2 x float> [[TMP12]], <vscale x 16 x float> [[ACCV_0_LCSSA]], <vscale x 2 x float> [[TMP12]], i64 [[TMP13]])
+; CHECK-NO-HOIST-NEXT:    [[TMP14:%.*]] = tail call <vscale x 2 x float> @llvm.riscv.vfredusum.nxv2f32.nxv16f32.i64(<vscale x 2 x float> [[TMP12]], <vscale x 16 x float> [[ACCV_0_LCSSA]], <vscale x 2 x float> [[TMP12]], i64 7, i64 [[TMP13]])
 ; CHECK-NO-HOIST-NEXT:    [[TMP15:%.*]] = tail call float @llvm.riscv.vfmv.f.s.nxv2f32(<vscale x 2 x float> [[TMP14]])
 ; CHECK-NO-HOIST-NEXT:    ret float [[TMP15]]
 ;
@@ -66,10 +66,10 @@ define float @test1(i64 %n, float* nocapture %x, i64 %incx, float* nocapture %y,
 ; CHECK-HOIST-NEXT:    [[TMP4:%.*]] = bitcast ptr [[Y_ADDR_026]] to ptr
 ; CHECK-HOIST-NEXT:    [[TMP5:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vle.nxv16f32.i64(<vscale x 16 x float> undef, ptr [[TMP4]], i64 [[TMP1]])
 ; CHECK-HOIST-NEXT:    [[CMP1:%.*]] = icmp ult i64 [[LEFT_025]], [[N]]
-; CHECK-HOIST-NEXT:    [[TMP6:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vfmul.nxv16f32.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float> [[TMP3]], <vscale x 16 x float> [[TMP5]], i64 [[TMP1]])
+; CHECK-HOIST-NEXT:    [[TMP6:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vfmul.nxv16f32.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float> [[TMP3]], <vscale x 16 x float> [[TMP5]], i64 7, i64 [[TMP1]])
 ; CHECK-HOIST-NEXT:    br i1 [[CMP1]], label [[IF_THEN:%.*]], label [[IF_END]]
 ; CHECK-HOIST:       if.then:
-; CHECK-HOIST-NEXT:    [[TMP7:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vfadd.nxv16f32.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float> [[ACCV_028]], <vscale x 16 x float> [[TMP6]], i64 [[TMP1]])
+; CHECK-HOIST-NEXT:    [[TMP7:%.*]] = tail call <vscale x 16 x float> @llvm.riscv.vfadd.nxv16f32.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float> [[ACCV_028]], <vscale x 16 x float> [[TMP6]], i64 7, i64 [[TMP1]])
 ; CHECK-HOIST-NEXT:    br label [[IF_END]]
 ; CHECK-HOIST:       if.end:
 ; CHECK-HOIST-NEXT:    [[ACCV_1]] = phi <vscale x 16 x float> [ [[TMP7]], [[IF_THEN]] ], [ [[TMP6]], [[FOR_BODY]] ]
@@ -87,7 +87,7 @@ define float @test1(i64 %n, float* nocapture %x, i64 %incx, float* nocapture %y,
 ; CHECK-HOIST-NEXT:    [[TMP10:%.*]] = tail call <vscale x 2 x i32> @llvm.riscv.vmv.v.x.nxv2i32.i64(<vscale x 2 x i32> undef, i32 0, i64 [[TMP9]])
 ; CHECK-HOIST-NEXT:    [[TMP11:%.*]] = bitcast <vscale x 2 x i32> [[TMP10]] to <vscale x 2 x float>
 ; CHECK-HOIST-NEXT:    [[TMP12:%.*]] = tail call i64 @llvm.riscv.vsetvli.i64(i64 [[N]], i64 2, i64 3)
-; CHECK-HOIST-NEXT:    [[TMP13:%.*]] = tail call <vscale x 2 x float> @llvm.riscv.vfredusum.nxv2f32.nxv16f32.i64(<vscale x 2 x float> [[TMP11]], <vscale x 16 x float> [[ACCV_0_LCSSA]], <vscale x 2 x float> [[TMP11]], i64 [[TMP12]])
+; CHECK-HOIST-NEXT:    [[TMP13:%.*]] = tail call <vscale x 2 x float> @llvm.riscv.vfredusum.nxv2f32.nxv16f32.i64(<vscale x 2 x float> [[TMP11]], <vscale x 16 x float> [[ACCV_0_LCSSA]], <vscale x 2 x float> [[TMP11]], i64 7, i64 [[TMP12]])
 ; CHECK-HOIST-NEXT:    [[TMP14:%.*]] = tail call float @llvm.riscv.vfmv.f.s.nxv2f32(<vscale x 2 x float> [[TMP13]])
 ; CHECK-HOIST-NEXT:    ret float [[TMP14]]
 ;
@@ -110,12 +110,12 @@ for.body:                                         ; preds = %entry, %if.end
   br i1 %cmp1, label %if.then, label %if.else
 
 if.then:                                          ; preds = %for.body
-  %6 = tail call <vscale x 16 x float> @llvm.riscv.vfmul.nxv16f32.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float> %3, <vscale x 16 x float> %5, i64 %1)
-  %7 = tail call <vscale x 16 x float> @llvm.riscv.vfadd.nxv16f32.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float> %accv.028, <vscale x 16 x float> %6, i64 %1)
+  %6 = tail call <vscale x 16 x float> @llvm.riscv.vfmul.nxv16f32.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float> %3, <vscale x 16 x float> %5, i64 7, i64 %1)
+  %7 = tail call <vscale x 16 x float> @llvm.riscv.vfadd.nxv16f32.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float> %accv.028, <vscale x 16 x float> %6, i64 7, i64 %1)
   br label %if.end
 
 if.else:                                          ; preds = %for.body
-  %8 = tail call <vscale x 16 x float> @llvm.riscv.vfmul.nxv16f32.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float> %3, <vscale x 16 x float> %5, i64 %1)
+  %8 = tail call <vscale x 16 x float> @llvm.riscv.vfmul.nxv16f32.nxv16f32.i64(<vscale x 16 x float> undef, <vscale x 16 x float> %3, <vscale x 16 x float> %5, i64 7, i64 %1)
   br label %if.end
 
 if.end:                                           ; preds = %if.else, %if.then
@@ -135,17 +135,17 @@ for.end:                                          ; preds = %if.end, %entry
   %11 = tail call <vscale x 2 x i32> @llvm.riscv.vmv.v.x.nxv2i32.i64(<vscale x 2 x i32> undef, i32 0, i64 %10)
   %12 = bitcast <vscale x 2 x i32> %11 to <vscale x 2 x float>
   %13 = tail call i64 @llvm.riscv.vsetvli.i64(i64 %n, i64 2, i64 3)
-  %14 = tail call <vscale x 2 x float> @llvm.riscv.vfredusum.nxv2f32.nxv16f32.i64(<vscale x 2 x float> %12, <vscale x 16 x float> %accv.0.lcssa, <vscale x 2 x float> %12, i64 %13)
+  %14 = tail call <vscale x 2 x float> @llvm.riscv.vfredusum.nxv2f32.nxv16f32.i64(<vscale x 2 x float> %12, <vscale x 16 x float> %accv.0.lcssa, <vscale x 2 x float> %12, i64 7, i64 %13)
   %15 = tail call float @llvm.riscv.vfmv.f.s.nxv2f32(<vscale x 2 x float> %14)
   ret float %15
 }
 
 declare i64 @llvm.riscv.vsetvli.i64(i64, i64 immarg, i64 immarg)
 declare <vscale x 16 x float> @llvm.riscv.vle.nxv16f32.i64(<vscale x 16 x float>, <vscale x 16 x float>* nocapture, i64)
-declare <vscale x 16 x float> @llvm.riscv.vfmul.nxv16f32.nxv16f32.i64(<vscale x 16 x float>, <vscale x 16 x float>, <vscale x 16 x float>, i64)
-declare <vscale x 16 x float> @llvm.riscv.vfadd.nxv16f32.nxv16f32.i64(<vscale x 16 x float>, <vscale x 16 x float>, <vscale x 16 x float>, i64)
+declare <vscale x 16 x float> @llvm.riscv.vfmul.nxv16f32.nxv16f32.i64(<vscale x 16 x float>, <vscale x 16 x float>, <vscale x 16 x float>, i64, i64)
+declare <vscale x 16 x float> @llvm.riscv.vfadd.nxv16f32.nxv16f32.i64(<vscale x 16 x float>, <vscale x 16 x float>, <vscale x 16 x float>, i64, i64)
 declare <vscale x 2 x i32> @llvm.riscv.vmv.v.x.nxv2i32.i64(<vscale x 2 x i32>, i32, i64)
-declare <vscale x 2 x float> @llvm.riscv.vfredusum.nxv2f32.nxv16f32.i64(<vscale x 2 x float>, <vscale x 16 x float>, <vscale x 2 x float>, i64)
+declare <vscale x 2 x float> @llvm.riscv.vfredusum.nxv2f32.nxv16f32.i64(<vscale x 2 x float>, <vscale x 16 x float>, <vscale x 2 x float>, i64, i64)
 
 declare float @llvm.riscv.vfmv.f.s.nxv2f32(<vscale x 2 x float>)
 

@@ -67,28 +67,28 @@ define dso_local void @main() local_unnamed_addr {
 entry:
   %0 = call { <vscale x 16 x half>, <vscale x 16 x half> } @llvm.riscv.vloxseg2.nxv16f16.nxv16i32.i64(<vscale x 16 x half> undef, <vscale x 16 x half> undef, half* nonnull undef, <vscale x 16 x i32> undef, i64 55)
   %1 = extractvalue { <vscale x 16 x half>, <vscale x 16 x half> } %0, 0
-  %2 = call <vscale x 16 x float> @llvm.riscv.vfwadd.mask.nxv16f32.nxv16f16.nxv16f16.i64(<vscale x 16 x float> undef, <vscale x 16 x half> undef, <vscale x 16 x half> undef, <vscale x 16 x i1> zeroinitializer, i64 36, i64 0)
+  %2 = call <vscale x 16 x float> @llvm.riscv.vfwadd.mask.nxv16f32.nxv16f16.nxv16f16.i64(<vscale x 16 x float> undef, <vscale x 16 x half> undef, <vscale x 16 x half> undef, <vscale x 16 x i1> zeroinitializer, i64 7, i64 36, i64 0)
   call void @_Z5checkIjEbPKT_S2_m()
   %3 = call <vscale x 16 x i16> @llvm.riscv.vrgather.vv.mask.nxv16i16.i64(<vscale x 16 x i16> undef, <vscale x 16 x i16> undef, <vscale x 16 x i16> undef, <vscale x 16 x i1> undef, i64 32, i64 0)
-  %4 = call <vscale x 16 x float> @llvm.riscv.vfwsub.w.nxv16f32.nxv16f16.i64(<vscale x 16 x float> undef, <vscale x 16 x float> %2, <vscale x 16 x half> %1, i64 36)
+  %4 = call <vscale x 16 x float> @llvm.riscv.vfwsub.w.nxv16f32.nxv16f16.i64(<vscale x 16 x float> undef, <vscale x 16 x float> %2, <vscale x 16 x half> %1, i64 7, i64 36)
   %5 = call <vscale x 16 x i16> @llvm.riscv.vssubu.mask.nxv16i16.nxv16i16.i64(<vscale x 16 x i16> %3, <vscale x 16 x i16> %3, <vscale x 16 x i16> undef, <vscale x 16 x i1> undef, i64 32, i64 0)
-  %6 = call <vscale x 16 x float> @llvm.riscv.vfdiv.mask.nxv16f32.nxv16f32.i64(<vscale x 16 x float> %4, <vscale x 16 x float> %2, <vscale x 16 x float> undef, <vscale x 16 x i1> undef, i64 36, i64 0)
+  %6 = call <vscale x 16 x float> @llvm.riscv.vfdiv.mask.nxv16f32.nxv16f32.i64(<vscale x 16 x float> %4, <vscale x 16 x float> %2, <vscale x 16 x float> undef, <vscale x 16 x i1> undef, i64 7, i64 36, i64 0)
   call void @llvm.riscv.vse.nxv16f32.i64(<vscale x 16 x float> %6, <vscale x 16 x float>* nonnull undef, i64 36)
   unreachable
 }
 
 declare { <vscale x 16 x half>, <vscale x 16 x half> } @llvm.riscv.vloxseg2.nxv16f16.nxv16i32.i64(<vscale x 16 x half>, <vscale x 16 x half>, half* nocapture, <vscale x 16 x i32>, i64)
 
-declare <vscale x 16 x float> @llvm.riscv.vfwadd.mask.nxv16f32.nxv16f16.nxv16f16.i64(<vscale x 16 x float>, <vscale x 16 x half>, <vscale x 16 x half>, <vscale x 16 x i1>, i64, i64 immarg)
+declare <vscale x 16 x float> @llvm.riscv.vfwadd.mask.nxv16f32.nxv16f16.nxv16f16.i64(<vscale x 16 x float>, <vscale x 16 x half>, <vscale x 16 x half>, <vscale x 16 x i1>, i64, i64, i64 immarg)
 
 declare dso_local void @_Z5checkIjEbPKT_S2_m() local_unnamed_addr
 
 declare <vscale x 16 x i16> @llvm.riscv.vrgather.vv.mask.nxv16i16.i64(<vscale x 16 x i16>, <vscale x 16 x i16>, <vscale x 16 x i16>, <vscale x 16 x i1>, i64, i64 immarg)
 
-declare <vscale x 16 x float> @llvm.riscv.vfwsub.w.nxv16f32.nxv16f16.i64(<vscale x 16 x float>, <vscale x 16 x float>, <vscale x 16 x half>, i64)
+declare <vscale x 16 x float> @llvm.riscv.vfwsub.w.nxv16f32.nxv16f16.i64(<vscale x 16 x float>, <vscale x 16 x float>, <vscale x 16 x half>, i64, i64)
 
 declare <vscale x 16 x i16> @llvm.riscv.vssubu.mask.nxv16i16.nxv16i16.i64(<vscale x 16 x i16>, <vscale x 16 x i16>, <vscale x 16 x i16>, <vscale x 16 x i1>, i64, i64 immarg)
 
-declare <vscale x 16 x float> @llvm.riscv.vfdiv.mask.nxv16f32.nxv16f32.i64(<vscale x 16 x float>, <vscale x 16 x float>, <vscale x 16 x float>, <vscale x 16 x i1>, i64, i64 immarg)
+declare <vscale x 16 x float> @llvm.riscv.vfdiv.mask.nxv16f32.nxv16f32.i64(<vscale x 16 x float>, <vscale x 16 x float>, <vscale x 16 x float>, <vscale x 16 x i1>, i64, i64, i64 immarg)
 
 declare void @llvm.riscv.vse.nxv16f32.i64(<vscale x 16 x float>, <vscale x 16 x float>* nocapture, i64)

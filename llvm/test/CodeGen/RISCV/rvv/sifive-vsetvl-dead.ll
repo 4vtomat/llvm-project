@@ -49,7 +49,7 @@ define float @blas_dot(i64 %0, float* nocapture readonly %1, i64 %2, float* noca
   %17 = tail call fast <vscale x 16 x float> @llvm.riscv.vle.nxv16f32(<vscale x 16 x float> undef, <vscale x 16 x float>* %16, i64 %11)
   %18 = bitcast float* %14 to <vscale x 16 x float>*
   %19 = tail call fast <vscale x 16 x float> @llvm.riscv.vle.nxv16f32(<vscale x 16 x float> undef, <vscale x 16 x float>* %18, i64 %11)
-  %20 = tail call fast <vscale x 16 x float> @llvm.riscv.vfmacc.nxv16f32.nxv16f32(<vscale x 16 x float> %12, <vscale x 16 x float> %17, <vscale x 16 x float> %19, i64 %11, i64 0)
+  %20 = tail call fast <vscale x 16 x float> @llvm.riscv.vfmacc.nxv16f32.nxv16f32(<vscale x 16 x float> %12, <vscale x 16 x float> %17, <vscale x 16 x float> %19, i64 7, i64 %11, i64 0)
   %21 = mul i64 %11, %2
   %22 = getelementptr inbounds float, float* %13, i64 %21
   %23 = mul i64 %11, %4
@@ -63,15 +63,15 @@ define float @blas_dot(i64 %0, float* nocapture readonly %1, i64 %2, float* noca
   %29 = phi <vscale x 16 x float> [ %7, %5 ], [ %20, %10 ]
   %30 = tail call i64 @llvm.riscv.vsetvli(i64 %0, i64 2, i64 3)
   %31 = tail call fast <vscale x 2 x float> @llvm.riscv.vfmv.v.f.nxv2f32.f32(<vscale x 2 x float> undef, float 0.000000e+00, i64 %30)
-  %32 = tail call fast <vscale x 2 x float> @llvm.riscv.vfredusum.nxv2f32.nxv16f32(<vscale x 2 x float> %31, <vscale x 16 x float> %29, <vscale x 2 x float> %31, i64 %30)
+  %32 = tail call fast <vscale x 2 x float> @llvm.riscv.vfredusum.nxv2f32.nxv16f32(<vscale x 2 x float> %31, <vscale x 16 x float> %29, <vscale x 2 x float> %31, i64 7, i64 %30)
   %33 = tail call fast float @llvm.riscv.vfmv.f.s.f32.nxv2f32(<vscale x 2 x float> %32)
   ret float %33
 }
 
 declare <vscale x 16 x float> @llvm.riscv.vfmv.v.f.nxv16f32.f32(<vscale x 16 x float>,float, i64)
 declare <vscale x 16 x float> @llvm.riscv.vle.nxv16f32(<vscale x 16 x float>, <vscale x 16 x float>* nocapture, i64)
-declare <vscale x 16 x float> @llvm.riscv.vfmacc.nxv16f32.nxv16f32(<vscale x 16 x float>, <vscale x 16 x float>, <vscale x 16 x float>, i64, i64)
+declare <vscale x 16 x float> @llvm.riscv.vfmacc.nxv16f32.nxv16f32(<vscale x 16 x float>, <vscale x 16 x float>, <vscale x 16 x float>, i64, i64, i64)
 declare <vscale x 2 x float> @llvm.riscv.vfmv.v.f.nxv2f32.f32(<vscale x 2 x float>, float, i64)
-declare <vscale x 2 x float> @llvm.riscv.vfredusum.nxv2f32.nxv16f32(<vscale x 2 x float>, <vscale x 16 x float>, <vscale x 2 x float>, i64)
+declare <vscale x 2 x float> @llvm.riscv.vfredusum.nxv2f32.nxv16f32(<vscale x 2 x float>, <vscale x 16 x float>, <vscale x 2 x float>, i64, i64)
 declare float @llvm.riscv.vfmv.f.s.f32.nxv2f32(<vscale x 2 x float>)
 declare i64 @llvm.riscv.vsetvli(i64, i64, i64)
