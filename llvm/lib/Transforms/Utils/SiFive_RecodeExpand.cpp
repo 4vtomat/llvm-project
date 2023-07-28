@@ -468,7 +468,21 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
             Builder.CreateExtractElement(Des, static_cast<uint64_t>(0)));
         break;
       }
-      case Intrinsic::aarch64_neon_frecpe:
+      case Intrinsic::aarch64_neon_frecpe: {
+        FixedVectorType *VecTy =
+            cast<FixedVectorType>(II->getArgOperand(0)->getType());
+        unsigned VecNumElements = VecTy->getNumElements();
+        CallInst *Src = toScalableVector(TTI, Builder, II->getArgOperand(0));
+        ConstantInt *VL = Builder.getIntN(XLEN, VecNumElements);
+        ConstantInt *FRM = Builder.getIntN(XLEN, 7);
+        II->replaceAllUsesWith(Builder.CreateExtractVector(
+            VecTy,
+            Builder.CreateIntrinsic(
+                Intrinsic::riscv_vfrec7, {Src->getType(), VL->getType()},
+                {PoisonValue::get(Src->getType()), Src, FRM, VL}),
+            Builder.getInt64(0)));
+        break;
+      }
       case Intrinsic::aarch64_neon_frsqrte: {
         FixedVectorType *VecTy =
             cast<FixedVectorType>(II->getArgOperand(0)->getType());
@@ -478,10 +492,7 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         II->replaceAllUsesWith(Builder.CreateExtractVector(
             VecTy,
             Builder.CreateIntrinsic(
-                II->getIntrinsicID() == Intrinsic::aarch64_neon_frecpe
-                    ? Intrinsic::riscv_vfrec7
-                    : Intrinsic::riscv_vfrsqrt7,
-                {Src->getType(), VL->getType()},
+                Intrinsic::riscv_vfrsqrt7, {Src->getType(), VL->getType()},
                 {PoisonValue::get(Src->getType()), Src, VL}),
             Builder.getInt64(0)));
         break;
@@ -524,6 +535,7 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
             Builder.CreateIntrinsic(Intrinsic::fabs, {VecTy}, {Op1});
         ConstantInt *VL = Builder.getIntN(XLEN, VecNumElements);
         ConstantInt *Agnostic = Builder.getIntN(XLEN, 1);
+        ConstantInt *FRM = Builder.getIntN(XLEN, 7);
         Value *FclassOp0 = createFclass(TTI, Builder, FabsOp0, VL);
         Value *FclassOp1 = createFclass(TTI, Builder, FabsOp1, VL);
         Value *FclassOr = Builder.CreateOr(FclassOp0, FclassOp1);
@@ -540,7 +552,8 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
                 Intrinsic::riscv_vfnmsac_mask,
                 {ScalableOp0->getType(), ScalableOp0->getType(), VL->getType()},
                 {ConstantFP::get(ScalableOp0->getType(), Isfrecps ? 2 : 3),
-                 ScalableOp0, ScalableOp1, ScalableIsNotInfAnd0, VL, Agnostic}),
+                 ScalableOp0, ScalableOp1, ScalableIsNotInfAnd0, FRM, VL,
+                 Agnostic}),
             Builder.getInt64(0));
         if (Isfrecps)
           II->replaceAllUsesWith(Vfmacc);
