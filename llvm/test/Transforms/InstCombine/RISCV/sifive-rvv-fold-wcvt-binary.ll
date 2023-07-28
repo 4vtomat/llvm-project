@@ -747,9 +747,9 @@ entry:
   ret void
 }
 
-declare <vscale x 1 x double> @llvm.riscv.vfadd.nxv1f64.nxv1f64.i64(<vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, i64)
-declare <vscale x 1 x double> @llvm.riscv.vfsub.nxv1f64.nxv1f64.i64(<vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, i64)
-declare <vscale x 1 x double> @llvm.riscv.vfmul.nxv1f64.nxv1f64.i64(<vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, i64)
+declare <vscale x 1 x double> @llvm.riscv.vfadd.nxv1f64.nxv1f64.i64(<vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, i64, i64)
+declare <vscale x 1 x double> @llvm.riscv.vfsub.nxv1f64.nxv1f64.i64(<vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, i64, i64)
+declare <vscale x 1 x double> @llvm.riscv.vfmul.nxv1f64.nxv1f64.i64(<vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, i64, i64)
 declare <vscale x 1 x double> @llvm.riscv.vfwcvt.f.f.v.nxv1f64.nxv1f32.i64(<vscale x 1 x double>, <vscale x 1 x float>, i64)
 declare void @llvm.riscv.vse.nxv1f64.i64(<vscale x 1 x double>, <vscale x 1 x double>* nocapture, i64)
 declare <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float>, <vscale x 1 x float>* nocapture, i64)
@@ -759,7 +759,7 @@ define void @fwcvt_fadd(float* nocapture readonly %in_0, float* nocapture readon
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = tail call <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float> undef, ptr [[IN_0:%.*]], i64 2)
 ; CHECK-NEXT:    [[TMP1:%.*]] = tail call <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float> undef, ptr [[IN_1:%.*]], i64 2)
-; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 1 x double> @llvm.riscv.vfwadd.nxv1f64.nxv1f32.nxv1f32.i64(<vscale x 1 x double> undef, <vscale x 1 x float> [[TMP0]], <vscale x 1 x float> [[TMP1]], i64 2)
+; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 1 x double> @llvm.riscv.vfwadd.nxv1f64.nxv1f32.nxv1f32.i64(<vscale x 1 x double> undef, <vscale x 1 x float> [[TMP0]], <vscale x 1 x float> [[TMP1]], i64 7, i64 2)
 ; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1f64.i64(<vscale x 1 x double> [[TMP2]], ptr [[OUT:%.*]], i64 2)
 ; CHECK-NEXT:    ret void
 ;
@@ -770,7 +770,7 @@ entry:
   %3 = bitcast float* %in_1 to <vscale x 1 x float>*
   %4 = tail call <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float> undef, <vscale x 1 x float>* %3, i64 2)
   %5 = tail call <vscale x 1 x double> @llvm.riscv.vfwcvt.f.f.v.nxv1f64.nxv1f32.i64(<vscale x 1 x double> undef, <vscale x 1 x float> %4, i64 2)
-  %6 = tail call <vscale x 1 x double> @llvm.riscv.vfadd.nxv1f64.nxv1f64.i64(<vscale x 1 x double> undef, <vscale x 1 x double> %2, <vscale x 1 x double> %5, i64 2)
+  %6 = tail call <vscale x 1 x double> @llvm.riscv.vfadd.nxv1f64.nxv1f64.i64(<vscale x 1 x double> undef, <vscale x 1 x double> %2, <vscale x 1 x double> %5, i64 7, i64 2)
   %7 = bitcast double* %out to <vscale x 1 x double>*
   tail call void @llvm.riscv.vse.nxv1f64.i64(<vscale x 1 x double> %6, <vscale x 1 x double>* %7, i64 2)
   ret void
@@ -781,7 +781,7 @@ define void @fwcvt_fsub(float* nocapture readonly %in_0, float* nocapture readon
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = tail call <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float> undef, ptr [[IN_0:%.*]], i64 2)
 ; CHECK-NEXT:    [[TMP1:%.*]] = tail call <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float> undef, ptr [[IN_1:%.*]], i64 2)
-; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 1 x double> @llvm.riscv.vfwsub.nxv1f64.nxv1f32.nxv1f32.i64(<vscale x 1 x double> undef, <vscale x 1 x float> [[TMP0]], <vscale x 1 x float> [[TMP1]], i64 2)
+; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 1 x double> @llvm.riscv.vfwsub.nxv1f64.nxv1f32.nxv1f32.i64(<vscale x 1 x double> undef, <vscale x 1 x float> [[TMP0]], <vscale x 1 x float> [[TMP1]], i64 7, i64 2)
 ; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1f64.i64(<vscale x 1 x double> [[TMP2]], ptr [[OUT:%.*]], i64 2)
 ; CHECK-NEXT:    ret void
 ;
@@ -792,7 +792,7 @@ entry:
   %3 = bitcast float* %in_1 to <vscale x 1 x float>*
   %4 = tail call <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float> undef, <vscale x 1 x float>* %3, i64 2)
   %5 = tail call <vscale x 1 x double> @llvm.riscv.vfwcvt.f.f.v.nxv1f64.nxv1f32.i64(<vscale x 1 x double> undef, <vscale x 1 x float> %4, i64 2)
-  %6 = tail call <vscale x 1 x double> @llvm.riscv.vfsub.nxv1f64.nxv1f64.i64(<vscale x 1 x double> undef, <vscale x 1 x double> %2, <vscale x 1 x double> %5, i64 2)
+  %6 = tail call <vscale x 1 x double> @llvm.riscv.vfsub.nxv1f64.nxv1f64.i64(<vscale x 1 x double> undef, <vscale x 1 x double> %2, <vscale x 1 x double> %5, i64 7, i64 2)
   %7 = bitcast double* %out to <vscale x 1 x double>*
   tail call void @llvm.riscv.vse.nxv1f64.i64(<vscale x 1 x double> %6, <vscale x 1 x double>* %7, i64 2)
   ret void
@@ -803,7 +803,7 @@ define void @fwcvt_fmul(float* nocapture readonly %in_0, float* nocapture readon
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = tail call <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float> undef, ptr [[IN_0:%.*]], i64 2)
 ; CHECK-NEXT:    [[TMP1:%.*]] = tail call <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float> undef, ptr [[IN_1:%.*]], i64 2)
-; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 1 x double> @llvm.riscv.vfwmul.nxv1f64.nxv1f32.nxv1f32.i64(<vscale x 1 x double> undef, <vscale x 1 x float> [[TMP0]], <vscale x 1 x float> [[TMP1]], i64 2)
+; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 1 x double> @llvm.riscv.vfwmul.nxv1f64.nxv1f32.nxv1f32.i64(<vscale x 1 x double> undef, <vscale x 1 x float> [[TMP0]], <vscale x 1 x float> [[TMP1]], i64 7, i64 2)
 ; CHECK-NEXT:    tail call void @llvm.riscv.vse.nxv1f64.i64(<vscale x 1 x double> [[TMP2]], ptr [[OUT:%.*]], i64 2)
 ; CHECK-NEXT:    ret void
 ;
@@ -814,7 +814,7 @@ entry:
   %3 = bitcast float* %in_1 to <vscale x 1 x float>*
   %4 = tail call <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float> undef, <vscale x 1 x float>* %3, i64 2)
   %5 = tail call <vscale x 1 x double> @llvm.riscv.vfwcvt.f.f.v.nxv1f64.nxv1f32.i64(<vscale x 1 x double> undef, <vscale x 1 x float> %4, i64 2)
-  %6 = tail call <vscale x 1 x double> @llvm.riscv.vfmul.nxv1f64.nxv1f64.i64(<vscale x 1 x double> undef, <vscale x 1 x double> %2, <vscale x 1 x double> %5, i64 2)
+  %6 = tail call <vscale x 1 x double> @llvm.riscv.vfmul.nxv1f64.nxv1f64.i64(<vscale x 1 x double> undef, <vscale x 1 x double> %2, <vscale x 1 x double> %5, i64 7, i64 2)
   %7 = bitcast double* %out to <vscale x 1 x double>*
   tail call void @llvm.riscv.vse.nxv1f64.i64(<vscale x 1 x double> %6, <vscale x 1 x double>* %7, i64 2)
   ret void

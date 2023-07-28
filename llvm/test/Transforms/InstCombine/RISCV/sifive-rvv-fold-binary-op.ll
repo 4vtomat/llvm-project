@@ -8,10 +8,10 @@ declare <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.iXLen(<vscale x 4 x fl
 declare <vscale x 4 x i32> @llvm.riscv.vadd.nxv4i32.nxv4i32.iXLen(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, iXLen)
 declare <vscale x 4 x i32> @llvm.riscv.vsub.nxv4i32.nxv4i32.iXLen(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, iXLen)
 declare <vscale x 4 x i32> @llvm.riscv.vrsub.nxv4i32.i32.iXLen(<vscale x 4 x i32>, <vscale x 4 x i32>, i32, iXLen)
-declare <vscale x 4 x float> @llvm.riscv.vfadd.nxv4f32.nxv4f32.iXLen(<vscale x 4 x float>, <vscale x 4 x float>, <vscale x 4 x float>, iXLen)
-declare <vscale x 4 x float> @llvm.riscv.vfsub.nxv4f32.nxv4f32.iXLen(<vscale x 4 x float>, <vscale x 4 x float>, <vscale x 4 x float>, iXLen)
-declare <vscale x 4 x float> @llvm.riscv.vfrsub.nxv4f32.f32.iXLen(<vscale x 4 x float>, <vscale x 4 x float>, float, iXLen)
-declare <vscale x 4 x float> @llvm.riscv.vfmul.nxv4f32.nxv4f32.iXLen(<vscale x 4 x float>, <vscale x 4 x float>, <vscale x 4 x float>, iXLen)
+declare <vscale x 4 x float> @llvm.riscv.vfadd.nxv4f32.nxv4f32.iXLen(<vscale x 4 x float>, <vscale x 4 x float>, <vscale x 4 x float>, iXLen, iXLen)
+declare <vscale x 4 x float> @llvm.riscv.vfsub.nxv4f32.nxv4f32.iXLen(<vscale x 4 x float>, <vscale x 4 x float>, <vscale x 4 x float>, iXLen, iXLen)
+declare <vscale x 4 x float> @llvm.riscv.vfrsub.nxv4f32.f32.iXLen(<vscale x 4 x float>, <vscale x 4 x float>, float, iXLen, iXLen)
+declare <vscale x 4 x float> @llvm.riscv.vfmul.nxv4f32.nxv4f32.iXLen(<vscale x 4 x float>, <vscale x 4 x float>, <vscale x 4 x float>, iXLen, iXLen)
 declare <vscale x 4 x i32> @llvm.riscv.vand.nxv4i32.nxv4i32.iXLen(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, iXLen)
 declare <vscale x 4 x i32> @llvm.riscv.vor.nxv4i32.nxv4i32.iXLen(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, iXLen)
 declare <vscale x 4 x i32> @llvm.riscv.vxor.nxv4i32.nxv4i32.iXLen(<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>, iXLen)
@@ -107,7 +107,7 @@ define <vscale x 4 x float> @test_vfadd(float %x, float %y) {
 ;
   %a = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.iXLen(<vscale x 4 x float> undef, float %x, iXLen 4)
   %b = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.iXLen(<vscale x 4 x float> undef, float %y, iXLen 4)
-  %c = call <vscale x 4 x float> @llvm.riscv.vfadd.nxv4f32.nxv4f32.iXLen(<vscale x 4 x float> undef, <vscale x 4 x float> %a, <vscale x 4 x float> %b, iXLen 4)
+  %c = call <vscale x 4 x float> @llvm.riscv.vfadd.nxv4f32.nxv4f32.iXLen(<vscale x 4 x float> undef, <vscale x 4 x float> %a, <vscale x 4 x float> %b, iXLen 7, iXLen 4)
   ret <vscale x 4 x float> %c
 }
 
@@ -124,7 +124,7 @@ define <vscale x 4 x float> @test_vfsub(float %x, float %y) {
 ;
   %a = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.iXLen(<vscale x 4 x float> undef, float %x, iXLen 4)
   %b = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.iXLen(<vscale x 4 x float> undef, float %y, iXLen 4)
-  %c = call <vscale x 4 x float> @llvm.riscv.vfsub.nxv4f32.nxv4f32.iXLen(<vscale x 4 x float> undef, <vscale x 4 x float> %a, <vscale x 4 x float> %b, iXLen 4)
+  %c = call <vscale x 4 x float> @llvm.riscv.vfsub.nxv4f32.nxv4f32.iXLen(<vscale x 4 x float> undef, <vscale x 4 x float> %a, <vscale x 4 x float> %b, iXLen 7, iXLen 4)
   ret <vscale x 4 x float> %c
 }
 
@@ -140,7 +140,7 @@ define <vscale x 4 x float> @test_vfrsub(float %x, float %y) {
 ; RV64-NEXT:    ret <vscale x 4 x float> [[C]]
 ;
   %a = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.iXLen(<vscale x 4 x float> undef, float %x, iXLen 4)
-  %c = call <vscale x 4 x float> @llvm.riscv.vfrsub.nxv4f32.f32.iXLen(<vscale x 4 x float> undef, <vscale x 4 x float> %a, float %y, iXLen 4)
+  %c = call <vscale x 4 x float> @llvm.riscv.vfrsub.nxv4f32.f32.iXLen(<vscale x 4 x float> undef, <vscale x 4 x float> %a, float %y, iXLen 7, iXLen 4)
   ret <vscale x 4 x float> %c
 }
 
@@ -395,7 +395,7 @@ define <vscale x 4 x float> @test_vfmul(float %x, float %y) {
 ;
   %a = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.iXLen(<vscale x 4 x float> undef, float %x, iXLen 4)
   %b = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.iXLen(<vscale x 4 x float> undef, float %y, iXLen 4)
-  %c = call <vscale x 4 x float> @llvm.riscv.vfmul.nxv4f32.nxv4f32.iXLen(<vscale x 4 x float> undef, <vscale x 4 x float> %a, <vscale x 4 x float> %b, iXLen 4)
+  %c = call <vscale x 4 x float> @llvm.riscv.vfmul.nxv4f32.nxv4f32.iXLen(<vscale x 4 x float> undef, <vscale x 4 x float> %a, <vscale x 4 x float> %b, iXLen 7, iXLen 4)
   ret <vscale x 4 x float> %c
 }
 
