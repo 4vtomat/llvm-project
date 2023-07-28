@@ -132,6 +132,7 @@ define void @vqrshl_s64(ptr nocapture noundef readonly %src, ptr nocapture nound
 ; CHECK-NEXT:    vmsle.vi v0, v9, -1
 ; CHECK-NEXT:    slli a0, a0, 63
 ; CHECK-NEXT:    vmerge.vxm v9, v10, a0, v0
+; CHECK-NEXT:    vmv.v.v v0, v8
 ; CHECK-NEXT:    vmerge.vvm v8, v11, v9, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret

@@ -687,6 +687,7 @@ define <1 x i64> @sshl_sat_v1i64(<1 x i64> %a, <1 x i64> %b) {
 ; CHECK-NEXT:    vmsle.vi v0, v8, -1
 ; CHECK-NEXT:    slli a0, a0, 63
 ; CHECK-NEXT:    vmerge.vxm v8, v11, a0, v0
+; CHECK-NEXT:    vmv.v.v v0, v9
 ; CHECK-NEXT:    vmerge.vvm v8, v10, v8, v0
 ; CHECK-NEXT:    ret
   %res = call <1 x i64> @llvm.sshl.sat.v1i64(<1 x i64> %a, <1 x i64> %b)
@@ -724,6 +725,7 @@ define <2 x i64> @sshl_sat_v2i64(<2 x i64> %a, <2 x i64> %b) {
 ; CHECK-V-NEXT:    vmsle.vi v0, v8, -1
 ; CHECK-V-NEXT:    slli a0, a0, 63
 ; CHECK-V-NEXT:    vmerge.vxm v8, v11, a0, v0
+; CHECK-V-NEXT:    vmv.v.v v0, v9
 ; CHECK-V-NEXT:    vmerge.vvm v8, v10, v8, v0
 ; CHECK-V-NEXT:    ret
   %res = call <2 x i64> @llvm.sshl.sat.v2i64(<2 x i64> %a, <2 x i64> %b)

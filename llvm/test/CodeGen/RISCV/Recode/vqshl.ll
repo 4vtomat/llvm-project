@@ -46,6 +46,7 @@ define void @vqshl_n_s64(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vmsle.vi v0, v9, -1
 ; CHECK-NEXT:    slli a0, a0, 63
 ; CHECK-NEXT:    vmerge.vxm v9, v10, a0, v0
+; CHECK-NEXT:    vmv.v.v v0, v8
 ; CHECK-NEXT:    vmerge.vvm v8, v11, v9, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -229,6 +230,7 @@ define void @vqshl_s64(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vmsle.vi v0, v9, -1
 ; CHECK-NEXT:    slli a1, a1, 63
 ; CHECK-NEXT:    vmerge.vxm v11, v11, a1, v0
+; CHECK-NEXT:    vmv.v.v v0, v8
 ; CHECK-NEXT:    vmerge.vvm v8, v12, v11, v0
 ; CHECK-NEXT:    li a1, 256
 ; CHECK-NEXT:    vrsub.vx v11, v10, a1
@@ -377,6 +379,7 @@ define void @vqshl_u64(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    li a0, 127
 ; CHECK-NEXT:    vmsgtu.vx v8, v8, a0
 ; CHECK-NEXT:    vmerge.vim v9, v9, 0, v0
+; CHECK-NEXT:    vmv.v.v v0, v8
 ; CHECK-NEXT:    vmerge.vvm v8, v10, v9, v0
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
@@ -466,6 +469,7 @@ define void @vqshlq_n_s64(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-NEXT:    vmsle.vi v0, v9, -1
 ; CHECK-NEXT:    slli a0, a0, 63
 ; CHECK-NEXT:    vmerge.vxm v9, v10, a0, v0
+; CHECK-NEXT:    vmv.v.v v0, v8
 ; CHECK-NEXT:    vmerge.vvm v8, v11, v9, v0
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -653,6 +657,7 @@ define void @vqshlq_s64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vmsle.vi v0, v9, -1
 ; CHECK-NEXT:    slli a1, a1, 63
 ; CHECK-NEXT:    vmerge.vxm v11, v11, a1, v0
+; CHECK-NEXT:    vmv.v.v v0, v8
 ; CHECK-NEXT:    vmerge.vvm v8, v12, v11, v0
 ; CHECK-NEXT:    li a1, 256
 ; CHECK-NEXT:    vrsub.vx v11, v10, a1
@@ -801,6 +806,7 @@ define void @vqshlq_u64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    li a0, 127
 ; CHECK-NEXT:    vmsgtu.vx v8, v8, a0
 ; CHECK-NEXT:    vmerge.vim v9, v9, 0, v0
+; CHECK-NEXT:    vmv.v.v v0, v8
 ; CHECK-NEXT:    vmerge.vvm v8, v10, v9, v0
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret

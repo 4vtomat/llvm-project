@@ -19,6 +19,7 @@ define <2 x i64> @vec_v2i64(<2 x i64> %x, <2 x i64> %y) nounwind {
 ; CHECK-NEXT:    vmsle.vi v0, v8, -1
 ; CHECK-NEXT:    slli a0, a0, 63
 ; CHECK-NEXT:    vmerge.vxm v8, v11, a0, v0
+; CHECK-NEXT:    vmv.v.v v0, v9
 ; CHECK-NEXT:    vmerge.vvm v8, v10, v8, v0
 ; CHECK-NEXT:    ret
   %tmp = call <2 x i64> @llvm.sshl.sat.v2i64(<2 x i64> %x, <2 x i64> %y)

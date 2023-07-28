@@ -347,6 +347,7 @@ define void @extract_v2i1_v64i1_0(ptr %x, ptr %y) {
 ; LMULMAX2-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; LMULMAX2-NEXT:    vmv.v.i v9, 0
 ; LMULMAX2-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
+; LMULMAX2-NEXT:    vmv.v.v v9, v8
 ; LMULMAX2-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; LMULMAX2-NEXT:    vmsne.vi v8, v9, 0
 ; LMULMAX2-NEXT:    vsm.v v8, (a1)
@@ -362,6 +363,7 @@ define void @extract_v2i1_v64i1_0(ptr %x, ptr %y) {
 ; LMULMAX1-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; LMULMAX1-NEXT:    vmv.v.i v9, 0
 ; LMULMAX1-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
+; LMULMAX1-NEXT:    vmv.v.v v9, v8
 ; LMULMAX1-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; LMULMAX1-NEXT:    vmsne.vi v8, v9, 0
 ; LMULMAX1-NEXT:    vsm.v v8, (a1)
@@ -389,6 +391,7 @@ define void @extract_v2i1_v64i1_2(ptr %x, ptr %y) {
 ; LMULMAX2-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; LMULMAX2-NEXT:    vmv.v.i v9, 0
 ; LMULMAX2-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
+; LMULMAX2-NEXT:    vmv.v.v v9, v8
 ; LMULMAX2-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; LMULMAX2-NEXT:    vmsne.vi v8, v9, 0
 ; LMULMAX2-NEXT:    vsm.v v8, (a1)
@@ -409,6 +412,7 @@ define void @extract_v2i1_v64i1_2(ptr %x, ptr %y) {
 ; LMULMAX1-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; LMULMAX1-NEXT:    vmv.v.i v9, 0
 ; LMULMAX1-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
+; LMULMAX1-NEXT:    vmv.v.v v9, v8
 ; LMULMAX1-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; LMULMAX1-NEXT:    vmsne.vi v8, v9, 0
 ; LMULMAX1-NEXT:    vsm.v v8, (a1)
@@ -437,6 +441,7 @@ define void @extract_v2i1_v64i1_42(ptr %x, ptr %y) {
 ; LMULMAX2-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; LMULMAX2-NEXT:    vmv.v.i v9, 0
 ; LMULMAX2-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
+; LMULMAX2-NEXT:    vmv.v.v v9, v8
 ; LMULMAX2-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; LMULMAX2-NEXT:    vmsne.vi v8, v9, 0
 ; LMULMAX2-NEXT:    vsm.v v8, (a1)
@@ -458,6 +463,7 @@ define void @extract_v2i1_v64i1_42(ptr %x, ptr %y) {
 ; LMULMAX1-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; LMULMAX1-NEXT:    vmv.v.i v9, 0
 ; LMULMAX1-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
+; LMULMAX1-NEXT:    vmv.v.v v9, v8
 ; LMULMAX1-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; LMULMAX1-NEXT:    vmsne.vi v8, v9, 0
 ; LMULMAX1-NEXT:    vsm.v v8, (a1)
@@ -477,6 +483,7 @@ define void @extract_v2i1_nxv2i1_0(<vscale x 2 x i1> %x, ptr %y) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
+; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a0)
@@ -501,6 +508,7 @@ define void @extract_v2i1_nxv2i1_2(<vscale x 2 x i1> %x, ptr %y) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
+; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a0)
@@ -519,6 +527,7 @@ define void @extract_v2i1_nxv64i1_0(<vscale x 64 x i1> %x, ptr %y) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
+; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a0)
@@ -543,6 +552,7 @@ define void @extract_v2i1_nxv64i1_2(<vscale x 64 x i1> %x, ptr %y) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
+; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a0)
@@ -568,6 +578,7 @@ define void @extract_v2i1_nxv64i1_42(<vscale x 64 x i1> %x, ptr %y) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
+; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a0)
@@ -592,6 +603,7 @@ define void @extract_v2i1_nxv32i1_26(<vscale x 32 x i1> %x, ptr %y) {
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
+; CHECK-NEXT:    vmv.v.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v9, 0
 ; CHECK-NEXT:    vsm.v v8, (a0)

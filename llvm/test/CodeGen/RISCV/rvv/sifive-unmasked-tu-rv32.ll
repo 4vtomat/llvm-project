@@ -72,6 +72,7 @@ define <vscale x 1 x i8> @intrinsic_vmv.v.v_v_tu_nxv1i8_nxv1i8(<vscale x 1 x i8>
 ; CHECK-LABEL: intrinsic_vmv.v.v_v_tu_nxv1i8_nxv1i8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, tu, ma
+; CHECK-NEXT:    vmv.v.v v8, v9
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 1 x i8> @llvm.riscv.vmv.v.v.tu.nxv1i8(

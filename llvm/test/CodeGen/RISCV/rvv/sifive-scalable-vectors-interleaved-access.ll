@@ -48,14 +48,14 @@ define {<vscale x 2 x i32>, <vscale x 2 x i32>} @masked_load_factor2_v2(<vscale 
 ; RV32-LABEL: masked_load_factor2_v2:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    srli a1, a1, 1
-; RV32-NEXT:    vsetvli zero, a1, e32, m1, ta, mu
+; RV32-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; RV32-NEXT:    vlseg2e32.v v8, (a0), v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: masked_load_factor2_v2:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    srliw a1, a1, 1
-; RV64-NEXT:    vsetvli zero, a1, e32, m1, ta, mu
+; RV64-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; RV64-NEXT:    vlseg2e32.v v8, (a0), v0.t
 ; RV64-NEXT:    ret
   %interleaved.mask = tail call <vscale x 4 x i1> @llvm.experimental.vector.interleave2.nxv4i1(<vscale x 2 x i1> %mask, <vscale x 2 x i1> %mask)
@@ -94,7 +94,7 @@ define void @masked_load_store_factor2_v2_shared_mask(<vscale x 2 x i1> %mask, p
 ; RV32-LABEL: masked_load_store_factor2_v2_shared_mask:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    srli a1, a1, 1
-; RV32-NEXT:    vsetvli zero, a1, e32, m1, ta, mu
+; RV32-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; RV32-NEXT:    vlseg2e32.v v8, (a0), v0.t
 ; RV32-NEXT:    vsseg2e32.v v8, (a0), v0.t
 ; RV32-NEXT:    ret
@@ -102,7 +102,7 @@ define void @masked_load_store_factor2_v2_shared_mask(<vscale x 2 x i1> %mask, p
 ; RV64-LABEL: masked_load_store_factor2_v2_shared_mask:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    srliw a1, a1, 1
-; RV64-NEXT:    vsetvli zero, a1, e32, m1, ta, mu
+; RV64-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; RV64-NEXT:    vlseg2e32.v v8, (a0), v0.t
 ; RV64-NEXT:    vsseg2e32.v v8, (a0), v0.t
 ; RV64-NEXT:    ret

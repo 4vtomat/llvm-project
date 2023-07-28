@@ -268,55 +268,53 @@ define <vscale x 2 x float> @sqrt_nxv2f32(<vscale x 2 x float> %a, <vscale x 2 x
 ; RV32-LABEL: sqrt_nxv2f32:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; RV32-NEXT:    vfabs.v v9, v8, v0.t
-; RV32-NEXT:    lui a1, 2048
-; RV32-NEXT:    fmv.w.x fa5, a1
-; RV32-NEXT:    vmflt.vf v9, v9, fa5, v0.t
-; RV32-NEXT:    vfrsqrt7.v v10, v8
-; RV32-NEXT:    vfmul.vv v11, v8, v10, v0.t
+; RV32-NEXT:    vfrsqrt7.v v9, v8
+; RV32-NEXT:    vfmul.vv v10, v8, v9, v0.t
 ; RV32-NEXT:    lui a1, 787456
 ; RV32-NEXT:    vsetvli a2, zero, e32, m1, ta, ma
-; RV32-NEXT:    vmv.v.x v12, a1
+; RV32-NEXT:    vmv.v.x v11, a1
 ; RV32-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; RV32-NEXT:    vmv1r.v v13, v10
-; RV32-NEXT:    vfmadd.vv v13, v11, v12, v0.t
+; RV32-NEXT:    vmv1r.v v12, v9
+; RV32-NEXT:    vfmadd.vv v12, v10, v11, v0.t
 ; RV32-NEXT:    lui a0, 782336
 ; RV32-NEXT:    fmv.w.x fa5, a0
+; RV32-NEXT:    vfmul.vf v9, v9, fa5, v0.t
+; RV32-NEXT:    vfmul.vv v9, v9, v12, v0.t
+; RV32-NEXT:    vfmul.vv v10, v8, v9, v0.t
+; RV32-NEXT:    vfmadd.vv v9, v10, v11, v0.t
 ; RV32-NEXT:    vfmul.vf v10, v10, fa5, v0.t
-; RV32-NEXT:    vfmul.vv v10, v10, v13, v0.t
-; RV32-NEXT:    vfmul.vv v8, v8, v10, v0.t
-; RV32-NEXT:    vfmadd.vv v10, v8, v12, v0.t
-; RV32-NEXT:    vfmul.vf v8, v8, fa5, v0.t
-; RV32-NEXT:    vfmul.vv v8, v8, v10, v0.t
-; RV32-NEXT:    vmv1r.v v0, v9
-; RV32-NEXT:    vmerge.vim v8, v8, 0, v0
+; RV32-NEXT:    vfmul.vv v9, v10, v9, v0.t
+; RV32-NEXT:    vfabs.v v8, v8, v0.t
+; RV32-NEXT:    lui a0, 2048
+; RV32-NEXT:    fmv.w.x fa5, a0
+; RV32-NEXT:    vmflt.vf v0, v8, fa5, v0.t
+; RV32-NEXT:    vmerge.vim v8, v9, 0, v0
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: sqrt_nxv2f32:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; RV64-NEXT:    vfabs.v v9, v8, v0.t
-; RV64-NEXT:    lui a1, 2048
-; RV64-NEXT:    fmv.w.x fa5, a1
-; RV64-NEXT:    vmflt.vf v9, v9, fa5, v0.t
-; RV64-NEXT:    vfrsqrt7.v v10, v8
-; RV64-NEXT:    vfmul.vv v11, v8, v10, v0.t
+; RV64-NEXT:    vfrsqrt7.v v9, v8
+; RV64-NEXT:    vfmul.vv v10, v8, v9, v0.t
 ; RV64-NEXT:    lui a1, 787456
 ; RV64-NEXT:    vsetvli a2, zero, e32, m1, ta, ma
-; RV64-NEXT:    vmv.v.x v12, a1
+; RV64-NEXT:    vmv.v.x v11, a1
 ; RV64-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; RV64-NEXT:    vmv1r.v v13, v10
-; RV64-NEXT:    vfmadd.vv v13, v11, v12, v0.t
+; RV64-NEXT:    vmv1r.v v12, v9
+; RV64-NEXT:    vfmadd.vv v12, v10, v11, v0.t
 ; RV64-NEXT:    lui a0, 782336
 ; RV64-NEXT:    fmv.w.x fa5, a0
+; RV64-NEXT:    vfmul.vf v9, v9, fa5, v0.t
+; RV64-NEXT:    vfmul.vv v9, v9, v12, v0.t
+; RV64-NEXT:    vfmul.vv v10, v8, v9, v0.t
+; RV64-NEXT:    vfmadd.vv v9, v10, v11, v0.t
 ; RV64-NEXT:    vfmul.vf v10, v10, fa5, v0.t
-; RV64-NEXT:    vfmul.vv v10, v10, v13, v0.t
-; RV64-NEXT:    vfmul.vv v8, v8, v10, v0.t
-; RV64-NEXT:    vfmadd.vv v10, v8, v12, v0.t
-; RV64-NEXT:    vfmul.vf v8, v8, fa5, v0.t
-; RV64-NEXT:    vfmul.vv v8, v8, v10, v0.t
-; RV64-NEXT:    vmv1r.v v0, v9
-; RV64-NEXT:    vmerge.vim v8, v8, 0, v0
+; RV64-NEXT:    vfmul.vv v9, v10, v9, v0.t
+; RV64-NEXT:    vfabs.v v8, v8, v0.t
+; RV64-NEXT:    lui a0, 2048
+; RV64-NEXT:    fmv.w.x fa5, a0
+; RV64-NEXT:    vmflt.vf v0, v8, fa5, v0.t
+; RV64-NEXT:    vmerge.vim v8, v9, 0, v0
 ; RV64-NEXT:    ret
   %1 = tail call fast <vscale x 2 x float> @llvm.vp.sqrt.nxv2f32(<vscale x 2 x float> %a, <vscale x 2 x i1> %m, i32 %evl)
   ret <vscale x 2 x float> %1
@@ -352,55 +350,53 @@ define <vscale x 4 x float> @sqrt_nxv4f32(<vscale x 4 x float> %a, <vscale x 4 x
 ; RV32-LABEL: sqrt_nxv4f32:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; RV32-NEXT:    vfabs.v v10, v8, v0.t
-; RV32-NEXT:    lui a1, 2048
-; RV32-NEXT:    fmv.w.x fa5, a1
-; RV32-NEXT:    vmflt.vf v10, v10, fa5, v0.t
-; RV32-NEXT:    vfrsqrt7.v v12, v8
-; RV32-NEXT:    vfmul.vv v14, v8, v12, v0.t
+; RV32-NEXT:    vfrsqrt7.v v10, v8
+; RV32-NEXT:    vfmul.vv v12, v8, v10, v0.t
 ; RV32-NEXT:    lui a1, 787456
 ; RV32-NEXT:    vsetvli a2, zero, e32, m2, ta, ma
-; RV32-NEXT:    vmv.v.x v16, a1
+; RV32-NEXT:    vmv.v.x v14, a1
 ; RV32-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; RV32-NEXT:    vmv2r.v v18, v12
-; RV32-NEXT:    vfmadd.vv v18, v14, v16, v0.t
+; RV32-NEXT:    vmv2r.v v16, v10
+; RV32-NEXT:    vfmadd.vv v16, v12, v14, v0.t
 ; RV32-NEXT:    lui a0, 782336
 ; RV32-NEXT:    fmv.w.x fa5, a0
+; RV32-NEXT:    vfmul.vf v10, v10, fa5, v0.t
+; RV32-NEXT:    vfmul.vv v10, v10, v16, v0.t
+; RV32-NEXT:    vfmul.vv v12, v8, v10, v0.t
+; RV32-NEXT:    vfmadd.vv v10, v12, v14, v0.t
 ; RV32-NEXT:    vfmul.vf v12, v12, fa5, v0.t
-; RV32-NEXT:    vfmul.vv v12, v12, v18, v0.t
-; RV32-NEXT:    vfmul.vv v8, v8, v12, v0.t
-; RV32-NEXT:    vfmadd.vv v12, v8, v16, v0.t
-; RV32-NEXT:    vfmul.vf v8, v8, fa5, v0.t
-; RV32-NEXT:    vfmul.vv v8, v8, v12, v0.t
-; RV32-NEXT:    vmv1r.v v0, v10
-; RV32-NEXT:    vmerge.vim v8, v8, 0, v0
+; RV32-NEXT:    vfmul.vv v10, v12, v10, v0.t
+; RV32-NEXT:    vfabs.v v8, v8, v0.t
+; RV32-NEXT:    lui a0, 2048
+; RV32-NEXT:    fmv.w.x fa5, a0
+; RV32-NEXT:    vmflt.vf v0, v8, fa5, v0.t
+; RV32-NEXT:    vmerge.vim v8, v10, 0, v0
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: sqrt_nxv4f32:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; RV64-NEXT:    vfabs.v v10, v8, v0.t
-; RV64-NEXT:    lui a1, 2048
-; RV64-NEXT:    fmv.w.x fa5, a1
-; RV64-NEXT:    vmflt.vf v10, v10, fa5, v0.t
-; RV64-NEXT:    vfrsqrt7.v v12, v8
-; RV64-NEXT:    vfmul.vv v14, v8, v12, v0.t
+; RV64-NEXT:    vfrsqrt7.v v10, v8
+; RV64-NEXT:    vfmul.vv v12, v8, v10, v0.t
 ; RV64-NEXT:    lui a1, 787456
 ; RV64-NEXT:    vsetvli a2, zero, e32, m2, ta, ma
-; RV64-NEXT:    vmv.v.x v16, a1
+; RV64-NEXT:    vmv.v.x v14, a1
 ; RV64-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; RV64-NEXT:    vmv2r.v v18, v12
-; RV64-NEXT:    vfmadd.vv v18, v14, v16, v0.t
+; RV64-NEXT:    vmv2r.v v16, v10
+; RV64-NEXT:    vfmadd.vv v16, v12, v14, v0.t
 ; RV64-NEXT:    lui a0, 782336
 ; RV64-NEXT:    fmv.w.x fa5, a0
+; RV64-NEXT:    vfmul.vf v10, v10, fa5, v0.t
+; RV64-NEXT:    vfmul.vv v10, v10, v16, v0.t
+; RV64-NEXT:    vfmul.vv v12, v8, v10, v0.t
+; RV64-NEXT:    vfmadd.vv v10, v12, v14, v0.t
 ; RV64-NEXT:    vfmul.vf v12, v12, fa5, v0.t
-; RV64-NEXT:    vfmul.vv v12, v12, v18, v0.t
-; RV64-NEXT:    vfmul.vv v8, v8, v12, v0.t
-; RV64-NEXT:    vfmadd.vv v12, v8, v16, v0.t
-; RV64-NEXT:    vfmul.vf v8, v8, fa5, v0.t
-; RV64-NEXT:    vfmul.vv v8, v8, v12, v0.t
-; RV64-NEXT:    vmv1r.v v0, v10
-; RV64-NEXT:    vmerge.vim v8, v8, 0, v0
+; RV64-NEXT:    vfmul.vv v10, v12, v10, v0.t
+; RV64-NEXT:    vfabs.v v8, v8, v0.t
+; RV64-NEXT:    lui a0, 2048
+; RV64-NEXT:    fmv.w.x fa5, a0
+; RV64-NEXT:    vmflt.vf v0, v8, fa5, v0.t
+; RV64-NEXT:    vmerge.vim v8, v10, 0, v0
 ; RV64-NEXT:    ret
   %1 = tail call fast <vscale x 4 x float> @llvm.vp.sqrt.nxv4f32(<vscale x 4 x float> %a, <vscale x 4 x i1> %m, i32 %evl)
   ret <vscale x 4 x float> %1
@@ -436,55 +432,53 @@ define <vscale x 8 x float> @sqrt_nxv8f32(<vscale x 8 x float> %a, <vscale x 8 x
 ; RV32-LABEL: sqrt_nxv8f32:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
-; RV32-NEXT:    vfabs.v v12, v8, v0.t
-; RV32-NEXT:    lui a1, 2048
-; RV32-NEXT:    fmv.w.x fa5, a1
-; RV32-NEXT:    vmflt.vf v12, v12, fa5, v0.t
-; RV32-NEXT:    vfrsqrt7.v v16, v8
-; RV32-NEXT:    vfmul.vv v20, v8, v16, v0.t
+; RV32-NEXT:    vfrsqrt7.v v12, v8
+; RV32-NEXT:    vfmul.vv v16, v8, v12, v0.t
 ; RV32-NEXT:    lui a1, 787456
 ; RV32-NEXT:    vsetvli a2, zero, e32, m4, ta, ma
-; RV32-NEXT:    vmv.v.x v24, a1
+; RV32-NEXT:    vmv.v.x v20, a1
 ; RV32-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
-; RV32-NEXT:    vmv4r.v v28, v16
-; RV32-NEXT:    vfmadd.vv v28, v20, v24, v0.t
+; RV32-NEXT:    vmv4r.v v24, v12
+; RV32-NEXT:    vfmadd.vv v24, v16, v20, v0.t
 ; RV32-NEXT:    lui a0, 782336
 ; RV32-NEXT:    fmv.w.x fa5, a0
+; RV32-NEXT:    vfmul.vf v12, v12, fa5, v0.t
+; RV32-NEXT:    vfmul.vv v12, v12, v24, v0.t
+; RV32-NEXT:    vfmul.vv v16, v8, v12, v0.t
+; RV32-NEXT:    vfmadd.vv v12, v16, v20, v0.t
 ; RV32-NEXT:    vfmul.vf v16, v16, fa5, v0.t
-; RV32-NEXT:    vfmul.vv v16, v16, v28, v0.t
-; RV32-NEXT:    vfmul.vv v8, v8, v16, v0.t
-; RV32-NEXT:    vfmadd.vv v16, v8, v24, v0.t
-; RV32-NEXT:    vfmul.vf v8, v8, fa5, v0.t
-; RV32-NEXT:    vfmul.vv v8, v8, v16, v0.t
-; RV32-NEXT:    vmv1r.v v0, v12
-; RV32-NEXT:    vmerge.vim v8, v8, 0, v0
+; RV32-NEXT:    vfmul.vv v12, v16, v12, v0.t
+; RV32-NEXT:    vfabs.v v8, v8, v0.t
+; RV32-NEXT:    lui a0, 2048
+; RV32-NEXT:    fmv.w.x fa5, a0
+; RV32-NEXT:    vmflt.vf v0, v8, fa5, v0.t
+; RV32-NEXT:    vmerge.vim v8, v12, 0, v0
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: sqrt_nxv8f32:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
-; RV64-NEXT:    vfabs.v v12, v8, v0.t
-; RV64-NEXT:    lui a1, 2048
-; RV64-NEXT:    fmv.w.x fa5, a1
-; RV64-NEXT:    vmflt.vf v12, v12, fa5, v0.t
-; RV64-NEXT:    vfrsqrt7.v v16, v8
-; RV64-NEXT:    vfmul.vv v20, v8, v16, v0.t
+; RV64-NEXT:    vfrsqrt7.v v12, v8
+; RV64-NEXT:    vfmul.vv v16, v8, v12, v0.t
 ; RV64-NEXT:    lui a1, 787456
 ; RV64-NEXT:    vsetvli a2, zero, e32, m4, ta, ma
-; RV64-NEXT:    vmv.v.x v24, a1
+; RV64-NEXT:    vmv.v.x v20, a1
 ; RV64-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
-; RV64-NEXT:    vmv4r.v v28, v16
-; RV64-NEXT:    vfmadd.vv v28, v20, v24, v0.t
+; RV64-NEXT:    vmv4r.v v24, v12
+; RV64-NEXT:    vfmadd.vv v24, v16, v20, v0.t
 ; RV64-NEXT:    lui a0, 782336
 ; RV64-NEXT:    fmv.w.x fa5, a0
+; RV64-NEXT:    vfmul.vf v12, v12, fa5, v0.t
+; RV64-NEXT:    vfmul.vv v12, v12, v24, v0.t
+; RV64-NEXT:    vfmul.vv v16, v8, v12, v0.t
+; RV64-NEXT:    vfmadd.vv v12, v16, v20, v0.t
 ; RV64-NEXT:    vfmul.vf v16, v16, fa5, v0.t
-; RV64-NEXT:    vfmul.vv v16, v16, v28, v0.t
-; RV64-NEXT:    vfmul.vv v8, v8, v16, v0.t
-; RV64-NEXT:    vfmadd.vv v16, v8, v24, v0.t
-; RV64-NEXT:    vfmul.vf v8, v8, fa5, v0.t
-; RV64-NEXT:    vfmul.vv v8, v8, v16, v0.t
-; RV64-NEXT:    vmv1r.v v0, v12
-; RV64-NEXT:    vmerge.vim v8, v8, 0, v0
+; RV64-NEXT:    vfmul.vv v12, v16, v12, v0.t
+; RV64-NEXT:    vfabs.v v8, v8, v0.t
+; RV64-NEXT:    lui a0, 2048
+; RV64-NEXT:    fmv.w.x fa5, a0
+; RV64-NEXT:    vmflt.vf v0, v8, fa5, v0.t
+; RV64-NEXT:    vmerge.vim v8, v12, 0, v0
 ; RV64-NEXT:    ret
   %1 = tail call fast <vscale x 8 x float> @llvm.vp.sqrt.nxv8f32(<vscale x 8 x float> %a, <vscale x 8 x i1> %m, i32 %evl)
   ret <vscale x 8 x float> %1

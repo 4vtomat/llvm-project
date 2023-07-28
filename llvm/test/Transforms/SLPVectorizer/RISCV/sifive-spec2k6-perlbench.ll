@@ -15,7 +15,13 @@ define void @Perl_pregcomp(ptr %RExC_state) {
 ; PROFITABLE-SAME: (ptr [[REXC_STATE:%.*]]) #[[ATTR0:[0-9]+]] {
 ; PROFITABLE-NEXT:  entry:
 ; PROFITABLE-NEXT:    [[NAUGHTY:%.*]] = getelementptr inbounds [[STRUCT_REXC_STATE_T:%.*]], ptr [[REXC_STATE]], i64 0, i32 9
-; PROFITABLE-NEXT:    store <4 x i32> zeroinitializer, ptr [[NAUGHTY]], align 8
+; PROFITABLE-NEXT:    [[SAWBACK:%.*]] = getelementptr inbounds [[STRUCT_REXC_STATE_T]], ptr [[REXC_STATE]], i64 0, i32 10
+; PROFITABLE-NEXT:    [[SEEN:%.*]] = getelementptr inbounds [[STRUCT_REXC_STATE_T]], ptr [[REXC_STATE]], i64 0, i32 11
+; PROFITABLE-NEXT:    [[SIZE:%.*]] = getelementptr inbounds [[STRUCT_REXC_STATE_T]], ptr [[REXC_STATE]], i64 0, i32 12
+; PROFITABLE-NEXT:    store i32 0, ptr [[NAUGHTY]], align 8
+; PROFITABLE-NEXT:    store i32 0, ptr [[SAWBACK]], align 4
+; PROFITABLE-NEXT:    store i32 0, ptr [[SEEN]], align 8
+; PROFITABLE-NEXT:    store i32 0, ptr [[SIZE]], align 4
 ; PROFITABLE-NEXT:    ret void
 ;
 ; NON-PROFITABLE-LABEL: define void @Perl_pregcomp
@@ -30,7 +36,6 @@ define void @Perl_pregcomp(ptr %RExC_state) {
 ; NON-PROFITABLE-NEXT:    store i32 0, ptr [[SEEN]], align 8
 ; NON-PROFITABLE-NEXT:    store i32 0, ptr [[SIZE]], align 4
 ; NON-PROFITABLE-NEXT:    ret void
-;
 entry:
   %naughty = getelementptr inbounds %struct.RExC_state_t, ptr %RExC_state, i64 0, i32 9
   %sawback = getelementptr inbounds %struct.RExC_state_t, ptr %RExC_state, i64 0, i32 10

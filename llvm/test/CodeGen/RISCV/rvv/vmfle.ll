@@ -140,7 +140,9 @@ define <vscale x 4 x i1> @intrinsic_vmfle_mask_vv_nxv4f16_nxv4f16(<vscale x 4 x 
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, mu
 ; CHECK-NEXT:    vmfle.vv v8, v8, v9
 ; CHECK-NEXT:    vmv1r.v v11, v0
+; CHECK-NEXT:    vmv.v.v v0, v8
 ; CHECK-NEXT:    vmfle.vv v11, v9, v10, v0.t
+; CHECK-NEXT:    vmv.v.v v0, v11
 ; CHECK-NEXT:    ret
 entry:
   %mask = call <vscale x 4 x i1> @llvm.riscv.vmfle.nxv4f16(
@@ -346,7 +348,9 @@ define <vscale x 2 x i1> @intrinsic_vmfle_mask_vv_nxv2f32_nxv2f32(<vscale x 2 x 
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
 ; CHECK-NEXT:    vmfle.vv v8, v8, v9
 ; CHECK-NEXT:    vmv1r.v v11, v0
+; CHECK-NEXT:    vmv.v.v v0, v8
 ; CHECK-NEXT:    vmfle.vv v11, v9, v10, v0.t
+; CHECK-NEXT:    vmv.v.v v0, v11
 ; CHECK-NEXT:    ret
 entry:
   %mask = call <vscale x 2 x i1> @llvm.riscv.vmfle.nxv2f32(
@@ -500,7 +504,9 @@ define <vscale x 1 x i1> @intrinsic_vmfle_mask_vv_nxv1f64_nxv1f64(<vscale x 1 x 
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
 ; CHECK-NEXT:    vmfle.vv v8, v8, v9
 ; CHECK-NEXT:    vmv1r.v v11, v0
+; CHECK-NEXT:    vmv.v.v v0, v8
 ; CHECK-NEXT:    vmfle.vv v11, v9, v10, v0.t
+; CHECK-NEXT:    vmv.v.v v0, v11
 ; CHECK-NEXT:    ret
 entry:
   %mask = call <vscale x 1 x i1> @llvm.riscv.vmfle.nxv1f64(
@@ -749,6 +755,7 @@ define <vscale x 4 x i1> @intrinsic_vmfle_mask_vf_nxv4f16_f16(<vscale x 4 x i1> 
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, mu
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vmfle.vf v10, v8, fa0, v0.t
+; CHECK-NEXT:    vmv.v.v v0, v10
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 4 x i1> @llvm.riscv.vmfle.mask.nxv4f16.f16(
@@ -936,6 +943,7 @@ define <vscale x 2 x i1> @intrinsic_vmfle_mask_vf_nxv2f32_f32(<vscale x 2 x i1> 
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, mu
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vmfle.vf v10, v8, fa0, v0.t
+; CHECK-NEXT:    vmv.v.v v0, v10
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 2 x i1> @llvm.riscv.vmfle.mask.nxv2f32.f32(
@@ -1076,6 +1084,7 @@ define <vscale x 1 x i1> @intrinsic_vmfle_mask_vf_nxv1f64_f64(<vscale x 1 x i1> 
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, mu
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vmfle.vf v10, v8, fa0, v0.t
+; CHECK-NEXT:    vmv.v.v v0, v10
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 1 x i1> @llvm.riscv.vmfle.mask.nxv1f64.f64(

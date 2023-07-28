@@ -80,6 +80,7 @@ define void @shufflevector_0_5(ptr %in, ptr %out) {
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, tu, ma
+; CHECK-NEXT:    vmv.v.v v12, v8
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v12, (a1)
 ; CHECK-NEXT:    ret
