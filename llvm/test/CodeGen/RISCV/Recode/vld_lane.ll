@@ -110,8 +110,8 @@ define void @vld2_lane_s32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vle8.v v10, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, tu, ma
 ; CHECK-NEXT:    vmv.v.v v8, v10
-; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vrgather.vi v11, v9, 1
 ; CHECK-NEXT:    vrgather.vi v11, v10, 1, v0.t
 ; CHECK-NEXT:    vmv1r.v v9, v11
@@ -211,8 +211,8 @@ define void @vld2_lane_u32(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vle8.v v10, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e32, mf2, tu, ma
 ; CHECK-NEXT:    vmv.v.v v8, v10
-; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vrgather.vi v11, v9, 1
 ; CHECK-NEXT:    vrgather.vi v11, v10, 1, v0.t
 ; CHECK-NEXT:    vmv1r.v v9, v11
@@ -337,8 +337,8 @@ define void @vld2q_lane_f64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    vle8.v v10, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, tu, ma
 ; CHECK-NEXT:    vmv.v.v v8, v10
-; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vrgather.vi v11, v9, 1
 ; CHECK-NEXT:    vrgather.vi v11, v10, 1, v0.t
 ; CHECK-NEXT:    vmv.v.v v9, v11
@@ -417,8 +417,8 @@ define void @vld2q_lane_s64(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture 
 ; CHECK-NEXT:    vle8.v v10, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, tu, ma
 ; CHECK-NEXT:    vmv.v.v v8, v10
-; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vmv.v.i v0, 1
 ; CHECK-NEXT:    vrgather.vi v11, v9, 1
 ; CHECK-NEXT:    vrgather.vi v11, v10, 1, v0.t
 ; CHECK-NEXT:    vmv.v.v v9, v11
