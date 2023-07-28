@@ -3003,7 +3003,7 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
 #if SIFIVE_CUSTOMIZATION
     if (Legal->useVLAVectorizer()) {
       for (unsigned Part = 0; Part < UF; ++Part) {
-        Instruction *NewLoad;
+        CallInst *WideLoad;
         Value *GroupMask;
         if (BlockInMask) {
           assert(useMaskedInterleavedAccesses(*TTI) &&
@@ -3026,11 +3026,14 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
             RVL32, ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor));
         Value *Operands[] = {AddrParts[Part], GroupMask, InterleaveRVL};
         Type *Types[] = {VecTy, Operands[0]->getType()};
-        NewLoad = State.Builder.CreateIntrinsic(
+        WideLoad = State.Builder.CreateIntrinsic(
             Intrinsic::vp_load, Types, Operands, nullptr, "wide.masked.load");
 
-        Group->addMetadata(NewLoad);
-        NewLoads.push_back(NewLoad);
+        WideLoad->addParamAttr(
+            0, Attribute::getWithAlignment(WideLoad->getContext(),
+                                           Group->getAlign()));
+        Group->addMetadata(WideLoad);
+        NewLoads.push_back(WideLoad);
       }
 
       // For each member in the group, shuffle out the appropriate data from the
@@ -3219,9 +3222,12 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
       Value *InterleaveRVL = Builder.CreateMul(
           RVL32, ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor));
       Operands = {StoredVal, AddrParts[Part], GroupMask, InterleaveRVL};
-      Instruction *WideStore = State.Builder.CreateIntrinsic(
+      CallInst *WideStore = State.Builder.CreateIntrinsic(
           Intrinsic::vp_store, {VecTy, AddrParts[Part]->getType()}, Operands,
           nullptr);
+      WideStore->addParamAttr(
+          1, Attribute::getWithAlignment(WideStore->getContext(),
+                                         Group->getAlign()));
       Group->addMetadata(WideStore);
     }
     return;
@@ -12218,6 +12224,8 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
 
           NewSI = Builder.CreateCall(
               VPIntr, {StoredVal, VecPtr, BlockInMaskPart, RVLPart});
+          cast<IntrinsicInst>(NewSI)->addParamAttr(
+              1, Attribute::getWithAlignment(NewSI->getContext(), Alignment));
         } else if (isMaskRequired) {
 #endif // SIFIVE_CUSTOMIZATION
           NewSI = Builder.CreateMaskedStore(StoredVal, VecPtr, Alignment,
@@ -12310,7 +12318,10 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
 
           NewLI = Builder.CreateCall(VPIntr, {VecPtr, BlockInMaskPart, RVLPart},
                                      "vp.op.load");
+          cast<IntrinsicInst>(NewLI)->addParamAttr(
+              0, Attribute::getWithAlignment(NewLI->getContext(), Alignment));
         }
+        State.addMetadata(NewLI, LI);
       } else if (isMaskRequired)
 #endif // SIFIVE_CUSTOMIZATION
         NewLI = Builder.CreateMaskedLoad(

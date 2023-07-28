@@ -335,6 +335,7 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
   VPValue *VPAddr = VPWMIR.getAddr();
   ElementCount NumElts = State.VF;
   auto &Builder = State.Builder;
+  const Align Alignment = getLoadStoreAlignment(&VPWMIR.getIngredient());
 
   auto MaskValue = [&](unsigned Part, ElementCount EC) -> Value * {
     // The outermost mask can be lowered as an all ones mask when using
@@ -368,17 +369,24 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
                  << " with a stride = " << *Stride << '\n');
       auto *PtrTy = cast<PointerType>(Ptr->getType());
       Value *Operands[] = {StoredVal, Ptr, Stride, BlockInMaskPart, RVLPart};
-      return Builder.CreateIntrinsic(
+      CallInst *VS = Builder.CreateIntrinsic(
           Intrinsic::experimental_vp_strided_store,
           {StoredVal->getType(), PtrTy, Stride->getType()}, Operands);
+
+      VS->addParamAttr(
+          1, Attribute::getWithAlignment(VS->getContext(), Alignment));
+      return VS;
     }
     auto *DataTy = cast<VectorType>(StoredVal->getType());
     LLVM_DEBUG(llvm::dbgs() << "Indexed store for " << *VPAddr << "\n");
     Value *VectorGep = State.get(VPAddr, Part);
     Value *Operands[] = {StoredVal, VectorGep, BlockInMaskPart, RVLPart};
     auto *PtrsTy = cast<VectorType>(VectorGep->getType());
-    return Builder.CreateIntrinsic(Intrinsic::vp_scatter, {DataTy, PtrsTy},
-                                   Operands);
+    CallInst *VS = Builder.CreateIntrinsic(Intrinsic::vp_scatter,
+                                           {DataTy, PtrsTy}, Operands);
+    VS->addParamAttr(1,
+                     Attribute::getWithAlignment(VS->getContext(), Alignment));
+    return VS;
   } else {
     auto *DataTy = VectorType::get(VPWMIR.getElementType(), State.VF);
     if (VPWMIR.isStrided()) {
@@ -397,16 +405,23 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
                  << "Generating strided load for addr = " << *VPAddr
                  << " with a stride = " << *Stride << '\n');
       Value *Operands[] = {Ptr, Stride, BlockInMaskPart, RVLPart};
-      return Builder.CreateIntrinsic(Intrinsic::experimental_vp_strided_load,
-                                      {DataTy, PtrTy, Stride->getType()},
-                                      Operands, nullptr, "vp.strided.load");
+      CallInst *VL =
+          Builder.CreateIntrinsic(Intrinsic::experimental_vp_strided_load,
+                                  {DataTy, PtrTy, Stride->getType()}, Operands,
+                                  nullptr, "vp.strided.load");
+      VL->addParamAttr(
+          0, Attribute::getWithAlignment(VL->getContext(), Alignment));
+      return VL;
     }
     LLVM_DEBUG(llvm::dbgs() << "Indexed load for " << VPAddr << "\n");
     Value *VectorGep = State.get(VPAddr, Part);
     Value *Operands[] = {VectorGep, BlockInMaskPart, RVLPart};
     auto *PtrsTy = cast<VectorType>(VectorGep->getType());
-    return Builder.CreateIntrinsic(Intrinsic::vp_gather, {DataTy, PtrsTy},
-                                   Operands, nullptr, "vp.gather");
+    CallInst *VL = Builder.CreateIntrinsic(
+        Intrinsic::vp_gather, {DataTy, PtrsTy}, Operands, nullptr, "vp.gather");
+    VL->addParamAttr(0,
+                     Attribute::getWithAlignment(VL->getContext(), Alignment));
+    return VL;
   }
 }
 

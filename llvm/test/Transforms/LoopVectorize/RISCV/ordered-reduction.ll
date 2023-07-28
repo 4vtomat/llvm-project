@@ -8,22 +8,6 @@
 target triple = "riscv64"
 
 define float @fadd(ptr noalias nocapture readonly %a, i64 %n) #0 {
-; CHECK-NOT-VECTORIZED-LABEL: @fadd(
-; CHECK-NOT-VECTORIZED-NEXT:  entry:
-; CHECK-NOT-VECTORIZED-NEXT:    br label [[FOR_BODY:%.*]]
-; CHECK-NOT-VECTORIZED:       for.body:
-; CHECK-NOT-VECTORIZED-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
-; CHECK-NOT-VECTORIZED-NEXT:    [[SUM_07:%.*]] = phi float [ 0.000000e+00, [[ENTRY]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
-; CHECK-NOT-VECTORIZED-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[IV]]
-; CHECK-NOT-VECTORIZED-NEXT:    [[TMP0:%.*]] = load float, ptr [[ARRAYIDX]], align 4
-; CHECK-NOT-VECTORIZED-NEXT:    [[ADD]] = fadd float [[TMP0]], [[SUM_07]]
-; CHECK-NOT-VECTORIZED-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
-; CHECK-NOT-VECTORIZED-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N:%.*]]
-; CHECK-NOT-VECTORIZED-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-; CHECK-NOT-VECTORIZED:       for.end:
-; CHECK-NOT-VECTORIZED-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ]
-; CHECK-NOT-VECTORIZED-NEXT:    ret float [[ADD_LCSSA]]
-;
 ; CHECK-ORDERED-LABEL: @fadd(
 ; CHECK-ORDERED-NEXT:  entry:
 ; CHECK-ORDERED-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N:%.*]], 12
@@ -40,7 +24,7 @@ define float @fadd(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-ORDERED-NEXT:    [[TMP4:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-ORDERED-NEXT:    [[TMP5:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[TMP4]]
 ; CHECK-ORDERED-NEXT:    [[TMP6:%.*]] = getelementptr inbounds float, ptr [[TMP5]], i32 0
-; CHECK-ORDERED-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr [[TMP6]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP3]])
+; CHECK-ORDERED-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x float> @llvm.vp.load.nxv2f32.p0(ptr align 4 [[TMP6]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP3]])
 ; CHECK-ORDERED-NEXT:    [[TMP7]] = call float @llvm.vp.reduce.fadd.nxv2f32(float [[VEC_PHI]], <vscale x 2 x float> [[VP_OP_LOAD]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP3]])
 ; CHECK-ORDERED-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP3]] to i64
 ; CHECK-ORDERED-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP8]]
@@ -64,6 +48,22 @@ define float @fadd(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-ORDERED:       for.end:
 ; CHECK-ORDERED-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ], [ [[TMP7]], [[MIDDLE_BLOCK]] ]
 ; CHECK-ORDERED-NEXT:    ret float [[ADD_LCSSA]]
+;
+; CHECK-NOT-VECTORIZED-LABEL: @fadd(
+; CHECK-NOT-VECTORIZED-NEXT:  entry:
+; CHECK-NOT-VECTORIZED-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-NOT-VECTORIZED:       for.body:
+; CHECK-NOT-VECTORIZED-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NOT-VECTORIZED-NEXT:    [[SUM_07:%.*]] = phi float [ 0.000000e+00, [[ENTRY]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
+; CHECK-NOT-VECTORIZED-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[IV]]
+; CHECK-NOT-VECTORIZED-NEXT:    [[TMP0:%.*]] = load float, ptr [[ARRAYIDX]], align 4
+; CHECK-NOT-VECTORIZED-NEXT:    [[ADD]] = fadd float [[TMP0]], [[SUM_07]]
+; CHECK-NOT-VECTORIZED-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
+; CHECK-NOT-VECTORIZED-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N:%.*]]
+; CHECK-NOT-VECTORIZED-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NOT-VECTORIZED:       for.end:
+; CHECK-NOT-VECTORIZED-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ]
+; CHECK-NOT-VECTORIZED-NEXT:    ret float [[ADD_LCSSA]]
 ;
 entry:
   br label %for.body

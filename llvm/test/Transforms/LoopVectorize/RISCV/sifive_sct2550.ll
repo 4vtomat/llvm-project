@@ -23,8 +23,8 @@ define i32 @test() {
 ; CHECK-NEXT:    [[PRED_NOT1:%.*]] = call <vscale x 4 x i1> @llvm.vp.xor.nxv4i1(<vscale x 4 x i1> zeroinitializer, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP2]])
 ; CHECK-NEXT:    [[VP_OP_SELECT:%.*]] = call <vscale x 4 x i1> @llvm.vp.select.nxv4i1(<vscale x 4 x i1> [[VP_OP]], <vscale x 4 x i1> [[PRED_NOT1]], <vscale x 4 x i1> zeroinitializer, i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr double, ptr [[TMP6]], i32 0
-; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x double> @llvm.vp.load.nxv4f64.p0(ptr [[TMP7]], <vscale x 4 x i1> [[VP_OP_SELECT]], i32 [[TMP2]])
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv4f64.nxv4p0(<vscale x 4 x double> [[VP_OP_LOAD]], <vscale x 4 x ptr> zeroinitializer, <vscale x 4 x i1> [[VP_OP_SELECT]], i32 [[TMP2]])
+; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 4 x double> @llvm.vp.load.nxv4f64.p0(ptr align 8 [[TMP7]], <vscale x 4 x i1> [[VP_OP_SELECT]], i32 [[TMP2]])
+; CHECK-NEXT:    call void @llvm.vp.scatter.nxv4f64.nxv4p0(<vscale x 4 x double> [[VP_OP_LOAD]], <vscale x 4 x ptr> align 8 zeroinitializer, <vscale x 4 x i1> [[VP_OP_SELECT]], i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP2]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP8]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_NEXT]], 0
