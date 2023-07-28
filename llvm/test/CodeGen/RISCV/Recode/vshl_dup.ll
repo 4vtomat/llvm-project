@@ -310,8 +310,7 @@ define void @vqrshl_u64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1,
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB6_3
 ; CHECK-NEXT:  .LBB6_6: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v8
-; CHECK-NEXT:    vse64.v v9, (a2)
+; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <1 x i64>, ptr %in_0, align 8
@@ -675,8 +674,7 @@ define void @vqrshlq_u64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB14_3
 ; CHECK-NEXT:  .LBB14_6: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v8
-; CHECK-NEXT:    vse64.v v9, (a2)
+; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <2 x i64>, ptr %in_0, align 8
