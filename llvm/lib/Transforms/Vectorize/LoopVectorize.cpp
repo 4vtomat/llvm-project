@@ -11771,13 +11771,17 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
   SCEVExpander Exp(SE, DL, "induction");
   Value *ScalarStepValue = Exp.expandCodeFor(ScalarStep, PhiType, InductionLoc);
 #endif
-#if SIFIVE_CUSTOMIZATION
-  auto CurrIP = State.Builder.saveIP();
-  if (State.Plan->getRVL())
-    State.Builder.SetInsertPoint(VectorPH->getTerminator());
-#endif // SIFIVE_CUSTOMIZATION
   Value *ScalarStepValue = State.get(getOperand(1), VPIteration(0, 0));
+#if SIFIVE_CUSTOMIZATION
+  Value *RuntimeVF;
+  if (VPValue *RVL = State.Plan->getRVL())
+    RuntimeVF = State.Builder.CreateIntCast(State.get(RVL, 0), PhiType,
+                                            /*IsSigned=*/false);
+  else
+    RuntimeVF = getRuntimeVF(State.Builder, PhiType, State.VF);
+#else
   Value *RuntimeVF = getRuntimeVF(State.Builder, PhiType, State.VF);
+#endif // SIFIVE_CUSTOMIZATION
   Value *NumUnrolledElems =
       State.Builder.CreateMul(RuntimeVF, ConstantInt::get(PhiType, State.UF));
 #if SIFIVE_CUSTOMIZATION
@@ -11792,6 +11796,7 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
       State.Builder.getInt8Ty(), NewPointerPhi,
       State.Builder.CreateMul(ScalarStepValue, PtrStride), "ptr.ind",
       InductionLoc);
+<<<<<<< HEAD
 
   if (State.Plan->getRVL())
     State.Builder.restoreIP(CurrIP);
@@ -11801,12 +11806,25 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
       State.Builder.CreateMul(ScalarStepValue, NumUnrolledElems), "ptr.ind",
       InductionLoc);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> origin/sifive-dev
   // Add induction update using an incorrect block temporarily. The phi node
   // will be fixed after VPlan execution. Note that at this point the latch
   // block cannot be used, as it does not exist yet.
   // TODO: Model increment value in VPlan, by turning the recipe into a
   // multi-def and a subclass of VPHeaderPHIRecipe.
   NewPointerPhi->addIncoming(InductionGEP, VectorPH);
+
+#if SIFIVE_CUSTOMIZATION
+  // To hoist the below calculation to preheader, we switch to vscale
+  if (State.Plan->getRVL()) {
+    auto CurrIP = State.Builder.saveIP();
+    State.Builder.SetInsertPoint(VectorPH->getTerminator());
+    assert(State.UF == 1 && "interleaving should be disabled to use vscale");
+    RuntimeVF = getRuntimeVF(State.Builder, PhiType, State.VF);
+    State.Builder.restoreIP(CurrIP);
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   // Create UF many actual address geps that use the pointer
   // phi as base and a vectorized version of the step value
