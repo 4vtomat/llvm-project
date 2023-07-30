@@ -11796,18 +11796,12 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
       State.Builder.getInt8Ty(), NewPointerPhi,
       State.Builder.CreateMul(ScalarStepValue, PtrStride), "ptr.ind",
       InductionLoc);
-<<<<<<< HEAD
-
-  if (State.Plan->getRVL())
-    State.Builder.restoreIP(CurrIP);
 #else
   Value *InductionGEP = GetElementPtrInst::Create(
       State.Builder.getInt8Ty(), NewPointerPhi,
       State.Builder.CreateMul(ScalarStepValue, NumUnrolledElems), "ptr.ind",
       InductionLoc);
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> origin/sifive-dev
   // Add induction update using an incorrect block temporarily. The phi node
   // will be fixed after VPlan execution. Note that at this point the latch
   // block cannot be used, as it does not exist yet.
