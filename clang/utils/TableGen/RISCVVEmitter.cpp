@@ -389,6 +389,13 @@ void RVVEmitter::createHeader(raw_ostream &OS) {
 
   OS << "#pragma clang riscv intrinsic vector\n\n";
 
+#if SIFIVE_CUSTOMIZATION
+  OS << "#ifdef __rvv_0p11_compatible_intrinsics\n";
+  OS << "#pragma clang riscv intrinsic v0p11\n";
+  OS << "#include <rvv_v0p11_compatible/riscv_vector.h>\n";
+  OS << "#endif\n\n";
+#endif
+
   printHeaderCode(OS);
 
   auto printType = [&](auto T) {
