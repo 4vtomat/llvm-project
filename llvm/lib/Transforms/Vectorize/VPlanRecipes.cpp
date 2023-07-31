@@ -525,7 +525,6 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     return AnyActive;
   }
   case VPInstruction::CSAVLPhi: {
-    errs() << "F\n";
     IRBuilder<>::InsertPointGuard Guard(State.Builder);
     State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHI());
     BasicBlock *PreheaderBB = State.CFG.getPreheaderBBFor(this);
