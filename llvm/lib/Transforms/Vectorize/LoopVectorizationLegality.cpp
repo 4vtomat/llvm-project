@@ -165,7 +165,7 @@ static cl::opt<LoopVectorizeHints::ScalableForceKind>
 #endif // SIFIVE_CUSTOMIZATION
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<bool>
-    EnableCSA("sifive-enable-csa", cl::init(true), cl::Hidden,
+    EnableCSA("sifive-enable-csa", cl::init(false), cl::Hidden,
               cl::desc("Control whether CSA loop vectorization is enabled"));
 #endif
 
