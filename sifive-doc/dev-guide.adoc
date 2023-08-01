@@ -138,7 +138,7 @@ To compile a `hello` example for a 21G3 P550 platform:
 $ riscv64-unknown-elf-clang *-march=rv64imafdc_zba_zbb -mtune=sifive-p550* hello.c
 ----
 
-<<table-arch-options>> list the default `-march`/`-mtune` options per each `-mcpu` target. `-mcpu` represents CPU name and may be infixed or suffixed by a letter that corresponds to SiFive Core IP release as specified in the table. For example `-mcpu=sifive-x280` targets X280 released in 21G2 Core IP release, `-mcpu=sifive-x280n` targets X280 released in 21G3 Core IP release and `-mcpu=sifive-x280o` targets X280 released in 22G1 Core IP release and above.
+<<table-arch-options>> list the default `-march`/`-mtune` options per each `-mcpu` target. `-mcpu` represents CPU name and may be infixed or suffixed by a letter that corresponds to SiFive Core IP release as specified in the table. For example `-mcpu=sifive-x280` targets X280 released in 21G2 Core IP release, `-mcpu=sifive-x280n` targets X280 released in 21G3 Core IP release, `-mcpu=sifive-x280o` targets X280 released in 22G1 Core IP release and above.
 Support of options starts from the compiler release specified in the table.
 
 // For PDF formatting
@@ -198,7 +198,9 @@ h|Core IP Version h|Compiler Version h|`-mcpu` h|Default `-march` h|Default `-mt
 
 |sifive-270
 
+|23G2 and above |2023.08.0 and above |sifive-u64r |`rv64imafdcv_zic64b_zicbom_zicbop_zicboz_ziccamoa_ziccif_ziccrse_zicntr_zicsr_zifencei_zihintntl_zihintpause_zihpm_za64rs_zfhmin_zca_zcb_zba_zbb_zbs_zkt` |sifive-6-series
 |21G3 and above |2021.11.5 and above |sifive-u64 |`rv64imafdc_zba_zbb` |sifive-6-series
+|23G2 and above |2023.08.0 and above |sifive-u74r |`rv64imafdcv_zic64b_zicbom_zicbop_zicboz_ziccamoa_ziccif_ziccrse_zicntr_zicsr_zifencei_zihintntl_zihintpause_zihpm_za64rs_zfhmin_zca_zcb_zba_zbb_zbs_zkt` |sifive-7n-series
 |21G3 and above |2021.11.5 and above |sifive-u74n |`rv64imafdc_zba_zbb` |sifive-7n-series
 |21G2 |2021.06.3 and above |sifive-u74m |`rv64imafdc_zba_zbb` |sifive-7m-series
 |21G3 and above |2021.11.5 and above |sifive-s76n |`rv64imafdc_zba_zbb` |sifive-7n-series
