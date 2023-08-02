@@ -85,8 +85,6 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"svnapot", RISCVExtensionVersion{1, 0}},
     {"svpbmt", RISCVExtensionVersion{1, 0}},
     {"v", RISCVExtensionVersion{1, 0}},
-<<<<<<< HEAD
-=======
 
     // vendor-defined ('X') extensions
     {"xcvalu", RISCVExtensionVersion{1, 0}},
@@ -94,7 +92,6 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xcvbitmanip", RISCVExtensionVersion{1, 0}},
     {"xcvmac", RISCVExtensionVersion{1, 0}},
     {"xcvsimd", RISCVExtensionVersion{1, 0}},
->>>>>>> upstream/main
     {"xsfcie", RISCVExtensionVersion{1, 0}},
     {"xsfvcp", RISCVExtensionVersion{1, 0}},
     {"xsfvfhbfmin", RISCVExtensionVersion{0, 1}}, // SIFIVE
@@ -195,12 +192,8 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"zacas", RISCVExtensionVersion{1, 0}},
 
     {"zfa", RISCVExtensionVersion{0, 2}},
-<<<<<<< HEAD
-    {"zfbfmin", RISCVExtensionVersion{0, 6}},
-=======
     {"zfbfmin", RISCVExtensionVersion{0, 8}},
 
->>>>>>> upstream/main
     {"zicond", RISCVExtensionVersion{1, 0}},
     {"zihintntl", RISCVExtensionVersion{0, 2}},
     {"ztso", RISCVExtensionVersion{0, 1}},
