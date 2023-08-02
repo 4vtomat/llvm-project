@@ -41,13 +41,8 @@ def SysRegsList : GenericTable {
   let FilterClass = "SysReg";
   // FIXME: add "ReadWrite", "Mode", "Extra", "Number" fields when needed.
   let Fields = [
-<<<<<<< HEAD
-    "Name", "AltName", "DeprecatedName", "Encoding", "FeaturesRequired",
-    "isRV32Only"
-=======
     "Name", "DeprecatedName", "Encoding", "FeaturesRequired",
     "isRV32Only",
->>>>>>> upstream/main
   ];
 
   let PrimaryKey = [ "Encoding" ];
