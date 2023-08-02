@@ -383,14 +383,22 @@ StringRef riscv::getRISCVArch(const llvm::opt::ArgList &Args,
       return "rv32imac";
     else
       return "rv32imafdc";
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   }
 
   if (Triple.isAndroid())
-    return "rv64imafdc_zbb";
+    return "rv64imafdc_zba_zbb_zbs";
 
   return "rv64imafdc";
+#else
+  } else {
+    if (Triple.getOS() == llvm::Triple::UnknownOS)
+      return "rv64imac";
+    else if (Triple.isAndroid())
+      return "rv64imafdc_zba_zbb_zbs";
+    else
+      return "rv64imafdc";
+  }
 #endif // SIFIVE_CUSTOMIZATION
 }
 
@@ -456,15 +464,6 @@ void riscv::addRISCVTargetLTOArgs(const ToolChain &ToolChain,
     A->claim();
     CmdArgs.push_back(
         Args.MakeArgString(Twine("-plugin-opt=") + A->getValue(0)));
-=======
-  } else {
-    if (Triple.getOS() == llvm::Triple::UnknownOS)
-      return "rv64imac";
-    else if (Triple.isAndroid())
-      return "rv64imafdc_zba_zbb_zbs";
-    else
-      return "rv64imafdc";
->>>>>>> upstream/main
   }
 }
 #endif // SIFIVE_CUSTOMIZATION

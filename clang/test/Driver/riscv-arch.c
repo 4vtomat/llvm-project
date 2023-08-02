@@ -218,17 +218,13 @@
 // RV32-ORDER: error: invalid arch name 'rv32imcq',
 // RV32-ORDER: standard user-level extension not given in canonical order 'q'
 
-<<<<<<< HEAD
 // SIFIVE_CUSTOMIZATION
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32id -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-DER %s
 // RV32-DER: "-target-feature" "+d"
 // end SIFIVE_CUSTOMIZATION
 
-// RUN: %clang --target=riscv32-unknown-elf -march=rv32izvl64b -### %s \
-=======
 // RUN: not %clang --target=riscv32-unknown-elf -march=rv32izvl64b -### %s \
->>>>>>> upstream/main
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-ZVL64B-ER %s
 // RV32-ZVL64B-ER: error: invalid arch name 'rv32izvl64b',
 // RV32-ZVL64B-ER: 'zvl*b' requires 'v' or 'zve*' extension to also be specified
@@ -335,17 +331,7 @@
 // RV32-X-ORDER: error: invalid arch name 'rv32ixdef_sabc',
 // RV32-X-ORDER  unsupported non-standard user-level extension 'xdef'
 
-<<<<<<< HEAD
-// RUN: %clang --target=riscv32-unknown-elf -march=rv32isxabc_sdef -### %s \
-// RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-S-ORDER %s
-// SIFIVE_CUSTOMIZATION
-// RV32-S-ORDER: "-target-abi" "ilp32"
-// end SIFIVE_CUSTOMIZATION
-
-// RUN: %clang --target=riscv32-unknown-elf -march=rv32ixabc_xabc -### %s \
-=======
 // RUN: not %clang --target=riscv32-unknown-elf -march=rv32ixabc_xabc -### %s \
->>>>>>> upstream/main
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-XDUP %s
 // RV32-XDUP: error: invalid arch name 'rv32ixabc_xabc',
 // RV32-XDUP: duplicated non-standard user-level extension 'xabc'
@@ -397,16 +383,11 @@
 // RV32-EXPERIMENTAL-NOFLAG: error: invalid arch name 'rv32izfa'
 // RV32-EXPERIMENTAL-NOFLAG: requires '-menable-experimental-extensions'
 
-<<<<<<< HEAD
 // COM: SiFive specific logic: Disable version check for integration with FESDK.
-// COM: %clang --target=riscv32-unknown-elf -march=rv32izca -menable-experimental-extensions -### %s \
+// COM : not %clang --target=riscv32-unknown-elf -march=rv32izfa -menable-experimental-extensions -### %s \
 // COM: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-NOVERS %s
-=======
-// RUN: not %clang --target=riscv32-unknown-elf -march=rv32izfa -menable-experimental-extensions -### %s \
-// RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-NOVERS %s
->>>>>>> upstream/main
-// RV32-EXPERIMENTAL-NOVERS: error: invalid arch name 'rv32izfa'
-// RV32-EXPERIMENTAL-NOVERS: experimental extension requires explicit version number
+// COM-RV32-EXPERIMENTAL-NOVERS: error: invalid arch name 'rv32izfa'
+// COM-RV32-EXPERIMENTAL-NOVERS: experimental extension requires explicit version number
 
 // RUN: not %clang --target=riscv32-unknown-elf -march=rv32izfa0p1 -menable-experimental-extensions -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-BADVERS %s
