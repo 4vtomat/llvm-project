@@ -1420,10 +1420,6 @@ static Type *DecodeFixedType(ArrayRef<Intrinsic::IITDescriptor> &Infos,
   case IITDescriptor::VecOfAnyPtrsToElt:
     // Return the overloaded type (which determines the pointers address space)
     return Tys[D.getOverloadArgNumber()];
-<<<<<<< HEAD
-  case IITDescriptor::AnyPtrToElt:
-    // Return the overloaded type (which determines the pointers address space)
-    return Tys[D.getOverloadArgNumber()];
 #if SIFIVE_CUSTOMIZATION
   case IITDescriptor::OneThirdVecArgument:
     return VectorType::getOneNthElementsVectorType(
@@ -1444,8 +1440,6 @@ static Type *DecodeFixedType(ArrayRef<Intrinsic::IITDescriptor> &Infos,
     return VectorType::getOneNthElementsVectorType(
         cast<VectorType>(Tys[D.getArgumentNumber()]), 8);
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
   }
   llvm_unreachable("unhandled");
 }
