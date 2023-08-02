@@ -2047,7 +2047,11 @@ public:
              VPSlotTracker &SlotTracker) const override;
 #endif
 
+#if SIFIVE_CUSTOMIZATION
+  const InterleaveGroup<Instruction> *getInterleaveGroup() const { return IG; }
+#else
   const InterleaveGroup<Instruction> *getInterleaveGroup() { return IG; }
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns the number of stored operands of this interleave group. Returns 0
   /// for load interleave groups.

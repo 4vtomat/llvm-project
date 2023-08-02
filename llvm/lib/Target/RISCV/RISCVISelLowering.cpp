@@ -19532,7 +19532,8 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
       Intrinsic::riscv_vlseg8,
   };
   Value *UndefVal = UndefValue::get(VTy);
-  SmallVector<Value *> Operands = {UndefVal, UndefVal, VPLoad->getOperand(0)};
+  SmallVector<Value *> Operands(Factor, UndefVal);
+  Operands.push_back(VPLoad->getOperand(0));
 
   Intrinsic::ID VlsegNID = IntrIds[Factor-2];
   if (Mask) {

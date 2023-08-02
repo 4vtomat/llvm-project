@@ -143,6 +143,10 @@ private:
   InstructionCost getMemoryOpCost(const VPWidenMemoryInstructionRecipe *VPWMIR,
                                   const RVVPair &RVL) const;
 
+  /// Return cost of the interleavedmemory operation for a given \p RVL
+  InstructionCost getInterleavedMemoryOpCost(const VPInterleaveRecipe *VPI,
+                                             const RVVPair &RVL) const;
+
   /// Return cost of the individual memory operation of a instruction \p I of a
   /// given type \p Ty
   InstructionCost getMemoryOpCost(const Instruction *I, Type *Ty,

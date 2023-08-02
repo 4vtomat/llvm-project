@@ -243,19 +243,72 @@ static std::optional<Value *> getMask(Value *WideMask, unsigned Factor) {
   using namespace llvm::PatternMatch;
   if (auto *IMI = dyn_cast<IntrinsicInst>(WideMask)) {
     switch (IMI->getIntrinsicID()) {
-    case Intrinsic::experimental_vector_interleave2:
-      assert(Factor == 2 && "Interleave factor of a data and mask don't match");
-      if (IMI->getOperand(0) != IMI->getOperand(1))
-        return std::nullopt;
-
-      return IMI->getOperand(0);
     default:
       return std::nullopt;
+#define TRY_DEINTERLEAVE_MASK(N)                                               \
+  case Intrinsic::experimental_vector_interleave##N:                           \
+    assert(Factor == N && "Interleave factor of a data and mask don't match"); \
+    for (unsigned I = 0; I < N; ++I)                                           \
+      if (IMI->getOperand(0) != IMI->getOperand(I))                            \
+        return std::nullopt;                                                   \
+                                                                               \
+    return IMI->getOperand(0);
+
+      TRY_DEINTERLEAVE_MASK(2);
+      TRY_DEINTERLEAVE_MASK(3);
+      TRY_DEINTERLEAVE_MASK(4);
+      TRY_DEINTERLEAVE_MASK(5);
+      TRY_DEINTERLEAVE_MASK(6);
+      TRY_DEINTERLEAVE_MASK(7);
+      TRY_DEINTERLEAVE_MASK(8);
+#undef TRY_DEINTERLEAVE_MASK
     }
   }
   if (match(WideMask, m_AllOnes()))
     return nullptr;
   return std::nullopt;
+}
+
+static unsigned getFactorFromVectorInterleaveIntrinsic(IntrinsicInst *II) {
+    switch (II->getIntrinsicID()) {
+    case Intrinsic::experimental_vector_interleave2:
+      return 2;
+    case Intrinsic::experimental_vector_interleave3:
+      return 3;
+    case Intrinsic::experimental_vector_interleave4:
+      return 4;
+    case Intrinsic::experimental_vector_interleave5:
+      return 5;
+    case Intrinsic::experimental_vector_interleave6:
+      return 6;
+    case Intrinsic::experimental_vector_interleave7:
+      return 7;
+    case Intrinsic::experimental_vector_interleave8:
+      return 8;
+    default:
+      return 0;
+    }
+}
+
+static unsigned getFactorFromVectorDeInterleaveIntrinsic(IntrinsicInst *DI) {
+    switch (DI->getIntrinsicID()) {
+    case Intrinsic::experimental_vector_deinterleave2:
+      return 2;
+    case Intrinsic::experimental_vector_deinterleave3:
+      return 3;
+    case Intrinsic::experimental_vector_deinterleave4:
+      return 4;
+    case Intrinsic::experimental_vector_deinterleave5:
+      return 5;
+    case Intrinsic::experimental_vector_deinterleave6:
+      return 6;
+    case Intrinsic::experimental_vector_deinterleave7:
+      return 7;
+    case Intrinsic::experimental_vector_deinterleave8:
+      return 8;
+    default:
+      return 0;
+    }
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -492,28 +545,31 @@ bool InterleavedAccess::lowerDeinterleaveIntrinsic(
     IntrinsicInst *DI, SmallVector<Instruction *, 32> &DeadInsts) {
 #if SIFIVE_CUSTOMIZATION
   if (auto *VPLoad = dyn_cast<VPIntrinsic>(DI->getOperand(0))) {
-    if (VPLoad->getIntrinsicID() == Intrinsic::vp_load && VPLoad->hasOneUse()) {
-      unsigned Factor = 2;
+    if (VPLoad->getIntrinsicID() != Intrinsic::vp_load || !VPLoad->hasOneUse())
+      return false;
 
-      // Check mask operand. Handle both all-true and interleaved mask.
-      Value *WideMask = VPLoad->getOperand(1);
-      IRBuilder<> Builder(VPLoad);
-      std::optional<Value *> Mask = getMask(WideMask, Factor);
-      if (!Mask)
-        return false;
-
-      LLVM_DEBUG(dbgs() << "IA: Found a deinterleave intrinsic: " << *DI
-                        << "\n");
-
-      // Since lowerInterleaveLoad expects Shuffles and LoadInst, use special
-      // TLI function to emit target-specific interleaved instruction.
-      if (!TLI->lowerInterleavedScalableLoad(VPLoad, *Mask, DI, Factor))
-        return false;
-
-      DeadInsts.push_back(DI);
-      DeadInsts.push_back(VPLoad);
-      return true;
+    unsigned Factor = getFactorFromVectorDeInterleaveIntrinsic(DI);
+    if (Factor == 0) {
+      assert(0 && "Unsupported vector.deinterleave intrinsic");
+      return false;
     }
+
+    // Check mask operand. Handle both all-true and interleaved mask.
+    Value *WideMask = VPLoad->getOperand(1);
+    std::optional<Value *> Mask = getMask(WideMask, Factor);
+    if (!Mask)
+      return false;
+
+    LLVM_DEBUG(dbgs() << "IA: Found a deinterleave intrinsic: " << *DI << "\n");
+
+    // Since lowerInterleaveLoad expects Shuffles and LoadInst, use special
+    // TLI function to emit target-specific interleaved instruction.
+    if (!TLI->lowerInterleavedScalableLoad(VPLoad, *Mask, DI, Factor))
+      return false;
+
+    DeadInsts.push_back(DI);
+    DeadInsts.push_back(VPLoad);
+    return true;
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -541,7 +597,14 @@ bool InterleavedAccess::lowerInterleaveIntrinsic(
 
 #if SIFIVE_CUSTOMIZATION
   if (auto *VPStore = dyn_cast<VPIntrinsic>(*(II->users().begin()))) {
-    unsigned Factor = 2;
+    if (VPStore->getIntrinsicID() != Intrinsic::vp_store)
+      return false;
+
+    unsigned Factor = getFactorFromVectorInterleaveIntrinsic(II);
+    if (Factor == 0) {
+      assert(0 && "Unsupported vector.interleave intrinsic");
+      return false;
+    }
 
     Value *WideMask = VPStore->getOperand(2);
     std::optional<Value *> Mask = getMask(WideMask, Factor);
@@ -604,9 +667,17 @@ bool InterleavedAccess::runOnFunction(Function &F) {
     if (auto *II = dyn_cast<IntrinsicInst>(&I)) {
       // At present, we only have intrinsics to represent (de)interleaving
       // with a factor of 2.
+#if SIFIVE_CUSTOMIZATION
+      if (getFactorFromVectorDeInterleaveIntrinsic(II) != 0)
+#else
       if (II->getIntrinsicID() == Intrinsic::experimental_vector_deinterleave2)
+#endif // SIFIVE_CUSTOMIZATION
         Changed |= lowerDeinterleaveIntrinsic(II, DeadInsts);
+#if SIFIVE_CUSTOMIZATION
+      if (getFactorFromVectorInterleaveIntrinsic(II) != 0)
+#else
       if (II->getIntrinsicID() == Intrinsic::experimental_vector_interleave2)
+#endif // SIFIVE_CUSTOMIZATION
         Changed |= lowerInterleaveIntrinsic(II, DeadInsts);
     }
   }
