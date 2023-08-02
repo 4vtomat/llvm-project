@@ -11335,35 +11335,10 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
   // bring the VPlan to its final state.
   // ---------------------------------------------------------------------------
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (!Legal->isVectorizableUncountable())
-#endif
-  VPlanTransforms::removeRedundantCanonicalIVs(*Plan);
-  VPlanTransforms::removeRedundantInductionCasts(*Plan);
-
-=======
->>>>>>> upstream/main
   // Adjust the recipes for any inloop reductions.
   adjustRecipesForReductions(cast<VPBasicBlock>(TopRegion->getExiting()), Plan,
                              RecipeBuilder, Range.Start);
 
-<<<<<<< HEAD
-  // Sink users of fixed-order recurrence past the recipe defining the previous
-  // value and introduce FirstOrderRecurrenceSplice VPInstructions.
-  if (!VPlanTransforms::adjustFixedOrderRecurrences(*Plan, Builder))
-#if SIFIVE_CUSTOMIZATION
-  {
-    LLVM_DEBUG(dbgs() << "LV: Cannot adjust ordered recurrences. Constructed "
-                         "VPlan is rejected\n");
-#endif // SIFIVE_CUSTOMIZATION
-    return std::nullopt;
-#if SIFIVE_CUSTOMIZATION
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
-=======
->>>>>>> upstream/main
   // Interleave memory: for each Interleave Group we marked earlier as relevant
   // for this VPlan, replace the Recipes widening its memory instructions with a
   // single VPInterleaveRecipe at its insertion point.
@@ -11420,24 +11395,34 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
   // in ways that accessing values using original IR values is incorrect.
   Plan->disableValue2VPValue();
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Legal->useVLAVectorizer())
     VPlanTransforms::optimizeGEPs(*Plan);
-
-  // Skip optimizeInductions as it has a dependency on canonical IV.
-  if (!Legal->isVectorizableUncountable())
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   // Sink users of fixed-order recurrence past the recipe defining the previous
   // value and introduce FirstOrderRecurrenceSplice VPInstructions.
   if (!VPlanTransforms::adjustFixedOrderRecurrences(*Plan, Builder))
+#if SIFIVE_CUSTOMIZATION
+  {
+    LLVM_DEBUG(dbgs() << "LV: Cannot adjust ordered recurrences. Constructed "
+                         "VPlan is rejected\n");
+#endif // SIFIVE_CUSTOMIZATION
     return std::nullopt;
+#if SIFIVE_CUSTOMIZATION
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
+#if SIFIVE_CUSTOMIZATION
+  if (!Legal->isVectorizableUncountable())
+#endif
   VPlanTransforms::removeRedundantCanonicalIVs(*Plan);
   VPlanTransforms::removeRedundantInductionCasts(*Plan);
 
->>>>>>> upstream/main
+#if SIFIVE_CUSTOMIZATION
+  // Skip optimizeInductions as it has a dependency on canonical IV.
+  if (!Legal->isVectorizableUncountable())
+#endif // SIFIVE_CUSTOMIZATION
   VPlanTransforms::optimizeInductions(*Plan, *PSE.getSE());
   VPlanTransforms::removeDeadRecipes(*Plan);
 
