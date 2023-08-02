@@ -3621,12 +3621,29 @@ static SDValue lowerScalarInsert(SDValue Scalar, SDValue VL, MVT VT,
 
   if (Scalar.getOpcode() == ISD::EXTRACT_VECTOR_ELT &&
       isNullConstant(Scalar.getOperand(1))) {
+#if SIFIVE_CUSTOMIZATION
+    SDValue ExtractedVal = Scalar.getOperand(0);
+    MVT ExtractedVT = ExtractedVal.getSimpleValueType();
+    MVT ExtractedContainerVT = ExtractedVT;
+    if (ExtractedContainerVT.isFixedLengthVector()) {
+      ExtractedContainerVT = getContainerForFixedLengthVector(
+          DAG, ExtractedContainerVT, Subtarget);
+      ExtractedVal = convertToScalableVector(ExtractedContainerVT, ExtractedVal,
+                                             DAG, Subtarget);
+    }
+    if (ExtractedContainerVT.bitsLE(VT))
+      return DAG.getNode(ISD::INSERT_SUBVECTOR, DL, VT, Passthru, ExtractedVal,
+                         DAG.getConstant(0, DL, XLenVT));
+    return DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, VT, ExtractedVal,
+                       DAG.getConstant(0, DL, XLenVT));
+#else
     MVT ExtractedVT = Scalar.getOperand(0).getSimpleValueType();
     if (ExtractedVT.bitsLE(VT))
       return DAG.getNode(ISD::INSERT_SUBVECTOR, DL, VT, Passthru,
                          Scalar.getOperand(0), DAG.getConstant(0, DL, XLenVT));
     return DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, VT, Scalar.getOperand(0),
                        DAG.getConstant(0, DL, XLenVT));
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   if (VT.isFloatingPoint()) {
@@ -8596,6 +8613,7 @@ static SDValue lowerReductionSeq(unsigned RVVOpcode, MVT ResVT,
                      DAG.getConstant(0, DL, XLenVT));
 }
 
+#ifndef SIFIVE_CUSTOMIZATION
 // Function to extract the first element of Vec. For fixed vector Vec, this
 // converts it to a scalable vector before extraction, so subsequent
 // optimizations don't have to handle fixed vectors.
@@ -8614,6 +8632,7 @@ static SDValue getFirstElement(SDValue Vec, SelectionDAG &DAG,
   return DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, VecEltVT, Vec,
                      DAG.getConstant(0, DL, XLenVT));
 }
+#endif // SIFIVE_CUSTOMIZTION
 
 SDValue RISCVTargetLowering::lowerVECREDUCE(SDValue Op,
                                             SelectionDAG &DAG) const {
@@ -8657,7 +8676,13 @@ SDValue RISCVTargetLowering::lowerVECREDUCE(SDValue Op,
   case ISD::UMIN:
   case ISD::SMAX:
   case ISD::SMIN:
+#if SIFIVE_CUSTOMIZATION
+    MVT XLenVT = Subtarget.getXLenVT();
+    StartV = DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, VecEltVT, Vec,
+                         DAG.getConstant(0, DL, XLenVT));
+#else
     StartV = getFirstElement(Vec, DAG, Subtarget);
+#endif
   }
   return lowerReductionSeq(RVVOpcode, Op.getSimpleValueType(), StartV, Vec,
                            Mask, VL, DL, DAG, Subtarget);
@@ -8685,11 +8710,24 @@ getRVVFPReductionOpAndOperands(SDValue Op, SelectionDAG &DAG, EVT EltVT,
     return std::make_tuple(RISCVISD::VECREDUCE_SEQ_FADD_VL, Op.getOperand(1),
                            Op.getOperand(0));
   case ISD::VECREDUCE_FMIN:
+#if SIFIVE_CUSTOMIZATION
+  case ISD::VECREDUCE_FMAX: {
+    MVT XLenVT = Subtarget.getXLenVT();
+    SDValue Front =
+        DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, EltVT, Op.getOperand(0),
+                    DAG.getConstant(0, DL, XLenVT));
+    unsigned RVVOpc = (Opcode == ISD::VECREDUCE_FMIN)
+                          ? RISCVISD::VECREDUCE_FMIN_VL
+                          : RISCVISD::VECREDUCE_FMAX_VL;
+    return std::make_tuple(RVVOpc, Op.getOperand(0), Front);
+  }
+#else
     return std::make_tuple(RISCVISD::VECREDUCE_FMIN_VL, Op.getOperand(0),
                            getFirstElement(Op.getOperand(0), DAG, Subtarget));
   case ISD::VECREDUCE_FMAX:
     return std::make_tuple(RISCVISD::VECREDUCE_FMAX_VL, Op.getOperand(0),
                            getFirstElement(Op.getOperand(0), DAG, Subtarget));
+#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
