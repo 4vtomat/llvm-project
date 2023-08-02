@@ -884,23 +884,6 @@ multiclass VPatMultiplyAddSDNode_VV_VX<SDNode op, string instruction_name> {
 // 7.4. Vector Unit-Stride Instructions
 foreach vti = !listconcat(FractionalGroupIntegerVectors,
                           FractionalGroupFloatVectors,
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-                          FractionalGroupBFloatVectors) in
-#endif // SIFIVE_CUSTOMIZATION
-  let Predicates = GetVTypePredicates<vti>.Predicates in
-  defm : VPatUSLoadStoreSDNode<vti.Vector, vti.Log2SEW, vti.LMul,
-                               vti.AVL, vti.RegClass>;
-#ifdef SIFIVE_CUSTOMIZATION
-foreach vti = [VI8M1, VI16M1, VI32M1, VI64M1, VF16M1, VBF16M1, VF32M1, VF64M1] in
-#endif // SIFIVE_CUSTOMIZATION
-  let Predicates = GetVTypePredicates<vti>.Predicates in
-  defm : VPatUSLoadStoreWholeVRSDNode<vti.Vector, vti.Log2SEW, vti.LMul,
-                                      vti.RegClass>;
-#ifdef SIFIVE_CUSTOMIZATION
-foreach vti = !listconcat(GroupIntegerVectors, GroupFloatVectors, GroupBFloatVectors) in
-#endif // SIFIVE_CUSTOMIZATION
-=======
                           FractionalGroupBFloatVectors) in
   let Predicates = GetVTypePredicates<vti>.Predicates in
   defm : VPatUSLoadStoreSDNode<vti.Vector, vti.Log2SEW, vti.LMul,
@@ -910,7 +893,6 @@ foreach vti = [VI8M1, VI16M1, VI32M1, VI64M1, VBF16M1, VF16M1, VF32M1, VF64M1] i
   defm : VPatUSLoadStoreWholeVRSDNode<vti.Vector, vti.Log2SEW, vti.LMul,
                                       vti.RegClass>;
 foreach vti = !listconcat(GroupIntegerVectors, GroupFloatVectors, GroupBFloatVectors) in
->>>>>>> upstream/main
   let Predicates = GetVTypePredicates<vti>.Predicates in 
   defm : VPatUSLoadStoreWholeVRSDNode<vti.Vector, vti.Log2SEW, vti.LMul,
                                       vti.RegClass>;
