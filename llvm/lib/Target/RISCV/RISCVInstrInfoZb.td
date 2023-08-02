@@ -346,15 +346,7 @@ def BINV : ALU_rr<0b0110100, 0b001, "binv">,
            Sched<[WriteSingleBit, ReadSingleBit, ReadSingleBit]>;
 let IsSignExtendingOpW = 1 in
 def BEXT : ALU_rr<0b0100100, 0b101, "bext">,
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
            Sched<[WriteBEXT, ReadSingleBit, ReadSingleBit]>;
-#else
-           Sched<[WriteSingleBit, ReadSingleBit, ReadSingleBit]>;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-           Sched<[WriteBEXT, ReadSingleBit, ReadSingleBit]>;
->>>>>>> upstream/main
 
 def BCLRI : RVBShift_ri<0b01001, 0b001, OPC_OP_IMM, "bclri">,
             Sched<[WriteSingleBitImm, ReadSingleBitImm]>;
@@ -364,15 +356,7 @@ def BINVI : RVBShift_ri<0b01101, 0b001, OPC_OP_IMM, "binvi">,
             Sched<[WriteSingleBitImm, ReadSingleBitImm]>;
 let IsSignExtendingOpW = 1 in
 def BEXTI : RVBShift_ri<0b01001, 0b101, OPC_OP_IMM, "bexti">,
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
             Sched<[WriteBEXTI, ReadSingleBitImm]>;
-#else
-            Sched<[WriteSingleBitImm, ReadSingleBitImm]>;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-            Sched<[WriteBEXTI, ReadSingleBitImm]>;
->>>>>>> upstream/main
 } // Predicates = [HasStdExtZbs]
 
 // These instructions were named xperm.n and xperm.b in the last version of
