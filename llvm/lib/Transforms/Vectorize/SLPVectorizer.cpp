@@ -5457,6 +5457,9 @@ BoUpSLP::TreeEntry::EntryState BoUpSLP::getScalarsVectorizationState(
     // unvectorized version.
     switch (canVectorizeLoads(VL, VL0, *TTI, *DL, *SE, *LI, *TLI, CurrentOrder,
                               PointerOps)) {
+#if SIFIVE_CUSTOMIZATION
+    case LoadsState::StridedVectorize:
+#endif // SIFIVE_CUSTOMIZATION
     case LoadsState::Vectorize:
       return TreeEntry::Vectorize;
     case LoadsState::ScatterVectorize:
@@ -6122,17 +6125,8 @@ void BoUpSLP::buildTree_rec(ArrayRef<Value *> VL, unsigned Depth,
       // from such a struct, we read/write packed bits disagreeing with the
       // unvectorized version.
       TreeEntry *TE = nullptr;
-<<<<<<< HEAD
-      switch (canVectorizeLoads(VL, VL0, *TTI, *DL, *SE, *LI, *TLI,
-                                CurrentOrder, PointerOps)) {
-#if SIFIVE_CUSTOMIZATION
-      case LoadsState::StridedVectorize:
-#endif // SIFIVE_CUSTOMIZATION
-      case LoadsState::Vectorize:
-=======
       switch (State) {
       case TreeEntry::Vectorize:
->>>>>>> upstream/main
         if (CurrentOrder.empty()) {
           // Original loads are consecutive and does not require reordering.
           TE = newTreeEntry(VL, Bundle /*vectorized*/, S, UserTreeIdx,
