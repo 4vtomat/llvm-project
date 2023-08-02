@@ -165,9 +165,6 @@ namespace Intrinsic {
     unsigned getArgumentNumber() const {
       assert(Kind == Argument || Kind == ExtendArgument ||
              Kind == TruncArgument || Kind == HalfVecArgument ||
-<<<<<<< HEAD
-             Kind == SameVecWidthArgument ||
-             Kind == PtrToElt || Kind == VecElementArgument ||
 // SIFIVE_CUSTOMIZATION
              Kind == OneThirdVecArgument ||
              Kind == OneFourthVecArgument ||
@@ -176,9 +173,7 @@ namespace Intrinsic {
              Kind == OneSeventhVecArgument ||
              Kind == OneEighthVecArgument ||
 // SIFIVE_CUSTOMIZATION
-=======
              Kind == SameVecWidthArgument || Kind == VecElementArgument ||
->>>>>>> upstream/main
              Kind == Subdivide2Argument || Kind == Subdivide4Argument ||
              Kind == VecOfBitcastsToInt);
       return Argument_Info >> 3;
