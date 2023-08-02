@@ -940,9 +940,6 @@ private:
   SDValue lowerLogicVPOp(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPExtMaskOp(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPSetCCMaskOp(SDValue Op, SelectionDAG &DAG) const;
-<<<<<<< HEAD
-  SDValue lowerVPFPIntConvOp(SDValue Op, SelectionDAG &DAG,
-                             unsigned RISCVISDOpc) const;
 #if SIFIVE_CUSTOMIZATION
   SDValue lowerVPMergeMask(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPFirst(SDValue Op, SelectionDAG &DAG) const;
@@ -951,9 +948,7 @@ private:
   SDValue lowerVPSpliceExperimental(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPReverseExperimental(SDValue Op, SelectionDAG &DAG) const;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   SDValue lowerVPFPIntConvOp(SDValue Op, SelectionDAG &DAG) const;
->>>>>>> upstream/main
   SDValue lowerVPStridedLoad(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPStridedStore(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerFixedLengthVectorExtendToRVV(SDValue Op, SelectionDAG &DAG,
