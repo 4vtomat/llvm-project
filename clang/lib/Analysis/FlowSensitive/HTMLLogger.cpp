@@ -99,18 +99,17 @@ public:
     case Value::Kind::AtomicBool:
     case Value::Kind::FormulaBool:
       break;
-    case Value::Kind::Reference:
-      JOS.attributeObject(
-          "referent", [&] { dump(cast<ReferenceValue>(V).getReferentLoc()); });
-      break;
     case Value::Kind::Pointer:
       JOS.attributeObject(
           "pointee", [&] { dump(cast<PointerValue>(V).getPointeeLoc()); });
       break;
-    case Value::Kind::Struct:
-      for (const auto &Child : cast<StructValue>(V).children())
-        JOS.attributeObject("f:" + Child.first->getNameAsString(),
-                            [&] { dump(*Child.second); });
+    case Value::Kind::Record:
+      for (const auto &Child : cast<RecordValue>(V).getLoc().children())
+        JOS.attributeObject("f:" + Child.first->getNameAsString(), [&] {
+          if (Child.second)
+            if (Value *Val = Env.getValue(*Child.second))
+              dump(*Val);
+        });
       break;
     }
 
@@ -254,10 +253,17 @@ public:
       if (ElementIndex > 0) {
         auto S =
             Iters.back().first->Elements[ElementIndex - 1].getAs<CFGStmt>();
-        if (const Expr *E = S ? llvm::dyn_cast<Expr>(S->getStmt()) : nullptr)
-          if (auto *Loc = State.Env.getStorageLocation(*E, SkipPast::None))
-            JOS->attributeObject(
-                "value", [&] { ModelDumper(*JOS, State.Env).dump(*Loc); });
+        if (const Expr *E = S ? llvm::dyn_cast<Expr>(S->getStmt()) : nullptr) {
+          if (E->isPRValue()) {
+            if (auto *V = State.Env.getValue(*E))
+              JOS->attributeObject(
+                  "value", [&] { ModelDumper(*JOS, State.Env).dump(*V); });
+          } else {
+            if (auto *Loc = State.Env.getStorageLocation(*E))
+              JOS->attributeObject(
+                  "value", [&] { ModelDumper(*JOS, State.Env).dump(*Loc); });
+          }
+        }
       }
       if (!ContextLogs.empty()) {
         JOS->attribute("logs", ContextLogs);
@@ -458,8 +464,9 @@ private:
       GraphS << "  " << blockID(I) << " [id=" << blockID(I) << "]\n";
     for (const auto *Block : CFG) {
       for (const auto &Succ : Block->succs()) {
-        GraphS << "  " << blockID(Block->getBlockID()) << " -> "
-               << blockID(Succ.getReachableBlock()->getBlockID()) << "\n";
+        if (Succ.getReachableBlock())
+          GraphS << "  " << blockID(Block->getBlockID()) << " -> "
+                 << blockID(Succ.getReachableBlock()->getBlockID()) << "\n";
       }
     }
     GraphS << "}\n";

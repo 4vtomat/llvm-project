@@ -2306,6 +2306,8 @@ public:
   /// Check if the type is the CUDA device builtin texture type.
   bool isCUDADeviceBuiltinTextureType() const;
 
+  bool isRVVType(unsigned ElementCount) const;
+
   bool isRVVType() const;
 
 #if SIFIVE_CUSTOMIZATION
@@ -3147,6 +3149,8 @@ public:
   static unsigned getNumAddressingBits(const ASTContext &Context,
                                        QualType ElementType,
                                        const llvm::APInt &NumElements);
+
+  unsigned getNumAddressingBits(const ASTContext &Context) const;
 
   /// Determine the maximum number of active bits that an array's size
   /// can require, which limits the maximum size of the array.
@@ -7199,20 +7203,32 @@ inline bool Type::isRVVType() const {
     false; // end of boolean or operation.
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 inline bool Type::isRVVType(unsigned ElementCount) const {
   bool Ret = false;
 #define RVV_VECTOR_TYPE(Name, Id, SingletonId, NumEls, ElBits, NF, IsSigned,   \
                         IsFP, IsBF)                                            \
+=======
+inline bool Type::isRVVType(unsigned ElementCount) const {
+  bool Ret = false;
+#define RVV_VECTOR_TYPE(Name, Id, SingletonId, NumEls, ElBits, NF, IsSigned,   \
+                        IsFP)                                                  \
+>>>>>>> upstream/main
   if (NumEls == ElementCount)                                                  \
     Ret |= isSpecificBuiltinType(BuiltinType::Id);
 #include "clang/Basic/RISCVVTypes.def"
   return Ret;
 }
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
 
 inline bool Type::isRVVType(unsigned Bitwidth, bool IsFloat,
                             bool IsBFloat) const {
+=======
+
+inline bool Type::isRVVType(unsigned Bitwidth, bool IsFloat) const {
+>>>>>>> upstream/main
   bool Ret = false;
 #define RVV_TYPE(Name, Id, SingletonId)
 #if SIFIVE_CUSTOMIZATION

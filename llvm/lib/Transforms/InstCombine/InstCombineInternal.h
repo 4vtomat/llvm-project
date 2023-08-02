@@ -16,6 +16,7 @@
 #define LLVM_LIB_TRANSFORMS_INSTCOMBINE_INSTCOMBINEINTERNAL_H
 
 #include "llvm/ADT/Statistic.h"
+#include "llvm/ADT/PostOrderIterator.h"
 #include "llvm/Analysis/InstructionSimplify.h"
 #include "llvm/Analysis/TargetFolder.h"
 #include "llvm/Analysis/ValueTracking.h"
@@ -72,6 +73,10 @@ public:
                      BFI, PSI, DL, LI) {}
 
   virtual ~InstCombinerImpl() = default;
+
+  /// Perform early cleanup and prepare the InstCombine worklist.
+  bool prepareWorklist(Function &F,
+                       ReversePostOrderTraversal<BasicBlock *> &RPOT);
 
   /// Run the combiner over the entire worklist until it is empty.
   ///
@@ -454,6 +459,12 @@ public:
   //    -> (BinOp (logic_shift (BinOp X, Y)), Mask)
   Instruction *foldBinOpShiftWithShift(BinaryOperator &I);
 
+  /// Tries to simplify binops of select and cast of the select condition.
+  ///
+  /// (Binop (cast C), (select C, T, F))
+  ///    -> (select C, C0, C1)
+  Instruction *foldBinOpOfSelectAndCastOfSelectCondition(BinaryOperator &I);
+
   /// This tries to simplify binary operations by factorizing out common terms
   /// (e. g. "(A*B)+(A*C)" -> "A*(B+C)").
   Value *tryFactorizationFolds(BinaryOperator &I);
@@ -661,8 +672,12 @@ public:
   bool tryToSinkInstruction(Instruction *I, BasicBlock *DestBlock);
 
   bool removeInstructionsBeforeUnreachable(Instruction &I);
-  bool handleUnreachableFrom(Instruction *I);
-  bool handlePotentiallyDeadSuccessors(BasicBlock *BB, BasicBlock *LiveSucc);
+  void addDeadEdge(BasicBlock *From, BasicBlock *To,
+                   SmallVectorImpl<BasicBlock *> &Worklist);
+  void handleUnreachableFrom(Instruction *I,
+                             SmallVectorImpl<BasicBlock *> &Worklist);
+  void handlePotentiallyDeadBlocks(SmallVectorImpl<BasicBlock *> &Worklist);
+  void handlePotentiallyDeadSuccessors(BasicBlock *BB, BasicBlock *LiveSucc);
   void freelyInvertAllUsersOf(Value *V, Value *IgnoredUser = nullptr);
 };
 

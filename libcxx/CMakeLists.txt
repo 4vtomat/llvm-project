@@ -48,10 +48,6 @@ include(CMakeDependentOption)
 include(HandleCompilerRT)
 
 # Basic options ---------------------------------------------------------------
-option(LIBCXX_ENABLE_ASSERTIONS
-  "Enable assertions inside the compiled library, and at the same time make it the
-   default when compiling user code. Note that assertions can be enabled or disabled
-   by users in their own code regardless of this option." OFF)
 option(LIBCXX_ENABLE_SHARED "Build libc++ as a shared library." ON)
 option(LIBCXX_ENABLE_STATIC "Build libc++ as a static library." ON)
 option(LIBCXX_ENABLE_FILESYSTEM
@@ -276,9 +272,6 @@ option(LIBCXX_HAS_WIN32_THREAD_API "Ignore auto-detection and force use of win32
 option(LIBCXX_HAS_EXTERNAL_THREAD_API
   "Build libc++ with an externalized threading API.
    This option may only be set to ON when LIBCXX_ENABLE_THREADS=ON." OFF)
-option(LIBCXX_BUILD_EXTERNAL_THREAD_LIBRARY
-    "Build libc++ with an externalized threading library.
-     This option may only be set to ON when LIBCXX_ENABLE_THREADS=ON" OFF)
 
 if (LIBCXX_ENABLE_THREADS)
   set(LIBCXX_PSTL_CPU_BACKEND "std_thread" CACHE STRING "Which PSTL CPU backend to use")
@@ -331,10 +324,6 @@ if(NOT LIBCXX_ENABLE_THREADS)
     message(FATAL_ERROR "LIBCXX_HAS_EXTERNAL_THREAD_API can only be set to ON"
                         " when LIBCXX_ENABLE_THREADS is also set to ON.")
   endif()
-  if (LIBCXX_BUILD_EXTERNAL_THREAD_LIBRARY)
-    message(FATAL_ERROR "LIBCXX_BUILD_EXTERNAL_THREAD_LIBRARY can only be set "
-                        "to ON when LIBCXX_ENABLE_THREADS is also set to ON.")
-  endif()
   if (LIBCXX_HAS_WIN32_THREAD_API)
     message(FATAL_ERROR "LIBCXX_HAS_WIN32_THREAD_API can only be set to ON"
                         " when LIBCXX_ENABLE_THREADS is also set to ON.")
@@ -343,11 +332,6 @@ if(NOT LIBCXX_ENABLE_THREADS)
 endif()
 
 if (LIBCXX_HAS_EXTERNAL_THREAD_API)
-  if (LIBCXX_BUILD_EXTERNAL_THREAD_LIBRARY)
-    message(FATAL_ERROR "The options LIBCXX_BUILD_EXTERNAL_THREAD_LIBRARY and "
-                        "LIBCXX_HAS_EXTERNAL_THREAD_API cannot both be ON at "
-                        "the same time")
-  endif()
   if (LIBCXX_HAS_PTHREAD_API)
     message(FATAL_ERROR "The options LIBCXX_HAS_EXTERNAL_THREAD_API"
                         "and LIBCXX_HAS_PTHREAD_API cannot be both"
@@ -392,6 +376,11 @@ endif()
 if (LIBCXX_ABI_FORCE_ITANIUM AND LIBCXX_ABI_FORCE_MICROSOFT)
   message(FATAL_ERROR "Only one of LIBCXX_ABI_FORCE_ITANIUM and LIBCXX_ABI_FORCE_MICROSOFT can be specified.")
 endif ()
+
+if (LIBCXX_ENABLE_SHARED AND CMAKE_MSVC_RUNTIME_LIBRARY AND
+    (NOT CMAKE_MSVC_RUNTIME_LIBRARY MATCHES "DLL$"))
+  message(WARNING "A static CRT linked into a shared libc++ doesn't work correctly.")
+endif()
 
 #===============================================================================
 # Configure System
@@ -486,11 +475,6 @@ endif()
 
 include(HandleLibCXXABI) # Setup the ABI library flags
 
-# FIXME: Remove all debug flags and flags that change which Windows
-# default libraries are linked. Currently we only support linking the
-# non-debug DLLs
-remove_flags("/D_DEBUG" "/MTd" "/MDd" "/MT" "/Md")
-
 # FIXME(EricWF): See the FIXME on LIBCXX_ENABLE_PEDANTIC.
 # Remove the -pedantic flag and -Wno-pedantic and -pedantic-errors
 # so they don't get transformed into -Wno and -errors respectively.
@@ -576,17 +560,6 @@ function(cxx_add_rtti_flags target)
     endif()
   endif()
 endfunction()
-
-# Threading flags =============================================================
-if (LIBCXX_BUILD_EXTERNAL_THREAD_LIBRARY AND LIBCXX_ENABLE_SHARED)
-  # Need to allow unresolved symbols if this is to work with shared library builds
-  if (APPLE)
-    add_link_flags("-undefined dynamic_lookup")
-  else()
-    # Relax this restriction from HandleLLVMOptions
-    string(REPLACE "-Wl,-z,defs" "" CMAKE_SHARED_LINKER_FLAGS "${CMAKE_SHARED_LINKER_FLAGS}")
-  endif()
-endif()
 
 # Modules flags ===============================================================
 # FIXME The libc++ sources are fundamentally non-modular. They need special
@@ -715,10 +688,16 @@ function(cxx_link_system_libraries target)
       set(LIB_SUFFIX "")
     endif()
 
-    target_link_libraries(${target} PRIVATE ucrt${LIB_SUFFIX}) # Universal C runtime
-    target_link_libraries(${target} PRIVATE vcruntime${LIB_SUFFIX}) # C++ runtime
-    target_link_libraries(${target} PRIVATE msvcrt${LIB_SUFFIX}) # C runtime startup files
-    target_link_libraries(${target} PRIVATE msvcprt${LIB_SUFFIX}) # C++ standard library. Required for exception_ptr internals.
+    if (NOT CMAKE_MSVC_RUNTIME_LIBRARY OR CMAKE_MSVC_RUNTIME_LIBRARY MATCHES "DLL$")
+      set(CRT_LIB "msvcrt")
+      set(CXX_LIB "msvcprt")
+    else()
+      set(CRT_LIB "libcmt")
+      set(CXX_LIB "libcpmt")
+    endif()
+
+    target_link_libraries(${target} PRIVATE ${CRT_LIB}${LIB_SUFFIX}) # C runtime startup files
+    target_link_libraries(${target} PRIVATE ${CXX_LIB}${LIB_SUFFIX}) # C++ standard library. Required for exception_ptr internals.
     # Required for standards-complaint wide character formatting functions
     # (e.g. `printfw`/`scanfw`)
     target_link_libraries(${target} PRIVATE iso_stdio_wide_specifiers)
@@ -768,7 +747,6 @@ endif()
 config_define_if(LIBCXX_HAS_PTHREAD_API _LIBCPP_HAS_THREAD_API_PTHREAD)
 config_define_if(LIBCXX_HAS_EXTERNAL_THREAD_API _LIBCPP_HAS_THREAD_API_EXTERNAL)
 config_define_if(LIBCXX_HAS_WIN32_THREAD_API _LIBCPP_HAS_THREAD_API_WIN32)
-config_define_if(LIBCXX_BUILD_EXTERNAL_THREAD_LIBRARY _LIBCPP_HAS_THREAD_LIBRARY_EXTERNAL)
 config_define_if(LIBCXX_HAS_MUSL_LIBC _LIBCPP_HAS_MUSL_LIBC)
 config_define_if(LIBCXX_NO_VCRUNTIME _LIBCPP_NO_VCRUNTIME)
 config_define_if_not(LIBCXX_ENABLE_FILESYSTEM _LIBCPP_HAS_NO_FILESYSTEM)
@@ -777,11 +755,6 @@ config_define_if_not(LIBCXX_ENABLE_LOCALIZATION _LIBCPP_HAS_NO_LOCALIZATION)
 config_define_if_not(LIBCXX_ENABLE_UNICODE _LIBCPP_HAS_NO_UNICODE)
 config_define_if_not(LIBCXX_ENABLE_WIDE_CHARACTERS _LIBCPP_HAS_NO_WIDE_CHARACTERS)
 config_define_if_not(LIBCXX_ENABLE_VENDOR_AVAILABILITY_ANNOTATIONS _LIBCPP_HAS_NO_VENDOR_AVAILABILITY_ANNOTATIONS)
-if (LIBCXX_ENABLE_ASSERTIONS)
-  config_define(1 _LIBCPP_ENABLE_ASSERTIONS_DEFAULT)
-else()
-  config_define(0 _LIBCPP_ENABLE_ASSERTIONS_DEFAULT)
-endif()
 if (LIBCXX_HARDENING_MODE STREQUAL "hardened")
   config_define(1 _LIBCPP_ENABLE_HARDENED_MODE_DEFAULT)
   config_define(0 _LIBCPP_ENABLE_DEBUG_MODE_DEFAULT)
@@ -791,6 +764,11 @@ elseif (LIBCXX_HARDENING_MODE STREQUAL "debug")
 elseif (LIBCXX_HARDENING_MODE STREQUAL "unchecked")
   config_define(0 _LIBCPP_ENABLE_HARDENED_MODE_DEFAULT)
   config_define(0 _LIBCPP_ENABLE_DEBUG_MODE_DEFAULT)
+endif()
+# TODO(LLVM 18): Remove this after branching for LLVM 17, this is a simple
+# courtesy for vendors to be notified about this change.
+if (LIBCXX_ENABLE_ASSERTIONS)
+  message(FATAL_ERROR "LIBCXX_ENABLE_ASSERTIONS has been replaced by LIBCXX_HARDENING_MODE=hardened")
 endif()
 
 if (LIBCXX_PSTL_CPU_BACKEND STREQUAL "serial")
@@ -863,10 +841,6 @@ if (LIBCXX_ENABLE_STD_MODULES)
 endif()
 
 set(LIBCXX_TEST_DEPS "cxx_experimental")
-
-if (LIBCXX_BUILD_EXTERNAL_THREAD_LIBRARY)
-  list(APPEND LIBCXX_TEST_DEPS cxx_external_threads)
-endif()
 
 if (LIBCXX_ENABLE_CLANG_TIDY)
   list(APPEND LIBCXX_TEST_DEPS cxx-tidy)

@@ -254,6 +254,71 @@ extern "C" MLIR_CUDA_WRAPPERS_EXPORT void mgpuSetDefaultDevice(int32_t device) {
   defaultDevice = device;
 }
 
+extern "C" MLIR_CUDA_WRAPPERS_EXPORT void mgpuTensorMapEncodeTiled(
+    CUtensorMap *tensorMap,             // Tensor map object
+    CUtensorMapDataType tensorDataType, // Tensor data type
+    cuuint32_t tensorRank,              // Dimensionality of tensor
+    void *globalAddress,                // Starting address
+    const cuuint64_t *globalDim,        // Tensor size (number of elements)
+    const cuuint64_t *globalStrides,    // Stride size (in bytes)
+    const cuuint32_t *boxDim,           // Traversal box (number of elments)
+    const cuuint32_t *elementStrides,   // Traversal stride
+    CUtensorMapInterleave interleave,   // Type of interleaved layout
+    CUtensorMapSwizzle swizzle,         // Bank swizzling pattern
+    CUtensorMapL2promotion l2Promotion, // L2 promotion size
+    CUtensorMapFloatOOBfill oobFill     // Padding zfill or NaN fill
+) {
+  ScopedContext scopedContext;
+  CUDA_REPORT_IF_ERROR(cuTensorMapEncodeTiled(
+      tensorMap, tensorDataType, tensorRank, globalAddress, globalDim,
+      globalStrides, boxDim, elementStrides, interleave, swizzle, l2Promotion,
+      oobFill));
+}
+
+extern "C" MLIR_CUDA_WRAPPERS_EXPORT void *mgpuTensorMapEncodeTiledMemref(
+    int64_t tensorRank,                       // Dimensionality of tensor
+    StridedMemRefType<char, 1> *descriptor,   // Starting address
+    const CUtensorMapDataType tensorDataType, // Stride size (in bytes)
+    CUtensorMapInterleave interleave,         // Type of interleaved layout
+    CUtensorMapSwizzle swizzle,               // Bank swizzling pattern
+    CUtensorMapL2promotion l2Promotion,       // L2 promotion size
+    CUtensorMapFloatOOBfill oobFill,          // Padding zfill or NaN fill
+    int64_t *inputBoxDims // Tensor size (number of elements)
+) {
+  CUtensorMap tensorMap;
+
+  auto *globalAddress = descriptor->data;
+  uint32_t boxDim[5] = {0}, elementStrides[5] = {0};
+  uint64_t globalDim[5] = {0}, globalStrides[5] = {0};
+  uint32_t tensorRank32 = uint32_t(tensorRank);
+
+  static const int elementSizeInBytes[] = {1, 2, 4, 4, 8, 8, 2,
+                                           4, 8, 2, 4, 4, 4};
+  for (int64_t r = 0; r < tensorRank; ++r) {
+    elementStrides[r] = uint32_t(1);
+    boxDim[r] = static_cast<uint32_t>(inputBoxDims[tensorRank - r - 1]);
+    globalDim[r] = static_cast<uint64_t>(descriptor->sizes[tensorRank - r - 1]);
+  }
+
+  globalStrides[0] = globalDim[0] * elementSizeInBytes[tensorDataType];
+  for (int r = 1; r < tensorRank - 1; r++)
+    globalStrides[r] = globalStrides[r - 1] * globalDim[1] *
+                       elementSizeInBytes[tensorDataType];
+
+  ScopedContext scopedContext;
+  mgpuTensorMapEncodeTiled(&tensorMap, tensorDataType, tensorRank32,
+                           globalAddress, globalDim, globalStrides, boxDim,
+                           elementStrides, interleave, swizzle, l2Promotion,
+                           oobFill);
+  // Copy created tensor map to device
+  CUdeviceptr dTensorMap;
+  CUDA_REPORT_IF_ERROR(cuMemAlloc(&dTensorMap, sizeof(CUtensorMap)));
+  CUDA_REPORT_IF_ERROR(cuMemcpy(dTensorMap,
+                                reinterpret_cast<CUdeviceptr>(&tensorMap),
+                                sizeof(CUtensorMap)));
+  return reinterpret_cast<void *>(dTensorMap);
+}
+
 #ifdef MLIR_ENABLE_CUDA_CUSPARSE
 
 ///
@@ -565,9 +630,13 @@ mgpuDestroyCuSparseLtSpMat(void *sh, CUstream /*stream*/) {
 
 // Several things are being done in this stage, algorithm selection, planning,
 // and returning workspace and compressed matrices data buffer sizes.
+// The parameter prune_flag is used to indicate whether pruning and pruning
+// check will happen 0 means not prune or prune check, 1 means prune, 2 means
+// prune & prune check
 extern "C" MLIR_CUDA_WRAPPERS_EXPORT void
 mgpuCuSparseLtSpMMBufferSize(void *bs, int32_t ma, int32_t mb, void *a, void *b,
-                             void *c, int32_t ctp, CUstream /*stream*/) {
+                             void *c, int32_t ctp, int32_t prune_flag,
+                             CUstream stream) {
   assert(cusparseLt_initiated && "client did not call mgpuCreateSparseLtEnv()");
   // TODO: support more advanced settings, e.g., the input right operand is a
   // sparse matrix assuming matA is the sparse matrix
@@ -595,6 +664,28 @@ mgpuCuSparseLtSpMMBufferSize(void *bs, int32_t ma, int32_t mb, void *a, void *b,
 
   CUSPARSE_REPORT_IF_ERROR(cusparseLtMatmulPlanInit(
       &cusparseLt_env, &(matA->plan), &(matA->matmul), &(matA->alg_sel)))
+
+  // Pruning step (in-place).
+  if (prune_flag > 0)
+    CUSPARSE_REPORT_IF_ERROR(cusparseLtSpMMAPrune(
+        &cusparseLt_env, &(matA->matmul), matA->values, matA->values,
+        CUSPARSELT_PRUNE_SPMMA_STRIP, stream))
+
+  // Check structure of A.
+  // Note that this adds a synchronization on the stream.
+  // TODO: Do we want that?
+  if (prune_flag == 2) {
+    int *dvalid = (int *)mgpuMemAlloc(sizeof(int), stream);
+    CUSPARSE_REPORT_IF_ERROR(cusparseLtSpMMAPruneCheck(
+        &cusparseLt_env, &(matA->matmul), matA->values, dvalid, stream))
+    int valid = 0;
+    mgpuMemcpy(&valid, dvalid, sizeof(int), stream);
+    mgpuStreamSynchronize(stream);
+    mgpuMemFree(dvalid, stream);
+    if (valid != 0)
+      fprintf(stderr, "CUPARSE-LT: sparse matrix is not 2:4; computed results "
+                      "will be invalid\n");
+  }
 
   CUSPARSE_REPORT_IF_ERROR(cusparseLtMatmulGetWorkspace(
       &cusparseLt_env, &(matA->plan), &workspace_size_))

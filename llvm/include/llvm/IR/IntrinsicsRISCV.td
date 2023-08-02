@@ -1125,7 +1125,7 @@ let TargetPrefix = "riscv" in {
         : DefaultAttrsIntrinsic<!listconcat([llvm_anyvector_ty], !listsplat(LLVMMatchType<0>,
                                 !add(nf, -1))),
                     !listconcat(!listsplat(LLVMMatchType<0>, nf),
-                                [LLVMPointerToElt<0>, llvm_anyint_ty]),
+                                [llvm_ptr_ty, llvm_anyint_ty]),
                     [NoCapture<ArgIndex<nf>>, IntrReadMem]>, RISCVVIntrinsic {
     let VLOperand = !add(nf, 1);
   }
@@ -1135,7 +1135,7 @@ let TargetPrefix = "riscv" in {
         : DefaultAttrsIntrinsic<!listconcat([llvm_anyvector_ty], !listsplat(LLVMMatchType<0>,
                                 !add(nf, -1))),
                     !listconcat(!listsplat(LLVMMatchType<0>, nf),
-                                [LLVMPointerToElt<0>,
+                                [llvm_ptr_ty,
                                  LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
                                  llvm_anyint_ty, LLVMMatchType<1>]),
                     [ImmArg<ArgIndex<!add(nf, 3)>>, NoCapture<ArgIndex<nf>>, IntrReadMem]>,
@@ -1152,7 +1152,7 @@ let TargetPrefix = "riscv" in {
         : DefaultAttrsIntrinsic<!listconcat([llvm_anyvector_ty], !listsplat(LLVMMatchType<0>,
                                 !add(nf, -1)), [llvm_anyint_ty]),
                     !listconcat(!listsplat(LLVMMatchType<0>, nf),
-                    [LLVMPointerToElt<0>, LLVMMatchType<1>]),
+                    [llvm_ptr_ty, LLVMMatchType<1>]),
                     [NoCapture<ArgIndex<nf>>]>, RISCVVIntrinsic {
     let VLOperand = !add(nf, 1);
   }
@@ -1165,7 +1165,7 @@ let TargetPrefix = "riscv" in {
         : DefaultAttrsIntrinsic<!listconcat([llvm_anyvector_ty], !listsplat(LLVMMatchType<0>,
                                 !add(nf, -1)), [llvm_anyint_ty]),
                     !listconcat(!listsplat(LLVMMatchType<0>, nf),
-                     [LLVMPointerToElt<0>,
+                     [llvm_ptr_ty,
                       LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
                       LLVMMatchType<1>, LLVMMatchType<1>]),
                     [ImmArg<ArgIndex<!add(nf, 3)>>, NoCapture<ArgIndex<nf>>]>,
@@ -1179,7 +1179,7 @@ let TargetPrefix = "riscv" in {
         : DefaultAttrsIntrinsic<!listconcat([llvm_anyvector_ty], !listsplat(LLVMMatchType<0>,
                                 !add(nf, -1))),
                     !listconcat(!listsplat(LLVMMatchType<0>, nf),
-                    [LLVMPointerToElt<0>, llvm_anyint_ty, LLVMMatchType<1>]),
+                    [llvm_ptr_ty, llvm_anyint_ty, LLVMMatchType<1>]),
                     [NoCapture<ArgIndex<nf>>, IntrReadMem]>, RISCVVIntrinsic {
     let VLOperand = !add(nf, 2);
   }
@@ -1189,7 +1189,7 @@ let TargetPrefix = "riscv" in {
         : DefaultAttrsIntrinsic<!listconcat([llvm_anyvector_ty], !listsplat(LLVMMatchType<0>,
                                 !add(nf, -1))),
                     !listconcat(!listsplat(LLVMMatchType<0>, nf),
-                                [LLVMPointerToElt<0>,
+                                [llvm_ptr_ty,
                                  llvm_anyint_ty,
                                  LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
                                  LLVMMatchType<1>, LLVMMatchType<1>]),
@@ -1204,7 +1204,7 @@ let TargetPrefix = "riscv" in {
         : DefaultAttrsIntrinsic<!listconcat([llvm_anyvector_ty], !listsplat(LLVMMatchType<0>,
                                 !add(nf, -1))),
                     !listconcat(!listsplat(LLVMMatchType<0>, nf),
-                    [LLVMPointerToElt<0>, llvm_anyvector_ty, llvm_anyint_ty]),
+                    [llvm_ptr_ty, llvm_anyvector_ty, llvm_anyint_ty]),
                     [NoCapture<ArgIndex<nf>>, IntrReadMem]>, RISCVVIntrinsic {
     let VLOperand = !add(nf, 2);
   }
@@ -1214,7 +1214,7 @@ let TargetPrefix = "riscv" in {
         : DefaultAttrsIntrinsic<!listconcat([llvm_anyvector_ty], !listsplat(LLVMMatchType<0>,
                                 !add(nf, -1))),
                     !listconcat(!listsplat(LLVMMatchType<0>, nf),
-                                [LLVMPointerToElt<0>,
+                                [llvm_ptr_ty,
                                  llvm_anyvector_ty,
                                  LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
                                  llvm_anyint_ty, LLVMMatchType<2>]),
@@ -1229,7 +1229,7 @@ let TargetPrefix = "riscv" in {
         : DefaultAttrsIntrinsic<[],
                     !listconcat([llvm_anyvector_ty],
                                 !listsplat(LLVMMatchType<0>, !add(nf, -1)),
-                                [LLVMPointerToElt<0>, llvm_anyint_ty]),
+                                [llvm_ptr_ty, llvm_anyint_ty]),
                     [NoCapture<ArgIndex<nf>>, IntrWriteMem]>, RISCVVIntrinsic {
     let VLOperand = !add(nf, 1);
   }
@@ -1239,7 +1239,7 @@ let TargetPrefix = "riscv" in {
         : DefaultAttrsIntrinsic<[],
                     !listconcat([llvm_anyvector_ty],
                                 !listsplat(LLVMMatchType<0>, !add(nf, -1)),
-                                [LLVMPointerToElt<0>,
+                                [llvm_ptr_ty,
                                  LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
                                  llvm_anyint_ty]),
                     [NoCapture<ArgIndex<nf>>, IntrWriteMem]>, RISCVVIntrinsic {
@@ -1252,7 +1252,7 @@ let TargetPrefix = "riscv" in {
         : DefaultAttrsIntrinsic<[],
                     !listconcat([llvm_anyvector_ty],
                                 !listsplat(LLVMMatchType<0>, !add(nf, -1)),
-                                [LLVMPointerToElt<0>, llvm_anyint_ty,
+                                [llvm_ptr_ty, llvm_anyint_ty,
                                  LLVMMatchType<1>]),
                     [NoCapture<ArgIndex<nf>>, IntrWriteMem]>, RISCVVIntrinsic {
     let VLOperand = !add(nf, 2);
@@ -1263,7 +1263,7 @@ let TargetPrefix = "riscv" in {
         : DefaultAttrsIntrinsic<[],
                     !listconcat([llvm_anyvector_ty],
                                 !listsplat(LLVMMatchType<0>, !add(nf, -1)),
-                                [LLVMPointerToElt<0>, llvm_anyint_ty,
+                                [llvm_ptr_ty, llvm_anyint_ty,
                                  LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
                                  LLVMMatchType<1>]),
                     [NoCapture<ArgIndex<nf>>, IntrWriteMem]>, RISCVVIntrinsic {
@@ -1276,7 +1276,7 @@ let TargetPrefix = "riscv" in {
         : DefaultAttrsIntrinsic<[],
                     !listconcat([llvm_anyvector_ty],
                                 !listsplat(LLVMMatchType<0>, !add(nf, -1)),
-                                [LLVMPointerToElt<0>, llvm_anyvector_ty,
+                                [llvm_ptr_ty, llvm_anyvector_ty,
                                  llvm_anyint_ty]),
                     [NoCapture<ArgIndex<nf>>, IntrWriteMem]>, RISCVVIntrinsic {
     let VLOperand = !add(nf, 2);
@@ -1287,7 +1287,7 @@ let TargetPrefix = "riscv" in {
         : DefaultAttrsIntrinsic<[],
                     !listconcat([llvm_anyvector_ty],
                                 !listsplat(LLVMMatchType<0>, !add(nf, -1)),
-                                [LLVMPointerToElt<0>, llvm_anyvector_ty,
+                                [llvm_ptr_ty, llvm_anyvector_ty,
                                  LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
                                  llvm_anyint_ty]),
                     [NoCapture<ArgIndex<nf>>, IntrWriteMem]>, RISCVVIntrinsic {
@@ -1661,6 +1661,7 @@ let TargetPrefix = "riscv" in {
   defm vfnmsub : RISCVTernaryAAXARoundingMode;
 
   defm vfwmacc : RISCVTernaryWideRoundingMode;
+  defm vfwmaccbf16 : RISCVTernaryWideRoundingMode;
   defm vfwnmacc : RISCVTernaryWideRoundingMode;
   defm vfwmsac : RISCVTernaryWideRoundingMode;
   defm vfwnmsac : RISCVTernaryWideRoundingMode;
@@ -1765,6 +1766,7 @@ let TargetPrefix = "riscv" in {
   defm vfwcvt_rtz_xu_f_v : RISCVConversion;
   defm vfwcvt_rtz_x_f_v : RISCVConversion;
   defm vfwcvt_f_f_v : RISCVConversion;
+  defm vfwcvtbf16_f_f_v : RISCVConversion;
 
   defm vfncvt_f_xu_w : RISCVConversionRoundingMode;
   defm vfncvt_f_x_w : RISCVConversionRoundingMode;
@@ -1773,6 +1775,7 @@ let TargetPrefix = "riscv" in {
   defm vfncvt_rtz_xu_f_w : RISCVConversion;
   defm vfncvt_rtz_x_f_w : RISCVConversion;
   defm vfncvt_f_f_w : RISCVConversionRoundingMode;
+  defm vfncvtbf16_f_f_w : RISCVConversionRoundingMode;
   defm vfncvt_rod_f_f_w : RISCVConversion;
 
   // Output: (vector)
@@ -1883,11 +1886,6 @@ let TargetPrefix = "riscv" in {
 
 let TargetPrefix = "riscv" in {
 
-class ScalarCryptoGprIntrinsicAny
-    : DefaultAttrsIntrinsic<[llvm_anyint_ty],
-                [LLVMMatchType<0>],
-                [IntrNoMem, IntrSpeculatable]>;
-
 class ScalarCryptoByteSelect32
     : DefaultAttrsIntrinsic<[llvm_i32_ty],
                             [llvm_i32_ty, llvm_i32_ty, llvm_i32_ty],
@@ -1904,85 +1902,85 @@ class ScalarCryptoGprGprIntrinsic64
                             [llvm_i64_ty, llvm_i64_ty],
                             [IntrNoMem, IntrSpeculatable]>;
 
+class ScalarCryptoGprIntrinsic32
+    : DefaultAttrsIntrinsic<[llvm_i32_ty],
+                            [llvm_i32_ty],
+                            [IntrNoMem, IntrSpeculatable]>;
+
 class ScalarCryptoGprIntrinsic64
     : DefaultAttrsIntrinsic<[llvm_i64_ty],
                             [llvm_i64_ty],
                             [IntrNoMem, IntrSpeculatable]>;
 
-class ScalarCryptoByteSelectAny
-    : DefaultAttrsIntrinsic<[llvm_anyint_ty],
-                            [LLVMMatchType<0>, LLVMMatchType<0>, llvm_i32_ty],
-                            [IntrNoMem, IntrSpeculatable, ImmArg<ArgIndex<2>>]>;
-
 // Zknd
 def int_riscv_aes32dsi  : ScalarCryptoByteSelect32,
-                          ClangBuiltin<"__builtin_riscv_aes32dsi_32">;
+                          ClangBuiltin<"__builtin_riscv_aes32dsi">;
 def int_riscv_aes32dsmi : ScalarCryptoByteSelect32,
-                          ClangBuiltin<"__builtin_riscv_aes32dsmi_32">;
+                          ClangBuiltin<"__builtin_riscv_aes32dsmi">;
 
 def int_riscv_aes64ds   : ScalarCryptoGprGprIntrinsic64,
-                          ClangBuiltin<"__builtin_riscv_aes64ds_64">;
+                          ClangBuiltin<"__builtin_riscv_aes64ds">;
 def int_riscv_aes64dsm  : ScalarCryptoGprGprIntrinsic64,
-                          ClangBuiltin<"__builtin_riscv_aes64dsm_64">;
+                          ClangBuiltin<"__builtin_riscv_aes64dsm">;
 
 def int_riscv_aes64im   : ScalarCryptoGprIntrinsic64,
-                          ClangBuiltin<"__builtin_riscv_aes64im_64">;
+                          ClangBuiltin<"__builtin_riscv_aes64im">;
 
 // Zkne
 def int_riscv_aes32esi  : ScalarCryptoByteSelect32,
-                          ClangBuiltin<"__builtin_riscv_aes32esi_32">;
+                          ClangBuiltin<"__builtin_riscv_aes32esi">;
 def int_riscv_aes32esmi : ScalarCryptoByteSelect32,
-                          ClangBuiltin<"__builtin_riscv_aes32esmi_32">;
+                          ClangBuiltin<"__builtin_riscv_aes32esmi">;
 
 def int_riscv_aes64es   : ScalarCryptoGprGprIntrinsic64,
-                          ClangBuiltin<"__builtin_riscv_aes64es_64">;
+                          ClangBuiltin<"__builtin_riscv_aes64es">;
 def int_riscv_aes64esm  : ScalarCryptoGprGprIntrinsic64,
-                          ClangBuiltin<"__builtin_riscv_aes64esm_64">;
+                          ClangBuiltin<"__builtin_riscv_aes64esm">;
 
 // Zknd & Zkne
 def int_riscv_aes64ks2  : ScalarCryptoGprGprIntrinsic64,
-                          ClangBuiltin<"__builtin_riscv_aes64ks2_64">;
+                          ClangBuiltin<"__builtin_riscv_aes64ks2">;
 def int_riscv_aes64ks1i : DefaultAttrsIntrinsic<[llvm_i64_ty],
                                                 [llvm_i64_ty, llvm_i32_ty],
                                                 [IntrNoMem, IntrSpeculatable,
                                                  ImmArg<ArgIndex<1>>]>,
-                          ClangBuiltin<"__builtin_riscv_aes64ks1i_64">;
+                          ClangBuiltin<"__builtin_riscv_aes64ks1i">;
 
 // Zknh
-def int_riscv_sha256sig0 : ScalarCryptoGprIntrinsicAny;
-def int_riscv_sha256sig1 : ScalarCryptoGprIntrinsicAny;
-def int_riscv_sha256sum0 : ScalarCryptoGprIntrinsicAny;
-def int_riscv_sha256sum1 : ScalarCryptoGprIntrinsicAny;
+def int_riscv_sha256sig0 : ScalarCryptoGprIntrinsic32;
+def int_riscv_sha256sig1 : ScalarCryptoGprIntrinsic32;
+def int_riscv_sha256sum0 : ScalarCryptoGprIntrinsic32;
+def int_riscv_sha256sum1 : ScalarCryptoGprIntrinsic32;
 
 def int_riscv_sha512sig0l : ScalarCryptoGprGprIntrinsic32,
-                            ClangBuiltin<"__builtin_riscv_sha512sig0l_32">;
+                            ClangBuiltin<"__builtin_riscv_sha512sig0l">;
 def int_riscv_sha512sig0h : ScalarCryptoGprGprIntrinsic32,
-                            ClangBuiltin<"__builtin_riscv_sha512sig0h_32">;
+                            ClangBuiltin<"__builtin_riscv_sha512sig0h">;
 def int_riscv_sha512sig1l : ScalarCryptoGprGprIntrinsic32,
-                            ClangBuiltin<"__builtin_riscv_sha512sig1l_32">;
+                            ClangBuiltin<"__builtin_riscv_sha512sig1l">;
 def int_riscv_sha512sig1h : ScalarCryptoGprGprIntrinsic32,
-                            ClangBuiltin<"__builtin_riscv_sha512sig1h_32">;
+                            ClangBuiltin<"__builtin_riscv_sha512sig1h">;
 def int_riscv_sha512sum0r : ScalarCryptoGprGprIntrinsic32,
-                            ClangBuiltin<"__builtin_riscv_sha512sum0r_32">;
+                            ClangBuiltin<"__builtin_riscv_sha512sum0r">;
 def int_riscv_sha512sum1r : ScalarCryptoGprGprIntrinsic32,
-                            ClangBuiltin<"__builtin_riscv_sha512sum1r_32">;
+                            ClangBuiltin<"__builtin_riscv_sha512sum1r">;
 
 def int_riscv_sha512sig0 : ScalarCryptoGprIntrinsic64,
-                           ClangBuiltin<"__builtin_riscv_sha512sig0_64">;
+                           ClangBuiltin<"__builtin_riscv_sha512sig0">;
 def int_riscv_sha512sig1 : ScalarCryptoGprIntrinsic64,
-                           ClangBuiltin<"__builtin_riscv_sha512sig1_64">;
+                           ClangBuiltin<"__builtin_riscv_sha512sig1">;
 def int_riscv_sha512sum0 : ScalarCryptoGprIntrinsic64,
-                           ClangBuiltin<"__builtin_riscv_sha512sum0_64">;
+                           ClangBuiltin<"__builtin_riscv_sha512sum0">;
 def int_riscv_sha512sum1 : ScalarCryptoGprIntrinsic64,
-                           ClangBuiltin<"__builtin_riscv_sha512sum1_64">;
+                           ClangBuiltin<"__builtin_riscv_sha512sum1">;
 
 // Zksed
-def int_riscv_sm4ks      : ScalarCryptoByteSelectAny;
-def int_riscv_sm4ed      : ScalarCryptoByteSelectAny;
+def int_riscv_sm4ks      : ScalarCryptoByteSelect32;
+def int_riscv_sm4ed      : ScalarCryptoByteSelect32;
 
 // Zksh
-def int_riscv_sm3p0      : ScalarCryptoGprIntrinsicAny;
-def int_riscv_sm3p1      : ScalarCryptoGprIntrinsicAny;
+def int_riscv_sm3p0      : ScalarCryptoGprIntrinsic32;
+def int_riscv_sm3p1      : ScalarCryptoGprIntrinsic32;
 } // TargetPrefix = "riscv"
 
 //===----------------------------------------------------------------------===//

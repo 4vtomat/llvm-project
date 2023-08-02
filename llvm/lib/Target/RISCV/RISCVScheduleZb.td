@@ -30,15 +30,21 @@ def WriteORCB        : SchedWrite;
 def WriteCLMUL       : SchedWrite; // CLMUL/CLMULR/CLMULH
 
 // Zbs extension
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
 def WriteSingleBit   : SchedWrite; // BCLR/BSET/BINV
 def WriteSingleBitImm: SchedWrite; // BCLRI/BSETI/BINVI
 def WriteBEXT : SchedWrite; // BEXT
 def WriteBEXTI : SchedWrite; // BEXTI
+<<<<<<< HEAD
 #else
 def WriteSingleBit   : SchedWrite; // BCLR/BSET/BINV/BEXT
 def WriteSingleBitImm: SchedWrite; // BCLRI/BSETI/BINVI/BEXTI
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
 
 // Zbkb extension
 def WriteBREV8       : SchedWrite; // brev8
@@ -139,10 +145,15 @@ multiclass UnsupportedSchedZbs {
 let Unsupported = true in {
 def : WriteRes<WriteSingleBit, []>;
 def : WriteRes<WriteSingleBitImm, []>;
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def : WriteRes<WriteBEXT, []>;
 def : WriteRes<WriteBEXTI, []>;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+def : WriteRes<WriteBEXT, []>;
+def : WriteRes<WriteBEXTI, []>;
+>>>>>>> upstream/main
 
 def : ReadAdvance<ReadSingleBit, 0>;
 def : ReadAdvance<ReadSingleBitImm, 0>;

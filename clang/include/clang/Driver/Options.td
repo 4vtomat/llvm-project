@@ -912,6 +912,12 @@ def bundle : Flag<["-"], "bundle">;
 def b : JoinedOrSeparate<["-"], "b">, Flags<[LinkerInput]>,
   HelpText<"Pass -b <arg> to the linker on AIX">, MetaVarName<"<arg>">,
   Group<Link_Group>;
+
+defm offload_uniform_block : BoolFOption<"offload-uniform-block",
+  LangOpts<"OffloadUniformBlock">, Default<"LangOpts->CUDA">,
+  PosFlag<SetTrue, [CC1Option], "Assume">, NegFlag<SetFalse, [CC1Option], "Don't assume">,
+  BothFlags<[], " that kernels are launched with uniform block sizes (default true for CUDA/HIP and false otherwise)">>;
+
 // OpenCL-only Options
 def cl_opt_disable : Flag<["-"], "cl-opt-disable">, Group<opencl_Group>, Flags<[CC1Option]>,
   HelpText<"OpenCL only. This option disables all optimizations. By default optimizations are enabled.">;
@@ -947,9 +953,8 @@ def cl_denorms_are_zero : Flag<["-"], "cl-denorms-are-zero">, Group<opencl_Group
 def cl_fp32_correctly_rounded_divide_sqrt : Flag<["-"], "cl-fp32-correctly-rounded-divide-sqrt">, Group<opencl_Group>, Flags<[CC1Option]>,
   HelpText<"OpenCL only. Specify that single precision floating-point divide and sqrt used in the program source are correctly rounded.">,
   MarshallingInfoFlag<CodeGenOpts<"OpenCLCorrectlyRoundedDivSqrt">>;
-def cl_uniform_work_group_size : Flag<["-"], "cl-uniform-work-group-size">, Group<opencl_Group>, Flags<[CC1Option]>,
-  HelpText<"OpenCL only. Defines that the global work-size be a multiple of the work-group size specified to clEnqueueNDRangeKernel">,
-  MarshallingInfoFlag<CodeGenOpts<"UniformWGSize">>;
+def cl_uniform_work_group_size : Flag<["-"], "cl-uniform-work-group-size">, Group<opencl_Group>, Flags<[CC1Option]>, Alias<foffload_uniform_block>,
+  HelpText<"OpenCL only. Defines that the global work-size be a multiple of the work-group size specified to clEnqueueNDRangeKernel">;
 def cl_no_stdinc : Flag<["-"], "cl-no-stdinc">, Group<opencl_Group>,
   HelpText<"OpenCL only. Disables all standard includes containing non-native compiler types and functions.">;
 def cl_ext_EQ : CommaJoined<["-"], "cl-ext=">, Group<opencl_Group>, Flags<[CC1Option]>,
@@ -1253,6 +1258,13 @@ def static_libsan : Flag<["-"], "static-libsan">,
 def : Flag<["-"], "shared-libasan">, Alias<shared_libsan>;
 def fasm : Flag<["-"], "fasm">, Group<f_Group>;
 
+defm assume_unique_vtables : BoolFOption<"assume-unique-vtables",
+  CodeGenOpts<"AssumeUniqueVTables">, DefaultTrue,
+  PosFlag<SetTrue>,
+  NegFlag<SetFalse, [CC1Option],
+          "Disable optimizations based on vtable pointer identity">,
+  BothFlags<[CoreOption]>>;
+
 def fassume_sane_operator_new : Flag<["-"], "fassume-sane-operator-new">, Group<f_Group>;
 def fastcp : Flag<["-"], "fastcp">, Group<f_Group>;
 def fastf : Flag<["-"], "fastf">, Group<f_Group>;
@@ -1260,9 +1272,7 @@ def fast : Flag<["-"], "fast">, Group<f_Group>;
 def fasynchronous_unwind_tables : Flag<["-"], "fasynchronous-unwind-tables">, Group<f_Group>;
 
 defm double_square_bracket_attributes : BoolFOption<"double-square-bracket-attributes",
-  LangOpts<"DoubleSquareBracketAttributes">, Default<!strconcat(cpp11.KeyPath, "||", c2x.KeyPath)>,
-  PosFlag<SetTrue, [], "Enable">, NegFlag<SetFalse, [], "Disable">,
-  BothFlags<[NoXarchOption, CC1Option], " '[[]]' attributes in all C and C++ language modes">>;
+  LangOpts<"DoubleSquareBracketAttributes">, DefaultTrue, PosFlag<SetTrue>, NegFlag<SetFalse>>;
 
 defm autolink : BoolFOption<"autolink",
   CodeGenOpts<"Autolink">, DefaultTrue,
@@ -1757,6 +1767,10 @@ defm keep_static_consts : BoolFOption<"keep-static-consts",
   CodeGenOpts<"KeepStaticConsts">, DefaultFalse,
   PosFlag<SetTrue, [CC1Option], "Keep">, NegFlag<SetFalse, [], "Don't keep">,
   BothFlags<[NoXarchOption], " static const variables even if unused">>;
+defm keep_persistent_storage_variables : BoolFOption<"keep-persistent-storage-variables",
+  CodeGenOpts<"KeepPersistentStorageVariables">, DefaultFalse,
+  PosFlag<SetTrue, [CC1Option], "Enable">, NegFlag<SetFalse, [], "Disable">,
+  BothFlags<[NoXarchOption], " keeping all variables that have a persistent storage duration, including global, static and thread-local variables, to guarantee that they can be directly addressed">>;
 defm fixed_point : BoolFOption<"fixed-point",
   LangOpts<"FixedPoint">, DefaultFalse,
   PosFlag<SetTrue, [CC1Option], "Enable">, NegFlag<SetFalse, [], "Disable">,
@@ -2366,6 +2380,11 @@ def fthin_link_bitcode_EQ : Joined<["-"], "fthin-link-bitcode=">,
   Flags<[CoreOption, CC1Option]>, Group<f_Group>,
   HelpText<"Write minimized bitcode to <file> for the ThinLTO thin link only">,
   MarshallingInfoString<CodeGenOpts<"ThinLinkBitcodeFile">>;
+defm fat_lto_objects : BoolFOption<"fat-lto-objects",
+  CodeGenOpts<"FatLTO">, DefaultFalse,
+  PosFlag<SetTrue, [CC1Option], "Enable">,
+  NegFlag<SetFalse, [CC1Option], "Disable">,
+  BothFlags<[CC1Option], " fat LTO object support">>;
 def fmacro_backtrace_limit_EQ : Joined<["-"], "fmacro-backtrace-limit=">,
   Group<f_Group>, Flags<[NoXarchOption, CC1Option, CoreOption]>,
   HelpText<"Set the maximum number of entries to print in a macro expansion backtrace (0 = no limit)">,
@@ -2579,6 +2598,10 @@ defm modules_search_all : BoolFOption<"modules-search-all",
 defm implicit_modules : BoolFOption<"implicit-modules",
   LangOpts<"ImplicitModules">, DefaultTrue,
   NegFlag<SetFalse, [CC1Option]>, PosFlag<SetTrue>, BothFlags<[NoXarchOption,CoreOption]>>;
+def fno_modules_check_relocated : Joined<["-"], "fno-modules-check-relocated">,
+  Group<f_Group>, Flags<[CC1Option]>,
+  HelpText<"Skip checks for relocated modules when loading PCM files">,
+  MarshallingInfoNegativeFlag<PreprocessorOpts<"ModulesCheckRelocated">>;
 def fretain_comments_from_system_headers : Flag<["-"], "fretain-comments-from-system-headers">, Group<f_Group>, Flags<[CC1Option]>,
   MarshallingInfoFlag<LangOpts<"RetainCommentsFromSystemHeaders">>;
 def fmodule_header : Flag <["-"], "fmodule-header">, Group<f_Group>,
@@ -2852,7 +2875,7 @@ def offload_device_only : Flag<["--"], "offload-device-only">, Flags<[FlangOptio
 def offload_host_only : Flag<["--"], "offload-host-only">, Flags<[FlangOption]>,
   HelpText<"Only compile for the offloading host.">;
 def offload_host_device : Flag<["--"], "offload-host-device">, Flags<[FlangOption]>,
-  HelpText<"Only compile for the offloading host.">;
+  HelpText<"Compile for both the offloading host and device (default).">;
 def cuda_device_only : Flag<["--"], "cuda-device-only">, Alias<offload_device_only>,
   HelpText<"Compile CUDA code for device only">;
 def cuda_host_only : Flag<["--"], "cuda-host-only">, Alias<offload_host_only>,
@@ -3061,18 +3084,18 @@ def foperator_arrow_depth_EQ : Joined<["-"], "foperator-arrow-depth=">, Group<f_
   HelpText<"Maximum number of 'operator->'s to call for a member access">,
   MarshallingInfoInt<LangOpts<"ArrowDepth">, "256">;
 
-def fsave_optimization_record : Flag<["-"], "fsave-optimization-record">,
+def fsave_optimization_record : Flag<["-"], "fsave-optimization-record">, Flags<[FlangOption]>,
   Group<f_Group>, HelpText<"Generate a YAML optimization record file">;
-def fsave_optimization_record_EQ : Joined<["-"], "fsave-optimization-record=">,
+def fsave_optimization_record_EQ : Joined<["-"], "fsave-optimization-record=">, Flags<[FlangOption]>,
   Group<f_Group>, HelpText<"Generate an optimization record file in a specific format">,
   MetaVarName<"<format>">;
 def fno_save_optimization_record : Flag<["-"], "fno-save-optimization-record">,
-  Group<f_Group>, Flags<[NoArgumentUnused]>;
-def foptimization_record_file_EQ : Joined<["-"], "foptimization-record-file=">,
+  Group<f_Group>, Flags<[FlangOption, NoArgumentUnused]>;
+def foptimization_record_file_EQ : Joined<["-"], "foptimization-record-file=">, Flags<[FlangOption]>,
   Group<f_Group>,
   HelpText<"Specify the output name of the file containing the optimization remarks. Implies -fsave-optimization-record. On Darwin platforms, this cannot be used with multiple -arch <arch> options.">,
   MetaVarName<"<file>">;
-def foptimization_record_passes_EQ : Joined<["-"], "foptimization-record-passes=">,
+def foptimization_record_passes_EQ : Joined<["-"], "foptimization-record-passes=">, Flags<[FlangOption]>,
   Group<f_Group>,
   HelpText<"Only include passes which match a specified regular expression in the generated optimization record (by default, include all passes)">,
   MetaVarName<"<regex>">;
@@ -4957,6 +4980,8 @@ def mavxifma : Flag<["-"], "mavxifma">, Group<m_x86_Features_Group>;
 def mno_avxifma : Flag<["-"], "mno-avxifma">, Group<m_x86_Features_Group>;
 def mavxneconvert : Flag<["-"], "mavxneconvert">, Group<m_x86_Features_Group>;
 def mno_avxneconvert : Flag<["-"], "mno-avxneconvert">, Group<m_x86_Features_Group>;
+def mavxvnniint16 : Flag<["-"], "mavxvnniint16">, Group<m_x86_Features_Group>;
+def mno_avxvnniint16 : Flag<["-"], "mno-avxvnniint16">, Group<m_x86_Features_Group>;
 def mavxvnniint8 : Flag<["-"], "mavxvnniint8">, Group<m_x86_Features_Group>;
 def mno_avxvnniint8 : Flag<["-"], "mno-avxvnniint8">, Group<m_x86_Features_Group>;
 def mavxvnni : Flag<["-"], "mavxvnni">, Group<m_x86_Features_Group>;
@@ -5053,6 +5078,12 @@ def msgx : Flag<["-"], "msgx">, Group<m_x86_Features_Group>;
 def mno_sgx : Flag<["-"], "mno-sgx">, Group<m_x86_Features_Group>;
 def msha : Flag<["-"], "msha">, Group<m_x86_Features_Group>;
 def mno_sha : Flag<["-"], "mno-sha">, Group<m_x86_Features_Group>;
+def msha512 : Flag<["-"], "msha512">, Group<m_x86_Features_Group>;
+def mno_sha512 : Flag<["-"], "mno-sha512">, Group<m_x86_Features_Group>;
+def msm3 : Flag<["-"], "msm3">, Group<m_x86_Features_Group>;
+def mno_sm3 : Flag<["-"], "mno-sm3">, Group<m_x86_Features_Group>;
+def msm4 : Flag<["-"], "msm4">, Group<m_x86_Features_Group>;
+def mno_sm4 : Flag<["-"], "mno-sm4">, Group<m_x86_Features_Group>;
 def mtbm : Flag<["-"], "mtbm">, Group<m_x86_Features_Group>;
 def mno_tbm : Flag<["-"], "mno-tbm">, Group<m_x86_Features_Group>;
 def mtsxldtrk : Flag<["-"], "mtsxldtrk">, Group<m_x86_Features_Group>;
@@ -5146,7 +5177,6 @@ defm caller_saves : BooleanFFlag<"caller-saves">, Group<clang_ignored_gcc_optimi
 defm reorder_blocks : BooleanFFlag<"reorder-blocks">, Group<clang_ignored_gcc_optimization_f_Group>;
 defm branch_count_reg : BooleanFFlag<"branch-count-reg">, Group<clang_ignored_gcc_optimization_f_Group>;
 defm default_inline : BooleanFFlag<"default-inline">, Group<clang_ignored_gcc_optimization_f_Group>;
-defm fat_lto_objects : BooleanFFlag<"fat-lto-objects">, Group<clang_ignored_gcc_optimization_f_Group>;
 defm float_store : BooleanFFlag<"float-store">, Group<clang_ignored_gcc_optimization_f_Group>;
 defm friend_injection : BooleanFFlag<"friend-injection">, Group<clang_ignored_f_Group>;
 defm function_attribute_list : BooleanFFlag<"function-attribute-list">, Group<clang_ignored_f_Group>;
@@ -5369,7 +5399,7 @@ def fopenacc : Flag<["-"], "fopenacc">, Group<f_Group>,
 def fdefault_double_8 : Flag<["-"],"fdefault-double-8">, Group<f_Group>,
   HelpText<"Set the default double precision kind to an 8 byte wide type">;
 def fdefault_integer_8 : Flag<["-"],"fdefault-integer-8">, Group<f_Group>,
-  HelpText<"Set the default integer kind to an 8 byte wide type">;
+  HelpText<"Set the default integer and logical kind to an 8 byte wide type">;
 def fdefault_real_8 : Flag<["-"],"fdefault-real-8">, Group<f_Group>,
   HelpText<"Set the default real kind to an 8 byte wide type">;
 def flarge_sizes : Flag<["-"],"flarge-sizes">, Group<f_Group>,
@@ -5513,7 +5543,7 @@ def triple : Separate<["-"], "triple">,
   MarshallingInfoString<TargetOpts<"Triple">, "llvm::Triple::normalize(llvm::sys::getDefaultTargetTriple())">,
   AlwaysEmit, Normalizer<"normalizeTriple">;
 
-} // let Flags = [CC1Option, CC1ASOption, FC1Option, NoDriverOption]
+} // let Flags = [CC1Option, CC1AsOption, FC1Option, NoDriverOption]
 
 //===----------------------------------------------------------------------===//
 // Target Options (other)
@@ -6370,14 +6400,6 @@ def arcmt_action_EQ : Joined<["-"], "arcmt-action=">, Flags<[CC1Option, NoDriver
   NormalizedValues<["ARCMT_Check", "ARCMT_Modify", "ARCMT_Migrate"]>,
   MarshallingInfoEnum<FrontendOpts<"ARCMTAction">, "ARCMT_None">;
 
-def opt_record_file : Separate<["-"], "opt-record-file">,
-  HelpText<"File name to use for YAML optimization record output">,
-  MarshallingInfoString<CodeGenOpts<"OptRecordFile">>;
-def opt_record_passes : Separate<["-"], "opt-record-passes">,
-  HelpText<"Only record remark information for passes whose names match the given regular expression">;
-def opt_record_format : Separate<["-"], "opt-record-format">,
-  HelpText<"The format used for serializing remarks (default: YAML)">;
-
 def print_stats : Flag<["-"], "print-stats">,
   HelpText<"Print performance metrics and statistics">,
   MarshallingInfoFlag<FrontendOpts<"ShowStats">>;
@@ -6786,11 +6808,12 @@ def sycl_std_EQ : Joined<["-"], "sycl-std=">, Group<sycl_Group>,
   MarshallingInfoEnum<LangOpts<"SYCLVersion">, "SYCL_None">,
   ShouldParseIf<!strconcat(fsycl_is_device.KeyPath, "||", fsycl_is_host.KeyPath)>;
 
-defm cuda_approx_transcendentals : BoolFOption<"cuda-approx-transcendentals",
-  LangOpts<"CUDADeviceApproxTranscendentals">, DefaultFalse,
+defm gpu_approx_transcendentals : BoolFOption<"gpu-approx-transcendentals",
+  LangOpts<"GPUDeviceApproxTranscendentals">, DefaultFalse,
   PosFlag<SetTrue, [CC1Option], "Use">, NegFlag<SetFalse, [], "Don't use">,
-  BothFlags<[], " approximate transcendental functions">>,
-  ShouldParseIf<fcuda_is_device.KeyPath>;
+  BothFlags<[], " approximate transcendental functions">>;
+def : Flag<["-"], "fcuda-approx-transcendentals">, Alias<fgpu_approx_transcendentals>;
+def : Flag<["-"], "fno-cuda-approx-transcendentals">, Alias<fno_gpu_approx_transcendentals>;
 
 //===----------------------------------------------------------------------===//
 // Frontend Options - cc1 + fc1
@@ -6816,6 +6839,14 @@ defm debug_pass_manager : BoolOption<"f", "debug-pass-manager",
   CodeGenOpts<"DebugPassManager">, DefaultFalse,
   PosFlag<SetTrue, [], "Prints debug information for the new pass manager">,
   NegFlag<SetFalse, [], "Disables debug printing for the new pass manager">>;
+
+def opt_record_file : Separate<["-"], "opt-record-file">,
+  HelpText<"File name to use for YAML optimization record output">,
+  MarshallingInfoString<CodeGenOpts<"OptRecordFile">>;
+def opt_record_passes : Separate<["-"], "opt-record-passes">,
+  HelpText<"Only record remark information for passes whose names match the given regular expression">;
+def opt_record_format : Separate<["-"], "opt-record-format">,
+  HelpText<"The format used for serializing remarks (default: YAML)">;
 
 } // let Flags = [CC1Option, FC1Option, NoDriverOption]
 
@@ -6848,7 +6879,7 @@ def dwarf_debug_producer : Separate<["-"], "dwarf-debug-producer">,
 def defsym : Separate<["-"], "defsym">,
   HelpText<"Define a value for a symbol">;
 
-} // let Flags = [CC1AsOption]
+} // let Flags = [CC1AsOption, NoDriverOption]
 
 //===----------------------------------------------------------------------===//
 // clang-cl Options

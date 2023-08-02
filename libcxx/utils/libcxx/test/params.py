@@ -51,6 +51,9 @@ _warningFlags = [
     # Disable warnings for extensions used in C++03
     "-Wno-local-type-template-args",
     "-Wno-c++11-extensions",
+
+    # TODO(philnik) This fails with the PSTL.
+    "-Wno-unknown-pragmas",
 ]
 
 _allStandards = ["c++03", "c++11", "c++14", "c++17", "c++20", "c++23", "c++26"]
@@ -282,18 +285,6 @@ DEFAULT_PARAMETERS = [
         default=True,
         help="Whether to enable tests that take longer to run. This can be useful when running on a very slow device.",
         actions=lambda enabled: [] if not enabled else [AddFeature("long_tests")],
-    ),
-    Parameter(
-        name="enable_assertions",
-        choices=[True, False],
-        type=bool,
-        default=False,
-        help="Whether to enable assertions when compiling the test suite. This is only meaningful when "
-        "running the tests against libc++.",
-        actions=lambda assertions: [] if not assertions else [
-            AddCompileFlag("-D_LIBCPP_ENABLE_ASSERTIONS=1"),
-            AddFeature("libcpp-has-assertions"),
-        ],
     ),
     Parameter(
         name="hardening_mode",

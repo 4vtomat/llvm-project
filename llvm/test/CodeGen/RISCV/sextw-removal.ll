@@ -1022,8 +1022,9 @@ bb7:                                              ; preds = %bb2
 define signext i32 @bug(i32 signext %x) {
 ; CHECK-LABEL: bug:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    beqz a0, .LBB18_11
+; CHECK-NEXT:    beqz a0, .LBB18_4
 ; CHECK-NEXT:  # %bb.1: # %if.end
+<<<<<<< HEAD
 ; CHECK-NEXT:    srli a1, a0, 16
 ; CHECK-NEXT:    beqz a1, .LBB18_3
 ; CHECK-NEXT:  # %bb.2: # %if.end
@@ -1064,12 +1065,49 @@ define signext i32 @bug(i32 signext %x) {
 ; CHECK-NEXT:    not a0, a0
 ; CHECK-NEXT:    addw a0, a1, a0
 ; CHECK-NEXT:  .LBB18_11: # %cleanup
+=======
+; CHECK-NEXT:    srliw a2, a0, 16
+; CHECK-NEXT:    seqz a1, a2
+; CHECK-NEXT:    slli a1, a1, 4
+; CHECK-NEXT:    sllw a1, a0, a1
+; CHECK-NEXT:    li a0, 16
+; CHECK-NEXT:    beqz a2, .LBB18_3
+; CHECK-NEXT:  # %bb.2: # %if.end
+; CHECK-NEXT:    li a0, 32
+; CHECK-NEXT:  .LBB18_3: # %if.end
+; CHECK-NEXT:    srliw a2, a1, 24
+; CHECK-NEXT:    seqz a2, a2
+; CHECK-NEXT:    slli a3, a2, 3
+; CHECK-NEXT:    sllw a1, a1, a3
+; CHECK-NEXT:    neg a2, a2
+; CHECK-NEXT:    andi a2, a2, -8
+; CHECK-NEXT:    add a0, a0, a2
+; CHECK-NEXT:    srliw a2, a1, 28
+; CHECK-NEXT:    seqz a2, a2
+; CHECK-NEXT:    slli a3, a2, 2
+; CHECK-NEXT:    sllw a1, a1, a3
+; CHECK-NEXT:    neg a2, a2
+; CHECK-NEXT:    andi a2, a2, -4
+; CHECK-NEXT:    add a0, a0, a2
+; CHECK-NEXT:    srliw a2, a1, 30
+; CHECK-NEXT:    seqz a2, a2
+; CHECK-NEXT:    slli a3, a2, 1
+; CHECK-NEXT:    sllw a1, a1, a3
+; CHECK-NEXT:    neg a2, a2
+; CHECK-NEXT:    andi a2, a2, -2
+; CHECK-NEXT:    add a0, a0, a2
+; CHECK-NEXT:    srai a1, a1, 31
+; CHECK-NEXT:    not a1, a1
+; CHECK-NEXT:    addw a0, a0, a1
+; CHECK-NEXT:  .LBB18_4: # %cleanup
+>>>>>>> upstream/main
 ; CHECK-NEXT:    ret
 ;
 ; NOREMOVAL-LABEL: bug:
 ; NOREMOVAL:       # %bb.0: # %entry
-; NOREMOVAL-NEXT:    beqz a0, .LBB18_11
+; NOREMOVAL-NEXT:    beqz a0, .LBB18_4
 ; NOREMOVAL-NEXT:  # %bb.1: # %if.end
+<<<<<<< HEAD
 ; NOREMOVAL-NEXT:    srli a1, a0, 16
 ; NOREMOVAL-NEXT:    beqz a1, .LBB18_3
 ; NOREMOVAL-NEXT:  # %bb.2: # %if.end
@@ -1110,6 +1148,42 @@ define signext i32 @bug(i32 signext %x) {
 ; NOREMOVAL-NEXT:    not a0, a0
 ; NOREMOVAL-NEXT:    add a0, a1, a0
 ; NOREMOVAL-NEXT:  .LBB18_11: # %cleanup
+=======
+; NOREMOVAL-NEXT:    srliw a2, a0, 16
+; NOREMOVAL-NEXT:    seqz a1, a2
+; NOREMOVAL-NEXT:    slli a1, a1, 4
+; NOREMOVAL-NEXT:    sllw a1, a0, a1
+; NOREMOVAL-NEXT:    li a0, 16
+; NOREMOVAL-NEXT:    beqz a2, .LBB18_3
+; NOREMOVAL-NEXT:  # %bb.2: # %if.end
+; NOREMOVAL-NEXT:    li a0, 32
+; NOREMOVAL-NEXT:  .LBB18_3: # %if.end
+; NOREMOVAL-NEXT:    srliw a2, a1, 24
+; NOREMOVAL-NEXT:    seqz a2, a2
+; NOREMOVAL-NEXT:    slli a3, a2, 3
+; NOREMOVAL-NEXT:    sllw a1, a1, a3
+; NOREMOVAL-NEXT:    neg a2, a2
+; NOREMOVAL-NEXT:    andi a2, a2, -8
+; NOREMOVAL-NEXT:    add a0, a0, a2
+; NOREMOVAL-NEXT:    srliw a2, a1, 28
+; NOREMOVAL-NEXT:    seqz a2, a2
+; NOREMOVAL-NEXT:    slli a3, a2, 2
+; NOREMOVAL-NEXT:    sllw a1, a1, a3
+; NOREMOVAL-NEXT:    neg a2, a2
+; NOREMOVAL-NEXT:    andi a2, a2, -4
+; NOREMOVAL-NEXT:    add a0, a0, a2
+; NOREMOVAL-NEXT:    srliw a2, a1, 30
+; NOREMOVAL-NEXT:    seqz a2, a2
+; NOREMOVAL-NEXT:    slli a3, a2, 1
+; NOREMOVAL-NEXT:    sllw a1, a1, a3
+; NOREMOVAL-NEXT:    neg a2, a2
+; NOREMOVAL-NEXT:    andi a2, a2, -2
+; NOREMOVAL-NEXT:    add a0, a0, a2
+; NOREMOVAL-NEXT:    srai a1, a1, 31
+; NOREMOVAL-NEXT:    not a1, a1
+; NOREMOVAL-NEXT:    add a0, a0, a1
+; NOREMOVAL-NEXT:  .LBB18_4: # %cleanup
+>>>>>>> upstream/main
 ; NOREMOVAL-NEXT:    sext.w a0, a0
 ; NOREMOVAL-NEXT:    ret
 entry:
@@ -1309,13 +1383,11 @@ define void @test18(i32 signext %arg, i32 signext %arg1) nounwind {
 ; NOREMOVAL-NEXT:    addi sp, sp, 32
 ; NOREMOVAL-NEXT:    ret
 bb:
-  %sext = sext i32 %arg1 to i64
-  %i = call i64 @llvm.riscv.sha256sig0.i64(i64 %sext)
-  %trunc = trunc i64 %i to i32
+  %i = call i32 @llvm.riscv.sha256sig0(i32 %arg1)
   br label %bb2
 
 bb2:                                              ; preds = %bb2, %bb
-  %i3 = phi i32 [ %trunc, %bb ], [ %i5, %bb2 ]
+  %i3 = phi i32 [ %i, %bb ], [ %i5, %bb2 ]
   %i4 = tail call signext i32 @bar(i32 signext %i3)
   %i5 = shl i32 %i3, %arg1
   %i6 = icmp eq i32 %i4, 0
@@ -1324,7 +1396,7 @@ bb2:                                              ; preds = %bb2, %bb
 bb7:                                              ; preds = %bb2
   ret void
 }
-declare i64 @llvm.riscv.sha256sig0.i64(i64)
+declare i32 @llvm.riscv.sha256sig0(i32)
 
 ; The type promotion of %7 forms a sext_inreg, but %7 and %6 are combined to
 ; form a sh2add. This leaves behind a sext.w that isn't needed.

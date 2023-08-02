@@ -325,15 +325,15 @@ def LLVM_MemsetOp : LLVM_ZeroResultIntrOp<"memset", [0, 2],
 
 def LLVM_NoAliasScopeDeclOp
     : LLVM_ZeroResultIntrOp<"experimental.noalias.scope.decl"> {
-  let arguments = (ins SymbolRefAttr:$scope);
+  let arguments = (ins LLVM_AliasScopeAttr:$scope);
   string llvmBuilder = [{
     // Wrap the scope argument into a list since the LLVM IR intrinsic takes
     // a list containing exactly one scope rather than a scope itself.
-    llvm::MDNode* node = moduleTranslation.getAliasScopes(op, {$scope});
+    llvm::MDNode* node = moduleTranslation.getAliasScopes({$scope});
     builder.CreateNoAliasScopeDeclaration(node);
   }];
   string mlirBuilder = [{
-    FailureOr<SmallVector<SymbolRefAttr>> scopeAttrs =
+    FailureOr<SmallVector<LLVM::AliasScopeAttr>> scopeAttrs =
       moduleImport.matchAliasScopeAttrs(llvmOperands[0]);
     // Drop the intrinsic if the alias scope translation fails since the scope
     // is not used by an aliasing operation, such as a load or store, that is
@@ -418,6 +418,13 @@ def LLVM_USHLSat : LLVM_BinarySameArgsIntrOpI<"ushl.sat">;
 
 def LLVM_AssumeOp
   : LLVM_ZeroResultIntrOp<"assume", []>, Arguments<(ins I1:$cond)>;
+
+def LLVM_SSACopyOp : LLVM_OneResultIntrOp<"ssa.copy", [], [0],
+                                            [Pure, SameOperandsAndResultType]> {
+  let arguments = (ins AnyType:$operand);
+
+  let assemblyFormat = "$operand attr-dict `:` type($operand)";
+}
 
 def LLVM_IsConstantOp : LLVM_IntrOp<"is.constant", [], [0], [Pure], 1> {
   let arguments = (ins LLVM_Type:$val);
@@ -711,6 +718,8 @@ def LLVM_vector_reduce_xor : LLVM_VecReductionI<"xor">;
 
 def LLVM_vector_reduce_fmax : LLVM_VecReductionF<"fmax">;
 def LLVM_vector_reduce_fmin : LLVM_VecReductionF<"fmin">;
+def LLVM_vector_reduce_fmaximum : LLVM_VecReductionF<"fmaximum">;
+def LLVM_vector_reduce_fminimum : LLVM_VecReductionF<"fminimum">;
 
 def LLVM_vector_reduce_fadd : LLVM_VecReductionAccF<"fadd">;
 def LLVM_vector_reduce_fmul : LLVM_VecReductionAccF<"fmul">;
@@ -1068,31 +1077,6 @@ def LLVM_vector_extract
     uint64_t getResVectorBitWidth() {
       return getVectorBitWidth(getRes().getType());
     }
-  }];
-}
-
-//===--------------------------------------------------------------------===//
-// CallIntrinsicOp
-//===--------------------------------------------------------------------===//
-
-def LLVM_CallIntrinsicOp
-    : LLVM_Op<"call_intrinsic",
-              [DeclareOpInterfaceMethods<FastmathFlagsInterface>]> {
-  let summary = "Call to an LLVM intrinsic function.";
-  let description = [{
-    Call the specified llvm intrinsic. If the intrinsic is overloaded, use
-    the MLIR function type of this op to determine which intrinsic to call.
-    }];
-  let arguments = (ins StrAttr:$intrin, Variadic<LLVM_Type>:$args,
-                       DefaultValuedAttr<LLVM_FastmathFlagsAttr,
-                                         "{}">:$fastmathFlags);
-  let results = (outs Variadic<LLVM_Type>:$results);
-  let llvmBuilder = [{
-    return convertCallLLVMIntrinsicOp(op, builder, moduleTranslation);
-  }];
-  let assemblyFormat = [{
-    $intrin `(` $args `)` `:` functional-type($args, $results)
-      custom<LLVMOpAttrs>(attr-dict)
   }];
 }
 

@@ -122,6 +122,7 @@ void RISCVTargetELFStreamer::emitDirectiveVariantCC(MCSymbol &Symbol) {
   cast<MCSymbolELF>(Symbol).setOther(ELF::STO_RISCV_VARIANT_CC);
 }
 
+<<<<<<< HEAD
 bool RISCVELFStreamer::requiresFixups(MCContext &C, const MCExpr *Value,
                                       const MCExpr *&LHS, const MCExpr *&RHS) {
   const auto *MBE = dyn_cast<MCBinaryExpr>(Value);
@@ -181,32 +182,70 @@ bool RISCVELFStreamer::requiresFixups(MCContext &C, const MCExpr *Value,
          A.getSection().getName() != B.getSection().getName();
 }
 
+=======
+>>>>>>> upstream/main
 void RISCVELFStreamer::reset() {
   static_cast<RISCVTargetStreamer *>(getTargetStreamer())->reset();
   MCELFStreamer::reset();
+  MappingSymbolCounter = 0;
+  LastMappingSymbols.clear();
+  LastEMS = EMS_None;
+}
+
+void RISCVELFStreamer::emitDataMappingSymbol() {
+  if (LastEMS == EMS_Data)
+    return;
+  emitMappingSymbol("$d");
+  LastEMS = EMS_Data;
+}
+
+void RISCVELFStreamer::emitInstructionsMappingSymbol() {
+  if (LastEMS == EMS_Instructions)
+    return;
+  emitMappingSymbol("$x");
+  LastEMS = EMS_Instructions;
+}
+
+void RISCVELFStreamer::emitMappingSymbol(StringRef Name) {
+  auto *Symbol = cast<MCSymbolELF>(getContext().getOrCreateSymbol(
+      Name + "." + Twine(MappingSymbolCounter++)));
+  emitLabel(Symbol);
+  Symbol->setType(ELF::STT_NOTYPE);
+  Symbol->setBinding(ELF::STB_LOCAL);
+}
+
+void RISCVELFStreamer::changeSection(MCSection *Section,
+                                     const MCExpr *Subsection) {
+  // We have to keep track of the mapping symbol state of any sections we
+  // use. Each one should start off as EMS_None, which is provided as the
+  // default constructor by DenseMap::lookup.
+  LastMappingSymbols[getPreviousSection().first] = LastEMS;
+  LastEMS = LastMappingSymbols.lookup(Section);
+
+  MCELFStreamer::changeSection(Section, Subsection);
+}
+
+void RISCVELFStreamer::emitInstruction(const MCInst &Inst,
+                                       const MCSubtargetInfo &STI) {
+  emitInstructionsMappingSymbol();
+  MCELFStreamer::emitInstruction(Inst, STI);
+}
+
+void RISCVELFStreamer::emitBytes(StringRef Data) {
+  emitDataMappingSymbol();
+  MCELFStreamer::emitBytes(Data);
+}
+
+void RISCVELFStreamer::emitFill(const MCExpr &NumBytes, uint64_t FillValue,
+                                SMLoc Loc) {
+  emitDataMappingSymbol();
+  MCELFStreamer::emitFill(NumBytes, FillValue, Loc);
 }
 
 void RISCVELFStreamer::emitValueImpl(const MCExpr *Value, unsigned Size,
                                      SMLoc Loc) {
-  const MCExpr *A, *B;
-  if (!requiresFixups(getContext(), Value, A, B))
-    return MCELFStreamer::emitValueImpl(Value, Size, Loc);
-
-  MCStreamer::emitValueImpl(Value, Size, Loc);
-
-  MCDataFragment *DF = getOrCreateDataFragment();
-  flushPendingLabels(DF, DF->getContents().size());
-  MCDwarfLineEntry::make(this, getCurrentSectionOnly());
-
-  MCFixupKind Add, Sub;
-  std::tie(Add, Sub) = RISCV::getRelocPairForSize(Size);
-
-  DF->getFixups().push_back(
-      MCFixup::create(DF->getContents().size(), A, Add, Loc));
-  DF->getFixups().push_back(
-      MCFixup::create(DF->getContents().size(), B, Sub, Loc));
-
-  DF->getContents().resize(DF->getContents().size() + Size, 0);
+  emitDataMappingSymbol();
+  MCELFStreamer::emitValueImpl(Value, Size, Loc);
 }
 
 namespace llvm {

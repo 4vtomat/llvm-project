@@ -128,7 +128,6 @@ namespace Intrinsic {
       TruncArgument,
       HalfVecArgument,
       SameVecWidthArgument,
-      PtrToElt,
       VecOfAnyPtrsToElt,
       VecElementArgument,
       Subdivide2Argument,
@@ -136,7 +135,6 @@ namespace Intrinsic {
       VecOfBitcastsToInt,
       AMX,
       PPCQuad,
-      AnyPtrToElt,
       AArch64Svcount,
 #if SIFIVE_CUSTOMIZATION
       OneThirdVecArgument,
@@ -167,6 +165,7 @@ namespace Intrinsic {
     unsigned getArgumentNumber() const {
       assert(Kind == Argument || Kind == ExtendArgument ||
              Kind == TruncArgument || Kind == HalfVecArgument ||
+<<<<<<< HEAD
              Kind == SameVecWidthArgument ||
              Kind == PtrToElt || Kind == VecElementArgument ||
 // SIFIVE_CUSTOMIZATION
@@ -177,6 +176,9 @@ namespace Intrinsic {
              Kind == OneSeventhVecArgument ||
              Kind == OneEighthVecArgument ||
 // SIFIVE_CUSTOMIZATION
+=======
+             Kind == SameVecWidthArgument || Kind == VecElementArgument ||
+>>>>>>> upstream/main
              Kind == Subdivide2Argument || Kind == Subdivide4Argument ||
              Kind == VecOfBitcastsToInt);
       return Argument_Info >> 3;
@@ -198,15 +200,14 @@ namespace Intrinsic {
       return (ArgKind)(Argument_Info & 7);
     }
 
-    // VecOfAnyPtrsToElt and AnyPtrToElt uses both an overloaded argument (for
-    // address space) and a reference argument (for matching vector width and
-    // element types)
+    // VecOfAnyPtrsToElt uses both an overloaded argument (for address space)
+    // and a reference argument (for matching vector width and element types)
     unsigned getOverloadArgNumber() const {
-      assert(Kind == VecOfAnyPtrsToElt || Kind == AnyPtrToElt);
+      assert(Kind == VecOfAnyPtrsToElt);
       return Argument_Info >> 16;
     }
     unsigned getRefArgNumber() const {
-      assert(Kind == VecOfAnyPtrsToElt || Kind == AnyPtrToElt);
+      assert(Kind == VecOfAnyPtrsToElt);
       return Argument_Info & 0xFFFF;
     }
 

@@ -521,6 +521,7 @@ public:
 enum RVVRequire : uint16_t {
   RVV_REQ_None = 0,
   RVV_REQ_RV64 = 1 << 0,
+<<<<<<< HEAD
   RVV_REQ_FullMultiply = 1 << 1,
 #if SIFIVE_CUSTOMIZATION
   RVV_REQ_xsfvqmaccqoq = 1 << 2,
@@ -533,6 +534,11 @@ enum RVVRequire : uint16_t {
 #endif // SIFIVE_CUSTOMIZATION
 
   LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_xsfvcp)
+=======
+  RVV_REQ_Xsfvcp = 1 << 1,
+
+  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Xsfvcp)
+>>>>>>> upstream/main
 };
 
 // Raw RVV intrinsic info, used to expand later.

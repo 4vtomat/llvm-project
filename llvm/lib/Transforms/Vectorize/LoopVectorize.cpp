@@ -4116,7 +4116,10 @@ void InnerLoopVectorizer::truncateToMinimalBitwidths(VPTransformState &State) {
     VPValue *Def = State.Plan->getVPValue(KV.first, true);
     if (!State.hasAnyVectorValue(Def))
       continue;
-    for (unsigned Part = 0; Part < UF; ++Part) {
+    // If the instruction is defined outside the loop, only update the first
+    // part; the first part will be re-used for all other parts.
+    unsigned UFToUse = OrigLoop->contains(KV.first) ? UF : 1;
+    for (unsigned Part = 0; Part < UFToUse; ++Part) {
       Value *I = State.get(Def, Part);
       if (Erased.count(I) || I->use_empty() || !isa<Instruction>(I))
         continue;
@@ -4140,21 +4143,22 @@ void InnerLoopVectorizer::truncateToMinimalBitwidths(VPTransformState &State) {
       // unfortunately.
       Value *NewI = nullptr;
       if (auto *BO = dyn_cast<BinaryOperator>(I)) {
-        NewI = B.CreateBinOp(BO->getOpcode(), ShrinkOperand(BO->getOperand(0)),
-                             ShrinkOperand(BO->getOperand(1)));
+        Value *Op0 = ShrinkOperand(BO->getOperand(0));
+        Value *Op1 = ShrinkOperand(BO->getOperand(1));
+        NewI = B.CreateBinOp(BO->getOpcode(), Op0, Op1);
 
         // Any wrapping introduced by shrinking this operation shouldn't be
         // considered undefined behavior. So, we can't unconditionally copy
         // arithmetic wrapping flags to NewI.
         cast<BinaryOperator>(NewI)->copyIRFlags(I, /*IncludeWrapFlags=*/false);
       } else if (auto *CI = dyn_cast<ICmpInst>(I)) {
-        NewI =
-            B.CreateICmp(CI->getPredicate(), ShrinkOperand(CI->getOperand(0)),
-                         ShrinkOperand(CI->getOperand(1)));
+        Value *Op0 = ShrinkOperand(BO->getOperand(0));
+        Value *Op1 = ShrinkOperand(BO->getOperand(1));
+        NewI = B.CreateICmp(CI->getPredicate(), Op0, Op1);
       } else if (auto *SI = dyn_cast<SelectInst>(I)) {
-        NewI = B.CreateSelect(SI->getCondition(),
-                              ShrinkOperand(SI->getTrueValue()),
-                              ShrinkOperand(SI->getFalseValue()));
+        Value *TV = ShrinkOperand(SI->getTrueValue());
+        Value *FV = ShrinkOperand(SI->getFalseValue());
+        NewI = B.CreateSelect(SI->getCondition(), TV, FV);
       } else if (auto *CI = dyn_cast<CastInst>(I)) {
         switch (CI->getOpcode()) {
         default:
@@ -4224,7 +4228,8 @@ void InnerLoopVectorizer::truncateToMinimalBitwidths(VPTransformState &State) {
     VPValue *Def = State.Plan->getVPValue(KV.first, true);
     if (!State.hasAnyVectorValue(Def))
       continue;
-    for (unsigned Part = 0; Part < UF; ++Part) {
+    unsigned UFToUse = OrigLoop->contains(KV.first) ? UF : 1;
+    for (unsigned Part = 0; Part < UFToUse; ++Part) {
       Value *I = State.get(Def, Part);
       ZExtInst *Inst = dyn_cast<ZExtInst>(I);
       if (Inst && Inst->use_empty()) {
@@ -7209,7 +7214,7 @@ LoopVectorizationCostModel::selectInterleaveCount(ElementCount VF,
 #endif // SIFIVE_CUSTOMIZATION
 
   // We used the distance for the interleave count.
-  if (Legal->getMaxSafeDepDistBytes() != -1U)
+  if (!Legal->isSafeForAnyVectorWidth())
     return 1;
 
   auto BestKnownTC = getSmallBestKnownTC(*PSE.getSE(), TheLoop);
@@ -11270,16 +11275,20 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
   // bring the VPlan to its final state.
   // ---------------------------------------------------------------------------
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (!Legal->isVectorizableUncountable())
 #endif
   VPlanTransforms::removeRedundantCanonicalIVs(*Plan);
   VPlanTransforms::removeRedundantInductionCasts(*Plan);
 
+=======
+>>>>>>> upstream/main
   // Adjust the recipes for any inloop reductions.
   adjustRecipesForReductions(cast<VPBasicBlock>(TopRegion->getExiting()), Plan,
                              RecipeBuilder, Range.Start);
 
+<<<<<<< HEAD
   // Sink users of fixed-order recurrence past the recipe defining the previous
   // value and introduce FirstOrderRecurrenceSplice VPInstructions.
   if (!VPlanTransforms::adjustFixedOrderRecurrences(*Plan, Builder))
@@ -11293,6 +11302,8 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
   }
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> upstream/main
   // Interleave memory: for each Interleave Group we marked earlier as relevant
   // for this VPlan, replace the Recipes widening its memory instructions with a
   // single VPInterleaveRecipe at its insertion point.
@@ -11349,6 +11360,7 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
   // in ways that accessing values using original IR values is incorrect.
   Plan->disableValue2VPValue();
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Legal->useVLAVectorizer())
     VPlanTransforms::optimizeGEPs(*Plan);
@@ -11356,6 +11368,16 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
   // Skip optimizeInductions as it has a dependency on canonical IV.
   if (!Legal->isVectorizableUncountable())
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  // Sink users of fixed-order recurrence past the recipe defining the previous
+  // value and introduce FirstOrderRecurrenceSplice VPInstructions.
+  if (!VPlanTransforms::adjustFixedOrderRecurrences(*Plan, Builder))
+    return std::nullopt;
+
+  VPlanTransforms::removeRedundantCanonicalIVs(*Plan);
+  VPlanTransforms::removeRedundantInductionCasts(*Plan);
+
+>>>>>>> upstream/main
   VPlanTransforms::optimizeInductions(*Plan, *PSE.getSE());
   VPlanTransforms::removeDeadRecipes(*Plan);
 
@@ -12443,6 +12465,9 @@ Value *VPTransformState::get(VPValue *Def, unsigned Part) {
   };
 
   if (!hasScalarValue(Def, {Part, 0})) {
+    assert(Def->isLiveIn() && "expected a live-in");
+    if (Part != 0)
+      return get(Def, 0);
     Value *IRV = Def->getLiveInIRValue();
     Value *B = GetBroadcastInstrs(IRV);
     set(Def, B, Part);

@@ -198,7 +198,9 @@
 #include "llvm/Pass.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/Debug.h"
+#include "llvm/Support/Format.h"
 #include "llvm/Support/OptimizedStructLayout.h"
+#include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/Utils/BasicBlockUtils.h"
 #include "llvm/Transforms/Utils/ModuleUtils.h"
 
@@ -268,8 +270,7 @@ class AMDGPULowerModuleLDS : public ModulePass {
       LocalVar->removeDeadConstantUsers();
   }
 
-  static void markUsedByKernel(IRBuilder<> &Builder, Function *Func,
-                               GlobalVariable *SGV) {
+  static void markUsedByKernel(Function *Func, GlobalVariable *SGV) {
     // The llvm.amdgcn.module.lds instance is implicitly used by all kernels
     // that might call a function which accesses a field within it. This is
     // presently approximated to 'all kernels' if there are any such functions
@@ -290,22 +291,16 @@ class AMDGPULowerModuleLDS : public ModulePass {
     // equivalent target specific intrinsic which lasts until immediately after
     // codegen would suffice for that, but one would still need to ensure that
     // the variables are allocated in the anticpated order.
-
-    LLVMContext &Ctx = Func->getContext();
-
-    Builder.SetInsertPoint(Func->getEntryBlock().getFirstNonPHI());
-
-    FunctionType *FTy = FunctionType::get(Type::getVoidTy(Ctx), {});
+    IRBuilder<> Builder(Func->getEntryBlock().getFirstNonPHI());
 
     Function *Decl =
         Intrinsic::getDeclaration(Func->getParent(), Intrinsic::donothing, {});
 
-    Value *UseInstance[1] = {Builder.CreateInBoundsGEP(
-        SGV->getValueType(), SGV, ConstantInt::get(Type::getInt32Ty(Ctx), 0))};
+    Value *UseInstance[1] = {
+        Builder.CreateConstInBoundsGEP1_32(SGV->getValueType(), SGV, 0)};
 
-    Builder.CreateCall(FTy, Decl, {},
-                       {OperandBundleDefT<Value *>("ExplicitUse", UseInstance)},
-                       "");
+    Builder.CreateCall(
+        Decl, {}, {OperandBundleDefT<Value *>("ExplicitUse", UseInstance)});
   }
 
   static bool eliminateConstantExprUsesOfLDSFromAllInstructions(Module &M) {
@@ -699,22 +694,18 @@ public:
     // Accesses from a function use the amdgcn_lds_kernel_id intrinsic which
     // lowers to a read from a live in register. Emit it once in the entry
     // block to spare deduplicating it later.
-    if (tableKernelIndexCache.count(F) == 0) {
-      LLVMContext &Ctx = M.getContext();
-      IRBuilder<> Builder(Ctx);
-      FunctionType *FTy = FunctionType::get(Type::getInt32Ty(Ctx), {});
+    auto [It, Inserted] = tableKernelIndexCache.try_emplace(F);
+    if (Inserted) {
       Function *Decl =
           Intrinsic::getDeclaration(&M, Intrinsic::amdgcn_lds_kernel_id, {});
 
-      BasicBlock::iterator it =
-          F->getEntryBlock().getFirstNonPHIOrDbgOrAlloca();
-      Instruction &i = *it;
-      Builder.SetInsertPoint(&i);
+      auto InsertAt = F->getEntryBlock().getFirstNonPHIOrDbgOrAlloca();
+      IRBuilder<> Builder(&*InsertAt);
 
-      tableKernelIndexCache[F] = Builder.CreateCall(FTy, Decl, {});
+      It->second = Builder.CreateCall(Decl, {});
     }
 
-    return tableKernelIndexCache[F];
+    return It->second;
   }
 
   static std::vector<Function *> assignLDSKernelIDToEachKernel(
@@ -886,8 +877,6 @@ public:
     // allocate the module scope variable, otherwise leave them unchanged
     // Record on each kernel whether the module scope global is used by it
 
-    IRBuilder<> Builder(Ctx);
-
     for (Function &Func : M.functions()) {
       if (Func.isDeclaration() || !isKernelLDS(&Func))
         continue;
@@ -903,7 +892,7 @@ public:
               return F == &Func;
             });
 
-        markUsedByKernel(Builder, &Func, ModuleScopeReplacement.SGV);
+        markUsedByKernel(&Func, ModuleScopeReplacement.SGV);
       }
     }
 
@@ -919,7 +908,6 @@ public:
 
     // Create a struct for each kernel for the non-module-scope variables.
 
-    IRBuilder<> Builder(M.getContext());
     DenseMap<Function *, LDSVariableReplacement> KernelToReplacement;
     for (Function &Func : M.functions()) {
       if (Func.isDeclaration() || !isKernelLDS(&Func))
@@ -978,7 +966,7 @@ public:
       auto Accesses = LDSUsesInfo.indirect_access.find(&Func);
       if ((Accesses != LDSUsesInfo.indirect_access.end()) &&
           !Accesses->second.empty())
-        markUsedByKernel(Builder, &Func, Replacement.SGV);
+        markUsedByKernel(&Func, Replacement.SGV);
 
       // remove preserves existing codegen
       removeLocalVarsFromUsedLists(M, KernelUsedVariables);
@@ -1067,7 +1055,7 @@ public:
 
           KernelToCreatedDynamicLDS[func] = N;
 
-          markUsedByKernel(Builder, func, N);
+          markUsedByKernel(func, N);
 
           auto emptyCharArray = ArrayType::get(Type::getInt8Ty(Ctx), 0);
           auto GEP = ConstantExpr::getGetElementPtr(
@@ -1252,8 +1240,22 @@ public:
           recordLDSAbsoluteAddress(&M, DynamicVariable, Offset);
         }
 
-        if (Offset != 0)
-          Func.addFnAttr("amdgpu-lds-size", std::to_string(Offset));
+        if (Offset != 0) {
+          std::string Buffer;
+          raw_string_ostream SS{Buffer};
+          SS << format("%u", Offset);
+
+          // Instead of explictly marking kernels that access dynamic variables
+          // using special case metadata, annotate with min-lds == max-lds, i.e.
+          // that there is no more space available for allocating more static
+          // LDS variables. That is the right condition to prevent allocating
+          // more variables which would collide with the addresses assigned to
+          // dynamic variables.
+          if (AllocateDynamicVariable)
+            SS << format(",%u", Offset);
+
+          Func.addFnAttr("amdgpu-lds-size", Buffer);
+        }
       }
     }
 

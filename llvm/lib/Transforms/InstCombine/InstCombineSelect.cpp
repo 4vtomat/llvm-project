@@ -503,7 +503,7 @@ static bool isSelect01(const APInt &C1I, const APInt &C2I) {
 /// optimization.
 Instruction *InstCombinerImpl::foldSelectIntoOp(SelectInst &SI, Value *TrueVal,
                                                 Value *FalseVal) {
-  // See the comment above GetSelectFoldableOperands for a description of the
+  // See the comment above getSelectFoldableOperands for a description of the
   // transformation we are doing here.
   auto TryFoldSelectIntoOp = [&](SelectInst &SI, Value *TrueVal,
                                  Value *FalseVal,
@@ -538,7 +538,7 @@ Instruction *InstCombinerImpl::foldSelectIntoOp(SelectInst &SI, Value *TrueVal,
     if (!isa<Constant>(OOp) ||
         (OOpIsAPInt && isSelect01(C->getUniqueInteger(), *OOpC))) {
       Value *NewSel = Builder.CreateSelect(SI.getCondition(), Swapped ? C : OOp,
-                                           Swapped ? OOp : C);
+                                           Swapped ? OOp : C, "", &SI);
       if (isa<FPMathOperator>(&SI))
         cast<Instruction>(NewSel)->setFastMathFlags(FMF);
       NewSel->takeName(TVI);
@@ -1060,6 +1060,8 @@ static Value *foldAbsDiff(ICmpInst *Cmp, Value *TVal, Value *FVal,
 /// \code
 ///   int a = ctlz(x & -x);
 //    x ? 31 - a : a;
+//    // or
+//    x ? 31 - a : 32;
 /// \code
 ///
 /// into:
@@ -1074,15 +1076,19 @@ static Instruction *foldSelectCtlzToCttz(ICmpInst *ICI, Value *TrueVal,
   if (ICI->getPredicate() == ICmpInst::ICMP_NE)
     std::swap(TrueVal, FalseVal);
 
+  Value *Ctlz;
   if (!match(FalseVal,
-             m_Xor(m_Deferred(TrueVal), m_SpecificInt(BitWidth - 1))))
+             m_Xor(m_Value(Ctlz), m_SpecificInt(BitWidth - 1))))
     return nullptr;
 
-  if (!match(TrueVal, m_Intrinsic<Intrinsic::ctlz>()))
+  if (!match(Ctlz, m_Intrinsic<Intrinsic::ctlz>()))
+    return nullptr;
+
+  if (TrueVal != Ctlz && !match(TrueVal, m_SpecificInt(BitWidth)))
     return nullptr;
 
   Value *X = ICI->getOperand(0);
-  auto *II = cast<IntrinsicInst>(TrueVal);
+  auto *II = cast<IntrinsicInst>(Ctlz);
   if (!match(II->getOperand(0), m_c_And(m_Specific(X), m_Neg(m_Specific(X)))))
     return nullptr;
 

@@ -1068,56 +1068,6 @@ multiclass RVVPseudoVNCVTBuiltin<string IR, string MName, string type_range,
   }
 }
 
-// Define vread_csr&vwrite_csr described in RVV intrinsics doc.
-let HeaderCode =
-[{
-enum RVV_CSR {
-  RVV_VSTART = 0,
-  RVV_VXSAT,
-  RVV_VXRM,
-  RVV_VCSR,
-};
-
-static __inline__ __attribute__((__always_inline__, __nodebug__))
-unsigned long __riscv_vread_csr(enum RVV_CSR __csr) {
-  unsigned long __rv = 0;
-  switch (__csr) {
-    case RVV_VSTART:
-      __asm__ __volatile__ ("csrr\t%0, vstart" : "=r"(__rv) : : "memory");
-      break;
-    case RVV_VXSAT:
-      __asm__ __volatile__ ("csrr\t%0, vxsat" : "=r"(__rv) : : "memory");
-      break;
-    case RVV_VXRM:
-      __asm__ __volatile__ ("csrr\t%0, vxrm" : "=r"(__rv) : : "memory");
-      break;
-    case RVV_VCSR:
-      __asm__ __volatile__ ("csrr\t%0, vcsr" : "=r"(__rv) : : "memory");
-      break;
-  }
-  return __rv;
-}
-
-static __inline__ __attribute__((__always_inline__, __nodebug__))
-void __riscv_vwrite_csr(enum RVV_CSR __csr, unsigned long __value) {
-  switch (__csr) {
-    case RVV_VSTART:
-      __asm__ __volatile__ ("csrw\tvstart, %z0" : : "rJ"(__value) : "memory");
-      break;
-    case RVV_VXSAT:
-      __asm__ __volatile__ ("csrw\tvxsat, %z0" : : "rJ"(__value) : "memory");
-      break;
-    case RVV_VXRM:
-      __asm__ __volatile__ ("csrw\tvxrm, %z0" : : "rJ"(__value) : "memory");
-      break;
-    case RVV_VCSR:
-      __asm__ __volatile__ ("csrw\tvcsr, %z0" : : "rJ"(__value) : "memory");
-      break;
-  }
-}
-}] in
-def vread_vwrite_csr: RVVHeader;
-
 let HeaderCode =
 [{
 #define __riscv_vlenb() __builtin_rvv_vlenb()
@@ -2289,13 +2239,11 @@ defm vmax : RVVSignedBinBuiltinSet;
 
 // 12.10. Vector Single-Width Integer Multiply Instructions
 defm vmul : RVVIntBinBuiltinSet;
-let RequiredFeatures = ["FullMultiply"] in {
 defm vmulh : RVVSignedBinBuiltinSet;
 defm vmulhu : RVVUnsignedBinBuiltinSet;
 defm vmulhsu : RVVOutOp1BuiltinSet<"vmulhsu", "csil",
                                    [["vv", "v", "vvUv"],
                                     ["vx", "v", "vvUe"]]>;
-}
 
 // 12.11. Vector Integer Divide Instructions
 defm vdivu : RVVUnsignedBinBuiltinSet;
@@ -2435,9 +2383,7 @@ let ManualCodegen = [{
   defm vasub : RVVSignedBinBuiltinSetRoundingMode;
 
   // 13.3. Vector Single-Width Fractional Multiply with Rounding and Saturation
-  let RequiredFeatures = ["FullMultiply"] in {
   defm vsmul : RVVSignedBinBuiltinSetRoundingMode;
-  }
 
   // 13.4. Vector Single-Width Scaling Shift Instructions
   defm vssrl : RVVUnsignedShiftBuiltinSetRoundingMode;
@@ -2944,7 +2890,7 @@ let ManualCodegen = [{
     let OverloadedName = "vfcvt_x" in
       defm :
         RVVConvBuiltinSet<"vfcvt_x_f_v", "xfd", [["Iv", "Ivvu"]]>;
-    let OverloadedName = "vfcvt_xu" in    
+    let OverloadedName = "vfcvt_xu" in
       defm :
         RVVConvBuiltinSet<"vfcvt_xu_f_v", "xfd", [["Uv", "Uvvu"]]>;
     let OverloadedName = "vfcvt_f" in {
@@ -2987,7 +2933,7 @@ let ManualCodegen = [{
   let OverloadedName = "vfcvt_x" in
     defm :
       RVVConvBuiltinSet<"vfcvt_x_f_v", "xfd", [["Iv", "Ivv"]]>;
-  let OverloadedName = "vfcvt_xu" in    
+  let OverloadedName = "vfcvt_xu" in
     defm :
       RVVConvBuiltinSet<"vfcvt_xu_f_v", "xfd", [["Uv", "Uvv"]]>;
   let OverloadedName = "vfcvt_f" in {

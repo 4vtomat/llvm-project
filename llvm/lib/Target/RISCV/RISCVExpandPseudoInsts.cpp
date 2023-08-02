@@ -32,6 +32,7 @@ namespace {
 
 class RISCVExpandPseudo : public MachineFunctionPass {
 public:
+  const RISCVSubtarget *STI;
   const RISCVInstrInfo *TII;
   static char ID;
 
@@ -81,7 +82,8 @@ private:
 char RISCVExpandPseudo::ID = 0;
 
 bool RISCVExpandPseudo::runOnMachineFunction(MachineFunction &MF) {
-  TII = static_cast<const RISCVInstrInfo *>(MF.getSubtarget().getInstrInfo());
+  STI = &MF.getSubtarget<RISCVSubtarget>();
+  TII = STI->getInstrInfo();
 
 #ifndef NDEBUG
   const unsigned OldSize = getInstSizeInBytes(MF);
@@ -403,9 +405,8 @@ bool RISCVExpandPseudo::removeRedundantVMV(MachineBasicBlock &MBB,
 // sequence for RV32.
 bool RISCVExpandPseudo::expandRV32ZdinxStore(MachineBasicBlock &MBB,
                                              MachineBasicBlock::iterator MBBI) {
-  MachineFunction *MF = MBB.getParent();
   DebugLoc DL = MBBI->getDebugLoc();
-  const TargetRegisterInfo *TRI = MF->getSubtarget().getRegisterInfo();
+  const TargetRegisterInfo *TRI = STI->getRegisterInfo();
   Register Lo = TRI->getSubReg(MBBI->getOperand(0).getReg(), RISCV::sub_32);
   Register Hi = TRI->getSubReg(MBBI->getOperand(0).getReg(), RISCV::sub_32_hi);
   BuildMI(MBB, MBBI, DL, TII->get(RISCV::SW))
@@ -414,7 +415,7 @@ bool RISCVExpandPseudo::expandRV32ZdinxStore(MachineBasicBlock &MBB,
       .add(MBBI->getOperand(2));
   if (MBBI->getOperand(2).isGlobal() || MBBI->getOperand(2).isCPI()) {
     // FIXME: Zdinx RV32 can not work on unaligned scalar memory.
-    assert(!MF->getSubtarget<RISCVSubtarget>().enableUnalignedScalarMem());
+    assert(!STI->enableUnalignedScalarMem());
 
     assert(MBBI->getOperand(2).getOffset() % 8 == 0);
     MBBI->getOperand(2).setOffset(MBBI->getOperand(2).getOffset() + 4);
@@ -438,9 +439,8 @@ bool RISCVExpandPseudo::expandRV32ZdinxStore(MachineBasicBlock &MBB,
 // RV32.
 bool RISCVExpandPseudo::expandRV32ZdinxLoad(MachineBasicBlock &MBB,
                                             MachineBasicBlock::iterator MBBI) {
-  MachineFunction *MF = MBB.getParent();
   DebugLoc DL = MBBI->getDebugLoc();
-  const TargetRegisterInfo *TRI = MF->getSubtarget().getRegisterInfo();
+  const TargetRegisterInfo *TRI = STI->getRegisterInfo();
   Register Lo = TRI->getSubReg(MBBI->getOperand(0).getReg(), RISCV::sub_32);
   Register Hi = TRI->getSubReg(MBBI->getOperand(0).getReg(), RISCV::sub_32_hi);
 
@@ -482,6 +482,7 @@ bool RISCVExpandPseudo::expandRV32ZdinxLoad(MachineBasicBlock &MBB,
 
 class RISCVPreRAExpandPseudo : public MachineFunctionPass {
 public:
+  const RISCVSubtarget *STI;
   const RISCVInstrInfo *TII;
   static char ID;
 
@@ -533,7 +534,8 @@ private:
 char RISCVPreRAExpandPseudo::ID = 0;
 
 bool RISCVPreRAExpandPseudo::runOnMachineFunction(MachineFunction &MF) {
-  TII = static_cast<const RISCVInstrInfo *>(MF.getSubtarget().getInstrInfo());
+  STI = &MF.getSubtarget<RISCVSubtarget>();
+  TII = STI->getInstrInfo();
 
 #ifndef NDEBUG
   const unsigned OldSize = getInstSizeInBytes(MF);
@@ -622,10 +624,7 @@ bool RISCVPreRAExpandPseudo::expandLoadLocalAddress(
 bool RISCVPreRAExpandPseudo::expandLoadGlobalAddress(
     MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
     MachineBasicBlock::iterator &NextMBBI) {
-  MachineFunction *MF = MBB.getParent();
-
-  const auto &STI = MF->getSubtarget<RISCVSubtarget>();
-  unsigned SecondOpcode = STI.is64Bit() ? RISCV::LD : RISCV::LW;
+  unsigned SecondOpcode = STI->is64Bit() ? RISCV::LD : RISCV::LW;
   return expandAuipcInstPair(MBB, MBBI, NextMBBI, RISCVII::MO_GOT_HI,
                              SecondOpcode);
 }
@@ -633,10 +632,7 @@ bool RISCVPreRAExpandPseudo::expandLoadGlobalAddress(
 bool RISCVPreRAExpandPseudo::expandLoadTLSIEAddress(
     MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
     MachineBasicBlock::iterator &NextMBBI) {
-  MachineFunction *MF = MBB.getParent();
-
-  const auto &STI = MF->getSubtarget<RISCVSubtarget>();
-  unsigned SecondOpcode = STI.is64Bit() ? RISCV::LD : RISCV::LW;
+  unsigned SecondOpcode = STI->is64Bit() ? RISCV::LD : RISCV::LW;
   return expandAuipcInstPair(MBB, MBBI, NextMBBI, RISCVII::MO_TLS_GOT_HI,
                              SecondOpcode);
 }
