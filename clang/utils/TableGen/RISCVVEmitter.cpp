@@ -764,12 +764,10 @@ void RVVEmitter::createRVVIntrinsics(
 
     SR.RequiredExtensions = 0;
     for (auto RequiredFeature : RequiredFeatures) {
-<<<<<<< HEAD
       RVVRequire RequireExt =
           StringSwitch<RVVRequire>(RequiredFeature)
               .Case("RV64", RVV_REQ_RV64)
-              .Case("FullMultiply", RVV_REQ_FullMultiply)
-              .Case("Xsfvcp", RVV_REQ_xsfvcp)
+              .Case("Xsfvcp", RVV_REQ_Xsfvcp)
 #if SIFIVE_CUSTOMIZATION
               .Case("Xsfvqmaccqoq", RVV_REQ_xsfvqmaccqoq)
               .Case("Xsfvqmaccdod", RVV_REQ_xsfvqmaccdod)
@@ -779,12 +777,6 @@ void RVVEmitter::createRVVIntrinsics(
               .Case("HasBfloat16", RVV_REQ_HasBfloat16)
 #endif // SIFIVE_CUSTOMIZATION
               .Default(RVV_REQ_None);
-=======
-      RVVRequire RequireExt = StringSwitch<RVVRequire>(RequiredFeature)
-                                  .Case("RV64", RVV_REQ_RV64)
-                                  .Case("Xsfvcp", RVV_REQ_Xsfvcp)
-                                  .Default(RVV_REQ_None);
->>>>>>> upstream/main
       assert(RequireExt != RVV_REQ_None && "Unrecognized required feature?");
       SR.RequiredExtensions |= RequireExt;
     }
