@@ -247,8 +247,6 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
     ArrayRef<RVVIntrinsicRecord> Recs, IntrinsicKind K) {
   const TargetInfo &TI = Context.getTargetInfo();
   bool HasRV64 = TI.hasFeature("64bit");
-<<<<<<< HEAD
-  bool HasFullMultiply = TI.hasFeature("v");
 #if SIFIVE_CUSTOMIZATION
   struct FeatureCheckInfo {
     bool HasFeature;
@@ -271,13 +269,10 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
       FEATURE_CHECK_ENTRY(xsfvfnrclipxfqf),
       FEATURE_CHECK_ENTRY(xsfvfhbfmin),
       FEATURE_CHECK_ENTRY(xsfvfwmaccqqq),
-      FEATURE_CHECK_ENTRY(xsfvcp),
   };
 #undef FEATURE_CHECK_ENTRY
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> upstream/main
   // Construction of RVVIntrinsicRecords need to sync with createRVVIntrinsics
   // in RISCVVEmitter.cpp.
   for (auto &Record : Recs) {
