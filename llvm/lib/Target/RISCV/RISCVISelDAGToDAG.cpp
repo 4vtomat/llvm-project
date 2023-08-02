@@ -3414,7 +3414,6 @@ bool RISCVDAGToDAGISel::doPeepholeMaskedRVV(SDNode *N) {
   return true;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool RISCVDAGToDAGISel::doPeepholeLUIADDI(SDNode *N) {
   unsigned Opc = N->getMachineOpcode();
@@ -3460,7 +3459,7 @@ bool RISCVDAGToDAGISel::doPeepholeLUIADDI(SDNode *N) {
   return true;
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 static bool IsVMerge(SDNode *N) {
   unsigned Opc = N->getMachineOpcode();
   return Opc == RISCV::PseudoVMERGE_VVM_MF8 ||
@@ -3500,7 +3499,6 @@ static unsigned GetVMSetForLMul(RISCVII::VLMUL LMUL) {
   }
   llvm_unreachable("Unknown VLMUL enum");
 }
->>>>>>> upstream/main
 
 // Try to fold away VMERGE_VVM instructions. We handle these cases:
 // -Masked TU VMERGE_VVM combined with an unmasked TA instruction instruction
