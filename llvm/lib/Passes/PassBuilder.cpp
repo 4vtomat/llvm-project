@@ -65,6 +65,9 @@
 #include "llvm/Analysis/ScalarEvolution.h"
 #include "llvm/Analysis/ScalarEvolutionAliasAnalysis.h"
 #include "llvm/Analysis/ScopedNoAliasAA.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Analysis/SiFive_LiveValues.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Analysis/StackLifetime.h"
 #include "llvm/Analysis/StackSafetyAnalysis.h"
 #include "llvm/Analysis/TargetLibraryInfo.h"

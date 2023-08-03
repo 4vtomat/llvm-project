@@ -135,6 +135,7 @@
 ; CHECK-O-NEXT: Running analysis: LoopAnalysis
 ; CHECK-O-NEXT: Running pass: LCSSAPass
 ; CHECK-O-NEXT: Running analysis: ScalarEvolutionAnalysis
+; CHECK-O-NEXT: Running analysis: LiveValuesAnalysis
 ; CHECK-O-NEXT: Running analysis: InnerAnalysisManagerProxy
 ; CHECK-O-NEXT: Running pass: LoopInstSimplifyPass
 ; CHECK-O-NEXT: Running pass: LoopSimplifyCFGPass

@@ -16,6 +16,7 @@
 ; CHECK-NEXT: Running analysis: AAManager on f
 ; CHECK-NEXT: Running analysis: TargetLibraryAnalysis on f
 ; CHECK-NEXT: Running analysis: ScalarEvolutionAnalysis on f
+; CHECK-NEXT: Running analysis: LiveValuesAnalysis on f
 ; CHECK-NEXT: Running analysis: InnerAnalysisManagerProxy{{.*}} on f
 ; CHECK-NEXT: Running pass: LoopRotatePass on bb
 ; CHECK-NEXT: Folding loop latch bb4 into bb
@@ -35,6 +36,7 @@
 ; MSSA-NEXT: Running analysis: AAManager on f
 ; MSSA-NEXT: Running analysis: TargetLibraryAnalysis on f
 ; MSSA-NEXT: Running analysis: ScalarEvolutionAnalysis on f
+; MSSA-NEXT: Running analysis: LiveValuesAnalysis on f
 ; MSSA-NEXT: Running analysis: InnerAnalysisManagerProxy{{.*}} on f
 ; MSSA-NEXT: Running pass: LoopRotatePass on bb
 ; MSSA-NEXT: Folding loop latch bb4 into bb

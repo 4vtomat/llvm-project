@@ -56,6 +56,9 @@
 #include "llvm/Analysis/MustExecute.h"
 #include "llvm/Analysis/OptimizationRemarkEmitter.h"
 #include "llvm/Analysis/ScalarEvolution.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Analysis/SiFive_LiveValues.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Analysis/TargetLibraryInfo.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/Analysis/ValueTracking.h"
@@ -205,6 +208,9 @@ struct LoopInvariantCodeMotion {
   bool runOnLoop(Loop *L, AAResults *AA, LoopInfo *LI, DominatorTree *DT,
                  AssumptionCache *AC, TargetLibraryInfo *TLI,
                  TargetTransformInfo *TTI, ScalarEvolution *SE, MemorySSA *MSSA,
+#if SIFIVE_CUSTOMIZATION
+                 LiveValues *LV,
+#endif // SIFIVE_CUSTOMIZATION
                  OptimizationRemarkEmitter *ORE, bool LoopNestMode = false);
 
   LoopInvariantCodeMotion(unsigned LicmMssaOptCap,
@@ -253,7 +259,11 @@ struct LegacyLICMPass : public LoopPass {
         &getAnalysis<AssumptionCacheTracker>().getAssumptionCache(*F),
         &getAnalysis<TargetLibraryInfoWrapperPass>().getTLI(*F),
         &getAnalysis<TargetTransformInfoWrapperPass>().getTTI(*F),
+#if SIFIVE_CUSTOMIZATION
+        SE ? &SE->getSE() : nullptr, MSSA, nullptr, &ORE);
+#else
         SE ? &SE->getSE() : nullptr, MSSA, &ORE);
+#endif
   }
 
   /// This transformation requires natural loop information & requires that
@@ -292,7 +302,11 @@ PreservedAnalyses LICMPass::run(Loop &L, LoopAnalysisManager &AM,
   LoopInvariantCodeMotion LICM(Opts.MssaOptCap, Opts.MssaNoAccForPromotionCap,
                                Opts.AllowSpeculation);
   if (!LICM.runOnLoop(&L, &AR.AA, &AR.LI, &AR.DT, &AR.AC, &AR.TLI, &AR.TTI,
+#if SIFIVE_CUSTOMIZATION
+                      &AR.SE, AR.MSSA, &AR.LV, &ORE))
+#else
                       &AR.SE, AR.MSSA, &ORE))
+#endif
     return PreservedAnalyses::all();
 
   auto PA = getLoopPassPreservedAnalyses();
@@ -328,7 +342,12 @@ PreservedAnalyses LNICMPass::run(LoopNest &LN, LoopAnalysisManager &AM,
 
   Loop &OutermostLoop = LN.getOutermostLoop();
   bool Changed = LICM.runOnLoop(&OutermostLoop, &AR.AA, &AR.LI, &AR.DT, &AR.AC,
+#if SIFIVE_CUSTOMIZATION
+                                &AR.TLI, &AR.TTI, &AR.SE, AR.MSSA, &AR.LV, &ORE,
+                                true);
+#else
                                 &AR.TLI, &AR.TTI, &AR.SE, AR.MSSA, &ORE, true);
+#endif
 
   if (!Changed)
     return PreservedAnalyses::all();
@@ -338,6 +357,9 @@ PreservedAnalyses LNICMPass::run(LoopNest &LN, LoopAnalysisManager &AM,
   PA.preserve<DominatorTreeAnalysis>();
   PA.preserve<LoopAnalysis>();
   PA.preserve<MemorySSAAnalysis>();
+#if SIFIVE_CUSTOMIZATION
+  PA.preserve<LiveValuesAnalysis>();
+#endif // SIFIVE_CUSTOMIZATION
 
   return PA;
 }
@@ -397,6 +419,9 @@ bool LoopInvariantCodeMotion::runOnLoop(Loop *L, AAResults *AA, LoopInfo *LI,
                                         TargetLibraryInfo *TLI,
                                         TargetTransformInfo *TTI,
                                         ScalarEvolution *SE, MemorySSA *MSSA,
+#if SIFIVE_CUSTOMIZATION
+                                        LiveValues *LV,
+#endif // SIFIVE_CUSTOMIZATION
                                         OptimizationRemarkEmitter *ORE,
                                         bool LoopNestMode) {
   bool Changed = false;
