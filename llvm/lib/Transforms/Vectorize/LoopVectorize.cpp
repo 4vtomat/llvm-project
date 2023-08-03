@@ -9979,6 +9979,13 @@ VPValue *VPRecipeBuilder::createEdgeMask(BasicBlock *Src, BasicBlock *Dst,
   VPValue *EdgeMask = Plan.getVPValueOrAddLiveIn(BI->getCondition());
   assert(EdgeMask && "No Edge Mask found for condition");
 
+#if SIFIVE_CUSTOMIZATION
+  VPBuilder::InsertPointGuard Guard(Builder);
+  VPBasicBlock *SrcVPBB = Builder.BB2VPBB[Src];
+  assert(SrcVPBB && "Cannot find corresponding VPBB for the BB");
+  Builder.setInsertPoint(SrcVPBB, SrcVPBB->end());
+#endif // SIFIVE_CUSTOMIZATION
+
   if (BI->getSuccessor(0) != Dst)
     EdgeMask = Builder.createNot(EdgeMask, BI->getDebugLoc());
 
@@ -10071,6 +10078,13 @@ VPValue *VPRecipeBuilder::createBlockInMask(BasicBlock *BB, VPlan &Plan) {
     }
     return BlockMaskCache[BB] = BlockMask;
   }
+
+#if SIFIVE_CUSTOMIZATION
+    VPBuilder::InsertPointGuard Guard(Builder);
+    VPBasicBlock *VPBB = Builder.BB2VPBB[BB];
+    assert(VPBB && "Cannot find corresponding VPBB for the BB");
+    Builder.setInsertPoint(VPBB, VPBB->end());
+#endif // SIFIVE_CUSTOMIZATION
 
   // This is the block mask. We OR all incoming edges.
   for (auto *Predecessor : predecessors(BB)) {
@@ -11190,6 +11204,10 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
     if (VPBB != HeaderVPBB)
       VPBB->setName(BB->getName());
     Builder.setInsertPoint(VPBB);
+
+#if SIFIVE_CUSTOMIZATION
+    Builder.BB2VPBB[BB] = VPBB;
+#endif // SIFIVE_CUSTOMIZATION
 
     // Introduce each ingredient into VPlan.
     // TODO: Model and preserve debug intrinsics in VPlan.
