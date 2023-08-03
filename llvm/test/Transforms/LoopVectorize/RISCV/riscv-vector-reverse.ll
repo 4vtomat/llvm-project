@@ -109,11 +109,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 1 registers
 ; CHECK-NEXT:  LV: The target has 31 registers of RISCV::GPRRC register class
 ; CHECK-NEXT:  LV: The target has 32 registers of RISCV::VRRC register class
-<<<<<<< HEAD
-; CHECK-NEXT:  LV: Loop cost is 23
-=======
-; CHECK-NEXT:  LV: Loop cost is 31
->>>>>>> upstream/main
+; CHECK-NEXT:  LV: Loop cost is 29
 ; CHECK-NEXT:  LV: IC is 1
 ; CHECK-NEXT:  LV: VF is vscale x 4
 ; CHECK-NEXT:  LV: Not Interleaving.
@@ -249,11 +245,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 1 registers
 ; CHECK-NEXT:  LV: The target has 31 registers of RISCV::GPRRC register class
 ; CHECK-NEXT:  LV: The target has 32 registers of RISCV::VRRC register class
-<<<<<<< HEAD
-; CHECK-NEXT:  LV: Loop cost is 23
-=======
-; CHECK-NEXT:  LV: Loop cost is 31
->>>>>>> upstream/main
+; CHECK-NEXT:  LV: Loop cost is 29
 ; CHECK-NEXT:  LV: IC is 1
 ; CHECK-NEXT:  LV: VF is vscale x 4
 ; CHECK-NEXT:  LV: Not Interleaving.
