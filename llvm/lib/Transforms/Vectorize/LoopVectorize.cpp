@@ -6028,7 +6028,7 @@ LoopVectorizationCostModel::computeFeasibleMaxVFScalableOnly(
   // dependence distance).
   unsigned MaxSafeVectorWidthInBits = Legal->getMaxSafeVectorWidthInBits();
 
-  if (Legal->getMaxSafeDepDistBytes() != -1U && UserVF.isZero() &&
+  if (!Legal->isSafeForAnyVectorWidth() && UserVF.isZero() &&
       !VectorizeLoopsWithKnownDepDist) {
     reportVectorizationFailure("LV: Scalable vectorization for loops with "
                                "known dependence distance is disabled.",
@@ -9525,12 +9525,12 @@ SCEV2ValueTy LoopVectorizationPlanner::executePlan(
              "Cannot set vector length: Unsupported type");
     }
     State.SEW = Log2_32(SEW) - 3;
-    // Only update MaxSafeNumElems if there is a dependency
-    if (Legal->getMaxSafeDepDistBytes() != -1U) {
+    // Update MaxSafeNumElems if there is a restriction on safe vector widths
+    if (!Legal->isSafeForAnyVectorWidth()) {
       State.MaxSafeNumElems =
-          Legal->getMaxSafeDepDistBytes() / (SEW / 8);
-      LLVM_DEBUG(dbgs() << "LV: Executing plan with MaxSafeDepDistBytes="
-                        << Legal->getMaxSafeDepDistBytes()
+          Legal->getMaxSafeVectorWidthInBits() / SEW;
+      LLVM_DEBUG(dbgs() << "LV: Executing plan with MaxSafeVectorWidthInBits="
+                        << Legal->getMaxSafeVectorWidthInBits()
                         << ", MaxSafeNumElems=" << State.MaxSafeNumElems
                         << "\n");
     }
@@ -13274,7 +13274,7 @@ bool LoopVectorizePass::processLoop(Loop *L) {
 #if SIFIVE_CUSTOMIZATION
         CSAsVectorized += LVL.getCSAs().size();
 
-        if (LVL.getMaxSafeDepDistBytes() != -1U)
+        if (!LVL.isSafeForAnyVectorWidth())
           ++LoopsVectorizedWithDep;
 
 #endif // SIFIVE_CUSTOMIZATION
@@ -13379,7 +13379,7 @@ bool LoopVectorizePass::processLoop(Loop *L) {
 #if SIFIVE_CUSTOMIZATION
         CSAsVectorized += LVL.getCSAs().size();
 
-        if (LVL.getMaxSafeDepDistBytes() != -1U)
+        if (!LVL.isSafeForAnyVectorWidth())
           ++LoopsVectorizedWithDep;
 
 #endif // SIFIVE_CUSTOMIZATION
