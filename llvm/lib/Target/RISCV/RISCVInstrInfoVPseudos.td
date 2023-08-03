@@ -3909,9 +3909,22 @@ multiclass VPseudoVWMAC_VX {
 
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoVWMAC_VV_VF_RM<int TargetConstraintType = 1> {
+  foreach m = MxListFW in {
+    defm "" : VPseudoTernaryW_VV_RM<m, TargetConstraintType>,
+              SchedTernary<"WriteVFWMulAddV", "ReadVFWMulAddV",
+                           "ReadVFWMulAddV", "ReadVFWMulAddV", m.MX>;
+  }
+
+  foreach f = FPListW in {
+    foreach m = f.MxListFW in {
+      defm "" : VPseudoTernaryW_VF_RM<m, f, TargetConstraintType>,
+                SchedTernary<"WriteVFWMulAddF", "ReadVFWMulAddV",
+                             "ReadVFWMulAddV", "ReadVFWMulAddF", m.MX>;
+    }
+  }
+}
 #else
 multiclass VPseudoVWMAC_VV_VF_RM {
-#endif // SIFIVE_CUSTOMIZATION
   foreach m = MxListFW in {
     defm "" : VPseudoTernaryW_VV_RM<m>,
               SchedTernary<"WriteVFWMulAddV", "ReadVFWMulAddV",
@@ -3926,6 +3939,7 @@ multiclass VPseudoVWMAC_VV_VF_RM {
     }
   }
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 multiclass VPseudoVWMAC_VV_VF_BF_RM {
   foreach m = MxListFW in {
