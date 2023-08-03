@@ -44,48 +44,18 @@ entry:
 define void @unaligned_memcpy2(ptr nocapture %dest, ptr %src) nounwind {
 ; RV32-LABEL: unaligned_memcpy2:
 ; RV32:       # %bb.0: # %entry
-<<<<<<< HEAD
-; RV32-NEXT:    lui a0, %hi(dst)
-; RV32-NEXT:    addi a0, a0, %lo(dst)
-; RV32-NEXT:    lui a1, %hi(src)
-; RV32-NEXT:    addi a1, a1, %lo(src)
-; RV32-NEXT:    lbu a2, 10(a1)
-; RV32-NEXT:    lh a3, 8(a1)
-; RV32-NEXT:    lw a4, 4(a1)
-; RV32-NEXT:    lw a1, 0(a1)
-; RV32-NEXT:    sb a2, 10(a0)
-; RV32-NEXT:    sh a3, 8(a0)
-; RV32-NEXT:    sw a4, 4(a0)
-; RV32-NEXT:    sw a1, 0(a0)
-; RV32-NEXT:    li a0, 0
-=======
 ; RV32-NEXT:    lbu a2, 1(a1)
 ; RV32-NEXT:    sb a2, 1(a0)
 ; RV32-NEXT:    lbu a1, 0(a1)
 ; RV32-NEXT:    sb a1, 0(a0)
->>>>>>> upstream/main
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: unaligned_memcpy2:
 ; RV64:       # %bb.0: # %entry
-<<<<<<< HEAD
-; RV64-NEXT:    lui a0, %hi(src)
-; RV64-NEXT:    addi a0, a0, %lo(src)
-; RV64-NEXT:    lbu a1, 10(a0)
-; RV64-NEXT:    lh a2, 8(a0)
-; RV64-NEXT:    ld a0, 0(a0)
-; RV64-NEXT:    lui a3, %hi(dst)
-; RV64-NEXT:    addi a3, a3, %lo(dst)
-; RV64-NEXT:    sb a1, 10(a3)
-; RV64-NEXT:    sh a2, 8(a3)
-; RV64-NEXT:    sd a0, 0(a3)
-; RV64-NEXT:    li a0, 0
-=======
 ; RV64-NEXT:    lbu a2, 1(a1)
 ; RV64-NEXT:    sb a2, 1(a0)
 ; RV64-NEXT:    lbu a1, 0(a1)
 ; RV64-NEXT:    sb a1, 0(a0)
->>>>>>> upstream/main
 ; RV64-NEXT:    ret
 ;
 ; RV32-FAST-LABEL: unaligned_memcpy2:
@@ -243,70 +213,6 @@ entry:
   ret void
 }
 
-<<<<<<< HEAD
-define void @t1(ptr nocapture %C) nounwind {
-; RV32ALIGNED-LABEL: t1:
-; RV32ALIGNED:       # %bb.0: # %entry
-; RV32ALIGNED-NEXT:    lui a1, %hi(.L.str1)
-; RV32ALIGNED-NEXT:    addi a1, a1, %lo(.L.str1)
-; RV32ALIGNED-NEXT:    li a2, 31
-; RV32ALIGNED-NEXT:    tail memcpy@plt
-;
-; RV64ALIGNED-LABEL: t1:
-; RV64ALIGNED:       # %bb.0: # %entry
-; RV64ALIGNED-NEXT:    lui a1, %hi(.L.str1)
-; RV64ALIGNED-NEXT:    addi a1, a1, %lo(.L.str1)
-; RV64ALIGNED-NEXT:    li a2, 31
-; RV64ALIGNED-NEXT:    tail memcpy@plt
-;
-; RV32UNALIGNED-LABEL: t1:
-; RV32UNALIGNED:       # %bb.0: # %entry
-; RV32UNALIGNED-NEXT:    sb zero, 30(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 4
-; RV32UNALIGNED-NEXT:    addi a1, a1, 1870
-; RV32UNALIGNED-NEXT:    sh a1, 28(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 300325
-; RV32UNALIGNED-NEXT:    addi a1, a1, 1107
-; RV32UNALIGNED-NEXT:    sw a1, 24(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 132181
-; RV32UNALIGNED-NEXT:    addi a1, a1, -689
-; RV32UNALIGNED-NEXT:    sw a1, 20(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 340483
-; RV32UNALIGNED-NEXT:    addi a1, a1, -947
-; RV32UNALIGNED-NEXT:    sw a1, 16(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 267556
-; RV32UNALIGNED-NEXT:    addi a1, a1, 1871
-; RV32UNALIGNED-NEXT:    sw a1, 12(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 337154
-; RV32UNALIGNED-NEXT:    addi a1, a1, 69
-; RV32UNALIGNED-NEXT:    sw a1, 8(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 320757
-; RV32UNALIGNED-NEXT:    addi a1, a1, 1107
-; RV32UNALIGNED-NEXT:    sw a1, 4(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 365861
-; RV32UNALIGNED-NEXT:    addi a1, a1, -1980
-; RV32UNALIGNED-NEXT:    sw a1, 0(a0)
-; RV32UNALIGNED-NEXT:    ret
-;
-; RV64UNALIGNED-LABEL: t1:
-; RV64UNALIGNED:       # %bb.0: # %entry
-; RV64UNALIGNED-NEXT:    lui a1, %hi(.L.str1)
-; RV64UNALIGNED-NEXT:    addi a1, a1, %lo(.L.str1)
-; RV64UNALIGNED-NEXT:    ld a2, 16(a1)
-; RV64UNALIGNED-NEXT:    ld a3, 8(a1)
-; RV64UNALIGNED-NEXT:    ld a1, 0(a1)
-; RV64UNALIGNED-NEXT:    sd a2, 16(a0)
-; RV64UNALIGNED-NEXT:    sb zero, 30(a0)
-; RV64UNALIGNED-NEXT:    sd a3, 8(a0)
-; RV64UNALIGNED-NEXT:    sd a1, 0(a0)
-; RV64UNALIGNED-NEXT:    lui a1, 4
-; RV64UNALIGNED-NEXT:    addiw a1, a1, 1870
-; RV64UNALIGNED-NEXT:    sh a1, 28(a0)
-; RV64UNALIGNED-NEXT:    lui a1, 300325
-; RV64UNALIGNED-NEXT:    addiw a1, a1, 1107
-; RV64UNALIGNED-NEXT:    sw a1, 24(a0)
-; RV64UNALIGNED-NEXT:    ret
-=======
 define void @unaligned_memcpy8(ptr nocapture %dest, ptr %src) nounwind {
 ; RV32-LABEL: unaligned_memcpy8:
 ; RV32:       # %bb.0: # %entry
@@ -361,76 +267,11 @@ define void @unaligned_memcpy8(ptr nocapture %dest, ptr %src) nounwind {
 ; RV64-FAST-NEXT:    ld a1, 0(a1)
 ; RV64-FAST-NEXT:    sd a1, 0(a0)
 ; RV64-FAST-NEXT:    ret
->>>>>>> upstream/main
 entry:
   tail call void @llvm.memcpy.inline.p0.p0.i64(ptr %dest, ptr %src, i64 8, i1 false)
   ret void
 }
 
-<<<<<<< HEAD
-define void @t2(ptr nocapture %C) nounwind {
-; RV32ALIGNED-LABEL: t2:
-; RV32ALIGNED:       # %bb.0: # %entry
-; RV32ALIGNED-NEXT:    lui a1, %hi(.L.str2)
-; RV32ALIGNED-NEXT:    addi a1, a1, %lo(.L.str2)
-; RV32ALIGNED-NEXT:    li a2, 36
-; RV32ALIGNED-NEXT:    tail memcpy@plt
-;
-; RV64ALIGNED-LABEL: t2:
-; RV64ALIGNED:       # %bb.0: # %entry
-; RV64ALIGNED-NEXT:    lui a1, %hi(.L.str2)
-; RV64ALIGNED-NEXT:    addi a1, a1, %lo(.L.str2)
-; RV64ALIGNED-NEXT:    li a2, 36
-; RV64ALIGNED-NEXT:    tail memcpy@plt
-;
-; RV32UNALIGNED-LABEL: t2:
-; RV32UNALIGNED:       # %bb.0: # %entry
-; RV32UNALIGNED-NEXT:    lui a1, 1156
-; RV32UNALIGNED-NEXT:    addi a1, a1, 332
-; RV32UNALIGNED-NEXT:    sw a1, 32(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 270852
-; RV32UNALIGNED-NEXT:    addi a1, a1, 1870
-; RV32UNALIGNED-NEXT:    sw a1, 28(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 300325
-; RV32UNALIGNED-NEXT:    addi a1, a1, 1107
-; RV32UNALIGNED-NEXT:    sw a1, 24(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 132181
-; RV32UNALIGNED-NEXT:    addi a1, a1, -689
-; RV32UNALIGNED-NEXT:    sw a1, 20(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 340483
-; RV32UNALIGNED-NEXT:    addi a1, a1, -947
-; RV32UNALIGNED-NEXT:    sw a1, 16(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 267556
-; RV32UNALIGNED-NEXT:    addi a1, a1, 1871
-; RV32UNALIGNED-NEXT:    sw a1, 12(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 337154
-; RV32UNALIGNED-NEXT:    addi a1, a1, 69
-; RV32UNALIGNED-NEXT:    sw a1, 8(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 320757
-; RV32UNALIGNED-NEXT:    addi a1, a1, 1107
-; RV32UNALIGNED-NEXT:    sw a1, 4(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 365861
-; RV32UNALIGNED-NEXT:    addi a1, a1, -1980
-; RV32UNALIGNED-NEXT:    sw a1, 0(a0)
-; RV32UNALIGNED-NEXT:    ret
-;
-; RV64UNALIGNED-LABEL: t2:
-; RV64UNALIGNED:       # %bb.0: # %entry
-; RV64UNALIGNED-NEXT:    lui a1, %hi(.L.str2)
-; RV64UNALIGNED-NEXT:    addi a1, a1, %lo(.L.str2)
-; RV64UNALIGNED-NEXT:    ld a2, 24(a1)
-; RV64UNALIGNED-NEXT:    ld a3, 16(a1)
-; RV64UNALIGNED-NEXT:    ld a4, 8(a1)
-; RV64UNALIGNED-NEXT:    ld a1, 0(a1)
-; RV64UNALIGNED-NEXT:    sd a2, 24(a0)
-; RV64UNALIGNED-NEXT:    sd a3, 16(a0)
-; RV64UNALIGNED-NEXT:    sd a4, 8(a0)
-; RV64UNALIGNED-NEXT:    sd a1, 0(a0)
-; RV64UNALIGNED-NEXT:    lui a1, 1156
-; RV64UNALIGNED-NEXT:    addiw a1, a1, 332
-; RV64UNALIGNED-NEXT:    sw a1, 32(a0)
-; RV64UNALIGNED-NEXT:    ret
-=======
 define void @unaligned_memcpy15(ptr nocapture %dest, ptr %src) nounwind {
 ; RV32-LABEL: unaligned_memcpy15:
 ; RV32:       # %bb.0: # %entry
@@ -519,62 +360,11 @@ define void @unaligned_memcpy15(ptr nocapture %dest, ptr %src) nounwind {
 ; RV64-FAST-NEXT:    ld a1, 0(a1)
 ; RV64-FAST-NEXT:    sd a1, 0(a0)
 ; RV64-FAST-NEXT:    ret
->>>>>>> upstream/main
 entry:
   tail call void @llvm.memcpy.inline.p0.p0.i64(ptr %dest, ptr %src, i64 15, i1 false)
   ret void
 }
 
-<<<<<<< HEAD
-define void @t3(ptr nocapture %C) nounwind {
-; RV32ALIGNED-LABEL: t3:
-; RV32ALIGNED:       # %bb.0: # %entry
-; RV32ALIGNED-NEXT:    lui a1, %hi(.L.str3)
-; RV32ALIGNED-NEXT:    addi a1, a1, %lo(.L.str3)
-; RV32ALIGNED-NEXT:    li a2, 24
-; RV32ALIGNED-NEXT:    tail memcpy@plt
-;
-; RV64ALIGNED-LABEL: t3:
-; RV64ALIGNED:       # %bb.0: # %entry
-; RV64ALIGNED-NEXT:    lui a1, %hi(.L.str3)
-; RV64ALIGNED-NEXT:    addi a1, a1, %lo(.L.str3)
-; RV64ALIGNED-NEXT:    li a2, 24
-; RV64ALIGNED-NEXT:    tail memcpy@plt
-;
-; RV32UNALIGNED-LABEL: t3:
-; RV32UNALIGNED:       # %bb.0: # %entry
-; RV32UNALIGNED-NEXT:    lui a1, 1109
-; RV32UNALIGNED-NEXT:    addi a1, a1, -689
-; RV32UNALIGNED-NEXT:    sw a1, 20(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 340483
-; RV32UNALIGNED-NEXT:    addi a1, a1, -947
-; RV32UNALIGNED-NEXT:    sw a1, 16(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 267556
-; RV32UNALIGNED-NEXT:    addi a1, a1, 1871
-; RV32UNALIGNED-NEXT:    sw a1, 12(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 337154
-; RV32UNALIGNED-NEXT:    addi a1, a1, 69
-; RV32UNALIGNED-NEXT:    sw a1, 8(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 320757
-; RV32UNALIGNED-NEXT:    addi a1, a1, 1107
-; RV32UNALIGNED-NEXT:    sw a1, 4(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 365861
-; RV32UNALIGNED-NEXT:    addi a1, a1, -1980
-; RV32UNALIGNED-NEXT:    sw a1, 0(a0)
-; RV32UNALIGNED-NEXT:    ret
-;
-; RV64UNALIGNED-LABEL: t3:
-; RV64UNALIGNED:       # %bb.0: # %entry
-; RV64UNALIGNED-NEXT:    lui a1, %hi(.L.str3)
-; RV64UNALIGNED-NEXT:    addi a1, a1, %lo(.L.str3)
-; RV64UNALIGNED-NEXT:    ld a2, 16(a1)
-; RV64UNALIGNED-NEXT:    ld a3, 8(a1)
-; RV64UNALIGNED-NEXT:    ld a1, 0(a1)
-; RV64UNALIGNED-NEXT:    sd a2, 16(a0)
-; RV64UNALIGNED-NEXT:    sd a3, 8(a0)
-; RV64UNALIGNED-NEXT:    sd a1, 0(a0)
-; RV64UNALIGNED-NEXT:    ret
-=======
 define void @unaligned_memcpy16(ptr nocapture %dest, ptr %src) nounwind {
 ; RV32-LABEL: unaligned_memcpy16:
 ; RV32:       # %bb.0: # %entry
@@ -667,58 +457,11 @@ define void @unaligned_memcpy16(ptr nocapture %dest, ptr %src) nounwind {
 ; RV64-FAST-NEXT:    ld a1, 0(a1)
 ; RV64-FAST-NEXT:    sd a1, 0(a0)
 ; RV64-FAST-NEXT:    ret
->>>>>>> upstream/main
 entry:
   tail call void @llvm.memcpy.inline.p0.p0.i64(ptr %dest, ptr %src, i64 16, i1 false)
   ret void
 }
 
-<<<<<<< HEAD
-define void @t4(ptr nocapture %C) nounwind {
-; RV32ALIGNED-LABEL: t4:
-; RV32ALIGNED:       # %bb.0: # %entry
-; RV32ALIGNED-NEXT:    lui a1, %hi(.L.str4)
-; RV32ALIGNED-NEXT:    addi a1, a1, %lo(.L.str4)
-; RV32ALIGNED-NEXT:    li a2, 18
-; RV32ALIGNED-NEXT:    tail memcpy@plt
-;
-; RV64ALIGNED-LABEL: t4:
-; RV64ALIGNED:       # %bb.0: # %entry
-; RV64ALIGNED-NEXT:    lui a1, %hi(.L.str4)
-; RV64ALIGNED-NEXT:    addi a1, a1, %lo(.L.str4)
-; RV64ALIGNED-NEXT:    li a2, 18
-; RV64ALIGNED-NEXT:    tail memcpy@plt
-;
-; RV32UNALIGNED-LABEL: t4:
-; RV32UNALIGNED:       # %bb.0: # %entry
-; RV32UNALIGNED-NEXT:    li a1, 32
-; RV32UNALIGNED-NEXT:    sh a1, 16(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 132388
-; RV32UNALIGNED-NEXT:    addi a1, a1, 1871
-; RV32UNALIGNED-NEXT:    sw a1, 12(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 337154
-; RV32UNALIGNED-NEXT:    addi a1, a1, 69
-; RV32UNALIGNED-NEXT:    sw a1, 8(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 320757
-; RV32UNALIGNED-NEXT:    addi a1, a1, 1107
-; RV32UNALIGNED-NEXT:    sw a1, 4(a0)
-; RV32UNALIGNED-NEXT:    lui a1, 365861
-; RV32UNALIGNED-NEXT:    addi a1, a1, -1980
-; RV32UNALIGNED-NEXT:    sw a1, 0(a0)
-; RV32UNALIGNED-NEXT:    ret
-;
-; RV64UNALIGNED-LABEL: t4:
-; RV64UNALIGNED:       # %bb.0: # %entry
-; RV64UNALIGNED-NEXT:    lui a1, %hi(.L.str4)
-; RV64UNALIGNED-NEXT:    addi a1, a1, %lo(.L.str4)
-; RV64UNALIGNED-NEXT:    ld a2, 8(a1)
-; RV64UNALIGNED-NEXT:    ld a1, 0(a1)
-; RV64UNALIGNED-NEXT:    li a3, 32
-; RV64UNALIGNED-NEXT:    sh a3, 16(a0)
-; RV64UNALIGNED-NEXT:    sd a2, 8(a0)
-; RV64UNALIGNED-NEXT:    sd a1, 0(a0)
-; RV64UNALIGNED-NEXT:    ret
-=======
 define void @unaligned_memcpy31(ptr nocapture %dest, ptr %src) nounwind {
 ; RV32-LABEL: unaligned_memcpy31:
 ; RV32:       # %bb.0: # %entry
@@ -883,7 +626,6 @@ define void @unaligned_memcpy31(ptr nocapture %dest, ptr %src) nounwind {
 ; RV64-FAST-NEXT:    ld a1, 0(a1)
 ; RV64-FAST-NEXT:    sd a1, 0(a0)
 ; RV64-FAST-NEXT:    ret
->>>>>>> upstream/main
 entry:
   tail call void @llvm.memcpy.inline.p0.p0.i64(ptr %dest, ptr %src, i64 31, i1 false)
   ret void
