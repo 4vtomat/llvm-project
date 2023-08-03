@@ -14,6 +14,9 @@
 #include "llvm/Analysis/MemorySSA.h"
 #include "llvm/Analysis/PostDominators.h"
 #include "llvm/Analysis/ScalarEvolution.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Analysis/SiFive_LiveValues.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Analysis/TargetLibraryInfo.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/AsmParser/Parser.h"
@@ -303,6 +306,9 @@ public:
 
     // We need DominatorTreeAnalysis for LoopAnalysis.
     FAM.registerPass([&] { return DominatorTreeAnalysis(); });
+#if SIFIVE_CUSTOMIZATION
+    FAM.registerPass([&] { return LiveValuesAnalysis(); });
+#endif // SIFIVE_CUSTOMIZATION
     FAM.registerPass([&] { return LoopAnalysis(); });
     // We also allow loop passes to assume a set of other analyses and so need
     // those.
@@ -594,6 +600,9 @@ TEST_F(LoopPassManagerTest, InvalidationOfBundledAnalyses) {
     auto PA = PreservedAnalyses::none();
     // Not preserving `AAManager`.
     PA.preserve<DominatorTreeAnalysis>();
+#if SIFIVE_CUSTOMIZATION
+    PA.preserve<LiveValuesAnalysis>();
+#endif // SIFIVE_CUSTOMIZATION
     PA.preserve<LoopAnalysis>();
     PA.preserve<LoopAnalysisManagerFunctionProxy>();
     PA.preserve<ScalarEvolutionAnalysis>();
@@ -609,6 +618,9 @@ TEST_F(LoopPassManagerTest, InvalidationOfBundledAnalyses) {
   EXPECT_CALL(MFPHandle, run(HasName("f"), _)).WillOnce(InvokeWithoutArgs([] {
     auto PA = PreservedAnalyses::none();
     // Not preserving `DominatorTreeAnalysis`.
+#if SIFIVE_CUSTOMIZATION
+    PA.preserve<LiveValuesAnalysis>();
+#endif // SIFIVE_CUSTOMIZATION
     PA.preserve<LoopAnalysis>();
     PA.preserve<LoopAnalysisManagerFunctionProxy>();
     PA.preserve<ScalarEvolutionAnalysis>();
@@ -621,9 +633,30 @@ TEST_F(LoopPassManagerTest, InvalidationOfBundledAnalyses) {
   FPM.addPass(createFunctionToLoopPassAdaptor(
       RequireAnalysisLoopPass<MockLoopAnalysisHandle::Analysis>()));
 
+#if SIFIVE_CUSTOMIZATION
   EXPECT_CALL(MFPHandle, run(HasName("f"), _)).WillOnce(InvokeWithoutArgs([] {
     auto PA = PreservedAnalyses::none();
     PA.preserve<DominatorTreeAnalysis>();
+    // Not preserving `LiveValuesAnalysis`.
+    PA.preserve<LoopAnalysis>();
+    PA.preserve<LoopAnalysisManagerFunctionProxy>();
+    PA.preserve<ScalarEvolutionAnalysis>();
+    return PA;
+  }));
+  EXPECT_CALL(MLAHandle, run(HasName("loop.0.0"), _, _));
+  EXPECT_CALL(MLAHandle, run(HasName("loop.0.1"), _, _));
+  EXPECT_CALL(MLAHandle, run(HasName("loop.0"), _, _));
+  FPM.addPass(MFPHandle.getPass());
+  FPM.addPass(createFunctionToLoopPassAdaptor(
+      RequireAnalysisLoopPass<MockLoopAnalysisHandle::Analysis>()));
+#endif // SIFIVE_CUSTOMIZATION
+
+  EXPECT_CALL(MFPHandle, run(HasName("f"), _)).WillOnce(InvokeWithoutArgs([] {
+    auto PA = PreservedAnalyses::none();
+    PA.preserve<DominatorTreeAnalysis>();
+#if SIFIVE_CUSTOMIZATION
+    PA.preserve<LiveValuesAnalysis>();
+#endif // SIFIVE_CUSTOMIZATION
     // Not preserving the `LoopAnalysis`.
     PA.preserve<LoopAnalysisManagerFunctionProxy>();
     PA.preserve<ScalarEvolutionAnalysis>();
@@ -639,6 +672,9 @@ TEST_F(LoopPassManagerTest, InvalidationOfBundledAnalyses) {
   EXPECT_CALL(MFPHandle, run(HasName("f"), _)).WillOnce(InvokeWithoutArgs([] {
     auto PA = PreservedAnalyses::none();
     PA.preserve<DominatorTreeAnalysis>();
+#if SIFIVE_CUSTOMIZATION
+    PA.preserve<LiveValuesAnalysis>();
+#endif // SIFIVE_CUSTOMIZATION
     PA.preserve<LoopAnalysis>();
     // Not preserving the `LoopAnalysisManagerFunctionProxy`.
     PA.preserve<ScalarEvolutionAnalysis>();
@@ -654,6 +690,9 @@ TEST_F(LoopPassManagerTest, InvalidationOfBundledAnalyses) {
   EXPECT_CALL(MFPHandle, run(HasName("f"), _)).WillOnce(InvokeWithoutArgs([] {
     auto PA = PreservedAnalyses::none();
     PA.preserve<DominatorTreeAnalysis>();
+#if SIFIVE_CUSTOMIZATION
+    PA.preserve<LiveValuesAnalysis>();
+#endif // SIFIVE_CUSTOMIZATION
     PA.preserve<LoopAnalysis>();
     PA.preserve<LoopAnalysisManagerFunctionProxy>();
     // Not preserving `ScalarEvolutionAnalysis`.
@@ -670,7 +709,11 @@ TEST_F(LoopPassManagerTest, InvalidationOfBundledAnalyses) {
   // 'g' once with a requires pass and then run our mock pass over g a bunch
   // but just get cached results each time.
   EXPECT_CALL(MLAHandle, run(HasName("loop.g.0"), _, _));
+#if SIFIVE_CUSTOMIZATION
+  EXPECT_CALL(MFPHandle, run(HasName("g"), _)).Times(7);
+#else
   EXPECT_CALL(MFPHandle, run(HasName("g"), _)).Times(6);
+#endif
 
   MPM.addPass(createModuleToFunctionPassAdaptor(std::move(FPM)));
   MPM.run(*M, MAM);

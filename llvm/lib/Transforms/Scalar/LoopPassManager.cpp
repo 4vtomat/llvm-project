@@ -12,6 +12,9 @@
 #include "llvm/Analysis/BranchProbabilityInfo.h"
 #include "llvm/Analysis/MemorySSA.h"
 #include "llvm/Analysis/ScalarEvolution.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Analysis/SiFive_LiveValues.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Analysis/TargetLibraryInfo.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/Support/TimeProfiler.h"
@@ -235,6 +238,9 @@ PreservedAnalyses FunctionToLoopPassAdaptor::run(Function &F,
                                      AM.getResult<ScalarEvolutionAnalysis>(F),
                                      AM.getResult<TargetLibraryAnalysis>(F),
                                      AM.getResult<TargetIRAnalysis>(F),
+#if SIFIVE_CUSTOMIZATION
+                                     AM.getResult<LiveValuesAnalysis>(F),
+#endif // SIFIVE_CUSTOMIZATION
                                      BFI,
                                      BPI,
                                      MSSA};
@@ -350,6 +356,9 @@ PreservedAnalyses FunctionToLoopPassAdaptor::run(Function &F,
   PA.preserve<LoopAnalysisManagerFunctionProxy>();
   // We also preserve the set of standard analyses.
   PA.preserve<DominatorTreeAnalysis>();
+#if SIFIVE_CUSTOMIZATION
+  PA.preserve<LiveValuesAnalysis>();
+#endif // SIFIVE_CUSTOMIZATION
   PA.preserve<LoopAnalysis>();
   PA.preserve<ScalarEvolutionAnalysis>();
   if (UseBlockFrequencyInfo && F.hasProfileData())

@@ -11,6 +11,9 @@
 #include "llvm/Analysis/LoopInfo.h"
 #include "llvm/Analysis/MemorySSA.h"
 #include "llvm/Analysis/ScalarEvolution.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Analysis/SiFive_LiveValues.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/IR/Dominators.h"
 #include "llvm/IR/PassManagerImpl.h"
 #include <optional>
@@ -54,6 +57,9 @@ bool LoopAnalysisManagerFunctionProxy::Result::invalidate(
       Inv.invalidate<DominatorTreeAnalysis>(F, PA) ||
       Inv.invalidate<LoopAnalysis>(F, PA) ||
       Inv.invalidate<ScalarEvolutionAnalysis>(F, PA) ||
+#if SIFIVE_CUSTOMIZATION
+      Inv.invalidate<LiveValuesAnalysis>(F, PA) ||
+#endif // SIFIVE_CUSTOMIZATION
       invalidateMemorySSAAnalysis) {
     // Note that the LoopInfo may be stale at this point, however the loop
     // objects themselves remain the only viable keys that could be in the
@@ -141,5 +147,8 @@ PreservedAnalyses llvm::getLoopPassPreservedAnalyses() {
   PA.preserve<LoopAnalysis>();
   PA.preserve<LoopAnalysisManagerFunctionProxy>();
   PA.preserve<ScalarEvolutionAnalysis>();
+#if SIFIVE_CUSTOMIZATION
+  PA.preserve<LiveValuesAnalysis>();
+#endif // SIFIVE_CUSTOMIZATION
   return PA;
 }

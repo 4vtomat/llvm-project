@@ -37,6 +37,9 @@ class AAResults;
 class AssumptionCache;
 class DominatorTree;
 class Function;
+#if SIFIVE_CUSTOMIZATION
+class LiveValues;
+#endif // SIFIVE_CUSTOMIZATION
 class Loop;
 class LoopInfo;
 class MemorySSA;
@@ -56,6 +59,9 @@ struct LoopStandardAnalysisResults {
   ScalarEvolution &SE;
   TargetLibraryInfo &TLI;
   TargetTransformInfo &TTI;
+#if SIFIVE_CUSTOMIZATION
+  LiveValues &LV;
+#endif // SIFIVE_CUSTOMIZATION
   BlockFrequencyInfo *BFI;
   BranchProbabilityInfo *BPI;
   MemorySSA *MSSA;
