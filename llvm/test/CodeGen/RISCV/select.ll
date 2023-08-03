@@ -922,24 +922,14 @@ define i32 @select_and_3(i1 zeroext %cond, i32 %a) {
 ; RV64IMXVTCONDOPS:       # %bb.0: # %entry
 ; RV64IMXVTCONDOPS-NEXT:    andi a2, a1, 42
 ; RV64IMXVTCONDOPS-NEXT:    vt.maskc a0, a1, a0
-<<<<<<< HEAD
-; RV64IMXVTCONDOPS-NEXT:    andi a1, a1, 42
-; RV64IMXVTCONDOPS-NEXT:    or a0, a1, a0
-=======
 ; RV64IMXVTCONDOPS-NEXT:    or a0, a2, a0
->>>>>>> upstream/main
 ; RV64IMXVTCONDOPS-NEXT:    ret
 ;
 ; CHECKZICOND-LABEL: select_and_3:
 ; CHECKZICOND:       # %bb.0: # %entry
 ; CHECKZICOND-NEXT:    andi a2, a1, 42
 ; CHECKZICOND-NEXT:    czero.eqz a0, a1, a0
-<<<<<<< HEAD
-; CHECKZICOND-NEXT:    andi a1, a1, 42
-; CHECKZICOND-NEXT:    or a0, a1, a0
-=======
 ; CHECKZICOND-NEXT:    or a0, a2, a0
->>>>>>> upstream/main
 ; CHECKZICOND-NEXT:    ret
 entry:
   %c = and i32 %a, 42
