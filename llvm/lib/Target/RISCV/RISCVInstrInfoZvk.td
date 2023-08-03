@@ -135,7 +135,10 @@ class VAESKF_MV_I<bits<6> funct6, string opcodestr, Operand optype>
 }
 } // hasSideEffects = 0, mayLoad = 0, mayStore = 0
 
-<<<<<<< HEAD
+//===----------------------------------------------------------------------===//
+// Instructions
+//===----------------------------------------------------------------------===//
+
 let Predicates = [HasStdExtZvbbOrZvkb0p1] in {
   let Predicates = [HasStdExtZvkb0p1], DecoderNamespace = "Zvk0p1" in
     defm VANDN_0P1_V : VALU_IV_V_X_I<"vandn", 0b000001>;
@@ -144,15 +147,6 @@ let Predicates = [HasStdExtZvbbOrZvkb0p1] in {
   defm VROL_V : VALU_IV_V_X<"vrol", 0b010101>;
   defm VROR_V : VROR_IV_V_X_I<"vror", 0b010100>;
   defm VANDN_V : VALU_IV_V_X_I<"vandn", 0b000001>;
-=======
-//===----------------------------------------------------------------------===//
-// Instructions
-//===----------------------------------------------------------------------===//
-
-let Predicates = [HasStdExtZvbb] in {
-  defm VANDN_V  : VALU_IV_V_X<"vandn", 0b000001>;
-  def  VBREV8_V : VALUVs2<0b010010, 0b01000, OPMVV, "vbrev8.v">;
->>>>>>> upstream/main
   def  VBREV_V  : VALUVs2<0b010010, 0b01010, OPMVV, "vbrev.v">;
   def  VCLZ_V   : VALUVs2<0b010010, 0b01100, OPMVV, "vclz.v">;
   def  VCPOP_V  : VALUVs2<0b010010, 0b01110, OPMVV, "vcpop.v">;
@@ -177,25 +171,7 @@ let Predicates = [HasStdExtZvknha], RVVConstraint = NoConstraint in {
   def VSHA2MS_VV : PALUVVNoVm<0b101101, OPMVV, "vsha2ms.vv">;
 } // Predicates = [HasStdExtZvknha]
 
-<<<<<<< HEAD
 let Predicates = [HasStdExtZvknsOrZvkned], RVVConstraint = NoConstraint in {
-  defm VAESDF : VAES_MV_V_S<0b101000, 0b101001, 0b00001, OPMVV, "vaesdf">;
-  defm VAESDM : VAES_MV_V_S<0b101000, 0b101001, 0b00000, OPMVV, "vaesdm">;
-  defm VAESEF : VAES_MV_V_S<0b101000, 0b101001, 0b00011, OPMVV, "vaesef">;
-  defm VAESEM : VAES_MV_V_S<0b101000, 0b101001, 0b00010, OPMVV, "vaesem">;
-#ifdef SIFIVE_CUSTOMIZATION
-  def VAESKF1_VI : VAESKF_MV_I<0b100010, "vaeskf1.vi", uimm5>;
-  def VAESKF2_VI : VAESKF_MV_I<0b101010, "vaeskf2.vi", uimm5>;
-#endif // SIFIVE_CUSTOMIZATION
-  def VAESZ_VS : PALUVs2NoVm<0b101001, 0b00111, OPMVV, "vaesz.vs">;
-} // Predicates = [HasStdExtZvknsOrZvkned]
-
-let Predicates = [HasStdExtZvksed], RVVConstraint = NoConstraint in {
-#ifdef SIFIVE_CUSTOMIZATION
-  def  VSM4K_VI : PALUVINoVm<0b100001, "vsm4k.vi", uimm5>;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-let Predicates = [HasStdExtZvkned], RVVConstraint = NoConstraint in {
   defm VAESDF     : VAES_MV_V_S<0b101000, 0b101001, 0b00001, OPMVV, "vaesdf">;
   defm VAESDM     : VAES_MV_V_S<0b101000, 0b101001, 0b00000, OPMVV, "vaesdm">;
   defm VAESEF     : VAES_MV_V_S<0b101000, 0b101001, 0b00011, OPMVV, "vaesef">;
@@ -203,11 +179,10 @@ let Predicates = [HasStdExtZvkned], RVVConstraint = NoConstraint in {
   def  VAESKF1_VI : VAESKF_MV_I<0b100010, "vaeskf1.vi", uimm5>;
   def  VAESKF2_VI : VAESKF_MV_I<0b101010, "vaeskf2.vi", uimm5>;
   def  VAESZ_VS   : PALUVs2NoVm<0b101001, 0b00111, OPMVV, "vaesz.vs">;
-} // Predicates = [HasStdExtZvkned]
+} // Predicates = [HasStdExtZvknsOrZvkned]
 
 let Predicates = [HasStdExtZvksed], RVVConstraint = NoConstraint in {
   def  VSM4K_VI : PALUVINoVm<0b100001, "vsm4k.vi", uimm5>;
->>>>>>> upstream/main
   defm VSM4R    : VAES_MV_V_S<0b101000, 0b101001, 0b10000, OPMVV, "vsm4r">;
 } // Predicates = [HasStdExtZvksed]
 
@@ -228,7 +203,6 @@ let Predicates = [HasStdExtZvkg0p1],
 // Pseudo instructions
 //===----------------------------------------------------------------------===//
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoUnaryV_V<LMULInfo m, string Constraint = ""> {
   let VLMul = m.value in {
@@ -314,17 +288,6 @@ multiclass VPseudoVALU_V<string Constraint = ""> {
 
     defm "" : VPseudoUnaryV_V<m, Constraint>,
               Sched<[WriteVIALUV_MX, ReadVIALUV_MX, ReadVIALUV_MX, ReadVMask]>;
-=======
-defm PseudoVANDN : VPseudoVALU_VV_VX;
-
-multiclass VPseudoUnaryV_V {
-  foreach m = MxList in {
-    let VLMul = m.value in {
-      def "_V_" # m.MX : VPseudoUnaryNoMask<m.vrclass, m.vrclass>;
-      def "_V_" # m.MX # "_MASK" : VPseudoUnaryMask<m.vrclass, m.vrclass>,
-                                   RISCVMaskedPseudo<MaskIdx=2>;
-    }
->>>>>>> upstream/main
   }
 }
 
@@ -425,9 +388,15 @@ let Predicates = [HasStdExtZvknsOrZvkned] in {
 
 let Predicates = [HasStdExtZvbbOrZvkb0p1] in {
   defm PseudoVANDN : VPseudoVALU_VV_VX;
+  defm PseudoVBREV : VPseudoVALU_V;
   defm PseudoVBREV8 : VPseudoVALU_V;
+  defm PseudoVREV8 : VPseudoVALU_V;
   defm PseudoVROL : VPseudoVALU_VV_VX;
-  defm PseudoVROR : VPseudoVALU_VV_VX_VI;
+  defm PseudoVROR : VPseudoVALU_VV_VX_VI<uimm6>;
+  defm PseudoVWSLL : VPseudoVWALU_VV_VX_VI<uimm5>;
+  defm PseudoVCLZ : VPseudoVALU_V;
+  defm PseudoVCTZ : VPseudoVALU_V;
+  defm PseudoVCPOP : VPseudoVALU_V;
 } // Predicates = [HasStdExtZvbbOrZvkb0p1]
 
 let Predicates = [HasStdExtZvbcOrZvkb0p1] in {
@@ -533,12 +502,6 @@ multiclass PPatUnaryV_V_S_NoMask<string intrinsic, string instruction,
 }
 
 
-defm PseudoVBREV : VPseudoVALU_V;
-defm PseudoVREV8 : VPseudoVALU_V;
-defm PseudoVCLZ : VPseudoVALU_V;
-defm PseudoVCTZ : VPseudoVALU_V;
-defm PseudoVCPOP : VPseudoVALU_V;
-
 let Predicates = [HasStdExtZvknsOrZvkned] in {
   defm : PPatUnaryV_V_S_NoMask<"int_riscv_vaesdf", "PseudoVAESDF", I32IntegerVectors>;
   defm : PPatUnaryV_V_S_NoMask<"int_riscv_vaesdm", "PseudoVAESDM", I32IntegerVectors>;
@@ -587,11 +550,6 @@ let Predicates = [HasStdExtZvknha] in {
   defm : VPatBinaryV_VV_NoMask<"int_riscv_vsha2ms", "PseudoVSHA2MS", I32I64IntegerVectors>;
 } // Predicates = [HasStdExtZvknha]
 #endif // SIFIVE_CUSTOMIZATION
-
-defm PseudoVROL : VPseudoVALU_VV_VX;
-defm PseudoVROR : VPseudoVALU_VV_VX_VI<uimm6>;
-
-defm PseudoVWSLL : VPseudoVWALU_VV_VX_VI<uimm5>;
 
 //===----------------------------------------------------------------------===//
 // SDNode patterns
