@@ -964,19 +964,12 @@ define <vscale x 1 x i16> @test_vaaddu(<vscale x 1 x i16> %var_11, i16 zeroext %
 ; CHECK-LABEL: test_vaaddu:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 3, e16, mf4, ta, mu
-<<<<<<< HEAD
-=======
 ; CHECK-NEXT:    csrwi vxrm, 0
->>>>>>> upstream/main
 ; CHECK-NEXT:    vaaddu.vx v9, v8, a0, v0.t
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
 entry:
-<<<<<<< HEAD
-  %0 = tail call <vscale x 1 x i16> @llvm.riscv.vaaddu.nxv1i16.i16.i64(<vscale x 1 x i16> poison, <vscale x 1 x i16> %var_11, i16 %var_9, i64 7, i64 3)
-=======
   %0 = tail call <vscale x 1 x i16> @llvm.riscv.vaaddu.nxv1i16.i16.i64(<vscale x 1 x i16> poison, <vscale x 1 x i16> %var_11, i16 %var_9, i64 0, i64 3)
->>>>>>> upstream/main
   %1 = tail call <vscale x 1 x i16> @llvm.riscv.vmerge.nxv1i16.nxv1i16.i64(<vscale x 1 x i16> poison, <vscale x 1 x i16> %var_0, <vscale x 1 x i16> %0, <vscale x 1 x i1> %var_5, i64 3)
   ret <vscale x 1 x i16> %1
 }
@@ -988,8 +981,6 @@ declare <vscale x 32 x i16> @llvm.riscv.vmerge.nxv32i16.nxv32i16.i64(<vscale x 3
 declare void @llvm.riscv.vse.nxv32i16.i64(<vscale x 32 x i16>, <vscale x 32 x i16>* nocapture, i64)
 declare <vscale x 1 x i16> @llvm.riscv.vaaddu.nxv1i16.i16.i64(<vscale x 1 x i16>, <vscale x 1 x i16>, i16, i64 immarg, i64)
 declare <vscale x 1 x i16> @llvm.riscv.vmerge.nxv1i16.nxv1i16.i64(<vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i1>, i64)
-<<<<<<< HEAD
-=======
 
 ; Tests for folding vmerge into its ops when their VLs differ
 
@@ -1074,4 +1065,3 @@ define <vscale x 2 x i32> @vmerge_larger_vl_poison_passthru(<vscale x 2 x i32> %
   ret <vscale x 2 x i32> %b
 }
 
->>>>>>> upstream/main
