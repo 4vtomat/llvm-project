@@ -28,11 +28,8 @@
 ; GCN-O0-NEXT:    FunctionPass Manager
 ; GCN-O0-NEXT:      Expand large div/rem
 ; GCN-O0-NEXT:      Expand large fp convert
-<<<<<<< HEAD
 ; GCN-O0-NEXT:      Expand powi functions
-=======
 ; GCN-O0-NEXT:    AMDGPU Remove Incompatible Functions
->>>>>>> upstream/main
 ; GCN-O0-NEXT:    AMDGPU Printf lowering
 ; GCN-O0-NEXT:    Lower ctors and dtors for AMDGPU
 ; GCN-O0-NEXT:    AMDGPU Inline All Functions
@@ -174,11 +171,8 @@
 ; GCN-O1-NEXT:    FunctionPass Manager
 ; GCN-O1-NEXT:      Expand large div/rem
 ; GCN-O1-NEXT:      Expand large fp convert
-<<<<<<< HEAD
 ; GCN-O1-NEXT:      Expand powi functions
-=======
 ; GCN-O1-NEXT:    AMDGPU Remove Incompatible Functions
->>>>>>> upstream/main
 ; GCN-O1-NEXT:    AMDGPU Printf lowering
 ; GCN-O1-NEXT:    Lower ctors and dtors for AMDGPU
 ; GCN-O1-NEXT:    AMDGPU Inline All Functions
@@ -450,11 +444,8 @@
 ; GCN-O1-OPTS-NEXT:    FunctionPass Manager
 ; GCN-O1-OPTS-NEXT:      Expand large div/rem
 ; GCN-O1-OPTS-NEXT:      Expand large fp convert
-<<<<<<< HEAD
 ; GCN-O1-OPTS-NEXT:      Expand powi functions
-=======
 ; GCN-O1-OPTS-NEXT:    AMDGPU Remove Incompatible Functions
->>>>>>> upstream/main
 ; GCN-O1-OPTS-NEXT:    AMDGPU Printf lowering
 ; GCN-O1-OPTS-NEXT:    Lower ctors and dtors for AMDGPU
 ; GCN-O1-OPTS-NEXT:    AMDGPU Inline All Functions
@@ -748,11 +739,8 @@
 ; GCN-O2-NEXT:    FunctionPass Manager
 ; GCN-O2-NEXT:      Expand large div/rem
 ; GCN-O2-NEXT:      Expand large fp convert
-<<<<<<< HEAD
 ; GCN-O2-NEXT:      Expand powi functions
-=======
 ; GCN-O2-NEXT:    AMDGPU Remove Incompatible Functions
->>>>>>> upstream/main
 ; GCN-O2-NEXT:    AMDGPU Printf lowering
 ; GCN-O2-NEXT:    Lower ctors and dtors for AMDGPU
 ; GCN-O2-NEXT:    AMDGPU Inline All Functions
@@ -1056,11 +1044,8 @@
 ; GCN-O3-NEXT:    FunctionPass Manager
 ; GCN-O3-NEXT:      Expand large div/rem
 ; GCN-O3-NEXT:      Expand large fp convert
-<<<<<<< HEAD
 ; GCN-O3-NEXT:      Expand powi functions
-=======
 ; GCN-O3-NEXT:    AMDGPU Remove Incompatible Functions
->>>>>>> upstream/main
 ; GCN-O3-NEXT:    AMDGPU Printf lowering
 ; GCN-O3-NEXT:    Lower ctors and dtors for AMDGPU
 ; GCN-O3-NEXT:    AMDGPU Inline All Functions
