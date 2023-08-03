@@ -18,16 +18,6 @@ define void @do.memmove() nounwind {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    lui a0, %hi(c)
 ; CHECK-NEXT:    addi a0, a0, %lo(c)
-<<<<<<< HEAD
-; CHECK-NEXT:    ld a1, 0(a0)
-; CHECK-NEXT:    ld a2, 8(a0)
-; CHECK-NEXT:    ld a3, 16(a0)
-; CHECK-NEXT:    ld a4, 24(a0)
-; CHECK-NEXT:    sd a1, 8(a0)
-; CHECK-NEXT:    sd a2, 16(a0)
-; CHECK-NEXT:    sd a3, 24(a0)
-; CHECK-NEXT:    sd a4, 32(a0)
-=======
 ; CHECK-NEXT:    addi a1, a0, 16
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a1)
@@ -36,7 +26,6 @@ define void @do.memmove() nounwind {
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    addi a0, a0, 8
 ; CHECK-NEXT:    vse64.v v8, (a0)
->>>>>>> upstream/main
 ; CHECK-NEXT:    ret
 entry:
   ; this thing is "__builtin_memmove(&c[1], &c[0], sizeof(c[0]) * 4);"
