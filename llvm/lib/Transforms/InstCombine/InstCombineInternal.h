@@ -238,6 +238,9 @@ private:
   Instruction *simplifyMaskedStore(IntrinsicInst &II);
   Instruction *simplifyMaskedGather(IntrinsicInst &II);
   Instruction *simplifyMaskedScatter(IntrinsicInst &II);
+#if SIFIVE_CUSTOMIZATION
+  Instruction *simplifyVPGather(IntrinsicInst &II);
+#endif
 
   /// Transform (zext icmp) to bitwise / integer operations in order to
   /// eliminate it.

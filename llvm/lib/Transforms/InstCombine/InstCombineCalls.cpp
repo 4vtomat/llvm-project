@@ -381,6 +381,31 @@ Instruction *InstCombinerImpl::simplifyMaskedStore(IntrinsicInst &II) {
   return nullptr;
 }
 
+#if SIFIVE_CUSTOMIZATION
+Instruction *InstCombinerImpl::simplifyVPGather(IntrinsicInst &II) {
+  // Fold vp.gather from splat pointer to vp.strided.load.
+  if (auto *SplatPtr = getSplatValue(II.getArgOperand(0))) {
+    auto *VecTy = cast<VectorType>(II.getType());
+    MaybeAlign Alignment = cast<VPIntrinsic>(II).getPointerAlignment();
+
+    Type *StrideTy = DL.getIndexType(SplatPtr->getType());
+    Constant *Stride = ConstantInt::get(StrideTy, 0);
+    Value *Operands[] = {SplatPtr, Stride, II.getArgOperand(1),
+                         II.getArgOperand(2)};
+    CallInst *Load =
+        Builder.CreateIntrinsic(Intrinsic::experimental_vp_strided_load,
+                                {VecTy, SplatPtr->getType(), StrideTy},
+                                Operands, nullptr, "load.splat");
+    if (Alignment)
+      Load->addParamAttr(
+          0, Attribute::getWithAlignment(Load->getContext(), *Alignment));
+    return replaceInstUsesWith(II, Load);
+  }
+
+  return nullptr;
+}
+#endif
+
 // TODO, Obvious Missing Transforms:
 // * Single constant active lane load -> load
 // * Dereferenceable address & few lanes -> scalarize speculative load/selects
@@ -1902,6 +1927,10 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     return simplifyMaskedGather(*II);
   case Intrinsic::masked_scatter:
     return simplifyMaskedScatter(*II);
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::vp_gather:
+    return simplifyVPGather(*II);
+#endif
   case Intrinsic::launder_invariant_group:
   case Intrinsic::strip_invariant_group:
     if (auto *SkippedBarrier = simplifyInvariantGroupIntrinsic(*II, *this))
