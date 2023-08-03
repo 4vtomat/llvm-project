@@ -156,17 +156,9 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   static const MVT::SimpleValueType F16VecVTs[] = {
       MVT::nxv1f16, MVT::nxv2f16,  MVT::nxv4f16,
       MVT::nxv8f16, MVT::nxv16f16, MVT::nxv32f16};
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   static const MVT::SimpleValueType BF16VecVTs[] = {
       MVT::nxv1bf16, MVT::nxv2bf16,  MVT::nxv4bf16,
       MVT::nxv8bf16, MVT::nxv16bf16, MVT::nxv32bf16};
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  static const MVT::SimpleValueType BF16VecVTs[] = {
-      MVT::nxv1bf16, MVT::nxv2bf16,  MVT::nxv4bf16,
-      MVT::nxv8bf16, MVT::nxv16bf16, MVT::nxv32bf16};
->>>>>>> upstream/main
   static const MVT::SimpleValueType F32VecVTs[] = {
       MVT::nxv1f32, MVT::nxv2f32, MVT::nxv4f32, MVT::nxv8f32, MVT::nxv16f32};
   static const MVT::SimpleValueType F64VecVTs[] = {
@@ -208,19 +200,11 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     if (Subtarget.hasVInstructionsF16())
       for (MVT VT : F16VecVTs)
         addRegClassForRVV(VT);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    if (Subtarget.hasVInstructionsBF16())
-      for (MVT VT : BF16VecVTs)
-        addRegClassForRVV(VT);
-#endif // SIFIVE_CUSTOMIZATION
-=======
 
     if (Subtarget.hasVInstructionsBF16())
       for (MVT VT : BF16VecVTs)
         addRegClassForRVV(VT);
 
->>>>>>> upstream/main
     if (Subtarget.hasVInstructionsF32())
       for (MVT VT : F32VecVTs)
         addRegClassForRVV(VT);
@@ -373,18 +357,13 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 #endif // SIFIVE_CUSTOMIZATION
     setOperationAction(ISD::ABS, MVT::i32, Custom);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // We could use PseudoCCSUB to implement ABS.
   if (Subtarget.hasShortForwardBranchOpt())
     setOperationAction(ISD::ABS, XLenVT, Legal);
 #endif // SIFIVE_CUSTOMIZATION
 
-  if (!Subtarget.hasStdExtZicond() && !Subtarget.hasVendorXVentanaCondOps() &&
-      !Subtarget.hasVendorXTHeadCondMov())
-=======
   if (!Subtarget.hasVendorXTHeadCondMov())
->>>>>>> upstream/main
     setOperationAction(ISD::SELECT, XLenVT, Custom);
 
   static const unsigned FPLegalNodeTypes[] = {
@@ -5075,7 +5054,6 @@ static unsigned getRISCVVLOp(SDValue Op) {
     if (Op.getSimpleValueType().getVectorElementType() == MVT::i1)
       return RISCVISD::VMXOR_VL;
     return RISCVISD::XOR_VL;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case ISD::INTRINSIC_WO_CHAIN:
     switch (Op.getConstantOperandVal(0)) {
@@ -5089,7 +5067,6 @@ static unsigned getRISCVVLOp(SDValue Op) {
       return RISCVISD::FMINNUM_VL;
     }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case ISD::VP_SELECT:
     return RISCVISD::VSELECT_VL;
   case ISD::VP_MERGE:
@@ -5108,7 +5085,6 @@ static unsigned getRISCVVLOp(SDValue Op) {
     return RISCVISD::VFCVT_RTZ_X_F_VL;
   case ISD::VP_FP_TO_UINT:
     return RISCVISD::VFCVT_RTZ_XU_F_VL;
->>>>>>> upstream/main
   }
   // clang-format on
 #undef OP_CASE
@@ -5884,25 +5860,14 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
     return lowerEH_DWARF_CFA(Op, DAG);
   case ISD::VP_SELECT:
   case ISD::VP_MERGE:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (Op.getSimpleValueType().getVectorElementType() == MVT::i1)
       return lowerVPMergeMask(Op, DAG);
+    return lowerVPOp(Op, DAG);
 #endif // SIFIVE_CUSTOMIZATION
-    return lowerVPOp(Op, DAG, RISCVISD::VP_MERGE_VL);
-=======
->>>>>>> upstream/main
   case ISD::VP_ADD:
   case ISD::VP_SUB:
   case ISD::VP_MUL:
-<<<<<<< HEAD
-    return lowerVPOp(Op, DAG, RISCVISD::MUL_VL, /*HasMergeOp*/ true);
-  case ISD::VP_MULHS:
-    return lowerVPOp(Op, DAG, RISCVISD::MULHS_VL, /*HasMergeOp*/ true);
-  case ISD::VP_MULHU:
-    return lowerVPOp(Op, DAG, RISCVISD::MULHU_VL, /*HasMergeOp*/ true);
-=======
->>>>>>> upstream/main
   case ISD::VP_SDIV:
   case ISD::VP_UDIV:
   case ISD::VP_SREM:
@@ -10402,7 +10367,6 @@ SDValue RISCVTargetLowering::lowerVPFPIntConvOp(SDValue Op,
   return convertFromScalableVector(VT, Result, DAG, Subtarget);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 SDValue RISCVTargetLowering::lowerVPMergeMask(SDValue Op, SelectionDAG &DAG) const {
   SDLoc DL(Op);
@@ -10702,13 +10666,8 @@ SDValue RISCVTargetLowering::lowerVPFirst(SDValue N, SelectionDAG &DAG) const {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-SDValue RISCVTargetLowering::lowerLogicVPOp(SDValue Op, SelectionDAG &DAG,
-                                            unsigned MaskOpc,
-                                            unsigned VecOpc) const {
-=======
 SDValue RISCVTargetLowering::lowerLogicVPOp(SDValue Op,
                                             SelectionDAG &DAG) const {
->>>>>>> upstream/main
   MVT VT = Op.getSimpleValueType();
   if (VT.getVectorElementType() != MVT::i1)
     return lowerVPOp(Op, DAG);
@@ -12205,7 +12164,6 @@ static SDValue transformAddImmMulImm(SDNode *N, SelectionDAG &DAG,
   return DAG.getNode(ISD::ADD, DL, VT, New1, DAG.getConstant(CB, DL, VT));
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // Reassociate (add X, (add Y, SImm12)) -> (add (add X, Y), SImm12) if the
 // the result is only used by scalar loads/stores. This allows the SImm12 to
@@ -12261,10 +12219,7 @@ static SDValue reassociateAddressArith(SDNode *N, SDValue N0, SDValue N1,
 }
 #endif
 
-// Try to turn (add (xor (setcc X, Y), 1) -1) into (neg (setcc X, Y)).
-=======
 // Try to turn (add (xor bool, 1) -1) into (neg bool).
->>>>>>> upstream/main
 static SDValue combineAddOfBooleanXor(SDNode *N, SelectionDAG &DAG) {
   SDValue N0 = N->getOperand(0);
   SDValue N1 = N->getOperand(1);
@@ -12489,7 +12444,6 @@ static SDValue performANDCombine(SDNode *N,
   return combineSelectAndUseCommutative(N, DAG, /*AllOnes*/ true, Subtarget);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // combine or (zext a) (shl (anyext b) c) to shufflevector
 static SDValue combineOrZextShlAnyext(SDNode *N, SelectionDAG &DAG,
@@ -12549,7 +12503,7 @@ static SDValue combineOrZextShlAnyext(SDNode *N, SelectionDAG &DAG,
   return SDValue();
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 // Try to pull an xor with 1 through a select idiom that uses czero_eqz/nez.
 // FIXME: Generalize to other binary operators with same operand.
 static SDValue combineOrOfCZERO(SDNode *N, SDValue N0, SDValue N1,
@@ -12585,7 +12539,6 @@ static SDValue combineOrOfCZERO(SDNode *N, SDValue N0, SDValue N1,
   SDValue NewOr = DAG.getNode(ISD::OR, DL, VT, NewN0, NewN1);
   return DAG.getNode(ISD::XOR, DL, VT, NewOr, TrueV.getOperand(1));
 }
->>>>>>> upstream/main
 
 static SDValue performORCombine(SDNode *N, TargetLowering::DAGCombinerInfo &DCI,
                                 const RISCVSubtarget &Subtarget) {
@@ -12654,7 +12607,6 @@ static SDValue performXORCombine(SDNode *N, SelectionDAG &DAG,
   return combineSelectAndUseCommutative(N, DAG, /*AllOnes*/ false, Subtarget);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // (mul (and (lshr X, 15), 65537), 65535) -> (bitcast (sra (bitcast X), 15)))
 static SDValue performMULCombine(SDNode *N, SelectionDAG &DAG,
@@ -12692,7 +12644,7 @@ static SDValue performMULCombine(SDNode *N, SelectionDAG &DAG,
   return DAG.getNode(ISD::BITCAST, DL, VT, Sra);
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 // According to the property that indexed load/store instructions
 // zero-extended their indices, \p narrowIndex tries to narrow the type of index
 // operand if it is matched to pattern (shl (zext x to ty), C) and bits(x) + C <
@@ -12732,7 +12684,6 @@ static SDValue narrowIndex(SDValue N, SelectionDAG &DAG) {
   SDValue NewShAmtVec = DAG.getConstant(ShAmtV, DL, NewVT);
   return DAG.getNode(ISD::SHL, DL, NewVT, NewExt, NewShAmtVec);
 }
->>>>>>> upstream/main
 
 // Replace (seteq (i64 (and X, 0xffffffff)), C1) with
 // (seteq (i64 (sext_inreg (X, i32)), C1')) where C1' is C1 sign extended from
@@ -15539,24 +15490,6 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
 
     break;
   }
-#if SIFIVE_CUSTOMIZATION
-  case ISD::INTRINSIC_W_CHAIN: {
-    unsigned IntNo = cast<ConstantSDNode>(N->getOperand(1))->getZExtValue();
-    switch (IntNo) {
-    case Intrinsic::riscv_vssrl:
-    case Intrinsic::riscv_vssra: {
-      // Shift by scalar only demand the lower log2(SEW) bits.
-      if (!N->getOperand(4).getSimpleValueType().isVector()) {
-        unsigned SEW = N->getOperand(3).getScalarValueSizeInBits();
-        if (SimplifyDemandedLowBitsHelper(4, Log2_32(SEW)))
-          return SDValue(N, 0);
-      }
-      break;
-    }
-    }
-    break;
-  }
-#endif // SIFIVE_CUSTOMIZATION
   case RISCVISD::VFMV_S_F_VL: {
     SDValue Src = N->getOperand(1);
     // Try to remove vector->scalar->vector if the scalar->vector is inserting
@@ -15614,7 +15547,23 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
         return DAG.getConstant(-1, DL, VT);
       return DAG.getConstant(0, DL, VT);
     }
-<<<<<<< HEAD
+    case Intrinsic::riscv_vloxei:
+    case Intrinsic::riscv_vloxei_mask:
+    case Intrinsic::riscv_vluxei:
+    case Intrinsic::riscv_vluxei_mask:
+    case Intrinsic::riscv_vsoxei:
+    case Intrinsic::riscv_vsoxei_mask:
+    case Intrinsic::riscv_vsuxei:
+    case Intrinsic::riscv_vsuxei_mask:
+      if (SDValue V = narrowIndex(N->getOperand(4), DAG)) {
+        SmallVector<SDValue, 8> Ops(N->ops());
+        Ops[4] = V;
+        const auto *MemSD = cast<MemIntrinsicSDNode>(N);
+        return DAG.getMemIntrinsicNode(N->getOpcode(), SDLoc(N), N->getVTList(),
+                                       Ops, MemSD->getMemoryVT(),
+                                       MemSD->getMemOperand());
+      }
+      return SDValue();
 #if SIFIVE_CUSTOMIZATION
     case Intrinsic::riscv_vsll:
     case Intrinsic::riscv_vsrl:
@@ -15824,25 +15773,6 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
                            MergedWhenTrue.getOperand(2), // T2
                            VL);
       }
-=======
-    case Intrinsic::riscv_vloxei:
-    case Intrinsic::riscv_vloxei_mask:
-    case Intrinsic::riscv_vluxei:
-    case Intrinsic::riscv_vluxei_mask:
-    case Intrinsic::riscv_vsoxei:
-    case Intrinsic::riscv_vsoxei_mask:
-    case Intrinsic::riscv_vsuxei:
-    case Intrinsic::riscv_vsuxei_mask:
-      if (SDValue V = narrowIndex(N->getOperand(4), DAG)) {
-        SmallVector<SDValue, 8> Ops(N->ops());
-        Ops[4] = V;
-        const auto *MemSD = cast<MemIntrinsicSDNode>(N);
-        return DAG.getMemIntrinsicNode(N->getOpcode(), SDLoc(N), N->getVTList(),
-                                       Ops, MemSD->getMemoryVT(),
-                                       MemSD->getMemOperand());
-      }
-      return SDValue();
->>>>>>> upstream/main
     }
 
     break;
