@@ -39,7 +39,7 @@ if.end:
   ret i32 %res
 }
 
-; Test case %entry branch to %then if its condition is false.
+; Test case %entry branch to %then if its condition is poison.
 define i32 @test2(ptr %arc, i32 %red_cost) {
 ; CHECK-LABEL: @test2(
 ; CHECK-NEXT:  entry:
@@ -52,7 +52,7 @@ define i32 @test2(ptr %arc, i32 %red_cost) {
 ; CHECK-NEXT:    [[CMP1:%.*]] = icmp ne i32 [[TMP0]], [[SPEC_SELECT]]
 ; CHECK-NEXT:    br label [[IF_END]]
 ; CHECK:       if.end:
-; CHECK-NEXT:    [[TMP1:%.*]] = phi i1 [ false, [[ENTRY:%.*]] ], [ [[CMP1]], [[ELSE_IF]] ]
+; CHECK-NEXT:    [[TMP1:%.*]] = phi i1 [ poison, [[ENTRY:%.*]] ], [ [[CMP1]], [[ELSE_IF]] ]
 ; CHECK-NEXT:    [[RES:%.*]] = zext i1 [[TMP1]] to i32
 ; CHECK-NEXT:    ret i32 [[RES]]
 ;
