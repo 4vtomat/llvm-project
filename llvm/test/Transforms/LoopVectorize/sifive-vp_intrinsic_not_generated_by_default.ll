@@ -800,7 +800,7 @@ for.end41:                                        ; preds = %for.inc39
   ret void
 }
 
-attributes #0 = { nounwind "approx-func-fp-math"="true" "frame-pointer"="none" "min-legal-vector-width"="0" "no-infs-fp-math"="true" "no-nans-fp-math"="true" "no-signed-zeros-fp-math"="true" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="sifive-x280" "target-features"="+64bit,+a,+c,+d,+experimental-zvfh,+f,+m,+v,+xsfvfhbfmin,+xsfvqmaccqoq,+zba,+zbb,+zfh,+zicsr,+zifencei,+zvl128b,+zvl256b,+zvl32b,+zvl512b,+zvl64b" "unsafe-fp-math"="true" }
+attributes #0 = { nounwind "approx-func-fp-math"="true" "frame-pointer"="none" "min-legal-vector-width"="0" "no-infs-fp-math"="true" "no-nans-fp-math"="true" "no-signed-zeros-fp-math"="true" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="sifive-x280" "target-features"="+64bit,+a,+c,+d,+zvfh,+f,+m,+v,+xsfvfhbfmin,+xsfvqmaccqoq,+zba,+zbb,+zfh,+zicsr,+zifencei,+zvl128b,+zvl256b,+zvl32b,+zvl512b,+zvl64b" "unsafe-fp-math"="true" }
 attributes #1 = { argmemonly nofree nosync nounwind willreturn }
 attributes #2 = { nounwind }
 

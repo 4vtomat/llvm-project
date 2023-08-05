@@ -2,7 +2,7 @@
 // REQUIRES: riscv-registered-target
 // RUN: %clang_cc1 -triple riscv64 -target-feature +f \
 // RUN:  -target-feature +d -target-feature +v \
-// RUN:  -target-feature +zfh -target-feature +xsfvcp -target-feature +experimental-zvfh \
+// RUN:  -target-feature +zfh -target-feature +xsfvcp -target-feature +zvfh \
 // RUN:  -target-feature +xsfvqmaccqoq -target-feature +xsfvqmaccdod \
 // RUN:  -target-feature +xsfvfnrclipxfqf -target-feature +xsfvfhbfmin \
 // RUN:  -target-feature +xsfvfwmaccqqq -disable-O0-optnone -emit-llvm %s -o - | \

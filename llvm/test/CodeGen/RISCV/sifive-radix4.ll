@@ -361,5 +361,5 @@ declare void @llvm.riscv.vsseg2.nxv4f32.i64(<vscale x 4 x float>, <vscale x 4 x 
 ; Function Attrs: nocallback nofree nosync nounwind willreturn memory(argmem: readwrite)
 declare void @llvm.lifetime.end.p0(i64 immarg, ptr nocapture)
 
-attributes #0 = { nounwind vscale_range(8,1024) "approx-func-fp-math"="true" "frame-pointer"="none" "no-infs-fp-math"="true" "no-nans-fp-math"="true" "no-signed-zeros-fp-math"="true" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="sifive-x280n" "target-features"="+64bit,+a,+c,+d,+experimental-zvfh,+f,+m,+relax,+v,+xsfvfhbfmin,+xsfvfnrclipxfqf,+xsfvfwmaccqqq,+xsfvqmaccqoq,+zba,+zbb,+zfh,+zicsr,+zifencei,+zve32f,+zve32x,+zve64d,+zve64f,+zve64x,+zvl128b,+zvl256b,+zvl32b,+zvl512b,+zvl64b,-save-restore" "unsafe-fp-math"="true" }
+attributes #0 = { nounwind vscale_range(8,1024) "approx-func-fp-math"="true" "frame-pointer"="none" "no-infs-fp-math"="true" "no-nans-fp-math"="true" "no-signed-zeros-fp-math"="true" "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-cpu"="sifive-x280n" "target-features"="+64bit,+a,+c,+d,+zvfh,+f,+m,+relax,+v,+xsfvfhbfmin,+xsfvfnrclipxfqf,+xsfvfwmaccqqq,+xsfvqmaccqoq,+zba,+zbb,+zfh,+zicsr,+zifencei,+zve32f,+zve32x,+zve64d,+zve64f,+zve64x,+zvl128b,+zvl256b,+zvl32b,+zvl512b,+zvl64b,-save-restore" "unsafe-fp-math"="true" }
 
