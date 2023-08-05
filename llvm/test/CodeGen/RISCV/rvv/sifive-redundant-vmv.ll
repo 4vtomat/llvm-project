@@ -18,10 +18,10 @@ define dso_local void @test(i64 %channel, i32* nocapture readonly %output_shift,
 ; CHECK-NEXT:    vmv.v.i v12, 0
 ; CHECK-NEXT:    vmslt.vx v0, v8, zero
 ; CHECK-NEXT:    add a7, a2, a6
-; CHECK-NEXT:    vle32.v v16, (a7)
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m4, tu, mu
 ; CHECK-NEXT:    vrsub.vi v12, v8, 0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
+; CHECK-NEXT:    vle32.v v16, (a7)
 ; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
 ; CHECK-NEXT:    vsll.vv v8, v16, v8
 ; CHECK-NEXT:    vssra.vv v8, v8, v12
