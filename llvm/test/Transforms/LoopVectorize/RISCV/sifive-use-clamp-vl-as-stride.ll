@@ -3,155 +3,126 @@
 
 ; This test checks to make sure that the stride of pointer access in the vector loop is the maximum safe number of elements, opposed to the number of unrolled elements.
 
-%struct.zot = type { ptr, %struct.ham, i16, ptr, ptr, ptr, ptr, i8, i8, ptr, %struct.spam, i8, i32, ptr, ptr, ptr, i64 }
-%struct.ham = type <{ %struct.wombat.1, i32, [4 x i8] }>
-%struct.wombat.1 = type { ptr, ptr, ptr }
-%struct.spam = type { %struct.bar }
-%struct.bar = type { %struct.hoge }
-%struct.hoge = type { %struct.pluto }
-%struct.pluto = type { ptr, i32, [4 x i8], ptr, i32 , [4 x i8], ptr }
-%struct.pluto.8 = type { %struct.wombat.1, i32, %struct.baz.12, i32, ptr, ptr, ptr, ptr }
-%struct.baz.12 = type { %struct.wombat.13 }
-%struct.wombat.13 = type { %struct.widget.14 }
-%struct.widget.14 = type { %struct.wombat.1}
-%struct.wombat.20 = type <{ %struct.blam, ptr, double, i8, [7 x i8] }>
-%struct.blam = type { ptr, i32, i32, ptr }
+%struct = type <{ ptr, double }>
+%struct2 = type <{ ptr, ptr, ptr }>
 
-define dso_local void @widget(ptr noundef nonnull align 8 dereferenceable(184) %arg) local_unnamed_addr align 2 {
+define void @widget(ptr %a, i64 %n) {
 ; CHECK-LABEL: @widget(
-; CHECK-NEXT:  bb:
-; CHECK-NEXT:    [[T0:%.*]] = getelementptr inbounds [[STRUCT_ZOT:%.*]], ptr [[ARG:%.*]], i64 0, i32 5
-; CHECK-NEXT:    [[T1:%.*]] = getelementptr inbounds [[STRUCT_ZOT]], ptr [[ARG]], i64 0, i32 5
-; CHECK-NEXT:    [[T2:%.*]] = load ptr, ptr [[T0]], align 8
-; CHECK-NEXT:    [[T3:%.*]] = getelementptr inbounds [[STRUCT_PLUTO_8:%.*]], ptr [[T2]], i64 0, i32 2, i32 0, i32 0, i32 0, i32 1
-; CHECK-NEXT:    [[T4:%.*]] = getelementptr inbounds [[STRUCT_PLUTO_8]], ptr [[T2]], i64 0, i32 3
-; CHECK-NEXT:    [[T5:%.*]] = load ptr, ptr [[T1]], align 8
-; CHECK-NEXT:    [[T6:%.*]] = getelementptr inbounds [[STRUCT_PLUTO_8]], ptr [[T5]], i64 0, i32 2
-; CHECK-NEXT:    [[T7:%.*]] = load ptr, ptr [[T6]], align 8
-; CHECK-NEXT:    [[T8:%.*]] = load ptr, ptr [[T1]], align 8
-; CHECK-NEXT:    [[T9:%.*]] = getelementptr inbounds [[STRUCT_PLUTO_8]], ptr [[T8]], i64 0, i32 3
-; CHECK-NEXT:    [[T10:%.*]] = load i32, ptr [[T9]], align 8
-; CHECK-NEXT:    [[T11:%.*]] = add nsw i32 [[T10]], -1
-; CHECK-NEXT:    [[T12:%.*]] = sext i32 [[T11]] to i64
-; CHECK-NEXT:    [[T13:%.*]] = getelementptr inbounds [[STRUCT_ZOT]], ptr [[ARG]], i64 0, i32 10, i32 0, i32 0, i32 0, i32 2
-; CHECK-NEXT:    [[T14:%.*]] = load ptr, ptr [[T13]], align 8
-; CHECK-NEXT:    [[T15:%.*]] = getelementptr inbounds [[STRUCT_WOMBAT_20:%.*]], ptr [[T14]], i64 [[T12]]
-; CHECK-NEXT:    [[T16:%.*]] = ptrtoint ptr [[T15]] to i64
-; CHECK-NEXT:    [[T17:%.*]] = load ptr, ptr [[T3]], align 8
-; CHECK-NEXT:    [[T18:%.*]] = getelementptr inbounds [[STRUCT_WOMBAT_20]], ptr [[T17]], i64 -2
-; CHECK-NEXT:    [[T19:%.*]] = ptrtoint ptr [[T18]] to i64
-; CHECK-NEXT:    [[T20:%.*]] = sub i64 [[T19]], [[T16]]
-; CHECK-NEXT:    br label [[BB21:%.*]]
-; CHECK:       bb21:
-; CHECK-NEXT:    [[T22:%.*]] = udiv i64 [[T20]], 48
-; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[T22]], 1
-; CHECK-NEXT:    [[UMIN:%.*]] = call i64 @llvm.umin.i64(i64 [[T22]], i64 1)
+; CHECK-NEXT:  ph:
+; CHECK-NEXT:    [[B:%.*]] = getelementptr inbounds [[STRUCT2:%.*]], ptr [[A:%.*]], i64 0, i32 2
+; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[N:%.*]], 1
+; CHECK-NEXT:    [[UMIN:%.*]] = call i64 @llvm.umin.i64(i64 [[N]], i64 1)
 ; CHECK-NEXT:    [[TMP1:%.*]] = sub i64 [[TMP0]], [[UMIN]]
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[IND_END:%.*]] = sub i64 [[T22]], [[TMP1]]
-; CHECK-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], -48
-; CHECK-NEXT:    [[IND_END1:%.*]] = getelementptr i8, ptr [[T17]], i64 [[TMP2]]
-; CHECK-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP1]], -48
-; CHECK-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[T18]], i64 [[TMP3]]
+; CHECK-NEXT:    [[IND_END:%.*]] = sub i64 [[N]], [[TMP1]]
+; CHECK-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], -16
+; CHECK-NEXT:    [[IND_END1:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP2]]
+; CHECK-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP1]], -16
+; CHECK-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP3]]
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP4:%.*]] = sub i64 [[TMP1]], [[INDEX]]
-; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP4]], i64 6)
+; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP4]], i64 2)
 ; CHECK-NEXT:    [[TMP6:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP5]], i64 3, i64 0)
 ; CHECK-NEXT:    [[TMP7:%.*]] = trunc i64 [[TMP6]] to i32
 ; CHECK-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX]], 0
-; CHECK-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP8]], -48
-; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[T17]], i64 [[TMP9]]
+; CHECK-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP8]], -16
+; CHECK-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP9]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = add i64 [[INDEX]], 0
-; CHECK-NEXT:    [[TMP11:%.*]] = mul i64 [[TMP10]], -48
-; CHECK-NEXT:    [[NEXT_GEP5:%.*]] = getelementptr i8, ptr [[T18]], i64 [[TMP11]]
-; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr [[STRUCT_WOMBAT_20]], ptr [[NEXT_GEP5]], i64 -1, i32 1
-; CHECK-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 1 x ptr> @llvm.experimental.vp.strided.load.nxv1p0.p0.i64(ptr align 8 [[TMP12]], i64 -48, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP7]])
-; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr [[STRUCT_WOMBAT_20]], ptr [[NEXT_GEP]], i64 -2, i32 1
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1p0.p0.i64(<vscale x 1 x ptr> [[VP_STRIDED_LOAD]], ptr align 8 [[TMP13]], i64 -48, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP7]])
-; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr [[STRUCT_WOMBAT_20]], ptr [[NEXT_GEP5]], i64 -1, i32 2
-; CHECK-NEXT:    [[VP_STRIDED_LOAD6:%.*]] = call <vscale x 1 x double> @llvm.experimental.vp.strided.load.nxv1f64.p0.i64(ptr align 8 [[TMP14]], i64 -48, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP7]])
-; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr [[STRUCT_WOMBAT_20]], ptr [[NEXT_GEP]], i64 -2, i32 2
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv1f64.p0.i64(<vscale x 1 x double> [[VP_STRIDED_LOAD6]], ptr align 8 [[TMP15]], i64 -48, <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP7]])
-; CHECK-NEXT:    [[TMP16:%.*]] = zext i32 [[TMP7]] to i64
-; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP16]]
-; CHECK-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP1]]
-; CHECK-NEXT:    br i1 [[TMP17]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    [[TMP11:%.*]] = mul i64 [[TMP10]], -16
+; CHECK-NEXT:    [[NEXT_GEP5:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP11]]
+; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr [[STRUCT:%.*]], ptr [[NEXT_GEP5]], i64 -1, i32 0
+; CHECK-NEXT:    [[TMP13:%.*]] = sub i32 [[TMP7]], 1
+; CHECK-NEXT:    [[TMP14:%.*]] = mul i32 [[TMP13]], 2
+; CHECK-NEXT:    [[TMP15:%.*]] = add i32 0, [[TMP14]]
+; CHECK-NEXT:    [[TMP16:%.*]] = sub i32 0, [[TMP15]]
+; CHECK-NEXT:    [[TMP17:%.*]] = getelementptr ptr, ptr [[TMP12]], i32 [[TMP16]]
+; CHECK-NEXT:    [[TMP18:%.*]] = mul i32 [[TMP7]], 2
+; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 2 x ptr> @llvm.vp.load.nxv2p0.p0(ptr align 8 [[TMP17]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP18]])
+; CHECK-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x ptr>, <vscale x 1 x ptr> } @llvm.experimental.vector.deinterleave2.nxv2p0(<vscale x 2 x ptr> [[WIDE_MASKED_LOAD]])
+; CHECK-NEXT:    [[TMP19:%.*]] = extractvalue { <vscale x 1 x ptr>, <vscale x 1 x ptr> } [[DEINTERLEAVED_RESULTS]], 0
+; CHECK-NEXT:    [[DEINTERLEAVED_RESULT_REVERSE:%.*]] = call <vscale x 1 x ptr> @llvm.experimental.vp.reverse.nxv1p0(<vscale x 1 x ptr> [[TMP19]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP7]])
+; CHECK-NEXT:    [[TMP20:%.*]] = extractvalue { <vscale x 1 x ptr>, <vscale x 1 x ptr> } [[DEINTERLEAVED_RESULTS]], 1
+; CHECK-NEXT:    [[DEINTERLEAVED_RESULT_REVERSE6:%.*]] = call <vscale x 1 x ptr> @llvm.experimental.vp.reverse.nxv1p0(<vscale x 1 x ptr> [[TMP20]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP7]])
+; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint <vscale x 1 x ptr> [[DEINTERLEAVED_RESULT_REVERSE6]] to <vscale x 1 x i64>
+; CHECK-NEXT:    [[TMP22:%.*]] = bitcast <vscale x 1 x i64> [[TMP21]] to <vscale x 1 x double>
+; CHECK-NEXT:    [[TMP23:%.*]] = getelementptr [[STRUCT]], ptr [[NEXT_GEP]], i64 -2, i32 1
+; CHECK-NEXT:    [[TMP24:%.*]] = sub i32 [[TMP7]], 1
+; CHECK-NEXT:    [[TMP25:%.*]] = mul i32 [[TMP24]], 2
+; CHECK-NEXT:    [[TMP26:%.*]] = add i32 1, [[TMP25]]
+; CHECK-NEXT:    [[TMP27:%.*]] = sub i32 0, [[TMP26]]
+; CHECK-NEXT:    [[TMP28:%.*]] = getelementptr double, ptr [[TMP23]], i32 [[TMP27]]
+; CHECK-NEXT:    [[RESULT_REVERSE:%.*]] = call <vscale x 1 x ptr> @llvm.experimental.vp.reverse.nxv1p0(<vscale x 1 x ptr> [[DEINTERLEAVED_RESULT_REVERSE]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP7]])
+; CHECK-NEXT:    [[TMP29:%.*]] = ptrtoint <vscale x 1 x ptr> [[RESULT_REVERSE]] to <vscale x 1 x i64>
+; CHECK-NEXT:    [[TMP30:%.*]] = bitcast <vscale x 1 x i64> [[TMP29]] to <vscale x 1 x double>
+; CHECK-NEXT:    [[RESULT_REVERSE7:%.*]] = call <vscale x 1 x double> @llvm.experimental.vp.reverse.nxv1f64(<vscale x 1 x double> [[TMP22]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP7]])
+; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 2 x double> @llvm.experimental.vector.interleave2.nxv2f64(<vscale x 1 x double> [[TMP30]], <vscale x 1 x double> [[RESULT_REVERSE7]])
+; CHECK-NEXT:    [[TMP31:%.*]] = mul i32 [[TMP7]], 2
+; CHECK-NEXT:    call void @llvm.vp.store.nxv2f64.p0(<vscale x 2 x double> [[INTERLEAVED_VEC]], ptr align 8 [[TMP28]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP31]])
+; CHECK-NEXT:    [[TMP32:%.*]] = zext i32 [[TMP7]] to i64
+; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP32]]
+; CHECK-NEXT:    [[TMP33:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP1]]
+; CHECK-NEXT:    br i1 [[TMP33]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    br i1 true, label [[BB37:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ [[T22]], [[BB21]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL2:%.*]] = phi ptr [ [[IND_END1]], [[MIDDLE_BLOCK]] ], [ [[T17]], [[BB21]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL4:%.*]] = phi ptr [ [[IND_END3]], [[MIDDLE_BLOCK]] ], [ [[T18]], [[BB21]] ]
-; CHECK-NEXT:    br label [[BB23:%.*]]
-; CHECK:       bb23:
-; CHECK-NEXT:    [[T24:%.*]] = phi i64 [ [[T35:%.*]], [[BB23]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
-; CHECK-NEXT:    [[T25:%.*]] = phi ptr [ [[T27:%.*]], [[BB23]] ], [ [[BC_RESUME_VAL2]], [[SCALAR_PH]] ]
-; CHECK-NEXT:    [[T26:%.*]] = phi ptr [ [[T28:%.*]], [[BB23]] ], [ [[BC_RESUME_VAL4]], [[SCALAR_PH]] ]
-; CHECK-NEXT:    [[T27]] = getelementptr inbounds [[STRUCT_WOMBAT_20]], ptr [[T25]], i64 -1
-; CHECK-NEXT:    [[T28]] = getelementptr inbounds [[STRUCT_WOMBAT_20]], ptr [[T26]], i64 -1
-; CHECK-NEXT:    [[T29:%.*]] = getelementptr [[STRUCT_WOMBAT_20]], ptr [[T26]], i64 -1, i32 1
-; CHECK-NEXT:    [[T30:%.*]] = load ptr, ptr [[T29]], align 8
-; CHECK-NEXT:    [[T31:%.*]] = getelementptr [[STRUCT_WOMBAT_20]], ptr [[T25]], i64 -2, i32 1
-; CHECK-NEXT:    store ptr [[T30]], ptr [[T31]], align 8
-; CHECK-NEXT:    [[T32:%.*]] = getelementptr [[STRUCT_WOMBAT_20]], ptr [[T26]], i64 -1, i32 2
-; CHECK-NEXT:    [[T33:%.*]] = load double, ptr [[T32]], align 8
-; CHECK-NEXT:    [[T34:%.*]] = getelementptr [[STRUCT_WOMBAT_20]], ptr [[T25]], i64 -2, i32 2
-; CHECK-NEXT:    store double [[T33]], ptr [[T34]], align 8
-; CHECK-NEXT:    [[T35]] = add nsw i64 [[T24]], -1
-; CHECK-NEXT:    [[T36:%.*]] = icmp ugt i64 [[T24]], 1
-; CHECK-NEXT:    br i1 [[T36]], label [[BB23]], label [[BB37]], !llvm.loop [[LOOP3:![0-9]+]]
-; CHECK:       bb37:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ [[N]], [[PH:%.*]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL2:%.*]] = phi ptr [ [[IND_END1]], [[MIDDLE_BLOCK]] ], [ [[A]], [[PH]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL4:%.*]] = phi ptr [ [[IND_END3]], [[MIDDLE_BLOCK]] ], [ [[B]], [[PH]] ]
+; CHECK-NEXT:    br label [[LOOP:%.*]]
+; CHECK:       loop:
+; CHECK-NEXT:    [[TMP34:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV:%.*]], [[LOOP]] ]
+; CHECK-NEXT:    [[TMP35:%.*]] = phi ptr [ [[BC_RESUME_VAL2]], [[SCALAR_PH]] ], [ [[TMP37:%.*]], [[LOOP]] ]
+; CHECK-NEXT:    [[TMP36:%.*]] = phi ptr [ [[BC_RESUME_VAL4]], [[SCALAR_PH]] ], [ [[TMP38:%.*]], [[LOOP]] ]
+; CHECK-NEXT:    [[TMP37]] = getelementptr inbounds [[STRUCT]], ptr [[TMP35]], i64 -1
+; CHECK-NEXT:    [[TMP38]] = getelementptr inbounds [[STRUCT]], ptr [[TMP36]], i64 -1
+; CHECK-NEXT:    [[TMP39:%.*]] = getelementptr [[STRUCT]], ptr [[TMP36]], i64 -1, i32 0
+; CHECK-NEXT:    [[TMP40:%.*]] = load ptr, ptr [[TMP39]], align 8
+; CHECK-NEXT:    [[TMP41:%.*]] = getelementptr [[STRUCT]], ptr [[TMP35]], i64 -2, i32 0
+; CHECK-NEXT:    store ptr [[TMP40]], ptr [[TMP41]], align 8
+; CHECK-NEXT:    [[TMP42:%.*]] = getelementptr [[STRUCT]], ptr [[TMP36]], i64 -1, i32 1
+; CHECK-NEXT:    [[TMP43:%.*]] = load double, ptr [[TMP42]], align 8
+; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr [[STRUCT]], ptr [[TMP35]], i64 -2, i32 1
+; CHECK-NEXT:    store double [[TMP43]], ptr [[TMP44]], align 8
+; CHECK-NEXT:    [[IV]] = add nsw i64 [[TMP34]], -1
+; CHECK-NEXT:    [[COND:%.*]] = icmp ugt i64 [[TMP34]], 1
+; CHECK-NEXT:    br i1 [[COND]], label [[LOOP]], label [[EXIT]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK:       exit:
 ; CHECK-NEXT:    ret void
 ;
-bb:
-  %t0 = getelementptr inbounds %struct.zot, ptr %arg, i64 0, i32 5
-  %t1 = getelementptr inbounds %struct.zot, ptr %arg, i64 0, i32 5
-  %t2 = load ptr, ptr %t0, align 8
-  %t3 = getelementptr inbounds %struct.pluto.8, ptr %t2, i64 0, i32 2, i32 0, i32 0, i32 0, i32 1
-  %t4 = getelementptr inbounds %struct.pluto.8, ptr %t2, i64 0, i32 3
-  %t5 = load ptr, ptr %t1, align 8
-  %t6 = getelementptr inbounds %struct.pluto.8, ptr %t5, i64 0, i32 2
-  %t7 = load ptr, ptr %t6, align 8
-  %t8 = load ptr, ptr %t1, align 8
-  %t9 = getelementptr inbounds %struct.pluto.8, ptr %t8, i64 0, i32 3
-  %t10 = load i32, ptr %t9, align 8
-  %t11 = add nsw i32 %t10, -1
-  %t12 = sext i32 %t11 to i64
-  %t13 = getelementptr inbounds %struct.zot, ptr %arg, i64 0, i32 10, i32 0, i32 0, i32 0, i32 2
-  %t14 = load ptr, ptr %t13, align 8
-  %t15 = getelementptr inbounds %struct.wombat.20, ptr %t14, i64 %t12
-  %t16 = ptrtoint ptr %t15 to i64
-  %t17 = load ptr, ptr %t3, align 8
-  %t18 = getelementptr inbounds %struct.wombat.20, ptr %t17, i64 -2
-  %t19 = ptrtoint ptr %t18 to i64
-  %t20 = sub i64 %t19, %t16
-  br label %bb21
+ph:
+  ; By casting %a to %struct2 and using index 2, a maximum
+  ; safe vector width is created since %struct only has an element at index
+  ; 0 and index 1. In this example, a ptr is the same size as the double since
+  ; we're using riscv64, so %b must be two 64 bit elements ahead of %a.
+  %b = getelementptr inbounds %struct2, ptr %a, i64 0, i32 2
+  br label %loop
 
-bb21:                                             ; preds = %bb
-  %t22 = udiv exact i64 %t20, 48
-  br label %bb23
+loop:
+  %0 = phi i64 [%n, %ph], [%iv, %loop]
+  %1 = phi ptr [%a, %ph], [%3, %loop]
+  %2 = phi ptr [%b, %ph], [%4, %loop]
+  %3 = getelementptr inbounds %struct, ptr %1, i64 -1
+  %4 = getelementptr inbounds %struct, ptr %2, i64 -1
 
-bb23:                                             ; preds = %bb23, %bb21
-  %t24 = phi i64 [ %t35, %bb23 ], [ %t22, %bb21 ]
-  %t25 = phi ptr [ %t27, %bb23 ], [ %t17, %bb21 ]
-  %t26 = phi ptr [ %t28, %bb23 ], [ %t18, %bb21 ]
-  %t27 = getelementptr inbounds %struct.wombat.20, ptr %t25, i64 -1
-  %t28 = getelementptr inbounds %struct.wombat.20, ptr %t26, i64 -1
-  %t29 = getelementptr %struct.wombat.20, ptr %t26, i64 -1, i32 1
-  %t30 = load ptr, ptr %t29, align 8
-  %t31 = getelementptr %struct.wombat.20, ptr %t25, i64 -2, i32 1
-  store ptr %t30, ptr %t31, align 8
-  %t32 = getelementptr %struct.wombat.20, ptr %t26, i64 -1, i32 2
-  %t33 = load double, ptr %t32, align 8
-  %t34 = getelementptr %struct.wombat.20, ptr %t25, i64 -2, i32 2
-  store double %t33, ptr %t34, align 8
-  %t35 = add nsw i64 %t24, -1
-  %t36 = icmp ugt i64 %t24, 1
-  br i1 %t36, label %bb23, label %bb37
+  ; A[i-2].ptr = B[i-1].ptr
+  %5 = getelementptr %struct, ptr %2, i64 -1, i32 0
+  %6 = load ptr, ptr %5, align 8
+  %7 = getelementptr %struct, ptr %1, i64 -2, i32 0
+  store ptr %6, ptr %7, align 8
 
-bb37:                                             ; preds = %bb23
+  ; A[i-2].double = B[i-1].double
+  %8 = getelementptr %struct, ptr %2, i64 -1, i32 1
+  %9 = load double, ptr %8, align 8
+  %10 = getelementptr %struct, ptr %1, i64 -2, i32 1
+  store double %9, ptr %10, align 8
+
+  %iv = add nsw i64 %0, -1
+  %cond = icmp ugt i64 %0, 1
+  br i1 %cond, label %loop, label %exit
+
+exit:
   ret void
 }
