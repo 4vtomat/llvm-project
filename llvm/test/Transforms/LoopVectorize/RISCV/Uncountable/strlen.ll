@@ -3,21 +3,21 @@
 ; This test covers vectorization of strlen under various vectorization parameters. It is not a comprehensive test of IR variations and end-2-end test. Testing of IR variations is in another test. E2E tests are in llvm-test-suite.
 
 ; Test default
-; RUN: opt -opaque-pointers -S -riscv-use-vla-vectorizer -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v < %s | FileCheck %s --check-prefix=DEFAULT
+; RUN: opt -S -riscv-use-vla-vectorizer -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v < %s | FileCheck %s --check-prefix=DEFAULT
 
 ; Test options
-; RUN: opt -opaque-pointers -S -riscv-use-vla-vectorizer -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v -sifive-uncountable-loop-vectorization=on < %s | FileCheck %s --check-prefix=ON
-; RUN: opt -opaque-pointers -S -riscv-use-vla-vectorizer -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v -sifive-uncountable-loop-vectorization=off < %s | FileCheck %s --check-prefix=OFF
-; RUN: opt -opaque-pointers -S -riscv-use-vla-vectorizer -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v -sifive-uncountable-loop-vectorization=analysis-only < %s | FileCheck %s --check-prefix=ANALYSIS-ONLY
-; RUN: opt -opaque-pointers -S -riscv-use-vla-vectorizer -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v -sifive-uncountable-loop-vectorization=stress < %s | FileCheck %s --check-prefix=stress
+; RUN: opt -S -riscv-use-vla-vectorizer -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v -sifive-uncountable-loop-vectorization=on < %s | FileCheck %s --check-prefix=ON
+; RUN: opt -S -riscv-use-vla-vectorizer -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v -sifive-uncountable-loop-vectorization=off < %s | FileCheck %s --check-prefix=OFF
+; RUN: opt -S -riscv-use-vla-vectorizer -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v -sifive-uncountable-loop-vectorization=analysis-only < %s | FileCheck %s --check-prefix=ANALYSIS-ONLY
+; RUN: opt -S -riscv-use-vla-vectorizer -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v -sifive-uncountable-loop-vectorization=stress < %s | FileCheck %s --check-prefix=stress
 
 ; Test VLS
-; RUN: opt -opaque-pointers -S -riscv-use-vla-vectorizer=false -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v < %s | FileCheck %s --check-prefix=VLS
+; RUN: opt -S -riscv-use-vla-vectorizer=false -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v < %s | FileCheck %s --check-prefix=VLS
 
 ; Test interleaving factors IF=0,1,2
-; RUN: opt -opaque-pointers -S -riscv-use-vla-vectorizer -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v -force-target-max-vector-interleave=0 < %s | FileCheck %s --check-prefix=IF0
-; RUN: opt -opaque-pointers -S -riscv-use-vla-vectorizer -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v -force-target-max-vector-interleave=1 < %s | FileCheck %s --check-prefix=IF1
-; RUN: opt -opaque-pointers -S -riscv-use-vla-vectorizer -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v -force-target-max-vector-interleave=2 < %s | FileCheck %s --check-prefix=IF2
+; RUN: opt -S -riscv-use-vla-vectorizer -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v -force-target-max-vector-interleave=0 < %s | FileCheck %s --check-prefix=IF0
+; RUN: opt -S -riscv-use-vla-vectorizer -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v -force-target-max-vector-interleave=1 < %s | FileCheck %s --check-prefix=IF1
+; RUN: opt -S -riscv-use-vla-vectorizer -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v -force-target-max-vector-interleave=2 < %s | FileCheck %s --check-prefix=IF2
 
 declare i8 @llvm.smax.i8(i8, i8)
 declare i8 @unknown(i8, i8)
