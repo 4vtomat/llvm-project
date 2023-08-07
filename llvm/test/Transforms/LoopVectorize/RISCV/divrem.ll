@@ -501,27 +501,15 @@ define void @predicated_udiv(ptr noalias nocapture %a, i64 %v, i64 %n) {
 ; FIXED-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i64, ptr [[TMP2]], i32 4
 ; FIXED-NEXT:    [[WIDE_LOAD1:%.*]] = load <4 x i64>, ptr [[TMP5]], align 8
 ; FIXED-NEXT:    [[TMP6:%.*]] = icmp ne <4 x i64> [[BROADCAST_SPLAT]], zeroinitializer
-<<<<<<< HEAD
 ; FIXED-NEXT:    [[TMP7:%.*]] = icmp ne <4 x i64> [[BROADCAST_SPLAT]], zeroinitializer
-; FIXED-NEXT:    [[TMP8:%.*]] = select <4 x i1> [[TMP6]], <4 x i64> [[BROADCAST_SPLAT]], <4 x i64> <i64 1, i64 1, i64 1, i64 1>
-; FIXED-NEXT:    [[TMP9:%.*]] = select <4 x i1> [[TMP7]], <4 x i64> [[BROADCAST_SPLAT]], <4 x i64> <i64 1, i64 1, i64 1, i64 1>
-; FIXED-NEXT:    [[TMP10:%.*]] = udiv <4 x i64> [[WIDE_LOAD]], [[TMP8]]
-; FIXED-NEXT:    [[TMP11:%.*]] = udiv <4 x i64> [[WIDE_LOAD1]], [[TMP9]]
-; FIXED-NEXT:    [[TMP12:%.*]] = xor <4 x i1> [[TMP6]], <i1 true, i1 true, i1 true, i1 true>
-; FIXED-NEXT:    [[TMP13:%.*]] = xor <4 x i1> [[TMP7]], <i1 true, i1 true, i1 true, i1 true>
-; FIXED-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP6]], <4 x i64> [[TMP10]], <4 x i64> [[WIDE_LOAD]]
-; FIXED-NEXT:    [[PREDPHI2:%.*]] = select <4 x i1> [[TMP7]], <4 x i64> [[TMP11]], <4 x i64> [[WIDE_LOAD1]]
-=======
-; FIXED-NEXT:    [[TMP7:%.*]] = icmp ne <4 x i64> [[BROADCAST_SPLAT3]], zeroinitializer
 ; FIXED-NEXT:    [[TMP8:%.*]] = xor <4 x i1> [[TMP6]], <i1 true, i1 true, i1 true, i1 true>
 ; FIXED-NEXT:    [[TMP9:%.*]] = xor <4 x i1> [[TMP7]], <i1 true, i1 true, i1 true, i1 true>
 ; FIXED-NEXT:    [[TMP10:%.*]] = select <4 x i1> [[TMP6]], <4 x i64> [[BROADCAST_SPLAT]], <4 x i64> <i64 1, i64 1, i64 1, i64 1>
-; FIXED-NEXT:    [[TMP11:%.*]] = select <4 x i1> [[TMP7]], <4 x i64> [[BROADCAST_SPLAT3]], <4 x i64> <i64 1, i64 1, i64 1, i64 1>
+; FIXED-NEXT:    [[TMP11:%.*]] = select <4 x i1> [[TMP7]], <4 x i64> [[BROADCAST_SPLAT]], <4 x i64> <i64 1, i64 1, i64 1, i64 1>
 ; FIXED-NEXT:    [[TMP12:%.*]] = udiv <4 x i64> [[WIDE_LOAD]], [[TMP10]]
 ; FIXED-NEXT:    [[TMP13:%.*]] = udiv <4 x i64> [[WIDE_LOAD1]], [[TMP11]]
 ; FIXED-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP6]], <4 x i64> [[TMP12]], <4 x i64> [[WIDE_LOAD]]
-; FIXED-NEXT:    [[PREDPHI4:%.*]] = select <4 x i1> [[TMP7]], <4 x i64> [[TMP13]], <4 x i64> [[WIDE_LOAD1]]
->>>>>>> refs/rewritten/origin-sifive-dev
+; FIXED-NEXT:    [[PREDPHI2:%.*]] = select <4 x i1> [[TMP7]], <4 x i64> [[TMP13]], <4 x i64> [[WIDE_LOAD1]]
 ; FIXED-NEXT:    store <4 x i64> [[PREDPHI]], ptr [[TMP4]], align 8
 ; FIXED-NEXT:    store <4 x i64> [[PREDPHI2]], ptr [[TMP5]], align 8
 ; FIXED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 8
@@ -648,27 +636,15 @@ define void @predicated_sdiv(ptr noalias nocapture %a, i64 %v, i64 %n) {
 ; FIXED-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i64, ptr [[TMP2]], i32 4
 ; FIXED-NEXT:    [[WIDE_LOAD1:%.*]] = load <4 x i64>, ptr [[TMP5]], align 8
 ; FIXED-NEXT:    [[TMP6:%.*]] = icmp ne <4 x i64> [[BROADCAST_SPLAT]], zeroinitializer
-<<<<<<< HEAD
 ; FIXED-NEXT:    [[TMP7:%.*]] = icmp ne <4 x i64> [[BROADCAST_SPLAT]], zeroinitializer
-; FIXED-NEXT:    [[TMP8:%.*]] = select <4 x i1> [[TMP6]], <4 x i64> [[BROADCAST_SPLAT]], <4 x i64> <i64 1, i64 1, i64 1, i64 1>
-; FIXED-NEXT:    [[TMP9:%.*]] = select <4 x i1> [[TMP7]], <4 x i64> [[BROADCAST_SPLAT]], <4 x i64> <i64 1, i64 1, i64 1, i64 1>
-; FIXED-NEXT:    [[TMP10:%.*]] = sdiv <4 x i64> [[WIDE_LOAD]], [[TMP8]]
-; FIXED-NEXT:    [[TMP11:%.*]] = sdiv <4 x i64> [[WIDE_LOAD1]], [[TMP9]]
-; FIXED-NEXT:    [[TMP12:%.*]] = xor <4 x i1> [[TMP6]], <i1 true, i1 true, i1 true, i1 true>
-; FIXED-NEXT:    [[TMP13:%.*]] = xor <4 x i1> [[TMP7]], <i1 true, i1 true, i1 true, i1 true>
-; FIXED-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP6]], <4 x i64> [[TMP10]], <4 x i64> [[WIDE_LOAD]]
-; FIXED-NEXT:    [[PREDPHI2:%.*]] = select <4 x i1> [[TMP7]], <4 x i64> [[TMP11]], <4 x i64> [[WIDE_LOAD1]]
-=======
-; FIXED-NEXT:    [[TMP7:%.*]] = icmp ne <4 x i64> [[BROADCAST_SPLAT3]], zeroinitializer
 ; FIXED-NEXT:    [[TMP8:%.*]] = xor <4 x i1> [[TMP6]], <i1 true, i1 true, i1 true, i1 true>
 ; FIXED-NEXT:    [[TMP9:%.*]] = xor <4 x i1> [[TMP7]], <i1 true, i1 true, i1 true, i1 true>
 ; FIXED-NEXT:    [[TMP10:%.*]] = select <4 x i1> [[TMP6]], <4 x i64> [[BROADCAST_SPLAT]], <4 x i64> <i64 1, i64 1, i64 1, i64 1>
-; FIXED-NEXT:    [[TMP11:%.*]] = select <4 x i1> [[TMP7]], <4 x i64> [[BROADCAST_SPLAT3]], <4 x i64> <i64 1, i64 1, i64 1, i64 1>
+; FIXED-NEXT:    [[TMP11:%.*]] = select <4 x i1> [[TMP7]], <4 x i64> [[BROADCAST_SPLAT]], <4 x i64> <i64 1, i64 1, i64 1, i64 1>
 ; FIXED-NEXT:    [[TMP12:%.*]] = sdiv <4 x i64> [[WIDE_LOAD]], [[TMP10]]
 ; FIXED-NEXT:    [[TMP13:%.*]] = sdiv <4 x i64> [[WIDE_LOAD1]], [[TMP11]]
 ; FIXED-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP6]], <4 x i64> [[TMP12]], <4 x i64> [[WIDE_LOAD]]
-; FIXED-NEXT:    [[PREDPHI4:%.*]] = select <4 x i1> [[TMP7]], <4 x i64> [[TMP13]], <4 x i64> [[WIDE_LOAD1]]
->>>>>>> refs/rewritten/origin-sifive-dev
+; FIXED-NEXT:    [[PREDPHI2:%.*]] = select <4 x i1> [[TMP7]], <4 x i64> [[TMP13]], <4 x i64> [[WIDE_LOAD1]]
 ; FIXED-NEXT:    store <4 x i64> [[PREDPHI]], ptr [[TMP4]], align 8
 ; FIXED-NEXT:    store <4 x i64> [[PREDPHI2]], ptr [[TMP5]], align 8
 ; FIXED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 8
