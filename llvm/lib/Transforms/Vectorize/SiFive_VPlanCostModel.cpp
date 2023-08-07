@@ -141,9 +141,22 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
           .Case<VPInterleaveRecipe>([&](const VPInterleaveRecipe *VPI) {
             return getInterleavedMemoryOpCost(VPI, RVL);
           })
+          .Case<VPWidenIntOrFpInductionRecipe>(
+              [&](const VPWidenIntOrFpInductionRecipe *IVR) -> InstructionCost {
+                Value *Start = IVR->getStartValue()->getLiveInIRValue();
+                const TruncInst *Trunc = IVR->getTruncInst();
+                Type *VectorTy = Trunc ? getVectorType(Trunc->getType(), RVL)
+                                       : getVectorType(Start->getType(), RVL);
+                Instruction::BinaryOps AddOp;
+                const InductionDescriptor &ID = IVR->getInductionDescriptor();
+                if (Start->getType()->isIntegerTy())
+                  AddOp = Instruction::Add;
+                else
+                  AddOp = ID.getInductionOpcode();
+                return TTI.getArithmeticInstrCost(AddOp, VectorTy, CostKind);
+              })
           .Case<VPCanonicalIVPHIRecipe, VPScalarIVStepsRecipe,
-                VPWidenIntOrFpInductionRecipe, VPReductionPHIRecipe,
-                VPWidenPointerInductionRecipe>(
+                VPReductionPHIRecipe, VPWidenPointerInductionRecipe>(
               [&](const VPRecipeBase *IVR) -> InstructionCost { return 1; })
           .Case<VPInstruction>(
               [&](const VPInstruction *VPI) -> InstructionCost {
@@ -439,6 +452,13 @@ InstructionCost VPlanCostModel::getInstructionCost(const VPInstruction *VPI,
       // VPSelectInstruction is generated to emit TU policy. Currently it has no
       // overhead in HW
       return 0;
+    case VPInstruction::FirstOrderRecurrenceSplice: {
+      auto *V = VPI->getOperand(0)->getUnderlyingValue();
+      auto *VectorTy = getVectorType(V->getType(), RVL);
+      return TTI.getShuffleCost(TargetTransformInfo::SK_Splice,
+                                cast<VectorType>(VectorTy), std::nullopt,
+                                CostKind, /*Index*/ -1);
+    }
     case VPInstruction::CanonicalIVIncrement:
     case VPInstruction::CanonicalIVIncrementNUW:
     case VPInstruction::BranchOnCount:
