@@ -6,9 +6,7 @@ define void @vmaxv_s16(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    lui a0, 1048568
-; CHECK-NEXT:    vmv.s.x v9, a0
-; CHECK-NEXT:    vredmax.vs v8, v8, v9
+; CHECK-NEXT:    vredmax.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -25,9 +23,7 @@ define void @vmaxv_s32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    lui a0, 524288
-; CHECK-NEXT:    vmv.s.x v9, a0
-; CHECK-NEXT:    vredmax.vs v8, v8, v9
+; CHECK-NEXT:    vredmax.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -43,9 +39,7 @@ define void @vmaxv_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    li a0, -128
-; CHECK-NEXT:    vmv.s.x v9, a0
-; CHECK-NEXT:    vredmax.vs v8, v8, v9
+; CHECK-NEXT:    vredmax.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -62,8 +56,7 @@ define void @vmaxv_u16(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vmv.s.x v9, zero
-; CHECK-NEXT:    vredmaxu.vs v8, v8, v9
+; CHECK-NEXT:    vredmaxu.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -80,8 +73,7 @@ define void @vmaxv_u32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vmv.s.x v9, zero
-; CHECK-NEXT:    vredmaxu.vs v8, v8, v9
+; CHECK-NEXT:    vredmaxu.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -97,8 +89,7 @@ define void @vmaxv_u8(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vmv.s.x v9, zero
-; CHECK-NEXT:    vredmaxu.vs v8, v8, v9
+; CHECK-NEXT:    vredmaxu.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -115,9 +106,7 @@ define void @vmaxvq_s16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    lui a0, 1048568
-; CHECK-NEXT:    vmv.s.x v9, a0
-; CHECK-NEXT:    vredmax.vs v8, v8, v9
+; CHECK-NEXT:    vredmax.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -134,9 +123,7 @@ define void @vmaxvq_s32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    lui a0, 524288
-; CHECK-NEXT:    vmv.s.x v9, a0
-; CHECK-NEXT:    vredmax.vs v8, v8, v9
+; CHECK-NEXT:    vredmax.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -152,9 +139,7 @@ define void @vmaxvq_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    li a0, -128
-; CHECK-NEXT:    vmv.s.x v9, a0
-; CHECK-NEXT:    vredmax.vs v8, v8, v9
+; CHECK-NEXT:    vredmax.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -171,8 +156,7 @@ define void @vmaxvq_u16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vmv.s.x v9, zero
-; CHECK-NEXT:    vredmaxu.vs v8, v8, v9
+; CHECK-NEXT:    vredmaxu.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -189,8 +173,7 @@ define void @vmaxvq_u32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vmv.s.x v9, zero
-; CHECK-NEXT:    vredmaxu.vs v8, v8, v9
+; CHECK-NEXT:    vredmaxu.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -206,8 +189,7 @@ define void @vmaxvq_u8(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vmv.s.x v9, zero
-; CHECK-NEXT:    vredmaxu.vs v8, v8, v9
+; CHECK-NEXT:    vredmaxu.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -224,10 +206,7 @@ define void @vminv_s16(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    lui a0, 8
-; CHECK-NEXT:    addiw a0, a0, -1
-; CHECK-NEXT:    vmv.s.x v9, a0
-; CHECK-NEXT:    vredmin.vs v8, v8, v9
+; CHECK-NEXT:    vredmin.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -244,10 +223,7 @@ define void @vminv_s32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    lui a0, 524288
-; CHECK-NEXT:    addiw a0, a0, -1
-; CHECK-NEXT:    vmv.s.x v9, a0
-; CHECK-NEXT:    vredmin.vs v8, v8, v9
+; CHECK-NEXT:    vredmin.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -263,9 +239,7 @@ define void @vminv_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    li a0, 127
-; CHECK-NEXT:    vmv.s.x v9, a0
-; CHECK-NEXT:    vredmin.vs v8, v8, v9
+; CHECK-NEXT:    vredmin.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -282,8 +256,7 @@ define void @vminv_u16(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vmv.v.i v9, -1
-; CHECK-NEXT:    vredminu.vs v8, v8, v9
+; CHECK-NEXT:    vredminu.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -300,8 +273,7 @@ define void @vminv_u32(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vmv.v.i v9, -1
-; CHECK-NEXT:    vredminu.vs v8, v8, v9
+; CHECK-NEXT:    vredminu.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -317,8 +289,7 @@ define void @vminv_u8(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vmv.v.i v9, -1
-; CHECK-NEXT:    vredminu.vs v8, v8, v9
+; CHECK-NEXT:    vredminu.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -335,10 +306,7 @@ define void @vminvq_s16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    lui a0, 8
-; CHECK-NEXT:    addiw a0, a0, -1
-; CHECK-NEXT:    vmv.s.x v9, a0
-; CHECK-NEXT:    vredmin.vs v8, v8, v9
+; CHECK-NEXT:    vredmin.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -355,10 +323,7 @@ define void @vminvq_s32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    lui a0, 524288
-; CHECK-NEXT:    addiw a0, a0, -1
-; CHECK-NEXT:    vmv.s.x v9, a0
-; CHECK-NEXT:    vredmin.vs v8, v8, v9
+; CHECK-NEXT:    vredmin.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -374,9 +339,7 @@ define void @vminvq_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    li a0, 127
-; CHECK-NEXT:    vmv.s.x v9, a0
-; CHECK-NEXT:    vredmin.vs v8, v8, v9
+; CHECK-NEXT:    vredmin.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -393,8 +356,7 @@ define void @vminvq_u16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
-; CHECK-NEXT:    vmv.v.i v9, -1
-; CHECK-NEXT:    vredminu.vs v8, v8, v9
+; CHECK-NEXT:    vredminu.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -411,8 +373,7 @@ define void @vminvq_u32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vmv.v.i v9, -1
-; CHECK-NEXT:    vredminu.vs v8, v8, v9
+; CHECK-NEXT:    vredminu.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -428,8 +389,7 @@ define void @vminvq_u8(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vmv.v.i v9, -1
-; CHECK-NEXT:    vredminu.vs v8, v8, v9
+; CHECK-NEXT:    vredminu.vs v8, v8, v8
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
