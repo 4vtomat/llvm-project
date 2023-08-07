@@ -5021,6 +5021,10 @@ static unsigned getRISCVVLOp(SDValue Op) {
   VP_CASE(ADD)        // VP_ADD
   VP_CASE(SUB)        // VP_SUB
   VP_CASE(MUL)        // VP_MUL
+#if SIFIVE_CUSTOMIZATION
+  VP_CASE(MULHS)      // VP_MULHS
+  VP_CASE(MULHU)      // VP_MULHU
+#endif // SIFIVE_CUSTOMIZATION
   VP_CASE(SDIV)       // VP_SDIV
   VP_CASE(SREM)       // VP_SREM
   VP_CASE(UDIV)       // VP_UDIV
@@ -5885,6 +5889,10 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
   case ISD::VP_ADD:
   case ISD::VP_SUB:
   case ISD::VP_MUL:
+#if SIFIVE_CUSTOMIZATION
+  case ISD::VP_MULHS:
+  case ISD::VP_MULHU:
+#endif // SIFIVE_CUSTOMIZATION
   case ISD::VP_SDIV:
   case ISD::VP_UDIV:
   case ISD::VP_SREM:
