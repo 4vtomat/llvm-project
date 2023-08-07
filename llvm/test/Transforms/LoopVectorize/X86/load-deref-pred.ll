@@ -39,30 +39,9 @@ define i32 @test_explicit_pred(i64 %len) {
 ; CHECK-NEXT:    [[TMP2:%.*]] = add i64 [[INDEX]], 8
 ; CHECK-NEXT:    [[TMP3:%.*]] = add i64 [[INDEX]], 12
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp slt <4 x i64> [[VEC_IND]], [[BROADCAST_SPLAT]]
-<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp slt <4 x i64> [[STEP_ADD]], [[BROADCAST_SPLAT]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp slt <4 x i64> [[STEP_ADD1]], [[BROADCAST_SPLAT]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp slt <4 x i64> [[STEP_ADD2]], [[BROADCAST_SPLAT]]
-; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i32, ptr [[ALLOCA]], i64 [[TMP0]]
-; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i32, ptr [[ALLOCA]], i64 [[TMP1]]
-; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr i32, ptr [[ALLOCA]], i64 [[TMP2]]
-; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[ALLOCA]], i64 [[TMP3]]
-; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr i32, ptr [[TMP8]], i32 0
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP12]], align 4
-; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr i32, ptr [[TMP8]], i32 4
-; CHECK-NEXT:    [[WIDE_LOAD7:%.*]] = load <4 x i32>, ptr [[TMP13]], align 4
-; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr i32, ptr [[TMP8]], i32 8
-; CHECK-NEXT:    [[WIDE_LOAD8:%.*]] = load <4 x i32>, ptr [[TMP14]], align 4
-; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr i32, ptr [[TMP8]], i32 12
-; CHECK-NEXT:    [[WIDE_LOAD9:%.*]] = load <4 x i32>, ptr [[TMP15]], align 4
-; CHECK-NEXT:    [[TMP16:%.*]] = xor <4 x i1> [[TMP4]], <i1 true, i1 true, i1 true, i1 true>
-; CHECK-NEXT:    [[TMP17:%.*]] = xor <4 x i1> [[TMP5]], <i1 true, i1 true, i1 true, i1 true>
-; CHECK-NEXT:    [[TMP18:%.*]] = xor <4 x i1> [[TMP6]], <i1 true, i1 true, i1 true, i1 true>
-; CHECK-NEXT:    [[TMP19:%.*]] = xor <4 x i1> [[TMP7]], <i1 true, i1 true, i1 true, i1 true>
-=======
-; CHECK-NEXT:    [[TMP5:%.*]] = icmp slt <4 x i64> [[STEP_ADD]], [[BROADCAST_SPLAT8]]
-; CHECK-NEXT:    [[TMP6:%.*]] = icmp slt <4 x i64> [[STEP_ADD1]], [[BROADCAST_SPLAT10]]
-; CHECK-NEXT:    [[TMP7:%.*]] = icmp slt <4 x i64> [[STEP_ADD2]], [[BROADCAST_SPLAT12]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = xor <4 x i1> [[TMP4]], <i1 true, i1 true, i1 true, i1 true>
 ; CHECK-NEXT:    [[TMP9:%.*]] = xor <4 x i1> [[TMP5]], <i1 true, i1 true, i1 true, i1 true>
 ; CHECK-NEXT:    [[TMP10:%.*]] = xor <4 x i1> [[TMP6]], <i1 true, i1 true, i1 true, i1 true>
@@ -74,12 +53,11 @@ define i32 @test_explicit_pred(i64 %len) {
 ; CHECK-NEXT:    [[TMP16:%.*]] = getelementptr i32, ptr [[TMP12]], i32 0
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP16]], align 4
 ; CHECK-NEXT:    [[TMP17:%.*]] = getelementptr i32, ptr [[TMP12]], i32 4
-; CHECK-NEXT:    [[WIDE_LOAD13:%.*]] = load <4 x i32>, ptr [[TMP17]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD7:%.*]] = load <4 x i32>, ptr [[TMP17]], align 4
 ; CHECK-NEXT:    [[TMP18:%.*]] = getelementptr i32, ptr [[TMP12]], i32 8
-; CHECK-NEXT:    [[WIDE_LOAD14:%.*]] = load <4 x i32>, ptr [[TMP18]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD8:%.*]] = load <4 x i32>, ptr [[TMP18]], align 4
 ; CHECK-NEXT:    [[TMP19:%.*]] = getelementptr i32, ptr [[TMP12]], i32 12
-; CHECK-NEXT:    [[WIDE_LOAD15:%.*]] = load <4 x i32>, ptr [[TMP19]], align 4
->>>>>>> refs/rewritten/origin-sifive-dev
+; CHECK-NEXT:    [[WIDE_LOAD9:%.*]] = load <4 x i32>, ptr [[TMP19]], align 4
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP4]], <4 x i32> [[WIDE_LOAD]], <4 x i32> zeroinitializer
 ; CHECK-NEXT:    [[PREDPHI10:%.*]] = select <4 x i1> [[TMP5]], <4 x i32> [[WIDE_LOAD7]], <4 x i32> zeroinitializer
 ; CHECK-NEXT:    [[PREDPHI11:%.*]] = select <4 x i1> [[TMP6]], <4 x i32> [[WIDE_LOAD8]], <4 x i32> zeroinitializer
