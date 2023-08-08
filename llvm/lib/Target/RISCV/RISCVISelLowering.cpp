@@ -19574,12 +19574,8 @@ bool RISCVTargetLowering::allowsMisalignedMemoryAccesses(
   // All vector implementations must support element alignment
   EVT ElemVT = VT.getVectorElementType();
   if (Alignment >= ElemVT.getStoreSize()) {
-#if SIFIVE_CUSTOMIZATION
-    // TODO: When should we set fast? A misaligned access is supported, but it
-    // may require more than one access.
     if (Fast)
-      *Fast = 0;
-#endif // SIFIVE_CUSTOMIZATION
+      *Fast = 1;
     return true;
   }
 
