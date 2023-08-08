@@ -327,10 +327,12 @@ foreach i = 3...31 in {
 //===----------------------------------------------------------------------===//
 
 let FeaturesRequired = [{ {RISCV::FeatureVendorXSfcie} }] in {
-def : SiFiveReg<"mnscratch", 0x350>;
-def : SiFiveReg<"mnepc", 0x351>;
-def : SiFiveReg<"mncause", 0x352>;
-def : SiFiveReg<"mnstatus", 0x353>;
+#ifdef SIFIVE_CUSTOMIZATION
+//def : SiFiveReg<"mnscratch", 0x350>;
+//def : SiFiveReg<"mnepc", 0x351>;
+//def : SiFiveReg<"mncause", 0x352>;
+//def : SiFiveReg<"mnstatus", 0x353>;
+#endif
 def : SiFiveReg<"mbpm", 0x7C0>;
 def : SiFiveReg<"mfd", 0x7C1>;
 def : SiFiveReg<"mpd", 0x7C8>;
