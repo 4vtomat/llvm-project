@@ -172,10 +172,10 @@ entry:
 define void @shufflevector_1_2(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_1_2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    ld a2, 16(a0)
-; CHECK-NEXT:    ld a0, 8(a0)
-; CHECK-NEXT:    sd a2, 8(a1)
-; CHECK-NEXT:    sd a0, 0(a1)
+; CHECK-NEXT:    addi a0, a0, 8
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i64>, ptr %in, align 8
@@ -467,10 +467,10 @@ entry:
 define void @shufflevector_3_4(ptr %in, ptr %out) {
 ; CHECK-LABEL: shufflevector_3_4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    ld a2, 32(a0)
-; CHECK-NEXT:    ld a0, 24(a0)
-; CHECK-NEXT:    sd a2, 8(a1)
-; CHECK-NEXT:    sd a0, 0(a1)
+; CHECK-NEXT:    addi a0, a0, 24
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i64>, ptr %in, align 8
