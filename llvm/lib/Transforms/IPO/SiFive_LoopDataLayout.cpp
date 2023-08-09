@@ -1522,14 +1522,7 @@ static void examinePhisForReferences(
   // if their GEPs are listed has having
   // as i8, promote to ContainerTy as the phi ptr
   // was used in a GEP to load the ArrayTy that paired
-  // with it.  If opaque pointers are not enabled, we
-  // will find the ContainerTy naturally as its GEP will
-  // identify it.
-  auto *CurTy = MemPtr->getType();
-  if (auto *PtrTy = dyn_cast<PointerType>(CurTy))
-    if (!PtrTy->isOpaque())
-      return;
-
+  // with it.
   SmallVector<const Value *, 4> Objects;
   auto *Int8Ty = Type::getInt8Ty(M->getContext());
 
@@ -1626,8 +1619,6 @@ static bool addReferencesForFunction(
             if (auto *CurArg = dyn_cast<Argument>(Op)) {
               // Obtain overlayed type from param map
               CurTy = LocalParamMap[CurArg->getArgNo()];
-              if (!CurTy && !PtrTy->isOpaque())
-                CurTy = PtrTy->getNonOpaquePointerElementType();
 
               if (!CurTy)
                 continue;
@@ -1640,8 +1631,6 @@ static bool addReferencesForFunction(
               CurTy = CurGEP->getSourceElementType();
             } else if (auto *AI = dyn_cast<AllocaInst>(Op)) {
               CurTy = AI->getAllocatedType();
-            } else if (!PtrTy->isOpaque()) {
-              CurTy = PtrTy->getNonOpaquePointerElementType();
             }
           }
 
@@ -2083,11 +2072,6 @@ static void walkCallGraphToFillParamMap(
           if (OptTy.has_value())
             BaseTy = *OptTy;
 
-          // Allow for maximally checking type divergence before falling back
-          // to legacy pointer type mining.
-          if (!BaseTy && !PtrTy->isOpaque())
-            BaseTy = PtrTy->getNonOpaquePointerElementType();
-
           if (!BaseTy)
             continue;
 
@@ -2111,21 +2095,7 @@ static bool typeBasedEscapeAnalysis(
           Type *ContainerTy = TypePair.second;
 
           Type *SrcTy = CurCast->getSrcTy();
-          if (auto *PtrTy = dyn_cast<PointerType>(SrcTy)) {
-            if (PtrTy->isOpaque())
-              continue;
-
-            SrcTy = PtrTy->getNonOpaquePointerElementType();
-          }
-
           Type *DstTy = CurCast->getDestTy();
-          if (auto *PtrTy = dyn_cast<PointerType>(DstTy)) {
-            if (PtrTy->isOpaque())
-              continue;
-
-            DstTy = PtrTy->getNonOpaquePointerElementType();
-          }
-
           // Now examine the use chain, iterating possibly to the end
           // of the function to determine if the actions are legal
           // In this case the dst is divergent as the src matches.
@@ -2272,13 +2242,6 @@ static LoopDataLayoutResult analyzeWholeProgram(
     // Check our unique list of types of candidates against each GA,
     // if we find any occurances, it is illegal to Transform AoS to SoA.
     Type *CurTy = GA.getType();
-    if (auto *PtrTy = dyn_cast<PointerType>(CurTy)) {
-      if (PtrTy->isOpaque())
-        continue;
-
-      CurTy = PtrTy->getNonOpaquePointerElementType();
-    }
-
     if (!CurTy->isStructTy())
       continue;
 
