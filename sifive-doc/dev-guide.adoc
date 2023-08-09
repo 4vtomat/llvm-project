@@ -153,19 +153,19 @@ Support of options starts from the compiler release specified in the table.
 h|Core IP Version h|Compiler Version h|`-mcpu` h|Default `-march` h|Default `-mtune`
 
 |23G3 and above |2023.03.0 and above |sifive-p650 
-|`rv64gc_zfhmin_zba_zbb_zbs`
+|`rv64imafdc_zic64b_zicbom_zicbop_zicboz_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintntl_zihintpause_zihpm_za64rs_zfhmin_zba_zbb_zbs_xsifivecdiscarddlone_xsifivecflushdlone`
 |sifive-p650
 
 |23G3.02 and above |2023.08.0 and above |sifive-p670
-|`rv64gcv_zfhmin_zba_zbb_zbs_zvknc1p0_zvkng1p0_zvksc1p0_zvksg1p0_zvl128b`
+|`rv64imafdcv_zic64b_zicbom_zicbop_zicboz_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintntl_zihintpause_zihpm_za64rs_zfhmin_zba_zbb_zbs_zvknc1p0_zvkng1p0_zvksc1p0_zvksg1p0_xsifivecdiscarddlone_xsifivecflushdlone`
 |sifive-p670
 
 |23G3 and above |2023.03.0 and above |sifive-p450
-|`rv64gc_zfhmin_zba_zbb_zbs`
+|`rv64imafdc_zic64b_zicbom_zicbop_zicboz_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintntl_zihintpause_zihpm_za64rs_zfhmin_zba_zbb_zbs_xsifivecdiscarddlone_xsifivecflushdlone`
 |sifive-p450
 
 |23G3.02 and above |2023.08.0 and above |sifive-p470
-|`rv64gcv_zfhmin_zba_zbb_zbs_zvknc1p0_zvkng1p0_zvksc1p0_zvksg1p0_zvl128b`
+|`rv64imafdcv_zic64b_zicbom_zicbop_zicboz_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintntl_zihintpause_zihpm_za64rs_zfhmin_zba_zbb_zbs_zvknc1p0_zvkng1p0_zvksc1p0_zvksg1p0_xsifivecdiscarddlone_xsifivecflushdlone`
 |sifive-p470
 
 |23G2 and above |2023.03.0 and above |sifive-u64 |`rv64gc_zba_zbb` |sifive-6-series

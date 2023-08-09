@@ -138,7 +138,6 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     auto *Cmp = cast<CmpInst>(Op);
     Value *A = State.get(User.getOperand(0), Part);
     Value *B = State.get(User.getOperand(1), Part);
-    Value *C = nullptr;
 
     VectorType *OpTy = cast<VectorType>(A->getType());
     Value *MaskArg = MaskValue(Part, OpTy->getElementCount());

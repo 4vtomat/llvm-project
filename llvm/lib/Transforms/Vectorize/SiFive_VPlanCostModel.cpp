@@ -138,6 +138,9 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
               [&](const VPWidenMemoryInstructionRecipe *VPWMIR) {
                 return getMemoryOpCost(VPWMIR, RVL);
               })
+          .Case<VPInterleaveRecipe>([&](const VPInterleaveRecipe *VPI) {
+            return getInterleavedMemoryOpCost(VPI, RVL);
+          })
           .Case<VPCanonicalIVPHIRecipe, VPScalarIVStepsRecipe,
                 VPWidenIntOrFpInductionRecipe, VPReductionPHIRecipe,
                 VPWidenPointerInductionRecipe>(
@@ -444,4 +447,44 @@ InstructionCost VPlanCostModel::getInstructionCost(const VPInstruction *VPI,
       return 0;
   }
 }
+
+InstructionCost
+VPlanCostModel::getInterleavedMemoryOpCost(const VPInterleaveRecipe *VPI,
+                                           const RVVPair &RVL) const {
+  const InterleaveGroup<Instruction> *Group = VPI->getInterleaveGroup();
+  const unsigned InterleaveFactor = Group->getFactor();
+  const Instruction *I = Group->getMember(0);
+  unsigned AS = getLoadStoreAddressSpace(const_cast<Instruction *>(I));
+  Type *ValTy = getLoadStoreType(const_cast<Instruction *>(I));
+  const bool IsMasked = VPI->getMask() != nullptr;
+  auto *VectorTy = cast<VectorType>(getVectorType(ValTy, RVL));
+  ElementCount VF = getElementCount(RVL);
+  auto *WideVecTy = VectorType::get(ValTy, VF * InterleaveFactor);
+
+  if (!TTI.isLegalVectorInterleave(VectorType::get(ValTy, VF), InterleaveFactor,
+                                   I->getModule()->getDataLayout())) {
+    LLVM_DEBUG(dbgs() << "InterleaveGroup = "; VPSlotTracker SlotTracker(
+                   (VPI->getParent()) ? VPI->getParent()->getPlan() : nullptr);
+               VPI->print(dbgs(), Twine(), SlotTracker);
+               dbgs() << " is illegal for " << RVL << '\n');
+    assert(0 && "InterleaveGroup is illegal for a given RVL");
+    // Even though such candidates should be filtered out before VPlan is
+    // constructed, make sure we won't select this candidate for vectorization
+    return InstructionCost::getInvalid();
+  }
+
+  assert(VF.isScalable() && "Cost model for Interleaved Memory Access is only "
+                            "implemented for scalable vectors");
+
+  InstructionCost Cost = TTI.getInterleavedMemoryOpCost(
+      I->getOpcode(), WideVecTy, InterleaveFactor, /*Indices=*/{},
+      Group->getAlign(), AS, CostKind, IsMasked, /*UseMaskForGaps=*/false);
+
+  if (Group->isReverse())
+    Cost += Group->getNumMembers() *
+            TTI.getShuffleCost(TargetTransformInfo::SK_Reverse, VectorTy,
+                               std::nullopt, CostKind, 0);
+  return Cost;
+}
+
 } // namespace llvm

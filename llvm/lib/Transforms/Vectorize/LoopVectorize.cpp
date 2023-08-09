@@ -2979,6 +2979,45 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
                                              MaskForGaps)
                        : ShuffledMask;
   };
+#if SIFIVE_CUSTOMIZATION
+  auto GetVectorInterleaveIntrinsic = [](const unsigned Factor) {
+#define INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(N)                                 \
+  case N:                                                                      \
+    return Intrinsic::experimental_vector_interleave##N;
+
+    switch (Factor) {
+    default:
+      llvm_unreachable("Unsupported interleave factor");
+      INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(2);
+      INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(3);
+      INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(4);
+      INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(5);
+      INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(6);
+      INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(7);
+      INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(8);
+    }
+#undef INTERLEAVE_FACTOR_VECTOR_INTERLEAVE
+  };
+
+  auto GetVectorDeinterleaveIntrinsic = [](const unsigned Factor) {
+#define DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(N)                               \
+  case N:                                                                      \
+    return Intrinsic::experimental_vector_deinterleave##N;
+
+    switch (Factor) {
+    default:
+      llvm_unreachable("Unsupported interleave factor");
+      DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(2);
+      DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(3);
+      DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(4);
+      DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(5);
+      DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(6);
+      DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(7);
+      DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(8);
+    }
+#undef DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE
+  };
+#endif // SIFIVE_CUSTOMIZATION
 
   // Vectorize the interleaved load group.
   if (isa<LoadInst>(Instr)) {
@@ -3004,11 +3043,11 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
           assert(useMaskedInterleavedAccesses(*TTI) &&
                  "masked interleaved groups are not allowed.");
           Value *BlockInMaskPart = State.get(BlockInMask, Part);
-          Value *Operands[] = {BlockInMaskPart, BlockInMaskPart};
+          SmallVector<Value *, 8> Operands(InterleaveFactor, BlockInMaskPart);
           Type *Types[] = {VectorType::get(
               Type::getInt1Ty(Builder.getContext()), VF * InterleaveFactor)};
           GroupMask = State.Builder.CreateIntrinsic(
-              Intrinsic::experimental_vector_interleave2, Types, Operands,
+              GetVectorInterleaveIntrinsic(InterleaveFactor), Types, Operands,
               nullptr, "interleaved.mask");
         } else {
           GroupMask = State.Builder.getTrueVector(VF * InterleaveFactor);
@@ -3034,11 +3073,10 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
       // For each member in the group, shuffle out the appropriate data from the
       // wide loads.
       for (unsigned Part = 0; Part < UF; ++Part) {
-        SmallVector<Type *> Types;
-        Types.push_back(NewLoads[Part]->getType());
+        SmallVector<Type *> Types = {NewLoads[Part]->getType()};
 
         Value *DeinterleavedResults = State.Builder.CreateIntrinsic(
-            Intrinsic::experimental_vector_deinterleave2, Types,
+            GetVectorDeinterleaveIntrinsic(InterleaveFactor), Types,
             {NewLoads[Part]}, nullptr, "deinterleaved.results");
 
         for (unsigned I = 0; I < InterleaveFactor; ++I) {
@@ -3164,14 +3202,12 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
         assert(useMaskedInterleavedAccesses(*TTI) &&
                "masked interleaved groups are not allowed.");
         Value *BlockInMaskPart = State.get(BlockInMask, Part);
-        SmallVector<Value *> Operands;
-        for (unsigned I = 0; I < Group->getFactor(); ++I)
-          Operands.push_back(BlockInMaskPart);
+        SmallVector<Value *> Operands(InterleaveFactor, BlockInMaskPart);
 
         Type *Types[] = {VectorType::get(Type::getInt1Ty(Builder.getContext()),
                                          VF * InterleaveFactor)};
         GroupMask = State.Builder.CreateIntrinsic(
-            Intrinsic::experimental_vector_interleave2, Types, Operands,
+            GetVectorInterleaveIntrinsic(InterleaveFactor), Types, Operands,
             nullptr, "interleaved.mask");
       } else {
         GroupMask = State.Builder.getTrueVector(VF * InterleaveFactor);
@@ -3179,7 +3215,7 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
 
       // Interleave store values
       SmallVector<Value *> Operands;
-      for (unsigned I = 0; I < Group->getFactor(); ++I) {
+      for (unsigned I = 0; I < InterleaveFactor; ++I) {
         Value *StoredValue = State.get(StoredValues[I], Part);
         if (Group->isReverse()) {
           Value *TrueVector = Builder.getTrueVector(VF);
@@ -3196,8 +3232,8 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
       }
 
       Value *StoredVal = State.Builder.CreateIntrinsic(
-          Intrinsic::experimental_vector_interleave2, {VecTy}, Operands, nullptr,
-          "interleaved.vec");
+          GetVectorInterleaveIntrinsic(InterleaveFactor), {VecTy}, Operands,
+          nullptr, "interleaved.vec");
 
       assert(State.Plan->getRVL() &&
              "RuntimeVL must be initialized at this point");
@@ -5382,10 +5418,11 @@ bool LoopVectorizationCostModel::interleavedAccessCanBeWidened(
                            "disabled by the option\n");
       return false;
     }
-    if (InterleaveFactor != 2 || Group->getNumMembers() < InterleaveFactor) {
-      // Since VLA vectorizer uses `llvm.experimental.vector.deinterleave2` and
-      // `llvm.experimental.vector.interleave2` intrinsics, only support cases
-      // with stride=2
+    if (InterleaveFactor > 8 || Group->getNumMembers() < InterleaveFactor) {
+      // TODO: Support gaps
+      // Since VLA vectorizer uses `llvm.experimental.vector.deinterleave[2-8]`
+      // and `llvm.experimental.vector.interleave[2-8]` intrinsics, only support
+      // cases with stride >= 2 && stride <= 8
       LLVM_DEBUG(
           dbgs() << "LV: Interleave factor = " << InterleaveFactor
                  << " is not currently supported by VLA vectorization\n");
@@ -9947,6 +9984,13 @@ VPValue *VPRecipeBuilder::createEdgeMask(BasicBlock *Src, BasicBlock *Dst,
   VPValue *EdgeMask = Plan.getVPValueOrAddLiveIn(BI->getCondition());
   assert(EdgeMask && "No Edge Mask found for condition");
 
+#if SIFIVE_CUSTOMIZATION
+  VPBuilder::InsertPointGuard Guard(Builder);
+  VPBasicBlock *SrcVPBB = Builder.BB2VPBB[Src];
+  assert(SrcVPBB && "Cannot find corresponding VPBB for the BB");
+  Builder.setInsertPoint(SrcVPBB, SrcVPBB->end());
+#endif // SIFIVE_CUSTOMIZATION
+
   if (BI->getSuccessor(0) != Dst)
     EdgeMask = Builder.createNot(EdgeMask, BI->getDebugLoc());
 
@@ -10039,6 +10083,13 @@ VPValue *VPRecipeBuilder::createBlockInMask(BasicBlock *BB, VPlan &Plan) {
     }
     return BlockMaskCache[BB] = BlockMask;
   }
+
+#if SIFIVE_CUSTOMIZATION
+    VPBuilder::InsertPointGuard Guard(Builder);
+    VPBasicBlock *VPBB = Builder.BB2VPBB[BB];
+    assert(VPBB && "Cannot find corresponding VPBB for the BB");
+    Builder.setInsertPoint(VPBB, VPBB->end());
+#endif // SIFIVE_CUSTOMIZATION
 
   // This is the block mask. We OR all incoming edges.
   for (auto *Predecessor : predecessors(BB)) {
@@ -11052,8 +11103,13 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
       // For scalable vectors, the only interleave factor currently supported
       // is 2 since we require the (de)interleave2 intrinsics instead of
       // shufflevectors.
+#if SIFIVE_CUSTOMIZATION
+      assert((!Result || !VF.isScalable() || IG->getFactor() <= 8) &&
+             "Unsupported interleave factor for scalable vectors");
+#else
       assert((!Result || !VF.isScalable() || IG->getFactor() == 2) &&
              "Unsupported interleave factor for scalable vectors");
+#endif // SIFIVE_CUSTOMIZATION
       return Result;
     };
     if (!getDecisionAndClampRange(applyIG, Range))
@@ -11153,6 +11209,10 @@ std::optional<VPlanPtr> LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(
     if (VPBB != HeaderVPBB)
       VPBB->setName(BB->getName());
     Builder.setInsertPoint(VPBB);
+
+#if SIFIVE_CUSTOMIZATION
+    Builder.BB2VPBB[BB] = VPBB;
+#endif // SIFIVE_CUSTOMIZATION
 
     // Introduce each ingredient into VPlan.
     // TODO: Model and preserve debug intrinsics in VPlan.

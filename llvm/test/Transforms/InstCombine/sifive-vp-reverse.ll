@@ -92,10 +92,8 @@ define <vscale x 2 x i32> @reverse_vpadd_lhs_splat_vpgather(ptr %x, <vscale x 2 
 ; CHECK-LABEL: @reverse_vpadd_lhs_splat_vpgather(
 ; CHECK-NEXT:    [[INS:%.*]] = insertelement <vscale x 2 x i1> poison, i1 [[M:%.*]], i64 0
 ; CHECK-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 2 x i1> [[INS]], <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
-; CHECK-NEXT:    [[INSX:%.*]] = insertelement <vscale x 2 x ptr> poison, ptr [[X:%.*]], i64 0
-; CHECK-NEXT:    [[SPLATX:%.*]] = shufflevector <vscale x 2 x ptr> [[INSX]], <vscale x 2 x ptr> poison, <vscale x 2 x i32> zeroinitializer
-; CHECK-NEXT:    [[SPLATGATHER:%.*]] = call <vscale x 2 x i32> @llvm.vp.gather.nxv2i32.nxv2p0(<vscale x 2 x ptr> [[SPLATX]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[VL:%.*]])
-; CHECK-NEXT:    [[C:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[SPLATGATHER]], <vscale x 2 x i32> [[Y:%.*]], <vscale x 2 x i1> [[MASK]], i32 [[VL]])
+; CHECK-NEXT:    [[LOAD_SPLAT:%.*]] = call <vscale x 2 x i32> @llvm.experimental.vp.strided.load.nxv2i32.p0.i64(ptr [[X:%.*]], i64 0, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[VL:%.*]])
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[LOAD_SPLAT]], <vscale x 2 x i32> [[Y:%.*]], <vscale x 2 x i1> [[MASK]], i32 [[VL]])
 ; CHECK-NEXT:    ret <vscale x 2 x i32> [[C]]
 ;
   %ins = insertelement <vscale x 2 x i1> poison, i1 %m, i32 0
@@ -114,10 +112,8 @@ define <vscale x 2 x i32> @reverse_vpadd_rhs_splat_vpgather(<vscale x 2 x i32> %
 ; CHECK-LABEL: @reverse_vpadd_rhs_splat_vpgather(
 ; CHECK-NEXT:    [[INS:%.*]] = insertelement <vscale x 2 x i1> poison, i1 [[M:%.*]], i64 0
 ; CHECK-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 2 x i1> [[INS]], <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
-; CHECK-NEXT:    [[INSY:%.*]] = insertelement <vscale x 2 x ptr> poison, ptr [[Y:%.*]], i64 0
-; CHECK-NEXT:    [[SPLATY:%.*]] = shufflevector <vscale x 2 x ptr> [[INSY]], <vscale x 2 x ptr> poison, <vscale x 2 x i32> zeroinitializer
-; CHECK-NEXT:    [[SPLATGATHER:%.*]] = call <vscale x 2 x i32> @llvm.vp.gather.nxv2i32.nxv2p0(<vscale x 2 x ptr> [[SPLATY]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[VL:%.*]])
-; CHECK-NEXT:    [[C:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[X:%.*]], <vscale x 2 x i32> [[SPLATGATHER]], <vscale x 2 x i1> [[MASK]], i32 [[VL]])
+; CHECK-NEXT:    [[LOAD_SPLAT:%.*]] = call <vscale x 2 x i32> @llvm.experimental.vp.strided.load.nxv2i32.p0.i64(ptr [[Y:%.*]], i64 0, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i32 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[VL:%.*]])
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[X:%.*]], <vscale x 2 x i32> [[LOAD_SPLAT]], <vscale x 2 x i1> [[MASK]], i32 [[VL]])
 ; CHECK-NEXT:    ret <vscale x 2 x i32> [[C]]
 ;
   %ins = insertelement <vscale x 2 x i1> poison, i1 %m, i32 0

@@ -189,6 +189,10 @@ public:
 
     ~InsertPointGuard() { Builder.restoreIP(VPInsertPoint(Block, Point)); }
   };
+
+#if SIFIVE_CUSTOMIZATION
+  DenseMap<BasicBlock *, VPBasicBlock *> BB2VPBB;
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 /// TODO: The following VectorizationFactor was pulled out of
