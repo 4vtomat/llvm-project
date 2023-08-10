@@ -15,6 +15,9 @@
 
 #include "llvm/Analysis/IVDescriptors.h"
 #include "llvm/Analysis/LoopAccessAnalysis.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Support/CommandLine.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Transforms/Utils/ValueMapper.h"
 
 namespace llvm {
@@ -46,6 +49,10 @@ struct RuntimeCheckingPtrGroup;
 typedef std::pair<const RuntimeCheckingPtrGroup *,
                   const RuntimeCheckingPtrGroup *>
     RuntimePointerCheck;
+
+#if SIFIVE_CUSTOMIZATION
+extern cl::opt<bool> EnableLoopDataLayout;
+#endif // SIFIVE_CUSTOMIZATION
 
 template <typename T, unsigned N> class SmallSetVector;
 template <typename T, unsigned N> class SmallPriorityWorklist;

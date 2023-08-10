@@ -1710,7 +1710,7 @@ PreservedAnalyses LoopUnrollPass::run(Function &F,
     // may perform on those loops we skip vectorization in pre-link, hence we
     // also have to skip these loops in pre-link too. You can find the same
     // function `HasOnlyNonUnitStrideMemoryAccesses` under LoopVectorize.cpp.
-    if (AdhocSkipUnrollInPrelink && IsLTOPrelink &&
+    if (EnableLoopDataLayout && IsLTOPrelink &&
         HasOnlyNonUnitStrideMemoryAccesses(&L)) {
       LLVM_DEBUG(
           dbgs() << "Bail out loop unroll in pre-link stage when there is only "

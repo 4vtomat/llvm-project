@@ -445,12 +445,6 @@ static cl::opt<bool> VectorizeLoopsWithKnownDepDist(
     cl::desc("Enable vectorization of loops that have a known dependence "
              "distance."));
 
-cl::opt<bool> llvm::AdhocSkipVectorizeInPrelink(
-    "sifive-vectorize-assume-optimizable-strided-accesses", cl::init(false),
-    cl::Hidden,
-    cl::desc("Allow the compiler to skip vectorization for loops of non-unit "
-             "stride memory access(es)"));
-
 cl::opt<uint64_t> LoopVectorizerVLUpperBound(
     "sifive-loop-vectorizer-clamp-vl", cl::init(0), cl::Hidden,
     cl::desc("Specify the maximum vl of a vectorized loop"));
@@ -6790,7 +6784,7 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor(
   // paralyze AOS to SOA transformation. This adhoc approach is driven by
   // SCT-1716, we seek to skip the vectorizer when when all memory accesses are
   // non-unit strides during the pre-link stage.
-  if (AdhocSkipVectorizeInPrelink && IsLTOPreLink &&
+  if (EnableLoopDataLayout && IsLTOPreLink &&
       hasOnlyNonUnitStrideMemoryAccesses(OrigLoop, Legal)) {
     LLVM_DEBUG(dbgs() << "LV: Bail out in pre-link stage when there is only "
                          "non-unit stride memory accesses.\n");
