@@ -2045,16 +2045,37 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
   RecurKind RdxKind = RdxDesc.getRecurrenceKind();
   Type *ElementTy = RdxDesc.getRecurrenceType();
   auto *VectorTy = cast<VectorType>(ToVectorTy(ElementTy, VF));
-  InstructionCost O = 0;
-  if (RecurrenceDescriptor::isMinMaxRecurrenceKind(RdxKind)) {
+  // TODO: Add broadcast cost for all recurrence kinds
+  switch (RdxKind) {
+  case RecurKind::Add:
+  case RecurKind::Mul:
+  case RecurKind::Or:
+  case RecurKind::And:
+  case RecurKind::Xor:
+  case RecurKind::FAdd:
+  case RecurKind::FMul:
+  case RecurKind::FMulAdd:
+    return Ctx.TTI->getArithmeticReductionCost(
+        RdxDesc.getOpcode(), VectorTy, RdxDesc.getFastMathFlags(), CostKind);
+  case RecurKind::SMin:
+  case RecurKind::SMax:
+  case RecurKind::UMin:
+  case RecurKind::UMax:
+  case RecurKind::FMin:
+  case RecurKind::FMax:
+  case RecurKind::FMinimum:
+  case RecurKind::FMaximum: {
     Intrinsic::ID Id = getMinMaxReductionIntrinsicOp(RdxKind);
-    O = Ctx.TTI->getMinMaxReductionCost(Id, VectorTy,
-                                        RdxDesc.getFastMathFlags(), CostKind);
-  } else if (RecurrenceDescriptor::isSelectCmpRecurrenceKind(RdxKind)) {
+    return Ctx.TTI->getMinMaxReductionCost(
+        Id, VectorTy, RdxDesc.getFastMathFlags(), CostKind);
+  }
+  case RecurKind::SelectICmp:
+  case RecurKind::SelectFCmp: {
     // The cost references the instructions created in
     // llvm::createSelectCmpTargetReduction
     auto *VecCondTy = cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
-    O = Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
+    InstructionCost O =
+        Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
     O += Ctx.TTI->getCmpSelInstrCost(Instruction::ICmp, VectorTy, VecCondTy,
                                      CmpInst::ICMP_NE, CostKind);
     O += Ctx.TTI->getArithmeticReductionCost(
@@ -2062,11 +2083,25 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
     O += Ctx.TTI->getCmpSelInstrCost(Instruction::Select, ElementTy,
                                      CmpInst::makeCmpResultType(ElementTy),
                                      CmpInst::BAD_ICMP_PREDICATE, CostKind);
-  } else {
-    O = Ctx.TTI->getArithmeticReductionCost(
-        RdxDesc.getOpcode(), VectorTy, RdxDesc.getFastMathFlags(), CostKind);
+    return O;
   }
-  return O;
+  case RecurKind::SelectIVICmp:
+  case RecurKind::SelectIVFCmp: {
+    // Emit reduce.smax to get the last induction value
+    InstructionCost O = Ctx.TTI->getMinMaxReductionCost(
+        Intrinsic::smax, VectorTy, FastMathFlags(), CostKind);
+    // Sentinel value handling
+    O += Ctx.TTI->getCmpSelInstrCost(Instruction::ICmp, ElementTy, nullptr,
+                                     CmpInst::ICMP_NE, CostKind);
+    O += Ctx.TTI->getCmpSelInstrCost(Instruction::Select, ElementTy,
+                                     CmpInst::makeCmpResultType(ElementTy),
+                                     CmpInst::BAD_ICMP_PREDICATE, CostKind);
+    return O;
+  }
+  case RecurKind::None:
+    llvm_unreachable("Unexpected reduction kind.");
+  }
+  return InstructionCost::getInvalid();
 }
 #endif // SIFIVE_CUSTOMIZATION
 
