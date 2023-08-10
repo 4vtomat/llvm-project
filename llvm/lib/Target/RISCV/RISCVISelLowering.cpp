@@ -13636,7 +13636,11 @@ static SDValue performFP_TO_INTCombine(SDNode *N,
     return SDValue();
 
   RISCVFPRndMode::RoundingMode FRM = matchRoundingOp(Src.getOpcode());
+#if SIFIVE_CUSTOMIZATION
+  if (FRM == RISCVFPRndMode::Invalid || FRM == RISCVFPRndMode::DYN)
+#else
   if (FRM == RISCVFPRndMode::Invalid)
+#endif
     return SDValue();
 
   SDLoc DL(N);
