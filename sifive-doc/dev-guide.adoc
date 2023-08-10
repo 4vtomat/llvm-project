@@ -240,6 +240,15 @@ https://github.com/riscv/riscv-v-spec/blob/master/v-spec.adoc#34-vector-type-reg
 * ^2^RISC-V Vector Specification, 5.2. Vector Operands +
 https://github.com/riscv/riscv-v-spec/blob/master/v-spec.adoc#52-vector-operands
 
+[[section-rvv-intrinsic-support]]
+== SiFive toolchain support for RISC-V vector C intrinsics
+
+The SiFive toolchain now supports the RISC-V Vector C intrinsics https://github.com/riscv-non-isa/rvv-intrinsic-doc/releases/tag/v0.12.0[v0.12]. Backward compatibility to https://github.com/riscv-non-isa/rvv-intrinsic-doc/releases/tag/v0.11.1[v0.11.1] and https://github.com/riscv-non-isa/rvv-intrinsic-doc/releases/tag/v0.10[v0.10] is also supported by the toolchain.
+
+NOTE: Regarding the RVV C intrinsics development, it is a consensus that there will be no incompatibility from v0.12 to v1.0.
+
+NOTE: Please note that the backward compatibility support is not available in the public upstream toolchain of GCC and LLVM. In a future release, we plan to deprecate the compatibility support. We suggest that users consult the https://github.com/sifive/toolchain-doc/blob/main/vector-c-intrinsic-migration-guide/content/migration-guide.adoc[migration guide] to migrate intrinsics used in their codebase to the latest version.
+
 [[section-vectorizer]]
 == Loop Vectorizer Defaults
 The SiFive pass:[C/C++] compiler v{sw-version} employs a vectorizer that may be enabled by default.
