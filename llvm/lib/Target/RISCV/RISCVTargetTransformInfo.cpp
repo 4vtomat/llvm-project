@@ -891,12 +891,22 @@ InstructionCost RISCVTTIImpl::getInterleavedMemoryOpCost(
     Align Alignment, unsigned AddressSpace, TTI::TargetCostKind CostKind,
     bool UseMaskForCond, bool UseMaskForGaps) {
 #if SIFIVE_CUSTOMIZATION
-  if (isa<ScalableVectorType>(VecTy))
-    return getMemoryOpCost(Opcode, VecTy, Alignment, AddressSpace, CostKind);
-#else
+  if (isa<ScalableVectorType>(VecTy) &&
+      Factor <= TLI->getMaxSupportedInterleaveFactor()) {
+    auto *SVTy = cast<ScalableVectorType>(VecTy);
+    ElementCount VF = SVTy->getElementCount().divideCoefficientBy(Factor);
+    VectorType *SubVecTy =
+        VectorType::get(SVTy->getElementType(), VF);
+    if (TLI->isLegalInterleavedAccessType(SubVecTy, Factor, Alignment,
+                                          AddressSpace, DL)) {
+      InstructionCost LegalMemCost = getMemoryOpCost(
+          Opcode, VecTy, Alignment, AddressSpace, CostKind);
+      return LegalMemCost;
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
   if (isa<ScalableVectorType>(VecTy))
     return InstructionCost::getInvalid();
-#endif // SIFIVE_CUSTOMIZATION
   auto *FVTy = cast<FixedVectorType>(VecTy);
   InstructionCost MemCost =
       getMemoryOpCost(Opcode, VecTy, Alignment, AddressSpace, CostKind);
