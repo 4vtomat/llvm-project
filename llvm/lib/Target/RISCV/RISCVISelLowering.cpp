@@ -15444,8 +15444,14 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
       for (unsigned i = 0; i < Val.getNumOperands(); i++) {
         if (Val.getOperand(i).isUndef())
           continue;
+#if SIFIVE_CUSTOMIZATION
+        uint64_t EltSize = Val.getScalarValueSizeInBits();
+        NewC.insertBits(Val.getConstantOperandAPInt(i).trunc(EltSize),
+                        i * EltSize);
+#else
         NewC.insertBits(Val.getConstantOperandAPInt(i),
                         i * Val.getScalarValueSizeInBits());
+#endif
       }
       MVT NewVT = MVT::getIntegerVT(MemVT.getSizeInBits());
 
