@@ -295,6 +295,8 @@ RelExpr RISCV::getRelExpr(const RelType type, const Symbol &s,
 #if SIFIVE_CUSTOMIZATION
   case R_RISCV_SIFIVE_SET_ULEB128:
   case R_RISCV_SIFIVE_SUB_ULEB128:
+  case R_RISCV_SET_ULEB128:
+  case R_RISCV_SUB_ULEB128:
 #endif // SIFIVE_CUSTOMIZATION
     return R_RISCV_ADD;
   case R_RISCV_JAL:
@@ -352,6 +354,7 @@ void RISCV::relocateAlloc(InputSectionBase &sec, uint8_t *buf) const {
       continue;
 
     switch (rel.type) {
+    case R_RISCV_SET_ULEB128:
     case R_RISCV_SIFIVE_SET_ULEB128: {
       if (lastULEB128SetLoc != nullptr) {
         ErrorPlace errPlace = getErrorPlace(loc);
@@ -361,6 +364,7 @@ void RISCV::relocateAlloc(InputSectionBase &sec, uint8_t *buf) const {
       lastULEB128SetVal = val;
       break;
     }
+    case R_RISCV_SUB_ULEB128:
     case R_RISCV_SIFIVE_SUB_ULEB128: {
       if (loc != lastULEB128SetLoc) {
         ErrorPlace errPlace = getErrorPlace(loc);
