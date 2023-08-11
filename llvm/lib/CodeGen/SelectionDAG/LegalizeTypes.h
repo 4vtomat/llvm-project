@@ -362,6 +362,10 @@ private:
   SDValue PromoteIntRes_ABS(SDNode *N);
   SDValue PromoteIntRes_Rotate(SDNode *N);
   SDValue PromoteIntRes_FunnelShift(SDNode *N);
+#if SIFIVE_CUSTOMIZATION
+  // Cherry-picked from upstream D157607.
+  SDValue PromoteIntRes_VPFunnelShift(SDNode *N);
+#endif // SIFIVE_CUSTOMIZATION
   SDValue PromoteIntRes_IS_FPCLASS(SDNode *N);
 
   // Integer Operand Promotion.
