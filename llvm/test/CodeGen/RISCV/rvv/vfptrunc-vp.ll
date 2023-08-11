@@ -8,8 +8,7 @@ define <vscale x 2 x half> @vfptrunc_nxv2f16_nxv2f32(<vscale x 2 x float> %a, <v
 ; CHECK-LABEL: vfptrunc_nxv2f16_nxv2f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v9, v8, v0.t
-; CHECK-NEXT:    vmv1r.v v8, v9
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8, v0.t
 ; CHECK-NEXT:    ret
   %v = call <vscale x 2 x half> @llvm.vp.fptrunc.nxv2f16.nxv2f32(<vscale x 2 x float> %a, <vscale x 2 x i1> %m, i32 %vl)
   ret <vscale x 2 x half> %v
@@ -31,9 +30,9 @@ define <vscale x 2 x half> @vfptrunc_nxv2f16_nxv2f64(<vscale x 2 x double> %a, <
 ; CHECK-LABEL: vfptrunc_nxv2f16_nxv2f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; CHECK-NEXT:    vfncvt.rod.f.f.w v10, v8, v0.t
+; CHECK-NEXT:    vfncvt.rod.f.f.w v8, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v8, v10, v0.t
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8, v0.t
 ; CHECK-NEXT:    ret
   %v = call <vscale x 2 x half> @llvm.vp.fptrunc.nxv2f16.nxv2f64(<vscale x 2 x double> %a, <vscale x 2 x i1> %m, i32 %vl)
   ret <vscale x 2 x half> %v
@@ -57,8 +56,7 @@ define <vscale x 2 x float> @vfptrunc_nxv2f32_nxv2f64(<vscale x 2 x double> %a, 
 ; CHECK-LABEL: vfptrunc_nxv2f32_nxv2f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v10, v8, v0.t
-; CHECK-NEXT:    vmv.v.v v8, v10
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8, v0.t
 ; CHECK-NEXT:    ret
   %v = call <vscale x 2 x float> @llvm.vp.fptrunc.nxv2f64.nxv2f32(<vscale x 2 x double> %a, <vscale x 2 x i1> %m, i32 %vl)
   ret <vscale x 2 x float> %v
@@ -80,8 +78,7 @@ define <vscale x 7 x float> @vfptrunc_nxv7f32_nxv7f64(<vscale x 7 x double> %a, 
 ; CHECK-LABEL: vfptrunc_nxv7f32_nxv7f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v16, v8, v0.t
-; CHECK-NEXT:    vmv.v.v v8, v16
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8, v0.t
 ; CHECK-NEXT:    ret
   %v = call <vscale x 7 x float> @llvm.vp.fptrunc.nxv7f64.nxv7f32(<vscale x 7 x double> %a, <vscale x 7 x i1> %m, i32 %vl)
   ret <vscale x 7 x float> %v
