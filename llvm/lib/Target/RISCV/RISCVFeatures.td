@@ -686,12 +686,20 @@ def HasStdExtZawrs : Predicate<"Subtarget->hasStdExtZawrs()">,
                                AssemblerPredicate<(all_of FeatureStdExtZawrs),
                                "'Zawrs' (Wait on Reservation Set)">;
 
+def FeatureStdExtZvkb
+    : SubtargetFeature<"experimental-zvkb", "HasStdExtZvkb", "true",
+                       "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
+def HasStdExtZvkb : Predicate<"Subtarget->hasStdExtZvkb()">,
+                              AssemblerPredicate<(all_of FeatureStdExtZvkb),
+                              "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
+
 def FeatureStdExtZvbb
     : SubtargetFeature<"experimental-zvbb", "HasStdExtZvbb", "true",
-                       "'Zvbb' (Vector Bit-manipulation used in Cryptography)">;
+                       "'Zvbb' (Vector basic bit-manipulation instructions.)",
+                       [FeatureStdExtZvkb]>;
 def HasStdExtZvbb : Predicate<"Subtarget->hasStdExtZvbb()">,
                               AssemblerPredicate<(all_of FeatureStdExtZvbb),
-                              "'Zvbb' (Vector Bit-manipulation used in Cryptography)">;
+                              "'Zvbb' (Vector basic bit-manipulation instructions.)">;
 
 def FeatureStdExtZvbc
     : SubtargetFeature<"experimental-zvbc", "HasStdExtZvbc", "true",
@@ -742,15 +750,15 @@ def HasStdExtZvksh : Predicate<"Subtarget->hasStdExtZvksh()">,
 
 #ifdef SIFIVE_CUSTOMIZATION
 def FeatureStdExtZvkb0p1
-    : SubtargetFeature<"experimental-zvkb", "HasStdExtZvkb0p1", "true",
+    : SubtargetFeature<"experimental-zvkb0p1", "HasStdExtZvkb0p1", "true",
                        "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
 def HasStdExtZvkb0p1 : Predicate<"Subtarget->hasStdExtZvkb0p1()">,
                               AssemblerPredicate<(all_of FeatureStdExtZvkb0p1),
                               "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
-def HasStdExtZvbbOrZvkb0p1
-    : Predicate<"Subtarget->hasStdExtZvbb() || Subtarget->hasStdExtZvkb0p1()">,
-      AssemblerPredicate<(any_of FeatureStdExtZvbb, FeatureStdExtZvkb0p1),
-                         "'Zvkb' or 'Zvbb' (Vector Bitmanip instructions for Cryptography.)">;
+def HasStdExtZvkbOrZvkb0p1
+    : Predicate<"Subtarget->hasStdExtZvkb() || Subtarget->hasStdExtZvkb0p1()">,
+      AssemblerPredicate<(any_of FeatureStdExtZvkb, FeatureStdExtZvkb0p1),
+                         "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
 
 def HasStdExtZvbcOrZvkb0p1
     : Predicate<"Subtarget->hasStdExtZvbc() || Subtarget->hasStdExtZvkb0p1()">,
@@ -798,9 +806,9 @@ def FeatureStdExtZvkt
 def FeatureStdExtZvkn
     : SubtargetFeature<"experimental-zvkn", "HasStdExtZvkn", "true",
                        "This extension is shorthand for the following set of "
-                       "other extensions: Zvkned, Zvknhb, Zvbb and Zvkt.",
+                       "other extensions: Zvkned, Zvknhb, Zvkb and Zvkt.",
                        [FeatureStdExtZvkned, FeatureStdExtZvknhb,
-                        FeatureStdExtZvbb, FeatureStdExtZvkt]>;
+                        FeatureStdExtZvkb, FeatureStdExtZvkt]>;
 
 def FeatureStdExtZvknc
     : SubtargetFeature<"experimental-zvknc", "HasStdExtZvknc", "true",
@@ -817,9 +825,9 @@ def FeatureStdExtZvkng
 def FeatureStdExtZvks
     : SubtargetFeature<"experimental-zvks", "HasStdExtZvks", "true",
                        "This extension is shorthand for the following set of "
-                       "other extensions: Zvksed, Zvksh, Zvbb and Zvkt.",
+                       "other extensions: Zvksed, Zvksh, Zvkb and Zvkt.",
                        [FeatureStdExtZvksed, FeatureStdExtZvksh,
-                        FeatureStdExtZvbb, FeatureStdExtZvkt]>;
+                        FeatureStdExtZvkb, FeatureStdExtZvkt]>;
 
 def FeatureStdExtZvksc
     : SubtargetFeature<"experimental-zvksc", "HasStdExtZvksc", "true",

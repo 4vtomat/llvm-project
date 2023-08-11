@@ -205,6 +205,7 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"zvfbfwma", RISCVExtensionVersion{0, 8}},
 
     // vector crypto
+    {"zvkb", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvkb", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvkg", RISCVExtensionVersion{1, 0}},
     {"zvkg", RISCVExtensionVersion{0, 1}}, // SIFIVE
@@ -1189,11 +1190,12 @@ static const char *ImpliedExtsXsfvfwmaccqqq[] = {"zve32f", "zvl256b"};
 static const char *ImpliedExtsXsfvqmaccdod[] = {"zve32x", "zvl128b"};
 static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x", "zvl256b"};
 #endif // SIFIVE_CUSTOMIZATION
-static const char *ImpliedExtsZvkn[] = {"zvbb", "zvkned", "zvknhb", "zvkt"};
+static const char *ImpliedExtsZvbb[] = {"zvkb"};
+static const char *ImpliedExtsZvkn[] = {"zvkb", "zvkned", "zvknhb", "zvkt"};
 static const char *ImpliedExtsZvknc[] = {"zvbc", "zvkn"};
 static const char *ImpliedExtsZvkng[] = {"zvkg", "zvkn"};
 static const char *ImpliedExtsZvknhb[] = {"zvknha"};
-static const char *ImpliedExtsZvks[] = {"zvbb", "zvksed", "zvksh", "zvkt"};
+static const char *ImpliedExtsZvks[] = {"zvkb", "zvksed", "zvksh", "zvkt"};
 static const char *ImpliedExtsZvksc[] = {"zvbc", "zvks"};
 static const char *ImpliedExtsZvksg[] = {"zvkg", "zvks"};
 static const char *ImpliedExtsZvl1024b[] = {"zvl512b"};
@@ -1251,6 +1253,7 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"zk"}, {ImpliedExtsZk}},
     {{"zkn"}, {ImpliedExtsZkn}},
     {{"zks"}, {ImpliedExtsZks}},
+    {{"zvbb"}, {ImpliedExtsZvbb}},
     {{"zve32f"}, {ImpliedExtsZve32f}},
     {{"zve32x"}, {ImpliedExtsZve32x}},
     {{"zve64d"}, {ImpliedExtsZve64d}},
