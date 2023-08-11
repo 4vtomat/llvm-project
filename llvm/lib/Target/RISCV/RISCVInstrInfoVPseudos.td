@@ -126,7 +126,6 @@ class PseudoToVInst<string PseudoInst> {
                         ["_F64", "_F"],
                         ["_F32", "_F"],
                         ["_F16", "_F"],
-                        ["_BF16", "_F"],
                         ["_VF64", "_VF"],
                         ["_VF32", "_VF"],
                         ["_VF16", "_VF"],
@@ -134,7 +133,6 @@ class PseudoToVInst<string PseudoInst> {
                         ["_WF64", "_WF"],
                         ["_WF32", "_WF"],
                         ["_WF16", "_WF"],
-                        ["_WBF16", "_WF"],
 #ifdef SIFIVE_CUSTOMIZATION
                         ["_SE", ""],
 #endif // SIFIVE_CUSTOMIZATION
