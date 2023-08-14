@@ -49,10 +49,7 @@ static cl::opt<unsigned> RISCVMaxBuildIntsCost(
     cl::desc("The maximum cost used for building integers."), cl::init(0),
     cl::Hidden);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-static cl::opt<bool> UseAA("riscv-use-aa", cl::init(false),
-                           cl::desc("Enable the use of AA during codegen."));
 static cl::opt<bool> UseAltGPROrder("riscv-use-alt-gpr-order", cl::init(false),
                                     cl::desc("Enable alternate GPR order."),
                                     cl::ReallyHidden);
@@ -60,10 +57,8 @@ static cl::opt<bool> UseAltVROrder("riscv-use-alt-vr-order", cl::init(false),
                                    cl::desc("Enable alternate VR order."),
                                    cl::ReallyHidden);
 #endif // SIFIVE_CUSTOMIZATION
-=======
 static cl::opt<bool> UseAA("riscv-use-aa", cl::init(true),
                            cl::desc("Enable the use of AA during codegen."));
->>>>>>> upstream/main
 
 void RISCVSubtarget::anchor() {}
 
@@ -221,7 +216,6 @@ void RISCVSubtarget::getPostRAMutations(
   Mutations.push_back(createRISCVMacroFusionDAGMutation());
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 void RISCVSubtarget::overrideSchedPolicy(MachineSchedPolicy &Policy,
                                          unsigned NumRegionInstrs) const {
@@ -229,13 +223,9 @@ void RISCVSubtarget::overrideSchedPolicy(MachineSchedPolicy &Policy,
     Policy.OnlyBottomUp = false;
 }
 
-bool RISCVSubtarget::useAA() const { return UseAA; }
-
 bool RISCVSubtarget::useAltGPROrder() const { return UseAltGPROrder; }
 bool RISCVSubtarget::useAltVROrder() const { return UseAltVROrder; }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   /// Enable use of alias analysis during code generation (during MI
   /// scheduling, DAGCombine, etc.).
 bool RISCVSubtarget::useAA() const { return UseAA; }
->>>>>>> upstream/main
