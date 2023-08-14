@@ -475,13 +475,6 @@ public:
   unsigned getNumStores() const { return LAI->getNumStores(); }
   unsigned getNumLoads() const { return LAI->getNumLoads(); }
 
-<<<<<<< HEAD
-  /// Returns all assume calls in predicated blocks. They need to be dropped
-  /// when flattening the CFG.
-  const SmallPtrSetImpl<Instruction *> &getConditionalAssumes() const {
-    return ConditionalAssumes;
-  }
-
 #if SIFIVE_CUSTOMIZATION
   /// Returns true if TTI says useVLAVectorizer() is enabled for the target.
   bool useVLAVectorizer() const {
@@ -507,8 +500,6 @@ public:
   };
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> upstream/main
   PredicatedScalarEvolution *getPredicatedScalarEvolution() const {
     return &PSE;
   }
