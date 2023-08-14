@@ -367,13 +367,9 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
 #else
       Value *Step =
           createStepForVF(Builder, Phi->getType(), State.VF, State.UF);
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-      return Builder.CreateAdd(Phi, Step, Name, IsNUW, false);
-=======
       return Builder.CreateAdd(Phi, Step, Name, hasNoUnsignedWrap(),
                                hasNoSignedWrap());
->>>>>>> upstream/main
     }
     return State.get(this, 0);
   }
