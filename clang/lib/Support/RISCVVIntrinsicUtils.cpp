@@ -621,7 +621,6 @@ PrototypeDescriptor::parsePrototypeDescriptor(
         llvm_unreachable("Invalid LFixedLog2LMUL value, should be [-3, 3]");
         return std::nullopt;
       }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     } else if (ComplexTT.first == "MultipleLMUL") {
       int32_t Log2LMUL;
@@ -639,7 +638,6 @@ PrototypeDescriptor::parsePrototypeDescriptor(
         llvm_unreachable("Invalid MultipleLMUL value, should be 1 or 2");
       }
 #endif // SIFIVE_CUSTOMIZATION
-=======
 
     } else if (ComplexTT.first == "SEFixedLog2LMUL") {
       int32_t Log2LMUL;
@@ -673,7 +671,6 @@ PrototypeDescriptor::parsePrototypeDescriptor(
         llvm_unreachable("Invalid LFixedLog2LMUL value, should be [-3, 3]");
         return std::nullopt;
       }
->>>>>>> upstream/main
     } else if (ComplexTT.first == "Tuple") {
       unsigned NF = 0;
       if (ComplexTT.second.getAsInteger(10, NF)) {
@@ -848,7 +845,6 @@ void RVVType::applyModifier(const PrototypeDescriptor &Transformer) {
   case VectorTypeModifier::SFixedLog2LMUL3:
     applyFixedLog2LMUL(3, FixedLMULType::SmallerThan);
     break;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case VectorTypeModifier::Widening2XVectorMultipleLMUL2:
     ElementBitwidth *= 2;
@@ -871,7 +867,6 @@ void RVVType::applyModifier(const PrototypeDescriptor &Transformer) {
     Scale = LMUL.getScale(ElementBitwidth);
     break;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case VectorTypeModifier::SEFixedLog2LMULN3:
     applyFixedLog2LMUL(-3, FixedLMULType::SmallerOrEqual);
     break;
@@ -893,7 +888,6 @@ void RVVType::applyModifier(const PrototypeDescriptor &Transformer) {
   case VectorTypeModifier::SEFixedLog2LMUL3:
     applyFixedLog2LMUL(3, FixedLMULType::SmallerOrEqual);
     break;
->>>>>>> upstream/main
   case VectorTypeModifier::Tuple2:
   case VectorTypeModifier::Tuple3:
   case VectorTypeModifier::Tuple4:
