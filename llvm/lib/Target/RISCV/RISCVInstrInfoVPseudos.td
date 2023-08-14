@@ -123,7 +123,6 @@ class PseudoToVInst<string PseudoInst> {
                         ["_E32", ""],
                         ["_E16", ""],
                         ["_E8", ""],
-<<<<<<< HEAD
                         ["_F64", "_F"],
                         ["_F32", "_F"],
                         ["_F16", "_F"],
@@ -137,11 +136,9 @@ class PseudoToVInst<string PseudoInst> {
 #ifdef SIFIVE_CUSTOMIZATION
                         ["_SE", ""],
 #endif // SIFIVE_CUSTOMIZATION
-=======
                         ["FPR64", "F"],
                         ["FPR32", "F"],
                         ["FPR16", "F"],
->>>>>>> upstream/main
                         ["_TU", ""],
                         ["_TIED", ""],
                         ["_MASK", ""],
@@ -2235,6 +2232,19 @@ multiclass VPseudoBinary<VReg RetClass,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+multiclass VPseudoBinaryNoMask<VReg RetClass,
+                               VReg Op1Class,
+                               DAGOperand Op2Class,
+                               LMULInfo MInfo,
+                               string Constraint = "",
+                               int sew = 0> {
+  let VLMul = MInfo.value, SEW=sew in {
+    defvar suffix = !if(sew, "_" # MInfo.MX # "_E" # sew, "_" # MInfo.MX);
+    def suffix : VPseudoBinaryNoMaskTU<RetClass, Op1Class, Op2Class,
+                                       Constraint>;
+  }
+}
+
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoBinaryRoundingMode<VReg RetClass,
                                      VReg Op1Class,
@@ -2257,25 +2267,9 @@ multiclass VPseudoBinaryRoundingMode<VReg RetClass,
                                                                TargetConstraintType>,
                            RISCVMaskedPseudo<MaskIdx=3>;
 
-<<<<<<< HEAD
   }
 }
 #else
-=======
-multiclass VPseudoBinaryNoMask<VReg RetClass,
-                               VReg Op1Class,
-                               DAGOperand Op2Class,
-                               LMULInfo MInfo,
-                               string Constraint = "",
-                               int sew = 0> {
-  let VLMul = MInfo.value, SEW=sew in {
-    defvar suffix = !if(sew, "_" # MInfo.MX # "_E" # sew, "_" # MInfo.MX);
-    def suffix : VPseudoBinaryNoMaskTU<RetClass, Op1Class, Op2Class,
-                                       Constraint>;
-  }
-}
-
->>>>>>> upstream/main
 multiclass VPseudoBinaryRoundingMode<VReg RetClass,
                                      VReg Op1Class,
                                      DAGOperand Op2Class,
