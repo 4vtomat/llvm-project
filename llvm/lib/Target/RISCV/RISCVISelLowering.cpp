@@ -1148,20 +1148,10 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 
         setOperationAction(IntegerVPOps, VT, Custom);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         // Copied from BSC.
         setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
 #endif // SIFIVE_CUSTOMIZATION
-
-        // Lower CTLZ_ZERO_UNDEF and CTTZ_ZERO_UNDEF if element of VT in the
-        // range of f32.
-        EVT FloatVT = MVT::getVectorVT(MVT::f32, VT.getVectorElementCount());
-        if (isTypeLegal(FloatVT))
-          setOperationAction(
-              {ISD::CTLZ, ISD::CTLZ_ZERO_UNDEF, ISD::CTTZ_ZERO_UNDEF}, VT,
-              Custom);
-=======
         if (Subtarget.hasStdExtZvbb()) {
           setOperationAction({ISD::BITREVERSE, ISD::BSWAP, ISD::CTLZ,
                               ISD::CTLZ_ZERO_UNDEF, ISD::CTTZ,
@@ -1177,7 +1167,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                 {ISD::CTLZ, ISD::CTLZ_ZERO_UNDEF, ISD::CTTZ_ZERO_UNDEF}, VT,
                 Custom);
         }
->>>>>>> upstream/main
       }
 
       for (MVT VT : MVT::fp_fixedlen_vector_valuetypes()) {
@@ -3758,10 +3747,6 @@ static SDValue lowerScalarInsert(SDValue Scalar, SDValue VL, MVT VT,
 
   if (Scalar.getOpcode() == ISD::EXTRACT_VECTOR_ELT &&
       isNullConstant(Scalar.getOperand(1))) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
     SDValue ExtractedVal = Scalar.getOperand(0);
     MVT ExtractedVT = ExtractedVal.getSimpleValueType();
     MVT ExtractedContainerVT = ExtractedVT;
@@ -3775,18 +3760,7 @@ static SDValue lowerScalarInsert(SDValue Scalar, SDValue VL, MVT VT,
       return DAG.getNode(ISD::INSERT_SUBVECTOR, DL, VT, Passthru, ExtractedVal,
                          DAG.getConstant(0, DL, XLenVT));
     return DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, VT, ExtractedVal,
-<<<<<<< HEAD
                        DAG.getConstant(0, DL, XLenVT));
-#else
-    MVT ExtractedVT = Scalar.getOperand(0).getSimpleValueType();
-    if (ExtractedVT.bitsLE(VT))
-      return DAG.getNode(ISD::INSERT_SUBVECTOR, DL, VT, Passthru,
-                         Scalar.getOperand(0), DAG.getConstant(0, DL, XLenVT));
-    return DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, VT, Scalar.getOperand(0),
-=======
->>>>>>> upstream/main
-                       DAG.getConstant(0, DL, XLenVT));
-#endif // SIFIVE_CUSTOMIZATION
   }
 
   if (VT.isFloatingPoint()) {
@@ -5312,22 +5286,13 @@ static bool hasMergeOp(unsigned Opcode) {
   assert(Opcode > RISCVISD::FIRST_NUMBER &&
          Opcode <= RISCVISD::LAST_RISCV_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
-<<<<<<< HEAD
-  static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP == 136 && // SIFIVE
-         RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
-                 ISD::FIRST_TARGET_STRICTFP_OPCODE ==
-             21 &&
-         "adding target specific op should update this function");
-  if (Opcode >= RISCVISD::ADD_VL && Opcode <= RISCVISD::FMAXNUM_VL)
-=======
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-                    124 &&
+                    138 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
                 "adding target specific op should update this function");
   if (Opcode >= RISCVISD::ADD_VL && Opcode <= RISCVISD::VFMAX_VL)
->>>>>>> upstream/main
     return true;
   if (Opcode == RISCVISD::FCOPYSIGN_VL)
     return true;
@@ -5345,20 +5310,12 @@ static bool hasMaskOp(unsigned Opcode) {
   assert(Opcode > RISCVISD::FIRST_NUMBER &&
          Opcode <= RISCVISD::LAST_RISCV_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
-<<<<<<< HEAD
-  static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP == 136 && // SIFIVE
-         RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
-                 ISD::FIRST_TARGET_STRICTFP_OPCODE ==
-             21 &&
-         "adding target specific op should update this function");
-=======
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-                    124 &&
+                    138 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
                 "adding target specific op should update this function");
->>>>>>> upstream/main
   if (Opcode >= RISCVISD::TRUNCATE_VECTOR_VL && Opcode <= RISCVISD::SETCC_VL)
     return true;
   if (Opcode >= RISCVISD::VRGATHER_VX_VL && Opcode <= RISCVISD::VFIRST_VL)
@@ -8210,7 +8167,6 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     return DAG.getNode(RISCVISD::VSELECT_VL, DL, VT, SelectCond, SplattedVal,
                        Vec, VL);
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case Intrinsic::aarch64_neon_fmax:
   case Intrinsic::aarch64_neon_fmin: {
@@ -8490,7 +8446,6 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
         DAG, Subtarget);
   }
 #endif
-=======
   // EGS * EEW >= 128 bits
   case Intrinsic::riscv_vaesdf_vv:
   case Intrinsic::riscv_vaesdf_vs:
@@ -8533,7 +8488,6 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
       report_fatal_error("EGW should be greater than or equal to 4 * SEW.");
     return Op;
   }
->>>>>>> upstream/main
   }
 
   return lowerVectorIntrinsicScalars(Op, DAG, Subtarget);
@@ -8903,30 +8857,6 @@ static SDValue lowerReductionSeq(unsigned RVVOpcode, MVT ResVT,
                      DAG.getConstant(0, DL, XLenVT));
 }
 
-<<<<<<< HEAD
-#ifndef SIFIVE_CUSTOMIZATION
-// Function to extract the first element of Vec. For fixed vector Vec, this
-// converts it to a scalable vector before extraction, so subsequent
-// optimizations don't have to handle fixed vectors.
-static SDValue getFirstElement(SDValue Vec, SelectionDAG &DAG,
-                               const RISCVSubtarget &Subtarget) {
-  SDLoc DL(Vec);
-  MVT XLenVT = Subtarget.getXLenVT();
-  MVT VecVT = Vec.getSimpleValueType();
-  MVT VecEltVT = VecVT.getVectorElementType();
-
-  MVT ContainerVT = VecVT;
-  if (VecVT.isFixedLengthVector()) {
-    ContainerVT = getContainerForFixedLengthVector(DAG, VecVT, Subtarget);
-    Vec = convertToScalableVector(ContainerVT, Vec, DAG, Subtarget);
-  }
-  return DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, VecEltVT, Vec,
-                     DAG.getConstant(0, DL, XLenVT));
-}
-#endif // SIFIVE_CUSTOMIZTION
-
-=======
->>>>>>> upstream/main
 SDValue RISCVTargetLowering::lowerVECREDUCE(SDValue Op,
                                             SelectionDAG &DAG) const {
   SDLoc DL(Op);
@@ -8969,19 +8899,9 @@ SDValue RISCVTargetLowering::lowerVECREDUCE(SDValue Op,
   case ISD::UMIN:
   case ISD::SMAX:
   case ISD::SMIN:
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     MVT XLenVT = Subtarget.getXLenVT();
     StartV = DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, VecEltVT, Vec,
                          DAG.getConstant(0, DL, XLenVT));
-#else
-    StartV = getFirstElement(Vec, DAG, Subtarget);
-#endif
-=======
-    MVT XLenVT = Subtarget.getXLenVT();
-    StartV = DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, VecEltVT, Vec,
-                         DAG.getConstant(0, DL, XLenVT));
->>>>>>> upstream/main
   }
   return lowerReductionSeq(RVVOpcode, Op.getSimpleValueType(), StartV, Vec,
                            Mask, VL, DL, DAG, Subtarget);
@@ -9009,10 +8929,6 @@ getRVVFPReductionOpAndOperands(SDValue Op, SelectionDAG &DAG, EVT EltVT,
     return std::make_tuple(RISCVISD::VECREDUCE_SEQ_FADD_VL, Op.getOperand(1),
                            Op.getOperand(0));
   case ISD::VECREDUCE_FMIN:
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
   case ISD::VECREDUCE_FMAX: {
     MVT XLenVT = Subtarget.getXLenVT();
     SDValue Front =
@@ -9023,16 +8939,6 @@ getRVVFPReductionOpAndOperands(SDValue Op, SelectionDAG &DAG, EVT EltVT,
                           : RISCVISD::VECREDUCE_FMAX_VL;
     return std::make_tuple(RVVOpc, Op.getOperand(0), Front);
   }
-<<<<<<< HEAD
-#else
-    return std::make_tuple(RISCVISD::VECREDUCE_FMIN_VL, Op.getOperand(0),
-                           getFirstElement(Op.getOperand(0), DAG, Subtarget));
-  case ISD::VECREDUCE_FMAX:
-    return std::make_tuple(RISCVISD::VECREDUCE_FMAX_VL, Op.getOperand(0),
-                           getFirstElement(Op.getOperand(0), DAG, Subtarget));
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
   }
 }
 
@@ -13936,19 +13842,11 @@ static SDValue performFP_TO_INTCombine(SDNode *N,
     return SDValue();
 
   RISCVFPRndMode::RoundingMode FRM = matchRoundingOp(Src.getOpcode());
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (FRM == RISCVFPRndMode::Invalid || FRM == RISCVFPRndMode::DYN)
-#else
-  if (FRM == RISCVFPRndMode::Invalid)
-#endif
-=======
   // If the result is invalid, we didn't find a foldable instruction.
   // If the result is dynamic, then we found an frint which we don't yet
   // support. It will cause 7 to be written to the FRM CSR for vector.
   // FIXME: We could support this by using VFCVT_X_F_VL/VFCVT_XU_F_VL below.
   if (FRM == RISCVFPRndMode::Invalid || FRM == RISCVFPRndMode::DYN)
->>>>>>> upstream/main
     return SDValue();
 
   SDLoc DL(N);
@@ -15757,19 +15655,8 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
       for (unsigned i = 0; i < Val.getNumOperands(); i++) {
         if (Val.getOperand(i).isUndef())
           continue;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-        uint64_t EltSize = Val.getScalarValueSizeInBits();
         NewC.insertBits(Val.getConstantOperandAPInt(i).trunc(EltSize),
                         i * EltSize);
-#else
-        NewC.insertBits(Val.getConstantOperandAPInt(i),
-                        i * Val.getScalarValueSizeInBits());
-#endif
-=======
-        NewC.insertBits(Val.getConstantOperandAPInt(i).trunc(EltSize),
-                        i * EltSize);
->>>>>>> upstream/main
       }
       MVT NewVT = MVT::getIntegerVT(MemVT.getSizeInBits());
 
