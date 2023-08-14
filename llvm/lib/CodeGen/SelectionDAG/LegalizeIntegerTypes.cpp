@@ -60,23 +60,6 @@ void DAGTypeLegalizer::PromoteIntegerResult(SDNode *N, unsigned ResNo) {
   case ISD::AssertSext:  Res = PromoteIntRes_AssertSext(N); break;
   case ISD::AssertZext:  Res = PromoteIntRes_AssertZext(N); break;
   case ISD::BITCAST:     Res = PromoteIntRes_BITCAST(N); break;
-<<<<<<< HEAD
-  case ISD::VP_BITREVERSE: // SiFive Cherry-picked from upstream D157607.
-  case ISD::BITREVERSE:  Res = PromoteIntRes_BITREVERSE(N); break;
-  case ISD::VP_BSWAP: // SiFive Cherry-picked from upstream D157607.
-  case ISD::BSWAP:       Res = PromoteIntRes_BSWAP(N); break;
-  case ISD::BUILD_PAIR:  Res = PromoteIntRes_BUILD_PAIR(N); break;
-  case ISD::Constant:    Res = PromoteIntRes_Constant(N); break;
-  case ISD::VP_CTLZ_ZERO_UNDEF: // SiFive Cherry-picked from upstream D157607.
-  case ISD::VP_CTLZ: // SiFive Cherry-picked from upstream D157607.
-  case ISD::CTLZ_ZERO_UNDEF:
-  case ISD::CTLZ:        Res = PromoteIntRes_CTLZ(N); break;
-  case ISD::PARITY:
-  case ISD::VP_CTPOP: // SiFive Cherry-picked from upstream D157607.
-  case ISD::CTPOP:       Res = PromoteIntRes_CTPOP_PARITY(N); break;
-  case ISD::VP_CTTZ_ZERO_UNDEF: // SiFive Cherry-picked from upstream D157607.
-  case ISD::VP_CTTZ: // SiFive Cherry-picked from upstream D157607.
-=======
   case ISD::VP_BITREVERSE:
   case ISD::BITREVERSE:  Res = PromoteIntRes_BITREVERSE(N); break;
   case ISD::VP_BSWAP:
@@ -92,7 +75,6 @@ void DAGTypeLegalizer::PromoteIntegerResult(SDNode *N, unsigned ResNo) {
   case ISD::CTPOP:       Res = PromoteIntRes_CTPOP_PARITY(N); break;
   case ISD::VP_CTTZ_ZERO_UNDEF:
   case ISD::VP_CTTZ:
->>>>>>> upstream/main
   case ISD::CTTZ_ZERO_UNDEF:
   case ISD::CTTZ:        Res = PromoteIntRes_CTTZ(N); break;
   case ISD::EXTRACT_VECTOR_ELT:
@@ -306,19 +288,10 @@ void DAGTypeLegalizer::PromoteIntegerResult(SDNode *N, unsigned ResNo) {
     Res = PromoteIntRes_FunnelShift(N);
     break;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // Cherry-picked from upstream D157607.
-=======
->>>>>>> upstream/main
   case ISD::VP_FSHL:
   case ISD::VP_FSHR:
     Res = PromoteIntRes_VPFunnelShift(N);
     break;
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 
   case ISD::IS_FPCLASS:
     Res = PromoteIntRes_IS_FPCLASS(N);
@@ -558,11 +531,6 @@ SDValue DAGTypeLegalizer::PromoteIntRes_BSWAP(SDNode *N) {
   }
 
   unsigned DiffBits = NVT.getScalarSizeInBits() - OVT.getScalarSizeInBits();
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // Cherry-picked from upstream D157607.
-=======
->>>>>>> upstream/main
   SDValue ShAmt = DAG.getShiftAmountConstant(DiffBits, NVT, dl);
   if (N->getOpcode() == ISD::BSWAP)
     return DAG.getNode(ISD::SRL, dl, NVT, DAG.getNode(ISD::BSWAP, dl, NVT, Op),
@@ -572,10 +540,6 @@ SDValue DAGTypeLegalizer::PromoteIntRes_BSWAP(SDNode *N) {
   return DAG.getNode(ISD::VP_LSHR, dl, NVT,
                      DAG.getNode(ISD::VP_BSWAP, dl, NVT, Op, Mask, EVL), ShAmt,
                      Mask, EVL);
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 }
 
 SDValue DAGTypeLegalizer::PromoteIntRes_BITREVERSE(SDNode *N) {
@@ -595,14 +559,7 @@ SDValue DAGTypeLegalizer::PromoteIntRes_BITREVERSE(SDNode *N) {
   }
 
   unsigned DiffBits = NVT.getScalarSizeInBits() - OVT.getScalarSizeInBits();
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // Cherry-picked from upstream D157607.
   SDValue ShAmt = DAG.getShiftAmountConstant(DiffBits, NVT, dl);
-  // Cherry-picked from upstream D157607.
-=======
-  SDValue ShAmt = DAG.getShiftAmountConstant(DiffBits, NVT, dl);
->>>>>>> upstream/main
   if (N->getOpcode() == ISD::BITREVERSE)
     return DAG.getNode(ISD::SRL, dl, NVT,
                        DAG.getNode(ISD::BITREVERSE, dl, NVT, Op), ShAmt);
@@ -611,10 +568,6 @@ SDValue DAGTypeLegalizer::PromoteIntRes_BITREVERSE(SDNode *N) {
   return DAG.getNode(ISD::VP_LSHR, dl, NVT,
                      DAG.getNode(ISD::VP_BITREVERSE, dl, NVT, Op, Mask, EVL),
                      ShAmt, Mask, EVL);
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 }
 
 SDValue DAGTypeLegalizer::PromoteIntRes_BUILD_PAIR(SDNode *N) {
@@ -661,11 +614,6 @@ SDValue DAGTypeLegalizer::PromoteIntRes_CTLZ(SDNode *N) {
   SDValue Op = ZExtPromotedInteger(N->getOperand(0));
 
   // Subtract off the extra leading bits in the bigger type.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // Cherry-picked from upstream D157607.
-=======
->>>>>>> upstream/main
   SDValue ExtractLeadingBits = DAG.getConstant(
       NVT.getScalarSizeInBits() - OVT.getScalarSizeInBits(), dl, NVT);
   if (!N->isVPOpcode())
@@ -677,10 +625,6 @@ SDValue DAGTypeLegalizer::PromoteIntRes_CTLZ(SDNode *N) {
   return DAG.getNode(ISD::VP_SUB, dl, NVT,
                      DAG.getNode(N->getOpcode(), dl, NVT, Op, Mask, EVL),
                      ExtractLeadingBits, Mask, EVL);
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 }
 
 SDValue DAGTypeLegalizer::PromoteIntRes_CTPOP_PARITY(SDNode *N) {
@@ -702,19 +646,10 @@ SDValue DAGTypeLegalizer::PromoteIntRes_CTPOP_PARITY(SDNode *N) {
 
   // Zero extend to the promoted type and do the count or parity there.
   SDValue Op = ZExtPromotedInteger(N->getOperand(0));
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // Cherry-picked from upstream D157607.
-=======
->>>>>>> upstream/main
   if (!N->isVPOpcode())
     return DAG.getNode(N->getOpcode(), SDLoc(N), Op.getValueType(), Op);
   return DAG.getNode(N->getOpcode(), SDLoc(N), Op.getValueType(), Op,
                      N->getOperand(1), N->getOperand(2));
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 }
 
 SDValue DAGTypeLegalizer::PromoteIntRes_CTTZ(SDNode *N) {
@@ -738,11 +673,6 @@ SDValue DAGTypeLegalizer::PromoteIntRes_CTTZ(SDNode *N) {
     }
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // Cherry-picked from upstream D157607.
-=======
->>>>>>> upstream/main
   if (N->getOpcode() == ISD::CTTZ || N->getOpcode() == ISD::VP_CTTZ) {
     // The count is the same in the promoted type except if the original
     // value was zero.  This can be handled by setting the bit just off
@@ -760,10 +690,6 @@ SDValue DAGTypeLegalizer::PromoteIntRes_CTTZ(SDNode *N) {
     return DAG.getNode(N->getOpcode(), dl, NVT, Op);
   return DAG.getNode(N->getOpcode(), dl, NVT, Op, N->getOperand(1),
                      N->getOperand(2));
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 }
 
 SDValue DAGTypeLegalizer::PromoteIntRes_EXTRACT_VECTOR_ELT(SDNode *N) {
@@ -1486,11 +1412,6 @@ SDValue DAGTypeLegalizer::PromoteIntRes_FunnelShift(SDNode *N) {
   return DAG.getNode(Opcode, DL, VT, Hi, Lo, Amt);
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-// Cherry-picked from upstream D157607.
-=======
->>>>>>> upstream/main
 // A vp version of PromoteIntRes_FunnelShift.
 SDValue DAGTypeLegalizer::PromoteIntRes_VPFunnelShift(SDNode *N) {
   SDValue Hi = GetPromotedInteger(N->getOperand(0));
@@ -1544,10 +1465,6 @@ SDValue DAGTypeLegalizer::PromoteIntRes_VPFunnelShift(SDNode *N) {
 
   return DAG.getNode(Opcode, DL, VT, Hi, Lo, Amt, Mask, EVL);
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 
 SDValue DAGTypeLegalizer::PromoteIntRes_TRUNCATE(SDNode *N) {
   EVT NVT = TLI.getTypeToTransformTo(*DAG.getContext(), N->getValueType(0));
