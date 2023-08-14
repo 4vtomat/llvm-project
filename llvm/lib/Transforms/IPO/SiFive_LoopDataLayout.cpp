@@ -1615,7 +1615,7 @@ static bool addReferencesForFunction(
         if (isa<Argument>(Op) || isa<Instruction>(Op)) {
           auto *CurTy = Op->getType();
           GetElementPtrInst *CurGEP = nullptr;
-          if (auto *PtrTy = dyn_cast<PointerType>(CurTy)) {
+          if (isa<PointerType>(CurTy)) {
             if (auto *CurArg = dyn_cast<Argument>(Op)) {
               // Obtain overlayed type from param map
               CurTy = LocalParamMap[CurArg->getArgNo()];
@@ -2063,7 +2063,7 @@ static void walkCallGraphToFillParamMap(
       SmallBitVector &LocalInvalidateMap = InvalidateMap[DCallee];
       for (unsigned i = 0, e = FTy->getNumParams(); i != e; ++i) {
         Type *ArgTy = FTy->getParamType(i);
-        if (auto *PtrTy = dyn_cast<PointerType>(ArgTy)) {
+        if (isa<PointerType>(ArgTy)) {
           Type *BaseTy = nullptr;
           Value *Arg = CurCB->getArgOperand(i);
           std::optional<Type *> OptTy =
