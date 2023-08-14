@@ -147,14 +147,10 @@ void RISCVDAGToDAGISel::PostprocessISelDAG() {
       continue;
 
     MadeChange |= doPeepholeSExtW(N);
-<<<<<<< HEAD
-    MadeChange |= doPeepholeMaskedRVV(N);
+    MadeChange |= doPeepholeMaskedRVV(cast<MachineSDNode>(N));
 #if SIFIVE_CUSTOMIZATION
     MadeChange |= doPeepholeLUIADDI(N);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    MadeChange |= doPeepholeMaskedRVV(cast<MachineSDNode>(N));
->>>>>>> upstream/main
   }
 
   CurDAG->setRoot(Dummy.getValue());
