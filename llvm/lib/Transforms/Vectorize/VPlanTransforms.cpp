@@ -505,7 +505,6 @@ void VPlanTransforms::removeDeadRecipes(VPlan &Plan) {
   }
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 void VPlanTransforms::optimizeGEPs(VPlan &Plan) {
   ReversePostOrderTraversal<VPBlockDeepTraversalWrapper<VPBlockBase *>> RPOT(
@@ -538,7 +537,6 @@ void VPlanTransforms::optimizeGEPs(VPlan &Plan) {
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
 static VPValue *createScalarIVSteps(VPlan &Plan, const InductionDescriptor &ID,
                                     ScalarEvolution &SE, Instruction *TruncI,
                                     Type *IVTy, VPValue *StartV,
@@ -557,7 +555,6 @@ static VPValue *createScalarIVSteps(VPlan &Plan, const InductionDescriptor &ID,
   HeaderVPBB->insert(Steps, IP);
   return Steps;
 }
->>>>>>> upstream/main
 
 void VPlanTransforms::optimizeInductions(VPlan &Plan, ScalarEvolution &SE) {
   SmallVector<VPRecipeBase *> ToRemove;
