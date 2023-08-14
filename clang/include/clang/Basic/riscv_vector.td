@@ -114,10 +114,6 @@ multiclass RVVIntBinBuiltinSet
     : RVVSignedBinBuiltinSet,
       RVVUnsignedBinBuiltinSet;
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 multiclass RVVInt64BinBuiltinSet
     : RVVOutOp1BuiltinSet<NAME, "l",
                           [["vv", "v", "vvv"],
@@ -125,10 +121,6 @@ multiclass RVVInt64BinBuiltinSet
       RVVOutOp1BuiltinSet<NAME, "l",
                           [["vv", "Uv", "UvUvUv"],
                            ["vx", "Uv", "UvUvUe"]]>;
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 
 multiclass RVVSlideOneBuiltinSet
     : RVVOutOp1BuiltinSet<NAME, "csil",
