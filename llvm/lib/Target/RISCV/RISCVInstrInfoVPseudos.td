@@ -133,9 +133,6 @@ class PseudoToVInst<string PseudoInst> {
                         ["_WF64", "_WF"],
                         ["_WF32", "_WF"],
                         ["_WF16", "_WF"],
-#ifdef SIFIVE_CUSTOMIZATION
-                        ["_SE", ""],
-#endif // SIFIVE_CUSTOMIZATION
                         ["_TU", ""],
                         ["_TIED", ""],
                         ["_MASK", ""],
