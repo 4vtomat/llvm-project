@@ -121,7 +121,6 @@ static cl::opt<bool> SpecializeLiteralConstant(
     "Enable specialization of functions that take a literal constant as an "
     "argument"));
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<bool> PropagateConstants(
     "funcspec-propagate-constants", cl::init(false), cl::Hidden,
@@ -129,20 +128,6 @@ static cl::opt<bool> PropagateConstants(
         "Propagate constants to clones even if we don't specialize for them"));
 #endif
 
-// Estimates the instruction cost of all the basic blocks in \p WorkList.
-// The successors of such blocks are added to the list as long as they are
-// executable and they have a unique predecessor. \p WorkList represents
-// the basic blocks of a specialization which become dead once we replace
-// instructions that are known to be constants. The aim here is to estimate
-// the combination of size and latency savings in comparison to the non
-// specialized version of the function.
-static Cost estimateBasicBlocks(SmallVectorImpl<BasicBlock *> &WorkList,
-                                DenseSet<BasicBlock *> &DeadBlocks,
-                                ConstMap &KnownConstants, SCCPSolver &Solver,
-                                BlockFrequencyInfo &BFI,
-                                TargetTransformInfo &TTI) {
-  Cost Bonus = 0;
-=======
 bool InstCostVisitor::canEliminateSuccessor(BasicBlock *BB, BasicBlock *Succ,
                                          DenseSet<BasicBlock *> &DeadBlocks) {
   unsigned I = 0;
@@ -152,7 +137,6 @@ bool InstCostVisitor::canEliminateSuccessor(BasicBlock *BB, BasicBlock *Succ,
       (Pred == BB || Pred == Succ || DeadBlocks.contains(Pred));
   });
 }
->>>>>>> upstream/main
 
 // Estimates the codesize savings due to dead code after constant propagation.
 // \p WorkList represents the basic blocks of a specialization which will
