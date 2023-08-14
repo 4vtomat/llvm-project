@@ -5002,8 +5002,11 @@ define <vscale x 16 x i64> @vp_cttz_zero_undef_nxv16i64_unmasked(<vscale x 16 x 
   ret <vscale x 16 x i64> %v
 }
 
+<<<<<<< HEAD
 ; SIFIVE_CUSTOMIZATION
 ; Cherry-picked from upstream D157607.
+=======
+>>>>>>> upstream/main
 ; Test promotion.
 declare <vscale x 1 x i9> @llvm.vp.cttz.nxv1i9(<vscale x 1 x i9>, i1 immarg, <vscale x 1 x i1>, i32)
 define <vscale x 1 x i9> @vp_cttz_nxv1i9(<vscale x 1 x i9> %va, <vscale x 1 x i1> %m, i32 zeroext %evl) {
@@ -5100,4 +5103,7 @@ define <vscale x 1 x i9> @vp_zero_undef_cttz_nxv1i9(<vscale x 1 x i9> %va, <vsca
   %v = call <vscale x 1 x i9> @llvm.vp.cttz.nxv1i9(<vscale x 1 x i9> %va, i1 true, <vscale x 1 x i1> %m, i32 %evl)
   ret <vscale x 1 x i9> %v
 }
+<<<<<<< HEAD
 ; SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main

@@ -144,6 +144,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zicntr", RISCVExtensionVersion{1, 0}},
     {"zicsr", RISCVExtensionVersion{2, 0}},
     {"zifencei", RISCVExtensionVersion{2, 0}},
+    {"zihintntl", RISCVExtensionVersion{1, 0}},
     {"zihintpause", RISCVExtensionVersion{2, 0}},
     {"zihpm", RISCVExtensionVersion{1, 0}},
     {"zk", RISCVExtensionVersion{1, 0}},
@@ -195,7 +196,11 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"zfbfmin", RISCVExtensionVersion{0, 8}},
 
     {"zicond", RISCVExtensionVersion{1, 0}},
+<<<<<<< HEAD
     {"zihintntl", RISCVExtensionVersion{0, 2}},
+=======
+
+>>>>>>> upstream/main
     {"ztso", RISCVExtensionVersion{0, 1}},
 
     {"zvbb", RISCVExtensionVersion{1, 0}},
@@ -1155,9 +1160,9 @@ static const char *ImpliedExtsXTHeadVdot[] = {"v"};
 static const char *ImpliedExtsXsfvcp[] = {"zve32x"};
 static const char *ImpliedExtsZacas[] = {"a"};
 static const char *ImpliedExtsZcb[] = {"zca"};
-static const char *ImpliedExtsZcd[] = {"zca"};
+static const char *ImpliedExtsZcd[] = {"d", "zca"};
 static const char *ImpliedExtsZce[] = {"zcb", "zcmp", "zcmt"};
-static const char *ImpliedExtsZcf[] = {"zca"};
+static const char *ImpliedExtsZcf[] = {"f", "zca"};
 static const char *ImpliedExtsZcmp[] = {"zca"};
 static const char *ImpliedExtsZcmt[] = {"zca"};
 static const char *ImpliedExtsZdinx[] = {"zfinx"};

@@ -65,20 +65,11 @@ private:
 
   /* Specialized optimizations */
 
-  // recip (half or native)
-  bool fold_recip(CallInst *CI, IRBuilder<> &B, const FuncInfo &FInfo);
-
-  // divide (half or native)
-  bool fold_divide(CallInst *CI, IRBuilder<> &B, const FuncInfo &FInfo);
-
   // pow/powr/pown
   bool fold_pow(FPMathOperator *FPOp, IRBuilder<> &B, const FuncInfo &FInfo);
 
   // rootn
   bool fold_rootn(FPMathOperator *FPOp, IRBuilder<> &B, const FuncInfo &FInfo);
-
-  // fma/mad
-  bool fold_fma_mad(CallInst *CI, IRBuilder<> &B, const FuncInfo &FInfo);
 
   // -fuse-native for sincos
   bool sincosUseNative(CallInst *aCI, const FuncInfo &FInfo);
@@ -91,17 +82,15 @@ private:
   // sqrt
   bool fold_sqrt(FPMathOperator *FPOp, IRBuilder<> &B, const FuncInfo &FInfo);
 
+  bool insertSinCos(CallInst *Sin, CallInst *Cos, IRBuilder<> &B,
+                    const FuncInfo &FInfo);
+
   // sin/cos
   bool fold_sincos(FPMathOperator *FPOp, IRBuilder<> &B, const FuncInfo &FInfo);
 
   // __read_pipe/__write_pipe
   bool fold_read_write_pipe(CallInst *CI, IRBuilder<> &B,
                             const FuncInfo &FInfo);
-
-  // Get insertion point at entry.
-  BasicBlock::iterator getEntryIns(CallInst * UI);
-  // Insert an Alloc instruction.
-  AllocaInst* insertAlloca(CallInst * UI, IRBuilder<> &B, const char *prefix);
 
   // Get a scalar native builtin single argument FP function
   FunctionCallee getNativeFunction(Module *M, const FuncInfo &FInfo);
@@ -589,24 +578,6 @@ bool AMDGPULibCalls::fold(CallInst *CI) {
     case AMDGPULibFunc::EI_COS:
     case AMDGPULibFunc::EI_SIN:
       return fold_sincos(FPOp, B, FInfo);
-    case AMDGPULibFunc::EI_RECIP:
-      // skip vector function
-      assert((FInfo.getPrefix() == AMDGPULibFunc::NATIVE ||
-              FInfo.getPrefix() == AMDGPULibFunc::HALF) &&
-             "recip must be an either native or half function");
-      return (getVecSize(FInfo) != 1) ? false : fold_recip(CI, B, FInfo);
-
-    case AMDGPULibFunc::EI_DIVIDE:
-      // skip vector function
-      assert((FInfo.getPrefix() == AMDGPULibFunc::NATIVE ||
-              FInfo.getPrefix() == AMDGPULibFunc::HALF) &&
-             "divide must be an either native or half function");
-      return (getVecSize(FInfo) != 1) ? false : fold_divide(CI, B, FInfo);
-    case AMDGPULibFunc::EI_FMA:
-    case AMDGPULibFunc::EI_MAD:
-    case AMDGPULibFunc::EI_NFMA:
-      // skip vector function
-      return (getVecSize(FInfo) != 1) ? false : fold_fma_mad(CI, B, FInfo);
     default:
       break;
     }
@@ -686,45 +657,6 @@ bool AMDGPULibCalls::TDOFold(CallInst *CI, const FuncInfo &FInfo) {
     }
   }
 
-  return false;
-}
-
-//  [native_]half_recip(c) ==> 1.0/c
-bool AMDGPULibCalls::fold_recip(CallInst *CI, IRBuilder<> &B,
-                                const FuncInfo &FInfo) {
-  Value *opr0 = CI->getArgOperand(0);
-  if (ConstantFP *CF = dyn_cast<ConstantFP>(opr0)) {
-    // Just create a normal div. Later, InstCombine will be able
-    // to compute the divide into a constant (avoid check float infinity
-    // or subnormal at this point).
-    Value *nval = B.CreateFDiv(ConstantFP::get(CF->getType(), 1.0),
-                               opr0,
-                               "recip2div");
-    LLVM_DEBUG(errs() << "AMDIC: " << *CI << " ---> " << *nval << "\n");
-    replaceCall(CI, nval);
-    return true;
-  }
-  return false;
-}
-
-//  [native_]half_divide(x, c) ==> x/c
-bool AMDGPULibCalls::fold_divide(CallInst *CI, IRBuilder<> &B,
-                                 const FuncInfo &FInfo) {
-  Value *opr0 = CI->getArgOperand(0);
-  Value *opr1 = CI->getArgOperand(1);
-  ConstantFP *CF0 = dyn_cast<ConstantFP>(opr0);
-  ConstantFP *CF1 = dyn_cast<ConstantFP>(opr1);
-
-  if ((CF0 && CF1) ||  // both are constants
-      (CF1 && (getArgType(FInfo) == AMDGPULibFunc::F32)))
-      // CF1 is constant && f32 divide
-  {
-    Value *nval1 = B.CreateFDiv(ConstantFP::get(opr1->getType(), 1.0),
-                                opr1, "__div2recip");
-    Value *nval  = B.CreateFMul(opr0, nval1, "__div2mul");
-    replaceCall(CI, nval);
-    return true;
-  }
   return false;
 }
 
@@ -1076,50 +1008,6 @@ bool AMDGPULibCalls::fold_rootn(FPMathOperator *FPOp, IRBuilder<> &B,
   return false;
 }
 
-bool AMDGPULibCalls::fold_fma_mad(CallInst *CI, IRBuilder<> &B,
-                                  const FuncInfo &FInfo) {
-  Value *opr0 = CI->getArgOperand(0);
-  Value *opr1 = CI->getArgOperand(1);
-  Value *opr2 = CI->getArgOperand(2);
-
-  ConstantFP *CF0 = dyn_cast<ConstantFP>(opr0);
-  ConstantFP *CF1 = dyn_cast<ConstantFP>(opr1);
-  if ((CF0 && CF0->isZero()) || (CF1 && CF1->isZero())) {
-    // fma/mad(a, b, c) = c if a=0 || b=0
-    LLVM_DEBUG(errs() << "AMDIC: " << *CI << " ---> " << *opr2 << "\n");
-    replaceCall(CI, opr2);
-    return true;
-  }
-  if (CF0 && CF0->isExactlyValue(1.0f)) {
-    // fma/mad(a, b, c) = b+c if a=1
-    LLVM_DEBUG(errs() << "AMDIC: " << *CI << " ---> " << *opr1 << " + " << *opr2
-                      << "\n");
-    Value *nval = B.CreateFAdd(opr1, opr2, "fmaadd");
-    replaceCall(CI, nval);
-    return true;
-  }
-  if (CF1 && CF1->isExactlyValue(1.0f)) {
-    // fma/mad(a, b, c) = a+c if b=1
-    LLVM_DEBUG(errs() << "AMDIC: " << *CI << " ---> " << *opr0 << " + " << *opr2
-                      << "\n");
-    Value *nval = B.CreateFAdd(opr0, opr2, "fmaadd");
-    replaceCall(CI, nval);
-    return true;
-  }
-  if (ConstantFP *CF = dyn_cast<ConstantFP>(opr2)) {
-    if (CF->isZero()) {
-      // fma/mad(a, b, c) = a*b if c=0
-      LLVM_DEBUG(errs() << "AMDIC: " << *CI << " ---> " << *opr0 << " * "
-                        << *opr1 << "\n");
-      Value *nval = B.CreateFMul(opr0, opr1, "fmamul");
-      replaceCall(CI, nval);
-      return true;
-    }
-  }
-
-  return false;
-}
-
 // Get a scalar native builtin single argument FP function
 FunctionCallee AMDGPULibCalls::getNativeFunction(Module *M,
                                                  const FuncInfo &FInfo) {
@@ -1153,6 +1041,71 @@ bool AMDGPULibCalls::fold_sqrt(FPMathOperator *FPOp, IRBuilder<> &B,
   return false;
 }
 
+bool AMDGPULibCalls::insertSinCos(CallInst *Sin, CallInst *Cos, IRBuilder<> &B,
+                                  const FuncInfo &fInfo) {
+  Value *Arg = Sin->getOperand(0);
+  assert(Arg == Cos->getOperand(0));
+
+  Function *F = B.GetInsertBlock()->getParent();
+  Module *M = F->getParent();
+  // Merge the sin and cos.
+
+  // for OpenCL 2.0 we have only generic implementation of sincos
+  // function.
+  // FIXME: This is not true anymore
+  AMDGPULibFunc nf(AMDGPULibFunc::EI_SINCOS, fInfo);
+  nf.getLeads()[0].PtrKind =
+      AMDGPULibFunc::getEPtrKindFromAddrSpace(AMDGPUAS::FLAT_ADDRESS);
+  FunctionCallee Fsincos = getFunction(M, nf);
+  if (!Fsincos)
+    return false;
+
+  B.SetInsertPointPastAllocas(F);
+
+  DILocation *MergedDebugLoc =
+      DILocation::getMergedLocation(Sin->getDebugLoc(), Cos->getDebugLoc());
+  B.SetCurrentDebugLocation(MergedDebugLoc);
+
+  AllocaInst *Alloc = B.CreateAlloca(Sin->getType(), nullptr, "__sincos_");
+
+  if (Instruction *ArgInst = dyn_cast<Instruction>(Arg)) {
+    // If the argument is an instruction, it must dominate all uses so put our
+    // sincos call there. Otherwise, right after the allocas works well enough
+    // if it's an argument or constant.
+
+    B.SetInsertPoint(ArgInst->getParent(), ++ArgInst->getIterator());
+    B.SetCurrentDebugLocation(MergedDebugLoc);
+  }
+
+  Value *P = Alloc;
+  Type *PTy = Fsincos.getFunctionType()->getParamType(1);
+  // The allocaInst allocates the memory in private address space. This need
+  // to be bitcasted to point to the address space of cos pointer type.
+  // In OpenCL 2.0 this is generic, while in 1.2 that is private.
+  if (PTy->getPointerAddressSpace() != AMDGPUAS::PRIVATE_ADDRESS)
+    P = B.CreateAddrSpaceCast(Alloc, PTy);
+
+  // Intersect the two sets of flags.
+  FastMathFlags FMF = cast<FPMathOperator>(Sin)->getFastMathFlags();
+  FMF &= cast<FPMathOperator>(Cos)->getFastMathFlags();
+  B.setFastMathFlags(FMF);
+
+  CallInst *Call = CreateCallEx2(B, Fsincos, Arg, P);
+  LoadInst *Reload = B.CreateLoad(Alloc->getAllocatedType(), Alloc);
+  Reload->setDebugLoc(Cos->getDebugLoc());
+
+  LLVM_DEBUG(errs() << "AMDIC: fold_sincos (" << *Sin << ", " << *Cos
+                    << ") with " << *Call << '\n');
+
+  Sin->replaceAllUsesWith(Call);
+  Sin->eraseFromParent();
+
+  Cos->replaceAllUsesWith(Reload);
+  Cos->eraseFromParent();
+
+  return true;
+}
+
 // fold sin, cos -> sincos.
 bool AMDGPULibCalls::fold_sincos(FPMathOperator *FPOp, IRBuilder<> &B,
                                  const FuncInfo &fInfo) {
@@ -1168,106 +1121,33 @@ bool AMDGPULibCalls::fold_sincos(FPMathOperator *FPOp, IRBuilder<> &B,
 
   Value *CArgVal = FPOp->getOperand(0);
   CallInst *CI = cast<CallInst>(FPOp);
-  BasicBlock * const CBB = CI->getParent();
-
-  int const MaxScan = 30;
   bool Changed = false;
 
-  Module *M = CI->getModule();
   FuncInfo PartnerInfo(isSin ? AMDGPULibFunc::EI_COS : AMDGPULibFunc::EI_SIN,
                        fInfo);
   const std::string PairName = PartnerInfo.mangle();
 
   CallInst *UI = nullptr;
+
+  // TODO: Handle repeated uses, the generic implementation does.
   for (User* U : CArgVal->users()) {
-    CallInst *XI = dyn_cast_or_null<CallInst>(U);
-    if (!XI || XI == CI || XI->getParent() != CBB)
+    CallInst *XI = dyn_cast<CallInst>(U);
+    if (!XI || XI->isNoBuiltin())
       continue;
 
     Function *UCallee = XI->getCalledFunction();
-    if (!UCallee || !UCallee->getName().equals(PairName))
-      continue;
-
-    BasicBlock::iterator BBI = CI->getIterator();
-    if (BBI == CI->getParent()->begin())
-      break;
-    --BBI;
-    for (int I = MaxScan; I > 0 && BBI != CBB->begin(); --BBI, --I) {
-      if (cast<Instruction>(BBI) == XI) {
-        UI = XI;
-        break;
-      }
-    }
-    if (UI) break;
+    if (UCallee && UCallee->getName().equals(PairName))
+      UI = XI;
+    else if (UI)
+      return Changed;
   }
 
   if (!UI)
     return Changed;
 
-  // Merge the sin and cos.
-
-  // for OpenCL 2.0 we have only generic implementation of sincos
-  // function.
-  AMDGPULibFunc nf(AMDGPULibFunc::EI_SINCOS, fInfo);
-  nf.getLeads()[0].PtrKind = AMDGPULibFunc::getEPtrKindFromAddrSpace(AMDGPUAS::FLAT_ADDRESS);
-  FunctionCallee Fsincos = getFunction(M, nf);
-  if (!Fsincos)
-    return Changed;
-
-  BasicBlock::iterator ItOld = B.GetInsertPoint();
-  AllocaInst *Alloc = insertAlloca(UI, B, "__sincos_");
-  B.SetInsertPoint(UI);
-
-  Value *P = Alloc;
-  Type *PTy = Fsincos.getFunctionType()->getParamType(1);
-  // The allocaInst allocates the memory in private address space. This need
-  // to be bitcasted to point to the address space of cos pointer type.
-  // In OpenCL 2.0 this is generic, while in 1.2 that is private.
-  if (PTy->getPointerAddressSpace() != AMDGPUAS::PRIVATE_ADDRESS)
-    P = B.CreateAddrSpaceCast(Alloc, PTy);
-  CallInst *Call = CreateCallEx2(B, Fsincos, UI->getArgOperand(0), P);
-
-  LLVM_DEBUG(errs() << "AMDIC: fold_sincos (" << *CI << ", " << *UI << ") with "
-                    << *Call << "\n");
-
-  if (!isSin) { // CI->cos, UI->sin
-    B.SetInsertPoint(&*ItOld);
-    UI->replaceAllUsesWith(&*Call);
-    Instruction *Reload = B.CreateLoad(Alloc->getAllocatedType(), Alloc);
-    CI->replaceAllUsesWith(Reload);
-    UI->eraseFromParent();
-    CI->eraseFromParent();
-  } else { // CI->sin, UI->cos
-    Instruction *Reload = B.CreateLoad(Alloc->getAllocatedType(), Alloc);
-    UI->replaceAllUsesWith(Reload);
-    CI->replaceAllUsesWith(Call);
-    UI->eraseFromParent();
-    CI->eraseFromParent();
-  }
-  return true;
-}
-
-// Get insertion point at entry.
-BasicBlock::iterator AMDGPULibCalls::getEntryIns(CallInst * UI) {
-  Function * Func = UI->getParent()->getParent();
-  BasicBlock * BB = &Func->getEntryBlock();
-  assert(BB && "Entry block not found!");
-  BasicBlock::iterator ItNew = BB->begin();
-  return ItNew;
-}
-
-// Insert a AllocsInst at the beginning of function entry block.
-AllocaInst* AMDGPULibCalls::insertAlloca(CallInst *UI, IRBuilder<> &B,
-                                         const char *prefix) {
-  BasicBlock::iterator ItNew = getEntryIns(UI);
-  Function *UCallee = UI->getCalledFunction();
-  Type *RetType = UCallee->getReturnType();
-  B.SetInsertPoint(&*ItNew);
-  AllocaInst *Alloc =
-      B.CreateAlloca(RetType, nullptr, std::string(prefix) + UI->getName());
-  Alloc->setAlignment(
-      Align(UCallee->getParent()->getDataLayout().getTypeAllocSize(RetType)));
-  return Alloc;
+  CallInst *Sin = isSin ? CI : UI;
+  CallInst *Cos = isSin ? UI : CI;
+  return insertSinCos(Sin, Cos, B, fInfo) || Changed;
 }
 
 bool AMDGPULibCalls::evaluateScalarMathFunc(const FuncInfo &FInfo,
@@ -1367,10 +1247,6 @@ bool AMDGPULibCalls::evaluateScalarMathFunc(const FuncInfo &FInfo,
 
   case AMDGPULibFunc::EI_EXP10:
     Res0 = pow(10.0, opr0);
-    return true;
-
-  case AMDGPULibFunc::EI_EXPM1:
-    Res0 = exp(opr0) - 1.0;
     return true;
 
   case AMDGPULibFunc::EI_LOG:

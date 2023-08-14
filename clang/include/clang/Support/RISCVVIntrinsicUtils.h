@@ -59,6 +59,7 @@ enum class VectorTypeModifier : uint8_t {
   SFixedLog2LMUL1,
   SFixedLog2LMUL2,
   SFixedLog2LMUL3,
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Vector type modifier has a restriction to have only 1 modifier.
   // SiFive custom instructions like sf_vqmaccu_4x8x4 needs more than 1
@@ -70,6 +71,15 @@ enum class VectorTypeModifier : uint8_t {
   // for workaround.
   SignedInteger32,
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  SEFixedLog2LMULN3,
+  SEFixedLog2LMULN2,
+  SEFixedLog2LMULN1,
+  SEFixedLog2LMUL0,
+  SEFixedLog2LMUL1,
+  SEFixedLog2LMUL2,
+  SEFixedLog2LMUL3,
+>>>>>>> upstream/main
   Tuple2,
   Tuple3,
   Tuple4,
@@ -260,6 +270,7 @@ enum ScalarTypeKind : uint8_t {
   Float,
   BFloat, // SIFIVE
   Invalid,
+  Undefined,
 };
 
 // Exponential LMUL
@@ -282,7 +293,7 @@ class RVVType {
   friend class RVVTypeCache;
 
   BasicType BT;
-  ScalarTypeKind ScalarType = Invalid;
+  ScalarTypeKind ScalarType = Undefined;
   LMULType LMUL;
   bool IsPointer = false;
   // IsConstant indices are "int", but have the constant expression.
@@ -300,7 +311,7 @@ class RVVType {
   std::string Str;
   std::string ShortStr;
 
-  enum class FixedLMULType { LargerThan, SmallerThan };
+  enum class FixedLMULType { LargerThan, SmallerThan, SmallerOrEqual };
 
   RVVType(BasicType BT, int Log2LMUL, const PrototypeDescriptor &Profile);
 

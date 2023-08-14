@@ -4,6 +4,7 @@
 ; RUN: sed 's/iXLen/i64/g' %s | llc -mtriple=riscv64 -mattr=+v,+experimental-zvknha,+experimental-zvknhb \
 ; RUN:   -verify-machineinstrs | FileCheck %s --check-prefixes=CHECK
 
+<<<<<<< HEAD
 declare <vscale x 1 x i32> @llvm.riscv.vsha2ms.nxv1i32.nxv1i32(
   <vscale x 1 x i32>,
   <vscale x 1 x i32>,
@@ -52,6 +53,8 @@ entry:
   ret <vscale x 2 x i32> %a
 }
 
+=======
+>>>>>>> upstream/main
 declare <vscale x 4 x i32> @llvm.riscv.vsha2ms.nxv4i32.nxv4i32(
   <vscale x 4 x i32>,
   <vscale x 4 x i32>,
@@ -125,6 +128,7 @@ entry:
   ret <vscale x 16 x i32> %a
 }
 
+<<<<<<< HEAD
 declare <vscale x 1 x i64> @llvm.riscv.vsha2ms.nxv1i64.nxv1i64(
   <vscale x 1 x i64>,
   <vscale x 1 x i64>,
@@ -173,6 +177,8 @@ entry:
   ret <vscale x 2 x i64> %a
 }
 
+=======
+>>>>>>> upstream/main
 declare <vscale x 4 x i64> @llvm.riscv.vsha2ms.nxv4i64.nxv4i64(
   <vscale x 4 x i64>,
   <vscale x 4 x i64>,

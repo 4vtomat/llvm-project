@@ -376,6 +376,7 @@ Intrinsic::ID getMinMaxReductionIntrinsicOp(RecurKind RK);
 /// Returns the comparison predicate used when expanding a min/max reduction.
 CmpInst::Predicate getMinMaxReductionPredicate(RecurKind RK);
 
+<<<<<<< HEAD
 /// See RecurrenceDescriptor::isSelectCmpPattern for a description of the
 /// pattern we are trying to match. In this pattern we are only ever selecting
 #if SIFIVE_CUSTOMIZATION
@@ -394,6 +395,16 @@ CmpInst::Predicate getMinMaxReductionPredicate(RecurKind RK);
 #endif // SIFIVE_CUSTOMIZATION
 Value *createSelectCmpOp(IRBuilderBase &Builder, Value *StartVal, RecurKind RK,
                          Value *Left, Value *Right);
+=======
+/// See RecurrenceDescriptor::isAnyOfPattern for a description of the pattern we
+/// are trying to match. In this pattern, we are only ever selecting between two
+/// values: 1) an initial start value \p StartVal of the reduction PHI, and 2) a
+/// loop invariant value. If any of lane value in \p Left, \p Right is not equal
+/// to \p StartVal, select the loop invariant value. This is done by selecting
+/// \p Right iff \p Left is equal to \p StartVal.
+Value *createAnyOfOp(IRBuilderBase &Builder, Value *StartVal, RecurKind RK,
+                     Value *Left, Value *Right);
+>>>>>>> upstream/main
 
 /// Returns a Min/Max operation corresponding to MinMaxRecurrenceKind.
 /// The Builder's fast-math-flags must be set to propagate the expected values.
@@ -427,6 +438,7 @@ Value *createSimpleTargetReduction(IRBuilderBase &B,
 #endif // SIFIVE_CUSTOMIZATION
 
 /// Create a target reduction of the given vector \p Src for a reduction of the
+<<<<<<< HEAD
 /// kind RecurKind::SelectICmp or RecurKind::SelectFCmp. The reduction operation
 /// is described by \p Desc.
 #if SIFIVE_CUSTOMIZATION
@@ -463,6 +475,14 @@ Value *createSelectCmpTargetReduction(IRBuilderBase &B,
                                       const RecurrenceDescriptor &Desc,
                                       PHINode *OrigPhi);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+/// kind RecurKind::IAnyOf or RecurKind::FAnyOf. The reduction operation is
+/// described by \p Desc.
+Value *createAnyOfTargetReduction(IRBuilderBase &B,
+                                  const TargetTransformInfo *TTI, Value *Src,
+                                  const RecurrenceDescriptor &Desc,
+                                  PHINode *OrigPhi);
+>>>>>>> upstream/main
 
 /// Create a generic target reduction using a recurrence descriptor \p Desc
 /// The target is queried to determine if intrinsics or shuffle sequences are

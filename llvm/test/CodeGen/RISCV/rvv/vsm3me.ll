@@ -4,6 +4,7 @@
 ; RUN: sed 's/iXLen/i64/g' %s | llc -mtriple=riscv64 -mattr=+v,+experimental-zvksh \
 ; RUN:   -verify-machineinstrs | FileCheck %s --check-prefixes=CHECK
 
+<<<<<<< HEAD
 declare <vscale x 1 x i32> @llvm.riscv.vsm3me.nxv1i32.nxv1i32(
   <vscale x 1 x i32>,
   <vscale x 1 x i32>,
@@ -70,6 +71,8 @@ entry:
   ret <vscale x 4 x i32> %a
 }
 
+=======
+>>>>>>> upstream/main
 declare <vscale x 8 x i32> @llvm.riscv.vsm3me.nxv8i32.nxv8i32(
   <vscale x 8 x i32>,
   <vscale x 8 x i32>,
@@ -79,7 +82,11 @@ declare <vscale x 8 x i32> @llvm.riscv.vsm3me.nxv8i32.nxv8i32(
 define <vscale x 8 x i32> @intrinsic_vsm3me_vv_nxv8i32_nxv8i32(<vscale x 8 x i32> %0, <vscale x 8 x i32> %1, iXLen %2) nounwind {
 ; CHECK-LABEL: intrinsic_vsm3me_vv_nxv8i32_nxv8i32:
 ; CHECK:       # %bb.0: # %entry
+<<<<<<< HEAD
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
+=======
+; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
+>>>>>>> upstream/main
 ; CHECK-NEXT:    vsm3me.vv v8, v8, v12
 ; CHECK-NEXT:    ret
 entry:
@@ -101,7 +108,11 @@ declare <vscale x 16 x i32> @llvm.riscv.vsm3me.nxv16i32.nxv16i32(
 define <vscale x 16 x i32> @intrinsic_vsm3me_vv_nxv16i32_nxv16i32(<vscale x 16 x i32> %0, <vscale x 16 x i32> %1, iXLen %2) nounwind {
 ; CHECK-LABEL: intrinsic_vsm3me_vv_nxv16i32_nxv16i32:
 ; CHECK:       # %bb.0: # %entry
+<<<<<<< HEAD
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
+=======
+; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
+>>>>>>> upstream/main
 ; CHECK-NEXT:    vsm3me.vv v8, v8, v16
 ; CHECK-NEXT:    ret
 entry:

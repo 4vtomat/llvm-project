@@ -404,13 +404,18 @@ public:
     case RecurKind::UMax:
     case RecurKind::FMin:
     case RecurKind::FMax:
+<<<<<<< HEAD
     case RecurKind::SelectICmp:
     case RecurKind::SelectFCmp:
 #if SIFIVE_CUSTOMIZATION
     case RecurKind::SelectIVICmp:
     case RecurKind::SelectIVFCmp:
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
     case RecurKind::FMulAdd:
+    case RecurKind::IAnyOf:
+    case RecurKind::FAnyOf:
       return true;
     default:
       return false;

@@ -1829,8 +1829,11 @@ define <vscale x 64 x i16> @vp_bswap_nxv64i16_unmasked(<vscale x 64 x i16> %va, 
   ret <vscale x 64 x i16> %v
 }
 
+<<<<<<< HEAD
 ; SIFIVE_CUSTOMIZATION
 ; Cherry-picked from upstream D157607.
+=======
+>>>>>>> upstream/main
 ; Test promotion.
 declare <vscale x 1 x i48> @llvm.vp.bswap.nxv1i48(<vscale x 1 x i48>, <vscale x 1 x i1>, i32)
 define <vscale x 1 x i48> @vp_bswap_nxv1i48(<vscale x 1 x i48> %va, <vscale x 1 x i1> %m, i32 zeroext %evl) {
@@ -1909,6 +1912,10 @@ define <vscale x 1 x i48> @vp_bswap_nxv1i48(<vscale x 1 x i48> %va, <vscale x 1 
 ; RV64-NEXT:    vor.vv v8, v9, v8, v0.t
 ; RV64-NEXT:    vsrl.vi v8, v8, 16, v0.t
 ; RV64-NEXT:    ret
+<<<<<<< HEAD
+=======
+;
+>>>>>>> upstream/main
 ; CHECK-ZVBB-LABEL: vp_bswap_nxv1i48:
 ; CHECK-ZVBB:       # %bb.0:
 ; CHECK-ZVBB-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
@@ -1918,4 +1925,7 @@ define <vscale x 1 x i48> @vp_bswap_nxv1i48(<vscale x 1 x i48> %va, <vscale x 1 
   %v = call <vscale x 1 x i48> @llvm.vp.bswap.nxv1i48(<vscale x 1 x i48> %va, <vscale x 1 x i1> %m, i32 %evl)
   ret <vscale x 1 x i48> %v
 }
+<<<<<<< HEAD
 ; SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main

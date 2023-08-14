@@ -60,6 +60,7 @@ void DAGTypeLegalizer::PromoteIntegerResult(SDNode *N, unsigned ResNo) {
   case ISD::AssertSext:  Res = PromoteIntRes_AssertSext(N); break;
   case ISD::AssertZext:  Res = PromoteIntRes_AssertZext(N); break;
   case ISD::BITCAST:     Res = PromoteIntRes_BITCAST(N); break;
+<<<<<<< HEAD
   case ISD::VP_BITREVERSE: // SiFive Cherry-picked from upstream D157607.
   case ISD::BITREVERSE:  Res = PromoteIntRes_BITREVERSE(N); break;
   case ISD::VP_BSWAP: // SiFive Cherry-picked from upstream D157607.
@@ -75,6 +76,23 @@ void DAGTypeLegalizer::PromoteIntegerResult(SDNode *N, unsigned ResNo) {
   case ISD::CTPOP:       Res = PromoteIntRes_CTPOP_PARITY(N); break;
   case ISD::VP_CTTZ_ZERO_UNDEF: // SiFive Cherry-picked from upstream D157607.
   case ISD::VP_CTTZ: // SiFive Cherry-picked from upstream D157607.
+=======
+  case ISD::VP_BITREVERSE:
+  case ISD::BITREVERSE:  Res = PromoteIntRes_BITREVERSE(N); break;
+  case ISD::VP_BSWAP:
+  case ISD::BSWAP:       Res = PromoteIntRes_BSWAP(N); break;
+  case ISD::BUILD_PAIR:  Res = PromoteIntRes_BUILD_PAIR(N); break;
+  case ISD::Constant:    Res = PromoteIntRes_Constant(N); break;
+  case ISD::VP_CTLZ_ZERO_UNDEF:
+  case ISD::VP_CTLZ:
+  case ISD::CTLZ_ZERO_UNDEF:
+  case ISD::CTLZ:        Res = PromoteIntRes_CTLZ(N); break;
+  case ISD::PARITY:
+  case ISD::VP_CTPOP:
+  case ISD::CTPOP:       Res = PromoteIntRes_CTPOP_PARITY(N); break;
+  case ISD::VP_CTTZ_ZERO_UNDEF:
+  case ISD::VP_CTTZ:
+>>>>>>> upstream/main
   case ISD::CTTZ_ZERO_UNDEF:
   case ISD::CTTZ:        Res = PromoteIntRes_CTTZ(N); break;
   case ISD::EXTRACT_VECTOR_ELT:
@@ -288,13 +306,19 @@ void DAGTypeLegalizer::PromoteIntegerResult(SDNode *N, unsigned ResNo) {
     Res = PromoteIntRes_FunnelShift(N);
     break;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Cherry-picked from upstream D157607.
+=======
+>>>>>>> upstream/main
   case ISD::VP_FSHL:
   case ISD::VP_FSHR:
     Res = PromoteIntRes_VPFunnelShift(N);
     break;
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
 
   case ISD::IS_FPCLASS:
     Res = PromoteIntRes_IS_FPCLASS(N);
@@ -534,8 +558,11 @@ SDValue DAGTypeLegalizer::PromoteIntRes_BSWAP(SDNode *N) {
   }
 
   unsigned DiffBits = NVT.getScalarSizeInBits() - OVT.getScalarSizeInBits();
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Cherry-picked from upstream D157607.
+=======
+>>>>>>> upstream/main
   SDValue ShAmt = DAG.getShiftAmountConstant(DiffBits, NVT, dl);
   if (N->getOpcode() == ISD::BSWAP)
     return DAG.getNode(ISD::SRL, dl, NVT, DAG.getNode(ISD::BSWAP, dl, NVT, Op),
@@ -545,7 +572,10 @@ SDValue DAGTypeLegalizer::PromoteIntRes_BSWAP(SDNode *N) {
   return DAG.getNode(ISD::VP_LSHR, dl, NVT,
                      DAG.getNode(ISD::VP_BSWAP, dl, NVT, Op, Mask, EVL), ShAmt,
                      Mask, EVL);
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
 }
 
 SDValue DAGTypeLegalizer::PromoteIntRes_BITREVERSE(SDNode *N) {
@@ -565,10 +595,14 @@ SDValue DAGTypeLegalizer::PromoteIntRes_BITREVERSE(SDNode *N) {
   }
 
   unsigned DiffBits = NVT.getScalarSizeInBits() - OVT.getScalarSizeInBits();
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Cherry-picked from upstream D157607.
   SDValue ShAmt = DAG.getShiftAmountConstant(DiffBits, NVT, dl);
   // Cherry-picked from upstream D157607.
+=======
+  SDValue ShAmt = DAG.getShiftAmountConstant(DiffBits, NVT, dl);
+>>>>>>> upstream/main
   if (N->getOpcode() == ISD::BITREVERSE)
     return DAG.getNode(ISD::SRL, dl, NVT,
                        DAG.getNode(ISD::BITREVERSE, dl, NVT, Op), ShAmt);
@@ -577,7 +611,10 @@ SDValue DAGTypeLegalizer::PromoteIntRes_BITREVERSE(SDNode *N) {
   return DAG.getNode(ISD::VP_LSHR, dl, NVT,
                      DAG.getNode(ISD::VP_BITREVERSE, dl, NVT, Op, Mask, EVL),
                      ShAmt, Mask, EVL);
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
 }
 
 SDValue DAGTypeLegalizer::PromoteIntRes_BUILD_PAIR(SDNode *N) {
@@ -624,8 +661,11 @@ SDValue DAGTypeLegalizer::PromoteIntRes_CTLZ(SDNode *N) {
   SDValue Op = ZExtPromotedInteger(N->getOperand(0));
 
   // Subtract off the extra leading bits in the bigger type.
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Cherry-picked from upstream D157607.
+=======
+>>>>>>> upstream/main
   SDValue ExtractLeadingBits = DAG.getConstant(
       NVT.getScalarSizeInBits() - OVT.getScalarSizeInBits(), dl, NVT);
   if (!N->isVPOpcode())
@@ -637,7 +677,10 @@ SDValue DAGTypeLegalizer::PromoteIntRes_CTLZ(SDNode *N) {
   return DAG.getNode(ISD::VP_SUB, dl, NVT,
                      DAG.getNode(N->getOpcode(), dl, NVT, Op, Mask, EVL),
                      ExtractLeadingBits, Mask, EVL);
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
 }
 
 SDValue DAGTypeLegalizer::PromoteIntRes_CTPOP_PARITY(SDNode *N) {
@@ -659,13 +702,19 @@ SDValue DAGTypeLegalizer::PromoteIntRes_CTPOP_PARITY(SDNode *N) {
 
   // Zero extend to the promoted type and do the count or parity there.
   SDValue Op = ZExtPromotedInteger(N->getOperand(0));
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Cherry-picked from upstream D157607.
+=======
+>>>>>>> upstream/main
   if (!N->isVPOpcode())
     return DAG.getNode(N->getOpcode(), SDLoc(N), Op.getValueType(), Op);
   return DAG.getNode(N->getOpcode(), SDLoc(N), Op.getValueType(), Op,
                      N->getOperand(1), N->getOperand(2));
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
 }
 
 SDValue DAGTypeLegalizer::PromoteIntRes_CTTZ(SDNode *N) {
@@ -689,8 +738,11 @@ SDValue DAGTypeLegalizer::PromoteIntRes_CTTZ(SDNode *N) {
     }
   }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Cherry-picked from upstream D157607.
+=======
+>>>>>>> upstream/main
   if (N->getOpcode() == ISD::CTTZ || N->getOpcode() == ISD::VP_CTTZ) {
     // The count is the same in the promoted type except if the original
     // value was zero.  This can be handled by setting the bit just off
@@ -708,7 +760,10 @@ SDValue DAGTypeLegalizer::PromoteIntRes_CTTZ(SDNode *N) {
     return DAG.getNode(N->getOpcode(), dl, NVT, Op);
   return DAG.getNode(N->getOpcode(), dl, NVT, Op, N->getOperand(1),
                      N->getOperand(2));
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
 }
 
 SDValue DAGTypeLegalizer::PromoteIntRes_EXTRACT_VECTOR_ELT(SDNode *N) {
@@ -1431,8 +1486,11 @@ SDValue DAGTypeLegalizer::PromoteIntRes_FunnelShift(SDNode *N) {
   return DAG.getNode(Opcode, DL, VT, Hi, Lo, Amt);
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // Cherry-picked from upstream D157607.
+=======
+>>>>>>> upstream/main
 // A vp version of PromoteIntRes_FunnelShift.
 SDValue DAGTypeLegalizer::PromoteIntRes_VPFunnelShift(SDNode *N) {
   SDValue Hi = GetPromotedInteger(N->getOperand(0));
@@ -1486,7 +1544,10 @@ SDValue DAGTypeLegalizer::PromoteIntRes_VPFunnelShift(SDNode *N) {
 
   return DAG.getNode(Opcode, DL, VT, Hi, Lo, Amt, Mask, EVL);
 }
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main
 
 SDValue DAGTypeLegalizer::PromoteIntRes_TRUNCATE(SDNode *N) {
   EVT NVT = TLI.getTypeToTransformTo(*DAG.getContext(), N->getValueType(0));
@@ -3736,6 +3797,17 @@ void DAGTypeLegalizer::ExpandIntRes_GET_ROUNDING(SDNode *N, SDValue &Lo,
   ReplaceValueWith(SDValue(N, 1), Chain);
 }
 
+// Helper for producing an FP_EXTEND/STRICT_FP_EXTEND of Op.
+static SDValue fpExtendHelper(SDValue Op, SDValue &Chain, bool IsStrict, EVT VT,
+                              SDLoc DL, SelectionDAG &DAG) {
+  if (IsStrict) {
+    Op = DAG.getNode(ISD::STRICT_FP_EXTEND, DL, {VT, MVT::Other}, {Chain, Op});
+    Chain = Op.getValue(1);
+    return Op;
+  }
+  return DAG.getNode(ISD::FP_EXTEND, DL, VT, Op);
+}
+
 void DAGTypeLegalizer::ExpandIntRes_FP_TO_SINT(SDNode *N, SDValue &Lo,
                                                SDValue &Hi) {
   SDLoc dl(N);
@@ -3748,12 +3820,19 @@ void DAGTypeLegalizer::ExpandIntRes_FP_TO_SINT(SDNode *N, SDValue &Lo,
     Op = GetPromotedFloat(Op);
 
   if (getTypeAction(Op.getValueType()) == TargetLowering::TypeSoftPromoteHalf) {
-    EVT NFPVT = TLI.getTypeToTransformTo(*DAG.getContext(), Op.getValueType());
+    EVT OFPVT = Op.getValueType();
+    EVT NFPVT = TLI.getTypeToTransformTo(*DAG.getContext(), OFPVT);
     Op = GetSoftPromotedHalf(Op);
-    Op = DAG.getNode(ISD::FP16_TO_FP, dl, NFPVT, Op);
+    Op = DAG.getNode(OFPVT == MVT::f16 ? ISD::FP16_TO_FP : ISD::BF16_TO_FP, dl,
+                     NFPVT, Op);
     Op = DAG.getNode(ISD::FP_TO_SINT, dl, VT, Op);
     SplitInteger(Op, Lo, Hi);
     return;
+  }
+
+  if (Op.getValueType() == MVT::bf16) {
+    // Extend to f32 as there is no bf16 libcall.
+    Op = fpExtendHelper(Op, Chain, IsStrict, MVT::f32, dl, DAG);
   }
 
   RTLIB::Libcall LC = RTLIB::getFPTOSINT(Op.getValueType(), VT);
@@ -3780,12 +3859,19 @@ void DAGTypeLegalizer::ExpandIntRes_FP_TO_UINT(SDNode *N, SDValue &Lo,
     Op = GetPromotedFloat(Op);
 
   if (getTypeAction(Op.getValueType()) == TargetLowering::TypeSoftPromoteHalf) {
-    EVT NFPVT = TLI.getTypeToTransformTo(*DAG.getContext(), Op.getValueType());
+    EVT OFPVT = Op.getValueType();
+    EVT NFPVT = TLI.getTypeToTransformTo(*DAG.getContext(), OFPVT);
     Op = GetSoftPromotedHalf(Op);
-    Op = DAG.getNode(ISD::FP16_TO_FP, dl, NFPVT, Op);
+    Op = DAG.getNode(OFPVT == MVT::f16 ? ISD::FP16_TO_FP : ISD::BF16_TO_FP, dl,
+                     NFPVT, Op);
     Op = DAG.getNode(ISD::FP_TO_UINT, dl, VT, Op);
     SplitInteger(Op, Lo, Hi);
     return;
+  }
+
+  if (Op.getValueType() == MVT::bf16) {
+    // Extend to f32 as there is no bf16 libcall.
+    Op = fpExtendHelper(Op, Chain, IsStrict, MVT::f32, dl, DAG);
   }
 
   RTLIB::Libcall LC = RTLIB::getFPTOUINT(Op.getValueType(), VT);
@@ -3818,14 +3904,9 @@ void DAGTypeLegalizer::ExpandIntRes_XROUND_XRINT(SDNode *N, SDValue &Lo,
   EVT VT = Op.getValueType();
 
   if (VT == MVT::f16) {
-    VT = MVT::f32;
     // Extend to f32.
-    if (IsStrict) {
-      Op = DAG.getNode(ISD::STRICT_FP_EXTEND, dl, { VT, MVT::Other }, {Chain, Op});
-      Chain = Op.getValue(1);
-    } else {
-      Op = DAG.getNode(ISD::FP_EXTEND, dl, VT, Op);
-    }
+    VT = MVT::f32;
+    Op = fpExtendHelper(Op, Chain, IsStrict, VT, dl, DAG);
   }
 
   RTLIB::Libcall LC = RTLIB::UNKNOWN_LIBCALL;

@@ -4,11 +4,17 @@
 // RV32: "target-features"="+32bit,+a,+c,+m
 // RV32-SAME: +relax,
 // RV32-SAME: -save-restore
+<<<<<<< HEAD
 // RV64: "target-features"="+64bit,+a,+c
 // RV64-SAME: +m
 // RV64-SAME: +relax
 // RV64-SAME: +zicsr
+=======
+// RV32-SAME: -unaligned-scalar-mem
+// RV64: "target-features"="+64bit,+a,+c,+m,+relax,
+>>>>>>> upstream/main
 // RV64-SAME: -save-restore
+// RV64-SAME: -unaligned-scalar-mem
 
 // Dummy function
 int foo(void){

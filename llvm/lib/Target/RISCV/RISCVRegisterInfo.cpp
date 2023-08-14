@@ -14,6 +14,7 @@
 #include "RISCV.h"
 #include "RISCVMachineFunctionInfo.h"
 #include "RISCVSubtarget.h"
+#include "llvm/ADT/SmallSet.h"
 #include "llvm/BinaryFormat/Dwarf.h"
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/CodeGen/LiveInterval.h"
@@ -143,7 +144,7 @@ const uint32_t *RISCVRegisterInfo::getNoPreservedMask() const {
 }
 
 // Frame indexes representing locations of CSRs which are given a fixed location
-// by save/restore libcalls.
+// by save/restore libcalls or Zcmp Push/Pop.
 static const std::pair<unsigned, int> FixedCSRFIMap[] = {
   {/*ra*/  RISCV::X1,   -1},
   {/*s0*/  RISCV::X8,   -2},
