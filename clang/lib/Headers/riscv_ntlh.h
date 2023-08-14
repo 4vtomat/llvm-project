@@ -23,13 +23,6 @@ enum {
   __RISCV_NTLH_ALL
 };
 
-<<<<<<< HEAD
-#define __riscv_ntl_load(PTR, DOMAIN) __builtin_riscv_ntl_load((PTR), (DOMAIN))
-#define __riscv_ntl_store(PTR, VAL, DOMAIN)                                    \
-  __builtin_riscv_ntl_store((PTR), (VAL), (DOMAIN))
-
-=======
 #define __riscv_ntl_load __builtin_riscv_ntl_load
 #define __riscv_ntl_store __builtin_riscv_ntl_store
->>>>>>> upstream/main
 #endif
