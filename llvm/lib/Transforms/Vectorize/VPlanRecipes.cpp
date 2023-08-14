@@ -2009,19 +2009,9 @@ void VPReductionPHIRecipe::execute(VPTransformState &State) {
 
   Value *Iden = nullptr;
   RecurKind RK = RdxDesc.getRecurrenceKind();
-#if SIFIVE_CUSTOMIZATION
   if (RecurrenceDescriptor::isMinMaxRecurrenceKind(RK) ||
-      (RK == RecurKind::SelectICmp || RK == RecurKind::SelectFCmp)) {
-#else
-  if (RecurrenceDescriptor::isMinMaxRecurrenceKind(RK) ||
-<<<<<<< HEAD
-      RecurrenceDescriptor::isSelectCmpRecurrenceKind(RK)) {
-#endif // SIFIVE_CUSTOMIZATION
-    // MinMax reduction have the start value as their identify.
-=======
       RecurrenceDescriptor::isAnyOfRecurrenceKind(RK)) {
     // MinMax and AnyOf reductions have the start value as their identity.
->>>>>>> upstream/main
     if (ScalarPHI) {
       Iden = StartV;
     } else {
@@ -2031,7 +2021,15 @@ void VPReductionPHIRecipe::execute(VPTransformState &State) {
           Builder.CreateVectorSplat(State.VF, StartV, "minmax.ident");
     }
 #if SIFIVE_CUSTOMIZATION
-  } else if (RK == RecurKind::SelectIVICmp || RK == RecurKind::SelectIVFCmp) {
+  } else if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK)) {
+    // [I|F]FindLastIV will use a sentinel value as the identity to initialize
+    // the reduction phi. In the middle block, createSentinelValueHandling will
+    // generate checks to verify if the reduction result is the sentinel value.
+    // If the result is the sentinel value, it will be corrected back to the
+    // start value.
+    // TODO: The sentinel value is not always necessary. When the start value is
+    // a constant, and smaller than the start value of the induction variable,
+    // the start value can be directly used to initialize the reduction phi.
     StartV = Iden = RdxDesc.getRecurrenceIdentity(RK, VecTy->getScalarType(),
                                                   RdxDesc.getFastMathFlags());
     if (!ScalarPHI) {
@@ -2082,9 +2080,9 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
     Intrinsic::ID Id = getMinMaxReductionIntrinsicOp(RdxKind);
     O = Ctx.TTI->getMinMaxReductionCost(Id, VectorTy,
                                         RdxDesc.getFastMathFlags(), CostKind);
-  } else if (RecurrenceDescriptor::isSelectCmpRecurrenceKind(RdxKind)) {
+  } else if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RdxKind)) {
     // The cost references the instructions created in
-    // llvm::createSelectCmpTargetReduction
+    // llvm::createAnyOfTargetReduction
     auto *VecCondTy = cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
     O = Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
     O += Ctx.TTI->getCmpSelInstrCost(Instruction::ICmp, VectorTy, VecCondTy,

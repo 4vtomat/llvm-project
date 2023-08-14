@@ -956,37 +956,21 @@ CmpInst::Predicate llvm::getMinMaxReductionPredicate(RecurKind RK) {
   }
 }
 
-<<<<<<< HEAD
-Value *llvm::createSelectCmpOp(IRBuilderBase &Builder, Value *StartVal,
-                               RecurKind RK, Value *Left, Value *Right) {
-#if SIFIVE_CUSTOMIZATION
-  switch (RK) {
-  case RecurKind::SelectICmp:
-  case RecurKind::SelectFCmp: {
-    if (auto *VTy = dyn_cast<VectorType>(Left->getType()))
-      StartVal = Builder.CreateVectorSplat(VTy->getElementCount(), StartVal);
-    Value *Cmp =
-        Builder.CreateCmp(CmpInst::ICMP_NE, Left, StartVal, "rdx.select.cmp");
-    return Builder.CreateSelect(Cmp, Left, Right, "rdx.select");
-  }
-  case RecurKind::SelectIVICmp:
-  case RecurKind::SelectIVFCmp:
-    return createMinMaxOp(Builder, RecurKind::SMax, Left, Right);
-  default:
-    llvm_unreachable("Unknown SelectCmp recurrence kind");
-  }
-#else
-=======
 Value *llvm::createAnyOfOp(IRBuilderBase &Builder, Value *StartVal,
                            RecurKind RK, Value *Left, Value *Right) {
->>>>>>> upstream/main
   if (auto VTy = dyn_cast<VectorType>(Left->getType()))
     StartVal = Builder.CreateVectorSplat(VTy->getElementCount(), StartVal);
   Value *Cmp =
       Builder.CreateCmp(CmpInst::ICMP_NE, Left, StartVal, "rdx.select.cmp");
   return Builder.CreateSelect(Cmp, Left, Right, "rdx.select");
-#endif // SIFIVE_CUSTOMIZATION
 }
+
+#if SIFIVE_CUSTOMIZATION
+Value *llvm::createFindLastIVOp(IRBuilderBase &Builder, Value *Left,
+                                Value *Right) {
+  return createMinMaxOp(Builder, RecurKind::SMax, Left, Right);
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 Value *llvm::createMinMaxOp(IRBuilderBase &Builder, RecurKind RK, Value *Left,
                             Value *Right) {
@@ -1070,25 +1054,6 @@ Value *llvm::getShuffleReduction(IRBuilderBase &Builder, Value *Src,
   return Builder.CreateExtractElement(TmpVec, Builder.getInt32(0));
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-Value *llvm::createInvariantSelectCmpTargetReduction(
-    IRBuilderBase &Builder, const TargetTransformInfo *TTI, Value *Src,
-    const RecurrenceDescriptor &Desc, PHINode *OrigPhi) {
-  assert((Desc.getRecurrenceKind() == RecurKind::SelectICmp ||
-          Desc.getRecurrenceKind() == RecurKind::SelectFCmp) &&
-         "Unexpected reduction kind");
-#else
-Value *llvm::createSelectCmpTargetReduction(IRBuilderBase &Builder,
-                                            const TargetTransformInfo *TTI,
-                                            Value *Src,
-                                            const RecurrenceDescriptor &Desc,
-                                            PHINode *OrigPhi) {
-  assert(RecurrenceDescriptor::isSelectCmpRecurrenceKind(
-             Desc.getRecurrenceKind()) &&
-         "Unexpected reduction kind");
-#endif // SIFIVE_CUSTOMIZATION
-=======
 Value *llvm::createAnyOfTargetReduction(IRBuilderBase &Builder,
                                         const TargetTransformInfo *TTI,
                                         Value *Src,
@@ -1097,7 +1062,6 @@ Value *llvm::createAnyOfTargetReduction(IRBuilderBase &Builder,
   assert(
       RecurrenceDescriptor::isAnyOfRecurrenceKind(Desc.getRecurrenceKind()) &&
       "Unexpected reduction kind");
->>>>>>> upstream/main
   Value *InitVal = Desc.getRecurrenceStartValue();
   Value *NewVal = nullptr;
 
@@ -1131,58 +1095,14 @@ Value *llvm::createAnyOfTargetReduction(IRBuilderBase &Builder,
 }
 
 #if SIFIVE_CUSTOMIZATION
-Value *llvm::createSelectCmpTargetReduction(IRBuilderBase &Builder,
-                                            const TargetTransformInfo *TTI,
-                                            Value *Src,
-                                            const RecurrenceDescriptor &Desc,
-                                            PHINode *OrigPhi) {
-  assert(RecurrenceDescriptor::isSelectCmpRecurrenceKind(
-             Desc.getRecurrenceKind()) &&
-         "Unexpected reduction kind");
-  RecurKind RdxKind = Desc.getRecurrenceKind();
-  switch (RdxKind) {
-  case RecurKind::SelectICmp:
-  case RecurKind::SelectFCmp:
-    return createInvariantSelectCmpTargetReduction(Builder, TTI, Src, Desc,
-                                                   OrigPhi);
-  case RecurKind::SelectIVICmp:
-  case RecurKind::SelectIVFCmp:
-    // TODO: Decreasing induction need fix here
-    return Builder.CreateIntMaxReduce(Src, true);
-  default:
-    llvm_unreachable("Unknown SelectCmp recurrence kind");
-  }
-}
-
-Value *llvm::createSelectCmpTargetReduction(IRBuilderBase &Builder,
-                                            const TargetTransformInfo *TTI,
-                                            Value *Src,
-                                            const RecurrenceDescriptor &Desc,
-                                            Value *RVL, PHINode *OrigPhi) {
-  assert(RecurrenceDescriptor::isSelectCmpRecurrenceKind(
-             Desc.getRecurrenceKind()) &&
-         "Unexpected reduction kind");
-  RecurKind RdxKind = Desc.getRecurrenceKind();
-  switch (RdxKind) {
-  case RecurKind::SelectICmp:
-  case RecurKind::SelectFCmp:
-    return createInvariantSelectCmpTargetReduction(Builder, TTI, Src, Desc,
-                                                   OrigPhi, RVL);
-  case RecurKind::SelectIVICmp:
-  case RecurKind::SelectIVFCmp:
-    // TODO: Decreasing induction need fix here
-    return Builder.CreateIntMaxReduce(Src, RVL, true);
-  default:
-    llvm_unreachable("Unknown SelectCmp recurrence kind");
-  }
-}
-
-Value *llvm::createInvariantSelectCmpTargetReduction(
-    IRBuilderBase &Builder, const TargetTransformInfo *TTI, Value *Src,
-    const RecurrenceDescriptor &Desc, PHINode *OrigPhi, Value *RVL) {
-  assert((Desc.getRecurrenceKind() == RecurKind::SelectICmp ||
-          Desc.getRecurrenceKind() == RecurKind::SelectFCmp) &&
-         "Unexpected reduction kind");
+Value *llvm::createAnyOfTargetReduction(IRBuilderBase &Builder,
+                                        const TargetTransformInfo *TTI,
+                                        Value *Src,
+                                        const RecurrenceDescriptor &Desc,
+                                        PHINode *OrigPhi, Value *RVL) {
+  assert(
+      RecurrenceDescriptor::isAnyOfRecurrenceKind(Desc.getRecurrenceKind()) &&
+      "Unexpected reduction kind");
   Value *InitVal = Desc.getRecurrenceStartValue();
   Value *NewVal = nullptr;
 
@@ -1214,6 +1134,27 @@ Value *llvm::createInvariantSelectCmpTargetReduction(
   // If any predicate is true it means that we want to select the new value.
   Cmp = Builder.CreateOrReduce(Cmp, RVL);
   return Builder.CreateSelect(Cmp, NewVal, InitVal, "rdx.select");
+}
+
+Value *llvm::createFindLastIVTargetReduction(IRBuilderBase &Builder,
+                                             const TargetTransformInfo *TTI,
+                                             Value *Src,
+                                             const RecurrenceDescriptor &Desc) {
+  assert(RecurrenceDescriptor::isFindLastIVRecurrenceKind(
+             Desc.getRecurrenceKind()) &&
+         "Unexpected reduction kind");
+  return Builder.CreateIntMaxReduce(Src, true);
+}
+
+Value *llvm::createFindLastIVTargetReduction(IRBuilderBase &Builder,
+                                             const TargetTransformInfo *TTI,
+                                             Value *Src,
+                                             const RecurrenceDescriptor &Desc,
+                                             Value *RVL) {
+  assert(RecurrenceDescriptor::isFindLastIVRecurrenceKind(
+             Desc.getRecurrenceKind()) &&
+         "Unexpected reduction kind");
+  return Builder.CreateIntMaxReduce(Src, RVL, true);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -1314,6 +1255,8 @@ Value *llvm::createTargetReduction(IRBuilderBase &B,
   RecurKind RK = Desc.getRecurrenceKind();
   if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK))
     return createAnyOfTargetReduction(B, TTI, Src, Desc, OrigPhi);
+  if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
+    return createFindLastIVTargetReduction(B, TTI, Src, Desc);
 
   return createSimpleTargetReduction(B, TTI, Src, RK);
 }
@@ -1330,9 +1273,13 @@ Value *llvm::createTargetReduction(IRBuilderBase &B,
   B.setFastMathFlags(Desc.getFastMathFlags());
 
   RecurKind RK = Desc.getRecurrenceKind();
-  if (RecurrenceDescriptor::isSelectCmpRecurrenceKind(RK)) {
-    assert(!Mask && "Masked SelectCmp recurrence is not supported");
-    return createSelectCmpTargetReduction(B, TTI, Src, Desc, RVL, OrigPhi);
+  if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK)) {
+    assert(!Mask && "Masked AnyOf recurrence is not supported");
+    return createAnyOfTargetReduction(B, TTI, Src, Desc, OrigPhi, RVL);
+  }
+  if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK)) {
+    assert(!Mask && "Masked FindLastIV recurrence is not supported");
+    return createFindLastIVTargetReduction(B, TTI, Src, Desc, RVL);
   }
 
   return createSimpleTargetReduction(B, TTI, Src, RK, RVL, Mask);

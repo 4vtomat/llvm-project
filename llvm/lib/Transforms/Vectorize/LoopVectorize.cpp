@@ -1457,7 +1457,8 @@ public:
     RecurKind RK = RdxDesc.getRecurrenceKind();
     return !useOrderedReductions(RdxDesc) && !isInLoopReduction(Phi) &&
            !RecurrenceDescriptor::isMinMaxRecurrenceKind(RK) &&
-           !RecurrenceDescriptor::isSelectCmpRecurrenceKind(RK) &&
+           !RecurrenceDescriptor::isAnyOfRecurrenceKind(RK) &&
+           !RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK) &&
            TTI.preferPostFixStartValue(RdxDesc.getOpcode(),
                                        RdxDesc.getRecurrenceType());
   }
@@ -4696,6 +4697,10 @@ void InnerLoopVectorizer::fixReduction(VPReductionPHIRecipe *PhiR,
       else if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK))
         ReducedPartRdx = createAnyOfOp(Builder, ReductionStartValue, RK,
                                        ReducedPartRdx, RdxPart);
+#if SIFIVE_CUSTOMIZATION
+      else if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
+        ReducedPartRdx = createFindLastIVOp(Builder, ReducedPartRdx, RdxPart);
+#endif // SIFIVE_CUSTOMIZATION
       else
         ReducedPartRdx = createMinMaxOp(Builder, RK, ReducedPartRdx, RdxPart);
     }
@@ -4741,7 +4746,7 @@ void InnerLoopVectorizer::fixReduction(VPReductionPHIRecipe *PhiR,
   }
 
 #if SIFIVE_CUSTOMIZATION
-  if (RK == RecurKind::SelectIVICmp || RK == RecurKind::SelectIVFCmp)
+  if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
     ReducedPartRdx =
         createSentinelValueHandling(Builder, TTI, RdxDesc, ReducedPartRdx);
 #endif // SIFIVE_CUSTOMIZATION
@@ -7415,8 +7420,14 @@ LoopVectorizationCostModel::selectInterleaveCount(ElementCount VF,
         HasReductions &&
         any_of(Legal->getReductionVars(), [&](auto &Reduction) -> bool {
           const RecurrenceDescriptor &RdxDesc = Reduction.second;
+#if SIFIVE_CUSTOMIZATION
+          RecurKind RK = RdxDesc.getRecurrenceKind();
+          return RecurrenceDescriptor::isAnyOfRecurrenceKind(RK) ||
+                 RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK);
+#else
           return RecurrenceDescriptor::isAnyOfRecurrenceKind(
               RdxDesc.getRecurrenceKind());
+#endif // SIFIVE_CUSTOMIZATION
         });
     if (HasSelectCmpReductions) {
       LLVM_DEBUG(dbgs() << "LV: Not interleaving select-cmp reductions.\n");
@@ -11511,8 +11522,15 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
   for (VPReductionPHIRecipe *PhiR : InLoopReductionPhis) {
     const RecurrenceDescriptor &RdxDesc = PhiR->getRecurrenceDescriptor();
     RecurKind Kind = RdxDesc.getRecurrenceKind();
+#if SIFIVE_CUSTOMIZATION
+    assert(
+        (!RecurrenceDescriptor::isAnyOfRecurrenceKind(Kind) &&
+         !RecurrenceDescriptor::isFindLastIVRecurrenceKind(Kind)) &&
+        "AnyOf and FindLast reductions are not allowed for in-loop reductions");
+#else
     assert(!RecurrenceDescriptor::isAnyOfRecurrenceKind(Kind) &&
            "AnyOf reductions are not allowed for in-loop reductions");
+#endif // SIFIVE_CUSTOMIZATION
 
     // Collect the chain of "link" recipes for the reduction starting at PhiR.
     SetVector<VPRecipeBase *> Worklist;

@@ -14528,17 +14528,12 @@ private:
     case RecurKind::Mul:
     case RecurKind::FMul:
     case RecurKind::FMulAdd:
-<<<<<<< HEAD
-    case RecurKind::SelectICmp:
-    case RecurKind::SelectFCmp:
-#if SIFIVE_CUSTOMIZATION
-    case RecurKind::SelectIVICmp:
-    case RecurKind::SelectIVFCmp:
-#endif // SIFIVE_CUSTOMIZATION
-=======
     case RecurKind::IAnyOf:
     case RecurKind::FAnyOf:
->>>>>>> upstream/main
+#if SIFIVE_CUSTOMIZATION
+    case RecurKind::IFindLastIV:
+    case RecurKind::FFindLastIV:
+#endif // SIFIVE_CUSTOMIZATION
     case RecurKind::None:
       llvm_unreachable("Unexpected reduction kind for repeated scalar.");
     }
@@ -14626,17 +14621,12 @@ private:
     case RecurKind::Mul:
     case RecurKind::FMul:
     case RecurKind::FMulAdd:
-<<<<<<< HEAD
-    case RecurKind::SelectICmp:
-    case RecurKind::SelectFCmp:
-#if SIFIVE_CUSTOMIZATION
-    case RecurKind::SelectIVICmp:
-    case RecurKind::SelectIVFCmp:
-#endif // SIFIVE_CUSTOMIZATION
-=======
     case RecurKind::IAnyOf:
     case RecurKind::FAnyOf:
->>>>>>> upstream/main
+#if SIFIVE_CUSTOMIZATION
+    case RecurKind::IFindLastIV:
+    case RecurKind::FFindLastIV:
+#endif // SIFIVE_CUSTOMIZATION
     case RecurKind::None:
       llvm_unreachable("Unexpected reduction kind for reused scalars.");
     }

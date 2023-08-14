@@ -376,26 +376,6 @@ Intrinsic::ID getMinMaxReductionIntrinsicOp(RecurKind RK);
 /// Returns the comparison predicate used when expanding a min/max reduction.
 CmpInst::Predicate getMinMaxReductionPredicate(RecurKind RK);
 
-<<<<<<< HEAD
-/// See RecurrenceDescriptor::isSelectCmpPattern for a description of the
-/// pattern we are trying to match. In this pattern we are only ever selecting
-#if SIFIVE_CUSTOMIZATION
-/// between two values: 1) an initial PHI start value, and 2) an integer loop
-/// invariant value or an increasing loop induction variable. This function
-/// uses \p LoopExitInst to determine 2), which we then use to select between \p
-/// Left and \p Right. For case where 2) is a loop invariant, any lane value
-/// in \p Left that matches 2) will be merged into \p Right. For case where 2)
-/// is an increasing loop induction variable, the larger value will be selected
-/// from both \p Left and \p Right.
-#else
-/// between two values: 1) an initial PHI start value, and 2) a loop invariant
-/// value. This function uses \p LoopExitInst to determine 2), which we then use
-/// to select between \p Left and \p Right. Any lane value in \p Left that
-/// matches 2) will be merged into \p Right.
-#endif // SIFIVE_CUSTOMIZATION
-Value *createSelectCmpOp(IRBuilderBase &Builder, Value *StartVal, RecurKind RK,
-                         Value *Left, Value *Right);
-=======
 /// See RecurrenceDescriptor::isAnyOfPattern for a description of the pattern we
 /// are trying to match. In this pattern, we are only ever selecting between two
 /// values: 1) an initial start value \p StartVal of the reduction PHI, and 2) a
@@ -404,7 +384,14 @@ Value *createSelectCmpOp(IRBuilderBase &Builder, Value *StartVal, RecurKind RK,
 /// \p Right iff \p Left is equal to \p StartVal.
 Value *createAnyOfOp(IRBuilderBase &Builder, Value *StartVal, RecurKind RK,
                      Value *Left, Value *Right);
->>>>>>> upstream/main
+
+#if SIFIVE_CUSTOMIZATION
+/// See RecurrenceDescriptor::isFindLastIVPattern for a description of the
+/// pattern we are trying to match. In this pattern, since the selected set of
+/// values forms an increasing sequence, we are selecting the maximum value from
+/// \p Left and \p Right.
+Value *createFindLastIVOp(IRBuilderBase &Builder, Value *Left, Value *Right);
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Returns a Min/Max operation corresponding to MinMaxRecurrenceKind.
 /// The Builder's fast-math-flags must be set to propagate the expected values.
@@ -438,51 +425,33 @@ Value *createSimpleTargetReduction(IRBuilderBase &B,
 #endif // SIFIVE_CUSTOMIZATION
 
 /// Create a target reduction of the given vector \p Src for a reduction of the
-<<<<<<< HEAD
-/// kind RecurKind::SelectICmp or RecurKind::SelectFCmp. The reduction operation
-/// is described by \p Desc.
-#if SIFIVE_CUSTOMIZATION
-Value *createInvariantSelectCmpTargetReduction(IRBuilderBase &B,
-                                               const TargetTransformInfo *TTI,
-                                               Value *Src,
-                                               const RecurrenceDescriptor &Desc,
-                                               PHINode *OrigPhi);
-
-Value *createInvariantSelectCmpTargetReduction(IRBuilderBase &B,
-                                               const TargetTransformInfo *TTI,
-                                               Value *Src,
-                                               const RecurrenceDescriptor &Desc,
-                                               PHINode *OrigPhi, Value *RVL);
-
-/// Create a target reduction of the given vector \p Src for a reduction of the
-/// kind conforms to RecurrenceDescriptor::isSelectCmpPattern. The reduction
-/// operation is described by \p Desc.
-Value *createSelectCmpTargetReduction(IRBuilderBase &B,
-                                      const TargetTransformInfo *TTI,
-                                      Value *Src,
-                                      const RecurrenceDescriptor &Desc,
-                                      PHINode *OrigPhi = nullptr);
-
-Value *createSelectCmpTargetReduction(IRBuilderBase &B,
-                                      const TargetTransformInfo *TTI,
-                                      Value *Src,
-                                      const RecurrenceDescriptor &Desc,
-                                      Value *RVL, PHINode *OrigPhi = nullptr);
-#else
-Value *createSelectCmpTargetReduction(IRBuilderBase &B,
-                                      const TargetTransformInfo *TTI,
-                                      Value *Src,
-                                      const RecurrenceDescriptor &Desc,
-                                      PHINode *OrigPhi);
-#endif // SIFIVE_CUSTOMIZATION
-=======
 /// kind RecurKind::IAnyOf or RecurKind::FAnyOf. The reduction operation is
 /// described by \p Desc.
 Value *createAnyOfTargetReduction(IRBuilderBase &B,
                                   const TargetTransformInfo *TTI, Value *Src,
                                   const RecurrenceDescriptor &Desc,
                                   PHINode *OrigPhi);
->>>>>>> upstream/main
+
+#if SIFIVE_CUSTOMIZATION
+Value *createAnyOfTargetReduction(IRBuilderBase &B,
+                                  const TargetTransformInfo *TTI, Value *Src,
+                                  const RecurrenceDescriptor &Desc,
+                                  PHINode *OrigPhi, Value *RVL);
+
+/// Create a target reduction of the given vector \p Src for a reduction of the
+/// kind RecurKind::IFindLastIV or RecurKind::FFindLastIV. The reduction
+/// operation is described by \p Desc.
+Value *createFindLastIVTargetReduction(IRBuilderBase &B,
+                                       const TargetTransformInfo *TTI,
+                                       Value *Src,
+                                       const RecurrenceDescriptor &Desc);
+
+Value *createFindLastIVTargetReduction(IRBuilderBase &B,
+                                       const TargetTransformInfo *TTI,
+                                       Value *Src,
+                                       const RecurrenceDescriptor &Desc,
+                                       Value *RVL);
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Create a generic target reduction using a recurrence descriptor \p Desc
 /// The target is queried to determine if intrinsics or shuffle sequences are
