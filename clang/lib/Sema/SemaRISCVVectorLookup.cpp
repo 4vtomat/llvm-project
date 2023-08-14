@@ -247,50 +247,26 @@ public:
 void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
     ArrayRef<RVVIntrinsicRecord> Recs, IntrinsicKind K) {
   const TargetInfo &TI = Context.getTargetInfo();
-<<<<<<< HEAD
-  bool HasRV64 = TI.hasFeature("64bit");
-#if SIFIVE_CUSTOMIZATION
-  struct FeatureCheckInfo {
-    bool HasFeature;
-    unsigned RequireFeatureMask;
-    bool Check(const RVVIntrinsicRecord &Record) const {
-      if ((Record.RequiredExtensions & RequireFeatureMask) == RequireFeatureMask)
-        return HasFeature;
 
-      return true;
-    }
-  };
-
-#define FEATURE_CHECK_ENTRY(EXT_NAME)                                         \
-  { TI.hasFeature(#EXT_NAME), RVV_REQ_##EXT_NAME }
-
-  const FeatureCheckInfo FeatureCheckList[] = {
-      {HasRV64, RVV_REQ_RV64},
-      FEATURE_CHECK_ENTRY(xsfvqmaccqoq),
-      FEATURE_CHECK_ENTRY(xsfvqmaccdod),
-      FEATURE_CHECK_ENTRY(xsfvfnrclipxfqf),
-      FEATURE_CHECK_ENTRY(xsfvfhbfmin),
-      FEATURE_CHECK_ENTRY(xsfvfwmaccqqq),
-  };
-#undef FEATURE_CHECK_ENTRY
-#endif // SIFIVE_CUSTOMIZATION
-=======
   static const std::pair<const char *, uint8_t> FeatureCheckList[] = {
       {"64bit", RVV_REQ_RV64},
+      {"xsfvqmaccqoq", RVV_REQ_xsfvqmaccqoq}};
+      {"xsfvqmaccdod", RVV_REQ_xsfvqmaccdod}};
+      {"xsfvfnrclipxfqf", RVV_REQ_xsfvfnrclipxfqf}};
+      {"xsfvfhbfmin", RVV_REQ_xsfvfhbfmin}};
+      {"xsfvfwmaccqqq", RVV_REQ_xsfvfwmaccqqq}};
       {"xsfvcp", RVV_REQ_Xsfvcp}};
->>>>>>> upstream/main
 
   // Construction of RVVIntrinsicRecords need to sync with createRVVIntrinsics
   // in RISCVVEmitter.cpp.
   for (auto &Record : Recs) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     // Do not add the v0.11 intrinsics into the compiler if declaration switch
     // is not triggered.
     if (!S.DeclareRISCVVectorV0p11Builtins && Record.IsV0p11Deprecated)
       continue;
 #endif
-=======
+
     // Check requirements.
     if (llvm::any_of(FeatureCheckList, [&](const auto &Item) {
           return (Record.RequiredExtensions & Item.second) == Item.second &&
@@ -298,7 +274,6 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
         }))
       continue;
 
->>>>>>> upstream/main
     // Create Intrinsics for each type and LMUL.
     BasicType BaseType = BasicType::Unknown;
     ArrayRef<PrototypeDescriptor> BasicProtoSeq =
@@ -374,21 +349,6 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
       for (int Log2LMUL = -3; Log2LMUL <= 3; Log2LMUL++) {
         if (!(Record.Log2LMULMask & (1 << (Log2LMUL + 3))))
           continue;
-
-          // Check requirement.
-#if SIFIVE_CUSTOMIZATION
-        bool Unsupported = false;
-
-        Unsupported = llvm::any_of(FeatureCheckList,
-                                   [&](auto &FC) { return !FC.Check(Record); });
-
-        if (Unsupported)
-          continue;
-#else
-        if (((Record.RequiredExtensions & RVV_REQ_RV64) == RVV_REQ_RV64) &&
-            !HasRV64)
-          continue;
-#endif // SIFIVE_CUSTOMIZATION
 
         std::optional<RVVTypes> Types =
             TypeCache.computeTypes(BaseType, Log2LMUL, Record.NF, ProtoSeq);
