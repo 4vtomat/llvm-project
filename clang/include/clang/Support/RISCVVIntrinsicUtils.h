@@ -59,7 +59,6 @@ enum class VectorTypeModifier : uint8_t {
   SFixedLog2LMUL1,
   SFixedLog2LMUL2,
   SFixedLog2LMUL3,
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Vector type modifier has a restriction to have only 1 modifier.
   // SiFive custom instructions like sf_vqmaccu_4x8x4 needs more than 1
@@ -71,7 +70,6 @@ enum class VectorTypeModifier : uint8_t {
   // for workaround.
   SignedInteger32,
 #endif // SIFIVE_CUSTOMIZATION
-=======
   SEFixedLog2LMULN3,
   SEFixedLog2LMULN2,
   SEFixedLog2LMULN1,
@@ -79,7 +77,6 @@ enum class VectorTypeModifier : uint8_t {
   SEFixedLog2LMUL1,
   SEFixedLog2LMUL2,
   SEFixedLog2LMUL3,
->>>>>>> upstream/main
   Tuple2,
   Tuple3,
   Tuple4,
