@@ -279,17 +279,13 @@ public:
   void getPostRAMutations(std::vector<std::unique_ptr<ScheduleDAGMutation>>
                               &Mutations) const override;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   void overrideSchedPolicy(MachineSchedPolicy &Policy,
                            unsigned NumRegionInstrs) const override;
-  bool useAA() const override;
   bool useAltGPROrder() const;
   bool useAltVROrder() const;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   bool useAA() const override;
->>>>>>> upstream/main
 };
 } // End llvm namespace
 
