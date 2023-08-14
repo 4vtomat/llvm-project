@@ -196,11 +196,6 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"zfbfmin", RISCVExtensionVersion{0, 8}},
 
     {"zicond", RISCVExtensionVersion{1, 0}},
-<<<<<<< HEAD
-    {"zihintntl", RISCVExtensionVersion{0, 2}},
-=======
-
->>>>>>> upstream/main
     {"ztso", RISCVExtensionVersion{0, 1}},
 
     {"zvbb", RISCVExtensionVersion{1, 0}},
