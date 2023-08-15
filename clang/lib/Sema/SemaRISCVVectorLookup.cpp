@@ -250,11 +250,11 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
 
   static const std::pair<const char *, uint8_t> FeatureCheckList[] = {
       {"64bit", RVV_REQ_RV64},
-      {"xsfvqmaccqoq", RVV_REQ_xsfvqmaccqoq}};
-      {"xsfvqmaccdod", RVV_REQ_xsfvqmaccdod}};
-      {"xsfvfnrclipxfqf", RVV_REQ_xsfvfnrclipxfqf}};
-      {"xsfvfhbfmin", RVV_REQ_xsfvfhbfmin}};
-      {"xsfvfwmaccqqq", RVV_REQ_xsfvfwmaccqqq}};
+      {"xsfvqmaccqoq", RVV_REQ_xsfvqmaccqoq},
+      {"xsfvqmaccdod", RVV_REQ_xsfvqmaccdod},
+      {"xsfvfnrclipxfqf", RVV_REQ_xsfvfnrclipxfqf},
+      {"xsfvfhbfmin", RVV_REQ_xsfvfhbfmin},
+      {"xsfvfwmaccqqq", RVV_REQ_xsfvfwmaccqqq},
       {"xsfvcp", RVV_REQ_Xsfvcp}};
 
   // Construction of RVVIntrinsicRecords need to sync with createRVVIntrinsics
