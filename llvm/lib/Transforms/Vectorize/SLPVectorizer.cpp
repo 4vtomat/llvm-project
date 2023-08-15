@@ -10949,6 +10949,7 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
         SI = cast<StoreInst>(E->Scalars.back());
 
         Value *ScalarPtr = SI->getPointerOperand();
+        unsigned AS = SI->getPointerAddressSpace();
         Value *VecPtr = Builder.CreateBitCast(
             ScalarPtr, VecValue->getType()->getPointerTo(AS));
         Type *StrideTy = DL->getIndexType(VecPtr->getType());
