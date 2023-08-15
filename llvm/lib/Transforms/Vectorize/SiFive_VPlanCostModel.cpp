@@ -440,7 +440,6 @@ InstructionCost VPlanCostModel::getInstructionCost(const VPInstruction *VPI,
       // overhead in HW
       return 0;
     case VPInstruction::CanonicalIVIncrement:
-    case VPInstruction::CanonicalIVIncrementNUW:
     case VPInstruction::BranchOnCount:
       return 1;
     default:
