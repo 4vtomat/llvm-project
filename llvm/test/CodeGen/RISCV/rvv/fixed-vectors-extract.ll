@@ -636,29 +636,6 @@ define i32 @extractelt_sdiv_v4i32(<4 x i32> %x) {
 ; RV32M-NEXT:    add a0, a0, a1
 ; RV32M-NEXT:    ret
 ;
-<<<<<<< HEAD
-; RV64-LABEL: extractelt_sdiv_v4i32:
-; RV64:       # %bb.0:
-; RV64-NEXT:    lui a0, %hi(.LCPI38_0)
-; RV64-NEXT:    addi a0, a0, %lo(.LCPI38_0)
-; RV64-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; RV64-NEXT:    vle32.v v9, (a0)
-; RV64-NEXT:    vmv.v.i v10, -1
-; RV64-NEXT:    vmv.v.i v11, 0
-; RV64-NEXT:    vslideup.vi v11, v10, 3
-; RV64-NEXT:    lui a0, %hi(.LCPI38_1)
-; RV64-NEXT:    addi a0, a0, %lo(.LCPI38_1)
-; RV64-NEXT:    vle32.v v10, (a0)
-; RV64-NEXT:    vmulh.vv v9, v8, v9
-; RV64-NEXT:    vand.vv v8, v8, v11
-; RV64-NEXT:    vadd.vv v8, v9, v8
-; RV64-NEXT:    vsra.vv v8, v8, v10
-; RV64-NEXT:    vsrl.vi v9, v8, 31
-; RV64-NEXT:    vadd.vv v8, v8, v9
-; RV64-NEXT:    vslidedown.vi v8, v8, 2
-; RV64-NEXT:    vmv.x.s a0, v8
-; RV64-NEXT:    ret
-=======
 ; RV64NOM-LABEL: extractelt_sdiv_v4i32:
 ; RV64NOM:       # %bb.0:
 ; RV64NOM-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
@@ -693,7 +670,6 @@ define i32 @extractelt_sdiv_v4i32(<4 x i32> %x) {
 ; RV64M-NEXT:    srai a0, a0, 34
 ; RV64M-NEXT:    add a0, a0, a1
 ; RV64M-NEXT:    ret
->>>>>>> upstream/main
   %bo = sdiv <4 x i32> %x, <i32 11, i32 12, i32 13, i32 14>
   %ext = extractelement <4 x i32> %bo, i32 2
   ret i32 %ext

@@ -6,17 +6,10 @@
 
 declare <vscale x 1 x i32> @llvm.riscv.vgmul.vv.nxv1i32(
   <vscale x 1 x i32>,
-<<<<<<< HEAD
-  <vscale x 2 x i32>,
-  iXLen, iXLen);
-
-define <vscale x 1 x i32> @intrinsic_vgmul_vs_nxv1i32(<vscale x 1 x i32> %0, <vscale x 2 x i32> %1, iXLen %2) nounwind {
-=======
   <vscale x 1 x i32>,
   iXLen, iXLen);
 
 define <vscale x 1 x i32> @intrinsic_vgmul_vs_nxv1i32(<vscale x 1 x i32> %0, <vscale x 1 x i32> %1, iXLen %2) nounwind {
->>>>>>> upstream/main
 ; CHECK-LABEL: intrinsic_vgmul_vs_nxv1i32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, tu, ma
@@ -25,11 +18,7 @@ define <vscale x 1 x i32> @intrinsic_vgmul_vs_nxv1i32(<vscale x 1 x i32> %0, <vs
 entry:
   %a = call <vscale x 1 x i32> @llvm.riscv.vgmul.vv.nxv1i32(
     <vscale x 1 x i32> %0,
-<<<<<<< HEAD
-    <vscale x 2 x i32> %1,
-=======
     <vscale x 1 x i32> %1,
->>>>>>> upstream/main
     iXLen %2, iXLen 2)
 
   ret <vscale x 1 x i32> %a
@@ -57,17 +46,10 @@ entry:
 
 declare <vscale x 4 x i32> @llvm.riscv.vgmul.vv.nxv4i32(
   <vscale x 4 x i32>,
-<<<<<<< HEAD
-  <vscale x 2 x i32>,
-  iXLen, iXLen);
-
-define <vscale x 4 x i32> @intrinsic_vgmul_vs_nxv4i32(<vscale x 4 x i32> %0, <vscale x 2 x i32> %1, iXLen %2) nounwind {
-=======
   <vscale x 4 x i32>,
   iXLen, iXLen);
 
 define <vscale x 4 x i32> @intrinsic_vgmul_vs_nxv4i32(<vscale x 4 x i32> %0, <vscale x 4 x i32> %1, iXLen %2) nounwind {
->>>>>>> upstream/main
 ; CHECK-LABEL: intrinsic_vgmul_vs_nxv4i32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m2, tu, ma
@@ -76,11 +58,7 @@ define <vscale x 4 x i32> @intrinsic_vgmul_vs_nxv4i32(<vscale x 4 x i32> %0, <vs
 entry:
   %a = call <vscale x 4 x i32> @llvm.riscv.vgmul.vv.nxv4i32(
     <vscale x 4 x i32> %0,
-<<<<<<< HEAD
-    <vscale x 2 x i32> %1,
-=======
     <vscale x 4 x i32> %1,
->>>>>>> upstream/main
     iXLen %2, iXLen 2)
 
   ret <vscale x 4 x i32> %a
@@ -88,17 +66,10 @@ entry:
 
 declare <vscale x 8 x i32> @llvm.riscv.vgmul.vv.nxv8i32(
   <vscale x 8 x i32>,
-<<<<<<< HEAD
-  <vscale x 2 x i32>,
-  iXLen, iXLen);
-
-define <vscale x 8 x i32> @intrinsic_vgmul_vs_nxv8i32(<vscale x 8 x i32> %0, <vscale x 2 x i32> %1, iXLen %2) nounwind {
-=======
   <vscale x 8 x i32>,
   iXLen, iXLen);
 
 define <vscale x 8 x i32> @intrinsic_vgmul_vs_nxv8i32(<vscale x 8 x i32> %0, <vscale x 8 x i32> %1, iXLen %2) nounwind {
->>>>>>> upstream/main
 ; CHECK-LABEL: intrinsic_vgmul_vs_nxv8i32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m4, tu, ma
@@ -107,11 +78,7 @@ define <vscale x 8 x i32> @intrinsic_vgmul_vs_nxv8i32(<vscale x 8 x i32> %0, <vs
 entry:
   %a = call <vscale x 8 x i32> @llvm.riscv.vgmul.vv.nxv8i32(
     <vscale x 8 x i32> %0,
-<<<<<<< HEAD
-    <vscale x 2 x i32> %1,
-=======
     <vscale x 8 x i32> %1,
->>>>>>> upstream/main
     iXLen %2, iXLen 2)
 
   ret <vscale x 8 x i32> %a
@@ -119,17 +86,10 @@ entry:
 
 declare <vscale x 16 x i32> @llvm.riscv.vgmul.vv.nxv16i32(
   <vscale x 16 x i32>,
-<<<<<<< HEAD
-  <vscale x 2 x i32>,
-  iXLen, iXLen);
-
-define <vscale x 16 x i32> @intrinsic_vgmul_vs_nxv16i32(<vscale x 16 x i32> %0, <vscale x 2 x i32> %1, iXLen %2) nounwind {
-=======
   <vscale x 16 x i32>,
   iXLen, iXLen);
 
 define <vscale x 16 x i32> @intrinsic_vgmul_vs_nxv16i32(<vscale x 16 x i32> %0, <vscale x 16 x i32> %1, iXLen %2) nounwind {
->>>>>>> upstream/main
 ; CHECK-LABEL: intrinsic_vgmul_vs_nxv16i32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
@@ -138,11 +98,7 @@ define <vscale x 16 x i32> @intrinsic_vgmul_vs_nxv16i32(<vscale x 16 x i32> %0, 
 entry:
   %a = call <vscale x 16 x i32> @llvm.riscv.vgmul.vv.nxv16i32(
     <vscale x 16 x i32> %0,
-<<<<<<< HEAD
-    <vscale x 2 x i32> %1,
-=======
     <vscale x 16 x i32> %1,
->>>>>>> upstream/main
     iXLen %2, iXLen 2)
 
   ret <vscale x 16 x i32> %a

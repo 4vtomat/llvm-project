@@ -710,28 +710,15 @@ define i32 @nocompress(i32 signext %size) {
 ; RV32IZCMP:       # %bb.0: # %entry
 ; RV32IZCMP-NEXT:    cm.push {ra, s0-s7}, -48
 ; RV32IZCMP-NEXT:    .cfi_def_cfa_offset 48
-<<<<<<< HEAD
-; RV32IZCMP-NEXT:    .cfi_offset ra, -4
-; RV32IZCMP-NEXT:    .cfi_offset s0, -8
-; RV32IZCMP-NEXT:    .cfi_offset s1, -12
-; RV32IZCMP-NEXT:    .cfi_offset s2, -16
+; RV32IZCMP-NEXT:    .cfi_offset ra, -36
+; RV32IZCMP-NEXT:    .cfi_offset s0, -32
+; RV32IZCMP-NEXT:    .cfi_offset s1, -28
+; RV32IZCMP-NEXT:    .cfi_offset s2, -24
 ; RV32IZCMP-NEXT:    .cfi_offset s3, -20
-; RV32IZCMP-NEXT:    .cfi_offset s4, -24
-; RV32IZCMP-NEXT:    .cfi_offset s5, -28
-; RV32IZCMP-NEXT:    .cfi_offset s6, -32
-; RV32IZCMP-NEXT:    .cfi_offset s7, -36
-=======
-; RV32IZCMP-NEXT:    .cfi_offset ra, -40
-; RV32IZCMP-NEXT:    .cfi_offset s0, -36
-; RV32IZCMP-NEXT:    .cfi_offset s1, -32
-; RV32IZCMP-NEXT:    .cfi_offset s2, -28
-; RV32IZCMP-NEXT:    .cfi_offset s3, -24
-; RV32IZCMP-NEXT:    .cfi_offset s4, -20
-; RV32IZCMP-NEXT:    .cfi_offset s5, -16
-; RV32IZCMP-NEXT:    .cfi_offset s6, -12
-; RV32IZCMP-NEXT:    .cfi_offset s7, -8
-; RV32IZCMP-NEXT:    .cfi_offset s8, -4
->>>>>>> upstream/main
+; RV32IZCMP-NEXT:    .cfi_offset s4, -16
+; RV32IZCMP-NEXT:    .cfi_offset s5, -12
+; RV32IZCMP-NEXT:    .cfi_offset s6, -8
+; RV32IZCMP-NEXT:    .cfi_offset s7, -4
 ; RV32IZCMP-NEXT:    addi s0, sp, 48
 ; RV32IZCMP-NEXT:    .cfi_def_cfa s0, 0
 ; RV32IZCMP-NEXT:    addi a0, a0, 15
@@ -761,28 +748,15 @@ define i32 @nocompress(i32 signext %size) {
 ; RV64IZCMP:       # %bb.0: # %entry
 ; RV64IZCMP-NEXT:    cm.push {ra, s0-s7}, -80
 ; RV64IZCMP-NEXT:    .cfi_def_cfa_offset 80
-<<<<<<< HEAD
-; RV64IZCMP-NEXT:    .cfi_offset ra, -8
-; RV64IZCMP-NEXT:    .cfi_offset s0, -16
-; RV64IZCMP-NEXT:    .cfi_offset s1, -24
-; RV64IZCMP-NEXT:    .cfi_offset s2, -32
+; RV64IZCMP-NEXT:    .cfi_offset ra, -72
+; RV64IZCMP-NEXT:    .cfi_offset s0, -64
+; RV64IZCMP-NEXT:    .cfi_offset s1, -56
+; RV64IZCMP-NEXT:    .cfi_offset s2, -48
 ; RV64IZCMP-NEXT:    .cfi_offset s3, -40
-; RV64IZCMP-NEXT:    .cfi_offset s4, -48
-; RV64IZCMP-NEXT:    .cfi_offset s5, -56
-; RV64IZCMP-NEXT:    .cfi_offset s6, -64
-; RV64IZCMP-NEXT:    .cfi_offset s7, -72
-=======
-; RV64IZCMP-NEXT:    .cfi_offset ra, -80
-; RV64IZCMP-NEXT:    .cfi_offset s0, -72
-; RV64IZCMP-NEXT:    .cfi_offset s1, -64
-; RV64IZCMP-NEXT:    .cfi_offset s2, -56
-; RV64IZCMP-NEXT:    .cfi_offset s3, -48
-; RV64IZCMP-NEXT:    .cfi_offset s4, -40
-; RV64IZCMP-NEXT:    .cfi_offset s5, -32
-; RV64IZCMP-NEXT:    .cfi_offset s6, -24
-; RV64IZCMP-NEXT:    .cfi_offset s7, -16
-; RV64IZCMP-NEXT:    .cfi_offset s8, -8
->>>>>>> upstream/main
+; RV64IZCMP-NEXT:    .cfi_offset s4, -32
+; RV64IZCMP-NEXT:    .cfi_offset s5, -24
+; RV64IZCMP-NEXT:    .cfi_offset s6, -16
+; RV64IZCMP-NEXT:    .cfi_offset s7, -8
 ; RV64IZCMP-NEXT:    addi s0, sp, 80
 ; RV64IZCMP-NEXT:    .cfi_def_cfa s0, 0
 ; RV64IZCMP-NEXT:    slli a0, a0, 32
@@ -814,28 +788,15 @@ define i32 @nocompress(i32 signext %size) {
 ; RV32IZCMP-SR:       # %bb.0: # %entry
 ; RV32IZCMP-SR-NEXT:    cm.push {ra, s0-s7}, -48
 ; RV32IZCMP-SR-NEXT:    .cfi_def_cfa_offset 48
-<<<<<<< HEAD
-; RV32IZCMP-SR-NEXT:    .cfi_offset ra, -4
-; RV32IZCMP-SR-NEXT:    .cfi_offset s0, -8
-; RV32IZCMP-SR-NEXT:    .cfi_offset s1, -12
-; RV32IZCMP-SR-NEXT:    .cfi_offset s2, -16
+; RV32IZCMP-SR-NEXT:    .cfi_offset ra, -36
+; RV32IZCMP-SR-NEXT:    .cfi_offset s0, -32
+; RV32IZCMP-SR-NEXT:    .cfi_offset s1, -28
+; RV32IZCMP-SR-NEXT:    .cfi_offset s2, -24
 ; RV32IZCMP-SR-NEXT:    .cfi_offset s3, -20
-; RV32IZCMP-SR-NEXT:    .cfi_offset s4, -24
-; RV32IZCMP-SR-NEXT:    .cfi_offset s5, -28
-; RV32IZCMP-SR-NEXT:    .cfi_offset s6, -32
-; RV32IZCMP-SR-NEXT:    .cfi_offset s7, -36
-=======
-; RV32IZCMP-SR-NEXT:    .cfi_offset ra, -40
-; RV32IZCMP-SR-NEXT:    .cfi_offset s0, -36
-; RV32IZCMP-SR-NEXT:    .cfi_offset s1, -32
-; RV32IZCMP-SR-NEXT:    .cfi_offset s2, -28
-; RV32IZCMP-SR-NEXT:    .cfi_offset s3, -24
-; RV32IZCMP-SR-NEXT:    .cfi_offset s4, -20
-; RV32IZCMP-SR-NEXT:    .cfi_offset s5, -16
-; RV32IZCMP-SR-NEXT:    .cfi_offset s6, -12
-; RV32IZCMP-SR-NEXT:    .cfi_offset s7, -8
-; RV32IZCMP-SR-NEXT:    .cfi_offset s8, -4
->>>>>>> upstream/main
+; RV32IZCMP-SR-NEXT:    .cfi_offset s4, -16
+; RV32IZCMP-SR-NEXT:    .cfi_offset s5, -12
+; RV32IZCMP-SR-NEXT:    .cfi_offset s6, -8
+; RV32IZCMP-SR-NEXT:    .cfi_offset s7, -4
 ; RV32IZCMP-SR-NEXT:    addi s0, sp, 48
 ; RV32IZCMP-SR-NEXT:    .cfi_def_cfa s0, 0
 ; RV32IZCMP-SR-NEXT:    addi a0, a0, 15
@@ -865,28 +826,15 @@ define i32 @nocompress(i32 signext %size) {
 ; RV64IZCMP-SR:       # %bb.0: # %entry
 ; RV64IZCMP-SR-NEXT:    cm.push {ra, s0-s7}, -80
 ; RV64IZCMP-SR-NEXT:    .cfi_def_cfa_offset 80
-<<<<<<< HEAD
-; RV64IZCMP-SR-NEXT:    .cfi_offset ra, -8
-; RV64IZCMP-SR-NEXT:    .cfi_offset s0, -16
-; RV64IZCMP-SR-NEXT:    .cfi_offset s1, -24
-; RV64IZCMP-SR-NEXT:    .cfi_offset s2, -32
+; RV64IZCMP-SR-NEXT:    .cfi_offset ra, -72
+; RV64IZCMP-SR-NEXT:    .cfi_offset s0, -64
+; RV64IZCMP-SR-NEXT:    .cfi_offset s1, -56
+; RV64IZCMP-SR-NEXT:    .cfi_offset s2, -48
 ; RV64IZCMP-SR-NEXT:    .cfi_offset s3, -40
-; RV64IZCMP-SR-NEXT:    .cfi_offset s4, -48
-; RV64IZCMP-SR-NEXT:    .cfi_offset s5, -56
-; RV64IZCMP-SR-NEXT:    .cfi_offset s6, -64
-; RV64IZCMP-SR-NEXT:    .cfi_offset s7, -72
-=======
-; RV64IZCMP-SR-NEXT:    .cfi_offset ra, -80
-; RV64IZCMP-SR-NEXT:    .cfi_offset s0, -72
-; RV64IZCMP-SR-NEXT:    .cfi_offset s1, -64
-; RV64IZCMP-SR-NEXT:    .cfi_offset s2, -56
-; RV64IZCMP-SR-NEXT:    .cfi_offset s3, -48
-; RV64IZCMP-SR-NEXT:    .cfi_offset s4, -40
-; RV64IZCMP-SR-NEXT:    .cfi_offset s5, -32
-; RV64IZCMP-SR-NEXT:    .cfi_offset s6, -24
-; RV64IZCMP-SR-NEXT:    .cfi_offset s7, -16
-; RV64IZCMP-SR-NEXT:    .cfi_offset s8, -8
->>>>>>> upstream/main
+; RV64IZCMP-SR-NEXT:    .cfi_offset s4, -32
+; RV64IZCMP-SR-NEXT:    .cfi_offset s5, -24
+; RV64IZCMP-SR-NEXT:    .cfi_offset s6, -16
+; RV64IZCMP-SR-NEXT:    .cfi_offset s7, -8
 ; RV64IZCMP-SR-NEXT:    addi s0, sp, 80
 ; RV64IZCMP-SR-NEXT:    .cfi_def_cfa s0, 0
 ; RV64IZCMP-SR-NEXT:    slli a0, a0, 32

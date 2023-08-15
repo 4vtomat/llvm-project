@@ -3288,11 +3288,6 @@ define <vscale x 16 x i64> @vp_ctpop_nxv16i64_unmasked(<vscale x 16 x i64> %va, 
   ret <vscale x 16 x i64> %v
 }
 
-<<<<<<< HEAD
-; SIFIVE_CUSTOMIZATION
-; Cherry-picked from upstream D157607.
-=======
->>>>>>> upstream/main
 ; Test promotion.
 declare <vscale x 1 x i9> @llvm.vp.ctpop.nxv1i9(<vscale x 1 x i9>, <vscale x 1 x i1>, i32)
 
@@ -3362,7 +3357,3 @@ define <vscale x 1 x i9> @vp_ctpop_nxv1i9(<vscale x 1 x i9> %va, <vscale x 1 x i
   %v = call <vscale x 1 x i9> @llvm.vp.ctpop.nxv1i9(<vscale x 1 x i9> %va, <vscale x 1 x i1> %m, i32 %evl)
   ret <vscale x 1 x i9> %v
 }
-<<<<<<< HEAD
-; SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main

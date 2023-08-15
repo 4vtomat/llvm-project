@@ -10,10 +10,9 @@
 define void @test_aa(ptr nocapture readonly align 8 dereferenceable(24) %this, ptr nocapture  writeonly %region) align 2 {
 ; NoAA-LABEL: test_aa:
 ; NoAA:       # %bb.0: # %entry
-; NoAA-NEXT:    lw a2, 4(a0)
-; NoAA-NEXT:    sw a2, 8(a1)
-; NoAA-NEXT:    lw a0, 0(a0)
-; NoAA-NEXT:    sw a0, 12(a1)
+; NoAA-NEXT:    ld a0, 0(a0)
+; NoAA-NEXT:    rori a0, a0, 32
+; NoAA-NEXT:    sd a0, 8(a1)
 ; NoAA-NEXT:    ret
 ;
 ; UseAA-LABEL: test_aa:

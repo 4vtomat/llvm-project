@@ -4,57 +4,6 @@
 ; RUN: sed 's/iXLen/i64/g' %s | llc -mtriple=riscv64 -mattr=+v,+experimental-zvknhb \
 ; RUN:   -verify-machineinstrs | FileCheck %s --check-prefixes=CHECK
 
-<<<<<<< HEAD
-declare <vscale x 1 x i32> @llvm.riscv.vsha2cl.nxv1i32.nxv1i32(
-  <vscale x 1 x i32>,
-  <vscale x 1 x i32>,
-  <vscale x 1 x i32>,
-  iXLen,
-  iXLen)
-
-define <vscale x 1 x i32> @intrinsic_vsha2cl_vv_nxv1i32_nxv1i32(<vscale x 1 x i32> %0, <vscale x 1 x i32> %1, <vscale x 1 x i32> %2, iXLen %3) nounwind {
-; CHECK-LABEL: intrinsic_vsha2cl_vv_nxv1i32_nxv1i32:
-; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, tu, ma
-; CHECK-NEXT:    vsha2ch.vv v8, v9, v10
-; CHECK-NEXT:    ret
-entry:
-  %a = call <vscale x 1 x i32> @llvm.riscv.vsha2cl.nxv1i32.nxv1i32(
-    <vscale x 1 x i32> %0,
-    <vscale x 1 x i32> %1,
-    <vscale x 1 x i32> %2,
-    iXLen %3,
-    iXLen 2)
-
-  ret <vscale x 1 x i32> %a
-}
-
-declare <vscale x 2 x i32> @llvm.riscv.vsha2cl.nxv2i32.nxv2i32(
-  <vscale x 2 x i32>,
-  <vscale x 2 x i32>,
-  <vscale x 2 x i32>,
-  iXLen,
-  iXLen)
-
-define <vscale x 2 x i32> @intrinsic_vsha2cl_vv_nxv2i32_nxv2i32(<vscale x 2 x i32> %0, <vscale x 2 x i32> %1, <vscale x 2 x i32> %2, iXLen %3) nounwind {
-; CHECK-LABEL: intrinsic_vsha2cl_vv_nxv2i32_nxv2i32:
-; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, ma
-; CHECK-NEXT:    vsha2ch.vv v8, v9, v10
-; CHECK-NEXT:    ret
-entry:
-  %a = call <vscale x 2 x i32> @llvm.riscv.vsha2cl.nxv2i32.nxv2i32(
-    <vscale x 2 x i32> %0,
-    <vscale x 2 x i32> %1,
-    <vscale x 2 x i32> %2,
-    iXLen %3,
-    iXLen 2)
-
-  ret <vscale x 2 x i32> %a
-}
-
-=======
->>>>>>> upstream/main
 declare <vscale x 4 x i32> @llvm.riscv.vsha2cl.nxv4i32.nxv4i32(
   <vscale x 4 x i32>,
   <vscale x 4 x i32>,
@@ -128,57 +77,6 @@ entry:
   ret <vscale x 16 x i32> %a
 }
 
-<<<<<<< HEAD
-declare <vscale x 1 x i64> @llvm.riscv.vsha2cl.nxv1i64.nxv1i64(
-  <vscale x 1 x i64>,
-  <vscale x 1 x i64>,
-  <vscale x 1 x i64>,
-  iXLen,
-  iXLen)
-
-define <vscale x 1 x i64> @intrinsic_vsha2cl_vv_nxv1i64_nxv1i64(<vscale x 1 x i64> %0, <vscale x 1 x i64> %1, <vscale x 1 x i64> %2, iXLen %3) nounwind {
-; CHECK-LABEL: intrinsic_vsha2cl_vv_nxv1i64_nxv1i64:
-; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, tu, ma
-; CHECK-NEXT:    vsha2ch.vv v8, v9, v10
-; CHECK-NEXT:    ret
-entry:
-  %a = call <vscale x 1 x i64> @llvm.riscv.vsha2cl.nxv1i64.nxv1i64(
-    <vscale x 1 x i64> %0,
-    <vscale x 1 x i64> %1,
-    <vscale x 1 x i64> %2,
-    iXLen %3,
-    iXLen 2)
-
-  ret <vscale x 1 x i64> %a
-}
-
-declare <vscale x 2 x i64> @llvm.riscv.vsha2cl.nxv2i64.nxv2i64(
-  <vscale x 2 x i64>,
-  <vscale x 2 x i64>,
-  <vscale x 2 x i64>,
-  iXLen,
-  iXLen)
-
-define <vscale x 2 x i64> @intrinsic_vsha2cl_vv_nxv2i64_nxv2i64(<vscale x 2 x i64> %0, <vscale x 2 x i64> %1, <vscale x 2 x i64> %2, iXLen %3) nounwind {
-; CHECK-LABEL: intrinsic_vsha2cl_vv_nxv2i64_nxv2i64:
-; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e64, m2, tu, ma
-; CHECK-NEXT:    vsha2ch.vv v8, v10, v12
-; CHECK-NEXT:    ret
-entry:
-  %a = call <vscale x 2 x i64> @llvm.riscv.vsha2cl.nxv2i64.nxv2i64(
-    <vscale x 2 x i64> %0,
-    <vscale x 2 x i64> %1,
-    <vscale x 2 x i64> %2,
-    iXLen %3,
-    iXLen 2)
-
-  ret <vscale x 2 x i64> %a
-}
-
-=======
->>>>>>> upstream/main
 declare <vscale x 4 x i64> @llvm.riscv.vsha2cl.nxv4i64.nxv4i64(
   <vscale x 4 x i64>,
   <vscale x 4 x i64>,

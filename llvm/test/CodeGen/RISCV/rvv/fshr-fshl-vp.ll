@@ -1331,11 +1331,6 @@ define <vscale x 16 x i64> @fshl_v16i64(<vscale x 16 x i64> %a, <vscale x 16 x i
   ret <vscale x 16 x i64> %res
 }
 
-<<<<<<< HEAD
-; SIFIVE_CUSTOMIZATION
-; Cherry-picked from upstream D157607.
-=======
->>>>>>> upstream/main
 ; Test promotion.
 declare <vscale x 1 x i9> @llvm.vp.fshr.nxv1i9(<vscale x 1 x i9>, <vscale x 1 x i9>, <vscale x 1 x i9>, <vscale x 1 x i1>, i32)
 define <vscale x 1 x i9> @fshr_v1i9(<vscale x 1 x i9> %a, <vscale x 1 x i9> %b, <vscale x 1 x i9> %c, <vscale x 1 x i1> %m, i32 zeroext %evl) {
@@ -1383,7 +1378,3 @@ define <vscale x 1 x i9> @fshl_v1i9(<vscale x 1 x i9> %a, <vscale x 1 x i9> %b, 
   %res = call <vscale x 1 x i9> @llvm.vp.fshl.nxv1i9(<vscale x 1 x i9> %a, <vscale x 1 x i9> %b, <vscale x 1 x i9> %c, <vscale x 1 x i1> %m, i32 %evl)
   ret <vscale x 1 x i9> %res
 }
-<<<<<<< HEAD
-; SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main

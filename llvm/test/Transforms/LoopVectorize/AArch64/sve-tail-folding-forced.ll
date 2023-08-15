@@ -24,19 +24,6 @@ target triple = "aarch64-unknown-linux-gnu"
 ; VPLANS-EMPTY:
 ; VPLANS-NEXT: <x1> vector loop: {
 ; VPLANS-NEXT:   vector.body:
-<<<<<<< HEAD
-; VPLANS-NEXT      ACTIVE-LANE-MASK-PHI vp<%6> = phi vp<%4>, vp<%10>
-; VPLANS-NEXT      vp<%7>    = SCALAR-STEPS vp<%5>, ir<1>
-; VPLANS-NEXT      CLONE ir<%gep> = getelementptr ir<%ptr>, vp<%7>
-; VPLANS-NEXT      WIDEN store ir<%gep>, ir<%val>, vp<%6>
-; VPLANS-NEXT      EMIT vp<%9> = VF * Part +  vp<%5>
-; VPLANS-NEXT      EMIT vp<%10> = active lane mask vp<%9> vp<%3>
-; VPLANS-NEXT      EMIT vp<%11> = VF * UF +  vp<%5>
-; VPLANS-NEXT      EMIT vp<%12> = not vp<%10>
-; VPLANS-NEXT      EMIT branch-on-cond vp<%12>
-; VPLANS-NEXT    No successors
-; VPLANS-NEXT  }
-=======
 ; VPLANS-NEXT:     EMIT vp<[[INDV:%[0-9]+]]> = CANONICAL-INDUCTION
 ; VPLANS-NEXT:     ACTIVE-LANE-MASK-PHI vp<[[LANEMASK_PHI:%[0-9]+]]> = phi vp<[[LANEMASK_ENTRY]]>, vp<[[LANEMASK_LOOP:%[0-9]+]]>
 ; VPLANS-NEXT:     vp<[[STEP:%[0-9]+]]>    = SCALAR-STEPS vp<[[INDV]]>, ir<1>
@@ -49,7 +36,6 @@ target triple = "aarch64-unknown-linux-gnu"
 ; VPLANS-NEXT:     EMIT branch-on-cond vp<[[NOT]]>
 ; VPLANS-NEXT:   No successors
 ; VPLANS-NEXT: }
->>>>>>> upstream/main
 
 define void @simple_memset(i32 %val, ptr %ptr, i64 %n) #0 {
 ; CHECK-LABEL: @simple_memset(

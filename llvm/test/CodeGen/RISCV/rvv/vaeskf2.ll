@@ -3,70 +3,11 @@
 ; RUN:   -verify-machineinstrs | FileCheck %s --check-prefixes=CHECK
 ; RUN: sed 's/iXLen/i64/g' %s | llc -mtriple=riscv64 -mattr=+v,+experimental-zvkned \
 ; RUN:   -verify-machineinstrs | FileCheck %s --check-prefixes=CHECK
-<<<<<<< HEAD
-; RUN: sed 's/iXLen/i32/g' %s | llc -mtriple=riscv32 -mattr=+v,+experimental-zvkns \
-; RUN:   -verify-machineinstrs | FileCheck %s --check-prefixes=CHECK
-; RUN: sed 's/iXLen/i64/g' %s | llc -mtriple=riscv64 -mattr=+v,+experimental-zvkns \
-; RUN:   -verify-machineinstrs | FileCheck %s --check-prefixes=CHECK
-
-declare <vscale x 1 x i32> @llvm.riscv.vaeskf2.nxv1i32.i32(
-  <vscale x 1 x i32>,
-  <vscale x 1 x i32>,
-  i32,
-  iXLen,
-  iXLen)
-
-define <vscale x 1 x i32> @intrinsic_vaeskf2_vi_nxv1i32_i32(<vscale x 1 x i32> %0, <vscale x 1 x i32> %1, iXLen %2) nounwind {
-; CHECK-LABEL: intrinsic_vaeskf2_vi_nxv1i32_i32:
-; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, tu, ma
-; CHECK-NEXT:    vaeskf2.vi v8, v9, 2
-; CHECK-NEXT:    ret
-entry:
-  %a = call <vscale x 1 x i32> @llvm.riscv.vaeskf2.nxv1i32.i32(
-    <vscale x 1 x i32> %0,
-    <vscale x 1 x i32> %1,
-    i32 2,
-    iXLen %2,
-    iXLen 2)
-
-  ret <vscale x 1 x i32> %a
-}
-
-declare <vscale x 2 x i32> @llvm.riscv.vaeskf2.nxv2i32.i32(
-  <vscale x 2 x i32>,
-  <vscale x 2 x i32>,
-  i32,
-  iXLen,
-  iXLen)
-
-define <vscale x 2 x i32> @intrinsic_vaeskf2_vi_nxv2i32_i32(<vscale x 2 x i32> %0, <vscale x 2 x i32> %1, iXLen %2) nounwind {
-; CHECK-LABEL: intrinsic_vaeskf2_vi_nxv2i32_i32:
-; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, tu, ma
-; CHECK-NEXT:    vaeskf2.vi v8, v9, 2
-; CHECK-NEXT:    ret
-entry:
-  %a = call <vscale x 2 x i32> @llvm.riscv.vaeskf2.nxv2i32.i32(
-    <vscale x 2 x i32> %0,
-    <vscale x 2 x i32> %1,
-    i32 2,
-    iXLen %2,
-    iXLen 2)
-
-  ret <vscale x 2 x i32> %a
-}
-=======
->>>>>>> upstream/main
 
 declare <vscale x 4 x i32> @llvm.riscv.vaeskf2.nxv4i32.i32(
   <vscale x 4 x i32>,
   <vscale x 4 x i32>,
-<<<<<<< HEAD
-  i32,
-=======
   iXLen,
->>>>>>> upstream/main
   iXLen,
   iXLen)
 
@@ -80,11 +21,7 @@ entry:
   %a = call <vscale x 4 x i32> @llvm.riscv.vaeskf2.nxv4i32.i32(
     <vscale x 4 x i32> %0,
     <vscale x 4 x i32> %1,
-<<<<<<< HEAD
-    i32 2,
-=======
     iXLen 2,
->>>>>>> upstream/main
     iXLen %2,
     iXLen 2)
 
@@ -94,11 +31,7 @@ entry:
 declare <vscale x 8 x i32> @llvm.riscv.vaeskf2.nxv8i32.i32(
   <vscale x 8 x i32>,
   <vscale x 8 x i32>,
-<<<<<<< HEAD
-  i32,
-=======
   iXLen,
->>>>>>> upstream/main
   iXLen,
   iXLen)
 
@@ -112,11 +45,7 @@ entry:
   %a = call <vscale x 8 x i32> @llvm.riscv.vaeskf2.nxv8i32.i32(
     <vscale x 8 x i32> %0,
     <vscale x 8 x i32> %1,
-<<<<<<< HEAD
-    i32 2,
-=======
     iXLen 2,
->>>>>>> upstream/main
     iXLen %2,
     iXLen 2)
 
@@ -126,11 +55,7 @@ entry:
 declare <vscale x 16 x i32> @llvm.riscv.vaeskf2.nxv16i32.i32(
   <vscale x 16 x i32>,
   <vscale x 16 x i32>,
-<<<<<<< HEAD
-  i32,
-=======
   iXLen,
->>>>>>> upstream/main
   iXLen,
   iXLen)
 
@@ -144,11 +69,7 @@ entry:
   %a = call <vscale x 16 x i32> @llvm.riscv.vaeskf2.nxv16i32.i32(
     <vscale x 16 x i32> %0,
     <vscale x 16 x i32> %1,
-<<<<<<< HEAD
-    i32 2,
-=======
     iXLen 2,
->>>>>>> upstream/main
     iXLen %2,
     iXLen 2)
 

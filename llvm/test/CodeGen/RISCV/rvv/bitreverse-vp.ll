@@ -4204,11 +4204,6 @@ define <vscale x 64 x i16> @vp_bitreverse_nxv64i16_unmasked(<vscale x 64 x i16> 
   ret <vscale x 64 x i16> %v
 }
 
-<<<<<<< HEAD
-; SIFIVE_CUSTOMIZATION
-; Cherry-picked from upstream D157607.
-=======
->>>>>>> upstream/main
 ; Test promotion.
 declare <vscale x 1 x i9> @llvm.vp.bitreverse.nxv1i9(<vscale x 1 x i9>, <vscale x 1 x i1>, i32)
 define <vscale x 1 x i9> @vp_bitreverse_nxv1i9(<vscale x 1 x i9> %va, <vscale x 1 x i1> %m, i32 zeroext %evl) {
@@ -4281,7 +4276,3 @@ define <vscale x 1 x i9> @vp_bitreverse_nxv1i9(<vscale x 1 x i9> %va, <vscale x 
   %v = call <vscale x 1 x i9> @llvm.vp.bitreverse.nxv1i9(<vscale x 1 x i9> %va, <vscale x 1 x i1> %m, i32 %evl)
   ret <vscale x 1 x i9> %v
 }
-<<<<<<< HEAD
-; SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
