@@ -5245,10 +5245,10 @@ static unsigned getRISCVVLOp(SDValue Op) {
       llvm_unreachable("don't have RISC-V specified VL op for this SDNode");
     case Intrinsic::aarch64_neon_fmax:
     case Intrinsic::aarch64_neon_fmaxnm:
-      return RISCVISD::FMAXNUM_VL;
+      return RISCVISD::VFMAX_VL;
     case Intrinsic::aarch64_neon_fmin:
     case Intrinsic::aarch64_neon_fminnm:
-      return RISCVISD::FMINNUM_VL;
+      return RISCVISD::VFMIN_VL;
     }
 #endif // SIFIVE_CUSTOMIZATION
   case ISD::VP_SELECT:
@@ -14267,7 +14267,7 @@ static SDValue combineToVFMAX_VFMIN(SDNode *N, SelectionDAG &DAG) {
   case ISD::SETULT:
   case ISD::SETULE: {
     unsigned Opcode =
-        CondLHS == TrueVal ? RISCVISD::FMINNUM_VL : RISCVISD::FMAXNUM_VL;
+        CondLHS == TrueVal ? RISCVISD::VFMIN_VL : RISCVISD::VFMAX_VL;
     SDValue TrueMask =
         DAG.getNode(RISCVISD::VMSET_VL, DL, Cond.getValueType(), VL);
     Res = DAG.getNode(Opcode, DL, VT, TrueVal, FalseVal, DAG.getUNDEF(VT),
@@ -14281,7 +14281,7 @@ static SDValue combineToVFMAX_VFMIN(SDNode *N, SelectionDAG &DAG) {
   case ISD::SETUGT:
   case ISD::SETUGE: {
     unsigned Opcode =
-        CondLHS == TrueVal ? RISCVISD::FMAXNUM_VL : RISCVISD::FMINNUM_VL;
+        CondLHS == TrueVal ? RISCVISD::VFMAX_VL : RISCVISD::VFMIN_VL;
     SDValue TrueMask =
         DAG.getNode(RISCVISD::VMSET_VL, DL, Cond.getValueType(), VL);
     Res = DAG.getNode(Opcode, DL, VT, TrueVal, FalseVal, DAG.getUNDEF(VT),
