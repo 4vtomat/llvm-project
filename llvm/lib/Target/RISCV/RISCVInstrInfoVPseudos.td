@@ -310,24 +310,6 @@ class GroupVTypeInfo<ValueType Vec, ValueType VecM1, ValueType Mas, int Sew,
   ValueType VectorM1 = VecM1;
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
-defset list<VTypeInfo> I32I64IntegerVectors = {
-  defset list<VTypeInfo> I32IntegerVectors = {
-    def : VTypeInfo<vint32mf2_t, vbool64_t, 32, VR, V_MF2>;
-    def : VTypeInfo<vint32m1_t,  vbool32_t, 32, VR, V_M1>;
-    def : GroupVTypeInfo<vint32m2_t,vint32m1_t,vbool16_t,32,VRM2, V_M2>;
-    def : GroupVTypeInfo<vint32m4_t,vint32m1_t,vbool8_t, 32,VRM4, V_M4>;
-    def : GroupVTypeInfo<vint32m8_t,vint32m1_t,vbool4_t, 32,VRM8, V_M8>;
-  }
-  defset list<VTypeInfo> _I64IntegerVectors = {
-    def : VTypeInfo<vint64m1_t,  vbool64_t, 64, VR, V_M1>;
-    def : GroupVTypeInfo<vint64m2_t,vint64m1_t,vbool32_t,64,VRM2, V_M2>;
-    def : GroupVTypeInfo<vint64m4_t,vint64m1_t,vbool16_t,64,VRM4, V_M4>;
-    def : GroupVTypeInfo<vint64m8_t,vint64m1_t,vbool8_t, 64,VRM8, V_M8>;
-  }
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 defset list<VTypeInfo> AllVectors = {
   defset list<VTypeInfo> AllIntegerVectors = {
     defset list<VTypeInfo> NoGroupIntegerVectors = {
@@ -5780,17 +5762,6 @@ multiclass VPatBinaryV_VV<string intrinsic, string instruction,
                       vti.RegClass, vti.RegClass>;
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
-multiclass VPatBinaryV_VV_NoMask<string intrinsic, string instruction,
-                          list<VTypeInfo> vtilist> {
-  foreach vti = vtilist in
-    def : VPatTernaryNoMaskWithPolicy<intrinsic, instruction, "VV",
-                           vti.Vector, vti.Vector, vti.Vector,
-                           vti.Log2SEW, vti.LMul, vti.RegClass, vti.RegClass,
-                           vti.RegClass>;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 multiclass VPatBinaryV_VV_RM<string intrinsic, string instruction,
                              list<VTypeInfo> vtilist, bit isSEWAware = 0> {
   foreach vti = vtilist in
@@ -5887,16 +5858,6 @@ multiclass VPatBinaryV_VI<string intrinsic, string instruction,
                       vti.Log2SEW, vti.RegClass,
                       vti.RegClass, imm_type>;
 }
-
-#ifdef SIFIVE_CUSTOMIZATION
-multiclass VPatBinaryV_VI_NoMask<string intrinsic, string instruction,
-                          list<VTypeInfo> vtilist, Operand imm_type = simm5> {
-  foreach vti = vtilist in
-    def : VPatTernaryNoMaskWithPolicy<intrinsic, instruction, "VI",
-                           vti.Vector, vti.Vector, XLenVT, vti.Log2SEW,
-                           vti.LMul, vti.RegClass, vti.RegClass, imm_type>;
-}
-#endif // SIFIVE_CUSTOMIZATION
 
 multiclass VPatBinaryV_VI_RM<string intrinsic, string instruction,
                              list<VTypeInfo> vtilist,
