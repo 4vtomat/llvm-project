@@ -2785,26 +2785,12 @@ static bool isIndvarOverflowCheckKnownFalse(
   return false;
 }
 
-<<<<<<< HEAD
-void InnerLoopVectorizer::packScalarIntoVectorValue(VPValue *Def,
-                                                    const VPIteration &Instance,
-                                                    VPTransformState &State) {
-  Value *ScalarInst = State.get(Def, Instance);
-  Value *VectorValue = State.get(Def, Instance.Part);
-  VectorValue = Builder.CreateInsertElement(
-      VectorValue, ScalarInst,
-      Instance.Lane.getAsRuntimeExpr(State.Builder, VF));
-  State.set(Def, VectorValue, Instance.Part);
-}
-
 #if SIFIVE_CUSTOMIZATION
 bool InnerLoopVectorizer::useVLAVectorizer() const {
   return TTI->useVLAVectorizer();
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> upstream/main
 // Return whether we allow using masked interleave-groups (for dealing with
 // strided loads/stores that reside in predicated blocks, or for dealing
 // with gaps).
@@ -2928,16 +2914,8 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
                                  "", InBounds);
 #else
     AddrPart = Builder.CreateGEP(ScalarTy, AddrPart, Idx, "", InBounds);
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-
-    // Cast to the vector pointer type.
-    unsigned AddressSpace = AddrPart->getType()->getPointerAddressSpace();
-    Type *PtrTy = VecTy->getPointerTo(AddressSpace);
-    AddrParts.push_back(Builder.CreateBitCast(AddrPart, PtrTy));
-=======
     AddrParts.push_back(AddrPart);
->>>>>>> upstream/main
   }
 
   State.setDebugLocFromInst(Instr);
@@ -11062,31 +11040,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   // process after constructing the initial VPlan.
   // ---------------------------------------------------------------------------
 
-<<<<<<< HEAD
-  for (const auto &Reduction : CM.getInLoopReductionChains()) {
-#if SIFIVE_CUSTOMIZATION
-    assert(!Legal->isVectorizableUncountable() &&
-          "Reduction is not supported for uncountable loops yet");
-#endif
-    PHINode *Phi = Reduction.first;
-    RecurKind Kind =
-        Legal->getReductionVars().find(Phi)->second.getRecurrenceKind();
-    const SmallVector<Instruction *, 4> &ReductionOperations = Reduction.second;
-
-    RecipeBuilder.recordRecipeOf(Phi);
-    for (const auto &R : ReductionOperations) {
-      RecipeBuilder.recordRecipeOf(R);
-      // For min/max reductions, where we have a pair of icmp/select, we also
-      // need to record the ICmp recipe, so it can be removed later.
-      assert(!RecurrenceDescriptor::isSelectCmpRecurrenceKind(Kind) &&
-             "Only min/max recurrences allowed for inloop reductions");
-      if (RecurrenceDescriptor::isMinMaxRecurrenceKind(Kind))
-        RecipeBuilder.recordRecipeOf(cast<Instruction>(R->getOperand(0)));
-    }
-  }
-
-=======
->>>>>>> upstream/main
   // For each interleave group which is relevant for this (possibly trimmed)
   // Range, add it to the set of groups to be later applied to the VPlan and add
   // placeholders for its members' Recipes which we'll be replacing with a
@@ -11218,22 +11171,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     // TODO: Model and preserve debug intrinsics in VPlan.
     for (Instruction &I : drop_end(BB->instructionsWithoutDebug(false))) {
       Instruction *Instr = &I;
-<<<<<<< HEAD
-
-      // First filter out irrelevant instructions, to ensure no recipes are
-      // built for them.
-#if SIFIVE_CUSTOMIZATION
-      // Branches need to be processed for uncountable loops
-      if (Legal->isVectorizableUncountable()) {
-        if (DeadInstructions.count(Instr))
-          continue;
-      } else
-#endif // SIFIVE_CUSTOMIZATION
-        if (isa<BranchInst>(Instr) || DeadInstructions.count(Instr))
-          continue;
-
-=======
->>>>>>> upstream/main
       SmallVector<VPValue *, 4> Operands;
       auto *Phi = dyn_cast<PHINode>(Instr);
       if (Phi && Phi->getParent() == OrigLoop->getHeader()) {
@@ -11406,48 +11343,24 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   // Sink users of fixed-order recurrence past the recipe defining the previous
   // value and introduce FirstOrderRecurrenceSplice VPInstructions.
   if (!VPlanTransforms::adjustFixedOrderRecurrences(*Plan, Builder))
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   {
     LLVM_DEBUG(dbgs() << "LV: Cannot adjust ordered recurrences. Constructed "
                          "VPlan is rejected\n");
 #endif // SIFIVE_CUSTOMIZATION
-    return std::nullopt;
+    return nullptr;
 #if SIFIVE_CUSTOMIZATION
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-#if SIFIVE_CUSTOMIZATION
-  if (!Legal->isVectorizableUncountable())
-#endif
-  VPlanTransforms::removeRedundantCanonicalIVs(*Plan);
-  VPlanTransforms::removeRedundantInductionCasts(*Plan);
-
-#if SIFIVE_CUSTOMIZATION
-  // Skip optimizeInductions as it has a dependency on canonical IV.
-  if (!Legal->isVectorizableUncountable())
-#endif // SIFIVE_CUSTOMIZATION
-  VPlanTransforms::optimizeInductions(*Plan, *PSE.getSE());
-  VPlanTransforms::removeDeadRecipes(*Plan);
-
-  VPlanTransforms::createAndOptimizeReplicateRegions(*Plan);
-
-  VPlanTransforms::removeRedundantExpandSCEVRecipes(*Plan);
-  VPlanTransforms::mergeBlocksIntoPredecessors(*Plan);
-
-  assert(VPlanVerifier::verifyPlanIsValid(*Plan) && "VPlan is invalid");
 #if SIFIVE_CUSTOMIZATION
   LLVM_DEBUG(if (Legal->isVectorizableUncountable()) {
     dbgs() << "Uncountable Loop: Final VPlan\n";
     Plan->print(dbgs());
   });
 #endif // SIFIVE_CUSTOMIZATION
-  return std::make_optional(std::move(Plan));
-=======
-    return nullptr;
 
   return Plan;
->>>>>>> upstream/main
 }
 
 VPlanPtr LoopVectorizationPlanner::buildVPlan(VFRange &Range) {
@@ -12530,99 +12443,6 @@ static ScalarEpilogueLowering getScalarEpilogueLowering(
   return CM_ScalarEpilogueAllowed;
 }
 
-<<<<<<< HEAD
-Value *VPTransformState::get(VPValue *Def, unsigned Part) {
-  // If Values have been set for this Def return the one relevant for \p Part.
-  if (hasVectorValue(Def, Part))
-    return Data.PerPartOutput[Def][Part];
-
-  auto GetBroadcastInstrs = [this, Def](Value *V) {
-    bool SafeToHoist = Def->isDefinedOutsideVectorRegions();
-    if (VF.isScalar())
-      return V;
-    // Place the code for broadcasting invariant variables in the new preheader.
-    IRBuilder<>::InsertPointGuard Guard(Builder);
-    if (SafeToHoist) {
-      BasicBlock *LoopVectorPreHeader = CFG.VPBB2IRBB[cast<VPBasicBlock>(
-          Plan->getVectorLoopRegion()->getSinglePredecessor())];
-      if (LoopVectorPreHeader)
-        Builder.SetInsertPoint(LoopVectorPreHeader->getTerminator());
-    }
-
-    // Place the code for broadcasting invariant variables in the new preheader.
-    // Broadcast the scalar into all locations in the vector.
-    Value *Shuf = Builder.CreateVectorSplat(VF, V, "broadcast");
-
-    return Shuf;
-  };
-
-  if (!hasScalarValue(Def, {Part, 0})) {
-    assert(Def->isLiveIn() && "expected a live-in");
-    if (Part != 0)
-      return get(Def, 0);
-    Value *IRV = Def->getLiveInIRValue();
-    Value *B = GetBroadcastInstrs(IRV);
-    set(Def, B, Part);
-    return B;
-  }
-
-  Value *ScalarValue = get(Def, {Part, 0});
-  // If we aren't vectorizing, we can just copy the scalar map values over
-  // to the vector map.
-  if (VF.isScalar()) {
-    set(Def, ScalarValue, Part);
-    return ScalarValue;
-  }
-
-  bool IsUniform = vputils::isUniformAfterVectorization(Def);
-
-  unsigned LastLane = IsUniform ? 0 : VF.getKnownMinValue() - 1;
-  // Check if there is a scalar value for the selected lane.
-  if (!hasScalarValue(Def, {Part, LastLane})) {
-    // At the moment, VPWidenIntOrFpInductionRecipes, VPScalarIVStepsRecipes and
-    // VPExpandSCEVRecipes can also be uniform.
-    assert((isa<VPWidenIntOrFpInductionRecipe>(Def->getDefiningRecipe()) ||
-            isa<VPScalarIVStepsRecipe>(Def->getDefiningRecipe()) ||
-            isa<VPExpandSCEVRecipe>(Def->getDefiningRecipe())) &&
-           "unexpected recipe found to be invariant");
-    IsUniform = true;
-    LastLane = 0;
-  }
-
-  auto *LastInst = cast<Instruction>(get(Def, {Part, LastLane}));
-  // Set the insert point after the last scalarized instruction or after the
-  // last PHI, if LastInst is a PHI. This ensures the insertelement sequence
-  // will directly follow the scalar definitions.
-  auto OldIP = Builder.saveIP();
-  auto NewIP =
-      isa<PHINode>(LastInst)
-          ? BasicBlock::iterator(LastInst->getParent()->getFirstNonPHI())
-          : std::next(BasicBlock::iterator(LastInst));
-  Builder.SetInsertPoint(&*NewIP);
-
-  // However, if we are vectorizing, we need to construct the vector values.
-  // If the value is known to be uniform after vectorization, we can just
-  // broadcast the scalar value corresponding to lane zero for each unroll
-  // iteration. Otherwise, we construct the vector values using
-  // insertelement instructions. Since the resulting vectors are stored in
-  // State, we will only generate the insertelements once.
-  Value *VectorValue = nullptr;
-  if (IsUniform) {
-    VectorValue = GetBroadcastInstrs(ScalarValue);
-    set(Def, VectorValue, Part);
-  } else {
-    // Initialize packing with insertelements to start from undef.
-    assert(!VF.isScalable() && "VF is assumed to be non scalable.");
-    Value *Undef = PoisonValue::get(VectorType::get(LastInst->getType(), VF));
-    set(Def, Undef, Part);
-    for (unsigned Lane = 0; Lane < VF.getKnownMinValue(); ++Lane)
-      ILV->packScalarIntoVectorValue(Def, {Part, Lane}, *this);
-    VectorValue = get(Def, Part);
-  }
-  Builder.restoreIP(OldIP);
-  return VectorValue;
-}
-
 #if SIFIVE_CUSTOMIZATION
 namespace {
 /// Sets and tracks the SCEV check block for VLA vectorization mode.
@@ -12645,9 +12465,6 @@ public:
 };
 } // end anonymous namespace
 #endif // SIFIVE_CUSTOMIZATION
-
-=======
->>>>>>> upstream/main
 // Process the loop in the VPlan-native vectorization path. This path builds
 // VPlan upfront in the vectorization pipeline, which allows to apply
 // VPlan-to-VPlan transformations from the very beginning without modifying the
