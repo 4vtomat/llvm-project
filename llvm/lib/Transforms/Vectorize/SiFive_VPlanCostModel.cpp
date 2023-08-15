@@ -158,6 +158,9 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
           .Case<VPCanonicalIVPHIRecipe, VPScalarIVStepsRecipe,
                 VPReductionPHIRecipe, VPWidenPointerInductionRecipe>(
               [&](const VPRecipeBase *IVR) -> InstructionCost { return 1; })
+          .Case<VPReductionRecipe>([&](const VPReductionRecipe *VPR) {
+            return getReductionCost(VPR, RVL);
+          })
           .Case<VPInstruction>(
               [&](const VPInstruction *VPI) -> InstructionCost {
                 return getInstructionCost(VPI, RVL);
@@ -505,6 +508,44 @@ VPlanCostModel::getInterleavedMemoryOpCost(const VPInterleaveRecipe *VPI,
             TTI.getShuffleCost(TargetTransformInfo::SK_Reverse, VectorTy,
                                std::nullopt, CostKind, 0);
   return Cost;
+}
+
+InstructionCost VPlanCostModel::getReductionCost(const VPReductionRecipe *VPR,
+                                                 const RVVPair &RVL) const {
+  const RecurrenceDescriptor *RdxDesc = VPR->getRecurrenceDescriptor();
+  if (!RdxDesc)
+    return InstructionCost::getInvalid();
+
+  RecurKind RdxKind = RdxDesc->getRecurrenceKind();
+  Type *ElementTy = RdxDesc->getRecurrenceType();
+  auto *VectorTy = cast<VectorType>(getVectorType(ElementTy, RVL));
+  switch (RdxKind) {
+  case RecurKind::Add:
+  case RecurKind::Mul:
+  case RecurKind::Or:
+  case RecurKind::And:
+  case RecurKind::Xor:
+  case RecurKind::FAdd:
+  case RecurKind::FMul:
+  case RecurKind::FMulAdd:
+    return TTI.getArithmeticReductionCost(
+        RdxDesc->getOpcode(), VectorTy, RdxDesc->getFastMathFlags(), CostKind);
+  case RecurKind::SMin:
+  case RecurKind::SMax:
+  case RecurKind::UMin:
+  case RecurKind::UMax:
+  case RecurKind::FMin:
+  case RecurKind::FMax:
+  case RecurKind::FMinimum:
+  case RecurKind::FMaximum: {
+    Intrinsic::ID Id = getMinMaxReductionIntrinsicOp(RdxKind);
+    return TTI.getMinMaxReductionCost(Id, VectorTy, RdxDesc->getFastMathFlags(),
+                                      CostKind);
+  }
+  default:
+    assert(0 && "Expected arithmetic or min/max reduction");
+  }
+  return InstructionCost::getInvalid();
 }
 
 } // namespace llvm

@@ -2099,6 +2099,12 @@ public:
              VPSlotTracker &SlotTracker) const override;
 #endif
 
+#if SIFIVE_CUSTOMIZATION
+  const RecurrenceDescriptor *getRecurrenceDescriptor() const {
+    return RdxDesc;
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   /// The VPValue of the scalar Chain being accumulated.
   VPValue *getChainOp() const { return getOperand(0); }
   /// The VPValue of the vector value to be reduced.

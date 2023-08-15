@@ -157,6 +157,10 @@ private:
   InstructionCost getInstructionCost(const VPInstruction *VPI,
                                      const RVVPair &RVL) const;
 
+  /// Return cost of the reduction operation for the given \p RVL
+  InstructionCost getReductionCost(const VPReductionRecipe *VPR,
+                                   const RVVPair &RVL) const;
+
   /// VPlan for which cost is computed
   const VPlan &Plan;
 
