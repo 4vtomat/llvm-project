@@ -1318,8 +1318,6 @@ public:
   }
 #if SIFIVE_CUSTOMIZATION
   DebugLoc getDebugLoc() const { return DL; }
-
-  FastMathFlags getFastMathFlags() const { return FMF; }
 #endif // SIFIVE_CUSTOMIZATION
 };
 
