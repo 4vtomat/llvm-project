@@ -75,10 +75,6 @@ STATISTIC(NumLoopsAnalyzed,
 STATISTIC(NumTransformed,
           "Number of AoS to SoA references transformed");
 
-static cl::opt<bool> EnableLoopDataLayout(
-    "loop-data-layout-enable", cl::Hidden, cl::init(false),
-    cl::desc("Discover Data Layout Opportunities in Loops"));
-
 enum class LoopDataLayoutResult {
   HasDataLayoutOpportunities,
   HasNoOpportunities,
@@ -1384,7 +1380,7 @@ static bool translateReferences(
 static bool runOnLoops(
     LoopInfo &LI, ScalarEvolution &SE, unsigned MaxElements,
     SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
-        &LocalCandidateMap, bool &MustNotProceed) {
+        &LocalCandidateMap) {
   bool FoundOpportunities = false;
   bool IsVectorized = false;
   for (auto &L : LI) {
@@ -1405,13 +1401,6 @@ static bool runOnLoops(
                                                     LocalCandidateMap,
                                                     IsVectorized);
 
-        // Override detection if strided vectorization is
-        // not enabled when vectors are present.
-        if (IsVectorized && !AdhocSkipVectorizeInPrelink) {
-          MustNotProceed = true;
-          return false;
-        }
-
         if (Result == LoopDataLayoutResult::HasDataLayoutOpportunities)
           FoundOpportunities |= true;
       }
@@ -1420,13 +1409,6 @@ static bool runOnLoops(
     auto Result = detectArrayOfStructDataAccess(L, LI, SE, MaxElements,
                                                 LocalCandidateMap,
                                                 IsVectorized);
-
-    // Override detection if strided vectorization is
-    // not enabled when vectors are present.
-    if (IsVectorized && !AdhocSkipVectorizeInPrelink) {
-      MustNotProceed = true;
-      return false;
-    }
 
     if (Result == LoopDataLayoutResult::HasDataLayoutOpportunities)
       FoundOpportunities |= true;
@@ -1615,7 +1597,7 @@ static bool addReferencesForFunction(
         if (isa<Argument>(Op) || isa<Instruction>(Op)) {
           auto *CurTy = Op->getType();
           GetElementPtrInst *CurGEP = nullptr;
-          if (auto *PtrTy = dyn_cast<PointerType>(CurTy)) {
+          if (isa<PointerType>(CurTy)) {
             if (auto *CurArg = dyn_cast<Argument>(Op)) {
               // Obtain overlayed type from param map
               CurTy = LocalParamMap[CurArg->getArgNo()];
@@ -2063,7 +2045,7 @@ static void walkCallGraphToFillParamMap(
       SmallBitVector &LocalInvalidateMap = InvalidateMap[DCallee];
       for (unsigned i = 0, e = FTy->getNumParams(); i != e; ++i) {
         Type *ArgTy = FTy->getParamType(i);
-        if (auto *PtrTy = dyn_cast<PointerType>(ArgTy)) {
+        if (isa<PointerType>(ArgTy)) {
           Type *BaseTy = nullptr;
           Value *Arg = CurCB->getArgOperand(i);
           std::optional<Type *> OptTy =
@@ -2179,12 +2161,11 @@ static LoopDataLayoutResult analyzeWholeProgram(
       return LoopDataLayoutResult::TransformationIsIllegal;
     }
 
-    bool MustNotProceed = false;
     LoopInfo &LI = LookupLoopInfo(F);
     ScalarEvolution &SE = LookupScalarEvolutionInfo(F);
     SmallDenseMap<std::pair<GetElementPtrInst *, GetElementPtrInst *>, int>
         &LocalCandidateMap = CandidateMap[&F];
-    if (runOnLoops(LI, SE, MaxElements, LocalCandidateMap, MustNotProceed)) {
+    if (runOnLoops(LI, SE, MaxElements, LocalCandidateMap)) {
       FoundOpportunities |= true;
       AAResults &AAR = AARGetter(F);
       SmallVector<Type *> &LocalParamMap = ParamMap[&F];
@@ -2199,8 +2180,6 @@ static LoopDataLayoutResult analyzeWholeProgram(
         UniqueTypeMap[Candididates.first.first->getSourceElementType()] =
             Candididates.first.second->getSourceElementType();
       }
-    } else if (MustNotProceed) {
-      return LoopDataLayoutResult::TransformationIsIllegal;
     }
   }
 

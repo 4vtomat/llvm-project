@@ -54,6 +54,12 @@ using namespace llvm::PatternMatch;
 static const char *LLVMLoopDisableNonforced = "llvm.loop.disable_nonforced";
 static const char *LLVMLoopDisableLICM = "llvm.licm.disable";
 
+#if SIFIVE_CUSTOMIZATION
+cl::opt<bool> llvm::EnableLoopDataLayout(
+    "loop-data-layout-enable", cl::Hidden, cl::init(false),
+    cl::desc("Discover Data Layout Opportunities in Loops"));
+#endif // SIFIVE_CUSTOMIZATION
+
 bool llvm::formDedicatedExitBlocks(Loop *L, DominatorTree *DT, LoopInfo *LI,
                                    MemorySSAUpdater *MSSAU,
                                    bool PreserveLCSSA) {

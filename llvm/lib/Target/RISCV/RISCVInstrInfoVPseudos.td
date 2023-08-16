@@ -133,12 +133,15 @@ class PseudoToVInst<string PseudoInst> {
                         ["_WF64", "_WF"],
                         ["_WF32", "_WF"],
                         ["_WF16", "_WF"],
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
                         ["_SE", ""],
 #endif // SIFIVE_CUSTOMIZATION
                         ["FPR64", "F"],
                         ["FPR32", "F"],
                         ["FPR16", "F"],
+=======
+>>>>>>> origin/sifive-dev
                         ["_TU", ""],
                         ["_TIED", ""],
                         ["_MASK", ""],

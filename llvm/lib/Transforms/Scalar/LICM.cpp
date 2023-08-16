@@ -114,6 +114,11 @@ STATISTIC(NumAddSubHoisted, "Number of add/subtract expressions reassociated "
                             "and hoisted out of the loop");
 STATISTIC(NumFPAssociationsHoisted, "Number of invariant FP expressions "
                                     "reassociated and hoisted out of the loop");
+#if SIFIVE_CUSTOMIZATION
+STATISTIC(NumIntAssociationsHoisted,
+          "Number of invariant int expressions "
+          "reassociated and hoisted out of the loop");
+#endif
 
 /// Memory promotion is enabled by default.
 static cl::opt<bool>
@@ -138,6 +143,14 @@ cl::opt<unsigned> FPAssociationUpperLimit(
     cl::desc(
         "Set upper limit for the number of transformations performed "
         "during a single round of hoisting the reassociated expressions."));
+
+#if SIFIVE_CUSTOMIZATION
+cl::opt<unsigned> IntAssociationUpperLimit(
+    "licm-max-num-int-reassociations", cl::init(5U), cl::Hidden,
+    cl::desc(
+        "Set upper limit for the number of transformations performed "
+        "during a single round of hoisting the reassociated expressions."));
+#endif
 
 // Experimental option to allow imprecision in LICM in pathological cases, in
 // exchange for faster compile. This is to be removed if MemorySSA starts to
@@ -2869,6 +2882,67 @@ static bool hoistFPAssociation(Instruction &I, Loop &L,
   return true;
 }
 
+#if SIFIVE_CUSTOMIZATION
+static bool hoistIntAssociation(Instruction &I, Loop &L,
+                                ICFLoopSafetyInfo &SafetyInfo,
+                                MemorySSAUpdater &MSSAU, AssumptionCache *AC,
+                                DominatorTree *DT) {
+  using namespace PatternMatch;
+  Value *VariantOp = nullptr, *InvariantOp = nullptr;
+
+  if (!match(&I, m_Mul(m_Value(VariantOp), m_Value(InvariantOp))))
+    return false;
+  if (L.isLoopInvariant(VariantOp))
+    std::swap(VariantOp, InvariantOp);
+  if (L.isLoopInvariant(VariantOp) || !L.isLoopInvariant(InvariantOp))
+    return false;
+  Value *Factor = InvariantOp;
+
+  // First, we need to make sure we should do the transformation.
+  SmallVector<Use *> Changes;
+  SmallVector<BinaryOperator *> Worklist;
+  if (BinaryOperator *VariantBinOp = dyn_cast<BinaryOperator>(VariantOp))
+    Worklist.push_back(VariantBinOp);
+  while (!Worklist.empty()) {
+    BinaryOperator *BO = Worklist.pop_back_val();
+    if (!BO->hasOneUse())
+      return false;
+    BinaryOperator *Op0, *Op1;
+    if (match(BO, m_Add(m_BinOp(Op0), m_BinOp(Op1)))) {
+      Worklist.push_back(Op0);
+      Worklist.push_back(Op1);
+      continue;
+    }
+    if (BO->getOpcode() != Instruction::Mul || L.isLoopInvariant(BO))
+      return false;
+    Use &U0 = BO->getOperandUse(0);
+    Use &U1 = BO->getOperandUse(1);
+    if (L.isLoopInvariant(U0))
+      Changes.push_back(&U0);
+    else if (L.isLoopInvariant(U1))
+      Changes.push_back(&U1);
+    else
+      return false;
+    if (Changes.size() > IntAssociationUpperLimit)
+      return false;
+  }
+  if (Changes.empty())
+    return false;
+
+  // We know we should do it so let's do the transformation.
+  auto *Preheader = L.getLoopPreheader();
+  assert(Preheader && "Loop is not in simplify form?");
+  IRBuilder<> Builder(Preheader->getTerminator());
+  for (auto *U : Changes) {
+    assert(L.isLoopInvariant(U->get()));
+    U->set(Builder.CreateMul(U->get(), Factor, "factor.op.mul"));
+  }
+  I.replaceAllUsesWith(VariantOp);
+  eraseInstruction(I, SafetyInfo, MSSAU);
+  return true;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 static bool hoistArithmetics(Instruction &I, Loop &L,
                              ICFLoopSafetyInfo &SafetyInfo,
                              MemorySSAUpdater &MSSAU, AssumptionCache *AC,
@@ -2901,6 +2975,14 @@ static bool hoistArithmetics(Instruction &I, Loop &L,
     ++NumFPAssociationsHoisted;
     return true;
   }
+
+#if SIFIVE_CUSTOMIZATION
+  if (hoistIntAssociation(I, L, SafetyInfo, MSSAU, AC, DT)) {
+    ++NumHoisted;
+    ++NumIntAssociationsHoisted;
+    return true;
+  }
+#endif
 
   return false;
 }

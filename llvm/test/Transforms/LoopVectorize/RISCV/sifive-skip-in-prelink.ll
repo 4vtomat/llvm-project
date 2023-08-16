@@ -1,8 +1,8 @@
 ; REQUIRES: asserts
 ; RUN: opt -passes="lto-pre-link<O3>" -mtriple=riscv64 -mattr=+v \
-; RUN: -riscv-v-vector-bits-min=128 -sifive-vectorize-assume-optimizable-strided-accesses -debug -S %s 2>&1 | FileCheck %s
+; RUN: -riscv-v-vector-bits-min=128 -loop-data-layout-enable -debug -S %s 2>&1 | FileCheck %s
 ; RUN: opt -passes="lto-pre-link<O2>" -mtriple=riscv64 -mattr=+v \
-; RUN: -riscv-v-vector-bits-min=128 -sifive-vectorize-assume-optimizable-strided-accesses -debug -S %s 2>&1 | FileCheck %s
+; RUN: -riscv-v-vector-bits-min=128 -loop-data-layout-enable -debug -S %s 2>&1 | FileCheck %s
 
 ; Skipping unroll in pre-link is controlled by option "sifive-vectorize-assume-optimizable-strided-accesses".
 ; This file tests `LoopVectorize.cpp::hasOnlyNonUnitStrideOrMemoryAccesses`.
