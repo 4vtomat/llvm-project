@@ -818,12 +818,13 @@ RecurrenceDescriptor::isFindLastIVPattern(Loop *Loop, PHINode *OrigPhi,
   // We are looking for selects of the form:
   //   select(cmp(), phi, loop_induction) or
   //   select(cmp(), loop_induction, phi)
-  if (!IsIncreasingLoopInduction(NonRdxPhi) ||
+  if (IsIncreasingLoopInduction(NonRdxPhi) ||
       IsTruncIncreasingLoopInduction(NonRdxPhi))
-    return InstDesc(false, I);
+    return InstDesc(I, isa<ICmpInst>(I->getOperand(0))
+                           ? RecurKind::IFindLastIV
+                           : RecurKind::FFindLastIV);
 
-  return InstDesc(I, isa<ICmpInst>(I->getOperand(0)) ? RecurKind::IFindLastIV
-                                                     : RecurKind::FFindLastIV);
+  return InstDesc(false, I);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
