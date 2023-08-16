@@ -1921,6 +1921,11 @@ let TargetPrefix = "riscv" in {
   defm vclmul            : RISCVBinaryAAX;
   defm vclmulh           : RISCVBinaryAAX;
 
+#ifdef SIFIVE_CUSTOMIZATION
+  // zvkg0p1
+  def int_riscv_vghmac : RISCVBinaryAAXUnMaskedP;
+#endif // SIFIVE_CUSTOMIZATION
+
   // Zvkg
   def int_riscv_vghsh    : RISCVBinaryAAXUnMaskedZvk;
   def int_riscv_vgmul_vv : RISCVUnaryAAUnMaskedZvk<IsVS=0>;
