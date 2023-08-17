@@ -97,17 +97,15 @@ let vm = 1, RVVConstraint = VS2Constraint, Predicates = [HasVendorXSfvqmaccdod],
   def VQMACCSU2x8x2_VV : CustomSiFiveVV<"sf.vqmaccsu.2x8x2", OPMVV, 0b101111>;
 } // Predicates = [HasVendorXSfvqmaccdod]
 
-let Predicates = [HasVendorXSfvfhbfmin], DecoderNamespace = "XSfvfhbfmin" in {
-let Constraints = "@earlyclobber $vd", RVVConstraint = WidenCvt in {
+let Predicates = [HasVendorXSfvfhbfmin], DecoderNamespace = "XSfvfhbfmin",
+    Constraints = "@earlyclobber $vd", mayRaiseFPException = true in {
+let RVVConstraint = WidenCvt in
 defm VFWCVT_F_BF16_V : VWCVTF_FV_VS2<"sf.vfwcvt.f.bf16.v", 0b010010, 0b01101>;
-}
-let Constraints = "@earlyclobber $vd" in {
 defm VFNCVT_BF16_F_W : VNCVTF_FV_VS2<"sf.vfncvt.bf16.f.w", 0b010010, 0b11101>;
-}
 } // Predicates = [HasVendorXSfvqmaccdod]
 
 let vm = 1, RVVConstraint = VS2Constraint, Predicates = [HasVendorXSfvfwmaccqqq],
-    DecoderNamespace = "XSfvfwmaccqqq" in {
+    DecoderNamespace = "XSfvfwmaccqqq", mayRaiseFPException = true in {
   def VFWMACC4X4X4_VV : CustomSiFiveVV<"sf.vfwmacc.4x4x4", OPFVV, 0b111100>, Sched<[]> ;
 } // Predicates = [HasVendorXSfvfwmaccqqq]
 
@@ -654,14 +652,14 @@ foreach m = [V_MF8, V_MF4, V_MF2, V_M1, V_M2] in {
   }
 }
 
-let Predicates = [HasVendorXSfvfhbfmin] in {
+let Predicates = [HasVendorXSfvfhbfmin], mayRaiseFPException = true in {
 #ifdef SIFIVE_CUSTOMIZATION
 defm PseudoVFWCVT_F_BF16   : VPseudoVWCVTD_V</*TargetConstraintType*/ 3>;
 defm PseudoVFNCVT_BF16_F   : VPseudoVNCVTD_W</*TargetConstraintType*/ 2>;
 #endif // SIFIVE_CUSTOMIZATION
 }
 
-let IsRVVWideningReduction = 1 in {
+let IsRVVWideningReduction = 1, mayRaiseFPException = true in {
 foreach m = [V_MF4, V_MF2, V_M1, V_M2, V_M4, V_M8] in {
   defvar Constraint = "@earlyclobber $rd";
   let VLMul = m.value in {
