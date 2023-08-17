@@ -2076,6 +2076,10 @@ void VPReductionPHIRecipe::execute(VPTransformState &State) {
 #if SIFIVE_CUSTOMIZATION
 InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
                                                VPCostContext &Ctx) const {
+  // There is no overhead when VF is scalar or the reduction is in-loop.
+  if (VF.isScalar() || IsInLoop)
+    return 0;
+
   TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
   RecurKind RdxKind = RdxDesc.getRecurrenceKind();
   Type *ElementTy = RdxDesc.getRecurrenceType();
