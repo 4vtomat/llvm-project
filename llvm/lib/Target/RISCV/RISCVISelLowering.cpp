@@ -19650,6 +19650,12 @@ EVT RISCVTargetLowering::getOptimalMemOpType(const MemOp &Op,
   if (!Subtarget.hasVInstructions())
     return MVT::Other;
 
+#if SIFIVE_CUSTOMIZATION
+  // Don't create vector load/store on SiFive cores.
+  if (Subtarget.isSiFiveCPU())
+    return MVT::Other;
+#endif
+
   if (FuncAttributes.hasFnAttr(Attribute::NoImplicitFloat))
     return MVT::Other;
 
@@ -19795,6 +19801,17 @@ bool RISCVTargetLowering::isIntDivCheap(EVT VT, AttributeList Attr) const {
   bool OptSize = Attr.hasFnAttr(Attribute::MinSize);
   return OptSize && !VT.isVector();
 }
+
+#if SIFIVE_CUSTOMIZATION
+bool RISCVTargetLowering::canMergeStoresTo(unsigned AddressSpace, EVT MemVT,
+                                           const MachineFunction &MF) const {
+  // Disable merging to vector store on SiFive cores.
+  if (MemVT.getSizeInBits() > Subtarget.getXLen())
+    return !Subtarget.isSiFiveCPU();
+
+  return true;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 bool RISCVTargetLowering::preferScalarizeSplat(SDNode *N) const {
   // Scalarize zero_ext and sign_ext might stop match to widening instruction in
