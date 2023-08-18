@@ -463,6 +463,13 @@ VPlanCostModel::getMemoryOpCost(const VPWidenMemoryInstructionRecipe *VPWMIR,
 InstructionCost VPlanCostModel::getInstructionCost(const VPInstruction *VPI,
                                                    const RVVPair &RVL) const {
   switch (VPI->getOpcode()) {
+    case Instruction::FMul: {
+      const Value *UV = VPI->getOperand(0)->getUnderlyingValue();
+      if (!UV)
+	return 0;
+      Type *VectorTy = getVectorType(UV->getType(), RVL);
+      return TTI.getArithmeticInstrCost(Instruction::FMul, VectorTy, CostKind);
+    }
     case Instruction::Select:
       // VPSelectInstruction is generated to emit TU policy. Currently it has no
       // overhead in HW
