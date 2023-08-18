@@ -293,8 +293,6 @@ void VPSelectInstruction::execute(VPTransformState &State) {
   }
 
   assert(!State.Instance && "VPInstruction executing an Instance");
-  IRBuilderBase::FastMathFlagGuard FMFGuard(State.Builder);
-  State.Builder.setFastMathFlags(getFastMathFlags());
 
   unsigned VPOpCode = Intrinsic::vp_select;
   StringRef Name = "vp.op.select";

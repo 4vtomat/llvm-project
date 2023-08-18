@@ -9978,7 +9978,12 @@ VPValue *VPRecipeBuilder::createEdgeMask(BasicBlock *Src, BasicBlock *Dst,
     VPValue *False = Plan.getVPValueOrAddLiveIn(
         ConstantInt::getFalse(BI->getCondition()->getType()));
     EdgeMask =
+#if SIFIVE_CUSTOMIZATION
+        Builder.createSelect(SrcMask, EdgeMask, False, FastMathFlags(),
+                             BI->getDebugLoc());
+#else
         Builder.createSelect(SrcMask, EdgeMask, False, BI->getDebugLoc());
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   return EdgeMaskCache[Edge] = EdgeMask;
@@ -10437,8 +10442,9 @@ VPRecipeBase *VPRecipeBuilder::tryToWiden(Instruction *I,
       if (Mask) {
         VPValue *One = Plan->getVPValueOrAddLiveIn(
             ConstantInt::get(I->getType(), 1u, false));
-        auto *SafeRHS = new VPInstruction(
-            Instruction::Select, {Mask, Ops[1], One}, I->getDebugLoc());
+        auto *SafeRHS =
+            new VPInstruction(Instruction::Select, {Mask, Ops[1], One},
+                              FastMathFlags(), I->getDebugLoc());
         VPBB->appendRecipe(SafeRHS);
         Ops[1] = SafeRHS;
       }
@@ -10712,8 +10718,14 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
     VFRange SubRange = {VF, MaxVFTimes2};
     if (auto Plan = tryToBuildVPlanWithVPRecipes(SubRange)) {
       // Now optimize the initial VPlan.
+#if SIFIVE_CUSTOMIZATION
+      if (!Legal->isVectorizableUncountable()) {
+#endif // SIFIVE_CUSTOMIZATION
       VPlanTransforms::optimize(*Plan, *PSE.getSE());
       assert(VPlanVerifier::verifyPlanIsValid(*Plan) && "VPlan is invalid");
+#if SIFIVE_CUSTOMIZATION
+      }
+#endif // SIFIVE_CUSTOMIZATION
       VPlans.push_back(std::move(Plan));
     }
     VF = SubRange.End;
@@ -11163,7 +11175,16 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 
     // Introduce each ingredient into VPlan.
     // TODO: Model and preserve debug intrinsics in VPlan.
+#if SIFIVE_CUSTOMIZATION
+
+    auto InstrList = Legal->isVectorizableUncountable()
+                         ? BB->instructionsWithoutDebug(false)
+                         : drop_end(BB->instructionsWithoutDebug(
+                               false));
+    for (Instruction &I : InstrList) {
+#else
     for (Instruction &I : drop_end(BB->instructionsWithoutDebug(false))) {
+#endif // SIFIVE_CUSTOMIZATION
       Instruction *Instr = &I;
       SmallVector<VPValue *, 4> Operands;
       auto *Phi = dyn_cast<PHINode>(Instr);
@@ -11560,11 +11581,13 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
              "reduction recipe must be defined before latch");
 #if SIFIVE_CUSTOMIZATION
       if (Legal->useVLAVectorizer())
-        Builder.createSelect(Cond, Red, PhiR, DebugLoc(),
+        Builder.createSelect(Cond, Red, PhiR, FastMathFlags(), DebugLoc(),
                              VPSelectInstruction::TailPolicy::Undisturbed);
       else
-#endif // SIFIVE_CUSTOMIZATION
+        Builder.createSelect(Cond, Red, PhiR, FastMathFlags(), DebugLoc());
+#else
       Builder.createNaryOp(Instruction::Select, {Cond, Red, PhiR});
+#endif // SIFIVE_CUSTOMIZATION
     }
   }
 

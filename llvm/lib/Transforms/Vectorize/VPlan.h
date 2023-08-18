@@ -1478,10 +1478,12 @@ private:
 
 public:
   explicit VPSelectInstruction(VPValue *Cond, VPValue *TrueVal,
-                               VPValue *FalseVal, DebugLoc DL,
+                               VPValue *FalseVal, FastMathFlags FMFs,
+                               DebugLoc DL,
                                TailPolicy TP = TailPolicy::Agnostic,
                                const Twine &Name = "")
-      : VPInstruction(Instruction::Select, {Cond, TrueVal, FalseVal}, DL, Name),
+      : VPInstruction(Instruction::Select, {Cond, TrueVal, FalseVal}, FMFs, DL,
+                      Name),
         TP(TP) {}
 
   explicit VPSelectInstruction() = delete;

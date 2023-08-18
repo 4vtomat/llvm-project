@@ -154,10 +154,19 @@ public:
 
 #if SIFIVE_CUSTOMIZATION
   VPValue *createSelect(VPValue *Cond, VPValue *TrueVal, VPValue *FalseVal,
-                        DebugLoc DL, const VPSelectInstruction::TailPolicy TP,
+                        FastMathFlags FMFs, DebugLoc DL,
+                        const VPSelectInstruction::TailPolicy TP,
                         const Twine &Name = "") {
     auto *SelectInst =
-        new VPSelectInstruction(Cond, TrueVal, FalseVal, DL, TP, Name);
+        new VPSelectInstruction(Cond, TrueVal, FalseVal, FMFs, DL, TP, Name);
+    insert(SelectInst);
+    return SelectInst;
+  }
+  VPValue *createSelect(VPValue *Cond, VPValue *TrueVal, VPValue *FalseVal,
+                        FastMathFlags FMFs, DebugLoc DL,
+                        const Twine &Name = "") {
+    auto *SelectInst = new VPInstruction(
+        Instruction::Select, {Cond, TrueVal, FalseVal}, FMFs, DL, Name);
     insert(SelectInst);
     return SelectInst;
   }
