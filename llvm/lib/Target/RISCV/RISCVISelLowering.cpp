@@ -6465,6 +6465,37 @@ foldBinOpIntoSelectIfProfitable(SDNode *BO, SelectionDAG &DAG,
   return DAG.getSelect(DL, VT, Sel.getOperand(0), NewT, NewF);
 }
 
+#if SIFIVE_CUSTOMIZATION
+static SDValue combineVWADDU_W_VL(SDNode *N, SelectionDAG &DAG,
+                                  const RISCVSubtarget &Subtarget) {
+  SDValue Sum = N->getOperand(0);
+  SDValue X = N->getOperand(1);
+  SDValue Mask = N->getOperand(3);
+  SDValue VL = N->getOperand(4);
+
+  if (Sum.getOpcode() != RISCVISD::VWADDU_W_VL || !N->getOperand(2).isUndef() ||
+      !Sum.hasOneUse())
+    return SDValue();
+
+  SDValue Ones = Sum.getOperand(0);
+  SDValue Y = Sum.getOperand(1);
+
+  APInt One;
+  if (!Sum.getOperand(2).isUndef() || Mask != Sum.getOperand(3) ||
+      VL != Sum.getOperand(4) ||
+      !ISD::isConstantSplatVector(Ones.getNode(), One) ||
+      !One.isOne())
+    return SDValue();
+
+  MVT VT = N->getSimpleValueType(0);
+  SDLoc DL(N);
+  SDValue Z = DAG.getNode(RISCVISD::VWADDU_VL, DL, VT, X, Y, DAG.getUNDEF(VT),
+                          Mask, VL);
+  return DAG.getNode(RISCVISD::ADD_VL, DL, VT, Z, DAG.getConstant(1, DL, VT),
+                     DAG.getUNDEF(VT), Mask, VL);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 SDValue RISCVTargetLowering::lowerSELECT(SDValue Op, SelectionDAG &DAG) const {
   SDValue CondV = Op.getOperand(0);
   SDValue TrueV = Op.getOperand(1);
@@ -15395,7 +15426,11 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
   case RISCVISD::VWSUB_W_VL:
   case RISCVISD::VWSUBU_W_VL:
   case RISCVISD::MUL_VL:
-    return combineBinOp_VLToVWBinOp_VL(N, DCI);
+#if SIFIVE_CUSTOMIZATION
+    if (SDValue V = combineBinOp_VLToVWBinOp_VL(N, DCI))
+      return V;
+    return combineVWADDU_W_VL(N, DAG, Subtarget);
+#endif // SIFIVE_CUSTOMIZATION
   case RISCVISD::VFMADD_VL:
   case RISCVISD::VFNMADD_VL:
   case RISCVISD::VFMSUB_VL:
