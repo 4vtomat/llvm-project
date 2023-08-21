@@ -6468,6 +6468,9 @@ foldBinOpIntoSelectIfProfitable(SDNode *BO, SelectionDAG &DAG,
 #if SIFIVE_CUSTOMIZATION
 static SDValue combineVWADDU_W_VL(SDNode *N, SelectionDAG &DAG,
                                   const RISCVSubtarget &Subtarget) {
+  if (N->getOpcode() != RISCVISD::VWADDU_W_VL)
+    return SDValue();
+
   SDValue Sum = N->getOperand(0);
   SDValue X = N->getOperand(1);
   SDValue Mask = N->getOperand(3);
