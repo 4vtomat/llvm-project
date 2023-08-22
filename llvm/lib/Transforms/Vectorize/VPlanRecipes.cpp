@@ -1434,6 +1434,8 @@ InstructionCost VPCSAHeaderPHIRecipe::overhead(ElementCount VF,
       VectorType::get(getUnderlyingValue()->getType(), VF);
   auto *MaskTy =
       VectorType::get(IntegerType::getInt1Ty(VectorTy->getContext()), VF);
+  auto *Int32VecTy =
+      VectorType::get(IntegerType::getInt32Ty(VectorTy->getContext()), VF);
 
   constexpr TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
   // TODO: When we move to VPlan based CM, the costs of recipes in PH and exit
@@ -1454,20 +1456,18 @@ InstructionCost VPCSAHeaderPHIRecipe::overhead(ElementCount VF,
   // StepVector
   ArrayRef<Value *> Args;
   IntrinsicCostAttributes CostAttrs(Intrinsic::experimental_stepvector,
-                                    VectorTy, Args);
+                                    Int32VecTy, Args);
   C += Ctx.TTI->getIntrinsicInstrCost(CostAttrs, CostKind);
   // NegOneSplat
-  C += Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
-  // ActiveIdx
-  C += Ctx.TTI->getArithmeticInstrCost(Instruction::Select, VectorTy, CostKind);
+  C += Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, Int32VecTy);
   // LastIdx
-  C += Ctx.TTI->getMinMaxReductionCost(Intrinsic::smax, VectorTy,
+  C += Ctx.TTI->getMinMaxReductionCost(Intrinsic::smax, Int32VecTy,
                                        FastMathFlags(), CostKind);
   // ExtractFromVec
   C += Ctx.TTI->getArithmeticInstrCost(Instruction::ExtractElement, VectorTy,
                                        CostKind);
   // LastIdxGeZero
-  C += Ctx.TTI->getArithmeticInstrCost(Instruction::ICmp, VectorTy, CostKind);
+  C += Ctx.TTI->getArithmeticInstrCost(Instruction::ICmp, Int32VecTy, CostKind);
   // ChooseFromVecOrInit
   C += Ctx.TTI->getArithmeticInstrCost(Instruction::Select,
                                        VectorTy->getScalarType(), CostKind);
