@@ -42,10 +42,22 @@ static ElementCount getElementCount(const RVVPair &RVVP) {
   return getElementCount(RVVP.getLMUL(), RVVP.getSEW());
 }
 
+static Type *getRecipeType(const VPRecipeBase *VPR) {
+  if (!VPR->hasUnderlyingInstr())
+    return nullptr;
+  return VPR->getUnderlyingInstr()->getType();
+}
+
 namespace llvm {
 ElementCount RVVPair::getElementCount(const int LMULExp,
                                       const unsigned SEW) {
   return ::getElementCount(getIntFromLMULKind((LMULKind)LMULExp), SEW);
+}
+
+RVVPair RVVPair::getWithType(Type *Ty, const RVVPair &RVVP) {
+  if (Ty->isVoidTy() || Ty->isAggregateType() || RVVP.getType() == Ty)
+    return RVVP;
+  return get(Ty, ::getElementCount(RVVP), RVVP.DL);
 }
 
 // FIXME: Unify with `RvvHintAttr` in Clang
@@ -160,6 +172,9 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
               [&](const VPRecipeBase *IVR) -> InstructionCost { return 1; })
           .Case<VPReductionRecipe>([&](const VPReductionRecipe *VPR) {
             return getReductionCost(VPR, RVL);
+          })
+          .Case<VPReplicateRecipe>([&](const VPReplicateRecipe *VPR) {
+            return getReplicateOpCost(VPR, RVL);
           })
           .Case<VPInstruction>(
               [&](const VPInstruction *VPI) -> InstructionCost {
@@ -296,12 +311,6 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
                   /*IsConsecutive=*/true,
                   /*IsMasked=*/false, /*IsReverse*/false,
                   /*Speculative=*/false);
-            case Instruction::Alloca:
-              // We cannot easily widen alloca to a scalable alloca, as
-              // the result would need to be a vector of pointers.
-              if (VF.isScalable())
-                return InstructionCost::getInvalid();
-              [[fallthrough]];
             default: {
               Type *VectorTy = getVectorType(I->getType(), RVL);
               // This opcode is unknown. Assume that it is the same as 'mul'.
@@ -311,7 +320,10 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
             } // end of switch.
           });
 
-  LLVM_DEBUG(dbgs() << "VPlanCM: cost " << Cost << " for RVL " << RVL
+  RVVPair VPRecipeRVL = getRecipeType(Recipe)
+                            ? RVVPair::getWithType(getRecipeType(Recipe), RVL)
+                            : RVL;
+  LLVM_DEBUG(dbgs() << "VPlanCM: cost " << Cost << " for RVL " << VPRecipeRVL
                     << " for VPInstruction: ";
              VPSlotTracker SlotTracker((Recipe->getParent())
                                            ? Recipe->getParent()->getPlan()
@@ -546,6 +558,28 @@ InstructionCost VPlanCostModel::getReductionCost(const VPReductionRecipe *VPR,
     assert(0 && "Expected arithmetic or min/max reduction");
   }
   return InstructionCost::getInvalid();
+}
+
+InstructionCost VPlanCostModel::getReplicateOpCost(const VPReplicateRecipe *VPR,
+                                                   const RVVPair &RVL) const {
+  if (VPR->isUniform())
+    return 1;
+  const Instruction *I = VPR->getUnderlyingInstr();
+  if (isa<AllocaInst>(I)) {
+    ElementCount VF = getElementCount(RVL);
+    // We cannot easily widen alloca to a scalable alloca, as
+    // the result would need to be a vector of pointers.
+    if (VF.isScalable())
+      return InstructionCost::getInvalid();
+    Type *VectorTy = getVectorType(I->getType(), RVL);
+    // This opcode is unknown. Assume that it is the same as 'mul'.
+    return TTI.getArithmeticInstrCost(Instruction::Mul, VectorTy, CostKind);
+  }
+
+  assert(0 &&
+         "non-uniform replicate recipe is not yet supported by VLA vectorizer");
+  // FIXME:This estimation is not correct. It should return VLMAX
+  return getElementCount(RVL).getKnownMinValue();
 }
 
 } // namespace llvm

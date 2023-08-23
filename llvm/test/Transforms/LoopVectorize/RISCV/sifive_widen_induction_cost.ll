@@ -3,11 +3,11 @@
 
 ; REQUIRES: asserts
 
-; CHECK: VPlanCM: cost 2 for RVL (mf2, float) for VPInstruction: WIDEN-INDUCTION\l" +
-; CHECK: VPlanCM: cost 4 for RVL (m1, float) for VPInstruction: WIDEN-INDUCTION\l" +
-; CHECK: VPlanCM: cost 8 for RVL (m2, float) for VPInstruction: WIDEN-INDUCTION\l" +
-; CHECK: VPlanCM: cost 16 for RVL (m4, float) for VPInstruction: WIDEN-INDUCTION\l" +
-; CHECK: VPlanCM: cost 32 for RVL (m8, float) for VPInstruction: WIDEN-INDUCTION\l" +
+; CHECK: VPlanCM: cost 2 for RVL (mf2, i32) for VPInstruction: WIDEN-INDUCTION\l" +
+; CHECK: VPlanCM: cost 4 for RVL (m1, i32) for VPInstruction: WIDEN-INDUCTION\l" +
+; CHECK: VPlanCM: cost 8 for RVL (m2, i32) for VPInstruction: WIDEN-INDUCTION\l" +
+; CHECK: VPlanCM: cost 16 for RVL (m4, i32) for VPInstruction: WIDEN-INDUCTION\l" +
+; CHECK: VPlanCM: cost 32 for RVL (m8, i32) for VPInstruction: WIDEN-INDUCTION\l" +
 
 
 define float @foo(ptr %a, i32 %N) {
