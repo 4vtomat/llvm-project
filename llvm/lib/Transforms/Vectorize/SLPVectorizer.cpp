@@ -3946,8 +3946,26 @@ calculateRtStride(ArrayRef<Value *> PointerOps, Type *ElemTy,
   if (!Stride)
     return std::nullopt;
   int Size = DL.getTypeStoreSize(ElemTy);
-  Stride = SE.getUDivExactExpr(
-      Stride, SE.getConstant(Stride->getType(), Size * (SCEVs.size() - 1)));
+  auto TryGetStride = [&](const SCEV *Dist,
+                          const SCEV *Multiplier) -> const SCEV * {
+    if (const auto *M = dyn_cast<SCEVMulExpr>(Dist)) {
+      if (M->getOperand(0) == Multiplier)
+        return M->getOperand(1);
+      if (M->getOperand(1) == Multiplier)
+        return M->getOperand(0);
+      return nullptr;
+    }
+    if (Multiplier == Dist)
+      return SE.getConstant(Dist->getType(), 1);
+    return SE.getUDivExactExpr(Dist, Multiplier);
+  };
+  if (Size != 1 || SCEVs.size() > 2) {
+    const SCEV *Sz =
+        SE.getConstant(Stride->getType(), Size * (SCEVs.size() - 1));
+    Stride = TryGetStride(Stride, Sz);
+    if (!Stride)
+      return std::nullopt;
+  }
   if (!Stride || isa<SCEVConstant>(Stride))
     return std::nullopt;
   // Iterate through all pointers and check if all distances are
@@ -3961,7 +3979,9 @@ calculateRtStride(ArrayRef<Value *> PointerOps, Type *ElemTy,
     unsigned Dist = 0;
     if (PtrSCEV != PtrSCEVA) {
       const SCEV *Diff = SE.getMinusSCEV(PtrSCEV, PtrSCEVA);
-      const SCEV *Coeff = SE.getUDivExactExpr(Diff, Stride);
+      const SCEV *Coeff = TryGetStride(Diff, Stride);
+      if (!Coeff)
+        return std::nullopt;
       const auto *SC = dyn_cast<SCEVConstant>(Coeff);
       if (!SC || isa<SCEVCouldNotCompute>(SC))
         return std::nullopt;
@@ -4024,7 +4044,12 @@ static LoadsState canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
                                     const DataLayout &DL, ScalarEvolution &SE,
                                     LoopInfo &LI, const TargetLibraryInfo &TLI,
                                     SmallVectorImpl<unsigned> &Order,
+#if SIFIVE_CUSTOMIZATION
+                                    SmallVectorImpl<Value *> &PointerOps,
+                                    bool TryRecursiveCheck = true) {
+#else
                                     SmallVectorImpl<Value *> &PointerOps) {
+#endif // SIFIVE_CUSTOMIZATION
   // Check that a vectorized load would load the same memory as a scalar
   // load. For example, we don't want to vectorize loads that are smaller
   // than 8-bit. Even though we have a packed struct {<i2, i2, i2, i2>} LLVM
@@ -4131,6 +4156,31 @@ static LoadsState canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
       }
 #endif // SIFIVE_CUSTOMIZATION
     }
+#if SIFIVE_CUSTOMIZATION
+    // Check if potential masked gather can be represented as series
+    // loads/insertselement.
+    if (TryRecursiveCheck &&
+        enabledRISCVExtensions(*cast<LoadInst>(VL0)->getModule(), TTI)) {
+      for (unsigned VF = VL.size() / 2; VF >= 2; VF /= 2) {
+        unsigned VectorizedCnt = 0;
+        for (unsigned Cnt = 0, End = VL.size(); Cnt + VF <= End;
+             Cnt += VF, ++VectorizedCnt) {
+          ArrayRef<Value *> Slice = VL.slice(Cnt, VF);
+          SmallVector<unsigned> Order;
+          SmallVector<Value *> PointerOps;
+          LoadsState LS =
+              canVectorizeLoads(Slice, Slice.front(), TTI, DL, SE, LI, TLI,
+                                Order, PointerOps, /*TryRecursiveCheck=*/false);
+          // Check that the sorted loads are consecutive.
+          if (LS != LoadsState::Vectorize && LS != LoadsState::StridedVectorize)
+            break;
+        }
+        // Can be vectorized later as a serie of loads/insertelements.
+        if (VectorizedCnt == VL.size() / VF)
+          return LoadsState::Gather;
+      }
+    }
+#endif // SIFIVE_CUSTOMIZATION
     // TODO: need to improve analysis of the pointers, if not all of them are
     // GEPs or have > 2 operands, we end up with a gather node, which just
     // increases the cost.
@@ -7063,9 +7113,9 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
                 canVectorizeLoads(Slice, Slice.front(), TTI, *R.DL, *R.SE,
                                   *R.LI, *R.TLI, CurrentOrder, PointerOps);
             switch (LS) {
-            #if SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
             case LoadsState::StridedVectorize:
-            #endif // SIFIVE_CUSTOMIZATION
+#endif // SIFIVE_CUSTOMIZATION
             case LoadsState::Vectorize:
             case LoadsState::ScatterVectorize:
               // Mark the vectorized loads so that we don't vectorize them
@@ -7100,6 +7150,26 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
         for (unsigned I = 0, End = VL.size(); I < End; I += VF) {
           if (VectorizedLoads.contains(VL[I]))
             continue;
+#if SIFIVE_CUSTOMIZATION
+          if (I + VF <= End) {
+            ArrayRef<Value *> Slice = VL.slice(I, VF);
+            SmallVector<Value *> PointerOps;
+            OrdersType CurrentOrder;
+            LoadsState LS = canVectorizeLoads(
+                Slice, Slice.front(), TTI, *R.DL, *R.SE, *R.LI, *R.TLI,
+                CurrentOrder, PointerOps, /*TryRecursiveCheck=*/false);
+            if (LS == LoadsState::ScatterVectorize) {
+              auto *LI = cast<LoadInst>(VL[I]);
+              auto *LoadTy = FixedVectorType::get(LI->getType(), VF / 2);
+              Align Alignment = LI->getAlign();
+              GatherCost += 2 * TTI.getMemoryOpCost(
+                                    Instruction::Load, LoadTy, Alignment,
+                                    LI->getPointerAddressSpace(), CostKind,
+                                    TTI::OperandValueInfo(), LI);
+              continue;
+            }
+          }
+#endif // SIFIVE_CUSTOMIZATION
           GatherCost += getBuildVectorCost(VL.slice(I, VF), Root);
         }
         // Exclude potentially vectorized loads from list of gathered
