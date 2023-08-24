@@ -31,7 +31,8 @@ CSADescriptor CSADescriptor::createCSADescriptor(PHINode *Phi, Loop *TheLoop) {
 
   // Must be a scalar
   Type *Type = Phi->getType();
-  if (!Type->isIntegerTy() && !Type->isFloatingPointTy())
+  if (!Type->isIntegerTy() && !Type->isFloatingPointTy() &&
+      !Type->isPointerTy())
     return CSADescriptor();
 
   // Match phi loop_inv, (select cmp, value, phi)

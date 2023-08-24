@@ -67,6 +67,10 @@ public:
     return getWithExponent(Ty, LMULExp, DL);
   }
 
+  /// Construct new RVV Pair from another RVV Pair \p RVVP and some other type
+  /// \p Ty
+  static RVVPair getWithType(Type *Ty, const RVVPair &RVVP);
+
   /// Return ElementCount that corresponds to current given parameters
   static ElementCount getElementCount(const int LMULExp, const unsigned SEW);
 
@@ -155,6 +159,14 @@ private:
 
   /// Return individual cost of the VPInstruction \p I for a given \p RVL
   InstructionCost getInstructionCost(const VPInstruction *VPI,
+                                     const RVVPair &RVL) const;
+
+  /// Return cost of the reduction operation for the given \p RVL
+  InstructionCost getReductionCost(const VPReductionRecipe *VPR,
+                                   const RVVPair &RVL) const;
+
+  /// Return individual cost of the VPReplicateRecipe \p VPR for a given \p RVL
+  InstructionCost getReplicateOpCost(const VPReplicateRecipe *VPR,
                                      const RVVPair &RVL) const;
 
   /// VPlan for which cost is computed

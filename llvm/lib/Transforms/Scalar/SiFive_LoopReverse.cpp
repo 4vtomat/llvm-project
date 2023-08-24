@@ -76,9 +76,8 @@ static Value *peekThroughExtTrunc(Value *Val) {
   return Val;
 }
 
-static bool
-isOuterLoopRelated(Loop *OuterLoop, Value *InitVal,
-                   ScalarEvolution *SE) {
+static bool isOuterLoopRelated(Loop *OuterLoop, Value *InitVal,
+                               ScalarEvolution *SE) {
   if (!OuterLoop)
     return false;
 
@@ -104,6 +103,20 @@ isOuterLoopRelated(Loop *OuterLoop, Value *InitVal,
   return false;
 }
 
+static bool hasInductionEscapes(PHINode *IV, BinaryOperator *BinOp, Loop *L) {
+  // Check for escaping IV based values used outside the loop.
+  for (User *U : IV->users())
+    if (!L->contains(cast<Instruction>(U)))
+      return true;
+
+  // Check uses of IVBinOp to make sure none escape the loop.
+  for (User *U : BinOp->users())
+    if (!L->contains(cast<Instruction>(U)))
+      return true;
+
+  return false;
+}
+
 static bool
 isLoopCanonical(Loop *L, PHINode *IV, ScalarEvolution *SE,
                 BinaryOperator *BinOp,
@@ -116,7 +129,7 @@ isLoopCanonical(Loop *L, PHINode *IV, ScalarEvolution *SE,
 
       if (BinOp == &LB->getStepInst() &&
           BinOp->getOpcode() == BinaryOperator::Add &&
-          !ReferenceMap[IV] &&
+          !hasInductionEscapes(IV, BinOp, L) && !ReferenceMap[IV] &&
           isa<ConstantInt>(LB->getStepValue()))
         return true;
     }
@@ -175,16 +188,6 @@ static bool isLoopLegalForm(Loop *L, DominatorTree &DT, ScalarEvolution *SE,
     return false;
   }
 
-  // Performing LR on single exit loops which upon termination
-  // exit the program is determined as cost ineffective.
-  for (BasicBlock *ExitBlock : ExitBlocks)
-    for (Instruction &I : *ExitBlock)
-      if (auto *Call = dyn_cast<CallInst>(&I))
-        if (Call->doesNotReturn()) {
-          LLVM_DEBUG(dbgs() << "LR: This loop has non standard exit\n");
-          return false;
-        }
-
   LoopBlocksRPO RPOT(L);
   RPOT.perform(&LI);
 
@@ -194,8 +197,6 @@ static bool isLoopLegalForm(Loop *L, DominatorTree &DT, ScalarEvolution *SE,
     LLVM_DEBUG(dbgs() << "LR: CFG is Irreducible.\n");
     return false;
   }
-
-  // TODO: Check for escaping IV based values used outside the loop.
 
   return true;
 }
@@ -221,8 +222,7 @@ canTranslateLoop(Loop *L, ScalarEvolution *SE, ICmpInst *LatchCmp,
   }
   ReferenceMap[IV] = BinOp;
   IsLowerBoundInclusive = !CmpInst::isNonStrictPredicate(Pred);
-  if (LatchCmp->getOperand(1) == BinOp ||
-      LatchCmp->getOperand(0) == BinOp) {
+  if (LatchCmp->getOperand(1) == BinOp || LatchCmp->getOperand(0) == BinOp) {
     IsLowerBoundInclusive = !HasPostDecrement;
     UsesBinOpInCmp = true;
   }
@@ -265,21 +265,10 @@ isInstTransformLegal(Loop *L, BasicBlock *BB, ScalarEvolution *SE,
     return false;
   }
 
-  if (auto *CurLoad = dyn_cast<LoadInst>(&I)) {
-    // TODO: Validate if we need this check or not.
-    if (isStrongerThan(CurLoad->getOrdering(), AtomicOrdering::Unordered)) {
-      LLVM_DEBUG(dbgs() << "LR: Unsupported Load detected\n");
-      return false;
-    }
+  if (auto *CurLoad = dyn_cast<LoadInst>(&I))
     Ptr = CurLoad->getPointerOperand();
-  } else if (auto *CurStore = dyn_cast<StoreInst>(&I)) {
-    // TODO: Validate if we need this check or not.
-    if (isStrongerThan(CurStore->getOrdering(), AtomicOrdering::Unordered)) {
-      LLVM_DEBUG(dbgs() << "LR: Unsupported Store detected\n");
-      return false;
-    }
+  else if (auto *CurStore = dyn_cast<StoreInst>(&I))
     Ptr = CurStore->getPointerOperand();
-  }
 
   if (I.mayReadOrWriteMemory()) {
     for (Instruction *MemI : MemoryInstructions) {
@@ -295,12 +284,10 @@ isInstTransformLegal(Loop *L, BasicBlock *BB, ScalarEvolution *SE,
 
           if (auto *MemGEP = dyn_cast_or_null<GetElementPtrInst>(MemPtr))
             if (auto *CurGEP = dyn_cast_or_null<GetElementPtrInst>(Ptr))
-              if (MemGEP->getPointerOperand() ==
-                  CurGEP->getPointerOperand()) {
+              if (MemGEP->getPointerOperand() == CurGEP->getPointerOperand()) {
                 // TODO: Handle multiple IV related accesses on the same
                 //       memory var.
-                LLVM_DEBUG(dbgs()
-                           << "LR: Related input dependence detected\n");
+                LLVM_DEBUG(dbgs() << "LR: Related input dependence detected\n");
                 return false;
               }
         }
@@ -414,100 +401,9 @@ isLoopReversable(Loop *L, DominatorTree &DT, ScalarEvolution *SE,
   return CanTranslate;
 }
 
-static bool
-doIndexUpdate(Loop *L, bool HasPostDecrement, BinaryOperator *IVBinOp,
-              SmallDenseMap<GetElementPtrInst *, Value *> &IndexMap) {
-  bool Changed = false;
-  if (HasPostDecrement)
-    return Changed;
-
-  for (BasicBlock *BB : L->blocks())
-    for (Instruction &I : *BB) {
-      // TODO: Move GEP processing to Worklist processing.
-      auto *GEP = dyn_cast<GetElementPtrInst>(&I);
-      if (!GEP)
-        continue;
-
-      Value *IndexVal = IndexMap[GEP];
-      if (!IndexVal)
-        continue;
-
-      auto *BinOp = dyn_cast<BinaryOperator>(IndexVal);
-      if (!BinOp)
-        continue;
-
-      // TODO: Support other binop IV cases such as a different indecies
-      //       for variable memory access (a[i], b[i+1], c[i+2], etc)
-      if (BinOp == IVBinOp) {
-        // For simple cases just collect the first operand and propagate
-        // to the GEP by reconstructing the context use to this
-        // IndexVal.
-        unsigned OpIdx;
-        for (OpIdx = 1; OpIdx < GEP->getNumOperands(); OpIdx++) {
-          Value *Index = GEP->getOperand(OpIdx);
-          if (isa<ConstantInt>(Index))
-            continue;
-
-          // pass through artifacts
-          bool KeepLooking = true;
-          while (KeepLooking) {
-            Value *OldIndex = Index;
-            Index = peekThroughExtTrunc(Index);
-            KeepLooking = (Index != OldIndex);
-          }
-          if (Index == IndexVal)
-            break;
-        }
-        // Update supported IV usage
-        if (OpIdx != GEP->getNumOperands()) {
-          Type *NewTy = BinOp->getOperand(0)->getType();
-          Type *IndexTy = GEP->getOperand(OpIdx)->getType();
-          // If the types are the not the same we will update
-          // the reaching value via the IVBinOp users.
-          if (NewTy == IndexTy) {
-            GEP->setOperand(OpIdx, BinOp->getOperand(0));
-            Changed = true;
-          }
-        }
-      }
-    }
-
-  Value *IV = IVBinOp->getOperand(0);
-  SmallVector<Instruction *, 10> Worklist;
-  // Update reaching uses of the value of IVBinOp.
-  for (User *U : IVBinOp->users()) {
-    if (auto *TI = dyn_cast<TruncInst>(U)) {
-      if (!TI->hasOneUse())
-        Worklist.push_back(TI);
-    } else if (isa<GetElementPtrInst, PHINode, ICmpInst>(U)) {
-      continue;
-    } else {
-      Worklist.push_back(cast<Instruction>(U));
-    }
-  }
-  // Now process all the uses we found.
-  while (!Worklist.empty()) {
-    Instruction *I = Worklist.pop_back_val();
-    for (unsigned Idx = 0; Idx < I->getNumOperands(); Idx++) {
-      if (I->getOperand(Idx) == IVBinOp) {
-        I->setOperand(Idx, IV);
-        Changed = true;
-        break;
-      }
-    }
-  }
-  return Changed;
-}
-
-// Transform a downcounted loop candidate to an upcounted loop.
-static LoopReverseResult
-doReverseLoop(Loop *L, DominatorTree &DT, ScalarEvolution &SE, LoopInfo &LI,
-              MemorySSA *MSSA,
-              SmallDenseMap<PHINode *, BinaryOperator *> &ReferenceMap,
-              SmallDenseMap<GetElementPtrInst *, Value *> &IndexMap,
-              bool IsLowerBoundInclusive, bool IsUpperBoundInclusive,
-              bool HasPostDecrement, bool UsesBinOpInCmp,
-              OptimizationRemarkEmitter &ORE) {
+static bool updateBinOp(BinaryOperator *IVBinOp, bool IsLowerBoundInclusive,
+                        bool HasPostDecrement, Value *InitIndVal,
+                        Value *FinalIndVal, Value *StepBy, PHINode *IV) {
   auto EmplaceInitVal = [&](PHINode *IV, Value *StepBy, Value *NewInitIndVal,
                             unsigned InitIdx) {
     if (auto *InsertPt = dyn_cast<Instruction>(NewInitIndVal)) {
@@ -521,6 +417,194 @@ doReverseLoop(Loop *L, DominatorTree &DT, ScalarEvolution &SE, LoopInfo &LI,
     }
     return NewInitIndVal;
   };
+  bool FinalIndIsZero = false;
+  if (auto *FinalIndCst = dyn_cast<ConstantInt>(FinalIndVal)) {
+    if (FinalIndCst->isNegative()) {
+      LLVM_DEBUG(dbgs() << "LR: LB in non translatable form\n");
+      return false;
+    }
+    FinalIndIsZero = FinalIndCst->isZero();
+  } else if (IsLowerBoundInclusive) {
+    // The FinalIndVal is variant, pessimistically assume zero.
+    FinalIndIsZero = true;
+  }
+
+  Value *NewInitIndVal = FinalIndVal;
+  // Now determine which phi edge contains the init value.
+  unsigned InitIdx = (IV->getIncomingValue(1) == InitIndVal) ? 1 : 0;
+
+  // Flip the value of StepBy.
+  auto *CI = cast<ConstantInt>(StepBy);
+  APInt ValA = CI->getValue();
+  int64_t NewStepBy = ValA.getSExtValue() * -1;
+  Value *NewStepByVal = ConstantInt::get(StepBy->getType(), NewStepBy);
+  if (!HasPostDecrement && !FinalIndIsZero)
+    NewInitIndVal = EmplaceInitVal(IV, StepBy, NewInitIndVal, InitIdx);
+  else if (!IsLowerBoundInclusive)
+    NewInitIndVal = EmplaceInitVal(IV, NewStepByVal, NewInitIndVal, InitIdx);
+  IV->setIncomingValue(InitIdx, NewInitIndVal);
+  IVBinOp->setOperand(1, NewStepByVal);
+  return true;
+}
+
+static bool updateLatchCompare(BranchInst *LatchBr, BinaryOperator *IVBinOp,
+                               Value *InitIndVal, PHINode *IV,
+                               bool UsesBinOpInCmp, bool IsUpperBoundInclusive,
+                               bool HasPostDecrement, ScalarEvolution &SE) {
+  ICmpInst *LatchCmp = cast<ICmpInst>(LatchBr->getCondition());
+
+  // Evaluate the Latch Compare.
+  CmpInst::Predicate Pred = EvaluatePred(LatchCmp, &SE);
+
+  // Check for possible unsupported case.
+  assert(Pred != CmpInst::ICMP_NE && "Unsupported cmp case");
+
+  // Flip the logic for reversing direction of the loop unless pred is eq.
+  bool AllowInverse = (Pred != CmpInst::ICMP_EQ);
+  if (AllowInverse) {
+    Pred = ICmpInst::getInversePredicate(Pred);
+    Pred = CmpInst::getStrictPredicate(Pred);
+  }
+  LatchCmp->setPredicate(Pred);
+  Value *IndCmpOpnd = (UsesBinOpInCmp) ? cast<Value>(IVBinOp) : cast<Value>(IV);
+  // Detect the IndCmpOpnd position in LatchCmp.
+  bool IsRhs = (LatchCmp->getOperand(1) == IndCmpOpnd);
+  unsigned IndIdx = (IsRhs) ? 1 : 0;
+  if (UsesBinOpInCmp) {
+    if (IsUpperBoundInclusive)
+      LatchCmp->setOperand(IndIdx, IV);
+  } else if (!HasPostDecrement && !IsUpperBoundInclusive) {
+    LatchCmp->setOperand(IndIdx, IVBinOp);
+  }
+  unsigned BndIdx = (IsRhs) ? 0 : 1;
+  LatchCmp->setOperand(BndIdx, InitIndVal);
+  return true;
+}
+
+static bool updateLoopAddress(GetElementPtrInst *GEP, BinaryOperator *IVBinOp,
+                              unsigned OpIdx) {
+  // Update qualifying addresses with the non step arg of the BinOp
+  bool Changed = false;
+  Value *Index = GEP->getOperand(OpIdx);
+  if (isa<ConstantInt>(Index))
+    return Changed;
+
+  // pass through artifacts
+  bool KeepLooking = true;
+  while (KeepLooking) {
+    Value *OldIndex = Index;
+    Index = peekThroughExtTrunc(Index);
+    KeepLooking = (Index != OldIndex);
+  }
+  if (OpIdx != GEP->getNumOperands()) {
+    Type *NewTy = IVBinOp->getOperand(0)->getType();
+    Type *IndexTy = GEP->getOperand(OpIdx)->getType();
+    // If the types are the not the same we will update
+    // the reaching value via the IVBinOp users.
+    if (NewTy == IndexTy) {
+      GEP->setOperand(OpIdx, IVBinOp->getOperand(0));
+      Changed = true;
+    }
+  }
+
+  return Changed;
+}
+
+static bool doLoopUpdate(Loop *L, bool HasPostDecrement,
+                         BinaryOperator *IVBinOp,
+                         SmallDenseMap<GetElementPtrInst *, Value *> &IndexMap,
+                         BranchInst *LatchBr, PHINode *IV, ScalarEvolution &SE,
+                         bool IsLowerBoundInclusive, bool IsUpperBoundInclusive,
+                         bool UsesBinOpInCmp) {
+  bool Changed = false;
+  auto LB = Loop::LoopBounds::getBounds(*L, *IV, SE);
+  if (!LB)
+    return Changed;
+
+  Value *InitIndVal = &LB->getInitialIVValue();
+  Value *FinalIndVal = &LB->getFinalIVValue();
+  Value *StepBy = LB->getStepValue();
+  SmallVector<Instruction *, 10> Worklist;
+  Worklist.push_back(LatchBr);
+  if (!HasPostDecrement) {
+    for (BasicBlock *BB : L->blocks()) {
+      for (Instruction &I : *BB) {
+        auto *GEP = dyn_cast<GetElementPtrInst>(&I);
+        if (!GEP)
+          continue;
+
+        Value *IndexVal = IndexMap[GEP];
+        if (!IndexVal)
+          continue;
+
+        auto *BinOp = dyn_cast<BinaryOperator>(IndexVal);
+        if (!BinOp)
+          continue;
+
+        // TODO: Support other binop IV cases such as a different indecies
+        //       for variable memory access (a[i], b[i+1], c[i+2], etc)
+        if (BinOp == IVBinOp)
+          Worklist.push_back(&I);
+      }
+    }
+
+    // Update reaching uses of the value of IVBinOp.
+    for (User *U : IVBinOp->users())
+      if (auto *TI = dyn_cast<TruncInst>(U)) {
+        if (!TI->hasOneUse())
+          Worklist.push_back(TI);
+      } else if (isa<GetElementPtrInst, PHINode, ICmpInst>(U)) {
+        continue;
+      } else {
+        Worklist.push_back(cast<Instruction>(U));
+      }
+
+  }
+
+  // The first entry has special state
+  Worklist.push_back(IVBinOp);
+  while (!Worklist.empty()) {
+    Instruction *I = Worklist.pop_back_val();
+
+    auto *BinOp = dyn_cast<BinaryOperator>(I);
+    if (BinOp && BinOp == IVBinOp) {
+      // If we can not modify the BinOp, we do not update the loop.
+      if (!updateBinOp(BinOp, IsLowerBoundInclusive, HasPostDecrement,
+                       InitIndVal, FinalIndVal, StepBy, IV))
+        break;
+      Changed |= true;
+      continue;
+    } else if (auto *Branch = dyn_cast<BranchInst>(I)) {
+      Changed |=
+          updateLatchCompare(Branch, IVBinOp, InitIndVal, IV, UsesBinOpInCmp,
+                             IsUpperBoundInclusive, HasPostDecrement, SE);
+      continue;
+    }
+    auto *GEP = dyn_cast<GetElementPtrInst>(I);
+    for (unsigned Idx = 0; Idx < I->getNumOperands(); Idx++) {
+      if (GEP && Idx == 0)
+        continue;
+
+      if (GEP) {
+        Changed |= updateLoopAddress(GEP, IVBinOp, Idx);
+      } else if (I->getOperand(Idx) == IVBinOp) {
+        I->setOperand(Idx, IV);
+        Changed |= true;
+      }
+    }
+  }
+  return Changed;
+}
+
+// Transform a downcounted loop candidate to an upcounted loop.
+static LoopReverseResult
+doReverseLoop(Loop *L, DominatorTree &DT, ScalarEvolution &SE, LoopInfo &LI,
+              MemorySSA *MSSA, BasicBlock *Latch,
+              SmallDenseMap<PHINode *, BinaryOperator *> &ReferenceMap,
+              SmallDenseMap<GetElementPtrInst *, Value *> &IndexMap,
+              bool IsLowerBoundInclusive, bool IsUpperBoundInclusive,
+              bool HasPostDecrement, bool UsesBinOpInCmp,
+              OptimizationRemarkEmitter &ORE) {
   bool Changed = false;
   auto *IV = L->getInductionVariable(SE);
   if (!IV)
@@ -532,85 +616,10 @@ doReverseLoop(Loop *L, DominatorTree &DT, ScalarEvolution &SE, LoopInfo &LI,
     return LoopReverseResult::Unmodified;
 
   BinaryOperator *IVBinOp = It->second;
-
-  // TODO: Move LatchCmp and IV to Worklist processing.
-
-  // Fetch the loop bounds.
-  if (auto LB = Loop::LoopBounds::getBounds(*L, *IV, SE)) {
-    Value *InitIndVal = &LB->getInitialIVValue();
-    Value *FinalIndVal = &LB->getFinalIVValue();
-    Value *StepBy = LB->getStepValue();
-    BasicBlock *Latch = L->getLoopLatch();
-    BranchInst *LatchBr = cast<BranchInst>(Latch->getTerminator());
-    ICmpInst *LatchCmp = cast<ICmpInst>(LatchBr->getCondition());
-
-    // Evaluate the Latch Compare.
-    CmpInst::Predicate Pred = EvaluatePred(LatchBr->getCondition(), &SE);
-    bool AllowInverse = (Pred != CmpInst::ICMP_EQ);
-
-    // Check for possible unsupported case.
-    assert(Pred != CmpInst::ICMP_NE && "Unsupported cmp case");
-
-    bool FinalIndIsZero = false;
-    // Check for FinalIndVal of untransformed loop as zero or negative.
-    if (auto *FinalIndCst = dyn_cast<ConstantInt>(FinalIndVal)) {
-      FinalIndIsZero = FinalIndCst->isZero();
-      if (FinalIndCst->isNegative()) {
-        LLVM_DEBUG(dbgs() << "LR: LB in non translatable form\n");
-        return LoopReverseResult::Unmodified;
-      }
-    } else if (IsLowerBoundInclusive) {
-      // The FinalIndVal is variant, ergo we have to pessimistically assume
-      // zero.
-      FinalIndIsZero = true;
-    }
-
-    // Flip the logic for reversing direction of the loop unless pred is eq.
-    if (AllowInverse)
-      Pred = ICmpInst::getInversePredicate(Pred);
-
-    Value *NewInitIndVal = FinalIndVal;
-    // Now determine which phi edge contains the init value.
-    unsigned InitIdx = (IV->getIncomingValue(1) == InitIndVal) ? 1 : 0;
-
-    // Flip the value of StepBy.
-    auto *CI = cast<ConstantInt>(StepBy);
-    APInt ValA = CI->getValue();
-    int64_t NewStepBy = ValA.getSExtValue() * -1;
-    Value *NewStepByVal = ConstantInt::get(StepBy->getType(), NewStepBy);
-    if (!HasPostDecrement && !FinalIndIsZero)
-      NewInitIndVal = EmplaceInitVal(IV, StepBy, NewInitIndVal, InitIdx);
-    else if (!IsLowerBoundInclusive)
-      NewInitIndVal =
-         EmplaceInitVal(IV, NewStepByVal, NewInitIndVal, InitIdx);
-
-    if (AllowInverse)
-      Pred = CmpInst::getStrictPredicate(Pred);
-
-    IV->setIncomingValue(InitIdx, NewInitIndVal);
-    LatchCmp->setPredicate(Pred);
-    Value *IndCmpOpnd =
-        (UsesBinOpInCmp) ? cast<Value>(IVBinOp) : cast<Value>(IV);
-    // Detect the IndCmpOpnd position in LatchCmp.
-    bool IsRhs = (LatchCmp->getOperand(1) == IndCmpOpnd);
-    unsigned IndIdx = (IsRhs) ? 1 : 0;
-    if (UsesBinOpInCmp) {
-      if (IsUpperBoundInclusive)
-        LatchCmp->setOperand(IndIdx, IV);
-    } else if (!HasPostDecrement && !IsUpperBoundInclusive) {
-      LatchCmp->setOperand(IndIdx, IVBinOp);
-    }
-    unsigned BndIdx = (IsRhs) ? 0 : 1;
-    LatchCmp->setOperand(BndIdx, InitIndVal);
-    IVBinOp->setOperand(1, NewStepByVal);
-    Changed = true;
-  }
-
-  if (!Changed)
-    return LoopReverseResult::Unmodified;
-
-  if (doIndexUpdate(L, HasPostDecrement, IVBinOp, IndexMap))
-    LLVM_DEBUG(dbgs() << "LR: Updated GEP indecies with new IV info\n");
+  BranchInst *LatchBr = cast<BranchInst>(Latch->getTerminator());
+  Changed = doLoopUpdate(L, HasPostDecrement, IVBinOp, IndexMap, LatchBr, IV,
+                         SE, IsLowerBoundInclusive, IsUpperBoundInclusive,
+                         UsesBinOpInCmp);
 
   return Changed ? LoopReverseResult::Modified : LoopReverseResult::Unmodified;
 }
@@ -644,7 +653,7 @@ static LoopReverseResult reverseLoop(Loop *L, DominatorTree &DT,
                        DI, LI, ReferenceMap, IndexMap, IsLowerBoundInclusive,
                        IsUpperBoundInclusive, HasPostDecrement,
                        UsesBinOpInCmp)) {
-    Result = doReverseLoop(L, DT, SE, LI, MSSA, ReferenceMap, IndexMap,
+    Result = doReverseLoop(L, DT, SE, LI, MSSA, Latch, ReferenceMap, IndexMap,
                            IsLowerBoundInclusive, IsUpperBoundInclusive,
                            HasPostDecrement, UsesBinOpInCmp, ORE);
     if (Result == LoopReverseResult::Modified)

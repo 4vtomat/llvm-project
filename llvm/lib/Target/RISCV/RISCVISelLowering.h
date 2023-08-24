@@ -502,6 +502,11 @@ public:
 
   bool isIntDivCheap(EVT VT, AttributeList Attr) const override;
 
+#if SIFIVE_CUSTOMIZATION
+  bool canMergeStoresTo(unsigned AddressSpace, EVT MemVT,
+                        const MachineFunction &MF) const override;
+#endif // SIFIVE_CUSTOMIZATION
+
   bool preferScalarizeSplat(SDNode *N) const override;
 
   bool softPromoteHalfType() const override { return true; }
