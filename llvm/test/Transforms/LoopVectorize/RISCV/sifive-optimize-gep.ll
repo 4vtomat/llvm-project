@@ -21,7 +21,7 @@ define void @test2(ptr %a, i64 %n) {
 ; CHECK-NEXT:     WIDEN-GEP Inv[Var] ir<%arrayidx> = getelementptr inbounds ir<%a>, ir<%i.07>
 ; CHECK-NEXT:     WIDEN store ir<%arrayidx>, ir<%arrayidx>
 ; CHECK-NEXT:     EMIT vp<%7> = VF * UF +  vp<%2>
-; CHECK-NEXT:     EMIT branch-on-count  vp<%7> vp<%0>
+; CHECK-NEXT:     EMIT branch-on-count  vp<%7>, vp<%0>
 ; CHECK-NEXT:   No successors
 ; CHECK-NEXT: }
 entry:
