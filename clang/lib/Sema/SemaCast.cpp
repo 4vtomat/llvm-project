@@ -935,11 +935,6 @@ void CastOperation::CheckDynamicCast() {
           << isClangCL;
   }
 
-<<<<<<< HEAD
-=======
-#if SIFIVE_CUSTOMIZATION
-  // SIFIVE cherry-picked from 9a370a1e586ca0ee1367ea58d7d61b8a86f660a3
->>>>>>> origin/sifive-dev
   // For a dynamic_cast to a final type, IR generation might emit a reference
   // to the vtable.
   if (DestRecord) {
@@ -947,10 +942,6 @@ void CastOperation::CheckDynamicCast() {
     if (DestDecl->isEffectivelyFinal())
       Self.MarkVTableUsed(OpRange.getBegin(), DestDecl);
   }
-<<<<<<< HEAD
-=======
-#endif
->>>>>>> origin/sifive-dev
 
   // Done. Everything else is run-time checks.
   Kind = CK_Dynamic;
