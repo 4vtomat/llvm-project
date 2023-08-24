@@ -2101,17 +2101,11 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
   case RecurKind::FMinimum:
   case RecurKind::FMaximum: {
     Intrinsic::ID Id = getMinMaxReductionIntrinsicOp(RdxKind);
-<<<<<<< HEAD
-    O = Ctx.TTI->getMinMaxReductionCost(Id, VectorTy,
-                                        RdxDesc.getFastMathFlags(), CostKind);
-  } else if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RdxKind)) {
-=======
     return Ctx.TTI->getMinMaxReductionCost(
         Id, VectorTy, RdxDesc.getFastMathFlags(), CostKind);
   }
-  case RecurKind::SelectICmp:
-  case RecurKind::SelectFCmp: {
->>>>>>> origin/sifive-dev
+  case RecurKind::IAnyOf:
+  case RecurKind::FAnyOf: {
     // The cost references the instructions created in
     // llvm::createAnyOfTargetReduction
     auto *VecCondTy = cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
@@ -2126,8 +2120,8 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
                                      CmpInst::BAD_ICMP_PREDICATE, CostKind);
     return O;
   }
-  case RecurKind::SelectIVICmp:
-  case RecurKind::SelectIVFCmp: {
+  case RecurKind::IFindLastIV:
+  case RecurKind::FFindLastIV: {
     // Emit reduce.smax to get the last induction value
     InstructionCost O = Ctx.TTI->getMinMaxReductionCost(
         Intrinsic::smax, VectorTy, FastMathFlags(), CostKind);
