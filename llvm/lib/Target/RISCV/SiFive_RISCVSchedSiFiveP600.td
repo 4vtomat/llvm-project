@@ -581,11 +581,12 @@ foreach mx = SchedMxList in {
   foreach sew = SchedSEWSet<mx>.val in {
     defvar LMulLat = SiFiveP600GetLMulCycles<mx>.c;
     defvar IsWorstCase = SiFiveP600IsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
-    let Latency = !add(2, !mul(2, LMulLat)), ResourceCycles = [LMulLat] in
+    let Latency = !add(2, !mul(2, LMulLat)), ResourceCycles = [LMulLat] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVIRedV_From", [SiFiveP600VEXQ1],
                                      mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVIRedMinMaxV_From", [SiFiveP600VEXQ1],
                                      mx, sew, IsWorstCase>;
+    }
   }
 }
 
@@ -593,9 +594,10 @@ foreach mx = SchedMxListWRed in {
   foreach sew = SchedSEWSet<mx, 0, 1>.val in {
     defvar LMulLat = SiFiveP600GetLMulCycles<mx>.c;
     defvar IsWorstCase = SiFiveP600IsWorstCaseMXSEW<mx, sew, SchedMxListWRed>.c;
-    let Latency = !add(2, !mul(2, LMulLat)), ResourceCycles = [LMulLat] in
+    let Latency = !add(2, !mul(2, LMulLat)), ResourceCycles = [LMulLat] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVIWRedV_From", [SiFiveP600VEXQ1],
                                      mx, sew, IsWorstCase>;
+    }
   }
 }
 

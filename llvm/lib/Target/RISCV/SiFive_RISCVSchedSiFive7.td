@@ -772,11 +772,12 @@ foreach mx = SchedMxList in {
   foreach sew = SchedSEWSet<mx>.val in {
     defvar Cycles = SiFive7GetReductionCycles<mx, sew>.c;
     defvar IsWorstCase = SiFive7IsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
-    let Latency = Cycles, ResourceCycles = [Cycles] in
+    let Latency = Cycles, ResourceCycles = [Cycles] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVIRedV_From", [SiFive7VA],
                                      mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVIRedMinMaxV_From", [SiFive7VA],
                                      mx, sew, IsWorstCase>;
+    }
   }
 }
 
@@ -784,9 +785,10 @@ foreach mx = SchedMxListWRed in {
   foreach sew = SchedSEWSet<mx, 0, 1>.val in {
     defvar Cycles = SiFive7GetReductionCycles<mx, sew>.c;
     defvar IsWorstCase = SiFive7IsWorstCaseMXSEW<mx, sew, SchedMxListWRed>.c;
-    let Latency = Cycles, ResourceCycles = [Cycles] in
+    let Latency = Cycles, ResourceCycles = [Cycles] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVIWRedV_From", [SiFive7VA],
                                      mx, sew, IsWorstCase>;
+    }
   }
 }
 
@@ -801,9 +803,10 @@ foreach mx = SchedMxListF in {
                                      mx, sew, IsWorstCase>;
     }
     defvar OrdRedCycles = SiFive7GetOrderedReductionCycles<mx, sew>.c;
-    let Latency = OrdRedCycles, ResourceCycles = [OrdRedCycles] in
+    let Latency = OrdRedCycles, ResourceCycles = [OrdRedCycles] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVFRedOV_From", [SiFive7VA],
                                  mx, sew, IsWorstCase>;
+    }
   }
 }
 
@@ -811,13 +814,15 @@ foreach mx = SchedMxListFWRed in {
   foreach sew = SchedSEWSet<mx, 1, 1>.val in {
     defvar RedCycles = SiFive7GetReductionCycles<mx, sew>.c;
     defvar IsWorstCase = SiFive7IsWorstCaseMXSEW<mx, sew, SchedMxListFWRed, 1>.c;
-    let Latency = RedCycles, ResourceCycles = [RedCycles] in
+    let Latency = RedCycles, ResourceCycles = [RedCycles] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVFWRedV_From", [SiFive7VA],
                                      mx, sew, IsWorstCase>;
+    }
     defvar OrdRedCycles = SiFive7GetOrderedReductionCycles<mx, sew>.c;
-    let Latency = OrdRedCycles, ResourceCycles = [OrdRedCycles] in
+    let Latency = OrdRedCycles, ResourceCycles = [OrdRedCycles] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVFWRedOV_From", [SiFive7VA],
                                      mx, sew, IsWorstCase>;
+    }
   }
 }
 
