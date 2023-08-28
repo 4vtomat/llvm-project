@@ -332,8 +332,8 @@ define <16 x i16> @sextload_v16i8_v16i16(ptr %x) {
 ; LMULMAX4-LABEL: sextload_v16i8_v16i16:
 ; LMULMAX4:       # %bb.0:
 ; LMULMAX4-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
-; LMULMAX4-NEXT:    vle8.v v10, (a0)
-; LMULMAX4-NEXT:    vsext.vf2 v8, v10
+; LMULMAX4-NEXT:    vle8.v v9, (a0)
+; LMULMAX4-NEXT:    vsext.vf2 v8, v9
 ; LMULMAX4-NEXT:    ret
   %y = load <16 x i8>, ptr %x
   %z = sext <16 x i8> %y to <16 x i16>
@@ -355,8 +355,8 @@ define <16 x i16> @zextload_v16i8_v16i16(ptr %x) {
 ; LMULMAX4-LABEL: zextload_v16i8_v16i16:
 ; LMULMAX4:       # %bb.0:
 ; LMULMAX4-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
-; LMULMAX4-NEXT:    vle8.v v10, (a0)
-; LMULMAX4-NEXT:    vzext.vf2 v8, v10
+; LMULMAX4-NEXT:    vle8.v v9, (a0)
+; LMULMAX4-NEXT:    vzext.vf2 v8, v9
 ; LMULMAX4-NEXT:    ret
   %y = load <16 x i8>, ptr %x
   %z = zext <16 x i8> %y to <16 x i16>
@@ -387,8 +387,8 @@ define <16 x i32> @sextload_v16i8_v16i32(ptr %x) {
 ; LMULMAX4-LABEL: sextload_v16i8_v16i32:
 ; LMULMAX4:       # %bb.0:
 ; LMULMAX4-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
-; LMULMAX4-NEXT:    vle8.v v12, (a0)
-; LMULMAX4-NEXT:    vsext.vf4 v8, v12
+; LMULMAX4-NEXT:    vle8.v v11, (a0)
+; LMULMAX4-NEXT:    vsext.vf4 v8, v11
 ; LMULMAX4-NEXT:    ret
   %y = load <16 x i8>, ptr %x
   %z = sext <16 x i8> %y to <16 x i32>
@@ -419,8 +419,8 @@ define <16 x i32> @zextload_v16i8_v16i32(ptr %x) {
 ; LMULMAX4-LABEL: zextload_v16i8_v16i32:
 ; LMULMAX4:       # %bb.0:
 ; LMULMAX4-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
-; LMULMAX4-NEXT:    vle8.v v12, (a0)
-; LMULMAX4-NEXT:    vzext.vf4 v8, v12
+; LMULMAX4-NEXT:    vle8.v v11, (a0)
+; LMULMAX4-NEXT:    vzext.vf4 v8, v11
 ; LMULMAX4-NEXT:    ret
   %y = load <16 x i8>, ptr %x
   %z = zext <16 x i8> %y to <16 x i32>
@@ -721,8 +721,8 @@ define <8 x i32> @sextload_v8i16_v8i32(ptr %x) {
 ; LMULMAX4-LABEL: sextload_v8i16_v8i32:
 ; LMULMAX4:       # %bb.0:
 ; LMULMAX4-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; LMULMAX4-NEXT:    vle16.v v10, (a0)
-; LMULMAX4-NEXT:    vsext.vf2 v8, v10
+; LMULMAX4-NEXT:    vle16.v v9, (a0)
+; LMULMAX4-NEXT:    vsext.vf2 v8, v9
 ; LMULMAX4-NEXT:    ret
   %y = load <8 x i16>, ptr %x
   %z = sext <8 x i16> %y to <8 x i32>
@@ -744,8 +744,8 @@ define <8 x i32> @zextload_v8i16_v8i32(ptr %x) {
 ; LMULMAX4-LABEL: zextload_v8i16_v8i32:
 ; LMULMAX4:       # %bb.0:
 ; LMULMAX4-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; LMULMAX4-NEXT:    vle16.v v10, (a0)
-; LMULMAX4-NEXT:    vzext.vf2 v8, v10
+; LMULMAX4-NEXT:    vle16.v v9, (a0)
+; LMULMAX4-NEXT:    vzext.vf2 v8, v9
 ; LMULMAX4-NEXT:    ret
   %y = load <8 x i16>, ptr %x
   %z = zext <8 x i16> %y to <8 x i32>
@@ -776,8 +776,8 @@ define <8 x i64> @sextload_v8i16_v8i64(ptr %x) {
 ; LMULMAX4-LABEL: sextload_v8i16_v8i64:
 ; LMULMAX4:       # %bb.0:
 ; LMULMAX4-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
-; LMULMAX4-NEXT:    vle16.v v12, (a0)
-; LMULMAX4-NEXT:    vsext.vf4 v8, v12
+; LMULMAX4-NEXT:    vle16.v v11, (a0)
+; LMULMAX4-NEXT:    vsext.vf4 v8, v11
 ; LMULMAX4-NEXT:    ret
   %y = load <8 x i16>, ptr %x
   %z = sext <8 x i16> %y to <8 x i64>
@@ -808,8 +808,8 @@ define <8 x i64> @zextload_v8i16_v8i64(ptr %x) {
 ; LMULMAX4-LABEL: zextload_v8i16_v8i64:
 ; LMULMAX4:       # %bb.0:
 ; LMULMAX4-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
-; LMULMAX4-NEXT:    vle16.v v12, (a0)
-; LMULMAX4-NEXT:    vzext.vf4 v8, v12
+; LMULMAX4-NEXT:    vle16.v v11, (a0)
+; LMULMAX4-NEXT:    vzext.vf4 v8, v11
 ; LMULMAX4-NEXT:    ret
   %y = load <8 x i16>, ptr %x
   %z = zext <8 x i16> %y to <8 x i64>
@@ -860,8 +860,8 @@ define <16 x i32> @sextload_v16i16_v16i32(ptr %x) {
 ; LMULMAX4-LABEL: sextload_v16i16_v16i32:
 ; LMULMAX4:       # %bb.0:
 ; LMULMAX4-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
-; LMULMAX4-NEXT:    vle16.v v12, (a0)
-; LMULMAX4-NEXT:    vsext.vf2 v8, v12
+; LMULMAX4-NEXT:    vle16.v v10, (a0)
+; LMULMAX4-NEXT:    vsext.vf2 v8, v10
 ; LMULMAX4-NEXT:    ret
   %y = load <16 x i16>, ptr %x
   %z = sext <16 x i16> %y to <16 x i32>
@@ -890,8 +890,8 @@ define <16 x i32> @zextload_v16i16_v16i32(ptr %x) {
 ; LMULMAX4-LABEL: zextload_v16i16_v16i32:
 ; LMULMAX4:       # %bb.0:
 ; LMULMAX4-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
-; LMULMAX4-NEXT:    vle16.v v12, (a0)
-; LMULMAX4-NEXT:    vzext.vf2 v8, v12
+; LMULMAX4-NEXT:    vle16.v v10, (a0)
+; LMULMAX4-NEXT:    vzext.vf2 v8, v10
 ; LMULMAX4-NEXT:    ret
   %y = load <16 x i16>, ptr %x
   %z = zext <16 x i16> %y to <16 x i32>
@@ -1091,8 +1091,8 @@ define <4 x i64> @sextload_v4i32_v4i64(ptr %x) {
 ; LMULMAX4-LABEL: sextload_v4i32_v4i64:
 ; LMULMAX4:       # %bb.0:
 ; LMULMAX4-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-; LMULMAX4-NEXT:    vle32.v v10, (a0)
-; LMULMAX4-NEXT:    vsext.vf2 v8, v10
+; LMULMAX4-NEXT:    vle32.v v9, (a0)
+; LMULMAX4-NEXT:    vsext.vf2 v8, v9
 ; LMULMAX4-NEXT:    ret
   %y = load <4 x i32>, ptr %x
   %z = sext <4 x i32> %y to <4 x i64>
@@ -1114,8 +1114,8 @@ define <4 x i64> @zextload_v4i32_v4i64(ptr %x) {
 ; LMULMAX4-LABEL: zextload_v4i32_v4i64:
 ; LMULMAX4:       # %bb.0:
 ; LMULMAX4-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-; LMULMAX4-NEXT:    vle32.v v10, (a0)
-; LMULMAX4-NEXT:    vzext.vf2 v8, v10
+; LMULMAX4-NEXT:    vle32.v v9, (a0)
+; LMULMAX4-NEXT:    vzext.vf2 v8, v9
 ; LMULMAX4-NEXT:    ret
   %y = load <4 x i32>, ptr %x
   %z = zext <4 x i32> %y to <4 x i64>
@@ -1195,8 +1195,8 @@ define <8 x i64> @sextload_v8i32_v8i64(ptr %x) {
 ; LMULMAX4-LABEL: sextload_v8i32_v8i64:
 ; LMULMAX4:       # %bb.0:
 ; LMULMAX4-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
-; LMULMAX4-NEXT:    vle32.v v12, (a0)
-; LMULMAX4-NEXT:    vsext.vf2 v8, v12
+; LMULMAX4-NEXT:    vle32.v v10, (a0)
+; LMULMAX4-NEXT:    vsext.vf2 v8, v10
 ; LMULMAX4-NEXT:    ret
   %y = load <8 x i32>, ptr %x
   %z = sext <8 x i32> %y to <8 x i64>
@@ -1225,8 +1225,8 @@ define <8 x i64> @zextload_v8i32_v8i64(ptr %x) {
 ; LMULMAX4-LABEL: zextload_v8i32_v8i64:
 ; LMULMAX4:       # %bb.0:
 ; LMULMAX4-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
-; LMULMAX4-NEXT:    vle32.v v12, (a0)
-; LMULMAX4-NEXT:    vzext.vf2 v8, v12
+; LMULMAX4-NEXT:    vle32.v v10, (a0)
+; LMULMAX4-NEXT:    vzext.vf2 v8, v10
 ; LMULMAX4-NEXT:    ret
   %y = load <8 x i32>, ptr %x
   %z = zext <8 x i32> %y to <8 x i64>

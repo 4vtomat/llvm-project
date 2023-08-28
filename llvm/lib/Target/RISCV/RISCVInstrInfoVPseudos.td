@@ -2934,15 +2934,16 @@ multiclass VPseudoVRCP_V_RM {
 }
 
 #ifdef SIFIVE_CUSTOMIZATION
-multiclass PseudoVEXT_VF2<int TargetConstraintType = 1> {
+multiclass PseudoVEXT_VF2 {
   defvar constraints = "@earlyclobber $rd";
   foreach m = MxListVF2 in {
     defvar mx = m.MX;
+    defvar CurrTypeConstraints = !if(!or(!eq(mx, "MF4"), !eq(mx, "MF2"), !eq(mx, "M1")), 1, 3);
     let VLMul = m.value in {
-      def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f2vrclass, constraints, TargetConstraintType>,
+      def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f2vrclass, constraints, CurrTypeConstraints>,
                      SchedUnary<"WriteVExtV", "ReadVExtV", mx>;
       def "_" # mx # "_MASK" :
-        VPseudoUnaryMaskTA<m.vrclass, m.f2vrclass, constraints, TargetConstraintType>,
+        VPseudoUnaryMaskTA<m.vrclass, m.f2vrclass, constraints, CurrTypeConstraints>,
         RISCVMaskedPseudo<MaskIdx=2>,
         SchedUnary<"WriteVExtV", "ReadVExtV", mx>;
     }
@@ -2966,15 +2967,16 @@ multiclass PseudoVEXT_VF2 {
 #endif // SIFIVE_CUSTOMIZATION
 
 #ifdef SIFIVE_CUSTOMIZATION
-multiclass PseudoVEXT_VF4<int TargetConstraintType = 1> {
+multiclass PseudoVEXT_VF4 {
   defvar constraints = "@earlyclobber $rd";
   foreach m = MxListVF4 in {
     defvar mx = m.MX;
+    defvar CurrTypeConstraints = !if(!or(!eq(mx, "MF2"), !eq(mx, "M1"), !eq(mx, "M2")), 1, 3);
     let VLMul = m.value in {
-      def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f4vrclass, constraints, TargetConstraintType>,
+      def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f4vrclass, constraints, CurrTypeConstraints>,
                      SchedUnary<"WriteVExtV", "ReadVExtV", mx>;
       def "_" # mx # "_MASK" :
-        VPseudoUnaryMaskTA<m.vrclass, m.f4vrclass, constraints, TargetConstraintType>,
+        VPseudoUnaryMaskTA<m.vrclass, m.f4vrclass, constraints, CurrTypeConstraints>,
         RISCVMaskedPseudo<MaskIdx=2>,
         SchedUnary<"WriteVExtV", "ReadVExtV", mx>;
     }
@@ -2998,15 +3000,16 @@ multiclass PseudoVEXT_VF4 {
 #endif // SIFIVE_CUSTOMIZATION
 
 #ifdef SIFIVE_CUSTOMIZATION
-multiclass PseudoVEXT_VF8<int TargetConstraintType = 1> {
+multiclass PseudoVEXT_VF8 {
   defvar constraints = "@earlyclobber $rd";
   foreach m = MxListVF8 in {
     defvar mx = m.MX;
+    defvar CurrTypeConstraints = !if(!or(!eq(mx, "M1"), !eq(mx, "M2"), !eq(mx, "M4")), 1, 3);
     let VLMul = m.value in {
-      def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f8vrclass, constraints, TargetConstraintType>,
+      def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f8vrclass, constraints, CurrTypeConstraints>,
                      SchedUnary<"WriteVExtV", "ReadVExtV", mx>;
       def "_" # mx # "_MASK" :
-        VPseudoUnaryMaskTA<m.vrclass, m.f8vrclass, constraints, TargetConstraintType>,
+        VPseudoUnaryMaskTA<m.vrclass, m.f8vrclass, constraints, CurrTypeConstraints>,
         RISCVMaskedPseudo<MaskIdx=2>,
         SchedUnary<"WriteVExtV", "ReadVExtV", mx>;
     }
@@ -7248,15 +7251,12 @@ defm PseudoVWSUB  : VPseudoVWALU_WV_WX</*sew*/ 0, /*TargetConstraintType*/ 3>;
 //===----------------------------------------------------------------------===//
 // 11.3. Vector Integer Extension
 //===----------------------------------------------------------------------===//
-#ifdef SIFIVE_CUSTOMIZATION
-// FIXME: Support VF correctly.
-defm PseudoVZEXT_VF2 : PseudoVEXT_VF2</*TargetConstraintType*/ 1>;
-defm PseudoVZEXT_VF4 : PseudoVEXT_VF4</*TargetConstraintType*/ 1>;
-defm PseudoVZEXT_VF8 : PseudoVEXT_VF8</*TargetConstraintType*/ 1>;
-defm PseudoVSEXT_VF2 : PseudoVEXT_VF2</*TargetConstraintType*/ 1>;
-defm PseudoVSEXT_VF4 : PseudoVEXT_VF4</*TargetConstraintType*/ 1>;
-defm PseudoVSEXT_VF8 : PseudoVEXT_VF8</*TargetConstraintType*/ 1>;
-#endif // SIFIVE_CUSTOMIZATION
+defm PseudoVZEXT_VF2 : PseudoVEXT_VF2;
+defm PseudoVZEXT_VF4 : PseudoVEXT_VF4;
+defm PseudoVZEXT_VF8 : PseudoVEXT_VF8;
+defm PseudoVSEXT_VF2 : PseudoVEXT_VF2;
+defm PseudoVSEXT_VF4 : PseudoVEXT_VF4;
+defm PseudoVSEXT_VF8 : PseudoVEXT_VF8;
 
 //===----------------------------------------------------------------------===//
 // 11.4. Vector Integer Add-with-Carry / Subtract-with-Borrow Instructions

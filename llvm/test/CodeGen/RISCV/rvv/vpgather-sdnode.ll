@@ -659,9 +659,9 @@ define <vscale x 2 x i64> @vpgather_nxv2i32_sextload_nxv2i64(<vscale x 2 x ptr> 
 ; RV32-LABEL: vpgather_nxv2i32_sextload_nxv2i64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; RV32-NEXT:    vluxei32.v v10, (zero), v8, v0.t
+; RV32-NEXT:    vluxei32.v v9, (zero), v8, v0.t
 ; RV32-NEXT:    vsetvli a0, zero, e64, m2, ta, ma
-; RV32-NEXT:    vsext.vf2 v8, v10
+; RV32-NEXT:    vsext.vf2 v8, v9
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: vpgather_nxv2i32_sextload_nxv2i64:
@@ -680,9 +680,9 @@ define <vscale x 2 x i64> @vpgather_nxv2i32_zextload_nxv2i64(<vscale x 2 x ptr> 
 ; RV32-LABEL: vpgather_nxv2i32_zextload_nxv2i64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; RV32-NEXT:    vluxei32.v v10, (zero), v8, v0.t
+; RV32-NEXT:    vluxei32.v v9, (zero), v8, v0.t
 ; RV32-NEXT:    vsetvli a0, zero, e64, m2, ta, ma
-; RV32-NEXT:    vzext.vf2 v8, v10
+; RV32-NEXT:    vzext.vf2 v8, v9
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: vpgather_nxv2i32_zextload_nxv2i64:
