@@ -152,7 +152,7 @@ class SiFive7GetReductionCycles<string mx, int sew> {
     !eq(mx, "MF8") : 1
   );
   int c = !add(
-    !div(TwoTimesLMUL, DLEN),
+    TwoTimesLMUL,
     !mul(5, !add(4, !logtwo(!div(DLEN, sew))))
   );
 }
