@@ -2220,7 +2220,6 @@ def int_experimental_vp_splice:
              llvm_i32_ty, llvm_i32_ty],
             [IntrNoMem, ImmArg<ArgIndex<2>>]>;
 
-<<<<<<< HEAD
 // SIFIVE_CUSTOMIZATION
 def int_experimental_vp_reverse:
   DefaultAttrsIntrinsic<[llvm_anyvector_ty],
@@ -2229,7 +2228,7 @@ def int_experimental_vp_reverse:
                          llvm_i32_ty],
                         [IntrNoMem]>;
 // END OF SIFIVE_CUSTOMIZATION
-=======
+
 def int_vp_is_fpclass:
       DefaultAttrsIntrinsic<[ LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>],
                               [ llvm_anyvector_ty,
@@ -2237,7 +2236,6 @@ def int_vp_is_fpclass:
                                 LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
                                 llvm_i32_ty],
                               [IntrNoMem, IntrSpeculatable, ImmArg<ArgIndex<1>>]>;
->>>>>>> upstream/main
 
 //===-------------------------- Masked Intrinsics -------------------------===//
 //
