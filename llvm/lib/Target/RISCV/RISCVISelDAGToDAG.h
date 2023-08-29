@@ -188,6 +188,7 @@ private:
   bool doPeepholeMaskedRVV(MachineSDNode *Node);
   bool doPeepholeLUIADDI(SDNode *Node); // SIFIVE
   bool doPeepholeMergeVVMFold();
+  bool doPeepholeNoRegPassThru();
   bool performVMergeToVMv(SDNode *N);
   bool performCombineVMergeAndVOps(SDNode *N);
 };

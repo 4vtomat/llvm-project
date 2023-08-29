@@ -165,6 +165,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zve64x", RISCVExtensionVersion{1, 0}},
 
     {"zvfh", RISCVExtensionVersion{1, 0}},
+    {"zvfhmin", RISCVExtensionVersion{1, 0}},
 
     {"zvl1024b", RISCVExtensionVersion{1, 0}},
     {"zvl128b", RISCVExtensionVersion{1, 0}},
@@ -195,6 +196,7 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"zfa", RISCVExtensionVersion{0, 2}},
     {"zfbfmin", RISCVExtensionVersion{0, 8}},
 
+    {"zicfilp", RISCVExtensionVersion{0, 2}},
     {"zicond", RISCVExtensionVersion{1, 0}},
     {"ztso", RISCVExtensionVersion{0, 1}},
 
@@ -205,8 +207,12 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"zvfbfwma", RISCVExtensionVersion{0, 8}},
 
     // vector crypto
+<<<<<<< HEAD
     {"zvkb", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zvkb", RISCVExtensionVersion{0, 1}}, // SIFIVE
+=======
+    {"zvkb", RISCVExtensionVersion{1, 0}},
+>>>>>>> upstream/main
     {"zvkg", RISCVExtensionVersion{1, 0}},
     {"zvkg", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvkn", RISCVExtensionVersion{1, 0}},
@@ -1175,6 +1181,7 @@ static const char *ImpliedExtsZk[] = {"zkn", "zkt", "zkr"};
 static const char *ImpliedExtsZkn[] = {"zbkb", "zbkc", "zbkx",
                                        "zkne", "zknd", "zknh"};
 static const char *ImpliedExtsZks[] = {"zbkb", "zbkc", "zbkx", "zksed", "zksh"};
+static const char *ImpliedExtsZvbb[] = {"zvkb"};
 static const char *ImpliedExtsZve32f[] = {"zve32x", "f"};
 static const char *ImpliedExtsZve32x[] = {"zvl32b", "zicsr"};
 static const char *ImpliedExtsZve64d[] = {"zve64f", "d"};
@@ -1183,6 +1190,7 @@ static const char *ImpliedExtsZve64x[] = {"zve32x", "zvl64b"};
 static const char *ImpliedExtsZvfbfmin[] = {"zve32f", "zfbfmin"};
 static const char *ImpliedExtsZvfbfwma[] = {"zvfbfmin"};
 static const char *ImpliedExtsZvfh[] = {"zve32f", "zfhmin"};
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsXsfvfhbfmin[] = {"zve32f"};
 static const char *ImpliedExtsXsfvfnrclipxfqf[] = {"zve32f"};
@@ -1191,6 +1199,9 @@ static const char *ImpliedExtsXsfvqmaccdod[] = {"zve32x", "zvl128b"};
 static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x", "zvl256b"};
 #endif // SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsZvbb[] = {"zvkb"};
+=======
+static const char *ImpliedExtsZvfhmin[] = {"zve32f"};
+>>>>>>> upstream/main
 static const char *ImpliedExtsZvkn[] = {"zvkb", "zvkned", "zvknhb", "zvkt"};
 static const char *ImpliedExtsZvknc[] = {"zvbc", "zvkn"};
 static const char *ImpliedExtsZvkng[] = {"zvkg", "zvkn"};
@@ -1262,6 +1273,7 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"zvfbfmin"}, {ImpliedExtsZvfbfmin}},
     {{"zvfbfwma"}, {ImpliedExtsZvfbfwma}},
     {{"zvfh"}, {ImpliedExtsZvfh}},
+    {{"zvfhmin"}, {ImpliedExtsZvfhmin}},
     {{"zvkn"}, {ImpliedExtsZvkn}},
     {{"zvknc"}, {ImpliedExtsZvknc}},
     {{"zvkng"}, {ImpliedExtsZvkng}},
@@ -1488,4 +1500,41 @@ StringRef RISCVISAInfo::computeDefaultABI() const {
     return "lp64";
   }
   llvm_unreachable("Invalid XLEN");
+}
+
+bool RISCVISAInfo::isSupportedExtensionWithVersion(StringRef Ext) {
+  if (Ext.empty())
+    return false;
+
+  auto Pos = findLastNonVersionCharacter(Ext) + 1;
+  StringRef Name = Ext.substr(0, Pos);
+  StringRef Vers = Ext.substr(Pos);
+  if (Vers.empty())
+    return false;
+
+  unsigned Major, Minor, ConsumeLength;
+  if (auto E = getExtensionVersion(Name, Vers, Major, Minor, ConsumeLength,
+                                   true, true)) {
+    consumeError(std::move(E));
+    return false;
+  }
+
+  return true;
+}
+
+std::string RISCVISAInfo::getTargetFeatureForExtension(StringRef Ext) {
+  if (Ext.empty())
+    return std::string();
+
+  auto Pos = findLastNonVersionCharacter(Ext) + 1;
+  StringRef Name = Ext.substr(0, Pos);
+
+  if (Pos != Ext.size() && !isSupportedExtensionWithVersion(Ext))
+    return std::string();
+
+  if (!isSupportedExtension(Name))
+    return std::string();
+
+  return isExperimentalExtension(Name) ? "experimental-" + Name.str()
+                                       : Name.str();
 }

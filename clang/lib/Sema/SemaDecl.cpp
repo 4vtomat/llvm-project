@@ -9235,7 +9235,8 @@ static FunctionDecl *CreateNewFunctionDecl(Sema &SemaRef, Declarator &D,
     bool HasPrototype =
         (D.isFunctionDeclarator() && D.getFunctionTypeInfo().hasPrototype) ||
         (D.getDeclSpec().isTypeRep() &&
-         D.getDeclSpec().getRepAsType().get()->isFunctionProtoType()) ||
+         SemaRef.GetTypeFromParser(D.getDeclSpec().getRepAsType(), nullptr)
+             ->isFunctionProtoType()) ||
         (!R->getAsAdjusted<FunctionType>() && R->isFunctionProtoType());
     assert(
         (HasPrototype || !SemaRef.getLangOpts().requiresStrictPrototypes()) &&
@@ -10324,7 +10325,10 @@ Sema::ActOnFunctionDeclarator(Scope *S, Declarator &D, DeclContext *DC,
     return NewFD;
   }
 
-  if (getLangOpts().OpenCL) {
+  if (getLangOpts().OpenCL || getLangOpts().HLSL) {
+    // Neither OpenCL nor HLSL allow an address space qualifyer on a return
+    // type.
+    //
     // OpenCL v1.1 s6.5: Using an address space qualifier in a function return
     // type declaration will generate a compilation error.
     LangAS AddressSpace = NewFD->getReturnType().getAddressSpace();
@@ -10358,13 +10362,6 @@ Sema::ActOnFunctionDeclarator(Scope *S, Declarator &D, DeclContext *DC,
                                                 NewFD->getBeginLoc()));
         }
       }
-    }
-    // HLSL does not support specifying an address space on a function return
-    // type.
-    LangAS AddressSpace = NewFD->getReturnType().getAddressSpace();
-    if (AddressSpace != LangAS::Default) {
-      Diag(NewFD->getLocation(), diag::err_return_value_with_address_space);
-      NewFD->setInvalidDecl();
     }
   }
 
@@ -14360,25 +14357,32 @@ void Sema::CheckCompleteVariableDeclaration(VarDecl *var) {
       !inTemplateInstantiation()) {
     PragmaStack<StringLiteral *> *Stack = nullptr;
     int SectionFlags = ASTContext::PSF_Read;
-    if (var->getType().isConstQualified()) {
-      if (HasConstInit)
-        Stack = &ConstSegStack;
-      else {
-        Stack = &BSSSegStack;
-        SectionFlags |= ASTContext::PSF_Write;
-      }
-    } else if (var->hasInit() && HasConstInit) {
-      Stack = &DataSegStack;
-      SectionFlags |= ASTContext::PSF_Write;
+    bool MSVCEnv =
+        Context.getTargetInfo().getTriple().isWindowsMSVCEnvironment();
+    std::optional<QualType::NonConstantStorageReason> Reason;
+    if (HasConstInit &&
+        !(Reason = var->getType().isNonConstantStorage(Context, true, false))) {
+      Stack = &ConstSegStack;
     } else {
-      Stack = &BSSSegStack;
       SectionFlags |= ASTContext::PSF_Write;
+      Stack = var->hasInit() && HasConstInit ? &DataSegStack : &BSSSegStack;
     }
     if (const SectionAttr *SA = var->getAttr<SectionAttr>()) {
       if (SA->getSyntax() == AttributeCommonInfo::AS_Declspec)
         SectionFlags |= ASTContext::PSF_Implicit;
       UnifySection(SA->getName(), SectionFlags, var);
     } else if (Stack->CurrentValue) {
+      if (Stack != &ConstSegStack && MSVCEnv &&
+          ConstSegStack.CurrentValue != ConstSegStack.DefaultValue &&
+          var->getType().isConstQualified()) {
+        assert((!Reason || Reason != QualType::NonConstantStorageReason::
+                                         NonConstNonReferenceType) &&
+               "This case should've already been handled elsewhere");
+        Diag(var->getLocation(), diag::warn_section_msvc_compat)
+                << var << ConstSegStack.CurrentValue << (int)(!HasConstInit
+            ? QualType::NonConstantStorageReason::NonTrivialCtor
+            : *Reason);
+      }
       SectionFlags |= ASTContext::PSF_Implicit;
       auto SectionName = Stack->CurrentValue->getString();
       var->addAttr(SectionAttr::CreateImplicit(Context, SectionName,
@@ -15281,11 +15285,10 @@ Sema::CheckForFunctionRedefinition(FunctionDecl *FD,
   FD->setInvalidDecl();
 }
 
-static void RebuildLambdaScopeInfo(CXXMethodDecl *CallOperator,
-                                   Sema &S) {
-  CXXRecordDecl *const LambdaClass = CallOperator->getParent();
+LambdaScopeInfo *Sema::RebuildLambdaScopeInfo(CXXMethodDecl *CallOperator) {
+  CXXRecordDecl *LambdaClass = CallOperator->getParent();
 
-  LambdaScopeInfo *LSI = S.PushLambdaScope();
+  LambdaScopeInfo *LSI = PushLambdaScope();
   LSI->CallOperator = CallOperator;
   LSI->Lambda = LambdaClass;
   LSI->ReturnType = CallOperator->getReturnType();
@@ -15309,7 +15312,7 @@ static void RebuildLambdaScopeInfo(CXXMethodDecl *CallOperator,
     if (C.capturesVariable()) {
       ValueDecl *VD = C.getCapturedVar();
       if (VD->isInitCapture())
-        S.CurrentInstantiationScope->InstantiatedLocal(VD, VD);
+        CurrentInstantiationScope->InstantiatedLocal(VD, VD);
       const bool ByRef = C.getCaptureKind() == LCK_ByRef;
       LSI->addCapture(VD, /*IsBlock*/false, ByRef,
           /*RefersToEnclosingVariableOrCapture*/true, C.getLocation(),
@@ -15326,6 +15329,7 @@ static void RebuildLambdaScopeInfo(CXXMethodDecl *CallOperator,
     }
     ++I;
   }
+  return LSI;
 }
 
 Decl *Sema::ActOnStartOfFunctionDef(Scope *FnBodyScope, Decl *D,
@@ -15429,7 +15433,7 @@ Decl *Sema::ActOnStartOfFunctionDef(Scope *FnBodyScope, Decl *D,
     assert(inTemplateInstantiation() &&
            "There should be an active template instantiation on the stack "
            "when instantiating a generic lambda!");
-    RebuildLambdaScopeInfo(cast<CXXMethodDecl>(D), *this);
+    RebuildLambdaScopeInfo(cast<CXXMethodDecl>(D));
   } else {
     // Enter a new function scope
     PushFunctionScope();
@@ -16009,6 +16013,7 @@ Decl *Sema::ActOnFinishFunctionBody(Decl *dcl, Stmt *Body,
       // been leftover. This ensures that these temporaries won't be picked up
       // for deletion in some later function.
       if (hasUncompilableErrorOccurred() ||
+          hasAnyUnrecoverableErrorsInThisFunction() ||
           getDiagnostics().getSuppressAllDiagnostics()) {
         DiscardCleanupsInEvaluationContext();
       }

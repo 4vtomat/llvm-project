@@ -26,7 +26,6 @@ def SCF_Dialect : Dialect {
   let name = "scf";
   let cppNamespace = "::mlir::scf";
   let dependentDialects = ["arith::ArithDialect"];
-  let usePropertiesForAttributes = 1;
 }
 
 // Base class for SCF dialect ops.
@@ -1110,6 +1109,8 @@ def WhileOp : SCF_Op<"while",
     YieldOp getYieldOp();
     Block::BlockArgListType getBeforeArguments();
     Block::BlockArgListType getAfterArguments();
+    Block *getBeforeBody() { return &getBefore().front(); }
+    Block *getAfterBody() { return &getAfter().front(); }
   }];
 
   let hasCanonicalizer = 1;

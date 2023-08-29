@@ -629,7 +629,17 @@ def FeatureStdExtZvfh
                        "'Zvfh' (Vector Half-Precision Floating-Point)",
                        [FeatureStdExtZve32f, FeatureStdExtZfhmin]>;
 
+def FeatureStdExtZvfhmin
+    : SubtargetFeature<"zvfhmin", "HasStdExtZvfhmin", "true",
+                       "'Zvfhmin' (Vector Half-Precision Floating-Point Minimal)",
+                       [FeatureStdExtZve32f]>;
+
 def HasVInstructionsF16 : Predicate<"Subtarget->hasVInstructionsF16()">;
+
+def HasVInstructionsF16Minimal : Predicate<"Subtarget->hasVInstructionsF16Minimal()">,
+      AssemblerPredicate<(any_of FeatureStdExtZvfhmin, FeatureStdExtZvfh),
+                         "'Zvfhmin' (Vector Half-Precision Floating-Point Minimal) or "
+                         "'Zvfh' (Vector Half-Precision Floating-Point)">;
 
 def HasStdExtZfhOrZvfh
     : Predicate<"Subtarget->hasStdExtZfh() || Subtarget->hasStdExtZvfh()">,
@@ -689,10 +699,17 @@ def HasStdExtZawrs : Predicate<"Subtarget->hasStdExtZawrs()">,
 
 def FeatureStdExtZvkb
     : SubtargetFeature<"experimental-zvkb", "HasStdExtZvkb", "true",
+<<<<<<< HEAD
                        "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
 def HasStdExtZvkb : Predicate<"Subtarget->hasStdExtZvkb()">,
                               AssemblerPredicate<(all_of FeatureStdExtZvkb),
                               "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
+=======
+                       "'Zvkb' (Vector Bit-manipulation used in Cryptography)">;
+def HasStdExtZvkb : Predicate<"Subtarget->hasStdExtZvkb()">,
+                              AssemblerPredicate<(all_of FeatureStdExtZvkb),
+                              "'Zvkb' (Vector Bit-manipulation used in Cryptography)">;
+>>>>>>> upstream/main
 
 def FeatureStdExtZvbb
     : SubtargetFeature<"experimental-zvbb", "HasStdExtZvbb", "true",
@@ -841,6 +858,13 @@ def FeatureStdExtZvksg
                        "This extension is shorthand for the following set of "
                        "other extensions: Zvks and Zvkg.",
                        [FeatureStdExtZvks, FeatureStdExtZvkg]>;
+
+def FeatureStdExtZicfilp
+    : SubtargetFeature<"experimental-zicfilp", "HasStdExtZicfilp", "true",
+                       "'Zicfilp' (Landing pad)">;
+def HasStdExtZicfilp : Predicate<"Subtarget->hasStdExtZicfilp()">,
+                                 AssemblerPredicate<(all_of FeatureStdExtZicfilp),
+                                 "'Zicfilp' (Landing pad)">;
 
 def FeatureStdExtZicond
     : SubtargetFeature<"experimental-zicond", "HasStdExtZicond", "true",
@@ -1291,3 +1315,12 @@ def FeatureTaggedGlobals : SubtargetFeature<"tagged-globals",
     "AllowTaggedGlobals",
     "true", "Use an instruction sequence for taking the address of a global "
     "that allows a memory tag in the upper address bits">;
+
+foreach align = [2, 4, 8, 16, 32, 64] in {
+  def TunePrefFunctionAlignment # align :
+      SubtargetFeature<"pref-func-align-" # align, "PrefFunctionAlignment",
+                       "Align(" # align # ")", "Set preferred function alignment to " # align # " bytes">;
+  def TunePrefLoopAlignment # align :
+      SubtargetFeature<"pref-loop-align-" # align, "PrefLoopAlignment",
+                       "Align(" # align # ")", "Set preferred loop alignment to " # align # " bytes">;
+}

@@ -299,11 +299,12 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
             /*HasMaskedOffOperand=*/false, Record.HasVL, Record.NF,
             UnMaskedPolicyScheme, DefaultPolicy, Record.IsTuple);
 
-    llvm::SmallVector<PrototypeDescriptor> ProtoMaskSeq =
-        RVVIntrinsic::computeBuiltinTypes(
-            BasicProtoSeq, /*IsMasked=*/true, Record.HasMaskedOffOperand,
-            Record.HasVL, Record.NF, MaskedPolicyScheme, DefaultPolicy,
-            Record.IsTuple);
+    llvm::SmallVector<PrototypeDescriptor> ProtoMaskSeq;
+    if (Record.HasMasked)
+      ProtoMaskSeq = RVVIntrinsic::computeBuiltinTypes(
+          BasicProtoSeq, /*IsMasked=*/true, Record.HasMaskedOffOperand,
+          Record.HasVL, Record.NF, MaskedPolicyScheme, DefaultPolicy,
+          Record.IsTuple);
 
 #if SIFIVE_CUSTOMIZATION
     llvm::SmallVector<PrototypeDescriptor> NTLProtoSeq =
@@ -344,6 +345,16 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
 
       if ((BaseTypeI & Record.TypeRangeMask) != BaseTypeI)
         continue;
+
+      if (BaseType == BasicType::Float16) {
+        if ((Record.RequiredExtensions & RVV_REQ_ZvfhminOrZvfh) ==
+            RVV_REQ_ZvfhminOrZvfh) {
+          if (!TI.hasFeature("zvfh") && !TI.hasFeature("zvfhmin"))
+            continue;
+        } else if (!TI.hasFeature("zvfh")) {
+          continue;
+        }
+      }
 
       // Expanded with different LMUL.
       for (int Log2LMUL = -3; Log2LMUL <= 3; Log2LMUL++) {

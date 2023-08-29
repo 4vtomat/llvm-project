@@ -31,7 +31,7 @@
 /// the exact bit pattern of inactive lanes, or produce the bit pattern -1 for
 /// those lanes.  Note that each lane can make this choice independently.
 /// Instructions which produce masks (and only those instructions) also have the
-/// option of producing a result as-if VL had been VLMAX. 
+/// option of producing a result as-if VL had been VLMAX.
 /// * "Undefined" - The bit pattern of the inactive lanes is unspecified, and
 /// can be changed without impacting the semantics of the program.  Note that
 /// this concept does not exist in the specification, and requires source
@@ -52,26 +52,26 @@
 ///
 /// Currently, the policy is represented via the following instrinsic families:
 /// * _MASK - Can represent all three policy states for both tail and mask.  If
-///   passthrough is IMPLICIT_DEF, then represents "undefined".  Otherwise,
-///   policy operand and tablegen flags drive the interpretation.  (If policy
-///   operand is not present - there are a couple, thought we're rapidly
-///   removing them - a non-undefined policy defaults to "tail agnostic", and
-///   "mask undisturbed".  Since this is the only variant with a mask, all
-///   other variants are "mask undefined".
+///   passthrough is IMPLICIT_DEF (or NoReg), then represents "undefined".
+///   Otherwise, policy operand and tablegen flags drive the interpretation.
+///   (If policy operand is not present - there are a couple, though we're
+///   rapidly removing them - a non-undefined policy defaults to "tail
+///   agnostic", and "mask undisturbed".  Since this is the only variant with
+///   a mask, all other variants are "mask undefined".
 /// * Unsuffixed w/ both passthrough and policy operand. Can represent all
-///   three policy states.  If passthrough is IMPLICIT_DEF, then represents
-///   "undefined".  Otherwise, policy operand and tablegen flags drive the
-///   interpretation.
+///   three policy states.  If passthrough is IMPLICIT_DEF (or NoReg), then
+///   represents "undefined".  Otherwise, policy operand and tablegen flags
+///   drive the interpretation.
 /// * Unsuffixed w/o passthrough or policy operand -- Does not have a
 ///   passthrough operand, and thus represents the "undefined" state.  Note
 ///   that terminology in code frequently refers to these as "TA" which is
 ///   confusing.  We're in the process of migrating away from this
 ///   representation.
 /// * _TU w/o policy operand -- Has a passthrough operand, and always
-///   represents the tail undisturbed state.  
+///   represents the tail undisturbed state.
 /// * _TU w/policy operand - Can represent all three policy states.  If
-///   passthrough is IMPLICIT_DEF, then represents "undefined".  Otherwise,
-///   policy operand and tablegen flags drive the interpretation.
+///   passthrough is IMPLICIT_DEF (or NoReg), then represents "undefined".
+///   Otherwise, policy operand and tablegen flags drive the interpretation.
 ///
 //===----------------------------------------------------------------------===//
 
@@ -785,10 +785,11 @@ class GetVTypePredicates<VTypeInfo vti> {
                                      true : [HasVInstructions]);
 }
 
-class VPseudoUSLoadNoMask<VReg RetClass, int EEW> :
+class VPseudoUSLoadNoMask<VReg RetClass,
+                          int EEW> :
       Pseudo<(outs RetClass:$rd),
              (ins RetClass:$dest, GPRMem:$rs1, AVL:$vl, ixlenimm:$sew,
-                  ixlenimm:$policy),[]>,
+                  ixlenimm:$policy), []>,
       RISCVVPseudo,
       RISCVVLE</*Masked*/0, /*Strided*/0, /*FF*/0, !logtwo(EEW), VLMul> {
   let mayLoad = 1;
@@ -800,11 +801,12 @@ class VPseudoUSLoadNoMask<VReg RetClass, int EEW> :
   let Constraints = "$rd = $dest";
 }
 
-class VPseudoUSLoadMask<VReg RetClass, int EEW> :
+class VPseudoUSLoadMask<VReg RetClass,
+                        int EEW> :
       Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
-              (ins GetVRegNoV0<RetClass>.R:$merge,
-                   GPRMem:$rs1,
-                   VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy),[]>,
+             (ins GetVRegNoV0<RetClass>.R:$merge,
+                  GPRMem:$rs1,
+                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
       RISCVVPseudo,
       RISCVVLE</*Masked*/1, /*Strided*/0, /*FF*/0, !logtwo(EEW), VLMul> {
   let mayLoad = 1;
@@ -817,10 +819,11 @@ class VPseudoUSLoadMask<VReg RetClass, int EEW> :
   let UsesMaskPolicy = 1;
 }
 
-class VPseudoUSLoadFFNoMask<VReg RetClass, int EEW> :
+class VPseudoUSLoadFFNoMask<VReg RetClass,
+                            int EEW> :
       Pseudo<(outs RetClass:$rd, GPR:$vl),
              (ins RetClass:$dest, GPRMem:$rs1, AVL:$avl,
-                  ixlenimm:$sew, ixlenimm:$policy),[]>,
+                  ixlenimm:$sew, ixlenimm:$policy), []>,
       RISCVVPseudo,
       RISCVVLE</*Masked*/0, /*Strided*/0, /*FF*/1, !logtwo(EEW), VLMul> {
   let mayLoad = 1;
@@ -832,11 +835,12 @@ class VPseudoUSLoadFFNoMask<VReg RetClass, int EEW> :
   let Constraints = "$rd = $dest";
 }
 
-class VPseudoUSLoadFFMask<VReg RetClass, int EEW> :
+class VPseudoUSLoadFFMask<VReg RetClass,
+                          int EEW> :
       Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd, GPR:$vl),
-              (ins GetVRegNoV0<RetClass>.R:$merge,
-                   GPRMem:$rs1,
-                   VMaskOp:$vm, AVL:$avl, ixlenimm:$sew, ixlenimm:$policy),[]>,
+             (ins GetVRegNoV0<RetClass>.R:$merge,
+                  GPRMem:$rs1,
+                  VMaskOp:$vm, AVL:$avl, ixlenimm:$sew, ixlenimm:$policy), []>,
       RISCVVPseudo,
       RISCVVLE</*Masked*/1, /*Strided*/0, /*FF*/1, !logtwo(EEW), VLMul> {
   let mayLoad = 1;
@@ -849,10 +853,11 @@ class VPseudoUSLoadFFMask<VReg RetClass, int EEW> :
   let UsesMaskPolicy = 1;
 }
 
-class VPseudoSLoadNoMask<VReg RetClass, int EEW>:
+class VPseudoSLoadNoMask<VReg RetClass,
+                         int EEW> :
       Pseudo<(outs RetClass:$rd),
              (ins RetClass:$dest, GPRMem:$rs1, GPR:$rs2, AVL:$vl,
-                  ixlenimm:$sew, ixlenimm:$policy),[]>,
+                  ixlenimm:$sew, ixlenimm:$policy), []>,
       RISCVVPseudo,
       RISCVVLE</*Masked*/0, /*Strided*/1, /*FF*/0, !logtwo(EEW), VLMul> {
   let mayLoad = 1;
@@ -864,11 +869,12 @@ class VPseudoSLoadNoMask<VReg RetClass, int EEW>:
   let Constraints = "$rd = $dest";
 }
 
-class VPseudoSLoadMask<VReg RetClass, int EEW>:
+class VPseudoSLoadMask<VReg RetClass,
+                       int EEW> :
       Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
-              (ins GetVRegNoV0<RetClass>.R:$merge,
-                   GPRMem:$rs1, GPR:$rs2,
-                   VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy),[]>,
+             (ins GetVRegNoV0<RetClass>.R:$merge,
+                  GPRMem:$rs1, GPR:$rs2,
+                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
       RISCVVPseudo,
       RISCVVLE</*Masked*/1, /*Strided*/1, /*FF*/0, !logtwo(EEW), VLMul> {
   let mayLoad = 1;
@@ -881,13 +887,22 @@ class VPseudoSLoadMask<VReg RetClass, int EEW>:
   let UsesMaskPolicy = 1;
 }
 
+<<<<<<< HEAD
 class VPseudoILoadNoMask<VReg RetClass, VReg IdxClass, int EEW, bits<3> LMUL,
 #ifdef SIFIVE_CUSTOMIZATION
                          bit Ordered, bit EarlyClobber, int TargetConstraintType = 1>:
 #endif // SIFIVE_CUSTOMIZATION
+=======
+class VPseudoILoadNoMask<VReg RetClass,
+                         VReg IdxClass,
+                         int EEW,
+                         bits<3> LMUL,
+                         bit Ordered,
+                         bit EarlyClobber> :
+>>>>>>> upstream/main
       Pseudo<(outs RetClass:$rd),
              (ins RetClass:$dest, GPRMem:$rs1, IdxClass:$rs2, AVL:$vl,
-              ixlenimm:$sew, ixlenimm:$policy),[]>,
+                  ixlenimm:$sew, ixlenimm:$policy), []>,
       RISCVVPseudo,
       RISCVVLX</*Masked*/0, Ordered, !logtwo(EEW), VLMul, LMUL> {
   let mayLoad = 1;
@@ -902,14 +917,23 @@ class VPseudoILoadNoMask<VReg RetClass, VReg IdxClass, int EEW, bits<3> LMUL,
 #endif // SIFIVE_CUSTOMIZATION
 }
 
+<<<<<<< HEAD
 class VPseudoILoadMask<VReg RetClass, VReg IdxClass, int EEW, bits<3> LMUL,
 #ifdef SIFIVE_CUSTOMIZATION
                        bit Ordered, bit EarlyClobber, int TargetConstraintType = 1>:
 #endif // SIFIVE_CUSTOMIZATION
+=======
+class VPseudoILoadMask<VReg RetClass,
+                       VReg IdxClass,
+                       int EEW,
+                       bits<3> LMUL,
+                       bit Ordered,
+                       bit EarlyClobber> :
+>>>>>>> upstream/main
       Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
-              (ins GetVRegNoV0<RetClass>.R:$merge,
-                   GPRMem:$rs1, IdxClass:$rs2,
-                   VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy),[]>,
+             (ins GetVRegNoV0<RetClass>.R:$merge,
+                  GPRMem:$rs1, IdxClass:$rs2,
+                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
       RISCVVPseudo,
       RISCVVLX</*Masked*/1, Ordered, !logtwo(EEW), VLMul, LMUL> {
   let mayLoad = 1;
@@ -925,9 +949,10 @@ class VPseudoILoadMask<VReg RetClass, VReg IdxClass, int EEW, bits<3> LMUL,
   let UsesMaskPolicy = 1;
 }
 
-class VPseudoUSStoreNoMask<VReg StClass, int EEW>:
+class VPseudoUSStoreNoMask<VReg StClass,
+                           int EEW> :
       Pseudo<(outs),
-              (ins StClass:$rd, GPRMem:$rs1, AVL:$vl, ixlenimm:$sew),[]>,
+             (ins StClass:$rd, GPRMem:$rs1, AVL:$vl, ixlenimm:$sew), []>,
       RISCVVPseudo,
       RISCVVSE</*Masked*/0, /*Strided*/0, !logtwo(EEW), VLMul> {
   let mayLoad = 0;
@@ -937,9 +962,11 @@ class VPseudoUSStoreNoMask<VReg StClass, int EEW>:
   let HasSEWOp = 1;
 }
 
-class VPseudoUSStoreMask<VReg StClass, int EEW>:
+class VPseudoUSStoreMask<VReg StClass,
+                         int EEW> :
       Pseudo<(outs),
-              (ins StClass:$rd, GPRMem:$rs1, VMaskOp:$vm, AVL:$vl, ixlenimm:$sew),[]>,
+             (ins StClass:$rd, GPRMem:$rs1,
+                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew), []>,
       RISCVVPseudo,
       RISCVVSE</*Masked*/1, /*Strided*/0, !logtwo(EEW), VLMul> {
   let mayLoad = 0;
@@ -949,9 +976,11 @@ class VPseudoUSStoreMask<VReg StClass, int EEW>:
   let HasSEWOp = 1;
 }
 
-class VPseudoSStoreNoMask<VReg StClass, int EEW>:
+class VPseudoSStoreNoMask<VReg StClass,
+                          int EEW> :
       Pseudo<(outs),
-              (ins StClass:$rd, GPRMem:$rs1, GPR:$rs2, AVL:$vl, ixlenimm:$sew),[]>,
+             (ins StClass:$rd, GPRMem:$rs1, GPR:$rs2,
+                  AVL:$vl, ixlenimm:$sew), []>,
       RISCVVPseudo,
       RISCVVSE</*Masked*/0, /*Strided*/1, !logtwo(EEW), VLMul> {
   let mayLoad = 0;
@@ -961,9 +990,11 @@ class VPseudoSStoreNoMask<VReg StClass, int EEW>:
   let HasSEWOp = 1;
 }
 
-class VPseudoSStoreMask<VReg StClass, int EEW>:
+class VPseudoSStoreMask<VReg StClass,
+                        int EEW> :
       Pseudo<(outs),
-              (ins StClass:$rd, GPRMem:$rs1, GPR:$rs2, VMaskOp:$vm, AVL:$vl, ixlenimm:$sew),[]>,
+             (ins StClass:$rd, GPRMem:$rs1, GPR:$rs2,
+                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew), []>,
       RISCVVPseudo,
       RISCVVSE</*Masked*/1, /*Strided*/1, !logtwo(EEW), VLMul> {
   let mayLoad = 0;
@@ -973,10 +1004,11 @@ class VPseudoSStoreMask<VReg StClass, int EEW>:
   let HasSEWOp = 1;
 }
 
-class VPseudoNullaryNoMask<VReg RegClass>:
+class VPseudoNullaryNoMask<VReg RegClass> :
       Pseudo<(outs RegClass:$rd),
-             (ins RegClass:$merge, AVL:$vl, ixlenimm:$sew,
-                  ixlenimm:$policy), []>, RISCVVPseudo {
+             (ins RegClass:$merge,
+                  AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
+      RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -986,10 +1018,11 @@ class VPseudoNullaryNoMask<VReg RegClass>:
   let HasVecPolicyOp = 1;
 }
 
-class VPseudoNullaryMask<VReg RegClass>:
+class VPseudoNullaryMask<VReg RegClass> :
       Pseudo<(outs GetVRegNoV0<RegClass>.R:$rd),
-             (ins GetVRegNoV0<RegClass>.R:$merge, VMaskOp:$vm, AVL:$vl,
-              ixlenimm:$sew, ixlenimm:$policy), []>, RISCVVPseudo {
+             (ins GetVRegNoV0<RegClass>.R:$merge,
+                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
+      RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1002,9 +1035,9 @@ class VPseudoNullaryMask<VReg RegClass>:
 
 // Nullary for pseudo instructions. They are expanded in
 // RISCVExpandPseudoInsts pass.
-class VPseudoNullaryPseudoM<string BaseInst>
-       : Pseudo<(outs VR:$rd), (ins AVL:$vl, ixlenimm:$sew), []>,
-       RISCVVPseudo {
+class VPseudoNullaryPseudoM<string BaseInst> :
+      Pseudo<(outs VR:$rd), (ins AVL:$vl, ixlenimm:$sew), []>,
+      RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1015,17 +1048,22 @@ class VPseudoNullaryPseudoM<string BaseInst>
   let BaseInstr = !cast<Instruction>(BaseInst);
 }
 
+<<<<<<< HEAD
 // RetClass could be GPR or VReg.
 #ifdef SIFIVE_CUSTOMIZATION
 class VPseudoUnaryNoMask<DAGOperand RetClass, DAGOperand OpClass, string Constraint = "", int TargetConstraintType = 1> :
 #else
 class VPseudoUnaryNoMask<DAGOperand RetClass, DAGOperand OpClass,
+=======
+class VPseudoUnaryNoMask<DAGOperand RetClass,
+                         DAGOperand OpClass,
+>>>>>>> upstream/main
                          string Constraint = ""> :
 #endif // SIFIVE_CUSTOMIZATION
       Pseudo<(outs RetClass:$rd),
-        (ins RetClass:$merge, OpClass:$rs2, AVL:$vl, ixlenimm:$sew,
-             ixlenimm:$policy), []>,
-        RISCVVPseudo {
+             (ins RetClass:$merge, OpClass:$rs2,
+                  AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
+      RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1038,6 +1076,7 @@ class VPseudoUnaryNoMask<DAGOperand RetClass, DAGOperand OpClass,
   let HasVecPolicyOp = 1;
 }
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 class VPseudoUnaryNoMaskRoundingMode<DAGOperand RetClass, DAGOperand OpClass,
                          string Constraint = "", int TargetConstraintType = 1> :
@@ -1045,10 +1084,15 @@ class VPseudoUnaryNoMaskRoundingMode<DAGOperand RetClass, DAGOperand OpClass,
 class VPseudoUnaryNoMaskRoundingMode<DAGOperand RetClass, DAGOperand OpClass,
                          string Constraint = ""> :
 #endif // SIFIVE_CUSTOMIZATION
+=======
+class VPseudoUnaryNoMaskRoundingMode<DAGOperand RetClass,
+                                     DAGOperand OpClass,
+                                     string Constraint = ""> :
+>>>>>>> upstream/main
       Pseudo<(outs RetClass:$rd),
-        (ins RetClass:$merge, OpClass:$rs2, ixlenimm:$rm, AVL:$vl, ixlenimm:$sew,
-             ixlenimm:$policy), []>,
-        RISCVVPseudo {
+             (ins RetClass:$merge, OpClass:$rs2, ixlenimm:$rm,
+                  AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
+      RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1063,11 +1107,13 @@ class VPseudoUnaryNoMaskRoundingMode<DAGOperand RetClass, DAGOperand OpClass,
   let UsesVXRM = 0;
 }
 
-class VPseudoUnaryMask<VReg RetClass, VReg OpClass, string Constraint = ""> :
-        Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
-               (ins GetVRegNoV0<RetClass>.R:$merge, OpClass:$rs2,
-                    VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
-        RISCVVPseudo {
+class VPseudoUnaryMask<VReg RetClass,
+                       VReg OpClass,
+                       string Constraint = ""> :
+      Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
+             (ins GetVRegNoV0<RetClass>.R:$merge, OpClass:$rs2,
+                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
+      RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1078,12 +1124,14 @@ class VPseudoUnaryMask<VReg RetClass, VReg OpClass, string Constraint = ""> :
   let UsesMaskPolicy = 1;
 }
 
-class VPseudoUnaryMaskRoundingMode<VReg RetClass, VReg OpClass, string Constraint = ""> :
-        Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
-               (ins GetVRegNoV0<RetClass>.R:$merge, OpClass:$rs2,
-                    VMaskOp:$vm, ixlenimm:$rm,
-                    AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
-        RISCVVPseudo {
+class VPseudoUnaryMaskRoundingMode<VReg RetClass,
+                                   VReg OpClass,
+                                   string Constraint = ""> :
+      Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
+             (ins GetVRegNoV0<RetClass>.R:$merge, OpClass:$rs2,
+                  VMaskOp:$vm, ixlenimm:$rm,
+                  AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
+      RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1096,6 +1144,7 @@ class VPseudoUnaryMaskRoundingMode<VReg RetClass, VReg OpClass, string Constrain
   let UsesVXRM = 0;
 }
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 class VPseudoUnaryMaskTA<VReg RetClass, VReg OpClass, string Constraint = "", int TargetConstraintType = 1> :
 #else
@@ -1122,6 +1171,14 @@ class VPseudoUnaryMask_NoExcept<VReg RetClass, VReg OpClass, string Constraint =
         Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
                (ins GetVRegNoV0<RetClass>.R:$merge, OpClass:$rs2, VMaskOp:$vm,
                     AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []> {
+=======
+class VPseudoUnaryMask_NoExcept<VReg RetClass,
+                                VReg OpClass,
+                                string Constraint = ""> :
+      Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
+             (ins GetVRegNoV0<RetClass>.R:$merge, OpClass:$rs2,
+                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []> {
+>>>>>>> upstream/main
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1134,10 +1191,12 @@ class VPseudoUnaryMask_NoExcept<VReg RetClass, VReg OpClass, string Constraint =
   let usesCustomInserter = 1;
 }
 
-class VPseudoUnaryNoMask_FRM<VReg RetClass, VReg OpClass, string Constraint = ""> :
-        Pseudo<(outs RetClass:$rd),
-               (ins RetClass:$merge, OpClass:$rs2, ixlenimm:$frm, AVL:$vl,
-                    ixlenimm:$sew, ixlenimm:$policy), []> {
+class VPseudoUnaryNoMask_FRM<VReg RetClass,
+                             VReg OpClass,
+                             string Constraint = ""> :
+      Pseudo<(outs RetClass:$rd),
+             (ins RetClass:$merge, OpClass:$rs2, ixlenimm:$frm,
+                  AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []> {
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1145,14 +1204,21 @@ class VPseudoUnaryNoMask_FRM<VReg RetClass, VReg OpClass, string Constraint = ""
   let HasVLOp = 1;
   let HasSEWOp = 1;
   let HasVecPolicyOp = 1;
+<<<<<<< HEAD
   let HasRoundModeOp = 1; // SIFIVE Cherry-picked from upstream D158711.
+=======
+  let HasRoundModeOp = 1;
+>>>>>>> upstream/main
   let usesCustomInserter = 1;
 }
 
-class VPseudoUnaryMask_FRM<VReg RetClass, VReg OpClass, string Constraint = ""> :
-        Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
-               (ins GetVRegNoV0<RetClass>.R:$merge, OpClass:$rs2,
-                    VMaskOp:$vm, ixlenimm:$frm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []> {
+class VPseudoUnaryMask_FRM<VReg RetClass,
+                           VReg OpClass,
+                           string Constraint = ""> :
+      Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
+             (ins GetVRegNoV0<RetClass>.R:$merge, OpClass:$rs2,
+                  VMaskOp:$vm, ixlenimm:$frm,
+                  AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []> {
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1161,13 +1227,14 @@ class VPseudoUnaryMask_FRM<VReg RetClass, VReg OpClass, string Constraint = ""> 
   let HasSEWOp = 1;
   let HasVecPolicyOp = 1;
   let UsesMaskPolicy = 1;
+  let HasRoundModeOp = 1;
   let usesCustomInserter = 1;
 }
 
 class VPseudoUnaryNoMaskGPROut :
-        Pseudo<(outs GPR:$rd),
-               (ins VR:$rs2, AVL:$vl, ixlenimm:$sew), []>,
-        RISCVVPseudo {
+      Pseudo<(outs GPR:$rd),
+             (ins VR:$rs2, AVL:$vl, ixlenimm:$sew), []>,
+      RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1175,10 +1242,10 @@ class VPseudoUnaryNoMaskGPROut :
   let HasSEWOp = 1;
 }
 
-class VPseudoUnaryMaskGPROut:
-        Pseudo<(outs GPR:$rd),
-               (ins VR:$rs1, VMaskOp:$vm, AVL:$vl, ixlenimm:$sew), []>,
-        RISCVVPseudo {
+class VPseudoUnaryMaskGPROut :
+      Pseudo<(outs GPR:$rd),
+             (ins VR:$rs1, VMaskOp:$vm, AVL:$vl, ixlenimm:$sew), []>,
+      RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1190,10 +1257,8 @@ class VPseudoUnaryMaskGPROut:
 class VPseudoUnaryAnyMask<VReg RetClass,
                           VReg Op1Class> :
       Pseudo<(outs RetClass:$rd),
-             (ins RetClass:$merge,
-                  Op1Class:$rs2,
-                  VR:$vm, AVL:$vl, ixlenimm:$sew),
-             []>,
+             (ins RetClass:$merge, Op1Class:$rs2,
+                  VR:$vm, AVL:$vl, ixlenimm:$sew), []>,
       RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
@@ -1206,6 +1271,7 @@ class VPseudoUnaryAnyMask<VReg RetClass,
 class VPseudoBinaryNoMask<VReg RetClass,
                           VReg Op1Class,
                           DAGOperand Op2Class,
+<<<<<<< HEAD
                           string Constraint,
 #ifdef SIFIVE_CUSTOMIZATION
                           int TargetConstraintType = 1> :
@@ -1213,6 +1279,12 @@ class VPseudoBinaryNoMask<VReg RetClass,
         Pseudo<(outs RetClass:$rd),
                (ins Op1Class:$rs2, Op2Class:$rs1, AVL:$vl, ixlenimm:$sew), []>,
         RISCVVPseudo {
+=======
+                          string Constraint> :
+      Pseudo<(outs RetClass:$rd),
+             (ins Op1Class:$rs2, Op2Class:$rs1, AVL:$vl, ixlenimm:$sew), []>,
+      RISCVVPseudo {
+>>>>>>> upstream/main
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1227,6 +1299,7 @@ class VPseudoBinaryNoMask<VReg RetClass,
 class VPseudoBinaryNoMaskTU<VReg RetClass,
                             VReg Op1Class,
                             DAGOperand Op2Class,
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
                             string Constraint,
                             int TargetConstraintType = 1> :
@@ -1235,6 +1308,13 @@ class VPseudoBinaryNoMaskTU<VReg RetClass,
                (ins RetClass:$merge, Op1Class:$rs2, Op2Class:$rs1, AVL:$vl,
                ixlenimm:$sew, ixlenimm:$policy), []>,
         RISCVVPseudo {
+=======
+                            string Constraint> :
+      Pseudo<(outs RetClass:$rd),
+             (ins RetClass:$merge, Op1Class:$rs2, Op2Class:$rs1, AVL:$vl,
+                  ixlenimm:$sew, ixlenimm:$policy), []>,
+      RISCVVPseudo {
+>>>>>>> upstream/main
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1256,11 +1336,18 @@ class VPseudoBinaryNoMaskRoundingMode<VReg RetClass,
                                       int TargetConstraintType = 1> :
 #else
                                       int UsesVXRM_ = 1> :
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
         Pseudo<(outs RetClass:$rd),
                (ins RetClass:$merge, Op1Class:$rs2, Op2Class:$rs1, ixlenimm:$rm, 
                     AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
         RISCVVPseudo {
+=======
+      Pseudo<(outs RetClass:$rd),
+             (ins RetClass:$merge, Op1Class:$rs2, Op2Class:$rs1, ixlenimm:$rm,
+                  AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
+      RISCVVPseudo {
+>>>>>>> upstream/main
   let mayLoad = 0;
   let mayStore = 0;
   let Constraints = !interleave([Constraint, "$rd = $merge"], ",");
@@ -1283,6 +1370,7 @@ class VPseudoBinaryMaskPolicyRoundingMode<VReg RetClass,
                                           int TargetConstraintType = 1> :
 #else
                                           int UsesVXRM_> :
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
         Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
                 (ins GetVRegNoV0<RetClass>.R:$merge,
@@ -1290,6 +1378,14 @@ class VPseudoBinaryMaskPolicyRoundingMode<VReg RetClass,
                      VMaskOp:$vm, ixlenimm:$rm, AVL:$vl,
                      ixlenimm:$sew, ixlenimm:$policy), []>,
         RISCVVPseudo {
+=======
+      Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
+             (ins GetVRegNoV0<RetClass>.R:$merge,
+                  Op1Class:$rs2, Op2Class:$rs1,
+                  VMaskOp:$vm, ixlenimm:$rm, AVL:$vl,
+                  ixlenimm:$sew, ixlenimm:$policy), []>,
+      RISCVVPseudo {
+>>>>>>> upstream/main
   let mayLoad = 0;
   let mayStore = 0;
   let Constraints = !interleave([Constraint, "$rd = $merge"], ",");
@@ -1309,6 +1405,7 @@ class VPseudoBinaryMaskPolicyRoundingMode<VReg RetClass,
 // This allows maskedoff and rs2 to be the same register.
 class VPseudoTiedBinaryNoMask<VReg RetClass,
                               DAGOperand Op2Class,
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
                               string Constraint,
                               int TargetConstraintType = 1> :
@@ -1317,6 +1414,13 @@ class VPseudoTiedBinaryNoMask<VReg RetClass,
                (ins RetClass:$rs2, Op2Class:$rs1, AVL:$vl, ixlenimm:$sew,
                     ixlenimm:$policy), []>,
         RISCVVPseudo {
+=======
+                              string Constraint> :
+      Pseudo<(outs RetClass:$rd),
+             (ins RetClass:$rs2, Op2Class:$rs1, AVL:$vl, ixlenimm:$sew,
+                  ixlenimm:$policy), []>,
+      RISCVVPseudo {
+>>>>>>> upstream/main
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1334,12 +1438,12 @@ class VPseudoTiedBinaryNoMask<VReg RetClass,
 class VPseudoTiedBinaryNoMaskRoundingMode<VReg RetClass,
                                           DAGOperand Op2Class,
                                           string Constraint> :
-        Pseudo<(outs RetClass:$rd),
-               (ins RetClass:$rs2, Op2Class:$rs1,
-                    ixlenimm:$rm,
-                    AVL:$vl, ixlenimm:$sew,
-                    ixlenimm:$policy), []>,
-        RISCVVPseudo {
+      Pseudo<(outs RetClass:$rd),
+             (ins RetClass:$rs2, Op2Class:$rs1,
+                  ixlenimm:$rm,
+                  AVL:$vl, ixlenimm:$sew,
+                  ixlenimm:$policy), []>,
+      RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1356,7 +1460,8 @@ class VPseudoTiedBinaryNoMaskRoundingMode<VReg RetClass,
 class VPseudoIStoreNoMask<VReg StClass, VReg IdxClass, int EEW, bits<3> LMUL,
                           bit Ordered>:
       Pseudo<(outs),
-              (ins StClass:$rd, GPRMem:$rs1, IdxClass:$rs2, AVL:$vl, ixlenimm:$sew),[]>,
+             (ins StClass:$rd, GPRMem:$rs1, IdxClass:$rs2, AVL:$vl,
+                  ixlenimm:$sew),[]>,
       RISCVVPseudo,
       RISCVVSX</*Masked*/0, Ordered, !logtwo(EEW), VLMul, LMUL> {
   let mayLoad = 0;
@@ -1369,7 +1474,8 @@ class VPseudoIStoreNoMask<VReg StClass, VReg IdxClass, int EEW, bits<3> LMUL,
 class VPseudoIStoreMask<VReg StClass, VReg IdxClass, int EEW, bits<3> LMUL,
                         bit Ordered>:
       Pseudo<(outs),
-              (ins StClass:$rd, GPRMem:$rs1, IdxClass:$rs2, VMaskOp:$vm, AVL:$vl, ixlenimm:$sew),[]>,
+             (ins StClass:$rd, GPRMem:$rs1, IdxClass:$rs2,
+                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew),[]>,
       RISCVVPseudo,
       RISCVVSX</*Masked*/1, Ordered, !logtwo(EEW), VLMul, LMUL> {
   let mayLoad = 0;
@@ -1383,11 +1489,11 @@ class VPseudoBinaryMask<VReg RetClass,
                         RegisterClass Op1Class,
                         DAGOperand Op2Class,
                         string Constraint> :
-        Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
-                (ins GetVRegNoV0<RetClass>.R:$merge,
-                     Op1Class:$rs2, Op2Class:$rs1,
-                     VMaskOp:$vm, AVL:$vl, ixlenimm:$sew), []>,
-        RISCVVPseudo {
+      Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
+             (ins GetVRegNoV0<RetClass>.R:$merge,
+                  Op1Class:$rs2, Op2Class:$rs1,
+                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew), []>,
+      RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1399,6 +1505,7 @@ class VPseudoBinaryMask<VReg RetClass,
 class VPseudoBinaryMaskPolicy<VReg RetClass,
                               RegisterClass Op1Class,
                               DAGOperand Op2Class,
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
                               string Constraint,
                               int TargetConstraintType = 1> :
@@ -1408,6 +1515,14 @@ class VPseudoBinaryMaskPolicy<VReg RetClass,
                      Op1Class:$rs2, Op2Class:$rs1,
                      VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
         RISCVVPseudo {
+=======
+                              string Constraint> :
+      Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
+             (ins GetVRegNoV0<RetClass>.R:$merge,
+                  Op1Class:$rs2, Op2Class:$rs1,
+                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
+      RISCVVPseudo {
+>>>>>>> upstream/main
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1425,11 +1540,11 @@ class VPseudoTernaryMaskPolicy<VReg RetClass,
                                RegisterClass Op1Class,
                                DAGOperand Op2Class,
                                string Constraint> :
-        Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
-                (ins GetVRegNoV0<RetClass>.R:$merge,
-                     Op1Class:$rs2, Op2Class:$rs1,
-                     VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
-        RISCVVPseudo {
+      Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
+             (ins GetVRegNoV0<RetClass>.R:$merge,
+                  Op1Class:$rs2, Op2Class:$rs1,
+                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
+      RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1443,13 +1558,13 @@ class VPseudoTernaryMaskPolicyRoundingMode<VReg RetClass,
                                            RegisterClass Op1Class,
                                            DAGOperand Op2Class,
                                            string Constraint> :
-        Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
-                (ins GetVRegNoV0<RetClass>.R:$merge,
-                     Op1Class:$rs2, Op2Class:$rs1,
-                     VMaskOp:$vm,
-                     ixlenimm:$rm,
-                     AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
-        RISCVVPseudo {
+      Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
+             (ins GetVRegNoV0<RetClass>.R:$merge,
+                  Op1Class:$rs2, Op2Class:$rs1,
+                  VMaskOp:$vm,
+                  ixlenimm:$rm,
+                  AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
+      RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1465,6 +1580,7 @@ class VPseudoTernaryMaskPolicyRoundingMode<VReg RetClass,
 class VPseudoBinaryMOutNoMask<VReg RetClass,
                               VReg Op1Class,
                               DAGOperand Op2Class,
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
                               string Constraint,
                               int TargetConstraintType = 1> :
@@ -1472,6 +1588,12 @@ class VPseudoBinaryMOutNoMask<VReg RetClass,
         Pseudo<(outs RetClass:$rd),
                (ins Op1Class:$rs2, Op2Class:$rs1, AVL:$vl, ixlenimm:$sew), []>,
         RISCVVPseudo {
+=======
+                              string Constraint> :
+      Pseudo<(outs RetClass:$rd),
+             (ins Op1Class:$rs2, Op2Class:$rs1, AVL:$vl, ixlenimm:$sew), []>,
+      RISCVVPseudo {
+>>>>>>> upstream/main
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1487,6 +1609,7 @@ class VPseudoBinaryMOutNoMask<VReg RetClass,
 class VPseudoBinaryMOutMask<VReg RetClass,
                             RegisterClass Op1Class,
                             DAGOperand Op2Class,
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
                             string Constraint,
                             int TargetConstraintType = 1> :
@@ -1496,6 +1619,14 @@ class VPseudoBinaryMOutMask<VReg RetClass,
                      Op1Class:$rs2, Op2Class:$rs1,
                      VMaskOp:$vm, AVL:$vl, ixlenimm:$sew), []>,
         RISCVVPseudo {
+=======
+                            string Constraint> :
+      Pseudo<(outs RetClass:$rd),
+             (ins RetClass:$merge,
+                  Op1Class:$rs2, Op2Class:$rs1,
+                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew), []>,
+      RISCVVPseudo {
+>>>>>>> upstream/main
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1513,6 +1644,7 @@ class VPseudoBinaryMOutMask<VReg RetClass,
 // This allows maskedoff and rs2 to be the same register.
 class VPseudoTiedBinaryMask<VReg RetClass,
                             DAGOperand Op2Class,
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
                             string Constraint,
                             int TargetConstraintType = 1> :
@@ -1522,6 +1654,14 @@ class VPseudoTiedBinaryMask<VReg RetClass,
                      Op2Class:$rs1,
                      VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
         RISCVVPseudo {
+=======
+                            string Constraint> :
+      Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
+             (ins GetVRegNoV0<RetClass>.R:$merge,
+                  Op2Class:$rs1,
+                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
+      RISCVVPseudo {
+>>>>>>> upstream/main
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1539,13 +1679,13 @@ class VPseudoTiedBinaryMask<VReg RetClass,
 class VPseudoTiedBinaryMaskRoundingMode<VReg RetClass,
                                         DAGOperand Op2Class,
                                         string Constraint> :
-        Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
-                (ins GetVRegNoV0<RetClass>.R:$merge,
-                     Op2Class:$rs1,
-                     VMaskOp:$vm,
-                     ixlenimm:$rm,
-                     AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
-        RISCVVPseudo {
+      Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
+             (ins GetVRegNoV0<RetClass>.R:$merge,
+                  Op2Class:$rs1,
+                  VMaskOp:$vm,
+                  ixlenimm:$rm,
+                  AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
+      RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1564,6 +1704,7 @@ class VPseudoBinaryCarryIn<VReg RetClass,
                            DAGOperand Op2Class,
                            LMULInfo MInfo,
                            bit CarryIn,
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
                            string Constraint,
                            int TargetConstraintType = 1> :
@@ -1574,6 +1715,16 @@ class VPseudoBinaryCarryIn<VReg RetClass,
                        ixlenimm:$sew),
                   (ins Op1Class:$rs2, Op2Class:$rs1, AVL:$vl, ixlenimm:$sew)), []>,
         RISCVVPseudo {
+=======
+                           string Constraint> :
+      Pseudo<(outs RetClass:$rd),
+             !if(CarryIn,
+                (ins Op1Class:$rs2, Op2Class:$rs1,
+                     VMV0:$carry, AVL:$vl, ixlenimm:$sew),
+                (ins Op1Class:$rs2, Op2Class:$rs1,
+                     AVL:$vl, ixlenimm:$sew)), []>,
+      RISCVVPseudo {
+>>>>>>> upstream/main
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1591,6 +1742,7 @@ class VPseudoTiedBinaryCarryIn<VReg RetClass,
                                DAGOperand Op2Class,
                                LMULInfo MInfo,
                                bit CarryIn,
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
                                string Constraint,
                                int TargetConstraintType = 1> :
@@ -1601,6 +1753,16 @@ class VPseudoTiedBinaryCarryIn<VReg RetClass,
                        ixlenimm:$sew),
                   (ins RetClass:$merge, Op1Class:$rs2, Op2Class:$rs1, AVL:$vl, ixlenimm:$sew)), []>,
         RISCVVPseudo {
+=======
+                               string Constraint> :
+      Pseudo<(outs RetClass:$rd),
+             !if(CarryIn,
+                (ins RetClass:$merge, Op1Class:$rs2, Op2Class:$rs1,
+                     VMV0:$carry, AVL:$vl, ixlenimm:$sew),
+                (ins RetClass:$merge, Op1Class:$rs2, Op2Class:$rs1,
+                     AVL:$vl, ixlenimm:$sew)), []>,
+      RISCVVPseudo {
+>>>>>>> upstream/main
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1618,11 +1780,10 @@ class VPseudoTernaryNoMask<VReg RetClass,
                            RegisterClass Op1Class,
                            DAGOperand Op2Class,
                            string Constraint> :
-        Pseudo<(outs RetClass:$rd),
-               (ins RetClass:$rs3, Op1Class:$rs1, Op2Class:$rs2,
-                    AVL:$vl, ixlenimm:$sew),
-               []>,
-        RISCVVPseudo {
+      Pseudo<(outs RetClass:$rd),
+             (ins RetClass:$rs3, Op1Class:$rs1, Op2Class:$rs2,
+                  AVL:$vl, ixlenimm:$sew), []>,
+      RISCVVPseudo {
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1634,6 +1795,7 @@ class VPseudoTernaryNoMask<VReg RetClass,
 class VPseudoTernaryNoMaskWithPolicy<VReg RetClass,
                                      RegisterClass Op1Class,
                                      DAGOperand Op2Class,
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
                                      string Constraint,
                                      int TargetConstraintType = 1> :
@@ -1643,6 +1805,13 @@ class VPseudoTernaryNoMaskWithPolicy<VReg RetClass,
                     AVL:$vl, ixlenimm:$sew, ixlenimm:$policy),
                []>,
         RISCVVPseudo {
+=======
+                                     string Constraint> :
+      Pseudo<(outs RetClass:$rd),
+             (ins RetClass:$rs3, Op1Class:$rs1, Op2Class:$rs2,
+                  AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
+      RISCVVPseudo {
+>>>>>>> upstream/main
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1663,12 +1832,19 @@ class VPseudoTernaryNoMaskWithPolicyRoundingMode<VReg RetClass,
                                                  int TargetConstraintType = 1> :
 #else
                                                  string Constraint> :
+<<<<<<< HEAD
 #endif
         Pseudo<(outs RetClass:$rd),
                (ins RetClass:$rs3, Op1Class:$rs1, Op2Class:$rs2,
                     ixlenimm:$rm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy),
                []>,
         RISCVVPseudo {
+=======
+      Pseudo<(outs RetClass:$rd),
+             (ins RetClass:$rs3, Op1Class:$rs1, Op2Class:$rs2,
+                  ixlenimm:$rm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
+      RISCVVPseudo {
+>>>>>>> upstream/main
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
@@ -1683,10 +1859,12 @@ class VPseudoTernaryNoMaskWithPolicyRoundingMode<VReg RetClass,
   let UsesVXRM = 0;
 }
 
-class VPseudoUSSegLoadNoMask<VReg RetClass, int EEW, bits<4> NF>:
+class VPseudoUSSegLoadNoMask<VReg RetClass,
+                             int EEW,
+                             bits<4> NF> :
       Pseudo<(outs RetClass:$rd),
              (ins RetClass:$dest, GPRMem:$rs1, AVL:$vl,
-                  ixlenimm:$sew, ixlenimm:$policy),[]>,
+                  ixlenimm:$sew, ixlenimm:$policy), []>,
       RISCVVPseudo,
       RISCVVLSEG<NF, /*Masked*/0, /*Strided*/0, /*FF*/0, !logtwo(EEW), VLMul> {
   let mayLoad = 1;
@@ -1698,10 +1876,12 @@ class VPseudoUSSegLoadNoMask<VReg RetClass, int EEW, bits<4> NF>:
   let Constraints = "$rd = $dest";
 }
 
-class VPseudoUSSegLoadMask<VReg RetClass, int EEW, bits<4> NF>:
+class VPseudoUSSegLoadMask<VReg RetClass,
+                           int EEW,
+                           bits<4> NF> :
       Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
              (ins GetVRegNoV0<RetClass>.R:$merge, GPRMem:$rs1,
-                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy),[]>,
+                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
       RISCVVPseudo,
       RISCVVLSEG<NF, /*Masked*/1, /*Strided*/0, /*FF*/0, !logtwo(EEW), VLMul> {
   let mayLoad = 1;
@@ -1714,10 +1894,12 @@ class VPseudoUSSegLoadMask<VReg RetClass, int EEW, bits<4> NF>:
   let UsesMaskPolicy = 1;
 }
 
-class VPseudoUSSegLoadFFNoMask<VReg RetClass, int EEW, bits<4> NF>:
+class VPseudoUSSegLoadFFNoMask<VReg RetClass,
+                               int EEW,
+                               bits<4> NF> :
       Pseudo<(outs RetClass:$rd, GPR:$vl),
              (ins RetClass:$dest, GPRMem:$rs1, AVL:$avl,
-                  ixlenimm:$sew, ixlenimm:$policy),[]>,
+                  ixlenimm:$sew, ixlenimm:$policy), []>,
       RISCVVPseudo,
       RISCVVLSEG<NF, /*Masked*/0, /*Strided*/0, /*FF*/1, !logtwo(EEW), VLMul> {
   let mayLoad = 1;
@@ -1729,10 +1911,12 @@ class VPseudoUSSegLoadFFNoMask<VReg RetClass, int EEW, bits<4> NF>:
   let Constraints = "$rd = $dest";
 }
 
-class VPseudoUSSegLoadFFMask<VReg RetClass, int EEW, bits<4> NF>:
+class VPseudoUSSegLoadFFMask<VReg RetClass,
+                             int EEW,
+                             bits<4> NF> :
       Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd, GPR:$vl),
              (ins GetVRegNoV0<RetClass>.R:$merge, GPRMem:$rs1,
-                  VMaskOp:$vm, AVL:$avl, ixlenimm:$sew, ixlenimm:$policy),[]>,
+                  VMaskOp:$vm, AVL:$avl, ixlenimm:$sew, ixlenimm:$policy), []>,
       RISCVVPseudo,
       RISCVVLSEG<NF, /*Masked*/1, /*Strided*/0, /*FF*/1, !logtwo(EEW), VLMul> {
   let mayLoad = 1;
@@ -1745,10 +1929,12 @@ class VPseudoUSSegLoadFFMask<VReg RetClass, int EEW, bits<4> NF>:
   let UsesMaskPolicy = 1;
 }
 
-class VPseudoSSegLoadNoMask<VReg RetClass, int EEW, bits<4> NF>:
+class VPseudoSSegLoadNoMask<VReg RetClass,
+                            int EEW,
+                            bits<4> NF> :
       Pseudo<(outs RetClass:$rd),
              (ins RetClass:$merge, GPRMem:$rs1, GPR:$offset, AVL:$vl,
-             ixlenimm:$sew, ixlenimm:$policy),[]>,
+             ixlenimm:$sew, ixlenimm:$policy), []>,
       RISCVVPseudo,
       RISCVVLSEG<NF, /*Masked*/0, /*Strided*/1, /*FF*/0, !logtwo(EEW), VLMul> {
   let mayLoad = 1;
@@ -1760,11 +1946,13 @@ class VPseudoSSegLoadNoMask<VReg RetClass, int EEW, bits<4> NF>:
   let Constraints = "$rd = $merge";
 }
 
-class VPseudoSSegLoadMask<VReg RetClass, int EEW, bits<4> NF>:
+class VPseudoSSegLoadMask<VReg RetClass,
+                          int EEW,
+                          bits<4> NF> :
       Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
              (ins GetVRegNoV0<RetClass>.R:$merge, GPRMem:$rs1,
                   GPR:$offset, VMaskOp:$vm, AVL:$vl, ixlenimm:$sew,
-                  ixlenimm:$policy),[]>,
+                  ixlenimm:$policy), []>,
       RISCVVPseudo,
       RISCVVLSEG<NF, /*Masked*/1, /*Strided*/1, /*FF*/0, !logtwo(EEW), VLMul> {
   let mayLoad = 1;
@@ -1777,11 +1965,15 @@ class VPseudoSSegLoadMask<VReg RetClass, int EEW, bits<4> NF>:
   let UsesMaskPolicy = 1;
 }
 
-class VPseudoISegLoadNoMask<VReg RetClass, VReg IdxClass, int EEW, bits<3> LMUL,
-                            bits<4> NF, bit Ordered>:
+class VPseudoISegLoadNoMask<VReg RetClass,
+                            VReg IdxClass,
+                            int EEW,
+                            bits<3> LMUL,
+                            bits<4> NF,
+                            bit Ordered> :
       Pseudo<(outs RetClass:$rd),
              (ins RetClass:$merge, GPRMem:$rs1, IdxClass:$offset, AVL:$vl,
-                  ixlenimm:$sew, ixlenimm:$policy),[]>,
+                  ixlenimm:$sew, ixlenimm:$policy), []>,
       RISCVVPseudo,
       RISCVVLXSEG<NF, /*Masked*/0, Ordered, !logtwo(EEW), VLMul, LMUL> {
   let mayLoad = 1;
@@ -1795,12 +1987,16 @@ class VPseudoISegLoadNoMask<VReg RetClass, VReg IdxClass, int EEW, bits<3> LMUL,
   let HasVecPolicyOp = 1;
 }
 
-class VPseudoISegLoadMask<VReg RetClass, VReg IdxClass, int EEW, bits<3> LMUL,
-                          bits<4> NF, bit Ordered>:
+class VPseudoISegLoadMask<VReg RetClass,
+                          VReg IdxClass,
+                          int EEW,
+                          bits<3> LMUL,
+                          bits<4> NF,
+                          bit Ordered> :
       Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
              (ins GetVRegNoV0<RetClass>.R:$merge, GPRMem:$rs1,
                   IdxClass:$offset, VMaskOp:$vm, AVL:$vl, ixlenimm:$sew,
-                  ixlenimm:$policy),[]>,
+                  ixlenimm:$policy), []>,
       RISCVVPseudo,
       RISCVVLXSEG<NF, /*Masked*/1, Ordered, !logtwo(EEW), VLMul, LMUL> {
   let mayLoad = 1;
@@ -1815,9 +2011,11 @@ class VPseudoISegLoadMask<VReg RetClass, VReg IdxClass, int EEW, bits<3> LMUL,
   let UsesMaskPolicy = 1;
 }
 
-class VPseudoUSSegStoreNoMask<VReg ValClass, int EEW, bits<4> NF>:
+class VPseudoUSSegStoreNoMask<VReg ValClass,
+                              int EEW,
+                              bits<4> NF> :
       Pseudo<(outs),
-             (ins ValClass:$rd, GPRMem:$rs1, AVL:$vl, ixlenimm:$sew),[]>,
+             (ins ValClass:$rd, GPRMem:$rs1, AVL:$vl, ixlenimm:$sew), []>,
       RISCVVPseudo,
       RISCVVSSEG<NF, /*Masked*/0, /*Strided*/0, !logtwo(EEW), VLMul> {
   let mayLoad = 0;
@@ -1827,10 +2025,12 @@ class VPseudoUSSegStoreNoMask<VReg ValClass, int EEW, bits<4> NF>:
   let HasSEWOp = 1;
 }
 
-class VPseudoUSSegStoreMask<VReg ValClass, int EEW, bits<4> NF>:
+class VPseudoUSSegStoreMask<VReg ValClass,
+                            int EEW,
+                            bits<4> NF> :
       Pseudo<(outs),
              (ins ValClass:$rd, GPRMem:$rs1,
-                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew),[]>,
+                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew), []>,
       RISCVVPseudo,
       RISCVVSSEG<NF, /*Masked*/1, /*Strided*/0, !logtwo(EEW), VLMul> {
   let mayLoad = 0;
@@ -1840,9 +2040,12 @@ class VPseudoUSSegStoreMask<VReg ValClass, int EEW, bits<4> NF>:
   let HasSEWOp = 1;
 }
 
-class VPseudoSSegStoreNoMask<VReg ValClass, int EEW, bits<4> NF>:
+class VPseudoSSegStoreNoMask<VReg ValClass,
+                             int EEW,
+                             bits<4> NF> :
       Pseudo<(outs),
-             (ins ValClass:$rd, GPRMem:$rs1, GPR: $offset, AVL:$vl, ixlenimm:$sew),[]>,
+             (ins ValClass:$rd, GPRMem:$rs1, GPR:$offset,
+                  AVL:$vl, ixlenimm:$sew), []>,
       RISCVVPseudo,
       RISCVVSSEG<NF, /*Masked*/0, /*Strided*/1, !logtwo(EEW), VLMul> {
   let mayLoad = 0;
@@ -1852,10 +2055,12 @@ class VPseudoSSegStoreNoMask<VReg ValClass, int EEW, bits<4> NF>:
   let HasSEWOp = 1;
 }
 
-class VPseudoSSegStoreMask<VReg ValClass, int EEW, bits<4> NF>:
+class VPseudoSSegStoreMask<VReg ValClass,
+                           int EEW,
+                           bits<4> NF> :
       Pseudo<(outs),
              (ins ValClass:$rd, GPRMem:$rs1, GPR: $offset,
-                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew),[]>,
+                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew), []>,
       RISCVVPseudo,
       RISCVVSSEG<NF, /*Masked*/1, /*Strided*/1, !logtwo(EEW), VLMul> {
   let mayLoad = 0;
@@ -1865,11 +2070,15 @@ class VPseudoSSegStoreMask<VReg ValClass, int EEW, bits<4> NF>:
   let HasSEWOp = 1;
 }
 
-class VPseudoISegStoreNoMask<VReg ValClass, VReg IdxClass, int EEW, bits<3> LMUL,
-                             bits<4> NF, bit Ordered>:
+class VPseudoISegStoreNoMask<VReg ValClass,
+                             VReg IdxClass,
+                             int EEW,
+                             bits<3> LMUL,
+                             bits<4> NF,
+                             bit Ordered> :
       Pseudo<(outs),
              (ins ValClass:$rd, GPRMem:$rs1, IdxClass: $index,
-                  AVL:$vl, ixlenimm:$sew),[]>,
+                  AVL:$vl, ixlenimm:$sew), []>,
       RISCVVPseudo,
       RISCVVSXSEG<NF, /*Masked*/0, Ordered, !logtwo(EEW), VLMul, LMUL> {
   let mayLoad = 0;
@@ -1879,11 +2088,15 @@ class VPseudoISegStoreNoMask<VReg ValClass, VReg IdxClass, int EEW, bits<3> LMUL
   let HasSEWOp = 1;
 }
 
-class VPseudoISegStoreMask<VReg ValClass, VReg IdxClass, int EEW, bits<3> LMUL,
-                           bits<4> NF, bit Ordered>:
+class VPseudoISegStoreMask<VReg ValClass,
+                           VReg IdxClass,
+                           int EEW,
+                           bits<3> LMUL,
+                           bits<4> NF,
+                           bit Ordered> :
       Pseudo<(outs),
              (ins ValClass:$rd, GPRMem:$rs1, IdxClass: $index,
-                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew),[]>,
+                  VMaskOp:$vm, AVL:$vl, ixlenimm:$sew), []>,
       RISCVVPseudo,
       RISCVVSXSEG<NF, /*Masked*/1, Ordered, !logtwo(EEW), VLMul, LMUL> {
   let mayLoad = 0;
@@ -4009,25 +4222,17 @@ multiclass VPseudoVWMAC_VV_VF_RM {
 multiclass VPseudoVWMAC_VV_VF_BF_RM {
   foreach m = MxListFW in {
     defvar mx = m.MX;
-    defvar WriteVFWMulAddV_MX = !cast<SchedWrite>("WriteVFWMulAddV_" # mx);
-    defvar ReadVFWMulAddV_MX = !cast<SchedRead>("ReadVFWMulAddV_" # mx);
-    // FIXME: should use SchedTernary
     defm "" : VPseudoTernaryW_VV_RM<m>,
-              Sched<[WriteVFWMulAddV_MX, ReadVFWMulAddV_MX,
-                     ReadVFWMulAddV_MX, ReadVFWMulAddV_MX, ReadVMask]>;
+              SchedTernary<"WriteVFWMulAddV", "ReadVFWMulAddV",
+                           "ReadVFWMulAddV", "ReadVFWMulAddV", mx>;
   }
 
   foreach f = BFPListW in {
     foreach m = f.MxListFW in {
       defvar mx = m.MX;
-      defvar WriteVFWMulAddF_MX = !cast<SchedWrite>("WriteVFWMulAddF_" # mx);
-      defvar ReadVFWMulAddV_MX = !cast<SchedRead>("ReadVFWMulAddV_" # mx);
-      defvar ReadVFWMulAddF_MX = !cast<SchedRead>("ReadVFWMulAddF_" # mx);
-
-      // FIXME: should use SchedTernary
       defm "" : VPseudoTernaryW_VF_RM<m, f>,
-                Sched<[WriteVFWMulAddF_MX, ReadVFWMulAddV_MX,
-                       ReadVFWMulAddF_MX, ReadVFWMulAddV_MX, ReadVMask]>;
+                SchedTernary<"WriteVFWMulAddF", "ReadVFWMulAddV",
+                             "ReadVFWMulAddF", "ReadVFWMulAddV", mx>;
     }
   }
 }
@@ -6765,11 +6970,13 @@ multiclass VPatConversionWF_VF<string intrinsic, string instruction> {
   foreach fvtiToFWti = AllWidenableFloatVectors in {
     defvar fvti = fvtiToFWti.Vti;
     defvar fwti = fvtiToFWti.Wti;
-    let Predicates = !listconcat(GetVTypePredicates<fvti>.Predicates,
-                                 GetVTypePredicates<fwti>.Predicates) in
-    defm : VPatConversionTA<intrinsic, instruction, "V",
-                            fwti.Vector, fvti.Vector, fwti.Mask, fvti.Log2SEW,
-                            fvti.LMul, fwti.RegClass, fvti.RegClass>;
+    // Define vfwcvt.f.f.v for f16 when Zvfhmin is enable.
+    let Predicates = !if(!eq(fvti.Scalar, f16), [HasVInstructionsF16Minimal],
+                         !listconcat(GetVTypePredicates<fvti>.Predicates,
+                                     GetVTypePredicates<fwti>.Predicates)) in
+      defm : VPatConversionTA<intrinsic, instruction, "V",
+                              fwti.Vector, fvti.Vector, fwti.Mask, fvti.Log2SEW,
+                              fvti.LMul, fwti.RegClass, fvti.RegClass>;
   }
 }
 
@@ -6834,8 +7041,9 @@ multiclass VPatConversionVF_WF <string intrinsic, string instruction> {
   }
 }
 
-multiclass VPatConversionVF_WF_RM <string intrinsic, string instruction> {
-  foreach fvtiToFWti = AllWidenableFloatVectors in {
+multiclass VPatConversionVF_WF_RM <string intrinsic, string instruction,
+                                   list<VTypeInfoToWide> wlist = AllWidenableFloatVectors> {
+  foreach fvtiToFWti = wlist in {
     defvar fvti = fvtiToFWti.Vti;
     defvar fwti = fvtiToFWti.Wti;
     let Predicates = !listconcat(GetVTypePredicates<fvti>.Predicates,
@@ -8182,8 +8390,17 @@ defm : VPatConversionVI_WF<"int_riscv_vfncvt_rtz_xu_f_w", "PseudoVFNCVT_RTZ_XU_F
 defm : VPatConversionVI_WF<"int_riscv_vfncvt_rtz_x_f_w", "PseudoVFNCVT_RTZ_X_F">;
 defm : VPatConversionVF_WI_RM <"int_riscv_vfncvt_f_xu_w", "PseudoVFNCVT_F_XU">;
 defm : VPatConversionVF_WI_RM <"int_riscv_vfncvt_f_x_w", "PseudoVFNCVT_F_X">;
-defm : VPatConversionVF_WF_RM<"int_riscv_vfncvt_f_f_w", "PseudoVFNCVT_F_F">;
-defm : VPatConversionVF_WF_BF_RM<"int_riscv_vfncvtbf16_f_f_w",
+defvar WidenableFloatVectorsExceptF16 = !filter(fvtiToFWti, AllWidenableFloatVectors,
+                                                !ne(fvtiToFWti.Vti.Scalar, f16));
+defm : VPatConversionVF_WF_RM<"int_riscv_vfncvt_f_f_w", "PseudoVFNCVT_F_F",
+                           WidenableFloatVectorsExceptF16>;
+// Define vfncvt.f.f.w for f16 when Zvfhmin is enable.
+defvar F16WidenableFloatVectors = !filter(fvtiToFWti, AllWidenableFloatVectors,
+                                          !eq(fvtiToFWti.Vti.Scalar, f16));
+let Predicates = [HasVInstructionsF16Minimal] in
+defm : VPatConversionVF_WF_RM<"int_riscv_vfncvt_f_f_w", "PseudoVFNCVT_F_F",
+                           F16WidenableFloatVectors>;
+defm : VPatConversionVF_WF_BF_RM<"int_riscv_vfncvtbf16_f_f_w", 
                                  "PseudoVFNCVTBF16_F_F">;
 defm : VPatConversionVF_WF<"int_riscv_vfncvt_rod_f_f_w", "PseudoVFNCVT_ROD_F_F">;
 

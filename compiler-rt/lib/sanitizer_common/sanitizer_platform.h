@@ -284,7 +284,11 @@
 // For such platforms build this code with -DSANITIZER_CAN_USE_ALLOCATOR64=0 or
 // change the definition of SANITIZER_CAN_USE_ALLOCATOR64 here.
 #ifndef SANITIZER_CAN_USE_ALLOCATOR64
+<<<<<<< HEAD
 #  if  (!SIFIVE_CUSTOMIZATION && SANITIZER_RISCV64) || SANITIZER_IOS
+=======
+#  if SANITIZER_RISCV64 || SANITIZER_IOS || SANITIZER_DRIVERKIT
+>>>>>>> upstream/main
 #    define SANITIZER_CAN_USE_ALLOCATOR64 0
 #  elif defined(__mips64) || defined(__hexagon__)
 #    define SANITIZER_CAN_USE_ALLOCATOR64 0

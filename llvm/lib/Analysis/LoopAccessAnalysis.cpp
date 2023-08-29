@@ -157,6 +157,13 @@ static cl::opt<bool> SpeculateUnitStride(
     cl::desc("Speculate that non-constant strides are unit in LAA"),
     cl::init(true));
 
+static cl::opt<bool, true> HoistRuntimeChecks(
+    "hoist-runtime-checks", cl::Hidden,
+    cl::desc(
+        "Hoist inner loop runtime memory checks to outer loop if possible"),
+    cl::location(VectorizerParams::HoistRuntimeChecks), cl::init(false));
+bool VectorizerParams::HoistRuntimeChecks;
+
 bool VectorizerParams::isInterleaveForced() {
   return ::VectorizationInterleave.getNumOccurrences() > 0;
 }
@@ -346,6 +353,29 @@ void RuntimePointerChecking::tryToCreateDiffCheck(
     CanUseDiffCheck = false;
     return;
   }
+
+  const Loop *InnerLoop = SrcAR->getLoop();
+  // If the start values for both Src and Sink also vary according to an outer
+  // loop, then it's probably better to avoid creating diff checks because
+  // they may not be hoisted. We should instead let llvm::addRuntimeChecks
+  // do the expanded full range overlap checks, which can be hoisted.
+  if (HoistRuntimeChecks && InnerLoop->getParentLoop() &&
+      isa<SCEVAddRecExpr>(SinkStartInt) && isa<SCEVAddRecExpr>(SrcStartInt)) {
+    auto *SrcStartAR = cast<SCEVAddRecExpr>(SrcStartInt);
+    auto *SinkStartAR = cast<SCEVAddRecExpr>(SinkStartInt);
+    const Loop *StartARLoop = SrcStartAR->getLoop();
+    if (StartARLoop == SinkStartAR->getLoop() &&
+        StartARLoop == InnerLoop->getParentLoop()) {
+      LLVM_DEBUG(dbgs() << "LAA: Not creating diff runtime check, since these "
+                           "cannot be hoisted out of the outer loop\n");
+      CanUseDiffCheck = false;
+      return;
+    }
+  }
+
+  LLVM_DEBUG(dbgs() << "LAA: Creating diff runtime check for:\n"
+                    << "SrcStart: " << *SrcStartInt << '\n'
+                    << "SinkStartInt: " << *SinkStartInt << '\n');
   DiffChecks.emplace_back(SrcStartInt, SinkStartInt, AllocSize,
                           Src->NeedsFreeze || Sink->NeedsFreeze);
 }
@@ -1693,7 +1723,7 @@ bool MemoryDepChecker::couldPreventStoreLoadForward(uint64_t Distance,
   const uint64_t NumItersForStoreLoadThroughMemory = 8 * TypeByteSize;
   // Maximum vector factor.
   uint64_t MaxVFWithoutSLForwardIssues = std::min(
-      VectorizerParams::MaxVectorWidth * TypeByteSize, MaxSafeDepDistBytes);
+      VectorizerParams::MaxVectorWidth * TypeByteSize, MinDepDistBytes);
 
 #if SIFIVE_CUSTOMIZATION
   if (PSE.getSE()->getTTI() && PSE.getSE()->getTTI()->useVLAVectorizer()) {
@@ -1731,10 +1761,10 @@ bool MemoryDepChecker::couldPreventStoreLoadForward(uint64_t Distance,
     return true;
   }
 
-  if (MaxVFWithoutSLForwardIssues < MaxSafeDepDistBytes &&
+  if (MaxVFWithoutSLForwardIssues < MinDepDistBytes &&
       MaxVFWithoutSLForwardIssues !=
           VectorizerParams::MaxVectorWidth * TypeByteSize)
-    MaxSafeDepDistBytes = MaxVFWithoutSLForwardIssues;
+    MinDepDistBytes = MaxVFWithoutSLForwardIssues;
   return false;
 }
 
@@ -1932,6 +1962,9 @@ MemoryDepChecker::isDependent(const MemAccessInfo &A, unsigned AIdx,
   // Negative distances are not plausible dependencies.
   if (Val.isNegative()) {
     bool IsTrueDataDependence = (AIsWrite && !BIsWrite);
+    // There is no need to update MaxSafeVectorWidthInBits after call to
+    // couldPreventStoreLoadForward, even if it changed MinDepDistBytes,
+    // since a forward dependency will allow vectorization using any width.
     if (IsTrueDataDependence && EnableForwardingConflictDetection &&
         (couldPreventStoreLoadForward(Val.abs().getZExtValue(), TypeByteSize) ||
          !HasSameSize)) {
@@ -2002,8 +2035,9 @@ MemoryDepChecker::isDependent(const MemAccessInfo &A, unsigned AIdx,
     return Dependence::Backward;
   }
 
-  // Unsafe if the minimum distance needed is greater than max safe distance.
-  if (MinDistanceNeeded > MaxSafeDepDistBytes) {
+  // Unsafe if the minimum distance needed is greater than smallest dependence
+  // distance distance.
+  if (MinDistanceNeeded > MinDepDistBytes) {
     LLVM_DEBUG(dbgs() << "LAA: Failure because it needs at least "
                       << MinDistanceNeeded << " size in bytes\n");
     return Dependence::Backward;
@@ -2025,6 +2059,7 @@ MemoryDepChecker::isDependent(const MemAccessInfo &A, unsigned AIdx,
   // is 2. Then we analyze the accesses on array A, the minimum distance needed
   // is 8, which is less than 2 and forbidden vectorization, But actually
   // both A and B could be vectorized by 2 iterations.
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Distance must be reduced by a factor of the stride of the loop induction
   // variable, otherwise it is possible that MaxSafeDepDistBytes is too
@@ -2060,13 +2095,27 @@ MemoryDepChecker::isDependent(const MemAccessInfo &A, unsigned AIdx,
   MaxSafeDepDistBytes =
       std::min(static_cast<uint64_t>(Distance), MaxSafeDepDistBytes);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  MinDepDistBytes =
+      std::min(static_cast<uint64_t>(Distance), MinDepDistBytes);
+>>>>>>> upstream/main
 
   bool IsTrueDataDependence = (!AIsWrite && BIsWrite);
+  uint64_t MinDepDistBytesOld = MinDepDistBytes;
   if (IsTrueDataDependence && EnableForwardingConflictDetection &&
-      couldPreventStoreLoadForward(Distance, TypeByteSize))
+      couldPreventStoreLoadForward(Distance, TypeByteSize)) {
+    // Sanity check that we didn't update MinDepDistBytes when calling
+    // couldPreventStoreLoadForward
+    assert(MinDepDistBytes == MinDepDistBytesOld &&
+           "An update to MinDepDistBytes requires an update to "
+           "MaxSafeVectorWidthInBits");
+    (void)MinDepDistBytesOld;
     return Dependence::BackwardVectorizableButPreventsForwarding;
+  }
 
-  uint64_t MaxVF = MaxSafeDepDistBytes / (TypeByteSize * Stride);
+  // An update to MinDepDistBytes requires an update to MaxSafeVectorWidthInBits
+  // since there is a backwards dependency.
+  uint64_t MaxVF = MinDepDistBytes / (TypeByteSize * Stride);
   LLVM_DEBUG(dbgs() << "LAA: Positive distance " << Val.getSExtValue()
                     << " with max VF = " << MaxVF << '\n');
   uint64_t MaxVFInBits = MaxVF * TypeByteSize * 8;
@@ -2078,7 +2127,7 @@ bool MemoryDepChecker::areDepsSafe(DepCandidates &AccessSets,
                                    MemAccessInfoList &CheckDeps,
                                    const DenseMap<Value *, const SCEV *> &Strides) {
 
-  MaxSafeDepDistBytes = -1;
+  MinDepDistBytes = -1;
   SmallPtrSet<MemAccessInfo, 8> Visited;
   for (MemAccessInfo CurAccess : CheckDeps) {
     if (Visited.count(CurAccess))
@@ -2482,7 +2531,6 @@ void LoopAccessInfo::analyzeLoop(AAResults *AA, LoopInfo *LI,
     LLVM_DEBUG(dbgs() << "LAA: Checking memory dependencies\n");
     CanVecMem = DepChecker->areDepsSafe(
         DependentAccesses, Accesses.getDependenciesToCheck(), SymbolicStrides);
-    MaxSafeDepDistBytes = DepChecker->getMaxSafeDepDistBytes();
 
     if (!CanVecMem && DepChecker->shouldRetryWithRuntimeCheck()) {
       LLVM_DEBUG(dbgs() << "LAA: Retrying with memory checks\n");
@@ -2847,9 +2895,10 @@ LoopAccessInfo::LoopAccessInfo(Loop *L, ScalarEvolution *SE,
 void LoopAccessInfo::print(raw_ostream &OS, unsigned Depth) const {
   if (CanVecMem) {
     OS.indent(Depth) << "Memory dependences are safe";
-    if (MaxSafeDepDistBytes != -1ULL)
-      OS << " with a maximum dependence distance of " << MaxSafeDepDistBytes
-         << " bytes";
+    const MemoryDepChecker &DC = getDepChecker();
+    if (!DC.isSafeForAnyVectorWidth())
+      OS << " with a maximum safe vector width of "
+         << DC.getMaxSafeVectorWidthInBits() << " bits";
     if (PtrRtChecking->Need)
       OS << " with run-time checks";
     OS << "\n";

@@ -541,8 +541,6 @@ void RVVEmitter::createCodeGen(raw_ostream &OS) {
       PrintFatalError("Builtin with same name has different IRName");
     else if (P.first->second->getManualCodegen() != Def->getManualCodegen())
       PrintFatalError("Builtin with same name has different ManualCodegen");
-    else if (P.first->second->getNF() != Def->getNF())
-      PrintFatalError("Builtin with same name has different NF");
     else if (P.first->second->isMasked() != Def->isMasked())
       PrintFatalError("Builtin with same name has different isMasked");
     else if (P.first->second->hasVL() != Def->hasVL())
@@ -764,6 +762,7 @@ void RVVEmitter::createRVVIntrinsics(
 
     SR.RequiredExtensions = 0;
     for (auto RequiredFeature : RequiredFeatures) {
+<<<<<<< HEAD
       RVVRequire RequireExt =
           StringSwitch<RVVRequire>(RequiredFeature)
               .Case("RV64", RVV_REQ_RV64)
@@ -777,6 +776,13 @@ void RVVEmitter::createRVVIntrinsics(
               .Case("HasBfloat16", RVV_REQ_HasBfloat16)
 #endif // SIFIVE_CUSTOMIZATION
               .Default(RVV_REQ_None);
+=======
+      RVVRequire RequireExt = StringSwitch<RVVRequire>(RequiredFeature)
+                                  .Case("RV64", RVV_REQ_RV64)
+                                  .Case("ZvfhminOrZvfh", RVV_REQ_ZvfhminOrZvfh)
+                                  .Case("Xsfvcp", RVV_REQ_Xsfvcp)
+                                  .Default(RVV_REQ_None);
+>>>>>>> upstream/main
       assert(RequireExt != RVV_REQ_None && "Unrecognized required feature?");
       SR.RequiredExtensions |= RequireExt;
     }

@@ -4190,8 +4190,8 @@ def HLSLShader : InheritableAttr {
     EnumArgument<"Type", "ShaderType",
                  [
                    "pixel", "vertex", "geometry", "hull", "domain", "compute",
-                   "library", "raygeneration", "intersection", "anyHit",
-                   "closestHit", "miss", "callable", "mesh", "amplification"
+                   "library", "raygeneration", "intersection", "anyhit",
+                   "closesthit", "miss", "callable", "mesh", "amplification"
                  ],
                  [
                    "Pixel", "Vertex", "Geometry", "Hull", "Domain", "Compute",

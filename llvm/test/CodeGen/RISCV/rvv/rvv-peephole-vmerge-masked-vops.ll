@@ -241,8 +241,11 @@ define <vscale x 2 x i32> @vmerge_larger_vl_poison_passthru(<vscale x 2 x i32> %
   ret <vscale x 2 x i32> %b
 }
 
+<<<<<<< HEAD
 ; SIFIVE_CUSTOMIZATION
 ; Cherry-picked from upstream D158711.
+=======
+>>>>>>> upstream/main
 ; Test VFCVT_RM
 declare <vscale x 2 x float> @llvm.floor.nxv2f32(<vscale x 2 x float>)
 declare <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1>, <vscale x 2 x i32>, <vscale x 2 x i32>, i32)
@@ -260,4 +263,7 @@ entry:
   %res = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> %m, <vscale x 2 x i32> %i, <vscale x 2 x i32> %passthru, i32 %evl)
   ret <vscale x 2 x i32> %res
 }
+<<<<<<< HEAD
 ; SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> upstream/main

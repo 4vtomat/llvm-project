@@ -529,6 +529,7 @@ public:
 enum RVVRequire : uint16_t {
   RVV_REQ_None = 0,
   RVV_REQ_RV64 = 1 << 0,
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   RVV_REQ_xsfvqmaccqoq = 1 << 1,
   RVV_REQ_xsfvqmaccdod = 1 << 2,
@@ -538,6 +539,10 @@ enum RVVRequire : uint16_t {
   RVV_REQ_HasBfloat16 = 1 << 6,
   RVV_REQ_Xsfvcp = 1 << 7,
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  RVV_REQ_ZvfhminOrZvfh = 1 << 1,
+  RVV_REQ_Xsfvcp = 1 << 2,
+>>>>>>> upstream/main
 
   LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Xsfvcp)
 };

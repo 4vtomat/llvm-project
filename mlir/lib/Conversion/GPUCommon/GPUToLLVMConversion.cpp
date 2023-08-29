@@ -296,6 +296,14 @@ protected:
       llvmVoidType,
       {llvmPointerType, llvmPointerType, llvmPointerType, llvmPointerType,
        llvmPointerType, llvmPointerType, llvmPointerType /*void *stream*/}};
+  FunctionCallBuilder createSpGEMMCreateDescrBuilder = {
+      "mgpuSpGEMMCreateDescr",
+      llvmPointerType,
+      {llvmPointerType /*void *stream*/}};
+  FunctionCallBuilder createSpGEMMDestroyDescrBuilder = {
+      "mgpuSpGEMMDestroyDescr",
+      llvmVoidType,
+      {llvmPointerType /*s*/, llvmPointerType /*void *stream*/}};
   FunctionCallBuilder createSpGEMMWorkEstimationBuilder = {
       "mgpuSpGEMMWorkEstimation",
       llvmIntPtrType,
@@ -316,16 +324,8 @@ protected:
       {llvmPointerType /*s*/, llvmInt32Type /*ma*/, llvmInt32Type /*mb*/,
        llvmPointerType /*a*/, llvmPointerType /*b*/, llvmPointerType /*c*/,
        llvmInt32Type /*ctp*/, llvmPointerType /*void *stream*/}};
-  FunctionCallBuilder createSpGEMMCreateDescrBuilder = {
-      "mgpuSpGEMMCreateDescr",
-      llvmPointerType,
-      {llvmPointerType /*void *stream*/}};
-  FunctionCallBuilder createSpGEMMDestroyDescrBuilder = {
-      "mgpuSpGEMMDestroyDescr",
-      llvmVoidType,
-      {llvmPointerType /*s*/, llvmPointerType /*void *stream*/}};
-  FunctionCallBuilder createSpGEMMGetSizeBuilder = {
-      "mgpuSpGEMMGetSize",
+  FunctionCallBuilder createSpMatGetSizeBuilder = {
+      "mgpuSpMatGetSize",
       llvmVoidType,
       {llvmPointerType /*mc*/, llvmPointerType /*rc*/, llvmPointerType /*cc*/,
        llvmPointerType /*nc*/, llvmPointerType /*void *stream*/}};
@@ -564,7 +564,7 @@ DECLARE_CONVERT_OP_TO_GPU_RUNTIME_CALL_PATTERN(SpGEMMCreateDescrOp)
 DECLARE_CONVERT_OP_TO_GPU_RUNTIME_CALL_PATTERN(SpGEMMDestroyDescrOp)
 DECLARE_CONVERT_OP_TO_GPU_RUNTIME_CALL_PATTERN(SpGEMMWorkEstimationOrComputeOp)
 DECLARE_CONVERT_OP_TO_GPU_RUNTIME_CALL_PATTERN(SpGEMMCopyOp)
-DECLARE_CONVERT_OP_TO_GPU_RUNTIME_CALL_PATTERN(SpGEMMGetSizeOp)
+DECLARE_CONVERT_OP_TO_GPU_RUNTIME_CALL_PATTERN(SpMatGetSizeOp)
 DECLARE_CONVERT_OP_TO_GPU_RUNTIME_CALL_PATTERN(SetCsrPointersOp)
 
 } // namespace
@@ -593,7 +593,7 @@ void GpuToLLVMConversionPass::runOnOperation() {
         return converter.isLegal(op->getOperandTypes()) &&
                converter.isLegal(op->getResultTypes()) &&
                (module && module.getTargetsAttr() &&
-                module.getTargetsAttr().size());
+                !module.getTargetsAttr().empty());
       });
 
   mlir::arith::populateArithToLLVMConversionPatterns(converter, patterns);
@@ -981,24 +981,12 @@ Value ConvertLaunchFuncOpToGpuRuntimeCallPattern::generateParamsArray(
     gpu::LaunchFuncOp launchOp, OpAdaptor adaptor, OpBuilder &builder) const {
   auto loc = launchOp.getLoc();
   auto numKernelOperands = launchOp.getNumKernelOperands();
-  SmallVector<Value, 4> arguments;
-  if (kernelBarePtrCallConv) {
-    // Hack the bare pointer value on just for the argument promotion
-    const LLVMTypeConverter *converter = getTypeConverter();
-    LowerToLLVMOptions options = converter->getOptions();
-    LowerToLLVMOptions overrideToMatchKernelOpts = options;
-    overrideToMatchKernelOpts.useBarePtrCallConv = true;
-    LLVMTypeConverter newConverter = *converter;
-    newConverter.dangerousSetOptions(overrideToMatchKernelOpts);
-    arguments = newConverter.promoteOperands(
-        loc, launchOp.getOperands().take_back(numKernelOperands),
-        adaptor.getOperands().take_back(numKernelOperands), builder);
-  } else {
-    arguments = getTypeConverter()->promoteOperands(
-        loc, launchOp.getOperands().take_back(numKernelOperands),
-        adaptor.getOperands().take_back(numKernelOperands), builder);
-  }
-
+  // Note: If `useBarePtrCallConv` is set in the type converter's options,
+  // the value of `kernelBarePtrCallConv` will be ignored.
+  SmallVector<Value, 4> arguments = getTypeConverter()->promoteOperands(
+      loc, launchOp.getOperands().take_back(numKernelOperands),
+      adaptor.getOperands().take_back(numKernelOperands), builder,
+      /*useBarePtrCallConv=*/kernelBarePtrCallConv);
   auto numArguments = arguments.size();
   SmallVector<Type, 4> argumentTypes;
   argumentTypes.reserve(numArguments);
@@ -1104,7 +1092,7 @@ LogicalResult ConvertLaunchFuncOpToGpuRuntimeCallPattern::matchAndRewrite(
   // If the module has Targets then just update the op operands.
   if (ArrayAttr targets = kernelModule.getTargetsAttr()) {
     Value stream = Value();
-    if (adaptor.getAsyncDependencies().size())
+    if (!adaptor.getAsyncDependencies().empty())
       stream = adaptor.getAsyncDependencies().front();
     // If the async keyword is present and there are no dependencies, then a
     // stream must be created to pass to subsequent operations.
@@ -1112,23 +1100,11 @@ LogicalResult ConvertLaunchFuncOpToGpuRuntimeCallPattern::matchAndRewrite(
       stream = streamCreateCallBuilder.create(loc, rewriter, {}).getResult();
 
     // Lower the kernel operands to match kernel parameters.
-    SmallVector<Value, 4> arguments;
-    if (kernelBarePtrCallConv) {
-      // Hack the bare pointer value on just for the argument promotion
-      const LLVMTypeConverter *converter = getTypeConverter();
-      LowerToLLVMOptions options = converter->getOptions();
-      LowerToLLVMOptions overrideToMatchKernelOpts = options;
-      overrideToMatchKernelOpts.useBarePtrCallConv = true;
-      LLVMTypeConverter newConverter = *converter;
-      newConverter.dangerousSetOptions(overrideToMatchKernelOpts);
-      arguments =
-          newConverter.promoteOperands(loc, launchOp.getKernelOperands(),
-                                       adaptor.getKernelOperands(), rewriter);
-    } else {
-      arguments = getTypeConverter()->promoteOperands(
-          loc, launchOp.getKernelOperands(), adaptor.getKernelOperands(),
-          rewriter);
-    }
+    // Note: If `useBarePtrCallConv` is set in the type converter's options,
+    // the value of `kernelBarePtrCallConv` will be ignored.
+    SmallVector<Value, 4> arguments = getTypeConverter()->promoteOperands(
+        loc, launchOp.getKernelOperands(), adaptor.getKernelOperands(),
+        rewriter, /*useBarePtrCallConv=*/kernelBarePtrCallConv);
 
     rewriter.create<gpu::LaunchFuncOp>(
         launchOp.getLoc(), launchOp.getKernelAttr(),
@@ -1852,8 +1828,8 @@ LogicalResult ConvertSpGEMMCopyOpToGpuRuntimeCallPattern::matchAndRewrite(
   return success();
 }
 
-LogicalResult ConvertSpGEMMGetSizeOpToGpuRuntimeCallPattern::matchAndRewrite(
-    gpu::SpGEMMGetSizeOp op, OpAdaptor adaptor,
+LogicalResult ConvertSpMatGetSizeOpToGpuRuntimeCallPattern::matchAndRewrite(
+    gpu::SpMatGetSizeOp op, OpAdaptor adaptor,
     ConversionPatternRewriter &rewriter) const {
   if (failed(areAllLLVMTypes(op, adaptor.getOperands(), rewriter)) ||
       failed(isAsyncWithOneDependency(rewriter, op)))
@@ -1878,7 +1854,7 @@ LogicalResult ConvertSpGEMMGetSizeOpToGpuRuntimeCallPattern::matchAndRewrite(
       loc, llvmInt64PointerType, llvmInt64PointerType, buffer,
       ValueRange{rewriter.create<LLVM::ConstantOp>(loc, getIndexType(),
                                                    rewriter.getIndexAttr(2))});
-  createSpGEMMGetSizeBuilder.create(
+  createSpMatGetSizeBuilder.create(
       loc, rewriter, {adaptor.getSpmat(), rowsPtr, colsPtr, nnzsPtr, stream});
   auto rows = rewriter.create<LLVM::LoadOp>(loc, llvmInt64Type, rowsPtr);
   auto cols = rewriter.create<LLVM::LoadOp>(loc, llvmInt64Type, colsPtr);
@@ -1950,7 +1926,7 @@ void mlir::populateGpuToLLVMConversionPatterns(LLVMTypeConverter &converter,
                ConvertSpGEMMDestroyDescrOpToGpuRuntimeCallPattern,
                ConvertSpGEMMWorkEstimationOrComputeOpToGpuRuntimeCallPattern,
                ConvertSpGEMMCopyOpToGpuRuntimeCallPattern,
-               ConvertSpGEMMGetSizeOpToGpuRuntimeCallPattern,
+               ConvertSpMatGetSizeOpToGpuRuntimeCallPattern,
                ConvertSetCsrPointersOpToGpuRuntimeCallPattern>(converter);
   patterns.add<ConvertLaunchFuncOpToGpuRuntimeCallPattern>(
       converter, gpuBinaryAnnotation, kernelBarePtrCallConv, cachedModuleTable);
