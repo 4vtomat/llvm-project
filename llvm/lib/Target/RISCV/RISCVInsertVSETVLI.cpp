@@ -84,10 +84,6 @@ static uint16_t getRVVMCOpcode(uint16_t RVVPseudoOpcode) {
   return RVV->BaseInstr;
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 static bool isFloatScalarMoveOrScalarSplatInstr(const MachineInstr &MI) {
   switch (getRVVMCOpcode(MI.getOpcode())) {
   default:
@@ -97,11 +93,6 @@ static bool isFloatScalarMoveOrScalarSplatInstr(const MachineInstr &MI) {
     return true;
   }
 }
-<<<<<<< HEAD
-#endif
-
-static bool isScalarMoveInstr(const MachineInstr &MI) {
-=======
 
 static bool isScalarExtractInstr(const MachineInstr &MI) {
   switch (getRVVMCOpcode(MI.getOpcode())) {
@@ -114,7 +105,6 @@ static bool isScalarExtractInstr(const MachineInstr &MI) {
 }
 
 static bool isScalarInsertInstr(const MachineInstr &MI) {
->>>>>>> upstream/main
   switch (getRVVMCOpcode(MI.getOpcode())) {
   default:
     return false;
@@ -350,15 +340,8 @@ DemandedFields getDemanded(const MachineInstr &MI,
   // emitVSETVLIs) and pre-lowering forms.  The main implication of this is
   // that it can't use the value of a SEW, VL, or Policy operand as they might
   // be stale after lowering.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   bool HasVInstructionsF64 =
       MI.getMF()->getSubtarget<RISCVSubtarget>().hasVInstructionsF64();
-#endif
-=======
-  bool HasVInstructionsF64 =
-      MI.getMF()->getSubtarget<RISCVSubtarget>().hasVInstructionsF64();
->>>>>>> upstream/main
 
   // Most instructions don't use any of these subfeilds.
   DemandedFields Res;
@@ -417,16 +400,8 @@ DemandedFields getDemanded(const MachineInstr &MI,
     // tail lanes to either be the original value or -1.  We are writing
     // unknown bits to the lanes here.
     if (hasUndefinedMergeOp(MI, *MRI)) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
       if (!isFloatScalarMoveOrScalarSplatInstr(MI) || HasVInstructionsF64)
         Res.SEW = DemandedFields::SEWGreaterThanOrEqual;
-#endif
-
-=======
-      if (!isFloatScalarMoveOrScalarSplatInstr(MI) || HasVInstructionsF64)
-        Res.SEW = DemandedFields::SEWGreaterThanOrEqual;
->>>>>>> upstream/main
       Res.TailPolicy = false;
     }
   }
@@ -1014,15 +989,8 @@ bool RISCVInsertVSETVLI::needVSETVLI(const MachineInstr &MI,
     return true;
 
   DemandedFields Used = getDemanded(MI, MRI);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   bool HasVInstructionsF64 =
       MI.getMF()->getSubtarget<RISCVSubtarget>().hasVInstructionsF64();
-#endif
-=======
-  bool HasVInstructionsF64 =
-      MI.getMF()->getSubtarget<RISCVSubtarget>().hasVInstructionsF64();
->>>>>>> upstream/main
 
   // A slidedown/slideup with an *undefined* merge op can freely clobber
   // elements not copied from the source vector (e.g. masked off, tail, or
@@ -1050,15 +1018,8 @@ bool RISCVInsertVSETVLI::needVSETVLI(const MachineInstr &MI,
     Used.LMUL = false;
     Used.SEWLMULRatio = false;
     Used.VLAny = false;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     if (!isFloatScalarMoveOrScalarSplatInstr(MI) || HasVInstructionsF64)
       Used.SEW = DemandedFields::SEWGreaterThanOrEqual;
-#endif
-=======
-    if (!isFloatScalarMoveOrScalarSplatInstr(MI) || HasVInstructionsF64)
-      Used.SEW = DemandedFields::SEWGreaterThanOrEqual;
->>>>>>> upstream/main
     Used.TailPolicy = false;
   }
 
