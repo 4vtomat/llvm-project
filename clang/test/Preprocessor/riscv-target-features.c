@@ -60,10 +60,6 @@
 // CHECK-NOT: __riscv_zcf {{.*$}}
 // CHECK-NOT: __riscv_zcmp {{.*$}}
 // CHECK-NOT: __riscv_zcmt {{.*$}}
-<<<<<<< HEAD
-// CHECK-NOT: __riscv_h {{.*$}}
-// CHECK-NOT: __riscv_zvkb {{.*$}}
-=======
 // CHECK-NOT: __riscv_zdinx {{.*$}}
 // CHECK-NOT: __riscv_zfh {{.*$}}
 // CHECK-NOT: __riscv_zfhmin {{.*$}}
@@ -108,37 +104,6 @@
 // CHECK-NOT: __riscv_zvl16384b {{.*$}}
 // CHECK-NOT: __riscv_zvl32768b {{.*$}}
 // CHECK-NOT: __riscv_zvl65536b {{.*$}}
-
-// Experimental extensions
-
-// CHECK-NOT: __riscv_smaia {{.*$}}
-// CHECK-NOT: __riscv_ssaia {{.*$}}
-// CHECK-NOT: __riscv_zacas {{.*$}}
-// CHECK-NOT: __riscv_zfa {{.*$}}
-// CHECK-NOT: __riscv_zfbfmin {{.*$}}
-// CHECK-NOT: __riscv_zicfilp {{.*$}}
-// CHECK-NOT: __riscv_zicond {{.*$}}
-// CHECK-NOT: __riscv_ztso {{.*$}}
->>>>>>> upstream/main
-// CHECK-NOT: __riscv_zvbb {{.*$}}
-// CHECK-NOT: __riscv_zvbc {{.*$}}
-// CHECK-NOT: __riscv_zvfbfmin {{.*$}}
-// CHECK-NOT: __riscv_zvfbfwma {{.*$}}
-// CHECK-NOT: __riscv_zvkg {{.*$}}
-// CHECK-NOT: __riscv_zvkn {{.*$}}
-// CHECK-NOT: __riscv_zvknc {{.*$}}
-// CHECK-NOT: __riscv_zvkned {{.*$}}
-// CHECK-NOT: __riscv_zvkng {{.*$}}
-// CHECK-NOT: __riscv_zvknha {{.*$}}
-// CHECK-NOT: __riscv_zvknhb {{.*$}}
-// CHECK-NOT: __riscv_zvks {{.*$}}
-// CHECK-NOT: __riscv_zvksc {{.*$}}
-// CHECK-NOT: __riscv_zvksed {{.*$}}
-// CHECK-NOT: __riscv_zvksg {{.*$}}
-// CHECK-NOT: __riscv_zvksh {{.*$}}
-// CHECK-NOT: __riscv_zvkt {{.*$}}
-<<<<<<< HEAD
-// CHECK-NOT: __riscv_zicond {{.*$}}
 // SIFIVE_CUSTOMIZATION
 // CHECK-NOT: __riscv_zicclsm
 // CHECK-NOT: __riscv_ziccif
@@ -171,14 +136,35 @@
 // CHECK-NOT: __riscv_smwgd
 // CHECK-NOT: __riscv_sswg
 // end SIFIVE_CUSTOMIZATION
+
+// Experimental extensions
+
 // CHECK-NOT: __riscv_smaia {{.*$}}
 // CHECK-NOT: __riscv_ssaia {{.*$}}
+// CHECK-NOT: __riscv_zacas {{.*$}}
+// CHECK-NOT: __riscv_zfa {{.*$}}
 // CHECK-NOT: __riscv_zfbfmin {{.*$}}
+// CHECK-NOT: __riscv_zicfilp {{.*$}}
+// CHECK-NOT: __riscv_zicond {{.*$}}
+// CHECK-NOT: __riscv_ztso {{.*$}}
+// CHECK-NOT: __riscv_zvbb {{.*$}}
+// CHECK-NOT: __riscv_zvbc {{.*$}}
 // CHECK-NOT: __riscv_zvfbfmin {{.*$}}
 // CHECK-NOT: __riscv_zvfbfwma {{.*$}}
-// CHECK-NOT: __riscv_zacas {{.*$}}
-=======
->>>>>>> upstream/main
+// CHECK-NOT: __riscv_zvkb {{.*$}}
+// CHECK-NOT: __riscv_zvkg {{.*$}}
+// CHECK-NOT: __riscv_zvkn {{.*$}}
+// CHECK-NOT: __riscv_zvknc {{.*$}}
+// CHECK-NOT: __riscv_zvkned {{.*$}}
+// CHECK-NOT: __riscv_zvkng {{.*$}}
+// CHECK-NOT: __riscv_zvknha {{.*$}}
+// CHECK-NOT: __riscv_zvknhb {{.*$}}
+// CHECK-NOT: __riscv_zvks {{.*$}}
+// CHECK-NOT: __riscv_zvksc {{.*$}}
+// CHECK-NOT: __riscv_zvksed {{.*$}}
+// CHECK-NOT: __riscv_zvksg {{.*$}}
+// CHECK-NOT: __riscv_zvksh {{.*$}}
+// CHECK-NOT: __riscv_zvkt {{.*$}}
 
 // RUN: %clang -target riscv32-unknown-linux-gnu \
 // RUN: -march=rv32ia -x c -E -dM %s \
@@ -1290,14 +1276,14 @@
 // CHECK-ZFA-EXT: __riscv_zfa 2000{{$}}
 
 // RUN: %clang -target riscv32 -menable-experimental-extensions \
-<<<<<<< HEAD
 // RUN: -march=rv32i_zve64x_zvkb1p0 -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-ZVKB-EXT %s
 // RUN: %clang -target riscv64 -menable-experimental-extensions \
 // RUN: -march=rv64i_zve64x_zvkb1p0 -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-ZVKB-EXT %s
 // CHECK-ZVKB-EXT: __riscv_zvkb  1000000{{$}}
-=======
+
+// RUN: %clang -target riscv32 -menable-experimental-extensions \
 // RUN: -march=rv32izfbfmin0p8 -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-ZFBFMIN-EXT %s
 // RUN: %clang -target riscv64 -menable-experimental-extensions \
@@ -1328,7 +1314,6 @@
 // RUN: -march=rv64iztso0p1 -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-ZTSO-EXT %s
 // CHECK-ZTSO-EXT: __riscv_ztso 1000{{$}}
->>>>>>> upstream/main
 
 // RUN: %clang -target riscv32 -menable-experimental-extensions \
 // RUN: -march=rv32i_zve64x_zvbb1p0 -x c -E -dM %s \
