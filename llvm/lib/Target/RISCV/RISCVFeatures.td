@@ -699,17 +699,10 @@ def HasStdExtZawrs : Predicate<"Subtarget->hasStdExtZawrs()">,
 
 def FeatureStdExtZvkb
     : SubtargetFeature<"experimental-zvkb", "HasStdExtZvkb", "true",
-<<<<<<< HEAD
-                       "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
-def HasStdExtZvkb : Predicate<"Subtarget->hasStdExtZvkb()">,
-                              AssemblerPredicate<(all_of FeatureStdExtZvkb),
-                              "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
-=======
                        "'Zvkb' (Vector Bit-manipulation used in Cryptography)">;
 def HasStdExtZvkb : Predicate<"Subtarget->hasStdExtZvkb()">,
                               AssemblerPredicate<(all_of FeatureStdExtZvkb),
                               "'Zvkb' (Vector Bit-manipulation used in Cryptography)">;
->>>>>>> upstream/main
 
 def FeatureStdExtZvbb
     : SubtargetFeature<"experimental-zvbb", "HasStdExtZvbb", "true",
