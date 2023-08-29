@@ -3868,20 +3868,15 @@ BoUpSLP::findReusedOrderedScalars(const BoUpSLP::TreeEntry &TE) {
 
 namespace {
 /// Tracks the state we can represent the loads in the given sequence.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-enum class LoadsState { Gather, Vectorize, ScatterVectorize, StridedVectorize };
-#else
-enum class LoadsState { Gather, Vectorize, ScatterVectorize };
-#endif // SIFIVE_CUSTOMIZATION
-=======
 enum class LoadsState {
   Gather,
   Vectorize,
   ScatterVectorize,
+#if SIFIVE_CUSTOMIZATION
+  StridedVectorize,
+#endif // SIFIVE_CUSTOMIZATION
   PossibleStridedVectorize
 };
->>>>>>> upstream/main
 } // anonymous namespace
 
 static bool arePointersCompatible(Value *Ptr1, Value *Ptr2,
@@ -4126,7 +4121,6 @@ static LoadsState canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
       // Check that the sorted loads are consecutive.
       if (static_cast<unsigned>(*Diff) == VL.size() - 1)
         return LoadsState::Vectorize;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       const unsigned Sz = VL.size();
       // Try to generate strided load node if:
@@ -4174,10 +4168,8 @@ static LoadsState canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
         }
       }
 #endif // SIFIVE_CUSTOMIZATION
-=======
       // Simple check if not a strided access - clear order.
       IsPossibleStrided = *Diff % (VL.size() - 1) == 0;
->>>>>>> upstream/main
     }
 #if SIFIVE_CUSTOMIZATION
     // Check if potential masked gather can be represented as series
