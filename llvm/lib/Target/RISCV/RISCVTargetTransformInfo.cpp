@@ -2310,7 +2310,6 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
       SlideCost = 1; // With a constant index, we do not need to use addi.
   }
 
-<<<<<<< HEAD
   // Mask vector extract/insert element is different from normal case.
   if (Val->getScalarSizeInBits() == 1) {
     // For extractelement, we need the following instructions:
@@ -2389,8 +2388,6 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> upstream/main
   // Extract i64 in the target that has XLEN=32 need more instruction.
   if (Val->getScalarType()->isIntegerTy() &&
       ST->getXLen() < Val->getScalarSizeInBits()) {
