@@ -3662,11 +3662,7 @@ bool RISCVDAGToDAGISel::performCombineVMergeAndVOps(SDNode *N) {
 
   // Because N and True must have the same merge operand (or True's operand is
   // implicit_def), the "effective" body is the minimum of their VLs.
-<<<<<<< HEAD
-  SDValue OrigVL = VL; // SIFIVE
-=======
   SDValue OrigVL = VL;
->>>>>>> upstream/main
   VL = GetMinVL(TrueVL, VL);
   if (!VL)
     return false;
@@ -3714,11 +3710,6 @@ bool RISCVDAGToDAGISel::performCombineVMergeAndVOps(SDNode *N) {
          "Expected instructions with mask have a tied dest.");
 #endif
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // SIFIVE cherry-picked from D158161
-=======
->>>>>>> upstream/main
   // Use a tumu policy, relaxing it to tail agnostic provided that the merge
   // operand is undefined.
   //
@@ -3727,18 +3718,11 @@ bool RISCVDAGToDAGISel::performCombineVMergeAndVOps(SDNode *N) {
   // to the tail. In that case we always need to use tail undisturbed to
   // preserve them.
   bool MergeVLShrunk = VL != OrigVL;
-<<<<<<< HEAD
-  uint64_t Policy = (isImplicitDef(Merge) && !MergeVLShrunk) ? RISCVII::TAIL_AGNOSTIC : /*TUMU*/ 0;
-=======
   uint64_t Policy = (isImplicitDef(Merge) && !MergeVLShrunk)
                         ? RISCVII::TAIL_AGNOSTIC
                         : /*TUMU*/ 0;
->>>>>>> upstream/main
   SDValue PolicyOp =
     CurDAG->getTargetConstant(Policy, DL, Subtarget->getXLenVT());
-#else
-  uint64_t Policy = isImplicitDef(Merge) ? RISCVII::TAIL_AGNOSTIC : /*TUMU*/ 0;
-#endif
 
 
   SmallVector<SDValue, 8> Ops;
