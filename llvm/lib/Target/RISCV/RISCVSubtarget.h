@@ -44,6 +44,7 @@ public:
     SiFiveP400,
     SiFiveP500,
     SiFiveP600,
+    SiFiveP800,
 #endif // SIFIVE_CUSTOMIZATION
   };
 
