@@ -291,20 +291,14 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     return Builder.CreateNot(A, Name);
   }
   case VPInstruction::ICmpULE: {
-<<<<<<< HEAD
-    Value *IV = State.get(getOperand(0), Part);
+    Value *A = State.get(getOperand(0), Part);
 #if SIFIVE_CUSTOMIZATION
-    if (State.Plan->getRVL() && IV->getType()->isVectorTy())
+    if (State.Plan->getRVL() && A->getType()->isVectorTy())
       return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
                                               nullptr, Part);
 #endif // SIFIVE_CUSTOMIZATION
-    Value *TC = State.get(getOperand(1), Part);
-    return Builder.CreateICmpULE(IV, TC, Name);
-=======
-    Value *A = State.get(getOperand(0), Part);
     Value *B = State.get(getOperand(1), Part);
     return Builder.CreateICmpULE(A, B, Name);
->>>>>>> upstream/main
   }
   case Instruction::Select: {
     Value *Cond = State.get(getOperand(0), Part);
