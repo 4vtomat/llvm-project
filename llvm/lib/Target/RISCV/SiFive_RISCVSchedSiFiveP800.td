@@ -57,7 +57,7 @@ class SiFiveP800GetCyclesSegmented<string mx, int nf> {
 
 // SiFiveP800 machine model for scheduling and other instruction cost heuristics.
 def SiFiveP800Model : SchedMachineModel {
-  let IssueWidth = 4;         // 4 micro-ops are dispatched per cycle.
+  let IssueWidth = 6;         // 6 micro-ops are dispatched per cycle.
   let MicroOpBufferSize = 160; // Max micro-ops that can be buffered.
   let LoadLatency = 4;        // Cycles for loads to access the cache.
   let MispredictPenalty = 9;  // Extra cycles for a mispredicted branch.
@@ -76,19 +76,25 @@ def SiFiveP800IEXQ0       : ProcResource<1>;
 def SiFiveP800IEXQ1       : ProcResource<1>;
 def SiFiveP800IEXQ2       : ProcResource<1>;
 def SiFiveP800IEXQ3       : ProcResource<1>;
+def SiFiveP800IEXQ4       : ProcResource<1>;
+def SiFiveP800IEXQ5       : ProcResource<1>;
 def SiFiveP800FEXQ0       : ProcResource<1>;
 def SiFiveP800FEXQ1       : ProcResource<1>;
 
 // Two Load/Store ports that can issue either two loads, two stores, or one load
 // and one store (P550 has one load and one separate store pipe).
 def SiFiveP800LDST       : ProcResource<2>;
+// One additional port that can only handle loads.
+def SiFiveP800LD         : ProcResource<1>;
+def SiFiveP800Load       : ProcResGroup<[SiFiveP800LDST, SiFiveP800LD]>;
 
-// 4-wide pipeline with 4 ALU pipes.
+// 6-wide pipeline with 6 ALU pipes.
 def SiFiveP800IntArith    : ProcResGroup<[SiFiveP800IEXQ0, SiFiveP800IEXQ1, SiFiveP800IEXQ2, SiFiveP800IEXQ3]>;
-defvar SiFiveP800SYS      = SiFiveP800IEXQ0;
-defvar SiFiveP800CMOV     = SiFiveP800IEXQ0;
-defvar SiFiveP800MulI2F   = SiFiveP800IEXQ1;
-def SiFiveP800Branch      : ProcResGroup<[SiFiveP800IEXQ2, SiFiveP800IEXQ3]>;
+defvar SiFiveP800SYS      = SiFiveP800IEXQ1;
+defvar SiFiveP800CMOV     = SiFiveP800IEXQ3;
+defvar SiFiveP800I2F      = SiFiveP800IEXQ3;
+def SiFiveP800Mul         : ProcResGroup<[SiFiveP800IEXQ1, SiFiveP800IEXQ3]>;
+def SiFiveP800Branch      : ProcResGroup<[SiFiveP800IEXQ4, SiFiveP800IEXQ5]>;
 def SiFiveP800Div         : ProcResource<1>;
 
 def SiFiveP800FloatArith  : ProcResGroup<[SiFiveP800FEXQ0, SiFiveP800FEXQ1]>;
@@ -129,21 +135,21 @@ def : WriteRes<WriteCMOV, [SiFiveP800Branch, SiFiveP800CMOV]> {
   let NumMicroOps = 2;
 }
 
-let Latency = 3 in {
+let Latency = 2 in {
 // Integer multiplication
-def : WriteRes<WriteIMul, [SiFiveP800MulI2F]>;
-def : WriteRes<WriteIMul32, [SiFiveP800MulI2F]>;
+def : WriteRes<WriteIMul, [SiFiveP800Mul]>;
+def : WriteRes<WriteIMul32, [SiFiveP800Mul]>;
 // cpop[w] look exactly like multiply.
-def : WriteRes<WriteCPOP, [SiFiveP800MulI2F]>;
-def : WriteRes<WriteCPOP32, [SiFiveP800MulI2F]>;
+def : WriteRes<WriteCPOP, [SiFiveP800Mul]>;
+def : WriteRes<WriteCPOP32, [SiFiveP800Mul]>;
 }
 
 // Integer division
-def : WriteRes<WriteIDiv, [SiFiveP800MulI2F, SiFiveP800Div]> {
+def : WriteRes<WriteIDiv, [SiFiveP800IEXQ2, SiFiveP800Div]> {
   let Latency = 35;
   let ResourceCycles = [1, 34];
 }
-def : WriteRes<WriteIDiv32,  [SiFiveP800MulI2F, SiFiveP800Div]> {
+def : WriteRes<WriteIDiv32,  [SiFiveP800IEXQ2, SiFiveP800Div]> {
   let Latency = 20;
   let ResourceCycles = [1, 19];
 }
@@ -184,18 +190,18 @@ def : WriteRes<WriteFST32, [SiFiveP800LDST]>;
 def : WriteRes<WriteFST64, [SiFiveP800LDST]>;
 }
 let Latency = 4 in {
-def : WriteRes<WriteLDB, [SiFiveP800LDST]>;
-def : WriteRes<WriteLDH, [SiFiveP800LDST]>;
+def : WriteRes<WriteLDB, [SiFiveP800Load]>;
+def : WriteRes<WriteLDH, [SiFiveP800Load]>;
 }
 let Latency = 4 in {
-def : WriteRes<WriteLDW, [SiFiveP800LDST]>;
-def : WriteRes<WriteLDD, [SiFiveP800LDST]>;
+def : WriteRes<WriteLDW, [SiFiveP800Load]>;
+def : WriteRes<WriteLDD, [SiFiveP800Load]>;
 }
 
 let Latency = 6 in {
-def : WriteRes<WriteFLD16, [SiFiveP800LDST]>;
-def : WriteRes<WriteFLD32, [SiFiveP800LDST]>;
-def : WriteRes<WriteFLD64, [SiFiveP800LDST]>;
+def : WriteRes<WriteFLD16, [SiFiveP800Load]>;
+def : WriteRes<WriteFLD32, [SiFiveP800Load]>;
+def : WriteRes<WriteFLD64, [SiFiveP800Load]>;
 }
 
 // Atomic memory
@@ -204,8 +210,8 @@ def : WriteRes<WriteAtomicSTW, [SiFiveP800LDST]>;
 def : WriteRes<WriteAtomicSTD, [SiFiveP800LDST]>;
 def : WriteRes<WriteAtomicW, [SiFiveP800LDST]>;
 def : WriteRes<WriteAtomicD, [SiFiveP800LDST]>;
-def : WriteRes<WriteAtomicLDW, [SiFiveP800LDST]>;
-def : WriteRes<WriteAtomicLDD, [SiFiveP800LDST]>;
+def : WriteRes<WriteAtomicLDW, [SiFiveP800Load]>;
+def : WriteRes<WriteAtomicLDD, [SiFiveP800Load]>;
 }
 
 // Floating point
@@ -267,12 +273,12 @@ def : WriteRes<WriteFSqrt64, [SiFiveP800FEXQ1, SiFiveP800FloatDiv]> {
 
 // Conversions
 let Latency = 2 in {
-def : WriteRes<WriteFCvtI32ToF16, [SiFiveP800MulI2F]>;
-def : WriteRes<WriteFCvtI32ToF32, [SiFiveP800MulI2F]>;
-def : WriteRes<WriteFCvtI32ToF64, [SiFiveP800MulI2F]>;
-def : WriteRes<WriteFCvtI64ToF16, [SiFiveP800MulI2F]>;
-def : WriteRes<WriteFCvtI64ToF32, [SiFiveP800MulI2F]>;
-def : WriteRes<WriteFCvtI64ToF64, [SiFiveP800MulI2F]>;
+def : WriteRes<WriteFCvtI32ToF16, [SiFiveP800I2F]>;
+def : WriteRes<WriteFCvtI32ToF32, [SiFiveP800I2F]>;
+def : WriteRes<WriteFCvtI32ToF64, [SiFiveP800I2F]>;
+def : WriteRes<WriteFCvtI64ToF16, [SiFiveP800I2F]>;
+def : WriteRes<WriteFCvtI64ToF32, [SiFiveP800I2F]>;
+def : WriteRes<WriteFCvtI64ToF64, [SiFiveP800I2F]>;
 def : WriteRes<WriteFCvtF16ToI32, [SiFiveP800F2I]>;
 def : WriteRes<WriteFCvtF16ToI64, [SiFiveP800F2I]>;
 def : WriteRes<WriteFCvtF16ToF32, [SiFiveP800FloatArith]>;
@@ -292,11 +298,11 @@ def : WriteRes<WriteFClass64, [SiFiveP800F2I]>;
 def : WriteRes<WriteFCmp16, [SiFiveP800F2I]>;
 def : WriteRes<WriteFCmp32, [SiFiveP800F2I]>;
 def : WriteRes<WriteFCmp64, [SiFiveP800F2I]>;
-def : WriteRes<WriteFMovI16ToF16, [SiFiveP800MulI2F]>;
+def : WriteRes<WriteFMovI16ToF16, [SiFiveP800I2F]>;
 def : WriteRes<WriteFMovF16ToI16, [SiFiveP800F2I]>;
-def : WriteRes<WriteFMovI32ToF32, [SiFiveP800MulI2F]>;
+def : WriteRes<WriteFMovI32ToF32, [SiFiveP800I2F]>;
 def : WriteRes<WriteFMovF32ToI32, [SiFiveP800F2I]>;
-def : WriteRes<WriteFMovI64ToF64, [SiFiveP800MulI2F]>;
+def : WriteRes<WriteFMovI64ToF64, [SiFiveP800I2F]>;
 def : WriteRes<WriteFMovF64ToI64, [SiFiveP800F2I]>;
 }
 
