@@ -64,49 +64,14 @@ INITIALIZE_PASS(RISCVInsertReadWriteCSR, DEBUG_TYPE,
 bool RISCVInsertReadWriteCSR::emitWriteRoundingMode(MachineBasicBlock &MBB) {
   bool Changed = false;
   for (MachineInstr &MI : MBB) {
-<<<<<<< HEAD
-    if (auto RoundModeIdx = getRoundModeIdx(MI)) {
-      if (RISCVII::usesVXRM(MI.getDesc().TSFlags)) {
-        unsigned VXRMImm = MI.getOperand(*RoundModeIdx).getImm();
+    int VXRMIdx = RISCVII::getVXRMOpNum(MI.getDesc());
+    if (VXRMIdx >= 0) {
+      unsigned VXRMImm = MI.getOperand(VXRMIdx).getImm();
 
 #ifdef SIFIVE_CUSTOMIZATION
         if (VXRMImm == RISCVVXRndMode::DYN)
           continue;
 #endif // SIFIVE_CUSTOMIZATION
-
-        Changed = true;
-
-        BuildMI(MBB, MI, MI.getDebugLoc(), TII->get(RISCV::WriteVXRMImm))
-            .addImm(VXRMImm);
-        MI.addOperand(MachineOperand::CreateReg(RISCV::VXRM, /*IsDef*/ false,
-                                                /*IsImp*/ true));
-      } else { // FRM
-        unsigned FRMImm = MI.getOperand(*RoundModeIdx).getImm();
-
-        // The value is a hint to this pass to not alter the frm value.
-        if (FRMImm == RISCVFPRndMode::DYN)
-          continue;
-
-        Changed = true;
-
-        // Save
-        MachineRegisterInfo *MRI = &MBB.getParent()->getRegInfo();
-        Register SavedFRM = MRI->createVirtualRegister(&RISCV::GPRRegClass);
-        BuildMI(MBB, MI, MI.getDebugLoc(), TII->get(RISCV::SwapFRMImm),
-                SavedFRM)
-            .addImm(FRMImm);
-        MI.addOperand(MachineOperand::CreateReg(RISCV::FRM, /*IsDef*/ false,
-                                                /*IsImp*/ true));
-        // Restore
-        MachineInstrBuilder MIB =
-            BuildMI(*MBB.getParent(), {}, TII->get(RISCV::WriteFRM))
-                .addReg(SavedFRM);
-        MBB.insertAfter(MI, MIB);
-      }
-=======
-    int VXRMIdx = RISCVII::getVXRMOpNum(MI.getDesc());
-    if (VXRMIdx >= 0) {
-      unsigned VXRMImm = MI.getOperand(VXRMIdx).getImm();
 
       Changed = true;
 
@@ -115,7 +80,6 @@ bool RISCVInsertReadWriteCSR::emitWriteRoundingMode(MachineBasicBlock &MBB) {
       MI.addOperand(MachineOperand::CreateReg(RISCV::VXRM, /*IsDef*/ false,
                                               /*IsImp*/ true));
       continue;
->>>>>>> upstream/main
     }
 
     int FRMIdx = RISCVII::getFRMOpNum(MI.getDesc());
