@@ -17675,7 +17675,6 @@ RISCVTargetLowering::EmitInstrWithCustomInserter(MachineInstr &MI,
 
 void RISCVTargetLowering::AdjustInstrPostInstrSelection(MachineInstr &MI,
                                                         SDNode *Node) const {
-<<<<<<< HEAD
   // Add FRM dependency to vector floating-point instructions with dynamic
   // rounding mode.
   if (auto RoundModeIdx = getRoundModeIdx(MI)) {
@@ -17697,8 +17696,6 @@ void RISCVTargetLowering::AdjustInstrPostInstrSelection(MachineInstr &MI,
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> upstream/main
   // Add FRM dependency to any instructions with dynamic rounding mode.
   int Idx = RISCV::getNamedOperandIdx(MI.getOpcode(), RISCV::OpName::frm);
   if (Idx < 0) {
