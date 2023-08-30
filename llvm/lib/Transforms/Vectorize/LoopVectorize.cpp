@@ -11064,6 +11064,7 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
       VPMaskSel->insertBefore(
           Plan.getVPValue(CSA.second.getAssignment())->getDefiningRecipe());
       VPDataUpdate->setVPNewMask(VPMaskSel);
+      VPDataUpdate->setVPCondToUse(CondToUse);
       ExtractScalarRecipe =
           new VPCSAExtractScalarRecipe({VPInitScalar, VPMaskSel, VPDataUpdate});
     }
