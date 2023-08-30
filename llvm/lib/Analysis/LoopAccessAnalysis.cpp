@@ -1728,7 +1728,7 @@ bool MemoryDepChecker::couldPreventStoreLoadForward(uint64_t Distance,
 #if SIFIVE_CUSTOMIZATION
   if (PSE.getSE()->getTTI() && PSE.getSE()->getTTI()->useVLAVectorizer()) {
     MaxVFWithoutSLForwardIssues =
-        std::min(RISCV::RVVBitsPerBlock * TypeByteSize, MaxSafeDepDistBytes);
+        std::min(RISCV::RVVBitsPerBlock * TypeByteSize, MinDepDistBytes);
     // RISCV VLA supports non-power-2 vector factor. So, we iterate in a
     // backward order to find largest VF, which allows aligned stores-loads or
     // the number of iterations between conflicting memory addresses is not less
@@ -2059,46 +2059,8 @@ MemoryDepChecker::isDependent(const MemAccessInfo &A, unsigned AIdx,
   // is 2. Then we analyze the accesses on array A, the minimum distance needed
   // is 8, which is less than 2 and forbidden vectorization, But actually
   // both A and B could be vectorized by 2 iterations.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // Distance must be reduced by a factor of the stride of the loop induction
-  // variable, otherwise it is possible that MaxSafeDepDistBytes is too
-  // large. For example,
-  //   for (int k = 0; k < len; k+=3) {
-  //     a[k] = a[k + 4];
-  //     a[k+2] = a[k+6];
-  //   }
-  // without accounting for loop stride has MaxSafeDepDist=24 when it it must be
-  // 8.
-  auto Bounds = InnermostLoop->getBounds(SE);
-  if (!Bounds) {
-    LLVM_DEBUG(dbgs() << "LAA: Could not determine bounds of loop induction "
-                         "variable, so the MaxSafeDepDistBytes is unknown\n");
-    MaxSafeDepDistBytes = 0;
-    return Dependence::BackwardVectorizableButPreventsForwarding;
-  }
-  const SCEV *StepVal = SE.getSCEV(Bounds->getStepValue());
-  const SCEVConstant *StepValC = dyn_cast<SCEVConstant>(StepVal);
-  if (!StepValC) {
-    LLVM_DEBUG(dbgs() << "LAA: Could not determine step value of loop induction "
-                         "variable, so the MaxSafeDepDistBytes is unknown\n");
-    MaxSafeDepDistBytes = 0;
-    return Dependence::BackwardVectorizableButPreventsForwarding;
-  }
-
-  const APInt &LoopIVStrideAP = StepValC->getAPInt().abs();
-  uint64_t LoopIVStride = LoopIVStrideAP.getZExtValue();
-
-  MaxSafeDepDistBytes = std::min(static_cast<uint64_t>(Distance / LoopIVStride),
-                                 MaxSafeDepDistBytes);
-#else
-  MaxSafeDepDistBytes =
-      std::min(static_cast<uint64_t>(Distance), MaxSafeDepDistBytes);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   MinDepDistBytes =
       std::min(static_cast<uint64_t>(Distance), MinDepDistBytes);
->>>>>>> upstream/main
 
   bool IsTrueDataDependence = (!AIsWrite && BIsWrite);
   uint64_t MinDepDistBytesOld = MinDepDistBytes;
