@@ -1546,11 +1546,6 @@ class VPseudoBinaryMOutMask<VReg RetClass,
 #else
                             string Constraint> :
 #endif // SIFIVE_CUSTOMIZATION
-        Pseudo<(outs RetClass:$rd),
-                (ins RetClass:$merge,
-                     Op1Class:$rs2, Op2Class:$rs1,
-                     VMaskOp:$vm, AVL:$vl, ixlenimm:$sew), []>,
-        RISCVVPseudo {
       Pseudo<(outs RetClass:$rd),
              (ins RetClass:$merge,
                   Op1Class:$rs2, Op2Class:$rs1,
