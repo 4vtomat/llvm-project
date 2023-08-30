@@ -9849,7 +9849,6 @@ VPValue *VPRecipeBuilder::createEdgeMask(BasicBlock *Src, BasicBlock *Dst,
   return EdgeMaskCache[Edge] = EdgeMask;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VPValue *VPRecipeBuilder::getOrCreateIV(VPBasicBlock *VPBB, VPlanPtr &Plan) {
   IVCacheTy::iterator IVEntryIt = IVCache.find(VPBB);
@@ -9873,7 +9872,7 @@ VPValue *VPRecipeBuilder::getOrCreateIV(VPBasicBlock *VPBB, VPlanPtr &Plan) {
   return IV; // TODO: IVCache[VPBB] = IV;
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 void VPRecipeBuilder::createHeaderMask(VPlan &Plan) {
   BasicBlock *Header = OrigLoop->getHeader();
 
@@ -9914,7 +9913,6 @@ void VPRecipeBuilder::createHeaderMask(VPlan &Plan) {
   }
   BlockMaskCache[Header] = BlockMask;
 }
->>>>>>> upstream/main
 
 VPValue *VPRecipeBuilder::createBlockInMask(BasicBlock *BB, VPlan &Plan) {
   assert(OrigLoop->contains(BB) && "Block is not a part of a loop");
@@ -9930,7 +9928,6 @@ VPValue *VPRecipeBuilder::createBlockInMask(BasicBlock *BB, VPlan &Plan) {
   // All-one mask is modelled as no-mask following the convention for masked
   // load/store/gather/scatter. Initialize BlockMask to no-mask.
   VPValue *BlockMask = nullptr;
-<<<<<<< HEAD
 
   if (OrigLoop->getHeader() == BB) {
     if (!CM.blockNeedsPredicationForAnyReason(BB))
@@ -9979,8 +9976,6 @@ VPValue *VPRecipeBuilder::createBlockInMask(BasicBlock *BB, VPlan &Plan) {
     Builder.setInsertPoint(VPBB, VPBB->end());
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> upstream/main
   // This is the block mask. We OR all incoming edges.
   for (auto *Predecessor : predecessors(BB)) {
     VPValue *EdgeMask = createEdgeMask(Predecessor, BB, Plan);
@@ -10891,17 +10886,11 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
 
 // Add exit values to \p Plan. VPLiveOuts are added for each LCSSA phi in the
 // original exit block.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB,
-                                VPBasicBlock *MiddleVPBB, Loop *OrigLoop,
+static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
                                 VPlan &Plan, LoopVectorizationLegality *Legal) {
 #else
-static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB,
-                                VPBasicBlock *MiddleVPBB, Loop *OrigLoop,
-=======
 static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
->>>>>>> upstream/main
                                 VPlan &Plan) {
 #endif
   BasicBlock *ExitBB = OrigLoop->getUniqueExitBlock();
@@ -11190,15 +11179,11 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     // and there is nothing to fix from vector loop; phis should have incoming
     // from scalar loop only.
   } else
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    addUsersInExitBlock(HeaderVPBB, MiddleVPBB, OrigLoop, *Plan, Legal);
+    addUsersInExitBlock(HeaderVPBB, OrigLoop, *Plan, Legal);
 #else
-    addUsersInExitBlock(HeaderVPBB, MiddleVPBB, OrigLoop, *Plan);
-#endif // SIFIVE_CUSTOMIZATION
-=======
     addUsersInExitBlock(HeaderVPBB, OrigLoop, *Plan);
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
 
   assert(isa<VPRegionBlock>(Plan->getVectorLoopRegion()) &&
          !Plan->getVectorLoopRegion()->getEntryBasicBlock()->empty() &&
@@ -11553,7 +11538,6 @@ void VPInterleaveRecipe::print(raw_ostream &O, const Twine &Indent,
 }
 #endif
 
-<<<<<<< HEAD
 void VPWidenIntOrFpInductionRecipe::execute(VPTransformState &State) {
   assert(!State.Instance && "Int or FP induction being replicated.");
 
@@ -11682,8 +11666,6 @@ void VPWidenIntOrFpInductionRecipe::execute(VPTransformState &State) {
 #endif // SIFIVE_CUSTOMIZATION
 }
 
-=======
->>>>>>> upstream/main
 void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
   assert(IndDesc.getKind() == InductionDescriptor::IK_PtrInduction &&
          "Not a pointer induction according to InductionDescriptor!");
@@ -11917,19 +11899,15 @@ void VPReductionRecipe::execute(VPTransformState &State) {
       PrevInChain = NewRed;
     } else {
       PrevInChain = State.get(getChainOp(), Part);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       if (RVLPart)
-        NewRed = createTargetReduction(State.Builder, TTI, *RdxDesc, NewVecOp,
+        NewRed = createTargetReduction(State.Builder, TTI, RdxDesc, NewVecOp,
                                        RVLPart, nullptr, NewCond);
       else
-        NewRed = createTargetReduction(State.Builder, TTI, *RdxDesc, NewVecOp);
+        NewRed = createTargetReduction(State.Builder, TTI, RdxDesc, NewVecOp);
 #else
-      NewRed = createTargetReduction(State.Builder, TTI, *RdxDesc, NewVecOp);
-#endif // SIFIVE_CUSTOMIZATION
-=======
       NewRed = createTargetReduction(State.Builder, TTI, RdxDesc, NewVecOp);
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
     }
     if (RecurrenceDescriptor::isMinMaxRecurrenceKind(Kind)) {
       NextInChain = createMinMaxOp(State.Builder, RdxDesc.getRecurrenceKind(),
@@ -13195,7 +13173,6 @@ bool LoopVectorizePass::processLoop(Loop *L) {
           DisableRuntimeUnroll = true;
       }
       // Report the vectorization decision.
-<<<<<<< HEAD
       ORE->emit([&]() {
 #if SIFIVE_CUSTOMIZATION
         const Module &M = *L->getHeader()->getModule();
@@ -13233,9 +13210,6 @@ bool LoopVectorizePass::processLoop(Loop *L) {
                << NV("VectorizationFactor", VF.Width)
                << ", interleaved count: " << NV("InterleaveCount", IC) << ")";
       });
-=======
-      reportVectorization(ORE, L, VF, IC);
->>>>>>> upstream/main
     }
 
     if (ORE->allowExtraAnalysis(LV_NAME))
