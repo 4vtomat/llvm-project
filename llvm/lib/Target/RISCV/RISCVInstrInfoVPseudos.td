@@ -3673,7 +3673,11 @@ multiclass VPseudoTernaryWithTailPolicy<VReg RetClass,
                                           int sew,
                                           string Constraint = "",
                                           bit Commutable = 0> {
+#ifdef SIFIVE_CUSTOMIZATION
+  let VLMul = MInfo.value, SEW=sew in {
+#else
   let VLMul = MInfo.value in {
+#endif // SIFIVE_CUSTOMIZATION
     defvar mx = MInfo.MX;
     let isCommutable = Commutable in
     def "_" # mx # "_E" # sew : VPseudoTernaryNoMaskWithPolicy<RetClass, Op1Class, Op2Class, Constraint>;
@@ -3688,7 +3692,11 @@ multiclass VPseudoTernaryWithTailPolicyRoundingMode<VReg RetClass,
                                           int sew,
                                           string Constraint = "",
                                           bit Commutable = 0> {
+#ifdef SIFIVE_CUSTOMIZATION
+  let VLMul = MInfo.value, SEW=sew in {
+#else
   let VLMul = MInfo.value in {
+#endif // SIFIVE_CUSTOMIZATION
     defvar mx = MInfo.MX;
     let isCommutable = Commutable in
     def "_" # mx # "_E" # sew
