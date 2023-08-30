@@ -129,20 +129,20 @@ let Predicates = [HasStdExtZvkb0p1], DecoderNamespace = "Zvk0p1" in
 #endif // SIFIVE_CUSTOMIZATION
 
 let Predicates = [HasStdExtZvkbOrZvkb0p1] in {
-  defm VANDN_V : VALU_IV_V_X<"vandn", 0b000001>;
-  def VBREV8_V : VALUVs2<0b010010, 0b01000, OPMVV, "vbrev8.v">;
-  def VREV8_V : VALUVs2<0b010010, 0b01001, OPMVV, "vrev8.v">;
-  defm VROL_V : VALU_IV_V_X<"vrol", 0b010101>;
-  defm VROR_V : VROR_IV_V_X_I<"vror", 0b010100>;
-} // Predicates = [HasStdExtZvkbOrZvkb0p1]
-
-let Predicates = [HasStdExtZvkb] in {
   defm VANDN_V  : VALU_IV_V_X<"vandn", 0b000001>;
   def  VBREV8_V : VALUVs2<0b010010, 0b01000, OPMVV, "vbrev8.v">;
   def  VREV8_V  : VALUVs2<0b010010, 0b01001, OPMVV, "vrev8.v">;
   defm VROL_V   : VALU_IV_V_X<"vrol", 0b010101>;
   defm VROR_V   : VROR_IV_V_X_I<"vror", 0b010100>;
-} // Predicates = [HasStdExtZvkb]
+} // Predicates = [HasStdExtZvkbOrZvkb0p1]
+
+#ifdef SIFIVE_CUSTOMIZATION
+let Predicates = [HasStdExtZvkg0p1],
+    RVVConstraint = NoConstraint,
+    DecoderNamespace = "Zvk0p1" in {
+  def VGHMAC_VV : PALUVVNoVm<0b101100, OPMVV, "vghmac.vv">;
+} // Predicates = [HasStdExtZvkg0p1]
+#endif // SIFIVE_CUSTOMIZATION
 
 let Predicates = [HasStdExtZvkg], RVVConstraint = NoConstraint in {
   def VGHSH_VV : PALUVVNoVm<0b101100, OPMVV, "vghsh.vv">;
@@ -174,14 +174,6 @@ let Predicates = [HasStdExtZvksh], RVVConstraint = NoConstraint in {
   def VSM3C_VI  : PALUVINoVm<0b101011, "vsm3c.vi", uimm5>;
   def VSM3ME_VV : PALUVVNoVm<0b100000, OPMVV, "vsm3me.vv">;
 } // Predicates = [HasStdExtZvksh]
-
-#ifdef SIFIVE_CUSTOMIZATION
-let Predicates = [HasStdExtZvkg0p1],
-    RVVConstraint = NoConstraint,
-    DecoderNamespace = "Zvk0p1" in {
-  def VGHMAC_VV : PALUVVNoVm<0b101100, OPMVV, "vghmac.vv">;
-} // Predicates = [HasStdExtZvkg0p1]
-#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // Pseudo instructions
@@ -381,9 +373,6 @@ let Predicates = [HasStdExtZvbb] in {
   defm PseudoVCTZ   : VPseudoVALU_V;
   defm PseudoVCPOP  : VPseudoVALU_V;
   defm PseudoVWSLL : VPseudoVWALU_VV_VX_VI<uimm5>;
-  defm PseudoVCLZ : VPseudoVALU_V;
-  defm PseudoVCTZ : VPseudoVALU_V;
-  defm PseudoVCPOP : VPseudoVALU_V;
 } // Predicates = [HasStdExtZvbb]
 
 let Predicates = [HasStdExtZvbcOrZvkb0p1] in {
@@ -392,21 +381,21 @@ let Predicates = [HasStdExtZvbcOrZvkb0p1] in {
 } // Predicates = [HasStdExtZvbcOrZvkb0p1]
 
 #ifdef SIFIVE_CUSTOMIZATION
-let Predicates = [HasStdExtZvkg0p1] in {
-  defm PseudoVGHMAC : VPseudoVALU_VV_NoMask_Zvk;
-} // Predicates = [HasStdExtZvkg0p1]
+let Predicates = [HasStdExtZvkbOrZvkb0p1] in {
+#endif // SIFIVE_CUSTOMIZATION
+  defm PseudoVANDN  : VPseudoVALU_VV_VX;
+  defm PseudoVBREV8 : VPseudoVALU_V;
+  defm PseudoVREV8  : VPseudoVALU_V;
+  defm PseudoVROL   : VPseudoVALU_VV_VX;
+  defm PseudoVROR   : VPseudoVALU_VV_VX_VI<uimm6>;
+#ifdef SIFIVE_CUSTOMIZATION
+} // Predicates = [HasStdExtZvkbOrZvkb0p1]
 #endif // SIFIVE_CUSTOMIZATION
 
 #ifdef SIFIVE_CUSTOMIZATION
-let Predicates = [HasStdExtZvkbOrZvkb0p1] in {
-#endif // SIFIVE_CUSTOMIZATION
-  defm PseudoVANDN : VPseudoVALU_VV_VX;
-  defm PseudoVBREV8 : VPseudoVALU_V;
-  defm PseudoVREV8 : VPseudoVALU_V;
-  defm PseudoVROL : VPseudoVALU_VV_VX;
-  defm PseudoVROR : VPseudoVALU_VV_VX_VI<uimm6>;
-#ifdef SIFIVE_CUSTOMIZATION
-} // Predicates = [HasStdExtZvkbOrZvkb0p1]
+let Predicates = [HasStdExtZvkg0p1] in {
+  defm PseudoVGHMAC : VPseudoVALU_VV_NoMask_Zvk;
+} // Predicates = [HasStdExtZvkg0p1]
 #endif // SIFIVE_CUSTOMIZATION
 
 let Predicates = [HasStdExtZvkg] in {
@@ -871,35 +860,34 @@ multiclass VPatBinaryW_VV_VX_VI_VWSLL<string intrinsic, string instruction,
       VPatBinaryW_VX_VWSLL<intrinsic, instruction, vtilist>,
       VPatBinaryW_VI_VWSLL<intrinsic, instruction, vtilist>;
 
-#ifdef SIFIVE_CUSTOMIZATION
-let Predicates = [HasStdExtZvkbOrZvkb0p1] in {
-#endif // SIFIVE_CUSTOMIZATION
-  defm : VPatBinaryV_VV_VX<"int_riscv_vandn", "PseudoVANDN", AllIntegerVectors>;
+let Predicates = [HasStdExtZvbb] in {
   defm : VPatUnaryV_V<"int_riscv_vbrev", "PseudoVBREV", AllIntegerVectors>;
   defm : VPatUnaryV_V<"int_riscv_vclz", "PseudoVCLZ", AllIntegerVectors>;
   defm : VPatUnaryV_V<"int_riscv_vctz", "PseudoVCTZ", AllIntegerVectors>;
   defm : VPatUnaryV_V<"int_riscv_vcpopv", "PseudoVCPOP", AllIntegerVectors>;
   defm : VPatBinaryW_VV_VX_VI_VWSLL<"int_riscv_vwsll", "PseudoVWSLL", AllWidenableIntVectors>;
-#ifdef SIFIVE_CUSTOMIZATION
-} // Predicates = [HasStdExtZvkbOrZvkb0p1]
-#endif // SIFIVE_CUSTOMIZATION
+} // Predicates = [HasStdExtZvbb]
 
 let Predicates = [HasStdExtZvbcOrZvkb0p1] in {
   defm : VPatBinaryV_VV_VX<"int_riscv_vclmul", "PseudoVCLMUL", I64IntegerVectors>;
   defm : VPatBinaryV_VV_VX<"int_riscv_vclmulh", "PseudoVCLMULH", I64IntegerVectors>;
 } // Predicates = [HasStdExtZvbcOrZvkb0p1]
 
-let Predicates = [HasStdExtZvkg0p1] in {
-  defm : VPatBinaryV_VV_NoMask<"int_riscv_vghmac", "PseudoVGHMAC", I32IntegerVectors>;
-} // Predicates = [HasStdExtZvkg0p1]
-
-let Predicates = [HasStdExtZvkb] in {
+#ifdef SIFIVE_CUSTOMIZATION
+let Predicates = [HasStdExtZvkbOrZvkb0p1] in {
+#endif // SIFIVE_CUSTOMIZATION
   defm : VPatBinaryV_VV_VX<"int_riscv_vandn", "PseudoVANDN", AllIntegerVectors>;
   defm : VPatUnaryV_V<"int_riscv_vbrev8", "PseudoVBREV8", AllIntegerVectors>;
   defm : VPatUnaryV_V<"int_riscv_vrev8", "PseudoVREV8", AllIntegerVectors>;
   defm : VPatBinaryV_VV_VX_VROL<"int_riscv_vrol", "PseudoVROL", "PseudoVROR", AllIntegerVectors>;
   defm : VPatBinaryV_VV_VX_VI_VROR<"int_riscv_vror", "PseudoVROR", AllIntegerVectors>;
-} // Predicates = [HasStdExtZvkb]
+#ifdef SIFIVE_CUSTOMIZATION
+} // Predicates = [HasStdExtZvkbOrZvkb0p1]
+#endif // SIFIVE_CUSTOMIZATION
+
+let Predicates = [HasStdExtZvkg0p1] in {
+  defm : VPatBinaryV_VV_NoMask<"int_riscv_vghmac", "PseudoVGHMAC", I32IntegerVectors>;
+} // Predicates = [HasStdExtZvkg0p1]
 
 let Predicates = [HasStdExtZvkg] in {
   defm : VPatBinaryV_VV_NoMask<"int_riscv_vghsh", "PseudoVGHSH", I32IntegerVectors>;
