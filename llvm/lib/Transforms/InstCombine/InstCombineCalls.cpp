@@ -3166,6 +3166,15 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     }
     break;
   }
+  case Intrinsic::vp_trunc: {
+    Value *Src = II->getOperand(0);
+    if (auto *VPI = dyn_cast<VPIntrinsic>(Src)) {
+      if ((VPI->getIntrinsicID() == Intrinsic::vp_zext) &&
+          (VPI->getOperand(0)->getType() == II->getType()))
+        return replaceInstUsesWith(CI, VPI->getOperand(0));
+    }
+    break;
+  }
   case Intrinsic::experimental_vp_reverse: {
     Value *Vec = II->getArgOperand(0);
     Value *Mask = II->getArgOperand(1);
