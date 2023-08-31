@@ -631,7 +631,8 @@ class InternalDebugOpt : Group<internal_debug_Group>,
 def ccc_install_dir : Separate<["-"], "ccc-install-dir">, InternalDebugOpt,
   HelpText<"Simulate installation in the given directory">;
 def ccc_print_phases : Flag<["-"], "ccc-print-phases">,
-  Flags<[NoXarchOption, HelpHidden]>, Visibility<[ClangOption, CLOption, DXCOption,
+  Flags<[NoXarchOption, HelpHidden]>,
+  Visibility<[ClangOption, CLOption, DXCOption,
   FlangOption]>,
   HelpText<"Dump list of actions to perform">;
 def ccc_print_bindings : Flag<["-"], "ccc-print-bindings">, InternalDebugOpt,
@@ -4219,7 +4220,8 @@ def mwatchos_simulator_version_min_EQ : Joined<["-"], "mwatchos-simulator-versio
 def mwatchsimulator_version_min_EQ : Joined<["-"], "mwatchsimulator-version-min=">, Alias<mwatchos_simulator_version_min_EQ>;
 } // let Flags = [TargetSpecific]
 def march_EQ : Joined<["-"], "march=">, Group<m_Group>,
-  Flags<[TargetSpecific]>, Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
+  Flags<[TargetSpecific]>,
+  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
   HelpText<"For a list of available architectures for the target use '-mcpu=help'">;
 def masm_EQ : Joined<["-"], "masm=">, Group<m_Group>, Flags<[NoXarchOption]>;
 def inline_asm_EQ : Joined<["-"], "inline-asm=">, Group<m_Group>,
@@ -4427,13 +4429,16 @@ def mcmodel_EQ_medany : Flag<["-"], "mcmodel=medany">, Group<m_Group>,
   HelpText<"Equivalent to -mcmodel=medium, compatible with RISC-V gcc.">;
 // SIFIVE
 def fuse_vla_vectorizer : Flag<["-"], "fuse-vla-vectorizer">, Group<f_Group>,
-  HelpText<"Turn on VLA vectorization">, Flags<[CoreOption, NoXarchOption]>;
+  HelpText<"Turn on VLA vectorization">, Flags<[NoXarchOption]>,
+  Visibility<[ClangOption, CLOption, DXCOption]>;
 def fno_use_vla_vectorizer : Flag<["-"], "fno-use-vla-vectorizer">, Group<f_Group>,
-  HelpText<"Turn off VLA vectorization">, Flags<[CoreOption, NoXarchOption]>;
+  HelpText<"Turn off VLA vectorization">, Flags<[NoXarchOption]>,
+  Visibility<[ClangOption, CLOption, DXCOption]>;
 def msifive_recode_EQ : Joined<["-"], "msifive-recode=">, Group<m_Group>,
   HelpText<"Set the target of SiFive Recode.">,
   Values<"off,neon">,
-  Flags<[CC1Option]>, MarshallingInfoString<TargetOpts<"SiFiveRecode">, [{"off"}]>;
+  Visibility<[ClangOption, CC1Option]>,
+  MarshallingInfoString<TargetOpts<"SiFiveRecode">, [{"off"}]>;
 // end SIFIVE
 let Flags = [TargetSpecific] in {
 def menable_experimental_extensions : Flag<["-"], "menable-experimental-extensions">, Group<m_Group>,
