@@ -1559,7 +1559,7 @@ static bool doesCaseProduceConstantInt(const SwitchInst *SI,
   // Look through empty blocks with simple branch.
   auto I = CaseDest->instructionsWithoutDebug(true).begin();
   if (I->isTerminator()) {
-    if (I->getNumSuccessors() != 1 || I->isExceptionalTerminator())
+    if (I->getNumSuccessors() != 1 || I->isSpecialTerminator())
       return false;
     Pred = CaseDest;
     CaseDest = I->getSuccessor(0);
