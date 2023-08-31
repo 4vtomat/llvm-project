@@ -11878,10 +11878,10 @@ void VPReductionRecipe::execute(VPTransformState &State) {
 #if SIFIVE_CUSTOMIZATION
       if (State.VF.isVector()) {
         if (RVLPart)
-          NewRed = createOrderedReduction(State.Builder, *RdxDesc, NewVecOp,
+          NewRed = createOrderedReduction(State.Builder, RdxDesc, NewVecOp,
                                           PrevInChain, RVLPart, NewCond);
         else
-          NewRed = createOrderedReduction(State.Builder, *RdxDesc, NewVecOp,
+          NewRed = createOrderedReduction(State.Builder, RdxDesc, NewVecOp,
                                           PrevInChain);
       } else {
 #else

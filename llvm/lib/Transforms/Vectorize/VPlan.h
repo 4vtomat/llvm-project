@@ -2125,7 +2125,7 @@ public:
 #endif
 
 #if SIFIVE_CUSTOMIZATION
-  const RecurrenceDescriptor *getRecurrenceDescriptor() const {
+  const RecurrenceDescriptor getRecurrenceDescriptor() const {
     return RdxDesc;
   }
 #endif // SIFIVE_CUSTOMIZATION
