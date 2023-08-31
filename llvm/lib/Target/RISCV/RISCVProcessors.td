@@ -464,7 +464,6 @@ def SIFIVE_X280O :
                        TunePseudoLIsimm32,
                        TuneOptimizedVRGatherVCompress]>;
 
-// FIXME: This needs its own scheduler model
 def SIFIVE_P450 : RISCVProcessorModel<"sifive-p450", SiFiveP400Model,
                                       [Feature64Bit,
                                        FeatureStdExtZifencei,
@@ -489,10 +488,10 @@ def SIFIVE_P450 : RISCVProcessorModel<"sifive-p450", SiFiveP400Model,
                                        FeatureStdExtZba,
                                        FeatureStdExtZbb,
                                        FeatureStdExtZbs,
-                                       FeatureStdExtZfhmin],
+                                       FeatureStdExtZfhmin,
+                                       FeatureUnalignedScalarMem],
                                       [TuneSiFiveP400]>;
 
-// FIXME: This needs its own scheduler model
 def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model,
                                       [Feature64Bit,
                                        FeatureStdExtZifencei,
@@ -524,7 +523,8 @@ def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model,
                                        FeatureStdExtZvknc,
                                        FeatureStdExtZvkng,
                                        FeatureStdExtZvksc,
-                                       FeatureStdExtZvksg],
+                                       FeatureStdExtZvksg,
+                                       FeatureUnalignedScalarMem],
                                       [TuneSiFiveP400, TuneDLen128b]>;
 
 def SIFIVE_P550 : RISCVProcessorModel<"sifive-p550", SiFiveP500Model,
@@ -563,7 +563,8 @@ def SIFIVE_P650 : RISCVProcessorModel<"sifive-p650", SiFiveP600Model,
                                        FeatureStdExtZba,
                                        FeatureStdExtZbb,
                                        FeatureStdExtZbs,
-                                       FeatureStdExtZfhmin],
+                                       FeatureStdExtZfhmin,
+                                       FeatureUnalignedScalarMem],
                                       [TuneSiFiveP600]>;
 
 def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
@@ -597,7 +598,8 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
                                        FeatureStdExtZvknc,
                                        FeatureStdExtZvkng,
                                        FeatureStdExtZvksc,
-                                       FeatureStdExtZvksg],
+                                       FeatureStdExtZvksg,
+                                       FeatureUnalignedScalarMem],
                                       [TuneSiFiveP600, TuneDLen128b]>;
 
 def SIFIVE_P870 : RISCVProcessorModel<"sifive-p870", SiFiveP800Model,
@@ -631,7 +633,8 @@ def SIFIVE_P870 : RISCVProcessorModel<"sifive-p870", SiFiveP800Model,
                                        FeatureStdExtZvknc,
                                        FeatureStdExtZvkng,
                                        FeatureStdExtZvksc,
-                                       FeatureStdExtZvksg],
+                                       FeatureStdExtZvksg,
+                                       FeatureUnalignedScalarMem],
                                       [TuneSiFiveP800, TuneDLen128b]>;
 #endif // SIFIVE_CUSTOMIZATION
 
