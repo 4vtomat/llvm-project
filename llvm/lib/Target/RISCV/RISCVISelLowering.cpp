@@ -17675,20 +17675,12 @@ RISCVTargetLowering::EmitInstrWithCustomInserter(MachineInstr &MI,
 
 void RISCVTargetLowering::AdjustInstrPostInstrSelection(MachineInstr &MI,
                                                         SDNode *Node) const {
-  // Add FRM dependency to vector floating-point instructions with dynamic
-  // rounding mode.
-  if (auto RoundModeIdx = getRoundModeIdx(MI)) {
-    unsigned FRMImm = MI.getOperand(*RoundModeIdx).getImm();
-    if (FRMImm == RISCVFPRndMode::DYN && !MI.readsRegister(RISCV::FRM)) {
-      MI.addOperand(MachineOperand::CreateReg(RISCV::FRM, /*isDef*/ false,
-                                              /*isImp*/ true));
-    }
-  }
 #if SIFIVE_CUSTOMIZATION
   // Add VXRM dependency to vector fixed-point instructions with dynamic
   // rounding mode.
-  if (auto RoundModeIdx = getRoundModeIdx(MI)) {
-    unsigned VXRMImm = MI.getOperand(*RoundModeIdx).getImm();
+  int VRMIdx = RISCVII::getVXRMOpNum(MI.getDesc());
+  if (VRMIdx >= 0) {
+    unsigned VXRMImm = MI.getOperand(VRMIdx).getImm();
     if (VXRMImm == RISCVVXRndMode::DYN && !MI.readsRegister(RISCV::VXRM)) {
       MI.addOperand(MachineOperand::CreateReg(RISCV::VXRM, /*isDef*/ false,
                                               /*isImp*/ true));
