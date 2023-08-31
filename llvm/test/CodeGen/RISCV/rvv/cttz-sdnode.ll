@@ -1534,13 +1534,8 @@ define <vscale x 1 x i64> @cttz_nxv1i64(<vscale x 1 x i64> %va) {
 ; RV32F-NEXT:    vand.vv v8, v8, v9
 ; RV32F-NEXT:    fsrmi a0, 1
 ; RV32F-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-<<<<<<< HEAD
-; RV32F-NEXT:    vfncvt.f.xu.w v9, v9
-; RV32F-NEXT:    vsrl.vi v9, v9, 23
-=======
-; RV32F-NEXT:    vfncvt.f.xu.w v9, v8
-; RV32F-NEXT:    vsrl.vi v8, v9, 23
->>>>>>> upstream/main
+; RV32F-NEXT:    vfncvt.f.xu.w v8, v8
+; RV32F-NEXT:    vsrl.vi v8, v8, 23
 ; RV32F-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
 ; RV32F-NEXT:    vzext.vf2 v9, v8
 ; RV32F-NEXT:    li a1, 127
@@ -1702,13 +1697,8 @@ define <vscale x 2 x i64> @cttz_nxv2i64(<vscale x 2 x i64> %va) {
 ; RV32F-NEXT:    vand.vv v8, v8, v10
 ; RV32F-NEXT:    fsrmi a0, 1
 ; RV32F-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-<<<<<<< HEAD
-; RV32F-NEXT:    vfncvt.f.xu.w v10, v10
-; RV32F-NEXT:    vsrl.vi v10, v10, 23
-=======
-; RV32F-NEXT:    vfncvt.f.xu.w v10, v8
-; RV32F-NEXT:    vsrl.vi v8, v10, 23
->>>>>>> upstream/main
+; RV32F-NEXT:    vfncvt.f.xu.w v8, v8
+; RV32F-NEXT:    vsrl.vi v8, v8, 23
 ; RV32F-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
 ; RV32F-NEXT:    vzext.vf2 v10, v8
 ; RV32F-NEXT:    li a1, 127
@@ -1870,13 +1860,8 @@ define <vscale x 4 x i64> @cttz_nxv4i64(<vscale x 4 x i64> %va) {
 ; RV32F-NEXT:    vand.vv v8, v8, v12
 ; RV32F-NEXT:    fsrmi a0, 1
 ; RV32F-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-<<<<<<< HEAD
-; RV32F-NEXT:    vfncvt.f.xu.w v12, v12
-; RV32F-NEXT:    vsrl.vi v12, v12, 23
-=======
-; RV32F-NEXT:    vfncvt.f.xu.w v12, v8
-; RV32F-NEXT:    vsrl.vi v8, v12, 23
->>>>>>> upstream/main
+; RV32F-NEXT:    vfncvt.f.xu.w v8, v8
+; RV32F-NEXT:    vsrl.vi v8, v8, 23
 ; RV32F-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
 ; RV32F-NEXT:    vzext.vf2 v12, v8
 ; RV32F-NEXT:    li a1, 127
@@ -2038,13 +2023,8 @@ define <vscale x 8 x i64> @cttz_nxv8i64(<vscale x 8 x i64> %va) {
 ; RV32F-NEXT:    vand.vv v8, v8, v16
 ; RV32F-NEXT:    fsrmi a0, 1
 ; RV32F-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
-<<<<<<< HEAD
-; RV32F-NEXT:    vfncvt.f.xu.w v16, v16
-; RV32F-NEXT:    vsrl.vi v16, v16, 23
-=======
-; RV32F-NEXT:    vfncvt.f.xu.w v16, v8
-; RV32F-NEXT:    vsrl.vi v8, v16, 23
->>>>>>> upstream/main
+; RV32F-NEXT:    vfncvt.f.xu.w v8, v8
+; RV32F-NEXT:    vsrl.vi v8, v8, 23
 ; RV32F-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
 ; RV32F-NEXT:    vzext.vf2 v16, v8
 ; RV32F-NEXT:    li a1, 127

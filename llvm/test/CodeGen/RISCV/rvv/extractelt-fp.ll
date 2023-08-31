@@ -487,15 +487,8 @@ define double @extractelt_nxv8f64_idx(<vscale x 8 x double> %v, i32 zeroext %idx
 define void @store_extractelt_nxv8f64(<vscale x 8 x double>* %x, double* %p) {
 ; CHECK-LABEL: store_extractelt_nxv8f64:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
 ; CHECK-NEXT:    fld fa5, 8(a0)
 ; CHECK-NEXT:    fsd fa5, 0(a1)
-=======
-; CHECK-NEXT:    vl8re64.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v8, v8, 1
-; CHECK-NEXT:    vse64.v v8, (a1)
->>>>>>> upstream/main
 ; CHECK-NEXT:    ret
   %a = load <vscale x 8 x double>, <vscale x 8 x double>* %x
   %b = extractelement <vscale x 8 x double> %a, i64 1
@@ -506,14 +499,9 @@ define void @store_extractelt_nxv8f64(<vscale x 8 x double>* %x, double* %p) {
 define void @store_vfmv_f_s_nxv8f64(<vscale x 8 x double>* %x, double* %p) {
 ; CHECK-LABEL: store_vfmv_f_s_nxv8f64:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-NEXT:    fld fa5, 0(a0)
-; CHECK-NEXT:    fsd fa5, 0(a1)
-=======
 ; CHECK-NEXT:    vl8re64.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v8, (a1)
->>>>>>> upstream/main
 ; CHECK-NEXT:    ret
   %a = load <vscale x 8 x double>, <vscale x 8 x double>* %x
   %b = call double @llvm.riscv.vfmv.f.s.nxv8f64(<vscale x 8 x double> %a)

@@ -241,22 +241,6 @@ define <vscale x 4 x half> @vp_rint_nxv4f16_unmasked(<vscale x 4 x half> %va, i3
 declare <vscale x 8 x half> @llvm.vp.rint.nxv8f16(<vscale x 8 x half>, <vscale x 8 x i1>, i32)
 
 define <vscale x 8 x half> @vp_rint_nxv8f16(<vscale x 8 x half> %va, <vscale x 8 x i1> %m, i32 zeroext %evl) {
-<<<<<<< HEAD
-; CHECK-LABEL: vp_rint_nxv8f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI6_0)
-; CHECK-NEXT:    flh fa5, %lo(.LCPI6_0)(a1)
-; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
-; CHECK-NEXT:    vfabs.v v10, v8, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, mu
-; CHECK-NEXT:    vmflt.vf v0, v10, fa5, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vfcvt.x.f.v v10, v8, v0.t
-; CHECK-NEXT:    vfcvt.f.x.v v10, v10, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, mu
-; CHECK-NEXT:    vfsgnj.vv v8, v10, v8, v0.t
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vp_rint_nxv8f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vmv1r.v v10, v0
@@ -294,7 +278,6 @@ define <vscale x 8 x half> @vp_rint_nxv8f16(<vscale x 8 x half> %va, <vscale x 8
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v12
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %v = call <vscale x 8 x half> @llvm.vp.rint.nxv8f16(<vscale x 8 x half> %va, <vscale x 8 x i1> %m, i32 %evl)
   ret <vscale x 8 x half> %v
 }
@@ -338,22 +321,6 @@ define <vscale x 8 x half> @vp_rint_nxv8f16_unmasked(<vscale x 8 x half> %va, i3
 declare <vscale x 16 x half> @llvm.vp.rint.nxv16f16(<vscale x 16 x half>, <vscale x 16 x i1>, i32)
 
 define <vscale x 16 x half> @vp_rint_nxv16f16(<vscale x 16 x half> %va, <vscale x 16 x i1> %m, i32 zeroext %evl) {
-<<<<<<< HEAD
-; CHECK-LABEL: vp_rint_nxv16f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI8_0)
-; CHECK-NEXT:    flh fa5, %lo(.LCPI8_0)(a1)
-; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
-; CHECK-NEXT:    vfabs.v v12, v8, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e16, m4, ta, mu
-; CHECK-NEXT:    vmflt.vf v0, v12, fa5, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
-; CHECK-NEXT:    vfcvt.x.f.v v12, v8, v0.t
-; CHECK-NEXT:    vfcvt.f.x.v v12, v12, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e16, m4, ta, mu
-; CHECK-NEXT:    vfsgnj.vv v8, v12, v8, v0.t
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vp_rint_nxv16f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vmv1r.v v12, v0
@@ -391,7 +358,6 @@ define <vscale x 16 x half> @vp_rint_nxv16f16(<vscale x 16 x half> %va, <vscale 
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v16
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %v = call <vscale x 16 x half> @llvm.vp.rint.nxv16f16(<vscale x 16 x half> %va, <vscale x 16 x i1> %m, i32 %evl)
   ret <vscale x 16 x half> %v
 }
@@ -435,22 +401,6 @@ define <vscale x 16 x half> @vp_rint_nxv16f16_unmasked(<vscale x 16 x half> %va,
 declare <vscale x 32 x half> @llvm.vp.rint.nxv32f16(<vscale x 32 x half>, <vscale x 32 x i1>, i32)
 
 define <vscale x 32 x half> @vp_rint_nxv32f16(<vscale x 32 x half> %va, <vscale x 32 x i1> %m, i32 zeroext %evl) {
-<<<<<<< HEAD
-; CHECK-LABEL: vp_rint_nxv32f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI10_0)
-; CHECK-NEXT:    flh fa5, %lo(.LCPI10_0)(a1)
-; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
-; CHECK-NEXT:    vfabs.v v16, v8, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e16, m8, ta, mu
-; CHECK-NEXT:    vmflt.vf v0, v16, fa5, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e16, m8, ta, ma
-; CHECK-NEXT:    vfcvt.x.f.v v16, v8, v0.t
-; CHECK-NEXT:    vfcvt.f.x.v v16, v16, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e16, m8, ta, mu
-; CHECK-NEXT:    vfsgnj.vv v8, v16, v8, v0.t
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vp_rint_nxv32f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vmv1r.v v16, v0

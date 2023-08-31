@@ -265,24 +265,6 @@ define <8 x half> @vp_ceil_v8f16_unmasked(<8 x half> %va, i32 zeroext %evl) {
 declare <16 x half> @llvm.vp.ceil.v16f16(<16 x half>, <16 x i1>, i32)
 
 define <16 x half> @vp_ceil_v16f16(<16 x half> %va, <16 x i1> %m, i32 zeroext %evl) {
-<<<<<<< HEAD
-; CHECK-LABEL: vp_ceil_v16f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    lui a1, %hi(.LCPI6_0)
-; CHECK-NEXT:    flh fa5, %lo(.LCPI6_0)(a1)
-; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
-; CHECK-NEXT:    vfabs.v v10, v8, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, mu
-; CHECK-NEXT:    vmflt.vf v0, v10, fa5, v0.t
-; CHECK-NEXT:    fsrmi a0, 3
-; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vfcvt.x.f.v v10, v8, v0.t
-; CHECK-NEXT:    fsrm a0
-; CHECK-NEXT:    vfcvt.f.x.v v10, v10, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, mu
-; CHECK-NEXT:    vfsgnj.vv v8, v10, v8, v0.t
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vp_ceil_v16f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vmv1r.v v10, v0
@@ -324,7 +306,6 @@ define <16 x half> @vp_ceil_v16f16(<16 x half> %va, <16 x i1> %m, i32 zeroext %e
 ; ZVFHMIN-NEXT:    vsetivli zero, 16, e16, m2, ta, ma
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v12
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %v = call <16 x half> @llvm.vp.ceil.v16f16(<16 x half> %va, <16 x i1> %m, i32 %evl)
   ret <16 x half> %v
 }

@@ -1837,11 +1837,6 @@ define signext i8 @vpreduce_mul_v64i8(i8 signext %s, <64 x i8> %v, <64 x i1> %m,
 ; RV64-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
 ; RV64-NEXT:    .cfi_offset ra, -8
 ; RV64-NEXT:    li a3, 32
-<<<<<<< HEAD
-; RV64-NEXT:    lui a2, %hi(.LCPI72_0)
-; RV64-NEXT:    addi a2, a2, %lo(.LCPI72_0)
-=======
->>>>>>> upstream/main
 ; RV64-NEXT:    vsetvli zero, a3, e32, m8, ta, ma
 ; RV64-NEXT:    lui a2, %hi(.LCPI72_0)
 ; RV64-NEXT:    addi a2, a2, %lo(.LCPI72_0)

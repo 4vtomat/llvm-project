@@ -1088,40 +1088,16 @@ define <32 x double> @vpmerge_vv_v32f64(<32 x double> %va, <32 x double> %vb, <3
 ; CHECK-NEXT:    slli a1, a1, 3
 ; CHECK-NEXT:    add a1, sp, a1
 ; CHECK-NEXT:    addi a1, a1, 16
-<<<<<<< HEAD
-; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
-; CHECK-NEXT:    addi a1, a2, -16
-; CHECK-NEXT:    sltu a3, a2, a1
-; CHECK-NEXT:    addi a3, a3, -1
-; CHECK-NEXT:    and a1, a3, a1
-; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
-; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    addi a0, a0, 128
-; CHECK-NEXT:    vle64.v v16, (a0)
-; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
-; CHECK-NEXT:    vslidedown.vi v0, v0, 2
-; CHECK-NEXT:    vsetvli zero, a1, e64, m8, tu, ma
-; CHECK-NEXT:    li a0, 16
-; CHECK-NEXT:    addi a1, sp, 16
-; CHECK-NEXT:    vl8r.v v24, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmerge.vvm v16, v16, v24, v0
-; CHECK-NEXT:    bltu a2, a0, .LBB80_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    li a2, 16
-; CHECK-NEXT:  .LBB80_2:
-; CHECK-NEXT:    vsetvli zero, a2, e64, m8, tu, ma
-; CHECK-NEXT:    vmv1r.v v0, v1
-=======
 ; CHECK-NEXT:    vs8r.v v24, (a1) # Unknown-size Folded Spill
 ; CHECK-NEXT:    vle64.v v24, (a0)
 ; CHECK-NEXT:    li a1, 16
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    mv a0, a2
-; CHECK-NEXT:    bltu a2, a1, .LBB79_2
+; CHECK-NEXT:    bltu a2, a1, .LBB80_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    li a0, 16
-; CHECK-NEXT:  .LBB79_2:
+; CHECK-NEXT:  .LBB80_2:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, tu, ma
 ; CHECK-NEXT:    vmerge.vvm v24, v24, v8, v0
 ; CHECK-NEXT:    addi a0, a2, -16
@@ -1131,7 +1107,6 @@ define <32 x double> @vpmerge_vv_v32f64(<32 x double> %va, <32 x double> %vb, <3
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v0, v0, 2
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, tu, ma
->>>>>>> upstream/main
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add a0, sp, a0
@@ -1155,10 +1130,10 @@ define <32 x double> @vpmerge_vf_v32f64(double %a, <32 x double> %vb, <32 x i1> 
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    li a2, 16
 ; CHECK-NEXT:    mv a1, a0
-; CHECK-NEXT:    bltu a0, a2, .LBB80_2
+; CHECK-NEXT:    bltu a0, a2, .LBB81_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    li a1, 16
-; CHECK-NEXT:  .LBB80_2:
+; CHECK-NEXT:  .LBB81_2:
 ; CHECK-NEXT:    vsetvli zero, a1, e64, m8, tu, ma
 ; CHECK-NEXT:    vfmerge.vfm v8, v8, fa0, v0
 ; CHECK-NEXT:    addi a1, a0, -16
@@ -1167,16 +1142,6 @@ define <32 x double> @vpmerge_vf_v32f64(double %a, <32 x double> %vb, <32 x i1> 
 ; CHECK-NEXT:    and a0, a0, a1
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v0, v0, 2
-<<<<<<< HEAD
-; CHECK-NEXT:    vsetvli zero, a1, e64, m8, tu, ma
-; CHECK-NEXT:    li a1, 16
-; CHECK-NEXT:    vfmerge.vfm v16, v16, fa0, v0
-; CHECK-NEXT:    bltu a0, a1, .LBB81_2
-; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    li a0, 16
-; CHECK-NEXT:  .LBB81_2:
-=======
->>>>>>> upstream/main
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, tu, ma
 ; CHECK-NEXT:    vfmerge.vfm v16, v16, fa0, v0
 ; CHECK-NEXT:    ret

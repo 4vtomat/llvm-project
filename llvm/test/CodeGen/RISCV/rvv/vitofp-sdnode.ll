@@ -279,21 +279,12 @@ define <vscale x 4 x double> @vuitofp_nxv4i1_nxv4f64(<vscale x 4 x i1> %va) {
 }
 
 define <vscale x 8 x half> @vsitofp_nxv8i1_nxv8f16(<vscale x 8 x i1> %va) {
-<<<<<<< HEAD
-; CHECK-LABEL: vsitofp_nxv8i1_nxv8f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vmv.v.i v8, 0
-; CHECK-NEXT:    vmerge.vim v9, v8, -1, v0
-; CHECK-NEXT:    vfwcvt.f.x.v v8, v9
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vsitofp_nxv8i1_nxv8f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
 ; ZVFH-NEXT:    vmv.v.i v8, 0
-; ZVFH-NEXT:    vmerge.vim v10, v8, -1, v0
-; ZVFH-NEXT:    vfwcvt.f.x.v v8, v10
+; ZVFH-NEXT:    vmerge.vim v9, v8, -1, v0
+; ZVFH-NEXT:    vfwcvt.f.x.v v8, v9
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: vsitofp_nxv8i1_nxv8f16:
@@ -304,27 +295,17 @@ define <vscale x 8 x half> @vsitofp_nxv8i1_nxv8f16(<vscale x 8 x i1> %va) {
 ; ZVFHMIN-NEXT:    vfwcvt.f.x.v v12, v8
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v12
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %evec = sitofp <vscale x 8 x i1> %va to <vscale x 8 x half>
   ret <vscale x 8 x half> %evec
 }
 
 define <vscale x 8 x half> @vuitofp_nxv8i1_nxv8f16(<vscale x 8 x i1> %va) {
-<<<<<<< HEAD
-; CHECK-LABEL: vuitofp_nxv8i1_nxv8f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vmv.v.i v8, 0
-; CHECK-NEXT:    vmerge.vim v9, v8, 1, v0
-; CHECK-NEXT:    vfwcvt.f.xu.v v8, v9
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vuitofp_nxv8i1_nxv8f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
 ; ZVFH-NEXT:    vmv.v.i v8, 0
-; ZVFH-NEXT:    vmerge.vim v10, v8, 1, v0
-; ZVFH-NEXT:    vfwcvt.f.xu.v v8, v10
+; ZVFH-NEXT:    vmerge.vim v9, v8, 1, v0
+; ZVFH-NEXT:    vfwcvt.f.xu.v v8, v9
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: vuitofp_nxv8i1_nxv8f16:
@@ -335,7 +316,6 @@ define <vscale x 8 x half> @vuitofp_nxv8i1_nxv8f16(<vscale x 8 x i1> %va) {
 ; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v12, v8
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v12
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %evec = uitofp <vscale x 8 x i1> %va to <vscale x 8 x half>
   ret <vscale x 8 x half> %evec
 }
@@ -389,21 +369,12 @@ define <vscale x 8 x double> @vuitofp_nxv8i1_nxv8f64(<vscale x 8 x i1> %va) {
 }
 
 define <vscale x 16 x half> @vsitofp_nxv16i1_nxv16f16(<vscale x 16 x i1> %va) {
-<<<<<<< HEAD
-; CHECK-LABEL: vsitofp_nxv16i1_nxv16f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vmv.v.i v8, 0
-; CHECK-NEXT:    vmerge.vim v10, v8, -1, v0
-; CHECK-NEXT:    vfwcvt.f.x.v v8, v10
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vsitofp_nxv16i1_nxv16f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; ZVFH-NEXT:    vmv.v.i v8, 0
-; ZVFH-NEXT:    vmerge.vim v12, v8, -1, v0
-; ZVFH-NEXT:    vfwcvt.f.x.v v8, v12
+; ZVFH-NEXT:    vmerge.vim v10, v8, -1, v0
+; ZVFH-NEXT:    vfwcvt.f.x.v v8, v10
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: vsitofp_nxv16i1_nxv16f16:
@@ -414,27 +385,17 @@ define <vscale x 16 x half> @vsitofp_nxv16i1_nxv16f16(<vscale x 16 x i1> %va) {
 ; ZVFHMIN-NEXT:    vfwcvt.f.x.v v16, v8
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v16
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %evec = sitofp <vscale x 16 x i1> %va to <vscale x 16 x half>
   ret <vscale x 16 x half> %evec
 }
 
 define <vscale x 16 x half> @vuitofp_nxv16i1_nxv16f16(<vscale x 16 x i1> %va) {
-<<<<<<< HEAD
-; CHECK-LABEL: vuitofp_nxv16i1_nxv16f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vmv.v.i v8, 0
-; CHECK-NEXT:    vmerge.vim v10, v8, 1, v0
-; CHECK-NEXT:    vfwcvt.f.xu.v v8, v10
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vuitofp_nxv16i1_nxv16f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; ZVFH-NEXT:    vmv.v.i v8, 0
-; ZVFH-NEXT:    vmerge.vim v12, v8, 1, v0
-; ZVFH-NEXT:    vfwcvt.f.xu.v v8, v12
+; ZVFH-NEXT:    vmerge.vim v10, v8, 1, v0
+; ZVFH-NEXT:    vfwcvt.f.xu.v v8, v10
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: vuitofp_nxv16i1_nxv16f16:
@@ -445,7 +406,6 @@ define <vscale x 16 x half> @vuitofp_nxv16i1_nxv16f16(<vscale x 16 x i1> %va) {
 ; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v16, v8
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v16
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %evec = uitofp <vscale x 16 x i1> %va to <vscale x 16 x half>
   ret <vscale x 16 x half> %evec
 }
@@ -475,21 +435,12 @@ define <vscale x 16 x float> @vuitofp_nxv16i1_nxv16f32(<vscale x 16 x i1> %va) {
 }
 
 define <vscale x 32 x half> @vsitofp_nxv32i1_nxv32f16(<vscale x 32 x i1> %va) {
-<<<<<<< HEAD
-; CHECK-LABEL: vsitofp_nxv32i1_nxv32f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e8, m4, ta, ma
-; CHECK-NEXT:    vmv.v.i v8, 0
-; CHECK-NEXT:    vmerge.vim v12, v8, -1, v0
-; CHECK-NEXT:    vfwcvt.f.x.v v8, v12
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vsitofp_nxv32i1_nxv32f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli a0, zero, e8, m4, ta, ma
 ; ZVFH-NEXT:    vmv.v.i v8, 0
-; ZVFH-NEXT:    vmerge.vim v16, v8, -1, v0
-; ZVFH-NEXT:    vfwcvt.f.x.v v8, v16
+; ZVFH-NEXT:    vmerge.vim v12, v8, -1, v0
+; ZVFH-NEXT:    vfwcvt.f.x.v v8, v12
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: vsitofp_nxv32i1_nxv32f16:
@@ -508,27 +459,17 @@ define <vscale x 32 x half> @vsitofp_nxv32i1_nxv32f16(<vscale x 32 x i1> %va) {
 ; ZVFHMIN-NEXT:    vfwcvt.f.x.v v16, v12
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v12, v16
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %evec = sitofp <vscale x 32 x i1> %va to <vscale x 32 x half>
   ret <vscale x 32 x half> %evec
 }
 
 define <vscale x 32 x half> @vuitofp_nxv32i1_nxv32f16(<vscale x 32 x i1> %va) {
-<<<<<<< HEAD
-; CHECK-LABEL: vuitofp_nxv32i1_nxv32f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e8, m4, ta, ma
-; CHECK-NEXT:    vmv.v.i v8, 0
-; CHECK-NEXT:    vmerge.vim v12, v8, 1, v0
-; CHECK-NEXT:    vfwcvt.f.xu.v v8, v12
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vuitofp_nxv32i1_nxv32f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli a0, zero, e8, m4, ta, ma
 ; ZVFH-NEXT:    vmv.v.i v8, 0
-; ZVFH-NEXT:    vmerge.vim v16, v8, 1, v0
-; ZVFH-NEXT:    vfwcvt.f.xu.v v8, v16
+; ZVFH-NEXT:    vmerge.vim v12, v8, 1, v0
+; ZVFH-NEXT:    vfwcvt.f.xu.v v8, v12
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: vuitofp_nxv32i1_nxv32f16:
@@ -547,7 +488,6 @@ define <vscale x 32 x half> @vuitofp_nxv32i1_nxv32f16(<vscale x 32 x i1> %va) {
 ; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v16, v12
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v12, v16
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %evec = uitofp <vscale x 32 x i1> %va to <vscale x 32 x half>
   ret <vscale x 32 x half> %evec
 }
@@ -564,8 +504,8 @@ define <vscale x 1 x half> @vsitofp_nxv1i8_nxv1f16(<vscale x 1 x i8> %va) {
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e16, mf4, ta, ma
 ; ZVFHMIN-NEXT:    vsext.vf2 v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.x.v v10, v9
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.x.v v8, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %evec = sitofp <vscale x 1 x i8> %va to <vscale x 1 x half>
   ret <vscale x 1 x half> %evec
@@ -587,8 +527,8 @@ define <vscale x 1 x half> @vsitofp_nxv1i7_nxv1f16(<vscale x 1 x i7> %va) {
 ; ZVFHMIN-NEXT:    vsra.vi v8, v8, 1
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
 ; ZVFHMIN-NEXT:    vsext.vf2 v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.x.v v10, v9
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.x.v v8, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %evec = sitofp <vscale x 1 x i7> %va to <vscale x 1 x half>
   ret <vscale x 1 x half> %evec
@@ -610,8 +550,8 @@ define <vscale x 1 x half> @vuitofp_nxv1i7_nxv1f16(<vscale x 1 x i7> %va) {
 ; ZVFHMIN-NEXT:    vand.vx v8, v8, a0
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
 ; ZVFHMIN-NEXT:    vzext.vf2 v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v10, v9
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v8, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %evec = uitofp <vscale x 1 x i7> %va to <vscale x 1 x half>
   ret <vscale x 1 x half> %evec
@@ -629,8 +569,8 @@ define <vscale x 1 x half> @vuitofp_nxv1i8_nxv1f16(<vscale x 1 x i8> %va) {
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e16, mf4, ta, ma
 ; ZVFHMIN-NEXT:    vzext.vf2 v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v10, v9
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v8, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %evec = uitofp <vscale x 1 x i8> %va to <vscale x 1 x half>
   ret <vscale x 1 x half> %evec
@@ -692,8 +632,8 @@ define <vscale x 2 x half> @vsitofp_nxv2i8_nxv2f16(<vscale x 2 x i8> %va) {
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
 ; ZVFHMIN-NEXT:    vsext.vf2 v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.x.v v10, v9
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.x.v v8, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %evec = sitofp <vscale x 2 x i8> %va to <vscale x 2 x half>
   ret <vscale x 2 x half> %evec
@@ -711,8 +651,8 @@ define <vscale x 2 x half> @vuitofp_nxv2i8_nxv2f16(<vscale x 2 x i8> %va) {
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
 ; ZVFHMIN-NEXT:    vzext.vf2 v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v10, v9
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v8, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %evec = uitofp <vscale x 2 x i8> %va to <vscale x 2 x half>
   ret <vscale x 2 x half> %evec
@@ -774,8 +714,8 @@ define <vscale x 4 x half> @vsitofp_nxv4i8_nxv4f16(<vscale x 4 x i8> %va) {
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vsext.vf2 v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.x.v v10, v9
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.x.v v8, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %evec = sitofp <vscale x 4 x i8> %va to <vscale x 4 x half>
   ret <vscale x 4 x half> %evec
@@ -793,8 +733,8 @@ define <vscale x 4 x half> @vuitofp_nxv4i8_nxv4f16(<vscale x 4 x i8> %va) {
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vzext.vf2 v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v10, v9
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v8, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %evec = uitofp <vscale x 4 x i8> %va to <vscale x 4 x half>
   ret <vscale x 4 x half> %evec
@@ -856,8 +796,8 @@ define <vscale x 8 x half> @vsitofp_nxv8i8_nxv8f16(<vscale x 8 x i8> %va) {
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
 ; ZVFHMIN-NEXT:    vsext.vf2 v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.x.v v12, v10
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v12
+; ZVFHMIN-NEXT:    vfwcvt.f.x.v v8, v10
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %evec = sitofp <vscale x 8 x i8> %va to <vscale x 8 x half>
   ret <vscale x 8 x half> %evec
@@ -875,8 +815,8 @@ define <vscale x 8 x half> @vuitofp_nxv8i8_nxv8f16(<vscale x 8 x i8> %va) {
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
 ; ZVFHMIN-NEXT:    vzext.vf2 v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v12, v10
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v12
+; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v8, v10
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %evec = uitofp <vscale x 8 x i8> %va to <vscale x 8 x half>
   ret <vscale x 8 x half> %evec
@@ -938,8 +878,8 @@ define <vscale x 16 x half> @vsitofp_nxv16i8_nxv16f16(<vscale x 16 x i8> %va) {
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
 ; ZVFHMIN-NEXT:    vsext.vf2 v12, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.x.v v16, v12
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v16
+; ZVFHMIN-NEXT:    vfwcvt.f.x.v v8, v12
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %evec = sitofp <vscale x 16 x i8> %va to <vscale x 16 x half>
   ret <vscale x 16 x half> %evec
@@ -957,8 +897,8 @@ define <vscale x 16 x half> @vuitofp_nxv16i8_nxv16f16(<vscale x 16 x i8> %va) {
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
 ; ZVFHMIN-NEXT:    vzext.vf2 v12, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v16, v12
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v16
+; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v8, v12
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
   %evec = uitofp <vscale x 16 x i8> %va to <vscale x 16 x half>
   ret <vscale x 16 x half> %evec
@@ -998,11 +938,11 @@ define <vscale x 32 x half> @vsitofp_nxv32i8_nxv32f16(<vscale x 32 x i8> %va) {
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
 ; ZVFHMIN-NEXT:    vsext.vf2 v12, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.x.v v24, v12
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v16, v24
+; ZVFHMIN-NEXT:    vfwcvt.f.x.v v16, v12
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v16, v16
 ; ZVFHMIN-NEXT:    vsext.vf2 v12, v10
-; ZVFHMIN-NEXT:    vfwcvt.f.x.v v24, v12
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v20, v24
+; ZVFHMIN-NEXT:    vfwcvt.f.x.v v8, v12
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v20, v8
 ; ZVFHMIN-NEXT:    vmv8r.v v8, v16
 ; ZVFHMIN-NEXT:    ret
   %evec = sitofp <vscale x 32 x i8> %va to <vscale x 32 x half>
@@ -1021,11 +961,11 @@ define <vscale x 32 x half> @vuitofp_nxv32i8_nxv32f16(<vscale x 32 x i8> %va) {
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
 ; ZVFHMIN-NEXT:    vzext.vf2 v12, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v24, v12
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v16, v24
+; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v16, v12
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v16, v16
 ; ZVFHMIN-NEXT:    vzext.vf2 v12, v10
-; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v24, v12
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v20, v24
+; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v8, v12
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v20, v8
 ; ZVFHMIN-NEXT:    vmv8r.v v8, v16
 ; ZVFHMIN-NEXT:    ret
   %evec = uitofp <vscale x 32 x i8> %va to <vscale x 32 x half>
@@ -1439,55 +1379,37 @@ define <vscale x 32 x half> @vuitofp_nxv32i16_nxv32f16(<vscale x 32 x i16> %va) 
 }
 
 define <vscale x 1 x half> @vsitofp_nxv1i32_nxv1f16(<vscale x 1 x i32> %va) {
-<<<<<<< HEAD
-; CHECK-LABEL: vsitofp_nxv1i32_nxv1f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e16, mf4, ta, ma
-; CHECK-NEXT:    vfncvt.f.x.w v8, v8
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vsitofp_nxv1i32_nxv1f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli a0, zero, e16, mf4, ta, ma
-; ZVFH-NEXT:    vfncvt.f.x.w v9, v8
-; ZVFH-NEXT:    vmv1r.v v8, v9
+; ZVFH-NEXT:    vfncvt.f.x.w v8, v8
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: vsitofp_nxv1i32_nxv1f16:
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e32, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfcvt.f.x.v v9, v8
+; ZVFHMIN-NEXT:    vfcvt.f.x.v v8, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %evec = sitofp <vscale x 1 x i32> %va to <vscale x 1 x half>
   ret <vscale x 1 x half> %evec
 }
 
 define <vscale x 1 x half> @vuitofp_nxv1i32_nxv1f16(<vscale x 1 x i32> %va) {
-<<<<<<< HEAD
-; CHECK-LABEL: vuitofp_nxv1i32_nxv1f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e16, mf4, ta, ma
-; CHECK-NEXT:    vfncvt.f.xu.w v8, v8
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vuitofp_nxv1i32_nxv1f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli a0, zero, e16, mf4, ta, ma
-; ZVFH-NEXT:    vfncvt.f.xu.w v9, v8
-; ZVFH-NEXT:    vmv1r.v v8, v9
+; ZVFH-NEXT:    vfncvt.f.xu.w v8, v8
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: vuitofp_nxv1i32_nxv1f16:
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e32, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfcvt.f.xu.v v9, v8
+; ZVFHMIN-NEXT:    vfcvt.f.xu.v v8, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %evec = uitofp <vscale x 1 x i32> %va to <vscale x 1 x half>
   ret <vscale x 1 x half> %evec
 }
@@ -1535,55 +1457,37 @@ define <vscale x 1 x double> @vuitofp_nxv1i32_nxv1f64(<vscale x 1 x i32> %va) {
 }
 
 define <vscale x 2 x half> @vsitofp_nxv2i32_nxv2f16(<vscale x 2 x i32> %va) {
-<<<<<<< HEAD
-; CHECK-LABEL: vsitofp_nxv2i32_nxv2f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfncvt.f.x.w v8, v8
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vsitofp_nxv2i32_nxv2f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
-; ZVFH-NEXT:    vfncvt.f.x.w v9, v8
-; ZVFH-NEXT:    vmv1r.v v8, v9
+; ZVFH-NEXT:    vfncvt.f.x.w v8, v8
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: vsitofp_nxv2i32_nxv2f16:
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfcvt.f.x.v v9, v8
+; ZVFHMIN-NEXT:    vfcvt.f.x.v v8, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %evec = sitofp <vscale x 2 x i32> %va to <vscale x 2 x half>
   ret <vscale x 2 x half> %evec
 }
 
 define <vscale x 2 x half> @vuitofp_nxv2i32_nxv2f16(<vscale x 2 x i32> %va) {
-<<<<<<< HEAD
-; CHECK-LABEL: vuitofp_nxv2i32_nxv2f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfncvt.f.xu.w v8, v8
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vuitofp_nxv2i32_nxv2f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
-; ZVFH-NEXT:    vfncvt.f.xu.w v9, v8
-; ZVFH-NEXT:    vmv1r.v v8, v9
+; ZVFH-NEXT:    vfncvt.f.xu.w v8, v8
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: vuitofp_nxv2i32_nxv2f16:
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfcvt.f.xu.v v9, v8
+; ZVFHMIN-NEXT:    vfcvt.f.xu.v v8, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %evec = uitofp <vscale x 2 x i32> %va to <vscale x 2 x half>
   ret <vscale x 2 x half> %evec
 }
@@ -1631,55 +1535,37 @@ define <vscale x 2 x double> @vuitofp_nxv2i32_nxv2f64(<vscale x 2 x i32> %va) {
 }
 
 define <vscale x 4 x half> @vsitofp_nxv4i32_nxv4f16(<vscale x 4 x i32> %va) {
-<<<<<<< HEAD
-; CHECK-LABEL: vsitofp_nxv4i32_nxv4f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vfncvt.f.x.w v8, v8
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vsitofp_nxv4i32_nxv4f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
-; ZVFH-NEXT:    vfncvt.f.x.w v10, v8
-; ZVFH-NEXT:    vmv.v.v v8, v10
+; ZVFH-NEXT:    vfncvt.f.x.w v8, v8
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: vsitofp_nxv4i32_nxv4f16:
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfcvt.f.x.v v10, v8
+; ZVFHMIN-NEXT:    vfcvt.f.x.v v8, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v10
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %evec = sitofp <vscale x 4 x i32> %va to <vscale x 4 x half>
   ret <vscale x 4 x half> %evec
 }
 
 define <vscale x 4 x half> @vuitofp_nxv4i32_nxv4f16(<vscale x 4 x i32> %va) {
-<<<<<<< HEAD
-; CHECK-LABEL: vuitofp_nxv4i32_nxv4f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vfncvt.f.xu.w v8, v8
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vuitofp_nxv4i32_nxv4f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
-; ZVFH-NEXT:    vfncvt.f.xu.w v10, v8
-; ZVFH-NEXT:    vmv.v.v v8, v10
+; ZVFH-NEXT:    vfncvt.f.xu.w v8, v8
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: vuitofp_nxv4i32_nxv4f16:
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vfcvt.f.xu.v v10, v8
+; ZVFHMIN-NEXT:    vfcvt.f.xu.v v8, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v10
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %evec = uitofp <vscale x 4 x i32> %va to <vscale x 4 x half>
   ret <vscale x 4 x half> %evec
 }
@@ -1727,55 +1613,37 @@ define <vscale x 4 x double> @vuitofp_nxv4i32_nxv4f64(<vscale x 4 x i32> %va) {
 }
 
 define <vscale x 8 x half> @vsitofp_nxv8i32_nxv8f16(<vscale x 8 x i32> %va) {
-<<<<<<< HEAD
-; CHECK-LABEL: vsitofp_nxv8i32_nxv8f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vfncvt.f.x.w v8, v8
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vsitofp_nxv8i32_nxv8f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
-; ZVFH-NEXT:    vfncvt.f.x.w v12, v8
-; ZVFH-NEXT:    vmv.v.v v8, v12
+; ZVFH-NEXT:    vfncvt.f.x.w v8, v8
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: vsitofp_nxv8i32_nxv8f16:
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e32, m4, ta, ma
-; ZVFHMIN-NEXT:    vfcvt.f.x.v v12, v8
+; ZVFHMIN-NEXT:    vfcvt.f.x.v v8, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v12
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %evec = sitofp <vscale x 8 x i32> %va to <vscale x 8 x half>
   ret <vscale x 8 x half> %evec
 }
 
 define <vscale x 8 x half> @vuitofp_nxv8i32_nxv8f16(<vscale x 8 x i32> %va) {
-<<<<<<< HEAD
-; CHECK-LABEL: vuitofp_nxv8i32_nxv8f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vfncvt.f.xu.w v8, v8
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vuitofp_nxv8i32_nxv8f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
-; ZVFH-NEXT:    vfncvt.f.xu.w v12, v8
-; ZVFH-NEXT:    vmv.v.v v8, v12
+; ZVFH-NEXT:    vfncvt.f.xu.w v8, v8
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: vuitofp_nxv8i32_nxv8f16:
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e32, m4, ta, ma
-; ZVFHMIN-NEXT:    vfcvt.f.xu.v v12, v8
+; ZVFHMIN-NEXT:    vfcvt.f.xu.v v8, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v12
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %evec = uitofp <vscale x 8 x i32> %va to <vscale x 8 x half>
   ret <vscale x 8 x half> %evec
 }
@@ -1823,55 +1691,37 @@ define <vscale x 8 x double> @vuitofp_nxv8i32_nxv8f64(<vscale x 8 x i32> %va) {
 }
 
 define <vscale x 16 x half> @vsitofp_nxv16i32_nxv16f16(<vscale x 16 x i32> %va) {
-<<<<<<< HEAD
-; CHECK-LABEL: vsitofp_nxv16i32_nxv16f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
-; CHECK-NEXT:    vfncvt.f.x.w v8, v8
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vsitofp_nxv16i32_nxv16f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
-; ZVFH-NEXT:    vfncvt.f.x.w v16, v8
-; ZVFH-NEXT:    vmv.v.v v8, v16
+; ZVFH-NEXT:    vfncvt.f.x.w v8, v8
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: vsitofp_nxv16i32_nxv16f16:
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e32, m8, ta, ma
-; ZVFHMIN-NEXT:    vfcvt.f.x.v v16, v8
+; ZVFHMIN-NEXT:    vfcvt.f.x.v v8, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v16
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %evec = sitofp <vscale x 16 x i32> %va to <vscale x 16 x half>
   ret <vscale x 16 x half> %evec
 }
 
 define <vscale x 16 x half> @vuitofp_nxv16i32_nxv16f16(<vscale x 16 x i32> %va) {
-<<<<<<< HEAD
-; CHECK-LABEL: vuitofp_nxv16i32_nxv16f16:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
-; CHECK-NEXT:    vfncvt.f.xu.w v8, v8
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: vuitofp_nxv16i32_nxv16f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
-; ZVFH-NEXT:    vfncvt.f.xu.w v16, v8
-; ZVFH-NEXT:    vmv.v.v v8, v16
+; ZVFH-NEXT:    vfncvt.f.xu.w v8, v8
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: vuitofp_nxv16i32_nxv16f16:
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e32, m8, ta, ma
-; ZVFHMIN-NEXT:    vfcvt.f.xu.v v16, v8
+; ZVFHMIN-NEXT:    vfcvt.f.xu.v v8, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v16
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %evec = uitofp <vscale x 16 x i32> %va to <vscale x 16 x half>
   ret <vscale x 16 x half> %evec
 }

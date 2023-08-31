@@ -665,16 +665,10 @@ define dso_local i32 @_extract_crng_crng() {
 ; CHECK-NEXT:    adrp x8, primary_crng
 ; CHECK-NEXT:    ldr w8, [x8, :lo12:primary_crng]
 ; CHECK-NEXT:    cmp w8, #0
-<<<<<<< HEAD
-; CHECK-NEXT:    csel x0, xzr, x9, eq
-; CHECK-NEXT:    b crng_reseed
-=======
 ; CHECK-NEXT:    adrp x8, input_pool
 ; CHECK-NEXT:    add x8, x8, :lo12:input_pool
 ; CHECK-NEXT:    csel x0, xzr, x8, eq
-; CHECK-NEXT:    bl crng_reseed
-; CHECK-NEXT:    ldr x30, [sp], #16 // 8-byte Folded Reload
->>>>>>> upstream/main
+; CHECK-NEXT:    b crng_reseed
 ; CHECK-NEXT:  .LBB36_3: // %if.end
 ; CHECK-NEXT:    ret
 entry:

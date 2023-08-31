@@ -37,8 +37,8 @@ define void @fadd_v8f16(ptr %x, ptr %y) {
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfadd.vv v8, v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = load <8 x half>, ptr %y
@@ -69,13 +69,13 @@ define void @fadd_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfadd.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: fadd_v6f16:
@@ -88,10 +88,10 @@ define void @fadd_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfadd.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
@@ -106,13 +106,13 @@ define void @fadd_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfadd.vv v8, v8, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: fadd_v6f16:
@@ -125,10 +125,10 @@ define void @fadd_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfadd.vv v8, v8, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
@@ -200,8 +200,8 @@ define void @fsub_v8f16(ptr %x, ptr %y) {
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfsub.vv v8, v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = load <8 x half>, ptr %y
@@ -232,13 +232,13 @@ define void @fsub_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfsub.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: fsub_v6f16:
@@ -251,10 +251,10 @@ define void @fsub_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfsub.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
@@ -269,13 +269,13 @@ define void @fsub_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfsub.vv v8, v8, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: fsub_v6f16:
@@ -288,10 +288,10 @@ define void @fsub_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfsub.vv v8, v8, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
@@ -363,8 +363,8 @@ define void @fmul_v8f16(ptr %x, ptr %y) {
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfmul.vv v8, v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = load <8 x half>, ptr %y
@@ -395,13 +395,13 @@ define void @fmul_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfmul.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: fmul_v6f16:
@@ -414,10 +414,10 @@ define void @fmul_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfmul.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
@@ -432,13 +432,13 @@ define void @fmul_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfmul.vv v8, v8, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: fmul_v6f16:
@@ -451,10 +451,10 @@ define void @fmul_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfmul.vv v8, v8, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
@@ -526,8 +526,8 @@ define void @fdiv_v8f16(ptr %x, ptr %y) {
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfdiv.vv v8, v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = load <8 x half>, ptr %y
@@ -558,13 +558,13 @@ define void @fdiv_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfdiv.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: fdiv_v6f16:
@@ -577,10 +577,10 @@ define void @fdiv_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfdiv.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
@@ -595,13 +595,13 @@ define void @fdiv_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfdiv.vv v8, v8, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: fdiv_v6f16:
@@ -614,10 +614,10 @@ define void @fdiv_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfdiv.vv v8, v8, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
@@ -686,8 +686,8 @@ define void @fneg_v8f16(ptr %x) {
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfneg.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = fneg <8 x half> %a
@@ -714,13 +714,13 @@ define void @fneg_v6f16(ptr %x) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfneg.v v8, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: fneg_v6f16:
@@ -731,11 +731,11 @@ define void @fneg_v6f16(ptr %x) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfneg.v v8, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
 ;
@@ -747,13 +747,13 @@ define void @fneg_v6f16(ptr %x) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfneg.v v8, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: fneg_v6f16:
@@ -764,11 +764,11 @@ define void @fneg_v6f16(ptr %x) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfneg.v v8, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
   %a = load <6 x half>, ptr %x
@@ -830,8 +830,8 @@ define void @fabs_v8f16(ptr %x) {
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfabs.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = call <8 x half> @llvm.fabs.v8f16(<8 x half> %a)
@@ -859,13 +859,13 @@ define void @fabs_v6f16(ptr %x) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfabs.v v8, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: fabs_v6f16:
@@ -876,11 +876,11 @@ define void @fabs_v6f16(ptr %x) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfabs.v v8, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
 ;
@@ -892,13 +892,13 @@ define void @fabs_v6f16(ptr %x) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfabs.v v8, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: fabs_v6f16:
@@ -909,11 +909,11 @@ define void @fabs_v6f16(ptr %x) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfabs.v v8, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
   %a = load <6 x half>, ptr %x
@@ -981,8 +981,8 @@ define void @copysign_v8f16(ptr %x, ptr %y) {
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfsgnj.vv v8, v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = load <8 x half>, ptr %y
@@ -1014,13 +1014,13 @@ define void @copysign_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfsgnj.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: copysign_v6f16:
@@ -1033,10 +1033,10 @@ define void @copysign_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfsgnj.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
@@ -1051,13 +1051,13 @@ define void @copysign_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfsgnj.vv v8, v8, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: copysign_v6f16:
@@ -1070,10 +1070,10 @@ define void @copysign_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfsgnj.vv v8, v8, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
@@ -1145,15 +1145,15 @@ define void @copysign_vf_v8f16(ptr %x, half %y) {
 ; ZVFHMIN-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfsgnj.vv v8, v9, v8
+; ZVFHMIN-NEXT:    vfsgnj.vv v8, v10, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = insertelement <8 x half> poison, half %y, i32 0
@@ -1182,20 +1182,20 @@ define void @copysign_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfsgnj.vv v8, v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfsgnj.vv v8, v10, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: copysign_vf_v6f16:
@@ -1206,17 +1206,17 @@ define void @copysign_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfsgnj.vv v8, v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfsgnj.vv v8, v10, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
@@ -1229,20 +1229,20 @@ define void @copysign_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfsgnj.vv v8, v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfsgnj.vv v8, v10, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: copysign_vf_v6f16:
@@ -1253,17 +1253,17 @@ define void @copysign_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfsgnj.vv v8, v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfsgnj.vv v8, v10, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
@@ -1334,14 +1334,14 @@ define void @copysign_neg_v8f16(ptr %x, ptr %y) {
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfneg.v v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v10
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfsgnj.vv v8, v8, v9
+; ZVFHMIN-NEXT:    vfsgnj.vv v8, v10, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = load <8 x half>, ptr %y
@@ -1372,19 +1372,19 @@ define void @copysign_neg_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfneg.v v8, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v10
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v10, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfsgnj.vv v8, v8, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfsgnj.vv v8, v10, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: copysign_neg_v6f16:
@@ -1396,16 +1396,16 @@ define void @copysign_neg_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfneg.v v8, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v10
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v10, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfsgnj.vv v8, v8, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfsgnj.vv v8, v10, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
@@ -1419,19 +1419,19 @@ define void @copysign_neg_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfneg.v v8, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v10
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v10, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfsgnj.vv v8, v8, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfsgnj.vv v8, v10, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: copysign_neg_v6f16:
@@ -1443,16 +1443,16 @@ define void @copysign_neg_v6f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfneg.v v8, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v10
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v10, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfsgnj.vv v8, v8, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfsgnj.vv v8, v10, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
@@ -1508,24 +1508,13 @@ define void @copysign_neg_v2f64(ptr %x, ptr %y) {
 }
 
 define void @copysign_neg_trunc_v4f16_v4f32(ptr %x, ptr %y) {
-<<<<<<< HEAD
-; CHECK-LABEL: copysign_neg_trunc_v4f16_v4f32:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a1)
-; CHECK-NEXT:    vle16.v v9, (a0)
-; CHECK-NEXT:    vfncvt.f.f.w v8, v8
-; CHECK-NEXT:    vfsgnjn.vv v8, v9, v8
-; CHECK-NEXT:    vse16.v v8, (a0)
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: copysign_neg_trunc_v4f16_v4f32:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; ZVFH-NEXT:    vle32.v v8, (a1)
 ; ZVFH-NEXT:    vle16.v v9, (a0)
-; ZVFH-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFH-NEXT:    vfsgnjn.vv v8, v9, v10
+; ZVFH-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFH-NEXT:    vfsgnjn.vv v8, v9, v8
 ; ZVFH-NEXT:    vse16.v v8, (a0)
 ; ZVFH-NEXT:    ret
 ;
@@ -1540,15 +1529,14 @@ define void @copysign_neg_trunc_v4f16_v4f32(ptr %x, ptr %y) {
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
 ; ZVFHMIN-NEXT:    vfneg.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfsgnj.vv v8, v10, v8
+; ZVFHMIN-NEXT:    vfsgnj.vv v8, v10, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
->>>>>>> upstream/main
   %a = load <4 x half>, ptr %x
   %b = load <4 x float>, ptr %y
   %c = fneg <4 x float> %b
@@ -1560,27 +1548,14 @@ define void @copysign_neg_trunc_v4f16_v4f32(ptr %x, ptr %y) {
 declare <4 x half> @llvm.copysign.v4f16(<4 x half>, <4 x half>)
 
 define void @copysign_neg_trunc_v3f16_v3f32(ptr %x, ptr %y) {
-<<<<<<< HEAD
-; CHECK-LABEL: copysign_neg_trunc_v3f16_v3f32:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 3, e16, mf2, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a1)
-; CHECK-NEXT:    vle16.v v9, (a0)
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v8, v8
-; CHECK-NEXT:    vfsgnjn.vv v8, v9, v8
-; CHECK-NEXT:    vsetivli zero, 3, e16, mf2, ta, ma
-; CHECK-NEXT:    vse16.v v8, (a0)
-; CHECK-NEXT:    ret
-=======
 ; ZVFH-LABEL: copysign_neg_trunc_v3f16_v3f32:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetivli zero, 3, e16, mf2, ta, ma
 ; ZVFH-NEXT:    vle32.v v8, (a1)
 ; ZVFH-NEXT:    vle16.v v9, (a0)
 ; ZVFH-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; ZVFH-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFH-NEXT:    vfsgnjn.vv v8, v9, v10
+; ZVFH-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFH-NEXT:    vfsgnjn.vv v8, v9, v8
 ; ZVFH-NEXT:    vsetivli zero, 3, e16, mf2, ta, ma
 ; ZVFH-NEXT:    vse16.v v8, (a0)
 ; ZVFH-NEXT:    ret
@@ -1600,18 +1575,18 @@ define void @copysign_neg_trunc_v3f16_v3f32(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfneg.v v8, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfsgnj.vv v8, v10, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfsgnj.vv v8, v10, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, sp, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    flh fa5, 12(sp)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    fsh fa5, 4(a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi sp, sp, 16
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
@@ -1634,18 +1609,18 @@ define void @copysign_neg_trunc_v3f16_v3f32(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfneg.v v8, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfsgnj.vv v8, v10, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfsgnj.vv v8, v10, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a1, sp, 8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse16.v v9, (a1)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse16.v v8, (a1)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    flh fa5, 12(sp)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    fsh fa5, 4(a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v9, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi sp, sp, 16
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
 ;
@@ -1664,18 +1639,18 @@ define void @copysign_neg_trunc_v3f16_v3f32(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfneg.v v8, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfsgnj.vv v8, v10, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfsgnj.vv v8, v10, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, sp, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    flh fa5, 12(sp)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    fsh fa5, 4(a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi sp, sp, 16
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
@@ -1698,21 +1673,20 @@ define void @copysign_neg_trunc_v3f16_v3f32(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfneg.v v8, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfsgnj.vv v8, v10, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfsgnj.vv v8, v10, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a1, sp, 8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse16.v v9, (a1)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse16.v v8, (a1)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    flh fa5, 12(sp)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    fsh fa5, 4(a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v9, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi sp, sp, 16
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
->>>>>>> upstream/main
   %a = load <3 x half>, ptr %x
   %b = load <3 x float>, ptr %y
   %c = fneg <3 x float> %b
@@ -1760,8 +1734,8 @@ define void @sqrt_v8f16(ptr %x) {
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfsqrt.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = call <8 x half> @llvm.sqrt.v8f16(<8 x half> %a)
@@ -1789,13 +1763,13 @@ define void @sqrt_v6f16(ptr %x) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfsqrt.v v8, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: sqrt_v6f16:
@@ -1806,11 +1780,11 @@ define void @sqrt_v6f16(ptr %x) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfsqrt.v v8, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
 ;
@@ -1822,13 +1796,13 @@ define void @sqrt_v6f16(ptr %x) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfsqrt.v v8, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: sqrt_v6f16:
@@ -1839,11 +1813,11 @@ define void @sqrt_v6f16(ptr %x) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfsqrt.v v8, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
   %a = load <6 x half>, ptr %x
@@ -2098,12 +2072,12 @@ define void @fmsub_v8f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfneg.v v8, v11
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v11, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v11, v9
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v10
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v11
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfmacc.vv v10, v8, v9
+; ZVFHMIN-NEXT:    vfmacc.vv v10, v11, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v10
 ; ZVFHMIN-NEXT:    vse16.v v8, (a0)
@@ -2140,12 +2114,12 @@ define void @fmsub_v6f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfneg.v v8, v11
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v11, v8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v11, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v10
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v10, v11
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v10, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfmacc.vv v10, v8, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfmacc.vv v10, v11, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
@@ -2166,12 +2140,12 @@ define void @fmsub_v6f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfneg.v v8, v11
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v11, v8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v11, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v10
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v10, v11
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v10, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfmacc.vv v10, v8, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfmacc.vv v10, v11, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
@@ -2191,12 +2165,12 @@ define void @fmsub_v6f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfneg.v v8, v11
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v11, v8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v11, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v10
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v10, v11
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v10, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfmacc.vv v10, v8, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfmacc.vv v10, v11, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
@@ -2217,12 +2191,12 @@ define void @fmsub_v6f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfneg.v v8, v11
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v11, v8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v11, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v10
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v10, v11
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v10, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfmacc.vv v10, v8, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfmacc.vv v10, v11, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
@@ -2335,12 +2309,12 @@ define void @fadd_v16f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX2-NEXT:    vle16.v v8, (a1)
 ; ZVFHMINLMULMAX2-NEXT:    vle16.v v9, (a0)
 ; ZVFHMINLMULMAX2-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMINLMULMAX2-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMINLMULMAX2-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMINLMULMAX2-NEXT:    vfadd.vv v8, v12, v10
+; ZVFHMINLMULMAX2-NEXT:    vfadd.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMINLMULMAX2-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFHMINLMULMAX2-NEXT:    vse16.v v10, (a0)
+; ZVFHMINLMULMAX2-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX2-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-NEXT:    ret
   %a = load <16 x half>, ptr %x
   %b = load <16 x half>, ptr %y
@@ -2505,12 +2479,12 @@ define void @fsub_v16f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX2-NEXT:    vle16.v v8, (a1)
 ; ZVFHMINLMULMAX2-NEXT:    vle16.v v9, (a0)
 ; ZVFHMINLMULMAX2-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMINLMULMAX2-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMINLMULMAX2-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMINLMULMAX2-NEXT:    vfsub.vv v8, v12, v10
+; ZVFHMINLMULMAX2-NEXT:    vfsub.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMINLMULMAX2-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFHMINLMULMAX2-NEXT:    vse16.v v10, (a0)
+; ZVFHMINLMULMAX2-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX2-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-NEXT:    ret
   %a = load <16 x half>, ptr %x
   %b = load <16 x half>, ptr %y
@@ -2675,12 +2649,12 @@ define void @fmul_v16f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX2-NEXT:    vle16.v v8, (a1)
 ; ZVFHMINLMULMAX2-NEXT:    vle16.v v9, (a0)
 ; ZVFHMINLMULMAX2-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMINLMULMAX2-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMINLMULMAX2-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMINLMULMAX2-NEXT:    vfmul.vv v8, v12, v10
+; ZVFHMINLMULMAX2-NEXT:    vfmul.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMINLMULMAX2-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFHMINLMULMAX2-NEXT:    vse16.v v10, (a0)
+; ZVFHMINLMULMAX2-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX2-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-NEXT:    ret
   %a = load <16 x half>, ptr %x
   %b = load <16 x half>, ptr %y
@@ -2845,12 +2819,12 @@ define void @fdiv_v16f16(ptr %x, ptr %y) {
 ; ZVFHMINLMULMAX2-NEXT:    vle16.v v8, (a1)
 ; ZVFHMINLMULMAX2-NEXT:    vle16.v v9, (a0)
 ; ZVFHMINLMULMAX2-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMINLMULMAX2-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMINLMULMAX2-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMINLMULMAX2-NEXT:    vfdiv.vv v8, v12, v10
+; ZVFHMINLMULMAX2-NEXT:    vfdiv.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMINLMULMAX2-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFHMINLMULMAX2-NEXT:    vse16.v v10, (a0)
+; ZVFHMINLMULMAX2-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX2-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-NEXT:    ret
   %a = load <16 x half>, ptr %x
   %b = load <16 x half>, ptr %y
@@ -2998,8 +2972,8 @@ define void @fneg_v16f16(ptr %x) {
 ; ZVFHMINLMULMAX2-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; ZVFHMINLMULMAX2-NEXT:    vfneg.v v8, v10
 ; ZVFHMINLMULMAX2-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMINLMULMAX2-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFHMINLMULMAX2-NEXT:    vse16.v v10, (a0)
+; ZVFHMINLMULMAX2-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX2-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-NEXT:    ret
   %a = load <16 x half>, ptr %x
   %b = fneg <16 x half> %a
@@ -3111,13 +3085,13 @@ define void @fma_v16f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMINLMULMAX2-NEXT:    vle16.v v9, (a0)
 ; ZVFHMINLMULMAX2-NEXT:    vle16.v v10, (a1)
 ; ZVFHMINLMULMAX2-NEXT:    vfwcvt.f.f.v v12, v8
-; ZVFHMINLMULMAX2-NEXT:    vfwcvt.f.f.v v14, v9
-; ZVFHMINLMULMAX2-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX2-NEXT:    vfwcvt.f.f.v v8, v9
+; ZVFHMINLMULMAX2-NEXT:    vfwcvt.f.f.v v14, v10
 ; ZVFHMINLMULMAX2-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; ZVFHMINLMULMAX2-NEXT:    vfmadd.vv v8, v14, v12
+; ZVFHMINLMULMAX2-NEXT:    vfmadd.vv v14, v8, v12
 ; ZVFHMINLMULMAX2-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; ZVFHMINLMULMAX2-NEXT:    vfncvt.f.f.w v10, v8
-; ZVFHMINLMULMAX2-NEXT:    vse16.v v10, (a0)
+; ZVFHMINLMULMAX2-NEXT:    vfncvt.f.f.w v8, v14
+; ZVFHMINLMULMAX2-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-NEXT:    ret
   %a = load <16 x half>, ptr %x
   %b = load <16 x half>, ptr %y
@@ -3239,15 +3213,15 @@ define void @fadd_vf_v8f16(ptr %x, half %y) {
 ; ZVFHMIN-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfadd.vv v8, v9, v8
+; ZVFHMIN-NEXT:    vfadd.vv v8, v10, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = insertelement <8 x half> poison, half %y, i32 0
@@ -3276,20 +3250,20 @@ define void @fadd_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfadd.vv v8, v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfadd.vv v8, v10, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: fadd_vf_v6f16:
@@ -3300,17 +3274,17 @@ define void @fadd_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfadd.vv v8, v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfadd.vv v8, v10, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
@@ -3323,20 +3297,20 @@ define void @fadd_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfadd.vv v8, v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfadd.vv v8, v10, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: fadd_vf_v6f16:
@@ -3347,17 +3321,17 @@ define void @fadd_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfadd.vv v8, v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfadd.vv v8, v10, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
@@ -3426,15 +3400,15 @@ define void @fadd_fv_v8f16(ptr %x, half %y) {
 ; ZVFHMIN-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfadd.vv v8, v8, v9
+; ZVFHMIN-NEXT:    vfadd.vv v8, v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = insertelement <8 x half> poison, half %y, i32 0
@@ -3463,20 +3437,20 @@ define void @fadd_fv_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfadd.vv v8, v8, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfadd.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: fadd_fv_v6f16:
@@ -3487,17 +3461,17 @@ define void @fadd_fv_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfadd.vv v8, v8, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfadd.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
@@ -3510,20 +3484,20 @@ define void @fadd_fv_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfadd.vv v8, v8, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfadd.vv v8, v8, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: fadd_fv_v6f16:
@@ -3534,17 +3508,17 @@ define void @fadd_fv_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfadd.vv v8, v8, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfadd.vv v8, v8, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
@@ -3613,15 +3587,15 @@ define void @fsub_vf_v8f16(ptr %x, half %y) {
 ; ZVFHMIN-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfsub.vv v8, v9, v8
+; ZVFHMIN-NEXT:    vfsub.vv v8, v10, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = insertelement <8 x half> poison, half %y, i32 0
@@ -3650,20 +3624,20 @@ define void @fsub_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfsub.vv v8, v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfsub.vv v8, v10, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: fsub_vf_v6f16:
@@ -3674,17 +3648,17 @@ define void @fsub_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfsub.vv v8, v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfsub.vv v8, v10, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
@@ -3697,20 +3671,20 @@ define void @fsub_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfsub.vv v8, v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfsub.vv v8, v10, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: fsub_vf_v6f16:
@@ -3721,17 +3695,17 @@ define void @fsub_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfsub.vv v8, v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfsub.vv v8, v10, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
@@ -3800,15 +3774,15 @@ define void @fsub_fv_v8f16(ptr %x, half %y) {
 ; ZVFHMIN-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfsub.vv v8, v8, v9
+; ZVFHMIN-NEXT:    vfsub.vv v8, v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = insertelement <8 x half> poison, half %y, i32 0
@@ -3837,20 +3811,20 @@ define void @fsub_fv_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfsub.vv v8, v8, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfsub.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: fsub_fv_v6f16:
@@ -3861,17 +3835,17 @@ define void @fsub_fv_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfsub.vv v8, v8, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfsub.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
@@ -3884,20 +3858,20 @@ define void @fsub_fv_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfsub.vv v8, v8, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfsub.vv v8, v8, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: fsub_fv_v6f16:
@@ -3908,17 +3882,17 @@ define void @fsub_fv_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfsub.vv v8, v8, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfsub.vv v8, v8, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
@@ -3987,15 +3961,15 @@ define void @fmul_vf_v8f16(ptr %x, half %y) {
 ; ZVFHMIN-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfmul.vv v8, v9, v8
+; ZVFHMIN-NEXT:    vfmul.vv v8, v10, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = insertelement <8 x half> poison, half %y, i32 0
@@ -4024,20 +3998,20 @@ define void @fmul_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfmul.vv v8, v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfmul.vv v8, v10, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: fmul_vf_v6f16:
@@ -4048,17 +4022,17 @@ define void @fmul_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfmul.vv v8, v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfmul.vv v8, v10, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
@@ -4071,20 +4045,20 @@ define void @fmul_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfmul.vv v8, v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfmul.vv v8, v10, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: fmul_vf_v6f16:
@@ -4095,17 +4069,17 @@ define void @fmul_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfmul.vv v8, v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfmul.vv v8, v10, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
@@ -4174,15 +4148,15 @@ define void @fmul_fv_v8f16(ptr %x, half %y) {
 ; ZVFHMIN-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfmul.vv v8, v8, v9
+; ZVFHMIN-NEXT:    vfmul.vv v8, v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = insertelement <8 x half> poison, half %y, i32 0
@@ -4211,20 +4185,20 @@ define void @fmul_fv_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfmul.vv v8, v8, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfmul.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: fmul_fv_v6f16:
@@ -4235,17 +4209,17 @@ define void @fmul_fv_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfmul.vv v8, v8, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfmul.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
@@ -4258,20 +4232,20 @@ define void @fmul_fv_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfmul.vv v8, v8, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfmul.vv v8, v8, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: fmul_fv_v6f16:
@@ -4282,17 +4256,17 @@ define void @fmul_fv_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfmul.vv v8, v8, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfmul.vv v8, v8, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
@@ -4361,15 +4335,15 @@ define void @fdiv_vf_v8f16(ptr %x, half %y) {
 ; ZVFHMIN-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v8, v9, v8
+; ZVFHMIN-NEXT:    vfdiv.vv v8, v10, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = insertelement <8 x half> poison, half %y, i32 0
@@ -4398,20 +4372,20 @@ define void @fdiv_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfdiv.vv v8, v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfdiv.vv v8, v10, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: fdiv_vf_v6f16:
@@ -4422,17 +4396,17 @@ define void @fdiv_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfdiv.vv v8, v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfdiv.vv v8, v10, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
@@ -4445,20 +4419,20 @@ define void @fdiv_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfdiv.vv v8, v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfdiv.vv v8, v10, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: fdiv_vf_v6f16:
@@ -4469,17 +4443,17 @@ define void @fdiv_vf_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfdiv.vv v8, v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfdiv.vv v8, v10, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
@@ -4548,15 +4522,15 @@ define void @fdiv_fv_v8f16(ptr %x, half %y) {
 ; ZVFHMIN-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfdiv.vv v8, v8, v9
+; ZVFHMIN-NEXT:    vfdiv.vv v8, v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = insertelement <8 x half> poison, half %y, i32 0
@@ -4585,20 +4559,20 @@ define void @fdiv_fv_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfdiv.vv v8, v8, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfdiv.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: fdiv_fv_v6f16:
@@ -4609,17 +4583,17 @@ define void @fdiv_fv_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfdiv.vv v8, v8, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfdiv.vv v8, v8, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
@@ -4632,20 +4606,20 @@ define void @fdiv_fv_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfdiv.vv v8, v8, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfdiv.vv v8, v8, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: fdiv_fv_v6f16:
@@ -4656,17 +4630,17 @@ define void @fdiv_fv_v6f16(ptr %x, half %y) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfmv.v.f v9, fa5
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v10, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v10
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v10, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfdiv.vv v8, v8, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfdiv.vv v8, v8, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
@@ -4737,16 +4711,16 @@ define void @fma_vf_v8f16(ptr %x, ptr %y, half %z) {
 ; ZVFHMIN-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfmv.v.f v10, fa5
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v11, v10
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v11, v9
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v11
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfmadd.vv v8, v9, v10
+; ZVFHMIN-NEXT:    vfmadd.vv v8, v9, v11
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = load <8 x half>, ptr %y
@@ -4778,21 +4752,21 @@ define void @fma_vf_v6f16(ptr %x, ptr %y, half %z) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfmv.v.f v10, fa5
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v11, v10
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v10, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v10, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v11, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v11
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfmadd.vv v8, v9, v10
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfmadd.vv v8, v9, v11
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: fma_vf_v6f16:
@@ -4804,18 +4778,18 @@ define void @fma_vf_v6f16(ptr %x, ptr %y, half %z) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfmv.v.f v10, fa5
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v11, v10
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v10, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v10, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v11, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v11
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfmadd.vv v8, v9, v10
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfmadd.vv v8, v9, v11
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
@@ -4829,21 +4803,21 @@ define void @fma_vf_v6f16(ptr %x, ptr %y, half %z) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfmv.v.f v10, fa5
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v11, v10
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v10, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v10, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v11, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v11
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfmadd.vv v8, v9, v10
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfmadd.vv v8, v9, v11
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: fma_vf_v6f16:
@@ -4855,18 +4829,18 @@ define void @fma_vf_v6f16(ptr %x, ptr %y, half %z) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfmv.v.f v10, fa5
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v11, v10
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v10, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v10, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v11, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v11
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfmadd.vv v8, v9, v10
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfmadd.vv v8, v9, v11
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
@@ -4943,16 +4917,16 @@ define void @fma_fv_v8f16(ptr %x, ptr %y, half %z) {
 ; ZVFHMIN-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfmv.v.f v10, fa5
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v11, v10
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v11, v9
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v11
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfmadd.vv v8, v9, v10
+; ZVFHMIN-NEXT:    vfmadd.vv v8, v9, v11
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = load <8 x half>, ptr %y
@@ -4984,21 +4958,21 @@ define void @fma_fv_v6f16(ptr %x, ptr %y, half %z) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfmv.v.f v10, fa5
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v11, v10
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v10, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v10, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v11, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v11
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfmadd.vv v8, v9, v10
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfmadd.vv v8, v9, v11
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: fma_fv_v6f16:
@@ -5010,18 +4984,18 @@ define void @fma_fv_v6f16(ptr %x, ptr %y, half %z) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfmv.v.f v10, fa5
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v11, v10
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v10, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v10, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v11, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v11
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfmadd.vv v8, v9, v10
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfmadd.vv v8, v9, v11
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
@@ -5035,21 +5009,21 @@ define void @fma_fv_v6f16(ptr %x, ptr %y, half %z) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfmv.v.f v10, fa5
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v11, v10
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v10, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v10, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v11, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v11
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfmadd.vv v8, v9, v10
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfmadd.vv v8, v9, v11
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: fma_fv_v6f16:
@@ -5061,18 +5035,18 @@ define void @fma_fv_v6f16(ptr %x, ptr %y, half %z) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfmv.v.f v10, fa5
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v11, v10
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v10, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v10, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v11, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v11
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfmadd.vv v8, v9, v10
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfmadd.vv v8, v9, v11
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
@@ -5149,20 +5123,20 @@ define void @fmsub_vf_v8f16(ptr %x, ptr %y, half %z) {
 ; ZVFHMIN-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfmv.v.f v10, fa5
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v11, v10
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v11, v9
+; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; ZVFHMIN-NEXT:    vfneg.v v9, v11
+; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v11, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfneg.v v9, v10
+; ZVFHMIN-NEXT:    vfmacc.vv v10, v11, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v10, v9
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v11
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v11, v10
-; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfmacc.vv v11, v9, v8
-; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v11
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v10
 ; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
@@ -5196,20 +5170,20 @@ define void @fmsub_vf_v6f16(ptr %x, ptr %y, half %z) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfmv.v.f v10, fa5
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v11, v10
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v10, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v11, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfneg.v v9, v11
+; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v11, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v10, v9
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfneg.v v9, v10
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfmacc.vv v10, v11, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v10, v9
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v11
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v11, v10
-; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfmacc.vv v11, v9, v8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v11
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
@@ -5227,20 +5201,20 @@ define void @fmsub_vf_v6f16(ptr %x, ptr %y, half %z) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfmv.v.f v10, fa5
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v11, v10
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v10, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v11, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfneg.v v9, v11
+; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v11, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v10, v9
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfneg.v v9, v10
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfmacc.vv v10, v11, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v10, v9
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v11
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v11, v10
-; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfmacc.vv v11, v9, v8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v11
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
@@ -5257,20 +5231,20 @@ define void @fmsub_vf_v6f16(ptr %x, ptr %y, half %z) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfmv.v.f v10, fa5
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v11, v10
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v10, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v11, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfneg.v v9, v11
+; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v11, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v10, v9
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfneg.v v9, v10
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfmacc.vv v10, v11, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v10, v9
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v11
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v11, v10
-; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfmacc.vv v11, v9, v8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v11
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
@@ -5288,20 +5262,20 @@ define void @fmsub_vf_v6f16(ptr %x, ptr %y, half %z) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfmv.v.f v10, fa5
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v11, v10
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v10, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 8, e16, mf2, ta, ma
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v11, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfneg.v v9, v11
+; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v11, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v10, v9
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfneg.v v9, v10
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfmacc.vv v10, v11, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v10, v9
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v11
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v11, v10
-; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfmacc.vv v11, v9, v8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v11
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
@@ -6465,14 +6439,14 @@ define void @fmuladd_v8f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfmul.vv v8, v8, v11
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v10
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfadd.vv v8, v8, v9
+; ZVFHMIN-NEXT:    vfadd.vv v8, v9, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = load <8 x half>, ptr %y
@@ -6507,19 +6481,19 @@ define void @fmuladd_v6f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfmul.vv v8, v8, v11
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v10
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfadd.vv v8, v8, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfadd.vv v8, v9, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: fmuladd_v6f16:
@@ -6533,16 +6507,16 @@ define void @fmuladd_v6f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfmul.vv v8, v8, v11
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v10
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfadd.vv v8, v8, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfadd.vv v8, v9, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
@@ -6558,19 +6532,19 @@ define void @fmuladd_v6f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfmul.vv v8, v8, v11
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v10
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfadd.vv v8, v8, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfadd.vv v8, v9, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: fmuladd_v6f16:
@@ -6584,16 +6558,16 @@ define void @fmuladd_v6f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfmul.vv v8, v8, v11
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v10
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfadd.vv v8, v8, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfadd.vv v8, v9, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
@@ -6676,14 +6650,14 @@ define void @fmsub_fmuladd_v8f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfmul.vv v8, v8, v11
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v10
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v9, v8
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfsub.vv v8, v8, v9
+; ZVFHMIN-NEXT:    vfsub.vv v8, v9, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMIN-NEXT:    vse16.v v9, (a0)
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMIN-NEXT:    vse16.v v8, (a0)
 ; ZVFHMIN-NEXT:    ret
   %a = load <8 x half>, ptr %x
   %b = load <8 x half>, ptr %y
@@ -6718,19 +6692,19 @@ define void @fmsub_fmuladd_v6f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vfmul.vv v8, v8, v11
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v10
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfsub.vv v8, v8, v9
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfsub.vv v8, v9, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX2-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX2-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX2-RV64-LABEL: fmsub_fmuladd_v6f16:
@@ -6744,16 +6718,16 @@ define void @fmsub_fmuladd_v6f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vfmul.vv v8, v8, v11
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v10
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfsub.vv v8, v8, v9
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfsub.vv v8, v9, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX2-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX2-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX2-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX2-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX2-RV64-NEXT:    ret
@@ -6769,19 +6743,19 @@ define void @fmsub_fmuladd_v6f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vfmul.vv v8, v8, v11
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v10
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfsub.vv v8, v8, v9
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfsub.vv v8, v9, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV32-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV32-NEXT:    vslidedown.vi v9, v8, 2
 ; ZVFHMINLMULMAX1-RV32-NEXT:    addi a1, a0, 8
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v8, (a1)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse32.v v9, (a1)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    vsetivli zero, 4, e16, mf4, ta, ma
-; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v9, (a0)
+; ZVFHMINLMULMAX1-RV32-NEXT:    vse16.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV32-NEXT:    ret
 ;
 ; ZVFHMINLMULMAX1-RV64-LABEL: fmsub_fmuladd_v6f16:
@@ -6795,16 +6769,16 @@ define void @fmsub_fmuladd_v6f16(ptr %x, ptr %y, ptr %z) {
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vfmul.vv v8, v8, v11
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v9
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v10
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfwcvt.f.f.v v8, v10
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfsub.vv v8, v8, v9
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfsub.vv v8, v9, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v9, v8
+; ZVFHMINLMULMAX1-RV64-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v9, (a0)
-; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v9, 2
+; ZVFHMINLMULMAX1-RV64-NEXT:    vse64.v v8, (a0)
+; ZVFHMINLMULMAX1-RV64-NEXT:    vslidedown.vi v8, v8, 2
 ; ZVFHMINLMULMAX1-RV64-NEXT:    addi a0, a0, 8
 ; ZVFHMINLMULMAX1-RV64-NEXT:    vse32.v v8, (a0)
 ; ZVFHMINLMULMAX1-RV64-NEXT:    ret
