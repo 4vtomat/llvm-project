@@ -8,7 +8,6 @@
 # RUN: llvm-mc -triple=riscv32 -filetype=obj --mattr=+zve32x --mattr=+experimental-zvbb %s \
 # RUN:        | llvm-objdump -d - | FileCheck %s --check-prefix=CHECK-UNKNOWN
 
-<<<<<<< HEAD
 vandn.vv v10, v9, v8, v0.t
 # CHECK-INST: vandn.vv v10, v9, v8, v0.t
 # CHECK-ENCODING: [0x57,0x05,0x94,0x04]
@@ -27,8 +26,6 @@ vbrev8.v v10, v9, v0.t
 # CHECK-ERROR: instruction requires the following: 'Zvkb' (Vector Bitmanip instructions for Cryptography.){{$}}
 # CHECK-UNKNOWN: 57 25 94 48   <unknown>
 
-=======
->>>>>>> upstream/main
 vbrev.v v10, v9, v0.t
 # CHECK-INST: vbrev.v v10, v9, v0.t
 # CHECK-ENCODING: [0x57,0x25,0x95,0x48]
@@ -53,7 +50,6 @@ vctz.v v10, v9, v0.t
 # CHECK-ERROR: instruction requires the following: 'Zvbb' (Vector basic bit-manipulation instructions.){{$}}
 # CHECK-UNKNOWN: 57 a5 96 48   <unknown>
 
-<<<<<<< HEAD
 vrev8.v v10, v9, v0.t
 # CHECK-INST: vrev8.v v10, v9, v0.t
 # CHECK-ENCODING: [0x57,0xa5,0x94,0x48]
@@ -90,8 +86,6 @@ vror.vi v10, v9, 33, v0.t
 # CHECK-ERROR: instruction requires the following: 'Zvkb' (Vector Bitmanip instructions for Cryptography.){{$}}
 # CHECK-UNKNOWN: 57 b5 90 54   <unknown>
 
-=======
->>>>>>> upstream/main
 vwsll.vv v10, v9, v8, v0.t
 # CHECK-INST: vwsll.vv v10, v9, v8, v0.t
 # CHECK-ENCODING: [0x57,0x05,0x94,0xd4]
