@@ -138,11 +138,11 @@ def : WriteRes<WriteCPOP32, [SiFiveP400MulI2F]>;
 // Integer division
 def : WriteRes<WriteIDiv, [SiFiveP400MulI2F, SiFiveP400Div]> {
   let Latency = 35;
-  let ResourceCycles = [1, 34];
+  let ReleaseAtCycles = [1, 34];
 }
 def : WriteRes<WriteIDiv32, [SiFiveP400MulI2F, SiFiveP400Div]> {
   let Latency = 20;
-  let ResourceCycles = [1, 19];
+  let ReleaseAtCycles = [1, 19];
 }
 
 let Latency = 1 in {
@@ -233,31 +233,31 @@ def : WriteRes<WriteFMinMax64, [SiFiveP400FloatArith]>;
 // Half precision.
 def : WriteRes<WriteFDiv16, [SiFiveP400FEXQ0, SiFiveP400FloatDiv]> {
   let Latency = 19;
-  let ResourceCycles = [1, 18];
+  let ReleaseAtCycles = [1, 18];
 }
 def : WriteRes<WriteFSqrt16, [SiFiveP400FEXQ0, SiFiveP400FloatDiv]> {
   let Latency = 18;
-  let ResourceCycles = [1, 17];
+  let ReleaseAtCycles = [1, 17];
 }
 
 // Single precision.
 def : WriteRes<WriteFDiv32, [SiFiveP400FEXQ0, SiFiveP400FloatDiv]> {
   let Latency = 19;
-  let ResourceCycles = [1, 18];
+  let ReleaseAtCycles = [1, 18];
 }
 def : WriteRes<WriteFSqrt32, [SiFiveP400FEXQ0, SiFiveP400FloatDiv]> {
   let Latency = 18;
-  let ResourceCycles = [1, 17];
+  let ReleaseAtCycles = [1, 17];
 }
 
 // Double precision
 def : WriteRes<WriteFDiv64, [SiFiveP400FEXQ0, SiFiveP400FloatDiv]> {
   let Latency = 33;
-  let ResourceCycles = [1, 32];
+  let ReleaseAtCycles = [1, 32];
 }
 def : WriteRes<WriteFSqrt64, [SiFiveP400FEXQ0, SiFiveP400FloatDiv]> {
   let Latency = 33;
-  let ResourceCycles = [1, 32];
+  let ReleaseAtCycles = [1, 32];
 }
 
 // Conversions
@@ -307,18 +307,18 @@ def : WriteRes<WriteVSETVL, [SiFiveP400SYS]>;
 foreach mx = SchedMxList in {
   defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxList>.c;
-  let Latency = 8, ResourceCycles = [LMulLat] in {
+  let Latency = 8, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVLDE",    [SiFiveP400VLD], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVLDM",    [SiFiveP400VLD], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVLDFF",   [SiFiveP400VLD], mx, IsWorstCase>;
   }
-  let Latency = 12, ResourceCycles = [LMulLat] in {
+  let Latency = 12, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVLDS8",   [SiFiveP400VLD], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVLDS16",  [SiFiveP400VLD], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVLDS32",  [SiFiveP400VLD], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVLDS64",  [SiFiveP400VLD], mx, IsWorstCase>;
   }
-  let Latency = 12, ResourceCycles = [LMulLat] in {
+  let Latency = 12, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVLDUX8",  [SiFiveP400VLD], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVLDUX16", [SiFiveP400VLD], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVLDUX32", [SiFiveP400VLD], mx, IsWorstCase>;
@@ -333,17 +333,17 @@ foreach mx = SchedMxList in {
 foreach mx = SchedMxList in {
   defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxList>.c;
-  let Latency = 8, ResourceCycles = [LMulLat] in {
+  let Latency = 8, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVSTE",    [SiFiveP400VST], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVSTM",    [SiFiveP400VST], mx, IsWorstCase>;
   }
-  let Latency = 12, ResourceCycles = [LMulLat] in {
+  let Latency = 12, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVSTS8",   [SiFiveP400VST], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVSTS16",  [SiFiveP400VST], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVSTS32",  [SiFiveP400VST], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVSTS64",  [SiFiveP400VST], mx, IsWorstCase>;
   }
-  let Latency = 12, ResourceCycles = [LMulLat] in {
+  let Latency = 12, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVSTUX8",  [SiFiveP400VST], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVSTUX16", [SiFiveP400VST], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVSTUX32", [SiFiveP400VST], mx, IsWorstCase>;
@@ -360,14 +360,14 @@ foreach mx = SchedMxList in {
     foreach eew = [8, 16, 32, 64] in {
       defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxList>.c;
       defvar LMulLat = SiFiveP400GetCyclesSegmented<mx, nf>.c;
-      let Latency = !add(12, LMulLat), ResourceCycles = [!add(12, LMulLat)] in {
+      let Latency = !add(12, LMulLat), ReleaseAtCycles = [!add(12, LMulLat)] in {
         defm "" : LMULWriteResMX<"WriteVLSEG" # nf # "e" #eew,   [SiFiveP400VLD], mx, IsWorstCase>;
         defm "" : LMULWriteResMX<"WriteVLSEGFF" # nf # "e" #eew, [SiFiveP400VLD], mx, IsWorstCase>;
         defm "" : LMULWriteResMX<"WriteVLSSEG" # nf # "e" #eew,  [SiFiveP400VLD], mx, IsWorstCase>;
         defm "" : LMULWriteResMX<"WriteVLUXSEG" # nf # "e" #eew, [SiFiveP400VLD], mx, IsWorstCase>;
         defm "" : LMULWriteResMX<"WriteVLOXSEG" # nf # "e" #eew, [SiFiveP400VLD], mx, IsWorstCase>;
       }
-      let Latency = !add(1, LMulLat), ResourceCycles = [!add(12, LMulLat)] in {
+      let Latency = !add(1, LMulLat), ReleaseAtCycles = [!add(12, LMulLat)] in {
         defm "" : LMULWriteResMX<"WriteVSSEG" # nf # "e" #eew,   [SiFiveP400VST], mx, IsWorstCase>;
         defm "" : LMULWriteResMX<"WriteVSSSEG" # nf # "e" #eew,  [SiFiveP400VST], mx, IsWorstCase>;
         defm "" : LMULWriteResMX<"WriteVSUXSEG" # nf # "e" #eew, [SiFiveP400VST], mx, IsWorstCase>;
@@ -379,11 +379,11 @@ foreach mx = SchedMxList in {
 
 // Whole register move/load/store
 foreach LMul = [1, 2, 4, 8] in {
-  let Latency = 8, ResourceCycles = [LMul] in {
+  let Latency = 8, ReleaseAtCycles = [LMul] in {
     def : WriteRes<!cast<SchedWrite>("WriteVLD" # LMul # "R"), [SiFiveP400VLD]>;
     def : WriteRes<!cast<SchedWrite>("WriteVST" # LMul # "R"), [SiFiveP400VST]>;
   }
-  let Latency = LMul, ResourceCycles = [LMul] in {
+  let Latency = LMul, ReleaseAtCycles = [LMul] in {
     def : WriteRes<!cast<SchedWrite>("WriteVMov" # LMul # "V"), [SiFiveP400VEXQ0]>;
   }
 }
@@ -392,7 +392,7 @@ foreach LMul = [1, 2, 4, 8] in {
 foreach mx = SchedMxList in {
   defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxList>.c;
-  let Latency = 1, ResourceCycles = [LMulLat] in {
+  let Latency = 1, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVIALUV",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIALUX",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIALUI",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
@@ -412,7 +412,7 @@ foreach mx = SchedMxList in {
     defm "" : LMULWriteResMX<"WriteVIMovX",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMovI",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
-  let Latency = 6, ResourceCycles = [LMulLat] in {
+  let Latency = 6, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVShiftV",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVShiftX",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVShiftI",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
@@ -426,7 +426,7 @@ foreach mx = SchedMxList in {
 foreach mx = SchedMxListW in {
   defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxListW>.c;
-  let Latency = 6, ResourceCycles = [LMulLat] in {
+  let Latency = 6, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVIWALUV",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIWALUX",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIWALUI",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
@@ -442,7 +442,7 @@ foreach mx = SchedMxList in {
   foreach sew = SchedSEWSet<mx>.val in {
     defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
     defvar IsWorstCase = SiFiveP400IsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
-    let Latency = 64, ResourceCycles = [LMulLat, !mul(63, LMulLat)] in {
+    let Latency = 64, ReleaseAtCycles = [LMulLat, !mul(63, LMulLat)] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVIDivV", [SiFiveP400VEXQ0, SiFiveP400VDiv], mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVIDivX", [SiFiveP400VEXQ0, SiFiveP400VDiv], mx, sew, IsWorstCase>;
     }
@@ -453,7 +453,7 @@ foreach mx = SchedMxList in {
 foreach mx = SchedMxListW in {
   defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxListW>.c;
-  let Latency = 2, ResourceCycles = [LMulLat] in {
+  let Latency = 2, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVNShiftV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVNShiftX", [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVNShiftI", [SiFiveP400VEXQ0], mx, IsWorstCase>;
@@ -467,7 +467,7 @@ foreach mx = SchedMxListW in {
 foreach mx = SchedMxList in {
   defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxList>.c;
-  let Latency = 6, ResourceCycles = [LMulLat] in {
+  let Latency = 6, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVSALUV",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVSALUX",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVSALUI",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
@@ -485,7 +485,7 @@ foreach mx = SchedMxList in {
 foreach mx = SchedMxList in {
   defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxList>.c;
-  let Latency = 6, ResourceCycles = [LMulLat] in {
+  let Latency = 6, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVFALUV",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFALUF",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFMulV",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
@@ -493,16 +493,16 @@ foreach mx = SchedMxList in {
     defm "" : LMULWriteResMX<"WriteVFMulAddV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFMulAddF", [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
-  let Latency = 3, ResourceCycles = [LMulLat] in {
+  let Latency = 3, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVFCvtIToFV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFCvtFToIV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
-  let Latency = 2, ResourceCycles = [LMulLat] in {
+  let Latency = 2, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVFCmpV",  [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFCmpF",  [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFRecpV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
-  let Latency = 1, ResourceCycles = [LMulLat] in {
+  let Latency = 1, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVFSgnjV",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFSgnjF",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFMinMaxV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
@@ -517,14 +517,14 @@ foreach mx = SchedMxList in {
 foreach mx = SchedMxListW in {
   defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxListW>.c;
-  let Latency = 3, ResourceCycles = [LMulLat] in {
+  let Latency = 3, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVFWCvtIToFV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
 }
 foreach mx = SchedMxListFW in {
   defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxListFW>.c;
-  let Latency = 6, ResourceCycles = [LMulLat] in {
+  let Latency = 6, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVFWCvtFToIV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFWCvtFToFV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
@@ -532,7 +532,7 @@ foreach mx = SchedMxListFW in {
 foreach mx = SchedMxListFW in {
   defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxListFW>.c;
-  let Latency = 6, ResourceCycles = [LMulLat] in {
+  let Latency = 6, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVFWALUV",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFWMulV",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFWMulAddV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
@@ -545,14 +545,14 @@ foreach mx = SchedMxListFW in {
 foreach mx = SchedMxListW in {
   defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxListW>.c;
-  let Latency = 3, ResourceCycles = [LMulLat] in {
+  let Latency = 3, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVFNCvtFToIV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
 }
 foreach mx = SchedMxListFW in {
   defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxListFW>.c;
-  let Latency = 3, ResourceCycles = [LMulLat] in {
+  let Latency = 3, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVFNCvtIToFV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFNCvtFToFV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
@@ -563,7 +563,7 @@ foreach mx = SchedMxListF in {
   foreach sew = SchedSEWSet<mx, 1>.val in {
     defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
     defvar IsWorstCase = SiFiveP400IsWorstCaseMXSEW<mx, sew, SchedMxListF, 1>.c;
-    let Latency = 76, ResourceCycles = [LMulLat, !mul(76, LMulLat)] in {
+    let Latency = 76, ReleaseAtCycles = [LMulLat, !mul(76, LMulLat)] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVFDivV",  [SiFiveP400VEXQ0, SiFiveP400VFloatDiv], mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVFDivF",  [SiFiveP400VEXQ0, SiFiveP400VFloatDiv], mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVFSqrtV", [SiFiveP400VEXQ0, SiFiveP400VFloatDiv], mx, sew, IsWorstCase>;
@@ -576,7 +576,7 @@ foreach mx = SchedMxList in {
   foreach sew = SchedSEWSet<mx>.val in {
     defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
     defvar IsWorstCase = SiFiveP400IsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
-    let Latency = !add(2, !mul(2, LMulLat)), ResourceCycles = [LMulLat] in {
+    let Latency = !add(2, !mul(2, LMulLat)), ReleaseAtCycles = [LMulLat] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVIRedV_From",  [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVIRedMinMaxV_From", [SiFiveP400VEXQ0],
                                      mx, sew, IsWorstCase>;
@@ -588,7 +588,7 @@ foreach mx = SchedMxListWRed in {
   foreach sew = SchedSEWSet<mx, 0, 1>.val in {
     defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
     defvar IsWorstCase = SiFiveP400IsWorstCaseMXSEW<mx, sew, SchedMxListWRed>.c;
-    let Latency = !add(2, !mul(2, LMulLat)), ResourceCycles = [LMulLat] in {
+    let Latency = !add(2, !mul(2, LMulLat)), ReleaseAtCycles = [LMulLat] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVIWRedV_From", [SiFiveP400VEXQ0],
                                       mx, sew, IsWorstCase>;
     }
@@ -599,7 +599,7 @@ foreach mx = SchedMxListF in {
   foreach sew = SchedSEWSet<mx, 1>.val in {
     defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
     defvar IsWorstCase = SiFiveP400IsWorstCaseMXSEW<mx, sew, SchedMxListF, 1>.c;
-    let Latency = !add(6, !mul(6, LMulLat)), ResourceCycles = [LMulLat] in {
+    let Latency = !add(6, !mul(6, LMulLat)), ReleaseAtCycles = [LMulLat] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVFRedV_From", [SiFiveP400VEXQ0],
                                      mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVFRedMinMaxV_From",
@@ -614,7 +614,7 @@ foreach mx = SchedMxListFWRed in {
   foreach sew = SchedSEWSet<mx, 1, 1>.val in {
     defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
     defvar IsWorstCase = SiFiveP400IsWorstCaseMXSEW<mx, sew, SchedMxListFWRed, 1>.c;
-    let Latency = !add(6, !mul(6, LMulLat)), ResourceCycles = [LMulLat] in {
+    let Latency = !add(6, !mul(6, LMulLat)), ReleaseAtCycles = [LMulLat] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVFWRedV_From",  [SiFiveP400VEXQ0],
                                      mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVFWRedOV_From", [SiFiveP400VEXQ0],
@@ -626,14 +626,14 @@ foreach mx = SchedMxListFWRed in {
 // 15. Vector Mask Instructions
 foreach mx = SchedMxList in {
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxList>.c;
-  let Latency = 1, ResourceCycles = [1] in {
+  let Latency = 1, ReleaseAtCycles = [1] in {
     defm "" : LMULWriteResMX<"WriteVMALUV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVMPopV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVMFFSV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVMSFSV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
   defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
-  let Latency = 1, ResourceCycles = [LMulLat] in {
+  let Latency = 1, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVMIotV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVMIdxV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
@@ -644,17 +644,17 @@ foreach mx = SchedMxList in {
 foreach mx = SchedMxList in {
   defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxList>.c;
-  let Latency = 2, ResourceCycles = [LMulLat] in {
+  let Latency = 2, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVISlideI",  [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
-  let Latency = 1, ResourceCycles = [LMulLat] in {
+  let Latency = 1, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVISlide1X", [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFSlide1F", [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
 }
 foreach mx = ["MF8", "MF4", "MF2", "M1"] in {
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxList>.c;
-  let Latency = 2, ResourceCycles = [1] in {
+  let Latency = 2, ReleaseAtCycles = [1] in {
     defm "" : LMULWriteResMX<"WriteVISlideX", [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
 }
@@ -663,16 +663,16 @@ foreach mx = ["MF8", "MF4", "MF2", "M1"] in {
 foreach mx = ["M2", "M4", "M8"] in {
   defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxList>.c;
-  let Latency = !add(4, LMulLat), ResourceCycles = [LMulLat] in {
+  let Latency = !add(4, LMulLat), ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVISlideX", [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
 }
 
-let Latency = 2, ResourceCycles = [1] in {
+let Latency = 2, ReleaseAtCycles = [1] in {
   def : WriteRes<WriteVIMovVX, [SiFiveP400VEXQ0]>;
   def : WriteRes<WriteVIMovXV, [SiFiveP400VEXQ0]>;
 }
-let Latency = 6, ResourceCycles = [1] in {
+let Latency = 6, ReleaseAtCycles = [1] in {
   def : WriteRes<WriteVFMovVF, [SiFiveP400VEXQ0]>;
   def : WriteRes<WriteVFMovFV, [SiFiveP400VEXQ0]>;
 }
@@ -680,7 +680,7 @@ let Latency = 6, ResourceCycles = [1] in {
 // Simple Gather and Compress
 foreach mx = ["MF8", "MF4", "MF2", "M1"] in {
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxList>.c;
-  let Latency = 3, ResourceCycles = [1] in {
+  let Latency = 3, ReleaseAtCycles = [1] in {
     defm "" : LMULWriteResMX<"WriteVRGatherVX", [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
 }
@@ -688,7 +688,7 @@ foreach mx = ["MF8", "MF4", "MF2", "M1"] in {
 foreach mx = ["MF8", "MF4", "MF2", "M1"] in {
   foreach sew = SchedSEWSet<mx>.val in {
     defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxList>.c;
-    let Latency = 3, ResourceCycles = [1] in {
+    let Latency = 3, ReleaseAtCycles = [1] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVRGatherVV", [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVCompressV", [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
     }
@@ -699,7 +699,7 @@ foreach mx = ["MF8", "MF4", "MF2", "M1"] in {
 foreach mx = ["M2", "M4", "M8"] in {
   defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxList>.c;
-  let Latency = 6, ResourceCycles = [LMulLat] in {
+  let Latency = 6, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVRGatherVX", [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
 }
@@ -708,7 +708,7 @@ foreach mx = ["M2", "M4", "M8"] in {
   foreach sew = SchedSEWSet<mx>.val in {
     defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
     defvar IsWorstCase = SiFiveP400IsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
-    let Latency = 6, ResourceCycles = [LMulLat] in {
+    let Latency = 6, ReleaseAtCycles = [LMulLat] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVRGatherVV", [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVCompressV", [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
     }
@@ -719,7 +719,7 @@ foreach mx = ["M2", "M4", "M8"] in {
 foreach mx = SchedMxList in {
   defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxList>.c;
-  let Latency = 3, ResourceCycles = [LMulLat] in {
+  let Latency = 3, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVRGatherVI", [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
 }

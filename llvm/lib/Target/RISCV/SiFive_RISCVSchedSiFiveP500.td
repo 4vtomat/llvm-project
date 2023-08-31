@@ -79,11 +79,11 @@ def : WriteRes<WriteCPOP32, [SiFiveP500MulI2F]>;
 // Integer division
 def : WriteRes<WriteIDiv, [SiFiveP500MulI2F, SiFiveP500Div]> {
   let Latency = 35;
-  let ResourceCycles = [1, 34];
+  let ReleaseAtCycles = [1, 34];
 }
 def : WriteRes<WriteIDiv32, [SiFiveP500MulI2F, SiFiveP500Div]> {
   let Latency = 20;
-  let ResourceCycles = [1, 19];
+  let ReleaseAtCycles = [1, 19];
 }
 
 let Latency = 1 in {
@@ -168,31 +168,31 @@ def : WriteRes<WriteFMinMax64, [SiFiveP500FloatArith]>;
 // Half precision.
 def : WriteRes<WriteFDiv16, [SiFiveP500FEXQ1, SiFiveP500FloatDiv]> {
   let Latency = 19;
-  let ResourceCycles = [1, 18];
+  let ReleaseAtCycles = [1, 18];
 }
 def : WriteRes<WriteFSqrt16, [SiFiveP500FEXQ1, SiFiveP500FloatDiv]> {
   let Latency = 18;
-  let ResourceCycles = [1, 17];
+  let ReleaseAtCycles = [1, 17];
 }
 
 // Single precision.
 def : WriteRes<WriteFDiv32, [SiFiveP500FEXQ1, SiFiveP500FloatDiv]> {
   let Latency = 19;
-  let ResourceCycles = [1, 18];
+  let ReleaseAtCycles = [1, 18];
 }
 def : WriteRes<WriteFSqrt32, [SiFiveP500FEXQ1, SiFiveP500FloatDiv]> {
   let Latency = 18;
-  let ResourceCycles = [1, 17];
+  let ReleaseAtCycles = [1, 17];
 }
 
 // Double precision
 def : WriteRes<WriteFDiv64, [SiFiveP500FEXQ1, SiFiveP500FloatDiv]> {
   let Latency = 33;
-  let ResourceCycles = [1, 32];
+  let ReleaseAtCycles = [1, 32];
 }
 def : WriteRes<WriteFSqrt64, [SiFiveP500FEXQ1, SiFiveP500FloatDiv]> {
   let Latency = 33;
-  let ResourceCycles = [1, 32];
+  let ReleaseAtCycles = [1, 32];
 }
 
 // Conversions

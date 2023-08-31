@@ -42,7 +42,7 @@ def : WriteRes<WriteJalr, [SiFive6Pipe]>;
 }
 
 //Short forward branch
-let Latency = 4, ResourceCycles = [2] in
+let Latency = 4, ReleaseAtCycles = [2] in
 def : WriteRes<WriteSFB, [SiFive6Pipe]>;
 
 // Integer arithmetic and logic
@@ -64,11 +64,11 @@ def : WriteRes<WriteIMul32, [SiFive6Pipe]>;
 // Integer division
 def : WriteRes<WriteIDiv, [SiFive6Pipe, SiFive6IDiv]> {
   let Latency = 16;
-  let ResourceCycles = [1, 15];
+  let ReleaseAtCycles = [1, 15];
 }
 def : WriteRes<WriteIDiv32,  [SiFive6Pipe, SiFive6IDiv]> {
   let Latency = 16;
-  let ResourceCycles = [1, 15];
+  let ReleaseAtCycles = [1, 15];
 }
 
 // Bitmanip
@@ -153,9 +153,9 @@ def : WriteRes<WriteFMinMax16, [SiFive6Pipe]>;
 }
 
 def : WriteRes<WriteFDiv16, [SiFive6Pipe, SiFive6FDiv]> { let Latency = 14;
-                                                         let ResourceCycles = [1, 13]; }
+                                                         let ReleaseAtCycles = [1, 13]; }
 def : WriteRes<WriteFSqrt16, [SiFive6Pipe, SiFive6FDiv]> { let Latency = 14;
-                                                          let ResourceCycles = [1, 13]; }
+                                                          let ReleaseAtCycles = [1, 13]; }
 
 // Single precision.
 let Latency = 5 in {
@@ -169,9 +169,9 @@ def : WriteRes<WriteFMinMax32, [SiFive6Pipe]>;
 }
 
 def : WriteRes<WriteFDiv32, [SiFive6Pipe, SiFive6FDiv]> { let Latency = 27;
-                                                         let ResourceCycles = [1, 26]; }
+                                                         let ReleaseAtCycles = [1, 26]; }
 def : WriteRes<WriteFSqrt32, [SiFive6Pipe, SiFive6FDiv]> { let Latency = 27;
-                                                          let ResourceCycles = [1, 26]; }
+                                                          let ReleaseAtCycles = [1, 26]; }
 
 // Double precision
 let Latency = 7 in {
@@ -185,9 +185,9 @@ def : WriteRes<WriteFMinMax64, [SiFive6Pipe]>;
 }
 
 def : WriteRes<WriteFDiv64, [SiFive6Pipe, SiFive6FDiv]> { let Latency = 56;
-                                                         let ResourceCycles = [1, 55]; }
+                                                         let ReleaseAtCycles = [1, 55]; }
 def : WriteRes<WriteFSqrt64, [SiFive6Pipe, SiFive6FDiv]> { let Latency = 56;
-                                                          let ResourceCycles = [1, 55]; }
+                                                          let ReleaseAtCycles = [1, 55]; }
 
 // Conversions
 let Latency = 3 in {
