@@ -13,6 +13,7 @@ define void @test() {
 ; SCALABLE-NEXT:    [[TMP1:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP0]], i64 2, i64 0)
 ; SCALABLE-NEXT:    [[TMP2:%.*]] = trunc i64 [[TMP1]] to i32
 ; SCALABLE-NEXT:    [[TMP3:%.*]] = add i64 [[INDEX]], 0
+; SCALABLE-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = call <vscale x 2 x i1> @llvm.get.active.lane.mask.nxv2i1.i64(i64 [[TMP3]], i64 7)
 ; SCALABLE-NEXT:    [[TMP4:%.*]] = getelementptr inbounds [125 x i32], ptr undef, i64 0, i64 [[TMP3]]
 ; SCALABLE-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[TMP4]], i32 0
 ; SCALABLE-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> zeroinitializer, ptr align 4 [[TMP5]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP2]])

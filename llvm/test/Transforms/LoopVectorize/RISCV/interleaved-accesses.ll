@@ -64,6 +64,7 @@ define void @load_store_factor2_i32(ptr %p) {
 ; CHECK-VLA-NEXT:    [[TMP1:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP0]], i64 2, i64 0)
 ; CHECK-VLA-NEXT:    [[TMP2:%.*]] = trunc i64 [[TMP1]] to i32
 ; CHECK-VLA-NEXT:    [[TMP3:%.*]] = add i64 [[INDEX]], 0
+; CHECK-VLA-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = call <vscale x 2 x i1> @llvm.get.active.lane.mask.nxv2i1.i64(i64 [[TMP3]], i64 1024)
 ; CHECK-VLA-NEXT:    [[TMP4:%.*]] = shl i64 [[TMP3]], 1
 ; CHECK-VLA-NEXT:    [[TMP5:%.*]] = getelementptr i32, ptr [[P:%.*]], i64 [[TMP4]]
 ; CHECK-VLA-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr [[TMP5]], i32 0
@@ -118,6 +119,7 @@ define void @load_store_factor2_i32(ptr %p) {
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP1:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP0]], i64 2, i64 2)
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP2:%.*]] = trunc i64 [[TMP1]] to i32
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP3:%.*]] = add i64 [[INDEX]], 0
+; CHECK-VLA-MAX-LMUL-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = call <vscale x 8 x i1> @llvm.get.active.lane.mask.nxv8i1.i64(i64 [[TMP3]], i64 1024)
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP4:%.*]] = shl i64 [[TMP3]], 1
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP5:%.*]] = getelementptr i32, ptr [[P:%.*]], i64 [[TMP4]]
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr [[TMP5]], i32 0
@@ -344,6 +346,7 @@ define void @load_store_factor3_i32(ptr %p) {
 ; CHECK-VLA-NEXT:    [[TMP1:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP0]], i64 2, i64 0)
 ; CHECK-VLA-NEXT:    [[TMP2:%.*]] = trunc i64 [[TMP1]] to i32
 ; CHECK-VLA-NEXT:    [[TMP3:%.*]] = add i64 [[INDEX]], 0
+; CHECK-VLA-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = call <vscale x 2 x i1> @llvm.get.active.lane.mask.nxv2i1.i64(i64 [[TMP3]], i64 1024)
 ; CHECK-VLA-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 3
 ; CHECK-VLA-NEXT:    [[TMP5:%.*]] = getelementptr i32, ptr [[P:%.*]], i64 [[TMP4]]
 ; CHECK-VLA-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr [[TMP5]], i32 0
@@ -406,6 +409,7 @@ define void @load_store_factor3_i32(ptr %p) {
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP1:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP0]], i64 2, i64 1)
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP2:%.*]] = trunc i64 [[TMP1]] to i32
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP3:%.*]] = add i64 [[INDEX]], 0
+; CHECK-VLA-MAX-LMUL-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[TMP3]], i64 1024)
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 3
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP5:%.*]] = getelementptr i32, ptr [[P:%.*]], i64 [[TMP4]]
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr [[TMP5]], i32 0
@@ -877,6 +881,7 @@ define void @combine_load_factor2_i32(ptr noalias %p, ptr noalias %q) {
 ; CHECK-VLA-NEXT:    [[TMP1:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP0]], i64 2, i64 0)
 ; CHECK-VLA-NEXT:    [[TMP2:%.*]] = trunc i64 [[TMP1]] to i32
 ; CHECK-VLA-NEXT:    [[TMP3:%.*]] = add i64 [[INDEX]], 0
+; CHECK-VLA-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = call <vscale x 2 x i1> @llvm.get.active.lane.mask.nxv2i1.i64(i64 [[TMP3]], i64 1024)
 ; CHECK-VLA-NEXT:    [[TMP4:%.*]] = shl i64 [[TMP3]], 1
 ; CHECK-VLA-NEXT:    [[TMP5:%.*]] = getelementptr i32, ptr [[P:%.*]], i64 [[TMP4]]
 ; CHECK-VLA-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr [[TMP5]], i32 0
@@ -926,6 +931,7 @@ define void @combine_load_factor2_i32(ptr noalias %p, ptr noalias %q) {
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP1:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP0]], i64 2, i64 2)
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP2:%.*]] = trunc i64 [[TMP1]] to i32
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP3:%.*]] = add i64 [[INDEX]], 0
+; CHECK-VLA-MAX-LMUL-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = call <vscale x 8 x i1> @llvm.get.active.lane.mask.nxv8i1.i64(i64 [[TMP3]], i64 1024)
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP4:%.*]] = shl i64 [[TMP3]], 1
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP5:%.*]] = getelementptr i32, ptr [[P:%.*]], i64 [[TMP4]]
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr [[TMP5]], i32 0

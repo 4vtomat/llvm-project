@@ -3,66 +3,66 @@
 ; RUN: opt -passes=loop-vectorize -mtriple riscv64 -vector-primary-lmul-max=3 -mcpu=sifive-p470 -debug-only=vplan-cost-model,vplan -disable-output %s 2>&1 | FileCheck %s --check-prefix=CHECK-P470
 ; RUN: opt -passes=loop-vectorize -mtriple riscv64 -vector-primary-lmul-max=3 -mcpu=sifive-p670 -debug-only=vplan-cost-model,vplan -disable-output %s 2>&1 | FileCheck %s --check-prefix=CHECK-P670
 
-; CHECK-X280: VPlanCM: cost 6 for RVL (mf2, float) for VPInstruction: EMIT vp<%10> = fmul ir<%sub>, ir<%sub>
-; CHECK-X280: VPlanCM: cost 47 for RVL (mf2, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%10>)
+; CHECK-X280: VPlanCM: cost 6 for RVL (mf2, float) for VPInstruction: EMIT vp<%12> = fmul ir<%sub>, ir<%sub>
+; CHECK-X280: VPlanCM: cost 47 for RVL (mf2, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%12>, vp<%8>)
 ; CHECK-X280: LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
-; CHECK-X280: VPlanCM: cost 12 for RVL (m1, float) for VPInstruction: EMIT vp<%10> = fmul ir<%sub>, ir<%sub>
-; CHECK-X280: VPlanCM: cost 48 for RVL (m1, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%10>)
+; CHECK-X280: VPlanCM: cost 12 for RVL (m1, float) for VPInstruction: EMIT vp<%12> = fmul ir<%sub>, ir<%sub>
+; CHECK-X280: VPlanCM: cost 48 for RVL (m1, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%12>, vp<%8>)
 ; CHECK-X280: LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
-; CHECK-X280: VPlanCM: cost 24 for RVL (m2, float) for VPInstruction: EMIT vp<%10> = fmul ir<%sub>, ir<%sub>
-; CHECK-X280: VPlanCM: cost 50 for RVL (m2, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%10>)
+; CHECK-X280: VPlanCM: cost 24 for RVL (m2, float) for VPInstruction: EMIT vp<%12> = fmul ir<%sub>, ir<%sub>
+; CHECK-X280: VPlanCM: cost 50 for RVL (m2, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%12>, vp<%8>)
 ; CHECK-X280: LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
-; CHECK-X280: VPlanCM: cost 48 for RVL (m4, float) for VPInstruction: EMIT vp<%10> = fmul ir<%sub>, ir<%sub>
-; CHECK-X280: VPlanCM: cost 54 for RVL (m4, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%10>)
+; CHECK-X280: VPlanCM: cost 48 for RVL (m4, float) for VPInstruction: EMIT vp<%12> = fmul ir<%sub>, ir<%sub>
+; CHECK-X280: VPlanCM: cost 54 for RVL (m4, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%12>, vp<%8>)
 ; CHECK-X280: LV: Found an estimated overhead of 0 for VF vscale x 8 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
-; CHECK-X280: VPlanCM: cost 96 for RVL (m8, float) for VPInstruction: EMIT vp<%10> = fmul ir<%sub>, ir<%sub>
-; CHECK-X280: VPlanCM: cost 62 for RVL (m8, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%10>)
+; CHECK-X280: VPlanCM: cost 96 for RVL (m8, float) for VPInstruction: EMIT vp<%12> = fmul ir<%sub>, ir<%sub>
+; CHECK-X280: VPlanCM: cost 62 for RVL (m8, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%12>, vp<%8>)
 ; CHECK-X280: LV: Found an estimated overhead of 0 for VF vscale x 16 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
 
-; CHECK-P470: VPlanCM: cost 4 for RVL (mf2, float) for VPInstruction: EMIT vp<%10> = fmul ir<%sub>, ir<%sub>
-; CHECK-P470: VPlanCM: cost 16 for RVL (mf2, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%10>)
+; CHECK-P470: VPlanCM: cost 4 for RVL (mf2, float) for VPInstruction: EMIT vp<%12> = fmul ir<%sub>, ir<%sub>
+; CHECK-P470: VPlanCM: cost 16 for RVL (mf2, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%12>, vp<%8>)
 ; CHECK-P470: LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
-; CHECK-P470: VPlanCM: cost 4 for RVL (m1, float) for VPInstruction: EMIT vp<%10> = fmul ir<%sub>, ir<%sub>
-; CHECK-P470: VPlanCM: cost 18 for RVL (m1, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%10>)
+; CHECK-P470: VPlanCM: cost 4 for RVL (m1, float) for VPInstruction: EMIT vp<%12> = fmul ir<%sub>, ir<%sub>
+; CHECK-P470: VPlanCM: cost 18 for RVL (m1, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%12>, vp<%8>)
 ; CHECK-P470: LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
-; CHECK-P470: VPlanCM: cost 8 for RVL (m2, float) for VPInstruction: EMIT vp<%10> = fmul ir<%sub>, ir<%sub>
-; CHECK-P470: VPlanCM: cost 22 for RVL (m2, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%10>)
+; CHECK-P470: VPlanCM: cost 8 for RVL (m2, float) for VPInstruction: EMIT vp<%12> = fmul ir<%sub>, ir<%sub>
+; CHECK-P470: VPlanCM: cost 22 for RVL (m2, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%12>, vp<%8>)
 ; CHECK-P470: LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
-; CHECK-P470: VPlanCM: cost 16 for RVL (m4, float) for VPInstruction: EMIT vp<%10> = fmul ir<%sub>, ir<%sub>
-; CHECK-P470: VPlanCM: cost 30 for RVL (m4, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%10>)
+; CHECK-P470: VPlanCM: cost 16 for RVL (m4, float) for VPInstruction: EMIT vp<%12> = fmul ir<%sub>, ir<%sub>
+; CHECK-P470: VPlanCM: cost 30 for RVL (m4, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%12>, vp<%8>)
 ; CHECK-P470: LV: Found an estimated overhead of 0 for VF vscale x 8 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
-; CHECK-P470: VPlanCM: cost 32 for RVL (m8, float) for VPInstruction: EMIT vp<%10> = fmul ir<%sub>, ir<%sub>
-; CHECK-P470: VPlanCM: cost 46 for RVL (m8, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%10>)
+; CHECK-P470: VPlanCM: cost 32 for RVL (m8, float) for VPInstruction: EMIT vp<%12> = fmul ir<%sub>, ir<%sub>
+; CHECK-P470: VPlanCM: cost 46 for RVL (m8, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%12>, vp<%8>)
 ; CHECK-P470: LV: Found an estimated overhead of 0 for VF vscale x 16 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
 
-; CHECK-P670: VPlanCM: cost 6 for RVL (mf2, float) for VPInstruction: EMIT vp<%10> = fmul ir<%sub>, ir<%sub>
-; CHECK-P670: VPlanCM: cost 16 for RVL (mf2, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%10>)
+; CHECK-P670: VPlanCM: cost 6 for RVL (mf2, float) for VPInstruction: EMIT vp<%12> = fmul ir<%sub>, ir<%sub>
+; CHECK-P670: VPlanCM: cost 16 for RVL (mf2, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%12>, vp<%8>)
 ; CHECK-P670: LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
-; CHECK-P670: VPlanCM: cost 6 for RVL (m1, float) for VPInstruction: EMIT vp<%10> = fmul ir<%sub>, ir<%sub>
-; CHECK-P670: VPlanCM: cost 18 for RVL (m1, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%10>)
+; CHECK-P670: VPlanCM: cost 6 for RVL (m1, float) for VPInstruction: EMIT vp<%12> = fmul ir<%sub>, ir<%sub>
+; CHECK-P670: VPlanCM: cost 18 for RVL (m1, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%12>, vp<%8>)
 ; CHECK-P670: LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
-; CHECK-P670: VPlanCM: cost 12 for RVL (m2, float) for VPInstruction: EMIT vp<%10> = fmul ir<%sub>, ir<%sub>
-; CHECK-P670: VPlanCM: cost 22 for RVL (m2, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%10>)
+; CHECK-P670: VPlanCM: cost 12 for RVL (m2, float) for VPInstruction: EMIT vp<%12> = fmul ir<%sub>, ir<%sub>
+; CHECK-P670: VPlanCM: cost 22 for RVL (m2, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%12>, vp<%8>)
 ; CHECK-P670: LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
-; CHECK-P670: VPlanCM: cost 24 for RVL (m4, float) for VPInstruction: EMIT vp<%10> = fmul ir<%sub>, ir<%sub>
-; CHECK-P670: VPlanCM: cost 30 for RVL (m4, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%10>)
+; CHECK-P670: VPlanCM: cost 24 for RVL (m4, float) for VPInstruction: EMIT vp<%12> = fmul ir<%sub>, ir<%sub>
+; CHECK-P670: VPlanCM: cost 30 for RVL (m4, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%12>, vp<%8>)
 ; CHECK-P670: LV: Found an estimated overhead of 0 for VF vscale x 8 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
-; CHECK-P670: VPlanCM: cost 48 for RVL (m8, float) for VPInstruction: EMIT vp<%10> = fmul ir<%sub>, ir<%sub>
-; CHECK-P670: VPlanCM: cost 46 for RVL (m8, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%10>)
+; CHECK-P670: VPlanCM: cost 48 for RVL (m8, float) for VPInstruction: EMIT vp<%12> = fmul ir<%sub>, ir<%sub>
+; CHECK-P670: VPlanCM: cost 46 for RVL (m8, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%12>, vp<%8>)
 ; CHECK-P670: LV: Found an estimated overhead of 0 for VF vscale x 16 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
 define float @fmuladd(i32 %profile_size, ptr %all_shifted_test_db, i64 %current_shift, ptr %template_copy) {

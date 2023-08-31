@@ -87,6 +87,7 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; PROFITABLE-NEXT:    [[TMP32:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP31]], i64 3, i64 0)
 ; PROFITABLE-NEXT:    [[TMP33:%.*]] = trunc i64 [[TMP32]] to i32
 ; PROFITABLE-NEXT:    [[TMP34:%.*]] = add i64 [[INDEX]], 0
+; PROFITABLE-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = call <vscale x 1 x i1> @llvm.get.active.lane.mask.nxv1i1.i64(i64 [[TMP34]], i64 [[N]])
 ; PROFITABLE-NEXT:    [[TMP35:%.*]] = getelementptr [[STRUCT_SU3_VECTOR:%.*]], ptr [[A]], i64 [[TMP34]]
 ; PROFITABLE-NEXT:    [[TMP36:%.*]] = getelementptr [[STRUCT_SU3_VECTOR]], ptr [[B]], i64 [[TMP34]]
 ; PROFITABLE-NEXT:    [[TMP37:%.*]] = getelementptr double, ptr [[TMP35]], i32 0

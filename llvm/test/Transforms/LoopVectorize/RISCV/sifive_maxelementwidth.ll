@@ -21,6 +21,7 @@ define void @foo(i64* %x, i64 %n, i64 %y) {
 ; V-NEXT:    [[TMP1:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP0]], i64 3, i64 0)
 ; V-NEXT:    [[TMP2:%.*]] = trunc i64 [[TMP1]] to i32
 ; V-NEXT:    [[TMP3:%.*]] = add i64 [[INDEX]], 0
+; V-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = call <vscale x 1 x i1> @llvm.get.active.lane.mask.nxv1i1.i64(i64 [[TMP3]], i64 [[N]])
 ; V-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i64, ptr [[X:%.*]], i64 [[TMP3]]
 ; V-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i64, ptr [[TMP4]], i32 0
 ; V-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 1 x i64> @llvm.vp.load.nxv1i64.p0(ptr align 8 [[TMP5]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP2]])

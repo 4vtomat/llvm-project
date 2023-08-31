@@ -15,11 +15,64 @@ define i32 @test(i32 %start, ptr %tmpbuf, ptr %buffers, ptr %weights, ptr %endpo
 ; CHECK-NEXT:    [[ERRORS:%.*]] = getelementptr ptr, ptr [[TMPBUF]], i32 4
 ; CHECK-NEXT:    [[BQL17:%.*]] = getelementptr ptr, ptr [[TMPBUF]], i32 5
 ; CHECK-NEXT:    [[BQL_MOD19:%.*]] = getelementptr ptr, ptr [[TMPBUF]], i32 6
+; CHECK-NEXT:    [[TMP0:%.*]] = add i32 [[START]], -1
+; CHECK-NEXT:    [[TMP1:%.*]] = zext i32 [[TMP0]] to i64
+; CHECK-NEXT:    [[TMP2:%.*]] = add nuw nsw i64 [[TMP1]], 1
+; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_MEMCHECK:%.*]]
+; CHECK:       vector.memcheck:
+; CHECK-NEXT:    [[TMP3:%.*]] = add i32 [[START]], -1
+; CHECK-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP3]] to i64
+; CHECK-NEXT:    [[TMP5:%.*]] = shl nuw nsw i64 [[TMP4]], 2
+; CHECK-NEXT:    [[TMP6:%.*]] = add nuw nsw i64 [[TMP5]], 36
+; CHECK-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[TMPBUF]], i64 [[TMP6]]
+; CHECK-NEXT:    [[TMP7:%.*]] = add nuw nsw i64 [[TMP4]], 41
+; CHECK-NEXT:    [[SCEVGEP1:%.*]] = getelementptr i8, ptr [[TMPBUF]], i64 [[TMP7]]
+; CHECK-NEXT:    [[TMP8:%.*]] = add nuw nsw i64 [[TMP4]], 49
+; CHECK-NEXT:    [[SCEVGEP2:%.*]] = getelementptr i8, ptr [[TMPBUF]], i64 [[TMP8]]
+; CHECK-NEXT:    [[BOUND0:%.*]] = icmp ult ptr [[ERRORS]], [[SCEVGEP1]]
+; CHECK-NEXT:    [[BOUND1:%.*]] = icmp ult ptr [[BQL17]], [[SCEVGEP]]
+; CHECK-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
+; CHECK-NEXT:    [[BOUND03:%.*]] = icmp ult ptr [[ERRORS]], [[SCEVGEP2]]
+; CHECK-NEXT:    [[BOUND14:%.*]] = icmp ult ptr [[BQL_MOD19]], [[SCEVGEP]]
+; CHECK-NEXT:    [[FOUND_CONFLICT5:%.*]] = and i1 [[BOUND03]], [[BOUND14]]
+; CHECK-NEXT:    [[CONFLICT_RDX:%.*]] = or i1 [[FOUND_CONFLICT]], [[FOUND_CONFLICT5]]
+; CHECK-NEXT:    [[BOUND06:%.*]] = icmp ult ptr [[BQL17]], [[SCEVGEP2]]
+; CHECK-NEXT:    [[BOUND17:%.*]] = icmp ult ptr [[BQL_MOD19]], [[SCEVGEP1]]
+; CHECK-NEXT:    [[FOUND_CONFLICT8:%.*]] = and i1 [[BOUND06]], [[BOUND17]]
+; CHECK-NEXT:    [[CONFLICT_RDX9:%.*]] = or i1 [[CONFLICT_RDX]], [[FOUND_CONFLICT8]]
+; CHECK-NEXT:    br i1 [[CONFLICT_RDX9]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
+; CHECK:       vector.ph:
+; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
+; CHECK:       vector.body:
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP9:%.*]] = sub i64 [[TMP2]], [[INDEX]]
+; CHECK-NEXT:    [[TMP10:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP9]], i64 2)
+; CHECK-NEXT:    [[TMP11:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP10]], i64 2, i64 0)
+; CHECK-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
+; CHECK-NEXT:    [[TMP13:%.*]] = add i64 [[INDEX]], 0
+; CHECK-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = call <vscale x 2 x i1> @llvm.get.active.lane.mask.nxv2i1.i64(i64 [[TMP13]], i64 [[TMP2]])
+; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr float, ptr [[ERRORS]], i64 [[TMP13]]
+; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr float, ptr [[TMP14]], i32 0
+; CHECK-NEXT:    call void @llvm.vp.store.nxv2f32.p0(<vscale x 2 x float> zeroinitializer, ptr align 4 [[TMP15]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP12]]), !alias.scope !0, !noalias !3
+; CHECK-NEXT:    [[TMP16:%.*]] = getelementptr i8, ptr [[BQL17]], i64 [[TMP13]]
+; CHECK-NEXT:    [[TMP17:%.*]] = getelementptr i8, ptr [[TMP16]], i32 0
+; CHECK-NEXT:    call void @llvm.vp.store.nxv2i8.p0(<vscale x 2 x i8> zeroinitializer, ptr align 1 [[TMP17]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP12]]), !alias.scope !6, !noalias !7
+; CHECK-NEXT:    [[TMP18:%.*]] = getelementptr i8, ptr [[BQL_MOD19]], i64 [[TMP13]]
+; CHECK-NEXT:    [[TMP19:%.*]] = getelementptr i8, ptr [[TMP18]], i32 0
+; CHECK-NEXT:    call void @llvm.vp.store.nxv2i8.p0(<vscale x 2 x i8> zeroinitializer, ptr align 1 [[TMP19]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP12]]), !alias.scope !7
+; CHECK-NEXT:    [[TMP20:%.*]] = zext i32 [[TMP12]] to i64
+; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP20]]
+; CHECK-NEXT:    [[TMP21:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP2]]
+; CHECK-NEXT:    br i1 [[TMP21]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
+; CHECK:       middle.block:
+; CHECK-NEXT:    br i1 true, label [[LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK:       scalar.ph:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[TMP2]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ], [ 0, [[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       loopexit:
 ; CHECK-NEXT:    ret i32 0
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ARRAYIDX28:%.*]] = getelementptr float, ptr [[ERRORS]], i64 [[IV]]
 ; CHECK-NEXT:    store float 0.000000e+00, ptr [[ARRAYIDX28]], align 4
 ; CHECK-NEXT:    [[ARRAYIDX30:%.*]] = getelementptr i8, ptr [[BQL17]], i64 [[IV]]
@@ -29,7 +82,7 @@ define i32 @test(i32 %start, ptr %tmpbuf, ptr %buffers, ptr %weights, ptr %endpo
 ; CHECK-NEXT:    [[IV_NEXT]] = add i64 [[IV]], 1
 ; CHECK-NEXT:    [[WIDEIV:%.*]] = trunc i64 [[IV_NEXT]] to i32
 ; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp eq i32 [[WIDEIV]], [[START]]
-; CHECK-NEXT:    br i1 [[EXITCOND]], label [[LOOPEXIT:%.*]], label [[FOR_BODY]]
+; CHECK-NEXT:    br i1 [[EXITCOND]], label [[LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP11:![0-9]+]]
 ;
 entry:
   %errors = getelementptr ptr, ptr %tmpbuf, i32 4
