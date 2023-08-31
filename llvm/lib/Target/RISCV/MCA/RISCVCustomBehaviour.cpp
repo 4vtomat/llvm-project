@@ -64,9 +64,15 @@ uint8_t RISCVLMULInstrument::getLMUL() const {
       .Case("M2", 0b001)
       .Case("M4", 0b010)
       .Case("M8", 0b011)
+#if SIFIVE_CUSTOMIZATION
+      .Case("MF2", 0b111)
+      .Case("MF4", 0b110)
+      .Case("MF8", 0b101);
+#else
       .Case("MF2", 0b101)
       .Case("MF4", 0b110)
       .Case("MF8", 0b111);
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 const llvm::StringRef RISCVSEWInstrument::DESC_NAME = "RISCV-SEW";
