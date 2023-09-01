@@ -1261,8 +1261,10 @@ Value *llvm::createTargetReduction(IRBuilderBase &B,
   RecurKind RK = Desc.getRecurrenceKind();
   if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK))
     return createAnyOfTargetReduction(B, TTI, Src, Desc, OrigPhi);
+#if SIFIVE_CUSTOMIZATION
   if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
     return createFindLastIVTargetReduction(B, TTI, Src, Desc);
+#endif // SIFIVE_CUSTOMIZATION
 
   return createSimpleTargetReduction(B, TTI, Src, RK);
 }
