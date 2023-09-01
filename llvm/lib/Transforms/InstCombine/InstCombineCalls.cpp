@@ -1426,8 +1426,8 @@ static bool canEvaluateVPReversed(Value *V, Value *Mask, Value *VL,
   if (Depth == 0)
     return false;
 
-  // Mask and VL must match.
-  if (VPI->getMaskParam() != Mask || VPI->getVectorLengthParam() != VL)
+  // Mask must be a splat and VL must match.
+  if (!isSplatValue(Mask) || VPI->getVectorLengthParam() != VL)
     return false;
 
   switch (VPI->getIntrinsicID()) {
@@ -1439,8 +1439,11 @@ static bool canEvaluateVPReversed(Value *V, Value *Mask, Value *VL,
     if (!isSplatValue(Ptr))
       return false;
 
-    auto *MaskC = dyn_cast<Constant>(Mask);
-    if (!MaskC || !MaskC->isAllOnesValue())
+    return true;
+  }
+  case Intrinsic::experimental_vp_strided_load: {
+    ConstantInt *StrideC = dyn_cast<ConstantInt>(VPI->getArgOperand(1));
+    if (!StrideC || !StrideC->isZero())
       return false;
 
     return true;
@@ -1475,6 +1478,7 @@ static Value *evaluateVPReversed(Value *V, InstCombinerImpl &IC) {
   case Intrinsic::experimental_vp_reverse:
     return VPI->getArgOperand(0);
   case Intrinsic::vp_gather:
+  case Intrinsic::experimental_vp_strided_load:
     return V;
   case Intrinsic::vp_add:
   case Intrinsic::vp_sub:
