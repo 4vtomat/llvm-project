@@ -5499,7 +5499,7 @@ bool LoopVectorizationCostModel::interleavedAccessCanBeWidened(
       LLVM_DEBUG(
           dbgs()
           << "LV: Interleave and Deinterleave intrinsics won't be legal with "
-          << VectorType::get(ScalarTy, VF)
+          << *VectorType::get(ScalarTy, VF)
           << " for interleave factor = " << InterleaveFactor << '\n');
       return false;
     }
