@@ -114,6 +114,7 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   initializeRISCVGatherScatterLoweringPass(*PR);
   initializeRISCVCodeGenPreparePass(*PR);
 #if SIFIVE_CUSTOMIZATION
+  initializeRISCVWidenReductionPHIPass(*PR);
   initializeRISCVLateCodeGenPreparePass(*PR);
   initializeRISCVTypePromotionPass(*PR);
   initializeRISCVPostRAExpandPseudoPass(*PR);
@@ -456,6 +457,7 @@ void RISCVPassConfig::addIRPasses() {
   addPass(createAtomicExpandPass());
 
   if (getOptLevel() != CodeGenOpt::None) {
+    addPass(createRISCVWidenReductionPHIPass()); // SIFIVE
     addPass(createRISCVGatherScatterLoweringPass());
     addPass(createInterleavedAccessPass());
     addPass(createRISCVCodeGenPreparePass());
