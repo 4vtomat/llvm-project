@@ -538,9 +538,11 @@ enum RVVRequire : uint16_t {
   RVV_REQ_xsfvfhbfmin = 1 << 6,
   RVV_REQ_xsfvfwmaccqqq = 1 << 7,
   RVV_REQ_HasBfloat16 = 1 << 8,
+  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_HasBfloat16)
+#else
+  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Xsfvcp)
 #endif // SIFIVE_CUSTOMIZATION
 
-  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Xsfvcp)
 };
 
 // Raw RVV intrinsic info, used to expand later.
