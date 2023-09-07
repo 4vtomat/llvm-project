@@ -844,10 +844,12 @@ foreach mx = SchedMxList in {
   }
 }
 
-let Latency = 4, ReleaseAtCycles = [1] in {
+let Latency = 11, ReleaseAtCycles = [11] in {
   def : WriteRes<WriteVIMovVX, [SiFive7NVA]>;
-  def : WriteRes<WriteVIMovXV, [SiFive7NVA]>;
   def : WriteRes<WriteVFMovVF, [SiFive7NVA]>;
+}
+let Latency = 4, ReleaseAtCycles = [1] in {
+  def : WriteRes<WriteVIMovXV, [SiFive7NVA]>;
   def : WriteRes<WriteVFMovFV, [SiFive7NVA]>;
 }
 

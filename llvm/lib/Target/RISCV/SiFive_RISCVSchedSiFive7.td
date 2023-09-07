@@ -843,10 +843,12 @@ foreach mx = SchedMxList in {
 }
 
 // 16. Vector Permutation Instructions
-let Latency = 4, ReleaseAtCycles = [1] in {
+let Latency = 11, ReleaseAtCycles = [11] in {
   def : WriteRes<WriteVIMovVX, [SiFive7VA]>;
-  def : WriteRes<WriteVIMovXV, [SiFive7VA]>;
   def : WriteRes<WriteVFMovVF, [SiFive7VA]>;
+}
+let Latency = 4, ReleaseAtCycles = [1] in {
+  def : WriteRes<WriteVIMovXV, [SiFive7VA]>;
   def : WriteRes<WriteVFMovFV, [SiFive7VA]>;
 }
 foreach mx = SchedMxList in {
