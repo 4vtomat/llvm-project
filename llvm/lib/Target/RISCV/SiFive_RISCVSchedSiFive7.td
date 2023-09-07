@@ -601,19 +601,13 @@ foreach mx = SchedMxList in {
     defm "" : LMULWriteResMX<"WriteVIMovV",     [SiFive7VA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMovX",     [SiFive7VA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMovI",     [SiFive7VA], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVExtV",      [SiFive7VA], mx, IsWorstCase>;
   }
   // Mask results can't chain.
   let Latency = !add(Cycles, 3), ReleaseAtCycles = [Cycles] in {
     defm "" : LMULWriteResMX<"WriteVICmpV",     [SiFive7VA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVICmpX",     [SiFive7VA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVICmpI",     [SiFive7VA], mx, IsWorstCase>;
-  }
-}
-foreach mx = SchedMxList in {
-  defvar Cycles = SiFive7GetCyclesDefault<mx>.c;
-  defvar IsWorstCase = SiFive7IsWorstCaseMX<mx, SchedMxList>.c;
-  let Latency = 4, ReleaseAtCycles = [Cycles] in {
-    defm "" : LMULWriteResMX<"WriteVExtV",      [SiFive7VA], mx, IsWorstCase>;
   }
 }
 foreach mx = SchedMxList in {
