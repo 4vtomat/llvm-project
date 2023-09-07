@@ -658,15 +658,16 @@ define <vscale x 1 x i64> @vpsdiv_pow2_nxv1i64(<vscale x 1 x i64> %va, <vscale x
 ; CHECK-NEXT:    vmv1r.v v9, v0
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v10, 4
+; CHECK-NEXT:    vmseq.vi v11, v10, -1, v0.t
+; CHECK-NEXT:    vmseq.vi v10, v10, 1, v0.t
+; CHECK-NEXT:    vmor.mm v10, v10, v11
 ; CHECK-NEXT:    li a0, 63
 ; CHECK-NEXT:    vsra.vx v11, v8, a0, v0.t
 ; CHECK-NEXT:    li a0, 62
 ; CHECK-NEXT:    vsrl.vx v11, v11, a0, v0.t
 ; CHECK-NEXT:    vadd.vv v11, v8, v11, v0.t
 ; CHECK-NEXT:    vsra.vi v11, v11, 2, v0.t
-; CHECK-NEXT:    vmseq.vi v12, v10, -1, v0.t
-; CHECK-NEXT:    vmseq.vi v10, v10, 1, v0.t
-; CHECK-NEXT:    vmor.mm v0, v10, v12
+; CHECK-NEXT:    vmv.v.v v0, v10
 ; CHECK-NEXT:    vmerge.vvm v8, v11, v8, v0
 ; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vrsub.vi v10, v8, 0, v0.t

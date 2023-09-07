@@ -8,6 +8,7 @@ define void @mv_store_f16(half* nocapture readonly %in, i32 signext %lane, half*
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e16, m2, ta, ma
 ; CHECK-NEXT:    vrgather.vx v10, v8, a1
+; CHECK-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; CHECK-NEXT:    vse16.v v10, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -27,6 +28,7 @@ define void @mv_store_f32(float* nocapture readonly %in, i32 signext %lane, floa
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m2, ta, ma
 ; CHECK-NEXT:    vrgather.vx v10, v8, a1
+; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v10, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -46,6 +48,7 @@ define void @mv_store_f64(double* nocapture readonly %in, i32 signext %lane, dou
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m2, ta, ma
 ; CHECK-NEXT:    vrgather.vx v10, v8, a1
+; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v10, (a2)
 ; CHECK-NEXT:    ret
 entry:

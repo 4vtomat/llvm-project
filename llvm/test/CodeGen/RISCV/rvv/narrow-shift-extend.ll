@@ -34,8 +34,8 @@ define <vscale x 4 x i32> @test_vloxei2(<vscale x 4 x i32>* %ptr, <vscale x 4 x 
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m2, ta, ma
 ; CHECK-NEXT:    vzext.vf4 v10, v8
-; CHECK-NEXT:    vsll.vi v8, v10, 14
-; CHECK-NEXT:    vloxei32.v v8, (a0), v8
+; CHECK-NEXT:    vsll.vi v10, v10, 14
+; CHECK-NEXT:    vloxei32.v v8, (a0), v10
 ; CHECK-NEXT:    ret
 entry:
   %offset.ext = zext <vscale x 4 x i8> %offset to <vscale x 4 x i64>

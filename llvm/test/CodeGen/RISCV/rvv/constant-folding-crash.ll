@@ -24,7 +24,7 @@ define void @constant_folding_crash(ptr %v54, <4 x ptr> %lanes.a, <4 x ptr> %lan
 ; RV32-NEXT:  # %bb.1: # %entry
 ; RV32-NEXT:    vmv1r.v v8, v9
 ; RV32-NEXT:  .LBB0_2: # %entry
-; RV32-NEXT:    vsetivli zero, 0, e32, m1, ta, ma
+; RV32-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; RV32-NEXT:    vmv.x.s a0, v8
 ; RV32-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
 ; RV32-NEXT:    vmv.v.i v8, 0
@@ -44,7 +44,7 @@ define void @constant_folding_crash(ptr %v54, <4 x ptr> %lanes.a, <4 x ptr> %lan
 ; RV64-NEXT:  # %bb.1: # %entry
 ; RV64-NEXT:    vmv2r.v v8, v10
 ; RV64-NEXT:  .LBB0_2: # %entry
-; RV64-NEXT:    vsetivli zero, 0, e64, m2, ta, ma
+; RV64-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; RV64-NEXT:    vmv.x.s a0, v8
 ; RV64-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
 ; RV64-NEXT:    vmv.v.i v8, 0

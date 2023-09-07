@@ -152,12 +152,12 @@ define <4 x double> @vrgather_shuffle_xv_v4f64(<4 x double> %x) {
 ;
 ; RV64-LABEL: vrgather_shuffle_xv_v4f64:
 ; RV64:       # %bb.0:
+; RV64-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
+; RV64-NEXT:    vid.v v10
+; RV64-NEXT:    vrsub.vi v12, v10, 4
 ; RV64-NEXT:    lui a0, %hi(.LCPI7_0)
 ; RV64-NEXT:    addi a0, a0, %lo(.LCPI7_0)
-; RV64-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; RV64-NEXT:    vlse64.v v10, (a0), zero
-; RV64-NEXT:    vid.v v12
-; RV64-NEXT:    vrsub.vi v12, v12, 4
 ; RV64-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
 ; RV64-NEXT:    vmv.v.i v0, 12
 ; RV64-NEXT:    vsetivli zero, 4, e64, m2, ta, mu

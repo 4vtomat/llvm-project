@@ -678,17 +678,17 @@ define <1 x i64> @sshl_sat_v1i64(<1 x i64> %a, <1 x i64> %b) {
 ; CHECK-LABEL: sshl_sat_v1i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; CHECK-NEXT:    vsll.vv v10, v8, v9
-; CHECK-NEXT:    vsra.vv v9, v10, v9
-; CHECK-NEXT:    vmsne.vv v9, v8, v9
+; CHECK-NEXT:    vmsle.vi v0, v8, -1
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    srli a1, a0, 1
-; CHECK-NEXT:    vmv.v.x v11, a1
-; CHECK-NEXT:    vmsle.vi v0, v8, -1
+; CHECK-NEXT:    vsll.vv v10, v8, v9
+; CHECK-NEXT:    vsra.vv v9, v10, v9
+; CHECK-NEXT:    vmsne.vv v8, v8, v9
+; CHECK-NEXT:    vmv.v.x v9, a1
 ; CHECK-NEXT:    slli a0, a0, 63
-; CHECK-NEXT:    vmerge.vxm v8, v11, a0, v0
-; CHECK-NEXT:    vmv.v.v v0, v9
-; CHECK-NEXT:    vmerge.vvm v8, v10, v8, v0
+; CHECK-NEXT:    vmerge.vxm v9, v9, a0, v0
+; CHECK-NEXT:    vmv.v.v v0, v8
+; CHECK-NEXT:    vmerge.vvm v8, v10, v9, v0
 ; CHECK-NEXT:    ret
   %res = call <1 x i64> @llvm.sshl.sat.v1i64(<1 x i64> %a, <1 x i64> %b)
   ret <1 x i64> %res
@@ -700,33 +700,33 @@ define <2 x i64> @sshl_sat_v2i64(<2 x i64> %a, <2 x i64> %b) {
 ; CHECK-ZVE64X-LABEL: sshl_sat_v2i64:
 ; CHECK-ZVE64X:       # %bb.0:
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 2, e64, m2, ta, ma
-; CHECK-ZVE64X-NEXT:    vsll.vv v12, v8, v10
-; CHECK-ZVE64X-NEXT:    vsra.vv v10, v12, v10
-; CHECK-ZVE64X-NEXT:    vmsne.vv v10, v8, v10
+; CHECK-ZVE64X-NEXT:    vmsle.vi v0, v8, -1
 ; CHECK-ZVE64X-NEXT:    li a0, -1
 ; CHECK-ZVE64X-NEXT:    srli a1, a0, 1
-; CHECK-ZVE64X-NEXT:    vmv.v.x v14, a1
-; CHECK-ZVE64X-NEXT:    vmsle.vi v0, v8, -1
+; CHECK-ZVE64X-NEXT:    vsll.vv v12, v8, v10
+; CHECK-ZVE64X-NEXT:    vsra.vv v10, v12, v10
+; CHECK-ZVE64X-NEXT:    vmsne.vv v8, v8, v10
+; CHECK-ZVE64X-NEXT:    vmv.v.x v10, a1
 ; CHECK-ZVE64X-NEXT:    slli a0, a0, 63
-; CHECK-ZVE64X-NEXT:    vmerge.vxm v8, v14, a0, v0
-; CHECK-ZVE64X-NEXT:    vmv1r.v v0, v10
-; CHECK-ZVE64X-NEXT:    vmerge.vvm v8, v12, v8, v0
+; CHECK-ZVE64X-NEXT:    vmerge.vxm v10, v10, a0, v0
+; CHECK-ZVE64X-NEXT:    vmv1r.v v0, v8
+; CHECK-ZVE64X-NEXT:    vmerge.vvm v8, v12, v10, v0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v2i64:
 ; CHECK-V:       # %bb.0:
 ; CHECK-V-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; CHECK-V-NEXT:    vsll.vv v10, v8, v9
-; CHECK-V-NEXT:    vsra.vv v9, v10, v9
-; CHECK-V-NEXT:    vmsne.vv v9, v8, v9
+; CHECK-V-NEXT:    vmsle.vi v0, v8, -1
 ; CHECK-V-NEXT:    li a0, -1
 ; CHECK-V-NEXT:    srli a1, a0, 1
-; CHECK-V-NEXT:    vmv.v.x v11, a1
-; CHECK-V-NEXT:    vmsle.vi v0, v8, -1
+; CHECK-V-NEXT:    vsll.vv v10, v8, v9
+; CHECK-V-NEXT:    vsra.vv v9, v10, v9
+; CHECK-V-NEXT:    vmsne.vv v8, v8, v9
+; CHECK-V-NEXT:    vmv.v.x v9, a1
 ; CHECK-V-NEXT:    slli a0, a0, 63
-; CHECK-V-NEXT:    vmerge.vxm v8, v11, a0, v0
-; CHECK-V-NEXT:    vmv.v.v v0, v9
-; CHECK-V-NEXT:    vmerge.vvm v8, v10, v8, v0
+; CHECK-V-NEXT:    vmerge.vxm v9, v9, a0, v0
+; CHECK-V-NEXT:    vmv.v.v v0, v8
+; CHECK-V-NEXT:    vmerge.vvm v8, v10, v9, v0
 ; CHECK-V-NEXT:    ret
   %res = call <2 x i64> @llvm.sshl.sat.v2i64(<2 x i64> %a, <2 x i64> %b)
   ret <2 x i64> %res
@@ -738,33 +738,33 @@ define <4 x i64> @sshl_sat_v4i64(<4 x i64> %a, <4 x i64> %b) {
 ; CHECK-ZVE64X-LABEL: sshl_sat_v4i64:
 ; CHECK-ZVE64X:       # %bb.0:
 ; CHECK-ZVE64X-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
-; CHECK-ZVE64X-NEXT:    vsll.vv v16, v8, v12
-; CHECK-ZVE64X-NEXT:    vsra.vv v12, v16, v12
-; CHECK-ZVE64X-NEXT:    vmsne.vv v12, v8, v12
+; CHECK-ZVE64X-NEXT:    vmsle.vi v0, v8, -1
 ; CHECK-ZVE64X-NEXT:    li a0, -1
 ; CHECK-ZVE64X-NEXT:    srli a1, a0, 1
-; CHECK-ZVE64X-NEXT:    vmv.v.x v20, a1
-; CHECK-ZVE64X-NEXT:    vmsle.vi v0, v8, -1
+; CHECK-ZVE64X-NEXT:    vsll.vv v16, v8, v12
+; CHECK-ZVE64X-NEXT:    vsra.vv v12, v16, v12
+; CHECK-ZVE64X-NEXT:    vmsne.vv v8, v8, v12
+; CHECK-ZVE64X-NEXT:    vmv.v.x v12, a1
 ; CHECK-ZVE64X-NEXT:    slli a0, a0, 63
-; CHECK-ZVE64X-NEXT:    vmerge.vxm v8, v20, a0, v0
-; CHECK-ZVE64X-NEXT:    vmv1r.v v0, v12
-; CHECK-ZVE64X-NEXT:    vmerge.vvm v8, v16, v8, v0
+; CHECK-ZVE64X-NEXT:    vmerge.vxm v12, v12, a0, v0
+; CHECK-ZVE64X-NEXT:    vmv1r.v v0, v8
+; CHECK-ZVE64X-NEXT:    vmerge.vvm v8, v16, v12, v0
 ; CHECK-ZVE64X-NEXT:    ret
 ;
 ; CHECK-V-LABEL: sshl_sat_v4i64:
 ; CHECK-V:       # %bb.0:
 ; CHECK-V-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-; CHECK-V-NEXT:    vsll.vv v12, v8, v10
-; CHECK-V-NEXT:    vsra.vv v10, v12, v10
-; CHECK-V-NEXT:    vmsne.vv v10, v8, v10
+; CHECK-V-NEXT:    vmsle.vi v0, v8, -1
 ; CHECK-V-NEXT:    li a0, -1
 ; CHECK-V-NEXT:    srli a1, a0, 1
-; CHECK-V-NEXT:    vmv.v.x v14, a1
-; CHECK-V-NEXT:    vmsle.vi v0, v8, -1
+; CHECK-V-NEXT:    vsll.vv v12, v8, v10
+; CHECK-V-NEXT:    vsra.vv v10, v12, v10
+; CHECK-V-NEXT:    vmsne.vv v8, v8, v10
+; CHECK-V-NEXT:    vmv.v.x v10, a1
 ; CHECK-V-NEXT:    slli a0, a0, 63
-; CHECK-V-NEXT:    vmerge.vxm v8, v14, a0, v0
-; CHECK-V-NEXT:    vmv1r.v v0, v10
-; CHECK-V-NEXT:    vmerge.vvm v8, v12, v8, v0
+; CHECK-V-NEXT:    vmerge.vxm v10, v10, a0, v0
+; CHECK-V-NEXT:    vmv1r.v v0, v8
+; CHECK-V-NEXT:    vmerge.vvm v8, v12, v10, v0
 ; CHECK-V-NEXT:    ret
   %res = call <4 x i64> @llvm.sshl.sat.v4i64(<4 x i64> %a, <4 x i64> %b)
   ret <4 x i64> %res
