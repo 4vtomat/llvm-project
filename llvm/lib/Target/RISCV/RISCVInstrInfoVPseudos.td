@@ -893,8 +893,8 @@ class VPseudoILoadNoMask<VReg RetClass,
                          bits<3> LMUL,
                          bit Ordered,
 #ifdef SIFIVE_CUSTOMIZATION
-                         int TargetConstraintType = 1,
-                         bit EarlyClobber> :
+                         bit EarlyClobber,
+                         int TargetConstraintType = 1> :
 #else
                          bit EarlyClobber> :
 #endif // SIFIVE_CUSTOMIZATION
@@ -921,8 +921,8 @@ class VPseudoILoadMask<VReg RetClass,
                        bits<3> LMUL,
                        bit Ordered,
 #ifdef SIFIVE_CUSTOMIZATION
-                       int TargetConstraintType = 1,
-                       bit EarlyClobber> :
+                       bit EarlyClobber,
+                       int TargetConstraintType = 1> :
 #else
                        bit EarlyClobber> :
 #endif // SIFIVE_CUSTOMIZATION
