@@ -1111,25 +1111,19 @@ class VPseudoUnaryMask<VReg RetClass,
   let UsesMaskPolicy = 1;
 }
 
-<<<<<<< HEAD
 class VPseudoUnaryMaskRoundingMode<VReg RetClass,
                                    VReg OpClass,
+#ifdef SIFIVE_CUSTOMIZATION
+                                   string Constraint = "",
+                                   int TargetConstraintType = 1> :
+#else
                                    string Constraint = ""> :
+#endif
       Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
              (ins GetVRegNoV0<RetClass>.R:$merge, OpClass:$rs2,
                   VMaskOp:$vm, ixlenimm:$rm,
                   AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
       RISCVVPseudo {
-=======
-#ifdef SIFIVE_CUSTOMIZATION
-class VPseudoUnaryMaskRoundingMode<VReg RetClass, VReg OpClass, string Constraint = "", int TargetConstraintType = 1> :
-#endif // SIFIVE_CUSTOMIZATION
-        Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
-               (ins GetVRegNoV0<RetClass>.R:$merge, OpClass:$rs2,
-                    VMaskOp:$vm, ixlenimm:$rm,
-                    AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
-        RISCVVPseudo {
->>>>>>> origin/sifive-dev
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
