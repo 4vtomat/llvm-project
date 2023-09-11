@@ -118,12 +118,10 @@ define <4 x half> @vsitofp_v4f16_v4i16_unmasked(<4 x i16> %va, i32 zeroext %evl)
 declare <4 x half> @llvm.vp.sitofp.v4f16.v4i32(<4 x i32>, <4 x i1>, i32)
 
 define <4 x half> @vsitofp_v4f16_v4i32(<4 x i32> %va, <4 x i1> %m, i32 zeroext %evl) {
-<<<<<<< HEAD
 ; ZVFH-LABEL: vsitofp_v4f16_v4i32:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
-; ZVFH-NEXT:    vfncvt.f.x.w v9, v8, v0.t
-; ZVFH-NEXT:    vmv1r.v v8, v9
+; ZVFH-NEXT:    vfncvt.f.x.w v8, v8, v0.t
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: vsitofp_v4f16_v4i32:
@@ -133,13 +131,6 @@ define <4 x half> @vsitofp_v4f16_v4i32(<4 x i32> %va, <4 x i1> %m, i32 zeroext %
 ; ZVFHMIN-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
-=======
-; CHECK-LABEL: vsitofp_v4f16_v4i32:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
-; CHECK-NEXT:    vfncvt.f.x.w v8, v8, v0.t
-; CHECK-NEXT:    ret
->>>>>>> origin/sifive-dev
   %v = call <4 x half> @llvm.vp.sitofp.v4f16.v4i32(<4 x i32> %va, <4 x i1> %m, i32 %evl)
   ret <4 x half> %v
 }
@@ -165,31 +156,21 @@ define <4 x half> @vsitofp_v4f16_v4i32_unmasked(<4 x i32> %va, i32 zeroext %evl)
 declare <4 x half> @llvm.vp.sitofp.v4f16.v4i64(<4 x i64>, <4 x i1>, i32)
 
 define <4 x half> @vsitofp_v4f16_v4i64(<4 x i64> %va, <4 x i1> %m, i32 zeroext %evl) {
-<<<<<<< HEAD
 ; ZVFH-LABEL: vsitofp_v4f16_v4i64:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; ZVFH-NEXT:    vfncvt.f.x.w v10, v8, v0.t
+; ZVFH-NEXT:    vfncvt.f.x.w v8, v8, v0.t
 ; ZVFH-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; ZVFH-NEXT:    vfncvt.f.f.w v8, v10, v0.t
+; ZVFH-NEXT:    vfncvt.f.f.w v8, v8, v0.t
 ; ZVFH-NEXT:    ret
 ;
 ; ZVFHMIN-LABEL: vsitofp_v4f16_v4i64:
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.x.w v10, v8, v0.t
+; ZVFHMIN-NEXT:    vfncvt.f.x.w v8, v8, v0.t
 ; ZVFHMIN-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v10
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
-=======
-; CHECK-LABEL: vsitofp_v4f16_v4i64:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; CHECK-NEXT:    vfncvt.f.x.w v8, v8, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfncvt.f.f.w v8, v8, v0.t
-; CHECK-NEXT:    ret
->>>>>>> origin/sifive-dev
   %v = call <4 x half> @llvm.vp.sitofp.v4f16.v4i64(<4 x i64> %va, <4 x i1> %m, i32 %evl)
   ret <4 x half> %v
 }
