@@ -575,15 +575,16 @@ RISCVTTIImpl::getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
                                     unsigned RegWidthFactor,
                                     bool IsScalable) const {
   // check for SEW <= ELEN in the base ISA
-  if (WidestType > getMaxElementWidth() || SmallestType > getMaxElementWidth())
+  // VLEN=32 support is incomplete.
+  if (WidestType > getMaxElementWidth() ||
+      SmallestType > getMaxElementWidth() ||
+      (ST->getRealMinVLen() < RISCV::RVVBitsPerBlock))
     return {ElementCount::get(0, false), ElementCount::get(0, false)};
 
   // Smallest SEW supported = 8. For 1 bit wide Type, clip to 8 bit to get a
   // valid range of VFs.
   SmallestType = std::max<unsigned>(8, SmallestType);
   WidestType = std::max<unsigned>(8, WidestType);
-  unsigned LMUL = llvm::bit_floor(
-      std::max<unsigned>(std::min<unsigned>(RVVRegisterWidthLMUL, 8), 1));
   unsigned LMULMin = 1 << std::min<unsigned>(VectorPrimaryLMULMinExp, 3);
 
   unsigned LMULMax;
@@ -593,24 +594,35 @@ RISCVTTIImpl::getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
     LMULMax = 1 << std::min<unsigned>(VectorPrimaryLMULMaxExp, 3);
 
   assert(LMULMax >= LMULMin && "LMULMax must be greater than or equal to LMUL");
-  unsigned MinRVVVectorSize = getRegisterBitWidth(K).getKnownMinValue() / LMUL;
+  unsigned MinRVVVectorSize = ST->getRealMinVLen();
   unsigned MaxRVVVectorSize = MinRVVVectorSize * LMULMax;
-  unsigned WidestRegister;
 
   if (IsScalable) {
-    WidestRegister = MaxSafeRegisterWidth;
-    for (auto L = LMULMin; L <= LMULMax; L <<= 1) {
-      unsigned NextWidestRegister = MinRVVVectorSize * L;
-      if (NextWidestRegister > MaxSafeRegisterWidth)
-        break;
-      WidestRegister = NextWidestRegister;
+    // Since RVL would be clamped by the safe dependence distance,
+    // we don't return `vscale x 0` if the smallest vector register size is
+    // still larger than MaxSafeRegisterWidth. Let the cost model make the
+    // vectorization decision.
+
+    int EC = RISCV::RVVBitsPerBlock / ST->getELEN();
+    int MaxEC = EC;
+
+    // Let RegisterSize start from the smallest fractional LMUL
+    unsigned RegisterSize = MinRVVVectorSize * WidestType / ST->getELEN();
+    for (; RegisterSize <= MaxSafeRegisterWidth &&
+           RegisterSize <= MaxRVVVectorSize;
+         RegisterSize <<= 1, EC <<= 1) {
+      MaxEC = EC;
     }
-  } else {
-    WidestRegister = std::max<unsigned>(MinRVVVectorSize * LMULMin,
-                                        MinRVVVectorSize * RegWidthFactor);
-    WidestRegister = std::min<unsigned>(WidestRegister, MaxSafeRegisterWidth);
-    WidestRegister = std::min<unsigned>(WidestRegister, MaxRVVVectorSize);
+    ElementCount UpperBoundVF = ElementCount::get(MaxEC, IsScalable);
+    ElementCount LowerBoundVF = ElementCount::get(1, IsScalable);
+    return {LowerBoundVF, UpperBoundVF};
   }
+
+  unsigned WidestRegister;
+  WidestRegister = std::max<unsigned>(MinRVVVectorSize * LMULMin,
+                                      MinRVVVectorSize * RegWidthFactor);
+  WidestRegister = std::min<unsigned>(WidestRegister, MaxSafeRegisterWidth);
+  WidestRegister = std::min<unsigned>(WidestRegister, MaxRVVVectorSize);
 
   unsigned SmallestRegister = std::min(MinRVVVectorSize, MaxSafeRegisterWidth);
 

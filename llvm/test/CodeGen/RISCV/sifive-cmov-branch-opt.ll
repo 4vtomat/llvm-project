@@ -2,11 +2,15 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+c -verify-machineinstrs < %s \
 ; RUN:   | FileCheck -check-prefix=NOCMOV %s
 ; RUN: llc -mtriple=riscv64 -mattr=+cmov-branch-opt,+c -verify-machineinstrs < %s \
-; RUN:   | FileCheck -check-prefix=CMOV %s
+; RUN:   | FileCheck -check-prefixes=CMOV,CMOV-NOZICOND %s
+; RUN: llc -mtriple=riscv64 -mattr=+cmov-branch-opt,+c,+experimental-zicond -verify-machineinstrs < %s \
+; RUN:   | FileCheck -check-prefixes=CMOV,CMOV-ZICOND %s
 ; RUN: llc -mtriple=riscv64 -mattr=+short-forward-branch-opt -verify-machineinstrs < %s \
-; RUN:   | FileCheck -check-prefix=SHORT_FORWARD %s
+; RUN:   | FileCheck -check-prefixes=SHORT_FORWARD,SFB-NOZICOND %s
 ; RUN: llc -mtriple=riscv64 -mattr=+short-forward-branch-opt,+c -verify-machineinstrs < %s \
-; RUN:   | FileCheck -check-prefix=SHORT_FORWARD %s
+; RUN:   | FileCheck -check-prefixes=SHORT_FORWARD,SFB-NOZICOND %s
+; RUN: llc -mtriple=riscv64 -mattr=+short-forward-branch-opt,+experimental-zicond -verify-machineinstrs < %s \
+; RUN:   | FileCheck -check-prefixes=SHORT_FORWARD,SFB-ZICOND %s
 
 ; The conditional move optimization in sifive-8-series requires that only a
 ; single c.mv instruction appears in the branch shadow.
@@ -133,24 +137,36 @@ define signext i32 @test4(i32 signext %x, i32 signext %y, i32 signext %z) {
 ; NOCMOV-NEXT:    andi a0, a0, 3
 ; NOCMOV-NEXT:    ret
 ;
-; CMOV-LABEL: test4:
-; CMOV:       # %bb.0:
-; CMOV-NEXT:    li a1, 0
-; CMOV-NEXT:    li a0, 3
-; CMOV-NEXT:    beqz a2, .LBB3_2
-; CMOV-NEXT:  # %bb.1:
-; CMOV-NEXT:    mv a0, a1
-; CMOV-NEXT:  .LBB3_2:
-; CMOV-NEXT:    ret
+; CMOV-NOZICOND-LABEL: test4:
+; CMOV-NOZICOND:       # %bb.0:
+; CMOV-NOZICOND-NEXT:    li a1, 0
+; CMOV-NOZICOND-NEXT:    li a0, 3
+; CMOV-NOZICOND-NEXT:    beqz a2, .LBB3_2
+; CMOV-NOZICOND-NEXT:  # %bb.1:
+; CMOV-NOZICOND-NEXT:    mv a0, a1
+; CMOV-NOZICOND-NEXT:  .LBB3_2:
+; CMOV-NOZICOND-NEXT:    ret
 ;
-; SHORT_FORWARD-LABEL: test4:
-; SHORT_FORWARD:       # %bb.0:
-; SHORT_FORWARD-NEXT:    li a0, 3
-; SHORT_FORWARD-NEXT:    beqz a2, .LBB3_2
-; SHORT_FORWARD-NEXT:  # %bb.1:
-; SHORT_FORWARD-NEXT:    li a0, 0
-; SHORT_FORWARD-NEXT:  .LBB3_2:
-; SHORT_FORWARD-NEXT:    ret
+; CMOV-ZICOND-LABEL: test4:
+; CMOV-ZICOND:       # %bb.0:
+; CMOV-ZICOND-NEXT:    li a0, 3
+; CMOV-ZICOND-NEXT:    czero.nez a0, a0, a2
+; CMOV-ZICOND-NEXT:    ret
+;
+; SFB-NOZICOND-LABEL: test4:
+; SFB-NOZICOND:       # %bb.0:
+; SFB-NOZICOND-NEXT:    li a0, 3
+; SFB-NOZICOND-NEXT:    beqz a2, .LBB3_2
+; SFB-NOZICOND-NEXT:  # %bb.1:
+; SFB-NOZICOND-NEXT:    li a0, 0
+; SFB-NOZICOND-NEXT:  .LBB3_2:
+; SFB-NOZICOND-NEXT:    ret
+;
+; SFB-ZICOND-LABEL: test4:
+; SFB-ZICOND:       # %bb.0:
+; SFB-ZICOND-NEXT:    li a0, 3
+; SFB-ZICOND-NEXT:    czero.nez a0, a0, a2
+; SFB-ZICOND-NEXT:    ret
   %c = icmp eq i32 %z, 0
   %a = select i1 %c, i32 3, i32 0
   ret i32 %a
@@ -300,6 +316,15 @@ define i32 @select_xor_2(i32 %A, i32 %B, i8 %cond) {
 ; CMOV-NEXT:    mv a0, a1
 ; CMOV-NEXT:  .LBB8_2: # %entry
 ; CMOV-NEXT:    ret
+;
+; SFB-ZICOND-LABEL: select_xor_2:
+; SFB-ZICOND:       # %bb.0: # %entry
+; SFB-ZICOND-NEXT:    andi a2, a2, 1
+; SFB-ZICOND-NEXT:    beqz a2, .LBB8_2
+; SFB-ZICOND-NEXT:  # %bb.1: # %entry
+; SFB-ZICOND-NEXT:    xor a0, a1, a0
+; SFB-ZICOND-NEXT:  .LBB8_2: # %entry
+; SFB-ZICOND-NEXT:    ret
 entry:
  %and = and i8 %cond, 1
  %cmp10 = icmp eq i8 %and, 0
@@ -328,6 +353,15 @@ define i32 @select_xor_2b(i32 %A, i32 %B, i8 %cond) {
 ; CMOV-NEXT:    mv a0, a1
 ; CMOV-NEXT:  .LBB9_2: # %entry
 ; CMOV-NEXT:    ret
+;
+; SFB-ZICOND-LABEL: select_xor_2b:
+; SFB-ZICOND:       # %bb.0: # %entry
+; SFB-ZICOND-NEXT:    andi a2, a2, 1
+; SFB-ZICOND-NEXT:    beqz a2, .LBB9_2
+; SFB-ZICOND-NEXT:  # %bb.1: # %entry
+; SFB-ZICOND-NEXT:    xor a0, a1, a0
+; SFB-ZICOND-NEXT:  .LBB9_2: # %entry
+; SFB-ZICOND-NEXT:    ret
 entry:
  %and = and i8 %cond, 1
  %cmp10 = icmp ne i8 %and, 1
@@ -354,6 +388,15 @@ define i32 @select_or(i32 %A, i32 %B, i8 %cond) {
 ; CMOV-NEXT:    mv a0, a1
 ; CMOV-NEXT:  .LBB10_2: # %entry
 ; CMOV-NEXT:    ret
+;
+; SFB-ZICOND-LABEL: select_or:
+; SFB-ZICOND:       # %bb.0: # %entry
+; SFB-ZICOND-NEXT:    andi a2, a2, 1
+; SFB-ZICOND-NEXT:    beqz a2, .LBB10_2
+; SFB-ZICOND-NEXT:  # %bb.1: # %entry
+; SFB-ZICOND-NEXT:    or a0, a1, a0
+; SFB-ZICOND-NEXT:  .LBB10_2: # %entry
+; SFB-ZICOND-NEXT:    ret
 entry:
  %and = and i8 %cond, 1
  %cmp10 = icmp eq i8 %and, 0
@@ -382,6 +425,15 @@ define i32 @select_or_b(i32 %A, i32 %B, i8 %cond) {
 ; CMOV-NEXT:    mv a0, a1
 ; CMOV-NEXT:  .LBB11_2: # %entry
 ; CMOV-NEXT:    ret
+;
+; SFB-ZICOND-LABEL: select_or_b:
+; SFB-ZICOND:       # %bb.0: # %entry
+; SFB-ZICOND-NEXT:    andi a2, a2, 1
+; SFB-ZICOND-NEXT:    beqz a2, .LBB11_2
+; SFB-ZICOND-NEXT:  # %bb.1: # %entry
+; SFB-ZICOND-NEXT:    or a0, a1, a0
+; SFB-ZICOND-NEXT:  .LBB11_2: # %entry
+; SFB-ZICOND-NEXT:    ret
 entry:
  %and = and i8 %cond, 1
  %cmp10 = icmp ne i8 %and, 1
@@ -408,6 +460,15 @@ define i32 @select_or_1(i32 %A, i32 %B, i32 %cond) {
 ; CMOV-NEXT:    mv a0, a1
 ; CMOV-NEXT:  .LBB12_2: # %entry
 ; CMOV-NEXT:    ret
+;
+; SFB-ZICOND-LABEL: select_or_1:
+; SFB-ZICOND:       # %bb.0: # %entry
+; SFB-ZICOND-NEXT:    andi a2, a2, 1
+; SFB-ZICOND-NEXT:    beqz a2, .LBB12_2
+; SFB-ZICOND-NEXT:  # %bb.1: # %entry
+; SFB-ZICOND-NEXT:    or a0, a1, a0
+; SFB-ZICOND-NEXT:  .LBB12_2: # %entry
+; SFB-ZICOND-NEXT:    ret
 entry:
  %and = and i32 %cond, 1
  %cmp10 = icmp eq i32 %and, 0
@@ -436,6 +497,15 @@ define i32 @select_or_1b(i32 %A, i32 %B, i32 %cond) {
 ; CMOV-NEXT:    mv a0, a1
 ; CMOV-NEXT:  .LBB13_2: # %entry
 ; CMOV-NEXT:    ret
+;
+; SFB-ZICOND-LABEL: select_or_1b:
+; SFB-ZICOND:       # %bb.0: # %entry
+; SFB-ZICOND-NEXT:    andi a2, a2, 1
+; SFB-ZICOND-NEXT:    beqz a2, .LBB13_2
+; SFB-ZICOND-NEXT:  # %bb.1: # %entry
+; SFB-ZICOND-NEXT:    or a0, a1, a0
+; SFB-ZICOND-NEXT:  .LBB13_2: # %entry
+; SFB-ZICOND-NEXT:    ret
 entry:
  %and = and i32 %cond, 1
  %cmp10 = icmp ne i32 %and, 1

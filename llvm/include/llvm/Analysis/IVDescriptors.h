@@ -275,11 +275,13 @@ public:
     return Kind == RecurKind::IAnyOf || Kind == RecurKind::FAnyOf;
   }
 
+#if SIFIVE_CUSTOMIZATION
   /// Returns true if the recurrence kind is of the form
   ///   select(cmp(),x,y) where one of (x,y) is increasing loop induction.
   static bool isFindLastIVRecurrenceKind(RecurKind Kind) {
     return Kind == RecurKind::IFindLastIV || Kind == RecurKind::FFindLastIV;
   }
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns the type of the recurrence. This type can be narrower than the
   /// actual type of the Phi if the recurrence has been type-promoted.

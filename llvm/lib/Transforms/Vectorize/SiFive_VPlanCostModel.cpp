@@ -15,6 +15,7 @@
 #include "llvm/Analysis/TargetLibraryInfo.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/Analysis/VectorUtils.h"
+#include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Operator.h"
 #include "llvm/Support/Debug.h"
@@ -29,6 +30,13 @@
 using namespace llvm;
 
 #define DEBUG_TYPE "vplan-cost-model"
+
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool> SiFiveEstimateRegesterPressure(
+    "sifive-vplan-cost-model-estimate-regpressure", cl::init(true), cl::Hidden,
+    cl::desc(
+        "Control whether cost model should estimate register pressure or not"));
+#endif // SIFIVE_CUSTOMIZATION
 
 static ElementCount getElementCount(const std::pair<unsigned, bool> LMUL,
                                     const unsigned SEW) {
@@ -49,8 +57,7 @@ static Type *getRecipeType(const VPRecipeBase *VPR) {
 }
 
 namespace llvm {
-ElementCount RVVPair::getElementCount(const int LMULExp,
-                                      const unsigned SEW) {
+ElementCount RVVPair::getElementCount(const int LMULExp, const unsigned SEW) {
   return ::getElementCount(getIntFromLMULKind((LMULKind)LMULExp), SEW);
 }
 
@@ -111,7 +118,7 @@ Type *VPlanCostModel::getVectorType(Type *Ty, const RVVPair &RVVP) {
   return ScalableVectorType::get(Ty, getElementCount(RVVP).getKnownMinValue());
 }
 
-InstructionCost VPlanCostModel::getCost(const RVVPair &RVL) const {
+InstructionCost VPlanCostModel::getCost(const RVVPair &RVL) {
   if (!RVL) {
     LLVM_DEBUG(dbgs() << "VPlanCM: unsupported Runtime VL = " << RVL << '\n');
     return InstructionCost::getInvalid();
@@ -131,7 +138,7 @@ InstructionCost VPlanCostModel::getCost(const RVVPair &RVL) const {
 }
 
 InstructionCost VPlanCostModel::getCost(const VPBlockBase *Block,
-                                        const RVVPair &RVL) const {
+                                        const RVVPair &RVL) {
   return TypeSwitch<const VPBlockBase *, InstructionCost>(Block)
       .Case<VPBasicBlock>([&](const VPBasicBlock *BBlock) {
         InstructionCost Cost = 0;
@@ -143,7 +150,7 @@ InstructionCost VPlanCostModel::getCost(const VPBlockBase *Block,
 }
 
 InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
-                                        const RVVPair &RVL) const {
+                                        const RVVPair &RVL) {
   InstructionCost Cost =
       TypeSwitch<const VPRecipeBase *, InstructionCost>(Recipe)
           .Case<VPWidenMemoryInstructionRecipe>(
@@ -232,21 +239,31 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
                 Op2Info.Kind = TargetTransformInfo::OK_UniformValue;
 
               SmallVector<const Value *, 4> Operands(I->operand_values());
-              return TTI.getArithmeticInstrCost(
-                  I->getOpcode(), VectorTy, CostKind,
-                  {TargetTransformInfo::OK_AnyValue,
-                   TargetTransformInfo::OP_None},
-                  Op2Info, Operands, I);
+              const unsigned RegID =
+                  TTI.getRegisterClassForType(true /*vector*/, VectorTy);
+              const unsigned NumUsedRegs = TTI.getRegUsageForType(VectorTy);
+              addRegisterUsage(Recipe->getVPSingleValue(), RegID, NumUsedRegs);
+              InstructionCost Cost = getRegisterPressureCost(RegID, VectorTy);
+              return Cost + TTI.getArithmeticInstrCost(
+                                I->getOpcode(), VectorTy, CostKind,
+                                {TargetTransformInfo::OK_AnyValue,
+                                 TargetTransformInfo::OP_None},
+                                Op2Info, Operands, I);
             }
             case Instruction::FNeg: {
               Type *VectorTy = getVectorType(I->getType(), RVL);
-              return TTI.getArithmeticInstrCost(
-                  I->getOpcode(), VectorTy, CostKind,
-                  {TargetTransformInfo::OK_AnyValue,
-                   TargetTransformInfo::OP_None},
-                  {TargetTransformInfo::OK_AnyValue,
-                   TargetTransformInfo::OP_None},
-                  I->getOperand(0), I);
+              const unsigned RegID =
+                  TTI.getRegisterClassForType(true /*vector*/, VectorTy);
+              const unsigned NumUsedRegs = TTI.getRegUsageForType(VectorTy);
+              addRegisterUsage(Recipe->getVPSingleValue(), RegID, NumUsedRegs);
+              InstructionCost Cost = getRegisterPressureCost(RegID, VectorTy);
+              return Cost + TTI.getArithmeticInstrCost(
+                                I->getOpcode(), VectorTy, CostKind,
+                                {TargetTransformInfo::OK_AnyValue,
+                                 TargetTransformInfo::OP_None},
+                                {TargetTransformInfo::OK_AnyValue,
+                                 TargetTransformInfo::OP_None},
+                                I->getOperand(0), I);
             }
             case Instruction::Select: {
               Type *VectorTy = getVectorType(I->getType(), RVL);
@@ -255,15 +272,25 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
               CmpInst::Predicate Pred = CmpInst::BAD_ICMP_PREDICATE;
               if (auto *Cmp = dyn_cast<CmpInst>(SI->getCondition()))
                 Pred = Cmp->getPredicate();
-              return TTI.getCmpSelInstrCost(I->getOpcode(), VectorTy, CondTy,
-                                             Pred, CostKind, I);
+              const unsigned RegID =
+                  TTI.getRegisterClassForType(true /*vector*/, VectorTy);
+              const unsigned NumUsedRegs = TTI.getRegUsageForType(VectorTy);
+              addRegisterUsage(Recipe->getVPSingleValue(), RegID, NumUsedRegs);
+              InstructionCost Cost = getRegisterPressureCost(RegID, VectorTy);
+              return Cost + TTI.getCmpSelInstrCost(I->getOpcode(), VectorTy,
+                                                   CondTy, Pred, CostKind, I);
             }
             case Instruction::ICmp:
             case Instruction::FCmp: {
               Type *VectorTy = getVectorType(I->getType(), RVL);
-              return TTI.getCmpSelInstrCost(I->getOpcode(), VectorTy, nullptr,
-                                             cast<CmpInst>(I)->getPredicate(),
-                                             CostKind, I);
+              const unsigned RegID =
+                  TTI.getRegisterClassForType(true /*vector*/, VectorTy);
+              const unsigned NumUsedRegs = TTI.getRegUsageForType(VectorTy);
+              addRegisterUsage(Recipe->getVPSingleValue(), RegID, NumUsedRegs);
+              InstructionCost Cost = getRegisterPressureCost(RegID, VectorTy);
+              return Cost + TTI.getCmpSelInstrCost(
+                                I->getOpcode(), VectorTy, nullptr,
+                                cast<CmpInst>(I)->getPredicate(), CostKind, I);
             }
             case Instruction::BitCast:
               if (I->getType()->isPointerTy())
@@ -290,8 +317,13 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
                                    ? ToVectorTy(SrcScalarTy, VF)
                                    : SrcScalarTy;
 
-              return TTI.getCastInstrCost(Opcode, VectorTy, SrcVecTy, CCH,
-                                           CostKind, I);
+              const unsigned RegID =
+                  TTI.getRegisterClassForType(true /*vector*/, VectorTy);
+              const unsigned NumUsedRegs = TTI.getRegUsageForType(VectorTy);
+              addRegisterUsage(Recipe->getVPSingleValue(), RegID, NumUsedRegs);
+              InstructionCost Cost = getRegisterPressureCost(RegID, VectorTy);
+              return Cost + TTI.getCastInstrCost(Opcode, VectorTy, SrcVecTy,
+                                                 CCH, CostKind, I);
             }
             case Instruction::Call: {
               const CallInst *CI = cast<CallInst>(I);
@@ -309,16 +341,49 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
               return getMemoryOpCost(
                   I, getLoadStoreType(const_cast<Instruction *>(I)),
                   /*IsConsecutive=*/true,
-                  /*IsMasked=*/false, /*IsReverse*/false,
+                  /*IsMasked=*/false, /*IsReverse=*/false,
                   /*Speculative=*/false);
             default: {
               Type *VectorTy = getVectorType(I->getType(), RVL);
+              const unsigned RegID =
+                  TTI.getRegisterClassForType(true /*vector*/, VectorTy);
+              InstructionCost Cost = 0;
+              for (const VPValue *VPV : Recipe->definedValues()) {
+                const unsigned NumUsedRegs = TTI.getRegUsageForType(VectorTy);
+                addRegisterUsage(VPV, RegID, NumUsedRegs);
+                Cost += getRegisterPressureCost(RegID, VectorTy);
+              }
               // This opcode is unknown. Assume that it is the same as 'mul'.
-              return TTI.getArithmeticInstrCost(Instruction::Mul, VectorTy,
-                                                 CostKind);
+              return Cost + TTI.getArithmeticInstrCost(Instruction::Mul,
+                                                       VectorTy, CostKind);
             }
             } // end of switch.
           });
+
+  VisitedRecipes.insert(Recipe);
+  // Traverse operands of the recipe and if operand is no longer used, free
+  // registers it occupied.
+  for (const VPValue *VPV : Recipe->operands()) {
+    if (llvm::all_of(VPV->users(), [&](const VPUser *VPU) -> bool {
+          if (auto *VPRU = dyn_cast<VPRecipeBase>(VPU))
+            return VisitedRecipes.count(VPRU);
+          return false;
+        })) {
+      auto RegUsageIt = RegistersUsage.LiveRecipes.find(VPV);
+      if (RegUsageIt == RegistersUsage.LiveRecipes.end())
+        continue;
+
+      for (auto &RegisterUsage : RegUsageIt->second) {
+        // Free registers of the VPValue as they're no longer used
+        unsigned &RegUsed = RegistersUsage.LiveRegister[RegisterUsage.first];
+        assert(RegisterUsage.second <= RegUsed &&
+               "Invalid number of registers in use");
+        RegUsed -= RegisterUsage.second;
+        // zero used number of registers by VPValue to avoid "double free"
+        RegisterUsage.second = 0;
+      }
+    }
+  }
 
   RVVPair VPRecipeRVL = getRecipeType(Recipe)
                             ? RVVPair::getWithType(getRecipeType(Recipe), RVL)
@@ -329,6 +394,15 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
                                            ? Recipe->getParent()->getPlan()
                                            : nullptr);
              Recipe->print(dbgs(), Twine(), SlotTracker); dbgs() << '\n');
+  LLVM_DEBUG(dbgs() << "VPlanCM: Current registers usage"
+                    << (SiFiveEstimateRegesterPressure ? "" : "(ignored by CM)")
+                    << ':');
+  LLVM_DEBUG(for (const auto RegUsage
+                  : RegistersUsage.LiveRegister) {
+    dbgs() << '\t' << TTI.getRegisterClassName(RegUsage.first) << " = "
+           << RegUsage.second;
+  });
+  LLVM_DEBUG(dbgs() << '\n');
   return Cost;
 }
 
@@ -397,8 +471,9 @@ InstructionCost VPlanCostModel::getVectorCallCost(const CallInst *CI,
   return Cost;
 }
 
-InstructionCost VPlanCostModel::getVectorIntrinsicCost(const CallInst *CI,
-                                                       const RVVPair &RVL) const {
+InstructionCost
+VPlanCostModel::getVectorIntrinsicCost(const CallInst *CI,
+                                       const RVVPair &RVL) const {
   Intrinsic::ID ID =
       getVectorIntrinsicIDForCall(CI, &TLI, Legal.useVLAVectorizer());
   assert(ID && "Expected intrinsic call!");
@@ -450,48 +525,56 @@ InstructionCost VPlanCostModel::getMemoryOpCost(const Instruction *I, Type *Ty,
 
 InstructionCost
 VPlanCostModel::getMemoryOpCost(const VPWidenMemoryInstructionRecipe *VPWMIR,
-                                const RVVPair &RVL) const {
+                                const RVVPair &RVL) {
   const Instruction *I = &VPWMIR->getIngredient();
   Type *ValTy = VPWMIR->getElementType();
   const bool IsMasked = VPWMIR->getMask() != nullptr;
-  Type *VectorTy = getVectorType(ValTy, RVL);
+  auto *VectorTy = cast<VectorType>(getVectorType(ValTy, RVL));
 
-  return getMemoryOpCost(I, VectorTy, VPWMIR->isConsecutive(), IsMasked,
-                         VPWMIR->isReverse(), VPWMIR->isSpeculative());
+  InstructionCost Cost = 0;
+  if (!VPWMIR->isStore()) {
+    const unsigned RegID =
+        TTI.getRegisterClassForType(true /*vector*/, VectorTy);
+    const unsigned NumUsedRegs = TTI.getRegUsageForType(VectorTy);
+    addRegisterUsage(VPWMIR->getVPSingleValue(), RegID, NumUsedRegs);
+    Cost = getRegisterPressureCost(RegID, VectorTy);
+  }
+  return Cost + getMemoryOpCost(I, VectorTy, VPWMIR->isConsecutive(), IsMasked,
+                                VPWMIR->isReverse(), VPWMIR->isSpeculative());
 }
 
 InstructionCost VPlanCostModel::getInstructionCost(const VPInstruction *VPI,
                                                    const RVVPair &RVL) const {
   switch (VPI->getOpcode()) {
-    case Instruction::FMul: {
-      const Value *UV = VPI->getOperand(0)->getUnderlyingValue();
-      if (!UV)
-	return 0;
-      Type *VectorTy = getVectorType(UV->getType(), RVL);
-      return TTI.getArithmeticInstrCost(Instruction::FMul, VectorTy, CostKind);
-    }
-    case Instruction::Select:
-      // VPSelectInstruction is generated to emit TU policy. Currently it has no
-      // overhead in HW
+  case Instruction::FMul: {
+    const Value *UV = VPI->getOperand(0)->getUnderlyingValue();
+    if (!UV)
       return 0;
-    case VPInstruction::FirstOrderRecurrenceSplice: {
-      auto *V = VPI->getOperand(0)->getUnderlyingValue();
-      auto *VectorTy = getVectorType(V->getType(), RVL);
-      return TTI.getShuffleCost(TargetTransformInfo::SK_Splice,
-                                cast<VectorType>(VectorTy), std::nullopt,
-                                CostKind, /*Index*/ -1);
-    }
-    case VPInstruction::CanonicalIVIncrement:
-    case VPInstruction::BranchOnCount:
-      return 1;
-    default:
-      return 0;
+    Type *VectorTy = getVectorType(UV->getType(), RVL);
+    return TTI.getArithmeticInstrCost(Instruction::FMul, VectorTy, CostKind);
+  }
+  case Instruction::Select:
+    // VPSelectInstruction is generated to emit TU policy. Currently it has no
+    // overhead in HW
+    return 0;
+  case VPInstruction::FirstOrderRecurrenceSplice: {
+    auto *V = VPI->getOperand(0)->getUnderlyingValue();
+    auto *VectorTy = getVectorType(V->getType(), RVL);
+    return TTI.getShuffleCost(TargetTransformInfo::SK_Splice,
+                              cast<VectorType>(VectorTy), std::nullopt,
+                              CostKind, /*Index*/ -1);
+  }
+  case VPInstruction::CanonicalIVIncrement:
+  case VPInstruction::BranchOnCount:
+    return 1;
+  default:
+    return 0;
   }
 }
 
 InstructionCost
 VPlanCostModel::getInterleavedMemoryOpCost(const VPInterleaveRecipe *VPI,
-                                           const RVVPair &RVL) const {
+                                           const RVVPair &RVL) {
   const InterleaveGroup<Instruction> *Group = VPI->getInterleaveGroup();
   const unsigned InterleaveFactor = Group->getFactor();
   const Instruction *I = Group->getMember(0);
@@ -516,15 +599,23 @@ VPlanCostModel::getInterleavedMemoryOpCost(const VPInterleaveRecipe *VPI,
 
   assert(VF.isScalable() && "Cost model for Interleaved Memory Access is only "
                             "implemented for scalable vectors");
+  const unsigned RegID = TTI.getRegisterClassForType(true /*vector*/, VectorTy);
 
   InstructionCost Cost = TTI.getInterleavedMemoryOpCost(
       I->getOpcode(), WideVecTy, InterleaveFactor, /*Indices=*/{},
       Group->getAlign(), AS, CostKind, IsMasked, /*UseMaskForGaps=*/false);
 
-  if (Group->isReverse())
+  for (const VPValue *VPV : VPI->definedValues()) {
+    const unsigned NumUsedRegs = TTI.getRegUsageForType(VectorTy);
+    addRegisterUsage(VPV, RegID, NumUsedRegs);
+    Cost += getRegisterPressureCost(RegID, VectorTy);
+  }
+
+  if (Group->isReverse()) {
     Cost += Group->getNumMembers() *
             TTI.getShuffleCost(TargetTransformInfo::SK_Reverse, VectorTy,
                                std::nullopt, CostKind, 0);
+  }
   return Cost;
 }
 
@@ -584,6 +675,37 @@ InstructionCost VPlanCostModel::getReplicateOpCost(const VPReplicateRecipe *VPR,
          "non-uniform replicate recipe is not yet supported by VLA vectorizer");
   // FIXME:This estimation is not correct. It should return VLMAX
   return getElementCount(RVL).getKnownMinValue();
+}
+
+void VPlanCostModel::addRegisterUsage(const VPValue *VPV, const unsigned RegID,
+                                      const unsigned NumRegs) {
+  LLVM_DEBUG(dbgs() << "VPlanCM: " << *VPV << " will use " << NumRegs << ' '
+                    << TTI.getRegisterClassName(RegID) << " registers\n");
+  RegistersUsage.LiveRecipes[VPV][RegID] += NumRegs;
+  RegistersUsage.LiveRegister[RegID] += NumRegs;
+}
+
+InstructionCost VPlanCostModel::getRegisterPressureCost(const unsigned RegID,
+                                                        Type *Ty) const {
+  if (!SiFiveEstimateRegesterPressure)
+    return 0;
+
+  const unsigned Count = RegistersUsage.LiveRegister.find(RegID)->second;
+  const unsigned MaxNumRegisters = TTI.getNumberOfRegisters(RegID);
+  if (Count > MaxNumRegisters) {
+    // Need to spill excessive registers, which will require to store them
+    // into memory
+    InstructionCost Cost =
+        (Count - MaxNumRegisters) *
+        TTI.getMemoryOpCost(Instruction::Store, Ty, Align(64), 0, CostKind);
+    Cost += (Count - MaxNumRegisters) *
+            TTI.getMemoryOpCost(Instruction::Load, Ty, Align(64), 0, CostKind);
+    LLVM_DEBUG(dbgs() << "VPlanCM: Spill and Reload of "
+                      << (Count - MaxNumRegisters) << " registers is required"
+                      << ". Cost increased by " << Cost << '\n');
+    return Cost;
+  }
+  return 0;
 }
 
 } // namespace llvm

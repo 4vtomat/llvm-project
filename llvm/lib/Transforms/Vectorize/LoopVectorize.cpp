@@ -155,6 +155,7 @@
 #include "SiFive_VPlanCostModel.h"
 #include "VPlanValue.h"
 #include "llvm/IR/IntrinsicsRISCV.h"
+#include <llvm/IR/VectorBuilder.h>
 #include "llvm/Support/TypeSize.h"
 #include "llvm/TargetParser/Triple.h"
 #include "llvm/Transforms/Utils/Local.h"
@@ -3993,7 +3994,48 @@ void InnerLoopVectorizer::truncateToMinimalBitwidths(VPTransformState &State) {
         continue;
 
       IRBuilder<> B(cast<Instruction>(I));
+      VectorBuilder VB(B);
+      if (auto *VPI = dyn_cast<VPIntrinsic>(I)) {
+        VB.setMask(VPI->getMaskParam());
+        VB.setEVL(VPI->getVectorLengthParam());
+      }
+
+#if SIFIVE_CUSTOMIZATION
+      auto CreateZExtOrTrunc = [&](Value *V, Type *DestTy) {
+        assert(V->getType()->isIntOrIntVectorTy() &&
+               DestTy->isIntOrIntVectorTy() &&
+               "Can only zero extend/truncate integers!");
+        Type *VTy = V->getType();
+        if (VTy->getScalarSizeInBits() < DestTy->getScalarSizeInBits())
+          return VB.createVectorInstruction(Instruction::ZExt, DestTy, {V});
+        if (VTy->getScalarSizeInBits() > DestTy->getScalarSizeInBits())
+          return VB.createVectorInstruction(Instruction::Trunc, DestTy, {V});
+        return V;
+      };
+
+      auto CreateSExtOrTrunc = [&](Value *V, Type *DestTy) {
+        assert(V->getType()->isIntOrIntVectorTy() &&
+               DestTy->isIntOrIntVectorTy() &&
+               "Can only sign extend/truncate integers!");
+        Type *VTy = V->getType();
+
+        if (VTy->getScalarSizeInBits() < DestTy->getScalarSizeInBits())
+          return VB.createVectorInstruction(Instruction::SExt, DestTy, {V});
+        if (VTy->getScalarSizeInBits() > DestTy->getScalarSizeInBits())
+          return VB.createVectorInstruction(Instruction::Trunc, DestTy, {V});
+        return V;
+      };
+#endif // SIFIVE_CUSTOMIZATION
+
       auto ShrinkOperand = [&](Value *V) -> Value * {
+#if SIFIVE_CUSTOMIZATION
+        if (auto *VPI = dyn_cast<VPIntrinsic>(V)) {
+          if ((VPI->getIntrinsicID() == Intrinsic::vp_zext) &&
+              (VPI->getOperand(0)->getType() == TruncatedTy))
+            return VPI->getOperand(0);
+          return CreateZExtOrTrunc(V, TruncatedTy);
+        }
+#endif // SIFIVE_CUSTOMIZATION
         if (auto *ZI = dyn_cast<ZExtInst>(V))
           if (ZI->getSrcTy() == TruncatedTy)
             return ZI->getOperand(0);
@@ -4065,6 +4107,50 @@ void InnerLoopVectorizer::truncateToMinimalBitwidths(VPTransformState &State) {
         auto *O0 = B.CreateZExtOrTrunc(
             EE->getOperand(0), VectorType::get(ScalarTruncatedTy, Elements));
         NewI = B.CreateExtractElement(O0, EE->getOperand(2));
+#if SIFIVE_CUSTOMIZATION
+      } else if (auto *VPI = dyn_cast<VPIntrinsic>(I)) {
+        unsigned Op = VPI->getIntrinsicID();
+        switch (Op) {
+        default:
+          // be conservative for unsupported VP intrinsics
+          continue;
+        case Intrinsic::vp_add:
+        case Intrinsic::vp_and:
+        case Intrinsic::vp_ashr:
+        case Intrinsic::vp_lshr:
+        case Intrinsic::vp_mul:
+        case Intrinsic::vp_or:
+        case Intrinsic::vp_sdiv:
+        case Intrinsic::vp_shl:
+        case Intrinsic::vp_srem:
+        case Intrinsic::vp_sub:
+        case Intrinsic::vp_udiv:
+        case Intrinsic::vp_urem:
+        case Intrinsic::vp_xor: {
+          Value *LHS = ShrinkOperand(VPI->getOperand(0));
+          Value *RHS = ShrinkOperand(VPI->getOperand(1));
+          Type *VTy = LHS->getType();
+          std::optional<unsigned> OC =
+              VPIntrinsic::getFunctionalOpcodeForVP(Op);
+          assert(OC && "OC is not valid opcode");
+          NewI = VB.createVectorInstruction(OC.value(), VTy, {LHS, RHS});
+          break;
+        }
+        case Intrinsic::vp_trunc:
+          NewI = ShrinkOperand(VPI->getOperand(0));
+          break;
+        case Intrinsic::vp_sext:
+          NewI = CreateSExtOrTrunc(
+              VPI->getOperand(0),
+              smallestIntegerVectorType(OriginalTy, TruncatedTy));
+          break;
+        case Intrinsic::vp_zext:
+          NewI = CreateZExtOrTrunc(
+              VPI->getOperand(0),
+              smallestIntegerVectorType(OriginalTy, TruncatedTy));
+          break;
+        }
+#endif // SIFIVE_CUSTOMIZATION
       } else {
         // If we don't know what to do, be conservative and don't do anything.
         continue;
@@ -4072,7 +4158,15 @@ void InnerLoopVectorizer::truncateToMinimalBitwidths(VPTransformState &State) {
 
       // Lastly, extend the result.
       NewI->takeName(cast<Instruction>(I));
+#if SIFIVE_CUSTOMIZATION
+      Value *Res;
+      if (dyn_cast<VPIntrinsic>(I))
+        Res = CreateZExtOrTrunc(NewI, OriginalTy);
+      else
+        Res = B.CreateZExtOrTrunc(NewI, OriginalTy);
+#else
       Value *Res = B.CreateZExtOrTrunc(NewI, OriginalTy);
+#endif // SIFIVE_CUSTOMIZATION
       I->replaceAllUsesWith(Res);
       cast<Instruction>(I)->eraseFromParent();
       Erased.insert(I);
@@ -5265,7 +5359,7 @@ bool LoopVectorizationCostModel::interleavedAccessCanBeWidened(
       LLVM_DEBUG(
           dbgs()
           << "LV: Interleave and Deinterleave intrinsics won't be legal with "
-          << VectorType::get(ScalarTy, VF)
+          << *VectorType::get(ScalarTy, VF)
           << " for interleave factor = " << InterleaveFactor << '\n');
       return false;
     }
@@ -10874,6 +10968,7 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
       VPMaskSel->insertBefore(
           Plan.getVPValue(CSA.second.getAssignment())->getDefiningRecipe());
       VPDataUpdate->setVPNewMask(VPMaskSel);
+      VPDataUpdate->setVPCondToUse(CondToUse);
       ExtractScalarRecipe =
           new VPCSAExtractScalarRecipe({VPInitScalar, VPMaskSel, VPDataUpdate});
     }

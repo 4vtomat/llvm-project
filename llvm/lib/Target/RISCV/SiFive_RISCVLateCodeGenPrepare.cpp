@@ -23,6 +23,7 @@
 #include "llvm/IR/IntrinsicsRISCV.h"
 #include "llvm/IR/PatternMatch.h"
 #include "llvm/Pass.h"
+#include "llvm/Support/KnownBits.h"
 #include "llvm/Support/MathExtras.h"
 
 #define DEBUG_TYPE "riscv-late-codegenprepare"
@@ -91,6 +92,7 @@ public:
   bool visitAnd(BinaryOperator &BO);
   bool optimizeAndUses(BinaryOperator &BO);
   bool visitICmp(ICmpInst &ICmp);
+  bool visitIntrinsicInst(IntrinsicInst &I);
   bool visitMemIntrinsic(MemIntrinsic &MI);
   bool expandMemIntrinsic(MemIntrinsic *MI);
   void expandMemCpyUnknownSize(MemCpyInst *MCI);
@@ -1206,6 +1208,85 @@ bool RISCVLateCodeGenPrepare::expandMemIntrinsic(MemIntrinsic *MI) {
   default:
     return false;
   }
+
+  return true;
+}
+
+// Look for (vp_mul (vp_zext X), (splat Y)) where vp_zext is doubling the
+// element size and Y is known to be zero extended. Replace with
+// (vp_mul (vp_zext X), (vp_zext (splat (trunc Y)))) to encourage the use of
+// widening multiply. Only do this if the splat isn't already in the same
+// basic block as the vp_mul. We put the vp_zext with the vp_mul and the new
+// splat and trunc in basic block with the original splat.
+bool RISCVLateCodeGenPrepare::visitIntrinsicInst(IntrinsicInst &I) {
+  if (!ST->hasVInstructions())
+    return false;
+
+  if (I.getIntrinsicID() != Intrinsic::vp_mul)
+    return false;
+
+  Value *LHS = I.getArgOperand(0);
+  Value *RHS = I.getArgOperand(1);
+
+  Value *Mask = cast<VPIntrinsic>(I).getMaskParam();
+  Value *VL = cast<VPIntrinsic>(I).getVectorLengthParam();
+
+  // Canonicalize an Intrinsic operand to the LHS.
+  if (isa<IntrinsicInst>(RHS))
+    std::swap(LHS, RHS);
+
+  // LHS should be a vp_zext.
+  Value *ZExtSrc;
+  if (!match(LHS, m_Intrinsic<Intrinsic::vp_zext>(
+                      m_Value(ZExtSrc), m_Specific(Mask), m_Specific(VL))))
+    return false;
+
+  // vp_zext should be in the same basic block as the vp_mul.
+  if (cast<Instruction>(LHS)->getParent() != I.getParent())
+    return false;
+
+  // The extend should be doubling.
+  unsigned Size = I.getType()->getScalarSizeInBits();
+  unsigned SrcSize = ZExtSrc->getType()->getScalarSizeInBits();
+  if (Size != SrcSize * 2)
+    return false;
+
+  // Types should be legal.
+  if (Size != 64 && Size != 32 && Size != 16)
+    return false;
+  if (Size == 64 && !ST->hasVInstructionsI64())
+    return false;
+
+  // RHS should be a splat shuffle.
+  Value *SplatVal;
+  if (!match(RHS, m_OneUse(m_Shuffle(
+                      m_InsertElt(m_Undef(), m_Value(SplatVal), m_ZeroInt()),
+                      m_Undef(), m_ZeroMask()))))
+    return false;
+
+  auto *RHSI = cast<Instruction>(RHS);
+
+  // Splat should be in another basic block.
+  if (RHSI->getParent() == I.getParent())
+    return false;
+
+  // Make sure we can freely truncate the value.
+  KnownBits Known = computeKnownBits(SplatVal, *DL);
+  if (Known.countMaxActiveBits() > SrcSize)
+    return false;
+
+  VectorType *VecTy = cast<VectorType>(ZExtSrc->getType());
+  Type *ScalarTy = VecTy->getElementType();
+  IRBuilder<> Builder(RHSI);
+  Value *Splat = Builder.CreateVectorSplat(
+      VecTy->getElementCount(), Builder.CreateTrunc(SplatVal, ScalarTy));
+
+  Builder.SetInsertPoint(&I);
+  Value *NewZExt = Builder.CreateIntrinsic(
+      Intrinsic::vp_zext, {I.getType(), Splat->getType()}, {Splat, Mask, VL});
+
+  RHSI->replaceAllUsesWith(NewZExt);
+  RHSI->eraseFromParent();
 
   return true;
 }

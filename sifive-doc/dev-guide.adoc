@@ -198,9 +198,17 @@ h|Core IP Version h|Compiler Version h|`-mcpu` h|Default `-march` h|Default `-mt
 
 |sifive-270
 
-|23G2 and above |2023.08.0 and above |sifive-u64r |`rv64imafdcv_zic64b_zicbom_zicbop_zicboz_ziccamoa_ziccif_ziccrse_zicntr_zicsr_zifencei_zihintntl_zihintpause_zihpm_za64rs_zfhmin_zca_zcb_zba_zbb_zbs_zkt` |sifive-6-series
+|23G2 and above |2023.10.0 and above |sifive-e20r |`rv32imc_zicsr_zifencei_zba_zbb_zcb_zcmp_zcmt` |rocket
+|23G2 and above |2023.10.0 and above |sifive-e21r |`rv32imac_zicsr_zifencei_zihpm_zba_zbb_zcb_zcmp_zcmt_zkt` |rocket
+|23G2 and above |2023.10.0 and above |sifive-e24r |`rv32imafc_zicsr_zifencei_zihpm_zba_zbb_zcb_zcmp_zcmt_zkt` |rocket
+|23G2 and above |2023.10.0 and above |sifive-e61r |`rv32imac_zic64b_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintpause_zihpm_za64rs_zba_zbb_zcb_zcmp_zcmt_zkt` |sifive-6-series
+|23G2 and above |2023.10.0 and above |sifive-e76r |`rv32imafc_zic64b_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintpause_zihpm_za64rs_zba_zbb_zcb_zcmp_zcmt_zkt_xsifivecdiscarddlone_xsifivecflushdlone` |sifive-7n-series
+|23G2 and above |2023.10.0 and above |sifive-s21r |`rv64imac_zicsr_zifencei_zihpm_zba_zbb_zcb_zcmp_zcmt_zkt` |rocket
+|23G2 and above |2023.10.0 and above |sifive-s61r |`rv64imac_zic64b_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintpause_zihpm_za64rs_zba_zbb_zcb_zcmp_zcmt_zkt` |sifive-6-series
+|23G2 and above |2023.10.0 and above |sifive-s76r |`rv64imac_zic64b_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintpause_zihpm_za64rs_zba_zbb_zcb_zcmp_zcmt_zkt_xsifivecdiscarddlone_xsifivecflushdlone` |sifive-7n-series
+|23G2 and above |2023.10.0 and above |sifive-u64r |`rv64imafdc_zic64b_zicbop_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintntl_zihintpause_zihpm_za64rs_zba_zbb_zcb_zkt_xsifivecdiscarddlone_xsifivecflushdlone` |sifive-6-series
+|23G2 and above |2023.10.0 and above |sifive-u74r |`rv64imafdc_zic64b_zicbop_zicboz_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintntl_zihintpause_zihpm_za64rs_zba_zbb_zbs_zcb_zkt_xsifivecdiscarddlone_xsifivecflushdlone` |sifive-7n-series
 |21G3 and above |2021.11.5 and above |sifive-u64 |`rv64imafdc_zba_zbb` |sifive-6-series
-|23G2 and above |2023.08.0 and above |sifive-u74r |`rv64imafdcv_zic64b_zicbom_zicbop_zicboz_ziccamoa_ziccif_ziccrse_zicntr_zicsr_zifencei_zihintntl_zihintpause_zihpm_za64rs_zfhmin_zca_zcb_zba_zbb_zbs_zkt` |sifive-7n-series
 |21G3 and above |2021.11.5 and above |sifive-u74n |`rv64imafdc_zba_zbb` |sifive-7n-series
 |21G2 |2021.06.3 and above |sifive-u74m |`rv64imafdc_zba_zbb` |sifive-7m-series
 |21G3 and above |2021.11.5 and above |sifive-s76n |`rv64imafdc_zba_zbb` |sifive-7n-series

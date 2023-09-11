@@ -1291,6 +1291,14 @@ def TuneSiFiveP600 : SubtargetFeature<"sifive-p600", "RISCVProcFamily", "SiFiveP
                                        TuneJumpIsCheap,
                                        TuneLUIADDIFusion,
                                        TuneDontSinkSplatOperands]>;
+
+def TuneSiFiveP800 : SubtargetFeature<"sifive-p800", "RISCVProcFamily", "SiFiveP800",
+                                      "SiFive P800-Series processors",
+                                      [TuneNoDefaultUnroll,
+                                       TuneCMOVBranchOpt,
+                                       TuneJumpIsCheap,
+                                       TuneLUIADDIFusion,
+                                       TuneDontSinkSplatOperands]>;
 #endif // SIFIVE_CUSTOMIZATION
 
 // Assume that lock-free native-width atomics are available, even if the target

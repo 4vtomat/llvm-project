@@ -2294,13 +2294,26 @@ public:
 #endif
 
   VPValue *getVPDataPhi() const { return getOperand(0); }
+
+  // The condition from the original select statement
   VPValue *getVPCond() const { return getOperand(1); }
+
+  // The true value from the original select statement
   VPValue *getVPTrue() const { return getOperand(2); }
+
+  // The false value from the original select statement
   VPValue *getVPFalse() const { return getOperand(3); }
 
+  // This condition is true when the conditional assignment occurs
+  // This value is only used by the RISC-V version of CSA
+  void setVPCondToUse(VPValue *Cond) { addOperand(Cond); }
+  VPValue *getVPCondToUse() const { return getOperand(5); }
+
+  // This value is only used by the non RISC-V version of CSA
   VPValue *getVPNewMask() const { return getOperand(4); }
   void setVPNewMask(VPValue *NewMask) { addOperand(NewMask); }
 
+  // This value is only used by the non RISC-V version of CSA
   VPValue *getVPAnyActive() const { return getOperand(5); }
   void setVPAnyActive(VPValue *AnyActive) { addOperand(AnyActive); }
 };

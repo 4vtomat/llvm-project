@@ -1111,6 +1111,7 @@ class VPseudoUnaryMask<VReg RetClass,
   let UsesMaskPolicy = 1;
 }
 
+<<<<<<< HEAD
 class VPseudoUnaryMaskRoundingMode<VReg RetClass,
                                    VReg OpClass,
                                    string Constraint = ""> :
@@ -1119,10 +1120,23 @@ class VPseudoUnaryMaskRoundingMode<VReg RetClass,
                   VMaskOp:$vm, ixlenimm:$rm,
                   AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
       RISCVVPseudo {
+=======
+#ifdef SIFIVE_CUSTOMIZATION
+class VPseudoUnaryMaskRoundingMode<VReg RetClass, VReg OpClass, string Constraint = "", int TargetConstraintType = 1> :
+#endif // SIFIVE_CUSTOMIZATION
+        Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
+               (ins GetVRegNoV0<RetClass>.R:$merge, OpClass:$rs2,
+                    VMaskOp:$vm, ixlenimm:$rm,
+                    AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
+        RISCVVPseudo {
+>>>>>>> origin/sifive-dev
   let mayLoad = 0;
   let mayStore = 0;
   let hasSideEffects = 0;
   let Constraints = !interleave([Constraint, "$rd = $merge"], ",");
+#ifdef SIFIVE_CUSTOMIZATION
+  let TargetOverlapConstraintType = TargetConstraintType;
+#endif // SIFIVE_CUSTOMIZATION
   let HasVLOp = 1;
   let HasSEWOp = 1;
   let HasVecPolicyOp = 1;
@@ -3767,7 +3781,11 @@ multiclass VPseudoTernaryWithTailPolicy<VReg RetClass,
                                           int sew,
                                           string Constraint = "",
                                           bit Commutable = 0> {
+#ifdef SIFIVE_CUSTOMIZATION
+  let VLMul = MInfo.value, SEW=sew in {
+#else
   let VLMul = MInfo.value in {
+#endif // SIFIVE_CUSTOMIZATION
     defvar mx = MInfo.MX;
     let isCommutable = Commutable in
     def "_" # mx # "_E" # sew : VPseudoTernaryNoMaskWithPolicy<RetClass, Op1Class, Op2Class, Constraint>;
@@ -3782,7 +3800,11 @@ multiclass VPseudoTernaryWithTailPolicyRoundingMode<VReg RetClass,
                                           int sew,
                                           string Constraint = "",
                                           bit Commutable = 0> {
+#ifdef SIFIVE_CUSTOMIZATION
+  let VLMul = MInfo.value, SEW=sew in {
+#else
   let VLMul = MInfo.value in {
+#endif // SIFIVE_CUSTOMIZATION
     defvar mx = MInfo.MX;
     let isCommutable = Commutable in
     def "_" # mx # "_E" # sew
@@ -4322,6 +4344,20 @@ multiclass VPseudoVFWRED_VS_RM {
   }
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoVFWREDO_VS_RM {
+  foreach m = MxListFWRed in {
+    defvar mx = m.MX;
+    foreach e = SchedSEWSet<mx, isF=1, isWidening=1>.val in {
+      defm _VS
+          : VPseudoTernaryWithTailPolicyRoundingMode<V_M1.vrclass, m.vrclass,
+                                                     V_M1.vrclass, m, e>,
+            SchedReduction<"WriteVFWRedOV_From", "ReadVFWRedV", mx, e>;
+    }
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 multiclass VPseudoConversion<VReg RetClass,
                              VReg Op1Class,
                              LMULInfo MInfo,
@@ -4355,7 +4391,9 @@ multiclass VPseudoConversionRoundingMode<VReg RetClass,
     def "_" # MInfo.MX : VPseudoUnaryNoMaskRoundingMode<RetClass, Op1Class, Constraint, TargetConstraintType>;
 #endif // SIFIVE_CUSTOMIZATION
     def "_" # MInfo.MX # "_MASK" : VPseudoUnaryMaskRoundingMode<RetClass, Op1Class,
-                                                                Constraint>,
+#ifdef SIFIVE_CUSTOMIZATION
+                                                                Constraint, TargetConstraintType>,
+#endif // SIFIVE_CUSTOMIZATION
                                    RISCVMaskedPseudo<MaskIdx=2>;
   }
 }
@@ -7673,7 +7711,7 @@ let IsRVVWideningReduction = 1,
     hasSideEffects = 0,
     mayRaiseFPException = true in {
 defm PseudoVFWREDUSUM  : VPseudoVFWRED_VS_RM;
-defm PseudoVFWREDOSUM  : VPseudoVFWRED_VS_RM;
+defm PseudoVFWREDOSUM  : VPseudoVFWREDO_VS_RM;
 }
 
 } // Predicates = [HasVInstructionsAnyF]

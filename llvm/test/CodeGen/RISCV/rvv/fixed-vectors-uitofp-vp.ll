@@ -118,6 +118,7 @@ define <4 x half> @vuitofp_v4f16_v4i16_unmasked(<4 x i16> %va, i32 zeroext %evl)
 declare <4 x half> @llvm.vp.uitofp.v4f16.v4i32(<4 x i32>, <4 x i1>, i32)
 
 define <4 x half> @vuitofp_v4f16_v4i32(<4 x i32> %va, <4 x i1> %m, i32 zeroext %evl) {
+<<<<<<< HEAD
 ; ZVFH-LABEL: vuitofp_v4f16_v4i32:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
@@ -132,6 +133,13 @@ define <4 x half> @vuitofp_v4f16_v4i32(<4 x i32> %va, <4 x i1> %m, i32 zeroext %
 ; ZVFHMIN-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v8
 ; ZVFHMIN-NEXT:    ret
+=======
+; CHECK-LABEL: vuitofp_v4f16_v4i32:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
+; CHECK-NEXT:    vfncvt.f.xu.w v8, v8, v0.t
+; CHECK-NEXT:    ret
+>>>>>>> origin/sifive-dev
   %v = call <4 x half> @llvm.vp.uitofp.v4f16.v4i32(<4 x i32> %va, <4 x i1> %m, i32 %evl)
   ret <4 x half> %v
 }
@@ -157,6 +165,7 @@ define <4 x half> @vuitofp_v4f16_v4i32_unmasked(<4 x i32> %va, i32 zeroext %evl)
 declare <4 x half> @llvm.vp.uitofp.v4f16.v4i64(<4 x i64>, <4 x i1>, i32)
 
 define <4 x half> @vuitofp_v4f16_v4i64(<4 x i64> %va, <4 x i1> %m, i32 zeroext %evl) {
+<<<<<<< HEAD
 ; ZVFH-LABEL: vuitofp_v4f16_v4i64:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
@@ -172,6 +181,15 @@ define <4 x half> @vuitofp_v4f16_v4i64(<4 x i64> %va, <4 x i1> %m, i32 zeroext %
 ; ZVFHMIN-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v10
 ; ZVFHMIN-NEXT:    ret
+=======
+; CHECK-LABEL: vuitofp_v4f16_v4i64:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
+; CHECK-NEXT:    vfncvt.f.xu.w v8, v8, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; CHECK-NEXT:    vfncvt.f.f.w v8, v8, v0.t
+; CHECK-NEXT:    ret
+>>>>>>> origin/sifive-dev
   %v = call <4 x half> @llvm.vp.uitofp.v4f16.v4i64(<4 x i64> %va, <4 x i1> %m, i32 %evl)
   ret <4 x half> %v
 }
@@ -272,8 +290,7 @@ define <4 x float> @vuitofp_v4f32_v4i64(<4 x i64> %va, <4 x i1> %m, i32 zeroext 
 ; CHECK-LABEL: vuitofp_v4f32_v4i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; CHECK-NEXT:    vfncvt.f.xu.w v10, v8, v0.t
-; CHECK-NEXT:    vmv.v.v v8, v10
+; CHECK-NEXT:    vfncvt.f.xu.w v8, v8, v0.t
 ; CHECK-NEXT:    ret
   %v = call <4 x float> @llvm.vp.uitofp.v4f32.v4i64(<4 x i64> %va, <4 x i1> %m, i32 %evl)
   ret <4 x float> %v

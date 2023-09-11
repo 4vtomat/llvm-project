@@ -25,6 +25,7 @@ class MCInst;
 class MCOperand;
 class MachineInstr;
 class MachineOperand;
+class Pass; // SIFIVE
 class PassRegistry;
 class RISCVRegisterBankInfo;
 class RISCVSubtarget;
@@ -36,6 +37,9 @@ void initializeRISCVLateCodeGenPreparePass(PassRegistry &);
 
 FunctionPass *createRISCVTypePromotionPass();
 void initializeRISCVTypePromotionPass(PassRegistry &);
+
+Pass *createRISCVWidenReductionPHIPass();
+void initializeRISCVWidenReductionPHIPass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
 
 FunctionPass *createRISCVCodeGenPreparePass();

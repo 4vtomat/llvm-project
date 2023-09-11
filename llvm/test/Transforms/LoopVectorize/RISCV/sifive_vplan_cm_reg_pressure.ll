@@ -1,0 +1,180 @@
+; RUN: opt -passes=loop-vectorize -mtriple riscv64 -vector-primary-lmul-max=3 -mcpu=sifive-p470 -debug-only=vplan-cost-model,vplan -disable-output %s 2>&1 | FileCheck %s --check-prefix=CHECK-P470
+; RUN: opt -passes=loop-vectorize -mtriple riscv64 -vector-primary-lmul-max=3 -mcpu=sifive-p670 -debug-only=vplan-cost-model,vplan -disable-output %s 2>&1 | FileCheck %s --check-prefix=CHECK-P670
+
+; To minimize the test itself, checks in the test only verify maximum register pressure of the loop for each candidate
+
+; CHECK-P470: VPlanCM: cost 3 for RVL (mf2, float) for VPInstruction: INTERLEAVE-GROUP with factor 4 at %36, ir<%add.ptr53.i>
+; CHECK-P470-NEXT:   ir<%36> = load from index 0
+; CHECK-P470-NEXT:   ir<%37> = load from index 1
+; CHECK-P470-NEXT:   ir<%38> = load from index 2
+; CHECK-P470-NEXT:   ir<%39> = load from index 3
+; CHECK-P470-NEXT: VPlanCM: Current registers usage:	RISCV::VRRC = 29
+; CHECK-P470: VPlanCM: (mf2, float) vec_iter_cost = 197
+; ...
+; CHECK-P470: VPlanCM: cost 5 for RVL (m1, float) for VPInstruction: INTERLEAVE-GROUP with factor 4 at %36, ir<%add.ptr53.i>
+; CHECK-P470-NEXT:   ir<%36> = load from index 0
+; CHECK-P470-NEXT:   ir<%37> = load from index 1
+; CHECK-P470-NEXT:   ir<%38> = load from index 2
+; CHECK-P470-NEXT:   ir<%39> = load from index 3
+; CHECK-P470-NEXT: VPlanCM: Current registers usage:	RISCV::VRRC = 29
+; CHECK-P470: VPlanCM: (m1, float) vec_iter_cost = 239
+
+; CHECK-P670: VPlanCM: cost 3 for RVL (mf2, float) for VPInstruction: INTERLEAVE-GROUP with factor 4 at %36, ir<%add.ptr53.i>
+; CHECK-P670-NEXT:   ir<%36> = load from index 0
+; CHECK-P670-NEXT:   ir<%37> = load from index 1
+; CHECK-P670-NEXT:   ir<%38> = load from index 2
+; CHECK-P670-NEXT:   ir<%39> = load from index 3
+; CHECK-P670-NEXT: VPlanCM: Current registers usage:	RISCV::VRRC = 29
+; CHECK-P670: VPlanCM: (mf2, float) vec_iter_cost = 253
+; ...
+; CHECK-P670: VPlanCM: cost 5 for RVL (m1, float) for VPInstruction: INTERLEAVE-GROUP with factor 4 at %36, ir<%add.ptr53.i>
+; CHECK-P670-NEXT:   ir<%36> = load from index 0
+; CHECK-P670-NEXT:   ir<%37> = load from index 1
+; CHECK-P670-NEXT:   ir<%38> = load from index 2
+; CHECK-P670-NEXT:   ir<%39> = load from index 3
+; CHECK-P670-NEXT: VPlanCM: Current registers usage:	RISCV::VRRC = 29
+; CHECK-P670: VPlanCM: (m1, float) vec_iter_cost = 295
+
+define void @test(ptr %ei, ptr %dweight, ptr %tweight, ptr %arrayidx2.i, ptr %arrayidx7.i902, ptr %arrayidx12.i, ptr %tfweight, ptr %arrayidx36.i, ptr %arrayidx43.i, ptr %arrayidx50.i, i64 %0) {
+entry:
+  %infilled_weights = alloca [216 x float], align 16
+  br label %for
+
+for:
+  %indvars.iv1040 = phi i64 [ 0, %entry ], [ %indvars.iv.next1041, %for ]
+  %add.ptr.i888 = getelementptr i8, ptr %tweight, i64 %indvars.iv1040
+  %1 = load i8, ptr %add.ptr.i888, align 2
+  %weight_idx0.sroa.0.0.insert.ext.i889 = zext i8 %1 to i64
+  %arrayidx3.i.i890 = getelementptr i8, ptr %add.ptr.i888, i64 1
+  %2 = load i8, ptr %arrayidx3.i.i890, align 1
+  %weight_idx0.sroa.0.4.insert.ext.i891 = zext i8 %2 to i64
+  %arrayidx7.i.i892 = getelementptr i8, ptr %add.ptr.i888, i64 2
+  %3 = load i8, ptr %arrayidx7.i.i892, align 4
+  %weight_idx0.sroa.5.8.insert.ext.i893 = zext i8 %3 to i64
+  %arrayidx11.i.i894 = getelementptr i8, ptr %add.ptr.i888, i64 3
+  %4 = load i8, ptr %arrayidx11.i.i894, align 1
+  %weight_idx0.sroa.5.12.insert.ext.i895 = zext i8 %4 to i64
+  %add.ptr5.i897 = getelementptr i8, ptr %arrayidx2.i, i64 %indvars.iv1040
+  %5 = load i8, ptr %add.ptr5.i897, align 2
+  %weight_idx1.sroa.0.0.insert.ext.i898 = zext i8 %5 to i64
+  %arrayidx3.i153.i = getelementptr i8, ptr %add.ptr5.i897, i64 1
+  %6 = load i8, ptr %arrayidx3.i153.i, align 1
+  %weight_idx1.sroa.0.4.insert.ext.i899 = zext i8 %6 to i64
+  %arrayidx7.i156.i = getelementptr i8, ptr %add.ptr5.i897, i64 2
+  %add.ptr10.i = getelementptr i8, ptr %arrayidx7.i902, i64 %indvars.iv1040
+  %7 = load i8, ptr %add.ptr10.i, align 2
+  %weight_idx2.sroa.0.0.insert.ext.i = zext i8 %7 to i64
+  %arrayidx3.i163.i = getelementptr i8, ptr %add.ptr10.i, i64 1
+  %8 = load i8, ptr %arrayidx3.i163.i, align 1
+  %weight_idx2.sroa.0.4.insert.ext.i = zext i8 %8 to i64
+  %arrayidx7.i166.i = getelementptr i8, ptr %add.ptr10.i, i64 2
+  %9 = load i8, ptr %arrayidx7.i166.i, align 4
+  %weight_idx2.sroa.5.8.insert.ext.i = zext i8 %9 to i64
+  %add.ptr15.i = getelementptr i8, ptr %arrayidx12.i, i64 %indvars.iv1040
+  %arrayidx3.i173.i = getelementptr i8, ptr %add.ptr15.i, i64 1
+  %10 = load i8, ptr %arrayidx3.i173.i, align 1
+  %weight_idx3.sroa.0.4.insert.ext.i = zext i8 %10 to i64
+  %arrayidx7.i176.i = getelementptr i8, ptr %add.ptr15.i, i64 2
+  %arrayidx1.i.i903 = getelementptr float, ptr %dweight, i64 %weight_idx0.sroa.0.0.insert.ext.i889
+  %11 = load float, ptr %arrayidx1.i.i903, align 4
+  %arrayidx5.i.i904 = getelementptr float, ptr %dweight, i64 %weight_idx0.sroa.0.4.insert.ext.i891
+  %12 = load float, ptr %arrayidx5.i.i904, align 4
+  %arrayidx9.i.i905 = getelementptr float, ptr %dweight, i64 %weight_idx0.sroa.5.8.insert.ext.i893
+  %13 = load float, ptr %arrayidx9.i.i905, align 4
+  %arrayidx13.i.i906 = getelementptr float, ptr %dweight, i64 %weight_idx0.sroa.5.12.insert.ext.i895
+  %14 = load float, ptr %arrayidx13.i.i906, align 4
+  %arrayidx1.i184.i = getelementptr float, ptr %dweight, i64 %weight_idx1.sroa.0.0.insert.ext.i898
+  %15 = load float, ptr %arrayidx1.i184.i, align 4
+  %arrayidx5.i186.i = getelementptr float, ptr %dweight, i64 %weight_idx1.sroa.0.4.insert.ext.i899
+  %16 = load float, ptr %arrayidx5.i186.i, align 4
+  %17 = load float, ptr %arrayidx7.i156.i, align 4
+  %arrayidx1.i204.i = getelementptr float, ptr %dweight, i64 %weight_idx2.sroa.0.0.insert.ext.i
+  %18 = load float, ptr %arrayidx1.i204.i, align 4
+  %arrayidx5.i206.i = getelementptr float, ptr %dweight, i64 %weight_idx2.sroa.0.4.insert.ext.i
+  %19 = load float, ptr %arrayidx5.i206.i, align 4
+  %arrayidx9.i209.i = getelementptr float, ptr %dweight, i64 %weight_idx2.sroa.5.8.insert.ext.i
+  %20 = load float, ptr %arrayidx9.i209.i, align 4
+  %21 = load float, ptr %add.ptr10.i, align 4
+  %arrayidx5.i226.i = getelementptr float, ptr %dweight, i64 %weight_idx3.sroa.0.4.insert.ext.i
+  %22 = load float, ptr %arrayidx5.i226.i, align 4
+  %23 = load float, ptr %arrayidx7.i176.i, align 4
+  %add.ptr32.i = getelementptr float, ptr %tfweight, i64 %indvars.iv1040
+  %24 = load float, ptr %add.ptr32.i, align 16
+  %arrayidx3.i.i.i908 = getelementptr float, ptr %add.ptr32.i, i64 1
+  %25 = load float, ptr %arrayidx3.i.i.i908, align 4
+  %arrayidx6.i.i.i909 = getelementptr float, ptr %add.ptr32.i, i64 2
+  %26 = load float, ptr %arrayidx6.i.i.i909, align 8
+  %arrayidx9.i.i.i910 = getelementptr float, ptr %add.ptr32.i, i64 3
+  %27 = load float, ptr %arrayidx9.i.i.i910, align 4
+  %add.ptr39.i = getelementptr float, ptr %arrayidx36.i, i64 %indvars.iv1040
+  %28 = load float, ptr %add.ptr39.i, align 16
+  %arrayidx3.i.i252.i = getelementptr float, ptr %add.ptr39.i, i64 1
+  %29 = load float, ptr %arrayidx3.i.i252.i, align 4
+  %arrayidx6.i.i253.i = getelementptr float, ptr %add.ptr39.i, i64 2
+  %30 = load float, ptr %arrayidx6.i.i253.i, align 8
+  %arrayidx9.i.i254.i = getelementptr float, ptr %add.ptr39.i, i64 3
+  %31 = load float, ptr %arrayidx9.i.i254.i, align 4
+  %add.ptr46.i = getelementptr float, ptr %arrayidx43.i, i64 %indvars.iv1040
+  %32 = load float, ptr %add.ptr46.i, align 16
+  %arrayidx3.i.i265.i = getelementptr float, ptr %add.ptr46.i, i64 1
+  %33 = load float, ptr %arrayidx3.i.i265.i, align 4
+  %arrayidx6.i.i266.i = getelementptr float, ptr %add.ptr46.i, i64 2
+  %34 = load float, ptr %arrayidx6.i.i266.i, align 8
+  %arrayidx9.i.i267.i = getelementptr float, ptr %add.ptr46.i, i64 3
+  %35 = load float, ptr %arrayidx9.i.i267.i, align 4
+  %add.ptr53.i = getelementptr float, ptr %arrayidx50.i, i64 %indvars.iv1040
+  %36 = load float, ptr %add.ptr53.i, align 16
+  %arrayidx3.i.i278.i = getelementptr float, ptr %add.ptr53.i, i64 1
+  %37 = load float, ptr %arrayidx3.i.i278.i, align 4
+  %arrayidx6.i.i279.i = getelementptr float, ptr %add.ptr53.i, i64 2
+  %38 = load float, ptr %arrayidx6.i.i279.i, align 8
+  %arrayidx9.i.i280.i = getelementptr float, ptr %add.ptr53.i, i64 3
+  %39 = load float, ptr %arrayidx9.i.i280.i, align 4
+  %mul.i.i911 = fmul float %11, %24
+  %mul8.i.i912 = fmul float %12, %25
+  %mul13.i.i913 = fmul float %13, %26
+  %mul18.i.i914 = fmul float %14, %27
+  %mul.i305.i = fmul float %15, %28
+  %mul8.i306.i = fmul float %16, %29
+  %mul13.i307.i = fmul float %17, %30
+  %mul18.i308.i = fmul float %31, 0.000000e+00
+  %add.i.i915 = fadd float %mul.i.i911, %mul.i305.i
+  %add8.i.i916 = fadd float %mul8.i.i912, %mul8.i306.i
+  %add13.i.i917 = fadd float %mul13.i.i913, %mul13.i307.i
+  %add18.i.i918 = fadd float %mul18.i.i914, %mul18.i308.i
+  %mul.i337.i = fmul float %18, %32
+  %mul8.i338.i = fmul float %19, %33
+  %mul13.i339.i = fmul float %20, %34
+  %mul18.i340.i = fmul float %21, %35
+  %mul.i355.i = fmul float %36, 0.000000e+00
+  %mul8.i356.i = fmul float %22, %37
+  %mul13.i357.i = fmul float %23, %38
+  %mul18.i358.i = fmul float %39, 0.000000e+00
+  %add.i373.i = fadd float %mul.i337.i, %mul.i355.i
+  %add8.i374.i = fadd float %mul8.i338.i, %mul8.i356.i
+  %add13.i375.i = fadd float %mul13.i339.i, %mul13.i357.i
+  %add18.i376.i = fadd float %mul18.i340.i, %mul18.i358.i
+  %add.i391.i = fadd float %add.i.i915, %add.i373.i
+  %add8.i392.i = fadd float %add8.i.i916, %add8.i374.i
+  %add13.i393.i = fadd float %add13.i.i917, %add13.i375.i
+  %add18.i394.i = fadd float %add18.i.i918, %add18.i376.i
+  %add.ptr128 = getelementptr float, ptr %infilled_weights, i64 %indvars.iv1040
+  store float %add.i391.i, ptr %add.ptr128, align 16
+  %arrayidx4.i560 = getelementptr float, ptr %add.ptr128, i64 1
+  store float %add8.i392.i, ptr %arrayidx4.i560, align 4
+  %arrayidx7.i561 = getelementptr float, ptr %add.ptr128, i64 2
+  store float %add13.i393.i, ptr %arrayidx7.i561, align 8
+  %arrayidx10.i562 = getelementptr float, ptr %add.ptr128, i64 3
+  store float %add18.i394.i, ptr %arrayidx10.i562, align 4
+  %indvars.iv.next1041 = add nsw i64 %indvars.iv1040, 4
+  %cmp119 = icmp ult i64 %indvars.iv1040, %0
+  br i1 %cmp119, label %for, label %cedge
+
+cedge:
+  %.pre = load float, ptr %infilled_weights, align 16
+  br label %exit
+
+exit:
+  store float %.pre, ptr %ei, align 4
+  br label %exit
+}

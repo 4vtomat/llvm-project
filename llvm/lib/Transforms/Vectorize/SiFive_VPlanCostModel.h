@@ -10,6 +10,7 @@
 /// VPlan-based cost model
 ///
 //===----------------------------------------------------------------------===//
+#include "llvm/ADT/MapVector.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/TargetParser/RISCVTargetParser.h"
@@ -123,17 +124,17 @@ public:
       : Plan(Plan), Legal(Legal), TTI(TTI), TLI(TLI) {}
 
   /// Return cost of the VPlan for a given \p RVL
-  InstructionCost getCost(const RVVPair &RVL) const;
+  InstructionCost getCost(const RVVPair &RVL);
 
   /// Return VectorType that corresponds to the specified (LMUL, SEW) pair
   static Type *getVectorType(Type *Ty, const RVVPair &RVVP);
 
 private:
   /// Return individual cost of the \p VPBasicBlock for a given \p RVL
-  InstructionCost getCost(const VPBlockBase *Block, const RVVPair &RVL) const;
+  InstructionCost getCost(const VPBlockBase *Block, const RVVPair &RVL);
 
   /// Return individual cost of the \p Recipe for a given \p RVL
-  InstructionCost getCost(const VPRecipeBase *Recipe, const RVVPair &RVL) const;
+  InstructionCost getCost(const VPRecipeBase *Recipe, const RVVPair &RVL);
 
   /// Return individual cost of the call for a given \p RVL
   InstructionCost getVectorCallCost(const CallInst *CI,
@@ -145,11 +146,11 @@ private:
 
   /// Return cost of the individual memory operation for a given \p RVL
   InstructionCost getMemoryOpCost(const VPWidenMemoryInstructionRecipe *VPWMIR,
-                                  const RVVPair &RVL) const;
+                                  const RVVPair &RVL);
 
   /// Return cost of the interleavedmemory operation for a given \p RVL
   InstructionCost getInterleavedMemoryOpCost(const VPInterleaveRecipe *VPI,
-                                             const RVVPair &RVL) const;
+                                             const RVVPair &RVL);
 
   /// Return cost of the individual memory operation of a instruction \p I of a
   /// given type \p Ty
@@ -169,6 +170,14 @@ private:
   InstructionCost getReplicateOpCost(const VPReplicateRecipe *VPR,
                                      const RVVPair &RVL) const;
 
+  /// Return cost to use register type \p RegID. Return 0 if no
+  /// spills/reload required
+  InstructionCost getRegisterPressureCost(const unsigned RegID, Type *Ty) const;
+
+  /// Associate new registers \p NumRegs of a type \p RegID with VPValue \p VPV.
+  void addRegisterUsage(const VPValue *VPV, const unsigned RegID,
+                        const unsigned NumRegs);
+
   /// VPlan for which cost is computed
   const VPlan &Plan;
 
@@ -185,5 +194,16 @@ private:
 
   /// Use same cost kind in the cost model
   const TargetTransformInfo::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
+
+  struct RegistersUsage {
+    /// A set of VPValues and their register use that are currently live
+    DenseMap<const VPValue *, DenseMap<unsigned, unsigned>> LiveRecipes;
+
+    /// A set of registers currently in use
+    DenseMap<unsigned, unsigned> LiveRegister;
+  } RegistersUsage;
+
+  /// A set of VPRecipes that were visited by the cost model
+  DenseSet<const VPRecipeBase *> VisitedRecipes;
 };
 } // namespace llvm

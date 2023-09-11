@@ -419,7 +419,11 @@ bool RecurrenceDescriptor::AddReductionVar(
 
     // A reduction operation must only have one use of the reduction value.
     if (!IsAPhi && !IsASelect && !isMinMaxRecurrenceKind(Kind) &&
+#if SIFIVE_CUSTOMIZATION
         !isAnyOfRecurrenceKind(Kind) && !isFindLastIVRecurrenceKind(Kind) &&
+#else
+        !isAnyOfRecurrenceKind(Kind) &&
+#endif // SIFIVE_CUSTOMIZATION
         hasMultipleUsesOf(Cur, VisitedInsts, 1))
       return false;
 
@@ -1078,11 +1082,13 @@ bool RecurrenceDescriptor::isReductionPHI(PHINode *Phi, Loop *TheLoop,
                       << *Phi << "\n");
     return true;
   }
+#if SIFIVE_CUSTOMIZATION
   if (AddReductionVar(Phi, RecurKind::IFindLastIV, TheLoop, FMF, RedDes, DB, AC,
                       DT, SE)) {
     LLVM_DEBUG(dbgs() << "Found a FindLastIV reduction PHI." << *Phi << "\n");
     return true;
   }
+#endif // SIFIVE_CUSTOMIZATION
   if (AddReductionVar(Phi, RecurKind::FMul, TheLoop, FMF, RedDes, DB, AC, DT,
                       SE)) {
     LLVM_DEBUG(dbgs() << "Found an FMult reduction PHI." << *Phi << "\n");

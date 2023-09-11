@@ -23,6 +23,7 @@
 #include "llvm/IR/DataLayout.h"
 #include "llvm/IR/GetElementPtrTypeIterator.h"
 #include "llvm/IR/IntrinsicInst.h"
+#include "llvm/IR/IntrinsicsRISCV.h"
 #include "llvm/IR/PatternMatch.h"
 #include "llvm/Support/KnownBits.h"
 #include "llvm/Transforms/InstCombine/InstCombiner.h"
@@ -6781,6 +6782,71 @@ static Instruction *foldICmpInvariantGroup(ICmpInst &I) {
   return nullptr;
 }
 
+#if SIFIVE_CUSTOMIZATION
+// Try to fold loop terminator for a vsetvli loop if we can prove it runs 1
+// iteration.
+static Instruction *foldVSetvliRecurrence(ICmpInst &Cmp, InstCombiner &IC) {
+  Value *LHS = Cmp.getOperand(0);
+  Value *RHS = Cmp.getOperand(1);
+  const CmpInst::Predicate Pred = Cmp.getPredicate();
+
+  if (Pred != ICmpInst::ICMP_EQ)
+    return nullptr;
+
+  // RHS should be a non-zero constant. This is our starting AVL.
+  auto *CI = dyn_cast<ConstantInt>(RHS);
+  if (!CI || CI->isZero())
+    return nullptr;
+
+  // Left hand side should be an add.
+  auto *BO = dyn_cast<BinaryOperator>(LHS);
+  if (!BO || BO->getOpcode() != Instruction::Add)
+    return nullptr;
+
+  // Left hand side of the compare should be a recurrence.
+  PHINode *PN;
+  Value *Start, *Step;
+  if (!matchSimpleRecurrence(BO, PN, Start, Step))
+    return nullptr;
+
+  // Start value should be 0.
+  if (!match(Start, m_ZeroInt()))
+    return nullptr;
+
+  // Recurrence step should be a vsetvli.
+  Value *AVL;
+  uint64_t VLMUL, VSEW;
+  if (!match(Step, m_Intrinsic<Intrinsic::riscv_vsetvli>(m_Value(AVL),
+                                                         m_ConstantInt(VSEW),
+                                                         m_ConstantInt(VLMUL))))
+    return nullptr;
+
+  // AVL should be (sub RHS, PN).
+  if (!match(AVL, m_Sub(m_Specific(RHS), m_Specific(PN))))
+    return nullptr;
+
+  // Try to estimate how many elements would fit in a vector defined by this
+  // vsetvli. If that number is greater than or equal to the starting AVL, we
+  // can assume the loop runs 1 time.
+  unsigned VectorLength = 32; // FIXME: This is conservative.
+  if (VSEW >= 4)
+    return nullptr;
+
+  if (VLMUL < 4)
+    VectorLength <<= VLMUL;
+  else if (VLMUL >= 5 && VLMUL <= 7)
+    VectorLength >>= (8 - VLMUL);
+  else
+    return nullptr;
+
+  unsigned Elts = VectorLength >> (VSEW + 3);
+  if (CI->getValue().ugt(Elts))
+    return nullptr;
+
+  return IC.replaceInstUsesWith(Cmp, ConstantInt::getTrue(Cmp.getType()));
+}
+#endif
+
 /// This function folds patterns produced by lowering of reduce idioms, such as
 /// llvm.vector.reduce.and which are lowered into instruction chains. This code
 /// attempts to generate fewer number of scalar comparisons instead of vector
@@ -7117,6 +7183,11 @@ Instruction *InstCombinerImpl::visitICmpInst(ICmpInst &I) {
 
   if (Instruction *Res = foldReductionIdiom(I, Builder, DL))
     return Res;
+
+#if SIFIVE_CUSTOMIZATION
+  if (Instruction *Res = foldVSetvliRecurrence(I, *this))
+    return Res;
+#endif
 
   return Changed ? &I : nullptr;
 }
