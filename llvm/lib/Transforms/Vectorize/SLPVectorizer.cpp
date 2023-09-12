@@ -3872,9 +3872,6 @@ enum class LoadsState {
   Gather,
   Vectorize,
   ScatterVectorize,
-#if SIFIVE_CUSTOMIZATION
-  StridedVectorize,
-#endif // SIFIVE_CUSTOMIZATION
   PossibleStridedVectorize
 };
 } // anonymous namespace
@@ -4100,7 +4097,7 @@ static LoadsState canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
       calculateRtStride(PointerOps, ScalarTy, DL, SE, Order) &&
       (Order.empty() || VL.size() <= SiFiveMaxProfitableUnorderedLoads ||
        isReverseOrder(Order)))
-    return LoadsState::StridedVectorize;
+    return LoadsState::PossibleStridedVectorize;
 #endif // SIFIVE_CUSTOMIZATION
   if (IsSorted || all_of(PointerOps, [&](Value *P) {
         return arePointersCompatible(P, PointerOps.front(), TLI);
@@ -4163,7 +4160,7 @@ static LoadsState canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
                 break;
             }
             if (Dists.size() == Sz)
-              return LoadsState::StridedVectorize;
+              return LoadsState::PossibleStridedVectorize;
           }
         }
       }
@@ -4187,7 +4184,7 @@ static LoadsState canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
               canVectorizeLoads(Slice, Slice.front(), TTI, DL, SE, LI, TLI,
                                 Order, PointerOps, /*TryRecursiveCheck=*/false);
           // Check that the sorted loads are consecutive.
-          if (LS != LoadsState::Vectorize && LS != LoadsState::StridedVectorize)
+          if (LS != LoadsState::Vectorize && LS != LoadsState::PossibleStridedVectorize)
             break;
         }
         // Can be vectorized later as a serie of loads/insertelements.
@@ -5586,9 +5583,6 @@ BoUpSLP::TreeEntry::EntryState BoUpSLP::getScalarsVectorizationState(
     // unvectorized version.
     switch (canVectorizeLoads(VL, VL0, *TTI, *DL, *SE, *LI, *TLI, CurrentOrder,
                               PointerOps)) {
-#if SIFIVE_CUSTOMIZATION
-    case LoadsState::StridedVectorize:
-#endif // SIFIVE_CUSTOMIZATION
     case LoadsState::Vectorize:
       return TreeEntry::Vectorize;
     case LoadsState::ScatterVectorize:
@@ -7181,9 +7175,6 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
                 canVectorizeLoads(Slice, Slice.front(), TTI, *R.DL, *R.SE,
                                   *R.LI, *R.TLI, CurrentOrder, PointerOps);
             switch (LS) {
-#if SIFIVE_CUSTOMIZATION
-            case LoadsState::StridedVectorize:
-#endif // SIFIVE_CUSTOMIZATION
             case LoadsState::Vectorize:
             case LoadsState::ScatterVectorize:
             case LoadsState::PossibleStridedVectorize:
