@@ -443,7 +443,9 @@ def SIFIVE_U64R : RISCVProcessorModel<"sifive-u64r", SiFive6Model,
                                        FeatureStdExtZba,
                                        FeatureStdExtZbb,
                                        FeatureStdExtZcb,
-                                       FeatureStdExtZkt],
+                                       FeatureStdExtZkt,
+                                       FeatureStdExtXsifivecdiscarddlone,
+                                       FeatureStdExtXsifivecflushdlone],
                                       [TuneSiFive6]>;
 #endif // SIFIVE_CUSTOMIZATION
 
