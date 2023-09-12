@@ -27,6 +27,8 @@
 #define LLVM_ANALYSIS_LIVEVALUE_H
 
 #include "llvm/ADT/SparseBitVector.h"
+#include "llvm/Analysis/SiFive_LiveInterval.h"
+#include "llvm/Analysis/AssumptionCache.h"
 #include "llvm/IR/AssemblyAnnotationWriter.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/CFG.h"
@@ -35,13 +37,9 @@
 #include "llvm/IR/PassManager.h"
 #include "llvm/Pass.h"
 #include "llvm/Support/raw_ostream.h"
-#include <atomic>
-
 #include <list>
 
 namespace llvm {
-
-using Workqueue = std::list<BasicBlock *>;
 
 class LiveValues : public AssemblyAnnotationWriter {
 private:
@@ -50,15 +48,23 @@ private:
   DenseMap<const BasicBlock *, SparseBitVector<>> LiveOut;
   DenseMap<const BasicBlock *, SparseBitVector<>> PhiValues;
 
+  /// For collecting and comparing if values are Ephemeral.
+  SmallPtrSet<const Value *, 4> EphValues;
+
   /// Map Values to their Instr SparseBitVector.
   SmallVector<Value *> BvIdxToValue;
-  /// Map Values (args and variables) to their SparseBitVector index.
-  DenseMap<Value *, int> ValueToBvIdx;
   /// Instruction In sets.
   DenseMap<const Instruction *, SparseBitVector<>> InstrLiveIn;
+  DenseMap<const Value *, ValueLiveInterval> LIs;
+  DenseMap<const Value *, IndexListEntry> Indices;
   bool LiveValuesAvailable = false;
 
+  ValueSlotInfo::Allocator VSInfoAllocator;
+  AssumptionCache *AC = nullptr;
+
 public:
+  using Workqueue = std::list<BasicBlock *>;
+
   /// Mark as a backward liveness analysis.
   LiveValues() = default;
 
@@ -74,6 +80,9 @@ public:
   /// Analyse Live Values for function F.
   bool analyzeFunction(Function &F);
 
+  void emitFunctionAnnot(const Function *F,
+                         formatted_raw_ostream &OS) final;
+
   /// Emit live variables before a basic block.
   void emitBasicBlockStartAnnot(const BasicBlock *BB,
                                 formatted_raw_ostream &OS) final;
@@ -87,6 +96,24 @@ public:
 
   /// live[n] = use[n] U (out[n] - def[n])
   bool statementTransferFunction(BasicBlock *BB, size_t &NumOperations);
+
+  /// Create A full Segment for V from Start to End
+  void createFullSegment(Value *Start, unsigned SlotStart,
+                         Value *End, unsigned SlotEnd, Value *V);
+
+  /// Create a Segment starting at Start for V.
+  void createSegmentStart(Value *Start, unsigned slot,
+                          Value *V, ValueSlotIndex &DefIndex);
+
+  /// End a Segment at End for V.
+  void endExistingSegment(Value *End, unsigned slot,
+                          Value *V, ValueSlotIndex &DefIndex);
+
+  /// Fill in LiveRange Segment info for V.
+  void constructLiveIntervalSegments(Value *V, Function &F);
+
+  /// Fill in pass through segments of all the LIs of F.
+  void extendPassThroughLiveIntervalSegments(Function &F);
 
   /// Function level data flow analysis.
   void doDataFlowAnalysis(Function &F);
@@ -102,9 +129,7 @@ public:
                   FunctionAnalysisManager::Invalidator &);
 
   /// Get the SparseBitVector for LiveIn[BB]
-  SparseBitVector<> &getLiveIn(BasicBlock *BB) {
-    return LiveIn[BB];
-  }
+  const SparseBitVector<> &getLiveIn(BasicBlock *BB) { return LiveIn[BB]; }
 
   /// Set the SparseBitVector for LiveIn[BB]
   void setLiveIn(BasicBlock *BB, const SparseBitVector<> &BV) {
@@ -112,9 +137,7 @@ public:
   }
 
   /// Get the SparseBitVector for LiveOut[BB]
-  SparseBitVector<> &getLiveOut(BasicBlock *BB) {
-    return LiveOut[BB];
-  }
+  const SparseBitVector<> &getLiveOut(BasicBlock *BB) { return LiveOut[BB]; }
 
   /// Set the SparseBitVector for LiveOut[BB]
   void setLiveOut(BasicBlock *BB, const SparseBitVector<> &BV) {
@@ -122,9 +145,7 @@ public:
   }
 
   /// Get the SparseBitVector for PhiValues[BB]
-  SparseBitVector<> &getPhiValues(BasicBlock *BB) {
-    return PhiValues[BB];
-  }
+  const SparseBitVector<> &getPhiValues(BasicBlock *BB) { return PhiValues[BB]; }
 
   /// Set the SparseBitVector for PhiValues[BB]
   void setPhiValues(BasicBlock *BB, const SparseBitVector<> &BV) {
@@ -132,14 +153,16 @@ public:
   }
 
   /// Get the SparseBitVector for InstrLiveIn[I]
-  SparseBitVector<> &getInstrLiveIn(Instruction *I) {
-    return InstrLiveIn[I];
-  }
+  const SparseBitVector<> &getInstrLiveIn(Instruction *I) { return InstrLiveIn[I]; }
 
   /// Set the SparseBitVector for InstrLiveIn[I]
   void setInstrLiveIn(Instruction *I, const SparseBitVector<> &BV) {
     InstrLiveIn[I] = BV;
   }
+
+  ValueSlotInfo::Allocator &getVSInfoAllocator() { return VSInfoAllocator; }
+
+  void setAssumptionCache(AssumptionCache *AC) { this->AC = AC; }
 };
 
 /// Analysis pass which computes a \c LiveValues.
@@ -151,7 +174,7 @@ public:
   /// Provide the result typedef for this analysis pass.
   using Result = LiveValues;
 
-  /// Run the analysis pass over a function and produce a dominator tree.
+  /// Run the analysis pass over a function and produce Live Values.
   LiveValues run(Function &F, FunctionAnalysisManager &);
 };
 

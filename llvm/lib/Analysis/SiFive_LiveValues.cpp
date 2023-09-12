@@ -1,4 +1,4 @@
-//===- SiFive_LiveValues.cpp - Utility code ---------------------===//
+//===- SiFive_LiveValues.cpp - Utility code -------------------------------===//
 //
 // Copyright (c) 2023 SiFive, Inc. -- Proprietary and Confidential All
 // Rights Reserved.
@@ -24,6 +24,7 @@
 
 #if SIFIVE_CUSTOMIZATION
 
+#include "llvm/Analysis/CodeMetrics.h"
 #include "llvm/Analysis/SiFive_LiveValues.h"
 #include "llvm/IR/DebugInfo.h"
 #include "llvm/IR/InstIterator.h"
@@ -32,6 +33,7 @@
 #include "llvm/Support/FormattedStream.h"
 
 #include <cmath>
+#include <type_traits>
 
 using namespace llvm;
 
@@ -70,8 +72,9 @@ size_t LiveValues::doAnalysis(Workqueue &W) {
   NumOperations += NumSuccs;
 
   // For incoming values of a PHINode, map the values as LiveOut of BB.
-  if (PhiValues.find(BB) != PhiValues.end()) {
-    LiveOut[BB] |= PhiValues[BB];
+  auto PIT = PhiValues.find(BB);
+  if (PIT != PhiValues.end()) {
+    LiveOut[BB] |= PIT->second;
     NumOperations++;
   }
 
@@ -84,10 +87,12 @@ size_t LiveValues::doAnalysis(Workqueue &W) {
 }
 
 void LiveValues::finalizeAnalysis(Function &F) {
-  for (BasicBlock &BB : F)
-    if (PhiValues.find(&BB) != PhiValues.end())
+  for (BasicBlock &BB : F) {
+    auto PIT = PhiValues.find(&BB);
+    if (PIT != PhiValues.end())
       for (auto SI = succ_begin(&BB), SE = succ_end(&BB); SI != SE; SI++)
-        LiveIn[*SI] |= PhiValues[&BB];
+        LiveIn[*SI] |= PIT->second;
+  }
 }
 
 // Configure compute threshold to limit how much compile time we use.
@@ -143,12 +148,23 @@ bool LiveValues::analyzeFunction(Function &F) {
   return LiveValuesAvailable;
 }
 
+// Dump ValueLiveIntervals before F.
+void LiveValues::emitFunctionAnnot(const Function *F,
+                                   formatted_raw_ostream &OS) {
+  int N = getLivenessPoolSize();
+  for (int I = 0; I < N; ++I) {
+    Value *V = BvIdxToValue[I];
+    OS << LIs[V] << "\n";
+  }
+}
+
 // Dump live values before BB.
 void LiveValues::emitBasicBlockStartAnnot(const BasicBlock *BB,
                                           formatted_raw_ostream &OS) {
   OS << "LiveIn(BB): ";
-  if (LiveIn.find(BB) != LiveIn.end()) {
-    for (auto Idx : LiveIn[BB]) {
+  auto LiveInIt = LiveIn.find(BB);
+  if (LiveInIt != LiveIn.end()) {
+    for (size_t Idx : LiveInIt->second) {
       Value *V = BvIdxToValue[Idx];
       if (V->hasName())
         OS << "%" << V->getName() << ", ";
@@ -158,8 +174,9 @@ void LiveValues::emitBasicBlockStartAnnot(const BasicBlock *BB,
   }
   OS << "\n";
   OS << "LiveOut(BB): ";
-  if (LiveOut.find(BB) != LiveOut.end()) {
-    for (auto Idx : LiveOut[BB]) {
+  auto LiveOutIt = LiveOut.find(BB);
+  if (LiveOutIt != LiveOut.end()) {
+    for (size_t Idx : LiveOutIt->second) {
       Value *V = BvIdxToValue[Idx];
       if (V->hasName())
         OS << "%" << V->getName() << ", ";
@@ -175,7 +192,7 @@ void LiveValues::emitInstructionAnnot(const Instruction *I,
                                       formatted_raw_ostream &OS) {
   OS << "Live(I): ";
   if (!isa<PHINode>(I)) {
-    for (auto Idx : InstrLiveIn[I]) {
+    for (size_t Idx : InstrLiveIn[I]) {
       Value *V = BvIdxToValue[Idx];
       if (V->hasName())
         OS << "%" << V->getName() << ", ";
@@ -197,7 +214,7 @@ bool LiveValues::statementTransferFunction(BasicBlock *BB,
     Instruction *I = &*IT;
 
     // Collect (out[n] - def[n])
-    NewLiveIn.reset(ValueToBvIdx[I]);
+    NewLiveIn.reset(Indices[I].getIndex());
     NumOperations++;
 
     // Add uses, unless a phi node then propagate incoming values.
@@ -205,7 +222,7 @@ bool LiveValues::statementTransferFunction(BasicBlock *BB,
       for (size_t Idx = 0; Idx < PhiNode->getNumIncomingValues(); Idx++) {
         Value *Val = PhiNode->getIncomingValue(Idx);
         if (isa<Instruction, Argument>(Val)) {
-          int ValIdx = ValueToBvIdx[Val];
+          int ValIdx = Indices[Val].getIndex();
           BasicBlock *IdxBB = PhiNode->getIncomingBlock(Idx);
           PhiValues[IdxBB].set(ValIdx);
           NumOperations++;
@@ -215,7 +232,7 @@ bool LiveValues::statementTransferFunction(BasicBlock *BB,
       // use[n] U (out[n] - def[n])
       for (auto OI = I->op_begin(), OE = I->op_end(); OI != OE; ++OI)
         if (isa<Instruction, Argument>(*OI)) {
-          NewLiveIn.set(ValueToBvIdx[*OI]);
+          NewLiveIn.set(Indices[*OI].getIndex());
           NumOperations++;
         }
     }
@@ -233,26 +250,185 @@ bool LiveValues::statementTransferFunction(BasicBlock *BB,
   return Changed;
 }
 
+void LiveValues::createFullSegment(Value *Start, unsigned SlotStart,
+                                   Value *End, unsigned SlotEnd, Value *V) {
+  ValueSlotIndex FirstIndex(&Indices[Start], SlotStart);
+  ValueSlotIndex LastIndex(&Indices[End], SlotEnd);
+  ValueSlotInfo *VNI = *LIs[V].vni_begin();
+  LIs[V].addSegment(ValueLiveInterval::Segment(FirstIndex, LastIndex, VNI));
+}
+
+void LiveValues::createSegmentStart(Value *Start, unsigned Slot,
+                                    Value *V, ValueSlotIndex &StartIndex) {
+  ValueSlotIndex DefIndex(&Indices[Start], Slot);
+  StartIndex = DefIndex;
+  LIs[V].createDeadDef(DefIndex, getVSInfoAllocator());
+}
+
+void LiveValues::endExistingSegment(Value *End, unsigned Slot,
+                                    Value *V, ValueSlotIndex &DefIndex) {
+  ValueSlotIndex EndIndex(&Indices[End], Slot);
+  LIs[V].extendInBlock(DefIndex, EndIndex);
+}
+
+void LiveValues::constructLiveIntervalSegments(Value *V, Function &F) {
+  if (V->getNumUses() == 0)
+    return;
+
+  BasicBlock *BB = nullptr;
+  if (auto *I = dyn_cast<Instruction>(V))
+    BB = I->getParent();
+  else if (isa<Argument>(V))
+    BB = &F.getEntryBlock();
+  else
+    return;
+
+  // Build a process list of non ephermal values
+  SmallVector<Instruction *, 10> Worklist;
+  for (User *U : V->users()) {
+    Instruction *UseI = cast<Instruction>(U);
+    if (EphValues.count(UseI))
+      continue;
+
+    Worklist.push_back(UseI);
+  }
+
+  if (Worklist.empty())
+    return;
+
+  int DefIdx = Indices[V].getIndex();
+  DenseMap<const BasicBlock *, ValueSlotIndex> CurIndexMap;
+  unsigned Slot = (isa<PHINode, Argument>(V))
+                      ? ValueSlotIndex::Slot::Slot_Block
+                      : ValueSlotIndex::Slot::Slot_Register;
+  createSegmentStart(V, Slot, V, CurIndexMap[BB]);
+
+  // Extend the Def if it's live out otherwise we defer to use processing.
+  if (LiveOut[BB].test(DefIdx)) {
+    // Fill in a segment from the DefIndex to the EndIdx
+    Instruction *I = &*BB->rbegin();
+    endExistingSegment(I, ValueSlotIndex::Slot::Slot_Register,
+                       V, CurIndexMap[BB]);
+  }
+
+  // Add segments as needed for uses of V.
+  SmallPtrSet<BasicBlock *, 4> Visited;
+  while (!Worklist.empty()) {
+    Instruction *UseI = Worklist.pop_back_val();
+    BasicBlock *UseBB = UseI->getParent();
+    // This implies that the definition is not BB local.
+    if (UseBB != BB) {
+      // All the blocks that have DefIdx as LiveIn and LiveOut
+      // will be processed as pass through segements later.
+      if (!LiveOut[UseBB].test(DefIdx)) {
+        // If this is the first time we have seen UseBB.
+        if (Visited.insert(UseBB).second) {
+          Instruction *FirstI = &*UseBB->begin();
+          createSegmentStart(FirstI, ValueSlotIndex::Slot::Slot_Block,
+                             V, CurIndexMap[UseBB]);
+        }
+      } else {
+        // These will be handled with pass through values Segments.
+        continue;
+      }
+    }
+    endExistingSegment(UseI, ValueSlotIndex::Slot::Slot_Register,
+                       V, CurIndexMap[UseBB]);
+  }
+}
+
+void LiveValues::extendPassThroughLiveIntervalSegments(Function &F) {
+  // Iterate the CFG and for each block where a Value is
+  // both LiveIn and LiveOut, add a segment for it.
+  BasicBlock *EntryBB = &F.getEntryBlock();
+  for (BasicBlock &BB : F) {
+    BasicBlock *CurBB = &BB;
+    // Skip the entry, we processed Arguments already.
+    if (EntryBB == CurBB)
+      continue;
+
+    auto LiveInIt = LiveIn.find(CurBB);
+    if (LiveInIt == LiveIn.end())
+      continue;
+
+    auto LiveOutIt = LiveOut.find(CurBB);
+    if (LiveOutIt == LiveOut.end())
+      continue;
+
+    // TODO: Extend support for detecting this scenario in
+    //       phi based ptr/fp updates in loops.
+    // Backedge based PHINodes can have holes from the phi to
+    // its updater for the phi input values.  These are technically
+    // backwards segments that have forward segment layout.
+    for (size_t Idx : LiveInIt->second)
+      if (LiveOut[CurBB].test(Idx)) {
+        Value *V = BvIdxToValue[Idx];
+        if (auto *BinOp = dyn_cast<BinaryOperator>(V)) {
+          bool SkipToNextIdx = false;
+          // Is V not a pass through value?
+          for (User *U : V->users())
+            if (auto *CurPhi = dyn_cast<PHINode>(U))
+              if (CurPhi->getParent() == CurBB) {
+                SkipToNextIdx |=
+                    (any_of(BinOp->operands(), [=](const Value *Op) {
+                      return (Op == CurPhi);
+                    }));
+                if (SkipToNextIdx)
+                  break;
+              }
+
+          if (SkipToNextIdx)
+            continue;
+        }
+
+        // Construct the pass through Segment for V.
+        Instruction *FirstI = &*CurBB->begin();
+        Instruction *LastI = &*CurBB->rbegin();
+        createFullSegment(FirstI, ValueSlotIndex::Slot::Slot_Block,
+                          LastI, ValueSlotIndex::Slot::Slot_Block, V);
+      }
+  }
+}
+
 void LiveValues::doDataFlowAnalysis(Function &F) {
+  VSInfoAllocator.Reset();
+  EphValues.clear();
+  CodeMetrics::collectEphemeralValues(&F, AC, EphValues);
+
   // Give a name to any Instruction/Block without hasName.
   if (EnableLivenessAnnotations)
     nameInstructions(F);
 
   // Initialize SparseBitVector accessors.
   int Idx = 0;
-  for (auto AI = F.arg_begin(), AE = F.arg_end(); AI != AE; ++AI) {
-    BvIdxToValue.push_back(&*AI);
-    ValueToBvIdx[&*AI] = Idx++;
+  for (auto &ArgI : F.args()) {
+    BvIdxToValue.push_back(&ArgI);
+    LIs[&ArgI].setValue(&ArgI);
+    Indices[&ArgI].setVal(&ArgI);
+    Indices[&ArgI].setIndex(Idx++);
   }
 
   for (auto IT = inst_begin(F), IE = inst_end(F); IT != IE; ++IT) {
-    BvIdxToValue.push_back(&*IT);
-    ValueToBvIdx[&*IT] = Idx++;
+    Instruction *I = &*IT;
+    BvIdxToValue.push_back(I);
+    LIs[I].setValue(I);
+    Indices[I].setVal(I);
+    Indices[I].setIndex(Idx++);
   }
 
   // Do flow analysis for F.
   if (!analyzeFunction(F))
     return;
+
+  for (int I = 0; I < Idx; ++I) {
+    Value *V = BvIdxToValue[I];
+    if (!V)
+      continue;
+
+    constructLiveIntervalSegments(V, F);
+  }
+
+  extendPassThroughLiveIntervalSegments(F);
 
   if (EnableLivenessAnnotations)
     F.print(errs(), this);
@@ -263,7 +439,6 @@ void LiveValues::recalcDataFlowAnalysis(Function &F) {
   LiveOut.clear();
   PhiValues.clear();
   BvIdxToValue.clear();
-  ValueToBvIdx.clear();
   InstrLiveIn.clear();
 
   doDataFlowAnalysis(F);
@@ -289,7 +464,8 @@ void LiveValues::nameInstructions(Function &F) {
 
 bool LiveValues::invalidate(Function &F, const PreservedAnalyses &PA,
                             FunctionAnalysisManager::Invalidator &) {
-  // Check whether the analysis or all analyses on functions have been preserved.
+  // Check whether the analysis or all analyses on functions have been
+  // preserved.
   auto PAC = PA.getChecker<LiveValuesAnalysis>();
   return !(PAC.preserved() || PAC.preservedSet<AllAnalysesOn<Function>>());
 }
@@ -303,10 +479,12 @@ bool LiveValues::invalidate(Function &F, const PreservedAnalyses &PA,
 //
 //===----------------------------------------------------------------------===//
 
-LiveValues LiveValuesAnalysis::run(Function &F, FunctionAnalysisManager &) {
+LiveValues LiveValuesAnalysis::run(Function &F, FunctionAnalysisManager &AM) {
   LiveValues LV;
-  if (EnableValuePressureAnalysis)
+  if (EnableValuePressureAnalysis) {
+    LV.setAssumptionCache(&AM.getResult<AssumptionAnalysis>(F));
     LV.doDataFlowAnalysis(F);
+  }
 
   return LV;
 }
