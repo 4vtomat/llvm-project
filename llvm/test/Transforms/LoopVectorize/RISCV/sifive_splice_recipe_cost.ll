@@ -3,14 +3,14 @@
 
 ; REQUIRES: asserts
 
-; CHECK: VPlanCM: cost 2 for RVL (mf2, float) for VPInstruction: EMIT vp<%11> = first-order splice ir<%x.0>, ir<%1>
-; CHECK: VPlanCM: cost 2 for RVL (mf2, float) for VPInstruction: EMIT vp<%12> = first-order splice ir<%y.022>, vp<%11>
-; CHECK: VPlanCM: cost 4 for RVL (m1, float) for VPInstruction: EMIT vp<%11> = first-order splice ir<%x.0>, ir<%1>
-; CHECK: VPlanCM: cost 4 for RVL (m1, float) for VPInstruction: EMIT vp<%12> = first-order splice ir<%y.022>, vp<%11>
-; CHECK: VPlanCM: cost 16 for RVL (m4, float) for VPInstruction: EMIT vp<%11> = first-order splice ir<%x.0>, ir<%1>
-; CHECK: VPlanCM: cost 16 for RVL (m4, float) for VPInstruction: EMIT vp<%12> = first-order splice ir<%y.022>, vp<%11>
-; CHECK: VPlanCM: cost 32 for RVL (m8, float) for VPInstruction: EMIT vp<%11> = first-order splice ir<%x.0>, ir<%1>
-; CHECK: VPlanCM: cost 32 for RVL (m8, float) for VPInstruction: EMIT vp<%12> = first-order splice ir<%y.022>, vp<%11>
+; CHECK: VPlanCM: cost 2 for RVL (mf2, float) for VPInstruction: EMIT vp<%10> = first-order splice ir<%x.0>, ir<%1>
+; CHECK: VPlanCM: cost 2 for RVL (mf2, float) for VPInstruction: EMIT vp<%11> = first-order splice ir<%y.022>, vp<%10>
+; CHECK: VPlanCM: cost 4 for RVL (m1, float) for VPInstruction: EMIT vp<%10> = first-order splice ir<%x.0>, ir<%1>
+; CHECK: VPlanCM: cost 4 for RVL (m1, float) for VPInstruction: EMIT vp<%11> = first-order splice ir<%y.022>, vp<%10>
+; CHECK: VPlanCM: cost 16 for RVL (m4, float) for VPInstruction: EMIT vp<%10> = first-order splice ir<%x.0>, ir<%1>
+; CHECK: VPlanCM: cost 16 for RVL (m4, float) for VPInstruction: EMIT vp<%11> = first-order splice ir<%y.022>, vp<%10>
+; CHECK: VPlanCM: cost 32 for RVL (m8, float) for VPInstruction: EMIT vp<%10> = first-order splice ir<%x.0>, ir<%1>
+; CHECK: VPlanCM: cost 32 for RVL (m8, float) for VPInstruction: EMIT vp<%11> = first-order splice ir<%y.022>, vp<%10>
 
 define void @foo(ptr %b, ptr %a) {
 entry:
