@@ -50,7 +50,6 @@ define i32 @test(i32 %start, ptr %tmpbuf, ptr %buffers, ptr %weights, ptr %endpo
 ; CHECK-NEXT:    [[TMP11:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[TMP10]], i64 2, i64 7)
 ; CHECK-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
 ; CHECK-NEXT:    [[TMP13:%.*]] = add i64 [[INDEX]], 0
-; CHECK-NEXT:    [[ACTIVE_LANE_MASK:%.*]] = call <vscale x 1 x i1> @llvm.get.active.lane.mask.nxv1i1.i64(i64 [[TMP13]], i64 [[TMP2]])
 ; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr float, ptr [[ERRORS]], i64 [[TMP13]]
 ; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr float, ptr [[TMP14]], i32 0
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv1f32.p0(<vscale x 1 x float> zeroinitializer, ptr align 4 [[TMP15]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP12]]), !alias.scope !0, !noalias !3

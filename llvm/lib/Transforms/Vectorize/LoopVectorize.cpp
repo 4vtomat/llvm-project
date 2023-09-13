@@ -9975,6 +9975,13 @@ void VPRecipeBuilder::createHeaderMask(VPlan &Plan) {
     BlockMaskCache[Header] = nullptr;
     return;
   }
+#if SIFIVE_CUSTOMIZATION
+  // We don't maks the loop body with this style of vectorization
+  if (Legal->useVLAVectorizer()) {
+    BlockMaskCache[Header] = nullptr;
+    return;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   // If we're using the active lane mask for control flow, then we get the
   // mask from the active lane mask PHI that is cached in the VPlan.
