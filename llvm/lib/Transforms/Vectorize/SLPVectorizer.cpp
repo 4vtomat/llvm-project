@@ -5588,6 +5588,10 @@ BoUpSLP::TreeEntry::EntryState BoUpSLP::getScalarsVectorizationState(
     case LoadsState::ScatterVectorize:
       return TreeEntry::ScatterVectorize;
     case LoadsState::PossibleStridedVectorize:
+#ifdef SIFIVE_CUSTOMIZATION
+      if (enabledRISCVExtensions(*cast<LoadInst>(VL0)->getModule(), *TTI))
+        return TreeEntry::Vectorize;
+#endif
       return TreeEntry::PossibleStridedVectorize;
     case LoadsState::Gather:
 #ifndef NDEBUG

@@ -5,19 +5,16 @@ define i32 @sum_of_abs(ptr noalias %a, ptr noalias %b) {
 ; CHECK-LABEL: define i32 @sum_of_abs
 ; CHECK-SAME: (ptr noalias [[A:%.*]], ptr noalias [[B:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = insertelement <4 x ptr> poison, ptr [[A]], i32 0
-; CHECK-NEXT:    [[TMP1:%.*]] = shufflevector <4 x ptr> [[TMP0]], <4 x ptr> poison, <4 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr i8, <4 x ptr> [[TMP1]], <4 x i64> <i64 64, i64 0, i64 128, i64 192>
-; CHECK-NEXT:    [[TMP3:%.*]] = call <4 x i8> @llvm.masked.gather.v4i8.v4p0(<4 x ptr> [[TMP2]], i32 1, <4 x i1> <i1 true, i1 true, i1 true, i1 true>, <4 x i8> poison)
-; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, <4 x ptr> [[TMP1]], <4 x i64> <i64 256, i64 320, i64 384, i64 448>
-; CHECK-NEXT:    [[TMP5:%.*]] = call <4 x i8> @llvm.masked.gather.v4i8.v4p0(<4 x ptr> [[TMP4]], i32 1, <4 x i1> <i1 true, i1 true, i1 true, i1 true>, <4 x i8> poison)
-; CHECK-NEXT:    [[TMP6:%.*]] = shufflevector <4 x i8> [[TMP3]], <4 x i8> poison, <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 poison, i32 poison, i32 poison, i32 poison>
-; CHECK-NEXT:    [[TMP7:%.*]] = shufflevector <4 x i8> [[TMP5]], <4 x i8> poison, <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 poison, i32 poison, i32 poison, i32 poison>
-; CHECK-NEXT:    [[TMP8:%.*]] = shufflevector <8 x i8> [[TMP6]], <8 x i8> [[TMP7]], <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 8, i32 9, i32 10, i32 11>
-; CHECK-NEXT:    [[TMP9:%.*]] = call <8 x i8> @llvm.abs.v8i8(<8 x i8> [[TMP8]], i1 false)
-; CHECK-NEXT:    [[TMP10:%.*]] = sext <8 x i8> [[TMP9]] to <8 x i32>
-; CHECK-NEXT:    [[TMP11:%.*]] = call i32 @llvm.vector.reduce.add.v8i32(<8 x i32> [[TMP10]])
-; CHECK-NEXT:    ret i32 [[TMP11]]
+; CHECK-NEXT:    [[TMP0:%.*]] = call <4 x i8> @llvm.riscv.masked.strided.load.v4i8.p0.i64(<4 x i8> poison, ptr align 1 [[A]], i64 64, <4 x i1> <i1 true, i1 true, i1 true, i1 true>)
+; CHECK-NEXT:    [[ARRAYIDX_4:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 256
+; CHECK-NEXT:    [[TMP1:%.*]] = call <4 x i8> @llvm.riscv.masked.strided.load.v4i8.p0.i64(<4 x i8> poison, ptr align 1 [[ARRAYIDX_4]], i64 64, <4 x i1> <i1 true, i1 true, i1 true, i1 true>)
+; CHECK-NEXT:    [[TMP2:%.*]] = shufflevector <4 x i8> [[TMP0]], <4 x i8> poison, <8 x i32> <i32 1, i32 0, i32 2, i32 3, i32 poison, i32 poison, i32 poison, i32 poison>
+; CHECK-NEXT:    [[TMP3:%.*]] = shufflevector <4 x i8> [[TMP1]], <4 x i8> poison, <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 poison, i32 poison, i32 poison, i32 poison>
+; CHECK-NEXT:    [[TMP4:%.*]] = shufflevector <8 x i8> [[TMP2]], <8 x i8> [[TMP3]], <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 8, i32 9, i32 10, i32 11>
+; CHECK-NEXT:    [[TMP5:%.*]] = call <8 x i8> @llvm.abs.v8i8(<8 x i8> [[TMP4]], i1 false)
+; CHECK-NEXT:    [[TMP6:%.*]] = sext <8 x i8> [[TMP5]] to <8 x i32>
+; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.vector.reduce.add.v8i32(<8 x i32> [[TMP6]])
+; CHECK-NEXT:    ret i32 [[TMP7]]
 ;
 entry:
   %0 = load i8, ptr %a, align 1
