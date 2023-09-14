@@ -2,20 +2,17 @@
 ; RUN: opt -S -passes=slp-vectorizer < %s -mtriple=riscv64-unknown-linux -mattr=+v | FileCheck %s
 
 define i32 @sum_of_abs(ptr noalias %a, ptr noalias %b) {
+; if SIFIVE_CUSTOMIZATION
 ; CHECK-LABEL: define i32 @sum_of_abs
 ; CHECK-SAME: (ptr noalias [[A:%.*]], ptr noalias [[B:%.*]]) #[[ATTR0:[0-9]+]] {
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = call <4 x i8> @llvm.riscv.masked.strided.load.v4i8.p0.i64(<4 x i8> poison, ptr align 1 [[A]], i64 64, <4 x i1> <i1 true, i1 true, i1 true, i1 true>)
-; CHECK-NEXT:    [[ARRAYIDX_4:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 256
-; CHECK-NEXT:    [[TMP1:%.*]] = call <4 x i8> @llvm.riscv.masked.strided.load.v4i8.p0.i64(<4 x i8> poison, ptr align 1 [[ARRAYIDX_4]], i64 64, <4 x i1> <i1 true, i1 true, i1 true, i1 true>)
-; CHECK-NEXT:    [[TMP2:%.*]] = shufflevector <4 x i8> [[TMP0]], <4 x i8> poison, <8 x i32> <i32 1, i32 0, i32 2, i32 3, i32 poison, i32 poison, i32 poison, i32 poison>
-; CHECK-NEXT:    [[TMP3:%.*]] = shufflevector <4 x i8> [[TMP1]], <4 x i8> poison, <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 poison, i32 poison, i32 poison, i32 poison>
-; CHECK-NEXT:    [[TMP4:%.*]] = shufflevector <8 x i8> [[TMP2]], <8 x i8> [[TMP3]], <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 8, i32 9, i32 10, i32 11>
-; CHECK-NEXT:    [[TMP5:%.*]] = call <8 x i8> @llvm.abs.v8i8(<8 x i8> [[TMP4]], i1 false)
-; CHECK-NEXT:    [[TMP6:%.*]] = sext <8 x i8> [[TMP5]] to <8 x i32>
-; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.vector.reduce.add.v8i32(<8 x i32> [[TMP6]])
-; CHECK-NEXT:    ret i32 [[TMP7]]
+; CHECK-NEXT:    [[TMP0:%.*]] = call <8 x i8> @llvm.riscv.masked.strided.load.v8i8.p0.i64(<8 x i8> poison, ptr align 1 [[A]], i64 64, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
+; CHECK-NEXT:    [[TMP1:%.*]] = call <8 x i8> @llvm.abs.v8i8(<8 x i8> [[TMP0]], i1 false)
+; CHECK-NEXT:    [[TMP2:%.*]] = sext <8 x i8> [[TMP1]] to <8 x i32>
+; CHECK-NEXT:    [[TMP3:%.*]] = call i32 @llvm.vector.reduce.add.v8i32(<8 x i32> [[TMP2]])
+; CHECK-NEXT:    ret i32 [[TMP3]]
 ;
+; end SIFIVE_CUSTOMIZATION
 entry:
   %0 = load i8, ptr %a, align 1
   %spec.select.i = tail call i8 @llvm.abs.i8(i8 %0, i1 false)
