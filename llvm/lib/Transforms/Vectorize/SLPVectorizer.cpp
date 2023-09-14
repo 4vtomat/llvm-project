@@ -186,11 +186,6 @@ static cl::opt<bool>
                 cl::desc("Display the SLP trees with Graphviz"));
 
 #if SIFIVE_CUSTOMIZATION
-static cl::opt<unsigned> SiFiveMaxProfitableUnorderedLoads(
-    "sifive-slp-max-unordered-strided-loads", cl::init(4), cl::Hidden,
-    cl::desc("The maximum size of the non-ordered strided loads, which should "
-             "be treated as strided loads, not masked gathers"));
-
 static cl::opt<unsigned> SiFiveMinProfitableStridedLoads(
     "sifive-slp-min-strided-loads", cl::init(2), cl::Hidden,
     cl::desc("The minimum number of loads, which should be considered strided, "
@@ -2449,6 +2444,10 @@ private:
   TargetTransformInfo::OperandValueInfo getOperandInfo(const TreeEntry &E,
                                                        unsigned OpIdx);
 
+#if SIFIVE_CUSTOMIZATION
+  bool isRISCVStridedNode(const TreeEntry *E) const;
+#endif // SIFIVE_CUSTOMIZATION
+
   /// \returns the cost of the vectorizable entry.
   InstructionCost getEntryCost(const TreeEntry *E,
                                ArrayRef<Value *> VectorizedVals,
@@ -4094,9 +4093,7 @@ static LoadsState canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
       TTI.isTypeLegal(VecTy) &&
       TTI.isLegalMaskedGather(VecTy, CommonAlignment) &&
       !TTI.forceScalarizeMaskedGather(VecTy, CommonAlignment) &&
-      calculateRtStride(PointerOps, ScalarTy, DL, SE, Order) &&
-      (Order.empty() || VL.size() <= SiFiveMaxProfitableUnorderedLoads ||
-       isReverseOrder(Order)))
+      calculateRtStride(PointerOps, ScalarTy, DL, SE, Order))
     return LoadsState::PossibleStridedVectorize;
 #endif // SIFIVE_CUSTOMIZATION
   if (IsSorted || all_of(PointerOps, [&](Value *P) {
@@ -4118,6 +4115,8 @@ static LoadsState canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
       // Check that the sorted loads are consecutive.
       if (static_cast<unsigned>(*Diff) == VL.size() - 1)
         return LoadsState::Vectorize;
+      // Simple check if not a strided access - clear order.
+      IsPossibleStrided = *Diff % (VL.size() - 1) == 0;
 #if SIFIVE_CUSTOMIZATION
       const unsigned Sz = VL.size();
       // Try to generate strided load node if:
@@ -4136,9 +4135,7 @@ static LoadsState canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
                   SiFiveMaxProfitableLoadStride * Sz &&
               isPowerOf2_32(std::abs(*Diff)))) &&
             static_cast<unsigned>(std::abs(*Diff)) > Sz) ||
-           *Diff == -(static_cast<int>(Sz) - 1)) &&
-          (Order.empty() || Sz <= SiFiveMaxProfitableUnorderedLoads ||
-           isReverseOrder(Order))) {
+           *Diff == -(static_cast<int>(Sz) - 1))) {
         int Stride = *Diff / static_cast<int>(Sz - 1);
         if (*Diff == Stride * static_cast<int>(Sz - 1)) {
           if (TTI.isTypeLegal(VecTy) &&
@@ -4163,10 +4160,9 @@ static LoadsState canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
               return LoadsState::PossibleStridedVectorize;
           }
         }
+        IsPossibleStrided = false;
       }
 #endif // SIFIVE_CUSTOMIZATION
-      // Simple check if not a strided access - clear order.
-      IsPossibleStrided = *Diff % (VL.size() - 1) == 0;
     }
 #if SIFIVE_CUSTOMIZATION
     // Check if potential masked gather can be represented as series
@@ -4184,7 +4180,8 @@ static LoadsState canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
               canVectorizeLoads(Slice, Slice.front(), TTI, DL, SE, LI, TLI,
                                 Order, PointerOps, /*TryRecursiveCheck=*/false);
           // Check that the sorted loads are consecutive.
-          if (LS != LoadsState::Vectorize && LS != LoadsState::PossibleStridedVectorize)
+          if (LS != LoadsState::Vectorize &&
+              LS != LoadsState::PossibleStridedVectorize)
             break;
         }
         // Can be vectorized later as a serie of loads/insertelements.
@@ -5197,10 +5194,21 @@ void BoUpSLP::buildExternalUses(
     // No need to handle users of gathered values.
     if (Entry->State == TreeEntry::NeedToGather)
       continue;
+#if SIFIVE_CUSTOMIZATION
+    if (!Entry->UserTreeIndices.empty() &&
+        all_of(Entry->UserTreeIndices, [&](const EdgeInfo &EI) {
+          return isRISCVStridedNode(EI.UserTE);
+        }))
+      continue;
+#endif // SIFIVE_CUSTOMIZATION
 
     // For each lane:
     for (int Lane = 0, LE = Entry->Scalars.size(); Lane != LE; ++Lane) {
       Value *Scalar = Entry->Scalars[Lane];
+#if SIFIVE_CUSTOMIZATION
+      if (!isa<Instruction>(Scalar))
+        continue;
+#endif // SIFIVE_CUSTOMIZATION
       int FoundLane = Entry->findLaneForValue(Scalar);
 
       // Check if the scalar is externally used as an extra arg.
@@ -5588,10 +5596,6 @@ BoUpSLP::TreeEntry::EntryState BoUpSLP::getScalarsVectorizationState(
     case LoadsState::ScatterVectorize:
       return TreeEntry::ScatterVectorize;
     case LoadsState::PossibleStridedVectorize:
-#ifdef SIFIVE_CUSTOMIZATION
-      if (enabledRISCVExtensions(*cast<LoadInst>(VL0)->getModule(), *TTI))
-        return TreeEntry::Vectorize;
-#endif
       return TreeEntry::PossibleStridedVectorize;
     case LoadsState::Gather:
 #ifndef NDEBUG
@@ -7630,6 +7634,14 @@ public:
   }
 };
 
+#if SIFIVE_CUSTOMIZATION
+bool BoUpSLP::isRISCVStridedNode(const TreeEntry *E) const {
+  return enabledRISCVExtensions(*F->getEntryBlock().getModule(), *TTI) &&
+         (E->State == TreeEntry::PossibleStridedVectorize &&
+          (E->ReorderIndices.empty() || isReverseOrder(E->ReorderIndices)));
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 InstructionCost
 BoUpSLP::getEntryCost(const TreeEntry *E, ArrayRef<Value *> VectorizedVals,
                       SmallPtrSetImpl<Value *> &CheckedExtracts) {
@@ -7644,6 +7656,71 @@ BoUpSLP::getEntryCost(const TreeEntry *E, ArrayRef<Value *> VectorizedVals,
     ScalarTy = IE->getOperand(1)->getType();
   auto *VecTy = FixedVectorType::get(ScalarTy, VL.size());
   TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
+
+#if SIFIVE_CUSTOMIZATION
+  if (!E->UserTreeIndices.empty() &&
+      all_of(E->UserTreeIndices, [&](const EdgeInfo &EI) {
+        return isRISCVStridedNode(EI.UserTE);
+      })) {
+    // Calculate cost difference from vectorizing set of GEPs.
+    // Negative value means vectorizing is profitable.
+    // FIXME: This is the copy of the first if-then branch from GetGEPCostDiff
+    // below.
+    auto GetGEPCostDiff = [=](ArrayRef<Value *> Ptrs, Value *BasePtr) {
+      InstructionCost ScalarCost = 0;
+      InstructionCost VecCost = 0;
+      // Here we differentiate two cases: (1) when Ptrs represent a regular
+      // vectorization tree node (as they are pointer arguments of scattered
+      // loads) or (2) when Ptrs are the arguments of loads or stores being
+      // vectorized as plane wide unit-stride load/store since all the
+      // loads/stores are known to be from/to adjacent locations.
+      // Case 2: estimate costs for pointer related costs when vectorizing to
+      // a wide load/store.
+      // Scalar cost is estimated as a set of pointers with known relationship
+      // between them.
+      // For vector code we will use BasePtr as argument for the wide
+      // load/store but we also need to account all the instructions which are
+      // going to stay in vectorized code due to uses outside of these scalar
+      // loads/stores.
+      ScalarCost = TTI->getPointersChainCost(
+          Ptrs, BasePtr, TTI::PointersChainInfo::getUnitStride(), ScalarTy,
+          CostKind);
+
+      SmallVector<const Value *> PtrsRetainedInVecCode;
+      for (Value *V : Ptrs) {
+        if (V == BasePtr) {
+          PtrsRetainedInVecCode.push_back(V);
+          continue;
+        }
+        auto *Ptr = dyn_cast<GetElementPtrInst>(V);
+        // For simplicity assume Ptr to stay in vectorized code if it's not a
+        // GEP instruction. We don't care since it's cost considered free.
+        // TODO: We should check for any uses outside of vectorizable tree
+        // rather than just single use.
+        if (!Ptr || !Ptr->hasOneUse())
+          PtrsRetainedInVecCode.push_back(V);
+      }
+
+      if (PtrsRetainedInVecCode.size() == Ptrs.size()) {
+        // If all pointers stay in vectorized code then we don't have
+        // any savings on that.
+        LLVM_DEBUG(dumpTreeCosts(E, 0, ScalarCost, ScalarCost,
+                                 "Calculated GEPs cost for Tree"));
+        return InstructionCost{TTI::TCC_Free};
+      }
+      VecCost = TTI->getPointersChainCost(
+          PtrsRetainedInVecCode, BasePtr,
+          TTI::PointersChainInfo::getKnownStride(), VecTy, CostKind);
+      LLVM_DEBUG(dumpTreeCosts(E, 0, VecCost, ScalarCost,
+                               "Calculated GEPs cost for Tree"));
+
+      return VecCost - ScalarCost;
+    };
+
+    // Estimate cost of GEPs since this tree node is a terminator.
+    return GetGEPCostDiff(VL, VL[0]);
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   // If we have computed a smaller type for the expression, update VecTy so
   // that the costs will be accurate.
@@ -8258,8 +8335,9 @@ BoUpSLP::getEntryCost(const TreeEntry *E, ArrayRef<Value *> VectorizedVals,
     auto *LI0 = cast<LoadInst>(VL0);
     auto GetVectorCost = [=](InstructionCost CommonCost) {
       InstructionCost VecLdCost;
-      if (E->State == TreeEntry::Vectorize) {
 #if SIFIVE_CUSTOMIZATION
+      bool IsReverse = isReverseOrder(E->ReorderIndices);
+      if (E->State == TreeEntry::Vectorize || isRISCVStridedNode(E)) {
         Value *Ptr0 = cast<LoadInst>(VL.front())->getPointerOperand();
         Value *PtrN = cast<LoadInst>(VL.back())->getPointerOperand();
         std::optional<int> Diff = getPointersDiff(
@@ -8267,7 +8345,6 @@ BoUpSLP::getEntryCost(const TreeEntry *E, ArrayRef<Value *> VectorizedVals,
         // Consecutive but reversed loads are just strided loads with the stride
         // -1.
         int Stride = Diff ? (*Diff / (static_cast<int>(VL.size()) - 1)) : 0;
-        bool IsReverse = isReverseOrder(E->ReorderIndices);
         if (enabledRISCVExtensions(*LI0->getModule(), *TTI) &&
             (Stride != 1 || IsReverse)) {
           Align CommonAlignment = LI0->getAlign();
@@ -8284,6 +8361,8 @@ BoUpSLP::getEntryCost(const TreeEntry *E, ArrayRef<Value *> VectorizedVals,
                   TTI::SK_PermuteSingleSrc, FinalVecTy, E->ReuseShuffleIndices);
           }
         } else
+#else
+      if (E->State == TreeEntry::Vectorize) {
 #endif // SIFIVE_CUSTOMIZATION
         VecLdCost = TTI->getMemoryOpCost(
             Instruction::Load, VecTy, LI0->getAlign(),
@@ -10976,15 +11055,15 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
       LoadInst *LI = cast<LoadInst>(VL0);
       Instruction *NewLI;
       Value *PO = LI->getPointerOperand();
-      if (E->State == TreeEntry::Vectorize) {
 #if SIFIVE_CUSTOMIZATION
+      bool IsReverse = isReverseOrder(E->ReorderIndices);
+      if (E->State == TreeEntry::Vectorize ||isRISCVStridedNode(E)) {
         Value *Ptr0 = cast<LoadInst>(E->Scalars.front())->getPointerOperand();
         Value *PtrN = cast<LoadInst>(E->Scalars.back())->getPointerOperand();
         std::optional<int> Diff = getPointersDiff(
             VL0->getType(), Ptr0, VL0->getType(), PtrN, *DL, *SE);
         int Stride =
             Diff ? (*Diff / (static_cast<int>(E->Scalars.size()) - 1)) : 0;
-        bool IsReverse = isReverseOrder(E->ReorderIndices);
         if (enabledRISCVExtensions(*LI->getModule(), *TTI) &&
             (Stride != 1 || IsReverse)) {
           // Do not reorder strided loads.
@@ -11042,11 +11121,18 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
           // BitCast or LoadInst to ExternalUses list to make sure that an
           // extract will be generated in the future.
           if (TreeEntry *Entry = getTreeEntry(Ptr)) {
-            // Find which lane we need to extract.
-            unsigned FoundLane = Entry->findLaneForValue(Ptr);
-            ExternalUses.emplace_back(Ptr, NewLI, FoundLane);
+            if (Entry->UserTreeIndices.empty() ||
+                any_of(Entry->UserTreeIndices, [&](const EdgeInfo &EI) {
+                  return !isRISCVStridedNode(EI.UserTE);
+                })) {
+              // Find which lane we need to extract.
+              unsigned FoundLane = Entry->findLaneForValue(Ptr);
+              ExternalUses.emplace_back(Ptr, NewLI, FoundLane);
+            }
           }
         } else {
+#else
+      if (E->State == TreeEntry::Vectorize) {
 #endif // SIFIVE_CUSTOMIZATION
         NewLI = Builder.CreateAlignedLoad(VecTy, PO, LI->getAlign());
 
@@ -11755,6 +11841,13 @@ Value *BoUpSLP::vectorizeTree(
     // No need to handle users of gathered values.
     if (Entry->State == TreeEntry::NeedToGather)
       continue;
+#if SIFIVE_CUSTOMIZATION
+    if (!Entry->UserTreeIndices.empty() &&
+        all_of(Entry->UserTreeIndices, [&](const EdgeInfo &EI) {
+          return isRISCVStridedNode(EI.UserTE);
+        }))
+      continue;
+#endif // SIFIVE_CUSTOMIZATION
 
     assert(Entry->VectorizedValue && "Can't find vectorizable value");
 
