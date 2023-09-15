@@ -667,6 +667,11 @@ install(
   DESTINATION ${header_install_dir}/sifive_wrappers
   EXCLUDE_FROM_ALL
   COMPONENT riscv-resource-headers)
+
+install(
+  FILES ${sifive_files}
+  DESTINATION ${header_install_dir}
+  COMPONENT riscv-resource-headers)
 # end SIFIVE
 
 install(
