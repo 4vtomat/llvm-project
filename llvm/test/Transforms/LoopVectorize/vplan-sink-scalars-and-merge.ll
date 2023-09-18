@@ -358,13 +358,9 @@ define void @pred_cfg1(i32 %k, i32 %j) {
 ; CHECK-NEXT: Successor(s): then.0.0
 ; CHECK-EMPTY:
 ; CHECK-NEXT: then.0.0:
-<<<<<<< HEAD
-; CHECK-NEXT:   BLEND %p = ir<0>/vp<[[MASK3]]> vp<[[PRED]]>/vp<[[MASK2]]>
-=======
 ; CHECK-NEXT:   EMIT vp<[[NOT:%.+]]> = not ir<%c.1>
 ; CHECK-NEXT:   EMIT vp<[[MASK3:%.+]]> = select vp<[[MASK1]]>, vp<[[NOT]]>, ir<false>
 ; CHECK-NEXT:   BLEND ir<%p> = ir<0>/vp<[[MASK3]]> vp<[[PRED]]>/vp<[[MASK2]]>
->>>>>>> upstream/main
 ; CHECK-NEXT:   EMIT vp<[[OR:%.+]]> = or vp<[[MASK2]]>, vp<[[MASK3]]>
 ; CHECK-NEXT: Successor(s): pred.store
 ; CHECK-EMPTY:
@@ -464,13 +460,9 @@ define void @pred_cfg2(i32 %k, i32 %j) {
 ; CHECK-NEXT: Successor(s): then.0.0
 ; CHECK-EMPTY:
 ; CHECK-NEXT: then.0.0:
-<<<<<<< HEAD
-; CHECK-NEXT:   BLEND %p = ir<0>/vp<[[MASK3]]> vp<[[PRED]]>/vp<[[MASK2]]>
-=======
 ; CHECK-NEXT:   EMIT vp<[[NOT:%.+]]> = not ir<%c.0>
 ; CHECK-NEXT:   EMIT vp<[[MASK3:%.+]]> = select vp<[[MASK1]]>, vp<[[NOT]]>, ir<false>
 ; CHECK-NEXT:   BLEND ir<%p> = ir<0>/vp<[[MASK3]]> vp<[[PRED]]>/vp<[[MASK2]]>
->>>>>>> upstream/main
 ; CHECK-NEXT:   EMIT vp<[[OR:%.+]]> = or vp<[[MASK2]]>, vp<[[MASK3]]>
 ; CHECK-NEXT:   EMIT vp<[[MASK4:%.+]]> = select vp<[[OR]]>, ir<%c.1>, ir<false>
 ; CHECK-NEXT: Successor(s): pred.store
@@ -577,13 +569,9 @@ define void @pred_cfg3(i32 %k, i32 %j) {
 ; CHECK-NEXT: Successor(s): then.0.0
 ; CHECK-EMPTY:
 ; CHECK-NEXT: then.0.0:
-<<<<<<< HEAD
-; CHECK-NEXT:   BLEND %p = ir<0>/vp<[[MASK3]]> vp<[[PRED]]>/vp<[[MASK2]]>
-=======
 ; CHECK-NEXT:   EMIT vp<[[NOT:%.+]]> = not ir<%c.0>
 ; CHECK-NEXT:   EMIT vp<[[MASK3:%.+]]> = select vp<[[MASK1]]>, vp<[[NOT]]>, ir<false>
 ; CHECK-NEXT:   BLEND ir<%p> = ir<0>/vp<[[MASK3]]> vp<[[PRED]]>/vp<[[MASK2]]>
->>>>>>> upstream/main
 ; CHECK-NEXT:   EMIT vp<[[MASK4:%.+]]> = or vp<[[MASK2]]>, vp<[[MASK3]]>
 ; CHECK-NEXT:   EMIT vp<[[MASK5:%.+]]> = select vp<[[MASK4]]>, ir<%c.0>, ir<false>
 ; CHECK-NEXT: Successor(s): pred.store

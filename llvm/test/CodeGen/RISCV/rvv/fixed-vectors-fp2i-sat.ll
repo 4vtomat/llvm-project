@@ -294,18 +294,6 @@ define void @fp2si_v8f64_v8i8(ptr %x, ptr %y) {
 ;
 ; RV32-LABEL: fp2si_v8f64_v8i8:
 ; RV32:       # %bb.0:
-<<<<<<< HEAD
-; RV32-NEXT:    fld fa5, 8(a0)
-; RV32-NEXT:    lui a2, %hi(.LCPI12_0)
-; RV32-NEXT:    fld fa4, %lo(.LCPI12_0)(a2)
-; RV32-NEXT:    lui a2, %hi(.LCPI12_1)
-; RV32-NEXT:    fld fa3, %lo(.LCPI12_1)(a2)
-; RV32-NEXT:    feq.d a2, fa5, fa5
-; RV32-NEXT:    fmax.d fa5, fa5, fa4
-; RV32-NEXT:    fmin.d fa5, fa5, fa3
-; RV32-NEXT:    fld fa2, 0(a0)
-; RV32-NEXT:    fcvt.w.d a3, fa5, rtz
-=======
 ; RV32-NEXT:    addi sp, sp, -128
 ; RV32-NEXT:    .cfi_def_cfa_offset 128
 ; RV32-NEXT:    sw ra, 124(sp) # 4-byte Folded Spill
@@ -334,7 +322,6 @@ define void @fp2si_v8f64_v8i8(ptr %x, ptr %y) {
 ; RV32-NEXT:    and a0, a0, a2
 ; RV32-NEXT:    vfmv.f.s fa3, v8
 ; RV32-NEXT:    feq.d a2, fa3, fa3
->>>>>>> upstream/main
 ; RV32-NEXT:    neg a2, a2
 ; RV32-NEXT:    and a2, a2, a3
 ; RV32-NEXT:    feq.d a3, fa2, fa2
@@ -343,53 +330,6 @@ define void @fp2si_v8f64_v8i8(ptr %x, ptr %y) {
 ; RV32-NEXT:    fmin.d fa5, fa5, fa3
 ; RV32-NEXT:    fcvt.w.d a4, fa5, rtz
 ; RV32-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-<<<<<<< HEAD
-; RV32-NEXT:    fld fa5, 16(a0)
-; RV32-NEXT:    and a3, a3, a4
-; RV32-NEXT:    vslide1down.vx v8, v8, a3
-; RV32-NEXT:    vslide1down.vx v8, v8, a2
-; RV32-NEXT:    feq.d a2, fa5, fa5
-; RV32-NEXT:    fmax.d fa5, fa5, fa4
-; RV32-NEXT:    fmin.d fa5, fa5, fa3
-; RV32-NEXT:    fcvt.w.d a3, fa5, rtz
-; RV32-NEXT:    fld fa5, 24(a0)
-; RV32-NEXT:    neg a2, a2
-; RV32-NEXT:    and a2, a2, a3
-; RV32-NEXT:    vslide1down.vx v8, v8, a2
-; RV32-NEXT:    feq.d a2, fa5, fa5
-; RV32-NEXT:    fmax.d fa5, fa5, fa4
-; RV32-NEXT:    fmin.d fa5, fa5, fa3
-; RV32-NEXT:    fcvt.w.d a3, fa5, rtz
-; RV32-NEXT:    fld fa5, 32(a0)
-; RV32-NEXT:    neg a2, a2
-; RV32-NEXT:    and a2, a2, a3
-; RV32-NEXT:    vslide1down.vx v8, v8, a2
-; RV32-NEXT:    feq.d a2, fa5, fa5
-; RV32-NEXT:    fmax.d fa5, fa5, fa4
-; RV32-NEXT:    fmin.d fa5, fa5, fa3
-; RV32-NEXT:    fcvt.w.d a3, fa5, rtz
-; RV32-NEXT:    fld fa5, 40(a0)
-; RV32-NEXT:    neg a2, a2
-; RV32-NEXT:    and a2, a2, a3
-; RV32-NEXT:    vslide1down.vx v8, v8, a2
-; RV32-NEXT:    feq.d a2, fa5, fa5
-; RV32-NEXT:    fmax.d fa5, fa5, fa4
-; RV32-NEXT:    fmin.d fa5, fa5, fa3
-; RV32-NEXT:    fcvt.w.d a3, fa5, rtz
-; RV32-NEXT:    fld fa5, 48(a0)
-; RV32-NEXT:    neg a2, a2
-; RV32-NEXT:    and a2, a2, a3
-; RV32-NEXT:    vslide1down.vx v8, v8, a2
-; RV32-NEXT:    feq.d a2, fa5, fa5
-; RV32-NEXT:    fmax.d fa5, fa5, fa4
-; RV32-NEXT:    fmin.d fa5, fa5, fa3
-; RV32-NEXT:    fcvt.w.d a3, fa5, rtz
-; RV32-NEXT:    fld fa5, 56(a0)
-; RV32-NEXT:    neg a0, a2
-; RV32-NEXT:    and a0, a0, a3
-; RV32-NEXT:    vslide1down.vx v8, v8, a0
-; RV32-NEXT:    feq.d a0, fa5, fa5
-=======
 ; RV32-NEXT:    vslide1down.vx v10, v8, a2
 ; RV32-NEXT:    vslide1down.vx v10, v10, a0
 ; RV32-NEXT:    vsetivli zero, 1, e64, m2, ta, ma
@@ -440,7 +380,6 @@ define void @fp2si_v8f64_v8i8(ptr %x, ptr %y) {
 ; RV32-NEXT:    and a0, a0, a2
 ; RV32-NEXT:    vslide1down.vx v8, v8, a0
 ; RV32-NEXT:    feq.d a0, fa3, fa3
->>>>>>> upstream/main
 ; RV32-NEXT:    neg a0, a0
 ; RV32-NEXT:    fmax.d fa5, fa5, fa4
 ; RV32-NEXT:    fmin.d fa5, fa5, fa3
@@ -456,18 +395,6 @@ define void @fp2si_v8f64_v8i8(ptr %x, ptr %y) {
 ;
 ; RV64-LABEL: fp2si_v8f64_v8i8:
 ; RV64:       # %bb.0:
-<<<<<<< HEAD
-; RV64-NEXT:    fld fa5, 8(a0)
-; RV64-NEXT:    lui a2, %hi(.LCPI12_0)
-; RV64-NEXT:    fld fa4, %lo(.LCPI12_0)(a2)
-; RV64-NEXT:    lui a2, %hi(.LCPI12_1)
-; RV64-NEXT:    fld fa3, %lo(.LCPI12_1)(a2)
-; RV64-NEXT:    feq.d a2, fa5, fa5
-; RV64-NEXT:    fmax.d fa5, fa5, fa4
-; RV64-NEXT:    fmin.d fa5, fa5, fa3
-; RV64-NEXT:    fld fa2, 0(a0)
-; RV64-NEXT:    fcvt.l.d a3, fa5, rtz
-=======
 ; RV64-NEXT:    addi sp, sp, -128
 ; RV64-NEXT:    .cfi_def_cfa_offset 128
 ; RV64-NEXT:    sd ra, 120(sp) # 8-byte Folded Spill
@@ -496,7 +423,6 @@ define void @fp2si_v8f64_v8i8(ptr %x, ptr %y) {
 ; RV64-NEXT:    and a0, a0, a2
 ; RV64-NEXT:    vfmv.f.s fa3, v8
 ; RV64-NEXT:    feq.d a2, fa3, fa3
->>>>>>> upstream/main
 ; RV64-NEXT:    neg a2, a2
 ; RV64-NEXT:    and a2, a2, a3
 ; RV64-NEXT:    feq.d a3, fa2, fa2
@@ -505,53 +431,6 @@ define void @fp2si_v8f64_v8i8(ptr %x, ptr %y) {
 ; RV64-NEXT:    fmin.d fa5, fa5, fa3
 ; RV64-NEXT:    fcvt.l.d a4, fa5, rtz
 ; RV64-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-<<<<<<< HEAD
-; RV64-NEXT:    fld fa5, 16(a0)
-; RV64-NEXT:    and a3, a3, a4
-; RV64-NEXT:    vslide1down.vx v8, v8, a3
-; RV64-NEXT:    vslide1down.vx v8, v8, a2
-; RV64-NEXT:    feq.d a2, fa5, fa5
-; RV64-NEXT:    fmax.d fa5, fa5, fa4
-; RV64-NEXT:    fmin.d fa5, fa5, fa3
-; RV64-NEXT:    fcvt.l.d a3, fa5, rtz
-; RV64-NEXT:    fld fa5, 24(a0)
-; RV64-NEXT:    neg a2, a2
-; RV64-NEXT:    and a2, a2, a3
-; RV64-NEXT:    vslide1down.vx v8, v8, a2
-; RV64-NEXT:    feq.d a2, fa5, fa5
-; RV64-NEXT:    fmax.d fa5, fa5, fa4
-; RV64-NEXT:    fmin.d fa5, fa5, fa3
-; RV64-NEXT:    fcvt.l.d a3, fa5, rtz
-; RV64-NEXT:    fld fa5, 32(a0)
-; RV64-NEXT:    neg a2, a2
-; RV64-NEXT:    and a2, a2, a3
-; RV64-NEXT:    vslide1down.vx v8, v8, a2
-; RV64-NEXT:    feq.d a2, fa5, fa5
-; RV64-NEXT:    fmax.d fa5, fa5, fa4
-; RV64-NEXT:    fmin.d fa5, fa5, fa3
-; RV64-NEXT:    fcvt.l.d a3, fa5, rtz
-; RV64-NEXT:    fld fa5, 40(a0)
-; RV64-NEXT:    neg a2, a2
-; RV64-NEXT:    and a2, a2, a3
-; RV64-NEXT:    vslide1down.vx v8, v8, a2
-; RV64-NEXT:    feq.d a2, fa5, fa5
-; RV64-NEXT:    fmax.d fa5, fa5, fa4
-; RV64-NEXT:    fmin.d fa5, fa5, fa3
-; RV64-NEXT:    fcvt.l.d a3, fa5, rtz
-; RV64-NEXT:    fld fa5, 48(a0)
-; RV64-NEXT:    neg a2, a2
-; RV64-NEXT:    and a2, a2, a3
-; RV64-NEXT:    vslide1down.vx v8, v8, a2
-; RV64-NEXT:    feq.d a2, fa5, fa5
-; RV64-NEXT:    fmax.d fa5, fa5, fa4
-; RV64-NEXT:    fmin.d fa5, fa5, fa3
-; RV64-NEXT:    fcvt.l.d a3, fa5, rtz
-; RV64-NEXT:    fld fa5, 56(a0)
-; RV64-NEXT:    neg a0, a2
-; RV64-NEXT:    and a0, a0, a3
-; RV64-NEXT:    vslide1down.vx v8, v8, a0
-; RV64-NEXT:    feq.d a0, fa5, fa5
-=======
 ; RV64-NEXT:    vslide1down.vx v10, v8, a2
 ; RV64-NEXT:    vslide1down.vx v10, v10, a0
 ; RV64-NEXT:    vsetivli zero, 1, e64, m2, ta, ma
@@ -602,7 +481,6 @@ define void @fp2si_v8f64_v8i8(ptr %x, ptr %y) {
 ; RV64-NEXT:    and a0, a0, a2
 ; RV64-NEXT:    vslide1down.vx v8, v8, a0
 ; RV64-NEXT:    feq.d a0, fa3, fa3
->>>>>>> upstream/main
 ; RV64-NEXT:    neg a0, a0
 ; RV64-NEXT:    fmax.d fa5, fa5, fa4
 ; RV64-NEXT:    fmin.d fa5, fa5, fa3
@@ -626,50 +504,6 @@ define void @fp2ui_v8f64_v8i8(ptr %x, ptr %y) {
 ;
 ; RV32-LABEL: fp2ui_v8f64_v8i8:
 ; RV32:       # %bb.0:
-<<<<<<< HEAD
-; RV32-NEXT:    fld fa5, 0(a0)
-; RV32-NEXT:    fcvt.d.w fa4, zero
-; RV32-NEXT:    lui a2, %hi(.LCPI13_0)
-; RV32-NEXT:    fld fa3, %lo(.LCPI13_0)(a2)
-; RV32-NEXT:    fmax.d fa5, fa5, fa4
-; RV32-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; RV32-NEXT:    fld fa2, 8(a0)
-; RV32-NEXT:    fmin.d fa5, fa5, fa3
-; RV32-NEXT:    fcvt.wu.d a2, fa5, rtz
-; RV32-NEXT:    fld fa5, 16(a0)
-; RV32-NEXT:    fmax.d fa2, fa2, fa4
-; RV32-NEXT:    fmin.d fa2, fa2, fa3
-; RV32-NEXT:    fcvt.wu.d a3, fa2, rtz
-; RV32-NEXT:    fmax.d fa5, fa5, fa4
-; RV32-NEXT:    fld fa2, 24(a0)
-; RV32-NEXT:    fmin.d fa5, fa5, fa3
-; RV32-NEXT:    fcvt.wu.d a4, fa5, rtz
-; RV32-NEXT:    fld fa5, 32(a0)
-; RV32-NEXT:    fmax.d fa2, fa2, fa4
-; RV32-NEXT:    fmin.d fa2, fa2, fa3
-; RV32-NEXT:    fcvt.wu.d a5, fa2, rtz
-; RV32-NEXT:    fmax.d fa5, fa5, fa4
-; RV32-NEXT:    fld fa2, 40(a0)
-; RV32-NEXT:    fmin.d fa5, fa5, fa3
-; RV32-NEXT:    fcvt.wu.d a6, fa5, rtz
-; RV32-NEXT:    vslide1down.vx v8, v8, a2
-; RV32-NEXT:    fmax.d fa5, fa2, fa4
-; RV32-NEXT:    fmin.d fa5, fa5, fa3
-; RV32-NEXT:    fcvt.wu.d a2, fa5, rtz
-; RV32-NEXT:    fld fa5, 48(a0)
-; RV32-NEXT:    vslide1down.vx v8, v8, a3
-; RV32-NEXT:    vslide1down.vx v8, v8, a4
-; RV32-NEXT:    vslide1down.vx v8, v8, a5
-; RV32-NEXT:    fmax.d fa5, fa5, fa4
-; RV32-NEXT:    fmin.d fa5, fa5, fa3
-; RV32-NEXT:    fcvt.wu.d a3, fa5, rtz
-; RV32-NEXT:    fld fa5, 56(a0)
-; RV32-NEXT:    vslide1down.vx v8, v8, a6
-; RV32-NEXT:    vslide1down.vx v8, v8, a2
-; RV32-NEXT:    vslide1down.vx v8, v8, a3
-; RV32-NEXT:    fmax.d fa5, fa5, fa4
-; RV32-NEXT:    fmin.d fa5, fa5, fa3
-=======
 ; RV32-NEXT:    addi sp, sp, -128
 ; RV32-NEXT:    .cfi_def_cfa_offset 128
 ; RV32-NEXT:    sw ra, 124(sp) # 4-byte Folded Spill
@@ -734,7 +568,6 @@ define void @fp2ui_v8f64_v8i8(ptr %x, ptr %y) {
 ; RV32-NEXT:    vslide1down.vx v8, v8, a0
 ; RV32-NEXT:    fmax.d fa4, fa4, fa3
 ; RV32-NEXT:    fmin.d fa5, fa4, fa5
->>>>>>> upstream/main
 ; RV32-NEXT:    fcvt.wu.d a0, fa5, rtz
 ; RV32-NEXT:    vslide1down.vx v8, v8, a0
 ; RV32-NEXT:    vse8.v v8, (a1)
@@ -746,50 +579,6 @@ define void @fp2ui_v8f64_v8i8(ptr %x, ptr %y) {
 ;
 ; RV64-LABEL: fp2ui_v8f64_v8i8:
 ; RV64:       # %bb.0:
-<<<<<<< HEAD
-; RV64-NEXT:    fld fa5, 0(a0)
-; RV64-NEXT:    fmv.d.x fa4, zero
-; RV64-NEXT:    lui a2, %hi(.LCPI13_0)
-; RV64-NEXT:    fld fa3, %lo(.LCPI13_0)(a2)
-; RV64-NEXT:    fmax.d fa5, fa5, fa4
-; RV64-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; RV64-NEXT:    fld fa2, 8(a0)
-; RV64-NEXT:    fmin.d fa5, fa5, fa3
-; RV64-NEXT:    fcvt.lu.d a2, fa5, rtz
-; RV64-NEXT:    fld fa5, 16(a0)
-; RV64-NEXT:    fmax.d fa2, fa2, fa4
-; RV64-NEXT:    fmin.d fa2, fa2, fa3
-; RV64-NEXT:    fcvt.lu.d a3, fa2, rtz
-; RV64-NEXT:    fmax.d fa5, fa5, fa4
-; RV64-NEXT:    fld fa2, 24(a0)
-; RV64-NEXT:    fmin.d fa5, fa5, fa3
-; RV64-NEXT:    fcvt.lu.d a4, fa5, rtz
-; RV64-NEXT:    fld fa5, 32(a0)
-; RV64-NEXT:    fmax.d fa2, fa2, fa4
-; RV64-NEXT:    fmin.d fa2, fa2, fa3
-; RV64-NEXT:    fcvt.lu.d a5, fa2, rtz
-; RV64-NEXT:    fmax.d fa5, fa5, fa4
-; RV64-NEXT:    fld fa2, 40(a0)
-; RV64-NEXT:    fmin.d fa5, fa5, fa3
-; RV64-NEXT:    fcvt.lu.d a6, fa5, rtz
-; RV64-NEXT:    vslide1down.vx v8, v8, a2
-; RV64-NEXT:    fmax.d fa5, fa2, fa4
-; RV64-NEXT:    fmin.d fa5, fa5, fa3
-; RV64-NEXT:    fcvt.lu.d a2, fa5, rtz
-; RV64-NEXT:    fld fa5, 48(a0)
-; RV64-NEXT:    vslide1down.vx v8, v8, a3
-; RV64-NEXT:    vslide1down.vx v8, v8, a4
-; RV64-NEXT:    vslide1down.vx v8, v8, a5
-; RV64-NEXT:    fmax.d fa5, fa5, fa4
-; RV64-NEXT:    fmin.d fa5, fa5, fa3
-; RV64-NEXT:    fcvt.lu.d a3, fa5, rtz
-; RV64-NEXT:    fld fa5, 56(a0)
-; RV64-NEXT:    vslide1down.vx v8, v8, a6
-; RV64-NEXT:    vslide1down.vx v8, v8, a2
-; RV64-NEXT:    vslide1down.vx v8, v8, a3
-; RV64-NEXT:    fmax.d fa5, fa5, fa4
-; RV64-NEXT:    fmin.d fa5, fa5, fa3
-=======
 ; RV64-NEXT:    addi sp, sp, -128
 ; RV64-NEXT:    .cfi_def_cfa_offset 128
 ; RV64-NEXT:    sd ra, 120(sp) # 8-byte Folded Spill
@@ -854,7 +643,6 @@ define void @fp2ui_v8f64_v8i8(ptr %x, ptr %y) {
 ; RV64-NEXT:    vslide1down.vx v8, v8, a0
 ; RV64-NEXT:    fmax.d fa4, fa4, fa3
 ; RV64-NEXT:    fmin.d fa5, fa4, fa5
->>>>>>> upstream/main
 ; RV64-NEXT:    fcvt.lu.d a0, fa5, rtz
 ; RV64-NEXT:    vslide1down.vx v8, v8, a0
 ; RV64-NEXT:    vse8.v v8, (a1)
