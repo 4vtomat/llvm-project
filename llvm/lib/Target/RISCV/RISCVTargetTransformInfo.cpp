@@ -581,11 +581,11 @@ RISCVTTIImpl::getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
     // still larger than MaxSafeRegisterWidth. Let the cost model make the
     // vectorization decision.
 
-    int EC = RISCV::RVVBitsPerBlock / ST->getELEN();
+    int EC = RISCV::RVVBitsPerBlock / ST->getELen();
     int MaxEC = EC;
 
     // Let RegisterSize start from the smallest fractional LMUL
-    unsigned RegisterSize = MinRVVVectorSize * WidestType / ST->getELEN();
+    unsigned RegisterSize = MinRVVVectorSize * WidestType / ST->getELen();
     for (; RegisterSize <= MaxSafeRegisterWidth &&
            RegisterSize <= MaxRVVVectorSize;
          RegisterSize <<= 1, EC <<= 1) {
@@ -2695,7 +2695,7 @@ Type *RISCVTTIImpl::getScalableVectorFromFixed(Type *Ty) const {
 
   // Follow getContainerForFixedLengthVector.
   unsigned MinVLen = getST()->getRealMinVLen();
-  unsigned MaxELen = getST()->getELEN();
+  unsigned MaxELen = getST()->getELen();
   unsigned NumElts =
       (VecTy->getNumElements() * RISCV::RVVBitsPerBlock) / MinVLen;
   NumElts = std::max(NumElts, RISCV::RVVBitsPerBlock / MaxELen);

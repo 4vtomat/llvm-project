@@ -9940,7 +9940,7 @@ SDValue RISCVTargetLowering::lowerVECTOR_DEINTERLEAVE(SDValue Op,
   // ELEN and the factor is 2.
   // TODO this also works for factor 4 and 8 if sufficient widening is
   // available.
-  if (Factor == 2 && VecVT.getScalarSizeInBits() < Subtarget.getElen()) {
+  if (Factor == 2 && VecVT.getScalarSizeInBits() < Subtarget.getELen()) {
 #else
   // ELEN
   if (VecVT.getScalarSizeInBits() < Subtarget.getELen()) {
@@ -10701,7 +10701,7 @@ SDValue RISCVTargetLowering::lowerSHLSAT(const SDLoc &DL, MVT VT, SDValue LHS,
   // isTypeLegal(WidenVT): if VT is v1024i8, WidenVT is v1024i16. But v1024i16
   // is not existed.
   bool CanUseWidenAlgo =
-      EltBitSize < Subtarget.getELEN() && isTypeLegal(WidenVT);
+      EltBitSize < Subtarget.getELen() && isTypeLegal(WidenVT);
   if (CanUseWidenAlgo) {
     MVT WidenContainerVT = getContainerForFixedLengthVector(WidenVT);
     SDValue WidenShl;
@@ -16553,6 +16553,43 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     SDValue Passthru = N->getOperand(0);
     SDValue Scalar = N->getOperand(1);
     SDValue VL = N->getOperand(2);
+#if SIFIVE_CUSTOMIZATION
+    if (Scalar.getOpcode() == RISCVISD::VMV_X_S &&
+        Scalar.getOperand(0).getValueType() == N->getValueType(0) &&
+        isa<ConstantSDNode>(N->getOperand(2))) {
+      if (N->getOperand(0).isUndef())
+        return Scalar.getOperand(0);
+      if (cast<ConstantSDNode>(N->getOperand(2))->getZExtValue() == 0)
+        return N->getOperand(0);
+      SDLoc DL(N);
+      if (Scalar.getOperand(0).getOpcode() == RISCVISD::VSLIDEDOWN_VL &&
+          Scalar.getOperand(0).getOperand(0).isUndef()) {
+        auto Slidedown = Scalar.getOperand(0);
+        if (isa<ConstantSDNode>(Slidedown.getOperand(4)) &&
+            cast<ConstantSDNode>(Slidedown.getOperand(4))->getZExtValue() == 0)
+          return N->getOperand(0);
+        if ((!isa<ConstantSDNode>(Slidedown.getOperand(4)) ||
+             1 < cast<ConstantSDNode>(Slidedown.getOperand(4))
+                     ->getZExtValue()) &&
+            !Slidedown.hasOneUse())
+          return SDValue();
+        return getVSlidedown(DAG, Subtarget, DL, Slidedown.getValueType(),
+                             N->getOperand(0), Slidedown.getOperand(1),
+                             Slidedown.getOperand(2), Slidedown.getOperand(3),
+                             Slidedown.getOperand(4));
+      }
+      MVT VecVT = N->getSimpleValueType(0);
+      MVT XLenVT = Subtarget.getXLenVT();
+      SDValue Mask, VL;
+      std::tie(Mask, VL) = getDefaultScalableVLOps(VecVT, DL, DAG, Subtarget);
+      SDValue Zero = DAG.getConstant(0, DL, XLenVT);
+      SDValue OneVL = DAG.getConstant(1, DL, XLenVT);
+      // FIXME: Use tail undisturbed vmv.v.v when RISCVISD::VMV_V_V_VL gets
+      // pulled down.
+      return getVSlideup(DAG, Subtarget, DL, VecVT, N->getOperand(0),
+                         Scalar.getOperand(0), Zero, Mask, OneVL);
+    }
+#endif // SIFIVE_CUSTOMIZATION
 
     // Use M1 or smaller to avoid over constraining register allocation
     const MVT M1VT = getLMUL1VT(VT);
@@ -16627,8 +16664,9 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     case Intrinsic::riscv_vsoxei:
     case Intrinsic::riscv_vsoxei_mask:
     case Intrinsic::riscv_vsuxei:
-    case Intrinsic::riscv_vsuxei_mask:
-      if (SDValue V = narrowIndex(N->getOperand(4), DAG)) {
+    case Intrinsic::riscv_vsuxei_mask: {
+      SDValue V = N->getOperand(4);
+      if (narrowIndex(V, ISD::MemIndexType::UNSIGNED_SCALED, DAG)) {
         SmallVector<SDValue, 8> Ops(N->ops());
         Ops[4] = V;
         const auto *MemSD = cast<MemIntrinsicSDNode>(N);
@@ -16637,6 +16675,7 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
                                        MemSD->getMemOperand());
       }
       return SDValue();
+    }
 #if SIFIVE_CUSTOMIZATION
     case Intrinsic::riscv_vsll:
     case Intrinsic::riscv_vsrl:
@@ -16762,45 +16801,6 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     break; // SIFIVE
   }
 #if SIFIVE_CUSTOMIZATION
-  case RISCVISD::VMV_S_X_VL: {
-    SDValue Src = N->getOperand(1);
-    if (Src.getOpcode() == RISCVISD::VMV_X_S &&
-        Src.getOperand(0).getValueType() == N->getValueType(0) &&
-        isa<ConstantSDNode>(N->getOperand(2))) {
-      if (N->getOperand(0).isUndef())
-        return Src.getOperand(0);
-      if (cast<ConstantSDNode>(N->getOperand(2))->getZExtValue() == 0)
-        return N->getOperand(0);
-      SDLoc DL(N);
-      if (Src.getOperand(0).getOpcode() == RISCVISD::VSLIDEDOWN_VL &&
-          Src.getOperand(0).getOperand(0).isUndef()) {
-        auto Slidedown = Src.getOperand(0);
-        if (isa<ConstantSDNode>(Slidedown.getOperand(4)) &&
-            cast<ConstantSDNode>(Slidedown.getOperand(4))->getZExtValue() == 0)
-          return N->getOperand(0);
-        if ((!isa<ConstantSDNode>(Slidedown.getOperand(4)) ||
-            1 < cast<ConstantSDNode>(Slidedown.getOperand(4))->getZExtValue()) &&
-            !Slidedown.hasOneUse())
-          return SDValue();
-        return getVSlidedown(DAG, Subtarget, DL, Slidedown.getValueType(),
-                             N->getOperand(0), Slidedown.getOperand(1),
-                             Slidedown.getOperand(2), Slidedown.getOperand(3),
-                             Slidedown.getOperand(4));
-      }
-      MVT VecVT = N->getSimpleValueType(0);
-      MVT XLenVT = Subtarget.getXLenVT();
-      SDValue Mask, VL;
-      std::tie(Mask, VL) =
-          getDefaultScalableVLOps(VecVT, DL, DAG, Subtarget);
-      SDValue Zero = DAG.getConstant(0, DL, XLenVT);
-      SDValue OneVL = DAG.getConstant(1, DL, XLenVT);
-      // FIXME: Use tail undisturbed vmv.v.v when RISCVISD::VMV_V_V_VL gets
-      // pulled down.
-      return getVSlideup(DAG, Subtarget, DL, VecVT, N->getOperand(0),
-                         Src.getOperand(0), Zero, Mask, OneVL);
-    }
-    break;
-  }
   case ISD::EXTRACT_VECTOR_ELT:
     return performEXTRACT_VECTOR_ELTCombine(N, DAG, Subtarget);
   case ISD::EXPERIMENTAL_VP_REVERSE:

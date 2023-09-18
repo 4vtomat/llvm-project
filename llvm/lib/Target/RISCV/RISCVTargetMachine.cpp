@@ -345,7 +345,7 @@ public:
   RISCVPassConfig(RISCVTargetMachine &TM, PassManagerBase &PM)
       : TargetPassConfig(TM, PM) {
 #if SIFIVE_CUSTOMIZATION
-    if (TM.getOptLevel() != CodeGenOpt::None)
+    if (getOptLevel() != CodeGenOptLevel::None)
       substitutePass(&PostRASchedulerID, &PostMachineSchedulerID);
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -469,7 +469,7 @@ void RISCVPassConfig::addIRPasses() {
   TargetPassConfig::addIRPasses();
 
 #if SIFIVE_CUSTOMIZATION
-  if (TM->getOptLevel() == CodeGenOpt::Aggressive &&
+  if (getOptLevel() == CodeGenOptLevel::Aggressive &&
       (EnableGEPOpt || EnableSLSROpt)) {
     if (EnableGEPOpt)
       addPass(createSeparateConstOffsetFromGEPPass(true));
@@ -484,7 +484,7 @@ void RISCVPassConfig::addIRPasses() {
 
 #if SIFIVE_CUSTOMIZATION
 void RISCVPassConfig::addCodeGenPrepare() {
-  if (getOptLevel() != CodeGenOpt::None) {
+  if (getOptLevel() != CodeGenOptLevel::None) {
     addPass(createRISCVLateCodeGenPreparePass());
     addPass(createRISCVTypePromotionPass());
     addPass(createTypePromotionLegacyPass());
@@ -547,7 +547,7 @@ void RISCVPassConfig::addPreSched2() {
 
 void RISCVPassConfig::addPreEmitPass() {
 #if SIFIVE_CUSTOMIZATION
-  if (TM->getOptLevel() != CodeGenOpt::None)
+  if (getOptLevel() != CodeGenOptLevel::None)
     addPass(createRISCVMachineConstPropagationPass());
 #endif // SIFIVE_CUSTOMIZATION
   addPass(&BranchRelaxationPassID);
@@ -595,7 +595,7 @@ void RISCVPassConfig::addMachineSSAOptimization() {
 
 void RISCVPassConfig::addPreRegAlloc() {
   addPass(createRISCVPreRAExpandPseudoPass());
-  if (TM->getOptLevel() != CodeGenOptLevel::None)
+  if (TM->getOptLevel() != CodeGenOptLevel::None) {
     addPass(createRISCVMergeBaseOffsetOptPass());
 #if SIFIVE_CUSTOMIZATION
     if (EnableVLOptimizer)

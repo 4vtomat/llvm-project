@@ -191,7 +191,7 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   case RISCV::PseudoVMV_V_V_M2:
   case RISCV::PseudoVMV_V_V_M4:
   case RISCV::PseudoVMV_V_V_M8:
-    if (MBB.getParent()->getTarget().getOptLevel() != CodeGenOpt::None) {
+    if (MBB.getParent()->getTarget().getOptLevel() != CodeGenOptLevel::None) {
       return removeRedundantVMV(MBB, MBBI);
     }
 #endif // SIFIVE_CUSTOMIZATION
