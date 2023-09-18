@@ -681,7 +681,8 @@ def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model,
                                        FeatureStdExtZvksc,
                                        FeatureStdExtZvksg,
                                        FeatureUnalignedScalarMem],
-                                      [TuneSiFiveP400, TuneDLen128b]>;
+                                      [TuneSiFiveP400, TuneDLen128b,
+                                       TuneDontSinkSplatOperands]>;
 
 def SIFIVE_P550 : RISCVProcessorModel<"sifive-p550", SiFiveP500Model,
                                       [Feature64Bit,
@@ -758,7 +759,8 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
                                        FeatureStdExtZvksc,
                                        FeatureStdExtZvksg,
                                        FeatureUnalignedScalarMem],
-                                      [TuneSiFiveP600, TuneDLen128b]>;
+                                      [TuneSiFiveP600, TuneDLen128b,
+                                       TuneDontSinkSplatOperands]>;
 
 def SIFIVE_P870 : RISCVProcessorModel<"sifive-p870", SiFiveP800Model,
                                       [Feature64Bit,
@@ -794,7 +796,8 @@ def SIFIVE_P870 : RISCVProcessorModel<"sifive-p870", SiFiveP800Model,
                                        FeatureStdExtZvksc,
                                        FeatureStdExtZvksg,
                                        FeatureUnalignedScalarMem],
-                                      [TuneSiFiveP800, TuneDLen128b]>;
+                                      [TuneSiFiveP800, TuneDLen128b,
+                                       TuneDontSinkSplatOperands]>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def SYNTACORE_SCR1_BASE : RISCVProcessorModel<"syntacore-scr1-base",
