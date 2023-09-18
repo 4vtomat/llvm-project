@@ -526,25 +526,15 @@ public:
 
 // RVVRequire should be sync'ed with target features, but only
 // required features used in riscv_vector.td.
+#if SIFIVE_CUSTOMIZATION
+enum RVVRequire : uint32_t {
+#else
 enum RVVRequire : uint16_t {
+#endif // SIFIVE_CUSTOMIZATION
   RVV_REQ_None = 0,
   RVV_REQ_RV64 = 1 << 0,
   RVV_REQ_ZvfhminOrZvfh = 1 << 1,
   RVV_REQ_Xsfvcp = 1 << 2,
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  RVV_REQ_xsfvqmaccqoq = 1 << 3,
-  RVV_REQ_xsfvqmaccdod = 1 << 4,
-  RVV_REQ_xsfvfnrclipxfqf = 1 << 5,
-  RVV_REQ_xsfvfhbfmin = 1 << 6,
-  RVV_REQ_xsfvfwmaccqqq = 1 << 7,
-  RVV_REQ_HasBfloat16 = 1 << 8,
-  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_HasBfloat16)
-#else
-  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Xsfvcp)
-#endif // SIFIVE_CUSTOMIZATION
-
-=======
   RVV_REQ_Zvbb = 1 << 3,
   RVV_REQ_Zvbc = 1 << 4,
   RVV_REQ_Zvkb = 1 << 5,
@@ -553,9 +543,17 @@ enum RVVRequire : uint16_t {
   RVV_REQ_Zvknha = 1 << 8,
   RVV_REQ_Zvksed = 1 << 9,
   RVV_REQ_Zvksh = 1 << 10,
-
+#if SIFIVE_CUSTOMIZATION
+  RVV_REQ_xsfvqmaccqoq = 1 << 11,
+  RVV_REQ_xsfvqmaccdod = 1 << 12,
+  RVV_REQ_xsfvfnrclipxfqf = 1 << 13,
+  RVV_REQ_xsfvfhbfmin = 1 << 14,
+  RVV_REQ_xsfvfwmaccqqq = 1 << 15,
+  RVV_REQ_HasBfloat16 = 1 << 16,
+  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_HasBfloat16)
+#else
   LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Zvksh)
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 // Raw RVV intrinsic info, used to expand later.

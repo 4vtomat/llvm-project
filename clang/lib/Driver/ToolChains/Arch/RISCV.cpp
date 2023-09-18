@@ -237,11 +237,6 @@ void riscv::getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
 
   // -mno-unaligned-access is default, unless -munaligned-access is specified.
   bool HasV = llvm::is_contained(Features, "+zve32x");
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // SIFIVE cherry-picked from D159145
-=======
->>>>>>> upstream/main
   if (const Arg *A = Args.getLastArg(options::OPT_munaligned_access,
                                      options::OPT_mno_unaligned_access)) {
     if (A->getOption().matches(options::OPT_munaligned_access)) {
@@ -253,10 +248,6 @@ void riscv::getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
       if (HasV)
         Features.push_back("-unaligned-vector-mem");
     }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
   }
 
   // Now add any that the user explicitly requested on the command line,

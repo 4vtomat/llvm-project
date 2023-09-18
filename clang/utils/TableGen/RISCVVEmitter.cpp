@@ -767,16 +767,6 @@ void RVVEmitter::createRVVIntrinsics(
                                   .Case("RV64", RVV_REQ_RV64)
                                   .Case("ZvfhminOrZvfh", RVV_REQ_ZvfhminOrZvfh)
                                   .Case("Xsfvcp", RVV_REQ_Xsfvcp)
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-                                  .Case("Xsfvqmaccqoq", RVV_REQ_xsfvqmaccqoq)
-                                  .Case("Xsfvqmaccdod", RVV_REQ_xsfvqmaccdod)
-                                  .Case("Xsfvfnrclipxfqf", RVV_REQ_xsfvfnrclipxfqf)
-                                  .Case("Xsfvfhbfmin", RVV_REQ_xsfvfhbfmin)
-                                  .Case("Xsfvfwmaccqqq", RVV_REQ_xsfvfwmaccqqq)
-                                  .Case("HasBfloat16", RVV_REQ_HasBfloat16)
-#endif // SIFIVE_CUSTOMIZATION
-=======
                                   .Case("Zvbb", RVV_REQ_Zvbb)
                                   .Case("Zvbc", RVV_REQ_Zvbc)
                                   .Case("Zvkb", RVV_REQ_Zvkb)
@@ -785,7 +775,14 @@ void RVVEmitter::createRVVIntrinsics(
                                   .Case("Zvknha", RVV_REQ_Zvknha)
                                   .Case("Zvksed", RVV_REQ_Zvksed)
                                   .Case("Zvksh", RVV_REQ_Zvksh)
->>>>>>> upstream/main
+#if SIFIVE_CUSTOMIZATION
+                                  .Case("Xsfvqmaccqoq", RVV_REQ_xsfvqmaccqoq)
+                                  .Case("Xsfvqmaccdod", RVV_REQ_xsfvqmaccdod)
+                                  .Case("Xsfvfnrclipxfqf", RVV_REQ_xsfvfnrclipxfqf)
+                                  .Case("Xsfvfhbfmin", RVV_REQ_xsfvfhbfmin)
+                                  .Case("Xsfvfwmaccqqq", RVV_REQ_xsfvfwmaccqqq)
+                                  .Case("HasBfloat16", RVV_REQ_HasBfloat16)
+#endif // SIFIVE_CUSTOMIZATION
                                   .Default(RVV_REQ_None);
       assert(RequireExt != RVV_REQ_None && "Unrecognized required feature?");
       SR.RequiredExtensions |= RequireExt;

@@ -8866,16 +8866,7 @@ void Sema::CheckVariableDeclarationType(VarDecl *NewVD) {
   }
 
   if (T->isRVVType())
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    // This fix will be done in the upstream too.
     checkRVVTypeSupport(T, NewVD->getLocation(), cast<Decl>(CurContext));
-#else
-    checkRVVTypeSupport(T, NewVD->getLocation(), cast<ValueDecl>(CurContext));
-#endif
-=======
-    checkRVVTypeSupport(T, NewVD->getLocation(), cast<Decl>(CurContext));
->>>>>>> upstream/main
 }
 
 /// Perform semantic checking on a newly-created variable

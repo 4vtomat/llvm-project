@@ -13758,16 +13758,9 @@ private:
   bool CheckRISCVLMUL(CallExpr *TheCall, unsigned ArgNum);
   bool CheckRISCVBuiltinFunctionCall(const TargetInfo &TI, unsigned BuiltinID,
                                      CallExpr *TheCall);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   // This fix will be done in the upstream too.
   void checkRVVTypeSupport(QualType Ty, SourceLocation Loc, Decl *D);
-#else
-  void checkRVVTypeSupport(QualType Ty, SourceLocation Loc, ValueDecl *D);
-#endif
-=======
   void checkRVVTypeSupport(QualType Ty, SourceLocation Loc, Decl *D);
->>>>>>> upstream/main
   bool CheckLoongArchBuiltinFunctionCall(const TargetInfo &TI,
                                          unsigned BuiltinID, CallExpr *TheCall);
   bool CheckWebAssemblyBuiltinFunctionCall(const TargetInfo &TI,

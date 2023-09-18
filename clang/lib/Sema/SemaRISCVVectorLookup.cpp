@@ -247,17 +247,8 @@ public:
 void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
     ArrayRef<RVVIntrinsicRecord> Recs, IntrinsicKind K) {
   const TargetInfo &TI = Context.getTargetInfo();
-<<<<<<< HEAD
 
   static const std::pair<const char *, uint8_t> FeatureCheckList[] = {
-      {"64bit", RVV_REQ_RV64},
-      {"xsfvqmaccqoq", RVV_REQ_xsfvqmaccqoq},
-      {"xsfvqmaccdod", RVV_REQ_xsfvqmaccdod},
-      {"xsfvfnrclipxfqf", RVV_REQ_xsfvfnrclipxfqf},
-      {"xsfvfhbfmin", RVV_REQ_xsfvfhbfmin},
-      {"xsfvfwmaccqqq", RVV_REQ_xsfvfwmaccqqq},
-      {"xsfvcp", RVV_REQ_Xsfvcp}};
-=======
   static const std::pair<const char *, RVVRequire> FeatureCheckList[] = {
       {"64bit", RVV_REQ_RV64},
       {"xsfvcp", RVV_REQ_Xsfvcp},
@@ -268,8 +259,17 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
       {"experimental-zvkned", RVV_REQ_Zvkned},
       {"experimental-zvknha", RVV_REQ_Zvknha},
       {"experimental-zvksed", RVV_REQ_Zvksed},
+#if SIFIVE_CUSTOMIZATION
+      {"experimental-zvksh", RVV_REQ_Zvksh},
+      {"xsfvqmaccqoq", RVV_REQ_xsfvqmaccqoq},
+      {"xsfvqmaccdod", RVV_REQ_xsfvqmaccdod},
+      {"xsfvfnrclipxfqf", RVV_REQ_xsfvfnrclipxfqf},
+      {"xsfvfhbfmin", RVV_REQ_xsfvfhbfmin},
+      {"xsfvfwmaccqqq", RVV_REQ_xsfvfwmaccqqq},
+      {"xsfvcp", RVV_REQ_Xsfvcp}};
+#else
       {"experimental-zvksh", RVV_REQ_Zvksh}};
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
 
   // Construction of RVVIntrinsicRecords need to sync with createRVVIntrinsics
   // in RISCVVEmitter.cpp.

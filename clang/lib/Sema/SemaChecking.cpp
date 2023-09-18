@@ -5582,16 +5582,7 @@ bool Sema::CheckWebAssemblyBuiltinFunctionCall(const TargetInfo &TI,
   return false;
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-// This fix will be done in the upstream too.
 void Sema::checkRVVTypeSupport(QualType Ty, SourceLocation Loc, Decl *D) {
-#else
-void Sema::checkRVVTypeSupport(QualType Ty, SourceLocation Loc, ValueDecl *D) {
-#endif
-=======
-void Sema::checkRVVTypeSupport(QualType Ty, SourceLocation Loc, Decl *D) {
->>>>>>> upstream/main
   const TargetInfo &TI = Context.getTargetInfo();
 
   // (ELEN, LMUL) pairs of (8, mf8), (16, mf4), (32, mf2), (64, m1) requires at
