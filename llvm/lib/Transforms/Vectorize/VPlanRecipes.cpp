@@ -1103,6 +1103,7 @@ void VPWidenRecipe::print(raw_ostream &O, const Twine &Indent,
 void VPWidenCastRecipe::execute(VPTransformState &State) {
   State.setDebugLocFrom(getDebugLoc());
 #if SIFIVE_CUSTOMIZATION
+  auto *I = cast_or_null<Instruction>(getUnderlyingValue());
   if (State.Plan->getRVL() &&
       State.get(getOperand(0), 0)->getType()->isVectorTy() &&
       !isa<BitCastInst>(I) && !isa<FreezeInst>(I)) {

@@ -4682,11 +4682,11 @@ void InnerLoopVectorizer::fixReduction(VPReductionPHIRecipe *PhiR,
       assert(InitRVL &&
              "InitRVL must be initialized in emitIterationCountCheck when "
              "using VP intrinsic to generate unordered reduction");
-      ReducedPartRdx = createTargetReduction(Builder, TTI, RdxDesc,
-                                             ReducedPartRdx, InitRVL, OrigPhi);
+      ReducedPartRdx = createTargetReduction(Builder, RdxDesc, ReducedPartRdx,
+                                             InitRVL, OrigPhi);
     } else {
       ReducedPartRdx =
-          createTargetReduction(Builder, TTI, RdxDesc, ReducedPartRdx, OrigPhi);
+          createTargetReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
     }
     // Adjust the final scalar result after the loop if the target prefers that.
     // FIXME: Handle situation that the start value and identity are equal.
@@ -4715,7 +4715,7 @@ void InnerLoopVectorizer::fixReduction(VPReductionPHIRecipe *PhiR,
 #if SIFIVE_CUSTOMIZATION
   if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
     ReducedPartRdx =
-        createSentinelValueHandling(Builder, TTI, RdxDesc, ReducedPartRdx);
+        createSentinelValueHandling(Builder, RdxDesc, ReducedPartRdx);
 #endif // SIFIVE_CUSTOMIZATION
 
   PHINode *ResumePhi =
@@ -10115,7 +10115,7 @@ VPValue *VPRecipeBuilder::createBlockInMask(BasicBlock *BB, VPlan &Plan) {
                                        nullptr, "active.lane.mask");
     } else {
       VPValue *BTC = Plan.getOrCreateBackedgeTakenCount();
-      BlockMask = Builder.createNaryOp(VPInstruction::ICmpULE, {IV, BTC});
+      BlockMask = Builder.createICmp(CmpInst::ICMP_ULE, IV, BTC);
     }
     return BlockMaskCache[BB] = BlockMask;
   }
@@ -11182,12 +11182,11 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
       DL = getDebugLocFromInstOrOperands(Legal->getPrimaryInduction());
   addCanonicalIVRecipes(
       *Plan, Legal->getWidestInductionType(),
-      DLInst ? DLInst->getDebugLoc() : DebugLoc(),
-      CM.getTailFoldingStyle(IVUpdateMayOverflow),
+      DL, CM.getTailFoldingStyle(IVUpdateMayOverflow),
       Legal->useVLAVectorizer());
   addCSAPreprocessRecipes(
       Legal->getCSAs(), OrigLoop, Plan->getPreheader(), HeaderVPBB,
-      DLInst ? DLInst->getDebugLoc() : DebugLoc(), Range, *Plan);
+      DL, Range, *Plan);
 #else
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), DL,
                         CM.getTailFoldingStyle(IVUpdateMayOverflow));
@@ -11312,9 +11311,7 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   if (Legal->isVectorizableUncountable())
     HeaderVPBB->setName("vector.body");
 
-  addCSAPostprocessRecipes(Legal->getCSAs(), MiddleVPBB,
-                           DLInst ? DLInst->getDebugLoc() : DebugLoc(), Range,
-                           *Plan);
+  addCSAPostprocessRecipes(Legal->getCSAs(), MiddleVPBB, DL, Range, *Plan);
 #endif // SIFIVE_CUSTOMIZATION
 
   // After here, VPBB should not be used.
@@ -12103,7 +12100,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
     // The outermost mask can be lowered as an all ones mask when using
     // RVL.
     if (auto *IMask = dyn_cast<VPInstruction>(Mask))
-      if (IMask->getOpcode() == VPInstruction::ICmpULE)
+      if (IMask->getOpcode() == CmpInst::ICMP_ULE)
         return Builder.getTrueVector(EC);
 
     return BlockInMaskParts[Part];

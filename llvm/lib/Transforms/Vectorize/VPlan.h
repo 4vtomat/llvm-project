@@ -1339,9 +1339,6 @@ public:
     };
     llvm_unreachable("switch should return");
   }
-#if SIFIVE_CUSTOMIZATION
-  DebugLoc getDebugLoc() const { return DL; }
-#endif // SIFIVE_CUSTOMIZATION
 };
 
 /// VPWidenRecipe is a recipe for producing a copy of vector type its

@@ -115,21 +115,6 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     return widenSelectInstruction(State, Intrinsic::vp_select, Def, User, Part,
                                   "vp.op.select");
   }
-  case VPInstruction::ICmpULE: {
-    assert(!Op && "Expected with no-op only.");
-    Value *IV = State.get(User.getOperand(0), Part);
-    Value *TC = State.get(User.getOperand(1), Part);
-    StringRef PredicateStr = CmpInst::getPredicateName(CmpInst::ICMP_ULE);
-    auto *PredicateMDS = MDString::get(IV->getContext(), PredicateStr);
-    Value *PredArg = MetadataAsValue::get(IV->getContext(), PredicateMDS);
-
-    Value *MaskArg = BuilderIR.getTrueVector(State.VF);
-    Value *RVLArg = State.get(RVL, Part);
-    Builder.setMask(MaskArg).setEVL(RVLArg);
-    return Builder.createVectorInstruction(Instruction::ICmp, IV->getType(),
-                                           {IV, TC, PredArg},
-                                           "pred.active.lane");
-  }
   case Instruction::ICmp:
   case Instruction::FCmp: {
     //===------------------ compare instructions --------------------------===//
@@ -329,7 +314,7 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
     // RVL.
     VPValue *Mask = VPWMIR.getMask();
     auto *IMask = dyn_cast_or_null<VPInstruction>(Mask);
-    if (!Mask || (IMask && IMask->getOpcode() == VPInstruction::ICmpULE))
+    if (!Mask)
       return Builder.getTrueVector(EC);
 
     return BlockInMaskParts[Part];

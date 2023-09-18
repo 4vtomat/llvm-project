@@ -424,8 +424,7 @@ Value *createSimpleTargetReduction(IRBuilderBase &B, Value *Src,
                                    RecurKind RdxKind);
 
 #if SIFIVE_CUSTOMIZATION
-Value *createSimpleTargetReduction(IRBuilderBase &B,
-                                   const TargetTransformInfo *TTI, Value *Src,
+Value *createSimpleTargetReduction(IRBuilderBase &B, Value *Src,
                                    RecurKind RdxKind, Value *RVL,
                                    Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
@@ -458,7 +457,7 @@ Value *createFindLastIVTargetReduction(IRBuilderBase &B, Value *Src,
 /// required to implement the reduction.
 /// Fast-math-flags are propagated using the RecurrenceDescriptor.
 #if SIFIVE_CUSTOMIZATION
-Value *createTargetReduction(IRBuilderBase &B const RecurrenceDescriptor &Desc,
+Value *createTargetReduction(IRBuilderBase &B, const RecurrenceDescriptor &Desc,
                              Value *Src, Value *RVL, PHINode *OrigPhi = nullptr,
                              Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION

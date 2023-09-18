@@ -155,18 +155,14 @@ public:
                         FastMathFlags FMFs, DebugLoc DL,
                         const VPSelectInstruction::TailPolicy TP,
                         const Twine &Name = "") {
-    auto *SelectInst =
-        new VPSelectInstruction(Cond, TrueVal, FalseVal, FMFs, DL, TP, Name);
-    insert(SelectInst);
-    return SelectInst;
+    return tryInsertInstruction(
+        new VPSelectInstruction(Cond, TrueVal, FalseVal, FMFs, DL, TP, Name));
   }
   VPValue *createSelect(VPValue *Cond, VPValue *TrueVal, VPValue *FalseVal,
                         FastMathFlags FMFs, DebugLoc DL,
                         const Twine &Name = "") {
-    auto *SelectInst = new VPInstruction(
-        Instruction::Select, {Cond, TrueVal, FalseVal}, FMFs, DL, Name);
-    insert(SelectInst);
-    return SelectInst;
+    return tryInsertInstruction(new VPInstruction(
+        Instruction::Select, {Cond, TrueVal, FalseVal}, FMFs, DL, Name));
   }
 #endif // SIFIVE_CUSTOMIZATION
 
