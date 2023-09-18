@@ -1210,7 +1210,7 @@ def TuneCMOVBranchOpt
     : SubtargetFeature<"cmov-branch-opt", "HasCMOVBranchOpt",
                        "true", "Enable CMOV branch optimization">;
 def CanUseCMOVBranchOpt : Predicate<"Subtarget->canUseCMOVBranchOpt()">;
-def NoCMOVBranchOpt : Predicate<"!Subtarget->hasCMOVBranchOpt()">;
+def NoCMOVBranchOpt : Predicate<"!Subtarget->canUseCMOVBranchOpt()">;
 
 def TuneJumpIsCheap
     : SubtargetFeature<"jump-is-cheap", "SetJumpIsCheap",
