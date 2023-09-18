@@ -457,12 +457,10 @@ bool RISCVPassConfig::addRegAssignAndRewriteOptimized() {
 void RISCVPassConfig::addIRPasses() {
   addPass(createAtomicExpandPass());
 
-<<<<<<< HEAD
-  if (getOptLevel() != CodeGenOpt::None) {
-    addPass(createRISCVWidenReductionPHIPass()); // SIFIVE
-=======
   if (getOptLevel() != CodeGenOptLevel::None) {
->>>>>>> upstream/main
+#if SIFIVE_CUSTOMIZATION
+    addPass(createRISCVWidenReductionPHIPass());
+#endif // SIFIVE_CUSTOMIZATION
     addPass(createRISCVGatherScatterLoweringPass());
     addPass(createInterleavedAccessPass());
     addPass(createRISCVCodeGenPreparePass());
@@ -597,11 +595,7 @@ void RISCVPassConfig::addMachineSSAOptimization() {
 
 void RISCVPassConfig::addPreRegAlloc() {
   addPass(createRISCVPreRAExpandPseudoPass());
-<<<<<<< HEAD
-  if (TM->getOptLevel() != CodeGenOpt::None) {
-=======
   if (TM->getOptLevel() != CodeGenOptLevel::None)
->>>>>>> upstream/main
     addPass(createRISCVMergeBaseOffsetOptPass());
 #if SIFIVE_CUSTOMIZATION
     if (EnableVLOptimizer)

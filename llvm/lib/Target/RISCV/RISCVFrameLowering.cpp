@@ -773,16 +773,8 @@ void RISCVFrameLowering::emitEpilogue(MachineFunction &MF,
   if (FirstSPAdjustAmount)
     StackSize = FirstSPAdjustAmount;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // Cherry-picked from upstream D158256.
   if (RVFI->isPushable(MF) && MBBI != MBB.end() &&
       MBBI->getOpcode() == RISCV::CM_POP) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  if (RVFI->isPushable(MF) && MBBI != MBB.end() &&
-      MBBI->getOpcode() == RISCV::CM_POP) {
->>>>>>> upstream/main
     // Use available stack adjustment in pop instruction to deallocate stack
     // space.
     unsigned PushStack = RVFI->getRVPushRegs() * (STI.getXLen() / 8);

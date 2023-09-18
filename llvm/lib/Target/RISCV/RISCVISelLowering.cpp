@@ -7184,30 +7184,18 @@ SDValue RISCVTargetLowering::lowerSELECT(SDValue Op, SelectionDAG &DAG) const {
     if (SDValue V = combineSelectToBinOp(Op.getNode(), DAG, Subtarget))
       return V;
 
-#if SIFIVE_CUSTOMIZATION
     // (select c, t, f) -> (or (czero_eqz t, c), (czero_nez f, c))
     // Unless we have short forward branch or cmov branch optimizations.
+#if SIFIVE_CUSTOMIZATION
     if (!Subtarget.hasShortForwardBranchOpt() &&
         !Subtarget.canUseCMOVBranchOpt())
-      return DAG.getNode(
-          ISD::OR, DL, VT,
-          DAG.getNode(RISCVISD::CZERO_EQZ, DL, VT, TrueV, CondV),
-          DAG.getNode(RISCVISD::CZERO_NEZ, DL, VT, FalseV, CondV));
 #else
-    // (select c, t, f) -> (or (czero_eqz t, c), (czero_nez f, c))
-<<<<<<< HEAD
-    return DAG.getNode(ISD::OR, DL, VT,
-                       DAG.getNode(RISCVISD::CZERO_EQZ, DL, VT, TrueV, CondV),
-                       DAG.getNode(RISCVISD::CZERO_NEZ, DL, VT, FalseV, CondV));
-#endif
-=======
-    // Unless we have the short forward branch optimization.
     if (!Subtarget.hasShortForwardBranchOpt())
+#endif
       return DAG.getNode(
           ISD::OR, DL, VT,
           DAG.getNode(RISCVISD::CZERO_EQZ, DL, VT, TrueV, CondV),
           DAG.getNode(RISCVISD::CZERO_NEZ, DL, VT, FalseV, CondV));
->>>>>>> upstream/main
   }
 
   if (SDValue V = combineSelectToBinOp(Op.getNode(), DAG, Subtarget))
@@ -9948,15 +9936,15 @@ SDValue RISCVTargetLowering::lowerVECTOR_DEINTERLEAVE(SDValue Op,
   SDValue Passthru = DAG.getUNDEF(ConcatVT);
 
   // We can deinterleave through vnsrl.wi if the element type is smaller than
-<<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
   // ELEN and the factor is 2.
   // TODO this also works for factor 4 and 8 if sufficient widening is
   // available.
-  if (Factor == 2 && VecVT.getScalarSizeInBits() < Subtarget.getELEN()) {
-=======
+  if (Factor == 2 && VecVT.getScalarSizeInBits() < Subtarget.getElen()) {
+#else
   // ELEN
   if (VecVT.getScalarSizeInBits() < Subtarget.getELen()) {
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
     SDValue Even =
         getDeinterleaveViaVNSRL(DL, VecVT, Concat, true, Subtarget, DAG);
     SDValue Odd =
@@ -10038,7 +10026,6 @@ SDValue RISCVTargetLowering::lowerVECTOR_INTERLEAVE(SDValue Op,
 
   SDValue Interleaved;
 
-<<<<<<< HEAD
   // Spill to the stack using a segment store for simplicity.
   if (Factor != 2) {
     EVT MemVT =
@@ -10093,12 +10080,7 @@ SDValue RISCVTargetLowering::lowerVECTOR_INTERLEAVE(SDValue Op,
 
   // If the element type is smaller than ELEN, then we can interleave with
   // vwaddu.vv and vwmaccu.vx
-  if (VecVT.getScalarSizeInBits() < Subtarget.getELEN()) {
-=======
-  // If the element type is smaller than ELEN, then we can interleave with
-  // vwaddu.vv and vwmaccu.vx
   if (VecVT.getScalarSizeInBits() < Subtarget.getELen()) {
->>>>>>> upstream/main
     Interleaved = getWideningInterleave(Op.getOperand(0), Op.getOperand(1), DL,
                                         DAG, Subtarget);
   } else {
@@ -16179,33 +16161,6 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     return DAG.getNode(ISD::FCOPYSIGN, DL, VT, N->getOperand(0),
                        DAG.getNode(ISD::FNEG, DL, VT, NewFPExtRound));
   }
-<<<<<<< HEAD
-  case ISD::MGATHER:
-  case ISD::MSCATTER:
-  case ISD::VP_GATHER:
-  case ISD::VP_SCATTER: {
-    if (!DCI.isBeforeLegalize())
-      break;
-#if SIFIVE_CUSTOMIZATION
-  if (SDValue V = lowerSplatPtrVPGather(SDValue(N, 0), DAG, Subtarget))
-    return V;
-#endif // SIFIVE_CUSTOMIZATION
-    SDValue Index, ScaleOp;
-    bool IsIndexSigned = false;
-    if (const auto *VPGSN = dyn_cast<VPGatherScatterSDNode>(N)) {
-      Index = VPGSN->getIndex();
-      ScaleOp = VPGSN->getScale();
-      IsIndexSigned = VPGSN->isIndexSigned();
-      assert(!VPGSN->isIndexScaled() &&
-             "Scaled gather/scatter should not be formed");
-    } else {
-      const auto *MGSN = cast<MaskedGatherScatterSDNode>(N);
-      Index = MGSN->getIndex();
-      ScaleOp = MGSN->getScale();
-      IsIndexSigned = MGSN->isIndexSigned();
-      assert(!MGSN->isIndexScaled() &&
-             "Scaled gather/scatter should not be formed");
-=======
   case ISD::MGATHER: {
     const auto *MGN = dyn_cast<MaskedGatherSDNode>(N);
     const EVT VT = N->getValueType(0);
@@ -16222,7 +16177,6 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
           {MGN->getChain(), MGN->getPassThru(), MGN->getMask(),
            MGN->getBasePtr(), Index, ScaleOp},
           MGN->getMemOperand(), IndexType, MGN->getExtensionType());
->>>>>>> upstream/main
 
     if (narrowIndex(Index, IndexType, DAG))
       return DAG.getMaskedGather(
@@ -16288,6 +16242,10 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     ISD::MemIndexType IndexType = VPGN->getIndexType();
     assert(!VPGN->isIndexScaled() &&
            "Scaled gather/scatter should not be formed");
+#if SIFIVE_CUSTOMIZATION
+  if (SDValue V = lowerSplatPtrVPGather(SDValue(N, 0), DAG, Subtarget))
+    return V;
+#endif // SIFIVE_CUSTOMIZATION
 
     SDLoc DL(N);
     if (legalizeScatterGatherIndexType(DL, Index, IndexType, DCI))
@@ -16662,7 +16620,6 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
         return DAG.getConstant(-1, DL, VT);
       return DAG.getConstant(0, DL, VT);
     }
-<<<<<<< HEAD
     case Intrinsic::riscv_vloxei:
     case Intrinsic::riscv_vloxei_mask:
     case Intrinsic::riscv_vluxei:
@@ -16900,8 +16857,6 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
                            MergedWhenTrue.getOperand(2), // T2
                            VL);
       }
-=======
->>>>>>> upstream/main
     }
 
     break;

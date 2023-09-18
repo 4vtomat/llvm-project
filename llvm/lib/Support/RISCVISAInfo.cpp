@@ -137,25 +137,17 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zicbom", RISCVExtensionVersion{1, 0}},
     {"zicbop", RISCVExtensionVersion{1, 0}},
     {"zicboz", RISCVExtensionVersion{1, 0}},
-<<<<<<< HEAD
     {"ziccamoa", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"ziccif", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zicclsm", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"ziccrse", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zicntr", RISCVExtensionVersion{1, 0}},
-=======
     {"zicntr", RISCVExtensionVersion{2, 0}},
->>>>>>> upstream/main
     {"zicsr", RISCVExtensionVersion{2, 0}},
     {"zifencei", RISCVExtensionVersion{2, 0}},
     {"zihintntl", RISCVExtensionVersion{1, 0}},
     {"zihintpause", RISCVExtensionVersion{2, 0}},
-<<<<<<< HEAD
-    {"zihpm", RISCVExtensionVersion{1, 0}},
-=======
     {"zihpm", RISCVExtensionVersion{2, 0}},
 
->>>>>>> upstream/main
     {"zk", RISCVExtensionVersion{1, 0}},
     {"zkn", RISCVExtensionVersion{1, 0}},
     {"zknd", RISCVExtensionVersion{1, 0}},
@@ -674,7 +666,6 @@ static Error getExtensionVersion(StringRef Ext, StringRef In, unsigned &Major,
     return createStringError(errc::invalid_argument, Error);
   }
 
-<<<<<<< HEAD
   auto getUnsupportedError = [=](bool IsExperimental = false) {
     std::string Error = "unsupported version number " + MajorStr.str();
     if (!MinorStr.empty())
@@ -693,10 +684,7 @@ static Error getExtensionVersion(StringRef Ext, StringRef In, unsigned &Major,
     return createStringError(errc::invalid_argument, Error);
   };
 
-  // If experimental extension, require use of current version number number
-=======
   // If experimental extension, require use of current version number
->>>>>>> upstream/main
   if (auto ExperimentalExtension = isExperimentalExtension(Ext)) {
     if (!EnableExperimentalExtension) {
       std::string Error = "requires '-menable-experimental-extensions' for "
@@ -713,6 +701,7 @@ static Error getExtensionVersion(StringRef Ext, StringRef In, unsigned &Major,
       return createStringError(errc::invalid_argument, Error);
     }
 
+#ifdef SIFIVE_CUSTOMIZATION
     if (ExperimentalExtensionVersionCheck) {
       auto SupportedVersions =
           getSupportedExtensionVersions(Ext, /* IsExperimental =*/true);
@@ -724,7 +713,6 @@ static Error getExtensionVersion(StringRef Ext, StringRef In, unsigned &Major,
       if (!FoundAnySupportedVersion)
         return getUnsupportedError(/* IsExperimental =*/ true);
     }
-#ifdef SIFIVE_CUSTOMIZATION
     // We need version information to report to the user.
     if (MajorStr.empty() && MinorStr.empty()) {
       if (auto DefaultVersion = findDefaultVersion(Ext)) {

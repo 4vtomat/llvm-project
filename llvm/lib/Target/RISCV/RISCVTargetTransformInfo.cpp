@@ -59,7 +59,6 @@ static cl::opt<unsigned> SLPMaxVF(
         "exclusively by SLP vectorizer."),
     cl::Hidden);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<unsigned> VectorPrimaryLMULMinExp(
     "vector-primary-lmul-min",
@@ -354,30 +353,6 @@ bool RISCVTTIImpl::getMemoryRefInfo(
 }
 #endif
 
-InstructionCost RISCVTTIImpl::getLMULCost(MVT VT) {
-  // TODO: Here assume reciprocal throughput is 1 for LMUL_1, it is
-  // implementation-defined.
-  if (!VT.isVector())
-    return InstructionCost::getInvalid();
-  unsigned DLenFactor = ST->getDLenFactor();
-  unsigned Cost;
-  if (VT.isScalableVector()) {
-    unsigned LMul;
-    bool Fractional;
-    std::tie(LMul, Fractional) =
-        RISCVVType::decodeVLMUL(RISCVTargetLowering::getLMUL(VT));
-    if (Fractional)
-      Cost = LMul <= DLenFactor ? (DLenFactor / LMul) : 1;
-    else
-      Cost = (LMul * DLenFactor);
-  } else {
-    Cost = divideCeil(VT.getSizeInBits(), ST->getRealMinVLen() / DLenFactor);
-  }
-  return Cost;
-}
-
-=======
->>>>>>> upstream/main
 InstructionCost RISCVTTIImpl::getIntImmCost(const APInt &Imm, Type *Ty,
                                             TTI::TargetCostKind CostKind) {
   assert(Ty->isIntegerTy() &&
@@ -1725,15 +1700,15 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
     InstructionCost DstLMULCost = 1;
     InstructionCost PowDiffCost = 1;
     if (CostKind == TTI::TCK_RecipThroughput) {
-      SrcLMULCost = getLMULCost(SrcLT.second);
-      DstLMULCost = getLMULCost(DstLT.second);
+      SrcLMULCost = TLI->getLMULCost(SrcLT.second);
+      DstLMULCost = TLI->getLMULCost(DstLT.second);
       PowDiffCost = 0;
       unsigned SrcSize = SrcEltSize;
       if (SrcSize != 1 && DstEltSize != 1) {
         for (; SrcSize != DstEltSize;) {
           MVT SrcMVT =
               SrcLT.second.changeVectorElementType(MVT::getIntegerVT(SrcSize));
-          PowDiffCost += getLMULCost(SrcMVT);
+          PowDiffCost += TLI->getLMULCost(SrcMVT);
           if (SrcSize < DstEltSize)
             SrcSize = SrcSize << 1;
           else
@@ -1824,7 +1799,7 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
           unsigned ExtendSize = SrcEltSize << (PowDiff - 1);
           MVT ExtendMVT = SrcLT.second.changeVectorElementType(
               MVT::getIntegerVT(ExtendSize));
-          InstructionCost FcvtCost = getLMULCost(ExtendMVT);
+          InstructionCost FcvtCost = TLI->getLMULCost(ExtendMVT);
           return SrcLT.first * (ExtendCost + FcvtCost);
         }
       }
@@ -1915,7 +1890,7 @@ RISCVTTIImpl::getMinMaxReductionCost(Intrinsic::ID IID, VectorType *Ty,
       CmpOpcode = Instruction::ICmp;
     }
     constexpr int ProfitableVF = 19;
-    return getLMULCost(LT.second) +
+    return TLI->getLMULCost(LT.second) +
            getVectorInstrCost(Instruction::ExtractElement, Ty, CostKind, 0,
                               nullptr, nullptr) +
            ProfitableVF * getCmpSelInstrCost(CmpOpcode, ScalarTy, ScalarCondTy,
@@ -1973,7 +1948,7 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
     // Now assume Vector performs better than scalar when
     // element count >= 19.
     constexpr int ProfitableVF = 19;
-    return getLMULCost(LT.second) +
+    return TLI->getLMULCost(LT.second) +
            getVectorInstrCost(Instruction::ExtractElement, Ty, CostKind, 0,
                               nullptr, nullptr) +
            ProfitableVF *
@@ -2107,7 +2082,7 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
         return Cost + 2;
     }
   }
-  Cost += LT.first * getLMULCost(LT.second);
+  Cost += LT.first * TLI->getLMULCost(LT.second);
 
   /// Extra penalty for misaligned load or store
   if (!Alignment ||
@@ -2281,7 +2256,7 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
   InstructionCost SlideCost = Opcode == Instruction::InsertElement ? 2 : 1;
   if (ST->isSiFiveCPU() && Opcode == Instruction::ExtractElement &&
       CostKind != TTI::TCK_CodeSize && Index == -1U)
-    SlideCost = 1 + getLMULCost(LT.second);
+    SlideCost = 1 + TLI->getLMULCost(LT.second);
 #else
   unsigned BaseCost = 1;
   // When insertelement we should add the index with 1 as the input of vslideup.
@@ -2351,11 +2326,11 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
                             CostKind) +
             ((CostKind == TTI::TCK_CodeSize)
                  ? LT.first
-                 : LT.first * getLMULCost(LT.second));
+                 : LT.first * TLI->getLMULCost(LT.second));
         return BaseCost;
       } else {
         InstructionCost LMULCost =
-            (CostKind == TTI::TCK_CodeSize) ? 1 : getLMULCost(LT.second);
+            (CostKind == TTI::TCK_CodeSize) ? 1 : TLI->getLMULCost(LT.second);
         BaseCost = V2SCost + LMULCost * 2;
         return BaseCost + SlideCost;
       }
@@ -2505,31 +2480,27 @@ InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
     // Make cost of the vector instruction the same as the cost of two scalar
     // INT instructions
     if (ST->isSiFiveCPU())
-      return ConstantMatCost + getLMULCost(LT.second) * LT.first * 2;
+      return ConstantMatCost + TLI->getLMULCost(LT.second) * LT.first * 2;
     [[fallthrough]];
 #endif // SIFIVE_CUSTOMIZATION
   case ISD::FADD:
   case ISD::FSUB:
   case ISD::FMUL:
   case ISD::FNEG: {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (ST->getProcFamily() == RISCVSubtarget::SiFiveP400) {
       // Make cost of the vector instruction the same as the cost of two scalar
       // FP instructions
-      return ConstantMatCost + getLMULCost(LT.second) * LT.first * 4;
+      return ConstantMatCost + TLI->getLMULCost(LT.second) * LT.first * 4;
     } else if (ST->isSiFiveCPU()) {
       // X280, P670 and the rest SiFive cores fall into this case.
       // P670 has two FP pipes so we make the vector cost higher than P470
       // Make cost of the vector instruction the same as the cost of three scalar
       // FP instructions
-      return ConstantMatCost + getLMULCost(LT.second) * LT.first * 6;
+      return ConstantMatCost + TLI->getLMULCost(LT.second) * LT.first * 6;
     }
 #endif // SIFIVE_CUSTOMIZATION
-    return ConstantMatCost + getLMULCost(LT.second) * LT.first * 1;
-=======
     return ConstantMatCost + TLI->getLMULCost(LT.second) * LT.first * 1;
->>>>>>> upstream/main
   }
   default:
     return ConstantMatCost +
