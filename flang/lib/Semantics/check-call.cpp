@@ -329,10 +329,11 @@ static void CheckExplicitDataArg(const characteristics::DummyDataObject &dummy,
       typesCompatible = true;
     }
   }
+  bool dummyIsAssumedRank{dummy.type.attrs().test(
+      characteristics::TypeAndShape::Attr::AssumedRank)};
   if (typesCompatible) {
     if (isElemental) {
-    } else if (dummy.type.attrs().test(
-                   characteristics::TypeAndShape::Attr::AssumedRank)) {
+    } else if (dummyIsAssumedRank) {
     } else if (dummy.ignoreTKR.test(common::IgnoreTKR::Rank)) {
     } else if (dummyRank > 0 && !dummyIsAllocatableOrPointer &&
         !dummy.type.attrs().test(
@@ -462,8 +463,6 @@ static void CheckExplicitDataArg(const characteristics::DummyDataObject &dummy,
           : nullptr};
   int actualRank{actualType.Rank()};
   bool actualIsPointer{evaluate::IsObjectPointer(actual, foldingContext)};
-  bool dummyIsAssumedRank{dummy.type.attrs().test(
-      characteristics::TypeAndShape::Attr::AssumedRank)};
   if (dummy.type.attrs().test(
           characteristics::TypeAndShape::Attr::AssumedShape)) {
     // 15.5.2.4(16)
@@ -682,8 +681,9 @@ static void CheckExplicitDataArg(const characteristics::DummyDataObject &dummy,
   if (dummyIsPointer) {
     if (actualIsPointer || dummy.intent == common::Intent::In) {
       if (scope) {
-        semantics::CheckPointerAssignment(
-            context, messages.at(), dummyName, dummy, actual, *scope);
+        semantics::CheckPointerAssignment(context, messages.at(), dummyName,
+            dummy, actual, *scope,
+            /*isAssumedRank=*/dummyIsAssumedRank);
       }
     } else if (!actualIsPointer) {
       messages.Say(
@@ -1430,7 +1430,7 @@ static void CheckTransfer(evaluate::ActualArguments &arguments,
               whole->name());
         } else if (context.ShouldWarn(
                        common::UsageWarning::TransferSizePresence) &&
-            IsAllocatableOrPointer(*whole)) {
+            IsAllocatableOrObjectPointer(whole)) {
           messages.Say(
               "SIZE= argument that is allocatable or pointer must be present at execution; parenthesize to silence this warning"_warn_en_US);
         }

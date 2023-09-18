@@ -1056,9 +1056,7 @@ Value *llvm::getShuffleReduction(IRBuilderBase &Builder, Value *Src,
   return Builder.CreateExtractElement(TmpVec, Builder.getInt32(0));
 }
 
-Value *llvm::createAnyOfTargetReduction(IRBuilderBase &Builder,
-                                        const TargetTransformInfo *TTI,
-                                        Value *Src,
+Value *llvm::createAnyOfTargetReduction(IRBuilderBase &Builder, Value *Src,
                                         const RecurrenceDescriptor &Desc,
                                         PHINode *OrigPhi) {
   assert(
@@ -1096,6 +1094,7 @@ Value *llvm::createAnyOfTargetReduction(IRBuilderBase &Builder,
   return Builder.CreateSelect(Cmp, NewVal, InitVal, "rdx.select");
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 Value *llvm::createAnyOfTargetReduction(IRBuilderBase &Builder,
                                         const TargetTransformInfo *TTI,
@@ -1163,6 +1162,10 @@ Value *llvm::createFindLastIVTargetReduction(IRBuilderBase &Builder,
 Value *llvm::createSimpleTargetReduction(IRBuilderBase &Builder,
                                          const TargetTransformInfo *TTI,
                                          Value *Src, RecurKind RdxKind) {
+=======
+Value *llvm::createSimpleTargetReduction(IRBuilderBase &Builder, Value *Src,
+                                         RecurKind RdxKind) {
+>>>>>>> upstream/main
   auto *SrcVecEltTy = cast<VectorType>(Src->getType())->getElementType();
   switch (RdxKind) {
   case RecurKind::Add:
@@ -1245,7 +1248,6 @@ Value *llvm::createSimpleTargetReduction(IRBuilderBase &Builder,
 #endif // SIFIVE_CUSTOMIZATION
 
 Value *llvm::createTargetReduction(IRBuilderBase &B,
-                                   const TargetTransformInfo *TTI,
                                    const RecurrenceDescriptor &Desc, Value *Src,
                                    PHINode *OrigPhi) {
   // TODO: Support in-order reductions based on the recurrence descriptor.
@@ -1256,13 +1258,17 @@ Value *llvm::createTargetReduction(IRBuilderBase &B,
 
   RecurKind RK = Desc.getRecurrenceKind();
   if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK))
+<<<<<<< HEAD
     return createAnyOfTargetReduction(B, TTI, Src, Desc, OrigPhi);
 #if SIFIVE_CUSTOMIZATION
   if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
     return createFindLastIVTargetReduction(B, TTI, Src, Desc);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    return createAnyOfTargetReduction(B, Src, Desc, OrigPhi);
+>>>>>>> upstream/main
 
-  return createSimpleTargetReduction(B, TTI, Src, RK);
+  return createSimpleTargetReduction(B, Src, RK);
 }
 
 #if SIFIVE_CUSTOMIZATION
@@ -1643,7 +1649,7 @@ int llvm::rewriteLoopExitValues(Loop *L, LoopInfo *LI, TargetLibraryInfo *TLI,
         // Note that we must not perform expansions until after
         // we query *all* the costs, because if we perform temporary expansion
         // inbetween, one that we might not intend to keep, said expansion
-        // *may* affect cost calculation of the the next SCEV's we'll query,
+        // *may* affect cost calculation of the next SCEV's we'll query,
         // and next SCEV may errneously get smaller cost.
 
         // Collect all the candidate PHINodes to be rewritten.

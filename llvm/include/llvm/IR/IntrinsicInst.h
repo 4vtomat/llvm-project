@@ -596,6 +596,11 @@ public:
     return getFunctionalOpcodeForVP(getIntrinsicID());
   }
 
+  // Equivalent non-predicated intrinsic ID
+  std::optional<unsigned> getFunctionalIntrinsicID() const {
+    return getFunctionalIntrinsicIDForVP(getIntrinsicID());
+  }
+
   // Equivalent non-predicated constrained ID
   std::optional<unsigned> getConstrainedIntrinsicID() const {
     return getConstrainedIntrinsicIDForVP(getIntrinsicID());
@@ -604,14 +609,20 @@ public:
   // Equivalent non-predicated opcode
   static std::optional<unsigned> getFunctionalOpcodeForVP(Intrinsic::ID ID);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Return the vector prediction id of ID if ID has vp form. Otherwise, return
   // not_intrinsic.
   static Intrinsic::ID getVPIntrinsicID(Intrinsic::ID ID);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  // Equivalent non-predicated intrinsic ID
+  static std::optional<Intrinsic::ID>
+  getFunctionalIntrinsicIDForVP(Intrinsic::ID ID);
+>>>>>>> upstream/main
 
   // Equivalent non-predicated constrained ID
-  static std::optional<unsigned>
+  static std::optional<Intrinsic::ID>
   getConstrainedIntrinsicIDForVP(Intrinsic::ID ID);
 };
 
@@ -668,6 +679,22 @@ public:
   }
   /// @}
 };
+
+class VPBinOpIntrinsic : public VPIntrinsic {
+public:
+  static bool isVPBinOp(Intrinsic::ID ID);
+
+  /// Methods for support type inquiry through isa, cast, and dyn_cast:
+  /// @{
+  static bool classof(const IntrinsicInst *I) {
+    return VPBinOpIntrinsic::isVPBinOp(I->getIntrinsicID());
+  }
+  static bool classof(const Value *V) {
+    return isa<IntrinsicInst>(V) && classof(cast<IntrinsicInst>(V));
+  }
+  /// @}
+};
+
 
 /// This is the common base class for constrained floating point intrinsics.
 class ConstrainedFPIntrinsic : public IntrinsicInst {

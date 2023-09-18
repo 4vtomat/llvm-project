@@ -1012,6 +1012,14 @@ public:
     }
   } DelayedDiagnostics;
 
+  enum CUDAFunctionTarget {
+    CFT_Device,
+    CFT_Global,
+    CFT_Host,
+    CFT_HostDevice,
+    CFT_InvalidTarget
+  };
+
   /// A RAII object to temporarily push a declaration context.
   class ContextRAII {
   private:
@@ -3010,7 +3018,13 @@ public:
                                       QualType NewT, QualType OldT);
   void CheckMain(FunctionDecl *FD, const DeclSpec &D);
   void CheckMSVCRTEntryPoint(FunctionDecl *FD);
+  void ActOnHLSLTopLevelFunction(FunctionDecl *FD);
   void CheckHLSLEntryPoint(FunctionDecl *FD);
+  void CheckHLSLSemanticAnnotation(FunctionDecl *EntryPoint, const Decl *Param,
+                                   const HLSLAnnotationAttr *AnnotationAttr);
+  void DiagnoseHLSLAttrStageMismatch(
+      const Attr *A, HLSLShaderAttr::ShaderType Stage,
+      std::initializer_list<HLSLShaderAttr::ShaderType> AllowedStages);
   Attr *getImplicitCodeSegOrSectionAttrForFunction(const FunctionDecl *FD,
                                                    bool IsDefinition);
   void CheckFunctionOrTemplateParamDeclarator(Scope *S, Declarator &D);
@@ -3490,9 +3504,8 @@ public:
 
   void ActOnLastBitfield(SourceLocation DeclStart,
                          SmallVectorImpl<Decl *> &AllIvarDecls);
-  Decl *ActOnIvar(Scope *S, SourceLocation DeclStart,
-                  Declarator &D, Expr *BitfieldWidth,
-                  tok::ObjCKeywordKind visibility);
+  Decl *ActOnIvar(Scope *S, SourceLocation DeclStart, Declarator &D,
+                  Expr *BitWidth, tok::ObjCKeywordKind visibility);
 
   // This is used for both record definitions and ObjC interface declarations.
   void ActOnFields(Scope *S, SourceLocation RecLoc, Decl *TagDecl,
@@ -3618,10 +3631,6 @@ public:
   /// or C function we're in, otherwise return null.  If we're currently
   /// in a 'block', this returns the containing context.
   NamedDecl *getCurFunctionOrMethodDecl() const;
-
-  /// getCurLocalScopeDecl - Return the Decl for either of:
-  /// block, lambda, captured statement, function, or nullptr.
-  Decl *getCurLocalScopeDecl();
 
   /// Add this decl to the scope shadowed decl chains.
   void PushOnScopeChains(NamedDecl *D, Scope *S, bool AddToContext = true);
@@ -4756,8 +4765,13 @@ public:
   bool isValidPointerAttrType(QualType T, bool RefOkay = false);
 
   bool CheckRegparmAttr(const ParsedAttr &attr, unsigned &value);
+
+  /// Check validaty of calling convention attribute \p attr. If \p FD
+  /// is not null pointer, use \p FD to determine the CUDA/HIP host/device
+  /// target. Otherwise, it is specified by \p CFT.
   bool CheckCallingConvAttr(const ParsedAttr &attr, CallingConv &CC,
-                            const FunctionDecl *FD = nullptr);
+                            const FunctionDecl *FD = nullptr,
+                            CUDAFunctionTarget CFT = CFT_InvalidTarget);
   bool CheckAttrTarget(const ParsedAttr &CurrAttr);
   bool CheckAttrNoArgs(const ParsedAttr &CurrAttr);
   bool checkStringLiteralArgumentAttr(const AttributeCommonInfo &CI,
@@ -7215,6 +7229,11 @@ public:
 
   CXXMethodDecl *CreateLambdaCallOperator(SourceRange IntroducerRange,
                                           CXXRecordDecl *Class);
+
+  void AddTemplateParametersToLambdaCallOperator(
+      CXXMethodDecl *CallOperator, CXXRecordDecl *Class,
+      TemplateParameterList *TemplateParams);
+
   void CompleteLambdaCallOperator(
       CXXMethodDecl *Method, SourceLocation LambdaLoc,
       SourceLocation CallOperatorLoc, Expr *TrailingRequiresClause,
@@ -7349,6 +7368,14 @@ public:
                                            Expr *Src);
 
   sema::LambdaScopeInfo *RebuildLambdaScopeInfo(CXXMethodDecl *CallOperator);
+
+  class LambdaScopeForCallOperatorInstantiationRAII
+      : private FunctionScopeRAII {
+  public:
+    LambdaScopeForCallOperatorInstantiationRAII(
+        Sema &SemasRef, FunctionDecl *FD, MultiLevelTemplateArgumentList MLTAL,
+        LocalInstantiationScope &Scope);
+  };
 
   /// Check whether the given expression is a valid constraint expression.
   /// A diagnostic is emitted if it is not, false is returned, and
@@ -13264,14 +13291,6 @@ public:
   void checkTypeSupport(QualType Ty, SourceLocation Loc,
                         ValueDecl *D = nullptr);
 
-  enum CUDAFunctionTarget {
-    CFT_Device,
-    CFT_Global,
-    CFT_Host,
-    CFT_HostDevice,
-    CFT_InvalidTarget
-  };
-
   /// Determines whether the given function is a CUDA device/host/kernel/etc.
   /// function.
   ///
@@ -13289,6 +13308,29 @@ public:
   };
   /// Determines whether the given variable is emitted on host or device side.
   CUDAVariableTarget IdentifyCUDATarget(const VarDecl *D);
+
+  /// Defines kinds of CUDA global host/device context where a function may be
+  /// called.
+  enum CUDATargetContextKind {
+    CTCK_Unknown,       /// Unknown context
+    CTCK_InitGlobalVar, /// Function called during global variable
+                        /// initialization
+  };
+
+  /// Define the current global CUDA host/device context where a function may be
+  /// called. Only used when a function is called outside of any functions.
+  struct CUDATargetContext {
+    CUDAFunctionTarget Target = CFT_HostDevice;
+    CUDATargetContextKind Kind = CTCK_Unknown;
+    Decl *D = nullptr;
+  } CurCUDATargetCtx;
+
+  struct CUDATargetContextRAII {
+    Sema &S;
+    CUDATargetContext SavedCtx;
+    CUDATargetContextRAII(Sema &S_, CUDATargetContextKind K, Decl *D);
+    ~CUDATargetContextRAII() { S.CurCUDATargetCtx = SavedCtx; }
+  };
 
   /// Gets the CUDA target for the current context.
   CUDAFunctionTarget CurrentCUDATarget() {
@@ -13716,12 +13758,16 @@ private:
   bool CheckRISCVLMUL(CallExpr *TheCall, unsigned ArgNum);
   bool CheckRISCVBuiltinFunctionCall(const TargetInfo &TI, unsigned BuiltinID,
                                      CallExpr *TheCall);
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // This fix will be done in the upstream too.
   void checkRVVTypeSupport(QualType Ty, SourceLocation Loc, Decl *D);
 #else
   void checkRVVTypeSupport(QualType Ty, SourceLocation Loc, ValueDecl *D);
 #endif
+=======
+  void checkRVVTypeSupport(QualType Ty, SourceLocation Loc, Decl *D);
+>>>>>>> upstream/main
   bool CheckLoongArchBuiltinFunctionCall(const TargetInfo &TI,
                                          unsigned BuiltinID, CallExpr *TheCall);
   bool CheckWebAssemblyBuiltinFunctionCall(const TargetInfo &TI,

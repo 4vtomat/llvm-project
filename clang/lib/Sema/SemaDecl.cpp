@@ -8866,12 +8866,16 @@ void Sema::CheckVariableDeclarationType(VarDecl *NewVD) {
   }
 
   if (T->isRVVType())
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     // This fix will be done in the upstream too.
     checkRVVTypeSupport(T, NewVD->getLocation(), cast<Decl>(CurContext));
 #else
     checkRVVTypeSupport(T, NewVD->getLocation(), cast<ValueDecl>(CurContext));
 #endif
+=======
+    checkRVVTypeSupport(T, NewVD->getLocation(), cast<Decl>(CurContext));
+>>>>>>> upstream/main
 }
 
 /// Perform semantic checking on a newly-created variable
@@ -10343,33 +10347,6 @@ Sema::ActOnFunctionDeclarator(Scope *S, Declarator &D, DeclContext *DC,
     }
   }
 
-  if (getLangOpts().HLSL) {
-    auto &TargetInfo = getASTContext().getTargetInfo();
-    // Skip operator overload which not identifier.
-    // Also make sure NewFD is in translation-unit scope.
-    if (!NewFD->isInvalidDecl() && Name.isIdentifier() &&
-        NewFD->getName() == TargetInfo.getTargetOpts().HLSLEntry &&
-        S->getDepth() == 0) {
-      CheckHLSLEntryPoint(NewFD);
-      if (!NewFD->isInvalidDecl()) {
-        auto Env = TargetInfo.getTriple().getEnvironment();
-        HLSLShaderAttr::ShaderType ShaderType =
-            static_cast<HLSLShaderAttr::ShaderType>(
-                hlsl::getStageFromEnvironment(Env));
-        // To share code with HLSLShaderAttr, add HLSLShaderAttr to entry
-        // function.
-        if (HLSLShaderAttr *NT = NewFD->getAttr<HLSLShaderAttr>()) {
-          if (NT->getType() != ShaderType)
-            Diag(NT->getLocation(), diag::err_hlsl_entry_shader_attr_mismatch)
-                << NT;
-        } else {
-          NewFD->addAttr(HLSLShaderAttr::Create(Context, ShaderType,
-                                                NewFD->getBeginLoc()));
-        }
-      }
-    }
-  }
-
   if (!getLangOpts().CPlusPlus) {
     // Perform semantic checking on the function declaration.
     if (!NewFD->isInvalidDecl() && NewFD->isMain())
@@ -10657,6 +10634,15 @@ Sema::ActOnFunctionDeclarator(Scope *S, Declarator &D, DeclContext *DC,
       Diag(NewFD->getLocation(), diag::ext_out_of_line_declaration)
         << D.getCXXScopeSpec().getRange();
     }
+  }
+
+  if (getLangOpts().HLSL && D.isFunctionDefinition()) {
+    // Any top level function could potentially be specified as an entry.
+    if (!NewFD->isInvalidDecl() && S->getDepth() == 0 && Name.isIdentifier())
+      ActOnHLSLTopLevelFunction(NewFD);
+
+    if (NewFD->hasAttr<HLSLShaderAttr>())
+      CheckHLSLEntryPoint(NewFD);
   }
 
   // If this is the first declaration of a library builtin function, add
@@ -11703,20 +11689,22 @@ static bool CheckMultiVersionFunction(Sema &S, FunctionDecl *NewFD,
   FunctionDecl *OldFD = OldDecl->getAsFunction();
 
   if (!OldFD->isMultiVersion() && MVKind == MultiVersionKind::None) {
-    // No target_version attributes mean default
-    if (!NewTVA) {
-      const auto *OldTVA = OldFD->getAttr<TargetVersionAttr>();
-      if (OldTVA) {
-        NewFD->addAttr(TargetVersionAttr::CreateImplicit(
-            S.Context, "default", NewFD->getSourceRange()));
-        NewFD->setIsMultiVersion();
-        OldFD->setIsMultiVersion();
-        OldDecl = OldFD;
-        Redeclaration = true;
-        return true;
-      }
+    if (NewTVA || !OldFD->getAttr<TargetVersionAttr>())
+      return false;
+    if (!NewFD->getType()->getAs<FunctionProtoType>()) {
+      // Multiversion declaration doesn't have prototype.
+      S.Diag(NewFD->getLocation(), diag::err_multiversion_noproto);
+      NewFD->setInvalidDecl();
+    } else {
+      // No "target_version" attribute is equivalent to "default" attribute.
+      NewFD->addAttr(TargetVersionAttr::CreateImplicit(
+          S.Context, "default", NewFD->getSourceRange()));
+      NewFD->setIsMultiVersion();
+      OldFD->setIsMultiVersion();
+      OldDecl = OldFD;
+      Redeclaration = true;
     }
-    return false;
+    return true;
   }
 
   // Multiversioned redeclarations aren't allowed to omit the attribute, except
@@ -11992,7 +11980,7 @@ bool Sema::CheckFunctionDeclaration(Scope *S, FunctionDecl *NewFD,
       // struct B { struct Y { ~Y(); }; using X = Y; };
       // template struct A<B>;
       if (NewFD->getFriendObjectKind() == Decl::FriendObjectKind::FOK_None ||
-          !Destructor->getThisType()->isDependentType()) {
+          !Destructor->getThisObjectType()->isDependentType()) {
         CXXRecordDecl *Record = Destructor->getParent();
         QualType ClassType = Context.getTypeDeclType(Record);
 
@@ -12386,24 +12374,81 @@ void Sema::CheckMSVCRTEntryPoint(FunctionDecl *FD) {
   }
 }
 
-void Sema::CheckHLSLEntryPoint(FunctionDecl *FD) {
+void Sema::ActOnHLSLTopLevelFunction(FunctionDecl *FD) {
   auto &TargetInfo = getASTContext().getTargetInfo();
-  auto const Triple = TargetInfo.getTriple();
-  switch (Triple.getEnvironment()) {
-  default:
-    // FIXME: check all shader profiles.
+
+  if (FD->getName() != TargetInfo.getTargetOpts().HLSLEntry)
+    return;
+
+  StringRef Env = TargetInfo.getTriple().getEnvironmentName();
+  HLSLShaderAttr::ShaderType ShaderType;
+  if (HLSLShaderAttr::ConvertStrToShaderType(Env, ShaderType)) {
+    if (const auto *Shader = FD->getAttr<HLSLShaderAttr>()) {
+      // The entry point is already annotated - check that it matches the
+      // triple.
+      if (Shader->getType() != ShaderType) {
+        Diag(Shader->getLocation(), diag::err_hlsl_entry_shader_attr_mismatch)
+            << Shader;
+        FD->setInvalidDecl();
+      }
+    } else {
+      // Implicitly add the shader attribute if the entry function isn't
+      // explicitly annotated.
+      FD->addAttr(HLSLShaderAttr::CreateImplicit(Context, ShaderType,
+                                                 FD->getBeginLoc()));
+    }
+  } else {
+    switch (TargetInfo.getTriple().getEnvironment()) {
+    case llvm::Triple::UnknownEnvironment:
+    case llvm::Triple::Library:
+      break;
+    default:
+      llvm_unreachable("Unhandled environment in triple");
+    }
+  }
+}
+
+void Sema::CheckHLSLEntryPoint(FunctionDecl *FD) {
+  const auto *ShaderAttr = FD->getAttr<HLSLShaderAttr>();
+  assert(ShaderAttr && "Entry point has no shader attribute");
+  HLSLShaderAttr::ShaderType ST = ShaderAttr->getType();
+
+  switch (ST) {
+  case HLSLShaderAttr::Pixel:
+  case HLSLShaderAttr::Vertex:
+  case HLSLShaderAttr::Geometry:
+  case HLSLShaderAttr::Hull:
+  case HLSLShaderAttr::Domain:
+  case HLSLShaderAttr::RayGeneration:
+  case HLSLShaderAttr::Intersection:
+  case HLSLShaderAttr::AnyHit:
+  case HLSLShaderAttr::ClosestHit:
+  case HLSLShaderAttr::Miss:
+  case HLSLShaderAttr::Callable:
+    if (const auto *NT = FD->getAttr<HLSLNumThreadsAttr>()) {
+      DiagnoseHLSLAttrStageMismatch(NT, ST,
+                                    {HLSLShaderAttr::Compute,
+                                     HLSLShaderAttr::Amplification,
+                                     HLSLShaderAttr::Mesh});
+      FD->setInvalidDecl();
+    }
     break;
-  case llvm::Triple::EnvironmentType::Compute:
+
+  case HLSLShaderAttr::Compute:
+  case HLSLShaderAttr::Amplification:
+  case HLSLShaderAttr::Mesh:
     if (!FD->hasAttr<HLSLNumThreadsAttr>()) {
       Diag(FD->getLocation(), diag::err_hlsl_missing_numthreads)
-          << Triple.getEnvironmentName();
+          << HLSLShaderAttr::ConvertShaderTypeToStr(ST);
       FD->setInvalidDecl();
     }
     break;
   }
 
-  for (const auto *Param : FD->parameters()) {
-    if (!Param->hasAttr<HLSLAnnotationAttr>()) {
+  for (ParmVarDecl *Param : FD->parameters()) {
+    if (const auto *AnnotationAttr = Param->getAttr<HLSLAnnotationAttr>()) {
+      CheckHLSLSemanticAnnotation(FD, Param, AnnotationAttr);
+    } else {
       // FIXME: Handle struct parameters where annotations are on struct fields.
       // See: https://github.com/llvm/llvm-project/issues/57875
       Diag(FD->getLocation(), diag::err_hlsl_missing_semantic_annotation);
@@ -12412,6 +12457,40 @@ void Sema::CheckHLSLEntryPoint(FunctionDecl *FD) {
     }
   }
   // FIXME: Verify return type semantic annotation.
+}
+
+void Sema::CheckHLSLSemanticAnnotation(
+    FunctionDecl *EntryPoint, const Decl *Param,
+    const HLSLAnnotationAttr *AnnotationAttr) {
+  auto *ShaderAttr = EntryPoint->getAttr<HLSLShaderAttr>();
+  assert(ShaderAttr && "Entry point has no shader attribute");
+  HLSLShaderAttr::ShaderType ST = ShaderAttr->getType();
+
+  switch (AnnotationAttr->getKind()) {
+  case attr::HLSLSV_DispatchThreadID:
+  case attr::HLSLSV_GroupIndex:
+    if (ST == HLSLShaderAttr::Compute)
+      return;
+    DiagnoseHLSLAttrStageMismatch(AnnotationAttr, ST,
+                                  {HLSLShaderAttr::Compute});
+    break;
+  default:
+    llvm_unreachable("Unknown HLSLAnnotationAttr");
+  }
+}
+
+void Sema::DiagnoseHLSLAttrStageMismatch(
+    const Attr *A, HLSLShaderAttr::ShaderType Stage,
+    std::initializer_list<HLSLShaderAttr::ShaderType> AllowedStages) {
+  SmallVector<StringRef, 8> StageStrings;
+  llvm::transform(AllowedStages, std::back_inserter(StageStrings),
+                  [](HLSLShaderAttr::ShaderType ST) {
+                    return StringRef(
+                        HLSLShaderAttr::ConvertShaderTypeToStr(ST));
+                  });
+  Diag(A->getLoc(), diag::err_hlsl_attr_unsupported_in_stage)
+      << A << HLSLShaderAttr::ConvertShaderTypeToStr(Stage)
+      << (AllowedStages.size() != 1) << join(StageStrings, ", ");
 }
 
 bool Sema::CheckForConstantInitializer(Expr *Init, QualType DclT) {
@@ -13450,6 +13529,18 @@ void Sema::AddInitializerToDecl(Decl *RealDecl, Expr *Init, bool DirectInit) {
     IsParenListInit = !InitSeq.steps().empty() &&
                       InitSeq.step_begin()->Kind ==
                           InitializationSequence::SK_ParenthesizedListInit;
+    QualType VDeclType = VDecl->getType();
+    if (Init && !Init->getType().isNull() &&
+        !Init->getType()->isDependentType() && !VDeclType->isDependentType() &&
+        Context.getAsIncompleteArrayType(VDeclType) &&
+        Context.getAsIncompleteArrayType(Init->getType())) {
+      // Bail out if it is not possible to deduce array size from the
+      // initializer.
+      Diag(VDecl->getLocation(), diag::err_typecheck_decl_incomplete_type)
+          << VDeclType;
+      VDecl->setInvalidDecl();
+      return;
+    }
   }
 
   // Check for self-references within variable initializers.
@@ -15297,6 +15388,10 @@ LambdaScopeInfo *Sema::RebuildLambdaScopeInfo(CXXMethodDecl *CallOperator) {
   LSI->CallOperator = CallOperator;
   LSI->Lambda = LambdaClass;
   LSI->ReturnType = CallOperator->getReturnType();
+  // This function in calls in situation where the context of the call operator
+  // is not entered, so we set AfterParameterList to false, so that
+  // `tryCaptureVariable` finds explicit captures in the appropriate context.
+  LSI->AfterParameterList = false;
   const LambdaCaptureDefault LCD = LambdaClass->getLambdaCaptureDefault();
 
   if (LCD == LCD_None)
@@ -18467,13 +18562,10 @@ TranslateIvarVisibility(tok::ObjCKeywordKind ivarVisibility) {
 
 /// ActOnIvar - Each ivar field of an objective-c class is passed into this
 /// in order to create an IvarDecl object for it.
-Decl *Sema::ActOnIvar(Scope *S,
-                                SourceLocation DeclStart,
-                                Declarator &D, Expr *BitfieldWidth,
-                                tok::ObjCKeywordKind Visibility) {
+Decl *Sema::ActOnIvar(Scope *S, SourceLocation DeclStart, Declarator &D,
+                      Expr *BitWidth, tok::ObjCKeywordKind Visibility) {
 
   IdentifierInfo *II = D.getIdentifier();
-  Expr *BitWidth = (Expr*)BitfieldWidth;
   SourceLocation Loc = DeclStart;
   if (II) Loc = D.getIdentifierLoc();
 
@@ -18536,9 +18628,8 @@ Decl *Sema::ActOnIvar(Scope *S,
   }
 
   // Construct the decl.
-  ObjCIvarDecl *NewID = ObjCIvarDecl::Create(Context, EnclosingContext,
-                                             DeclStart, Loc, II, T,
-                                             TInfo, ac, (Expr *)BitfieldWidth);
+  ObjCIvarDecl *NewID = ObjCIvarDecl::Create(
+      Context, EnclosingContext, DeclStart, Loc, II, T, TInfo, ac, BitWidth);
 
   if (II) {
     NamedDecl *PrevDecl = LookupSingleName(S, II, Loc, LookupMemberName,

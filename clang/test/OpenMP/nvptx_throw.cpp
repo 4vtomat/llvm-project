@@ -1,3 +1,5 @@
+// REQUIRES: nvptx-registered-target, staticanalyzer
+
 /**
  * The first four lines test that a warning is produced when enabling 
  * -Wopenmp-target-exception no matter what combination of -fexceptions and 
@@ -28,7 +30,7 @@
 
 // RUN: %clang_cc1 -triple nvptx64 %s -emit-llvm -S -verify=noexceptions -o -
 
-// noexceptions-error@35 {{cannot use 'throw' with exceptions disabled}}
+// noexceptions-error@37 {{cannot use 'throw' with exceptions disabled}}
 
 #pragma omp declare target
 void foo(void) {

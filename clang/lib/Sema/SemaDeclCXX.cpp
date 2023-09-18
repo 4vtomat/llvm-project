@@ -3729,10 +3729,20 @@ Sema::ActOnCXXMemberDeclarator(Scope *S, AccessSpecifier AS, Declarator &D,
     if (!Diags.isIgnored(diag::warn_unused_private_field, FD->getLocation())) {
       // Remember all explicit private FieldDecls that have a name, no side
       // effects and are not part of a dependent type declaration.
+
+      auto DeclHasUnusedAttr = [](const QualType &T) {
+        if (const TagDecl *TD = T->getAsTagDecl())
+          return TD->hasAttr<UnusedAttr>();
+        if (const TypedefType *TDT = T->getAs<TypedefType>())
+          return TDT->getDecl()->hasAttr<UnusedAttr>();
+        return false;
+      };
+
       if (!FD->isImplicit() && FD->getDeclName() &&
           FD->getAccess() == AS_private &&
           !FD->hasAttr<UnusedAttr>() &&
           !FD->getParent()->isDependentContext() &&
+          !DeclHasUnusedAttr(FD->getType()) &&
           !InitializationHasSideEffects(*FD))
         UnusedPrivateFields.insert(FD);
     }
@@ -6591,6 +6601,13 @@ void Sema::checkClassLevelDLLAttribute(CXXRecordDecl *Class) {
     // Only methods and static fields inherit the attributes.
     if (!VD && !MD)
       continue;
+
+    if ((TSK == TSK_ExplicitInstantiationDeclaration ||
+         TSK == TSK_ExplicitInstantiationDefinition) &&
+        Member->hasAttr<ExcludeFromExplicitInstantiationAttr>()) {
+      // Skip members excluded from instantiation.
+      continue;
+    }
 
     if (MD) {
       // Don't process deleted methods.

@@ -863,7 +863,7 @@ public:
                                          addr);
         } else if (sym->test(Fortran::semantics::Symbol::Flag::CrayPointee)) {
           // get the corresponding Cray pointer
-          auto ptrSym = Fortran::lower::getPointer(sym);
+          auto ptrSym = Fortran::lower::getCrayPointer(sym);
           ExtValue ptr = gen(ptrSym);
           mlir::Value ptrVal = fir::getBase(ptr);
           mlir::Type ptrTy = converter.genType(*ptrSym);
@@ -937,7 +937,7 @@ public:
       if (isDerivedTypeWithLenParameters(sym))
         TODO(loc, "component with length parameters in structure constructor");
 
-      llvm::StringRef name = toStringRef(sym.name());
+      std::string name = converter.getRecordTypeFieldName(sym);
       // FIXME: type parameters must come from the derived-type-spec
       mlir::Value field = builder.create<fir::FieldIndexOp>(
           loc, fieldTy, name, ty,
@@ -1476,7 +1476,7 @@ public:
     for (const Fortran::evaluate::Component *field : list) {
       auto recTy = ty.cast<fir::RecordType>();
       const Fortran::semantics::Symbol &sym = getLastSym(*field);
-      llvm::StringRef name = toStringRef(sym.name());
+      std::string name = converter.getRecordTypeFieldName(sym);
       coorArgs.push_back(builder.create<fir::FieldIndexOp>(
           loc, fldTy, name, recTy, fir::getTypeParams(obj)));
       ty = recTy.getType(name);
@@ -1571,7 +1571,7 @@ public:
     auto baseSym = getFirstSym(aref);
     if (baseSym.test(Fortran::semantics::Symbol::Flag::CrayPointee)) {
       // get the corresponding Cray pointer
-      auto ptrSym = Fortran::lower::getPointer(baseSym);
+      auto ptrSym = Fortran::lower::getCrayPointer(baseSym);
 
       fir::ExtendedValue ptr = gen(ptrSym);
       mlir::Value ptrVal = fir::getBase(ptr);
@@ -4564,7 +4564,7 @@ private:
   }
 
   /// If there were temporaries created for this element evaluation, finalize
-  /// and deallocate the resources now. This should be done just prior the the
+  /// and deallocate the resources now. This should be done just prior to the
   /// fir::ResultOp at the end of the innermost loop.
   void finalizeElementCtx() {
     if (elementCtx) {
@@ -6745,7 +6745,8 @@ private:
               },
               [&](const Fortran::evaluate::Component *x) {
                 auto fieldTy = fir::FieldType::get(builder.getContext());
-                llvm::StringRef name = toStringRef(getLastSym(*x).name());
+                std::string name =
+                    converter.getRecordTypeFieldName(getLastSym(*x));
                 if (auto recTy = ty.dyn_cast<fir::RecordType>()) {
                   ty = recTy.getType(name);
                   auto fld = builder.create<fir::FieldIndexOp>(
@@ -6974,7 +6975,7 @@ private:
                             ComponentPath &components) {
     mlir::Value ptrVal = nullptr;
     if (x.test(Fortran::semantics::Symbol::Flag::CrayPointee)) {
-      auto ptrSym = Fortran::lower::getPointer(x);
+      auto ptrSym = Fortran::lower::getCrayPointer(x);
       ExtValue ptr = converter.getSymbolExtendedValue(ptrSym);
       ptrVal = fir::getBase(ptr);
     }
@@ -7627,19 +7628,6 @@ void Fortran::lower::createArrayMergeStores(
   esp.outerLoop = std::nullopt;
   esp.resetBindings();
   esp.incrementCounter();
-}
-
-Fortran::semantics::SymbolRef
-Fortran::lower::getPointer(Fortran::semantics::SymbolRef sym) {
-  assert(!sym->owner().crayPointers().empty() &&
-         "empty Cray pointer/pointee map");
-  for (const auto &[pointee, pointer] : sym->owner().crayPointers()) {
-    if (pointee == sym->name()) {
-      Fortran::semantics::SymbolRef v{pointer.get()};
-      return v;
-    }
-  }
-  llvm_unreachable("corresponding Cray pointer cannot be found");
 }
 
 mlir::Value Fortran::lower::addCrayPointerInst(mlir::Location loc,

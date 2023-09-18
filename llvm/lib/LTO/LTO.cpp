@@ -142,8 +142,8 @@ void llvm::computeLTOCacheKey(
     AddUnsigned(-1);
   for (const auto &S : Conf.MllvmArgs)
     AddString(S);
-  AddUnsigned(Conf.CGOptLevel);
-  AddUnsigned(Conf.CGFileType);
+  AddUnsigned(static_cast<int>(Conf.CGOptLevel));
+  AddUnsigned(static_cast<int>(Conf.CGFileType));
   AddUnsigned(Conf.OptLevel);
   AddUnsigned(Conf.Freestanding);
   AddString(Conf.OptPipeline);
@@ -183,7 +183,7 @@ void llvm::computeLTOCacheKey(
       return ModIt->second;
     }
 
-    const ModuleHash &getHash() const { return ModInfo->second.second; }
+    const ModuleHash &getHash() const { return ModInfo->second; }
   };
 
   std::vector<ImportModule> ImportModulesVector;
@@ -765,7 +765,7 @@ Error LTO::addModule(InputFile &Input, unsigned ModI,
 
   // Regular LTO module summaries are added to a dummy module that represents
   // the combined regular LTO module.
-  if (Error Err = BM.readSummary(ThinLTO.CombinedIndex, "", -1ull))
+  if (Error Err = BM.readSummary(ThinLTO.CombinedIndex, ""))
     return Err;
   RegularLTO.ModsWithSummaries.push_back(std::move(*ModOrErr));
   return Error::success();
@@ -1013,16 +1013,14 @@ Error LTO::addThinLTO(BitcodeModule BM, ArrayRef<InputFile::Symbol> Syms,
     }
   }
 
-  uint64_t ModuleId = ThinLTO.ModuleMap.size();
   if (Error Err =
           BM.readSummary(ThinLTO.CombinedIndex, BM.getModuleIdentifier(),
-                         ModuleId, [&](GlobalValue::GUID GUID) {
+                         [&](GlobalValue::GUID GUID) {
                            return ThinLTO.PrevailingModuleForGUID[GUID] ==
                                   BM.getModuleIdentifier();
                          }))
     return Err;
-  LLVM_DEBUG(dbgs() << "Module " << ModuleId << ": " << BM.getModuleIdentifier()
-                    << "\n");
+  LLVM_DEBUG(dbgs() << "Module " << BM.getModuleIdentifier() << "\n");
 
   for (const InputFile::Symbol &Sym : Syms) {
     assert(ResI != ResE);

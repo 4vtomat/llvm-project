@@ -3425,19 +3425,30 @@ bool SIInstrInfo::areMemAccessesTriviallyDisjoint(const MachineInstr &MIa,
     if (isMUBUF(MIb) || isMTBUF(MIb))
       return checkInstOffsetsDoNotOverlap(MIa, MIb);
 
-    return !isFLAT(MIb) && !isSMRD(MIb);
+    if (isFLAT(MIb))
+      return isFLATScratch(MIb);
+
+    return !isSMRD(MIb);
   }
 
   if (isSMRD(MIa)) {
     if (isSMRD(MIb))
       return checkInstOffsetsDoNotOverlap(MIa, MIb);
 
-    return !isFLAT(MIb) && !isMUBUF(MIb) && !isMTBUF(MIb);
+    if (isFLAT(MIb))
+      return isFLATScratch(MIb);
+
+    return !isMUBUF(MIb) && !isMTBUF(MIb);
   }
 
   if (isFLAT(MIa)) {
-    if (isFLAT(MIb))
+    if (isFLAT(MIb)) {
+      if ((isFLATScratch(MIa) && isFLATGlobal(MIb)) ||
+          (isFLATGlobal(MIa) && isFLATScratch(MIb)))
+        return true;
+
       return checkInstOffsetsDoNotOverlap(MIa, MIb);
+    }
 
     return false;
   }
@@ -6400,10 +6411,11 @@ void SIInstrInfo::moveToVALUImpl(SIInstrWorklist &Worklist,
   default:
     break;
   case AMDGPU::S_ADD_U64_PSEUDO:
+    NewOpcode = AMDGPU::V_ADD_U64_PSEUDO;
+    break;
   case AMDGPU::S_SUB_U64_PSEUDO:
-    splitScalar64BitAddSub(Worklist, Inst, MDT);
-    Inst.eraseFromParent();
-    return;
+    NewOpcode = AMDGPU::V_SUB_U64_PSEUDO;
+    break;
   case AMDGPU::S_ADD_I32:
   case AMDGPU::S_SUB_I32: {
     // FIXME: The u32 versions currently selected use the carry.

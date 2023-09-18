@@ -1,3 +1,5 @@
+// REQUIRES: amdgpu-registered-target, staticanalyzer
+
 /**
  * The first four lines test that a warning is produced when enabling 
  * -Wopenmp-target-exception no matter what combination of -fexceptions and 
@@ -28,8 +30,8 @@
 
 // RUN: %clang_cc1 -triple amdgcn-amd-amdhsa %s -emit-llvm -S -verify=noexceptions -o -
 
-// noexceptions-error@37 {{cannot use 'try' with exceptions disabled}}
-// noexceptions-error@38 {{cannot use 'throw' with exceptions disabled}}
+// noexceptions-error@39 {{cannot use 'try' with exceptions disabled}}
+// noexceptions-error@40 {{cannot use 'throw' with exceptions disabled}}
 
 #pragma omp declare target
 int foo(void) {

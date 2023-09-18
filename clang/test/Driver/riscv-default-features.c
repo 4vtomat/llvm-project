@@ -3,7 +3,11 @@
 
 // RV32: "target-features"="+32bit,+a,+c,+m,+relax,
 // RV32-SAME: -save-restore
+<<<<<<< HEAD
 // RV64: "target-features"="+64bit,+a,+c,+d,+f,+m,+relax,+zicsr
+=======
+// RV64: "target-features"="+64bit,+a,+c,+m,+relax,
+>>>>>>> upstream/main
 // RV64-SAME: -save-restore
 
 // Dummy function

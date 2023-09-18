@@ -17,7 +17,7 @@
 #include "mlir/Dialect/MemRef/IR/MemRef.h"
 #include "mlir/Dialect/Tensor/IR/Tensor.h"
 #include "mlir/Dialect/Transform/IR/TransformDialect.h"
-#include "mlir/IR/FunctionInterfaces.h"
+#include "mlir/Interfaces/FunctionInterfaces.h"
 
 using namespace mlir;
 using namespace mlir::bufferization;
@@ -121,8 +121,7 @@ DiagnosedSilenceableFailure transform::EliminateEmptyTensorsOp::apply(
     if (failed(analyzeOp(target, state)))
       return mlir::emitSilenceableFailure(target->getLoc())
              << "failed to analyze op";
-    if (failed(bufferization::insertSliceAnchoredEmptyTensorEliminationStep(
-            rewriter, target, state)))
+    if (failed(bufferization::eliminateEmptyTensors(rewriter, target, state)))
       return mlir::emitSilenceableFailure(target->getLoc())
              << "failed to eliminate insert_slice anchored tensor.empty ops";
   }

@@ -250,9 +250,6 @@ def ForOp : SCF_Op<"for",
         "expected an index less than the number of region iter args");
       return getBody()->getArguments().drop_front(getNumInductionVars())[index];
     }
-    Operation::operand_range getIterOperands() {
-      return getOperands().drop_front(getNumControlOperands());
-    }
     MutableArrayRef<OpOperand> getIterOpOperands() {
       return
         getOperation()->getOpOperands().drop_front(getNumControlOperands());
@@ -273,14 +270,6 @@ def ForOp : SCF_Op<"for",
     }
     /// Number of operands controlling the loop: lb, ub, step
     unsigned getNumControlOperands() { return 3; }
-    /// Does the operation hold operands for loop-carried values
-    bool hasIterOperands() {
-      return getOperation()->getNumOperands() > getNumControlOperands();
-    }
-    /// Get Number of loop-carried values
-    unsigned getNumIterOperands() {
-      return getOperation()->getNumOperands() - getNumControlOperands();
-    }
     /// Get the iter arg number for an operand. If it isnt an iter arg
     /// operand return std::nullopt.
     std::optional<unsigned> getIterArgNumberForOpOperand(OpOperand &opOperand) {
@@ -976,7 +965,7 @@ def ReduceReturnOp :
 def WhileOp : SCF_Op<"while",
     [DeclareOpInterfaceMethods<RegionBranchOpInterface,
         ["getEntrySuccessorOperands"]>,
-     RecursiveMemoryEffects]> {
+     RecursiveMemoryEffects, SingleBlock]> {
   let summary = "a generic 'while' loop";
   let description = [{
     This operation represents a generic "while"/"do-while" loop that keeps

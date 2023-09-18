@@ -1023,6 +1023,7 @@ let IntrProperties = [IntrNoMem, IntrSpeculatable, IntrWillReturn] in {
   def int_log2 : DefaultAttrsIntrinsic<[llvm_anyfloat_ty], [LLVMMatchType<0>]>;
   def int_exp  : DefaultAttrsIntrinsic<[llvm_anyfloat_ty], [LLVMMatchType<0>]>;
   def int_exp2 : DefaultAttrsIntrinsic<[llvm_anyfloat_ty], [LLVMMatchType<0>]>;
+  def int_exp10 : DefaultAttrsIntrinsic<[llvm_anyfloat_ty], [LLVMMatchType<0>]>;
   def int_fabs : DefaultAttrsIntrinsic<[llvm_anyfloat_ty], [LLVMMatchType<0>]>;
   def int_copysign : DefaultAttrsIntrinsic<[llvm_anyfloat_ty],
                                [LLVMMatchType<0>, LLVMMatchType<0>]>;
@@ -1661,7 +1662,8 @@ def int_coro_free : Intrinsic<[llvm_ptr_ty], [llvm_token_ty, llvm_ptr_ty],
                               [IntrReadMem, IntrArgMemOnly,
                                ReadOnly<ArgIndex<1>>,
                                NoCapture<ArgIndex<1>>]>;
-def int_coro_end : Intrinsic<[llvm_i1_ty], [llvm_ptr_ty, llvm_i1_ty], []>;
+def int_coro_end : Intrinsic<[llvm_i1_ty], [llvm_ptr_ty, llvm_i1_ty, llvm_token_ty], []>;
+def int_coro_end_results : Intrinsic<[llvm_token_ty], [llvm_vararg_ty]>;
 def int_coro_end_async
     : Intrinsic<[llvm_i1_ty], [llvm_ptr_ty, llvm_i1_ty, llvm_vararg_ty], []>;
 
