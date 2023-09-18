@@ -1508,7 +1508,9 @@ static Value *evaluateVPReversed(Value *V, InstCombinerImpl &IC) {
       Function *F = Intrinsic::getDeclaration(VPI->getModule(), VPI->getIntrinsicID(), VPI->getType());
       Instruction *Intrin = CallInst::Create(F, {NewOp0, NewOp1, Mask, VL});
       Intrin->takeName(VPI);
-      return IC.InsertNewInstWith(Intrin, *VPI);
+      Instruction *InsertPt = VPI->getInsertionPointAfterDef();
+      assert(InsertPt && "No place to insert cast");
+      return IC.InsertNewInstWith(Intrin, InsertPt->getIterator());
     }
 
     return V;
