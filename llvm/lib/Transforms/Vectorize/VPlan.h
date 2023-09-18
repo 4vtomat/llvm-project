@@ -1348,33 +1348,13 @@ public:
 /// ingredient. This recipe covers most of the traditional vectorization cases
 /// where each ingredient transforms into a vectorized version of itself.
 class VPWidenRecipe : public VPRecipeWithIRFlags, public VPValue {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-protected:
-  template <typename IterT>
-  VPWidenRecipe(Instruction &I, iterator_range<IterT> Operands,
-                const unsigned char RecipeSC, const unsigned char ValueSC)
-      : VPRecipeWithIRFlags(RecipeSC, Operands, I), VPValue(ValueSC, &I, this) {}
-#endif // SIFIVE_CUSTOMIZATION
-=======
   unsigned Opcode;
->>>>>>> upstream/main
 
 public:
   template <typename IterT>
   VPWidenRecipe(Instruction &I, iterator_range<IterT> Operands)
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-      : VPWidenRecipe(I, Operands, VPRecipeBase::VPWidenSC,
-                      VPDef::VPWidenSC) {}
-#else
-      : VPRecipeBase(VPDef::VPWidenSC, Operands), VPValue(this, &I) {}
-      : VPRecipeWithIRFlags(VPDef::VPWidenSC, Operands, I), VPValue(this, &I) {}
-#endif // SIFIVE_CUSTOMIZATION
-=======
       : VPRecipeWithIRFlags(VPDef::VPWidenSC, Operands, I), VPValue(this, &I),
         Opcode(I.getOpcode()) {}
->>>>>>> upstream/main
 
   ~VPWidenRecipe() override = default;
 

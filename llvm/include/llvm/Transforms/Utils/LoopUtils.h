@@ -438,22 +438,17 @@ Value *createAnyOfTargetReduction(IRBuilderBase &B, Value *Src,
                                   PHINode *OrigPhi);
 
 #if SIFIVE_CUSTOMIZATION
-Value *createAnyOfTargetReduction(IRBuilderBase &B,
-                                  const TargetTransformInfo *TTI, Value *Src,
+Value *createAnyOfTargetReduction(IRBuilderBase &B, Value *Src,
                                   const RecurrenceDescriptor &Desc,
                                   PHINode *OrigPhi, Value *RVL);
 
 /// Create a target reduction of the given vector \p Src for a reduction of the
 /// kind RecurKind::IFindLastIV or RecurKind::FFindLastIV. The reduction
 /// operation is described by \p Desc.
-Value *createFindLastIVTargetReduction(IRBuilderBase &B,
-                                       const TargetTransformInfo *TTI,
-                                       Value *Src,
+Value *createFindLastIVTargetReduction(IRBuilderBase &B, Value *Src,
                                        const RecurrenceDescriptor &Desc);
 
-Value *createFindLastIVTargetReduction(IRBuilderBase &B,
-                                       const TargetTransformInfo *TTI,
-                                       Value *Src,
+Value *createFindLastIVTargetReduction(IRBuilderBase &B, Value *Src,
                                        const RecurrenceDescriptor &Desc,
                                        Value *RVL);
 #endif // SIFIVE_CUSTOMIZATION
@@ -462,20 +457,13 @@ Value *createFindLastIVTargetReduction(IRBuilderBase &B,
 /// The target is queried to determine if intrinsics or shuffle sequences are
 /// required to implement the reduction.
 /// Fast-math-flags are propagated using the RecurrenceDescriptor.
-<<<<<<< HEAD
-Value *createTargetReduction(IRBuilderBase &B, const TargetTransformInfo *TTI,
-                             const RecurrenceDescriptor &Desc, Value *Src,
-                             PHINode *OrigPhi = nullptr);
 #if SIFIVE_CUSTOMIZATION
-Value *createTargetReduction(IRBuilderBase &B, const TargetTransformInfo *TTI,
-                             const RecurrenceDescriptor &Desc, Value *Src,
-                             Value *RVL, PHINode *OrigPhi = nullptr,
+Value *createTargetReduction(IRBuilderBase &B const RecurrenceDescriptor &Desc,
+                             Value *Src, Value *RVL, PHINode *OrigPhi = nullptr,
                              Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
-=======
 Value *createTargetReduction(IRBuilderBase &B, const RecurrenceDescriptor &Desc,
                              Value *Src, PHINode *OrigPhi = nullptr);
->>>>>>> upstream/main
 
 /// Create an ordered reduction intrinsic using the given recurrence
 /// descriptor \p Desc.
@@ -494,7 +482,6 @@ Value *createOrderedReduction(IRBuilderBase &B,
 /// sentinel value of the recurrence descriptor \p Desc, and InitVal is the
 /// start value of the recurrence descriptor \p Desc.
 Value *createSentinelValueHandling(IRBuilderBase &Builder,
-                                   const TargetTransformInfo *TTI,
                                    const RecurrenceDescriptor &Desc,
                                    Value *Rdx);
 #endif // SIFIVE_CUSTOMIZATION

@@ -6793,7 +6793,6 @@ static Value *simplifyIntrinsic(CallBase *Call, Value *Callee,
                             *FPI->getExceptionBehavior(),
                             *FPI->getRoundingMode());
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case Intrinsic::experimental_vp_reverse: {
     Value *Op0 = Call->getArgOperand(0);
@@ -6813,10 +6812,8 @@ static Value *simplifyIntrinsic(CallBase *Call, Value *Callee,
     return nullptr;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case Intrinsic::experimental_constrained_ldexp:
     return simplifyLdexp(Args[0], Args[1], Q, true);
->>>>>>> upstream/main
   default:
     return nullptr;
   }

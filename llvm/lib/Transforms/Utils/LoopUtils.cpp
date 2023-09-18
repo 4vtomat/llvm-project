@@ -1094,10 +1094,8 @@ Value *llvm::createAnyOfTargetReduction(IRBuilderBase &Builder, Value *Src,
   return Builder.CreateSelect(Cmp, NewVal, InitVal, "rdx.select");
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 Value *llvm::createAnyOfTargetReduction(IRBuilderBase &Builder,
-                                        const TargetTransformInfo *TTI,
                                         Value *Src,
                                         const RecurrenceDescriptor &Desc,
                                         PHINode *OrigPhi, Value *RVL) {
@@ -1138,7 +1136,6 @@ Value *llvm::createAnyOfTargetReduction(IRBuilderBase &Builder,
 }
 
 Value *llvm::createFindLastIVTargetReduction(IRBuilderBase &Builder,
-                                             const TargetTransformInfo *TTI,
                                              Value *Src,
                                              const RecurrenceDescriptor &Desc) {
   assert(RecurrenceDescriptor::isFindLastIVRecurrenceKind(
@@ -1148,7 +1145,6 @@ Value *llvm::createFindLastIVTargetReduction(IRBuilderBase &Builder,
 }
 
 Value *llvm::createFindLastIVTargetReduction(IRBuilderBase &Builder,
-                                             const TargetTransformInfo *TTI,
                                              Value *Src,
                                              const RecurrenceDescriptor &Desc,
                                              Value *RVL) {
@@ -1159,13 +1155,8 @@ Value *llvm::createFindLastIVTargetReduction(IRBuilderBase &Builder,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-Value *llvm::createSimpleTargetReduction(IRBuilderBase &Builder,
-                                         const TargetTransformInfo *TTI,
-                                         Value *Src, RecurKind RdxKind) {
-=======
 Value *llvm::createSimpleTargetReduction(IRBuilderBase &Builder, Value *Src,
                                          RecurKind RdxKind) {
->>>>>>> upstream/main
   auto *SrcVecEltTy = cast<VectorType>(Src->getType())->getElementType();
   switch (RdxKind) {
   case RecurKind::Add:
@@ -1206,10 +1197,9 @@ Value *llvm::createSimpleTargetReduction(IRBuilderBase &Builder, Value *Src,
 }
 
 #if SIFIVE_CUSTOMIZATION
-Value *llvm::createSimpleTargetReduction(IRBuilderBase &Builder,
-                                         const TargetTransformInfo *TTI,
-                                         Value *Src, RecurKind RdxKind,
-                                         Value *RVL, Value *Mask) {
+Value *llvm::createSimpleTargetReduction(IRBuilderBase &Builder, Value *Src,
+                                         RecurKind RdxKind, Value *RVL,
+                                         Value *Mask) {
   auto *SrcVecEltTy = cast<VectorType>(Src->getType())->getElementType();
   switch (RdxKind) {
   case RecurKind::Add:
@@ -1258,22 +1248,17 @@ Value *llvm::createTargetReduction(IRBuilderBase &B,
 
   RecurKind RK = Desc.getRecurrenceKind();
   if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK))
-<<<<<<< HEAD
-    return createAnyOfTargetReduction(B, TTI, Src, Desc, OrigPhi);
+    return createAnyOfTargetReduction(B, Src, Desc, OrigPhi);
 #if SIFIVE_CUSTOMIZATION
   if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
-    return createFindLastIVTargetReduction(B, TTI, Src, Desc);
+    return createFindLastIVTargetReduction(B, Src, Desc);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    return createAnyOfTargetReduction(B, Src, Desc, OrigPhi);
->>>>>>> upstream/main
 
   return createSimpleTargetReduction(B, Src, RK);
 }
 
 #if SIFIVE_CUSTOMIZATION
 Value *llvm::createTargetReduction(IRBuilderBase &B,
-                                   const TargetTransformInfo *TTI,
                                    const RecurrenceDescriptor &Desc, Value *Src,
                                    Value *RVL, PHINode *OrigPhi, Value *Mask) {
   // TODO: Support in-order reductions based on the recurrence descriptor.
@@ -1285,14 +1270,14 @@ Value *llvm::createTargetReduction(IRBuilderBase &B,
   RecurKind RK = Desc.getRecurrenceKind();
   if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK)) {
     assert(!Mask && "Masked AnyOf recurrence is not supported");
-    return createAnyOfTargetReduction(B, TTI, Src, Desc, OrigPhi, RVL);
+    return createAnyOfTargetReduction(B, Src, Desc, OrigPhi, RVL);
   }
   if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK)) {
     assert(!Mask && "Masked FindLastIV recurrence is not supported");
-    return createFindLastIVTargetReduction(B, TTI, Src, Desc, RVL);
+    return createFindLastIVTargetReduction(B, Src, Desc, RVL);
   }
 
-  return createSimpleTargetReduction(B, TTI, Src, RK, RVL, Mask);
+  return createSimpleTargetReduction(B, Src, RK, RVL, Mask);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -1324,7 +1309,6 @@ Value *llvm::createOrderedReduction(IRBuilderBase &B,
 }
 
 Value *llvm::createSentinelValueHandling(IRBuilderBase &Builder,
-                                         const TargetTransformInfo *TTI,
                                          const RecurrenceDescriptor &Desc,
                                          Value *Rdx) {
   Value *InitVal = Desc.getRecurrenceStartValue();

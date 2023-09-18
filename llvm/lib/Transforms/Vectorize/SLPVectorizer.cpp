@@ -5226,15 +5226,8 @@ void BoUpSLP::buildExternalUses(
     // For each lane:
     for (int Lane = 0, LE = Entry->Scalars.size(); Lane != LE; ++Lane) {
       Value *Scalar = Entry->Scalars[Lane];
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
       if (!isa<Instruction>(Scalar))
         continue;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-      if (!isa<Instruction>(Scalar))
-        continue;
->>>>>>> upstream/main
       int FoundLane = Entry->findLaneForValue(Scalar);
 
       // Check if the scalar is externally used as an extra arg.

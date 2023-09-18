@@ -988,14 +988,13 @@ void VPRecipeWithIRFlags::printFlags(raw_ostream &O) const {
 #endif
 
 void VPWidenRecipe::execute(VPTransformState &State) {
-<<<<<<< HEAD
-  auto &I = *cast<Instruction>(getUnderlyingValue());
+  State.setDebugLocFrom(getDebugLoc());
 #if SIFIVE_CUSTOMIZATION
+  auto &I = *cast<Instruction>(getUnderlyingValue());
   if (State.Plan->getRVL() &&
       State.get(getOperand(0), 0)->getType()->isVectorTy() &&
       !isa<BitCastInst>(I) && !isa<FreezeInst>(I)) {
     // Bitcasts are not supported.
-    State.setDebugLocFromInst(&I);
     for (unsigned Part = 0; Part < State.UF; ++Part) {
       Value *V = llvm::widenPredicatedInstruction(&I, this, *this, State,
                                                   nullptr, Part);
@@ -1006,9 +1005,6 @@ void VPWidenRecipe::execute(VPTransformState &State) {
     return;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  State.setDebugLocFrom(getDebugLoc());
->>>>>>> upstream/main
   auto &Builder = State.Builder;
   switch (Opcode) {
   case Instruction::Call:
@@ -1105,10 +1101,7 @@ void VPWidenRecipe::print(raw_ostream &O, const Twine &Indent,
 #endif
 
 void VPWidenCastRecipe::execute(VPTransformState &State) {
-<<<<<<< HEAD
-  auto *I = cast_or_null<Instruction>(getUnderlyingValue());
-  if (I)
-    State.setDebugLocFromInst(I);
+  State.setDebugLocFrom(getDebugLoc());
 #if SIFIVE_CUSTOMIZATION
   if (State.Plan->getRVL() &&
       State.get(getOperand(0), 0)->getType()->isVectorTy() &&
@@ -1123,9 +1116,6 @@ void VPWidenCastRecipe::execute(VPTransformState &State) {
     return;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  State.setDebugLocFrom(getDebugLoc());
->>>>>>> upstream/main
   auto &Builder = State.Builder;
   /// Vectorize casts.
   assert(State.VF.isVector() && "Not vectorizing?");

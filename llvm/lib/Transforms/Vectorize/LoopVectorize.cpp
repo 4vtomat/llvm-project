@@ -4702,12 +4702,8 @@ void InnerLoopVectorizer::fixReduction(VPReductionPHIRecipe *PhiR,
     }
 #else
     ReducedPartRdx =
-<<<<<<< HEAD
-        createTargetReduction(Builder, TTI, RdxDesc, ReducedPartRdx, OrigPhi);
-#endif // SIFIVE_CUSTOMIZATION
-=======
         createTargetReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
     // If the reduction can be performed in a smaller type, we need to extend
     // the reduction to the wider type before we branch to the original loop.
     if (PhiTy != RdxDesc.getRecurrenceType())
@@ -11179,17 +11175,11 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   for (ElementCount VF : Range)
     IVUpdateMayOverflow |= !isIndvarOverflowCheckKnownFalse(&CM, VF);
 
-<<<<<<< HEAD
+  DebugLoc DL = getDebugLocFromInstOrOperands(Legal->getPrimaryInduction());
 #if SIFIVE_CUSTOMIZATION
-  Instruction *DLInst = nullptr;
   // Canonical IV is not available for uncountable loops in general.
   if (!Legal->isVectorizableUncountable()) {
-      DLInst = getDebugLocFromInstOrOperands(Legal->getPrimaryInduction());
-#else
-  Instruction *DLInst =
-      getDebugLocFromInstOrOperands(Legal->getPrimaryInduction());
-#endif // SIFIVE_CUSTOMIZATION
-#if SIFIVE_CUSTOMIZATION
+      DL = getDebugLocFromInstOrOperands(Legal->getPrimaryInduction());
   addCanonicalIVRecipes(
       *Plan, Legal->getWidestInductionType(),
       DLInst ? DLInst->getDebugLoc() : DebugLoc(),
@@ -11199,12 +11189,7 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
       Legal->getCSAs(), OrigLoop, Plan->getPreheader(), HeaderVPBB,
       DLInst ? DLInst->getDebugLoc() : DebugLoc(), Range, *Plan);
 #else
-  addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(),
-                        DLInst ? DLInst->getDebugLoc() : DebugLoc(),
-=======
-  DebugLoc DL = getDebugLocFromInstOrOperands(Legal->getPrimaryInduction());
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), DL,
->>>>>>> upstream/main
                         CM.getTailFoldingStyle(IVUpdateMayOverflow));
 #endif // SIFIVE_CUSTOMIZATION
 #if SIFIVE_CUSTOMIZATION
@@ -11932,19 +11917,15 @@ void VPReductionRecipe::execute(VPTransformState &State) {
       PrevInChain = NewRed;
     } else {
       PrevInChain = State.get(getChainOp(), Part);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       if (RVLPart)
-        NewRed = createTargetReduction(State.Builder, TTI, RdxDesc, NewVecOp,
+        NewRed = createTargetReduction(State.Builder, RdxDesc, NewVecOp,
                                        RVLPart, nullptr, NewCond);
       else
-        NewRed = createTargetReduction(State.Builder, TTI, RdxDesc, NewVecOp);
+        NewRed = createTargetReduction(State.Builder, RdxDesc, NewVecOp);
 #else
-      NewRed = createTargetReduction(State.Builder, TTI, RdxDesc, NewVecOp);
-#endif // SIFIVE_CUSTOMIZATION
-=======
       NewRed = createTargetReduction(State.Builder, RdxDesc, NewVecOp);
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
     }
     if (RecurrenceDescriptor::isMinMaxRecurrenceKind(Kind)) {
       NextInChain = createMinMaxOp(State.Builder, RdxDesc.getRecurrenceKind(),
