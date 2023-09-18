@@ -44,7 +44,7 @@ include "SiFive_RISCVSchedSiFive7N.td"
 include "SiFive_RISCVSchedSiFiveP400.td"
 include "SiFive_RISCVSchedSiFiveP500.td"
 include "SiFive_RISCVSchedSiFiveP600.td"
-include "SiFive_RISCVSchedSiFiveP800.td"
+include "SiFive_RISCVSchedSiFiveP800S.td"
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
