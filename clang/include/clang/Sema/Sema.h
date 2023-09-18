@@ -13760,7 +13760,6 @@ private:
                                      CallExpr *TheCall);
   // This fix will be done in the upstream too.
   void checkRVVTypeSupport(QualType Ty, SourceLocation Loc, Decl *D);
-  void checkRVVTypeSupport(QualType Ty, SourceLocation Loc, Decl *D);
   bool CheckLoongArchBuiltinFunctionCall(const TargetInfo &TI,
                                          unsigned BuiltinID, CallExpr *TheCall);
   bool CheckWebAssemblyBuiltinFunctionCall(const TargetInfo &TI,
