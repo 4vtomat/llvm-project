@@ -23,10 +23,10 @@
 # CHECK: attribute      5, "rv32i2p1_zic64b1p0"
 
 .attribute arch, "rv32i_zicsr_zicntr"
-# CHECK: attribute      5, "rv32i2p1_zicntr1p0_zicsr2p0"
+# CHECK: attribute      5, "rv32i2p1_zicntr2p0_zicsr2p0"
 
 .attribute arch, "rv32i_zicsr_zihpm"
-# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zihpm1p0"
+# CHECK: attribute      5, "rv32i2p1_zicsr2p0_zihpm2p0"
 
 .attribute arch, "rv32iss"
 # CHECK: attribute      5, "rv32i2p1_ss1p12"
