@@ -2282,9 +2282,8 @@ define double @reduction_increment_by_first_order_recurrence() {
 ; CHECK-UNORDERED-NEXT:    br i1 [[TMP3]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP28:![0-9]+]]
 ; CHECK-UNORDERED:       middle.block:
 ; CHECK-UNORDERED-NEXT:    [[TMP4:%.*]] = call double @llvm.vector.reduce.fadd.v4f64(double -0.000000e+00, <4 x double> [[TMP2]])
-; CHECK-UNORDERED-NEXT:    [[CMP_N:%.*]] = icmp eq i32 0, 0
 ; CHECK-UNORDERED-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <4 x double> [[TMP0]], i32 3
-; CHECK-UNORDERED-NEXT:    br i1 [[CMP_N]], label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-UNORDERED-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-UNORDERED:       scalar.ph:
 ; CHECK-UNORDERED-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi double [ 0.000000e+00, [[ENTRY:%.*]] ], [ [[VECTOR_RECUR_EXTRACT]], [[MIDDLE_BLOCK]] ]
 ; CHECK-UNORDERED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
@@ -2321,9 +2320,8 @@ define double @reduction_increment_by_first_order_recurrence() {
 ; CHECK-ORDERED-NEXT:    [[TMP3:%.*]] = icmp eq i32 [[INDEX_NEXT]], 0
 ; CHECK-ORDERED-NEXT:    br i1 [[TMP3]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP28:![0-9]+]]
 ; CHECK-ORDERED:       middle.block:
-; CHECK-ORDERED-NEXT:    [[CMP_N:%.*]] = icmp eq i32 0, 0
 ; CHECK-ORDERED-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <4 x double> [[TMP0]], i32 3
-; CHECK-ORDERED-NEXT:    br i1 [[CMP_N]], label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-ORDERED-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-ORDERED:       scalar.ph:
 ; CHECK-ORDERED-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi double [ 0.000000e+00, [[ENTRY:%.*]] ], [ [[VECTOR_RECUR_EXTRACT]], [[MIDDLE_BLOCK]] ]
 ; CHECK-ORDERED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
@@ -3349,8 +3347,7 @@ define void @reduction_store_to_invariant_address(ptr %dst, ptr readonly %src) {
 ; CHECK-UNORDERED:       middle.block:
 ; CHECK-UNORDERED-NEXT:    [[TMP5:%.*]] = call float @llvm.vector.reduce.fadd.v8f32(float -0.000000e+00, <8 x float> [[TMP3]])
 ; CHECK-UNORDERED-NEXT:    store float [[TMP5]], ptr [[ARRAYIDX]], align 4
-; CHECK-UNORDERED-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1000, 1000
-; CHECK-UNORDERED-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_CLEANUP:%.*]], label [[SCALAR_PH]]
+; CHECK-UNORDERED-NEXT:    br i1 true, label [[FOR_COND_CLEANUP:%.*]], label [[SCALAR_PH]]
 ; CHECK-UNORDERED:       scalar.ph:
 ; CHECK-UNORDERED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1000, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ], [ 0, [[VECTOR_MEMCHECK]] ]
 ; CHECK-UNORDERED-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ 0.000000e+00, [[VECTOR_MEMCHECK]] ], [ 0.000000e+00, [[ENTRY]] ], [ [[TMP5]], [[MIDDLE_BLOCK]] ]
@@ -3396,8 +3393,7 @@ define void @reduction_store_to_invariant_address(ptr %dst, ptr readonly %src) {
 ; CHECK-ORDERED-NEXT:    br i1 [[TMP4]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP39:![0-9]+]]
 ; CHECK-ORDERED:       middle.block:
 ; CHECK-ORDERED-NEXT:    store float [[TMP3]], ptr [[ARRAYIDX]], align 4
-; CHECK-ORDERED-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1000, 1000
-; CHECK-ORDERED-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_CLEANUP:%.*]], label [[SCALAR_PH]]
+; CHECK-ORDERED-NEXT:    br i1 true, label [[FOR_COND_CLEANUP:%.*]], label [[SCALAR_PH]]
 ; CHECK-ORDERED:       scalar.ph:
 ; CHECK-ORDERED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1000, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ], [ 0, [[VECTOR_MEMCHECK]] ]
 ; CHECK-ORDERED-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ 0.000000e+00, [[VECTOR_MEMCHECK]] ], [ 0.000000e+00, [[ENTRY]] ], [ [[TMP3]], [[MIDDLE_BLOCK]] ]

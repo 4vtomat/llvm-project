@@ -234,7 +234,6 @@ define void @print_replicate_predicated_phi(i64 %n, ptr %x) {
 ; CHECK-NEXT: Successor(s): if.then.0
 ; CHECK-EMPTY:
 ; CHECK-NEXT: if.then.0:
-; CHECK-NEXT:   EMIT vp<[[NOT:%.+]]> = not ir<%cmp>
 ; CHECK-NEXT:   BLEND ir<%d> = ir<0>/vp<[[NOT]]> vp<[[PRED]]>/ir<%cmp>
 ; CHECK-NEXT:   CLONE ir<%idx> = getelementptr ir<%x>, vp<[[STEPS]]>
 ; CHECK-NEXT:   WIDEN store ir<%idx>, ir<%d>
@@ -435,8 +434,6 @@ define void @debug_loc_vpinstruction(ptr nocapture %asd, ptr nocapture %bsd) !db
 ; CHECK-NEXT:  Successor(s): if.then.0
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  if.then.0:
-; CHECK-NEXT:    EMIT vp<[[NOT2:%.+]]> = not ir<%cmp2>
-; CHECK-NEXT:    EMIT vp<[[SEL2:%.+]]> = select vp<[[NOT1]]>, vp<[[NOT2]]>, ir<false>
 ; CHECK-NEXT:    BLEND ir<%ysd.0> = vp<[[PHI]]>/vp<[[OR1]]> ir<%psd>/vp<[[SEL2]]>
 ; CHECK-NEXT:    WIDEN store ir<%isd>, ir<%ysd.0>
 ; CHECK-NEXT:    EMIT vp<[[CAN_IV_NEXT:%.+]]> = VF * UF + nuw vp<[[CAN_IV]]>
@@ -718,9 +715,8 @@ define void @print_call_flags(ptr readonly %src, ptr noalias %dest, i64 %n) {
 ; CHECK-NEXT:  Successor(s): if.then.1
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  if.then.1:
-; CHECK-NEXT:    WIDEN ir<%fadd> = fadd vp<%8>, vp<%9>
-; CHECK-NEXT:    EMIT vp<%11> = not ir<%ifcond>
-; CHECK-NEXT:    BLEND ir<%st.value> = ir<%ld.value>/vp<%11> ir<%fadd>/ir<%ifcond>
+; CHECK-NEXT:    WIDEN ir<%fadd> = fadd vp<%9>, vp<%10>
+; CHECK-NEXT:    BLEND ir<%st.value> = ir<%ld.value>/vp<%6> ir<%fadd>/ir<%ifcond>
 ; CHECK-NEXT:    CLONE ir<%st.addr> = getelementptr inbounds ir<%dest>, vp<%2>
 ; CHECK-NEXT:    WIDEN store ir<%st.addr>, ir<%st.value>
 ; CHECK-NEXT:   EMIT vp<[[CAN_IV_NEXT:%.+]]> = VF * UF + nuw vp<[[CAN_IV]]>

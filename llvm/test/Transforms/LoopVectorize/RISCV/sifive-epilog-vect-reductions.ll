@@ -356,8 +356,7 @@ define i16 @reduction_or_trunc(i16* noalias nocapture %ptr, i32 %start) {
 ; CHECK-NEXT:    [[TMP11:%.*]] = trunc i32 [[START:%.*]] to i16
 ; CHECK-NEXT:    [[TMP12:%.*]] = or i16 [[TMP11]], [[TMP10]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = zext i16 [[TMP12]] to i32
-; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i32 256, 256
-; CHECK-NEXT:    br i1 [[CMP_N]], label [[FOR_END:%.*]], label [[VEC_EPILOG_ITER_CHECK:%.*]]
+; CHECK-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_EPILOG_ITER_CHECK:%.*]]
 ; CHECK:       vec.epilog.iter.check:
 ; CHECK-NEXT:    br i1 true, label [[VEC_EPILOG_SCALAR_PH]], label [[VEC_EPILOG_PH]]
 ; CHECK:       vec.epilog.ph:
@@ -365,17 +364,17 @@ define i16 @reduction_or_trunc(i16* noalias nocapture %ptr, i32 %start) {
 ; CHECK-NEXT:    [[VEC_EPILOG_RESUME_VAL:%.*]] = phi i32 [ 256, [[VEC_EPILOG_ITER_CHECK]] ], [ 0, [[VECTOR_MAIN_LOOP_ITER_CHECK]] ]
 ; CHECK-NEXT:    br label [[VEC_EPILOG_VECTOR_BODY:%.*]]
 ; CHECK:       vec.epilog.vector.body:
-; CHECK-NEXT:    [[INDEX2:%.*]] = phi i32 [ [[VEC_EPILOG_RESUME_VAL]], [[VEC_EPILOG_PH]] ], [ [[INDEX_NEXT5:%.*]], [[VEC_EPILOG_VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VEC_PHI3:%.*]] = phi <4 x i32> [ zeroinitializer, [[VEC_EPILOG_PH]] ], [ [[TMP22:%.*]], [[VEC_EPILOG_VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP14:%.*]] = add i32 [[INDEX2]], 0
-; CHECK-NEXT:    [[TMP15:%.*]] = and <4 x i32> [[VEC_PHI3]], <i32 65535, i32 65535, i32 65535, i32 65535>
+; CHECK-NEXT:    [[INDEX1:%.*]] = phi i32 [ [[VEC_EPILOG_RESUME_VAL]], [[VEC_EPILOG_PH]] ], [ [[INDEX_NEXT4:%.*]], [[VEC_EPILOG_VECTOR_BODY]] ]
+; CHECK-NEXT:    [[VEC_PHI2:%.*]] = phi <4 x i32> [ zeroinitializer, [[VEC_EPILOG_PH]] ], [ [[TMP22:%.*]], [[VEC_EPILOG_VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP14:%.*]] = add i32 [[INDEX1]], 0
+; CHECK-NEXT:    [[TMP15:%.*]] = and <4 x i32> [[VEC_PHI2]], <i32 65535, i32 65535, i32 65535, i32 65535>
 ; CHECK-NEXT:    [[TMP16:%.*]] = getelementptr inbounds i16, ptr [[PTR]], i32 [[TMP14]]
 ; CHECK-NEXT:    [[TMP17:%.*]] = getelementptr inbounds i16, ptr [[TMP16]], i32 0
-; CHECK-NEXT:    [[WIDE_LOAD4:%.*]] = load <4 x i16>, ptr [[TMP17]], align 2
-; CHECK-NEXT:    [[TMP18:%.*]] = zext <4 x i16> [[WIDE_LOAD4]] to <4 x i32>
+; CHECK-NEXT:    [[WIDE_LOAD3:%.*]] = load <4 x i16>, ptr [[TMP17]], align 2
+; CHECK-NEXT:    [[TMP18:%.*]] = zext <4 x i16> [[WIDE_LOAD3]] to <4 x i32>
 ; CHECK-NEXT:    [[TMP19:%.*]] = or <4 x i32> [[TMP15]], [[TMP18]]
-; CHECK-NEXT:    [[INDEX_NEXT5]] = add nuw i32 [[INDEX2]], 4
-; CHECK-NEXT:    [[TMP20:%.*]] = icmp eq i32 [[INDEX_NEXT5]], 256
+; CHECK-NEXT:    [[INDEX_NEXT4]] = add nuw i32 [[INDEX1]], 4
+; CHECK-NEXT:    [[TMP20:%.*]] = icmp eq i32 [[INDEX_NEXT4]], 256
 ; CHECK-NEXT:    [[TMP21:%.*]] = trunc <4 x i32> [[TMP19]] to <4 x i16>
 ; CHECK-NEXT:    [[TMP22]] = zext <4 x i16> [[TMP21]] to <4 x i32>
 ; CHECK-NEXT:    br i1 [[TMP20]], label [[VEC_EPILOG_MIDDLE_BLOCK:%.*]], label [[VEC_EPILOG_VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
@@ -385,15 +384,14 @@ define i16 @reduction_or_trunc(i16* noalias nocapture %ptr, i32 %start) {
 ; CHECK-NEXT:    [[TMP25:%.*]] = trunc i32 [[BC_MERGE_RDX]] to i16
 ; CHECK-NEXT:    [[TMP26:%.*]] = or i16 [[TMP25]], [[TMP24]]
 ; CHECK-NEXT:    [[TMP27:%.*]] = zext i16 [[TMP26]] to i32
-; CHECK-NEXT:    [[CMP_N1:%.*]] = icmp eq i32 256, 256
-; CHECK-NEXT:    br i1 [[CMP_N1]], label [[FOR_END]], label [[VEC_EPILOG_SCALAR_PH]]
+; CHECK-NEXT:    br i1 true, label [[FOR_END]], label [[VEC_EPILOG_SCALAR_PH]]
 ; CHECK:       vec.epilog.scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 256, [[VEC_EPILOG_MIDDLE_BLOCK]] ], [ 256, [[VEC_EPILOG_ITER_CHECK]] ], [ 0, [[ITER_CHECK:%.*]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX6:%.*]] = phi i32 [ [[START]], [[ITER_CHECK]] ], [ [[TMP13]], [[VEC_EPILOG_ITER_CHECK]] ], [ [[TMP27]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX5:%.*]] = phi i32 [ [[START]], [[ITER_CHECK]] ], [ [[TMP13]], [[VEC_EPILOG_ITER_CHECK]] ], [ [[TMP27]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i32 [ [[IV_NEXT:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[VEC_EPILOG_SCALAR_PH]] ]
-; CHECK-NEXT:    [[SUM_02P:%.*]] = phi i32 [ [[XOR:%.*]], [[FOR_BODY]] ], [ [[BC_MERGE_RDX6]], [[VEC_EPILOG_SCALAR_PH]] ]
+; CHECK-NEXT:    [[SUM_02P:%.*]] = phi i32 [ [[XOR:%.*]], [[FOR_BODY]] ], [ [[BC_MERGE_RDX5]], [[VEC_EPILOG_SCALAR_PH]] ]
 ; CHECK-NEXT:    [[SUM_02:%.*]] = and i32 [[SUM_02P]], 65535
 ; CHECK-NEXT:    [[GEP:%.*]] = getelementptr inbounds i16, ptr [[PTR]], i32 [[IV]]
 ; CHECK-NEXT:    [[LOAD:%.*]] = load i16, ptr [[GEP]], align 2
@@ -434,8 +432,7 @@ define i16 @reduction_or_trunc(i16* noalias nocapture %ptr, i32 %start) {
 ; CHECK-NO-POSTSV-NEXT:    [[TMP10:%.*]] = trunc <4 x i32> [[TMP9]] to <4 x i16>
 ; CHECK-NO-POSTSV-NEXT:    [[TMP11:%.*]] = call i16 @llvm.vector.reduce.or.v4i16(<4 x i16> [[TMP10]])
 ; CHECK-NO-POSTSV-NEXT:    [[TMP12:%.*]] = zext i16 [[TMP11]] to i32
-; CHECK-NO-POSTSV-NEXT:    [[CMP_N:%.*]] = icmp eq i32 256, 256
-; CHECK-NO-POSTSV-NEXT:    br i1 [[CMP_N]], label [[FOR_END:%.*]], label [[VEC_EPILOG_ITER_CHECK:%.*]]
+; CHECK-NO-POSTSV-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_EPILOG_ITER_CHECK:%.*]]
 ; CHECK-NO-POSTSV:       vec.epilog.iter.check:
 ; CHECK-NO-POSTSV-NEXT:    br i1 true, label [[VEC_EPILOG_SCALAR_PH]], label [[VEC_EPILOG_PH]]
 ; CHECK-NO-POSTSV:       vec.epilog.ph:
@@ -444,17 +441,17 @@ define i16 @reduction_or_trunc(i16* noalias nocapture %ptr, i32 %start) {
 ; CHECK-NO-POSTSV-NEXT:    [[TMP13:%.*]] = insertelement <4 x i32> zeroinitializer, i32 [[BC_MERGE_RDX]], i32 0
 ; CHECK-NO-POSTSV-NEXT:    br label [[VEC_EPILOG_VECTOR_BODY:%.*]]
 ; CHECK-NO-POSTSV:       vec.epilog.vector.body:
-; CHECK-NO-POSTSV-NEXT:    [[INDEX2:%.*]] = phi i32 [ [[VEC_EPILOG_RESUME_VAL]], [[VEC_EPILOG_PH]] ], [ [[INDEX_NEXT5:%.*]], [[VEC_EPILOG_VECTOR_BODY]] ]
-; CHECK-NO-POSTSV-NEXT:    [[VEC_PHI3:%.*]] = phi <4 x i32> [ [[TMP13]], [[VEC_EPILOG_PH]] ], [ [[TMP22:%.*]], [[VEC_EPILOG_VECTOR_BODY]] ]
-; CHECK-NO-POSTSV-NEXT:    [[TMP14:%.*]] = add i32 [[INDEX2]], 0
-; CHECK-NO-POSTSV-NEXT:    [[TMP15:%.*]] = and <4 x i32> [[VEC_PHI3]], <i32 65535, i32 65535, i32 65535, i32 65535>
+; CHECK-NO-POSTSV-NEXT:    [[INDEX1:%.*]] = phi i32 [ [[VEC_EPILOG_RESUME_VAL]], [[VEC_EPILOG_PH]] ], [ [[INDEX_NEXT4:%.*]], [[VEC_EPILOG_VECTOR_BODY]] ]
+; CHECK-NO-POSTSV-NEXT:    [[VEC_PHI2:%.*]] = phi <4 x i32> [ [[TMP13]], [[VEC_EPILOG_PH]] ], [ [[TMP22:%.*]], [[VEC_EPILOG_VECTOR_BODY]] ]
+; CHECK-NO-POSTSV-NEXT:    [[TMP14:%.*]] = add i32 [[INDEX1]], 0
+; CHECK-NO-POSTSV-NEXT:    [[TMP15:%.*]] = and <4 x i32> [[VEC_PHI2]], <i32 65535, i32 65535, i32 65535, i32 65535>
 ; CHECK-NO-POSTSV-NEXT:    [[TMP16:%.*]] = getelementptr inbounds i16, ptr [[PTR]], i32 [[TMP14]]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP17:%.*]] = getelementptr inbounds i16, ptr [[TMP16]], i32 0
-; CHECK-NO-POSTSV-NEXT:    [[WIDE_LOAD4:%.*]] = load <4 x i16>, ptr [[TMP17]], align 2
-; CHECK-NO-POSTSV-NEXT:    [[TMP18:%.*]] = zext <4 x i16> [[WIDE_LOAD4]] to <4 x i32>
+; CHECK-NO-POSTSV-NEXT:    [[WIDE_LOAD3:%.*]] = load <4 x i16>, ptr [[TMP17]], align 2
+; CHECK-NO-POSTSV-NEXT:    [[TMP18:%.*]] = zext <4 x i16> [[WIDE_LOAD3]] to <4 x i32>
 ; CHECK-NO-POSTSV-NEXT:    [[TMP19:%.*]] = or <4 x i32> [[TMP15]], [[TMP18]]
-; CHECK-NO-POSTSV-NEXT:    [[INDEX_NEXT5]] = add nuw i32 [[INDEX2]], 4
-; CHECK-NO-POSTSV-NEXT:    [[TMP20:%.*]] = icmp eq i32 [[INDEX_NEXT5]], 256
+; CHECK-NO-POSTSV-NEXT:    [[INDEX_NEXT4]] = add nuw i32 [[INDEX1]], 4
+; CHECK-NO-POSTSV-NEXT:    [[TMP20:%.*]] = icmp eq i32 [[INDEX_NEXT4]], 256
 ; CHECK-NO-POSTSV-NEXT:    [[TMP21:%.*]] = trunc <4 x i32> [[TMP19]] to <4 x i16>
 ; CHECK-NO-POSTSV-NEXT:    [[TMP22]] = zext <4 x i16> [[TMP21]] to <4 x i32>
 ; CHECK-NO-POSTSV-NEXT:    br i1 [[TMP20]], label [[VEC_EPILOG_MIDDLE_BLOCK:%.*]], label [[VEC_EPILOG_VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
@@ -462,15 +459,14 @@ define i16 @reduction_or_trunc(i16* noalias nocapture %ptr, i32 %start) {
 ; CHECK-NO-POSTSV-NEXT:    [[TMP23:%.*]] = trunc <4 x i32> [[TMP22]] to <4 x i16>
 ; CHECK-NO-POSTSV-NEXT:    [[TMP24:%.*]] = call i16 @llvm.vector.reduce.or.v4i16(<4 x i16> [[TMP23]])
 ; CHECK-NO-POSTSV-NEXT:    [[TMP25:%.*]] = zext i16 [[TMP24]] to i32
-; CHECK-NO-POSTSV-NEXT:    [[CMP_N1:%.*]] = icmp eq i32 256, 256
-; CHECK-NO-POSTSV-NEXT:    br i1 [[CMP_N1]], label [[FOR_END]], label [[VEC_EPILOG_SCALAR_PH]]
+; CHECK-NO-POSTSV-NEXT:    br i1 true, label [[FOR_END]], label [[VEC_EPILOG_SCALAR_PH]]
 ; CHECK-NO-POSTSV:       vec.epilog.scalar.ph:
 ; CHECK-NO-POSTSV-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 256, [[VEC_EPILOG_MIDDLE_BLOCK]] ], [ 256, [[VEC_EPILOG_ITER_CHECK]] ], [ 0, [[ITER_CHECK:%.*]] ]
-; CHECK-NO-POSTSV-NEXT:    [[BC_MERGE_RDX6:%.*]] = phi i32 [ [[START]], [[ITER_CHECK]] ], [ [[TMP12]], [[VEC_EPILOG_ITER_CHECK]] ], [ [[TMP25]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
+; CHECK-NO-POSTSV-NEXT:    [[BC_MERGE_RDX5:%.*]] = phi i32 [ [[START]], [[ITER_CHECK]] ], [ [[TMP12]], [[VEC_EPILOG_ITER_CHECK]] ], [ [[TMP25]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
 ; CHECK-NO-POSTSV-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-NO-POSTSV:       for.body:
 ; CHECK-NO-POSTSV-NEXT:    [[IV:%.*]] = phi i32 [ [[IV_NEXT:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[VEC_EPILOG_SCALAR_PH]] ]
-; CHECK-NO-POSTSV-NEXT:    [[SUM_02P:%.*]] = phi i32 [ [[XOR:%.*]], [[FOR_BODY]] ], [ [[BC_MERGE_RDX6]], [[VEC_EPILOG_SCALAR_PH]] ]
+; CHECK-NO-POSTSV-NEXT:    [[SUM_02P:%.*]] = phi i32 [ [[XOR:%.*]], [[FOR_BODY]] ], [ [[BC_MERGE_RDX5]], [[VEC_EPILOG_SCALAR_PH]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[SUM_02:%.*]] = and i32 [[SUM_02P]], 65535
 ; CHECK-NO-POSTSV-NEXT:    [[GEP:%.*]] = getelementptr inbounds i16, ptr [[PTR]], i32 [[IV]]
 ; CHECK-NO-POSTSV-NEXT:    [[LOAD:%.*]] = load i16, ptr [[GEP]], align 2
