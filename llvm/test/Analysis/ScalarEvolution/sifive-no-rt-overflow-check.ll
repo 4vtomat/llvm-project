@@ -32,8 +32,7 @@ define dso_local float @no_rt_overflow_check(i32 signext %zero) local_unnamed_ad
 ; CHECK-NEXT:    br i1 [[TMP11]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP12:%.*]] = call fast float @llvm.vector.reduce.fadd.v2f32(float -0.000000e+00, <2 x float> [[TMP10]])
-; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i32 65536, 65536
-; CHECK-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_CLEANUP:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 65536, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ 0.000000e+00, [[ENTRY]] ], [ [[TMP12]], [[MIDDLE_BLOCK]] ]
@@ -175,8 +174,7 @@ define dso_local float @no_rt_overflow_check_8(i32 signext %zero) local_unnamed_
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP7:%.*]] = call fast float @llvm.vector.reduce.fadd.v2f32(float -0.000000e+00, <2 x float> [[TMP5]])
-; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i32 8, 8
-; CHECK-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_CLEANUP:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 8, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ 0.000000e+00, [[ENTRY]] ], [ [[TMP7]], [[MIDDLE_BLOCK]] ]
