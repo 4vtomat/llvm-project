@@ -925,9 +925,9 @@ define <8 x i1> @ctpop_v8i32_eq_one(ptr %x, ptr %y) {
 ; LMULMAX2-NEXT:    vle32.v v8, (a0)
 ; LMULMAX2-NEXT:    vadd.vi v10, v8, -1
 ; LMULMAX2-NEXT:    vand.vv v10, v8, v10
-; LMULMAX2-NEXT:    vmseq.vi v12, v10, 0
-; LMULMAX2-NEXT:    vmsne.vi v10, v8, 0
-; LMULMAX2-NEXT:    vmand.mm v0, v10, v12
+; LMULMAX2-NEXT:    vmseq.vi v10, v10, 0
+; LMULMAX2-NEXT:    vmsne.vi v8, v8, 0
+; LMULMAX2-NEXT:    vmand.mm v0, v8, v10
 ; LMULMAX2-NEXT:    ret
 ;
 ; LMULMAX1-LABEL: ctpop_v8i32_eq_one:
@@ -986,9 +986,9 @@ define <8 x i1> @ctpop_v8i32_ne_one(ptr %x, ptr %y) {
 ; LMULMAX2-NEXT:    vle32.v v8, (a0)
 ; LMULMAX2-NEXT:    vadd.vi v10, v8, -1
 ; LMULMAX2-NEXT:    vand.vv v10, v8, v10
-; LMULMAX2-NEXT:    vmsne.vi v12, v10, 0
-; LMULMAX2-NEXT:    vmseq.vi v10, v8, 0
-; LMULMAX2-NEXT:    vmor.mm v0, v10, v12
+; LMULMAX2-NEXT:    vmsne.vi v10, v10, 0
+; LMULMAX2-NEXT:    vmseq.vi v8, v8, 0
+; LMULMAX2-NEXT:    vmor.mm v0, v8, v10
 ; LMULMAX2-NEXT:    ret
 ;
 ; LMULMAX1-LABEL: ctpop_v8i32_ne_one:
@@ -1399,9 +1399,9 @@ define <4 x i1> @ctpop_v4i64_eq_one(ptr %x, ptr %y) {
 ; LMULMAX2-NEXT:    vle64.v v8, (a0)
 ; LMULMAX2-NEXT:    vadd.vi v10, v8, -1
 ; LMULMAX2-NEXT:    vand.vv v10, v8, v10
-; LMULMAX2-NEXT:    vmseq.vi v12, v10, 0
-; LMULMAX2-NEXT:    vmsne.vi v10, v8, 0
-; LMULMAX2-NEXT:    vmand.mm v0, v10, v12
+; LMULMAX2-NEXT:    vmseq.vi v10, v10, 0
+; LMULMAX2-NEXT:    vmsne.vi v8, v8, 0
+; LMULMAX2-NEXT:    vmand.mm v0, v8, v10
 ; LMULMAX2-NEXT:    ret
 ;
 ; LMULMAX1-RV32-LABEL: ctpop_v4i64_eq_one:
@@ -1501,9 +1501,9 @@ define <4 x i1> @ctpop_v4i64_ne_one(ptr %x, ptr %y) {
 ; LMULMAX2-NEXT:    vle64.v v8, (a0)
 ; LMULMAX2-NEXT:    vadd.vi v10, v8, -1
 ; LMULMAX2-NEXT:    vand.vv v10, v8, v10
-; LMULMAX2-NEXT:    vmsne.vi v12, v10, 0
-; LMULMAX2-NEXT:    vmseq.vi v10, v8, 0
-; LMULMAX2-NEXT:    vmor.mm v0, v10, v12
+; LMULMAX2-NEXT:    vmsne.vi v10, v10, 0
+; LMULMAX2-NEXT:    vmseq.vi v8, v8, 0
+; LMULMAX2-NEXT:    vmor.mm v0, v8, v10
 ; LMULMAX2-NEXT:    ret
 ;
 ; LMULMAX1-RV32-LABEL: ctpop_v4i64_ne_one:

@@ -13747,12 +13747,12 @@ define <8 x i16> @mgather_shuffle_vrgather(ptr %base) {
 ;
 ; RV64V-LABEL: mgather_shuffle_vrgather:
 ; RV64V:       # %bb.0:
+; RV64V-NEXT:    lui a1, %hi(.LCPI111_0)
+; RV64V-NEXT:    addi a1, a1, %lo(.LCPI111_0)
 ; RV64V-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; RV64V-NEXT:    vle16.v v9, (a0)
-; RV64V-NEXT:    lui a0, %hi(.LCPI111_0)
-; RV64V-NEXT:    addi a0, a0, %lo(.LCPI111_0)
+; RV64V-NEXT:    vle16.v v9, (a1)
 ; RV64V-NEXT:    vle16.v v10, (a0)
-; RV64V-NEXT:    vrgather.vv v8, v9, v10
+; RV64V-NEXT:    vrgather.vv v8, v10, v9
 ; RV64V-NEXT:    ret
 ;
 ; RV64ZVE32F-LABEL: mgather_shuffle_vrgather:

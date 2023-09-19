@@ -684,7 +684,7 @@ define <1 x i64> @sshl_sat_v1i64(<1 x i64> %a, <1 x i64> %b) {
 ; CHECK-NEXT:    vsll.vv v10, v8, v9
 ; CHECK-NEXT:    vsra.vv v9, v10, v9
 ; CHECK-NEXT:    vmsne.vv v8, v8, v9
-; CHECK-NEXT:    vmv.v.x v9, a1
+; CHECK-NEXT:    vmv.s.x v9, a1
 ; CHECK-NEXT:    slli a0, a0, 63
 ; CHECK-NEXT:    vmerge.vxm v9, v9, a0, v0
 ; CHECK-NEXT:    vmv.v.v v0, v8

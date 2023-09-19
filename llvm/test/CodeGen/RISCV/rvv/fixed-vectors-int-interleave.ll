@@ -440,11 +440,11 @@ define <64 x i32> @interleave_v32i32(<32 x i32> %x, <32 x i32> %y) {
 ; RV64-V128-NEXT:    slli a0, a0, 2
 ; RV64-V128-NEXT:    sub sp, sp, a0
 ; RV64-V128-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x04, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 4 * vlenb
-; RV64-V128-NEXT:    lui a0, %hi(.LCPI17_0)
-; RV64-V128-NEXT:    addi a0, a0, %lo(.LCPI17_0)
-; RV64-V128-NEXT:    li a1, 32
-; RV64-V128-NEXT:    vsetvli zero, a1, e32, m8, ta, mu
-; RV64-V128-NEXT:    vle16.v v4, (a0)
+; RV64-V128-NEXT:    li a0, 32
+; RV64-V128-NEXT:    lui a1, %hi(.LCPI17_0)
+; RV64-V128-NEXT:    addi a1, a1, %lo(.LCPI17_0)
+; RV64-V128-NEXT:    vsetvli zero, a0, e32, m8, ta, mu
+; RV64-V128-NEXT:    vle16.v v4, (a1)
 ; RV64-V128-NEXT:    lui a0, %hi(.LCPI17_1)
 ; RV64-V128-NEXT:    addi a0, a0, %lo(.LCPI17_1)
 ; RV64-V128-NEXT:    vle16.v v24, (a0)

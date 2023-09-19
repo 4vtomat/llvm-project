@@ -307,17 +307,15 @@ define <vscale x 4 x i32> @vwsll_vv_nxv4i32_zext(<vscale x 4 x i16> %a, <vscale 
 define <vscale x 4 x i32> @vwsll_vx_i64_nxv4i32(<vscale x 4 x i16> %a, i64 %b, <vscale x 4 x i1> %m, i32 zeroext %vl) {
 ; CHECK-RV32-LABEL: vwsll_vx_i64_nxv4i32:
 ; CHECK-RV32:       # %bb.0:
-; CHECK-RV32-NEXT:    vsetvli a1, zero, e32, m2, ta, ma
-; CHECK-RV32-NEXT:    vzext.vf2 v10, v8
 ; CHECK-RV32-NEXT:    vsetvli zero, a2, e32, m2, ta, ma
+; CHECK-RV32-NEXT:    vzext.vf2 v10, v8
 ; CHECK-RV32-NEXT:    vsll.vx v8, v10, a0, v0.t
 ; CHECK-RV32-NEXT:    ret
 ;
 ; CHECK-RV64-LABEL: vwsll_vx_i64_nxv4i32:
 ; CHECK-RV64:       # %bb.0:
-; CHECK-RV64-NEXT:    vsetvli a2, zero, e32, m2, ta, ma
-; CHECK-RV64-NEXT:    vzext.vf2 v10, v8
 ; CHECK-RV64-NEXT:    vsetvli zero, a1, e32, m2, ta, ma
+; CHECK-RV64-NEXT:    vzext.vf2 v10, v8
 ; CHECK-RV64-NEXT:    vsll.vx v8, v10, a0, v0.t
 ; CHECK-RV64-NEXT:    ret
 ;
@@ -534,17 +532,15 @@ define <vscale x 8 x i16> @vwsll_vv_nxv8i16_zext(<vscale x 8 x i8> %a, <vscale x
 define <vscale x 8 x i16> @vwsll_vx_i64_nxv8i16(<vscale x 8 x i8> %a, i64 %b, <vscale x 8 x i1> %m, i32 zeroext %vl) {
 ; CHECK-RV32-LABEL: vwsll_vx_i64_nxv8i16:
 ; CHECK-RV32:       # %bb.0:
-; CHECK-RV32-NEXT:    vsetvli a1, zero, e16, m2, ta, ma
-; CHECK-RV32-NEXT:    vzext.vf2 v10, v8
 ; CHECK-RV32-NEXT:    vsetvli zero, a2, e16, m2, ta, ma
+; CHECK-RV32-NEXT:    vzext.vf2 v10, v8
 ; CHECK-RV32-NEXT:    vsll.vx v8, v10, a0, v0.t
 ; CHECK-RV32-NEXT:    ret
 ;
 ; CHECK-RV64-LABEL: vwsll_vx_i64_nxv8i16:
 ; CHECK-RV64:       # %bb.0:
-; CHECK-RV64-NEXT:    vsetvli a2, zero, e16, m2, ta, ma
-; CHECK-RV64-NEXT:    vzext.vf2 v10, v8
 ; CHECK-RV64-NEXT:    vsetvli zero, a1, e16, m2, ta, ma
+; CHECK-RV64-NEXT:    vzext.vf2 v10, v8
 ; CHECK-RV64-NEXT:    vsll.vx v8, v10, a0, v0.t
 ; CHECK-RV64-NEXT:    ret
 ;
@@ -572,9 +568,8 @@ define <vscale x 8 x i16> @vwsll_vx_i64_nxv8i16(<vscale x 8 x i8> %a, i64 %b, <v
 define <vscale x 8 x i16> @vwsll_vx_i32_nxv8i16(<vscale x 8 x i8> %a, i32 %b, <vscale x 8 x i1> %m, i32 zeroext %vl) {
 ; CHECK-LABEL: vwsll_vx_i32_nxv8i16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a2, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vzext.vf2 v10, v8
 ; CHECK-NEXT:    vsetvli zero, a1, e16, m2, ta, ma
+; CHECK-NEXT:    vzext.vf2 v10, v8
 ; CHECK-NEXT:    vsll.vx v8, v10, a0, v0.t
 ; CHECK-NEXT:    ret
 ;

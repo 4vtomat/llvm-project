@@ -165,23 +165,69 @@ define <6 x float> @load_v6f32(ptr %p) {
 }
 
 define <6 x double> @load_v6f64(ptr %p) {
-; CHECK-LABEL: load_v6f64:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    fld fa5, 40(a0)
-; CHECK-NEXT:    fld fa4, 32(a0)
-; CHECK-NEXT:    fld fa3, 24(a0)
-; CHECK-NEXT:    fld fa2, 0(a0)
-; CHECK-NEXT:    fld fa1, 8(a0)
-; CHECK-NEXT:    fld fa0, 16(a0)
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
-; CHECK-NEXT:    vfslide1down.vf v8, v8, fa2
-; CHECK-NEXT:    vfslide1down.vf v8, v8, fa1
-; CHECK-NEXT:    vfslide1down.vf v8, v8, fa0
-; CHECK-NEXT:    vfslide1down.vf v8, v8, fa3
-; CHECK-NEXT:    vfslide1down.vf v8, v8, fa4
-; CHECK-NEXT:    vfslide1down.vf v8, v8, fa5
-; CHECK-NEXT:    vslidedown.vi v8, v8, 2
-; CHECK-NEXT:    ret
+; RV32-LABEL: load_v6f64:
+; RV32:       # %bb.0:
+; RV32-NEXT:    addi sp, sp, -128
+; RV32-NEXT:    .cfi_def_cfa_offset 128
+; RV32-NEXT:    sw ra, 124(sp) # 4-byte Folded Spill
+; RV32-NEXT:    sw s0, 120(sp) # 4-byte Folded Spill
+; RV32-NEXT:    .cfi_offset ra, -4
+; RV32-NEXT:    .cfi_offset s0, -8
+; RV32-NEXT:    addi s0, sp, 128
+; RV32-NEXT:    .cfi_def_cfa s0, 0
+; RV32-NEXT:    andi sp, sp, -64
+; RV32-NEXT:    fld fa5, 0(a0)
+; RV32-NEXT:    fld fa4, 8(a0)
+; RV32-NEXT:    fld fa3, 40(a0)
+; RV32-NEXT:    fld fa2, 32(a0)
+; RV32-NEXT:    fld fa1, 24(a0)
+; RV32-NEXT:    fld fa0, 16(a0)
+; RV32-NEXT:    fsd fa3, 40(sp)
+; RV32-NEXT:    fsd fa2, 32(sp)
+; RV32-NEXT:    fsd fa1, 24(sp)
+; RV32-NEXT:    fsd fa0, 16(sp)
+; RV32-NEXT:    fsd fa4, 8(sp)
+; RV32-NEXT:    fsd fa5, 0(sp)
+; RV32-NEXT:    mv a0, sp
+; RV32-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
+; RV32-NEXT:    vle64.v v8, (a0)
+; RV32-NEXT:    addi sp, s0, -128
+; RV32-NEXT:    lw ra, 124(sp) # 4-byte Folded Reload
+; RV32-NEXT:    lw s0, 120(sp) # 4-byte Folded Reload
+; RV32-NEXT:    addi sp, sp, 128
+; RV32-NEXT:    ret
+;
+; RV64-LABEL: load_v6f64:
+; RV64:       # %bb.0:
+; RV64-NEXT:    addi sp, sp, -128
+; RV64-NEXT:    .cfi_def_cfa_offset 128
+; RV64-NEXT:    sd ra, 120(sp) # 8-byte Folded Spill
+; RV64-NEXT:    sd s0, 112(sp) # 8-byte Folded Spill
+; RV64-NEXT:    .cfi_offset ra, -8
+; RV64-NEXT:    .cfi_offset s0, -16
+; RV64-NEXT:    addi s0, sp, 128
+; RV64-NEXT:    .cfi_def_cfa s0, 0
+; RV64-NEXT:    andi sp, sp, -64
+; RV64-NEXT:    fld fa5, 0(a0)
+; RV64-NEXT:    fld fa4, 8(a0)
+; RV64-NEXT:    fld fa3, 40(a0)
+; RV64-NEXT:    fld fa2, 32(a0)
+; RV64-NEXT:    fld fa1, 24(a0)
+; RV64-NEXT:    fld fa0, 16(a0)
+; RV64-NEXT:    fsd fa3, 40(sp)
+; RV64-NEXT:    fsd fa2, 32(sp)
+; RV64-NEXT:    fsd fa1, 24(sp)
+; RV64-NEXT:    fsd fa0, 16(sp)
+; RV64-NEXT:    fsd fa4, 8(sp)
+; RV64-NEXT:    fsd fa5, 0(sp)
+; RV64-NEXT:    mv a0, sp
+; RV64-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
+; RV64-NEXT:    vle64.v v8, (a0)
+; RV64-NEXT:    addi sp, s0, -128
+; RV64-NEXT:    ld ra, 120(sp) # 8-byte Folded Reload
+; RV64-NEXT:    ld s0, 112(sp) # 8-byte Folded Reload
+; RV64-NEXT:    addi sp, sp, 128
+; RV64-NEXT:    ret
   %x = load <6 x double>, ptr %p
   ret <6 x double> %x
 }
