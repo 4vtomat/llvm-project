@@ -1294,6 +1294,20 @@ void VPWidenIntOrFpInductionRecipe::execute(VPTransformState &State) {
     if (isa<TruncInst>(EntryVal))
       State.addMetadata(LastInduction, EntryVal);
 
+#if SIFIVE_CUSTOMIZATION
+    if (VPValue *RVL = State.Plan->getRVL()) {
+      Value *RVLPart = State.get(RVL, Part);
+      Value *RVLPartCast = nullptr;
+      RVLPartCast = StepType->isIntegerTy()
+                        ? Builder.CreateSExtOrTrunc(RVLPart, StepType)
+                        : Builder.CreateUIToFP(RVLPart, StepType);
+      Value *Mul = Builder.CreateBinOp(MulOp, Step, RVLPartCast);
+      SplatVF = Builder.CreateVectorSplat(State.VF, Mul);
+      LastInduction = widenPredicatedArithmeticOp(
+          State, AddOp, {LastInduction, SplatVF}, Part,
+          /*Mask=*/nullptr, "step.add");
+    } else
+#endif // SIFIVE_CUSTOMIZATION
     LastInduction = cast<Instruction>(
         Builder.CreateBinOp(AddOp, LastInduction, SplatVF, "step.add"));
     LastInduction->setDebugLoc(EntryVal->getDebugLoc());
