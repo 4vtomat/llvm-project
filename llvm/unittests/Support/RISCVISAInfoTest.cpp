@@ -641,9 +641,14 @@ R"(All available -march extensions for RISC-V
 	c                   2.0
 	v                   1.0
 	h                   1.0
+	zic64b              1.0
 	zicbom              1.0
 	zicbop              1.0
 	zicboz              1.0
+	ziccamoa            1.0
+	ziccif              1.0
+	zicclsm             1.0
+	ziccrse             1.0
 	zicntr              2.0
 	zicsr               2.0
 	zifencei            2.0
@@ -651,6 +656,7 @@ R"(All available -march extensions for RISC-V
 	zihintpause         2.0
 	zihpm               2.0
 	zmmul               1.0
+	za64rs              1.0
 	zawrs               1.0
 	zfh                 1.0
 	zfhmin              1.0
@@ -701,6 +707,24 @@ R"(All available -march extensions for RISC-V
 	zvl8192b            1.0
 	zhinx               1.0
 	zhinxmin            1.0
+	shcounterenw        1.0
+	shgatpa             1.0
+	shtvala             1.0
+	shvsatpa            1.0
+	shvstvala           1.0
+	shvstvecd           1.0
+	smstateen           1.0
+	ss                  1.12
+	ssccptr             1.0
+	sscofpmf            1.0
+	sscounterenw        1.0
+	ssstateen           1.0
+	sstc                1.0
+	sstvala             1.0
+	sstvecd             1.0
+	ssu64xl             1.0
+	svade               1.0
+	svbare              1.0
 	svinval             1.0
 	svnapot             1.0
 	svpbmt              1.0
@@ -711,6 +735,11 @@ R"(All available -march extensions for RISC-V
 	xcvsimd             1.0
 	xsfcie              1.0
 	xsfvcp              1.0
+	xsfvfhbfmin         0.1
+	xsfvfnrclipxfqf     0.1
+	xsfvfwmaccqqq       0.1
+	xsfvqmaccdod        0.1
+	xsfvqmaccqoq        0.1
 	xtheadba            1.0
 	xtheadbb            1.0
 	xtheadbs            1.0
@@ -735,22 +764,28 @@ Experimental extensions
 	zvbc                1.0
 	zvfbfmin            0.8
 	zvfbfwma            0.8
-	zvkb                1.0
-	zvkg                1.0
+	zvkb                0.1
+	zvkg                0.1
 	zvkn                1.0
 	zvknc               1.0
 	zvkned              1.0
 	zvkng               1.0
-	zvknha              1.0
-	zvknhb              1.0
+	zvknha              0.1
+	zvknhb              0.1
+	zvkns               0.1
 	zvks                1.0
 	zvksc               1.0
-	zvksed              1.0
+	zvksed              0.1
 	zvksg               1.0
-	zvksh               1.0
+	zvksh               0.1
 	zvkt                1.0
 	smaia               1.0
+	smwg                0.3
+	smwgd               0.3
 	ssaia               1.0
+	sswg                0.3
+	xsifivecdiscarddlone0.1
+	xsifivecflushdlone  0.1
 
 Use -march to specify the target's extension.
 For example, clang -march=rv32i_v1p0)";
