@@ -553,7 +553,7 @@ define void @vrshr_n_s64(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-LABEL: vrshr_n_s64:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    vmv.s.x v8, zero
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:

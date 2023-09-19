@@ -52,7 +52,7 @@ define void @vcagt_f64(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vfabs.v v8, v8
 ; CHECK-NEXT:    vfabs.v v9, v9
 ; CHECK-NEXT:    vmflt.vv v0, v9, v8
-; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    vmv.s.x v8, zero
 ; CHECK-NEXT:    vmerge.vim v8, v8, -1, v0
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
@@ -178,7 +178,7 @@ define void @vcalt_f64(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vfabs.v v8, v8
 ; CHECK-NEXT:    vfabs.v v9, v9
 ; CHECK-NEXT:    vmflt.vv v0, v9, v8
-; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    vmv.s.x v8, zero
 ; CHECK-NEXT:    vmerge.vim v8, v8, -1, v0
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret

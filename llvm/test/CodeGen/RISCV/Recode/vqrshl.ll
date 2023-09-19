@@ -81,7 +81,7 @@ define void @vqrshl_s64(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vmsle.vi v0, v9, -1
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    srli a1, a0, 1
-; CHECK-NEXT:    vmv.v.x v10, a1
+; CHECK-NEXT:    vmv.s.x v10, a1
 ; CHECK-NEXT:    slli a0, a0, 63
 ; CHECK-NEXT:    li a1, 255
 ; CHECK-NEXT:    vand.vx v11, v8, a1
