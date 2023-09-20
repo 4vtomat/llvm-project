@@ -226,39 +226,42 @@ getRestoreLibCallName(const MachineFunction &MF,
   return RestoreLibCalls[LibCallID];
 }
 
-// Return encoded value for PUSH/POP instruction, representing
-// registers to store/load.
-static unsigned getPushPopEncoding(const Register MaxReg) {
+#if SIFIVE_CUSTOMIZATION
+// Return encoded value and register count for PUSH/POP instruction,
+// representing registers to store/load.
+static std::pair<unsigned, unsigned>
+getPushPopEncodingAndNum(const Register MaxReg) {
   switch (MaxReg) {
   default:
     llvm_unreachable("Unexpected Reg for Push/Pop Inst");
   case RISCV::X27: /*s11*/
   case RISCV::X26: /*s10*/
-    return llvm::RISCVZC::RLISTENCODE::RA_S0_S11;
+    return std::make_pair(llvm::RISCVZC::RLISTENCODE::RA_S0_S11, 13);
   case RISCV::X25: /*s9*/
-    return llvm::RISCVZC::RLISTENCODE::RA_S0_S9;
+    return std::make_pair(llvm::RISCVZC::RLISTENCODE::RA_S0_S9, 11);
   case RISCV::X24: /*s8*/
-    return llvm::RISCVZC::RLISTENCODE::RA_S0_S8;
+    return std::make_pair(llvm::RISCVZC::RLISTENCODE::RA_S0_S8, 10);
   case RISCV::X23: /*s7*/
-    return llvm::RISCVZC::RLISTENCODE::RA_S0_S7;
+    return std::make_pair(llvm::RISCVZC::RLISTENCODE::RA_S0_S7, 9);
   case RISCV::X22: /*s6*/
-    return llvm::RISCVZC::RLISTENCODE::RA_S0_S6;
+    return std::make_pair(llvm::RISCVZC::RLISTENCODE::RA_S0_S6, 8);
   case RISCV::X21: /*s5*/
-    return llvm::RISCVZC::RLISTENCODE::RA_S0_S5;
+    return std::make_pair(llvm::RISCVZC::RLISTENCODE::RA_S0_S5, 7);
   case RISCV::X20: /*s4*/
-    return llvm::RISCVZC::RLISTENCODE::RA_S0_S4;
+    return std::make_pair(llvm::RISCVZC::RLISTENCODE::RA_S0_S4, 6);
   case RISCV::X19: /*s3*/
-    return llvm::RISCVZC::RLISTENCODE::RA_S0_S3;
+    return std::make_pair(llvm::RISCVZC::RLISTENCODE::RA_S0_S3, 5);
   case RISCV::X18: /*s2*/
-    return llvm::RISCVZC::RLISTENCODE::RA_S0_S2;
+    return std::make_pair(llvm::RISCVZC::RLISTENCODE::RA_S0_S2, 4);
   case RISCV::X9: /*s1*/
-    return llvm::RISCVZC::RLISTENCODE::RA_S0_S1;
+    return std::make_pair(llvm::RISCVZC::RLISTENCODE::RA_S0_S1, 3);
   case RISCV::X8: /*s0*/
-    return llvm::RISCVZC::RLISTENCODE::RA_S0;
+    return std::make_pair(llvm::RISCVZC::RLISTENCODE::RA_S0, 2);
   case RISCV::X1: /*ra*/
-    return llvm::RISCVZC::RLISTENCODE::RA;
+    return std::make_pair(llvm::RISCVZC::RLISTENCODE::RA, 1);
   }
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 // Get the max reg of Push/Pop for restoring callee saved registers.
 static Register getMaxPushPopReg(const MachineFunction &MF,
@@ -1370,15 +1373,15 @@ bool RISCVFrameLowering::spillCalleeSavedRegisters(
   // Emit CM.PUSH with base SPimm & evaluate Push stack
   RISCVMachineFunctionInfo *RVFI = MF->getInfo<RISCVMachineFunctionInfo>();
   if (RVFI->isPushable(*MF)) {
+#if SIFIVE_CUSTOMIZATION
     Register MaxReg = getMaxPushPopReg(*MF, CSI);
-    unsigned PushedRegNum =
-        getPushPopEncoding(MaxReg) - llvm::RISCVZC::RLISTENCODE::RA + 1;
-    RVFI->setRVPushRegs(PushedRegNum);
-    RVFI->setRVPushStackSize(alignTo((STI.getXLen() / 8) * PushedRegNum, 16));
-
     if (MaxReg != RISCV::NoRegister) {
+      auto [RegEnc, PushedRegNum] = getPushPopEncodingAndNum(MaxReg);
+      RVFI->setRVPushRegs(PushedRegNum);
+      RVFI->setRVPushStackSize(alignTo((STI.getXLen() / 8) * PushedRegNum, 16));
+
       // Use encoded number to represent registers to spill.
-      unsigned RegEnc = getPushPopEncoding(MaxReg);
+#endif // SIFIVE_CUSTOMIZATION
       RVFI->setRVPushRlist(RegEnc);
       MachineInstrBuilder PushBuilder =
           BuildMI(MBB, MI, DL, TII.get(RISCV::CM_PUSH))
