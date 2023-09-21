@@ -18,6 +18,9 @@
 #include "RISCVTargetObjectFile.h"
 #include "RISCVTargetTransformInfo.h"
 #include "RISCVMacroFusion.h"
+#if SIFIVE_CUSTOMIZATION
+#include "SiFive_RISCVLoopIdiomRecognize.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "TargetInfo/RISCVTargetInfo.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
