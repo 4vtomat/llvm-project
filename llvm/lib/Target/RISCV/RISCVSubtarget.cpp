@@ -56,6 +56,14 @@ static cl::opt<bool> UseAltGPROrder("riscv-use-alt-gpr-order", cl::init(false),
 static cl::opt<bool> UseAltVROrder("riscv-use-alt-vr-order", cl::init(false),
                                    cl::desc("Enable alternate VR order."),
                                    cl::ReallyHidden);
+
+cl::opt<unsigned> VectorPrimaryLMULMaxExp(
+    "vector-primary-lmul-max",
+    cl::desc("Limit the exponent of maximum primary LMUL used by "
+             "autovectorized code."
+             "The default value is 0, it means LMUL=pow(2, 0)=1."
+             "Fractional LMULs are not supported."),
+    cl::init(0), cl::Hidden);
 #endif // SIFIVE_CUSTOMIZATION
 static cl::opt<bool> UseAA("riscv-use-aa", cl::init(true),
                            cl::desc("Enable the use of AA during codegen."));
@@ -226,6 +234,13 @@ void RISCVSubtarget::overrideSchedPolicy(MachineSchedPolicy &Policy,
 
 bool RISCVSubtarget::useAltGPROrder() const { return UseAltGPROrder; }
 bool RISCVSubtarget::useAltVROrder() const { return UseAltVROrder; }
+
+unsigned RISCVSubtarget::getVectorPrimaryLMULMax() const {
+  if (!VectorPrimaryLMULMaxExp.getNumOccurrences() && isSiFiveCPU())
+    return 4;
+  return 1 << std::min<unsigned>(VectorPrimaryLMULMaxExp, 3);
+}
+
 #endif // SIFIVE_CUSTOMIZATION
   /// Enable use of alias analysis during code generation (during MI
   /// scheduling, DAGCombine, etc.).

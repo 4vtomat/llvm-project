@@ -48,7 +48,6 @@
 using namespace llvm;
 using namespace llvm::PatternMatch;
 
-extern cl::opt<unsigned> VectorPrimaryLMULMaxExp;
 static cl::opt<bool>
     MemToRVVOpt("riscv-mem-to-rvv", cl::Hidden,
                 cl::desc("Expand mem intrinsic to vector instructions."),
@@ -60,7 +59,8 @@ static cl::opt<bool>
 static cl::opt<unsigned>
     MemLMUL("riscv-mem-to-rvv-lmul", cl::Hidden,
             cl::desc("Configure LMUL for memcpy/memmove/memset expansion "
-                     "(default value: 2 ^ VectorPrimaryLMULMaxExp)."), cl::init(~0));
+                     "(default value: 2 ^ VectorPrimaryLMULMaxExp)."),
+            cl::init(0));
 
 namespace {
 
@@ -1301,10 +1301,6 @@ bool RISCVLateCodeGenPrepare::visitMemIntrinsic(MemIntrinsic &MI) {
 }
 
 bool RISCVLateCodeGenPrepare::runOnFunction(Function &F) {
-  MemLMULLocal = MemLMUL;
-  if (MemLMULLocal == (unsigned)~0)
-    MemLMULLocal = 1 << VectorPrimaryLMULMaxExp;
-
   if (skipFunction(F))
     return false;
 
@@ -1312,15 +1308,20 @@ bool RISCVLateCodeGenPrepare::runOnFunction(Function &F) {
   if (!TPC)
     return false;
 
+  auto &TM = TPC->getTM<RISCVTargetMachine>();
+
+  ST = TM.getSubtargetImpl(F);
+
+  if (MemLMUL.getNumOccurrences())
+    MemLMULLocal = MemLMUL;
+  else
+    MemLMULLocal = ST->getVectorPrimaryLMULMax();
+
   if (MemLMULLocal != 8 && MemLMULLocal != 4 && MemLMULLocal != 2 && MemLMULLocal != 1) {
     errs() << "Invalid LMUL for memcpy/memmove/memset expansion,"
            << "set to default value: 8.\n";
     MemLMULLocal = 8;
   }
-
-  auto &TM = TPC->getTM<RISCVTargetMachine>();
-
-  ST = TM.getSubtargetImpl(F);
 
   DL = &F.getParent()->getDataLayout();
 
