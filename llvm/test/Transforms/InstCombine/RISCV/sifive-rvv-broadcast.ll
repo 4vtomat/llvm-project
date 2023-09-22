@@ -1335,8 +1335,7 @@ define <vscale x 4 x double> @test_vfwmul_scalar(float %x, float %y) {
 
 define <vscale x 4 x double> @test_vfwsub_rhs(<vscale x 4 x float> %x, float %y) {
 ; CHECK-LABEL: @test_vfwsub_rhs(
-; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float [[Y:%.*]], i64 4)
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x double> @llvm.riscv.vfwsub.nxv4f64.nxv4f32.nxv4f32.i64(<vscale x 4 x double> undef, <vscale x 4 x float> [[X:%.*]], <vscale x 4 x float> [[A]], i64 7, i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x double> @llvm.riscv.vfwsub.nxv4f64.nxv4f32.f32.i64(<vscale x 4 x double> undef, <vscale x 4 x float> [[X:%.*]], float [[Y:%.*]], i64 7, i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x double> [[B]]
 ;
   %a = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float %y, i64 4)

@@ -1036,12 +1036,6 @@ static Instruction *foldVBroadcast(InstCombiner &IC, IntrinsicInst &II) {
     break;
   case Intrinsic::riscv_vfwadd:
   case Intrinsic::riscv_vfwmul:
-    if (Value *V = getVSplat(II.getArgOperand(2), II.getArgOperand(4)))
-      return CreateIntrinsic(&II, IID,
-                             {II.getType(), II.getArgOperand(1)->getType(),
-                              V->getType(), II.getArgOperand(3)->getType()},
-                             {II.getArgOperand(0), II.getArgOperand(1), V,
-                              II.getArgOperand(3), II.getArgOperand(4)});
     // These instructions are commutable so check the other operand.
     if (II.getArgOperand(2)->getType()->isVectorTy())
       if (Value *V = getVSplat(II.getArgOperand(1), II.getArgOperand(4)))
@@ -1050,11 +1044,18 @@ static Instruction *foldVBroadcast(InstCombiner &IC, IntrinsicInst &II) {
                                 V->getType(), II.getArgOperand(3)->getType()},
                                {II.getArgOperand(0), II.getArgOperand(2), V,
                                 II.getArgOperand(3), II.getArgOperand(4)});
+    [[fallthrough]];
+  case Intrinsic::riscv_vfwsub:
+    if (Value *V = getVSplat(II.getArgOperand(2), II.getArgOperand(4)))
+      return CreateIntrinsic(&II, IID,
+                             {II.getType(), II.getArgOperand(1)->getType(),
+                              V->getType(), II.getArgOperand(3)->getType()},
+                             {II.getArgOperand(0), II.getArgOperand(1), V,
+                              II.getArgOperand(3), II.getArgOperand(4)});
     break;
   case Intrinsic::riscv_vwmulsu:
   case Intrinsic::riscv_vwsub:
   case Intrinsic::riscv_vwsubu:
-  case Intrinsic::riscv_vfwsub:
     if (Value *V = getVSplat(II.getArgOperand(2), II.getArgOperand(3)))
       return CreateIntrinsic(
           &II, IID,
