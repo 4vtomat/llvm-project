@@ -248,17 +248,21 @@ void llvm::riscvExtensionsHelp() {
   outs() << "All available -march extensions for RISC-V\n\n";
   outs() << '\t' << left_justify("Name", 20) << "Version\n";
 
-  RISCVISAInfo::OrderedExtensionMap ExtMap;
+#if SIFIVE_CUSTOMIZATION
+  RISCVISAInfo::OrderedExtensionMultiMap ExtMap;
   for (const auto &E : SupportedExtensions)
-    ExtMap[E.Name] = {E.Version.Major, E.Version.Minor};
+    ExtMap.insert({E.Name, {E.Version.Major, E.Version.Minor}});
+#endif
   for (const auto &E : ExtMap)
     outs() << format("\t%-20s%d.%d\n", E.first.c_str(), E.second.MajorVersion,
                      E.second.MinorVersion);
 
   outs() << "\nExperimental extensions\n";
   ExtMap.clear();
+#if SIFIVE_CUSTOMIZATION
   for (const auto &E : SupportedExperimentalExtensions)
-    ExtMap[E.Name] = {E.Version.Major, E.Version.Minor};
+    ExtMap.insert({E.Name, {E.Version.Major, E.Version.Minor}});
+#endif
   for (const auto &E : ExtMap)
     outs() << format("\t%-20s%d.%d\n", E.first.c_str(), E.second.MajorVersion,
                      E.second.MinorVersion);

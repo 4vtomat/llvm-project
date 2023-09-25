@@ -764,19 +764,25 @@ Experimental extensions
 	zvbc                1.0
 	zvfbfmin            0.8
 	zvfbfwma            0.8
+	zvkb                1.0
 	zvkb                0.1
+	zvkg                1.0
 	zvkg                0.1
 	zvkn                1.0
 	zvknc               1.0
 	zvkned              1.0
 	zvkng               1.0
+	zvknha              1.0
 	zvknha              0.1
+	zvknhb              1.0
 	zvknhb              0.1
 	zvkns               0.1
 	zvks                1.0
 	zvksc               1.0
+	zvksed              1.0
 	zvksed              0.1
 	zvksg               1.0
+	zvksh               1.0
 	zvksh               0.1
 	zvkt                1.0
 	smaia               1.0

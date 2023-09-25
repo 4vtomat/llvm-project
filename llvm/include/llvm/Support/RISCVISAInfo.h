@@ -43,6 +43,11 @@ public:
   typedef std::map<std::string, RISCVExtensionInfo, ExtensionComparator>
       OrderedExtensionMap;
 
+#if SIFIVE_CUSTOMIZATION
+  typedef std::multimap<std::string, RISCVExtensionInfo, ExtensionComparator>
+      OrderedExtensionMultiMap;
+#endif
+
   RISCVISAInfo(unsigned XLen, OrderedExtensionMap &Exts)
       : XLen(XLen), FLen(0), MinVLen(0), MaxELen(0), MaxELenFp(0), Exts(Exts) {}
 
