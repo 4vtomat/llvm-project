@@ -593,29 +593,25 @@ foreach mx = SchedMxList in {
     defm "" : LMULWriteResMX<"WriteVShiftI",    [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMinMaxV",  [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMinMaxX",  [SiFive7NVA], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVIMulV",     [SiFive7NVA], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVIMulX",     [SiFive7NVA], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVIMulAddV",  [SiFive7NVA], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVIMulAddX",  [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMergeV",   [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMergeX",   [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMergeI",   [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMovV",     [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMovX",     [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMovI",     [SiFive7NVA], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVExtV",      [SiFive7NVA], mx, IsWorstCase>;
+  }
+  let Latency = 8, ReleaseAtCycles = [Cycles] in {
+    defm "" : LMULWriteResMX<"WriteVIMulV",     [SiFive7NVA], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVIMulX",     [SiFive7NVA], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVIMulAddV",  [SiFive7NVA], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVIMulAddX",  [SiFive7NVA], mx, IsWorstCase>;
   }
   // Mask results can't chain.
   let Latency = !add(Cycles, 3), ReleaseAtCycles = [Cycles] in {
     defm "" : LMULWriteResMX<"WriteVICmpV",     [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVICmpX",     [SiFive7NVA], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVICmpI",     [SiFive7NVA], mx, IsWorstCase>;
-  }
-}
-foreach mx = SchedMxList in {
-  defvar Cycles = SiFive7NGetCyclesDefault<mx>.c;
-  defvar IsWorstCase = SiFive7NIsWorstCaseMX<mx, SchedMxList>.c;
-  let Latency = 4, ReleaseAtCycles = [Cycles] in {
-    defm "" : LMULWriteResMX<"WriteVExtV",      [SiFive7NVA], mx, IsWorstCase>;
   }
 }
 foreach mx = SchedMxList in {
@@ -848,10 +844,12 @@ foreach mx = SchedMxList in {
   }
 }
 
-let Latency = 4, ReleaseAtCycles = [1] in {
+let Latency = 11, ReleaseAtCycles = [11] in {
   def : WriteRes<WriteVIMovVX, [SiFive7NVA]>;
-  def : WriteRes<WriteVIMovXV, [SiFive7NVA]>;
   def : WriteRes<WriteVFMovVF, [SiFive7NVA]>;
+}
+let Latency = 4, ReleaseAtCycles = [1] in {
+  def : WriteRes<WriteVIMovXV, [SiFive7NVA]>;
   def : WriteRes<WriteVFMovFV, [SiFive7NVA]>;
 }
 
@@ -886,10 +884,11 @@ foreach mx = SchedMxList in {
         "On SiFive7N MF2, MF4, and MF8 never lead to WorstCase behavior";
 
       // Define Narwhal resources
+      defvar VRGatherVVLat = !add(7, !div(256, sew)); // 7 + DLEN / SEW
       def "WriteVRGatherVV_" # mx # "_E" # sew # "_N" : SchedWriteRes<[SiFive7NVA]>
-        { let Latency = !add(Cycles, 3); let ReleaseAtCycles = [Cycles]; }
+        { let Latency = VRGatherVVLat; let ReleaseAtCycles = [!add(4, Cycles)]; }
       def "WriteVCompressV_" # mx # "_E" # sew # "_N" : SchedWriteRes<[SiFive7NVA]>
-        { let Latency = !add(Cycles, 3); let ReleaseAtCycles = [Cycles]; }
+        { let Latency = !add(Cycles, 7); let ReleaseAtCycles = [!add(7, Cycles)]; }
       // Define Orca resources
       def "WriteVRGatherVV_" # mx # "_E" # sew # "_O" : SchedWriteRes<[SiFive7NVA]>
         { let Latency = 4; let ReleaseAtCycles = [1]; }

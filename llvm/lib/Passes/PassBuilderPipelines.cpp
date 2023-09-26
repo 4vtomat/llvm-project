@@ -442,9 +442,14 @@ PassBuilder::buildO1FunctionSimplificationPipeline(OptimizationLevel Level,
     LPM1.addPass(LoopFlattenPass());
 
   LPM2.addPass(LoopIdiomRecognizePass());
+#if SIFIVE_CUSTOMIZATION
+  invokeLateLoopOptimizationsEPCallbacks(LPM2, Level);
+  LPM2.addPass(IndVarSimplifyPass());
+#else
   LPM2.addPass(IndVarSimplifyPass());
 
   invokeLateLoopOptimizationsEPCallbacks(LPM2, Level);
+#endif // SIFIVE_CUSTOMIZATION
 
   LPM2.addPass(LoopDeletionPass());
 #if SIFIVE_CUSTOMIZATION

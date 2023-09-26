@@ -93,6 +93,7 @@ static_library("LLVMRISCVCodeGen") {
     "RISCVTargetMachine.cpp",
     "RISCVTargetObjectFile.cpp",
     "RISCVTargetTransformInfo.cpp",
+    "SiFive_RISCV64LoopIdiomRecognize.cpp",
   ]
 }
 

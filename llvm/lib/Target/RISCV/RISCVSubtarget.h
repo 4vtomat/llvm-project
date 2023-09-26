@@ -290,6 +290,8 @@ public:
                            unsigned NumRegionInstrs) const override;
   bool useAltGPROrder() const;
   bool useAltVROrder() const;
+
+  unsigned getVectorPrimaryLMULMax() const;
 #endif // SIFIVE_CUSTOMIZATION
   bool useAA() const override;
 };

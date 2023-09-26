@@ -2457,6 +2457,8 @@ private:
 
 #if SIFIVE_CUSTOMIZATION
   bool isRISCVStridedNode(const TreeEntry *E) const;
+
+  bool areAllUsersRISCVStridedNode(const TreeEntry *E) const;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// \returns the cost of the vectorizable entry.
@@ -5216,10 +5218,7 @@ void BoUpSLP::buildExternalUses(
     if (Entry->State == TreeEntry::NeedToGather)
       continue;
 #if SIFIVE_CUSTOMIZATION
-    if (!Entry->UserTreeIndices.empty() &&
-        all_of(Entry->UserTreeIndices, [&](const EdgeInfo &EI) {
-          return isRISCVStridedNode(EI.UserTE);
-        }))
+    if (areAllUsersRISCVStridedNode(Entry))
       continue;
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -7687,6 +7686,34 @@ bool BoUpSLP::isRISCVStridedNode(const TreeEntry *E) const {
          (E->State == TreeEntry::PossibleStridedVectorize &&
           (E->ReorderIndices.empty() || isReverseOrder(E->ReorderIndices)));
 }
+
+bool BoUpSLP::areAllUsersRISCVStridedNode(const TreeEntry *E) const {
+  if (E->UserTreeIndices.empty())
+    return false;
+  SmallVector<const TreeEntry *> Users;
+  DenseSet<const TreeEntry *> Checked;
+  SmallVector<const TreeEntry *> Worklist;
+  for (const EdgeInfo &EI: E->UserTreeIndices)
+    Worklist.push_back(EI.UserTE);
+  bool Res = false;
+  while (!Worklist.empty()) {
+    const TreeEntry *UserTE = Worklist.pop_back_val();
+    if (!Checked.insert(UserTE).second)
+      continue;
+    if (isRISCVStridedNode(UserTE)) {
+      Res = true;
+      continue;
+    }
+    if (UserTE->State == TreeEntry::ScatterVectorize ||
+        UserTE->State == TreeEntry::PossibleStridedVectorize)
+      return false;
+    if (UserTE->UserTreeIndices.empty())
+      return false;
+    for (const EdgeInfo &EI: UserTE->UserTreeIndices)
+      Worklist.push_back(EI.UserTE);
+  }
+  return Res;
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 InstructionCost
@@ -9043,6 +9070,10 @@ InstructionCost BoUpSLP::getTreeCost(ArrayRef<Value *> VectorizedVals) {
         continue;
       }
     }
+#if SIFIVE_CUSTOMIZATION
+    if (areAllUsersRISCVStridedNode(&TE))
+      continue;
+#endif // SIFIVE_CUSTOMIZATION
 
     InstructionCost C = getEntryCost(&TE, VectorizedVals, CheckedExtracts);
     Cost += C;
@@ -11923,6 +11954,8 @@ Value *BoUpSLP::vectorizeTree(
         all_of(Entry->UserTreeIndices, [&](const EdgeInfo &EI) {
           return isRISCVStridedNode(EI.UserTE);
         }))
+      continue;
+    if (areAllUsersRISCVStridedNode(Entry))
       continue;
 #endif // SIFIVE_CUSTOMIZATION
 

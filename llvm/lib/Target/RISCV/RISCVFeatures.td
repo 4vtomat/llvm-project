@@ -1210,7 +1210,7 @@ def TuneCMOVBranchOpt
     : SubtargetFeature<"cmov-branch-opt", "HasCMOVBranchOpt",
                        "true", "Enable CMOV branch optimization">;
 def CanUseCMOVBranchOpt : Predicate<"Subtarget->canUseCMOVBranchOpt()">;
-def NoCMOVBranchOpt : Predicate<"!Subtarget->hasCMOVBranchOpt()">;
+def NoCMOVBranchOpt : Predicate<"!Subtarget->canUseCMOVBranchOpt()">;
 
 def TuneJumpIsCheap
     : SubtargetFeature<"jump-is-cheap", "SetJumpIsCheap",
@@ -1275,30 +1275,26 @@ def TuneSiFiveP400 : SubtargetFeature<"sifive-p400", "RISCVProcFamily", "SiFiveP
                                       [TuneNoDefaultUnroll,
                                        TuneCMOVBranchOpt,
                                        TuneJumpIsCheap,
-                                       TuneLUIADDIFusion,
-                                       TuneDontSinkSplatOperands]>;
+                                       TuneLUIADDIFusion]>;
 def TuneSiFiveP500 : SubtargetFeature<"sifive-p500", "RISCVProcFamily", "SiFiveP500",
                                       "SiFive P500-Series processors",
                                       [TuneNoDefaultUnroll,
                                        TuneCMOVBranchOpt,
                                        TuneJumpIsCheap,
-                                       TuneLUIADDIFusion,
-                                       TuneDontSinkSplatOperands]>;
+                                       TuneLUIADDIFusion]>;
 def TuneSiFiveP600 : SubtargetFeature<"sifive-p600", "RISCVProcFamily", "SiFiveP600",
                                       "SiFive P600-Series processors",
                                       [TuneNoDefaultUnroll,
                                        TuneCMOVBranchOpt,
                                        TuneJumpIsCheap,
-                                       TuneLUIADDIFusion,
-                                       TuneDontSinkSplatOperands]>;
+                                       TuneLUIADDIFusion]>;
 
 def TuneSiFiveP800 : SubtargetFeature<"sifive-p800", "RISCVProcFamily", "SiFiveP800",
                                       "SiFive P800-Series processors",
                                       [TuneNoDefaultUnroll,
                                        TuneCMOVBranchOpt,
                                        TuneJumpIsCheap,
-                                       TuneLUIADDIFusion,
-                                       TuneDontSinkSplatOperands]>;
+                                       TuneLUIADDIFusion]>;
 #endif // SIFIVE_CUSTOMIZATION
 
 // Assume that lock-free native-width atomics are available, even if the target

@@ -3997,13 +3997,13 @@ void InnerLoopVectorizer::truncateToMinimalBitwidths(VPTransformState &State) {
         continue;
 
       IRBuilder<> B(cast<Instruction>(I));
+#if SIFIVE_CUSTOMIZATION
       VectorBuilder VB(B);
       if (auto *VPI = dyn_cast<VPIntrinsic>(I)) {
         VB.setMask(VPI->getMaskParam());
         VB.setEVL(VPI->getVectorLengthParam());
       }
 
-#if SIFIVE_CUSTOMIZATION
       auto CreateZExtOrTrunc = [&](Value *V, Type *DestTy) {
         assert(V->getType()->isIntOrIntVectorTy() &&
                DestTy->isIntOrIntVectorTy() &&
