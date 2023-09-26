@@ -3684,7 +3684,11 @@ static SDValue lowerBuildVectorOfConstants(SDValue Op, SelectionDAG &DAG,
   // profitable cases this misses.
   const unsigned ScalarSize =
     Op.getSimpleValueType().getScalarSizeInBits();
-  if (ScalarSize > 8 && NumElts <= 4) {
+#if SIFIVE_CUSTOMIZATION
+  // Cherry-picked PR#67488 to fix ICE in neon2rvv suite. In next pulldown this
+  // customization can be removed
+  if (ScalarSize > 8 && VT.isInteger() && NumElts <= 4) {
+#endif // SIFIVE_CUSTOMIZATION
     unsigned SignBits = DAG.ComputeNumSignBits(Op);
     if (ScalarSize - SignBits < 8) {
       SDValue Source =
