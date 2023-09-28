@@ -80,7 +80,7 @@ private:
   bool moveUp(StoreInst *SI, Instruction *P, const LoadInst *LI);
   bool performStackMoveOptzn(Instruction *Load, Instruction *Store,
                              AllocaInst *DestAlloca, AllocaInst *SrcAlloca,
-                             uint64_t Size, BatchAAResults &BAA);
+                             TypeSize Size, BatchAAResults &BAA); // SIFIVE
 
   void eraseInstruction(Instruction *I);
   bool iterateOnFunction(Function &F);
