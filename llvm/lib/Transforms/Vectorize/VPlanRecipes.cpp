@@ -990,17 +990,17 @@ void VPRecipeWithIRFlags::printFlags(raw_ostream &O) const {
 void VPWidenRecipe::execute(VPTransformState &State) {
   State.setDebugLocFrom(getDebugLoc());
 #if SIFIVE_CUSTOMIZATION
-  auto &I = *cast<Instruction>(getUnderlyingValue());
-  if (State.Plan->getRVL() &&
+  auto *I = cast_or_null<Instruction>(getUnderlyingValue());
+  if (I && State.Plan->getRVL() &&
       State.get(getOperand(0), 0)->getType()->isVectorTy() &&
       !isa<BitCastInst>(I) && !isa<FreezeInst>(I)) {
     // Bitcasts are not supported.
     for (unsigned Part = 0; Part < State.UF; ++Part) {
-      Value *V = llvm::widenPredicatedInstruction(&I, this, *this, State,
+      Value *V = llvm::widenPredicatedInstruction(I, this, *this, State,
                                                   nullptr, Part);
       State.set(this, V, Part);
       //Value *V = State.get(this, Part);
-      State.addMetadata(V, &I);
+      State.addMetadata(V, I);
     }
     return;
   }
@@ -1104,7 +1104,7 @@ void VPWidenCastRecipe::execute(VPTransformState &State) {
   State.setDebugLocFrom(getDebugLoc());
 #if SIFIVE_CUSTOMIZATION
   auto *I = cast_or_null<Instruction>(getUnderlyingValue());
-  if (State.Plan->getRVL() &&
+  if (I && State.Plan->getRVL() &&
       State.get(getOperand(0), 0)->getType()->isVectorTy() &&
       !isa<BitCastInst>(I) && !isa<FreezeInst>(I)) {
     for (unsigned Part = 0; Part < State.UF; ++Part) {
