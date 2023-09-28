@@ -653,5 +653,10 @@ void RISCVTargetMachine::registerPassBuilderCallbacks(PassBuilder &PB) {
       [](ModulePassManager &MPM, OptimizationLevel Level) {
         MPM.addPass(createModuleToFunctionPassAdaptor(SiFiveRecodePass()));
       });
+
+  PB.registerLateLoopOptimizationsEPCallback(
+      [=](LoopPassManager &LPM, OptimizationLevel Level) {
+        LPM.addPass(RISCVLoopIdiomRecognizePass());
+      });
 }
 #endif
