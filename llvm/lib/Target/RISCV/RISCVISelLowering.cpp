@@ -13245,59 +13245,62 @@ static SDValue performANDCombine(SDNode *N,
 // combine or (zext a) (shl (anyext b) c) to shufflevector
 static SDValue combineOrZextShlAnyext(SDNode *N, SelectionDAG &DAG,
                                       const RISCVSubtarget &Subtarget) {
-  EVT ResultVT = N->getValueType(0);
-  if (!ResultVT.isVector())
+  EVT VT = N->getValueType(0);
+  if (!VT.isFixedLengthVector())
     return SDValue();
-  EVT ResultEltEVT = ResultVT.getVectorElementType();
+  EVT EltVT = VT.getVectorElementType();
+  unsigned EltSize = EltVT.getSizeInBits();
+
   // The minimum SEW for vmaccu.vx and vwaddu.vx is 8.
-  if (!ResultEltEVT.isRound() || !ResultEltEVT.bitsGT(MVT::i8))
+  if (!isPowerOf2_32(EltSize) || EltSize < 8)
     return SDValue();
-  for (unsigned i = 0; i != 2; ++i) {
-    SDValue Zext = N->getOperand(i);
-    SDValue Shl = N->getOperand(1 - i);
-    if (Zext.getOpcode() != ISD::ZERO_EXTEND || Shl.getOpcode() != ISD::SHL)
-      continue;
-    SDValue Lo = Zext.getOperand(0);
-    if (Lo.getValueType().widenIntegerVectorElementType(*DAG.getContext()) !=
-        ResultVT)
-      continue;
-    EVT SrcEVT = Lo.getValueType();
-    BuildVectorSDNode *BuildVector =
-        dyn_cast<BuildVectorSDNode>(Shl.getOperand(1));
-    if (!BuildVector)
-      continue;
-    ConstantSDNode *ShlAmount = BuildVector->getConstantSplatNode();
-    if (!ShlAmount ||
-        (ShlAmount->getZExtValue() * 2) != ResultVT.getScalarSizeInBits())
-      continue;
-    SDValue Ext = Shl.getOperand(0);
-    if (!(Ext.getOpcode() == ISD::SIGN_EXTEND ||
-          Ext.getOpcode() == ISD::ZERO_EXTEND ||
-          Ext.getOpcode() == ISD::ANY_EXTEND))
-      continue;
-    SDValue Hi = Ext.getOperand(0);
-    if (Hi.getValueType().widenIntegerVectorElementType(*DAG.getContext()) !=
-        ResultVT)
-      continue;
-    SDLoc DL(N);
-    unsigned NumElements = SrcEVT.getVectorNumElements();
-    // Use ISD::CONCAT_VECTORS for Lo and Hi and ISD::VECTOR_SHUFFLE with undef
-    // as operand will stop isInterleaveShuffle recognize the pattern
-    // (vmaccu.vx + vwaddu.vx).
-    SmallVector<int, 32> Mask;
-    for (unsigned j = 0; j != NumElements; ++j) {
-      Mask.push_back(j);
-      Mask.push_back(j + NumElements * 2);
-    }
-    EVT ConcatEVT = SrcEVT.getDoubleNumVectorElementsVT(*DAG.getContext());
-    SDValue WidenLo = DAG.getNode(ISD::CONCAT_VECTORS, DL, ConcatEVT, Lo,
-                                  DAG.getUNDEF(SrcEVT));
-    SDValue WidenHi = DAG.getNode(ISD::CONCAT_VECTORS, DL, ConcatEVT, Hi,
-                                  DAG.getUNDEF(SrcEVT));
-    return DAG.getBitcast(
-        ResultVT, DAG.getVectorShuffle(ConcatEVT, DL, WidenLo, WidenHi, Mask));
+
+  SDValue Zext = N->getOperand(0);
+  SDValue Shl = N->getOperand(1);
+  if (Zext.getOpcode() != ISD::ZERO_EXTEND)
+    std::swap(Zext, Shl);
+  if (Zext.getOpcode() != ISD::ZERO_EXTEND || Shl.getOpcode() != ISD::SHL)
+    return SDValue();
+
+  SDValue Lo = Zext.getOperand(0);
+  if (Lo.getScalarValueSizeInBits() != EltSize / 2)
+    return SDValue();
+
+  EVT SrcVT = Lo.getValueType();
+
+  APInt ShAmt;
+  if (!ISD::isConstantSplatVector(Shl.getOperand(1).getNode(), ShAmt))
+    return SDValue();
+
+  if (ShAmt != EltSize / 2)
+    return SDValue();
+
+  SDValue Ext = Shl.getOperand(0);
+  if (Ext.getOpcode() != ISD::SIGN_EXTEND &&
+      Ext.getOpcode() != ISD::ZERO_EXTEND && Ext.getOpcode() != ISD::ANY_EXTEND)
+    return SDValue();
+
+  SDValue Hi = Ext.getOperand(0);
+  if (Hi.getValueType() != SrcVT)
+    return SDValue();
+
+  SDLoc DL(N);
+  unsigned NumElements = SrcVT.getVectorNumElements();
+  // Use ISD::CONCAT_VECTORS for Lo and Hi and ISD::VECTOR_SHUFFLE with undef
+  // as operand will stop isInterleaveShuffle recognize the pattern
+  // (vmaccu.vx + vwaddu.vx).
+  SmallVector<int, 32> Mask(NumElements * 2);
+  for (unsigned j = 0; j != NumElements; ++j) {
+    Mask[j * 2] = j;
+    Mask[j * 2 + 1] = j + NumElements * 2;
   }
-  return SDValue();
+  EVT ConcatVT = SrcVT.getDoubleNumVectorElementsVT(*DAG.getContext());
+  SDValue WidenLo =
+      DAG.getNode(ISD::CONCAT_VECTORS, DL, ConcatVT, Lo, DAG.getUNDEF(SrcVT));
+  SDValue WidenHi =
+      DAG.getNode(ISD::CONCAT_VECTORS, DL, ConcatVT, Hi, DAG.getUNDEF(SrcVT));
+  return DAG.getBitcast(
+      VT, DAG.getVectorShuffle(ConcatVT, DL, WidenLo, WidenHi, Mask));
 }
 #endif // SIFIVE_CUSTOMIZATION
 
