@@ -13260,6 +13260,89 @@ static SDValue performANDCombine(SDNode *N,
 }
 
 #if SIFIVE_CUSTOMIZATION
+// Combine vector (or (add (zext A, zext B), (shl (sub (zext A, zext B)), C)))
+// (or (zext (add (zext A, zext B))), (shl (zext (sub (zext A, zext B)), C)))
+// where C is half the size of the vector element type and A and B have elements
+// that are 1/4 the size of the vector element type. combineOrZextShlAnyext will
+// convert the end of the new code into an interleave shuffle which will use
+// vwaddu.vv+vwmaccu.vx or vwsll.vi+vwaddu.wv.
+static SDValue combineOrShlAddSub(SDNode *N, SelectionDAG &DAG,
+                                  const RISCVSubtarget &Subtarget) {
+  EVT VT = N->getValueType(0);
+  const TargetLowering &TLI = DAG.getTargetLoweringInfo();
+
+  if (!VT.isFixedLengthVector() ||
+      (VT.getVectorElementType() != MVT::i32 &&
+       VT.getVectorElementType() != MVT::i64) ||
+      !TLI.isTypeLegal(VT))
+    return SDValue();
+
+  SDValue Add = N->getOperand(0);
+  SDValue Shl = N->getOperand(1);
+  if (Add.getOpcode() != ISD::ADD)
+    std::swap(Add, Shl);
+  if (Add.getOpcode() != ISD::ADD || Shl.getOpcode() != ISD::SHL ||
+      !Add.hasOneUse() || !Shl.hasOneUse())
+    return SDValue();
+
+  SDValue Sub = Shl.getOperand(0);
+  if (Sub.getOpcode() != ISD::SUB || !Sub.hasOneUse())
+    return SDValue();
+
+  APInt ShAmt;
+  if (!ISD::isConstantSplatVector(Shl.getOperand(1).getNode(), ShAmt))
+    return SDValue();
+
+  unsigned ScalarSize = VT.getScalarSizeInBits();
+  if (ShAmt != (ScalarSize / 2))
+    return SDValue();
+
+  SDValue ZExtX = Sub.getOperand(0);
+  SDValue ZExtY = Sub.getOperand(1);
+
+  // Make sure add has same operands. Order doesn't mattter.
+  // TODO: They don't need to be the same operands, but it makes the use
+  // counting simpler.
+  if (!(Add.getOperand(0) == ZExtX && Add.getOperand(1) == ZExtY) &&
+      !(Add.getOperand(0) == ZExtY && Add.getOperand(1) == ZExtX))
+    return SDValue();
+
+  // Inputs should be zero extends.
+  if (ZExtX.getOpcode() != ISD::ZERO_EXTEND ||
+      ZExtY.getOpcode() != ISD::ZERO_EXTEND)
+    return SDValue();
+
+  // X and Y should be used by the Add and the Sub only.
+  if (!ZExtX->hasNUsesOfValue(2, 0) || !ZExtY->hasNUsesOfValue(2, 0))
+    return SDValue();
+
+  SDValue X = ZExtX.getOperand(0);
+  SDValue Y = ZExtY.getOperand(0);
+
+  EVT NarrowVT = X.getValueType();
+
+  // We should be extending from a type four times as small.
+  if (NarrowVT != Y.getValueType() ||
+      NarrowVT.getScalarSizeInBits() != (ScalarSize / 4))
+    return SDValue();
+
+  EVT IntermediateVT =
+      EVT::getVectorVT(*DAG.getContext(), MVT::getIntegerVT(ScalarSize / 2),
+                       VT.getVectorElementCount());
+
+  X = DAG.getNode(ISD::ZERO_EXTEND, SDLoc(ZExtX), IntermediateVT, X);
+  Y = DAG.getNode(ISD::ZERO_EXTEND, SDLoc(ZExtY), IntermediateVT, Y);
+
+  Add = DAG.getNode(ISD::ADD, SDLoc(Add), IntermediateVT, X, Y);
+  Sub = DAG.getNode(ISD::SUB, SDLoc(Sub), IntermediateVT, X, Y);
+
+  Add = DAG.getNode(ISD::ZERO_EXTEND, SDLoc(Add), VT, Add);
+  Sub = DAG.getNode(ISD::ANY_EXTEND, SDLoc(Sub), VT, Sub);
+
+  Shl = DAG.getNode(ISD::SHL, SDLoc(Shl), VT, Sub, Shl.getOperand(1));
+  return DAG.getNode(ISD::OR, SDLoc(N), VT, Shl, Add);
+}
+
 // combine or (zext a) (shl (anyext b) c) to shufflevector
 static SDValue combineOrZextShlAnyext(SDNode *N, SelectionDAG &DAG,
                                       const RISCVSubtarget &Subtarget) {
@@ -13366,6 +13449,8 @@ static SDValue performORCombine(SDNode *N, TargetLowering::DAGCombinerInfo &DCI,
     return V;
 
 #if SIFIVE_CUSTOMIZATION
+  if (SDValue V = combineOrShlAddSub(N, DAG, Subtarget))
+    return V;
   if (SDValue V = combineOrZextShlAnyext(N, DAG, Subtarget))
     return V;
 #endif // SIFIVE_CUSTOMIZATION
