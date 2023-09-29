@@ -13427,7 +13427,7 @@ static SDValue performXORCombine(SDNode *N, SelectionDAG &DAG,
 
 #if SIFIVE_CUSTOMIZATION
 // (mul (and (lshr X, 15), 65537), 65535) -> (bitcast (sra (bitcast X), 15)))
-static SDValue performMULCombine(SDNode *N, SelectionDAG &DAG) {
+static SDValue combineVectorMulToSraBitcast(SDNode *N, SelectionDAG &DAG) {
   EVT VT = N->getValueType(0);
   const TargetLowering &TLI = DAG.getTargetLoweringInfo();
 
@@ -13459,6 +13459,66 @@ static SDValue performMULCombine(SDNode *N, SelectionDAG &DAG) {
   SDValue Sra =
       DAG.getNode(ISD::SRA, DL, HalfVT, Cast, DAG.getConstant(15, DL, HalfVT));
   return DAG.getNode(ISD::BITCAST, DL, VT, Sra);
+}
+
+// Combine (mul (sub (zext X), (zext Y)), (sub (zext X), (zext Y))) to
+// (mul (sext (sub (zext X), (zext Y))), (zext (sub (zext X), (zext Y))) to
+// make use of widening multiply and reduce the size of the sub.
+static SDValue combineVectorSquareDifference(SDNode *N,
+                                             SelectionDAG &DAG) {
+  EVT VT = N->getValueType(0);
+  const TargetLowering &TLI = DAG.getTargetLoweringInfo();
+
+  if (!VT.isFixedLengthVector() ||
+      (VT.getVectorElementType() != MVT::i32 &&
+       VT.getVectorElementType() != MVT::i64) ||
+      !TLI.isTypeLegal(VT))
+    return SDValue();
+
+  SDValue Sub = N->getOperand(0);
+
+  // We should be squaring a subtract.
+  if (Sub.getOpcode() != ISD::SUB || N->getOperand(1) != Sub ||
+      !N->isOnlyUserOf(Sub.getNode()))
+    return SDValue();
+
+  SDValue ZExtX = Sub.getOperand(0);
+  SDValue ZExtY = Sub.getOperand(1);
+
+  if (ZExtX.getOpcode() != ISD::ZERO_EXTEND || !ZExtX.hasOneUse() ||
+      ZExtY.getOpcode() != ISD::ZERO_EXTEND || !ZExtY.hasOneUse())
+    return SDValue();
+
+  SDValue X = ZExtX.getOperand(0);
+  SDValue Y = ZExtY.getOperand(0);
+
+  unsigned ScalarSize = VT.getScalarSizeInBits();
+  EVT NarrowVT = X.getValueType();
+
+  // We should be extending from a type four times as small.
+  if (NarrowVT != Y.getValueType() ||
+      NarrowVT.getScalarSizeInBits() != (ScalarSize / 4))
+    return SDValue();
+
+  EVT IntermediateVT =
+      EVT::getVectorVT(*DAG.getContext(), MVT::getIntegerVT(ScalarSize / 2),
+                       VT.getVectorElementCount());
+
+  X = DAG.getNode(ISD::ZERO_EXTEND, SDLoc(ZExtX), IntermediateVT, X);
+  Y = DAG.getNode(ISD::ZERO_EXTEND, SDLoc(ZExtY), IntermediateVT, Y);
+
+  Sub = DAG.getNode(ISD::SUB, SDLoc(Sub), IntermediateVT, X, Y);
+  Sub = DAG.getNode(ISD::SIGN_EXTEND, SDLoc(Sub), VT, Sub);
+  return DAG.getNode(ISD::MUL, SDLoc(N), VT, Sub, Sub);
+}
+
+static SDValue performMULCombine(SDNode *N, SelectionDAG &DAG) {
+  if (SDValue V = combineVectorMulToSraBitcast(N, DAG))
+    return V;
+  if (SDValue V = combineVectorSquareDifference(N, DAG))
+    return V;
+
+  return SDValue();
 }
 
 // Look for (abs (sub (zext X), (zext Y))).
