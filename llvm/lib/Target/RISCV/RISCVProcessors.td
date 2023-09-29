@@ -680,7 +680,8 @@ def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model,
                                        FeatureStdExtZvkng,
                                        FeatureStdExtZvksc,
                                        FeatureStdExtZvksg,
-                                       FeatureUnalignedScalarMem],
+                                       FeatureUnalignedScalarMem,
+                                       FeatureUnalignedVectorMem],
                                       [TuneSiFiveP400, TuneDLen128b,
                                        TuneDontSinkSplatOperands]>;
 
@@ -758,7 +759,8 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
                                        FeatureStdExtZvkng,
                                        FeatureStdExtZvksc,
                                        FeatureStdExtZvksg,
-                                       FeatureUnalignedScalarMem],
+                                       FeatureUnalignedScalarMem,
+                                       FeatureUnalignedVectorMem],
                                       [TuneSiFiveP600, TuneDLen128b,
                                        TuneDontSinkSplatOperands]>;
 
@@ -795,7 +797,8 @@ def SIFIVE_P870 : RISCVProcessorModel<"sifive-p870", SiFiveP800Model,
                                        FeatureStdExtZvkng,
                                        FeatureStdExtZvksc,
                                        FeatureStdExtZvksg,
-                                       FeatureUnalignedScalarMem],
+                                       FeatureUnalignedScalarMem,
+                                       FeatureUnalignedVectorMem],
                                       [TuneSiFiveP800, TuneDLen128b,
                                        TuneDontSinkSplatOperands]>;
 #endif // SIFIVE_CUSTOMIZATION
