@@ -66,6 +66,13 @@ static cl::opt<unsigned> VectorPrimaryLMULMinExp(
              "The default value is 0, it means LMUL=pow(2, 0)=1."
              "Fractional LMULs are not supported."),
     cl::init(0), cl::Hidden);
+
+cl::opt<unsigned> VectorPrimaryLMULMaxExp(
+    "vector-primary-lmul-max",
+    cl::desc("Limit the exponent of maximum primary LMUL used by autovectorized code."
+             "The default value is 0, it means LMUL=pow(2, 0)=1."
+             "Fractional LMULs are not supported."),
+    cl::init(0), cl::Hidden);
 #endif
 
 #if SIFIVE_CUSTOMIZATION
@@ -558,7 +565,11 @@ RISCVTTIImpl::getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
   WidestType = std::max<unsigned>(8, WidestType);
   unsigned LMULMin = 1 << std::min<unsigned>(VectorPrimaryLMULMinExp, 3);
 
-  unsigned LMULMax = ST->getVectorPrimaryLMULMax();
+  unsigned LMULMax;
+  if (!VectorPrimaryLMULMaxExp.getNumOccurrences() && ST->isSiFiveCPU())
+    LMULMax = 4;
+  else
+    LMULMax = 1 << std::min<unsigned>(VectorPrimaryLMULMaxExp, 3);
 
   assert(LMULMax >= LMULMin && "LMULMax must be greater than or equal to LMUL");
   unsigned MinRVVVectorSize = ST->getRealMinVLen();

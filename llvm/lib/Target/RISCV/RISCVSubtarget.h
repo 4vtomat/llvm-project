@@ -291,7 +291,7 @@ public:
   bool useAltGPROrder() const;
   bool useAltVROrder() const;
 
-  unsigned getVectorPrimaryLMULMax() const;
+  unsigned getMemToRVVLMUL() const;
 #endif // SIFIVE_CUSTOMIZATION
   bool useAA() const override;
 };

@@ -59,7 +59,7 @@ static cl::opt<bool>
 static cl::opt<unsigned>
     MemLMUL("riscv-mem-to-rvv-lmul", cl::Hidden,
             cl::desc("Configure LMUL for memcpy/memmove/memset expansion "
-                     "(default value: 2 ^ VectorPrimaryLMULMaxExp)."),
+                     "(default value: CPU specific heuristic)."),
             cl::init(0));
 
 namespace {
@@ -1315,7 +1315,7 @@ bool RISCVLateCodeGenPrepare::runOnFunction(Function &F) {
   if (MemLMUL.getNumOccurrences())
     MemLMULLocal = MemLMUL;
   else
-    MemLMULLocal = ST->getVectorPrimaryLMULMax();
+    MemLMULLocal = ST->getMemToRVVLMUL();
 
   if (MemLMULLocal != 8 && MemLMULLocal != 4 && MemLMULLocal != 2 && MemLMULLocal != 1) {
     errs() << "Invalid LMUL for memcpy/memmove/memset expansion,"
