@@ -13427,8 +13427,7 @@ static SDValue performXORCombine(SDNode *N, SelectionDAG &DAG,
 
 #if SIFIVE_CUSTOMIZATION
 // (mul (and (lshr X, 15), 65537), 65535) -> (bitcast (sra (bitcast X), 15)))
-static SDValue performMULCombine(SDNode *N, SelectionDAG &DAG,
-                                 const RISCVSubtarget &Subtarget) {
+static SDValue performMULCombine(SDNode *N, SelectionDAG &DAG) {
   EVT VT = N->getValueType(0);
   const TargetLowering &TLI = DAG.getTargetLoweringInfo();
 
@@ -13467,8 +13466,7 @@ static SDValue performMULCombine(SDNode *N, SelectionDAG &DAG,
 // or reduction add. The min/max can be done in parallel and with a lower LMUL
 // than the original code. The two zexts can be folded into widening sub and
 // widening add or widening redsum.
-static SDValue performABSCombine(SDNode *N, SelectionDAG &DAG,
-                                 const RISCVSubtarget &Subtarget) {
+static SDValue performABSCombine(SDNode *N, SelectionDAG &DAG) {
   EVT VT = N->getValueType(0);
   const TargetLowering &TLI = DAG.getTargetLoweringInfo();
 
@@ -15982,13 +15980,9 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     return performXORCombine(N, DAG, Subtarget);
 #if SIFIVE_CUSTOMIZATION
   case ISD::MUL:
-    if (SDValue V = performMULCombine(N, DAG, Subtarget))
-      return V;
-    break;
+    return performMULCombine(N, DAG);
   case ISD::ABS:
-    if (SDValue V = performABSCombine(N, DAG, Subtarget))
-      return V;
-    break;
+    return performABSCombine(N, DAG);
 #endif // SIFIVE_CUSTOMIZATION
   case ISD::FADD:
   case ISD::UMAX:
