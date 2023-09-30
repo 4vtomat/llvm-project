@@ -139,10 +139,9 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
       BuilderIR.setFastMathFlags(Cmp->getFastMathFlags());
       return Builder.createVectorInstruction(Opcode, OpTy, {A, B, PredArg},
                                           "vp.op.fcmp");
-    } else {
-      return Builder.createVectorInstruction(Opcode, OpTy, {A, B, PredArg},
-                                          "vp.op.icmp");
     }
+    return Builder.createVectorInstruction(Opcode, OpTy, {A, B, PredArg},
+                                           "vp.op.icmp");
   }
   case Instruction::SExt:
   case Instruction::ZExt:
@@ -313,7 +312,6 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
     // The outermost mask can be lowered as an all ones mask when using
     // RVL.
     VPValue *Mask = VPWMIR.getMask();
-    auto *IMask = dyn_cast_or_null<VPInstruction>(Mask);
     if (!Mask)
       return Builder.getTrueVector(EC);
 
@@ -359,42 +357,41 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
     VS->addParamAttr(1,
                      Attribute::getWithAlignment(VS->getContext(), Alignment));
     return VS;
-  } else {
-    auto *DataTy = VectorType::get(VPWMIR.getElementType(), State.VF);
-    if (VPWMIR.isStrided()) {
-      Value *Ptr = State.get(VPAddr, VPIteration(0, 0));
-      const SCEV *SCEVStride = VPWMIR.getStride();
-      auto &DL = State.CFG.PrevBB->getModule()->getDataLayout();
-      SCEVExpander Exp(*(State.SE), DL, "stride");
-      Instruction *InsertPoint = &*State.Builder.GetInsertPoint();
-      assert(Exp.isSafeToExpandAt(SCEVStride, InsertPoint) &&
-             "It's not safe to expand that SCEV in the vector loop. That was "
-             "not caught by isSafeStrideAccessInfo.");
-      Value *Stride =
-          Exp.expandCodeFor(SCEVStride, SCEVStride->getType(), InsertPoint);
-      auto *PtrTy = cast<PointerType>(Ptr->getType());
-      LLVM_DEBUG(llvm::dbgs()
-                 << "Generating strided load for addr = " << *VPAddr
-                 << " with a stride = " << *Stride << '\n');
-      Value *Operands[] = {Ptr, Stride, BlockInMaskPart, RVLPart};
-      CallInst *VL =
-          Builder.CreateIntrinsic(Intrinsic::experimental_vp_strided_load,
-                                  {DataTy, PtrTy, Stride->getType()}, Operands,
-                                  nullptr, "vp.strided.load");
-      VL->addParamAttr(
-          0, Attribute::getWithAlignment(VL->getContext(), Alignment));
-      return VL;
-    }
-    LLVM_DEBUG(llvm::dbgs() << "Indexed load for " << VPAddr << "\n");
-    Value *VectorGep = State.get(VPAddr, Part);
-    Value *Operands[] = {VectorGep, BlockInMaskPart, RVLPart};
-    auto *PtrsTy = cast<VectorType>(VectorGep->getType());
-    CallInst *VL = Builder.CreateIntrinsic(
-        Intrinsic::vp_gather, {DataTy, PtrsTy}, Operands, nullptr, "vp.gather");
-    VL->addParamAttr(0,
-                     Attribute::getWithAlignment(VL->getContext(), Alignment));
+  }
+  auto *DataTy = VectorType::get(VPWMIR.getElementType(), State.VF);
+  if (VPWMIR.isStrided()) {
+    Value *Ptr = State.get(VPAddr, VPIteration(0, 0));
+    const SCEV *SCEVStride = VPWMIR.getStride();
+    auto &DL = State.CFG.PrevBB->getModule()->getDataLayout();
+    SCEVExpander Exp(*(State.SE), DL, "stride");
+    Instruction *InsertPoint = &*State.Builder.GetInsertPoint();
+    assert(Exp.isSafeToExpandAt(SCEVStride, InsertPoint) &&
+           "It's not safe to expand that SCEV in the vector loop. That was "
+           "not caught by isSafeStrideAccessInfo.");
+    Value *Stride =
+        Exp.expandCodeFor(SCEVStride, SCEVStride->getType(), InsertPoint);
+    auto *PtrTy = cast<PointerType>(Ptr->getType());
+    LLVM_DEBUG(llvm::dbgs()
+               << "Generating strided load for addr = " << *VPAddr
+               << " with a stride = " << *Stride << '\n');
+    Value *Operands[] = {Ptr, Stride, BlockInMaskPart, RVLPart};
+    CallInst *VL =
+        Builder.CreateIntrinsic(Intrinsic::experimental_vp_strided_load,
+                                {DataTy, PtrTy, Stride->getType()}, Operands,
+                                nullptr, "vp.strided.load");
+    VL->addParamAttr(
+        0, Attribute::getWithAlignment(VL->getContext(), Alignment));
     return VL;
   }
+  LLVM_DEBUG(llvm::dbgs() << "Indexed load for " << VPAddr << "\n");
+  Value *VectorGep = State.get(VPAddr, Part);
+  Value *Operands[] = {VectorGep, BlockInMaskPart, RVLPart};
+  auto *PtrsTy = cast<VectorType>(VectorGep->getType());
+  CallInst *VL = Builder.CreateIntrinsic(
+      Intrinsic::vp_gather, {DataTy, PtrsTy}, Operands, nullptr, "vp.gather");
+  VL->addParamAttr(0,
+                   Attribute::getWithAlignment(VL->getContext(), Alignment));
+  return VL;
 }
 
 Instruction *widenPredicatedArithmeticOp(VPTransformState &State,
