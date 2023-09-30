@@ -87,6 +87,9 @@ uint64_t TargetMachine::getMaxCodeSize() const {
   case CodeModel::Small:
   case CodeModel::Kernel:
   case CodeModel::Medium:
+#if SIFIVE_CUSTOMIZATION
+  case CodeModel::Compact:
+#endif
     return llvm::maxUIntN(31);
   case CodeModel::Large:
     return llvm::maxUIntN(64);
