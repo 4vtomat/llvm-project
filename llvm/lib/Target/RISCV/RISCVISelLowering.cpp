@@ -3691,8 +3691,14 @@ static SDValue lowerBuildVectorOfConstants(SDValue Op, SelectionDAG &DAG,
 #endif // SIFIVE_CUSTOMIZATION
     unsigned SignBits = DAG.ComputeNumSignBits(Op);
     if (ScalarSize - SignBits < 8) {
+#if SIFIVE_CUSTOMIZATION
+      // SIFIVE Will be upstreamed.
+      SDValue Source = DAG.getBuildVector(VT.changeVectorElementType(MVT::i8),
+                                          DL, Op->ops());
+#else
       SDValue Source =
         DAG.getNode(ISD::TRUNCATE, DL, VT.changeVectorElementType(MVT::i8), Op);
+#endif // SIFIVE_CUSTOMIZATION
       Source = convertToScalableVector(ContainerVT.changeVectorElementType(MVT::i8),
                                        Source, DAG, Subtarget);
       SDValue Res = DAG.getNode(RISCVISD::VSEXT_VL, DL, ContainerVT, Source, Mask, VL);
