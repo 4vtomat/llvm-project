@@ -274,9 +274,6 @@
 #include "llvm/Transforms/Vectorize/LoopVectorize.h"
 #include "llvm/Transforms/Vectorize/SLPVectorizer.h"
 #include "llvm/Transforms/Vectorize/VectorCombine.h"
-#if SIFIVE_CUSTOMIZATION
-#include "../../lib/Target/RISCV/SiFive_RISCVLoopIdiomRecognize.h"
-#endif // SIFIVE_CUSTOMIZATION
 #include <optional>
 
 using namespace llvm;
