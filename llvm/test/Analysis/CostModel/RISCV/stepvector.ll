@@ -43,6 +43,7 @@ define void @stepvector() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %36 = call <vscale x 8 x i64> @llvm.experimental.stepvector.nxv8i64()
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %37 = call <vscale x 8 x i64> @llvm.experimental.stepvector.nxv8i64()
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %38 = call <vscale x 8 x i64> @llvm.experimental.stepvector.nxv8i64()
+<<<<<<< HEAD
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %39 = call <vscale x 16 x i64> @llvm.experimental.stepvector.nxv16i64()
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %40 = call <vscale x 16 x i64> @llvm.experimental.stepvector.nxv16i64()
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %41 = call <vscale x 16 x i64> @llvm.experimental.stepvector.nxv16i64()
@@ -50,6 +51,15 @@ define void @stepvector() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %43 = call <vscale x 16 x i64> @llvm.experimental.stepvector.nxv16i64()
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %44 = call <vscale x 16 x i64> @llvm.experimental.stepvector.nxv16i64()
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+=======
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %39 = call <vscale x 16 x i64> @llvm.experimental.stepvector.nxv16i64()
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %40 = call <vscale x 16 x i64> @llvm.experimental.stepvector.nxv16i64()
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %41 = call <vscale x 16 x i64> @llvm.experimental.stepvector.nxv16i64()
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %42 = call <vscale x 16 x i64> @llvm.experimental.stepvector.nxv16i64()
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %43 = call <vscale x 16 x i64> @llvm.experimental.stepvector.nxv16i64()
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %44 = call <vscale x 16 x i64> @llvm.experimental.stepvector.nxv16i64()
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
+>>>>>>> pub/main
 ;
   %zero = call <vscale x 1 x i8> @llvm.experimental.stepvector.nxv1i8()
   %1 = call <vscale x 2 x i8> @llvm.experimental.stepvector.nxv2i8()

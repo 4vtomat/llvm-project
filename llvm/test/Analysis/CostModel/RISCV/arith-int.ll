@@ -39,12 +39,13 @@ define i32 @add() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV2I64 = add <vscale x 2 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV4I64 = add <vscale x 4 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV8I64 = add <vscale x 8 x i64> undef, undef
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
 ;
 ; SIFIVE-X280-LABEL: 'add'
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I16 = add i16 undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I32 = add i32 undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I64 = add i64 undef, undef
+<<<<<<< HEAD
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V1I16 = add <1 x i16> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V2I16 = add <2 x i16> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V4I16 = add <4 x i16> undef, undef
@@ -76,6 +77,39 @@ define i32 @add() {
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV4I64 = add <vscale x 4 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %NXV8I64 = add <vscale x 8 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+=======
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1I16 = add <1 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V2I16 = add <2 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V4I16 = add <4 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V8I16 = add <8 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V16I16 = add <16 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V32I16 = add <32 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV1I16 = add <vscale x 1 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV2I16 = add <vscale x 2 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV4I16 = add <vscale x 4 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV8I16 = add <vscale x 8 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV16I16 = add <vscale x 16 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV32I16 = add <vscale x 32 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1I32 = add <1 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V2I32 = add <2 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V4I32 = add <4 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V8I32 = add <8 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V16I32 = add <16 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV1I32 = add <vscale x 1 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV2I32 = add <vscale x 2 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV4I32 = add <vscale x 4 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV8I32 = add <vscale x 8 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV16I32 = add <vscale x 16 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1I64 = add <1 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V2I64 = add <2 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V4I64 = add <4 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V8I64 = add <8 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV1I64 = add <vscale x 1 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV2I64 = add <vscale x 2 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV4I64 = add <vscale x 4 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV8I64 = add <vscale x 8 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
+>>>>>>> pub/main
 ;
   %I16 = add i16 undef, undef
   %I32 = add i32 undef, undef
@@ -155,12 +189,13 @@ define i32 @sub() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV2I64 = sub <vscale x 2 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV4I64 = sub <vscale x 4 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV8I64 = sub <vscale x 8 x i64> undef, undef
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
 ;
 ; SIFIVE-X280-LABEL: 'sub'
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I16 = sub i16 undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I32 = sub i32 undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I64 = sub i64 undef, undef
+<<<<<<< HEAD
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V1I16 = sub <1 x i16> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V2I16 = sub <2 x i16> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V4I16 = sub <4 x i16> undef, undef
@@ -192,6 +227,39 @@ define i32 @sub() {
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV4I64 = sub <vscale x 4 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %NXV8I64 = sub <vscale x 8 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+=======
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1I16 = sub <1 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V2I16 = sub <2 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V4I16 = sub <4 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V8I16 = sub <8 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V16I16 = sub <16 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V32I16 = sub <32 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV1I16 = sub <vscale x 1 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV2I16 = sub <vscale x 2 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV4I16 = sub <vscale x 4 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV8I16 = sub <vscale x 8 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV16I16 = sub <vscale x 16 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV32I16 = sub <vscale x 32 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1I32 = sub <1 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V2I32 = sub <2 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V4I32 = sub <4 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V8I32 = sub <8 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V16I32 = sub <16 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV1I32 = sub <vscale x 1 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV2I32 = sub <vscale x 2 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV4I32 = sub <vscale x 4 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV8I32 = sub <vscale x 8 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV16I32 = sub <vscale x 16 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1I64 = sub <1 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V2I64 = sub <2 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V4I64 = sub <4 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V8I64 = sub <8 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV1I64 = sub <vscale x 1 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV2I64 = sub <vscale x 2 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV4I64 = sub <vscale x 4 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV8I64 = sub <vscale x 8 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
+>>>>>>> pub/main
 ;
   %I16 = sub i16 undef, undef
   %I32 = sub i32 undef, undef
@@ -271,12 +339,13 @@ define i32 @mul() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV2I64 = mul <vscale x 2 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV4I64 = mul <vscale x 4 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV8I64 = mul <vscale x 8 x i64> undef, undef
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
 ;
 ; SIFIVE-X280-LABEL: 'mul'
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I16 = mul i16 undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I32 = mul i32 undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I64 = mul i64 undef, undef
+<<<<<<< HEAD
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V1I16 = mul <1 x i16> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V2I16 = mul <2 x i16> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V4I16 = mul <4 x i16> undef, undef
@@ -308,6 +377,39 @@ define i32 @mul() {
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV4I64 = mul <vscale x 4 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %NXV8I64 = mul <vscale x 8 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+=======
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1I16 = mul <1 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V2I16 = mul <2 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V4I16 = mul <4 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V8I16 = mul <8 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V16I16 = mul <16 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V32I16 = mul <32 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV1I16 = mul <vscale x 1 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV2I16 = mul <vscale x 2 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV4I16 = mul <vscale x 4 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV8I16 = mul <vscale x 8 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV16I16 = mul <vscale x 16 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV32I16 = mul <vscale x 32 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1I32 = mul <1 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V2I32 = mul <2 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V4I32 = mul <4 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V8I32 = mul <8 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V16I32 = mul <16 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV1I32 = mul <vscale x 1 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV2I32 = mul <vscale x 2 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV4I32 = mul <vscale x 4 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV8I32 = mul <vscale x 8 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV16I32 = mul <vscale x 16 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1I64 = mul <1 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V2I64 = mul <2 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V4I64 = mul <4 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V8I64 = mul <8 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV1I64 = mul <vscale x 1 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV2I64 = mul <vscale x 2 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV4I64 = mul <vscale x 4 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV8I64 = mul <vscale x 8 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
+>>>>>>> pub/main
 ;
   %I16 = mul i16 undef, undef
   %I32 = mul i32 undef, undef
@@ -387,12 +489,13 @@ define i32 @shl() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV2I64 = shl <vscale x 2 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV4I64 = shl <vscale x 4 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV8I64 = shl <vscale x 8 x i64> undef, undef
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
 ;
 ; SIFIVE-X280-LABEL: 'shl'
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I16 = shl i16 undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I32 = shl i32 undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I64 = shl i64 undef, undef
+<<<<<<< HEAD
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V1I16 = shl <1 x i16> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V2I16 = shl <2 x i16> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V4I16 = shl <4 x i16> undef, undef
@@ -424,6 +527,39 @@ define i32 @shl() {
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV4I64 = shl <vscale x 4 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %NXV8I64 = shl <vscale x 8 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+=======
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1I16 = shl <1 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V2I16 = shl <2 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V4I16 = shl <4 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V8I16 = shl <8 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V16I16 = shl <16 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V32I16 = shl <32 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV1I16 = shl <vscale x 1 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV2I16 = shl <vscale x 2 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV4I16 = shl <vscale x 4 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV8I16 = shl <vscale x 8 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV16I16 = shl <vscale x 16 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV32I16 = shl <vscale x 32 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1I32 = shl <1 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V2I32 = shl <2 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V4I32 = shl <4 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V8I32 = shl <8 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V16I32 = shl <16 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV1I32 = shl <vscale x 1 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV2I32 = shl <vscale x 2 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV4I32 = shl <vscale x 4 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV8I32 = shl <vscale x 8 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV16I32 = shl <vscale x 16 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1I64 = shl <1 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V2I64 = shl <2 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V4I64 = shl <4 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V8I64 = shl <8 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV1I64 = shl <vscale x 1 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV2I64 = shl <vscale x 2 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV4I64 = shl <vscale x 4 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV8I64 = shl <vscale x 8 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
+>>>>>>> pub/main
 ;
   %I16 = shl i16 undef, undef
   %I32 = shl i32 undef, undef
@@ -503,12 +639,13 @@ define i32 @lshr() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV2I64 = lshr <vscale x 2 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV4I64 = lshr <vscale x 4 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV8I64 = lshr <vscale x 8 x i64> undef, undef
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
 ;
 ; SIFIVE-X280-LABEL: 'lshr'
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I16 = lshr i16 undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I32 = lshr i32 undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I64 = lshr i64 undef, undef
+<<<<<<< HEAD
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V1I16 = lshr <1 x i16> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V2I16 = lshr <2 x i16> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V4I16 = lshr <4 x i16> undef, undef
@@ -540,6 +677,39 @@ define i32 @lshr() {
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV4I64 = lshr <vscale x 4 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %NXV8I64 = lshr <vscale x 8 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+=======
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1I16 = lshr <1 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V2I16 = lshr <2 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V4I16 = lshr <4 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V8I16 = lshr <8 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V16I16 = lshr <16 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V32I16 = lshr <32 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV1I16 = lshr <vscale x 1 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV2I16 = lshr <vscale x 2 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV4I16 = lshr <vscale x 4 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV8I16 = lshr <vscale x 8 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV16I16 = lshr <vscale x 16 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV32I16 = lshr <vscale x 32 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1I32 = lshr <1 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V2I32 = lshr <2 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V4I32 = lshr <4 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V8I32 = lshr <8 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V16I32 = lshr <16 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV1I32 = lshr <vscale x 1 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV2I32 = lshr <vscale x 2 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV4I32 = lshr <vscale x 4 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV8I32 = lshr <vscale x 8 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV16I32 = lshr <vscale x 16 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1I64 = lshr <1 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V2I64 = lshr <2 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V4I64 = lshr <4 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V8I64 = lshr <8 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV1I64 = lshr <vscale x 1 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV2I64 = lshr <vscale x 2 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV4I64 = lshr <vscale x 4 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV8I64 = lshr <vscale x 8 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
+>>>>>>> pub/main
 ;
   %I16 = lshr i16 undef, undef
   %I32 = lshr i32 undef, undef
@@ -619,12 +789,13 @@ define i32 @ashr() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV2I64 = ashr <vscale x 2 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV4I64 = ashr <vscale x 4 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV8I64 = ashr <vscale x 8 x i64> undef, undef
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
 ;
 ; SIFIVE-X280-LABEL: 'ashr'
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I16 = ashr i16 undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I32 = ashr i32 undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I64 = ashr i64 undef, undef
+<<<<<<< HEAD
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V1I16 = ashr <1 x i16> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V2I16 = ashr <2 x i16> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V4I16 = ashr <4 x i16> undef, undef
@@ -656,6 +827,39 @@ define i32 @ashr() {
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV4I64 = ashr <vscale x 4 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %NXV8I64 = ashr <vscale x 8 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+=======
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1I16 = ashr <1 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V2I16 = ashr <2 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V4I16 = ashr <4 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V8I16 = ashr <8 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V16I16 = ashr <16 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V32I16 = ashr <32 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV1I16 = ashr <vscale x 1 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV2I16 = ashr <vscale x 2 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV4I16 = ashr <vscale x 4 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV8I16 = ashr <vscale x 8 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV16I16 = ashr <vscale x 16 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV32I16 = ashr <vscale x 32 x i16> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1I32 = ashr <1 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V2I32 = ashr <2 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V4I32 = ashr <4 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V8I32 = ashr <8 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V16I32 = ashr <16 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV1I32 = ashr <vscale x 1 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV2I32 = ashr <vscale x 2 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV4I32 = ashr <vscale x 4 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV8I32 = ashr <vscale x 8 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV16I32 = ashr <vscale x 16 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V1I64 = ashr <1 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V2I64 = ashr <2 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %V4I64 = ashr <4 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V8I64 = ashr <8 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %NXV1I64 = ashr <vscale x 1 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %NXV2I64 = ashr <vscale x 2 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %NXV4I64 = ashr <vscale x 4 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %NXV8I64 = ashr <vscale x 8 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
+>>>>>>> pub/main
 ;
   %I16 = ashr i16 undef, undef
   %I32 = ashr i32 undef, undef
@@ -735,7 +939,7 @@ define i32 @udiv() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV2I64 = udiv <vscale x 2 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV4I64 = udiv <vscale x 4 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV8I64 = udiv <vscale x 8 x i64> undef, undef
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
 ;
 ; SIFIVE-X280-LABEL: 'udiv'
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I16 = udiv i16 undef, undef
@@ -767,11 +971,19 @@ define i32 @udiv() {
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V2I64 = udiv <2 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V4I64 = udiv <4 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V8I64 = udiv <8 x i64> undef, undef
+<<<<<<< HEAD
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 256 for instruction: %NXV1I64 = udiv <vscale x 1 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 512 for instruction: %NXV2I64 = udiv <vscale x 2 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1024 for instruction: %NXV4I64 = udiv <vscale x 4 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2048 for instruction: %NXV8I64 = udiv <vscale x 8 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+=======
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV1I64 = udiv <vscale x 1 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV2I64 = udiv <vscale x 2 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV4I64 = udiv <vscale x 4 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV8I64 = udiv <vscale x 8 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
+>>>>>>> pub/main
 ;
   %I16 = udiv i16 undef, undef
   %I32 = udiv i32 undef, undef
@@ -851,7 +1063,7 @@ define i32 @urem() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV2I64 = urem <vscale x 2 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV4I64 = urem <vscale x 4 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV8I64 = urem <vscale x 8 x i64> undef, undef
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
 ;
 ; SIFIVE-X280-LABEL: 'urem'
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I16 = urem i16 undef, undef
@@ -887,7 +1099,7 @@ define i32 @urem() {
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV2I64 = urem <vscale x 2 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV4I64 = urem <vscale x 4 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV8I64 = urem <vscale x 8 x i64> undef, undef
-; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
 ;
   %I16 = urem i16 undef, undef
   %I32 = urem i32 undef, undef
@@ -967,7 +1179,7 @@ define i32 @sdiv() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV2I64 = sdiv <vscale x 2 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV4I64 = sdiv <vscale x 4 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV8I64 = sdiv <vscale x 8 x i64> undef, undef
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
 ;
 ; SIFIVE-X280-LABEL: 'sdiv'
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I16 = sdiv i16 undef, undef
@@ -999,11 +1211,19 @@ define i32 @sdiv() {
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V2I64 = sdiv <2 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V4I64 = sdiv <4 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %V8I64 = sdiv <8 x i64> undef, undef
+<<<<<<< HEAD
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 256 for instruction: %NXV1I64 = sdiv <vscale x 1 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 512 for instruction: %NXV2I64 = sdiv <vscale x 2 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1024 for instruction: %NXV4I64 = sdiv <vscale x 4 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2048 for instruction: %NXV8I64 = sdiv <vscale x 8 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+=======
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV1I64 = sdiv <vscale x 1 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV2I64 = sdiv <vscale x 2 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV4I64 = sdiv <vscale x 4 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV8I64 = sdiv <vscale x 8 x i64> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
+>>>>>>> pub/main
 ;
   %I16 = sdiv i16 undef, undef
   %I32 = sdiv i32 undef, undef
@@ -1083,7 +1303,7 @@ define i32 @srem() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV2I64 = srem <vscale x 2 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV4I64 = srem <vscale x 4 x i64> undef, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV8I64 = srem <vscale x 8 x i64> undef, undef
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
 ;
 ; SIFIVE-X280-LABEL: 'srem'
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %I16 = srem i16 undef, undef
@@ -1119,7 +1339,7 @@ define i32 @srem() {
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV2I64 = srem <vscale x 2 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV4I64 = srem <vscale x 4 x i64> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %NXV8I64 = srem <vscale x 8 x i64> undef, undef
-; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret i32 undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret i32 undef
 ;
   %I16 = srem i16 undef, undef
   %I32 = srem i32 undef, undef
@@ -1184,9 +1404,10 @@ define void @add_of_constant() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %13 = add <4 x i32> <i32 2, i32 4, i32 6, i32 8>, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %14 = add <4 x i32> <i32 -1, i32 0, i32 2, i32 1>, undef
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %15 = add <4 x i32> <i32 256, i32 4096, i32 57, i32 1>, undef
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
 ; SIFIVE-X280-LABEL: 'add_of_constant'
+<<<<<<< HEAD
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %1 = add <4 x i32> poison, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %2 = add <4 x i32> undef, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %3 = add <4 x i32> zeroinitializer, undef
@@ -1203,6 +1424,24 @@ define void @add_of_constant() {
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %14 = add <4 x i32> <i32 -1, i32 0, i32 2, i32 1>, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %15 = add <4 x i32> <i32 256, i32 4096, i32 57, i32 1>, undef
 ; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+=======
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %1 = add <4 x i32> poison, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %2 = add <4 x i32> undef, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %3 = add <4 x i32> zeroinitializer, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %4 = add <2 x i64> zeroinitializer, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %5 = add <4 x i32> <i32 1, i32 1, i32 1, i32 1>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %6 = add <2 x i64> <i64 1, i64 1>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %7 = add <4 x i32> <i32 4096, i32 4096, i32 4096, i32 4096>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %8 = add <4 x i32> <i32 1, i32 1, i32 2, i32 1>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %9 = add <4 x i32> <i32 2, i32 1, i32 1, i32 1>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %10 = add <4 x i32> <i32 0, i32 1, i32 2, i32 3>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %11 = add <4 x i32> <i32 1, i32 2, i32 3, i32 4>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %12 = add <4 x i32> <i32 -1, i32 -2, i32 -3, i32 -4>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %13 = add <4 x i32> <i32 2, i32 4, i32 6, i32 8>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %14 = add <4 x i32> <i32 -1, i32 0, i32 2, i32 1>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %15 = add <4 x i32> <i32 256, i32 4096, i32 57, i32 1>, undef
+; SIFIVE-X280-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
+>>>>>>> pub/main
 ;
 
   ; poison and undef

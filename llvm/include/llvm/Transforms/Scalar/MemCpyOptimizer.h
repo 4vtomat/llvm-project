@@ -83,7 +83,11 @@ private:
   bool moveUp(StoreInst *SI, Instruction *P, const LoadInst *LI);
   bool performStackMoveOptzn(Instruction *Load, Instruction *Store,
                              AllocaInst *DestAlloca, AllocaInst *SrcAlloca,
+<<<<<<< HEAD
                              TypeSize Size, BatchAAResults &BAA); // SIFIVE
+=======
+                             TypeSize Size, BatchAAResults &BAA);
+>>>>>>> pub/main
 
   void eraseInstruction(Instruction *I);
   bool iterateOnFunction(Function &F);

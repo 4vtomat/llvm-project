@@ -42,7 +42,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated cost of 11 for VF vscale x 4 For instruction: store i32 %add9, ptr %arrayidx3, align 4
 ; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %cmp = icmp ugt i64 %indvars.iv, 1
 ; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
 ; CHECK-NEXT:  LV: Using user VF vscale x 4.
 ; CHECK-NEXT:  LV: Scalarizing: %i.0 = add nsw i32 %i.0.in8, -1
 ; CHECK-NEXT:  LV: Scalarizing: %idxprom = zext i32 %i.0 to i64
@@ -89,7 +89,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated cost of 11 for VF vscale x 4 For instruction: store i32 %add9, ptr %arrayidx3, align 4
 ; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %cmp = icmp ugt i64 %indvars.iv, 1
 ; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
 ; CHECK-NEXT:  LV(REG): Calculating max register usage:
 ; CHECK-NEXT:  LV(REG): At #0 Interval # 0
 ; CHECK-NEXT:  LV(REG): At #1 Interval # 1
@@ -109,7 +109,11 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 1 registers
 ; CHECK-NEXT:  LV: The target has 31 registers of RISCV::GPRRC register class
 ; CHECK-NEXT:  LV: The target has 32 registers of RISCV::VRRC register class
+<<<<<<< HEAD
 ; CHECK-NEXT:  LV: Loop cost is 29
+=======
+; CHECK-NEXT:  LV: Loop cost is 28
+>>>>>>> pub/main
 ; CHECK-NEXT:  LV: IC is 1
 ; CHECK-NEXT:  LV: VF is vscale x 4
 ; CHECK-NEXT:  LV: Not Interleaving.
@@ -118,6 +122,7 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LEV: Epilogue vectorization is not profitable for this loop
 ; CHECK-NEXT:  Executing best plan with VF=vscale x 4, UF=1
 ; CHECK-NEXT:  LV: Interleaving disabled by the pass manager
+; CHECK-NEXT:  LV: Vectorizing: innermost loop.
 ;
 entry:
   %cmp7 = icmp sgt i32 %n, 0
@@ -178,7 +183,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated cost of 11 for VF vscale x 4 For instruction: store float %conv1, ptr %arrayidx3, align 4
 ; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %cmp = icmp ugt i64 %indvars.iv, 1
 ; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
 ; CHECK-NEXT:  LV: Using user VF vscale x 4.
 ; CHECK-NEXT:  LV: Scalarizing: %i.0 = add nsw i32 %i.0.in8, -1
 ; CHECK-NEXT:  LV: Scalarizing: %idxprom = zext i32 %i.0 to i64
@@ -225,7 +230,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found an estimated cost of 11 for VF vscale x 4 For instruction: store float %conv1, ptr %arrayidx3, align 4
 ; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %cmp = icmp ugt i64 %indvars.iv, 1
 ; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
 ; CHECK-NEXT:  LV(REG): Calculating max register usage:
 ; CHECK-NEXT:  LV(REG): At #0 Interval # 0
 ; CHECK-NEXT:  LV(REG): At #1 Interval # 1
@@ -245,7 +250,11 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 1 registers
 ; CHECK-NEXT:  LV: The target has 31 registers of RISCV::GPRRC register class
 ; CHECK-NEXT:  LV: The target has 32 registers of RISCV::VRRC register class
+<<<<<<< HEAD
 ; CHECK-NEXT:  LV: Loop cost is 29
+=======
+; CHECK-NEXT:  LV: Loop cost is 28
+>>>>>>> pub/main
 ; CHECK-NEXT:  LV: IC is 1
 ; CHECK-NEXT:  LV: VF is vscale x 4
 ; CHECK-NEXT:  LV: Not Interleaving.
@@ -254,6 +263,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LEV: Epilogue vectorization is not profitable for this loop
 ; CHECK-NEXT:  Executing best plan with VF=vscale x 4, UF=1
 ; CHECK-NEXT:  LV: Interleaving disabled by the pass manager
+; CHECK-NEXT:  LV: Vectorizing: innermost loop.
 ;
 entry:
   %cmp7 = icmp sgt i32 %n, 0

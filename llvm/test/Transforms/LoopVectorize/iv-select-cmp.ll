@@ -3,6 +3,7 @@
 ; RUN: opt -passes=loop-vectorize -force-vector-interleave=4 -force-vector-width=4 -S < %s | FileCheck %s --check-prefix=CHECK-VF4IC4
 ; RUN: opt -passes=loop-vectorize -force-vector-interleave=4 -force-vector-width=1 -S < %s | FileCheck %s --check-prefix=CHECK-VF1IC4
 
+<<<<<<< HEAD
 define i64 @select_icmp_const_1(ptr nocapture readonly %a, i64 %n) {
 ; CHECK-VF4IC1-LABEL: @select_icmp_const_1(
 ; CHECK-VF4IC1-NEXT:  entry:
@@ -185,6 +186,11 @@ define i64 @select_icmp_const_1(ptr nocapture readonly %a, i64 %n) {
 ; CHECK-VF1IC4:       exit:
 ; CHECK-VF1IC4-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; CHECK-VF1IC4-NEXT:    ret i64 [[COND_LCSSA]]
+=======
+define i64 @select_icmp_const_1(ptr %a, i64 %n) {
+; CHECK-LABEL: define i64 @select_icmp_const_1
+; CHECK-NOT:   vector.body:
+>>>>>>> pub/main
 ;
 entry:
   br label %for.body
@@ -204,6 +210,7 @@ exit:                                             ; preds = %for.body
   ret i64 %cond
 }
 
+<<<<<<< HEAD
 define i64 @select_icmp_const_2(ptr nocapture readonly %a, i64 %n) {
 ; CHECK-VF4IC1-LABEL: @select_icmp_const_2(
 ; CHECK-VF4IC1-NEXT:  entry:
@@ -386,6 +393,11 @@ define i64 @select_icmp_const_2(ptr nocapture readonly %a, i64 %n) {
 ; CHECK-VF1IC4:       exit:
 ; CHECK-VF1IC4-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; CHECK-VF1IC4-NEXT:    ret i64 [[COND_LCSSA]]
+=======
+define i64 @select_icmp_const_2(ptr %a, i64 %n) {
+; CHECK-LABEL: define i64 @select_icmp_const_2
+; CHECK-NOT:   vector.body:
+>>>>>>> pub/main
 ;
 entry:
   br label %for.body
@@ -405,6 +417,7 @@ exit:                                             ; preds = %for.body
   ret i64 %cond
 }
 
+<<<<<<< HEAD
 define i64 @select_icmp_const_3_variable_rdx_start(ptr nocapture readonly %a, i64 %rdx.start, i64 %n) {
 ; CHECK-VF4IC1-LABEL: @select_icmp_const_3_variable_rdx_start(
 ; CHECK-VF4IC1-NEXT:  entry:
@@ -587,6 +600,11 @@ define i64 @select_icmp_const_3_variable_rdx_start(ptr nocapture readonly %a, i6
 ; CHECK-VF1IC4:       exit:
 ; CHECK-VF1IC4-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; CHECK-VF1IC4-NEXT:    ret i64 [[COND_LCSSA]]
+=======
+define i64 @select_icmp_const_3_variable_rdx_start(ptr %a, i64 %rdx.start, i64 %n) {
+; CHECK-LABEL: define i64 @select_icmp_const_3_variable_rdx_start
+; CHECK-NOT:   vector.body:
+>>>>>>> pub/main
 ;
 entry:
   br label %for.body
@@ -606,6 +624,7 @@ exit:                                             ; preds = %for.body
   ret i64 %cond
 }
 
+<<<<<<< HEAD
 define i64 @select_fcmp_const_fast(ptr nocapture readonly %a, i64 %n) {
 ; CHECK-VF4IC1-LABEL: @select_fcmp_const_fast(
 ; CHECK-VF4IC1-NEXT:  entry:
@@ -788,6 +807,11 @@ define i64 @select_fcmp_const_fast(ptr nocapture readonly %a, i64 %n) {
 ; CHECK-VF1IC4:       exit:
 ; CHECK-VF1IC4-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; CHECK-VF1IC4-NEXT:    ret i64 [[COND_LCSSA]]
+=======
+define i64 @select_fcmp_const_fast(ptr %a, i64 %n) {
+; CHECK-LABEL: define i64 @select_fcmp_const_fast
+; CHECK-NOT:   vector.body:
+>>>>>>> pub/main
 ;
 entry:
   br label %for.body
@@ -807,6 +831,7 @@ exit:                                             ; preds = %for.body
   ret i64 %cond
 }
 
+<<<<<<< HEAD
 define i64 @select_fcmp_const(ptr nocapture readonly %a, i64 %n) {
 ; CHECK-VF4IC1-LABEL: @select_fcmp_const(
 ; CHECK-VF4IC1-NEXT:  entry:
@@ -989,6 +1014,11 @@ define i64 @select_fcmp_const(ptr nocapture readonly %a, i64 %n) {
 ; CHECK-VF1IC4:       exit:
 ; CHECK-VF1IC4-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; CHECK-VF1IC4-NEXT:    ret i64 [[COND_LCSSA]]
+=======
+define i64 @select_fcmp_const(ptr %a, i64 %n) {
+; CHECK-LABEL: define i64 @select_fcmp_const
+; CHECK-NOT:   vector.body:
+>>>>>>> pub/main
 ;
 entry:
   br label %for.body
@@ -1008,6 +1038,7 @@ exit:                                             ; preds = %for.body
   ret i64 %cond
 }
 
+<<<<<<< HEAD
 define i64 @select_icmp(ptr nocapture readonly %a, ptr nocapture readonly %b, i64 %rdx.start, i64 %n) {
 ; CHECK-VF4IC1-LABEL: @select_icmp(
 ; CHECK-VF4IC1-NEXT:  entry:
@@ -1219,6 +1250,11 @@ define i64 @select_icmp(ptr nocapture readonly %a, ptr nocapture readonly %b, i6
 ; CHECK-VF1IC4:       exit:
 ; CHECK-VF1IC4-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; CHECK-VF1IC4-NEXT:    ret i64 [[COND_LCSSA]]
+=======
+define i64 @select_icmp(ptr %a, ptr %b, i64 %rdx.start, i64 %n) {
+; CHECK-LABEL: define i64 @select_icmp
+; CHECK-NOT:   vector.body:
+>>>>>>> pub/main
 ;
 entry:
   br label %for.body
@@ -1240,6 +1276,7 @@ exit:                                             ; preds = %for.body
   ret i64 %cond
 }
 
+<<<<<<< HEAD
 define i64 @select_fcmp(ptr nocapture readonly %a, ptr nocapture readonly %b, i64 %rdx.start, i64 %n) {
 ; CHECK-VF4IC1-LABEL: @select_fcmp(
 ; CHECK-VF4IC1-NEXT:  entry:
@@ -1451,6 +1488,11 @@ define i64 @select_fcmp(ptr nocapture readonly %a, ptr nocapture readonly %b, i6
 ; CHECK-VF1IC4:       exit:
 ; CHECK-VF1IC4-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; CHECK-VF1IC4-NEXT:    ret i64 [[COND_LCSSA]]
+=======
+define i64 @select_fcmp(ptr %a, ptr %b, i64 %rdx.start, i64 %n) {
+; CHECK-LABEL: define i64 @select_fcmp
+; CHECK-NOT:   vector.body:
+>>>>>>> pub/main
 ;
 entry:
   br label %for.body
@@ -1472,6 +1514,7 @@ exit:                                             ; preds = %for.body
   ret i64 %cond
 }
 
+<<<<<<< HEAD
 define i64 @select_icmp_const_rdx_start_lt_const_iv_start(ptr %a, ptr %b, i64 %n) {
 ; CHECK-VF4IC1-LABEL: @select_icmp_const_rdx_start_lt_const_iv_start(
 ; CHECK-VF4IC1-NEXT:  entry:
@@ -2396,6 +2439,11 @@ define i64 @select_icmp_min_valid_iv_start(ptr nocapture readonly %a, ptr nocapt
 ; CHECK-VF1IC4:       exit:
 ; CHECK-VF1IC4-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; CHECK-VF1IC4-NEXT:    ret i64 [[COND_LCSSA]]
+=======
+define i64 @select_icmp_min_valid_iv_start(ptr %a, ptr %b, i64 %rdx.start, i64 %n) {
+; CHECK-LABEL: define i64 @select_icmp_min_valid_iv_start
+; CHECK-NOT:   vector.body:
+>>>>>>> pub/main
 ;
 entry:
   br label %for.body
@@ -2421,6 +2469,7 @@ exit:                                             ; preds = %for.body
 
 ; Negative tests
 
+<<<<<<< HEAD
 ; This test can theoretically be vectorized without a runtime-check, by
 ; pattern-matching on the constructs that are introduced by IndVarSimplify.
 ; We can check two things:
@@ -2650,6 +2699,11 @@ define float @not_vectorized_select_float_induction_icmp(ptr nocapture readonly 
 ; CHECK-VF1IC4:       exit:
 ; CHECK-VF1IC4-NEXT:    [[COND_LCSSA:%.*]] = phi float [ [[COND]], [[FOR_BODY]] ]
 ; CHECK-VF1IC4-NEXT:    ret float [[COND_LCSSA]]
+=======
+define float @not_vectorized_select_float_induction_icmp(ptr %a, ptr %b, float %rdx.start, i64 %n) {
+; CHECK-LABEL: @not_vectorized_select_float_induction_icmp
+; CHECK-NOT:   vector.body:
+>>>>>>> pub/main
 ;
 entry:
   br label %for.body
@@ -2673,6 +2727,7 @@ exit:                                             ; preds = %for.body
   ret float %cond
 }
 
+<<<<<<< HEAD
 define i64 @not_vectorized_select_decreasing_induction_icmp_const_start(ptr nocapture readonly %a) {
 ; CHECK-VF4IC1-LABEL: @not_vectorized_select_decreasing_induction_icmp_const_start(
 ; CHECK-VF4IC1-NEXT:  entry:
@@ -2724,6 +2779,11 @@ define i64 @not_vectorized_select_decreasing_induction_icmp_const_start(ptr noca
 ; CHECK-VF1IC4:       exit:
 ; CHECK-VF1IC4-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i64 [ [[SPEC_SELECT]], [[FOR_BODY]] ]
 ; CHECK-VF1IC4-NEXT:    ret i64 [[SPEC_SELECT_LCSSA]]
+=======
+define i64 @not_vectorized_select_decreasing_induction_icmp_const_start(ptr %a) {
+; CHECK-LABEL: @not_vectorized_select_decreasing_induction_icmp_const_start
+; CHECK-NOT:   vector.body:
+>>>>>>> pub/main
 ;
 entry:
   br label %for.body
@@ -2743,6 +2803,7 @@ exit:                                             ; preds = %for.body
   ret i64 %spec.select
 }
 
+<<<<<<< HEAD
 define i64 @not_vectorized_select_decreasing_induction_icmp_non_const_start(ptr nocapture readonly %a, ptr nocapture readonly %b, i64 %rdx.start, i64 %n) {
 ; CHECK-VF4IC1-LABEL: @not_vectorized_select_decreasing_induction_icmp_non_const_start(
 ; CHECK-VF4IC1-NEXT:  entry:
@@ -2800,6 +2861,11 @@ define i64 @not_vectorized_select_decreasing_induction_icmp_non_const_start(ptr 
 ; CHECK-VF1IC4:       exit:
 ; CHECK-VF1IC4-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY]] ]
 ; CHECK-VF1IC4-NEXT:    ret i64 [[COND_LCSSA]]
+=======
+define i64 @not_vectorized_select_decreasing_induction_icmp_non_const_start(ptr %a, ptr %b, i64 %rdx.start, i64 %n) {
+; CHECK-LABEL: @not_vectorized_select_decreasing_induction_icmp_non_const_start
+; CHECK-NOT:   vector.body:
+>>>>>>> pub/main
 ;
 entry:
   br label %for.body
@@ -2821,6 +2887,7 @@ exit:                                             ; preds = %for.body
   ret i64 %cond
 }
 
+<<<<<<< HEAD
 define i64 @not_vectorized_select_icmp_iv_out_of_bound(ptr nocapture readonly %a, ptr nocapture readonly %b, i64 %rdx.start, i64 %n) {
 ; CHECK-VF4IC1-LABEL: @not_vectorized_select_icmp_iv_out_of_bound(
 ; CHECK-VF4IC1-NEXT:  entry:
@@ -2884,6 +2951,13 @@ define i64 @not_vectorized_select_icmp_iv_out_of_bound(ptr nocapture readonly %a
 ; CHECK-VF1IC4:       exit:
 ; CHECK-VF1IC4-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY]] ]
 ; CHECK-VF1IC4-NEXT:    ret i64 [[COND_LCSSA]]
+=======
+; The sentinel value for increasing-IV vectorization is -LONG_MAX, and since
+; the IV hits this value, it is impossible to vectorize this case.
+define i64 @not_vectorized_select_icmp_iv_out_of_bound(ptr %a, ptr %b, i64 %rdx.start, i64 %n) {
+; CHECK-LABEL: @not_vectorized_select_icmp_iv_out_of_bound
+; CHECK-NOT:   vector.body:
+>>>>>>> pub/main
 ;
 entry:
   br label %for.body
@@ -2907,6 +2981,7 @@ exit:                                             ; preds = %for.body
   ret i64 %cond
 }
 
+<<<<<<< HEAD
 define i64 @not_vectorized_select_icmp_non_const_iv_start_value(ptr nocapture readonly %a, ptr nocapture readonly %b, i64 %ivstart, i64 %rdx.start, i64 %n) {
 ; CHECK-VF4IC1-LABEL: @not_vectorized_select_icmp_non_const_iv_start_value(
 ; CHECK-VF4IC1-NEXT:  entry:
@@ -2964,6 +3039,35 @@ define i64 @not_vectorized_select_icmp_non_const_iv_start_value(ptr nocapture re
 ; CHECK-VF1IC4:       exit:
 ; CHECK-VF1IC4-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY]] ]
 ; CHECK-VF1IC4-NEXT:    ret i64 [[COND_LCSSA]]
+=======
+; The sentinel value for decreasing-IV vectorization is LONG_MAX, and since
+; the IV hits this value, it is impossible to vectorize this case.
+define i64 @not_vectorized_select_decreasing_induction_icmp_iv_out_of_bound(ptr %a) {
+; CHECK-LABEL: @not_vectorized_select_decreasing_induction_icmp_iv_out_of_bound
+; CHECK-NOT:   vector.body:
+;
+entry:
+  br label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %iv = phi i64 [ 9223372036854775807, %entry ], [ %dec, %for.body ]
+  %rdx = phi i64 [ 331, %entry ], [ %spec.select, %for.body ]
+  %arrayidx = getelementptr inbounds i64, ptr %a, i64 %iv
+  %0 = load i64, ptr %arrayidx, align 8
+  %cmp1 = icmp sgt i64 %0, 3
+  %spec.select = select i1 %cmp1, i64 %iv, i64 %rdx
+  %dec = add nsw i64 %iv, -1
+  %cmp.not = icmp eq i64 %iv, 0
+  br i1 %cmp.not, label %exit, label %for.body
+
+exit:                                             ; preds = %for.body
+  ret i64 %spec.select
+}
+
+define i64 @not_vectorized_select_icmp_non_const_iv_start_value(ptr %a, ptr %b, i64 %ivstart, i64 %rdx.start, i64 %n) {
+; CHECK-LABEL: define i64 @not_vectorized_select_icmp_non_const_iv_start_value
+; CHECK-NOT:   vector.body:
+>>>>>>> pub/main
 ;
 entry:
   br label %for.body

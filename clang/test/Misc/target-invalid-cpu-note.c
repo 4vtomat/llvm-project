@@ -88,10 +88,14 @@
 
 // RUN: not %clang_cc1 -triple riscv64 -target-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix RISCV64
 // RISCV64: error: unknown target CPU 'not-a-cpu'
+<<<<<<< HEAD
 // RISCV64: note: valid target CPU values are: generic-rv64, rocket-rv64, sifive-p270,
 // RISCV64-SAME: sifive-p270n, sifive-p450, sifive-p470, sifive-p550, sifive-p650, sifive-p670, sifive-p870, sifive-s21, 
 // RISCV64-SAME: sifive-s51, sifive-s54, sifive-s61, sifive-s61r, sifive-s76, sifive-s76m, sifive-s76n, sifive-s76r, sifive-u54,
 // RISCV64-SAME: sifive-u64, sifive-u64r, sifive-u74, sifive-u74m, sifive-u74n, sifive-u74r, sifive-x280, sifive-x280n, sifive-x280o
+=======
+// RISCV64-NEXT: note: valid target CPU values are: generic-rv64, rocket-rv64, sifive-s21, sifive-s51, sifive-s54, sifive-s76, sifive-u54, sifive-u74, sifive-x280, veyron-v1{{$}}
+>>>>>>> pub/main
 
 // RUN: not %clang_cc1 -triple riscv32 -tune-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix TUNE-RISCV32
 // TUNE-RISCV32: error: unknown target CPU 'not-a-cpu'
@@ -103,6 +107,7 @@
 
 // RUN: not %clang_cc1 -triple riscv64 -tune-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix TUNE-RISCV64
 // TUNE-RISCV64: error: unknown target CPU 'not-a-cpu'
+<<<<<<< HEAD
 // TUNE-RISCV64: note: valid target CPU values are: generic-rv64, rocket-rv64, sifive-p270, 
 // TUNE-RISCV64-SAME: sifive-p270n, sifive-p450, sifive-p470, sifive-p550, sifive-p650, sifive-p670, sifive-p870,
 // TUNE-RISCV64-SAME: sifive-s21, sifive-s21r, sifive-s51, sifive-s54, sifive-s61, sifive-s61r, sifive-s76, sifive-s76m,
@@ -110,3 +115,6 @@
 // TUNE-RISCV64-SAME: sifive-x280, sifive-x280n, sifive-x280o, generic, rocket, sifive-6-series, 
 // TUNE-RISCV64-SAME: sifive-7-series, sifive-7m-series, sifive-7n-series, sifive-7o-series, 
 // TUNE-RISCV64-SAME: sifive-8-series, sifive-p400-series, sifive-p500-series, sifive-p600-series
+=======
+// TUNE-RISCV64-NEXT: note: valid target CPU values are: generic-rv64, rocket-rv64, sifive-s21, sifive-s51, sifive-s54, sifive-s76, sifive-u54, sifive-u74, sifive-x280, veyron-v1, generic, rocket, sifive-7-series{{$}}
+>>>>>>> pub/main

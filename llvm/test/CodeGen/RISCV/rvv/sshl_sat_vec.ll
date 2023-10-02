@@ -30,10 +30,23 @@ define <4 x i32> @vec_v4i32(<4 x i32> %x, <4 x i32> %y) nounwind {
 ; CHECK-LABEL: vec_v4i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
+<<<<<<< HEAD
 ; CHECK-NEXT:    vmv.v.i v10, 1
 ; CHECK-NEXT:    vsll.vv v9, v10, v9
 ; CHECK-NEXT:    vwmulsu.vv v10, v8, v9
 ; CHECK-NEXT:    vnclip.wi v8, v10, 0
+=======
+; CHECK-NEXT:    vmsle.vi v0, v8, -1
+; CHECK-NEXT:    lui a0, 524288
+; CHECK-NEXT:    addiw a1, a0, -1
+; CHECK-NEXT:    vsll.vv v10, v8, v9
+; CHECK-NEXT:    vsra.vv v9, v10, v9
+; CHECK-NEXT:    vmsne.vv v8, v8, v9
+; CHECK-NEXT:    vmv.v.x v9, a1
+; CHECK-NEXT:    vmerge.vxm v9, v9, a0, v0
+; CHECK-NEXT:    vmv.v.v v0, v8
+; CHECK-NEXT:    vmerge.vvm v8, v10, v9, v0
+>>>>>>> pub/main
 ; CHECK-NEXT:    ret
   %tmp = call <4 x i32> @llvm.sshl.sat.v4i32(<4 x i32> %x, <4 x i32> %y)
   ret <4 x i32> %tmp
@@ -96,8 +109,9 @@ define <vscale x 4 x i32> @vec_nxv4i32(<vscale x 4 x i32> %x, <vscale x 4 x i32>
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    vmsle.vi v0, v8, -1
 ; CHECK-NEXT:    lui a0, 524288
-; CHECK-NEXT:    addiw a0, a0, -1
+; CHECK-NEXT:    addiw a1, a0, -1
 ; CHECK-NEXT:    vsll.vv v12, v8, v10
+<<<<<<< HEAD
 ; CHECK-NEXT:    vsra.vv v10, v12, v10
 ; CHECK-NEXT:    vmsne.vv v8, v8, v10
 ; CHECK-NEXT:    vmv.v.x v10, a0
@@ -106,6 +120,14 @@ define <vscale x 4 x i32> @vec_nxv4i32(<vscale x 4 x i32> %x, <vscale x 4 x i32>
 ; CHECK-NEXT:    vmerge.vxm v10, v10, a0, v0
 ; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    vmerge.vvm v8, v12, v10, v0
+=======
+; CHECK-NEXT:    vsra.vv v14, v12, v10
+; CHECK-NEXT:    vmsne.vv v10, v8, v14
+; CHECK-NEXT:    vmv.v.x v8, a1
+; CHECK-NEXT:    vmerge.vxm v8, v8, a0, v0
+; CHECK-NEXT:    vmv1r.v v0, v10
+; CHECK-NEXT:    vmerge.vvm v8, v12, v8, v0
+>>>>>>> pub/main
 ; CHECK-NEXT:    ret
   %tmp = call <vscale x 4 x i32> @llvm.sshl.sat.nxv4i32(<vscale x 4 x i32> %x, <vscale x 4 x i32> %y)
   ret <vscale x 4 x i32> %tmp

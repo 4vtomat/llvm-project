@@ -114,6 +114,7 @@ set(ppc_htm_files
 
 set(riscv_files
   riscv_ntlh.h
+<<<<<<< HEAD
   )
 
 # SIFIVE_CUSTOMIZATION
@@ -126,6 +127,8 @@ set(rvv_v0p11_compatible_header_file
 #end SIFIVE_CUSTOMIZATION
 
 set(sifive_files
+=======
+>>>>>>> pub/main
   sifive_vector.h
   )
 
@@ -280,7 +283,6 @@ set(files
   ${ppc_files}
   ${ppc_htm_files}
   ${riscv_files}
-  ${sifive_files}
   ${systemz_files}
   ${ve_files}
   ${x86_files}

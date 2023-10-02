@@ -34,6 +34,18 @@ class SDep; // SIFIVE
 class SUnit; // SIFIVE
 class StringRef;
 
+namespace RISCVTuneInfoTable {
+
+struct RISCVTuneInfo {
+  const char *Name;
+  uint8_t PrefFunctionAlignment;
+  uint8_t PrefLoopAlignment;
+};
+
+#define GET_RISCVTuneInfoTable_DECL
+#include "RISCVGenSearchableTables.inc"
+} // namespace RISCVTuneInfoTable
+
 class RISCVSubtarget : public RISCVGenSubtargetInfo {
 public:
   enum RISCVProcFamilyEnum : uint8_t {
@@ -67,8 +79,7 @@ private:
   uint8_t MaxInterleaveFactor = 2;
   RISCVABI::ABI TargetABI = RISCVABI::ABI_Unknown;
   std::bitset<RISCV::NUM_TARGET_REGS> UserReservedRegister;
-  Align PrefFunctionAlignment;
-  Align PrefLoopAlignment;
+  const RISCVTuneInfoTable::RISCVTuneInfo *TuneInfo;
 
   RISCVFrameLowering FrameLowering;
   RISCVInstrInfo InstrInfo;
@@ -114,8 +125,12 @@ public:
   }
   bool enableMachineScheduler() const override { return true; }
 
-  Align getPrefFunctionAlignment() const { return PrefFunctionAlignment; }
-  Align getPrefLoopAlignment() const { return PrefLoopAlignment; }
+  Align getPrefFunctionAlignment() const {
+    return Align(TuneInfo->PrefFunctionAlignment);
+  }
+  Align getPrefLoopAlignment() const {
+    return Align(TuneInfo->PrefLoopAlignment);
+  }
 
   /// Returns RISC-V processor family.
   /// Avoid this function! CPU specifics should be kept local to this class

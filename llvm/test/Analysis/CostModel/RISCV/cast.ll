@@ -164,7 +164,7 @@ define void @sext() {
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 66 for instruction: %nxv128i1_nxv128i16 = sext <vscale x 128 x i1> undef to <vscale x 128 x i16>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 134 for instruction: %nxv128i1_nxv128i32 = sext <vscale x 128 x i1> undef to <vscale x 128 x i32>
 ; RV32-NEXT:  Cost Model: Invalid cost for instruction: %nxv128i1_nxv128i128 = sext <vscale x 128 x i1> undef to <vscale x 128 x i128>
-; RV32-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; RV32-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
 ; RV64-LABEL: 'sext'
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v2i8_v2i16 = sext <2 x i8> undef to <2 x i16>
@@ -327,7 +327,7 @@ define void @sext() {
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 66 for instruction: %nxv128i1_nxv128i16 = sext <vscale x 128 x i1> undef to <vscale x 128 x i16>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 134 for instruction: %nxv128i1_nxv128i32 = sext <vscale x 128 x i1> undef to <vscale x 128 x i32>
 ; RV64-NEXT:  Cost Model: Invalid cost for instruction: %nxv128i1_nxv128i128 = sext <vscale x 128 x i1> undef to <vscale x 128 x i128>
-; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; RV64-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
   %v2i8_v2i16 = sext <2 x i8> undef to <2 x i16>
   %v2i8_v2i32 = sext <2 x i8> undef to <2 x i32>
@@ -670,7 +670,7 @@ define void @zext() {
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 66 for instruction: %nxv128i1_nxv128i16 = zext <vscale x 128 x i1> undef to <vscale x 128 x i16>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 134 for instruction: %nxv128i1_nxv128i32 = zext <vscale x 128 x i1> undef to <vscale x 128 x i32>
 ; RV32-NEXT:  Cost Model: Invalid cost for instruction: %nxv128i1_nxv128i128 = zext <vscale x 128 x i1> undef to <vscale x 128 x i128>
-; RV32-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; RV32-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
 ; RV64-LABEL: 'zext'
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v2i8_v2i16 = zext <2 x i8> undef to <2 x i16>
@@ -833,7 +833,7 @@ define void @zext() {
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 66 for instruction: %nxv128i1_nxv128i16 = zext <vscale x 128 x i1> undef to <vscale x 128 x i16>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 134 for instruction: %nxv128i1_nxv128i32 = zext <vscale x 128 x i1> undef to <vscale x 128 x i32>
 ; RV64-NEXT:  Cost Model: Invalid cost for instruction: %nxv128i1_nxv128i128 = zext <vscale x 128 x i1> undef to <vscale x 128 x i128>
-; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; RV64-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
   %v2i8_v2i16 = zext <2 x i8> undef to <2 x i16>
   %v2i8_v2i32 = zext <2 x i8> undef to <2 x i32>
@@ -1166,7 +1166,7 @@ define void @trunc() {
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 33 for instruction: %nxv64i16_nxv64i1 = trunc <vscale x 64 x i16> undef to <vscale x 64 x i1>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 67 for instruction: %nxv64i32_nxv64i1 = trunc <vscale x 64 x i32> undef to <vscale x 64 x i1>
 ; RV32-NEXT:  Cost Model: Invalid cost for instruction: %nxv64i64_nxv64i1 = trunc <vscale x 64 x i64> undef to <vscale x 64 x i1>
-; RV32-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; RV32-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
 ; RV64-LABEL: 'trunc'
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v2i16_v2i8 = trunc <2 x i16> undef to <2 x i8>
@@ -1286,6 +1286,7 @@ define void @trunc() {
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %nxv8i64_nxv8i16 = trunc <vscale x 8 x i64> undef to <vscale x 8 x i16>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %nxv8i64_nxv8i32 = trunc <vscale x 8 x i64> undef to <vscale x 8 x i32>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv8i8_nxv8i1 = trunc <vscale x 8 x i8> undef to <vscale x 8 x i1>
+<<<<<<< HEAD
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %nxv8i16_nxv8i1 = trunc <vscale x 8 x i16> undef to <vscale x 8 x i1>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %nxv8i32_nxv8i1 = trunc <vscale x 8 x i32> undef to <vscale x 8 x i1>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %nxv8i64_nxv8i1 = trunc <vscale x 8 x i64> undef to <vscale x 8 x i1>
@@ -1320,6 +1321,42 @@ define void @trunc() {
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 67 for instruction: %nxv64i32_nxv64i1 = trunc <vscale x 64 x i32> undef to <vscale x 64 x i1>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 135 for instruction: %nxv64i64_nxv64i1 = trunc <vscale x 64 x i64> undef to <vscale x 64 x i1>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+=======
+; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv8i16_nxv8i1 = trunc <vscale x 8 x i16> undef to <vscale x 8 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv8i32_nxv8i1 = trunc <vscale x 8 x i32> undef to <vscale x 8 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv8i64_nxv8i1 = trunc <vscale x 8 x i64> undef to <vscale x 8 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv16i16_nxv16i8 = trunc <vscale x 16 x i16> undef to <vscale x 16 x i8>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv16i32_nxv16i8 = trunc <vscale x 16 x i32> undef to <vscale x 16 x i8>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 7 for instruction: %nxv16i64_nxv16i8 = trunc <vscale x 16 x i64> undef to <vscale x 16 x i8>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv16i32_nxv16i16 = trunc <vscale x 16 x i32> undef to <vscale x 16 x i16>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %nxv16i64_nxv16i16 = trunc <vscale x 16 x i64> undef to <vscale x 16 x i16>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %nxv16i64_nxv16i32 = trunc <vscale x 16 x i64> undef to <vscale x 16 x i32>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv16i8_nxv16i1 = trunc <vscale x 16 x i8> undef to <vscale x 16 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv16i16_nxv16i1 = trunc <vscale x 16 x i16> undef to <vscale x 16 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv16i32_nxv16i1 = trunc <vscale x 16 x i32> undef to <vscale x 16 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %nxv16i64_nxv16i1 = trunc <vscale x 16 x i64> undef to <vscale x 16 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv32i16_nxv32i8 = trunc <vscale x 32 x i16> undef to <vscale x 32 x i8>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %nxv32i32_nxv32i8 = trunc <vscale x 32 x i32> undef to <vscale x 32 x i8>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 15 for instruction: %nxv32i64_nxv32i8 = trunc <vscale x 32 x i64> undef to <vscale x 32 x i8>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %nxv32i32_nxv32i16 = trunc <vscale x 32 x i32> undef to <vscale x 32 x i16>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 11 for instruction: %nxv32i64_nxv32i16 = trunc <vscale x 32 x i64> undef to <vscale x 32 x i16>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %nxv32i64_nxv32i32 = trunc <vscale x 32 x i64> undef to <vscale x 32 x i32>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv32i8_nxv32i1 = trunc <vscale x 32 x i8> undef to <vscale x 32 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv32i16_nxv32i1 = trunc <vscale x 32 x i16> undef to <vscale x 32 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %nxv32i32_nxv32i1 = trunc <vscale x 32 x i32> undef to <vscale x 32 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 11 for instruction: %nxv32i64_nxv32i1 = trunc <vscale x 32 x i64> undef to <vscale x 32 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %nxv64i16_nxv64i8 = trunc <vscale x 64 x i16> undef to <vscale x 64 x i8>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 11 for instruction: %nxv64i32_nxv64i8 = trunc <vscale x 64 x i32> undef to <vscale x 64 x i8>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 31 for instruction: %nxv64i64_nxv64i8 = trunc <vscale x 64 x i64> undef to <vscale x 64 x i8>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %nxv64i32_nxv64i16 = trunc <vscale x 64 x i32> undef to <vscale x 64 x i16>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 22 for instruction: %nxv64i64_nxv64i16 = trunc <vscale x 64 x i64> undef to <vscale x 64 x i16>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %nxv64i64_nxv64i32 = trunc <vscale x 64 x i64> undef to <vscale x 64 x i32>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv64i8_nxv64i1 = trunc <vscale x 64 x i8> undef to <vscale x 64 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %nxv64i16_nxv64i1 = trunc <vscale x 64 x i16> undef to <vscale x 64 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 11 for instruction: %nxv64i32_nxv64i1 = trunc <vscale x 64 x i32> undef to <vscale x 64 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 23 for instruction: %nxv64i64_nxv64i1 = trunc <vscale x 64 x i64> undef to <vscale x 64 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
+>>>>>>> pub/main
 ;
   %v2i16_v2i8 = trunc <2 x i16> undef to <2 x i8>
   %v2i32_v2i8 = trunc <2 x i32> undef to <2 x i8>
@@ -1519,6 +1556,7 @@ define void @fpext() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv2f16_nxv2f64 = fpext <vscale x 2 x half> undef to <vscale x 2 x double>
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv2f32_nxv2f64 = fpext <vscale x 2 x float> undef to <vscale x 2 x double>
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv4f16_nxv4f32 = fpext <vscale x 4 x half> undef to <vscale x 4 x float>
+<<<<<<< HEAD
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %nxv4f16_nxv4f64 = fpext <vscale x 4 x half> undef to <vscale x 4 x double>
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv4f32_nxv4f64 = fpext <vscale x 4 x float> undef to <vscale x 4 x double>
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv8f16_nxv8f32 = fpext <vscale x 8 x half> undef to <vscale x 8 x float>
@@ -1534,6 +1572,23 @@ define void @fpext() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 54 for instruction: %nxv64f16_nxv64f64 = fpext <vscale x 64 x half> undef to <vscale x 64 x double>
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 36 for instruction: %nxv64f32_nxv64f64 = fpext <vscale x 64 x float> undef to <vscale x 64 x double>
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+=======
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv4f16_nxv4f64 = fpext <vscale x 4 x half> undef to <vscale x 4 x double>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv4f32_nxv4f64 = fpext <vscale x 4 x float> undef to <vscale x 4 x double>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv8f16_nxv8f32 = fpext <vscale x 8 x half> undef to <vscale x 8 x float>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv8f16_nxv8f64 = fpext <vscale x 8 x half> undef to <vscale x 8 x double>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv8f32_nxv8f64 = fpext <vscale x 8 x float> undef to <vscale x 8 x double>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv16f16_nxv16f32 = fpext <vscale x 16 x half> undef to <vscale x 16 x float>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %nxv16f16_nxv16f64 = fpext <vscale x 16 x half> undef to <vscale x 16 x double>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %nxv16f32_nxv16f64 = fpext <vscale x 16 x float> undef to <vscale x 16 x double>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %nxv32f16_nxv32f32 = fpext <vscale x 32 x half> undef to <vscale x 32 x float>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 11 for instruction: %nxv32f16_nxv32f64 = fpext <vscale x 32 x half> undef to <vscale x 32 x double>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %nxv32f32_nxv32f64 = fpext <vscale x 32 x float> undef to <vscale x 32 x double>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %nxv64f16_nxv64f32 = fpext <vscale x 64 x half> undef to <vscale x 64 x float>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 22 for instruction: %nxv64f16_nxv64f64 = fpext <vscale x 64 x half> undef to <vscale x 64 x double>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %nxv64f32_nxv64f64 = fpext <vscale x 64 x float> undef to <vscale x 64 x double>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
+>>>>>>> pub/main
 ;
   %v2f16_v2f32 = fpext <2 x half> undef to <2 x float>
   %v2f16_v2f64 = fpext <2 x half> undef to <2 x double>
@@ -1621,6 +1676,7 @@ define void @fptrunc() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv1f64_nxv1f16 = fptrunc <vscale x 1 x double> undef to <vscale x 1 x half>
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv1f64_nxv1f32 = fptrunc <vscale x 1 x double> undef to <vscale x 1 x float>
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv2f32_nxv1f16 = fptrunc <vscale x 2 x float> undef to <vscale x 2 x half>
+<<<<<<< HEAD
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %nxv2f64_nxv1f16 = fptrunc <vscale x 2 x double> undef to <vscale x 2 x half>
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv2f64_nxv1f32 = fptrunc <vscale x 2 x double> undef to <vscale x 2 x float>
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv4f32_nxv4f16 = fptrunc <vscale x 4 x float> undef to <vscale x 4 x half>
@@ -1639,6 +1695,26 @@ define void @fptrunc() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 102 for instruction: %nxv64f64_nxv64f16 = fptrunc <vscale x 64 x double> undef to <vscale x 64 x half>
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 68 for instruction: %nxv64f64_nxv64f32 = fptrunc <vscale x 64 x double> undef to <vscale x 64 x float>
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+=======
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv2f64_nxv1f16 = fptrunc <vscale x 2 x double> undef to <vscale x 2 x half>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv2f64_nxv1f32 = fptrunc <vscale x 2 x double> undef to <vscale x 2 x float>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv4f32_nxv4f16 = fptrunc <vscale x 4 x float> undef to <vscale x 4 x half>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv4f64_nxv4f16 = fptrunc <vscale x 4 x double> undef to <vscale x 4 x half>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv4f64_nxv4f32 = fptrunc <vscale x 4 x double> undef to <vscale x 4 x float>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv8f32_nxv8f16 = fptrunc <vscale x 8 x float> undef to <vscale x 8 x half>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv8f64_nxv8f16 = fptrunc <vscale x 8 x double> undef to <vscale x 8 x half>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv8f64_nxv8f32 = fptrunc <vscale x 8 x double> undef to <vscale x 8 x float>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv16f32_nxv16f16 = fptrunc <vscale x 16 x float> undef to <vscale x 16 x half>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %nxv16f64_nxv16f16 = fptrunc <vscale x 16 x double> undef to <vscale x 16 x half>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %nxv16f64_nxv16f32 = fptrunc <vscale x 16 x double> undef to <vscale x 16 x float>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %nxv32f32_nxv32f16 = fptrunc <vscale x 32 x float> undef to <vscale x 32 x half>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 11 for instruction: %nxv32f64_nxv32f16 = fptrunc <vscale x 32 x double> undef to <vscale x 32 x half>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %nxv32f64_nxv32f32 = fptrunc <vscale x 32 x double> undef to <vscale x 32 x float>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %nxv64f32_nxv64f16 = fptrunc <vscale x 64 x float> undef to <vscale x 64 x half>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 22 for instruction: %nxv64f64_nxv64f16 = fptrunc <vscale x 64 x double> undef to <vscale x 64 x half>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %nxv64f64_nxv64f32 = fptrunc <vscale x 64 x double> undef to <vscale x 64 x float>
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
+>>>>>>> pub/main
 ;
   %v2f32_v2f16 = fptrunc <2 x float> undef to <2 x half>
   %v2f64_v2f16 = fptrunc <2 x double> undef to <2 x half>
@@ -1908,10 +1984,17 @@ define void @fptosi() {
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 55 for instruction: %nxv64f16_nxv64i64 = fptosi <vscale x 64 x half> undef to <vscale x 64 x i64>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 37 for instruction: %nxv64f32_nxv64i64 = fptosi <vscale x 64 x float> undef to <vscale x 64 x i64>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %nxv64f64_nxv64i64 = fptosi <vscale x 64 x double> undef to <vscale x 64 x i64>
+<<<<<<< HEAD
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 49 for instruction: %nxv64f16_nxv64i1 = fptosi <vscale x 64 x half> undef to <vscale x 64 x i1>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 99 for instruction: %nxv64f32_nxv64i1 = fptosi <vscale x 64 x float> undef to <vscale x 64 x i1>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 199 for instruction: %nxv64f64_nxv64i1 = fptosi <vscale x 64 x double> undef to <vscale x 64 x i1>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+=======
+; RV32-NEXT:  Cost Model: Found an estimated cost of 7 for instruction: %nxv64f16_nxv64i1 = fptosi <vscale x 64 x half> undef to <vscale x 64 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 15 for instruction: %nxv64f32_nxv64i1 = fptosi <vscale x 64 x float> undef to <vscale x 64 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 31 for instruction: %nxv64f64_nxv64i1 = fptosi <vscale x 64 x double> undef to <vscale x 64 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
+>>>>>>> pub/main
 ;
 ; RV64-LABEL: 'fptosi'
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v2f16_v2i8 = fptosi <2 x half> undef to <2 x i8>
@@ -2121,10 +2204,17 @@ define void @fptosi() {
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 54 for instruction: %nxv64f16_nxv64i64 = fptosi <vscale x 64 x half> undef to <vscale x 64 x i64>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 36 for instruction: %nxv64f32_nxv64i64 = fptosi <vscale x 64 x float> undef to <vscale x 64 x i64>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %nxv64f64_nxv64i64 = fptosi <vscale x 64 x double> undef to <vscale x 64 x i64>
+<<<<<<< HEAD
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 49 for instruction: %nxv64f16_nxv64i1 = fptosi <vscale x 64 x half> undef to <vscale x 64 x i1>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 99 for instruction: %nxv64f32_nxv64i1 = fptosi <vscale x 64 x float> undef to <vscale x 64 x i1>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 199 for instruction: %nxv64f64_nxv64i1 = fptosi <vscale x 64 x double> undef to <vscale x 64 x i1>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+=======
+; RV64-NEXT:  Cost Model: Found an estimated cost of 7 for instruction: %nxv64f16_nxv64i1 = fptosi <vscale x 64 x half> undef to <vscale x 64 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 15 for instruction: %nxv64f32_nxv64i1 = fptosi <vscale x 64 x float> undef to <vscale x 64 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 31 for instruction: %nxv64f64_nxv64i1 = fptosi <vscale x 64 x double> undef to <vscale x 64 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
+>>>>>>> pub/main
 ;
   %v2f16_v2i8 = fptosi <2 x half> undef to <2 x i8>
   %v2f32_v2i8 = fptosi <2 x float> undef to <2 x i8>
@@ -2562,10 +2652,17 @@ define void @fptoui() {
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 55 for instruction: %nxv64f16_nxv64i64 = fptoui <vscale x 64 x half> undef to <vscale x 64 x i64>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 37 for instruction: %nxv64f32_nxv64i64 = fptoui <vscale x 64 x float> undef to <vscale x 64 x i64>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %nxv64f64_nxv64i64 = fptoui <vscale x 64 x double> undef to <vscale x 64 x i64>
+<<<<<<< HEAD
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 49 for instruction: %nxv64f16_nxv64i1 = fptoui <vscale x 64 x half> undef to <vscale x 64 x i1>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 99 for instruction: %nxv64f32_nxv64i1 = fptoui <vscale x 64 x float> undef to <vscale x 64 x i1>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 199 for instruction: %nxv64f64_nxv64i1 = fptoui <vscale x 64 x double> undef to <vscale x 64 x i1>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+=======
+; RV32-NEXT:  Cost Model: Found an estimated cost of 7 for instruction: %nxv64f16_nxv64i1 = fptoui <vscale x 64 x half> undef to <vscale x 64 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 15 for instruction: %nxv64f32_nxv64i1 = fptoui <vscale x 64 x float> undef to <vscale x 64 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 31 for instruction: %nxv64f64_nxv64i1 = fptoui <vscale x 64 x double> undef to <vscale x 64 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
+>>>>>>> pub/main
 ;
 ; RV64-LABEL: 'fptoui'
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v2f16_v2i8 = fptoui <2 x half> undef to <2 x i8>
@@ -2775,10 +2872,17 @@ define void @fptoui() {
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 54 for instruction: %nxv64f16_nxv64i64 = fptoui <vscale x 64 x half> undef to <vscale x 64 x i64>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 36 for instruction: %nxv64f32_nxv64i64 = fptoui <vscale x 64 x float> undef to <vscale x 64 x i64>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %nxv64f64_nxv64i64 = fptoui <vscale x 64 x double> undef to <vscale x 64 x i64>
+<<<<<<< HEAD
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 49 for instruction: %nxv64f16_nxv64i1 = fptoui <vscale x 64 x half> undef to <vscale x 64 x i1>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 99 for instruction: %nxv64f32_nxv64i1 = fptoui <vscale x 64 x float> undef to <vscale x 64 x i1>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 199 for instruction: %nxv64f64_nxv64i1 = fptoui <vscale x 64 x double> undef to <vscale x 64 x i1>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+=======
+; RV64-NEXT:  Cost Model: Found an estimated cost of 7 for instruction: %nxv64f16_nxv64i1 = fptoui <vscale x 64 x half> undef to <vscale x 64 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 15 for instruction: %nxv64f32_nxv64i1 = fptoui <vscale x 64 x float> undef to <vscale x 64 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 31 for instruction: %nxv64f64_nxv64i1 = fptoui <vscale x 64 x double> undef to <vscale x 64 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
+>>>>>>> pub/main
 ;
   %v2f16_v2i8 = fptoui <2 x half> undef to <2 x i8>
   %v2f32_v2i8 = fptoui <2 x float> undef to <2 x i8>
@@ -3212,6 +3316,7 @@ define void @sitofp() {
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 54 for instruction: %nxv64i16_nxv64f64 = sitofp <vscale x 64 x i16> undef to <vscale x 64 x double>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 34 for instruction: %nxv64i32_nxv64f16 = sitofp <vscale x 64 x i32> undef to <vscale x 64 x half>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %nxv64i32_nxv64f32 = sitofp <vscale x 64 x i32> undef to <vscale x 64 x float>
+<<<<<<< HEAD
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 36 for instruction: %nxv64i32_nxv64f64 = sitofp <vscale x 64 x i32> undef to <vscale x 64 x double>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 103 for instruction: %nxv64i64_nxv64f16 = sitofp <vscale x 64 x i64> undef to <vscale x 64 x half>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 69 for instruction: %nxv64i64_nxv64f32 = sitofp <vscale x 64 x i64> undef to <vscale x 64 x float>
@@ -3220,6 +3325,16 @@ define void @sitofp() {
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 99 for instruction: %nxv64i1_nxv64f32 = sitofp <vscale x 64 x i1> undef to <vscale x 64 x float>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 199 for instruction: %nxv64i1_nxv64f64 = sitofp <vscale x 64 x i1> undef to <vscale x 64 x double>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+=======
+; RV32-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %nxv64i32_nxv64f64 = sitofp <vscale x 64 x i32> undef to <vscale x 64 x double>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 23 for instruction: %nxv64i64_nxv64f16 = sitofp <vscale x 64 x i64> undef to <vscale x 64 x half>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 13 for instruction: %nxv64i64_nxv64f32 = sitofp <vscale x 64 x i64> undef to <vscale x 64 x float>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 22 for instruction: %nxv64i64_nxv64f64 = sitofp <vscale x 64 x i16> undef to <vscale x 64 x double>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 7 for instruction: %nxv64i1_nxv64f16 = sitofp <vscale x 64 x i1> undef to <vscale x 64 x half>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 15 for instruction: %nxv64i1_nxv64f32 = sitofp <vscale x 64 x i1> undef to <vscale x 64 x float>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 31 for instruction: %nxv64i1_nxv64f64 = sitofp <vscale x 64 x i1> undef to <vscale x 64 x double>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
+>>>>>>> pub/main
 ;
 ; RV64-LABEL: 'sitofp'
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v2i8_v2f16 = sitofp <2 x i8> undef to <2 x half>
@@ -3425,6 +3540,7 @@ define void @sitofp() {
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 54 for instruction: %nxv64i16_nxv64f64 = sitofp <vscale x 64 x i16> undef to <vscale x 64 x double>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 34 for instruction: %nxv64i32_nxv64f16 = sitofp <vscale x 64 x i32> undef to <vscale x 64 x half>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %nxv64i32_nxv64f32 = sitofp <vscale x 64 x i32> undef to <vscale x 64 x float>
+<<<<<<< HEAD
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 36 for instruction: %nxv64i32_nxv64f64 = sitofp <vscale x 64 x i32> undef to <vscale x 64 x double>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 102 for instruction: %nxv64i64_nxv64f16 = sitofp <vscale x 64 x i64> undef to <vscale x 64 x half>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 68 for instruction: %nxv64i64_nxv64f32 = sitofp <vscale x 64 x i64> undef to <vscale x 64 x float>
@@ -3433,6 +3549,16 @@ define void @sitofp() {
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 99 for instruction: %nxv64i1_nxv64f32 = sitofp <vscale x 64 x i1> undef to <vscale x 64 x float>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 199 for instruction: %nxv64i1_nxv64f64 = sitofp <vscale x 64 x i1> undef to <vscale x 64 x double>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+=======
+; RV64-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %nxv64i32_nxv64f64 = sitofp <vscale x 64 x i32> undef to <vscale x 64 x double>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 22 for instruction: %nxv64i64_nxv64f16 = sitofp <vscale x 64 x i64> undef to <vscale x 64 x half>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %nxv64i64_nxv64f32 = sitofp <vscale x 64 x i64> undef to <vscale x 64 x float>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 22 for instruction: %nxv64i64_nxv64f64 = sitofp <vscale x 64 x i16> undef to <vscale x 64 x double>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 7 for instruction: %nxv64i1_nxv64f16 = sitofp <vscale x 64 x i1> undef to <vscale x 64 x half>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 15 for instruction: %nxv64i1_nxv64f32 = sitofp <vscale x 64 x i1> undef to <vscale x 64 x float>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 31 for instruction: %nxv64i1_nxv64f64 = sitofp <vscale x 64 x i1> undef to <vscale x 64 x double>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
+>>>>>>> pub/main
 ;
   %v2i8_v2f16 = sitofp <2 x i8> undef to <2 x half>
   %v2i8_v2f32 = sitofp <2 x i8> undef to <2 x float>
@@ -3866,6 +3992,7 @@ define void @uitofp() {
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 54 for instruction: %nxv64i16_nxv64f64 = uitofp <vscale x 64 x i16> undef to <vscale x 64 x double>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 34 for instruction: %nxv64i32_nxv64f16 = uitofp <vscale x 64 x i32> undef to <vscale x 64 x half>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %nxv64i32_nxv64f32 = uitofp <vscale x 64 x i32> undef to <vscale x 64 x float>
+<<<<<<< HEAD
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 36 for instruction: %nxv64i32_nxv64f64 = uitofp <vscale x 64 x i32> undef to <vscale x 64 x double>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 103 for instruction: %nxv64i64_nxv64f16 = uitofp <vscale x 64 x i64> undef to <vscale x 64 x half>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 69 for instruction: %nxv64i64_nxv64f32 = uitofp <vscale x 64 x i64> undef to <vscale x 64 x float>
@@ -3874,6 +4001,16 @@ define void @uitofp() {
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 99 for instruction: %nxv64i1_nxv64f32 = uitofp <vscale x 64 x i1> undef to <vscale x 64 x float>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 199 for instruction: %nxv64i1_nxv64f64 = uitofp <vscale x 64 x i1> undef to <vscale x 64 x double>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+=======
+; RV32-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %nxv64i32_nxv64f64 = uitofp <vscale x 64 x i32> undef to <vscale x 64 x double>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 23 for instruction: %nxv64i64_nxv64f16 = uitofp <vscale x 64 x i64> undef to <vscale x 64 x half>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 13 for instruction: %nxv64i64_nxv64f32 = uitofp <vscale x 64 x i64> undef to <vscale x 64 x float>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 22 for instruction: %nxv64i64_nxv64f64 = uitofp <vscale x 64 x i16> undef to <vscale x 64 x double>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 7 for instruction: %nxv64i1_nxv64f16 = uitofp <vscale x 64 x i1> undef to <vscale x 64 x half>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 15 for instruction: %nxv64i1_nxv64f32 = uitofp <vscale x 64 x i1> undef to <vscale x 64 x float>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 31 for instruction: %nxv64i1_nxv64f64 = uitofp <vscale x 64 x i1> undef to <vscale x 64 x double>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
+>>>>>>> pub/main
 ;
 ; RV64-LABEL: 'uitofp'
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v2i8_v2f16 = uitofp <2 x i8> undef to <2 x half>
@@ -4079,6 +4216,7 @@ define void @uitofp() {
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 54 for instruction: %nxv64i16_nxv64f64 = uitofp <vscale x 64 x i16> undef to <vscale x 64 x double>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 34 for instruction: %nxv64i32_nxv64f16 = uitofp <vscale x 64 x i32> undef to <vscale x 64 x half>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %nxv64i32_nxv64f32 = uitofp <vscale x 64 x i32> undef to <vscale x 64 x float>
+<<<<<<< HEAD
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 36 for instruction: %nxv64i32_nxv64f64 = uitofp <vscale x 64 x i32> undef to <vscale x 64 x double>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 102 for instruction: %nxv64i64_nxv64f16 = uitofp <vscale x 64 x i64> undef to <vscale x 64 x half>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 68 for instruction: %nxv64i64_nxv64f32 = uitofp <vscale x 64 x i64> undef to <vscale x 64 x float>
@@ -4087,6 +4225,16 @@ define void @uitofp() {
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 99 for instruction: %nxv64i1_nxv64f32 = uitofp <vscale x 64 x i1> undef to <vscale x 64 x float>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 199 for instruction: %nxv64i1_nxv64f64 = uitofp <vscale x 64 x i1> undef to <vscale x 64 x double>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+=======
+; RV64-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %nxv64i32_nxv64f64 = uitofp <vscale x 64 x i32> undef to <vscale x 64 x double>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 22 for instruction: %nxv64i64_nxv64f16 = uitofp <vscale x 64 x i64> undef to <vscale x 64 x half>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %nxv64i64_nxv64f32 = uitofp <vscale x 64 x i64> undef to <vscale x 64 x float>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 22 for instruction: %nxv64i64_nxv64f64 = uitofp <vscale x 64 x i16> undef to <vscale x 64 x double>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 7 for instruction: %nxv64i1_nxv64f16 = uitofp <vscale x 64 x i1> undef to <vscale x 64 x half>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 15 for instruction: %nxv64i1_nxv64f32 = uitofp <vscale x 64 x i1> undef to <vscale x 64 x float>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 31 for instruction: %nxv64i1_nxv64f64 = uitofp <vscale x 64 x i1> undef to <vscale x 64 x double>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
+>>>>>>> pub/main
 ;
   %v2i8_v2f16 = uitofp <2 x i8> undef to <2 x half>
   %v2i8_v2f32 = uitofp <2 x i8> undef to <2 x float>

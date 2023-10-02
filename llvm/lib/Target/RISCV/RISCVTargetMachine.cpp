@@ -100,19 +100,32 @@ static cl::opt<bool> EnableRISCVCopyPropagation(
     cl::desc("Enable the copy propagation with RISC-V copy instr"),
     cl::init(true), cl::Hidden);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<bool> EnableVLOptimizer(
     "riscv-enable-vloptimizer",
     cl::desc("Enable the VL Optimizer pass"), cl::init(true),
     cl::Hidden);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+static cl::opt<bool> EnableRISCVDeadRegisterElimination(
+    "riscv-enable-dead-defs", cl::Hidden,
+    cl::desc("Enable the pass that removes dead"
+             " definitons and replaces stores to"
+             " them with stores to x0"),
+    cl::init(true));
+>>>>>>> pub/main
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   RegisterTargetMachine<RISCVTargetMachine> X(getTheRISCV32Target());
   RegisterTargetMachine<RISCVTargetMachine> Y(getTheRISCV64Target());
   auto *PR = PassRegistry::getPassRegistry();
   initializeGlobalISel(*PR);
+  initializeRISCVO0PreLegalizerCombinerPass(*PR);
+  initializeRISCVPreLegalizerCombinerPass(*PR);
+  initializeRISCVPostLegalizerCombinerPass(*PR);
   initializeKCFIPass(*PR);
+  initializeRISCVDeadRegisterDefinitionsPass(*PR);
   initializeRISCVMakeCompressibleOptPass(*PR);
   initializeRISCVGatherScatterLoweringPass(*PR);
   initializeRISCVCodeGenPreparePass(*PR);
@@ -403,7 +416,9 @@ public:
   bool addPreISel() override;
   bool addInstSelector() override;
   bool addIRTranslator() override;
+  void addPreLegalizeMachineIR() override;
   bool addLegalizeMachineIR() override;
+  void addPreRegBankSelect() override;
   bool addRegBankSelect() override;
   bool addGlobalInstructionSelect() override;
   void addPreEmitPass() override;
@@ -524,9 +539,22 @@ bool RISCVPassConfig::addIRTranslator() {
   return false;
 }
 
+void RISCVPassConfig::addPreLegalizeMachineIR() {
+  if (getOptLevel() == CodeGenOptLevel::None) {
+    addPass(createRISCVO0PreLegalizerCombiner());
+  } else {
+    addPass(createRISCVPreLegalizerCombiner());
+  }
+}
+
 bool RISCVPassConfig::addLegalizeMachineIR() {
   addPass(new Legalizer());
   return false;
+}
+
+void RISCVPassConfig::addPreRegBankSelect() {
+  if (getOptLevel() != CodeGenOptLevel::None)
+    addPass(createRISCVPostLegalizerCombiner());
 }
 
 bool RISCVPassConfig::addRegBankSelect() {
@@ -606,6 +634,9 @@ void RISCVPassConfig::addPreRegAlloc() {
 #endif
   }
   addPass(createRISCVInsertVSETVLIPass());
+  if (TM->getOptLevel() != CodeGenOptLevel::None &&
+      EnableRISCVDeadRegisterElimination)
+    addPass(createRISCVDeadRegisterDefinitionsPass());
   addPass(createRISCVInsertReadWriteCSRPass());
 }
 

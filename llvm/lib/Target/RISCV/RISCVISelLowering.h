@@ -325,6 +325,7 @@ enum NodeType : unsigned {
   VWADDU_W_VL,
   VWSUB_W_VL,
   VWSUBU_W_VL,
+  VWSLL_VL,
 
   VFWMUL_VL,
   VFWADD_VL,
@@ -602,7 +603,7 @@ public:
   getRegForInlineAsmConstraint(const TargetRegisterInfo *TRI,
                                StringRef Constraint, MVT VT) const override;
 
-  void LowerAsmOperandForConstraint(SDValue Op, std::string &Constraint,
+  void LowerAsmOperandForConstraint(SDValue Op, StringRef Constraint,
                                     std::vector<SDValue> &Ops,
                                     SelectionDAG &DAG) const override;
 

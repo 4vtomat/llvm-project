@@ -268,6 +268,7 @@ class RISCVAsmParser : public MCTargetAsmParser {
 
   std::unique_ptr<RISCVOperand> defaultMaskRegOp() const;
   std::unique_ptr<RISCVOperand> defaultFRMArgOp() const;
+  std::unique_ptr<RISCVOperand> defaultFRMArgLegacyOp() const;
 
   std::unique_ptr<RISCVOperand> defaultPseudoGPRegisterOperands() const;
 
@@ -578,6 +579,7 @@ public:
 
   /// Return true if the operand is a valid floating point rounding mode.
   bool isFRMArg() const { return Kind == KindTy::FRM; }
+  bool isFRMArgLegacy() const { return Kind == KindTy::FRM; }
   bool isRTZArg() const { return isFRMArg() && FRM.FRM == RISCVFPRndMode::RTZ; }
 
   /// Return true if the operand is a valid fli.s floating-point immediate.
@@ -3440,9 +3442,15 @@ std::unique_ptr<RISCVOperand> RISCVAsmParser::defaultFRMArgOp() const {
                                     llvm::SMLoc());
 }
 
+<<<<<<< HEAD
 std::unique_ptr<RISCVOperand> RISCVAsmParser::defaultPseudoGPRegisterOperands() const {
   return RISCVOperand::createReg(RISCV::NoRegister, llvm::SMLoc(),
                                  llvm::SMLoc(), isRV64());
+=======
+std::unique_ptr<RISCVOperand> RISCVAsmParser::defaultFRMArgLegacyOp() const {
+  return RISCVOperand::createFRMArg(RISCVFPRndMode::RoundingMode::RNE,
+                                    llvm::SMLoc());
+>>>>>>> pub/main
 }
 
 bool RISCVAsmParser::validateInstruction(MCInst &Inst,

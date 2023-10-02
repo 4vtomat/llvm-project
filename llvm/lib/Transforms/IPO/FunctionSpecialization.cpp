@@ -494,7 +494,7 @@ void FunctionSpecializer::promoteConstantStackValues(Function *F) {
 
       Value *GV = new GlobalVariable(M, ConstVal->getType(), true,
                                      GlobalValue::InternalLinkage, ConstVal,
-                                     "funcspec.arg");
+                                     "specialized.arg." + Twine(++NGlobals));
       if (ArgOpType != ConstVal->getType())
         GV = ConstantExpr::getBitCast(cast<Constant>(GV), ArgOpType);
 
@@ -726,9 +726,10 @@ void FunctionSpecializer::removeDeadFunctions() {
 
 /// Clone the function \p F and remove the ssa_copy intrinsics added by
 /// the SCCPSolver in the cloned version.
-static Function *cloneCandidateFunction(Function *F) {
+static Function *cloneCandidateFunction(Function *F, unsigned NSpecs) {
   ValueToValueMapTy Mappings;
   Function *Clone = CloneFunction(F, Mappings);
+  Clone->setName(F->getName() + ".specialized." + Twine(NSpecs));
   removeSSACopy(*Clone);
   return Clone;
 }
@@ -892,8 +893,12 @@ Function *FunctionSpecializer::createSpecialization(
 #else
 Function *FunctionSpecializer::createSpecialization(Function *F,
                                                     const SpecSig &S) {
+<<<<<<< HEAD
 #endif
   Function *Clone = cloneCandidateFunction(F);
+=======
+  Function *Clone = cloneCandidateFunction(F, Specializations.size() + 1);
+>>>>>>> pub/main
 
   // The original function does not neccessarily have internal linkage, but the
   // clone must.
