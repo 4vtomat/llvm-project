@@ -284,13 +284,8 @@ define void @non_foldable_vector_uses(ptr %base, <2 x ptr> %base.vec) {
 ; RVI-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %11 = getelementptr i8, ptr %base, i32 42
 ; RVI-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: call void @llvm.vp.store.v2i8.p0(<2 x i8> undef, ptr %11, <2 x i1> undef, i32 undef)
 ; RVI-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %12 = getelementptr i8, ptr %base, i32 42
-<<<<<<< HEAD
 ; RVI-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: call void @llvm.experimental.vp.strided.store.v2i8.p0.i64(<2 x i8> undef, ptr %12, i64 undef, <2 x i1> undef, i32 undef)
-; RVI-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
-=======
-; RVI-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: call void @llvm.experimental.vp.strided.store.v2i8.p0.i64(<2 x i8> undef, ptr %12, i64 undef, <2 x i1> undef, i32 undef)
 ; RVI-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
->>>>>>> pub/main
 ;
   %1 = getelementptr i8, ptr %base, i32 42
   %x1 = load volatile <2 x i8>, ptr %1
@@ -359,13 +354,8 @@ define void @foldable_vector_uses(ptr %base, <2 x ptr> %base.vec) {
 ; RVI-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: %11 = getelementptr i8, ptr %base, i32 0
 ; RVI-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: call void @llvm.vp.store.v2i8.p0(<2 x i8> undef, ptr %11, <2 x i1> undef, i32 undef)
 ; RVI-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: %12 = getelementptr i8, ptr %base, i32 0
-<<<<<<< HEAD
 ; RVI-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: call void @llvm.experimental.vp.strided.store.v2i8.p0.i64(<2 x i8> undef, ptr %12, i64 undef, <2 x i1> undef, i32 undef)
-; RVI-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
-=======
-; RVI-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: call void @llvm.experimental.vp.strided.store.v2i8.p0.i64(<2 x i8> undef, ptr %12, i64 undef, <2 x i1> undef, i32 undef)
 ; RVI-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
->>>>>>> pub/main
 ;
   %1 = getelementptr i8, ptr %base, i32 0
   %x1 = load volatile <2 x i8>, ptr %1

@@ -169,13 +169,8 @@ define void @extractelement_int(i32 %x) {
 ; RV32V-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %nxv2i64_x = extractelement <vscale x 2 x i64> undef, i32 %x
 ; RV32V-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %nxv4i64_x = extractelement <vscale x 4 x i64> undef, i32 %x
 ; RV32V-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %nxv8i64_x = extractelement <vscale x 8 x i64> undef, i32 %x
-<<<<<<< HEAD
 ; RV32V-NEXT:  Cost Model: Found an estimated cost of 25 for instruction: %nxv16i64_x = extractelement <vscale x 16 x i64> undef, i32 %x
-; RV32V-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
-=======
-; RV32V-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv16i64_x = extractelement <vscale x 16 x i64> undef, i32 %x
 ; RV32V-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
->>>>>>> pub/main
 ;
 ; RV64V-LABEL: 'extractelement_int'
 ; RV64V-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %v2i1_0 = extractelement <2 x i1> undef, i32 0
@@ -339,13 +334,8 @@ define void @extractelement_int(i32 %x) {
 ; RV64V-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv2i64_x = extractelement <vscale x 2 x i64> undef, i32 %x
 ; RV64V-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv4i64_x = extractelement <vscale x 4 x i64> undef, i32 %x
 ; RV64V-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv8i64_x = extractelement <vscale x 8 x i64> undef, i32 %x
-<<<<<<< HEAD
 ; RV64V-NEXT:  Cost Model: Found an estimated cost of 24 for instruction: %nxv16i64_x = extractelement <vscale x 16 x i64> undef, i32 %x
-; RV64V-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
-=======
-; RV64V-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv16i64_x = extractelement <vscale x 16 x i64> undef, i32 %x
 ; RV64V-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
->>>>>>> pub/main
 ;
 ; RV32ZVE64X-LABEL: 'extractelement_int'
 ; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %v2i1_0 = extractelement <2 x i1> undef, i32 0
@@ -509,13 +499,8 @@ define void @extractelement_int(i32 %x) {
 ; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %nxv2i64_x = extractelement <vscale x 2 x i64> undef, i32 %x
 ; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %nxv4i64_x = extractelement <vscale x 4 x i64> undef, i32 %x
 ; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %nxv8i64_x = extractelement <vscale x 8 x i64> undef, i32 %x
-<<<<<<< HEAD
 ; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 25 for instruction: %nxv16i64_x = extractelement <vscale x 16 x i64> undef, i32 %x
-; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
-=======
-; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv16i64_x = extractelement <vscale x 16 x i64> undef, i32 %x
 ; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
->>>>>>> pub/main
 ;
 ; RV64ZVE64X-LABEL: 'extractelement_int'
 ; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %v2i1_0 = extractelement <2 x i1> undef, i32 0
@@ -679,13 +664,8 @@ define void @extractelement_int(i32 %x) {
 ; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv2i64_x = extractelement <vscale x 2 x i64> undef, i32 %x
 ; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv4i64_x = extractelement <vscale x 4 x i64> undef, i32 %x
 ; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv8i64_x = extractelement <vscale x 8 x i64> undef, i32 %x
-<<<<<<< HEAD
 ; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 24 for instruction: %nxv16i64_x = extractelement <vscale x 16 x i64> undef, i32 %x
-; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
-=======
-; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv16i64_x = extractelement <vscale x 16 x i64> undef, i32 %x
 ; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
->>>>>>> pub/main
 ;
   %v2i1_0 = extractelement <2 x i1> undef, i32 0
   %v4i1_0 = extractelement <4 x i1> undef, i32 0
@@ -898,13 +878,8 @@ define void @extractelement_int_lmul(i32 %x) {
 ; RV32V-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v128i8 = extractelement <128 x i8> undef, i32 %x
 ; RV32V-NEXT:  Cost Model: Found an estimated cost of 24 for instruction: %v256i8 = extractelement <256 x i8> undef, i32 %x
 ; RV32V-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v32i32 = extractelement <32 x i32> undef, i32 %x
-<<<<<<< HEAD
 ; RV32V-NEXT:  Cost Model: Found an estimated cost of 24 for instruction: %v64i32 = extractelement <64 x i32> undef, i32 %x
-; RV32V-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
-=======
-; RV32V-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v64i32 = extractelement <64 x i32> undef, i32 %x
 ; RV32V-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
->>>>>>> pub/main
 ;
 ; RV64V-LABEL: 'extractelement_int_lmul'
 ; RV64V-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v128i8_31 = extractelement <128 x i8> undef, i32 31
@@ -920,9 +895,8 @@ define void @extractelement_int_lmul(i32 %x) {
 ; RV64V-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v128i8 = extractelement <128 x i8> undef, i32 %x
 ; RV64V-NEXT:  Cost Model: Found an estimated cost of 24 for instruction: %v256i8 = extractelement <256 x i8> undef, i32 %x
 ; RV64V-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v32i32 = extractelement <32 x i32> undef, i32 %x
-<<<<<<< HEAD
 ; RV64V-NEXT:  Cost Model: Found an estimated cost of 24 for instruction: %v64i32 = extractelement <64 x i32> undef, i32 %x
-; RV64V-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; RV64V-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
 ; RV32ZVE64X-LABEL: 'extractelement_int_lmul'
 ; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v128i8_31 = extractelement <128 x i8> undef, i32 31
@@ -939,7 +913,7 @@ define void @extractelement_int_lmul(i32 %x) {
 ; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 42 for instruction: %v256i8 = extractelement <256 x i8> undef, i32 %x
 ; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 24 for instruction: %v32i32 = extractelement <32 x i32> undef, i32 %x
 ; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 42 for instruction: %v64i32 = extractelement <64 x i32> undef, i32 %x
-; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
 ; RV64ZVE64X-LABEL: 'extractelement_int_lmul'
 ; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v128i8_31 = extractelement <128 x i8> undef, i32 31
@@ -956,45 +930,7 @@ define void @extractelement_int_lmul(i32 %x) {
 ; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 42 for instruction: %v256i8 = extractelement <256 x i8> undef, i32 %x
 ; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 24 for instruction: %v32i32 = extractelement <32 x i32> undef, i32 %x
 ; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 42 for instruction: %v64i32 = extractelement <64 x i32> undef, i32 %x
-; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
-=======
-; RV64V-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v64i32 = extractelement <64 x i32> undef, i32 %x
-; RV64V-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
-;
-; RV32ZVE64X-LABEL: 'extractelement_int_lmul'
-; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v128i8_31 = extractelement <128 x i8> undef, i32 31
-; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v128i8_63 = extractelement <128 x i8> undef, i32 63
-; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v128i8_127 = extractelement <128 x i8> undef, i32 127
-; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v256i8_127 = extractelement <256 x i8> undef, i32 127
-; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v256i8_255 = extractelement <256 x i8> undef, i32 255
-; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v32i32_3 = extractelement <32 x i32> undef, i32 3
-; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v32i32_7 = extractelement <32 x i32> undef, i32 7
-; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v32i32_15 = extractelement <32 x i32> undef, i32 15
-; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v32i32_31 = extractelement <32 x i32> undef, i32 31
-; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v64i32_63 = extractelement <64 x i32> undef, i32 63
-; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v128i8 = extractelement <128 x i8> undef, i32 %x
-; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v256i8 = extractelement <256 x i8> undef, i32 %x
-; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v32i32 = extractelement <32 x i32> undef, i32 %x
-; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v64i32 = extractelement <64 x i32> undef, i32 %x
-; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
-;
-; RV64ZVE64X-LABEL: 'extractelement_int_lmul'
-; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v128i8_31 = extractelement <128 x i8> undef, i32 31
-; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v128i8_63 = extractelement <128 x i8> undef, i32 63
-; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v128i8_127 = extractelement <128 x i8> undef, i32 127
-; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v256i8_127 = extractelement <256 x i8> undef, i32 127
-; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v256i8_255 = extractelement <256 x i8> undef, i32 255
-; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v32i32_3 = extractelement <32 x i32> undef, i32 3
-; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v32i32_7 = extractelement <32 x i32> undef, i32 7
-; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v32i32_15 = extractelement <32 x i32> undef, i32 15
-; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v32i32_31 = extractelement <32 x i32> undef, i32 31
-; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v64i32_63 = extractelement <64 x i32> undef, i32 63
-; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v128i8 = extractelement <128 x i8> undef, i32 %x
-; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v256i8 = extractelement <256 x i8> undef, i32 %x
-; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v32i32 = extractelement <32 x i32> undef, i32 %x
-; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v64i32 = extractelement <64 x i32> undef, i32 %x
 ; RV64ZVE64X-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
->>>>>>> pub/main
 ;
   %v128i8_31 = extractelement <128 x i8> undef, i32 31
   %v128i8_63 = extractelement <128 x i8> undef, i32 63
@@ -1109,13 +1045,8 @@ define void @extractelement_fp(i32 %x) {
 ; RV32V-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv2f64_x = extractelement <vscale x 2 x double> undef, i32 %x
 ; RV32V-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv4f64_x = extractelement <vscale x 4 x double> undef, i32 %x
 ; RV32V-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv8f64_x = extractelement <vscale x 8 x double> undef, i32 %x
-<<<<<<< HEAD
 ; RV32V-NEXT:  Cost Model: Found an estimated cost of 24 for instruction: %nxv16f64_x = extractelement <vscale x 16 x double> undef, i32 %x
-; RV32V-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
-=======
-; RV32V-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv16f64_x = extractelement <vscale x 16 x double> undef, i32 %x
 ; RV32V-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
->>>>>>> pub/main
 ;
 ; RV64V-LABEL: 'extractelement_fp'
 ; RV64V-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v2f16_0 = extractelement <2 x half> undef, i32 0
@@ -1207,13 +1138,8 @@ define void @extractelement_fp(i32 %x) {
 ; RV64V-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv2f64_x = extractelement <vscale x 2 x double> undef, i32 %x
 ; RV64V-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv4f64_x = extractelement <vscale x 4 x double> undef, i32 %x
 ; RV64V-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv8f64_x = extractelement <vscale x 8 x double> undef, i32 %x
-<<<<<<< HEAD
 ; RV64V-NEXT:  Cost Model: Found an estimated cost of 24 for instruction: %nxv16f64_x = extractelement <vscale x 16 x double> undef, i32 %x
-; RV64V-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
-=======
-; RV64V-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv16f64_x = extractelement <vscale x 16 x double> undef, i32 %x
 ; RV64V-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
->>>>>>> pub/main
 ;
 ; RV32ZVE64X-LABEL: 'extractelement_fp'
 ; RV32ZVE64X-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: %v2f16_0 = extractelement <2 x half> undef, i32 0

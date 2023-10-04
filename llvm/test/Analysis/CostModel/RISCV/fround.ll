@@ -198,19 +198,11 @@ define void @nearbyint() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %13 = call <4 x double> @llvm.nearbyint.v4f64(<4 x double> undef)
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %14 = call <8 x double> @llvm.nearbyint.v8f64(<8 x double> undef)
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %15 = call <16 x double> @llvm.nearbyint.v16f64(<16 x double> undef)
-<<<<<<< HEAD
 ; CHECK-NEXT:  Cost Model: Invalid cost for instruction: %16 = call <vscale x 1 x double> @llvm.nearbyint.nxv1f64(<vscale x 1 x double> undef)
 ; CHECK-NEXT:  Cost Model: Invalid cost for instruction: %17 = call <vscale x 2 x double> @llvm.nearbyint.nxv2f64(<vscale x 2 x double> undef)
 ; CHECK-NEXT:  Cost Model: Invalid cost for instruction: %18 = call <vscale x 4 x double> @llvm.nearbyint.nxv4f64(<vscale x 4 x double> undef)
 ; CHECK-NEXT:  Cost Model: Invalid cost for instruction: %19 = call <vscale x 8 x double> @llvm.nearbyint.nxv8f64(<vscale x 8 x double> undef)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
-=======
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %16 = call <vscale x 1 x double> @llvm.nearbyint.nxv1f64(<vscale x 1 x double> undef)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %17 = call <vscale x 2 x double> @llvm.nearbyint.nxv2f64(<vscale x 2 x double> undef)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %18 = call <vscale x 4 x double> @llvm.nearbyint.nxv4f64(<vscale x 4 x double> undef)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %19 = call <vscale x 8 x double> @llvm.nearbyint.nxv8f64(<vscale x 8 x double> undef)
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
->>>>>>> pub/main
 ;
   call float @llvm.nearbyint.f32(float undef)
   call <2 x float> @llvm.nearbyint.v2f32(<2 x float> undef)
