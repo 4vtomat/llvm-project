@@ -921,6 +921,9 @@ public:
   // Add InterestingMemoryOperand of Intrinsic \p II into array \p Interesting.
   bool getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
                         IntrinsicInst *II) const;
+
+  // Return the optimal vector type for loop idiom.
+  VectorType *getBestVectorTypeForLoopIdiom(LLVMContext &Context) const;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Should the Select Optimization pass be enabled and ran.
@@ -1885,6 +1888,9 @@ public:
   virtual bool
   getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
                    IntrinsicInst *II) const = 0;
+
+  virtual VectorType *
+  getBestVectorTypeForLoopIdiom(LLVMContext &Context) const = 0;
 #endif // SIFIVE_CUSTOMIZATION
   virtual bool enableSelectOptimize() = 0;
   virtual bool enableInterleavedAccessVectorization() = 0;
@@ -2432,6 +2438,11 @@ public:
   bool getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
                         IntrinsicInst *II) const override {
     return Impl.getMemoryRefInfo(Interesting, II);
+  }
+
+  VectorType *
+  getBestVectorTypeForLoopIdiom(LLVMContext &Context) const override {
+    return Impl.getBestVectorTypeForLoopIdiom(Context);
   }
 #endif // SIFIVE_CUSTOMIZATION
 

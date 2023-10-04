@@ -375,6 +375,10 @@ public:
                         IntrinsicInst *II) const {
     return false;
   }
+
+  VectorType *getBestVectorTypeForLoopIdiom(LLVMContext &Context) const {
+    return nullptr;
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   bool enableSelectOptimize() const { return true; }

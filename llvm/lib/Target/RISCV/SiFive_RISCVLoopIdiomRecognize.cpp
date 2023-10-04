@@ -34,13 +34,6 @@ static cl::opt<bool> DisableByteCmp(
     cl::desc("Proceed with RISCV Loop Idiom Recognize Pass, but do "
              "not convert byte-compare loop(s)."));
 
-// CustomizeLMUL is the exponent value for LMUL i.e. 0 -> LMUL 1, 1 -> LMUL 2, 2
-// -> LMUL 4, 3 -> LMUL 8, etc. This is used to customize the LMUL value for the
-// vectorized loop.
-static cl::opt<int> CustomizeLMUL("riscv-loop-idiom-customize-lmul", cl::Hidden,
-                                  cl::init(1),
-                                  cl::desc("Customize LMUL for vector loop."));
-
 namespace {
 
 class RISCVLoopIdiomRecognize {
@@ -50,7 +43,6 @@ class RISCVLoopIdiomRecognize {
   TargetLibraryInfo &TLI;
   const TargetTransformInfo &TTI;
   const DataLayout &DL;
-
 public:
   explicit RISCVLoopIdiomRecognize(DominatorTree &DT, LoopInfo &LI,
                                    TargetLibraryInfo &TLI,
@@ -69,11 +61,13 @@ private:
                       SmallVectorImpl<BasicBlock *> &ExitBlocks);
 
   bool recognizeAndTransformByteCompare();
-  Value *expandFindMismatch(IRBuilder<> &Builder, Value *PtrA, Value *PtrB,
-                            Value *Start, Value *MaxLen);
-  void transformByteCompare(Value *PtrA, Value *PtrB, Value *MaxLen,
-                            Value *Index, Value *Start, bool IncIdx,
-                            BasicBlock *FoundBB, BasicBlock *EndBB);
+  Value *expandFindMismatch(IRBuilder<> &Builder, GetElementPtrInst *GEPA,
+                            GetElementPtrInst *GEPB, Value *Start,
+                            Value *MaxLen);
+  void transformByteCompare(GetElementPtrInst *GEPA, GetElementPtrInst *GEPB,
+                            Value *MaxLen, Value *Index, Value *Start,
+                            bool IncIdx, BasicBlock *FoundBB,
+                            BasicBlock *EndBB);
 
   /// @}
 };
@@ -290,7 +284,7 @@ bool RISCVLoopIdiomRecognize::recognizeAndTransformByteCompare() {
 
   LLVM_DEBUG(dbgs() << "FOUND IDIOM IN LOOP: \n"
                     << *(EndBB->getParent()) << "\n\n");
-  transformByteCompare(PtrA, PtrB, MaxLen, Index, StartIdx, true, FoundBB,
+  transformByteCompare(GEPA, GEPB, MaxLen, Index, StartIdx, true, FoundBB,
                        EndBB);
   LLVM_DEBUG(dbgs() << "AFTER IDIOM TRANSFORMATION: \n"
                     << *(EndBB->getParent()) << "\n\n");
@@ -298,9 +292,13 @@ bool RISCVLoopIdiomRecognize::recognizeAndTransformByteCompare() {
 }
 
 Value *RISCVLoopIdiomRecognize::expandFindMismatch(IRBuilder<> &Builder,
-                                                   Value *PtrA, Value *PtrB,
+                                                   GetElementPtrInst *GEPA,
+                                                   GetElementPtrInst *GEPB,
                                                    Value *Start,
                                                    Value *MaxLen) {
+  Value *PtrA = GEPA->getPointerOperand();
+  Value *PtrB = GEPB->getPointerOperand();
+
   // Get the arguments and types for the intrinsic.
   BasicBlock *Preheader = CurLoop->getLoopPreheader();
   auto *PHBranch = cast<BranchInst>(Preheader->getTerminator());
@@ -459,26 +457,30 @@ Value *RISCVLoopIdiomRecognize::expandFindMismatch(IRBuilder<> &Builder,
   // Calculate AVL by subtracting the vector loop index from the trip count
   Value *AVL = Builder.CreateSub(ExtEnd, RVVIndexPhi, "avl", /*HasNUW=*/true,
                                  /*HasNSW=*/true);
-  Constant *VF =
-      ConstantInt::get(I32Type, (RISCV::RVVBitsPerBlock / 8) << CustomizeLMUL);
-  auto *IsScalable = ConstantInt::getTrue(Builder.getContext());
+
+  VectorType *RVVLoadType =
+      TTI.getBestVectorTypeForLoopIdiom(Builder.getContext());
+  auto *VF = ConstantInt::get(
+      I32Type, RVVLoadType->getElementCount().getKnownMinValue());
+  auto *IsScalable = ConstantInt::getBool(
+      Builder.getContext(), RVVLoadType->getElementCount().isScalable());
 
   Value *RVL =
       Builder.CreateIntrinsic(Intrinsic::experimental_get_vector_length,
                               {I64Type}, {AVL, VF, IsScalable});
-
-  auto *RVVLoadType = ScalableVectorType::get(
-      Builder.getInt8Ty(), (RISCV::RVVBitsPerBlock / 8) << CustomizeLMUL);
   Value *GepOffset = RVVIndexPhi;
 
-  Value *RVVLhsGep = Builder.CreateInBoundsGEP(LoadType, PtrA, GepOffset);
-
+  Value *RVVLhsGep = Builder.CreateGEP(LoadType, PtrA, GepOffset);
+  if (GEPA->isInBounds())
+    cast<GetElementPtrInst>(RVVLhsGep)->setIsInBounds(true);
   Value *AllTrueMask = Builder.getTrueVector(RVVLoadType->getElementCount());
   Value *RVVLhsLoad = Builder.CreateIntrinsic(
       Intrinsic::vp_load, {RVVLoadType, RVVLhsGep->getType()},
       {RVVLhsGep, AllTrueMask, RVL}, nullptr, "lhs.load");
 
-  Value *RVVRhsGep = Builder.CreateInBoundsGEP(LoadType, PtrB, GepOffset);
+  Value *RVVRhsGep = Builder.CreateGEP(LoadType, PtrB, GepOffset);
+  if (GEPB->isInBounds())
+    cast<GetElementPtrInst>(RVVRhsGep)->setIsInBounds(true);
   Value *RVVRhsLoad = Builder.CreateIntrinsic(
       Intrinsic::vp_load, {RVVLoadType, RVVLhsGep->getType()},
       {RVVRhsGep, AllTrueMask, RVL}, nullptr, "rhs.load");
@@ -546,10 +548,14 @@ Value *RISCVLoopIdiomRecognize::expandFindMismatch(IRBuilder<> &Builder,
   // Load bytes from each array and compare them.
   GepOffset = Builder.CreateZExt(IndexPhi, I64Type);
 
-  Value *LhsGep = Builder.CreateInBoundsGEP(LoadType, PtrA, GepOffset);
+  Value *LhsGep = Builder.CreateGEP(LoadType, PtrA, GepOffset);
+  if (GEPA->isInBounds())
+    cast<GetElementPtrInst>(LhsGep)->setIsInBounds(true);
   Value *LhsLoad = Builder.CreateLoad(LoadType, LhsGep);
 
-  Value *RhsGep = Builder.CreateInBoundsGEP(LoadType, PtrB, GepOffset);
+  Value *RhsGep = Builder.CreateGEP(LoadType, PtrB, GepOffset);
+  if (GEPB->isInBounds())
+    cast<GetElementPtrInst>(RhsGep)->setIsInBounds(true);
   Value *RhsLoad = Builder.CreateLoad(LoadType, RhsGep);
 
   Value *MatchCmp = Builder.CreateICmpEQ(LhsLoad, RhsLoad);
@@ -585,7 +591,8 @@ Value *RISCVLoopIdiomRecognize::expandFindMismatch(IRBuilder<> &Builder,
   return Builder.CreateTrunc(ResPhi, ResType);
 }
 
-void RISCVLoopIdiomRecognize::transformByteCompare(Value *PtrA, Value *PtrB,
+void RISCVLoopIdiomRecognize::transformByteCompare(GetElementPtrInst *GEPA,
+                                                   GetElementPtrInst *GEPB,
                                                    Value *MaxLen, Value *Index,
                                                    Value *Start, bool IncIdx,
                                                    BasicBlock *FoundBB,
@@ -602,7 +609,7 @@ void RISCVLoopIdiomRecognize::transformByteCompare(Value *PtrA, Value *PtrB,
   if (IncIdx)
     Start = Builder.CreateAdd(Start, ConstantInt::get(Start->getType(), 1));
 
-  Value *ByteCmpRes = expandFindMismatch(Builder, PtrA, PtrB, Start, MaxLen);
+  Value *ByteCmpRes = expandFindMismatch(Builder, GEPA, GEPB, Start, MaxLen);
 
   // Replaces uses of index & induction Phi with intrinsic (we already
   // checked that the the first instruction of Header is the Phi above).
