@@ -23,11 +23,10 @@ define void @UnKnownSize(i8* nocapture %dst, i8 %val, i32 signext %n) {
 ; ALIGN:       # %bb.0: # %entry
 ; ALIGN-NEXT:    andi a3, a0, 15
 ; ALIGN-NEXT:    li a4, 16
-; ALIGN-NEXT:    sub a4, a4, a3
-; ALIGN-NEXT:    mv a3, a2
-; ALIGN-NEXT:    bltu a2, a4, .LBB0_2
+; ALIGN-NEXT:    sub a3, a4, a3
+; ALIGN-NEXT:    bltu a3, a2, .LBB0_2
 ; ALIGN-NEXT:  # %bb.1: # %entry
-; ALIGN-NEXT:    mv a3, a4
+; ALIGN-NEXT:    mv a3, a2
 ; ALIGN-NEXT:  .LBB0_2: # %entry
 ; ALIGN-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
 ; ALIGN-NEXT:    vmv.v.x v8, a1

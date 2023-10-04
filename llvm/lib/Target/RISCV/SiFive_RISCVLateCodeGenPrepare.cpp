@@ -485,9 +485,8 @@ void RISCVLateCodeGenPrepare::expandMemmoveUnknownSizeAligned(MemMoveInst *M) {
         Builder.CreateAnd(Builder.CreatePtrToInt(SrcEndAddr, ILengthType),
                           ConstantInt::get(ILengthType, AlignBytes - 1));
 
-    Value *Cmp = Builder.CreateICmpUGT(DLenElement, CopyLen);
-    Value *AlignLen =
-        Builder.CreateSelect(Cmp, CopyLen, DLenElement, "length.select");
+    Value *AlignLen = Builder.CreateBinaryIntrinsic(
+        Intrinsic::umin, DLenElement, CopyLen, nullptr, "length.select");
     Value *VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
                                         {AlignLen, Sew8, Lmul});
     NewCopyLen = Builder.CreateSub(CopyLen, VL);
@@ -522,9 +521,8 @@ void RISCVLateCodeGenPrepare::expandMemmoveUnknownSizeAligned(MemMoveInst *M) {
         Builder.CreateAnd(Builder.CreatePtrToInt(SrcAddr, ILengthType),
                           ConstantInt::get(ILengthType, AlignBytes - 1)));
 
-    Value *Cmp = Builder.CreateICmpUGT(DLenElement, CopyLen);
-    Value *AlignLen =
-        Builder.CreateSelect(Cmp, CopyLen, DLenElement, "length.select");
+    Value *AlignLen = Builder.CreateBinaryIntrinsic(
+        Intrinsic::umin, DLenElement, CopyLen, nullptr, "length.select");
     Value *VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
                                         {AlignLen, Sew8, Lmul});
     NewCopyLen = Builder.CreateSub(CopyLen, VL);
@@ -900,9 +898,8 @@ void RISCVLateCodeGenPrepare::expandMemCpyUnknownSizewithAlign(MemCpyInst *M) {
   Value *DLenElement =
       Builder.CreateSub(ConstantInt::get(ILengthType, AlignBytes), And);
 
-  Value *Cmp = Builder.CreateICmpUGT(DLenElement, CopyLen);
-  Value *AlignLen =
-      Builder.CreateSelect(Cmp, CopyLen, DLenElement, "length.select");
+  Value *AlignLen = Builder.CreateBinaryIntrinsic(
+      Intrinsic::umin, DLenElement, CopyLen, nullptr, "length.select");
   Value *AlignVL = Builder.CreateIntrinsic(
       Intrinsic::riscv_vsetvli, {CopyLenType}, {AlignLen, SEW, LMUL});
   Value *SrcCast =
@@ -957,9 +954,8 @@ void RISCVLateCodeGenPrepare::expandMemSetUnknownSizeAligned(MemSetInst *M) {
       Builder.CreateAnd(Builder.CreatePtrToInt(DstAddr, ILengthType),
                         ConstantInt::get(ILengthType, AlignBytes - 1)));
 
-  Value *Cmp = Builder.CreateICmpUGT(DLenElement, CopyLen);
-  Value *AlignLen =
-      Builder.CreateSelect(Cmp, CopyLen, DLenElement, "length.select");
+  Value *AlignLen = Builder.CreateBinaryIntrinsic(
+      Intrinsic::umin, DLenElement, CopyLen, nullptr, "length.select");
 
   Value *TmpVal =
       Builder.CreateIntrinsic(Intrinsic::riscv_vmv_v_x, {VTy, CopyLenType},
