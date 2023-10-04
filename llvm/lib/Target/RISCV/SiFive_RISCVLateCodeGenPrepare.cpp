@@ -957,20 +957,25 @@ void RISCVLateCodeGenPrepare::expandMemSetUnknownSizeAligned(MemSetInst *M) {
   Value *AlignLen = Builder.CreateBinaryIntrinsic(
       Intrinsic::umin, DLenElement, CopyLen, nullptr, "length.select");
 
+  Value *AlignVL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
+                                      {AlignLen, SEW, LMUL});
+  CopyLen = Builder.CreateSub(CopyLen, AlignVL);
+
+  Value *CopyVL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
+                                          {CopyLen, SEW, LMUL});
+
+  Value *MaxVL = Builder.CreateBinaryIntrinsic(Intrinsic::umax, CopyVL, AlignVL);
+
   Value *TmpVal =
       Builder.CreateIntrinsic(Intrinsic::riscv_vmv_v_x, {VTy, CopyLenType},
-                              {UndefValue::get(VTy), Val, CopyLen});
+                              {UndefValue::get(VTy), Val, MaxVL});
 
-  Value *VL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
-                                      {AlignLen, SEW, LMUL});
   Value *DstCast =
       Builder.CreatePointerCast(DstAddr, PointerType::get(VTy, DstAS));
   Builder.CreateIntrinsic(Intrinsic::riscv_vse, {VTy, CopyLenType},
-                          {TmpVal, DstCast, VL});
+                          {TmpVal, DstCast, AlignVL});
 
-  CopyLen = Builder.CreateSub(CopyLen, VL);
-
-  DstAddr = Builder.CreateGEP(Int8Type, DstAddr, VL);
+  DstAddr = Builder.CreateGEP(Int8Type, DstAddr, AlignVL);
 
   createMemsetLoopBody(ForwardLoopBB, PreLoopBB, PostLoopBB, TmpVal, DstAddr,
                        CopyLen, 1);
