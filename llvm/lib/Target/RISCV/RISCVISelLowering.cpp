@@ -57,6 +57,10 @@ static cl::opt<bool> EnableSimplifyCFGHoistingVec(
     "experimental-riscv-simplifycfg-hoist-vector",
     cl::desc("Enable SimplifyCFG hoisting vectors."), cl::init(false),
     cl::Hidden);
+static cl::opt<bool> EnableSimplifyCFGHoistingCall(
+    "experimental-riscv-simplifycfg-hoist-call",
+    cl::desc("Enable SimplifyCFG hoisting call instructions."), cl::init(false),
+    cl::Hidden);
 #endif
 
 STATISTIC(NumTailCalls, "Number of tail calls");
@@ -1816,6 +1820,14 @@ bool RISCVTargetLowering::isProfitableToHoist(Instruction *I) const {
   // Disable the hoisting of vectors until we have a counter example
   if (!EnableSimplifyCFGHoistingVec && I->getType()->isVectorTy())
     return false;
+
+  // Disable the hoisting of call only used by the condition branch of the
+  // same basic block. It can increase the opportunity for jump threading.
+  if (!EnableSimplifyCFGHoistingCall && isa<CallInst>(I) && I->hasOneUse()) {
+    if (auto *Branch = dyn_cast<BranchInst>(I->getParent()->getTerminator()))
+      if (Branch->isConditional() && I->user_back() == Branch->getCondition())
+        return false;
+  }
 
   return true;
 }
