@@ -535,12 +535,6 @@ define <vscale x 32 x half> @vp_round_nxv32f16_unmasked(<vscale x 32 x half> %va
 ;
 ; ZVFHMIN-LABEL: vp_round_nxv32f16_unmasked:
 ; ZVFHMIN:       # %bb.0:
-; ZVFHMIN-NEXT:    addi sp, sp, -16
-; ZVFHMIN-NEXT:    .cfi_def_cfa_offset 16
-; ZVFHMIN-NEXT:    csrr a1, vlenb
-; ZVFHMIN-NEXT:    slli a1, a1, 3
-; ZVFHMIN-NEXT:    sub sp, sp, a1
-; ZVFHMIN-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * vlenb
 ; ZVFHMIN-NEXT:    vsetvli a1, zero, e8, m4, ta, ma
 ; ZVFHMIN-NEXT:    vmset.m v16
 ; ZVFHMIN-NEXT:    csrr a2, vlenb
@@ -551,48 +545,29 @@ define <vscale x 32 x half> @vp_round_nxv32f16_unmasked(<vscale x 32 x half> %va
 ; ZVFHMIN-NEXT:    and a3, a4, a3
 ; ZVFHMIN-NEXT:    srli a2, a2, 2
 ; ZVFHMIN-NEXT:    vsetvli a4, zero, e8, mf2, ta, ma
-<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vslidedown.vx v0, v16, a2
-=======
-; ZVFHMIN-NEXT:    vslidedown.vx v16, v16, a2
->>>>>>> pub/main
 ; ZVFHMIN-NEXT:    vsetvli a2, zero, e16, m4, ta, ma
-; ZVFHMIN-NEXT:    addi a2, sp, 16
-; ZVFHMIN-NEXT:    vs8r.v v8, (a2) # Unknown-size Folded Spill
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v24, v12
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v16, v12
 ; ZVFHMIN-NEXT:    vsetvli zero, a3, e32, m8, ta, ma
-<<<<<<< HEAD
-=======
-; ZVFHMIN-NEXT:    vmv1r.v v0, v16
->>>>>>> pub/main
-; ZVFHMIN-NEXT:    vfabs.v v8, v24, v0.t
+; ZVFHMIN-NEXT:    vfabs.v v24, v16, v0.t
 ; ZVFHMIN-NEXT:    lui a2, 307200
 ; ZVFHMIN-NEXT:    fmv.w.x fa5, a2
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m8, ta, mu
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vmflt.vf v0, v8, fa5, v0.t
+; ZVFHMIN-NEXT:    vmflt.vf v0, v24, fa5, v0.t
 ; ZVFHMIN-NEXT:    fsrmi a2, 4
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m8, ta, ma
-=======
-; ZVFHMIN-NEXT:    vmflt.vf v16, v8, fa5, v0.t
-; ZVFHMIN-NEXT:    fsrmi a2, 4
-; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m8, ta, ma
-; ZVFHMIN-NEXT:    vmv1r.v v0, v16
->>>>>>> pub/main
-; ZVFHMIN-NEXT:    vfcvt.x.f.v v8, v24, v0.t
+; ZVFHMIN-NEXT:    vfcvt.x.f.v v24, v16, v0.t
 ; ZVFHMIN-NEXT:    fsrm a2
-; ZVFHMIN-NEXT:    vfcvt.f.x.v v8, v8, v0.t
+; ZVFHMIN-NEXT:    vfcvt.f.x.v v24, v24, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m8, ta, mu
-; ZVFHMIN-NEXT:    vfsgnj.vv v24, v8, v24, v0.t
+; ZVFHMIN-NEXT:    vfsgnj.vv v16, v24, v16, v0.t
 ; ZVFHMIN-NEXT:    vsetvli a2, zero, e16, m4, ta, ma
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v12, v24
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v12, v16
 ; ZVFHMIN-NEXT:    bltu a0, a1, .LBB11_2
 ; ZVFHMIN-NEXT:  # %bb.1:
 ; ZVFHMIN-NEXT:    mv a0, a1
 ; ZVFHMIN-NEXT:  .LBB11_2:
-; ZVFHMIN-NEXT:    addi a1, sp, 16
-; ZVFHMIN-NEXT:    vl8r.v v24, (a1) # Unknown-size Folded Reload
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v16, v24
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v16, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
 ; ZVFHMIN-NEXT:    vfabs.v v24, v16
 ; ZVFHMIN-NEXT:    vmflt.vf v0, v24, fa5
@@ -604,10 +579,6 @@ define <vscale x 32 x half> @vp_round_nxv32f16_unmasked(<vscale x 32 x half> %va
 ; ZVFHMIN-NEXT:    vfsgnj.vv v16, v24, v16, v0.t
 ; ZVFHMIN-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v8, v16
-; ZVFHMIN-NEXT:    csrr a0, vlenb
-; ZVFHMIN-NEXT:    slli a0, a0, 3
-; ZVFHMIN-NEXT:    add sp, sp, a0
-; ZVFHMIN-NEXT:    addi sp, sp, 16
 ; ZVFHMIN-NEXT:    ret
   %head = insertelement <vscale x 32 x i1> poison, i1 true, i32 0
   %m = shufflevector <vscale x 32 x i1> %head, <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer
@@ -1073,11 +1044,7 @@ define <vscale x 16 x double> @vp_round_nxv16f64(<vscale x 16 x double> %va, <vs
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    srli a2, a1, 3
 ; CHECK-NEXT:    vsetvli a3, zero, e8, mf4, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vslidedown.vx v0, v0, a2
-=======
-; CHECK-NEXT:    vslidedown.vx v25, v0, a2
->>>>>>> pub/main
 ; CHECK-NEXT:    sub a2, a0, a1
 ; CHECK-NEXT:    sltu a3, a0, a2
 ; CHECK-NEXT:    addi a3, a3, -1
@@ -1085,23 +1052,12 @@ define <vscale x 16 x double> @vp_round_nxv16f64(<vscale x 16 x double> %va, <vs
 ; CHECK-NEXT:    lui a3, %hi(.LCPI32_0)
 ; CHECK-NEXT:    fld fa5, %lo(.LCPI32_0)(a3)
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vfabs.v v24, v16, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
-; CHECK-NEXT:    vmflt.vf v0, v24, fa5, v0.t
-; CHECK-NEXT:    fsrmi a2, 4
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vfcvt.x.f.v v24, v16, v0.t
-=======
-; CHECK-NEXT:    vmv1r.v v0, v25
 ; CHECK-NEXT:    vfabs.v v8, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
-; CHECK-NEXT:    vmflt.vf v25, v8, fa5, v0.t
+; CHECK-NEXT:    vmflt.vf v0, v8, fa5, v0.t
 ; CHECK-NEXT:    fsrmi a2, 4
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmv1r.v v0, v25
 ; CHECK-NEXT:    vfcvt.x.f.v v8, v16, v0.t
->>>>>>> pub/main
 ; CHECK-NEXT:    fsrm a2
 ; CHECK-NEXT:    vfcvt.f.x.v v8, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu

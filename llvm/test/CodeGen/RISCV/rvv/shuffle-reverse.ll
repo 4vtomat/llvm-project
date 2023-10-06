@@ -270,21 +270,12 @@ define <32 x i16> @v16i16_2(<16 x i16> %a, <16 x i16> %b) {
 ;
 ; RV64-LABEL: v16i16_2:
 ; RV64:       # %bb.0:
-<<<<<<< HEAD
 ; RV64-NEXT:    li a0, 32
 ; RV64-NEXT:    lui a1, %hi(.LCPI15_0)
 ; RV64-NEXT:    addi a1, a1, %lo(.LCPI15_0)
 ; RV64-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
-; RV64-NEXT:    vle16.v v16, (a1)
-; RV64-NEXT:    vmv2r.v v20, v10
-=======
-; RV64-NEXT:    lui a0, %hi(.LCPI15_0)
-; RV64-NEXT:    addi a0, a0, %lo(.LCPI15_0)
-; RV64-NEXT:    li a1, 32
-; RV64-NEXT:    vsetvli zero, a1, e16, m4, ta, ma
-; RV64-NEXT:    vle16.v v20, (a0)
+; RV64-NEXT:    vle16.v v20, (a1)
 ; RV64-NEXT:    vmv2r.v v16, v10
->>>>>>> pub/main
 ; RV64-NEXT:    vmv2r.v v12, v8
 ; RV64-NEXT:    vrgather.vv v8, v12, v20
 ; RV64-NEXT:    vid.v v12
@@ -292,15 +283,9 @@ define <32 x i16> @v16i16_2(<16 x i16> %a, <16 x i16> %b) {
 ; RV64-NEXT:    lui a1, 16
 ; RV64-NEXT:    addiw a1, a1, -1
 ; RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
-<<<<<<< HEAD
 ; RV64-NEXT:    vmv.s.x v0, a1
 ; RV64-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
-; RV64-NEXT:    vrgather.vv v8, v20, v12, v0.t
-=======
-; RV64-NEXT:    vmv.s.x v0, a0
-; RV64-NEXT:    vsetvli zero, a1, e16, m4, ta, mu
 ; RV64-NEXT:    vrgather.vv v8, v16, v12, v0.t
->>>>>>> pub/main
 ; RV64-NEXT:    ret
   %v32i16 = shufflevector <16 x i16> %a, <16 x i16> %b,  <32 x i32> <i32 31, i32 30, i32 29, i32 28, i32 27, i32 26, i32 25, i32 24, i32 23, i32 22, i32 21, i32 20, i32 19, i32 18, i32 17, i32 16, i32 15, i32 14, i32 13, i32 12, i32 11, i32 10, i32 9, i32 8, i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
   ret <32 x i16> %v32i16

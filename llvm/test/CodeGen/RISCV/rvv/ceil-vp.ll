@@ -726,11 +726,7 @@ define <vscale x 16 x double> @vp_ceil_vv_nxv16f64(<vscale x 16 x double> %va, <
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    srli a2, a1, 3
 ; CHECK-NEXT:    vsetvli a3, zero, e8, mf4, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vslidedown.vx v0, v0, a2
-=======
-; CHECK-NEXT:    vslidedown.vx v25, v0, a2
->>>>>>> pub/main
 ; CHECK-NEXT:    sub a2, a0, a1
 ; CHECK-NEXT:    sltu a3, a0, a2
 ; CHECK-NEXT:    addi a3, a3, -1
@@ -738,23 +734,12 @@ define <vscale x 16 x double> @vp_ceil_vv_nxv16f64(<vscale x 16 x double> %va, <
 ; CHECK-NEXT:    lui a3, %hi(.LCPI32_0)
 ; CHECK-NEXT:    fld fa5, %lo(.LCPI32_0)(a3)
 ; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vfabs.v v24, v16, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
-; CHECK-NEXT:    vmflt.vf v0, v24, fa5, v0.t
-; CHECK-NEXT:    fsrmi a2, 3
-; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vfcvt.x.f.v v24, v16, v0.t
-=======
-; CHECK-NEXT:    vmv1r.v v0, v25
 ; CHECK-NEXT:    vfabs.v v8, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
-; CHECK-NEXT:    vmflt.vf v25, v8, fa5, v0.t
+; CHECK-NEXT:    vmflt.vf v0, v8, fa5, v0.t
 ; CHECK-NEXT:    fsrmi a2, 3
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmv1r.v v0, v25
 ; CHECK-NEXT:    vfcvt.x.f.v v8, v16, v0.t
->>>>>>> pub/main
 ; CHECK-NEXT:    fsrm a2
 ; CHECK-NEXT:    vfcvt.f.x.v v8, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu

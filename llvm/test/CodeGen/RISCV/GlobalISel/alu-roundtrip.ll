@@ -423,10 +423,6 @@ define i64 @addi_i64(i64 %a) {
 ; RV32IM:       # %bb.0: # %entry
 ; RV32IM-NEXT:    addi a0, a0, 1234
 ; RV32IM-NEXT:    sltiu a2, a0, 1234
-<<<<<<< HEAD
-; RV32IM-NEXT:    andi a2, a2, 1
-=======
->>>>>>> pub/main
 ; RV32IM-NEXT:    add a1, a1, a2
 ; RV32IM-NEXT:    ret
 ;
@@ -465,10 +461,6 @@ define i64 @subi_i64(i64 %a) {
 ; RV32IM-NEXT:    addi a3, a2, 1548
 ; RV32IM-NEXT:    sub a2, a0, a3
 ; RV32IM-NEXT:    sltu a0, a0, a3
-<<<<<<< HEAD
-; RV32IM-NEXT:    andi a0, a0, 1
-=======
->>>>>>> pub/main
 ; RV32IM-NEXT:    sub a1, a1, a0
 ; RV32IM-NEXT:    mv a0, a2
 ; RV32IM-NEXT:    ret

@@ -11,7 +11,6 @@
 declare <4 x i1> @llvm.vp.merge.v4i1(<4 x i1>, <4 x i1>, <4 x i1>, i32)
 
 define <4 x i1> @vpmerge_vv_v4i1(<4 x i1> %va, <4 x i1> %vb, <4 x i1> %m, i32 zeroext %evl) {
-<<<<<<< HEAD
 ; CHECK-LABEL: vpmerge_vv_v4i1:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a1, zero, e8, mf4, ta, ma
@@ -27,51 +26,6 @@ define <4 x i1> @vpmerge_vv_v4i1(<4 x i1> %va, <4 x i1> %vb, <4 x i1> %m, i32 ze
 ; CHECK-NEXT:    vsetvli a0, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vmsne.vi v0, v8, 0
 ; CHECK-NEXT:    ret
-=======
-; RV32-LABEL: vpmerge_vv_v4i1:
-; RV32:       # %bb.0:
-; RV32-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; RV32-NEXT:    vid.v v10
-; RV32-NEXT:    vmsltu.vx v10, v10, a0
-; RV32-NEXT:    vmand.mm v9, v9, v10
-; RV32-NEXT:    vmandn.mm v8, v8, v9
-; RV32-NEXT:    vmand.mm v9, v0, v9
-; RV32-NEXT:    vmor.mm v0, v9, v8
-; RV32-NEXT:    ret
-;
-; RV64-LABEL: vpmerge_vv_v4i1:
-; RV64:       # %bb.0:
-; RV64-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-; RV64-NEXT:    vid.v v10
-; RV64-NEXT:    vmsltu.vx v12, v10, a0
-; RV64-NEXT:    vmand.mm v9, v9, v12
-; RV64-NEXT:    vmandn.mm v8, v8, v9
-; RV64-NEXT:    vmand.mm v9, v0, v9
-; RV64-NEXT:    vmor.mm v0, v9, v8
-; RV64-NEXT:    ret
-;
-; RV32ZVFHMIN-LABEL: vpmerge_vv_v4i1:
-; RV32ZVFHMIN:       # %bb.0:
-; RV32ZVFHMIN-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; RV32ZVFHMIN-NEXT:    vid.v v10
-; RV32ZVFHMIN-NEXT:    vmsltu.vx v10, v10, a0
-; RV32ZVFHMIN-NEXT:    vmand.mm v9, v9, v10
-; RV32ZVFHMIN-NEXT:    vmandn.mm v8, v8, v9
-; RV32ZVFHMIN-NEXT:    vmand.mm v9, v0, v9
-; RV32ZVFHMIN-NEXT:    vmor.mm v0, v9, v8
-; RV32ZVFHMIN-NEXT:    ret
-;
-; RV64ZVFHMIN-LABEL: vpmerge_vv_v4i1:
-; RV64ZVFHMIN:       # %bb.0:
-; RV64ZVFHMIN-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-; RV64ZVFHMIN-NEXT:    vid.v v10
-; RV64ZVFHMIN-NEXT:    vmsltu.vx v12, v10, a0
-; RV64ZVFHMIN-NEXT:    vmand.mm v9, v9, v12
-; RV64ZVFHMIN-NEXT:    vmandn.mm v8, v8, v9
-; RV64ZVFHMIN-NEXT:    vmand.mm v9, v0, v9
-; RV64ZVFHMIN-NEXT:    vmor.mm v0, v9, v8
-; RV64ZVFHMIN-NEXT:    ret
->>>>>>> pub/main
   %v = call <4 x i1> @llvm.vp.merge.v4i1(<4 x i1> %m, <4 x i1> %va, <4 x i1> %vb, i32 %evl)
   ret <4 x i1> %v
 }

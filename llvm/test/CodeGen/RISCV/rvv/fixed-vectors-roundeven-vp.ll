@@ -792,12 +792,7 @@ define <32 x double> @vp_roundeven_v32f64(<32 x double> %va, <32 x i1> %m, i32 z
 ; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vfabs.v v8, v16, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, mu
-<<<<<<< HEAD
-; CHECK-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmflt.vf v1, v24, fa5, v0.t
-=======
 ; CHECK-NEXT:    vmflt.vf v24, v8, fa5, v0.t
->>>>>>> pub/main
 ; CHECK-NEXT:    fsrmi a0, 0
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
 ; CHECK-NEXT:    vmv1r.v v0, v24

@@ -75,19 +75,11 @@ define dso_local float @flw_fsw_global(float %a, float %b) nounwind {
 ; CHECKIZFINX:       # %bb.0:
 ; CHECKIZFINX-NEXT:    fadd.s a0, a0, a1
 ; CHECKIZFINX-NEXT:    lui a1, %hi(G)
-<<<<<<< HEAD
 ; CHECKIZFINX-NEXT:    addi a1, a1, %lo(G)
-; CHECKIZFINX-NEXT:    lw a2, 0(a1)
+; CHECKIZFINX-NEXT:    lw zero, 0(a1)
 ; CHECKIZFINX-NEXT:    sw a0, 0(a1)
-; CHECKIZFINX-NEXT:    lw a2, 36(a1)
+; CHECKIZFINX-NEXT:    lw zero, 36(a1)
 ; CHECKIZFINX-NEXT:    sw a0, 36(a1)
-=======
-; CHECKIZFINX-NEXT:    lw zero, %lo(G)(a1)
-; CHECKIZFINX-NEXT:    addi a2, a1, %lo(G)
-; CHECKIZFINX-NEXT:    sw a0, %lo(G)(a1)
-; CHECKIZFINX-NEXT:    lw zero, 36(a2)
-; CHECKIZFINX-NEXT:    sw a0, 36(a2)
->>>>>>> pub/main
 ; CHECKIZFINX-NEXT:    ret
   %1 = fadd float %a, %b
   %2 = load volatile float, ptr @G

@@ -153,11 +153,11 @@ define void @lower_global_rmw(i32 %a) nounwind {
 ;
 ; RV32I-MEDIUM-LABEL: lower_global_rmw:
 ; RV32I-MEDIUM:       # %bb.0:
-; RV32I-MEDIUM-NEXT:  .Lpcrel_hi3:
+; RV32I-MEDIUM-NEXT:  .Lpcrel_hi4:
 ; RV32I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(G)
-; RV32I-MEDIUM-NEXT:    lw a2, %pcrel_lo(.Lpcrel_hi3)(a1)
+; RV32I-MEDIUM-NEXT:    lw a2, %pcrel_lo(.Lpcrel_hi4)(a1)
 ; RV32I-MEDIUM-NEXT:    or a0, a2, a0
-; RV32I-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi3)(a1)
+; RV32I-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi4)(a1)
 ; RV32I-MEDIUM-NEXT:    ret
   %1 = load volatile i32, i32* @G
   %2 = or i32 %1, %a
@@ -182,14 +182,14 @@ define i32 @lower_global_rmw_multiple_blocks(i32 %a, i1 %c) nounwind {
 ;
 ; RV32I-MEDIUM-LABEL: lower_global_rmw_multiple_blocks:
 ; RV32I-MEDIUM:       # %bb.0:
-; RV32I-MEDIUM-NEXT:  .Lpcrel_hi4:
+; RV32I-MEDIUM-NEXT:  .Lpcrel_hi5:
 ; RV32I-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
-; RV32I-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi4)(a2)
+; RV32I-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi5)(a2)
 ; RV32I-MEDIUM-NEXT:    andi a1, a1, 1
 ; RV32I-MEDIUM-NEXT:    or a0, a3, a0
 ; RV32I-MEDIUM-NEXT:    beqz a1, .LBB5_2
 ; RV32I-MEDIUM-NEXT:  # %bb.1: # %cond.store
-; RV32I-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi4)(a2)
+; RV32I-MEDIUM-NEXT:    sw a0, %pcrel_lo(.Lpcrel_hi5)(a2)
 ; RV32I-MEDIUM-NEXT:  .LBB5_2: # %merge
 ; RV32I-MEDIUM-NEXT:    ret
   %1 = load volatile i32, i32* @G
@@ -229,9 +229,9 @@ define i32 @lower_global_nonload_use(i32 %a, i1 %c) nounwind {
 ; RV32I-MEDIUM-NEXT:    addi sp, sp, -16
 ; RV32I-MEDIUM-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
 ; RV32I-MEDIUM-NEXT:    sw s0, 8(sp) # 4-byte Folded Spill
-; RV32I-MEDIUM-NEXT:  .Lpcrel_hi5:
+; RV32I-MEDIUM-NEXT:  .Lpcrel_hi6:
 ; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(G)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi5)
+; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi6)
 ; RV32I-MEDIUM-NEXT:    lw s0, 0(a0)
 ; RV32I-MEDIUM-NEXT:    call foo@plt
 ; RV32I-MEDIUM-NEXT:    mv a0, s0
@@ -266,11 +266,11 @@ define void @lower_global_loop(i32* %a) {
 ; RV32I-MEDIUM-LABEL: lower_global_loop:
 ; RV32I-MEDIUM:       # %bb.0: # %entry
 ; RV32I-MEDIUM-NEXT:    li a1, 10
-; RV32I-MEDIUM-NEXT:  .Lpcrel_hi6:
+; RV32I-MEDIUM-NEXT:  .Lpcrel_hi7:
 ; RV32I-MEDIUM-NEXT:    auipc a2, %pcrel_hi(G)
 ; RV32I-MEDIUM-NEXT:  .LBB7_1: # %for.body
 ; RV32I-MEDIUM-NEXT:    # =>This Inner Loop Header: Depth=1
-; RV32I-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi6)(a2)
+; RV32I-MEDIUM-NEXT:    lw a3, %pcrel_lo(.Lpcrel_hi7)(a2)
 ; RV32I-MEDIUM-NEXT:    lw a4, 0(a0)
 ; RV32I-MEDIUM-NEXT:    or a3, a4, a3
 ; RV32I-MEDIUM-NEXT:    sw a3, 0(a0)
@@ -308,15 +308,9 @@ define i32 @lower_extern_weak(i32 %a) nounwind {
 ;
 ; RV32I-MEDIUM-LABEL: lower_extern_weak:
 ; RV32I-MEDIUM:       # %bb.0:
-<<<<<<< HEAD
-; RV32I-MEDIUM-NEXT:  .Lpcrel_hi7:
+; RV32I-MEDIUM-NEXT:  .Lpcrel_hi8:
 ; RV32I-MEDIUM-NEXT:    auipc a0, %got_pcrel_hi(W)
-; RV32I-MEDIUM-NEXT:    lw a0, %pcrel_lo(.Lpcrel_hi7)(a0)
-=======
-; RV32I-MEDIUM-NEXT:  .Lpcrel_hi4:
-; RV32I-MEDIUM-NEXT:    auipc a0, %got_pcrel_hi(W)
-; RV32I-MEDIUM-NEXT:    lw a0, %pcrel_lo(.Lpcrel_hi4)(a0)
->>>>>>> pub/main
+; RV32I-MEDIUM-NEXT:    lw a0, %pcrel_lo(.Lpcrel_hi8)(a0)
 ; RV32I-MEDIUM-NEXT:    lw a0, 0(a0)
 ; RV32I-MEDIUM-NEXT:    ret
   %1 = load volatile i32, ptr @W
