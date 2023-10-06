@@ -899,6 +899,11 @@ bool TypePromotionImpl::TryToPromote(Value *V, unsigned PromotedWidth,
   unsigned NonFreeArgs = 0;
   unsigned NonLoopSources = 0, LoopSinks = 0;
   SmallPtrSet<BasicBlock *, 4> Blocks;
+#if SIFIVE_CUSTOMIZATION
+  std::optional<bool> AllICmps;
+  bool AnySignedICmp = false;
+  bool AnyUnsignedICmp = false;
+#endif // SIFIVE_CUSTOMIZATION
   for (auto *CV : CurrentVisited) {
     if (auto *I = dyn_cast<Instruction>(CV))
       Blocks.insert(I->getParent());
@@ -912,6 +917,17 @@ bool TypePromotionImpl::TryToPromote(Value *V, unsigned PromotedWidth,
         ++NonLoopSources;
       continue;
     }
+
+#if SIFIVE_CUSTOMIZATION
+    if (auto *ICmp = dyn_cast<ICmpInst>(CV)) {
+      if (!AllICmps.has_value())
+        AllICmps = true;
+      AnySignedICmp |= ICmp->isSigned();
+      AnyUnsignedICmp |= ICmp->isUnsigned();
+    } else {
+      AllICmps = false;
+    }
+#endif
 
     if (isa<PHINode>(CV))
       continue;
@@ -927,6 +943,17 @@ bool TypePromotionImpl::TryToPromote(Value *V, unsigned PromotedWidth,
   if (!isa<PHINode>(V) && !(LoopSinks && NonLoopSources) &&
       (ToPromote < 2 || (Blocks.size() == 1 && NonFreeArgs > SafeWrap.size())))
     return false;
+
+#if SIFIVE_CUSTOMIZATION
+  // If all non-sources are non-unsigned icmps and at least one is signed
+  // and not equality, don't promote. This prevents a mix of equality compares
+  // and signed compares getting a zext for equality compares and a trunc+sext
+  // from the signed compare.
+  // FIXME: This is a hack for a specific workload. This pass
+  // should be made to figure out the best extend type.
+  if (AllICmps.has_value() && *AllICmps && AnySignedICmp && !AnyUnsignedICmp)
+    return false;
+#endif
 
   IRPromoter Promoter(*Ctx, PromotedWidth, CurrentVisited, Sources, Sinks,
                       SafeWrap, InstsToRemove);
@@ -1020,28 +1047,6 @@ bool TypePromotionImpl::run(Function &F, const TargetMachine *TM,
         for (auto &Op : ICmp->operands()) {
           if (auto *OpI = dyn_cast<Instruction>(Op)) {
             if (auto PromotedWidth = GetPromoteWidth(OpI)) {
-#if SIFIVE_CUSTOMIZATION
-              // If all users are non-unsigned icmps and at least one is signed
-              // and not equality, skip. This prevents a mix of equality
-              // compares and signed compares getting a zext for equality
-              // compares and a trunc+sext from the signed compare.
-              // FIXME: This is a hack for a specific workload. This pass
-              // should be made to figure out the best extend type.
-              if (ICmp->isEquality() && isa<LoadInst>(OpI)) {
-                bool AnySigned = false;
-                bool AllNonUnsignedICmp = true;
-                for (const User *U : OpI->users()) {
-                  auto *ICI = dyn_cast<ICmpInst>(U);
-                  if (!ICI || ICI->isUnsigned()) {
-                    AllNonUnsignedICmp = false;
-                    break;
-                  }
-                  AnySigned |= ICI->isSigned();
-                }
-                if (AllNonUnsignedICmp && AnySigned)
-                  continue;
-              }
-#endif // SIFIVE_CUSTOMIZATION
               MadeChange |= TryToPromote(OpI, PromotedWidth, LI);
               break;
             }
