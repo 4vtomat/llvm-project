@@ -107,7 +107,7 @@ define void @load(ptr %p) {
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %101 = load <vscale x 8 x ptr>, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %102 = load <vscale x 16 x ptr>, ptr %p, align 128
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 64 for instruction: %103 = load <vscale x 32 x ptr>, ptr %p, align 256
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
 ; SIZE-LABEL: 'load'
 ; SIZE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %1 = load i8, ptr %p, align 1
@@ -407,7 +407,7 @@ define void @store(ptr %p) {
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: store <vscale x 8 x ptr> undef, ptr %p, align 64
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: store <vscale x 16 x ptr> undef, ptr %p, align 128
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 64 for instruction: store <vscale x 32 x ptr> undef, ptr %p, align 256
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
 ; SIZE-LABEL: 'store'
 ; SIZE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store i8 undef, ptr %p, align 1
@@ -580,7 +580,7 @@ define void @store_of_constant(ptr %p) {
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: store <4 x i32> <i32 2, i32 4, i32 6, i32 8>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: store <4 x i32> <i32 -1, i32 0, i32 2, i32 1>, ptr %p, align 16
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: store <4 x i32> <i32 256, i32 4096, i32 57, i32 1>, ptr %p, align 16
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
 ; SIZE-LABEL: 'store_of_constant'
 ; SIZE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <4 x i32> poison, ptr %p, align 16

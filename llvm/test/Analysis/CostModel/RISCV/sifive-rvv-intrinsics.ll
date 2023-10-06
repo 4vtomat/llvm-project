@@ -14,7 +14,7 @@ define void @unsupported_fp_ops(<vscale x 4 x float> %vec) {
 ; CHECK-NEXT:  Cost Model: Invalid cost for instruction: %log10 = call <vscale x 4 x float> @llvm.log10.nxv4f32(<vscale x 4 x float> %vec)
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 7 for instruction: %rint = call <vscale x 4 x float> @llvm.rint.nxv4f32(<vscale x 4 x float> %vec)
 ; CHECK-NEXT:  Cost Model: Invalid cost for instruction: %nearbyint = call <vscale x 4 x float> @llvm.nearbyint.nxv4f32(<vscale x 4 x float> %vec)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
 
   %sin = call <vscale x 4 x float> @llvm.sin.nxv4f32(<vscale x 4 x float> %vec)

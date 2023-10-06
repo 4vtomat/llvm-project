@@ -180,7 +180,7 @@ define void @extractelement_int(i32 %x) {
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 17 for instruction: %nxv4f64_x = extractelement <vscale x 4 x double> undef, i32 %x
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 25 for instruction: %nxv8f64_x = extractelement <vscale x 8 x double> undef, i32 %x
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 40 for instruction: %nxv16f64_x = extractelement <vscale x 16 x double> undef, i32 %x
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
 ; CODESIZE-LABEL: 'extractelement_int'
 ; CODESIZE-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %v2i1_0 = extractelement <2 x i1> undef, i32 0

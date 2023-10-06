@@ -96,7 +96,7 @@ define void @powi(i32 %vl) {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 28 for instruction: %vpnxv16f16 = call <vscale x 16 x half> @llvm.vp.powi.nxv16f16.i32(<vscale x 16 x half> undef, i32 42, <vscale x 16 x i1> undef, i32 %vl)
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 56 for instruction: %vpnxv16f32 = call <vscale x 16 x float> @llvm.vp.powi.nxv16f32.i32(<vscale x 16 x float> undef, i32 42, <vscale x 16 x i1> undef, i32 %vl)
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 112 for instruction: %vpnxv16f64 = call <vscale x 16 x double> @llvm.vp.powi.nxv16f64.i32(<vscale x 16 x double> undef, i32 42, <vscale x 16 x i1> undef, i32 %vl)
-; CHECK-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
   %f16 = call half @llvm.powi.f16.i32(half undef, i32 42)
   %f32 = call float @llvm.powi.f32.i32(float undef, i32 42)

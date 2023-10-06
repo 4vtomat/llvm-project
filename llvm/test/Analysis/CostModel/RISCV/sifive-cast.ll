@@ -41,7 +41,7 @@ define void @ext() {
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %36 = zext <8 x i1> undef to <8 x i32>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %37 = sext <8 x i1> undef to <8 x i64>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %38 = zext <8 x i1> undef to <8 x i64>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
   sext <4 x i8>  undef to <4 x i16>
   zext <4 x i8>  undef to <4 x i16>
@@ -147,7 +147,7 @@ define void @trunc() {
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %s32i1i16 = trunc <vscale x 32 x i16> undef to <vscale x 32 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 65 for instruction: %s32i1i32 = trunc <vscale x 32 x i32> undef to <vscale x 32 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 131 for instruction: %s32i1i64 = trunc <vscale x 32 x i64> undef to <vscale x 32 x i1>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
   %s1i8i16 = trunc <vscale x 1 x i16> undef to <vscale x 1 x i8>
   %s1i8i32 = trunc <vscale x 1 x i32> undef to <vscale x 1 x i8>
@@ -222,7 +222,7 @@ define void @fpext() {
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %1 = fpext <8 x half> undef to <8 x float>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %2 = fpext <8 x half> undef to <8 x double>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %3 = fpext <8 x float> undef to <8 x double>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
   fpext <8 x half>  undef to <8 x float>
   fpext <8 x half>  undef to <8 x double>
@@ -235,7 +235,7 @@ define void @ftrunc() {
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %1 = fptrunc <8 x float> undef to <8 x half>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %2 = fptrunc <8 x double> undef to <8 x half>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %3 = fptrunc <8 x double> undef to <8 x float>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
   fptrunc <8 x float> undef to <8 x half>
   fptrunc <8 x double> undef to <8 x half>
@@ -271,7 +271,7 @@ define void @fp_to_int() {
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %24 = fptoui <4 x float> undef to <4 x i64>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %25 = fptoui <4 x double> undef to <4 x i16>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %26 = fptoui <4 x double> undef to <4 x i1>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
   fptosi <4 x half> undef to <4 x i8>
   fptosi <4 x float> undef to <4 x i8>
@@ -332,7 +332,7 @@ define void @int_to_fp() {
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %24 = uitofp <4 x i64> undef to <4 x float>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %25 = uitofp <4 x i16> undef to <4 x double>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %26 = uitofp <4 x i1> undef to <4 x double>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: ret void
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
   sitofp <4 x i8> undef to <4 x half>
   sitofp <4 x i8> undef to <4 x float>
