@@ -67,14 +67,14 @@ code generation, and more, of the generated executable.
 |===
 h|Compiler Option h|Description
 
-|-march/-mtune/-mcpu
+|-march=/-mtune=/-mcpu=
 |These options are used together to specify code generation and optimization for specific SiFive processors.
 These options are further described in <<march-mtune-mcpu>>.
 
-* `-march`: generates code for specific SiFive processors.
+* `-march`: generates code for processors that support specified extensions.
 Using this option may produce incompatible binaries across all SiFive processors.
-* `-mtune`: performs optimization for specific SiFive processors.
-Does not change the extended instruction sets to be used.
+* `-mtune`: performs optimization for specific SiFive processor.
+Does not change the extension instruction sets to be used.
 * `-mcpu`: equal to `-march + -mtune`. Sets the default `-march` and `-mtune` at the same time.
 
 |-mllvm -allow-epilog-peeling
@@ -92,7 +92,7 @@ disabling compiler support of the v0.10 intrinsics.
 |The SiFive pass:[C/C++] compiler employs a Vector Length Agnostic (VLA) vectorizer by default at `-O2` and above (see <<section-vectorizer>>).
 This option enables the Vector Length Specific (VLS) vectorizer instead of the default VLA vectorizer.
 
-|-mllvm -vector-primary-lmul-min
+|-mllvm -vector-primary-lmul-min=
 |*[Experimental] This option may be deprecated and removed in a future release.*
 
 Limits the exponent of the minimum primary LMUL considered by the VLA vectorizer's cost model.
@@ -101,7 +101,7 @@ Fractional LMULs are currently not supported.
 Acceptable values are [0,1,2,3].
 This option does not force vectorization.
 
-|-mllvm -vector-primary-lmul-max
+|-mllvm -vector-primary-lmul-max=
 |*[Experimental] This option may be deprecated and removed in a future release.*
 
 Limits the exponent of the maximum primary LMUL considered by the VLA vectorizer's cost model.
@@ -109,6 +109,14 @@ The default value is 0, meaning `LMUL=pow(2,0)=1`.
 Fractional LMULs are currently not supported.
 Acceptable values are [0,1,2,3].
 This option does not force vectorization.
+
+|-mllvm -riscv-mem-to-rvv=true/false
+|*[Experimental] This option may be deprecated and removed in a future release.*
+
+Enables or disables inline expansion of memcpy/memset/memmove using a loop of
+RISCV-V vector instructions when available. Default is enabled. Disabling will
+use a library call or scalar instructions.
+
 |===
 
 [[march-mtune-mcpu]]
@@ -118,7 +126,7 @@ This option does not force vectorization.
 ** The `-march` string (e.g., `rv32imafdc`) specifies processors (e.g., `rv32i`) and supported RISC-V extensions (e.g., `mafdc`)
 ** Using this option may produce incompatible binaries across all SiFive processors
 * Set `-mtune` to perform optimizations for the specified processor
-** Does not change the extended instruction sets to be used
+** Does not change the extension instruction sets to be used
 * Set `-mcpu` to set the default `-march` and default `-mtune` at the same time
 ** `-mcpu = -march + -mtune`
 
@@ -138,7 +146,7 @@ To compile a `hello` example for a 21G3 P550 platform:
 $ riscv64-unknown-elf-clang *-march=rv64imafdc_zba_zbb -mtune=sifive-p550* hello.c
 ----
 
-<<table-arch-options>> list the default `-march`/`-mtune` options per each `-mcpu` target. `-mcpu` represents CPU name and may be infixed or suffixed by a letter that corresponds to SiFive Core IP release as specified in the table. For example `-mcpu=sifive-x280` targets X280 released in 21G2 Core IP release, `-mcpu=sifive-x280n` targets X280 released in 21G3 Core IP release, `-mcpu=sifive-x280o` targets X280 released in 22G1 Core IP release and above.
+<<table-arch-options>> list the default `-march`/`-mtune` options per each `-mcpu` target. `-mcpu` represents CPU name and may be infixed or suffixed by a letter that corresponds to SiFive Core IP release as specified in the table. For example, `-mcpu=sifive-x280` targets X280 released in 21G2 Core IP release, `-mcpu=sifive-x280n` targets X280 released in 21G3 Core IP release, `-mcpu=sifive-x280o` targets X280 released in 22G1 Core IP release and above.
 Support of options starts from the compiler release specified in the table.
 
 // For PDF formatting
@@ -196,7 +204,7 @@ h|Core IP Version h|Compiler Version h|`-mcpu` h|Default `-march` h|Default `-mt
 |21G2 |2021.06.3 and above |sifive-p270
 |`rv64imafdcv_zvfh_zba_zbb_zvl256b`
 
-|sifive-270
+|sifive-p270
 
 |23G2 and above |2023.10.0 and above |sifive-e20r |`rv32imc_zicsr_zifencei_zba_zbb_zcb_zcmp_zcmt` |rocket
 |23G2 and above |2023.10.0 and above |sifive-e21r |`rv32imac_zicsr_zifencei_zihpm_zba_zbb_zcb_zcmp_zcmt_zkt` |rocket
