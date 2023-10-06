@@ -23,8 +23,7 @@ define <7 x i1> @fcmp_oeq_vv_v7f16(<7 x half> %va, <7 x half> %vb, <7 x i1> %m, 
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfeq.vv v8, v12, v10, v0.t
-; ZVFHMIN-NEXT:    vmv1r.v v0, v8
+; ZVFHMIN-NEXT:    vmfeq.vv v0, v12, v10, v0.t
 ; ZVFHMIN-NEXT:    ret
   %v = call <7 x i1> @llvm.vp.fcmp.v7f16(<7 x half> %va, <7 x half> %vb, metadata !"oeq", <7 x i1> %m, i32 %evl)
   ret <7 x i1> %v
@@ -45,8 +44,7 @@ define <8 x i1> @fcmp_oeq_vv_v8f16(<8 x half> %va, <8 x half> %vb, <8 x i1> %m, 
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfeq.vv v8, v12, v10, v0.t
-; ZVFHMIN-NEXT:    vmv1r.v v0, v8
+; ZVFHMIN-NEXT:    vmfeq.vv v0, v12, v10, v0.t
 ; ZVFHMIN-NEXT:    ret
   %v = call <8 x i1> @llvm.vp.fcmp.v8f16(<8 x half> %va, <8 x half> %vb, metadata !"oeq", <8 x i1> %m, i32 %evl)
   ret <8 x i1> %v
@@ -68,10 +66,9 @@ define <8 x i1> @fcmp_oeq_vf_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i32 zer
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfeq.vv v8, v10, v12, v0.t
-; ZVFHMIN-NEXT:    vmv1r.v v0, v8
+; ZVFHMIN-NEXT:    vmfeq.vv v0, v10, v8, v0.t
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
   %vb = shufflevector <8 x half> %elt.head, <8 x half> poison, <8 x i32> zeroinitializer
@@ -95,10 +92,9 @@ define <8 x i1> @fcmp_oeq_vf_swap_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i3
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfeq.vv v8, v12, v10, v0.t
-; ZVFHMIN-NEXT:    vmv1r.v v0, v8
+; ZVFHMIN-NEXT:    vmfeq.vv v0, v8, v10, v0.t
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
   %vb = shufflevector <8 x half> %elt.head, <8 x half> poison, <8 x i32> zeroinitializer
@@ -117,10 +113,9 @@ define <8 x i1> @fcmp_ogt_vv_v8f16(<8 x half> %va, <8 x half> %vb, <8 x i1> %m, 
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmflt.vv v8, v12, v10, v0.t
-; ZVFHMIN-NEXT:    vmv1r.v v0, v8
+; ZVFHMIN-NEXT:    vmflt.vv v0, v8, v10, v0.t
 ; ZVFHMIN-NEXT:    ret
   %v = call <8 x i1> @llvm.vp.fcmp.v8f16(<8 x half> %va, <8 x half> %vb, metadata !"ogt", <8 x i1> %m, i32 %evl)
   ret <8 x i1> %v
@@ -142,10 +137,9 @@ define <8 x i1> @fcmp_ogt_vf_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i32 zer
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmflt.vv v8, v12, v10, v0.t
-; ZVFHMIN-NEXT:    vmv1r.v v0, v8
+; ZVFHMIN-NEXT:    vmflt.vv v0, v8, v10, v0.t
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
   %vb = shufflevector <8 x half> %elt.head, <8 x half> poison, <8 x i32> zeroinitializer
@@ -169,10 +163,9 @@ define <8 x i1> @fcmp_ogt_vf_swap_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i3
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmflt.vv v8, v10, v12, v0.t
-; ZVFHMIN-NEXT:    vmv1r.v v0, v8
+; ZVFHMIN-NEXT:    vmflt.vv v0, v10, v8, v0.t
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
   %vb = shufflevector <8 x half> %elt.head, <8 x half> poison, <8 x i32> zeroinitializer
@@ -191,10 +184,9 @@ define <8 x i1> @fcmp_oge_vv_v8f16(<8 x half> %va, <8 x half> %vb, <8 x i1> %m, 
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfle.vv v8, v12, v10, v0.t
-; ZVFHMIN-NEXT:    vmv1r.v v0, v8
+; ZVFHMIN-NEXT:    vmfle.vv v0, v8, v10, v0.t
 ; ZVFHMIN-NEXT:    ret
   %v = call <8 x i1> @llvm.vp.fcmp.v8f16(<8 x half> %va, <8 x half> %vb, metadata !"oge", <8 x i1> %m, i32 %evl)
   ret <8 x i1> %v
@@ -216,10 +208,9 @@ define <8 x i1> @fcmp_oge_vf_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i32 zer
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfle.vv v8, v12, v10, v0.t
-; ZVFHMIN-NEXT:    vmv1r.v v0, v8
+; ZVFHMIN-NEXT:    vmfle.vv v0, v8, v10, v0.t
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
   %vb = shufflevector <8 x half> %elt.head, <8 x half> poison, <8 x i32> zeroinitializer
@@ -243,10 +234,9 @@ define <8 x i1> @fcmp_oge_vf_swap_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i3
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfle.vv v8, v10, v12, v0.t
-; ZVFHMIN-NEXT:    vmv1r.v v0, v8
+; ZVFHMIN-NEXT:    vmfle.vv v0, v10, v8, v0.t
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
   %vb = shufflevector <8 x half> %elt.head, <8 x half> poison, <8 x i32> zeroinitializer
@@ -267,8 +257,7 @@ define <8 x i1> @fcmp_olt_vv_v8f16(<8 x half> %va, <8 x half> %vb, <8 x i1> %m, 
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmflt.vv v8, v12, v10, v0.t
-; ZVFHMIN-NEXT:    vmv1r.v v0, v8
+; ZVFHMIN-NEXT:    vmflt.vv v0, v12, v10, v0.t
 ; ZVFHMIN-NEXT:    ret
   %v = call <8 x i1> @llvm.vp.fcmp.v8f16(<8 x half> %va, <8 x half> %vb, metadata !"olt", <8 x i1> %m, i32 %evl)
   ret <8 x i1> %v
@@ -290,10 +279,9 @@ define <8 x i1> @fcmp_olt_vf_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i32 zer
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmflt.vv v8, v10, v12, v0.t
-; ZVFHMIN-NEXT:    vmv1r.v v0, v8
+; ZVFHMIN-NEXT:    vmflt.vv v0, v10, v8, v0.t
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
   %vb = shufflevector <8 x half> %elt.head, <8 x half> poison, <8 x i32> zeroinitializer
@@ -317,10 +305,9 @@ define <8 x i1> @fcmp_olt_vf_swap_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i3
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmflt.vv v8, v12, v10, v0.t
-; ZVFHMIN-NEXT:    vmv1r.v v0, v8
+; ZVFHMIN-NEXT:    vmflt.vv v0, v8, v10, v0.t
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
   %vb = shufflevector <8 x half> %elt.head, <8 x half> poison, <8 x i32> zeroinitializer
@@ -341,8 +328,7 @@ define <8 x i1> @fcmp_ole_vv_v8f16(<8 x half> %va, <8 x half> %vb, <8 x i1> %m, 
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfle.vv v8, v12, v10, v0.t
-; ZVFHMIN-NEXT:    vmv1r.v v0, v8
+; ZVFHMIN-NEXT:    vmfle.vv v0, v12, v10, v0.t
 ; ZVFHMIN-NEXT:    ret
   %v = call <8 x i1> @llvm.vp.fcmp.v8f16(<8 x half> %va, <8 x half> %vb, metadata !"ole", <8 x i1> %m, i32 %evl)
   ret <8 x i1> %v
@@ -364,10 +350,9 @@ define <8 x i1> @fcmp_ole_vf_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i32 zer
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfle.vv v8, v10, v12, v0.t
-; ZVFHMIN-NEXT:    vmv1r.v v0, v8
+; ZVFHMIN-NEXT:    vmfle.vv v0, v10, v8, v0.t
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
   %vb = shufflevector <8 x half> %elt.head, <8 x half> poison, <8 x i32> zeroinitializer
@@ -391,10 +376,9 @@ define <8 x i1> @fcmp_ole_vf_swap_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i3
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfle.vv v8, v12, v10, v0.t
-; ZVFHMIN-NEXT:    vmv1r.v v0, v8
+; ZVFHMIN-NEXT:    vmfle.vv v0, v8, v10, v0.t
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
   %vb = shufflevector <8 x half> %elt.head, <8 x half> poison, <8 x i32> zeroinitializer
@@ -443,11 +427,11 @@ define <8 x i1> @fcmp_one_vf_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i32 zer
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmflt.vv v8, v10, v12, v0.t
-; ZVFHMIN-NEXT:    vmflt.vv v9, v12, v10, v0.t
-; ZVFHMIN-NEXT:    vmor.mm v0, v9, v8
+; ZVFHMIN-NEXT:    vmflt.vv v12, v10, v8, v0.t
+; ZVFHMIN-NEXT:    vmflt.vv v8, v8, v10, v0.t
+; ZVFHMIN-NEXT:    vmor.mm v0, v8, v12
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
   %vb = shufflevector <8 x half> %elt.head, <8 x half> poison, <8 x i32> zeroinitializer
@@ -473,11 +457,11 @@ define <8 x i1> @fcmp_one_vf_swap_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i3
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmflt.vv v8, v12, v10, v0.t
-; ZVFHMIN-NEXT:    vmflt.vv v9, v10, v12, v0.t
-; ZVFHMIN-NEXT:    vmor.mm v0, v9, v8
+; ZVFHMIN-NEXT:    vmflt.vv v12, v8, v10, v0.t
+; ZVFHMIN-NEXT:    vmflt.vv v8, v10, v8, v0.t
+; ZVFHMIN-NEXT:    vmor.mm v0, v8, v12
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
   %vb = shufflevector <8 x half> %elt.head, <8 x half> poison, <8 x i32> zeroinitializer
@@ -619,11 +603,11 @@ define <8 x i1> @fcmp_ueq_vf_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i32 zer
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmflt.vv v8, v10, v12, v0.t
-; ZVFHMIN-NEXT:    vmflt.vv v9, v12, v10, v0.t
-; ZVFHMIN-NEXT:    vmnor.mm v0, v9, v8
+; ZVFHMIN-NEXT:    vmflt.vv v12, v10, v8, v0.t
+; ZVFHMIN-NEXT:    vmflt.vv v8, v8, v10, v0.t
+; ZVFHMIN-NEXT:    vmnor.mm v0, v8, v12
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
   %vb = shufflevector <8 x half> %elt.head, <8 x half> poison, <8 x i32> zeroinitializer
@@ -649,11 +633,11 @@ define <8 x i1> @fcmp_ueq_vf_swap_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i3
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmflt.vv v8, v12, v10, v0.t
-; ZVFHMIN-NEXT:    vmflt.vv v9, v10, v12, v0.t
-; ZVFHMIN-NEXT:    vmnor.mm v0, v9, v8
+; ZVFHMIN-NEXT:    vmflt.vv v12, v8, v10, v0.t
+; ZVFHMIN-NEXT:    vmflt.vv v8, v10, v8, v0.t
+; ZVFHMIN-NEXT:    vmnor.mm v0, v8, v12
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
   %vb = shufflevector <8 x half> %elt.head, <8 x half> poison, <8 x i32> zeroinitializer
@@ -699,9 +683,9 @@ define <8 x i1> @fcmp_ugt_vf_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i32 zer
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfle.vv v8, v10, v12, v0.t
+; ZVFHMIN-NEXT:    vmfle.vv v8, v10, v8, v0.t
 ; ZVFHMIN-NEXT:    vmnot.m v0, v8
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
@@ -727,9 +711,9 @@ define <8 x i1> @fcmp_ugt_vf_swap_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i3
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfle.vv v8, v12, v10, v0.t
+; ZVFHMIN-NEXT:    vmfle.vv v8, v8, v10, v0.t
 ; ZVFHMIN-NEXT:    vmnot.m v0, v8
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
@@ -776,9 +760,9 @@ define <8 x i1> @fcmp_uge_vf_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i32 zer
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmflt.vv v8, v10, v12, v0.t
+; ZVFHMIN-NEXT:    vmflt.vv v8, v10, v8, v0.t
 ; ZVFHMIN-NEXT:    vmnot.m v0, v8
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
@@ -804,9 +788,9 @@ define <8 x i1> @fcmp_uge_vf_swap_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i3
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmflt.vv v8, v12, v10, v0.t
+; ZVFHMIN-NEXT:    vmflt.vv v8, v8, v10, v0.t
 ; ZVFHMIN-NEXT:    vmnot.m v0, v8
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
@@ -827,9 +811,9 @@ define <8 x i1> @fcmp_ult_vv_v8f16(<8 x half> %va, <8 x half> %vb, <8 x i1> %m, 
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfle.vv v8, v12, v10, v0.t
+; ZVFHMIN-NEXT:    vmfle.vv v8, v8, v10, v0.t
 ; ZVFHMIN-NEXT:    vmnot.m v0, v8
 ; ZVFHMIN-NEXT:    ret
   %v = call <8 x i1> @llvm.vp.fcmp.v8f16(<8 x half> %va, <8 x half> %vb, metadata !"ult", <8 x i1> %m, i32 %evl)
@@ -853,9 +837,9 @@ define <8 x i1> @fcmp_ult_vf_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i32 zer
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfle.vv v8, v12, v10, v0.t
+; ZVFHMIN-NEXT:    vmfle.vv v8, v8, v10, v0.t
 ; ZVFHMIN-NEXT:    vmnot.m v0, v8
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
@@ -881,9 +865,9 @@ define <8 x i1> @fcmp_ult_vf_swap_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i3
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfle.vv v8, v10, v12, v0.t
+; ZVFHMIN-NEXT:    vmfle.vv v8, v10, v8, v0.t
 ; ZVFHMIN-NEXT:    vmnot.m v0, v8
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
@@ -904,9 +888,9 @@ define <8 x i1> @fcmp_ule_vv_v8f16(<8 x half> %va, <8 x half> %vb, <8 x i1> %m, 
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmflt.vv v8, v12, v10, v0.t
+; ZVFHMIN-NEXT:    vmflt.vv v8, v8, v10, v0.t
 ; ZVFHMIN-NEXT:    vmnot.m v0, v8
 ; ZVFHMIN-NEXT:    ret
   %v = call <8 x i1> @llvm.vp.fcmp.v8f16(<8 x half> %va, <8 x half> %vb, metadata !"ule", <8 x i1> %m, i32 %evl)
@@ -930,9 +914,9 @@ define <8 x i1> @fcmp_ule_vf_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i32 zer
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmflt.vv v8, v12, v10, v0.t
+; ZVFHMIN-NEXT:    vmflt.vv v8, v8, v10, v0.t
 ; ZVFHMIN-NEXT:    vmnot.m v0, v8
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
@@ -958,9 +942,9 @@ define <8 x i1> @fcmp_ule_vf_swap_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i3
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmflt.vv v8, v10, v12, v0.t
+; ZVFHMIN-NEXT:    vmflt.vv v8, v10, v8, v0.t
 ; ZVFHMIN-NEXT:    vmnot.m v0, v8
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
@@ -982,8 +966,7 @@ define <8 x i1> @fcmp_une_vv_v8f16(<8 x half> %va, <8 x half> %vb, <8 x i1> %m, 
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v9
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v8
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfne.vv v8, v12, v10, v0.t
-; ZVFHMIN-NEXT:    vmv1r.v v0, v8
+; ZVFHMIN-NEXT:    vmfne.vv v0, v12, v10, v0.t
 ; ZVFHMIN-NEXT:    ret
   %v = call <8 x i1> @llvm.vp.fcmp.v8f16(<8 x half> %va, <8 x half> %vb, metadata !"une", <8 x i1> %m, i32 %evl)
   ret <8 x i1> %v
@@ -1005,10 +988,9 @@ define <8 x i1> @fcmp_une_vf_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i32 zer
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfne.vv v8, v10, v12, v0.t
-; ZVFHMIN-NEXT:    vmv1r.v v0, v8
+; ZVFHMIN-NEXT:    vmfne.vv v0, v10, v8, v0.t
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
   %vb = shufflevector <8 x half> %elt.head, <8 x half> poison, <8 x i32> zeroinitializer
@@ -1032,10 +1014,9 @@ define <8 x i1> @fcmp_une_vf_swap_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i3
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v9, v10
 ; ZVFHMIN-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v10, v8
-; ZVFHMIN-NEXT:    vfwcvt.f.f.v v12, v9
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v9
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; ZVFHMIN-NEXT:    vmfne.vv v8, v12, v10, v0.t
-; ZVFHMIN-NEXT:    vmv1r.v v0, v8
+; ZVFHMIN-NEXT:    vmfne.vv v0, v8, v10, v0.t
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <8 x half> poison, half %b, i32 0
   %vb = shufflevector <8 x half> %elt.head, <8 x half> poison, <8 x i32> zeroinitializer

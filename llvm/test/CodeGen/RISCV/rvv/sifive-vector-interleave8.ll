@@ -62,23 +62,23 @@ define <vscale x 128 x i1> @vector_interleave_nxv128i1_nxv16i1(<vscale x 16 x i1
 ; CHECK-NEXT:    vmsne.vi v8, v8, 0
 ; CHECK-NEXT:    vmsne.vi v0, v10, 0
 ; CHECK-NEXT:    srli a2, a0, 2
-; CHECK-NEXT:    add a3, a2, a2
-; CHECK-NEXT:    vsetvli zero, a3, e8, m1, tu, ma
+; CHECK-NEXT:    add a5, a2, a2
+; CHECK-NEXT:    vsetvli zero, a5, e8, m1, tu, ma
 ; CHECK-NEXT:    add a4, a4, a0
 ; CHECK-NEXT:    vl1r.v v10, (a4)
 ; CHECK-NEXT:    add a4, a4, a0
 ; CHECK-NEXT:    vl1r.v v11, (a4)
 ; CHECK-NEXT:    vslideup.vx v0, v8, a2
-; CHECK-NEXT:    vsetvli a5, zero, e8, m2, ta, ma
+; CHECK-NEXT:    vsetvli a3, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v10, 0
-; CHECK-NEXT:    srli a5, a0, 1
-; CHECK-NEXT:    add a6, a5, a2
+; CHECK-NEXT:    srli a3, a0, 1
+; CHECK-NEXT:    add a6, a3, a2
 ; CHECK-NEXT:    vsetvli zero, a6, e8, m1, tu, ma
 ; CHECK-NEXT:    add a4, a4, a0
 ; CHECK-NEXT:    vl1r.v v10, (a4)
 ; CHECK-NEXT:    add a4, a4, a0
 ; CHECK-NEXT:    vl1r.v v11, (a4)
-; CHECK-NEXT:    vslideup.vx v0, v8, a5
+; CHECK-NEXT:    vslideup.vx v0, v8, a3
 ; CHECK-NEXT:    vsetvli a4, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v10, 0
 ; CHECK-NEXT:    srli a4, a0, 3
@@ -97,7 +97,7 @@ define <vscale x 128 x i1> @vector_interleave_nxv128i1_nxv16i1(<vscale x 16 x i1
 ; CHECK-NEXT:    vl1r.v v11, (t0)
 ; CHECK-NEXT:    vmsne.vi v12, v8, 0
 ; CHECK-NEXT:    vmsne.vi v8, v10, 0
-; CHECK-NEXT:    vsetvli zero, a3, e8, m1, tu, ma
+; CHECK-NEXT:    vsetvli zero, a5, e8, m1, tu, ma
 ; CHECK-NEXT:    add t1, t1, a0
 ; CHECK-NEXT:    vl1r.v v10, (t1)
 ; CHECK-NEXT:    add t1, t1, a0
@@ -110,7 +110,7 @@ define <vscale x 128 x i1> @vector_interleave_nxv128i1_nxv16i1(<vscale x 16 x i1
 ; CHECK-NEXT:    vl1r.v v10, (t1)
 ; CHECK-NEXT:    add a0, t1, a0
 ; CHECK-NEXT:    vl1r.v v11, (a0)
-; CHECK-NEXT:    vslideup.vx v8, v9, a5
+; CHECK-NEXT:    vslideup.vx v8, v9, a3
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v9, v10, 0
 ; CHECK-NEXT:    vsetvli zero, a7, e8, m1, tu, ma

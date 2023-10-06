@@ -476,9 +476,8 @@ define void @vst3_lane_f64(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vlseg3e64.v v8, (a1)
-; CHECK-NEXT:    vmv1r.v v12, v9
-; CHECK-NEXT:    vsetivli zero, 2, e64, m2, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v12, 1
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, tu, ma
+; CHECK-NEXT:    vslideup.vi v8, v9, 1
 ; CHECK-NEXT:    vsetivli zero, 3, e64, m2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v10, 2
 ; CHECK-NEXT:    vse64.v v8, (a0)
@@ -542,9 +541,8 @@ define void @vst3_lane_s64(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vlseg3e64.v v8, (a1)
-; CHECK-NEXT:    vmv1r.v v12, v9
-; CHECK-NEXT:    vsetivli zero, 2, e64, m2, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v12, 1
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, tu, ma
+; CHECK-NEXT:    vslideup.vi v8, v9, 1
 ; CHECK-NEXT:    vsetivli zero, 3, e64, m2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v10, 2
 ; CHECK-NEXT:    vse64.v v8, (a0)
@@ -630,9 +628,8 @@ define void @vst3_lane_u64(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vlseg3e64.v v8, (a1)
-; CHECK-NEXT:    vmv1r.v v12, v9
-; CHECK-NEXT:    vsetivli zero, 2, e64, m2, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v12, 1
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, tu, ma
+; CHECK-NEXT:    vslideup.vi v8, v9, 1
 ; CHECK-NEXT:    vsetivli zero, 3, e64, m2, tu, ma
 ; CHECK-NEXT:    vslideup.vi v8, v10, 2
 ; CHECK-NEXT:    vse64.v v8, (a0)
@@ -997,16 +994,16 @@ define void @vst4_lane_f64(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vlseg4e64.v v9, (a1)
 ; CHECK-NEXT:    vmv1r.v v8, v11
-; CHECK-NEXT:    vmv1r.v v14, v9
-; CHECK-NEXT:    vsetivli zero, 2, e64, m2, tu, ma
-; CHECK-NEXT:    vslideup.vi v14, v10, 1
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, tu, ma
+; CHECK-NEXT:    vslideup.vi v9, v10, 1
+; CHECK-NEXT:    vmv1r.v v10, v9
 ; CHECK-NEXT:    vsetivli zero, 3, e64, m2, tu, ma
-; CHECK-NEXT:    vslideup.vi v14, v8, 2
+; CHECK-NEXT:    vslideup.vi v10, v8, 2
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-; CHECK-NEXT:    vslideup.vi v14, v12, 3
+; CHECK-NEXT:    vslideup.vi v10, v12, 3
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
-; CHECK-NEXT:    vse8.v v14, (a0)
+; CHECK-NEXT:    vse8.v v10, (a0)
 ; CHECK-NEXT:    ret
 entry:
   %vld4 = tail call { <1 x double>, <1 x double>, <1 x double>, <1 x double> } @llvm.aarch64.neon.ld4.v1f64.p0(ptr %in_1)
@@ -1073,16 +1070,16 @@ define void @vst4_lane_s64(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vlseg4e64.v v9, (a1)
 ; CHECK-NEXT:    vmv1r.v v8, v11
-; CHECK-NEXT:    vmv1r.v v14, v9
-; CHECK-NEXT:    vsetivli zero, 2, e64, m2, tu, ma
-; CHECK-NEXT:    vslideup.vi v14, v10, 1
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, tu, ma
+; CHECK-NEXT:    vslideup.vi v9, v10, 1
+; CHECK-NEXT:    vmv1r.v v10, v9
 ; CHECK-NEXT:    vsetivli zero, 3, e64, m2, tu, ma
-; CHECK-NEXT:    vslideup.vi v14, v8, 2
+; CHECK-NEXT:    vslideup.vi v10, v8, 2
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-; CHECK-NEXT:    vslideup.vi v14, v12, 3
+; CHECK-NEXT:    vslideup.vi v10, v12, 3
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
-; CHECK-NEXT:    vse8.v v14, (a0)
+; CHECK-NEXT:    vse8.v v10, (a0)
 ; CHECK-NEXT:    ret
 entry:
   %vld4 = tail call { <1 x i64>, <1 x i64>, <1 x i64>, <1 x i64> } @llvm.aarch64.neon.ld4.v1i64.p0(ptr %in_1)
@@ -1177,16 +1174,16 @@ define void @vst4_lane_u64(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; CHECK-NEXT:    vlseg4e64.v v9, (a1)
 ; CHECK-NEXT:    vmv1r.v v8, v11
-; CHECK-NEXT:    vmv1r.v v14, v9
-; CHECK-NEXT:    vsetivli zero, 2, e64, m2, tu, ma
-; CHECK-NEXT:    vslideup.vi v14, v10, 1
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, tu, ma
+; CHECK-NEXT:    vslideup.vi v9, v10, 1
+; CHECK-NEXT:    vmv1r.v v10, v9
 ; CHECK-NEXT:    vsetivli zero, 3, e64, m2, tu, ma
-; CHECK-NEXT:    vslideup.vi v14, v8, 2
+; CHECK-NEXT:    vslideup.vi v10, v8, 2
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-; CHECK-NEXT:    vslideup.vi v14, v12, 3
+; CHECK-NEXT:    vslideup.vi v10, v12, 3
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
-; CHECK-NEXT:    vse8.v v14, (a0)
+; CHECK-NEXT:    vse8.v v10, (a0)
 ; CHECK-NEXT:    ret
 entry:
   %vld4 = tail call { <1 x i64>, <1 x i64>, <1 x i64>, <1 x i64> } @llvm.aarch64.neon.ld4.v1i64.p0(ptr %in_1)

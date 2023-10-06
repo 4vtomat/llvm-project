@@ -14,17 +14,17 @@ define dso_local void @test(i64 %channel, i32* nocapture readonly %output_shift,
 ; CHECK-NEXT:    slli a6, a5, 2
 ; CHECK-NEXT:    add a7, a1, a6
 ; CHECK-NEXT:    vsetvli zero, a4, e32, m4, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a7)
-; CHECK-NEXT:    vmv.v.i v12, 0
-; CHECK-NEXT:    vmslt.vx v0, v8, zero
+; CHECK-NEXT:    vle32.v v12, (a7)
+; CHECK-NEXT:    vmv.v.i v8, 0
+; CHECK-NEXT:    vmslt.vx v0, v12, zero
 ; CHECK-NEXT:    add a7, a2, a6
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m4, tu, mu
-; CHECK-NEXT:    vrsub.vi v12, v8, 0, v0.t
+; CHECK-NEXT:    vrsub.vi v8, v12, 0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
 ; CHECK-NEXT:    vle32.v v16, (a7)
-; CHECK-NEXT:    vmerge.vim v8, v8, 0, v0
-; CHECK-NEXT:    vsll.vv v8, v16, v8
-; CHECK-NEXT:    vssra.vv v8, v8, v12
+; CHECK-NEXT:    vmerge.vim v12, v12, 0, v0
+; CHECK-NEXT:    vsll.vv v12, v16, v12
+; CHECK-NEXT:    vssra.vv v8, v12, v8
 ; CHECK-NEXT:    add a6, a3, a6
 ; CHECK-NEXT:    vse32.v v8, (a6)
 ; CHECK-NEXT:    sub a0, a0, a4

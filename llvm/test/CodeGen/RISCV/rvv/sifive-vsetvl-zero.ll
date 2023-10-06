@@ -32,7 +32,7 @@ define void @test_vsetvl_avl(<vscale x 1 x double>* %v, i64 signext %avl) nounwi
 ;
 ; CHECK-O0-LABEL: test_vsetvl_avl:
 ; CHECK-O0:       # %bb.0:
-; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, ta, ma
+; CHECK-O0-NEXT:    vsetvli a1, a1, e64, m1, ta, ma
 ; CHECK-O0-NEXT:    # implicit-def: $v9
 ; CHECK-O0-NEXT:    vle64.v v9, (a0)
 ; CHECK-O0-NEXT:    # implicit-def: $v8
@@ -80,7 +80,7 @@ define void @test_vsetvl_zero(<vscale x 1 x double>* %v) nounwind
 ;
 ; CHECK-O0-LABEL: test_vsetvl_zero:
 ; CHECK-O0:       # %bb.0:
-; CHECK-O0-NEXT:    vsetivli zero, 0, e64, m1, ta, ma
+; CHECK-O0-NEXT:    vsetivli a1, 0, e64, m1, ta, ma
 ; CHECK-O0-NEXT:    # implicit-def: $v9
 ; CHECK-O0-NEXT:    vle64.v v9, (a0)
 ; CHECK-O0-NEXT:    # implicit-def: $v8

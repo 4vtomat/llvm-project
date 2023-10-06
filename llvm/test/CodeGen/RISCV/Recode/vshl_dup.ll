@@ -1319,15 +1319,15 @@ define void @vrshl_s16(ptr nocapture noundef readonly %in_0, i16 noundef signext
 ; CHECK-LABEL: vrshl_s16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vle16.v v10, (a0)
+; CHECK-NEXT:    vle16.v v9, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
 ; CHECK-NEXT:    sub a3, a1, a0
 ; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    li a1, 16
-; CHECK-NEXT:    vssra.vx v11, v10, a3
-; CHECK-NEXT:    vmv1r.v v9, v8
+; CHECK-NEXT:    vssra.vx v11, v9, a3
+; CHECK-NEXT:    vmv1r.v v10, v8
 ; CHECK-NEXT:    bltu a3, a1, .LBB32_4
 ; CHECK-NEXT:  # %bb.1: # %entry
 ; CHECK-NEXT:    bltu a0, a1, .LBB32_5
@@ -1335,13 +1335,13 @@ define void @vrshl_s16(ptr nocapture noundef readonly %in_0, i16 noundef signext
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bltu a0, a1, .LBB32_6
 ; CHECK-NEXT:  .LBB32_3: # %entry
-; CHECK-NEXT:    vse16.v v9, (a2)
+; CHECK-NEXT:    vse16.v v10, (a2)
 ; CHECK-NEXT:    ret
 ; CHECK-NEXT:  .LBB32_4: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v11
+; CHECK-NEXT:    vmv1r.v v10, v11
 ; CHECK-NEXT:    bgeu a0, a1, .LBB32_2
 ; CHECK-NEXT:  .LBB32_5: # %entry
-; CHECK-NEXT:    vsll.vx v8, v10, a0
+; CHECK-NEXT:    vsll.vx v8, v9, a0
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB32_3
 ; CHECK-NEXT:  .LBB32_6: # %entry
@@ -1360,15 +1360,15 @@ define void @vrshl_s32(ptr nocapture noundef readonly %in_0, i32 noundef signext
 ; CHECK-LABEL: vrshl_s32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vle32.v v10, (a0)
+; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
 ; CHECK-NEXT:    sub a3, a1, a0
 ; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    li a1, 32
-; CHECK-NEXT:    vssra.vx v11, v10, a3
-; CHECK-NEXT:    vmv1r.v v9, v8
+; CHECK-NEXT:    vssra.vx v11, v9, a3
+; CHECK-NEXT:    vmv1r.v v10, v8
 ; CHECK-NEXT:    bltu a3, a1, .LBB33_4
 ; CHECK-NEXT:  # %bb.1: # %entry
 ; CHECK-NEXT:    bltu a0, a1, .LBB33_5
@@ -1376,13 +1376,13 @@ define void @vrshl_s32(ptr nocapture noundef readonly %in_0, i32 noundef signext
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bltu a0, a1, .LBB33_6
 ; CHECK-NEXT:  .LBB33_3: # %entry
-; CHECK-NEXT:    vse32.v v9, (a2)
+; CHECK-NEXT:    vse32.v v10, (a2)
 ; CHECK-NEXT:    ret
 ; CHECK-NEXT:  .LBB33_4: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v11
+; CHECK-NEXT:    vmv1r.v v10, v11
 ; CHECK-NEXT:    bgeu a0, a1, .LBB33_2
 ; CHECK-NEXT:  .LBB33_5: # %entry
-; CHECK-NEXT:    vsll.vx v8, v10, a0
+; CHECK-NEXT:    vsll.vx v8, v9, a0
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB33_3
 ; CHECK-NEXT:  .LBB33_6: # %entry
@@ -1662,15 +1662,15 @@ define void @vrshlq_s16(ptr nocapture noundef readonly %in_0, i16 noundef signex
 ; CHECK-LABEL: vrshlq_s16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v10, (a0)
+; CHECK-NEXT:    vle16.v v9, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
 ; CHECK-NEXT:    sub a3, a1, a0
 ; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    li a1, 16
-; CHECK-NEXT:    vssra.vx v11, v10, a3
-; CHECK-NEXT:    vmv.v.i v9, 0
+; CHECK-NEXT:    vssra.vx v11, v9, a3
+; CHECK-NEXT:    vmv.v.i v10, 0
 ; CHECK-NEXT:    bltu a3, a1, .LBB40_4
 ; CHECK-NEXT:  # %bb.1: # %entry
 ; CHECK-NEXT:    bltu a0, a1, .LBB40_5
@@ -1678,13 +1678,13 @@ define void @vrshlq_s16(ptr nocapture noundef readonly %in_0, i16 noundef signex
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bltu a0, a1, .LBB40_6
 ; CHECK-NEXT:  .LBB40_3: # %entry
-; CHECK-NEXT:    vse16.v v9, (a2)
+; CHECK-NEXT:    vse16.v v10, (a2)
 ; CHECK-NEXT:    ret
 ; CHECK-NEXT:  .LBB40_4: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v11
+; CHECK-NEXT:    vmv1r.v v10, v11
 ; CHECK-NEXT:    bgeu a0, a1, .LBB40_2
 ; CHECK-NEXT:  .LBB40_5: # %entry
-; CHECK-NEXT:    vsll.vx v8, v10, a0
+; CHECK-NEXT:    vsll.vx v8, v9, a0
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB40_3
 ; CHECK-NEXT:  .LBB40_6: # %entry
@@ -1703,15 +1703,15 @@ define void @vrshlq_s32(ptr nocapture noundef readonly %in_0, i32 noundef signex
 ; CHECK-LABEL: vrshlq_s32:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v10, (a0)
+; CHECK-NEXT:    vle32.v v9, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
 ; CHECK-NEXT:    sub a3, a1, a0
 ; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    li a1, 32
-; CHECK-NEXT:    vssra.vx v11, v10, a3
-; CHECK-NEXT:    vmv.v.i v9, 0
+; CHECK-NEXT:    vssra.vx v11, v9, a3
+; CHECK-NEXT:    vmv.v.i v10, 0
 ; CHECK-NEXT:    bltu a3, a1, .LBB41_4
 ; CHECK-NEXT:  # %bb.1: # %entry
 ; CHECK-NEXT:    bltu a0, a1, .LBB41_5
@@ -1719,13 +1719,13 @@ define void @vrshlq_s32(ptr nocapture noundef readonly %in_0, i32 noundef signex
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bltu a0, a1, .LBB41_6
 ; CHECK-NEXT:  .LBB41_3: # %entry
-; CHECK-NEXT:    vse32.v v9, (a2)
+; CHECK-NEXT:    vse32.v v10, (a2)
 ; CHECK-NEXT:    ret
 ; CHECK-NEXT:  .LBB41_4: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v11
+; CHECK-NEXT:    vmv1r.v v10, v11
 ; CHECK-NEXT:    bgeu a0, a1, .LBB41_2
 ; CHECK-NEXT:  .LBB41_5: # %entry
-; CHECK-NEXT:    vsll.vx v8, v10, a0
+; CHECK-NEXT:    vsll.vx v8, v9, a0
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB41_3
 ; CHECK-NEXT:  .LBB41_6: # %entry
@@ -1744,15 +1744,15 @@ define void @vrshlq_s64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1,
 ; CHECK-LABEL: vrshlq_s64:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; CHECK-NEXT:    vle64.v v10, (a0)
+; CHECK-NEXT:    vle64.v v9, (a0)
 ; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    li a1, 256
 ; CHECK-NEXT:    sub a3, a1, a0
 ; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    li a1, 64
-; CHECK-NEXT:    vssra.vx v11, v10, a3
-; CHECK-NEXT:    vmv.v.i v9, 0
+; CHECK-NEXT:    vssra.vx v11, v9, a3
+; CHECK-NEXT:    vmv.v.i v10, 0
 ; CHECK-NEXT:    bltu a3, a1, .LBB42_4
 ; CHECK-NEXT:  # %bb.1: # %entry
 ; CHECK-NEXT:    bltu a0, a1, .LBB42_5
@@ -1760,13 +1760,13 @@ define void @vrshlq_s64(ptr nocapture noundef readonly %in_0, i64 noundef %in_1,
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bltu a0, a1, .LBB42_6
 ; CHECK-NEXT:  .LBB42_3: # %entry
-; CHECK-NEXT:    vse64.v v9, (a2)
+; CHECK-NEXT:    vse64.v v10, (a2)
 ; CHECK-NEXT:    ret
 ; CHECK-NEXT:  .LBB42_4: # %entry
-; CHECK-NEXT:    vmv1r.v v9, v11
+; CHECK-NEXT:    vmv1r.v v10, v11
 ; CHECK-NEXT:    bgeu a0, a1, .LBB42_2
 ; CHECK-NEXT:  .LBB42_5: # %entry
-; CHECK-NEXT:    vsll.vx v8, v10, a0
+; CHECK-NEXT:    vsll.vx v8, v9, a0
 ; CHECK-NEXT:    li a1, 128
 ; CHECK-NEXT:    bgeu a0, a1, .LBB42_3
 ; CHECK-NEXT:  .LBB42_6: # %entry

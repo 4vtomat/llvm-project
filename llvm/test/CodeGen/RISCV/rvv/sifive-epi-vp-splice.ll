@@ -335,7 +335,7 @@ define <vscale x 16 x i64> @test_vp_splice_nxv16i64(<vscale x 16 x i64> %va, <vs
 ; CHECK-NEXT:    csrr a4, vlenb
 ; CHECK-NEXT:    slli a1, a4, 3
 ; CHECK-NEXT:    add a5, a0, a1
-; CHECK-NEXT:    vl8re64.v v0, (a5)
+; CHECK-NEXT:    vl8re64.v v24, (a5)
 ; CHECK-NEXT:    mv a5, a2
 ; CHECK-NEXT:    bltu a2, a4, .LBB21_2
 ; CHECK-NEXT:  # %bb.1:
@@ -353,7 +353,7 @@ define <vscale x 16 x i64> @test_vp_splice_nxv16i64(<vscale x 16 x i64> %va, <vs
 ; CHECK-NEXT:    slli a6, a6, 5
 ; CHECK-NEXT:    sub sp, sp, a6
 ; CHECK-NEXT:    andi sp, sp, -64
-; CHECK-NEXT:    vl8re64.v v24, (a0)
+; CHECK-NEXT:    vl8re64.v v0, (a0)
 ; CHECK-NEXT:    addi a6, sp, 64
 ; CHECK-NEXT:    vsetvli zero, a5, e64, m8, ta, ma
 ; CHECK-NEXT:    vse64.v v8, (a6)
@@ -372,13 +372,13 @@ define <vscale x 16 x i64> @test_vp_splice_nxv16i64(<vscale x 16 x i64> %va, <vs
 ; CHECK-NEXT:    add a2, a6, a2
 ; CHECK-NEXT:    add a5, a2, a1
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vse64.v v0, (a5)
+; CHECK-NEXT:    vse64.v v24, (a5)
 ; CHECK-NEXT:    bltu a3, a4, .LBB21_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    mv a3, a4
 ; CHECK-NEXT:  .LBB21_4:
 ; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
-; CHECK-NEXT:    vse64.v v24, (a2)
+; CHECK-NEXT:    vse64.v v0, (a2)
 ; CHECK-NEXT:    addi a2, sp, 104
 ; CHECK-NEXT:    add a1, a2, a1
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
@@ -403,7 +403,7 @@ define <vscale x 16 x i64> @test_vp_splice_nxv16i64_negative_offset(<vscale x 16
 ; CHECK-NEXT:    csrr a4, vlenb
 ; CHECK-NEXT:    slli a1, a4, 3
 ; CHECK-NEXT:    add a5, a0, a1
-; CHECK-NEXT:    vl8re64.v v0, (a5)
+; CHECK-NEXT:    vl8re64.v v24, (a5)
 ; CHECK-NEXT:    mv a5, a2
 ; CHECK-NEXT:    bltu a2, a4, .LBB22_2
 ; CHECK-NEXT:  # %bb.1:
@@ -421,7 +421,7 @@ define <vscale x 16 x i64> @test_vp_splice_nxv16i64_negative_offset(<vscale x 16
 ; CHECK-NEXT:    slli a6, a6, 5
 ; CHECK-NEXT:    sub sp, sp, a6
 ; CHECK-NEXT:    andi sp, sp, -64
-; CHECK-NEXT:    vl8re64.v v24, (a0)
+; CHECK-NEXT:    vl8re64.v v0, (a0)
 ; CHECK-NEXT:    addi a6, sp, 64
 ; CHECK-NEXT:    vsetvli zero, a5, e64, m8, ta, ma
 ; CHECK-NEXT:    vse64.v v8, (a6)
@@ -440,13 +440,13 @@ define <vscale x 16 x i64> @test_vp_splice_nxv16i64_negative_offset(<vscale x 16
 ; CHECK-NEXT:    add a2, a6, a2
 ; CHECK-NEXT:    add a5, a2, a1
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vse64.v v0, (a5)
+; CHECK-NEXT:    vse64.v v24, (a5)
 ; CHECK-NEXT:    bltu a3, a4, .LBB22_4
 ; CHECK-NEXT:  # %bb.3:
 ; CHECK-NEXT:    mv a3, a4
 ; CHECK-NEXT:  .LBB22_4:
 ; CHECK-NEXT:    vsetvli zero, a3, e64, m8, ta, ma
-; CHECK-NEXT:    vse64.v v24, (a2)
+; CHECK-NEXT:    vse64.v v0, (a2)
 ; CHECK-NEXT:    addi a2, a2, -8
 ; CHECK-NEXT:    vle64.v v8, (a2)
 ; CHECK-NEXT:    add a1, a2, a1

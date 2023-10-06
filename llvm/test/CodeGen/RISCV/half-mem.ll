@@ -123,11 +123,11 @@ define half @flh_fsh_global(half %a, half %b) nounwind {
 ; CHECKIZHINX:       # %bb.0:
 ; CHECKIZHINX-NEXT:    fadd.h a0, a0, a1
 ; CHECKIZHINX-NEXT:    lui a1, %hi(G)
-; CHECKIZHINX-NEXT:    lh zero, %lo(G)(a1)
-; CHECKIZHINX-NEXT:    addi a2, a1, %lo(G)
-; CHECKIZHINX-NEXT:    sh a0, %lo(G)(a1)
-; CHECKIZHINX-NEXT:    lh zero, 18(a2)
-; CHECKIZHINX-NEXT:    sh a0, 18(a2)
+; CHECKIZHINX-NEXT:    addi a1, a1, %lo(G)
+; CHECKIZHINX-NEXT:    lh zero, 0(a1)
+; CHECKIZHINX-NEXT:    sh a0, 0(a1)
+; CHECKIZHINX-NEXT:    lh zero, 18(a1)
+; CHECKIZHINX-NEXT:    sh a0, 18(a1)
 ; CHECKIZHINX-NEXT:    ret
 ;
 ; CHECKIZFHMIN-LABEL: flh_fsh_global:
@@ -151,11 +151,11 @@ define half @flh_fsh_global(half %a, half %b) nounwind {
 ; CHECKIZHINXMIN-NEXT:    fadd.s a0, a0, a1
 ; CHECKIZHINXMIN-NEXT:    fcvt.h.s a0, a0
 ; CHECKIZHINXMIN-NEXT:    lui a1, %hi(G)
-; CHECKIZHINXMIN-NEXT:    lh zero, %lo(G)(a1)
-; CHECKIZHINXMIN-NEXT:    addi a2, a1, %lo(G)
-; CHECKIZHINXMIN-NEXT:    sh a0, %lo(G)(a1)
-; CHECKIZHINXMIN-NEXT:    lh zero, 18(a2)
-; CHECKIZHINXMIN-NEXT:    sh a0, 18(a2)
+; CHECKIZHINXMIN-NEXT:    addi a1, a1, %lo(G)
+; CHECKIZHINXMIN-NEXT:    lh zero, 0(a1)
+; CHECKIZHINXMIN-NEXT:    sh a0, 0(a1)
+; CHECKIZHINXMIN-NEXT:    lh zero, 18(a1)
+; CHECKIZHINXMIN-NEXT:    sh a0, 18(a1)
 ; CHECKIZHINXMIN-NEXT:    ret
   %1 = fadd half %a, %b
   %2 = load volatile half, ptr @G

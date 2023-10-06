@@ -215,9 +215,9 @@ define <vscale x 32 x half> @vfmerge_fv_nxv32f16(<vscale x 32 x half> %va, half 
 ; CHECK-ZVFHMIN:       # %bb.0:
 ; CHECK-ZVFHMIN-NEXT:    fcvt.s.h fa5, fa0
 ; CHECK-ZVFHMIN-NEXT:    vsetvli a0, zero, e32, m8, ta, ma
-; CHECK-ZVFHMIN-NEXT:    vfmv.v.f v24, fa5
+; CHECK-ZVFHMIN-NEXT:    vfmv.v.f v16, fa5
 ; CHECK-ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
-; CHECK-ZVFHMIN-NEXT:    vfncvt.f.f.w v16, v24
+; CHECK-ZVFHMIN-NEXT:    vfncvt.f.f.w v16, v16
 ; CHECK-ZVFHMIN-NEXT:    vmv.v.v v20, v16
 ; CHECK-ZVFHMIN-NEXT:    vsetvli a0, zero, e16, m8, ta, ma
 ; CHECK-ZVFHMIN-NEXT:    vmerge.vvm v8, v8, v16, v0

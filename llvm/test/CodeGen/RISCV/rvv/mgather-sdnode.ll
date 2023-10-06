@@ -196,15 +196,13 @@ define <vscale x 4 x i8> @mgather_truemask_nxv4i8(<vscale x 4 x ptr> %ptrs, <vsc
 ; RV32-LABEL: mgather_truemask_nxv4i8:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
-; RV32-NEXT:    vluxei32.v v10, (zero), v8
-; RV32-NEXT:    vmv1r.v v8, v10
+; RV32-NEXT:    vluxei32.v v8, (zero), v8
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: mgather_truemask_nxv4i8:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
-; RV64-NEXT:    vluxei64.v v12, (zero), v8
-; RV64-NEXT:    vmv1r.v v8, v12
+; RV64-NEXT:    vluxei64.v v8, (zero), v8
 ; RV64-NEXT:    ret
   %mhead = insertelement <vscale x 4 x i1> poison, i1 1, i32 0
   %mtrue = shufflevector <vscale x 4 x i1> %mhead, <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer
@@ -419,15 +417,13 @@ define <vscale x 4 x i16> @mgather_truemask_nxv4i16(<vscale x 4 x ptr> %ptrs, <v
 ; RV32-LABEL: mgather_truemask_nxv4i16:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
-; RV32-NEXT:    vluxei32.v v10, (zero), v8
-; RV32-NEXT:    vmv.v.v v8, v10
+; RV32-NEXT:    vluxei32.v v8, (zero), v8
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: mgather_truemask_nxv4i16:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
-; RV64-NEXT:    vluxei64.v v12, (zero), v8
-; RV64-NEXT:    vmv.v.v v8, v12
+; RV64-NEXT:    vluxei64.v v8, (zero), v8
 ; RV64-NEXT:    ret
   %mhead = insertelement <vscale x 4 x i1> poison, i1 1, i32 0
   %mtrue = shufflevector <vscale x 4 x i1> %mhead, <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer
@@ -672,8 +668,7 @@ define <vscale x 4 x i32> @mgather_truemask_nxv4i32(<vscale x 4 x ptr> %ptrs, <v
 ; RV64-LABEL: mgather_truemask_nxv4i32:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    vsetvli a0, zero, e32, m2, ta, ma
-; RV64-NEXT:    vluxei64.v v12, (zero), v8
-; RV64-NEXT:    vmv.v.v v8, v12
+; RV64-NEXT:    vluxei64.v v8, (zero), v8
 ; RV64-NEXT:    ret
   %mhead = insertelement <vscale x 4 x i1> poison, i1 1, i32 0
   %mtrue = shufflevector <vscale x 4 x i1> %mhead, <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer
@@ -1330,15 +1325,13 @@ define <vscale x 4 x half> @mgather_truemask_nxv4f16(<vscale x 4 x ptr> %ptrs, <
 ; RV32-LABEL: mgather_truemask_nxv4f16:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
-; RV32-NEXT:    vluxei32.v v10, (zero), v8
-; RV32-NEXT:    vmv.v.v v8, v10
+; RV32-NEXT:    vluxei32.v v8, (zero), v8
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: mgather_truemask_nxv4f16:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
-; RV64-NEXT:    vluxei64.v v12, (zero), v8
-; RV64-NEXT:    vmv.v.v v8, v12
+; RV64-NEXT:    vluxei64.v v8, (zero), v8
 ; RV64-NEXT:    ret
   %mhead = insertelement <vscale x 4 x i1> poison, i1 1, i32 0
   %mtrue = shufflevector <vscale x 4 x i1> %mhead, <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer
@@ -1539,8 +1532,7 @@ define <vscale x 4 x float> @mgather_truemask_nxv4f32(<vscale x 4 x ptr> %ptrs, 
 ; RV64-LABEL: mgather_truemask_nxv4f32:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    vsetvli a0, zero, e32, m2, ta, ma
-; RV64-NEXT:    vluxei64.v v12, (zero), v8
-; RV64-NEXT:    vmv.v.v v8, v12
+; RV64-NEXT:    vluxei64.v v8, (zero), v8
 ; RV64-NEXT:    ret
   %mhead = insertelement <vscale x 4 x i1> poison, i1 1, i32 0
   %mtrue = shufflevector <vscale x 4 x i1> %mhead, <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer

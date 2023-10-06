@@ -25,8 +25,7 @@ define void @vqshlu_n_s32(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
-; CHECK-NEXT:    li a0, 1
-; CHECK-NEXT:    slli a0, a0, 31
+; CHECK-NEXT:    lui a0, 524288
 ; CHECK-NEXT:    vwmulu.vx v9, v8, a0
 ; CHECK-NEXT:    vnclipu.wi v8, v9, 0
 ; CHECK-NEXT:    vse32.v v8, (a1)

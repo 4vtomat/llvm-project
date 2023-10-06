@@ -666,31 +666,31 @@ define <4 x double> @rsqrt_v4f64(<4 x double> %a, <4 x i1> %m, i32 zeroext %evl)
 ; CHECK-LABEL: rsqrt_v4f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
-; CHECK-NEXT:    vfrsqrt7.v v10, v8
-; CHECK-NEXT:    vfmul.vv v12, v8, v10, v0.t
+; CHECK-NEXT:    vfrsqrt7.v v12, v8
+; CHECK-NEXT:    vfmul.vv v14, v8, v12, v0.t
 ; CHECK-NEXT:    lui a1, %hi(.LCPI25_0)
 ; CHECK-NEXT:    addi a1, a1, %lo(.LCPI25_0)
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-; CHECK-NEXT:    vlse64.v v14, (a1), zero
+; CHECK-NEXT:    vlse64.v v10, (a1), zero
 ; CHECK-NEXT:    lui a1, %hi(.LCPI25_1)
 ; CHECK-NEXT:    fld fa5, %lo(.LCPI25_1)(a1)
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
-; CHECK-NEXT:    vmv2r.v v16, v10
-; CHECK-NEXT:    vfmadd.vv v16, v12, v14, v0.t
-; CHECK-NEXT:    vfmul.vf v10, v10, fa5, v0.t
-; CHECK-NEXT:    vfmul.vv v10, v10, v16, v0.t
-; CHECK-NEXT:    vfmul.vv v12, v8, v10, v0.t
-; CHECK-NEXT:    vmv.v.v v16, v10
-; CHECK-NEXT:    vfmadd.vv v16, v12, v14, v0.t
-; CHECK-NEXT:    vfmul.vf v10, v10, fa5, v0.t
-; CHECK-NEXT:    vfmul.vv v10, v10, v16, v0.t
-; CHECK-NEXT:    vfmul.vv v8, v8, v10, v0.t
-; CHECK-NEXT:    vmv.v.v v12, v10
+; CHECK-NEXT:    vmv2r.v v16, v12
+; CHECK-NEXT:    vfmadd.vv v16, v14, v10, v0.t
+; CHECK-NEXT:    vfmul.vf v12, v12, fa5, v0.t
+; CHECK-NEXT:    vfmul.vv v12, v12, v16, v0.t
+; CHECK-NEXT:    vfmul.vv v14, v8, v12, v0.t
+; CHECK-NEXT:    vmv.v.v v16, v12
+; CHECK-NEXT:    vfmadd.vv v16, v14, v10, v0.t
+; CHECK-NEXT:    vfmul.vf v12, v12, fa5, v0.t
+; CHECK-NEXT:    vfmul.vv v12, v12, v16, v0.t
+; CHECK-NEXT:    vfmul.vv v8, v8, v12, v0.t
+; CHECK-NEXT:    vmv.v.v v14, v12
 ; CHECK-NEXT:    lui a0, %hi(.LCPI25_2)
 ; CHECK-NEXT:    fld fa4, %lo(.LCPI25_2)(a0)
-; CHECK-NEXT:    vfmadd.vv v12, v8, v14, v0.t
-; CHECK-NEXT:    vfmul.vf v8, v10, fa5, v0.t
-; CHECK-NEXT:    vfmul.vv v8, v8, v12, v0.t
+; CHECK-NEXT:    vfmadd.vv v14, v8, v10, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v12, fa5, v0.t
+; CHECK-NEXT:    vfmul.vv v8, v8, v14, v0.t
 ; CHECK-NEXT:    vfmul.vf v8, v8, fa4, v0.t
 ; CHECK-NEXT:    ret
   %ins = insertelement <4 x double> poison, double 1.000000e+00, i32 0

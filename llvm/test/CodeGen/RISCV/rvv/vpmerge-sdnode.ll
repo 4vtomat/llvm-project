@@ -1364,9 +1364,9 @@ define <vscale x 32 x half> @vpmerge_vf_nxv32f16(half %a, <vscale x 32 x half> %
 ; RV32ZVFHMIN:       # %bb.0:
 ; RV32ZVFHMIN-NEXT:    fcvt.s.h fa5, fa0
 ; RV32ZVFHMIN-NEXT:    vsetvli a1, zero, e32, m8, ta, ma
-; RV32ZVFHMIN-NEXT:    vfmv.v.f v24, fa5
+; RV32ZVFHMIN-NEXT:    vfmv.v.f v16, fa5
 ; RV32ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
-; RV32ZVFHMIN-NEXT:    vfncvt.f.f.w v16, v24
+; RV32ZVFHMIN-NEXT:    vfncvt.f.f.w v16, v16
 ; RV32ZVFHMIN-NEXT:    vmv.v.v v20, v16
 ; RV32ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m8, tu, ma
 ; RV32ZVFHMIN-NEXT:    vmerge.vvm v8, v8, v16, v0
@@ -1376,9 +1376,9 @@ define <vscale x 32 x half> @vpmerge_vf_nxv32f16(half %a, <vscale x 32 x half> %
 ; RV64ZVFHMIN:       # %bb.0:
 ; RV64ZVFHMIN-NEXT:    fcvt.s.h fa5, fa0
 ; RV64ZVFHMIN-NEXT:    vsetvli a1, zero, e32, m8, ta, ma
-; RV64ZVFHMIN-NEXT:    vfmv.v.f v24, fa5
+; RV64ZVFHMIN-NEXT:    vfmv.v.f v16, fa5
 ; RV64ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
-; RV64ZVFHMIN-NEXT:    vfncvt.f.f.w v16, v24
+; RV64ZVFHMIN-NEXT:    vfncvt.f.f.w v16, v16
 ; RV64ZVFHMIN-NEXT:    vmv.v.v v20, v16
 ; RV64ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m8, tu, ma
 ; RV64ZVFHMIN-NEXT:    vmerge.vvm v8, v8, v16, v0

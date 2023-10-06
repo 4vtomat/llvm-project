@@ -9,9 +9,9 @@ define void @wombat(ptr %arg, ptr %arg1, ptr %arg2, i64 %arg3, i32 %arg4, i32 %a
 ; CHECK-NEXT:    li a6, 0
 ; CHECK-NEXT:    andi a5, a5, 7
 ; CHECK-NEXT:    li a7, 8
-; CHECK-NEXT:    sub t0, a7, a5
+; CHECK-NEXT:    subw t0, a7, a5
 ; CHECK-NEXT:    andi a4, a4, 7
-; CHECK-NEXT:    sub a7, a7, a4
+; CHECK-NEXT:    subw a7, a7, a4
 ; CHECK-NEXT:    mul t1, a7, a5
 ; CHECK-NEXT:    mul a5, a4, a5
 ; CHECK-NEXT:    mul a7, a7, t0

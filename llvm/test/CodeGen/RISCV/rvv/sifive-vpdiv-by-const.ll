@@ -160,7 +160,7 @@ define <vscale x 8 x i8> @vpudiv_by_shl2_nxv8i8(<vscale x 8 x i8> %va, i8 %b, <v
 ; CHECK-LABEL: vpudiv_by_shl2_nxv8i8:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    andi a0, a0, 255
-; CHECK-NEXT:    addi a0, a0, 1
+; CHECK-NEXT:    addiw a0, a0, 1
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
 ; CHECK-NEXT:    vsrl.vx v8, v8, a0, v0.t
 ; CHECK-NEXT:    ret
@@ -176,7 +176,7 @@ define <vscale x 4 x i16> @vpudiv_by_shl2_nxv4i16(<vscale x 4 x i16> %va, i16 %b
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    slli a0, a0, 48
 ; CHECK-NEXT:    srli a0, a0, 48
-; CHECK-NEXT:    addi a0, a0, 1
+; CHECK-NEXT:    addiw a0, a0, 1
 ; CHECK-NEXT:    vsetvli zero, a1, e16, m1, ta, ma
 ; CHECK-NEXT:    vsrl.vx v8, v8, a0, v0.t
 ; CHECK-NEXT:    ret
@@ -190,9 +190,8 @@ define <vscale x 4 x i16> @vpudiv_by_shl2_nxv4i16(<vscale x 4 x i16> %va, i16 %b
 define <vscale x 2 x i32> @vpudiv_by_shl2_nxv2i32(<vscale x 2 x i32> %va, i32 %b, <vscale x 2 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpudiv_by_shl2_nxv2i32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    slli a0, a0, 32
-; CHECK-NEXT:    srli a0, a0, 32
-; CHECK-NEXT:    addi a0, a0, 1
+; CHECK-NEXT:    andi a0, a0, -1
+; CHECK-NEXT:    addiw a0, a0, 1
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; CHECK-NEXT:    vsrl.vx v8, v8, a0, v0.t
 ; CHECK-NEXT:    ret
@@ -206,7 +205,7 @@ define <vscale x 2 x i32> @vpudiv_by_shl2_nxv2i32(<vscale x 2 x i32> %va, i32 %b
 define <vscale x 1 x i64> @vpudiv_by_shl2_nxv1i64(<vscale x 1 x i64> %va, i64 %b, <vscale x 1 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpudiv_by_shl2_nxv1i64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    addi a0, a0, 1
+; CHECK-NEXT:    addiw a0, a0, 1
 ; CHECK-NEXT:    vsetvli zero, a1, e64, m1, ta, ma
 ; CHECK-NEXT:    vsrl.vx v8, v8, a0, v0.t
 ; CHECK-NEXT:    ret
