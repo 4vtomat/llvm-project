@@ -103,12 +103,8 @@
 ; CHECK-O23SZ-NEXT: Running analysis: ScalarEvolutionAnalysis
 ; CHECK-O-NEXT: Running pass: LoopSimplifyPass
 ; CHECK-O-NEXT: Running pass: LCSSAPass
-<<<<<<< HEAD
-; CHECK-O-NEXT: Running analysis: ScalarEvolutionAnalysis
-; CHECK-O-NEXT: Running analysis: LiveValuesAnalysis
-=======
 ; CHECK-O1-NEXT: Running analysis: ScalarEvolutionAnalysis
->>>>>>> pub/main
+; CHECK-O-NEXT: Running analysis: LiveValuesAnalysis
 ; CHECK-O-NEXT: Running analysis: InnerAnalysisManagerProxy
 ; CHECK-O-NEXT: Running pass: LoopInstSimplifyPass
 ; CHECK-O-NEXT: Running pass: LoopSimplifyCFGPass

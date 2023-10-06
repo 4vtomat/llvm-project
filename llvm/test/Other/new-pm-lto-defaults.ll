@@ -99,11 +99,7 @@
 ; CHECK-O23SZ-NEXT: Running pass: LCSSAPass on foo
 ; CHECK-O23SZ-NEXT: Running analysis: MemorySSAAnalysis on foo
 ; CHECK-O23SZ-NEXT: Running analysis: AAManager on foo
-<<<<<<< HEAD
-; CHECK-O23SZ-NEXT: Running analysis: ScalarEvolutionAnalysis on foo
 ; CHECK-O23SZ-NEXT: Running analysis: LiveValuesAnalysis on foo
-=======
->>>>>>> pub/main
 ; CHECK-O23SZ-NEXT: Running analysis: InnerAnalysisManagerProxy
 ; CHECK-O23SZ-NEXT: Running pass: LICMPass on loop
 ; CHECK-O23SZ-NEXT: Running pass: GVNPass on foo
