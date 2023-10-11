@@ -3,7 +3,7 @@
 
 define i64 @select_icmp_nuw_nsw(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-LABEL: define i64 @select_icmp_nuw_nsw
-; CHECK-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) {
+; CHECK-SAME: (ptr [[A:%.*]], ptr [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 4
 ; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
@@ -76,7 +76,7 @@ exit:                                             ; preds = %for.body
 
 define i64 @select_icmp_nsw(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-LABEL: define i64 @select_icmp_nsw
-; CHECK-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) {
+; CHECK-SAME: (ptr [[A:%.*]], ptr [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 4
 ; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
@@ -149,7 +149,7 @@ exit:                                             ; preds = %for.body
 
 define i64 @select_icmp_nuw(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-LABEL: define i64 @select_icmp_nuw
-; CHECK-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) {
+; CHECK-SAME: (ptr [[A:%.*]], ptr [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
@@ -190,7 +190,7 @@ exit:                                             ; preds = %for.body
 
 define i64 @select_icmp_noflag(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-LABEL: define i64 @select_icmp_noflag
-; CHECK-SAME: (ptr nocapture readonly [[A:%.*]], ptr nocapture readonly [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) {
+; CHECK-SAME: (ptr [[A:%.*]], ptr [[B:%.*]], i64 [[II:%.*]], i64 [[N:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
