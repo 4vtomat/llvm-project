@@ -12,7 +12,9 @@
 ; and successfully vectorize the case without a runtime-check.
 define i32 @select_icmp_const_truncated_iv_widened_exit(ptr %a, i32 %n) {
 ; CHECK-LABEL: define i32 @select_icmp_const_truncated_iv_widened_exit
-; CHECK-NOT:   vector.body:
+; SIFIVE_CUSTOMIZATION    the test can be legally vectorized by sifive-dev
+; CHECK:   vector.body:
+; end SIFIVE_CUSTOMIZATION
 ;
 entry:
   %cmp.sgt = icmp sgt i32 %n, 0
@@ -49,7 +51,9 @@ exit:                                            ; preds = %for.body, %entry
 ; and successfully vectorize the case without a runtime-check.
 define i32 @select_icmp_const_truncated_iv_const_exit(ptr %a) {
 ; CHECK-LABEL: define i32 @select_icmp_const_truncated_iv_const_exit
-; CHECK-NOT:   vector.body:
+; SIFIVE_CUSTOMIZATION    the test can be legally vectorized by sifive-dev
+; CHECK:   vector.body:
+; end SIFIVE_CUSTOMIZATION
 ;
 entry:
   br label %for.body

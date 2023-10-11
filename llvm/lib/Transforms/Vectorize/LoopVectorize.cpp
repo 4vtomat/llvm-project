@@ -4568,7 +4568,7 @@ void InnerLoopVectorizer::fixReduction(VPReductionPHIRecipe *PhiR,
         auto *II = dyn_cast<IntrinsicInst>(U);
         if (isa<SelectInst>(U) ||
             (II && II->getIntrinsicID() == Intrinsic::vp_merge)) {
-          assert(!Sel && "Reduction exit feeding two selects");
+          assert((!Sel || U == Sel) && "Reduction exit feeding two selects");
           Sel = U;
 #else
       SelectInst *Sel = nullptr;
@@ -11504,7 +11504,15 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
   // and the live-out instruction of each reduction, at the beginning of the
   // dedicated latch block.
   if (CM.foldTailByMasking() || Legal->useVLAVectorizer()) {
+#if SIFIVE_CUSTOMIZATION
+    // FIXME: Work with upstream to address the following issue:
+    // upstream's code tries to dereference iplist's iterator, which is a
+    // Sentinel when VPBB is empty, like when we do uncountable loop
+    // vectorization.
+    Builder.setInsertPoint(LatchVPBB, LatchVPBB->begin());
+#else
     Builder.setInsertPoint(&*LatchVPBB->begin());
+#endif // SIFIVE_CUSTOMIZATION
     for (VPRecipeBase &R :
          Plan->getVectorLoopRegion()->getEntryBasicBlock()->phis()) {
       VPReductionPHIRecipe *PhiR = dyn_cast<VPReductionPHIRecipe>(&R);
