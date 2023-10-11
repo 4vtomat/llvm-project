@@ -1424,17 +1424,13 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setTargetDAGCombine({ISD::FCOPYSIGN, ISD::MGATHER, ISD::MSCATTER,
                          ISD::VP_GATHER, ISD::VP_SCATTER, ISD::SRA, ISD::SRL,
                          ISD::SHL, ISD::STORE, ISD::SPLAT_VECTOR,
-<<<<<<< HEAD
-                         ISD::CONCAT_VECTORS,
+                         ISD::BUILD_VECTOR, ISD::CONCAT_VECTORS,
                          ISD::EXPERIMENTAL_VP_REVERSE, // SIFIVE
                          ISD::VP_STORE,                // SIFIVE
                          ISD::SPLAT_VECTOR,            // SIFIVE
                          ISD::INTRINSIC_WO_CHAIN,      // SIFIVE
                          ISD::INTRINSIC_W_CHAIN});     // SIFIVE
 #endif
-=======
-                         ISD::BUILD_VECTOR, ISD::CONCAT_VECTORS});
->>>>>>> pub/main
   if (Subtarget.hasVendorXTHeadMemPair())
     setTargetDAGCombine({ISD::LOAD, ISD::STORE});
   if (Subtarget.useRVVForFixedLengthVectors())
@@ -3689,18 +3685,8 @@ static SDValue lowerBuildVectorOfConstants(SDValue Op, SelectionDAG &DAG,
   // narrow vector is known to materialize cheaply.
   // TODO: We really should be costing the smaller vector.  There are
   // profitable cases this misses.
-<<<<<<< HEAD
-  const unsigned ScalarSize =
-    Op.getSimpleValueType().getScalarSizeInBits();
-#if SIFIVE_CUSTOMIZATION
-  // Cherry-picked PR#67488 to fix ICE in neon2rvv suite. In next pulldown this
-  // customization can be removed
-  if (ScalarSize > 8 && VT.isInteger() && NumElts <= 4) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
   if (EltBitSize > 8 && VT.isInteger() &&
       (NumElts <= 4 || VT.getSizeInBits() > Subtarget.getRealMinVLen())) {
->>>>>>> pub/main
     unsigned SignBits = DAG.ComputeNumSignBits(Op);
     if (EltBitSize - SignBits < 8) {
       SDValue Source =
@@ -5635,11 +5621,7 @@ static bool hasMergeOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_RISCV_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-<<<<<<< HEAD
-                    138 && // SIFIVE
-=======
-                    125 &&
->>>>>>> pub/main
+                    139 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
@@ -5663,11 +5645,7 @@ static bool hasMaskOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_RISCV_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-<<<<<<< HEAD
-                    138 && // SIFIVE
-=======
-                    125 &&
->>>>>>> pub/main
+                    139 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
@@ -13595,7 +13573,6 @@ static SDValue performXORCombine(SDNode *N, SelectionDAG &DAG,
   return combineSelectAndUseCommutative(N, DAG, /*AllOnes*/ false, Subtarget);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // (mul (and (lshr X, 15), 65537), 65535) -> (bitcast (sra (bitcast X), 15)))
 static SDValue performMULCombine(SDNode *N, SelectionDAG &DAG,
@@ -13690,14 +13667,8 @@ static SDValue performABSCombine(SDNode *N, SelectionDAG &DAG,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-// According to the property that indexed load/store instructions
-// zero-extended their indices, \p narrowIndex tries to narrow the type of index
-// operand if it is matched to pattern (shl (zext x to ty), C) and bits(x) + C <
-// bits(ty).
-=======
 /// According to the property that indexed load/store instructions zero-extend
 /// their indices, try to narrow the type of index operand.
->>>>>>> pub/main
 static bool narrowIndex(SDValue &N, ISD::MemIndexType IndexType, SelectionDAG &DAG) {
   if (isIndexTypeSigned(IndexType))
     return false;

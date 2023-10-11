@@ -140,11 +140,9 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   case RISCV::PseudoCCXOR:
   case RISCV::PseudoCCADDW:
   case RISCV::PseudoCCSUBW:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case RISCV::PseudoCCMOVGPRNoX0:
-=======
->>>>>>> pub/main
+#endif // SIFIVE_CUSTOMIZATION
   case RISCV::PseudoCCSLL:
   case RISCV::PseudoCCSRL:
   case RISCV::PseudoCCSRA:
@@ -162,10 +160,6 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   case RISCV::PseudoCCSLLIW:
   case RISCV::PseudoCCSRLIW:
   case RISCV::PseudoCCSRAIW:
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> pub/main
     return expandCCOp(MBB, MBBI, NextMBBI);
   case RISCV::PseudoVSETVLI:
   case RISCV::PseudoVSETVLIX0:

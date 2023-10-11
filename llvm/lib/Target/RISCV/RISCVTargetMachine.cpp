@@ -100,21 +100,19 @@ static cl::opt<bool> EnableRISCVCopyPropagation(
     cl::desc("Enable the copy propagation with RISC-V copy instr"),
     cl::init(true), cl::Hidden);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<bool> EnableVLOptimizer(
     "riscv-enable-vloptimizer",
     cl::desc("Enable the VL Optimizer pass"), cl::init(true),
     cl::Hidden);
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 static cl::opt<bool> EnableRISCVDeadRegisterElimination(
     "riscv-enable-dead-defs", cl::Hidden,
     cl::desc("Enable the pass that removes dead"
              " definitons and replaces stores to"
              " them with stores to x0"),
     cl::init(true));
->>>>>>> pub/main
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   RegisterTargetMachine<RISCVTargetMachine> X(getTheRISCV32Target());

@@ -259,39 +259,25 @@ void llvm::riscvExtensionsHelp(StringMap<StringRef> DescMap) {
 #if SIFIVE_CUSTOMIZATION
   RISCVISAInfo::OrderedExtensionMultiMap ExtMap;
   for (const auto &E : SupportedExtensions)
-<<<<<<< HEAD
     ExtMap.insert({E.Name, {E.Version.Major, E.Version.Minor}});
 #endif
-  for (const auto &E : ExtMap)
-    outs() << format("\t%-20s%d.%d\n", E.first.c_str(), E.second.MajorVersion,
-                     E.second.MinorVersion);
-=======
-    ExtMap[E.Name] = {E.Version.Major, E.Version.Minor};
   for (const auto &E : ExtMap) {
     std::string Version = std::to_string(E.second.MajorVersion) + "." +
                           std::to_string(E.second.MinorVersion);
     PrintExtension(E.first, Version, DescMap[E.first].str());
   }
->>>>>>> pub/main
 
   outs() << "\nExperimental extensions\n";
   ExtMap.clear();
 #if SIFIVE_CUSTOMIZATION
   for (const auto &E : SupportedExperimentalExtensions)
-<<<<<<< HEAD
     ExtMap.insert({E.Name, {E.Version.Major, E.Version.Minor}});
 #endif
-  for (const auto &E : ExtMap)
-    outs() << format("\t%-20s%d.%d\n", E.first.c_str(), E.second.MajorVersion,
-                     E.second.MinorVersion);
-=======
-    ExtMap[E.Name] = {E.Version.Major, E.Version.Minor};
   for (const auto &E : ExtMap) {
     std::string Version = std::to_string(E.second.MajorVersion) + "." +
                           std::to_string(E.second.MinorVersion);
     PrintExtension(E.first, Version, DescMap["experimental-" + E.first].str());
   }
->>>>>>> pub/main
 
   outs() << "\nUse -march to specify the target's extension.\n"
             "For example, clang -march=rv32i_v1p0\n";

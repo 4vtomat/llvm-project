@@ -1153,18 +1153,10 @@ static MachineInstr *canFoldAsPredicatedOp(Register Reg,
   // Check if MI can be predicated and folded into the CCMOV.
   if (getPredicatedOpcode(MI->getOpcode()) == RISCV::INSTRUCTION_LIST_END)
     return nullptr;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> pub/main
   // Don't predicate li idiom.
   if (MI->getOpcode() == RISCV::ADDI && MI->getOperand(1).isReg() &&
       MI->getOperand(1).getReg() == RISCV::X0)
     return nullptr;
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> pub/main
   // Check if MI has any other defs or physreg uses.
   for (const MachineOperand &MO : llvm::drop_begin(MI->operands())) {
     // Reject frame index operands, PEI can't handle the predicated pseudos.

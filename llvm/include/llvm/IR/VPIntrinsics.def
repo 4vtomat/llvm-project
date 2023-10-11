@@ -118,7 +118,6 @@
 #define VP_PROPERTY_FUNCTIONAL_INTRINSIC(INTRIN)
 #endif
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // Map this VP intrinsic to its canonical functional intrinsic.
 // \p INTRIN     The non-VP intrinsics with the similiar function without mask.
@@ -126,12 +125,11 @@
 #define VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(INTRIN)
 #endif
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 // This VP Intrinsic has no functionally-equivalent non-VP opcode or intrinsic.
 #ifndef VP_PROPERTY_NO_FUNCTIONAL
 #define VP_PROPERTY_NO_FUNCTIONAL
 #endif
->>>>>>> pub/main
 
 // This VP Intrinsic is a memory operation
 // The pointer arg is at POINTERPOS and the data arg is at DATAPOS.
@@ -269,49 +267,37 @@ END_REGISTER_VP(vp_umax, VP_UMAX)
 BEGIN_REGISTER_VP_INTRINSIC(vp_abs, 2, 3)
 BEGIN_REGISTER_VP_SDNODE(VP_ABS, -1, vp_abs, 1, 2)
 HELPER_MAP_VPID_TO_VPSD(vp_abs, VP_ABS)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(abs)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_INTRINSIC(abs)
->>>>>>> pub/main
 VP_PROPERTY_FUNCTIONAL_SDOPC(ABS)
 END_REGISTER_VP(vp_abs, VP_ABS)
 
 // llvm.vp.bswap(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_bswap, 1, 2, VP_BSWAP, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(bswap)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_INTRINSIC(bswap)
->>>>>>> pub/main
 VP_PROPERTY_FUNCTIONAL_SDOPC(BSWAP)
 END_REGISTER_VP(vp_bswap, VP_BSWAP)
 
 // llvm.vp.bitreverse(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_bitreverse, 1, 2, VP_BITREVERSE, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(bitreverse)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_INTRINSIC(bitreverse)
->>>>>>> pub/main
 VP_PROPERTY_FUNCTIONAL_SDOPC(BITREVERSE)
 END_REGISTER_VP(vp_bitreverse, VP_BITREVERSE)
 
 // llvm.vp.ctpop(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_ctpop, 1, 2, VP_CTPOP, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(ctpop)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_INTRINSIC(ctpop)
->>>>>>> pub/main
 VP_PROPERTY_FUNCTIONAL_SDOPC(CTPOP)
 END_REGISTER_VP(vp_ctpop, VP_CTPOP)
 
@@ -343,25 +329,19 @@ END_REGISTER_VP_INTRINSIC(vp_cttz)
 
 // llvm.vp.fshl(x,y,z,mask,vlen)
 BEGIN_REGISTER_VP(vp_fshl, 3, 4, VP_FSHL, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(fshl)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_INTRINSIC(fshl)
->>>>>>> pub/main
 VP_PROPERTY_FUNCTIONAL_SDOPC(FSHL)
 END_REGISTER_VP(vp_fshl, VP_FSHL)
 
 // llvm.vp.fshr(x,y,z,mask,vlen)
 BEGIN_REGISTER_VP(vp_fshr, 3, 4, VP_FSHR, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(fshr)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_INTRINSIC(fshr)
->>>>>>> pub/main
 VP_PROPERTY_FUNCTIONAL_SDOPC(FSHR)
 END_REGISTER_VP(vp_fshr, VP_FSHR)
 ///// } Integer Arithmetic
@@ -407,51 +387,39 @@ END_REGISTER_VP(vp_fneg, VP_FNEG)
 
 // llvm.vp.fabs(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_fabs, 1, 2, VP_FABS, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(fabs)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_INTRINSIC(fabs)
->>>>>>> pub/main
 VP_PROPERTY_FUNCTIONAL_SDOPC(FABS)
 END_REGISTER_VP(vp_fabs, VP_FABS)
 
 // llvm.vp.sqrt(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_sqrt, 1, 2, VP_SQRT, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(sqrt)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_INTRINSIC(sqrt)
->>>>>>> pub/main
 VP_PROPERTY_FUNCTIONAL_SDOPC(FSQRT)
 END_REGISTER_VP(vp_sqrt, VP_SQRT)
 
 // llvm.vp.fma(x,y,z,mask,vlen)
 BEGIN_REGISTER_VP(vp_fma, 3, 4, VP_FMA, -1)
 VP_PROPERTY_CONSTRAINEDFP(1, 1, experimental_constrained_fma)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(fma)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_INTRINSIC(fma)
->>>>>>> pub/main
 VP_PROPERTY_FUNCTIONAL_SDOPC(FMA)
 END_REGISTER_VP(vp_fma, VP_FMA)
 
 // llvm.vp.fmuladd(x,y,z,mask,vlen)
 BEGIN_REGISTER_VP(vp_fmuladd, 3, 4, VP_FMULADD, -1)
 VP_PROPERTY_CONSTRAINEDFP(1, 1, experimental_constrained_fmuladd)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(fmuladd)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_INTRINSIC(fmuladd)
->>>>>>> pub/main
 VP_PROPERTY_FUNCTIONAL_SDOPC(FMAD)
 END_REGISTER_VP(vp_fmuladd, VP_FMULADD)
 
@@ -487,85 +455,64 @@ END_REGISTER_VP(vp_maxnum, VP_FMAXNUM)
 
 // llvm.vp.ceil(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_ceil, 1, 2, VP_FCEIL, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(ceil)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_INTRINSIC(ceil)
->>>>>>> pub/main
 VP_PROPERTY_FUNCTIONAL_SDOPC(FCEIL)
 END_REGISTER_VP(vp_ceil, VP_FCEIL)
 
 // llvm.vp.floor(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_floor, 1, 2, VP_FFLOOR, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(floor)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_INTRINSIC(floor)
->>>>>>> pub/main
 VP_PROPERTY_FUNCTIONAL_SDOPC(FFLOOR)
 END_REGISTER_VP(vp_floor, VP_FFLOOR)
 
 // llvm.vp.round(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_round, 1, 2, VP_FROUND, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(round)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_INTRINSIC(round)
->>>>>>> pub/main
 VP_PROPERTY_FUNCTIONAL_SDOPC(FROUND)
 END_REGISTER_VP(vp_round, VP_FROUND)
 
 // llvm.vp.roundeven(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_roundeven, 1, 2, VP_FROUNDEVEN, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(roundeven)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_INTRINSIC(roundeven)
->>>>>>> pub/main
 VP_PROPERTY_FUNCTIONAL_SDOPC(FROUNDEVEN)
 END_REGISTER_VP(vp_roundeven, VP_FROUNDEVEN)
 
 // llvm.vp.roundtozero(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_roundtozero, 1, 2, VP_FROUNDTOZERO, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(trunc)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_INTRINSIC(trunc)
->>>>>>> pub/main
 VP_PROPERTY_FUNCTIONAL_SDOPC(FTRUNC)
 END_REGISTER_VP(vp_roundtozero, VP_FROUNDTOZERO)
 
 // llvm.vp.rint(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_rint, 1, 2, VP_FRINT, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(rint)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_INTRINSIC(rint)
->>>>>>> pub/main
 VP_PROPERTY_FUNCTIONAL_SDOPC(FRINT)
 END_REGISTER_VP(vp_rint, VP_FRINT)
 
 // llvm.vp.nearbyint(x,mask,vlen)
 BEGIN_REGISTER_VP(vp_nearbyint, 1, 2, VP_FNEARBYINT, -1)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(nearbyint)
 #endif // SIFIVE_CUSTOMIZATION
-=======
 VP_PROPERTY_FUNCTIONAL_INTRINSIC(nearbyint)
->>>>>>> pub/main
 VP_PROPERTY_FUNCTIONAL_SDOPC(FNEARBYINT)
 END_REGISTER_VP(vp_nearbyint, VP_FNEARBYINT)
 
@@ -574,6 +521,7 @@ END_REGISTER_VP(vp_nearbyint, VP_FNEARBYINT)
 BEGIN_REGISTER_VP_INTRINSIC(vp_powi, 2, 3)
 #if SIFIVE_CUSTOMIZATION
 VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(powi)
+VP_PROPERTY_FUNCTIONAL_INTRINSIC(powi)
 #endif // SIFIVE_CUSTOMIZATION
 END_REGISTER_VP_INTRINSIC(vp_powi)
 #endif // SIFIVE_CUSTOMIZATION
@@ -725,6 +673,7 @@ BEGIN_REGISTER_VP_INTRINSIC(vp_load_ff, 1, 2)
 BEGIN_REGISTER_VP_SDNODE(VP_LOAD_FF, -1, vp_load_ff, 2, 3)
 HELPER_MAP_VPID_TO_VPSD(vp_load_ff, VP_LOAD_FF)
 VP_PROPERTY_MEMOP(0, std::nullopt)
+VP_PROPERTY_FUNCTIONAL_INTRINSIC(vp_load_ff)
 END_REGISTER_VP(vp_load_ff, VP_LOAD_FF)
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -869,6 +818,7 @@ END_REGISTER_VP(experimental_vp_splice, EXPERIMENTAL_VP_SPLICE)
 // llvm.experimental.vp.reverse(x,mask,vlen)
 BEGIN_REGISTER_VP(experimental_vp_reverse, 1, 2,
                   EXPERIMENTAL_VP_REVERSE, -1)
+VP_PROPERTY_FUNCTIONAL_INTRINSIC(experimental_vp_reverse)
 END_REGISTER_VP(experimental_vp_reverse, EXPERIMENTAL_VP_REVERSE)
 #endif // SIFIVE_CUSTOMIZATION
 ///// } Shuffles
@@ -878,6 +828,7 @@ END_REGISTER_VP(experimental_vp_reverse, EXPERIMENTAL_VP_REVERSE)
 // Return lowest-numbered active element of the source mask vector that has the
 // value 1. Return -1, if no active element has the value 1.
 BEGIN_REGISTER_VP(vp_first, 1, 2, VP_FIRST, 0)
+VP_PROPERTY_FUNCTIONAL_INTRINSIC(vp_first)
 END_REGISTER_VP(vp_first, VP_FIRST)
 #endif // SIFIVE_CUSTOMIZATION
 

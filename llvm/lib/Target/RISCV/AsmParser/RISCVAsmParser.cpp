@@ -3442,15 +3442,14 @@ std::unique_ptr<RISCVOperand> RISCVAsmParser::defaultFRMArgOp() const {
                                     llvm::SMLoc());
 }
 
-<<<<<<< HEAD
 std::unique_ptr<RISCVOperand> RISCVAsmParser::defaultPseudoGPRegisterOperands() const {
   return RISCVOperand::createReg(RISCV::NoRegister, llvm::SMLoc(),
                                  llvm::SMLoc(), isRV64());
-=======
+}
+
 std::unique_ptr<RISCVOperand> RISCVAsmParser::defaultFRMArgLegacyOp() const {
   return RISCVOperand::createFRMArg(RISCVFPRndMode::RoundingMode::RNE,
                                     llvm::SMLoc());
->>>>>>> pub/main
 }
 
 bool RISCVAsmParser::validateInstruction(MCInst &Inst,
