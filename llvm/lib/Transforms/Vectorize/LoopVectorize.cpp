@@ -4584,16 +4584,11 @@ void InnerLoopVectorizer::fixReduction(VPReductionPHIRecipe *PhiR,
       assert(Sel && "Reduction exit feeds no select");
       State.reset(LoopExitInstDef, Sel, Part);
 
-<<<<<<< HEAD
-      if (isa<FPMathOperator>(Sel))
 #if SIFIVE_CUSTOMIZATION
+      if (isa<FPMathOperator>(Sel))
         cast<Instruction>(Sel)->setFastMathFlags(RdxDesc.getFastMathFlags());
-#else
-        Sel->setFastMathFlags(RdxDesc.getFastMathFlags());
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> pub/main
       // If the target can create a predicated operator for the reduction at no
       // extra cost in the loop (for example a predicated vadd), it can be
       // cheaper for the select to remain in the loop than be sunk out of it,
@@ -10070,45 +10065,6 @@ VPValue *VPRecipeBuilder::createBlockInMask(BasicBlock *BB, VPlan &Plan) {
   // load/store/gather/scatter. Initialize BlockMask to no-mask.
   VPValue *BlockMask = nullptr;
 
-  if (OrigLoop->getHeader() == BB) {
-    if (!CM.blockNeedsPredicationForAnyReason(BB))
-      return BlockMaskCache[BB] = BlockMask; // Loop incoming mask is all-one.
-
-    assert(CM.foldTailByMasking() && "must fold the tail");
-
-    // If we're using the active lane mask for control flow, then we get the
-    // mask from the active lane mask PHI that is cached in the VPlan.
-    TailFoldingStyle TFStyle = CM.getTailFoldingStyle();
-    if (useActiveLaneMaskForControlFlow(TFStyle))
-      return BlockMaskCache[BB] = Plan.getActiveLaneMaskPhi();
-
-    // Introduce the early-exit compare IV <= BTC to form header block mask.
-    // This is used instead of IV < TC because TC may wrap, unlike BTC. Start by
-    // constructing the desired canonical IV in the header block as its first
-    // non-phi instructions.
-
-#if SIFIVE_CUSTOMIZATION
-    if (Legal->useVLAVectorizer())
-      return BlockMaskCache[BB] = BlockMask;
-#endif // SIFIVE_CUSTOMIZATION
-
-    VPBasicBlock *HeaderVPBB = Plan.getVectorLoopRegion()->getEntryBasicBlock();
-    auto NewInsertionPoint = HeaderVPBB->getFirstNonPhi();
-    auto *IV = new VPWidenCanonicalIVRecipe(Plan.getCanonicalIV());
-    HeaderVPBB->insert(IV, HeaderVPBB->getFirstNonPhi());
-
-    VPBuilder::InsertPointGuard Guard(Builder);
-    Builder.setInsertPoint(HeaderVPBB, NewInsertionPoint);
-    if (useActiveLaneMask(TFStyle)) {
-      VPValue *TC = Plan.getTripCount();
-      BlockMask = Builder.createNaryOp(VPInstruction::ActiveLaneMask, {IV, TC},
-                                       nullptr, "active.lane.mask");
-    } else {
-      VPValue *BTC = Plan.getOrCreateBackedgeTakenCount();
-      BlockMask = Builder.createICmp(CmpInst::ICMP_ULE, IV, BTC);
-    }
-    return BlockMaskCache[BB] = BlockMask;
-  }
 
 #if SIFIVE_CUSTOMIZATION
     VPBuilder::InsertPointGuard Guard(Builder);
@@ -10779,19 +10735,14 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
 
 // Add the necessary canonical IV and branch recipes required to control the
 // loop.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, DebugLoc DL,
-                                  TailFoldingStyle Style,
+static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, bool HasNUW,
+                                  DebugLoc DL,
                                   bool NeedRVL) {
 #else
-static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, DebugLoc DL,
-                                  TailFoldingStyle Style) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
 static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, bool HasNUW,
                                   DebugLoc DL) {
->>>>>>> pub/main
+#endif // SIFIVE_CUSTOMIZATION
   Value *StartIdx = ConstantInt::get(IdxTy, 0);
   auto *StartV = Plan.getVPValueOrAddLiveIn(StartIdx);
 
@@ -10809,97 +10760,18 @@ static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, bool HasNUW,
   CanonicalIVPHI->addOperand(CanonicalIVIncrement);
 
   VPBasicBlock *EB = TopRegion->getExitingBasicBlock();
-<<<<<<< HEAD
-
-#if SIFIVE_CUSTOMIZATION
-  if (!NeedRVL && useActiveLaneMaskForControlFlow(Style)) {
-#else
-  if (useActiveLaneMaskForControlFlow(Style)) {
-#endif // SIFIVE_CUSTOMIZATION
-    // Create the active lane mask instruction in the vplan preheader.
-    VPBasicBlock *VecPreheader =
-        cast<VPBasicBlock>(Plan.getVectorLoopRegion()->getSinglePredecessor());
-
-    // We can't use StartV directly in the ActiveLaneMask VPInstruction, since
-    // we have to take unrolling into account. Each part needs to start at
-    //   Part * VF
-    auto *CanonicalIVIncrementParts =
-        new VPInstruction(VPInstruction::CanonicalIVIncrementForPart, {StartV},
-                          {HasNUW, false}, DL, "index.part.next");
-    VecPreheader->appendRecipe(CanonicalIVIncrementParts);
-
-    // Create the ActiveLaneMask instruction using the correct start values.
-    VPValue *TC = Plan.getTripCount();
-
-    VPValue *TripCount, *IncrementValue;
-    if (Style == TailFoldingStyle::DataAndControlFlowWithoutRuntimeCheck) {
-      // When avoiding a runtime check, the active.lane.mask inside the loop
-      // uses a modified trip count and the induction variable increment is
-      // done after the active.lane.mask intrinsic is called.
-      auto *TCMinusVF =
-          new VPInstruction(VPInstruction::CalculateTripCountMinusVF, {TC}, DL);
-      VecPreheader->appendRecipe(TCMinusVF);
-      IncrementValue = CanonicalIVPHI;
-      TripCount = TCMinusVF;
-    } else {
-      // When the loop is guarded by a runtime overflow check for the loop
-      // induction variable increment by VF, we can increment the value before
-      // the get.active.lane mask and use the unmodified tripcount.
-      EB->appendRecipe(CanonicalIVIncrement);
-      IncrementValue = CanonicalIVIncrement;
-      TripCount = TC;
-    }
-
-    auto *EntryALM = new VPInstruction(VPInstruction::ActiveLaneMask,
-                                       {CanonicalIVIncrementParts, TC}, DL,
-                                       "active.lane.mask.entry");
-    VecPreheader->appendRecipe(EntryALM);
-
-    // Now create the ActiveLaneMaskPhi recipe in the main loop using the
-    // preheader ActiveLaneMask instruction.
-    auto *LaneMaskPhi = new VPActiveLaneMaskPHIRecipe(EntryALM, DebugLoc());
-    Header->insert(LaneMaskPhi, Header->getFirstNonPhi());
-
-    // Create the active lane mask for the next iteration of the loop.
-    CanonicalIVIncrementParts =
-        new VPInstruction(VPInstruction::CanonicalIVIncrementForPart,
-                          {IncrementValue}, {HasNUW, false}, DL);
-    EB->appendRecipe(CanonicalIVIncrementParts);
-
-    auto *ALM = new VPInstruction(VPInstruction::ActiveLaneMask,
-                                  {CanonicalIVIncrementParts, TripCount}, DL,
-                                  "active.lane.mask.next");
-    EB->appendRecipe(ALM);
-    LaneMaskPhi->addOperand(ALM);
-
-    if (Style == TailFoldingStyle::DataAndControlFlowWithoutRuntimeCheck) {
-      // Do the increment of the canonical IV after the active.lane.mask, because
-      // that value is still based off %CanonicalIVPHI
-      EB->appendRecipe(CanonicalIVIncrement);
-    }
-
-    // We have to invert the mask here because a true condition means jumping
-    // to the exit block.
-    auto *NotMask = new VPInstruction(VPInstruction::Not, ALM, DL);
-    EB->appendRecipe(NotMask);
-
-    VPInstruction *BranchBack =
-        new VPInstruction(VPInstruction::BranchOnCond, {NotMask}, DL);
-    EB->appendRecipe(BranchBack);
-  } else {
-    EB->appendRecipe(CanonicalIVIncrement);
-
-    // Add the BranchOnCount VPInstruction to the latch.
-    VPInstruction *BranchBack = new VPInstruction(
-        VPInstruction::BranchOnCount,
-        {CanonicalIVIncrement, &Plan.getVectorTripCount()}, DL);
-    EB->appendRecipe(BranchBack);
-  }
 
 #if SIFIVE_CUSTOMIZATION
   if (NeedRVL)
     Plan.createRVL();
 #endif // SIFIVE_CUSTOMIZATION
+  EB->appendRecipe(CanonicalIVIncrement);
+
+  // Add the BranchOnCount VPInstruction to the latch.
+  VPInstruction *BranchBack =
+      new VPInstruction(VPInstruction::BranchOnCount,
+                        {CanonicalIVIncrement, &Plan.getVectorTripCount()}, DL);
+  EB->appendRecipe(BranchBack);
 }
 
 #if SIFIVE_CUSTOMIZATION
@@ -10950,15 +10822,6 @@ addCSAPreprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
                              VPMaskPhi);
     Plan.addCSAState(CSA.first, S);
   }
-=======
-  EB->appendRecipe(CanonicalIVIncrement);
-
-  // Add the BranchOnCount VPInstruction to the latch.
-  VPInstruction *BranchBack =
-      new VPInstruction(VPInstruction::BranchOnCount,
-                        {CanonicalIVIncrement, &Plan.getVectorTripCount()}, DL);
-  EB->appendRecipe(BranchBack);
->>>>>>> pub/main
 }
 
 /// Add CSA Recipes that must occur after each instruction in the input IR
@@ -11180,21 +11043,22 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     IVUpdateMayOverflow |= !isIndvarOverflowCheckKnownFalse(&CM, VF);
 
   DebugLoc DL = getDebugLocFromInstOrOperands(Legal->getPrimaryInduction());
-<<<<<<< HEAD
+  TailFoldingStyle Style = CM.getTailFoldingStyle(IVUpdateMayOverflow);
+  // When not folding the tail, we know that the induction increment will not
+  // overflow.
+  bool HasNUW = Style == TailFoldingStyle::None;
 #if SIFIVE_CUSTOMIZATION
   // Canonical IV is not available for uncountable loops in general.
   if (!Legal->isVectorizableUncountable()) {
       DL = getDebugLocFromInstOrOperands(Legal->getPrimaryInduction());
   addCanonicalIVRecipes(
-      *Plan, Legal->getWidestInductionType(),
-      DL, CM.getTailFoldingStyle(IVUpdateMayOverflow),
-      Legal->useVLAVectorizer());
+      *Plan, Legal->getWidestInductionType(), HasNUW,
+      DL, Legal->useVLAVectorizer());
   addCSAPreprocessRecipes(
       Legal->getCSAs(), OrigLoop, Plan->getPreheader(), HeaderVPBB,
       DL, Range, *Plan);
 #else
-  addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), DL,
-                        CM.getTailFoldingStyle(IVUpdateMayOverflow));
+  addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), HasNUW, DL);
 #endif // SIFIVE_CUSTOMIZATION
 #if SIFIVE_CUSTOMIZATION
   }
@@ -11207,13 +11071,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     Plan->createInitRVL();
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  TailFoldingStyle Style = CM.getTailFoldingStyle(IVUpdateMayOverflow);
-  // When not folding the tail, we know that the induction increment will not
-  // overflow.
-  bool HasNUW = Style == TailFoldingStyle::None;
-  addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), HasNUW, DL);
->>>>>>> pub/main
 
   // Proactively create header mask. Masks for other blocks are created on
   // demand.
@@ -11443,7 +11300,11 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   });
 #endif // SIFIVE_CUSTOMIZATION
 
+#if SIFIVE_CUSTOMIZATION
+  if (!Legal->useVLAVectorizer() && useActiveLaneMask(Style)) {
+#else
   if (useActiveLaneMask(Style)) {
+#endif // SIFIVE_CUSTOMIZATION
     // TODO: Move checks to VPlanTransforms::addActiveLaneMask once
     // TailFoldingStyle is visible there.
     bool ForControlFlow = useActiveLaneMaskForControlFlow(Style);
@@ -11496,22 +11357,16 @@ VPlanPtr LoopVectorizationPlanner::buildVPlan(VFRange &Range) {
       Plan->getVectorLoopRegion()->getExitingBasicBlock()->getTerminator();
   Term->eraseFromParent();
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  addCanonicalIVRecipes(
-      *Plan, Legal->getWidestInductionType(), DebugLoc(), CM.getTailFoldingStyle(),
-      Legal->useVLAVectorizer());
-#else
-  addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), DebugLoc(),
-                        CM.getTailFoldingStyle());
-#endif // SIFIVE_CUSTOMIZATION
-=======
   // Tail folding is not supported for outer loops, so the induction increment
   // is guaranteed to not wrap.
   bool HasNUW = true;
+#if SIFIVE_CUSTOMIZATION
+  addCanonicalIVRecipes(
+      *Plan, Legal->getWidestInductionType(), HasNUW, DebugLoc(), Legal->useVLAVectorizer());
+#else
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), HasNUW,
                         DebugLoc());
->>>>>>> pub/main
+#endif // SIFIVE_CUSTOMIZATION
   return Plan;
 }
 
@@ -11648,13 +11503,8 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
   // If tail is folded by masking, introduce selects between the phi
   // and the live-out instruction of each reduction, at the beginning of the
   // dedicated latch block.
-<<<<<<< HEAD
   if (CM.foldTailByMasking() || Legal->useVLAVectorizer()) {
-    Builder.setInsertPoint(LatchVPBB, LatchVPBB->begin());
-=======
-  if (CM.foldTailByMasking()) {
     Builder.setInsertPoint(&*LatchVPBB->begin());
->>>>>>> pub/main
     for (VPRecipeBase &R :
          Plan->getVectorLoopRegion()->getEntryBasicBlock()->phis()) {
       VPReductionPHIRecipe *PhiR = dyn_cast<VPReductionPHIRecipe>(&R);
@@ -11670,25 +11520,23 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
       VPValue *Red = PhiR->getBackedgeValue();
       assert(Red->getDefiningRecipe()->getParent() != LatchVPBB &&
              "reduction recipe must be defined before latch");
-<<<<<<< HEAD
+      FastMathFlags FMFs;
+      Type *PhiTy = PhiR->getOperand(0)->getLiveInIRValue()->getType();
+      if (PhiTy->isFloatingPointTy())
+        FMFs = RdxDesc.getFastMathFlags();
 #if SIFIVE_CUSTOMIZATION
       if (Legal->useVLAVectorizer())
-        Builder.createSelect(Cond, Red, PhiR, FastMathFlags(), DebugLoc(),
+        Builder.createSelect(Cond, Red, PhiR, FMFs, DebugLoc(),
                              VPSelectInstruction::TailPolicy::Undisturbed);
       else
-        Builder.createSelect(Cond, Red, PhiR, FastMathFlags(), DebugLoc());
+        Builder.createSelect(Cond, Red, PhiR, FMFs, DebugLoc());
 #else
-      Builder.createNaryOp(Instruction::Select, {Cond, Red, PhiR});
-#endif // SIFIVE_CUSTOMIZATION
-=======
-      FastMathFlags FMFs = RdxDesc.getFastMathFlags();
-      Type *PhiTy = PhiR->getOperand(0)->getLiveInIRValue()->getType();
       auto *Select =
           PhiTy->isFloatingPointTy()
               ? new VPInstruction(Instruction::Select, {Cond, Red, PhiR}, FMFs)
               : new VPInstruction(Instruction::Select, {Cond, Red, PhiR});
       Select->insertBefore(&*Builder.getInsertPoint());
->>>>>>> pub/main
+#endif // SIFIVE_CUSTOMIZATION
     }
   }
 

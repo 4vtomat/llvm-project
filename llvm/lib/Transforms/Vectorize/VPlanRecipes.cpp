@@ -656,14 +656,10 @@ bool VPInstruction::isFPMathOp() const {
   return Opcode == Instruction::FAdd || Opcode == Instruction::FMul ||
          Opcode == Instruction::FNeg || Opcode == Instruction::FSub ||
          Opcode == Instruction::FDiv || Opcode == Instruction::FRem ||
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
          Opcode == Instruction::Select ||
 #endif // SIFIVE_CUSTOMIZATION
-         Opcode == Instruction::FCmp;
-=======
          Opcode == Instruction::FCmp || Opcode == Instruction::Select;
->>>>>>> pub/main
 }
 #endif
 

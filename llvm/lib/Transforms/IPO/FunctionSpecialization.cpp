@@ -893,12 +893,8 @@ Function *FunctionSpecializer::createSpecialization(
 #else
 Function *FunctionSpecializer::createSpecialization(Function *F,
                                                     const SpecSig &S) {
-<<<<<<< HEAD
 #endif
-  Function *Clone = cloneCandidateFunction(F);
-=======
   Function *Clone = cloneCandidateFunction(F, Specializations.size() + 1);
->>>>>>> pub/main
 
   // The original function does not neccessarily have internal linkage, but the
   // clone must.

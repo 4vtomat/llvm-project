@@ -1432,11 +1432,7 @@ bool MemCpyOptPass::performMemCpyToMemSetOptzn(MemCpyInst *MemCpy,
 // allocas that aren't captured.
 bool MemCpyOptPass::performStackMoveOptzn(Instruction *Load, Instruction *Store,
                                           AllocaInst *DestAlloca,
-<<<<<<< HEAD
-                                          AllocaInst *SrcAlloca, TypeSize Size, // SIFIVE
-=======
                                           AllocaInst *SrcAlloca, TypeSize Size,
->>>>>>> pub/main
                                           BatchAAResults &BAA) {
   LLVM_DEBUG(dbgs() << "Stack Move: Attempting to optimize:\n"
                     << *Store << "\n");
@@ -1778,15 +1774,8 @@ bool MemCpyOptPass::processMemCpy(MemCpyInst *M, BasicBlock::iterator &BBI) {
   ConstantInt *Len = dyn_cast<ConstantInt>(M->getLength());
   if (Len == nullptr)
     return false;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   if (performStackMoveOptzn(M, M, DestAlloca, SrcAlloca,
                             TypeSize::getFixed(Len->getZExtValue()), BAA)) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  if (performStackMoveOptzn(M, M, DestAlloca, SrcAlloca,
-                            TypeSize::getFixed(Len->getZExtValue()), BAA)) {
->>>>>>> pub/main
     // Avoid invalidating the iterator.
     BBI = M->getNextNonDebugInstruction()->getIterator();
     eraseInstruction(M);

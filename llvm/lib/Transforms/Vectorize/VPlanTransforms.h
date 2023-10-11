@@ -67,13 +67,12 @@ struct VPlanTransforms {
   /// regions until no improvements are remaining.
   static void createAndOptimizeReplicateRegions(VPlan &Plan);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// If any user of a WidenGEPRecipe is uniform, provide them a Replicate of
   /// underlying valueunderlying value to reduce the needs of vector extracts.
   static void optimizeGEPs(VPlan &Plan);
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   /// Replace (ICMP_ULE, wide canonical IV, backedge-taken-count) checks with an
   /// (active-lane-mask recipe, wide canonical IV, trip-count). If \p
   /// UseActiveLaneMaskForControlFlow is true, introduce an
@@ -85,7 +84,6 @@ struct VPlanTransforms {
   static void addActiveLaneMask(VPlan &Plan,
                                 bool UseActiveLaneMaskForControlFlow,
                                 bool DataAndControlFlowWithoutRuntimeCheck);
->>>>>>> pub/main
 
 private:
   /// Remove redundant VPBasicBlocks by merging them into their predecessor if

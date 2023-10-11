@@ -3331,16 +3331,9 @@ public:
     return cast<VPCanonicalIVPHIRecipe>(&*EntryVPBB->begin());
   }
 
-<<<<<<< HEAD
-  /// Find and return the VPActiveLaneMaskPHIRecipe from the header - there
-  /// be only one at most. If there isn't one, then return nullptr.
-  VPActiveLaneMaskPHIRecipe *getActiveLaneMaskPhi();
-
 #if SIFIVE_CUSTOMIZATION
   void addLiveOut(PHINode *PN, VPValue *V, bool onlyFirstLaneUsed = false);
 #else
-=======
->>>>>>> pub/main
   void addLiveOut(PHINode *PN, VPValue *V);
 #endif // SIFIVE_CUSTOMIZATION
 
