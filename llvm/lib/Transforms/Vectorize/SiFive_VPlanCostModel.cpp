@@ -565,8 +565,9 @@ InstructionCost VPlanCostModel::getInstructionCost(const VPInstruction *VPI,
                               CostKind, /*Index*/ -1);
   }
   case VPInstruction::CanonicalIVIncrement:
-  case VPInstruction::BranchOnCount:
     return 1;
+  case VPInstruction::BranchOnCount:
+    return 0;
   default:
     return 0;
   }
@@ -657,9 +658,15 @@ InstructionCost VPlanCostModel::getReductionCost(const VPReductionRecipe *VPR,
 
 InstructionCost VPlanCostModel::getReplicateOpCost(const VPReplicateRecipe *VPR,
                                                    const RVVPair &RVL) const {
+  const Instruction *I = VPR->getUnderlyingInstr();
+  if (I->getOpcode() == Instruction::GetElementPtr)
+    // We mark this instruction as zero-cost because the cost of GEPs in
+    // vectorized code depends on whether the corresponding memory instruction
+    // is scalarized or not. Therefore, we handle GEPs with the memory
+    // instruction cost.
+    return 0;
   if (VPR->isUniform())
     return 1;
-  const Instruction *I = VPR->getUnderlyingInstr();
   if (isa<AllocaInst>(I)) {
     ElementCount VF = getElementCount(RVL);
     // We cannot easily widen alloca to a scalable alloca, as
