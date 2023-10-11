@@ -38,7 +38,7 @@ define i64 @main(i64 %x, i64 %y, i1 %flag) {
 ; ONE-NEXT:    [[TMP0:%.*]] = call i64 @compute(i64 [[X:%.*]], i64 [[Y:%.*]], ptr @power, ptr @mul)
 ; ONE-NEXT:    br label [[MERGE:%.*]]
 ; ONE:       minus:
-; ONE-NEXT:    [[TMP1:%.*]] = call i64 @compute.1(i64 [[X]], i64 [[Y]], ptr @plus, ptr @minus)
+; ONE-NEXT:    [[TMP1:%.*]] = call i64 @compute.specialized.1(i64 [[X]], i64 [[Y]], ptr @plus, ptr @minus)
 ; ONE-NEXT:    br label [[MERGE]]
 ; ONE:       merge:
 ; ONE-NEXT:    [[TMP2:%.*]] = phi i64 [ [[TMP0]], [[PLUS]] ], [ [[TMP1]], [[MINUS]] ]
@@ -52,25 +52,25 @@ define i64 @main(i64 %x, i64 %y, i1 %flag) {
 ; TWO-NEXT:    [[TMP0:%.*]] = call i64 @compute(i64 [[X:%.*]], i64 [[Y:%.*]], ptr @power, ptr @mul)
 ; TWO-NEXT:    br label [[MERGE:%.*]]
 ; TWO:       minus:
-; TWO-NEXT:    [[TMP1:%.*]] = call i64 @compute.2(i64 [[X]], i64 [[Y]], ptr @plus, ptr @minus)
+; TWO-NEXT:    [[TMP1:%.*]] = call i64 @compute.specialized.2(i64 [[X]], i64 [[Y]], ptr @plus, ptr @minus)
 ; TWO-NEXT:    br label [[MERGE]]
 ; TWO:       merge:
 ; TWO-NEXT:    [[TMP2:%.*]] = phi i64 [ [[TMP0]], [[PLUS]] ], [ [[TMP1]], [[MINUS]] ]
-; TWO-NEXT:    [[TMP3:%.*]] = call i64 @compute.1(i64 [[TMP2]], i64 42, ptr @minus, ptr @power)
+; TWO-NEXT:    [[TMP3:%.*]] = call i64 @compute.specialized.1(i64 [[TMP2]], i64 42, ptr @minus, ptr @power)
 ; TWO-NEXT:    ret i64 [[TMP3]]
 ;
 ; THREE-LABEL: @main(
 ; THREE-NEXT:  entry:
 ; THREE-NEXT:    br i1 [[FLAG:%.*]], label [[PLUS:%.*]], label [[MINUS:%.*]]
 ; THREE:       plus:
-; THREE-NEXT:    [[TMP0:%.*]] = call i64 @compute.1(i64 [[X:%.*]], i64 [[Y:%.*]], ptr @power, ptr @mul)
+; THREE-NEXT:    [[TMP0:%.*]] = call i64 @compute.specialized.1(i64 [[X:%.*]], i64 [[Y:%.*]], ptr @power, ptr @mul)
 ; THREE-NEXT:    br label [[MERGE:%.*]]
 ; THREE:       minus:
-; THREE-NEXT:    [[TMP1:%.*]] = call i64 @compute.2(i64 [[X]], i64 [[Y]], ptr @plus, ptr @minus)
+; THREE-NEXT:    [[TMP1:%.*]] = call i64 @compute.specialized.2(i64 [[X]], i64 [[Y]], ptr @plus, ptr @minus)
 ; THREE-NEXT:    br label [[MERGE]]
 ; THREE:       merge:
 ; THREE-NEXT:    [[TMP2:%.*]] = phi i64 [ [[TMP0]], [[PLUS]] ], [ [[TMP1]], [[MINUS]] ]
-; THREE-NEXT:    [[TMP3:%.*]] = call i64 @compute.3(i64 [[TMP2]], i64 42, ptr @minus, ptr @power)
+; THREE-NEXT:    [[TMP3:%.*]] = call i64 @compute.specialized.3(i64 [[TMP2]], i64 42, ptr @minus, ptr @power)
 ; THREE-NEXT:    ret i64 [[TMP3]]
 ;
 entry:
@@ -94,38 +94,47 @@ merge:
 ;
 ; THREE-LABEL: define internal i64 @compute.1(i64 %x, i64 %y, ptr %binop1, ptr %binop2) {
 ; THREE-NEXT:  entry:
-; THREE-NEXT:    [[TMP0:%.+]] = call i64 @power(i64 %x, i64 %y)
-; THREE-NEXT:    [[TMP1:%.+]] = call i64 @mul(i64 %x, i64 %y)
-; THREE-NEXT:    [[TMP2:%.+]] = add i64 [[TMP0]], [[TMP1]]
-; THREE-NEXT:    [[TMP3:%.+]] = sdiv i64 [[TMP2]], %x
-; THREE-NEXT:    [[TMP4:%.+]] = sub i64 [[TMP3]], %y
-; THREE-NEXT:    [[TMP5:%.+]] = mul i64 [[TMP4]], 2
-; THREE-NEXT:    ret i64 [[TMP5]]
 ; THREE-NEXT:  }
 ;
 ; THREE-LABEL: define internal i64 @compute.2(i64 %x, i64 %y, ptr %binop1, ptr %binop2) {
 ; THREE-NEXT:  entry:
-; THREE-NEXT:    [[TMP0:%.+]] = call i64 @plus(i64 %x, i64 %y)
-; THREE-NEXT:    [[TMP1:%.+]] = call i64 @minus(i64 %x, i64 %y)
-; THREE-NEXT:    [[TMP2:%.+]] = add i64 [[TMP0]], [[TMP1]]
-; THREE-NEXT:    [[TMP3:%.+]] = sdiv i64 [[TMP2]], %x
-; THREE-NEXT:    [[TMP4:%.+]] = sub i64 [[TMP3]], %y
-; THREE-NEXT:    [[TMP5:%.+]] = mul i64 [[TMP4]], 2
-; THREE-NEXT:    ret i64 [[TMP5]]
 ; THREE-NEXT:  }
 ;
 ; THREE-LABEL: define internal i64 @compute.3(i64 %x, i64 %y, ptr %binop1, ptr %binop2) {
 ; THREE-NEXT:  entry:
-; THREE-NEXT:    [[TMP0:%.+]] = call i64 @minus(i64 %x, i64 42)
-; THREE-NEXT:    [[TMP1:%.+]] = call i64 @power(i64 %x, i64 42)
-; THREE-NEXT:    [[TMP2:%.+]] = add i64 [[TMP0]], [[TMP1]]
-; THREE-NEXT:    [[TMP3:%.+]] = sdiv i64 [[TMP2]], %x
-; THREE-NEXT:    [[TMP4:%.+]] = sub i64 [[TMP3]], 42
-; THREE-NEXT:    [[TMP5:%.+]] = mul i64 [[TMP4]], 2
-; THREE-NEXT:    ret i64 [[TMP5]]
 ; THREE-NEXT:  }
 ;
 define internal i64 @compute(i64 %x, i64 %y, ptr %binop1, ptr %binop2) {
+; NONE-LABEL: @compute(
+; NONE-NEXT:  entry:
+; NONE-NEXT:    [[TMP0:%.*]] = call i64 [[BINOP1:%.*]](i64 [[X:%.*]], i64 [[Y:%.*]])
+; NONE-NEXT:    [[TMP1:%.*]] = call i64 [[BINOP2:%.*]](i64 [[X]], i64 [[Y]])
+; NONE-NEXT:    [[ADD:%.*]] = add i64 [[TMP0]], [[TMP1]]
+; NONE-NEXT:    [[DIV:%.*]] = sdiv i64 [[ADD]], [[X]]
+; NONE-NEXT:    [[SUB:%.*]] = sub i64 [[DIV]], [[Y]]
+; NONE-NEXT:    [[MUL:%.*]] = mul i64 [[SUB]], 2
+; NONE-NEXT:    ret i64 [[MUL]]
+;
+; ONE-LABEL: @compute(
+; ONE-NEXT:  entry:
+; ONE-NEXT:    [[TMP0:%.*]] = call i64 [[BINOP1:%.*]](i64 [[X:%.*]], i64 [[Y:%.*]])
+; ONE-NEXT:    [[TMP1:%.*]] = call i64 [[BINOP2:%.*]](i64 [[X]], i64 [[Y]])
+; ONE-NEXT:    [[ADD:%.*]] = add i64 [[TMP0]], [[TMP1]]
+; ONE-NEXT:    [[DIV:%.*]] = sdiv i64 [[ADD]], [[X]]
+; ONE-NEXT:    [[SUB:%.*]] = sub i64 [[DIV]], [[Y]]
+; ONE-NEXT:    [[MUL:%.*]] = mul i64 [[SUB]], 2
+; ONE-NEXT:    ret i64 [[MUL]]
+;
+; TWO-LABEL: @compute(
+; TWO-NEXT:  entry:
+; TWO-NEXT:    [[TMP0:%.*]] = call i64 [[BINOP1:%.*]](i64 [[X:%.*]], i64 [[Y:%.*]])
+; TWO-NEXT:    [[TMP1:%.*]] = call i64 [[BINOP2:%.*]](i64 [[X]], i64 [[Y]])
+; TWO-NEXT:    [[ADD:%.*]] = add i64 [[TMP0]], [[TMP1]]
+; TWO-NEXT:    [[DIV:%.*]] = sdiv i64 [[ADD]], [[X]]
+; TWO-NEXT:    [[SUB:%.*]] = sub i64 [[DIV]], [[Y]]
+; TWO-NEXT:    [[MUL:%.*]] = mul i64 [[SUB]], 2
+; TWO-NEXT:    ret i64 [[MUL]]
+;
 entry:
   %tmp0 = call i64 %binop1(i64 %x, i64 %y)
   %tmp1 = call i64 %binop2(i64 %x, i64 %y)
@@ -137,18 +146,118 @@ entry:
 }
 
 define internal i64 @plus(i64 %x, i64 %y) {
+; NONE-LABEL: @plus(
+; NONE-NEXT:  entry:
+; NONE-NEXT:    [[TMP0:%.*]] = add i64 [[X:%.*]], [[Y:%.*]]
+; NONE-NEXT:    ret i64 [[TMP0]]
+;
+; ONE-LABEL: @plus(
+; ONE-NEXT:  entry:
+; ONE-NEXT:    [[TMP0:%.*]] = add i64 [[X:%.*]], [[Y:%.*]]
+; ONE-NEXT:    ret i64 [[TMP0]]
+;
+; TWO-LABEL: @plus(
+; TWO-NEXT:  entry:
+; TWO-NEXT:    [[TMP0:%.*]] = add i64 [[X:%.*]], [[Y:%.*]]
+; TWO-NEXT:    ret i64 [[TMP0]]
+;
+; THREE-LABEL: @plus(
+; THREE-NEXT:  entry:
+; THREE-NEXT:    [[TMP0:%.*]] = add i64 [[X:%.*]], [[Y:%.*]]
+; THREE-NEXT:    ret i64 [[TMP0]]
+;
 entry:
   %tmp0 = add i64 %x, %y
   ret i64 %tmp0
 }
 
 define internal i64 @minus(i64 %x, i64 %y) {
+; NONE-LABEL: @minus(
+; NONE-NEXT:  entry:
+; NONE-NEXT:    [[TMP0:%.*]] = sub i64 [[X:%.*]], [[Y:%.*]]
+; NONE-NEXT:    ret i64 [[TMP0]]
+;
+; ONE-LABEL: @minus(
+; ONE-NEXT:  entry:
+; ONE-NEXT:    [[TMP0:%.*]] = sub i64 [[X:%.*]], [[Y:%.*]]
+; ONE-NEXT:    ret i64 [[TMP0]]
+;
+; TWO-LABEL: @minus(
+; TWO-NEXT:  entry:
+; TWO-NEXT:    [[TMP0:%.*]] = sub i64 [[X:%.*]], [[Y:%.*]]
+; TWO-NEXT:    ret i64 [[TMP0]]
+;
+; THREE-LABEL: @minus(
+; THREE-NEXT:  entry:
+; THREE-NEXT:    [[TMP0:%.*]] = sub i64 [[X:%.*]], [[Y:%.*]]
+; THREE-NEXT:    ret i64 [[TMP0]]
+;
 entry:
   %tmp0 = sub i64 %x, %y
   ret i64 %tmp0
 }
 
 define internal i64 @mul(i64 %x, i64 %n) {
+; NONE-LABEL: @mul(
+; NONE-NEXT:  entry:
+; NONE-NEXT:    [[CMP6:%.*]] = icmp sgt i64 [[N:%.*]], 1
+; NONE-NEXT:    br i1 [[CMP6]], label [[FOR_BODY:%.*]], label [[FOR_COND_CLEANUP:%.*]]
+; NONE:       for.cond.cleanup:
+; NONE-NEXT:    [[X_ADDR_0_LCSSA:%.*]] = phi i64 [ [[X:%.*]], [[ENTRY:%.*]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
+; NONE-NEXT:    ret i64 [[X_ADDR_0_LCSSA]]
+; NONE:       for.body:
+; NONE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ], [ 1, [[ENTRY]] ]
+; NONE-NEXT:    [[X_ADDR_07:%.*]] = phi i64 [ [[ADD]], [[FOR_BODY]] ], [ [[X]], [[ENTRY]] ]
+; NONE-NEXT:    [[ADD]] = shl nsw i64 [[X_ADDR_07]], 1
+; NONE-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
+; NONE-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
+; NONE-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP]], label [[FOR_BODY]]
+;
+; ONE-LABEL: @mul(
+; ONE-NEXT:  entry:
+; ONE-NEXT:    [[CMP6:%.*]] = icmp sgt i64 [[N:%.*]], 1
+; ONE-NEXT:    br i1 [[CMP6]], label [[FOR_BODY:%.*]], label [[FOR_COND_CLEANUP:%.*]]
+; ONE:       for.cond.cleanup:
+; ONE-NEXT:    [[X_ADDR_0_LCSSA:%.*]] = phi i64 [ [[X:%.*]], [[ENTRY:%.*]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
+; ONE-NEXT:    ret i64 [[X_ADDR_0_LCSSA]]
+; ONE:       for.body:
+; ONE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ], [ 1, [[ENTRY]] ]
+; ONE-NEXT:    [[X_ADDR_07:%.*]] = phi i64 [ [[ADD]], [[FOR_BODY]] ], [ [[X]], [[ENTRY]] ]
+; ONE-NEXT:    [[ADD]] = shl nsw i64 [[X_ADDR_07]], 1
+; ONE-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
+; ONE-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
+; ONE-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP]], label [[FOR_BODY]]
+;
+; TWO-LABEL: @mul(
+; TWO-NEXT:  entry:
+; TWO-NEXT:    [[CMP6:%.*]] = icmp sgt i64 [[N:%.*]], 1
+; TWO-NEXT:    br i1 [[CMP6]], label [[FOR_BODY:%.*]], label [[FOR_COND_CLEANUP:%.*]]
+; TWO:       for.cond.cleanup:
+; TWO-NEXT:    [[X_ADDR_0_LCSSA:%.*]] = phi i64 [ [[X:%.*]], [[ENTRY:%.*]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
+; TWO-NEXT:    ret i64 [[X_ADDR_0_LCSSA]]
+; TWO:       for.body:
+; TWO-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ], [ 1, [[ENTRY]] ]
+; TWO-NEXT:    [[X_ADDR_07:%.*]] = phi i64 [ [[ADD]], [[FOR_BODY]] ], [ [[X]], [[ENTRY]] ]
+; TWO-NEXT:    [[ADD]] = shl nsw i64 [[X_ADDR_07]], 1
+; TWO-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
+; TWO-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
+; TWO-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP]], label [[FOR_BODY]]
+;
+; THREE-LABEL: @mul(
+; THREE-NEXT:  entry:
+; THREE-NEXT:    [[CMP6:%.*]] = icmp sgt i64 [[N:%.*]], 1
+; THREE-NEXT:    br i1 [[CMP6]], label [[FOR_BODY:%.*]], label [[FOR_COND_CLEANUP:%.*]]
+; THREE:       for.cond.cleanup:
+; THREE-NEXT:    [[X_ADDR_0_LCSSA:%.*]] = phi i64 [ [[X:%.*]], [[ENTRY:%.*]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
+; THREE-NEXT:    ret i64 [[X_ADDR_0_LCSSA]]
+; THREE:       for.body:
+; THREE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ], [ 1, [[ENTRY]] ]
+; THREE-NEXT:    [[X_ADDR_07:%.*]] = phi i64 [ [[ADD]], [[FOR_BODY]] ], [ [[X]], [[ENTRY]] ]
+; THREE-NEXT:    [[ADD]] = shl nsw i64 [[X_ADDR_07]], 1
+; THREE-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
+; THREE-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
+; THREE-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP]], label [[FOR_BODY]]
+;
 entry:
   %cmp6 = icmp sgt i64 %n, 1
   br i1 %cmp6, label %for.body, label %for.cond.cleanup
@@ -167,6 +276,66 @@ for.body:                                         ; preds = %entry, %for.body
 }
 
 define internal i64 @power(i64 %x, i64 %n) {
+; NONE-LABEL: @power(
+; NONE-NEXT:  entry:
+; NONE-NEXT:    [[CMP6:%.*]] = icmp sgt i64 [[N:%.*]], 1
+; NONE-NEXT:    br i1 [[CMP6]], label [[FOR_BODY:%.*]], label [[FOR_COND_CLEANUP:%.*]]
+; NONE:       for.cond.cleanup:
+; NONE-NEXT:    [[X_ADDR_0_LCSSA:%.*]] = phi i64 [ [[X:%.*]], [[ENTRY:%.*]] ], [ [[MUL:%.*]], [[FOR_BODY]] ]
+; NONE-NEXT:    ret i64 [[X_ADDR_0_LCSSA]]
+; NONE:       for.body:
+; NONE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ], [ 1, [[ENTRY]] ]
+; NONE-NEXT:    [[X_ADDR_07:%.*]] = phi i64 [ [[MUL]], [[FOR_BODY]] ], [ [[X]], [[ENTRY]] ]
+; NONE-NEXT:    [[MUL]] = mul nsw i64 [[X_ADDR_07]], [[X_ADDR_07]]
+; NONE-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
+; NONE-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
+; NONE-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP]], label [[FOR_BODY]]
+;
+; ONE-LABEL: @power(
+; ONE-NEXT:  entry:
+; ONE-NEXT:    [[CMP6:%.*]] = icmp sgt i64 [[N:%.*]], 1
+; ONE-NEXT:    br i1 [[CMP6]], label [[FOR_BODY:%.*]], label [[FOR_COND_CLEANUP:%.*]]
+; ONE:       for.cond.cleanup:
+; ONE-NEXT:    [[X_ADDR_0_LCSSA:%.*]] = phi i64 [ [[X:%.*]], [[ENTRY:%.*]] ], [ [[MUL:%.*]], [[FOR_BODY]] ]
+; ONE-NEXT:    ret i64 [[X_ADDR_0_LCSSA]]
+; ONE:       for.body:
+; ONE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ], [ 1, [[ENTRY]] ]
+; ONE-NEXT:    [[X_ADDR_07:%.*]] = phi i64 [ [[MUL]], [[FOR_BODY]] ], [ [[X]], [[ENTRY]] ]
+; ONE-NEXT:    [[MUL]] = mul nsw i64 [[X_ADDR_07]], [[X_ADDR_07]]
+; ONE-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
+; ONE-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
+; ONE-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP]], label [[FOR_BODY]]
+;
+; TWO-LABEL: @power(
+; TWO-NEXT:  entry:
+; TWO-NEXT:    [[CMP6:%.*]] = icmp sgt i64 [[N:%.*]], 1
+; TWO-NEXT:    br i1 [[CMP6]], label [[FOR_BODY:%.*]], label [[FOR_COND_CLEANUP:%.*]]
+; TWO:       for.cond.cleanup:
+; TWO-NEXT:    [[X_ADDR_0_LCSSA:%.*]] = phi i64 [ [[X:%.*]], [[ENTRY:%.*]] ], [ [[MUL:%.*]], [[FOR_BODY]] ]
+; TWO-NEXT:    ret i64 [[X_ADDR_0_LCSSA]]
+; TWO:       for.body:
+; TWO-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ], [ 1, [[ENTRY]] ]
+; TWO-NEXT:    [[X_ADDR_07:%.*]] = phi i64 [ [[MUL]], [[FOR_BODY]] ], [ [[X]], [[ENTRY]] ]
+; TWO-NEXT:    [[MUL]] = mul nsw i64 [[X_ADDR_07]], [[X_ADDR_07]]
+; TWO-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
+; TWO-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
+; TWO-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP]], label [[FOR_BODY]]
+;
+; THREE-LABEL: @power(
+; THREE-NEXT:  entry:
+; THREE-NEXT:    [[CMP6:%.*]] = icmp sgt i64 [[N:%.*]], 1
+; THREE-NEXT:    br i1 [[CMP6]], label [[FOR_BODY:%.*]], label [[FOR_COND_CLEANUP:%.*]]
+; THREE:       for.cond.cleanup:
+; THREE-NEXT:    [[X_ADDR_0_LCSSA:%.*]] = phi i64 [ [[X:%.*]], [[ENTRY:%.*]] ], [ [[MUL:%.*]], [[FOR_BODY]] ]
+; THREE-NEXT:    ret i64 [[X_ADDR_0_LCSSA]]
+; THREE:       for.body:
+; THREE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ], [ 1, [[ENTRY]] ]
+; THREE-NEXT:    [[X_ADDR_07:%.*]] = phi i64 [ [[MUL]], [[FOR_BODY]] ], [ [[X]], [[ENTRY]] ]
+; THREE-NEXT:    [[MUL]] = mul nsw i64 [[X_ADDR_07]], [[X_ADDR_07]]
+; THREE-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
+; THREE-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
+; THREE-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP]], label [[FOR_BODY]]
+;
 entry:
   %cmp6 = icmp sgt i64 %n, 1
   br i1 %cmp6, label %for.body, label %for.cond.cleanup

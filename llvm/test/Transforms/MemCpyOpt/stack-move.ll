@@ -118,9 +118,16 @@ define void @load_store_scalable(<vscale x 4 x i32> %x) {
 ; CHECK-LABEL: define void @load_store_scalable
 ; CHECK-SAME: (<vscale x 4 x i32> [[X:%.*]]) {
 ; CHECK-NEXT:    [[SRC:%.*]] = alloca <vscale x 4 x i32>, align 16
+; CHECK-NEXT:    [[DEST:%.*]] = alloca <vscale x 4 x i32>, align 16
+; CHECK-NEXT:    call void @llvm.lifetime.start.p0(i64 -1, ptr nocapture [[SRC]])
+; CHECK-NEXT:    call void @llvm.lifetime.start.p0(i64 -1, ptr nocapture [[DEST]])
 ; CHECK-NEXT:    store <vscale x 4 x i32> [[X]], ptr [[SRC]], align 16
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @use_nocapture(ptr nocapture [[SRC]])
-; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @use_nocapture(ptr nocapture [[SRC]])
+; CHECK-NEXT:    [[SRC_VAL:%.*]] = load <vscale x 4 x i32>, ptr [[SRC]], align 16
+; CHECK-NEXT:    store <vscale x 4 x i32> [[SRC_VAL]], ptr [[DEST]], align 16
+; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @use_nocapture(ptr nocapture [[DEST]])
+; CHECK-NEXT:    call void @llvm.lifetime.end.p0(i64 -1, ptr nocapture [[SRC]])
+; CHECK-NEXT:    call void @llvm.lifetime.end.p0(i64 -1, ptr nocapture [[DEST]])
 ; CHECK-NEXT:    ret void
 ;
   %src = alloca <vscale x 4 x i32>
