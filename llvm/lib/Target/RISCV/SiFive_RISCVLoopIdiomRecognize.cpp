@@ -84,6 +84,10 @@ RISCVLoopIdiomRecognizePass::run(Loop &L, LoopAnalysisManager &AM,
   if (L.getHeader()->getModule()->getDataLayout().getPointerSizeInBits() != 64)
     return PreservedAnalyses::all();
 
+  // Only enabled when vector extension is present.
+  if (!AR.TTI.supportsScalableVectors())
+    return PreservedAnalyses::all();
+
   const auto DL = L.getHeader()->getModule()->getDataLayout();
 
   RISCVLoopIdiomRecognize LIR(AR.DT, AR.LI, AR.TLI, AR.TTI, DL);
