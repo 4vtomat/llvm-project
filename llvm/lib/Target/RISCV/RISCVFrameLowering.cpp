@@ -518,8 +518,10 @@ void RISCVFrameLowering::emitPrologue(MachineFunction &MF,
   // FIXME (note copied from Lanai): This appears to be overallocating.  Needs
   // investigation. Get the number of bytes to allocate from the FrameInfo.
   uint64_t StackSize = getStackSizeWithRVVPadding(MF);
-  uint64_t RealStackSize =
-      StackSize + RVFI->getLibCallStackSize() + RVFI->getRVPushStackSize();
+#if SIFIVE_CUSTOMIZATION
+  // Cherry-picked from upstream #66613.
+  uint64_t RealStackSize = StackSize + RVFI->getReservedSpillsSize();
+#endif // SIFIVE_CUSTOMIZATION
   uint64_t RVVStackSize = RVFI->getRVVStackSize();
 
   // Early exit if there is no need to allocate on the stack
@@ -588,8 +590,10 @@ void RISCVFrameLowering::emitPrologue(MachineFunction &MF,
         Offset = FrameIdx * (int64_t)STI.getXLen() / 8;
       }
     } else {
-      Offset = MFI.getObjectOffset(FrameIdx) -
-               RVFI->getLibCallStackSize();
+#if SIFIVE_CUSTOMIZATION
+      // Cherry-picked from upstream #66613.
+      Offset = MFI.getObjectOffset(FrameIdx) - RVFI->getReservedSpillsSize();
+#endif // SIFIVE_CUSTOMIZATION
     }
     Register Reg = Entry.getReg();
     unsigned CFIIndex = MF.addFrameInst(MCCFIInstruction::createOffset(
@@ -734,8 +738,10 @@ void RISCVFrameLowering::emitEpilogue(MachineFunction &MF,
     LastFrameDestroy = std::prev(MBBI, CSI.size());
 
   uint64_t StackSize = getStackSizeWithRVVPadding(MF);
-  uint64_t RealStackSize =
-      StackSize + RVFI->getLibCallStackSize() + RVFI->getRVPushStackSize();
+#if SIFIVE_CUSTOMIZATION
+  // Cherry-picked from upstream #66613.
+  uint64_t RealStackSize = StackSize + RVFI->getReservedSpillsSize();
+#endif // SIFIVE_CUSTOMIZATION
   uint64_t FPOffset = RealStackSize - RVFI->getVarArgsSaveSize();
   uint64_t RVVStackSize = RVFI->getRVVStackSize();
 
@@ -886,7 +892,10 @@ RISCVFrameLowering::getFrameIndexReference(const MachineFunction &MF, int FI,
   if (FrameReg == getFPReg(STI)) {
     Offset += StackOffset::getFixed(RVFI->getVarArgsSaveSize());
     if (FI >= 0)
-      Offset -= StackOffset::getFixed(RVFI->getLibCallStackSize());
+#if SIFIVE_CUSTOMIZATION
+      // Cherry-picked from upstream #66613.
+      Offset -= StackOffset::getFixed(RVFI->getReservedSpillsSize());
+#endif // SIFIVE_CUSTOMIZATION
     // When using FP to access scalable vector objects, we need to minus
     // the frame size.
     //
@@ -954,8 +963,10 @@ RISCVFrameLowering::getFrameIndexReference(const MachineFunction &MF, int FI,
       assert(!RI->hasStackRealignment(MF) &&
              "Can't index across variable sized realign");
       Offset += StackOffset::get(getStackSizeWithRVVPadding(MF) +
-                                     RVFI->getLibCallStackSize() +
-                                     RVFI->getRVPushStackSize(),
+#if SIFIVE_CUSTOMIZATION
+                                     // Cherry-picked from upstream #66613.
+                                     RVFI->getReservedSpillsSize(),
+#endif // SIFIVE_CUSTOMIZATION
                                  RVFI->getRVVStackSize());
     } else {
       Offset += StackOffset::getFixed(MFI.getStackSize());
@@ -1300,7 +1311,10 @@ RISCVFrameLowering::getFirstSPAdjustAmount(const MachineFunction &MF) const {
   // Disable SplitSPAdjust if save-restore libcall is used. The callee-saved
   // registers will be pushed by the save-restore libcalls, so we don't have to
   // split the SP adjustment in this case.
-  if (RVFI->getLibCallStackSize() || RVFI->getRVPushStackSize())
+#if SIFIVE_CUSTOMIZATION
+  // Cherry-picked from upstream #66613.
+  if (RVFI->getReservedSpillsSize())
+#endif // SIFIVE_CUSTOMIZATION
     return 0;
 
   // Return the FirstSPAdjustAmount if the StackSize can not fit in a signed
