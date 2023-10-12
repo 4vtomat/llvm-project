@@ -660,8 +660,8 @@ foreach m = [V_MF8, V_MF4, V_MF2, V_M1, V_M2] in {
 
 let Predicates = [HasVendorXSfvfhbfmin], mayRaiseFPException = true in {
 #ifdef SIFIVE_CUSTOMIZATION
-defm PseudoVFWCVT_F_BF16   : VPseudoVWCVTD_V</*TargetConstraintType*/ 3>;
-defm PseudoVFNCVT_BF16_F   : VPseudoVNCVTD_W</*TargetConstraintType*/ 2>;
+defm PseudoVFWCVT_F_BF16   : VPseudoVWCVTD_V;
+defm PseudoVFNCVT_BF16_F   : VPseudoVNCVTD_W;
 #endif // SIFIVE_CUSTOMIZATION
 }
 
