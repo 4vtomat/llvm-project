@@ -44,41 +44,40 @@ define i64 @strlen_i8(ptr %start) {
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
 ; ON-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 0, i64 0)
-; ON-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; ON-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 8
-; ON-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 1
-; ON-NEXT:    [[TMP5:%.*]] = mul i64 1, [[TMP4]]
-; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
-; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP3]], 0
-; ON-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 1
-; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP7]]
-; ON-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
-; ON-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP1]] to i64
-; ON-NEXT:    [[TMP10:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP8]], i64 [[TMP9]])
-; ON-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 0
-; ON-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 1
-; ON-NEXT:    [[TMP13:%.*]] = trunc i64 [[TMP12]] to i32
-; ON-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP13]]
-; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP11]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; ON-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
-; ON-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP13]] to i64
-; ON-NEXT:    [[TMP16:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP15]])
-; ON-NEXT:    [[TMP17:%.*]] = icmp sge i64 [[TMP16]], 0
-; ON-NEXT:    br i1 [[TMP17]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; ON-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; ON-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; ON-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 8
+; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; ON-NEXT:    [[TMP4:%.*]] = mul i64 1, [[TMP3]]
+; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; ON-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 1
+; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; ON-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
+; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP0]] to i64
+; ON-NEXT:    [[TMP9:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP7]], i64 [[TMP8]])
+; ON-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 0
+; ON-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 1
+; ON-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
+; ON-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP10]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; ON-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
+; ON-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
+; ON-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
+; ON-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; ON-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
-; ON-NEXT:    [[TMP18:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; ON-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP16]], 1
-; ON-NEXT:    [[TMP20:%.*]] = add i64 [[TMP18]], [[TMP19]]
-; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; ON-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; ON-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
+; ON-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
 ; ON-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; ON:       vec.uncountable.scalar.ph:
 ; ON-NEXT:    br label [[FOR_COND:%.*]]
 ; ON:       for.cond:
 ; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
-; ON-NEXT:    [[TMP21:%.*]] = load i8, ptr [[END_0]], align 1
-; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP21]], 0
+; ON-NEXT:    [[TMP20:%.*]] = load i8, ptr [[END_0]], align 1
+; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP20]], 0
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
 ; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP3:![0-9]+]]
 ; ON:       for.end:
@@ -125,41 +124,40 @@ define i64 @strlen_i8(ptr %start) {
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
 ; stress-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 0, i64 0)
-; stress-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; stress-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 8
-; stress-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 1
-; stress-NEXT:    [[TMP5:%.*]] = mul i64 1, [[TMP4]]
-; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
-; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP3]], 0
-; stress-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 1
-; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP7]]
-; stress-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
-; stress-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP1]] to i64
-; stress-NEXT:    [[TMP10:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP8]], i64 [[TMP9]])
-; stress-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 0
-; stress-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 1
-; stress-NEXT:    [[TMP13:%.*]] = trunc i64 [[TMP12]] to i32
-; stress-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP13]]
-; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP11]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; stress-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
-; stress-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP13]] to i64
-; stress-NEXT:    [[TMP16:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP15]])
-; stress-NEXT:    [[TMP17:%.*]] = icmp sge i64 [[TMP16]], 0
-; stress-NEXT:    br i1 [[TMP17]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; stress-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; stress-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; stress-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 8
+; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; stress-NEXT:    [[TMP4:%.*]] = mul i64 1, [[TMP3]]
+; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; stress-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 1
+; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; stress-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
+; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP0]] to i64
+; stress-NEXT:    [[TMP9:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP7]], i64 [[TMP8]])
+; stress-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 0
+; stress-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 1
+; stress-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
+; stress-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP10]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; stress-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
+; stress-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
+; stress-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
+; stress-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; stress-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
-; stress-NEXT:    [[TMP18:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; stress-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP16]], 1
-; stress-NEXT:    [[TMP20:%.*]] = add i64 [[TMP18]], [[TMP19]]
-; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; stress-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; stress-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
+; stress-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
 ; stress-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; stress:       vec.uncountable.scalar.ph:
 ; stress-NEXT:    br label [[FOR_COND:%.*]]
 ; stress:       for.cond:
 ; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
-; stress-NEXT:    [[TMP21:%.*]] = load i8, ptr [[END_0]], align 1
-; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP21]], 0
+; stress-NEXT:    [[TMP20:%.*]] = load i8, ptr [[END_0]], align 1
+; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP20]], 0
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
 ; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP3:![0-9]+]]
 ; stress:       for.end:
@@ -274,41 +272,40 @@ define i64 @strlen_i16(ptr %start) {
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
 ; ON-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 1, i64 0)
-; ON-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; ON-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 4
-; ON-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 1
-; ON-NEXT:    [[TMP5:%.*]] = mul i64 2, [[TMP4]]
-; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
-; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP3]], 0
-; ON-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 2
-; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP7]]
-; ON-NEXT:    [[TMP8:%.*]] = getelementptr i16, ptr [[VECTOR_GEP]], i32 0
-; ON-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP1]] to i64
-; ON-NEXT:    [[TMP10:%.*]] = call { <vscale x 4 x i16>, i64 } @llvm.riscv.vleff.nxv4i16.i64(<vscale x 4 x i16> poison, ptr [[TMP8]], i64 [[TMP9]])
-; ON-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 4 x i16>, i64 } [[TMP10]], 0
-; ON-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 4 x i16>, i64 } [[TMP10]], 1
-; ON-NEXT:    [[TMP13:%.*]] = trunc i64 [[TMP12]] to i32
-; ON-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP13]]
-; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i16(<vscale x 4 x i16> [[TMP11]], <vscale x 4 x i16> zeroinitializer, metadata !"eq", <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP13]])
-; ON-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i16, ptr [[VECTOR_GEP]], i64 1
-; ON-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP13]] to i64
-; ON-NEXT:    [[TMP16:%.*]] = call i64 @llvm.riscv.vfirst.nxv4i1.i64(<vscale x 4 x i1> [[VP_OP_ICMP]], i64 [[TMP15]])
-; ON-NEXT:    [[TMP17:%.*]] = icmp sge i64 [[TMP16]], 0
-; ON-NEXT:    br i1 [[TMP17]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; ON-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 4, i1 true)
+; ON-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; ON-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 4
+; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; ON-NEXT:    [[TMP4:%.*]] = mul i64 2, [[TMP3]]
+; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; ON-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 2
+; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; ON-NEXT:    [[TMP7:%.*]] = getelementptr i16, ptr [[VECTOR_GEP]], i32 0
+; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP0]] to i64
+; ON-NEXT:    [[TMP9:%.*]] = call { <vscale x 4 x i16>, i64 } @llvm.riscv.vleff.nxv4i16.i64(<vscale x 4 x i16> poison, ptr [[TMP7]], i64 [[TMP8]])
+; ON-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 4 x i16>, i64 } [[TMP9]], 0
+; ON-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 4 x i16>, i64 } [[TMP9]], 1
+; ON-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
+; ON-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i16(<vscale x 4 x i16> [[TMP10]], <vscale x 4 x i16> zeroinitializer, metadata !"eq", <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP12]])
+; ON-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i16, ptr [[VECTOR_GEP]], i64 1
+; ON-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
+; ON-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv4i1.i64(<vscale x 4 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
+; ON-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; ON-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
-; ON-NEXT:    [[TMP18:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; ON-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP16]], 2
-; ON-NEXT:    [[TMP20:%.*]] = add i64 [[TMP18]], [[TMP19]]
-; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; ON-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; ON-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 2
+; ON-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
 ; ON-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; ON:       vec.uncountable.scalar.ph:
 ; ON-NEXT:    br label [[FOR_COND:%.*]]
 ; ON:       for.cond:
 ; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
-; ON-NEXT:    [[TMP21:%.*]] = load i16, ptr [[END_0]], align 2
-; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i16 [[TMP21]], 0
+; ON-NEXT:    [[TMP20:%.*]] = load i16, ptr [[END_0]], align 2
+; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i16 [[TMP20]], 0
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i16, ptr [[END_0]], i64 1
 ; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP5:![0-9]+]]
 ; ON:       for.end:
@@ -358,41 +355,40 @@ define i64 @strlen_i16(ptr %start) {
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
 ; stress-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 1, i64 0)
-; stress-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; stress-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 4
-; stress-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 1
-; stress-NEXT:    [[TMP5:%.*]] = mul i64 2, [[TMP4]]
-; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
-; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP3]], 0
-; stress-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 2
-; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP7]]
-; stress-NEXT:    [[TMP8:%.*]] = getelementptr i16, ptr [[VECTOR_GEP]], i32 0
-; stress-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP1]] to i64
-; stress-NEXT:    [[TMP10:%.*]] = call { <vscale x 4 x i16>, i64 } @llvm.riscv.vleff.nxv4i16.i64(<vscale x 4 x i16> poison, ptr [[TMP8]], i64 [[TMP9]])
-; stress-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 4 x i16>, i64 } [[TMP10]], 0
-; stress-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 4 x i16>, i64 } [[TMP10]], 1
-; stress-NEXT:    [[TMP13:%.*]] = trunc i64 [[TMP12]] to i32
-; stress-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP13]]
-; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i16(<vscale x 4 x i16> [[TMP11]], <vscale x 4 x i16> zeroinitializer, metadata !"eq", <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP13]])
-; stress-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i16, ptr [[VECTOR_GEP]], i64 1
-; stress-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP13]] to i64
-; stress-NEXT:    [[TMP16:%.*]] = call i64 @llvm.riscv.vfirst.nxv4i1.i64(<vscale x 4 x i1> [[VP_OP_ICMP]], i64 [[TMP15]])
-; stress-NEXT:    [[TMP17:%.*]] = icmp sge i64 [[TMP16]], 0
-; stress-NEXT:    br i1 [[TMP17]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; stress-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 4, i1 true)
+; stress-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; stress-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 4
+; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; stress-NEXT:    [[TMP4:%.*]] = mul i64 2, [[TMP3]]
+; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; stress-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 2
+; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; stress-NEXT:    [[TMP7:%.*]] = getelementptr i16, ptr [[VECTOR_GEP]], i32 0
+; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP0]] to i64
+; stress-NEXT:    [[TMP9:%.*]] = call { <vscale x 4 x i16>, i64 } @llvm.riscv.vleff.nxv4i16.i64(<vscale x 4 x i16> poison, ptr [[TMP7]], i64 [[TMP8]])
+; stress-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 4 x i16>, i64 } [[TMP9]], 0
+; stress-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 4 x i16>, i64 } [[TMP9]], 1
+; stress-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
+; stress-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i16(<vscale x 4 x i16> [[TMP10]], <vscale x 4 x i16> zeroinitializer, metadata !"eq", <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP12]])
+; stress-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i16, ptr [[VECTOR_GEP]], i64 1
+; stress-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
+; stress-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv4i1.i64(<vscale x 4 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
+; stress-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; stress-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
-; stress-NEXT:    [[TMP18:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; stress-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP16]], 2
-; stress-NEXT:    [[TMP20:%.*]] = add i64 [[TMP18]], [[TMP19]]
-; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; stress-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; stress-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 2
+; stress-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
 ; stress-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; stress:       vec.uncountable.scalar.ph:
 ; stress-NEXT:    br label [[FOR_COND:%.*]]
 ; stress:       for.cond:
 ; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
-; stress-NEXT:    [[TMP21:%.*]] = load i16, ptr [[END_0]], align 2
-; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i16 [[TMP21]], 0
+; stress-NEXT:    [[TMP20:%.*]] = load i16, ptr [[END_0]], align 2
+; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i16 [[TMP20]], 0
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i16, ptr [[END_0]], i64 1
 ; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP5:![0-9]+]]
 ; stress:       for.end:
@@ -513,41 +509,40 @@ define i64 @strlen_i32(ptr %start) {
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
 ; ON-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 2, i64 0)
-; ON-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; ON-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 2
-; ON-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 1
-; ON-NEXT:    [[TMP5:%.*]] = mul i64 4, [[TMP4]]
-; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
-; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP3]], 0
-; ON-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 4
-; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP7]]
-; ON-NEXT:    [[TMP8:%.*]] = getelementptr i32, ptr [[VECTOR_GEP]], i32 0
-; ON-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP1]] to i64
-; ON-NEXT:    [[TMP10:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.nxv2i32.i64(<vscale x 2 x i32> poison, ptr [[TMP8]], i64 [[TMP9]])
-; ON-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP10]], 0
-; ON-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP10]], 1
-; ON-NEXT:    [[TMP13:%.*]] = trunc i64 [[TMP12]] to i32
-; ON-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP13]]
-; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i32(<vscale x 2 x i32> [[TMP11]], <vscale x 2 x i32> zeroinitializer, metadata !"eq", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP13]])
-; ON-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, ptr [[VECTOR_GEP]], i64 1
-; ON-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP13]] to i64
-; ON-NEXT:    [[TMP16:%.*]] = call i64 @llvm.riscv.vfirst.nxv2i1.i64(<vscale x 2 x i1> [[VP_OP_ICMP]], i64 [[TMP15]])
-; ON-NEXT:    [[TMP17:%.*]] = icmp sge i64 [[TMP16]], 0
-; ON-NEXT:    br i1 [[TMP17]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
+; ON-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 2, i1 true)
+; ON-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; ON-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 2
+; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; ON-NEXT:    [[TMP4:%.*]] = mul i64 4, [[TMP3]]
+; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; ON-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 4
+; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; ON-NEXT:    [[TMP7:%.*]] = getelementptr i32, ptr [[VECTOR_GEP]], i32 0
+; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP0]] to i64
+; ON-NEXT:    [[TMP9:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.nxv2i32.i64(<vscale x 2 x i32> poison, ptr [[TMP7]], i64 [[TMP8]])
+; ON-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP9]], 0
+; ON-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP9]], 1
+; ON-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
+; ON-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i32(<vscale x 2 x i32> [[TMP10]], <vscale x 2 x i32> zeroinitializer, metadata !"eq", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP12]])
+; ON-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[VECTOR_GEP]], i64 1
+; ON-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
+; ON-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv2i1.i64(<vscale x 2 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
+; ON-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; ON-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
-; ON-NEXT:    [[TMP18:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; ON-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP16]], 4
-; ON-NEXT:    [[TMP20:%.*]] = add i64 [[TMP18]], [[TMP19]]
-; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; ON-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; ON-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 4
+; ON-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
 ; ON-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; ON:       vec.uncountable.scalar.ph:
 ; ON-NEXT:    br label [[FOR_COND:%.*]]
 ; ON:       for.cond:
 ; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
-; ON-NEXT:    [[TMP21:%.*]] = load i32, ptr [[END_0]], align 4
-; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i32 [[TMP21]], 0
+; ON-NEXT:    [[TMP20:%.*]] = load i32, ptr [[END_0]], align 4
+; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i32 [[TMP20]], 0
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i32, ptr [[END_0]], i64 1
 ; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP7:![0-9]+]]
 ; ON:       for.end:
@@ -597,41 +592,40 @@ define i64 @strlen_i32(ptr %start) {
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
 ; stress-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 2, i64 0)
-; stress-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; stress-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 2
-; stress-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 1
-; stress-NEXT:    [[TMP5:%.*]] = mul i64 4, [[TMP4]]
-; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
-; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP3]], 0
-; stress-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 4
-; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP7]]
-; stress-NEXT:    [[TMP8:%.*]] = getelementptr i32, ptr [[VECTOR_GEP]], i32 0
-; stress-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP1]] to i64
-; stress-NEXT:    [[TMP10:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.nxv2i32.i64(<vscale x 2 x i32> poison, ptr [[TMP8]], i64 [[TMP9]])
-; stress-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP10]], 0
-; stress-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP10]], 1
-; stress-NEXT:    [[TMP13:%.*]] = trunc i64 [[TMP12]] to i32
-; stress-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP13]]
-; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i32(<vscale x 2 x i32> [[TMP11]], <vscale x 2 x i32> zeroinitializer, metadata !"eq", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP13]])
-; stress-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, ptr [[VECTOR_GEP]], i64 1
-; stress-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP13]] to i64
-; stress-NEXT:    [[TMP16:%.*]] = call i64 @llvm.riscv.vfirst.nxv2i1.i64(<vscale x 2 x i1> [[VP_OP_ICMP]], i64 [[TMP15]])
-; stress-NEXT:    [[TMP17:%.*]] = icmp sge i64 [[TMP16]], 0
-; stress-NEXT:    br i1 [[TMP17]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
+; stress-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 2, i1 true)
+; stress-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; stress-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 2
+; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; stress-NEXT:    [[TMP4:%.*]] = mul i64 4, [[TMP3]]
+; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; stress-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 4
+; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; stress-NEXT:    [[TMP7:%.*]] = getelementptr i32, ptr [[VECTOR_GEP]], i32 0
+; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP0]] to i64
+; stress-NEXT:    [[TMP9:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.nxv2i32.i64(<vscale x 2 x i32> poison, ptr [[TMP7]], i64 [[TMP8]])
+; stress-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP9]], 0
+; stress-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP9]], 1
+; stress-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
+; stress-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 2 x i1> @llvm.vp.icmp.nxv2i32(<vscale x 2 x i32> [[TMP10]], <vscale x 2 x i32> zeroinitializer, metadata !"eq", <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP12]])
+; stress-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[VECTOR_GEP]], i64 1
+; stress-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
+; stress-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv2i1.i64(<vscale x 2 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
+; stress-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; stress-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
-; stress-NEXT:    [[TMP18:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; stress-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP16]], 4
-; stress-NEXT:    [[TMP20:%.*]] = add i64 [[TMP18]], [[TMP19]]
-; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; stress-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; stress-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 4
+; stress-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
 ; stress-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; stress:       vec.uncountable.scalar.ph:
 ; stress-NEXT:    br label [[FOR_COND:%.*]]
 ; stress:       for.cond:
 ; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
-; stress-NEXT:    [[TMP21:%.*]] = load i32, ptr [[END_0]], align 4
-; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i32 [[TMP21]], 0
+; stress-NEXT:    [[TMP20:%.*]] = load i32, ptr [[END_0]], align 4
+; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i32 [[TMP20]], 0
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i32, ptr [[END_0]], i64 1
 ; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP7:![0-9]+]]
 ; stress:       for.end:
@@ -752,40 +746,39 @@ define i64 @strlen_i64(ptr %start) {
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
 ; ON-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 3, i64 0)
-; ON-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; ON-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
-; ON-NEXT:    [[TMP4:%.*]] = mul i64 8, [[TMP3]]
-; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
-; ON-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
-; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 8
-; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
-; ON-NEXT:    [[TMP7:%.*]] = getelementptr i64, ptr [[VECTOR_GEP]], i32 0
-; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP1]] to i64
-; ON-NEXT:    [[TMP9:%.*]] = call { <vscale x 1 x i64>, i64 } @llvm.riscv.vleff.nxv1i64.i64(<vscale x 1 x i64> poison, ptr [[TMP7]], i64 [[TMP8]])
-; ON-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 1 x i64>, i64 } [[TMP9]], 0
-; ON-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 1 x i64>, i64 } [[TMP9]], 1
-; ON-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
-; ON-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
-; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 1 x i1> @llvm.vp.icmp.nxv1i64(<vscale x 1 x i64> [[TMP10]], <vscale x 1 x i64> zeroinitializer, metadata !"eq", <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP12]])
-; ON-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i64, ptr [[VECTOR_GEP]], i64 1
-; ON-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
-; ON-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv1i1.i64(<vscale x 1 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
-; ON-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
-; ON-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
+; ON-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 1, i1 true)
+; ON-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; ON-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 1
+; ON-NEXT:    [[TMP3:%.*]] = mul i64 8, [[TMP2]]
+; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP3]]
+; ON-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP1]], 0
+; ON-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP4]], 8
+; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
+; ON-NEXT:    [[TMP6:%.*]] = getelementptr i64, ptr [[VECTOR_GEP]], i32 0
+; ON-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP0]] to i64
+; ON-NEXT:    [[TMP8:%.*]] = call { <vscale x 1 x i64>, i64 } @llvm.riscv.vleff.nxv1i64.i64(<vscale x 1 x i64> poison, ptr [[TMP6]], i64 [[TMP7]])
+; ON-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 1 x i64>, i64 } [[TMP8]], 0
+; ON-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 1 x i64>, i64 } [[TMP8]], 1
+; ON-NEXT:    [[TMP11:%.*]] = trunc i64 [[TMP10]] to i32
+; ON-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP11]]
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 1 x i1> @llvm.vp.icmp.nxv1i64(<vscale x 1 x i64> [[TMP9]], <vscale x 1 x i64> zeroinitializer, metadata !"eq", <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP11]])
+; ON-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i64, ptr [[VECTOR_GEP]], i64 1
+; ON-NEXT:    [[TMP13:%.*]] = zext i32 [[TMP11]] to i64
+; ON-NEXT:    [[TMP14:%.*]] = call i64 @llvm.riscv.vfirst.nxv1i1.i64(<vscale x 1 x i1> [[VP_OP_ICMP]], i64 [[TMP13]])
+; ON-NEXT:    [[TMP15:%.*]] = icmp sge i64 [[TMP14]], 0
+; ON-NEXT:    br i1 [[TMP15]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
-; ON-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; ON-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 8
-; ON-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
-; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
+; ON-NEXT:    [[TMP16:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; ON-NEXT:    [[TMP17:%.*]] = mul i64 [[TMP14]], 8
+; ON-NEXT:    [[TMP18:%.*]] = add i64 [[TMP16]], [[TMP17]]
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP18]] to ptr
 ; ON-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; ON:       vec.uncountable.scalar.ph:
 ; ON-NEXT:    br label [[FOR_COND:%.*]]
 ; ON:       for.cond:
 ; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
-; ON-NEXT:    [[TMP20:%.*]] = load i64, ptr [[END_0]], align 4
-; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i64 [[TMP20]], 0
+; ON-NEXT:    [[TMP19:%.*]] = load i64, ptr [[END_0]], align 4
+; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i64 [[TMP19]], 0
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i64, ptr [[END_0]], i64 1
 ; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP9:![0-9]+]]
 ; ON:       for.end:
@@ -835,40 +828,39 @@ define i64 @strlen_i64(ptr %start) {
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
 ; stress-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 3, i64 0)
-; stress-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; stress-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
-; stress-NEXT:    [[TMP4:%.*]] = mul i64 8, [[TMP3]]
-; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
-; stress-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
-; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 8
-; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
-; stress-NEXT:    [[TMP7:%.*]] = getelementptr i64, ptr [[VECTOR_GEP]], i32 0
-; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP1]] to i64
-; stress-NEXT:    [[TMP9:%.*]] = call { <vscale x 1 x i64>, i64 } @llvm.riscv.vleff.nxv1i64.i64(<vscale x 1 x i64> poison, ptr [[TMP7]], i64 [[TMP8]])
-; stress-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 1 x i64>, i64 } [[TMP9]], 0
-; stress-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 1 x i64>, i64 } [[TMP9]], 1
-; stress-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
-; stress-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
-; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 1 x i1> @llvm.vp.icmp.nxv1i64(<vscale x 1 x i64> [[TMP10]], <vscale x 1 x i64> zeroinitializer, metadata !"eq", <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP12]])
-; stress-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i64, ptr [[VECTOR_GEP]], i64 1
-; stress-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
-; stress-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv1i1.i64(<vscale x 1 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
-; stress-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
-; stress-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
+; stress-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 1, i1 true)
+; stress-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; stress-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 1
+; stress-NEXT:    [[TMP3:%.*]] = mul i64 8, [[TMP2]]
+; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP3]]
+; stress-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP1]], 0
+; stress-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP4]], 8
+; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
+; stress-NEXT:    [[TMP6:%.*]] = getelementptr i64, ptr [[VECTOR_GEP]], i32 0
+; stress-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP0]] to i64
+; stress-NEXT:    [[TMP8:%.*]] = call { <vscale x 1 x i64>, i64 } @llvm.riscv.vleff.nxv1i64.i64(<vscale x 1 x i64> poison, ptr [[TMP6]], i64 [[TMP7]])
+; stress-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 1 x i64>, i64 } [[TMP8]], 0
+; stress-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 1 x i64>, i64 } [[TMP8]], 1
+; stress-NEXT:    [[TMP11:%.*]] = trunc i64 [[TMP10]] to i32
+; stress-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP11]]
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 1 x i1> @llvm.vp.icmp.nxv1i64(<vscale x 1 x i64> [[TMP9]], <vscale x 1 x i64> zeroinitializer, metadata !"eq", <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP11]])
+; stress-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i64, ptr [[VECTOR_GEP]], i64 1
+; stress-NEXT:    [[TMP13:%.*]] = zext i32 [[TMP11]] to i64
+; stress-NEXT:    [[TMP14:%.*]] = call i64 @llvm.riscv.vfirst.nxv1i1.i64(<vscale x 1 x i1> [[VP_OP_ICMP]], i64 [[TMP13]])
+; stress-NEXT:    [[TMP15:%.*]] = icmp sge i64 [[TMP14]], 0
+; stress-NEXT:    br i1 [[TMP15]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
-; stress-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; stress-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 8
-; stress-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
-; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
+; stress-NEXT:    [[TMP16:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; stress-NEXT:    [[TMP17:%.*]] = mul i64 [[TMP14]], 8
+; stress-NEXT:    [[TMP18:%.*]] = add i64 [[TMP16]], [[TMP17]]
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP18]] to ptr
 ; stress-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; stress:       vec.uncountable.scalar.ph:
 ; stress-NEXT:    br label [[FOR_COND:%.*]]
 ; stress:       for.cond:
 ; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
-; stress-NEXT:    [[TMP20:%.*]] = load i64, ptr [[END_0]], align 4
-; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i64 [[TMP20]], 0
+; stress-NEXT:    [[TMP19:%.*]] = load i64, ptr [[END_0]], align 4
+; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i64 [[TMP19]], 0
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i64, ptr [[END_0]], i64 1
 ; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP9:![0-9]+]]
 ; stress:       for.end:
@@ -990,42 +982,41 @@ define i64 @SingleBlock0(ptr %start) {
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
 ; ON-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 0, i64 0)
-; ON-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; ON-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 8
-; ON-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 1
-; ON-NEXT:    [[TMP5:%.*]] = mul i64 1, [[TMP4]]
-; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
-; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP3]], 0
-; ON-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 1
-; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP7]]
-; ON-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
-; ON-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP1]] to i64
-; ON-NEXT:    [[TMP10:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP8]], i64 [[TMP9]])
-; ON-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 0
-; ON-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 1
-; ON-NEXT:    [[TMP13:%.*]] = trunc i64 [[TMP12]] to i32
-; ON-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP13]]
-; ON-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i8> @llvm.vp.smax.nxv8i8(<vscale x 8 x i8> [[TMP11]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 1, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 1, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; ON-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
-; ON-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP13]] to i64
-; ON-NEXT:    [[TMP16:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP15]])
-; ON-NEXT:    [[TMP17:%.*]] = icmp sge i64 [[TMP16]], 0
-; ON-NEXT:    br i1 [[TMP17]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
+; ON-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; ON-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; ON-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 8
+; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; ON-NEXT:    [[TMP4:%.*]] = mul i64 1, [[TMP3]]
+; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; ON-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 1
+; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; ON-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
+; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP0]] to i64
+; ON-NEXT:    [[TMP9:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP7]], i64 [[TMP8]])
+; ON-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 0
+; ON-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 1
+; ON-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
+; ON-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
+; ON-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i8> @llvm.vp.smax.nxv8i8(<vscale x 8 x i8> [[TMP10]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 1, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 1, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; ON-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
+; ON-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
+; ON-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
+; ON-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; ON-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
-; ON-NEXT:    [[TMP18:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; ON-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP16]], 1
-; ON-NEXT:    [[TMP20:%.*]] = add i64 [[TMP18]], [[TMP19]]
-; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; ON-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; ON-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
+; ON-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
 ; ON-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; ON:       vec.uncountable.scalar.ph:
 ; ON-NEXT:    br label [[FOR_COND:%.*]]
 ; ON:       for.cond:
 ; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
-; ON-NEXT:    [[TMP21:%.*]] = load i8, ptr [[END_0]], align 1
-; ON-NEXT:    [[MAX:%.*]] = tail call i8 @llvm.smax.i8(i8 [[TMP21]], i8 1)
+; ON-NEXT:    [[TMP20:%.*]] = load i8, ptr [[END_0]], align 1
+; ON-NEXT:    [[MAX:%.*]] = tail call i8 @llvm.smax.i8(i8 [[TMP20]], i8 1)
 ; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[MAX]], 1
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
 ; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP11:![0-9]+]]
@@ -1075,42 +1066,41 @@ define i64 @SingleBlock0(ptr %start) {
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
 ; stress-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 0, i64 0)
-; stress-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; stress-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 8
-; stress-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 1
-; stress-NEXT:    [[TMP5:%.*]] = mul i64 1, [[TMP4]]
-; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
-; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP3]], 0
-; stress-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 1
-; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP7]]
-; stress-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
-; stress-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP1]] to i64
-; stress-NEXT:    [[TMP10:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP8]], i64 [[TMP9]])
-; stress-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 0
-; stress-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 1
-; stress-NEXT:    [[TMP13:%.*]] = trunc i64 [[TMP12]] to i32
-; stress-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP13]]
-; stress-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i8> @llvm.vp.smax.nxv8i8(<vscale x 8 x i8> [[TMP11]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 1, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 1, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; stress-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
-; stress-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP13]] to i64
-; stress-NEXT:    [[TMP16:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP15]])
-; stress-NEXT:    [[TMP17:%.*]] = icmp sge i64 [[TMP16]], 0
-; stress-NEXT:    br i1 [[TMP17]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
+; stress-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; stress-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; stress-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 8
+; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; stress-NEXT:    [[TMP4:%.*]] = mul i64 1, [[TMP3]]
+; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; stress-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 1
+; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; stress-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
+; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP0]] to i64
+; stress-NEXT:    [[TMP9:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP7]], i64 [[TMP8]])
+; stress-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 0
+; stress-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 1
+; stress-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
+; stress-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
+; stress-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i8> @llvm.vp.smax.nxv8i8(<vscale x 8 x i8> [[TMP10]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 1, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 1, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; stress-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
+; stress-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
+; stress-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
+; stress-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; stress-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
-; stress-NEXT:    [[TMP18:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; stress-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP16]], 1
-; stress-NEXT:    [[TMP20:%.*]] = add i64 [[TMP18]], [[TMP19]]
-; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; stress-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; stress-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
+; stress-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
 ; stress-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; stress:       vec.uncountable.scalar.ph:
 ; stress-NEXT:    br label [[FOR_COND:%.*]]
 ; stress:       for.cond:
 ; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
-; stress-NEXT:    [[TMP21:%.*]] = load i8, ptr [[END_0]], align 1
-; stress-NEXT:    [[MAX:%.*]] = tail call i8 @llvm.smax.i8(i8 [[TMP21]], i8 1)
+; stress-NEXT:    [[TMP20:%.*]] = load i8, ptr [[END_0]], align 1
+; stress-NEXT:    [[MAX:%.*]] = tail call i8 @llvm.smax.i8(i8 [[TMP20]], i8 1)
 ; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[MAX]], 1
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
 ; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP11:![0-9]+]]
@@ -1580,43 +1570,42 @@ define i64 @SingleBlock3(ptr %start) {
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
 ; ON-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 0, i64 0)
-; ON-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; ON-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 8
-; ON-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 1
-; ON-NEXT:    [[TMP5:%.*]] = mul i64 1, [[TMP4]]
-; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
-; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP3]], 0
-; ON-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 1
-; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP7]]
-; ON-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
-; ON-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP1]] to i64
-; ON-NEXT:    [[TMP10:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP8]], i64 [[TMP9]])
-; ON-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 0
-; ON-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 1
-; ON-NEXT:    [[TMP13:%.*]] = trunc i64 [[TMP12]] to i32
-; ON-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP13]]
-; ON-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i8> @llvm.vp.sdiv.nxv8i8(<vscale x 8 x i8> [[TMP11]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 2, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 1, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; ON-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
-; ON-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP13]] to i64
-; ON-NEXT:    [[TMP16:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP15]])
-; ON-NEXT:    [[TMP17:%.*]] = icmp sge i64 [[TMP16]], 0
-; ON-NEXT:    br i1 [[TMP17]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
+; ON-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; ON-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; ON-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 8
+; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; ON-NEXT:    [[TMP4:%.*]] = mul i64 1, [[TMP3]]
+; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; ON-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 1
+; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; ON-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
+; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP0]] to i64
+; ON-NEXT:    [[TMP9:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP7]], i64 [[TMP8]])
+; ON-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 0
+; ON-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 1
+; ON-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
+; ON-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
+; ON-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i8> @llvm.vp.sdiv.nxv8i8(<vscale x 8 x i8> [[TMP10]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 2, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 1, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; ON-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
+; ON-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
+; ON-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
+; ON-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; ON-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
-; ON-NEXT:    [[TMP18:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; ON-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP16]], 1
-; ON-NEXT:    [[TMP20:%.*]] = add i64 [[TMP18]], [[TMP19]]
-; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; ON-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; ON-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
+; ON-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
 ; ON-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; ON:       vec.uncountable.scalar.ph:
 ; ON-NEXT:    br label [[FOR_COND:%.*]]
 ; ON:       for.cond:
 ; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
-; ON-NEXT:    [[TMP21:%.*]] = load i8, ptr [[END_0]], align 1
-; ON-NEXT:    [[TMP22:%.*]] = sdiv i8 [[TMP21]], 2
-; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP22]], 1
+; ON-NEXT:    [[TMP20:%.*]] = load i8, ptr [[END_0]], align 1
+; ON-NEXT:    [[TMP21:%.*]] = sdiv i8 [[TMP20]], 2
+; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP21]], 1
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
 ; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP13:![0-9]+]]
 ; ON:       for.end:
@@ -1665,43 +1654,42 @@ define i64 @SingleBlock3(ptr %start) {
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
 ; stress-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 0, i64 0)
-; stress-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; stress-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 8
-; stress-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 1
-; stress-NEXT:    [[TMP5:%.*]] = mul i64 1, [[TMP4]]
-; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
-; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP3]], 0
-; stress-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 1
-; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP7]]
-; stress-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
-; stress-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP1]] to i64
-; stress-NEXT:    [[TMP10:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP8]], i64 [[TMP9]])
-; stress-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 0
-; stress-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 1
-; stress-NEXT:    [[TMP13:%.*]] = trunc i64 [[TMP12]] to i32
-; stress-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP13]]
-; stress-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i8> @llvm.vp.sdiv.nxv8i8(<vscale x 8 x i8> [[TMP11]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 2, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 1, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; stress-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
-; stress-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP13]] to i64
-; stress-NEXT:    [[TMP16:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP15]])
-; stress-NEXT:    [[TMP17:%.*]] = icmp sge i64 [[TMP16]], 0
-; stress-NEXT:    br i1 [[TMP17]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
+; stress-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; stress-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; stress-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 8
+; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; stress-NEXT:    [[TMP4:%.*]] = mul i64 1, [[TMP3]]
+; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; stress-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 1
+; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; stress-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
+; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP0]] to i64
+; stress-NEXT:    [[TMP9:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP7]], i64 [[TMP8]])
+; stress-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 0
+; stress-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 1
+; stress-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
+; stress-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
+; stress-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i8> @llvm.vp.sdiv.nxv8i8(<vscale x 8 x i8> [[TMP10]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 2, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 1, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; stress-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
+; stress-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
+; stress-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
+; stress-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; stress-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
-; stress-NEXT:    [[TMP18:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; stress-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP16]], 1
-; stress-NEXT:    [[TMP20:%.*]] = add i64 [[TMP18]], [[TMP19]]
-; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; stress-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; stress-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
+; stress-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
 ; stress-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; stress:       vec.uncountable.scalar.ph:
 ; stress-NEXT:    br label [[FOR_COND:%.*]]
 ; stress:       for.cond:
 ; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
-; stress-NEXT:    [[TMP21:%.*]] = load i8, ptr [[END_0]], align 1
-; stress-NEXT:    [[TMP22:%.*]] = sdiv i8 [[TMP21]], 2
-; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP22]], 1
+; stress-NEXT:    [[TMP20:%.*]] = load i8, ptr [[END_0]], align 1
+; stress-NEXT:    [[TMP21:%.*]] = sdiv i8 [[TMP20]], 2
+; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP21]], 1
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
 ; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP13:![0-9]+]]
 ; stress:       for.end:
@@ -1985,41 +1973,40 @@ define i64 @SingleBlock5(ptr %start) {
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
 ; ON-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 0, i64 0)
-; ON-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; ON-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 8
-; ON-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 1
-; ON-NEXT:    [[TMP5:%.*]] = mul i64 1, [[TMP4]]
-; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
-; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP3]], 0
-; ON-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 1
-; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP7]]
-; ON-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
-; ON-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP1]] to i64
-; ON-NEXT:    [[TMP10:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP8]], i64 [[TMP9]])
-; ON-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 0
-; ON-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 1
-; ON-NEXT:    [[TMP13:%.*]] = trunc i64 [[TMP12]] to i32
-; ON-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP13]]
-; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP11]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; ON-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
-; ON-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP13]] to i64
-; ON-NEXT:    [[TMP16:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP15]])
-; ON-NEXT:    [[TMP17:%.*]] = icmp sge i64 [[TMP16]], 0
-; ON-NEXT:    br i1 [[TMP17]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
+; ON-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; ON-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; ON-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 8
+; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; ON-NEXT:    [[TMP4:%.*]] = mul i64 1, [[TMP3]]
+; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; ON-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 1
+; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; ON-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
+; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP0]] to i64
+; ON-NEXT:    [[TMP9:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP7]], i64 [[TMP8]])
+; ON-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 0
+; ON-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 1
+; ON-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
+; ON-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP10]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; ON-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
+; ON-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
+; ON-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
+; ON-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; ON-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
-; ON-NEXT:    [[TMP18:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; ON-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP16]], 1
-; ON-NEXT:    [[TMP20:%.*]] = add i64 [[TMP18]], [[TMP19]]
-; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; ON-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; ON-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
+; ON-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
 ; ON-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; ON:       vec.uncountable.scalar.ph:
 ; ON-NEXT:    br label [[FOR_COND:%.*]]
 ; ON:       for.cond:
 ; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
-; ON-NEXT:    [[TMP21:%.*]] = load i8, ptr [[END_0]], align 1
-; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP21]], 0
+; ON-NEXT:    [[TMP20:%.*]] = load i8, ptr [[END_0]], align 1
+; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP20]], 0
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
 ; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP15:![0-9]+]]
 ; ON:       for.end:
@@ -2066,41 +2053,40 @@ define i64 @SingleBlock5(ptr %start) {
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
 ; stress-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 0, i64 0)
-; stress-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; stress-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 8
-; stress-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 1
-; stress-NEXT:    [[TMP5:%.*]] = mul i64 1, [[TMP4]]
-; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
-; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP3]], 0
-; stress-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 1
-; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP7]]
-; stress-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
-; stress-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP1]] to i64
-; stress-NEXT:    [[TMP10:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP8]], i64 [[TMP9]])
-; stress-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 0
-; stress-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 1
-; stress-NEXT:    [[TMP13:%.*]] = trunc i64 [[TMP12]] to i32
-; stress-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP13]]
-; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP11]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; stress-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
-; stress-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP13]] to i64
-; stress-NEXT:    [[TMP16:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP15]])
-; stress-NEXT:    [[TMP17:%.*]] = icmp sge i64 [[TMP16]], 0
-; stress-NEXT:    br i1 [[TMP17]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
+; stress-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; stress-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; stress-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 8
+; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; stress-NEXT:    [[TMP4:%.*]] = mul i64 1, [[TMP3]]
+; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; stress-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 1
+; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; stress-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
+; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP0]] to i64
+; stress-NEXT:    [[TMP9:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP7]], i64 [[TMP8]])
+; stress-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 0
+; stress-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 1
+; stress-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
+; stress-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP10]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; stress-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
+; stress-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
+; stress-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
+; stress-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; stress-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
-; stress-NEXT:    [[TMP18:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; stress-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP16]], 1
-; stress-NEXT:    [[TMP20:%.*]] = add i64 [[TMP18]], [[TMP19]]
-; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; stress-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; stress-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
+; stress-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
 ; stress-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; stress:       vec.uncountable.scalar.ph:
 ; stress-NEXT:    br label [[FOR_COND:%.*]]
 ; stress:       for.cond:
 ; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
-; stress-NEXT:    [[TMP21:%.*]] = load i8, ptr [[END_0]], align 1
-; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP21]], 0
+; stress-NEXT:    [[TMP20:%.*]] = load i8, ptr [[END_0]], align 1
+; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP20]], 0
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
 ; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP15:![0-9]+]]
 ; stress:       for.end:
@@ -2678,43 +2664,42 @@ define i64 @SingleBlock9(ptr %start) {
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
 ; ON-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 0, i64 0)
-; ON-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; ON-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 8
-; ON-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 1
-; ON-NEXT:    [[TMP5:%.*]] = mul i64 1, [[TMP4]]
-; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
-; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP3]], 0
-; ON-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 1
-; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP7]]
-; ON-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
-; ON-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP1]] to i64
-; ON-NEXT:    [[TMP10:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP8]], i64 [[TMP9]])
-; ON-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 0
-; ON-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 1
-; ON-NEXT:    [[TMP13:%.*]] = trunc i64 [[TMP12]] to i32
-; ON-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP13]]
-; ON-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i8> @llvm.vp.add.nxv8i8(<vscale x 8 x i8> [[TMP11]], <vscale x 8 x i8> [[TMP11]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; ON-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
-; ON-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP13]] to i64
-; ON-NEXT:    [[TMP16:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP15]])
-; ON-NEXT:    [[TMP17:%.*]] = icmp sge i64 [[TMP16]], 0
-; ON-NEXT:    br i1 [[TMP17]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
+; ON-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; ON-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; ON-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 8
+; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; ON-NEXT:    [[TMP4:%.*]] = mul i64 1, [[TMP3]]
+; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; ON-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 1
+; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; ON-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
+; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP0]] to i64
+; ON-NEXT:    [[TMP9:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP7]], i64 [[TMP8]])
+; ON-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 0
+; ON-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 1
+; ON-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
+; ON-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
+; ON-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i8> @llvm.vp.add.nxv8i8(<vscale x 8 x i8> [[TMP10]], <vscale x 8 x i8> [[TMP10]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; ON-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
+; ON-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
+; ON-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
+; ON-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; ON-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
-; ON-NEXT:    [[TMP18:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; ON-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP16]], 1
-; ON-NEXT:    [[TMP20:%.*]] = add i64 [[TMP18]], [[TMP19]]
-; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; ON-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; ON-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
+; ON-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
 ; ON-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; ON:       vec.uncountable.scalar.ph:
 ; ON-NEXT:    br label [[FOR_COND:%.*]]
 ; ON:       for.cond:
 ; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
-; ON-NEXT:    [[TMP21:%.*]] = load i8, ptr [[END_0]], align 1
-; ON-NEXT:    [[TMP22:%.*]] = add i8 [[TMP21]], [[TMP21]]
-; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP22]], 0
+; ON-NEXT:    [[TMP20:%.*]] = load i8, ptr [[END_0]], align 1
+; ON-NEXT:    [[TMP21:%.*]] = add i8 [[TMP20]], [[TMP20]]
+; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP21]], 0
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
 ; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP17:![0-9]+]]
 ; ON:       for.end:
@@ -2763,43 +2748,42 @@ define i64 @SingleBlock9(ptr %start) {
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
 ; stress-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 0, i64 0)
-; stress-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; stress-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 8
-; stress-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 1
-; stress-NEXT:    [[TMP5:%.*]] = mul i64 1, [[TMP4]]
-; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
-; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP3]], 0
-; stress-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 1
-; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP7]]
-; stress-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
-; stress-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP1]] to i64
-; stress-NEXT:    [[TMP10:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP8]], i64 [[TMP9]])
-; stress-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 0
-; stress-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 1
-; stress-NEXT:    [[TMP13:%.*]] = trunc i64 [[TMP12]] to i32
-; stress-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP13]]
-; stress-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i8> @llvm.vp.add.nxv8i8(<vscale x 8 x i8> [[TMP11]], <vscale x 8 x i8> [[TMP11]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; stress-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
-; stress-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP13]] to i64
-; stress-NEXT:    [[TMP16:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP15]])
-; stress-NEXT:    [[TMP17:%.*]] = icmp sge i64 [[TMP16]], 0
-; stress-NEXT:    br i1 [[TMP17]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
+; stress-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; stress-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; stress-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 8
+; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; stress-NEXT:    [[TMP4:%.*]] = mul i64 1, [[TMP3]]
+; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; stress-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 1
+; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; stress-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
+; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP0]] to i64
+; stress-NEXT:    [[TMP9:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP7]], i64 [[TMP8]])
+; stress-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 0
+; stress-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 1
+; stress-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
+; stress-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
+; stress-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i8> @llvm.vp.add.nxv8i8(<vscale x 8 x i8> [[TMP10]], <vscale x 8 x i8> [[TMP10]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[VP_OP]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; stress-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
+; stress-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
+; stress-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
+; stress-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; stress-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
-; stress-NEXT:    [[TMP18:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; stress-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP16]], 1
-; stress-NEXT:    [[TMP20:%.*]] = add i64 [[TMP18]], [[TMP19]]
-; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; stress-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; stress-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
+; stress-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
 ; stress-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; stress:       vec.uncountable.scalar.ph:
 ; stress-NEXT:    br label [[FOR_COND:%.*]]
 ; stress:       for.cond:
 ; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
-; stress-NEXT:    [[TMP21:%.*]] = load i8, ptr [[END_0]], align 1
-; stress-NEXT:    [[TMP22:%.*]] = add i8 [[TMP21]], [[TMP21]]
-; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP22]], 0
+; stress-NEXT:    [[TMP20:%.*]] = load i8, ptr [[END_0]], align 1
+; stress-NEXT:    [[TMP21:%.*]] = add i8 [[TMP20]], [[TMP20]]
+; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP21]], 0
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
 ; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP17:![0-9]+]]
 ; stress:       for.end:
@@ -3051,42 +3035,41 @@ define ptr @SingleBlock11(ptr %s) {
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
 ; ON-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[S:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 0, i64 0)
-; ON-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; ON-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 8
-; ON-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 1
-; ON-NEXT:    [[TMP5:%.*]] = mul i64 1, [[TMP4]]
-; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
-; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP3]], 0
-; ON-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 1
-; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP7]]
-; ON-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
-; ON-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP1]] to i64
-; ON-NEXT:    [[TMP10:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP8]], i64 [[TMP9]])
-; ON-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 0
-; ON-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 1
-; ON-NEXT:    [[TMP13:%.*]] = trunc i64 [[TMP12]] to i32
-; ON-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP13]]
-; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP11]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 49, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; ON-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
-; ON-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; ON-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP13]] to i64
-; ON-NEXT:    [[TMP16:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[PRED_NOT]], i64 [[TMP15]])
-; ON-NEXT:    [[TMP17:%.*]] = icmp sge i64 [[TMP16]], 0
-; ON-NEXT:    br i1 [[TMP17]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
+; ON-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; ON-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; ON-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 8
+; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; ON-NEXT:    [[TMP4:%.*]] = mul i64 1, [[TMP3]]
+; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; ON-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 1
+; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; ON-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
+; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP0]] to i64
+; ON-NEXT:    [[TMP9:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP7]], i64 [[TMP8]])
+; ON-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 0
+; ON-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 1
+; ON-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
+; ON-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP10]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 49, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; ON-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
+; ON-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; ON-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
+; ON-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[PRED_NOT]], i64 [[TMP14]])
+; ON-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; ON-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
-; ON-NEXT:    [[TMP18:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; ON-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP16]], 1
-; ON-NEXT:    [[TMP20:%.*]] = add i64 [[TMP18]], [[TMP19]]
-; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; ON-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; ON-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
+; ON-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
 ; ON-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; ON:       vec.uncountable.scalar.ph:
 ; ON-NEXT:    br label [[WHILE_COND:%.*]]
 ; ON:       while.cond:
 ; ON-NEXT:    [[S_ADDR_0:%.*]] = phi ptr [ [[S]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
-; ON-NEXT:    [[TMP21:%.*]] = load i8, ptr [[S_ADDR_0]], align 1
-; ON-NEXT:    [[CMP:%.*]] = icmp eq i8 [[TMP21]], 49
+; ON-NEXT:    [[TMP20:%.*]] = load i8, ptr [[S_ADDR_0]], align 1
+; ON-NEXT:    [[CMP:%.*]] = icmp eq i8 [[TMP20]], 49
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[S_ADDR_0]], i64 1
 ; ON-NEXT:    br i1 [[CMP]], label [[WHILE_COND]], label [[WHILE_END]], !llvm.loop [[LOOP19:![0-9]+]]
 ; ON:       while.end:
@@ -3124,42 +3107,41 @@ define ptr @SingleBlock11(ptr %s) {
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
 ; stress-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[S:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 0, i64 0)
-; stress-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; stress-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 8
-; stress-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 1
-; stress-NEXT:    [[TMP5:%.*]] = mul i64 1, [[TMP4]]
-; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
-; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP3]], 0
-; stress-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 1
-; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP7]]
-; stress-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
-; stress-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP1]] to i64
-; stress-NEXT:    [[TMP10:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP8]], i64 [[TMP9]])
-; stress-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 0
-; stress-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 1
-; stress-NEXT:    [[TMP13:%.*]] = trunc i64 [[TMP12]] to i32
-; stress-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP13]]
-; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP11]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 49, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; stress-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
-; stress-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
-; stress-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP13]] to i64
-; stress-NEXT:    [[TMP16:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[PRED_NOT]], i64 [[TMP15]])
-; stress-NEXT:    [[TMP17:%.*]] = icmp sge i64 [[TMP16]], 0
-; stress-NEXT:    br i1 [[TMP17]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
+; stress-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; stress-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; stress-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 8
+; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; stress-NEXT:    [[TMP4:%.*]] = mul i64 1, [[TMP3]]
+; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; stress-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 1
+; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; stress-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
+; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP0]] to i64
+; stress-NEXT:    [[TMP9:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP7]], i64 [[TMP8]])
+; stress-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 0
+; stress-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 1
+; stress-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
+; stress-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP10]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 49, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; stress-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
+; stress-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; stress-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
+; stress-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[PRED_NOT]], i64 [[TMP14]])
+; stress-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; stress-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
-; stress-NEXT:    [[TMP18:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; stress-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP16]], 1
-; stress-NEXT:    [[TMP20:%.*]] = add i64 [[TMP18]], [[TMP19]]
-; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; stress-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; stress-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
+; stress-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
 ; stress-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; stress:       vec.uncountable.scalar.ph:
 ; stress-NEXT:    br label [[WHILE_COND:%.*]]
 ; stress:       while.cond:
 ; stress-NEXT:    [[S_ADDR_0:%.*]] = phi ptr [ [[S]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
-; stress-NEXT:    [[TMP21:%.*]] = load i8, ptr [[S_ADDR_0]], align 1
-; stress-NEXT:    [[CMP:%.*]] = icmp eq i8 [[TMP21]], 49
+; stress-NEXT:    [[TMP20:%.*]] = load i8, ptr [[S_ADDR_0]], align 1
+; stress-NEXT:    [[CMP:%.*]] = icmp eq i8 [[TMP20]], 49
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[S_ADDR_0]], i64 1
 ; stress-NEXT:    br i1 [[CMP]], label [[WHILE_COND]], label [[WHILE_END]], !llvm.loop [[LOOP19:![0-9]+]]
 ; stress:       while.end:
@@ -4447,48 +4429,47 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
 ; ON-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[SRC:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP2:%.*]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 0, i64 0)
-; ON-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; ON-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 8
-; ON-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 1
-; ON-NEXT:    [[TMP5:%.*]] = mul i64 1, [[TMP4]]
-; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
-; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP3]], 0
-; ON-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 1
-; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP7]]
-; ON-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
-; ON-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
-; ON-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP1]] to i64
-; ON-NEXT:    [[TMP11:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP9]], i64 [[TMP10]])
-; ON-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP11]], 0
-; ON-NEXT:    [[TMP13:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP11]], 1
-; ON-NEXT:    [[TMP14:%.*]] = trunc i64 [[TMP13]] to i32
-; ON-NEXT:    [[VECTOR_GEP2]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP14]]
-; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP12]], <vscale x 8 x i8> [[BROADCAST_SPLAT]], metadata !"ult", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP14]])
-; ON-NEXT:    [[VP_OP_ICMP1:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP12]], <vscale x 8 x i8> zeroinitializer, metadata !"ne", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP14]])
-; ON-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i1> @llvm.vp.and.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> [[VP_OP_ICMP1]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP14]])
-; ON-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[VP_OP]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP14]])
-; ON-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP14]] to i64
-; ON-NEXT:    [[TMP16:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[PRED_NOT]], i64 [[TMP15]])
-; ON-NEXT:    [[TMP17:%.*]] = icmp sge i64 [[TMP16]], 0
-; ON-NEXT:    br i1 [[TMP17]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
+; ON-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; ON-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; ON-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 8
+; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; ON-NEXT:    [[TMP4:%.*]] = mul i64 1, [[TMP3]]
+; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; ON-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 1
+; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; ON-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
+; ON-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
+; ON-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP0]] to i64
+; ON-NEXT:    [[TMP10:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP8]], i64 [[TMP9]])
+; ON-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 0
+; ON-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 1
+; ON-NEXT:    [[TMP13:%.*]] = trunc i64 [[TMP12]] to i32
+; ON-NEXT:    [[VECTOR_GEP2]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP13]]
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP11]], <vscale x 8 x i8> [[BROADCAST_SPLAT]], metadata !"ult", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
+; ON-NEXT:    [[VP_OP_ICMP1:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP11]], <vscale x 8 x i8> zeroinitializer, metadata !"ne", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
+; ON-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i1> @llvm.vp.and.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> [[VP_OP_ICMP1]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
+; ON-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[VP_OP]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
+; ON-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP13]] to i64
+; ON-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[PRED_NOT]], i64 [[TMP14]])
+; ON-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; ON-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
-; ON-NEXT:    [[TMP18:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; ON-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP16]], 1
-; ON-NEXT:    [[TMP20:%.*]] = add i64 [[TMP18]], [[TMP19]]
-; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; ON-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; ON-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
+; ON-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
 ; ON-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; ON:       vec.uncountable.scalar.ph:
 ; ON-NEXT:    br label [[WHILE_COND:%.*]]
 ; ON:       while.cond:
 ; ON-NEXT:    [[SRC_ADDR_0:%.*]] = phi ptr [ [[SRC]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[SRC_ADDR_0]], i64 1
-; ON-NEXT:    [[TMP21:%.*]] = load i8, ptr [[SRC_ADDR_0]], align 1
-; ON-NEXT:    [[CMP:%.*]] = icmp ult i8 [[TMP21]], [[N]]
-; ON-NEXT:    [[CMP3:%.*]] = icmp ne i8 [[TMP21]], 0
-; ON-NEXT:    [[TMP22:%.*]] = and i1 [[CMP]], [[CMP3]]
-; ON-NEXT:    br i1 [[TMP22]], label [[WHILE_COND]], label [[WHILE_END]], !llvm.loop [[LOOP21:![0-9]+]]
+; ON-NEXT:    [[TMP20:%.*]] = load i8, ptr [[SRC_ADDR_0]], align 1
+; ON-NEXT:    [[CMP:%.*]] = icmp ult i8 [[TMP20]], [[N]]
+; ON-NEXT:    [[CMP3:%.*]] = icmp ne i8 [[TMP20]], 0
+; ON-NEXT:    [[TMP21:%.*]] = and i1 [[CMP]], [[CMP3]]
+; ON-NEXT:    br i1 [[TMP21]], label [[WHILE_COND]], label [[WHILE_END]], !llvm.loop [[LOOP21:![0-9]+]]
 ; ON:       while.end:
 ; ON-NEXT:    [[DOTLCSSA:%.*]] = phi ptr [ [[SRC_ADDR_0]], [[WHILE_COND]] ], [ [[IND_ESCAPE]], [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]] ]
 ; ON-NEXT:    ret ptr [[DOTLCSSA]]
@@ -4530,48 +4511,47 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
 ; stress-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[SRC:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP2:%.*]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 0, i64 0)
-; stress-NEXT:    [[TMP1:%.*]] = trunc i64 [[TMP0]] to i32
-; stress-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 8
-; stress-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 1
-; stress-NEXT:    [[TMP5:%.*]] = mul i64 1, [[TMP4]]
-; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP5]]
-; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP3]], 0
-; stress-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP6]], 1
-; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP7]]
-; stress-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
-; stress-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
-; stress-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP1]] to i64
-; stress-NEXT:    [[TMP11:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP9]], i64 [[TMP10]])
-; stress-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP11]], 0
-; stress-NEXT:    [[TMP13:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP11]], 1
-; stress-NEXT:    [[TMP14:%.*]] = trunc i64 [[TMP13]] to i32
-; stress-NEXT:    [[VECTOR_GEP2]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP14]]
-; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP12]], <vscale x 8 x i8> [[BROADCAST_SPLAT]], metadata !"ult", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP14]])
-; stress-NEXT:    [[VP_OP_ICMP1:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP12]], <vscale x 8 x i8> zeroinitializer, metadata !"ne", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP14]])
-; stress-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i1> @llvm.vp.and.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> [[VP_OP_ICMP1]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP14]])
-; stress-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[VP_OP]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP14]])
-; stress-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP14]] to i64
-; stress-NEXT:    [[TMP16:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[PRED_NOT]], i64 [[TMP15]])
-; stress-NEXT:    [[TMP17:%.*]] = icmp sge i64 [[TMP16]], 0
-; stress-NEXT:    br i1 [[TMP17]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
+; stress-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; stress-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; stress-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 8
+; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; stress-NEXT:    [[TMP4:%.*]] = mul i64 1, [[TMP3]]
+; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; stress-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 1
+; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; stress-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
+; stress-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
+; stress-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP0]] to i64
+; stress-NEXT:    [[TMP10:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP8]], i64 [[TMP9]])
+; stress-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 0
+; stress-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP10]], 1
+; stress-NEXT:    [[TMP13:%.*]] = trunc i64 [[TMP12]] to i32
+; stress-NEXT:    [[VECTOR_GEP2]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP13]]
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP11]], <vscale x 8 x i8> [[BROADCAST_SPLAT]], metadata !"ult", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
+; stress-NEXT:    [[VP_OP_ICMP1:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP11]], <vscale x 8 x i8> zeroinitializer, metadata !"ne", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
+; stress-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i1> @llvm.vp.and.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> [[VP_OP_ICMP1]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
+; stress-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[VP_OP]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP13]])
+; stress-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP13]] to i64
+; stress-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[PRED_NOT]], i64 [[TMP14]])
+; stress-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; stress-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
-; stress-NEXT:    [[TMP18:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
-; stress-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP16]], 1
-; stress-NEXT:    [[TMP20:%.*]] = add i64 [[TMP18]], [[TMP19]]
-; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; stress-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; stress-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
+; stress-NEXT:    [[TMP19:%.*]] = add i64 [[TMP17]], [[TMP18]]
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP19]] to ptr
 ; stress-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; stress:       vec.uncountable.scalar.ph:
 ; stress-NEXT:    br label [[WHILE_COND:%.*]]
 ; stress:       while.cond:
 ; stress-NEXT:    [[SRC_ADDR_0:%.*]] = phi ptr [ [[SRC]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[SRC_ADDR_0]], i64 1
-; stress-NEXT:    [[TMP21:%.*]] = load i8, ptr [[SRC_ADDR_0]], align 1
-; stress-NEXT:    [[CMP:%.*]] = icmp ult i8 [[TMP21]], [[N]]
-; stress-NEXT:    [[CMP3:%.*]] = icmp ne i8 [[TMP21]], 0
-; stress-NEXT:    [[TMP22:%.*]] = and i1 [[CMP]], [[CMP3]]
-; stress-NEXT:    br i1 [[TMP22]], label [[WHILE_COND]], label [[WHILE_END]], !llvm.loop [[LOOP21:![0-9]+]]
+; stress-NEXT:    [[TMP20:%.*]] = load i8, ptr [[SRC_ADDR_0]], align 1
+; stress-NEXT:    [[CMP:%.*]] = icmp ult i8 [[TMP20]], [[N]]
+; stress-NEXT:    [[CMP3:%.*]] = icmp ne i8 [[TMP20]], 0
+; stress-NEXT:    [[TMP21:%.*]] = and i1 [[CMP]], [[CMP3]]
+; stress-NEXT:    br i1 [[TMP21]], label [[WHILE_COND]], label [[WHILE_END]], !llvm.loop [[LOOP21:![0-9]+]]
 ; stress:       while.end:
 ; stress-NEXT:    [[DOTLCSSA:%.*]] = phi ptr [ [[SRC_ADDR_0]], [[WHILE_COND]] ], [ [[IND_ESCAPE]], [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]] ]
 ; stress-NEXT:    ret ptr [[DOTLCSSA]]
