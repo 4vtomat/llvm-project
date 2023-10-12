@@ -2774,7 +2774,7 @@ unsigned RISCVTTIImpl::getCSABodyFactor() const {
 
 unsigned RISCVTTIImpl::getCSAOverheadFactor() const {
   if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
-    return 4;
+    return 3;
   return 1;
 }
 #endif
