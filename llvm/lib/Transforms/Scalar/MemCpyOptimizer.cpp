@@ -1437,11 +1437,6 @@ bool MemCpyOptPass::performStackMoveOptzn(Instruction *Load, Instruction *Store,
   LLVM_DEBUG(dbgs() << "Stack Move: Attempting to optimize:\n"
                     << *Store << "\n");
 
-#if SIFIVE_CUSTOMIZATION
-  if (Size.isScalable())
-    return false;
-#endif // SIFIVE_CUSTOMIZATION
-
   // Make sure the two allocas are in the same address space.
   if (SrcAlloca->getAddressSpace() != DestAlloca->getAddressSpace()) {
     LLVM_DEBUG(dbgs() << "Stack Move: Address space mismatch\n");
