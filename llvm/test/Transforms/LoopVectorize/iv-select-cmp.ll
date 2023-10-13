@@ -2984,3 +2984,76 @@ for.body:                                         ; preds = %entry, %for.body
 exit:                                             ; preds = %for.body
   ret i64 %cond
 }
+
+;
+; The test case is modified from @select_i32_from_icmp_same_inputs at
+; Transforms/LoopVectorize/select-cmp.ll
+;
+define i64 @not_vectorized_select_icmp_const_cmp_in_recurrence(i64 %a, i64 %b, i64 %n) {
+; CHECK-LABEL: define i64 @not_vectorized_select_icmp_const_cmp_in_recurrence
+; CHECK-NOT:   vector.body:
+;
+entry:
+  br label %for.body
+
+for.body:                                      ; preds = %entry, %for.body
+  %0 = phi i64 [ 0, %entry ], [ %4, %for.body ]
+  %1 = phi i64 [ %a, %entry ], [ %3, %for.body ]
+  %2 = icmp eq i64 %1, 3
+  %3 = select i1 %2, i64 %1, i64 %0
+  %4 = add nuw nsw i64 %0, 1
+  %5 = icmp eq i64 %4, %n
+  br i1 %5, label %exit, label %for.body
+
+exit:                                     ; preds = %for.body
+  ret i64 %3
+}
+
+define i64 @not_vectorized_select_icmp_cmp_in_recurrence(i64 %a, i64 %b, i64 %n, ptr %c) {
+; CHECK-LABEL: define i64 @not_vectorized_select_icmp_cmp_in_recurrence
+; CHECK-NOT:   vector.body:
+;
+entry:
+  br label %for.body
+
+for.body:                                      ; preds = %entry, %for.body
+  %0 = phi i64 [ 0, %entry ], [ %6, %for.body ]
+  %1 = phi i64 [ %a, %entry ], [ %5, %for.body ]
+  %2 = getelementptr inbounds i64, ptr %c, i64 %0
+  %3 = load i64, ptr %2, align 8
+  %4 = icmp eq i64 %1, %3
+  %5 = select i1 %4, i64 %1, i64 %0
+  %6 = add nuw nsw i64 %0, 1
+  %7 = icmp eq i64 %6, %n
+  br i1 %7, label %exit, label %for.body
+
+exit:                                     ; preds = %for.body
+  ret i64 %5
+}
+
+define i64 @todo_select_icmp_multiuser(i64 %n, ptr %a, i8 %cond) {
+; CHECK-LABEL: define i64 @todo_select_icmp_multiuser
+; CHECK-NOT:   vector.body:
+;
+entry:
+  br label %for.body
+
+for.body:                                         ; preds = %entry, %for.body
+  %iv = phi i64 [ 0, %entry ], [ %iv.next, %for.body ]
+  %count.rdx = phi i64 [ 0, %entry ], [ %select.count, %for.body ]
+  %index.rdx = phi i64 [ -1, %entry ], [ %select.index, %for.body ]
+  %arrayidx = getelementptr inbounds i8, ptr %a, i64 %iv
+  %load.a = load i8, ptr %arrayidx, align 1
+  %cmp = icmp eq i8 %load.a, %cond
+  %select.index = select i1 %cmp, i64 %iv, i64 %index.rdx
+  %inc = zext i1 %cmp to i64
+  %select.count = add nuw nsw i64 %count.rdx, %inc
+  %iv.next = add nuw nsw i64 %iv, 1
+  %exitcond.not = icmp eq i64 %inc, %n
+  br i1 %exitcond.not, label %exit, label %for.body
+
+exit:                                     ; preds = %for.body
+  %zero.count = icmp eq i64 %select.count, 0
+  %res = select i1 %zero.count, i64 0, i64 %select.index
+  ret i64 %res
+}

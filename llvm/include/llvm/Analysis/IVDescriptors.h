@@ -177,14 +177,11 @@ public:
   ///   Select(ICmp(A, B), X, Y), or
   ///   Select(FCmp(A, B), X, Y)
   /// where one of (X, Y) is an increasing loop induction variable, and the
-  /// other is a PHI value. \p Prev specifies the  description of an already
-  /// processed select instruction, so its corresponding cmp can be matched to
-  /// it.
+  /// other is a PHI value.
   // TODO: FindLast does not need be restricted to increasing loop induction
   // variables.
   static InstDesc isFindLastIVPattern(Loop *Loop, PHINode *OrigPhi,
-                                      Instruction *I, InstDesc &Prev,
-                                      ScalarEvolution *SE);
+                                      Instruction *I, ScalarEvolution *SE);
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Returns a struct describing if the instruction is a
