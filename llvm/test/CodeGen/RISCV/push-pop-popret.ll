@@ -3085,6 +3085,10 @@ define void @callee_no_irq() nounwind{
   ret void
 }
 
+<<<<<<< HEAD
+=======
+; SIFIVE_CUSTOMIZATION
+>>>>>>> origin
 declare void @bar(ptr, ptr)
 declare ptr @llvm.frameaddress.p0(i32 immarg)
 
@@ -3123,11 +3127,20 @@ define i32 @use_fp(i32 %x) {
 ;
 ; RV32IZCMP-SR-LABEL: use_fp:
 ; RV32IZCMP-SR:       # %bb.0: # %entry
+<<<<<<< HEAD
 ; RV32IZCMP-SR-NEXT:    cm.push {ra, s0-s1}, -32
 ; RV32IZCMP-SR-NEXT:    .cfi_def_cfa_offset 32
 ; RV32IZCMP-SR-NEXT:    .cfi_offset ra, -12
 ; RV32IZCMP-SR-NEXT:    .cfi_offset s0, -8
 ; RV32IZCMP-SR-NEXT:    .cfi_offset s1, -4
+=======
+; RV32IZCMP-SR-NEXT:    call t0, __riscv_save_2
+; RV32IZCMP-SR-NEXT:    addi sp, sp, -16
+; RV32IZCMP-SR-NEXT:    .cfi_def_cfa_offset 32
+; RV32IZCMP-SR-NEXT:    .cfi_offset ra, -4
+; RV32IZCMP-SR-NEXT:    .cfi_offset s0, -8
+; RV32IZCMP-SR-NEXT:    .cfi_offset s1, -12
+>>>>>>> origin
 ; RV32IZCMP-SR-NEXT:    addi s0, sp, 32
 ; RV32IZCMP-SR-NEXT:    .cfi_def_cfa s0, 0
 ; RV32IZCMP-SR-NEXT:    mv s1, a0
@@ -3135,6 +3148,7 @@ define i32 @use_fp(i32 %x) {
 ; RV32IZCMP-SR-NEXT:    mv a0, s0
 ; RV32IZCMP-SR-NEXT:    call bar@plt
 ; RV32IZCMP-SR-NEXT:    mv a0, s1
+<<<<<<< HEAD
 ; RV32IZCMP-SR-NEXT:    cm.popret {ra, s0-s1}, 32
 ;
 ; RV64IZCMP-SR-LABEL: use_fp:
@@ -3144,6 +3158,19 @@ define i32 @use_fp(i32 %x) {
 ; RV64IZCMP-SR-NEXT:    .cfi_offset ra, -24
 ; RV64IZCMP-SR-NEXT:    .cfi_offset s0, -16
 ; RV64IZCMP-SR-NEXT:    .cfi_offset s1, -8
+=======
+; RV32IZCMP-SR-NEXT:    addi sp, sp, 16
+; RV32IZCMP-SR-NEXT:    tail __riscv_restore_2
+;
+; RV64IZCMP-SR-LABEL: use_fp:
+; RV64IZCMP-SR:       # %bb.0: # %entry
+; RV64IZCMP-SR-NEXT:    call t0, __riscv_save_2
+; RV64IZCMP-SR-NEXT:    addi sp, sp, -16
+; RV64IZCMP-SR-NEXT:    .cfi_def_cfa_offset 48
+; RV64IZCMP-SR-NEXT:    .cfi_offset ra, -8
+; RV64IZCMP-SR-NEXT:    .cfi_offset s0, -16
+; RV64IZCMP-SR-NEXT:    .cfi_offset s1, -24
+>>>>>>> origin
 ; RV64IZCMP-SR-NEXT:    addi s0, sp, 48
 ; RV64IZCMP-SR-NEXT:    .cfi_def_cfa s0, 0
 ; RV64IZCMP-SR-NEXT:    mv s1, a0
@@ -3151,7 +3178,12 @@ define i32 @use_fp(i32 %x) {
 ; RV64IZCMP-SR-NEXT:    mv a0, s0
 ; RV64IZCMP-SR-NEXT:    call bar@plt
 ; RV64IZCMP-SR-NEXT:    mv a0, s1
+<<<<<<< HEAD
 ; RV64IZCMP-SR-NEXT:    cm.popret {ra, s0-s1}, 48
+=======
+; RV64IZCMP-SR-NEXT:    addi sp, sp, 16
+; RV64IZCMP-SR-NEXT:    tail __riscv_restore_2
+>>>>>>> origin
 ;
 ; RV32I-LABEL: use_fp:
 ; RV32I:       # %bb.0: # %entry
@@ -3204,3 +3236,7 @@ entry:
   call void @bar(ptr %0, ptr %var)
   ret i32 %x
 }
+<<<<<<< HEAD
+=======
+; SIFIVE_CUSTOMIZATION
+>>>>>>> origin

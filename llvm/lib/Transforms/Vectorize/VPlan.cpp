@@ -756,8 +756,16 @@ Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
     assert(State.Plan->getRVL() && "RVL is null");
     assert(!RVL && "RVL not expected by uncountable loops");
 
-    Value *VLMax64 = State.Builder.CreateIntrinsic(
-        Intrinsic::riscv_vsetvlimax, {SEWArg->getType()}, {SEWArg, LMULArg});
+    Type *I64Type = State.Builder.getInt64Ty();
+    Type *I32Type = State.Builder.getInt32Ty();
+
+    // Set RVL to allOnes to get vlmax
+    Constant *RVLArg = ConstantInt::get(I64Type, APInt::getAllOnes(64));
+    Constant *VFArg = ConstantInt::get(I32Type, State.VF.getKnownMinValue());
+    auto *IsScalable = ConstantInt::getTrue(State.Builder.getContext());
+    Value *VLMax64 =
+        State.Builder.CreateIntrinsic(Intrinsic::experimental_get_vector_length,
+                                      {I64Type}, {RVLArg, VFArg, IsScalable});
     Value *VLMax32 =
         State.Builder.CreateTrunc(VLMax64, State.Builder.getInt32Ty());
     State.set(State.Plan->getInitRVL(), VLMax64, 0);
@@ -789,8 +797,15 @@ Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
                                                  RVLUpperBound);
   }
 
-  Value *GVL = State.Builder.CreateIntrinsic(
-      Intrinsic::riscv_vsetvli, {RVLArg->getType()}, {RVLArg, SEWArg, LMULArg});
+  Type *I64Type = State.Builder.getInt64Ty();
+  Type *I32Type = State.Builder.getInt32Ty();
+
+  Constant *VFArg = ConstantInt::get(I32Type, State.VF.getKnownMinValue());
+  auto *IsScalable = ConstantInt::getTrue(State.Builder.getContext());
+  Value *GVL =
+      State.Builder.CreateIntrinsic(Intrinsic::experimental_get_vector_length,
+                                    {I64Type}, {RVLArg, VFArg, IsScalable});
+
   return State.Builder.CreateZExtOrTrunc(GVL, RVL->getType());
 }
 
@@ -1088,11 +1103,13 @@ void VPlan::print(raw_ostream &O) const {
   }
 
   O << "\n";
-  if (TripCount->isLiveIn())
-    O << "Live-in ";
-  TripCount->printAsOperand(O, SlotTracker);
-  O << " = original trip-count";
-  O << "\n";
+  if (TripCount) {
+    if (TripCount->isLiveIn())
+      O << "Live-in ";
+    TripCount->printAsOperand(O, SlotTracker);
+    O << " = original trip-count";
+    O << "\n";
+  }
 
   if (!getPreheader()->empty()) {
     O << "\n";

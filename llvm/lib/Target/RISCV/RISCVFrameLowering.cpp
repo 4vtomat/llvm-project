@@ -226,6 +226,10 @@ getRestoreLibCallName(const MachineFunction &MF,
   return RestoreLibCalls[LibCallID];
 }
 
+<<<<<<< HEAD
+=======
+#if SIFIVE_CUSTOMIZATION
+>>>>>>> origin
 // Return encoded value and register count for PUSH/POP instruction,
 // representing registers to store/load.
 static std::pair<unsigned, unsigned>
@@ -260,6 +264,7 @@ getPushPopEncodingAndNum(const Register MaxReg) {
     return std::make_pair(llvm::RISCVZC::RLISTENCODE::RA, 1);
   }
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 // Get the max reg of Push/Pop for restoring callee saved registers.
 static Register getMaxPushPopReg(const MachineFunction &MF,
@@ -506,7 +511,14 @@ void RISCVFrameLowering::emitPrologue(MachineFunction &MF,
   // FIXME (note copied from Lanai): This appears to be overallocating.  Needs
   // investigation. Get the number of bytes to allocate from the FrameInfo.
   uint64_t StackSize = getStackSizeWithRVVPadding(MF);
+<<<<<<< HEAD
   uint64_t RealStackSize = StackSize + RVFI->getReservedSpillsSize();
+=======
+#if SIFIVE_CUSTOMIZATION
+  // Cherry-picked from upstream #66613.
+  uint64_t RealStackSize = StackSize + RVFI->getReservedSpillsSize();
+#endif // SIFIVE_CUSTOMIZATION
+>>>>>>> origin
   uint64_t RVVStackSize = RVFI->getRVVStackSize();
 
   // Early exit if there is no need to allocate on the stack
@@ -574,7 +586,14 @@ void RISCVFrameLowering::emitPrologue(MachineFunction &MF,
         Offset = FrameIdx * (int64_t)STI.getXLen() / 8;
       }
     } else {
+<<<<<<< HEAD
       Offset = MFI.getObjectOffset(FrameIdx) - RVFI->getReservedSpillsSize();
+=======
+#if SIFIVE_CUSTOMIZATION
+      // Cherry-picked from upstream #66613.
+      Offset = MFI.getObjectOffset(FrameIdx) - RVFI->getReservedSpillsSize();
+#endif // SIFIVE_CUSTOMIZATION
+>>>>>>> origin
     }
     Register Reg = Entry.getReg();
     unsigned CFIIndex = MF.addFrameInst(MCCFIInstruction::createOffset(
@@ -719,7 +738,14 @@ void RISCVFrameLowering::emitEpilogue(MachineFunction &MF,
     LastFrameDestroy = std::prev(MBBI, CSI.size());
 
   uint64_t StackSize = getStackSizeWithRVVPadding(MF);
+<<<<<<< HEAD
   uint64_t RealStackSize = StackSize + RVFI->getReservedSpillsSize();
+=======
+#if SIFIVE_CUSTOMIZATION
+  // Cherry-picked from upstream #66613.
+  uint64_t RealStackSize = StackSize + RVFI->getReservedSpillsSize();
+#endif // SIFIVE_CUSTOMIZATION
+>>>>>>> origin
   uint64_t FPOffset = RealStackSize - RVFI->getVarArgsSaveSize();
   uint64_t RVVStackSize = RVFI->getRVVStackSize();
 
@@ -870,7 +896,14 @@ RISCVFrameLowering::getFrameIndexReference(const MachineFunction &MF, int FI,
   if (FrameReg == getFPReg(STI)) {
     Offset += StackOffset::getFixed(RVFI->getVarArgsSaveSize());
     if (FI >= 0)
+<<<<<<< HEAD
       Offset -= StackOffset::getFixed(RVFI->getReservedSpillsSize());
+=======
+#if SIFIVE_CUSTOMIZATION
+      // Cherry-picked from upstream #66613.
+      Offset -= StackOffset::getFixed(RVFI->getReservedSpillsSize());
+#endif // SIFIVE_CUSTOMIZATION
+>>>>>>> origin
     // When using FP to access scalable vector objects, we need to minus
     // the frame size.
     //
@@ -938,7 +971,14 @@ RISCVFrameLowering::getFrameIndexReference(const MachineFunction &MF, int FI,
       assert(!RI->hasStackRealignment(MF) &&
              "Can't index across variable sized realign");
       Offset += StackOffset::get(getStackSizeWithRVVPadding(MF) +
+<<<<<<< HEAD
                                      RVFI->getReservedSpillsSize(),
+=======
+#if SIFIVE_CUSTOMIZATION
+                                     // Cherry-picked from upstream #66613.
+                                     RVFI->getReservedSpillsSize(),
+#endif // SIFIVE_CUSTOMIZATION
+>>>>>>> origin
                                  RVFI->getRVVStackSize());
     } else {
       Offset += StackOffset::getFixed(MFI.getStackSize());
@@ -1283,7 +1323,14 @@ RISCVFrameLowering::getFirstSPAdjustAmount(const MachineFunction &MF) const {
   // Disable SplitSPAdjust if save-restore libcall is used. The callee-saved
   // registers will be pushed by the save-restore libcalls, so we don't have to
   // split the SP adjustment in this case.
+<<<<<<< HEAD
   if (RVFI->getReservedSpillsSize())
+=======
+#if SIFIVE_CUSTOMIZATION
+  // Cherry-picked from upstream #66613.
+  if (RVFI->getReservedSpillsSize())
+#endif // SIFIVE_CUSTOMIZATION
+>>>>>>> origin
     return 0;
 
   // Return the FirstSPAdjustAmount if the StackSize can not fit in a signed
@@ -1356,6 +1403,7 @@ bool RISCVFrameLowering::spillCalleeSavedRegisters(
   // Emit CM.PUSH with base SPimm & evaluate Push stack
   RISCVMachineFunctionInfo *RVFI = MF->getInfo<RISCVMachineFunctionInfo>();
   if (RVFI->isPushable(*MF)) {
+#if SIFIVE_CUSTOMIZATION
     Register MaxReg = getMaxPushPopReg(*MF, CSI);
     if (MaxReg != RISCV::NoRegister) {
       auto [RegEnc, PushedRegNum] = getPushPopEncodingAndNum(MaxReg);
@@ -1363,6 +1411,10 @@ bool RISCVFrameLowering::spillCalleeSavedRegisters(
       RVFI->setRVPushStackSize(alignTo((STI.getXLen() / 8) * PushedRegNum, 16));
 
       // Use encoded number to represent registers to spill.
+<<<<<<< HEAD
+=======
+#endif // SIFIVE_CUSTOMIZATION
+>>>>>>> origin
       RVFI->setRVPushRlist(RegEnc);
       MachineInstrBuilder PushBuilder =
           BuildMI(MBB, MI, DL, TII.get(RISCV::CM_PUSH))

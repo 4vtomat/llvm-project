@@ -512,10 +512,6 @@ bool RecurrenceDescriptor::AddReductionVar(
                   (!isConditionalRdxPattern(Kind, UI).isRecurrence() &&
                    !isAnyOfPattern(TheLoop, Phi, UI, IgnoredVal)
                         .isRecurrence() &&
-#if SIFIVE_CUSTOMIZATION
-                   !isFindLastIVPattern(TheLoop, Phi, UI, IgnoredVal, SE)
-                        .isRecurrence() &&
-#endif // SIFIVE_CUSTOMIZATION
                    !isMinMaxPattern(UI, Kind, IgnoredVal).isRecurrence())))
         return false;
 
@@ -724,17 +720,10 @@ RecurrenceDescriptor::isAnyOfPattern(Loop *Loop, PHINode *OrigPhi,
 // reduction operations.
 RecurrenceDescriptor::InstDesc
 RecurrenceDescriptor::isFindLastIVPattern(Loop *Loop, PHINode *OrigPhi,
-                                          Instruction *I, InstDesc &Prev,
-                                          ScalarEvolution *SE) {
-  // We must handle the select(cmp(),x,y) as a single instruction. Advance to
-  // the select.
-  CmpInst::Predicate Pred;
-  if (match(I, m_OneUse(m_Cmp(Pred, m_Value(), m_Value())))) {
-    if (auto *Select = dyn_cast<SelectInst>(*I->user_begin()))
-      return InstDesc(Select, Prev.getRecKind());
-  }
-
+                                          Instruction *I, ScalarEvolution *SE) {
   // Only match select with single use cmp condition.
+  // TODO: Only handle single use for now.
+  CmpInst::Predicate Pred;
   if (!match(I, m_Select(m_OneUse(m_Cmp(Pred, m_Value(), m_Value())), m_Value(),
                          m_Value())))
     return InstDesc(false, I);
@@ -974,16 +963,16 @@ RecurrenceDescriptor::isRecurrenceInstr(Loop *L, PHINode *OrigPhi,
     if (Kind == RecurKind::FAdd || Kind == RecurKind::FMul ||
         Kind == RecurKind::Add || Kind == RecurKind::Mul)
       return isConditionalRdxPattern(Kind, I);
+#if SIFIVE_CUSTOMIZATION
+    if (isFindLastIVRecurrenceKind(Kind))
+      return isFindLastIVPattern(L, OrigPhi, I, SE);
+#endif // SIFIVE_CUSTOMIZATION
     [[fallthrough]];
   case Instruction::FCmp:
   case Instruction::ICmp:
   case Instruction::Call:
     if (isAnyOfRecurrenceKind(Kind))
       return isAnyOfPattern(L, OrigPhi, I, Prev);
-#if SIFIVE_CUSTOMIZATION
-    if (isFindLastIVRecurrenceKind(Kind))
-      return isFindLastIVPattern(L, OrigPhi, I, Prev, SE);
-#endif // SIFIVE_CUSTOMIZATION
     auto HasRequiredFMF = [&]() {
      if (FuncFMF.noNaNs() && FuncFMF.noSignedZeros())
        return true;

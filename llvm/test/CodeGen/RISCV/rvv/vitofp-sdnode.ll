@@ -940,9 +940,9 @@ define <vscale x 32 x half> @vsitofp_nxv32i8_nxv32f16(<vscale x 32 x i8> %va) {
 ; ZVFHMIN-NEXT:    vsext.vf2 v12, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.x.v v16, v12
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v16, v16
-; ZVFHMIN-NEXT:    vsext.vf2 v12, v10
-; ZVFHMIN-NEXT:    vfwcvt.f.x.v v8, v12
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v20, v8
+; ZVFHMIN-NEXT:    vsext.vf2 v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.x.v v24, v8
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v20, v24
 ; ZVFHMIN-NEXT:    vmv8r.v v8, v16
 ; ZVFHMIN-NEXT:    ret
   %evec = sitofp <vscale x 32 x i8> %va to <vscale x 32 x half>
@@ -963,9 +963,9 @@ define <vscale x 32 x half> @vuitofp_nxv32i8_nxv32f16(<vscale x 32 x i8> %va) {
 ; ZVFHMIN-NEXT:    vzext.vf2 v12, v8
 ; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v16, v12
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v16, v16
-; ZVFHMIN-NEXT:    vzext.vf2 v12, v10
-; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v8, v12
-; ZVFHMIN-NEXT:    vfncvt.f.f.w v20, v8
+; ZVFHMIN-NEXT:    vzext.vf2 v8, v10
+; ZVFHMIN-NEXT:    vfwcvt.f.xu.v v24, v8
+; ZVFHMIN-NEXT:    vfncvt.f.f.w v20, v24
 ; ZVFHMIN-NEXT:    vmv8r.v v8, v16
 ; ZVFHMIN-NEXT:    ret
   %evec = uitofp <vscale x 32 x i8> %va to <vscale x 32 x half>

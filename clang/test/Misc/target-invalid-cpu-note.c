@@ -90,7 +90,7 @@
 // RISCV64: error: unknown target CPU 'not-a-cpu'
 <<<<<<< HEAD
 // RISCV64: note: valid target CPU values are: generic-rv64, rocket-rv64, sifive-p270,
-// RISCV64-SAME: sifive-p270n, sifive-p450, sifive-p470, sifive-p550, sifive-p650, sifive-p670, sifive-p870, sifive-s21, 
+// RISCV64-SAME: sifive-p270n, sifive-p450, sifive-p470, sifive-p550, sifive-p650, sifive-p670, sifive-p870s, sifive-s21, 
 // RISCV64-SAME: sifive-s51, sifive-s54, sifive-s61, sifive-s61r, sifive-s76, sifive-s76m, sifive-s76n, sifive-s76r, sifive-u54,
 // RISCV64-SAME: sifive-u64, sifive-u64r, sifive-u74, sifive-u74m, sifive-u74n, sifive-u74r, sifive-x280, sifive-x280n, sifive-x280o
 =======
@@ -109,7 +109,7 @@
 // TUNE-RISCV64: error: unknown target CPU 'not-a-cpu'
 <<<<<<< HEAD
 // TUNE-RISCV64: note: valid target CPU values are: generic-rv64, rocket-rv64, sifive-p270, 
-// TUNE-RISCV64-SAME: sifive-p270n, sifive-p450, sifive-p470, sifive-p550, sifive-p650, sifive-p670, sifive-p870,
+// TUNE-RISCV64-SAME: sifive-p270n, sifive-p450, sifive-p470, sifive-p550, sifive-p650, sifive-p670, sifive-p870s,
 // TUNE-RISCV64-SAME: sifive-s21, sifive-s21r, sifive-s51, sifive-s54, sifive-s61, sifive-s61r, sifive-s76, sifive-s76m,
 // TUNE-RISCV64-SAME: sifive-s76n, sifive-s76r, sifive-u54, sifive-u64, sifive-u64r, sifive-u74, sifive-u74m, sifive-u74n, sifive-u74r,
 // TUNE-RISCV64-SAME: sifive-x280, sifive-x280n, sifive-x280o, generic, rocket, sifive-6-series, 

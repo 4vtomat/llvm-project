@@ -57,6 +57,10 @@ static cl::opt<bool> EnableSimplifyCFGHoistingVec(
     "experimental-riscv-simplifycfg-hoist-vector",
     cl::desc("Enable SimplifyCFG hoisting vectors."), cl::init(false),
     cl::Hidden);
+static cl::opt<bool> EnableSimplifyCFGHoistingCall(
+    "experimental-riscv-simplifycfg-hoist-call",
+    cl::desc("Enable SimplifyCFG hoisting call instructions."), cl::init(false),
+    cl::Hidden);
 #endif
 
 STATISTIC(NumTailCalls, "Number of tail calls");
@@ -1823,6 +1827,14 @@ bool RISCVTargetLowering::isProfitableToHoist(Instruction *I) const {
   // Disable the hoisting of vectors until we have a counter example
   if (!EnableSimplifyCFGHoistingVec && I->getType()->isVectorTy())
     return false;
+
+  // Disable the hoisting of call only used by the condition branch of the
+  // same basic block. It can increase the opportunity for jump threading.
+  if (!EnableSimplifyCFGHoistingCall && isa<CallInst>(I) && I->hasOneUse()) {
+    if (auto *Branch = dyn_cast<BranchInst>(I->getParent()->getTerminator()))
+      if (Branch->isConditional() && I->user_back() == Branch->getCondition())
+        return false;
+  }
 
   return true;
 }
@@ -3688,9 +3700,19 @@ static SDValue lowerBuildVectorOfConstants(SDValue Op, SelectionDAG &DAG,
   if (EltBitSize > 8 && VT.isInteger() &&
       (NumElts <= 4 || VT.getSizeInBits() > Subtarget.getRealMinVLen())) {
     unsigned SignBits = DAG.ComputeNumSignBits(Op);
+<<<<<<< HEAD
     if (EltBitSize - SignBits < 8) {
+=======
+    if (ScalarSize - SignBits < 8) {
+#if SIFIVE_CUSTOMIZATION
+      // SIFIVE Will be upstreamed.
+      SDValue Source = DAG.getBuildVector(VT.changeVectorElementType(MVT::i8),
+                                          DL, Op->ops());
+#else
+>>>>>>> origin
       SDValue Source =
         DAG.getNode(ISD::TRUNCATE, DL, VT.changeVectorElementType(MVT::i8), Op);
+#endif // SIFIVE_CUSTOMIZATION
       Source = convertToScalableVector(ContainerVT.changeVectorElementType(MVT::i8),
                                        Source, DAG, Subtarget);
       SDValue Res = DAG.getNode(RISCVISD::VSEXT_VL, DL, ContainerVT, Source, Mask, VL);
@@ -13408,6 +13430,89 @@ static SDValue performANDCombine(SDNode *N,
 }
 
 #if SIFIVE_CUSTOMIZATION
+// Combine vector (or (add (zext A, zext B), (shl (sub (zext A, zext B)), C)))
+// (or (zext (add (zext A, zext B))), (shl (zext (sub (zext A, zext B)), C)))
+// where C is half the size of the vector element type and A and B have elements
+// that are 1/4 the size of the vector element type. combineOrZextShlAnyext will
+// convert the end of the new code into an interleave shuffle which will use
+// vwaddu.vv+vwmaccu.vx or vwsll.vi+vwaddu.wv.
+static SDValue combineOrShlAddSub(SDNode *N, SelectionDAG &DAG,
+                                  const RISCVSubtarget &Subtarget) {
+  EVT VT = N->getValueType(0);
+  const TargetLowering &TLI = DAG.getTargetLoweringInfo();
+
+  if (!VT.isFixedLengthVector() ||
+      (VT.getVectorElementType() != MVT::i32 &&
+       VT.getVectorElementType() != MVT::i64) ||
+      !TLI.isTypeLegal(VT))
+    return SDValue();
+
+  SDValue Add = N->getOperand(0);
+  SDValue Shl = N->getOperand(1);
+  if (Add.getOpcode() != ISD::ADD)
+    std::swap(Add, Shl);
+  if (Add.getOpcode() != ISD::ADD || Shl.getOpcode() != ISD::SHL ||
+      !Add.hasOneUse() || !Shl.hasOneUse())
+    return SDValue();
+
+  SDValue Sub = Shl.getOperand(0);
+  if (Sub.getOpcode() != ISD::SUB || !Sub.hasOneUse())
+    return SDValue();
+
+  APInt ShAmt;
+  if (!ISD::isConstantSplatVector(Shl.getOperand(1).getNode(), ShAmt))
+    return SDValue();
+
+  unsigned ScalarSize = VT.getScalarSizeInBits();
+  if (ShAmt != (ScalarSize / 2))
+    return SDValue();
+
+  SDValue ZExtX = Sub.getOperand(0);
+  SDValue ZExtY = Sub.getOperand(1);
+
+  // Make sure add has same operands. Order doesn't mattter.
+  // TODO: They don't need to be the same operands, but it makes the use
+  // counting simpler.
+  if (!(Add.getOperand(0) == ZExtX && Add.getOperand(1) == ZExtY) &&
+      !(Add.getOperand(0) == ZExtY && Add.getOperand(1) == ZExtX))
+    return SDValue();
+
+  // Inputs should be zero extends.
+  if (ZExtX.getOpcode() != ISD::ZERO_EXTEND ||
+      ZExtY.getOpcode() != ISD::ZERO_EXTEND)
+    return SDValue();
+
+  // X and Y should be used by the Add and the Sub only.
+  if (!ZExtX->hasNUsesOfValue(2, 0) || !ZExtY->hasNUsesOfValue(2, 0))
+    return SDValue();
+
+  SDValue X = ZExtX.getOperand(0);
+  SDValue Y = ZExtY.getOperand(0);
+
+  EVT NarrowVT = X.getValueType();
+
+  // We should be extending from a type four times as small.
+  if (NarrowVT != Y.getValueType() ||
+      NarrowVT.getScalarSizeInBits() != (ScalarSize / 4))
+    return SDValue();
+
+  EVT IntermediateVT =
+      EVT::getVectorVT(*DAG.getContext(), MVT::getIntegerVT(ScalarSize / 2),
+                       VT.getVectorElementCount());
+
+  X = DAG.getNode(ISD::ZERO_EXTEND, SDLoc(ZExtX), IntermediateVT, X);
+  Y = DAG.getNode(ISD::ZERO_EXTEND, SDLoc(ZExtY), IntermediateVT, Y);
+
+  Add = DAG.getNode(ISD::ADD, SDLoc(Add), IntermediateVT, X, Y);
+  Sub = DAG.getNode(ISD::SUB, SDLoc(Sub), IntermediateVT, X, Y);
+
+  Add = DAG.getNode(ISD::ZERO_EXTEND, SDLoc(Add), VT, Add);
+  Sub = DAG.getNode(ISD::ANY_EXTEND, SDLoc(Sub), VT, Sub);
+
+  Shl = DAG.getNode(ISD::SHL, SDLoc(Shl), VT, Sub, Shl.getOperand(1));
+  return DAG.getNode(ISD::OR, SDLoc(N), VT, Shl, Add);
+}
+
 // combine or (zext a) (shl (anyext b) c) to shufflevector
 static SDValue combineOrZextShlAnyext(SDNode *N, SelectionDAG &DAG,
                                       const RISCVSubtarget &Subtarget) {
@@ -13514,6 +13619,8 @@ static SDValue performORCombine(SDNode *N, TargetLowering::DAGCombinerInfo &DCI,
     return V;
 
 #if SIFIVE_CUSTOMIZATION
+  if (SDValue V = combineOrShlAddSub(N, DAG, Subtarget))
+    return V;
   if (SDValue V = combineOrZextShlAnyext(N, DAG, Subtarget))
     return V;
 #endif // SIFIVE_CUSTOMIZATION
@@ -13575,8 +13682,7 @@ static SDValue performXORCombine(SDNode *N, SelectionDAG &DAG,
 
 #if SIFIVE_CUSTOMIZATION
 // (mul (and (lshr X, 15), 65537), 65535) -> (bitcast (sra (bitcast X), 15)))
-static SDValue performMULCombine(SDNode *N, SelectionDAG &DAG,
-                                 const RISCVSubtarget &Subtarget) {
+static SDValue combineVectorMulToSraBitcast(SDNode *N, SelectionDAG &DAG) {
   EVT VT = N->getValueType(0);
   const TargetLowering &TLI = DAG.getTargetLoweringInfo();
 
@@ -13610,13 +13716,72 @@ static SDValue performMULCombine(SDNode *N, SelectionDAG &DAG,
   return DAG.getNode(ISD::BITCAST, DL, VT, Sra);
 }
 
+// Combine (mul (sub (zext X), (zext Y)), (sub (zext X), (zext Y))) to
+// (mul (sext (sub (zext X), (zext Y))), (zext (sub (zext X), (zext Y))) to
+// make use of widening multiply and reduce the size of the sub.
+static SDValue combineVectorSquareDifference(SDNode *N,
+                                             SelectionDAG &DAG) {
+  EVT VT = N->getValueType(0);
+  const TargetLowering &TLI = DAG.getTargetLoweringInfo();
+
+  if (!VT.isFixedLengthVector() ||
+      (VT.getVectorElementType() != MVT::i32 &&
+       VT.getVectorElementType() != MVT::i64) ||
+      !TLI.isTypeLegal(VT))
+    return SDValue();
+
+  SDValue Sub = N->getOperand(0);
+
+  // We should be squaring a subtract.
+  if (Sub.getOpcode() != ISD::SUB || N->getOperand(1) != Sub ||
+      !N->isOnlyUserOf(Sub.getNode()))
+    return SDValue();
+
+  SDValue ZExtX = Sub.getOperand(0);
+  SDValue ZExtY = Sub.getOperand(1);
+
+  if (ZExtX.getOpcode() != ISD::ZERO_EXTEND || !ZExtX.hasOneUse() ||
+      ZExtY.getOpcode() != ISD::ZERO_EXTEND || !ZExtY.hasOneUse())
+    return SDValue();
+
+  SDValue X = ZExtX.getOperand(0);
+  SDValue Y = ZExtY.getOperand(0);
+
+  unsigned ScalarSize = VT.getScalarSizeInBits();
+  EVT NarrowVT = X.getValueType();
+
+  // We should be extending from a type four times as small.
+  if (NarrowVT != Y.getValueType() ||
+      NarrowVT.getScalarSizeInBits() != (ScalarSize / 4))
+    return SDValue();
+
+  EVT IntermediateVT =
+      EVT::getVectorVT(*DAG.getContext(), MVT::getIntegerVT(ScalarSize / 2),
+                       VT.getVectorElementCount());
+
+  X = DAG.getNode(ISD::ZERO_EXTEND, SDLoc(ZExtX), IntermediateVT, X);
+  Y = DAG.getNode(ISD::ZERO_EXTEND, SDLoc(ZExtY), IntermediateVT, Y);
+
+  Sub = DAG.getNode(ISD::SUB, SDLoc(Sub), IntermediateVT, X, Y);
+  Sub = DAG.getNode(ISD::SIGN_EXTEND, SDLoc(Sub), VT, Sub);
+  return DAG.getNode(ISD::MUL, SDLoc(N), VT, Sub, Sub);
+}
+
+static SDValue performMULCombine(SDNode *N, SelectionDAG &DAG) {
+  if (SDValue V = combineVectorMulToSraBitcast(N, DAG))
+    return V;
+  if (SDValue V = combineVectorSquareDifference(N, DAG))
+    return V;
+
+  return SDValue();
+}
+
 // Look for (abs (sub (zext X), (zext Y))).
 // Rewrite as (zext (sub (zext (max X, Y), (min X, Y)))) if the user is an add
 // or reduction add. The min/max can be done in parallel and with a lower LMUL
 // than the original code. The two zexts can be folded into widening sub and
 // widening add or widening redsum.
-static SDValue performABSCombine(SDNode *N, SelectionDAG &DAG,
-                                 const RISCVSubtarget &Subtarget) {
+static SDValue performABSCombine(SDNode *N, SelectionDAG &DAG) {
   EVT VT = N->getValueType(0);
   const TargetLowering &TLI = DAG.getTargetLoweringInfo();
 
@@ -16249,13 +16414,9 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     return performXORCombine(N, DAG, Subtarget);
 #if SIFIVE_CUSTOMIZATION
   case ISD::MUL:
-    if (SDValue V = performMULCombine(N, DAG, Subtarget))
-      return V;
-    break;
+    return performMULCombine(N, DAG);
   case ISD::ABS:
-    if (SDValue V = performABSCombine(N, DAG, Subtarget))
-      return V;
-    break;
+    return performABSCombine(N, DAG);
 #endif // SIFIVE_CUSTOMIZATION
   case ISD::FADD:
   case ISD::UMAX:

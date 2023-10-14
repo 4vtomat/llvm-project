@@ -63,6 +63,8 @@ public:
                                                     IntrinsicInst &II) const;
   bool getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
                         IntrinsicInst *II) const;
+
+  VectorType *getBestVectorTypeForLoopIdiom(LLVMContext &Ctx) const;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Return the cost of materializing an immediate for a value operand of

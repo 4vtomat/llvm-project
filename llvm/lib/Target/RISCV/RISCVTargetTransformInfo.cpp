@@ -14,6 +14,9 @@
 #include "llvm/CodeGen/BasicTTIImpl.h"
 #include "llvm/CodeGen/CostTable.h"
 #include "llvm/CodeGen/TargetLowering.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/TargetParser/RISCVTargetParser.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Instructions.h"
 #include <cmath>
@@ -73,6 +76,14 @@ cl::opt<unsigned> VectorPrimaryLMULMaxExp(
              "The default value is 0, it means LMUL=pow(2, 0)=1."
              "Fractional LMULs are not supported."),
     cl::init(0), cl::Hidden);
+
+// CustomizeXZLoopIdiomLMUL can be used to customize LMUL for the loop idiom
+// targeting SPEC2017/xz. It uses the exponent value to represent LMUL i.e.
+// 0 -> LMUL 1, 1 -> LMUL 2, 2 -> LMUL 4, 3 -> LMUL 8, etc.
+static cl::opt<unsigned>
+    CustomizeXZLoopIdiomLMUL("riscv-loop-idiom-customize-lmul", cl::Hidden,
+                             cl::init(1), llvm::cl::Optional,
+                             cl::desc("Customize LMUL for vector loop."));
 #endif
 
 #if SIFIVE_CUSTOMIZATION
@@ -350,6 +361,31 @@ bool RISCVTTIImpl::getMemoryRefInfo(
   }
   }
   return false;
+}
+
+VectorType *
+RISCVTTIImpl::getBestVectorTypeForLoopIdiom(LLVMContext &Ctx) const {
+  unsigned LMULExp;
+  switch (ST->getProcFamily()) {
+  case RISCVSubtarget::Others:
+    LMULExp = 1;
+    break;
+  case RISCVSubtarget::SiFive6:
+  case RISCVSubtarget::SiFive7:
+  case RISCVSubtarget::SiFiveP400:
+  case RISCVSubtarget::SiFiveP500:
+  case RISCVSubtarget::SiFiveP600:
+  case RISCVSubtarget::SiFiveP800:
+    LMULExp = 1;
+    break;
+  }
+
+  LMULExp = CustomizeXZLoopIdiomLMUL.getNumOccurrences() == 0
+                ? LMULExp
+                : std::min(3U, CustomizeXZLoopIdiomLMUL.getValue());
+  unsigned VF = (RISCV::RVVBitsPerBlock / 8) << LMULExp;
+  ElementCount EC = ElementCount::getScalable(VF);
+  return VectorType::get(Type::getInt8Ty(Ctx), EC);
 }
 #endif
 

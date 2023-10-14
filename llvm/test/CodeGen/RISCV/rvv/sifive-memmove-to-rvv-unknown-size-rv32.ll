@@ -39,12 +39,11 @@ define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i32 si
 ; ALIGN-NEXT:    sub a3, a1, a0
 ; ALIGN-NEXT:    bgeu a3, a2, .LBB0_5
 ; ALIGN-NEXT:  # %bb.1: # %memmove-backward-pre-loop
-; ALIGN-NEXT:    add a4, a0, a2
-; ALIGN-NEXT:    andi a4, a4, 15
-; ALIGN-NEXT:    mv a3, a2
-; ALIGN-NEXT:    bltu a2, a4, .LBB0_3
+; ALIGN-NEXT:    add a3, a0, a2
+; ALIGN-NEXT:    andi a3, a3, 15
+; ALIGN-NEXT:    bltu a3, a2, .LBB0_3
 ; ALIGN-NEXT:  # %bb.2: # %memmove-backward-pre-loop
-; ALIGN-NEXT:    mv a3, a4
+; ALIGN-NEXT:    mv a3, a2
 ; ALIGN-NEXT:  .LBB0_3: # %memmove-backward-pre-loop
 ; ALIGN-NEXT:    vsetvli a3, a3, e8, m8, ta, ma
 ; ALIGN-NEXT:    sub a2, a2, a3
@@ -66,11 +65,10 @@ define void @UnKnownSize(i8* nocapture readonly %src, i8* nocapture %dst, i32 si
 ; ALIGN-NEXT:  .LBB0_5: # %memmove-forward-pre-loop
 ; ALIGN-NEXT:    andi a3, a0, 15
 ; ALIGN-NEXT:    li a4, 16
-; ALIGN-NEXT:    sub a4, a4, a3
-; ALIGN-NEXT:    mv a3, a2
-; ALIGN-NEXT:    bltu a2, a4, .LBB0_7
+; ALIGN-NEXT:    sub a3, a4, a3
+; ALIGN-NEXT:    bltu a3, a2, .LBB0_7
 ; ALIGN-NEXT:  # %bb.6: # %memmove-forward-pre-loop
-; ALIGN-NEXT:    mv a3, a4
+; ALIGN-NEXT:    mv a3, a2
 ; ALIGN-NEXT:  .LBB0_7: # %memmove-forward-pre-loop
 ; ALIGN-NEXT:    vsetvli a3, a3, e8, m8, ta, ma
 ; ALIGN-NEXT:    vle8.v v8, (a0)

@@ -587,6 +587,11 @@ bool TargetTransformInfo::getMemoryRefInfo(
     IntrinsicInst *II) const {
   return TTIImpl->getMemoryRefInfo(Interesting, II);
 }
+
+VectorType *
+TargetTransformInfo::getBestVectorTypeForLoopIdiom(LLVMContext &Context) const {
+  return TTIImpl->getBestVectorTypeForLoopIdiom(Context);
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 bool TargetTransformInfo::enableSelectOptimize() const {

@@ -11,7 +11,7 @@
 ; RUN:   | FileCheck -check-prefixes=ALL,FAST,P650 %s
 ; RUN: llc -mtriple=riscv64 -mcpu=sifive-p670 -verify-machineinstrs < %s \
 ; RUN:   | FileCheck -check-prefixes=ALL,FAST,P670 %s
-; RUN: llc -mtriple=riscv64 -mcpu=sifive-p870 -verify-machineinstrs < %s \
+; RUN: llc -mtriple=riscv64 -mcpu=sifive-p870s -verify-machineinstrs < %s \
 ; RUN:   | FileCheck -check-prefixes=ALL,FAST,P870 %s
 
 ; A collection of cases showing codegen for unaligned loads and stores

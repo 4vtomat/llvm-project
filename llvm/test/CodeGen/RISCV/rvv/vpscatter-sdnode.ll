@@ -2056,9 +2056,9 @@ define void @vpscatter_nxv16f64(<vscale x 16 x double> %val, <vscale x 16 x ptr>
 define void @vpscatter_baseidx_nxv16i16_nxv16f64(<vscale x 16 x double> %val, ptr %base, <vscale x 16 x i16> %idxs, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; RV32-LABEL: vpscatter_baseidx_nxv16i16_nxv16f64:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vl4re16.v v4, (a1)
+; RV32-NEXT:    vl4re16.v v28, (a1)
 ; RV32-NEXT:    vsetvli a1, zero, e32, m8, ta, ma
-; RV32-NEXT:    vsext.vf2 v24, v4
+; RV32-NEXT:    vsext.vf2 v24, v28
 ; RV32-NEXT:    csrr a1, vlenb
 ; RV32-NEXT:    vsll.vi v24, v24, 3
 ; RV32-NEXT:    mv a3, a2
@@ -2137,9 +2137,9 @@ define void @vpscatter_baseidx_nxv16i16_nxv16f64(<vscale x 16 x double> %val, pt
 define void @vpscatter_baseidx_sext_nxv16i16_nxv16f64(<vscale x 16 x double> %val, ptr %base, <vscale x 16 x i16> %idxs, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; RV32-LABEL: vpscatter_baseidx_sext_nxv16i16_nxv16f64:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vl4re16.v v4, (a1)
+; RV32-NEXT:    vl4re16.v v28, (a1)
 ; RV32-NEXT:    vsetvli a1, zero, e32, m8, ta, ma
-; RV32-NEXT:    vsext.vf2 v24, v4
+; RV32-NEXT:    vsext.vf2 v24, v28
 ; RV32-NEXT:    csrr a1, vlenb
 ; RV32-NEXT:    vsll.vi v24, v24, 3
 ; RV32-NEXT:    mv a3, a2
@@ -2219,9 +2219,9 @@ define void @vpscatter_baseidx_sext_nxv16i16_nxv16f64(<vscale x 16 x double> %va
 define void @vpscatter_baseidx_zext_nxv16i16_nxv16f64(<vscale x 16 x double> %val, ptr %base, <vscale x 16 x i16> %idxs, <vscale x 16 x i1> %m, i32 zeroext %evl) {
 ; RV32-LABEL: vpscatter_baseidx_zext_nxv16i16_nxv16f64:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vl4re16.v v4, (a1)
+; RV32-NEXT:    vl4re16.v v28, (a1)
 ; RV32-NEXT:    vsetvli a1, zero, e32, m8, ta, ma
-; RV32-NEXT:    vzext.vf2 v24, v4
+; RV32-NEXT:    vzext.vf2 v24, v28
 ; RV32-NEXT:    csrr a1, vlenb
 ; RV32-NEXT:    vsll.vi v24, v24, 3
 ; RV32-NEXT:    mv a3, a2
@@ -2244,9 +2244,9 @@ define void @vpscatter_baseidx_zext_nxv16i16_nxv16f64(<vscale x 16 x double> %va
 ;
 ; RV64-LABEL: vpscatter_baseidx_zext_nxv16i16_nxv16f64:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vl4re16.v v4, (a1)
+; RV64-NEXT:    vl4re16.v v28, (a1)
 ; RV64-NEXT:    vsetvli a1, zero, e32, m8, ta, ma
-; RV64-NEXT:    vzext.vf2 v24, v4
+; RV64-NEXT:    vzext.vf2 v24, v28
 ; RV64-NEXT:    csrr a1, vlenb
 ; RV64-NEXT:    vsll.vi v24, v24, 3
 ; RV64-NEXT:    mv a3, a2

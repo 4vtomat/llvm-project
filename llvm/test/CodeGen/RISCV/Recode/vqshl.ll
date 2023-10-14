@@ -714,8 +714,8 @@ define void @vqshlq_u16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vminu.vx v8, v8, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    vzext.vf2 v12, v8
-; CHECK-NEXT:    vzext.vf2 v14, v9
-; CHECK-NEXT:    vsll.vv v8, v14, v12
+; CHECK-NEXT:    vzext.vf2 v8, v9
+; CHECK-NEXT:    vsll.vv v8, v8, v12
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v11, v8, 0
 ; CHECK-NEXT:    vmerge.vvm v8, v11, v10, v0
@@ -749,8 +749,8 @@ define void @vqshlq_u32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vminu.vx v8, v8, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
 ; CHECK-NEXT:    vzext.vf2 v12, v8
-; CHECK-NEXT:    vzext.vf2 v14, v9
-; CHECK-NEXT:    vsll.vv v8, v14, v12
+; CHECK-NEXT:    vzext.vf2 v8, v9
+; CHECK-NEXT:    vsll.vv v8, v8, v12
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v11, v8, 0
 ; CHECK-NEXT:    vmerge.vvm v8, v11, v10, v0
