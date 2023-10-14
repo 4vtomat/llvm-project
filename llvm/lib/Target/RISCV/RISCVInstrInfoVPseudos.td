@@ -2680,20 +2680,13 @@ multiclass VPseudoVRCP_V_RM {
   }
 }
 
-<<<<<<< HEAD
-multiclass PseudoVEXT_VF2<int TargetConstraintType = 1> {
-=======
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass PseudoVEXT_VF2 {
->>>>>>> origin
   defvar constraints = "@earlyclobber $rd";
   foreach m = MxListVF2 in {
     defvar mx = m.MX;
     defvar CurrTypeConstraints = !if(!or(!eq(mx, "MF4"), !eq(mx, "MF2"), !eq(mx, "M1")), 1, 3);
     let VLMul = m.value in {
-<<<<<<< HEAD
-      def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f2vrclass, constraints, TargetConstraintType>,
-=======
       def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f2vrclass, constraints, CurrTypeConstraints>,
                      SchedUnary<"WriteVExtV", "ReadVExtV", mx>;
       def "_" # mx # "_MASK" :
@@ -2704,13 +2697,12 @@ multiclass PseudoVEXT_VF2 {
   }
 }
 #else
-multiclass PseudoVEXT_VF2 {
+multiclass PseudoVEXT_VF2<int TargetConstraintType = 1> {
   defvar constraints = "@earlyclobber $rd";
   foreach m = MxListVF2 in {
     defvar mx = m.MX;
     let VLMul = m.value in {
-      def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f2vrclass, constraints>,
->>>>>>> origin
+      def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f2vrclass, constraints, TargetConstraintType>,
                      SchedUnary<"WriteVExtV", "ReadVExtV", mx, forceMergeOpRead=true>;
       def "_" # mx # "_MASK" :
         VPseudoUnaryMask<m.vrclass, m.f2vrclass, constraints, TargetConstraintType>,
@@ -2719,21 +2711,15 @@ multiclass PseudoVEXT_VF2 {
     }
   }
 }
+#endif // SIFIVE_CUSTOMIZATION
 
-<<<<<<< HEAD
-multiclass PseudoVEXT_VF4<int TargetConstraintType = 1> {
-=======
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass PseudoVEXT_VF4 {
->>>>>>> origin
   defvar constraints = "@earlyclobber $rd";
   foreach m = MxListVF4 in {
     defvar mx = m.MX;
     defvar CurrTypeConstraints = !if(!or(!eq(mx, "MF2"), !eq(mx, "M1"), !eq(mx, "M2")), 1, 3);
     let VLMul = m.value in {
-<<<<<<< HEAD
-      def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f4vrclass, constraints, TargetConstraintType>,
-=======
       def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f4vrclass, constraints, CurrTypeConstraints>,
                      SchedUnary<"WriteVExtV", "ReadVExtV", mx>;
       def "_" # mx # "_MASK" :
@@ -2744,13 +2730,12 @@ multiclass PseudoVEXT_VF4 {
   }
 }
 #else
-multiclass PseudoVEXT_VF4 {
+multiclass PseudoVEXT_VF4<int TargetConstraintType = 1> {
   defvar constraints = "@earlyclobber $rd";
   foreach m = MxListVF4 in {
     defvar mx = m.MX;
     let VLMul = m.value in {
-      def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f4vrclass, constraints>,
->>>>>>> origin
+      def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f4vrclass, constraints, TargetConstraintType>,
                      SchedUnary<"WriteVExtV", "ReadVExtV", mx, forceMergeOpRead=true>;
       def "_" # mx # "_MASK" :
         VPseudoUnaryMask<m.vrclass, m.f4vrclass, constraints, TargetConstraintType>,
@@ -2759,21 +2744,15 @@ multiclass PseudoVEXT_VF4 {
     }
   }
 }
+#endif // SIFIVE_CUSTOMIZATION
 
-<<<<<<< HEAD
-multiclass PseudoVEXT_VF8<int TargetConstraintType = 1> {
-=======
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass PseudoVEXT_VF8 {
->>>>>>> origin
   defvar constraints = "@earlyclobber $rd";
   foreach m = MxListVF8 in {
     defvar mx = m.MX;
     defvar CurrTypeConstraints = !if(!or(!eq(mx, "M1"), !eq(mx, "M2"), !eq(mx, "M4")), 1, 3);
     let VLMul = m.value in {
-<<<<<<< HEAD
-      def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f8vrclass, constraints, TargetConstraintType>,
-=======
       def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f8vrclass, constraints, CurrTypeConstraints>,
                      SchedUnary<"WriteVExtV", "ReadVExtV", mx>;
       def "_" # mx # "_MASK" :
@@ -2784,13 +2763,12 @@ multiclass PseudoVEXT_VF8 {
   }
 }
 #else
-multiclass PseudoVEXT_VF8 {
+multiclass PseudoVEXT_VF8<int TargetConstraintType = 1> {
   defvar constraints = "@earlyclobber $rd";
   foreach m = MxListVF8 in {
     defvar mx = m.MX;
     let VLMul = m.value in {
-      def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f8vrclass, constraints>,
->>>>>>> origin
+      def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f8vrclass, constraints, TargetConstraintType>,
                      SchedUnary<"WriteVExtV", "ReadVExtV", mx, forceMergeOpRead=true>;
       def "_" # mx # "_MASK" :
         VPseudoUnaryMask<m.vrclass, m.f8vrclass, constraints, TargetConstraintType>,
@@ -2799,6 +2777,7 @@ multiclass PseudoVEXT_VF8 {
     }
   }
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 // The destination EEW is 1 since "For the purposes of register group overlap
 // constraints, mask elements have EEW=1."

@@ -3700,16 +3700,12 @@ static SDValue lowerBuildVectorOfConstants(SDValue Op, SelectionDAG &DAG,
   if (EltBitSize > 8 && VT.isInteger() &&
       (NumElts <= 4 || VT.getSizeInBits() > Subtarget.getRealMinVLen())) {
     unsigned SignBits = DAG.ComputeNumSignBits(Op);
-<<<<<<< HEAD
     if (EltBitSize - SignBits < 8) {
-=======
-    if (ScalarSize - SignBits < 8) {
 #if SIFIVE_CUSTOMIZATION
       // SIFIVE Will be upstreamed.
       SDValue Source = DAG.getBuildVector(VT.changeVectorElementType(MVT::i8),
                                           DL, Op->ops());
 #else
->>>>>>> origin
       SDValue Source =
         DAG.getNode(ISD::TRUNCATE, DL, VT.changeVectorElementType(MVT::i8), Op);
 #endif // SIFIVE_CUSTOMIZATION

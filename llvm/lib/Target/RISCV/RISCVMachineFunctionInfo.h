@@ -111,18 +111,9 @@ public:
     BranchRelaxationScratchFrameIndex = Index;
   }
 
-<<<<<<< HEAD
   unsigned getReservedSpillsSize() const {
     return LibCallStackSize + RVPushStackSize;
   }
-=======
-#if SIFIVE_CUSTOMIZATION
-  // Cherry-picked from upstream #66613.
-  unsigned getReservedSpillsSize() const {
-    return LibCallStackSize + RVPushStackSize;
-  }
-#endif // SIFIVE_CUSTOMIZATION
->>>>>>> origin
 
   unsigned getLibCallStackSize() const { return LibCallStackSize; }
   void setLibCallStackSize(unsigned Size) { LibCallStackSize = Size; }
