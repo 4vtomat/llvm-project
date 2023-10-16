@@ -6880,34 +6880,30 @@ static Instruction *foldVSetvliRecurrence(ICmpInst &Cmp, InstCombiner &IC) {
   if (!match(Start, m_ZeroInt()))
     return nullptr;
 
-  // Recurrence step should be a vsetvli.
+  // Recurrence step should be an experimental_get_vector_length.
   Value *AVL;
-  uint64_t VLMUL, VSEW;
-  if (!match(Step, m_Intrinsic<Intrinsic::riscv_vsetvli>(m_Value(AVL),
-                                                         m_ConstantInt(VSEW),
-                                                         m_ConstantInt(VLMUL))))
+  uint64_t VF, Scalable;
+  if (!match(Step,
+             m_ZExt(m_Intrinsic<Intrinsic::experimental_get_vector_length>(
+                 m_Value(AVL), m_ConstantInt(VF), m_ConstantInt(Scalable)))))
+    return nullptr;
+
+  if (!Scalable)
     return nullptr;
 
   // AVL should be (sub RHS, PN).
   if (!match(AVL, m_Sub(m_Specific(RHS), m_Specific(PN))))
     return nullptr;
 
-  // Try to estimate how many elements would fit in a vector defined by this
-  // vsetvli. If that number is greater than or equal to the starting AVL, we
-  // can assume the loop runs 1 time.
-  unsigned VectorLength = 32; // FIXME: This is conservative.
-  if (VSEW >= 4)
+  Function *F = Cmp.getFunction();
+  Attribute Attr = F->getFnAttribute(Attribute::VScaleRange);
+  if (!Attr.isValid())
     return nullptr;
 
-  if (VLMUL < 4)
-    VectorLength <<= VLMUL;
-  else if (VLMUL >= 5 && VLMUL <= 7)
-    VectorLength >>= (8 - VLMUL);
-  else
-    return nullptr;
+  unsigned AttrMin = Attr.getVScaleRangeMin();
+  unsigned MinElts = AttrMin * VF;
 
-  unsigned Elts = VectorLength >> (VSEW + 3);
-  if (CI->getValue().ugt(Elts))
+  if (CI->getValue().ugt(MinElts))
     return nullptr;
 
   return IC.replaceInstUsesWith(Cmp, ConstantInt::getTrue(Cmp.getType()));
