@@ -117,6 +117,14 @@ Enables or disables inline expansion of memcpy/memset/memmove using a loop of
 RISCV-V vector instructions when available. Default is enabled. Disabling will
 use a library call or scalar instructions.
 
+|-mllvm -riscv-disable-all-loop-idiom=
+|*[Experimental] This option may be deprecated and removed in a future release.*
+
+Controls whether to disable all RISC-V specific loop idioms.
+The default value is `true`, meaning all RISC-V specific loop idioms are disabled.
+Acceptable values are `true` or `false`.
+Currently only the byte compare loop idiom is supported.
+
 |===
 
 [[march-mtune-mcpu]]
