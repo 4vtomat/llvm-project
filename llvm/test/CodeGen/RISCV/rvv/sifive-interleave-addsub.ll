@@ -7,16 +7,26 @@
 ; We want to use widening add, sub, macc, or shl.
 
 define <4 x i32> @interleave_addsub_1(<4 x i8> %x, <4 x i8> %y) {
-; CHECK-LABEL: interleave_addsub_1:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
-; CHECK-NEXT:    vwaddu.vv v10, v8, v9
-; CHECK-NEXT:    vwsubu.vv v11, v8, v9
-; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vwaddu.vv v8, v10, v11
-; CHECK-NEXT:    li a0, -1
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v11
-; CHECK-NEXT:    ret
+; V-LABEL: interleave_addsub_1:
+; V:       # %bb.0:
+; V-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
+; V-NEXT:    vwaddu.vv v10, v8, v9
+; V-NEXT:    vwsubu.vv v11, v8, v9
+; V-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; V-NEXT:    vwaddu.vv v8, v10, v11
+; V-NEXT:    li a0, -1
+; V-NEXT:    vwmaccu.vx v8, a0, v11
+; V-NEXT:    ret
+;
+; ZVBB-LABEL: interleave_addsub_1:
+; ZVBB:       # %bb.0:
+; ZVBB-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
+; ZVBB-NEXT:    vwaddu.vv v10, v8, v9
+; ZVBB-NEXT:    vwsubu.vv v11, v8, v9
+; ZVBB-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; ZVBB-NEXT:    vwsll.vi v8, v11, 16
+; ZVBB-NEXT:    vwaddu.wv v8, v8, v10
+; ZVBB-NEXT:    ret
   %a = zext <4 x i8> %x to <4 x i32>
   %b = zext <4 x i8> %y to <4 x i32>
   %c = add <4 x i32> %a, %b
@@ -28,16 +38,26 @@ define <4 x i32> @interleave_addsub_1(<4 x i8> %x, <4 x i8> %y) {
 
 ; Swap add operands
 define <4 x i32> @interleave_addsub_2(<4 x i8> %x, <4 x i8> %y) {
-; CHECK-LABEL: interleave_addsub_2:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
-; CHECK-NEXT:    vwaddu.vv v10, v8, v9
-; CHECK-NEXT:    vwsubu.vv v11, v8, v9
-; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vwaddu.vv v8, v10, v11
-; CHECK-NEXT:    li a0, -1
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v11
-; CHECK-NEXT:    ret
+; V-LABEL: interleave_addsub_2:
+; V:       # %bb.0:
+; V-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
+; V-NEXT:    vwaddu.vv v10, v8, v9
+; V-NEXT:    vwsubu.vv v11, v8, v9
+; V-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; V-NEXT:    vwaddu.vv v8, v10, v11
+; V-NEXT:    li a0, -1
+; V-NEXT:    vwmaccu.vx v8, a0, v11
+; V-NEXT:    ret
+;
+; ZVBB-LABEL: interleave_addsub_2:
+; ZVBB:       # %bb.0:
+; ZVBB-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
+; ZVBB-NEXT:    vwaddu.vv v10, v8, v9
+; ZVBB-NEXT:    vwsubu.vv v11, v8, v9
+; ZVBB-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; ZVBB-NEXT:    vwsll.vi v8, v11, 16
+; ZVBB-NEXT:    vwaddu.wv v8, v8, v10
+; ZVBB-NEXT:    ret
   %a = zext <4 x i8> %x to <4 x i32>
   %b = zext <4 x i8> %y to <4 x i32>
   %c = add <4 x i32> %b, %a
@@ -49,16 +69,27 @@ define <4 x i32> @interleave_addsub_2(<4 x i8> %x, <4 x i8> %y) {
 
 ; Try i64 and swap the or operands.
 define <4 x i64> @interleave_addsub_3(<4 x i16> %x, <4 x i16> %y) {
-; CHECK-LABEL: interleave_addsub_3:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vwaddu.vv v10, v8, v9
-; CHECK-NEXT:    vwsubu.vv v11, v8, v9
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vwaddu.vv v8, v10, v11
-; CHECK-NEXT:    li a0, -1
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v11
-; CHECK-NEXT:    ret
+; V-LABEL: interleave_addsub_3:
+; V:       # %bb.0:
+; V-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
+; V-NEXT:    vwaddu.vv v10, v8, v9
+; V-NEXT:    vwsubu.vv v11, v8, v9
+; V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; V-NEXT:    vwaddu.vv v8, v10, v11
+; V-NEXT:    li a0, -1
+; V-NEXT:    vwmaccu.vx v8, a0, v11
+; V-NEXT:    ret
+;
+; ZVBB-LABEL: interleave_addsub_3:
+; ZVBB:       # %bb.0:
+; ZVBB-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
+; ZVBB-NEXT:    vwaddu.vv v10, v8, v9
+; ZVBB-NEXT:    vwsubu.vv v11, v8, v9
+; ZVBB-NEXT:    li a0, 32
+; ZVBB-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; ZVBB-NEXT:    vwsll.vx v8, v11, a0
+; ZVBB-NEXT:    vwaddu.wv v8, v8, v10
+; ZVBB-NEXT:    ret
   %a = zext <4 x i16> %x to <4 x i64>
   %b = zext <4 x i16> %y to <4 x i64>
   %c = add <4 x i64> %a, %b
@@ -70,16 +101,27 @@ define <4 x i64> @interleave_addsub_3(<4 x i16> %x, <4 x i16> %y) {
 
 ; Try i64 and swap the or and add operands.
 define <4 x i64> @interleave_addsub_4(<4 x i16> %x, <4 x i16> %y) {
-; CHECK-LABEL: interleave_addsub_4:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vwaddu.vv v10, v8, v9
-; CHECK-NEXT:    vwsubu.vv v11, v8, v9
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vwaddu.vv v8, v10, v11
-; CHECK-NEXT:    li a0, -1
-; CHECK-NEXT:    vwmaccu.vx v8, a0, v11
-; CHECK-NEXT:    ret
+; V-LABEL: interleave_addsub_4:
+; V:       # %bb.0:
+; V-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
+; V-NEXT:    vwaddu.vv v10, v8, v9
+; V-NEXT:    vwsubu.vv v11, v8, v9
+; V-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; V-NEXT:    vwaddu.vv v8, v10, v11
+; V-NEXT:    li a0, -1
+; V-NEXT:    vwmaccu.vx v8, a0, v11
+; V-NEXT:    ret
+;
+; ZVBB-LABEL: interleave_addsub_4:
+; ZVBB:       # %bb.0:
+; ZVBB-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
+; ZVBB-NEXT:    vwaddu.vv v10, v8, v9
+; ZVBB-NEXT:    vwsubu.vv v11, v8, v9
+; ZVBB-NEXT:    li a0, 32
+; ZVBB-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; ZVBB-NEXT:    vwsll.vx v8, v11, a0
+; ZVBB-NEXT:    vwaddu.wv v8, v8, v10
+; ZVBB-NEXT:    ret
   %a = zext <4 x i16> %x to <4 x i64>
   %b = zext <4 x i16> %y to <4 x i64>
   %c = add <4 x i64> %b, %a
@@ -111,6 +153,3 @@ define <4 x i32> @interleave_addsub_5(<4 x i8> %x, <4 x i8> %y) {
   ret <4 x i32> %f
 }
 
-;; NOTE: These prefixes are unused and the list is autogenerated. Do not add tests below this line:
-; V: {{.*}}
-; ZVBB: {{.*}}
