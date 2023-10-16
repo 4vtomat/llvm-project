@@ -746,11 +746,6 @@ void VPRegionBlock::print(raw_ostream &O, const Twine &Indent,
 Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
   assert(State.LMULExp != 4 && State.LMULExp <= 7 &&
          "LMUL is not supported by the hardware");
-  Constant *SEWArg = ConstantInt::get(
-      IntegerType::get(State.Builder.getContext(), 64), State.SEW);
-  Constant *LMULArg = ConstantInt::get(
-      IntegerType::get(State.Builder.getContext(), 64), State.LMULExp);
-
   if (State.Plan->isUncountable()) {
     assert(State.Plan->getInitRVL() && "InitRVL is null");
     assert(State.Plan->getRVL() && "RVL is null");
