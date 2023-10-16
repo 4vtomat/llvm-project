@@ -650,8 +650,8 @@ bool RISCVTargetMachine::parseMachineFunctionInfo(
 #if SIFIVE_CUSTOMIZATION
 void RISCVTargetMachine::registerPassBuilderCallbacks(PassBuilder &PB) {
   PB.registerPipelineParsingCallback(
-      [this](StringRef PassName, LoopPassManager &PM,
-             ArrayRef<PassBuilder::PipelineElement>) {
+      [](StringRef PassName, LoopPassManager &PM,
+         ArrayRef<PassBuilder::PipelineElement>) {
         if (PassName == "riscv-loop-idiom") {
           PM.addPass(RISCVLoopIdiomRecognizePass());
           return true;
