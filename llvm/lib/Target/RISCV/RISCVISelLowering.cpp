@@ -15946,6 +15946,13 @@ static SDValue performBUILD_VECTORCombine(SDNode *N, SelectionDAG &DAG,
     if (!isa<ConstantSDNode>(Op.getOperand(1)) &&
         !isa<ConstantFPSDNode>(Op.getOperand(1)))
       return SDValue();
+#if SIFIVE_CUSTOMIZATION
+    // FIXME: Support known bits smaller than LHSOps type size
+    // for now just return if the types don't match
+    if (LHSOps[0].getValueType() != Op.getOperand(1).getValueType())
+      return SDValue();
+#endif // SIFIVE_CUSTOMIZATION
+
     RHSOps.push_back(Op.getOperand(1));
   }
 
