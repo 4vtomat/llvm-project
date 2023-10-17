@@ -19,13 +19,13 @@ define void @quux(ptr %arg, i64 %arg1, i64 %arg2, ptr %arg3) {
 ; CHECK-NEXT:    [[PHI7:%.*]] = phi ptr [ [[GETELEMENTPTR]], [[ENTRY]] ], [ [[PHI23:%.*]], [[IF_END2]] ]
 ; CHECK-NEXT:    [[PHI8:%.*]] = phi ptr [ [[GETELEMENTPTR4]], [[ENTRY]] ], [ [[PHI26:%.*]], [[IF_END2]] ]
 ; CHECK-NEXT:    [[ICMP:%.*]] = icmp ugt ptr [[PHI]], [[PHI6]]
-; CHECK-NEXT:    br i1 [[ICMP]], label [[WHILE_END:%.*]], label [[LAND_RHS:%.*]]
+; CHECK-NEXT:    br i1 [[ICMP]], label [[FOR_END:%.*]], label [[LAND_RHS:%.*]]
 ; CHECK:       land.rhs:
 ; CHECK-NEXT:    [[PHI10:%.*]] = phi ptr [ [[PHI18:%.*]], [[IF_END:%.*]] ], [ [[PHI7]], [[FOR_COND]] ]
 ; CHECK-NEXT:    [[PHI11:%.*]] = phi ptr [ [[GETELEMENTPTR19:%.*]], [[IF_END]] ], [ [[PHI]], [[FOR_COND]] ]
 ; CHECK-NEXT:    [[CALL:%.*]] = tail call signext i32 [[ARG3]](ptr [[PHI11]], ptr [[ARG]])
 ; CHECK-NEXT:    [[ICMP12:%.*]] = icmp slt i32 [[CALL]], 1
-; CHECK-NEXT:    br i1 [[ICMP12]], label [[WHILE_BODY:%.*]], label [[WHILE_END]]
+; CHECK-NEXT:    br i1 [[ICMP12]], label [[WHILE_BODY:%.*]], label [[WHILE_END:%.*]]
 ; CHECK:       while.body:
 ; CHECK-NEXT:    [[ICMP14:%.*]] = icmp eq i32 [[CALL]], 0
 ; CHECK-NEXT:    br i1 [[ICMP14]], label [[IF_THEN:%.*]], label [[IF_END]]
@@ -37,12 +37,12 @@ define void @quux(ptr %arg, i64 %arg1, i64 %arg2, ptr %arg3) {
 ; CHECK-NEXT:    [[PHI18]] = phi ptr [ [[GETELEMENTPTR16]], [[IF_THEN]] ], [ [[PHI10]], [[WHILE_BODY]] ]
 ; CHECK-NEXT:    [[GETELEMENTPTR19]] = getelementptr inbounds i8, ptr [[PHI11]], i64 [[ARG2]]
 ; CHECK-NEXT:    [[ICMP20:%.*]] = icmp ugt ptr [[GETELEMENTPTR19]], [[PHI6]]
-; CHECK-NEXT:    br i1 [[ICMP20]], label [[WHILE_END]], label [[LAND_RHS]]
+; CHECK-NEXT:    br i1 [[ICMP20]], label [[FOR_END]], label [[LAND_RHS]]
 ; CHECK:       while.end:
-; CHECK-NEXT:    [[PHI22:%.*]] = phi ptr [ [[PHI]], [[FOR_COND]] ], [ [[GETELEMENTPTR19]], [[IF_END]] ], [ [[PHI11]], [[LAND_RHS]] ]
-; CHECK-NEXT:    [[PHI23]] = phi ptr [ [[PHI7]], [[FOR_COND]] ], [ [[PHI18]], [[IF_END]] ], [ [[PHI10]], [[LAND_RHS]] ]
+; CHECK-NEXT:    [[PHI22:%.*]] = phi ptr [ [[PHI11]], [[LAND_RHS]] ]
+; CHECK-NEXT:    [[PHI23]] = phi ptr [ [[PHI10]], [[LAND_RHS]] ]
 ; CHECK-NEXT:    [[ICMP24:%.*]] = icmp ugt ptr [[PHI22]], [[PHI6]]
-; CHECK-NEXT:    br i1 [[ICMP24]], label [[FOR_END:%.*]], label [[LAND_RHS1:%.*]]
+; CHECK-NEXT:    br i1 [[ICMP24]], label [[FOR_END]], label [[LAND_RHS1:%.*]]
 ; CHECK:       land.rhs1:
 ; CHECK-NEXT:    [[PHI26]] = phi ptr [ [[PHI35:%.*]], [[IF_END1:%.*]] ], [ [[PHI8]], [[WHILE_END]] ]
 ; CHECK-NEXT:    [[PHI27:%.*]] = phi ptr [ [[GETELEMENTPTR36:%.*]], [[IF_END1]] ], [ [[PHI6]], [[WHILE_END]] ]
