@@ -1806,15 +1806,48 @@ define i64 @SingleBlock4(ptr %start) {
 ;
 ; ON-LABEL: @SingleBlock4(
 ; ON-NEXT:  entry:
+; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
+; ON:       vector.body:
+; ON-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
+; ON-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; ON-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; ON-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 8
+; ON-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; ON-NEXT:    [[TMP4:%.*]] = mul i64 1, [[TMP3]]
+; ON-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; ON-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; ON-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 1
+; ON-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; ON-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
+; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP0]] to i64
+; ON-NEXT:    [[TMP9:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP7]], i64 [[TMP8]])
+; ON-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 0
+; ON-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 1
+; ON-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
+; ON-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
+; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP10]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; ON-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
+; ON-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
+; ON-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
+; ON-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; ON-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
+; ON:       vec.uncountable.middle.block:
+; ON-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; ON-NEXT:    [[TMP18:%.*]] = add i64 [[TMP15]], 1
+; ON-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP18]], 1
+; ON-NEXT:    [[TMP20:%.*]] = add i64 [[TMP17]], [[TMP19]]
+; ON-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; ON-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; ON:       vec.uncountable.scalar.ph:
 ; ON-NEXT:    br label [[FOR_COND:%.*]]
 ; ON:       for.cond:
-; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
-; ON-NEXT:    [[TMP0:%.*]] = load i8, ptr [[END_0]], align 1
-; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP0]], 0
+; ON-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; ON-NEXT:    [[TMP21:%.*]] = load i8, ptr [[END_0]], align 1
+; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP21]], 0
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP15:![0-9]+]]
 ; ON:       for.end:
-; ON-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[INCDEC_PTR]], [[FOR_COND]] ]
+; ON-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[INCDEC_PTR]], [[FOR_COND]] ], [ [[IND_ESCAPE]], [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]] ]
 ; ON-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[INCDEC_PTR_LCSSA]] to i64
 ; ON-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; ON-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -1854,15 +1887,48 @@ define i64 @SingleBlock4(ptr %start) {
 ;
 ; stress-LABEL: @SingleBlock4(
 ; stress-NEXT:  entry:
+; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
+; stress:       vector.body:
+; stress-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[VECTOR_GEP1:%.*]], [[VECTOR_BODY]] ]
+; stress-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; stress-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
+; stress-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 8
+; stress-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 1
+; stress-NEXT:    [[TMP4:%.*]] = mul i64 1, [[TMP3]]
+; stress-NEXT:    [[PTR_IND:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP4]]
+; stress-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP2]], 0
+; stress-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 1
+; stress-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
+; stress-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
+; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP0]] to i64
+; stress-NEXT:    [[TMP9:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP7]], i64 [[TMP8]])
+; stress-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 0
+; stress-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 1
+; stress-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
+; stress-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
+; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP10]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
+; stress-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
+; stress-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
+; stress-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
+; stress-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
+; stress-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
+; stress:       vec.uncountable.middle.block:
+; stress-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
+; stress-NEXT:    [[TMP18:%.*]] = add i64 [[TMP15]], 1
+; stress-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP18]], 1
+; stress-NEXT:    [[TMP20:%.*]] = add i64 [[TMP17]], [[TMP19]]
+; stress-NEXT:    [[IND_ESCAPE:%.*]] = inttoptr i64 [[TMP20]] to ptr
+; stress-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
+; stress:       vec.uncountable.scalar.ph:
 ; stress-NEXT:    br label [[FOR_COND:%.*]]
 ; stress:       for.cond:
-; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START:%.*]], [[ENTRY:%.*]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
-; stress-NEXT:    [[TMP0:%.*]] = load i8, ptr [[END_0]], align 1
-; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP0]], 0
+; stress-NEXT:    [[END_0:%.*]] = phi ptr [ [[START]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[FOR_COND]] ]
+; stress-NEXT:    [[TMP21:%.*]] = load i8, ptr [[END_0]], align 1
+; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP21]], 0
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END:%.*]], label [[FOR_COND]]
+; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP15:![0-9]+]]
 ; stress:       for.end:
-; stress-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[INCDEC_PTR]], [[FOR_COND]] ]
+; stress-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[INCDEC_PTR]], [[FOR_COND]] ], [ [[IND_ESCAPE]], [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]] ]
 ; stress-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[INCDEC_PTR_LCSSA]] to i64
 ; stress-NEXT:    [[SUB_PTR_RHS_CAST:%.*]] = ptrtoint ptr [[START]] to i64
 ; stress-NEXT:    [[SUB_PTR_SUB:%.*]] = sub i64 [[SUB_PTR_LHS_CAST]], [[SUB_PTR_RHS_CAST]]
@@ -1994,7 +2060,7 @@ define i64 @SingleBlock5(ptr %start) {
 ; ON-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
 ; ON-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
 ; ON-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
-; ON-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
+; ON-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
 ; ON-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
 ; ON-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
@@ -2008,7 +2074,7 @@ define i64 @SingleBlock5(ptr %start) {
 ; ON-NEXT:    [[TMP20:%.*]] = load i8, ptr [[END_0]], align 1
 ; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP20]], 0
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP15:![0-9]+]]
+; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP17:![0-9]+]]
 ; ON:       for.end:
 ; ON-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ], [ [[IND_ESCAPE]], [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]] ]
 ; ON-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[INCDEC_PTR_LCSSA]] to i64
@@ -2074,7 +2140,7 @@ define i64 @SingleBlock5(ptr %start) {
 ; stress-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
 ; stress-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
 ; stress-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
-; stress-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
+; stress-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
 ; stress-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
 ; stress-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
@@ -2088,7 +2154,7 @@ define i64 @SingleBlock5(ptr %start) {
 ; stress-NEXT:    [[TMP20:%.*]] = load i8, ptr [[END_0]], align 1
 ; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP20]], 0
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP15:![0-9]+]]
+; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP17:![0-9]+]]
 ; stress:       for.end:
 ; stress-NEXT:    [[INCDEC_PTR_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ], [ [[IND_ESCAPE]], [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]] ]
 ; stress-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[INCDEC_PTR_LCSSA]] to i64
@@ -2686,7 +2752,7 @@ define i64 @SingleBlock9(ptr %start) {
 ; ON-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
 ; ON-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
 ; ON-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
-; ON-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
+; ON-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
 ; ON-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
 ; ON-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
@@ -2701,7 +2767,7 @@ define i64 @SingleBlock9(ptr %start) {
 ; ON-NEXT:    [[TMP21:%.*]] = add i8 [[TMP20]], [[TMP20]]
 ; ON-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP21]], 0
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP17:![0-9]+]]
+; ON-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP19:![0-9]+]]
 ; ON:       for.end:
 ; ON-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ], [ [[IND_ESCAPE]], [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]] ]
 ; ON-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
@@ -2770,7 +2836,7 @@ define i64 @SingleBlock9(ptr %start) {
 ; stress-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
 ; stress-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[VP_OP_ICMP]], i64 [[TMP14]])
 ; stress-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
-; stress-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
+; stress-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
 ; stress-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
 ; stress-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
@@ -2785,7 +2851,7 @@ define i64 @SingleBlock9(ptr %start) {
 ; stress-NEXT:    [[TMP21:%.*]] = add i8 [[TMP20]], [[TMP20]]
 ; stress-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP21]], 0
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
-; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP17:![0-9]+]]
+; stress-NEXT:    br i1 [[CMP_NOT]], label [[FOR_END]], label [[FOR_COND]], !llvm.loop [[LOOP19:![0-9]+]]
 ; stress:       for.end:
 ; stress-NEXT:    [[END_0_LCSSA:%.*]] = phi ptr [ [[END_0]], [[FOR_COND]] ], [ [[IND_ESCAPE]], [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]] ]
 ; stress-NEXT:    [[SUB_PTR_LHS_CAST:%.*]] = ptrtoint ptr [[END_0_LCSSA]] to i64
@@ -3057,7 +3123,7 @@ define ptr @SingleBlock11(ptr %s) {
 ; ON-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
 ; ON-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[PRED_NOT]], i64 [[TMP14]])
 ; ON-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
-; ON-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
+; ON-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
 ; ON-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
 ; ON-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
@@ -3071,7 +3137,7 @@ define ptr @SingleBlock11(ptr %s) {
 ; ON-NEXT:    [[TMP20:%.*]] = load i8, ptr [[S_ADDR_0]], align 1
 ; ON-NEXT:    [[CMP:%.*]] = icmp eq i8 [[TMP20]], 49
 ; ON-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[S_ADDR_0]], i64 1
-; ON-NEXT:    br i1 [[CMP]], label [[WHILE_COND]], label [[WHILE_END]], !llvm.loop [[LOOP19:![0-9]+]]
+; ON-NEXT:    br i1 [[CMP]], label [[WHILE_COND]], label [[WHILE_END]], !llvm.loop [[LOOP21:![0-9]+]]
 ; ON:       while.end:
 ; ON-NEXT:    [[S_ADDR_0_LCSSA:%.*]] = phi ptr [ [[S_ADDR_0]], [[WHILE_COND]] ], [ [[IND_ESCAPE]], [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]] ]
 ; ON-NEXT:    ret ptr [[S_ADDR_0_LCSSA]]
@@ -3129,7 +3195,7 @@ define ptr @SingleBlock11(ptr %s) {
 ; stress-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP12]] to i64
 ; stress-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[PRED_NOT]], i64 [[TMP14]])
 ; stress-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
-; stress-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
+; stress-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
 ; stress-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
 ; stress-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
@@ -3143,7 +3209,7 @@ define ptr @SingleBlock11(ptr %s) {
 ; stress-NEXT:    [[TMP20:%.*]] = load i8, ptr [[S_ADDR_0]], align 1
 ; stress-NEXT:    [[CMP:%.*]] = icmp eq i8 [[TMP20]], 49
 ; stress-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[S_ADDR_0]], i64 1
-; stress-NEXT:    br i1 [[CMP]], label [[WHILE_COND]], label [[WHILE_END]], !llvm.loop [[LOOP19:![0-9]+]]
+; stress-NEXT:    br i1 [[CMP]], label [[WHILE_COND]], label [[WHILE_END]], !llvm.loop [[LOOP21:![0-9]+]]
 ; stress:       while.end:
 ; stress-NEXT:    [[S_ADDR_0_LCSSA:%.*]] = phi ptr [ [[S_ADDR_0]], [[WHILE_COND]] ], [ [[IND_ESCAPE]], [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]] ]
 ; stress-NEXT:    ret ptr [[S_ADDR_0_LCSSA]]
@@ -4453,7 +4519,7 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; ON-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP13]] to i64
 ; ON-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[PRED_NOT]], i64 [[TMP14]])
 ; ON-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
-; ON-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
+; ON-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP22:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
 ; ON-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
 ; ON-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
@@ -4469,7 +4535,7 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; ON-NEXT:    [[CMP:%.*]] = icmp ult i8 [[TMP20]], [[N]]
 ; ON-NEXT:    [[CMP3:%.*]] = icmp ne i8 [[TMP20]], 0
 ; ON-NEXT:    [[TMP21:%.*]] = and i1 [[CMP]], [[CMP3]]
-; ON-NEXT:    br i1 [[TMP21]], label [[WHILE_COND]], label [[WHILE_END]], !llvm.loop [[LOOP21:![0-9]+]]
+; ON-NEXT:    br i1 [[TMP21]], label [[WHILE_COND]], label [[WHILE_END]], !llvm.loop [[LOOP23:![0-9]+]]
 ; ON:       while.end:
 ; ON-NEXT:    [[DOTLCSSA:%.*]] = phi ptr [ [[SRC_ADDR_0]], [[WHILE_COND]] ], [ [[IND_ESCAPE]], [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]] ]
 ; ON-NEXT:    ret ptr [[DOTLCSSA]]
@@ -4535,7 +4601,7 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; stress-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP13]] to i64
 ; stress-NEXT:    [[TMP15:%.*]] = call i64 @llvm.riscv.vfirst.nxv8i1.i64(<vscale x 8 x i1> [[PRED_NOT]], i64 [[TMP14]])
 ; stress-NEXT:    [[TMP16:%.*]] = icmp sge i64 [[TMP15]], 0
-; stress-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
+; stress-NEXT:    br i1 [[TMP16]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP22:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
 ; stress-NEXT:    [[TMP17:%.*]] = ptrtoint ptr [[POINTER_PHI]] to i64
 ; stress-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP15]], 1
@@ -4551,7 +4617,7 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; stress-NEXT:    [[CMP:%.*]] = icmp ult i8 [[TMP20]], [[N]]
 ; stress-NEXT:    [[CMP3:%.*]] = icmp ne i8 [[TMP20]], 0
 ; stress-NEXT:    [[TMP21:%.*]] = and i1 [[CMP]], [[CMP3]]
-; stress-NEXT:    br i1 [[TMP21]], label [[WHILE_COND]], label [[WHILE_END]], !llvm.loop [[LOOP21:![0-9]+]]
+; stress-NEXT:    br i1 [[TMP21]], label [[WHILE_COND]], label [[WHILE_END]], !llvm.loop [[LOOP23:![0-9]+]]
 ; stress:       while.end:
 ; stress-NEXT:    [[DOTLCSSA:%.*]] = phi ptr [ [[SRC_ADDR_0]], [[WHILE_COND]] ], [ [[IND_ESCAPE]], [[VEC_UNCOUNTABLE_MIDDLE_BLOCK]] ]
 ; stress-NEXT:    ret ptr [[DOTLCSSA]]

@@ -1107,13 +1107,17 @@ void VPlan::print(raw_ostream &O) const {
   }
 
   O << "\n";
+#if SIFIVE_CUSTOMIZATION
   if (TripCount) {
-    if (TripCount->isLiveIn())
-      O << "Live-in ";
-    TripCount->printAsOperand(O, SlotTracker);
-    O << " = original trip-count";
-    O << "\n";
+#endif // SIFIVE_CUSTOMIZATION
+  if (TripCount->isLiveIn())
+    O << "Live-in ";
+  TripCount->printAsOperand(O, SlotTracker);
+  O << " = original trip-count";
+  O << "\n";
+#if SIFIVE_CUSTOMIZATION
   }
+#endif // SIFIVE_CUSTOMIZATION
 
   if (!getPreheader()->empty()) {
     O << "\n";
