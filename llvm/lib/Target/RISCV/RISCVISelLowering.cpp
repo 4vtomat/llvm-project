@@ -12859,7 +12859,10 @@ static SDValue combineSelectAndUse(SDNode *N, SDValue Slct, SDValue OtherOp,
   if (VT.isVector())
     return SDValue();
 
-  if (!Subtarget.hasShortForwardBranchOpt() ||
+#if SIFIVE_CUSTOMIZATION
+  if ((!Subtarget.hasShortForwardBranchOpt() &&
+       !Subtarget.canUseCMOVBranchOpt()) ||
+#endif // SIFIVE_CUSTOMIZATION
       (Slct.getOpcode() != ISD::SELECT &&
        Slct.getOpcode() != RISCVISD::SELECT_CC) ||
       !Slct.hasOneUse())
