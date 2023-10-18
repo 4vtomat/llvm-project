@@ -15956,8 +15956,17 @@ static SDValue performBUILD_VECTORCombine(SDNode *N, SelectionDAG &DAG,
     RHSOps.push_back(Op.getOperand(1));
   }
 
+#if SIFIVE_CUSTOMIZATION
+  SDValue NodeOp = DAG.getNode(Opcode, DL, VT, DAG.getBuildVector(VT, DL, LHSOps),
+                               DAG.getBuildVector(VT, DL, RHSOps));
+  // FIXME: workaround to avoid undef value
+  if (NodeOp.isUndef())
+    return SDValue();
+  return NodeOp;
+#else
   return DAG.getNode(Opcode, DL, VT, DAG.getBuildVector(VT, DL, LHSOps),
                      DAG.getBuildVector(VT, DL, RHSOps));
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 // If we're concatenating a series of vector loads like
