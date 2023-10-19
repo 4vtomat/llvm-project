@@ -1977,6 +1977,9 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
 
   invokePeepholeEPCallbacks(MainFPM, Level);
   MainFPM.addPass(JumpThreadingPass());
+#if SIFIVE_CUSTOMIZATION
+  MainFPM.addPass(CorrelatedValuePropagationPass());
+#endif // SIFIVE_CUSTOMIZATION
   MPM.addPass(createModuleToFunctionPassAdaptor(std::move(MainFPM),
                                                 PTO.EagerlyInvalidateAnalyses));
 
