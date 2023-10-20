@@ -112,6 +112,14 @@ static cl::opt<bool> ThreadAcrossLoopHeaders(
     cl::desc("Allow JumpThreading to thread across loop headers, for testing"),
     cl::init(false), cl::Hidden);
 
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool> DisablePHIOpt(
+    "jump-threading-disable-phi-optimization",
+    cl::desc("Disable looking through phi to find identical compare in "
+             "predecessor"),
+    cl::init(false), cl::Hidden);
+#endif
+
 JumpThreadingPass::JumpThreadingPass(int T) {
   DefaultBBDupThreshold = (T == -1) ? BBDuplicateThreshold : unsigned(T);
 }
@@ -777,8 +785,34 @@ bool JumpThreadingPass::computeValueKnownInPredecessorsImpl(
         }
         Value *Res = simplifyCmpInst(Pred, LHS, RHS, {DL});
         if (!Res) {
-          if (!isa<Constant>(RHS))
+#if SIFIVE_CUSTOMIZATION
+          if (!isa<Constant>(RHS)) {
+            if (DisablePHIOpt)
+              continue;
+            // If the predecessor has an identical compare and we know we came
+            // from the true edge, then we know the compare is also true here.
+            // TODO: Operands could be in a different order and predicate
+            // swapped.
+            // TODO: If we came from the false edge then we know the condition
+            // is false.
+            BranchInst *PredBr = dyn_cast<BranchInst>(PredBB->getTerminator());
+            if (!PredBr || !PredBr->isConditional())
+              continue;
+            // Make sure we came from the true successor.
+            if (PredBr->getSuccessor(0) != BB || PredBr->getSuccessor(1) == BB)
+              continue;
+            // Make sure the condition is an ICmp with matching operands and
+            // predicate.
+            ICmpInst *PredCmp = dyn_cast<ICmpInst>(PredBr->getCondition());
+            if (!PredCmp || PredCmp->getOperand(0) != LHS ||
+                PredCmp->getOperand(1) != RHS ||
+                PredCmp->getPredicate() != Pred)
+              continue;
+            Constant *ResC = ConstantInt::get(CmpType, true);
+            Result.emplace_back(ResC, PredBB);
             continue;
+          }
+#endif // SIFIVE_CUSTOMIZATION
 
           // getPredicateOnEdge call will make no sense if LHS is defined in BB.
           auto LHSInst = dyn_cast<Instruction>(LHS);

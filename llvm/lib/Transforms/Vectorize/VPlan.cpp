@@ -746,11 +746,6 @@ void VPRegionBlock::print(raw_ostream &O, const Twine &Indent,
 Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
   assert(State.LMULExp != 4 && State.LMULExp <= 7 &&
          "LMUL is not supported by the hardware");
-  Constant *SEWArg = ConstantInt::get(
-      IntegerType::get(State.Builder.getContext(), 64), State.SEW);
-  Constant *LMULArg = ConstantInt::get(
-      IntegerType::get(State.Builder.getContext(), 64), State.LMULExp);
-
   if (State.Plan->isUncountable()) {
     assert(State.Plan->getInitRVL() && "InitRVL is null");
     assert(State.Plan->getRVL() && "RVL is null");
@@ -1103,13 +1098,17 @@ void VPlan::print(raw_ostream &O) const {
   }
 
   O << "\n";
+#if SIFIVE_CUSTOMIZATION
   if (TripCount) {
-    if (TripCount->isLiveIn())
-      O << "Live-in ";
-    TripCount->printAsOperand(O, SlotTracker);
-    O << " = original trip-count";
-    O << "\n";
+#endif // SIFIVE_CUSTOMIZATION
+  if (TripCount->isLiveIn())
+    O << "Live-in ";
+  TripCount->printAsOperand(O, SlotTracker);
+  O << " = original trip-count";
+  O << "\n";
+#if SIFIVE_CUSTOMIZATION
   }
+#endif // SIFIVE_CUSTOMIZATION
 
   if (!getPreheader()->empty()) {
     O << "\n";

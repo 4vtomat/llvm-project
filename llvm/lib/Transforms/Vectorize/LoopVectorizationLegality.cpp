@@ -2272,25 +2272,21 @@ bool LoopVectorizationLegality::canVectorizeUncountableLoop(
     return false;
   }
 
-  // Limit liveouts to IVs only
-  // TODO: Ptr and Fp induction variables don't have their getInductionBinOp set.
-  auto SetIsInductionBinOp = [&](const Value *LiveOut,
-                                 bool &IsInductionBinOp) -> void {
-    for (const std::pair<PHINode *, InductionDescriptor> &InductionEntry :
-         getInductionVars()) {
-      if (LiveOut == InductionEntry.second.getInductionBinOp()) {
-        IsInductionBinOp = true;
-        break;
-      }
-    }
-  };
-
+  // Limit liveouts to IVs or their next op only
   for (const Value *LiveOut : LiveOutValues) {
     if (!isInductionVariable(LiveOut)) {
-      bool IsInductionBinOp = false;
-      SetIsInductionBinOp(LiveOut, IsInductionBinOp);
+      bool IsInductionNext =
+          any_of(getInductionVars(), [&](const auto &InductionEntry) {
+            PHINode *InductionEntryPHI = InductionEntry.first;
+            return any_of(
+                InductionEntryPHI->incoming_values(), [&](const Use &Incoming) {
+                  return Incoming == LiveOut &&
+                         TheLoop->contains(
+                             InductionEntryPHI->getIncomingBlock(Incoming));
+                });
+          });
 
-      if (!IsInductionBinOp) {
+      if (!IsInductionNext) {
         ORE->emit([&]() {
           return OptimizationRemarkAnalysis(
                      Hints->vectorizeAnalysisPassName(),
