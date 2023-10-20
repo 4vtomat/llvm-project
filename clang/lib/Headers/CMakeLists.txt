@@ -114,6 +114,7 @@ set(ppc_htm_files
 
 set(riscv_files
   riscv_ntlh.h
+  sifive_vector.h
   )
 
 # SIFIVE_CUSTOMIZATION
@@ -123,10 +124,6 @@ set(rvv_v0p10_compatible_header_file
 set(rvv_v0p11_compatible_header_file
   rvv_v0p11_compatible/riscv_vector.h
 )
-
-set(sifive_files
-  sifive_vector.h
-  )
 #end SIFIVE_CUSTOMIZATION
 
 set(systemz_files
@@ -280,7 +277,6 @@ set(files
   ${ppc_files}
   ${ppc_htm_files}
   ${riscv_files}
-  ${sifive_files}
   ${systemz_files}
   ${ve_files}
   ${x86_files}
@@ -684,11 +680,6 @@ install(
   FILES ${sifive_wrapper_files}
   DESTINATION ${header_install_dir}/sifive_wrappers
   EXCLUDE_FROM_ALL
-  COMPONENT riscv-resource-headers)
-
-install(
-  FILES ${sifive_files}
-  DESTINATION ${header_install_dir}
   COMPONENT riscv-resource-headers)
 # end SIFIVE
 
