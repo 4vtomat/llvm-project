@@ -71,8 +71,8 @@
 ; CHECK-NEXT:       Expand reduction intrinsics
 ; CHECK-NEXT:       Natural Loop Information
 ; CHECK-NEXT:       TLS Variable Hoist
-; CHECK-NEXT:       RISCV Late CodeGenPrepare
-; CHECK-NEXT:       RISCV Type Promotion
+; CHECK-NEXT:       RISC-V Late CodeGenPrepare
+; CHECK-NEXT:       RISC-V Type Promotion
 ; CHECK-NEXT:       Dominator Tree Construction
 ; CHECK-NEXT:       Natural Loop Information
 ; CHECK-NEXT:       Type Promotion
@@ -183,7 +183,7 @@
 ; CHECK-NEXT:       Insert fentry calls
 ; CHECK-NEXT:       Insert XRay ops
 ; CHECK-NEXT:       Implement the 'patchable-function' attribute
-; CHECK-NEXT:       RISCV Machine Constant Propagation
+; CHECK-NEXT:       RISC-V Machine Constant Propagation
 ; CHECK-NEXT:       Branch relaxation pass
 ; CHECK-NEXT:       RISC-V Make Compressible
 ; CHECK-NEXT:       Machine Copy Propagation Pass

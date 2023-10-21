@@ -8526,7 +8526,7 @@ SDValue RISCVTargetLowering::lowerAArch64_qrshl(SelectionDAG &DAG,
   // If Op1 is in [128, 255], we do Op0 >> Op1.
   SDValue IsRight =
       DAG.getSetCC(DL, SetccVT, Op1, DAG.getConstant(127, DL, VT), ISD::SETUGT);
-  // Because RISCV only takes log2(Size) bit to do shift. If a shift amount is
+  // Because RISC-V only takes log2(Size) bit to do shift. If a shift amount is
   // greater than or equal to log2(Size), we need to handle it by ourselves.
   SDValue MaxShift = DAG.getConstant(Size - 1, DL, VT);
   SDValue LShift;

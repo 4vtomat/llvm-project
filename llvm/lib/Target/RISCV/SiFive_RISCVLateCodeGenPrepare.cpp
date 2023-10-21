@@ -6,7 +6,7 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This is a RISCV specific version of CodeGenPrepare.
+// This is a RISC-V specific version of CodeGenPrepare.
 // It munges the code in the input function to better prepare it for
 // SelectionDAG-based code generation. This works around limitations in it's
 // basic-block-at-a-time approach.
@@ -27,7 +27,7 @@
 #include "llvm/Support/MathExtras.h"
 
 #define DEBUG_TYPE "riscv-late-codegenprepare"
-#define PASS_NAME "RISCV Late CodeGenPrepare"
+#define PASS_NAME "RISC-V Late CodeGenPrepare"
 
 #define CREATE_BASIC_BLOCKS_WO_BACKWARD(NAME)                                  \
   BasicBlock *PreLoopBB = M->getParent();                                      \
