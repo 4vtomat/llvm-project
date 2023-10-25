@@ -187,6 +187,11 @@ static void hoist(Instruction &I, const DominatorTree *DT, const Loop *CurLoop,
 static bool sink(Instruction &I, LoopInfo *LI, DominatorTree *DT,
                  const Loop *CurLoop, ICFLoopSafetyInfo *SafetyInfo,
                  MemorySSAUpdater &MSSAU, OptimizationRemarkEmitter *ORE);
+#if SIFIVE_CUSTOMIZATION
+static bool maySpillForCandidate(
+    Instruction *Inst, const Loop *CurLoop, LiveValues *LV,
+    TargetTransformInfo *TTI, BasicBlock *TargetBB);
+#endif // SIFIVE_CUSTOMIZATION
 static bool isSafeToExecuteUnconditionally(
     Instruction &Inst, const DominatorTree *DT, const TargetLibraryInfo *TLI,
     const Loop *CurLoop, const LoopSafetyInfo *SafetyInfo,
@@ -500,9 +505,15 @@ bool LoopInvariantCodeMotion::runOnLoop(Loop *L, AAResults *AA, LoopInfo *LI,
                          MSSAU, &SafetyInfo, Flags, ORE);
   Flags.setIsSink(false);
   if (Preheader)
+#if SIFIVE_CUSTOMIZATION
+    Changed |= hoistRegion(DT->getNode(L->getHeader()), AA, LI, DT, AC, TLI, L, LV,
+                           TTI, MSSAU, SE, &SafetyInfo, Flags, ORE, LoopNestMode,
+                           LicmAllowSpeculation);
+#else
     Changed |= hoistRegion(DT->getNode(L->getHeader()), AA, LI, DT, AC, TLI, L,
                            MSSAU, SE, &SafetyInfo, Flags, ORE, LoopNestMode,
                            LicmAllowSpeculation);
+#endif
 
   // Now that all loop invariants have been removed from the loop, promote any
   // memory references to scalars that we can.
@@ -909,6 +920,21 @@ public:
 /// order w.r.t the DominatorTree.  This allows us to visit definitions before
 /// uses, allowing us to hoist a loop body in one pass without iteration.
 ///
+#if SIFIVE_CUSTOMIZATION
+bool llvm::hoistRegion(DomTreeNode *N, AAResults *AA, LoopInfo *LI,
+                       DominatorTree *DT, AssumptionCache *AC,
+                       TargetLibraryInfo *TLI, Loop *CurLoop,
+                       LiveValues *LV, TargetTransformInfo *TTI,
+                       MemorySSAUpdater &MSSAU, ScalarEvolution *SE,
+                       ICFLoopSafetyInfo *SafetyInfo,
+                       SinkAndHoistLICMFlags &Flags,
+                       OptimizationRemarkEmitter *ORE, bool LoopNestMode,
+                       bool AllowSpeculation) {
+  // Verify inputs.
+  assert(N != nullptr && AA != nullptr && LI != nullptr && DT != nullptr &&
+         CurLoop != nullptr && SafetyInfo != nullptr &&
+         "Unexpected input to hoistRegion.");
+#else
 bool llvm::hoistRegion(DomTreeNode *N, AAResults *AA, LoopInfo *LI,
                        DominatorTree *DT, AssumptionCache *AC,
                        TargetLibraryInfo *TLI, Loop *CurLoop,
@@ -921,6 +947,7 @@ bool llvm::hoistRegion(DomTreeNode *N, AAResults *AA, LoopInfo *LI,
   assert(N != nullptr && AA != nullptr && LI != nullptr && DT != nullptr &&
          CurLoop != nullptr && SafetyInfo != nullptr &&
          "Unexpected input to hoistRegion.");
+#endif
 
   ControlFlowHoister CFH(LI, DT, CurLoop, MSSAU);
 
@@ -956,13 +983,17 @@ bool llvm::hoistRegion(DomTreeNode *N, AAResults *AA, LoopInfo *LI,
       if (CurLoop->hasLoopInvariantOperands(&I) &&
           canSinkOrHoistInst(I, AA, DT, CurLoop, MSSAU, true, Flags,
                              NewStructTBAAPtrHoisting, ORE) &&
+          isSafeToExecuteUnconditionally(
+              I, DT, TLI, CurLoop, SafetyInfo, ORE,
+              Preheader->getTerminator(), AC, AllowSpeculation) &&
+          !maySpillForCandidate(&I, CurLoop, LV, TTI, BB)) {
 #else
       if (CurLoop->hasLoopInvariantOperands(&I) &&
           canSinkOrHoistInst(I, AA, DT, CurLoop, MSSAU, true, Flags, ORE) &&
-#endif // SIFIVE_CUSTOMIZATION
           isSafeToExecuteUnconditionally(
               I, DT, TLI, CurLoop, SafetyInfo, ORE,
               Preheader->getTerminator(), AC, AllowSpeculation)) {
+#endif // SIFIVE_CUSTOMIZATION
         hoist(I, DT, CurLoop, CFH.getOrCreateHoistedBlock(BB), SafetyInfo,
               MSSAU, SE, ORE);
         HoistedInstructions.push_back(&I);
@@ -1879,6 +1910,36 @@ static void hoist(Instruction &I, const DominatorTree *DT, const Loop *CurLoop,
     ++NumMovedCalls;
   ++NumHoisted;
 }
+
+#if SIFIVE_CUSTOMIZATION
+static bool maySpillForCandidate(
+    Instruction *Inst, const Loop *CurLoop, LiveValues *LV,
+    TargetTransformInfo *TTI, BasicBlock *TargetBB) {
+  // Calculate value pressure for the prescribed loop blocks.
+  if (LV->haveLiveValueAnalysis()) {
+    // Skip vectorized loops for now until vectype/config for lmul is
+    // amended to correctly calculate VecRC register pressure.
+    if (getBooleanLoopAttribute(CurLoop, "llvm.loop.isvectorized"))
+      return false;
+
+    SmallVector<BasicBlock *, 4> Worklist;
+    for (auto *BB : CurLoop->getBlocks())
+      Worklist.push_back(BB);
+
+    LLVMContext &C = TargetBB->getContext();
+    unsigned IntRC = TTI->getRegisterClassForType(false, Type::getInt32Ty(C));
+    unsigned FpRC = TTI->getRegisterClassForType(false, Type::getFloatTy(C));
+    unsigned VecRC = TTI->getRegisterClassForType(true);
+    return LV->exceedValuePressureForBlocks(
+        Worklist, TTI->getNumberOfRegisters(IntRC),
+        TTI->getNumberOfRegisters(FpRC),
+        TTI->getNumberOfRegisters(VecRC), Inst);
+  }
+
+  // No data optmistically allow.
+  return false;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Only sink or hoist an instruction if it is not a trapping instruction,
 /// or if the instruction is known not to trap when moved to the preheader.

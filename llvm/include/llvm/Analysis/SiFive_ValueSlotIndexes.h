@@ -48,8 +48,8 @@ class raw_ostream;
 /// This class represents an entry in the slot index list held in the
 /// LiveValues pass.
 class IndexListEntry : public ilist_node<IndexListEntry> {
-  Value *V;
-  unsigned Index;
+  Value *V = nullptr;
+  unsigned Index = 0xffffffff;
 
 public:
   IndexListEntry() = default;

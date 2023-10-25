@@ -660,17 +660,13 @@ public:
 
 private:
   Value *V;           // the register or stack slot of this interval.
-  float Weight = 0.0; // weight of this interval
 
 public:
   Value *reg() { return V; }
-  float weight() const { return Weight; }
-  void incrementWeight(float Inc) { Weight += Inc; }
-  void setWeight(float Value) { Weight = Value; }
   void setValue(Value *Val) { V = Val; }
 
-  ValueLiveInterval(Value *V, float Weight) : V(V), Weight(Weight) {}
-  ValueLiveInterval() {}
+  ValueLiveInterval(Value *V) : V(V) {}
+  ValueLiveInterval() = default;
 
   /// getSize - Returns the sum of sizes of all the ValueLiveRange's.
   ///
