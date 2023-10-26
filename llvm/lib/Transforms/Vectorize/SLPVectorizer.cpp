@@ -7750,8 +7750,11 @@ public:
 #if SIFIVE_CUSTOMIZATION
 bool BoUpSLP::isRISCVStridedNode(const TreeEntry *E) const {
   return enabledRISCVExtensions(*F->getEntryBlock().getModule(), *TTI) &&
-         (E->State == TreeEntry::PossibleStridedVectorize &&
-          (E->ReorderIndices.empty() || isReverseOrder(E->ReorderIndices)));
+         ((E->State == TreeEntry::PossibleStridedVectorize &&
+           (E->ReorderIndices.empty() || isReverseOrder(E->ReorderIndices))) ||
+          (E->State == TreeEntry::Vectorize &&
+           E->getOpcode() == Instruction::Load &&
+           isReverseOrder(E->ReorderIndices)));
 }
 
 bool BoUpSLP::areAllUsersRISCVStridedNode(const TreeEntry *E) const {
@@ -7767,7 +7770,9 @@ bool BoUpSLP::areAllUsersRISCVStridedNode(const TreeEntry *E) const {
     const TreeEntry *UserTE = Worklist.pop_back_val();
     if (!Checked.insert(UserTE).second)
       continue;
-    if (isRISCVStridedNode(UserTE)) {
+    if (isRISCVStridedNode(UserTE) ||
+        (UserTE->State == TreeEntry::Vectorize &&
+         UserTE->getOpcode() == Instruction::Load)) {
       Res = true;
       continue;
     }
@@ -7801,7 +7806,9 @@ BoUpSLP::getEntryCost(const TreeEntry *E, ArrayRef<Value *> VectorizedVals,
 #if SIFIVE_CUSTOMIZATION
   if (!E->UserTreeIndices.empty() &&
       all_of(E->UserTreeIndices, [&](const EdgeInfo &EI) {
-        return isRISCVStridedNode(EI.UserTE);
+        return (EI.UserTE->State == TreeEntry::Vectorize &&
+                EI.UserTE->getOpcode() == Instruction::Load) ||
+               isRISCVStridedNode(EI.UserTE);
       })) {
     // Calculate cost difference from vectorizing set of GEPs.
     // Negative value means vectorizing is profitable.
@@ -9135,7 +9142,12 @@ InstructionCost BoUpSLP::getTreeCost(ArrayRef<Value *> VectorizedVals) {
       }
     }
 #if SIFIVE_CUSTOMIZATION
-    if (areAllUsersRISCVStridedNode(&TE))
+    if (areAllUsersRISCVStridedNode(&TE) &&
+        !any_of(TE.UserTreeIndices, [&](const EdgeInfo &EI) {
+          return (EI.UserTE->State == TreeEntry::Vectorize &&
+                  EI.UserTE->getOpcode() == Instruction::Load) ||
+                 isRISCVStridedNode(EI.UserTE);
+        }))
       continue;
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -11237,7 +11249,7 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
       Value *PO = LI->getPointerOperand();
 #if SIFIVE_CUSTOMIZATION
       bool IsReverse = isReverseOrder(E->ReorderIndices);
-      if (E->State == TreeEntry::Vectorize ||isRISCVStridedNode(E)) {
+      if (E->State == TreeEntry::Vectorize || isRISCVStridedNode(E)) {
         Value *Ptr0 = cast<LoadInst>(E->Scalars.front())->getPointerOperand();
         Value *PtrN = cast<LoadInst>(E->Scalars.back())->getPointerOperand();
         std::optional<int> Diff = getPointersDiff(
@@ -11303,7 +11315,8 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
           if (TreeEntry *Entry = getTreeEntry(Ptr)) {
             if (Entry->UserTreeIndices.empty() ||
                 any_of(Entry->UserTreeIndices, [&](const EdgeInfo &EI) {
-                  return !isRISCVStridedNode(EI.UserTE);
+                  return EI.UserTE->State != TreeEntry::Vectorize &&
+                         !isRISCVStridedNode(EI.UserTE);
                 })) {
               // Find which lane we need to extract.
               unsigned FoundLane = Entry->findLaneForValue(Ptr);
@@ -12036,11 +12049,6 @@ Value *BoUpSLP::vectorizeTree(
     if (Entry->State == TreeEntry::NeedToGather)
       continue;
 #if SIFIVE_CUSTOMIZATION
-    if (!Entry->UserTreeIndices.empty() &&
-        all_of(Entry->UserTreeIndices, [&](const EdgeInfo &EI) {
-          return isRISCVStridedNode(EI.UserTE);
-        }))
-      continue;
     if (areAllUsersRISCVStridedNode(Entry))
       continue;
 #endif // SIFIVE_CUSTOMIZATION
