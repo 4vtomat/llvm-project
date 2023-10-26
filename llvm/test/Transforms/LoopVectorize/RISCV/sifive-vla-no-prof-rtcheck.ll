@@ -14,12 +14,12 @@ define i32 @foo(i32 %n, ptr %a) {
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    br i1 [[CMP4]], label [[FOR_BODY_PREHEADER:%.*]], label [[FOR_COND_CLEANUP:%.*]]
 ; CHECK-HAS-PROF-RTCHECK:       for.body.preheader:
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
-; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
-; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP1:%.*]] = zext i32 [[TMP0]] to i64
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[WIDE_TRIP_COUNT]], 12
-; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP2:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
-; CHECK-HAS-PROF-RTCHECK-NEXT:    br i1 [[TMP2]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
+; CHECK-HAS-PROF-RTCHECK-NEXT:    br i1 [[TMP0]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-HAS-PROF-RTCHECK:       vector.ph:
+; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
+; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP2:%.*]] = zext i32 [[TMP1]] to i64
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-HAS-PROF-RTCHECK:       vector.body:
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -39,7 +39,7 @@ define i32 @foo(i32 %n, ptr %a) {
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP11:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[WIDE_TRIP_COUNT]]
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    br i1 [[TMP11]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-HAS-PROF-RTCHECK:       middle.block:
-; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP1]] to i32
+; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP2]] to i32
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP12]])
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP14:%.*]] = add i32 0, [[TMP13]]
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
@@ -70,10 +70,10 @@ define i32 @foo(i32 %n, ptr %a) {
 ; CHECK-NO-PROF-RTCHECK-NEXT:    br i1 [[CMP4]], label [[FOR_BODY_PREHEADER:%.*]], label [[FOR_COND_CLEANUP:%.*]]
 ; CHECK-NO-PROF-RTCHECK:       for.body.preheader:
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
-; CHECK-NO-PROF-RTCHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
-; CHECK-NO-PROF-RTCHECK-NEXT:    [[TMP1:%.*]] = zext i32 [[TMP0]] to i64
 ; CHECK-NO-PROF-RTCHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-NO-PROF-RTCHECK:       vector.ph:
+; CHECK-NO-PROF-RTCHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
+; CHECK-NO-PROF-RTCHECK-NEXT:    [[TMP1:%.*]] = zext i32 [[TMP0]] to i64
 ; CHECK-NO-PROF-RTCHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-NO-PROF-RTCHECK:       vector.body:
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]

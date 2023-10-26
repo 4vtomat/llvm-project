@@ -137,12 +137,12 @@ define void @masked_load(i32 %n, ptr %b, ptr %a) {
 ; CHECK:       for.body.preheader:
 ; CHECK-NEXT:    [[DIV2021:%.*]] = lshr i32 [[N]], 1
 ; CHECK-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[DIV2021]] to i64
-; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP1:%.*]] = zext i32 [[TMP0]] to i64
 ; CHECK-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[WIDE_TRIP_COUNT]], 12
-; CHECK-NEXT:    [[TMP2:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
-; CHECK-NEXT:    br i1 [[TMP2]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
+; CHECK-NEXT:    br i1 [[TMP0]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
+; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[WIDE_TRIP_COUNT]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP2:%.*]] = zext i32 [[TMP1]] to i64
 ; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 2 x i64> @llvm.experimental.stepvector.nxv2i64()
 ; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 2 x i64> [[TMP3]], zeroinitializer
 ; CHECK-NEXT:    [[TMP5:%.*]] = mul <vscale x 2 x i64> [[TMP4]], shufflevector (<vscale x 2 x i64> insertelement (<vscale x 2 x i64> poison, i64 1, i64 0), <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer)
@@ -189,7 +189,7 @@ define void @masked_load(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP24:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[WIDE_TRIP_COUNT]]
 ; CHECK-NEXT:    br i1 [[TMP24]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP25:%.*]] = trunc i64 [[TMP1]] to i32
+; CHECK-NEXT:    [[TMP25:%.*]] = trunc i64 [[TMP2]] to i32
 ; CHECK-NEXT:    [[TMP26:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP25]])
 ; CHECK-NEXT:    [[TMP27:%.*]] = add i32 0, [[TMP26]]
 ; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
