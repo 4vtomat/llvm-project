@@ -65,16 +65,24 @@ multiclass LMULSEWWriteResMXSEW<string name, list<ProcResourceKind> resources,
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass LMULWriteResMXVariant<string Name, SchedPredicate Pred,
                                  list<ProcResourceKind> resources,
-                                 int predLat, list<int> predCycles,
-                                 int noPredLat, list<int> noPredCycles,
+                                 int predLat, list<int> predAcquireCycles,
+                                 list<int> predReleaseCycles, int noPredLat,
+                                 list<int> noPredAcquireCycles,
+                                 list<int> noPredReleaseCycles,
                                  string mx, bit IsWorstCase, string prefix> {
   defvar NameMX = prefix # Name # "_" # mx;
 
   // Define the different behaviors
-  def NameMX # "_Pred" : SchedWriteRes<resources>
-  { let Latency = predLat; let ReleaseAtCycles = predCycles; }
-  def NameMX # "_NoPred" : SchedWriteRes<resources>
-  { let Latency = noPredLat; let ReleaseAtCycles = noPredCycles; }
+  def NameMX # "_Pred" : SchedWriteRes<resources>{
+    let Latency = predLat;
+    let AcquireAtCycles = predAcquireCycles;
+    let ReleaseAtCycles = predReleaseCycles;
+  }
+  def NameMX # "_NoPred" : SchedWriteRes<resources> {
+    let Latency = noPredLat;
+    let AcquireAtCycles = noPredAcquireCycles;
+    let ReleaseAtCycles = noPredReleaseCycles;
+  }
 
   // Tie behavior to predicate
   def NameMX # "_Variant" : SchedWriteVariant<[

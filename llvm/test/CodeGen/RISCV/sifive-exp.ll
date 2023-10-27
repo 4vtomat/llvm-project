@@ -57,8 +57,8 @@ define void @skl_exp_f16(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280-NEXT:    vlse16.v v0, (a7), zero
 ; X280-NEXT:    vs8r.v v0, (a4) # Unknown-size Folded Spill
 ; X280-NEXT:    csrr a4, vlenb
-; X280-NEXT:    vfnmsac.vf v8, fa2, v24
 ; X280-NEXT:    slli a4, a4, 2
+; X280-NEXT:    vfnmsac.vf v8, fa2, v24
 ; X280-NEXT:    add a4, a4, sp
 ; X280-NEXT:    addi a4, a4, 16
 ; X280-NEXT:    vlse16.v v16, (a6), zero
@@ -146,8 +146,8 @@ define void @skl_exp_f16(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280N-NEXT:    vlse16.v v0, (a7), zero
 ; X280N-NEXT:    vs8r.v v0, (a4) # Unknown-size Folded Spill
 ; X280N-NEXT:    csrr a4, vlenb
-; X280N-NEXT:    vfnmsac.vf v8, fa2, v24
 ; X280N-NEXT:    slli a4, a4, 2
+; X280N-NEXT:    vfnmsac.vf v8, fa2, v24
 ; X280N-NEXT:    add a4, a4, sp
 ; X280N-NEXT:    addi a4, a4, 16
 ; X280N-NEXT:    vlse16.v v16, (a6), zero

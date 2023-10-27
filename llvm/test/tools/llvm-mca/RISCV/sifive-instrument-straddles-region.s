@@ -18,7 +18,7 @@ vadd.vv v12, v12, v12
 # CHECK:      Dispatch Width:    2
 # CHECK-NEXT: uOps Per Cycle:    0.25
 # CHECK-NEXT: IPC:               0.25
-# CHECK-NEXT: Block RThroughput: 2.0
+# CHECK-NEXT: Block RThroughput: 3.0
 
 # CHECK:      Instruction Info:
 # CHECK-NEXT: [1]: #uOps
@@ -30,7 +30,7 @@ vadd.vv v12, v12, v12
 
 # CHECK:      [1]    [2]    [3]    [4]    [5]    [6]    Instructions:
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, a0, e8, m1, tu, mu
-# CHECK-NEXT:  1      4     2.00                        vadd.vv	v12, v12, v12
+# CHECK-NEXT:  1      4     3.00                        vadd.vv	v12, v12, v12
 
 # CHECK:      Resources:
 # CHECK-NEXT: [0]   - SiFive7NFDiv
@@ -39,18 +39,20 @@ vadd.vv v12, v12, v12
 # CHECK-NEXT: [3]   - SiFive7NPipeA
 # CHECK-NEXT: [4]   - SiFive7NPipeB
 # CHECK-NEXT: [5]   - SiFive7NVA
-# CHECK-NEXT: [6]   - SiFive7NVL
-# CHECK-NEXT: [7]   - SiFive7NVS
-# CHECK-NEXT: [8]   - SiFive7VA
+# CHECK-NEXT: [6]   - SiFive7NVCQ
+# CHECK-NEXT: [7]   - SiFive7NVL
+# CHECK-NEXT: [8]   - SiFive7NVS
+# CHECK-NEXT: [9]   - SiFive7VA
+# CHECK-NEXT: [10]  - SiFive7VCQ
 
 # CHECK:      Resource pressure per iteration:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
-# CHECK-NEXT:  -      -      -     1.00    -     2.00    -      -      -
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]    [10]
+# CHECK-NEXT:  -      -      -     1.00    -     3.00   1.00    -      -      -      -
 
 # CHECK:      Resource pressure by instruction:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, m1, tu, mu
-# CHECK-NEXT:  -      -      -      -      -     2.00    -      -      -     vadd.vv	v12, v12, v12
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]    [10]   Instructions:
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -      -     vsetvli	zero, a0, e8, m1, tu, mu
+# CHECK-NEXT:  -      -      -      -      -     3.00   1.00    -      -      -      -     vadd.vv	v12, v12, v12
 
 # CHECK:      Timeline view:
 # CHECK-NEXT: Index     01234567
