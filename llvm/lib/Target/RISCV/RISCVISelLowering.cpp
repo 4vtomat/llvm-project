@@ -11452,7 +11452,7 @@ RISCVTargetLowering::lowerVPReverseExperimental(SDValue Op,
   unsigned EltSize = GatherVT.getScalarSizeInBits();
   unsigned MinSize = GatherVT.getSizeInBits().getKnownMinValue();
   unsigned MaxVLMAX = 0;
-  unsigned VectorBitsMax = Subtarget.getMaxRVVVectorSizeInBits();
+  unsigned VectorBitsMax = Subtarget.getRealMaxVLen();
   if (VectorBitsMax != 0)
     MaxVLMAX =
         RISCVTargetLowering::computeVLMAX(VectorBitsMax, EltSize, MinSize);
