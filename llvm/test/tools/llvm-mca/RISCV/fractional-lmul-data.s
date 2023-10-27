@@ -39,18 +39,17 @@ vdiv.vv v12, v12, v12
 # CHECK-NEXT: [2]   - SiFive7Mem
 # CHECK-NEXT: [3]   - SiFive7PipeA
 # CHECK-NEXT: [4]   - SiFive7PipeB
-# CHECK-NEXT: [5]   - SiFive7PipeV
-# CHECK-NEXT: [6]   - SiFive7VA
-# CHECK-NEXT: [7]   - SiFive7VL
-# CHECK-NEXT: [8]   - SiFive7VS
+# CHECK-NEXT: [5]   - SiFive7VA
+# CHECK-NEXT: [6]   - SiFive7VL
+# CHECK-NEXT: [7]   - SiFive7VS
 
 # CHECK:      Resource pressure per iteration:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
-# CHECK-NEXT:  -      -      -     2.00    -     80.00  80.00   -      -
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]
+# CHECK-NEXT:  -      -      -     2.00    -     80.00   -      -
 
 # CHECK:      Resource pressure by instruction:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, mf2, tu, mu
-# CHECK-NEXT:  -      -      -      -      -     64.00  64.00   -      -     vdiv.vv	v12, v12, v12
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e8, mf8, tu, mu
-# CHECK-NEXT:  -      -      -      -      -     16.00  16.00   -      -     vdiv.vv	v12, v12, v12
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    Instructions:
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -     vsetvli	zero, zero, e32, mf2, tu, mu
+# CHECK-NEXT:  -      -      -      -      -     64.00   -      -     vdiv.vv	v12, v12, v12
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -     vsetvli	zero, zero, e8, mf8, tu, mu
+# CHECK-NEXT:  -      -      -      -      -     16.00   -      -     vdiv.vv	v12, v12, v12

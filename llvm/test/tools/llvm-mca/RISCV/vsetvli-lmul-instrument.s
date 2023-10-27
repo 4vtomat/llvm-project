@@ -36,21 +36,20 @@ vadd.vv v12, v12, v12
 # CHECK-NEXT: [2]   - SiFive7Mem
 # CHECK-NEXT: [3]   - SiFive7PipeA
 # CHECK-NEXT: [4]   - SiFive7PipeB
-# CHECK-NEXT: [5]   - SiFive7PipeV
-# CHECK-NEXT: [6]   - SiFive7VA
-# CHECK-NEXT: [7]   - SiFive7VL
-# CHECK-NEXT: [8]   - SiFive7VS
+# CHECK-NEXT: [5]   - SiFive7VA
+# CHECK-NEXT: [6]   - SiFive7VL
+# CHECK-NEXT: [7]   - SiFive7VS
 
 # CHECK:      Resource pressure per iteration:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
-# CHECK-NEXT:  -      -      -     2.00    -     18.00  18.00   -      -
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]
+# CHECK-NEXT:  -      -      -     2.00    -     18.00   -      -
 
 # CHECK:      Resource pressure by instruction:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, m1, tu, mu
-# CHECK-NEXT:  -      -      -      -      -     2.00   2.00    -      -     vadd.vv	v12, v12, v12
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, m8, tu, mu
-# CHECK-NEXT:  -      -      -      -      -     16.00  16.00   -      -     vadd.vv	v12, v12, v12
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    Instructions:
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -     vsetvli	zero, a0, e8, m1, tu, mu
+# CHECK-NEXT:  -      -      -      -      -     2.00    -      -     vadd.vv	v12, v12, v12
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -     vsetvli	zero, a0, e8, m8, tu, mu
+# CHECK-NEXT:  -      -      -      -      -     16.00   -      -     vadd.vv	v12, v12, v12
 
 # CHECK:      Timeline view:
 # CHECK-NEXT:                     01

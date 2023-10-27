@@ -192,21 +192,20 @@ def SiFive7Model : SchedMachineModel {
 // Pipe A can handle memory, integer alu and vector operations.
 // Pipe B can handle integer alu, control flow, integer multiply and divide,
 // and floating point computation.
-// Pipe V can handle the V extension.
+// The V pipeline is modeled by the VA, VL, and VS resources.
 let SchedModel = SiFive7Model in {
 let BufferSize = 0 in {
 def SiFive7PipeA       : ProcResource<1>;
 def SiFive7PipeB       : ProcResource<1>;
-def SiFive7PipeV       : ProcResource<1>;
+def SiFive7VA          : ProcResource<1>; // Arithmetic sequencer
+def SiFive7VL          : ProcResource<1>; // Load sequencer
+def SiFive7VS          : ProcResource<1>; // Store sequencer
 }
 
 let BufferSize = 1 in {
 def SiFive7Mem         : ProcResource<1> { let Super = SiFive7PipeA; } // Memory
 def SiFive7IDiv        : ProcResource<1> { let Super = SiFive7PipeB; } // Int Division
 def SiFive7FDiv        : ProcResource<1> { let Super = SiFive7PipeB; } // FP Division/Sqrt
-def SiFive7VA          : ProcResource<1> { let Super = SiFive7PipeV; } // Arithmetic sequencer
-def SiFive7VL          : ProcResource<1> { let Super = SiFive7PipeV; } // Load sequencer
-def SiFive7VS          : ProcResource<1> { let Super = SiFive7PipeV; } // Store sequencer
 }
 
 def SiFive7PipeAB : ProcResGroup<[SiFive7PipeA, SiFive7PipeB]>;
