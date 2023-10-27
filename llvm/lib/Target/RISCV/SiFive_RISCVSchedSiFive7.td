@@ -197,6 +197,9 @@ let SchedModel = SiFive7Model in {
 let BufferSize = 0 in {
 def SiFive7PipeA       : ProcResource<1>;
 def SiFive7PipeB       : ProcResource<1>;
+def SiFive7Mem         : ProcResource<1>; // Memory
+def SiFive7IDiv        : ProcResource<1>; // Int Division
+def SiFive7FDiv        : ProcResource<1>; // FP Division/Sqrt
 def SiFive7VA          : ProcResource<1>; // Arithmetic sequencer
 def SiFive7VL          : ProcResource<1>; // Load sequencer
 def SiFive7VS          : ProcResource<1>; // Store sequencer
@@ -210,12 +213,6 @@ def SiFive7VS          : ProcResource<1>; // Store sequencer
 // instruction at a time and remain busy for the number of cycles associated
 // with that instruction.
 def SiFive7VCQ         : ProcResource<1>; // Vector Command Queue
-}
-
-let BufferSize = 1 in {
-def SiFive7Mem         : ProcResource<1> { let Super = SiFive7PipeA; } // Memory
-def SiFive7IDiv        : ProcResource<1> { let Super = SiFive7PipeB; } // Int Division
-def SiFive7FDiv        : ProcResource<1> { let Super = SiFive7PipeB; } // FP Division/Sqrt
 }
 
 def SiFive7PipeAB : ProcResGroup<[SiFive7PipeA, SiFive7PipeB]>;
