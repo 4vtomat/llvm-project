@@ -788,11 +788,6 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-  SmallVector<Type *, 4> Tys;
-  for (Value *ArgOperand : CI.args())
-    Tys.push_back(
-        ToVectorTy(ArgOperand->getType(), State.VF.getKnownMinValue()));
-
   for (unsigned Part = 0; Part < State.UF; ++Part) {
     SmallVector<Type *, 2> TysForDecl;
     // Add return type if intrinsic is overloaded on it.
