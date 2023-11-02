@@ -3952,6 +3952,19 @@ LoopVectorizationCostModel::getVectorIntrinsicCost(CallInst *CI,
   std::transform(FTy->param_begin(), FTy->param_end(),
                  std::back_inserter(ParamTys),
                  [&](Type *Ty) { return MaybeVectorizeType(Ty, VF); });
+#if SIFIVE_CUSTOMIZATION
+  if (Legal->useVLAVectorizer()) {
+    // VLA Vectorizer using VP intrinsics, and require dummy mask and vector
+    // length args, it will verified during cost calculation.
+    Type *MaskType = ScalableVectorType::get(Type::getInt1Ty(CI->getContext()),
+                                             VF.getKnownMinValue());
+    Type *VLType = Type::getInt32Ty(CI->getContext());
+    Arguments.push_back(PoisonValue::get(MaskType));
+    Arguments.push_back(PoisonValue::get(VLType));
+    ParamTys.push_back(MaskType);
+    ParamTys.push_back(VLType);
+  }
+#endif
 
   IntrinsicCostAttributes CostAttrs(ID, RetTy, Arguments, ParamTys, FMF,
                                     dyn_cast<IntrinsicInst>(CI));
