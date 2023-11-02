@@ -383,18 +383,11 @@
 // RV32-EXPERIMENTAL-NOFLAG: error: invalid arch name 'rv32iztso'
 // RV32-EXPERIMENTAL-NOFLAG: requires '-menable-experimental-extensions'
 
-<<<<<<< HEAD
 // COM: SiFive specific logic: Disable version check for integration with FESDK.
-// COM : not %clang --target=riscv32-unknown-elf -march=rv32izfa -menable-experimental-extensions -### %s \
+// COM: not %clang --target=riscv32-unknown-elf -march=rv32iztso -menable-experimental-extensions -### %s \
 // COM: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-NOVERS %s
-// COM-RV32-EXPERIMENTAL-NOVERS: error: invalid arch name 'rv32izfa'
+// COM-RV32-EXPERIMENTAL-NOVERS: error: invalid arch name 'rv32iztso'
 // COM-RV32-EXPERIMENTAL-NOVERS: experimental extension requires explicit version number
-=======
-// RUN: not %clang --target=riscv32-unknown-elf -march=rv32iztso -menable-experimental-extensions -### %s \
-// RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-NOVERS %s
-// RV32-EXPERIMENTAL-NOVERS: error: invalid arch name 'rv32iztso'
-// RV32-EXPERIMENTAL-NOVERS: experimental extension requires explicit version number
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
 
 // RUN: not %clang --target=riscv32-unknown-elf -march=rv32iztso0p7 -menable-experimental-extensions -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-BADVERS %s
