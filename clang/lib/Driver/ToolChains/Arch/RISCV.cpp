@@ -318,9 +318,16 @@ StringRef riscv::getRISCVABI(const ArgList &Args, const llvm::Triple &Triple) {
       return "ilp32";
     else
       return "ilp32d";
+  } else {
+    if (Triple.getOS() == llvm::Triple::UnknownOS)
+#if SIFIVE_CUSTOMIZATION
+      return "lp64d";
+#else
+      return "lp64";
+#endif // SIFIVE_CUSTOMIZATION
+    else
+      return "lp64d";
   }
-
-  return "lp64d";
 }
 
 StringRef riscv::getRISCVArch(const llvm::opt::ArgList &Args,
@@ -398,23 +405,18 @@ StringRef riscv::getRISCVArch(const llvm::opt::ArgList &Args,
       return "rv32imac";
     else
       return "rv32imafdc";
-#if SIFIVE_CUSTOMIZATION
-  }
-
-  if (Triple.isAndroid())
-    return "rv64imafdc_zba_zbb_zbs";
-
-  return "rv64imafdc";
-#else
   } else {
     if (Triple.getOS() == llvm::Triple::UnknownOS)
+#if SIFIVE_CUSTOMIZATION
+      return "rv64imafdc";
+#else
       return "rv64imac";
+#endif // SIFIVE_CUSTOMIZATION
     else if (Triple.isAndroid())
       return "rv64imafdcv_zba_zbb_zbs";
     else
       return "rv64imafdc";
   }
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 #if SIFIVE_CUSTOMIZATION
