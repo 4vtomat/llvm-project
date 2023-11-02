@@ -337,7 +337,7 @@ define i16 @reduction_or_trunc(i16* noalias nocapture %ptr, i32 %start) {
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP8:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP7:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i32 [[INDEX]], 0
 ; CHECK-NEXT:    [[TMP1:%.*]] = and <4 x i32> [[VEC_PHI]], <i32 65535, i32 65535, i32 65535, i32 65535>
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i16, ptr [[PTR:%.*]], i32 [[TMP0]]
@@ -345,13 +345,13 @@ define i16 @reduction_or_trunc(i16* noalias nocapture %ptr, i32 %start) {
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i16>, ptr [[TMP3]], align 2
 ; CHECK-NEXT:    [[TMP4:%.*]] = zext <4 x i16> [[WIDE_LOAD]] to <4 x i32>
 ; CHECK-NEXT:    [[TMP5:%.*]] = or <4 x i32> [[TMP1]], [[TMP4]]
+; CHECK-NEXT:    [[TMP6:%.*]] = trunc <4 x i32> [[TMP5]] to <4 x i16>
+; CHECK-NEXT:    [[TMP7]] = zext <4 x i16> [[TMP6]] to <4 x i32>
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 4
-; CHECK-NEXT:    [[TMP6:%.*]] = icmp eq i32 [[INDEX_NEXT]], 256
-; CHECK-NEXT:    [[TMP7:%.*]] = trunc <4 x i32> [[TMP5]] to <4 x i16>
-; CHECK-NEXT:    [[TMP8]] = zext <4 x i16> [[TMP7]] to <4 x i32>
-; CHECK-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
+; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i32 [[INDEX_NEXT]], 256
+; CHECK-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP9:%.*]] = trunc <4 x i32> [[TMP8]] to <4 x i16>
+; CHECK-NEXT:    [[TMP9:%.*]] = trunc <4 x i32> [[TMP7]] to <4 x i16>
 ; CHECK-NEXT:    [[TMP10:%.*]] = call i16 @llvm.vector.reduce.or.v4i16(<4 x i16> [[TMP9]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = trunc i32 [[START:%.*]] to i16
 ; CHECK-NEXT:    [[TMP12:%.*]] = or i16 [[TMP11]], [[TMP10]]
@@ -365,7 +365,7 @@ define i16 @reduction_or_trunc(i16* noalias nocapture %ptr, i32 %start) {
 ; CHECK-NEXT:    br label [[VEC_EPILOG_VECTOR_BODY:%.*]]
 ; CHECK:       vec.epilog.vector.body:
 ; CHECK-NEXT:    [[INDEX1:%.*]] = phi i32 [ [[VEC_EPILOG_RESUME_VAL]], [[VEC_EPILOG_PH]] ], [ [[INDEX_NEXT4:%.*]], [[VEC_EPILOG_VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VEC_PHI2:%.*]] = phi <4 x i32> [ zeroinitializer, [[VEC_EPILOG_PH]] ], [ [[TMP22:%.*]], [[VEC_EPILOG_VECTOR_BODY]] ]
+; CHECK-NEXT:    [[VEC_PHI2:%.*]] = phi <4 x i32> [ zeroinitializer, [[VEC_EPILOG_PH]] ], [ [[TMP21:%.*]], [[VEC_EPILOG_VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP14:%.*]] = add i32 [[INDEX1]], 0
 ; CHECK-NEXT:    [[TMP15:%.*]] = and <4 x i32> [[VEC_PHI2]], <i32 65535, i32 65535, i32 65535, i32 65535>
 ; CHECK-NEXT:    [[TMP16:%.*]] = getelementptr inbounds i16, ptr [[PTR]], i32 [[TMP14]]
@@ -373,13 +373,13 @@ define i16 @reduction_or_trunc(i16* noalias nocapture %ptr, i32 %start) {
 ; CHECK-NEXT:    [[WIDE_LOAD3:%.*]] = load <4 x i16>, ptr [[TMP17]], align 2
 ; CHECK-NEXT:    [[TMP18:%.*]] = zext <4 x i16> [[WIDE_LOAD3]] to <4 x i32>
 ; CHECK-NEXT:    [[TMP19:%.*]] = or <4 x i32> [[TMP15]], [[TMP18]]
+; CHECK-NEXT:    [[TMP20:%.*]] = trunc <4 x i32> [[TMP19]] to <4 x i16>
+; CHECK-NEXT:    [[TMP21]] = zext <4 x i16> [[TMP20]] to <4 x i32>
 ; CHECK-NEXT:    [[INDEX_NEXT4]] = add nuw i32 [[INDEX1]], 4
-; CHECK-NEXT:    [[TMP20:%.*]] = icmp eq i32 [[INDEX_NEXT4]], 256
-; CHECK-NEXT:    [[TMP21:%.*]] = trunc <4 x i32> [[TMP19]] to <4 x i16>
-; CHECK-NEXT:    [[TMP22]] = zext <4 x i16> [[TMP21]] to <4 x i32>
-; CHECK-NEXT:    br i1 [[TMP20]], label [[VEC_EPILOG_MIDDLE_BLOCK:%.*]], label [[VEC_EPILOG_VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
+; CHECK-NEXT:    [[TMP22:%.*]] = icmp eq i32 [[INDEX_NEXT4]], 256
+; CHECK-NEXT:    br i1 [[TMP22]], label [[VEC_EPILOG_MIDDLE_BLOCK:%.*]], label [[VEC_EPILOG_VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
 ; CHECK:       vec.epilog.middle.block:
-; CHECK-NEXT:    [[TMP23:%.*]] = trunc <4 x i32> [[TMP22]] to <4 x i16>
+; CHECK-NEXT:    [[TMP23:%.*]] = trunc <4 x i32> [[TMP21]] to <4 x i16>
 ; CHECK-NEXT:    [[TMP24:%.*]] = call i16 @llvm.vector.reduce.or.v4i16(<4 x i16> [[TMP23]])
 ; CHECK-NEXT:    [[TMP25:%.*]] = trunc i32 [[BC_MERGE_RDX]] to i16
 ; CHECK-NEXT:    [[TMP26:%.*]] = or i16 [[TMP25]], [[TMP24]]
@@ -415,7 +415,7 @@ define i16 @reduction_or_trunc(i16* noalias nocapture %ptr, i32 %start) {
 ; CHECK-NO-POSTSV-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-NO-POSTSV:       vector.body:
 ; CHECK-NO-POSTSV-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NO-POSTSV-NEXT:    [[VEC_PHI:%.*]] = phi <4 x i32> [ [[TMP0]], [[VECTOR_PH]] ], [ [[TMP9:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NO-POSTSV-NEXT:    [[VEC_PHI:%.*]] = phi <4 x i32> [ [[TMP0]], [[VECTOR_PH]] ], [ [[TMP8:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP1:%.*]] = add i32 [[INDEX]], 0
 ; CHECK-NO-POSTSV-NEXT:    [[TMP2:%.*]] = and <4 x i32> [[VEC_PHI]], <i32 65535, i32 65535, i32 65535, i32 65535>
 ; CHECK-NO-POSTSV-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i16, ptr [[PTR:%.*]], i32 [[TMP1]]
@@ -423,13 +423,13 @@ define i16 @reduction_or_trunc(i16* noalias nocapture %ptr, i32 %start) {
 ; CHECK-NO-POSTSV-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i16>, ptr [[TMP4]], align 2
 ; CHECK-NO-POSTSV-NEXT:    [[TMP5:%.*]] = zext <4 x i16> [[WIDE_LOAD]] to <4 x i32>
 ; CHECK-NO-POSTSV-NEXT:    [[TMP6:%.*]] = or <4 x i32> [[TMP2]], [[TMP5]]
+; CHECK-NO-POSTSV-NEXT:    [[TMP7:%.*]] = trunc <4 x i32> [[TMP6]] to <4 x i16>
+; CHECK-NO-POSTSV-NEXT:    [[TMP8]] = zext <4 x i16> [[TMP7]] to <4 x i32>
 ; CHECK-NO-POSTSV-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 4
-; CHECK-NO-POSTSV-NEXT:    [[TMP7:%.*]] = icmp eq i32 [[INDEX_NEXT]], 256
-; CHECK-NO-POSTSV-NEXT:    [[TMP8:%.*]] = trunc <4 x i32> [[TMP6]] to <4 x i16>
-; CHECK-NO-POSTSV-NEXT:    [[TMP9]] = zext <4 x i16> [[TMP8]] to <4 x i32>
-; CHECK-NO-POSTSV-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
+; CHECK-NO-POSTSV-NEXT:    [[TMP9:%.*]] = icmp eq i32 [[INDEX_NEXT]], 256
+; CHECK-NO-POSTSV-NEXT:    br i1 [[TMP9]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; CHECK-NO-POSTSV:       middle.block:
-; CHECK-NO-POSTSV-NEXT:    [[TMP10:%.*]] = trunc <4 x i32> [[TMP9]] to <4 x i16>
+; CHECK-NO-POSTSV-NEXT:    [[TMP10:%.*]] = trunc <4 x i32> [[TMP8]] to <4 x i16>
 ; CHECK-NO-POSTSV-NEXT:    [[TMP11:%.*]] = call i16 @llvm.vector.reduce.or.v4i16(<4 x i16> [[TMP10]])
 ; CHECK-NO-POSTSV-NEXT:    [[TMP12:%.*]] = zext i16 [[TMP11]] to i32
 ; CHECK-NO-POSTSV-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[VEC_EPILOG_ITER_CHECK:%.*]]
@@ -442,7 +442,7 @@ define i16 @reduction_or_trunc(i16* noalias nocapture %ptr, i32 %start) {
 ; CHECK-NO-POSTSV-NEXT:    br label [[VEC_EPILOG_VECTOR_BODY:%.*]]
 ; CHECK-NO-POSTSV:       vec.epilog.vector.body:
 ; CHECK-NO-POSTSV-NEXT:    [[INDEX1:%.*]] = phi i32 [ [[VEC_EPILOG_RESUME_VAL]], [[VEC_EPILOG_PH]] ], [ [[INDEX_NEXT4:%.*]], [[VEC_EPILOG_VECTOR_BODY]] ]
-; CHECK-NO-POSTSV-NEXT:    [[VEC_PHI2:%.*]] = phi <4 x i32> [ [[TMP13]], [[VEC_EPILOG_PH]] ], [ [[TMP22:%.*]], [[VEC_EPILOG_VECTOR_BODY]] ]
+; CHECK-NO-POSTSV-NEXT:    [[VEC_PHI2:%.*]] = phi <4 x i32> [ [[TMP13]], [[VEC_EPILOG_PH]] ], [ [[TMP21:%.*]], [[VEC_EPILOG_VECTOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP14:%.*]] = add i32 [[INDEX1]], 0
 ; CHECK-NO-POSTSV-NEXT:    [[TMP15:%.*]] = and <4 x i32> [[VEC_PHI2]], <i32 65535, i32 65535, i32 65535, i32 65535>
 ; CHECK-NO-POSTSV-NEXT:    [[TMP16:%.*]] = getelementptr inbounds i16, ptr [[PTR]], i32 [[TMP14]]
@@ -450,13 +450,13 @@ define i16 @reduction_or_trunc(i16* noalias nocapture %ptr, i32 %start) {
 ; CHECK-NO-POSTSV-NEXT:    [[WIDE_LOAD3:%.*]] = load <4 x i16>, ptr [[TMP17]], align 2
 ; CHECK-NO-POSTSV-NEXT:    [[TMP18:%.*]] = zext <4 x i16> [[WIDE_LOAD3]] to <4 x i32>
 ; CHECK-NO-POSTSV-NEXT:    [[TMP19:%.*]] = or <4 x i32> [[TMP15]], [[TMP18]]
+; CHECK-NO-POSTSV-NEXT:    [[TMP20:%.*]] = trunc <4 x i32> [[TMP19]] to <4 x i16>
+; CHECK-NO-POSTSV-NEXT:    [[TMP21]] = zext <4 x i16> [[TMP20]] to <4 x i32>
 ; CHECK-NO-POSTSV-NEXT:    [[INDEX_NEXT4]] = add nuw i32 [[INDEX1]], 4
-; CHECK-NO-POSTSV-NEXT:    [[TMP20:%.*]] = icmp eq i32 [[INDEX_NEXT4]], 256
-; CHECK-NO-POSTSV-NEXT:    [[TMP21:%.*]] = trunc <4 x i32> [[TMP19]] to <4 x i16>
-; CHECK-NO-POSTSV-NEXT:    [[TMP22]] = zext <4 x i16> [[TMP21]] to <4 x i32>
-; CHECK-NO-POSTSV-NEXT:    br i1 [[TMP20]], label [[VEC_EPILOG_MIDDLE_BLOCK:%.*]], label [[VEC_EPILOG_VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
+; CHECK-NO-POSTSV-NEXT:    [[TMP22:%.*]] = icmp eq i32 [[INDEX_NEXT4]], 256
+; CHECK-NO-POSTSV-NEXT:    br i1 [[TMP22]], label [[VEC_EPILOG_MIDDLE_BLOCK:%.*]], label [[VEC_EPILOG_VECTOR_BODY]], !llvm.loop [[LOOP9:![0-9]+]]
 ; CHECK-NO-POSTSV:       vec.epilog.middle.block:
-; CHECK-NO-POSTSV-NEXT:    [[TMP23:%.*]] = trunc <4 x i32> [[TMP22]] to <4 x i16>
+; CHECK-NO-POSTSV-NEXT:    [[TMP23:%.*]] = trunc <4 x i32> [[TMP21]] to <4 x i16>
 ; CHECK-NO-POSTSV-NEXT:    [[TMP24:%.*]] = call i16 @llvm.vector.reduce.or.v4i16(<4 x i16> [[TMP23]])
 ; CHECK-NO-POSTSV-NEXT:    [[TMP25:%.*]] = zext i16 [[TMP24]] to i32
 ; CHECK-NO-POSTSV-NEXT:    br i1 true, label [[FOR_END]], label [[VEC_EPILOG_SCALAR_PH]]

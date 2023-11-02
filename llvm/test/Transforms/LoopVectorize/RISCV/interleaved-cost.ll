@@ -73,7 +73,7 @@ entry:
 ; VF_8:       Found an estimated cost of 0 for VF 8 For instruction:   store i8 %a1, ptr %p1, align 1
 ; VF_8-NEXT:  Found an estimated cost of 3 for VF 8 For instruction:   store i8 %a2, ptr %p2, align 1
 ; VF_16-LABEL: Checking a loop in 'i8_factor_3'
-; VF_16:       Found an estimated cost of 16 for VF 16 For instruction:   %l0 = load i8, ptr %p0, align 1
+; VF_16:       Found an estimated cost of 48 for VF 16 For instruction:   %l0 = load i8, ptr %p0, align 1
 ; VF_16-NEXT:  Found an estimated cost of 0 for VF 16 For instruction:   %l1 = load i8, ptr %p1, align 1
 ; VF_16-NEXT:  Found an estimated cost of 0 for VF 16 For instruction:   %l2 = load i8, ptr %p2, align 1
 ; VF_16:       Found an estimated cost of 0 for VF 16 For instruction:   store i8 %a0, ptr %p0, align 1

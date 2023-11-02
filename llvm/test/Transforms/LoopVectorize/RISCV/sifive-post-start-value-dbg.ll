@@ -34,7 +34,7 @@ define dso_local signext i16 @foo(i16* nocapture readonly %ptr, i32 signext %sta
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ], !dbg [[DBG11:![0-9]+]]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <8 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP15:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VEC_PHI1:%.*]] = phi <8 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP17:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[VEC_PHI1:%.*]] = phi <8 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP16:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP1:%.*]] = add i64 [[INDEX]], 0, !dbg [[DBG10]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = add i64 [[INDEX]], 8, !dbg [[DBG10]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i16, ptr [[PTR:%.*]], i64 [[TMP1]], !dbg [[DBG12:![0-9]+]]
@@ -49,16 +49,16 @@ define dso_local signext i16 @foo(i16* nocapture readonly %ptr, i32 signext %sta
 ; CHECK-NEXT:    [[TMP10:%.*]] = zext <8 x i16> [[WIDE_LOAD2]] to <8 x i32>
 ; CHECK-NEXT:    [[TMP11:%.*]] = add <8 x i32> [[TMP7]], [[TMP9]], !dbg [[DBG18:![0-9]+]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = add <8 x i32> [[TMP8]], [[TMP10]], !dbg [[DBG18]]
+; CHECK-NEXT:    [[TMP13:%.*]] = trunc <8 x i32> [[TMP11]] to <8 x i16>
+; CHECK-NEXT:    [[TMP14:%.*]] = trunc <8 x i32> [[TMP12]] to <8 x i16>
+; CHECK-NEXT:    [[TMP15]] = zext <8 x i16> [[TMP13]] to <8 x i32>
+; CHECK-NEXT:    [[TMP16]] = zext <8 x i16> [[TMP14]] to <8 x i32>
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16, !dbg [[DBG11]]
-; CHECK-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]], !dbg [[DBG11]]
-; CHECK-NEXT:    [[TMP14:%.*]] = trunc <8 x i32> [[TMP11]] to <8 x i16>, !dbg [[DBG11]]
-; CHECK-NEXT:    [[TMP15]] = zext <8 x i16> [[TMP14]] to <8 x i32>, !dbg [[DBG11]]
-; CHECK-NEXT:    [[TMP16:%.*]] = trunc <8 x i32> [[TMP12]] to <8 x i16>, !dbg [[DBG11]]
-; CHECK-NEXT:    [[TMP17]] = zext <8 x i16> [[TMP16]] to <8 x i32>, !dbg [[DBG11]]
-; CHECK-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !dbg [[DBG11]], !llvm.loop [[LOOP19:![0-9]+]]
+; CHECK-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]], !dbg [[DBG11]]
+; CHECK-NEXT:    br i1 [[TMP17]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !dbg [[DBG11]], !llvm.loop [[LOOP19:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP18:%.*]] = trunc <8 x i32> [[TMP15]] to <8 x i16>, !dbg [[DBG10]]
-; CHECK-NEXT:    [[TMP19:%.*]] = trunc <8 x i32> [[TMP17]] to <8 x i16>, !dbg [[DBG10]]
+; CHECK-NEXT:    [[TMP19:%.*]] = trunc <8 x i32> [[TMP16]] to <8 x i16>, !dbg [[DBG10]]
 ; CHECK-NEXT:    [[BIN_RDX:%.*]] = add <8 x i16> [[TMP19]], [[TMP18]], !dbg [[DBG10]]
 ; CHECK-NEXT:    [[TMP20:%.*]] = call i16 @llvm.vector.reduce.add.v8i16(<8 x i16> [[BIN_RDX]]), !dbg [[DBG10]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = trunc i32 [[START]] to i16, !dbg [[DBG10]]
@@ -105,7 +105,7 @@ define dso_local signext i16 @foo(i16* nocapture readonly %ptr, i32 signext %sta
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br label [[VECTOR_BODY:%.*]], !dbg [[DBG10]]
 ; IGNORE-INTERLEAVE-FOR-VLA:       vector.body:
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ], !dbg [[DBG11:![0-9]+]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP14:%.*]], [[VECTOR_BODY]] ]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP12:%.*]], [[VECTOR_BODY]] ]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP4:%.*]] = sub i64 [[TMP0]], [[INDEX]], !dbg [[DBG10]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP5:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP4]], i32 4, i1 true), !dbg [[DBG10]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP5]] to i64, !dbg [[DBG10]]
@@ -117,15 +117,15 @@ define dso_local signext i16 @foo(i16* nocapture readonly %ptr, i32 signext %sta
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP:%.*]] = call <vscale x 4 x i32> @llvm.vp.and.nxv4i32(<vscale x 4 x i32> [[VEC_PHI]], <vscale x 4 x i32> shufflevector (<vscale x 4 x i32> insertelement (<vscale x 4 x i32> poison, i32 65535, i64 0), <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP7]]), !dbg [[DBG17:![0-9]+]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_CAST:%.*]] = call <vscale x 4 x i32> @llvm.vp.zext.nxv4i32.nxv4i16(<vscale x 4 x i16> [[VP_OP_LOAD]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP7]])
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP1:%.*]] = call <vscale x 4 x i32> @llvm.vp.add.nxv4i32(<vscale x 4 x i32> [[VP_OP]], <vscale x 4 x i32> [[VP_CAST]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP7]]), !dbg [[DBG18:![0-9]+]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP_MERGE:%.*]] = call <vscale x 4 x i32> @llvm.vp.merge.nxv4i32(<vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x i32> [[VP_OP1]], <vscale x 4 x i32> [[VEC_PHI]], i32 [[TMP7]]), !dbg [[DBG18]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP7]] to i64, !dbg [[DBG11]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP11]], !dbg [[DBG11]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP0]], !dbg [[DBG11]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP13:%.*]] = trunc <vscale x 4 x i32> [[VP_OP_MERGE]] to <vscale x 4 x i16>, !dbg [[DBG11]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP14]] = zext <vscale x 4 x i16> [[TMP13]] to <vscale x 4 x i32>, !dbg [[DBG11]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !dbg [[DBG11]], !llvm.loop [[LOOP19:![0-9]+]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP11:%.*]] = trunc <vscale x 4 x i32> [[VP_OP1]] to <vscale x 4 x i16>
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP12]] = zext <vscale x 4 x i16> [[TMP11]] to <vscale x 4 x i32>
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VP_OP_MERGE:%.*]] = call <vscale x 4 x i32> @llvm.vp.merge.nxv4i32(<vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x i32> [[TMP12]], <vscale x 4 x i32> [[VEC_PHI]], i32 [[TMP7]])
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP13:%.*]] = zext i32 [[TMP7]] to i64, !dbg [[DBG11]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP13]], !dbg [[DBG11]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP0]], !dbg [[DBG11]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !dbg [[DBG11]], !llvm.loop [[LOOP19:![0-9]+]]
 ; IGNORE-INTERLEAVE-FOR-VLA:       middle.block:
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP15:%.*]] = trunc <vscale x 4 x i32> [[TMP14]] to <vscale x 4 x i16>, !dbg [[DBG10]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP15:%.*]] = trunc <vscale x 4 x i32> [[VP_OP_MERGE]] to <vscale x 4 x i16>, !dbg [[DBG10]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP16:%.*]] = trunc i64 [[TMP2]] to i32, !dbg [[DBG10]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP17:%.*]] = call i16 @llvm.vp.reduce.add.nxv4i16(i16 0, <vscale x 4 x i16> [[TMP15]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP16]]), !dbg [[DBG10]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP18:%.*]] = trunc i32 [[START]] to i16, !dbg [[DBG10]]

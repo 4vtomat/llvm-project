@@ -708,28 +708,16 @@ define void @print_call_flags(ptr readonly %src, ptr noalias %dest, i64 %n) {
 ; CHECK-NEXT:    Successor(s): pred.call.continue
 ; CHECK-EMPTY:
 ; CHECK-NEXT:    pred.call.continue:
-<<<<<<< HEAD
-; CHECK-NEXT:      PHI-PREDICATED-INSTRUCTION vp<%9> = ir<%foo.ret.1>
-; CHECK-NEXT:      PHI-PREDICATED-INSTRUCTION vp<%10> = ir<%foo.ret.2>
-=======
 ; CHECK-NEXT:      PHI-PREDICATED-INSTRUCTION vp<[[PHI1:%.+]]> = ir<%foo.ret.1>
 ; CHECK-NEXT:      PHI-PREDICATED-INSTRUCTION vp<[[PHI2:%.+]]> = ir<%foo.ret.2>
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
 ; CHECK-NEXT:    No successors
 ; CHECK-NEXT:  }
 ; CHECK-NEXT:  Successor(s): if.then.1
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  if.then.1:
-<<<<<<< HEAD
-; CHECK-NEXT:    WIDEN ir<%fadd> = fadd vp<%9>, vp<%10>
+; CHECK-NEXT:    WIDEN ir<%fadd> = fadd vp<[[PHI1]]>, vp<[[PHI2]]>
 ; CHECK-NEXT:    BLEND ir<%st.value> = ir<%ld.value>/vp<%6> ir<%fadd>/ir<%ifcond>
 ; CHECK-NEXT:    CLONE ir<%st.addr> = getelementptr inbounds ir<%dest>, vp<%2>
-=======
-; CHECK-NEXT:    WIDEN ir<%fadd> = fadd vp<[[PHI1]]>, vp<[[PHI2]]>
-; CHECK-NEXT:    EMIT vp<[[NOT_COND:%.+]]> = not ir<%ifcond>
-; CHECK-NEXT:    BLEND ir<%st.value> = ir<%ld.value>/vp<[[NOT_COND]]> ir<%fadd>/ir<%ifcond>
-; CHECK-NEXT:    CLONE ir<%st.addr> = getelementptr inbounds ir<%dest>, vp<[[STEPS]]>
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
 ; CHECK-NEXT:    WIDEN store ir<%st.addr>, ir<%st.value>
 ; CHECK-NEXT:   EMIT vp<[[CAN_IV_NEXT]]> = VF * UF + nuw vp<[[CAN_IV]]>
 ; CHECK-NEXT:   EMIT branch-on-count vp<[[CAN_IV_NEXT]]>, vp<[[VEC_TC]]>
