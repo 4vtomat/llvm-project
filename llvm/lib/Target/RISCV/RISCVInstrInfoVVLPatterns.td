@@ -664,31 +664,6 @@ def sew16simm5 : ComplexPattern<XLenVT, 1, "selectRVVSimm5<16>", []>;
 def sew32simm5 : ComplexPattern<XLenVT, 1, "selectRVVSimm5<32>", []>;
 def sew64simm5 : ComplexPattern<XLenVT, 1, "selectRVVSimm5<64>", []>;
 
-multiclass VPatBinaryVL_V<SDPatternOperator vop,
-                          string instruction_name,
-                          string suffix,
-                          ValueType result_type,
-                          ValueType op1_type,
-                          ValueType op2_type,
-                          ValueType mask_type,
-                          int sew,
-                          LMULInfo vlmul,
-                          VReg result_reg_class,
-                          VReg op1_reg_class,
-                          VReg op2_reg_class> {
-  def : Pat<(result_type (vop
-                         (op1_type op1_reg_class:$rs1),
-                         (op2_type op2_reg_class:$rs2),
-                         (result_type result_reg_class:$merge),
-                         (mask_type V0),
-                         VLOpFrag)),
-        (!cast<Instruction>(instruction_name#"_"#suffix#"_"# vlmul.MX#"_MASK")
-                     result_reg_class:$merge,
-                     op1_reg_class:$rs1,
-                     op2_reg_class:$rs2,
-                     (mask_type V0), GPR:$vl, sew, TAIL_AGNOSTIC)>;
-}
-
 class VPatBinaryVL_V<SDPatternOperator vop,
                      string instruction_name,
                      string suffix,
@@ -747,32 +722,6 @@ multiclass VPatBinaryRM_VL_V<SDNode vop,
                      GPR:$vl, sew, (XLenVT timm:$policy))>;
 }
 #endif // SIFIVE_CUSTOMIZATION
-
-multiclass VPatBinaryVL_V_E<SDPatternOperator vop,
-                            string instruction_name,
-                            string suffix,
-                            ValueType result_type,
-                            ValueType op1_type,
-                            ValueType op2_type,
-                            ValueType mask_type,
-                            int log2sew,
-                            LMULInfo vlmul,
-                            int sew,
-                            VReg result_reg_class,
-                            VReg op1_reg_class,
-                            VReg op2_reg_class> {
-  def : Pat<(result_type (vop
-                         (op1_type op1_reg_class:$rs1),
-                         (op2_type op2_reg_class:$rs2),
-                         (result_type result_reg_class:$merge),
-                         (mask_type V0),
-                         VLOpFrag)),
-        (!cast<Instruction>(instruction_name#"_"#suffix#"_"# vlmul.MX#"_E"# sew#"_MASK")
-                     result_reg_class:$merge,
-                     op1_reg_class:$rs1,
-                     op2_reg_class:$rs2,
-                     (mask_type V0), GPR:$vl, log2sew, TAIL_AGNOSTIC)>;
-}
 
 class VPatBinaryVL_V_RM<SDPatternOperator vop,
                      string instruction_name,
