@@ -274,7 +274,7 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
           // Don't use the mangler for C code.
           OutName += (IsClass) ? "class " : "struct ";
           llvm::raw_svector_ostream Out(Name);
-          MContext.mangleTypeName(QualType(Ty, 0), Out);
+          MContext.mangleCanonicalTypeName(QualType(Ty, 0), Out);
           OutName += Name;
         } else {
           OutName += QualType(Ty, 0).getAsString(Context.getPrintingPolicy());
