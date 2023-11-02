@@ -948,7 +948,8 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
     // savings threshold.
     Size = Size > InlineSizeAllowance ? Size - InlineSizeAllowance : 1;
 
-<<<<<<< HEAD
+    OverrideCycleSavingsAndSizeForTesting(CycleSavings, Size);
+
 #if SIFIVE_CUSTOMIZATION
     //Allow inlining when call overhead and function size wrt number of params
     //makes inlining beneficial and turn it off for amdgpu target.
@@ -962,9 +963,6 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
        Size = 1;
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
-    OverrideCycleSavingsAndSizeForTesting(CycleSavings, Size);
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
     CostBenefit.emplace(APInt(128, Size), CycleSavings);
 
     // Let R be the ratio of CycleSavings to Size.  We accept the inlining
