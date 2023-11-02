@@ -2687,9 +2687,8 @@ bool CodeGenPrepare::dupRetToEnableTailCallOpts(BasicBlock *BB,
     (void)FoldReturnIntoUncondBranch(RetI, BB, TailCallBB);
     assert(!VerifyBFIUpdates ||
            BFI->getBlockFreq(BB) >= BFI->getBlockFreq(TailCallBB));
-    BFI->setBlockFreq(
-        BB,
-        (BFI->getBlockFreq(BB) - BFI->getBlockFreq(TailCallBB)).getFrequency());
+    BFI->setBlockFreq(BB,
+                      (BFI->getBlockFreq(BB) - BFI->getBlockFreq(TailCallBB)));
     ModifiedDT = ModifyDT::ModifyBBDT;
     Changed = true;
     ++NumRetsDup;
@@ -7163,7 +7162,7 @@ bool CodeGenPrepare::optimizeSelectInst(SelectInst *SI) {
     FreshBBs.insert(EndBlock);
   }
 
-  BFI->setBlockFreq(EndBlock, BFI->getBlockFreq(StartBlock).getFrequency());
+  BFI->setBlockFreq(EndBlock, BFI->getBlockFreq(StartBlock));
 
   static const unsigned MD[] = {
       LLVMContext::MD_prof, LLVMContext::MD_unpredictable,
@@ -8095,6 +8094,8 @@ static bool tryUnmergingGEPsAcrossIndirectBr(GetElementPtrInst *GEPI,
     if (!GEPSequentialConstIndexed(UGEPI))
       return false;
     if (UGEPI->getOperand(0) != GEPIOp)
+      return false;
+    if (UGEPI->getSourceElementType() != GEPI->getSourceElementType())
       return false;
     if (GEPIIdx->getType() !=
         cast<ConstantInt>(UGEPI->getOperand(1))->getType())

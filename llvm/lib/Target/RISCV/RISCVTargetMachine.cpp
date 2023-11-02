@@ -114,6 +114,11 @@ static cl::opt<bool> EnableRISCVDeadRegisterElimination(
              " them with stores to x0"),
     cl::init(true));
 
+static cl::opt<bool>
+    EnableSinkFold("riscv-enable-sink-fold",
+                   cl::desc("Enable sinking and folding of instruction copies"),
+                   cl::init(false), cl::Hidden);
+
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   RegisterTargetMachine<RISCVTargetMachine> X(getTheRISCV32Target());
   RegisterTargetMachine<RISCVTargetMachine> Y(getTheRISCV64Target());
@@ -358,11 +363,19 @@ class RISCVPassConfig : public TargetPassConfig {
 public:
   RISCVPassConfig(RISCVTargetMachine &TM, PassManagerBase &PM)
       : TargetPassConfig(TM, PM) {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (getOptLevel() != CodeGenOptLevel::None)
       substitutePass(&PostRASchedulerID, &PostMachineSchedulerID);
 #endif // SIFIVE_CUSTOMIZATION
   }
+=======
+    if (TM.getOptLevel() != CodeGenOptLevel::None)
+      substitutePass(&PostRASchedulerID, &PostMachineSchedulerID);
+    setEnableSinkAndFold(EnableSinkFold);
+  }
+
+>>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
   RISCVTargetMachine &getRISCVTargetMachine() const {
     return getTM<RISCVTargetMachine>();
   }

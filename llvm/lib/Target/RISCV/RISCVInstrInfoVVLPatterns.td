@@ -2295,6 +2295,56 @@ multiclass VPatWidenFPMulAccVL_VV_VF_RM<SDNode vop, string instruction_name> {
   }
 }
 
+multiclass VPatSlideVL_VX_VI<SDNode vop, string instruction_name> {
+  foreach vti = AllVectors in {
+    let Predicates = GetVTypePredicates<vti>.Predicates in {
+      def : Pat<(vti.Vector (vop (vti.Vector vti.RegClass:$rd),
+                                 (vti.Vector vti.RegClass:$rs1),
+                                 uimm5:$rs2, (vti.Mask V0),
+                                 VLOpFrag, (XLenVT timm:$policy))),
+                (!cast<Instruction>(instruction_name#"_VI_"#vti.LMul.MX#"_MASK")
+                    vti.RegClass:$rd, vti.RegClass:$rs1, uimm5:$rs2,
+                    (vti.Mask V0), GPR:$vl, vti.Log2SEW,
+                    (XLenVT timm:$policy))>;
+
+      def : Pat<(vti.Vector (vop (vti.Vector vti.RegClass:$rd),
+                                 (vti.Vector vti.RegClass:$rs1),
+                                 GPR:$rs2, (vti.Mask V0),
+                                 VLOpFrag, (XLenVT timm:$policy))),
+                (!cast<Instruction>(instruction_name#"_VX_"#vti.LMul.MX#"_MASK")
+                    vti.RegClass:$rd, vti.RegClass:$rs1, GPR:$rs2,
+                    (vti.Mask V0), GPR:$vl, vti.Log2SEW,
+                    (XLenVT timm:$policy))>;
+    }
+  }
+}
+
+multiclass VPatSlide1VL_VX<SDNode vop, string instruction_name> {
+  foreach vti = AllIntegerVectors in {
+    let Predicates = GetVTypePredicates<vti>.Predicates in {
+      def : Pat<(vti.Vector (vop (vti.Vector vti.RegClass:$rs3),
+                                 (vti.Vector vti.RegClass:$rs1),
+                                 GPR:$rs2, (vti.Mask V0), VLOpFrag)),
+                (!cast<Instruction>(instruction_name#"_VX_"#vti.LMul.MX#"_MASK")
+                    vti.RegClass:$rs3, vti.RegClass:$rs1, GPR:$rs2,
+                    (vti.Mask V0), GPR:$vl, vti.Log2SEW, TU_MU)>;
+    }
+  }
+}
+
+multiclass VPatSlide1VL_VF<SDNode vop, string instruction_name> {
+  foreach vti = AllFloatVectors in {
+    let Predicates = GetVTypePredicates<vti>.Predicates in {
+      def : Pat<(vti.Vector (vop (vti.Vector vti.RegClass:$rs3),
+                                 (vti.Vector vti.RegClass:$rs1),
+                                 vti.Scalar:$rs2, (vti.Mask V0), VLOpFrag)),
+                (!cast<Instruction>(instruction_name#"_V"#vti.ScalarSuffix#"_"#vti.LMul.MX#"_MASK")
+                    vti.RegClass:$rs3, vti.RegClass:$rs1, vti.Scalar:$rs2,
+                    (vti.Mask V0), GPR:$vl, vti.Log2SEW, TU_MU)>;
+    }
+  }
+}
+
 //===----------------------------------------------------------------------===//
 // Patterns.
 //===----------------------------------------------------------------------===//
@@ -3311,6 +3361,7 @@ foreach vti = AllIntegerVectors in {
               (!cast<Instruction>("PseudoVID_V_"#vti.LMul.MX#"_MASK")
                   (vti.Vector (IMPLICIT_DEF)), (vti.Mask V0), GPR:$vl, vti.Log2SEW,
                   TAIL_AGNOSTIC)>;
+<<<<<<< HEAD
 
 #ifdef SIFIVE_CUSTOMIZATION
     // Copied from BSC
@@ -3423,3 +3474,14 @@ foreach vti = AllVectors in {
                   GPR:$vl, vti.Log2SEW, (XLenVT timm:$policy))>;
   }
 }
+=======
+  }
+}
+
+defm : VPatSlideVL_VX_VI<riscv_slideup_vl, "PseudoVSLIDEUP">;
+defm : VPatSlideVL_VX_VI<riscv_slidedown_vl, "PseudoVSLIDEDOWN">;
+defm : VPatSlide1VL_VX<riscv_slide1up_vl, "PseudoVSLIDE1UP">;
+defm : VPatSlide1VL_VF<riscv_fslide1up_vl, "PseudoVFSLIDE1UP">;
+defm : VPatSlide1VL_VX<riscv_slide1down_vl, "PseudoVSLIDE1DOWN">;
+defm : VPatSlide1VL_VF<riscv_fslide1down_vl, "PseudoVFSLIDE1DOWN">;
+>>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60

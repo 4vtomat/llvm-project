@@ -349,6 +349,9 @@ public:
   /// individual classes of instructions would be better.
   unsigned getInliningThresholdMultiplier() const;
 
+  unsigned getInliningCostBenefitAnalysisSavingsMultiplier() const;
+  unsigned getInliningCostBenefitAnalysisProfitableMultiplier() const;
+
   /// \returns A value to be added to the inlining threshold.
   unsigned adjustInliningThreshold(const CallBase *CB) const;
 
@@ -1764,6 +1767,9 @@ public:
                        const TTI::PointersChainInfo &Info, Type *AccessTy,
                        TTI::TargetCostKind CostKind) = 0;
   virtual unsigned getInliningThresholdMultiplier() const = 0;
+  virtual unsigned getInliningCostBenefitAnalysisSavingsMultiplier() const = 0;
+  virtual unsigned
+  getInliningCostBenefitAnalysisProfitableMultiplier() const = 0;
   virtual unsigned adjustInliningThreshold(const CallBase *CB) = 0;
   virtual int getInlinerVectorBonusPercent() const = 0;
   virtual unsigned getCallerAllocaCost(const CallBase *CB,
@@ -2167,6 +2173,12 @@ public:
   }
   unsigned adjustInliningThreshold(const CallBase *CB) override {
     return Impl.adjustInliningThreshold(CB);
+  }
+  unsigned getInliningCostBenefitAnalysisSavingsMultiplier() const override {
+    return Impl.getInliningCostBenefitAnalysisSavingsMultiplier();
+  }
+  unsigned getInliningCostBenefitAnalysisProfitableMultiplier() const override {
+    return Impl.getInliningCostBenefitAnalysisProfitableMultiplier();
   }
   int getInlinerVectorBonusPercent() const override {
     return Impl.getInlinerVectorBonusPercent();

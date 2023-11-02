@@ -38,10 +38,6 @@ static bool isLUIADDI(const MachineInstr *FirstMI,
 #endif // SIFIVE_CUSTOMIZATION
     return false;
 
-  // The first operand of ADDI might be a frame index.
-  if (!SecondMI.getOperand(1).isReg())
-    return false;
-
   Register FirstDest = FirstMI->getOperand(0).getReg();
 
   // Destination of LUI should be the ADDI(W) source register.

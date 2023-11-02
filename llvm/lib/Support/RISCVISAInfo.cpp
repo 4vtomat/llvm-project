@@ -94,11 +94,16 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xcvsimd", RISCVExtensionVersion{1, 0}},
     {"xsfcie", RISCVExtensionVersion{1, 0}},
     {"xsfvcp", RISCVExtensionVersion{1, 0}},
+<<<<<<< HEAD
     {"xsfvfhbfmin", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xsfvfnrclipxfqf", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xsfvfwmaccqqq", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xsfvqmaccdod", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xsfvqmaccqoq", RISCVExtensionVersion{0, 1}}, // SIFIVE
+=======
+    {"xsfvqmaccdod", RISCVExtensionVersion{1, 0}},
+    {"xsfvqmaccqoq", RISCVExtensionVersion{1, 0}},
+>>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
     {"xtheadba", RISCVExtensionVersion{1, 0}},
     {"xtheadbb", RISCVExtensionVersion{1, 0}},
     {"xtheadbs", RISCVExtensionVersion{1, 0}},
@@ -128,6 +133,11 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zcmp", RISCVExtensionVersion{1, 0}},
     {"zcmt", RISCVExtensionVersion{1, 0}},
     {"zdinx", RISCVExtensionVersion{1, 0}},
+<<<<<<< HEAD
+=======
+
+    {"zfa", RISCVExtensionVersion{1, 0}},
+>>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
     {"zfh", RISCVExtensionVersion{1, 0}},
     {"zfhmin", RISCVExtensionVersion{1, 0}},
     {"zfinx", RISCVExtensionVersion{1, 0}},
@@ -194,7 +204,6 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
 
     {"zacas", RISCVExtensionVersion{1, 0}},
 
-    {"zfa", RISCVExtensionVersion{0, 2}},
     {"zfbfmin", RISCVExtensionVersion{0, 8}},
 
     {"zicfilp", RISCVExtensionVersion{0, 2}},
@@ -1196,6 +1205,8 @@ static const char *ImpliedExtsF[] = {"zicsr"};
 static const char *ImpliedExtsV[] = {"zvl128b", "zve64d"};
 static const char *ImpliedExtsXTHeadVdot[] = {"v"};
 static const char *ImpliedExtsXsfvcp[] = {"zve32x"};
+static const char *ImpliedExtsXsfvqmaccdod[] = {"zve32x"};
+static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x"};
 static const char *ImpliedExtsZacas[] = {"a"};
 static const char *ImpliedExtsZcb[] = {"zca"};
 static const char *ImpliedExtsZcd[] = {"d", "zca"};
@@ -1270,11 +1281,16 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"f"}, {ImpliedExtsF}},
     {{"v"}, {ImpliedExtsV}},
     {{"xsfvcp"}, {ImpliedExtsXsfvcp}},
+<<<<<<< HEAD
     {{"xsfvfhbfmin"}, {ImpliedExtsXsfvfhbfmin}}, // SIFIVE
     {{"xsfvfnrclipxfqf"}, {ImpliedExtsXsfvfnrclipxfqf}}, // SIFIVE
     {{"xsfvfwmaccqqq"}, {ImpliedExtsXsfvfwmaccqqq}}, // SIFIVE
     {{"xsfvqmaccdod"}, {ImpliedExtsXsfvqmaccdod}}, // SIFIVE
     {{"xsfvqmaccqoq"}, {ImpliedExtsXsfvqmaccqoq}}, // SIFIVE
+=======
+    {{"xsfvqmaccdod"}, {ImpliedExtsXsfvqmaccdod}},
+    {{"xsfvqmaccqoq"}, {ImpliedExtsXsfvqmaccqoq}},
+>>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
     {{"xtheadvdot"}, {ImpliedExtsXTHeadVdot}},
     {{"zacas"}, {ImpliedExtsZacas}},
     {{"zcb"}, {ImpliedExtsZcb}},

@@ -2033,7 +2033,8 @@ void VPCanonicalIVPHIRecipe::print(raw_ostream &O, const Twine &Indent,
                                    VPSlotTracker &SlotTracker) const {
   O << Indent << "EMIT ";
   printAsOperand(O, SlotTracker);
-  O << " = CANONICAL-INDUCTION";
+  O << " = CANONICAL-INDUCTION ";
+  printOperands(O, SlotTracker);
 }
 #endif
 

@@ -34,7 +34,7 @@ define i1 @test_srem_odd(i29 %X) nounwind {
 ; RV64-NEXT:    addiw a1, a1, 331
 ; RV64-NEXT:    call __muldi3@plt
 ; RV64-NEXT:    lui a1, 662
-; RV64-NEXT:    addiw a1, a1, -83
+; RV64-NEXT:    addi a1, a1, -83
 ; RV64-NEXT:    add a0, a0, a1
 ; RV64-NEXT:    slli a0, a0, 35
 ; RV64-NEXT:    srli a0, a0, 35
@@ -63,10 +63,10 @@ define i1 @test_srem_odd(i29 %X) nounwind {
 ; RV64M-LABEL: test_srem_odd:
 ; RV64M:       # %bb.0:
 ; RV64M-NEXT:    lui a1, 128424
-; RV64M-NEXT:    addiw a1, a1, 331
+; RV64M-NEXT:    addi a1, a1, 331
 ; RV64M-NEXT:    mul a0, a0, a1
 ; RV64M-NEXT:    lui a1, 662
-; RV64M-NEXT:    addiw a1, a1, -83
+; RV64M-NEXT:    addi a1, a1, -83
 ; RV64M-NEXT:    add a0, a0, a1
 ; RV64M-NEXT:    slli a0, a0, 35
 ; RV64M-NEXT:    srli a0, a0, 35
@@ -93,10 +93,10 @@ define i1 @test_srem_odd(i29 %X) nounwind {
 ; RV64MV-LABEL: test_srem_odd:
 ; RV64MV:       # %bb.0:
 ; RV64MV-NEXT:    lui a1, 128424
-; RV64MV-NEXT:    addiw a1, a1, 331
+; RV64MV-NEXT:    addi a1, a1, 331
 ; RV64MV-NEXT:    mul a0, a0, a1
 ; RV64MV-NEXT:    lui a1, 662
-; RV64MV-NEXT:    addiw a1, a1, -83
+; RV64MV-NEXT:    addi a1, a1, -83
 ; RV64MV-NEXT:    add a0, a0, a1
 ; RV64MV-NEXT:    slli a0, a0, 35
 ; RV64MV-NEXT:    srli a0, a0, 35
@@ -773,7 +773,11 @@ define void @test_srem_vec(ptr %X) nounwind {
 ; RV64MV-NEXT:    srli a1, a1, 31
 ; RV64MV-NEXT:    vand.vx v8, v8, a1
 ; RV64MV-NEXT:    lui a2, 32
+<<<<<<< HEAD
 ; RV64MV-NEXT:    addiw a2, a2, 256
+=======
+; RV64MV-NEXT:    addi a2, a2, 256
+>>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
 ; RV64MV-NEXT:    vmv.s.x v10, a2
 ; RV64MV-NEXT:    vsext.vf8 v12, v10
 ; RV64MV-NEXT:    vmsne.vv v0, v8, v12
