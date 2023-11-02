@@ -738,16 +738,13 @@ R"(All available -march extensions for RISC-V
     xcvsimd             1.0
     xsfcie              1.0
     xsfvcp              1.0
-<<<<<<< HEAD
     xsfvfhbfmin         0.1
     xsfvfnrclipxfqf     0.1
     xsfvfwmaccqqq       0.1
-    xsfvqmaccdod        0.1
-    xsfvqmaccqoq        0.1
-=======
     xsfvqmaccdod        1.0
+    xsfvqmaccdod        0.1
     xsfvqmaccqoq        1.0
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
+    xsfvqmaccqoq        0.1
     xtheadba            1.0
     xtheadbb            1.0
     xtheadbs            1.0

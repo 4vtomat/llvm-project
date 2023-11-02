@@ -94,16 +94,13 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xcvsimd", RISCVExtensionVersion{1, 0}},
     {"xsfcie", RISCVExtensionVersion{1, 0}},
     {"xsfvcp", RISCVExtensionVersion{1, 0}},
-<<<<<<< HEAD
     {"xsfvfhbfmin", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xsfvfnrclipxfqf", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xsfvfwmaccqqq", RISCVExtensionVersion{0, 1}}, // SIFIVE
-    {"xsfvqmaccdod", RISCVExtensionVersion{0, 1}}, // SIFIVE
-    {"xsfvqmaccqoq", RISCVExtensionVersion{0, 1}}, // SIFIVE
-=======
     {"xsfvqmaccdod", RISCVExtensionVersion{1, 0}},
+    {"xsfvqmaccdod", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xsfvqmaccqoq", RISCVExtensionVersion{1, 0}},
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
+    {"xsfvqmaccqoq", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xtheadba", RISCVExtensionVersion{1, 0}},
     {"xtheadbb", RISCVExtensionVersion{1, 0}},
     {"xtheadbs", RISCVExtensionVersion{1, 0}},
@@ -133,11 +130,8 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zcmp", RISCVExtensionVersion{1, 0}},
     {"zcmt", RISCVExtensionVersion{1, 0}},
     {"zdinx", RISCVExtensionVersion{1, 0}},
-<<<<<<< HEAD
-=======
 
     {"zfa", RISCVExtensionVersion{1, 0}},
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
     {"zfh", RISCVExtensionVersion{1, 0}},
     {"zfhmin", RISCVExtensionVersion{1, 0}},
     {"zfinx", RISCVExtensionVersion{1, 0}},
@@ -1241,8 +1235,6 @@ static const char *ImpliedExtsZvfh[] = {"zve32f", "zfhmin"};
 static const char *ImpliedExtsXsfvfhbfmin[] = {"zve32f"};
 static const char *ImpliedExtsXsfvfnrclipxfqf[] = {"zve32f"};
 static const char *ImpliedExtsXsfvfwmaccqqq[] = {"zve32f", "zvl256b"};
-static const char *ImpliedExtsXsfvqmaccdod[] = {"zve32x", "zvl128b"};
-static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x", "zvl256b"};
 #endif // SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsZvfhmin[] = {"zve32f"};
 static const char *ImpliedExtsZvkn[] = {"zvkb", "zvkned", "zvknhb", "zvkt"};
@@ -1281,16 +1273,11 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"f"}, {ImpliedExtsF}},
     {{"v"}, {ImpliedExtsV}},
     {{"xsfvcp"}, {ImpliedExtsXsfvcp}},
-<<<<<<< HEAD
     {{"xsfvfhbfmin"}, {ImpliedExtsXsfvfhbfmin}}, // SIFIVE
     {{"xsfvfnrclipxfqf"}, {ImpliedExtsXsfvfnrclipxfqf}}, // SIFIVE
     {{"xsfvfwmaccqqq"}, {ImpliedExtsXsfvfwmaccqqq}}, // SIFIVE
-    {{"xsfvqmaccdod"}, {ImpliedExtsXsfvqmaccdod}}, // SIFIVE
-    {{"xsfvqmaccqoq"}, {ImpliedExtsXsfvqmaccqoq}}, // SIFIVE
-=======
     {{"xsfvqmaccdod"}, {ImpliedExtsXsfvqmaccdod}},
     {{"xsfvqmaccqoq"}, {ImpliedExtsXsfvqmaccqoq}},
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
     {{"xtheadvdot"}, {ImpliedExtsXTHeadVdot}},
     {{"zacas"}, {ImpliedExtsZacas}},
     {{"zcb"}, {ImpliedExtsZcb}},

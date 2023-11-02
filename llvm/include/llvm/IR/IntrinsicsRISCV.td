@@ -1774,16 +1774,6 @@ let TargetPrefix = "riscv" in {
   }
 
 #ifdef SIFIVE_CUSTOMIZATION
-  def int_riscv_sf_vqmaccu_4x8x4 : RISCVSFCustomVQMACC;
-  def int_riscv_sf_vqmacc_4x8x4 : RISCVSFCustomVQMACC;
-  def int_riscv_sf_vqmaccus_4x8x4 : RISCVSFCustomVQMACC;
-  def int_riscv_sf_vqmaccsu_4x8x4 : RISCVSFCustomVQMACC;
-
-  def int_riscv_sf_vqmaccu_2x8x2 : RISCVSFCustomVQMACC;
-  def int_riscv_sf_vqmacc_2x8x2 : RISCVSFCustomVQMACC;
-  def int_riscv_sf_vqmaccus_2x8x2 : RISCVSFCustomVQMACC;
-  def int_riscv_sf_vqmaccsu_2x8x2 : RISCVSFCustomVQMACC;
-
   defm sf_vfnrclip_x  : RISCVSFCustomVFNRCLIP;
   defm sf_vfnrclip_xu : RISCVSFCustomVFNRCLIP;
 

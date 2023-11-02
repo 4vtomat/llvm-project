@@ -81,22 +81,6 @@ class CustomSiFiveVV<string opcodestr,  RISCVVFormat opv, bits<6> funct6>
   let mayStore = 0;
 }
 
-let vm = 1, RVVConstraint = VS2Constraint, Predicates = [HasVendorXSfvqmaccqoq],
-    DecoderNamespace = "XSfvqmaccqoq" in {
-  def VQMACCU4x8x4_VV : CustomSiFiveVV<"sf.vqmaccu.4x8x4", OPMVV, 0b111100>;
-  def VQMACC4x8x4_VV : CustomSiFiveVV<"sf.vqmacc.4x8x4", OPMVV, 0b111101>;
-  def VQMACCUS4x8x4_VV : CustomSiFiveVV<"sf.vqmaccus.4x8x4", OPMVV, 0b111110>;
-  def VQMACCSU4x8x4_VV : CustomSiFiveVV<"sf.vqmaccsu.4x8x4", OPMVV, 0b111111>;
-} // Predicates = [HasVendorXSfvqmaccqoq]
-
-let vm = 1, RVVConstraint = VS2Constraint, Predicates = [HasVendorXSfvqmaccdod],
-    DecoderNamespace = "XSfvqmaccdod" in {
-  def VQMACCU2x8x2_VV : CustomSiFiveVV<"sf.vqmaccu.2x8x2", OPMVV, 0b101100>;
-  def VQMACC2x8x2_VV : CustomSiFiveVV<"sf.vqmacc.2x8x2", OPMVV, 0b101101>;
-  def VQMACCUS2x8x2_VV : CustomSiFiveVV<"sf.vqmaccus.2x8x2", OPMVV, 0b101110>;
-  def VQMACCSU2x8x2_VV : CustomSiFiveVV<"sf.vqmaccsu.2x8x2", OPMVV, 0b101111>;
-} // Predicates = [HasVendorXSfvqmaccdod]
-
 let Predicates = [HasVendorXSfvfhbfmin], DecoderNamespace = "XSfvfhbfmin",
     Constraints = "@earlyclobber $vd", mayRaiseFPException = true in {
 let RVVConstraint = WidenCvt in
@@ -686,30 +670,21 @@ let Predicates = [HasVendorXSfvcp] in {
   }
 }
 
-<<<<<<< HEAD
+let Predicates = [HasVendorXSfvqmaccdod] in {
+  defm : VPatVQMACC<"vqmaccu_2x8x2", "VQMACCU", "2x8x2">;
+  defm : VPatVQMACC<"vqmacc_2x8x2", "VQMACC", "2x8x2">;
+  defm : VPatVQMACC<"vqmaccus_2x8x2", "VQMACCUS", "2x8x2">;
+  defm : VPatVQMACC<"vqmaccsu_2x8x2", "VQMACCSU", "2x8x2">;
+}
+
+let Predicates = [HasVendorXSfvqmaccqoq] in {
+  defm : VPatVQMACC<"vqmaccu_4x8x4", "VQMACCU", "4x8x4">;
+  defm : VPatVQMACC<"vqmacc_4x8x4", "VQMACC", "4x8x4">;
+  defm : VPatVQMACC<"vqmaccus_4x8x4", "VQMACCUS", "4x8x4">;
+  defm : VPatVQMACC<"vqmaccsu_4x8x4", "VQMACCSU", "4x8x4">;
+}
+
 #ifdef SIFIVE_CUSTOMIZATION
-let IsRVVWideningReduction = 1 in {
-foreach m = [V_MF2, V_M1, V_M2, V_M4] in {
-  defvar Constraint = "@earlyclobber $rd";
-  let VLMul = m.value in {
-    def PseudoVQMACCU4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
-    def PseudoVQMACC4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
-    def PseudoVQMACCUS4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
-    def PseudoVQMACCSU4x8x4_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
-  }
-}
-
-foreach m = [V_M1, V_M2, V_M4, V_M8] in {
-  defvar Constraint = "@earlyclobber $rd";
-  let VLMul = m.value in {
-    def PseudoVQMACCU2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.vrclass, VR, m.vrclass, Constraint>;
-    def PseudoVQMACC2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.vrclass, VR, m.vrclass, Constraint>;
-    def PseudoVQMACCUS2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.vrclass, VR, m.vrclass, Constraint>;
-    def PseudoVQMACCSU2x8x2_VV # "_" # m.MX : VPseudoTernaryNoMaskWithPolicy<m.vrclass, VR, m.vrclass, Constraint>;
-  }
-}
-}
-
 foreach m = [V_MF8, V_MF4, V_MF2, V_M1, V_M2] in {
   defvar Constraint = "@earlyclobber $rd";
   let VLMul = m.value in {
@@ -721,10 +696,8 @@ foreach m = [V_MF8, V_MF4, V_MF2, V_M1, V_M2] in {
 }
 
 let Predicates = [HasVendorXSfvfhbfmin], mayRaiseFPException = true in {
-#ifdef SIFIVE_CUSTOMIZATION
 defm PseudoVFWCVT_F_BF16   : VPseudoVWCVTD_V;
 defm PseudoVFNCVT_BF16_F   : VPseudoVNCVTD_W;
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 let IsRVVWideningReduction = 1, mayRaiseFPException = true in {
@@ -744,18 +717,6 @@ def : Pat<(int_riscv_vsetvxrm (XLenVT GPR:$rm)),
 def : Pat<(int_riscv_vsetvxrm uimm5:$rm),
           (WriteVXRMImm uimm5:$rm)>;
 
-multiclass XPatSFVQMACC_VV<string intrinsic, string instruction,
-                           list<VTypeInfoToWide> vtilist> {
-  foreach VtiToWti = vtilist in {
-    defvar Vti = VtiToWti.Vti;
-    defvar Wti = VtiToWti.Wti;
-    def : VPatTernaryNoMaskWithPolicy<intrinsic, instruction, "VV",
-                                        Wti.Vector, vint8m1_t, Vti.Vector,
-                                        Vti.Log2SEW, Vti.LMul,
-                                        Wti.RegClass, VR, Vti.RegClass>;
-  }
-}
-
 multiclass XPatSFVFNRCLIP<string intrinsic, string instruction,
                           list<VTypeInfoToWide> vtilist> {
   foreach VtiToWti = vtilist in {
@@ -766,20 +727,6 @@ multiclass XPatSFVFNRCLIP<string intrinsic, string instruction,
                       Vti.RegClass, Wti.RegClass, Wti.ScalarRegClass>;
   }
 }
-
-let Predicates = [HasVendorXSfvqmaccqoq] in {
-  defm : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccu_4x8x4", "PseudoVQMACCU4x8x4", AllVQMACCQoQVectors>;
-  defm : XPatSFVQMACC_VV<"int_riscv_sf_vqmacc_4x8x4", "PseudoVQMACC4x8x4", AllVQMACCQoQVectors>;
-  defm : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccus_4x8x4", "PseudoVQMACCUS4x8x4", AllVQMACCQoQVectors>;
-  defm : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccsu_4x8x4", "PseudoVQMACCSU4x8x4", AllVQMACCQoQVectors>;
-} // Predicates = [HasVendorXSfvqmaccqoq]
-
-let Predicates = [HasVendorXSfvqmaccdod] in {
-  defm : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccu_2x8x2", "PseudoVQMACCU2x8x2", AllVQMACCDoDVectors>;
-  defm : XPatSFVQMACC_VV<"int_riscv_sf_vqmacc_2x8x2", "PseudoVQMACC2x8x2", AllVQMACCDoDVectors>;
-  defm : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccus_2x8x2", "PseudoVQMACCUS2x8x2", AllVQMACCDoDVectors>;
-  defm : XPatSFVQMACC_VV<"int_riscv_sf_vqmaccsu_2x8x2", "PseudoVQMACCSU2x8x2", AllVQMACCDoDVectors>;
-} // Predicates = [HasVendorXSfvqmaccdod]
 
 let Predicates = [HasVendorXSfvfnrclipxfqf] in {
   defm : XPatSFVFNRCLIP<"int_riscv_sf_vfnrclip_xu", "PseudoVFNRCLIP_XU_F_QF", AllVFNRCLIPVectors>;
@@ -836,22 +783,6 @@ def CFLUSH_I_L1
 }
 } // hasNoSchedulingInfo = 1, ...
 #endif // SIFIVE_CUSTOMIZATION
-=======
-let Predicates = [HasVendorXSfvqmaccdod] in {
-  defm : VPatVQMACC<"vqmaccu_2x8x2", "VQMACCU", "2x8x2">;
-  defm : VPatVQMACC<"vqmacc_2x8x2", "VQMACC", "2x8x2">;
-  defm : VPatVQMACC<"vqmaccus_2x8x2", "VQMACCUS", "2x8x2">;
-  defm : VPatVQMACC<"vqmaccsu_2x8x2", "VQMACCSU", "2x8x2">;
-}
-
-let Predicates = [HasVendorXSfvqmaccqoq] in {
-  defm : VPatVQMACC<"vqmaccu_4x8x4", "VQMACCU", "4x8x4">;
-  defm : VPatVQMACC<"vqmacc_4x8x4", "VQMACC", "4x8x4">;
-  defm : VPatVQMACC<"vqmaccus_4x8x4", "VQMACCUS", "4x8x4">;
-  defm : VPatVQMACC<"vqmaccsu_4x8x4", "VQMACCSU", "4x8x4">;
-}
-
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
 let Predicates = [HasVendorXSfcie] in {
 let hasSideEffects = 1, mayLoad = 0, mayStore = 0, DecoderNamespace = "XSfcie" in {
 def SF_CFLUSH_D_L1 : RVInstI<0b000, OPC_SYSTEM, (outs), (ins GPR:$rs1), "cflush.d.l1","$rs1">,

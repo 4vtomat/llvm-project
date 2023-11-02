@@ -993,21 +993,6 @@ def HasVendorXSfvcp : Predicate<"Subtarget->hasVendorXSfvcp()">,
                                 "'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions)">;
 
 #ifdef SIFIVE_CUSTOMIZATION
-def FeatureVendorXSfvqmaccqoq
-    : SubtargetFeature<"xsfvqmaccqoq", "HasVendorXSfvqmaccqoq", "true",
-                       "Xsfvqmaccqoq (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 256)",
-                       [FeatureStdExtZve32x, FeatureStdExtZvl256b]>;
-def HasVendorXSfvqmaccqoq : Predicate<"Subtarget->hasVendorXSfvqmaccqoq()">,
-                         AssemblerPredicate<(all_of FeatureVendorXSfvqmaccqoq),
-                         "'Xsfvqmaccqoq' (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 256)">;
-def FeatureVendorXSfvqmaccdod
-    : SubtargetFeature<"xsfvqmaccdod", "HasVendorXSfvqmaccdod", "true",
-                       "Xsfvqmaccdod (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 128)",
-                       [FeatureStdExtZve32x, FeatureStdExtZvl128b]>;
-def HasVendorXSfvqmaccdod : Predicate<"Subtarget->hasVendorXSfvqmaccdod()">,
-                         AssemblerPredicate<(all_of FeatureVendorXSfvqmaccdod),
-                         "'Xsfvqmaccdod' (SiFive Custom int8 Matrix-Multiply Instructions for DLEN >= 128)">;
-
 def FeatureVendorXSfvfhbfmin
     : SubtargetFeature<"xsfvfhbfmin", "HasVendorXSfvfhbfmin", "true",
                        "Xsfvfhbfmin (SiFive custom minimal BF16 vector support)",

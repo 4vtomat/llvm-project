@@ -3212,36 +3212,6 @@ let IntrinsicTypes = [-1] in
 // (MultipleLMUL:1)q stands for LMUL don't multiply and SEW multiply by 4
 // (MultipleLMUL:2)w stands for LMUL multiply by 2 and SEW multiply by 2
 // (MultipleLMUL:2)q stands for LMUL multiply by 2 and SEW multiply by 4
-let RequiredFeatures = ["Xsfvqmaccqoq"],
-    UnMaskedPolicyScheme = HasPolicyOperand,
-    Log2LMUL = [0, 1, 2, -1],
-    HasMasked = false,
-    IntrinsicTypes = [-1, 1, 2] in {
-  let OverloadedName = "sf_vqmaccu_4x8x4" in
-    def sf_vqmaccu_4x8x4 : RVVBuiltin<"(MultipleLMUL:2)q", "(MultipleLMUL:2)q(MultipleLMUL:2)qUSvUv", "c">;
-  let OverloadedName = "sf_vqmacc_4x8x4" in
-    def sf_vqmacc_4x8x4 : RVVBuiltin<"(MultipleLMUL:2)q", "(MultipleLMUL:2)q(MultipleLMUL:2)qSvv", "c">;
-  let OverloadedName = "sf_vqmaccus_4x8x4" in
-    def sf_vqmaccus_4x8x4 : RVVBuiltin<"(MultipleLMUL:2)q", "(MultipleLMUL:2)q(MultipleLMUL:2)qUSvv", "c">;
-  let OverloadedName = "sf_vqmaccsu_4x8x4" in
-    def sf_vqmaccsu_4x8x4 : RVVBuiltin<"(MultipleLMUL:2)q", "(MultipleLMUL:2)q(MultipleLMUL:2)qSvUv", "c">;
-}
-
-let RequiredFeatures = ["Xsfvqmaccdod"],
-    UnMaskedPolicyScheme = HasPolicyOperand,
-    Log2LMUL = [0, 1, 2, 3],
-    HasMasked = false,
-    IntrinsicTypes = [-1, 1, 2] in {
-  let OverloadedName = "sf_vqmaccu_2x8x2" in
-    def sf_vqmaccu_2x8x2 : RVVBuiltin<"(MultipleLMUL:1)q", "(MultipleLMUL:1)q(MultipleLMUL:1)qUSvUv", "c">;
-  let OverloadedName = "sf_vqmacc_2x8x2" in
-    def sf_vqmacc_2x8x2 : RVVBuiltin<"(MultipleLMUL:1)q", "(MultipleLMUL:1)q(MultipleLMUL:1)qSvv", "c">;
-  let OverloadedName = "sf_vqmaccus_2x8x2" in
-    def sf_vqmaccus_2x8x2 : RVVBuiltin<"(MultipleLMUL:1)q", "(MultipleLMUL:1)q(MultipleLMUL:1)qUSvv", "c">;
-  let OverloadedName = "sf_vqmaccsu_2x8x2" in
-    def sf_vqmaccsu_2x8x2 : RVVBuiltin<"(MultipleLMUL:1)q", "(MultipleLMUL:1)q(MultipleLMUL:1)qSvUv", "c">;
-}
-
 let RequiredFeatures = ["Xsfvfnrclipxfqf"], UnMaskedPolicyScheme = HasPassthruOperand,
     Log2LMUL = [0, 1, -1, -2, -3] in {
   let Name = "sf_vfnrclip_x_f_qf" in
