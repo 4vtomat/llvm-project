@@ -11461,8 +11461,7 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
 
       setInsertPointAfterBundle(E);
 
-<<<<<<< HEAD
-      Value *VecValue = vectorizeOperand(E, 0);
+      Value *VecValue = vectorizeOperand(E, 0, PostponedPHIs);
 #if SIFIVE_CUSTOMIZATION
       // Consecutive but reversed stores are just strided stores with the stride
       // -1.
@@ -11507,9 +11506,6 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
         return V;
       }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      Value *VecValue = vectorizeOperand(E, 0, PostponedPHIs);
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
       VecValue = FinalShuffle(VecValue, E);
 
       Value *Ptr = SI->getPointerOperand();
