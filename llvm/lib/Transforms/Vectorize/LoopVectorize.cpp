@@ -1552,18 +1552,13 @@ public:
     CM_Widen,         // For consecutive accesses with stride +1.
     CM_Widen_Reverse, // For consecutive accesses with stride -1.
     CM_Interleave,
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     CM_Strided,       // Non-consecutive accesses with known stride.
 #endif // SIFIVE_CUSTOMIZATION
-    CM_GatherScatter, // Non-consecutive accesses in general.
-    CM_Scalarize
-=======
     CM_GatherScatter,
     CM_Scalarize,
     CM_VectorCall,
     CM_IntrinsicCall
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
   };
 
   /// Save vectorization decision \p W and \p Cost taken by the cost model for
@@ -1687,15 +1682,12 @@ public:
 #endif
       return;
     setCostBasedWideningDecision(VF);
-<<<<<<< HEAD
+    setVectorizedCallDecision(VF);
 #if SIFIVE_CUSTOMIZATION
     if (Legal->isVectorizableUncountable())
       collectLoopUniformsForUncountableLoops(VF);
     else
 #endif
-=======
-    setVectorizedCallDecision(VF);
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
     collectLoopUniforms(VF);
     collectLoopScalars(VF);
   }
@@ -4541,61 +4533,12 @@ void InnerLoopVectorizer::fixReduction(VPReductionPHIRecipe *PhiR,
   // instead of the former. For an inloop reduction the reduction will already
   // be predicated, and does not need to be handled here.
   if (Cost->foldTailByMasking() && !PhiR->isInLoop()) {
-<<<<<<< HEAD
-    for (unsigned Part = 0; Part < UF; ++Part) {
-      Value *VecLoopExitInst = State.get(LoopExitInstDef, Part);
-#if SIFIVE_CUSTOMIZATION
-      Value *Sel = nullptr;
-      for (User *U : VecLoopExitInst->users()) {
-        auto *II = dyn_cast<IntrinsicInst>(U);
-        if (isa<SelectInst>(U) ||
-            (II && II->getIntrinsicID() == Intrinsic::vp_merge)) {
-          assert((!Sel || U == Sel) && "Reduction exit feeding two selects");
-          Sel = U;
-#else
-      SelectInst *Sel = nullptr;
-      for (User *U : VecLoopExitInst->users()) {
-        if (isa<SelectInst>(U)) {
-          assert((!Sel || U == Sel) &&
-                 "Reduction exit feeding two different selects");
-          Sel = cast<SelectInst>(U);
-#endif // SIFIVE_CUSTOMIZATION
-        } else
-          assert(isa<PHINode>(U) && "Reduction exit must feed Phi's or select");
-      }
-      assert(Sel && "Reduction exit feeds no select");
-      State.reset(LoopExitInstDef, Sel, Part);
-
-#if SIFIVE_CUSTOMIZATION
-      if (isa<FPMathOperator>(Sel))
-        cast<Instruction>(Sel)->setFastMathFlags(RdxDesc.getFastMathFlags());
-#endif // SIFIVE_CUSTOMIZATION
-
-      // If the target can create a predicated operator for the reduction at no
-      // extra cost in the loop (for example a predicated vadd), it can be
-      // cheaper for the select to remain in the loop than be sunk out of it,
-      // and so use the select value for the phi instead of the old
-      // LoopExitValue.
-      if (PreferPredicatedReductionSelect ||
-          TTI->preferPredicatedReductionSelect(
-              RdxDesc.getOpcode(), PhiTy,
-              TargetTransformInfo::ReductionFlags())
-#if SIFIVE_CUSTOMIZATION
-          || useVLAVectorizer()) {
-#else
-              ) {
-#endif // SIFIVE_CUSTOMIZATION
-        auto *VecRdxPhi =
-            cast<PHINode>(State.get(PhiR, Part));
-        VecRdxPhi->setIncomingValueForBlock(VectorLoopLatch, Sel);
-=======
     VPValue *Def = nullptr;
     for (VPUser *U : LoopExitInstDef->users()) {
       auto *S = dyn_cast<VPInstruction>(U);
       if (S && S->getOpcode() == Instruction::Select) {
         Def = S;
         break;
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
       }
     }
     if (Def)
@@ -6141,17 +6084,13 @@ LoopVectorizationCostModel::computeFeasibleMaxVFScalableOnly(
 #endif // SIFIVE_CUSTOMIZATION
 
 FixedScalableVFPair LoopVectorizationCostModel::computeFeasibleMaxVF(
-<<<<<<< HEAD
-    unsigned ConstTripCount, ElementCount UserVF, bool FoldTailByMasking) {
+    unsigned MaxTripCount, ElementCount UserVF, bool FoldTailByMasking) {
 #if SIFIVE_CUSTOMIZATION
   if (Hints->isFixedVectorizationDisabled())
-    return computeFeasibleMaxVFScalableOnly(ConstTripCount, UserVF,
+    return computeFeasibleMaxVFScalableOnly(MaxTripCount, UserVF,
                                             FoldTailByMasking);
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
-    unsigned MaxTripCount, ElementCount UserVF, bool FoldTailByMasking) {
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
   MinBWs = computeMinimumValueSizes(TheLoop->getBlocks(), *DB, &TTI);
   unsigned SmallestType, WidestType;
   std::tie(SmallestType, WidestType) = getSmallestAndWidestTypes();
@@ -6291,7 +6230,6 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
   }
 
   switch (ScalarEpilogueStatus) {
-<<<<<<< HEAD
   case CM_ScalarEpilogueAllowed: {
 #if SIFIVE_CUSTOMIZATION
     FixedScalableVFPair MaxVF = computeFeasibleMaxVF(TC, UserVF, false);
@@ -6303,11 +6241,10 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
 
     return MaxVF;
   }
-#endif // SIFIVE_CUSTOMIZATION
-=======
+#else
   case CM_ScalarEpilogueAllowed:
-    return computeFeasibleMaxVF(MaxTC, UserVF, false);
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
+    return computeFeasibleMaxVF(TC, UserVF, false);
+#endif // SIFIVE_CUSTOMIZATION
   case CM_ScalarEpilogueNotAllowedUsePredicate:
     [[fallthrough]];
   case CM_ScalarEpilogueNotNeededUsePredicate:
@@ -8722,66 +8659,6 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
   }
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-static InstructionCost getCSACost(PHINode *Phi, VectorType *&VTy,
-                                  TTI::TargetCostKind CostKind, ElementCount VF,
-                                  LoopVectorizationLegality *Legal,
-                                  const TargetTransformInfo &TTI) {
-  assert(VF.isVector() && Legal->isCSAPhi(Phi) &&
-         "VF must be vector and Phi must be a CSA Phi.");
-  auto *MaskTy = VectorType::get(IntegerType::getInt1Ty(VTy->getContext()), VF);
-  InstructionCost C = 0;
-  if (!EnableRISCVCSA) {
-    // AnyActive
-    C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
-    // vp.reduce.or
-    C += TTI.getArithmeticReductionCost(Instruction::Or, VTy, std::nullopt,
-                                        CostKind);
-    // VPVLSel
-    C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
-    // MaskUpdate
-    C += TTI.getArithmeticInstrCost(Instruction::Select, MaskTy, CostKind);
-    // Data Update
-    C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
-    return C;
-  }
-  // CSAMaskUpdate
-  // UndistCond is a VPMerge and happens on non mask type
-  C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
-  // Convert the non masked mask to mask type
-  C += TTI.getArithmeticInstrCost(Instruction::ICmp, MaskTy, CostKind);
-  // ZExt init RVL
-  C += TTI.getArithmeticInstrCost(
-      Instruction::ZExt, IntegerType::getInt32Ty(VTy->getContext()), CostKind);
-  // RISCV_VMSBF
-  IntrinsicCostAttributes CostAttrs(Intrinsic::riscv_vmsbf, VTy,
-                                    {VTy, Type::getInt64Ty(VTy->getContext())});
-  C += TTI.getIntrinsicInstrCost(CostAttrs, CostKind);
-  // VPAnd
-  C += TTI.getArithmeticInstrCost(Instruction::And, MaskTy, CostKind);
-  // NewMask is a VPOr
-  C += TTI.getArithmeticInstrCost(Instruction::Or, MaskTy, CostKind);
-
-  // DataUpdate
-  // VPMerge
-  C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
-
-  // The cost returned by the cost model is larger than that of the cycle count
-  // that is returned by MCA for the scalar CSA loop. It is believed that the
-  // main reason for this discrepancy is because MCA models instruction level
-  // parallelism that exists on the target processor. The cost model has
-  // difficulty modeling this since it operates on the IR and not the generated
-  // assembely, so there is no easy way to query the scheduler model to get this
-  // information. As a solution, the cost of the scalar loop could be lowered by
-  // some parallelization factor, or the cost of the vector loop can be
-  // increased by this amount. We opt to increase the vectorized cost as to not
-  // disturb the tuning of non-csa loops. This factor is an empirical value
-  // that can be determined for each target.
-  return C * TTI.getCSABodyFactor();
-}
-#endif
-=======
 void LoopVectorizationCostModel::setVectorizedCallDecision(ElementCount VF) {
   assert(!VF.isScalar() &&
          "Trying to set a vectorization decision for a scalar VF");
@@ -8898,7 +8775,64 @@ void LoopVectorizationCostModel::setVectorizedCallDecision(ElementCount VF) {
   }
 }
 
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
+#if SIFIVE_CUSTOMIZATION
+static InstructionCost getCSACost(PHINode *Phi, VectorType *&VTy,
+                                  TTI::TargetCostKind CostKind, ElementCount VF,
+                                  LoopVectorizationLegality *Legal,
+                                  const TargetTransformInfo &TTI) {
+  assert(VF.isVector() && Legal->isCSAPhi(Phi) &&
+         "VF must be vector and Phi must be a CSA Phi.");
+  auto *MaskTy = VectorType::get(IntegerType::getInt1Ty(VTy->getContext()), VF);
+  InstructionCost C = 0;
+  if (!EnableRISCVCSA) {
+    // AnyActive
+    C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+    // vp.reduce.or
+    C += TTI.getArithmeticReductionCost(Instruction::Or, VTy, std::nullopt,
+                                        CostKind);
+    // VPVLSel
+    C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+    // MaskUpdate
+    C += TTI.getArithmeticInstrCost(Instruction::Select, MaskTy, CostKind);
+    // Data Update
+    C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+    return C;
+  }
+  // CSAMaskUpdate
+  // UndistCond is a VPMerge and happens on non mask type
+  C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+  // Convert the non masked mask to mask type
+  C += TTI.getArithmeticInstrCost(Instruction::ICmp, MaskTy, CostKind);
+  // ZExt init RVL
+  C += TTI.getArithmeticInstrCost(
+      Instruction::ZExt, IntegerType::getInt32Ty(VTy->getContext()), CostKind);
+  // RISCV_VMSBF
+  IntrinsicCostAttributes CostAttrs(Intrinsic::riscv_vmsbf, VTy,
+                                    {VTy, Type::getInt64Ty(VTy->getContext())});
+  C += TTI.getIntrinsicInstrCost(CostAttrs, CostKind);
+  // VPAnd
+  C += TTI.getArithmeticInstrCost(Instruction::And, MaskTy, CostKind);
+  // NewMask is a VPOr
+  C += TTI.getArithmeticInstrCost(Instruction::Or, MaskTy, CostKind);
+
+  // DataUpdate
+  // VPMerge
+  C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
+
+  // The cost returned by the cost model is larger than that of the cycle count
+  // that is returned by MCA for the scalar CSA loop. It is believed that the
+  // main reason for this discrepancy is because MCA models instruction level
+  // parallelism that exists on the target processor. The cost model has
+  // difficulty modeling this since it operates on the IR and not the generated
+  // assembely, so there is no easy way to query the scheduler model to get this
+  // information. As a solution, the cost of the scalar loop could be lowered by
+  // some parallelization factor, or the cost of the vector loop can be
+  // increased by this amount. We opt to increase the vectorized cost as to not
+  // disturb the tuning of non-csa loops. This factor is an empirical value
+  // that can be determined for each target.
+  return C * TTI.getCSABodyFactor();
+}
+#endif
 InstructionCost
 LoopVectorizationCostModel::getInstructionCost(Instruction *I, ElementCount VF,
                                                Type *&VectorTy) {
@@ -9429,7 +9363,6 @@ LoopVectorizationPlanner::plan(ElementCount UserVF, unsigned UserIC) {
     CM.collectInLoopReductions();
     if (CM.selectUserVectorizationFactor(UserVF)) {
       LLVM_DEBUG(dbgs() << "LV: Using user VF " << UserVF << ".\n");
-<<<<<<< HEAD
       CM.collectInLoopReductions();
 #if SIFIVE_CUSTOMIZATION
       // Stop vectorizing an uncountable loop if there is no instruction to
@@ -9437,8 +9370,6 @@ LoopVectorizationPlanner::plan(ElementCount UserVF, unsigned UserIC) {
       if (Legal->isVectorizableUncountable() && !CM.hasNonUniforms(UserVF))
         return std::nullopt;
 #endif
-=======
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
       buildVPlansWithVPRecipes(UserVF, UserVF);
       if (!hasPlanWithVF(UserVF)) {
         LLVM_DEBUG(dbgs() << "LV: No VPlan could be built for " << UserVF
@@ -9555,17 +9486,13 @@ static void AddRuntimeUnrollDisableMetaData(Loop *L) {
 SCEV2ValueTy LoopVectorizationPlanner::executePlan(
     ElementCount BestVF, unsigned BestUF, VPlan &BestVPlan,
     InnerLoopVectorizer &ILV, DominatorTree *DT, bool IsEpilogueVectorization,
-<<<<<<< HEAD
-    DenseMap<const SCEV *, Value *> *ExpandedSCEVs) {
+    const DenseMap<const SCEV *, Value *> *ExpandedSCEVs) {
 #if SIFIVE_CUSTOMIZATION
   assert((!Legal->isVectorizableUncountable() ||
           (BestVPlan.isUncountable() && BestVPlan.getInitRVL() &&
            BestVPlan.getRVL() && !ILV.InitVL)) &&
          "Uncountable loop is not set up correctly for executing VPlan");
 #endif
-=======
-    const DenseMap<const SCEV *, Value *> *ExpandedSCEVs) {
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
   assert(BestVPlan.hasVF(BestVF) &&
          "Trying to execute plan with unsupported VF");
   assert(BestVPlan.hasUF(BestUF) &&
@@ -10452,25 +10379,8 @@ VPWidenCallRecipe *VPRecipeBuilder::tryToWidenCall(CallInst *CI,
   bool ShouldUseVectorIntrinsic =
       ID && LoopVectorizationPlanner::getDecisionAndClampRange(
                 [&](ElementCount VF) -> bool {
-<<<<<<< HEAD
-                  Function *Variant = nullptr;
-                  // Is it beneficial to perform intrinsic call compared to lib
-                  // call?
-                  InstructionCost CallCost =
-                      CM.getVectorCallCost(CI, VF, &Variant);
-                  InstructionCost IntrinsicCost =
-                      CM.getVectorIntrinsicCost(CI, VF);
-#if SIFIVE_CUSTOMIZATION
-                  if (Legal->useVLAVectorizer()) {
-                    return (IntrinsicCost <= CallCost) || (Variant == nullptr);
-                  } else {
-                    return IntrinsicCost <= CallCost;
-                  }
-#endif // SIFIVE_CUSTOMIZATION
-=======
                   return CM.getCallWideningDecision(CI, VF).Kind ==
                          LoopVectorizationCostModel::CM_IntrinsicCall;
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
                 },
                 Range);
   if (ShouldUseVectorIntrinsic)
@@ -11669,12 +11579,10 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
       PreviousLink = RedRecipe;
     }
   }
-<<<<<<< HEAD
 
   // If tail is folded by masking, introduce selects between the phi
   // and the live-out instruction of each reduction, at the beginning of the
   // dedicated latch block.
-  if (CM.foldTailByMasking() || Legal->useVLAVectorizer()) {
 #if SIFIVE_CUSTOMIZATION
     // FIXME: Work with upstream to address the following issue:
     // upstream's code tries to dereference iplist's iterator, which is a
@@ -11682,8 +11590,6 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
     // vectorization.
     Builder.setInsertPoint(LatchVPBB, LatchVPBB->begin());
 #else
-=======
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
     Builder.setInsertPoint(&*LatchVPBB->begin());
 #endif // SIFIVE_CUSTOMIZATION
     for (VPRecipeBase &R :
@@ -11707,11 +11613,8 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
       VPValue *Red = PhiR->getBackedgeValue();
       assert(Red->getDefiningRecipe()->getParent() != LatchVPBB &&
              "reduction recipe must be defined before latch");
-      FastMathFlags FMFs;
+      FastMathFlags FMFs = RdxDesc.getFastMathFlags();
       Type *PhiTy = PhiR->getOperand(0)->getLiveInIRValue()->getType();
-<<<<<<< HEAD
-      if (PhiTy->isFloatingPointTy())
-        FMFs = RdxDesc.getFastMathFlags();
 #if SIFIVE_CUSTOMIZATION
       if (Legal->useVLAVectorizer())
         Builder.createSelect(Cond, Red, PhiR, FMFs, DebugLoc(),
@@ -11719,18 +11622,12 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
       else
         Builder.createSelect(Cond, Red, PhiR, FMFs, DebugLoc());
 #else
-      auto *Select =
-          PhiTy->isFloatingPointTy()
-              ? new VPInstruction(Instruction::Select, {Cond, Red, PhiR}, FMFs)
-              : new VPInstruction(Instruction::Select, {Cond, Red, PhiR});
-      Select->insertBefore(&*Builder.getInsertPoint());
-#endif // SIFIVE_CUSTOMIZATION
-=======
       Result =
           PhiTy->isFloatingPointTy()
               ? new VPInstruction(Instruction::Select, {Cond, Red, PhiR}, FMFs)
               : new VPInstruction(Instruction::Select, {Cond, Red, PhiR});
       Result->insertBefore(&*Builder.getInsertPoint());
+#endif // SIFIVE_CUSTOMIZATION
       if (PreferPredicatedReductionSelect ||
           TTI.preferPredicatedReductionSelect(
               PhiR->getRecurrenceDescriptor().getOpcode(), PhiTy,
@@ -11755,7 +11652,6 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
       Extnd->insertAfter(Trunc);
       Result->getVPSingleValue()->replaceAllUsesWith(Extnd);
       Trunc->setOperand(0, Result->getVPSingleValue());
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
     }
   }
 
@@ -12542,17 +12438,13 @@ static bool processLoopInVPlanNativePath(
   // Use the planner for outer loop vectorization.
   // TODO: CM is not used at this point inside the planner. Turn CM into an
   // optional argument if we don't need it in the future.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  LoopVectorizationPlanner LVP(L, LI, TLI, *TTI, LVL, CM, IAI, PSE, Hints, ORE,
-                               IsLTOPreLink);
+  LoopVectorizationPlanner LVP(L, LI, DT, TLI, *TTI, LVL, CM, IAI, PSE, Hints,
+                               ORE, IsLTOPreLink);
 #else
-  LoopVectorizationPlanner LVP(L, LI, TLI, *TTI, LVL, CM, IAI, PSE, Hints, ORE);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   LoopVectorizationPlanner LVP(L, LI, DT, TLI, *TTI, LVL, CM, IAI, PSE, Hints,
                                ORE);
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
+#endif // SIFIVE_CUSTOMIZATION
 
   // Get user vectorization factor.
   ElementCount UserVF = Hints.getWidth();
@@ -12931,14 +12823,10 @@ bool LoopVectorizePass::processLoop(Loop *L) {
                                 F, &Hints, IAI);
 
   // Use the planner for vectorization.
-<<<<<<< HEAD
-  LoopVectorizationPlanner LVP(L, LI, TLI, *TTI, &LVL, CM, IAI, PSE, Hints,
+  LoopVectorizationPlanner LVP(L, LI, DT, TLI, *TTI, &LVL, CM, IAI, PSE, Hints,
 #if SIFIVE_CUSTOMIZATION
                                ORE, IsLTOPreLink);
 #else
-=======
-  LoopVectorizationPlanner LVP(L, LI, DT, TLI, *TTI, &LVL, CM, IAI, PSE, Hints,
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
                                ORE);
 #endif // SIFIVE_CUSTOMIZATION
 

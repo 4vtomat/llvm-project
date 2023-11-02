@@ -356,37 +356,24 @@ class LoopVectorizationPlanner {
   bool IsLTOPreLink; // SIFIVE
 #endif // SIFIVE_CUSTOMIZATION
 public:
-<<<<<<< HEAD
-  LoopVectorizationPlanner(Loop *L, LoopInfo *LI, const TargetLibraryInfo *TLI,
-                           const TargetTransformInfo &TTI,
-                           LoopVectorizationLegality *Legal,
-                           LoopVectorizationCostModel &CM,
-                           InterleavedAccessInfo &IAI,
-                           PredicatedScalarEvolution &PSE,
-                           const LoopVectorizeHints &Hints,
-#if SIFIVE_CUSTOMIZATION
-                           OptimizationRemarkEmitter *ORE,
-                           bool IsLTOPreLink)
-#else
-                           OptimizationRemarkEmitter *ORE)
-#endif // SIFIVE_CUSTOMIZATION
-      : OrigLoop(L), LI(LI), TLI(TLI), TTI(TTI), Legal(Legal), CM(CM), IAI(IAI),
-#if SIFIVE_CUSTOMIZATION
-        PSE(PSE), Hints(Hints), ORE(ORE), IsLTOPreLink(IsLTOPreLink) {
-  }
-#else
-        PSE(PSE), Hints(Hints), ORE(ORE) {}
-#endif // SIFIVE_CUSTOMIZATION
-=======
   LoopVectorizationPlanner(
       Loop *L, LoopInfo *LI, DominatorTree *DT, const TargetLibraryInfo *TLI,
       const TargetTransformInfo &TTI, LoopVectorizationLegality *Legal,
       LoopVectorizationCostModel &CM, InterleavedAccessInfo &IAI,
       PredicatedScalarEvolution &PSE, const LoopVectorizeHints &Hints,
+#if SIFIVE_CUSTOMIZATION
+      OptimizationRemarkEmitter *ORE,
+      bool IsLTOPreLink)
+#else
       OptimizationRemarkEmitter *ORE)
+#endif // SIFIVE_CUSTOMIZATION
       : OrigLoop(L), LI(LI), DT(DT), TLI(TLI), TTI(TTI), Legal(Legal), CM(CM),
+
+#if SIFIVE_CUSTOMIZATION
+        IAI(IAI), PSE(PSE), Hints(Hints), ORE(ORE), IsLTOPreLink(IsLTOPreLink) {}
+#else
         IAI(IAI), PSE(PSE), Hints(Hints), ORE(ORE) {}
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Plan how to best vectorize, return the best VF and its cost, or
   /// std::nullopt if vectorization and interleaving should be avoided up front.
