@@ -844,13 +844,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       // Splice
       setOperationAction(ISD::VECTOR_SPLICE, VT, Custom);
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-      // Copied from BSC
-      // VP Shuffles
-      setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
-#endif // SIFIVE_CUSTOMIZATION
-=======
       if (Subtarget.hasStdExtZvkb()) {
         setOperationAction(ISD::BSWAP, VT, Legal);
         setOperationAction(ISD::VP_BSWAP, VT, Custom);
@@ -858,7 +851,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         setOperationAction({ISD::BSWAP, ISD::VP_BSWAP}, VT, Expand);
         setOperationAction({ISD::ROTL, ISD::ROTR}, VT, Expand);
       }
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
+
+#if SIFIVE_CUSTOMIZATION
+      // Copied from BSC
+      // VP Shuffles
+      setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
+#endif // SIFIVE_CUSTOMIZATION
 
       if (Subtarget.hasStdExtZvbb()) {
         setOperationAction(ISD::BITREVERSE, VT, Legal);
@@ -1213,16 +1211,13 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 
         setOperationAction(IntegerVPOps, VT, Custom);
 
-<<<<<<< HEAD
+        if (Subtarget.hasStdExtZvkb())
+          setOperationAction({ISD::BSWAP, ISD::ROTL, ISD::ROTR}, VT, Custom);
+
 #if SIFIVE_CUSTOMIZATION
         // Copied from BSC.
         setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-        if (Subtarget.hasStdExtZvkb())
-          setOperationAction({ISD::BSWAP, ISD::ROTL, ISD::ROTR}, VT, Custom);
-
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
         if (Subtarget.hasStdExtZvbb()) {
           setOperationAction({ISD::BITREVERSE, ISD::CTLZ, ISD::CTLZ_ZERO_UNDEF,
                               ISD::CTTZ, ISD::CTTZ_ZERO_UNDEF, ISD::CTPOP},
@@ -3743,19 +3738,8 @@ static SDValue lowerBuildVectorOfConstants(SDValue Op, SelectionDAG &DAG,
       (NumElts <= 4 || VT.getSizeInBits() > Subtarget.getRealMinVLen())) {
     unsigned SignBits = DAG.ComputeNumSignBits(Op);
     if (EltBitSize - SignBits < 8) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-      // SIFIVE Will be upstreamed.
       SDValue Source = DAG.getBuildVector(VT.changeVectorElementType(MVT::i8),
                                           DL, Op->ops());
-#else
-      SDValue Source =
-        DAG.getNode(ISD::TRUNCATE, DL, VT.changeVectorElementType(MVT::i8), Op);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-      SDValue Source = DAG.getBuildVector(VT.changeVectorElementType(MVT::i8),
-                                          DL, Op->ops());
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
       Source = convertToScalableVector(ContainerVT.changeVectorElementType(MVT::i8),
                                        Source, DAG, Subtarget);
       SDValue Res = DAG.getNode(RISCVISD::VSEXT_VL, DL, ContainerVT, Source, Mask, VL);
@@ -13271,14 +13255,10 @@ static SDValue combineSelectAndUse(SDNode *N, SDValue Slct, SDValue OtherOp,
   if (VT.isVector())
     return SDValue();
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if ((!Subtarget.hasShortForwardBranchOpt() &&
-       !Subtarget.canUseCMOVBranchOpt()) ||
+       !Subtarget.canUseCMOVBranchOpt())) {
 #endif // SIFIVE_CUSTOMIZATION
-      (Slct.getOpcode() != ISD::SELECT &&
-=======
-  if (!Subtarget.hasShortForwardBranchOpt()) {
     // (select cond, x, (and x, c)) has custom lowering with Zicond.
     if ((!Subtarget.hasStdExtZicond() &&
          !Subtarget.hasVendorXVentanaCondOps()) ||
@@ -13295,7 +13275,6 @@ static SDValue combineSelectAndUse(SDNode *N, SDValue Slct, SDValue OtherOp,
   }
 
   if ((Slct.getOpcode() != ISD::SELECT &&
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
        Slct.getOpcode() != RISCVISD::SELECT_CC) ||
       !Slct.hasOneUse())
     return SDValue();
@@ -16229,20 +16208,10 @@ static SDValue performBUILD_VECTORCombine(SDNode *N, SelectionDAG &DAG,
     if (!isa<ConstantSDNode>(Op.getOperand(1)) &&
         !isa<ConstantFPSDNode>(Op.getOperand(1)))
       return SDValue();
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    // FIXME: Support known bits smaller than LHSOps type size
-    // for now just return if the types don't match
-    if (LHSOps[0].getValueType() != Op.getOperand(1).getValueType())
-      return SDValue();
-#endif // SIFIVE_CUSTOMIZATION
-
-=======
     // FIXME: Return failure if the RHS type doesn't match the LHS. Shifts may
     // have different LHS and RHS types.
     if (Op.getOperand(0).getValueType() != Op.getOperand(1).getValueType())
       return SDValue();
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
     RHSOps.push_back(Op.getOperand(1));
   }
 

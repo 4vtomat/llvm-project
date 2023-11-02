@@ -363,19 +363,11 @@ class RISCVPassConfig : public TargetPassConfig {
 public:
   RISCVPassConfig(RISCVTargetMachine &TM, PassManagerBase &PM)
       : TargetPassConfig(TM, PM) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    if (getOptLevel() != CodeGenOptLevel::None)
-      substitutePass(&PostRASchedulerID, &PostMachineSchedulerID);
-#endif // SIFIVE_CUSTOMIZATION
-  }
-=======
     if (TM.getOptLevel() != CodeGenOptLevel::None)
       substitutePass(&PostRASchedulerID, &PostMachineSchedulerID);
     setEnableSinkAndFold(EnableSinkFold);
   }
 
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
   RISCVTargetMachine &getRISCVTargetMachine() const {
     return getTM<RISCVTargetMachine>();
   }
