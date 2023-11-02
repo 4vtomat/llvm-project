@@ -109,7 +109,7 @@ define void @vsli_n_u32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
 ; CHECK-NEXT:    lui a0, 128
-; CHECK-NEXT:    addiw a0, a0, -1
+; CHECK-NEXT:    addi a0, a0, -1
 ; CHECK-NEXT:    vand.vx v8, v8, a0
 ; CHECK-NEXT:    vsll.vi v9, v9, 19
 ; CHECK-NEXT:    vor.vv v8, v8, v9
@@ -273,7 +273,7 @@ define void @vsliq_n_u32(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
 ; CHECK-NEXT:    lui a0, 2
-; CHECK-NEXT:    addiw a0, a0, -1
+; CHECK-NEXT:    addi a0, a0, -1
 ; CHECK-NEXT:    vand.vx v8, v8, a0
 ; CHECK-NEXT:    vsll.vi v9, v9, 13
 ; CHECK-NEXT:    vor.vv v8, v8, v9

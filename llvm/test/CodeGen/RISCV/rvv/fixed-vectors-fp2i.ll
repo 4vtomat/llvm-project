@@ -591,44 +591,35 @@ define void @fp2ui_v2f16_v2i64(ptr %x, ptr %y) {
 }
 
 define <2 x i1> @fp2si_v2f16_v2i1(<2 x half> %x) {
-<<<<<<< HEAD
-; CHECK-LABEL: fp2si_v2f16_v2i1:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; CHECK-NEXT:    vfncvt.rtz.x.f.w v8, v8
-; CHECK-NEXT:    vand.vi v8, v8, 1
-; CHECK-NEXT:    vmsne.vi v0, v8, 0
-; CHECK-NEXT:    ret
-=======
 ; LMULMAX8RV32ZVFH-LABEL: fp2si_v2f16_v2i1:
 ; LMULMAX8RV32ZVFH:       # %bb.0:
 ; LMULMAX8RV32ZVFH-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; LMULMAX8RV32ZVFH-NEXT:    vfncvt.rtz.x.f.w v9, v8
-; LMULMAX8RV32ZVFH-NEXT:    vand.vi v8, v9, 1
+; LMULMAX8RV32ZVFH-NEXT:    vfncvt.rtz.x.f.w v8, v8
+; LMULMAX8RV32ZVFH-NEXT:    vand.vi v8, v8, 1
 ; LMULMAX8RV32ZVFH-NEXT:    vmsne.vi v0, v8, 0
 ; LMULMAX8RV32ZVFH-NEXT:    ret
 ;
 ; LMULMAX8RV64ZVFH-LABEL: fp2si_v2f16_v2i1:
 ; LMULMAX8RV64ZVFH:       # %bb.0:
 ; LMULMAX8RV64ZVFH-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; LMULMAX8RV64ZVFH-NEXT:    vfncvt.rtz.x.f.w v9, v8
-; LMULMAX8RV64ZVFH-NEXT:    vand.vi v8, v9, 1
+; LMULMAX8RV64ZVFH-NEXT:    vfncvt.rtz.x.f.w v8, v8
+; LMULMAX8RV64ZVFH-NEXT:    vand.vi v8, v8, 1
 ; LMULMAX8RV64ZVFH-NEXT:    vmsne.vi v0, v8, 0
 ; LMULMAX8RV64ZVFH-NEXT:    ret
 ;
 ; LMULMAX1RV32ZVFH-LABEL: fp2si_v2f16_v2i1:
 ; LMULMAX1RV32ZVFH:       # %bb.0:
 ; LMULMAX1RV32ZVFH-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; LMULMAX1RV32ZVFH-NEXT:    vfncvt.rtz.x.f.w v9, v8
-; LMULMAX1RV32ZVFH-NEXT:    vand.vi v8, v9, 1
+; LMULMAX1RV32ZVFH-NEXT:    vfncvt.rtz.x.f.w v8, v8
+; LMULMAX1RV32ZVFH-NEXT:    vand.vi v8, v8, 1
 ; LMULMAX1RV32ZVFH-NEXT:    vmsne.vi v0, v8, 0
 ; LMULMAX1RV32ZVFH-NEXT:    ret
 ;
 ; LMULMAX1RV64ZVFH-LABEL: fp2si_v2f16_v2i1:
 ; LMULMAX1RV64ZVFH:       # %bb.0:
 ; LMULMAX1RV64ZVFH-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; LMULMAX1RV64ZVFH-NEXT:    vfncvt.rtz.x.f.w v9, v8
-; LMULMAX1RV64ZVFH-NEXT:    vand.vi v8, v9, 1
+; LMULMAX1RV64ZVFH-NEXT:    vfncvt.rtz.x.f.w v8, v8
+; LMULMAX1RV64ZVFH-NEXT:    vand.vi v8, v8, 1
 ; LMULMAX1RV64ZVFH-NEXT:    vmsne.vi v0, v8, 0
 ; LMULMAX1RV64ZVFH-NEXT:    ret
 ;
@@ -667,50 +658,40 @@ define <2 x i1> @fp2si_v2f16_v2i1(<2 x half> %x) {
 ; LMULMAX1RV64ZVFHMIN-NEXT:    vand.vi v8, v8, 1
 ; LMULMAX1RV64ZVFHMIN-NEXT:    vmsne.vi v0, v8, 0
 ; LMULMAX1RV64ZVFHMIN-NEXT:    ret
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
   %z = fptosi <2 x half> %x to <2 x i1>
   ret <2 x i1> %z
 }
 
 define <2 x i1> @fp2ui_v2f16_v2i1(<2 x half> %x) {
-<<<<<<< HEAD
-; CHECK-LABEL: fp2ui_v2f16_v2i1:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; CHECK-NEXT:    vfncvt.rtz.xu.f.w v8, v8
-; CHECK-NEXT:    vand.vi v8, v8, 1
-; CHECK-NEXT:    vmsne.vi v0, v8, 0
-; CHECK-NEXT:    ret
-=======
 ; LMULMAX8RV32ZVFH-LABEL: fp2ui_v2f16_v2i1:
 ; LMULMAX8RV32ZVFH:       # %bb.0:
 ; LMULMAX8RV32ZVFH-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; LMULMAX8RV32ZVFH-NEXT:    vfncvt.rtz.xu.f.w v9, v8
-; LMULMAX8RV32ZVFH-NEXT:    vand.vi v8, v9, 1
+; LMULMAX8RV32ZVFH-NEXT:    vfncvt.rtz.xu.f.w v8, v8
+; LMULMAX8RV32ZVFH-NEXT:    vand.vi v8, v8, 1
 ; LMULMAX8RV32ZVFH-NEXT:    vmsne.vi v0, v8, 0
 ; LMULMAX8RV32ZVFH-NEXT:    ret
 ;
 ; LMULMAX8RV64ZVFH-LABEL: fp2ui_v2f16_v2i1:
 ; LMULMAX8RV64ZVFH:       # %bb.0:
 ; LMULMAX8RV64ZVFH-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; LMULMAX8RV64ZVFH-NEXT:    vfncvt.rtz.xu.f.w v9, v8
-; LMULMAX8RV64ZVFH-NEXT:    vand.vi v8, v9, 1
+; LMULMAX8RV64ZVFH-NEXT:    vfncvt.rtz.xu.f.w v8, v8
+; LMULMAX8RV64ZVFH-NEXT:    vand.vi v8, v8, 1
 ; LMULMAX8RV64ZVFH-NEXT:    vmsne.vi v0, v8, 0
 ; LMULMAX8RV64ZVFH-NEXT:    ret
 ;
 ; LMULMAX1RV32ZVFH-LABEL: fp2ui_v2f16_v2i1:
 ; LMULMAX1RV32ZVFH:       # %bb.0:
 ; LMULMAX1RV32ZVFH-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; LMULMAX1RV32ZVFH-NEXT:    vfncvt.rtz.xu.f.w v9, v8
-; LMULMAX1RV32ZVFH-NEXT:    vand.vi v8, v9, 1
+; LMULMAX1RV32ZVFH-NEXT:    vfncvt.rtz.xu.f.w v8, v8
+; LMULMAX1RV32ZVFH-NEXT:    vand.vi v8, v8, 1
 ; LMULMAX1RV32ZVFH-NEXT:    vmsne.vi v0, v8, 0
 ; LMULMAX1RV32ZVFH-NEXT:    ret
 ;
 ; LMULMAX1RV64ZVFH-LABEL: fp2ui_v2f16_v2i1:
 ; LMULMAX1RV64ZVFH:       # %bb.0:
 ; LMULMAX1RV64ZVFH-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; LMULMAX1RV64ZVFH-NEXT:    vfncvt.rtz.xu.f.w v9, v8
-; LMULMAX1RV64ZVFH-NEXT:    vand.vi v8, v9, 1
+; LMULMAX1RV64ZVFH-NEXT:    vfncvt.rtz.xu.f.w v8, v8
+; LMULMAX1RV64ZVFH-NEXT:    vand.vi v8, v8, 1
 ; LMULMAX1RV64ZVFH-NEXT:    vmsne.vi v0, v8, 0
 ; LMULMAX1RV64ZVFH-NEXT:    ret
 ;
@@ -749,7 +730,6 @@ define <2 x i1> @fp2ui_v2f16_v2i1(<2 x half> %x) {
 ; LMULMAX1RV64ZVFHMIN-NEXT:    vand.vi v8, v8, 1
 ; LMULMAX1RV64ZVFHMIN-NEXT:    vmsne.vi v0, v8, 0
 ; LMULMAX1RV64ZVFHMIN-NEXT:    ret
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
   %z = fptoui <2 x half> %x to <2 x i1>
   ret <2 x i1> %z
 }

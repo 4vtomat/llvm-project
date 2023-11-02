@@ -263,7 +263,6 @@ define i1 @add_ultcmp_i16_i8(i16 %x) nounwind {
 ; RV32I-NEXT:    sltiu a0, a0, 255
 ; RV32I-NEXT:    ret
 ;
-<<<<<<< HEAD
 ; RV64I-LABEL: add_ultcmp_i16_i8:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    slli a0, a0, 48
@@ -288,15 +287,6 @@ define i1 @add_ultcmp_i16_i8(i16 %x) nounwind {
 ; RV64ZBB-NEXT:    srli a0, a0, 8
 ; RV64ZBB-NEXT:    sltiu a0, a0, 255
 ; RV64ZBB-NEXT:    ret
-=======
-; RV64-LABEL: add_ultcmp_i16_i8:
-; RV64:       # %bb.0:
-; RV64-NEXT:    addi a0, a0, -128
-; RV64-NEXT:    slli a0, a0, 48
-; RV64-NEXT:    srli a0, a0, 56
-; RV64-NEXT:    sltiu a0, a0, 255
-; RV64-NEXT:    ret
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
   %tmp0 = add i16 %x, -128 ; ~0U << (8-1)
   %tmp1 = icmp ult i16 %tmp0, -256 ; ~0U << 8
   ret i1 %tmp1
@@ -458,7 +448,6 @@ define i1 @add_ulecmp_i16_i8(i16 %x) nounwind {
 ; RV32I-NEXT:    sltiu a0, a0, 255
 ; RV32I-NEXT:    ret
 ;
-<<<<<<< HEAD
 ; RV64I-LABEL: add_ulecmp_i16_i8:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    slli a0, a0, 48
@@ -483,15 +472,6 @@ define i1 @add_ulecmp_i16_i8(i16 %x) nounwind {
 ; RV64ZBB-NEXT:    srli a0, a0, 8
 ; RV64ZBB-NEXT:    sltiu a0, a0, 255
 ; RV64ZBB-NEXT:    ret
-=======
-; RV64-LABEL: add_ulecmp_i16_i8:
-; RV64:       # %bb.0:
-; RV64-NEXT:    addi a0, a0, -128
-; RV64-NEXT:    slli a0, a0, 48
-; RV64-NEXT:    srli a0, a0, 56
-; RV64-NEXT:    sltiu a0, a0, 255
-; RV64-NEXT:    ret
->>>>>>> 0374bbba4c455e5f862a32581cc8d37690fb3b60
   %tmp0 = add i16 %x, -128 ; ~0U << (8-1)
   %tmp1 = icmp ule i16 %tmp0, -257 ; ~0U << 8 - 1
   ret i1 %tmp1

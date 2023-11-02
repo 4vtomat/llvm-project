@@ -123,7 +123,7 @@ define void @main() {
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
 ; CHECK-NEXT:    vmadd.vx v16, a0, v8, v0.t
 ; CHECK-NEXT:    lui a0, 854558
-; CHECK-NEXT:    addiw a0, a0, 733
+; CHECK-NEXT:    addi a0, a0, 733
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, tu, mu
 ; CHECK-NEXT:    vnmsac.vx v8, a0, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
@@ -176,7 +176,7 @@ define void @main() {
 ; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
 ; SUBREG_LIVENESS-NEXT:    vmadd.vx v12, a0, v8, v0.t
 ; SUBREG_LIVENESS-NEXT:    lui a0, 854558
-; SUBREG_LIVENESS-NEXT:    addiw a0, a0, 733
+; SUBREG_LIVENESS-NEXT:    addi a0, a0, 733
 ; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e32, m2, tu, mu
 ; SUBREG_LIVENESS-NEXT:    vnmsac.vx v8, a0, v8, v0.t
 ; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, ta, ma

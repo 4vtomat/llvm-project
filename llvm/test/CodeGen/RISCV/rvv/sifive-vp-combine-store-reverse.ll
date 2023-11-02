@@ -53,7 +53,7 @@ define void @test_store_mask_not_all_one(<vscale x 2 x float> %val, <vscale x 2 
 ; CHECK-NEXT:    vmclr.m v0
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; CHECK-NEXT:    vid.v v9, v0.t
-; CHECK-NEXT:    addiw a1, a1, -1
+; CHECK-NEXT:    addi a1, a1, -1
 ; CHECK-NEXT:    vrsub.vx v9, v9, a1, v0.t
 ; CHECK-NEXT:    vrgather.vv v10, v8, v9, v0.t
 ; CHECK-NEXT:    vse32.v v10, (a0), v0.t
@@ -80,7 +80,7 @@ define void @test_different_evl(<vscale x 2 x float> %val, <vscale x 2 x float>*
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vmerge.vim v9, v9, 1, v0
-; CHECK-NEXT:    addiw a1, a1, -1
+; CHECK-NEXT:    addi a1, a1, -1
 ; CHECK-NEXT:    vid.v v10
 ; CHECK-NEXT:    vrsub.vx v10, v10, a1
 ; CHECK-NEXT:    vrgather.vv v11, v9, v10

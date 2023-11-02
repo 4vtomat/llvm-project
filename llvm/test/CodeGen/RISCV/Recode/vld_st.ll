@@ -2415,7 +2415,7 @@ define void @vtrnq_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vrgather.vv v11, v8, v10
 ; CHECK-NEXT:    vadd.vi v12, v10, -1
 ; CHECK-NEXT:    lui a0, 11
-; CHECK-NEXT:    addiw a0, a0, -1366
+; CHECK-NEXT:    addi a0, a0, -1366
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
@@ -2495,7 +2495,7 @@ define void @vtrnq_u8(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vrgather.vv v11, v8, v10
 ; CHECK-NEXT:    vadd.vi v12, v10, -1
 ; CHECK-NEXT:    lui a0, 11
-; CHECK-NEXT:    addiw a0, a0, -1366
+; CHECK-NEXT:    addi a0, a0, -1366
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
@@ -3269,7 +3269,7 @@ define void @vzipq_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vadd.vi v12, v11, 8
 ; CHECK-NEXT:    vrgather.vv v11, v8, v12
 ; CHECK-NEXT:    lui a0, 11
-; CHECK-NEXT:    addiw a0, a0, -1366
+; CHECK-NEXT:    addi a0, a0, -1366
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
@@ -3358,7 +3358,7 @@ define void @vzipq_u8(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vadd.vi v12, v11, 8
 ; CHECK-NEXT:    vrgather.vv v11, v8, v12
 ; CHECK-NEXT:    lui a0, 11
-; CHECK-NEXT:    addiw a0, a0, -1366
+; CHECK-NEXT:    addi a0, a0, -1366
 ; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu

@@ -57,7 +57,7 @@ define void @sink_splat_add_scalable(i32* nocapture %a, i32 signext %x) {
 ; CHECK-NEXT:    li a7, 0
 ; CHECK-NEXT:    j .LBB1_5
 ; CHECK-NEXT:  .LBB1_2: # %vector.ph
-; CHECK-NEXT:    addiw a2, a3, -1
+; CHECK-NEXT:    addi a2, a3, -1
 ; CHECK-NEXT:    slli a4, a4, 1
 ; CHECK-NEXT:    mv a5, a0
 ; CHECK-NEXT:    andi a6, a2, 1024
@@ -228,7 +228,7 @@ define void @sink_splat_fadd_scalable(float* nocapture %a, float %x) {
 ; CHECK-NEXT:    li a4, 0
 ; CHECK-NEXT:    j .LBB4_5
 ; CHECK-NEXT:  .LBB4_2: # %vector.ph
-; CHECK-NEXT:    addiw a1, a3, -1
+; CHECK-NEXT:    addi a1, a3, -1
 ; CHECK-NEXT:    mv a5, a0
 ; CHECK-NEXT:    andi a6, a1, 1024
 ; CHECK-NEXT:    vsetvli a1, zero, e32, m1, ta, ma

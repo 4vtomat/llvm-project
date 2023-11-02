@@ -85,7 +85,7 @@ define signext i32 @test3(i32 signext %v, i32 signext %w, i32 signext %x, i32 si
 ; NOCMOV-LABEL: test3:
 ; NOCMOV:       # %bb.0:
 ; NOCMOV-NEXT:    seqz a4, a4
-; NOCMOV-NEXT:    addiw a4, a4, -1
+; NOCMOV-NEXT:    addi a4, a4, -1
 ; NOCMOV-NEXT:    and a1, a1, a4
 ; NOCMOV-NEXT:    xor a0, a0, a1
 ; NOCMOV-NEXT:    and a3, a3, a4
@@ -133,7 +133,7 @@ define signext i32 @test4(i32 signext %x, i32 signext %y, i32 signext %z) {
 ; NOCMOV-LABEL: test4:
 ; NOCMOV:       # %bb.0:
 ; NOCMOV-NEXT:    snez a0, a2
-; NOCMOV-NEXT:    addiw a0, a0, -1
+; NOCMOV-NEXT:    addi a0, a0, -1
 ; NOCMOV-NEXT:    andi a0, a0, 3
 ; NOCMOV-NEXT:    ret
 ;
@@ -176,14 +176,14 @@ declare i32 @llvm.abs.i32(i32, i1)
 define signext i32 @test5(i32 signext %x) {
 ; NOCMOV-LABEL: test5:
 ; NOCMOV:       # %bb.0:
-; NOCMOV-NEXT:    srai a1, a0, 31
+; NOCMOV-NEXT:    sraiw a1, a0, 31
 ; NOCMOV-NEXT:    xor a0, a0, a1
 ; NOCMOV-NEXT:    subw a0, a0, a1
 ; NOCMOV-NEXT:    ret
 ;
 ; CMOV-LABEL: test5:
 ; CMOV:       # %bb.0:
-; CMOV-NEXT:    srai a1, a0, 31
+; CMOV-NEXT:    sraiw a1, a0, 31
 ; CMOV-NEXT:    xor a0, a0, a1
 ; CMOV-NEXT:    subw a0, a0, a1
 ; CMOV-NEXT:    ret

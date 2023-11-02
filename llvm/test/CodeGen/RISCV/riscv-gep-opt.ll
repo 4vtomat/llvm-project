@@ -4,7 +4,7 @@
 define void @gep_test(i32* nocapture %Arr, i32 signext %x, i32 signext %y) {
 ; CHECK-LABEL: gep_test:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addiw a3, a1, 5
+; CHECK-NEXT:    addi a3, a1, 5
 ; CHECK-NEXT:    slli a1, a1, 2
 ; CHECK-NEXT:    add a0, a0, a1
 ; CHECK-NEXT:    sw a2, 20(a0)

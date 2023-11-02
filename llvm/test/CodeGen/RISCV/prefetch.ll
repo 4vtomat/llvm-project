@@ -1076,8 +1076,7 @@ define void @test_prefetch_frameindex_9() nounwind {
 ; RV32ZICBOP-LABEL: test_prefetch_frameindex_9:
 ; RV32ZICBOP:       # %bb.0:
 ; RV32ZICBOP-NEXT:    addi sp, sp, -512
-; RV32ZICBOP-NEXT:    mv a0, sp
-; RV32ZICBOP-NEXT:    addi a0, a0, -4
+; RV32ZICBOP-NEXT:    addi a0, sp, -4
 ; RV32ZICBOP-NEXT:    prefetch.r -2048(a0)
 ; RV32ZICBOP-NEXT:    addi sp, sp, 512
 ; RV32ZICBOP-NEXT:    ret
@@ -1085,8 +1084,7 @@ define void @test_prefetch_frameindex_9() nounwind {
 ; RV64ZICBOP-LABEL: test_prefetch_frameindex_9:
 ; RV64ZICBOP:       # %bb.0:
 ; RV64ZICBOP-NEXT:    addi sp, sp, -512
-; RV64ZICBOP-NEXT:    mv a0, sp
-; RV64ZICBOP-NEXT:    addi a0, a0, -4
+; RV64ZICBOP-NEXT:    addi a0, sp, -4
 ; RV64ZICBOP-NEXT:    prefetch.r -2048(a0)
 ; RV64ZICBOP-NEXT:    addi sp, sp, 512
 ; RV64ZICBOP-NEXT:    ret
@@ -1094,8 +1092,7 @@ define void @test_prefetch_frameindex_9() nounwind {
 ; RV64ZICBOPZIHINTNTL-LABEL: test_prefetch_frameindex_9:
 ; RV64ZICBOPZIHINTNTL:       # %bb.0:
 ; RV64ZICBOPZIHINTNTL-NEXT:    addi sp, sp, -512
-; RV64ZICBOPZIHINTNTL-NEXT:    mv a0, sp
-; RV64ZICBOPZIHINTNTL-NEXT:    addi a0, a0, -4
+; RV64ZICBOPZIHINTNTL-NEXT:    addi a0, sp, -4
 ; RV64ZICBOPZIHINTNTL-NEXT:    ntl.all
 ; RV64ZICBOPZIHINTNTL-NEXT:    prefetch.r -2048(a0)
 ; RV64ZICBOPZIHINTNTL-NEXT:    addi sp, sp, 512
