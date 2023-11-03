@@ -125,13 +125,8 @@ define dso_local signext i16 @foo(i16* nocapture readonly %ptr, i32 signext %sta
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP0]], !dbg [[DBG11]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !dbg [[DBG11]], !llvm.loop [[LOOP19:![0-9]+]]
 ; IGNORE-INTERLEAVE-FOR-VLA:       middle.block:
-<<<<<<< HEAD
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP15:%.*]] = trunc <vscale x 4 x i32> [[TMP12]] to <vscale x 4 x i16>, !dbg [[DBG10]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP16:%.*]] = trunc i64 [[TMP2]] to i32, !dbg [[DBG10]]
-=======
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP15:%.*]] = trunc <vscale x 4 x i32> [[TMP14]] to <vscale x 4 x i16>, !dbg [[DBG10]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP16:%.*]] = trunc i64 [[TMP3]] to i32, !dbg [[DBG10]]
->>>>>>> origin/sifive-dev
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP17:%.*]] = call i16 @llvm.vp.reduce.add.nxv4i16(i16 0, <vscale x 4 x i16> [[TMP15]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP16]]), !dbg [[DBG10]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP18:%.*]] = trunc i32 [[START]] to i16, !dbg [[DBG10]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP19:%.*]] = add i16 [[TMP18]], [[TMP17]], !dbg [[DBG10]]
