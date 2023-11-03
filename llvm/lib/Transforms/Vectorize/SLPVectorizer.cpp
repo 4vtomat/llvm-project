@@ -8597,7 +8597,8 @@ BoUpSLP::getEntryCost(const TreeEntry *E, ArrayRef<Value *> VectorizedVals,
            none_of(seq<unsigned>(0, E->ReuseShuffleIndices.size() / Sz),
                    [&](unsigned Idx) {
                      return ShuffleVectorInst::isReverseMask(
-                         ArrayRef(E->ReuseShuffleIndices).slice(Idx * Sz, Sz));
+                         ArrayRef(E->ReuseShuffleIndices).slice(Idx * Sz, Sz),
+                         Sz);
                    }));
       if (E->State == TreeEntry::Vectorize || isRISCVStridedNode(E)) {
         Value *Ptr0 = cast<LoadInst>(VL.front())->getPointerOperand();
@@ -11370,7 +11371,8 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
            none_of(seq<unsigned>(0, E->ReuseShuffleIndices.size() / Sz),
                    [&](unsigned Idx) {
                      return ShuffleVectorInst::isReverseMask(
-                         ArrayRef(E->ReuseShuffleIndices).slice(Idx * Sz, Sz));
+                         ArrayRef(E->ReuseShuffleIndices).slice(Idx * Sz, Sz),
+                         Sz);
                    }));
       if (E->State == TreeEntry::Vectorize || isRISCVStridedNode(E)) {
         Value *Ptr0 = cast<LoadInst>(E->Scalars.front())->getPointerOperand();
