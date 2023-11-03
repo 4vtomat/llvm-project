@@ -471,20 +471,15 @@ TLI_DEFINE_VECFUNC("__exp2f_finite", "__svml_exp2f16", FIXED(16), "_ZGV_LLVM_N16
 // SIFIVE_CUSTOMIZATION
 #elif defined(TLI_DEFINE_SIFIVE_NF_LIBRARY_FUNCS)
 #define TLI_DEFINE_NF_VECFUNC(func) \
-TLI_DEFINE_VECFUNC(#func "f", "sifive_nf_" #func "_vf32m1_1ulp", SCALABLE(2)) \
-TLI_DEFINE_VECFUNC(#func "f", "sifive_nf_" #func "_vf32m2_1ulp", SCALABLE(4)) \
-TLI_DEFINE_VECFUNC(#func "f", "sifive_nf_" #func "_vf32m4_1ulp", SCALABLE(8)) \
-TLI_DEFINE_VECFUNC(#func "f", "sifive_nf_" #func "_vf32m8_1ulp", SCALABLE(16)) \
-TLI_DEFINE_VECFUNC(#func,  "sifive_nf_" #func "_vf64m1_1ulp", SCALABLE(1)) \
-TLI_DEFINE_VECFUNC(#func,  "sifive_nf_" #func "_vf64m2_1ulp", SCALABLE(2)) \
-TLI_DEFINE_VECFUNC(#func,  "sifive_nf_" #func "_vf64m4_1ulp", SCALABLE(4)) \
-TLI_DEFINE_VECFUNC(#func,  "sifive_nf_" #func "_vf64m8_1ulp", SCALABLE(8))
+TLI_DEFINE_VECFUNC(#func "f", "sifive_nf_" #func "_vf32m1_1ulp", SCALABLE(2), "_ZGVsNxv") \
+TLI_DEFINE_VECFUNC(#func "f", "sifive_nf_" #func "_vf32m2_1ulp", SCALABLE(4), "_ZGVsNxv") \
+TLI_DEFINE_VECFUNC(#func "f", "sifive_nf_" #func "_vf32m4_1ulp", SCALABLE(8), "_ZGVsNxv") \
+TLI_DEFINE_VECFUNC(#func "f", "sifive_nf_" #func "_vf32m8_1ulp", SCALABLE(16), "_ZGVsNxv") \
+TLI_DEFINE_VECFUNC(#func,  "sifive_nf_" #func "_vf64m1_1ulp", SCALABLE(1), "_ZGVsNxv") \
+TLI_DEFINE_VECFUNC(#func,  "sifive_nf_" #func "_vf64m2_1ulp", SCALABLE(2), "_ZGVsNxv") \
+TLI_DEFINE_VECFUNC(#func,  "sifive_nf_" #func "_vf64m4_1ulp", SCALABLE(4), "_ZGVsNxv") \
+TLI_DEFINE_VECFUNC(#func,  "sifive_nf_" #func "_vf64m8_1ulp", SCALABLE(8), "_ZGVsNxv")
 
-<<<<<<< HEAD
-TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m1_1ulp", SCALABLE(2), "_ZGVsNxv")
-TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m2_1ulp", SCALABLE(4), "_ZGVsNxv")
-TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m4_1ulp", SCALABLE(8), "_ZGVsNxv")
-=======
 TLI_DEFINE_NF_VECFUNC(cos)
 TLI_DEFINE_NF_VECFUNC(cosh)
 TLI_DEFINE_NF_VECFUNC(sin)
@@ -516,11 +511,10 @@ TLI_DEFINE_NF_VECFUNC(log2)
 TLI_DEFINE_NF_VECFUNC(logb)
 TLI_DEFINE_NF_VECFUNC(nextafter)
 TLI_DEFINE_NF_VECFUNC(pow)
-TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m1_1ulp", SCALABLE(2))
-TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m2_1ulp", SCALABLE(4))
-TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m4_1ulp", SCALABLE(8))
-TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m8_1ulp", SCALABLE(16))
->>>>>>> origin/sifive-dev
+TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m1_1ulp", SCALABLE(2), "_ZGVsNxv")
+TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m2_1ulp", SCALABLE(4), "_ZGVsNxv")
+TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m4_1ulp", SCALABLE(8), "_ZGVsNxv")
+TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m8_1ulp", SCALABLE(16), "_ZGVsNxv")
 // end SIFIVE_CUSTOMIZATION
 #elif defined(TLI_DEFINE_SLEEFGNUABI_VF2_VECFUNCS)
 
