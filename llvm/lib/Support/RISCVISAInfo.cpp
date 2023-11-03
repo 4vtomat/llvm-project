@@ -132,6 +132,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zdinx", RISCVExtensionVersion{1, 0}},
 
     {"zfa", RISCVExtensionVersion{1, 0}},
+    {"zfa", RISCVExtensionVersion{0, 2}}, // SIFIVE
     {"zfh", RISCVExtensionVersion{1, 0}},
     {"zfhmin", RISCVExtensionVersion{1, 0}},
     {"zfinx", RISCVExtensionVersion{1, 0}},
@@ -143,7 +144,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zicboz", RISCVExtensionVersion{1, 0}},
     {"ziccamoa", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"ziccif", RISCVExtensionVersion{1, 0}}, // SIFIVE
-    {"zicclsm", RISCVExtensionVersion{1, 0}}, // SIFIVE
+    {"zicclsm", RISCVExtensionVersion{1, 0}},// SIFIVE
     {"ziccrse", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zicntr", RISCVExtensionVersion{2, 0}},
     {"zicsr", RISCVExtensionVersion{2, 0}},
@@ -198,10 +199,6 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
 
     {"zacas", RISCVExtensionVersion{1, 0}},
 
-<<<<<<< HEAD
-=======
-    {"zfa", RISCVExtensionVersion{1, 0}},
->>>>>>> origin/sifive-dev
     {"zfbfmin", RISCVExtensionVersion{0, 8}},
 
     {"zicfilp", RISCVExtensionVersion{0, 2}},

@@ -391,17 +391,10 @@
 
 // RUN: not %clang --target=riscv32-unknown-elf -march=rv32iztso0p7 -menable-experimental-extensions -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-BADVERS %s
-<<<<<<< HEAD
 // RV32-EXPERIMENTAL-BADVERS: error: invalid arch name 'rv32iztso0p7'
 // RV32-EXPERIMENTAL-BADVERS: unsupported version number 0.7 for experimental extension 'ztso' (this compiler supports 0.1)
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32iztso0p1 -menable-experimental-extensions -### %s \
-=======
-// RV32-EXPERIMENTAL-BADVERS: error: invalid arch name 'rv32izfa0p1'
-// RV32-EXPERIMENTAL-BADVERS: unsupported version number 0.1 for experimental extension 'zfa' (this compiler supports 1.0)
-
-// RUN: %clang --target=riscv32-unknown-elf -march=rv32izfa1p0 -menable-experimental-extensions -### %s \
->>>>>>> origin/sifive-dev
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-GOODVERS %s
 // RV32-EXPERIMENTAL-GOODVERS: "-target-feature" "+experimental-ztso"
 
