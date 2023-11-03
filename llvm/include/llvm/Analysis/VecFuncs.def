@@ -471,9 +471,9 @@ TLI_DEFINE_VECFUNC("__exp2f_finite", "__svml_exp2f16", FIXED(16), "_ZGV_LLVM_N16
 // SIFIVE_CUSTOMIZATION
 #elif defined(TLI_DEFINE_SIFIVE_NF_LIBRARY_FUNCS)
 
-TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m1_1ulp", SCALABLE(2), "_ZGVsMxv")
-TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m2_1ulp", SCALABLE(4), "_ZGVsMxv")
-TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m4_1ulp", SCALABLE(8), "_ZGVsMxv")
+TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m1_1ulp", SCALABLE(2), "_ZGVsNxv")
+TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m2_1ulp", SCALABLE(4), "_ZGVsNxv")
+TLI_DEFINE_VECFUNC("llvm.exp.f32", "sifive_nf_exp_vf32m4_1ulp", SCALABLE(8), "_ZGVsNxv")
 // end SIFIVE_CUSTOMIZATION
 #elif defined(TLI_DEFINE_SLEEFGNUABI_VF2_VECFUNCS)
 
