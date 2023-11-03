@@ -3946,8 +3946,8 @@ LoopVectorizationCostModel::getVectorIntrinsicCost(CallInst *CI,
                  [&](Type *Ty) { return MaybeVectorizeType(Ty, VF); });
 #if SIFIVE_CUSTOMIZATION
   if (VPIntrinsic::isVPIntrinsic(ID)) {
-    // VLA Vectorizer using VP intrinsics, and require dummy mask and vector
-    // length args, it will verified during cost calculation.
+    // VLA Vectorizer may using VP intrinsics, that will require dummy mask and
+    // vector length args, it will verified during cost calculation.
     Type *MaskType = ScalableVectorType::get(Type::getInt1Ty(CI->getContext()),
                                              VF.getKnownMinValue());
     Type *VLType = Type::getInt32Ty(CI->getContext());
