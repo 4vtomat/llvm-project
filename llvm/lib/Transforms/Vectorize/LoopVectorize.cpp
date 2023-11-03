@@ -11580,9 +11580,6 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
     }
   }
 
-  // If tail is folded by masking, introduce selects between the phi
-  // and the live-out instruction of each reduction, at the beginning of the
-  // dedicated latch block.
 #if SIFIVE_CUSTOMIZATION
     // FIXME: Work with upstream to address the following issue:
     // upstream's code tries to dereference iplist's iterator, which is a
