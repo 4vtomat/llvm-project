@@ -421,17 +421,6 @@ def : SysReg<"mnstatus", 0x744>;
 def : SysReg<"mlwid", 0x390>;
 def : SysReg<"mwiddeleg", 0x748>;
 def : SysReg<"slwid", 0x190>;
-
-//===-----------------------------------------------
-// Sscofpmf CSRs
-//===-----------------------------------------------
-def : SysReg<"scountovf", 0xda0>;
-
-// mhpmevent3h-mhpmevent31h at 0x723-0x73F.
-let isRV32Only = 1 in {
-foreach i = 3...31 in
-  def : SysReg<"mhpmevent"#i#"h", !add(0x723, !sub(i, 3))>;
-}
 // end SIFIVE
 
 //===-----------------------------------------------

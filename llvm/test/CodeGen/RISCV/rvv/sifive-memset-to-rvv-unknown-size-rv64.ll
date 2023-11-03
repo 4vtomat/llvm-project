@@ -21,10 +21,10 @@ define void @UnKnownSize(i8* nocapture readonly %dst, i8 %val, i64 signext %n) {
 ;
 ; ALIGN-LABEL: UnKnownSize:
 ; ALIGN:       # %bb.0: # %entry
-; ALIGN-NEXT:    li a3, 32
-; ALIGN-NEXT:    andi a4, a0, 31
-; ALIGN-NEXT:    sub a3, a3, a4
-; ALIGN-NEXT:    minu a3, a3, a2
+; ALIGN-NEXT:    andi a3, a0, 31
+; ALIGN-NEXT:    li a4, 32
+; ALIGN-NEXT:    sub a4, a4, a3
+; ALIGN-NEXT:    minu a3, a4, a2
 ; ALIGN-NEXT:    vsetvli a3, a3, e8, m8, ta, ma
 ; ALIGN-NEXT:    sub a2, a2, a3
 ; ALIGN-NEXT:    vsetvli a4, a2, e8, m8, ta, ma

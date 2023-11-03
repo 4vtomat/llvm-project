@@ -14,7 +14,7 @@
 /// possible.
 ///
 /// This is based on the target independent TypePromotion pass, but customized
-/// for RISCV which is more interested in sext.
+/// for RISC-V which is more interested in sext.
 ///
 //===----------------------------------------------------------------------===//
 
@@ -31,14 +31,14 @@
 #include "llvm/Pass.h"
 
 #define DEBUG_TYPE "riscv-type-promotion"
-#define PASS_NAME "RISCV Type Promotion"
+#define PASS_NAME "RISC-V Type Promotion"
 
 using namespace llvm;
 
 static cl::opt<bool>
     DisablePromotion("riscv-disable-type-promotion", cl::Hidden,
                      cl::init(false),
-                     cl::desc("Disable RISCV type promotion pass"));
+                     cl::desc("Disable RISC-V type promotion pass"));
 
 namespace {
 class IRPromoter {
@@ -110,8 +110,8 @@ void IRPromoter::ReplaceAllUsersOfWith(Value *From, Value *To,
   Instruction *InstTo = dyn_cast<Instruction>(To);
   bool ReplacedAll = true;
 
-  LLVM_DEBUG(dbgs() << "RISCV Promotion: Replacing " << *From << " with " << *To
-                    << "\n");
+  LLVM_DEBUG(dbgs() << "RISC-V Promotion: Replacing " << *From << " with "
+                    << *To << "\n");
 
   for (Use &U : From->uses()) {
     auto *User = cast<Instruction>(U.getUser());
@@ -134,7 +134,7 @@ void IRPromoter::ReplaceAllUsersOfWith(Value *From, Value *To,
 void IRPromoter::ExtendSources() {
   auto InsertSExt = [&](Value *V, Instruction *InsertPt) {
     assert(V->getType() != ExtTy && "sext already extends to ExtTy");
-    LLVM_DEBUG(dbgs() << "RISCV Promotion: Inserting SExt for " << *V << "\n");
+    LLVM_DEBUG(dbgs() << "RISC-V Promotion: Inserting SExt for " << *V << "\n");
     IRBuilder<> Builder(InsertPt);
     if (auto *I = dyn_cast<Instruction>(V))
       Builder.SetCurrentDebugLocation(I->getDebugLoc());
@@ -152,7 +152,7 @@ void IRPromoter::ExtendSources() {
   };
 
   // Now, insert extending instructions between the sources and their users.
-  LLVM_DEBUG(dbgs() << "RISCV Promotion: Promoting sources:\n");
+  LLVM_DEBUG(dbgs() << "RISC-V Promotion: Promoting sources:\n");
   for (Value *V : Sources) {
     LLVM_DEBUG(dbgs() << " - " << *V << "\n");
     if (auto *I = dyn_cast<Instruction>(V)) {
@@ -172,7 +172,7 @@ void IRPromoter::ExtendSources() {
 }
 
 void IRPromoter::PromoteTree() {
-  LLVM_DEBUG(dbgs() << "RISCV Promotion: Mutating the tree..\n");
+  LLVM_DEBUG(dbgs() << "RISC-V Promotion: Mutating the tree..\n");
 
   // Mutate the instructions that aren't sources or sinks.
   for (Value *V : Visited) {
@@ -212,7 +212,7 @@ void IRPromoter::PromoteTree() {
 }
 
 void IRPromoter::TruncateSinks() {
-  LLVM_DEBUG(dbgs() << "RISCV Promotion: Fixing up the sinks:\n");
+  LLVM_DEBUG(dbgs() << "RISC-V Promotion: Fixing up the sinks:\n");
 
   auto InsertTrunc = [&](Value *V, Type *TruncTy) -> Instruction * {
     assert(TruncTy && "Null Type");
@@ -223,7 +223,7 @@ void IRPromoter::TruncateSinks() {
     if ((!Promoted.count(V) && !NewInsts.count(V)) || Sources.count(V))
       return nullptr;
 
-    LLVM_DEBUG(dbgs() << "RISCV Promotion: Creating " << *TruncTy
+    LLVM_DEBUG(dbgs() << "RISC-V Promotion: Creating " << *TruncTy
                       << " Trunc for " << *V << "\n");
     IRBuilder<> Builder(cast<Instruction>(V));
     Builder.SetCurrentDebugLocation(DebugLoc());
@@ -236,7 +236,7 @@ void IRPromoter::TruncateSinks() {
   // Fix up any stores or returns that use the results of the promoted
   // chain.
   for (Instruction *I : Sinks) {
-    LLVM_DEBUG(dbgs() << "RISCV Promotion: For Sink: " << *I << "\n");
+    LLVM_DEBUG(dbgs() << "RISC-V Promotion: For Sink: " << *I << "\n");
 
     // Handle calls separately as we need to iterate over arg operands.
     if (auto *Call = dyn_cast<CallInst>(I)) {
@@ -263,7 +263,7 @@ void IRPromoter::TruncateSinks() {
 }
 
 void IRPromoter::Cleanup() {
-  LLVM_DEBUG(dbgs() << "RISCV Promotion: Cleanup..\n");
+  LLVM_DEBUG(dbgs() << "RISC-V Promotion: Cleanup..\n");
   // Some sexts will now have become redundant, along with their trunc
   // operands, so remove them
   for (Value *V : Visited) {
@@ -292,14 +292,14 @@ void IRPromoter::Cleanup() {
   }
 
   for (Instruction *I : InstsToRemove) {
-    LLVM_DEBUG(dbgs() << "RISCV Promotion: Removing " << *I << "\n");
+    LLVM_DEBUG(dbgs() << "RISC-V Promotion: Removing " << *I << "\n");
     I->dropAllReferences();
     I->eraseFromParent();
   }
 }
 
 void IRPromoter::Mutate() {
-  LLVM_DEBUG(dbgs() << "RISCV Promotion: Promoting use-def chains from "
+  LLVM_DEBUG(dbgs() << "RISC-V Promotion: Promoting use-def chains from "
                     << OrigTy->getBitWidth() << " to " << PromotedWidth
                     << "-bits\n");
 
@@ -327,7 +327,7 @@ void IRPromoter::Mutate() {
   // clear the data structures.
   Cleanup();
 
-  LLVM_DEBUG(dbgs() << "RISCV Promotion: Mutation complete\n");
+  LLVM_DEBUG(dbgs() << "RISC-V Promotion: Mutation complete\n");
 }
 
 static bool isMinMaxIntrinsic(Instruction *I) {
@@ -447,7 +447,7 @@ bool RISCVTypePromotion::TryToPromote(Instruction *I, unsigned PromotedWidth) {
   IntegerType *OrigTy = cast<IntegerType>(I->getType());
   unsigned TypeSize = OrigTy->getBitWidth();
 
-  LLVM_DEBUG(dbgs() << "RISCV Promotion: TryToPromote: " << *I << ", from "
+  LLVM_DEBUG(dbgs() << "RISC-V Promotion: TryToPromote: " << *I << ", from "
                     << TypeSize << " bits to " << PromotedWidth << "\n");
 
   if (!isSource(I) && !isPromotableOperation(I)) {
@@ -475,7 +475,7 @@ bool RISCVTypePromotion::TryToPromote(Instruction *I, unsigned PromotedWidth) {
     assert((isa<Instruction>(V) || isa<Argument>(V)) &&
            "Expected Instruction or Argument.");
 
-    LLVM_DEBUG(dbgs() << "RISCV Promotion: Visiting: " << *V << "\n");
+    LLVM_DEBUG(dbgs() << "RISC-V Promotion: Visiting: " << *V << "\n");
 
     // If we've already visited this value from somewhere, bail now because
     // the tree has already been explored.
@@ -503,7 +503,7 @@ bool RISCVTypePromotion::TryToPromote(Instruction *I, unsigned PromotedWidth) {
         auto *IntTy = dyn_cast<IntegerType>(Op->getType());
         if (!IntTy || IntTy->getBitWidth() != TypeSize) {
           LLVM_DEBUG(dbgs()
-                     << "RISCV Promotion: Can't handle def: " << *Op << "\n");
+                     << "RISC-V Promotion: Can't handle def: " << *Op << "\n");
           return false;
         }
         // Skip ConstantInts and undef.
@@ -513,7 +513,7 @@ bool RISCVTypePromotion::TryToPromote(Instruction *I, unsigned PromotedWidth) {
         if (!isSource(Op) && !(isa<Instruction>(Op) &&
                                isPromotableOperation(cast<Instruction>(Op)))) {
           LLVM_DEBUG(dbgs()
-                     << "RISCV Promotion: Can't handle def: " << *Op << "\n");
+                     << "RISC-V Promotion: Can't handle def: " << *Op << "\n");
           return false;
         }
         AddToWorklist(Op);
@@ -529,7 +529,7 @@ bool RISCVTypePromotion::TryToPromote(Instruction *I, unsigned PromotedWidth) {
         } else if (isSink(VUser)) {
           Sinks.insert(VUser);
         } else {
-          LLVM_DEBUG(dbgs() << "RISCV Promotion: Can't handle user: " << *VUser
+          LLVM_DEBUG(dbgs() << "RISC-V Promotion: Can't handle user: " << *VUser
                             << "\n");
           return false;
         }
@@ -541,7 +541,7 @@ bool RISCVTypePromotion::TryToPromote(Instruction *I, unsigned PromotedWidth) {
   for (Instruction *I : Sinks)
     CurrentVisited.insert(I);
 
-  LLVM_DEBUG(dbgs() << "RISCV Promotion: Visited nodes:\n";
+  LLVM_DEBUG(dbgs() << "RISC-V Promotion: Visited nodes:\n";
              for (auto *I
                   : CurrentVisited) I->dump(););
 
@@ -602,7 +602,7 @@ bool RISCVTypePromotion::runOnFunction(Function &F) {
   if (skipFunction(F) || DisablePromotion)
     return false;
 
-  LLVM_DEBUG(dbgs() << "RISCV Promotion: Running on " << F.getName() << "\n");
+  LLVM_DEBUG(dbgs() << "RISC-V Promotion: Running on " << F.getName() << "\n");
 
   auto *TPC = getAnalysisIfAvailable<TargetPassConfig>();
   if (!TPC)
@@ -630,7 +630,7 @@ bool RISCVTypePromotion::runOnFunction(Function &F) {
       if (!ICmp->getOperand(0)->getType()->isIntegerTy(32))
         continue;
 
-      LLVM_DEBUG(dbgs() << "RISCV Promotion: Searching from: " << *ICmp
+      LLVM_DEBUG(dbgs() << "RISC-V Promotion: Searching from: " << *ICmp
                         << "\n");
 
       if (isBitTest(ICmp)) {

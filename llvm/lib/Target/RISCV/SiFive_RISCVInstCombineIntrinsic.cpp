@@ -1,4 +1,4 @@
-//===-- RISCVInstCombineIntrinsic.cpp - RISCV specific InstCombine pass ---===//
+//===-- RISCVInstCombineIntrinsic.cpp - RISC-V specific InstCombine pass --===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -7,7 +7,7 @@
 //===----------------------------------------------------------------------===//
 /// \file
 /// This file implements a TargetTransformInfo analysis pass specific to the
-/// RISCV target machine. It uses the target's detailed information to provide
+/// RISC-V target machine. It uses the target's detailed information to provide
 /// more precise answers to certain TTI queries, while letting the target
 /// independent and default TTI implementations handle the rest.
 ///

@@ -1,4 +1,4 @@
-//=- RISCVMachineConstProp.cpp - Machine constant propagation for RISCV ----=//
+//=- RISCVMachineConstProp.cpp - Machine constant propagation for RISC-V ----=//
 //
 // This pass tries:
 // 1. Fold the register with immediate value produced by ADDI X0, imm into
@@ -62,7 +62,7 @@ public:
   }
 
   StringRef getPassName() const override {
-    return "RISCV Machine Constant Propagation";
+    return "RISC-V Machine Constant Propagation";
   }
 
 private:
@@ -74,7 +74,7 @@ private:
 char RISCVMachineConstPropagation::ID = 0;
 
 INITIALIZE_PASS(RISCVMachineConstPropagation, DEBUG_TYPE,
-                "RISCV Machine Constant Propagation", false, false)
+                "RISC-V Machine Constant Propagation", false, false)
 
 // This function recognizes the %x = LI imm pattern which is composed by
 // %x = ADDI x0, imm

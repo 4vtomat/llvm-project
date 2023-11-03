@@ -11,13 +11,13 @@ vdiv.vv v12, v12, v12
 
 # CHECK:      Iterations:        1
 # CHECK-NEXT: Instructions:      4
-# CHECK-NEXT: Total Cycles:      84
+# CHECK-NEXT: Total Cycles:      85
 # CHECK-NEXT: Total uOps:        4
 
 # CHECK:      Dispatch Width:    2
 # CHECK-NEXT: uOps Per Cycle:    0.05
 # CHECK-NEXT: IPC:               0.05
-# CHECK-NEXT: Block RThroughput: 80.0
+# CHECK-NEXT: Block RThroughput: 82.0
 
 # CHECK:      Instruction Info:
 # CHECK-NEXT: [1]: #uOps
@@ -29,9 +29,9 @@ vdiv.vv v12, v12, v12
 
 # CHECK:      [1]    [2]    [3]    [4]    [5]    [6]    Instructions:
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
-# CHECK-NEXT:  1      64    64.00                       vdiv.vv	v12, v12, v12
+# CHECK-NEXT:  1      64    65.00                       vdiv.vv	v12, v12, v12
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf8, tu, mu
-# CHECK-NEXT:  1      16    16.00                       vdiv.vv	v12, v12, v12
+# CHECK-NEXT:  1      16    17.00                       vdiv.vv	v12, v12, v12
 
 # CHECK:      Resources:
 # CHECK-NEXT: [0]   - SiFive7FDiv
@@ -39,18 +39,18 @@ vdiv.vv v12, v12, v12
 # CHECK-NEXT: [2]   - SiFive7Mem
 # CHECK-NEXT: [3]   - SiFive7PipeA
 # CHECK-NEXT: [4]   - SiFive7PipeB
-# CHECK-NEXT: [5]   - SiFive7PipeV
-# CHECK-NEXT: [6]   - SiFive7VA
+# CHECK-NEXT: [5]   - SiFive7VA
+# CHECK-NEXT: [6]   - SiFive7VCQ
 # CHECK-NEXT: [7]   - SiFive7VL
 # CHECK-NEXT: [8]   - SiFive7VS
 
 # CHECK:      Resource pressure per iteration:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
-# CHECK-NEXT:  -      -      -     2.00    -     80.00  80.00   -      -
+# CHECK-NEXT:  -      -      -     2.00    -     82.00  2.00    -      -
 
 # CHECK:      Resource pressure by instruction:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, mf2, tu, mu
-# CHECK-NEXT:  -      -      -      -      -     64.00  64.00   -      -     vdiv.vv	v12, v12, v12
+# CHECK-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vdiv.vv	v12, v12, v12
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e8, mf8, tu, mu
-# CHECK-NEXT:  -      -      -      -      -     16.00  16.00   -      -     vdiv.vv	v12, v12, v12
+# CHECK-NEXT:  -      -      -      -      -     17.00  1.00    -      -     vdiv.vv	v12, v12, v12

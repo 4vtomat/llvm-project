@@ -8,6 +8,10 @@
 //
 // This file describes the RISC-V instructions from the standard 'Zfa'
 // additional floating-point extension, version 1.0.
+<<<<<<< HEAD
+=======
+// This version is still experimental.
+>>>>>>> origin/sifive-dev
 //
 //===----------------------------------------------------------------------===//
 

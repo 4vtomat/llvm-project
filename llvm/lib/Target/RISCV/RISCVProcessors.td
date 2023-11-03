@@ -158,9 +158,7 @@ def SIFIVE_E20R : RISCVProcessorModel<"sifive-e20r",
                                        FeatureStdExtZifencei,
                                        FeatureStdExtZba,
                                        FeatureStdExtZbb,
-                                       FeatureStdExtZcb,
-                                       FeatureStdExtZcmp,
-                                       FeatureStdExtZcmt]>;
+                                       FeatureStdExtZcb]>;
 
 def SIFIVE_E21R : RISCVProcessorModel<"sifive-e21r",
                                       RocketModel,
@@ -350,9 +348,7 @@ def SIFIVE_S61R : RISCVProcessorModel<"sifive-s61r", SiFive6Model,
                                        FeatureStdExtZcb,
                                        FeatureStdExtZcmp,
                                        FeatureStdExtZcmt,
-                                       FeatureStdExtZkt,
-                                       FeatureStdExtXsifivecdiscarddlone,
-                                       FeatureStdExtXsifivecflushdlone],
+                                       FeatureStdExtZkt],
                                      [TuneSiFive6]>;
 #endif // SIFIVE_CUSTOMIZATION
 

@@ -62,6 +62,49 @@ multiclass LMULSEWWriteResMXSEW<string name, list<ProcResourceKind> resources,
     def : WriteRes<!cast<SchedWrite>(name # "_WorstCase"), resources>;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass LMULWriteResMXVariant<string Name, SchedPredicate Pred,
+                                 list<ProcResourceKind> resources,
+                                 int predLat, list<int> predAcquireCycles,
+                                 list<int> predReleaseCycles, int noPredLat,
+                                 list<int> noPredAcquireCycles,
+                                 list<int> noPredReleaseCycles,
+                                 string mx, bit IsWorstCase, string prefix> {
+  defvar NameMX = prefix # Name # "_" # mx;
+
+  // Define the different behaviors
+  def NameMX # "_Pred" : SchedWriteRes<resources>{
+    let Latency = predLat;
+    let AcquireAtCycles = predAcquireCycles;
+    let ReleaseAtCycles = predReleaseCycles;
+  }
+  def NameMX # "_NoPred" : SchedWriteRes<resources> {
+    let Latency = noPredLat;
+    let AcquireAtCycles = noPredAcquireCycles;
+    let ReleaseAtCycles = noPredReleaseCycles;
+  }
+
+  // Tie behavior to predicate
+  def NameMX # "_Variant" : SchedWriteVariant<[
+    SchedVar<Pred, [!cast<SchedWriteRes>(NameMX # "_Pred")]>,
+    SchedVar<NoSchedPred, [!cast<SchedWriteRes>(NameMX # "_NoPred")]>
+  ]>;
+  def : SchedAlias<
+    !cast<SchedReadWrite>(Name # "_" # mx),
+    !cast<SchedReadWrite>(NameMX # "_Variant")>;
+
+  if IsWorstCase then {
+    def prefix # Name # "_WorstCase_Variant" : SchedWriteVariant<[
+      SchedVar<Pred, [!cast<SchedWriteRes>(NameMX # "_Pred")]>,
+      SchedVar<NoSchedPred, [!cast<SchedWriteRes>(NameMX # "_NoPred")]>
+    ]>;
+    def : SchedAlias<
+      !cast<SchedReadWrite>(Name # "_WorstCase"),
+      !cast<SchedReadWrite>(prefix # Name # "_WorstCase_Variant")>;
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 // Define multiclasses to define SchedWrite, SchedRead,  WriteRes, and
 // ReadAdvance for each (name, LMUL) pair and for each LMUL in each of the
 // SchedMxList variants above. Each multiclass is responsible for defining

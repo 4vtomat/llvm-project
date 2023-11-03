@@ -16,16 +16,13 @@
 #include "RISCV.h"
 #include "RISCVInstrInfo.h"
 #include "RISCVTargetMachine.h"
-#include "MCTargetDesc/RISCVMatInt.h"
-
-#include "llvm/CodeGen/LivePhysRegs.h"
 #include "llvm/CodeGen/MachineFunctionPass.h"
 #include "llvm/CodeGen/MachineInstrBuilder.h"
 
 using namespace llvm;
 
 #define RISCV_POST_RA_EXPAND_PSEUDO_NAME                                       \
-  "RISCV post-regalloc pseudo instruction expansion pass"
+  "RISC-V post-regalloc pseudo instruction expansion pass"
 
 namespace {
 
@@ -76,13 +73,8 @@ bool RISCVPostRAExpandPseudo::expandMBB(MachineBasicBlock &MBB) {
 }
 
 bool RISCVPostRAExpandPseudo::expandMI(MachineBasicBlock &MBB,
-                                 MachineBasicBlock::iterator MBBI,
-                                 MachineBasicBlock::iterator &NextMBBI) {
-  // RISCVInstrInfo::getInstSizeInBytes expects that the total size of the
-  // expanded instructions for each pseudo is correct in the Size field of the
-  // tablegen definition for the pseudo.
-  //
-  // We only handle PseudoLIsimm32
+                                       MachineBasicBlock::iterator MBBI,
+                                       MachineBasicBlock::iterator &NextMBBI) {
   switch (MBBI->getOpcode()) {
   case RISCV::PseudoLIsimm32:
     return expandLIsimm32(MBB, MBBI);
@@ -94,7 +86,7 @@ bool RISCVPostRAExpandPseudo::expandMI(MachineBasicBlock &MBB,
 }
 
 bool RISCVPostRAExpandPseudo::expandLIsimm32(MachineBasicBlock &MBB,
-                                       MachineBasicBlock::iterator MBBI) {
+                                             MachineBasicBlock::iterator MBBI) {
   const RISCVSubtarget &Subtarget =
       MBB.getParent()->getSubtarget<RISCVSubtarget>();
 

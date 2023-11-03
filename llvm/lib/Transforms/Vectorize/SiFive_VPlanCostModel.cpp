@@ -678,6 +678,10 @@ InstructionCost VPlanCostModel::getReplicateOpCost(const VPReplicateRecipe *VPR,
     return TTI.getArithmeticInstrCost(Instruction::Mul, VectorTy, CostKind);
   }
 
+  // VF is not suitable for vector function of I.
+  if (isa<CallInst>(I))
+    return InstructionCost::getInvalid();
+
   assert(0 &&
          "non-uniform replicate recipe is not yet supported by VLA vectorizer");
   // FIXME:This estimation is not correct. It should return VLMAX

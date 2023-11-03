@@ -71,12 +71,12 @@ c.jr a0
 # CHECK-NEXT: [2]   - SiFive7NMem
 # CHECK-NEXT: [3]   - SiFive7NPipeA
 # CHECK-NEXT: [4]   - SiFive7NPipeB
-# CHECK-NEXT: [5]   - SiFive7NPipeV
-# CHECK-NEXT: [6]   - SiFive7NVA
+# CHECK-NEXT: [5]   - SiFive7NVA
+# CHECK-NEXT: [6]   - SiFive7NVCQ
 # CHECK-NEXT: [7]   - SiFive7NVL
 # CHECK-NEXT: [8]   - SiFive7NVS
-# CHECK-NEXT: [9]   - SiFive7PipeV
-# CHECK-NEXT: [10]  - SiFive7VA
+# CHECK-NEXT: [9]   - SiFive7VA
+# CHECK-NEXT: [10]  - SiFive7VCQ
 
 # CHECK:      Resource pressure per iteration:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]    [10]

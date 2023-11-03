@@ -116,7 +116,11 @@ Changes to the PowerPC Backend
 Changes to the RISC-V Backend
 -----------------------------
 
+<<<<<<< HEAD
 * The Zfa extension version was upgraded to 1.0 and is no longer experimental.
+=======
+* The Zfa extension version was upgraded to 1.0.
+>>>>>>> origin/sifive-dev
 * Zihintntl extension version was upgraded to 1.0 and is no longer experimental.
 
 Changes to the WebAssembly Backend

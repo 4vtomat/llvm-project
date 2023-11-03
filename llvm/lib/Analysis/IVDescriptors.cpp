@@ -739,80 +739,43 @@ RecurrenceDescriptor::isFindLastIVPattern(Loop *Loop, PHINode *OrigPhi,
     return InstDesc(false, I);
 
   auto IsIncreasingLoopInduction = [&SE, &Loop](Value *V) {
-    auto *Phi = dyn_cast<PHINode>(V);
-    if (!Phi)
-      return false;
-
     if (!SE)
       return false;
 
-    InductionDescriptor ID;
-    if (!InductionDescriptor::isInductionPHI(Phi, Loop, SE, ID))
+    Type *Ty = V->getType();
+    if (!SE->isSCEVable(Ty))
       return false;
 
-    const SCEVAddRecExpr *AR = cast<SCEVAddRecExpr>(SE->getSCEV(Phi));
-    if (!AR->hasNoSignedWrap())
+    auto *AR = dyn_cast<SCEVAddRecExpr>(SE->getSCEV(V));
+    if (!AR)
       return false;
 
-    ConstantInt *IVStartValue = dyn_cast<ConstantInt>(ID.getStartValue());
-    if (!IVStartValue || IVStartValue->isMinSignedValue())
+    const SCEV *Step = AR->getStepRecurrence(*SE);
+    // TODO: Support for monotonically decreasing induction variable
+    if (!SE->isKnownPositive(Step))
       return false;
 
-    const SCEV *Step = ID.getStep();
-    return SE->isKnownPositive(Step);
-  };
-
-  auto IsTruncIncreasingLoopInduction = [&SE, &Loop](Value *V) {
-    Value *Src;
-    if (!match(V, m_Trunc(m_Value(Src))))
-      return false;
-
-    auto *Phi = dyn_cast<PHINode>(Src);
-    if (!Phi)
-      return false;
-
-    if (!SE)
-      return false;
-
-    auto LoopBound = Loop::LoopBounds::getBounds(*Loop, *Phi, *SE);
-    if (!LoopBound)
-      return false;
-
-    Type *DstTy = cast<TruncInst>(V)->getType();
-    unsigned DstNumBits = DstTy->getIntegerBitWidth();
-    auto Direction = LoopBound->getDirection();
-
-    // Handle the cases where the trip count is constant, and there is no loop
-    // guard.
-    if (auto *ConstUB =
-            dyn_cast<ConstantInt>(&(LoopBound->getFinalIVValue()))) {
-      const APInt &ConstUBVal = ConstUB->getValue();
-      // Ensure that the constant upper bound does not cause overflow in
-      // destination type of truncate instruction
-      return ConstUBVal.isSignedIntN(DstNumBits) &&
-             Direction == Loop::LoopBounds::Direction::Increasing;
-    }
-
-    BranchInst *LoopGuard = Loop->getLoopGuardBranch();
-    if (!LoopGuard)
-      return false;
-
-    // Ensure that the condition of loop guard is a signed comparison, and the
-    // size of the truncated type must be greater than or equal to the unwidened
-    // trip count.
-    auto *Cond = dyn_cast<ICmpInst>(LoopGuard->getCondition());
-    if (!Cond || !Cond->isSigned() ||
-        Cond->getOperand(0)->getType()->getIntegerBitWidth() > DstNumBits)
-      return false;
-
-    return Direction == Loop::LoopBounds::Direction::Increasing;
+    const ConstantRange IVRange = SE->getSignedRange(AR);
+    unsigned NumBits = Ty->getIntegerBitWidth();
+    // Keep the minmum value of the recurrence type as the sentinel value.
+    // The maximum acceptable range for the increasing induction variable,
+    // called the valid range, will be defined as
+    //   [<sentinel value> + 1, SignedMin(<recurrence type>))
+    // TODO: This range restriction can be lifted by adding an additional
+    // virtual OR reduction.
+    const APInt Sentinel = APInt::getSignedMinValue(NumBits);
+    const ConstantRange ValidRange =
+        ConstantRange::getFull(NumBits).difference(ConstantRange(Sentinel));
+    LLVM_DEBUG(dbgs() << "LV: FindLastIV valid range is " << ValidRange
+                      << ", and the signed range of " << *AR << " is "
+                      << IVRange << "\n");
+    return ValidRange.contains(IVRange);
   };
 
   // We are looking for selects of the form:
   //   select(cmp(), phi, loop_induction) or
   //   select(cmp(), loop_induction, phi)
-  if (IsIncreasingLoopInduction(NonRdxPhi) ||
-      IsTruncIncreasingLoopInduction(NonRdxPhi))
+  if (IsIncreasingLoopInduction(NonRdxPhi))
     return InstDesc(I, isa<ICmpInst>(I->getOperand(0))
                            ? RecurKind::IFindLastIV
                            : RecurKind::FFindLastIV);

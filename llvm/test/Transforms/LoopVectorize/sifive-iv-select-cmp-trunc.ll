@@ -1710,7 +1710,7 @@ define i32 @select_trunc_fcmp_invalid_const_ub(ptr nocapture readonly %a) {
 ; CHECK-VF4IC1-NEXT:    [[TMP1:%.*]] = trunc i64 [[INDVARS_IV]] to i32
 ; CHECK-VF4IC1-NEXT:    [[J_2]] = select i1 [[CMP6]], i32 [[TMP1]], i32 [[J_119]]
 ; CHECK-VF4IC1-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
-; CHECK-VF4IC1-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 2147483648
+; CHECK-VF4IC1-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 2147483649
 ; CHECK-VF4IC1-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]]
 ; CHECK-VF4IC1:       exit:
 ; CHECK-VF4IC1-NEXT:    [[J_2_LCSSA:%.*]] = phi i32 [ [[J_2]], [[FOR_BODY]] ]
@@ -1729,7 +1729,7 @@ define i32 @select_trunc_fcmp_invalid_const_ub(ptr nocapture readonly %a) {
 ; CHECK-VF4IC4-NEXT:    [[TMP1:%.*]] = trunc i64 [[INDVARS_IV]] to i32
 ; CHECK-VF4IC4-NEXT:    [[J_2]] = select i1 [[CMP6]], i32 [[TMP1]], i32 [[J_119]]
 ; CHECK-VF4IC4-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
-; CHECK-VF4IC4-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 2147483648
+; CHECK-VF4IC4-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 2147483649
 ; CHECK-VF4IC4-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]]
 ; CHECK-VF4IC4:       exit:
 ; CHECK-VF4IC4-NEXT:    [[J_2_LCSSA:%.*]] = phi i32 [ [[J_2]], [[FOR_BODY]] ]
@@ -1748,7 +1748,7 @@ define i32 @select_trunc_fcmp_invalid_const_ub(ptr nocapture readonly %a) {
 ; CHECK-VF1IC4-NEXT:    [[TMP1:%.*]] = trunc i64 [[INDVARS_IV]] to i32
 ; CHECK-VF1IC4-NEXT:    [[J_2]] = select i1 [[CMP6]], i32 [[TMP1]], i32 [[J_119]]
 ; CHECK-VF1IC4-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
-; CHECK-VF1IC4-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 2147483648
+; CHECK-VF1IC4-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 2147483649
 ; CHECK-VF1IC4-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]]
 ; CHECK-VF1IC4:       exit:
 ; CHECK-VF1IC4-NEXT:    [[J_2_LCSSA:%.*]] = phi i32 [ [[J_2]], [[FOR_BODY]] ]
@@ -1766,7 +1766,7 @@ for.body:                                        ; preds = %entry, %for.body
   %1 = trunc i64 %indvars.iv to i32
   %j.2 = select i1 %cmp6, i32 %1, i32 %j.119
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond.not = icmp eq i64 %indvars.iv.next, 2147483648
+  %exitcond.not = icmp eq i64 %indvars.iv.next, 2147483649
   br i1 %exitcond.not, label %exit, label %for.body
 
 exit:                                            ; preds = %for.body

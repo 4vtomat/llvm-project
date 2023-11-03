@@ -3403,15 +3403,6 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
     bool EnableProfitableCheck = !VectorizerDisableProfitableTripCountRTCheck &&
                                  !ForceVectorization &&
                                  ProfitableVectorTripCount;
-    bool IncludeUnorderedReduction =
-        any_of(Legal->getReductionVars(), [&](auto &Reduction) {
-          PHINode *Phi = Reduction.first;
-          return !Cost->isInLoopReduction(Phi);
-        });
-
-    if (IncludeUnorderedReduction)
-      InitVL = Builder.CreateLoad(
-          Count->getType(), UndefValue::get(Count->getType()->getPointerTo()));
 
     if (EnableProfitableCheck) {
       // TODO: Build runtime checks into vplan to model their costs.
@@ -3427,6 +3418,21 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
   LoopVectorPreHeader =
       SplitBlock(TCCheckBlock, TCCheckBlock->getTerminator(), DT, LI, nullptr,
                  "vector.ph");
+
+#if SIFIVE_CUSTOMIZATION
+  // Insert initial runtime VL computation at the preheader
+  if (useVLAVectorizer() && !Legal->getReductionVars().empty() &&
+      any_of(Legal->getReductionVars(), [&](auto &Reduction) {
+        PHINode *Phi = Reduction.first;
+        return !Cost->isInLoopReduction(Phi);
+      })) {
+    IRBuilder<>::InsertPointGuard Guard(Builder);
+    Builder.SetInsertPoint(LoopVectorPreHeader->getTerminator());
+
+    InitVL = Builder.CreateLoad(
+        Count->getType(), UndefValue::get(Count->getType()->getPointerTo()));
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   assert(DT->properlyDominates(DT->getNode(TCCheckBlock),
                                DT->getNode(Bypass)->getIDom()) &&

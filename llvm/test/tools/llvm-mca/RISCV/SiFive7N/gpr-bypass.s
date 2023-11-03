@@ -219,16 +219,16 @@ jr a0
 # CHECK-NEXT: [2]   - SiFive7NMem
 # CHECK-NEXT: [3]   - SiFive7NPipeA
 # CHECK-NEXT: [4]   - SiFive7NPipeB
-# CHECK-NEXT: [5]   - SiFive7NPipeV
-# CHECK-NEXT: [6]   - SiFive7NVA
+# CHECK-NEXT: [5]   - SiFive7NVA
+# CHECK-NEXT: [6]   - SiFive7NVCQ
 # CHECK-NEXT: [7]   - SiFive7NVL
 # CHECK-NEXT: [8]   - SiFive7NVS
-# CHECK-NEXT: [9]   - SiFive7PipeV
-# CHECK-NEXT: [10]  - SiFive7VA
+# CHECK-NEXT: [9]   - SiFive7VA
+# CHECK-NEXT: [10]  - SiFive7VCQ
 
 # CHECK:      Resource pressure per iteration:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]    [10]
-# CHECK-NEXT:  -      -     7.00   39.00  52.00   -      -      -      -      -      -
+# CHECK-NEXT:  -      -     7.00   36.00  48.00   -      -      -      -      -      -
 
 # CHECK:      Resource pressure by instruction:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]    [10]   Instructions:
@@ -308,20 +308,20 @@ jr a0
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -      -     add	a0, a0, a0
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -      -     rev8	a0, a0
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -     orc.b	a0, a0
-# CHECK-NEXT:  -      -     1.00   1.00    -      -      -      -      -      -      -     lb	a0, 0(a0)
-# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -     add	a0, a0, a0
-# CHECK-NEXT:  -      -     1.00   1.00    -      -      -      -      -      -      -     lh	a0, 0(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -      -     lb	a0, 0(a0)
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -      -     add	a0, a0, a0
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -      -     lh	a0, 0(a0)
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -     and	a0, a0, a0
-# CHECK-NEXT:  -      -     1.00   1.00    -      -      -      -      -      -      -     lw	a0, 0(a0)
-# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -     or	a0, a0, a0
-# CHECK-NEXT:  -      -     1.00   1.00    -      -      -      -      -      -      -     ld	a0, 0(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -      -     lw	a0, 0(a0)
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -      -     or	a0, a0, a0
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -      -     ld	a0, 0(a0)
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -     xor	a0, a0, a0
-# CHECK-NEXT:  -      -     1.00   1.00    -      -      -      -      -      -      -     lbu	a0, 0(a0)
-# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -     addi	a0, a0, 1
-# CHECK-NEXT:  -      -     1.00   1.00    -      -      -      -      -      -      -     lhu	a0, 0(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -      -     lbu	a0, 0(a0)
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -      -     addi	a0, a0, 1
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -      -     lhu	a0, 0(a0)
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -     sub	a0, a0, a0
-# CHECK-NEXT:  -      -     1.00   1.00    -      -      -      -      -      -      -     lwu	a0, 0(a0)
-# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -     addw	a0, a0, a0
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -      -     lwu	a0, 0(a0)
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -      -     addw	a0, a0, a0
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -     jr	a0
 
 # CHECK:      Timeline view:

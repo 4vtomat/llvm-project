@@ -71,8 +71,8 @@ c.jr a0
 # CHECK-NEXT: [2]   - SiFive7Mem
 # CHECK-NEXT: [3]   - SiFive7PipeA
 # CHECK-NEXT: [4]   - SiFive7PipeB
-# CHECK-NEXT: [5]   - SiFive7PipeV
-# CHECK-NEXT: [6]   - SiFive7VA
+# CHECK-NEXT: [5]   - SiFive7VA
+# CHECK-NEXT: [6]   - SiFive7VCQ
 # CHECK-NEXT: [7]   - SiFive7VL
 # CHECK-NEXT: [8]   - SiFive7VS
 

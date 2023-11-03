@@ -96,10 +96,10 @@ define float @fadd_fmf_reduction(float* noalias nocapture readonly %a, i64 %n, f
 ;
 ; CHECK-SCALABLE-LABEL: @fadd_fmf_reduction(
 ; CHECK-SCALABLE-NEXT:  entry:
-; CHECK-SCALABLE-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N:%.*]], i32 2, i1 true)
-; CHECK-SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 13
+; CHECK-SCALABLE-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N:%.*]], 13
 ; CHECK-SCALABLE-NEXT:    br i1 [[PROF_MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-SCALABLE:       vector.ph:
+; CHECK-SCALABLE-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-SCALABLE-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-SCALABLE:       vector.body:
 ; CHECK-SCALABLE-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -134,10 +134,10 @@ define float @fadd_fmf_reduction(float* noalias nocapture readonly %a, i64 %n, f
 ;
 ; CHECK-SCALABLE-NO-POSTSV-LABEL: @fadd_fmf_reduction(
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:  entry:
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N:%.*]], i32 2, i1 true)
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N]], 13
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N:%.*]], 13
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    br i1 [[PROF_MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK-SCALABLE-NO-POSTSV:       vector.ph:
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP0:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N]], i32 2, i1 true)
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 2 x float> zeroinitializer, float [[START:%.*]], i64 0
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK-SCALABLE-NO-POSTSV:       vector.body:

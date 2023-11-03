@@ -198,6 +198,10 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
 
     {"zacas", RISCVExtensionVersion{1, 0}},
 
+<<<<<<< HEAD
+=======
+    {"zfa", RISCVExtensionVersion{1, 0}},
+>>>>>>> origin/sifive-dev
     {"zfbfmin", RISCVExtensionVersion{0, 8}},
 
     {"zicfilp", RISCVExtensionVersion{0, 2}},
