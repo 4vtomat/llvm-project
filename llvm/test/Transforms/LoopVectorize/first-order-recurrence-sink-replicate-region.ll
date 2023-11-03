@@ -204,7 +204,7 @@ define i32 @sink_replicate_region_3_reduction(i32 %x, i8 %y, ptr %ptr) optsize {
 ; CHECK-NEXT: loop.0:
 ; CHECK-NEXT:   WIDEN ir<%add> = add vp<[[PRED]]>, ir<%recur.next>
 ; CHECK-NEXT:   WIDEN ir<%and.red.next> = and ir<%and.red>, ir<%add>
-; CHECK-NEXT:   EMIT vp<[[SEL:%.+]]> = select reassoc nnan ninf nsz arcp contract afn vp<[[MASK]]>, ir<%and.red.next>, ir<%and.red>
+; CHECK-NEXT:   EMIT vp<[[SEL:%.+]]> = select vp<[[MASK]]>, ir<%and.red.next>, ir<%and.red>
 ; CHECK-NEXT:   EMIT vp<[[CAN_IV_NEXT:%.+]]> = VF * UF + vp<[[CAN_IV]]>
 ; CHECK-NEXT:   EMIT branch-on-count vp<[[CAN_IV_NEXT]]>, vp<[[VEC_TC]]>
 ; CHECK-NEXT: No successors

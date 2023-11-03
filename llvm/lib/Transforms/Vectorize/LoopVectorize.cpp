@@ -11616,19 +11616,24 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
       FastMathFlags FMFs = RdxDesc.getFastMathFlags();
       Type *PhiTy = PhiR->getOperand(0)->getLiveInIRValue()->getType();
 #if SIFIVE_CUSTOMIZATION
-      if (Legal->useVLAVectorizer())
-        Builder.createSelect(Cond, Red, PhiR, FMFs, DebugLoc(),
-                             VPSelectInstruction::TailPolicy::Undisturbed);
-      else
-        Builder.createSelect(Cond, Red, PhiR, FMFs, DebugLoc());
-#else
+      if (Legal->useVLAVectorizer()) {
+        Result = cast<VPInstruction>(
+            Builder.createSelect(Cond, Red, PhiR, FMFs, DebugLoc(),
+                                 VPSelectInstruction::TailPolicy::Undisturbed));
+      } else {
+#endif // SIFIVE_CUSTOMIZATION
       Result =
           PhiTy->isFloatingPointTy()
               ? new VPInstruction(Instruction::Select, {Cond, Red, PhiR}, FMFs)
               : new VPInstruction(Instruction::Select, {Cond, Red, PhiR});
       Result->insertBefore(&*Builder.getInsertPoint());
+#if SIFIVE_CUSTOMIZATION
+      }
 #endif // SIFIVE_CUSTOMIZATION
       if (PreferPredicatedReductionSelect ||
+#if SIFIVE_CUSTOMIZATION
+          Legal->useVLAVectorizer() ||
+#endif // SIFIVE_CUSTOMIZATION
           TTI.preferPredicatedReductionSelect(
               PhiR->getRecurrenceDescriptor().getOpcode(), PhiTy,
               TargetTransformInfo::ReductionFlags()))

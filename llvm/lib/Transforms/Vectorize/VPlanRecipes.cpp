@@ -891,6 +891,7 @@ void VPSelectInstruction::print(raw_ostream &O, const Twine &Indent,
   O << Indent << "EMIT ";
   printAsOperand(O, SlotTracker);
   O << " = select ";
+  printFlags(O);
   getOperand(0)->printAsOperand(O, SlotTracker);
   O << " ";
   getOperand(1)->printAsOperand(O, SlotTracker);
