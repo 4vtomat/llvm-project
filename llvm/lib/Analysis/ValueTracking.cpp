@@ -2816,6 +2816,8 @@ static bool isKnownNonZeroFromOperator(const Operator *I,
       case Intrinsic::vscale:
         return true;
 #if SIFIVE_CUSTOMIZATION
+      case Intrinsic::experimental_get_vector_length:
+        return isKnownNonZero(I->getOperand(0), Depth, Q);
       case Intrinsic::riscv_vsetvlimax:
         return true;
       case Intrinsic::riscv_vsetvli:
