@@ -723,7 +723,8 @@ for.body:                                         ; preds = %for.body.preheader,
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
-declare float @atan2f(float)
+
+declare float @atan2f(float, float)
 define void @test_atan2f(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_atan2f(
 ; M1:  call <vscale x 2 x float> @sifive_nf_atan2_vf32m1_1ulp(
@@ -749,14 +750,15 @@ for.body:                                         ; preds = %for.body.preheader,
   %arrayidx = getelementptr inbounds float, ptr %a, i64 %indvars.iv
   %arrayidx2 = getelementptr inbounds float, ptr %b, i64 %indvars.iv
   %0 = load float, ptr %arrayidx, align 4
-  %1 = call float @atan2f(float %0)
-  store float %1, ptr %arrayidx, align 4
+  %1 = load float, ptr %arrayidx2, align 4
+  %2 = call float @atan2f(float %0, float %1)
+  store float %2, ptr %arrayidx, align 4
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
 
-declare double @atan2(double)
+declare double @atan2(double, double)
 define void @test_atan2(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_atan2(
 ; M1:  call <vscale x 1 x double> @sifive_nf_atan2_vf64m1_1ulp(
@@ -782,12 +784,14 @@ for.body:                                         ; preds = %for.body.preheader,
   %arrayidx = getelementptr inbounds double, ptr %a, i64 %indvars.iv
   %arrayidx2 = getelementptr inbounds double, ptr %b, i64 %indvars.iv
   %0 = load double, ptr %arrayidx, align 8
-  %1 = call double @atan2(double %0)
-  store double %1, ptr %arrayidx, align 8
+  %1 = load double, ptr %arrayidx2, align 8
+  %2 = call double @atan2(double %0, double %1)
+  store double %2, ptr %arrayidx, align 8
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
+
 declare float @atanhf(float)
 define void @test_atanhf(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_atanhf(
@@ -1243,7 +1247,8 @@ for.body:                                         ; preds = %for.body.preheader,
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
-declare float @fmodf(float)
+
+declare float @fmodf(float, float)
 define void @test_fmodf(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_fmodf(
 ; M1:  call <vscale x 2 x float> @sifive_nf_fmod_vf32m1_1ulp(
@@ -1269,14 +1274,15 @@ for.body:                                         ; preds = %for.body.preheader,
   %arrayidx = getelementptr inbounds float, ptr %a, i64 %indvars.iv
   %arrayidx2 = getelementptr inbounds float, ptr %b, i64 %indvars.iv
   %0 = load float, ptr %arrayidx, align 4
-  %1 = call float @fmodf(float %0)
-  store float %1, ptr %arrayidx, align 4
+  %1 = load float, ptr %arrayidx2, align 4
+  %2 = call float @fmodf(float %0, float %1)
+  store float %2, ptr %arrayidx, align 4
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
 
-declare double @fmod(double)
+declare double @fmod(double, double)
 define void @test_fmod(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_fmod(
 ; M1:  call <vscale x 1 x double> @sifive_nf_fmod_vf64m1_1ulp(
@@ -1302,78 +1308,15 @@ for.body:                                         ; preds = %for.body.preheader,
   %arrayidx = getelementptr inbounds double, ptr %a, i64 %indvars.iv
   %arrayidx2 = getelementptr inbounds double, ptr %b, i64 %indvars.iv
   %0 = load double, ptr %arrayidx, align 8
-  %1 = call double @fmod(double %0)
-  store double %1, ptr %arrayidx, align 8
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
-  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
-}
-declare float @frexpf(float)
-define void @test_frexpf(i32 %n, ptr noundef %a, ptr noundef %b) {
-; M1-LABEL: @test_frexpf(
-; M1:  call <vscale x 2 x float> @sifive_nf_frexp_vf32m1_1ulp(
-; M2-LABEL: @test_frexpf(
-; M2:  call <vscale x 4 x float> @sifive_nf_frexp_vf32m2_1ulp(
-; M4-LABEL: @test_frexpf(
-; M4:  call <vscale x 8 x float> @sifive_nf_frexp_vf32m4_1ulp(
-; M8-LABEL: @test_frexpf(
-; M8:  call <vscale x 16 x float> @sifive_nf_frexp_vf32m8_1ulp(
-entry:
-  %cmp10 = icmp sgt i32 %n, 0
-  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
-
-for.body.preheader:                               ; preds = %entry
-  %wide.trip.count = zext i32 %n to i64
-  br label %for.body
-
-for.cond.cleanup:                                 ; preds = %for.body, %entry
-  ret void
-
-for.body:                                         ; preds = %for.body.preheader, %for.body
-  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
-  %arrayidx = getelementptr inbounds float, ptr %a, i64 %indvars.iv
-  %arrayidx2 = getelementptr inbounds float, ptr %b, i64 %indvars.iv
-  %0 = load float, ptr %arrayidx, align 4
-  %1 = call float @frexpf(float %0)
-  store float %1, ptr %arrayidx, align 4
+  %1 = load double, ptr %arrayidx2, align 8
+  %2 = call double @fmod(double %0, double %1)
+  store double %2, ptr %arrayidx, align 8
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
 
-declare double @frexp(double)
-define void @test_frexp(i32 %n, ptr noundef %a, ptr noundef %b) {
-; M1-LABEL: @test_frexp(
-; M1:  call <vscale x 1 x double> @sifive_nf_frexp_vf64m1_1ulp(
-; M2-LABEL: @test_frexp(
-; M2:  call <vscale x 2 x double> @sifive_nf_frexp_vf64m2_1ulp(
-; M4-LABEL: @test_frexp(
-; M4:  call <vscale x 4 x double> @sifive_nf_frexp_vf64m4_1ulp(
-; M8-LABEL: @test_frexp(
-; M8:  call <vscale x 8 x double> @sifive_nf_frexp_vf64m8_1ulp(
-entry:
-  %cmp10 = icmp sgt i32 %n, 0
-  br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
-
-for.body.preheader:                               ; preds = %entry
-  %wide.trip.count = zext i32 %n to i64
-  br label %for.body
-
-for.cond.cleanup:                                 ; preds = %for.body, %entry
-  ret void
-
-for.body:                                         ; preds = %for.body.preheader, %for.body
-  %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
-  %arrayidx = getelementptr inbounds double, ptr %a, i64 %indvars.iv
-  %arrayidx2 = getelementptr inbounds double, ptr %b, i64 %indvars.iv
-  %0 = load double, ptr %arrayidx, align 8
-  %1 = call double @frexp(double %0)
-  store double %1, ptr %arrayidx, align 8
-  %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
-  %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
-  br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
-}
-declare float @hypotf(float)
+declare float @hypotf(float, float)
 define void @test_hypotf(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_hypotf(
 ; M1:  call <vscale x 2 x float> @sifive_nf_hypot_vf32m1_1ulp(
@@ -1399,14 +1342,15 @@ for.body:                                         ; preds = %for.body.preheader,
   %arrayidx = getelementptr inbounds float, ptr %a, i64 %indvars.iv
   %arrayidx2 = getelementptr inbounds float, ptr %b, i64 %indvars.iv
   %0 = load float, ptr %arrayidx, align 4
-  %1 = call float @hypotf(float %0)
+  %1 = load float, ptr %arrayidx, align 4
+  %2 = call float @hypotf(float %0, float %1)
   store float %1, ptr %arrayidx, align 4
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
 
-declare double @hypot(double)
+declare double @hypot(double, double)
 define void @test_hypot(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_hypot(
 ; M1:  call <vscale x 1 x double> @sifive_nf_hypot_vf64m1_1ulp(
@@ -1432,22 +1376,24 @@ for.body:                                         ; preds = %for.body.preheader,
   %arrayidx = getelementptr inbounds double, ptr %a, i64 %indvars.iv
   %arrayidx2 = getelementptr inbounds double, ptr %b, i64 %indvars.iv
   %0 = load double, ptr %arrayidx, align 8
-  %1 = call double @hypot(double %0)
-  store double %1, ptr %arrayidx, align 8
+  %1 = load double, ptr %arrayidx2, align 8
+  %2 = call double @hypot(double %0, double %1)
+  store double %2, ptr %arrayidx, align 8
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
-declare float @ilogdf(float)
-define void @test_ilogdf(i32 %n, ptr noundef %a, ptr noundef %b) {
-; M1-LABEL: @test_ilogdf(
-; M1:  call <vscale x 2 x float> @sifive_nf_ilogd_vf32m1_1ulp(
-; M2-LABEL: @test_ilogdf(
-; M2:  call <vscale x 4 x float> @sifive_nf_ilogd_vf32m2_1ulp(
-; M4-LABEL: @test_ilogdf(
-; M4:  call <vscale x 8 x float> @sifive_nf_ilogd_vf32m4_1ulp(
-; M8-LABEL: @test_ilogdf(
-; M8:  call <vscale x 16 x float> @sifive_nf_ilogd_vf32m8_1ulp(
+
+declare i32 @ilogbf(float)
+define void @test_ilogbf(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_ilogbf(
+; M1:  call <vscale x 2 x i32> @sifive_nf_ilogb_vf32m1_1ulp(
+; M2-LABEL: @test_ilogbf(
+; M2:  call <vscale x 4 x i32> @sifive_nf_ilogb_vf32m2_1ulp(
+; M4-LABEL: @test_ilogbf(
+; M4:  call <vscale x 8 x i32> @sifive_nf_ilogb_vf32m4_1ulp(
+; M8-LABEL: @test_ilogbf(
+; M8:  call <vscale x 16 x i32> @sifive_nf_ilogb_vf32m8_1ulp(
 entry:
   %cmp10 = icmp sgt i32 %n, 0
   br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
@@ -1462,25 +1408,25 @@ for.cond.cleanup:                                 ; preds = %for.body, %entry
 for.body:                                         ; preds = %for.body.preheader, %for.body
   %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
   %arrayidx = getelementptr inbounds float, ptr %a, i64 %indvars.iv
-  %arrayidx2 = getelementptr inbounds float, ptr %b, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds i32, ptr %b, i64 %indvars.iv
   %0 = load float, ptr %arrayidx, align 4
-  %1 = call float @ilogdf(float %0)
-  store float %1, ptr %arrayidx, align 4
+  %1 = call i32 @ilogbf(float %0)
+  store i32 %1, ptr %arrayidx2, align 4
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
 
-declare double @ilogd(double)
-define void @test_ilogd(i32 %n, ptr noundef %a, ptr noundef %b) {
-; M1-LABEL: @test_ilogd(
-; M1:  call <vscale x 1 x double> @sifive_nf_ilogd_vf64m1_1ulp(
-; M2-LABEL: @test_ilogd(
-; M2:  call <vscale x 2 x double> @sifive_nf_ilogd_vf64m2_1ulp(
-; M4-LABEL: @test_ilogd(
-; M4:  call <vscale x 4 x double> @sifive_nf_ilogd_vf64m4_1ulp(
-; M8-LABEL: @test_ilogd(
-; M8:  call <vscale x 8 x double> @sifive_nf_ilogd_vf64m8_1ulp(
+declare i32 @ilogb(double)
+define void @test_ilogb(i32 %n, ptr noundef %a, ptr noundef %b) {
+; M1-LABEL: @test_ilogb(
+; M1:  call <vscale x 1 x i32> @sifive_nf_ilogb_vf64m1_1ulp(
+; M2-LABEL: @test_ilogb(
+; M2:  call <vscale x 2 x i32> @sifive_nf_ilogb_vf64m2_1ulp(
+; M4-LABEL: @test_ilogb(
+; M4:  call <vscale x 4 x i32> @sifive_nf_ilogb_vf64m4_1ulp(
+; M8-LABEL: @test_ilogb(
+; M8:  call <vscale x 8 x i32> @sifive_nf_ilogb_vf64m8_1ulp(
 entry:
   %cmp10 = icmp sgt i32 %n, 0
   br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
@@ -1495,15 +1441,16 @@ for.cond.cleanup:                                 ; preds = %for.body, %entry
 for.body:                                         ; preds = %for.body.preheader, %for.body
   %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
   %arrayidx = getelementptr inbounds double, ptr %a, i64 %indvars.iv
-  %arrayidx2 = getelementptr inbounds double, ptr %b, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds i32, ptr %b, i64 %indvars.iv
   %0 = load double, ptr %arrayidx, align 8
-  %1 = call double @ilogd(double %0)
-  store double %1, ptr %arrayidx, align 8
+  %1 = call i32 @ilogb(double %0)
+  store i32 %1, ptr %arrayidx2, align 4
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
-declare float @ldexpf(float)
+
+declare float @ldexpf(float, i32)
 define void @test_ldexpf(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_ldexpf(
 ; M1:  call <vscale x 2 x float> @sifive_nf_ldexp_vf32m1_1ulp(
@@ -1527,16 +1474,17 @@ for.cond.cleanup:                                 ; preds = %for.body, %entry
 for.body:                                         ; preds = %for.body.preheader, %for.body
   %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
   %arrayidx = getelementptr inbounds float, ptr %a, i64 %indvars.iv
-  %arrayidx2 = getelementptr inbounds float, ptr %b, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds i32, ptr %b, i64 %indvars.iv
   %0 = load float, ptr %arrayidx, align 4
-  %1 = call float @ldexpf(float %0)
-  store float %1, ptr %arrayidx, align 4
+  %1 = load i32, ptr %arrayidx2, align 4
+  %2 = call float @ldexpf(float %0, i32 %1)
+  store float %2, ptr %arrayidx, align 4
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
 
-declare double @ldexp(double)
+declare double @ldexp(double, i32)
 define void @test_ldexp(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_ldexp(
 ; M1:  call <vscale x 1 x double> @sifive_nf_ldexp_vf64m1_1ulp(
@@ -1560,14 +1508,16 @@ for.cond.cleanup:                                 ; preds = %for.body, %entry
 for.body:                                         ; preds = %for.body.preheader, %for.body
   %indvars.iv = phi i64 [ 0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
   %arrayidx = getelementptr inbounds double, ptr %a, i64 %indvars.iv
-  %arrayidx2 = getelementptr inbounds double, ptr %b, i64 %indvars.iv
+  %arrayidx2 = getelementptr inbounds i32, ptr %b, i64 %indvars.iv
   %0 = load double, ptr %arrayidx, align 8
-  %1 = call double @ldexp(double %0)
-  store double %1, ptr %arrayidx, align 8
+  %1 = load i32, ptr %arrayidx2, align 4
+  %2 = call double @ldexp(double %0, i32 %1)
+  store double %2, ptr %arrayidx, align 8
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
+
 declare float @logf(float)
 define void @test_logf(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_logf(
@@ -1893,7 +1843,8 @@ for.body:                                         ; preds = %for.body.preheader,
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
-declare float @nextafterf(float)
+
+declare float @nextafterf(float, float)
 define void @test_nextafterf(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_nextafterf(
 ; M1:  call <vscale x 2 x float> @sifive_nf_nextafter_vf32m1_1ulp(
@@ -1919,14 +1870,15 @@ for.body:                                         ; preds = %for.body.preheader,
   %arrayidx = getelementptr inbounds float, ptr %a, i64 %indvars.iv
   %arrayidx2 = getelementptr inbounds float, ptr %b, i64 %indvars.iv
   %0 = load float, ptr %arrayidx, align 4
-  %1 = call float @nextafterf(float %0)
-  store float %1, ptr %arrayidx, align 4
+  %1 = load float, ptr %arrayidx2, align 4
+  %2 = call float @nextafterf(float %0, float %1)
+  store float %2, ptr %arrayidx, align 4
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
 
-declare double @nextafter(double)
+declare double @nextafter(double, double)
 define void @test_nextafter(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_nextafter(
 ; M1:  call <vscale x 1 x double> @sifive_nf_nextafter_vf64m1_1ulp(
@@ -1952,13 +1904,15 @@ for.body:                                         ; preds = %for.body.preheader,
   %arrayidx = getelementptr inbounds double, ptr %a, i64 %indvars.iv
   %arrayidx2 = getelementptr inbounds double, ptr %b, i64 %indvars.iv
   %0 = load double, ptr %arrayidx, align 8
-  %1 = call double @nextafter(double %0)
-  store double %1, ptr %arrayidx, align 8
+  %1 = load double, ptr %arrayidx2, align 8
+  %2 = call double @nextafter(double %0, double %1)
+  store double %2, ptr %arrayidx, align 8
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
-declare float @powf(float)
+
+declare float @powf(float, float)
 define void @test_powf(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_powf(
 ; M1:  call <vscale x 2 x float> @sifive_nf_pow_vf32m1_1ulp(
@@ -1984,14 +1938,15 @@ for.body:                                         ; preds = %for.body.preheader,
   %arrayidx = getelementptr inbounds float, ptr %a, i64 %indvars.iv
   %arrayidx2 = getelementptr inbounds float, ptr %b, i64 %indvars.iv
   %0 = load float, ptr %arrayidx, align 4
-  %1 = call float @powf(float %0)
-  store float %1, ptr %arrayidx, align 4
+  %1 = load float, ptr %arrayidx2, align 4
+  %2 = call float @powf(float %0, float %1)
+  store float %2, ptr %arrayidx, align 4
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
 
-declare double @pow(double)
+declare double @pow(double, double)
 define void @test_pow(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_pow(
 ; M1:  call <vscale x 1 x double> @sifive_nf_pow_vf64m1_1ulp(
@@ -2017,8 +1972,9 @@ for.body:                                         ; preds = %for.body.preheader,
   %arrayidx = getelementptr inbounds double, ptr %a, i64 %indvars.iv
   %arrayidx2 = getelementptr inbounds double, ptr %b, i64 %indvars.iv
   %0 = load double, ptr %arrayidx, align 8
-  %1 = call double @pow(double %0)
-  store double %1, ptr %arrayidx, align 8
+  %1 = load double, ptr %arrayidx, align 8
+  %2 = call double @pow(double %0, double %1)
+  store double %2, ptr %arrayidx, align 8
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
