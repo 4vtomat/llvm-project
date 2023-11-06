@@ -20,6 +20,9 @@
 #include <optional>
 #include <string>
 #include <vector>
+#if SIFIVE_CUSTOMIZATION
+#include <set>
+#endif
 
 using namespace llvm;
 
@@ -590,6 +593,11 @@ void RISCVISAInfo::toFeatures(
     std::vector<StringRef> &Features,
     llvm::function_ref<StringRef(const Twine &)> StrAlloc,
     bool AddAllExtensions) const {
+#if SIFIVE_CUSTOMIZATION
+  // This records the extensions that have been converted into features
+  // to avoid duplication.
+  std::set<std::string> AddedExts;
+#endif
   for (auto const &Ext : Exts) {
 #if SIFIVE_CUSTOMIZATION
     std::string ExtName = tryAppendVersionInfo(Ext.first, Ext.second);
@@ -610,6 +618,12 @@ void RISCVISAInfo::toFeatures(
       std::string ExtName =
           tryAppendVersionInfo(Ext.Name,
                                {Ext.Version.Major, Ext.Version.Minor});
+
+      if (AddedExts.count(ExtName))
+        continue;
+
+      AddedExts.insert(ExtName);
+
       if (ExtName == "i")
         continue;
 
@@ -624,6 +638,12 @@ void RISCVISAInfo::toFeatures(
       std::string ExtName =
           tryAppendVersionInfo(Ext.Name,
                                {Ext.Version.Major, Ext.Version.Minor});
+
+      if (AddedExts.count(ExtName))
+        continue;
+
+      AddedExts.insert(ExtName);
+
       if (std::find(Features.begin(),
                     Features.end(), "+experimental-" + ExtName) !=
           Features.end())
@@ -1490,6 +1510,12 @@ std::vector<std::string> RISCVISAInfo::toFeatureVector() const {
 #if SIFIVE_CUSTOMIZATION
 static std::optional<std::pair<StringRef, RISCVExtensionInfo>>
     tryDecodeExtWithVersion(StringRef Ext) {
+
+  // We only really support multi-version for vector crypto since it
+  // incompatible between different version.
+  if (!Ext.startswith("zvk"))
+    return std::nullopt;
+
   auto Pos = findLastNonVersionCharacter(Ext) + 1;
   if (Pos == Ext.size())
     return std::nullopt;
