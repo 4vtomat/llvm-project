@@ -12293,8 +12293,8 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
                                      "vp.op.load");
           cast<IntrinsicInst>(NewLI)->addParamAttr(
               0, Attribute::getWithAlignment(NewLI->getContext(), Alignment));
+          State.addMetadata(NewLI, LI);
         }
-        State.addMetadata(NewLI, LI);
       } else if (isMaskRequired)
 #endif // SIFIVE_CUSTOMIZATION
         NewLI = Builder.CreateMaskedLoad(

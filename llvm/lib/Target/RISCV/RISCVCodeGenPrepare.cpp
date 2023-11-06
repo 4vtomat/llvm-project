@@ -18,7 +18,10 @@
 #include "llvm/ADT/Statistic.h"
 #include "llvm/Analysis/ValueTracking.h"
 #include "llvm/CodeGen/TargetPassConfig.h"
+#include "llvm/IR/Dominators.h" // SIFIVE
+#include "llvm/IR/IRBuilder.h"  // SIFIVE
 #include "llvm/IR/InstVisitor.h"
+#include "llvm/IR/IntrinsicsRISCV.h" // SIFIVE
 #include "llvm/IR/PatternMatch.h"
 #include "llvm/InitializePasses.h"
 #include "llvm/Pass.h"
@@ -36,6 +39,7 @@ class RISCVCodeGenPrepare : public FunctionPass,
                             public InstVisitor<RISCVCodeGenPrepare, bool> {
   const DataLayout *DL;
   const RISCVSubtarget *ST;
+  const DominatorTree *DT; // SIFIVE
 
 public:
   static char ID;
@@ -49,11 +53,13 @@ public:
   void getAnalysisUsage(AnalysisUsage &AU) const override {
     AU.setPreservesCFG();
     AU.addRequired<TargetPassConfig>();
+    AU.addRequired<DominatorTreeWrapperPass>(); // SIFIVE
   }
 
   bool visitInstruction(Instruction &I) { return false; }
   bool visitZExtInst(ZExtInst &I);
   bool visitAnd(BinaryOperator &BO);
+  bool visitIntrinsicInst(IntrinsicInst &II); // SIFIVE
 };
 
 } // end anonymous namespace
@@ -149,6 +155,86 @@ bool RISCVCodeGenPrepare::visitAnd(BinaryOperator &BO) {
   return true;
 }
 
+#if SIFIVE_CUSTOMIZATION
+// Manually expand unordered reductions with non-zero VL to get better regalloc
+// and vsetvli than SelectionDAG can manage. We need to know the VL is non-zero
+// so we don't need a passthru for the vredusum. We can also use the VL for
+// vfmv.s.f if we know if it is non-zero. SelectionDAG will conservatively use
+// a value of 1 to make sure it is non-zero.
+bool RISCVCodeGenPrepare::visitIntrinsicInst(IntrinsicInst &II) {
+  // FIXME: Extend to other reduction operations.
+  if (II.getIntrinsicID() != Intrinsic::vp_reduce_fadd)
+    return false;
+
+  // Must be an unordered reduction.
+  if (!II.getFastMathFlags().allowReassoc())
+    return false;
+
+  Value *Vec = II.getArgOperand(1);
+
+  // FIXME: Only handle scalable vectors for now.
+  auto *VecTy = dyn_cast<ScalableVectorType>(Vec->getType());
+  if (!VecTy)
+    return false;
+
+  // TODO: Handle masks that aren't all ones?
+  auto *ConstMask = dyn_cast<Constant>(II.getArgOperand(2));
+  if (!ConstMask || !ConstMask->isAllOnesValue())
+    return false;
+
+  // Get the LMUL1 type and ensure that we didn't exceed LMUL=8.
+  // FIXME: Support larger LMUL.
+  Type *ScalarTy = VecTy->getElementType();
+  Type *LMul1Ty;
+  if (ScalarTy->isFloatTy() && ST->hasVInstructionsF32() &&
+      VecTy->getMinNumElements() <= 16)
+    LMul1Ty = ScalableVectorType::get(ScalarTy, 2);
+  else if (ScalarTy->isDoubleTy() && ST->hasVInstructionsF64() &&
+           VecTy->getMinNumElements() <= 8)
+    LMul1Ty = ScalableVectorType::get(ScalarTy, 1);
+  else
+    return false;
+
+  // Try to prove the VL is non-zero.
+  Value *VL = II.getArgOperand(3);
+  if (!isKnownNonZero(VL, *DL, 0, nullptr, &II, DT))
+    return false;
+
+  // Found non-zero VL, let's rewrite.
+  Value *Scalar = II.getArgOperand(0);
+
+  IRBuilder<> Builder(&II);
+
+  // Extend VL from i32 to XLen if needed.
+  if (ST->is64Bit())
+    VL = Builder.CreateZExt(VL, Builder.getInt64Ty());
+
+  // Move scalar into vector using vfmv.s.f. We need use VecTy to get the
+  // correct LMUL in the vsetvli even though vfmv.s.f doesn't care about LMUL.
+  Value *ScalarInVec =
+      Builder.CreateIntrinsic(Intrinsic::riscv_vfmv_s_f, {VecTy, VL->getType()},
+                              {PoisonValue::get(VecTy), Scalar, VL});
+
+  // Extract to MUL1 to match what vfredusum wants.
+  Value *Extract =
+      Builder.CreateExtractVector(LMul1Ty, ScalarInVec, Builder.getInt64(0));
+
+  // Do the reduction.
+  // The 7 here is dynamic rounding mode.
+  Value *Reduce = Builder.CreateIntrinsic(
+      Intrinsic::riscv_vfredusum, {LMul1Ty, VecTy, VL->getType()},
+      {PoisonValue::get(LMul1Ty), Vec, Extract,
+       ConstantInt::get(VL->getType(), 7), VL});
+
+  // Extract the scalar result to match the original intrinsic result type.
+  Value *Res = Builder.CreateExtractElement(Reduce, (uint64_t)0);
+  Res->takeName(&II);
+  II.replaceAllUsesWith(Res);
+  II.eraseFromParent();
+  return true;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 bool RISCVCodeGenPrepare::runOnFunction(Function &F) {
   if (skipFunction(F))
     return false;
@@ -158,6 +244,8 @@ bool RISCVCodeGenPrepare::runOnFunction(Function &F) {
   ST = &TM.getSubtarget<RISCVSubtarget>(F);
 
   DL = &F.getParent()->getDataLayout();
+
+  DT = &getAnalysis<DominatorTreeWrapperPass>().getDomTree(); // SIFIVE
 
   bool MadeChange = false;
   for (auto &BB : F)
