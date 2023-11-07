@@ -719,8 +719,8 @@ RecurrenceDescriptor::isAnyOfPattern(Loop *Loop, PHINode *OrigPhi,
 // value of the data type or a non-constant value by using mask and multiple
 // reduction operations.
 RecurrenceDescriptor::InstDesc
-RecurrenceDescriptor::isFindLastIVPattern(Loop *Loop, PHINode *OrigPhi,
-                                          Instruction *I, ScalarEvolution *SE) {
+RecurrenceDescriptor::isFindLastIVPattern(PHINode *OrigPhi, Instruction *I,
+                                          ScalarEvolution *SE) {
   // Only match select with single use cmp condition.
   // TODO: Only handle single use for now.
   CmpInst::Predicate Pred;
@@ -738,7 +738,7 @@ RecurrenceDescriptor::isFindLastIVPattern(Loop *Loop, PHINode *OrigPhi,
   else
     return InstDesc(false, I);
 
-  auto IsIncreasingLoopInduction = [&SE, &Loop](Value *V) {
+  auto IsIncreasingLoopInduction = [&](Value *V) {
     if (!SE)
       return false;
 
@@ -928,7 +928,7 @@ RecurrenceDescriptor::isRecurrenceInstr(Loop *L, PHINode *OrigPhi,
       return isConditionalRdxPattern(Kind, I);
 #if SIFIVE_CUSTOMIZATION
     if (isFindLastIVRecurrenceKind(Kind))
-      return isFindLastIVPattern(L, OrigPhi, I, SE);
+      return isFindLastIVPattern(OrigPhi, I, SE);
 #endif // SIFIVE_CUSTOMIZATION
     [[fallthrough]];
   case Instruction::FCmp:
