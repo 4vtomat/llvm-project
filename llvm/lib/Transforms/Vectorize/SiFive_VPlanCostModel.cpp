@@ -489,6 +489,19 @@ VPlanCostModel::getVectorIntrinsicCost(const CallInst *CI,
                  std::back_inserter(ParamTys),
                  [&](Type *Ty) { return getVectorType(Ty, RVL); });
 
+  if (VPIntrinsic::isVPIntrinsic(ID)) {
+    // VP intrinsics require dummy mask and vector length args, it will
+    // verified during cost calculation.
+    Type *MaskType =
+        ScalableVectorType::get(Type::getInt1Ty(CI->getContext()),
+                                getElementCount(RVL).getKnownMinValue());
+    Type *VLType = Type::getInt32Ty(CI->getContext());
+    Arguments.push_back(PoisonValue::get(MaskType));
+    Arguments.push_back(PoisonValue::get(VLType));
+    ParamTys.push_back(MaskType);
+    ParamTys.push_back(VLType);
+  }
+
   IntrinsicCostAttributes CostAttrs(ID, RetTy, Arguments, ParamTys, FMF,
                                     dyn_cast<IntrinsicInst>(CI));
   return TTI.getIntrinsicInstrCost(CostAttrs, CostKind);
