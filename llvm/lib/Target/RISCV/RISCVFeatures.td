@@ -18,6 +18,16 @@ def HasStdExtZicsr : Predicate<"Subtarget->hasStdExtZicsr()">,
                                 "'Zicsr' (CSRs)">;
 
 #ifdef SIFIVE_CUSTOMIZATION
+def FeatureStdExtSdext
+    : SubtargetFeature<"sdext", "HasStdExtSdext", "true",
+                       "'Sdext' (External Debugging Extension)",
+                       []>;
+
+def FeatureStdExtSdtrig
+    : SubtargetFeature<"sdtrig", "HasStdExtSdtrig", "true",
+                       "'Sdtrig' (Debugging Triggers)",
+                       []>;
+
 def FeatureStdExtSs
     : SubtargetFeature<"ss", "HasStdExtSs", "true",
                        "'Ss' (Supervisor Architecture)",
@@ -33,6 +43,11 @@ def FeatureStdExtSvade
                        "'Svade' (Page-fault exceptions are raised when a page "
                        "is accessed when A bit is clear, or written when D bit "
                        "is clear)", []>;
+
+def FeatureStdExtSvadu
+    : SubtargetFeature<"svadu", "HasStdExtSvadu", "true",
+                       "'Svadu' (Extension adds support and CSR controls for "
+                       "hardware updating of PTE A/D bits)", []>;
 
 def FeatureStdExtSsccptr
     : SubtargetFeature<"ssccptr", "HasStdExtSsccptr", "true",

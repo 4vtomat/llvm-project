@@ -28,6 +28,12 @@
 .attribute arch, "rv32i_zicsr_zihpm"
 # CHECK: attribute      5, "rv32i2p1_zicsr2p0_zihpm2p0"
 
+.attribute arch, "rv32isdext"
+# CHECK: attribute      5, "rv32i2p1_sdext1p0"
+
+.attribute arch, "rv32isdtrig"
+# CHECK: attribute      5, "rv32i2p1_sdtrig1p0"
+
 .attribute arch, "rv32iss"
 # CHECK: attribute      5, "rv32i2p1_ss1p12"
 
@@ -36,6 +42,9 @@
 
 .attribute arch, "rv32isvade"
 # CHECK: attribute      5, "rv32i2p1_svade1p0"
+
+.attribute arch, "rv32isvadu"
+# CHECK: attribute      5, "rv32i2p1_svadu1p0"
 
 .attribute arch, "rv32issccptr"
 # CHECK: attribute      5, "rv32i2p1_ssccptr1p0"

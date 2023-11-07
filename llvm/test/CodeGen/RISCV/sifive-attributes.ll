@@ -6,9 +6,12 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+ziccrse %s -o - | FileCheck --check-prefixes=CHECK,RV32ZICCRSE %s
 ; RUN: llc -mtriple=riscv32 -mattr=+za64rs %s -o - | FileCheck --check-prefixes=CHECK,RV32ZA64RS %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zic64b %s -o - | FileCheck --check-prefixes=CHECK,RV32ZIC64B %s
+; RUN: llc -mtriple=riscv32 -mattr=+sdext %s -o - | FileCheck --check-prefixes=CHECK,RV32SDEXT %s
+; RUN: llc -mtriple=riscv32 -mattr=+sdtrig %s -o - | FileCheck --check-prefixes=CHECK,RV32SDTRIG %s
 ; RUN: llc -mtriple=riscv32 -mattr=+ss %s -o - | FileCheck --check-prefixes=CHECK,RV32SS %s
 ; RUN: llc -mtriple=riscv32 -mattr=+svbare %s -o - | FileCheck --check-prefixes=CHECK,RV32SVBARE %s
 ; RUN: llc -mtriple=riscv32 -mattr=+svade %s -o - | FileCheck --check-prefixes=CHECK,RV32SVADE %s
+; RUN: llc -mtriple=riscv32 -mattr=+svadu %s -o - | FileCheck --check-prefixes=CHECK,RV32SVADU %s
 ; RUN: llc -mtriple=riscv32 -mattr=+ssccptr %s -o - | FileCheck --check-prefixes=CHECK,RV32SSCCPTR %s
 ; RUN: llc -mtriple=riscv32 -mattr=+sstvecd %s -o - | FileCheck --check-prefixes=CHECK,RV32SSTVECD %s
 ; RUN: llc -mtriple=riscv32 -mattr=+sstvala %s -o - | FileCheck --check-prefixes=CHECK,RV32SSTVALA %s
@@ -34,9 +37,12 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+ziccrse %s -o - | FileCheck --check-prefixes=CHECK,RV64ZICCRSE %s
 ; RUN: llc -mtriple=riscv64 -mattr=+za64rs %s -o - | FileCheck --check-prefixes=CHECK,RV64ZA64RS %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zic64b %s -o - | FileCheck --check-prefixes=CHECK,RV64ZIC64B %s
+; RUN: llc -mtriple=riscv64 -mattr=+sdext %s -o - | FileCheck --check-prefixes=CHECK,RV64SDEXT %s
+; RUN: llc -mtriple=riscv64 -mattr=+sdtrig %s -o - | FileCheck --check-prefixes=CHECK,RV64SDTRIG %s
 ; RUN: llc -mtriple=riscv64 -mattr=+ss %s -o - | FileCheck --check-prefixes=CHECK,RV64SS %s
 ; RUN: llc -mtriple=riscv64 -mattr=+svbare %s -o - | FileCheck --check-prefixes=CHECK,RV64SVBARE %s
 ; RUN: llc -mtriple=riscv64 -mattr=+svade %s -o - | FileCheck --check-prefixes=CHECK,RV64SVADE %s
+; RUN: llc -mtriple=riscv64 -mattr=+svadu %s -o - | FileCheck --check-prefixes=CHECK,RV64SVADU %s
 ; RUN: llc -mtriple=riscv64 -mattr=+ssccptr %s -o - | FileCheck --check-prefixes=CHECK,RV64SSCCPTR %s
 ; RUN: llc -mtriple=riscv64 -mattr=+sstvecd %s -o - | FileCheck --check-prefixes=CHECK,RV64SSTVECD %s
 ; RUN: llc -mtriple=riscv64 -mattr=+sstvala %s -o - | FileCheck --check-prefixes=CHECK,RV64SSTVALA %s
@@ -67,9 +73,12 @@
 ; RV32ZIC64B: .attribute 5, "rv32i2p1_zic64b1p0"
 ; RV32ZVKB0P1: .attribute 5, "rv32i2p1_zicsr2p0_zve32x1p0_zve64x1p0_zvkb0p1_zvl32b1p0_zvl64b1p0"
 ; RV32ZVKG0P1: .attribute 5, "rv32i2p1_zicsr2p0_zve32x1p0_zvkg0p1_zvl32b1p0"
+; RV32SDEXT: .attribute 5, "rv32i2p1_sdext1p0"
+; RV32SDTRIG: .attribute 5, "rv32i2p1_sdtrig1p0"
 ; RV32SS: .attribute 5, "rv32i2p1_ss1p12"
 ; RV32SVBARE: .attribute 5, "rv32i2p1_svbare1p0"
 ; RV32SVADE: .attribute 5, "rv32i2p1_svade1p0"
+; RV32SVADU: .attribute 5, "rv32i2p1_svadu1p0"
 ; RV32SSCCPTR: .attribute 5, "rv32i2p1_ssccptr1p0"
 ; RV32SSTVECD: .attribute 5, "rv32i2p1_sstvecd1p0"
 ; RV32SSTVALA: .attribute 5, "rv32i2p1_sstvala1p0"
@@ -93,9 +102,12 @@
 ; RV64ZICCRSE: .attribute 5, "rv64i2p1_ziccrse1p0"
 ; RV64ZA64RS: .attribute 5, "rv64i2p1_za64rs1p0"
 ; RV64ZIC64B: .attribute 5, "rv64i2p1_zic64b1p0"
+; RV64SDEXT: .attribute 5, "rv64i2p1_sdext1p0"
+; RV64SDTRIG: .attribute 5, "rv64i2p1_sdtrig1p0"
 ; RV64SS: .attribute 5, "rv64i2p1_ss1p12"
 ; RV64SVBARE: .attribute 5, "rv64i2p1_svbare1p0"
 ; RV64SVADE: .attribute 5, "rv64i2p1_svade1p0"
+; RV64SVADU: .attribute 5, "rv64i2p1_svadu1p0"
 ; RV64SSCCPTR: .attribute 5, "rv64i2p1_ssccptr1p0"
 ; RV64SSTVECD: .attribute 5, "rv64i2p1_sstvecd1p0"
 ; RV64SSTVALA: .attribute 5, "rv64i2p1_sstvala1p0"

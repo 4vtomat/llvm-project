@@ -111,9 +111,12 @@
 // CHECK-NOT: __riscv_ziccrse
 // CHECK-NOT: __riscv_za64rs
 // CHECK-NOT: __riscv_zic64b
+// CHECK-NOT: __riscv_sdext
+// CHECK-NOT: __riscv_sdtrig
 // CHECK-NOT: __riscv_ss
 // CHECK-NOT: __riscv_svbare
 // CHECK-NOT: __riscv_svade
+// CHECK-NOT: __riscv_svadu
 // CHECK-NOT: __riscv_ssccptr
 // CHECK-NOT: __riscv_sstvecd
 // CHECK-NOT: __riscv_sstvala
@@ -1001,6 +1004,18 @@
 // RUN: -o - | FileCheck --check-prefix=CHECK-ZIHPM-EXT1 %s
 // CHECK-ZIHPM-EXT1: __riscv_zihpm  2000000{{$}}
 
+// RUN: %clang --target=riscv32 -march=rv32isdext -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SDEXT-EXT %s
+// RUN: %clang --target=riscv64 -march=rv64isdext  -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SDEXT-EXT %s
+// CHECK-SDEXT-EXT: __riscv_sdext  1000000{{$}}
+
+// RUN: %clang --target=riscv32 -march=rv32isdtrig -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SDTRIG-EXT %s
+// RUN: %clang --target=riscv64 -march=rv64isdtrig  -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SDTRIG-EXT %s
+// CHECK-SDTRIG-EXT: __riscv_sdtrig  1000000{{$}}
+
 // RUN: %clang --target=riscv32 -march=rv32iss -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SS-EXT %s
 // RUN: %clang --target=riscv64 -march=rv64iss  -x c -E -dM %s \
@@ -1018,6 +1033,12 @@
 // RUN: %clang --target=riscv64 -march=rv64isvade  -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SVADE-EXT %s
 // CHECK-SVADE-EXT: __riscv_svade  1000000{{$}}
+
+// RUN: %clang --target=riscv32 -march=rv32isvadu -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SVADU-EXT %s
+// RUN: %clang --target=riscv64 -march=rv64isvadu  -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SVADU-EXT %s
+// CHECK-SVADU-EXT: __riscv_svadu  1000000{{$}}
 
 // RUN: %clang --target=riscv32 -march=rv32issccptr -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SSCCPTR-EXT %s

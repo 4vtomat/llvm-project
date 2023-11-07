@@ -708,6 +708,8 @@ R"(All available -march extensions for RISC-V
     zvl8192b            1.0
     zhinx               1.0
     zhinxmin            1.0
+    sdext               1.0
+    sdtrig              1.0
     shcounterenw        1.0
     shgatpa             1.0
     shtvala             1.0
@@ -725,6 +727,7 @@ R"(All available -march extensions for RISC-V
     sstvecd             1.0
     ssu64xl             1.0
     svade               1.0
+    svadu               1.0
     svbare              1.0
     svinval             1.0
     svnapot             1.0
