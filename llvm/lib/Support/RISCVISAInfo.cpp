@@ -66,6 +66,8 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"h", RISCVExtensionVersion{1, 0}},
     {"i", RISCVExtensionVersion{2, 1}},
     {"m", RISCVExtensionVersion{2, 0}},
+    {"sdext", RISCVExtensionVersion{1, 0}}, // SIFIVE
+    {"sdtrig", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"shcounterenw", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"shgatpa", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"shtvala", RISCVExtensionVersion{1, 0}}, // SIFIVE
@@ -83,6 +85,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"sstvecd", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"ssu64xl", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"svade", RISCVExtensionVersion{1, 0}}, // SIFIVE
+    {"svadu", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"svbare", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"svinval", RISCVExtensionVersion{1, 0}},
     {"svnapot", RISCVExtensionVersion{1, 0}},
