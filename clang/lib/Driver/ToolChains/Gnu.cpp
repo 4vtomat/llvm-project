@@ -29,6 +29,7 @@
 #include "llvm/ADT/Twine.h"
 #include "llvm/Option/ArgList.h"
 #include "llvm/Support/CodeGen.h"
+#include "llvm/Support/FileUtilities.h" // SIFIVE
 #include "llvm/Support/Path.h"
 #include "llvm/Support/VirtualFileSystem.h"
 #include "llvm/TargetParser/TargetParser.h"
@@ -2056,6 +2057,7 @@ static bool getRISCVMultilibFromGCC(const Driver &D,
   // Ask GCC's multi-lib config via --print-multi-lib.
   llvm::StringRef GCCArgs[] = {{GCCPath}, {"--print-multi-lib"}};
   std::string MultilibOutput = D.GetTemporaryPath("gcc-output-", "");
+  llvm::FileRemover OutputRemover(MultilibOutput);
   std::optional<llvm::StringRef> Redirects[] = {
       std::nullopt, {MultilibOutput}, {""}};
 
