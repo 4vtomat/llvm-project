@@ -9221,6 +9221,10 @@ InstructionCost BoUpSLP::getTreeCost(ArrayRef<Value *> VectorizedVals) {
   for (const std::unique_ptr<TreeEntry> &EntryPtr : VectorizableTree) {
     if (EntryPtr->State != TreeEntry::NeedToGather)
       continue;
+#if SIFIVE_CUSTOMIZATION
+    if (areAllUsersRISCVStridedNode(EntryPtr.get()))
+      continue;
+#endif // SIFIVE_CUSTOMIZATION
     for (Value *V : EntryPtr->Scalars)
       if (!isConstant(V))
         ValueToGatherNodes.try_emplace(V).first->getSecond().insert(
