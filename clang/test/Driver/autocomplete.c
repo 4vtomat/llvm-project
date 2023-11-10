@@ -85,6 +85,7 @@
 // FVECLIBALL-NEXT: libmvec
 // FVECLIBALL-NEXT: MASSV
 // FVECLIBALL-NEXT: none
+// FVECLIBALL-NEXT: SiFive_NF
 // FVECLIBALL-NEXT: SLEEF
 // FVECLIBALL-NEXT: SVML
 // RUN: %clang --autocomplete=-fshow-overloads= | FileCheck %s -check-prefix=FSOVERALL
