@@ -17,8 +17,8 @@
 
 #if SIFIVE_CUSTOMIZATION
 // Prefix that every SiFive NF Library function name must begin with
-static constexpr char SiFiveNFLibraryPrefix[] = "sifive_nf";
-#endif
+static constexpr char SiFiveNFLibraryPrefix[] = "skl";
+#endif // SIFIVE_CUSTOMIZATION
 
 namespace llvm {
 class Function;
