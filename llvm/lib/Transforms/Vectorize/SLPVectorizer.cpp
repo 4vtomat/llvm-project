@@ -11441,6 +11441,9 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E) {
         if (TreeEntry *Entry = getTreeEntry(Ptr)) {
           // Find which lane we need to extract.
           unsigned FoundLane = Entry->findLaneForValue(Ptr);
+#if SIFIVE_CUSTOMIZATION
+          if (!areAllUsersRISCVStridedNode(Entry))
+#endif // SIFIVE_CUSTOMIZATION
           ExternalUses.push_back(ExternalUser(Ptr, ST, FoundLane));
         }
       }
