@@ -318,13 +318,13 @@ bool RISCVTTIImpl::getMemoryRefInfo(
     // RVV indexed loads/stores zero-extend offset operands which are narrower
     // than XLEN to XLEN.
     Value *OffsetOp = II->getArgOperand(PtrOperandNo + 1);
-    if (OffsetOp->getType()->getScalarType()->getIntegerBitWidth() <
-        ST->getXLen()) {
-      VectorType *OrigType = cast<VectorType>(OffsetOp->getType());
+    Type *OffsetTy = OffsetOp->getType();
+    if (OffsetTy->getScalarType()->getIntegerBitWidth() < ST->getXLen()) {
+      VectorType *OrigType = cast<VectorType>(OffsetTy);
       Type *ExtendTy = VectorType::get(XLenIntTy, OrigType);
       OffsetOp = IB.CreateZExt(OffsetOp, ExtendTy);
     }
-    Value *Mask = ConstantInt::get(Ty->getWithNewBitWidth(1), 1);
+    Value *Mask = ConstantInt::get(OffsetTy->getWithNewBitWidth(1), 1);
     if (HasMask)
       Mask = II->getArgOperand(VLIndex - 1);
     Value *EVL = II->getArgOperand(VLIndex);
