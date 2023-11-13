@@ -1916,7 +1916,7 @@ static bool maySpillForCandidate(
     Instruction *Inst, const Loop *CurLoop, LiveValues *LV,
     TargetTransformInfo *TTI, BasicBlock *TargetBB) {
   // Calculate value pressure for the prescribed loop blocks.
-  if (LV->haveLiveValueAnalysis()) {
+  if (LV && LV->haveLiveValueAnalysis()) {
     // Skip vectorized loops for now until vectype/config for lmul is
     // amended to correctly calculate VecRC register pressure.
     if (getBooleanLoopAttribute(CurLoop, "llvm.loop.isvectorized"))
