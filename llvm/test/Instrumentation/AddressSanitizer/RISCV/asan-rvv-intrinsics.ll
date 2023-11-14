@@ -8837,6 +8837,53 @@ entry:
   ret <vscale x 1 x i32> %a
 }
 
+declare <vscale x 1 x float> @llvm.riscv.vloxei.nxv1f32.nxv1i16(
+  <vscale x 1 x float>,
+  <vscale x 1 x float>*,
+  <vscale x 1 x i16>,
+  i64);
+
+define <vscale x 1 x float> @intrinsic_vloxei_v_nxv1f32_nxv1f32_nxv1i16(<vscale x 1 x float>* %0, <vscale x 1 x i16> %1, i64 %2) sanitize_address {
+; CHECK-LABEL: @intrinsic_vloxei_v_nxv1f32_nxv1f32_nxv1i16(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[TMP3:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP4:%.*]] = zext <vscale x 1 x i16> [[TMP1:%.*]] to <vscale x 1 x i64>
+; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[TMP0:%.*]], <vscale x 1 x i64> [[TMP4]]
+; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[TMP2:%.*]], 0
+; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP15:%.*]]
+; CHECK:       7:
+; CHECK-NEXT:    [[TMP8:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    [[TMP9:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP2]], i64 [[TMP8]])
+; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
+; CHECK:       .split:
+; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP7]] ], [ [[IV_NEXT:%.*]], [[TMP14:%.*]] ]
+; CHECK-NEXT:    [[TMP10:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP14]]
+; CHECK:       11:
+; CHECK-NEXT:    [[TMP12:%.*]] = extractelement <vscale x 1 x ptr> [[TMP5]], i64 [[IV]]
+; CHECK-NEXT:    [[TMP13:%.*]] = ptrtoint ptr [[TMP12]] to i64
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP13]], i64 4)
+; CHECK-NEXT:    br label [[TMP14]]
+; CHECK:       14:
+; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
+; CHECK-NEXT:    [[IV_CHECK:%.*]] = icmp eq i64 [[IV_NEXT]], [[TMP9]]
+; CHECK-NEXT:    br i1 [[IV_CHECK]], label [[DOTSPLIT_SPLIT:%.*]], label [[DOTSPLIT]]
+; CHECK:       .split.split:
+; CHECK-NEXT:    br label [[TMP15]]
+; CHECK:       15:
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 1 x float> @llvm.riscv.vloxei.nxv1f32.nxv1i16.i64(<vscale x 1 x float> undef, ptr [[TMP0]], <vscale x 1 x i16> [[TMP1]], i64 [[TMP2]])
+; CHECK-NEXT:    ret <vscale x 1 x float> [[A]]
+;
+entry:
+  %a = call <vscale x 1 x float> @llvm.riscv.vloxei.nxv1f32.nxv1i16(
+  <vscale x 1 x float> undef,
+  <vscale x 1 x float>* %0,
+  <vscale x 1 x i16> %1,
+  i64 %2)
+
+  ret <vscale x 1 x float> %a
+}
+
 declare <vscale x 1 x i32> @llvm.riscv.vluxei.nxv1i32.nxv1i16(
   <vscale x 1 x i32>,
   <vscale x 1 x i32>*,

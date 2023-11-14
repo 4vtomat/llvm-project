@@ -3,44 +3,25 @@
 
 ; Test ValueLiveInterval Construction
 
-; CHECK: i64 %n [0,4:0)[5,5:0)[8,8:1) 0@0-phi 1@8-phi
-; CHECK: weight:0.000000e+00
-; CHECK: ptr %a [1,4:0)[5,5:0)[6,6:0)[7,7:1)[8,18:0) 0@1-phi 1@7-phi
-; CHECK: weight:0.000000e+00
-; CHECK: ptr %b [2,4:0)[5,5:0)[8,18:0) 0@2-phi
-; CHECK: weight:0.000000e+00
-; CHECK: %cmp7 = icmp sgt i64 %n, 0 [3,4:0) 0@3
-; CHECK: weight:0.000000e+00
-; CHECK: br i1 %cmp7, label %for.body.preheader, label %for.cond.cleanup EMPTY
-; CHECK: weight:0.000000e+00
-; CHECK: br label %for.body EMPTY
-; CHECK: weight:0.000000e+00
-; CHECK: br label %for.cond.cleanup EMPTY
-; CHECK: weight:0.000000e+00
-; CHECK: ret ptr %a EMPTY
-; CHECK: weight:0.000000e+00
-; CHECK: %indvars.iv = phi i64 [ %n, %for.body.preheader ], [ %indvars.iv.next, %for.body ] [8,17:0) 0@8-phi
-; CHECK: weight:0.000000e+00
-; CHECK: %indvars.iv.next = add nsw i64 %indvars.iv, -1 [9,18:0) 0@9
-; CHECK: weight:0.000000e+00
-; CHECK: %indvars = trunc i64 %indvars.iv.next to i32 [10,11:0) 0@10
-; CHECK: weight:0.000000e+00
-; CHECK: %idxprom = zext i32 %indvars to i64 [11,15:0) 0@11
-; CHECK: weight:0.000000e+00
-; CHECK: %arrayidx = getelementptr inbounds i32, ptr %b, i64 %idxprom [12,13:0) 0@12
-; CHECK: weight:0.000000e+00
-; CHECK: %ld = load i32, ptr %arrayidx, align 4 [13,14:0) 0@13
-; CHECK: weight:0.000000e+00
-; CHECK: %add = add nsw i32 %ld, 1 [14,16:0) 0@14
-; CHECK: weight:0.000000e+00
-; CHECK: %arrayidx2 = getelementptr inbounds i32, ptr %a, i64 %idxprom [15,16:0) 0@15
-; CHECK: weight:0.000000e+00
-; CHECK: store i32 %add, ptr %arrayidx2, align 4 EMPTY
-; CHECK: weight:0.000000e+00
-; CHECK: %cmp = icmp sgt i64 %indvars.iv, 1 [17,18:0) 0@17
-; CHECK: weight:0.000000e+00
-; CHECK: br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit EMPTY
-; CHECK: weight:0.000000e+00
+; CHECK: i64 %n [0,4:0)[5,5:0)[6,6:1) 0@0-phi 1@6-phi
+; CHECK: ptr %a [1,4:0)[5,5:0)[6,16:0)[17,17:0)[18,18:1) 0@1-phi 1@18-phi
+; CHECK: ptr %b [2,4:0)[5,5:0)[6,16:0) 0@2-phi
+; CHECK:   %cmp7 = icmp sgt i64 %n, 0 [3,4:0) 0@3
+; CHECK:   br i1 %cmp7, label %for.body.preheader, label %for.cond.cleanup EMPTY
+; CHECK:   br label %for.body EMPTY
+; CHECK:   %indvars.iv = phi i64 [ %n, %for.body.preheader ], [ %indvars.iv.next, %for.body ] [6,15:0) 0@6-phi
+; CHECK:   %indvars.iv.next = add nsw i64 %indvars.iv, -1 [7,16:0) 0@7
+; CHECK:   %indvars = trunc i64 %indvars.iv.next to i32 [8,9:0) 0@8
+; CHECK:   %idxprom = zext i32 %indvars to i64 [9,13:0) 0@9
+; CHECK:   %arrayidx = getelementptr inbounds i32, ptr %b, i64 %idxprom [10,11:0) 0@10
+; CHECK:   %ld = load i32, ptr %arrayidx, align 4 [11,12:0) 0@11
+; CHECK:   %add = add nsw i32 %ld, 1 [12,14:0) 0@12
+; CHECK:   %arrayidx2 = getelementptr inbounds i32, ptr %a, i64 %idxprom [13,14:0) 0@13
+; CHECK:   store i32 %add, ptr %arrayidx2, align 4 EMPTY
+; CHECK:   %cmp = icmp sgt i64 %indvars.iv, 1 [15,16:0) 0@15
+; CHECK:   br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit EMPTY
+; CHECK:   br label %for.cond.cleanup EMPTY
+; CHECK:   ret ptr %a EMPTY
 
 ; Test the basic functionality of live value analysis of IR.
 define ptr @bar(i64 %n, ptr noalias %a, ptr noalias %b) {

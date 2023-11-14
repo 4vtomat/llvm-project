@@ -3119,10 +3119,18 @@ def fno_experimental_isel : Flag<["-"], "fno-experimental-isel">, Group<f_clang_
 def fveclib : Joined<["-"], "fveclib=">, Group<f_Group>,
   Visibility<[ClangOption, CC1Option]>,
     HelpText<"Use the given vector functions library">,
-    Values<"Accelerate,libmvec,MASSV,SVML,SLEEF,Darwin_libsystem_m,ArmPL,none">,
+    Values<"Accelerate,libmvec,MASSV,"
+// SIFIVE_CUSTOMIZATION
+           "SiFive_NF,"
+// end SIFIVE_CUSTOMIZATION
+           "SVML,SLEEF,Darwin_libsystem_m,ArmPL,none">,
     NormalizedValuesScope<"CodeGenOptions">,
-    NormalizedValues<["Accelerate", "LIBMVEC", "MASSV", "SVML", "SLEEF",
-                      "Darwin_libsystem_m", "ArmPL", "NoLibrary"]>,
+    NormalizedValues<["Accelerate", "LIBMVEC", "MASSV",
+// SIFIVE_CUSTOMIZATION
+                      "SiFive_NF",
+// end SIFIVE_CUSTOMIZATION
+                      "SVML", "SLEEF", "Darwin_libsystem_m", "ArmPL",
+                      "NoLibrary"]>,
     MarshallingInfoEnum<CodeGenOpts<"VecLib">, "NoLibrary">;
 def fno_lax_vector_conversions : Flag<["-"], "fno-lax-vector-conversions">, Group<f_Group>,
   Alias<flax_vector_conversions_EQ>, AliasArgs<["none"]>;

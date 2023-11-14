@@ -32,6 +32,9 @@ class AAResults;
 class BasicBlock;
 class ICFLoopSafetyInfo;
 class IRBuilderBase;
+#if SIFIVE_CUSTOMIZATION
+class LiveValues;
+#endif // SIFIVE_CUSTOMIZATION
 class Loop;
 class LoopInfo;
 class MemoryAccess;
@@ -181,6 +184,9 @@ bool sinkRegionForLoopNest(DomTreeNode *, AAResults *, LoopInfo *,
 /// guaranteed to execute in the loop, but are safe to speculatively execute.
 bool hoistRegion(DomTreeNode *, AAResults *, LoopInfo *, DominatorTree *,
                  AssumptionCache *, TargetLibraryInfo *, Loop *,
+#if SIFIVE_CUSTOMIZATION
+                 LiveValues *, TargetTransformInfo *,
+#endif // SIFIVE_CUSTOMIZATION
                  MemorySSAUpdater &, ScalarEvolution *, ICFLoopSafetyInfo *,
                  SinkAndHoistLICMFlags &, OptimizationRemarkEmitter *, bool,
                  bool AllowSpeculation);

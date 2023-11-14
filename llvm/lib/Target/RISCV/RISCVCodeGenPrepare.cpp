@@ -185,7 +185,7 @@ bool RISCVCodeGenPrepare::visitIntrinsicInst(IntrinsicInst &II) {
   // Get the LMUL1 type and ensure that we didn't exceed LMUL=8.
   // FIXME: Support larger LMUL.
   Type *ScalarTy = VecTy->getElementType();
-  Type *LMul1Ty;
+  ScalableVectorType *LMul1Ty;
   if (ScalarTy->isFloatTy() && ST->hasVInstructionsF32() &&
       VecTy->getMinNumElements() <= 16)
     LMul1Ty = ScalableVectorType::get(ScalarTy, 2);
@@ -215,15 +215,20 @@ bool RISCVCodeGenPrepare::visitIntrinsicInst(IntrinsicInst &II) {
       Builder.CreateIntrinsic(Intrinsic::riscv_vfmv_s_f, {VecTy, VL->getType()},
                               {PoisonValue::get(VecTy), Scalar, VL});
 
-  // Extract to MUL1 to match what vfredusum wants.
-  Value *Extract =
-      Builder.CreateExtractVector(LMul1Ty, ScalarInVec, Builder.getInt64(0));
+  if (ElementCount::isKnownLT(LMul1Ty->getElementCount(),
+                              VecTy->getElementCount()))
+    ScalarInVec =
+        Builder.CreateExtractVector(LMul1Ty, ScalarInVec, Builder.getInt64(0));
+  else if (ElementCount::isKnownGT(LMul1Ty->getElementCount(),
+                                   VecTy->getElementCount()))
+    ScalarInVec = Builder.CreateInsertVector(LMul1Ty, PoisonValue::get(LMul1Ty),
+                                             ScalarInVec, Builder.getInt64(0));
 
   // Do the reduction.
   // The 7 here is dynamic rounding mode.
   Value *Reduce = Builder.CreateIntrinsic(
       Intrinsic::riscv_vfredusum, {LMul1Ty, VecTy, VL->getType()},
-      {PoisonValue::get(LMul1Ty), Vec, Extract,
+      {PoisonValue::get(LMul1Ty), Vec, ScalarInVec,
        ConstantInt::get(VL->getType(), 7), VL});
 
   // Extract the scalar result to match the original intrinsic result type.

@@ -22,8 +22,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if SIFIVE_CUSTOMIZATION
-
 #include "llvm/Analysis/CodeMetrics.h"
 #include "llvm/Analysis/SiFive_LiveValues.h"
 #include "llvm/IR/DebugInfo.h"
@@ -31,6 +29,7 @@
 #include "llvm/InitializePasses.h"
 #include "llvm/PassRegistry.h"
 #include "llvm/Support/FormattedStream.h"
+#include "llvm/Transforms/Utils/BasicBlockUtils.h"
 
 #include <cmath>
 #include <type_traits>
@@ -46,6 +45,15 @@ static cl::opt<bool>
     EnableValuePressureAnalysis("value-liveness-enable", cl::Hidden,
                                 cl::init(false),
                                 cl::desc("Analysis of Value Liveness"));
+
+static cl::opt<bool>
+    EnableValuePressureBypass("value-liveness-gpr-bypass", cl::Hidden,
+                              cl::init(false),
+                              cl::desc("Value Liveness GPR Bypass"));
+
+static cl::opt<uint32_t> MaxGeneralPurposeRegs(
+    "Max GPR number", cl::Hidden, cl::init(6),
+    cl::desc("Max num gp registers user assigned (default = 6)"));
 
 static cl::opt<uint32_t> ThresholdKnee(
     "value-liveness-threshold-knee", cl::Hidden, cl::init(5000),
@@ -78,19 +86,25 @@ size_t LiveValues::doAnalysis(Workqueue &W) {
     NumOperations++;
   }
 
-  // Collect LiveIn of BB and Add preds to work if changed
-  if (statementTransferFunction(BB, NumOperations))
-    for (auto PI = pred_begin(BB), PE = pred_end(BB); PI != PE; ++PI)
+  // Collect LiveIn of BB and Add preds to work if changed.
+  // Ensure we visit each block at least once as simple blocks can
+  // have Liveness that does not change with the transfer function,
+  // causing premature termination of the flow analysis.
+  bool Changed = statementTransferFunction(BB, NumOperations);
+  for (auto PI = pred_begin(BB), PE = pred_end(BB); PI != PE; ++PI)
+    if (Changed || !Visited.contains(*PI))
       W.push_back(*PI);
 
   return NumOperations;
 }
 
 void LiveValues::finalizeAnalysis(Function &F) {
-  for (BasicBlock &BB : F) {
-    auto PIT = PhiValues.find(&BB);
+  // Walk all reachable blocks.
+  df_iterator_default_set<BasicBlock*> DfsSet;
+  for (BasicBlock *BB : depth_first_ext(&F, DfsSet)) {
+    auto PIT = PhiValues.find(BB);
     if (PIT != PhiValues.end())
-      for (auto SI = succ_begin(&BB), SE = succ_end(&BB); SI != SE; SI++)
+      for (auto SI = succ_begin(BB), SE = succ_end(BB); SI != SE; SI++)
         LiveIn[*SI] |= PIT->second;
   }
 }
@@ -107,12 +121,14 @@ size_t LiveValues::configureThreshold() {
 
 bool LiveValues::analyzeFunction(Function &F) {
   Workqueue W;
-
   unsigned NumBlocks = 0;
-  for (BasicBlock &BB : F) {
+
+  // Walk all reachable blocks.
+  df_iterator_default_set<BasicBlock*> DfsSet;
+  for (BasicBlock *BB : depth_first_ext(&F, DfsSet)) {
     NumBlocks++;
-    if (succ_empty(&BB))
-      W.push_back(&BB);
+    if (succ_empty(BB))
+      W.push_back(BB);
   }
 
   LLVM_DEBUG(dbgs() << "LivenessPoolSize = " << getLivenessPoolSize()
@@ -154,7 +170,7 @@ void LiveValues::emitFunctionAnnot(const Function *F,
   int N = getLivenessPoolSize();
   for (int I = 0; I < N; ++I) {
     Value *V = BvIdxToValue[I];
-    OS << LIs[V] << "\n";
+    OS << LIs[V];
   }
 }
 
@@ -209,32 +225,42 @@ bool LiveValues::statementTransferFunction(BasicBlock *BB,
   SparseBitVector<> NewLiveIn = LiveOut[BB];
   bool Changed = false;
 
+  // Marked each block we see visited.
+  Visited.insert(BB);
+
   // Bottom up walk of instructions.
-  for (auto IT = BB->rbegin(); IT != BB->rend(); IT++) {
-    Instruction *I = &*IT;
+  for (auto It = BB->rbegin(), E = BB->rend(); It != E; ++It) {
+    Instruction *I = &*It;
 
     // Collect (out[n] - def[n])
     NewLiveIn.reset(Indices[I].getIndex());
     NumOperations++;
 
     // Add uses, unless a phi node then propagate incoming values.
-    if (auto *PhiNode = dyn_cast<PHINode>(&*IT)) {
-      for (size_t Idx = 0; Idx < PhiNode->getNumIncomingValues(); Idx++) {
+    if (auto *PhiNode = dyn_cast<PHINode>(I)) {
+      for (unsigned Idx = 0, E = PhiNode->getNumIncomingValues();
+           Idx < E; Idx++) {
         Value *Val = PhiNode->getIncomingValue(Idx);
+        if (EphValues.count(Val))
+          continue;
+
         if (isa<Instruction, Argument>(Val)) {
-          int ValIdx = Indices[Val].getIndex();
           BasicBlock *IdxBB = PhiNode->getIncomingBlock(Idx);
-          PhiValues[IdxBB].set(ValIdx);
+          PhiValues[IdxBB].set(Indices[Val].getIndex());
           NumOperations++;
         }
       }
     } else {
       // use[n] U (out[n] - def[n])
-      for (auto OI = I->op_begin(), OE = I->op_end(); OI != OE; ++OI)
+      for (auto OI = I->op_begin(), OE = I->op_end(); OI != OE; ++OI) {
+        if (EphValues.count(*OI))
+          continue;
+
         if (isa<Instruction, Argument>(*OI)) {
           NewLiveIn.set(Indices[*OI].getIndex());
           NumOperations++;
         }
+      }
     }
 
     InstrLiveIn[I] = NewLiveIn;
@@ -269,6 +295,20 @@ void LiveValues::endExistingSegment(Value *End, unsigned Slot,
                                     Value *V, ValueSlotIndex &DefIndex) {
   ValueSlotIndex EndIndex(&Indices[End], Slot);
   LIs[V].extendInBlock(DefIndex, EndIndex);
+}
+
+Instruction *LiveValues::FindFirstValue(BasicBlock *BB) {
+  Instruction *CurI = nullptr;
+  for (auto It = BB->begin(), E = BB->end(); It != E; ++It) {
+    Instruction *I = &*It;
+    if (EphValues.count(I))
+      continue;
+
+    CurI = I;
+    break;
+  }
+
+  return CurI;
 }
 
 void LiveValues::constructLiveIntervalSegments(Value *V, Function &F) {
@@ -312,7 +352,7 @@ void LiveValues::constructLiveIntervalSegments(Value *V, Function &F) {
   }
 
   // Add segments as needed for uses of V.
-  SmallPtrSet<BasicBlock *, 4> Visited;
+  SmallPtrSet<BasicBlock *, 4> VisitedUseBB;
   while (!Worklist.empty()) {
     Instruction *UseI = Worklist.pop_back_val();
     BasicBlock *UseBB = UseI->getParent();
@@ -322,8 +362,9 @@ void LiveValues::constructLiveIntervalSegments(Value *V, Function &F) {
       // will be processed as pass through segements later.
       if (!LiveOut[UseBB].test(DefIdx)) {
         // If this is the first time we have seen UseBB.
-        if (Visited.insert(UseBB).second) {
-          Instruction *FirstI = &*UseBB->begin();
+        if (VisitedUseBB.insert(UseBB).second) {
+          Instruction *FirstI = FindFirstValue(UseBB);
+          assert(FirstI && "Must find a suitable value to start");
           createSegmentStart(FirstI, ValueSlotIndex::Slot::Slot_Block,
                              V, CurIndexMap[UseBB]);
         }
@@ -338,11 +379,11 @@ void LiveValues::constructLiveIntervalSegments(Value *V, Function &F) {
 }
 
 void LiveValues::extendPassThroughLiveIntervalSegments(Function &F) {
-  // Iterate the CFG and for each block where a Value is
+  // Iterate the CFG and for each reachable block where a Value is
   // both LiveIn and LiveOut, add a segment for it.
   BasicBlock *EntryBB = &F.getEntryBlock();
-  for (BasicBlock &BB : F) {
-    BasicBlock *CurBB = &BB;
+  df_iterator_default_set<BasicBlock*> DfsSet;
+  for (BasicBlock *CurBB : depth_first_ext(&F, DfsSet)) {
     // Skip the entry, we processed Arguments already.
     if (EntryBB == CurBB)
       continue;
@@ -360,7 +401,12 @@ void LiveValues::extendPassThroughLiveIntervalSegments(Function &F) {
     // Backedge based PHINodes can have holes from the phi to
     // its updater for the phi input values.  These are technically
     // backwards segments that have forward segment layout.
-    for (size_t Idx : LiveInIt->second)
+    for (size_t Idx : LiveInIt->second) {
+      // Skip uninitialized nodes, they all land on this index,
+      // they have to go somewhere.
+      if (Idx == 0xffffffff)
+        continue;
+
       if (LiveOut[CurBB].test(Idx)) {
         Value *V = BvIdxToValue[Idx];
         if (auto *BinOp = dyn_cast<BinaryOperator>(V)) {
@@ -382,12 +428,331 @@ void LiveValues::extendPassThroughLiveIntervalSegments(Function &F) {
         }
 
         // Construct the pass through Segment for V.
-        Instruction *FirstI = &*CurBB->begin();
+        Instruction *FirstI = FindFirstValue(CurBB);
+        assert(FirstI && "Must find a suitable value to start");
         Instruction *LastI = &*CurBB->rbegin();
         createFullSegment(FirstI, ValueSlotIndex::Slot::Slot_Block,
                           LastI, ValueSlotIndex::Slot::Slot_Block, V);
       }
+    }
   }
+}
+
+LiveValues::ValueDescr LiveValues::getMappedValueDesr(Value *V) {
+  // If the value is no longer mapped, return not found.
+  if (!isa<Instruction, Argument>(V))
+    return ValueDescr::Types_End;
+
+  Type *T = V->getType();
+  if (T->isIntegerTy() || T->isPointerTy())
+    return ValueDescr::Types_Integer;
+  if (T->isFloatingPointTy())
+    return ValueDescr::Types_Float;
+  if (T->isVectorTy())
+    return ValueDescr::Types_Vector;
+
+  return ValueDescr::Types_End;
+}
+
+LLVM_DUMP_METHOD void LiveValues::printPressureData(
+    ArrayRef<PressureTracker> PT) {
+  dbgs() << "ValueDescr types\n";
+  for (unsigned I = ValueDescr::Types_Integer; I < ValueDescr::Types_End ; ++I) {
+    switch (I) {
+    case ValueDescr::Types_Integer: dbgs() << "PT[Types_Integer]\n";
+         break;
+    case ValueDescr::Types_Float:   dbgs() << "PT[Types_Float]\n";
+         break;
+    case ValueDescr::Types_Vector:  dbgs() << "PT[Types_Vector]\n";
+         break;
+    default:
+         break;
+    }
+    dbgs() << "\tInitPressure = " << PT[I].InitPressure << "\n";
+    dbgs() << "\tCurPressure = " << PT[I].CurPressure << "\n";
+    dbgs() << "\tLocalMaxima = " << PT[I].LocalMaxima << "\n";
+    dbgs() << "\tFinalPressure = " << PT[I].FinalPressure << "\n";
+  }
+}
+
+void LiveValues::calculatePressureForValue(
+    Value *CurV, unsigned TD, ValueSlotIndex *CurIndex,
+    MutableArrayRef<PressureTracker> CurPT) {
+  ValueDescr VD = getMappedValueDesr(CurV);
+  if (VD != ValueDescr::Types_End) {
+    switch (TD) {
+    case TrackerDescr::Calculate_InitPressure:
+      CurPT[VD].InitPressure++;
+      break;
+    case TrackerDescr::Calculate_CurPressure:
+      assert(CurIndex && "must provide the current loc");
+
+      // The program changes iteratively, meaning
+      // the live range info may now be no longer available
+      if (LIs[CurV].empty())
+        break;
+
+      // Sometimes are at the end of segment, so
+      // check if there are any segments which hold
+      // this value live at a later index.
+      if (LIs[CurV].expiredAt(*CurIndex))
+        CurPT[VD].CurPressure--;
+
+      break;
+    case TrackerDescr::Calculate_FinalPressure:
+      CurPT[VD].FinalPressure++;
+      break;
+    }
+  }
+}
+
+void LiveValues::calculatePressureForBitvector(
+    SparseBitVector<> &LiveData, unsigned TD,
+    ValueSlotIndex *CurIndex,
+    MutableArrayRef<PressureTracker> CurPT) {
+  for (auto Idx : LiveData) {
+    // Skip unitialized indicies
+    if (Idx == 0xffffffff)
+      continue;
+
+    Value *CurV = BvIdxToValue[Idx];
+    if (!ResidentValues.contains(CurV))
+      continue;
+
+    calculatePressureForValue(CurV, TD, CurIndex, CurPT);
+  }
+}
+
+void LiveValues::adjustInitialPressure(
+    BasicBlock *BB, MutableArrayRef<PressureTracker> CurPT) {
+  Instruction *StartI = BB->getFirstNonPHI();
+  for (auto It = BB->begin(), E = BB->end(); It != E; ++It) {
+    Instruction *I = &*It;
+    if (StartI == I)
+      break;
+
+    // Process PHINodes to adjust side effects and set correct
+    // initial conditions of block entry for value pressure.
+    if (auto *PN = dyn_cast<PHINode>(I)) {
+      for (unsigned Idx = 0, E = PN->getNumIncomingValues(); Idx < E; Idx++) {
+        Value *InVal = PN->getIncomingValue(Idx);
+        ValueDescr VD = getMappedValueDesr(InVal);
+        if (VD != ValueDescr::Types_End)
+          CurPT[VD].InitPressure--;
+      }
+
+      // Now count the phi def.
+      auto VD = getMappedValueDesr(I);
+      if (VD == ValueDescr::Types_End)
+        continue;
+
+      CurPT[VD].InitPressure++;
+    }
+  }
+}
+
+void LiveValues::calculateBlockValuePressure(
+    BasicBlock *BB, BasicBlock *&MaximaBlock,
+    Instruction *TargetI,
+    MutableArrayRef<PressureTracker> InsnPT,
+    MutableArrayRef<PressureTracker> CurPT,
+    MutableArrayRef<PressureTracker> SummaryPT) {
+  for (auto It = BB->begin(), E = BB->end(); It != E; ++It) {
+    Instruction *I = &*It;
+    if (isa<PHINode>(I) || EphValues.count(I))
+      continue;
+
+    // Collect the initial pressure for TargetI to calculate
+    // the changed pressure of the candidate instruction.
+    if (I == TargetI)
+      for (unsigned Idx = ValueDescr::Types_Integer;
+           Idx < ValueDescr::Types_End; ++Idx)
+        InsnPT[Idx].InitPressure = CurPT[Idx].CurPressure;
+
+    if (Indices[I].getIndex() == 0xffffffff)
+      continue;
+
+    ValueSlotIndex CurIndex(&Indices[I],
+                            ValueSlotIndex::Slot::Slot_Register);
+    if (!CurIndex.isValid())
+      continue;
+
+    for (Use &Op : I->operands())
+      if (ResidentValues.contains(Op))
+        calculatePressureForValue(
+            Op, TrackerDescr::Calculate_CurPressure, &CurIndex, CurPT);
+
+    if (LIs[I].empty())
+      continue;
+
+    auto VD = getMappedValueDesr(I);
+    if (VD == ValueDescr::Types_End)
+      continue;
+
+    CurPT[VD].CurPressure++;
+    CurPT[VD].LocalMaxima =
+        std::max(CurPT[VD].CurPressure, CurPT[VD].LocalMaxima);
+
+    // Calculate the final pressure as a delta of
+    // the initial pressure and the current pressure.
+    if (TargetI == I)
+      for (unsigned Idx = ValueDescr::Types_Integer;
+           Idx < ValueDescr::Types_End; ++Idx)
+        InsnPT[Idx].FinalPressure =
+            CurPT[Idx].CurPressure - InsnPT[Idx].InitPressure;
+
+    if (SummaryPT[VD].LocalMaxima < CurPT[VD].LocalMaxima) {
+      SummaryPT[VD].LocalMaxima = CurPT[VD].LocalMaxima;
+      MaximaBlock = BB;
+    }
+  }
+}
+
+bool LiveValues::markResidentValues(
+    Function *F, ArrayRef<PressureTracker> MachinePT) {
+  ResidentValues.clear();
+  int NumIntervalsMissing = 0;
+  bool NeedRecalc = false;
+  for (auto &ArgI : F->args())
+    ResidentValues.insert(&ArgI);
+
+  // Walk all reachable blocks to look for residence.
+  df_iterator_default_set<BasicBlock*> DfsSet;
+  for (BasicBlock *BB : depth_first_ext(F, DfsSet))
+    for (auto It = BB->begin(), E = BB->end(); It != E; ++It) {
+      Instruction *I = &*It;
+      ResidentValues.insert(I);
+      if (isa<PHINode>(I) || EphValues.count(I))
+        continue;
+
+      if (Indices[I].getIndex() == 0xffffffff)
+        NumIntervalsMissing++;
+    }
+
+  if (NumIntervalsMissing) {
+    LLVM_DEBUG(dbgs() << "Total recorded intervals = "
+                      << getLivenessPoolSize() << "\n");
+    LLVM_DEBUG(dbgs() << " , Intervals missing = "
+                      << NumIntervalsMissing << "\n");
+    // If the NumIntervalsMissing is more than 1/3 of the available registers
+    // of any RC, we need to recalculate DFA.
+    for (unsigned VD = ValueDescr::Types_Integer; VD < ValueDescr::Types_End; ++VD) {
+      if (NumIntervalsMissing > (MachinePT[VD].LocalMaxima / 3)) {
+        NeedRecalc = true;
+        break;
+      }
+    }
+  }
+
+  if (NeedRecalc)
+    return true;
+
+  int NumResidentsMissing = 0;
+  for (int i = 0; i < getLivenessPoolSize(); i++) {
+    Value *CurV = BvIdxToValue[i];
+    if (!ResidentValues.contains(CurV))
+      NumResidentsMissing++;
+  }
+
+  if (NumResidentsMissing) {
+    LLVM_DEBUG(dbgs() << "Total resident intervals = "
+                      << ResidentValues.size() << "\n");
+    LLVM_DEBUG(dbgs() << "Residents missing from DFA = "
+                      << NumResidentsMissing << "\n");
+    // If the NumResidentsMissing is more than 1/3 of the available registers
+    // of any RC, we need to recalculate DFA.
+    for (unsigned VD = ValueDescr::Types_Integer; VD < ValueDescr::Types_End; ++VD) {
+      if (NumResidentsMissing > (MachinePT[VD].LocalMaxima / 3)) {
+        NeedRecalc = true;
+        break;
+      }
+    }
+  }
+
+  return NeedRecalc;
+}
+
+bool LiveValues::exceedValuePressureForBlocks(
+    SmallVectorImpl<BasicBlock *> &Worklist,
+    int NumGprs, int NumFprs, int NumVrs,
+    Instruction *TargetI) {
+  Function *F = TargetI->getParent()->getParent();
+  SmallVector<PressureTracker, 3> SummaryPT;
+  SmallVector<PressureTracker, 3> InsnPT;
+  SmallVector<PressureTracker, 3> MachinePT;
+
+  // Do initializations of collection PressureTrackers
+  for (unsigned I = ValueDescr::Types_Integer; I < ValueDescr::Types_End; ++I) {
+    SummaryPT.push_back(PressureTracker());
+    InsnPT.push_back(PressureTracker());
+    MachinePT.push_back(PressureTracker());
+  }
+
+  MachinePT[ValueDescr::Types_Integer].LocalMaxima = NumGprs;
+  MachinePT[ValueDescr::Types_Float].LocalMaxima = NumFprs;
+  MachinePT[ValueDescr::Types_Vector].LocalMaxima = NumVrs;
+
+  if (markResidentValues(F, MachinePT)) {
+    recalcDataFlowAnalysis(*F);
+    markResidentValues(F, MachinePT);
+  }
+
+  BasicBlock *MaximaBlock = nullptr;
+  while (!Worklist.empty()) {
+    BasicBlock *BB = Worklist.pop_back_val();
+    auto LiveInIt = LiveIn.find(BB);
+    if (LiveInIt != LiveIn.end()) {
+      SmallVector<PressureTracker, 3> PT;
+
+      // Populate empty ValueDescr's for each type in PT.
+      for (unsigned Idx = ValueDescr::Types_Integer;
+           Idx < ValueDescr::Types_End; ++Idx)
+        PT.push_back(PressureTracker());
+
+      // First calculate the initial/final pressure of BB.
+      calculatePressureForBitvector(LiveInIt->second,
+                                    TrackerDescr::Calculate_InitPressure,
+                                    /* CurIndex */ nullptr, PT);
+
+      // Adjust inital block pressure with PHINode processing
+      adjustInitialPressure(BB, PT);
+
+      // Initialize pressure data with Init pressure
+      for (unsigned Idx = ValueDescr::Types_Integer;
+           Idx < ValueDescr::Types_End; ++Idx) {
+        PT[Idx].CurPressure = PT[Idx].InitPressure;
+        PT[Idx].LocalMaxima = PT[Idx].InitPressure;
+      }
+
+      calculateBlockValuePressure(BB, MaximaBlock, TargetI,
+                                  InsnPT, PT, SummaryPT);
+
+      for (unsigned Idx = ValueDescr::Types_Integer;
+           Idx < ValueDescr::Types_End; ++Idx) {
+        PT[Idx].FinalPressure = PT[Idx].CurPressure;
+      }
+
+      LLVM_DEBUG(dbgs() << "Block Summary\n");
+      LLVM_DEBUG(printPressureData(PT));
+    }
+  }
+  LLVM_DEBUG(dbgs() << "Collection Summary\n");
+  LLVM_DEBUG(printPressureData(SummaryPT));
+
+  // Simulate running out of GP registers if bypass enabled and
+  // max number is either default(6) or user defined.
+  if (EnableValuePressureBypass) {
+    unsigned Idx = ValueDescr::Types_Integer;
+    MachinePT[Idx].LocalMaxima = MaxGeneralPurposeRegs;
+  }
+
+  for (unsigned Idx = ValueDescr::Types_Integer;
+       Idx < ValueDescr::Types_End; ++Idx)
+    if ((SummaryPT[Idx].LocalMaxima > MachinePT[Idx].LocalMaxima) &&
+        (InsnPT[Idx].FinalPressure >= 0))
+      return true;
+
+  return false;
 }
 
 void LiveValues::doDataFlowAnalysis(Function &F) {
@@ -408,12 +773,19 @@ void LiveValues::doDataFlowAnalysis(Function &F) {
     Indices[&ArgI].setIndex(Idx++);
   }
 
-  for (auto IT = inst_begin(F), IE = inst_end(F); IT != IE; ++IT) {
-    Instruction *I = &*IT;
-    BvIdxToValue.push_back(I);
-    LIs[I].setValue(I);
-    Indices[I].setVal(I);
-    Indices[I].setIndex(Idx++);
+  // Walk all reachable blocks and annotate DFA as we go.
+  df_iterator_default_set<BasicBlock*> DfsSet;
+  for (BasicBlock *BB : depth_first_ext(&F, DfsSet)) {
+    for (auto It = BB->begin(), E = BB->end(); It != E; ++It) {
+      Instruction *I = &*It;
+      if (EphValues.count(I))
+        continue;
+
+      BvIdxToValue.push_back(I);
+      LIs[I].setValue(I);
+      Indices[I].setVal(I);
+      Indices[I].setIndex(Idx++);
+    }
   }
 
   // Do flow analysis for F.
@@ -440,6 +812,8 @@ void LiveValues::recalcDataFlowAnalysis(Function &F) {
   PhiValues.clear();
   BvIdxToValue.clear();
   InstrLiveIn.clear();
+  LIs.clear();
+  Visited.clear();
 
   doDataFlowAnalysis(F);
 }
@@ -451,13 +825,16 @@ void LiveValues::nameInstructions(Function &F) {
       Arg.setName("arg");
   }
 
-  for (BasicBlock &BB : F) {
-    if (!BB.hasName())
-      BB.setName("bb");
+  // Name instructions in Dfs order
+  df_iterator_default_set<BasicBlock*> DfsSet;
+  for (BasicBlock *BB : depth_first_ext(&F, DfsSet)) {
+    if (!BB->hasName())
+      BB->setName("bb");
 
-    for (Instruction &I : BB) {
-      if (!I.hasName() && !I.getType()->isVoidTy())
-        I.setName("i");
+    for (auto It = BB->begin(), E = BB->end(); It != E; ++It) {
+      Instruction *I = &*It;
+      if (!I->hasName() && !I->getType()->isVoidTy())
+        I->setName("i");
     }
   }
 }
@@ -490,5 +867,3 @@ LiveValues LiveValuesAnalysis::run(Function &F, FunctionAnalysisManager &AM) {
 }
 
 AnalysisKey LiveValuesAnalysis::Key;
-
-#endif // SIFIVE_CUSTOMIZATION

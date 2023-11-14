@@ -35,7 +35,7 @@ static cl::opt<TargetLibraryInfoImpl::VectorLibrary> ClVectorLibrary(
 #if SIFIVE_CUSTOMIZATION
                clEnumValN(TargetLibraryInfoImpl::SiFive_NF, "SiFive_NF",
                           "SiFive Nonlinear Functions Library"),
-#endif
+#endif // SIFIVE_CUSTOMIZATION
                clEnumValN(TargetLibraryInfoImpl::SVML, "SVML",
                           "Intel SVML library"),
                clEnumValN(TargetLibraryInfoImpl::SLEEFGNUABI, "sleefgnuabi",
@@ -1222,7 +1222,7 @@ void TargetLibraryInfoImpl::addVectorizableFunctionsFromVecLib(
     addVectorizableFunctions(VecFuncs);
     break;
   }
-#endif
+#endif // SIFIVE_CUSTOMIZATION
   case SLEEFGNUABI: {
     const VecDesc VecFuncs_VF2[] = {
 #define TLI_DEFINE_SLEEFGNUABI_VF2_VECFUNCS

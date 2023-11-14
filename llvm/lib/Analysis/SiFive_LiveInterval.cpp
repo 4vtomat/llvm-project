@@ -871,7 +871,6 @@ void ValueLiveRange::print(raw_ostream &OS) const {
 void ValueLiveInterval::print(raw_ostream &OS) const {
   OS << *V << ' ';
   super::print(OS);
-  OS << "  weight:" << Weight;
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)

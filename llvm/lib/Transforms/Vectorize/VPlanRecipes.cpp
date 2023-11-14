@@ -828,7 +828,7 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
         Value *RVL = State.get(State.Plan->getRVL(), Part);
         Args.push_back(RVL);
       }
-#endif
+#endif // SIFIVE_CUSTOMIZATION
     }
 
     SmallVector<OperandBundleDef, 1> OpBundles;

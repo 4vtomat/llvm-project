@@ -21,8 +21,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-#if SIFIVE_CUSTOMIZATION
-
 #ifndef LLVM_ANALYSIS_LIVEVALUE_H
 #define LLVM_ANALYSIS_LIVEVALUE_H
 
@@ -41,12 +39,42 @@
 
 namespace llvm {
 
+// Components for tracking Value Pressure
+// attribute such as Initial, Final, Current
+// pressure as well as a recorded Local Maxima.
+struct PressureTracker {
+  int InitPressure = 0;
+  int FinalPressure = 0;
+  int CurPressure = 0;
+  int LocalMaxima = 0;
+};
+
 class LiveValues : public AssemblyAnnotationWriter {
 private:
+  // Use to track initial/final & local min/max value pressure for
+  // each of the following Types.
+  enum ValueDescr : unsigned {
+    // Contains {char, short, int, long, etc} value types.
+    Types_Integer = 0,
+    // Contains {double, float, half} value types.
+    Types_Float = 1,
+    // Contains vector value types.
+    Types_Vector = 2,
+    // Num Value Descriptors
+    Types_End = 3
+  };
+
+  enum TrackerDescr : unsigned {
+    Calculate_InitPressure = 0,
+    Calculate_CurPressure = 1,
+    Calculate_FinalPressure = 2
+  };
+
   /// Liveness sets for Basic Blocks.
   DenseMap<const BasicBlock *, SparseBitVector<>> LiveIn;
   DenseMap<const BasicBlock *, SparseBitVector<>> LiveOut;
   DenseMap<const BasicBlock *, SparseBitVector<>> PhiValues;
+  DenseSet<const BasicBlock *> Visited;
 
   /// For collecting and comparing if values are Ephemeral.
   SmallPtrSet<const Value *, 4> EphValues;
@@ -57,6 +85,7 @@ private:
   DenseMap<const Instruction *, SparseBitVector<>> InstrLiveIn;
   DenseMap<const Value *, ValueLiveInterval> LIs;
   DenseMap<const Value *, IndexListEntry> Indices;
+  SmallPtrSet<const Value *, 10> ResidentValues;
   bool LiveValuesAvailable = false;
 
   ValueSlotInfo::Allocator VSInfoAllocator;
@@ -94,6 +123,9 @@ public:
   /// Used for allocating SparseBitVectors.
   int getLivenessPoolSize(void) { return BvIdxToValue.size(); }
 
+  /// Indicate if Live Value Analysis completed or not.
+  bool haveLiveValueAnalysis(void) { return LiveValuesAvailable; }
+
   /// live[n] = use[n] U (out[n] - def[n])
   bool statementTransferFunction(BasicBlock *BB, size_t &NumOperations);
 
@@ -109,11 +141,55 @@ public:
   void endExistingSegment(Value *End, unsigned slot,
                           Value *V, ValueSlotIndex &DefIndex);
 
+  /// Find first non Ephermal value in a block.
+  Instruction *FindFirstValue(BasicBlock *BB);
+
   /// Fill in LiveRange Segment info for V.
   void constructLiveIntervalSegments(Value *V, Function &F);
 
   /// Fill in pass through segments of all the LIs of F.
   void extendPassThroughLiveIntervalSegments(Function &F);
+
+  /// Translate a given Value type as a ValueDescr.
+  ValueDescr getMappedValueDesr(Value *V);
+
+  /// Print the pressure data for each ValueDescr.
+  void printPressureData(ArrayRef<PressureTracker> PT);
+
+  /// Calculate pressure for a given value.
+  void calculatePressureForValue(
+      Value *CurV, unsigned TD, ValueSlotIndex *CurIndex,
+      MutableArrayRef<PressureTracker> CurPT);
+
+  /// Convience function to calculate pressure for a TrackerDescr
+  void calculatePressureForBitvector(
+      SparseBitVector<> &LiveData, unsigned TD,
+      ValueSlotIndex *CurIndex,
+      MutableArrayRef<PressureTracker> CurPT);
+
+  /// Adjust inital block pressure with PHINode processing.
+  void adjustInitialPressure(BasicBlock *BB,
+                             MutableArrayRef<PressureTracker> CurPT);
+
+  /// Compute incremental Pressure, instruction by instruction for BB.
+  void calculateBlockValuePressure(
+      BasicBlock *BB, BasicBlock *&MaximaBlock,
+      Instruction *TargetI,
+      MutableArrayRef<PressureTracker> InsnPT,
+      MutableArrayRef<PressureTracker> CurPT,
+      MutableArrayRef<PressureTracker> SummaryPT);
+
+  /// Find all values that are no longer used in F and decide
+  /// if we need to recalculate DFA.
+  bool markResidentValues(
+      Function *F, ArrayRef<PressureTracker> MachinePT);
+
+  /// Using a list of blocks, calculate the register pressure
+  /// data for each block.
+  bool exceedValuePressureForBlocks(
+      SmallVectorImpl<BasicBlock *> &Worklist,
+      int NumGprs, int NumFprs, int NumVrs,
+      Instruction *TargetI);
 
   /// Function level data flow analysis.
   void doDataFlowAnalysis(Function &F);
@@ -181,5 +257,3 @@ public:
 } // end namespace llvm
 
 #endif /* LLVM_ANALYSIS_LIVEVALUE_H */
-
-#endif // SIFIVE_CUSTOMIZATION
