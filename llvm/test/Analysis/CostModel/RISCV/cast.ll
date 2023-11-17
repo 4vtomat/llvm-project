@@ -1063,6 +1063,7 @@ define void @trunc() {
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %v32i64_v32i16 = trunc <16 x i64> undef to <16 x i16>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %v32i64_v32i32 = trunc <16 x i64> undef to <16 x i32>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v32i8_v32i1 = trunc <16 x i8> undef to <16 x i1>
+<<<<<<< HEAD
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %v32i16_v32i1 = trunc <16 x i16> undef to <16 x i1>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %v32i32_v32i1 = trunc <16 x i32> undef to <16 x i1>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %v32i64_v32i1 = trunc <16 x i64> undef to <16 x i1>
@@ -1096,6 +1097,41 @@ define void @trunc() {
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 66 for instruction: %v256i16_v256i1 = trunc <256 x i16> undef to <256 x i1>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 134 for instruction: %v256i32_v256i1 = trunc <256 x i32> undef to <256 x i1>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 270 for instruction: %v256i64_v256i1 = trunc <256 x i64> undef to <256 x i1>
+=======
+; RV32-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v32i16_v32i1 = trunc <16 x i16> undef to <16 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v32i32_v32i1 = trunc <16 x i32> undef to <16 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v32i64_v32i1 = trunc <16 x i64> undef to <16 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v64i16_v64i8 = trunc <64 x i16> undef to <64 x i8>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %v64i32_v64i8 = trunc <64 x i32> undef to <64 x i8>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 15 for instruction: %v64i64_v64i8 = trunc <64 x i64> undef to <64 x i8>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %v64i32_v64i16 = trunc <64 x i32> undef to <64 x i16>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 11 for instruction: %v64i64_v64i16 = trunc <64 x i64> undef to <64 x i16>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %v64i64_v64i32 = trunc <64 x i64> undef to <64 x i32>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v64i8_v64i1 = trunc <64 x i8> undef to <64 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v64i16_v64i1 = trunc <64 x i16> undef to <64 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %v64i32_v64i1 = trunc <64 x i32> undef to <64 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v64i64_v64i1 = trunc <64 x i64> undef to <64 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %v128i16_v128i8 = trunc <128 x i16> undef to <128 x i8>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 11 for instruction: %v128i32_v128i8 = trunc <128 x i32> undef to <128 x i8>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 31 for instruction: %v128i64_v128i8 = trunc <128 x i64> undef to <128 x i8>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %v128i32_v128i16 = trunc <128 x i32> undef to <128 x i16>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 22 for instruction: %v128i64_v128i16 = trunc <128 x i64> undef to <128 x i16>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %v128i64_v128i32 = trunc <128 x i64> undef to <128 x i32>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v128i8_v128i1 = trunc <128 x i8> undef to <128 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %v128i16_v128i1 = trunc <128 x i16> undef to <128 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 11 for instruction: %v128i32_v128i1 = trunc <128 x i32> undef to <128 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %v128i64_v128i1 = trunc <128 x i64> undef to <128 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %v256i16_v256i8 = trunc <256 x i16> undef to <256 x i8>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 22 for instruction: %v256i32_v256i8 = trunc <256 x i32> undef to <256 x i8>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 62 for instruction: %v256i64_v256i8 = trunc <256 x i64> undef to <256 x i8>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %v256i32_v256i16 = trunc <256 x i32> undef to <256 x i16>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 44 for instruction: %v256i64_v256i16 = trunc <256 x i64> undef to <256 x i16>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 24 for instruction: %v256i64_v256i32 = trunc <256 x i64> undef to <256 x i32>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %v256i8_v256i1 = trunc <256 x i8> undef to <256 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 10 for instruction: %v256i16_v256i1 = trunc <256 x i16> undef to <256 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 22 for instruction: %v256i32_v256i1 = trunc <256 x i32> undef to <256 x i1>
+; RV32-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %v256i64_v256i1 = trunc <256 x i64> undef to <256 x i1>
+>>>>>>> upstream/main
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv1i16_nxv1i8 = trunc <vscale x 1 x i16> undef to <vscale x 1 x i8>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv1i32_nxv1i8 = trunc <vscale x 1 x i32> undef to <vscale x 1 x i8>
 ; RV32-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %nxv1i64_nxv1i8 = trunc <vscale x 1 x i64> undef to <vscale x 1 x i8>
@@ -1216,6 +1252,7 @@ define void @trunc() {
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %v32i64_v32i16 = trunc <16 x i64> undef to <16 x i16>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %v32i64_v32i32 = trunc <16 x i64> undef to <16 x i32>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v32i8_v32i1 = trunc <16 x i8> undef to <16 x i1>
+<<<<<<< HEAD
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %v32i16_v32i1 = trunc <16 x i16> undef to <16 x i1>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %v32i32_v32i1 = trunc <16 x i32> undef to <16 x i1>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %v32i64_v32i1 = trunc <16 x i64> undef to <16 x i1>
@@ -1249,6 +1286,41 @@ define void @trunc() {
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 66 for instruction: %v256i16_v256i1 = trunc <256 x i16> undef to <256 x i1>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 134 for instruction: %v256i32_v256i1 = trunc <256 x i32> undef to <256 x i1>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 270 for instruction: %v256i64_v256i1 = trunc <256 x i64> undef to <256 x i1>
+=======
+; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v32i16_v32i1 = trunc <16 x i16> undef to <16 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v32i32_v32i1 = trunc <16 x i32> undef to <16 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v32i64_v32i1 = trunc <16 x i64> undef to <16 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v64i16_v64i8 = trunc <64 x i16> undef to <64 x i8>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %v64i32_v64i8 = trunc <64 x i32> undef to <64 x i8>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 15 for instruction: %v64i64_v64i8 = trunc <64 x i64> undef to <64 x i8>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %v64i32_v64i16 = trunc <64 x i32> undef to <64 x i16>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 11 for instruction: %v64i64_v64i16 = trunc <64 x i64> undef to <64 x i16>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %v64i64_v64i32 = trunc <64 x i64> undef to <64 x i32>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v64i8_v64i1 = trunc <64 x i8> undef to <64 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v64i16_v64i1 = trunc <64 x i16> undef to <64 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: %v64i32_v64i1 = trunc <64 x i32> undef to <64 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: %v64i64_v64i1 = trunc <64 x i64> undef to <64 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %v128i16_v128i8 = trunc <128 x i16> undef to <128 x i8>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 11 for instruction: %v128i32_v128i8 = trunc <128 x i32> undef to <128 x i8>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 31 for instruction: %v128i64_v128i8 = trunc <128 x i64> undef to <128 x i8>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %v128i32_v128i16 = trunc <128 x i32> undef to <128 x i16>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 22 for instruction: %v128i64_v128i16 = trunc <128 x i64> undef to <128 x i16>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %v128i64_v128i32 = trunc <128 x i64> undef to <128 x i32>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v128i8_v128i1 = trunc <128 x i8> undef to <128 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 5 for instruction: %v128i16_v128i1 = trunc <128 x i16> undef to <128 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v128i32_v128i1 = trunc <128 x i32> undef to <128 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %v128i64_v128i1 = trunc <128 x i64> undef to <128 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %v256i16_v256i8 = trunc <256 x i16> undef to <256 x i8>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 22 for instruction: %v256i32_v256i8 = trunc <256 x i32> undef to <256 x i8>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 62 for instruction: %v256i64_v256i8 = trunc <256 x i64> undef to <256 x i8>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %v256i32_v256i16 = trunc <256 x i32> undef to <256 x i16>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 44 for instruction: %v256i64_v256i16 = trunc <256 x i64> undef to <256 x i16>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 24 for instruction: %v256i64_v256i32 = trunc <256 x i64> undef to <256 x i32>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %v256i8_v256i1 = trunc <256 x i8> undef to <256 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 10 for instruction: %v256i16_v256i1 = trunc <256 x i16> undef to <256 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v256i32_v256i1 = trunc <256 x i32> undef to <256 x i1>
+; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %v256i64_v256i1 = trunc <256 x i64> undef to <256 x i1>
+>>>>>>> upstream/main
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %nxv1i16_nxv1i8 = trunc <vscale x 1 x i16> undef to <vscale x 1 x i8>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %nxv1i32_nxv1i8 = trunc <vscale x 1 x i32> undef to <vscale x 1 x i8>
 ; RV64-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %nxv1i64_nxv1i8 = trunc <vscale x 1 x i64> undef to <vscale x 1 x i8>

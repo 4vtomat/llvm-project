@@ -97,6 +97,7 @@ enum class BaseTypeModifier : uint8_t {
   Ptrdiff,
   UnsignedLong,
   SignedLong,
+  Float32
 };
 
 // Modifier for type, used for both scalar and vector types.
@@ -108,15 +109,22 @@ enum class TypeModifier : uint8_t {
   UnsignedInteger = 1 << 3,
   SignedInteger = 1 << 4,
   Float = 1 << 5,
+  BFloat = 1 << 6,
   // LMUL1 should be kind of VectorTypeModifier, but that might come with
   // Widening2XVector for widening reduction.
   // However that might require VectorTypeModifier become bitmask rather than
   // simple enum, so we decide keek LMUL1 in TypeModifier for code size
   // optimization of clang binary size.
+<<<<<<< HEAD
   LMUL1 = 1 << 6,
   Float32 = 1 << 7, // SIFIVE
   MaxOffset = 7, // SIFIVE
   LLVM_MARK_AS_BITMASK_ENUM(Float32), // SIFIVE
+=======
+  LMUL1 = 1 << 7,
+  MaxOffset = 7,
+  LLVM_MARK_AS_BITMASK_ENUM(LMUL1),
+>>>>>>> upstream/main
 };
 
 class Policy {
@@ -244,12 +252,21 @@ enum class BasicType : uint8_t {
   Int16 = 1 << 1,
   Int32 = 1 << 2,
   Int64 = 1 << 3,
+<<<<<<< HEAD
   Float16 = 1 << 4,
   Float32 = 1 << 5,
   Float64 = 1 << 6,
   BFloat = 1 << 7, // SIFIVE
   MaxOffset = 7, // SIFIVE
   LLVM_MARK_AS_BITMASK_ENUM(BFloat), // SIFIVE
+=======
+  BFloat16 = 1 << 4,
+  Float16 = 1 << 5,
+  Float32 = 1 << 6,
+  Float64 = 1 << 7,
+  MaxOffset = 7,
+  LLVM_MARK_AS_BITMASK_ENUM(Float64),
+>>>>>>> upstream/main
 };
 
 // Type of vector type.
@@ -265,7 +282,11 @@ enum ScalarTypeKind : uint8_t {
   SignedInteger,
   UnsignedInteger,
   Float,
+<<<<<<< HEAD
   BFloat, // SIFIVE
+=======
+  BFloat,
+>>>>>>> upstream/main
   Invalid,
   Undefined,
 };
@@ -341,6 +362,7 @@ public:
     return isVector() && ElementBitwidth == Width;
   }
   bool isFloat() const { return ScalarType == ScalarTypeKind::Float; }
+  bool isBFloat() const { return ScalarType == ScalarTypeKind::BFloat; }
   bool isSignedInteger() const {
     return ScalarType == ScalarTypeKind::SignedInteger;
   }
@@ -535,6 +557,7 @@ enum RVVRequire : uint16_t {
   RVV_REQ_RV64 = 1 << 0,
   RVV_REQ_ZvfhminOrZvfh = 1 << 1,
   RVV_REQ_Xsfvcp = 1 << 2,
+<<<<<<< HEAD
   RVV_REQ_Xsfvqmaccdod = 1 << 3,
   RVV_REQ_Xsfvqmaccqoq = 1 << 4,
   RVV_REQ_Zvbb = 1 << 5,
@@ -552,6 +575,22 @@ enum RVVRequire : uint16_t {
   RVV_REQ_HasBfloat16 = 1 << 16,
   LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_HasBfloat16)
 #else
+=======
+  RVV_REQ_Xsfvfnrclipxfqf = 1 << 3,
+  RVV_REQ_Xsfvfwmaccqqq = 1 << 4,
+  RVV_REQ_Xsfvqmaccdod = 1 << 5,
+  RVV_REQ_Xsfvqmaccqoq = 1 << 6,
+  RVV_REQ_Zvbb = 1 << 7,
+  RVV_REQ_Zvbc = 1 << 8,
+  RVV_REQ_Zvkb = 1 << 9,
+  RVV_REQ_Zvkg = 1 << 10,
+  RVV_REQ_Zvkned = 1 << 11,
+  RVV_REQ_Zvknha = 1 << 12,
+  RVV_REQ_Zvknhb = 1 << 13,
+  RVV_REQ_Zvksed = 1 << 14,
+  RVV_REQ_Zvksh = 1 << 15,
+
+>>>>>>> upstream/main
   LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Zvksh)
 #endif // SIFIVE_CUSTOMIZATION
 };

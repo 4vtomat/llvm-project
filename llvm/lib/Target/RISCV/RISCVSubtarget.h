@@ -40,6 +40,12 @@ struct RISCVTuneInfo {
   const char *Name;
   uint8_t PrefFunctionAlignment;
   uint8_t PrefLoopAlignment;
+
+  // Information needed by LoopDataPrefetch.
+  uint16_t CacheLineSize;
+  uint16_t PrefetchDistance;
+  uint16_t MinPrefetchStride;
+  unsigned MaxPrefetchIterationsAhead;
 };
 
 #define GET_RISCVTuneInfoTable_DECL
@@ -48,18 +54,23 @@ struct RISCVTuneInfo {
 
 class RISCVSubtarget : public RISCVGenSubtargetInfo {
 public:
+  // clang-format off
   enum RISCVProcFamilyEnum : uint8_t {
     Others,
     SiFive6, // SIFIVE
     SiFive7,
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     SiFiveP400,
     SiFiveP500,
     SiFiveP600,
     SiFiveP800,
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    VentanaVeyron,
+>>>>>>> upstream/main
   };
-
+  // clang-format on
 private:
   virtual void anchor();
 
@@ -310,6 +321,22 @@ public:
   unsigned getMemToRVVLMUL() const;
 #endif // SIFIVE_CUSTOMIZATION
   bool useAA() const override;
+
+  unsigned getCacheLineSize() const override {
+    return TuneInfo->CacheLineSize;
+  };
+  unsigned getPrefetchDistance() const override {
+    return TuneInfo->PrefetchDistance;
+  };
+  unsigned getMinPrefetchStride(unsigned NumMemAccesses,
+                                unsigned NumStridedMemAccesses,
+                                unsigned NumPrefetches,
+                                bool HasCall) const override {
+    return TuneInfo->MinPrefetchStride;
+  };
+  unsigned getMaxPrefetchIterationsAhead() const override {
+    return TuneInfo->MaxPrefetchIterationsAhead;
+  };
 };
 } // End llvm namespace
 

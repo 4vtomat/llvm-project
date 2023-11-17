@@ -17,6 +17,7 @@
 #include "clang/Basic/XRayInstr.h"
 #include "llvm/ADT/FloatingPointMode.h"
 #include "llvm/Frontend/Debug/Options.h"
+#include "llvm/Frontend/Driver/CodeGenOptions.h"
 #include "llvm/Support/CodeGen.h"
 #include "llvm/Support/Regex.h"
 #include "llvm/Target/TargetOptions.h"
@@ -26,6 +27,9 @@
 #include <string>
 #include <vector>
 
+namespace llvm {
+class PassBuilder;
+}
 namespace clang {
 
 /// Bitfields of CodeGenOptions, split out from CodeGenOptions to ensure
@@ -55,6 +59,7 @@ public:
     OnlyAlwaysInlining  // Only run the always inlining pass.
   };
 
+<<<<<<< HEAD
   enum VectorLibrary {
     NoLibrary,  // Don't use any vector library.
     Accelerate, // Use the Accelerate framework.
@@ -69,6 +74,8 @@ public:
     ArmPL               // Arm Performance Libraries.
   };
 
+=======
+>>>>>>> upstream/main
   enum ObjCDispatchMethodKind {
     Legacy = 0,
     NonLegacy = 1,
@@ -410,6 +417,9 @@ public:
 
   /// List of dynamic shared object files to be loaded as pass plugins.
   std::vector<std::string> PassPlugins;
+
+  /// List of pass builder callbacks.
+  std::vector<std::function<void(llvm::PassBuilder &)>> PassBuilderCallbacks;
 
   /// Path to allowlist file specifying which objects
   /// (files, functions) should exclusively be instrumented

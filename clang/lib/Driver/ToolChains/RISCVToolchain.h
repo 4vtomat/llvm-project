@@ -61,7 +61,7 @@ private:
 
 namespace tools {
 namespace RISCV {
-class LLVM_LIBRARY_VISIBILITY Linker : public Tool {
+class LLVM_LIBRARY_VISIBILITY Linker final : public Tool {
 public:
 #if SIFIVE_CUSTOMIZATION
   Linker(const ToolChain &TC, LibcType libc) : Tool("RISCV::Linker", "ld", TC), SpecialLibc(libc) {}

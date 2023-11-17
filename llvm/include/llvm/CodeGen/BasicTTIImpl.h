@@ -719,7 +719,7 @@ public:
   /// @{
 
   TypeSize getRegisterBitWidth(TargetTransformInfo::RegisterKind K) const {
-    return TypeSize::getFixed(32);
+    return TypeSize::Fixed(32);
   }
 
 #if SIFIVE_CUSTOMIZATION
