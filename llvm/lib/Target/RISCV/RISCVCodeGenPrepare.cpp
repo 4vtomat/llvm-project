@@ -162,12 +162,51 @@ bool RISCVCodeGenPrepare::visitAnd(BinaryOperator &BO) {
 // vfmv.s.f if we know if it is non-zero. SelectionDAG will conservatively use
 // a value of 1 to make sure it is non-zero.
 bool RISCVCodeGenPrepare::visitIntrinsicInst(IntrinsicInst &II) {
-  // FIXME: Extend to other reduction operations.
-  if (II.getIntrinsicID() != Intrinsic::vp_reduce_fadd)
+  Intrinsic::ID IID = II.getIntrinsicID();
+  // RISCV intrinsic ID.
+  Intrinsic::ID RVIID;
+  switch (IID) {
+  // Floating point reductions.
+  case Intrinsic::vp_reduce_fadd:
+    RVIID = Intrinsic::riscv_vfredusum;
+    break;
+  case Intrinsic::vp_reduce_fmin:
+    RVIID = Intrinsic::riscv_vfredmin;
+    break;
+  case Intrinsic::vp_reduce_fmax:
+    RVIID = Intrinsic::riscv_vfredmax;
+    break;
+  // Integer reductions.
+  case Intrinsic::vp_reduce_add:
+    RVIID = Intrinsic::riscv_vredsum;
+    break;
+  case Intrinsic::vp_reduce_smax:
+    RVIID = Intrinsic::riscv_vredmax;
+    break;
+  case Intrinsic::vp_reduce_umax:
+    RVIID = Intrinsic::riscv_vredmaxu;
+    break;
+  case Intrinsic::vp_reduce_smin:
+    RVIID = Intrinsic::riscv_vredmin;
+    break;
+  case Intrinsic::vp_reduce_umin:
+    RVIID = Intrinsic::riscv_vredminu;
+    break;
+  case Intrinsic::vp_reduce_and:
+    RVIID = Intrinsic::riscv_vredand;
+    break;
+  case Intrinsic::vp_reduce_or:
+    RVIID = Intrinsic::riscv_vredor;
+    break;
+  case Intrinsic::vp_reduce_xor:
+    RVIID = Intrinsic::riscv_vredxor;
+    break;
+  default:
     return false;
+  }
 
-  // Must be an unordered reduction.
-  if (!II.getFastMathFlags().allowReassoc())
+  // Must be unordered for fadd reduction.
+  if (IID == Intrinsic::vp_reduce_fadd && !II.getFastMathFlags().allowReassoc())
     return false;
 
   Value *Vec = II.getArgOperand(1);
@@ -185,15 +224,17 @@ bool RISCVCodeGenPrepare::visitIntrinsicInst(IntrinsicInst &II) {
   // Get the LMUL1 type and ensure that we didn't exceed LMUL=8.
   // FIXME: Support larger LMUL.
   Type *ScalarTy = VecTy->getElementType();
-  ScalableVectorType *LMul1Ty;
-  if (ScalarTy->isFloatTy() && ST->hasVInstructionsF32() &&
-      VecTy->getMinNumElements() <= 16)
-    LMul1Ty = ScalableVectorType::get(ScalarTy, 2);
-  else if (ScalarTy->isDoubleTy() && ST->hasVInstructionsF64() &&
-           VecTy->getMinNumElements() <= 8)
-    LMul1Ty = ScalableVectorType::get(ScalarTy, 1);
-  else
+  unsigned SizeInBits = ScalarTy->getPrimitiveSizeInBits();
+  const auto &TLI = *ST->getTargetLowering();
+  if (!TLI.isTypeLegal(EVT::getEVT(VecTy)) ||
+      // We only need Zvfhmin to make half a legal type, but Zvfhmin lacks
+      // the operations we need here.
+      (ScalarTy->isHalfTy() && !ST->hasVInstructionsF16()) ||
+      // Boolean vector (i.e. mask) is a legal type, but it's not valid here.
+      SizeInBits == 1)
     return false;
+  ScalableVectorType *LMul1Ty =
+      ScalableVectorType::get(ScalarTy, RISCV::RVVBitsPerBlock / SizeInBits);
 
   // Try to prove the VL is non-zero.
   Value *VL = II.getArgOperand(3);
@@ -209,12 +250,15 @@ bool RISCVCodeGenPrepare::visitIntrinsicInst(IntrinsicInst &II) {
   if (ST->is64Bit())
     VL = Builder.CreateZExt(VL, Builder.getInt64Ty());
 
-  // Move scalar into vector using vfmv.s.f. We need use VecTy to get the
-  // correct LMUL in the vsetvli even though vfmv.s.f doesn't care about LMUL.
-  Value *ScalarInVec =
-      Builder.CreateIntrinsic(Intrinsic::riscv_vfmv_s_f, {VecTy, VL->getType()},
-                              {PoisonValue::get(VecTy), Scalar, VL});
+  // Move scalar into vector using vfmv.s.f / vmv.s.x. We need use VecTy to get
+  // the correct LMUL in the vsetvli even though vfmv.s.f / vmv.s.x don't care
+  // about LMUL.
+  Value *ScalarInVec = Builder.CreateIntrinsic(
+      ScalarTy->isFloatingPointTy() ? Intrinsic::riscv_vfmv_s_f
+                                    : Intrinsic::riscv_vmv_s_x,
+      {VecTy, VL->getType()}, {PoisonValue::get(VecTy), Scalar, VL});
 
+  // Convert to LMUL1 to match what vfredusum wants.
   if (ElementCount::isKnownLT(LMul1Ty->getElementCount(),
                               VecTy->getElementCount()))
     ScalarInVec =
@@ -225,11 +269,18 @@ bool RISCVCodeGenPrepare::visitIntrinsicInst(IntrinsicInst &II) {
                                              ScalarInVec, Builder.getInt64(0));
 
   // Do the reduction.
-  // The 7 here is dynamic rounding mode.
-  Value *Reduce = Builder.CreateIntrinsic(
-      Intrinsic::riscv_vfredusum, {LMul1Ty, VecTy, VL->getType()},
-      {PoisonValue::get(LMul1Ty), Vec, ScalarInVec,
-       ConstantInt::get(VL->getType(), 7), VL});
+  Value *Reduce;
+  // We only care about rounding mode for vp_reduce_fadd.
+  if (IID == Intrinsic::vp_reduce_fadd)
+    // The 7 here is dynamic rounding mode.
+    Reduce =
+        Builder.CreateIntrinsic(RVIID, {LMul1Ty, VecTy, VL->getType()},
+                                {PoisonValue::get(LMul1Ty), Vec, ScalarInVec,
+                                 ConstantInt::get(VL->getType(), 7), VL});
+  else
+    Reduce = Builder.CreateIntrinsic(
+        RVIID, {LMul1Ty, VecTy, VL->getType()},
+        {PoisonValue::get(LMul1Ty), Vec, ScalarInVec, VL});
 
   // Extract the scalar result to match the original intrinsic result type.
   Value *Res = Builder.CreateExtractElement(Reduce, (uint64_t)0);
