@@ -3206,6 +3206,23 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     }
     break;
   }
+  case Intrinsic::vp_fmul: {
+    // (vp_fmul (splat_vector 1.0), X) --> X
+    Value *LHS = II->getOperand(0);
+    Value *RHS = II->getOperand(1);
+
+    auto isSplatFPOne = [](Value *Op) -> bool {
+      if (auto *Splat = dyn_cast_or_null<ConstantFP>(getSplatValue(Op)))
+        return Splat->isExactlyValue(1.0);
+      return false;
+    };
+    if (isSplatFPOne(LHS))
+      return replaceInstUsesWith(CI, RHS);
+    else if (isSplatFPOne(RHS))
+      return replaceInstUsesWith(CI, LHS);
+
+    break;
+  }
   case Intrinsic::experimental_vp_reverse: {
     Value *Vec = II->getArgOperand(0);
     Value *Mask = II->getArgOperand(1);

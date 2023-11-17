@@ -560,6 +560,7 @@ namespace {
 #if SIFIVE_CUSTOMIZATION
     SDValue visitVPXOR(SDNode *N);
     SDValue visitVPFDIV(SDNode *N);
+    SDValue visitVPFMUL(SDNode *N);
     SDValue visitVPFSQRT(SDNode *N);
     SDValue visitVPUDIV(SDNode *N);
     SDValue visitVPUDIVLike(SDValue N0, SDValue N1, SDNode *N);
@@ -26721,6 +26722,31 @@ SDValue DAGCombiner::visitVPFDIV(SDNode *N) {
   return SDValue();
 }
 
+SDValue DAGCombiner::visitVPFMUL(SDNode *N) {
+  /// Replace `(vp_fmul X, (splat_vector 1.0))` with `X`
+  EVT VT = N->getValueType(0);
+  SDValue Op0 = N->getOperand(0);
+  SDValue Op1 = N->getOperand(1);
+
+  auto isSplatFPOne = [](const SDNode *N) -> bool {
+    // TODO: what about BUILD_VECTOR?
+    if (N->getOpcode() != ISD::SPLAT_VECTOR)
+      return false;
+
+    if (auto *Op = dyn_cast<ConstantFPSDNode>(N->getOperand(0)))
+      return Op->getValueAPF().isExactlyValue(1.0);
+
+    return false;
+  };
+
+  if (isSplatFPOne(Op0.getNode()))
+    return Op1;
+  else if (isSplatFPOne(Op1.getNode()))
+    return Op0;
+
+  return SDValue();
+}
+
 SDValue DAGCombiner::visitVPFSQRT(SDNode *N) {
   SDNodeFlags Flags = N->getFlags();
   const TargetOptions &Options = DAG.getTarget().Options;
@@ -27122,6 +27148,8 @@ SDValue DAGCombiner::visitVPOp(SDNode *N) {
       return visitVPXOR(N);
     case ISD::VP_FDIV:
       return visitVPFDIV(N);
+    case ISD::VP_FMUL:
+      return visitVPFMUL(N);
     case ISD::VP_SQRT:
       return visitVPFSQRT(N);
     case ISD::VP_UDIV:
