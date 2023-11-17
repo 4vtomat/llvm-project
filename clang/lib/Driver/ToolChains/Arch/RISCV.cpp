@@ -132,11 +132,13 @@ void riscv::getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
                                    std::vector<StringRef> &Features) {
   StringRef MArch = getRISCVArch(Args, Triple);
 
+#if SIFIVE_CUSTOMIZATION
   if (Args.getLastArgValue(options::OPT_mcmodel_EQ).equals_insensitive("compact") &&
       (Triple.getArch() == llvm::Triple::riscv32)) {
     D.Diag(diag::err_drv_unsupported_opt_for_target)
         << "-mcmodel=compact" << "riscv32";
   }
+#endif // SIFIVE_CUSTOMIZATION
 
   if (!getArchFeatures(D, MArch, Features, Args))
     return;
