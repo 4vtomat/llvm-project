@@ -7,6 +7,7 @@
 //===----------------------------------------------------------------------===//
 
 #include "SiFive_RISCVLoopIdiomRecognize.h"
+#include "llvm/ADT/ScopeExit.h"
 #include "llvm/Analysis/DomTreeUpdater.h"
 #include "llvm/Analysis/LoopPass.h"
 #include "llvm/Analysis/TargetLibraryInfo.h"
@@ -94,7 +95,9 @@ RISCVLoopIdiomRecognizePass::run(Loop &L, LoopAnalysisManager &AM,
   if (!LIR.run(&L))
     return PreservedAnalyses::all();
 
-  return PreservedAnalyses::none();
+  auto PA = PreservedAnalyses::none();
+  PA.preserve<DominatorTreeAnalysis>();
+  return PA;
 }
 
 //===----------------------------------------------------------------------===//
@@ -316,6 +319,11 @@ Value *RISCVLoopIdiomRecognize::expandFindMismatch(IRBuilder<> &Builder,
   BasicBlock *EndBlock =
       SplitBlock(Preheader, PHBranch, &DT, &LI, nullptr, "mismatch_end");
 
+  // Safeguard to check if we build the correct DomTree with DTU.
+  auto CheckDTU = llvm::make_scope_exit([&]() {
+    assert(DTU.getDomTree().verify() && "Ill-formed DomTree built by DTU");
+  });
+
   // Create the blocks that we're going to need:
   //  1. A block for checking the zero-extended length exceeds 0
   //  2. A block to check that the start and end addresses of a given array
@@ -333,6 +341,11 @@ Value *RISCVLoopIdiomRecognize::expandFindMismatch(IRBuilder<> &Builder,
   BasicBlock *MinItCheckBlock = BasicBlock::Create(
       Ctx, "mismatch_min_it_check", EndBlock->getParent(), EndBlock);
 
+  // This DTU update is actually the only one we need to cover all control flow
+  // changes made in this function. Because the current DTU algorithm
+  // recaculates the whole sub-tree between a deleted edge. And the edge between
+  // Preheader and EndBlock happens to enclose all the blocks we inserted
+  // in this function.
   DTU.applyUpdates({{DominatorTree::Insert, Preheader, MinItCheckBlock},
                     {DominatorTree::Delete, Preheader, EndBlock}});
 
