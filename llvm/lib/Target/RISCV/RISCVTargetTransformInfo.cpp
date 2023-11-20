@@ -332,12 +332,13 @@ bool RISCVTTIImpl::getMemoryRefInfo(
     unsigned SegNum = getSegNum(II, PtrOperandNo, IsWrite);
     unsigned ElemSize = Ty->getScalarSizeInBits() / 8;
     for (unsigned n = 0; n < SegNum; ++n) {
+      Value *NewOffsetOp = OffsetOp;
       if (n) {
         Value *BaseOffset = ConstantInt::get(OffsetOp->getType(), ElemSize * n);
-        OffsetOp = IB.CreateAdd(OffsetOp, BaseOffset);
+        NewOffsetOp = IB.CreateAdd(OffsetOp, BaseOffset);
       }
       Interesting.emplace_back(II, PtrOperandNo, IsWrite, Ty, Align(1), Mask,
-                               EVL, /* Stride */ nullptr, OffsetOp);
+                               EVL, /* Stride */ nullptr, NewOffsetOp);
     }
     return true;
   }
