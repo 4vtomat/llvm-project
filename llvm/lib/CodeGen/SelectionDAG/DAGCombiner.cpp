@@ -26724,7 +26724,6 @@ SDValue DAGCombiner::visitVPFDIV(SDNode *N) {
 
 SDValue DAGCombiner::visitVPFMUL(SDNode *N) {
   /// Replace `(vp_fmul X, (splat_vector 1.0))` with `X`
-  EVT VT = N->getValueType(0);
   SDValue Op0 = N->getOperand(0);
   SDValue Op1 = N->getOperand(1);
 
