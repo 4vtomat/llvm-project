@@ -19,7 +19,6 @@
 #include "llvm/IR/Metadata.h"
 #include "llvm/Support/MathExtras.h" // SIFIVE
 #include <optional>
-
 using namespace clang::CodeGen;
 using namespace llvm;
 

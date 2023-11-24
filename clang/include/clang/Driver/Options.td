@@ -634,8 +634,7 @@ class InternalDebugOpt : Group<internal_debug_Group>,
 def ccc_install_dir : Separate<["-"], "ccc-install-dir">, InternalDebugOpt,
   HelpText<"Simulate installation in the given directory">;
 def ccc_print_phases : Flag<["-"], "ccc-print-phases">,
-  Flags<[NoXarchOption, HelpHidden]>,
-  Visibility<[ClangOption, CLOption, DXCOption,
+  Flags<[NoXarchOption, HelpHidden]>, Visibility<[ClangOption, CLOption, DXCOption,
   FlangOption]>,
   HelpText<"Dump list of actions to perform">;
 def ccc_print_bindings : Flag<["-"], "ccc-print-bindings">, InternalDebugOpt,
@@ -4309,8 +4308,7 @@ def mwatchos_simulator_version_min_EQ : Joined<["-"], "mwatchos-simulator-versio
 def mwatchsimulator_version_min_EQ : Joined<["-"], "mwatchsimulator-version-min=">, Alias<mwatchos_simulator_version_min_EQ>;
 } // let Flags = [TargetSpecific]
 def march_EQ : Joined<["-"], "march=">, Group<m_Group>,
-  Flags<[TargetSpecific]>,
-  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
+  Flags<[TargetSpecific]>, Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
   HelpText<"For a list of available architectures for the target use '-mcpu=help'">;
 def masm_EQ : Joined<["-"], "masm=">, Group<m_Group>, Flags<[NoXarchOption]>;
 def inline_asm_EQ : Joined<["-"], "inline-asm=">, Group<m_Group>,
