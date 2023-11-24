@@ -779,13 +779,11 @@ void tools::gnutools::Assembler::ConstructJob(Compilation &C,
     CmdArgs.push_back("-mabi");
     CmdArgs.push_back(ABIName.data());
     StringRef MArchName = riscv::getRISCVArch(Args, getToolChain().getTriple());
+    CmdArgs.push_back("-march");
+#if SIFIVE_CUSTOMIZATION
     // Canonicalize the arch string before passing to binutils, older binutils
     // need arch string in canonical order.
 
-    CmdArgs.push_back("-march");
-    //CmdArgs.push_back(MArchName.data());
-    if (!Args.hasFlag(options::OPT_mrelax, options::OPT_mno_relax, true))
-      Args.addOptOutFlag(CmdArgs, options::OPT_mrelax, options::OPT_mno_relax);
     auto ParseResult = llvm::RISCVISAInfo::parseArchString(
         MArchName, /*EnableExperimentalExtension=*/true,
         /*ExperimentalExtensionVersionCheck=*/false);
@@ -800,6 +798,11 @@ void tools::gnutools::Assembler::ConstructJob(Compilation &C,
       std::string Arch = ISAInfo->toString();
       CmdArgs.push_back(Args.MakeArgStringRef(Arch));
     }
+#else
+    CmdArgs.push_back(MArchName.data());
+#endif // SIFIVE_CUSTOMIZATION
+    if (!Args.hasFlag(options::OPT_mrelax, options::OPT_mno_relax, true))
+      Args.addOptOutFlag(CmdArgs, options::OPT_mrelax, options::OPT_mno_relax);
     break;
   }
   case llvm::Triple::sparc:
