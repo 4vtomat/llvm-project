@@ -64,9 +64,7 @@ public:
   const flags_list &flags() const { return Flags; }
 #if SIFIVE_CUSTOMIZATION
   flags_list &flags() { return Flags; }
-#endif // SIFIVE_CUSTOMIZATION
 
-#if SIFIVE_CUSTOMIZATION
   /// Add a flag to the flags list
   /// \p Flag must be a flag accepted by the driver with its leading '-' removed,
   ///     and replaced with either:

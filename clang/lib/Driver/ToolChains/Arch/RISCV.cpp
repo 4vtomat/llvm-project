@@ -40,9 +40,7 @@ static bool getArchFeatures(const Driver &D, StringRef Arch,
   if (const Arg *A = Args.getLastArg(options::OPT_mcpu_EQ))
     if (llvm::RISCV::getMArchFromMcpu(A->getValue()) != "")
      EnableExperimentalExtensions = true;
-#endif // SIFIVE_CUSTOMIZATION
 
-#if SIFIVE_CUSTOMIZATION
   // Allow user to use unratified extension without version, but we still need
   // emit warning, so parse that twice.
   // The first pass will ignore the version check and proceed.
