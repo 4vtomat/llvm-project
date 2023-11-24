@@ -157,6 +157,7 @@ class RISCVAsmParser : public MCTargetAsmParser {
   void emitLoadStoreSymbol(MCInst &Inst, unsigned Opcode, SMLoc IDLoc,
                            MCStreamer &Out, bool HasTmpReg);
 
+#if SIFIVE_CUSTOMIZATION
   // Helper to emit compact pseudo load address instruction used in GP-rel
   // addressing.
   bool emitCompactLoadAddress(MCInst &Inst, unsigned Opcode, SMLoc IDLoc,
@@ -165,6 +166,7 @@ class RISCVAsmParser : public MCTargetAsmParser {
   // Helper to emit compact pseudo load/store instruction with a symbol.
   void emitCompactLoadStoreSymbol(MCInst &Inst, unsigned Opcode, SMLoc IDLoc,
                                   MCStreamer &Out, bool HasTmpReg);
+#endif // SIFIVE_CUSTOMIZATION
 
   // Helper to emit pseudo sign/zero extend instruction.
   void emitPseudoExtend(MCInst &Inst, bool SignExtend, int64_t Width,
@@ -173,11 +175,13 @@ class RISCVAsmParser : public MCTargetAsmParser {
   // Helper to emit pseudo vmsge{u}.vx instruction.
   void emitVMSGE(MCInst &Inst, unsigned Opcode, SMLoc IDLoc, MCStreamer &Out);
 
+#if SIFIVE_CUSTOMIZATION
   // Checks that a PseudoAddRegRel is using a register in its second input
   // operand.  Enforcing this using a restricted register class for the
   // second input operand of PseudoAddRegRel results in a poor diagnostic
   // due to the fact 'add' is an overloaded mnemonic.
   bool checkPseudoAddRegRel(MCInst &Inst, OperandVector &Operands);
+#endif // SIFIVE_CUSTOMIZATION
 
   // Check instruction constraints.
   bool validateInstruction(MCInst &Inst, OperandVector &Operands);
@@ -270,8 +274,9 @@ class RISCVAsmParser : public MCTargetAsmParser {
   std::unique_ptr<RISCVOperand> defaultFRMArgOp() const;
   std::unique_ptr<RISCVOperand> defaultFRMArgLegacyOp() const;
 
+#if SIFIVE_CUSTOMIZATION
   std::unique_ptr<RISCVOperand> defaultPseudoGPRegisterOperands() const;
-
+#endif // SIFIVE_CUSTOMIZATION
 public:
   enum RISCVMatchResultTy {
     Match_Dummy = FIRST_TARGET_MATCH_RESULT_TY,
@@ -535,6 +540,7 @@ public:
            VK == RISCVMCExpr::VK_RISCV_CALL;
   }
 
+#if SIFIVE_CUSTOMIZATION
   bool isRegRelAddSymbol() const {
     int64_t Imm;
     RISCVMCExpr::VariantKind VK = RISCVMCExpr::VK_RISCV_None;
@@ -548,6 +554,7 @@ public:
             VK == RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_ADD ||
             VK == RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_ADD);
   }
+#endif // SIFIVE_CUSTOMIZATION
 
   bool isCSRSystemRegister() const { return isSystemRegister(); }
 
@@ -854,11 +861,15 @@ public:
     return IsValid && ((IsConstantImm && VK == RISCVMCExpr::VK_RISCV_None) ||
                        VK == RISCVMCExpr::VK_RISCV_LO ||
                        VK == RISCVMCExpr::VK_RISCV_PCREL_LO ||
+#if SIFIVE_CUSTOMIZATION
                        VK == RISCVMCExpr::VK_RISCV_TPREL_LO ||
                        VK == RISCVMCExpr::VK_RISCV_GPREL_LO ||
                        VK == RISCVMCExpr::VK_RISCV_GOT_GPREL_LO ||
                        VK == RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_LO ||
                        VK == RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_LO);
+#else
+                       VK == RISCVMCExpr::VK_RISCV_TPREL_LO);
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   bool isSImm12Lsb0() const { return isBareSimmNLsb0<12>(); }
@@ -895,19 +906,27 @@ public:
     if (!IsConstantImm) {
       IsValid = RISCVAsmParser::classifySymbolRef(getImm(), VK);
       return IsValid && (VK == RISCVMCExpr::VK_RISCV_HI ||
+#if SIFIVE_CUSTOMIZATION
                          VK == RISCVMCExpr::VK_RISCV_TPREL_HI ||
                          VK == RISCVMCExpr::VK_RISCV_GPREL_HI ||
                          VK == RISCVMCExpr::VK_RISCV_GOT_GPREL_HI ||
                          VK == RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_HI ||
                          VK == RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_HI);
+#else
+                         VK == RISCVMCExpr::VK_RISCV_TPREL_HI);
+#endif // SIFIVE_CUSTOMIZATION
     } else {
       return isUInt<20>(Imm) && (VK == RISCVMCExpr::VK_RISCV_None ||
                                  VK == RISCVMCExpr::VK_RISCV_HI ||
+#if SIFIVE_CUSTOMIZATION
                                  VK == RISCVMCExpr::VK_RISCV_TPREL_HI ||
                                  VK == RISCVMCExpr::VK_RISCV_GPREL_HI ||
                                  VK == RISCVMCExpr::VK_RISCV_GOT_GPREL_HI ||
                                  VK == RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_HI ||
                                  VK == RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_HI);
+#else
+                                 VK == RISCVMCExpr::VK_RISCV_TPREL_HI);
+#endif // SIFIVE_CUSTOMIZATION
     }
   }
 
@@ -1540,12 +1559,14 @@ bool RISCVAsmParser::MatchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
     return Error(ErrorLoc, "operand must be a bare symbol name");
   }
+#if SIFIVE_CUSTOMIZATION
   case Match_InvalidRegRelAddSymbol: {
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
     return Error(ErrorLoc, "operand must be a symbol with any of "
                            "%tprel_add, %gprel, %got_gprel, %tls_ie_gprel "
                            "and %tls_gd_gprel modifier");
   }
+#endif // SIFIVE_CUSTOMIZATION
   case Match_InvalidRTZArg: {
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
     return Error(ErrorLoc, "operand must be 'rtz' floating-point rounding mode");
@@ -3160,6 +3181,7 @@ void RISCVAsmParser::emitLoadStoreSymbol(MCInst &Inst, unsigned Opcode,
                     Opcode, IDLoc, Out);
 }
 
+#if SIFIVE_CUSTOMIZATION
 bool RISCVAsmParser::emitCompactLoadAddress(MCInst &Inst, unsigned Opcode,
                                             SMLoc IDLoc, MCStreamer &Out) {
   MCContext &Ctx = getContext();
@@ -3291,6 +3313,8 @@ void RISCVAsmParser::emitCompactLoadStoreSymbol(MCInst &Inst, unsigned Opcode,
                           .addExpr(SymbolLow));
 }
 
+#endif // SIFIVE_CUSTOMIZATION
+
 void RISCVAsmParser::emitPseudoExtend(MCInst &Inst, bool SignExtend,
                                       int64_t Width, SMLoc IDLoc,
                                       MCStreamer &Out) {
@@ -3399,6 +3423,7 @@ void RISCVAsmParser::emitVMSGE(MCInst &Inst, unsigned Opcode, SMLoc IDLoc,
   }
 }
 
+#if SIFIVE_CUSTOMIZATION
 bool RISCVAsmParser::checkPseudoAddRegRel(MCInst &Inst,
                                           OperandVector &Operands) {
   const MCOperand &Op2 = Inst.getOperand(2);
@@ -3431,6 +3456,7 @@ bool RISCVAsmParser::checkPseudoAddRegRel(MCInst &Inst,
 
   return false;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 std::unique_ptr<RISCVOperand> RISCVAsmParser::defaultMaskRegOp() const {
   return RISCVOperand::createReg(RISCV::NoRegister, llvm::SMLoc(),
@@ -3442,10 +3468,12 @@ std::unique_ptr<RISCVOperand> RISCVAsmParser::defaultFRMArgOp() const {
                                     llvm::SMLoc());
 }
 
+#if SIFIVE_CUSTOMIZATION
 std::unique_ptr<RISCVOperand> RISCVAsmParser::defaultPseudoGPRegisterOperands() const {
   return RISCVOperand::createReg(RISCV::NoRegister, llvm::SMLoc(),
                                  llvm::SMLoc(), isRV64());
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 std::unique_ptr<RISCVOperand> RISCVAsmParser::defaultFRMArgLegacyOp() const {
   return RISCVOperand::createFRMArg(RISCVFPRndMode::RoundingMode::RNE,
@@ -3589,7 +3617,6 @@ bool RISCVAsmParser::validateInstruction(MCInst &Inst,
       return Error(Loc, "The destination vector register group cannot overlap"
                         " the mask register.");
   }
-
   return false;
 }
 
@@ -3690,8 +3717,10 @@ bool RISCVAsmParser::processInstruction(MCInst &Inst, SMLoc IDLoc,
   case RISCV::PseudoFSD:
     emitLoadStoreSymbol(Inst, RISCV::FSD, IDLoc, Out, /*HasTmpReg=*/true);
     return false;
+#if SIFIVE_CUSTOMIZATION
   case RISCV::PseudoAddRegRel:
     if (checkPseudoAddRegRel(Inst, Operands))
+#endif // SIFIVE_CUSTOMIZATION
       return true;
     break;
   case RISCV::PseudoSEXT_B:
@@ -3761,6 +3790,7 @@ bool RISCVAsmParser::processInstruction(MCInst &Inst, SMLoc IDLoc,
     return false;
   }
 
+#if SIFIVE_CUSTOMIZATION
   case RISCV::PseudoLLA_GPREL:
   case RISCV::PseudoLA_GOT_GPREL:
   case RISCV::PseudoLA_TLS_IE_GPREL:
@@ -3834,6 +3864,7 @@ bool RISCVAsmParser::processInstruction(MCInst &Inst, SMLoc IDLoc,
     emitCompactLoadStoreSymbol(Inst, RISCV::FSD, IDLoc,
                                Out, /*HasTmpReg=*/true);
     return false;
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   emitToStreamer(Out, Inst);

@@ -123,6 +123,7 @@ unsigned RISCVELFObjectWriter::getRelocType(MCContext &Ctx,
     return ELF::R_RISCV_TPREL_LO12_S;
   case RISCV::fixup_riscv_tprel_add:
     return ELF::R_RISCV_TPREL_ADD;
+#if SIFIVE_CUSTOMIZATION
   case RISCV::fixup_riscv_gprel_hi20:
     return ELF::R_RISCV_SIFIVE_GPREL_HI20;
   case RISCV::fixup_riscv_gprel_lo12_i:
@@ -149,6 +150,7 @@ unsigned RISCVELFObjectWriter::getRelocType(MCContext &Ctx,
     return ELF::R_RISCV_SIFIVE_TLS_GD_GPREL_LO12_I;
   case RISCV::fixup_riscv_tls_gd_gprel_add:
     return ELF::R_RISCV_SIFIVE_TLS_GD_GPREL_ADD;
+#endif // SIFIVE_CUSTOMIZATION
   case RISCV::fixup_riscv_relax:
     return ELF::R_RISCV_RELAX;
   case RISCV::fixup_riscv_align:

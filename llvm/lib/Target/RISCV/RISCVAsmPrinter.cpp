@@ -395,8 +395,10 @@ void RISCVAsmPrinter::emitEndOfAsmFile(Module &M) {
   RISCVTargetStreamer &RTS =
       static_cast<RISCVTargetStreamer &>(*OutStreamer->getTargetStreamer());
 
+#if SIFIVE_CUSTOMIZATION
   if (TM.getCodeModel() == CodeModel::Compact)
     emitCompactStub();
+#endif // SIFIVE_CUSTOMIZATION
 
   if (TM.getTargetTriple().isOSBinFormatELF())
     RTS.finishAttributeSection();
