@@ -2099,12 +2099,14 @@ def : Pat<(binop_allwusers<add> GPR:$rs1, (AddiPair:$rs2)),
 }
 
 #ifdef SIFIVE_CUSTOMIZATION
+let Predicates = [HasShortForwardBranchOpt] in
 def : Pat<(XLenVT (abs GPR:$rs1)),
           (PseudoCCSUB (XLenVT GPR:$rs1), (XLenVT X0), /* COND_LT */ 2,
            (XLenVT GPR:$rs1), (XLenVT X0), (XLenVT GPR:$rs1))>;
+let Predicates = [HasShortForwardBranchOpt, IsRV64] in
 def : Pat<(sext_inreg (abs 33signbits_node:$rs1), i32),
-          (PseudoCCSUBW (XLenVT GPR:$rs1), (XLenVT X0), /* COND_LT */ 2,
-           (XLenVT GPR:$rs1), (XLenVT X0), (XLenVT GPR:$rs1))>;
+          (PseudoCCSUBW (i64 GPR:$rs1), (i64 X0), /* COND_LT */ 2,
+           (i64 GPR:$rs1), (i64 X0), (i64 GPR:$rs1))>;
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
