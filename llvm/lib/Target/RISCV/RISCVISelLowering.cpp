@@ -3020,7 +3020,9 @@ lowerVectorStrictFTRUNC_FCEIL_FFLOOR_FROUND(SDValue Op, SelectionDAG &DAG,
   Chain = Unorder.getValue(1);
   Src = DAG.getNode(RISCVISD::STRICT_FADD_VL, DL,
                     DAG.getVTList(ContainerVT, MVT::Other),
-                    {Chain, Src, Src, DAG.getUNDEF(ContainerVT), Unorder, VL});
+#if SIFIVE_CUSTOMIZATION
+                    {Chain, Src, Src, Src, Unorder, VL});
+#endif // SIFIVE_CUSTOMIZATION
   Chain = Src.getValue(1);
 
   // We do the conversion on the absolute value and fix the sign at the end.
