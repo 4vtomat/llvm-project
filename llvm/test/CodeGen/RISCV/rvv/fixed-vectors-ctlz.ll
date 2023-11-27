@@ -531,13 +531,6 @@ define void @ctlz_v2i64(ptr %x, ptr %y) nounwind {
 ; LMULMAX2-RV32F:       # %bb.0:
 ; LMULMAX2-RV32F-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; LMULMAX2-RV32F-NEXT:    vle64.v v8, (a0)
-<<<<<<< HEAD
-; LMULMAX2-RV32F-NEXT:    fsrmi a1, 1
-; LMULMAX2-RV32F-NEXT:    vfncvt.f.xu.w v8, v8
-; LMULMAX2-RV32F-NEXT:    fsrm a1
-; LMULMAX2-RV32F-NEXT:    vsrl.vi v8, v8, 23
-=======
->>>>>>> upstream/main
 ; LMULMAX2-RV32F-NEXT:    li a1, 190
 ; LMULMAX2-RV32F-NEXT:    vmv.v.x v9, a1
 ; LMULMAX2-RV32F-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
@@ -556,13 +549,6 @@ define void @ctlz_v2i64(ptr %x, ptr %y) nounwind {
 ; LMULMAX2-RV64F:       # %bb.0:
 ; LMULMAX2-RV64F-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; LMULMAX2-RV64F-NEXT:    vle64.v v8, (a0)
-<<<<<<< HEAD
-; LMULMAX2-RV64F-NEXT:    fsrmi a1, 1
-; LMULMAX2-RV64F-NEXT:    vfncvt.f.xu.w v8, v8
-; LMULMAX2-RV64F-NEXT:    fsrm a1
-; LMULMAX2-RV64F-NEXT:    vsrl.vi v8, v8, 23
-=======
->>>>>>> upstream/main
 ; LMULMAX2-RV64F-NEXT:    li a1, 190
 ; LMULMAX2-RV64F-NEXT:    vmv.v.x v9, a1
 ; LMULMAX2-RV64F-NEXT:    fsrmi a1, 1
@@ -1144,13 +1130,6 @@ define void @ctlz_v4i64(ptr %x, ptr %y) nounwind {
 ; LMULMAX2-RV32F:       # %bb.0:
 ; LMULMAX2-RV32F-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; LMULMAX2-RV32F-NEXT:    vle64.v v8, (a0)
-<<<<<<< HEAD
-; LMULMAX2-RV32F-NEXT:    fsrmi a1, 1
-; LMULMAX2-RV32F-NEXT:    vfncvt.f.xu.w v8, v8
-; LMULMAX2-RV32F-NEXT:    fsrm a1
-; LMULMAX2-RV32F-NEXT:    vsrl.vi v8, v8, 23
-=======
->>>>>>> upstream/main
 ; LMULMAX2-RV32F-NEXT:    li a1, 190
 ; LMULMAX2-RV32F-NEXT:    vmv.v.x v10, a1
 ; LMULMAX2-RV32F-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
@@ -1172,19 +1151,10 @@ define void @ctlz_v4i64(ptr %x, ptr %y) nounwind {
 ; LMULMAX2-RV64F-NEXT:    li a1, 190
 ; LMULMAX2-RV64F-NEXT:    vmv.v.x v10, a1
 ; LMULMAX2-RV64F-NEXT:    fsrmi a1, 1
-<<<<<<< HEAD
-; LMULMAX2-RV64F-NEXT:    vfncvt.f.xu.w v8, v8
-; LMULMAX2-RV64F-NEXT:    fsrm a1
-; LMULMAX2-RV64F-NEXT:    vsrl.vi v8, v8, 23
-; LMULMAX2-RV64F-NEXT:    li a1, 190
-; LMULMAX2-RV64F-NEXT:    vmv.v.x v9, a1
-; LMULMAX2-RV64F-NEXT:    vwsubu.vv v10, v9, v8
-=======
 ; LMULMAX2-RV64F-NEXT:    vfncvt.f.xu.w v11, v8
 ; LMULMAX2-RV64F-NEXT:    fsrm a1
 ; LMULMAX2-RV64F-NEXT:    vsrl.vi v8, v11, 23
 ; LMULMAX2-RV64F-NEXT:    vwsubu.vv v12, v10, v8
->>>>>>> upstream/main
 ; LMULMAX2-RV64F-NEXT:    li a1, 64
 ; LMULMAX2-RV64F-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
 ; LMULMAX2-RV64F-NEXT:    vminu.vx v8, v12, a1
@@ -1746,13 +1716,6 @@ define void @ctlz_zero_undef_v2i64(ptr %x, ptr %y) nounwind {
 ; LMULMAX2-RV32F:       # %bb.0:
 ; LMULMAX2-RV32F-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; LMULMAX2-RV32F-NEXT:    vle64.v v8, (a0)
-<<<<<<< HEAD
-; LMULMAX2-RV32F-NEXT:    fsrmi a1, 1
-; LMULMAX2-RV32F-NEXT:    vfncvt.f.xu.w v8, v8
-; LMULMAX2-RV32F-NEXT:    fsrm a1
-; LMULMAX2-RV32F-NEXT:    vsrl.vi v8, v8, 23
-=======
->>>>>>> upstream/main
 ; LMULMAX2-RV32F-NEXT:    li a1, 190
 ; LMULMAX2-RV32F-NEXT:    vmv.v.x v9, a1
 ; LMULMAX2-RV32F-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
@@ -1768,13 +1731,6 @@ define void @ctlz_zero_undef_v2i64(ptr %x, ptr %y) nounwind {
 ; LMULMAX2-RV64F:       # %bb.0:
 ; LMULMAX2-RV64F-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; LMULMAX2-RV64F-NEXT:    vle64.v v8, (a0)
-<<<<<<< HEAD
-; LMULMAX2-RV64F-NEXT:    fsrmi a1, 1
-; LMULMAX2-RV64F-NEXT:    vfncvt.f.xu.w v8, v8
-; LMULMAX2-RV64F-NEXT:    fsrm a1
-; LMULMAX2-RV64F-NEXT:    vsrl.vi v8, v8, 23
-=======
->>>>>>> upstream/main
 ; LMULMAX2-RV64F-NEXT:    li a1, 190
 ; LMULMAX2-RV64F-NEXT:    vmv.v.x v9, a1
 ; LMULMAX2-RV64F-NEXT:    fsrmi a1, 1
@@ -2329,13 +2285,6 @@ define void @ctlz_zero_undef_v4i64(ptr %x, ptr %y) nounwind {
 ; LMULMAX2-RV32F:       # %bb.0:
 ; LMULMAX2-RV32F-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; LMULMAX2-RV32F-NEXT:    vle64.v v8, (a0)
-<<<<<<< HEAD
-; LMULMAX2-RV32F-NEXT:    fsrmi a1, 1
-; LMULMAX2-RV32F-NEXT:    vfncvt.f.xu.w v8, v8
-; LMULMAX2-RV32F-NEXT:    fsrm a1
-; LMULMAX2-RV32F-NEXT:    vsrl.vi v8, v8, 23
-=======
->>>>>>> upstream/main
 ; LMULMAX2-RV32F-NEXT:    li a1, 190
 ; LMULMAX2-RV32F-NEXT:    vmv.v.x v10, a1
 ; LMULMAX2-RV32F-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
@@ -2354,21 +2303,11 @@ define void @ctlz_zero_undef_v4i64(ptr %x, ptr %y) nounwind {
 ; LMULMAX2-RV64F-NEXT:    li a1, 190
 ; LMULMAX2-RV64F-NEXT:    vmv.v.x v10, a1
 ; LMULMAX2-RV64F-NEXT:    fsrmi a1, 1
-<<<<<<< HEAD
-; LMULMAX2-RV64F-NEXT:    vfncvt.f.xu.w v8, v8
-; LMULMAX2-RV64F-NEXT:    fsrm a1
-; LMULMAX2-RV64F-NEXT:    vsrl.vi v8, v8, 23
-; LMULMAX2-RV64F-NEXT:    li a1, 190
-; LMULMAX2-RV64F-NEXT:    vmv.v.x v9, a1
-; LMULMAX2-RV64F-NEXT:    vwsubu.vv v10, v9, v8
-; LMULMAX2-RV64F-NEXT:    vse64.v v10, (a0)
-=======
 ; LMULMAX2-RV64F-NEXT:    vfncvt.f.xu.w v11, v8
 ; LMULMAX2-RV64F-NEXT:    fsrm a1
 ; LMULMAX2-RV64F-NEXT:    vsrl.vi v8, v11, 23
 ; LMULMAX2-RV64F-NEXT:    vwsubu.vv v12, v10, v8
 ; LMULMAX2-RV64F-NEXT:    vse64.v v12, (a0)
->>>>>>> upstream/main
 ; LMULMAX2-RV64F-NEXT:    ret
 ;
 ; LMULMAX2-RV32D-LABEL: ctlz_zero_undef_v4i64:

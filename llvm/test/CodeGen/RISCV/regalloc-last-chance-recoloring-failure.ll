@@ -57,13 +57,8 @@ define void @last_chance_recoloring_failure() {
 ; CHECK-NEXT:    slli a1, a1, 3
 ; CHECK-NEXT:    add a1, sp, a1
 ; CHECK-NEXT:    addi a1, a1, 16
-<<<<<<< HEAD
-; CHECK-NEXT:    vl8r.v v8, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    vfwsub.wv v24, v8, v20
-=======
 ; CHECK-NEXT:    vl8r.v v0, (a1) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vfwsub.wv v8, v0, v20
->>>>>>> upstream/main
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, tu, mu
 ; CHECK-NEXT:    vssubu.vv v16, v16, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, s0, e32, m8, tu, mu
@@ -72,13 +67,8 @@ define void @last_chance_recoloring_failure() {
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-<<<<<<< HEAD
-; CHECK-NEXT:    vfdiv.vv v24, v16, v8, v0.t
-; CHECK-NEXT:    vse32.v v24, (a0)
-=======
 ; CHECK-NEXT:    vfdiv.vv v8, v16, v8, v0.t
 ; CHECK-NEXT:    vse32.v v8, (a0)
->>>>>>> upstream/main
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 4
 ; CHECK-NEXT:    add sp, sp, a0

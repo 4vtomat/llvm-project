@@ -1233,14 +1233,8 @@ define <vscale x 1 x i64> @ctlz_nxv1i64(<vscale x 1 x i64> %va) {
 ; CHECK-F:       # %bb.0:
 ; CHECK-F-NEXT:    vsetvli a0, zero, e32, mf2, ta, ma
 ; CHECK-F-NEXT:    fsrmi a0, 1
-<<<<<<< HEAD
-; CHECK-F-NEXT:    vsetvli a1, zero, e32, mf2, ta, ma
-; CHECK-F-NEXT:    vfncvt.f.xu.w v8, v8
-; CHECK-F-NEXT:    vsrl.vi v8, v8, 23
-=======
 ; CHECK-F-NEXT:    vfncvt.f.xu.w v9, v8
 ; CHECK-F-NEXT:    vsrl.vi v8, v9, 23
->>>>>>> upstream/main
 ; CHECK-F-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
 ; CHECK-F-NEXT:    vzext.vf2 v9, v8
 ; CHECK-F-NEXT:    li a1, 190
@@ -1379,14 +1373,8 @@ define <vscale x 2 x i64> @ctlz_nxv2i64(<vscale x 2 x i64> %va) {
 ; CHECK-F:       # %bb.0:
 ; CHECK-F-NEXT:    vsetvli a0, zero, e32, m1, ta, ma
 ; CHECK-F-NEXT:    fsrmi a0, 1
-<<<<<<< HEAD
-; CHECK-F-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
-; CHECK-F-NEXT:    vfncvt.f.xu.w v8, v8
-; CHECK-F-NEXT:    vsrl.vi v8, v8, 23
-=======
 ; CHECK-F-NEXT:    vfncvt.f.xu.w v10, v8
 ; CHECK-F-NEXT:    vsrl.vi v8, v10, 23
->>>>>>> upstream/main
 ; CHECK-F-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
 ; CHECK-F-NEXT:    vzext.vf2 v10, v8
 ; CHECK-F-NEXT:    li a1, 190
@@ -1525,14 +1513,8 @@ define <vscale x 4 x i64> @ctlz_nxv4i64(<vscale x 4 x i64> %va) {
 ; CHECK-F:       # %bb.0:
 ; CHECK-F-NEXT:    vsetvli a0, zero, e32, m2, ta, ma
 ; CHECK-F-NEXT:    fsrmi a0, 1
-<<<<<<< HEAD
-; CHECK-F-NEXT:    vsetvli a1, zero, e32, m2, ta, ma
-; CHECK-F-NEXT:    vfncvt.f.xu.w v8, v8
-; CHECK-F-NEXT:    vsrl.vi v8, v8, 23
-=======
 ; CHECK-F-NEXT:    vfncvt.f.xu.w v12, v8
 ; CHECK-F-NEXT:    vsrl.vi v8, v12, 23
->>>>>>> upstream/main
 ; CHECK-F-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
 ; CHECK-F-NEXT:    vzext.vf2 v12, v8
 ; CHECK-F-NEXT:    li a1, 190
@@ -1671,14 +1653,8 @@ define <vscale x 8 x i64> @ctlz_nxv8i64(<vscale x 8 x i64> %va) {
 ; CHECK-F:       # %bb.0:
 ; CHECK-F-NEXT:    vsetvli a0, zero, e32, m4, ta, ma
 ; CHECK-F-NEXT:    fsrmi a0, 1
-<<<<<<< HEAD
-; CHECK-F-NEXT:    vsetvli a1, zero, e32, m4, ta, ma
-; CHECK-F-NEXT:    vfncvt.f.xu.w v8, v8
-; CHECK-F-NEXT:    vsrl.vi v8, v8, 23
-=======
 ; CHECK-F-NEXT:    vfncvt.f.xu.w v16, v8
 ; CHECK-F-NEXT:    vsrl.vi v8, v16, 23
->>>>>>> upstream/main
 ; CHECK-F-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
 ; CHECK-F-NEXT:    vzext.vf2 v16, v8
 ; CHECK-F-NEXT:    li a1, 190
@@ -2859,14 +2835,8 @@ define <vscale x 1 x i64> @ctlz_zero_undef_nxv1i64(<vscale x 1 x i64> %va) {
 ; CHECK-F:       # %bb.0:
 ; CHECK-F-NEXT:    vsetvli a0, zero, e32, mf2, ta, ma
 ; CHECK-F-NEXT:    fsrmi a0, 1
-<<<<<<< HEAD
-; CHECK-F-NEXT:    vsetvli a1, zero, e32, mf2, ta, ma
-; CHECK-F-NEXT:    vfncvt.f.xu.w v8, v8
-; CHECK-F-NEXT:    vsrl.vi v8, v8, 23
-=======
 ; CHECK-F-NEXT:    vfncvt.f.xu.w v9, v8
 ; CHECK-F-NEXT:    vsrl.vi v8, v9, 23
->>>>>>> upstream/main
 ; CHECK-F-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
 ; CHECK-F-NEXT:    vzext.vf2 v9, v8
 ; CHECK-F-NEXT:    li a1, 190
@@ -3000,14 +2970,8 @@ define <vscale x 2 x i64> @ctlz_zero_undef_nxv2i64(<vscale x 2 x i64> %va) {
 ; CHECK-F:       # %bb.0:
 ; CHECK-F-NEXT:    vsetvli a0, zero, e32, m1, ta, ma
 ; CHECK-F-NEXT:    fsrmi a0, 1
-<<<<<<< HEAD
-; CHECK-F-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
-; CHECK-F-NEXT:    vfncvt.f.xu.w v8, v8
-; CHECK-F-NEXT:    vsrl.vi v8, v8, 23
-=======
 ; CHECK-F-NEXT:    vfncvt.f.xu.w v10, v8
 ; CHECK-F-NEXT:    vsrl.vi v8, v10, 23
->>>>>>> upstream/main
 ; CHECK-F-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
 ; CHECK-F-NEXT:    vzext.vf2 v10, v8
 ; CHECK-F-NEXT:    li a1, 190
@@ -3141,14 +3105,8 @@ define <vscale x 4 x i64> @ctlz_zero_undef_nxv4i64(<vscale x 4 x i64> %va) {
 ; CHECK-F:       # %bb.0:
 ; CHECK-F-NEXT:    vsetvli a0, zero, e32, m2, ta, ma
 ; CHECK-F-NEXT:    fsrmi a0, 1
-<<<<<<< HEAD
-; CHECK-F-NEXT:    vsetvli a1, zero, e32, m2, ta, ma
-; CHECK-F-NEXT:    vfncvt.f.xu.w v8, v8
-; CHECK-F-NEXT:    vsrl.vi v8, v8, 23
-=======
 ; CHECK-F-NEXT:    vfncvt.f.xu.w v12, v8
 ; CHECK-F-NEXT:    vsrl.vi v8, v12, 23
->>>>>>> upstream/main
 ; CHECK-F-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
 ; CHECK-F-NEXT:    vzext.vf2 v12, v8
 ; CHECK-F-NEXT:    li a1, 190
@@ -3282,14 +3240,8 @@ define <vscale x 8 x i64> @ctlz_zero_undef_nxv8i64(<vscale x 8 x i64> %va) {
 ; CHECK-F:       # %bb.0:
 ; CHECK-F-NEXT:    vsetvli a0, zero, e32, m4, ta, ma
 ; CHECK-F-NEXT:    fsrmi a0, 1
-<<<<<<< HEAD
-; CHECK-F-NEXT:    vsetvli a1, zero, e32, m4, ta, ma
-; CHECK-F-NEXT:    vfncvt.f.xu.w v8, v8
-; CHECK-F-NEXT:    vsrl.vi v8, v8, 23
-=======
 ; CHECK-F-NEXT:    vfncvt.f.xu.w v16, v8
 ; CHECK-F-NEXT:    vsrl.vi v8, v16, 23
->>>>>>> upstream/main
 ; CHECK-F-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
 ; CHECK-F-NEXT:    vzext.vf2 v16, v8
 ; CHECK-F-NEXT:    li a1, 190

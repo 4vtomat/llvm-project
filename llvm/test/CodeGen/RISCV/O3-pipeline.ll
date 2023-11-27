@@ -12,16 +12,7 @@
 ; CHECK-NEXT: Target Pass Configuration
 ; CHECK-NEXT: Machine Module Information
 ; CHECK-NEXT: Target Transform Information
-<<<<<<< HEAD
-; SIFIVE_CUSTOMIZATION
-; `Assumption Cache Tracher` moves up after add WidenReductionPhi pass.
 ; CHECK-NEXT: Assumption Cache Tracker
-; CHECK-NEXT: Type-Based Alias Analysis
-; CHECK-NEXT: Scoped NoAlias Alias Analysis
-; SIFIVE_CUSTOMIZATION
-=======
-; CHECK-NEXT: Assumption Cache Tracker
->>>>>>> upstream/main
 ; CHECK-NEXT: Profile summary info
 ; CHECK-NEXT: Type-Based Alias Analysis
 ; CHECK-NEXT: Scoped NoAlias Alias Analysis
@@ -38,20 +29,16 @@
 ; CHECK-NEXT:       Expand Atomic instructions
 ; CHECK-NEXT:       Dominator Tree Construction
 ; CHECK-NEXT:       Natural Loop Information
-<<<<<<< HEAD
-; SIFIVE_CUSTOMIZATION
 ; CHECK-NEXT:       Canonicalize natural loops
+; SIFIVE_CUSTOMIZATION
 ; CHECK-NEXT:       Loop Pass Manager
-; CHECK-NEXT:         RISC-V widen reduction phis
+; CHECK-NEXT:       RISC-V widen reduction phis
 ; SIFIVE_CUSTOMIZATION
-=======
-; CHECK-NEXT:       Canonicalize natural loops
 ; CHECK-NEXT:       Lazy Branch Probability Analysis
 ; CHECK-NEXT:       Lazy Block Frequency Analysis
 ; CHECK-NEXT:       Optimization Remark Emitter
 ; CHECK-NEXT:       Scalar Evolution Analysis
 ; CHECK-NEXT:       Loop Data Prefetch
->>>>>>> upstream/main
 ; CHECK-NEXT:       RISC-V gather/scatter lowering
 ; CHECK-NEXT:       Interleaved Access Pass
 ; CHECK-NEXT:       RISC-V CodeGenPrepare

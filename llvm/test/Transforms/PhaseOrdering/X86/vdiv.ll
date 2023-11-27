@@ -28,13 +28,8 @@ define void @vdiv(ptr %x, ptr %y, double %a, i32 %N) #0 {
 ; CHECK-NEXT:    [[OR_COND:%.*]] = select i1 [[MIN_ITERS_CHECK]], i1 true, i1 [[DIFF_CHECK]]
 ; CHECK-NEXT:    br i1 [[OR_COND]], label [[FOR_BODY_PREHEADER9:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[N_VEC:%.*]] = and i64 [[WIDE_TRIP_COUNT]], 4294967280
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <4 x double> poison, double [[DIV]], i64 0
-=======
 ; CHECK-NEXT:    [[N_VEC:%.*]] = and i64 [[WIDE_TRIP_COUNT]], 2147483632
-; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <4 x double> poison, double [[A:%.*]], i64 0
->>>>>>> upstream/main
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <4 x double> poison, double [[DIV]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <4 x double> [[BROADCAST_SPLATINSERT]], <4 x double> poison, <4 x i32> zeroinitializer
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:

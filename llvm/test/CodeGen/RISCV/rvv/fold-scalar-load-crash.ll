@@ -7,31 +7,17 @@
 define i32 @test(i32 %size, ptr %add.ptr, i64 %const) {
 ; RV32-LABEL: test:
 ; RV32:       # %bb.0: # %entry
-<<<<<<< HEAD
-; RV32-NEXT:    addi a3, a1, -1
-; RV32-NEXT:    add a0, a1, a0
-; RV32-NEXT:    addi a1, a2, 1
-=======
 ; RV32-NEXT:    th.lbib a3, (a1), -1, 0
 ; RV32-NEXT:    th.lrb a0, a1, a0, 0
->>>>>>> upstream/main
 ; RV32-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; RV32-NEXT:    vmv.v.x v8, a3
 ; RV32-NEXT:    addi a1, a2, 1
 ; RV32-NEXT:  .LBB0_1: # %for.body
 ; RV32-NEXT:    # =>This Inner Loop Header: Depth=1
-<<<<<<< HEAD
-; RV32-NEXT:    vlse8.v v8, (a3), zero
-; RV32-NEXT:    lbu a4, -1(a0)
-; RV32-NEXT:    vmv.s.x v9, zero
-; RV32-NEXT:    vsetvli zero, a1, e8, mf2, tu, ma
-; RV32-NEXT:    vslideup.vx v8, v9, a2
-=======
 ; RV32-NEXT:    vmv.s.x v9, zero
 ; RV32-NEXT:    vsetvli zero, a1, e8, mf2, tu, ma
 ; RV32-NEXT:    vmv1r.v v10, v8
 ; RV32-NEXT:    vslideup.vx v10, v9, a2
->>>>>>> upstream/main
 ; RV32-NEXT:    vsetivli zero, 8, e8, mf2, tu, ma
 ; RV32-NEXT:    vmv.s.x v10, a0
 ; RV32-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
@@ -45,33 +31,18 @@ define i32 @test(i32 %size, ptr %add.ptr, i64 %const) {
 ;
 ; RV64-LABEL: test:
 ; RV64:       # %bb.0: # %entry
-<<<<<<< HEAD
-; RV64-NEXT:    addi a3, a1, -1
-; RV64-NEXT:    sext.w a0, a0
-; RV64-NEXT:    add a1, a1, a0
-; RV64-NEXT:    addi a0, a2, 1
-=======
 ; RV64-NEXT:    th.lbib a3, (a1), -1, 0
 ; RV64-NEXT:    sext.w a0, a0
 ; RV64-NEXT:    th.lrb a0, a1, a0, 0
->>>>>>> upstream/main
 ; RV64-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; RV64-NEXT:    vmv.v.x v8, a3
 ; RV64-NEXT:    addi a1, a2, 1
 ; RV64-NEXT:  .LBB0_1: # %for.body
 ; RV64-NEXT:    # =>This Inner Loop Header: Depth=1
-<<<<<<< HEAD
-; RV64-NEXT:    vlse8.v v8, (a3), zero
-; RV64-NEXT:    lbu a4, -1(a1)
-; RV64-NEXT:    vmv.s.x v9, zero
-; RV64-NEXT:    vsetvli zero, a0, e8, mf2, tu, ma
-; RV64-NEXT:    vslideup.vx v8, v9, a2
-=======
 ; RV64-NEXT:    vmv.s.x v9, zero
 ; RV64-NEXT:    vsetvli zero, a1, e8, mf2, tu, ma
 ; RV64-NEXT:    vmv1r.v v10, v8
 ; RV64-NEXT:    vslideup.vx v10, v9, a2
->>>>>>> upstream/main
 ; RV64-NEXT:    vsetivli zero, 8, e8, mf2, tu, ma
 ; RV64-NEXT:    vmv.s.x v10, a0
 ; RV64-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
