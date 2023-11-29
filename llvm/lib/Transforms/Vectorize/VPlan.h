@@ -321,12 +321,8 @@ struct VPTransformState {
                    DominatorTree *DT, IRBuilderBase &Builder,
                    InnerLoopVectorizer *ILV, VPlan *Plan, LLVMContext &Ctx)
       : VF(VF), UF(UF), LI(LI), DT(DT), Builder(Builder), ILV(ILV), Plan(Plan),
-<<<<<<< HEAD
-        LVer(nullptr) {}
-#endif // SIFIVE_CUSTOMIZATION
-=======
         LVer(nullptr), TypeAnalysis(Ctx) {}
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
 
   /// The chosen Vectorization and Unroll Factors of the loop being vectorized.
   ElementCount VF;
@@ -542,7 +538,9 @@ struct VPTransformState {
   /// VPExpandSCEVRecipes.
   DenseMap<const SCEV *, Value *> ExpandedSCEVs;
 
-<<<<<<< HEAD
+  /// VPlan-based type analysis.
+  VPTypeAnalysis TypeAnalysis;
+
 #if SIFIVE_CUSTOMIZATION
   /// True if the RISCV specific implementation of CSA vectorization is
   /// enabled.
@@ -555,10 +553,6 @@ struct VPTransformState {
 struct VPCostContext {
   /// The TTI to query target costs
   const TargetTransformInfo *TTI;
-=======
-  /// VPlan-based type analysis.
-  VPTypeAnalysis TypeAnalysis;
->>>>>>> upstream/main
 };
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -3118,7 +3112,6 @@ public:
 
   ~VPlan();
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   void addCSAState(PHINode *Phi, VPCSAState * S) {
     CSAStates.insert({Phi , S});
@@ -3132,15 +3125,11 @@ public:
   static VPlanPtr createInitialVPlan(const SCEV *TripCount,
                                      ScalarEvolution &PSE, bool IsUncountable);
 #else
-  /// Create an initial VPlan with preheader and entry blocks. Creates a
-  /// VPExpandSCEVRecipe for \p TripCount and uses it as plan's trip count.
-=======
   /// Create initial VPlan skeleton, having an "entry" VPBasicBlock (wrapping
   /// original scalar pre-header) which contains SCEV expansions that need to
   /// happen before the CFG is modified; a VPBasicBlock for the vector
   /// pre-header, followed by a region for the vector loop, followed by the
   /// middle VPBasicBlock.
->>>>>>> upstream/main
   static VPlanPtr createInitialVPlan(const SCEV *TripCount,
                                      ScalarEvolution &PSE);
 #endif // SIFIVE_CUSTOMIZATION

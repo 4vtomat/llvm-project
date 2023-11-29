@@ -84,9 +84,6 @@ def riscv_read_cycle_wide : SDNode<"RISCVISD::READ_CYCLE_WIDE",
 def riscv_add_lo : SDNode<"RISCVISD::ADD_LO", SDTIntBinOp>;
 def riscv_hi : SDNode<"RISCVISD::HI", SDTIntUnaryOp>;
 def riscv_lla : SDNode<"RISCVISD::LLA", SDTIntUnaryOp>;
-<<<<<<< HEAD
-def riscv_lga : SDNode<"RISCVISD::LGA", SDTLoad,
-                       [SDNPHasChain, SDNPMayLoad, SDNPMemOperand]>;
 #ifdef SIFIVE_CUSTOMIZATION
 def riscv_add_regrel : SDNode<"RISCVISD::ADD_REGREL",
                               SDTypeProfile<1, 3, [SDTCisSameAs<0, 1>,
@@ -94,20 +91,12 @@ def riscv_add_regrel : SDNode<"RISCVISD::ADD_REGREL",
                                                    SDTCisSameAs<0, 3>,
                                                    SDTCisInt<0>]>>;
 #else
-=======
->>>>>>> upstream/main
 def riscv_add_tprel : SDNode<"RISCVISD::ADD_TPREL",
                              SDTypeProfile<1, 3, [SDTCisSameAs<0, 1>,
                                                   SDTCisSameAs<0, 2>,
                                                   SDTCisSameAs<0, 3>,
                                                   SDTCisInt<0>]>>;
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-def riscv_la_tls_ie : SDNode<"RISCVISD::LA_TLS_IE", SDTLoad,
-                             [SDNPHasChain, SDNPMayLoad, SDNPMemOperand]>;
-def riscv_la_tls_gd : SDNode<"RISCVISD::LA_TLS_GD", SDTIntUnaryOp>;
-=======
->>>>>>> upstream/main
 
 //===----------------------------------------------------------------------===//
 // Operand and SDNode transformation definitions.
@@ -1768,7 +1757,6 @@ def PseudoJump : Pseudo<(outs GPR:$rd), (ins pseudo_jump_symbol:$target), [],
                         "jump", "$target, $rd">,
                  Sched<[WriteIALU, WriteJalr, ReadJalr]>;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 // Pseudo for LI of simm32.
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Size = 8, isCodeGenOnly = 1,
@@ -1776,7 +1764,6 @@ let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Size = 8, isCodeGenOnly = 1,
 def PseudoLIsimm32 : Pseudo<(outs GPR:$dst), (ins i32imm:$imm), []>,
                      Sched<[WriteIALU]>;
 #endif // SIFIVE_CUSTOMIZATION
-=======
 // Pseudo for a rematerializable constant materialization sequence.
 // This is an experimental feature enabled by
 // -riscv-use-rematerializable-movimm in RISCVISelDAGToDAG.cpp
@@ -1786,7 +1773,6 @@ let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Size = 8, isCodeGenOnly = 1,
     isPseudo = 1, isReMaterializable = 1, IsSignExtendingOpW = 1 in
 def PseudoMovImm : Pseudo<(outs GPR:$dst), (ins i32imm:$imm), []>,
                    Sched<[WriteIALU]>;
->>>>>>> upstream/main
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Size = 8, isCodeGenOnly = 0,
     isAsmParserOnly = 1 in

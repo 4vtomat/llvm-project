@@ -298,19 +298,16 @@ void DAGTypeLegalizer::PromoteIntegerResult(SDNode *N, unsigned ResNo) {
   case ISD::FFREXP:
     Res = PromoteIntRes_FFREXP(N);
     break;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case ISD::VP_FIRST:
     Res = PromoteIntRes_VP_FIRST(N);
     break;
 #endif // SIFIVE_CUSTOMIZATION
-=======
 
   case ISD::LRINT:
   case ISD::LLRINT:
     Res = PromoteIntRes_XRINT(N);
     break;
->>>>>>> upstream/main
   }
 
   // If the result is null then the sub-method took care of registering it.

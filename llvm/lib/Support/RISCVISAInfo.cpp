@@ -66,7 +66,6 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"h", RISCVExtensionVersion{1, 0}},
     {"i", RISCVExtensionVersion{2, 1}},
     {"m", RISCVExtensionVersion{2, 0}},
-<<<<<<< HEAD
     {"sdext", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"sdtrig", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"shcounterenw", RISCVExtensionVersion{1, 0}}, // SIFIVE
@@ -75,8 +74,10 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"shvsatpa", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"shvstvala", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"shvstvecd", RISCVExtensionVersion{1, 0}}, // SIFIVE
+    {"smaia", RISCVExtensionVersion{1, 0}},
     {"smstateen", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"ss", RISCVExtensionVersion{1, 12}}, // SIFIVE
+    {"ssaia", RISCVExtensionVersion{1, 0}},
     {"ssccptr", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"sscofpmf", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"sscounterenw", RISCVExtensionVersion{1, 0}}, // SIFIVE
@@ -88,14 +89,11 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"svade", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"svadu", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"svbare", RISCVExtensionVersion{1, 0}}, // SIFIVE
-=======
 
-    {"smaia", RISCVExtensionVersion{1, 0}},
-    {"ssaia", RISCVExtensionVersion{1, 0}},
->>>>>>> upstream/main
     {"svinval", RISCVExtensionVersion{1, 0}},
     {"svnapot", RISCVExtensionVersion{1, 0}},
     {"svpbmt", RISCVExtensionVersion{1, 0}},
+
     {"v", RISCVExtensionVersion{1, 0}},
 
     // vendor-defined ('X') extensions
@@ -108,14 +106,11 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xcvsimd", RISCVExtensionVersion{1, 0}},
     {"xsfcie", RISCVExtensionVersion{1, 0}},
     {"xsfvcp", RISCVExtensionVersion{1, 0}},
-<<<<<<< HEAD
     {"xsfvfhbfmin", RISCVExtensionVersion{0, 1}}, // SIFIVE
-    {"xsfvfnrclipxfqf", RISCVExtensionVersion{0, 1}}, // SIFIVE
-    {"xsfvfwmaccqqq", RISCVExtensionVersion{0, 1}}, // SIFIVE
-=======
     {"xsfvfnrclipxfqf", RISCVExtensionVersion{1, 0}},
+    {"xsfvfnrclipxfqf", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xsfvfwmaccqqq", RISCVExtensionVersion{1, 0}},
->>>>>>> upstream/main
+    {"xsfvfwmaccqqq", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xsfvqmaccdod", RISCVExtensionVersion{1, 0}},
     {"xsfvqmaccdod", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xsfvqmaccqoq", RISCVExtensionVersion{1, 0}},
@@ -141,6 +136,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zbkc", RISCVExtensionVersion{1, 0}},
     {"zbkx", RISCVExtensionVersion{1, 0}},
     {"zbs", RISCVExtensionVersion{1, 0}},
+
     {"zca", RISCVExtensionVersion{1, 0}},
     {"zcb", RISCVExtensionVersion{1, 0}},
     {"zcd", RISCVExtensionVersion{1, 0}},
@@ -148,6 +144,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zcf", RISCVExtensionVersion{1, 0}},
     {"zcmp", RISCVExtensionVersion{1, 0}},
     {"zcmt", RISCVExtensionVersion{1, 0}},
+
     {"zdinx", RISCVExtensionVersion{1, 0}},
 
     {"zfa", RISCVExtensionVersion{1, 0}},
@@ -182,7 +179,9 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"zksed", RISCVExtensionVersion{1, 0}},
     {"zksh", RISCVExtensionVersion{1, 0}},
     {"zkt", RISCVExtensionVersion{1, 0}},
+
     {"zmmul", RISCVExtensionVersion{1, 0}},
+
     {"zve32f", RISCVExtensionVersion{1, 0}},
     {"zve32x", RISCVExtensionVersion{1, 0}},
     {"zve64d", RISCVExtensionVersion{1, 0}},
@@ -208,17 +207,12 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
 
 // NOTE: This table should be sorted alphabetically by extension name.
 static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
-<<<<<<< HEAD
-    {"smaia", RISCVExtensionVersion{1, 0}},
     {"smwg", RISCVExtensionVersion{0, 3}}, // SIFIVE
     {"smwgd", RISCVExtensionVersion{0, 3}}, // SIFIVE
-    {"ssaia", RISCVExtensionVersion{1, 0}},
     {"sswg", RISCVExtensionVersion{0, 3}}, // SIFIVE
     {"xsifivecdiscarddlone", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xsifivecflushdlone", RISCVExtensionVersion{0, 1}}, // SIFIVE
 
-=======
->>>>>>> upstream/main
     {"zacas", RISCVExtensionVersion{1, 0}},
 
     {"zfbfmin", RISCVExtensionVersion{0, 8}},
@@ -1275,8 +1269,6 @@ static const char *ImpliedExtsZvfbfwma[] = {"zvfbfmin"};
 static const char *ImpliedExtsZvfh[] = {"zve32f", "zfhmin"};
 #if SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsXsfvfhbfmin[] = {"zve32f"};
-static const char *ImpliedExtsXsfvfnrclipxfqf[] = {"zve32f"};
-static const char *ImpliedExtsXsfvfwmaccqqq[] = {"zve32f", "zvl256b"};
 #endif // SIFIVE_CUSTOMIZATION
 static const char *ImpliedExtsZvfhmin[] = {"zve32f"};
 static const char *ImpliedExtsZvkn[] = {"zvkb", "zvkned", "zvknhb", "zvkt"};
@@ -1315,14 +1307,9 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"f"}, {ImpliedExtsF}},
     {{"v"}, {ImpliedExtsV}},
     {{"xsfvcp"}, {ImpliedExtsXsfvcp}},
-<<<<<<< HEAD
     {{"xsfvfhbfmin"}, {ImpliedExtsXsfvfhbfmin}}, // SIFIVE
-    {{"xsfvfnrclipxfqf"}, {ImpliedExtsXsfvfnrclipxfqf}}, // SIFIVE
-    {{"xsfvfwmaccqqq"}, {ImpliedExtsXsfvfwmaccqqq}}, // SIFIVE
-=======
     {{"xsfvfnrclipxfqf"}, {ImpliedExtsXsfvfnrclipxfqf}},
     {{"xsfvfwmaccqqq"}, {ImpliedExtsXsfvfwmaccqqq}},
->>>>>>> upstream/main
     {{"xsfvqmaccdod"}, {ImpliedExtsXsfvqmaccdod}},
     {{"xsfvqmaccqoq"}, {ImpliedExtsXsfvqmaccqoq}},
     {{"xtheadvdot"}, {ImpliedExtsXTHeadVdot}},

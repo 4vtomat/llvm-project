@@ -452,11 +452,11 @@ multiclass VPseudoSiFiveVQMACCDOD<string Constraint = ""> {
     defm NAME : VPseudoSiFiveVMACC<m.MX, m.vrclass, m.vrclass, Constraint>;
 }
 
-<<<<<<< HEAD
 multiclass VPseudoSiFiveVQMACCQOQ<string Constraint = ""> {
   foreach m = MxListVF8 in
     defm NAME : VPseudoSiFiveVMACC<m.MX, m.vrclass, m.f2vrclass, Constraint>;
-=======
+}
+
 multiclass VPseudoSiFiveVFWMACC<string Constraint = ""> {
   foreach m = MxListFW in
     defm NAME : VPseudoSiFiveVMACC<m.MX, m.wvrclass, m.vrclass, Constraint>;
@@ -470,7 +470,6 @@ multiclass VPseudoSiFiveVFNRCLIP<string Constraint = "@earlyclobber $rd"> {
                                                        m.vrclass, FPR32, m,
                                                        Constraint, /*sew*/0,
                                                        UsesVXRM=0>;
->>>>>>> upstream/main
 }
 
 let Predicates = [HasVendorXSfvcp] in {
@@ -806,7 +805,6 @@ multiclass XPatSFVFNRCLIP<string intrinsic, string instruction,
   }
 }
 
-<<<<<<< HEAD
 let Predicates = [HasVendorXSfvfnrclipxfqf] in {
   defm : XPatSFVFNRCLIP<"int_riscv_sf_vfnrclip_xu", "PseudoVFNRCLIP_XU_F_QF", AllVFNRCLIPVectors>;
   defm : XPatSFVFNRCLIP<"int_riscv_sf_vfnrclip_x",  "PseudoVFNRCLIP_X_F_QF",  AllVFNRCLIPVectors>;
@@ -862,7 +860,6 @@ def CFLUSH_I_L1
 }
 } // hasNoSchedulingInfo = 1, ...
 #endif // SIFIVE_CUSTOMIZATION
-=======
 let Predicates = [HasVendorXSfvfwmaccqqq] in {
   defm : VPatVFWMACC<"vfwmacc_4x4x4", "VFWMACC", "4x4x4">;
 }
@@ -872,7 +869,6 @@ let Predicates = [HasVendorXSfvfnrclipxfqf] in {
   defm : VPatVFNRCLIP<"vfnrclip_x_f_qf", "VFNRCLIP_X_F_QF">;
 }
 
->>>>>>> upstream/main
 let Predicates = [HasVendorXSfcie] in {
 let hasSideEffects = 1, mayLoad = 0, mayStore = 0, DecoderNamespace = "XSfcie" in {
 def SF_CFLUSH_D_L1 : RVInstI<0b000, OPC_SYSTEM, (outs), (ins GPR:$rs1), "cflush.d.l1","$rs1">,

@@ -62,50 +62,6 @@ multiclass LMULSEWWriteResMXSEW<string name, list<ProcResourceKind> resources,
     def : WriteRes<!cast<SchedWrite>(name # "_WorstCase"), resources>;
 }
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-multiclass LMULWriteResMXVariant<string Name, SchedPredicate Pred,
-                                 list<ProcResourceKind> resources,
-                                 int predLat, list<int> predAcquireCycles,
-                                 list<int> predReleaseCycles, int noPredLat,
-                                 list<int> noPredAcquireCycles,
-                                 list<int> noPredReleaseCycles,
-                                 string mx, bit IsWorstCase, string prefix> {
-  defvar NameMX = prefix # Name # "_" # mx;
-
-  // Define the different behaviors
-  def NameMX # "_Pred" : SchedWriteRes<resources>{
-    let Latency = predLat;
-    let AcquireAtCycles = predAcquireCycles;
-    let ReleaseAtCycles = predReleaseCycles;
-  }
-  def NameMX # "_NoPred" : SchedWriteRes<resources> {
-    let Latency = noPredLat;
-    let AcquireAtCycles = noPredAcquireCycles;
-    let ReleaseAtCycles = noPredReleaseCycles;
-  }
-
-  // Tie behavior to predicate
-  def NameMX # "_Variant" : SchedWriteVariant<[
-    SchedVar<Pred, [!cast<SchedWriteRes>(NameMX # "_Pred")]>,
-    SchedVar<NoSchedPred, [!cast<SchedWriteRes>(NameMX # "_NoPred")]>
-  ]>;
-  def : SchedAlias<
-    !cast<SchedReadWrite>(Name # "_" # mx),
-    !cast<SchedReadWrite>(NameMX # "_Variant")>;
-
-  if IsWorstCase then {
-    def prefix # Name # "_WorstCase_Variant" : SchedWriteVariant<[
-      SchedVar<Pred, [!cast<SchedWriteRes>(NameMX # "_Pred")]>,
-      SchedVar<NoSchedPred, [!cast<SchedWriteRes>(NameMX # "_NoPred")]>
-    ]>;
-    def : SchedAlias<
-      !cast<SchedReadWrite>(Name # "_WorstCase"),
-      !cast<SchedReadWrite>(prefix # Name # "_WorstCase_Variant")>;
-  }
-}
-#endif // SIFIVE_CUSTOMIZATION
-=======
 // Define a SchedAlias for the SchedWrite associated with (name, mx) whose
 // behavior is aliased to a Variant. The Variant has Latency predLad and
 // ReleaseAtCycles predCycles if the SchedPredicate Pred is true, otherwise has
@@ -147,7 +103,6 @@ multiclass LMULWriteResMXVariant<string name, SchedPredicateBase Pred,
       !cast<SchedReadWrite>(NAME # name # "_WorstCase_Variant")>;
   }
 }
->>>>>>> upstream/main
 
 // Define multiclasses to define SchedWrite, SchedRead,  WriteRes, and
 // ReadAdvance for each (name, LMUL) pair and for each LMUL in each of the

@@ -29,18 +29,15 @@ using namespace llvm;
 #define DEBUG_TYPE "riscv-isel"
 #define PASS_NAME "RISC-V DAG->DAG Pattern Instruction Selection"
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 extern cl::opt<bool> ForceTailUndisturbed;
 extern cl::opt<bool> ForceMaskUndisturbed;
 #endif // SIFIVE_CUSTOMIZATION
-=======
 static cl::opt<bool> UsePseudoMovImm(
     "riscv-use-rematerializable-movimm", cl::Hidden,
     cl::desc("Use a rematerializable pseudoinstruction for 2 instruction "
              "constant materialization"),
     cl::init(false));
->>>>>>> upstream/main
 
 namespace llvm::RISCV {
 #define GET_RISCVVSSEGTable_IMPL

@@ -17,7 +17,6 @@
 #include "RISCVMacroFusion.h"
 #include "RISCVTargetObjectFile.h"
 #include "RISCVTargetTransformInfo.h"
-#include "RISCVMacroFusion.h"
 #if SIFIVE_CUSTOMIZATION
 #include "SiFive_RISCVLoopIdiomRecognize.h"
 #endif // SIFIVE_CUSTOMIZATION
@@ -31,13 +30,7 @@
 #include "llvm/CodeGen/MIRParser/MIParser.h"
 #include "llvm/CodeGen/MIRYamlMapping.h"
 #include "llvm/CodeGen/Passes.h"
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
 #include "llvm/CodeGen/RegAllocRegistry.h"
-#endif // SIFIVE_CUSTOMIZATION
-=======
-#include "llvm/CodeGen/RegAllocRegistry.h"
->>>>>>> upstream/main
 #include "llvm/CodeGen/TargetLoweringObjectFileImpl.h"
 #include "llvm/CodeGen/TargetPassConfig.h"
 #include "llvm/InitializePasses.h"
@@ -48,14 +41,10 @@
 #include "llvm/Support/FormattedStream.h"
 #include "llvm/Target/TargetOptions.h"
 #include "llvm/Transforms/IPO.h"
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-#include "llvm/Transforms/Scalar.h"
 #include "llvm/Transforms/Utils/SiFive_RecodeExpand.h"
 #endif
-=======
 #include "llvm/Transforms/Scalar.h"
->>>>>>> upstream/main
 #include <optional>
 using namespace llvm;
 
@@ -150,16 +139,12 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   initializeRISCVMakeCompressibleOptPass(*PR);
   initializeRISCVGatherScatterLoweringPass(*PR);
   initializeRISCVCodeGenPreparePass(*PR);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   initializeRISCVWidenReductionPHIPass(*PR);
   initializeRISCVLateCodeGenPreparePass(*PR);
   initializeRISCVTypePromotionPass(*PR);
-  initializeRISCVPostRAExpandPseudoPass(*PR);
 #endif // SIFIVE_CUSTOMIZATION
-=======
   initializeRISCVPostRAExpandPseudoPass(*PR);
->>>>>>> upstream/main
   initializeRISCVMergeBaseOffsetOptPass(*PR);
   initializeRISCVOptWInstrsPass(*PR);
   initializeRISCVPreRAExpandPseudoPass(*PR);
@@ -314,10 +299,6 @@ bool RISCVTargetMachine::isNoopAddrSpaceCast(unsigned SrcAS,
 
 namespace {
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 class RVVRegisterRegAlloc : public RegisterRegAllocBase<RVVRegisterRegAlloc> {
 public:
   RVVRegisterRegAlloc(const char *N, const char *D, FunctionPassCtor C)
@@ -347,19 +328,12 @@ static FunctionPass *useDefaultRegisterAllocator() { return nullptr; }
 
 static llvm::once_flag InitializeDefaultRVVRegisterAllocatorFlag;
 
-<<<<<<< HEAD
-/// -riscv-splitRA-rvv-regalloc=... command line option.
-static cl::opt<RVVRegisterRegAlloc::FunctionPassCtor, false,
-               RegisterPassParser<RVVRegisterRegAlloc>>
-    RVVRegAlloc("riscv-splitRA-rvv-regalloc", cl::Hidden,
-=======
 /// -riscv-rvv-regalloc=<fast|basic|greedy> command line option.
 /// This option could designate the rvv register allocator only.
 /// For example: -riscv-rvv-regalloc=basic
 static cl::opt<RVVRegisterRegAlloc::FunctionPassCtor, false,
                RegisterPassParser<RVVRegisterRegAlloc>>
     RVVRegAlloc("riscv-rvv-regalloc", cl::Hidden,
->>>>>>> upstream/main
                 cl::init(&useDefaultRegisterAllocator),
                 cl::desc("Register allocator to use for RVV register."));
 
@@ -393,10 +367,6 @@ static RVVRegisterRegAlloc
 
 static RVVRegisterRegAlloc fastRegAllocRVVReg("fast", "fast register allocator",
                                               createFastRVVRegisterAllocator);
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 
 class RISCVPassConfig : public TargetPassConfig {
 public:
@@ -467,17 +437,9 @@ public:
   void addPreEmitPass2() override;
   void addPreSched2() override;
   void addMachineSSAOptimization() override;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   FunctionPass *createRVVRegAllocPass(bool Optimized);
   bool addRegAssignAndRewriteFast() override;
   bool addRegAssignAndRewriteOptimized() override;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  FunctionPass *createRVVRegAllocPass(bool Optimized);
-  bool addRegAssignAndRewriteFast() override;
-  bool addRegAssignAndRewriteOptimized() override;
->>>>>>> upstream/main
   void addPreRegAlloc() override;
   void addPostRegAlloc() override;
   void addOptimizedRegAlloc() override;
@@ -489,10 +451,6 @@ TargetPassConfig *RISCVTargetMachine::createPassConfig(PassManagerBase &PM) {
   return new RISCVPassConfig(*this, PM);
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 FunctionPass *RISCVPassConfig::createRVVRegAllocPass(bool Optimized) {
   // Initialize the global default.
   llvm::call_once(InitializeDefaultRVVRegisterAllocatorFlag,
@@ -509,44 +467,29 @@ FunctionPass *RISCVPassConfig::createRVVRegAllocPass(bool Optimized) {
 }
 
 bool RISCVPassConfig::addRegAssignAndRewriteFast() {
-<<<<<<< HEAD
-  if (EnableSplitRA)
-=======
   if (EnableSplitRegAlloc)
->>>>>>> upstream/main
     addPass(createRVVRegAllocPass(false));
   return TargetPassConfig::addRegAssignAndRewriteFast();
 }
 
 bool RISCVPassConfig::addRegAssignAndRewriteOptimized() {
-<<<<<<< HEAD
-  if (EnableSplitRA) {
-=======
   if (EnableSplitRegAlloc) {
->>>>>>> upstream/main
     addPass(createRVVRegAllocPass(true));
     addPass(createVirtRegRewriter(false));
   }
   return TargetPassConfig::addRegAssignAndRewriteOptimized();
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 
 void RISCVPassConfig::addIRPasses() {
   addPass(createAtomicExpandPass());
 
   if (getOptLevel() != CodeGenOptLevel::None) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     addPass(createRISCVWidenReductionPHIPass());
 #endif // SIFIVE_CUSTOMIZATION
-=======
     if (EnableLoopDataPrefetch)
       addPass(createLoopDataPrefetchPass());
 
->>>>>>> upstream/main
     addPass(createRISCVGatherScatterLoweringPass());
     addPass(createInterleavedAccessPass());
     addPass(createRISCVCodeGenPreparePass());
@@ -636,13 +579,7 @@ bool RISCVPassConfig::addGlobalInstructionSelect() {
 }
 
 void RISCVPassConfig::addPreSched2() {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  addPass(createRISCVPostRAExpandPseudoPass()); 
-#endif // SIFIVE_CUSTOMIZATION
-=======
   addPass(createRISCVPostRAExpandPseudoPass());
->>>>>>> upstream/main
 
   // Emit KCFI checks for indirect calls.
   addPass(createKCFIPass());

@@ -1226,20 +1226,14 @@ void DAGTypeLegalizer::SplitVectorResult(SDNode *N, unsigned ResNo) {
   case ISD::UDIVFIXSAT:
     SplitVecRes_FIX(N, Lo, Hi);
     break;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  case ISD::EXPERIMENTAL_VP_REVERSE:
-    SplitVecRes_VP_REVERSE(N, Lo, Hi);
-    break;
   case ISD::EXPERIMENTAL_VP_SPLICE:
     SplitVecRes_VP_SPLICE(N, Lo, Hi);
     break;
 #endif
-=======
   case ISD::EXPERIMENTAL_VP_REVERSE:
     SplitVecRes_VP_REVERSE(N, Lo, Hi);
     break;
->>>>>>> upstream/main
   }
 
   // If Lo/Hi is null, the sub-method took care of registering results etc.
@@ -2899,10 +2893,6 @@ void DAGTypeLegalizer::SplitVecRes_VECTOR_SPLICE(SDNode *N, SDValue &Lo,
                   DAG.getVectorIdxConstant(LoVT.getVectorMinNumElements(), DL));
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
 void DAGTypeLegalizer::SplitVecRes_VP_REVERSE(SDNode *N, SDValue &Lo,
                                               SDValue &Hi) {
   EVT VT = N->getValueType(0);
@@ -2945,12 +2935,7 @@ void DAGTypeLegalizer::SplitVecRes_VP_REVERSE(SDNode *N, SDValue &Lo,
 
   SDValue Load = DAG.getLoadVP(VT, DL, Store, StackPtr, Mask, EVL, LoadMMO);
 
-<<<<<<< HEAD
-  EVT LoVT, HiVT;
-  std::tie(LoVT, HiVT) = DAG.GetSplitDestVTs(VT);
-=======
   auto [LoVT, HiVT] = DAG.GetSplitDestVTs(VT);
->>>>>>> upstream/main
   Lo = DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, LoVT, Load,
                    DAG.getVectorIdxConstant(0, DL));
   Hi =
@@ -2958,7 +2943,7 @@ void DAGTypeLegalizer::SplitVecRes_VP_REVERSE(SDNode *N, SDValue &Lo,
                   DAG.getVectorIdxConstant(LoVT.getVectorMinNumElements(), DL));
 }
 
-<<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
 void DAGTypeLegalizer::SplitVecRes_VP_SPLICE(SDNode *N, SDValue &Lo,
                                              SDValue &Hi) {
   EVT VT = N->getValueType(0);
@@ -3030,8 +3015,6 @@ void DAGTypeLegalizer::SplitVecRes_VP_SPLICE(SDNode *N, SDValue &Lo,
 }
 #endif
 
-=======
->>>>>>> upstream/main
 void DAGTypeLegalizer::SplitVecRes_VECTOR_DEINTERLEAVE(SDNode *N) {
 #if SIFIVE_CUSTOMIZATION
   unsigned Factor = N->getNumOperands();

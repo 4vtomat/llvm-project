@@ -11468,18 +11468,14 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
     return Vec;
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Do not need to reorder strided loads, built out of reversed loads.
   bool IgnoreReorder = false;
 #endif // SIFIVE_CUSTOMIZATION
-  auto FinalShuffle = [&](Value *V, const TreeEntry *E) {
-=======
   auto FinalShuffle = [&](Value *V, const TreeEntry *E, VectorType *VecTy,
                           bool IsSigned) {
     if (V->getType() != VecTy)
       V = Builder.CreateIntCast(V, VecTy, IsSigned);
->>>>>>> upstream/main
     ShuffleInstructionBuilder ShuffleBuilder(Builder, *this);
     if (E->getOpcode() == Instruction::Store) {
       ArrayRef<int> Mask =
@@ -12096,7 +12092,6 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
       setInsertPointAfterBundle(E);
 
       Value *VecValue = vectorizeOperand(E, 0, PostponedPHIs);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       // Consecutive but reversed stores are just strided stores with the stride
       // -1.
@@ -12138,10 +12133,7 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
         return V;
       }
 #endif // SIFIVE_CUSTOMIZATION
-      VecValue = FinalShuffle(VecValue, E);
-=======
       VecValue = FinalShuffle(VecValue, E, VecTy, IsSigned);
->>>>>>> upstream/main
 
       Value *Ptr = SI->getPointerOperand();
       StoreInst *ST =

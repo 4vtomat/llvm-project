@@ -664,7 +664,6 @@ private:
   BlockFrequencyInfo *BFI;
   ProfileSummaryInfo *PSI;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool IsVectorizableUncountable = false;
 
@@ -672,13 +671,11 @@ private:
   SmallPtrSet<Instruction *, 4> SpeculativeLoads;
   SmallPtrSet<Instruction *, 4> SpeculativeStores;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   /// If we discover function calls within the loop which have a valid
   /// vectorized variant, record that fact so that LoopVectorize can
   /// (potentially) make a better decision on the maximum VF and enable
   /// the use of those function variants.
   bool VecCallVariantsFound = false;
->>>>>>> upstream/main
 };
 
 } // namespace llvm

@@ -543,12 +543,8 @@ void LoopVectorizeHints::setHint(StringRef Name, Metadata *Arg,
                                  const bool ReportInvalid) {
 #else
 void LoopVectorizeHints::setHint(StringRef Name, Metadata *Arg) {
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-  if (!Name.startswith(Prefix()))
-=======
   if (!Name.starts_with(Prefix()))
->>>>>>> upstream/main
     return;
   Name = Name.substr(Prefix().size(), StringRef::npos);
 

@@ -1284,13 +1284,8 @@ void InnerLoopVectorizer::collectPoisonGeneratingRecipes(
       if (auto *RecWithFlags = dyn_cast<VPRecipeWithIRFlags>(CurRec)) {
         RecWithFlags->dropPoisonGeneratingFlags();
       } else {
-<<<<<<< HEAD
-        Instruction *Instr =
-          CurRec->hasUnderlyingInstr() ? CurRec->getUnderlyingInstr() : nullptr;
-=======
         Instruction *Instr = dyn_cast_or_null<Instruction>(
             CurRec->getVPSingleValue()->getUnderlyingValue());
->>>>>>> upstream/main
         (void)Instr;
         assert((!Instr || !Instr->hasPoisonGeneratingFlags()) &&
                "found instruction with poison generating flags not covered by "
@@ -9570,18 +9565,14 @@ SCEV2ValueTy LoopVectorizationPlanner::executePlan(
     VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
 
   // Perform the actual loop transformation.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   VPTransformState State{BestVF,      BestUF, LI,         DT,
                          ILV.Builder, &ILV,   &BestVPlan, EnableRISCVCSA};
   BestVPlan.initializeMasks(State);
 #else
-  VPTransformState State{BestVF, BestUF, LI, DT, ILV.Builder, &ILV, &BestVPlan};
-#endif // SIFIVE_CUSTOMIZATION
-=======
   VPTransformState State(BestVF, BestUF, LI, DT, ILV.Builder, &ILV, &BestVPlan,
                          OrigLoop->getHeader()->getContext());
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
 
   // 0. Generate SCEV-dependent code into the preheader, including TripCount,
   // before making any changes to the CFG.
@@ -11955,15 +11946,10 @@ void VPReductionRecipe::execute(VPTransformState &State) {
 #else
     if (VPValue *Cond = getCondOp()) {
       Value *NewCond = State.get(Cond, Part);
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-      VectorType *VecTy = cast<VectorType>(NewVecOp->getType());
-      Value *Iden = RdxDesc.getRecurrenceIdentity(Kind, VecTy->getElementType(),
-=======
       VectorType *VecTy = dyn_cast<VectorType>(NewVecOp->getType());
       Type *ElementTy = VecTy ? VecTy->getElementType() : NewVecOp->getType();
       Value *Iden = RdxDesc.getRecurrenceIdentity(Kind, ElementTy,
->>>>>>> upstream/main
                                                   RdxDesc.getFastMathFlags());
       if (State.VF.isVector()) {
         Iden =
@@ -12156,7 +12142,6 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       PartPtr = Builder.CreateGEP(ScalarDataTy, Ptr, NumElt, "", InBounds);
       PartPtr =
           Builder.CreateGEP(ScalarDataTy, PartPtr, LastLane, "", InBounds);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       if (isMaskRequired) { // We reverse the mask only if it is not an all-ones mask.
         if (VPValue *RVL = State.Plan->getRVL()) {
@@ -12177,8 +12162,6 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
         }
       }
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> upstream/main
     } else {
       Value *Increment = createStepForVF(Builder, IndexTy, State.VF, Part);
       PartPtr = Builder.CreateGEP(ScalarDataTy, Ptr, Increment, "", InBounds);

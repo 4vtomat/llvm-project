@@ -492,19 +492,8 @@ static bool isSignExtendedW(Register SrcReg, const RISCVSubtarget &ST,
     case RISCV::PseudoCCADDW:
     case RISCV::PseudoCCADDIW:
     case RISCV::PseudoCCSUBW:
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    case RISCV::PseudoCCSLLW:
-    case RISCV::PseudoCCSRLW:
-    case RISCV::PseudoCCSRAW:
-    case RISCV::PseudoCCADDIW:
-    case RISCV::PseudoCCSLLIW:
-    case RISCV::PseudoCCSRLIW:
-    case RISCV::PseudoCCSRAIW:
-#endif // SIFIVE_CUSTOMIZATION
       // Returns operand 4 or an ADDW/SUBW of operands 5 and 6. We only need to
       // check if operand 4 is sign extended.
-=======
     case RISCV::PseudoCCSLLW:
     case RISCV::PseudoCCSRLW:
     case RISCV::PseudoCCSRAW:
@@ -513,7 +502,6 @@ static bool isSignExtendedW(Register SrcReg, const RISCVSubtarget &ST,
     case RISCV::PseudoCCSRAIW:
       // Returns operand 4 or an ADDW/SUBW/etc. of operands 5 and 6. We only
       // need to check if operand 4 is sign extended.
->>>>>>> upstream/main
       if (!AddRegDefToWorkList(MI->getOperand(4).getReg()))
         return false;
       break;

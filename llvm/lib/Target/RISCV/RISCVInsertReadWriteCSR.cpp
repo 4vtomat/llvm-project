@@ -62,27 +62,6 @@ INITIALIZE_PASS(RISCVInsertReadWriteCSR, DEBUG_TYPE,
 bool RISCVInsertReadWriteCSR::emitWriteRoundingMode(MachineBasicBlock &MBB) {
   bool Changed = false;
   for (MachineInstr &MI : MBB) {
-<<<<<<< HEAD
-    int VXRMIdx = RISCVII::getVXRMOpNum(MI.getDesc());
-    if (VXRMIdx >= 0) {
-      unsigned VXRMImm = MI.getOperand(VXRMIdx).getImm();
-
-#ifdef SIFIVE_CUSTOMIZATION
-        if (VXRMImm == RISCVVXRndMode::DYN)
-          continue;
-#endif // SIFIVE_CUSTOMIZATION
-
-      Changed = true;
-
-      BuildMI(MBB, MI, MI.getDebugLoc(), TII->get(RISCV::WriteVXRMImm))
-          .addImm(VXRMImm);
-      MI.addOperand(MachineOperand::CreateReg(RISCV::VXRM, /*IsDef*/ false,
-                                              /*IsImp*/ true));
-      continue;
-    }
-
-=======
->>>>>>> upstream/main
     int FRMIdx = RISCVII::getFRMOpNum(MI.getDesc());
     if (FRMIdx < 0)
       continue;

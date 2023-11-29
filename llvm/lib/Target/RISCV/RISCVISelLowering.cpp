@@ -411,15 +411,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       setOperationAction(ISD::CTLZ, MVT::i32, Expand);
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  if (Subtarget.is64Bit() && !Subtarget.hasShortForwardBranchOpt())
+  if (!RV64LegalI32 && Subtarget.is64Bit() &&
+      !Subtarget.hasShortForwardBranchOpt())
 #else
-  if (Subtarget.is64Bit())
-#endif // SIFIVE_CUSTOMIZATION
-=======
   if (!RV64LegalI32 && Subtarget.is64Bit())
->>>>>>> upstream/main
+#endif // SIFIVE_CUSTOMIZATION
     setOperationAction(ISD::ABS, MVT::i32, Custom);
 
 #if SIFIVE_CUSTOMIZATION
@@ -697,7 +694,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setOperationAction({ISD::INTRINSIC_W_CHAIN, ISD::INTRINSIC_VOID},
                        MVT::Other, Custom);
 
-    // EXPERIMENTAL_VP_REVERSE copied from BSC.
     static const unsigned IntegerVPOps[] = {
         ISD::VP_ADD,         ISD::VP_SUB,         ISD::VP_MUL,
         ISD::VP_SDIV,        ISD::VP_UDIV,        ISD::VP_SREM,
@@ -710,16 +706,10 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_FP_TO_UINT,  ISD::VP_SETCC,       ISD::VP_SIGN_EXTEND,
         ISD::VP_ZERO_EXTEND, ISD::VP_TRUNCATE,    ISD::VP_SMIN,
         ISD::VP_SMAX,        ISD::VP_UMIN,        ISD::VP_UMAX,
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         ISD::VP_MULHU, ISD::VP_MULHS,
-        ISD::VP_ABS, ISD::EXPERIMENTAL_VP_REVERSE};
-#else
-        ISD::VP_ABS};
 #endif // SIFIVE_CUSTOMIZATION
-=======
         ISD::VP_ABS, ISD::EXPERIMENTAL_VP_REVERSE};
->>>>>>> upstream/main
 
     static const unsigned FloatingPointVPOps[] = {
         ISD::VP_FADD,        ISD::VP_FSUB,        ISD::VP_FMUL,
@@ -730,7 +720,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_SETCC,       ISD::VP_FP_ROUND,    ISD::VP_FP_EXTEND,
         ISD::VP_SQRT,        ISD::VP_FMINNUM,     ISD::VP_FMAXNUM,
         ISD::VP_FCEIL,       ISD::VP_FFLOOR,      ISD::VP_FROUND,
-        ISD::EXPERIMENTAL_VP_REVERSE, // SIFIVE
         ISD::VP_FROUNDEVEN,  ISD::VP_FCOPYSIGN,   ISD::VP_FROUNDTOZERO,
         ISD::VP_FRINT,       ISD::VP_FNEARBYINT,  ISD::VP_IS_FPCLASS,
         ISD::EXPERIMENTAL_VP_REVERSE};
@@ -823,15 +812,11 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 
       setOperationAction(ISD::VECTOR_REVERSE, VT, Custom);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       // Copied from BSC
       setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
-      setOperationAction(ISD::EXPERIMENTAL_VP_REVERSE, VT, Custom);
 #endif // SIFIVE_CUSTOMIZATION
-=======
       setOperationAction(ISD::EXPERIMENTAL_VP_REVERSE, VT, Custom);
->>>>>>> upstream/main
 
       setOperationPromotedToType(
           ISD::VECTOR_SPLICE, VT,
@@ -1222,18 +1207,14 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                               ISD::VP_SETCC, ISD::VP_TRUNCATE},
                              VT, Custom);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
           setOperationAction(ISD::VP_MERGE, VT, Custom);
 
           setOperationAction(ISD::VP_FIRST, VT, Custom);
           // Copied from BSC
           setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
-          setOperationAction(ISD::EXPERIMENTAL_VP_REVERSE, VT, Custom);
 #endif // SIFIVE_CUSTOMIZATION
-=======
           setOperationAction(ISD::EXPERIMENTAL_VP_REVERSE, VT, Custom);
->>>>>>> upstream/main
           continue;
         }
 
@@ -1526,16 +1507,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                          ISD::VP_GATHER, ISD::VP_SCATTER, ISD::SRA, ISD::SRL,
                          ISD::SHL, ISD::STORE, ISD::SPLAT_VECTOR,
                          ISD::BUILD_VECTOR, ISD::CONCAT_VECTORS,
-<<<<<<< HEAD
                          ISD::EXPERIMENTAL_VP_REVERSE, // SIFIVE
                          ISD::VP_STORE,                // SIFIVE
                          ISD::SPLAT_VECTOR,            // SIFIVE
                          ISD::INTRINSIC_WO_CHAIN,      // SIFIVE
                          ISD::INTRINSIC_W_CHAIN});     // SIFIVE
 #endif
-=======
-                         ISD::EXPERIMENTAL_VP_REVERSE});
->>>>>>> upstream/main
   if (Subtarget.hasVendorXTHeadMemPair())
     setTargetDAGCombine({ISD::LOAD, ISD::STORE});
   if (Subtarget.useRVVForFixedLengthVectors())
@@ -6894,20 +6871,15 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
          !Subtarget.hasVInstructionsF16()))
       return SplitVPOp(Op, DAG);
     return lowerVectorFTRUNC_FCEIL_FFLOOR_FROUND(Op, DAG, Subtarget);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case ISD::VP_FIRST:
     return lowerVPFirst(Op, DAG);
   // Below copied from BSC
   case ISD::EXPERIMENTAL_VP_SPLICE:
     return lowerVPSpliceExperimental(Op, DAG);
-  case ISD::EXPERIMENTAL_VP_REVERSE:
-    return lowerVPReverseExperimental(Op, DAG);
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case ISD::EXPERIMENTAL_VP_REVERSE:
     return lowerVPReverseExperimental(Op, DAG);
->>>>>>> upstream/main
   }
 }
 
@@ -7120,7 +7092,6 @@ SDValue RISCVTargetLowering::getStaticTLSAddr(GlobalAddressSDNode *N,
   MVT XLenVT = Subtarget.getXLenVT();
 
   if (UseGOT) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
       SDValue Load = getCompactAddr(N, DAG, RISCVII::MO_TLS_GOT_GPREL_HI);
@@ -7128,21 +7099,6 @@ SDValue RISCVTargetLowering::getStaticTLSAddr(GlobalAddressSDNode *N,
       return SDValue(DAG.getMachineNode(RISCV::ADD, DL, Ty, Load, TPReg), 0);
     } else {
 #endif // SIFIVE_CUSTOMIZATION
-      // Use PC-relative addressing to access the GOT for this TLS symbol, then
-      // load the address from the GOT and add the thread pointer. This generates
-      // the pattern (PseudoLA_TLS_IE sym), which expands to
-      // (ld (auipc %tls_ie_pcrel_hi(sym)) %pcrel_lo(auipc)).
-      SDValue Addr = DAG.getTargetGlobalAddress(GV, DL, Ty, 0, 0);
-      MachineFunction &MF = DAG.getMachineFunction();
-      MachineMemOperand *MemOp = MF.getMachineMemOperand(
-          MachinePointerInfo::getGOT(MF),
-          MachineMemOperand::MOLoad | MachineMemOperand::MODereferenceable |
-              MachineMemOperand::MOInvariant,
-          LLT(Ty.getSimpleVT()), Align(Ty.getFixedSizeInBits() / 8));
-      SDValue Load = DAG.getMemIntrinsicNode(
-          RISCVISD::LA_TLS_IE, DL, DAG.getVTList(Ty, MVT::Other),
-          {DAG.getEntryNode(), Addr}, Ty, MemOp);
-=======
     // Use PC-relative addressing to access the GOT for this TLS symbol, then
     // load the address from the GOT and add the thread pointer. This generates
     // the pattern (PseudoLA_TLS_IE sym), which expands to
@@ -7157,7 +7113,6 @@ SDValue RISCVTargetLowering::getStaticTLSAddr(GlobalAddressSDNode *N,
             MachineMemOperand::MOInvariant,
         LLT(Ty.getSimpleVT()), Align(Ty.getFixedSizeInBits() / 8));
     DAG.setNodeMemRefs(cast<MachineSDNode>(Load.getNode()), {MemOp});
->>>>>>> upstream/main
 
       // Add the thread pointer.
       SDValue TPReg = DAG.getRegister(RISCV::X4, XLenVT);
@@ -7200,22 +7155,16 @@ SDValue RISCVTargetLowering::getDynamicTLSAddr(GlobalAddressSDNode *N,
   // This generates the pattern (PseudoLA_TLS_GD sym), which expands to
   // (addi (auipc %tls_gd_pcrel_hi(sym)) %pcrel_lo(auipc)).
   SDValue Addr = DAG.getTargetGlobalAddress(GV, DL, Ty, 0, 0);
-<<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
   SDValue Load;
 
-#if SIFIVE_CUSTOMIZATION
   if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
     Load = getCompactAddr(N, DAG, RISCVII::MO_TLS_GD_GPREL_HI);
   } else {
-#endif // SIFIVE_CUSTOMIZATION
-    Load = DAG.getNode(RISCVISD::LA_TLS_GD, DL, Ty, Addr);
-#if SIFIVE_CUSTOMIZATION
+    Load =
+        SDValue(DAG.getMachineNode(RISCV::PseudoLA_TLS_GD, DL, Ty, Addr), 0);
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  SDValue Load =
-      SDValue(DAG.getMachineNode(RISCV::PseudoLA_TLS_GD, DL, Ty, Addr), 0);
->>>>>>> upstream/main
 
   // Prepare argument list to generate call.
   ArgListTy Args;
@@ -11694,7 +11643,6 @@ SDValue RISCVTargetLowering::lowerVPFPIntConvOp(SDValue Op,
   return convertFromScalableVector(VT, Result, DAG, Subtarget);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 SDValue RISCVTargetLowering::lowerVPMergeMask(SDValue Op, SelectionDAG &DAG) const {
   SDLoc DL(Op);
@@ -11828,8 +11776,6 @@ RISCVTargetLowering::lowerVPSpliceExperimental(SDValue Op,
   return convertFromScalableVector(VT, Result, DAG, Subtarget);
 }
 
-=======
->>>>>>> upstream/main
 SDValue
 RISCVTargetLowering::lowerVPReverseExperimental(SDValue Op,
                                                 SelectionDAG &DAG) const {
@@ -11854,54 +11800,24 @@ RISCVTargetLowering::lowerVPReverseExperimental(SDValue Op,
   // Check if we are working with mask vectors
   bool IsMaskVector = ContainerVT.getVectorElementType() == MVT::i1;
   if (IsMaskVector) {
-<<<<<<< HEAD
-    switch(ContainerVT.getVectorElementCount().getKnownMinValue()) {
-    default: llvm_unreachable("Invalid factor size");
-    case 1: IndicesVT = MVT::i64; break;
-    case 2: IndicesVT = MVT::i32; break;
-    case 4: IndicesVT = MVT::i16; break;
-    case 8:
-    case 16:
-    case 32:
-    case 64: IndicesVT = MVT::i8; break;
-    }
-    GatherVT = IndicesVT = ContainerVT.changeVectorElementType(IndicesVT);
-=======
     GatherVT = IndicesVT = ContainerVT.changeVectorElementType(MVT::i8);
->>>>>>> upstream/main
 
     // Expand input operand
     SDValue SplatOne = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, IndicesVT,
                                    DAG.getUNDEF(IndicesVT),
                                    DAG.getConstant(1, DL, XLenVT), EVL);
-<<<<<<< HEAD
-    SDValue VMV0 = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, IndicesVT,
-                               DAG.getUNDEF(IndicesVT),
-                               DAG.getConstant(0, DL, XLenVT), EVL);
-    Op1 = DAG.getNode(RISCVISD::VSELECT_VL, DL, IndicesVT, Op1, SplatOne, VMV0,
-                      EVL);
-=======
     SDValue SplatZero = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, IndicesVT,
                                     DAG.getUNDEF(IndicesVT),
                                     DAG.getConstant(0, DL, XLenVT), EVL);
     Op1 = DAG.getNode(RISCVISD::VSELECT_VL, DL, IndicesVT, Op1, SplatOne,
                       SplatZero, EVL);
->>>>>>> upstream/main
   }
 
   unsigned EltSize = GatherVT.getScalarSizeInBits();
   unsigned MinSize = GatherVT.getSizeInBits().getKnownMinValue();
-<<<<<<< HEAD
-  unsigned MaxVLMAX = 0;
-  unsigned VectorBitsMax = Subtarget.getRealMaxVLen();
-  if (VectorBitsMax != 0)
-    MaxVLMAX =
-        RISCVTargetLowering::computeVLMAX(VectorBitsMax, EltSize, MinSize);
-=======
   unsigned VectorBitsMax = Subtarget.getRealMaxVLen();
   unsigned MaxVLMAX =
       RISCVTargetLowering::computeVLMAX(VectorBitsMax, EltSize, MinSize);
->>>>>>> upstream/main
 
   unsigned GatherOpc = RISCVISD::VRGATHER_VV_VL;
   // If this is SEW=8 and VLMAX is unknown or more than 256, we need
@@ -11909,26 +11825,15 @@ RISCVTargetLowering::lowerVPReverseExperimental(SDValue Op,
   // TODO: It's also possible to use vrgatherei16.vv for other types to
   // decrease register width for the index calculation.
   // NOTE: This code assumes VLMAX <= 65536 for LMUL=8 SEW=16.
-<<<<<<< HEAD
-  if ((MaxVLMAX == 0 || MaxVLMAX > 256) && EltSize == 8) {
-=======
   if (MaxVLMAX > 256 && EltSize == 8) {
->>>>>>> upstream/main
     // If this is LMUL=8, we have to split before using vrgatherei16.vv.
     // Split the vector in half and reverse each half using a full register
     // reverse.
     // Swap the halves and concatenate them.
     // Slide the concatenated result by (VLMax - VL).
     if (MinSize == (8 * RISCV::RVVBitsPerBlock)) {
-<<<<<<< HEAD
-      EVT LoVT, HiVT;
-      std::tie(LoVT, HiVT) = DAG.GetSplitDestVTs(GatherVT);
-      SDValue Lo, Hi;
-      std::tie(Lo, Hi) = DAG.SplitVector(Op1, DL);
-=======
       auto [LoVT, HiVT] = DAG.GetSplitDestVTs(GatherVT);
       auto [Lo, Hi] = DAG.SplitVector(Op1, DL);
->>>>>>> upstream/main
 
       SDValue LoRev = DAG.getNode(ISD::VECTOR_REVERSE, DL, LoVT, Lo);
       SDValue HiRev = DAG.getNode(ISD::VECTOR_REVERSE, DL, HiVT, Hi);
@@ -11947,15 +11852,8 @@ RISCVTargetLowering::lowerVPReverseExperimental(SDValue Op,
                                   DAG.getConstant(MinElts, DL, XLenVT));
       SDValue Diff = DAG.getNode(ISD::SUB, DL, XLenVT, VLMax, EVL);
 
-<<<<<<< HEAD
-      SDValue TrueMask = getAllOnesMask(ContainerVT, EVL, DL, DAG);
-      Result =
-          getVSlidedown(DAG, Subtarget, DL, GatherVT, DAG.getUNDEF(GatherVT),
-                        Result, Diff, TrueMask, EVL);
-=======
       Result = getVSlidedown(DAG, Subtarget, DL, GatherVT,
                              DAG.getUNDEF(GatherVT), Result, Diff, Mask, EVL);
->>>>>>> upstream/main
 
       if (IsMaskVector) {
         // Truncate Result back to a mask vector
@@ -11981,14 +11879,8 @@ RISCVTargetLowering::lowerVPReverseExperimental(SDValue Op,
       DAG.getNode(ISD::SUB, DL, XLenVT, EVL, DAG.getConstant(1, DL, XLenVT));
   SDValue VecLenSplat = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, IndicesVT,
                                     DAG.getUNDEF(IndicesVT), VecLen, EVL);
-<<<<<<< HEAD
-  SDValue VRSUB =
-      DAG.getNode(RISCVISD::SUB_VL, DL, IndicesVT, VecLenSplat, VID,
-                  DAG.getUNDEF(IndicesVT), Mask, EVL);
-=======
   SDValue VRSUB = DAG.getNode(RISCVISD::SUB_VL, DL, IndicesVT, VecLenSplat, VID,
                               DAG.getUNDEF(IndicesVT), Mask, EVL);
->>>>>>> upstream/main
   SDValue Result = DAG.getNode(GatherOpc, DL, GatherVT, Op1, VRSUB,
                                DAG.getUNDEF(GatherVT), Mask, EVL);
 
@@ -12005,7 +11897,6 @@ RISCVTargetLowering::lowerVPReverseExperimental(SDValue Op,
   return convertFromScalableVector(VT, Result, DAG, Subtarget);
 }
 
-<<<<<<< HEAD
 SDValue RISCVTargetLowering::lowerVPFirst(SDValue N, SelectionDAG &DAG) const {
   SDValue Op = N.getOperand(0);
   SDValue Mask = N.getOperand(1);
@@ -12034,8 +11925,6 @@ SDValue RISCVTargetLowering::lowerVPFirst(SDValue N, SelectionDAG &DAG) const {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> upstream/main
 SDValue RISCVTargetLowering::lowerLogicVPOp(SDValue Op,
                                             SelectionDAG &DAG) const {
   MVT VT = Op.getSimpleValueType();
@@ -20749,18 +20638,11 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(ADD_LO)
   NODE_NAME_CASE(HI)
   NODE_NAME_CASE(LLA)
-<<<<<<< HEAD
-  NODE_NAME_CASE(LGA)
 #if SIFIVE_CUSTOMIZATION
   NODE_NAME_CASE(ADD_REGREL)
 #else
   NODE_NAME_CASE(ADD_TPREL)
 #endif
-  NODE_NAME_CASE(LA_TLS_IE)
-  NODE_NAME_CASE(LA_TLS_GD)
-=======
-  NODE_NAME_CASE(ADD_TPREL)
->>>>>>> upstream/main
   NODE_NAME_CASE(MULHSU)
   NODE_NAME_CASE(SLLW)
   NODE_NAME_CASE(SRAW)

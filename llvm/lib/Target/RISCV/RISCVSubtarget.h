@@ -59,16 +59,13 @@ public:
     Others,
     SiFive6, // SIFIVE
     SiFive7,
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     SiFiveP400,
     SiFiveP500,
     SiFiveP600,
     SiFiveP800,
 #endif // SIFIVE_CUSTOMIZATION
-=======
     VentanaVeyron,
->>>>>>> upstream/main
   };
   // clang-format on
 private:

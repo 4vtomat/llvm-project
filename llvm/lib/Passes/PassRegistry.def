@@ -450,14 +450,11 @@ FUNCTION_PASS("transform-warning", WarnMissedTransformationsPass())
 FUNCTION_PASS("tsan", ThreadSanitizerPass())
 FUNCTION_PASS("memprof", MemProfilerPass())
 FUNCTION_PASS("declare-to-assign", llvm::AssignmentTrackingPass())
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 FUNCTION_PASS("sifive-recode", SiFiveRecodePass())
 #endif
-=======
 FUNCTION_PASS("expand-large-div-rem", ExpandLargeDivRemPass(TM));
 FUNCTION_PASS("expand-large-fp-convert", ExpandLargeFpConvertPass(TM));
->>>>>>> upstream/main
 #undef FUNCTION_PASS
 
 #ifndef FUNCTION_PASS_WITH_PARAMS
