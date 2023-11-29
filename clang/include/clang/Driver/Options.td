@@ -3142,25 +3142,14 @@ def fno_experimental_isel : Flag<["-"], "fno-experimental-isel">, Group<f_clang_
 def fveclib : Joined<["-"], "fveclib=">, Group<f_Group>,
   Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>,
     HelpText<"Use the given vector functions library">,
-<<<<<<< HEAD
-    Values<"Accelerate,libmvec,MASSV,"
 // SIFIVE_CUSTOMIZATION
-           "SiFive_NF,"
+    Values<"Accelerate,libmvec,MASSV,SiFive_NF,SVML,SLEEF,Darwin_libsystem_m,ArmPL,none">,
 // end SIFIVE_CUSTOMIZATION
-           "SVML,SLEEF,Darwin_libsystem_m,ArmPL,none">,
-    NormalizedValuesScope<"CodeGenOptions">,
-    NormalizedValues<["Accelerate", "LIBMVEC", "MASSV",
-// SIFIVE_CUSTOMIZATION
-                      "SiFive_NF",
-// end SIFIVE_CUSTOMIZATION
-                      "SVML", "SLEEF", "Darwin_libsystem_m", "ArmPL",
-                      "NoLibrary"]>,
-=======
-    Values<"Accelerate,libmvec,MASSV,SVML,SLEEF,Darwin_libsystem_m,ArmPL,none">,
     NormalizedValuesScope<"llvm::driver::VectorLibrary">,
-    NormalizedValues<["Accelerate", "LIBMVEC", "MASSV", "SVML", "SLEEF",
+// SIFIVE_CUSTOMIZATION
+    NormalizedValues<["Accelerate", "LIBMVEC", "MASSV", "SiFive_NF", "SVML", "SLEEF",
                       "Darwin_libsystem_m", "ArmPL", "NoLibrary"]>,
->>>>>>> upstream/main
+// end SIFIVE_CUSTOMIZATION
     MarshallingInfoEnum<CodeGenOpts<"VecLib">, "NoLibrary">;
 def fno_lax_vector_conversions : Flag<["-"], "fno-lax-vector-conversions">, Group<f_Group>,
   Alias<flax_vector_conversions_EQ>, AliasArgs<["none"]>;
@@ -4547,15 +4536,6 @@ def msave_restore : Flag<["-"], "msave-restore">, Group<m_riscv_Features_Group>,
 def mno_save_restore : Flag<["-"], "mno-save-restore">, Group<m_riscv_Features_Group>,
   HelpText<"Disable using library calls for save and restore">;
 } // let Flags = [TargetSpecific]
-<<<<<<< HEAD
-def mcmodel_EQ_medlow : Flag<["-"], "mcmodel=medlow">, Group<m_Group>,
-  Visibility<[ClangOption, CC1Option]>,
-  Alias<mcmodel_EQ>, AliasArgs<["small"]>,
-  HelpText<"Equivalent to -mcmodel=small, compatible with RISC-V gcc.">;
-def mcmodel_EQ_medany : Flag<["-"], "mcmodel=medany">, Group<m_Group>,
-  Visibility<[ClangOption, CC1Option]>,
-  Alias<mcmodel_EQ>, AliasArgs<["medium"]>,
-  HelpText<"Equivalent to -mcmodel=medium, compatible with RISC-V gcc.">;
 // SIFIVE
 def fuse_vla_vectorizer : Flag<["-"], "fuse-vla-vectorizer">, Group<f_Group>,
   HelpText<"Turn on VLA vectorization">, Flags<[NoXarchOption]>,
@@ -4569,8 +4549,6 @@ def msifive_recode_EQ : Joined<["-"], "msifive-recode=">, Group<m_Group>,
   Visibility<[ClangOption, CC1Option]>,
   MarshallingInfoString<TargetOpts<"SiFiveRecode">, [{"off"}]>;
 // end SIFIVE
-=======
->>>>>>> upstream/main
 let Flags = [TargetSpecific] in {
 def menable_experimental_extensions : Flag<["-"], "menable-experimental-extensions">, Group<m_Group>,
   HelpText<"Enable use of experimental RISC-V extensions.">;

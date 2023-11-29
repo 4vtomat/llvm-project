@@ -445,18 +445,8 @@ void RVVEmitter::createHeader(raw_ostream &OS) {
     }
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  for (BasicType BT : {BasicType::Float16, BasicType::BFloat,
-                       BasicType::Float32, BasicType::Float64}) {
-#else
-  for (BasicType BT :
-       {BasicType::Float16, BasicType::Float32, BasicType::Float64}) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
   for (BasicType BT : {BasicType::Float16, BasicType::Float32,
                        BasicType::Float64, BasicType::BFloat16}) {
->>>>>>> upstream/main
     for (int Log2LMUL : Log2LMULs) {
       auto T = TypeCache.computeType(BT, Log2LMUL, PrototypeDescriptor::Vector);
       if (T)

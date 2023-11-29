@@ -68,12 +68,8 @@
 //   t: ptrdiff_t, ignores "t"
 //   u: unsigned long, ignores "t"
 //   l: long, ignores "t"
-<<<<<<< HEAD
-//   f: float32, ignores "t" // SIFIVE
 //   i: int32, ignores "t" // SIFIVE
-=======
 //   f: float32, ignores "t"
->>>>>>> upstream/main
 //
 // So for instance if t is "i", i.e. int, then "e" will yield int again. "v"
 // will yield an RVV vector type (assume LMUL=1), so __rvv_int32m1_t.

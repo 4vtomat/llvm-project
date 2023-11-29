@@ -265,54 +265,6 @@ static bool asanUseGlobalsGC(const Triple &T, const CodeGenOptions &CGOpts) {
   return false;
 }
 
-<<<<<<< HEAD
-static TargetLibraryInfoImpl *createTLII(llvm::Triple &TargetTriple,
-                                         const CodeGenOptions &CodeGenOpts) {
-  TargetLibraryInfoImpl *TLII = new TargetLibraryInfoImpl(TargetTriple);
-
-  switch (CodeGenOpts.getVecLib()) {
-  case CodeGenOptions::Accelerate:
-    TLII->addVectorizableFunctionsFromVecLib(TargetLibraryInfoImpl::Accelerate,
-                                             TargetTriple);
-    break;
-  case CodeGenOptions::LIBMVEC:
-    TLII->addVectorizableFunctionsFromVecLib(TargetLibraryInfoImpl::LIBMVEC_X86,
-                                             TargetTriple);
-    break;
-  case CodeGenOptions::MASSV:
-    TLII->addVectorizableFunctionsFromVecLib(TargetLibraryInfoImpl::MASSV,
-                                             TargetTriple);
-    break;
-#if SIFIVE_CUSTOMIZATION
-  case CodeGenOptions::SiFive_NF:
-    TLII->addVectorizableFunctionsFromVecLib(TargetLibraryInfoImpl::SiFive_NF,
-                                             TargetTriple);
-    break;
-#endif // SIFIVE_CUSTOMIZATION
-  case CodeGenOptions::SVML:
-    TLII->addVectorizableFunctionsFromVecLib(TargetLibraryInfoImpl::SVML,
-                                             TargetTriple);
-    break;
-  case CodeGenOptions::SLEEF:
-    TLII->addVectorizableFunctionsFromVecLib(TargetLibraryInfoImpl::SLEEFGNUABI,
-                                             TargetTriple);
-    break;
-  case CodeGenOptions::Darwin_libsystem_m:
-    TLII->addVectorizableFunctionsFromVecLib(
-        TargetLibraryInfoImpl::DarwinLibSystemM, TargetTriple);
-    break;
-  case CodeGenOptions::ArmPL:
-    TLII->addVectorizableFunctionsFromVecLib(TargetLibraryInfoImpl::ArmPL,
-                                             TargetTriple);
-    break;
-  default:
-    break;
-  }
-  return TLII;
-}
-
-=======
->>>>>>> upstream/main
 static std::optional<llvm::CodeModel::Model>
 getCodeModel(const CodeGenOptions &CodeGenOpts) {
   unsigned CodeModel = llvm::StringSwitch<unsigned>(CodeGenOpts.CodeModel)

@@ -2386,15 +2386,7 @@ public:
 
   bool isRVVType() const;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   bool isRVVType(unsigned Bitwidth, bool IsFloat, bool IsBFloat = false) const;
-#else
-  bool isRVVType(unsigned Bitwidth, bool IsFloat) const;
-#endif
-=======
-  bool isRVVType(unsigned Bitwidth, bool IsFloat, bool IsBFloat = false) const;
->>>>>>> upstream/main
 
   /// Return the implicit lifetime for this type, which must not be dependent.
   Qualifiers::ObjCLifetime getObjCARCImplicitLifetime() const;
@@ -7302,48 +7294,22 @@ inline bool Type::isRVVType() const {
 
 inline bool Type::isRVVType(unsigned ElementCount) const {
   bool Ret = false;
-#if SIFIVE_CUSTOMIZATION
 #define RVV_VECTOR_TYPE(Name, Id, SingletonId, NumEls, ElBits, NF, IsSigned,   \
                         IsFP, IsBF)                                            \
   if (NumEls == ElementCount)                                                  \
     Ret |= isSpecificBuiltinType(BuiltinType::Id);
-#else
-#define RVV_VECTOR_TYPE(Name, Id, SingletonId, NumEls, ElBits, NF, IsSigned,   \
-                        IsFP, IsBF)                                            \
-  if (NumEls == ElementCount)                                                  \
-    Ret |= isSpecificBuiltinType(BuiltinType::Id);
-#endif // SIFIVE_CUSTOMIZATION
 #include "clang/Basic/RISCVVTypes.def"
   return Ret;
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
 inline bool Type::isRVVType(unsigned Bitwidth, bool IsFloat,
                             bool IsBFloat) const {
-#else
-inline bool Type::isRVVType(unsigned Bitwidth, bool IsFloat) const {
-#endif // SIFIVE_CUSTOMIZATION
-=======
-inline bool Type::isRVVType(unsigned Bitwidth, bool IsFloat,
-                            bool IsBFloat) const {
->>>>>>> upstream/main
   bool Ret = false;
 #define RVV_TYPE(Name, Id, SingletonId)
-#if SIFIVE_CUSTOMIZATION
 #define RVV_VECTOR_TYPE(Name, Id, SingletonId, NumEls, ElBits, NF, IsSigned,   \
                         IsFP, IsBF)                                            \
   if (ElBits == Bitwidth && IsFloat == IsFP && IsBFloat == IsBF)               \
-<<<<<<< HEAD
     Ret |= isSpecificBuiltinType(BuiltinType::Id);
-#else
-#define RVV_VECTOR_TYPE(Name, Id, SingletonId, NumEls, ElBits, NF, IsSigned,   \
-                        IsFP, IsBF)                                            \
-  if (ElBits == Bitwidth && IsFloat == IsFP)                                   \
-=======
->>>>>>> upstream/main
-    Ret |= isSpecificBuiltinType(BuiltinType::Id);
-#endif // SIFIVE_CUSTOMIZATION
 #include "clang/Basic/RISCVVTypes.def"
   return Ret;
 }

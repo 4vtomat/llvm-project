@@ -104,9 +104,6 @@ let SupportOverloading = false in {
   }
 }
 
-<<<<<<< HEAD
-multiclass RVVVQMACCDODBuiltinSet<list<list<string>> suffixes_prototypes> {
-=======
 multiclass RVVVFWMACCBuiltinSet<list<list<string>> suffixes_prototypes> {
   let OverloadedName = NAME,
       Name = NAME,
@@ -115,8 +112,7 @@ multiclass RVVVFWMACCBuiltinSet<list<list<string>> suffixes_prototypes> {
     defm NAME : RVVOutOp1Op2BuiltinSet<NAME, "b", suffixes_prototypes>;
 }
 
-multiclass RVVVQMACCBuiltinSet<list<list<string>> suffixes_prototypes> {
->>>>>>> upstream/main
+multiclass RVVVQMACCDODBuiltinSet<list<list<string>> suffixes_prototypes> {
   let OverloadedName = NAME,
       Name = NAME,
       HasMasked = false,
@@ -124,21 +120,20 @@ multiclass RVVVQMACCBuiltinSet<list<list<string>> suffixes_prototypes> {
     defm NAME : RVVOutOp1Op2BuiltinSet<NAME, "i", suffixes_prototypes>;
 }
 
-<<<<<<< HEAD
 multiclass RVVVQMACCQOQBuiltinSet<list<list<string>> suffixes_prototypes> {
   let OverloadedName = NAME,
       Name = NAME,
       HasMasked = false,
       Log2LMUL = [-1, 0, 1, 2] in
     defm NAME : RVVOutOp1Op2BuiltinSet<NAME, "s", suffixes_prototypes>;
-=======
+}
+
 multiclass RVVVFNRCLIPBuiltinSet<string suffix, string prototype, string type_range> {
   let Log2LMUL = [-3, -2, -1, 0, 1, 2],
       Name = NAME,
       IRName = NAME,
       MaskedIRName = NAME # "_mask" in
   def : RVVConvBuiltin<suffix, prototype, type_range, NAME>;
->>>>>>> upstream/main
 }
 
 let UnMaskedPolicyScheme = HasPolicyOperand in

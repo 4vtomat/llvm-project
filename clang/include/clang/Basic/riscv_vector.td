@@ -190,21 +190,16 @@ let HasMaskedOffOperand = false,
           std::swap(Ops[0], Ops[1]);
         }
         Ops[1] = Builder.CreateBitCast(Ops[1], Ops[0]->getType()->getPointerTo());
+#endif // SIFIVE_CUSTOMIZATION
         if (IsMasked)
           IntrinsicTypes = {Ops[0]->getType(), Ops[3]->getType()};
         else
           IntrinsicTypes = {Ops[0]->getType(), Ops[2]->getType()};
+#ifdef SIFIVE_CUSTOMIZATION
         if(IsNontemporal)
           return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
       }
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      if (IsMasked)
-        IntrinsicTypes = {Ops[0]->getType(), Ops[3]->getType()};
-      else
-        IntrinsicTypes = {Ops[0]->getType(), Ops[2]->getType()};
->>>>>>> upstream/main
     }] in {
   class RVVVSEMaskBuiltin : RVVBuiltin<"m", "0PUem", "c"> {
     let Name = "vsm_v";
@@ -248,21 +243,16 @@ multiclass RVVVSSEBuiltin<list<string> types> {
             std::rotate(Ops.begin(), Ops.begin() + 2, Ops.begin() + 3);
           }
           Ops[1] = Builder.CreateBitCast(Ops[1], Ops[0]->getType()->getPointerTo());
+#endif // SIFIVE_CUSTOMIZATION
           if (IsMasked)
             IntrinsicTypes = {Ops[0]->getType(), Ops[4]->getType()};
           else
             IntrinsicTypes = {Ops[0]->getType(), Ops[3]->getType()};
+#ifdef SIFIVE_CUSTOMIZATION
           if(IsNontemporal)
             return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
 #endif // SIFIVE_CUSTOMIZATION
         }
-<<<<<<< HEAD
-=======
-        if (IsMasked)
-          IntrinsicTypes = {Ops[0]->getType(), Ops[4]->getType()};
-        else
-          IntrinsicTypes = {Ops[0]->getType(), Ops[3]->getType()};
->>>>>>> upstream/main
       }] in {
     foreach type = types in {
       def : RVVBuiltin<"v", "0Petv", type>;
@@ -293,21 +283,16 @@ multiclass RVVIndexedStore<string op> {
             std::rotate(Ops.begin(), Ops.begin() + 2, Ops.begin() + 3);
           }
           Ops[1] = Builder.CreateBitCast(Ops[1], Ops[0]->getType()->getPointerTo());
+#endif // SIFIVE_CUSTOMIZATION
           if (IsMasked)
             IntrinsicTypes = {Ops[0]->getType(), Ops[2]->getType(), Ops[4]->getType()};
           else
             IntrinsicTypes = {Ops[0]->getType(), Ops[2]->getType(), Ops[3]->getType()};
+#ifdef SIFIVE_CUSTOMIZATION
           if(IsNontemporal)
             return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
 #endif // SIFIVE_CUSTOMIZATION
         }
-<<<<<<< HEAD
-=======
-        if (IsMasked)
-          IntrinsicTypes = {Ops[0]->getType(), Ops[2]->getType(), Ops[4]->getType()};
-        else
-          IntrinsicTypes = {Ops[0]->getType(), Ops[2]->getType(), Ops[3]->getType()};
->>>>>>> upstream/main
       }] in {
       foreach type = TypeList in {
         foreach eew_list = EEWList[0-2] in {

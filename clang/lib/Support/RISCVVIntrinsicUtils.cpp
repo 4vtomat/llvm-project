@@ -206,12 +206,10 @@ void RVVType::initBuiltinStr() {
       llvm_unreachable("Unhandled ElementBitwidth!");
     }
     break;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   case ScalarTypeKind::BFloat:
-    BuiltinStr += "y";
-    assert(ElementBitwidth == 16 && "BFloat 16 should be 16-bit");
+    BuiltinStr += "b";
     break;
+#if SIFIVE_CUSTOMIZATION
   case ScalarTypeKind::Float32:
     BuiltinStr += "f";
     break;
@@ -219,11 +217,6 @@ void RVVType::initBuiltinStr() {
     BuiltinStr += "i";
     return;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  case ScalarTypeKind::BFloat:
-    BuiltinStr += "b";
-    break;
->>>>>>> upstream/main
   default:
     llvm_unreachable("ScalarType is invalid!");
   }
@@ -259,17 +252,9 @@ void RVVType::initClangBuiltinStr() {
   case ScalarTypeKind::Float:
     ClangBuiltinStr += "float";
     break;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   case ScalarTypeKind::BFloat:
     ClangBuiltinStr += "bfloat";
     break;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  case ScalarTypeKind::BFloat:
-    ClangBuiltinStr += "bfloat";
-    break;
->>>>>>> upstream/main
   case ScalarTypeKind::SignedInteger:
     ClangBuiltinStr += "int";
     break;
@@ -336,23 +321,6 @@ void RVVType::initTypeStr() {
     } else
       Str += getTypeString("float");
     break;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  case ScalarTypeKind::BFloat:
-    if (isScalar()) {
-      assert(ElementBitwidth == 16 && "Unexpected bit width for BFloat16");
-      Str += "__bf16";
-    } else
-      Str += getTypeString("bfloat");
-    break;
-  case ScalarTypeKind::Float32:
-    Str += "float";
-    break;
-  case ScalarTypeKind::SignedInteger32:
-    Str += "int";
-    return;
-#endif // SIFIVE_CUSTOMIZATION
-=======
   case ScalarTypeKind::BFloat:
     if (isScalar()) {
       if (ElementBitwidth == 16)
@@ -362,7 +330,14 @@ void RVVType::initTypeStr() {
     } else
       Str += getTypeString("bfloat");
     break;
->>>>>>> upstream/main
+#if SIFIVE_CUSTOMIZATION
+  case ScalarTypeKind::Float32:
+    Str += "float";
+    break;
+  case ScalarTypeKind::SignedInteger32:
+    Str += "int";
+    return;
+#endif // SIFIVE_CUSTOMIZATION
   case ScalarTypeKind::SignedInteger:
     Str += getTypeString("int");
     break;
@@ -385,17 +360,9 @@ void RVVType::initShortStr() {
   case ScalarTypeKind::Float:
     ShortStr = "f" + utostr(ElementBitwidth);
     break;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   case ScalarTypeKind::BFloat:
     ShortStr = "bf" + utostr(ElementBitwidth);
     break;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  case ScalarTypeKind::BFloat:
-    ShortStr = "bf" + utostr(ElementBitwidth);
-    break;
->>>>>>> upstream/main
   case ScalarTypeKind::SignedInteger:
     ShortStr = "i" + utostr(ElementBitwidth);
     break;
@@ -1345,11 +1312,7 @@ void RVVIntrinsic::updateNamesAndPolicy(
 
 SmallVector<PrototypeDescriptor> parsePrototypes(StringRef Prototypes) {
   SmallVector<PrototypeDescriptor> PrototypeDescriptors;
-<<<<<<< HEAD
   const StringRef Primaries("evwqom0ztulfi");  // SIFIVE
-=======
-  const StringRef Primaries("evwqom0ztulf");
->>>>>>> upstream/main
   while (!Prototypes.empty()) {
     size_t Idx = 0;
     // Skip over complex prototype because it could contain primitive type

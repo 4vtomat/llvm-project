@@ -426,15 +426,9 @@ C23_KEYWORD(typeof                  , KEYGNU)
 C23_KEYWORD(typeof_unqual           , 0)
 
 // ISO/IEC JTC1 SC22 WG14 N1169 Extension
-<<<<<<< HEAD
-KEYWORD(_Accum                      , KEYNOCXX)
-KEYWORD(_Fract                      , KEYNOCXX)
-KEYWORD(_Sat                        , KEYNOCXX)
-=======
 KEYWORD(_Accum                      , KEYFIXEDPOINT)
 KEYWORD(_Fract                      , KEYFIXEDPOINT)
 KEYWORD(_Sat                        , KEYFIXEDPOINT)
->>>>>>> upstream/main
 
 // GNU Extensions (in impl-reserved namespace)
 KEYWORD(_Decimal32                  , KEYALL)

@@ -2475,19 +2475,10 @@ QualType Type::getSveEltType(const ASTContext &Ctx) const {
 bool Type::isRVVVLSBuiltinType() const {
   if (const BuiltinType *BT = getAs<BuiltinType>()) {
     switch (BT->getKind()) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-#define RVV_VECTOR_TYPE(Name, Id, SingletonId, NumEls, ElBits, NF, IsSigned,   \
-                        IsFP, IsBF)                                            \
-    case BuiltinType::Id: \
-      return NF == 1;
-#endif
-=======
 #define RVV_VECTOR_TYPE(Name, Id, SingletonId, NumEls, ElBits, NF, IsSigned,   \
                         IsFP, IsBF)                                            \
   case BuiltinType::Id:                                                        \
     return NF == 1;
->>>>>>> upstream/main
 #include "clang/Basic/RISCVVTypes.def"
     default:
       return false;
