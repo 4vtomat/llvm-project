@@ -920,6 +920,20 @@ void RISCVLateCodeGenPrepare::expandMemSetUnknownSizeAligned(MemSetInst *M) {
 
   IRBuilder<> Builder(PreLoopBB->getTerminator());
 
+  Value *VLMax = nullptr;
+  if (ST->getRealMinVLen() == ST->getRealMaxVLen())
+    VLMax =
+        ConstantInt::get(CopyLenType, ST->getRealMinVLen() / 8 * MemLMULLocal);
+  else
+    VLMax = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvlimax, {CopyLenType},
+                                    {SEW, LMUL});
+  Value *TmpVL =
+      Builder.CreateBinaryIntrinsic(Intrinsic::umin, VLMax, CopyLen);
+
+  Value *TmpVal =
+      Builder.CreateIntrinsic(Intrinsic::riscv_vmv_v_x, {VTy, CopyLenType},
+                              {UndefValue::get(VTy), Val, TmpVL});
+
   Value *DLenElement = Builder.CreateSub(
       ConstantInt::get(ILengthType, AlignBytes),
       Builder.CreateAnd(Builder.CreatePtrToInt(DstAddr, ILengthType),
@@ -928,19 +942,9 @@ void RISCVLateCodeGenPrepare::expandMemSetUnknownSizeAligned(MemSetInst *M) {
   Value *AlignLen = Builder.CreateBinaryIntrinsic(
       Intrinsic::umin, DLenElement, CopyLen, nullptr, "length.select");
 
-  Value *AlignVL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
-                                      {AlignLen, SEW, LMUL});
+  Value *AlignVL = Builder.CreateIntrinsic(
+      Intrinsic::riscv_vsetvli, {CopyLenType}, {AlignLen, SEW, LMUL});
   CopyLen = Builder.CreateSub(CopyLen, AlignVL);
-
-  Value *CopyVL = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvli, {CopyLenType},
-                                          {CopyLen, SEW, LMUL});
-
-  Value *MaxVL = Builder.CreateBinaryIntrinsic(Intrinsic::umax, CopyVL, AlignVL);
-
-  Value *TmpVal =
-      Builder.CreateIntrinsic(Intrinsic::riscv_vmv_v_x, {VTy, CopyLenType},
-                              {UndefValue::get(VTy), Val, MaxVL});
-
   Builder.CreateIntrinsic(Intrinsic::riscv_vse, {VTy, CopyLenType},
                           {TmpVal, DstAddr, AlignVL});
 
