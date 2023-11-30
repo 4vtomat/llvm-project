@@ -208,6 +208,14 @@ void RISCV::Linker::ConstructJob(Compilation &C, const JobAction &JA,
   }
   CmdArgs.push_back("-X");
 
+#if SIFIVE_CUSTOMIZATION
+  if (D.isUsingLTO()) {
+    assert(!Inputs.empty() && "Must have at least one input.");
+    addLTOOptions(ToolChain, Args, CmdArgs, Output, Inputs[0],
+                  D.getLTOMode() == LTOK_Thin);
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   std::string Linker = getToolChain().GetLinkerPath();
 
   bool WantCRTs =
