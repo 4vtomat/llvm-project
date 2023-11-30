@@ -3218,6 +3218,9 @@ bool DAGTypeLegalizer::SplitVectorOperand(SDNode *N, unsigned OpNo) {
   case ISD::VP_FIRST:
     Res = SplitVecOp_VP_FIRST(N);
     break;
+  case ISD::EXPERIMENTAL_VP_POPCOUNT:
+    Res = SplitVecOp_VP_POPCOUNT(N, OpNo);
+    break;
 #endif
   }
 
@@ -4193,6 +4196,31 @@ SDValue DAGTypeLegalizer::SplitVecOp_VP_FIRST(SDNode *N) {
                       DAG.getConstant(-1, dl, ResVT), ResMerge, ISD::SETLT);
   return DAG.getSelectCC(dl, ResLo, DAG.getConstant(0, dl, ResVT), ResTmp,
                          ResLo, ISD::SETLT);
+}
+
+SDValue DAGTypeLegalizer::SplitVecOp_VP_POPCOUNT(SDNode *N, unsigned OpNo) {
+  assert(N->isVPOpcode() && "Expected VP opcode");
+  assert(OpNo == 0 && "Can only split first operand");
+
+  unsigned Opc = N->getOpcode();
+  EVT ResVT = N->getValueType(0);
+  SDValue Lo, Hi;
+  SDLoc dl(N);
+
+  SDValue VecOp = N->getOperand(OpNo);
+  EVT VecVT = VecOp.getValueType();
+  assert(VecVT.isVector() && "Can only split reduce vector operand");
+  GetSplitVector(VecOp, Lo, Hi);
+
+  SDValue MaskLo, MaskHi;
+  std::tie(MaskLo, MaskHi) = SplitMask(N->getOperand(1));
+
+  SDValue EVLLo, EVLHi;
+  std::tie(EVLLo, EVLHi) = DAG.SplitEVL(N->getOperand(2), VecVT, dl);
+
+  SDValue ResLo = DAG.getNode(Opc, dl, ResVT, {Lo, MaskLo, EVLLo});
+  SDValue ResHi = DAG.getNode(Opc, dl, ResVT, {Hi, MaskHi, EVLHi});
+  return DAG.getNode(ISD::ADD, dl, ResVT, ResLo, ResHi);
 }
 #endif
 
@@ -6262,7 +6290,8 @@ bool DAGTypeLegalizer::WidenVectorOperand(SDNode *N, unsigned OpNo) {
     break;
 #if SIFIVE_CUSTOMIZATION
   case ISD::VP_FIRST:
-    Res = WidenVecOp_VP_FIRST(N);
+  case ISD::EXPERIMENTAL_VP_POPCOUNT:
+    Res = WidenVecOp_VP_FIRST_POPCOUNT(N);
     break;
 #endif
   }
@@ -7024,7 +7053,7 @@ SDValue DAGTypeLegalizer::WidenVecOp_VSELECT(SDNode *N) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-SDValue DAGTypeLegalizer::WidenVecOp_VP_FIRST(SDNode *N) {
+SDValue DAGTypeLegalizer::WidenVecOp_VP_FIRST_POPCOUNT(SDNode *N) {
   EVT ResVT = N->getValueType(0);
   SDValue Op = GetWidenedVector(N->getOperand(0));
   SDValue Mask = GetWidenedVector(N->getOperand(1));

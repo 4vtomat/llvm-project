@@ -964,6 +964,7 @@ private:
 #if SIFIVE_CUSTOMIZATION
   SDValue lowerVPMergeMask(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPFirst(SDValue Op, SelectionDAG &DAG) const;
+  SDValue lowerVPPopcount(SDValue Op, SelectionDAG &DAG) const;
 
   // Copied from BSC
   SDValue lowerVPSpliceExperimental(SDValue Op, SelectionDAG &DAG) const;

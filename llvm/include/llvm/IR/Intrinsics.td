@@ -2180,6 +2180,10 @@ let IntrProperties = [IntrNoMem, IntrNoSync, IntrWillReturn] in {
                              [ llvm_anyvector_ty,
                                LLVMMatchType<0>,
                                llvm_i32_ty]>;
+  def int_experimental_vp_popcount: DefaultAttrsIntrinsic<[llvm_i32_ty],
+                             [ llvm_anyvector_ty,
+                               LLVMMatchType<0>,
+                               llvm_i32_ty]>;
 // END OF SIFIVE_CUSTOMIZATION
 }
 

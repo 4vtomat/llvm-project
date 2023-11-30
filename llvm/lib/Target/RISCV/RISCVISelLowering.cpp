@@ -708,6 +708,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
           Expand);
       setOperationAction(ISD::VP_MERGE, VT, Custom);
       setOperationAction(ISD::VP_FIRST, VT, Custom);
+      setOperationAction(ISD::EXPERIMENTAL_VP_POPCOUNT, VT, Custom);
 #endif
 
       setOperationAction({ISD::VP_AND, ISD::VP_OR, ISD::VP_XOR}, VT, Custom);
@@ -1147,6 +1148,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
           setOperationAction(ISD::VP_MERGE, VT, Custom);
 
           setOperationAction(ISD::VP_FIRST, VT, Custom);
+          setOperationAction(ISD::EXPERIMENTAL_VP_POPCOUNT, VT, Custom);
           // Copied from BSC
           setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
           setOperationAction(ISD::EXPERIMENTAL_VP_REVERSE, VT, Custom);
@@ -6730,6 +6732,8 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
 #if SIFIVE_CUSTOMIZATION
   case ISD::VP_FIRST:
     return lowerVPFirst(Op, DAG);
+  case ISD::EXPERIMENTAL_VP_POPCOUNT:
+    return lowerVPPopcount(Op, DAG);
   // Below copied from BSC
   case ISD::EXPERIMENTAL_VP_SPLICE:
     return lowerVPSpliceExperimental(Op, DAG);
@@ -11753,6 +11757,33 @@ SDValue RISCVTargetLowering::lowerVPFirst(SDValue N, SelectionDAG &DAG) const {
 
   return DAG.getNode(ISD::INTRINSIC_WO_CHAIN, DL, Subtarget.getXLenVT(),
                      DAG.getConstant(Intrinsic::riscv_vfirst_mask, DL, XLenVT),
+                     Op, Mask, N->getOperand(2));
+}
+
+SDValue RISCVTargetLowering::lowerVPPopcount(SDValue N,
+                                             SelectionDAG &DAG) const {
+  SDValue Op = N.getOperand(0);
+  SDValue Mask = N.getOperand(1);
+  MVT VT = Op.getSimpleValueType();
+  SDLoc DL(N);
+  MVT XLenVT = Subtarget.getXLenVT();
+
+  bool IsUnMasked = ISD::isConstantSplatVectorAllOnes(Mask.getNode());
+
+  MVT ContainerVT = VT;
+  if (VT.isFixedLengthVector()) {
+    ContainerVT = getContainerForFixedLengthVector(VT);
+    Op = convertToScalableVector(ContainerVT, Op, DAG, Subtarget);
+    Mask = convertToScalableVector(ContainerVT, Mask, DAG, Subtarget);
+  }
+
+  if (IsUnMasked)
+    return DAG.getNode(ISD::INTRINSIC_WO_CHAIN, DL, Subtarget.getXLenVT(),
+                       DAG.getConstant(Intrinsic::riscv_vcpop, DL, XLenVT), Op,
+                       N->getOperand(2));
+
+  return DAG.getNode(ISD::INTRINSIC_WO_CHAIN, DL, Subtarget.getXLenVT(),
+                     DAG.getConstant(Intrinsic::riscv_vcpop_mask, DL, XLenVT),
                      Op, Mask, N->getOperand(2));
 }
 #endif // SIFIVE_CUSTOMIZATION

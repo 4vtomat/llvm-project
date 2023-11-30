@@ -407,7 +407,7 @@ private:
   SDValue PromoteIntOp_VP_REDUCE(SDNode *N, unsigned OpNo);
   SDValue PromoteIntOp_SET_ROUNDING(SDNode *N);
 #if SIFIVE_CUSTOMIZATION
-  SDValue PromoteIntRes_VP_FIRST(SDNode *N);
+  SDValue PromoteIntRes_VP_FIRST_POPCOUNT(SDNode *N);
   // Copied from BSC
   SDValue PromoteIntOp_VP_SPLICE(SDNode *N, unsigned OpNo);
 #endif // SIFIVE_CUSTOMIZATION
@@ -925,6 +925,7 @@ private:
   SDValue SplitVecOp_FP_TO_XINT_SAT(SDNode *N);
 #if SIFIVE_CUSTOMIZATION
   SDValue SplitVecOp_VP_FIRST(SDNode *N);
+  SDValue SplitVecOp_VP_POPCOUNT(SDNode *N, unsigned OpNo);
 #endif
 
   //===--------------------------------------------------------------------===//
@@ -1032,7 +1033,7 @@ private:
   SDValue WidenVecOp_VP_REDUCE(SDNode *N);
   SDValue WidenVecOp_ExpOp(SDNode *N);
 #if SIFIVE_CUSTOMIZATION
-  SDValue WidenVecOp_VP_FIRST(SDNode *N);
+  SDValue WidenVecOp_VP_FIRST_POPCOUNT(SDNode *N);
 #endif
 
   /// Helper function to generate a set of operations to perform
