@@ -1867,6 +1867,11 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
       return replaceInstUsesWith(CI, Abs);
     }
 
+#if SIFIVE_CUSTOMIZATION
+    if (Instruction *I = foldNeutralVPReduce(*II))
+      return I;
+#endif
+
     if (Instruction *Sel = foldClampRangeOfTwo(II, Builder))
       return Sel;
 
@@ -2237,6 +2242,11 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
 
   case Intrinsic::minnum:
   case Intrinsic::maxnum:
+#if SIFIVE_CUSTOMIZATION
+    if (Instruction *I = foldNeutralVPReduce(*II))
+      return I;
+    [[fallthrough]];
+#endif
   case Intrinsic::minimum:
   case Intrinsic::maximum: {
     Value *Arg0 = II->getArgOperand(0);
@@ -4334,3 +4344,212 @@ InstCombinerImpl::transformCallThroughTrampoline(CallBase &Call,
   Call.setCalledFunction(FTy, NestF);
   return &Call;
 }
+
+#if SIFIVE_CUSTOMIZATION
+Instruction *InstCombinerImpl::foldNeutralVPReduce(Instruction &I) {
+  Value *X, *Y, *Mask, *EVL;
+
+  // add
+  // X + (vp.reduce.add 0, Y, Mask, EVL) --> (vp.reduce.add X, Y, Mask, EVL)
+  if (match(&I,
+            m_c_Add(m_Value(X), m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_add>(
+                                    m_ZeroInt(), m_Value(Y), m_Value(Mask),
+                                    m_Value(EVL))))))
+    return replaceInstUsesWith(
+        I, Builder.CreateIntrinsic(Intrinsic::vp_reduce_add, {Y->getType()},
+                                   {X, Y, Mask, EVL}));
+
+  // mul
+  // X * (vp.reduce.mul 1, Y, Mask, EVL) --> (vp.reduce.mul X, Y, Mask, EVL)
+  if (match(&I,
+            m_c_Mul(m_Value(X),
+                    m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_mul>(
+                        m_One(), m_Value(Y), m_Value(Mask), m_Value(EVL))))))
+    return replaceInstUsesWith(
+        I, Builder.CreateIntrinsic(Intrinsic::vp_reduce_mul, {Y->getType()},
+                                   {X, Y, Mask, EVL}));
+
+  // and
+  // X & (vp.reduce.and ONES, Y, Mask, EVL) --> (vp.reduce.and X, Y, Mask, EVL)
+  if (match(&I,
+            m_c_And(m_Value(X), m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_and>(
+                                    m_AllOnes(), m_Value(Y), m_Value(Mask),
+                                    m_Value(EVL))))))
+    return replaceInstUsesWith(
+        I, Builder.CreateIntrinsic(Intrinsic::vp_reduce_and, {Y->getType()},
+                                   {X, Y, Mask, EVL}));
+
+  // or
+  // X | (vp.reduce.or 0, Y, Mask, EVL) --> (vp.reduce.or X, Y, Mask, EVL)
+  if (match(&I,
+            m_c_Or(m_Value(X),
+                   m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_or>(
+                       m_ZeroInt(), m_Value(Y), m_Value(Mask), m_Value(EVL))))))
+    return replaceInstUsesWith(
+        I, Builder.CreateIntrinsic(Intrinsic::vp_reduce_or, {Y->getType()},
+                                   {X, Y, Mask, EVL}));
+
+  // xor
+  // X ^ (vp.reduce.xor 0, Y, Mask, EVL) --> (vp.reduce.xor X, Y, Mask, EVL)
+  if (match(&I,
+            m_c_Xor(m_Value(X), m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_xor>(
+                                    m_ZeroInt(), m_Value(Y), m_Value(Mask),
+                                    m_Value(EVL))))))
+    return replaceInstUsesWith(
+        I, Builder.CreateIntrinsic(Intrinsic::vp_reduce_xor, {Y->getType()},
+                                   {X, Y, Mask, EVL}));
+
+  // s/umin & s/umax
+  auto MinSignedValue =
+      APInt::getSignedMinValue(I.getType()->getScalarSizeInBits());
+  if (match(&I, m_c_SMin(m_Value(X),
+                         m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_smin>(
+                             m_MaxSignedValue(), m_Value(Y), m_Value(Mask),
+                             m_Value(EVL))))) ||
+      match(&I, m_c_SMax(m_Value(X),
+                         m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_smax>(
+                             m_SpecificInt(MinSignedValue), m_Value(Y),
+                             m_Value(Mask), m_Value(EVL))))) ||
+      match(&I, m_c_UMin(m_Value(X),
+                         m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_umin>(
+                             m_AllOnes(), m_Value(Y), m_Value(Mask),
+                             m_Value(EVL))))) ||
+      match(&I, m_c_UMax(m_Value(X),
+                         m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_umax>(
+                             m_ZeroInt(), m_Value(Y), m_Value(Mask),
+                             m_Value(EVL)))))) {
+    assert(isa<IntrinsicInst>(I));
+    Intrinsic::ID IID;
+    switch (cast<IntrinsicInst>(I).getIntrinsicID()) {
+    case Intrinsic::smin:
+      IID = Intrinsic::vp_reduce_smin;
+      break;
+    case Intrinsic::smax:
+      IID = Intrinsic::vp_reduce_smax;
+      break;
+    case Intrinsic::umin:
+      IID = Intrinsic::vp_reduce_umin;
+      break;
+    case Intrinsic::umax:
+      IID = Intrinsic::vp_reduce_umax;
+      break;
+    default:
+      llvm_unreachable("Unrecognized intrinsic");
+    }
+    return replaceInstUsesWith(
+        I, Builder.CreateIntrinsic(IID, {Y->getType()}, {X, Y, Mask, EVL}));
+  }
+
+  if (I.getType()->isFloatingPointTy()) {
+    const fltSemantics &FPSema = I.getType()->getFltSemantics();
+    FastMathFlags OtherFMF, NNaNFMF, ReassocFMF;
+    NNaNFMF.setNoNaNs();
+    FastMathFlags NNaNInfFMF = NNaNFMF;
+    NNaNInfFMF.setNoInfs();
+    ReassocFMF.setAllowReassoc();
+    FastMathFlags NSZReassocFMF = ReassocFMF;
+    NSZReassocFMF.setNoSignedZeros();
+    FastMathFlags MatchedFMF;
+
+    // fadd
+    // reassoc X + (vp.reduce.fadd -0.0, Y, Mask, EVL) --> (vp.reduce.fadd X, Y,
+    // Mask, EVL)
+    auto getFAddPattern = [&](FastMathFlags CheckFMF, auto ZeroPat) {
+      return m_CombineAnd(
+          m_c_FAdd(m_Value(X),
+                   m_CombineAnd(
+                       m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fadd>(
+                           ZeroPat, m_Value(Y), m_Value(Mask), m_Value(EVL))),
+                       m_FMF(CheckFMF, MatchedFMF))),
+          m_FMF(ReassocFMF));
+    };
+    if (match(&I, getFAddPattern(NSZReassocFMF, m_AnyZeroFP())) ||
+        match(&I, getFAddPattern(ReassocFMF, m_NegZeroFP()))) {
+      auto *CI = Builder.CreateIntrinsic(Intrinsic::vp_reduce_fadd,
+                                         {Y->getType()}, {X, Y, Mask, EVL});
+      CI->setFastMathFlags(MatchedFMF);
+      return replaceInstUsesWith(I, CI);
+    }
+
+    // fmul
+    // reassoc X * (vp.reduce.fmul 1.0, Y, Mask, EVL) --> (vp.reduce.fmul X, Y,
+    // Mask, EVL)
+    if (match(&I,
+              m_CombineAnd(
+                  m_c_FMul(m_Value(X),
+                           m_CombineAnd(
+                               m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fmul>(
+                                   m_FPOne(), m_Value(Y), m_Value(Mask),
+                                   m_Value(EVL))),
+                               m_FMF(ReassocFMF, MatchedFMF))),
+                  m_FMF(ReassocFMF)))) {
+      auto *CI = Builder.CreateIntrinsic(Intrinsic::vp_reduce_fmul,
+                                         {Y->getType()}, {X, Y, Mask, EVL});
+      CI->setFastMathFlags(MatchedFMF);
+      return replaceInstUsesWith(I, CI);
+    }
+
+    // fmin
+    auto getFMinPattern = [&](FastMathFlags CheckFMF,
+                              const APFloat &NeutralVal) {
+      return m_CombineOr(
+          m_FMin(m_Value(X),
+                 m_CombineAnd(m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fmin>(
+                                  m_SpecificFP(NeutralVal), m_Value(Y),
+                                  m_Value(Mask), m_Value(EVL))),
+                              m_FMF(CheckFMF, MatchedFMF))),
+          m_FMin(m_CombineAnd(m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fmin>(
+                                  m_SpecificFP(NeutralVal), m_Value(Y),
+                                  m_Value(Mask), m_Value(EVL))),
+                              m_FMF(CheckFMF, MatchedFMF)),
+                 m_Value(X)));
+    };
+    // Neutral values:
+    // nnan + ninf -> largest
+    // nnan -> +Inf
+    // otherwise -> +QNaN
+    if (match(&I, getFMinPattern(NNaNInfFMF, APFloat::getLargest(FPSema))) ||
+        match(&I, getFMinPattern(NNaNFMF, APFloat::getInf(FPSema))) ||
+        match(&I, getFMinPattern(OtherFMF, APFloat::getQNaN(FPSema)))) {
+      auto *CI = Builder.CreateIntrinsic(Intrinsic::vp_reduce_fmin,
+                                         {Y->getType()}, {X, Y, Mask, EVL});
+      CI->setFastMathFlags(MatchedFMF);
+      return replaceInstUsesWith(I, CI);
+    }
+
+    // fmax
+    auto getFMaxPattern = [&](FastMathFlags CheckFMF,
+                              const APFloat &NeutralVal) {
+      return m_CombineOr(
+          m_FMax(m_Value(X),
+                 m_CombineAnd(m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fmax>(
+                                  m_SpecificFP(NeutralVal), m_Value(Y),
+                                  m_Value(Mask), m_Value(EVL))),
+                              m_FMF(CheckFMF, MatchedFMF))),
+          m_FMax(m_CombineAnd(m_OneUse(m_Intrinsic<Intrinsic::vp_reduce_fmax>(
+                                  m_SpecificFP(NeutralVal), m_Value(Y),
+                                  m_Value(Mask), m_Value(EVL))),
+                              m_FMF(CheckFMF, MatchedFMF)),
+                 m_Value(X)));
+    };
+    // Neutral values:
+    // nnan + ninf -> -largest
+    // nnan -> -Inf
+    // otherwise -> -QNaN
+    if (match(&I,
+              getFMaxPattern(NNaNInfFMF, APFloat::getLargest(
+                                             FPSema, /*isNegative=*/true))) ||
+        match(&I, getFMaxPattern(
+                      NNaNFMF, APFloat::getInf(FPSema, /*isNegative=*/true))) ||
+        match(&I, getFMaxPattern(OtherFMF, APFloat::getQNaN(
+                                               FPSema, /*isNegative=*/true)))) {
+      auto *CI = Builder.CreateIntrinsic(Intrinsic::vp_reduce_fmax,
+                                         {Y->getType()}, {X, Y, Mask, EVL});
+      CI->setFastMathFlags(MatchedFMF);
+      return replaceInstUsesWith(I, CI);
+    }
+  }
+
+  return nullptr;
+}
+#endif // SIFIVE_CUSTOMIZATION

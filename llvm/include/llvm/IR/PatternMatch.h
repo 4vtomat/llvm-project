@@ -700,6 +700,38 @@ inline cstfp_pred_ty<is_non_zero_fp> m_NonZeroFP() {
   return cstfp_pred_ty<is_non_zero_fp>();
 }
 
+#if SIFIVE_CUSTOMIZATION
+struct match_fast_math_flags {
+  FastMathFlags FMF;
+  FastMathFlags *MatchedFMF;
+
+  match_fast_math_flags(FastMathFlags FMF, FastMathFlags *MatchedFMF)
+      : FMF(FMF), MatchedFMF(MatchedFMF) {}
+
+  template <typename ValTy> bool match(ValTy *V) {
+    if (auto *I = dyn_cast<FPMathOperator>(V)) {
+      FastMathFlags OrigFMF = FMF;
+      FastMathFlags TargetFMF = I->getFastMathFlags();
+      FMF &= TargetFMF;
+      if (OrigFMF == FMF) {
+        if (MatchedFMF)
+          *MatchedFMF = TargetFMF;
+        return true;
+      }
+    }
+    return false;
+  }
+};
+
+inline match_fast_math_flags m_FMF(FastMathFlags FMF) {
+  return match_fast_math_flags(FMF, nullptr);
+}
+inline match_fast_math_flags m_FMF(FastMathFlags FMF,
+                                   FastMathFlags &MatchedFMF) {
+  return match_fast_math_flags(FMF, &MatchedFMF);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 ///////////////////////////////////////////////////////////////////////////////
 
 template <typename Class> struct bind_ty {
@@ -818,9 +850,49 @@ struct specific_fpval {
   }
 };
 
+#if SIFIVE_CUSTOMIZATION
+struct specific_apfloat {
+  APFloat Val;
+
+  specific_apfloat(APFloat V) : Val(std::move(V)) {}
+
+  bool isEqual(const APFloat &RHS) const {
+    if (&Val.getSemantics() != &RHS.getSemantics())
+      return false;
+    switch (Val.compare(RHS)) {
+    case APFloat::cmpEqual:
+      return true;
+    // Special case for NaNs. We use bitwise
+    // equal here in case users want to
+    // distinguish between SNaN and QNaN.
+    case APFloat::cmpUnordered:
+      return Val.bitwiseIsEqual(RHS);
+    default:
+      return false;
+    }
+  }
+
+  template <typename ITy> bool match(ITy *V) {
+    if (const auto *CFP = dyn_cast<ConstantFP>(V))
+      return isEqual(CFP->getValue());
+    if (V->getType()->isVectorTy())
+      if (const auto *C = dyn_cast<Constant>(V))
+        if (auto *CFP = dyn_cast_or_null<ConstantFP>(C->getSplatValue()))
+          return isEqual(CFP->getValue());
+    return false;
+  }
+};
+#endif // SIFIVE_CUSTOMIZATION
+
 /// Match a specific floating point value or vector with all elements
 /// equal to the value.
 inline specific_fpval m_SpecificFP(double V) { return specific_fpval(V); }
+
+#if SIFIVE_CUSTOMIZATION
+inline specific_apfloat m_SpecificFP(APFloat V) {
+  return specific_apfloat(std::move(V));
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Match a float 1.0 or vector with all elements equal to 1.0.
 inline specific_fpval m_FPOne() { return m_SpecificFP(1.0); }

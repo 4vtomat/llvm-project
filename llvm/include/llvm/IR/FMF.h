@@ -105,6 +105,11 @@ public:
   bool operator!=(const FastMathFlags &OtherFlags) const {
     return Flags != OtherFlags.Flags;
   }
+#if SIFIVE_CUSTOMIZATION
+  bool operator==(const FastMathFlags &OtherFlags) const {
+    return Flags == OtherFlags.Flags;
+  }
+#endif
 
   /// Print fast-math flags to \p O.
   void print(raw_ostream &O) const;

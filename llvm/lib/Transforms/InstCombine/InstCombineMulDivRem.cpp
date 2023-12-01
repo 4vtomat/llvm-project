@@ -513,6 +513,11 @@ Instruction *InstCombinerImpl::visitMul(BinaryOperator &I) {
     return Shl;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  if (Instruction *NewI = foldNeutralVPReduce(I))
+    return NewI;
+#endif
+
   bool Changed = false;
   if (!HasNSW && willNotOverflowSignedMul(Op0, Op1, I)) {
     Changed = true;
@@ -829,6 +834,11 @@ Instruction *InstCombinerImpl::visitFMul(BinaryOperator &I) {
       Result->setHasNoInfs(false);
     return Result;
   }
+
+#if SIFIVE_CUSTOMIZATION
+  if (Instruction *NewI = foldNeutralVPReduce(I))
+    return NewI;
+#endif
 
   return nullptr;
 }
