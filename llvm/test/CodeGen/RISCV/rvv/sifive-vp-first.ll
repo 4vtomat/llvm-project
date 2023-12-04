@@ -326,3 +326,21 @@ entry:
   %a = call i32 @llvm.vp.first.nxv128i1(<vscale x 128 x i1> %op, <vscale x 128 x i1> %m, i32 %evl)
   ret i32 %a
 }
+
+define signext i32 @vp_first_nxv64i1_signext(<vscale x 64 x i1> %m, <vscale x 64 x i1> %op, i32 zeroext %evl) {
+; RV32-LABEL: vp_first_nxv64i1_signext:
+; RV32:       # %bb.0: # %entry
+; RV32-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
+; RV32-NEXT:    vfirst.m a0, v8, v0.t
+; RV32-NEXT:    ret
+;
+; RV64-LABEL: vp_first_nxv64i1_signext:
+; RV64:       # %bb.0: # %entry
+; RV64-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
+; RV64-NEXT:    vfirst.m a0, v8, v0.t
+; RV64-NEXT:    sext.w a0, a0
+; RV64-NEXT:    ret
+entry:
+  %a = call i32 @llvm.vp.first.nxv64i1(<vscale x 64 x i1> %op, <vscale x 64 x i1> %m, i32 %evl)
+  ret i32 %a
+}
