@@ -18040,6 +18040,14 @@ void RISCVTargetLowering::computeKnownBitsForTargetNode(const SDValue Op,
     Known.Zero.setBitsFrom(10);
     break;
   }
+#if SIFIVE_CUSTOMIZATION
+  case RISCVISD::VCPOP_VL:
+    // The maximum number of elements is 65536 for LMUL=8.
+    // FIXME: This is for LMUL=8, we could reduce for other LMULs.
+    // FIXME: We could reduce this based on known VLEN.
+    Known.Zero.setBitsFrom(17);
+    break;
+#endif
   case ISD::INTRINSIC_W_CHAIN:
   case ISD::INTRINSIC_WO_CHAIN: {
     unsigned IntNo =
@@ -18116,6 +18124,14 @@ unsigned RISCVTargetLowering::ComputeNumSignBitsForTargetNode(
       return XLen - EltBits + 1;
     break;
   }
+#if SIFIVE_CUSTOMIZATION
+  case RISCVISD::VFIRST_VL:
+    // The maximum number of elements is 65536 for LMUL=8. So result is
+    // [-1, 65535].
+    // FIXME: This is for LMUL=8, we could reduce for other LMULs.
+    // FIXME: We could reduce this based on known VLEN.
+    return Subtarget.getXLen() - 16;
+#endif // SIFIVE_CUSTOMIZATION
   case ISD::INTRINSIC_W_CHAIN: {
     unsigned IntNo = Op.getConstantOperandVal(1);
     switch (IntNo) {
