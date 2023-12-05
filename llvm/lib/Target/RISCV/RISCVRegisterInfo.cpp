@@ -302,12 +302,29 @@ void RISCVRegisterInfo::lowerVSPILL(MachineBasicBlock::iterator II) const {
                 "Unexpected subreg numbering");
 
   Register VL = MRI.createVirtualRegister(&RISCV::GPRRegClass);
+#if SIFIVE_CUSTOMIZATION
+  // Optimize for constant VLEN.
+  const RISCVSubtarget &STI = MF.getSubtarget<RISCVSubtarget>();
+  if (STI.getRealMinVLen() == STI.getRealMaxVLen()) {
+    const int64_t VLENB = STI.getRealMinVLen() / 8;
+    int64_t Offset = VLENB * LMUL;
+    STI.getInstrInfo()->movImm(MBB, II, DL, VL, Offset);
+  } else {
+    BuildMI(MBB, II, DL, TII->get(RISCV::PseudoReadVLENB), VL);
+    uint32_t ShiftAmount = Log2_32(LMUL);
+    if (ShiftAmount != 0)
+      BuildMI(MBB, II, DL, TII->get(RISCV::SLLI), VL)
+          .addReg(VL)
+          .addImm(ShiftAmount);
+  }
+#else  // SIFIVE_CUSTOMIZATION
   BuildMI(MBB, II, DL, TII->get(RISCV::PseudoReadVLENB), VL);
   uint32_t ShiftAmount = Log2_32(LMUL);
   if (ShiftAmount != 0)
     BuildMI(MBB, II, DL, TII->get(RISCV::SLLI), VL)
         .addReg(VL)
         .addImm(ShiftAmount);
+#endif // SIFIVE_CUSTOMIZATION
 
   Register SrcReg = II->getOperand(0).getReg();
   Register Base = II->getOperand(1).getReg();
@@ -371,12 +388,29 @@ void RISCVRegisterInfo::lowerVRELOAD(MachineBasicBlock::iterator II) const {
                 "Unexpected subreg numbering");
 
   Register VL = MRI.createVirtualRegister(&RISCV::GPRRegClass);
+#if SIFIVE_CUSTOMIZATION
+  // Optimize for constant VLEN.
+  const RISCVSubtarget &STI = MF.getSubtarget<RISCVSubtarget>();
+  if (STI.getRealMinVLen() == STI.getRealMaxVLen()) {
+    const int64_t VLENB = STI.getRealMinVLen() / 8;
+    int64_t Offset = VLENB * LMUL;
+    STI.getInstrInfo()->movImm(MBB, II, DL, VL, Offset);
+  } else {
+    BuildMI(MBB, II, DL, TII->get(RISCV::PseudoReadVLENB), VL);
+    uint32_t ShiftAmount = Log2_32(LMUL);
+    if (ShiftAmount != 0)
+      BuildMI(MBB, II, DL, TII->get(RISCV::SLLI), VL)
+          .addReg(VL)
+          .addImm(ShiftAmount);
+  }
+#else  // SIFIVE_CUSTOMIZATION
   BuildMI(MBB, II, DL, TII->get(RISCV::PseudoReadVLENB), VL);
   uint32_t ShiftAmount = Log2_32(LMUL);
   if (ShiftAmount != 0)
     BuildMI(MBB, II, DL, TII->get(RISCV::SLLI), VL)
         .addReg(VL)
         .addImm(ShiftAmount);
+#endif // SIFIVE_CUSTOMIZATION
 
   Register DestReg = II->getOperand(0).getReg();
   Register Base = II->getOperand(1).getReg();
