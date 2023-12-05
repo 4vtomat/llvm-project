@@ -11740,8 +11740,6 @@ SDValue RISCVTargetLowering::lowerVPFirst(SDValue N, SelectionDAG &DAG) const {
   SDLoc DL(N);
   MVT XLenVT = Subtarget.getXLenVT();
 
-  bool IsUnMasked = ISD::isConstantSplatVectorAllOnes(Mask.getNode());
-
   MVT ContainerVT = VT;
   if (VT.isFixedLengthVector()) {
     ContainerVT = getContainerForFixedLengthVector(VT);
@@ -11749,15 +11747,8 @@ SDValue RISCVTargetLowering::lowerVPFirst(SDValue N, SelectionDAG &DAG) const {
     Mask = convertToScalableVector(ContainerVT, Mask, DAG, Subtarget);
   }
 
-  // TODO: Teach doPeepholeMaskedRVV to fold masked operations.
-  if (IsUnMasked)
-    return DAG.getNode(ISD::INTRINSIC_WO_CHAIN, DL, Subtarget.getXLenVT(),
-                       DAG.getConstant(Intrinsic::riscv_vfirst, DL, XLenVT), Op,
-                       N->getOperand(2));
-
-  return DAG.getNode(ISD::INTRINSIC_WO_CHAIN, DL, Subtarget.getXLenVT(),
-                     DAG.getConstant(Intrinsic::riscv_vfirst_mask, DL, XLenVT),
-                     Op, Mask, N->getOperand(2));
+  return DAG.getNode(RISCVISD::VFIRST_VL, DL, XLenVT, Op, Mask,
+                     N->getOperand(2));
 }
 
 SDValue RISCVTargetLowering::lowerVPPopcount(SDValue N,
@@ -11768,8 +11759,6 @@ SDValue RISCVTargetLowering::lowerVPPopcount(SDValue N,
   SDLoc DL(N);
   MVT XLenVT = Subtarget.getXLenVT();
 
-  bool IsUnMasked = ISD::isConstantSplatVectorAllOnes(Mask.getNode());
-
   MVT ContainerVT = VT;
   if (VT.isFixedLengthVector()) {
     ContainerVT = getContainerForFixedLengthVector(VT);
@@ -11777,14 +11766,8 @@ SDValue RISCVTargetLowering::lowerVPPopcount(SDValue N,
     Mask = convertToScalableVector(ContainerVT, Mask, DAG, Subtarget);
   }
 
-  if (IsUnMasked)
-    return DAG.getNode(ISD::INTRINSIC_WO_CHAIN, DL, Subtarget.getXLenVT(),
-                       DAG.getConstant(Intrinsic::riscv_vcpop, DL, XLenVT), Op,
-                       N->getOperand(2));
-
-  return DAG.getNode(ISD::INTRINSIC_WO_CHAIN, DL, Subtarget.getXLenVT(),
-                     DAG.getConstant(Intrinsic::riscv_vcpop_mask, DL, XLenVT),
-                     Op, Mask, N->getOperand(2));
+  return DAG.getNode(RISCVISD::VCPOP_VL, DL, XLenVT, Op, Mask,
+                     N->getOperand(2));
 }
 #endif // SIFIVE_CUSTOMIZATION
 
