@@ -22151,6 +22151,96 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
   Builder.CreateCall(VssegNFunc, Operands);
   return true;
 }
+
+/// Lower an interleaved vp.strided.load into a vlssegN intrinsic.
+///
+/// E.g. Lower an interleaved vp.strided.load (Factor = 2):
+///   %l = call <vscale x 2 x i16>
+///           @llvm.experimental.vp.strided.load.nxv2i16.p0.i64(ptr %ptr,
+///                                                             %stride,
+///                                                             <all-true-mask>,
+///                                                             i32 %rvl)
+///   %l.cast = bitcast <vscale x 2 x i16> %l to <vscale x 4 x i8>
+///   %dl = tail call { <vscale x 2 x i8>, <vscale x 2 x i8> }
+///             @llvm.experimental.vector.deinterleave2.nxv2i8(
+///               <vscale x 4 x i8> %l.cast)
+///   %r0 = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8> } %dl, 0
+///   %r1 = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8> } %dl, 1
+///
+/// Into:
+///   %ssl = call { <vscale x 2 x i8>, <vscale x 2 x i8> }
+///              @llvm.riscv.vlseg2.nxv2i8.i64(<vscale x 32 x i8> poison,
+///                                            <vscale x 32 x i8> poison,
+///                                            %ptr,
+///                                            %stride,
+///                                            i64 %rvl)
+///   %r0 = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8> } %ssl, 0
+///   %r1 = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8> } %ssl, 1
+///
+/// NOTE: the deinterleave2 intrinsic and the bitcast instruction won't be
+/// touched and is expected to be removed by the caller
+// TODO: Support mask vlsseg
+bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
+    Instruction *StridedLoad, IntrinsicInst *DI, unsigned Factor) const {
+  using namespace llvm::PatternMatch;
+  Value *BasePtr, *Stride, *Mask, *RVL;
+  if (!match(StridedLoad, m_Intrinsic<Intrinsic::experimental_vp_strided_load>(
+                              m_Value(BasePtr), m_Value(Stride), m_Value(Mask),
+                              m_Value(RVL))))
+    return false;
+
+  // TODO: support vlssegN_mask
+  if (!match(Mask, m_AllOnes()))
+    return false;
+
+  [[maybe_unused]] auto *DISrcTy =
+      cast<VectorType>(DI->getOperand(0)->getType());
+  [[maybe_unused]] auto *LTy = cast<VectorType>(StridedLoad->getType());
+  assert(DISrcTy->getPrimitiveSizeInBits() == LTy->getPrimitiveSizeInBits() &&
+         "The primitive size of strided load and the source of deinterleave "
+         "should be the same.");
+  assert(DISrcTy->getElementCount() == LTy->getElementCount() * Factor &&
+         "ElementCount of source deinterleave should be equal to the "
+         "ElementCount of strided load multiplied by factor.");
+
+  auto *ResTy = cast<VectorType>(DI->getType()->getContainedType(0));
+
+  Align Alignment =
+      cast<VPIntrinsic>(StridedLoad)->getPointerAlignment().valueOrOne();
+  if (!isLegalInterleavedAccessType(
+          ResTy, Factor, Alignment,
+          BasePtr->getType()->getPointerAddressSpace(),
+          StridedLoad->getModule()->getDataLayout()))
+    return false;
+
+  IRBuilder<> Builder(StridedLoad);
+  auto *XLenTy =
+      Type::getIntNTy(StridedLoad->getContext(), Subtarget.getXLen());
+  assert(Stride->getType() == XLenTy &&
+         "The type of stride must be the XLEN integer type.");
+  RVL = Builder.CreateZExtOrTrunc(RVL, XLenTy);
+
+  static const Intrinsic::ID IntrIds[] = {
+      Intrinsic::riscv_vlsseg2, Intrinsic::riscv_vlsseg3,
+      Intrinsic::riscv_vlsseg4, Intrinsic::riscv_vlsseg5,
+      Intrinsic::riscv_vlsseg6, Intrinsic::riscv_vlsseg7,
+      Intrinsic::riscv_vlsseg8,
+  };
+
+  Value *PoisonVal = PoisonValue::get(ResTy);
+  SmallVector<Value *> Operands(Factor, PoisonVal);
+  Operands.append({BasePtr, Stride});
+
+  Intrinsic::ID VlssegNID = IntrIds[Factor - 2];
+  Operands.push_back(RVL);
+
+  Function *VlssegNFunc = Intrinsic::getDeclaration(
+      StridedLoad->getModule(), VlssegNID, {ResTy, RVL->getType()});
+  CallInst *VlssegN = Builder.CreateCall(VlssegNFunc, Operands);
+  DI->replaceAllUsesWith(VlssegN);
+
+  return true;
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 MachineInstr *

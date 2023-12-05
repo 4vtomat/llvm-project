@@ -3058,6 +3058,19 @@ public:
                                              unsigned Factor) const {
     return false;
   }
+
+  /// Lower a deinterleave intrinsic to a target specific strided load
+  /// intrinsic. Return true on success.
+  ///
+  /// \p StridedLoad is the strided load instruction.
+  /// \p DI is the deinterleave intrinsic.
+  /// \p Factor is the interleave factor.
+  virtual bool lowerDeinterleaveIntrinsicToStridedLoad(Instruction *StridedLoad,
+                                                       IntrinsicInst *DI,
+                                                       unsigned Factor) const {
+    return false;
+  }
+
 #endif // SIFIVE_CUSTOMIZATION
   /// Lower a deinterleave intrinsic to a target specific load intrinsic.
   /// Return true on success. Currently only supports

@@ -852,6 +852,10 @@ public:
 
                                      IntrinsicInst *InterleaveIntrin,
                                      unsigned Factor) const override;
+
+  bool lowerDeinterleaveIntrinsicToStridedLoad(Instruction *StridedLoad,
+                                               IntrinsicInst *DI,
+                                               unsigned Factor) const override;
 #endif // SIFIVE_CUSTOMIZATION
 
   bool supportKCFIBundles() const override { return true; }
