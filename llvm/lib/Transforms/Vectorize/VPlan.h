@@ -1218,7 +1218,7 @@ public:
     BranchOnCount,
 #if SIFIVE_CUSTOMIZATION
     BranchOnCond,
-    BranchOnVFirstCmp,
+    ExitingCond,
     CSAInitMask,
     CSAInitData,
     CSAMaskPhi,
@@ -1316,9 +1316,6 @@ public:
     case Instruction::AtomicRMW:
     case VPInstruction::BranchOnCond:
     case VPInstruction::BranchOnCount:
-#if SIFIVE_CUSTOMIZATION
-    case VPInstruction::BranchOnVFirstCmp:
-#endif
       return false;
     default:
       return true;
@@ -1340,7 +1337,7 @@ public:
     case VPInstruction::CanonicalIVIncrementForPart:
     case VPInstruction::BranchOnCount:
 #if SIFIVE_CUSTOMIZATION
-    case VPInstruction::BranchOnVFirstCmp:
+    case VPInstruction::ExitingCond:
 #endif
       return true;
     };

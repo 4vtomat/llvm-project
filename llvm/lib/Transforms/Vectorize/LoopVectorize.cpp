@@ -4926,6 +4926,7 @@ void UncountableInnerLoopVectorizer::fixupIVUsers(
     Value *VectorLoopPHINode = MapIt->second;
     Value *VFirst = State.getVFirst();
     assert(VFirst && "VFirst is null for uncountable loops");
+    VFirst = B.CreateSExtOrTrunc(VFirst, Builder.getInt64Ty());
     Value *Cast = nullptr;
     if (VectorLoopPHINode->getType()->isVectorTy()) {
       // Fp inductions are not supported yet
@@ -10832,8 +10833,12 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
         VPBB->appendRecipe(cast<VPInstruction>(VPV));
       }
 
-      return toVPRecipeResult(new VPInstruction(
-          VPInstruction::BranchOnVFirstCmp, {VPV}, Instr->getDebugLoc()));
+      auto *VPCond = new VPInstruction(VPInstruction::ExitingCond, {VPV},
+                                       Br->getDebugLoc(), "exitcond");
+      VPBB->appendRecipe(cast<VPInstruction>(VPCond));
+      auto *R = new VPInstruction(VPInstruction::BranchOnCond, {VPCond},
+                                  Br->getDebugLoc());
+      return toVPRecipeResult(R);
     }
   }
 #else
@@ -10885,13 +10890,12 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
     if (auto Plan = tryToBuildVPlanWithVPRecipes(SubRange)) {
       // Now optimize the initial VPlan.
 #if SIFIVE_CUSTOMIZATION
-      if (!Legal->isVectorizableUncountable()) {
+      if (Legal->isVectorizableUncountable())
+        VPlanTransforms::optimizeUncountable(*Plan, *PSE.getSE());
+      else
 #endif // SIFIVE_CUSTOMIZATION
       VPlanTransforms::optimize(*Plan, *PSE.getSE());
       assert(VPlanVerifier::verifyPlanIsValid(*Plan) && "VPlan is invalid");
-#if SIFIVE_CUSTOMIZATION
-      }
-#endif // SIFIVE_CUSTOMIZATION
       VPlans.push_back(std::move(Plan));
     }
     VF = SubRange.End;
@@ -11260,7 +11264,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     // Introduce each ingredient into VPlan.
     // TODO: Model and preserve debug intrinsics in VPlan.
 #if SIFIVE_CUSTOMIZATION
-
     auto InstrList = Legal->isVectorizableUncountable()
                          ? BB->instructionsWithoutDebug(false)
                          : drop_end(BB->instructionsWithoutDebug(
@@ -11271,6 +11274,10 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 #endif // SIFIVE_CUSTOMIZATION
       Instruction *Instr = &I;
       SmallVector<VPValue *, 4> Operands;
+#if SIFIVE_CUSTOMIZATION
+      if (isa<BranchInst>(Instr) && !Legal->isVectorizableUncountable())
+        continue;
+#endif // SIFIVE_CUSTOMIZATION
       auto *Phi = dyn_cast<PHINode>(Instr);
       if (Phi && Phi->getParent() == OrigLoop->getHeader()) {
         Operands.push_back(Plan->getVPValueOrAddLiveIn(
@@ -11289,8 +11296,19 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 
       auto RecipeOrValue = RecipeBuilder.tryToCreateWidenRecipe(
           Instr, Operands, Range, VPBB, Plan);
+#if SIFIVE_CUSTOMIZATION
+      if (!RecipeOrValue) {
+        // Skip branches that are not vectorized. These are exiting branches
+        // with scalar conditions.
+        if (isa<BranchInst>(Instr))
+          continue;
+        else
+          RecipeOrValue = RecipeBuilder.handleReplication(Instr, Range, *Plan);
+      }
+#else
       if (!RecipeOrValue)
         RecipeOrValue = RecipeBuilder.handleReplication(Instr, Range, *Plan);
+#endif // SIFIVE_CUSTOMIZATION
       // If Instr can be simplified to an existing VPValue, use it.
       if (isa<VPValue *>(RecipeOrValue)) {
         auto *VPV = cast<VPValue *>(RecipeOrValue);
@@ -11303,18 +11321,13 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
       }
       // Otherwise, add the new recipe.
       VPRecipeBase *Recipe = cast<VPRecipeBase *>(RecipeOrValue);
-#if SIFIVE_CUSTOMIZATION
-      // Branches do not define any value and need to be specialized
-      if (Legal->isVectorizableUncountable())
-        if (auto *VPI = dyn_cast<VPInstruction>(Recipe))
-          if (VPI->getOpcode() == VPInstruction::BranchOnVFirstCmp) {
-            RecipeBuilder.setRecipe(Instr, Recipe);
-            VPBB->appendRecipe(Recipe);
-            continue;
-          }
-#endif // SIFIVE_CUSTOMIZATION
       for (auto *Def : Recipe->definedValues()) {
         auto *UV = Def->getUnderlyingValue();
+#if SIFIVE_CUSTOMIZATION
+        // Only add VPValue that has an underlying value.
+        // VPInstructions like BranchOnCond don't have one.
+        if (UV)
+#endif // SIFIVE_CUSTOMIZATION
         Plan->addVPValue(UV, Def);
       }
 
@@ -11341,9 +11354,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   }
 
 #if SIFIVE_CUSTOMIZATION
-  if (Legal->isVectorizableUncountable())
-    HeaderVPBB->setName("vector.body");
-
   VPBasicBlock *MiddleVPBB =
       cast<VPBasicBlock>(Plan->getVectorLoopRegion()->getSingleSuccessor());
   addCSAPostprocessRecipes(Legal->getCSAs(), MiddleVPBB, DL, Range, *Plan);
@@ -11368,13 +11378,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
          "entry block must be set to a VPRegionBlock having a non-empty entry "
          "VPBasicBlock");
   RecipeBuilder.fixHeaderPhis();
-
-#if SIFIVE_CUSTOMIZATION
-  LLVM_DEBUG(if (Legal->isVectorizableUncountable()) {
-    dbgs() << "Uncountable Loop: Initial VPlan\n";
-    Plan->print(dbgs());
-  });
-#endif
 
   // ---------------------------------------------------------------------------
   // Transform initial VPlan: Apply previously taken decisions, in order, to
@@ -11456,13 +11459,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     return nullptr;
 #if SIFIVE_CUSTOMIZATION
   }
-#endif // SIFIVE_CUSTOMIZATION
-
-#if SIFIVE_CUSTOMIZATION
-  LLVM_DEBUG(if (Legal->isVectorizableUncountable()) {
-    dbgs() << "Uncountable Loop: Final VPlan\n";
-    Plan->print(dbgs());
-  });
 #endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION

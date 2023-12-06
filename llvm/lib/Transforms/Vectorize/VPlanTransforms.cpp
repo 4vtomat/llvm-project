@@ -920,6 +920,15 @@ void VPlanTransforms::optimize(VPlan &Plan, ScalarEvolution &SE) {
   mergeBlocksIntoPredecessors(Plan);
 }
 
+#if SIFIVE_CUSTOMIZATION
+// Some passes rely on the existence of CanonicalIV
+// Here provides basic passes for uncountable loops
+// TODO: Merge with VPlanTransforms::optimize if more optimization are needed
+void VPlanTransforms::optimizeUncountable(VPlan &Plan, ScalarEvolution &SE) {
+  mergeBlocksIntoPredecessors(Plan);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 // Add a VPActiveLaneMaskPHIRecipe and related recipes to \p Plan and replace
 // the loop terminator with a branch-on-cond recipe with the negated
 // active-lane-mask as operand. Note that this turns the loop into an

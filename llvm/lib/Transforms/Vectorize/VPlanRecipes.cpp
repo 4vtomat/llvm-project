@@ -599,45 +599,26 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     State.set(this, VLSel, Part);
     return VLSel;
   }
-  case VPInstruction::BranchOnVFirstCmp: {
+  case VPInstruction::ExitingCond: {
+    VPValue *VPVectorCond = getOperand(0);
+    assert(VPVectorCond && "Mask cannot be null for vfirst");
     // Create vfirst
-    BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
-    Intrinsic::ID VFirstIntrinsicId =
-        Function::lookupIntrinsicID("llvm.riscv.vfirst");
-    Value *Mask = State.get(getOperand(0), Part);
+    Value *Mask = State.get(VPVectorCond, Part);
     Value *RVL = State.get(State.Plan->getRVL(), 0);
     assert(RVL && "VL is null for uncountable loops");
-    // Cast VL to i64 to invoke llvm.riscv.* intrinsics as LV only
-    // supports RV64 atm. VP intrinsics needs i32 VL in contrast.
-    // TODO: Switch to VP vfirst when available.
-    if (RVL->getType() != State.Builder.getInt64Ty())
-      RVL = Builder.CreateZExt(RVL, State.Builder.getInt64Ty());
-
-    Function *VPIntr =
-        Intrinsic::getDeclaration(VectorPH->getModule(), VFirstIntrinsicId,
-                                  {Mask->getType(), RVL->getType()});
-    Value *VFirstI = Builder.CreateCall(VPIntr, {Mask, RVL});
+    Value *VFirstI = Builder.CreateIntrinsic(
+        Intrinsic::vp_first, {Mask->getType()},
+        {Mask,
+         Builder.getTrueVector(
+             cast<VectorType>(Mask->getType())->getElementCount()),
+         RVL});
     State.setVFirst(VFirstI);
 
     // Create cmp
     Value *Cond = Builder.CreateICmp(ICmpInst::ICMP_SGE, VFirstI,
                                      ConstantInt::get(VFirstI->getType(), 0));
-
-    // Create the branch
-    VPRegionBlock *TopRegion = State.Plan->getVectorLoopRegion();
-    VPBasicBlock *Header = TopRegion->getEntry()->getEntryBasicBlock();
-
-    // Replace the temporary unreachable terminator with a new conditional
-    // branch, hooking it up to backward destination (the header) now and to the
-    // forward destination (the exit/middle block) later when it is created.
-    // Note that CreateCondBr expects a valid BB as first argument, so we need
-    // to set it to nullptr later.
-    BranchInst *CondBr = Builder.CreateCondBr(Cond, State.CFG.VPBB2IRBB[Header],
-                                              Builder.GetInsertBlock());
-    CondBr->setSuccessor(0, nullptr);
-    Builder.GetInsertBlock()->getTerminator()->eraseFromParent();
-
-    return VFirstI;
+    State.set(this, Cond, Part);
+    return Cond;
   }
   // TODO: This case can be removed when support for Call instruction is added
   // to VPlan in upstream. For now it helps catch any use of VPInstruction for
@@ -749,8 +730,8 @@ void VPInstruction::print(raw_ostream &O, const Twine &Indent,
   case VPInstruction::CSAAnyActive:
     O << "csa-anyactive";
     break;
-  case VPInstruction::BranchOnVFirstCmp:
-    O << "branch-on-vfirst-cmp ";
+  case VPInstruction::ExitingCond:
+    O << "exiting-cond";
     break;
 #endif // SIFIVE_CUSTOMIZATION
   default:
