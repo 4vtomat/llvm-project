@@ -643,7 +643,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_SMAX,        ISD::VP_UMIN,        ISD::VP_UMAX,
 #if SIFIVE_CUSTOMIZATION
         ISD::VP_MULHU, ISD::VP_MULHS,
-        ISD::VP_ABS, ISD::EXPERIMENTAL_VP_REVERSE};
+        ISD::VP_ABS, ISD::EXPERIMENTAL_VP_REVERSE, ISD::EXPERIMENTAL_VP_SPLICE};
 #else
         ISD::VP_ABS};
 #endif // SIFIVE_CUSTOMIZATION
@@ -658,6 +658,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_SQRT,        ISD::VP_FMINNUM,     ISD::VP_FMAXNUM,
         ISD::VP_FCEIL,       ISD::VP_FFLOOR,      ISD::VP_FROUND,
         ISD::EXPERIMENTAL_VP_REVERSE, // SIFIVE
+        ISD::EXPERIMENTAL_VP_SPLICE, // SIFIVE
         ISD::VP_FROUNDEVEN,  ISD::VP_FCOPYSIGN,   ISD::VP_FROUNDTOZERO,
         ISD::VP_FRINT,       ISD::VP_FNEARBYINT,  ISD::VP_IS_FPCLASS};
 
@@ -853,12 +854,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         setOperationAction({ISD::ROTL, ISD::ROTR}, VT, Expand);
       }
 
-#if SIFIVE_CUSTOMIZATION
-      // Copied from BSC
-      // VP Shuffles
-      setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
-#endif // SIFIVE_CUSTOMIZATION
-
       if (Subtarget.hasStdExtZvbb()) {
         setOperationAction(ISD::BITREVERSE, VT, Legal);
         setOperationAction(ISD::VP_BITREVERSE, VT, Custom);
@@ -982,11 +977,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       setOperationAction({ISD::VECTOR_REVERSE, ISD::VECTOR_SPLICE}, VT, Custom);
 
       setOperationAction(FloatingPointVPOps, VT, Custom);
-
-#if SIFIVE_CUSTOMIZATION
-      // Copied from BSC
-      setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
-#endif // SIFIVE_CUSTOMIZATION
 
       setOperationAction({ISD::STRICT_FP_EXTEND, ISD::STRICT_FP_ROUND}, VT,
                          Custom);
@@ -1216,10 +1206,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         if (Subtarget.hasStdExtZvkb())
           setOperationAction({ISD::BSWAP, ISD::ROTL, ISD::ROTR}, VT, Custom);
 
-#if SIFIVE_CUSTOMIZATION
-        // Copied from BSC.
-        setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
-#endif // SIFIVE_CUSTOMIZATION
         if (Subtarget.hasStdExtZvbb()) {
           setOperationAction({ISD::BITREVERSE, ISD::CTLZ, ISD::CTLZ_ZERO_UNDEF,
                               ISD::CTTZ, ISD::CTTZ_ZERO_UNDEF, ISD::CTPOP},
@@ -1330,11 +1316,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         setOperationAction(FloatingPointVecReduceOps, VT, Custom);
 
         setOperationAction(FloatingPointVPOps, VT, Custom);
-
-#if SIFIVE_CUSTOMIZATION
-        // Copied from BSC
-        setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
-#endif // SIFIVE_CUSTOMIZATION
 
         setOperationAction({ISD::STRICT_FP_EXTEND, ISD::STRICT_FP_ROUND}, VT,
                            Custom);
@@ -11545,20 +11526,20 @@ RISCVTargetLowering::lowerVPSpliceExperimental(SDValue Op,
     SDValue SplatOneOp1 = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, ContainerVT,
                                       DAG.getUNDEF(ContainerVT),
                                       DAG.getConstant(1, DL, XLenVT), EVL1);
-    SDValue VMV0Op1 = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, ContainerVT,
-                                  DAG.getUNDEF(ContainerVT),
-                                  DAG.getConstant(0, DL, XLenVT), EVL1);
+    SDValue SplatZeroOp1 = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, ContainerVT,
+                                       DAG.getUNDEF(ContainerVT),
+                                       DAG.getConstant(0, DL, XLenVT), EVL1);
     Op1 = DAG.getNode(RISCVISD::VSELECT_VL, DL, ContainerVT, Op1, SplatOneOp1,
-                      VMV0Op1, EVL1);
+                      SplatZeroOp1, EVL1);
 
     SDValue SplatOneOp2 = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, ContainerVT,
                                       DAG.getUNDEF(ContainerVT),
                                       DAG.getConstant(1, DL, XLenVT), EVL2);
-    SDValue VMV0Op2 = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, ContainerVT,
-                                  DAG.getUNDEF(ContainerVT),
-                                  DAG.getConstant(0, DL, XLenVT), EVL2);
+    SDValue SplatZeroOp2 = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, ContainerVT,
+                                       DAG.getUNDEF(ContainerVT),
+                                       DAG.getConstant(0, DL, XLenVT), EVL2);
     Op2 = DAG.getNode(RISCVISD::VSELECT_VL, DL, ContainerVT, Op2, SplatOneOp2,
-                      VMV0Op2, EVL2);
+                      SplatZeroOp2, EVL2);
   }
 
   int64_t ImmValue = cast<ConstantSDNode>(Offset)->getSExtValue();
