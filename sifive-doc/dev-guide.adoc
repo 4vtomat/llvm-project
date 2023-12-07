@@ -92,6 +92,15 @@ disabling compiler support of the v0.10 intrinsics.
 |The SiFive pass:[C/C++] compiler employs a Vector Length Agnostic (VLA) vectorizer by default at `-O2` and above (see <<section-vectorizer>>).
 This option enables the Vector Length Specific (VLS) vectorizer instead of the default VLA vectorizer.
 
+|-mrvv-vector-bits=zvl
+|Tells the compiler to assume that the runtime VLEN will be exactly the same
+as the Zvl*b extension passed to -march or implied by -mcpu. This can improve
+the vector code generation in some cases. Code compiled with this flag will
+not run correctly on CPUs with a different VLEN.
+
+Also enables the use of __attribute__((riscv_rvv_vector_bits(__riscv_v_fixed_vlen)))
+to define fixed size vector types in C/C++ code. For more information see https://clang.llvm.org/docs/AttributeReference.html#riscv-rvv-vector-bits
+
 |-mllvm -vector-primary-lmul-min=
 |*[Experimental] This option may be deprecated and removed in a future release.*
 
