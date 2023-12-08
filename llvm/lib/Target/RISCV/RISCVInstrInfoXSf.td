@@ -81,6 +81,18 @@ class CustomSiFiveVV<string opcodestr,  RISCVVFormat opv, bits<6> funct6>
   let mayStore = 0;
 }
 
+// FIXME: might need to put more constraint
+let RVVConstraint = VMConstraint, Predicates = [HasVendorXSfvqdotq],
+    DecoderNamespace = "XSfvqdotq" in {
+  def VQDOT_VV   : VALUVV<0b101100, OPMVV, "sf.vqdot.vv">;
+  def VQDOT_VX   : VALUVX<0b101100, OPMVX, "sf.vqdot.vx">;
+  def VQDOTU_VV  : VALUVV<0b101000, OPMVV, "sf.vqdotu.vv">;
+  def VQDOTU_VX  : VALUVX<0b101000, OPMVX, "sf.vqdotu.vx">;
+  def VQDOTSU_VV : VALUVV<0b101010, OPMVV, "sf.vqdotsu.vv">;
+  def VQDOTSU_VX : VALUVX<0b101010, OPMVX, "sf.vqdotsu.vx">;
+  def VQDOTUS_VX : VALUVX<0b101110, OPMVX, "sf.vqdotus.vx">;
+} // Predicates = [HasVendorXSfvqdotq]
+
 let Predicates = [HasVendorXSfvfhbfmin], DecoderNamespace = "XSfvfhbfmin",
     Constraints = "@earlyclobber $vd", mayRaiseFPException = true in {
 let RVVConstraint = WidenCvt in
@@ -707,6 +719,24 @@ foreach m = [V_MF8, V_MF4, V_MF2, V_M1, V_M2] in {
     def PseudoVFNRCLIP_X_F_QF # "_" # m.MX : VPseudoBinaryNoMaskTU<m.vrclass, m.w2vrclass, FPR32, Constraint>;
     def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX # "_MASK" : VPseudoBinaryMaskPolicy<m.vrclass, m.w2vrclass, FPR32, Constraint>;
     def PseudoVFNRCLIP_X_F_QF # "_" # m.MX # "_MASK" : VPseudoBinaryMaskPolicy<m.vrclass, m.w2vrclass, FPR32, Constraint>;
+  }
+}
+
+multiclass VPseudoSiFiveVQDOT<string Constraint = ""> {
+  foreach m = MxListVF4 in {
+    defm "Pseudo" # NAME # "_VV" : VPseudoTernaryWithPolicy<m.vrclass, m.vrclass, m.vrclass, m, Constraint>;
+    defm "Pseudo" # NAME # "_VX" : VPseudoTernaryWithPolicy<m.vrclass, m.vrclass, GPR, m, Constraint>;
+  }
+}
+
+let Predicates = [HasVendorXSfvqdotq] in {
+  defm VQDOT  : VPseudoSiFiveVQDOT;
+  defm VQDOTU : VPseudoSiFiveVQDOT;
+  defm VQDOTSU: VPseudoSiFiveVQDOT;
+
+  // VQDOTUS does not have a VV variant
+  foreach m = MxListVF4 in {
+    defm "PseudoVQDOTUS_VX" : VPseudoTernaryWithPolicy<m.vrclass, m.vrclass, GPR, m>;
   }
 }
 

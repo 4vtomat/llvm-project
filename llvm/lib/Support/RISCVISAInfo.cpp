@@ -103,6 +103,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xsfvfhbfmin", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xsfvfnrclipxfqf", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xsfvfwmaccqqq", RISCVExtensionVersion{0, 1}}, // SIFIVE
+    {"xsfvqdotq", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xsfvqmaccdod", RISCVExtensionVersion{1, 0}},
     {"xsfvqmaccdod", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xsfvqmaccqoq", RISCVExtensionVersion{1, 0}},
@@ -1179,6 +1180,11 @@ Error RISCVISAInfo::checkDependency() {
     return createStringError(
         errc::invalid_argument,
         "smwgd requires smwg extension to also be specified");
+
+  if (Exts.count("xsfvqdotq") && !HasVector)
+    return createStringError(
+        errc::invalid_argument,
+        "'xsfvqdotq' requires 'v' or 'zve*' extension to also be specified");
 #endif // SIFIVE_CUSTOMIZATION
 
   if (Exts.count("zvbb") && !HasVector)

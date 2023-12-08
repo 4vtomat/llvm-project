@@ -1031,6 +1031,14 @@ def FeatureVendorXSfvfnrclipxfqf
 def HasVendorXSfvfnrclipxfqf : Predicate<"Subtarget->hasVendorXSfvfnrclipxfqf()">,
                             AssemblerPredicate<(all_of FeatureVendorXSfvfnrclipxfqf),
                             "'Xsfvfnrclipxfqf' (SiFive custom FP32-to-int8 ranged clip instructions)">;
+
+def FeatureVendorXSfvqdotq
+    : SubtargetFeature<"xsfvqdotq", "HasVendorXSfvqdotq", "true",
+                       "Xsfvqdotq (SiFive Vector Quad-Widening 4D Dot Product Instructions)",
+                       [FeatureStdExtZve32x]>;
+def HasVendorXSfvqdotq : Predicate<"Subtarget->hasVendorXSfvqdot()">,
+                         AssemblerPredicate<(all_of FeatureVendorXSfvqdotq),
+                         "'Xsfvqdotq' (SiFive Vector Quad-Widening 4D Dot Product Instructions)">;
 #endif // SIFIVE_CUSTOMIZATION
 def FeatureVendorXSfcie
     : SubtargetFeature<"xsfcie", "HasVendorXSfcie", "true",
