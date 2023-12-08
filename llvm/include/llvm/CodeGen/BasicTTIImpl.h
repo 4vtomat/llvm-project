@@ -1605,6 +1605,41 @@ public:
       // The cost of materialising a constant integer vector.
       return TargetTransformInfo::TCC_Basic;
     }
+#if SIFIVE_CUSTOMIZATION
+    case Intrinsic::experimental_get_vector_length: {
+      if (!I)
+        break;
+      Type *TripCountTy = ICA.getArgTypes()[0];
+      auto TripCountVT = EVT::getEVT(TripCountTy);
+      assert(cast<ConstantInt>(I->getOperand(1))->getSExtValue() > 0 &&
+             "Expected positive VF");
+      unsigned VF = cast<ConstantInt>(I->getOperand(1))->getZExtValue();
+      bool IsScalable = cast<ConstantInt>(I->getOperand(2))->isOne();
+
+      if (!getTLI()->shouldExpandGetVectorLength(TripCountVT, VF, IsScalable)) {
+        // Assuming it's cheap.
+        return TargetTransformInfo::TCC_Basic;
+      } else {
+        auto LT = getTypeLegalizationCost(RetTy);
+        // Otherwise, this will be expanded into:
+        //   - umin(llvm.vscale() * VF, TripCount), if it's scalable
+        //   - umin(SomeConstant, TripCount), otherwise
+        IntrinsicCostAttributes UMinICA(Intrinsic::umin, TripCountTy,
+                                        {TripCountTy, TripCountTy});
+        InstructionCost Cost =
+            thisT()->getIntrinsicInstrCost(UMinICA, CostKind);
+        if (IsScalable) {
+          IntrinsicCostAttributes VScaleICA(Intrinsic::vscale, TripCountTy,
+                                            /*ArgTys=*/ArrayRef<Type *>());
+          Cost += thisT()->getIntrinsicInstrCost(VScaleICA, CostKind);
+          Cost += thisT()->getArithmeticInstrCost(Instruction::Mul, TripCountTy,
+                                                  CostKind);
+        }
+
+        return Cost + (LT.first - 1);
+      }
+    }
+#endif // SIFIVE_CUSTOMIZATION
     case Intrinsic::vector_extract: {
       // FIXME: Handle case where a scalable vector is extracted from a scalable
       // vector

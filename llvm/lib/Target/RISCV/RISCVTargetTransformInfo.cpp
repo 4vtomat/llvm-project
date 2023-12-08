@@ -1637,6 +1637,11 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
       return InstructionCost::getInvalid();
     break;
   }
+  case Intrinsic::vscale: {
+    // vscale is defined as `VLEN / RISCVBitsPerBlock`.
+    // Or `VLENB / RISCVBytesPerBlock` = `VLENB / 8`.
+    return 1 + getArithmeticInstrCost(Instruction::UDiv, RetTy, CostKind);
+  }
   // This is not ideal but untill all VP intrinsics are in upstream we can't use
   // the IsVPIntrinsic getter, so build the list manually from
   // IntrinsicEnums.inc.
