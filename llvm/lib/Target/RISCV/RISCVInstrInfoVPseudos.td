@@ -1148,7 +1148,6 @@ class VPseudoUnaryMask_NoExcept<VReg RetClass,
   let HasSEWOp = 1;
   let HasVecPolicyOp = 1;
   let UsesMaskPolicy = 1;
-  let HasRoundModeOp = 1; // SIFIVE Cherry-picked from upstream D158711.
   let usesCustomInserter = 1;
 }
 
