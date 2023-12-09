@@ -6580,37 +6580,52 @@ let Defs = [VXSAT], hasSideEffects = 1 in {
 //===----------------------------------------------------------------------===//
 // 12.2. Vector Single-Width Averaging Add and Subtract
 //===----------------------------------------------------------------------===//
+#ifdef SIFIVE_CUSTOMIZATION
 let hasPostISelHook = 1 in {
+#endif
 defm PseudoVAADDU : VPseudoVAALU_VV_VX_RM;
 defm PseudoVAADD  : VPseudoVAALU_VV_VX_RM;
 defm PseudoVASUBU : VPseudoVAALU_VV_VX_RM;
 defm PseudoVASUB  : VPseudoVAALU_VV_VX_RM;
-}
+#ifdef SIFIVE_CUSTOMIZATION
+} // hasPostISelHook = 1
+#endif
 
 //===----------------------------------------------------------------------===//
 // 12.3. Vector Single-Width Fractional Multiply with Rounding and Saturation
 //===----------------------------------------------------------------------===//
-let Defs = [VXSAT], hasSideEffects = 1,
-    hasPostISelHook = 1 in {
+let Defs = [VXSAT], hasSideEffects = 1 in {
+  #ifdef SIFIVE_CUSTOMIZATION
+  let hasPostISelHook = 1 in
+  #endif
   defm PseudoVSMUL : VPseudoVSMUL_VV_VX_RM;
 }
 
 //===----------------------------------------------------------------------===//
 // 12.4. Vector Single-Width Scaling Shift Instructions
 //===----------------------------------------------------------------------===//
+#ifdef SIFIVE_CUSTOMIZATION
 let hasPostISelHook = 1 in {
+#endif
 defm PseudoVSSRL : VPseudoVSSHT_VV_VX_VI_RM<uimm5>;
 defm PseudoVSSRA : VPseudoVSSHT_VV_VX_VI_RM<uimm5>;
-}
+#ifdef SIFIVE_CUSTOMIZATION
+} // hasPostISelHook = 1
+#endif
 
 //===----------------------------------------------------------------------===//
 // 12.5. Vector Narrowing Fixed-Point Clip Instructions
 //===----------------------------------------------------------------------===//
-let Defs = [VXSAT], hasSideEffects = 1,
-    hasPostISelHook = 1 in {
+#ifdef SIFIVE_CUSTOMIZATION
+let hasPostISelHook = 1 in {
+#endif
+let Defs = [VXSAT], hasSideEffects = 1 in {
   defm PseudoVNCLIP  : VPseudoVNCLP_WV_WX_WI_RM;
   defm PseudoVNCLIPU : VPseudoVNCLP_WV_WX_WI_RM;
 }
+#ifdef SIFIVE_CUSTOMIZATION
+} // hasPostISelHook = 1
+#endif
 
 } // Predicates = [HasVInstructions]
 
