@@ -31,7 +31,11 @@ using namespace llvm;
 using namespace llvm::PatternMatch;
 
 /// Maximum factor for an interleaved memory access.
+#if SIFIVE_CUSTOMIZATION
+cl::opt<unsigned> llvm::MaxInterleaveGroupFactor(
+#else
 static cl::opt<unsigned> MaxInterleaveGroupFactor(
+#endif // SIFIVE_CUSTOMIZATION
     "max-interleave-group-factor", cl::Hidden,
     cl::desc("Maximum factor for an interleaved access group (default = 8)"),
     cl::init(8));
@@ -1048,9 +1052,15 @@ bool InterleavedAccessInfo::isStrided(int Stride) {
   return Factor >= 2 && Factor <= MaxInterleaveGroupFactor;
 }
 
+#if SIFIVE_CUSTOMIZATION
+void InterleavedAccessInfo::collectConstStrideAccesses(
+    MapVector<Instruction *, StrideDescriptor> &AccessStrideInfo,
+    const DenseMap<Value *, const SCEV *> &Strides, bool EnableNonConstStride) {
+#else
 void InterleavedAccessInfo::collectConstStrideAccesses(
     MapVector<Instruction *, StrideDescriptor> &AccessStrideInfo,
     const DenseMap<Value*, const SCEV*> &Strides) {
+#endif // SIFIVE_CUSTOMIZATION
   auto &DL = TheLoop->getHeader()->getModule()->getDataLayout();
 
   // Since it's desired that the load/store instructions be maintained in
@@ -1086,6 +1096,19 @@ void InterleavedAccessInfo::collectConstStrideAccesses(
                      /*Assume=*/true, /*ShouldCheckWrap=*/false).value_or(0);
 
       const SCEV *Scev = replaceSymbolicStrideSCEV(PSE, Strides, Ptr);
+
+#if SIFIVE_CUSTOMIZATION
+      // Consider non-constant stride
+      if (EnableNonConstStride && !Stride) {
+        const SCEV *StrideExpr =
+            getStrideFromPointer(Ptr, PSE.getSE(), TheLoop);
+        if (StrideExpr) {
+          AccessStrideInfo[&I] = StrideDescriptor(StrideExpr, Scev, Size,
+                                                  getLoadStoreAlignment(&I));
+          continue;
+        }
+      }
+#endif // SIFIVE_CUSTOMIZATION
       AccessStrideInfo[&I] = StrideDescriptor(Stride, Scev, Size,
                                               getLoadStoreAlignment(&I));
     }
@@ -1127,14 +1150,23 @@ void InterleavedAccessInfo::collectConstStrideAccesses(
 // this group because it and (2) are dependent. However, (1) can be grouped
 // with other accesses that may precede it in program order. Note that a
 // bottom-up order does not imply that WAW dependences should not be checked.
+#if SIFIVE_CUSTOMIZATION
+void InterleavedAccessInfo::analyzeInterleaving(
+    bool EnablePredicatedInterleavedMemAccesses, bool EnableNonConstStride) {
+#else
 void InterleavedAccessInfo::analyzeInterleaving(
                                  bool EnablePredicatedInterleavedMemAccesses) {
+#endif // SIFIVE_CUSTOMIZATION
   LLVM_DEBUG(dbgs() << "LV: Analyzing interleaved accesses...\n");
   const auto &Strides = LAI->getSymbolicStrides();
 
   // Holds all accesses with a constant stride.
   MapVector<Instruction *, StrideDescriptor> AccessStrideInfo;
+#if SIFIVE_CUSTOMIZATION
+  collectConstStrideAccesses(AccessStrideInfo, Strides, EnableNonConstStride);
+#else
   collectConstStrideAccesses(AccessStrideInfo, Strides);
+#endif // SIFIVE_CUSTOMIZATION
 
   if (AccessStrideInfo.empty())
     return;
@@ -1170,13 +1202,26 @@ void InterleavedAccessInfo::analyzeInterleaving(
     // create a group for B, we continue with the bottom-up algorithm to ensure
     // we don't break any of B's dependences.
     InterleaveGroup<Instruction> *GroupB = nullptr;
+#if SIFIVE_CUSTOMIZATION
+    if ((isStrided(DesB.Stride) || DesB.isNonConstStride()) &&
+        (!isPredicated(B->getParent()) ||
+         EnablePredicatedInterleavedMemAccesses)) {
+#else
     if (isStrided(DesB.Stride) &&
         (!isPredicated(B->getParent()) || EnablePredicatedInterleavedMemAccesses)) {
+#endif // SIFIVE_CUSTOMIZATION
       GroupB = getInterleaveGroup(B);
       if (!GroupB) {
         LLVM_DEBUG(dbgs() << "LV: Creating an interleave group with:" << *B
                           << '\n');
-        GroupB = createInterleaveGroup(B, DesB.Stride, DesB.Alignment);
+#if SIFIVE_CUSTOMIZATION
+        if (DesB.isNonConstStride())
+          GroupB =
+              createInterleaveGroup(B, DesB.NonConstStride, DesB.Alignment);
+        else
+#endif // SIFIVE_CUSTOMIZATION
+          GroupB = createInterleaveGroup(B, DesB.Stride, DesB.Alignment);
+
         if (B->mayWriteToMemory())
           StoreGroups.insert(GroupB);
         else
@@ -1267,7 +1312,12 @@ void InterleavedAccessInfo::analyzeInterleaving(
 
       // At this point, we've checked for illegal code motion. If either A or B
       // isn't strided, there's nothing left to do.
+#if SIFIVE_CUSTOMIZATION
+      if ((!isStrided(DesA.Stride) && !DesA.isNonConstStride()) ||
+          (!isStrided(DesB.Stride) && !DesB.isNonConstStride()))
+#else
       if (!isStrided(DesA.Stride) || !isStrided(DesB.Stride))
+#endif // SIFIVE_CUSTOMIZATION
         continue;
 
       // Ignore A if it's already in a group or isn't the same kind of memory
@@ -1285,6 +1335,13 @@ void InterleavedAccessInfo::analyzeInterleaving(
       // that of B.
       if (DesA.Stride != DesB.Stride || DesA.Size != DesB.Size)
         continue;
+
+#if SIFIVE_CUSTOMIZATION
+      // Check rule 1 for non-constant stride.
+      if (DesA.isNonConstStride() != DesB.isNonConstStride() &&
+          DesA.NonConstStride != DesB.NonConstStride)
+        continue;
+#endif // SIFIVE_CUSTOMIZATION
 
       // Ignore A if the memory object of A and B don't belong to the same
       // address space
@@ -1347,6 +1404,25 @@ void InterleavedAccessInfo::analyzeInterleaving(
     return true;
   };
 
+#if SIFIVE_CUSTOMIZATION
+  auto InvalidateGroupAfterMinimizeFactor =
+      [&](InterleaveGroup<Instruction> *Group) -> bool {
+    if (!Group->minimizeFactor())
+      return false;
+
+    uint32_t Factor = Group->getFactor();
+    if (Factor <= 1) {
+      LLVM_DEBUG(
+          dbgs() << "LV: Invalidate candidate strided interleaved group due to "
+                    "invalid interleave factor.\n");
+      releaseGroup(Group);
+      return true;
+    }
+    LLVM_DEBUG(dbgs() << "LV: Reassign the factor to " << Factor << '\n');
+    return false;
+  };
+#endif // SIFIVE_CUSTOMIZATION
+
   // Remove interleaved groups with gaps whose memory
   // accesses may wrap around. We have to revisit the getPtrStride analysis,
   // this time with ShouldCheckWrap=true, since collectConstStrideAccesses does
@@ -1362,6 +1438,13 @@ void InterleavedAccessInfo::analyzeInterleaving(
   // check the first pointer for no-wrap. When we'll change to use Assume=true
   // we'll only need at most one runtime check per interleaved group.
   for (auto *Group : LoadGroups) {
+#if SIFIVE_CUSTOMIZATION
+    // Minimizing factor for non-constant strided group.
+    if (Group->isStrided())
+      if (InvalidateGroupAfterMinimizeFactor(Group))
+	continue;
+#endif // SIFIVE_CUSTOMIZATION
+
     // Case 1: A full group. Can Skip the checks; For full groups, if the wide
     // load would wrap around the address space we would do a memory access at
     // nullptr even without the transformation.
@@ -1398,6 +1481,13 @@ void InterleavedAccessInfo::analyzeInterleaving(
   }
 
   for (auto *Group : StoreGroups) {
+#if SIFIVE_CUSTOMIZATION
+    // Minimizing factor for non-constant strided group.
+    if (Group->isStrided())
+      if (InvalidateGroupAfterMinimizeFactor(Group))
+	continue;
+#endif // SIFIVE_CUSTOMIZATION
+
     // Case 1: A full group. Can Skip the checks; For full groups, if the wide
     // store would wrap around the address space we would do a memory access at
     // nullptr even without the transformation.

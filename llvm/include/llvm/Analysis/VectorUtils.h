@@ -17,9 +17,16 @@
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/Analysis/LoopAccessAnalysis.h"
 #include "llvm/Support/CheckedArithmetic.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Support/CommandLine.h"
+#endif // SIFIVE_CUSTOMIZATION
 
 namespace llvm {
 class TargetLibraryInfo;
+
+#if SIFIVE_CUSTOMIZATION
+extern cl::opt<unsigned> MaxInterleaveGroupFactor;
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Describes the type of Parameters
 enum class VFParamKind {
@@ -631,6 +638,21 @@ public:
     Members[0] = Instr;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // The factor for the group cannot be determined using the non-constant
+  // stride. Currently, the non-constant stride group is initialized with the
+  // maximum factor.
+  InterleaveGroup(InstTy *Instr, const SCEV *Stride, Align Alignment)
+      : Factor(MaxInterleaveGroupFactor), Reverse(false), Alignment(Alignment),
+        Stride(Stride), InsertPos(nullptr) {
+    Members[0] = Instr;
+  }
+
+  const SCEV *getStride() const { return Stride; }
+  /// True if the stride of this group is non-constant. In other words, this
+  /// group will require support for strided load/store.
+  bool isStrided() const { return Stride != nullptr; }
+#endif // SIFIVE_CUSTOMIZATION
   bool isReverse() const { return Reverse; }
   uint32_t getFactor() const { return Factor; }
   Align getAlign() const { return Alignment; }
@@ -728,6 +750,29 @@ public:
     return true;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  /// Return true if the group contains the gaps at the end.
+  bool containsTailGap() const { return getMember(getFactor() - 1) == nullptr; }
+
+  /// The factor is set to maximum available factor by default if the stride is
+  /// non-constant. Therefore, the gap maybe happen at the end of the group,
+  /// i.e., tail gap. This function supports reassigning the factor to the
+  /// minimum supported size for the group. It's important to note that this
+  /// function won't entirely eliminate gaps within the group.
+  bool minimizeFactor() {
+    if (!containsTailGap())
+      return false;
+
+    assert(isStrided() &&
+           "Only non-const strided group is allowed to reassign the factor");
+
+    uint32_t NewFactor = std::abs(LargestKey - SmallestKey) + 1;
+    Factor = NewFactor;
+
+    return true;
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
 private:
   uint32_t Factor; // Interleave Factor.
   bool Reverse;
@@ -735,6 +780,9 @@ private:
   DenseMap<int32_t, InstTy *> Members;
   int32_t SmallestKey = 0;
   int32_t LargestKey = 0;
+#if SIFIVE_CUSTOMIZATION
+  const SCEV *Stride = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
 
   // To avoid breaking dependences, vectorized instructions of an interleave
   // group should be inserted at either the first load or the last store in
@@ -767,11 +815,22 @@ public:
 
   ~InterleavedAccessInfo() { invalidateGroups(); }
 
+#if SIFIVE_CUSTOMIZATION
+  /// Analyze the interleaved accesses and collect them in interleave
+  /// groups. Substitute symbolic strides using \p Strides.
+  /// Consider also predicated loads/stores in the analysis if
+  /// \p EnableMaskedInterleavedGroup is true.
+  /// Consider non-constant stride accesses in the analysis if \p
+  /// EnableNonConstStride is true.
+  void analyzeInterleaving(bool EnableMaskedInterleavedGroup,
+                           bool EnableNonConstStride = false);
+#else
   /// Analyze the interleaved accesses and collect them in interleave
   /// groups. Substitute symbolic strides using \p Strides.
   /// Consider also predicated loads/stores in the analysis if
   /// \p EnableMaskedInterleavedGroup is true.
   void analyzeInterleaving(bool EnableMaskedInterleavedGroup);
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Invalidate groups, e.g., in case all blocks in loop will be predicated
   /// contrary to original assumption. Although we currently prevent group
@@ -856,9 +915,20 @@ private:
     StrideDescriptor(int64_t Stride, const SCEV *Scev, uint64_t Size,
                      Align Alignment)
         : Stride(Stride), Scev(Scev), Size(Size), Alignment(Alignment) {}
+#if SIFIVE_CUSTOMIZATION
+    StrideDescriptor(const SCEV *NonConstStride, const SCEV *Scev,
+                     uint64_t Size, Align Alignment)
+        : NonConstStride(NonConstStride), Scev(Scev), Size(Size),
+          Alignment(Alignment) {}
+#endif // SIFIVE_CUSTOMIZATION
 
     // The access's stride. It is negative for a reverse access.
     int64_t Stride = 0;
+
+#if SIFIVE_CUSTOMIZATION
+    // The non-const stride of this access.
+    const SCEV *NonConstStride = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
 
     // The scalar expression of this access.
     const SCEV *Scev = nullptr;
@@ -868,6 +938,11 @@ private:
 
     // The alignment of this access.
     Align Alignment;
+
+#if SIFIVE_CUSTOMIZATION
+    // True if this is non-const stride
+    bool isNonConstStride() const { return NonConstStride != nullptr; }
+#endif // SIFIVE_CUSTOMIZATION
   };
 
   /// A type for holding instructions and their stride descriptors.
@@ -887,6 +962,21 @@ private:
     return InterleaveGroupMap[Instr];
   }
 
+#if SIFIVE_CUSTOMIZATION
+  /// Create a new interleave group with non-constant stride.
+  InterleaveGroup<Instruction> *createInterleaveGroup(Instruction *Instr,
+                                                      const SCEV *Stride,
+                                                      Align Alignment) {
+    assert(!InterleaveGroupMap.count(Instr) &&
+           "Already in an interleaved access group");
+    assert(Stride && "Stride scev is illegal");
+    InterleaveGroupMap[Instr] =
+        new InterleaveGroup<Instruction>(Instr, Stride, Alignment);
+    InterleaveGroups.insert(InterleaveGroupMap[Instr]);
+    return InterleaveGroupMap[Instr];
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   /// Release the group and remove all the relationships.
   void releaseGroup(InterleaveGroup<Instruction> *Group) {
     for (unsigned i = 0; i < Group->getFactor(); i++)
@@ -897,10 +987,20 @@ private:
     delete Group;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  /// Collect all the accesses with a constant stride in program order.
+  /// Also consider non-constant strides if \p EnableNonConstStride is true.
+  // TODO: Correcting the function name to align with functionality.
+  void collectConstStrideAccesses(
+      MapVector<Instruction *, StrideDescriptor> &AccessStrideInfo,
+      const DenseMap<Value *, const SCEV *> &Strides,
+      bool EnableNonConstStride = false);
+#else
   /// Collect all the accesses with a constant stride in program order.
   void collectConstStrideAccesses(
       MapVector<Instruction *, StrideDescriptor> &AccessStrideInfo,
       const DenseMap<Value *, const SCEV *> &Strides);
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns true if \p Stride is allowed in an interleaved group.
   static bool isStrided(int Stride);
