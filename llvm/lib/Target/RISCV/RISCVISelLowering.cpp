@@ -18037,6 +18037,11 @@ void RISCVTargetLowering::computeKnownBitsForTargetNode(const SDValue Op,
     default:
       // We can't do anything for most intrinsics.
       break;
+#if SIFIVE_CUSTOMIZATION
+    case Intrinsic::riscv_vcpop:
+    case Intrinsic::riscv_vcpop_mask:
+    // FIXME: Generalize to LMUL other than 8
+#endif // SIFIVE_CUSTOMIZATION
     case Intrinsic::riscv_vsetvli:
     case Intrinsic::riscv_vsetvlimax:
       // Assume that VL output is >= 65536.
@@ -18137,6 +18142,33 @@ unsigned RISCVTargetLowering::ComputeNumSignBitsForTargetNode(
       assert(Subtarget.hasStdExtA());
       return 33;
     }
+#if SIFIVE_CUSTOMIZATION
+    break;
+  }
+  case ISD::INTRINSIC_WO_CHAIN: {
+    unsigned IntNo = Op.getConstantOperandVal(0);
+    switch (IntNo) {
+    default:
+      break;
+    case Intrinsic::riscv_vfirst:
+    case Intrinsic::riscv_vfirst_mask:
+      // vfirst returns an index or -1. The largest index is VLMAX-1. The
+      // largest VLMAX possible is 65536. This means the largest index is
+      // 65536-1 which fits in 16 bits. Bits 17 to XLEN-1 are 0 when an an
+      // active element is 1. When no active element has value 1, -1 is written.
+      // In that case, bits 17 to XLEN-1 are 1. Therefore, bits XLEN-1 to 17 may
+      // be considered sign bits.
+      // FIXME: This is the number of sign bits when LMUL = 8,
+      // which is also the minimal (# of sign bits) of all
+      // possible LMULs.
+      // This value will yield incorrect result when we're casting
+      // the return of vfirst (length equals to XLen) to some
+      // smaller types like 16 bits integers, as they have
+      // higher number of sign bits.
+      return Subtarget.getXLen() - 16;
+    }
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   }
   }
 
