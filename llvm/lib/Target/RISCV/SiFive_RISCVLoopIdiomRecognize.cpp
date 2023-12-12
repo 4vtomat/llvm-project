@@ -513,7 +513,7 @@ Value *RISCVLoopIdiomRecognize::expandFindMismatch(IRBuilder<> &Builder,
       Intrinsic::vp_first, {RVVMatchCmp->getType()},
       {RVVMatchCmp, AllTrueMask, RVL}, nullptr, "first");
   Value *MismatchFound =
-      Builder.CreateICmpNE(First, ConstantInt::get(First->getType(), -1));
+      Builder.CreateICmpSGE(First, ConstantInt::get(First->getType(), 0));
   auto *RVVEarlyExit =
       BranchInst::Create(RVVLoopMismatchBlock, RVVLoopIncBlock, MismatchFound);
   Builder.Insert(RVVEarlyExit);
