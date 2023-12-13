@@ -17700,7 +17700,7 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     }
 
     // Fold vp_merge_vl (M2, OP (M1, T1, F1, VL), F2, VL) ->
-    //      vmerge_vl (F2, M1, T1, F2, VL)
+    //      vmerge_vl (F2, M1, T1, F1, VL)
     //      when M2 is all 1s and OP is vp_merge_vl or vselect_vl.
     SDValue MergedWhenTrue = N->getOperand(1);
     bool IsCorrectOpcode =
@@ -17714,7 +17714,7 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
                            N->getOperand(2),             // F2
                            MergedWhenTrue.getOperand(0), // M1
                            MergedWhenTrue.getOperand(1), // T1
-                           MergedWhenTrue.getOperand(2), // T2
+                           MergedWhenTrue.getOperand(2), // F1
                            VL);
       }
     }
