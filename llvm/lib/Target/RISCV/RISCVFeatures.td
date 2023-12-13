@@ -161,8 +161,7 @@ def HasStdExtXsifivecflushdlone :
 
 def FeatureStdExtXsifivecdiscarddlone
     : SubtargetFeature<"experimental-xsifivecdiscarddlone", "HasStdExtXsifivecdiscarddlone", "true",
-                       "Cache Flush/Power Down Instructions"
-                       "'Xsifivecdiscarddlone'(Cache Flush/Power Down Instructions)", []>;
+                       "'Xsifivecdiscarddlone' (Cache Flush/Power Down Instructions)", []>;
 def HasStdExtXsifivecdiscarddlone :
     Predicate<"Subtarget->hasStdExtXsifivecdiscarddlone()">,
     AssemblerPredicate<(all_of FeatureStdExtXsifivecdiscarddlone),
