@@ -151,21 +151,21 @@ def FeatureStdExtSswg
                        "slwid CSR, which sets the WID used for modes lower than "
                        "[H]S-mode.)", []>;
 
-def FeatureStdExtXsifivecflushdlone
-    : SubtargetFeature<"experimental-xsifivecflushdlone", "HasStdExtXsifivecflushdlone", "true",
+def FeatureVendorXsifivecflushdlone
+    : SubtargetFeature<"experimental-xsifivecflushdlone", "HasVendorXsifivecflushdlone", "true",
                        "'Xsifivecflushdlone' (Cache Flush/Power Down Instructions)", []>;
-def HasStdExtXsifivecflushdlone :
-    Predicate<"Subtarget->hasStdExtXsifivecflushdlone()">,
-    AssemblerPredicate<(all_of FeatureStdExtXsifivecflushdlone),
+def HasVendorXsifivecflushdlone :
+    Predicate<"Subtarget->hasVendorXsifivecflushdlone()">,
+    AssemblerPredicate<(all_of FeatureVendorXsifivecflushdlone),
                        "'Xsifivecflushdlone' (Cache Flush/Power Down Instructions)">;
 
-def FeatureStdExtXsifivecdiscarddlone
-    : SubtargetFeature<"experimental-xsifivecdiscarddlone", "HasStdExtXsifivecdiscarddlone", "true",
+def FeatureVendorXsifivecdiscarddlone
+    : SubtargetFeature<"experimental-xsifivecdiscarddlone", "HasVendorXsifivecdiscarddlone", "true",
                        "'Xsifivecdiscarddlone' (Cache Flush/Power Down Instructions)", []>;
-def HasStdExtXsifivecdiscarddlone :
-    Predicate<"Subtarget->hasStdExtXsifivecdiscarddlone()">,
-    AssemblerPredicate<(all_of FeatureStdExtXsifivecdiscarddlone),
-                        "'Xsifivecdiscarddlone' (Cache Flush/Power Down Instructions)">;
+def HasVendorXsifivecdiscarddlone :
+    Predicate<"Subtarget->hasVendorXsifivecdiscarddlone()">,
+    AssemblerPredicate<(all_of FeatureVendorXsifivecdiscarddlone),
+                       "'Xsifivecdiscarddlone' (Cache Flush/Power Down Instructions)">;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM
