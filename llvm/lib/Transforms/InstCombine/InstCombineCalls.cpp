@@ -3243,6 +3243,22 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     }
     break;
   }
+  case Intrinsic::vp_merge: {
+    // If this vp.merge has an all ones mask, then FalseV is only used for
+    // elements past EVL. If the TrueV is also a vp.merge with the same FalseV
+    // and EVL, then this vp.merge is redundant.
+    auto *ConstMask = dyn_cast<Constant>(II->getArgOperand(0));
+    if (ConstMask && ConstMask->isAllOnesValue()) {
+      Value *TrueV = II->getArgOperand(1);
+      Value *FalseV = II->getArgOperand(2);
+      Value *EVL = II->getArgOperand(3);
+      if (match(TrueV, m_Intrinsic<Intrinsic::vp_merge>(m_Value(), m_Value(),
+                                                        m_Specific(FalseV),
+                                                        m_Specific(EVL))))
+        return replaceInstUsesWith(CI, TrueV);
+    }
+    break;
+  }
 #endif // SIFIVE_CUSTOMIZATION
   case Intrinsic::vector_reduce_or:
   case Intrinsic::vector_reduce_and: {
