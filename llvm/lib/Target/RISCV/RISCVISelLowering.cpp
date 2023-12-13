@@ -8772,6 +8772,12 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
                        Op.getOperand(2));
   case Intrinsic::experimental_get_vector_length:
     return lowerGetVectorLength(Op.getNode(), DAG, Subtarget);
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::experimental_vp_compress:
+    return lowerVPCompressExperimental(Op, DAG);
+  case Intrinsic::experimental_vp_expand:
+    return lowerVPExpandExperimental(Op, DAG);
+#endif // SIFIVE_CUSTOMIZATION
   case Intrinsic::riscv_vmv_x_s:
     assert(Op.getValueType() == XLenVT && "Unexpected VT!");
     return DAG.getNode(RISCVISD::VMV_X_S, DL, Op.getValueType(),
@@ -11749,6 +11755,80 @@ SDValue RISCVTargetLowering::lowerVPPopcount(SDValue N,
 
   return DAG.getNode(RISCVISD::VCPOP_VL, DL, XLenVT, Op, Mask,
                      N->getOperand(2));
+}
+
+SDValue
+RISCVTargetLowering::lowerVPCompressExperimental(SDValue N,
+                                                 SelectionDAG &DAG) const {
+  SDLoc DL(N);
+  MVT VT = N.getSimpleValueType();
+  MVT XLenVT = Subtarget.getXLenVT();
+  SDValue Op = N.getOperand(1);
+  SDValue Mask = N.getOperand(2);
+  SDValue VL = DAG.getNode(ISD::ZERO_EXTEND, DL, XLenVT, N.getOperand(3));
+
+  MVT ContainerVT = VT;
+  if (VT.isFixedLengthVector()) {
+    ContainerVT = getContainerForFixedLengthVector(VT);
+    Op = convertToScalableVector(ContainerVT, Op, DAG, Subtarget);
+    MVT MaskContainerVT = ContainerVT.changeVectorElementType(MVT::i1);
+    Mask = convertToScalableVector(MaskContainerVT, Mask, DAG, Subtarget);
+  }
+  SDValue Res =
+      DAG.getNode(ISD::INTRINSIC_WO_CHAIN, DL, ContainerVT,
+                  DAG.getConstant(Intrinsic::riscv_vcompress, DL, XLenVT),
+                  DAG.getUNDEF(ContainerVT), Op, Mask, VL);
+  if (!VT.isFixedLengthVector())
+    return Res;
+  return convertFromScalableVector(VT, Res, DAG, Subtarget);
+}
+
+SDValue
+RISCVTargetLowering::lowerVPExpandExperimental(SDValue N,
+                                               SelectionDAG &DAG) const {
+  SDLoc DL(N);
+  MVT VT = N.getSimpleValueType();
+  MVT XLenVT = Subtarget.getXLenVT();
+  SDValue Op = N.getOperand(1);
+  SDValue Mask = N.getOperand(2);
+  SDValue VL = DAG.getNode(ISD::ZERO_EXTEND, DL, XLenVT, N.getOperand(3));
+
+  MVT ContainerVT = VT;
+  if (VT.isFixedLengthVector()) {
+    ContainerVT = getContainerForFixedLengthVector(VT);
+    Op = convertToScalableVector(ContainerVT, Op, DAG, Subtarget);
+    MVT MaskContainerVT = ContainerVT.changeVectorElementType(MVT::i1);
+    Mask = convertToScalableVector(MaskContainerVT, Mask, DAG, Subtarget);
+  }
+
+  auto UpperBoundSize = [this](MVT VT) -> uint64_t {
+    assert(VT.getScalarType() == MVT::i8);
+    if (VT.isFixedLengthVector())
+      return VT.getVectorMinNumElements();
+    unsigned MinSize = VT.getSizeInBits().getKnownMinValue();
+    unsigned VectorBitsMax = Subtarget.getRealMaxVLen();
+    return RISCVTargetLowering::computeVLMAX(VectorBitsMax, 8, MinSize);
+  };
+
+  unsigned GatherVVOpc = RISCVISD::VRGATHEREI16_VV_VL;
+  MVT IndexVT = ContainerVT.changeVectorElementType(MVT::i16);
+  // Use vrgather instead of if VL <= 256.
+  if (VT.getScalarType() == MVT::i8 &&
+      (UpperBoundSize(VT) <= 256 ||
+       (isa<ConstantSDNode>(VL) && N->getConstantOperandVal(3) <= 256))) {
+    GatherVVOpc = RISCVISD::VRGATHER_VV_VL;
+    IndexVT = ContainerVT;
+  }
+
+  SDValue Index =
+      DAG.getNode(ISD::INTRINSIC_WO_CHAIN, DL, IndexVT,
+                  DAG.getConstant(Intrinsic::riscv_viota, DL, XLenVT),
+                  DAG.getUNDEF(IndexVT), Mask, VL);
+  SDValue Res = DAG.getNode(GatherVVOpc, DL, ContainerVT, Op, Index,
+                            DAG.getUNDEF(ContainerVT), Mask, VL);
+  if (!VT.isFixedLengthVector())
+    return Res;
+  return convertFromScalableVector(VT, Res, DAG, Subtarget);
 }
 #endif // SIFIVE_CUSTOMIZATION
 

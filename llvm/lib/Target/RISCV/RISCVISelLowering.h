@@ -972,6 +972,8 @@ private:
   SDValue lowerVPMergeMask(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPFirst(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPPopcount(SDValue Op, SelectionDAG &DAG) const;
+  SDValue lowerVPCompressExperimental(SDValue Op, SelectionDAG &DAG) const;
+  SDValue lowerVPExpandExperimental(SDValue Op, SelectionDAG &DAG) const;
 
   // Copied from BSC
   SDValue lowerVPSpliceExperimental(SDValue Op, SelectionDAG &DAG) const;

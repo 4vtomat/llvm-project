@@ -1746,6 +1746,40 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
                                 ICA.getScalarizationCost()),
         CostKind);
   }
+  case Intrinsic::experimental_vp_compress: {
+    if (!isTypeLegal(RetTy))
+      return InstructionCost::getInvalid();
+    if (CostKind == TTI::TCK_CodeSize)
+      return 1;
+    if (CostKind == TTI::TCK_RecipThroughput) {
+      // For bullet, the throughput of vcompress is calculated as vl.
+      unsigned VL = getEstimatedVLFor(cast<VectorType>(RetTy));
+      if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+        return VL;
+      // For mallard, the throughput of vcompress is calculated as #uop.
+      if (ST->isSiFiveMallardCPU()) {
+        unsigned Size = VL * RetTy->getScalarSizeInBits();
+        return divideCeil(Size, ST->getRealMinVLen());
+      }
+    }
+    break;
+  }
+  case Intrinsic::experimental_vp_expand: {
+    // The codegen of vp.expand is viota.m + vrgatherei16.vv, so there will be
+    // an i16 vector whose element count is same as the RetTy.
+    IntegerType *HalfType = Type::getInt16Ty(RetTy->getContext());
+    if (!isTypeLegal(RetTy) || !isTypeLegal(RetTy->getWithNewType(HalfType)))
+      return InstructionCost::getInvalid();
+    // Need extra two vsetvli for i8/i32/i64 vector source.
+    unsigned Cost = 2 * (RetTy->getScalarSizeInBits() != 16);
+    if (CostKind == TTI::TCK_CodeSize)
+      return Cost + 2;
+    if (ST->isSiFiveCPU() && CostKind == TTI::TCK_RecipThroughput) {
+      MVT VT = getTypeLegalizationCost(RetTy).second;
+      return Cost + TLI->getLMULCost(VT) + TLI->getVRGatherVVCost(VT);
+    }
+    break;
+  }
 #endif // SIFIVE_CUSTOMIZATION
   }
 

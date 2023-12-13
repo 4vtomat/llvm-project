@@ -7584,6 +7584,10 @@ void SelectionDAGBuilder::visitIntrinsicCall(const CallInst &I,
   case Intrinsic::experimental_vector_deinterleave8:
     visitVectorDeinterleave(I, 8);
     return;
+  case Intrinsic::experimental_vp_compress:
+  case Intrinsic::experimental_vp_expand:
+    visitTargetIntrinsic(I, Intrinsic);
+    return;
 #endif // SIFIVE_CUSTOMIZATION
   }
 }
