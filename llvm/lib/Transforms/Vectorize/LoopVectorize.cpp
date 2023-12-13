@@ -3114,9 +3114,17 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
         Operands.push_back(StoredValue);
       }
 
-      Value *StoredVal = State.Builder.CreateIntrinsic(
-          GetVectorInterleaveIntrinsic(InterleaveFactor), {VecTy}, Operands,
-          nullptr, "interleaved.vec");
+      Value *StoredVal = nullptr;
+      // If same value is stored, broadcast it and do regular contiguous store
+      if (llvm::all_equal(Operands))
+        if (Value *Splat = getSplatValue(Operands.front()))
+          StoredVal = State.Builder.CreateVectorSplat(VecTy->getElementCount(),
+                                                      Splat, "wide.broadcast");
+
+      if (!StoredVal)
+        StoredVal = State.Builder.CreateIntrinsic(
+            GetVectorInterleaveIntrinsic(InterleaveFactor), {VecTy}, Operands,
+            nullptr, "interleaved.vec");
 
       assert(State.Plan->getRVL() &&
              "RuntimeVL must be initialized at this point");
