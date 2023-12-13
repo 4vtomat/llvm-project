@@ -6816,6 +6816,15 @@ static Value *simplifyIntrinsic(CallBase *Call, Value *Callee,
 
     return nullptr;
   }
+  case Intrinsic::vp_merge: {
+    Value *TrueV = Call->getArgOperand(1);
+    Value *FalseV = Call->getArgOperand(2);
+    // If the True and False values are the same, this is a no-op.
+    if (TrueV == FalseV)
+      return TrueV;
+
+    return nullptr;
+  }
 #endif // SIFIVE_CUSTOMIZATION
   case Intrinsic::experimental_constrained_fadd: {
     auto *FPI = cast<ConstrainedFPIntrinsic>(Call);
