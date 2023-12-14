@@ -1517,6 +1517,28 @@ static Value *evaluateVPReversed(Value *V, InstCombinerImpl &IC) {
 
   llvm_unreachable("Unexpected value!");
 }
+
+static Value *simplifyUsingEVL(Value *V, Value *EVL, IRBuilderBase &Builder) {
+  if (!V->hasOneUse())
+    return nullptr;
+
+  auto *VPI = dyn_cast<VPIntrinsic>(V);
+  if (!VPI || VPI->getIntrinsicID() != Intrinsic::vp_merge)
+    return nullptr;
+
+  // EVL must be the same.
+  if (VPI->getArgOperand(3) != EVL)
+    return nullptr;
+
+  Value *Mask = VPI->getArgOperand(0);
+  Value *TrueV = VPI->getArgOperand(1);
+  Value *FalseV = VPI->getArgOperand(2);
+
+  Value *Res = Builder.CreateIntrinsic(Intrinsic::vp_select, {VPI->getType()},
+                                       {Mask, TrueV, FalseV, EVL});
+  Res->takeName(V);
+  return Res;
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 /// CallInst simplification. This mostly only handles folding of intrinsic
@@ -3243,19 +3265,35 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     }
     break;
   }
+  case Intrinsic::vp_select: {
+    Value *EVL = II->getArgOperand(3);
+    if (Value *V = simplifyUsingEVL(II->getArgOperand(1), EVL, Builder))
+      return replaceOperand(*II, 1, V);
+    if (Value *V = simplifyUsingEVL(II->getArgOperand(2), EVL, Builder))
+      return replaceOperand(*II, 2, V);
+    break;
+  }
   case Intrinsic::vp_merge: {
+    Value *TrueV = II->getArgOperand(1);
+    Value *EVL = II->getArgOperand(3);
+
+    if (Value *V = simplifyUsingEVL(TrueV, EVL, Builder))
+      return replaceOperand(*II, 1, V);
+
     // If this vp.merge has an all ones mask, then FalseV is only used for
-    // elements past EVL. If the TrueV is also a vp.merge with the same FalseV
-    // and EVL, then this vp.merge is redundant.
+    // elements past EVL. If the TrueV is a vp.select with the same FalseV
+    // and EVL, then we can merge these into a single vp.merge by copying the
+    // mask and TrueV from the vp.select.
     auto *ConstMask = dyn_cast<Constant>(II->getArgOperand(0));
     if (ConstMask && ConstMask->isAllOnesValue()) {
-      Value *TrueV = II->getArgOperand(1);
       Value *FalseV = II->getArgOperand(2);
-      Value *EVL = II->getArgOperand(3);
-      if (match(TrueV, m_Intrinsic<Intrinsic::vp_merge>(m_Value(), m_Value(),
-                                                        m_Specific(FalseV),
-                                                        m_Specific(EVL))))
-        return replaceInstUsesWith(CI, TrueV);
+      Value *OtherMask, *OtherTrueV;
+      if (match(TrueV, m_Intrinsic<Intrinsic::vp_select>(
+                           m_Value(OtherMask), m_Value(OtherTrueV),
+                           m_Specific(FalseV), m_Specific(EVL)))) {
+        replaceOperand(*II, 0, OtherMask);
+        return replaceOperand(*II, 1, OtherTrueV);
+      }
     }
     break;
   }
