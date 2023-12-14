@@ -3271,6 +3271,21 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
       return replaceOperand(*II, 1, V);
     if (Value *V = simplifyUsingEVL(II->getArgOperand(2), EVL, Builder))
       return replaceOperand(*II, 2, V);
+
+    // If the mask is a vp.xor with all ones, skip it and swap the true/false
+    // operands.
+    Value *X;
+    Constant *YC, *MaskC;
+    if (match(II->getArgOperand(0), m_Intrinsic<Intrinsic::vp_xor>(
+                                        m_Value(X), m_Constant(YC),
+                                        m_Constant(MaskC), m_Specific(EVL))) &&
+        YC->isAllOnesValue() && MaskC->isAllOnesValue()) {
+      Value *Res = Builder.CreateIntrinsic(
+          Intrinsic::vp_select, {II->getType()},
+          {X, II->getArgOperand(2), II->getArgOperand(1), EVL});
+      return replaceInstUsesWith(CI, Res);
+    }
+
     break;
   }
   case Intrinsic::vp_merge: {

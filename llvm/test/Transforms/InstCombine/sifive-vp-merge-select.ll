@@ -3,6 +3,7 @@
 
 declare <vscale x 8 x i32> @llvm.vp.merge.nxv8i32(<vscale x 8 x i1>, <vscale x 8 x i32>, <vscale x 8 x i32>, i32)
 declare <vscale x 8 x i32> @llvm.vp.select.nxv8i32(<vscale x 8 x i1>, <vscale x 8 x i32>, <vscale x 8 x i32>, i32)
+declare <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1>, <vscale x 8 x i1>, <vscale x 8 x i1>, i32)
 
 define <vscale x 8 x i32> @redundant_vp_merge(<vscale x 8 x i1> %m, <vscale x 8 x i32> %t, <vscale x 8 x i32> %f, i32 %evl) {
 ; CHECK-LABEL: define <vscale x 8 x i32> @redundant_vp_merge(
@@ -49,4 +50,15 @@ define <vscale x 8 x i32> @redundant_vp_merge_convert_to_select3(<vscale x 8 x i
   %a = call <vscale x 8 x i32> @llvm.vp.merge.nxv8i32(<vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i32> %t, <vscale x 8 x i32> %f, i32 %evl)
   %b = call <vscale x 8 x i32> @llvm.vp.select.nxv8i32(<vscale x 8 x i1> %m, <vscale x 8 x i32> %t, <vscale x 8 x i32> %a, i32 %evl)
   ret <vscale x 8 x i32> %b
+}
+
+define <vscale x 8 x i32> @redundant_vp_select_vmnot(<vscale x 8 x i1> %m, <vscale x 8 x i32> %t, <vscale x 8 x i32> %f, i32 %evl) {
+; CHECK-LABEL: define <vscale x 8 x i32> @redundant_vp_select_vmnot(
+; CHECK-SAME: <vscale x 8 x i1> [[M:%.*]], <vscale x 8 x i32> [[T:%.*]], <vscale x 8 x i32> [[F:%.*]], i32 [[EVL:%.*]]) {
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 8 x i32> @llvm.vp.select.nxv8i32(<vscale x 8 x i1> [[M]], <vscale x 8 x i32> [[F]], <vscale x 8 x i32> [[T]], i32 [[EVL]])
+; CHECK-NEXT:    ret <vscale x 8 x i32> [[A]]
+;
+  %mn = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> %m, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 %evl)
+  %a = call <vscale x 8 x i32> @llvm.vp.select.nxv8i32(<vscale x 8 x i1> %mn, <vscale x 8 x i32> %t, <vscale x 8 x i32> %f, i32 %evl)
+  ret <vscale x 8 x i32> %a
 }
