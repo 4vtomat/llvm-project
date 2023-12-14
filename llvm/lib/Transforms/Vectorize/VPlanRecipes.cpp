@@ -1593,7 +1593,7 @@ void VPBlendRecipe::execute(VPTransformState &State) {
         if (State.Plan->getRVL() && Cond->getType()->isVectorTy()) {
           Value *RVLArg = State.get(State.Plan->getRVL(), Part);
           Entry[Part] = State.Builder.CreateIntrinsic(
-              Intrinsic::vp_merge, {In0->getType()},
+              Intrinsic::vp_select, {In0->getType()},
               {Cond, In0, Entry[Part], RVLArg}, nullptr, "predphi");
         } else
 #endif // SIFIVE_CUSTOMIZATION

@@ -6816,6 +6816,7 @@ static Value *simplifyIntrinsic(CallBase *Call, Value *Callee,
 
     return nullptr;
   }
+  case Intrinsic::vp_select:
   case Intrinsic::vp_merge: {
     Value *TrueV = Call->getArgOperand(1);
     Value *FalseV = Call->getArgOperand(2);
