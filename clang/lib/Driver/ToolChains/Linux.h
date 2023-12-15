@@ -51,6 +51,10 @@ public:
   SanitizerMask getSupportedSanitizers() const override;
   void addProfileRTLibs(const llvm::opt::ArgList &Args,
                         llvm::opt::ArgStringList &CmdArgs) const override;
+#if SIFIVE_CUSTOMIZATION
+  void addLoopProfileRTLibs(const llvm::opt::ArgList &Args,
+                            llvm::opt::ArgStringList &CmdArgs) const override;
+#endif // SIFIVE_CUSTOMIZATION
   std::string computeSysRoot() const override;
 
   std::string getDynamicLinker(const llvm::opt::ArgList &Args) const override;

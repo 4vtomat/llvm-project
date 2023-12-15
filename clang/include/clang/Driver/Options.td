@@ -1623,6 +1623,11 @@ defm debug_info_for_profiling : BoolFOption<"debug-info-for-profiling",
   PosFlag<SetTrue, [], [ClangOption, CC1Option],
           "Emit extra debug info to make sample profile more accurate">,
   NegFlag<SetFalse>>;
+// SIFIVE_CUSTOMIZATION
+def fsifive_loop_count_profile_generate : Flag<["-"], "fsifive-loop-count-profile-generate">,
+    Group<f_Group>, Visibility<[ClangOption, CLOption, DXCOption]>,
+    HelpText<"Generate Loop profile output into `loopProfile.output` file (overriden by LOOP_PROFILE env var)">;
+// end SIFIVE_CUSTOMIZATION
 def fprofile_instr_generate : Flag<["-"], "fprofile-instr-generate">,
     Group<f_Group>, Visibility<[ClangOption, CLOption]>,
     HelpText<"Generate instrumented code to collect execution counts into default.profraw file (overridden by '=' form of option or LLVM_PROFILE_FILE env var)">;

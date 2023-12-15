@@ -558,6 +558,9 @@ void tools::gnutools::Linker::ConstructJob(Compilation &C, const JobAction &JA,
 
   // The profile runtime also needs access to system libraries.
   getToolChain().addProfileRTLibs(Args, CmdArgs);
+#if SIFIVE_CUSTOMIZATION
+  getToolChain().addLoopProfileRTLibs(Args, CmdArgs);
+#endif // SIFIVE_CUSTOMIZATION
 
   if (D.CCCIsCXX() &&
       !Args.hasArg(options::OPT_nostdlib, options::OPT_nodefaultlibs,

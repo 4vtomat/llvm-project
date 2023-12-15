@@ -76,6 +76,9 @@ MODULE_PASS("inliner-wrapper-no-mandatory-first", ModuleInlinerWrapperPass(
   getInlineParams(),
   false))
 MODULE_PASS("insert-gcov-profiling", GCOVProfilerPass())
+#if SIFIVE_CUSTOMIZATION
+MODULE_PASS("insert-loop-count-profiling", LoopCountProfilerPass())
+#endif
 MODULE_PASS("instrorderfile", InstrOrderFilePass())
 MODULE_PASS("instrprof", InstrProfiling())
 MODULE_PASS("internalize", InternalizePass())

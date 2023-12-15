@@ -830,6 +830,18 @@ void Linux::addProfileRTLibs(const llvm::opt::ArgList &Args,
   ToolChain::addProfileRTLibs(Args, CmdArgs);
 }
 
+#if SIFIVE_CUSTOMIZATION
+void Linux::addLoopProfileRTLibs(const llvm::opt::ArgList &Args,
+                                 llvm::opt::ArgStringList &CmdArgs) const {
+  // Add linker option -u__llvm_loop_profile_runtime to cause runtime
+  // initialization module to be linked in.
+  if (Args.hasArg(options::OPT_fsifive_loop_count_profile_generate))
+    CmdArgs.push_back(
+        Args.MakeArgString(Twine("-u__llvm_loop_profile_runtime")));
+  ToolChain::addLoopProfileRTLibs(Args, CmdArgs);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 llvm::DenormalMode
 Linux::getDefaultDenormalModeForType(const llvm::opt::ArgList &DriverArgs,
                                      const JobAction &JA,

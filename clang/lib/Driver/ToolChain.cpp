@@ -1042,6 +1042,17 @@ void ToolChain::addProfileRTLibs(const llvm::opt::ArgList &Args,
   CmdArgs.push_back(getCompilerRTArgString(Args, "profile"));
 }
 
+#if SIFIVE_CUSTOMIZATION
+void ToolChain::addLoopProfileRTLibs(const llvm::opt::ArgList &Args,
+                                     llvm::opt::ArgStringList &CmdArgs) const {
+  // Loop-Profiler only support single threaded program.
+  if (!Args.hasArg(options::OPT_fsifive_loop_count_profile_generate) ||
+      Args.hasArg(options::OPT_fopenmp))
+    return;
+  CmdArgs.push_back(getCompilerRTArgString(Args, "loop_profile"));
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 ToolChain::RuntimeLibType ToolChain::GetRuntimeLibType(
     const ArgList &Args) const {
   if (runtimeLibType)

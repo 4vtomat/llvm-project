@@ -149,6 +149,9 @@
 #include "llvm/Transforms/Instrumentation/InstrOrderFile.h"
 #include "llvm/Transforms/Instrumentation/InstrProfiling.h"
 #include "llvm/Transforms/Instrumentation/KCFI.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Transforms/Instrumentation/SiFive_LoopCountProfiler.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Transforms/Instrumentation/MemProfiler.h"
 #include "llvm/Transforms/Instrumentation/MemorySanitizer.h"
 #include "llvm/Transforms/Instrumentation/PGOInstrumentation.h"
