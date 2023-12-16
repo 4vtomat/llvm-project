@@ -46,6 +46,10 @@ private:
   bool expandMI(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
                 MachineBasicBlock::iterator &NextMBBI);
   bool expandMovImm(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
+#if SIFIVE_CUSTOMIZATION
+  bool expandLIsimm32(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
+  bool expandLIaddr(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 char RISCVPostRAExpandPseudo::ID = 0;
@@ -77,6 +81,12 @@ bool RISCVPostRAExpandPseudo::expandMI(MachineBasicBlock &MBB,
   switch (MBBI->getOpcode()) {
   case RISCV::PseudoMovImm:
     return expandMovImm(MBB, MBBI);
+#if SIFIVE_CUSTOMIZATION
+  case RISCV::PseudoLIsimm32:
+    return expandLIsimm32(MBB, MBBI);
+  case RISCV::PseudoLIaddr:
+    return expandLIaddr(MBB, MBBI);
+#endif // SIFIVE_CUSTOMIZATION
   default:
     return false;
   }
@@ -102,6 +112,26 @@ bool RISCVPostRAExpandPseudo::expandMovImm(MachineBasicBlock &MBB,
   MBBI->eraseFromParent();
   return true;
 }
+
+#if SIFIVE_CUSTOMIZATION
+bool RISCVPostRAExpandPseudo::expandLIsimm32(MachineBasicBlock &MBB,
+                                             MachineBasicBlock::iterator MBBI) {
+  const RISCVSubtarget &Subtarget =
+      MBB.getParent()->getSubtarget<RISCVSubtarget>();
+
+  if (!Subtarget.usePseudoLIsimm32() || Subtarget.hasLUIADDIFusion())
+    return false;
+
+  TII->expandLIsimm32(MBB, MBBI);
+  return true;
+}
+
+bool RISCVPostRAExpandPseudo::expandLIaddr(MachineBasicBlock &MBB,
+                                           MachineBasicBlock::iterator MBBI) {
+  TII->expandLIaddr(MBB, MBBI);
+  return true;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 } // end of anonymous namespace
 

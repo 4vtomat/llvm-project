@@ -60,7 +60,6 @@ add_llvm_target(RISCVCodeGen
   RISCVTargetMachine.cpp
   RISCVTargetObjectFile.cpp
   RISCVTargetTransformInfo.cpp
-  SiFive_RISCVPostRAExpandPseudoInsts.cpp
   SiFive_RISCVTypePromotion.cpp
   SiFive_RISCVVLOptimizer.cpp
   SiFive_RISCVLoopIdiomRecognize.cpp
