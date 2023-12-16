@@ -142,9 +142,6 @@ static QualType RVVType2Qual(ASTContext &Context, const RVVType *Type) {
   case ScalarTypeKind::Float32:
     QT = Context.FloatTy;
     break;
-  case ScalarTypeKind::BFloat:
-    QT = Context.BFloat16Ty;
-    break;
 #endif
   case Invalid:
   case Undefined:
@@ -267,9 +264,7 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
       {"experimental-zvksed", RVV_REQ_Zvksed},
 #if SIFIVE_CUSTOMIZATION
       {"experimental-zvksh", RVV_REQ_Zvksh},
-      {"xsfvfnrclipxfqf", RVV_REQ_xsfvfnrclipxfqf},
       {"xsfvfhbfmin", RVV_REQ_xsfvfhbfmin},
-      {"xsfvfwmaccqqq", RVV_REQ_xsfvfwmaccqqq},
       {"xsfvcp", RVV_REQ_Xsfvcp}};
 #else
       {"experimental-zvksh", RVV_REQ_Zvksh}};
@@ -333,11 +328,12 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
 #endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
-    llvm::SmallVector<PrototypeDescriptor> NTLProtoMaskSeq =
-        RVVIntrinsic::computeBuiltinTypes(
-            BasicProtoSeq, /*IsMasked=*/true, Record.HasMaskedOffOperand,
-            Record.HasVL, Record.NF, MaskedPolicyScheme,
-            NonTemporalDefaultPolicy, Record.IsTuple);
+    llvm::SmallVector<PrototypeDescriptor> NTLProtoMaskSeq;
+    if (Record.HasMasked)
+      NTLProtoMaskSeq = RVVIntrinsic::computeBuiltinTypes(
+          BasicProtoSeq, /*IsMasked=*/true, Record.HasMaskedOffOperand,
+          Record.HasVL, Record.NF, MaskedPolicyScheme,
+          NonTemporalDefaultPolicy, Record.IsTuple);
 #endif // SIFIVE_CUSTOMIZATION
 
     bool UnMaskedHasPolicy = UnMaskedPolicyScheme != PolicyScheme::SchemeNone;

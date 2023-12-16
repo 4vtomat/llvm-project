@@ -149,11 +149,6 @@ static BasicType ParseBasicType(char c) {
   case 'x':
     return BasicType::Float16;
     break;
-#if SIFIVE_CUSTOMIZATION
-  case 'y':
-    return BasicType::BFloat;
-    break;
-#endif // SIFIVE_CUSTOMIZATION
   case 'f':
     return BasicType::Float32;
     break;
@@ -636,9 +631,11 @@ void RVVEmitter::createRVVIntrinsics(
           BasicPrototype, /*IsMasked=*/true, HasMaskedOffOperand, HasVL, NF,
           MaskedPolicyScheme, DefaultPolicy, IsTuple);
 #if SIFIVE_CUSTOMIZATION
-    auto NTLMaskedPrototype = RVVIntrinsic::computeBuiltinTypes(
-        BasicPrototype, /*IsMasked=*/true, HasMaskedOffOperand, HasVL, NF,
-        MaskedPolicyScheme, NonTemporalDefaultPolicy, IsTuple);
+    llvm::SmallVector<PrototypeDescriptor> NTLMaskedPrototype;
+    if (HasMasked)
+      NTLMaskedPrototype = RVVIntrinsic::computeBuiltinTypes(
+          BasicPrototype, /*IsMasked=*/true, HasMaskedOffOperand, HasVL, NF,
+          MaskedPolicyScheme, NonTemporalDefaultPolicy, IsTuple);
 #endif // SIFIVE_CUSTOMIZATION
 
     // Create Intrinsics for each type and LMUL.
@@ -780,9 +777,7 @@ void RVVEmitter::createRVVIntrinsics(
                                   .Case("Zvksed", RVV_REQ_Zvksed)
                                   .Case("Zvksh", RVV_REQ_Zvksh)
 #if SIFIVE_CUSTOMIZATION
-                                  .Case("Xsfvfnrclipxfqf", RVV_REQ_xsfvfnrclipxfqf)
                                   .Case("Xsfvfhbfmin", RVV_REQ_xsfvfhbfmin)
-                                  .Case("Xsfvfwmaccqqq", RVV_REQ_xsfvfwmaccqqq)
                                   .Case("HasBfloat16", RVV_REQ_HasBfloat16)
 #endif // SIFIVE_CUSTOMIZATION
                                   .Default(RVV_REQ_None);

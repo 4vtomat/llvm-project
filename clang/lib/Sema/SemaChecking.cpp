@@ -6105,22 +6105,19 @@ void Sema::checkRVVTypeSupport(QualType Ty, SourceLocation Loc, Decl *D) {
   // Check if enabled zvfbfmin for BFloat16
   if (Ty->isRVVType(/* Bitwidth */ 16, /* IsFloat */ false,
                     /* IsBFloat */ true) &&
-      !TI.hasFeature("experimental-zvfbfmin"))
-    Diag(Loc, diag::err_riscv_type_requires_extension, D) << Ty << "zvfbfmin";
+#if SIFIVE_CUSTOMIZATION
+      !TI.hasFeature("experimental-zvfbfmin") &&
+      !TI.hasFeature("xsfvfhbfmin") &&
+      !TI.hasFeature("xsfvfwmaccqqq"))
+    Diag(Loc, diag::err_riscv_type_requires_extension, D) << Ty
+        << "zvfbfmin' or 'xsfvfhbfmin' or 'xsfvfwmaccqqq";
+#endif
   if (Ty->isRVVType(/* Bitwidth */ 32, /* IsFloat */ true) &&
       !TI.hasFeature("zve32f"))
     Diag(Loc, diag::err_riscv_type_requires_extension, D) << Ty << "zve32f";
   if (Ty->isRVVType(/* Bitwidth */ 64, /* IsFloat */ true) &&
       !TI.hasFeature("zve64d"))
     Diag(Loc, diag::err_riscv_type_requires_extension, D) << Ty << "zve64d";
-#if SIFIVE_CUSTOMIZATION
-  if (Ty->isRVVType(/* Bitwidth */ 16, /* IsFloat */ false,
-                    /* IsBFloat */ true) &&
-      !Context.getTargetInfo().hasFeature("xsfvfhbfmin") &&
-      !Context.getTargetInfo().hasFeature("xsfvfwmaccqqq"))
-    Diag(Loc, diag::err_riscv_type_requires_extension, D)
-        << Ty << "xsfvfhbfmin' or 'xsfvfwmaccqqq";
-#endif
   // Given that caller already checked isRVVType() before calling this function,
   // if we don't have at least zve32x supported, then we need to emit error.
   if (!TI.hasFeature("zve32x"))

@@ -142,8 +142,8 @@ multiclass RVVVLSEBuiltin<list<string> types> {
 multiclass RVVIndexedLoad<string op> {
 #ifdef SIFIVE_CUSTOMIZATION
   let HasNontemporalOperand = true, 
-#endif // SIFIVE_CUSTOMIZATION
       UnMaskedPolicyScheme = HasPassthruOperand in {
+#endif // SIFIVE_CUSTOMIZATION
     foreach type = TypeList in {
       foreach eew_list = EEWList[0-2] in {
         defvar eew = eew_list[0];
@@ -189,13 +189,10 @@ let HasMaskedOffOperand = false,
           // Builtin: (ptr, value, vl). Intrinsic: (value, ptr, vl)
           std::swap(Ops[0], Ops[1]);
         }
-        Ops[1] = Builder.CreateBitCast(Ops[1], Ops[0]->getType()->getPointerTo());
-#endif // SIFIVE_CUSTOMIZATION
         if (IsMasked)
           IntrinsicTypes = {Ops[0]->getType(), Ops[3]->getType()};
         else
           IntrinsicTypes = {Ops[0]->getType(), Ops[2]->getType()};
-#ifdef SIFIVE_CUSTOMIZATION
         if(IsNontemporal)
           return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
       }
@@ -242,13 +239,10 @@ multiclass RVVVSSEBuiltin<list<string> types> {
             // Builtin: (ptr, stride, value, vl). Intrinsic: (value, ptr, stride, vl)
             std::rotate(Ops.begin(), Ops.begin() + 2, Ops.begin() + 3);
           }
-          Ops[1] = Builder.CreateBitCast(Ops[1], Ops[0]->getType()->getPointerTo());
-#endif // SIFIVE_CUSTOMIZATION
           if (IsMasked)
             IntrinsicTypes = {Ops[0]->getType(), Ops[4]->getType()};
           else
             IntrinsicTypes = {Ops[0]->getType(), Ops[3]->getType()};
-#ifdef SIFIVE_CUSTOMIZATION
           if(IsNontemporal)
             return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
 #endif // SIFIVE_CUSTOMIZATION
@@ -282,13 +276,10 @@ multiclass RVVIndexedStore<string op> {
             // Builtin: (ptr, index, value, vl). Intrinsic: (value, ptr, index, vl)
             std::rotate(Ops.begin(), Ops.begin() + 2, Ops.begin() + 3);
           }
-          Ops[1] = Builder.CreateBitCast(Ops[1], Ops[0]->getType()->getPointerTo());
-#endif // SIFIVE_CUSTOMIZATION
           if (IsMasked)
             IntrinsicTypes = {Ops[0]->getType(), Ops[2]->getType(), Ops[4]->getType()};
           else
             IntrinsicTypes = {Ops[0]->getType(), Ops[2]->getType(), Ops[3]->getType()};
-#ifdef SIFIVE_CUSTOMIZATION
           if(IsNontemporal)
             return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
 #endif // SIFIVE_CUSTOMIZATION
@@ -2963,8 +2954,8 @@ let HasMasked = false, HasVL = false, IRName = "" in {
     // reinterpret for bf16 <-> uint16
     // Reinterpret between different type under the same SEW and LMUL
     let RequiredFeatures = ["HasBfloat16"] in {
-      def vreinterpret_bf16_u : RVVBuiltin<"Uvv", "vUv", "y", "v">;
-      def vreinterpret_u_bf16 : RVVBuiltin<"vUv", "Uvv", "y", "Uv">;
+      def vreinterpret_bf16_u : RVVBuiltin<"Uvv", "vUv", "b", "v">;
+      def vreinterpret_u_bf16 : RVVBuiltin<"vUv", "Uvv", "b", "Uv">;
     }
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -2976,7 +2967,7 @@ let HasMasked = false, HasVL = false, IRName = "" in {
       }] in {
     def vundefined : RVVBuiltin<"v", "v", "csilxfd">;
     def vundefined_u : RVVBuiltin<"Uv", "Uv", "csil">;
-
+    
     foreach nf = NFList in {
       let NF = nf in {
         defvar T = "(Tuple:" # nf # ")";
@@ -3269,33 +3260,10 @@ let IntrinsicTypes = [-1] in
   def vgetvxrm : RVVBuiltin<"", "z", "i">;
 }
 
-// The modifier 'MultipleLMUL' represents LMUL that will expanded but
-// doesn't follow general expansion rules. The LMUL here is represented
-// under logarithm.
-// (MultipleLMUL:1)q stands for LMUL don't multiply and SEW multiply by 4
-// (MultipleLMUL:2)w stands for LMUL multiply by 2 and SEW multiply by 2
-// (MultipleLMUL:2)q stands for LMUL multiply by 2 and SEW multiply by 4
-let RequiredFeatures = ["Xsfvfnrclipxfqf"], UnMaskedPolicyScheme = HasPassthruOperand,
-    Log2LMUL = [0, 1, -1, -2, -3] in {
-  let Name = "sf_vfnrclip_x_f_qf" in
-    def sf_vfnrclip_x : RVVConvBuiltin<"v", "vFqf", "c", "sf_vfnrclip_x_f_qf">;
-  let Name = "sf_vfnrclip_xu_f_qf" in
-    def sf_vfnrclip_xu : RVVConvBuiltin<"Uv", "UvFqf", "c", "sf_vfnrclip_xu_f_qf">;
-}
-
 let RequiredFeatures = ["Xsfvfhbfmin"], UnMaskedPolicyScheme = HasPassthruOperand,
     Log2LMUL = [-3, -2, -1, 0, 1, 2] in {
-  def sf_vfwcvt_f_bf16_v : RVVConvBuiltin<"w", "wv", "y", "sf_vfwcvt_f">;
-  def sf_vfncvt_bf16_f_w : RVVConvBuiltin<"v", "vw", "y", "sf_vfncvt_bf16">;
-}
-
-let RequiredFeatures = ["Xsfvfwmaccqqq"],
-    UnMaskedPolicyScheme = HasPolicyOperand,
-    Log2LMUL = [-2, -1, 0, 1, 2],
-    HasMasked = false,
-    IntrinsicTypes = [-1, 1, 2] in {
-  let OverloadedName = "sf_vfwmacc_4x4x4" in
-    def sf_vfwmacc_4x4x4 : RVVBuiltin<"(MultipleLMUL:2)w", "(MultipleLMUL:2)w(MultipleLMUL:2)wSvv", "y">;
+  def sf_vfwcvt_f_bf16_v : RVVConvBuiltin<"w", "wv", "b", "sf_vfwcvt_f">;
+  def sf_vfncvt_bf16_f_w : RVVConvBuiltin<"v", "vw", "b", "sf_vfncvt_bf16">;
 }
 
 let HeaderCode = [{
