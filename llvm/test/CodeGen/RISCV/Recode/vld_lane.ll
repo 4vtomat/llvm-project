@@ -448,9 +448,9 @@ define void @vld2q_lane_s8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vid.v v11
 ; CHECK-NEXT:    vrgather.vv v12, v9, v11
 ; CHECK-NEXT:    lui a0, 2
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
+; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vrgather.vi v12, v10, 1, v0.t
 ; CHECK-NEXT:    vmv.v.v v9, v12
 ; CHECK-NEXT:    vsseg2e8.v v8, (a2)
@@ -561,9 +561,9 @@ define void @vld2q_lane_u8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vid.v v11
 ; CHECK-NEXT:    vrgather.vv v12, v9, v11
 ; CHECK-NEXT:    li a0, 256
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
+; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vrgather.vi v12, v10, 1, v0.t
 ; CHECK-NEXT:    vmv.v.v v9, v12
 ; CHECK-NEXT:    vsseg2e8.v v8, (a2)
@@ -1327,9 +1327,9 @@ define void @vld3q_lane_s8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vid.v v12
 ; CHECK-NEXT:    vrgather.vv v13, v9, v12
 ; CHECK-NEXT:    li a0, 64
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
+; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vrgather.vi v13, v11, 1, v0.t
 ; CHECK-NEXT:    vrgather.vv v14, v10, v12
 ; CHECK-NEXT:    vrgather.vi v14, v11, 2, v0.t
@@ -2437,9 +2437,9 @@ define void @vld4q_lane_s8(ptr noundef %in_0, ptr noundef %in_1, ptr nocapture n
 ; CHECK-NEXT:    vid.v v13
 ; CHECK-NEXT:    vrgather.vv v14, v9, v13
 ; CHECK-NEXT:    lui a0, 4
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
+; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vrgather.vi v14, v12, 1, v0.t
 ; CHECK-NEXT:    vrgather.vv v15, v10, v13
 ; CHECK-NEXT:    vrgather.vi v15, v12, 2, v0.t

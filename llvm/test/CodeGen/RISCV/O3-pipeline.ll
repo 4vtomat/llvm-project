@@ -34,6 +34,7 @@
 ; CHECK-NEXT:       Loop Pass Manager
 ; CHECK-NEXT:       RISC-V widen reduction phis
 ; SIFIVE_CUSTOMIZATION
+; CHECK-NEXT:       Canonicalize natural loops
 ; CHECK-NEXT:       Lazy Branch Probability Analysis
 ; CHECK-NEXT:       Lazy Block Frequency Analysis
 ; CHECK-NEXT:       Optimization Remark Emitter

@@ -360,9 +360,9 @@ define void @vpaddq_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vrgather.vv v11, v8, v10
 ; CHECK-NEXT:    vadd.vi v12, v10, -16
 ; CHECK-NEXT:    li a0, -256
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
+; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vrgather.vv v11, v9, v12, v0.t
 ; CHECK-NEXT:    vadd.vi v12, v10, 1
 ; CHECK-NEXT:    vrgather.vv v13, v8, v12
@@ -465,9 +465,9 @@ define void @vpaddq_u8(ptr nocapture noundef readonly %in_0, ptr nocapture nound
 ; CHECK-NEXT:    vrgather.vv v11, v8, v10
 ; CHECK-NEXT:    vadd.vi v12, v10, -16
 ; CHECK-NEXT:    li a0, -256
-; CHECK-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
+; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
 ; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
+; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
 ; CHECK-NEXT:    vrgather.vv v11, v9, v12, v0.t
 ; CHECK-NEXT:    vadd.vi v12, v10, 1
 ; CHECK-NEXT:    vrgather.vv v13, v8, v12

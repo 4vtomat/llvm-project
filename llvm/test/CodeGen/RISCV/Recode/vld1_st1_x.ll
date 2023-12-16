@@ -244,9 +244,9 @@ entry:
 define void @vld1_s64_x2(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld1_s64_x2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vse8.v v8, (a1)
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %vld1xN = tail call { <1 x i64>, <1 x i64> } @llvm.aarch64.neon.ld1x2.v1i64.p0(ptr %in_0)
@@ -275,10 +275,9 @@ entry:
 define void @vld1_s64_x4(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld1_s64_x4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a2, 32
-; CHECK-NEXT:    vsetvli zero, a2, e8, m2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vse8.v v8, (a1)
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %vld1xN = tail call { <1 x i64>, <1 x i64>, <1 x i64>, <1 x i64> } @llvm.aarch64.neon.ld1x4.v1i64.p0(ptr %in_0)
@@ -438,9 +437,9 @@ entry:
 define void @vld1_u64_x2(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld1_u64_x2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vse8.v v8, (a1)
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %vld1xN = tail call { <1 x i64>, <1 x i64> } @llvm.aarch64.neon.ld1x2.v1i64.p0(ptr %in_0)
@@ -469,10 +468,9 @@ entry:
 define void @vld1_u64_x4(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld1_u64_x4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a2, 32
-; CHECK-NEXT:    vsetvli zero, a2, e8, m2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vse8.v v8, (a1)
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %vld1xN = tail call { <1 x i64>, <1 x i64>, <1 x i64>, <1 x i64> } @llvm.aarch64.neon.ld1x4.v1i64.p0(ptr %in_0)
@@ -778,10 +776,9 @@ entry:
 define void @vld1q_s64_x2(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld1q_s64_x2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a2, 32
-; CHECK-NEXT:    vsetvli zero, a2, e8, m2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vse8.v v8, (a1)
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %vld1xN = tail call { <2 x i64>, <2 x i64> } @llvm.aarch64.neon.ld1x2.v2i64.p0(ptr %in_0)
@@ -810,10 +807,9 @@ entry:
 define void @vld1q_s64_x4(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld1q_s64_x4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a2, 64
-; CHECK-NEXT:    vsetvli zero, a2, e8, m4, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vse8.v v8, (a1)
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %vld1xN = tail call { <2 x i64>, <2 x i64>, <2 x i64>, <2 x i64> } @llvm.aarch64.neon.ld1x4.v2i64.p0(ptr %in_0)
@@ -976,10 +972,9 @@ entry:
 define void @vld1q_u64_x2(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld1q_u64_x2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a2, 32
-; CHECK-NEXT:    vsetvli zero, a2, e8, m2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vse8.v v8, (a1)
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %vld1xN = tail call { <2 x i64>, <2 x i64> } @llvm.aarch64.neon.ld1x2.v2i64.p0(ptr %in_0)
@@ -1008,10 +1003,9 @@ entry:
 define void @vld1q_u64_x4(ptr noundef %in_0, ptr nocapture noundef %out) {
 ; CHECK-LABEL: vld1q_u64_x4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a2, 64
-; CHECK-NEXT:    vsetvli zero, a2, e8, m4, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vse8.v v8, (a1)
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a0)
+; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %vld1xN = tail call { <2 x i64>, <2 x i64>, <2 x i64>, <2 x i64> } @llvm.aarch64.neon.ld1x4.v2i64.p0(ptr %in_0)
@@ -1317,9 +1311,9 @@ entry:
 define void @vst1_s64_x2(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-LABEL: vst1_s64_x2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a1)
-; CHECK-NEXT:    vse8.v v8, (a0)
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a1)
+; CHECK-NEXT:    vse64.v v8, (a0)
 ; CHECK-NEXT:    ret
 entry:
   %vld1xN = tail call { <1 x i64>, <1 x i64> } @llvm.aarch64.neon.ld1x2.v1i64.p0(ptr %in_1)
@@ -1348,10 +1342,9 @@ entry:
 define void @vst1_s64_x4(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-LABEL: vst1_s64_x4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a2, 32
-; CHECK-NEXT:    vsetvli zero, a2, e8, m2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a1)
-; CHECK-NEXT:    vse8.v v8, (a0)
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a1)
+; CHECK-NEXT:    vse64.v v8, (a0)
 ; CHECK-NEXT:    ret
 entry:
   %vld1xN = tail call { <1 x i64>, <1 x i64>, <1 x i64>, <1 x i64> } @llvm.aarch64.neon.ld1x4.v1i64.p0(ptr %in_1)
@@ -1511,9 +1504,9 @@ entry:
 define void @vst1_u64_x2(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-LABEL: vst1_u64_x2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a1)
-; CHECK-NEXT:    vse8.v v8, (a0)
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a1)
+; CHECK-NEXT:    vse64.v v8, (a0)
 ; CHECK-NEXT:    ret
 entry:
   %vld1xN = tail call { <1 x i64>, <1 x i64> } @llvm.aarch64.neon.ld1x2.v1i64.p0(ptr %in_1)
@@ -1542,10 +1535,9 @@ entry:
 define void @vst1_u64_x4(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-LABEL: vst1_u64_x4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a2, 32
-; CHECK-NEXT:    vsetvli zero, a2, e8, m2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a1)
-; CHECK-NEXT:    vse8.v v8, (a0)
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a1)
+; CHECK-NEXT:    vse64.v v8, (a0)
 ; CHECK-NEXT:    ret
 entry:
   %vld1xN = tail call { <1 x i64>, <1 x i64>, <1 x i64>, <1 x i64> } @llvm.aarch64.neon.ld1x4.v1i64.p0(ptr %in_1)
@@ -1851,10 +1843,9 @@ entry:
 define void @vst1q_s64_x2(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-LABEL: vst1q_s64_x2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a2, 32
-; CHECK-NEXT:    vsetvli zero, a2, e8, m2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a1)
-; CHECK-NEXT:    vse8.v v8, (a0)
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a1)
+; CHECK-NEXT:    vse64.v v8, (a0)
 ; CHECK-NEXT:    ret
 entry:
   %vld1xN = tail call { <2 x i64>, <2 x i64> } @llvm.aarch64.neon.ld1x2.v2i64.p0(ptr %in_1)
@@ -1883,10 +1874,9 @@ entry:
 define void @vst1q_s64_x4(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-LABEL: vst1q_s64_x4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a2, 64
-; CHECK-NEXT:    vsetvli zero, a2, e8, m4, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a1)
-; CHECK-NEXT:    vse8.v v8, (a0)
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a1)
+; CHECK-NEXT:    vse64.v v8, (a0)
 ; CHECK-NEXT:    ret
 entry:
   %vld1xN = tail call { <2 x i64>, <2 x i64>, <2 x i64>, <2 x i64> } @llvm.aarch64.neon.ld1x4.v2i64.p0(ptr %in_1)
@@ -2049,10 +2039,9 @@ entry:
 define void @vst1q_u64_x2(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-LABEL: vst1q_u64_x2:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a2, 32
-; CHECK-NEXT:    vsetvli zero, a2, e8, m2, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a1)
-; CHECK-NEXT:    vse8.v v8, (a0)
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a1)
+; CHECK-NEXT:    vse64.v v8, (a0)
 ; CHECK-NEXT:    ret
 entry:
   %vld1xN = tail call { <2 x i64>, <2 x i64> } @llvm.aarch64.neon.ld1x2.v2i64.p0(ptr %in_1)
@@ -2081,10 +2070,9 @@ entry:
 define void @vst1q_u64_x4(ptr nocapture noundef %out, ptr noundef %in_1) {
 ; CHECK-LABEL: vst1q_u64_x4:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    li a2, 64
-; CHECK-NEXT:    vsetvli zero, a2, e8, m4, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a1)
-; CHECK-NEXT:    vse8.v v8, (a0)
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
+; CHECK-NEXT:    vle64.v v8, (a1)
+; CHECK-NEXT:    vse64.v v8, (a0)
 ; CHECK-NEXT:    ret
 entry:
   %vld1xN = tail call { <2 x i64>, <2 x i64>, <2 x i64>, <2 x i64> } @llvm.aarch64.neon.ld1x4.v2i64.p0(ptr %in_1)

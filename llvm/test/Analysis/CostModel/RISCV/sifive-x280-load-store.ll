@@ -7,7 +7,7 @@ define void @load(ptr %p) {
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %1 = load i8, ptr %p, align 1
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %2 = load i16, ptr %p, align 2
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %3 = load i32, ptr %p, align 4
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %4 = load i64, ptr %p, align 4
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %4 = load i64, ptr %p, align 8
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %5 = load ptr, ptr %p, align 8
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %6 = load <1 x bfloat>, ptr %p, align 2
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %7 = load <2 x bfloat>, ptr %p, align 4
@@ -113,7 +113,7 @@ define void @load(ptr %p) {
 ; SIZE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %1 = load i8, ptr %p, align 1
 ; SIZE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %2 = load i16, ptr %p, align 2
 ; SIZE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %3 = load i32, ptr %p, align 4
-; SIZE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %4 = load i64, ptr %p, align 4
+; SIZE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %4 = load i64, ptr %p, align 8
 ; SIZE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %5 = load ptr, ptr %p, align 8
 ; SIZE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %6 = load <1 x bfloat>, ptr %p, align 2
 ; SIZE-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %7 = load <2 x bfloat>, ptr %p, align 4
@@ -343,7 +343,7 @@ define void @store(ptr %p) {
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store i8 undef, ptr %p, align 1
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store i16 undef, ptr %p, align 2
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store i32 undef, ptr %p, align 4
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store i64 undef, ptr %p, align 4
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store i64 undef, ptr %p, align 8
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store ptr undef, ptr %p, align 8
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <1 x i8> undef, ptr %p, align 1
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <2 x i8> undef, ptr %p, align 2
@@ -413,7 +413,7 @@ define void @store(ptr %p) {
 ; SIZE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store i8 undef, ptr %p, align 1
 ; SIZE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store i16 undef, ptr %p, align 2
 ; SIZE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store i32 undef, ptr %p, align 4
-; SIZE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store i64 undef, ptr %p, align 4
+; SIZE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store i64 undef, ptr %p, align 8
 ; SIZE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store ptr undef, ptr %p, align 8
 ; SIZE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <1 x i8> undef, ptr %p, align 1
 ; SIZE-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <2 x i8> undef, ptr %p, align 2
