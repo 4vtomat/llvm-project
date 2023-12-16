@@ -9,7 +9,7 @@ declare <vscale x 1 x i32> @llvm.riscv.vle.nxv1i32(
 define <vscale x 1 x i32> @intrinsic_vle_v_nxv1i32_nxv1i32(<vscale x 1 x i32>* align 4 %0, i64 %1) sanitize_address {
 ; CHECK-LABEL: @intrinsic_vle_v_nxv1i32_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP2:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP2:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP3:%.*]] = icmp ne i64 [[TMP1:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP3]], label [[TMP4:%.*]], label [[TMP12:%.*]]
 ; CHECK:       4:
@@ -52,7 +52,7 @@ declare <vscale x 1 x i32> @llvm.riscv.vle.mask.nxv1i32(
 define <vscale x 1 x i32> @intrinsic_vle_mask_v_nxv1i32_nxv1i32(<vscale x 1 x i32> %0, <vscale x 1 x i32>* align 4 %1, <vscale x 1 x i1> %2, i64 %3) sanitize_address {
 ; CHECK-LABEL: @intrinsic_vle_mask_v_nxv1i32_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP4:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP4:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i64 [[TMP3:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP14:%.*]]
 ; CHECK:       6:
@@ -94,7 +94,7 @@ declare void @llvm.riscv.vse.nxv1i32(
 define void @intrinsic_vse_v_nxv1i32_nxv1i32(<vscale x 1 x i32> %0, <vscale x 1 x i32>* align 4 %1, i64 %2) sanitize_address {
 ; CHECK-LABEL: @intrinsic_vse_v_nxv1i32_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP3:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP3:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp ne i64 [[TMP2:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP4]], label [[TMP5:%.*]], label [[TMP13:%.*]]
 ; CHECK:       5:
@@ -136,7 +136,7 @@ declare void @llvm.riscv.vse.mask.nxv1i32(
 define void @intrinsic_vse_mask_v_nxv1i32_nxv1i32(<vscale x 1 x i32> %0, <vscale x 1 x i32>* align 4 %1, <vscale x 1 x i1> %2, i64 %3) sanitize_address {
 ; CHECK-LABEL: @intrinsic_vse_mask_v_nxv1i32_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP4:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP4:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i64 [[TMP3:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP14:%.*]]
 ; CHECK:       6:
@@ -177,7 +177,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg2.mask.nxv1i32(
 define <vscale x 1 x i32> @test_vlseg2_nxv1i32(ptr align 4 %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlseg2_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -238,7 +238,7 @@ entry:
 define <vscale x 1 x i32> @test_vlseg2_mask_nxv1i32(ptr align 4 %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlseg2_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -302,7 +302,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.v
 define <vscale x 1 x i32> @test_vlseg3_nxv1i32(ptr align 4 %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlseg3_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -387,7 +387,7 @@ entry:
 define <vscale x 1 x i32> @test_vlseg3_mask_nxv1i32(ptr align 4 %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlseg3_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -475,7 +475,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vlseg4_nxv1i32(ptr align 4 %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlseg4_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -584,7 +584,7 @@ entry:
 define <vscale x 1 x i32> @test_vlseg4_mask_nxv1i32(ptr align 4 %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlseg4_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -696,7 +696,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vlseg5_nxv1i32(ptr align 4 %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlseg5_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -829,7 +829,7 @@ entry:
 define <vscale x 1 x i32> @test_vlseg5_mask_nxv1i32(ptr align 4 %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlseg5_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -965,7 +965,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vlseg6_nxv1i32(ptr align 4 %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlseg6_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -1122,7 +1122,7 @@ entry:
 define <vscale x 1 x i32> @test_vlseg6_mask_nxv1i32(ptr align 4 %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlseg6_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -1282,7 +1282,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vlseg7_nxv1i32(ptr align 4 %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlseg7_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -1463,7 +1463,7 @@ entry:
 define <vscale x 1 x i32> @test_vlseg7_mask_nxv1i32(ptr align 4 %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlseg7_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -1647,7 +1647,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr align 4 %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlseg8_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -1852,7 +1852,7 @@ entry:
 define <vscale x 1 x i32> @test_vlseg8_mask_nxv1i32(ptr align 4 %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlseg8_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -2060,7 +2060,7 @@ declare void @llvm.riscv.vsseg2.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i3
 define void @test_vsseg2_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg2_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -2119,7 +2119,7 @@ entry:
 define void @test_vsseg2_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg2_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -2181,7 +2181,7 @@ declare void @llvm.riscv.vsseg3.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i3
 define void @test_vsseg3_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg3_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -2264,7 +2264,7 @@ entry:
 define void @test_vsseg3_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg3_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -2350,7 +2350,7 @@ declare void @llvm.riscv.vsseg4.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i3
 define void @test_vsseg4_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg4_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -2457,7 +2457,7 @@ entry:
 define void @test_vsseg4_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg4_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -2567,7 +2567,7 @@ declare void @llvm.riscv.vsseg5.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i3
 define void @test_vsseg5_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg5_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -2698,7 +2698,7 @@ entry:
 define void @test_vsseg5_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg5_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -2832,7 +2832,7 @@ declare void @llvm.riscv.vsseg6.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i3
 define void @test_vsseg6_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg6_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -2987,7 +2987,7 @@ entry:
 define void @test_vsseg6_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg6_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -3145,7 +3145,7 @@ declare void @llvm.riscv.vsseg7.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i3
 define void @test_vsseg7_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg7_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -3324,7 +3324,7 @@ entry:
 define void @test_vsseg7_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg7_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -3506,7 +3506,7 @@ declare void @llvm.riscv.vsseg8.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i3
 define void @test_vsseg8_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg8_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -3709,7 +3709,7 @@ entry:
 define void @test_vsseg8_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg8_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -3919,7 +3919,7 @@ declare <vscale x 1 x i32> @llvm.riscv.vlse.nxv1i32(
 define <vscale x 1 x i32> @intrinsic_vlse_v_nxv1i32_nxv1i32(<vscale x 1 x i32>* align 4 %0, i64 %1, i64 %2) sanitize_address {
 ; CHECK-LABEL: @intrinsic_vlse_v_nxv1i32_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP3:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP3:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp ne i64 [[TMP2:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP4]], label [[TMP5:%.*]], label [[TMP14:%.*]]
 ; CHECK:       5:
@@ -3967,7 +3967,7 @@ declare <vscale x 1 x i32> @llvm.riscv.vlse.mask.nxv1i32(
 define <vscale x 1 x i32> @intrinsic_vlse_mask_v_nxv1i32_nxv1i32(<vscale x 1 x i32> %0, <vscale x 1 x i32>* %1, i64 %2, <vscale x 1 x i1> %3, i64 %4) sanitize_address {
 ; CHECK-LABEL: @intrinsic_vlse_mask_v_nxv1i32_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP5:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP5:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[TMP4:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP16:%.*]]
 ; CHECK:       7:
@@ -4015,7 +4015,7 @@ declare void @llvm.riscv.vsse.nxv1i32(
 define void @intrinsic_vsse_v_nxv1i32_nxv1i32(<vscale x 1 x i32> %0, <vscale x 1 x i32>* %1, i64 %2, i64 %3) sanitize_address {
 ; CHECK-LABEL: @intrinsic_vsse_v_nxv1i32_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP4:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP4:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i64 [[TMP3:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP15:%.*]]
 ; CHECK:       6:
@@ -4062,7 +4062,7 @@ declare void @llvm.riscv.vsse.mask.nxv1i32(
 define void @intrinsic_vsse_mask_v_nxv1i32_nxv1i32(<vscale x 1 x i32> %0, <vscale x 1 x i32>* %1, i64 %2, <vscale x 1 x i1> %3, i64 %4) sanitize_address {
 ; CHECK-LABEL: @intrinsic_vsse_mask_v_nxv1i32_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP5:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP5:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[TMP4:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP16:%.*]]
 ; CHECK:       7:
@@ -4106,7 +4106,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg2.mask.nxv1i32
 define <vscale x 1 x i32> @test_vlsseg2_nxv1i32(ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg2_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -4167,7 +4167,7 @@ entry:
 define <vscale x 1 x i32> @test_vlsseg2_mask_nxv1i32(ptr %base, i64 %offset, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg2_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -4282,7 +4282,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.v
 define <vscale x 1 x i32> @test_vlsseg3_nxv1i32(ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg3_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -4367,7 +4367,7 @@ entry:
 define <vscale x 1 x i32> @test_vlsseg3_mask_nxv1i32(ptr %base, i64 %offset, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg3_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -4530,7 +4530,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vlsseg4_nxv1i32(ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg4_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -4639,7 +4639,7 @@ entry:
 define <vscale x 1 x i32> @test_vlsseg4_mask_nxv1i32(ptr %base, i64 %offset, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg4_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -4850,7 +4850,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vlsseg5_nxv1i32(ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg5_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -4983,7 +4983,7 @@ entry:
 define <vscale x 1 x i32> @test_vlsseg5_mask_nxv1i32(ptr %base, i64 %offset, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg5_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -5242,7 +5242,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vlsseg6_nxv1i32(ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg6_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -5399,7 +5399,7 @@ entry:
 define <vscale x 1 x i32> @test_vlsseg6_mask_nxv1i32(ptr %base, i64 %offset, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg6_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -5706,7 +5706,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vlsseg7_nxv1i32(ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg7_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -5887,7 +5887,7 @@ entry:
 define <vscale x 1 x i32> @test_vlsseg7_mask_nxv1i32(ptr %base, i64 %offset, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg7_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -6242,7 +6242,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vlsseg8_nxv1i32(ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg8_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -6447,7 +6447,7 @@ entry:
 define <vscale x 1 x i32> @test_vlsseg8_mask_nxv1i32(ptr %base, i64 %offset, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg8_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -6850,7 +6850,7 @@ declare void @llvm.riscv.vssseg2.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i
 define void @test_vssseg2_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg2_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -6909,7 +6909,7 @@ entry:
 define void @test_vssseg2_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg2_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -6971,7 +6971,7 @@ declare void @llvm.riscv.vssseg3.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i
 define void @test_vssseg3_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg3_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -7054,7 +7054,7 @@ entry:
 define void @test_vssseg3_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg3_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -7140,7 +7140,7 @@ declare void @llvm.riscv.vssseg4.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i
 define void @test_vssseg4_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg4_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -7247,7 +7247,7 @@ entry:
 define void @test_vssseg4_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg4_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -7357,7 +7357,7 @@ declare void @llvm.riscv.vssseg5.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i
 define void @test_vssseg5_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg5_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -7488,7 +7488,7 @@ entry:
 define void @test_vssseg5_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg5_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -7622,7 +7622,7 @@ declare void @llvm.riscv.vssseg6.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i
 define void @test_vssseg6_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg6_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -7777,7 +7777,7 @@ entry:
 define void @test_vssseg6_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg6_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -7935,7 +7935,7 @@ declare void @llvm.riscv.vssseg7.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i
 define void @test_vssseg7_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg7_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -8114,7 +8114,7 @@ entry:
 define void @test_vssseg7_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg7_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -8296,7 +8296,7 @@ declare void @llvm.riscv.vssseg8.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i
 define void @test_vssseg8_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg8_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -8499,7 +8499,7 @@ entry:
 define void @test_vssseg8_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg8_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP11:%.*]]
 ; CHECK:       2:
@@ -8703,7 +8703,7 @@ entry:
 define <vscale x 1 x i32> @intrinsic_vlse_v_nxv1i32_nxv1i32_align(<vscale x 1 x i32>* align 4 %0, i64 %1, i64 %2) sanitize_address {
 ; CHECK-LABEL: @intrinsic_vlse_v_nxv1i32_nxv1i32_align(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP3:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP3:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp ne i64 [[TMP2:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP4]], label [[TMP5:%.*]], label [[TMP14:%.*]]
 ; CHECK:       5:
@@ -8749,7 +8749,7 @@ declare <vscale x 1 x i32> @llvm.riscv.vloxei.nxv1i32.nxv1i16(
 define <vscale x 1 x i32> @intrinsic_vloxei_v_nxv1i32_nxv1i32_nxv1i16(<vscale x 1 x i32>* %0, <vscale x 1 x i16> %1, i64 %2) sanitize_address {
 ; CHECK-LABEL: @intrinsic_vloxei_v_nxv1i32_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP3:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP3:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP4:%.*]] = zext <vscale x 1 x i16> [[TMP1:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[TMP0:%.*]], <vscale x 1 x i64> [[TMP4]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[TMP2:%.*]], 0
@@ -8798,7 +8798,7 @@ declare <vscale x 1 x i32> @llvm.riscv.vloxei.mask.nxv1i32.nxv1i16(
 define <vscale x 1 x i32> @intrinsic_vloxei_mask_v_nxv1i32_nxv1i32_nxv1i16(<vscale x 1 x i32> %0, <vscale x 1 x i32>* %1, <vscale x 1 x i16> %2, <vscale x 1 x i1> %3, i64 %4) sanitize_address {
 ; CHECK-LABEL: @intrinsic_vloxei_mask_v_nxv1i32_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP5:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP5:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP6:%.*]] = zext <vscale x 1 x i16> [[TMP2:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[TMP1:%.*]], <vscale x 1 x i64> [[TMP6]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[TMP4:%.*]], 0
@@ -8846,7 +8846,7 @@ declare <vscale x 1 x float> @llvm.riscv.vloxei.nxv1f32.nxv1i16(
 define <vscale x 1 x float> @intrinsic_vloxei_v_nxv1f32_nxv1f32_nxv1i16(<vscale x 1 x float>* %0, <vscale x 1 x i16> %1, i64 %2) sanitize_address {
 ; CHECK-LABEL: @intrinsic_vloxei_v_nxv1f32_nxv1f32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP3:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP3:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP4:%.*]] = zext <vscale x 1 x i16> [[TMP1:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[TMP0:%.*]], <vscale x 1 x i64> [[TMP4]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[TMP2:%.*]], 0
@@ -8893,7 +8893,7 @@ declare <vscale x 1 x i32> @llvm.riscv.vluxei.nxv1i32.nxv1i16(
 define <vscale x 1 x i32> @intrinsic_vluxei_v_nxv1i32_nxv1i32_nxv1i16(<vscale x 1 x i32>* %0, <vscale x 1 x i16> %1, i64 %2) sanitize_address {
 ; CHECK-LABEL: @intrinsic_vluxei_v_nxv1i32_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP3:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP3:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP4:%.*]] = zext <vscale x 1 x i16> [[TMP1:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[TMP0:%.*]], <vscale x 1 x i64> [[TMP4]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[TMP2:%.*]], 0
@@ -8942,7 +8942,7 @@ declare <vscale x 1 x i32> @llvm.riscv.vluxei.mask.nxv1i32.nxv1i16(
 define <vscale x 1 x i32> @intrinsic_vluxei_mask_v_nxv1i32_nxv1i32_nxv1i16(<vscale x 1 x i32> %0, <vscale x 1 x i32>* %1, <vscale x 1 x i16> %2, <vscale x 1 x i1> %3, i64 %4) sanitize_address {
 ; CHECK-LABEL: @intrinsic_vluxei_mask_v_nxv1i32_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP5:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP5:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP6:%.*]] = zext <vscale x 1 x i16> [[TMP2:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[TMP1:%.*]], <vscale x 1 x i64> [[TMP6]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[TMP4:%.*]], 0
@@ -8990,7 +8990,7 @@ declare void @llvm.riscv.vsoxei.nxv1i32.nxv1i16(
 define void @intrinsic_vsoxei_v_nxv1i32_nxv1i32_nxv1i16(<vscale x 1 x i32> %0, <vscale x 1 x i32>* %1, <vscale x 1 x i16> %2, i64 %3) sanitize_address {
 ; CHECK-LABEL: @intrinsic_vsoxei_v_nxv1i32_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP4:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP4:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP5:%.*]] = zext <vscale x 1 x i16> [[TMP2:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[TMP1:%.*]], <vscale x 1 x i64> [[TMP5]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp ne i64 [[TMP3:%.*]], 0
@@ -9038,7 +9038,7 @@ declare void @llvm.riscv.vsoxei.mask.nxv1i32.nxv1i16(
 define void @intrinsic_vsoxei_mask_v_nxv1i32_nxv1i32_nxv1i16(<vscale x 1 x i32> %0, <vscale x 1 x i32>* %1, <vscale x 1 x i16> %2, <vscale x 1 x i1> %3, i64 %4) sanitize_address {
 ; CHECK-LABEL: @intrinsic_vsoxei_mask_v_nxv1i32_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP5:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP5:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP6:%.*]] = zext <vscale x 1 x i16> [[TMP2:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[TMP1:%.*]], <vscale x 1 x i64> [[TMP6]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[TMP4:%.*]], 0
@@ -9086,7 +9086,7 @@ declare void @llvm.riscv.vsuxei.nxv1i32.nxv1i16(
 define void @intrinsic_vsuxei_v_nxv1i32_nxv1i32_nxv1i16(<vscale x 1 x i32> %0, <vscale x 1 x i32>* %1, <vscale x 1 x i16> %2, i64 %3) sanitize_address {
 ; CHECK-LABEL: @intrinsic_vsuxei_v_nxv1i32_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP4:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP4:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP5:%.*]] = zext <vscale x 1 x i16> [[TMP2:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[TMP1:%.*]], <vscale x 1 x i64> [[TMP5]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp ne i64 [[TMP3:%.*]], 0
@@ -9134,7 +9134,7 @@ declare void @llvm.riscv.vsuxei.mask.nxv1i32.nxv1i16(
 define void @intrinsic_vsuxei_mask_v_nxv1i32_nxv1i32_nxv1i16(<vscale x 1 x i32> %0, <vscale x 1 x i32>* %1, <vscale x 1 x i16> %2, <vscale x 1 x i1> %3, i64 %4) sanitize_address {
 ; CHECK-LABEL: @intrinsic_vsuxei_mask_v_nxv1i32_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP5:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP5:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP6:%.*]] = zext <vscale x 1 x i16> [[TMP2:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[TMP1:%.*]], <vscale x 1 x i64> [[TMP6]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[TMP4:%.*]], 0
@@ -9179,7 +9179,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg2.mask.nxv1i3
 define <vscale x 1 x i32> @test_vloxseg2_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg2_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
@@ -9241,7 +9241,7 @@ entry:
 define <vscale x 1 x i32> @test_vloxseg2_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg2_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
@@ -9306,7 +9306,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.v
 define <vscale x 1 x i32> @test_vloxseg3_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg3_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -9392,7 +9392,7 @@ entry:
 define <vscale x 1 x i32> @test_vloxseg3_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg3_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -9481,7 +9481,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vloxseg4_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg4_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -9591,7 +9591,7 @@ entry:
 define <vscale x 1 x i32> @test_vloxseg4_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg4_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -9704,7 +9704,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vloxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg5_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -9838,7 +9838,7 @@ entry:
 define <vscale x 1 x i32> @test_vloxseg5_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg5_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -9975,7 +9975,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vloxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg6_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -10133,7 +10133,7 @@ entry:
 define <vscale x 1 x i32> @test_vloxseg6_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg6_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -10294,7 +10294,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vloxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg7_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -10476,7 +10476,7 @@ entry:
 define <vscale x 1 x i32> @test_vloxseg7_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg7_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -10661,7 +10661,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vloxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg8_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -10867,7 +10867,7 @@ entry:
 define <vscale x 1 x i32> @test_vloxseg8_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg8_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -11076,7 +11076,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg2.mask.nxv1i3
 define <vscale x 1 x i32> @test_vluxseg2_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg2_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
@@ -11138,7 +11138,7 @@ entry:
 define <vscale x 1 x i32> @test_vluxseg2_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg2_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
@@ -11203,7 +11203,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.v
 define <vscale x 1 x i32> @test_vluxseg3_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg3_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -11289,7 +11289,7 @@ entry:
 define <vscale x 1 x i32> @test_vluxseg3_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg3_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -11378,7 +11378,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vluxseg4_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg4_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -11488,7 +11488,7 @@ entry:
 define <vscale x 1 x i32> @test_vluxseg4_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg4_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -11601,7 +11601,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vluxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg5_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -11735,7 +11735,7 @@ entry:
 define <vscale x 1 x i32> @test_vluxseg5_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg5_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -11872,7 +11872,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vluxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg6_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -12030,7 +12030,7 @@ entry:
 define <vscale x 1 x i32> @test_vluxseg6_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg6_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -12191,7 +12191,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vluxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg7_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -12373,7 +12373,7 @@ entry:
 define <vscale x 1 x i32> @test_vluxseg7_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg7_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -12558,7 +12558,7 @@ declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x 
 define <vscale x 1 x i32> @test_vluxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg8_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -12764,7 +12764,7 @@ entry:
 define <vscale x 1 x i32> @test_vluxseg8_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg8_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -12973,7 +12973,7 @@ declare void @llvm.riscv.vsoxseg2.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscal
 define void @test_vsoxseg2_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg2_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
@@ -13033,7 +13033,7 @@ entry:
 define void @test_vsoxseg2_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg2_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
@@ -13096,7 +13096,7 @@ declare void @llvm.riscv.vsoxseg3.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscal
 define void @test_vsoxseg3_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg3_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -13180,7 +13180,7 @@ entry:
 define void @test_vsoxseg3_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg3_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -13267,7 +13267,7 @@ declare void @llvm.riscv.vsoxseg4.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscal
 define void @test_vsoxseg4_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg4_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -13375,7 +13375,7 @@ entry:
 define void @test_vsoxseg4_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg4_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -13486,7 +13486,7 @@ declare void @llvm.riscv.vsoxseg5.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscal
 define void @test_vsoxseg5_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg5_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -13618,7 +13618,7 @@ entry:
 define void @test_vsoxseg5_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg5_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -13753,7 +13753,7 @@ declare void @llvm.riscv.vsoxseg6.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscal
 define void @test_vsoxseg6_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg6_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -13909,7 +13909,7 @@ entry:
 define void @test_vsoxseg6_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg6_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -14068,7 +14068,7 @@ declare void @llvm.riscv.vsoxseg7.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscal
 define void @test_vsoxseg7_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg7_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -14248,7 +14248,7 @@ entry:
 define void @test_vsoxseg7_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg7_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -14431,7 +14431,7 @@ declare void @llvm.riscv.vsoxseg8.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscal
 define void @test_vsoxseg8_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg8_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -14635,7 +14635,7 @@ entry:
 define void @test_vsoxseg8_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg8_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -14842,7 +14842,7 @@ declare void @llvm.riscv.vsuxseg2.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscal
 define void @test_vsuxseg2_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg2_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
@@ -14902,7 +14902,7 @@ entry:
 define void @test_vsuxseg2_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg2_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
@@ -14965,7 +14965,7 @@ declare void @llvm.riscv.vsuxseg3.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscal
 define void @test_vsuxseg3_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg3_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -15049,7 +15049,7 @@ entry:
 define void @test_vsuxseg3_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg3_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -15136,7 +15136,7 @@ declare void @llvm.riscv.vsuxseg4.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscal
 define void @test_vsuxseg4_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg4_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -15244,7 +15244,7 @@ entry:
 define void @test_vsuxseg4_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg4_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -15355,7 +15355,7 @@ declare void @llvm.riscv.vsuxseg5.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscal
 define void @test_vsuxseg5_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg5_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -15487,7 +15487,7 @@ entry:
 define void @test_vsuxseg5_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg5_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -15622,7 +15622,7 @@ declare void @llvm.riscv.vsuxseg6.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscal
 define void @test_vsuxseg6_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg6_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -15778,7 +15778,7 @@ entry:
 define void @test_vsuxseg6_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg6_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -15937,7 +15937,7 @@ declare void @llvm.riscv.vsuxseg7.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscal
 define void @test_vsuxseg7_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg7_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -16117,7 +16117,7 @@ entry:
 define void @test_vsuxseg7_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg7_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -16300,7 +16300,7 @@ declare void @llvm.riscv.vsuxseg8.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscal
 define void @test_vsuxseg8_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg8_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -16504,7 +16504,7 @@ entry:
 define void @test_vsuxseg8_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg8_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
@@ -16709,7 +16709,7 @@ declare <vscale x 1 x i32> @llvm.riscv.masked.strided.load.nxv1i32.p0.i64(<vscal
 define <vscale x 1 x i32> @intrinsic_masked_strided_load_nxv1i32(ptr align 4 %ptr, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @intrinsic_masked_strided_load_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    br label [[ENTRY_SPLIT:%.*]]
 ; CHECK:       entry.split:
@@ -16743,7 +16743,7 @@ declare void @llvm.riscv.masked.strided.store.nxv1i32.p0.i64(<vscale x 1 x i32>,
 define void @intrinsic_masked_strided_store_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %ptr, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @intrinsic_masked_strided_store_nxv1i32(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    br label [[ENTRY_SPLIT:%.*]]
 ; CHECK:       entry.split:
