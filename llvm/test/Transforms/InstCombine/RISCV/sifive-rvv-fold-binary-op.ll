@@ -236,7 +236,7 @@ define <vscale x 4 x i32> @test_vsll_vx(i32 %x, iXLen %y) {
 define <vscale x 4 x i64> @test_vsll_vx_2(i64 %x, iXLen %y) {
 ; RV32-LABEL: @test_vsll_vx_2(
 ; RV32-NEXT:    [[TMP1:%.*]] = and i32 [[Y:%.*]], 63
-; RV32-NEXT:    [[TMP2:%.*]] = zext i32 [[TMP1]] to i64
+; RV32-NEXT:    [[TMP2:%.*]] = zext nneg i32 [[TMP1]] to i64
 ; RV32-NEXT:    [[TMP3:%.*]] = shl i64 [[X:%.*]], [[TMP2]]
 ; RV32-NEXT:    [[C:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i32(<vscale x 4 x i64> undef, i64 [[TMP3]], i32 4)
 ; RV32-NEXT:    ret <vscale x 4 x i64> [[C]]
@@ -625,7 +625,7 @@ define <vscale x 4 x i64> @test_vwsub_w(i64 %x, i32 %y) {
 define <vscale x 4 x i32> @test_vnsrl(i64 %x, i32 %y) {
 ; RV32-LABEL: @test_vnsrl(
 ; RV32-NEXT:    [[TMP1:%.*]] = and i32 [[Y:%.*]], 63
-; RV32-NEXT:    [[TMP2:%.*]] = zext i32 [[TMP1]] to i64
+; RV32-NEXT:    [[TMP2:%.*]] = zext nneg i32 [[TMP1]] to i64
 ; RV32-NEXT:    [[TMP3:%.*]] = lshr i64 [[X:%.*]], [[TMP2]]
 ; RV32-NEXT:    [[TMP4:%.*]] = trunc i64 [[TMP3]] to i32
 ; RV32-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i32(<vscale x 4 x i32> undef, i32 [[TMP4]], i32 4)
@@ -633,7 +633,7 @@ define <vscale x 4 x i32> @test_vnsrl(i64 %x, i32 %y) {
 ;
 ; RV64-LABEL: @test_vnsrl(
 ; RV64-NEXT:    [[TMP1:%.*]] = and i32 [[Y:%.*]], 63
-; RV64-NEXT:    [[TMP2:%.*]] = zext i32 [[TMP1]] to i64
+; RV64-NEXT:    [[TMP2:%.*]] = zext nneg i32 [[TMP1]] to i64
 ; RV64-NEXT:    [[TMP3:%.*]] = lshr i64 [[X:%.*]], [[TMP2]]
 ; RV64-NEXT:    [[TMP4:%.*]] = trunc i64 [[TMP3]] to i32
 ; RV64-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP4]], i64 4)
@@ -648,7 +648,7 @@ define <vscale x 4 x i32> @test_vnsrl(i64 %x, i32 %y) {
 define <vscale x 4 x i32> @test_vnsrl_vx(i64 %x, iXLen %y) {
 ; RV32-LABEL: @test_vnsrl_vx(
 ; RV32-NEXT:    [[TMP1:%.*]] = and i32 [[Y:%.*]], 63
-; RV32-NEXT:    [[TMP2:%.*]] = zext i32 [[TMP1]] to i64
+; RV32-NEXT:    [[TMP2:%.*]] = zext nneg i32 [[TMP1]] to i64
 ; RV32-NEXT:    [[TMP3:%.*]] = lshr i64 [[X:%.*]], [[TMP2]]
 ; RV32-NEXT:    [[TMP4:%.*]] = trunc i64 [[TMP3]] to i32
 ; RV32-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i32(<vscale x 4 x i32> undef, i32 [[TMP4]], i32 4)
@@ -690,7 +690,7 @@ define <vscale x 4 x i16> @test_vnsrl_vx_2(i32 %x, iXLen %y) {
 define <vscale x 4 x i32> @test_vnsra(i64 %x, i32 %y) {
 ; RV32-LABEL: @test_vnsra(
 ; RV32-NEXT:    [[TMP1:%.*]] = and i32 [[Y:%.*]], 63
-; RV32-NEXT:    [[TMP2:%.*]] = zext i32 [[TMP1]] to i64
+; RV32-NEXT:    [[TMP2:%.*]] = zext nneg i32 [[TMP1]] to i64
 ; RV32-NEXT:    [[TMP3:%.*]] = ashr i64 [[X:%.*]], [[TMP2]]
 ; RV32-NEXT:    [[TMP4:%.*]] = trunc i64 [[TMP3]] to i32
 ; RV32-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i32(<vscale x 4 x i32> undef, i32 [[TMP4]], i32 4)
@@ -698,7 +698,7 @@ define <vscale x 4 x i32> @test_vnsra(i64 %x, i32 %y) {
 ;
 ; RV64-LABEL: @test_vnsra(
 ; RV64-NEXT:    [[TMP1:%.*]] = and i32 [[Y:%.*]], 63
-; RV64-NEXT:    [[TMP2:%.*]] = zext i32 [[TMP1]] to i64
+; RV64-NEXT:    [[TMP2:%.*]] = zext nneg i32 [[TMP1]] to i64
 ; RV64-NEXT:    [[TMP3:%.*]] = ashr i64 [[X:%.*]], [[TMP2]]
 ; RV64-NEXT:    [[TMP4:%.*]] = trunc i64 [[TMP3]] to i32
 ; RV64-NEXT:    [[C:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP4]], i64 4)
