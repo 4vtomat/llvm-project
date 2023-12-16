@@ -23,7 +23,7 @@ define i64 @int_reduction_add_5(i64* %a, i64 %N) {
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i64, ptr [[A:%.*]], i64 [[TMP0]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i64, ptr [[TMP1]], i32 0
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i64>, ptr [[TMP2]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i64>, ptr [[TMP2]], align 8
 ; CHECK-NEXT:    [[TMP3]] = add <4 x i64> [[WIDE_LOAD]], [[VEC_PHI]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
@@ -49,7 +49,7 @@ define i64 @int_reduction_add_5(i64* %a, i64 %N) {
 ; CHECK-NEXT:    [[TMP7:%.*]] = add i64 [[INDEX5]], 0
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i64, ptr [[A]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i64, ptr [[TMP8]], i32 0
-; CHECK-NEXT:    [[WIDE_LOAD7:%.*]] = load <4 x i64>, ptr [[TMP9]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD7:%.*]] = load <4 x i64>, ptr [[TMP9]], align 8
 ; CHECK-NEXT:    [[TMP10]] = add <4 x i64> [[WIDE_LOAD7]], [[VEC_PHI6]]
 ; CHECK-NEXT:    [[INDEX_NEXT8]] = add nuw i64 [[INDEX5]], 4
 ; CHECK-NEXT:    [[TMP11:%.*]] = icmp eq i64 [[INDEX_NEXT8]], [[N_VEC3]]
@@ -67,7 +67,7 @@ define i64 @int_reduction_add_5(i64* %a, i64 %N) {
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[VEC_EPILOG_SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[SUM:%.*]] = phi i64 [ [[BC_MERGE_RDX9]], [[VEC_EPILOG_SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[A]], i64 [[IV]]
-; CHECK-NEXT:    [[TMP14:%.*]] = load i64, ptr [[ARRAYIDX]], align 4
+; CHECK-NEXT:    [[TMP14:%.*]] = load i64, ptr [[ARRAYIDX]], align 8
 ; CHECK-NEXT:    [[ADD]] = add i64 [[TMP14]], [[SUM]]
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
@@ -93,7 +93,7 @@ define i64 @int_reduction_add_5(i64* %a, i64 %N) {
 ; CHECK-NO-POSTSV-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-NO-POSTSV-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i64, ptr [[A:%.*]], i64 [[TMP0]]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i64, ptr [[TMP1]], i32 0
-; CHECK-NO-POSTSV-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i64>, ptr [[TMP2]], align 4
+; CHECK-NO-POSTSV-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i64>, ptr [[TMP2]], align 8
 ; CHECK-NO-POSTSV-NEXT:    [[TMP3]] = add <4 x i64> [[WIDE_LOAD]], [[VEC_PHI]]
 ; CHECK-NO-POSTSV-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-NO-POSTSV-NEXT:    [[TMP4:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
@@ -119,7 +119,7 @@ define i64 @int_reduction_add_5(i64* %a, i64 %N) {
 ; CHECK-NO-POSTSV-NEXT:    [[TMP7:%.*]] = add i64 [[INDEX5]], 0
 ; CHECK-NO-POSTSV-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i64, ptr [[A]], i64 [[TMP7]]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i64, ptr [[TMP8]], i32 0
-; CHECK-NO-POSTSV-NEXT:    [[WIDE_LOAD7:%.*]] = load <4 x i64>, ptr [[TMP9]], align 4
+; CHECK-NO-POSTSV-NEXT:    [[WIDE_LOAD7:%.*]] = load <4 x i64>, ptr [[TMP9]], align 8
 ; CHECK-NO-POSTSV-NEXT:    [[TMP10]] = add <4 x i64> [[WIDE_LOAD7]], [[VEC_PHI6]]
 ; CHECK-NO-POSTSV-NEXT:    [[INDEX_NEXT8]] = add nuw i64 [[INDEX5]], 4
 ; CHECK-NO-POSTSV-NEXT:    [[TMP11:%.*]] = icmp eq i64 [[INDEX_NEXT8]], [[N_VEC3]]
@@ -136,7 +136,7 @@ define i64 @int_reduction_add_5(i64* %a, i64 %N) {
 ; CHECK-NO-POSTSV-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[VEC_EPILOG_SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[SUM:%.*]] = phi i64 [ [[BC_MERGE_RDX9]], [[VEC_EPILOG_SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[A]], i64 [[IV]]
-; CHECK-NO-POSTSV-NEXT:    [[TMP13:%.*]] = load i64, ptr [[ARRAYIDX]], align 4
+; CHECK-NO-POSTSV-NEXT:    [[TMP13:%.*]] = load i64, ptr [[ARRAYIDX]], align 8
 ; CHECK-NO-POSTSV-NEXT:    [[ADD]] = add i64 [[TMP13]], [[SUM]]
 ; CHECK-NO-POSTSV-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
 ; CHECK-NO-POSTSV-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
@@ -183,7 +183,7 @@ define i64 @int_reduction_add_start(i64* %a, i64 %N, i64 %start) {
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i64, ptr [[A:%.*]], i64 [[TMP0]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i64, ptr [[TMP1]], i32 0
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i64>, ptr [[TMP2]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i64>, ptr [[TMP2]], align 8
 ; CHECK-NEXT:    [[TMP3]] = add <4 x i64> [[WIDE_LOAD]], [[VEC_PHI]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
@@ -209,7 +209,7 @@ define i64 @int_reduction_add_start(i64* %a, i64 %N, i64 %start) {
 ; CHECK-NEXT:    [[TMP7:%.*]] = add i64 [[INDEX5]], 0
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i64, ptr [[A]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i64, ptr [[TMP8]], i32 0
-; CHECK-NEXT:    [[WIDE_LOAD7:%.*]] = load <4 x i64>, ptr [[TMP9]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD7:%.*]] = load <4 x i64>, ptr [[TMP9]], align 8
 ; CHECK-NEXT:    [[TMP10]] = add <4 x i64> [[WIDE_LOAD7]], [[VEC_PHI6]]
 ; CHECK-NEXT:    [[INDEX_NEXT8]] = add nuw i64 [[INDEX5]], 4
 ; CHECK-NEXT:    [[TMP11:%.*]] = icmp eq i64 [[INDEX_NEXT8]], [[N_VEC3]]
@@ -227,7 +227,7 @@ define i64 @int_reduction_add_start(i64* %a, i64 %N, i64 %start) {
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[VEC_EPILOG_SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[SUM:%.*]] = phi i64 [ [[BC_MERGE_RDX9]], [[VEC_EPILOG_SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[A]], i64 [[IV]]
-; CHECK-NEXT:    [[TMP14:%.*]] = load i64, ptr [[ARRAYIDX]], align 4
+; CHECK-NEXT:    [[TMP14:%.*]] = load i64, ptr [[ARRAYIDX]], align 8
 ; CHECK-NEXT:    [[ADD]] = add i64 [[TMP14]], [[SUM]]
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
@@ -254,7 +254,7 @@ define i64 @int_reduction_add_start(i64* %a, i64 %N, i64 %start) {
 ; CHECK-NO-POSTSV-NEXT:    [[TMP1:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-NO-POSTSV-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i64, ptr [[A:%.*]], i64 [[TMP1]]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i64, ptr [[TMP2]], i32 0
-; CHECK-NO-POSTSV-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i64>, ptr [[TMP3]], align 4
+; CHECK-NO-POSTSV-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i64>, ptr [[TMP3]], align 8
 ; CHECK-NO-POSTSV-NEXT:    [[TMP4]] = add <4 x i64> [[WIDE_LOAD]], [[VEC_PHI]]
 ; CHECK-NO-POSTSV-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-NO-POSTSV-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
@@ -280,7 +280,7 @@ define i64 @int_reduction_add_start(i64* %a, i64 %N, i64 %start) {
 ; CHECK-NO-POSTSV-NEXT:    [[TMP8:%.*]] = add i64 [[INDEX5]], 0
 ; CHECK-NO-POSTSV-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i64, ptr [[A]], i64 [[TMP8]]
 ; CHECK-NO-POSTSV-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i64, ptr [[TMP9]], i32 0
-; CHECK-NO-POSTSV-NEXT:    [[WIDE_LOAD7:%.*]] = load <4 x i64>, ptr [[TMP10]], align 4
+; CHECK-NO-POSTSV-NEXT:    [[WIDE_LOAD7:%.*]] = load <4 x i64>, ptr [[TMP10]], align 8
 ; CHECK-NO-POSTSV-NEXT:    [[TMP11]] = add <4 x i64> [[WIDE_LOAD7]], [[VEC_PHI6]]
 ; CHECK-NO-POSTSV-NEXT:    [[INDEX_NEXT8]] = add nuw i64 [[INDEX5]], 4
 ; CHECK-NO-POSTSV-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_NEXT8]], [[N_VEC3]]
@@ -297,7 +297,7 @@ define i64 @int_reduction_add_start(i64* %a, i64 %N, i64 %start) {
 ; CHECK-NO-POSTSV-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[VEC_EPILOG_SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[SUM:%.*]] = phi i64 [ [[BC_MERGE_RDX9]], [[VEC_EPILOG_SCALAR_PH]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[A]], i64 [[IV]]
-; CHECK-NO-POSTSV-NEXT:    [[TMP14:%.*]] = load i64, ptr [[ARRAYIDX]], align 4
+; CHECK-NO-POSTSV-NEXT:    [[TMP14:%.*]] = load i64, ptr [[ARRAYIDX]], align 8
 ; CHECK-NO-POSTSV-NEXT:    [[ADD]] = add i64 [[TMP14]], [[SUM]]
 ; CHECK-NO-POSTSV-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
 ; CHECK-NO-POSTSV-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]

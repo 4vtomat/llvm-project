@@ -27,7 +27,7 @@ define void @Ppmd8_EncodeSymbol(ptr %p, i8 %0) {
 ; CHECK-NEXT:    [[DOTLCSSA:%.*]] = phi i8 [ [[TMP1]], [[DO_BODY214]] ]
 ; CHECK-NEXT:    [[S180_06_LCSSA:%.*]] = phi ptr [ [[S180_06]], [[DO_BODY214]] ]
 ; CHECK-NEXT:    [[I182_0_LCSSA:%.*]] = phi i32 [ [[I182_0]], [[DO_BODY214]] ]
-; CHECK-NEXT:    [[TMP3:%.*]] = zext i8 [[DOTLCSSA]] to i64
+; CHECK-NEXT:    [[TMP3:%.*]] = zext nneg i8 [[DOTLCSSA]] to i64
 ; CHECK-NEXT:    [[TMP4:%.*]] = add nuw nsw i64 [[TMP3]], 1
 ; CHECK-NEXT:    [[TMP5:%.*]] = mul nsw i64 [[INDVAR_LCSSA]], -1
 ; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[TMP5]], [[TMP4]]

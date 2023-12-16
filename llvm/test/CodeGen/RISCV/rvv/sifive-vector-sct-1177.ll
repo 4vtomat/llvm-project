@@ -52,8 +52,8 @@ define dso_local void @main() local_unnamed_addr {
 ; CHECK-NEXT:    slli a1, a1, 3
 ; CHECK-NEXT:    add a1, sp, a1
 ; CHECK-NEXT:    addi a1, a1, 16
-; CHECK-NEXT:    vl8r.v v8, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    vfwsub.wv v24, v8, v20
+; CHECK-NEXT:    vl8r.v v0, (a1) # Unknown-size Folded Reload
+; CHECK-NEXT:    vfwsub.wv v8, v0, v20
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, tu, mu
 ; CHECK-NEXT:    vssubu.vv v16, v16, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, s0, e32, m8, tu, mu
@@ -62,8 +62,8 @@ define dso_local void @main() local_unnamed_addr {
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vfdiv.vv v24, v16, v8, v0.t
-; CHECK-NEXT:    vse32.v v24, (a0)
+; CHECK-NEXT:    vfdiv.vv v8, v16, v8, v0.t
+; CHECK-NEXT:    vse32.v v8, (a0)
 entry:
   %0 = call { <vscale x 16 x half>, <vscale x 16 x half> } @llvm.riscv.vloxseg2.nxv16f16.nxv16i32.i64(<vscale x 16 x half> undef, <vscale x 16 x half> undef, half* nonnull undef, <vscale x 16 x i32> undef, i64 55)
   %1 = extractvalue { <vscale x 16 x half>, <vscale x 16 x half> } %0, 0

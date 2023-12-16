@@ -35,19 +35,21 @@ define void @gather(i32* noalias %arg, i32* noalias %arg1, i32 %arg2) {
 ; RV32V:       vector.body:
 ; RV32V-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; RV32V-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 4 x i64> [ [[TMP6]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
-; RV32V-NEXT:    [[TMP9:%.*]] = shl nsw <vscale x 4 x i64> [[VEC_IND]], shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 2, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer)
-; RV32V-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[ARG1:%.*]], <vscale x 4 x i64> [[TMP9]]
+; RV32V-NEXT:    [[VEC_IND_TR:%.*]] = trunc <vscale x 4 x i64> [[VEC_IND]] to <vscale x 4 x i32>
+; RV32V-NEXT:    [[TMP9:%.*]] = shl <vscale x 4 x i32> [[VEC_IND_TR]], trunc (<vscale x 4 x i64> shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 2, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer) to <vscale x 4 x i32>)
+; RV32V-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i32, ptr [[ARG1:%.*]], <vscale x 4 x i32> [[TMP9]]
 ; RV32V-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <vscale x 4 x i32> @llvm.masked.gather.nxv4i32.nxv4p0(<vscale x 4 x ptr> [[TMP10]], i32 4, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x i32> poison)
-; RV32V-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i32, ptr [[ARG:%.*]], i64 [[INDEX]]
-; RV32V-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x i32>, ptr [[TMP11]], align 4
-; RV32V-NEXT:    [[TMP12:%.*]] = add nsw <vscale x 4 x i32> [[WIDE_LOAD]], [[WIDE_MASKED_GATHER]]
-; RV32V-NEXT:    store <vscale x 4 x i32> [[TMP12]], ptr [[TMP11]], align 4
-; RV32V-NEXT:    [[TMP13:%.*]] = call i64 @llvm.vscale.i64()
-; RV32V-NEXT:    [[TMP14:%.*]] = shl i64 [[TMP13]], 2
-; RV32V-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP14]]
+; RV32V-NEXT:    [[TMP11:%.*]] = trunc i64 [[INDEX]] to i32
+; RV32V-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[ARG:%.*]], i32 [[TMP11]]
+; RV32V-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x i32>, ptr [[TMP12]], align 4
+; RV32V-NEXT:    [[TMP13:%.*]] = add nsw <vscale x 4 x i32> [[WIDE_LOAD]], [[WIDE_MASKED_GATHER]]
+; RV32V-NEXT:    store <vscale x 4 x i32> [[TMP13]], ptr [[TMP12]], align 4
+; RV32V-NEXT:    [[TMP14:%.*]] = call i64 @llvm.vscale.i64()
+; RV32V-NEXT:    [[TMP15:%.*]] = shl i64 [[TMP14]], 2
+; RV32V-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP15]]
 ; RV32V-NEXT:    [[VEC_IND_NEXT]] = add <vscale x 4 x i64> [[VEC_IND]], [[DOTSPLAT]]
-; RV32V-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; RV32V-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; RV32V-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
+; RV32V-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; RV32V:       middle.block:
 ; RV32V-NEXT:    br label [[SCALAR_PH]]
 ; RV32V:       scalar.ph:
@@ -55,10 +57,12 @@ define void @gather(i32* noalias %arg, i32* noalias %arg1, i32 %arg2) {
 ; RV32V-NEXT:    br label [[BB4:%.*]]
 ; RV32V:       bb4:
 ; RV32V-NEXT:    [[I8:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[I15:%.*]], [[BB4]] ]
-; RV32V-NEXT:    [[I9:%.*]] = shl nsw i64 [[I8]], 2
-; RV32V-NEXT:    [[I10:%.*]] = getelementptr inbounds i32, ptr [[ARG1]], i64 [[I9]]
+; RV32V-NEXT:    [[I8_TR:%.*]] = trunc i64 [[I8]] to i32
+; RV32V-NEXT:    [[TMP17:%.*]] = shl i32 [[I8_TR]], 2
+; RV32V-NEXT:    [[I10:%.*]] = getelementptr inbounds i32, ptr [[ARG1]], i32 [[TMP17]]
 ; RV32V-NEXT:    [[I11:%.*]] = load i32, ptr [[I10]], align 4
-; RV32V-NEXT:    [[I12:%.*]] = getelementptr inbounds i32, ptr [[ARG]], i64 [[I8]]
+; RV32V-NEXT:    [[TMP18:%.*]] = trunc i64 [[I8]] to i32
+; RV32V-NEXT:    [[I12:%.*]] = getelementptr inbounds i32, ptr [[ARG]], i32 [[TMP18]]
 ; RV32V-NEXT:    [[I13:%.*]] = load i32, ptr [[I12]], align 4
 ; RV32V-NEXT:    [[I14:%.*]] = add nsw i32 [[I13]], [[I11]]
 ; RV32V-NEXT:    store i32 [[I14]], ptr [[I12]], align 4
@@ -147,17 +151,19 @@ define void @gather(i32* noalias %arg, i32* noalias %arg1, i32 %arg2) {
 ; RV32ZVE32F-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; RV32ZVE32F:       vector.body:
 ; RV32ZVE32F-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; RV32ZVE32F-NEXT:    [[TMP2:%.*]] = shl nsw i64 [[INDEX]], 2
-; RV32ZVE32F-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[ARG1:%.*]], i64 [[TMP2]]
+; RV32ZVE32F-NEXT:    [[INDEX_TR:%.*]] = trunc i64 [[INDEX]] to i32
+; RV32ZVE32F-NEXT:    [[TMP2:%.*]] = shl i32 [[INDEX_TR]], 2
+; RV32ZVE32F-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[ARG1:%.*]], i32 [[TMP2]]
 ; RV32ZVE32F-NEXT:    [[WIDE_VEC:%.*]] = load <16 x i32>, ptr [[TMP3]], align 4
 ; RV32ZVE32F-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <16 x i32> [[WIDE_VEC]], <16 x i32> poison, <4 x i32> <i32 0, i32 4, i32 8, i32 12>
-; RV32ZVE32F-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i32, ptr [[ARG:%.*]], i64 [[INDEX]]
-; RV32ZVE32F-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP4]], align 4
-; RV32ZVE32F-NEXT:    [[TMP5:%.*]] = add nsw <4 x i32> [[WIDE_LOAD]], [[STRIDED_VEC]]
-; RV32ZVE32F-NEXT:    store <4 x i32> [[TMP5]], ptr [[TMP4]], align 4
+; RV32ZVE32F-NEXT:    [[TMP4:%.*]] = trunc i64 [[INDEX]] to i32
+; RV32ZVE32F-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[ARG:%.*]], i32 [[TMP4]]
+; RV32ZVE32F-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP5]], align 4
+; RV32ZVE32F-NEXT:    [[TMP6:%.*]] = add nsw <4 x i32> [[WIDE_LOAD]], [[STRIDED_VEC]]
+; RV32ZVE32F-NEXT:    store <4 x i32> [[TMP6]], ptr [[TMP5]], align 4
 ; RV32ZVE32F-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
-; RV32ZVE32F-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
-; RV32ZVE32F-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; RV32ZVE32F-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
+; RV32ZVE32F-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; RV32ZVE32F:       middle.block:
 ; RV32ZVE32F-NEXT:    br label [[SCALAR_PH]]
 ; RV32ZVE32F:       scalar.ph:
@@ -165,10 +171,12 @@ define void @gather(i32* noalias %arg, i32* noalias %arg1, i32 %arg2) {
 ; RV32ZVE32F-NEXT:    br label [[BB4:%.*]]
 ; RV32ZVE32F:       bb4:
 ; RV32ZVE32F-NEXT:    [[I8:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[I15:%.*]], [[BB4]] ]
-; RV32ZVE32F-NEXT:    [[I9:%.*]] = shl nsw i64 [[I8]], 2
-; RV32ZVE32F-NEXT:    [[I10:%.*]] = getelementptr inbounds i32, ptr [[ARG1]], i64 [[I9]]
+; RV32ZVE32F-NEXT:    [[I8_TR:%.*]] = trunc i64 [[I8]] to i32
+; RV32ZVE32F-NEXT:    [[TMP8:%.*]] = shl i32 [[I8_TR]], 2
+; RV32ZVE32F-NEXT:    [[I10:%.*]] = getelementptr inbounds i32, ptr [[ARG1]], i32 [[TMP8]]
 ; RV32ZVE32F-NEXT:    [[I11:%.*]] = load i32, ptr [[I10]], align 4
-; RV32ZVE32F-NEXT:    [[I12:%.*]] = getelementptr inbounds i32, ptr [[ARG]], i64 [[I8]]
+; RV32ZVE32F-NEXT:    [[TMP9:%.*]] = trunc i64 [[I8]] to i32
+; RV32ZVE32F-NEXT:    [[I12:%.*]] = getelementptr inbounds i32, ptr [[ARG]], i32 [[TMP9]]
 ; RV32ZVE32F-NEXT:    [[I13:%.*]] = load i32, ptr [[I12]], align 4
 ; RV32ZVE32F-NEXT:    [[I14:%.*]] = add nsw i32 [[I13]], [[I11]]
 ; RV32ZVE32F-NEXT:    store i32 [[I14]], ptr [[I12]], align 4

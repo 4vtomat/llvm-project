@@ -407,8 +407,8 @@ define void @lower_jumptable(i32 %in, i32* %out) nounwind {
 ; PIC-NEXT:  .LBB11_2: # %bb1
 ; PIC-NEXT:    li a0, 4
 ; PIC-NEXT:    j .LBB11_8
-; PIC-NEXT:  .LBB11_3: # %bb2
-; PIC-NEXT:    li a0, 3
+; PIC-NEXT:  .LBB11_3: # %bb5
+; PIC-NEXT:    li a0, 100
 ; PIC-NEXT:    j .LBB11_8
 ; PIC-NEXT:  .LBB11_4: # %bb3
 ; PIC-NEXT:    li a0, 2
@@ -416,8 +416,8 @@ define void @lower_jumptable(i32 %in, i32* %out) nounwind {
 ; PIC-NEXT:  .LBB11_5: # %bb4
 ; PIC-NEXT:    li a0, 1
 ; PIC-NEXT:    j .LBB11_8
-; PIC-NEXT:  .LBB11_6: # %bb5
-; PIC-NEXT:    li a0, 100
+; PIC-NEXT:  .LBB11_6: # %bb2
+; PIC-NEXT:    li a0, 3
 ; PIC-NEXT:    j .LBB11_8
 ; PIC-NEXT:  .LBB11_7: # %bb6
 ; PIC-NEXT:    li a0, 200
@@ -443,8 +443,8 @@ define void @lower_jumptable(i32 %in, i32* %out) nounwind {
 ; NoPIC-NEXT:  .LBB11_2: # %bb1
 ; NoPIC-NEXT:    li a0, 4
 ; NoPIC-NEXT:    j .LBB11_8
-; NoPIC-NEXT:  .LBB11_3: # %bb2
-; NoPIC-NEXT:    li a0, 3
+; NoPIC-NEXT:  .LBB11_3: # %bb5
+; NoPIC-NEXT:    li a0, 100
 ; NoPIC-NEXT:    j .LBB11_8
 ; NoPIC-NEXT:  .LBB11_4: # %bb3
 ; NoPIC-NEXT:    li a0, 2
@@ -452,12 +452,12 @@ define void @lower_jumptable(i32 %in, i32* %out) nounwind {
 ; NoPIC-NEXT:  .LBB11_5: # %bb4
 ; NoPIC-NEXT:    li a0, 1
 ; NoPIC-NEXT:    j .LBB11_8
-; NoPIC-NEXT:  .LBB11_6: # %bb5
-; NoPIC-NEXT:    li a0, 100
+; NoPIC-NEXT:  .LBB11_6: # %bb2
+; NoPIC-NEXT:    li a0, 3
 ; NoPIC-NEXT:    j .LBB11_8
 ; NoPIC-NEXT:  .LBB11_7: # %bb6
 ; NoPIC-NEXT:    li a0, 200
-; NoPIC-NEXT:  .LBB11_8:
+; NoPIC-NEXT:  .LBB11_8: # %exit
 ; NoPIC-NEXT:    sw a0, 0(a1)
 ; NoPIC-NEXT:  .LBB11_9: # %exit
 ; NoPIC-NEXT:    ret

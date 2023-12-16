@@ -86,7 +86,7 @@ define signext i32 @sad2(ptr %a, ptr %b, i32 signext %stridea, i32 signext %stri
 ; CHECK-NEXT:    vwsubu.vv v16, v12, v14
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
 ; CHECK-NEXT:    vwaddu.wv v8, v8, v16
-; CHECK-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
+; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
 ; CHECK-NEXT:    vmv.s.x v12, zero
 ; CHECK-NEXT:    vredsum.vs v8, v8, v12
 ; CHECK-NEXT:    vmv.x.s a0, v8

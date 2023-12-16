@@ -673,6 +673,7 @@ define <vscale x 1 x i32> @ceil_nxv1f64_to_si32(<vscale x 1 x double> %x) {
 ; RV32-NEXT:    fsrmi a0, 3
 ; RV32-NEXT:    vfncvt.x.f.w v9, v8
 ; RV32-NEXT:    fsrm a0
+; RV32-NEXT:    vmv1r.v v8, v9
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: ceil_nxv1f64_to_si32:
@@ -681,6 +682,7 @@ define <vscale x 1 x i32> @ceil_nxv1f64_to_si32(<vscale x 1 x double> %x) {
 ; RV64-NEXT:    fsrmi a0, 3
 ; RV64-NEXT:    vfncvt.x.f.w v9, v8
 ; RV64-NEXT:    fsrm a0
+; RV64-NEXT:    vmv1r.v v8, v9
 ; RV64-NEXT:    ret
   %a = call <vscale x 1 x double> @llvm.ceil.nxv1f64(<vscale x 1 x double> %x)
   %b = fptosi <vscale x 1 x double> %a to <vscale x 1 x i32>
@@ -694,6 +696,7 @@ define <vscale x 1 x i32> @ceil_nxv1f64_to_ui32(<vscale x 1 x double> %x) {
 ; RV32-NEXT:    fsrmi a0, 3
 ; RV32-NEXT:    vfncvt.xu.f.w v9, v8
 ; RV32-NEXT:    fsrm a0
+; RV32-NEXT:    vmv1r.v v8, v9
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: ceil_nxv1f64_to_ui32:
@@ -702,6 +705,7 @@ define <vscale x 1 x i32> @ceil_nxv1f64_to_ui32(<vscale x 1 x double> %x) {
 ; RV64-NEXT:    fsrmi a0, 3
 ; RV64-NEXT:    vfncvt.xu.f.w v9, v8
 ; RV64-NEXT:    fsrm a0
+; RV64-NEXT:    vmv1r.v v8, v9
 ; RV64-NEXT:    ret
   %a = call <vscale x 1 x double> @llvm.ceil.nxv1f64(<vscale x 1 x double> %x)
   %b = fptoui <vscale x 1 x double> %a to <vscale x 1 x i32>
@@ -943,6 +947,7 @@ define <vscale x 4 x i32> @ceil_nxv4f64_to_si32(<vscale x 4 x double> %x) {
 ; RV32-NEXT:    fsrmi a0, 3
 ; RV32-NEXT:    vfncvt.x.f.w v12, v8
 ; RV32-NEXT:    fsrm a0
+; RV32-NEXT:    vmv.v.v v8, v12
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: ceil_nxv4f64_to_si32:
@@ -951,6 +956,7 @@ define <vscale x 4 x i32> @ceil_nxv4f64_to_si32(<vscale x 4 x double> %x) {
 ; RV64-NEXT:    fsrmi a0, 3
 ; RV64-NEXT:    vfncvt.x.f.w v12, v8
 ; RV64-NEXT:    fsrm a0
+; RV64-NEXT:    vmv.v.v v8, v12
 ; RV64-NEXT:    ret
   %a = call <vscale x 4 x double> @llvm.ceil.nxv4f64(<vscale x 4 x double> %x)
   %b = fptosi <vscale x 4 x double> %a to <vscale x 4 x i32>
@@ -964,6 +970,7 @@ define <vscale x 4 x i32> @ceil_nxv4f64_to_ui32(<vscale x 4 x double> %x) {
 ; RV32-NEXT:    fsrmi a0, 3
 ; RV32-NEXT:    vfncvt.xu.f.w v12, v8
 ; RV32-NEXT:    fsrm a0
+; RV32-NEXT:    vmv.v.v v8, v12
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: ceil_nxv4f64_to_ui32:
@@ -972,6 +979,7 @@ define <vscale x 4 x i32> @ceil_nxv4f64_to_ui32(<vscale x 4 x double> %x) {
 ; RV64-NEXT:    fsrmi a0, 3
 ; RV64-NEXT:    vfncvt.xu.f.w v12, v8
 ; RV64-NEXT:    fsrm a0
+; RV64-NEXT:    vmv.v.v v8, v12
 ; RV64-NEXT:    ret
   %a = call <vscale x 4 x double> @llvm.ceil.nxv4f64(<vscale x 4 x double> %x)
   %b = fptoui <vscale x 4 x double> %a to <vscale x 4 x i32>

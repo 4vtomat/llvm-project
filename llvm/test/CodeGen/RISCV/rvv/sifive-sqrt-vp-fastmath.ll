@@ -844,7 +844,10 @@ define <vscale x 8 x double> @sqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 8
 ; RV64-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
 ; RV64-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV64-NEXT:    vfmul.vv v8, v8, v24, v0.t
-; RV64-NEXT:    addi a0, sp, 16
+; RV64-NEXT:    csrr a0, vlenb
+; RV64-NEXT:    slli a0, a0, 3
+; RV64-NEXT:    add a0, sp, a0
+; RV64-NEXT:    addi a0, a0, 16
 ; RV64-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
 ; RV64-NEXT:    csrr a0, vlenb
 ; RV64-NEXT:    li a1, 24
@@ -852,25 +855,26 @@ define <vscale x 8 x double> @sqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 8
 ; RV64-NEXT:    add a0, sp, a0
 ; RV64-NEXT:    addi a0, a0, 16
 ; RV64-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-; RV64-NEXT:    vfmul.vv v24, v16, v8, v0.t
+; RV64-NEXT:    vfmul.vv v8, v16, v8, v0.t
+; RV64-NEXT:    addi a0, sp, 16
+; RV64-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
 ; RV64-NEXT:    csrr a0, vlenb
 ; RV64-NEXT:    slli a0, a0, 3
 ; RV64-NEXT:    add a0, sp, a0
 ; RV64-NEXT:    addi a0, a0, 16
-; RV64-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
-; RV64-NEXT:    vmv.v.v v24, v8
+; RV64-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
 ; RV64-NEXT:    csrr a0, vlenb
 ; RV64-NEXT:    slli a0, a0, 4
 ; RV64-NEXT:    add a0, sp, a0
 ; RV64-NEXT:    addi a0, a0, 16
 ; RV64-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
+; RV64-NEXT:    addi a0, sp, 16
+; RV64-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
+; RV64-NEXT:    vfmadd.vv v24, v8, v16, v0.t
 ; RV64-NEXT:    csrr a0, vlenb
 ; RV64-NEXT:    slli a0, a0, 3
 ; RV64-NEXT:    add a0, sp, a0
 ; RV64-NEXT:    addi a0, a0, 16
-; RV64-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; RV64-NEXT:    vfmadd.vv v24, v8, v16, v0.t
-; RV64-NEXT:    addi a0, sp, 16
 ; RV64-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
 ; RV64-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV64-NEXT:    vfmul.vv v24, v8, v24, v0.t
@@ -2089,12 +2093,12 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
 ; RV32-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
-; RV32-NEXT:    vfmul.vv v24, v24, v8, v0.t
+; RV32-NEXT:    vfmul.vv v16, v24, v8, v0.t
 ; RV32-NEXT:    csrr a0, vlenb
 ; RV32-NEXT:    slli a0, a0, 3
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
-; RV32-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
+; RV32-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
 ; RV32-NEXT:    vmv.v.v v24, v8
 ; RV32-NEXT:    csrr a0, vlenb
 ; RV32-NEXT:    slli a0, a0, 3
@@ -2218,12 +2222,12 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV64-NEXT:    add a0, sp, a0
 ; RV64-NEXT:    addi a0, a0, 16
 ; RV64-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
-; RV64-NEXT:    vfmul.vv v24, v24, v8, v0.t
+; RV64-NEXT:    vfmul.vv v16, v24, v8, v0.t
 ; RV64-NEXT:    csrr a0, vlenb
 ; RV64-NEXT:    slli a0, a0, 3
 ; RV64-NEXT:    add a0, sp, a0
 ; RV64-NEXT:    addi a0, a0, 16
-; RV64-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
+; RV64-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
 ; RV64-NEXT:    vmv.v.v v24, v8
 ; RV64-NEXT:    csrr a0, vlenb
 ; RV64-NEXT:    slli a0, a0, 3
