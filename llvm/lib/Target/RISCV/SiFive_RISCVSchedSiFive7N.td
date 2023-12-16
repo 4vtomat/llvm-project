@@ -182,6 +182,7 @@ def SiFive7NModel : SchedMachineModel {
   let MispredictPenalty = 3;
   let CompleteModel = 0;
   let PostRAScheduler = true;
+  let EnableIntervals = true;
   let UnsupportedFeatures = [HasStdExtZbkb, HasStdExtZbkc, HasStdExtZbkx,
                              HasStdExtZknd, HasStdExtZkne, HasStdExtZknh,
                              HasStdExtZksed, HasStdExtZksh, HasStdExtZkr,
