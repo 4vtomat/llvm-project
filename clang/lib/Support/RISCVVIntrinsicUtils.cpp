@@ -406,12 +406,6 @@ void RVVType::applyBasicType() {
     ElementBitwidth = 16;
     ScalarType = ScalarTypeKind::Float;
     break;
-#if SIFIVE_CUSTOMIZATION
- case BasicType::BFloat:
-    ElementBitwidth = 16;
-    ScalarType = ScalarTypeKind::BFloat;
-    break;
-#endif // SIFIVE_CUSTOMIZATION
   case BasicType::Float32:
     ElementBitwidth = 32;
     ScalarType = ScalarTypeKind::Float;
@@ -436,9 +430,6 @@ PrototypeDescriptor::parsePrototypeDescriptor(
   PrototypeDescriptor PD;
   BaseTypeModifier PT = BaseTypeModifier::Invalid;
   VectorTypeModifier VTM = VectorTypeModifier::NoModifier;
-#if SIFIVE_CUSTOMIZATION
-  TypeModifier TM = TypeModifier::NoModifier;
-#endif // SIFIVE_CUSTOMIZATION
 
   if (PrototypeDescriptorStr.empty())
     return PD;
@@ -468,16 +459,10 @@ PrototypeDescriptor::parsePrototypeDescriptor(
     PT = BaseTypeModifier::Vector;
     VTM = VectorTypeModifier::MaskVector;
     break;
-#if SIFIVE_CUSTOMIZATION
-  case 'f':
-    PT = BaseTypeModifier::Scalar;
-    TM |= TypeModifier::Float32;
-    break;
   case 'i':
     PT = BaseTypeModifier::Vector;
     VTM = VectorTypeModifier::SignedInteger32;
     break;
-#endif // SIFIVE_CUSTOMIZATION
   case '0':
     PT = BaseTypeModifier::Void;
     break;
@@ -691,6 +676,7 @@ PrototypeDescriptor::parsePrototypeDescriptor(
   PD.VTM = static_cast<uint8_t>(VTM);
 
   // Compute the remain type transformers
+  TypeModifier TM = TypeModifier::NoModifier;
   for (char I : PrototypeDescriptorStr) {
     switch (I) {
     case 'P':
@@ -960,11 +946,6 @@ void RVVType::applyModifier(const PrototypeDescriptor &Transformer) {
       // Update ElementBitwidth need to update Scale too.
       Scale = LMUL.getScale(ElementBitwidth);
       break;
-#if SIFIVE_CUSTOMIZATION
-    case TypeModifier::Float32:
-      ScalarType = ScalarTypeKind::Float32;
-      break;
-#endif // SIFIVE_CUSTOMIZATION
     default:
       llvm_unreachable("Unknown type modifier mask!");
     }

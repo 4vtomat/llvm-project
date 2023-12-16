@@ -71,7 +71,7 @@ public:
 #if SIFIVE_CUSTOMIZATION
 bool RISCVABIInfo::isHomogeneousAggregateBaseType(QualType Ty) const {
   if (const VectorType *VT = Ty->getAs<VectorType>())
-    if (VT->getVectorKind() == VectorType::NeonVector) {
+    if (VT->getVectorKind() == VectorKind::Neon) {
       unsigned VecSize = getContext().getTypeSize(VT);
       if (VecSize == 64 || VecSize == 128)
         return true;
@@ -82,7 +82,7 @@ bool RISCVABIInfo::isHomogeneousAggregateBaseType(QualType Ty) const {
 bool RISCVABIInfo::isHomogeneousAggregateSmallEnough(const Type *Base,
                                                      uint64_t Members) const {
   if (const VectorType *VT = Base->getAs<VectorType>())
-    if (VT->getVectorKind() == VectorType::NeonVector)
+    if (VT->getVectorKind() == VectorKind::Neon)
       return Members <= 4;
   return false;
 }
@@ -368,7 +368,7 @@ ABIArgInfo RISCVABIInfo::classifyArgumentType(QualType Ty, bool IsFixed,
 
 #if SIFIVE_CUSTOMIZATION
   if (auto *VectorTy = dyn_cast<VectorType>(Ty.operator->()))
-    if (VectorTy->getVectorKind() == VectorType::NeonVector)
+    if (VectorTy->getVectorKind() == VectorKind::Neon)
       return ABIArgInfo::getDirect();
   const RecordDecl *RD = Ty->getAsRecordDecl();
   if (RD && RD->hasAttr<NeonStructTypeAttr>()) {

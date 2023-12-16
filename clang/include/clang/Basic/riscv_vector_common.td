@@ -39,7 +39,6 @@
 //   i: int32_t (i32)
 //   l: int64_t (i64)
 //   x: float16_t (half)
-//   y: bfloat16_t (bf16) // SIFIVE
 //   f: float32_t (float)
 //   d: float64_t (double)
 //   b: bfloat16_t (bfloat16)
