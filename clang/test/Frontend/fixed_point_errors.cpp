@@ -1,7 +1,5 @@
-// RUN: %clang_cc1 -x c++ %s -verify
-// RUN: %clang_cc1 -x c++ -ffixed-point %s -verify
-
-// Name namgling is not provided for fixed point types in c++
+// RUN: %clang_cc1 -x c++ %s -verify -DWITHOUT_FIXED_POINT
+// RUN: %clang_cc1 -x c++ %s -verify -ffixed-point
 
 #ifdef WITHOUT_FIXED_POINT
 _Accum accum;                           // expected-error{{unknown type name '_Accum'}}
@@ -12,5 +10,8 @@ _Sat _Accum sat_accum;                  // expected-error{{unknown type name '_S
 
 int accum_int = 10k;     // expected-error{{invalid suffix 'k' on integer constant}}
 int fract_int = 10r;     // expected-error{{invalid suffix 'r' on integer constant}}
-float accum_flt = 10.0k; // expected-error{{invalid suffix 'k' on floating constant}}
-float fract_flt = 10.0r; // expected-error{{invalid suffix 'r' on floating constant}}
+#ifdef WITHOUT_FIXED_POINT
+float accum_flt = 0.0k;  // expected-error{{invalid suffix 'k' on floating constant}}
+float fract_flt = 0.0r;  // expected-error{{invalid suffix 'r' on floating constant}}
+#endif
+
