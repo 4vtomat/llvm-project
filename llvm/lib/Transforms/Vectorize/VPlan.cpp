@@ -880,16 +880,16 @@ VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE) {
   VPBasicBlock *VecPreheader = new VPBasicBlock("vector.ph");
 #if SIFIVE_CUSTOMIZATION
   auto Plan = std::make_unique<VPlan>(Preheader, VecPreheader, IsUncountable);
-  if (IsUncountable) {
-    assert(!TripCount &&
-           "Trip Count must not be set when loop is not countable");
-    return Plan;
-  }
+  assert((!IsUncountable || !TripCount) &&
+         "Trip Count must not be set when loop is not countable");
+  if (!IsUncountable)
+    Plan->TripCount =
+        vputils::getOrCreateVPValueForSCEVExpr(*Plan, TripCount, SE);
 #else
   auto Plan = std::make_unique<VPlan>(Preheader, VecPreheader);
-#endif // SIFIVE_CUSTOMIZATION
   Plan->TripCount =
       vputils::getOrCreateVPValueForSCEVExpr(*Plan, TripCount, SE);
+#endif // SIFIVE_CUSTOMIZATION
   // Create empty VPRegionBlock, to be filled during processing later.
   auto *TopRegion = new VPRegionBlock("vector loop", false /*isReplicator*/);
   VPBlockUtils::insertBlockAfter(TopRegion, VecPreheader);
