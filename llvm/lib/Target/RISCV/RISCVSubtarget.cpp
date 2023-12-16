@@ -102,6 +102,7 @@ void RISCVSubtarget::initializeProperties() {
   // this in the future so we can specify it together with the subtarget
   // features.
   switch (getProcFamily()) {
+  case VentanaVeyron:
   case Others:
     break;
   case RISCVSubtarget::SiFive7:

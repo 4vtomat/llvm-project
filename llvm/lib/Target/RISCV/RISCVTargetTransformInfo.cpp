@@ -367,6 +367,7 @@ VectorType *
 RISCVTTIImpl::getBestVectorTypeForLoopIdiom(LLVMContext &Ctx) const {
   unsigned LMULExp;
   switch (ST->getProcFamily()) {
+  case RISCVSubtarget::VentanaVeyron:
   case RISCVSubtarget::Others:
     LMULExp = 1;
     break;
