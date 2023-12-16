@@ -45,7 +45,7 @@ entry:
 
 for.body.lr.ph:                                   ; preds = %entry
   %idx.ext = sext i32 %channels to i64
-  %wide.trip.count = zext i32 %width_ to i64
+  %wide.trip.count = zext nneg i32 %width_ to i64
   br label %for.body
 
 for.cond.cleanup:                                 ; preds = %for.body, %entry
