@@ -9567,7 +9567,7 @@ SCEV2ValueTy LoopVectorizationPlanner::executePlan(
   // Perform the actual loop transformation.
 #if SIFIVE_CUSTOMIZATION
   VPTransformState State{BestVF,      BestUF, LI,         DT,
-                         ILV.Builder, &ILV,   &BestVPlan, EnableRISCVCSA};
+                         ILV.Builder, &ILV,   &BestVPlan, OrigLoop->getHeader()->getContext(), EnableRISCVCSA};
   BestVPlan.initializeMasks(State);
 #else
   VPTransformState State(BestVF, BestUF, LI, DT, ILV.Builder, &ILV, &BestVPlan,
@@ -11280,6 +11280,8 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   if (Legal->isVectorizableUncountable())
     HeaderVPBB->setName("vector.body");
 
+  VPBasicBlock *MiddleVPBB =
+      cast<VPBasicBlock>(Plan->getVectorLoopRegion()->getSingleSuccessor());
   addCSAPostprocessRecipes(Legal->getCSAs(), MiddleVPBB, DL, Range, *Plan);
 #endif // SIFIVE_CUSTOMIZATION
 
