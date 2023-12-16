@@ -11,5 +11,5 @@
 sf.vfwmacc.4x4x4 v4, v8, v12
 # CHECK-INST: sf.vfwmacc.4x4x4 v4, v8, v12
 # CHECK-ENCODING: [0x5b,0x12,0xc4,0xf2]
-# CHECK-ERROR: instruction requires the following: 'Xsfvfwmaccqqq' (SiFive custom BF16 matrix arithmetic vector instructions)
+# CHECK-ERROR: instruction requires the following: 'XSfvfwmaccqqq' (SiFive Matrix Multiply Accumulate Instruction and 4-by-4))
 # CHECK-UNKNOWN: 5b 12 c4 f2 <unknown>

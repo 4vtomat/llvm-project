@@ -1022,22 +1022,6 @@ def FeatureVendorXSfvfhbfmin
 def HasVendorXSfvfhbfmin : Predicate<"Subtarget->hasVendorXSfvfhbfmin()">,
                          AssemblerPredicate<(all_of FeatureVendorXSfvfhbfmin),
                          "'Xsfvfhbfmin' (SiFive custom minimal BF16 vector support)">;
-
-def FeatureVendorXSfvfwmaccqqq
-    : SubtargetFeature<"xsfvfwmaccqqq", "HasVendorXSfvfwmaccqqq", "true",
-                       "Xsfvfwmaccqqq (Support SiFive custom BF16 matrix arithmetic vector instructions)",
-                       [FeatureStdExtZve32f, FeatureStdExtZvl256b]>;
-def HasVendorXSfvfwmaccqqq : Predicate<"Subtarget->hasVendorXSfvfwmaccqqq()">,
-                          AssemblerPredicate<(all_of FeatureVendorXSfvfwmaccqqq),
-                          "'Xsfvfwmaccqqq' (SiFive custom BF16 matrix arithmetic vector instructions)">;
-
-def FeatureVendorXSfvfnrclipxfqf
-    : SubtargetFeature<"xsfvfnrclipxfqf", "HasVendorXSfvfnrclipxfqf", "true",
-                       "Xsfvfnrclipxfqf (Support SiFive custom FP32-to-int8 ranged clip instructions)",
-                       [FeatureStdExtZve32f]>;
-def HasVendorXSfvfnrclipxfqf : Predicate<"Subtarget->hasVendorXSfvfnrclipxfqf()">,
-                            AssemblerPredicate<(all_of FeatureVendorXSfvfnrclipxfqf),
-                            "'Xsfvfnrclipxfqf' (SiFive custom FP32-to-int8 ranged clip instructions)">;
 #endif // SIFIVE_CUSTOMIZATION
 def FeatureVendorXSfcie
     : SubtargetFeature<"xsfcie", "HasVendorXSfcie", "true",
@@ -1065,7 +1049,7 @@ def HasVendorXSfvqmaccqoq : Predicate<"Subtarget->hasVendorXSfvqmaccqoq()">,
 def FeatureVendorXSfvfwmaccqqq
     : SubtargetFeature<"xsfvfwmaccqqq", "HasVendorXSfvfwmaccqqq", "true",
                        "'XSfvfwmaccqqq' (SiFive Matrix Multiply Accumulate Instruction and 4-by-4))",
-                       [FeatureStdExtZve32f, FeatureStdExtZvfbfmin]>;
+                       [FeatureStdExtZve32f]>; // SIFIVE
 def HasVendorXSfvfwmaccqqq : Predicate<"Subtarget->hasVendorXSfvfwmaccqqq()">,
                          AssemblerPredicate<(all_of FeatureVendorXSfvfwmaccqqq),
                          "'XSfvfwmaccqqq' (SiFive Matrix Multiply Accumulate Instruction and 4-by-4))">;
@@ -1178,12 +1162,6 @@ def FeatureRecodeFullfp16
     : SubtargetFeature<"fullfp16", "HasRecodeFullfp16", "true",
                        "fullfp16 (A corresponding feature for NEON fullfp16.)",
                        [FeatureStdExtZfh, FeatureStdExtZvfh]>;
-
-def HasStdExtZvknhaOrZvknhb  : Predicate<"Subtarget->hasStdExtZvknha() || Subtarget->hasStdExtZvknhb()">,
-                                AssemblerPredicate<(any_of FeatureStdExtZvknha, FeatureStdExtZvknhb),
-                                "'Zvknha' (Vector SHA-2. (SHA-256 only)) or "
-                                "'Zvknhb' (Vector SHA-2. (SHA-256 and SHA-512))">;
-
 #endif // SIFIVE_CUSTOMIZATION
 
 def Feature64Bit
