@@ -208,7 +208,11 @@ bool RISCVInsertWriteVXRM::computeVXRMChanges(const MachineBasicBlock &MBB) {
     int VXRMIdx = RISCVII::getVXRMOpNum(MI.getDesc());
     if (VXRMIdx >= 0) {
       unsigned NewVXRMImm = MI.getOperand(VXRMIdx).getImm();
-
+#if SIFIVE_CUSTOMIZATION
+      // Dynamic VXRM can't be mixed with non-dynamic.
+      if (NewVXRMImm == 7)
+        continue;
+#endif // SIFIVE_CUSTOMIZATION
       if (!BBInfo.VXRMUse.isValid())
         BBInfo.VXRMUse.setVXRMImm(NewVXRMImm);
 
@@ -360,6 +364,12 @@ void RISCVInsertWriteVXRM::emitWriteVXRM(MachineBasicBlock &MBB) {
     int VXRMIdx = RISCVII::getVXRMOpNum(MI.getDesc());
     if (VXRMIdx >= 0) {
       unsigned NewVXRMImm = MI.getOperand(VXRMIdx).getImm();
+
+#if SIFIVE_CUSTOMIZATION
+      // Dynamic VXRM can't be mixed with non-dynamic.
+      if (NewVXRMImm == 7)
+        continue;
+#endif // SIFIVE_CUSTOMIZATION
 
       if (PendingInsert || !Info.isStatic() ||
           Info.getVXRMImm() != NewVXRMImm) {
