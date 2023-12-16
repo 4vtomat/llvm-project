@@ -22,6 +22,7 @@
 #include "RISCVTargetMachine.h"
 #include "llvm/ADT/SetVector.h"
 #include "llvm/ADT/SmallSet.h"
+#include "llvm/Analysis/ConstantFolding.h"
 #include "llvm/CodeGen/TargetPassConfig.h"
 #include "llvm/CodeGen/TargetSubtargetInfo.h"
 #include "llvm/IR/IRBuilder.h"
@@ -183,6 +184,7 @@ void IRPromoter::PromoteTree() {
     if (Sinks.count(I))
       continue;
 
+    const DataLayout &DL = I->getModule()->getDataLayout();
     // Update constant and undef operands.
     for (unsigned i = 0, e = I->getNumOperands(); i < e; ++i) {
       Value *Op = I->getOperand(i);
@@ -190,7 +192,7 @@ void IRPromoter::PromoteTree() {
         continue;
 
       if (auto *Const = dyn_cast<ConstantInt>(Op)) {
-        Constant *NewConst = ConstantExpr::getSExt(Const, ExtTy);
+        Constant *NewConst = ConstantFoldCastOperand(Instruction::SExt, Const, ExtTy, DL);;
         I->setOperand(i, NewConst);
       } else if (isa<UndefValue>(Op))
         I->setOperand(i, UndefValue::get(ExtTy));

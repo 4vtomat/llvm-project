@@ -88,11 +88,6 @@ defm VFWCVT_F_BF16_V : VWCVTF_FV_VS2<"sf.vfwcvt.f.bf16.v", 0b010010, 0b01101>;
 defm VFNCVT_BF16_F_W : VNCVTF_FV_VS2<"sf.vfncvt.bf16.f.w", 0b010010, 0b11101>;
 } // Predicates = [HasVendorXSfvqmaccdod]
 
-let vm = 1, RVVConstraint = VS2Constraint, Predicates = [HasVendorXSfvfwmaccqqq],
-    DecoderNamespace = "XSfvfwmaccqqq", mayRaiseFPException = true in {
-  def VFWMACC4X4X4_VV : CustomSiFiveVV<"sf.vfwmacc.4x4x4", OPFVV, 0b111100>, Sched<[]> ;
-} // Predicates = [HasVendorXSfvfwmaccqqq]
-
 class CustomSiFiveVF<string opcodestr,  RISCVVFormat opv, bits<6> funct6>
   : RVInstVXCustom2<funct6, opv, (outs VR:$vd),
                     (ins VR:$vs2, FPR32:$rs1, VMaskOp:$vm), opcodestr,
@@ -101,11 +96,6 @@ class CustomSiFiveVF<string opcodestr,  RISCVVFormat opv, bits<6> funct6>
   let mayLoad = 0;
   let mayStore = 0;
 }
-
-let Predicates = [HasVendorXSfvfnrclipxfqf], DecoderNamespace = "XSfvfnrclipxfqf" in {
-  def VFNRCLIP_XU_F_QF : CustomSiFiveVF<"sf.vfnrclip.xu.f.qf", OPFVF, 0b100010>, Sched<[]> ;
-  def VFNRCLIP_X_F_QF : CustomSiFiveVF<"sf.vfnrclip.x.f.qf", OPFVF, 0b100011>, Sched<[]> ;
-} // Predicates = [HasVendorXSfvfnrclipxfqf]
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
@@ -458,8 +448,11 @@ multiclass VPseudoSiFiveVQMACCQOQ<string Constraint = ""> {
 }
 
 multiclass VPseudoSiFiveVFWMACC<string Constraint = ""> {
-  foreach m = MxListFW in
-    defm NAME : VPseudoSiFiveVMACC<m.MX, m.wvrclass, m.vrclass, Constraint>;
+#ifdef SIFIVE_CUSTOMIZATION
+   foreach i = [0, 1, 2, 3, 4] in
+    defm NAME : VPseudoSiFiveVMACC<MxListVF4[i].MX, MxListFW[i].wvrclass,
+                                   MxListFW[i].vrclass, Constraint>;
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 multiclass VPseudoSiFiveVFNRCLIP<string Constraint = "@earlyclobber $rd"> {
@@ -762,28 +755,9 @@ let Predicates = [HasVendorXSfvqmaccqoq] in {
 }
 
 #ifdef SIFIVE_CUSTOMIZATION
-foreach m = [V_MF8, V_MF4, V_MF2, V_M1, V_M2] in {
-  defvar Constraint = "@earlyclobber $rd";
-  let VLMul = m.value in {
-    def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX : VPseudoBinaryNoMaskTU<m.vrclass, m.w2vrclass, FPR32, Constraint>;
-    def PseudoVFNRCLIP_X_F_QF # "_" # m.MX : VPseudoBinaryNoMaskTU<m.vrclass, m.w2vrclass, FPR32, Constraint>;
-    def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX # "_MASK" : VPseudoBinaryMaskPolicy<m.vrclass, m.w2vrclass, FPR32, Constraint>;
-    def PseudoVFNRCLIP_X_F_QF # "_" # m.MX # "_MASK" : VPseudoBinaryMaskPolicy<m.vrclass, m.w2vrclass, FPR32, Constraint>;
-  }
-}
-
 let Predicates = [HasVendorXSfvfhbfmin], mayRaiseFPException = true in {
 defm PseudoVFWCVT_F_BF16   : VPseudoVWCVTD_V;
 defm PseudoVFNCVT_BF16_F   : VPseudoVNCVTD_W;
-}
-
-let IsRVVWideningReduction = 1, mayRaiseFPException = true in {
-foreach m = [V_MF4, V_MF2, V_M1, V_M2, V_M4, V_M8] in {
-  defvar Constraint = "@earlyclobber $rd";
-  let VLMul = m.value in {
-    def PseudoVFWMACC4X4X4_VV # "_" # m.MX: VPseudoTernaryNoMaskWithPolicy<m.wvrclass, VR, m.vrclass, Constraint>;
-  }
-}
 }
 
 def : Pat<(XLenVT (int_riscv_vgetvxrm)), (ReadVXRM)>;
@@ -794,36 +768,9 @@ def : Pat<(int_riscv_vsetvxrm (XLenVT GPR:$rm)),
 def : Pat<(int_riscv_vsetvxrm uimm5:$rm),
           (WriteVXRMImm uimm5:$rm)>;
 
-multiclass XPatSFVFNRCLIP<string intrinsic, string instruction,
-                          list<VTypeInfoToWide> vtilist> {
-  foreach VtiToWti = vtilist in {
-    defvar Vti = VtiToWti.Vti;
-    defvar Wti = VtiToWti.Wti;
-    defm : VPatBinary<intrinsic, instruction # "_" # Vti.LMul.MX, Vti.Vector,
-                      Wti.Vector, Wti.Scalar, Vti.Mask, Vti.Log2SEW,
-                      Vti.RegClass, Wti.RegClass, Wti.ScalarRegClass>;
-  }
-}
-
-let Predicates = [HasVendorXSfvfnrclipxfqf] in {
-  defm : XPatSFVFNRCLIP<"int_riscv_sf_vfnrclip_xu", "PseudoVFNRCLIP_XU_F_QF", AllVFNRCLIPVectors>;
-  defm : XPatSFVFNRCLIP<"int_riscv_sf_vfnrclip_x",  "PseudoVFNRCLIP_X_F_QF",  AllVFNRCLIPVectors>;
-}
-
 let Predicates = [HasVendorXSfvfhbfmin] in {
 defm : XPatConversionWF_VF<"int_riscv_sf_vfwcvt_f_bf16_v", "PseudoVFWCVT_F_BF16">;
 defm : XPatConversionVF_WF<"int_riscv_sf_vfncvt_bf16_f_w", "PseudoVFNCVT_BF16_F">;
-}
-
-let Predicates = [HasVendorXSfvfwmaccqqq] in {
-  foreach fvtiToFWti = AllWidenableBFloatToFloatVectors in {
-    defvar fvti = fvtiToFWti.Vti;
-    defvar fwti = fvtiToFWti.Wti;
-    def: VPatTernaryNoMaskWithPolicy<"int_riscv_sf_vfwmacc_4x4x4", "PseudoVFWMACC4X4X4", "VV",
-                                       fwti.Vector, vbfloat16m1_t, fvti.Vector,
-                                       fvti.Log2SEW, fvti.LMul,
-                                       fwti.RegClass, VR, fvti.RegClass>;
-  }
 }
 
 let isBarrier = 1, isReturn = 1, isTerminator = 1,
@@ -860,6 +807,7 @@ def CFLUSH_I_L1
 }
 } // hasNoSchedulingInfo = 1, ...
 #endif // SIFIVE_CUSTOMIZATION
+
 let Predicates = [HasVendorXSfvfwmaccqqq] in {
   defm : VPatVFWMACC<"vfwmacc_4x4x4", "VFWMACC", "4x4x4">;
 }

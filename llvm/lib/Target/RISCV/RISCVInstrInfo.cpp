@@ -3227,7 +3227,7 @@ void RISCVInstrInfo::expandLIsimm32(MachineBasicBlock &MBB,
   assert(isInt<32>(Val) && "Unexpected immediate");
 
   RISCVMatInt::InstSeq Seq = RISCVMatInt::generateInstSeq(
-      Val, MBB.getParent()->getSubtarget().getFeatureBits());
+      Val, MBB.getParent()->getSubtarget());
   assert(!Seq.empty());
 
   Register SrcReg = RISCV::X0;

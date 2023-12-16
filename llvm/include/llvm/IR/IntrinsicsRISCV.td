@@ -426,36 +426,6 @@ let TargetPrefix = "riscv" in {
                    [ImmArg<ArgIndex<5>>, IntrNoMem]>, RISCVVIntrinsic {
     let VLOperand = 4;
   }
-#ifdef SIFIVE_CUSTOMIZATION
-  // Input: (vector_in, vector_in, vector_in, vl, policy)
-  class RISCVSFCustomVQMACC: Intrinsic<[llvm_anyvector_ty],
-                                       [LLVMMatchType<0>, llvm_anyvector_ty,
-                                        llvm_anyvector_ty, llvm_anyint_ty,
-                                        LLVMMatchType<3>],
-                                       [ImmArg<ArgIndex<4>>, IntrNoMem]>, RISCVVIntrinsic {
-    let VLOperand = 3;
-  }
-
-  // Input: (passthru, vector_in, scalar_in, vl)
-  class RISCVSFCustomVFNRCLIPUnMasked
-       : Intrinsic<[llvm_anyvector_ty],
-                   [LLVMMatchType<0>, llvm_anyfloat_ty, LLVMVectorElementType<1>,
-                    llvm_anyint_ty],
-                   [IntrNoMem]>, RISCVVIntrinsic {
-    let VLOperand = 3;
-  }
-
-  // Input: (passthru, vector_in, scalar_in, mask, vl, policy)
-  class RISCVSFCustomVFNRCLIPMasked
-       : Intrinsic<[llvm_anyvector_ty],
-                   [LLVMMatchType<0>, llvm_anyfloat_ty, LLVMVectorElementType<1>,
-                    LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>, llvm_anyint_ty,
-                    LLVMMatchType<2>],
-                   [ImmArg<ArgIndex<5>>, IntrNoMem]>, RISCVVIntrinsic {
-    let VLOperand = 4;
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
   // For destination vector type is the same as first source vector.
   // Input: (passthru, vector_in, vector_in/scalar_in, vl)
   class RISCVBinaryAAXUnMasked<bit IsVI = 0>
@@ -1400,12 +1370,6 @@ let TargetPrefix = "riscv" in {
     def "int_riscv_" # NAME : RISCVISegStore<nf>;
     def "int_riscv_" # NAME # "_mask" : RISCVISegStoreMasked<nf>;
   }
-#ifdef SIFIVE_CUSTOMIZATION
-  multiclass RISCVSFCustomVFNRCLIP {
-    def "int_riscv_" # NAME : RISCVSFCustomVFNRCLIPUnMasked;
-    def "int_riscv_" # NAME # "_mask" : RISCVSFCustomVFNRCLIPMasked;
-  }
-#endif // SIFIVE_CUSTOMIZATION
 
   defm vle : RISCVUSLoad;
   defm vleff : RISCVUSLoadFF;
@@ -1774,13 +1738,8 @@ let TargetPrefix = "riscv" in {
   }
 
 #ifdef SIFIVE_CUSTOMIZATION
-  defm sf_vfnrclip_x  : RISCVSFCustomVFNRCLIP;
-  defm sf_vfnrclip_xu : RISCVSFCustomVFNRCLIP;
-
   defm sf_vfwcvt_f_bf16_v : RISCVConversion;
   defm sf_vfncvt_bf16_f_w : RISCVConversion;
-
-  def int_riscv_sf_vfwmacc_4x4x4 : RISCVSFCustomVQMACC;
 #endif // SIFIVE_CUSTOMIZATION
 } // TargetPrefix = "riscv"
 

@@ -313,9 +313,10 @@ struct VPTransformState {
 #if SIFIVE_CUSTOMIZATION
   VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                    DominatorTree *DT, IRBuilderBase &Builder,
-                   InnerLoopVectorizer *ILV, VPlan *Plan, bool EnableRISCVCSA)
+                   InnerLoopVectorizer *ILV, VPlan *Plan, LLVMContext &Ctx,
+                   bool EnableRISCVCSA)
       : VF(VF), UF(UF), LI(LI), DT(DT), Builder(Builder), ILV(ILV), Plan(Plan),
-        LVer(nullptr), EnableRISCVCSA(EnableRISCVCSA) {}
+        LVer(nullptr), TypeAnalysis(Ctx),  EnableRISCVCSA(EnableRISCVCSA) {}
 #else
   VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                    DominatorTree *DT, IRBuilderBase &Builder,

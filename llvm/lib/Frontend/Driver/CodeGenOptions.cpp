@@ -30,6 +30,12 @@ TargetLibraryInfoImpl *createTLII(llvm::Triple &TargetTriple,
     TLII->addVectorizableFunctionsFromVecLib(TargetLibraryInfoImpl::MASSV,
                                              TargetTriple);
     break;
+#if SIFIVE_CUSTOMIZATION
+  case VectorLibrary::SiFive_NF:
+    TLII->addVectorizableFunctionsFromVecLib(TargetLibraryInfoImpl::SiFive_NF,
+                                             TargetTriple);
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   case VectorLibrary::SVML:
     TLII->addVectorizableFunctionsFromVecLib(TargetLibraryInfoImpl::SVML,
                                              TargetTriple);
