@@ -12,7 +12,7 @@
 // RUN:  -disable-O0-optnone -emit-llvm %s -o - | \
 // RUN:  opt -S -passes=mem2reg | FileCheck %s
 
-#include <riscv_vector.h>
+#include <sifive_vector.h>
 
 // CHECK-LABEL: @test_sf_vfwmacc_4x4x4_f32mf2_tu(
 // CHECK-NEXT:  entry:
