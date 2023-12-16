@@ -333,7 +333,7 @@
 // MCPU-SIFIVE-P470-SAME: "-target-feature" "+zba" "-target-feature" "+zbb" "-target-feature" "+zbs"
 // MCPU-SIFIVE-P470-SAME: "-target-feature" "+experimental-zvbb" "-target-feature" "+experimental-zvbc" 
 // MCPU-SIFIVE-P470-SAME: "-target-feature" "+zve32f" "-target-feature" "+zve32x" "-target-feature" "+zve64d" "-target-feature" "+zve64f" "-target-feature" "+zve64x"
-// MCPU-SIFIVE-P470-SAME: "-target-feature" "+experimental-zvkg" "-target-feature" "+experimental-zvkn" "-target-feature" "+experimental-zvknc" "-target-feature" "+experimental-zvkned" "-target-feature" "+experimental-zvkng" "-target-feature" "+experimental-zvknha" "-target-feature" "+experimental-zvknhb" "-target-feature" "+experimental-zvks" "-target-feature" "+experimental-zvksc" "-target-feature" "+experimental-zvksed" "-target-feature" "+experimental-zvksg" "-target-feature" "+experimental-zvksh" "-target-feature" "+experimental-zvkt"
+// MCPU-SIFIVE-P470-SAME: "-target-feature" "+experimental-zvkg" "-target-feature" "+experimental-zvkn" "-target-feature" "+experimental-zvknc" "-target-feature" "+experimental-zvkned" "-target-feature" "+experimental-zvkng" "-target-feature" "+experimental-zvknhb" "-target-feature" "+experimental-zvks" "-target-feature" "+experimental-zvksc" "-target-feature" "+experimental-zvksed" "-target-feature" "+experimental-zvksg" "-target-feature" "+experimental-zvksh" "-target-feature" "+experimental-zvkt"
 // MCPU-SIFIVE-P470-SAME: "-target-abi" "lp64d"
 
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-p670 | FileCheck -check-prefix=MCPU-SIFIVE-P670 %s
@@ -343,7 +343,7 @@
 // MCPU-SIFIVE-P670-SAME: "-target-feature" "+zba" "-target-feature" "+zbb" "-target-feature" "+zbs"
 // MCPU-SIFIVE-P670-SAME: "-target-feature" "+experimental-zvbb" "-target-feature" "+experimental-zvbc" 
 // MCPU-SIFIVE-P670-SAME: "-target-feature" "+zve32f" "-target-feature" "+zve32x" "-target-feature" "+zve64d" "-target-feature" "+zve64f" "-target-feature" "+zve64x"
-// MCPU-SIFIVE-P670-SAME: "-target-feature" "+experimental-zvkg" "-target-feature" "+experimental-zvkn" "-target-feature" "+experimental-zvknc" "-target-feature" "+experimental-zvkned" "-target-feature" "+experimental-zvkng" "-target-feature" "+experimental-zvknha" "-target-feature" "+experimental-zvknhb" "-target-feature" "+experimental-zvks" "-target-feature" "+experimental-zvksc" "-target-feature" "+experimental-zvksed" "-target-feature" "+experimental-zvksg" "-target-feature" "+experimental-zvksh" "-target-feature" "+experimental-zvkt"
+// MCPU-SIFIVE-P670-SAME: "-target-feature" "+experimental-zvkg" "-target-feature" "+experimental-zvkn" "-target-feature" "+experimental-zvknc" "-target-feature" "+experimental-zvkned" "-target-feature" "+experimental-zvkng" "-target-feature" "+experimental-zvknhb" "-target-feature" "+experimental-zvks" "-target-feature" "+experimental-zvksc" "-target-feature" "+experimental-zvksed" "-target-feature" "+experimental-zvksg" "-target-feature" "+experimental-zvksh" "-target-feature" "+experimental-zvkt"
 // MCPU-SIFIVE-P670-SAME: "-target-abi" "lp64d"
 
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-p870s | FileCheck -check-prefix=MCPU-SIFIVE-P870S %s
@@ -353,7 +353,7 @@
 // MCPU-SIFIVE-P870S-SAME: "-target-feature" "+zba" "-target-feature" "+zbb" "-target-feature" "+zbs"
 // MCPU-SIFIVE-P870S-SAME: "-target-feature" "+experimental-zvbb" "-target-feature" "+experimental-zvbc" 
 // MCPU-SIFIVE-P870S-SAME: "-target-feature" "+zve32f" "-target-feature" "+zve32x" "-target-feature" "+zve64d" "-target-feature" "+zve64f" "-target-feature" "+zve64x"
-// MCPU-SIFIVE-P870S-SAME: "-target-feature" "+experimental-zvkg" "-target-feature" "+experimental-zvkn" "-target-feature" "+experimental-zvknc" "-target-feature" "+experimental-zvkned" "-target-feature" "+experimental-zvkng" "-target-feature" "+experimental-zvknha" "-target-feature" "+experimental-zvknhb" "-target-feature" "+experimental-zvks" "-target-feature" "+experimental-zvksc" "-target-feature" "+experimental-zvksed" "-target-feature" "+experimental-zvksg" "-target-feature" "+experimental-zvksh" "-target-feature" "+experimental-zvkt"
+// MCPU-SIFIVE-P870S-SAME: "-target-feature" "+experimental-zvkg" "-target-feature" "+experimental-zvkn" "-target-feature" "+experimental-zvknc" "-target-feature" "+experimental-zvkned" "-target-feature" "+experimental-zvkng" "-target-feature" "+experimental-zvknhb" "-target-feature" "+experimental-zvks" "-target-feature" "+experimental-zvksc" "-target-feature" "+experimental-zvksed" "-target-feature" "+experimental-zvksg" "-target-feature" "+experimental-zvksh" "-target-feature" "+experimental-zvkt"
 // MCPU-SIFIVE-P870S-SAME: "-target-abi" "lp64d"
 
 // RUN: %clang -target riscv32 -### -c %s 2>&1 -mcpu=sifive-e61 | FileCheck -check-prefix=MCPU-SIFIVE-E61 %s
