@@ -104,7 +104,7 @@ public:
   InsertCounter(Module &M) {
     // Initial helper types
     StringWrapperTy = StructType::create(M.getContext());
-    Type *CharPtrTy = Type::getInt8PtrTy(M.getContext());
+    Type *CharPtrTy = PointerType::getUnqual(M.getContext());
     StringWrapperTy->setBody({CharPtrTy});
   }
   bool runOnModule(Module &M, llvm::function_ref<LoopInfo &(Function &)> GetLI);
