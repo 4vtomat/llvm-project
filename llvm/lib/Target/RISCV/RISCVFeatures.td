@@ -1022,24 +1022,6 @@ def FeatureVendorXSfvfhbfmin
 def HasVendorXSfvfhbfmin : Predicate<"Subtarget->hasVendorXSfvfhbfmin()">,
                          AssemblerPredicate<(all_of FeatureVendorXSfvfhbfmin),
                          "'Xsfvfhbfmin' (SiFive custom minimal BF16 vector support)">;
-<<<<<<< HEAD
-=======
-
-def FeatureVendorXSfvfwmaccqqq
-    : SubtargetFeature<"xsfvfwmaccqqq", "HasVendorXSfvfwmaccqqq", "true",
-                       "Xsfvfwmaccqqq (Support SiFive custom BF16 matrix arithmetic vector instructions)",
-                       [FeatureStdExtZve32f, FeatureStdExtZvl256b]>;
-def HasVendorXSfvfwmaccqqq : Predicate<"Subtarget->hasVendorXSfvfwmaccqqq()">,
-                          AssemblerPredicate<(all_of FeatureVendorXSfvfwmaccqqq),
-                          "'Xsfvfwmaccqqq' (SiFive custom BF16 matrix arithmetic vector instructions)">;
-
-def FeatureVendorXSfvfnrclipxfqf
-    : SubtargetFeature<"xsfvfnrclipxfqf", "HasVendorXSfvfnrclipxfqf", "true",
-                       "Xsfvfnrclipxfqf (Support SiFive custom FP32-to-int8 ranged clip instructions)",
-                       [FeatureStdExtZve32f]>;
-def HasVendorXSfvfnrclipxfqf : Predicate<"Subtarget->hasVendorXSfvfnrclipxfqf()">,
-                            AssemblerPredicate<(all_of FeatureVendorXSfvfnrclipxfqf),
-                            "'Xsfvfnrclipxfqf' (SiFive custom FP32-to-int8 ranged clip instructions)">;
 
 def FeatureVendorXSfvqdotq
     : SubtargetFeature<"xsfvqdotq", "HasVendorXSfvqdotq", "true",
@@ -1048,7 +1030,6 @@ def FeatureVendorXSfvqdotq
 def HasVendorXSfvqdotq : Predicate<"Subtarget->hasVendorXSfvqdot()">,
                          AssemblerPredicate<(all_of FeatureVendorXSfvqdotq),
                          "'Xsfvqdotq' (SiFive Vector Quad-Widening 4D Dot Product Instructions)">;
->>>>>>> origin/sifive-dev
 #endif // SIFIVE_CUSTOMIZATION
 def FeatureVendorXSfcie
     : SubtargetFeature<"xsfcie", "HasVendorXSfcie", "true",

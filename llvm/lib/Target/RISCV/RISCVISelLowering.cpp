@@ -707,13 +707,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_ZERO_EXTEND, ISD::VP_TRUNCATE,    ISD::VP_SMIN,
         ISD::VP_SMAX,        ISD::VP_UMIN,        ISD::VP_UMAX,
 #if SIFIVE_CUSTOMIZATION
-        ISD::VP_MULHU, ISD::VP_MULHS,
-<<<<<<< HEAD
-=======
-        ISD::VP_ABS, ISD::EXPERIMENTAL_VP_REVERSE, ISD::EXPERIMENTAL_VP_SPLICE};
-#else
-        ISD::VP_ABS};
->>>>>>> origin/sifive-dev
+        ISD::VP_MULHU, ISD::VP_MULHS, ISD::EXPERIMENTAL_VP_SPLICE,
 #endif // SIFIVE_CUSTOMIZATION
         ISD::VP_ABS, ISD::EXPERIMENTAL_VP_REVERSE};
 
@@ -726,11 +720,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_SETCC,       ISD::VP_FP_ROUND,    ISD::VP_FP_EXTEND,
         ISD::VP_SQRT,        ISD::VP_FMINNUM,     ISD::VP_FMAXNUM,
         ISD::VP_FCEIL,       ISD::VP_FFLOOR,      ISD::VP_FROUND,
-<<<<<<< HEAD
-=======
-        ISD::EXPERIMENTAL_VP_REVERSE, // SIFIVE
         ISD::EXPERIMENTAL_VP_SPLICE, // SIFIVE
->>>>>>> origin/sifive-dev
         ISD::VP_FROUNDEVEN,  ISD::VP_FCOPYSIGN,   ISD::VP_FROUNDTOZERO,
         ISD::VP_FRINT,       ISD::VP_FNEARBYINT,  ISD::VP_IS_FPCLASS,
         ISD::EXPERIMENTAL_VP_REVERSE};
@@ -8970,23 +8960,16 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
   }
   case Intrinsic::experimental_get_vector_length:
     return lowerGetVectorLength(Op.getNode(), DAG, Subtarget);
-<<<<<<< HEAD
-  case Intrinsic::riscv_vmv_x_s: {
-    SDValue Res = DAG.getNode(RISCVISD::VMV_X_S, DL, XLenVT, Op.getOperand(1));
-    return DAG.getNode(ISD::TRUNCATE, DL, Op.getValueType(), Res);
-  }
-=======
 #if SIFIVE_CUSTOMIZATION
   case Intrinsic::experimental_vp_compress:
     return lowerVPCompressExperimental(Op, DAG);
   case Intrinsic::experimental_vp_expand:
     return lowerVPExpandExperimental(Op, DAG);
 #endif // SIFIVE_CUSTOMIZATION
-  case Intrinsic::riscv_vmv_x_s:
-    assert(Op.getValueType() == XLenVT && "Unexpected VT!");
-    return DAG.getNode(RISCVISD::VMV_X_S, DL, Op.getValueType(),
-                       Op.getOperand(1));
->>>>>>> origin/sifive-dev
+  case Intrinsic::riscv_vmv_x_s: {
+    SDValue Res = DAG.getNode(RISCVISD::VMV_X_S, DL, XLenVT, Op.getOperand(1));
+    return DAG.getNode(ISD::TRUNCATE, DL, Op.getValueType(), Res);
+  }
   case Intrinsic::riscv_vfmv_f_s:
     return DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, Op.getValueType(),
                        Op.getOperand(1), DAG.getConstant(0, DL, XLenVT));

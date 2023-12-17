@@ -279,11 +279,6 @@ define <vscale x 2 x i32> @vpmerge_vid(<vscale x 2 x i32> %passthru, <vscale x 2
   ret <vscale x 2 x i32> %b
 }
 
-<<<<<<< HEAD
-=======
-; SIFIVE_CUSTOMIZATION
-; Cherry-picked from upstream #71483.
->>>>>>> origin/sifive-dev
 ; Test not combine VIOTA_M and VMERGE_VVM without true mask.
 declare <vscale x 2 x i32> @llvm.riscv.viota.nxv2i32(<vscale x 2 x i32>, <vscale x 2 x i1>, i64)
 define <vscale x 2 x i32> @vpmerge_viota(<vscale x 2 x i32> %passthru, <vscale x 2 x i1> %m, <vscale x 2 x i1> %vm, i32 zeroext %vl) {
@@ -314,10 +309,6 @@ define <vscale x 2 x i32> @vpmerge_viota2(<vscale x 2 x i32> %passthru, <vscale 
   %b = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> %true, <vscale x 2 x i32> %a, <vscale x 2 x i32> %passthru, i32 %vl)
   ret <vscale x 2 x i32> %b
 }
-<<<<<<< HEAD
-=======
-; SIFIVE_CUSTOMIZATION
->>>>>>> origin/sifive-dev
 
 ; Test riscv.vfclass
 declare <vscale x 2 x i32> @llvm.riscv.vfclass.nxv2i32(<vscale x 2 x i32>, <vscale x 2 x float>, i64)

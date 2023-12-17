@@ -2143,14 +2143,7 @@ multiclass VPseudoVIOT_M {
                        SchedUnary<"WriteVMIotV", "ReadVMIotV", mx,
                                   forceMergeOpRead=true>;
       def "_" # mx # "_MASK" : VPseudoUnaryMask<m.vrclass, VR, constraint>,
-<<<<<<< HEAD
                                  RISCVMaskedPseudo<MaskIdx=2, MaskAffectsRes=true>,
-=======
-#ifdef SIFIVE_CUSTOMIZATION
-                                 // Cherry-picked from upstream #71483.
-                                 RISCVMaskedPseudo<MaskIdx=2, MaskAffectsRes=true>,
-#endif // SIFIVE_CUSTOMIZATION
->>>>>>> origin/sifive-dev
                                  SchedUnary<"WriteVMIotV", "ReadVMIotV", mx,
                                             forceMergeOpRead=true>;
     }

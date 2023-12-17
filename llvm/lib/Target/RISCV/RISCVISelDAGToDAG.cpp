@@ -3735,19 +3735,10 @@ bool RISCVDAGToDAGISel::performCombineVMergeAndVOps(SDNode *N) {
   if (!Info)
     return false;
 
-<<<<<<< HEAD
-=======
-#if SIFIVE_CUSTOMIZATION
-  // Cherry-picked from upstream #71483.
->>>>>>> origin/sifive-dev
   // When Mask is not a true mask, this transformation is illegal for some
   // operations whose results are affected by mask, like viota.m.
   if (Info->MaskAffectsResult && Mask && !usesAllOnesMask(Mask, Glue))
     return false;
-<<<<<<< HEAD
-=======
-#endif // SIFIVE_CUSTOMIZATION
->>>>>>> origin/sifive-dev
 
   if (HasTiedDest && !isImplicitDef(True->getOperand(0))) {
     // The vmerge instruction must be TU.

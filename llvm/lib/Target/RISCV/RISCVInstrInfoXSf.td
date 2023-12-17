@@ -767,18 +767,6 @@ let Predicates = [HasVendorXSfvqmaccqoq] in {
 }
 
 #ifdef SIFIVE_CUSTOMIZATION
-<<<<<<< HEAD
-=======
-foreach m = [V_MF8, V_MF4, V_MF2, V_M1, V_M2] in {
-  defvar Constraint = "@earlyclobber $rd";
-  let VLMul = m.value in {
-    def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX : VPseudoBinaryNoMaskTU<m.vrclass, m.w2vrclass, FPR32, Constraint>;
-    def PseudoVFNRCLIP_X_F_QF # "_" # m.MX : VPseudoBinaryNoMaskTU<m.vrclass, m.w2vrclass, FPR32, Constraint>;
-    def PseudoVFNRCLIP_XU_F_QF # "_" # m.MX # "_MASK" : VPseudoBinaryMaskPolicy<m.vrclass, m.w2vrclass, FPR32, Constraint>;
-    def PseudoVFNRCLIP_X_F_QF # "_" # m.MX # "_MASK" : VPseudoBinaryMaskPolicy<m.vrclass, m.w2vrclass, FPR32, Constraint>;
-  }
-}
-
 multiclass VPseudoSiFiveVQDOT<string Constraint = ""> {
   foreach m = MxListVF4 in {
     defm "Pseudo" # NAME # "_VV" : VPseudoTernaryWithPolicy<m.vrclass, m.vrclass, m.vrclass, m, Constraint>;
@@ -797,7 +785,6 @@ let Predicates = [HasVendorXSfvqdotq] in {
   }
 }
 
->>>>>>> origin/sifive-dev
 let Predicates = [HasVendorXSfvfhbfmin], mayRaiseFPException = true in {
 defm PseudoVFWCVT_F_BF16   : VPseudoVWCVTD_V;
 defm PseudoVFNCVT_BF16_F   : VPseudoVNCVTD_W;
@@ -810,24 +797,6 @@ def : Pat<(int_riscv_vsetvxrm (XLenVT GPR:$rm)),
 
 def : Pat<(int_riscv_vsetvxrm uimm5:$rm),
           (WriteVXRMImm uimm5:$rm)>;
-
-<<<<<<< HEAD
-=======
-multiclass XPatSFVFNRCLIP<string intrinsic, string instruction,
-                          list<VTypeInfoToWide> vtilist> {
-  foreach VtiToWti = vtilist in {
-    defvar Vti = VtiToWti.Vti;
-    defvar Wti = VtiToWti.Wti;
-    defm : VPatBinary<intrinsic, instruction # "_" # Vti.LMul.MX, Vti.Vector,
-                      Wti.Vector, Wti.Scalar, Vti.Mask, Vti.Log2SEW,
-                      Vti.RegClass, Wti.RegClass, Wti.ScalarRegClass>;
-  }
-}
-
-let Predicates = [HasVendorXSfvfnrclipxfqf] in {
-  defm : XPatSFVFNRCLIP<"int_riscv_sf_vfnrclip_xu", "PseudoVFNRCLIP_XU_F_QF", AllVFNRCLIPVectors>;
-  defm : XPatSFVFNRCLIP<"int_riscv_sf_vfnrclip_x",  "PseudoVFNRCLIP_X_F_QF",  AllVFNRCLIPVectors>;
-}
 
 multiclass XPatConversionWF_VF <string intrinsic, string instruction> {
   foreach fvtiToFWti = AllWidenableBFloatToFloatVectors in
@@ -853,7 +822,6 @@ multiclass XPatConversionVF_WF <string intrinsic, string instruction> {
   }
 }
 
->>>>>>> origin/sifive-dev
 let Predicates = [HasVendorXSfvfhbfmin] in {
 defm : XPatConversionWF_VF<"int_riscv_sf_vfwcvt_f_bf16_v", "PseudoVFWCVT_F_BF16">;
 defm : XPatConversionVF_WF<"int_riscv_sf_vfncvt_bf16_f_w", "PseudoVFNCVT_BF16_F">;
