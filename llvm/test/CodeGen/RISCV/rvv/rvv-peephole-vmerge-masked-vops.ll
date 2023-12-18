@@ -259,6 +259,11 @@ entry:
   ret <vscale x 2 x i32> %res
 }
 
+<<<<<<< HEAD
+=======
+; SIFIVE_CUSTOMIZATION
+; Cherry-picked from upstream #71483.
+>>>>>>> origin/sifive-dev
 ; Test VIOTA_M
 declare <vscale x 2 x i32> @llvm.riscv.viota.mask.nxv2i32(<vscale x 2 x i32>, <vscale x 2 x i1>,  <vscale x 2 x i1>, i64, i64)
 define <vscale x 2 x i32> @vpmerge_viota(<vscale x 2 x i32> %passthru, <vscale x 2 x i1> %m, <vscale x 2 x i1> %vm, i32 zeroext %vl) {
@@ -274,3 +279,7 @@ define <vscale x 2 x i32> @vpmerge_viota(<vscale x 2 x i32> %passthru, <vscale x
   %b = call <vscale x 2 x i32> @llvm.riscv.vmerge.nxv2i32.nxv2i32(<vscale x 2 x i32> %passthru, <vscale x 2 x i32> %passthru, <vscale x 2 x i32> %a, <vscale x 2 x i1> %mask, i64 %1)
   ret <vscale x 2 x i32> %b
 }
+<<<<<<< HEAD
+=======
+; SIFIVE_CUSTOMIZATION
+>>>>>>> origin/sifive-dev

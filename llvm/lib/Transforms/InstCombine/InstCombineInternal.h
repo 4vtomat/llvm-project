@@ -435,6 +435,10 @@ private:
   Instruction *foldAndOrOfSelectUsingImpliedCond(Value *Op, SelectInst &SI,
                                                  bool IsAnd);
 
+#if SIFIVE_CUSTOMIZATION
+  Instruction *foldNeutralVPReduce(Instruction &I);
+#endif
+
   Instruction *hoistFNegAboveFMulFDiv(Value *FNegOp, Instruction &FMFSource);
 
 public:

@@ -92,6 +92,15 @@ disabling compiler support of the v0.10 intrinsics.
 |The SiFive pass:[C/C++] compiler employs a Vector Length Agnostic (VLA) vectorizer by default at `-O2` and above (see <<section-vectorizer>>).
 This option enables the Vector Length Specific (VLS) vectorizer instead of the default VLA vectorizer.
 
+|-mrvv-vector-bits=zvl
+|Tells the compiler to assume that the runtime VLEN will be exactly the same
+as the Zvl*b extension passed to -march or implied by -mcpu. This can improve
+the vector code generation in some cases. Code compiled with this flag will
+not run correctly on CPUs with a different VLEN.
+
+Also enables the use of __attribute__((riscv_rvv_vector_bits(__riscv_v_fixed_vlen)))
+to define fixed size vector types in C/C++ code. For more information see https://clang.llvm.org/docs/AttributeReference.html#riscv-rvv-vector-bits
+
 |-mllvm -vector-primary-lmul-min=
 |*[Experimental] This option may be deprecated and removed in a future release.*
 
@@ -225,9 +234,9 @@ h|Core IP Version h|Compiler Version h|`-mcpu` h|Default `-march` h|Default `-mt
 |23G2 and above |2023.10.0 and above |sifive-e76r |`rv32imafc_zic64b_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintpause_zihpm_za64rs_zba_zbb_zcb_zcmp_zcmt_zkt_xsifivecdiscarddlone_xsifivecflushdlone` |sifive-7n-series
 |23G2 and above |2023.10.0 and above |sifive-s21r |`rv64imac_zicsr_zifencei_zihpm_zba_zbb_zcb_zcmp_zcmt_zkt` |rocket
 |23G2 and above |2023.10.0 and above |sifive-s61r |`rv64imac_zic64b_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintpause_zihpm_za64rs_zba_zbb_zcb_zcmp_zcmt_zkt` |sifive-6-series
-|23G2 and above |2023.10.0 and above |sifive-s76r |`rv64imac_zic64b_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintpause_zihpm_za64rs_zba_zbb_zcb_zcmp_zcmt_zkt_xsifivecdiscarddlone_xsifivecflushdlone` |sifive-7n-series
-|23G2 and above |2023.10.0 and above |sifive-u64r |`rv64imafdc_zic64b_zicbop_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintntl_zihintpause_zihpm_za64rs_zba_zbb_zcb_zkt_xsifivecdiscarddlone_xsifivecflushdlone` |sifive-6-series
-|23G2 and above |2023.10.0 and above |sifive-u74r |`rv64imafdc_zic64b_zicbop_zicboz_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintntl_zihintpause_zihpm_za64rs_zba_zbb_zbs_zcb_zkt_xsifivecdiscarddlone_xsifivecflushdlone` |sifive-7n-series
+|23G2 and above |2023.10.0 and above |sifive-s76r |`rv64imafc_zic64b_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintpause_zihpm_za64rs_zba_zbb_zcb_zcmp_zcmt_zkt_xsifivecdiscarddlone_xsifivecflushdlone` |sifive-7n-series
+|23G2 and above |2023.10.0 and above |sifive-u64r |`rv64imafdc_zic64b_zicbom_zicbop_zicboz_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintntl_zihintpause_zihpm_za64rs_zfh_zba_zbb_zbs_zcb_zkt_xsifivecdiscarddlone_xsifivecflushdlone` |sifive-6-series
+|23G2 and above |2023.10.0 and above |sifive-u74r |`rv64imafdc_zic64b_zicbom_zicbop_zicboz_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintntl_zihintpause_zihpm_za64rs_zfh_zba_zbb_zbs_zcb_zkt_xsifivecdiscarddlone_xsifivecflushdlone` |sifive-7n-series
 |21G3 and above |2021.11.5 and above |sifive-u64 |`rv64imafdc_zba_zbb` |sifive-6-series
 |21G3 and above |2021.11.5 and above |sifive-u74n |`rv64imafdc_zba_zbb` |sifive-7n-series
 |21G2 |2021.06.3 and above |sifive-u74m |`rv64imafdc_zba_zbb` |sifive-7m-series

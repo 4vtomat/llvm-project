@@ -1702,6 +1702,11 @@ Instruction *InstCombinerImpl::visitAdd(BinaryOperator &I) {
         I, Builder.CreateIntrinsic(Intrinsic::ctpop, {I.getType()},
                                    {Builder.CreateOr(A, B)}));
 
+#if SIFIVE_CUSTOMIZATION
+  if (Instruction *Res = foldNeutralVPReduce(I))
+    return Res;
+#endif
+
   if (Instruction *Res = foldSquareSumInt(I))
     return Res;
 
@@ -1961,6 +1966,11 @@ Instruction *InstCombinerImpl::visitFAdd(BinaryOperator &I) {
       Result->setHasNoInfs(false);
     return Result;
   }
+
+#if SIFIVE_CUSTOMIZATION
+  if (Instruction *NewI = foldNeutralVPReduce(I))
+    return NewI;
+#endif
 
   return nullptr;
 }

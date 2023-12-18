@@ -636,8 +636,7 @@ class InternalDebugOpt : Group<internal_debug_Group>,
 def ccc_install_dir : Separate<["-"], "ccc-install-dir">, InternalDebugOpt,
   HelpText<"Simulate installation in the given directory">;
 def ccc_print_phases : Flag<["-"], "ccc-print-phases">,
-  Flags<[NoXarchOption, HelpHidden]>,
-  Visibility<[ClangOption, CLOption, DXCOption,
+  Flags<[NoXarchOption, HelpHidden]>, Visibility<[ClangOption, CLOption, DXCOption,
   FlangOption]>,
   HelpText<"Dump list of actions to perform">;
 def ccc_print_bindings : Flag<["-"], "ccc-print-bindings">, InternalDebugOpt,
@@ -1650,6 +1649,11 @@ defm debug_info_for_profiling : BoolFOption<"debug-info-for-profiling",
   PosFlag<SetTrue, [], [ClangOption, CC1Option],
           "Emit extra debug info to make sample profile more accurate">,
   NegFlag<SetFalse>>;
+// SIFIVE_CUSTOMIZATION
+def fsifive_loop_count_profile_generate : Flag<["-"], "fsifive-loop-count-profile-generate">,
+    Group<f_Group>, Visibility<[ClangOption, CLOption, DXCOption]>,
+    HelpText<"Generate Loop profile output into `loopProfile.output` file (overriden by LOOP_PROFILE env var)">;
+// end SIFIVE_CUSTOMIZATION
 def fprofile_instr_generate : Flag<["-"], "fprofile-instr-generate">,
     Group<f_Group>, Visibility<[ClangOption, CLOption]>,
     HelpText<"Generate instrumented code to collect execution counts into default.profraw file (overridden by '=' form of option or LLVM_PROFILE_FILE env var)">;
@@ -4334,8 +4338,7 @@ def mwatchos_simulator_version_min_EQ : Joined<["-"], "mwatchos-simulator-versio
 def mwatchsimulator_version_min_EQ : Joined<["-"], "mwatchsimulator-version-min=">, Alias<mwatchos_simulator_version_min_EQ>;
 } // let Flags = [TargetSpecific]
 def march_EQ : Joined<["-"], "march=">, Group<m_Group>,
-  Flags<[TargetSpecific]>,
-  Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
+  Flags<[TargetSpecific]>, Visibility<[ClangOption, CLOption, DXCOption, FlangOption]>,
   HelpText<"For a list of available architectures for the target use '-mcpu=help'">;
 def masm_EQ : Joined<["-"], "masm=">, Group<m_Group>;
 def inline_asm_EQ : Joined<["-"], "inline-asm=">, Group<m_Group>,

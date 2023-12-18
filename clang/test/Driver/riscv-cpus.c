@@ -156,6 +156,11 @@
 // MCPU-SIFIVE-S76: "-target-feature" "+xsfcie"
 // MCPU-SIFIVE-S76: "-target-abi" "lp64d"
 
+// mcpu with mabi option
+// RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-s76r | FileCheck -check-prefix=MCPU-SIFIVE-S76R %s
+// MCPU-SIFIVE-S76R: "-nostdsysteminc" "-target-cpu" "sifive-s76r"
+// MCPU-SIFIVE-S76R-SAME-SAME-SAME-SAME-SAME-SAME-SAME-SAME-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+c" "-target-feature" "+zic64b" "-target-feature" "+ziccamoa" "-target-feature" "+ziccif" "-target-feature" "+ziccrse" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zihintpause" "-target-feature" "+zihpm" "-target-feature" "+za64rs" "-target-feature" "+zca" "-target-feature" "+zcb" "-target-feature" "+zcmp" "-target-feature" "+zcmt" "-target-feature" "+zba" "-target-feature" "+zbb" "-target-feature" "+zkt" "-target-feature" "+experimental-xsifivecdiscarddlone" "-target-feature" "+experimental-xsifivecflushdlone"
+
 // mcpu with default march
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-u54 | FileCheck -check-prefix=MCPU-SIFIVE-U54 %s
 // MCPU-SIFIVE-U54: "-nostdsysteminc" "-target-cpu" "sifive-u54"
@@ -203,6 +208,11 @@
 // MCPU-ABI-SIFIVE-U74M: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zba"
 // MCPU-ABI-SIFIVE-U74M: "-target-feature" "+zbb"
 // MCPU-ABI-SIFIVE-U74M: "-target-abi" "lp64"
+
+// mcpu with mabi option
+// RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-u74r -mabi=lp64 | FileCheck -check-prefix=MCPU-ABI-SIFIVE-U74R %s
+// MCPU-ABI-SIFIVE-U74R: "-target-cpu" "sifive-u74r"
+// MCPU-ABI-SIFIVE-U74R-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d" "-target-feature" "+c" "-target-feature" "+zic64b" "-target-feature" "+zicbom" "-target-feature" "+zicbop" "-target-feature" "+zicboz" "-target-feature" "+ziccamoa" "-target-feature" "+ziccif" "-target-feature" "+ziccrse" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zihintntl" "-target-feature" "+zihintpause" "-target-feature" "+zihpm" "-target-feature" "+za64rs" "-target-feature" "+zfh" "-target-feature" "+zca" "-target-feature" "+zcb" "-target-feature" "+zba" "-target-feature" "+zbb" "-target-feature" "+zbs" "-target-feature" "+zkt" "-target-feature" "+experimental-xsifivecdiscarddlone" "-target-feature" "+experimental-xsifivecflushdlone"
 
 // march overwrite mcpu's default march
 // RUN: %clang --target=riscv32 -### -c %s 2>&1 -mcpu=sifive-e31 -march=rv32imc | FileCheck -check-prefix=MCPU-MARCH %s
@@ -373,3 +383,7 @@
 // MCPU-SIFIVE-U64-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
 // MCPU-SIFIVE-U64-SAME: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zba" "-target-feature" "+zbb"
 // MCPU-SIFIVE-U64-SAME: "-target-abi" "lp64d"
+
+// RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-u64r | FileCheck -check-prefix=MCPU-SIFIVE-U64R %s
+// MCPU-SIFIVE-U64R: "-target-cpu" "sifive-u64r"
+// MCPU-SIFIVE-U64R-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d" "-target-feature" "+c" "-target-feature" "+zic64b" "-target-feature" "+zicbom" "-target-feature" "+zicbop" "-target-feature" "+zicboz" "-target-feature" "+ziccamoa" "-target-feature" "+ziccif" "-target-feature" "+ziccrse" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zihintntl" "-target-feature" "+zihintpause" "-target-feature" "+zihpm" "-target-feature" "+za64rs" "-target-feature" "+zfh" "-target-feature" "+zca" "-target-feature" "+zcb" "-target-feature" "+zba" "-target-feature" "+zbb" "-target-feature" "+zbs" "-target-feature" "+zkt" "-target-feature" "+experimental-xsifivecdiscarddlone" "-target-feature" "+experimental-xsifivecflushdlone"

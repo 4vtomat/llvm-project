@@ -264,7 +264,11 @@ struct RISCVMaskedPseudoInfo {
   uint16_t MaskedPseudo;
   uint16_t UnmaskedPseudo;
   uint8_t MaskOpIdx;
+<<<<<<< HEAD
   uint8_t MaskAffectsResult : 1;
+=======
+  uint8_t MaskAffectsResult : 1; // SIFIVE. Cherry-picked from upstream #71483.
+>>>>>>> origin/sifive-dev
 };
 
 #define GET_RISCVVSSEGTable_DECL

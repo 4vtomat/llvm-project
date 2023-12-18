@@ -3,6 +3,8 @@
 ; RUN:   -verify-machineinstrs < %s | FileCheck %s --check-prefixes=NOALIGN
 ; RUN: llc -mtriple=riscv64 -mattr=+v -mcpu=sifive-x280 -riscv-mem-to-rvv=true -riscv-mem-to-rvv-dlen-align=true -riscv-mem-to-rvv-lmul=8 -O3 \
 ; RUN:   -verify-machineinstrs < %s | FileCheck %s --check-prefixes=ALIGN
+; RUN: llc -mtriple=riscv64 -mattr=+v -mcpu=sifive-x280 -riscv-mem-to-rvv=true -riscv-mem-to-rvv-dlen-align=true -riscv-mem-to-rvv-lmul=8 -O3 \
+; RUN:   --riscv-v-vector-bits-max=512 -verify-machineinstrs < %s | FileCheck %s --check-prefixes=ALIGN-VLEN
 
 define void @UnKnownSize(i8* nocapture readonly %dst, i8 %val, i64 signext %n) {
 ; NOALIGN-LABEL: UnKnownSize:
@@ -21,28 +23,51 @@ define void @UnKnownSize(i8* nocapture readonly %dst, i8 %val, i64 signext %n) {
 ;
 ; ALIGN-LABEL: UnKnownSize:
 ; ALIGN:       # %bb.0: # %entry
-; ALIGN-NEXT:    andi a3, a0, 31
-; ALIGN-NEXT:    li a4, 32
-; ALIGN-NEXT:    sub a4, a4, a3
-; ALIGN-NEXT:    minu a3, a4, a2
-; ALIGN-NEXT:    vsetvli a3, a3, e8, m8, ta, ma
-; ALIGN-NEXT:    sub a2, a2, a3
-; ALIGN-NEXT:    vsetvli a4, a2, e8, m8, ta, ma
-; ALIGN-NEXT:    maxu a4, a4, a3
-; ALIGN-NEXT:    vsetvli zero, a4, e8, m8, ta, ma
-; ALIGN-NEXT:    vmv.v.x v8, a1
-; ALIGN-NEXT:    add a1, a0, a3
+; ALIGN-NEXT:    vsetvli a3, zero, e8, m8, ta, ma
+; ALIGN-NEXT:    andi a4, a0, 31
+; ALIGN-NEXT:    li a5, 32
+; ALIGN-NEXT:    sub a5, a5, a4
+; ALIGN-NEXT:    minu a3, a3, a2
 ; ALIGN-NEXT:    vsetvli zero, a3, e8, m8, ta, ma
+; ALIGN-NEXT:    minu a3, a5, a2
+; ALIGN-NEXT:    vmv.v.x v8, a1
+; ALIGN-NEXT:    vsetvli a3, a3, e8, m8, ta, ma
+; ALIGN-NEXT:    sub a1, a2, a3
+; ALIGN-NEXT:    add a2, a0, a3
 ; ALIGN-NEXT:    vse8.v v8, (a0)
 ; ALIGN-NEXT:  .LBB0_1: # %memset-forward-loop
 ; ALIGN-NEXT:    # =>This Inner Loop Header: Depth=1
-; ALIGN-NEXT:    vsetvli a0, a2, e8, m8, ta, ma
-; ALIGN-NEXT:    vse8.v v8, (a1)
-; ALIGN-NEXT:    add a1, a1, a0
-; ALIGN-NEXT:    sub a2, a2, a0
-; ALIGN-NEXT:    bnez a2, .LBB0_1
+; ALIGN-NEXT:    vsetvli a0, a1, e8, m8, ta, ma
+; ALIGN-NEXT:    vse8.v v8, (a2)
+; ALIGN-NEXT:    add a2, a2, a0
+; ALIGN-NEXT:    sub a1, a1, a0
+; ALIGN-NEXT:    bnez a1, .LBB0_1
 ; ALIGN-NEXT:  # %bb.2: # %memset-post-loop
 ; ALIGN-NEXT:    ret
+;
+; ALIGN-VLEN-LABEL: UnKnownSize:
+; ALIGN-VLEN:       # %bb.0: # %entry
+; ALIGN-VLEN-NEXT:    li a3, 512
+; ALIGN-VLEN-NEXT:    andi a4, a0, 31
+; ALIGN-VLEN-NEXT:    li a5, 32
+; ALIGN-VLEN-NEXT:    minu a3, a2, a3
+; ALIGN-VLEN-NEXT:    sub a5, a5, a4
+; ALIGN-VLEN-NEXT:    vsetvli zero, a3, e8, m8, ta, ma
+; ALIGN-VLEN-NEXT:    minu a3, a5, a2
+; ALIGN-VLEN-NEXT:    vmv.v.x v8, a1
+; ALIGN-VLEN-NEXT:    vsetvli a3, a3, e8, m8, ta, ma
+; ALIGN-VLEN-NEXT:    sub a1, a2, a3
+; ALIGN-VLEN-NEXT:    add a2, a0, a3
+; ALIGN-VLEN-NEXT:    vse8.v v8, (a0)
+; ALIGN-VLEN-NEXT:  .LBB0_1: # %memset-forward-loop
+; ALIGN-VLEN-NEXT:    # =>This Inner Loop Header: Depth=1
+; ALIGN-VLEN-NEXT:    vsetvli a0, a1, e8, m8, ta, ma
+; ALIGN-VLEN-NEXT:    vse8.v v8, (a2)
+; ALIGN-VLEN-NEXT:    add a2, a2, a0
+; ALIGN-VLEN-NEXT:    sub a1, a1, a0
+; ALIGN-VLEN-NEXT:    bnez a1, .LBB0_1
+; ALIGN-VLEN-NEXT:  # %bb.2: # %memset-post-loop
+; ALIGN-VLEN-NEXT:    ret
 entry:
   tail call void @llvm.memset.p0i8.i8.i64(i8* align 1 %dst, i8 %val, i64 %n, i1 false)
   ret void

@@ -741,6 +741,13 @@ public:
   virtual void addProfileRTLibs(const llvm::opt::ArgList &Args,
                                 llvm::opt::ArgStringList &CmdArgs) const;
 
+#if SIFIVE_CUSTOMIZATION
+  /// addLoopProfileRTLibs - When -fsifive-loop-profile-generate is specified,
+  /// try to pass a suitable profile runtime library to the linker.
+  virtual void addLoopProfileRTLibs(const llvm::opt::ArgList &Args,
+                                    llvm::opt::ArgStringList &CmdArgs) const;
+#endif // SIFIVE_CUSTOMIZATION
+
   /// Add arguments to use system-specific CUDA includes.
   virtual void AddCudaIncludeArgs(const llvm::opt::ArgList &DriverArgs,
                                   llvm::opt::ArgStringList &CC1Args) const;

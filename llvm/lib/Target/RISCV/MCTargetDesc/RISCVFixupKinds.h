@@ -51,6 +51,7 @@ enum Fixups {
   // 20-bit fixup corresponding to %tls_gd_pcrel_hi(foo) for instructions like
   // auipc
   fixup_riscv_tls_gd_hi20,
+#if SIFIVE_CUSTOMIZATION
   // fixup_riscv_gprel_hi20 - 20-bit fixup corresponding to gprel_hi(foo) for
   // instructions like lui
   fixup_riscv_gprel_hi20,
@@ -92,8 +93,8 @@ enum Fixups {
   // %tls_gd_gprel(foo) for the add_tls_gd_gprel instruction.
   // Used to provide a hint to the linker
   fixup_riscv_tls_gd_gprel_add,
-  // fixup_riscv_jal - 20-bit fixup for symbol references in the jal
-  // instruction
+#endif // SIFIVE_CUSTOMIZATION
+  // 20-bit fixup for symbol references in the jal instruction
   fixup_riscv_jal,
   // 12-bit fixup for symbol references in the branch instructions
   fixup_riscv_branch,

@@ -708,6 +708,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_SMAX,        ISD::VP_UMIN,        ISD::VP_UMAX,
 #if SIFIVE_CUSTOMIZATION
         ISD::VP_MULHU, ISD::VP_MULHS,
+<<<<<<< HEAD
+=======
+        ISD::VP_ABS, ISD::EXPERIMENTAL_VP_REVERSE, ISD::EXPERIMENTAL_VP_SPLICE};
+#else
+        ISD::VP_ABS};
+>>>>>>> origin/sifive-dev
 #endif // SIFIVE_CUSTOMIZATION
         ISD::VP_ABS, ISD::EXPERIMENTAL_VP_REVERSE};
 
@@ -720,6 +726,11 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_SETCC,       ISD::VP_FP_ROUND,    ISD::VP_FP_EXTEND,
         ISD::VP_SQRT,        ISD::VP_FMINNUM,     ISD::VP_FMAXNUM,
         ISD::VP_FCEIL,       ISD::VP_FFLOOR,      ISD::VP_FROUND,
+<<<<<<< HEAD
+=======
+        ISD::EXPERIMENTAL_VP_REVERSE, // SIFIVE
+        ISD::EXPERIMENTAL_VP_SPLICE, // SIFIVE
+>>>>>>> origin/sifive-dev
         ISD::VP_FROUNDEVEN,  ISD::VP_FCOPYSIGN,   ISD::VP_FROUNDTOZERO,
         ISD::VP_FRINT,       ISD::VP_FNEARBYINT,  ISD::VP_IS_FPCLASS,
         ISD::EXPERIMENTAL_VP_REVERSE};
@@ -771,6 +782,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
           Expand);
       setOperationAction(ISD::VP_MERGE, VT, Custom);
       setOperationAction(ISD::VP_FIRST, VT, Custom);
+      setOperationAction(ISD::EXPERIMENTAL_VP_POPCOUNT, VT, Custom);
 #endif
 
       setOperationAction({ISD::VP_AND, ISD::VP_OR, ISD::VP_XOR}, VT, Custom);
@@ -915,12 +927,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         setOperationAction({ISD::ROTL, ISD::ROTR}, VT, Expand);
       }
 
-#if SIFIVE_CUSTOMIZATION
-      // Copied from BSC
-      // VP Shuffles
-      setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
-#endif // SIFIVE_CUSTOMIZATION
-
       if (Subtarget.hasStdExtZvbb()) {
         setOperationAction(ISD::BITREVERSE, VT, Legal);
         setOperationAction(ISD::VP_BITREVERSE, VT, Custom);
@@ -1045,11 +1051,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       setOperationAction({ISD::VECTOR_REVERSE, ISD::VECTOR_SPLICE}, VT, Custom);
 
       setOperationAction(FloatingPointVPOps, VT, Custom);
-
-#if SIFIVE_CUSTOMIZATION
-      // Copied from BSC
-      setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
-#endif // SIFIVE_CUSTOMIZATION
 
       setOperationAction({ISD::STRICT_FP_EXTEND, ISD::STRICT_FP_ROUND}, VT,
                          Custom);
@@ -1211,6 +1212,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
           setOperationAction(ISD::VP_MERGE, VT, Custom);
 
           setOperationAction(ISD::VP_FIRST, VT, Custom);
+          setOperationAction(ISD::EXPERIMENTAL_VP_POPCOUNT, VT, Custom);
           // Copied from BSC
           setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
 #endif // SIFIVE_CUSTOMIZATION
@@ -1278,10 +1280,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         if (Subtarget.hasStdExtZvkb())
           setOperationAction({ISD::BSWAP, ISD::ROTL, ISD::ROTR}, VT, Custom);
 
-#if SIFIVE_CUSTOMIZATION
-        // Copied from BSC.
-        setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
-#endif // SIFIVE_CUSTOMIZATION
         if (Subtarget.hasStdExtZvbb()) {
           setOperationAction({ISD::BITREVERSE, ISD::CTLZ, ISD::CTLZ_ZERO_UNDEF,
                               ISD::CTTZ, ISD::CTTZ_ZERO_UNDEF, ISD::CTPOP},
@@ -1392,11 +1390,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         setOperationAction(FloatingPointVecReduceOps, VT, Custom);
 
         setOperationAction(FloatingPointVPOps, VT, Custom);
-
-#if SIFIVE_CUSTOMIZATION
-        // Copied from BSC
-        setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
-#endif // SIFIVE_CUSTOMIZATION
 
         setOperationAction({ISD::STRICT_FP_EXTEND, ISD::STRICT_FP_ROUND}, VT,
                            Custom);
@@ -3115,7 +3108,9 @@ lowerVectorStrictFTRUNC_FCEIL_FFLOOR_FROUND(SDValue Op, SelectionDAG &DAG,
   Chain = Unorder.getValue(1);
   Src = DAG.getNode(RISCVISD::STRICT_FADD_VL, DL,
                     DAG.getVTList(ContainerVT, MVT::Other),
-                    {Chain, Src, Src, DAG.getUNDEF(ContainerVT), Unorder, VL});
+#if SIFIVE_CUSTOMIZATION
+                    {Chain, Src, Src, Src, Unorder, VL});
+#endif // SIFIVE_CUSTOMIZATION
   Chain = Src.getValue(1);
 
   // We do the conversion on the absolute value and fix the sign at the end.
@@ -6874,6 +6869,8 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
 #if SIFIVE_CUSTOMIZATION
   case ISD::VP_FIRST:
     return lowerVPFirst(Op, DAG);
+  case ISD::EXPERIMENTAL_VP_POPCOUNT:
+    return lowerVPPopcount(Op, DAG);
   // Below copied from BSC
   case ISD::EXPERIMENTAL_VP_SPLICE:
     return lowerVPSpliceExperimental(Op, DAG);
@@ -8973,10 +8970,23 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
   }
   case Intrinsic::experimental_get_vector_length:
     return lowerGetVectorLength(Op.getNode(), DAG, Subtarget);
+<<<<<<< HEAD
   case Intrinsic::riscv_vmv_x_s: {
     SDValue Res = DAG.getNode(RISCVISD::VMV_X_S, DL, XLenVT, Op.getOperand(1));
     return DAG.getNode(ISD::TRUNCATE, DL, Op.getValueType(), Res);
   }
+=======
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::experimental_vp_compress:
+    return lowerVPCompressExperimental(Op, DAG);
+  case Intrinsic::experimental_vp_expand:
+    return lowerVPExpandExperimental(Op, DAG);
+#endif // SIFIVE_CUSTOMIZATION
+  case Intrinsic::riscv_vmv_x_s:
+    assert(Op.getValueType() == XLenVT && "Unexpected VT!");
+    return DAG.getNode(RISCVISD::VMV_X_S, DL, Op.getValueType(),
+                       Op.getOperand(1));
+>>>>>>> origin/sifive-dev
   case Intrinsic::riscv_vfmv_f_s:
     return DAG.getNode(ISD::EXTRACT_VECTOR_ELT, DL, Op.getValueType(),
                        Op.getOperand(1), DAG.getConstant(0, DL, XLenVT));
@@ -11726,20 +11736,20 @@ RISCVTargetLowering::lowerVPSpliceExperimental(SDValue Op,
     SDValue SplatOneOp1 = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, ContainerVT,
                                       DAG.getUNDEF(ContainerVT),
                                       DAG.getConstant(1, DL, XLenVT), EVL1);
-    SDValue VMV0Op1 = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, ContainerVT,
-                                  DAG.getUNDEF(ContainerVT),
-                                  DAG.getConstant(0, DL, XLenVT), EVL1);
+    SDValue SplatZeroOp1 = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, ContainerVT,
+                                       DAG.getUNDEF(ContainerVT),
+                                       DAG.getConstant(0, DL, XLenVT), EVL1);
     Op1 = DAG.getNode(RISCVISD::VSELECT_VL, DL, ContainerVT, Op1, SplatOneOp1,
-                      VMV0Op1, EVL1);
+                      SplatZeroOp1, EVL1);
 
     SDValue SplatOneOp2 = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, ContainerVT,
                                       DAG.getUNDEF(ContainerVT),
                                       DAG.getConstant(1, DL, XLenVT), EVL2);
-    SDValue VMV0Op2 = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, ContainerVT,
-                                  DAG.getUNDEF(ContainerVT),
-                                  DAG.getConstant(0, DL, XLenVT), EVL2);
+    SDValue SplatZeroOp2 = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, ContainerVT,
+                                       DAG.getUNDEF(ContainerVT),
+                                       DAG.getConstant(0, DL, XLenVT), EVL2);
     Op2 = DAG.getNode(RISCVISD::VSELECT_VL, DL, ContainerVT, Op2, SplatOneOp2,
-                      VMV0Op2, EVL2);
+                      SplatZeroOp2, EVL2);
   }
 
   int64_t ImmValue = cast<ConstantSDNode>(Offset)->getSExtValue();
@@ -11904,7 +11914,24 @@ SDValue RISCVTargetLowering::lowerVPFirst(SDValue N, SelectionDAG &DAG) const {
   SDLoc DL(N);
   MVT XLenVT = Subtarget.getXLenVT();
 
-  bool IsUnMasked = ISD::isConstantSplatVectorAllOnes(Mask.getNode());
+  MVT ContainerVT = VT;
+  if (VT.isFixedLengthVector()) {
+    ContainerVT = getContainerForFixedLengthVector(VT);
+    Op = convertToScalableVector(ContainerVT, Op, DAG, Subtarget);
+    Mask = convertToScalableVector(ContainerVT, Mask, DAG, Subtarget);
+  }
+
+  return DAG.getNode(RISCVISD::VFIRST_VL, DL, XLenVT, Op, Mask,
+                     N->getOperand(2));
+}
+
+SDValue RISCVTargetLowering::lowerVPPopcount(SDValue N,
+                                             SelectionDAG &DAG) const {
+  SDValue Op = N.getOperand(0);
+  SDValue Mask = N.getOperand(1);
+  MVT VT = Op.getSimpleValueType();
+  SDLoc DL(N);
+  MVT XLenVT = Subtarget.getXLenVT();
 
   MVT ContainerVT = VT;
   if (VT.isFixedLengthVector()) {
@@ -11913,15 +11940,82 @@ SDValue RISCVTargetLowering::lowerVPFirst(SDValue N, SelectionDAG &DAG) const {
     Mask = convertToScalableVector(ContainerVT, Mask, DAG, Subtarget);
   }
 
-  // TODO: Teach doPeepholeMaskedRVV to fold masked operations.
-  if (IsUnMasked)
-    return DAG.getNode(ISD::INTRINSIC_WO_CHAIN, DL, Subtarget.getXLenVT(),
-                       DAG.getConstant(Intrinsic::riscv_vfirst, DL, XLenVT), Op,
-                       N->getOperand(2));
+  return DAG.getNode(RISCVISD::VCPOP_VL, DL, XLenVT, Op, Mask,
+                     N->getOperand(2));
+}
 
-  return DAG.getNode(ISD::INTRINSIC_WO_CHAIN, DL, Subtarget.getXLenVT(),
-                     DAG.getConstant(Intrinsic::riscv_vfirst_mask, DL, XLenVT),
-                     Op, Mask, N->getOperand(2));
+SDValue
+RISCVTargetLowering::lowerVPCompressExperimental(SDValue N,
+                                                 SelectionDAG &DAG) const {
+  SDLoc DL(N);
+  MVT VT = N.getSimpleValueType();
+  MVT XLenVT = Subtarget.getXLenVT();
+  SDValue Op = N.getOperand(1);
+  SDValue Mask = N.getOperand(2);
+  SDValue VL = DAG.getNode(ISD::ZERO_EXTEND, DL, XLenVT, N.getOperand(3));
+
+  MVT ContainerVT = VT;
+  if (VT.isFixedLengthVector()) {
+    ContainerVT = getContainerForFixedLengthVector(VT);
+    Op = convertToScalableVector(ContainerVT, Op, DAG, Subtarget);
+    MVT MaskContainerVT = ContainerVT.changeVectorElementType(MVT::i1);
+    Mask = convertToScalableVector(MaskContainerVT, Mask, DAG, Subtarget);
+  }
+  SDValue Res =
+      DAG.getNode(ISD::INTRINSIC_WO_CHAIN, DL, ContainerVT,
+                  DAG.getConstant(Intrinsic::riscv_vcompress, DL, XLenVT),
+                  DAG.getUNDEF(ContainerVT), Op, Mask, VL);
+  if (!VT.isFixedLengthVector())
+    return Res;
+  return convertFromScalableVector(VT, Res, DAG, Subtarget);
+}
+
+SDValue
+RISCVTargetLowering::lowerVPExpandExperimental(SDValue N,
+                                               SelectionDAG &DAG) const {
+  SDLoc DL(N);
+  MVT VT = N.getSimpleValueType();
+  MVT XLenVT = Subtarget.getXLenVT();
+  SDValue Op = N.getOperand(1);
+  SDValue Mask = N.getOperand(2);
+  SDValue VL = DAG.getNode(ISD::ZERO_EXTEND, DL, XLenVT, N.getOperand(3));
+
+  MVT ContainerVT = VT;
+  if (VT.isFixedLengthVector()) {
+    ContainerVT = getContainerForFixedLengthVector(VT);
+    Op = convertToScalableVector(ContainerVT, Op, DAG, Subtarget);
+    MVT MaskContainerVT = ContainerVT.changeVectorElementType(MVT::i1);
+    Mask = convertToScalableVector(MaskContainerVT, Mask, DAG, Subtarget);
+  }
+
+  auto UpperBoundSize = [this](MVT VT) -> uint64_t {
+    assert(VT.getScalarType() == MVT::i8);
+    if (VT.isFixedLengthVector())
+      return VT.getVectorMinNumElements();
+    unsigned MinSize = VT.getSizeInBits().getKnownMinValue();
+    unsigned VectorBitsMax = Subtarget.getRealMaxVLen();
+    return RISCVTargetLowering::computeVLMAX(VectorBitsMax, 8, MinSize);
+  };
+
+  unsigned GatherVVOpc = RISCVISD::VRGATHEREI16_VV_VL;
+  MVT IndexVT = ContainerVT.changeVectorElementType(MVT::i16);
+  // Use vrgather instead of if VL <= 256.
+  if (VT.getScalarType() == MVT::i8 &&
+      (UpperBoundSize(VT) <= 256 ||
+       (isa<ConstantSDNode>(VL) && N->getConstantOperandVal(3) <= 256))) {
+    GatherVVOpc = RISCVISD::VRGATHER_VV_VL;
+    IndexVT = ContainerVT;
+  }
+
+  SDValue Index =
+      DAG.getNode(ISD::INTRINSIC_WO_CHAIN, DL, IndexVT,
+                  DAG.getConstant(Intrinsic::riscv_viota, DL, XLenVT),
+                  DAG.getUNDEF(IndexVT), Mask, VL);
+  SDValue Res = DAG.getNode(GatherVVOpc, DL, ContainerVT, Op, Index,
+                            DAG.getUNDEF(ContainerVT), Mask, VL);
+  if (!VT.isFixedLengthVector())
+    return Res;
+  return convertFromScalableVector(VT, Res, DAG, Subtarget);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -17895,7 +17989,7 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     }
 
     // Fold vp_merge_vl (M2, OP (M1, T1, F1, VL), F2, VL) ->
-    //      vmerge_vl (F2, M1, T1, F2, VL)
+    //      vmerge_vl (F2, M1, T1, F1, VL)
     //      when M2 is all 1s and OP is vp_merge_vl or vselect_vl.
     SDValue MergedWhenTrue = N->getOperand(1);
     bool IsCorrectOpcode =
@@ -17909,7 +18003,7 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
                            N->getOperand(2),             // F2
                            MergedWhenTrue.getOperand(0), // M1
                            MergedWhenTrue.getOperand(1), // T1
-                           MergedWhenTrue.getOperand(2), // T2
+                           MergedWhenTrue.getOperand(2), // F1
                            VL);
       }
     }
@@ -18216,6 +18310,14 @@ void RISCVTargetLowering::computeKnownBitsForTargetNode(const SDValue Op,
     Known.Zero.setBitsFrom(10);
     break;
   }
+#if SIFIVE_CUSTOMIZATION
+  case RISCVISD::VCPOP_VL:
+    // The maximum number of elements is 65536 for LMUL=8.
+    // FIXME: This is for LMUL=8, we could reduce for other LMULs.
+    // FIXME: We could reduce this based on known VLEN.
+    Known.Zero.setBitsFrom(17);
+    break;
+#endif
   case ISD::INTRINSIC_W_CHAIN:
   case ISD::INTRINSIC_WO_CHAIN: {
     unsigned IntNo =
@@ -18224,6 +18326,11 @@ void RISCVTargetLowering::computeKnownBitsForTargetNode(const SDValue Op,
     default:
       // We can't do anything for most intrinsics.
       break;
+#if SIFIVE_CUSTOMIZATION
+    case Intrinsic::riscv_vcpop:
+    case Intrinsic::riscv_vcpop_mask:
+    // FIXME: Generalize to LMUL other than 8
+#endif // SIFIVE_CUSTOMIZATION
     case Intrinsic::riscv_vsetvli:
     case Intrinsic::riscv_vsetvlimax:
       // Assume that VL output is >= 65536.
@@ -18292,6 +18399,14 @@ unsigned RISCVTargetLowering::ComputeNumSignBitsForTargetNode(
       return XLen - EltBits + 1;
     break;
   }
+#if SIFIVE_CUSTOMIZATION
+  case RISCVISD::VFIRST_VL:
+    // The maximum number of elements is 65536 for LMUL=8. So result is
+    // [-1, 65535].
+    // FIXME: This is for LMUL=8, we could reduce for other LMULs.
+    // FIXME: We could reduce this based on known VLEN.
+    return Subtarget.getXLen() - 16;
+#endif // SIFIVE_CUSTOMIZATION
   case ISD::INTRINSIC_W_CHAIN: {
     unsigned IntNo = Op.getConstantOperandVal(1);
     switch (IntNo) {
@@ -18316,6 +18431,33 @@ unsigned RISCVTargetLowering::ComputeNumSignBitsForTargetNode(
       assert(Subtarget.hasStdExtA());
       return 33;
     }
+#if SIFIVE_CUSTOMIZATION
+    break;
+  }
+  case ISD::INTRINSIC_WO_CHAIN: {
+    unsigned IntNo = Op.getConstantOperandVal(0);
+    switch (IntNo) {
+    default:
+      break;
+    case Intrinsic::riscv_vfirst:
+    case Intrinsic::riscv_vfirst_mask:
+      // vfirst returns an index or -1. The largest index is VLMAX-1. The
+      // largest VLMAX possible is 65536. This means the largest index is
+      // 65536-1 which fits in 16 bits. Bits 17 to XLEN-1 are 0 when an an
+      // active element is 1. When no active element has value 1, -1 is written.
+      // In that case, bits 17 to XLEN-1 are 1. Therefore, bits XLEN-1 to 17 may
+      // be considered sign bits.
+      // FIXME: This is the number of sign bits when LMUL = 8,
+      // which is also the minimal (# of sign bits) of all
+      // possible LMULs.
+      // This value will yield incorrect result when we're casting
+      // the return of vfirst (length equals to XLen) to some
+      // smaller types like 16 bits integers, as they have
+      // higher number of sign bits.
+      return Subtarget.getXLen() - 16;
+    }
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   }
   }
 
@@ -22262,6 +22404,96 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
       VPStore->getModule(), VssegNID, {VTy, RVL->getType()});
 
   Builder.CreateCall(VssegNFunc, Operands);
+  return true;
+}
+
+/// Lower an interleaved vp.strided.load into a vlssegN intrinsic.
+///
+/// E.g. Lower an interleaved vp.strided.load (Factor = 2):
+///   %l = call <vscale x 2 x i16>
+///           @llvm.experimental.vp.strided.load.nxv2i16.p0.i64(ptr %ptr,
+///                                                             %stride,
+///                                                             <all-true-mask>,
+///                                                             i32 %rvl)
+///   %l.cast = bitcast <vscale x 2 x i16> %l to <vscale x 4 x i8>
+///   %dl = tail call { <vscale x 2 x i8>, <vscale x 2 x i8> }
+///             @llvm.experimental.vector.deinterleave2.nxv2i8(
+///               <vscale x 4 x i8> %l.cast)
+///   %r0 = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8> } %dl, 0
+///   %r1 = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8> } %dl, 1
+///
+/// Into:
+///   %ssl = call { <vscale x 2 x i8>, <vscale x 2 x i8> }
+///              @llvm.riscv.vlseg2.nxv2i8.i64(<vscale x 32 x i8> poison,
+///                                            <vscale x 32 x i8> poison,
+///                                            %ptr,
+///                                            %stride,
+///                                            i64 %rvl)
+///   %r0 = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8> } %ssl, 0
+///   %r1 = extractvalue { <vscale x 2 x i8>, <vscale x 2 x i8> } %ssl, 1
+///
+/// NOTE: the deinterleave2 intrinsic and the bitcast instruction won't be
+/// touched and is expected to be removed by the caller
+// TODO: Support mask vlsseg
+bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
+    Instruction *StridedLoad, IntrinsicInst *DI, unsigned Factor) const {
+  using namespace llvm::PatternMatch;
+  Value *BasePtr, *Stride, *Mask, *RVL;
+  if (!match(StridedLoad, m_Intrinsic<Intrinsic::experimental_vp_strided_load>(
+                              m_Value(BasePtr), m_Value(Stride), m_Value(Mask),
+                              m_Value(RVL))))
+    return false;
+
+  // TODO: support vlssegN_mask
+  if (!match(Mask, m_AllOnes()))
+    return false;
+
+  [[maybe_unused]] auto *DISrcTy =
+      cast<VectorType>(DI->getOperand(0)->getType());
+  [[maybe_unused]] auto *LTy = cast<VectorType>(StridedLoad->getType());
+  assert(DISrcTy->getPrimitiveSizeInBits() == LTy->getPrimitiveSizeInBits() &&
+         "The primitive size of strided load and the source of deinterleave "
+         "should be the same.");
+  assert(DISrcTy->getElementCount() == LTy->getElementCount() * Factor &&
+         "ElementCount of source deinterleave should be equal to the "
+         "ElementCount of strided load multiplied by factor.");
+
+  auto *ResTy = cast<VectorType>(DI->getType()->getContainedType(0));
+
+  Align Alignment =
+      cast<VPIntrinsic>(StridedLoad)->getPointerAlignment().valueOrOne();
+  if (!isLegalInterleavedAccessType(
+          ResTy, Factor, Alignment,
+          BasePtr->getType()->getPointerAddressSpace(),
+          StridedLoad->getModule()->getDataLayout()))
+    return false;
+
+  IRBuilder<> Builder(StridedLoad);
+  auto *XLenTy =
+      Type::getIntNTy(StridedLoad->getContext(), Subtarget.getXLen());
+  assert(Stride->getType() == XLenTy &&
+         "The type of stride must be the XLEN integer type.");
+  RVL = Builder.CreateZExtOrTrunc(RVL, XLenTy);
+
+  static const Intrinsic::ID IntrIds[] = {
+      Intrinsic::riscv_vlsseg2, Intrinsic::riscv_vlsseg3,
+      Intrinsic::riscv_vlsseg4, Intrinsic::riscv_vlsseg5,
+      Intrinsic::riscv_vlsseg6, Intrinsic::riscv_vlsseg7,
+      Intrinsic::riscv_vlsseg8,
+  };
+
+  Value *PoisonVal = PoisonValue::get(ResTy);
+  SmallVector<Value *> Operands(Factor, PoisonVal);
+  Operands.append({BasePtr, Stride});
+
+  Intrinsic::ID VlssegNID = IntrIds[Factor - 2];
+  Operands.push_back(RVL);
+
+  Function *VlssegNFunc = Intrinsic::getDeclaration(
+      StridedLoad->getModule(), VlssegNID, {ResTy, RVL->getType()});
+  CallInst *VlssegN = Builder.CreateCall(VlssegNFunc, Operands);
+  DI->replaceAllUsesWith(VlssegN);
+
   return true;
 }
 #endif // SIFIVE_CUSTOMIZATION

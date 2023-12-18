@@ -531,16 +531,6 @@ defset list<VTypeInfoToWide> AllWidenableBFloatToFloatVectors = {
   def : VTypeInfoToWide<VBF16M4, VF32M8>;
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
-defset list<VTypeInfoToWide> AllWidenableBFloatVectors = {
-  def : VTypeInfoToWide<VBF16MF4, VBF16MF2>;
-  def : VTypeInfoToWide<VBF16MF2, VBF16M1>;
-  def : VTypeInfoToWide<VBF16M1, VBF16M2>;
-  def : VTypeInfoToWide<VBF16M2, VBF16M4>;
-  def : VTypeInfoToWide<VBF16M4, VBF16M8>;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 // This class holds the record of the RISCVVPseudoTable below.
 // This represents the information we need in codegen for each pseudo.
 // The definition should be consistent with `struct PseudoInfo` in
@@ -548,9 +538,6 @@ defset list<VTypeInfoToWide> AllWidenableBFloatVectors = {
 class RISCVVPseudo {
   Pseudo Pseudo = !cast<Pseudo>(NAME); // Used as a key.
   Instruction BaseInstr = !cast<Instruction>(PseudoToVInst<NAME>.VInst);
-#ifdef SIFIVE_CUSTOMIZATION
-  bits<2> TargetOverlapConstraintType = 1;
-#endif // SIFIVE_CUSTOMIZATION
   // SEW = 0 is used to denote that the Pseudo is not SEW specific (or unknown).
   bits<8> SEW = 0;
   bit NeedBeInPseudoTable = 1;
@@ -569,9 +556,7 @@ def RISCVVPseudosTable : GenericTable {
   let FilterClass = "RISCVVPseudo";
   let FilterClassField = "NeedBeInPseudoTable";
   let CppTypeName = "PseudoInfo";
-#ifdef SIFIVE_CUSTOMIZATION
-  let Fields = [ "Pseudo", "BaseInstr"];
-#endif // SIFIVE_CUSTOMIZATION
+  let Fields = [ "Pseudo", "BaseInstr" ];
   let PrimaryKey = [ "Pseudo" ];
   let PrimaryKeyName = "getPseudoInfo";
   let PrimaryKeyEarlyOut = true;
@@ -1166,7 +1151,6 @@ class VPseudoUnaryMask_NoExcept<VReg RetClass,
   let HasSEWOp = 1;
   let HasVecPolicyOp = 1;
   let UsesMaskPolicy = 1;
-  let HasRoundModeOp = 1; // SIFIVE Cherry-picked from upstream D158711.
   let usesCustomInserter = 1;
 }
 
@@ -2159,7 +2143,14 @@ multiclass VPseudoVIOT_M {
                        SchedUnary<"WriteVMIotV", "ReadVMIotV", mx,
                                   forceMergeOpRead=true>;
       def "_" # mx # "_MASK" : VPseudoUnaryMask<m.vrclass, VR, constraint>,
+<<<<<<< HEAD
                                  RISCVMaskedPseudo<MaskIdx=2, MaskAffectsRes=true>,
+=======
+#ifdef SIFIVE_CUSTOMIZATION
+                                 // Cherry-picked from upstream #71483.
+                                 RISCVMaskedPseudo<MaskIdx=2, MaskAffectsRes=true>,
+#endif // SIFIVE_CUSTOMIZATION
+>>>>>>> origin/sifive-dev
                                  SchedUnary<"WriteVMIotV", "ReadVMIotV", mx,
                                             forceMergeOpRead=true>;
     }
@@ -3018,23 +3009,6 @@ multiclass VPseudoVALU_VV_VX {
   }
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
-multiclass VPseudoVALU_VCLMUL {
-  foreach m = MxList in {
-    defvar mx = m.MX;
-    defvar WriteVIALUV_MX = !cast<SchedWrite>("WriteVIALUV_" # mx);
-    defvar WriteVIALUX_MX = !cast<SchedWrite>("WriteVIALUV_" # mx);
-    defvar ReadVIALUV_MX = !cast<SchedRead>("ReadVIALUV_" # mx);
-    defvar ReadVIALUX_MX = !cast<SchedRead>("ReadVIALUX_" # mx);
-
-    defm "" : VPseudoBinaryV_VV<m>,
-              Sched<[WriteVIALUV_MX, ReadVIALUV_MX, ReadVIALUV_MX, ReadVMask]>;
-    defm "" : VPseudoBinaryV_VX<m>,
-              Sched<[WriteVIALUX_MX, ReadVIALUV_MX, ReadVIALUX_MX, ReadVMask]>;
-  }
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 multiclass VPseudoVSGNJ_VV_VF {
   foreach m = MxListF in {
     defm "" : VPseudoBinaryFV_VV<m>,
@@ -3404,7 +3378,6 @@ multiclass VPseudoTernaryWithPolicy<VReg RetClass,
   }
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoTernaryWithPolicyRoundingMode<VReg RetClass,
                                                 RegisterClass Op1Class,
                                                 DAGOperand Op2Class,
@@ -3426,29 +3399,6 @@ multiclass VPseudoTernaryWithPolicyRoundingMode<VReg RetClass,
                                    RISCVMaskedPseudo<MaskIdx=3>;
   }
 }
-#else
-multiclass VPseudoTernaryWithPolicyRoundingMode<VReg RetClass,
-                                                RegisterClass Op1Class,
-                                                DAGOperand Op2Class,
-                                                LMULInfo MInfo,
-                                                string Constraint = "",
-                                                bit Commutable = 0,
-                                                int TargetConstraintType = 1> {
-  let VLMul = MInfo.value in {
-    let isCommutable = Commutable in
-    def "_" # MInfo.MX :
-        VPseudoTernaryNoMaskWithPolicyRoundingMode<RetClass, Op1Class,
-                                                   Op2Class, Constraint,
-                                                   TargetConstraintType>;
-    def "_" # MInfo.MX # "_MASK" :
-        VPseudoBinaryMaskPolicyRoundingMode<RetClass, Op1Class,
-                                            Op2Class, Constraint,
-                                            UsesVXRM_=0,
-                                            TargetConstraintType=TargetConstraintType>,
-                                   RISCVMaskedPseudo<MaskIdx=3>;
-  }
-}
-#endif // SIFIVE_CUSTOMIZATION
 
 multiclass VPseudoTernaryV_VV_AAXA<LMULInfo m, string Constraint = ""> {
   defm _VV : VPseudoTernaryWithPolicy<m.vrclass, m.vrclass, m.vrclass, m,
@@ -3638,7 +3588,6 @@ multiclass VPseudoVWMAC_VV_VF_BF_RM {
     }
   }
 }
-
 
 multiclass VPseudoVCMPM_VV_VX_VI {
   foreach m = MxList in {
@@ -4322,27 +4271,6 @@ class VPatBinaryM<string intrinsic_name,
                    (op2_type op2_kind:$rs2),
                    GPR:$vl, sew)>;
 
-#ifdef SIFIVE_CUSTOMIZATION
-multiclass VPatBinaryRMNoMaskTA<string intrinsic_name,
-                                string inst,
-                                ValueType result_type,
-                                ValueType op1_type,
-                                ValueType op2_type,
-                                int sew,
-                                VReg op1_reg_class,
-                                DAGOperand op2_kind> {
-  def : Pat<(result_type (!cast<Intrinsic>(intrinsic_name)
-                   (result_type (undef)),
-                   (op1_type op1_reg_class:$rs1),
-                   (op2_type op2_kind:$rs2),
-                   VLOpFrag)),
-            (!cast<Instruction>(inst)
-                   (op1_type op1_reg_class:$rs1),
-                   (op2_type op2_kind:$rs2),
-                   (XLenVT VXRM_DYN), GPR:$vl, sew)>;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 class VPatBinaryNoMaskTU<string intrinsic_name,
                          string inst,
                          ValueType result_type,
@@ -4384,29 +4312,6 @@ class VPatBinaryNoMaskRoundingMode<string intrinsic_name,
                    (XLenVT timm:$round),
                    GPR:$vl, sew, TA_MA)>;
 
-#ifdef SIFIVE_CUSTOMIZATION
-multiclass VPatBinaryRMNoMaskTU<string intrinsic_name,
-                                string inst,
-                                ValueType result_type,
-                                ValueType op1_type,
-                                ValueType op2_type,
-                                int sew,
-                                VReg result_reg_class,
-                                VReg op1_reg_class,
-                                DAGOperand op2_kind> {
-  def : Pat<(result_type (!cast<Intrinsic>(intrinsic_name)
-                   (result_type result_reg_class:$merge),
-                   (op1_type op1_reg_class:$rs1),
-                   (op2_type op2_kind:$rs2),
-                   VLOpFrag)),
-            (!cast<Instruction>(inst#"_TU")
-                   (result_type result_reg_class:$merge),
-                   (op1_type op1_reg_class:$rs1),
-                   (op2_type op2_kind:$rs2),
-                   (XLenVT VXRM_DYN), GPR:$vl, sew, TU_MU)>;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 class VPatBinaryNoMaskTURoundingMode<string intrinsic_name,
                                      string inst,
                                      ValueType result_type,
@@ -4428,6 +4333,7 @@ class VPatBinaryNoMaskTURoundingMode<string intrinsic_name,
                    (op2_type op2_kind:$rs2),
                    (XLenVT timm:$round),
                    GPR:$vl, sew, TU_MU)>;
+
 
 // Same as above but source operands are swapped.
 class VPatBinaryNoMaskSwapped<string intrinsic_name,
@@ -6325,32 +6231,6 @@ multiclass VPatCompare_VI<string intrinsic, string inst,
   }
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
-multiclass XPatConversionWF_VF <string intrinsic, string instruction> {
-  foreach fvtiToFWti = AllWidenableBFloatToFloatVectors in
-  {
-    defvar fvti = fvtiToFWti.Vti;
-    defvar fwti = fvtiToFWti.Wti;
-
-    defm : VPatConversionTA<intrinsic, instruction, "V",
-                            fwti.Vector, fvti.Vector, fwti.Mask, fvti.Log2SEW,
-                            fvti.LMul, fwti.RegClass, fvti.RegClass>;
-  }
-}
-
-multiclass XPatConversionVF_WF <string intrinsic, string instruction> {
-  foreach fvtiToFWti = AllWidenableBFloatToFloatVectors in
-  {
-    defvar fvti = fvtiToFWti.Vti;
-    defvar fwti = fvtiToFWti.Wti;
-
-    defm : VPatConversionTA<intrinsic, instruction, "W",
-                            fvti.Vector, fwti.Vector, fvti.Mask, fvti.Log2SEW,
-                            fvti.LMul, fvti.RegClass, fwti.RegClass>;
-  }
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 //===----------------------------------------------------------------------===//
 // Pseudo instructions
 //===----------------------------------------------------------------------===//
@@ -6682,37 +6562,52 @@ let Defs = [VXSAT], hasSideEffects = 1 in {
 //===----------------------------------------------------------------------===//
 // 12.2. Vector Single-Width Averaging Add and Subtract
 //===----------------------------------------------------------------------===//
+#ifdef SIFIVE_CUSTOMIZATION
 let hasPostISelHook = 1 in {
+#endif
 defm PseudoVAADDU : VPseudoVAALU_VV_VX_RM;
 defm PseudoVAADD  : VPseudoVAALU_VV_VX_RM;
 defm PseudoVASUBU : VPseudoVAALU_VV_VX_RM;
 defm PseudoVASUB  : VPseudoVAALU_VV_VX_RM;
-}
+#ifdef SIFIVE_CUSTOMIZATION
+} // hasPostISelHook = 1
+#endif
 
 //===----------------------------------------------------------------------===//
 // 12.3. Vector Single-Width Fractional Multiply with Rounding and Saturation
 //===----------------------------------------------------------------------===//
-let Defs = [VXSAT], hasSideEffects = 1,
-    hasPostISelHook = 1 in {
+let Defs = [VXSAT], hasSideEffects = 1 in {
+  #ifdef SIFIVE_CUSTOMIZATION
+  let hasPostISelHook = 1 in
+  #endif
   defm PseudoVSMUL : VPseudoVSMUL_VV_VX_RM;
 }
 
 //===----------------------------------------------------------------------===//
 // 12.4. Vector Single-Width Scaling Shift Instructions
 //===----------------------------------------------------------------------===//
+#ifdef SIFIVE_CUSTOMIZATION
 let hasPostISelHook = 1 in {
+#endif
 defm PseudoVSSRL : VPseudoVSSHT_VV_VX_VI_RM<uimm5>;
 defm PseudoVSSRA : VPseudoVSSHT_VV_VX_VI_RM<uimm5>;
-}
+#ifdef SIFIVE_CUSTOMIZATION
+} // hasPostISelHook = 1
+#endif
 
 //===----------------------------------------------------------------------===//
 // 12.5. Vector Narrowing Fixed-Point Clip Instructions
 //===----------------------------------------------------------------------===//
-let Defs = [VXSAT], hasSideEffects = 1,
-    hasPostISelHook = 1 in {
+#ifdef SIFIVE_CUSTOMIZATION
+let hasPostISelHook = 1 in {
+#endif
+let Defs = [VXSAT], hasSideEffects = 1 in {
   defm PseudoVNCLIP  : VPseudoVNCLP_WV_WX_WI_RM;
   defm PseudoVNCLIPU : VPseudoVNCLP_WV_WX_WI_RM;
 }
+#ifdef SIFIVE_CUSTOMIZATION
+} // hasPostISelHook = 1
+#endif
 
 } // Predicates = [HasVInstructions]
 
@@ -6734,12 +6629,10 @@ defm PseudoVFRSUB : VPseudoVALU_VF_RM;
 // 13.3. Vector Widening Floating-Point Add/Subtract Instructions
 //===----------------------------------------------------------------------===//
 let mayRaiseFPException = true, hasSideEffects = 0, hasPostISelHook = 1 in {
-#ifdef SIFIVE_CUSTOMIZATION
 defm PseudoVFWADD : VPseudoVFWALU_VV_VF_RM;
 defm PseudoVFWSUB : VPseudoVFWALU_VV_VF_RM;
 defm PseudoVFWADD : VPseudoVFWALU_WV_WF_RM;
 defm PseudoVFWSUB : VPseudoVFWALU_WV_WF_RM;
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 //===----------------------------------------------------------------------===//
@@ -6907,7 +6800,6 @@ let hasSideEffects = 0, hasPostISelHook = 1 in {
 defm PseudoVFNCVT_F_XU     : VPseudoVNCVTF_W_RM;
 defm PseudoVFNCVT_F_X      : VPseudoVNCVTF_W_RM;
 }
-
 defm PseudoVFNCVT_RM_F_XU  : VPseudoVNCVTF_RM_W;
 defm PseudoVFNCVT_RM_F_X   : VPseudoVNCVTF_RM_W;
 

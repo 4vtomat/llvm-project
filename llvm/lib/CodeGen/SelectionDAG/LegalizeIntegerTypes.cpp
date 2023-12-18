@@ -300,7 +300,8 @@ void DAGTypeLegalizer::PromoteIntegerResult(SDNode *N, unsigned ResNo) {
     break;
 #if SIFIVE_CUSTOMIZATION
   case ISD::VP_FIRST:
-    Res = PromoteIntRes_VP_FIRST(N);
+  case ISD::EXPERIMENTAL_VP_POPCOUNT:
+    Res = PromoteIntRes_VP_FIRST_POPCOUNT(N);
     break;
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -5902,7 +5903,7 @@ SDValue DAGTypeLegalizer::PromoteIntRes_VP_REDUCE(SDNode *N) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-SDValue DAGTypeLegalizer::PromoteIntRes_VP_FIRST(SDNode *N) {
+SDValue DAGTypeLegalizer::PromoteIntRes_VP_FIRST_POPCOUNT(SDNode *N) {
   SDLoc dl(N);
   EVT NVT = TLI.getTypeToTransformTo(*DAG.getContext(), N->getValueType(0));
   return DAG.getNode(N->getOpcode(), dl, NVT, N->ops());

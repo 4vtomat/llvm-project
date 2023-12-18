@@ -1594,6 +1594,11 @@ static void computeKnownBitsFromOperator(const Operator *I,
       case Intrinsic::x86_sse42_crc32_64_64:
         Known.Zero.setBitsFrom(32);
         break;
+#if SIFIVE_CUSTOMIZATION
+      case Intrinsic::riscv_vcpop:
+      case Intrinsic::riscv_vcpop_mask:
+        // FIXME: Generalize to LMUL other than 8.
+#endif
       case Intrinsic::riscv_vsetvli:
       case Intrinsic::riscv_vsetvlimax:
         // Assume that VL output is >= 65536.
@@ -3555,6 +3560,18 @@ static unsigned ComputeNumSignBitsImpl(const Value *V,
       if (const auto *II = dyn_cast<IntrinsicInst>(U)) {
         switch (II->getIntrinsicID()) {
         default: break;
+#if SIFIVE_CUSTOMIZATION
+        case Intrinsic::riscv_vfirst:
+        case Intrinsic::riscv_vfirst_mask:
+          // FIXME: This is the number of sign bits when LMUL = 8,
+          // which is also the minimal (# of sign bits) of all
+          // possible LMULs.
+          // This value will yield incorrect result when we're casting
+          // the return of vfirst (length equals to XLen) to some
+          // smaller types like 16 bits integers, as they have
+          // higher number of sign bits.
+          return TyBits - 16;
+#endif
         case Intrinsic::abs:
           Tmp = ComputeNumSignBits(U->getOperand(0), Depth + 1, Q);
           if (Tmp == 1) break;

@@ -158,6 +158,7 @@ protected:
 
 #if SIFIVE_CUSTOMIZATION
     Str << " declare i32 @llvm.vp.first.v8i1(<8 x i1>, <8 x i1>, i32) ";
+    Str << " declare i32 @llvm.experimental.vp.popcount.v8i1(<8 x i1>, <8 x i1>, i32) ";
 #endif // SIFIVE_CUSTOMIZATION
     Str << " declare <8 x i32> @llvm.experimental.vp.reverse.v8i32(<8 x i32>, "
            "<8 x i1>, i32) ";

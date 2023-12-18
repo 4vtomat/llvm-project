@@ -2201,6 +2201,24 @@ let IntrProperties = [IntrNoMem, IntrNoSync, IntrWillReturn] in {
                              [ llvm_anyvector_ty,
                                LLVMMatchType<0>,
                                llvm_i32_ty]>;
+  def int_experimental_vp_popcount: DefaultAttrsIntrinsic<[llvm_i32_ty],
+                             [ llvm_anyvector_ty,
+                               LLVMMatchType<0>,
+                               llvm_i32_ty]>;
+  def int_experimental_vp_compress:
+    DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                          [LLVMMatchType<0>,
+                           LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
+                           llvm_i32_ty],
+              [IntrNoMem, IntrNoSync, IntrWillReturn]>;
+
+  def int_experimental_vp_expand:
+    DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                          [LLVMMatchType<0>,
+                           LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
+                           llvm_i32_ty],
+              [IntrNoMem, IntrNoSync, IntrWillReturn]>;
+
 // END OF SIFIVE_CUSTOMIZATION
 }
 

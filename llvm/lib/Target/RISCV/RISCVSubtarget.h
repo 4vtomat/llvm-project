@@ -159,6 +159,19 @@ public:
     case RISCVProcFamilyEnum::SiFiveP400:
     case RISCVProcFamilyEnum::SiFiveP500:
     case RISCVProcFamilyEnum::SiFiveP600:
+    case RISCVProcFamilyEnum::SiFiveP800:
+      return true;
+    default:
+      return false;
+    }
+  }
+
+  bool isSiFiveMallardCPU() const {
+    switch (RISCVProcFamily) {
+    case RISCVProcFamilyEnum::SiFiveP400:
+    case RISCVProcFamilyEnum::SiFiveP500:
+    case RISCVProcFamilyEnum::SiFiveP600:
+    case RISCVProcFamilyEnum::SiFiveP800:
       return true;
     default:
       return false;

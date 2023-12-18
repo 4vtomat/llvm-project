@@ -76,6 +76,9 @@
 #include "llvm/Transforms/Instrumentation/ControlHeightReduction.h"
 #include "llvm/Transforms/Instrumentation/InstrOrderFile.h"
 #include "llvm/Transforms/Instrumentation/InstrProfiling.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Transforms/Instrumentation/SiFive_LoopCountProfiler.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Transforms/Instrumentation/MemProfiler.h"
 #include "llvm/Transforms/Instrumentation/PGOInstrumentation.h"
 #include "llvm/Transforms/Scalar/ADCE.h"
@@ -144,6 +147,12 @@
 
 using namespace llvm;
 
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool>
+    ClEnableLoopProfiler("sifive-enable-loop-count-profiler",
+                         cl::desc("Enable profile loop pass, default is false"),
+                         cl::Hidden, cl::init(false));
+#endif // SIFIVE_CUSTOMIZATION
 static cl::opt<InliningAdvisorMode> UseInlineAdvisor(
     "enable-ml-inliner", cl::init(InliningAdvisorMode::Default), cl::Hidden,
     cl::desc("Enable ML policy for inliner. Currently trained for -Oz only"),
@@ -1499,6 +1508,12 @@ PassBuilder::buildModuleOptimizationPipeline(OptimizationLevel Level,
   MPM.addPass(createModuleToFunctionPassAdaptor(std::move(OptimizePM),
                                                 PTO.EagerlyInvalidateAnalyses));
 
+  // Add Loop Profile pass in optimizing pipeline
+#if SIFIVE_CUSTOMIZATION
+  if (ClEnableLoopProfiler && !LTOPreLink)
+    MPM.addPass(LoopCountProfilerPass());
+#endif // SIFIVE_CUSTOMIZATION
+
   invokeOptimizerLastEPCallbacks(MPM, Level);
 
   // Split out cold code. Splitting is done late to avoid hiding context from
@@ -1986,6 +2001,12 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
   addVectorPasses(Level, MainFPM, /* IsFullLTO */ true);
 #endif
 
+  // Add the loopProfile pass
+#if SIFIVE_CUSTOMIZATION
+  if (ClEnableLoopProfiler)
+    MPM.addPass(LoopCountProfilerPass());
+#endif // SIFIVE_CUSTOMIZATION
+
   // Run the OpenMPOpt CGSCC pass again late.
   MPM.addPass(createModuleToPostOrderCGSCCPassAdaptor(
       OpenMPOptCGSCCPass(ThinOrFullLTOPhase::FullLTOPostLink)));
@@ -2147,6 +2168,11 @@ ModulePassManager PassBuilder::buildO0DefaultPipeline(OptimizationLevel Level,
     addRequiredLTOPreLinkPasses(MPM);
 
   MPM.addPass(createModuleToFunctionPassAdaptor(AnnotationRemarksPass()));
+#if SIFIVE_CUSTOMIZATION
+  // Add LoopProfile pass
+  if (ClEnableLoopProfiler && !LTOPreLink)
+    MPM.addPass(LoopCountProfilerPass());
+#endif // SIFIVE_CUSTOMIZATION
 
   return MPM;
 }

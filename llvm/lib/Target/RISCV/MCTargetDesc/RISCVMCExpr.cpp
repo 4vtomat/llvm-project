@@ -121,6 +121,7 @@ RISCVMCExpr::VariantKind RISCVMCExpr::getVariantKindForName(StringRef name) {
       .Case("tprel_add", VK_RISCV_TPREL_ADD)
       .Case("tls_ie_pcrel_hi", VK_RISCV_TLS_GOT_HI)
       .Case("tls_gd_pcrel_hi", VK_RISCV_TLS_GD_HI)
+#if SIFIVE_CUSTOMIZATION
       .Case("gprel_lo", VK_RISCV_GPREL_LO)
       .Case("gprel_hi", VK_RISCV_GPREL_HI)
       .Case("gprel", VK_RISCV_GPREL_ADD)
@@ -133,6 +134,7 @@ RISCVMCExpr::VariantKind RISCVMCExpr::getVariantKindForName(StringRef name) {
       .Case("tls_gd_gprel_lo", VK_RISCV_TLS_GD_GPREL_LO)
       .Case("tls_gd_gprel_hi", VK_RISCV_TLS_GD_GPREL_HI)
       .Case("tls_gd_gprel", VK_RISCV_TLS_GD_GPREL_ADD)
+#endif // SIFIVE_CUSTOMIZATION
       .Default(VK_RISCV_Invalid);
 }
 
@@ -167,6 +169,7 @@ StringRef RISCVMCExpr::getVariantKindName(VariantKind Kind) {
     return "call_plt";
   case VK_RISCV_32_PCREL:
     return "32_pcrel";
+#if SIFIVE_CUSTOMIZATION
   case VK_RISCV_GPREL_LO:
     return "gprel_lo";
   case VK_RISCV_GPREL_HI:
@@ -191,6 +194,7 @@ StringRef RISCVMCExpr::getVariantKindName(VariantKind Kind) {
     return "tls_gd_gprel_hi";
   case VK_RISCV_TLS_GD_GPREL_ADD:
     return "tls_gd_gprel";
+#endif // SIFIVE_CUSTOMIZATION
   }
   llvm_unreachable("Invalid ELF symbol kind");
 }
@@ -231,8 +235,10 @@ void RISCVMCExpr::fixELFSymbolsInTLSFixups(MCAssembler &Asm) const {
   case VK_RISCV_TPREL_HI:
   case VK_RISCV_TLS_GOT_HI:
   case VK_RISCV_TLS_GD_HI:
+#if SIFIVE_CUSTOMIZATION
   case VK_RISCV_TLS_GOT_GPREL_HI:
   case VK_RISCV_TLS_GD_GPREL_HI:
+#endif // SIFIVE_CUSTOMIZATION
     break;
   }
 

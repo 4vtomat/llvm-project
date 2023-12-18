@@ -51,6 +51,12 @@ if(COMPILER_RT_BUILD_PROFILE AND COMPILER_RT_HAS_PROFILE)
   compiler_rt_build_runtime(profile)
 endif()
 
+# SIFIVE_CUSTOMIZATION
+if(COMPILER_RT_HAS_LOOP_PROFILE)
+  compiler_rt_build_runtime(loop_profile)
+endif()
+# end SIFIVE_CUSTOMIZATION
+
 if(COMPILER_RT_BUILD_XRAY)
   compiler_rt_build_runtime(xray)
 endif()

@@ -544,15 +544,15 @@ bool InterleavedAccess::lowerInterleavedStore(
 bool InterleavedAccess::lowerDeinterleaveIntrinsic(
     IntrinsicInst *DI, SmallVector<Instruction *, 32> &DeadInsts) {
 #if SIFIVE_CUSTOMIZATION
+  unsigned Factor = getFactorFromVectorDeInterleaveIntrinsic(DI);
+  if (Factor == 0) {
+    assert(0 && "Unsupported vector.deinterleave intrinsic");
+    return false;
+  }
+
   if (auto *VPLoad = dyn_cast<VPIntrinsic>(DI->getOperand(0))) {
     if (VPLoad->getIntrinsicID() != Intrinsic::vp_load || !VPLoad->hasOneUse())
       return false;
-
-    unsigned Factor = getFactorFromVectorDeInterleaveIntrinsic(DI);
-    if (Factor == 0) {
-      assert(0 && "Unsupported vector.deinterleave intrinsic");
-      return false;
-    }
 
     // Check mask operand. Handle both all-true and interleaved mask.
     Value *WideMask = VPLoad->getOperand(1);
@@ -570,6 +570,43 @@ bool InterleavedAccess::lowerDeinterleaveIntrinsic(
     DeadInsts.push_back(DI);
     DeadInsts.push_back(VPLoad);
     return true;
+  }
+
+  // Match
+  //   %x = vp.strided.load  ;; VPStridedLoad
+  //   %y = bitcast %x       ;; BitCast
+  //   %z = deinterleave %y  ;; DI
+  if (auto *BitCast = dyn_cast<BitCastInst>(DI->getOperand(0))) {
+    if (!BitCast->hasOneUse())
+      return false;
+
+    // Match the type is
+    //   <VF x (factor * elementTy)> bitcast to <(VF * factor) x elementTy>
+    Value *BitCastSrc = BitCast->getOperand(0);
+    auto *BitCastSrcTy = dyn_cast<VectorType>(BitCastSrc->getType());
+    auto *BitCastDstTy = cast<VectorType>(BitCast->getType());
+    if (!BitCastSrcTy || (BitCastSrcTy->getElementCount() * Factor !=
+                          BitCastDstTy->getElementCount()))
+      return false;
+
+    if (auto *VPStridedLoad = dyn_cast<VPIntrinsic>(BitCast->getOperand(0))) {
+      if (VPStridedLoad->getIntrinsicID() !=
+              Intrinsic::experimental_vp_strided_load ||
+          !VPStridedLoad->hasOneUse())
+        return false;
+
+      LLVM_DEBUG(dbgs() << "IA: Found a deinterleave intrinsic: " << *DI
+                        << "\n");
+
+      if (!TLI->lowerDeinterleaveIntrinsicToStridedLoad(VPStridedLoad, DI,
+                                                        Factor))
+        return false;
+
+      DeadInsts.push_back(DI);
+      DeadInsts.push_back(BitCast);
+      DeadInsts.push_back(VPStridedLoad);
+      return true;
+    }
   }
 #endif // SIFIVE_CUSTOMIZATION
 

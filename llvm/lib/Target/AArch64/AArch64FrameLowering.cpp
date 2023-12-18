@@ -1728,7 +1728,9 @@ void AArch64FrameLowering::emitPrologue(MachineFunction &MF,
     case CodeModel::Tiny:
     case CodeModel::Small:
     case CodeModel::Medium:
+#if SIFIVE_CUSTOMIZATION
     case CodeModel::Compact:
+#endif // SIFIVE_CUSTOMIZATION
     case CodeModel::Kernel:
       BuildMI(MBB, MBBI, DL, TII->get(AArch64::BL))
           .addExternalSymbol(ChkStk)

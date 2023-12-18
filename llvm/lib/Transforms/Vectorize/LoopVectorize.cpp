@@ -457,9 +457,29 @@ cl::opt<bool> SiFiveLoopVectorizerUseVPlanBasedCostModel(
     "sifive-loop-vectorizer-use-vplan-based-cost-model", cl::init(true),
     cl::Hidden, cl::desc("Use VPlan-based cost model"));
 
-cl::opt<bool> SiFiveEnableInterleavedAccess(
-    "sifive-loop-vectorizer-enable-interleaved-access", cl::init(true),
-    cl::Hidden, cl::desc("Enable interleaved access in RVV VLA vectorization"));
+namespace SiFiveInterleavedAccess {
+  enum Level {
+    /// Disable interleaved access
+    NoInterleaved = 0,
+    /// Enable only interleaved access with const stride
+    ConstStride,
+    /// Enable interleaved access with constant and invariant stride
+    InvariantStride
+  };
+} // namespace SiFiveInterleavedAccess
+
+cl::opt<SiFiveInterleavedAccess::Level> SiFiveEnableInterleavedAccess(
+    "sifive-loop-vectorizer-enable-interleaved-access",
+    cl::init(SiFiveInterleavedAccess::ConstStride), cl::Hidden,
+    cl::desc("Enable interleaved access in RVV VLA vectorization"),
+    cl::values(
+        clEnumValN(SiFiveInterleavedAccess::NoInterleaved, "no-interleaved",
+                   "Disable interleaved access"),
+        clEnumValN(SiFiveInterleavedAccess::ConstStride, "const-stride",
+                   "Enable only interleaved access with const stride"),
+        clEnumValN(
+            SiFiveInterleavedAccess::InvariantStride, "invariant-stride",
+            "Enable interleaved access with constant and invariant stride")));
 
 static cl::opt<bool> EnableRISCVCSA(
     "sifive-enable-riscv-csa", cl::init(true), cl::Hidden,
@@ -3122,9 +3142,17 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
         Operands.push_back(StoredValue);
       }
 
-      Value *StoredVal = State.Builder.CreateIntrinsic(
-          GetVectorInterleaveIntrinsic(InterleaveFactor), {VecTy}, Operands,
-          nullptr, "interleaved.vec");
+      Value *StoredVal = nullptr;
+      // If same value is stored, broadcast it and do regular contiguous store
+      if (llvm::all_equal(Operands))
+        if (Value *Splat = getSplatValue(Operands.front()))
+          StoredVal = State.Builder.CreateVectorSplat(VecTy->getElementCount(),
+                                                      Splat, "wide.broadcast");
+
+      if (!StoredVal)
+        StoredVal = State.Builder.CreateIntrinsic(
+            GetVectorInterleaveIntrinsic(InterleaveFactor), {VecTy}, Operands,
+            nullptr, "interleaved.vec");
 
       assert(State.Plan->getRVL() &&
              "RuntimeVL must be initialized at this point");
@@ -5312,6 +5340,15 @@ bool LoopVectorizationCostModel::interleavedAccessCanBeWidened(
          "Decision should not be set yet.");
   auto *Group = getInterleavedAccessGroup(I);
   assert(Group && "Must have a group.");
+
+#if SIFIVE_CUSTOMIZATION
+  // TODO: Support interleaved group with non-const stride.
+  if (Group->isStrided()) {
+    LLVM_DEBUG(dbgs() << "LV: Interleaved group with non-const stride is not "
+                         "supported yet.\n");
+    return false;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   // If the instruction's allocated size doesn't equal it's type size, it
   // requires padding and will be scalarized.
@@ -12806,7 +12843,14 @@ bool LoopVectorizePass::processLoop(Loop *L) {
 
   // Analyze interleaved memory accesses.
   if (UseInterleaved)
+#if SIFIVE_CUSTOMIZATION
+    IAI.analyzeInterleaving(useMaskedInterleavedAccesses(*TTI),
+                            // FIXME: Apply TTI
+                            SiFiveEnableInterleavedAccess >
+                                SiFiveInterleavedAccess::ConstStride);
+#else
     IAI.analyzeInterleaving(useMaskedInterleavedAccesses(*TTI));
+#endif // SIFIVE_CUSTOMIZATION
 
   // Check the function attributes and profiles to find out if this function
   // should be optimized for size.

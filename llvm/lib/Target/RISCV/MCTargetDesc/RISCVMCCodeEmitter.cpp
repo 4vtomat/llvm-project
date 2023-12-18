@@ -166,13 +166,6 @@ void RISCVMCCodeEmitter::expandAddRegRel(const MCInst &MI,
                                          SmallVectorImpl<char> &CB,
                                          SmallVectorImpl<MCFixup> &Fixups,
                                          const MCSubtargetInfo &STI) const {
-#else
-// Expand PseudoAddTPRel to a simple ADD with the correct relocation.
-void RISCVMCCodeEmitter::expandAddTPRel(const MCInst &MI,
-                                        SmallVectorImpl<char> &CB,
-                                        SmallVectorImpl<MCFixup> &Fixups,
-                                        const MCSubtargetInfo &STI) const {
-#endif // SIFIVE_CUSTOMIZATION
   MCOperand DestReg = MI.getOperand(0);
   MCOperand SrcReg1 = MI.getOperand(1);
   MCOperand SrcReg2 = MI.getOperand(2);
@@ -228,6 +221,46 @@ void RISCVMCCodeEmitter::expandAddTPRel(const MCInst &MI,
   uint32_t Binary = getBinaryCodeForInstr(TmpInst, Fixups, STI);
   support::endian::write(CB, Binary, llvm::endianness::little);
 }
+#else
+// Expand PseudoAddTPRel to a simple ADD with the correct relocation.
+void RISCVMCCodeEmitter::expandAddTPRel(const MCInst &MI,
+                                        SmallVectorImpl<char> &CB,
+                                        SmallVectorImpl<MCFixup> &Fixups,
+                                        const MCSubtargetInfo &STI) const {
+  MCOperand DestReg = MI.getOperand(0);
+  MCOperand SrcReg = MI.getOperand(1);
+  MCOperand TPReg = MI.getOperand(2);
+  assert(TPReg.isReg() && TPReg.getReg() == RISCV::X4 &&
+         "Expected thread pointer as second input to TP-relative add");
+
+  MCOperand SrcSymbol = MI.getOperand(3);
+  assert(SrcSymbol.isExpr() &&
+         "Expected expression as third input to TP-relative add");
+
+  const RISCVMCExpr *Expr = dyn_cast<RISCVMCExpr>(SrcSymbol.getExpr());
+  assert(Expr && Expr->getKind() == RISCVMCExpr::VK_RISCV_TPREL_ADD &&
+         "Expected tprel_add relocation on TP-relative symbol");
+
+  // Emit the correct tprel_add relocation for the symbol.
+  Fixups.push_back(MCFixup::create(
+      0, Expr, MCFixupKind(RISCV::fixup_riscv_tprel_add), MI.getLoc()));
+
+  // Emit fixup_riscv_relax for tprel_add where the relax feature is enabled.
+  if (STI.hasFeature(RISCV::FeatureRelax)) {
+    const MCConstantExpr *Dummy = MCConstantExpr::create(0, Ctx);
+    Fixups.push_back(MCFixup::create(
+        0, Dummy, MCFixupKind(RISCV::fixup_riscv_relax), MI.getLoc()));
+  }
+
+  // Emit a normal ADD instruction with the given operands.
+  MCInst TmpInst = MCInstBuilder(RISCV::ADD)
+                       .addOperand(DestReg)
+                       .addOperand(SrcReg)
+                       .addOperand(TPReg);
+  uint32_t Binary = getBinaryCodeForInstr(TmpInst, Fixups, STI);
+  support::endian::write(CB, Binary, llvm::endianness::little);
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 static unsigned getInvertedBranchOp(unsigned BrOp) {
   switch (BrOp) {

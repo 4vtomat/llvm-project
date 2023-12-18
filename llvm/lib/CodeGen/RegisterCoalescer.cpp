@@ -2910,6 +2910,17 @@ JoinVals::analyzeValue(unsigned ValNo, JoinVals &Other) {
   if (SubRangeJoin)
     return CR_Replace;
 
+#if SIFIVE_CUSTOMIZATION
+  // This is a workaround for SCT-3128. It will skip the
+  // coalescing for this pattern.
+  if (OtherLRQ.isKill()) {
+    // This case where the def doesn't overlap the kill is handled above.
+    assert(VNI->def.isEarlyClobber() &&
+           "Only early clobber defs can overlap a kill");
+    return CR_Impossible;
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   // If the lanes written by this instruction were all undef in OtherVNI, it is
   // still safe to join the live ranges. This can't be done with a simple value
   // mapping, though - OtherVNI will map to multiple values:

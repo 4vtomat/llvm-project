@@ -751,6 +751,7 @@ R"(All available -march extensions for RISC-V
     xsfvfnrclipxfqf     0.1
     xsfvfwmaccqqq       1.0
     xsfvfwmaccqqq       0.1
+    xsfvqdotq           0.1
     xsfvqmaccdod        1.0
     xsfvqmaccdod        0.1
     xsfvqmaccqoq        1.0

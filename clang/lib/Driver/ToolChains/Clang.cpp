@@ -709,6 +709,14 @@ static void addDashXForInput(const ArgList &Args, const InputInfo &Input,
   }
 }
 
+#if SIFIVE_CUSTOMIZATION
+static void addLoopCountProfileFlags(const ArgList &Args,
+                                     ArgStringList &CmdArgs) {
+  CmdArgs.append({"-mllvm", "--sifive-enable-loop-count-profiler"});
+  return;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 static void addPGOAndCoverageFlags(const ToolChain &TC, Compilation &C,
                                    const JobAction &JA, const InputInfo &Output,
                                    const ArgList &Args, SanitizerArgs &SanArgs,
@@ -6012,6 +6020,10 @@ void Clang::ConstructJob(Compilation &C, const JobAction &JA,
                   options::OPT_finstrument_functions_after_inlining,
                   options::OPT_finstrument_function_entry_bare);
 
+#if SIFIVE_CUSTOMIZATION
+  if (Args.hasArg(options::OPT_fsifive_loop_count_profile_generate))
+    addLoopCountProfileFlags(Args, CmdArgs);
+#endif // SIFIVE_CUSTOMIZATION
   // NVPTX/AMDGCN doesn't support PGO or coverage. There's no runtime support
   // for sampling, overhead of call arc collection is way too high and there's
   // no way to collect the output.

@@ -38,8 +38,10 @@ inline std::optional<CodeModel::Model> unwrap(LLVMCodeModel Model, bool &JIT) {
     return CodeModel::Kernel;
   case LLVMCodeModelMedium:
     return CodeModel::Medium;
+#if SIFIVE_CUSTOMIZATION
   case LLVMCodeModelCompact:
     return CodeModel::Compact;
+#endif // SIFIVE_CUSTOMIZATION
   case LLVMCodeModelLarge:
     return CodeModel::Large;
   }
@@ -56,8 +58,10 @@ inline LLVMCodeModel wrap(CodeModel::Model Model) {
     return LLVMCodeModelKernel;
   case CodeModel::Medium:
     return LLVMCodeModelMedium;
+#if SIFIVE_CUSTOMIZATION
   case CodeModel::Compact:
     return LLVMCodeModelCompact;
+#endif // SIFIVE_CUSTOMIZATION
   case CodeModel::Large:
     return LLVMCodeModelLarge;
   }

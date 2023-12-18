@@ -2662,6 +2662,11 @@ Instruction *InstCombinerImpl::visitAnd(BinaryOperator &I) {
   if (sinkNotIntoOtherHandOfLogicalOp(I))
     return &I;
 
+#if SIFIVE_CUSTOMIZATION
+  if (Instruction *NewI = foldNeutralVPReduce(I))
+    return NewI;
+#endif
+
   // An and recurrence w/loop invariant step is equivelent to (and start, step)
   PHINode *PN = nullptr;
   Value *Start = nullptr, *Step = nullptr;
@@ -3777,6 +3782,11 @@ Instruction *InstCombinerImpl::visitOr(BinaryOperator &I) {
     }
   }
 
+#if SIFIVE_CUSTOMIZATION
+  if (Instruction *NewI = foldNeutralVPReduce(I))
+    return NewI;
+#endif
+
   return nullptr;
 }
 
@@ -4697,6 +4707,11 @@ Instruction *InstCombinerImpl::visitXor(BinaryOperator &I) {
 
   if (Instruction *Res = foldBinOpOfDisplacedShifts(I))
     return Res;
+
+#if SIFIVE_CUSTOMIZATION
+  if (Instruction *NewI = foldNeutralVPReduce(I))
+    return NewI;
+#endif
 
   return nullptr;
 }

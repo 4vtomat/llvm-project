@@ -6,6 +6,9 @@ add_llvm_component_library(LLVMInstrumentation
   DataFlowSanitizer.cpp
   GCOVProfiling.cpp
   BlockCoverageInference.cpp
+# SIFIVE_CUSTOMIZATION
+  SiFive_LoopCountProfiler.cpp
+# end SIFIVE_CUSTOMIZATION
   MemProfiler.cpp
   MemorySanitizer.cpp
   IndirectCallPromotion.cpp

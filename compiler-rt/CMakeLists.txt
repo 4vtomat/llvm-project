@@ -53,6 +53,10 @@ option(COMPILER_RT_BUILD_LIBFUZZER "Build libFuzzer" ON)
 mark_as_advanced(COMPILER_RT_BUILD_LIBFUZZER)
 option(COMPILER_RT_BUILD_PROFILE "Build profile runtime" ON)
 mark_as_advanced(COMPILER_RT_BUILD_PROFILE)
+# SIFIVE_CUSTOMIZATION
+option(COMPILER_RT_BUILD_LOOP_PROFILE "Build loop_profile runtime" ON)
+mark_as_advanced(COMPILER_RT_BUILD_LOOP_PROFILE)
+# end SIFIVE_CUSTOMIZATION
 option(COMPILER_RT_BUILD_MEMPROF "Build memory profiling runtime" ON)
 mark_as_advanced(COMPILER_RT_BUILD_MEMPROF)
 option(COMPILER_RT_BUILD_XRAY_NO_PREINIT "Build xray with no preinit patching" OFF)

@@ -11660,8 +11660,10 @@ ARMTargetLowering::EmitLowered__chkstk(MachineInstr &MI,
   switch (TM.getCodeModel()) {
   case CodeModel::Tiny:
     llvm_unreachable("Tiny code model not available on ARM.");
+#if SIFIVE_CUSTOMIZATION
   case CodeModel::Compact:
     llvm_unreachable("Compact code model not available on ARM.");
+#endif // SIFIVE_CUSTOMIZATION
   case CodeModel::Small:
   case CodeModel::Medium:
   case CodeModel::Kernel:

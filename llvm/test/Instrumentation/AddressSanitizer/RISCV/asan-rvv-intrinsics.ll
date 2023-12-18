@@ -9309,7 +9309,7 @@ define <vscale x 1 x i32> @test_vloxseg3_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP14:%.*]]
@@ -9395,7 +9395,7 @@ define <vscale x 1 x i32> @test_vloxseg3_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP14:%.*]]
@@ -9484,8 +9484,8 @@ define <vscale x 1 x i32> @test_vloxseg4_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP15:%.*]]
@@ -9594,8 +9594,8 @@ define <vscale x 1 x i32> @test_vloxseg4_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP15:%.*]]
@@ -9707,9 +9707,9 @@ define <vscale x 1 x i32> @test_vloxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[TMP8:%.*]], label [[TMP16:%.*]]
@@ -9841,9 +9841,9 @@ define <vscale x 1 x i32> @test_vloxseg5_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[TMP8:%.*]], label [[TMP16:%.*]]
@@ -9978,10 +9978,10 @@ define <vscale x 1 x i32> @test_vloxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP17:%.*]]
@@ -10136,10 +10136,10 @@ define <vscale x 1 x i32> @test_vloxseg6_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP17:%.*]]
@@ -10297,11 +10297,11 @@ define <vscale x 1 x i32> @test_vloxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP6]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP18:%.*]]
@@ -10479,11 +10479,11 @@ define <vscale x 1 x i32> @test_vloxseg7_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP6]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP18:%.*]]
@@ -10664,12 +10664,12 @@ define <vscale x 1 x i32> @test_vloxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP6]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP7]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP19:%.*]]
@@ -10870,12 +10870,12 @@ define <vscale x 1 x i32> @test_vloxseg8_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP6]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP7]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP19:%.*]]
@@ -11206,7 +11206,7 @@ define <vscale x 1 x i32> @test_vluxseg3_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP14:%.*]]
@@ -11292,7 +11292,7 @@ define <vscale x 1 x i32> @test_vluxseg3_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP14:%.*]]
@@ -11381,8 +11381,8 @@ define <vscale x 1 x i32> @test_vluxseg4_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP15:%.*]]
@@ -11491,8 +11491,8 @@ define <vscale x 1 x i32> @test_vluxseg4_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP15:%.*]]
@@ -11604,9 +11604,9 @@ define <vscale x 1 x i32> @test_vluxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[TMP8:%.*]], label [[TMP16:%.*]]
@@ -11738,9 +11738,9 @@ define <vscale x 1 x i32> @test_vluxseg5_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[TMP8:%.*]], label [[TMP16:%.*]]
@@ -11875,10 +11875,10 @@ define <vscale x 1 x i32> @test_vluxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP17:%.*]]
@@ -12033,10 +12033,10 @@ define <vscale x 1 x i32> @test_vluxseg6_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP17:%.*]]
@@ -12194,11 +12194,11 @@ define <vscale x 1 x i32> @test_vluxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP6]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP18:%.*]]
@@ -12376,11 +12376,11 @@ define <vscale x 1 x i32> @test_vluxseg7_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP6]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP18:%.*]]
@@ -12561,12 +12561,12 @@ define <vscale x 1 x i32> @test_vluxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP6]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP7]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP19:%.*]]
@@ -12767,12 +12767,12 @@ define <vscale x 1 x i32> @test_vluxseg8_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP6]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP7]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP19:%.*]]
@@ -13099,7 +13099,7 @@ define void @test_vsoxseg3_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP14:%.*]]
@@ -13183,7 +13183,7 @@ define void @test_vsoxseg3_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP14:%.*]]
@@ -13270,8 +13270,8 @@ define void @test_vsoxseg4_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP15:%.*]]
@@ -13378,8 +13378,8 @@ define void @test_vsoxseg4_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP15:%.*]]
@@ -13489,9 +13489,9 @@ define void @test_vsoxseg5_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[TMP8:%.*]], label [[TMP16:%.*]]
@@ -13621,9 +13621,9 @@ define void @test_vsoxseg5_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[TMP8:%.*]], label [[TMP16:%.*]]
@@ -13756,10 +13756,10 @@ define void @test_vsoxseg6_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP17:%.*]]
@@ -13912,10 +13912,10 @@ define void @test_vsoxseg6_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP17:%.*]]
@@ -14071,11 +14071,11 @@ define void @test_vsoxseg7_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP6]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP18:%.*]]
@@ -14251,11 +14251,11 @@ define void @test_vsoxseg7_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP6]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP18:%.*]]
@@ -14434,12 +14434,12 @@ define void @test_vsoxseg8_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP6]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP7]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP19:%.*]]
@@ -14638,12 +14638,12 @@ define void @test_vsoxseg8_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP6]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP7]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP19:%.*]]
@@ -14968,7 +14968,7 @@ define void @test_vsuxseg3_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP14:%.*]]
@@ -15052,7 +15052,7 @@ define void @test_vsuxseg3_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP14:%.*]]
@@ -15139,8 +15139,8 @@ define void @test_vsuxseg4_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP15:%.*]]
@@ -15247,8 +15247,8 @@ define void @test_vsuxseg4_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP15:%.*]]
@@ -15358,9 +15358,9 @@ define void @test_vsuxseg5_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[TMP8:%.*]], label [[TMP16:%.*]]
@@ -15490,9 +15490,9 @@ define void @test_vsuxseg5_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[TMP8:%.*]], label [[TMP16:%.*]]
@@ -15625,10 +15625,10 @@ define void @test_vsuxseg6_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP17:%.*]]
@@ -15781,10 +15781,10 @@ define void @test_vsuxseg6_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[TMP9:%.*]], label [[TMP17:%.*]]
@@ -15940,11 +15940,11 @@ define void @test_vsuxseg7_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP6]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP18:%.*]]
@@ -16120,11 +16120,11 @@ define void @test_vsuxseg7_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP6]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP9]], label [[TMP10:%.*]], label [[TMP18:%.*]]
@@ -16303,12 +16303,12 @@ define void @test_vsuxseg8_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP6]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP7]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP19:%.*]]
@@ -16507,12 +16507,12 @@ define void @test_vsuxseg8_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = zext <vscale x 1 x i16> [[INDEX:%.*]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 4, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP2]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP3]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP4]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP5]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP6]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP7]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP3:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 8, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP4:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 12, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP5:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 16, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP6:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 20, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 24, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
+; CHECK-NEXT:    [[TMP8:%.*]] = add <vscale x 1 x i64> [[TMP1]], shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 28, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[BASE:%.*]], <vscale x 1 x i64> [[TMP1]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = icmp ne i64 [[VL:%.*]], 0
 ; CHECK-NEXT:    br i1 [[TMP10]], label [[TMP11:%.*]], label [[TMP19:%.*]]

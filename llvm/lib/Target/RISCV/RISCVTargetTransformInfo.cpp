@@ -332,12 +332,13 @@ bool RISCVTTIImpl::getMemoryRefInfo(
     unsigned SegNum = getSegNum(II, PtrOperandNo, IsWrite);
     unsigned ElemSize = Ty->getScalarSizeInBits() / 8;
     for (unsigned n = 0; n < SegNum; ++n) {
+      Value *NewOffsetOp = OffsetOp;
       if (n) {
         Value *BaseOffset = ConstantInt::get(OffsetOp->getType(), ElemSize * n);
-        OffsetOp = IB.CreateAdd(OffsetOp, BaseOffset);
+        NewOffsetOp = IB.CreateAdd(OffsetOp, BaseOffset);
       }
       Interesting.emplace_back(II, PtrOperandNo, IsWrite, Ty, Align(1), Mask,
-                               EVL, /* Stride */ nullptr, OffsetOp);
+                               EVL, /* Stride */ nullptr, NewOffsetOp);
     }
     return true;
   }
@@ -1635,6 +1636,11 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
       return InstructionCost::getInvalid();
     break;
   }
+  case Intrinsic::vscale: {
+    // vscale is defined as `VLEN / RISCVBitsPerBlock`.
+    // Or `VLENB / RISCVBytesPerBlock` = `VLENB / 8`.
+    return 1 + getArithmeticInstrCost(Instruction::UDiv, RetTy, CostKind);
+  }
   // This is not ideal but untill all VP intrinsics are in upstream we can't use
   // the IsVPIntrinsic getter, so build the list manually from
   // IntrinsicEnums.inc.
@@ -1738,6 +1744,40 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
                                 ICA.getFlags(), ICA.getInst(),
                                 ICA.getScalarizationCost()),
         CostKind);
+  }
+  case Intrinsic::experimental_vp_compress: {
+    if (!isTypeLegal(RetTy))
+      return InstructionCost::getInvalid();
+    if (CostKind == TTI::TCK_CodeSize)
+      return 1;
+    if (CostKind == TTI::TCK_RecipThroughput) {
+      // For bullet, the throughput of vcompress is calculated as vl.
+      unsigned VL = getEstimatedVLFor(cast<VectorType>(RetTy));
+      if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+        return VL;
+      // For mallard, the throughput of vcompress is calculated as #uop.
+      if (ST->isSiFiveMallardCPU()) {
+        unsigned Size = VL * RetTy->getScalarSizeInBits();
+        return divideCeil(Size, ST->getRealMinVLen());
+      }
+    }
+    break;
+  }
+  case Intrinsic::experimental_vp_expand: {
+    // The codegen of vp.expand is viota.m + vrgatherei16.vv, so there will be
+    // an i16 vector whose element count is same as the RetTy.
+    IntegerType *HalfType = Type::getInt16Ty(RetTy->getContext());
+    if (!isTypeLegal(RetTy) || !isTypeLegal(RetTy->getWithNewType(HalfType)))
+      return InstructionCost::getInvalid();
+    // Need extra two vsetvli for i8/i32/i64 vector source.
+    unsigned Cost = 2 * (RetTy->getScalarSizeInBits() != 16);
+    if (CostKind == TTI::TCK_CodeSize)
+      return Cost + 2;
+    if (ST->isSiFiveCPU() && CostKind == TTI::TCK_RecipThroughput) {
+      MVT VT = getTypeLegalizationCost(RetTy).second;
+      return Cost + TLI->getLMULCost(VT) + TLI->getVRGatherVVCost(VT);
+    }
+    break;
   }
 #endif // SIFIVE_CUSTOMIZATION
   }

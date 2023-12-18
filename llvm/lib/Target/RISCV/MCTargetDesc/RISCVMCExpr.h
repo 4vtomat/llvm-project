@@ -37,6 +37,7 @@ public:
     VK_RISCV_CALL,
     VK_RISCV_CALL_PLT,
     VK_RISCV_32_PCREL,
+#if SIFIVE_CUSTOMIZATION
     VK_RISCV_GPREL_LO,
     VK_RISCV_GPREL_HI,
     VK_RISCV_GPREL_ADD,
@@ -49,6 +50,7 @@ public:
     VK_RISCV_TLS_GD_GPREL_LO,
     VK_RISCV_TLS_GD_GPREL_HI,
     VK_RISCV_TLS_GD_GPREL_ADD,
+#endif // SIFIVE_CUSTOMIZATION
     VK_RISCV_Invalid // Must be the last item
   };
 

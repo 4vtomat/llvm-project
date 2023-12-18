@@ -782,6 +782,9 @@ public:
 
   bool shouldRemoveExtendFromGSIndex(SDValue Extend, EVT DataVT) const override;
 
+  bool shouldExpandGetVectorLength(EVT TripCountVT, unsigned VF,
+                                   bool IsScalable) const override;
+
   bool isLegalElementTypeForRVV(EVT ScalarTy) const;
 
   bool shouldConvertFpToSat(unsigned Op, EVT FPVT, EVT VT) const override;
@@ -852,6 +855,10 @@ public:
 
                                      IntrinsicInst *InterleaveIntrin,
                                      unsigned Factor) const override;
+
+  bool lowerDeinterleaveIntrinsicToStridedLoad(Instruction *StridedLoad,
+                                               IntrinsicInst *DI,
+                                               unsigned Factor) const override;
 #endif // SIFIVE_CUSTOMIZATION
 
   bool supportKCFIBundles() const override { return true; }
@@ -964,6 +971,9 @@ private:
 #if SIFIVE_CUSTOMIZATION
   SDValue lowerVPMergeMask(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPFirst(SDValue Op, SelectionDAG &DAG) const;
+  SDValue lowerVPPopcount(SDValue Op, SelectionDAG &DAG) const;
+  SDValue lowerVPCompressExperimental(SDValue Op, SelectionDAG &DAG) const;
+  SDValue lowerVPExpandExperimental(SDValue Op, SelectionDAG &DAG) const;
 
   // Copied from BSC
   SDValue lowerVPSpliceExperimental(SDValue Op, SelectionDAG &DAG) const;
@@ -1014,9 +1024,6 @@ private:
   bool useRVVForFixedLengthVectorVT(MVT VT) const;
 
   MVT getVPExplicitVectorLengthTy() const override;
-
-  bool shouldExpandGetVectorLength(EVT TripCountVT, unsigned VF,
-                                   bool IsScalable) const override;
 
   /// RVV code generation for fixed length vectors does not lower all
   /// BUILD_VECTORs. This makes BUILD_VECTOR legalisation a source of stores to

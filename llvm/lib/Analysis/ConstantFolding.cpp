@@ -64,6 +64,17 @@ using namespace llvm;
 
 namespace {
 
+#if SIFIVE_CUSTOMIZATION
+#define ALL_VECTOR_INTERLEAVE_CASES                   \
+  Intrinsic::experimental_vector_interleave2:         \
+  case Intrinsic::experimental_vector_interleave3:    \
+  case Intrinsic::experimental_vector_interleave4:    \
+  case Intrinsic::experimental_vector_interleave5:    \
+  case Intrinsic::experimental_vector_interleave6:    \
+  case Intrinsic::experimental_vector_interleave7:    \
+  case Intrinsic::experimental_vector_interleave8
+#endif // SIFIVE_CUSTOMIZATION
+
 //===----------------------------------------------------------------------===//
 // Constant Folding internal helper functions
 //===----------------------------------------------------------------------===//
@@ -1639,6 +1650,10 @@ bool llvm::canConstantFoldCallTo(const CallBase *Call, const Function *F) {
   case Intrinsic::experimental_constrained_rint:
   case Intrinsic::experimental_constrained_fcmp:
   case Intrinsic::experimental_constrained_fcmps:
+#if SIFIVE_CUSTOMIZATION
+  // Vector interleave can be folded if all operands are splat.
+  case ALL_VECTOR_INTERLEAVE_CASES:
+#endif // SIFIVE_CUSTOMIZATION
     return true;
   default:
     return false;
@@ -3162,6 +3177,26 @@ static Constant *ConstantFoldScalarCall(StringRef Name,
   return nullptr;
 }
 
+#if SIFIVE_CUSTOMIZATION
+/// Fold `vector.interleaveX({C x N}, {C x N}, ..., {C x N})` into a large splat
+/// `{C x X*N}`.
+/// TODO: Do a similar thing for deinterleave.
+static Constant *constantFoldVectorInterleave(VectorType *VTy,
+                                              ArrayRef<Constant *> Operands) {
+  // Check if the (first) operand is a splat.
+  Constant *SplatVal = Operands[0]->getSplatValue();
+  if (!SplatVal)
+    return nullptr;
+
+  // Check if all the operands are the same.
+  if (llvm::all_equal(Operands))
+    // Build a new splat.
+    return ConstantVector::getSplat(VTy->getElementCount(), SplatVal);
+
+  return nullptr;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 static Constant *ConstantFoldFixedVectorCall(
     StringRef Name, Intrinsic::ID IntrinsicID, FixedVectorType *FVTy,
     ArrayRef<Constant *> Operands, const DataLayout &DL,
@@ -3247,6 +3282,12 @@ static Constant *ConstantFoldFixedVectorCall(
     }
     return nullptr;
   }
+#if SIFIVE_CUSTOMIZATION
+  case ALL_VECTOR_INTERLEAVE_CASES:
+    if (Constant *NewSplat = constantFoldVectorInterleave(FVTy, Operands))
+      return NewSplat;
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   default:
     break;
   }
@@ -3290,6 +3331,12 @@ static Constant *ConstantFoldScalableVectorCall(
 
     return ConstantInt::getFalse(SVTy);
   }
+#if SIFIVE_CUSTOMIZATION
+  case ALL_VECTOR_INTERLEAVE_CASES:
+    if (Constant *NewSplat = constantFoldVectorInterleave(SVTy, Operands))
+      return NewSplat;
+    break;
+#endif // SIFIVE_CUSTOMIZATION
   default:
     break;
   }

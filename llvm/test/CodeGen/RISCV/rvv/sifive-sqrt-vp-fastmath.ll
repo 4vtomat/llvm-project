@@ -1293,16 +1293,13 @@ define <vscale x 2 x half> @rsqrt_nxv2f16(<vscale x 2 x half> %a, <vscale x 2 x 
 ; RV32-NEXT:    addi a1, a1, %lo(.LCPI18_0)
 ; RV32-NEXT:    vsetvli a2, zero, e16, mf2, ta, ma
 ; RV32-NEXT:    vlse16.v v10, (a1), zero
+; RV32-NEXT:    lui a1, %hi(.LCPI18_1)
+; RV32-NEXT:    flh fa5, %lo(.LCPI18_1)(a1)
 ; RV32-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; RV32-NEXT:    vmv1r.v v11, v9
-; RV32-NEXT:    lui a0, %hi(.LCPI18_1)
-; RV32-NEXT:    flh fa5, %lo(.LCPI18_1)(a0)
-; RV32-NEXT:    lui a0, %hi(.LCPI18_2)
-; RV32-NEXT:    flh fa4, %lo(.LCPI18_2)(a0)
 ; RV32-NEXT:    vfmadd.vv v11, v8, v10, v0.t
 ; RV32-NEXT:    vfmul.vf v8, v9, fa5, v0.t
 ; RV32-NEXT:    vfmul.vv v8, v8, v11, v0.t
-; RV32-NEXT:    vfmul.vf v8, v8, fa4, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: rsqrt_nxv2f16:
@@ -1314,16 +1311,13 @@ define <vscale x 2 x half> @rsqrt_nxv2f16(<vscale x 2 x half> %a, <vscale x 2 x 
 ; RV64-NEXT:    addi a1, a1, %lo(.LCPI18_0)
 ; RV64-NEXT:    vsetvli a2, zero, e16, mf2, ta, ma
 ; RV64-NEXT:    vlse16.v v10, (a1), zero
+; RV64-NEXT:    lui a1, %hi(.LCPI18_1)
+; RV64-NEXT:    flh fa5, %lo(.LCPI18_1)(a1)
 ; RV64-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; RV64-NEXT:    vmv1r.v v11, v9
-; RV64-NEXT:    lui a0, %hi(.LCPI18_1)
-; RV64-NEXT:    flh fa5, %lo(.LCPI18_1)(a0)
-; RV64-NEXT:    lui a0, %hi(.LCPI18_2)
-; RV64-NEXT:    flh fa4, %lo(.LCPI18_2)(a0)
 ; RV64-NEXT:    vfmadd.vv v11, v8, v10, v0.t
 ; RV64-NEXT:    vfmul.vf v8, v9, fa5, v0.t
 ; RV64-NEXT:    vfmul.vv v8, v8, v11, v0.t
-; RV64-NEXT:    vfmul.vf v8, v8, fa4, v0.t
 ; RV64-NEXT:    ret
   %ins = insertelement <vscale x 2 x half> poison, half 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 2 x half> %ins, <vscale x 2 x half> poison, <vscale x 2 x i32> zeroinitializer
@@ -1362,16 +1356,13 @@ define <vscale x 4 x half> @rsqrt_nxv4f16(<vscale x 4 x half> %a, <vscale x 4 x 
 ; RV32-NEXT:    addi a1, a1, %lo(.LCPI19_0)
 ; RV32-NEXT:    vsetvli a2, zero, e16, m1, ta, ma
 ; RV32-NEXT:    vlse16.v v10, (a1), zero
+; RV32-NEXT:    lui a1, %hi(.LCPI19_1)
+; RV32-NEXT:    flh fa5, %lo(.LCPI19_1)(a1)
 ; RV32-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; RV32-NEXT:    vmv1r.v v11, v9
-; RV32-NEXT:    lui a0, %hi(.LCPI19_1)
-; RV32-NEXT:    flh fa5, %lo(.LCPI19_1)(a0)
-; RV32-NEXT:    lui a0, %hi(.LCPI19_2)
-; RV32-NEXT:    flh fa4, %lo(.LCPI19_2)(a0)
 ; RV32-NEXT:    vfmadd.vv v11, v8, v10, v0.t
 ; RV32-NEXT:    vfmul.vf v8, v9, fa5, v0.t
 ; RV32-NEXT:    vfmul.vv v8, v8, v11, v0.t
-; RV32-NEXT:    vfmul.vf v8, v8, fa4, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: rsqrt_nxv4f16:
@@ -1383,16 +1374,13 @@ define <vscale x 4 x half> @rsqrt_nxv4f16(<vscale x 4 x half> %a, <vscale x 4 x 
 ; RV64-NEXT:    addi a1, a1, %lo(.LCPI19_0)
 ; RV64-NEXT:    vsetvli a2, zero, e16, m1, ta, ma
 ; RV64-NEXT:    vlse16.v v10, (a1), zero
+; RV64-NEXT:    lui a1, %hi(.LCPI19_1)
+; RV64-NEXT:    flh fa5, %lo(.LCPI19_1)(a1)
 ; RV64-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; RV64-NEXT:    vmv1r.v v11, v9
-; RV64-NEXT:    lui a0, %hi(.LCPI19_1)
-; RV64-NEXT:    flh fa5, %lo(.LCPI19_1)(a0)
-; RV64-NEXT:    lui a0, %hi(.LCPI19_2)
-; RV64-NEXT:    flh fa4, %lo(.LCPI19_2)(a0)
 ; RV64-NEXT:    vfmadd.vv v11, v8, v10, v0.t
 ; RV64-NEXT:    vfmul.vf v8, v9, fa5, v0.t
 ; RV64-NEXT:    vfmul.vv v8, v8, v11, v0.t
-; RV64-NEXT:    vfmul.vf v8, v8, fa4, v0.t
 ; RV64-NEXT:    ret
   %ins = insertelement <vscale x 4 x half> poison, half 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 4 x half> %ins, <vscale x 4 x half> poison, <vscale x 4 x i32> zeroinitializer
@@ -1431,16 +1419,13 @@ define <vscale x 8 x half> @rsqrt_nxv8f16(<vscale x 8 x half> %a, <vscale x 8 x 
 ; RV32-NEXT:    addi a1, a1, %lo(.LCPI20_0)
 ; RV32-NEXT:    vsetvli a2, zero, e16, m2, ta, ma
 ; RV32-NEXT:    vlse16.v v12, (a1), zero
+; RV32-NEXT:    lui a1, %hi(.LCPI20_1)
+; RV32-NEXT:    flh fa5, %lo(.LCPI20_1)(a1)
 ; RV32-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; RV32-NEXT:    vmv2r.v v14, v10
-; RV32-NEXT:    lui a0, %hi(.LCPI20_1)
-; RV32-NEXT:    flh fa5, %lo(.LCPI20_1)(a0)
-; RV32-NEXT:    lui a0, %hi(.LCPI20_2)
-; RV32-NEXT:    flh fa4, %lo(.LCPI20_2)(a0)
 ; RV32-NEXT:    vfmadd.vv v14, v8, v12, v0.t
 ; RV32-NEXT:    vfmul.vf v8, v10, fa5, v0.t
 ; RV32-NEXT:    vfmul.vv v8, v8, v14, v0.t
-; RV32-NEXT:    vfmul.vf v8, v8, fa4, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: rsqrt_nxv8f16:
@@ -1452,16 +1437,13 @@ define <vscale x 8 x half> @rsqrt_nxv8f16(<vscale x 8 x half> %a, <vscale x 8 x 
 ; RV64-NEXT:    addi a1, a1, %lo(.LCPI20_0)
 ; RV64-NEXT:    vsetvli a2, zero, e16, m2, ta, ma
 ; RV64-NEXT:    vlse16.v v12, (a1), zero
+; RV64-NEXT:    lui a1, %hi(.LCPI20_1)
+; RV64-NEXT:    flh fa5, %lo(.LCPI20_1)(a1)
 ; RV64-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; RV64-NEXT:    vmv2r.v v14, v10
-; RV64-NEXT:    lui a0, %hi(.LCPI20_1)
-; RV64-NEXT:    flh fa5, %lo(.LCPI20_1)(a0)
-; RV64-NEXT:    lui a0, %hi(.LCPI20_2)
-; RV64-NEXT:    flh fa4, %lo(.LCPI20_2)(a0)
 ; RV64-NEXT:    vfmadd.vv v14, v8, v12, v0.t
 ; RV64-NEXT:    vfmul.vf v8, v10, fa5, v0.t
 ; RV64-NEXT:    vfmul.vv v8, v8, v14, v0.t
-; RV64-NEXT:    vfmul.vf v8, v8, fa4, v0.t
 ; RV64-NEXT:    ret
   %ins = insertelement <vscale x 8 x half> poison, half 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 8 x half> %ins, <vscale x 8 x half> poison, <vscale x 8 x i32> zeroinitializer
@@ -1515,9 +1497,6 @@ define <vscale x 2 x float> @rsqrt_nxv2f32(<vscale x 2 x float> %a, <vscale x 2 
 ; RV32-NEXT:    vfmadd.vv v10, v8, v11, v0.t
 ; RV32-NEXT:    vfmul.vf v8, v9, fa5, v0.t
 ; RV32-NEXT:    vfmul.vv v8, v8, v10, v0.t
-; RV32-NEXT:    lui a0, 260096
-; RV32-NEXT:    fmv.w.x fa5, a0
-; RV32-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: rsqrt_nxv2f32:
@@ -1540,9 +1519,6 @@ define <vscale x 2 x float> @rsqrt_nxv2f32(<vscale x 2 x float> %a, <vscale x 2 
 ; RV64-NEXT:    vfmadd.vv v10, v8, v11, v0.t
 ; RV64-NEXT:    vfmul.vf v8, v9, fa5, v0.t
 ; RV64-NEXT:    vfmul.vv v8, v8, v10, v0.t
-; RV64-NEXT:    lui a0, 260096
-; RV64-NEXT:    fmv.w.x fa5, a0
-; RV64-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV64-NEXT:    ret
   %ins = insertelement <vscale x 2 x float> poison, float 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 2 x float> %ins, <vscale x 2 x float> poison, <vscale x 2 x i32> zeroinitializer
@@ -1596,9 +1572,6 @@ define <vscale x 4 x float> @rsqrt_nxv4f32(<vscale x 4 x float> %a, <vscale x 4 
 ; RV32-NEXT:    vfmadd.vv v12, v8, v14, v0.t
 ; RV32-NEXT:    vfmul.vf v8, v10, fa5, v0.t
 ; RV32-NEXT:    vfmul.vv v8, v8, v12, v0.t
-; RV32-NEXT:    lui a0, 260096
-; RV32-NEXT:    fmv.w.x fa5, a0
-; RV32-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: rsqrt_nxv4f32:
@@ -1621,9 +1594,6 @@ define <vscale x 4 x float> @rsqrt_nxv4f32(<vscale x 4 x float> %a, <vscale x 4 
 ; RV64-NEXT:    vfmadd.vv v12, v8, v14, v0.t
 ; RV64-NEXT:    vfmul.vf v8, v10, fa5, v0.t
 ; RV64-NEXT:    vfmul.vv v8, v8, v12, v0.t
-; RV64-NEXT:    lui a0, 260096
-; RV64-NEXT:    fmv.w.x fa5, a0
-; RV64-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV64-NEXT:    ret
   %ins = insertelement <vscale x 4 x float> poison, float 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 4 x float> %ins, <vscale x 4 x float> poison, <vscale x 4 x i32> zeroinitializer
@@ -1677,9 +1647,6 @@ define <vscale x 8 x float> @rsqrt_nxv8f32(<vscale x 8 x float> %a, <vscale x 8 
 ; RV32-NEXT:    vfmadd.vv v20, v8, v12, v0.t
 ; RV32-NEXT:    vfmul.vf v8, v16, fa5, v0.t
 ; RV32-NEXT:    vfmul.vv v8, v8, v20, v0.t
-; RV32-NEXT:    lui a0, 260096
-; RV32-NEXT:    fmv.w.x fa5, a0
-; RV32-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: rsqrt_nxv8f32:
@@ -1702,9 +1669,6 @@ define <vscale x 8 x float> @rsqrt_nxv8f32(<vscale x 8 x float> %a, <vscale x 8 
 ; RV64-NEXT:    vfmadd.vv v20, v8, v12, v0.t
 ; RV64-NEXT:    vfmul.vf v8, v16, fa5, v0.t
 ; RV64-NEXT:    vfmul.vv v8, v8, v20, v0.t
-; RV64-NEXT:    lui a0, 260096
-; RV64-NEXT:    fmv.w.x fa5, a0
-; RV64-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV64-NEXT:    ret
   %ins = insertelement <vscale x 8 x float> poison, float 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 8 x float> %ins, <vscale x 8 x float> poison, <vscale x 8 x i32> zeroinitializer
@@ -1747,63 +1711,57 @@ define <vscale x 2 x double> @rsqrt_nxv2f64(<vscale x 2 x double> %a, <vscale x 
 ; RV32-LABEL: rsqrt_nxv2f64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
-; RV32-NEXT:    vfrsqrt7.v v12, v8
-; RV32-NEXT:    vfmul.vv v14, v8, v12, v0.t
+; RV32-NEXT:    vfrsqrt7.v v10, v8
+; RV32-NEXT:    vfmul.vv v12, v8, v10, v0.t
 ; RV32-NEXT:    lui a1, %hi(.LCPI24_0)
 ; RV32-NEXT:    addi a1, a1, %lo(.LCPI24_0)
 ; RV32-NEXT:    vsetvli a2, zero, e64, m2, ta, ma
-; RV32-NEXT:    vlse64.v v10, (a1), zero
+; RV32-NEXT:    vlse64.v v14, (a1), zero
 ; RV32-NEXT:    lui a1, %hi(.LCPI24_1)
 ; RV32-NEXT:    fld fa5, %lo(.LCPI24_1)(a1)
 ; RV32-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
-; RV32-NEXT:    vmv2r.v v16, v12
-; RV32-NEXT:    vfmadd.vv v16, v14, v10, v0.t
-; RV32-NEXT:    vfmul.vf v12, v12, fa5, v0.t
-; RV32-NEXT:    vfmul.vv v12, v12, v16, v0.t
-; RV32-NEXT:    vfmul.vv v14, v8, v12, v0.t
-; RV32-NEXT:    vmv.v.v v16, v12
-; RV32-NEXT:    vfmadd.vv v16, v14, v10, v0.t
-; RV32-NEXT:    vfmul.vf v12, v12, fa5, v0.t
-; RV32-NEXT:    vfmul.vv v12, v12, v16, v0.t
+; RV32-NEXT:    vmv2r.v v16, v10
+; RV32-NEXT:    vfmadd.vv v16, v12, v14, v0.t
+; RV32-NEXT:    vfmul.vf v10, v10, fa5, v0.t
+; RV32-NEXT:    vfmul.vv v10, v10, v16, v0.t
+; RV32-NEXT:    vfmul.vv v12, v8, v10, v0.t
+; RV32-NEXT:    vmv.v.v v16, v10
+; RV32-NEXT:    vfmadd.vv v16, v12, v14, v0.t
+; RV32-NEXT:    vfmul.vf v10, v10, fa5, v0.t
+; RV32-NEXT:    vfmul.vv v10, v10, v16, v0.t
+; RV32-NEXT:    vfmul.vv v8, v8, v10, v0.t
+; RV32-NEXT:    vmv.v.v v12, v10
+; RV32-NEXT:    vfmadd.vv v12, v8, v14, v0.t
+; RV32-NEXT:    vfmul.vf v8, v10, fa5, v0.t
 ; RV32-NEXT:    vfmul.vv v8, v8, v12, v0.t
-; RV32-NEXT:    vmv.v.v v14, v12
-; RV32-NEXT:    lui a0, %hi(.LCPI24_2)
-; RV32-NEXT:    fld fa4, %lo(.LCPI24_2)(a0)
-; RV32-NEXT:    vfmadd.vv v14, v8, v10, v0.t
-; RV32-NEXT:    vfmul.vf v8, v12, fa5, v0.t
-; RV32-NEXT:    vfmul.vv v8, v8, v14, v0.t
-; RV32-NEXT:    vfmul.vf v8, v8, fa4, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: rsqrt_nxv2f64:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
-; RV64-NEXT:    vfrsqrt7.v v12, v8
-; RV64-NEXT:    vfmul.vv v14, v8, v12, v0.t
+; RV64-NEXT:    vfrsqrt7.v v10, v8
+; RV64-NEXT:    vfmul.vv v12, v8, v10, v0.t
 ; RV64-NEXT:    lui a1, %hi(.LCPI24_0)
 ; RV64-NEXT:    addi a1, a1, %lo(.LCPI24_0)
 ; RV64-NEXT:    vsetvli a2, zero, e64, m2, ta, ma
-; RV64-NEXT:    vlse64.v v10, (a1), zero
+; RV64-NEXT:    vlse64.v v14, (a1), zero
 ; RV64-NEXT:    lui a1, %hi(.LCPI24_1)
 ; RV64-NEXT:    fld fa5, %lo(.LCPI24_1)(a1)
 ; RV64-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
-; RV64-NEXT:    vmv2r.v v16, v12
-; RV64-NEXT:    vfmadd.vv v16, v14, v10, v0.t
-; RV64-NEXT:    vfmul.vf v12, v12, fa5, v0.t
-; RV64-NEXT:    vfmul.vv v12, v12, v16, v0.t
-; RV64-NEXT:    vfmul.vv v14, v8, v12, v0.t
-; RV64-NEXT:    vmv.v.v v16, v12
-; RV64-NEXT:    vfmadd.vv v16, v14, v10, v0.t
-; RV64-NEXT:    vfmul.vf v12, v12, fa5, v0.t
-; RV64-NEXT:    vfmul.vv v12, v12, v16, v0.t
+; RV64-NEXT:    vmv2r.v v16, v10
+; RV64-NEXT:    vfmadd.vv v16, v12, v14, v0.t
+; RV64-NEXT:    vfmul.vf v10, v10, fa5, v0.t
+; RV64-NEXT:    vfmul.vv v10, v10, v16, v0.t
+; RV64-NEXT:    vfmul.vv v12, v8, v10, v0.t
+; RV64-NEXT:    vmv.v.v v16, v10
+; RV64-NEXT:    vfmadd.vv v16, v12, v14, v0.t
+; RV64-NEXT:    vfmul.vf v10, v10, fa5, v0.t
+; RV64-NEXT:    vfmul.vv v10, v10, v16, v0.t
+; RV64-NEXT:    vfmul.vv v8, v8, v10, v0.t
+; RV64-NEXT:    vmv.v.v v12, v10
+; RV64-NEXT:    vfmadd.vv v12, v8, v14, v0.t
+; RV64-NEXT:    vfmul.vf v8, v10, fa5, v0.t
 ; RV64-NEXT:    vfmul.vv v8, v8, v12, v0.t
-; RV64-NEXT:    vmv.v.v v14, v12
-; RV64-NEXT:    lui a0, %hi(.LCPI24_2)
-; RV64-NEXT:    fld fa4, %lo(.LCPI24_2)(a0)
-; RV64-NEXT:    vfmadd.vv v14, v8, v10, v0.t
-; RV64-NEXT:    vfmul.vf v8, v12, fa5, v0.t
-; RV64-NEXT:    vfmul.vv v8, v8, v14, v0.t
-; RV64-NEXT:    vfmul.vf v8, v8, fa4, v0.t
 ; RV64-NEXT:    ret
   %ins = insertelement <vscale x 2 x double> poison, double 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 2 x double> %ins, <vscale x 2 x double> poison, <vscale x 2 x i32> zeroinitializer
@@ -1866,12 +1824,9 @@ define <vscale x 4 x double> @rsqrt_nxv4f64(<vscale x 4 x double> %a, <vscale x 
 ; RV32-NEXT:    vfmul.vv v16, v16, v24, v0.t
 ; RV32-NEXT:    vfmul.vv v8, v8, v16, v0.t
 ; RV32-NEXT:    vmv.v.v v20, v16
-; RV32-NEXT:    lui a0, %hi(.LCPI25_2)
-; RV32-NEXT:    fld fa4, %lo(.LCPI25_2)(a0)
 ; RV32-NEXT:    vfmadd.vv v20, v8, v12, v0.t
 ; RV32-NEXT:    vfmul.vf v8, v16, fa5, v0.t
 ; RV32-NEXT:    vfmul.vv v8, v8, v20, v0.t
-; RV32-NEXT:    vfmul.vf v8, v8, fa4, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: rsqrt_nxv4f64:
@@ -1897,12 +1852,9 @@ define <vscale x 4 x double> @rsqrt_nxv4f64(<vscale x 4 x double> %a, <vscale x 
 ; RV64-NEXT:    vfmul.vv v16, v16, v24, v0.t
 ; RV64-NEXT:    vfmul.vv v8, v8, v16, v0.t
 ; RV64-NEXT:    vmv.v.v v20, v16
-; RV64-NEXT:    lui a0, %hi(.LCPI25_2)
-; RV64-NEXT:    fld fa4, %lo(.LCPI25_2)(a0)
 ; RV64-NEXT:    vfmadd.vv v20, v8, v12, v0.t
 ; RV64-NEXT:    vfmul.vf v8, v16, fa5, v0.t
 ; RV64-NEXT:    vfmul.vv v8, v8, v20, v0.t
-; RV64-NEXT:    vfmul.vf v8, v8, fa4, v0.t
 ; RV64-NEXT:    ret
   %ins = insertelement <vscale x 4 x double> poison, double 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 4 x double> %ins, <vscale x 4 x double> poison, <vscale x 4 x i32> zeroinitializer
@@ -2050,7 +2002,7 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV32-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; RV32-NEXT:    vfrsqrt7.v v8, v8
 ; RV32-NEXT:    csrr a1, vlenb
-; RV32-NEXT:    slli a1, a1, 3
+; RV32-NEXT:    slli a1, a1, 4
 ; RV32-NEXT:    add a1, sp, a1
 ; RV32-NEXT:    addi a1, a1, 16
 ; RV32-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
@@ -2063,7 +2015,7 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV32-NEXT:    lui a2, %hi(.LCPI26_1)
 ; RV32-NEXT:    vlse64.v v8, (a1), zero
 ; RV32-NEXT:    csrr a1, vlenb
-; RV32-NEXT:    slli a1, a1, 4
+; RV32-NEXT:    slli a1, a1, 3
 ; RV32-NEXT:    add a1, sp, a1
 ; RV32-NEXT:    addi a1, a1, 16
 ; RV32-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
@@ -2071,7 +2023,7 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV32-NEXT:    fld fa5, %lo(.LCPI26_1)(a2)
 ; RV32-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 3
+; RV32-NEXT:    slli a0, a0, 4
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
 ; RV32-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
@@ -2079,7 +2031,7 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV32-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
 ; RV32-NEXT:    vfmadd.vv v24, v8, v16, v0.t
 ; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 3
+; RV32-NEXT:    slli a0, a0, 4
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
 ; RV32-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
@@ -2095,18 +2047,18 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV32-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
 ; RV32-NEXT:    vfmul.vv v16, v24, v8, v0.t
 ; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 3
+; RV32-NEXT:    slli a0, a0, 4
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
 ; RV32-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
 ; RV32-NEXT:    vmv.v.v v24, v8
 ; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 3
+; RV32-NEXT:    slli a0, a0, 4
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
 ; RV32-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
 ; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 4
+; RV32-NEXT:    slli a0, a0, 3
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
 ; RV32-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
@@ -2116,7 +2068,7 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV32-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV32-NEXT:    vfmul.vv v16, v8, v24, v0.t
 ; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 3
+; RV32-NEXT:    slli a0, a0, 4
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
 ; RV32-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
@@ -2133,10 +2085,8 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
 ; RV32-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
-; RV32-NEXT:    lui a0, %hi(.LCPI26_2)
-; RV32-NEXT:    fld fa4, %lo(.LCPI26_2)(a0)
 ; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 4
+; RV32-NEXT:    slli a0, a0, 3
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
 ; RV32-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
@@ -2148,13 +2098,12 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV32-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
 ; RV32-NEXT:    vfmadd.vv v16, v24, v8, v0.t
 ; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 3
+; RV32-NEXT:    slli a0, a0, 4
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
 ; RV32-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
 ; RV32-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV32-NEXT:    vfmul.vv v8, v8, v16, v0.t
-; RV32-NEXT:    vfmul.vf v8, v8, fa4, v0.t
 ; RV32-NEXT:    csrr a0, vlenb
 ; RV32-NEXT:    slli a0, a0, 5
 ; RV32-NEXT:    add sp, sp, a0
@@ -2179,7 +2128,7 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV64-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; RV64-NEXT:    vfrsqrt7.v v8, v8
 ; RV64-NEXT:    csrr a1, vlenb
-; RV64-NEXT:    slli a1, a1, 3
+; RV64-NEXT:    slli a1, a1, 4
 ; RV64-NEXT:    add a1, sp, a1
 ; RV64-NEXT:    addi a1, a1, 16
 ; RV64-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
@@ -2192,7 +2141,7 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV64-NEXT:    lui a2, %hi(.LCPI26_1)
 ; RV64-NEXT:    vlse64.v v8, (a1), zero
 ; RV64-NEXT:    csrr a1, vlenb
-; RV64-NEXT:    slli a1, a1, 4
+; RV64-NEXT:    slli a1, a1, 3
 ; RV64-NEXT:    add a1, sp, a1
 ; RV64-NEXT:    addi a1, a1, 16
 ; RV64-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
@@ -2200,7 +2149,7 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV64-NEXT:    fld fa5, %lo(.LCPI26_1)(a2)
 ; RV64-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 3
+; RV64-NEXT:    slli a0, a0, 4
 ; RV64-NEXT:    add a0, sp, a0
 ; RV64-NEXT:    addi a0, a0, 16
 ; RV64-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
@@ -2208,7 +2157,7 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV64-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
 ; RV64-NEXT:    vfmadd.vv v24, v8, v16, v0.t
 ; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 3
+; RV64-NEXT:    slli a0, a0, 4
 ; RV64-NEXT:    add a0, sp, a0
 ; RV64-NEXT:    addi a0, a0, 16
 ; RV64-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
@@ -2224,18 +2173,18 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV64-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
 ; RV64-NEXT:    vfmul.vv v16, v24, v8, v0.t
 ; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 3
+; RV64-NEXT:    slli a0, a0, 4
 ; RV64-NEXT:    add a0, sp, a0
 ; RV64-NEXT:    addi a0, a0, 16
 ; RV64-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
 ; RV64-NEXT:    vmv.v.v v24, v8
 ; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 3
+; RV64-NEXT:    slli a0, a0, 4
 ; RV64-NEXT:    add a0, sp, a0
 ; RV64-NEXT:    addi a0, a0, 16
 ; RV64-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
 ; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 4
+; RV64-NEXT:    slli a0, a0, 3
 ; RV64-NEXT:    add a0, sp, a0
 ; RV64-NEXT:    addi a0, a0, 16
 ; RV64-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
@@ -2245,7 +2194,7 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV64-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV64-NEXT:    vfmul.vv v16, v8, v24, v0.t
 ; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 3
+; RV64-NEXT:    slli a0, a0, 4
 ; RV64-NEXT:    add a0, sp, a0
 ; RV64-NEXT:    addi a0, a0, 16
 ; RV64-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
@@ -2262,10 +2211,8 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV64-NEXT:    add a0, sp, a0
 ; RV64-NEXT:    addi a0, a0, 16
 ; RV64-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
-; RV64-NEXT:    lui a0, %hi(.LCPI26_2)
-; RV64-NEXT:    fld fa4, %lo(.LCPI26_2)(a0)
 ; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 4
+; RV64-NEXT:    slli a0, a0, 3
 ; RV64-NEXT:    add a0, sp, a0
 ; RV64-NEXT:    addi a0, a0, 16
 ; RV64-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
@@ -2277,13 +2224,12 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a, <vscale x 
 ; RV64-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
 ; RV64-NEXT:    vfmadd.vv v16, v24, v8, v0.t
 ; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 3
+; RV64-NEXT:    slli a0, a0, 4
 ; RV64-NEXT:    add a0, sp, a0
 ; RV64-NEXT:    addi a0, a0, 16
 ; RV64-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
 ; RV64-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV64-NEXT:    vfmul.vv v8, v8, v16, v0.t
-; RV64-NEXT:    vfmul.vf v8, v8, fa4, v0.t
 ; RV64-NEXT:    csrr a0, vlenb
 ; RV64-NEXT:    slli a0, a0, 5
 ; RV64-NEXT:    add sp, sp, a0
@@ -2307,20 +2253,14 @@ define <vscale x 2 x half> @rsqrt_zero_steps_nxv2f16(<vscale x 2 x half> %a, <vs
 ; CHECK-NEXT:    ret
 ; RV32-LABEL: rsqrt_zero_steps_nxv2f16:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    lui a1, %hi(.LCPI27_0)
-; RV32-NEXT:    flh fa5, %lo(.LCPI27_0)(a1)
 ; RV32-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; RV32-NEXT:    vfrsqrt7.v v8, v8
-; RV32-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: rsqrt_zero_steps_nxv2f16:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    lui a1, %hi(.LCPI27_0)
-; RV64-NEXT:    flh fa5, %lo(.LCPI27_0)(a1)
 ; RV64-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; RV64-NEXT:    vfrsqrt7.v v8, v8
-; RV64-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV64-NEXT:    ret
   %ins = insertelement <vscale x 2 x half> poison, half 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 2 x half> %ins, <vscale x 2 x half> poison, <vscale x 2 x i32> zeroinitializer
@@ -2340,20 +2280,14 @@ define <vscale x 4 x half> @rsqrt_zero_steps_nxv4f16(<vscale x 4 x half> %a, <vs
 ; CHECK-NEXT:    ret
 ; RV32-LABEL: rsqrt_zero_steps_nxv4f16:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    lui a1, %hi(.LCPI28_0)
-; RV32-NEXT:    flh fa5, %lo(.LCPI28_0)(a1)
 ; RV32-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; RV32-NEXT:    vfrsqrt7.v v8, v8
-; RV32-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: rsqrt_zero_steps_nxv4f16:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    lui a1, %hi(.LCPI28_0)
-; RV64-NEXT:    flh fa5, %lo(.LCPI28_0)(a1)
 ; RV64-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; RV64-NEXT:    vfrsqrt7.v v8, v8
-; RV64-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV64-NEXT:    ret
   %ins = insertelement <vscale x 4 x half> poison, half 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 4 x half> %ins, <vscale x 4 x half> poison, <vscale x 4 x i32> zeroinitializer
@@ -2373,20 +2307,14 @@ define <vscale x 8 x half> @rsqrt_zero_steps_nxv8f16(<vscale x 8 x half> %a, <vs
 ; CHECK-NEXT:    ret
 ; RV32-LABEL: rsqrt_zero_steps_nxv8f16:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    lui a1, %hi(.LCPI29_0)
-; RV32-NEXT:    flh fa5, %lo(.LCPI29_0)(a1)
 ; RV32-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; RV32-NEXT:    vfrsqrt7.v v8, v8
-; RV32-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: rsqrt_zero_steps_nxv8f16:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    lui a1, %hi(.LCPI29_0)
-; RV64-NEXT:    flh fa5, %lo(.LCPI29_0)(a1)
 ; RV64-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
 ; RV64-NEXT:    vfrsqrt7.v v8, v8
-; RV64-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV64-NEXT:    ret
   %ins = insertelement <vscale x 8 x half> poison, half 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 8 x half> %ins, <vscale x 8 x half> poison, <vscale x 8 x i32> zeroinitializer
@@ -2408,18 +2336,12 @@ define <vscale x 2 x float> @rsqrt_zero_steps_nxv2f32(<vscale x 2 x float> %a, <
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; RV32-NEXT:    vfrsqrt7.v v8, v8
-; RV32-NEXT:    lui a0, 260096
-; RV32-NEXT:    fmv.w.x fa5, a0
-; RV32-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: rsqrt_zero_steps_nxv2f32:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; RV64-NEXT:    vfrsqrt7.v v8, v8
-; RV64-NEXT:    lui a0, 260096
-; RV64-NEXT:    fmv.w.x fa5, a0
-; RV64-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV64-NEXT:    ret
   %ins = insertelement <vscale x 2 x float> poison, float 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 2 x float> %ins, <vscale x 2 x float> poison, <vscale x 2 x i32> zeroinitializer
@@ -2441,18 +2363,12 @@ define <vscale x 4 x float> @rsqrt_zero_steps_nxv4f32(<vscale x 4 x float> %a, <
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; RV32-NEXT:    vfrsqrt7.v v8, v8
-; RV32-NEXT:    lui a0, 260096
-; RV32-NEXT:    fmv.w.x fa5, a0
-; RV32-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: rsqrt_zero_steps_nxv4f32:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; RV64-NEXT:    vfrsqrt7.v v8, v8
-; RV64-NEXT:    lui a0, 260096
-; RV64-NEXT:    fmv.w.x fa5, a0
-; RV64-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV64-NEXT:    ret
   %ins = insertelement <vscale x 4 x float> poison, float 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 4 x float> %ins, <vscale x 4 x float> poison, <vscale x 4 x i32> zeroinitializer
@@ -2474,18 +2390,12 @@ define <vscale x 8 x float> @rsqrt_zero_steps_nxv8f32(<vscale x 8 x float> %a, <
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; RV32-NEXT:    vfrsqrt7.v v8, v8
-; RV32-NEXT:    lui a0, 260096
-; RV32-NEXT:    fmv.w.x fa5, a0
-; RV32-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: rsqrt_zero_steps_nxv8f32:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
 ; RV64-NEXT:    vfrsqrt7.v v8, v8
-; RV64-NEXT:    lui a0, 260096
-; RV64-NEXT:    fmv.w.x fa5, a0
-; RV64-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV64-NEXT:    ret
   %ins = insertelement <vscale x 8 x float> poison, float 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 8 x float> %ins, <vscale x 8 x float> poison, <vscale x 8 x i32> zeroinitializer
@@ -2505,20 +2415,14 @@ define <vscale x 2 x double> @rsqrt_zero_steps_nxv2f64(<vscale x 2 x double> %a,
 ; CHECK-NEXT:    ret
 ; RV32-LABEL: rsqrt_zero_steps_nxv2f64:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    lui a1, %hi(.LCPI33_0)
-; RV32-NEXT:    fld fa5, %lo(.LCPI33_0)(a1)
 ; RV32-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; RV32-NEXT:    vfrsqrt7.v v8, v8
-; RV32-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: rsqrt_zero_steps_nxv2f64:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    lui a1, %hi(.LCPI33_0)
-; RV64-NEXT:    fld fa5, %lo(.LCPI33_0)(a1)
 ; RV64-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; RV64-NEXT:    vfrsqrt7.v v8, v8
-; RV64-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV64-NEXT:    ret
   %ins = insertelement <vscale x 2 x double> poison, double 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 2 x double> %ins, <vscale x 2 x double> poison, <vscale x 2 x i32> zeroinitializer
@@ -2538,20 +2442,14 @@ define <vscale x 4 x double> @rsqrt_zero_steps_nxv4f64(<vscale x 4 x double> %a,
 ; CHECK-NEXT:    ret
 ; RV32-LABEL: rsqrt_zero_steps_nxv4f64:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    lui a1, %hi(.LCPI34_0)
-; RV32-NEXT:    fld fa5, %lo(.LCPI34_0)(a1)
 ; RV32-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; RV32-NEXT:    vfrsqrt7.v v8, v8
-; RV32-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: rsqrt_zero_steps_nxv4f64:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    lui a1, %hi(.LCPI34_0)
-; RV64-NEXT:    fld fa5, %lo(.LCPI34_0)(a1)
 ; RV64-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; RV64-NEXT:    vfrsqrt7.v v8, v8
-; RV64-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV64-NEXT:    ret
   %ins = insertelement <vscale x 4 x double> poison, double 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 4 x double> %ins, <vscale x 4 x double> poison, <vscale x 4 x i32> zeroinitializer
@@ -2571,20 +2469,14 @@ define <vscale x 8 x double> @rsqrt_zero_steps_nxv8f64(<vscale x 8 x double> %a,
 ; CHECK-NEXT:    ret
 ; RV32-LABEL: rsqrt_zero_steps_nxv8f64:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    lui a1, %hi(.LCPI35_0)
-; RV32-NEXT:    fld fa5, %lo(.LCPI35_0)(a1)
 ; RV32-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; RV32-NEXT:    vfrsqrt7.v v8, v8
-; RV32-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: rsqrt_zero_steps_nxv8f64:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    lui a1, %hi(.LCPI35_0)
-; RV64-NEXT:    fld fa5, %lo(.LCPI35_0)(a1)
 ; RV64-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; RV64-NEXT:    vfrsqrt7.v v8, v8
-; RV64-NEXT:    vfmul.vf v8, v8, fa5, v0.t
 ; RV64-NEXT:    ret
   %ins = insertelement <vscale x 8 x double> poison, double 1.000000e+00, i32 0
   %splat = shufflevector <vscale x 8 x double> %ins, <vscale x 8 x double> poison, <vscale x 8 x i32> zeroinitializer

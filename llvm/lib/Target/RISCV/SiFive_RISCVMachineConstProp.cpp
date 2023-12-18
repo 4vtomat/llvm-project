@@ -50,10 +50,7 @@ class RISCVMachineConstPropagation : public MachineFunctionPass {
 
 public:
   static char ID;
-  RISCVMachineConstPropagation() : MachineFunctionPass(ID) {
-    initializeRISCVMachineConstPropagationPass(
-        *PassRegistry::getPassRegistry());
-  }
+  RISCVMachineConstPropagation() : MachineFunctionPass(ID) { }
 
   bool runOnMachineFunction(MachineFunction &MF) override;
   MachineFunctionProperties getRequiredProperties() const override {
