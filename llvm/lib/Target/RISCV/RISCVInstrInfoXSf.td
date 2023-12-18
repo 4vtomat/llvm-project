@@ -11,28 +11,6 @@
 //===----------------------------------------------------------------------===//
 
 #ifdef SIFIVE_CUSTOMIZATION
-defset list<VTypeInfoToWide> AllVQMACCQoQVectors = {
-  def : VTypeInfoToWide<VI8MF2,  VI32M1>;
-  def : VTypeInfoToWide<VI8M1,   VI32M2>;
-  def : VTypeInfoToWide<VI8M2,   VI32M4>;
-  def : VTypeInfoToWide<VI8M4,   VI32M8>;
-}
-
-defset list<VTypeInfoToWide> AllVQMACCDoDVectors = {
-  def : VTypeInfoToWide<VI8M1,   VI32M1>;
-  def : VTypeInfoToWide<VI8M2,   VI32M2>;
-  def : VTypeInfoToWide<VI8M4,   VI32M4>;
-  def : VTypeInfoToWide<VI8M8,   VI32M8>;
-}
-
-defset list<VTypeInfoToWide> AllVFNRCLIPVectors = {
-  def : VTypeInfoToWide<VI8MF8,  VF32MF2>;
-  def : VTypeInfoToWide<VI8MF4,  VF32M1>;
-  def : VTypeInfoToWide<VI8MF2,  VF32M2>;
-  def : VTypeInfoToWide<VI8M1,   VF32M4>;
-  def : VTypeInfoToWide<VI8M2,   VF32M8>;
-}
-
 class RVInstVVCustom2<bits<6> funct6, RISCVVFormat opv, dag outs, dag ins,
                       string opcodestr, string argstr>
     : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
@@ -468,13 +446,14 @@ multiclass VPseudoSiFiveVFWMACC<string Constraint = ""> {
 }
 
 multiclass VPseudoSiFiveVFNRCLIP<string Constraint = "@earlyclobber $rd"> {
-  foreach m = MxListVF4 in
+#ifdef SIFIVE_CUSTOMIZATION
+  foreach m = [V_MF8, V_MF4, V_MF2, V_M1, V_M2] in
     let hasSideEffects = 0 in
-      defm "Pseudo" # NAME : VPseudoBinaryRoundingMode<!if(!eq(m.vrclass, VRM8),
-                                                           VRM2, VR),
-                                                       m.vrclass, FPR32, m,
+      defm "Pseudo" # NAME : VPseudoBinaryRoundingMode<m.vrclass,
+                                                       m.w2vrclass, FPR32, m,
                                                        Constraint, /*sew*/0,
                                                        UsesVXRM=0>;
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 let Predicates = [HasVendorXSfvcp] in {
@@ -710,7 +689,7 @@ multiclass VPatVFNRCLIP<string intrinsic, string instruction> {
     defvar Vti = pair.Vti;
     defvar Wti = pair.Wti;
     defm : VPatBinaryRoundingMode<"int_riscv_sf_" # intrinsic,
-                                  "Pseudo" # instruction # "_" # Wti.LMul.MX,
+                                  "Pseudo" # instruction # "_" # Vti.LMul.MX, // SIFIVE
                                   Vti.Vector, Wti.Vector, Wti.Scalar, Vti.Mask,
                                   Vti.Log2SEW, Vti.RegClass,
                                   Wti.RegClass, Wti.ScalarRegClass>;
