@@ -12092,8 +12092,21 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
   if (isMaskRequired)
     for (unsigned Part = 0; Part < State.UF; ++Part) {
       Value *Mask = State.get(getMask(), Part);
-      if (isReverse())
-        Mask = Builder.CreateVectorReverse(Mask, "reverse");
+#if SIFIVE_CUSTOMIZATION
+      if (isReverse()) {
+        if (VPValue *RVL = State.Plan->getRVL()) {
+          VectorType *MaskTy = cast<VectorType>(Mask->getType());
+          Value *BlockInMaskPart =
+              Builder.getTrueVector(MaskTy->getElementCount());
+
+          Mask = Builder.CreateIntrinsic(
+              Intrinsic::experimental_vp_reverse, {MaskTy},
+              {Mask, BlockInMaskPart, State.get(RVL, Part)});
+        } else {
+          Mask = Builder.CreateVectorReverse(Mask, "reverse");
+        }
+      }
+#endif // SIFIVE_CUSTOMIZATION
       BlockInMaskParts[Part] = Mask;
     }
 
@@ -12144,26 +12157,6 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       PartPtr = Builder.CreateGEP(ScalarDataTy, Ptr, NumElt, "", InBounds);
       PartPtr =
           Builder.CreateGEP(ScalarDataTy, PartPtr, LastLane, "", InBounds);
-#if SIFIVE_CUSTOMIZATION
-      if (isMaskRequired) { // We reverse the mask only if it is not an all-ones mask.
-        if (VPValue *RVL = State.Plan->getRVL()) {
-          Value *Mask = BlockInMaskParts[Part];
-          VectorType *MaskTy = cast<VectorType>(Mask->getType());
-          BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
-          Function *VPIntr = Intrinsic::getDeclaration(
-              VectorPH->getModule(), Intrinsic::experimental_vp_reverse,
-              {MaskTy});
-          Value *BlockInMaskPart =
-              Builder.getTrueVector(MaskTy->getElementCount());
-
-          BlockInMaskParts[Part] = Builder.CreateCall(
-              VPIntr, {Mask, BlockInMaskPart, State.get(RVL, Part)});
-        } else {
-          BlockInMaskParts[Part] =
-              Builder.CreateVectorReverse(BlockInMaskParts[Part], "reverse");
-        }
-      }
-#endif // SIFIVE_CUSTOMIZATION
     } else {
       Value *Increment = createStepForVF(Builder, IndexTy, State.VF, Part);
       PartPtr = Builder.CreateGEP(ScalarDataTy, Ptr, Increment, "", InBounds);
