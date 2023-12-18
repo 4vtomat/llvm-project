@@ -1156,7 +1156,12 @@ class VPseudoUnaryMask_NoExcept<VReg RetClass,
 
 class VPseudoUnaryNoMask_FRM<VReg RetClass,
                              VReg OpClass,
+#ifdef SIFIVE_CUSTOMIZATION
+                             string Constraint = "",
+                             int TargetConstraintType = 1> :
+#else
                              string Constraint = ""> :
+#endif
       Pseudo<(outs RetClass:$rd),
              (ins RetClass:$merge, OpClass:$rs2, ixlenimm:$frm,
                   AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
@@ -1165,6 +1170,9 @@ class VPseudoUnaryNoMask_FRM<VReg RetClass,
   let mayStore = 0;
   let hasSideEffects = 0;
   let Constraints = !interleave([Constraint, "$rd = $merge"], ",");
+#ifdef SIFIVE_CUSTOMIZATION
+  let TargetOverlapConstraintType = TargetConstraintType;
+#endif // SIFIVE_CUSTOMIZATION
   let HasVLOp = 1;
   let HasSEWOp = 1;
   let HasVecPolicyOp = 1;
@@ -1173,7 +1181,12 @@ class VPseudoUnaryNoMask_FRM<VReg RetClass,
 
 class VPseudoUnaryMask_FRM<VReg RetClass,
                            VReg OpClass,
+#ifdef SIFIVE_CUSTOMIZATION
+                           string Constraint = "",
+                           int TargetConstraintType = 1> :
+#else
                            string Constraint = ""> :
+#endif
       Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
              (ins GetVRegNoV0<RetClass>.R:$merge, OpClass:$rs2,
                   VMaskOp:$vm, ixlenimm:$frm,
@@ -1183,6 +1196,9 @@ class VPseudoUnaryMask_FRM<VReg RetClass,
   let mayStore = 0;
   let hasSideEffects = 0;
   let Constraints = !interleave([Constraint, "$rd = $merge"], ",");
+#ifdef SIFIVE_CUSTOMIZATION
+  let TargetOverlapConstraintType = TargetConstraintType;
+#endif // SIFIVE_CUSTOMIZATION
   let HasVLOp = 1;
   let HasSEWOp = 1;
   let HasVecPolicyOp = 1;
@@ -3756,12 +3772,17 @@ multiclass VPseudoConversionRoundingMode<VReg RetClass,
 multiclass VPseudoConversionRM<VReg RetClass,
                                VReg Op1Class,
                                LMULInfo MInfo,
-                               string Constraint = ""> {
+                               string Constraint = "",
+                               int TargetConstraintType = 1> {
   let VLMul = MInfo.value in {
     def "_" # MInfo.MX : VPseudoUnaryNoMask_FRM<RetClass, Op1Class,
-                                                        Constraint>;
+#ifdef SIFIVE_CUSTOMIZATION
+                                                        Constraint, TargetConstraintType>;
+#endif // SIFIVE_CUSTOMIZATION
     def "_" # MInfo.MX # "_MASK" : VPseudoUnaryMask_FRM<RetClass, Op1Class,
-                                                        Constraint>,
+#ifdef SIFIVE_CUSTOMIZATION
+                                                        Constraint, TargetConstraintType>,
+#endif // SIFIVE_CUSTOMIZATION
                                    RISCVMaskedPseudo<MaskIdx=2>;
   }
 }
@@ -3889,7 +3910,9 @@ multiclass VPseudoVNCVTI_W_RM {
 multiclass VPseudoVNCVTI_RM_W {
   defvar constraint = "@earlyclobber $rd";
   foreach m = MxListW in {
-    defm _W : VPseudoConversionRM<m.vrclass, m.wvrclass, m, constraint>,
+#ifdef SIFIVE_CUSTOMIZATION
+    defm _W : VPseudoConversionRM<m.vrclass, m.wvrclass, m, constraint, TargetConstraintType=2>,
+#endif // SIFIVE_CUSTOMIZATION
               SchedUnary<"WriteVFNCvtFToIV", "ReadVFNCvtFToIV", m.MX,
                          forceMergeOpRead=true>;
   }
@@ -3907,7 +3930,9 @@ multiclass VPseudoVNCVTF_W_RM {
 multiclass VPseudoVNCVTF_RM_W {
   defvar constraint = "@earlyclobber $rd";
   foreach m = MxListFW in {
-    defm _W : VPseudoConversionRM<m.vrclass, m.wvrclass, m, constraint>,
+#ifdef SIFIVE_CUSTOMIZATION
+    defm _W : VPseudoConversionRM<m.vrclass, m.wvrclass, m, constraint, TargetConstraintType=2>,
+#endif // SIFIVE_CUSTOMIZATION
               SchedUnary<"WriteVFNCvtIToFV", "ReadVFNCvtIToFV", m.MX,
                          forceMergeOpRead=true>;
   }

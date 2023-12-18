@@ -247,9 +247,8 @@ define <vscale x 1 x i8> @ceil_nxv1f16_to_si8(<vscale x 1 x half> %x) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e8, mf8, ta, ma
 ; CHECK-NEXT:    fsrmi a0, 3
-; CHECK-NEXT:    vfncvt.x.f.w v9, v8
+; CHECK-NEXT:    vfncvt.x.f.w v8, v8
 ; CHECK-NEXT:    fsrm a0
-; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
   %a = call <vscale x 1 x half> @llvm.ceil.nxv1f16(<vscale x 1 x half> %x)
   %b = fptosi <vscale x 1 x half> %a to <vscale x 1 x i8>
@@ -261,9 +260,8 @@ define <vscale x 1 x i8> @ceil_nxv1f16_to_ui8(<vscale x 1 x half> %x) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e8, mf8, ta, ma
 ; CHECK-NEXT:    fsrmi a0, 3
-; CHECK-NEXT:    vfncvt.xu.f.w v9, v8
+; CHECK-NEXT:    vfncvt.xu.f.w v8, v8
 ; CHECK-NEXT:    fsrm a0
-; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
   %a = call <vscale x 1 x half> @llvm.ceil.nxv1f16(<vscale x 1 x half> %x)
   %b = fptoui <vscale x 1 x half> %a to <vscale x 1 x i8>
@@ -449,9 +447,8 @@ define <vscale x 4 x i8> @ceil_nxv4f16_to_si8(<vscale x 4 x half> %x) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    fsrmi a0, 3
-; CHECK-NEXT:    vfncvt.x.f.w v9, v8
+; CHECK-NEXT:    vfncvt.x.f.w v8, v8
 ; CHECK-NEXT:    fsrm a0
-; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
   %a = call <vscale x 4 x half> @llvm.ceil.nxv4f16(<vscale x 4 x half> %x)
   %b = fptosi <vscale x 4 x half> %a to <vscale x 4 x i8>
@@ -463,9 +460,8 @@ define <vscale x 4 x i8> @ceil_nxv4f16_to_ui8(<vscale x 4 x half> %x) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    fsrmi a0, 3
-; CHECK-NEXT:    vfncvt.xu.f.w v9, v8
+; CHECK-NEXT:    vfncvt.xu.f.w v8, v8
 ; CHECK-NEXT:    fsrm a0
-; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
   %a = call <vscale x 4 x half> @llvm.ceil.nxv4f16(<vscale x 4 x half> %x)
   %b = fptoui <vscale x 4 x half> %a to <vscale x 4 x i8>
