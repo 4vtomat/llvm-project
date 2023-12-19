@@ -62,6 +62,24 @@ static cl::opt<unsigned>
                      "(default value: CPU specific heuristic)."),
             cl::init(0));
 
+static cl::opt<unsigned>
+    PreferMemcpyLMUL("riscv-memcpy-to-rvv-lmul", cl::Hidden,
+                     cl::desc("Configure LMUL for memcpy expansion "
+                              "(default value: riscv-mem-to-rvv)."),
+                     cl::init(0));
+
+static cl::opt<unsigned>
+    PreferMemsetLMUL("riscv-memset-to-rvv-lmul", cl::Hidden,
+                     cl::desc("Configure LMUL for memset expansion "
+                              "(default value: riscv-mem-to-rvv)."),
+                     cl::init(0));
+
+static cl::opt<unsigned>
+    PreferMemmoveLMUL("riscv-memmove-to-rvv-lmul", cl::Hidden,
+                      cl::desc("Configure LMUL for memmove expansion "
+                               "(default value: riscv-mem-to-rvv)."),
+                      cl::init(0));
+
 namespace {
 
 class RISCVLateCodeGenPrepare
@@ -84,7 +102,9 @@ public:
   static constexpr unsigned MinCopySize = 64;
   static constexpr unsigned MaxUnrollTimes = 8;
 
-  unsigned MemLMULLocal;
+  unsigned MemcpyLMUL;
+  unsigned MemsetLMUL;
+  unsigned MemmoveLMUL;
 
   bool visitInstruction(Instruction &I) { return false; }
   bool visitZExtInst(ZExtInst &I);
@@ -109,7 +129,7 @@ public:
   void expandMemmoveKnownSize(MemMoveInst *MCI);
   void createMemcpyLoopBody(BasicBlock *LoopBody, BasicBlock *PreLoopBB,
                             BasicBlock *PostLoopBB, Value *SrcAddr,
-                            Value *DstAddr, Value *CopyLen,
+                            Value *DstAddr, Value *CopyLen, unsigned LMUL,
                             bool IsBackward = false, uint64_t UnrollCount = 1);
 };
 
@@ -336,7 +356,7 @@ void RISCVLateCodeGenPrepare::expandMemCpyUnknownSize(MemCpyInst *M) {
 
   Builder.CreateBr(ForwardLoopBB);
   createMemcpyLoopBody(ForwardLoopBB, PreLoopBB, PostLoopBB, SrcAddr, DstAddr,
-                       CopyLen, false);
+                       CopyLen, MemcpyLMUL, false);
   PreLoopBB->getTerminator()->eraseFromParent();
   M->eraseFromParent();
 }
@@ -393,9 +413,9 @@ void RISCVLateCodeGenPrepare::expandMemmoveUnknownSize(MemMoveInst *M) {
   Builder.CreateBr(BackwardLoopBB);
 
   createMemcpyLoopBody(BackwardLoopBB, BWPreLoopBB, PostLoopBB, SrcEndAddr,
-                       DstEndAddr, CopyLen, true);
+                       DstEndAddr, CopyLen, MemmoveLMUL, true);
   createMemcpyLoopBody(ForwardLoopBB, PreLoopBB, PostLoopBB, SrcAddr, DstAddr,
-                       CopyLen, false);
+                       CopyLen, MemmoveLMUL, false);
 
   PreLoopBB->getTerminator()->eraseFromParent();
   M->eraseFromParent();
@@ -462,14 +482,14 @@ void RISCVLateCodeGenPrepare::expandMemmoveUnknownSizeAligned(MemMoveInst *M) {
   Value *ULT = Builder.CreateICmpULT(Diff, CopyLen);
   Builder.CreateCondBr(ULT, BWPreLoopBB, FWPreLoopBB);
 
-  ScalableVectorType *VTy =
-      ScalableVectorType::get(Int8Type, RISCV::RVVBitsPerBlock / 8 * MemLMULLocal);
+  ScalableVectorType *VTy = ScalableVectorType::get(
+      Int8Type, RISCV::RVVBitsPerBlock / 8 * MemmoveLMUL);
   Type *CopyLenType = CopyLen->getType();
   IntegerType *ILengthType = cast<IntegerType>(CopyLenType);
 
   Value *Sew8 = ConstantInt::get(CopyLenType, RISCVVType::encodeSEW(8));
   Value *Lmul =
-      ConstantInt::get(CopyLenType, RISCVVType::encodeLMUL(MemLMULLocal, false));
+      ConstantInt::get(CopyLenType, RISCVVType::encodeLMUL(MemmoveLMUL, false));
   ConstantInt *Zero = ConstantInt::get(ILengthType, 0U);
 
   unsigned AlignBytes = ST->getDLen() / 8;
@@ -504,7 +524,7 @@ void RISCVLateCodeGenPrepare::expandMemmoveUnknownSizeAligned(MemMoveInst *M) {
 
   // Backward loop
   createMemcpyLoopBody(BackwardLoopBB, BWPreLoopBB, PostLoopBB, SrcLastElemAddr,
-                       DstLastElemAddr, NewCopyLen, true);
+                       DstLastElemAddr, NewCopyLen, MemmoveLMUL, true);
 
   Builder.SetInsertPoint(FWPreLoopBB);
   Value *SrcFirstElemAddr, *DstFirstElemAddr;
@@ -537,7 +557,7 @@ void RISCVLateCodeGenPrepare::expandMemmoveUnknownSizeAligned(MemMoveInst *M) {
 
   // Forward loop
   createMemcpyLoopBody(ForwardLoopBB, FWPreLoopBB, PostLoopBB, SrcFirstElemAddr,
-                       DstFirstElemAddr, NewCopyLen);
+                       DstFirstElemAddr, NewCopyLen, MemmoveLMUL);
 
   PreLoopBB->getTerminator()->eraseFromParent();
   M->eraseFromParent();
@@ -571,8 +591,8 @@ void RISCVLateCodeGenPrepare::expandMemmoveKnownSize(MemMoveInst *M) {
   //   return
 
   auto *CI = cast<ConstantInt>(CopyLen);
-  unsigned UnrollCount = divideCeil(CI->getZExtValue(),
-                                    (ST->getRealMinVLen() / 8) * MemLMULLocal);
+  unsigned UnrollCount =
+      divideCeil(CI->getZExtValue(), (ST->getRealMinVLen() / 8) * MemmoveLMUL);
 
   if (UnrollCount > 1) {
     BasicBlock *BWPreLoopBB =
@@ -595,12 +615,12 @@ void RISCVLateCodeGenPrepare::expandMemmoveKnownSize(MemMoveInst *M) {
     Builder.CreateBr(BackwardLoopBB);
 
     createMemcpyLoopBody(BackwardLoopBB, BWPreLoopBB, PostLoopBB, SrcEndAddr,
-                         DstEndAddr, CopyLen, true, UnrollCount);
+                         DstEndAddr, CopyLen, MemmoveLMUL, true, UnrollCount);
   } else
     Builder.CreateBr(ForwardLoopBB);
 
   createMemcpyLoopBody(ForwardLoopBB, PreLoopBB, PostLoopBB, SrcAddr, DstAddr,
-                       CopyLen, false, UnrollCount);
+                       CopyLen, MemmoveLMUL, false, UnrollCount);
 
   PreLoopBB->getTerminator()->eraseFromParent();
   M->eraseFromParent();
@@ -608,8 +628,8 @@ void RISCVLateCodeGenPrepare::expandMemmoveKnownSize(MemMoveInst *M) {
 
 void RISCVLateCodeGenPrepare::createMemcpyLoopBody(
     BasicBlock *LoopBody, BasicBlock *PreLoopBB, BasicBlock *PostLoopBB,
-    Value *SrcAddr, Value *DstAddr, Value *CopyLen, bool IsBackward,
-    uint64_t UnrollCount) {
+    Value *SrcAddr, Value *DstAddr, Value *CopyLen, unsigned LMUL,
+    bool IsBackward, uint64_t UnrollCount) {
   BasicBlock *EpilogBB;
 
   // We only deal with 8-bits width of memory at a time.
@@ -617,18 +637,18 @@ void RISCVLateCodeGenPrepare::createMemcpyLoopBody(
   // Initial vector type for <vscale x (LMUL * RVVBitsPerBlock / 8) x i8>,
   // LMUL=8, SEW=8.
   ScalableVectorType *VTy =
-      ScalableVectorType::get(Int8Type, RISCV::RVVBitsPerBlock / 8 * MemLMULLocal);
+      ScalableVectorType::get(Int8Type, RISCV::RVVBitsPerBlock / 8 * LMUL);
   Type *CopyLenType = CopyLen->getType();
 
   // Set SEW to 8 bits.
   Value *Sew8 = ConstantInt::get(CopyLenType, RISCVVType::encodeSEW(8));
   Value *Lmul =
-      ConstantInt::get(CopyLenType, RISCVVType::encodeLMUL(MemLMULLocal, false));
+      ConstantInt::get(CopyLenType, RISCVVType::encodeLMUL(LMUL, false));
 
   bool FullyUnrolled = false;
   Value *EpilogLen = nullptr;
   // Max copy size we can deal with each round: DataVLen * LMUL
-  int64_t MaxCopySize = (ST->getRealMinVLen() / 8) * MemLMULLocal;
+  int64_t MaxCopySize = (ST->getRealMinVLen() / 8) * LMUL;
   int64_t KnownCurrentLen = -MaxCopySize;
   if (auto *CI = dyn_cast<ConstantInt>(CopyLen)) {
     KnownCurrentLen = CI->getZExtValue();
@@ -642,7 +662,7 @@ void RISCVLateCodeGenPrepare::createMemcpyLoopBody(
       FullyUnrolled = true;
     else if (UnrollCount > TotalCopiesNeeded) {
       createMemcpyLoopBody(LoopBody, PreLoopBB, PostLoopBB, SrcAddr, DstAddr,
-                           CopyLen, IsBackward, UnrollCount - 1);
+                           CopyLen, LMUL, IsBackward, UnrollCount - 1);
       return;
     } else if (FullCopies % UnrollCount) {
       uint64_t EpilogCnt = CI->getZExtValue() % (UnrollCount * MaxCopySize);
@@ -794,12 +814,12 @@ void RISCVLateCodeGenPrepare::expandMemCpyKnownSize(MemCpyInst *M) {
   //   vse8.v vData, (Dst)
 
   auto *CI = cast<ConstantInt>(CopyLen);
-  unsigned UnrollCount = divideCeil(CI->getZExtValue(),
-                                    (ST->getRealMinVLen() / 8) * MemLMULLocal);
+  unsigned UnrollCount =
+      divideCeil(CI->getZExtValue(), (ST->getRealMinVLen() / 8) * MemcpyLMUL);
 
   Builder.CreateBr(ForwardLoopBB);
   createMemcpyLoopBody(ForwardLoopBB, PreLoopBB, PostLoopBB, SrcAddr, DstAddr,
-                       CopyLen, false, UnrollCount);
+                       CopyLen, MemcpyLMUL, false, UnrollCount);
 
   PreLoopBB->getTerminator()->eraseFromParent();
   M->eraseFromParent();
@@ -813,8 +833,8 @@ void RISCVLateCodeGenPrepare::expandMemSetKnownSize(MemSetInst *M) {
   Value *CopyLen = M->getLength();
 
   auto *CI = cast<ConstantInt>(CopyLen);
-  unsigned UnrollCount = divideCeil(CI->getZExtValue(),
-                                    (ST->getRealMinVLen() / 8) * MemLMULLocal);
+  unsigned UnrollCount =
+      divideCeil(CI->getZExtValue(), (ST->getRealMinVLen() / 8) * MemsetLMUL);
 
   createMemsetLoopBody(ForwardLoopBB, PreLoopBB, PostLoopBB, Val, DstAddr,
                        CopyLen, UnrollCount);
@@ -856,14 +876,14 @@ void RISCVLateCodeGenPrepare::expandMemCpyUnknownSizewithAlign(MemCpyInst *M) {
   //   bgtu NewCopyLen, zero, loop
   // postloop:
 
-  ScalableVectorType *VTy =
-      ScalableVectorType::get(Int8Type, RISCV::RVVBitsPerBlock / 8 * MemLMULLocal);
+  ScalableVectorType *VTy = ScalableVectorType::get(
+      Int8Type, RISCV::RVVBitsPerBlock / 8 * MemcpyLMUL);
   Type *CopyLenType = CopyLen->getType();
   IntegerType *ILengthType = cast<IntegerType>(CopyLenType);
 
   Value *SEW = ConstantInt::get(CopyLenType, RISCVVType::encodeSEW(8));
   Value *LMUL =
-      ConstantInt::get(CopyLenType, RISCVVType::encodeLMUL(MemLMULLocal, false));
+      ConstantInt::get(CopyLenType, RISCVVType::encodeLMUL(MemcpyLMUL, false));
 
   unsigned AlignBytes = ST->getDLen() / 8;
 
@@ -893,7 +913,7 @@ void RISCVLateCodeGenPrepare::expandMemCpyUnknownSizewithAlign(MemCpyInst *M) {
                        PostLoopBB);
 
   createMemcpyLoopBody(ForwardLoopBB, PreLoopBB, PostLoopBB, AlignSrcGEP,
-                       AlignDstGEP, NewCopyLen);
+                       AlignDstGEP, NewCopyLen, MemcpyLMUL);
 
   PreLoopBB->getTerminator()->eraseFromParent();
   M->eraseFromParent();
@@ -909,21 +929,21 @@ void RISCVLateCodeGenPrepare::expandMemSetUnknownSizeAligned(MemSetInst *M) {
   unsigned AlignBytes = ST->getDLen() / 8;
 
   Type *Int8Type = Type::getInt8Ty(PreLoopBB->getContext());
-  ScalableVectorType *VTy =
-      ScalableVectorType::get(Int8Type, RISCV::RVVBitsPerBlock / 8 * MemLMULLocal);
+  ScalableVectorType *VTy = ScalableVectorType::get(
+      Int8Type, RISCV::RVVBitsPerBlock / 8 * MemsetLMUL);
   Type *CopyLenType = CopyLen->getType();
   IntegerType *ILengthType = cast<IntegerType>(CopyLenType);
 
   Value *SEW = ConstantInt::get(CopyLenType, RISCVVType::encodeSEW(8));
   Value *LMUL =
-      ConstantInt::get(CopyLenType, RISCVVType::encodeLMUL(MemLMULLocal, false));
+      ConstantInt::get(CopyLenType, RISCVVType::encodeLMUL(MemsetLMUL, false));
 
   IRBuilder<> Builder(PreLoopBB->getTerminator());
 
   Value *VLMax = nullptr;
   if (ST->getRealMinVLen() == ST->getRealMaxVLen())
     VLMax =
-        ConstantInt::get(CopyLenType, ST->getRealMinVLen() / 8 * MemLMULLocal);
+        ConstantInt::get(CopyLenType, ST->getRealMinVLen() / 8 * MemsetLMUL);
   else
     VLMax = Builder.CreateIntrinsic(Intrinsic::riscv_vsetvlimax, {CopyLenType},
                                     {SEW, LMUL});
@@ -965,19 +985,19 @@ void RISCVLateCodeGenPrepare::createMemsetLoopBody(
   // We only deal with 8-bits width of memory at a time.
   Type *Int8Type = Type::getInt8Ty(LoopBody->getContext());
   // Initial vector type for <vscale x (LMUL * RVVBitsPerBlock / 8) x i8>, SEW=8.
-  ScalableVectorType *VTy =
-      ScalableVectorType::get(Int8Type, RISCV::RVVBitsPerBlock / 8 * MemLMULLocal);
+  ScalableVectorType *VTy = ScalableVectorType::get(
+      Int8Type, RISCV::RVVBitsPerBlock / 8 * MemsetLMUL);
   Type *CopyLenType = CopyLen->getType();
 
   // Set SEW to 8 bits.
   Value *SEW = ConstantInt::get(CopyLenType, RISCVVType::encodeSEW(8));
   Value *LMUL =
-      ConstantInt::get(CopyLenType, RISCVVType::encodeLMUL(MemLMULLocal, false));
+      ConstantInt::get(CopyLenType, RISCVVType::encodeLMUL(MemsetLMUL, false));
 
   bool FullyUnrolled = false;
   Value *EpilogLen = nullptr;
   // Max copy size we can deal with each round: DataVLen * LMUL
-  int64_t MaxCopySize = (ST->getRealMinVLen() / 8) * MemLMULLocal;
+  int64_t MaxCopySize = (ST->getRealMinVLen() / 8) * MemsetLMUL;
   int64_t KnownCurrentLen = -MaxCopySize;
   if (auto *CI = dyn_cast<ConstantInt>(CopyLen)) {
     KnownCurrentLen = CI->getZExtValue();
@@ -1118,7 +1138,7 @@ bool RISCVLateCodeGenPrepare::expandMemIntrinsic(MemIntrinsic *MI) {
       if (CI->getZExtValue() < MinCopySize)
         return false;
       // We only deal with the size of VLen * LMUL * MaxUnrollTimes.
-      if (CI->getZExtValue() < (MinVLenInBytes * MemLMULLocal * MaxUnrollTimes)) {
+      if (CI->getZExtValue() < (MinVLenInBytes * MemcpyLMUL * MaxUnrollTimes)) {
         expandMemCpyKnownSize(cast<MemCpyInst>(MI));
         return true;
       }
@@ -1139,7 +1159,7 @@ bool RISCVLateCodeGenPrepare::expandMemIntrinsic(MemIntrinsic *MI) {
       if (CI->getZExtValue() < MinCopySize)
         return false;
       // We only deal with the size of VLen * LMUL * MaxUnrollTimes.
-      if (CI->getZExtValue() < (MinVLenInBytes * MemLMULLocal * MaxUnrollTimes)) {
+      if (CI->getZExtValue() < (MinVLenInBytes * MemsetLMUL * MaxUnrollTimes)) {
         expandMemSetKnownSize(cast<MemSetInst>(MI));
         return true;
       }
@@ -1160,7 +1180,8 @@ bool RISCVLateCodeGenPrepare::expandMemIntrinsic(MemIntrinsic *MI) {
       if (CI->getZExtValue() < MinCopySize)
         return false;
       // We only deal with the size of VLen * LMUL * MaxUnrollTimes.
-      if (CI->getZExtValue() < (MinVLenInBytes * MemLMULLocal * MaxUnrollTimes)) {
+      if (CI->getZExtValue() <
+          (MinVLenInBytes * MemmoveLMUL * MaxUnrollTimes)) {
         expandMemmoveKnownSize(cast<MemMoveInst>(MI));
         return true;
       }
@@ -1280,15 +1301,41 @@ bool RISCVLateCodeGenPrepare::runOnFunction(Function &F) {
 
   ST = TM.getSubtargetImpl(F);
 
+  unsigned MemLMULLocal = ST->getMemToRVVLMUL();
   if (MemLMUL.getNumOccurrences())
     MemLMULLocal = MemLMUL;
-  else
-    MemLMULLocal = ST->getMemToRVVLMUL();
 
   if (MemLMULLocal != 8 && MemLMULLocal != 4 && MemLMULLocal != 2 && MemLMULLocal != 1) {
     errs() << "Invalid LMUL for memcpy/memmove/memset expansion,"
            << "set to default value: 8.\n";
     MemLMULLocal = 8;
+  }
+
+  MemcpyLMUL = MemLMULLocal;
+  if (PreferMemcpyLMUL.getNumOccurrences()) {
+    if (isPowerOf2_64(PreferMemcpyLMUL) && PreferMemcpyLMUL <= 8)
+      MemcpyLMUL = PreferMemcpyLMUL;
+    else
+      errs()
+          << "Invalid LMUL for memcpy expansion, set to default lmul value.\n";
+  }
+
+  MemsetLMUL = MemLMULLocal;
+  if (PreferMemsetLMUL.getNumOccurrences()) {
+    if (isPowerOf2_64(PreferMemsetLMUL) && PreferMemsetLMUL <= 8)
+      MemsetLMUL = PreferMemsetLMUL;
+    else
+      errs()
+          << "Invalid LMUL for memset expansion, set to default lmul value.\n";
+  }
+
+  MemmoveLMUL = MemLMULLocal;
+  if (PreferMemmoveLMUL.getNumOccurrences()) {
+    if (isPowerOf2_64(PreferMemmoveLMUL) && PreferMemmoveLMUL <= 8)
+      MemmoveLMUL = PreferMemmoveLMUL;
+    else
+      errs()
+          << "Invalid LMUL for memmove expansion, set to default lmul value.\n";
   }
 
   DL = &F.getParent()->getDataLayout();

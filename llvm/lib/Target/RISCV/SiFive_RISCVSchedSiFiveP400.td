@@ -35,24 +35,19 @@ class SiFiveP400GetLMulCycles<string mx> {
   );
 }
 
-// Same as SiFive7.
-// Cycles for segmented loads and stores are calculated using the
-// formula ceil(2 * nf * lmul).
-class SiFiveP400GetCyclesSegmented<string mx, int nf> {
-  int c = !cond(
-    !eq(mx, "M1") : !mul(!mul(2, nf), 1),
-    !eq(mx, "M2") : !mul(!mul(2, nf), 2),
-    !eq(mx, "M4") : !mul(!mul(2, nf), 4),
-    !eq(mx, "M8") : !mul(!mul(2, nf), 8),
-    // We can calculate ceil(a/b) using (a + b - 1) / b.
-    // Since the multiplication of fractional lmul is the
-    // same as division by the denominator the formula we
-    // use is ceil(2 * nf / lmul_denominator). We can use
-    // ceil(a/b) where a = 2 * nf, b = lmul_denominator.
-    !eq(mx, "MF2") : !div(!sub(!add(!mul(2, nf), 2), 1), 2),
-    !eq(mx, "MF4") : !div(!sub(!add(!mul(2, nf), 4), 1), 4),
-    !eq(mx, "MF8") : !div(!sub(!add(!mul(2, nf), 8), 1), 8)
+// Latency for segmented loads and stores are calculated as vl * nf.
+class SiFiveP400GetCyclesSegmented<string mx, int sew, int nf> {
+  defvar VLEN = 128;
+  defvar VLUpperBound = !cond(
+    !eq(mx, "M1") : !div(VLEN, sew),
+    !eq(mx, "M2") : !div(!mul(VLEN, 2), sew),
+    !eq(mx, "M4") : !div(!mul(VLEN, 4), sew),
+    !eq(mx, "M8") : !div(!mul(VLEN, 8), sew),
+    !eq(mx, "MF2") : !div(!div(VLEN, 2), sew),
+    !eq(mx, "MF4") : !div(!div(VLEN, 4), sew),
+    !eq(mx, "MF8") : !div(!div(VLEN, 8), sew),
   );
+  int c = !mul(VLUpperBound, nf);
 }
 
 // SiFiveP400 machine model for scheduling and other instruction cost heuristics.
@@ -359,7 +354,7 @@ foreach mx = SchedMxList in {
   foreach nf=2-8 in {
     foreach eew = [8, 16, 32, 64] in {
       defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxList>.c;
-      defvar LMulLat = SiFiveP400GetCyclesSegmented<mx, nf>.c;
+      defvar LMulLat = SiFiveP400GetCyclesSegmented<mx, eew, nf>.c;
       let Latency = !add(12, LMulLat), ReleaseAtCycles = [!add(12, LMulLat)] in {
         defm "" : LMULWriteResMX<"WriteVLSEG" # nf # "e" #eew,   [SiFiveP400VLD], mx, IsWorstCase>;
         defm "" : LMULWriteResMX<"WriteVLSEGFF" # nf # "e" #eew, [SiFiveP400VLD], mx, IsWorstCase>;

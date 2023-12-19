@@ -35,23 +35,17 @@ class SiFiveP800SGetLMulCycles<string mx> {
   );
 }
 
-// Same as SiFive7.
-// Cycles for segmented loads and stores are calculated using the
-// formula ceil(2 * nf * lmul).
-class SiFiveP800SGetCyclesSegmented<string mx, int nf> {
+// Latency for segmented loads and stores are calculated as vl.
+class SiFiveP800SGetCyclesSegmented<string mx, int sew> {
+  defvar VLEN = 128;
   int c = !cond(
-    !eq(mx, "M1") : !mul(!mul(2, nf), 1),
-    !eq(mx, "M2") : !mul(!mul(2, nf), 2),
-    !eq(mx, "M4") : !mul(!mul(2, nf), 4),
-    !eq(mx, "M8") : !mul(!mul(2, nf), 8),
-    // We can calculate ceil(a/b) using (a + b - 1) / b.
-    // Since the multiplication of fractional lmul is the
-    // same as division by the denominator the formula we
-    // use is ceil(2 * nf / lmul_denominator). We can use
-    // ceil(a/b) where a = 2 * nf, b = lmul_denominator.
-    !eq(mx, "MF2") : !div(!sub(!add(!mul(2, nf), 2), 1), 2),
-    !eq(mx, "MF4") : !div(!sub(!add(!mul(2, nf), 4), 1), 4),
-    !eq(mx, "MF8") : !div(!sub(!add(!mul(2, nf), 8), 1), 8)
+    !eq(mx, "M1") : !div(VLEN, sew),
+    !eq(mx, "M2") : !div(!mul(VLEN, 2), sew),
+    !eq(mx, "M4") : !div(!mul(VLEN, 4), sew),
+    !eq(mx, "M8") : !div(!mul(VLEN, 8), sew),
+    !eq(mx, "MF2") : !div(!div(VLEN, 2), sew),
+    !eq(mx, "MF4") : !div(!div(VLEN, 4), sew),
+    !eq(mx, "MF8") : !div(!div(VLEN, 8), sew),
   );
 }
 
@@ -369,7 +363,7 @@ foreach mx = SchedMxList in {
 foreach mx = SchedMxList in {
   foreach nf=2-8 in {
     foreach eew = [8, 16, 32, 64] in {
-      defvar LMulLat = SiFiveP800SGetCyclesSegmented<mx, nf>.c;
+      defvar LMulLat = SiFiveP800SGetCyclesSegmented<mx, eew>.c;
       defvar IsWorstCase = SiFiveP800SIsWorstCaseMX<mx, SchedMxList>.c;
       let Latency = !add(12, LMulLat), ReleaseAtCycles = [!add(12, LMulLat)] in {
         defm "" : LMULWriteResMX<"WriteVLSEG" # nf # "e" # eew,   [SiFiveP800SVLD], mx, IsWorstCase>;
