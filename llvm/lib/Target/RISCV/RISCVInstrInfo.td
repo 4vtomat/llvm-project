@@ -1250,11 +1250,17 @@ def anyext_oneuse : unop_oneuse<anyext>;
 def ext_oneuse    : unop_oneuse<ext>;
 def fpext_oneuse  : unop_oneuse<any_fpextend>;
 
+<<<<<<< HEAD
 // SIFIVE
 def 33signbits_node : PatLeaf<(i64 GPR:$src), [{
   return CurDAG->ComputeNumSignBits(SDValue(N, 0)) > 32;
 }]>;
 // end SIFIVE
+=======
+def 33signbits_node : PatLeaf<(i64 GPR:$src), [{
+  return CurDAG->ComputeNumSignBits(SDValue(N, 0)) > 32;
+}]>;
+>>>>>>> 26cf3aab836ce421156d7542985f35701e1b5783
 
 /// Simple arithmetic operations
 
@@ -2105,7 +2111,10 @@ def : Pat<(binop_allwusers<add> GPR:$rs1, (AddiPair:$rs2)),
                  (AddiPairImmSmall AddiPair:$rs2))>;
 }
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 26cf3aab836ce421156d7542985f35701e1b5783
 let Predicates = [HasShortForwardBranchOpt] in
 def : Pat<(XLenVT (abs GPR:$rs1)),
           (PseudoCCSUB (XLenVT GPR:$rs1), (XLenVT X0), /* COND_LT */ 2,
@@ -2114,7 +2123,10 @@ let Predicates = [HasShortForwardBranchOpt, IsRV64] in
 def : Pat<(sext_inreg (abs 33signbits_node:$rs1), i32),
           (PseudoCCSUBW (i64 GPR:$rs1), (i64 X0), /* COND_LT */ 2,
            (i64 GPR:$rs1), (i64 X0), (i64 GPR:$rs1))>;
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 26cf3aab836ce421156d7542985f35701e1b5783
 
 //===----------------------------------------------------------------------===//
 // Experimental RV64 i32 legalization patterns.
@@ -2229,3 +2241,9 @@ include "RISCVInstrInfoXVentana.td"
 include "RISCVInstrInfoXTHead.td"
 include "RISCVInstrInfoXSf.td"
 include "RISCVInstrInfoXCV.td"
+
+//===----------------------------------------------------------------------===//
+// Global ISel
+//===----------------------------------------------------------------------===//
+
+include "RISCVInstrGISel.td"

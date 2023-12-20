@@ -893,11 +893,15 @@ VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE) {
 
 void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
                              Value *CanonicalIVStartValue,
+<<<<<<< HEAD
                              VPTransformState &State,
                              bool IsEpilogueVectorization) {
 #if SIFIVE_CUSTOMIZATION
   if (!isUncountable()) {
 #endif // SIFIVE_CUSTOMIZATION
+=======
+                             VPTransformState &State) {
+>>>>>>> 26cf3aab836ce421156d7542985f35701e1b5783
   // Check if the backedge taken count is needed, and if so build it.
   if (BackedgeTakenCount && BackedgeTakenCount->getNumUsers()) {
     IRBuilder<> Builder(State.CFG.PrevBB->getTerminator());

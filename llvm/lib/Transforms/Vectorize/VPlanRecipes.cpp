@@ -774,6 +774,7 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
          "DbgInfoIntrinsic should have been dropped during VPlan construction");
   State.setDebugLocFrom(CI.getDebugLoc());
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (State.Plan->getRVL()) {
     // Skip if CI doesn't have vp form.
@@ -789,6 +790,11 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
   }
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+  FunctionType *VFTy = nullptr;
+  if (Variant)
+    VFTy = Variant->getFunctionType();
+>>>>>>> 26cf3aab836ce421156d7542985f35701e1b5783
   for (unsigned Part = 0; Part < State.UF; ++Part) {
     SmallVector<Type *, 2> TysForDecl;
     // Add return type if intrinsic is overloaded on it.
@@ -800,12 +806,15 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
     for (const auto &I : enumerate(operands())) {
       // Some intrinsics have a scalar argument - don't replace it with a
       // vector.
+      // Some vectorized function variants may also take a scalar argument,
+      // e.g. linear parameters for pointers.
       Value *Arg;
-      if (VectorIntrinsicID == Intrinsic::not_intrinsic ||
-          !isVectorIntrinsicWithScalarOpAtArg(VectorIntrinsicID, I.index()))
-        Arg = State.get(I.value(), Part);
-      else
+      if ((VFTy && !VFTy->getParamType(I.index())->isVectorTy()) ||
+          (VectorIntrinsicID != Intrinsic::not_intrinsic &&
+           isVectorIntrinsicWithScalarOpAtArg(VectorIntrinsicID, I.index())))
         Arg = State.get(I.value(), VPIteration(0, 0));
+      else
+        Arg = State.get(I.value(), Part);
       if (isVectorIntrinsicWithOverloadTypeAtArg(VectorIntrinsicID, I.index()))
         TysForDecl.push_back(Arg->getType());
       Args.push_back(Arg);
