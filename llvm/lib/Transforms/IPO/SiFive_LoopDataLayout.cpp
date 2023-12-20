@@ -466,7 +466,7 @@ static uint64_t gatherIndicesForArrayAddress(SmallVectorImpl<Value *> &Indices,
 
 static unsigned calculateStructSizeInBytes(StructType *InputST,
                                            const DataLayout &DL) {
-  return TypeSize::Fixed(DL.getStructLayout(InputST)->getSizeInBits()) >> 3;
+  return TypeSize::getFixed(DL.getStructLayout(InputST)->getSizeInBits()) >> 3;
 }
 
 static void updateAllocationSize(IRBuilder<> &IRB, LibFunc TLIFn,
