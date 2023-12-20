@@ -6104,6 +6104,10 @@ LoopVectorizationCostModel::computeFeasibleMaxVFScalableOnly(
   assert(MaxVectorSize.getFixedValue() <= WidestRegister &&
          "Did not expect to pack so many elements"
          " into one vector!");
+  if (MaxVectorSize.getFixedValue() == 0) {
+    LLVM_DEBUG(dbgs() << "LV: The target has no vector registers.\n");
+    return ElementCount::getFixed(1);
+  }
 
   if (MaxVFIsScalableLowerBound) {
     // TODO: Adjust scalable VF for register usage and bandwidth maximization.
@@ -6113,10 +6117,6 @@ LoopVectorizationCostModel::computeFeasibleMaxVFScalableOnly(
       return FixedScalableVFPair::getNone();
     }
   } else {
-    if (MaxVectorSize.getFixedValue() == 0) {
-      LLVM_DEBUG(dbgs() << "LV: The target has no vector registers.\n");
-      return ElementCount::getFixed(1);
-    }
     if (ConstTripCount && ConstTripCount < MaxVectorSize.getFixedValue() &&
         isPowerOf2_32(ConstTripCount)) {
       // We need to clamp the VF to be the ConstTripCount. There is no point in
