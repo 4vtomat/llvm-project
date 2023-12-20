@@ -541,17 +541,11 @@ LoopInfo::LoopInfo(BasicBlock *Header, const LoopAttributes &Attrs,
       Attrs.VectorizeEnable == LoopAttributes::Unspecified &&
       Attrs.UnrollEnable == LoopAttributes::Unspecified &&
       Attrs.UnrollAndJamEnable == LoopAttributes::Unspecified &&
-<<<<<<< HEAD
-      Attrs.DistributeEnable == LoopAttributes::Unspecified && !StartLoc &&
 #if SIFIVE_CUSTOMIZATION
-      !EndLoc && !Attrs.MustProgress && !Attrs.RvvForceLmulSew)
-#else
-      !EndLoc && !Attrs.MustProgress)
+      !Attrs.RvvForceLmulSew &&
 #endif // SIFIVE_CUSTOMIZATION
-=======
       Attrs.DistributeEnable == LoopAttributes::Unspecified &&
       Attrs.CodeAlign == 0 && !StartLoc && !EndLoc && !Attrs.MustProgress)
->>>>>>> 26cf3aab836ce421156d7542985f35701e1b5783
     return;
 
   TempLoopID = MDNode::getTemporary(Header->getContext(), std::nullopt);

@@ -12007,17 +12007,16 @@ void VPReductionRecipe::execute(VPTransformState &State) {
 #if SIFIVE_CUSTOMIZATION
     Value *RVLPart =
         State.Plan->getRVL() ? State.get(State.Plan->getRVL(), Part) : nullptr;
-    Value *NewCond = getCondOp() ? State.get(getCondOp(), Part) : nullptr;
+    Value *NewCond = nullptr;
+    if (VPValue *Cond = getCondOp())
+      NewCond = State.VF.isVector() ? State.get(Cond, Part)
+                                    : State.get(Cond, {Part, 0});
     if (NewCond && !RVLPart) {
 #else
     if (VPValue *Cond = getCondOp()) {
-<<<<<<< HEAD
-      Value *NewCond = State.get(Cond, Part);
-#endif // SIFIVE_CUSTOMIZATION
-=======
       Value *NewCond = State.VF.isVector() ? State.get(Cond, Part)
                                            : State.get(Cond, {Part, 0});
->>>>>>> 26cf3aab836ce421156d7542985f35701e1b5783
+#endif // SIFIVE_CUSTOMIZATION
       VectorType *VecTy = dyn_cast<VectorType>(NewVecOp->getType());
       Type *ElementTy = VecTy ? VecTy->getElementType() : NewVecOp->getType();
       Value *Iden = RdxDesc.getRecurrenceIdentity(Kind, ElementTy,

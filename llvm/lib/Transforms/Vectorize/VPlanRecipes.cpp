@@ -774,7 +774,6 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
          "DbgInfoIntrinsic should have been dropped during VPlan construction");
   State.setDebugLocFrom(CI.getDebugLoc());
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (State.Plan->getRVL()) {
     // Skip if CI doesn't have vp form.
@@ -790,11 +789,9 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
   FunctionType *VFTy = nullptr;
   if (Variant)
     VFTy = Variant->getFunctionType();
->>>>>>> 26cf3aab836ce421156d7542985f35701e1b5783
   for (unsigned Part = 0; Part < State.UF; ++Part) {
     SmallVector<Type *, 2> TysForDecl;
     // Add return type if intrinsic is overloaded on it.

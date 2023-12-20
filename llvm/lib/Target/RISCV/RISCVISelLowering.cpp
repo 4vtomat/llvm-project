@@ -411,21 +411,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
       setOperationAction(ISD::CTLZ, MVT::i32, Expand);
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (!RV64LegalI32 && Subtarget.is64Bit() &&
-      !Subtarget.hasShortForwardBranchOpt())
-#else
-  if (!RV64LegalI32 && Subtarget.is64Bit())
-#endif // SIFIVE_CUSTOMIZATION
-    setOperationAction(ISD::ABS, MVT::i32, Custom);
-
-#if SIFIVE_CUSTOMIZATION
-  // We could use PseudoCCSUB to implement ABS.
-  if (Subtarget.hasShortForwardBranchOpt())
-    setOperationAction(ISD::ABS, XLenVT, Legal);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   if (!RV64LegalI32 && Subtarget.is64Bit() &&
       !Subtarget.hasShortForwardBranchOpt())
     setOperationAction(ISD::ABS, MVT::i32, Custom);
@@ -433,7 +418,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   // We can use PseudoCCSUB to implement ABS.
   if (Subtarget.hasShortForwardBranchOpt())
     setOperationAction(ISD::ABS, XLenVT, Legal);
->>>>>>> 26cf3aab836ce421156d7542985f35701e1b5783
 
   if (!Subtarget.hasVendorXTHeadCondMov())
     setOperationAction(ISD::SELECT, XLenVT, Custom);
@@ -1456,9 +1440,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   setPrefFunctionAlignment(Subtarget.getPrefFunctionAlignment());
   setPrefLoopAlignment(Subtarget.getPrefLoopAlignment());
 
-<<<<<<< HEAD
-  setMinimumJumpTableEntries(5);
-
 #if SIFIVE_CUSTOMIZATION
   // Increase number of stores for memcpy expansion for RV32.
   if (!Subtarget.is64Bit())
@@ -1467,11 +1448,10 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 
 #if SIFIVE_CUSTOMIZATION
   setJumpIsExpensive(!Subtarget.setJumpIsCheap());
-#endif // SIFIVE_CUSTOMIZATION
-=======
+#else // SIFIVE_CUSTOMIZATION
   // Jumps are expensive, compared to logic
   setJumpIsExpensive();
->>>>>>> 26cf3aab836ce421156d7542985f35701e1b5783
+#endif // SIFIVE_CUSTOMIZATION
 
   setTargetDAGCombine({ISD::INTRINSIC_VOID, ISD::INTRINSIC_W_CHAIN,
                        ISD::INTRINSIC_WO_CHAIN, ISD::ADD, ISD::SUB, ISD::AND,
@@ -1499,32 +1479,23 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   if (Subtarget.hasStdExtFOrZfinx())
     setTargetDAGCombine({ISD::ZERO_EXTEND, ISD::FP_TO_SINT, ISD::FP_TO_UINT,
                          ISD::FP_TO_SINT_SAT, ISD::FP_TO_UINT_SAT});
-#if SIFIVE_CUSTOMIZATION
   if (Subtarget.hasVInstructions())
     setTargetDAGCombine({ISD::FCOPYSIGN, ISD::MGATHER, ISD::MSCATTER,
                          ISD::VP_GATHER, ISD::VP_SCATTER, ISD::SRA, ISD::SRL,
                          ISD::SHL, ISD::STORE, ISD::SPLAT_VECTOR,
                          ISD::BUILD_VECTOR, ISD::CONCAT_VECTORS,
-<<<<<<< HEAD
-                         ISD::EXPERIMENTAL_VP_REVERSE, // SIFIVE
-                         ISD::VP_STORE,                // SIFIVE
-                         ISD::SPLAT_VECTOR,            // SIFIVE
-                         ISD::INTRINSIC_WO_CHAIN,      // SIFIVE
-                         ISD::INTRINSIC_W_CHAIN});     // SIFIVE
+#if SIFIVE_CUSTOMIZATION
+                         ISD::ABS,
+                         ISD::VP_STORE,
+                         ISD::SPLAT_VECTOR,
+                         ISD::INTRINSIC_WO_CHAIN,
+                         ISD::INTRINSIC_W_CHAIN,
 #endif
-=======
                          ISD::EXPERIMENTAL_VP_REVERSE, ISD::MUL});
->>>>>>> 26cf3aab836ce421156d7542985f35701e1b5783
   if (Subtarget.hasVendorXTHeadMemPair())
     setTargetDAGCombine({ISD::LOAD, ISD::STORE});
   if (Subtarget.useRVVForFixedLengthVectors())
     setTargetDAGCombine(ISD::BITCAST);
-
-#if SIFIVE_CUSTOMIZATION
-  setTargetDAGCombine(ISD::MUL);
-
-  setTargetDAGCombine(ISD::ABS);
-#endif // SIFIVE_CUSTOMIZATION
 
   setLibcallName(RTLIB::FPEXT_F16_F32, "__extendhfsf2");
   setLibcallName(RTLIB::FPROUND_F32_F16, "__truncsfhf2");
@@ -14249,7 +14220,6 @@ static SDValue performXORCombine(SDNode *N, SelectionDAG &DAG,
   return combineSelectAndUseCommutative(N, DAG, /*AllOnes*/ false, Subtarget);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // (mul (and (lshr X, 15), 65537), 65535) -> (bitcast (sra (bitcast X), 15)))
 static SDValue combineVectorMulToSraBitcast(SDNode *N, SelectionDAG &DAG) {
@@ -14337,15 +14307,6 @@ static SDValue combineVectorSquareDifference(SDNode *N,
   return DAG.getNode(ISD::MUL, SDLoc(N), VT, Sub, Sub);
 }
 
-static SDValue performMULCombine(SDNode *N, SelectionDAG &DAG) {
-  if (SDValue V = combineVectorMulToSraBitcast(N, DAG))
-    return V;
-  if (SDValue V = combineVectorSquareDifference(N, DAG))
-    return V;
-
-  return SDValue();
-}
-
 // Look for (abs (sub (zext X), (zext Y))).
 // Rewrite as (zext (sub (zext (max X, Y), (min X, Y)))) if the user is an add
 // or reduction add. The min/max can be done in parallel and with a lower LMUL
@@ -14401,8 +14362,15 @@ static SDValue performABSCombine(SDNode *N, SelectionDAG &DAG) {
   return DAG.getNode(ISD::ZERO_EXTEND, DL, VT, Sub);
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 static SDValue performMULCombine(SDNode *N, SelectionDAG &DAG) {
+#if SIFIVE_CUSTOMIZATION
+  if (SDValue V = combineVectorMulToSraBitcast(N, DAG))
+    return V;
+  if (SDValue V = combineVectorSquareDifference(N, DAG))
+    return V;
+#endif
+
   EVT VT = N->getValueType(0);
   if (!VT.isVector())
     return SDValue();
@@ -14442,7 +14410,6 @@ static SDValue performMULCombine(SDNode *N, SelectionDAG &DAG) {
 
   return SDValue();
 }
->>>>>>> 26cf3aab836ce421156d7542985f35701e1b5783
 
 /// According to the property that indexed load/store instructions zero-extend
 /// their indices, try to narrow the type of index operand.
@@ -17029,17 +16996,12 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     return performORCombine(N, DCI, Subtarget);
   case ISD::XOR:
     return performXORCombine(N, DAG, Subtarget);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  case ISD::MUL:
-    return performMULCombine(N, DAG);
   case ISD::ABS:
     return performABSCombine(N, DAG);
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case ISD::MUL:
     return performMULCombine(N, DAG);
->>>>>>> 26cf3aab836ce421156d7542985f35701e1b5783
   case ISD::FADD:
   case ISD::UMAX:
   case ISD::UMIN:
