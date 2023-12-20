@@ -502,6 +502,49 @@ public:
            "IsVectorizableUncountable should only be set once");
     IsVectorizableUncountable = true;
   };
+
+  // Helper class to hold the information about strided memory access
+  class StrideAccessInfo {
+  private:
+    const SCEV *SCEVExpr = nullptr;
+    const SCEV *SCEVStride = nullptr;
+
+  public:
+    explicit StrideAccessInfo() = default;
+    explicit StrideAccessInfo(const SCEV *SCEVExpr, const SCEV *SCEVStride)
+        : SCEVExpr(SCEVExpr), SCEVStride(SCEVStride) {}
+    const SCEV *getSCEVExpr() const { return SCEVExpr; }
+    const SCEV *getSCEVStride() const { return SCEVStride; }
+
+    explicit operator bool() const { return SCEVExpr && SCEVStride; }
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+    void print(raw_ostream &OS) const {
+      OS << "StrideAccessInfo: ";
+
+      OS << "SCEV: ";
+      if (SCEVExpr) {
+        OS << *SCEVExpr;
+        OS << "( ";
+        OS << " stride: " << *SCEVStride << ')';
+      } else {
+        OS << "<<unknown>>";
+      }
+    }
+
+    void dump() const { print(llvm::dbgs()); }
+#endif // !NDEBUG || LLVM_ENABLE_DUMP
+  };
+
+  /// Returns true if it's safe to emit special intrinsic for non-unit strided
+  /// accesses by simply reusing scalar address as a base address of the
+  /// intrinsic
+  bool isSafeStrideAccessInfo(const StrideAccessInfo &SAI) const;
+
+  /// Returns stride access info of the instruction. If it cannot be computed,
+  /// returns empty data structure.
+  StrideAccessInfo computeStrideAccessInfo(Instruction *I) const;
+
 #endif // SIFIVE_CUSTOMIZATION
 
   PredicatedScalarEvolution *getPredicatedScalarEvolution() const {
@@ -677,6 +720,13 @@ private:
   /// the use of those function variants.
   bool VecCallVariantsFound = false;
 };
+
+#if SIFIVE_CUSTOMIZATION
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+raw_ostream &operator<<(raw_ostream &OS,
+                        const LoopVectorizationLegality::StrideAccessInfo &SAI);
+#endif // !NDEBUG || LLVM_ENABLE_DUMP
+#endif // SIFIVE_CUSTOMIZATION
 
 } // namespace llvm
 

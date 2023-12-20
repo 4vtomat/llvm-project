@@ -2163,7 +2163,7 @@ private:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  bool canUseStridedAccess(Instruction *I) const;
+  InstWidening getMemoryAccessType(Instruction *I) const;
 #endif // SIFIVE_CUSTOMIZATION
 
 public:
@@ -8503,20 +8503,25 @@ InstructionCost LoopVectorizationCostModel::getScalarizationOverhead(
                     filterExtractingOperands(Ops, VF), Tys, CostKind);
 }
 #if SIFIVE_CUSTOMIZATION
-bool LoopVectorizationCostModel::canUseStridedAccess(Instruction *I) const {
+LoopVectorizationCostModel::InstWidening
+LoopVectorizationCostModel::getMemoryAccessType(Instruction *I) const {
   if (!Legal->useVLAVectorizer())
-    return false;
+    // Conservatively decide to vectorize that memory access as gather/scatter
+    // for RVV VLA vectorization
+    return CM_GatherScatter;
 
-  StrideAccessInfo SAI = computeStrideAccessInfo(PSE, I);
-  if (!isSafeStrideAccessInfo(TheLoop, SAI))
-    return false;
+  LoopVectorizationLegality::StrideAccessInfo SAI =
+      Legal->computeStrideAccessInfo(I);
+  if (!Legal->isSafeStrideAccessInfo(SAI))
+    return CM_GatherScatter;
 
   const SCEV *SCEVPtr = SAI.getSCEVExpr();
   assert(isa<SCEVAddRecExpr>(SCEVPtr) &&
          "Expected return value of isStridedAddressing is SCEVAddRecExpr.");
 
   // Need the recurrence of Ptr is for current loop.
-  return cast<SCEVAddRecExpr>(SCEVPtr)->getLoop() == TheLoop;
+  return cast<SCEVAddRecExpr>(SCEVPtr)->getLoop() == TheLoop ? CM_Strided
+                                                             : CM_GatherScatter;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -8582,12 +8587,13 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
         // scalable invalid which signals a failure and a vectorization abort.
 #if SIFIVE_CUSTOMIZATION
         if (GatherScatterCost < ScalarizationCost) {
-          if (UseStridedAccesses && canUseStridedAccess(&I)) {
+          InstWidening MemAccessType = getMemoryAccessType(&I);
+          if (UseStridedAccesses && MemAccessType == CM_Strided) {
             setWideningDecision(&I, VF, CM_Strided, GatherScatterCost);
-            LLVM_DEBUG(dbgs() << "Can use strided access " << I << "\n");
+            LLVM_DEBUG(dbgs() << "LV: Can use strided access " << I << '\n');
           } else {
             if (UseStridedAccesses) {
-              LLVM_DEBUG(dbgs() << "Cannot use strided access " << I << "\n");
+              LLVM_DEBUG(dbgs() << "Cannot use strided access " << I << '\n');
             }
             setWideningDecision(&I, VF, CM_GatherScatter, GatherScatterCost);
           }
@@ -8658,14 +8664,13 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
         Cost = GatherScatterCost;
 
 #if SIFIVE_CUSTOMIZATION
-        if (UseStridedAccesses) {
-          if (canUseStridedAccess(&I)) {
-            // FIXME
-            // Cost = StridedAccessCost;
+        InstWidening MemAccessType = getMemoryAccessType(&I);
+        if (MemAccessType == CM_Strided) {
+          if (UseStridedAccesses) {
             Decision = CM_Strided;
-            LLVM_DEBUG(dbgs() << "Can use strided access " << I << "\n");
+            LLVM_DEBUG(dbgs() << "LV: Can use strided access " << I << '\n');
           } else {
-            LLVM_DEBUG(dbgs() << "Cannot use strided access " << I << "\n");
+            LLVM_DEBUG(dbgs() << "LV: Cannot use strided access " << I << '\n');
           }
         }
 #endif // SIFIVE_CUSTOMIZATION
@@ -10285,7 +10290,8 @@ VPRecipeBase *VPRecipeBuilder::tryToWidenMemory(Instruction *I,
 #if SIFIVE_CUSTOMIZATION
   const SCEV *Stride = nullptr;
   if (Decision == LoopVectorizationCostModel::CM_Strided) {
-    StrideAccessInfo SAI = computeStrideAccessInfo(PSE, I);
+    LoopVectorizationLegality::StrideAccessInfo SAI =
+        Legal->computeStrideAccessInfo(I);
     Stride = SAI.getSCEVStride();
   }
 #endif // SIFIVE_CUSTOMIZATION

@@ -1076,11 +1076,6 @@ private:
   }
 };
 
-#if SIFIVE_CUSTOMIZATION
-// TODO: Reorganise this
-const SCEV *isStridedAddressing(Value *Ptr, PredicatedScalarEvolution &PSE);
-#endif // SIFIVE_CUSTOMIZATION
-
 } // llvm namespace
 
 #endif

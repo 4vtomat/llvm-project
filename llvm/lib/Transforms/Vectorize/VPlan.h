@@ -3712,57 +3712,6 @@ bool isPhiThatGeneratesBackedge(const VPRecipeBase &R);
 bool isHeaderPhi(const VPRecipeBase &R);
 #endif // SIFIVE_CUSTOMIZATION
 } // end namespace vputils
-
-#if SIFIVE_CUSTOMIZATION
-// Strided accesses.
-class StrideAccessInfo {
-private:
-  const SCEV *SCEVExpr = nullptr;
-  const SCEV *SCEVStride = nullptr;
-
-public:
-  explicit StrideAccessInfo() = default;
-  explicit StrideAccessInfo(const SCEV *SCEVExpr, const SCEV *SCEVStride)
-      : SCEVExpr(SCEVExpr), SCEVStride(SCEVStride) {}
-  const SCEV *getSCEVExpr() const { return SCEVExpr; }
-  const SCEV *getSCEVStride() const { return SCEVStride; }
-  bool isConstantStride() const {
-    return SCEVStride && isa<SCEVConstant>(SCEVStride);
-  }
-
-  explicit operator bool() const { return SCEVExpr && SCEVStride; }
-
-#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-  void print(raw_ostream &OS) const {
-    OS << "StrideAccessInfo: ";
-
-    OS << "SCEV: ";
-    if (SCEVExpr) {
-      OS << *SCEVExpr;
-      OS << " (stride: " << *SCEVStride << ')';
-    } else {
-      OS << "<<unknown>>";
-    }
-  }
-
-  void dump() const {
-    print(llvm::dbgs());
-  }
-#endif // !NDEBUG || LLVM_ENABLE_DUMP
-};
-
-raw_ostream &operator<<(raw_ostream &OS, const StrideAccessInfo &SAI);
-
-struct StridedAccessValues {
-  Value* BaseAddress;
-  Value* Stride;
-};
-
-bool isSafeStrideAccessInfo(const Loop *L, const llvm::StrideAccessInfo &SAI);
-
-StrideAccessInfo computeStrideAccessInfo(PredicatedScalarEvolution &PSE,
-                                         Instruction *I);
-#endif // SIFIVE_CUSTOMIZATION
 } // end namespace llvm
 
 #endif // LLVM_TRANSFORMS_VECTORIZE_VPLAN_H

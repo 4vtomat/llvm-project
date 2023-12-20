@@ -2331,5 +2331,105 @@ bool LoopVectorizationLegality::canVectorizeUncountableLoop(
   return !(UncountableLoopVectorizationOption ==
            UncountableLoopVectorization::Option::AnalysisOnly);
 }
+
+/// Visit SCEVExpr and verifies that it can be expanded safely in the other
+/// loop, i.e. it has not leaf node that is computed within the original loop.
+class SCEVRuntimeStrideChecker final
+    : public SCEVVisitor<SCEVRuntimeStrideChecker, bool> {
+private:
+  using RetVal = bool;
+  using Base = SCEVVisitor<SCEVRuntimeStrideChecker, RetVal>;
+
+  const LoopVectorizationLegality &LVL;
+
+  template <typename SCEVT> bool visitExpr(SCEVT *S) {
+    return all_of(S->operands(),
+                  [&](const SCEV *Op) { return Base::visit(Op); });
+  }
+
+public:
+  explicit SCEVRuntimeStrideChecker(const LoopVectorizationLegality &LVL)
+      : LVL(LVL) {}
+
+  /// SCEVUnknown contains pointer to the original Value that needs to be
+  /// investigated for safe expansion in the new loop. At this point it's not
+  /// possible to call `SCEVExpander.SafeToHoist` as we don't have proper
+  /// InsertionPoint to pass to that function (vector skeleton for the vector
+  /// loop). Thus simply check if value is NOT defined within the loop we're
+  /// trying to vectorize
+  bool visitUnknown(const SCEVUnknown *S) {
+    if (auto *I = dyn_cast<Instruction>(S->getValue()))
+      if (LVL.getLoop()->contains(I)) {
+        LLVM_DEBUG(llvm::dbgs() << "SCEVUnknown = "; S->print(llvm::dbgs());
+                   llvm::dbgs() << " is defined within the loop\n");
+        return false;
+      }
+    return true;
+  }
+
+  /// Don't know what to do with this expression. Assume unsafe.
+  bool visitCouldNotCompute(const SCEVCouldNotCompute *S) { return false; }
+
+  /// All other expressions are good and won't prevent SCEV expansion in the
+  /// vector loop
+  bool visitConstant(const SCEVConstant *S) { return true; }
+  bool visitVScale(const SCEVVScale *S) { return true; }
+  bool visitPtrToIntExpr(const SCEVPtrToIntExpr *S) { return visitExpr(S); }
+  bool visitTruncateExpr(const SCEVTruncateExpr *S) { return visitExpr(S); }
+  bool visitZeroExtendExpr(const SCEVZeroExtendExpr *S) { return visitExpr(S); }
+  bool visitSignExtendExpr(const SCEVSignExtendExpr *S) { return visitExpr(S); }
+  bool visitAddExpr(const SCEVAddExpr *S) { return visitExpr(S); }
+  bool visitMulExpr(const SCEVMulExpr *S) { return visitExpr(S); }
+  bool visitUDivExpr(const SCEVUDivExpr *S) { return visitExpr(S); }
+  bool visitAddRecExpr(const SCEVAddRecExpr *S) { return visitExpr(S); }
+  bool visitSMaxExpr(const SCEVSMaxExpr *S) { return visitExpr(S); }
+  bool visitUMaxExpr(const SCEVUMaxExpr *S) { return visitExpr(S); }
+  bool visitSMinExpr(const SCEVSMinExpr *S) { return visitExpr(S); }
+  bool visitUMinExpr(const SCEVUMinExpr *S) { return visitExpr(S); }
+  bool visitSequentialUMinExpr(const SCEVSequentialMinMaxExpr *S) {
+    return visitExpr(S);
+  }
+};
+
+/// Return true if runtime stride will be safe to expand using SCEVExpander in
+/// the vector loop
+bool LoopVectorizationLegality::isSafeStrideAccessInfo(
+    const StrideAccessInfo &SAI) const {
+  if (!SAI)
+    return false;
+
+  SCEVRuntimeStrideChecker StrideChecker(*this);
+  return StrideChecker.visit(SAI.getSCEVStride());
+}
+
+LoopVectorizationLegality::StrideAccessInfo
+LoopVectorizationLegality::computeStrideAccessInfo(Instruction *I) const {
+  Value *Ptr = getLoadStorePointerOperand(I);
+  auto *PtrTy = dyn_cast<PointerType>(Ptr->getType());
+  if (!PtrTy)
+    return StrideAccessInfo();
+
+  auto GetSimpleSCEVStride = [](const SCEV *SPtr) -> const SCEVAddRecExpr * {
+    const auto *S = dyn_cast<SCEVAddRecExpr>(SPtr);
+    if (!S || !S->isAffine())
+      return nullptr;
+    return S;
+  };
+
+  if (const SCEVAddRecExpr *V = GetSimpleSCEVStride(PSE.getSCEV(Ptr))) {
+    const SCEV *Stride = V->getStepRecurrence(*PSE.getSE());
+    return StrideAccessInfo(V, Stride);
+  }
+  return StrideAccessInfo();
+}
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+raw_ostream &
+operator<<(raw_ostream &OS,
+           const LoopVectorizationLegality::StrideAccessInfo &SAI) {
+  SAI.print(OS);
+  return OS;
+}
+#endif // !NDEBUG || LLVM_ENABLE_DUMP
 #endif // SIFIVE_CUSTOMIZATION
 } // namespace llvm
