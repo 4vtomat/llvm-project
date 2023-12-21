@@ -7291,18 +7291,20 @@ class BoUpSLP::ShuffleCostEstimator : public BaseShuffleAnalysis {
             ArrayRef<Value *> Slice = VL.slice(I, VF);
             SmallVector<Value *> PointerOps;
             OrdersType CurrentOrder;
-            LoadsState LS = canVectorizeLoads(
-                Slice, Slice.front(), TTI, *R.DL, *R.SE, *R.LI, *R.TLI,
-                CurrentOrder, PointerOps, /*TryRecursiveCheck=*/false);
-            if (LS == LoadsState::ScatterVectorize) {
-              auto *LI = cast<LoadInst>(VL[I]);
-              auto *LoadTy = FixedVectorType::get(LI->getType(), VF / 2);
-              Align Alignment = LI->getAlign();
-              GatherCost += 2 * TTI.getMemoryOpCost(
-                                    Instruction::Load, LoadTy, Alignment,
-                                    LI->getPointerAddressSpace(), CostKind,
-                                    TTI::OperandValueInfo(), LI);
-              continue;
+            if (all_of(Slice, [](Value *V) { return isa<LoadInst>(V); })) {
+              LoadsState LS = canVectorizeLoads(
+                  Slice, Slice.front(), TTI, *R.DL, *R.SE, *R.LI, *R.TLI,
+                  CurrentOrder, PointerOps, /*TryRecursiveCheck=*/false);
+              if (LS == LoadsState::ScatterVectorize) {
+                auto *LI = cast<LoadInst>(VL[I]);
+                auto *LoadTy = FixedVectorType::get(LI->getType(), VF / 2);
+                Align Alignment = LI->getAlign();
+                GatherCost += 2 * TTI.getMemoryOpCost(
+                                      Instruction::Load, LoadTy, Alignment,
+                                      LI->getPointerAddressSpace(), CostKind,
+                                      TTI::OperandValueInfo(), LI);
+                continue;
+              }
             }
           }
 #endif // SIFIVE_CUSTOMIZATION
