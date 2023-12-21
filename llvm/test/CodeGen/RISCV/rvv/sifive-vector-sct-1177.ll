@@ -31,7 +31,7 @@ define dso_local void @main() local_unnamed_addr {
 ; CHECK-NEXT:    vmclr.m v0
 ; CHECK-NEXT:    li s0, 36
 ; CHECK-NEXT:    vsetvli zero, s0, e16, m4, ta, ma
-; CHECK-NEXT:    vfwadd.vv v16, v8, v8, v0.t
+; CHECK-NEXT:    vfwadd.vv v16, v8, v12, v0.t
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add a0, sp, a0
@@ -40,7 +40,7 @@ define dso_local void @main() local_unnamed_addr {
 ; CHECK-NEXT:    call _Z5checkIjEbPKT_S2_m
 ; CHECK-NEXT:    li a0, 32
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
-; CHECK-NEXT:    vrgather.vv v16, v8, v8, v0.t
+; CHECK-NEXT:    vrgather.vv v16, v8, v12, v0.t
 ; CHECK-NEXT:    vsetvli zero, s0, e16, m4, ta, ma
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    csrr a2, vlenb
