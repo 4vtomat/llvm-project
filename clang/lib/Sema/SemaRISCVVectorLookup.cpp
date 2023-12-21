@@ -135,14 +135,6 @@ static QualType RVVType2Qual(ASTContext &Context, const RVVType *Type) {
       llvm_unreachable("Unsupported floating point width.");
     }
     break;
-#if SIFIVE_CUSTOMIZATION
-  case ScalarTypeKind::SignedInteger32:
-    QT = Context.getIntTypeForBitwidth(32, true);
-    break;
-  case ScalarTypeKind::Float32:
-    QT = Context.FloatTy;
-    break;
-#endif
   case Invalid:
   case Undefined:
     llvm_unreachable("Unhandled type.");

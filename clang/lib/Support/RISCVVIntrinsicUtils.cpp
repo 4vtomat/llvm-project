@@ -209,14 +209,6 @@ void RVVType::initBuiltinStr() {
   case ScalarTypeKind::BFloat:
     BuiltinStr += "b";
     break;
-#if SIFIVE_CUSTOMIZATION
-  case ScalarTypeKind::Float32:
-    BuiltinStr += "f";
-    break;
-  case ScalarTypeKind::SignedInteger32:
-    BuiltinStr += "i";
-    return;
-#endif // SIFIVE_CUSTOMIZATION
   default:
     llvm_unreachable("ScalarType is invalid!");
   }
@@ -330,14 +322,6 @@ void RVVType::initTypeStr() {
     } else
       Str += getTypeString("bfloat");
     break;
-#if SIFIVE_CUSTOMIZATION
-  case ScalarTypeKind::Float32:
-    Str += "float";
-    break;
-  case ScalarTypeKind::SignedInteger32:
-    Str += "int";
-    return;
-#endif // SIFIVE_CUSTOMIZATION
   case ScalarTypeKind::SignedInteger:
     Str += getTypeString("int");
     break;
@@ -458,10 +442,6 @@ PrototypeDescriptor::parsePrototypeDescriptor(
   case 'm':
     PT = BaseTypeModifier::Vector;
     VTM = VectorTypeModifier::MaskVector;
-    break;
-  case 'i':
-    PT = BaseTypeModifier::Vector;
-    VTM = VectorTypeModifier::SignedInteger32;
     break;
   case '0':
     PT = BaseTypeModifier::Void;
@@ -898,13 +878,6 @@ void RVVType::applyModifier(const PrototypeDescriptor &Transformer) {
   }
   case VectorTypeModifier::NoModifier:
     break;
-#if SIFIVE_CUSTOMIZATION
-  // For SiFive VCIX intrinsic that need const integer for payloads.
-  case VectorTypeModifier::SignedInteger32:
-    ScalarType = ScalarTypeKind::SignedInteger32;
-    Scale = 0;
-    break;
-#endif // SIFIVE_CUSTOMIZATION
   }
 
   // Early return if the current type modifier is already invalid.
