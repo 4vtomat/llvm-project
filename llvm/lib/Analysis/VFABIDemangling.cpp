@@ -492,6 +492,16 @@ std::optional<VFInfo> VFABI::tryDemangleForVFABI(StringRef MangledName,
     assert(Parameters.back().ParamKind == VFParamKind::GlobalPredicate &&
            "The global predicate must be the last parameter");
 
+#if SIFIVE_CUSTOMIZATION
+  if (EC->isScalable()) {
+    if (VectorName.ends_with("m1"))
+      EC = ElementCount::get(EC->getKnownMinValue() / 2, EC->isScalable());
+    else if (VectorName.ends_with("m4"))
+      EC = ElementCount::get(EC->getKnownMinValue() * 2, EC->isScalable());
+    else if (VectorName.ends_with("m8"))
+      EC = ElementCount::get(EC->getKnownMinValue() * 4, EC->isScalable());
+  }
+#endif // SIFIVE_CUSTOMIZATION
   const VFShape Shape({*EC, Parameters});
   return VFInfo({Shape, std::string(ScalarName), std::string(VectorName), ISA});
 }
