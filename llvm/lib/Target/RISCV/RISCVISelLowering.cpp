@@ -22417,7 +22417,6 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
 ///
 /// NOTE: the deinterleave2 intrinsic and the bitcast instruction won't be
 /// touched and is expected to be removed by the caller
-// TODO: Support mask vlsseg
 bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
     Instruction *StridedLoad, IntrinsicInst *DI, unsigned Factor) const {
   using namespace llvm::PatternMatch;
@@ -22425,10 +22424,6 @@ bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
   if (!match(StridedLoad, m_Intrinsic<Intrinsic::experimental_vp_strided_load>(
                               m_Value(BasePtr), m_Value(Stride), m_Value(Mask),
                               m_Value(RVL))))
-    return false;
-
-  // TODO: support vlssegN_mask
-  if (!match(Mask, m_AllOnes()))
     return false;
 
   [[maybe_unused]] auto *DISrcTy =
@@ -22458,6 +22453,13 @@ bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
          "The type of stride must be the XLEN integer type.");
   RVL = Builder.CreateZExtOrTrunc(RVL, XLenTy);
 
+  static const Intrinsic::ID IntrMaskIds[] = {
+      Intrinsic::riscv_vlsseg2_mask, Intrinsic::riscv_vlsseg3_mask,
+      Intrinsic::riscv_vlsseg4_mask, Intrinsic::riscv_vlsseg5_mask,
+      Intrinsic::riscv_vlsseg6_mask, Intrinsic::riscv_vlsseg7_mask,
+      Intrinsic::riscv_vlsseg8_mask,
+  };
+
   static const Intrinsic::ID IntrIds[] = {
       Intrinsic::riscv_vlsseg2, Intrinsic::riscv_vlsseg3,
       Intrinsic::riscv_vlsseg4, Intrinsic::riscv_vlsseg5,
@@ -22470,7 +22472,18 @@ bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
   Operands.append({BasePtr, Stride});
 
   Intrinsic::ID VlssegNID = IntrIds[Factor - 2];
+  bool IsMasked = !match(Mask, m_AllOnes());
+  if (IsMasked) {
+    VlssegNID = IntrMaskIds[Factor - 2];
+    Operands.push_back(Mask);
+  }
+
   Operands.push_back(RVL);
+
+  // Set the tail policy to tail-agnostic, mask-agnostic (tama) for masked
+  // intrinsics
+  if (IsMasked)
+    Operands.push_back(ConstantInt::get(XLenTy, 3));
 
   Function *VlssegNFunc = Intrinsic::getDeclaration(
       StridedLoad->getModule(), VlssegNID, {ResTy, RVL->getType()});
