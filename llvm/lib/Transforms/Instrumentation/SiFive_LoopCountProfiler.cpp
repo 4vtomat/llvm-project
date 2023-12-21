@@ -105,7 +105,7 @@ public:
     // Initial helper types
     StringWrapperTy = StructType::create(M.getContext());
     Type *CharPtrTy = PointerType::getUnqual(M.getContext());
-    StringWrapperTy->setBody({CharPtrTy});
+    StringWrapperTy->setBody(CharPtrTy);
   }
   bool runOnModule(Module &M, llvm::function_ref<LoopInfo &(Function &)> GetLI);
   bool declareVars(Module &M);
