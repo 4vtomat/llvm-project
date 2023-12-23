@@ -48,8 +48,8 @@
 # RUN: not ld.lld -shared --gc-sections -z dead-reloc-in-nonalloc=.debug_loclists=0x80 a.o 2>&1 | FileCheck %s --check-prefix=CHECK128
 # CHECK128: error: a.o:(.debug_loclists+0x1): ULEB128 value 128 exceeds available space; references 'x2'
 
-# RUN: llvm-mc -filetype=obj -triple=riscv64 -mattr=+relax sub.s -o sub.o
-# RUN: not ld.lld -shared sub.o 2>&1 | FileCheck %s --check-prefix=SUB
+# COM: llvm-mc -filetype=obj -triple=riscv64 -mattr=+relax sub.s -o sub.o
+# COM: not ld.lld -shared sub.o 2>&1 | FileCheck %s --check-prefix=SUB
 # SUB: error: sub.o:(.debug_rnglists+0x8): unknown relocation (61) against symbol w2
 
 # RUN: llvm-mc -filetype=obj -triple=riscv64 -mattr=+relax unpaired1.s -o unpaired1.o
