@@ -66,9 +66,6 @@ enum class VectorTypeModifier : uint8_t {
   Widening2XVectorMultipleLMUL2, // (MultipleLMUL:2)w
   Widening4XVectorMultipleLMUL1, // (MultipleLMUL:1)q
   Widening4XVectorMultipleLMUL2, // (MultipleLMUL:2)q
-  // Since TypeModifier is full, so put this in VectorTypeModifier
-  // for workaround.
-  SignedInteger32,
 #endif // SIFIVE_CUSTOMIZATION
   SEFixedLog2LMULN3,
   SEFixedLog2LMULN2,
@@ -260,8 +257,6 @@ enum ScalarTypeKind : uint8_t {
   Ptrdiff_t,
   UnsignedLong,
   SignedLong,
-  Float32, // SIFIVE
-  SignedInteger32, // SIFIVE
   Boolean,
   SignedInteger,
   UnsignedInteger,

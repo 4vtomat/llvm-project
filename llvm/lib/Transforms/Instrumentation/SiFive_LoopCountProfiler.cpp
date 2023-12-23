@@ -105,7 +105,7 @@ public:
     // Initial helper types
     StringWrapperTy = StructType::create(M.getContext());
     Type *CharPtrTy = PointerType::getUnqual(M.getContext());
-    StringWrapperTy->setBody({CharPtrTy});
+    StringWrapperTy->setBody(CharPtrTy);
   }
   bool runOnModule(Module &M, llvm::function_ref<LoopInfo &(Function &)> GetLI);
   bool declareVars(Module &M);
@@ -148,15 +148,15 @@ static Constant *getLoopName(Module &M, Function &F, Loop *L) {
   if (L->getStartLoc().get()) {
     return ConstantDataArray::getString(
         M.getContext(),
-        Twine(L->getHeader()->getName().str() + "-" + F.getName().str() + ", " +
-              cast<DIScope>(L->getStartLoc().getScope())->getFilename().str() +
-              ":" + std::to_string(L->getStartLoc().getLine()))
-            .getSingleStringRef());
+        (L->getHeader()->getName() + "-" + F.getName() + ", " +
+         cast<DIScope>(L->getStartLoc().getScope())->getFilename() + ":" +
+         Twine(L->getStartLoc().getLine()))
+            .str());
   } else {
-    return ConstantDataArray::getString(
-        M.getContext(), Twine(L->getHeader()->getName().str() + "-" +
-                              F.getName().str() + ", " + "unknown:unknown")
-                            .getSingleStringRef());
+    return ConstantDataArray::getString(M.getContext(),
+                                        (L->getHeader()->getName() + "-" +
+                                         F.getName() + ", " + "unknown:unknown")
+                                            .str());
   }
 }
 

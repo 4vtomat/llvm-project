@@ -1313,7 +1313,6 @@ bool RISCVInstrInfo::isBranchOffsetInRange(unsigned BranchOp,
   }
 }
 
-#if SIFIVE_CUSTOMIZATION
 // If the operation has a predicated pseudo instruction, return the pseudo
 // instruction opcode. Otherwise, return RISCV::INSTRUCTION_LIST_END.
 // TODO: Support more operations.
@@ -1350,7 +1349,6 @@ unsigned getPredicatedOpcode(unsigned Opcode) {
 
   return RISCV::INSTRUCTION_LIST_END;
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 /// Identify instructions that can be folded into a CCMOV instruction, and
 /// return the defining instruction.
