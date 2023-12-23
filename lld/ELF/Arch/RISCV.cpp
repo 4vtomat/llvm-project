@@ -292,12 +292,6 @@ RelExpr RISCV::getRelExpr(const RelType type, const Symbol &s,
   case R_RISCV_SUB16:
   case R_RISCV_SUB32:
   case R_RISCV_SUB64:
-#if SIFIVE_CUSTOMIZATION
-  case R_RISCV_SIFIVE_SET_ULEB128:
-  case R_RISCV_SIFIVE_SUB_ULEB128:
-  case R_RISCV_SET_ULEB128:
-  case R_RISCV_SUB_ULEB128:
-#endif // SIFIVE_CUSTOMIZATION
     return R_RISCV_ADD;
   case R_RISCV_JAL:
   case R_RISCV_BRANCH:
@@ -327,6 +321,9 @@ RelExpr RISCV::getRelExpr(const RelType type, const Symbol &s,
   case R_RISCV_TPREL_ADD:
   case R_RISCV_RELAX:
     return config->relax ? R_RELAX_HINT : R_NONE;
+#if SIFIVE_CUSTOMIZATION
+  case R_RISCV_SIFIVE_SET_ULEB128:
+#endif
   case R_RISCV_SET_ULEB128:
     return R_RISCV_LEB128;
   default:
