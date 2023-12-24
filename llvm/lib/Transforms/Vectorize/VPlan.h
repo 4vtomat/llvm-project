@@ -377,6 +377,12 @@ struct VPTransformState {
            I->second[Part];
   }
 
+#if SIFIVE_CUSTOMIZATION
+  bool hasAnyVectorValue(VPValue *Def) const {
+    return Data.PerPartOutput.contains(Def);
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   bool hasScalarValue(VPValue *Def, VPIteration Instance) {
     auto I = Data.PerPartScalars.find(Def);
     if (I == Data.PerPartScalars.end())
