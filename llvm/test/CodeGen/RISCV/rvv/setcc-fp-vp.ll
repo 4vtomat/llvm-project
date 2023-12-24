@@ -3455,13 +3455,8 @@ define <vscale x 32 x i1> @fcmp_oeq_vv_nxv32f64(<vscale x 32 x double> %va, <vsc
 ; CHECK-NEXT:    srli a1, a3, 3
 ; CHECK-NEXT:    vsetvli a5, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    add a5, a2, t1
-<<<<<<< HEAD
 ; CHECK-NEXT:    vl8re64.v v16, (a5)
-; CHECK-NEXT:    slli t3, a3, 4
-=======
-; CHECK-NEXT:    vl8re64.v v8, (a5)
 ; CHECK-NEXT:    slli t0, a3, 4
->>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
 ; CHECK-NEXT:    slli a5, a3, 1
 ; CHECK-NEXT:    vslidedown.vx v0, v0, a1
 ; CHECK-NEXT:    mv a7, a6
@@ -3471,13 +3466,8 @@ define <vscale x 32 x i1> @fcmp_oeq_vv_nxv32f64(<vscale x 32 x double> %va, <vsc
 ; CHECK-NEXT:  .LBB171_2:
 ; CHECK-NEXT:    add t2, a2, t2
 ; CHECK-NEXT:    add t1, a0, t1
-<<<<<<< HEAD
-; CHECK-NEXT:    add t0, a2, t3
-; CHECK-NEXT:    vl8re64.v v8, (a2)
-=======
 ; CHECK-NEXT:    add t0, a2, t0
-; CHECK-NEXT:    vl8re64.v v16, (a2)
->>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
+; CHECK-NEXT:    vl8re64.v v8, (a2)
 ; CHECK-NEXT:    csrr a2, vlenb
 ; CHECK-NEXT:    slli a2, a2, 3
 ; CHECK-NEXT:    add a2, sp, a2
