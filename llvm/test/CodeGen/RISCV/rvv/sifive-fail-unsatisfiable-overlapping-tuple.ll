@@ -115,9 +115,9 @@ define void @main() {
 ; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    vl4r.v v20, (a1) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vremu.vx v16, v8, a0, v0.t
+; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_3)
 ; CHECK-NEXT:    ld a0, %lo(.LCPI0_3)(a0)
-; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    vmv1r.v v0, v1
 ; CHECK-NEXT:    vnsrl.wi v8, v12, 0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
@@ -168,9 +168,9 @@ define void @main() {
 ; SUBREG_LIVENESS-NEXT:    vssrl.vi v20, v4, 10, v0.t
 ; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
 ; SUBREG_LIVENESS-NEXT:    vremu.vx v12, v8, a0, v0.t
+; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; SUBREG_LIVENESS-NEXT:    lui a0, %hi(.LCPI0_3)
 ; SUBREG_LIVENESS-NEXT:    ld a0, %lo(.LCPI0_3)(a0)
-; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; SUBREG_LIVENESS-NEXT:    vmv1r.v v0, v8
 ; SUBREG_LIVENESS-NEXT:    vnsrl.wi v8, v20, 0, v0.t
 ; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, tu, mu

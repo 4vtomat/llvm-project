@@ -984,11 +984,7 @@ define float @extractelt_fdiv_v4f32(<4 x float> %x) {
 define i32 @extractelt_v16i32_idx7_exact_vlen(ptr %x) nounwind vscale_range(2,2) {
 ; CHECK-LABEL: extractelt_v16i32_idx7_exact_vlen:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v8, v9, 3
-; CHECK-NEXT:    vmv.x.s a0, v8
+; CHECK-NEXT:    lw a0, 28(a0)
 ; CHECK-NEXT:    ret
   %a = load <16 x i32>, ptr %x
   %b = extractelement <16 x i32> %a, i32 7
@@ -998,11 +994,7 @@ define i32 @extractelt_v16i32_idx7_exact_vlen(ptr %x) nounwind vscale_range(2,2)
 define i32 @extractelt_v16i32_idx15_exact_vlen(ptr %x) nounwind vscale_range(2,2) {
 ; CHECK-LABEL: extractelt_v16i32_idx15_exact_vlen:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
-; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v8, v11, 3
-; CHECK-NEXT:    vmv.x.s a0, v8
+; CHECK-NEXT:    lw a0, 60(a0)
 ; CHECK-NEXT:    ret
   %a = load <16 x i32>, ptr %x
   %b = extractelement <16 x i32> %a, i32 15
