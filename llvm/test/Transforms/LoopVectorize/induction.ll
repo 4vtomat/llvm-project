@@ -2060,17 +2060,10 @@ define i32 @scalarize_induction_variable_05(ptr %a, i32 %x, i1 %c, i32 %n) {
 ; IND-NEXT:    [[TMP7:%.*]] = phi <2 x i32> [ poison, [[VECTOR_BODY]] ], [ [[TMP6]], [[PRED_UDIV_IF]] ]
 ; IND-NEXT:    br i1 [[C]], label [[PRED_UDIV_IF1:%.*]], label [[PRED_UDIV_CONTINUE2]]
 ; IND:       pred.udiv.if1:
-<<<<<<< HEAD
-; IND-NEXT:    [[TMP8:%.*]] = or i32 [[INDEX]], 1
+; IND-NEXT:    [[TMP8:%.*]] = or disjoint i32 [[INDEX]], 1
 ; IND-NEXT:    [[TMP9:%.*]] = extractelement <2 x i32> [[WIDE_LOAD]], i64 1
 ; IND-NEXT:    [[TMP10:%.*]] = udiv i32 [[TMP9]], [[TMP8]]
 ; IND-NEXT:    [[TMP11:%.*]] = insertelement <2 x i32> [[TMP7]], i32 [[TMP10]], i64 1
-=======
-; IND-NEXT:    [[TMP6:%.*]] = or disjoint i32 [[INDEX]], 1
-; IND-NEXT:    [[TMP7:%.*]] = extractelement <2 x i32> [[WIDE_LOAD]], i64 1
-; IND-NEXT:    [[TMP8:%.*]] = udiv i32 [[TMP7]], [[TMP6]]
-; IND-NEXT:    [[TMP9:%.*]] = insertelement <2 x i32> [[TMP5]], i32 [[TMP8]], i64 1
->>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
 ; IND-NEXT:    br label [[PRED_UDIV_CONTINUE2]]
 ; IND:       pred.udiv.continue2:
 ; IND-NEXT:    [[TMP12:%.*]] = phi <2 x i32> [ [[TMP7]], [[PRED_UDIV_CONTINUE]] ], [ [[TMP11]], [[PRED_UDIV_IF1]] ]

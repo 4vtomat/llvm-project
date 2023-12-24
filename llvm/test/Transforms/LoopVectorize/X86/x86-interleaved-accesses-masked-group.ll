@@ -2296,13 +2296,8 @@ define dso_local void @masked_strided2_unknown_tc(ptr noalias nocapture readonly
 ; DISABLED_MASKED_STRIDED-NEXT:    br label [[PRED_LOAD_CONTINUE16]]
 ; DISABLED_MASKED_STRIDED:       pred.load.continue16:
 ; DISABLED_MASKED_STRIDED-NEXT:    [[TMP51:%.*]] = phi <8 x i8> [ [[TMP45]], [[PRED_LOAD_CONTINUE14]] ], [ [[TMP50]], [[PRED_LOAD_IF15]] ]
-<<<<<<< HEAD
-; DISABLED_MASKED_STRIDED-NEXT:    [[TMP52:%.*]] = or <8 x i32> [[TMP3]], <i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1>
+; DISABLED_MASKED_STRIDED-NEXT:    [[TMP52:%.*]] = or disjoint <8 x i32> [[TMP3]], <i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1>
 ; DISABLED_MASKED_STRIDED-NEXT:    [[TMP53:%.*]] = extractelement <8 x i1> [[TMP2]], i64 0
-=======
-; DISABLED_MASKED_STRIDED-NEXT:    [[TMP52:%.*]] = or disjoint <8 x i32> [[TMP2]], <i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1>
-; DISABLED_MASKED_STRIDED-NEXT:    [[TMP53:%.*]] = extractelement <8 x i1> [[TMP3]], i64 0
->>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
 ; DISABLED_MASKED_STRIDED-NEXT:    br i1 [[TMP53]], label [[PRED_LOAD_IF17:%.*]], label [[PRED_LOAD_CONTINUE18:%.*]]
 ; DISABLED_MASKED_STRIDED:       pred.load.if17:
 ; DISABLED_MASKED_STRIDED-NEXT:    [[TMP54:%.*]] = extractelement <8 x i32> [[TMP52]], i64 0
@@ -2560,11 +2555,7 @@ define dso_local void @masked_strided2_unknown_tc(ptr noalias nocapture readonly
 ; ENABLED_MASKED_STRIDED-NEXT:    [[WIDE_MASKED_VEC:%.*]] = call <16 x i8> @llvm.masked.load.v16i8.p0(ptr [[TMP4]], i32 1, <16 x i1> [[INTERLEAVED_MASK]], <16 x i8> poison)
 ; ENABLED_MASKED_STRIDED-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <16 x i8> [[WIDE_MASKED_VEC]], <16 x i8> poison, <8 x i32> <i32 0, i32 2, i32 4, i32 6, i32 8, i32 10, i32 12, i32 14>
 ; ENABLED_MASKED_STRIDED-NEXT:    [[STRIDED_VEC3:%.*]] = shufflevector <16 x i8> [[WIDE_MASKED_VEC]], <16 x i8> poison, <8 x i32> <i32 1, i32 3, i32 5, i32 7, i32 9, i32 11, i32 13, i32 15>
-<<<<<<< HEAD
-; ENABLED_MASKED_STRIDED-NEXT:    [[TMP5:%.*]] = or i32 [[TMP3]], 1
-=======
-; ENABLED_MASKED_STRIDED-NEXT:    [[TMP5:%.*]] = or disjoint i32 [[TMP2]], 1
->>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
+; ENABLED_MASKED_STRIDED-NEXT:    [[TMP5:%.*]] = or disjoint i32 [[TMP3]], 1
 ; ENABLED_MASKED_STRIDED-NEXT:    [[TMP6:%.*]] = call <8 x i8> @llvm.smax.v8i8(<8 x i8> [[STRIDED_VEC]], <8 x i8> [[STRIDED_VEC3]])
 ; ENABLED_MASKED_STRIDED-NEXT:    [[TMP7:%.*]] = sub <8 x i8> zeroinitializer, [[TMP6]]
 ; ENABLED_MASKED_STRIDED-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[Q:%.*]], i32 [[TMP5]]
