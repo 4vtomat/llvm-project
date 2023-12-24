@@ -188,7 +188,6 @@ void emitCodeGenSwitchBody(const RVVIntrinsic *RVVI, raw_ostream &OS) {
     return;
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (RVVI->getPolicyAttrs().isNTLPolicy() && !RVVI->hasManualCodegen()) {
     OS << "// Handle NTL Operand"
@@ -206,9 +205,6 @@ void emitCodeGenSwitchBody(const RVVIntrinsic *RVVI, raw_ostream &OS) {
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-  // Cast pointer operand of vector load intrinsic.
-=======
->>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
   for (const auto &I : enumerate(RVVI->getInputTypes())) {
     if (I.value()->isPointer()) {
       assert(RVVI->getIntrinsicTypes().front() == -1 &&

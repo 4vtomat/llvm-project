@@ -60,16 +60,12 @@ Multilib::Multilib(StringRef GCCSuffix, StringRef OSSuffix,
                    StringRef IncludeSuffix, const flags_list &Flags,
                    StringRef ExclusiveGroup)
     : GCCSuffix(GCCSuffix), OSSuffix(OSSuffix), IncludeSuffix(IncludeSuffix),
-<<<<<<< HEAD
-      Flags(Flags) {
+      Flags(Flags), ExclusiveGroup(ExclusiveGroup) {
 #if SIFIVE_CUSTOMIZATION
   normalizePathSegment(this->GCCSuffix);
   normalizePathSegment(this->OSSuffix);
   normalizePathSegment(this->IncludeSuffix);
 #else
-=======
-      Flags(Flags), ExclusiveGroup(ExclusiveGroup) {
->>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
   assert(GCCSuffix.empty() ||
          (StringRef(GCCSuffix).front() == '/' && GCCSuffix.size() > 1));
   assert(OSSuffix.empty() ||

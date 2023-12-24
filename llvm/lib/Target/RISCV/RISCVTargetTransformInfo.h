@@ -488,12 +488,7 @@ public:
   bool enableMaskedInterleavedAccessVectorization() const {
     return useVLAVectorizer();
   }
-#endif // SIFIVE_CUSTOMIZATION
-  bool isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
-                     const TargetTransformInfo::LSRCost &C2);
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   /// \returns true if the loop vectorizer should vectorize conditional
   /// scalar assignments for the target.
   bool enableCSAVectorization() const;
@@ -501,11 +496,13 @@ public:
   unsigned getCSABodyFactor() const;
   unsigned getCSAOverheadFactor() const;
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
+  bool isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
+                     const TargetTransformInfo::LSRCost &C2);
+
   bool shouldFoldTerminatingConditionAfterLSR() const {
     return true;
   }
->>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
 };
 
 } // end namespace llvm

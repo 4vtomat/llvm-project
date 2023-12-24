@@ -84,20 +84,17 @@ MODULE_PASS("instrprof", InstrProfiling())
 MODULE_PASS("internalize", InternalizePass())
 MODULE_PASS("invalidate<all>", InvalidateAllAnalysesPass())
 MODULE_PASS("iroutliner", IROutlinerPass())
+#if SIFIVE_CUSTOMIZATION
+MODULE_PASS("loop-data-layout", LoopDataLayoutPass())
+#endif
 MODULE_PASS("lower-global-dtors", LowerGlobalDtorsPass())
 MODULE_PASS("lower-ifunc", LowerIFuncPass())
 MODULE_PASS("lowertypetests", LowerTypeTestsPass())
 MODULE_PASS("memprof-context-disambiguation", MemProfContextDisambiguation())
 MODULE_PASS("memprof-module", ModuleMemProfilerPass())
 MODULE_PASS("mergefunc", MergeFunctionsPass())
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-MODULE_PASS("loop-data-layout", LoopDataLayoutPass())
-#endif
-=======
 MODULE_PASS("metarenamer", MetaRenamerPass())
 MODULE_PASS("module-inline", ModuleInlinerPass())
->>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
 MODULE_PASS("name-anon-globals", NameAnonGlobalPass())
 MODULE_PASS("no-op-module", NoOpModulePass())
 MODULE_PASS("objc-arc-apelim", ObjCARCAPElimPass())
@@ -243,18 +240,11 @@ FUNCTION_ANALYSIS("demanded-bits", DemandedBitsAnalysis())
 FUNCTION_ANALYSIS("domfrontier", DominanceFrontierAnalysis())
 FUNCTION_ANALYSIS("domtree", DominatorTreeAnalysis())
 FUNCTION_ANALYSIS("func-properties", FunctionPropertiesAnalysis())
-<<<<<<< HEAD
+FUNCTION_ANALYSIS("inliner-size-estimator", InlineSizeEstimatorAnalysis())
+FUNCTION_ANALYSIS("lazy-value-info", LazyValueAnalysis())
 #if SIFIVE_CUSTOMIZATION
 FUNCTION_ANALYSIS("live-values", LiveValuesAnalysis())
 #endif
-FUNCTION_ANALYSIS("loops", LoopAnalysis())
-FUNCTION_ANALYSIS("access-info", LoopAccessAnalysis())
-FUNCTION_ANALYSIS("lazy-value-info", LazyValueAnalysis())
-FUNCTION_ANALYSIS("da", DependenceAnalysis())
-=======
->>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
-FUNCTION_ANALYSIS("inliner-size-estimator", InlineSizeEstimatorAnalysis())
-FUNCTION_ANALYSIS("lazy-value-info", LazyValueAnalysis())
 FUNCTION_ANALYSIS("loops", LoopAnalysis())
 FUNCTION_ANALYSIS("memdep", MemoryDependenceAnalysis())
 FUNCTION_ANALYSIS("memoryssa", MemorySSAAnalysis())
@@ -416,6 +406,9 @@ FUNCTION_PASS("scalarizer", ScalarizerPass())
 FUNCTION_PASS("sccp", SCCPPass())
 FUNCTION_PASS("separate-const-offset-from-gep",
               SeparateConstOffsetFromGEPPass())
+#if SIFIVE_CUSTOMIZATION
+FUNCTION_PASS("sifive-recode", SiFiveRecodePass())
+#endif
 FUNCTION_PASS("sink", SinkingPass())
 FUNCTION_PASS("slp-vectorizer", SLPVectorizerPass())
 FUNCTION_PASS("slsr", StraightLineStrengthReducePass())
@@ -438,23 +431,10 @@ FUNCTION_PASS("verify<safepoint-ir>", SafepointIRVerifierPass())
 FUNCTION_PASS("verify<scalar-evolution>", ScalarEvolutionVerifierPass())
 FUNCTION_PASS("view-cfg", CFGViewerPass())
 FUNCTION_PASS("view-cfg-only", CFGOnlyViewerPass())
-<<<<<<< HEAD
-FUNCTION_PASS("tlshoist", TLSVariableHoistPass())
-FUNCTION_PASS("transform-warning", WarnMissedTransformationsPass())
-FUNCTION_PASS("tsan", ThreadSanitizerPass())
-FUNCTION_PASS("memprof", MemProfilerPass())
-FUNCTION_PASS("declare-to-assign", llvm::AssignmentTrackingPass())
-#if SIFIVE_CUSTOMIZATION
-FUNCTION_PASS("sifive-recode", SiFiveRecodePass())
-#endif
-FUNCTION_PASS("expand-large-div-rem", ExpandLargeDivRemPass(TM));
-FUNCTION_PASS("expand-large-fp-convert", ExpandLargeFpConvertPass(TM));
-=======
 FUNCTION_PASS("view-dom", DomViewer())
 FUNCTION_PASS("view-dom-only", DomOnlyViewer())
 FUNCTION_PASS("view-post-dom", PostDomViewer())
 FUNCTION_PASS("view-post-dom-only", PostDomOnlyViewer())
->>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
 #undef FUNCTION_PASS
 
 #ifndef FUNCTION_PASS_WITH_PARAMS
@@ -587,17 +567,12 @@ LOOP_PASS("loop-bound-split", LoopBoundSplitPass())
 LOOP_PASS("loop-deletion", LoopDeletionPass())
 LOOP_PASS("loop-idiom", LoopIdiomRecognizePass())
 LOOP_PASS("loop-instsimplify", LoopInstSimplifyPass())
-<<<<<<< HEAD
-LOOP_PASS("no-op-loop", NoOpLoopPass())
-LOOP_PASS("print", PrintLoopPass(dbgs()))
-LOOP_PASS("loop-deletion", LoopDeletionPass())
-LOOP_PASS("loop-reverse", LoopReversePass())
-LOOP_PASS("loop-simplifycfg", LoopSimplifyCFGPass())
-=======
 LOOP_PASS("loop-predication", LoopPredicationPass())
->>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
 LOOP_PASS("loop-reduce", LoopStrengthReducePass())
 LOOP_PASS("loop-reroll", LoopRerollPass())
+#if SIFIVE_CUSTOMIZATION
+LOOP_PASS("loop-reverse", LoopReversePass())
+#endif
 LOOP_PASS("loop-simplifycfg", LoopSimplifyCFGPass())
 LOOP_PASS("loop-unroll-full", LoopFullUnrollPass())
 LOOP_PASS("loop-versioning-licm", LoopVersioningLICMPass())

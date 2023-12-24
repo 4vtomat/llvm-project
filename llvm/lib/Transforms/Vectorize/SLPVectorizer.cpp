@@ -2353,16 +2353,14 @@ private:
   /// of a vector of (the same) instruction.
   TargetTransformInfo::OperandValueInfo getOperandInfo(ArrayRef<Value *> Ops);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool isRISCVStridedNode(const TreeEntry *E) const;
 
   bool areAllUsersRISCVStridedNode(const TreeEntry *E) const;
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   /// \ returns the graph entry for the \p Idx operand of the \p E entry.
   const TreeEntry *getOperandEntry(const TreeEntry *E, unsigned Idx) const;
->>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
 
   /// \returns the cost of the vectorizable entry.
   InstructionCost getEntryCost(const TreeEntry *E,

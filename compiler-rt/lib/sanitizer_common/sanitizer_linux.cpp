@@ -1100,14 +1100,9 @@ static uptr GetKernelAreaSize() {
 uptr GetMaxVirtualAddress() {
 #  if SANITIZER_NETBSD && defined(__x86_64__)
   return 0x7f7ffffff000ULL;  // (0x00007f8000000000 - PAGE_SIZE)
-<<<<<<< HEAD
-#elif SANITIZER_WORDSIZE == 64
-# if defined(__powerpc64__) || defined(__aarch64__) \
-     || defined(__loongarch__) || (SIFIVE_CUSTOMIZATION && SANITIZER_RISCV64)
-=======
 #  elif SANITIZER_WORDSIZE == 64
-#    if defined(__powerpc64__) || defined(__aarch64__) || defined(__loongarch__)
->>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
+#    if defined(__powerpc64__) || defined(__aarch64__) || \
+        defined(__loongarch__) || (SIFIVE_CUSTOMIZATION && SANITIZER_RISCV64)
   // On PowerPC64 we have two different address space layouts: 44- and 46-bit.
   // We somehow need to figure out which one we are using now and choose
   // one of 0x00000fffffffffffUL and 0x00003fffffffffffUL.

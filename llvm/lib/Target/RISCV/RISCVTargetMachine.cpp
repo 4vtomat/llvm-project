@@ -390,43 +390,39 @@ public:
   ScheduleDAGInstrs *
   createMachineScheduler(MachineSchedContext *C) const override {
     const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    ScheduleDAGMILive *DAG = createGenericSchedLive(C);
-    if (ST.getProcFamily() == RISCVSubtarget::SiFive7)
-      DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
-    if (ST.hasMacroFusion())
-      DAG->addMutation(createRISCVMacroFusionDAGMutation());
-    return DAG;
-#else
-=======
     ScheduleDAGMILive *DAG = nullptr;
     if (EnableMISchedLoadClustering) {
       DAG = createGenericSchedLive(C);
       DAG->addMutation(createLoadClusterDAGMutation(DAG->TII, DAG->TRI));
     }
->>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
+#if SIFIVE_CUSTOMIZATION
+    if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
+      if (!DAG)
+        DAG = createGenericSchedLive(C);
+      DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
+    }
+#endif // SIFIVE_CUSTOMIZATION
     if (ST.hasMacroFusion()) {
       DAG = DAG ? DAG : createGenericSchedLive(C);
       DAG->addMutation(createRISCVMacroFusionDAGMutation());
     }
-<<<<<<< HEAD
-    return nullptr;
-#endif // SIFIVE_CUSTOMIZATION
-=======
     return DAG;
->>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
   }
 
   ScheduleDAGInstrs *
   createPostMachineScheduler(MachineSchedContext *C) const override {
     const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
 #if SIFIVE_CUSTOMIZATION
-    ScheduleDAGMI *DAG = createGenericSchedPostRA(C);
-    if (ST.getProcFamily() == RISCVSubtarget::SiFive7)
+    ScheduleDAGMI *DAG = nullptr;
+    if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
+      DAG = createGenericSchedPostRA(C);
       DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
-    if (ST.hasMacroFusion())
+    }
+    if (ST.hasMacroFusion()) {
+      if (!DAG)
+        DAG = createGenericSchedPostRA(C);
       DAG->addMutation(createRISCVMacroFusionDAGMutation());
+    }
     return DAG;
 #else
     if (ST.hasMacroFusion()) {

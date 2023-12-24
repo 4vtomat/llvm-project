@@ -83,27 +83,12 @@ X86Subtarget::classifyLocalReference(const GlobalValue *GV) const {
   if (is64Bit()) {
     // 64-bit ELF PIC local references may use GOTOFF relocations.
     if (isTargetELF()) {
-<<<<<<< HEAD
-      switch (TM.getCodeModel()) {
-      // 64-bit small code model is simple: All rip-relative.
-      case CodeModel::Tiny:
-        llvm_unreachable("Tiny codesize model not supported on X86");
-      case CodeModel::Compact:
-        llvm_unreachable("Compact codesize model not supported on X86");
-      case CodeModel::Small:
-      case CodeModel::Kernel:
-        return X86II::MO_NO_FLAG;
-
-      // The large PIC code model uses GOTOFF.
-      case CodeModel::Large:
-=======
       CodeModel::Model CM = TM.getCodeModel();
       assert(CM != CodeModel::Tiny &&
              "Tiny codesize model not supported on X86");
       // In the large code model, even referencing a global under the large data
       // threshold which is considered "small", we need to use GOTOFF.
       if (CM == CodeModel::Large)
->>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
         return X86II::MO_GOTOFF;
       // Large objects use GOTOFF, otherwise use RIP-rel access.
       if (auto *GO = dyn_cast_or_null<GlobalObject>(GV))
