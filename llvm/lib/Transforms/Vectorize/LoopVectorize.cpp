@@ -770,10 +770,6 @@ protected:
   /// the block that was created for it.
   void sinkScalarOperands(Instruction *PredInst);
 
-  /// Shrinks vector element sizes to the smallest bitwidth they can be legally
-  /// represented as.
-  void truncateToMinimalBitwidths(VPTransformState &State);
-
   /// Returns (and creates if needed) the trip count of the widened loop.
 #if SIFIVE_CUSTOMIZATION
   virtual
@@ -4052,6 +4048,7 @@ static Type *largestIntegerVectorType(Type *T1, Type *T2) {
   return I1->getBitWidth() > I2->getBitWidth() ? T1 : T2;
 }
 
+<<<<<<< HEAD
 void InnerLoopVectorizer::truncateToMinimalBitwidths(VPTransformState &State) {
   // For every instruction `I` in MinBWs, truncate the operands, create a
   // truncated version of `I` and reextend its result. InstCombine runs
@@ -4304,13 +4301,10 @@ void InnerLoopVectorizer::fixCSALiveOuts(VPTransformState &State, VPlan &Plan) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
 void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State,
                                             VPlan &Plan) {
-  // Insert truncates and extends for any truncated instructions as hints to
-  // InstCombine.
-  if (VF.isVector())
-    truncateToMinimalBitwidths(State);
-
   // Fix widened non-induction PHIs by setting up the PHI operands.
   if (EnableVPlanNativePath)
     fixNonInductionPHIs(Plan, State);
@@ -8825,6 +8819,14 @@ void LoopVectorizationCostModel::setVectorizedCallDecision(ElementCount VF) {
           switch (Param.ParamKind) {
           case VFParamKind::Vector:
             break;
+          case VFParamKind::OMP_Uniform: {
+            Value *ScalarParam = CI->getArgOperand(Param.ParamPos);
+            // Make sure the scalar parameter in the loop is invariant.
+            if (!PSE.getSE()->isLoopInvariant(PSE.getSCEV(ScalarParam),
+                                              TheLoop))
+              ParamsOk = false;
+            break;
+          }
           case VFParamKind::GlobalPredicate:
             UsesMask = true;
             break;
@@ -10884,9 +10886,15 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
     VFRange SubRange = {VF, MaxVFTimes2};
     if (auto Plan = tryToBuildVPlanWithVPRecipes(SubRange)) {
       // Now optimize the initial VPlan.
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       if (!Legal->isVectorizableUncountable()) {
 #endif // SIFIVE_CUSTOMIZATION
+=======
+      if (!Plan->hasVF(ElementCount::getFixed(1)))
+        VPlanTransforms::truncateToMinimalBitwidths(
+            *Plan, CM.getMinimalBitwidths(), PSE.getSE()->getContext());
+>>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
       VPlanTransforms::optimize(*Plan, *PSE.getSE());
       assert(VPlanVerifier::verifyPlanIsValid(*Plan) && "VPlan is invalid");
 #if SIFIVE_CUSTOMIZATION
@@ -11748,9 +11756,15 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
               ? new VPInstruction(Instruction::Select, {Cond, Red, PhiR}, FMFs)
               : new VPInstruction(Instruction::Select, {Cond, Red, PhiR});
       Result->insertBefore(&*Builder.getInsertPoint());
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+      Red->replaceUsesWithIf(
+          Result->getVPSingleValue(),
+          [](VPUser &U, unsigned) { return isa<VPLiveOut>(&U); });
+>>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
       if (PreferPredicatedReductionSelect ||
 #if SIFIVE_CUSTOMIZATION
           Legal->useVLAVectorizer() ||

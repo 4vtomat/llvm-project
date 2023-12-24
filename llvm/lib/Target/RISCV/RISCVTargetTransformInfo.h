@@ -310,7 +310,7 @@ public:
       return false;
 
     EVT ElemType = DataTypeVT.getScalarType();
-    if (!ST->enableUnalignedVectorMem() && Alignment < ElemType.getStoreSize())
+    if (!ST->hasFastUnalignedAccess() && Alignment < ElemType.getStoreSize())
       return false;
 
     return TLI->isLegalElementTypeForRVV(ElemType);
@@ -335,7 +335,7 @@ public:
       return false;
 
     EVT ElemType = DataTypeVT.getScalarType();
-    if (!ST->enableUnalignedVectorMem() && Alignment < ElemType.getStoreSize())
+    if (!ST->hasFastUnalignedAccess() && Alignment < ElemType.getStoreSize())
       return false;
 
     return TLI->isLegalElementTypeForRVV(ElemType);
@@ -492,6 +492,7 @@ public:
   bool isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
                      const TargetTransformInfo::LSRCost &C2);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// \returns true if the loop vectorizer should vectorize conditional
   /// scalar assignments for the target.
@@ -500,6 +501,11 @@ public:
   unsigned getCSABodyFactor() const;
   unsigned getCSAOverheadFactor() const;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  bool shouldFoldTerminatingConditionAfterLSR() const {
+    return true;
+  }
+>>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
 };
 
 } // end namespace llvm

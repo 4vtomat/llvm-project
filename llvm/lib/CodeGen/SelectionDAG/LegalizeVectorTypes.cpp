@@ -6782,7 +6782,7 @@ SDValue DAGTypeLegalizer::WidenVecOp_VP_STRIDED_STORE(SDNode *N,
 }
 
 SDValue DAGTypeLegalizer::WidenVecOp_MSTORE(SDNode *N, unsigned OpNo) {
-  assert((OpNo == 1 || OpNo == 3) &&
+  assert((OpNo == 1 || OpNo == 4) &&
          "Can widen only data or mask operand of mstore");
   MaskedStoreSDNode *MST = cast<MaskedStoreSDNode>(N);
   SDValue Mask = MST->getMask();

@@ -124,7 +124,12 @@ static cl::opt<bool>
 static cl::opt<bool>
     EnableSplitRegAlloc("riscv-split-regalloc", cl::Hidden,
                         cl::desc("Enable Split RegisterAlloc for RVV"),
-                        cl::init(false));
+                        cl::init(true));
+
+static cl::opt<bool> EnableMISchedLoadClustering(
+    "riscv-misched-load-clustering", cl::Hidden,
+    cl::desc("Enable load clustering in the machine scheduler"),
+    cl::init(false));
 
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   RegisterTargetMachine<RISCVTargetMachine> X(getTheRISCV32Target());
@@ -385,6 +390,7 @@ public:
   ScheduleDAGInstrs *
   createMachineScheduler(MachineSchedContext *C) const override {
     const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     ScheduleDAGMILive *DAG = createGenericSchedLive(C);
     if (ST.getProcFamily() == RISCVSubtarget::SiFive7)
@@ -393,13 +399,23 @@ public:
       DAG->addMutation(createRISCVMacroFusionDAGMutation());
     return DAG;
 #else
-    if (ST.hasMacroFusion()) {
-      ScheduleDAGMILive *DAG = createGenericSchedLive(C);
-      DAG->addMutation(createRISCVMacroFusionDAGMutation());
-      return DAG;
+=======
+    ScheduleDAGMILive *DAG = nullptr;
+    if (EnableMISchedLoadClustering) {
+      DAG = createGenericSchedLive(C);
+      DAG->addMutation(createLoadClusterDAGMutation(DAG->TII, DAG->TRI));
     }
+>>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
+    if (ST.hasMacroFusion()) {
+      DAG = DAG ? DAG : createGenericSchedLive(C);
+      DAG->addMutation(createRISCVMacroFusionDAGMutation());
+    }
+<<<<<<< HEAD
     return nullptr;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    return DAG;
+>>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
   }
 
   ScheduleDAGInstrs *

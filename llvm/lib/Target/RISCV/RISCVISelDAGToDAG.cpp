@@ -22,7 +22,6 @@
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/MathExtras.h"
 #include "llvm/Support/raw_ostream.h"
-#include <optional>
 
 using namespace llvm;
 
@@ -155,6 +154,10 @@ void RISCVDAGToDAGISel::PostprocessISelDAG() {
       continue;
 
     MadeChange |= doPeepholeSExtW(N);
+
+    // FIXME: This is here only because the VMerge transform doesn't
+    // know how to handle masked true inputs.  Once that has been moved
+    // to post-ISEL, this can be deleted as well.
     MadeChange |= doPeepholeMaskedRVV(cast<MachineSDNode>(N));
 #if SIFIVE_CUSTOMIZATION
     MadeChange |= doPeepholeLUIADDI(N);
@@ -3921,8 +3924,6 @@ bool RISCVDAGToDAGISel::performCombineVMergeAndVOps(SDNode *N) {
   for (unsigned Idx = 1; Idx < True->getNumValues(); ++Idx)
     ReplaceUses(True.getValue(Idx), SDValue(Result, Idx));
 
-  // Try to transform Result to unmasked intrinsic.
-  doPeepholeMaskedRVV(Result);
   return true;
 }
 

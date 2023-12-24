@@ -128,9 +128,13 @@ static bool hasAllNBitUsers(const MachineInstr &OrigMI,
     if (MI->getNumExplicitDefs() != 1)
       return false;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     for (auto &UserOp : MRI.use_nodbg_operands(MI->getOperand(0).getReg())) {
 #endif
+=======
+    for (auto &UserOp : MRI.use_nodbg_operands(MI->getOperand(0).getReg())) {
+>>>>>>> 55f91bfe5074a22ead581a49e54ec9ed1744b39d
       const MachineInstr *UserMI = UserOp.getParent();
       unsigned OpIdx = UserOp.getOperandNo();
 

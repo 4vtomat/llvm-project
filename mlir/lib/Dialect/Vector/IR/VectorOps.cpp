@@ -3754,12 +3754,8 @@ void TransferReadOp::print(OpAsmPrinter &p) {
   p << " : " << getShapedType() << ", " << getVectorType();
 }
 
-/// Infers the mask type for a transfer op given its vector type and
-/// permutation map. The mask in a transfer op operation applies to the
-/// tensor/buffer part of it and its type should match the vector shape
-/// *before* any permutation or broadcasting.
-static VectorType inferTransferOpMaskType(VectorType vecType,
-                                          AffineMap permMap) {
+VectorType mlir::vector::inferTransferOpMaskType(VectorType vecType,
+                                                 AffineMap permMap) {
   auto i1Type = IntegerType::get(permMap.getContext(), 1);
   AffineMap invPermMap = inversePermutation(compressUnusedDims(permMap));
   assert(invPermMap && "Inversed permutation map couldn't be computed");
@@ -5552,12 +5548,57 @@ public:
   }
 };
 
+/// Folds transpose(shape_cast) into a new shape_cast, when the transpose just
+/// permutes a unit dim from the result of the shape_cast.
+class FoldTransposeShapeCast : public OpRewritePattern<TransposeOp> {
+  using OpRewritePattern::OpRewritePattern;
+
+  LogicalResult matchAndRewrite(TransposeOp transpOp,
+                                PatternRewriter &rewriter) const override {
+    Value transposeSrc = transpOp.getVector();
+    auto shapeCastOp = transposeSrc.getDefiningOp<vector::ShapeCastOp>();
+    if (!shapeCastOp)
+      return rewriter.notifyMatchFailure(
+          transpOp, "TransposeOp source is not ShapeCastOp");
+
+    auto sourceType = transpOp.getSourceVectorType();
+    auto resultType = transpOp.getResultVectorType();
+
+    auto filterUnitDims = [](VectorType type) {
+      return llvm::make_filter_range(
+          llvm::zip_equal(type.getShape(), type.getScalableDims()),
+          [&](auto dim) {
+            auto [size, isScalable] = dim;
+            return size != 1 || isScalable;
+          });
+    };
+
+    auto sourceWithoutUnitDims = filterUnitDims(sourceType);
+    auto resultWithoutUnitDims = filterUnitDims(resultType);
+
+    // If this transpose just permutes a unit dim, then we can fold it into the
+    // shape_cast.
+    for (auto [srcDim, resDim] :
+         llvm::zip_equal(sourceWithoutUnitDims, resultWithoutUnitDims)) {
+      if (srcDim != resDim)
+        return rewriter.notifyMatchFailure(transpOp,
+                                           "TransposeOp permutes non-unit dim");
+    }
+
+    rewriter.replaceOpWithNewOp<vector::ShapeCastOp>(transpOp, resultType,
+                                                     shapeCastOp.getSource());
+
+    return success();
+  };
+};
+
 } // namespace
 
 void vector::TransposeOp::getCanonicalizationPatterns(
     RewritePatternSet &results, MLIRContext *context) {
   results.add<FoldTransposeCreateMask, FoldTransposedScalarBroadcast,
-              TransposeFolder, FoldTransposeSplat>(context);
+              TransposeFolder, FoldTransposeSplat, FoldTransposeShapeCast>(
+      context);
 }
 
 //===----------------------------------------------------------------------===//
