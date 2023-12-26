@@ -60,6 +60,9 @@ struct VPlanTransforms {
   /// optimizations, dead recipe removal, replicate region optimizations and
   /// block merging.
   static void optimize(VPlan &Plan, ScalarEvolution &SE);
+#if SIFIVE_CUSTOMIZATION
+  static void optimizeUncountable(VPlan &Plan, ScalarEvolution &SE);
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Wrap predicated VPReplicateRecipes with a mask operand in an if-then
   /// region block and remove the mask operand. Optimize the created regions by
