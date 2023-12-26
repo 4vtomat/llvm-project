@@ -10658,15 +10658,14 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
     VFRange SubRange = {VF, MaxVFTimes2};
     if (auto Plan = tryToBuildVPlanWithVPRecipes(SubRange)) {
       // Now optimize the initial VPlan.
+      if (!Plan->hasVF(ElementCount::getFixed(1)))
+        VPlanTransforms::truncateToMinimalBitwidths(
+            *Plan, CM.getMinimalBitwidths(), PSE.getSE()->getContext());
 #if SIFIVE_CUSTOMIZATION
       if (Legal->isVectorizableUncountable())
         VPlanTransforms::optimizeUncountable(*Plan, *PSE.getSE());
       else
 #endif // SIFIVE_CUSTOMIZATION
-
-      if (!Plan->hasVF(ElementCount::getFixed(1)))
-        VPlanTransforms::truncateToMinimalBitwidths(
-            *Plan, CM.getMinimalBitwidths(), PSE.getSE()->getContext());
       VPlanTransforms::optimize(*Plan, *PSE.getSE());
       assert(VPlanVerifier::verifyPlanIsValid(*Plan) && "VPlan is invalid");
       VPlans.push_back(std::move(Plan));
