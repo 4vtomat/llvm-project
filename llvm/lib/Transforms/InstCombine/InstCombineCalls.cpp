@@ -3333,8 +3333,14 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
       if (match(TrueV, m_Intrinsic<Intrinsic::vp_select>(
                            m_Value(OtherMask), m_Value(OtherTrueV),
                            m_Specific(FalseV), m_Specific(EVL)))) {
-        replaceOperand(*II, 0, OtherMask);
-        return replaceOperand(*II, 1, OtherTrueV);
+        Instruction *TrueI = cast<Instruction>(TrueV);
+        Builder.SetInsertPoint(TrueI);
+        Instruction *Call =
+            Builder.CreateIntrinsic(Intrinsic::vp_merge, {II->getType()},
+                                    {OtherMask, OtherTrueV, FalseV, EVL});
+        replaceInstUsesWith(*TrueI, Call);
+        eraseInstFromFunction(*TrueI);
+        return replaceInstUsesWith(CI, Call);
       }
     }
     break;
