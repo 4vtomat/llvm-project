@@ -8485,7 +8485,9 @@ static SDValue lowerVectorIntrinsicScalars(SDValue Op, SelectionDAG &DAG,
   bool HasChain = Op.getOpcode() == ISD::INTRINSIC_VOID ||
                   Op.getOpcode() == ISD::INTRINSIC_W_CHAIN;
   unsigned IntNo = Op.getConstantOperandVal(HasChain ? 1 : 0);
+#if SIFIVE_CUSTOMIZATION
   bool VCIX = VCIXScalarNeedLegalization(IntNo);
+#endif // SIFIVE_CUSTOMIZATION
   SDLoc DL(Op);
 
   const RISCVVIntrinsicsTable::RISCVVIntrinsicInfo *II =
