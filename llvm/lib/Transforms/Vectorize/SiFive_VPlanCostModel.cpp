@@ -440,14 +440,15 @@ InstructionCost VPlanCostModel::getVectorCallCost(const CallInst *CI,
   // If we can't emit a vector call for this function, then the currently found
   // cost is the cost we need to return.
   InstructionCost MaskCost = 0;
-  VFShape Shape = VFShape::get(*CI, VF, false /*HasGlobalPred*/);
+  VFShape Shape =
+      VFShape::get(CI->getFunctionType(), VF, false /*HasGlobalPred*/);
   Function *VecFunc =
       VFDatabase(*const_cast<CallInst *>(CI)).getVectorizedFunction(Shape);
   // If we want an unmasked vector function but can't find one matching the VF,
   // maybe we can find vector function that does use a mask and synthesize
   // an all-true mask.
   if (!VecFunc) {
-    Shape = VFShape::get(*CI, VF, /*HasGlobalPred=*/true);
+    Shape = VFShape::get(CI->getFunctionType(), VF, /*HasGlobalPred=*/true);
     VecFunc =
         VFDatabase(*const_cast<CallInst *>(CI)).getVectorizedFunction(Shape);
     // If we found one, add in the cost of creating a mask
