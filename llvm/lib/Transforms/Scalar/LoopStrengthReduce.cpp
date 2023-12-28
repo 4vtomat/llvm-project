@@ -6816,8 +6816,11 @@ canFoldTermCondOfLoop(Loop *L, ScalarEvolution &SE, DominatorTree &DT,
     // iteration. The simplest case to consider is a candidate IV which is
     // narrower than the trip count (and thus original IV), but this can
     // also happen due to non-unit strides on the candidate IVs.
-    if (!AddRec->hasNoSelfWrap())
+#if SIFIVE_CUSTOMIZATION
+    if (!AddRec->hasNoSelfWrap() ||
+        !SE.isKnownNonZero(AddRec->getStepRecurrence(SE)))
       continue;
+#endif
 
     const SCEVAddRecExpr *PostInc = AddRec->getPostIncExpr(SE);
     const SCEV *TermValueSLocal = PostInc->evaluateAtIteration(BECount, SE);

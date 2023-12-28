@@ -7,9 +7,8 @@ define void @_Z12export_rgba8PhiPfi(ptr nocapture noundef writeonly %dst, i32 no
 ; CHECK-NEXT:    blez a3, .LBB0_3
 ; CHECK-NEXT:  # %bb.1: # %for.body.lr.ph
 ; CHECK-NEXT:    slli a3, a3, 32
-; CHECK-NEXT:    srli a3, a3, 32
-; CHECK-NEXT:    mul a3, a1, a3
-; CHECK-NEXT:    add a3, a0, a3
+; CHECK-NEXT:    srli a3, a3, 28
+; CHECK-NEXT:    add a3, a2, a3
 ; CHECK-NEXT:    fmv.w.x fa5, zero
 ; CHECK-NEXT:    lui a4, 523264
 ; CHECK-NEXT:    lui a5, 276464
@@ -37,9 +36,9 @@ define void @_Z12export_rgba8PhiPfi(ptr nocapture noundef writeonly %dst, i32 no
 ; CHECK-NEXT:    vnclipu.wi v9, v9, 0
 ; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; CHECK-NEXT:    vse32.v v9, (a0)
-; CHECK-NEXT:    add a0, a0, a1
 ; CHECK-NEXT:    addi a2, a2, 16
-; CHECK-NEXT:    bne a0, a3, .LBB0_2
+; CHECK-NEXT:    add a0, a0, a1
+; CHECK-NEXT:    bne a2, a3, .LBB0_2
 ; CHECK-NEXT:  .LBB0_3: # %for.cond.cleanup
 ; CHECK-NEXT:    ret
 entry:
