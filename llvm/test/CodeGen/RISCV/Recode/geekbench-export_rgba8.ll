@@ -6,8 +6,7 @@ define void @_Z12export_rgba8PhiPfi(ptr nocapture noundef writeonly %dst, i32 no
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    blez a3, .LBB0_3
 ; CHECK-NEXT:  # %bb.1: # %for.body.lr.ph
-; CHECK-NEXT:    slli a3, a3, 32
-; CHECK-NEXT:    srli a3, a3, 28
+; CHECK-NEXT:    slli a3, a3, 4
 ; CHECK-NEXT:    add a3, a2, a3
 ; CHECK-NEXT:    fmv.w.x fa5, zero
 ; CHECK-NEXT:    lui a4, 523264

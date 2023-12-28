@@ -66,26 +66,14 @@ define <vscale x 1 x i32> @spill_zvlsseg_nxv1i32(ptr %base, i32 %vl) nounwind {
 ; SPILL-O2-VLEN128-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; SPILL-O2-VLEN128-NEXT:    vlseg2e32.v v8, (a0)
 ; SPILL-O2-VLEN128-NEXT:    addi a0, sp, 16
-<<<<<<< HEAD
 ; SPILL-O2-VLEN128-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
 ; SPILL-O2-VLEN128-NEXT:    addi a0, a0, 16
-=======
-; SPILL-O2-VLEN128-NEXT:    li a1, 16
-; SPILL-O2-VLEN128-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
-; SPILL-O2-VLEN128-NEXT:    add a0, a0, a1
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 ; SPILL-O2-VLEN128-NEXT:    vs1r.v v9, (a0) # Unknown-size Folded Spill
 ; SPILL-O2-VLEN128-NEXT:    #APP
 ; SPILL-O2-VLEN128-NEXT:    #NO_APP
 ; SPILL-O2-VLEN128-NEXT:    addi a0, sp, 16
-<<<<<<< HEAD
 ; SPILL-O2-VLEN128-NEXT:    vl1r.v v7, (a0) # Unknown-size Folded Reload
 ; SPILL-O2-VLEN128-NEXT:    addi a0, a0, 16
-=======
-; SPILL-O2-VLEN128-NEXT:    li a1, 16
-; SPILL-O2-VLEN128-NEXT:    vl1r.v v7, (a0) # Unknown-size Folded Reload
-; SPILL-O2-VLEN128-NEXT:    add a0, a0, a1
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 ; SPILL-O2-VLEN128-NEXT:    vl1r.v v8, (a0) # Unknown-size Folded Reload
 ; SPILL-O2-VLEN128-NEXT:    addi sp, sp, 32
 ; SPILL-O2-VLEN128-NEXT:    addi sp, sp, 16
@@ -158,26 +146,14 @@ define <vscale x 2 x i32> @spill_zvlsseg_nxv2i32(ptr %base, i32 %vl) nounwind {
 ; SPILL-O2-VLEN128-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; SPILL-O2-VLEN128-NEXT:    vlseg2e32.v v8, (a0)
 ; SPILL-O2-VLEN128-NEXT:    addi a0, sp, 16
-<<<<<<< HEAD
 ; SPILL-O2-VLEN128-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
 ; SPILL-O2-VLEN128-NEXT:    addi a0, a0, 16
-=======
-; SPILL-O2-VLEN128-NEXT:    li a1, 16
-; SPILL-O2-VLEN128-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
-; SPILL-O2-VLEN128-NEXT:    add a0, a0, a1
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 ; SPILL-O2-VLEN128-NEXT:    vs1r.v v9, (a0) # Unknown-size Folded Spill
 ; SPILL-O2-VLEN128-NEXT:    #APP
 ; SPILL-O2-VLEN128-NEXT:    #NO_APP
 ; SPILL-O2-VLEN128-NEXT:    addi a0, sp, 16
-<<<<<<< HEAD
 ; SPILL-O2-VLEN128-NEXT:    vl1r.v v7, (a0) # Unknown-size Folded Reload
 ; SPILL-O2-VLEN128-NEXT:    addi a0, a0, 16
-=======
-; SPILL-O2-VLEN128-NEXT:    li a1, 16
-; SPILL-O2-VLEN128-NEXT:    vl1r.v v7, (a0) # Unknown-size Folded Reload
-; SPILL-O2-VLEN128-NEXT:    add a0, a0, a1
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 ; SPILL-O2-VLEN128-NEXT:    vl1r.v v8, (a0) # Unknown-size Folded Reload
 ; SPILL-O2-VLEN128-NEXT:    addi sp, sp, 32
 ; SPILL-O2-VLEN128-NEXT:    addi sp, sp, 16
@@ -253,26 +229,14 @@ define <vscale x 4 x i32> @spill_zvlsseg_nxv4i32(ptr %base, i32 %vl) nounwind {
 ; SPILL-O2-VLEN128-NEXT:    vsetvli zero, a1, e32, m2, ta, ma
 ; SPILL-O2-VLEN128-NEXT:    vlseg2e32.v v8, (a0)
 ; SPILL-O2-VLEN128-NEXT:    addi a0, sp, 16
-<<<<<<< HEAD
 ; SPILL-O2-VLEN128-NEXT:    vs2r.v v8, (a0) # Unknown-size Folded Spill
 ; SPILL-O2-VLEN128-NEXT:    addi a0, a0, 32
-=======
-; SPILL-O2-VLEN128-NEXT:    li a1, 32
-; SPILL-O2-VLEN128-NEXT:    vs2r.v v8, (a0) # Unknown-size Folded Spill
-; SPILL-O2-VLEN128-NEXT:    add a0, a0, a1
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 ; SPILL-O2-VLEN128-NEXT:    vs2r.v v10, (a0) # Unknown-size Folded Spill
 ; SPILL-O2-VLEN128-NEXT:    #APP
 ; SPILL-O2-VLEN128-NEXT:    #NO_APP
 ; SPILL-O2-VLEN128-NEXT:    addi a0, sp, 16
-<<<<<<< HEAD
 ; SPILL-O2-VLEN128-NEXT:    vl2r.v v6, (a0) # Unknown-size Folded Reload
 ; SPILL-O2-VLEN128-NEXT:    addi a0, a0, 32
-=======
-; SPILL-O2-VLEN128-NEXT:    li a1, 32
-; SPILL-O2-VLEN128-NEXT:    vl2r.v v6, (a0) # Unknown-size Folded Reload
-; SPILL-O2-VLEN128-NEXT:    add a0, a0, a1
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 ; SPILL-O2-VLEN128-NEXT:    vl2r.v v8, (a0) # Unknown-size Folded Reload
 ; SPILL-O2-VLEN128-NEXT:    addi sp, sp, 64
 ; SPILL-O2-VLEN128-NEXT:    addi sp, sp, 16
@@ -348,26 +312,14 @@ define <vscale x 8 x i32> @spill_zvlsseg_nxv8i32(ptr %base, i32 %vl) nounwind {
 ; SPILL-O2-VLEN128-NEXT:    vsetvli zero, a1, e32, m4, ta, ma
 ; SPILL-O2-VLEN128-NEXT:    vlseg2e32.v v8, (a0)
 ; SPILL-O2-VLEN128-NEXT:    addi a0, sp, 16
-<<<<<<< HEAD
 ; SPILL-O2-VLEN128-NEXT:    vs4r.v v8, (a0) # Unknown-size Folded Spill
 ; SPILL-O2-VLEN128-NEXT:    addi a0, a0, 64
-=======
-; SPILL-O2-VLEN128-NEXT:    li a1, 64
-; SPILL-O2-VLEN128-NEXT:    vs4r.v v8, (a0) # Unknown-size Folded Spill
-; SPILL-O2-VLEN128-NEXT:    add a0, a0, a1
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 ; SPILL-O2-VLEN128-NEXT:    vs4r.v v12, (a0) # Unknown-size Folded Spill
 ; SPILL-O2-VLEN128-NEXT:    #APP
 ; SPILL-O2-VLEN128-NEXT:    #NO_APP
 ; SPILL-O2-VLEN128-NEXT:    addi a0, sp, 16
-<<<<<<< HEAD
 ; SPILL-O2-VLEN128-NEXT:    vl4r.v v4, (a0) # Unknown-size Folded Reload
 ; SPILL-O2-VLEN128-NEXT:    addi a0, a0, 64
-=======
-; SPILL-O2-VLEN128-NEXT:    li a1, 64
-; SPILL-O2-VLEN128-NEXT:    vl4r.v v4, (a0) # Unknown-size Folded Reload
-; SPILL-O2-VLEN128-NEXT:    add a0, a0, a1
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 ; SPILL-O2-VLEN128-NEXT:    vl4r.v v8, (a0) # Unknown-size Folded Reload
 ; SPILL-O2-VLEN128-NEXT:    addi sp, sp, 128
 ; SPILL-O2-VLEN128-NEXT:    addi sp, sp, 16
