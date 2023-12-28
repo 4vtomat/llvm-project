@@ -587,8 +587,6 @@ InstructionCost VPlanCostModel::getInstructionCost(const VPInstruction *VPI,
                               cast<VectorType>(VectorTy), std::nullopt,
                               CostKind, /*Index*/ -1);
   }
-  case VPInstruction::CanonicalIVIncrement:
-    return 1;
   case VPInstruction::BranchOnCount:
     return 0;
   default:
