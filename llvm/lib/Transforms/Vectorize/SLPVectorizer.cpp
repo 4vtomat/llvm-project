@@ -9341,23 +9341,6 @@ static T *performExtractsShuffleAction(
 }
 
 InstructionCost BoUpSLP::getTreeCost(ArrayRef<Value *> VectorizedVals) {
-<<<<<<< HEAD
-  // Build a map for gathered scalars to the nodes where they are used.
-  ValueToGatherNodes.clear();
-  for (const std::unique_ptr<TreeEntry> &EntryPtr : VectorizableTree) {
-    if (EntryPtr->State != TreeEntry::NeedToGather)
-      continue;
-#if SIFIVE_CUSTOMIZATION
-    if (areAllUsersRISCVStridedNode(EntryPtr.get()))
-      continue;
-#endif // SIFIVE_CUSTOMIZATION
-    for (Value *V : EntryPtr->Scalars)
-      if (!isConstant(V))
-        ValueToGatherNodes.try_emplace(V).first->getSecond().insert(
-            EntryPtr.get());
-  }
-=======
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
   InstructionCost Cost = 0;
   LLVM_DEBUG(dbgs() << "SLP: Calculating cost for tree of size "
                     << VectorizableTree.size() << ".\n");
