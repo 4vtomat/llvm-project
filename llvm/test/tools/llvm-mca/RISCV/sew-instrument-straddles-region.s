@@ -19,11 +19,7 @@ vdiv.vv v8, v8, v12
 # CHECK:      Dispatch Width:    2
 # CHECK-NEXT: uOps Per Cycle:    0.02
 # CHECK-NEXT: IPC:               0.02
-<<<<<<< HEAD
 # CHECK-NEXT: Block RThroughput: 129.0
-=======
-# CHECK-NEXT: Block RThroughput: 115.0
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 
 # CHECK:      Instruction Info:
 # CHECK-NEXT: [1]: #uOps
@@ -35,16 +31,11 @@ vdiv.vv v8, v8, v12
 
 # CHECK:      [1]    [2]    [3]    [4]    [5]    [6]    Instructions:
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, a0, e64, m1, tu, mu
-<<<<<<< HEAD
 # CHECK-NEXT:  1      128   129.00                      vdiv.vv	v8, v8, v12
-=======
-# CHECK-NEXT:  1      114   115.00                      vdiv.vv	v8, v8, v12
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 
 # CHECK:      Resources:
 # CHECK-NEXT: [0]   - SiFive7FDiv
 # CHECK-NEXT: [1]   - SiFive7IDiv
-<<<<<<< HEAD
 # CHECK-NEXT: [2]   - SiFive7Mem
 # CHECK-NEXT: [3]   - SiFive7PipeA
 # CHECK-NEXT: [4]   - SiFive7PipeB
@@ -61,23 +52,6 @@ vdiv.vv v8, v8, v12
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e64, m1, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     129.00 1.00    -      -     vdiv.vv	v8, v8, v12
-=======
-# CHECK-NEXT: [2]   - SiFive7PipeA
-# CHECK-NEXT: [3]   - SiFive7PipeB
-# CHECK-NEXT: [4]   - SiFive7VA
-# CHECK-NEXT: [5]   - SiFive7VCQ
-# CHECK-NEXT: [6]   - SiFive7VL
-# CHECK-NEXT: [7]   - SiFive7VS
-
-# CHECK:      Resource pressure per iteration:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]
-# CHECK-NEXT:  -      -     1.00    -     115.00 1.00    -      -
-
-# CHECK:      Resource pressure by instruction:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    Instructions:
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e64, m1, tu, mu
-# CHECK-NEXT:  -      -      -      -     115.00 1.00    -      -     vdiv.vv	v8, v8, v12
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 
 # CHECK:      Timeline view:
 # CHECK-NEXT: Index     0123
