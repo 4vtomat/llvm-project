@@ -429,31 +429,31 @@ multiclass VPseudoSiFiveVMACC<string mx, VReg vd_type, VReg vs2_type,
 
 multiclass VPseudoSiFiveVQMACCDOD<string Constraint = ""> {
   foreach m = MxListVF8 in
+    let VLMul = m.value in
     defm NAME : VPseudoSiFiveVMACC<m.MX, m.vrclass, m.vrclass, Constraint>;
 }
 
 multiclass VPseudoSiFiveVQMACCQOQ<string Constraint = ""> {
-  foreach m = MxListVF8 in
-    defm NAME : VPseudoSiFiveVMACC<m.MX, m.vrclass, m.f2vrclass, Constraint>;
+  foreach i = 0-3 in
+    let VLMul = MxListVF4[i].value in
+    defm NAME : VPseudoSiFiveVMACC<MxListVF4[i].MX, MxListVF8[i].vrclass,
+                                   MxListVF4[i].vrclass, Constraint>;
 }
 
 multiclass VPseudoSiFiveVFWMACC<string Constraint = ""> {
-#ifdef SIFIVE_CUSTOMIZATION
-   foreach i = [0, 1, 2, 3, 4] in
-    defm NAME : VPseudoSiFiveVMACC<MxListVF4[i].MX, MxListFW[i].wvrclass,
-                                   MxListFW[i].vrclass, Constraint>;
-#endif // SIFIVE_CUSTOMIZATION
+  foreach m = MxListVF2 in
+    let VLMul = m.value in
+    defm NAME : VPseudoSiFiveVMACC<m.MX, m.wvrclass, m.vrclass, Constraint>;
 }
 
 multiclass VPseudoSiFiveVFNRCLIP<string Constraint = "@earlyclobber $rd"> {
-#ifdef SIFIVE_CUSTOMIZATION
-  foreach m = [V_MF8, V_MF4, V_MF2, V_M1, V_M2] in
+  foreach i = [0, 1, 2, 3, 4] in
     let hasSideEffects = 0 in
-      defm "Pseudo" # NAME : VPseudoBinaryRoundingMode<m.vrclass,
-                                                       m.w2vrclass, FPR32, m,
+      defm "Pseudo" # NAME : VPseudoBinaryRoundingMode<MxListW[i].vrclass,
+                                                       MxListVF4[i].vrclass,
+                                                       FPR32, MxListW[i],
                                                        Constraint, /*sew*/0,
                                                        UsesVXRM=0>;
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 let Predicates = [HasVendorXSfvcp] in {
@@ -646,7 +646,7 @@ multiclass VPatVMACC<string intrinsic, string instruction, string kind,
     def : VPatTernaryNoMaskWithPolicy<"int_riscv_sf_" # intrinsic,
                                       "Pseudo" # instruction, kind, VdInfo.Vector,
                                       vec_m1, Vs2Info.Vector,
-                                      Vs2Info.Log2SEW, VdInfo.LMul,
+                                      Vs2Info.Log2SEW, Vs2Info.LMul,
                                       VdInfo.RegClass, VR, Vs2Info.RegClass>;
   }
 }
@@ -670,7 +670,6 @@ multiclass VPatVQMACCDOD<string intrinsic, string instruction, string kind>
 
 multiclass VPatVQMACCQOQ<string intrinsic, string instruction, string kind>
     : VPatVMACC<intrinsic, instruction, kind, VQMACCQOQInfoPairs, vint8m1_t>;
-
 
 multiclass VPatVFWMACC<string intrinsic, string instruction, string kind>
     : VPatVMACC<intrinsic, instruction, kind, AllWidenableBFloatToFloatVectors,
