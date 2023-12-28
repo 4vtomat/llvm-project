@@ -285,20 +285,16 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
 
     Value *A = State.get(getOperand(0), Part);
     Value *B = State.get(getOperand(1), Part);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (State.Plan->getRVL() && A->getType()->isVectorTy())
       return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
                                               nullptr, Part);
 #endif // SIFIVE_CUSTOMIZATION
-    return Builder.CreateBinOp((Instruction::BinaryOps)getOpcode(), A, B, Name);
-=======
     auto *Res =
         Builder.CreateBinOp((Instruction::BinaryOps)getOpcode(), A, B, Name);
     if (auto *I = dyn_cast<Instruction>(Res))
       setFlags(I);
     return Res;
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
   }
 
   switch (getOpcode()) {
@@ -390,30 +386,6 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     Value *Zero = ConstantInt::get(ScalarTC->getType(), 0);
     return Builder.CreateSelect(Cmp, Sub, Zero);
   }
-<<<<<<< HEAD
-  case VPInstruction::CanonicalIVIncrement: {
-    if (Part == 0) {
-      auto *Phi = State.get(getOperand(0), 0);
-      // The loop step is equal to the vectorization factor (num of SIMD
-      // elements) times the unroll factor (num of SIMD instructions).
-#if SIFIVE_CUSTOMIZATION
-      Value *Step;
-      if (VPValue *RVL = State.Plan->getRVL())
-        Step = Builder.CreateZExtOrTrunc(State.get(RVL, 0), Phi->getType());
-      else
-        Step = createStepForVF(Builder, Phi->getType(), State.VF, State.UF);
-#else
-      Value *Step =
-          createStepForVF(Builder, Phi->getType(), State.VF, State.UF);
-#endif // SIFIVE_CUSTOMIZATION
-      return Builder.CreateAdd(Phi, Step, Name, hasNoUnsignedWrap(),
-                               hasNoSignedWrap());
-    }
-    return State.get(this, 0);
-  }
-
-=======
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
   case VPInstruction::CanonicalIVIncrementForPart: {
     auto *IV = State.get(getOperand(0), VPIteration(0, 0));
     if (Part == 0)

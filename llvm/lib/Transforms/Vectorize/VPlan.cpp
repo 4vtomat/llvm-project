@@ -1111,11 +1111,9 @@ void VPlan::printLiveIns(raw_ostream &O) const {
   TripCount->printAsOperand(O, SlotTracker);
   O << " = original trip-count";
   O << "\n";
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
 }
 
 LLVM_DUMP_METHOD
@@ -1125,7 +1123,6 @@ void VPlan::print(raw_ostream &O) const {
   O << "VPlan '" << getName() << "' {";
 
   printLiveIns(O);
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 
   if (!getPreheader()->empty()) {
     O << "\n";
@@ -1261,7 +1258,6 @@ void VPlanPrinter::dump() {
   for (auto Line : Lines)
     OS << DOT::EscapeString(Line.str()) << "\\n";
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Plan.RVL) {
     OS << "\\n";
@@ -1289,9 +1285,7 @@ void VPlanPrinter::dump() {
     OS << " := All-FALSE-MASK";
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
 
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
   OS << "\"]\n";
   OS << "node [shape=rect, fontname=Courier, fontsize=30]\n";
   OS << "edge [fontname=Courier, fontsize=30]\n";
