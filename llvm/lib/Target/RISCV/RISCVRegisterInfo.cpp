@@ -310,10 +310,6 @@ void RISCVRegisterInfo::lowerVSPILL(MachineBasicBlock::iterator II) const {
                 "Unexpected subreg numbering");
 
   Register VL = MRI.createVirtualRegister(&RISCV::GPRRegClass);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
   // Optimize for constant VLEN.
   const RISCVSubtarget &STI = MF.getSubtarget<RISCVSubtarget>();
   if (STI.getRealMinVLen() == STI.getRealMaxVLen()) {
@@ -328,17 +324,6 @@ void RISCVRegisterInfo::lowerVSPILL(MachineBasicBlock::iterator II) const {
           .addReg(VL)
           .addImm(ShiftAmount);
   }
-<<<<<<< HEAD
-#else  // SIFIVE_CUSTOMIZATION
-  BuildMI(MBB, II, DL, TII->get(RISCV::PseudoReadVLENB), VL);
-  uint32_t ShiftAmount = Log2_32(LMUL);
-  if (ShiftAmount != 0)
-    BuildMI(MBB, II, DL, TII->get(RISCV::SLLI), VL)
-        .addReg(VL)
-        .addImm(ShiftAmount);
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 
   Register SrcReg = II->getOperand(0).getReg();
   Register Base = II->getOperand(1).getReg();
@@ -402,10 +387,6 @@ void RISCVRegisterInfo::lowerVRELOAD(MachineBasicBlock::iterator II) const {
                 "Unexpected subreg numbering");
 
   Register VL = MRI.createVirtualRegister(&RISCV::GPRRegClass);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
   // Optimize for constant VLEN.
   const RISCVSubtarget &STI = MF.getSubtarget<RISCVSubtarget>();
   if (STI.getRealMinVLen() == STI.getRealMaxVLen()) {
@@ -420,17 +401,6 @@ void RISCVRegisterInfo::lowerVRELOAD(MachineBasicBlock::iterator II) const {
           .addReg(VL)
           .addImm(ShiftAmount);
   }
-<<<<<<< HEAD
-#else  // SIFIVE_CUSTOMIZATION
-  BuildMI(MBB, II, DL, TII->get(RISCV::PseudoReadVLENB), VL);
-  uint32_t ShiftAmount = Log2_32(LMUL);
-  if (ShiftAmount != 0)
-    BuildMI(MBB, II, DL, TII->get(RISCV::SLLI), VL)
-        .addReg(VL)
-        .addImm(ShiftAmount);
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 
   Register DestReg = II->getOperand(0).getReg();
   Register Base = II->getOperand(1).getReg();

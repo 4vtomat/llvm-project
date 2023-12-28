@@ -6,12 +6,6 @@
 //
 //===----------------------------------------------------------------------===//
 
-<<<<<<< HEAD
-#include <array>
-#include <cerrno>
-#include <iostream>
-=======
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 #include <memory>
 #include <string>
 

@@ -81,11 +81,8 @@ def remark_fe_backend_optimization_remark_analysis_aliasing : Remark<"%0; "
     "the '__restrict__' qualifier with the independent array arguments. "
     "Erroneous results will occur if these options are incorrectly applied!">,
     BackendInfo, InGroup<BackendOptimizationRemarkAnalysis>;
-<<<<<<< HEAD
 // end SIFIVE_CUSTOMIZATION
-=======
 
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 def warn_fe_backend_optimization_failure : Warning<"%0">, BackendInfo,
     InGroup<BackendOptimizationFailure>, DefaultWarn;
 def note_fe_backend_invalid_loc : Note<"could "
