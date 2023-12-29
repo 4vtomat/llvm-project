@@ -2428,8 +2428,9 @@ static bool memOpsHaveSameBasePtr(const MachineInstr &MI1,
 }
 
 bool RISCVInstrInfo::shouldClusterMemOps(
-    ArrayRef<const MachineOperand *> BaseOps1,
-    ArrayRef<const MachineOperand *> BaseOps2, unsigned ClusterSize,
+    ArrayRef<const MachineOperand *> BaseOps1, int64_t Offset1,
+    bool OffsetIsScalable1, ArrayRef<const MachineOperand *> BaseOps2,
+    int64_t Offset2, bool OffsetIsScalable2, unsigned ClusterSize,
     unsigned NumBytes) const {
 #if SIFIVE_CUSTOMIZATION
   if (STI.getProcFamily() == RISCVSubtarget::SiFive7)
@@ -2471,7 +2472,8 @@ bool RISCVInstrInfo::getMemOperandWithOffsetWidth(
   // load/store instructions.
   if (LdSt.getNumExplicitOperands() != 3)
     return false;
-  if (!LdSt.getOperand(1).isReg() || !LdSt.getOperand(2).isImm())
+  if ((!LdSt.getOperand(1).isReg() && !LdSt.getOperand(1).isFI()) ||
+      !LdSt.getOperand(2).isImm())
     return false;
 
   if (!LdSt.hasOneMemOperand())

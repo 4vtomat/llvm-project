@@ -64,7 +64,11 @@ void f1(t1 x, t1 y) {
 // CHECK: {"enabled":true,"level":"error","rank":50},"fullDescription":{"text":""},"id":"{{[0-9]+}}","name":""},{"defaultConfiguration":
 // CHECK: {"enabled":true,"level":"error","rank":50},"fullDescription":{"text":""},"id":"{{[0-9]+}}","name":""},{"defaultConfiguration":
 // CHECK: {"enabled":true,"level":"error","rank":50},"fullDescription":
+<<<<<<< HEAD
 // SIFIVE_CUSTOMIZATION
 // CHECK: {"text":""},"id":"{{[0-9]+}}","name":""}],"version":"17.9.{{[0-9]+}}"}}}],"version":"2.1.0"}
 // end of SIFIVE_CUSTOMIZATION
+=======
+// CHECK: {"text":""},"id":"{{[0-9]+}}","name":""}],"version":"{{[0-9]+\.[0-9]+\.[0-9]+[^" ]*}}"}}}],"version":"2.1.0"}
+>>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 // CHECK: 2 warnings and 6 errors generated.

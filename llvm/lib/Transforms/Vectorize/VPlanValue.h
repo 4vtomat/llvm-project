@@ -303,6 +303,7 @@ public:
            "Op must be an operand of the recipe");
     return false;
   }
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   virtual bool usesAnyScalars(const VPValue *Op) const {
     assert(is_contained(operands(), Op) &&
@@ -319,6 +320,16 @@ public:
     return false;
   }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+
+  /// Returns true if the VPUser only uses the first part of operand \p Op.
+  /// Conservatively returns false.
+  virtual bool onlyFirstPartUsed(const VPValue *Op) const {
+    assert(is_contained(operands(), Op) &&
+           "Op must be an operand of the recipe");
+    return false;
+  }
+>>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 };
 
 /// This class augments a recipe with a set of VPValues defined by the recipe.

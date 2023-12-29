@@ -68,6 +68,7 @@ c.jr a0
 # CHECK:      Resources:
 # CHECK-NEXT: [0]   - SiFive7FDiv
 # CHECK-NEXT: [1]   - SiFive7IDiv
+<<<<<<< HEAD
 # CHECK-NEXT: [2]   - SiFive7Mem
 # CHECK-NEXT: [3]   - SiFive7PipeA
 # CHECK-NEXT: [4]   - SiFive7PipeB
@@ -75,6 +76,14 @@ c.jr a0
 # CHECK-NEXT: [6]   - SiFive7VCQ
 # CHECK-NEXT: [7]   - SiFive7VL
 # CHECK-NEXT: [8]   - SiFive7VS
+=======
+# CHECK-NEXT: [2]   - SiFive7PipeA
+# CHECK-NEXT: [3]   - SiFive7PipeB
+# CHECK-NEXT: [4]   - SiFive7VA
+# CHECK-NEXT: [5]   - SiFive7VCQ
+# CHECK-NEXT: [6]   - SiFive7VL
+# CHECK-NEXT: [7]   - SiFive7VS
+>>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 
 # CHECK:      Resource pressure per iteration:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]

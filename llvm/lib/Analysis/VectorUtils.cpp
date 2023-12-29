@@ -1576,7 +1576,8 @@ void VFABI::getVectorVariantNames(
   S.split(ListAttr, ",");
 
   for (const auto &S : SetVector<StringRef>(ListAttr.begin(), ListAttr.end())) {
-    std::optional<VFInfo> Info = VFABI::tryDemangleForVFABI(S, CI);
+    std::optional<VFInfo> Info =
+        VFABI::tryDemangleForVFABI(S, CI.getFunctionType());
     if (Info && CI.getModule()->getFunction(Info->VectorName)) {
       LLVM_DEBUG(dbgs() << "VFABI: Adding mapping '" << S << "' for " << CI
                         << "\n");

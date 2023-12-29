@@ -2476,6 +2476,7 @@ public:
                                                bool IsZeroCmp) const override {
     return Impl.enableMemCmpExpansion(OptSize, IsZeroCmp);
   }
+<<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
   bool getMemoryRefInfo(SmallVectorImpl<InterestingMemoryOperand> &Interesting,
@@ -2492,8 +2493,13 @@ public:
   bool enableInterleavedAccessVectorization() override {
     return Impl.enableInterleavedAccessVectorization();
   }
+=======
+>>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
   bool enableSelectOptimize() override {
     return Impl.enableSelectOptimize();
+  }
+  bool enableInterleavedAccessVectorization() override {
+    return Impl.enableInterleavedAccessVectorization();
   }
   bool enableMaskedInterleavedAccessVectorization() override {
     return Impl.enableMaskedInterleavedAccessVectorization();

@@ -153,7 +153,7 @@ public:
 
   /// Select compatible variants, \returns false if none are compatible
   bool select(const Multilib::flags_list &Flags,
-              llvm::SmallVector<Multilib> &) const;
+              llvm::SmallVectorImpl<Multilib> &) const;
 
   unsigned size() const { return Multilibs.size(); }
 

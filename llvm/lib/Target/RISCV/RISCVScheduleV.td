@@ -74,16 +74,28 @@ multiclass LMULWriteResMXVariant<string Name, SchedPredicate Pred,
                                  list<int> predReleaseCycles, int noPredLat,
                                  list<int> noPredAcquireCycles,
                                  list<int> noPredReleaseCycles,
+<<<<<<< HEAD
                                  string mx, bit IsWorstCase, string prefix> {
   defvar NameMX = prefix # Name # "_" # mx;
 
   // Define the different behaviors
   def NameMX # "_Pred" : SchedWriteRes<resources>{
+=======
+                                 string mx, bit IsWorstCase> {
+  defvar nameMX = name # "_" # mx;
+
+  // Define the different behaviors
+  def nameMX # "_Pred" : SchedWriteRes<resources>{
+>>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
     let Latency = predLat;
     let AcquireAtCycles = predAcquireCycles;
     let ReleaseAtCycles = predReleaseCycles;
   }
+<<<<<<< HEAD
   def NameMX # "_NoPred" : SchedWriteRes<resources> {
+=======
+  def nameMX # "_NoPred" : SchedWriteRes<resources> {
+>>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
     let Latency = noPredLat;
     let AcquireAtCycles = noPredAcquireCycles;
     let ReleaseAtCycles = noPredReleaseCycles;
