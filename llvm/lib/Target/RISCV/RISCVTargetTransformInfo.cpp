@@ -943,6 +943,11 @@ InstructionCost RISCVTTIImpl::getInterleavedMemoryOpCost(
 #if SIFIVE_CUSTOMIZATION
   if (isa<ScalableVectorType>(VecTy) &&
       Factor <= TLI->getMaxSupportedInterleaveFactor()) {
+    // Only supported deinterleave2/interleave2 for scalable vectors in upstream
+    // vectorizer.
+    if (!useVLAVectorizer() && Factor != 2)
+      return InstructionCost::getInvalid();
+
     auto *SVTy = cast<ScalableVectorType>(VecTy);
     ElementCount VF = SVTy->getElementCount().divideCoefficientBy(Factor);
     VectorType *SubVecTy =

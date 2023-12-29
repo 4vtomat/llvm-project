@@ -7896,13 +7896,6 @@ LoopVectorizationCostModel::getGatherScatterCost(Instruction *I,
 InstructionCost
 LoopVectorizationCostModel::getInterleaveGroupCost(Instruction *I,
                                                    ElementCount VF) {
-  // TODO: Once we have support for interleaving with scalable vectors
-  // we can calculate the cost properly here.
-#if SIFIVE_CUSTOMIZATION
-  if (!Legal->useVLAVectorizer() && VF.isScalable())
-#endif // SIFIVE_CUSTOMIZATION
-    return InstructionCost::getInvalid();
-
   Type *ValTy = getLoadStoreType(I);
   auto *VectorTy = cast<VectorType>(ToVectorTy(ValTy, VF));
   unsigned AS = getLoadStoreAddressSpace(I);
