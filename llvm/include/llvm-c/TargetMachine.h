@@ -59,8 +59,8 @@ typedef enum {
     LLVMCodeModelSmall,
     LLVMCodeModelKernel,
     LLVMCodeModelMedium,
-    LLVMCodeModelCompact, // SIFIVE_CUSTOMIZATION
-    LLVMCodeModelLarge
+    LLVMCodeModelLarge, // SIFIVE
+    LLVMCodeModelCompact, // SIFIVE
 } LLVMCodeModel;
 
 typedef enum {

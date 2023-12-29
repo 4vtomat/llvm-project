@@ -15,7 +15,7 @@
 // CHECK-MEDIUM: !llvm.module.flags = !{{{.*}}}
 // CHECK-MEDIUM: !{{[0-9]+}} = !{i32 1, !"Code Model", i32 3}
 // CHECK-COMPACT: !llvm.module.flags = !{{{.*}}}
-// CHECK-COMPACT: !{{[0-9]+}} = !{i32 1, !"Code Model", i32 4}
+// CHECK-COMPACT: !{{[0-9]+}} = !{i32 1, !"Code Model", i32 5}
 // CHECK-LARGE: !llvm.module.flags = !{{{.*}}}
-// CHECK-LARGE: !{{[0-9]+}} = !{i32 1, !"Code Model", i32 5}
+// CHECK-LARGE: !{{[0-9]+}} = !{i32 1, !"Code Model", i32 4}
 // CHECK-NOMODEL-NOT: Code Model
