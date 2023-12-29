@@ -289,6 +289,16 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     if (State.Plan->getRVL() && A->getType()->isVectorTy())
       return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
                                               nullptr, Part);
+    // FIXME: Remove with a proper representation of VFxUF in a VPlan. Currently
+    // VFxUF is replaced with RVL if it's available. It can happen that after
+    // such replacement types of operands do not match. In this case we have to
+    // convert RVL operand to the proper type
+    if (A->getType() != B->getType()) {
+      if (getOperand(0) == State.Plan->getRVL())
+        A = Builder.CreateZExtOrTrunc(A, B->getType());
+      else if (getOperand(1) == State.Plan->getRVL())
+        B = Builder.CreateZExtOrTrunc(B, A->getType());
+    }
 #endif // SIFIVE_CUSTOMIZATION
     auto *Res =
         Builder.CreateBinOp((Instruction::BinaryOps)getOpcode(), A, B, Name);

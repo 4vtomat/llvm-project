@@ -138,7 +138,7 @@ define void @interleaved_store_factor_4(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP8]]
 ; CHECK-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.experimental.vp.strided.load.nxv2i32.p0.i64(ptr align 4 [[TMP9]], i64 8, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP6]])
 ; CHECK-NEXT:    [[TMP10:%.*]] = shl nsw i64 [[TMP7]], 2
-; CHECK-NEXT:    [[TMP11:%.*]] = or i64 [[TMP10]], 3
+; CHECK-NEXT:    [[TMP11:%.*]] = or disjoint i64 [[TMP10]], 3
 ; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP11]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[TMP12]], i32 -3
 ; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vector.interleave4.nxv8i32(<vscale x 2 x i32> [[VP_STRIDED_LOAD]], <vscale x 2 x i32> [[VP_STRIDED_LOAD]], <vscale x 2 x i32> [[VP_STRIDED_LOAD]], <vscale x 2 x i32> [[VP_STRIDED_LOAD]])
@@ -165,13 +165,13 @@ define void @interleaved_store_factor_4(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP19:%.*]] = shl nsw i64 [[INDVARS_IV]], 2
 ; CHECK-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP19]]
 ; CHECK-NEXT:    store i32 [[TMP18]], ptr [[ARRAYIDX3]], align 4
-; CHECK-NEXT:    [[TMP20:%.*]] = or i64 [[TMP19]], 1
+; CHECK-NEXT:    [[TMP20:%.*]] = or disjoint i64 [[TMP19]], 1
 ; CHECK-NEXT:    [[ARRAYIDX9:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP20]]
 ; CHECK-NEXT:    store i32 [[TMP18]], ptr [[ARRAYIDX9]], align 4
-; CHECK-NEXT:    [[TMP21:%.*]] = or i64 [[TMP19]], 2
+; CHECK-NEXT:    [[TMP21:%.*]] = or disjoint i64 [[TMP19]], 2
 ; CHECK-NEXT:    [[ARRAYIDX16:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP21]]
 ; CHECK-NEXT:    store i32 [[TMP18]], ptr [[ARRAYIDX16]], align 4
-; CHECK-NEXT:    [[TMP22:%.*]] = or i64 [[TMP19]], 3
+; CHECK-NEXT:    [[TMP22:%.*]] = or disjoint i64 [[TMP19]], 3
 ; CHECK-NEXT:    [[ARRAYIDX23:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP22]]
 ; CHECK-NEXT:    store i32 [[TMP18]], ptr [[ARRAYIDX23]], align 4
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
@@ -201,13 +201,13 @@ for.body:
   %2 = shl nsw i64 %indvars.iv, 2
   %arrayidx3 = getelementptr inbounds i32, ptr %b, i64 %2
   store i32 %1, ptr %arrayidx3, align 4
-  %3 = or i64 %2, 1
+  %3 = or disjoint i64 %2, 1
   %arrayidx9 = getelementptr inbounds i32, ptr %b, i64 %3
   store i32 %1, ptr %arrayidx9, align 4
-  %4 = or i64 %2, 2
+  %4 = or disjoint i64 %2, 2
   %arrayidx16 = getelementptr inbounds i32, ptr %b, i64 %4
   store i32 %1, ptr %arrayidx16, align 4
-  %5 = or i64 %2, 3
+  %5 = or disjoint i64 %2, 3
   %arrayidx23 = getelementptr inbounds i32, ptr %b, i64 %5
   store i32 %1, ptr %arrayidx23, align 4
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
@@ -391,7 +391,7 @@ define void @interleaved_store_factor_6(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul nuw nsw i64 [[INDVARS_IV]], 6
 ; CHECK-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP19]]
 ; CHECK-NEXT:    store i32 [[TMP18]], ptr [[ARRAYIDX3]], align 4
-; CHECK-NEXT:    [[TMP20:%.*]] = or i64 [[TMP19]], 1
+; CHECK-NEXT:    [[TMP20:%.*]] = or disjoint i64 [[TMP19]], 1
 ; CHECK-NEXT:    [[ARRAYIDX9:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP20]]
 ; CHECK-NEXT:    store i32 [[TMP18]], ptr [[ARRAYIDX9]], align 4
 ; CHECK-NEXT:    [[TMP21:%.*]] = add nuw nsw i64 [[TMP19]], 2
@@ -433,7 +433,7 @@ for.body:
   %2 = mul nuw nsw i64 %indvars.iv, 6
   %arrayidx3 = getelementptr inbounds i32, ptr %b, i64 %2
   store i32 %1, ptr %arrayidx3, align 4
-  %3 = or i64 %2, 1
+  %3 = or disjoint i64 %2, 1
   %arrayidx9 = getelementptr inbounds i32, ptr %b, i64 %3
   store i32 %1, ptr %arrayidx9, align 4
   %4 = add nuw nsw i64 %2, 2
@@ -614,7 +614,7 @@ define void @interleaved_store_factor_8(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP8]]
 ; CHECK-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.experimental.vp.strided.load.nxv2i32.p0.i64(ptr align 4 [[TMP9]], i64 8, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP6]])
 ; CHECK-NEXT:    [[TMP10:%.*]] = shl nsw i64 [[TMP7]], 3
-; CHECK-NEXT:    [[TMP11:%.*]] = or i64 [[TMP10]], 7
+; CHECK-NEXT:    [[TMP11:%.*]] = or disjoint i64 [[TMP10]], 7
 ; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP11]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[TMP12]], i32 -7
 ; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 16 x i32> @llvm.experimental.vector.interleave8.nxv16i32(<vscale x 2 x i32> [[VP_STRIDED_LOAD]], <vscale x 2 x i32> [[VP_STRIDED_LOAD]], <vscale x 2 x i32> [[VP_STRIDED_LOAD]], <vscale x 2 x i32> [[VP_STRIDED_LOAD]], <vscale x 2 x i32> [[VP_STRIDED_LOAD]], <vscale x 2 x i32> [[VP_STRIDED_LOAD]], <vscale x 2 x i32> [[VP_STRIDED_LOAD]], <vscale x 2 x i32> [[VP_STRIDED_LOAD]])
@@ -641,25 +641,25 @@ define void @interleaved_store_factor_8(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP19:%.*]] = shl nsw i64 [[INDVARS_IV]], 3
 ; CHECK-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP19]]
 ; CHECK-NEXT:    store i32 [[TMP18]], ptr [[ARRAYIDX3]], align 4
-; CHECK-NEXT:    [[TMP20:%.*]] = or i64 [[TMP19]], 1
+; CHECK-NEXT:    [[TMP20:%.*]] = or disjoint i64 [[TMP19]], 1
 ; CHECK-NEXT:    [[ARRAYIDX9:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP20]]
 ; CHECK-NEXT:    store i32 [[TMP18]], ptr [[ARRAYIDX9]], align 4
-; CHECK-NEXT:    [[TMP21:%.*]] = or i64 [[TMP19]], 2
+; CHECK-NEXT:    [[TMP21:%.*]] = or disjoint i64 [[TMP19]], 2
 ; CHECK-NEXT:    [[ARRAYIDX16:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP21]]
 ; CHECK-NEXT:    store i32 [[TMP18]], ptr [[ARRAYIDX16]], align 4
-; CHECK-NEXT:    [[TMP22:%.*]] = or i64 [[TMP19]], 3
+; CHECK-NEXT:    [[TMP22:%.*]] = or disjoint i64 [[TMP19]], 3
 ; CHECK-NEXT:    [[ARRAYIDX23:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP22]]
 ; CHECK-NEXT:    store i32 [[TMP18]], ptr [[ARRAYIDX23]], align 4
-; CHECK-NEXT:    [[TMP23:%.*]] = or i64 [[TMP19]], 4
+; CHECK-NEXT:    [[TMP23:%.*]] = or disjoint i64 [[TMP19]], 4
 ; CHECK-NEXT:    [[ARRAYIDX30:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP23]]
 ; CHECK-NEXT:    store i32 [[TMP18]], ptr [[ARRAYIDX30]], align 4
-; CHECK-NEXT:    [[TMP24:%.*]] = or i64 [[TMP19]], 5
+; CHECK-NEXT:    [[TMP24:%.*]] = or disjoint i64 [[TMP19]], 5
 ; CHECK-NEXT:    [[ARRAYIDX37:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP24]]
 ; CHECK-NEXT:    store i32 [[TMP18]], ptr [[ARRAYIDX37]], align 4
-; CHECK-NEXT:    [[TMP25:%.*]] = or i64 [[TMP19]], 6
+; CHECK-NEXT:    [[TMP25:%.*]] = or disjoint i64 [[TMP19]], 6
 ; CHECK-NEXT:    [[ARRAYIDX44:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP25]]
 ; CHECK-NEXT:    store i32 [[TMP18]], ptr [[ARRAYIDX44]], align 4
-; CHECK-NEXT:    [[TMP26:%.*]] = or i64 [[TMP19]], 7
+; CHECK-NEXT:    [[TMP26:%.*]] = or disjoint i64 [[TMP19]], 7
 ; CHECK-NEXT:    [[ARRAYIDX51:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP26]]
 ; CHECK-NEXT:    store i32 [[TMP18]], ptr [[ARRAYIDX51]], align 4
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
@@ -689,25 +689,25 @@ for.body:
   %2 = shl nsw i64 %indvars.iv, 3
   %arrayidx3 = getelementptr inbounds i32, ptr %b, i64 %2
   store i32 %1, ptr %arrayidx3, align 4
-  %3 = or i64 %2, 1
+  %3 = or disjoint i64 %2, 1
   %arrayidx9 = getelementptr inbounds i32, ptr %b, i64 %3
   store i32 %1, ptr %arrayidx9, align 4
-  %4 = or i64 %2, 2
+  %4 = or disjoint i64 %2, 2
   %arrayidx16 = getelementptr inbounds i32, ptr %b, i64 %4
   store i32 %1, ptr %arrayidx16, align 4
-  %5 = or i64 %2, 3
+  %5 = or disjoint i64 %2, 3
   %arrayidx23 = getelementptr inbounds i32, ptr %b, i64 %5
   store i32 %1, ptr %arrayidx23, align 4
-  %6 = or i64 %2, 4
+  %6 = or disjoint i64 %2, 4
   %arrayidx30 = getelementptr inbounds i32, ptr %b, i64 %6
   store i32 %1, ptr %arrayidx30, align 4
-  %7 = or i64 %2, 5
+  %7 = or disjoint i64 %2, 5
   %arrayidx37 = getelementptr inbounds i32, ptr %b, i64 %7
   store i32 %1, ptr %arrayidx37, align 4
-  %8 = or i64 %2, 6
+  %8 = or disjoint i64 %2, 6
   %arrayidx44 = getelementptr inbounds i32, ptr %b, i64 %8
   store i32 %1, ptr %arrayidx44, align 4
-  %9 = or i64 %2, 7
+  %9 = or disjoint i64 %2, 7
   %arrayidx51 = getelementptr inbounds i32, ptr %b, i64 %9
   store i32 %1, ptr %arrayidx51, align 4
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
@@ -938,13 +938,13 @@ define void @interleaved_masked_store_factor_4(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP27:%.*]] = shl nsw i64 [[INDVARS_IV]], 2
 ; CHECK-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP27]]
 ; CHECK-NEXT:    store i32 [[TMP26]], ptr [[ARRAYIDX3]], align 4
-; CHECK-NEXT:    [[TMP28:%.*]] = or i64 [[TMP27]], 1
+; CHECK-NEXT:    [[TMP28:%.*]] = or disjoint i64 [[TMP27]], 1
 ; CHECK-NEXT:    [[ARRAYIDX9:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP28]]
 ; CHECK-NEXT:    store i32 [[TMP26]], ptr [[ARRAYIDX9]], align 4
-; CHECK-NEXT:    [[TMP29:%.*]] = or i64 [[TMP27]], 2
+; CHECK-NEXT:    [[TMP29:%.*]] = or disjoint i64 [[TMP27]], 2
 ; CHECK-NEXT:    [[ARRAYIDX16:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP29]]
 ; CHECK-NEXT:    store i32 [[TMP26]], ptr [[ARRAYIDX16]], align 4
-; CHECK-NEXT:    [[TMP30:%.*]] = or i64 [[TMP27]], 3
+; CHECK-NEXT:    [[TMP30:%.*]] = or disjoint i64 [[TMP27]], 3
 ; CHECK-NEXT:    [[ARRAYIDX23:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP30]]
 ; CHECK-NEXT:    store i32 [[TMP26]], ptr [[ARRAYIDX23]], align 4
 ; CHECK-NEXT:    br label [[FOR_INC]]
@@ -981,13 +981,13 @@ if.then:
   %2 = shl nsw i64 %indvars.iv, 2
   %arrayidx3 = getelementptr inbounds i32, ptr %b, i64 %2
   store i32 %1, ptr %arrayidx3, align 4
-  %3 = or i64 %2, 1
+  %3 = or disjoint i64 %2, 1
   %arrayidx9 = getelementptr inbounds i32, ptr %b, i64 %3
   store i32 %1, ptr %arrayidx9, align 4
-  %4 = or i64 %2, 2
+  %4 = or disjoint i64 %2, 2
   %arrayidx16 = getelementptr inbounds i32, ptr %b, i64 %4
   store i32 %1, ptr %arrayidx16, align 4
-  %5 = or i64 %2, 3
+  %5 = or disjoint i64 %2, 3
   %arrayidx23 = getelementptr inbounds i32, ptr %b, i64 %5
   store i32 %1, ptr %arrayidx23, align 4
   br label %for.inc
@@ -1230,7 +1230,7 @@ define void @interleaved_masked_store_factor_6(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP27:%.*]] = mul nuw nsw i64 [[INDVARS_IV]], 6
 ; CHECK-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP27]]
 ; CHECK-NEXT:    store i32 [[TMP26]], ptr [[ARRAYIDX3]], align 4
-; CHECK-NEXT:    [[TMP28:%.*]] = or i64 [[TMP27]], 1
+; CHECK-NEXT:    [[TMP28:%.*]] = or disjoint i64 [[TMP27]], 1
 ; CHECK-NEXT:    [[ARRAYIDX9:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP28]]
 ; CHECK-NEXT:    store i32 [[TMP26]], ptr [[ARRAYIDX9]], align 4
 ; CHECK-NEXT:    [[TMP29:%.*]] = add nuw nsw i64 [[TMP27]], 2
@@ -1279,7 +1279,7 @@ if.then:
   %2 = mul nuw nsw i64 %indvars.iv, 6
   %arrayidx3 = getelementptr inbounds i32, ptr %b, i64 %2
   store i32 %1, ptr %arrayidx3, align 4
-  %3 = or i64 %2, 1
+  %3 = or disjoint i64 %2, 1
   %arrayidx9 = getelementptr inbounds i32, ptr %b, i64 %3
   store i32 %1, ptr %arrayidx9, align 4
   %4 = add nuw nsw i64 %2, 2
@@ -1546,25 +1546,25 @@ define void @interleaved_masked_store_factor_8(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP27:%.*]] = shl nsw i64 [[INDVARS_IV]], 3
 ; CHECK-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP27]]
 ; CHECK-NEXT:    store i32 [[TMP26]], ptr [[ARRAYIDX3]], align 4
-; CHECK-NEXT:    [[TMP28:%.*]] = or i64 [[TMP27]], 1
+; CHECK-NEXT:    [[TMP28:%.*]] = or disjoint i64 [[TMP27]], 1
 ; CHECK-NEXT:    [[ARRAYIDX9:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP28]]
 ; CHECK-NEXT:    store i32 [[TMP26]], ptr [[ARRAYIDX9]], align 4
-; CHECK-NEXT:    [[TMP29:%.*]] = or i64 [[TMP27]], 2
+; CHECK-NEXT:    [[TMP29:%.*]] = or disjoint i64 [[TMP27]], 2
 ; CHECK-NEXT:    [[ARRAYIDX16:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP29]]
 ; CHECK-NEXT:    store i32 [[TMP26]], ptr [[ARRAYIDX16]], align 4
-; CHECK-NEXT:    [[TMP30:%.*]] = or i64 [[TMP27]], 3
+; CHECK-NEXT:    [[TMP30:%.*]] = or disjoint i64 [[TMP27]], 3
 ; CHECK-NEXT:    [[ARRAYIDX23:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP30]]
 ; CHECK-NEXT:    store i32 [[TMP26]], ptr [[ARRAYIDX23]], align 4
-; CHECK-NEXT:    [[TMP31:%.*]] = or i64 [[TMP27]], 4
+; CHECK-NEXT:    [[TMP31:%.*]] = or disjoint i64 [[TMP27]], 4
 ; CHECK-NEXT:    [[ARRAYIDX30:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP31]]
 ; CHECK-NEXT:    store i32 [[TMP26]], ptr [[ARRAYIDX30]], align 4
-; CHECK-NEXT:    [[TMP32:%.*]] = or i64 [[TMP27]], 5
+; CHECK-NEXT:    [[TMP32:%.*]] = or disjoint i64 [[TMP27]], 5
 ; CHECK-NEXT:    [[ARRAYIDX37:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP32]]
 ; CHECK-NEXT:    store i32 [[TMP26]], ptr [[ARRAYIDX37]], align 4
-; CHECK-NEXT:    [[TMP33:%.*]] = or i64 [[TMP27]], 6
+; CHECK-NEXT:    [[TMP33:%.*]] = or disjoint i64 [[TMP27]], 6
 ; CHECK-NEXT:    [[ARRAYIDX44:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP33]]
 ; CHECK-NEXT:    store i32 [[TMP26]], ptr [[ARRAYIDX44]], align 4
-; CHECK-NEXT:    [[TMP34:%.*]] = or i64 [[TMP27]], 7
+; CHECK-NEXT:    [[TMP34:%.*]] = or disjoint i64 [[TMP27]], 7
 ; CHECK-NEXT:    [[ARRAYIDX51:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP34]]
 ; CHECK-NEXT:    store i32 [[TMP26]], ptr [[ARRAYIDX51]], align 4
 ; CHECK-NEXT:    br label [[FOR_INC]]
@@ -1601,25 +1601,25 @@ if.then:
   %2 = shl nsw i64 %indvars.iv, 3
   %arrayidx3 = getelementptr inbounds i32, ptr %b, i64 %2
   store i32 %1, ptr %arrayidx3, align 4
-  %3 = or i64 %2, 1
+  %3 = or disjoint i64 %2, 1
   %arrayidx9 = getelementptr inbounds i32, ptr %b, i64 %3
   store i32 %1, ptr %arrayidx9, align 4
-  %4 = or i64 %2, 2
+  %4 = or disjoint i64 %2, 2
   %arrayidx16 = getelementptr inbounds i32, ptr %b, i64 %4
   store i32 %1, ptr %arrayidx16, align 4
-  %5 = or i64 %2, 3
+  %5 = or disjoint i64 %2, 3
   %arrayidx23 = getelementptr inbounds i32, ptr %b, i64 %5
   store i32 %1, ptr %arrayidx23, align 4
-  %6 = or i64 %2, 4
+  %6 = or disjoint i64 %2, 4
   %arrayidx30 = getelementptr inbounds i32, ptr %b, i64 %6
   store i32 %1, ptr %arrayidx30, align 4
-  %7 = or i64 %2, 5
+  %7 = or disjoint i64 %2, 5
   %arrayidx37 = getelementptr inbounds i32, ptr %b, i64 %7
   store i32 %1, ptr %arrayidx37, align 4
-  %8 = or i64 %2, 6
+  %8 = or disjoint i64 %2, 6
   %arrayidx44 = getelementptr inbounds i32, ptr %b, i64 %8
   store i32 %1, ptr %arrayidx44, align 4
-  %9 = or i64 %2, 7
+  %9 = or disjoint i64 %2, 7
   %arrayidx51 = getelementptr inbounds i32, ptr %b, i64 %9
   store i32 %1, ptr %arrayidx51, align 4
   br label %for.inc

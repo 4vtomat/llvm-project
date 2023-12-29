@@ -20,7 +20,7 @@ define void @store_constant(i32 %n, ptr %a){
 ; CHECK-NEXT:    [[TMP3:%.*]] = trunc i64 [[TMP2]] to i32
 ; CHECK-NEXT:    [[TMP4:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-NEXT:    [[TMP5:%.*]] = shl nsw i64 [[TMP4]], 2
-; CHECK-NEXT:    [[TMP6:%.*]] = or i64 [[TMP5]], 3
+; CHECK-NEXT:    [[TMP6:%.*]] = or disjoint i64 [[TMP5]], 3
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP6]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, ptr [[TMP7]], i32 -3
 ; CHECK-NEXT:    [[TMP9:%.*]] = mul i32 [[TMP3]], 4
@@ -43,13 +43,13 @@ define void @store_constant(i32 %n, ptr %a){
 ; CHECK-NEXT:    [[TMP12:%.*]] = shl nsw i64 [[INDVARS_IV]], 2
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP12]]
 ; CHECK-NEXT:    store i32 -939524096, ptr [[ARRAYIDX]], align 4
-; CHECK-NEXT:    [[TMP13:%.*]] = or i64 [[TMP12]], 1
+; CHECK-NEXT:    [[TMP13:%.*]] = or disjoint i64 [[TMP12]], 1
 ; CHECK-NEXT:    [[ARRAYIDX4:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP13]]
 ; CHECK-NEXT:    store i32 -939524096, ptr [[ARRAYIDX4]], align 4
-; CHECK-NEXT:    [[TMP14:%.*]] = or i64 [[TMP12]], 2
+; CHECK-NEXT:    [[TMP14:%.*]] = or disjoint i64 [[TMP12]], 2
 ; CHECK-NEXT:    [[ARRAYIDX8:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP14]]
 ; CHECK-NEXT:    store i32 -939524096, ptr [[ARRAYIDX8]], align 4
-; CHECK-NEXT:    [[TMP15:%.*]] = or i64 [[TMP12]], 3
+; CHECK-NEXT:    [[TMP15:%.*]] = or disjoint i64 [[TMP12]], 3
 ; CHECK-NEXT:    [[ARRAYIDX12:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP15]]
 ; CHECK-NEXT:    store i32 -939524096, ptr [[ARRAYIDX12]], align 4
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
@@ -75,13 +75,13 @@ for.body:
   %0 = shl nsw i64 %indvars.iv, 2
   %arrayidx = getelementptr inbounds i32, ptr %a, i64 %0
   store i32 -939524096, ptr %arrayidx, align 4
-  %1 = or i64 %0, 1
+  %1 = or disjoint i64 %0, 1
   %arrayidx4 = getelementptr inbounds i32, ptr %a, i64 %1
   store i32 -939524096, ptr %arrayidx4, align 4
-  %2 = or i64 %0, 2
+  %2 = or disjoint i64 %0, 2
   %arrayidx8 = getelementptr inbounds i32, ptr %a, i64 %2
   store i32 -939524096, ptr %arrayidx8, align 4
-  %3 = or i64 %0, 3
+  %3 = or disjoint i64 %0, 3
   %arrayidx12 = getelementptr inbounds i32, ptr %a, i64 %3
   store i32 -939524096, ptr %arrayidx12, align 4
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
@@ -110,7 +110,7 @@ define void @store_same_invariant(i32 %n, ptr %a){
 ; CHECK-NEXT:    [[TMP3:%.*]] = trunc i64 [[TMP2]] to i32
 ; CHECK-NEXT:    [[TMP4:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-NEXT:    [[TMP5:%.*]] = shl nsw i64 [[TMP4]], 2
-; CHECK-NEXT:    [[TMP6:%.*]] = or i64 [[TMP5]], 3
+; CHECK-NEXT:    [[TMP6:%.*]] = or disjoint i64 [[TMP5]], 3
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP6]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, ptr [[TMP7]], i32 -3
 ; CHECK-NEXT:    [[WIDE_BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 16 x i32> poison, i32 [[N]], i64 0
@@ -135,13 +135,13 @@ define void @store_same_invariant(i32 %n, ptr %a){
 ; CHECK-NEXT:    [[TMP12:%.*]] = shl nsw i64 [[INDVARS_IV]], 2
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP12]]
 ; CHECK-NEXT:    store i32 [[N]], ptr [[ARRAYIDX]], align 4
-; CHECK-NEXT:    [[TMP13:%.*]] = or i64 [[TMP12]], 1
+; CHECK-NEXT:    [[TMP13:%.*]] = or disjoint i64 [[TMP12]], 1
 ; CHECK-NEXT:    [[ARRAYIDX4:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP13]]
 ; CHECK-NEXT:    store i32 [[N]], ptr [[ARRAYIDX4]], align 4
-; CHECK-NEXT:    [[TMP14:%.*]] = or i64 [[TMP12]], 2
+; CHECK-NEXT:    [[TMP14:%.*]] = or disjoint i64 [[TMP12]], 2
 ; CHECK-NEXT:    [[ARRAYIDX8:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP14]]
 ; CHECK-NEXT:    store i32 [[N]], ptr [[ARRAYIDX8]], align 4
-; CHECK-NEXT:    [[TMP15:%.*]] = or i64 [[TMP12]], 3
+; CHECK-NEXT:    [[TMP15:%.*]] = or disjoint i64 [[TMP12]], 3
 ; CHECK-NEXT:    [[ARRAYIDX12:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP15]]
 ; CHECK-NEXT:    store i32 [[N]], ptr [[ARRAYIDX12]], align 4
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
@@ -164,13 +164,13 @@ for.body:
   %0 = shl nsw i64 %indvars.iv, 2
   %arrayidx = getelementptr inbounds i32, ptr %a, i64 %0
   store i32 %n, ptr %arrayidx, align 4
-  %1 = or i64 %0, 1
+  %1 = or disjoint i64 %0, 1
   %arrayidx4 = getelementptr inbounds i32, ptr %a, i64 %1
   store i32 %n, ptr %arrayidx4, align 4
-  %2 = or i64 %0, 2
+  %2 = or disjoint i64 %0, 2
   %arrayidx8 = getelementptr inbounds i32, ptr %a, i64 %2
   store i32 %n, ptr %arrayidx8, align 4
-  %3 = or i64 %0, 3
+  %3 = or disjoint i64 %0, 3
   %arrayidx12 = getelementptr inbounds i32, ptr %a, i64 %3
   store i32 %n, ptr %arrayidx12, align 4
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1

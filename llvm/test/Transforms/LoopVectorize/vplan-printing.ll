@@ -707,7 +707,7 @@ define void @print_call_flags(ptr readonly %src, ptr noalias %dest, i64 %n) {
 ; CHECK-NEXT:   CLONE ir<%ld.addr> = getelementptr inbounds ir<%src>, vp<[[STEPS]]>
 ; CHECK-NEXT:   WIDEN ir<%ld.value> = load ir<%ld.addr>
 ; CHECK-NEXT:   WIDEN ir<%ifcond> = fcmp oeq ir<%ld.value>, ir<5.000000e+00>
-; CHECK-NEXT:   EMIT vp<%6> = not ir<%ifcond>
+; CHECK-NEXT:   EMIT vp<%7> = not ir<%ifcond>
 ; CHECK-NEXT:  Successor(s): pred.call
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  <xVFxUF> pred.call: {
@@ -729,8 +729,8 @@ define void @print_call_flags(ptr readonly %src, ptr noalias %dest, i64 %n) {
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  if.then.1:
 ; CHECK-NEXT:    WIDEN ir<%fadd> = fadd vp<[[PHI1]]>, vp<[[PHI2]]>
-; CHECK-NEXT:    BLEND ir<%st.value> = ir<%ld.value>/vp<%6> ir<%fadd>/ir<%ifcond>
-; CHECK-NEXT:    CLONE ir<%st.addr> = getelementptr inbounds ir<%dest>, vp<%2>
+; CHECK-NEXT:    BLEND ir<%st.value> = ir<%ld.value>/vp<%7> ir<%fadd>/ir<%ifcond>
+; CHECK-NEXT:    CLONE ir<%st.addr> = getelementptr inbounds ir<%dest>, vp<%3>
 ; CHECK-NEXT:    WIDEN store ir<%st.addr>, ir<%st.value>
 ; CHECK-NEXT:   EMIT vp<[[CAN_IV_NEXT]]> = add nuw vp<[[CAN_IV]]>, vp<[[VFxUF]]>
 ; CHECK-NEXT:   EMIT branch-on-count vp<[[CAN_IV_NEXT]]>, vp<[[VEC_TC]]>

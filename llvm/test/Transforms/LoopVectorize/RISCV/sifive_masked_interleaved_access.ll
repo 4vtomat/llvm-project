@@ -81,7 +81,7 @@ define void @masked_store(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP24:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
 ; CHECK-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP23]]
 ; CHECK-NEXT:    store i32 [[TMP24]], ptr [[ARRAYIDX3]], align 4
-; CHECK-NEXT:    [[TMP25:%.*]] = or i64 [[TMP23]], 1
+; CHECK-NEXT:    [[TMP25:%.*]] = or disjoint i64 [[TMP23]], 1
 ; CHECK-NEXT:    [[ARRAYIDX9:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP25]]
 ; CHECK-NEXT:    store i32 [[TMP24]], ptr [[ARRAYIDX9]], align 4
 ; CHECK-NEXT:    br label [[FOR_INC]]
@@ -117,7 +117,7 @@ if.then:
   %1 = load i32, ptr %arrayidx, align 4
   %arrayidx3 = getelementptr inbounds i32, ptr %b, i64 %0
   store i32 %1, ptr %arrayidx3, align 4
-  %2 = or i64 %0, 1
+  %2 = or disjoint i64 %0, 1
   %arrayidx9 = getelementptr inbounds i32, ptr %b, i64 %2
   store i32 %1, ptr %arrayidx9, align 4
   br label %for.inc
@@ -212,7 +212,7 @@ define void @masked_load(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    br i1 [[TOBOOL_NOT]], label [[FOR_INC]], label [[IF_THEN:%.*]]
 ; CHECK:       if.then:
 ; CHECK-NEXT:    [[TMP28:%.*]] = shl nuw nsw i64 [[INDVARS_IV]], 1
-; CHECK-NEXT:    [[TMP29:%.*]] = or i64 [[TMP28]], 1
+; CHECK-NEXT:    [[TMP29:%.*]] = or disjoint i64 [[TMP28]], 1
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP29]]
 ; CHECK-NEXT:    [[TMP30:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
 ; CHECK-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP28]]
@@ -249,7 +249,7 @@ for.body:
 
 if.then:
   %0 = shl nuw nsw i64 %indvars.iv, 1
-  %1 = or i64 %0, 1
+  %1 = or disjoint i64 %0, 1
   %arrayidx = getelementptr inbounds i32, ptr %a, i64 %1
   %2 = load i32, ptr %arrayidx, align 4
   %arrayidx3 = getelementptr inbounds i32, ptr %a, i64 %0

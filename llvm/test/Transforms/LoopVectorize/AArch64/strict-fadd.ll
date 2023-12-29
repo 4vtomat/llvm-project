@@ -609,7 +609,7 @@ define void @fadd_strict_interleave(ptr noalias nocapture readonly %a, ptr noali
 ; CHECK-NOT-VECTORIZED-NEXT:    [[ARRAYIDXB1:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[IV]]
 ; CHECK-NOT-VECTORIZED-NEXT:    [[TMP0:%.*]] = load float, ptr [[ARRAYIDXB1]], align 4
 ; CHECK-NOT-VECTORIZED-NEXT:    [[ADD1]] = fadd float [[TMP0]], [[ADD_PHI2]]
-; CHECK-NOT-VECTORIZED-NEXT:    [[OR:%.*]] = or i64 [[IV]], 1
+; CHECK-NOT-VECTORIZED-NEXT:    [[OR:%.*]] = or disjoint i64 [[IV]], 1
 ; CHECK-NOT-VECTORIZED-NEXT:    [[ARRAYIDXB2:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[OR]]
 ; CHECK-NOT-VECTORIZED-NEXT:    [[TMP1:%.*]] = load float, ptr [[ARRAYIDXB2]], align 4
 ; CHECK-NOT-VECTORIZED-NEXT:    [[ADD2]] = fadd float [[TMP1]], [[ADD_PHI1]]
@@ -674,7 +674,7 @@ define void @fadd_strict_interleave(ptr noalias nocapture readonly %a, ptr noali
 ; CHECK-UNORDERED-NEXT:    [[ARRAYIDXB1:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[IV]]
 ; CHECK-UNORDERED-NEXT:    [[TMP13:%.*]] = load float, ptr [[ARRAYIDXB1]], align 4
 ; CHECK-UNORDERED-NEXT:    [[ADD1]] = fadd float [[TMP13]], [[ADD_PHI2]]
-; CHECK-UNORDERED-NEXT:    [[OR:%.*]] = or i64 [[IV]], 1
+; CHECK-UNORDERED-NEXT:    [[OR:%.*]] = or disjoint i64 [[IV]], 1
 ; CHECK-UNORDERED-NEXT:    [[ARRAYIDXB2:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[OR]]
 ; CHECK-UNORDERED-NEXT:    [[TMP14:%.*]] = load float, ptr [[ARRAYIDXB2]], align 4
 ; CHECK-UNORDERED-NEXT:    [[ADD2]] = fadd float [[TMP14]], [[ADD_PHI1]]
@@ -735,7 +735,7 @@ define void @fadd_strict_interleave(ptr noalias nocapture readonly %a, ptr noali
 ; CHECK-ORDERED-NEXT:    [[ARRAYIDXB1:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[IV]]
 ; CHECK-ORDERED-NEXT:    [[TMP9:%.*]] = load float, ptr [[ARRAYIDXB1]], align 4
 ; CHECK-ORDERED-NEXT:    [[ADD1]] = fadd float [[TMP9]], [[ADD_PHI2]]
-; CHECK-ORDERED-NEXT:    [[OR:%.*]] = or i64 [[IV]], 1
+; CHECK-ORDERED-NEXT:    [[OR:%.*]] = or disjoint i64 [[IV]], 1
 ; CHECK-ORDERED-NEXT:    [[ARRAYIDXB2:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[OR]]
 ; CHECK-ORDERED-NEXT:    [[TMP10:%.*]] = load float, ptr [[ARRAYIDXB2]], align 4
 ; CHECK-ORDERED-NEXT:    [[ADD2]] = fadd float [[TMP10]], [[ADD_PHI1]]
@@ -3339,7 +3339,7 @@ define void @reduction_store_to_invariant_address(ptr %dst, ptr readonly %src) {
 ; CHECK-UNORDERED-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-UNORDERED-NEXT:    [[TMP1:%.*]] = getelementptr inbounds float, ptr [[SRC]], i64 [[TMP0]]
 ; CHECK-UNORDERED-NEXT:    [[TMP2:%.*]] = getelementptr inbounds float, ptr [[TMP1]], i32 0
-; CHECK-UNORDERED-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x float>, ptr [[TMP2]], align 4, !alias.scope !40
+; CHECK-UNORDERED-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x float>, ptr [[TMP2]], align 4, !alias.scope [[META40:![0-9]+]]
 ; CHECK-UNORDERED-NEXT:    [[TMP3]] = fadd <8 x float> [[VEC_PHI]], [[WIDE_LOAD]]
 ; CHECK-UNORDERED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 8
 ; CHECK-UNORDERED-NEXT:    [[TMP4:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1000
@@ -3386,7 +3386,7 @@ define void @reduction_store_to_invariant_address(ptr %dst, ptr readonly %src) {
 ; CHECK-ORDERED-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-ORDERED-NEXT:    [[TMP1:%.*]] = getelementptr inbounds float, ptr [[SRC]], i64 [[TMP0]]
 ; CHECK-ORDERED-NEXT:    [[TMP2:%.*]] = getelementptr inbounds float, ptr [[TMP1]], i32 0
-; CHECK-ORDERED-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x float>, ptr [[TMP2]], align 4, !alias.scope !36
+; CHECK-ORDERED-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x float>, ptr [[TMP2]], align 4, !alias.scope [[META36:![0-9]+]]
 ; CHECK-ORDERED-NEXT:    [[TMP3]] = call float @llvm.vector.reduce.fadd.v8f32(float [[VEC_PHI]], <8 x float> [[WIDE_LOAD]])
 ; CHECK-ORDERED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 8
 ; CHECK-ORDERED-NEXT:    [[TMP4:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1000

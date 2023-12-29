@@ -20,7 +20,7 @@ define void @test(ptr %Ptr, i8 %Val) {
 ; CHECK-NEXT:    [[TMP5:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i8, ptr [[PTR:%.*]], i64 [[TMP5]]
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv8i8.p0.i64(<vscale x 8 x i8> [[BROADCAST_SPLAT]], ptr align 1 [[TMP6]], i64 4, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP3]])
-; CHECK-NEXT:    [[TMP7:%.*]] = or i64 [[TMP5]], 1
+; CHECK-NEXT:    [[TMP7:%.*]] = or disjoint i64 [[TMP5]], 1
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i8, ptr [[PTR]], i64 [[TMP7]]
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv8i8.p0.i64(<vscale x 8 x i8> [[BROADCAST_SPLAT]], ptr align 1 [[TMP8]], i64 4, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP3]])
 ; CHECK-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP3]] to i64
@@ -36,7 +36,7 @@ define void @test(ptr %Ptr, i8 %Val) {
 ; CHECK-NEXT:    [[INDVAR:%.*]] = phi i64 [ [[INDVAR_NEXT1:%.*]], [[EDGE1:%.*]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds i8, ptr [[PTR]], i64 [[INDVAR]]
 ; CHECK-NEXT:    store i8 [[VAL]], ptr [[ARRAYIDX1]], align 1
-; CHECK-NEXT:    [[INDVAR_NEXT:%.*]] = or i64 [[INDVAR]], 1
+; CHECK-NEXT:    [[INDVAR_NEXT:%.*]] = or disjoint i64 [[INDVAR]], 1
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp ult i64 [[INDVAR_NEXT]], 1024
 ; CHECK-NEXT:    br i1 [[CMP]], label [[EDGE1]], label [[LOOPEXIT:%.*]]
 ; CHECK:       edge1:
@@ -55,7 +55,7 @@ edge:
   %indvar = phi i64 [ %indvar.next1, %edge1 ], [ 10, %entry ]
   %arrayidx1 = getelementptr inbounds i8, ptr %Ptr, i64 %indvar
   store i8 %Val, ptr %arrayidx1, align 1
-  %indvar.next = or i64 %indvar, 1
+  %indvar.next = or disjoint i64 %indvar, 1
   %cmp = icmp ult i64 %indvar.next, 1024
   br i1 %cmp, label %edge1, label %loopexit
 

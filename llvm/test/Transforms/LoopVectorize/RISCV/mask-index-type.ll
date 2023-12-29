@@ -37,35 +37,18 @@ define void @test(ptr noalias nocapture %a, ptr noalias nocapture %b, i32 %v) {
 ; VLENUNK:       vector.body:
 ; VLENUNK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; VLENUNK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 4 x i64> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
-<<<<<<< HEAD
-; VLENUNK-NEXT:    [[TMP10:%.*]] = add i64 [[INDEX]], 0
-; VLENUNK-NEXT:    [[TMP11:%.*]] = icmp ult <vscale x 4 x i64> [[VEC_IND]], shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 512, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer)
-; VLENUNK-NEXT:    [[TMP12:%.*]] = xor <vscale x 4 x i1> [[TMP11]], shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer)
-; VLENUNK-NEXT:    [[TMP13:%.*]] = getelementptr i32, ptr [[A:%.*]], i64 [[TMP10]]
-; VLENUNK-NEXT:    [[TMP14:%.*]] = getelementptr i32, ptr [[TMP13]], i32 0
-; VLENUNK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 4 x i32> @llvm.masked.load.nxv4i32.p0(ptr [[TMP14]], i32 4, <vscale x 4 x i1> [[TMP11]], <vscale x 4 x i32> poison)
-; VLENUNK-NEXT:    [[PREDPHI:%.*]] = select <vscale x 4 x i1> [[TMP12]], <vscale x 4 x i32> zeroinitializer, <vscale x 4 x i32> [[WIDE_MASKED_LOAD]]
-; VLENUNK-NEXT:    [[TMP15:%.*]] = add <vscale x 4 x i32> [[PREDPHI]], [[BROADCAST_SPLAT]]
-; VLENUNK-NEXT:    [[TMP16:%.*]] = getelementptr inbounds i32, ptr [[B:%.*]], i64 [[TMP10]]
-; VLENUNK-NEXT:    [[TMP17:%.*]] = getelementptr inbounds i32, ptr [[TMP16]], i32 0
-; VLENUNK-NEXT:    store <vscale x 4 x i32> [[TMP15]], ptr [[TMP17]], align 4
-; VLENUNK-NEXT:    [[TMP18:%.*]] = call i64 @llvm.vscale.i64()
-; VLENUNK-NEXT:    [[TMP19:%.*]] = mul i64 [[TMP18]], 4
-; VLENUNK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP19]]
-=======
 ; VLENUNK-NEXT:    [[TMP12:%.*]] = add i64 [[INDEX]], 0
 ; VLENUNK-NEXT:    [[TMP13:%.*]] = icmp ult <vscale x 4 x i64> [[VEC_IND]], shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 512, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer)
-; VLENUNK-NEXT:    [[TMP14:%.*]] = getelementptr i32, ptr [[A:%.*]], i64 [[TMP12]]
-; VLENUNK-NEXT:    [[TMP15:%.*]] = getelementptr i32, ptr [[TMP14]], i32 0
-; VLENUNK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 4 x i32> @llvm.masked.load.nxv4i32.p0(ptr [[TMP15]], i32 4, <vscale x 4 x i1> [[TMP13]], <vscale x 4 x i32> poison)
-; VLENUNK-NEXT:    [[TMP16:%.*]] = xor <vscale x 4 x i1> [[TMP13]], shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer)
-; VLENUNK-NEXT:    [[PREDPHI:%.*]] = select <vscale x 4 x i1> [[TMP16]], <vscale x 4 x i32> zeroinitializer, <vscale x 4 x i32> [[WIDE_MASKED_LOAD]]
+; VLENUNK-NEXT:    [[TMP14:%.*]] = xor <vscale x 4 x i1> [[TMP13]], shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer)
+; VLENUNK-NEXT:    [[TMP15:%.*]] = getelementptr i32, ptr [[A:%.*]], i64 [[TMP12]]
+; VLENUNK-NEXT:    [[TMP16:%.*]] = getelementptr i32, ptr [[TMP15]], i32 0
+; VLENUNK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 4 x i32> @llvm.masked.load.nxv4i32.p0(ptr [[TMP16]], i32 4, <vscale x 4 x i1> [[TMP13]], <vscale x 4 x i32> poison)
+; VLENUNK-NEXT:    [[PREDPHI:%.*]] = select <vscale x 4 x i1> [[TMP14]], <vscale x 4 x i32> zeroinitializer, <vscale x 4 x i32> [[WIDE_MASKED_LOAD]]
 ; VLENUNK-NEXT:    [[TMP17:%.*]] = add <vscale x 4 x i32> [[PREDPHI]], [[BROADCAST_SPLAT]]
 ; VLENUNK-NEXT:    [[TMP18:%.*]] = getelementptr inbounds i32, ptr [[B:%.*]], i64 [[TMP12]]
 ; VLENUNK-NEXT:    [[TMP19:%.*]] = getelementptr inbounds i32, ptr [[TMP18]], i32 0
 ; VLENUNK-NEXT:    store <vscale x 4 x i32> [[TMP17]], ptr [[TMP19]], align 4
 ; VLENUNK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
->>>>>>> b88b480640f173582ffbfd2faae690f2bc895d14
 ; VLENUNK-NEXT:    [[VEC_IND_NEXT]] = add <vscale x 4 x i64> [[VEC_IND]], [[DOTSPLAT]]
 ; VLENUNK-NEXT:    [[TMP20:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; VLENUNK-NEXT:    br i1 [[TMP20]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
@@ -94,6 +77,9 @@ define void @test(ptr noalias nocapture %a, ptr noalias nocapture %b, i32 %v) {
 ; VLENUNK:       for.end:
 ; VLENUNK-NEXT:    ret void
 ;
+
+
+
 entry:
   br label %for.body
 

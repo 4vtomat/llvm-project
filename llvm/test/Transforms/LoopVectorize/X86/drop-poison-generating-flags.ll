@@ -35,7 +35,7 @@ define void @drop_scalar_nuw_nsw(ptr noalias nocapture readonly %input,
 ; CHECK-NEXT:    [[TMP3:%.*]] = sub i64 [[TMP0]], 1
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr float, ptr [[INPUT]], i64 [[TMP3]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr float, ptr [[TMP4]], i32 0
-; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP5]], i32 4, <4 x i1> [[TMP2]], <4 x float> poison), !invariant.load !0
+; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP5]], i32 4, <4 x i1> [[TMP2]], <4 x float> poison), !invariant.load [[META0:![0-9]+]]
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP2]], <4 x float> [[WIDE_MASKED_LOAD]], <4 x float> zeroinitializer
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds float, ptr [[OUTPUT]], i64 [[TMP0]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds float, ptr [[TMP6]], i32 0
@@ -55,7 +55,7 @@ define void @drop_scalar_nuw_nsw(ptr noalias nocapture readonly %input,
 ; CHECK:       if.then:
 ; CHECK-NEXT:    [[I27:%.*]] = sub nuw nsw i64 [[IV]], 1
 ; CHECK-NEXT:    [[I29:%.*]] = getelementptr inbounds float, ptr [[INPUT]], i64 [[I27]]
-; CHECK-NEXT:    [[I30:%.*]] = load float, ptr [[I29]], align 4, !invariant.load !0
+; CHECK-NEXT:    [[I30:%.*]] = load float, ptr [[I29]], align 4, !invariant.load [[META0]]
 ; CHECK-NEXT:    br label [[IF_END]]
 ; CHECK:       if.end:
 ; CHECK-NEXT:    [[I34:%.*]] = phi float [ 0.000000e+00, [[LOOP_HEADER]] ], [ [[I30]], [[IF_THEN]] ]
@@ -112,7 +112,7 @@ define void @drop_nonpred_scalar_nuw_nsw(ptr noalias nocapture readonly %input,
 ; CHECK-NEXT:    [[TMP3:%.*]] = icmp eq <4 x i64> [[VEC_IND]], zeroinitializer
 ; CHECK-NEXT:    [[TMP4:%.*]] = xor <4 x i1> [[TMP3]], <i1 true, i1 true, i1 true, i1 true>
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr float, ptr [[TMP2]], i32 0
-; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP5]], i32 4, <4 x i1> [[TMP4]], <4 x float> poison), !invariant.load !0
+; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP5]], i32 4, <4 x i1> [[TMP4]], <4 x float> poison), !invariant.load [[META0]]
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP4]], <4 x float> [[WIDE_MASKED_LOAD]], <4 x float> zeroinitializer
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds float, ptr [[OUTPUT]], i64 [[TMP0]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds float, ptr [[TMP6]], i32 0
@@ -132,7 +132,7 @@ define void @drop_nonpred_scalar_nuw_nsw(ptr noalias nocapture readonly %input,
 ; CHECK-NEXT:    [[I23:%.*]] = icmp eq i64 [[IV]], 0
 ; CHECK-NEXT:    br i1 [[I23]], label [[IF_END]], label [[IF_THEN:%.*]]
 ; CHECK:       if.then:
-; CHECK-NEXT:    [[I30:%.*]] = load float, ptr [[I29]], align 4, !invariant.load !0
+; CHECK-NEXT:    [[I30:%.*]] = load float, ptr [[I29]], align 4, !invariant.load [[META0]]
 ; CHECK-NEXT:    br label [[IF_END]]
 ; CHECK:       if.end:
 ; CHECK-NEXT:    [[I34:%.*]] = phi float [ 0.000000e+00, [[LOOP_HEADER]] ], [ [[I30]], [[IF_THEN]] ]
@@ -188,7 +188,7 @@ define void @preserve_vector_nuw_nsw(ptr noalias nocapture readonly %input,
 ; CHECK-NEXT:    [[TMP3:%.*]] = sub nuw nsw <4 x i64> [[VEC_IND]], <i64 1, i64 1, i64 1, i64 1>
 ; CHECK-NEXT:    [[TMP4:%.*]] = mul nuw nsw <4 x i64> [[TMP3]], <i64 2, i64 2, i64 2, i64 2>
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds float, ptr [[INPUT]], <4 x i64> [[TMP4]]
-; CHECK-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <4 x float> @llvm.masked.gather.v4f32.v4p0(<4 x ptr> [[TMP5]], i32 4, <4 x i1> [[TMP2]], <4 x float> poison), !invariant.load !0
+; CHECK-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <4 x float> @llvm.masked.gather.v4f32.v4p0(<4 x ptr> [[TMP5]], i32 4, <4 x i1> [[TMP2]], <4 x float> poison), !invariant.load [[META0]]
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP2]], <4 x float> [[WIDE_MASKED_GATHER]], <4 x float> zeroinitializer
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds float, ptr [[OUTPUT]], i64 [[TMP0]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds float, ptr [[TMP6]], i32 0
@@ -209,7 +209,7 @@ define void @preserve_vector_nuw_nsw(ptr noalias nocapture readonly %input,
 ; CHECK-NEXT:    [[I27:%.*]] = sub nuw nsw i64 [[IV]], 1
 ; CHECK-NEXT:    [[I28:%.*]] = mul nuw nsw i64 [[I27]], 2
 ; CHECK-NEXT:    [[I29:%.*]] = getelementptr inbounds float, ptr [[INPUT]], i64 [[I28]]
-; CHECK-NEXT:    [[I30:%.*]] = load float, ptr [[I29]], align 4, !invariant.load !0
+; CHECK-NEXT:    [[I30:%.*]] = load float, ptr [[I29]], align 4, !invariant.load [[META0]]
 ; CHECK-NEXT:    br label [[IF_END]]
 ; CHECK:       if.end:
 ; CHECK-NEXT:    [[I34:%.*]] = phi float [ 0.000000e+00, [[LOOP_HEADER]] ], [ [[I30]], [[IF_THEN]] ]
@@ -270,7 +270,7 @@ define void @drop_vector_nuw_nsw(ptr noalias nocapture readonly %input,
 ; CHECK-NEXT:    [[TMP6:%.*]] = xor <4 x i1> [[TMP1]], <i1 true, i1 true, i1 true, i1 true>
 ; CHECK-NEXT:    [[TMP7:%.*]] = extractelement <4 x ptr> [[TMP4]], i32 0
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr float, ptr [[TMP7]], i32 0
-; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP8]], i32 4, <4 x i1> [[TMP6]], <4 x float> poison), !invariant.load !0
+; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP8]], i32 4, <4 x i1> [[TMP6]], <4 x float> poison), !invariant.load [[META0]]
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP6]], <4 x float> [[WIDE_MASKED_LOAD]], <4 x float> zeroinitializer
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds float, ptr [[OUTPUT]], i64 [[TMP0]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds float, ptr [[TMP9]], i32 0
@@ -292,7 +292,7 @@ define void @drop_vector_nuw_nsw(ptr noalias nocapture readonly %input,
 ; CHECK-NEXT:    store ptr [[I29]], ptr [[GEP]], align 8
 ; CHECK-NEXT:    br i1 [[I23]], label [[IF_END]], label [[IF_THEN:%.*]]
 ; CHECK:       if.then:
-; CHECK-NEXT:    [[I30:%.*]] = load float, ptr [[I29]], align 4, !invariant.load !0
+; CHECK-NEXT:    [[I30:%.*]] = load float, ptr [[I29]], align 4, !invariant.load [[META0]]
 ; CHECK-NEXT:    br label [[IF_END]]
 ; CHECK:       if.end:
 ; CHECK-NEXT:    [[I34:%.*]] = phi float [ 0.000000e+00, [[LOOP_HEADER]] ], [ [[I30]], [[IF_THEN]] ]
@@ -422,7 +422,7 @@ define void @drop_scalar_exact(ptr noalias nocapture readonly %input,
 ; CHECK-NEXT:    [[TMP6:%.*]] = sdiv i64 [[TMP0]], 1
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr float, ptr [[INPUT]], i64 [[TMP6]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr float, ptr [[TMP7]], i32 0
-; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP8]], i32 4, <4 x i1> [[TMP5]], <4 x float> poison), !invariant.load !0
+; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x float> @llvm.masked.load.v4f32.p0(ptr [[TMP8]], i32 4, <4 x i1> [[TMP5]], <4 x float> poison), !invariant.load [[META0]]
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP5]], <4 x float> [[WIDE_MASKED_LOAD]], <4 x float> zeroinitializer
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds float, ptr [[OUTPUT]], i64 [[TMP0]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds float, ptr [[TMP9]], i32 0
@@ -445,7 +445,7 @@ define void @drop_scalar_exact(ptr noalias nocapture readonly %input,
 ; CHECK:       if.then:
 ; CHECK-NEXT:    [[I26:%.*]] = sdiv exact i64 [[IV]], 1
 ; CHECK-NEXT:    [[I29:%.*]] = getelementptr inbounds float, ptr [[INPUT]], i64 [[I26]]
-; CHECK-NEXT:    [[I30:%.*]] = load float, ptr [[I29]], align 4, !invariant.load !0
+; CHECK-NEXT:    [[I30:%.*]] = load float, ptr [[I29]], align 4, !invariant.load [[META0]]
 ; CHECK-NEXT:    br label [[IF_END]]
 ; CHECK:       if.end:
 ; CHECK-NEXT:    [[I34:%.*]] = phi float [ 0.000000e+00, [[LOOP_HEADER]] ], [ [[I30]], [[IF_THEN]] ]
@@ -488,8 +488,8 @@ loop.exit:
 }
 
 define void @drop_zext_nneg(ptr noalias %p, ptr noalias %p1) #0 {
-; CHECK-LABEL: define void @drop_zext_nneg(
-; CHECK-SAME: ptr noalias [[P:%.*]], ptr noalias [[P1:%.*]]) #[[ATTR0:[0-9]+]] {
+; CHECK-LABEL: define void @drop_zext_nneg
+; CHECK-SAME: (ptr noalias [[P:%.*]], ptr noalias [[P1:%.*]]) #[[ATTR0]] {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br i1 true, label [[SCALAR_PH:%.*]], label [[VECTOR_SCEVCHECK:%.*]]
 ; CHECK:       vector.scevcheck:
@@ -500,19 +500,19 @@ define void @drop_zext_nneg(ptr noalias %p, ptr noalias %p1) #0 {
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <4 x i32> [ <i32 0, i32 1, i32 2, i32 3>, [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP0:%.*]] = icmp eq <4 x i32> [[VEC_IND]], zeroinitializer
-; CHECK-NEXT:    [[TMP1:%.*]] = zext <4 x i32> [[VEC_IND]] to <4 x i64>
-; CHECK-NEXT:    [[TMP2:%.*]] = extractelement <4 x i64> [[TMP1]], i32 0
-; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr double, ptr [[P]], i64 [[TMP2]]
-; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr double, ptr [[TMP3]], i32 0
-; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x double> @llvm.masked.load.v4f64.p0(ptr [[TMP4]], i32 8, <4 x i1> [[TMP0]], <4 x double> poison)
-; CHECK-NEXT:    [[TMP5:%.*]] = xor <4 x i1> [[TMP0]], <i1 true, i1 true, i1 true, i1 true>
-; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP5]], <4 x double> zeroinitializer, <4 x double> [[WIDE_MASKED_LOAD]]
+; CHECK-NEXT:    [[TMP1:%.*]] = xor <4 x i1> [[TMP0]], <i1 true, i1 true, i1 true, i1 true>
+; CHECK-NEXT:    [[TMP2:%.*]] = zext <4 x i32> [[VEC_IND]] to <4 x i64>
+; CHECK-NEXT:    [[TMP3:%.*]] = extractelement <4 x i64> [[TMP2]], i32 0
+; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr double, ptr [[P]], i64 [[TMP3]]
+; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr double, ptr [[TMP4]], i32 0
+; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x double> @llvm.masked.load.v4f64.p0(ptr [[TMP5]], i32 8, <4 x i1> [[TMP0]], <4 x double> poison)
+; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP1]], <4 x double> zeroinitializer, <4 x double> [[WIDE_MASKED_LOAD]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = extractelement <4 x double> [[PREDPHI]], i32 3
 ; CHECK-NEXT:    store double [[TMP6]], ptr [[P1]], align 8
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <4 x i32> [[VEC_IND]], <i32 4, i32 4, i32 4, i32 4>
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_NEXT]], 0
-; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP17:![0-9]+]]
+; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP15:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -534,7 +534,7 @@ define void @drop_zext_nneg(ptr noalias %p, ptr noalias %p1) #0 {
 ; CHECK-NEXT:    store double [[PHI]], ptr [[P1]], align 8
 ; CHECK-NEXT:    [[NEXT]] = add i64 [[IV]], 1
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp eq i64 [[NEXT]], 0
-; CHECK-NEXT:    br i1 [[CMP]], label [[EXIT]], label [[BODY]], !llvm.loop [[LOOP18:![0-9]+]]
+; CHECK-NEXT:    br i1 [[CMP]], label [[EXIT]], label [[BODY]], !llvm.loop [[LOOP16:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    ret void
 ;
@@ -584,14 +584,14 @@ define void @preserve_vector_exact_no_addr(ptr noalias nocapture readonly %input
 ; CHECK-NEXT:    [[TMP5:%.*]] = xor <4 x i1> [[TMP4]], <i1 true, i1 true, i1 true, i1 true>
 ; CHECK-NEXT:    [[TMP6:%.*]] = sdiv exact <4 x i64> [[VEC_IND]], <i64 2, i64 2, i64 2, i64 2>
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds float, ptr [[INPUT]], <4 x i64> [[TMP6]]
-; CHECK-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <4 x float> @llvm.masked.gather.v4f32.v4p0(<4 x ptr> [[TMP7]], i32 4, <4 x i1> [[TMP5]], <4 x float> poison), !invariant.load !0
+; CHECK-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <4 x float> @llvm.masked.gather.v4f32.v4p0(<4 x ptr> [[TMP7]], i32 4, <4 x i1> [[TMP5]], <4 x float> poison), !invariant.load [[META0]]
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP5]], <4 x float> [[WIDE_MASKED_GATHER]], <4 x float> zeroinitializer
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds float, ptr [[OUTPUT]], i64 [[TMP0]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds float, ptr [[TMP8]], i32 0
 ; CHECK-NEXT:    store <4 x float> [[PREDPHI]], ptr [[TMP9]], align 4
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <4 x i64> [[VEC_IND]], <i64 4, i64 4, i64 4, i64 4>
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
-; CHECK-NEXT:    br i1 true, label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP15:![0-9]+]]
+; CHECK-NEXT:    br i1 true, label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP17:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br i1 true, label [[LOOP_EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -607,7 +607,7 @@ define void @preserve_vector_exact_no_addr(ptr noalias nocapture readonly %input
 ; CHECK:       if.then:
 ; CHECK-NEXT:    [[I26:%.*]] = sdiv exact i64 [[IV]], 2
 ; CHECK-NEXT:    [[I29:%.*]] = getelementptr inbounds float, ptr [[INPUT]], i64 [[I26]]
-; CHECK-NEXT:    [[I30:%.*]] = load float, ptr [[I29]], align 4, !invariant.load !0
+; CHECK-NEXT:    [[I30:%.*]] = load float, ptr [[I29]], align 4, !invariant.load [[META0]]
 ; CHECK-NEXT:    br label [[IF_END]]
 ; CHECK:       if.end:
 ; CHECK-NEXT:    [[I34:%.*]] = phi float [ 0.000000e+00, [[LOOP_HEADER]] ], [ [[I30]], [[IF_THEN]] ]
@@ -615,7 +615,7 @@ define void @preserve_vector_exact_no_addr(ptr noalias nocapture readonly %input
 ; CHECK-NEXT:    store float [[I34]], ptr [[I35]], align 4
 ; CHECK-NEXT:    [[IV_INC]] = add nuw nsw i64 [[IV]], 1
 ; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp eq i64 [[IV_INC]], 4
-; CHECK-NEXT:    br i1 [[EXITCOND]], label [[LOOP_EXIT]], label [[LOOP_HEADER]], !llvm.loop [[LOOP16:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND]], label [[LOOP_EXIT]], label [[LOOP_HEADER]], !llvm.loop [[LOOP18:![0-9]+]]
 ; CHECK:       loop.exit:
 ; CHECK-NEXT:    ret void
 ;
@@ -671,7 +671,7 @@ define void @preserve_exact_no_addr(ptr %output) local_unnamed_addr #0 {
 ; CHECK-NEXT:    store <4 x i64> [[PREDPHI]], ptr [[TMP5]], align 4
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <4 x i64> [[VEC_IND]], <i64 4, i64 4, i64 4, i64 4>
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
-; CHECK-NEXT:    br i1 true, label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP17:![0-9]+]]
+; CHECK-NEXT:    br i1 true, label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP19:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br i1 true, label [[LOOP_EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -690,7 +690,7 @@ define void @preserve_exact_no_addr(ptr %output) local_unnamed_addr #0 {
 ; CHECK-NEXT:    store i64 [[I34]], ptr [[I35]], align 4
 ; CHECK-NEXT:    [[IV_INC]] = add nuw nsw i64 [[IV]], 1
 ; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp eq i64 [[IV_INC]], 4
-; CHECK-NEXT:    br i1 [[EXITCOND]], label [[LOOP_EXIT]], label [[LOOP_HEADER]], !llvm.loop [[LOOP18:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EXITCOND]], label [[LOOP_EXIT]], label [[LOOP_HEADER]], !llvm.loop [[LOOP20:![0-9]+]]
 ; CHECK:       loop.exit:
 ; CHECK-NEXT:    ret void
 ;
@@ -732,7 +732,7 @@ define void @dont_vectorize_poison_phi(ptr noalias nocapture readonly %input,
 ; CHECK-NEXT:    br i1 [[I23]], label [[IF_END]], label [[IF_THEN:%.*]]
 ; CHECK:       if.then:
 ; CHECK-NEXT:    [[I29:%.*]] = getelementptr inbounds float, ptr [[INPUT]], i64 [[POISON]]
-; CHECK-NEXT:    [[I30:%.*]] = load float, ptr [[I29]], align 4, !invariant.load !0
+; CHECK-NEXT:    [[I30:%.*]] = load float, ptr [[I29]], align 4, !invariant.load [[META0]]
 ; CHECK-NEXT:    br label [[IF_END]]
 ; CHECK:       if.end:
 ; CHECK-NEXT:    [[I34:%.*]] = phi float [ 0.000000e+00, [[LOOP_HEADER]] ], [ [[I30]], [[IF_THEN]] ]
@@ -777,12 +777,19 @@ loop.exit:
 ; Note that the then block has UB, but I could not find any other way to
 ; construct a suitable test case.
 define void @pr70590_recipe_without_underlying_instr(i64 %n, ptr noalias %dst) {
-; CHECK-LABEL: @pr70590_recipe_without_underlying_instr(
+; CHECK-LABEL: define void @pr70590_recipe_without_underlying_instr
+; CHECK-SAME: (i64 [[N:%.*]], ptr noalias [[DST:%.*]]) {
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK:       vector.ph:
+; CHECK-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <4 x i64> poison, i64 [[N]], i64 0
+; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <4 x i64> [[BROADCAST_SPLATINSERT]], <4 x i64> poison, <4 x i32> zeroinitializer
+; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
-; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH:%.+]] ], [ [[INDEX_NEXT:%.*]], [[PRED_SREM_CONTINUE6:%.*]] ]
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[PRED_SREM_CONTINUE6:%.*]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <4 x i64> [ <i64 0, i64 1, i64 2, i64 3>, [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[PRED_SREM_CONTINUE6]] ]
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
-; CHECK-NEXT:    [[TMP1:%.*]] = icmp eq <4 x i64> [[VEC_IND]],
+; CHECK-NEXT:    [[TMP1:%.*]] = icmp eq <4 x i64> [[VEC_IND]], [[BROADCAST_SPLAT]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = xor <4 x i1> [[TMP1]], <i1 true, i1 true, i1 true, i1 true>
 ; CHECK-NEXT:    [[TMP3:%.*]] = extractelement <4 x i1> [[TMP2]], i32 0
 ; CHECK-NEXT:    br i1 [[TMP3]], label [[PRED_SREM_IF:%.*]], label [[PRED_SREM_CONTINUE:%.*]]
@@ -790,7 +797,7 @@ define void @pr70590_recipe_without_underlying_instr(i64 %n, ptr noalias %dst) {
 ; CHECK-NEXT:    [[TMP4:%.*]] = srem i64 3, 0
 ; CHECK-NEXT:    br label [[PRED_SREM_CONTINUE]]
 ; CHECK:       pred.srem.continue:
-; CHECK-NEXT:    [[TMP5:%.*]] = phi i64 [ poison, %vector.body ], [ [[TMP4]], [[PRED_SREM_IF]] ]
+; CHECK-NEXT:    [[TMP5:%.*]] = phi i64 [ poison, [[VECTOR_BODY]] ], [ [[TMP4]], [[PRED_SREM_IF]] ]
 ; CHECK-NEXT:    [[TMP6:%.*]] = extractelement <4 x i1> [[TMP2]], i32 1
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[PRED_SREM_IF1:%.*]], label [[PRED_SREM_CONTINUE2:%.*]]
 ; CHECK:       pred.srem.if1:
@@ -818,13 +825,38 @@ define void @pr70590_recipe_without_underlying_instr(i64 %n, ptr noalias %dst) {
 ; CHECK-NEXT:    [[TMP18:%.*]] = getelementptr i8, ptr [[TMP17]], i32 0
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i8>, ptr [[TMP18]], align 1
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP2]], <4 x i8> [[WIDE_LOAD]], <4 x i8> zeroinitializer
-; CHECK-NEXT:    [[TMP19:%.*]] = getelementptr i8, ptr %dst, i64 [[TMP0]]
+; CHECK-NEXT:    [[TMP19:%.*]] = getelementptr i8, ptr [[DST]], i64 [[TMP0]]
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP19]], i32 0
 ; CHECK-NEXT:    store <4 x i8> [[PREDPHI]], ptr [[TMP20]], align 4
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <4 x i64> [[VEC_IND]], <i64 4, i64 4, i64 4, i64 4>
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
-; CHECK-NEXT:    br i1 true, label %middle.block, label %vector.body
+; CHECK-NEXT:    br i1 true, label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP21:![0-9]+]]
 ; CHECK:       middle.block:
+; CHECK-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK:       scalar.ph:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 4, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-NEXT:    br label [[LOOP_HEADER:%.*]]
+; CHECK:       loop.header:
+; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INC:%.*]], [[LOOP_LATCH:%.*]] ]
+; CHECK-NEXT:    [[CMP:%.*]] = icmp eq i64 [[IV]], [[N]]
+; CHECK-NEXT:    br i1 [[CMP]], label [[LOOP_LATCH]], label [[THEN:%.*]]
+; CHECK:       then:
+; CHECK-NEXT:    [[REM:%.*]] = srem i64 3, 0
+; CHECK-NEXT:    [[ADD3:%.*]] = add i64 [[REM]], -3
+; CHECK-NEXT:    [[ADD5:%.*]] = add i64 [[IV]], [[ADD3]]
+; CHECK-NEXT:    [[GEP:%.*]] = getelementptr [5 x i8], ptr @c, i64 0, i64 [[ADD5]]
+; CHECK-NEXT:    [[L:%.*]] = load i8, ptr [[GEP]], align 1
+; CHECK-NEXT:    br label [[LOOP_LATCH]]
+; CHECK:       loop.latch:
+; CHECK-NEXT:    [[SR:%.*]] = phi i8 [ 0, [[LOOP_HEADER]] ], [ [[L]], [[THEN]] ]
+; CHECK-NEXT:    [[GEP_DST:%.*]] = getelementptr i8, ptr [[DST]], i64 [[IV]]
+; CHECK-NEXT:    store i8 [[SR]], ptr [[GEP_DST]], align 4
+; CHECK-NEXT:    [[INC]] = add i64 [[IV]], 1
+; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], 4
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT]], label [[LOOP_HEADER]], !llvm.loop [[LOOP22:![0-9]+]]
+; CHECK:       exit:
+; CHECK-NEXT:    ret void
+;
 
 entry:
   br label %loop.header

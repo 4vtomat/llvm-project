@@ -914,6 +914,13 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
     State.set(&VectorTripCount, VectorTripCountV, Part);
 
   IRBuilder<> Builder(State.CFG.PrevBB->getTerminator());
+#if SIFIVE_CUSTOMIZATION
+  // FIXME: remove this check and do proper modeling of that VPValue after fixme
+  // below is addressed
+  if (VPValue *RVL = State.Plan->getRVL())
+    VFxUF.replaceAllUsesWith(RVL);
+  else
+#endif // SIFIVE_CUSTOMIZATION
   // FIXME: Model VF * UF computation completely in VPlan.
   State.set(&VFxUF,
             createStepForVF(Builder, TripCountV->getType(), State.VF, State.UF),
