@@ -3694,6 +3694,11 @@ void AssemblyWriter::printGlobal(const GlobalVariable *GV) {
     case CodeModel::Large:
       Out << "large";
       break;
+#if SIFIVE_CUSTOMIZATION
+    case CodeModel::Compact:
+      Out << "compact";
+      break;
+#endif // SIFIVE_CUSTOMIZATION
     }
     Out << '"';
   }
