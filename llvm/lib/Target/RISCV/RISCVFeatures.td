@@ -1027,7 +1027,7 @@ def FeatureVendorXSfvqdotq
     : SubtargetFeature<"xsfvqdotq", "HasVendorXSfvqdotq", "true",
                        "Xsfvqdotq (SiFive Vector Quad-Widening 4D Dot Product Instructions)",
                        [FeatureStdExtZve32x]>;
-def HasVendorXSfvqdotq : Predicate<"Subtarget->hasVendorXSfvqdot()">,
+def HasVendorXSfvqdotq : Predicate<"Subtarget->hasVendorXSfvqdotq()">,
                          AssemblerPredicate<(all_of FeatureVendorXSfvqdotq),
                          "'Xsfvqdotq' (SiFive Vector Quad-Widening 4D Dot Product Instructions)">;
 #endif // SIFIVE_CUSTOMIZATION
