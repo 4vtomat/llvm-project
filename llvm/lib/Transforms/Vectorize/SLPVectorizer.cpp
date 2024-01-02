@@ -5402,6 +5402,17 @@ void BoUpSLP::buildTree(ArrayRef<Value *> Roots,
   if (!allSameType(Roots))
     return;
   buildTree_rec(Roots, 0, EdgeInfo());
+#if SIFIVE_CUSTOMIZATION
+  for (const std::unique_ptr<TreeEntry> &EntryPtr : VectorizableTree) {
+    if (EntryPtr->State != TreeEntry::NeedToGather)
+      continue;
+    if (!areAllUsersRISCVStridedNode(EntryPtr.get()))
+      continue;
+    for (Value *V : EntryPtr->Scalars)
+      if (!isConstant(V))
+        ValueToGatherNodes.erase(V);
+  }
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 void BoUpSLP::buildTree(ArrayRef<Value *> Roots) {
@@ -5409,6 +5420,17 @@ void BoUpSLP::buildTree(ArrayRef<Value *> Roots) {
   if (!allSameType(Roots))
     return;
   buildTree_rec(Roots, 0, EdgeInfo());
+#if SIFIVE_CUSTOMIZATION
+  for (const std::unique_ptr<TreeEntry> &EntryPtr : VectorizableTree) {
+    if (EntryPtr->State != TreeEntry::NeedToGather)
+      continue;
+    if (!areAllUsersRISCVStridedNode(EntryPtr.get()))
+      continue;
+    for (Value *V : EntryPtr->Scalars)
+      if (!isConstant(V))
+        ValueToGatherNodes.erase(V);
+  }
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 /// \return true if the specified list of values has only one instruction that
