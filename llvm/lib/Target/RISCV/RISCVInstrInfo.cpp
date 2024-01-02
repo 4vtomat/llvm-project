@@ -2373,7 +2373,8 @@ static bool shouldClusterMemOpsSiFive7(
   const MachineInstr &SecondLdSt = *BaseOp2.getParent();
 
   // Checking BaseOps1 and BaseOps2 have the same base register.
-  if (BaseOp1.isReg() && BaseOp1.getReg() != BaseOp2.getReg())
+  if (!BaseOp1.isReg() || !BaseOp2.isReg() ||
+      BaseOp1.getReg() != BaseOp2.getReg())
     return false;
 
   // If this is a volatile store, don't mess with it.
