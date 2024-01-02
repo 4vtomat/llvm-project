@@ -22571,6 +22571,49 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
   return true;
 }
 
+/// If we're interleaving 2 constant splats, for instance `<vscale x 8 x i32>
+/// <splat of 666>` and `<vscale x 8 x i32> <splat of 777>`, we can create a
+/// larger splat
+/// `<vscale x 4 x i64> <splat of ((777 << 32) | 666)>` first before casting it
+/// into
+/// `<vscale x 8 x i32>`. This will resuling a simple unit stride store rather
+/// than a segment store, which is more expensive in this case.
+static Value *foldInterleaved2OfConstSplats(ArrayRef<Value *> Operands,
+                                            VectorType *VTy,
+                                            const TargetLowering *TLI,
+                                            Instruction *VPStore) {
+  // We only handle Factor = 2 for now.
+  assert(Operands.size() == 2);
+  auto *SplatVal0 = dyn_cast_or_null<ConstantInt>(getSplatValue(Operands[0]));
+  auto *SplatVal1 = dyn_cast_or_null<ConstantInt>(getSplatValue(Operands[1]));
+  if (!SplatVal0 || !SplatVal1)
+    return nullptr;
+
+  auto &Ctx = VPStore->getContext();
+  auto &DL = VPStore->getModule()->getDataLayout();
+
+  auto *NewVTy = VectorType::getExtendedElementVectorType(VTy);
+  if (!TLI->isTypeLegal(TLI->getValueType(DL, NewVTy)))
+    return nullptr;
+
+  // InterleavedAccessPass will remove VPStore after this but we still want to
+  // preserve it, hence clone another one here.
+  auto *ClonedVPStore = VPStore->clone();
+  ClonedVPStore->insertBefore(VPStore);
+  IRBuilder<> Builder(ClonedVPStore);
+
+  Type *ETy = VTy->getElementType();
+  unsigned Width = ETy->getIntegerBitWidth();
+
+  APInt NewSplatVal(Width * 2, SplatVal1->getZExtValue());
+  NewSplatVal <<= Width;
+  NewSplatVal |= SplatVal0->getZExtValue();
+  auto *NewSplat = ConstantVector::getSplat(NewVTy->getElementCount(),
+                                            ConstantInt::get(Ctx, NewSplatVal));
+  return Builder.CreateBitCast(NewSplat,
+                               VectorType::getDoubleElementsVectorType(VTy));
+}
+
 /// Lower an interleaved vp.store into a vssegN intrinsic.
 ///
 /// E.g. Lower an interleaved vp.store (Factor = 2):
@@ -22614,6 +22657,13 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
           Store->getOperand(1)->getType()->getPointerAddressSpace(),
           Store->getModule()->getDataLayout()))
     return false;
+
+  if (Factor == 2)
+    if (Value *BC =
+            foldInterleaved2OfConstSplats(Operands, VTy, this, VPStore)) {
+      InterleaveIntrin->replaceAllUsesWith(BC);
+      return true;
+    }
 
   IRBuilder<> Builder(VPStore);
   Value *WideRVL = VPStore->getOperand(3);
