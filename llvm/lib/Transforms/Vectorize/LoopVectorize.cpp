@@ -11680,24 +11680,10 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
 #endif // SIFIVE_CUSTOMIZATION
   Value *NumUnrolledElems =
       State.Builder.CreateMul(RuntimeVF, ConstantInt::get(PhiType, State.UF));
-#if SIFIVE_CUSTOMIZATION
-  // If MaxSafeNumElems is not unknown, then we have clamped the VL.
-  // Therefore, we need to bump the pointer by the clamped disntance
-  // instead.
-  Value *PtrStride =
-      State.MaxSafeNumElems == VPTransformState::UnknownNumSafeElems
-          ? NumUnrolledElems
-          : ConstantInt::get(PhiType, State.MaxSafeNumElems);
-  Value *InductionGEP = GetElementPtrInst::Create(
-      State.Builder.getInt8Ty(), NewPointerPhi,
-      State.Builder.CreateMul(ScalarStepValue, PtrStride), "ptr.ind",
-      InductionLoc);
-#else
   Value *InductionGEP = GetElementPtrInst::Create(
       State.Builder.getInt8Ty(), NewPointerPhi,
       State.Builder.CreateMul(ScalarStepValue, NumUnrolledElems), "ptr.ind",
       InductionLoc);
-#endif // SIFIVE_CUSTOMIZATION
   // Add induction update using an incorrect block temporarily. The phi node
   // will be fixed after VPlan execution. Note that at this point the latch
   // block cannot be used, as it does not exist yet.
