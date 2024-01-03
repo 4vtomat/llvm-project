@@ -9859,6 +9859,9 @@ BoUpSLP::isGatherShuffledSingleRegisterEntry(
       continue;
     // Build a list of tree entries where V is used.
     SmallPtrSet<const TreeEntry *, 4> VToTEs;
+#if SIFIVE_CUSTOMIZATION
+    if (ValueToGatherNodes.contains(V)) {
+#endif // SIFIVE_CUSTOMIZATION
     for (const TreeEntry *TEPtr : ValueToGatherNodes.find(V)->second) {
       if (TEPtr == TE)
         continue;
@@ -9894,6 +9897,9 @@ BoUpSLP::isGatherShuffledSingleRegisterEntry(
         continue;
       VToTEs.insert(TEPtr);
     }
+#if SIFIVE_CUSTOMIZATION
+    }
+#endif // SIFIVE_CUSTOMIZATION
     if (const TreeEntry *VTE = getTreeEntry(V)) {
       Instruction &LastBundleInst = getLastInstructionInBundle(VTE);
       if (&LastBundleInst == TEInsertPt || !CheckOrdering(&LastBundleInst))
