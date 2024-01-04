@@ -331,17 +331,6 @@ bool RISCVTargetInfo::initFeatureMap(
   // RISCVISAInfo makes implications for ISA features
   std::vector<std::string> ImpliedFeatures = (*ParseResult)->toFeatureVector();
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (getTargetOpts().SiFiveRecode == "neon") {
-    ImpliedFeatures.push_back("+dotprod");
-    if (llvm::is_contained(ImpliedFeatures, "+zfh") &&
-        llvm::is_contained(ImpliedFeatures, "+zvfh"))
-      ImpliedFeatures.push_back("+fullfp16");
-  }
-#endif
-
-=======
   // parseFeatures normalizes the feature set by dropping any explicit
   // negatives, and non-extension features.  We need to preserve the later
   // for correctness and want to preserve the former for consistency.
@@ -353,7 +342,16 @@ bool RISCVTargetInfo::initFeatureMap(
          !llvm::is_contained(ImpliedFeatures, ("-" + ExtName).str()))
        ImpliedFeatures.push_back(Feature);
   }
->>>>>>> 93b14c3df17500e675f31674165b5378dd0b4eaf
+
+#if SIFIVE_CUSTOMIZATION
+  if (getTargetOpts().SiFiveRecode == "neon") {
+    ImpliedFeatures.push_back("+dotprod");
+    if (llvm::is_contained(ImpliedFeatures, "+zfh") &&
+        llvm::is_contained(ImpliedFeatures, "+zvfh"))
+      ImpliedFeatures.push_back("+fullfp16");
+  }
+#endif
+
   return TargetInfo::initFeatureMap(Features, Diags, CPU, ImpliedFeatures);
 }
 

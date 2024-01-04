@@ -44,17 +44,12 @@ FUNCTION_PASS("cfguard", CFGuardPass, ())
 FUNCTION_PASS("consthoist", ConstantHoistingPass, ())
 FUNCTION_PASS("dwarf-eh-prepare", DwarfEHPreparePass, (TM))
 FUNCTION_PASS("ee-instrument", EntryExitInstrumenterPass, (false))
-<<<<<<< HEAD
-FUNCTION_PASS("expand-large-div-rem", ExpandLargeDivRemPass, ())
-FUNCTION_PASS("expand-large-fp-convert", ExpandLargeFpConvertPass, ())
-#ifdef SIFIVE_CUSTOMIZATION
-FUNCTION_PASS("expand-powi", ExpandPowiPass, ())
-#endif
-=======
 FUNCTION_PASS("expand-large-div-rem", ExpandLargeDivRemPass, (TM))
 FUNCTION_PASS("expand-large-fp-convert", ExpandLargeFpConvertPass, (TM))
 FUNCTION_PASS("expand-memcmp", ExpandMemCmpPass, (TM))
->>>>>>> 93b14c3df17500e675f31674165b5378dd0b4eaf
+#ifdef SIFIVE_CUSTOMIZATION
+FUNCTION_PASS("expand-powi", ExpandPowiPass, ())
+#endif
 FUNCTION_PASS("expand-reductions", ExpandReductionsPass, ())
 FUNCTION_PASS("expandvp", ExpandVectorPredicationPass, ())
 FUNCTION_PASS("indirectbr-expand", IndirectBrExpandPass, (TM))

@@ -311,7 +311,6 @@ static bool shouldScheduleAdjacent(const TargetInstrInfo &TII,
 
   if (ST.hasLUIADDIFusion() && isLUIADDI(FirstMI, SecondMI))
     return true;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (ST.hasFuseLUILoad() && isLUILoad(FirstMI, SecondMI))
     return true;
@@ -321,7 +320,6 @@ static bool shouldScheduleAdjacent(const TargetInstrInfo &TII,
   if (ST.hasFuseArithEqZ() && isArithEqZ(FirstMI, SecondMI))
     return true;
 #endif // SIFIVE_CUSTOMIZATION
-=======
 
   if (ST.hasAUIPCADDIFusion() && isAUIPCADDI(FirstMI, SecondMI))
     return true;
@@ -332,7 +330,6 @@ static bool shouldScheduleAdjacent(const TargetInstrInfo &TII,
   if (ST.hasLDADDFusion() && isLDADD(FirstMI, SecondMI))
     return true;
 
->>>>>>> 93b14c3df17500e675f31674165b5378dd0b4eaf
   return false;
 }
 

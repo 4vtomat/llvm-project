@@ -4484,7 +4484,6 @@ InstCombinerImpl::transformCallThroughTrampoline(CallBase &Call,
   return &Call;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 Instruction *InstCombinerImpl::foldNeutralVPReduce(Instruction &I) {
   Value *X, *Y, *Mask, *EVL;
@@ -4688,7 +4687,12 @@ Instruction *InstCombinerImpl::foldNeutralVPReduce(Instruction &I) {
       CI->setFastMathFlags(MatchedFMF);
       return replaceInstUsesWith(I, CI);
     }
-=======
+  }
+
+  return nullptr;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 // op(select(%v, %x, %y), select(%v, %y, %x)) --> op(%x, %y)
 Instruction *
 InstCombinerImpl::foldCommutativeIntrinsicOverSelects(IntrinsicInst &II) {
@@ -4701,12 +4705,7 @@ InstCombinerImpl::foldCommutativeIntrinsicOverSelects(IntrinsicInst &II) {
     replaceOperand(II, 0, B);
     replaceOperand(II, 1, C);
     return &II;
->>>>>>> 93b14c3df17500e675f31674165b5378dd0b4eaf
   }
 
   return nullptr;
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 93b14c3df17500e675f31674165b5378dd0b4eaf

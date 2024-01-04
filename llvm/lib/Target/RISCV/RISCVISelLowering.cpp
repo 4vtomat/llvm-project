@@ -1440,22 +1440,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   setPrefFunctionAlignment(Subtarget.getPrefFunctionAlignment());
   setPrefLoopAlignment(Subtarget.getPrefLoopAlignment());
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Increase number of stores for memcpy expansion for RV32.
   if (!Subtarget.is64Bit())
     MaxStoresPerMemcpy = 12;
 #endif // SIFIVE_CUSTOMIZATION
 
-#if SIFIVE_CUSTOMIZATION
-  setJumpIsExpensive(!Subtarget.setJumpIsCheap());
-#else // SIFIVE_CUSTOMIZATION
-  // Jumps are expensive, compared to logic
-  setJumpIsExpensive();
-#endif // SIFIVE_CUSTOMIZATION
-
-=======
->>>>>>> 93b14c3df17500e675f31674165b5378dd0b4eaf
   setTargetDAGCombine({ISD::INTRINSIC_VOID, ISD::INTRINSIC_W_CHAIN,
                        ISD::INTRINSIC_WO_CHAIN, ISD::ADD, ISD::SUB, ISD::AND,
                        ISD::OR, ISD::XOR, ISD::SETCC, ISD::SELECT});
@@ -18794,10 +18784,9 @@ unsigned RISCVTargetLowering::ComputeNumSignBitsForTargetNode(
       assert(Subtarget.hasStdExtA());
       return 33;
     }
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     break;
   }
+#if SIFIVE_CUSTOMIZATION
   case ISD::INTRINSIC_WO_CHAIN: {
     unsigned IntNo = Op.getConstantOperandVal(0);
     switch (IntNo) {
@@ -18821,11 +18810,8 @@ unsigned RISCVTargetLowering::ComputeNumSignBitsForTargetNode(
       return Subtarget.getXLen() - 16;
     }
     break;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-    break;
->>>>>>> 93b14c3df17500e675f31674165b5378dd0b4eaf
   }
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   return 1;

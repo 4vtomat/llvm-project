@@ -55,12 +55,7 @@
 // RUN:   | FileCheck -check-prefix=CHECK-LP64 %s
 // RUN: %clang --target=riscv64-unknown-elf %s -### -march=rv64imc 2>&1 \
 // RUN:   | FileCheck -check-prefix=CHECK-LP64 %s
-<<<<<<< HEAD
-// RUN: %clang --target=riscv64-unknown-elf %s -### -march=rv64imf 2>&1 \
-// RUN:   | FileCheck -check-prefix=CHECK-LP64 %s
 // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 93b14c3df17500e675f31674165b5378dd0b4eaf
 // RUN: %clang --target=riscv64-unknown-elf -x assembler %s -### 2>&1 \
 // RUN:   | FileCheck -check-prefix=CHECK-LP64D  %s
 // end SIFIVE_CUSTOMIZATION

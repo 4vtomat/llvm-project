@@ -274,7 +274,6 @@ static bool isReInterleaveMask(ShuffleVectorInst *SVI, unsigned &Factor,
   return false;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 /// Check the interleaved mask
 ///
@@ -356,10 +355,7 @@ static unsigned getFactorFromVectorDeInterleaveIntrinsic(IntrinsicInst *DI) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-bool InterleavedAccess::lowerInterleavedLoad(
-=======
 bool InterleavedAccessImpl::lowerInterleavedLoad(
->>>>>>> 93b14c3df17500e675f31674165b5378dd0b4eaf
     LoadInst *LI, SmallVector<Instruction *, 32> &DeadInsts) {
   if (!LI->isSimple() || isa<ScalableVectorType>(LI->getType()))
     return false;

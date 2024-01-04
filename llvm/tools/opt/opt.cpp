@@ -423,14 +423,10 @@ int main(int argc, char **argv) {
   // supported.
   initializeExpandLargeDivRemLegacyPassPass(Registry);
   initializeExpandLargeFpConvertLegacyPassPass(Registry);
-<<<<<<< HEAD
-  initializeExpandMemCmpPassPass(Registry);
+  initializeExpandMemCmpLegacyPassPass(Registry);
 #if SIFIVE_CUSTOMIZATION
   initializeExpandPowiLegacyPassPass(Registry);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  initializeExpandMemCmpLegacyPassPass(Registry);
->>>>>>> 93b14c3df17500e675f31674165b5378dd0b4eaf
   initializeScalarizeMaskedMemIntrinLegacyPassPass(Registry);
   initializeSelectOptimizePass(Registry);
   initializeCallBrPreparePass(Registry);

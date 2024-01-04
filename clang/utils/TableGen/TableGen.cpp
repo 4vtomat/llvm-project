@@ -471,17 +471,14 @@ bool ClangTableGenMain(raw_ostream &OS, RecordKeeper &Records) {
   case GenArmFP16:
     EmitFP16(Records, OS);
     break;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case GenRecodeFP16:
     EmitRecodeFP16(Records, OS);
     break;
 #endif
-=======
   case GenArmVectorType:
     EmitVectorTypes(Records, OS);
     break;
->>>>>>> 93b14c3df17500e675f31674165b5378dd0b4eaf
   case GenArmBF16:
     EmitBF16(Records, OS);
     break;
