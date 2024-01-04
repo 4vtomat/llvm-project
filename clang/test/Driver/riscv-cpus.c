@@ -191,7 +191,7 @@
 // MCPU-SIFIVE-E76M: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f"
 // MCPU-SIFIVE-E76M: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei"
 // MCPU-SIFIVE-E76M: "-target-feature" "+zba" "-target-feature" "+zbb"
-// MCPU-SIFIVE-E76M: "-target-abi" "ilp32"
+// MCPU-SIFIVE-E76M: "-target-abi" "ilp32f"
 
 // mcpu with mabi option
 // RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-u74 -mabi=lp64 | FileCheck -check-prefix=MCPU-ABI-SIFIVE-U74 %s
