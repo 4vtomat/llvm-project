@@ -11,19 +11,19 @@
 # RUN: llvm-objdump -d -M no-aliases --no-show-raw-insn %t.rv32 | FileCheck --check-prefix=GP %s
 # RUN: llvm-objdump -d -M no-aliases --no-show-raw-insn %t.rv64 | FileCheck --check-prefix=GP %s
 # GP-NOT:  lui
-# GP:      addi    a0, gp, -2048
-# GP-NEXT: lw      a0, -2048(gp)
-# GP-NEXT: sw      a0, -2048(gp)
+# GP:      addi    a0, gp, -0x800
+# GP-NEXT: lw      a0, -0x800(gp)
+# GP-NEXT: sw      a0, -0x800(gp)
 
 # RUN: echo 'SECTIONS { .text : { *(.text) } .sdata 0x200000 : { foo = . + 4096; } }' > %t-out-of-range.lds
 # RUN: ld.lld --relax-gp --undefined=__global_pointer$ %t.rv32.o %t-out-of-range.lds -o %t.rv32-out-of-range
 # RUN: ld.lld --relax-gp --undefined=__global_pointer$ %t.rv64.o %t-out-of-range.lds -o %t.rv64-out-of-range
 # RUN: llvm-objdump -d -M no-aliases --no-show-raw-insn %t.rv32-out-of-range | FileCheck --check-prefix=NORELAX %s
 # RUN: llvm-objdump -d -M no-aliases --no-show-raw-insn %t.rv64-out-of-range | FileCheck --check-prefix=NORELAX %s
-# NORELAX:      lui     a0, 513
-# NORELAX-NEXT: addi    a0, a0, 0
-# NORELAX-NEXT: lw      a0, 0(a0)
-# NORELAX-NEXT: sw      a0, 0(a0)
+# NORELAX:      lui     a0, 0x201
+# NORELAX-NEXT: addi    a0, a0, 0x0
+# NORELAX-NEXT: lw      a0, 0x0(a0)
+# NORELAX-NEXT: sw      a0, 0x0(a0)
 
 .global _start
 _start:
