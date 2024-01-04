@@ -1678,6 +1678,9 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
   }
 
   if (II->isCommutative()) {
+    if (Instruction *I = foldCommutativeIntrinsicOverSelects(*II))
+      return I;
+
     if (CallInst *NewCall = canonicalizeConstantArg0ToArg1(CI))
       return NewCall;
   }
@@ -4481,6 +4484,7 @@ InstCombinerImpl::transformCallThroughTrampoline(CallBase &Call,
   return &Call;
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 Instruction *InstCombinerImpl::foldNeutralVPReduce(Instruction &I) {
   Value *X, *Y, *Mask, *EVL;
@@ -4684,8 +4688,25 @@ Instruction *InstCombinerImpl::foldNeutralVPReduce(Instruction &I) {
       CI->setFastMathFlags(MatchedFMF);
       return replaceInstUsesWith(I, CI);
     }
+=======
+// op(select(%v, %x, %y), select(%v, %y, %x)) --> op(%x, %y)
+Instruction *
+InstCombinerImpl::foldCommutativeIntrinsicOverSelects(IntrinsicInst &II) {
+  assert(II.isCommutative());
+
+  Value *A, *B, *C;
+  if (match(II.getOperand(0), m_Select(m_Value(A), m_Value(B), m_Value(C))) &&
+      match(II.getOperand(1),
+            m_Select(m_Specific(A), m_Specific(C), m_Specific(B)))) {
+    replaceOperand(II, 0, B);
+    replaceOperand(II, 1, C);
+    return &II;
+>>>>>>> 93b14c3df17500e675f31674165b5378dd0b4eaf
   }
 
   return nullptr;
 }
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 93b14c3df17500e675f31674165b5378dd0b4eaf

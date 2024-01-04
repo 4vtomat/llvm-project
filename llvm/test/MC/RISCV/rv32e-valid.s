@@ -1,12 +1,17 @@
 # RUN: llvm-mc %s -triple=riscv32 -riscv-no-aliases -mattr=+e -show-encoding \
 # RUN:     | FileCheck -check-prefixes=CHECK-ASM,CHECK-ASM-AND-OBJ %s
 # RUN: llvm-mc -filetype=obj -triple=riscv32 -mattr=+e < %s \
-# RUN:     | llvm-objdump -M no-aliases -d -r - \
+# RUN:     | llvm-objdump --no-print-imm-hex -M no-aliases -d -r - \
 # RUN:     | FileCheck -check-prefixes=CHECK-OBJ,CHECK-ASM-AND-OBJ %s
 # RUN: llvm-mc %s -triple=riscv64 --mattr=+zicsr --mattr=+zifencei -riscv-no-aliases -mattr=+e -show-encoding \
 # RUN:     | FileCheck -check-prefixes=CHECK-ASM,CHECK-ASM-AND-OBJ %s
+<<<<<<< HEAD
 # RUN: llvm-mc -filetype=obj -triple=riscv64 --mattr=+zicsr --mattr=+zifencei -mattr=+e < %s \
 # RUN:     | llvm-objdump -M no-aliases -d -r --mattr=+zicsr --mattr=+zifencei - \
+=======
+# RUN: llvm-mc -filetype=obj -triple=riscv64 -mattr=+e < %s \
+# RUN:     | llvm-objdump --no-print-imm-hex -M no-aliases -d -r - \
+>>>>>>> 93b14c3df17500e675f31674165b5378dd0b4eaf
 # RUN:     | FileCheck -check-prefixes=CHECK-OBJ,CHECK-ASM-AND-OBJ %s
 
 # This file provides a basic test for RV32E, checking that the expected

@@ -339,7 +339,7 @@ static bool shouldPinPassToLegacyPM(StringRef Pass) {
       "nvptx-",  "mips-",  "lanai-", "hexagon-", "bpf-",    "avr-",
       "thumb2-", "arm-",   "si-",    "gcn-",     "amdgpu-", "aarch64-",
       "amdgcn-", "polly-", "riscv-", "dxil-"};
-  std::vector<StringRef> PassNameContain = {"ehprepare"};
+  std::vector<StringRef> PassNameContain = {"-eh-prepare"};
   std::vector<StringRef> PassNameExact = {
       "safe-stack",
       "cost-model",
@@ -356,14 +356,14 @@ static bool shouldPinPassToLegacyPM(StringRef Pass) {
       "expand-reductions",
       "indirectbr-expand",
       "generic-to-nvvm",
-      "expandmemcmp",
+      "expand-memcmp",
       "loop-reduce",
       "lower-amx-type",
       "lower-amx-intrinsics",
       "polyhedral-info",
       "print-polyhedral-info",
       "replace-with-veclib",
-      "jmc-instrument",
+      "jmc-instrumenter",
       "dot-regions",
       "dot-regions-only",
       "view-regions",
@@ -377,7 +377,7 @@ static bool shouldPinPassToLegacyPM(StringRef Pass) {
       "expand-powi",
   };
   for (const auto &P : PassNamePrefix)
-    if (Pass.startswith(P))
+    if (Pass.starts_with(P))
       return true;
   for (const auto &P : PassNameContain)
     if (Pass.contains(P))
@@ -423,10 +423,14 @@ int main(int argc, char **argv) {
   // supported.
   initializeExpandLargeDivRemLegacyPassPass(Registry);
   initializeExpandLargeFpConvertLegacyPassPass(Registry);
+<<<<<<< HEAD
   initializeExpandMemCmpPassPass(Registry);
 #if SIFIVE_CUSTOMIZATION
   initializeExpandPowiLegacyPassPass(Registry);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  initializeExpandMemCmpLegacyPassPass(Registry);
+>>>>>>> 93b14c3df17500e675f31674165b5378dd0b4eaf
   initializeScalarizeMaskedMemIntrinLegacyPassPass(Registry);
   initializeSelectOptimizePass(Registry);
   initializeCallBrPreparePass(Registry);
@@ -438,7 +442,7 @@ int main(int argc, char **argv) {
   initializeSjLjEHPreparePass(Registry);
   initializePreISelIntrinsicLoweringLegacyPassPass(Registry);
   initializeGlobalMergePass(Registry);
-  initializeIndirectBrExpandPassPass(Registry);
+  initializeIndirectBrExpandLegacyPassPass(Registry);
   initializeInterleavedLoadCombinePass(Registry);
   initializeInterleavedAccessPass(Registry);
   initializeUnreachableBlockElimLegacyPassPass(Registry);

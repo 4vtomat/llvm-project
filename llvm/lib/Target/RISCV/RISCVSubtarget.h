@@ -25,6 +25,7 @@
 #include "llvm/CodeGen/TargetSubtargetInfo.h"
 #include "llvm/IR/DataLayout.h"
 #include "llvm/Target/TargetMachine.h"
+#include <bitset>
 
 #define GET_SUBTARGETINFO_HEADER
 #include "RISCVGenSubtargetInfo.inc"
@@ -251,10 +252,15 @@ public:
   }
 
   bool hasMacroFusion() const {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     return hasLUIADDIFusion() || hasFuseLUILoad() || hasFuseIndexedLoad() ||
            hasFuseArithEqZ() || hasFuseBFX();
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    return hasLUIADDIFusion() || hasAUIPCADDIFusion() ||
+           hasShiftedZExtFusion() || hasLDADDFusion();
+>>>>>>> 93b14c3df17500e675f31674165b5378dd0b4eaf
   }
 
   // Vector codegen related methods.

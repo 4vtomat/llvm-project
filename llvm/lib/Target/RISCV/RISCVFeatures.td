@@ -1231,6 +1231,16 @@ def TuneLUIADDIFusion
     : SubtargetFeature<"lui-addi-fusion", "HasLUIADDIFusion",
                        "true", "Enable LUI+ADDI macrofusion">;
 
+def TuneAUIPCADDIFusion
+    : SubtargetFeature<"auipc-addi-fusion", "HasAUIPCADDIFusion",
+                       "true", "Enable AUIPC+ADDI macrofusion">;
+def TuneShiftedZExtFusion
+    : SubtargetFeature<"shifted-zext-fusion", "HasShiftedZExtFusion",
+                       "true", "Enable SLLI+SRLI to be fused when computing (shifted) zero extension">;
+def TuneLDADDFusion
+    : SubtargetFeature<"ld-add-fusion", "HasLDADDFusion",
+                       "true", "Enable LD+ADD macrofusion.">;
+
 def TuneNoDefaultUnroll
     : SubtargetFeature<"no-default-unroll", "EnableDefaultUnroll", "false",
                        "Disable default unroll preference.">;
@@ -1335,9 +1345,12 @@ def TuneSiFiveP800 : SubtargetFeature<"sifive-p800", "RISCVProcFamily", "SiFiveP
                                        TuneLUIADDIFusion]>;
 #endif // SIFIVE_CUSTOMIZATION
 
-def TuneVentanaVeyron : SubtargetFeature<"ventana-veyron", "RISCVProcFamily", "VentanaVeyron",
-                                         "Ventana-Veyron Series processors",
-                                         [TuneLUIADDIFusion]>;
+def TuneVeyronFusions : SubtargetFeature<"ventana-veyron", "RISCVProcFamily", "VentanaVeyron",
+                                         "Ventana Veyron-Series processors",
+                                         [TuneLUIADDIFusion,
+                                          TuneAUIPCADDIFusion,
+                                          TuneShiftedZExtFusion,
+                                          TuneLDADDFusion]>;
 
 // Assume that lock-free native-width atomics are available, even if the target
 // and operating system combination would not usually provide them. The user

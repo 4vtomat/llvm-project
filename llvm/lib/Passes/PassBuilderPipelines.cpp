@@ -836,7 +836,7 @@ void PassBuilder::addPGOInstrPasses(ModulePassManager &MPM,
   Options.DoCounterPromotion = true;
   Options.UseBFIInPromotion = IsCS;
   Options.Atomic = AtomicCounterUpdate;
-  MPM.addPass(InstrProfiling(Options, IsCS));
+  MPM.addPass(InstrProfilingLoweringPass(Options, IsCS));
 }
 
 void PassBuilder::addPGOInstrPassesForO0(
@@ -863,7 +863,7 @@ void PassBuilder::addPGOInstrPassesForO0(
   Options.DoCounterPromotion = false;
   Options.UseBFIInPromotion = IsCS;
   Options.Atomic = AtomicCounterUpdate;
-  MPM.addPass(InstrProfiling(Options, IsCS));
+  MPM.addPass(InstrProfilingLoweringPass(Options, IsCS));
 }
 
 static InlineParams getInlineParamsFromOptLevel(OptimizationLevel Level) {

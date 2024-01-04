@@ -103,7 +103,7 @@ void initializeEdgeBundlesPass(PassRegistry&);
 void initializeEHContGuardCatchretPass(PassRegistry &);
 void initializeExpandLargeFpConvertLegacyPassPass(PassRegistry&);
 void initializeExpandLargeDivRemLegacyPassPass(PassRegistry&);
-void initializeExpandMemCmpPassPass(PassRegistry&);
+void initializeExpandMemCmpLegacyPassPass(PassRegistry &);
 void initializeExpandPostRAPass(PassRegistry&);
 #if SIFIVE_CUSTOMIZATION
 void initializeExpandPowiLegacyPassPass(PassRegistry &);
@@ -132,7 +132,7 @@ void initializeIVUsersWrapperPassPass(PassRegistry&);
 void initializeIfConverterPass(PassRegistry&);
 void initializeImmutableModuleSummaryIndexWrapperPassPass(PassRegistry&);
 void initializeImplicitNullChecksPass(PassRegistry&);
-void initializeIndirectBrExpandPassPass(PassRegistry&);
+void initializeIndirectBrExpandLegacyPassPass(PassRegistry &);
 void initializeInferAddressSpacesPass(PassRegistry&);
 void initializeInstSimplifyLegacyPassPass(PassRegistry &);
 void initializeInstructionCombiningPassPass(PassRegistry&);
