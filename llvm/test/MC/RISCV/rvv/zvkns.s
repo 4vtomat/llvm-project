@@ -3,7 +3,7 @@
 # RUN: not llvm-mc -triple=riscv32 -show-encoding %s 2>&1 \
 # RUN:        | FileCheck %s --check-prefix=CHECK-ERROR
 # RUN: llvm-mc -triple=riscv32 -filetype=obj --mattr=+zve32x --mattr=+experimental-zvkns %s \
-# RUN:        | llvm-objdump -d --mattr=+zve32x --mattr=+experimental-zvkns  - \
+# RUN:        | llvm-objdump -d --mattr=+zve32x --mattr=+experimental-zvkns --no-print-imm-hex - \
 # RUN:        | FileCheck %s --check-prefix=CHECK-INST
 # RUN: llvm-mc -triple=riscv32 -filetype=obj --mattr=+zve32x --mattr=+experimental-zvkns %s \
 # RUN:        | llvm-objdump -d - | FileCheck %s --check-prefix=CHECK-UNKNOWN
