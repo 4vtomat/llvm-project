@@ -1359,6 +1359,9 @@ def TuneDLen128b : SubtargetFeature<"dlen128b", "DLen", "128",
 def TuneDLen256b : SubtargetFeature<"dlen256b", "DLen", "256",
                                     "'DLen' (SiFive datapath length) 256">;
 
+def TuneDLen512b : SubtargetFeature<"dlen512b", "DLen", "512",
+                                    "'DLen' (SiFive datapath length) 512">;
+
 def TuneOptimizedVRGatherVCompress
     : SubtargetFeature<"optimized-vrgather-vrcompress",
                        "HasOptimizedVRGatherVRCompress", "true",
