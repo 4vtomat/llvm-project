@@ -1260,10 +1260,6 @@ def TuneCMOVBranchOpt
 def CanUseCMOVBranchOpt : Predicate<"Subtarget->canUseCMOVBranchOpt()">;
 def NoCMOVBranchOpt : Predicate<"!Subtarget->canUseCMOVBranchOpt()">;
 
-def TuneJumpIsCheap
-    : SubtargetFeature<"jump-is-cheap", "SetJumpIsCheap",
-                       "true", "Set jump is cheap.">;
-
 def TuneFuseLUILoad
     : SubtargetFeature<"fuse-lui-load", "HasFuseLUILoad",
                        "true", "CPU fuses LUI/AUIPC with load">;
@@ -1311,37 +1307,31 @@ def TuneOptimizedVRGatherVCompress
 def TuneSiFive6 : SubtargetFeature<"sifive6", "RISCVProcFamily", "SiFive6",
                                    "SiFive 6-Series processors",
                                    [TuneNoDefaultUnroll,
-                                    TuneShortForwardBranchOpt,
-                                    TuneJumpIsCheap]>;
+                                    TuneShortForwardBranchOpt]>;
 def TuneSiFive7 : SubtargetFeature<"sifive7", "RISCVProcFamily", "SiFive7",
                                    "SiFive 7-Series processors",
                                    [TuneNoDefaultUnroll,
-                                    TuneShortForwardBranchOpt,
-                                    TuneJumpIsCheap]>;
+                                    TuneShortForwardBranchOpt]>;
 def TuneSiFiveP400 : SubtargetFeature<"sifive-p400", "RISCVProcFamily", "SiFiveP400",
                                       "SiFive P400-Series processors",
                                       [TuneNoDefaultUnroll,
                                        TuneCMOVBranchOpt,
-                                       TuneJumpIsCheap,
                                        TuneLUIADDIFusion]>;
 def TuneSiFiveP500 : SubtargetFeature<"sifive-p500", "RISCVProcFamily", "SiFiveP500",
                                       "SiFive P500-Series processors",
                                       [TuneNoDefaultUnroll,
                                        TuneCMOVBranchOpt,
-                                       TuneJumpIsCheap,
                                        TuneLUIADDIFusion]>;
 def TuneSiFiveP600 : SubtargetFeature<"sifive-p600", "RISCVProcFamily", "SiFiveP600",
                                       "SiFive P600-Series processors",
                                       [TuneNoDefaultUnroll,
                                        TuneCMOVBranchOpt,
-                                       TuneJumpIsCheap,
                                        TuneLUIADDIFusion]>;
 
 def TuneSiFiveP800 : SubtargetFeature<"sifive-p800", "RISCVProcFamily", "SiFiveP800",
                                       "SiFive P800-Series processors",
                                       [TuneNoDefaultUnroll,
                                        TuneCMOVBranchOpt,
-                                       TuneJumpIsCheap,
                                        TuneLUIADDIFusion]>;
 #endif // SIFIVE_CUSTOMIZATION
 
