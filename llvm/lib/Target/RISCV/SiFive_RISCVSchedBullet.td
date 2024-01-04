@@ -88,9 +88,7 @@ class BulletGetCyclesSegmentedSeg2<string mx> {
 
 // Cycles for segmented loads and stores are calculated using the
 // formula vl * ceil((SEW * nf) / DLEN), where SEW * nf is the segment size.
-class BulletGetCyclesSegmented<string mx, int sew, int nf> {
-  defvar VLEN = 512;
-  defvar DLEN = 256;
+class BulletGetCyclesSegmented<string mx, int sew, int nf, int VLEN> {
   // (VLEN * LMUL) / SEW
   defvar VLUpperBound  = !cond(
     !eq(mx, "M1") : !div(VLEN, sew),
@@ -103,27 +101,24 @@ class BulletGetCyclesSegmented<string mx, int sew, int nf> {
   );
   // We can calculate ceil(a/b) using (a + b - 1) / b.
   defvar a = !mul(sew, nf);
-  defvar b = DLEN;
+  defvar b = !div(VLEN, 2); // DLEN
   int c = !mul(VLUpperBound, !div(!sub(!add(a, b), 1), b));
 }
 
-class BulletGetCyclesOnePerElement<string mx, int sew> {
-  // FIXME: On Bullet, VLEN is 512. Although a user can request the compiler
-  // to use a different VLEN, this model will not make scheduling decisions
-  // based on the user specified VLEN.
+class BulletGetCyclesOnePerElement<string mx, int sew, int VLEN> {
   // c = ceil(VLEN / SEW) * LMUL
   // Note: c >= 1 since the smallest VLEN is 512 / 8 = 8, and the
   // largest division performed on VLEN is in MF8 case with division
   // by 8. Therefore, there is no need to ceil the result.
-  int VLEN = !div(512, sew);
+  defvar a = !div(VLEN, sew);
   int c = !cond(
-    !eq(mx, "M1")  : VLEN,
-    !eq(mx, "M2")  : !mul(VLEN, 2),
-    !eq(mx, "M4")  : !mul(VLEN, 4),
-    !eq(mx, "M8")  : !mul(VLEN, 8),
-    !eq(mx, "MF2") : !div(VLEN, 2),
-    !eq(mx, "MF4") : !div(VLEN, 4),
-    !eq(mx, "MF8") : !div(VLEN, 8)
+    !eq(mx, "M1")  : a,
+    !eq(mx, "M2")  : !mul(a, 2),
+    !eq(mx, "M4")  : !mul(a, 4),
+    !eq(mx, "M8")  : !mul(a, 8),
+    !eq(mx, "MF2") : !div(a, 2),
+    !eq(mx, "MF4") : !div(a, 4),
+    !eq(mx, "MF8") : !div(a, 8)
   );
 }
 
@@ -137,10 +132,9 @@ class BulletGetDivOrSqrtFactor<int sew> {
 
 /// Cycles for reductions take approximately VL*SEW/DLEN + 5(4 + log(DLEN/SEW))
 /// cycles.
-class BulletGetReductionCycles<string mx, int sew> {
+class BulletGetReductionCycles<string mx, int sew, int VLEN> {
   // VLUpperBound*SEW/DLEN is equivalent to 2*LMUL since
   // VLUpperBound=(VLEN*LMUL)/SEW.
-  defvar VLEN = 512;
   defvar DLEN = !div(VLEN, 2);
   defvar TwoTimesLMUL = !cond(
     !eq(mx, "M1") : 2,
@@ -158,8 +152,7 @@ class BulletGetReductionCycles<string mx, int sew> {
 }
 
 /// Cycles for ordered reductions take approximatley 6*VL cycles
-class BulletGetOrderedReductionCycles<string mx, int sew> {
-  defvar VLEN = 512;
+class BulletGetOrderedReductionCycles<string mx, int sew, int VLEN> {
   // (VLEN * LMUL) / SEW
   defvar VLUpperBound  = !cond(
     !eq(mx, "M1") : !div(VLEN, sew),
