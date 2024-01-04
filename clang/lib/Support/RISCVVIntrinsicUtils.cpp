@@ -467,16 +467,10 @@ PrototypeDescriptor::parsePrototypeDescriptor(
   PD.PT = static_cast<uint8_t>(PT);
   PrototypeDescriptorStr = PrototypeDescriptorStr.drop_back();
 
-#if SIFIVE_CUSTOMIZATION
-  // Compute the vector type transformers.
-  // For SiFive custom instruction contains multiple VectorTypeModifier
-  // def sf_vqmaccu_4x8x4 : RVVBuiltin<"(MultipleLMUL:2)q",
-  //                        "(MultipleLMUL:2)q(MultipleLMUL:2)qUSvUv", "c">;
-  if (PrototypeDescriptorStr.starts_with("(")) {
-    assert((VTM == VectorTypeModifier::NoModifier ||
-            PType == 'q' || PType == 'w') &&
+  // Compute the vector type transformers, it can only appear one time.
+  if (PrototypeDescriptorStr.startswith("(")) {
+    assert(VTM == VectorTypeModifier::NoModifier &&
            "VectorTypeModifier should only have one modifier");
-#endif // SIFIVE_CUSTOMIZATION
     size_t Idx = PrototypeDescriptorStr.find(')');
     assert(Idx != StringRef::npos);
     StringRef ComplexType = PrototypeDescriptorStr.slice(1, Idx);
