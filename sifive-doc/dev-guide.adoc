@@ -57,84 +57,73 @@ https://releases.llvm.org/{upstream-llvm-version}/tools/clang/docs/UsersManual.h
 https://releases.llvm.org/{upstream-llvm-version}/tools/clang/docs/ClangCommandLineReference.html
 
 == SiFive-Specific Compiler Options
-<<table-options>> lists the currently supported SiFive-specific compiler options.
+The following lists the currently supported SiFive-specific compiler options.
 These options, when appropriately used, affect the optimization,
 code generation, and more, of the generated executable.
 
-[[table-options]]
-.SiFive-Specific Compiler Options
-[cols="m,a",options="header,autowidth"]
-|===
-h|Compiler Option h|Description
-
-|-march=/-mtune=/-mcpu=
-|These options are used together to specify code generation and optimization for specific SiFive processors.
+``-march=/-mtune=/-mcpu=``::
+These options are used together to specify code generation and optimization for specific SiFive processors.
 These options are further described in <<march-mtune-mcpu>>.
-
++
 * `-march`: generates code for processors that support specified extensions.
 Using this option may produce incompatible binaries across all SiFive processors.
-* `-mtune`: performs optimization for specific SiFive processor.
+* `-mtune`: performs optimization for a specific SiFive processor.
 Does not change the extension instruction sets to be used.
 * `-mcpu`: equal to `-march + -mtune`. Sets the default `-march` and `-mtune` at the same time.
 
-|-mllvm -allow-epilog-peeling
-|Enable Epilog Peeling; allows peeling from final iterations of loops.
+``-mllvm -allow-epilog-peeling``::
+Enable Epilog Peeling; allows peeling from final iterations of loops.
 The control flow is removed from the main loop, helping subsequent optimizations.
 
-|-U __rvv_0p10_compatible_intrinsics
-|*[Experimental] This option may be deprecated and removed in a future release.*
-
+``-U __rvv_0p10_compatible_intrinsics``::
+*[Experimental] This option may be deprecated and removed in a future release.*
++
 The RISC-V Vectors (RVV) v0.10 compatible header is included by default when `riscv_vector.h`
 is included. Specifying this option disables the inclusion of the header file,
 disabling compiler support of the v0.10 intrinsics.
 
-|-fno-use-vla-vectorizer
-|The SiFive pass:[C/C++] compiler employs a Vector Length Agnostic (VLA) vectorizer by default at `-O2` and above (see <<section-vectorizer>>).
+``-fno-use-vla-vectorizer``::
+The SiFive pass:[C/C++] compiler employs a Vector Length Agnostic (VLA) vectorizer by default at `-O2` and above (see <<section-vectorizer>>).
 This option enables the Vector Length Specific (VLS) vectorizer instead of the default VLA vectorizer.
 
-|-mrvv-vector-bits=zvl
-|Tells the compiler to assume that the runtime VLEN will be exactly the same
-as the Zvl*b extension passed to -march or implied by -mcpu. This can improve
+``-mrvv-vector-bits=zvl``::
+Tells the compiler to assume that the runtime VLEN will be exactly the same
+as the Zvl*b extension passed to `-march` or implied by `-mcpu`. This can improve
 the vector code generation in some cases. Code compiled with this flag will
 not run correctly on CPUs with a different VLEN.
++
+Also enables the use of
++
+----
+__attribute__((riscv_rvv_vector_bits(__riscv_v_fixed_vlen)))
+----
++
+to define fixed size vector types in C/C++ code. For more information, see https://clang.llvm.org/docs/AttributeReference.html#riscv-rvv-vector-bits
 
-Also enables the use of __attribute__((riscv_rvv_vector_bits(__riscv_v_fixed_vlen)))
-to define fixed size vector types in C/C++ code. For more information see https://clang.llvm.org/docs/AttributeReference.html#riscv-rvv-vector-bits
-
-|-mllvm -vector-primary-lmul-min=
-|*[Experimental] This option may be deprecated and removed in a future release.*
-
+``-mllvm -vector-primary-lmul-min=``::
+*[Experimental] This option may be deprecated and removed in a future release.*
++
 Limits the exponent of the minimum primary LMUL considered by the VLA vectorizer's cost model.
 The default value is 0, meaning `LMUL=pow(2,0)=1`.
 Fractional LMULs are currently not supported.
 Acceptable values are [0,1,2,3].
 This option does not force vectorization.
 
-|-mllvm -vector-primary-lmul-max=
-|*[Experimental] This option may be deprecated and removed in a future release.*
-
+``-mllvm -vector-primary-lmul-max=``::
+*[Experimental] This option may be deprecated and removed in a future release.*
++
 Limits the exponent of the maximum primary LMUL considered by the VLA vectorizer's cost model.
 The default value is 0, meaning `LMUL=pow(2,0)=1`.
 Fractional LMULs are currently not supported.
 Acceptable values are [0,1,2,3].
 This option does not force vectorization.
 
-|-mllvm -riscv-mem-to-rvv=true/false
-|*[Experimental] This option may be deprecated and removed in a future release.*
-
+``-mllvm -riscv-mem-to-rvv=true/false``::
+*[Experimental] This option may be deprecated and removed in a future release.*
++
 Enables or disables inline expansion of memcpy/memset/memmove using a loop of
 RISCV-V vector instructions when available. Default is enabled. Disabling will
 use a library call or scalar instructions.
-
-|-mllvm -riscv-disable-all-loop-idiom=
-|*[Experimental] This option may be deprecated and removed in a future release.*
-
-Controls whether to disable all RISC-V specific loop idioms.
-The default value is `true`, meaning all RISC-V specific loop idioms are disabled.
-Acceptable values are `true` or `false`.
-Currently only the byte compare loop idiom is supported.
-
-|===
 
 [[march-mtune-mcpu]]
 === SiFive `-march`/`-mtune`/`-mcpu` Options
@@ -177,11 +166,7 @@ Support of options starts from the compiler release specified in the table.
 |===
 h|Core IP Version h|Compiler Version h|`-mcpu` h|Default `-march` h|Default `-mtune`
 
-|TBD |TBD |sifive-p870s
-|`rv64imafdcv_zic64b_zicbom_zicbop_zicboz_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintntl_zihintpause_zihpm_za64rs_zfhmin_zba_zbb_zbs_zvbb1p0_zvknc1p0_zvkng1p0_zvksc1p0_zvksg1p0_xsifivecdiscarddlone_xsifivecflushdlone`
-|sifive-p870s
-
-|23G3 and above |2023.03.0 and above |sifive-p650 
+|23G3 and above |2023.03.0 and above |sifive-p650
 |`rv64imafdc_zic64b_zicbom_zicbop_zicboz_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintntl_zihintpause_zihpm_za64rs_zfhmin_zba_zbb_zbs_xsifivecdiscarddlone_xsifivecflushdlone`
 |sifive-p650
 
@@ -278,13 +263,13 @@ https://github.com/riscv/riscv-v-spec/blob/master/v-spec.adoc#34-vector-type-reg
 https://github.com/riscv/riscv-v-spec/blob/master/v-spec.adoc#52-vector-operands
 
 [[section-rvv-intrinsic-support]]
-== SiFive toolchain support for RISC-V vector C intrinsics
+== SiFive Toolchain Support for RISC-V Vector C Intrinsics
 
-The SiFive toolchain now supports the RISC-V Vector C intrinsics https://github.com/riscv-non-isa/rvv-intrinsic-doc/releases/tag/v0.12.0[v0.12]. Backward compatibility to https://github.com/riscv-non-isa/rvv-intrinsic-doc/releases/tag/v0.11.1[v0.11.1] and https://github.com/riscv-non-isa/rvv-intrinsic-doc/releases/tag/v0.10[v0.10] is also supported by the toolchain.
+The SiFive toolchain now supports the RISC-V Vector C intrinsics https://github.com/riscv-non-isa/rvv-intrinsic-doc/releases/tag/v0.12.0[v0.12]. Backwards compatibility to https://github.com/riscv-non-isa/rvv-intrinsic-doc/releases/tag/v0.11.1[v0.11.1] and https://github.com/riscv-non-isa/rvv-intrinsic-doc/releases/tag/v0.10[v0.10] is also supported by the toolchain.
 
 NOTE: Regarding the RVV C intrinsics development, it is a consensus that there will be no incompatibility from v0.12 to v1.0.
 
-NOTE: Please note that the backward compatibility support is not available in the public upstream toolchain of GCC and LLVM. In a future release, we plan to deprecate the compatibility support. We suggest that users consult the https://github.com/sifive/toolchain-doc/blob/main/vector-c-intrinsic-migration-guide/content/migration-guide.adoc[migration guide] to migrate intrinsics used in their codebase to the latest version.
+NOTE: Please note that the backwards compatibility support is not available in the public upstream toolchain of GCC and LLVM. In a future release, we plan to deprecate the compatibility support. We suggest that users consult the https://github.com/sifive/toolchain-doc/blob/main/vector-c-intrinsic-migration-guide/content/migration-guide.adoc[migration guide] to migrate intrinsics used in their codebase to the latest version.
 
 [[section-vectorizer]]
 == Loop Vectorizer Defaults
