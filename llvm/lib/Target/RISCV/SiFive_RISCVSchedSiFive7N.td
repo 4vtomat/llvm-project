@@ -24,32 +24,10 @@ def SiFive7NModel : SchedMachineModel {
                              HasVendorXSfvfhbfmin]; // SIFIVE
 }
 
-// The SiFive7N microarchitecture has three pipelines: A, B, V.
-// Pipe A can handle memory, integer alu and vector operations.
-// Pipe B can handle integer alu, control flow, integer multiply and divide,
-// and floating point computation.
-// The V pipeline is modeled by the VCQ, VA, VL, and VS resources.
 let SchedModel = SiFive7NModel in {
-let BufferSize = 0 in {
-def SiFive7NPipeA       : ProcResource<1>;
-def SiFive7NPipeB       : ProcResource<1>;
-def SiFive7NMem         : ProcResource<1>; // Memory
-def SiFive7NIDiv        : ProcResource<1>; // Int Division
-def SiFive7NFDiv        : ProcResource<1>; // FP Division/Sqrt
-def SiFive7NVA          : ProcResource<1>; // Arithmetic sequencer
-def SiFive7NVL          : ProcResource<1>; // Load sequencer
-def SiFive7NVS          : ProcResource<1>; // Store sequencer
-// The VCQ accepts instructions from the the A Pipe and holds them until the
-// vector unit is ready to dequeue them. The unit dequeues up to one instruction
-// per cycle, in order, as soon as the sequencer for that type of instruction is
-// avaliable. This resource is meant to be used for 1 cycle by all vector
-// instructions, to model that only one vector instruction may be dequed at a
-// time. The actual dequeueing into the sequencer is modeled by the VA, VL, and
-// VS sequencer resources below. Each of them will only accept a single
-// instruction at a time and remain busy for the number of cycles associated
-// with that instruction.
-def SiFive7NVCQ         : ProcResource<1>; // Vector Command Queue
-}
+
+let BufferSize = 0 in
+defm SiFive7N : BulletProcResources;
 
 def SiFive7NPipeAB : ProcResGroup<[SiFive7NPipeA, SiFive7NPipeB]>;
 
