@@ -693,7 +693,8 @@ public:
 
   /// Returns previous SCEV check block.
   BasicBlock *getPrevSCEVCheckBlock() const {
-    if (!VF.isScalable() || Legal->getLAI()->getSymbolicStrides().empty())
+    const LoopAccessInfo *LAI = Legal->getLAI();
+    if (!VF.isScalable() || !LAI || LAI->getSymbolicStrides().empty())
       return nullptr;
     return PrevSCEVCheckBlock;
   }
@@ -9461,7 +9462,8 @@ SCEV2ValueTy LoopVectorizationPlanner::executePlan(
     }
     State.SEW = Log2_32(SEW) - 3;
     // Update MaxSafeNumElems if there is a restriction on safe vector widths
-    if (!Legal->isSafeForAnyVectorWidth()) {
+    const LoopAccessInfo *LAI = Legal->getLAI();
+    if (LAI && !Legal->isSafeForAnyVectorWidth()) {
       State.MaxSafeNumElems =
           Legal->getMaxSafeVectorWidthInBits() / SEW;
       LLVM_DEBUG(dbgs() << "LV: Executing plan with MaxSafeVectorWidthInBits="
