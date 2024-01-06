@@ -5815,7 +5815,7 @@ static bool hasMergeOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_RISCV_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-                    139 && // SIFIVE
+                    138 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
@@ -5841,7 +5841,7 @@ static bool hasMaskOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_RISCV_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-                    139 && // SIFIVE
+                    138 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
@@ -11827,8 +11827,8 @@ SDValue RISCVTargetLowering::lowerVPMergeMask(SDValue Op, SelectionDAG &DAG) con
                          SplatOne, SplatZero, VLMax);
 
   // VP_MERGE the two promoted values.
-  SDValue VPMerge = DAG.getNode(RISCVISD::VP_MERGE_VL, DL, PromotedVT,
-                                Mask, TrueVal, FalseVal, VL);
+  SDValue VPMerge = DAG.getNode(RISCVISD::VMERGE_VL, DL, PromotedVT,
+                                Mask, TrueVal, FalseVal, FalseVal, VL);
 
   // Convert back to mask.
   SDValue TrueMask = DAG.getNode(RISCVISD::VMSET_VL, DL, ContainerVT, VL);
@@ -11841,87 +11841,7 @@ SDValue RISCVTargetLowering::lowerVPMergeMask(SDValue Op, SelectionDAG &DAG) con
     Result = convertFromScalableVector(VT, Result, DAG, Subtarget);
   return Result;
 }
-
-SDValue
-RISCVTargetLowering::lowerVPSpliceExperimental(SDValue Op,
-                                               SelectionDAG &DAG) const {
-  SDLoc DL(Op);
-
-  SDValue Op1 = Op.getOperand(0);
-  SDValue Op2 = Op.getOperand(1);
-  SDValue Offset = Op.getOperand(2);
-  SDValue Mask = Op.getOperand(3);
-  SDValue EVL1 = Op.getOperand(4);
-  SDValue EVL2 = Op.getOperand(5);
-
-  const MVT XLenVT = Subtarget.getXLenVT();
-  MVT VT = Op.getSimpleValueType();
-  MVT ContainerVT = VT;
-  if (VT.isFixedLengthVector()) {
-    ContainerVT = getContainerForFixedLengthVector(VT);
-    Op1 = convertToScalableVector(ContainerVT, Op1, DAG, Subtarget);
-    Op2 = convertToScalableVector(ContainerVT, Op2, DAG, Subtarget);
-    MVT MaskVT = getMaskTypeFor(ContainerVT);
-    Mask = convertToScalableVector(MaskVT, Mask, DAG, Subtarget);
-  }
-
-  bool IsMaskVector = VT.getVectorElementType() == MVT::i1;
-  if (IsMaskVector) {
-    ContainerVT = ContainerVT.changeVectorElementType(MVT::i8);
-
-    // Expand input operands
-    SDValue SplatOneOp1 = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, ContainerVT,
-                                      DAG.getUNDEF(ContainerVT),
-                                      DAG.getConstant(1, DL, XLenVT), EVL1);
-    SDValue SplatZeroOp1 = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, ContainerVT,
-                                       DAG.getUNDEF(ContainerVT),
-                                       DAG.getConstant(0, DL, XLenVT), EVL1);
-    Op1 = DAG.getNode(RISCVISD::VSELECT_VL, DL, ContainerVT, Op1, SplatOneOp1,
-                      SplatZeroOp1, EVL1);
-
-    SDValue SplatOneOp2 = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, ContainerVT,
-                                      DAG.getUNDEF(ContainerVT),
-                                      DAG.getConstant(1, DL, XLenVT), EVL2);
-    SDValue SplatZeroOp2 = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, ContainerVT,
-                                       DAG.getUNDEF(ContainerVT),
-                                       DAG.getConstant(0, DL, XLenVT), EVL2);
-    Op2 = DAG.getNode(RISCVISD::VSELECT_VL, DL, ContainerVT, Op2, SplatOneOp2,
-                      SplatZeroOp2, EVL2);
-  }
-
-  int64_t ImmValue = cast<ConstantSDNode>(Offset)->getSExtValue();
-  SDValue DownOffset, UpOffset;
-  if (ImmValue >= 0) {
-    // The operand is a TargetConstant, we need to rebuild it as a regular
-    // constant.
-    DownOffset = DAG.getConstant(ImmValue, DL, XLenVT);
-    UpOffset = DAG.getNode(ISD::SUB, DL, XLenVT, EVL1, DownOffset);
-  } else {
-    // The operand is a TargetConstant, we need to rebuild it as a regular
-    // constant rather than negating the original operand.
-    UpOffset = DAG.getConstant(-ImmValue, DL, XLenVT);
-    DownOffset = DAG.getNode(ISD::SUB, DL, XLenVT, EVL1, UpOffset);
-  }
-
-  SDValue SlideDown =
-      getVSlidedown(DAG, Subtarget, DL, ContainerVT, DAG.getUNDEF(ContainerVT),
-                    Op1, DownOffset, Mask, UpOffset);
-  SDValue Result = getVSlideup(DAG, Subtarget, DL, ContainerVT, SlideDown, Op2,
-                               UpOffset, Mask, EVL2, RISCVII::TAIL_AGNOSTIC);
-
-  if (IsMaskVector) {
-    // Truncate Result back to a mask vector (Result has same EVL as Op2)
-    Result = DAG.getNode(
-        RISCVISD::SETCC_VL, DL, ContainerVT.changeVectorElementType(MVT::i1),
-        {Result, DAG.getConstant(0, DL, ContainerVT),
-         DAG.getCondCode(ISD::SETNE), DAG.getUNDEF(getMaskTypeFor(ContainerVT)),
-         Mask, EVL2});
-  }
-
-  if (!VT.isFixedLengthVector())
-    return Result;
-  return convertFromScalableVector(VT, Result, DAG, Subtarget);
-}
+#endif // SIFIVE_CUSTOMIZATION
 
 SDValue
 RISCVTargetLowering::lowerVPSpliceExperimental(SDValue Op,
@@ -12125,6 +12045,7 @@ RISCVTargetLowering::lowerVPReverseExperimental(SDValue Op,
   return convertFromScalableVector(VT, Result, DAG, Subtarget);
 }
 
+#if SIFIVE_CUSTOMIZATION
 SDValue RISCVTargetLowering::lowerVPFirst(SDValue N, SelectionDAG &DAG) const {
   SDValue Op = N.getOperand(0);
   SDValue Mask = N.getOperand(1);
@@ -16053,8 +15974,8 @@ static SDValue combineToVFMAX_VFMIN(SDNode *N, SelectionDAG &DAG) {
   // elements. Use an unmasked vp_merge_vl.
   SDValue TrueMask =
       DAG.getNode(RISCVISD::VMSET_VL, DL, Cond.getValueType(), VL);
-  return DAG.getNode(RISCVISD::VP_MERGE_VL, DL, VT, TrueMask, Res, FalseVal,
-                     VL);
+  return DAG.getNode(RISCVISD::VMERGE_VL, DL, VT, TrueMask, Res, FalseVal,
+                     FalseVal, VL);
 }
 
 static SDValue performVSELECT_VLCombine(SDNode *N, SelectionDAG &DAG) {
@@ -18437,41 +18358,63 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     }
     return SDValue();
   }
-  case RISCVISD::VP_MERGE_VL: {
+  case RISCVISD::VMERGE_VL: {
+    // Combines below all assume this is a vp.merge.
+    // FIXME: Review this.
+    if (N->getOperand(2) != N->getOperand(3))
+      break;
+
     if (SDValue V = combineToVFMAX_VFMIN(N, DAG))
       return V;
 
     SDValue Mask = N->getOperand(0);
-    SDValue VL = N->getOperand(3);
+    SDValue VL = N->getOperand(4);
     // Fold (vp_merge_vl (vmnot_vl X, VL), Y, Z, VL) ->
-    //      (vmerge_vl Z, X, Z, Y, VL)
+    //      (vmerge_vl X, Z, Y, Z, VL)
     if (Mask.getOpcode() == RISCVISD::VMXOR_VL &&
         Mask.getOperand(2) == VL) {
       if (ISD::isConstantSplatVectorAllOnes(Mask.getOperand(1).getNode())) {
         // We need to freeze the false value so we can use it twice.
         SDValue Freeze = DAG.getFreeze(N->getOperand(2));
         return DAG.getNode(RISCVISD::VMERGE_VL, SDLoc(N), N->getValueType(0),
-                           Freeze, Mask.getOperand(0), Freeze, N->getOperand(1),
-                           VL);
+                           Mask.getOperand(0), Freeze, N->getOperand(1),
+                           Freeze, VL);
       }
     }
 
-    // Fold vp_merge_vl (M2, OP (M1, T1, F1, VL), F2, VL) ->
-    //      vmerge_vl (F2, M1, T1, F1, VL)
-    //      when M2 is all 1s and OP is vp_merge_vl or vselect_vl.
+    // Fold vmerge_vl (M2, vselect_vl (M1, T1, F1, VL), F2, F2, VL) ->
+    //      vmerge_vl (M1, T1, F1, F2, VL)
+    //      when M2 is all 1s
     SDValue MergedWhenTrue = N->getOperand(1);
-    bool IsCorrectOpcode =
-        MergedWhenTrue.getOpcode() == RISCVISD::VP_MERGE_VL ||
-        MergedWhenTrue.getOpcode() == RISCVISD::VSELECT_VL;
-    if (IsCorrectOpcode && MergedWhenTrue.getOperand(3) == VL) {
+    if (MergedWhenTrue.getOpcode() == RISCVISD::VSELECT_VL &&
+        MergedWhenTrue.getOperand(3) == VL) {
       // Now we know the operand we will merge when true is a vp_merge_vl or
       // vselect_vl with the same VL length as it's parent vp_merge_vl N.
       if (ISD::isConstantSplatVectorAllOnes(Mask.getNode())) {
         return DAG.getNode(RISCVISD::VMERGE_VL, SDLoc(N), N->getValueType(0),
-                           N->getOperand(2),             // F2
                            MergedWhenTrue.getOperand(0), // M1
                            MergedWhenTrue.getOperand(1), // T1
                            MergedWhenTrue.getOperand(2), // F1
+                           N->getOperand(3),             // F2
+                           VL);
+      }
+    }
+
+    // Fold vmerge_vl (M2, vmerge_vl (M1, T1, F1, F1, VL), F2, F2, VL) ->
+    //      vmerge_vl (M1, T1, F1, F2, VL)
+    //      when M2 is all 1s
+    // FIXME: Does false operand and passthru need to be the same?
+    if (MergedWhenTrue.getOpcode() == RISCVISD::VMERGE_VL &&
+        MergedWhenTrue.getOperand(2) == MergedWhenTrue.getOperand(3) &&
+        MergedWhenTrue.getOperand(4) == VL) {
+      // Now we know the operand we will merge when true is a vp_merge_vl or
+      // vselect_vl with the same VL length as it's parent vp_merge_vl N.
+      if (ISD::isConstantSplatVectorAllOnes(Mask.getNode())) {
+        return DAG.getNode(RISCVISD::VMERGE_VL, SDLoc(N), N->getValueType(0),
+                           MergedWhenTrue.getOperand(0), // M1
+                           MergedWhenTrue.getOperand(1), // T1
+                           MergedWhenTrue.getOperand(2), // F1
+                           N->getOperand(3),             // F2
                            VL);
       }
     }
