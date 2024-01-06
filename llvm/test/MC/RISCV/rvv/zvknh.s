@@ -1,17 +1,21 @@
+<<<<<<< HEAD
 #SIFIVE
 # RUN: llvm-mc -triple=riscv32 -show-encoding --mattr=+zve32x --mattr=+experimental-zvknha %s \
+=======
+# RUN: llvm-mc -triple=riscv32 -show-encoding --mattr=+zve32x --mattr=+zvknha %s \
+>>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
 # RUN:        | FileCheck %s --check-prefixes=CHECK-ENCODING,CHECK-INST
-# RUN: llvm-mc -triple=riscv64 -show-encoding --mattr=+zve64x --mattr=+experimental-zvknhb %s \
+# RUN: llvm-mc -triple=riscv64 -show-encoding --mattr=+zve64x --mattr=+zvknhb %s \
 # RUN:        | FileCheck %s --check-prefixes=CHECK-ENCODING,CHECK-INST
-# RUN: llvm-mc -triple=riscv32 -filetype=obj --mattr=+zve32x --mattr=+experimental-zvknha %s \
-# RUN:        | llvm-objdump -d --mattr=+zve32x --mattr=+experimental-zvknha  - \
+# RUN: llvm-mc -triple=riscv32 -filetype=obj --mattr=+zve32x --mattr=+zvknha %s \
+# RUN:        | llvm-objdump -d --mattr=+zve32x --mattr=+zvknha  - \
 # RUN:        | FileCheck %s --check-prefix=CHECK-INST
-# RUN: llvm-mc -triple=riscv64 -filetype=obj --mattr=+zve64x --mattr=+experimental-zvknhb %s \
-# RUN:        | llvm-objdump -d --mattr=+zve64x --mattr=+experimental-zvknhb  - \
+# RUN: llvm-mc -triple=riscv64 -filetype=obj --mattr=+zve64x --mattr=+zvknhb %s \
+# RUN:        | llvm-objdump -d --mattr=+zve64x --mattr=+zvknhb  - \
 # RUN:        | FileCheck %s --check-prefix=CHECK-INST
-# RUN: llvm-mc -triple=riscv32 -filetype=obj --mattr=+zve32x --mattr=+experimental-zvknha %s \
+# RUN: llvm-mc -triple=riscv32 -filetype=obj --mattr=+zve32x --mattr=+zvknha %s \
 # RUN:        | llvm-objdump -d - | FileCheck %s --check-prefix=CHECK-UNKNOWN
-# RUN: llvm-mc -triple=riscv64 -filetype=obj --mattr=+zve64x --mattr=+experimental-zvknhb %s \
+# RUN: llvm-mc -triple=riscv64 -filetype=obj --mattr=+zve64x --mattr=+zvknhb %s \
 # RUN:        | llvm-objdump -d - | FileCheck %s --check-prefix=CHECK-UNKNOWN
 # RUN: not llvm-mc -triple=riscv32 -show-encoding %s 2>&1 \
 # RUN:        | FileCheck %s --check-prefix=CHECK-ERROR

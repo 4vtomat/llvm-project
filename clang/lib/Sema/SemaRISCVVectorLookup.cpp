@@ -240,6 +240,7 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
       {"xsfvfwmaccqqq", RVV_REQ_Xsfvfwmaccqqq},
       {"xsfvqmaccdod", RVV_REQ_Xsfvqmaccdod},
       {"xsfvqmaccqoq", RVV_REQ_Xsfvqmaccqoq},
+<<<<<<< HEAD
       {"experimental-zvbb", RVV_REQ_Zvbb},
       {"experimental-zvbc", RVV_REQ_Zvbc},
       {"experimental-zvkb", RVV_REQ_Zvkb},
@@ -255,6 +256,18 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
 #else
       {"experimental-zvksh", RVV_REQ_Zvksh}};
 #endif // SIFIVE_CUSTOMIZATION
+=======
+      {"zvbb", RVV_REQ_Zvbb},
+      {"zvbc", RVV_REQ_Zvbc},
+      {"zvkb", RVV_REQ_Zvkb},
+      {"zvkg", RVV_REQ_Zvkg},
+      {"zvkned", RVV_REQ_Zvkned},
+      {"zvknha", RVV_REQ_Zvknha},
+      {"zvknhb", RVV_REQ_Zvknhb},
+      {"zvksed", RVV_REQ_Zvksed},
+      {"zvksh", RVV_REQ_Zvksh},
+      {"experimental", RVV_REQ_Experimental}};
+>>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
 
   // Construction of RVVIntrinsicRecords need to sync with createRVVIntrinsics
   // in RISCVVEmitter.cpp.

@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 #SIFIVE
 # RUN: llvm-mc -triple=riscv32 -show-encoding --mattr=+zve32x --mattr=+experimental-zvkg %s \
 # RUN:        | FileCheck %s --check-prefixes=CHECK-ENCODING,CHECK-INST
@@ -8,6 +9,17 @@
 # RUN:        | FileCheck %s --check-prefix=CHECK-INST
 # RUN: llvm-mc -triple=riscv32 -filetype=obj --mattr=+zve32x --mattr=+experimental-zvkg %s \
 # RUN:        | llvm-objdump -d - 2>&1 | FileCheck %s --check-prefix=CHECK-UNKNOWN
+=======
+# RUN: llvm-mc -triple=riscv32 -show-encoding --mattr=+zve32x --mattr=+zvkg %s \
+# RUN:        | FileCheck %s --check-prefixes=CHECK-ENCODING,CHECK-INST
+# RUN: not llvm-mc -triple=riscv32 -show-encoding %s 2>&1 \
+# RUN:        | FileCheck %s --check-prefix=CHECK-ERROR
+# RUN: llvm-mc -triple=riscv32 -filetype=obj --mattr=+zve32x --mattr=+zvkg %s \
+# RUN:        | llvm-objdump -d --mattr=+zve32x --mattr=+zvkg  - \
+# RUN:        | FileCheck %s --check-prefix=CHECK-INST
+# RUN: llvm-mc -triple=riscv32 -filetype=obj --mattr=+zve32x --mattr=+zvkg %s \
+# RUN:        | llvm-objdump -d - | FileCheck %s --check-prefix=CHECK-UNKNOWN
+>>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
 
 vghsh.vv v10, v9, v8
 # CHECK-INST: vghsh.vv v10, v9, v8

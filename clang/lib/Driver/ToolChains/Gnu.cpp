@@ -31,6 +31,7 @@
 #include "llvm/Support/CodeGen.h"
 #include "llvm/Support/FileUtilities.h" // SIFIVE
 #include "llvm/Support/Path.h"
+#include "llvm/Support/RISCVISAInfo.h"
 #include "llvm/Support/VirtualFileSystem.h"
 #include "llvm/TargetParser/TargetParser.h"
 #include <system_error>
@@ -1750,6 +1751,7 @@ static void findCSKYMultilibs(const Driver &D, const llvm::Triple &TargetTriple,
     Result.Multilibs = CSKYMultilibs;
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static std::string findGCCPath(const Driver &D, llvm::StringRef BasePath) {
   SmallString<128> GCCPath;
@@ -1818,19 +1820,58 @@ static bool RISCVMultilibSelect(const MultilibSet &RISCVMultilibSet,
   auto &ISAInfo = *ParseResult;
 
   auto CurrentExts = ISAInfo->getExtensions();
+=======
+/// Extend the multi-lib re-use selection mechanism for RISC-V.
+/// This function will try to re-use multi-lib if they are compatible.
+/// Definition of compatible:
+///   - ABI must be the same.
+///   - multi-lib is a subset of current arch, e.g. multi-lib=march=rv32im
+///     is a subset of march=rv32imc.
+///   - march that contains atomic extension can't reuse multi-lib that
+///     doesn't have atomic, vice versa. e.g. multi-lib=march=rv32im and
+///     march=rv32ima are not compatible, because software and hardware
+///     atomic operation can't work together correctly.
+static bool
+selectRISCVMultilib(const MultilibSet &RISCVMultilibSet, StringRef Arch,
+                    const Multilib::flags_list &Flags,
+                    llvm::SmallVectorImpl<Multilib> &SelectedMultilibs) {
+  // Try to find the perfect matching multi-lib first.
+  if (RISCVMultilibSet.select(Flags, SelectedMultilibs))
+    return true;
+
+  Multilib::flags_list NewFlags;
+  std::vector<MultilibBuilder> NewMultilibs;
+
+  llvm::Expected<std::unique_ptr<llvm::RISCVISAInfo>> ParseResult =
+      llvm::RISCVISAInfo::parseArchString(
+          Arch, /*EnableExperimentalExtension=*/true,
+          /*ExperimentalExtensionVersionCheck=*/false);
+  if (!ParseResult) {
+    // Ignore any error here, we assume it will be handled in another place.
+    consumeError(ParseResult.takeError());
+    return false;
+  }
+
+  auto &ISAInfo = *ParseResult;
+>>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
 
   addMultilibFlag(ISAInfo->getXLen() == 32, "-m32", NewFlags);
   addMultilibFlag(ISAInfo->getXLen() == 64, "-m64", NewFlags);
 
   // Collect all flags except march=*
   for (StringRef Flag : Flags) {
+<<<<<<< HEAD
     if (Flag.startswith("!march=") || Flag.startswith("-march="))
+=======
+    if (Flag.starts_with("!march=") || Flag.starts_with("-march="))
+>>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
       continue;
 
     NewFlags.push_back(Flag.str());
   }
 
   llvm::StringSet<> AllArchExts;
+<<<<<<< HEAD
   // Reconstruct multi-lib list, and break march option into seperated
   // extension. e.g. march=rv32im -> +i +m
   for (auto M : RISCVMultilibSet) {
@@ -1841,37 +1882,72 @@ static bool RISCVMultilibSelect(const MultilibSet &RISCVMultilibSet,
     for (StringRef Flag : M.flags()) {
       // Add back the all option except -march.
       if (!Flag.startswith("-march=")) {
+=======
+  // Reconstruct multi-lib list, and break march option into separated
+  // extension. e.g. march=rv32im -> +i +m
+  for (const auto &M : RISCVMultilibSet) {
+    bool Skip = false;
+
+    MultilibBuilder NewMultilib =
+        MultilibBuilder(M.gccSuffix(), M.osSuffix(), M.includeSuffix());
+    for (StringRef Flag : M.flags()) {
+      // Add back all flags except -march.
+      if (!Flag.consume_front("-march=")) {
+>>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
         NewMultilib.flag(Flag);
         continue;
       }
 
+<<<<<<< HEAD
       // Break down -march to individual extension.
       auto MLConfigParseResult = llvm::RISCVISAInfo::parseArchString(
           Flag.drop_front(7), /*EnableExperimentalExtension=*/true,
           /*ExperimentalExtensionVersionCheck=*/false);
+=======
+      // Break down -march into individual extension.
+      llvm::Expected<std::unique_ptr<llvm::RISCVISAInfo>> MLConfigParseResult =
+          llvm::RISCVISAInfo::parseArchString(
+              Flag, /*EnableExperimentalExtension=*/true,
+              /*ExperimentalExtensionVersionCheck=*/false);
+>>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
       if (!MLConfigParseResult) {
         // Ignore any error here, we assume it will handled in another place.
         llvm::consumeError(MLConfigParseResult.takeError());
 
+<<<<<<< HEAD
         // We might got parsing error if rv32e in the list, we could just skip
         // that and process all rest multi-lib configs.
+=======
+        // We might get a parsing error if rv32e in the list, we could just skip
+        // that and process the rest of multi-lib configs.
+>>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
         Skip = true;
         continue;
       }
       auto &MLConfigISAInfo = *MLConfigParseResult;
 
+<<<<<<< HEAD
       auto MLConfigArchExts = MLConfigISAInfo->getExtensions();
+=======
+      const llvm::RISCVISAInfo::OrderedExtensionMap &MLConfigArchExts =
+          MLConfigISAInfo->getExtensions();
+>>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
       for (auto MLConfigArchExt : MLConfigArchExts) {
         auto ExtName = MLConfigArchExt.first;
         NewMultilib.flag(Twine("-", ExtName).str());
 
+<<<<<<< HEAD
         if (!AllArchExts.contains(ExtName)) {
           AllArchExts.insert(ExtName);
+=======
+        if (AllArchExts.insert(ExtName).second) {
+>>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
           addMultilibFlag(ISAInfo->hasExtension(ExtName),
                           Twine("-", ExtName).str(), NewFlags);
         }
       }
 
+<<<<<<< HEAD
       // Check XLEN explicitly.
       if (MLConfigISAInfo->getXLen() == 32) {
         NewMultilib.flag("-m32");
@@ -1885,6 +1961,21 @@ static bool RISCVMultilibSelect(const MultilibSet &RISCVMultilibSet,
       // never co-work correctly.
       if (!MLConfigISAInfo->hasExtension("a"))
         NewMultilib.flag("!a");
+=======
+      // Check the XLEN explicitly.
+      if (MLConfigISAInfo->getXLen() == 32) {
+        NewMultilib.flag("-m32");
+        NewMultilib.flag("-m64", /*Disallow*/ true);
+      } else {
+        NewMultilib.flag("-m32", /*Disallow*/ true);
+        NewMultilib.flag("-m64");
+      }
+
+      // Atomic extension must be explicitly checked, soft and hard atomic
+      // operation never co-work correctly.
+      if (!MLConfigISAInfo->hasExtension("a"))
+        NewMultilib.flag("-a", /*Disallow*/ true);
+>>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
     }
 
     if (Skip)
@@ -1893,6 +1984,7 @@ static bool RISCVMultilibSelect(const MultilibSet &RISCVMultilibSet,
     NewMultilibs.emplace_back(NewMultilib);
   }
 
+<<<<<<< HEAD
   // Build an internal used only multi-lib list, used for check any compatible
   // multi-lib.
   MultilibSet NewRISCVMultilibs =
@@ -1901,12 +1993,23 @@ static bool RISCVMultilibSelect(const MultilibSet &RISCVMultilibSet,
   if (NewRISCVMultilibs.select(NewFlags, SelectedMultilibs))
     for (const Multilib &NewSelectedM : SelectedMultilibs)
       for (auto M : RISCVMultilibSet)
+=======
+  // Build an internal used only multi-lib list, used for checking any
+  // compatible multi-lib.
+  MultilibSet NewRISCVMultilibs =
+      MultilibSetBuilder().Either(NewMultilibs).makeMultilibSet();
+
+  if (NewRISCVMultilibs.select(NewFlags, SelectedMultilibs))
+    for (const Multilib &NewSelectedM : SelectedMultilibs)
+      for (const auto &M : RISCVMultilibSet)
+>>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
         // Look up the corresponding multi-lib entry in original multi-lib set.
         if (M.gccSuffix() == NewSelectedM.gccSuffix())
           return true;
 
   return false;
 }
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
 
 static bool scanRISCVGCCMultilibConfig(const Driver &D,
@@ -2070,6 +2173,8 @@ static bool getRISCVMultilibFromGCC(const Driver &D,
                                     Result, MultilibVerboseMessages);
 }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
 
 static void findRISCVBareMetalMultilibs(const Driver &D,
                                         const llvm::Triple &TargetTriple,
@@ -2133,7 +2238,8 @@ static void findRISCVBareMetalMultilibs(const Driver &D,
     }
   }
 
-  if (RISCVMultilibs.select(Flags, Result.SelectedMultilibs))
+  if (selectRISCVMultilib(RISCVMultilibs, MArch, Flags,
+                          Result.SelectedMultilibs))
     Result.Multilibs = RISCVMultilibs;
 }
 

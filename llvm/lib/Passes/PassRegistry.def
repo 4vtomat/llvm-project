@@ -86,9 +86,13 @@ MODULE_PASS("internalize", InternalizePass())
 MODULE_PASS("invalidate<all>", InvalidateAllAnalysesPass())
 MODULE_PASS("iroutliner", IROutlinerPass())
 MODULE_PASS("jmc-instrumenter", JMCInstrumenterPass())
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 MODULE_PASS("loop-data-layout", LoopDataLayoutPass())
 #endif
+=======
+MODULE_PASS("lower-emutls", LowerEmuTLSPass())
+>>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
 MODULE_PASS("lower-global-dtors", LowerGlobalDtorsPass())
 MODULE_PASS("lower-ifunc", LowerIFuncPass())
 MODULE_PASS("lowertypetests", LowerTypeTestsPass())

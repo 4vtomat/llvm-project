@@ -834,6 +834,25 @@ def SIFIVE_P870S : RISCVProcessorModel<"sifive-p870s", SiFiveP800SModel,
                                         TuneDontSinkSplatOperands]>;
 #endif // SIFIVE_CUSTOMIZATION
 
+def SIFIVE_P450 : RISCVProcessorModel<"sifive-p450", NoSchedModel,
+                                      [Feature64Bit,
+                                       FeatureStdExtZifencei,
+                                       FeatureStdExtM,
+                                       FeatureStdExtA,
+                                       FeatureStdExtF,
+                                       FeatureStdExtD,
+                                       FeatureStdExtC,
+                                       FeatureStdExtZicbop,
+                                       FeatureStdExtZicbom,
+                                       FeatureStdExtZicboz,
+                                       FeatureStdExtZihintntl,
+                                       FeatureStdExtZihintpause,
+                                       FeatureStdExtZihpm,
+                                       FeatureStdExtZba,
+                                       FeatureStdExtZbb,
+                                       FeatureStdExtZbs,
+                                       FeatureStdExtZfhmin]>;
+
 def SYNTACORE_SCR1_BASE : RISCVProcessorModel<"syntacore-scr1-base",
                                               SyntacoreSCR1Model,
                                               [Feature32Bit,
@@ -872,7 +891,13 @@ def VENTANA_VEYRON_V1 : RISCVProcessorModel<"veyron-v1",
                                              FeatureStdExtZicbop,
                                              FeatureStdExtZicboz,
                                              FeatureVendorXVentanaCondOps],
-                                             [TuneVeyronFusions]>;
+                                             [TuneVentanaVeyron,
+                                              TuneLUIADDIFusion,
+                                              TuneAUIPCADDIFusion,
+                                              TuneZExtHFusion,
+                                              TuneZExtWFusion,
+                                              TuneShiftedZExtWFusion,
+                                              TuneLDADDFusion]>;
 
 def XIANGSHAN_NANHU : RISCVProcessorModel<"xiangshan-nanhu",
                                           NoSchedModel,

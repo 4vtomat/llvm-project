@@ -201,16 +201,12 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
   bool hasStdExtFOrZfinx() const { return HasStdExtF || HasStdExtZfinx; }
   bool hasStdExtDOrZdinx() const { return HasStdExtD || HasStdExtZdinx; }
-  bool hasStdExtZfhOrZfhmin() const { return HasStdExtZfh || HasStdExtZfhmin; }
   bool hasStdExtZfhOrZhinx() const { return HasStdExtZfh || HasStdExtZhinx; }
-  bool hasStdExtZhinxOrZhinxmin() const {
-    return HasStdExtZhinx || HasStdExtZhinxmin;
-  }
-  bool hasStdExtZfhOrZfhminOrZhinxOrZhinxmin() const {
-    return hasStdExtZfhOrZfhmin() || hasStdExtZhinxOrZhinxmin();
+  bool hasStdExtZfhminOrZhinxmin() const {
+    return HasStdExtZfhmin || HasStdExtZhinxmin;
   }
   bool hasHalfFPLoadStoreMove() const {
-    return hasStdExtZfhOrZfhmin() || HasStdExtZfbfmin;
+    return HasStdExtZfhmin || HasStdExtZfbfmin;
   }
   bool is64Bit() const { return IsRV64; }
   MVT getXLenVT() const {
@@ -252,6 +248,7 @@ public:
   }
 
   bool hasMacroFusion() const {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (hasFuseLUILoad() || hasFuseIndexedLoad() || hasFuseArithEqZ() ||
         hasFuseBFX())
@@ -259,14 +256,16 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
     return hasLUIADDIFusion() || hasAUIPCADDIFusion() ||
            hasShiftedZExtFusion() || hasLDADDFusion();
+=======
+    return hasLUIADDIFusion() || hasAUIPCADDIFusion() || hasZExtHFusion() ||
+           hasZExtWFusion() || hasShiftedZExtWFusion() || hasLDADDFusion();
+>>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
   }
 
   // Vector codegen related methods.
   bool hasVInstructions() const { return HasStdExtZve32x; }
   bool hasVInstructionsI64() const { return HasStdExtZve64x; }
-  bool hasVInstructionsF16Minimal() const {
-    return HasStdExtZvfhmin || HasStdExtZvfh;
-  }
+  bool hasVInstructionsF16Minimal() const { return HasStdExtZvfhmin; }
   bool hasVInstructionsF16() const { return HasStdExtZvfh; }
   bool hasVInstructionsF32() const { return HasStdExtZve32f; }
   bool hasVInstructionsF64() const { return HasStdExtZve64d; }

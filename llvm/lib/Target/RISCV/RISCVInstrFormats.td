@@ -213,6 +213,7 @@ class RVInstCommon<dag outs, dag ins, string opcodestr, string argstr,
   bit UsesVXRM = 0;
   let TSFlags{20} =  UsesVXRM;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   // IMPORTANT: SiFive specific TSFlags should count down from 63 to avoid
   // collisions when new TSFlags are added upstream
@@ -220,6 +221,16 @@ class RVInstCommon<dag outs, dag ins, string opcodestr, string argstr,
   bits<2> TargetOverlapConstraintType = 0;
   let TSFlags{63-62} = TargetOverlapConstraintType;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  // Indicates whther these instructions can partially overlap between source
+  // registers and destination registers according to the vector spec.
+  // 0 -> not a vector pseudo
+  // 1 -> default value for vector pseudos. not widening or narrowing.
+  // 2 -> narrowing case
+  // 3 -> widening case
+  bits<2> TargetOverlapConstraintType = 0;
+  let TSFlags{22-21} = TargetOverlapConstraintType;
+>>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
 }
 
 class RVInst<dag outs, dag ins, string opcodestr, string argstr,
