@@ -114,16 +114,6 @@ enum {
   UsesVXRMShift = HasRoundModeOpShift + 1,
   UsesVXRMMask = 1 << UsesVXRMShift,
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // IMPORTANT: SiFive specific TSFlags start at bit 63 and shift by -1 for
-  // each subsequent TSFlag.
-
-  // TargetOverlapConstraintType occupies 2 bits (62 ~ 63).
-  TargetOverlapConstraintTypeShift = 62,
-  TargetOverlapConstraintTypeMask = 3ULL << TargetOverlapConstraintTypeShift,
-#endif // SIFIVE_CUSTOMIZATION
-=======
   // Indicates whether these instructions can partially overlap between source
   // registers and destination registers according to the vector spec.
   // 0 -> not a vector pseudo
@@ -132,7 +122,6 @@ enum {
   // 3 -> widening case
   TargetOverlapConstraintTypeShift = UsesVXRMShift + 1,
   TargetOverlapConstraintTypeMask = 3ULL << TargetOverlapConstraintTypeShift,
->>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
 };
 
 enum VLMUL : uint8_t {

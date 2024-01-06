@@ -756,30 +756,6 @@ void RVVEmitter::createRVVIntrinsics(
 
     SR.RequiredExtensions = 0;
     for (auto RequiredFeature : RequiredFeatures) {
-<<<<<<< HEAD
-      RVVRequire RequireExt = StringSwitch<RVVRequire>(RequiredFeature)
-                                  .Case("RV64", RVV_REQ_RV64)
-                                  .Case("ZvfhminOrZvfh", RVV_REQ_ZvfhminOrZvfh)
-                                  .Case("Xsfvcp", RVV_REQ_Xsfvcp)
-                                  .Case("Xsfvfnrclipxfqf", RVV_REQ_Xsfvfnrclipxfqf)
-                                  .Case("Xsfvfwmaccqqq", RVV_REQ_Xsfvfwmaccqqq)
-                                  .Case("Xsfvqmaccdod", RVV_REQ_Xsfvqmaccdod)
-                                  .Case("Xsfvqmaccqoq", RVV_REQ_Xsfvqmaccqoq)
-                                  .Case("Zvbb", RVV_REQ_Zvbb)
-                                  .Case("Zvbc", RVV_REQ_Zvbc)
-                                  .Case("Zvkb", RVV_REQ_Zvkb)
-                                  .Case("Zvkg", RVV_REQ_Zvkg)
-                                  .Case("Zvkned", RVV_REQ_Zvkned)
-                                  .Case("Zvknha", RVV_REQ_Zvknha)
-                                  .Case("Zvknhb", RVV_REQ_Zvknhb)
-                                  .Case("Zvksed", RVV_REQ_Zvksed)
-                                  .Case("Zvksh", RVV_REQ_Zvksh)
-#if SIFIVE_CUSTOMIZATION
-                                  .Case("Xsfvfhbfmin", RVV_REQ_xsfvfhbfmin)
-                                  .Case("HasBfloat16", RVV_REQ_HasBfloat16)
-#endif // SIFIVE_CUSTOMIZATION
-                                  .Default(RVV_REQ_None);
-=======
       RVVRequire RequireExt =
           StringSwitch<RVVRequire>(RequiredFeature)
               .Case("RV64", RVV_REQ_RV64)
@@ -798,9 +774,12 @@ void RVVEmitter::createRVVIntrinsics(
               .Case("Zvknhb", RVV_REQ_Zvknhb)
               .Case("Zvksed", RVV_REQ_Zvksed)
               .Case("Zvksh", RVV_REQ_Zvksh)
+#if SIFIVE_CUSTOMIZATION
+              .Case("Xsfvfhbfmin", RVV_REQ_xsfvfhbfmin)
+              .Case("HasBfloat16", RVV_REQ_HasBfloat16)
+#endif // SIFIVE_CUSTOMIZATION
               .Case("Experimental", RVV_REQ_Experimental)
               .Default(RVV_REQ_None);
->>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
       assert(RequireExt != RVV_REQ_None && "Unrecognized required feature?");
       SR.RequiredExtensions |= RequireExt;
     }

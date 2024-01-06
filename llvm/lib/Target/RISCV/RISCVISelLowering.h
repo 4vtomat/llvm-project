@@ -348,20 +348,8 @@ enum NodeType : unsigned {
 
   // Vector select with an additional VL operand. This operation is unmasked.
   VSELECT_VL,
-<<<<<<< HEAD
-  // Vector select with operand #2 (the value when the condition is false) tied
-  // to the destination and an additional VL operand. This operation is
-  // unmasked.
-  VP_MERGE_VL,
-#if SIFIVE_CUSTOMIZATION
-  // General vmerge node with passthru, mask, true, false, and vl operands.
-  // The two nodes above are special cases of this.
-  VMERGE_VL,
-#endif // SIFIVE_CUSTOMIZATION
-=======
   // General vmerge node with mask, true, false, passthru, and vl operands.
   VMERGE_VL,
->>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
 
   // Mask binary operators.
   VMAND_VL,
@@ -982,20 +970,14 @@ private:
   SDValue lowerLogicVPOp(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPExtMaskOp(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPSetCCMaskOp(SDValue Op, SelectionDAG &DAG) const;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   SDValue lowerVPMergeMask(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPFirst(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPPopcount(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPCompressExperimental(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPExpandExperimental(SDValue Op, SelectionDAG &DAG) const;
-
-  // Copied from BSC
-  SDValue lowerVPSpliceExperimental(SDValue Op, SelectionDAG &DAG) const;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   SDValue lowerVPSpliceExperimental(SDValue Op, SelectionDAG &DAG) const;
->>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
   SDValue lowerVPReverseExperimental(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPFPIntConvOp(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPStridedLoad(SDValue Op, SelectionDAG &DAG) const;

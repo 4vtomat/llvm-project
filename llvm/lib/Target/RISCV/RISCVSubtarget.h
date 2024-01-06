@@ -248,18 +248,13 @@ public:
   }
 
   bool hasMacroFusion() const {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (hasFuseLUILoad() || hasFuseIndexedLoad() || hasFuseArithEqZ() ||
         hasFuseBFX())
       return true;
 #endif // SIFIVE_CUSTOMIZATION
-    return hasLUIADDIFusion() || hasAUIPCADDIFusion() ||
-           hasShiftedZExtFusion() || hasLDADDFusion();
-=======
     return hasLUIADDIFusion() || hasAUIPCADDIFusion() || hasZExtHFusion() ||
            hasZExtWFusion() || hasShiftedZExtWFusion() || hasLDADDFusion();
->>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
   }
 
   // Vector codegen related methods.

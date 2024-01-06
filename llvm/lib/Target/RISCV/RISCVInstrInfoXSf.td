@@ -441,11 +441,7 @@ multiclass VPseudoSiFiveVQMACCQOQ<string Constraint = ""> {
 }
 
 multiclass VPseudoSiFiveVFWMACC<string Constraint = ""> {
-<<<<<<< HEAD
   foreach m = MxListVF2 in
-=======
-  foreach m = MxListFW in
->>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
     let VLMul = m.value in
     defm NAME : VPseudoSiFiveVMACC<m.MX, m.wvrclass, m.vrclass, Constraint>;
 }
@@ -692,11 +688,7 @@ multiclass VPatVFNRCLIP<string intrinsic, string instruction> {
     defvar Vti = pair.Vti;
     defvar Wti = pair.Wti;
     defm : VPatBinaryRoundingMode<"int_riscv_sf_" # intrinsic,
-<<<<<<< HEAD
-                                  "Pseudo" # instruction # "_" # Vti.LMul.MX, // SIFIVE
-=======
                                   "Pseudo" # instruction # "_" # Vti.LMul.MX,
->>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
                                   Vti.Vector, Wti.Vector, Wti.Scalar, Vti.Mask,
                                   Vti.Log2SEW, Vti.RegClass,
                                   Wti.RegClass, Wti.ScalarRegClass>;

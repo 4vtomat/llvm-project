@@ -243,32 +243,17 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
 
     {"zvfbfmin", RISCVExtensionVersion{0, 8}},
     {"zvfbfwma", RISCVExtensionVersion{0, 8}},
-<<<<<<< HEAD
 
     // vector crypto
-    {"zvkb", RISCVExtensionVersion{1, 0}},
-    {"zvkb", RISCVExtensionVersion{0, 1}}, // SIFIVE
-    {"zvkg", RISCVExtensionVersion{1, 0}},
-    {"zvkg", RISCVExtensionVersion{0, 1}}, // SIFIVE
-    {"zvkn", RISCVExtensionVersion{1, 0}},
-    {"zvknc", RISCVExtensionVersion{1, 0}},
-    {"zvkned", RISCVExtensionVersion{1, 0}},
-    {"zvkng", RISCVExtensionVersion{1, 0}},
-    {"zvknha", RISCVExtensionVersion{1, 0}},
-    {"zvknha", RISCVExtensionVersion{0, 1}}, // SIFIVE
-    {"zvknhb", RISCVExtensionVersion{1, 0}},
-    {"zvknhb", RISCVExtensionVersion{0, 1}}, // SIFIVE
-    {"zvkns", RISCVExtensionVersion{0, 1}}, // SIFIVE
-    {"zvks", RISCVExtensionVersion{1, 0}},
-    {"zvksc", RISCVExtensionVersion{1, 0}},
-    {"zvksed", RISCVExtensionVersion{1, 0}},
-    {"zvksed", RISCVExtensionVersion{0, 1}}, // SIFIVE
-    {"zvksg", RISCVExtensionVersion{1, 0}},
-    {"zvksh", RISCVExtensionVersion{1, 0}},
-    {"zvksh", RISCVExtensionVersion{0, 1}}, // SIFIVE
-    {"zvkt", RISCVExtensionVersion{1, 0}},
-=======
->>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
+#if SIFIVE_CUSTOMIZATION
+    {"zvkb", RISCVExtensionVersion{0, 1}},
+    {"zvkg", RISCVExtensionVersion{0, 1}},
+    {"zvknha", RISCVExtensionVersion{0, 1}},
+    {"zvknhb", RISCVExtensionVersion{0, 1}},
+    {"zvkns", RISCVExtensionVersion{0, 1}},
+    {"zvksed", RISCVExtensionVersion{0, 1}},
+    {"zvksh", RISCVExtensionVersion{0, 1}},
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 static void verifyTables() {
@@ -1258,19 +1243,12 @@ static const char *ImpliedExtsD[] = {"f"};
 static const char *ImpliedExtsF[] = {"zicsr"};
 static const char *ImpliedExtsV[] = {"zvl128b", "zve64d"};
 static const char *ImpliedExtsXTHeadVdot[] = {"v"};
-<<<<<<< HEAD
-static const char *ImpliedExtsXsfvcp[] = {"zve32x"};
-static const char *ImpliedExtsXsfvfnrclipxfqf[] = {"zve32f"};
-static const char *ImpliedExtsXsfvfwmaccqqq[] = {"zve32f"}; // SIFIVE
-static const char *ImpliedExtsXsfvqmaccdod[] = {"zve32x"};
-static const char *ImpliedExtsXsfvqmaccqoq[] = {"zve32x"};
-=======
 static const char *ImpliedExtsXSfvcp[] = {"zve32x"};
 static const char *ImpliedExtsXSfvfnrclipxfqf[] = {"zve32f"};
-static const char *ImpliedExtsXSfvfwmaccqqq[] = {"zvfbfmin"};
+static const char *ImpliedExtsXSfvfhbfmin[] = {"zve32f"}; // SIFIVE
+static const char *ImpliedExtsXSfvfwmaccqqq[] = {"zve32f"}; // SIFIVE
 static const char *ImpliedExtsXSfvqmaccdod[] = {"zve32x"};
 static const char *ImpliedExtsXSfvqmaccqoq[] = {"zve32x"};
->>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
 static const char *ImpliedExtsZacas[] = {"a"};
 static const char *ImpliedExtsZcb[] = {"zca"};
 static const char *ImpliedExtsZcd[] = {"d", "zca"};
@@ -1298,18 +1276,9 @@ static const char *ImpliedExtsZve32x[] = {"zvl32b", "zicsr"};
 static const char *ImpliedExtsZve64d[] = {"zve64f", "d"};
 static const char *ImpliedExtsZve64f[] = {"zve64x", "zve32f"};
 static const char *ImpliedExtsZve64x[] = {"zve32x", "zvl64b"};
-<<<<<<< HEAD
-static const char *ImpliedExtsZvfbfmin[] = {"zve32f", "zfbfmin"};
-static const char *ImpliedExtsZvfbfwma[] = {"zvfbfmin"};
-static const char *ImpliedExtsZvfh[] = {"zve32f", "zfhmin"};
-#if SIFIVE_CUSTOMIZATION
-static const char *ImpliedExtsXsfvfhbfmin[] = {"zve32f"};
-#endif // SIFIVE_CUSTOMIZATION
-=======
 static const char *ImpliedExtsZvfbfmin[] = {"zve32f"};
 static const char *ImpliedExtsZvfbfwma[] = {"zvfbfmin", "zfbfmin"};
 static const char *ImpliedExtsZvfh[] = {"zvfhmin", "zfhmin"};
->>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
 static const char *ImpliedExtsZvfhmin[] = {"zve32f"};
 static const char *ImpliedExtsZvkn[] = {"zvkb", "zvkned", "zvknhb", "zvkt"};
 static const char *ImpliedExtsZvknc[] = {"zvbc", "zvkn"};
@@ -1346,20 +1315,12 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"d"}, {ImpliedExtsD}},
     {{"f"}, {ImpliedExtsF}},
     {{"v"}, {ImpliedExtsV}},
-<<<<<<< HEAD
-    {{"xsfvcp"}, {ImpliedExtsXsfvcp}},
-    {{"xsfvfhbfmin"}, {ImpliedExtsXsfvfhbfmin}}, // SIFIVE
-    {{"xsfvfnrclipxfqf"}, {ImpliedExtsXsfvfnrclipxfqf}},
-    {{"xsfvfwmaccqqq"}, {ImpliedExtsXsfvfwmaccqqq}},
-    {{"xsfvqmaccdod"}, {ImpliedExtsXsfvqmaccdod}},
-    {{"xsfvqmaccqoq"}, {ImpliedExtsXsfvqmaccqoq}},
-=======
     {{"xsfvcp"}, {ImpliedExtsXSfvcp}},
+    {{"xsfvfhbfmin"}, {ImpliedExtsXSfvfhbfmin}}, // SIFIVE
     {{"xsfvfnrclipxfqf"}, {ImpliedExtsXSfvfnrclipxfqf}},
     {{"xsfvfwmaccqqq"}, {ImpliedExtsXSfvfwmaccqqq}},
     {{"xsfvqmaccdod"}, {ImpliedExtsXSfvqmaccdod}},
     {{"xsfvqmaccqoq"}, {ImpliedExtsXSfvqmaccqoq}},
->>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
     {{"xtheadvdot"}, {ImpliedExtsXTHeadVdot}},
     {{"zacas"}, {ImpliedExtsZacas}},
     {{"zcb"}, {ImpliedExtsZcb}},

@@ -708,14 +708,10 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_FP_TO_UINT,  ISD::VP_SETCC,       ISD::VP_SIGN_EXTEND,
         ISD::VP_ZERO_EXTEND, ISD::VP_TRUNCATE,    ISD::VP_SMIN,
         ISD::VP_SMAX,        ISD::VP_UMIN,        ISD::VP_UMAX,
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         ISD::VP_MULHU, ISD::VP_MULHS, ISD::EXPERIMENTAL_VP_SPLICE,
 #endif // SIFIVE_CUSTOMIZATION
-        ISD::VP_ABS, ISD::EXPERIMENTAL_VP_REVERSE};
-=======
         ISD::VP_ABS, ISD::EXPERIMENTAL_VP_REVERSE, ISD::EXPERIMENTAL_VP_SPLICE};
->>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
 
     static const unsigned FloatingPointVPOps[] = {
         ISD::VP_FADD,        ISD::VP_FSUB,        ISD::VP_FMUL,
@@ -820,14 +816,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 
       setOperationAction(ISD::VECTOR_REVERSE, VT, Custom);
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-      // Copied from BSC
       setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-      setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
->>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
       setOperationAction(ISD::EXPERIMENTAL_VP_REVERSE, VT, Custom);
 
       setOperationPromotedToType(
@@ -1208,18 +1197,13 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                               ISD::VP_SETCC, ISD::VP_TRUNCATE},
                              VT, Custom);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
           setOperationAction(ISD::VP_MERGE, VT, Custom);
 
           setOperationAction(ISD::VP_FIRST, VT, Custom);
           setOperationAction(ISD::EXPERIMENTAL_VP_POPCOUNT, VT, Custom);
-          // Copied from BSC
-          setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
 #endif // SIFIVE_CUSTOMIZATION
-=======
           setOperationAction(ISD::EXPERIMENTAL_VP_SPLICE, VT, Custom);
->>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
           setOperationAction(ISD::EXPERIMENTAL_VP_REVERSE, VT, Custom);
           continue;
         }
@@ -6931,20 +6915,14 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
          !Subtarget.hasVInstructionsF16()))
       return SplitVPOp(Op, DAG);
     return lowerVectorFTRUNC_FCEIL_FFLOOR_FROUND(Op, DAG, Subtarget);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case ISD::VP_FIRST:
     return lowerVPFirst(Op, DAG);
   case ISD::EXPERIMENTAL_VP_POPCOUNT:
     return lowerVPPopcount(Op, DAG);
-  // Below copied from BSC
-  case ISD::EXPERIMENTAL_VP_SPLICE:
-    return lowerVPSpliceExperimental(Op, DAG);
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case ISD::EXPERIMENTAL_VP_SPLICE:
     return lowerVPSpliceExperimental(Op, DAG);
->>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
   case ISD::EXPERIMENTAL_VP_REVERSE:
     return lowerVPReverseExperimental(Op, DAG);
   }
@@ -21488,12 +21466,7 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(VNSRL_VL)
   NODE_NAME_CASE(SETCC_VL)
   NODE_NAME_CASE(VSELECT_VL)
-<<<<<<< HEAD
-  NODE_NAME_CASE(VP_MERGE_VL)
-  NODE_NAME_CASE(VMERGE_VL) // SIFIVE
-=======
   NODE_NAME_CASE(VMERGE_VL)
->>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
   NODE_NAME_CASE(VMAND_VL)
   NODE_NAME_CASE(VMOR_VL)
   NODE_NAME_CASE(VMXOR_VL)

@@ -409,8 +409,6 @@ private:
   SDValue PromoteIntOp_SET_ROUNDING(SDNode *N);
 #if SIFIVE_CUSTOMIZATION
   SDValue PromoteIntRes_VP_FIRST_POPCOUNT(SDNode *N);
-  // Copied from BSC
-  SDValue PromoteIntOp_VP_SPLICE(SDNode *N, unsigned OpNo);
 #endif // SIFIVE_CUSTOMIZATION
   SDValue PromoteIntOp_STACKMAP(SDNode *N, unsigned OpNo);
   SDValue PromoteIntOp_PATCHPOINT(SDNode *N, unsigned OpNo);
