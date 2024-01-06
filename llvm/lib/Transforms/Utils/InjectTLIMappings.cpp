@@ -49,7 +49,7 @@ static void addVariantDeclaration(CallInst &CI, const ElementCount &VF,
     Tys.push_back(ToVectorTy(ArgOperand->getType(), VF));
 #if SIFIVE_CUSTOMIZATION
   // Add explicit VL argument for NF Library functions
-  if (VFName.startswith(SiFiveNFLibraryPrefix))
+  if (VFName.starts_with(SiFiveNFLibraryPrefix))
     Tys.push_back(Type::getInt32Ty(M->getContext()));
 #endif
 

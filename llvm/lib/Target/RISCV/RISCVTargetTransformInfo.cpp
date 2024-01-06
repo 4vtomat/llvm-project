@@ -2086,7 +2086,7 @@ bool RISCVTTIImpl::isLoweredToCall(const Function *F) {
     return BaseT::isLoweredToCall(F);
 
   // Assume all Arm-specific intrinsics map to an instruction.
-  if (F->getName().startswith("llvm.riscv"))
+  if (F->getName().starts_with("llvm.riscv"))
     return false;
 
   switch (F->getIntrinsicID()) {

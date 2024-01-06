@@ -1535,7 +1535,7 @@ static std::optional<std::pair<StringRef, RISCVExtensionInfo>>
 
   // We only really support multi-version for vector crypto since it
   // incompatible between different version.
-  if (!Ext.startswith("zvk"))
+  if (!Ext.starts_with("zvk"))
     return std::nullopt;
 
   auto Pos = findLastNonVersionCharacter(Ext) + 1;

@@ -1245,7 +1245,7 @@ bool isNewStructTBAAPointerCandidate(LoadInst *LI, Loop *CurLoop,
         //       Analysis queries.
         if (isa<MDString>(NameMD)) {
           StringRef PtrName = cast<MDString>(NameMD)->getString();
-          if (PtrName.startswith("p")) {
+          if (PtrName.starts_with("p")) {
             StringRef PtrLevel = PtrName.split(' ').first;
             StringRef PointeeName = PtrName.split(' ').second;
             bool IsClassStruct =

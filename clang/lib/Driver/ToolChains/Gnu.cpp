@@ -1979,20 +1979,20 @@ static bool scanRISCVGCCMultilibConfig(const Driver &D,
       Multilib.flag(Twine("-", Option).str());
 
       // Gather all used option from multi-lib config.
-      if (Option.startswith("march=")) {
+      if (Option.starts_with("march=")) {
         if (!AllArch.contains(Option)) {
           // Make sure every option we only process once
           AllArch.insert(Option);
           addMultilibFlag(CurrentArchOpt == Option,
                           Twine("-", Option.str()).str(), Flags);
         }
-      } else if (Option.startswith("mabi=")) {
+      } else if (Option.starts_with("mabi=")) {
         if (!AllABI.contains(Option)) {
           AllABI.insert(Option);
           addMultilibFlag(CurrentABIOpt == Option,
                           Twine("-", Option.str()).str(), Flags);
         }
-      } else if (Option.startswith("mcmodel=")) {
+      } else if (Option.starts_with("mcmodel=")) {
         if (!AllMCmodel.contains(Option)) {
           AllMCmodel.insert(Option);
           addMultilibFlag(CurrentMCmodelOpt == Option,

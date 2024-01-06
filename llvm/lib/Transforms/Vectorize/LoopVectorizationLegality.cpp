@@ -489,7 +489,7 @@ void LoopVectorizeHints::getHintsFromMetadata() {
 void LoopVectorizeHints::setLmulSewHint(StringRef Name,
                                         ArrayRef<Metadata *> Args,
                                         const bool ReportInvalid) {
-  if (!Name.startswith(Prefix()))
+  if (!Name.starts_with(Prefix()))
     return;
 
   Name = Name.substr(Prefix().size(), StringRef::npos);

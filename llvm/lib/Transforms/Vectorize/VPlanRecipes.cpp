@@ -807,7 +807,7 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
       VectorF = Variant;
 #if SIFIVE_CUSTOMIZATION
       // Add VL as an explicit final argument to SiFive NF Library functions
-      if (VectorF->getName().startswith(SiFiveNFLibraryPrefix) &&
+      if (VectorF->getName().starts_with(SiFiveNFLibraryPrefix) &&
           State.Plan->getRVL()) {
         Value *RVL = State.get(State.Plan->getRVL(), Part);
         Args.push_back(RVL);
