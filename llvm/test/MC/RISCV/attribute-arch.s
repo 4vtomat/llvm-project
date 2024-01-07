@@ -313,4 +313,4 @@
 # CHECK: attribute      5, "rv32i2p1_zicfilp0p4"
 
 .attribute arch, "rv64i_xsfvfwmaccqqq"
-# CHECK: attribute      5, "rv64i2p1_f2p2_zicsr2p0_zve32f1p0_zve32x1p0_zvfbfmin0p8_zvl32b1p0_xsfvfwmaccqqq1p0"
+# CHECK: attribute      5, "rv64i2p1_f2p2_zicsr2p0_zve32f1p0_zve32x1p0_zvl32b1p0_xsfvfwmaccqqq1p0"
