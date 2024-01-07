@@ -27,7 +27,7 @@ void test_vfmaq_f16(const float16_t *in_0, const float16_t *in_1, const float16_
 // CHECK-NEXT:  entry:
 // CHECK-NEXT:    [[TMP0:%.*]] = load <8 x half>, ptr [[IN_0:%.*]], align 2
 // CHECK-NEXT:    [[TMP1:%.*]] = load <8 x half>, ptr [[IN_1:%.*]], align 2
-// CHECK-NEXT:    [[VECINIT:%.*]] = insertelement <8 x half> undef, half [[IN_2:%.*]], i32 0
+// CHECK-NEXT:    [[VECINIT:%.*]] = insertelement <8 x half> poison, half [[IN_2:%.*]], i32 0
 // CHECK-NEXT:    [[VECINIT5:%.*]] = insertelement <8 x half> [[VECINIT]], half [[IN_2]], i32 1
 // CHECK-NEXT:    [[VECINIT6:%.*]] = insertelement <8 x half> [[VECINIT5]], half [[IN_2]], i32 2
 // CHECK-NEXT:    [[VECINIT7:%.*]] = insertelement <8 x half> [[VECINIT6]], half [[IN_2]], i32 3
