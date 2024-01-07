@@ -15906,7 +15906,7 @@ static SDValue combineToVFMAX_VFMIN(SDNode *N, SelectionDAG &DAG) {
     return SDValue();
 
   // VL should match.
-  SDValue VL = N->getOperand(3);
+  SDValue VL = N->getOperand(N->getOpcode() == RISCVISD::VMERGE_VL ? 4 : 3);
   if (VL != Cond.getOperand(5))
     return SDValue();
 
