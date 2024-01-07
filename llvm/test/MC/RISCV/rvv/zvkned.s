@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-#SIFIVE
-# RUN: llvm-mc -triple=riscv32 -show-encoding --mattr=+zve32x --mattr=+experimental-zvkned %s \
-=======
 # RUN: llvm-mc -triple=riscv32 -show-encoding --mattr=+zve32x --mattr=+zvkned %s \
->>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
 # RUN:        | FileCheck %s --check-prefixes=CHECK-ENCODING,CHECK-INST
 # RUN: not llvm-mc -triple=riscv32 -show-encoding %s 2>&1 \
 # RUN:        | FileCheck %s --check-prefix=CHECK-ERROR
@@ -30,7 +25,7 @@ vaesef.vv v10, v9
 # CHECK-ENCODING: [0x77,0xa5,0x91,0xa2]
 # CHECK-ERROR: instruction requires the following: 'Zvkns' or 'Zvkned' (Vector AES Encryption & Decryption (Single Round)){{$}}
 # CHECK-UNKNOWN: 77 a5 91 a2   <unknown>
-                       
+
 vaesef.vs v10, v9
 # CHECK-INST: vaesef.vs v10, v9
 # CHECK-ENCODING: [0x77,0xa5,0x91,0xa6]
@@ -42,7 +37,7 @@ vaesdm.vv v10, v9
 # CHECK-ENCODING: [0x77,0x25,0x90,0xa2]
 # CHECK-ERROR: instruction requires the following: 'Zvkns' or 'Zvkned' (Vector AES Encryption & Decryption (Single Round)){{$}}
 # CHECK-UNKNOWN: 77 25 90 a2   <unknown>
-                                              
+                       
 vaesdm.vs v10, v9
 # CHECK-INST: vaesdm.vs v10, v9
 # CHECK-ENCODING: [0x77,0x25,0x90,0xa6]
@@ -54,7 +49,7 @@ vaesem.vv v10, v9
 # CHECK-ENCODING: [0x77,0x25,0x91,0xa2]
 # CHECK-ERROR: instruction requires the following: 'Zvkns' or 'Zvkned' (Vector AES Encryption & Decryption (Single Round)){{$}}
 # CHECK-UNKNOWN: 77 25 91 a2   <unknown>
-                                                                     
+                       
 vaesem.vs v10, v9
 # CHECK-INST: vaesem.vs v10, v9
 # CHECK-ENCODING: [0x77,0x25,0x91,0xa6]

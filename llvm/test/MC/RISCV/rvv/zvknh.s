@@ -1,9 +1,4 @@
-<<<<<<< HEAD
-#SIFIVE
-# RUN: llvm-mc -triple=riscv32 -show-encoding --mattr=+zve32x --mattr=+experimental-zvknha %s \
-=======
 # RUN: llvm-mc -triple=riscv32 -show-encoding --mattr=+zve32x --mattr=+zvknha %s \
->>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
 # RUN:        | FileCheck %s --check-prefixes=CHECK-ENCODING,CHECK-INST
 # RUN: llvm-mc -triple=riscv64 -show-encoding --mattr=+zve64x --mattr=+zvknhb %s \
 # RUN:        | FileCheck %s --check-prefixes=CHECK-ENCODING,CHECK-INST

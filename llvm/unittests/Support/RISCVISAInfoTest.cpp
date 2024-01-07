@@ -795,35 +795,18 @@ Experimental extensions
     ztso                0.1
     zvfbfmin            0.8
     zvfbfwma            0.8
-<<<<<<< HEAD
-    zvkb                1.0
     zvkb                0.1
-    zvkg                1.0
     zvkg                0.1
-    zvkn                1.0
-    zvknc               1.0
-    zvkned              1.0
-    zvkng               1.0
-    zvknha              1.0
     zvknha              0.1
-    zvknhb              1.0
     zvknhb              0.1
     zvkns               0.1
-    zvks                1.0
-    zvksc               1.0
-    zvksed              1.0
     zvksed              0.1
-    zvksg               1.0
-    zvksh               1.0
     zvksh               0.1
-    zvkt                1.0
     smwg                0.3
     smwgd               0.3
     sswg                0.3
     xsifivecdiscarddlone0.1
     xsifivecflushdlone  0.1
-=======
->>>>>>> f78a742ab8fc0290742db28a61feef21aa0ecf97
 
 Use -march to specify the target's extension.
 For example, clang -march=rv32i_v1p0)";
