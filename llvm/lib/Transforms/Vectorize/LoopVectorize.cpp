@@ -2948,25 +2948,59 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
           assert(useMaskedInterleavedAccesses(*TTI) &&
                  "masked interleaved groups are not allowed.");
           Value *BlockInMaskPart = State.get(BlockInMask, Part);
-          SmallVector<Value *, 8> Operands(InterleaveFactor, BlockInMaskPart);
-          Type *Types[] = {VectorType::get(
-              Type::getInt1Ty(Builder.getContext()), VF * InterleaveFactor)};
-          GroupMask = State.Builder.CreateIntrinsic(
-              GetVectorInterleaveIntrinsic(InterleaveFactor), Types, Operands,
-              nullptr, "interleaved.mask");
+          if (Group->isStrided()) {
+            GroupMask = BlockInMaskPart;
+          } else {
+            SmallVector<Value *, 8> Operands(InterleaveFactor, BlockInMaskPart);
+            Type *Types[] = {VectorType::get(
+                Type::getInt1Ty(Builder.getContext()), VF * InterleaveFactor)};
+            GroupMask = State.Builder.CreateIntrinsic(
+                GetVectorInterleaveIntrinsic(InterleaveFactor), Types, Operands,
+                nullptr, "interleaved.mask");
+          }
         } else {
-          GroupMask = State.Builder.getTrueVector(VF * InterleaveFactor);
+          ElementCount EC = Group->isStrided() ? VF : VF * InterleaveFactor;
+          GroupMask = State.Builder.getTrueVector(EC);
         }
         assert(State.Plan->getRVL() &&
                "RuntimeVL must be initialized at this point");
         Value *RVL32 = Builder.CreateZExtOrTrunc(
             State.get(State.Plan->getRVL(), Part), Builder.getInt32Ty());
-        Value *InterleaveRVL = Builder.CreateMul(
-            RVL32, ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor));
-        Value *Operands[] = {AddrParts[Part], GroupMask, InterleaveRVL};
-        Type *Types[] = {VecTy, Operands[0]->getType()};
-        WideLoad = State.Builder.CreateIntrinsic(
-            Intrinsic::vp_load, Types, Operands, nullptr, "wide.masked.load");
+        if (Group->isStrided()) {
+          // Generate the stride
+          const SCEV *StrideScev = Group->getStride();
+          auto &DL = State.CFG.PrevBB->getModule()->getDataLayout();
+          SCEVExpander Exp(*(State.SE), DL, "stride");
+          Instruction *InsertPoint = &*State.Builder.GetInsertPoint();
+          Value *Stride =
+              Exp.expandCodeFor(StrideScev, StrideScev->getType(), InsertPoint);
+          // Use an integer type with the same width as the element type for
+          // strided access. Mainly to support access of float types.
+          // TODO: Better to add specific intrinsics to handle strided
+          // interleaved group.
+          auto *VecTyInBit = VecTy->isIntOrIntVectorTy()
+                                 ? VecTy
+                                 : VectorType::getInteger(VecTy);
+          // Get the combined vector type
+          assert(isPowerOf2_32(InterleaveFactor) &&
+                 "Non-power-of-2 factors are not supported yet");
+          auto *StridedVecTy = VectorType::getCombinedVectorType(
+              VecTyInBit, Log2_32(InterleaveFactor));
+          // Use original RVL instead of RVL * factor
+          Value *Operands[] = {AddrParts[Part], Stride, GroupMask, RVL32};
+          Type *Types[] = {StridedVecTy, Operands[0]->getType(),
+                           Stride->getType()};
+          WideLoad = State.Builder.CreateIntrinsic(
+              Intrinsic::experimental_vp_strided_load, Types, Operands, nullptr,
+              "wide.strided.load");
+        } else {
+          Value *InterleaveRVL = Builder.CreateMul(
+              RVL32, ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor));
+          Value *Operands[] = {AddrParts[Part], GroupMask, InterleaveRVL};
+          Type *Types[] = {VecTy, Operands[0]->getType()};
+          WideLoad = State.Builder.CreateIntrinsic(
+              Intrinsic::vp_load, Types, Operands, nullptr, "wide.masked.load");
+        }
 
         WideLoad->addParamAttr(
             0, Attribute::getWithAlignment(WideLoad->getContext(),
@@ -2974,6 +3008,14 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
         Group->addMetadata(WideLoad);
         NewLoads.push_back(WideLoad);
       }
+
+      // Need bitcast if the group requires strided load
+      //   <VF x (elementTy * factor)> strided.load
+      //   bitcast <VF x (elementTy * factor)> to <(VF * factor) x elementTy>
+      if (Group->isStrided())
+        for (unsigned Part = 0; Part < UF; ++Part)
+          NewLoads[Part] = State.Builder.CreateBitCast(
+              NewLoads[Part], VecTy, NewLoads[Part]->getName() + ".cast");
 
       // For each member in the group, shuffle out the appropriate data from the
       // wide loads.
@@ -3098,6 +3140,10 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
   auto *SubVT = VectorType::get(ScalarTy, VF);
 
 #if SIFIVE_CUSTOMIZATION
+  assert(
+      !Group->isStrided() &&
+      "Interleaving for stores with non-const stride is not supported for VLA");
+
   if (Legal->useVLAVectorizer()) {
     assert(Group->getFactor() == Group->getNumMembers() &&
            "Interleaving for stores with gaps is not supported for VLA");
@@ -5100,15 +5146,6 @@ bool LoopVectorizationCostModel::interleavedAccessCanBeWidened(
   auto *Group = getInterleavedAccessGroup(I);
   assert(Group && "Must have a group.");
 
-#if SIFIVE_CUSTOMIZATION
-  // TODO: Support interleaved group with non-const stride.
-  if (Group->isStrided()) {
-    LLVM_DEBUG(dbgs() << "LV: Interleaved group with non-const stride is not "
-                         "supported yet.\n");
-    return false;
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
   // If the instruction's allocated size doesn't equal it's type size, it
   // requires padding and will be scalarized.
   auto &DL = I->getModule()->getDataLayout();
@@ -5151,7 +5188,47 @@ bool LoopVectorizationCostModel::interleavedAccessCanBeWidened(
   bool StoreAccessWithGapsRequiresMasking =
       isa<StoreInst>(I) && (Group->getNumMembers() < Group->getFactor());
 #if SIFIVE_CUSTOMIZATION
+  // Only support strided group if using VLA vectorizer currently.
+  if (!Legal->useVLAVectorizer() && Group->isStrided())
+    return false;
+
   if (Legal->useVLAVectorizer()) {
+    // Check if the strided group is supported.
+    if (Group->isStrided()) {
+      // Check if vp strided access is supported.
+      // TODO: Introduce member requiresStridedAccesses
+      if (!UseStridedAccesses) {
+        LLVM_DEBUG(
+            dbgs() << "LV: The interleaved group with non-const stride is not "
+                      "supported if the vp strided access is disable\n");
+        return false;
+      }
+
+      // Check if the stride is safe to be expanded in the vectorized loop.
+      InstWidening MemAccessType = getMemoryAccessType(I);
+      if (MemAccessType != CM_Strided) {
+        LLVM_DEBUG(dbgs() << "LV: The stride of interleaved group is unsafe to "
+                             "be expanded within the vectorized loop\n");
+        return false;
+      }
+
+      // TODO: Support non-power-of-2 interleave factor.
+      if (!isPowerOf2_32(InterleaveFactor)) {
+        LLVM_DEBUG(dbgs() << "LV: The non-power-of-2 factor = "
+                          << InterleaveFactor
+                          << " is not supported yet for the interleaved group "
+                             "with non-const stride\n");
+        return false;
+      }
+
+      // TODO: Support interleaved stores with non-const stride.
+      if (isa<StoreInst>(I)) {
+        LLVM_DEBUG(dbgs() << "LV: Interleaved stores with non-const stride is "
+                             "not supported\n");
+        return false;
+      }
+    }
+
     if (!SiFiveEnableInterleavedAccess) {
       LLVM_DEBUG(dbgs() << "LV: Interleaving for VLA vectorization is "
                            "disabled by the option\n");
