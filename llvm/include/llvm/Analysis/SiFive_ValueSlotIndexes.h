@@ -41,6 +41,8 @@
 #include <iterator>
 #include <utility>
 
+#define EMPTY_INDEX 0xffffffff
+
 namespace llvm {
 
 class raw_ostream;
@@ -49,7 +51,7 @@ class raw_ostream;
 /// LiveValues pass.
 class IndexListEntry : public ilist_node<IndexListEntry> {
   Value *V = nullptr;
-  unsigned Index = 0xffffffff;
+  unsigned Index = EMPTY_INDEX;
 
 public:
   IndexListEntry() = default;
