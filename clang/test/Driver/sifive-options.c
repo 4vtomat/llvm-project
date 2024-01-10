@@ -40,4 +40,16 @@
 // CHECK-LTO-NO-USE-VLA: "-plugin-opt=-riscv-use-vla-vectorizer=false"
 // CHECK-LTO-NO-USE-VLA: "-plugin-opt=-scalable-vectorization=off"
 
+// Pass --relax-zcmt to linker if -Os/-Oz presents.
+// RUN: %clang -### -target riscv64-unknown-elf --gcc-toolchain="" %s -Os 2>&1 | FileCheck %s --check-prefix=RELAX-ZCMT
+// RUN: %clang -### -target riscv64-unknown-elf --gcc-toolchain="" %s -Oz 2>&1 | FileCheck %s --check-prefix=RELAX-ZCMT
+// If other optimization comes last, don't pass --relax-zcmt.
+// RUN: %clang -### -target riscv64-unknown-elf --gcc-toolchain="" %s -Os -O3 2>&1 | FileCheck %s --check-prefix=NO-RELAX-ZCMT
+// RUN: %clang -### -target riscv64-unknown-elf --gcc-toolchain="" %s -Oz -O3 2>&1 | FileCheck %s --check-prefix=NO-RELAX-ZCMT
+// RUN: %clang -### -target riscv64-unknown-elf --gcc-toolchain="" %s 2>&1 | FileCheck %s --check-prefix=NO-RELAX-ZCMT
+// lld doesn't support yet --relax-zcmt yet.
+// RUN: %clang -### -target riscv64-unknown-elf --gcc-toolchain="" -fuse-ld=lld -B%S/Inputs/lld %s 2>&1 | FileCheck %s --check-prefix=NO-RELAX-ZCMT
+// RELAX-ZCMT: "--relax-zcmt"
+// NO-RELAX-ZCMT-NOT: "--relax-zcmt"
+
 int main() { return 0; }
