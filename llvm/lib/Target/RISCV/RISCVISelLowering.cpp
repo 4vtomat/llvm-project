@@ -869,6 +869,13 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
 
       setOperationAction(IntegerVPOps, VT, Custom);
 
+#if SIFIVE_CUSTOMIZATION
+      // Zve64* does not support VP_MULHU/S with nxvXi64.
+      if (VT.getVectorElementType() == MVT::i64 && !Subtarget.hasStdExtV()) {
+        setOperationAction({ISD::VP_MULHU, ISD::VP_MULHS}, VT, Expand);
+      }
+#endif
+
       setOperationAction({ISD::LOAD, ISD::STORE}, VT, Custom);
 
       setOperationAction({ISD::MLOAD, ISD::MSTORE, ISD::MGATHER, ISD::MSCATTER},
@@ -1260,6 +1267,13 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                            VT, Custom);
 
         setOperationAction(IntegerVPOps, VT, Custom);
+
+#if SIFIVE_CUSTOMIZATION
+        // Zve64* does not support VP_MULHU/S with nxvXi64.
+        if (VT.getVectorElementType() == MVT::i64 && !Subtarget.hasStdExtV()) {
+          setOperationAction({ISD::VP_MULHU, ISD::VP_MULHS}, VT, Expand);
+        }
+#endif
 
         if (Subtarget.hasStdExtZvkb())
           setOperationAction({ISD::BSWAP, ISD::ROTL, ISD::ROTR}, VT, Custom);
