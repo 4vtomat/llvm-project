@@ -372,8 +372,7 @@ def SIFIVE_S76 : RISCVProcessorModel<"sifive-s76",
                                       FeatureStdExtF,
                                       FeatureStdExtD,
                                       FeatureStdExtC,
-                                      FeatureStdExtZihintpause,
-                                      FeatureVendorXSfcie],
+                                      FeatureStdExtZihintpause],
                                      [TuneSiFive7]>;
 
 #ifdef SIFIVE_CUSTOMIZATION

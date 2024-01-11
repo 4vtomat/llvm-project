@@ -10183,7 +10183,15 @@ VPRecipeBase *VPRecipeBuilder::tryToWidenMemory(Instruction *I,
   }
 #endif // SIFIVE_CUSTOMIZATION
 
+  VPValue *Ptr = isa<LoadInst>(I) ? Operands[0] : Operands[1];
+  if (Consecutive) {
+    auto *VectorPtr = new VPVectorPointerRecipe(Ptr, getLoadStoreType(I),
+                                                Reverse, I->getDebugLoc());
+    Builder.getInsertBlock()->appendRecipe(VectorPtr);
+    Ptr = VectorPtr;
+  }
   if (LoadInst *Load = dyn_cast<LoadInst>(I))
+<<<<<<< HEAD
     return new VPWidenMemoryInstructionRecipe(*Load, Operands[0], Mask,
 #if SIFIVE_CUSTOMIZATION
         Consecutive, Reverse, Stride,
@@ -10200,6 +10208,14 @@ VPRecipeBase *VPRecipeBuilder::tryToWidenMemory(Instruction *I,
 #else
                                             Mask, Consecutive, Reverse);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    return new VPWidenMemoryInstructionRecipe(*Load, Ptr, Mask, Consecutive,
+                                              Reverse);
+
+  StoreInst *Store = cast<StoreInst>(I);
+  return new VPWidenMemoryInstructionRecipe(*Store, Ptr, Operands[0], Mask,
+                                            Consecutive, Reverse);
+>>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
 }
 
 /// Creates a VPWidenIntOrFpInductionRecpipe for \p Phi. If needed, it will also
@@ -12011,8 +12027,8 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
   InnerLoopVectorizer::VectorParts BlockInMaskParts(State.UF);
   bool isMaskRequired = getMask();
   if (isMaskRequired) {
-    // Mask reversal is only neede for non-all-one (null) masks, as reverse of a
-    // null all-one mask is a null mask.
+    // Mask reversal is only needed for non-all-one (null) masks, as reverse of
+    // a null all-one mask is a null mask.
     for (unsigned Part = 0; Part < State.UF; ++Part) {
       Value *Mask = State.get(getMask(), Part);
 #if SIFIVE_CUSTOMIZATION
@@ -12034,6 +12050,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
     }
   }
 
+<<<<<<< HEAD
   const auto CreateVecPtr = [&](unsigned Part, Value *Ptr) -> Value * {
     // Calculate the pointer for the specific unroll-part.
     Value *PartPtr = nullptr;
@@ -12103,6 +12120,8 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
   };
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
   // Handle Stores:
   if (SI) {
     State.setDebugLocFrom(SI->getDebugLoc());
@@ -12158,6 +12177,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
           }
 #endif // SIFIVE_CUSTOMIZATION
         }
+<<<<<<< HEAD
         auto *VecPtr =
             CreateVecPtr(Part, State.get(getAddr(), VPIteration(0, 0)));
 #if SIFIVE_CUSTOMIZATION
@@ -12180,6 +12200,10 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
               1, Attribute::getWithAlignment(NewSI->getContext(), Alignment));
         } else if (isMaskRequired) {
 #endif // SIFIVE_CUSTOMIZATION
+=======
+        auto *VecPtr = State.get(getAddr(), Part);
+        if (isMaskRequired)
+>>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
           NewSI = Builder.CreateMaskedStore(StoredVal, VecPtr, Alignment,
                                             BlockInMaskParts[Part]);
 #if SIFIVE_CUSTOMIZATION
@@ -12219,6 +12243,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       }
 #endif // SIFIVE_CUSTOMIZATION
     } else {
+<<<<<<< HEAD
       auto *VecPtr =
           CreateVecPtr(Part, State.get(getAddr(), VPIteration(0, 0)));
 #if SIFIVE_CUSTOMIZATION
@@ -12276,6 +12301,10 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
         }
       } else if (isMaskRequired)
 #endif // SIFIVE_CUSTOMIZATION
+=======
+      auto *VecPtr = State.get(getAddr(), Part);
+      if (isMaskRequired)
+>>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
         NewLI = Builder.CreateMaskedLoad(
             DataTy, VecPtr, Alignment, BlockInMaskParts[Part],
             PoisonValue::get(DataTy), "wide.masked.load");

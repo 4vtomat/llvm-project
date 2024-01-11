@@ -155,7 +155,7 @@ static BasicType ParseBasicType(char c) {
   case 'd':
     return BasicType::Float64;
     break;
-  case 'b':
+  case 'y':
     return BasicType::BFloat16;
     break;
   default:

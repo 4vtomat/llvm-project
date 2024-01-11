@@ -19,9 +19,11 @@ include "llvm/TableGen/SearchableTable.td"
 
 class SysReg<string name, bits<12> op> {
   string Name = name;
-  // A maximum of one deprecated name is supported right now. It generates a
-  // diagnostic when the name is used to encourage software to migrate away from
-  // the name.
+  // A maximum of one alias is supported right now.
+  string AltName = name;
+  // A maximum of one deprecated name is supported right now.  Unlike the
+  // `AltName` alias, a `DeprecatedName` generates a diagnostic when the name is
+  // used to encourage software to migrate away from the name.
   string DeprecatedName = "";
   bits<12> Encoding = op;
   // FIXME: add these additional fields when needed.
@@ -41,7 +43,7 @@ def SysRegsList : GenericTable {
   let FilterClass = "SysReg";
   // FIXME: add "ReadWrite", "Mode", "Extra", "Number" fields when needed.
   let Fields = [
-    "Name", "DeprecatedName", "Encoding", "FeaturesRequired",
+    "Name", "AltName", "DeprecatedName", "Encoding", "FeaturesRequired",
     "isRV32Only",
   ];
 
@@ -54,32 +56,13 @@ def lookupSysRegByName : SearchIndex {
   let Key = [ "Name" ];
 }
 
+def lookupSysRegByAltName : SearchIndex {
+  let Table = SysRegsList;
+  let Key = [ "AltName" ];
+}
+
 def lookupSysRegByDeprecatedName : SearchIndex {
   let Table = SysRegsList;
-  let Key = [ "DeprecatedName" ];
-}
-
-class SiFiveReg<string name, bits<12> op> : SysReg<name, op>;
-
-def SiFiveRegsList : GenericTable {
-  let FilterClass = "SiFiveReg";
-  // FIXME: add "ReadWrite", "Mode", "Extra", "Number" fields when needed.
-  let Fields = [
-    "Name", "DeprecatedName", "Encoding", "FeaturesRequired",
-    "isRV32Only",
-  ];
-
-  let PrimaryKey = [ "Encoding" ];
-  let PrimaryKeyName = "lookupSiFiveRegByEncoding";
-}
-
-def lookupSiFiveRegByName : SearchIndex {
-  let Table = SiFiveRegsList;
-  let Key = [ "Name" ];
-}
-
-def lookupSiFiveRegByDeprecatedName : SearchIndex {
-  let Table = SiFiveRegsList;
   let Key = [ "DeprecatedName" ];
 }
 
@@ -309,7 +292,7 @@ foreach i = 3...31 in
 //===----------------------------------------------------------------------===//
 // Machine Counter Setup
 //===----------------------------------------------------------------------===//
-let DeprecatedName = "mucounteren" in // Privileged spec v1.9.1 Name
+let AltName = "mucounteren" in // Privileged spec v1.9.1 Name
 def : SysReg<"mcountinhibit", 0x320>;
 
 // mhpmevent3-mhpmevent31 at 0x323-0x33F.
@@ -323,6 +306,7 @@ foreach i = 3...31 in {
 }
 
 //===----------------------------------------------------------------------===//
+<<<<<<< HEAD
 // SiFive Custom Machine Mode Registers
 //===----------------------------------------------------------------------===//
 
@@ -339,6 +323,8 @@ def : SiFiveReg<"mpd", 0x7C8>;
 }
 
 //===----------------------------------------------------------------------===//
+=======
+>>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
 // Debug/ Trace Registers (shared with Debug Mode)
 //===----------------------------------------------------------------------===//
 def : SysReg<"tselect", 0x7A0>;
@@ -360,7 +346,7 @@ def : SysReg<"dpc", 0x7B1>;
 
 // "dscratch" is an alternative name for "dscratch0" which appeared in earlier
 // drafts of the RISC-V debug spec
-let DeprecatedName = "dscratch" in
+let AltName = "dscratch" in
 def : SysReg<"dscratch0", 0x7B2>;
 def : SysReg<"dscratch1", 0x7B3>;
 
