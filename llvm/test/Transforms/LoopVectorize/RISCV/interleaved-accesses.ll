@@ -1243,7 +1243,6 @@ define void @combine_load_factor2_i32(ptr noalias %p, ptr noalias %q) {
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-NEXT:    [[TMP7:%.*]] = shl i64 [[TMP6]], 1
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i32, ptr [[P:%.*]], i64 [[TMP7]]
@@ -1259,33 +1258,6 @@ define void @combine_load_factor2_i32(ptr noalias %p, ptr noalias %q) {
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; CHECK-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
-=======
-; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
-; CHECK-NEXT:    [[TMP1:%.*]] = add i64 [[INDEX]], 8
-; CHECK-NEXT:    [[TMP2:%.*]] = shl i64 [[TMP0]], 1
-; CHECK-NEXT:    [[TMP3:%.*]] = shl i64 [[TMP1]], 1
-; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i32, ptr [[P:%.*]], i64 [[TMP2]]
-; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i32, ptr [[P]], i64 [[TMP3]]
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr [[TMP4]], i32 0
-; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i32, ptr [[TMP5]], i32 0
-; CHECK-NEXT:    [[WIDE_VEC:%.*]] = load <16 x i32>, ptr [[TMP6]], align 4
-; CHECK-NEXT:    [[WIDE_VEC1:%.*]] = load <16 x i32>, ptr [[TMP7]], align 4
-; CHECK-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <16 x i32> [[WIDE_VEC]], <16 x i32> poison, <8 x i32> <i32 0, i32 2, i32 4, i32 6, i32 8, i32 10, i32 12, i32 14>
-; CHECK-NEXT:    [[STRIDED_VEC2:%.*]] = shufflevector <16 x i32> [[WIDE_VEC1]], <16 x i32> poison, <8 x i32> <i32 0, i32 2, i32 4, i32 6, i32 8, i32 10, i32 12, i32 14>
-; CHECK-NEXT:    [[STRIDED_VEC3:%.*]] = shufflevector <16 x i32> [[WIDE_VEC]], <16 x i32> poison, <8 x i32> <i32 1, i32 3, i32 5, i32 7, i32 9, i32 11, i32 13, i32 15>
-; CHECK-NEXT:    [[STRIDED_VEC4:%.*]] = shufflevector <16 x i32> [[WIDE_VEC1]], <16 x i32> poison, <8 x i32> <i32 1, i32 3, i32 5, i32 7, i32 9, i32 11, i32 13, i32 15>
-; CHECK-NEXT:    [[TMP8:%.*]] = add <8 x i32> [[STRIDED_VEC]], [[STRIDED_VEC3]]
-; CHECK-NEXT:    [[TMP9:%.*]] = add <8 x i32> [[STRIDED_VEC2]], [[STRIDED_VEC4]]
-; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr i32, ptr [[Q:%.*]], i64 [[TMP0]]
-; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[Q]], i64 [[TMP1]]
-; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr i32, ptr [[TMP10]], i32 0
-; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr i32, ptr [[TMP10]], i32 8
-; CHECK-NEXT:    store <8 x i32> [[TMP8]], ptr [[TMP12]], align 4
-; CHECK-NEXT:    store <8 x i32> [[TMP9]], ptr [[TMP13]], align 4
-; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
-; CHECK-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
-; CHECK-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
->>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1024, [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], label [[EXIT:%.*]], label [[SCALAR_PH]]
@@ -1452,7 +1424,6 @@ define void @combine_load_factor2_i64(ptr noalias %p, ptr noalias %q) {
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-NEXT:    [[TMP7:%.*]] = shl i64 [[TMP6]], 1
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[TMP7]]
@@ -1468,33 +1439,6 @@ define void @combine_load_factor2_i64(ptr noalias %p, ptr noalias %q) {
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; CHECK-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
-=======
-; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
-; CHECK-NEXT:    [[TMP1:%.*]] = add i64 [[INDEX]], 4
-; CHECK-NEXT:    [[TMP2:%.*]] = shl i64 [[TMP0]], 1
-; CHECK-NEXT:    [[TMP3:%.*]] = shl i64 [[TMP1]], 1
-; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[TMP2]]
-; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i64, ptr [[P]], i64 [[TMP3]]
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i64, ptr [[TMP4]], i32 0
-; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i64, ptr [[TMP5]], i32 0
-; CHECK-NEXT:    [[WIDE_VEC:%.*]] = load <8 x i64>, ptr [[TMP6]], align 8
-; CHECK-NEXT:    [[WIDE_VEC1:%.*]] = load <8 x i64>, ptr [[TMP7]], align 8
-; CHECK-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <8 x i64> [[WIDE_VEC]], <8 x i64> poison, <4 x i32> <i32 0, i32 2, i32 4, i32 6>
-; CHECK-NEXT:    [[STRIDED_VEC2:%.*]] = shufflevector <8 x i64> [[WIDE_VEC1]], <8 x i64> poison, <4 x i32> <i32 0, i32 2, i32 4, i32 6>
-; CHECK-NEXT:    [[STRIDED_VEC3:%.*]] = shufflevector <8 x i64> [[WIDE_VEC]], <8 x i64> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
-; CHECK-NEXT:    [[STRIDED_VEC4:%.*]] = shufflevector <8 x i64> [[WIDE_VEC1]], <8 x i64> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
-; CHECK-NEXT:    [[TMP8:%.*]] = add <4 x i64> [[STRIDED_VEC]], [[STRIDED_VEC3]]
-; CHECK-NEXT:    [[TMP9:%.*]] = add <4 x i64> [[STRIDED_VEC2]], [[STRIDED_VEC4]]
-; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr i64, ptr [[Q:%.*]], i64 [[TMP0]]
-; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i64, ptr [[Q]], i64 [[TMP1]]
-; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr i64, ptr [[TMP10]], i32 0
-; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr i64, ptr [[TMP10]], i32 4
-; CHECK-NEXT:    store <4 x i64> [[TMP8]], ptr [[TMP12]], align 8
-; CHECK-NEXT:    store <4 x i64> [[TMP9]], ptr [[TMP13]], align 8
-; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 8
-; CHECK-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
-; CHECK-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
->>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 1024, [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], label [[EXIT:%.*]], label [[SCALAR_PH]]
