@@ -277,8 +277,8 @@ define void @trunc_sat_i32i64_notopt(ptr %x, ptr %y) {
 ; CHECK-NEXT:    slli a0, a0, 31
 ; CHECK-NEXT:    vmin.vx v8, v8, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vnsrl.wi v10, v8, 0
-; CHECK-NEXT:    vse32.v v10, (a1)
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0
+; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
   %1 = load <4 x i64>, ptr %x, align 64
   %2 = tail call <4 x i64> @llvm.smax.v4i64(<4 x i64> %1, <4 x i64> <i64 -2147483647, i64 -2147483647, i64 -2147483647, i64 -2147483647>)
@@ -332,8 +332,8 @@ define void @trunc_sat_u32u64_notopt(ptr %x, ptr %y) {
 ; CHECK-NEXT:    addiw a0, a0, -1
 ; CHECK-NEXT:    vminu.vx v8, v8, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vnsrl.wi v10, v8, 0
-; CHECK-NEXT:    vse32.v v10, (a1)
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0
+; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
   %1 = load <4 x i64>, ptr %x, align 64
   %2 = tail call <4 x i64> @llvm.umin.v4i64(<4 x i64> %1, <4 x i64> <i64 2147483647, i64 2147483647, i64 2147483647, i64 2147483647>)
