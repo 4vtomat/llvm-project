@@ -12074,42 +12074,14 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
                                                            CommonAlignment));
             NewLI = Inst;
           }
-          // The pointer operand uses an in-tree scalar so we add the new
-          // BitCast or LoadInst to ExternalUses list to make sure that an
-          // extract will be generated in the future.
-          if (TreeEntry *Entry = getTreeEntry(Ptr)) {
-            if (Entry->UserTreeIndices.empty() ||
-                any_of(Entry->UserTreeIndices, [&](const EdgeInfo &EI) {
-                  return EI.UserTE->State != TreeEntry::Vectorize &&
-                         !isRISCVStridedNode(EI.UserTE);
-                })) {
-              // Find which lane we need to extract.
-              unsigned FoundLane = Entry->findLaneForValue(Ptr);
-              ExternalUses.emplace_back(Ptr, NewLI, FoundLane);
-            }
-          }
         } else {
 #else
       if (E->State == TreeEntry::Vectorize) {
 #endif // SIFIVE_CUSTOMIZATION
         NewLI = Builder.CreateAlignedLoad(VecTy, PO, LI->getAlign());
-<<<<<<< HEAD
-
-        // The pointer operand uses an in-tree scalar so we add the new
-        // LoadInst to ExternalUses list to make sure that an extract will
-        // be generated in the future.
-        if (isa<Instruction>(PO)) {
-          if (TreeEntry *Entry = getTreeEntry(PO)) {
-            // Find which lane we need to extract.
-            unsigned FoundLane = Entry->findLaneForValue(PO);
-            ExternalUses.emplace_back(PO, NewLI, FoundLane);
-          }
-        }
 #if SIFIVE_CUSTOMIZATION
         }
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
       } else {
         assert((E->State == TreeEntry::ScatterVectorize ||
                 E->State == TreeEntry::PossibleStridedVectorize) &&
@@ -12162,16 +12134,6 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
         ST->addParamAttr(
             /*ArgNo=*/1,
             Attribute::getWithAlignment(ST->getContext(), CommonAlignment));
-        // The pointer operand uses an in-tree scalar, so add the new BitCast or
-        // StoreInst to ExternalUses to make sure that an extract will be
-        // generated in the future.
-        if (TreeEntry *Entry = getTreeEntry(ScalarPtr)) {
-          // Find which lane we need to extract.
-          unsigned FoundLane = Entry->findLaneForValue(ScalarPtr);
-          ExternalUses.push_back(ExternalUser(
-              ScalarPtr, ScalarPtr != VecPtr ? cast<User>(VecPtr) : ST,
-              FoundLane));
-        }
 
         Value *V = propagateMetadata(ST, E->Scalars);
 
@@ -12186,23 +12148,6 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
       StoreInst *ST =
           Builder.CreateAlignedStore(VecValue, Ptr, SI->getAlign());
 
-<<<<<<< HEAD
-      // The pointer operand uses an in-tree scalar, so add the new StoreInst to
-      // ExternalUses to make sure that an extract will be generated in the
-      // future.
-      if (isa<Instruction>(Ptr)) {
-        if (TreeEntry *Entry = getTreeEntry(Ptr)) {
-          // Find which lane we need to extract.
-          unsigned FoundLane = Entry->findLaneForValue(Ptr);
-#if SIFIVE_CUSTOMIZATION
-          if (!areAllUsersRISCVStridedNode(Entry))
-#endif // SIFIVE_CUSTOMIZATION
-          ExternalUses.push_back(ExternalUser(Ptr, ST, FoundLane));
-        }
-      }
-
-=======
->>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
       Value *V = propagateMetadata(ST, E->Scalars);
 
       E->VectorizedValue = V;

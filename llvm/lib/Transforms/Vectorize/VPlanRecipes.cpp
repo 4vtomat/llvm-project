@@ -139,6 +139,9 @@ bool VPRecipeBase::mayHaveSideEffects() const {
   case VPWidenCallSC:
     return cast<Instruction>(getVPSingleValue()->getUnderlyingValue())
         ->mayHaveSideEffects();
+#if SIFIVE_CUSTOMIZATION
+  case VPVectorPointerSC:
+#endif // SIFIVE_CUSTOMIZATION
   case VPBlendSC:
   case VPReductionSC:
   case VPScalarIVStepsSC:
@@ -1590,7 +1593,20 @@ void VPVectorPointerRecipe ::execute(VPTransformState &State) {
       // wide store needs to start at the last vector element.
       // RunTimeVF =  VScale * VF.getKnownMinValue()
       // For fixed-width VScale is 1, then RunTimeVF = VF.getKnownMinValue()
+#if SIFIVE_CUSTOMIZATION
+      Value *RunTimeVF;
+      if (VPValue *RVL = State.Plan->getRVL()) {
+        // If RVL is not nullptr, then RVL must be a valid value set during plan
+        // creation and must be used to correctly reverse the address
+        RunTimeVF = State.get(RVL, Part);
+        if (RunTimeVF->getType() != IndexTy)
+          RunTimeVF = Builder.CreateZExtOrTrunc(RunTimeVF, IndexTy);
+      } else {
+        RunTimeVF = getRuntimeVF(Builder, IndexTy, State.VF);
+      }
+#else
       Value *RunTimeVF = getRuntimeVF(Builder, IndexTy, State.VF);
+#endif // SIFIVE_CUSTOMIZATION
       // NumElt = -Part * RunTimeVF
       Value *NumElt = Builder.CreateMul(
           ConstantInt::get(IndexTy, -(int64_t)Part), RunTimeVF);
