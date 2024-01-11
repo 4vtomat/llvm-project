@@ -18761,7 +18761,12 @@ void RISCVTargetLowering::computeKnownBitsForTargetNode(const SDValue Op,
 #if SIFIVE_CUSTOMIZATION
     case Intrinsic::riscv_vcpop:
     case Intrinsic::riscv_vcpop_mask:
-    // FIXME: Generalize to LMUL other than 8
+       // FIXME: Generalize to LMUL other than 8
+       // Assume that VL output is >= 65536.
+       // TODO: Take SEW and LMUL into account.
+       if (BitWidth > 17)
+         Known.Zero.setBitsFrom(17);
+       break;
 #endif // SIFIVE_CUSTOMIZATION
     case Intrinsic::riscv_vsetvli:
     case Intrinsic::riscv_vsetvlimax: {
