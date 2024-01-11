@@ -151,22 +151,21 @@ def FeatureStdExtSswg
                        "slwid CSR, which sets the WID used for modes lower than "
                        "[H]S-mode.)", []>;
 
-def FeatureStdExtXsifivecflushdlone
-    : SubtargetFeature<"experimental-xsifivecflushdlone", "HasStdExtXsifivecflushdlone", "true",
-                       "'Xsifivecflushdlone' (Cache Flush/Power Down Instructions)", []>;
-def HasStdExtXsifivecflushdlone :
-    Predicate<"Subtarget->hasStdExtXsifivecflushdlone()">,
-    AssemblerPredicate<(all_of FeatureStdExtXsifivecflushdlone),
-                       "'Xsifivecflushdlone' (Cache Flush/Power Down Instructions)">;
+def FeatureVendorXSiFivecflushdlone
+    : SubtargetFeature<"experimental-xsifivecflushdlone", "HasVendorXSiFivecflushdlone", "true",
+                       "'XSiFivecflushdlone' (Cache Flush/Power Down Instructions)", []>;
+def HasVendorXSiFivecflushdlone :
+    Predicate<"Subtarget->hasVendorXSiFivecflushdlone()">,
+    AssemblerPredicate<(all_of FeatureVendorXSiFivecflushdlone),
+                       "'XSiFivecflushdlone' (Cache Flush/Power Down Instructions)">;
 
-def FeatureStdExtXsifivecdiscarddlone
-    : SubtargetFeature<"experimental-xsifivecdiscarddlone", "HasStdExtXsifivecdiscarddlone", "true",
-                       "Cache Flush/Power Down Instructions"
-                       "'Xsifivecdiscarddlone'(Cache Flush/Power Down Instructions)", []>;
-def HasStdExtXsifivecdiscarddlone :
-    Predicate<"Subtarget->hasStdExtXsifivecdiscarddlone()">,
-    AssemblerPredicate<(all_of FeatureStdExtXsifivecdiscarddlone),
-                        "'Xsifivecdiscarddlone' (Cache Flush/Power Down Instructions)">;
+def FeatureVendorXSiFivecdiscarddlone
+    : SubtargetFeature<"experimental-xsifivecdiscarddlone", "HasVendorXSiFivecdiscarddlone", "true",
+                       "'XSiFivecdiscarddlone' (Cache Flush/Power Down Instructions)", []>;
+def HasVendorXSiFivecdiscarddlone :
+    Predicate<"Subtarget->hasVendorXSiFivecdiscarddlone()">,
+    AssemblerPredicate<(all_of FeatureVendorXSiFivecdiscarddlone),
+                       "'XSiFivecdiscarddlone' (Cache Flush/Power Down Instructions)">;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM

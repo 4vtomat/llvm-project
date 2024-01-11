@@ -471,20 +471,18 @@ TLI_DEFINE_VECFUNC("__exp2f_finite", "__svml_exp2f16", FIXED(16), "_ZGV_LLVM_N16
 // SIFIVE_CUSTOMIZATION
 #elif defined(TLI_DEFINE_SIFIVE_NF_LIBRARY_FUNCS)
 // SiFive SKL NF (Nonlinear Functions) library's Vector Functions
-#define __TLI_DEFINE_NF_VECFUNC(func, VABI_PREFIX) \
-TLI_DEFINE_VECFUNC(#func "f", "skl_vf" #func "_v_f32m1", SCALABLE(2), VABI_PREFIX) \
-TLI_DEFINE_VECFUNC(#func "f", "skl_vf" #func "_v_f32m2", SCALABLE(4), VABI_PREFIX) \
-TLI_DEFINE_VECFUNC(#func "f", "skl_vf" #func "_v_f32m4", SCALABLE(8), VABI_PREFIX) \
-TLI_DEFINE_VECFUNC(#func "f", "skl_vf" #func "_v_f32m8", SCALABLE(16), VABI_PREFIX) \
-TLI_DEFINE_VECFUNC(#func,     "skl_vf" #func "_v_f64m1", SCALABLE(1), VABI_PREFIX) \
-TLI_DEFINE_VECFUNC(#func,     "skl_vf" #func "_v_f64m2", SCALABLE(2), VABI_PREFIX) \
-TLI_DEFINE_VECFUNC(#func,     "skl_vf" #func "_v_f64m4", SCALABLE(4), VABI_PREFIX) \
-TLI_DEFINE_VECFUNC(#func,     "skl_vf" #func "_v_f64m8", SCALABLE(8), VABI_PREFIX)
+#define __TLI_DEFINE_NF_VECFUNC(func, VABI_SUFFIX) \
+TLI_DEFINE_VECFUNC(#func "f", "skl_vf" #func "_v_f32m1", SCALABLE(2),  "_ZGVrNx2"  VABI_SUFFIX) \
+TLI_DEFINE_VECFUNC(#func "f", "skl_vf" #func "_v_f32m2", SCALABLE(4),  "_ZGVrNx4"  VABI_SUFFIX) \
+TLI_DEFINE_VECFUNC(#func "f", "skl_vf" #func "_v_f32m4", SCALABLE(8),  "_ZGVrNx8"  VABI_SUFFIX) \
+TLI_DEFINE_VECFUNC(#func "f", "skl_vf" #func "_v_f32m8", SCALABLE(16), "_ZGVrNx16" VABI_SUFFIX) \
+TLI_DEFINE_VECFUNC(#func,     "skl_vf" #func "_v_f64m1", SCALABLE(1),  "_ZGVrNx1"  VABI_SUFFIX) \
+TLI_DEFINE_VECFUNC(#func,     "skl_vf" #func "_v_f64m2", SCALABLE(2),  "_ZGVrNx2"  VABI_SUFFIX) \
+TLI_DEFINE_VECFUNC(#func,     "skl_vf" #func "_v_f64m4", SCALABLE(4),  "_ZGVrNx4"  VABI_SUFFIX) \
+TLI_DEFINE_VECFUNC(#func,     "skl_vf" #func "_v_f64m8", SCALABLE(8),  "_ZGVrNx8"  VABI_SUFFIX)
 
-#define TLI_DEFINE_NF_VECFUNC(func) \
-  __TLI_DEFINE_NF_VECFUNC(func, "_ZGVsNxv")
-#define TLI_DEFINE_NF_VECFUNC_2ARG(func) \
-  __TLI_DEFINE_NF_VECFUNC(func, "_ZGVsNxvv")
+#define TLI_DEFINE_NF_VECFUNC(func) __TLI_DEFINE_NF_VECFUNC(func, "v")
+#define TLI_DEFINE_NF_VECFUNC_2ARG(func) __TLI_DEFINE_NF_VECFUNC(func, "vv")
 
 TLI_DEFINE_NF_VECFUNC(cos)
 TLI_DEFINE_NF_VECFUNC(cosh)
@@ -518,24 +516,40 @@ TLI_DEFINE_NF_VECFUNC_2ARG(nextafter)
 TLI_DEFINE_NF_VECFUNC_2ARG(pow)
 
 #define TLI_DEFINE_NF_VECFUNC_LLVM_INTRIN(func) \
-TLI_DEFINE_VECFUNC("llvm." #func ".f32", "skl_vf" #func "_v_f32m1", SCALABLE(2), "_ZGVsNxv")  \
-TLI_DEFINE_VECFUNC("llvm." #func ".f32", "skl_vf" #func "_v_f32m2", SCALABLE(4), "_ZGVsNxv")  \
-TLI_DEFINE_VECFUNC("llvm." #func ".f32", "skl_vf" #func "_v_f32m4", SCALABLE(8), "_ZGVsNxv")  \
-TLI_DEFINE_VECFUNC("llvm." #func ".f32", "skl_vf" #func "_v_f32m8", SCALABLE(16), "_ZGVsNxv") \
-TLI_DEFINE_VECFUNC("llvm." #func ".f64", "skl_vf" #func "_v_f64m1", SCALABLE(1), "_ZGVsNxv")  \
-TLI_DEFINE_VECFUNC("llvm." #func ".f64", "skl_vf" #func "_v_f64m2", SCALABLE(2), "_ZGVsNxv")  \
-TLI_DEFINE_VECFUNC("llvm." #func ".f64", "skl_vf" #func "_v_f64m4", SCALABLE(4), "_ZGVsNxv")  \
-TLI_DEFINE_VECFUNC("llvm." #func ".f64", "skl_vf" #func "_v_f64m8", SCALABLE(8), "_ZGVsNxv")
+TLI_DEFINE_VECFUNC("llvm." #func ".f32", "skl_vf" #func "_v_f32m1", SCALABLE(2), "_ZGVrNx2v")  \
+TLI_DEFINE_VECFUNC("llvm." #func ".f32", "skl_vf" #func "_v_f32m2", SCALABLE(4), "_ZGVrNx4v")  \
+TLI_DEFINE_VECFUNC("llvm." #func ".f32", "skl_vf" #func "_v_f32m4", SCALABLE(8), "_ZGVrNx8v")  \
+TLI_DEFINE_VECFUNC("llvm." #func ".f32", "skl_vf" #func "_v_f32m8", SCALABLE(16), "_ZGVrNx16v") \
+TLI_DEFINE_VECFUNC("llvm." #func ".f64", "skl_vf" #func "_v_f64m1", SCALABLE(1), "_ZGVrNx1v")  \
+TLI_DEFINE_VECFUNC("llvm." #func ".f64", "skl_vf" #func "_v_f64m2", SCALABLE(2), "_ZGVrNx2v")  \
+TLI_DEFINE_VECFUNC("llvm." #func ".f64", "skl_vf" #func "_v_f64m4", SCALABLE(4), "_ZGVrNx4v")  \
+TLI_DEFINE_VECFUNC("llvm." #func ".f64", "skl_vf" #func "_v_f64m8", SCALABLE(8), "_ZGVrNx8v")
 
 TLI_DEFINE_NF_VECFUNC_LLVM_INTRIN(cos)
 TLI_DEFINE_NF_VECFUNC_LLVM_INTRIN(sin)
 TLI_DEFINE_NF_VECFUNC_LLVM_INTRIN(exp)
 TLI_DEFINE_NF_VECFUNC_LLVM_INTRIN(exp2)
-TLI_DEFINE_NF_VECFUNC_LLVM_INTRIN(ldexp)
 TLI_DEFINE_NF_VECFUNC_LLVM_INTRIN(log)
 TLI_DEFINE_NF_VECFUNC_LLVM_INTRIN(log10)
 TLI_DEFINE_NF_VECFUNC_LLVM_INTRIN(log2)
-TLI_DEFINE_NF_VECFUNC_LLVM_INTRIN(pow)
+
+TLI_DEFINE_VECFUNC("llvm.pow.f32", "skl_vfpow_v_f32m1", SCALABLE(2), "_ZGVrNx2vv")
+TLI_DEFINE_VECFUNC("llvm.pow.f32", "skl_vfpow_v_f32m2", SCALABLE(4), "_ZGVrNx4vv")
+TLI_DEFINE_VECFUNC("llvm.pow.f32", "skl_vfpow_v_f32m4", SCALABLE(8), "_ZGVrNx8vv")
+TLI_DEFINE_VECFUNC("llvm.pow.f32", "skl_vfpow_v_f32m8", SCALABLE(16), "_ZGVrNx16vv")
+TLI_DEFINE_VECFUNC("llvm.pow.f64", "skl_vfpow_v_f64m1", SCALABLE(1), "_ZGVrNx1vv")
+TLI_DEFINE_VECFUNC("llvm.pow.f64", "skl_vfpow_v_f64m2", SCALABLE(2), "_ZGVrNx2vv")
+TLI_DEFINE_VECFUNC("llvm.pow.f64", "skl_vfpow_v_f64m4", SCALABLE(4), "_ZGVrNx4vv")
+TLI_DEFINE_VECFUNC("llvm.pow.f64", "skl_vfpow_v_f64m8", SCALABLE(8), "_ZGVrNx8vv")
+
+TLI_DEFINE_VECFUNC("llvm.ldexp.f32.i32", "skl_vfldexp_v_f32m1", SCALABLE(2), "_ZGVrNx2vv")
+TLI_DEFINE_VECFUNC("llvm.ldexp.f32.i32", "skl_vfldexp_v_f32m2", SCALABLE(4), "_ZGVrNx4vv")
+TLI_DEFINE_VECFUNC("llvm.ldexp.f32.i32", "skl_vfldexp_v_f32m4", SCALABLE(8), "_ZGVrNx8vv")
+TLI_DEFINE_VECFUNC("llvm.ldexp.f32.i32", "skl_vfldexp_v_f32m8", SCALABLE(16), "_ZGVrNx16vv")
+TLI_DEFINE_VECFUNC("llvm.ldexp.f64.i32", "skl_vfldexp_v_f64m1", SCALABLE(1), "_ZGVrNx1vv")
+TLI_DEFINE_VECFUNC("llvm.ldexp.f64.i32", "skl_vfldexp_v_f64m2", SCALABLE(2), "_ZGVrNx2vv")
+TLI_DEFINE_VECFUNC("llvm.ldexp.f64.i32", "skl_vfldexp_v_f64m4", SCALABLE(4), "_ZGVrNx4vv")
+TLI_DEFINE_VECFUNC("llvm.ldexp.f64.i32", "skl_vfldexp_v_f64m8", SCALABLE(8), "_ZGVrNx8vv")
 // end SIFIVE_CUSTOMIZATION
 #elif defined(TLI_DEFINE_SLEEFGNUABI_VF2_VECFUNCS)
 

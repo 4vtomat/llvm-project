@@ -43,6 +43,7 @@ static ParseRet tryParseISA(StringRef &MangledName, VFISAKind &ISA) {
               .Case("c", VFISAKind::AVX)
               .Case("d", VFISAKind::AVX2)
               .Case("e", VFISAKind::AVX512)
+              .Case("r", VFISAKind::RVV) // SIFIVE
               .Default(VFISAKind::Unknown);
     MangledName = MangledName.drop_front(1);
   }
@@ -76,11 +77,26 @@ static ParseRet tryParseVLEN(StringRef &ParseString, VFISAKind ISA,
                              std::pair<unsigned, bool> &ParsedVF) {
   if (ParseString.consume_front("x")) {
     // SVE is the only scalable ISA currently supported.
-    if (ISA != VFISAKind::SVE) {
+#if SIFIVE_CUSTOMIZATION
+    // RVV is supported in SiFive internal.
+    if (ISA != VFISAKind::SVE && ISA != VFISAKind::RVV) {
+#endif // SIFIVE_CUSTOMIZATION
       LLVM_DEBUG(dbgs() << "Vector function variant declared with scalable VF "
                         << "but ISA is not SVE\n");
       return ParseRet::Error;
     }
+
+#if SIFIVE_CUSTOMIZATION
+    unsigned VF = 0;
+    if (!ParseString.consumeInteger(10, VF)) {
+      // The token `0` is invalid for scalable VF.
+      if (VF == 0)
+        return ParseRet::Error;
+      ParsedVF = {VF, true};
+      return ParseRet::OK;
+    }
+#endif // SIFIVE_CUSTOMIZATION
+
     // We can't determine the VF of a scalable vector by looking at the vlen
     // string (just 'x'), so say we successfully parsed it but return a 'true'
     // for the scalable field with an invalid VF field so that we know to look
@@ -434,7 +450,12 @@ std::optional<VFInfo> VFABI::tryDemangleForVFABI(StringRef MangledName,
   // demangled parameter types and the scalar function signature.
   std::optional<ElementCount> EC;
   if (ParsedVF.second) {
-    EC = getScalableECFromSignature(FTy, ISA, Parameters);
+#if SIFIVE_CUSTOMIZATION
+    if (ParsedVF.first)
+      EC = ElementCount::getScalable(ParsedVF.first);
+    else
+      EC = getScalableECFromSignature(FTy, ISA, Parameters);
+#endif // SIFIVE_CUSTOMIZATION
     if (!EC)
       return std::nullopt;
   } else
@@ -492,16 +513,6 @@ std::optional<VFInfo> VFABI::tryDemangleForVFABI(StringRef MangledName,
     assert(Parameters.back().ParamKind == VFParamKind::GlobalPredicate &&
            "The global predicate must be the last parameter");
 
-#if SIFIVE_CUSTOMIZATION
-  if (EC->isScalable()) {
-    if (VectorName.ends_with("m1"))
-      EC = ElementCount::get(EC->getKnownMinValue() / 2, EC->isScalable());
-    else if (VectorName.ends_with("m4"))
-      EC = ElementCount::get(EC->getKnownMinValue() * 2, EC->isScalable());
-    else if (VectorName.ends_with("m8"))
-      EC = ElementCount::get(EC->getKnownMinValue() * 4, EC->isScalable());
-  }
-#endif // SIFIVE_CUSTOMIZATION
   const VFShape Shape({*EC, Parameters});
   return VFInfo({Shape, std::string(ScalarName), std::string(VectorName), ISA});
 }
