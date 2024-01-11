@@ -2111,16 +2111,9 @@ void Clang::AddRISCVTargetArgs(const ArgList &Args,
 #else
     auto ISAInfo = llvm::RISCVISAInfo::parseArchString(
         Arch, /*EnableExperimentalExtensions*/ true);
-<<<<<<< HEAD
 #endif
-    if (!ISAInfo) {
-      // Ignore parsing error.
-      consumeError(ISAInfo.takeError());
-    } else {
-=======
     // Ignore parsing error.
     if (!errorToBool(ISAInfo.takeError()))
->>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
       MinVLen = (*ISAInfo)->getMinVLen();
 
     // If the value is "zvl", use MinVLen from march. Otherwise, try to parse

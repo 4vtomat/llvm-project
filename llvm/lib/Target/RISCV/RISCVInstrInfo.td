@@ -2233,14 +2233,6 @@ include "RISCVInstrInfoZk.td"
 include "RISCVInstrInfoV.td"
 include "RISCVInstrInfoZvk.td"
 
-<<<<<<< HEAD
-// Integer
-include "RISCVInstrInfoZicbo.td"
-include "RISCVInstrInfoCompactPseudos.td" // SIFIVE
-include "RISCVInstrInfoZicond.td"
-
-=======
->>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
 // Compressed
 include "RISCVInstrInfoC.td"
 include "RISCVInstrInfoZc.td"
@@ -2249,6 +2241,7 @@ include "RISCVInstrInfoZcmop.td"
 // Integer
 include "RISCVInstrInfoZimop.td"
 include "RISCVInstrInfoZicbo.td"
+include "RISCVInstrInfoCompactPseudos.td" // SIFIVE
 include "RISCVInstrInfoZicond.td"
 include "RISCVInstrInfoZicfiss.td"
 

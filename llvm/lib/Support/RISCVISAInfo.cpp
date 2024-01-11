@@ -129,6 +129,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xventanacondops", RISCVExtensionVersion{1, 0}},
     {"za64rs", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zawrs", RISCVExtensionVersion{1, 0}},
+
     {"zba", RISCVExtensionVersion{1, 0}},
     {"zbb", RISCVExtensionVersion{1, 0}},
     {"zbc", RISCVExtensionVersion{1, 0}},
@@ -249,12 +250,9 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"zicfiss", RISCVExtensionVersion{0, 4}},
 
     {"zicond", RISCVExtensionVersion{1, 0}},
-<<<<<<< HEAD
-=======
 
     {"zimop", RISCVExtensionVersion{0, 1}},
 
->>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
     {"ztso", RISCVExtensionVersion{0, 1}},
 
     {"zvfbfmin", RISCVExtensionVersion{0, 8}},

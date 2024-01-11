@@ -121,19 +121,11 @@ multiclass RVVVQMACCDODBuiltinSet<list<list<string>> suffixes_prototypes> {
 }
 
 multiclass RVVVQMACCQOQBuiltinSet<list<list<string>> suffixes_prototypes> {
-<<<<<<< HEAD
-  let OverloadedName = NAME,
-      Name = NAME,
-      HasMasked = false,
-      Log2LMUL = [-1, 0, 1, 2] in
-    defm NAME : RVVOutOp1Op2BuiltinSet<NAME, "s", suffixes_prototypes>;
-=======
    let OverloadedName = NAME,
        Name = NAME,
        HasMasked = false,
        Log2LMUL = [-1, 0, 1, 2] in
      defm NAME : RVVOutOp1Op2BuiltinSet<NAME, "s", suffixes_prototypes>;
->>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
 }
 
 multiclass RVVVFNRCLIPBuiltinSet<string suffix, string prototype, string type_range> {
@@ -154,17 +146,10 @@ let UnMaskedPolicyScheme = HasPolicyOperand in
 
 let UnMaskedPolicyScheme = HasPolicyOperand in
   let RequiredFeatures = ["Xsfvqmaccqoq"] in {
-<<<<<<< HEAD
     defm sf_vqmaccu_4x8x4 : RVVVQMACCQOQBuiltinSet<[["", "w", "ww(FixedSEW:8)SUv(FixedSEW:8)Uw"]]>;
     defm sf_vqmacc_4x8x4 : RVVVQMACCQOQBuiltinSet<[["", "w", "ww(FixedSEW:8)Sv(FixedSEW:8)w"]]>;
     defm sf_vqmaccus_4x8x4 : RVVVQMACCQOQBuiltinSet<[["", "w", "ww(FixedSEW:8)SUv(FixedSEW:8)w"]]>;
     defm sf_vqmaccsu_4x8x4 : RVVVQMACCQOQBuiltinSet<[["", "w", "ww(FixedSEW:8)Sv(FixedSEW:8)Uw"]]>;
-=======
-    defm sf_vqmaccu_4x8x4 : RVVVQMACCQOQBuiltinSet<[["", "w", "ww(FixedSEW:8)SUv(FixedSEW:8)Uv"]]>;
-    defm sf_vqmacc_4x8x4 : RVVVQMACCQOQBuiltinSet<[["", "w", "ww(FixedSEW:8)Sv(FixedSEW:8)v"]]>;
-    defm sf_vqmaccus_4x8x4 : RVVVQMACCQOQBuiltinSet<[["", "w", "ww(FixedSEW:8)SUv(FixedSEW:8)v"]]>;
-    defm sf_vqmaccsu_4x8x4 : RVVVQMACCQOQBuiltinSet<[["", "w", "ww(FixedSEW:8)Sv(FixedSEW:8)Uv"]]>;
->>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
   }
 
 let UnMaskedPolicyScheme = HasPolicyOperand in

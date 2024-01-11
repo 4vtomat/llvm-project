@@ -1035,7 +1035,6 @@ def HasVendorXSfvcp : Predicate<"Subtarget->hasVendorXSfvcp()">,
                                 AssemblerPredicate<(all_of FeatureVendorXSfvcp),
                                 "'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions)">;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def FeatureVendorXSfvfhbfmin
     : SubtargetFeature<"xsfvfhbfmin", "HasVendorXSfvfhbfmin", "true",
@@ -1053,15 +1052,7 @@ def HasVendorXSfvqdotq : Predicate<"Subtarget->hasVendorXSfvqdotq()">,
                          AssemblerPredicate<(all_of FeatureVendorXSfvqdotq),
                          "'Xsfvqdotq' (SiFive Vector Quad-Widening 4D Dot Product Instructions)">;
 #endif // SIFIVE_CUSTOMIZATION
-def FeatureVendorXSfcie
-    : SubtargetFeature<"xsfcie", "HasVendorXSfcie", "true",
-                       "'XSfcie' (SiFive Custom Instruction Extension SCIE.)">;
-def HasVendorXSfcie : Predicate<"Subtarget->hasVendorXSfcie()">,
-                        AssemblerPredicate<(all_of FeatureVendorXSfcie),
-                        "'XSfcie' (SiFive Custom Instruction Extension SCIE.)">;
 
-=======
->>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
 def FeatureVendorXSfvqmaccdod
     : SubtargetFeature<"xsfvqmaccdod", "HasVendorXSfvqmaccdod", "true",
                        "'XSfvqmaccdod' (SiFive Int8 Matrix Multiplication Instructions (2-by-8 and 8-by-2))",

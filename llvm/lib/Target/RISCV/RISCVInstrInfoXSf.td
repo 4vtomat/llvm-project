@@ -434,16 +434,9 @@ multiclass VPseudoSiFiveVQMACCDOD<string Constraint = ""> {
 }
 
 multiclass VPseudoSiFiveVQMACCQOQ<string Constraint = ""> {
-<<<<<<< HEAD
-  foreach i = 0-3 in
-    let VLMul = MxListVF4[i].value in
-    defm NAME : VPseudoSiFiveVMACC<MxListVF4[i].MX, MxListVF8[i].vrclass,
-                                   MxListVF4[i].vrclass, Constraint>;
-=======
   foreach m = [V_MF2, V_M1, V_M2, V_M4] in
     let VLMul = m.value in
     defm NAME : VPseudoSiFiveVMACC<m.MX, m.wvrclass, m.vrclass, Constraint>;
->>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
 }
 
 multiclass VPseudoSiFiveVFWMACC<string Constraint = ""> {
@@ -748,7 +741,6 @@ let Predicates = [HasVendorXSfvqmaccqoq] in {
   defm : VPatVQMACCQOQ<"vqmacc_4x8x4", "VQMACC", "4x8x4">;
   defm : VPatVQMACCQOQ<"vqmaccus_4x8x4", "VQMACCUS", "4x8x4">;
   defm : VPatVQMACCQOQ<"vqmaccsu_4x8x4", "VQMACCSU", "4x8x4">;
-<<<<<<< HEAD
 }
 
 #ifdef SIFIVE_CUSTOMIZATION
@@ -843,8 +835,6 @@ def CFLUSH_I_L1
   let rd = 0;
   let rs1 = 0;
   let rs2 = 0b00001;
-=======
->>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
 }
 } // hasNoSchedulingInfo = 1, ...
 #endif // SIFIVE_CUSTOMIZATION

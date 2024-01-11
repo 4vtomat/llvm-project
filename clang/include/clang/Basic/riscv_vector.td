@@ -2954,8 +2954,8 @@ let HasMasked = false, HasVL = false, IRName = "" in {
     // reinterpret for bf16 <-> uint16
     // Reinterpret between different type under the same SEW and LMUL
     let RequiredFeatures = ["HasBfloat16"] in {
-      def vreinterpret_bf16_u : RVVBuiltin<"Uvv", "vUv", "b", "v">;
-      def vreinterpret_u_bf16 : RVVBuiltin<"vUv", "Uvv", "b", "Uv">;
+      def vreinterpret_bf16_u : RVVBuiltin<"Uvv", "vUv", "y", "v">;
+      def vreinterpret_u_bf16 : RVVBuiltin<"vUv", "Uvv", "y", "Uv">;
     }
 #endif // SIFIVE_CUSTOMIZATION
   }
@@ -3260,8 +3260,8 @@ let IntrinsicTypes = [-1] in
 
 let RequiredFeatures = ["Xsfvfhbfmin"], UnMaskedPolicyScheme = HasPassthruOperand,
     Log2LMUL = [-3, -2, -1, 0, 1, 2] in {
-  def sf_vfwcvt_f_bf16_v : RVVConvBuiltin<"w", "wv", "b", "sf_vfwcvt_f">;
-  def sf_vfncvt_bf16_f_w : RVVConvBuiltin<"v", "vw", "b", "sf_vfncvt_bf16">;
+  def sf_vfwcvt_f_bf16_v : RVVConvBuiltin<"w", "wv", "y", "sf_vfwcvt_f">;
+  def sf_vfncvt_bf16_f_w : RVVConvBuiltin<"v", "vw", "y", "sf_vfncvt_bf16">;
 }
 
 let HeaderCode = [{

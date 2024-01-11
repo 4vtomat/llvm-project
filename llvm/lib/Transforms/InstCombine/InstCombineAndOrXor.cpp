@@ -3881,12 +3881,6 @@ Instruction *InstCombinerImpl::visitOr(BinaryOperator &I) {
     }
   }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (Instruction *NewI = foldNeutralVPReduce(I))
-    return NewI;
-#endif
-=======
   // (X & C1) | C2 -> X & (C1 | C2) iff (X & C2) == C2
   if (match(Op0, m_OneUse(m_And(m_Value(X), m_APInt(C1)))) &&
       match(Op1, m_APInt(C2))) {
@@ -3894,7 +3888,11 @@ Instruction *InstCombinerImpl::visitOr(BinaryOperator &I) {
     if ((KnownX.One & *C2) == *C2)
       return BinaryOperator::CreateAnd(X, ConstantInt::get(Ty, *C1 | *C2));
   }
->>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
+
+#if SIFIVE_CUSTOMIZATION
+  if (Instruction *NewI = foldNeutralVPReduce(I))
+    return NewI;
+#endif
 
   return nullptr;
 }

@@ -2528,7 +2528,6 @@ defm : VPatBinaryVL_VV_VX_VI<riscv_uaddsat_vl, "PseudoVSADDU">;
 defm : VPatBinaryVL_VV_VX<riscv_ssubsat_vl, "PseudoVSSUB">;
 defm : VPatBinaryVL_VV_VX<riscv_usubsat_vl, "PseudoVSSUBU">;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 // 12.2 Vector Single-Width Averaging Add and Subtract
 defm : VPatBinaryRM_VL_VV_VX<riscv_vaadd_vl, "PseudoVAADD">;
@@ -2547,7 +2546,7 @@ defm : VPatBinaryRM_VL_VV_VX_VI<riscv_vssra_vl, "PseudoVSSRA", uimm5>;
 defm : VPatBinaryRM_NVL_WV_WX_WI<riscv_vnclip_vl, "PseudoVNCLIP">;
 defm : VPatBinaryRM_NVL_WV_WX_WI<riscv_vnclipu_vl, "PseudoVNCLIPU">;
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 // 12.5. Vector Narrowing Fixed-Point Clip Instructions
 class VPatTruncSatClipMaxMinBase<string inst,
                                  VTypeInfo vti,
@@ -2605,7 +2604,6 @@ multiclass VPatTruncSatClip<VTypeInfo vti, VTypeInfo wti> {
 
 foreach vtiToWti = AllWidenableIntVectors in
   defm : VPatTruncSatClip<vtiToWti.Vti, vtiToWti.Wti>;
->>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
 
 // 13. Vector Floating-Point Instructions
 

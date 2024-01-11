@@ -6228,14 +6228,11 @@ bool Sema::CheckWebAssemblyBuiltinFunctionCall(const TargetInfo &TI,
 void Sema::checkRVVTypeSupport(QualType Ty, SourceLocation Loc, Decl *D) {
   const TargetInfo &TI = Context.getTargetInfo();
 
-<<<<<<< HEAD
-=======
   ASTContext::BuiltinVectorTypeInfo Info =
       Context.getBuiltinVectorTypeInfo(Ty->castAs<BuiltinType>());
   unsigned EltSize = Context.getTypeSize(Info.ElementType);
   unsigned MinElts = Info.EC.getKnownMinValue();
 
->>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
   // (ELEN, LMUL) pairs of (8, mf8), (16, mf4), (32, mf2), (64, m1) requires at
   // least zve64x
   if (((EltSize == 64 && Info.ElementType->isIntegerType()) || MinElts == 1) &&
@@ -6245,26 +6242,16 @@ void Sema::checkRVVTypeSupport(QualType Ty, SourceLocation Loc, Decl *D) {
            !TI.hasFeature("zvfhmin"))
     Diag(Loc, diag::err_riscv_type_requires_extension, D)
         << Ty << "zvfh or zvfhmin";
-<<<<<<< HEAD
-  // Check if enabled zvfbfmin for BFloat16
-  if (Ty->isRVVType(/* Bitwidth */ 16, /* IsFloat */ false,
-                    /* IsBFloat */ true) &&
+  else if (Info.ElementType->isBFloat16Type() &&
 #if SIFIVE_CUSTOMIZATION
-      !TI.hasFeature("experimental-zvfbfmin") &&
-      !TI.hasFeature("xsfvfhbfmin") &&
-      !TI.hasFeature("xsfvfwmaccqqq"))
+           !TI.hasFeature("experimental-zvfbfmin") &&
+           !TI.hasFeature("xsfvfhbfmin") &&
+           !TI.hasFeature("xsfvfwmaccqqq"))
     Diag(Loc, diag::err_riscv_type_requires_extension, D) << Ty
         << "zvfbfmin' or 'xsfvfhbfmin' or 'xsfvfwmaccqqq";
 #endif
-  if (Ty->isRVVType(/* Bitwidth */ 32, /* IsFloat */ true) &&
-      !TI.hasFeature("zve32f"))
-=======
-  else if (Info.ElementType->isBFloat16Type() &&
-           !TI.hasFeature("experimental-zvfbfmin"))
-    Diag(Loc, diag::err_riscv_type_requires_extension, D) << Ty << "zvfbfmin";
   else if (Info.ElementType->isSpecificBuiltinType(BuiltinType::Float) &&
            !TI.hasFeature("zve32f"))
->>>>>>> b51f8f13edf3f7ab6407d2b7b46285ea675730b6
     Diag(Loc, diag::err_riscv_type_requires_extension, D) << Ty << "zve32f";
   else if (Info.ElementType->isSpecificBuiltinType(BuiltinType::Double) &&
            !TI.hasFeature("zve64d"))
