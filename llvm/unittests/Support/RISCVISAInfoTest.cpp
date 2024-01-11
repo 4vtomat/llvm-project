@@ -702,18 +702,25 @@ R"(All available -march extensions for RISC-V
     zvfh                1.0
     zvfhmin             1.0
     zvkb                1.0
+    zvkb                0.1
     zvkg                1.0
+    zvkg                0.1
     zvkn                1.0
     zvknc               1.0
     zvkned              1.0
     zvkng               1.0
     zvknha              1.0
+    zvknha              0.1
     zvknhb              1.0
+    zvknhb              0.1
+    zvkns               0.1
     zvks                1.0
     zvksc               1.0
     zvksed              1.0
+    zvksed              0.1
     zvksg               1.0
     zvksh               1.0
+    zvksh               0.1
     zvkt                1.0
     zvl1024b            1.0
     zvl128b             1.0
@@ -795,13 +802,6 @@ Experimental extensions
     ztso                0.1
     zvfbfmin            0.8
     zvfbfwma            0.8
-    zvkb                0.1
-    zvkg                0.1
-    zvknha              0.1
-    zvknhb              0.1
-    zvkns               0.1
-    zvksed              0.1
-    zvksh               0.1
     smwg                0.3
     smwgd               0.3
     sswg                0.3

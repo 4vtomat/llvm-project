@@ -197,18 +197,25 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
 
     // vector crypto
     {"zvkb", RISCVExtensionVersion{1, 0}},
+    {"zvkb", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvkg", RISCVExtensionVersion{1, 0}},
+    {"zvkg", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvkn", RISCVExtensionVersion{1, 0}},
     {"zvknc", RISCVExtensionVersion{1, 0}},
     {"zvkned", RISCVExtensionVersion{1, 0}},
     {"zvkng", RISCVExtensionVersion{1, 0}},
     {"zvknha", RISCVExtensionVersion{1, 0}},
+    {"zvknha", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvknhb", RISCVExtensionVersion{1, 0}},
+    {"zvknhb", RISCVExtensionVersion{0, 1}}, // SIFIVE
+    {"zvkns", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvks", RISCVExtensionVersion{1, 0}},
     {"zvksc", RISCVExtensionVersion{1, 0}},
     {"zvksed", RISCVExtensionVersion{1, 0}},
+    {"zvksed", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvksg", RISCVExtensionVersion{1, 0}},
     {"zvksh", RISCVExtensionVersion{1, 0}},
+    {"zvksh", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"zvkt", RISCVExtensionVersion{1, 0}},
 
     {"zvl1024b", RISCVExtensionVersion{1, 0}},
@@ -243,17 +250,6 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
 
     {"zvfbfmin", RISCVExtensionVersion{0, 8}},
     {"zvfbfwma", RISCVExtensionVersion{0, 8}},
-
-    // vector crypto
-#if SIFIVE_CUSTOMIZATION
-    {"zvkb", RISCVExtensionVersion{0, 1}},
-    {"zvkg", RISCVExtensionVersion{0, 1}},
-    {"zvknha", RISCVExtensionVersion{0, 1}},
-    {"zvknhb", RISCVExtensionVersion{0, 1}},
-    {"zvkns", RISCVExtensionVersion{0, 1}},
-    {"zvksed", RISCVExtensionVersion{0, 1}},
-    {"zvksh", RISCVExtensionVersion{0, 1}},
-#endif // SIFIVE_CUSTOMIZATION
 };
 
 static void verifyTables() {
@@ -470,14 +466,14 @@ bool RISCVISAInfo::isSupportedExtensionFeature(StringRef Ext) {
 }
 
 bool RISCVISAInfo::isSupportedExtension(StringRef Ext) {
+  verifyTables();
+
 #if SIFIVE_CUSTOMIZATION
   if (auto ExtInfo = tryDecodeExtWithVersion(Ext))
     return isSupportedExtension(ExtInfo->first,
                                 ExtInfo->second.MajorVersion,
                                 ExtInfo->second.MinorVersion);
 #endif // SIFIVE_CUSTOMIZATION
-
-  verifyTables();
 
   for (auto ExtInfo : {ArrayRef(SupportedExtensions),
                        ArrayRef(SupportedExperimentalExtensions)}) {

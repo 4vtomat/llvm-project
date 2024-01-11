@@ -1,11 +1,11 @@
-# RUN: llvm-mc -triple=riscv32 -show-encoding --mattr=+zve32x --mattr=+experimental-zvkns %s \
+# RUN: llvm-mc -triple=riscv32 -show-encoding --mattr=+zve32x --mattr=+zvkns %s \
 # RUN:        | FileCheck %s --check-prefixes=CHECK-ENCODING,CHECK-INST
 # RUN: not llvm-mc -triple=riscv32 -show-encoding %s 2>&1 \
 # RUN:        | FileCheck %s --check-prefix=CHECK-ERROR
-# RUN: llvm-mc -triple=riscv32 -filetype=obj --mattr=+zve32x --mattr=+experimental-zvkns %s \
-# RUN:        | llvm-objdump -d --mattr=+zve32x --mattr=+experimental-zvkns --no-print-imm-hex - \
+# RUN: llvm-mc -triple=riscv32 -filetype=obj --mattr=+zve32x --mattr=+zvkns %s \
+# RUN:        | llvm-objdump -d --mattr=+zve32x --mattr=+zvkns --no-print-imm-hex - \
 # RUN:        | FileCheck %s --check-prefix=CHECK-INST
-# RUN: llvm-mc -triple=riscv32 -filetype=obj --mattr=+zve32x --mattr=+experimental-zvkns %s \
+# RUN: llvm-mc -triple=riscv32 -filetype=obj --mattr=+zve32x --mattr=+zvkns %s \
 # RUN:        | llvm-objdump -d - | FileCheck %s --check-prefix=CHECK-UNKNOWN
 
 vaesdf.vv v10, v9
