@@ -663,7 +663,6 @@ R"(All available -march extensions for RISC-V
     za64rs              1.0
     zawrs               1.0
     zfa                 1.0
-    zfa                 0.2
     zfh                 1.0
     zfhmin              1.0
     zfinx               1.0
