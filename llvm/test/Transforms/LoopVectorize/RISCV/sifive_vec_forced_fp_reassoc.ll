@@ -1,5 +1,6 @@
 ; RUN: opt -S -mtriple=riscv64 -mattr=+d,+v -riscv-v-vector-bits-min=512 -passes=loop-vectorize -debug-only=loop-vectorize %s -o - 2>&1 | FileCheck %s --check-prefix=CHECK --check-prefix=CHECK-ORDERED
 ; RUN: opt -S -mtriple=riscv64 -mattr=+d,+v -riscv-v-vector-bits-min=512 -passes=loop-vectorize -force-ordered-reductions=false -debug-only=loop-vectorize %s -o - 2>&1 | FileCheck %s --check-prefix=CHECK --check-prefix=CHECK-UNORDERED
+; REQUIRES: asserts
 
 ;
 ; float reassociate_on_vec_forced(const int32_t n, float *a)
