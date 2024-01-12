@@ -529,10 +529,10 @@ define float @multiple_fp_rdx(float* %A, i64 %N) {
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP11:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP6:%.*]] = call fast float @llvm.vector.reduce.fadd.v4f32(float -0.000000e+00, <4 x float> [[TMP3]])
-; CHECK-NEXT:    [[TMP7:%.*]] = fadd fast float 1.000000e+01, [[TMP6]]
-; CHECK-NEXT:    [[TMP8:%.*]] = call fast float @llvm.vector.reduce.fmul.v4f32(float 1.000000e+00, <4 x float> [[TMP4]])
-; CHECK-NEXT:    [[TMP9:%.*]] = fmul fast float 1.500000e+01, [[TMP8]]
+; CHECK-NEXT:    [[TMP6:%.*]] = call fast float @llvm.vector.reduce.fmul.v4f32(float 1.000000e+00, <4 x float> [[TMP4]])
+; CHECK-NEXT:    [[TMP7:%.*]] = fmul fast float 1.500000e+01, [[TMP6]]
+; CHECK-NEXT:    [[TMP8:%.*]] = call fast float @llvm.vector.reduce.fadd.v4f32(float -0.000000e+00, <4 x float> [[TMP3]])
+; CHECK-NEXT:    [[TMP9:%.*]] = fadd fast float 1.000000e+01, [[TMP8]]
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], label [[FOR_END:%.*]], label [[VEC_EPILOG_ITER_CHECK:%.*]]
 ; CHECK:       vec.epilog.iter.check:
@@ -540,8 +540,8 @@ define float @multiple_fp_rdx(float* %A, i64 %N) {
 ; CHECK-NEXT:    [[MIN_EPILOG_ITERS_CHECK:%.*]] = icmp ult i64 [[N_VEC_REMAINING]], 4
 ; CHECK-NEXT:    br i1 [[MIN_EPILOG_ITERS_CHECK]], label [[VEC_EPILOG_SCALAR_PH]], label [[VEC_EPILOG_PH]]
 ; CHECK:       vec.epilog.ph:
-; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ 1.500000e+01, [[VECTOR_MAIN_LOOP_ITER_CHECK]] ], [ [[TMP9]], [[VEC_EPILOG_ITER_CHECK]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX3:%.*]] = phi float [ 1.000000e+01, [[VECTOR_MAIN_LOOP_ITER_CHECK]] ], [ [[TMP7]], [[VEC_EPILOG_ITER_CHECK]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ 1.500000e+01, [[VECTOR_MAIN_LOOP_ITER_CHECK]] ], [ [[TMP7]], [[VEC_EPILOG_ITER_CHECK]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX3:%.*]] = phi float [ 1.000000e+01, [[VECTOR_MAIN_LOOP_ITER_CHECK]] ], [ [[TMP9]], [[VEC_EPILOG_ITER_CHECK]] ]
 ; CHECK-NEXT:    [[VEC_EPILOG_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[VEC_EPILOG_ITER_CHECK]] ], [ 0, [[VECTOR_MAIN_LOOP_ITER_CHECK]] ]
 ; CHECK-NEXT:    [[N_MOD_VF4:%.*]] = urem i64 [[N]], 4
 ; CHECK-NEXT:    [[N_VEC5:%.*]] = sub i64 [[N]], [[N_MOD_VF4]]
@@ -560,16 +560,16 @@ define float @multiple_fp_rdx(float* %A, i64 %N) {
 ; CHECK-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_NEXT11]], [[N_VEC5]]
 ; CHECK-NEXT:    br i1 [[TMP15]], label [[VEC_EPILOG_MIDDLE_BLOCK:%.*]], label [[VEC_EPILOG_VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; CHECK:       vec.epilog.middle.block:
-; CHECK-NEXT:    [[TMP16:%.*]] = call fast float @llvm.vector.reduce.fadd.v4f32(float -0.000000e+00, <4 x float> [[TMP13]])
-; CHECK-NEXT:    [[TMP17:%.*]] = fadd fast float [[BC_MERGE_RDX3]], [[TMP16]]
-; CHECK-NEXT:    [[TMP18:%.*]] = call fast float @llvm.vector.reduce.fmul.v4f32(float 1.000000e+00, <4 x float> [[TMP14]])
-; CHECK-NEXT:    [[TMP19:%.*]] = fmul fast float [[BC_MERGE_RDX]], [[TMP18]]
+; CHECK-NEXT:    [[TMP16:%.*]] = call fast float @llvm.vector.reduce.fmul.v4f32(float 1.000000e+00, <4 x float> [[TMP14]])
+; CHECK-NEXT:    [[TMP17:%.*]] = fmul fast float [[BC_MERGE_RDX]], [[TMP16]]
+; CHECK-NEXT:    [[TMP18:%.*]] = call fast float @llvm.vector.reduce.fadd.v4f32(float -0.000000e+00, <4 x float> [[TMP13]])
+; CHECK-NEXT:    [[TMP19:%.*]] = fadd fast float [[BC_MERGE_RDX3]], [[TMP18]]
 ; CHECK-NEXT:    [[CMP_N6:%.*]] = icmp eq i64 [[N]], [[N_VEC5]]
 ; CHECK-NEXT:    br i1 [[CMP_N6]], label [[FOR_END]], label [[VEC_EPILOG_SCALAR_PH]]
 ; CHECK:       vec.epilog.scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC5]], [[VEC_EPILOG_MIDDLE_BLOCK]] ], [ [[N_VEC]], [[VEC_EPILOG_ITER_CHECK]] ], [ 0, [[ITER_CHECK:%.*]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX12:%.*]] = phi float [ 1.500000e+01, [[ITER_CHECK]] ], [ [[TMP9]], [[VEC_EPILOG_ITER_CHECK]] ], [ [[TMP19]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX13:%.*]] = phi float [ 1.000000e+01, [[ITER_CHECK]] ], [ [[TMP7]], [[VEC_EPILOG_ITER_CHECK]] ], [ [[TMP17]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX12:%.*]] = phi float [ 1.500000e+01, [[ITER_CHECK]] ], [ [[TMP7]], [[VEC_EPILOG_ITER_CHECK]] ], [ [[TMP17]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX13:%.*]] = phi float [ 1.000000e+01, [[ITER_CHECK]] ], [ [[TMP9]], [[VEC_EPILOG_ITER_CHECK]] ], [ [[TMP19]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[VEC_EPILOG_SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
@@ -583,8 +583,8 @@ define float @multiple_fp_rdx(float* %A, i64 %N) {
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP13:![0-9]+]]
 ; CHECK:       for.end:
-; CHECK-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ], [ [[TMP7]], [[MIDDLE_BLOCK]] ], [ [[TMP17]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
-; CHECK-NEXT:    [[MUL_LCSSA:%.*]] = phi float [ [[MUL]], [[FOR_BODY]] ], [ [[TMP9]], [[MIDDLE_BLOCK]] ], [ [[TMP19]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ], [ [[TMP9]], [[MIDDLE_BLOCK]] ], [ [[TMP19]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[MUL_LCSSA:%.*]] = phi float [ [[MUL]], [[FOR_BODY]] ], [ [[TMP7]], [[MIDDLE_BLOCK]] ], [ [[TMP17]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    [[DIV:%.*]] = fdiv float [[MUL_LCSSA]], [[ADD_LCSSA]]
 ; CHECK-NEXT:    ret float [[DIV]]
 ;
@@ -613,8 +613,8 @@ define float @multiple_fp_rdx(float* %A, i64 %N) {
 ; CHECK-NO-POSTSV-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-NO-POSTSV-NEXT:    br i1 [[TMP5]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP11:![0-9]+]]
 ; CHECK-NO-POSTSV:       middle.block:
-; CHECK-NO-POSTSV-NEXT:    [[TMP6:%.*]] = call fast float @llvm.vector.reduce.fadd.v4f32(float -0.000000e+00, <4 x float> [[TMP3]])
-; CHECK-NO-POSTSV-NEXT:    [[TMP7:%.*]] = call fast float @llvm.vector.reduce.fmul.v4f32(float 1.000000e+00, <4 x float> [[TMP4]])
+; CHECK-NO-POSTSV-NEXT:    [[TMP6:%.*]] = call fast float @llvm.vector.reduce.fmul.v4f32(float 1.000000e+00, <4 x float> [[TMP4]])
+; CHECK-NO-POSTSV-NEXT:    [[TMP7:%.*]] = call fast float @llvm.vector.reduce.fadd.v4f32(float -0.000000e+00, <4 x float> [[TMP3]])
 ; CHECK-NO-POSTSV-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N]], [[N_VEC]]
 ; CHECK-NO-POSTSV-NEXT:    br i1 [[CMP_N]], label [[FOR_END:%.*]], label [[VEC_EPILOG_ITER_CHECK:%.*]]
 ; CHECK-NO-POSTSV:       vec.epilog.iter.check:
@@ -622,8 +622,8 @@ define float @multiple_fp_rdx(float* %A, i64 %N) {
 ; CHECK-NO-POSTSV-NEXT:    [[MIN_EPILOG_ITERS_CHECK:%.*]] = icmp ult i64 [[N_VEC_REMAINING]], 4
 ; CHECK-NO-POSTSV-NEXT:    br i1 [[MIN_EPILOG_ITERS_CHECK]], label [[VEC_EPILOG_SCALAR_PH]], label [[VEC_EPILOG_PH]]
 ; CHECK-NO-POSTSV:       vec.epilog.ph:
-; CHECK-NO-POSTSV-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ 1.500000e+01, [[VECTOR_MAIN_LOOP_ITER_CHECK]] ], [ [[TMP7]], [[VEC_EPILOG_ITER_CHECK]] ]
-; CHECK-NO-POSTSV-NEXT:    [[BC_MERGE_RDX3:%.*]] = phi float [ 1.000000e+01, [[VECTOR_MAIN_LOOP_ITER_CHECK]] ], [ [[TMP6]], [[VEC_EPILOG_ITER_CHECK]] ]
+; CHECK-NO-POSTSV-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ 1.500000e+01, [[VECTOR_MAIN_LOOP_ITER_CHECK]] ], [ [[TMP6]], [[VEC_EPILOG_ITER_CHECK]] ]
+; CHECK-NO-POSTSV-NEXT:    [[BC_MERGE_RDX3:%.*]] = phi float [ 1.000000e+01, [[VECTOR_MAIN_LOOP_ITER_CHECK]] ], [ [[TMP7]], [[VEC_EPILOG_ITER_CHECK]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[VEC_EPILOG_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[VEC_EPILOG_ITER_CHECK]] ], [ 0, [[VECTOR_MAIN_LOOP_ITER_CHECK]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[N_MOD_VF4:%.*]] = urem i64 [[N]], 4
 ; CHECK-NO-POSTSV-NEXT:    [[N_VEC5:%.*]] = sub i64 [[N]], [[N_MOD_VF4]]
@@ -644,14 +644,14 @@ define float @multiple_fp_rdx(float* %A, i64 %N) {
 ; CHECK-NO-POSTSV-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_NEXT11]], [[N_VEC5]]
 ; CHECK-NO-POSTSV-NEXT:    br i1 [[TMP15]], label [[VEC_EPILOG_MIDDLE_BLOCK:%.*]], label [[VEC_EPILOG_VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; CHECK-NO-POSTSV:       vec.epilog.middle.block:
-; CHECK-NO-POSTSV-NEXT:    [[TMP16:%.*]] = call fast float @llvm.vector.reduce.fadd.v4f32(float -0.000000e+00, <4 x float> [[TMP13]])
-; CHECK-NO-POSTSV-NEXT:    [[TMP17:%.*]] = call fast float @llvm.vector.reduce.fmul.v4f32(float 1.000000e+00, <4 x float> [[TMP14]])
+; CHECK-NO-POSTSV-NEXT:    [[TMP16:%.*]] = call fast float @llvm.vector.reduce.fmul.v4f32(float 1.000000e+00, <4 x float> [[TMP14]])
+; CHECK-NO-POSTSV-NEXT:    [[TMP17:%.*]] = call fast float @llvm.vector.reduce.fadd.v4f32(float -0.000000e+00, <4 x float> [[TMP13]])
 ; CHECK-NO-POSTSV-NEXT:    [[CMP_N6:%.*]] = icmp eq i64 [[N]], [[N_VEC5]]
 ; CHECK-NO-POSTSV-NEXT:    br i1 [[CMP_N6]], label [[FOR_END]], label [[VEC_EPILOG_SCALAR_PH]]
 ; CHECK-NO-POSTSV:       vec.epilog.scalar.ph:
 ; CHECK-NO-POSTSV-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC5]], [[VEC_EPILOG_MIDDLE_BLOCK]] ], [ [[N_VEC]], [[VEC_EPILOG_ITER_CHECK]] ], [ 0, [[ITER_CHECK:%.*]] ]
-; CHECK-NO-POSTSV-NEXT:    [[BC_MERGE_RDX12:%.*]] = phi float [ 1.500000e+01, [[ITER_CHECK]] ], [ [[TMP7]], [[VEC_EPILOG_ITER_CHECK]] ], [ [[TMP17]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
-; CHECK-NO-POSTSV-NEXT:    [[BC_MERGE_RDX13:%.*]] = phi float [ 1.000000e+01, [[ITER_CHECK]] ], [ [[TMP6]], [[VEC_EPILOG_ITER_CHECK]] ], [ [[TMP16]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
+; CHECK-NO-POSTSV-NEXT:    [[BC_MERGE_RDX12:%.*]] = phi float [ 1.500000e+01, [[ITER_CHECK]] ], [ [[TMP6]], [[VEC_EPILOG_ITER_CHECK]] ], [ [[TMP16]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
+; CHECK-NO-POSTSV-NEXT:    [[BC_MERGE_RDX13:%.*]] = phi float [ 1.000000e+01, [[ITER_CHECK]] ], [ [[TMP7]], [[VEC_EPILOG_ITER_CHECK]] ], [ [[TMP17]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
 ; CHECK-NO-POSTSV-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-NO-POSTSV:       for.body:
 ; CHECK-NO-POSTSV-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[VEC_EPILOG_SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
@@ -665,8 +665,8 @@ define float @multiple_fp_rdx(float* %A, i64 %N) {
 ; CHECK-NO-POSTSV-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N]]
 ; CHECK-NO-POSTSV-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP13:![0-9]+]]
 ; CHECK-NO-POSTSV:       for.end:
-; CHECK-NO-POSTSV-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ], [ [[TMP6]], [[MIDDLE_BLOCK]] ], [ [[TMP16]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
-; CHECK-NO-POSTSV-NEXT:    [[MUL_LCSSA:%.*]] = phi float [ [[MUL]], [[FOR_BODY]] ], [ [[TMP7]], [[MIDDLE_BLOCK]] ], [ [[TMP17]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
+; CHECK-NO-POSTSV-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ], [ [[TMP7]], [[MIDDLE_BLOCK]] ], [ [[TMP17]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
+; CHECK-NO-POSTSV-NEXT:    [[MUL_LCSSA:%.*]] = phi float [ [[MUL]], [[FOR_BODY]] ], [ [[TMP6]], [[MIDDLE_BLOCK]] ], [ [[TMP16]], [[VEC_EPILOG_MIDDLE_BLOCK]] ]
 ; CHECK-NO-POSTSV-NEXT:    [[DIV:%.*]] = fdiv float [[MUL_LCSSA]], [[ADD_LCSSA]]
 ; CHECK-NO-POSTSV-NEXT:    ret float [[DIV]]
 ;

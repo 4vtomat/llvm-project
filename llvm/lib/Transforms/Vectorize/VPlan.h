@@ -1245,9 +1245,9 @@ public:
     // Increment the canonical IV separately for each unrolled part.
     CanonicalIVIncrementForPart,
     BranchOnCount,
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     BranchOnCond,
+    ComputeReductionResult,
+#if SIFIVE_CUSTOMIZATION
     ExitingCond,
     CSAInitMask,
     CSAInitData,
@@ -1256,13 +1256,7 @@ public:
     CSAVLPhi,
     CSAVLSel,
     CSAAnyActive,
-#else
-    BranchOnCond
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    BranchOnCond,
-    ComputeReductionResult,
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
   };
 
 private:

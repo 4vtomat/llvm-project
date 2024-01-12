@@ -13,6 +13,9 @@
 
 #include "VPlan.h"
 #include "VPlanAnalysis.h"
+#if SIFIVE_CUSTOMIZATION
+#include "SiFive_VPlanPredicatedInstructions.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/Twine.h"
@@ -21,6 +24,7 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Instructions.h"
+#include "llvm/IR/IntrinsicsRISCV.h" // SIFIVE
 #include "llvm/IR/Type.h"
 #include "llvm/IR/Value.h"
 #include "llvm/Support/Casting.h"
@@ -28,21 +32,10 @@
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/Utils/BasicBlockUtils.h"
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-#include "llvm/IR/IntrinsicsRISCV.h"
-#include "llvm/Transforms/Utils/InjectTLIMappings.h"
+#include "llvm/Transforms/Utils/InjectTLIMappings.h" // SIFIVE
 #include "llvm/Transforms/Utils/LoopUtils.h"
-#include "llvm/IR/IntrinsicsRISCV.h"
-#endif // SIFIVE_CUSTOMIZATION
-=======
-#include "llvm/Transforms/Utils/LoopUtils.h"
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
 #include "llvm/Transforms/Utils/ScalarEvolutionExpander.h"
 #include <cassert>
-#if SIFIVE_CUSTOMIZATION
-#include "SiFive_VPlanPredicatedInstructions.h"
-#endif // SIFIVE_CUSTOMIZATION
 
 using namespace llvm;
 
@@ -463,7 +456,6 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     Builder.GetInsertBlock()->getTerminator()->eraseFromParent();
     return CondBr;
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case VPInstruction::CSAInitMask: {
     if (Part == 0) {
@@ -633,7 +625,6 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
   case Instruction::Call:
     llvm_unreachable("This opcode is handled by the VPCallInstruction recipe");
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case VPInstruction::ComputeReductionResult: {
     if (Part != 0)
       return State.get(this, 0);
@@ -684,6 +675,10 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
               RdxDesc.getRecurrenceStartValue();
           ReducedPartRdx = createAnyOfOp(Builder, ReductionStartValue, RK,
                                          ReducedPartRdx, RdxPart);
+#if SIFIVE_CUSTOMIZATION
+        }  else if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK)) {
+          ReducedPartRdx = createFindLastIVOp(Builder, ReducedPartRdx, RdxPart);
+#endif // SIFIVE_CUSTOMIZATION
         } else
           ReducedPartRdx = createMinMaxOp(Builder, RK, ReducedPartRdx, RdxPart);
       }
@@ -692,8 +687,35 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     // Create the reduction after the loop. Note that inloop reductions create
     // the target reduction in the loop using a Reduction recipe.
     if (State.VF.isVector() && !PhiR->isInLoop()) {
+#if SIFIVE_CUSTOMIZATION
+      if (State.Plan->getRVL()) {
+        Value *InitRVL = State.get(State.Plan->getInitRVL(), 0);
+        assert(InitRVL &&
+               "InitRVL must be initialized in emitIterationCountCheck when "
+               "using VP intrinsic to generate unordered reduction");
+        ReducedPartRdx = createTargetReduction(Builder, RdxDesc, ReducedPartRdx,
+                                               InitRVL, OrigPhi);
+      } else {
+        ReducedPartRdx =
+            createTargetReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
+      }
+      // Adjust the final scalar result after the loop if the target prefers
+      // that.
+      // FIXME: Handle situation that the start value and identity are equal.
+      if (PhiR->postFixStartValue()) {
+        IRBuilderBase::FastMathFlagGuard FMFG(Builder);
+        Builder.setFastMathFlags(RdxDesc.getFastMathFlags());
+        Value *StartV = PhiR->getStartValue()->getLiveInIRValue();
+        // Truncate start value if the reduction is performed in a smaller type.
+        if (PhiTy != RdxDesc.getRecurrenceType())
+          StartV = Builder.CreateTrunc(StartV, RdxDesc.getRecurrenceType());
+        ReducedPartRdx = Builder.CreateBinOp((Instruction::BinaryOps)Op, StartV,
+                                             ReducedPartRdx);
+      }
+#else
       ReducedPartRdx =
           createTargetReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
+#endif // SIFIVE_CUSTOMIZATION
       // If the reduction can be performed in a smaller type, we need to extend
       // the reduction to the wider type before we branch to the original loop.
       if (PhiTy != RdxDesc.getRecurrenceType())
@@ -701,6 +723,11 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
                              ? Builder.CreateSExt(ReducedPartRdx, PhiTy)
                              : Builder.CreateZExt(ReducedPartRdx, PhiTy);
     }
+#if SIFIVE_CUSTOMIZATION
+    if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
+      ReducedPartRdx =
+          createSentinelValueHandling(Builder, RdxDesc, ReducedPartRdx);
+#endif // SIFIVE_CUSTOMIZATION
 
     // If there were stores of the reduction value to a uniform memory address
     // inside the loop, create the final store here.
@@ -712,7 +739,6 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
 
     return ReducedPartRdx;
   }
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
   default:
     llvm_unreachable("Unsupported opcode for instruction");
   }
@@ -792,7 +818,9 @@ void VPInstruction::print(raw_ostream &O, const Twine &Indent,
   case VPInstruction::BranchOnCount:
     O << "branch-on-count";
     break;
-<<<<<<< HEAD
+  case VPInstruction::ComputeReductionResult:
+    O << "compute-reduction-result";
+    break;
 #if SIFIVE_CUSTOMIZATION
   case VPInstruction::CSAInitMask:
     O << "csa-init-mask";
@@ -819,11 +847,6 @@ void VPInstruction::print(raw_ostream &O, const Twine &Indent,
     O << "exiting-cond";
     break;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  case VPInstruction::ComputeReductionResult:
-    O << "compute-reduction-result";
-    break;
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
   default:
     O << Instruction::getOpcodeName(getOpcode());
   }
@@ -845,7 +868,6 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
          "DbgInfoIntrinsic should have been dropped during VPlan construction");
   State.setDebugLocFrom(CI.getDebugLoc());
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (State.Plan->getRVL()) {
     // Skip if CI doesn't have vp form.
@@ -861,9 +883,7 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
   bool UseIntrinsic = VectorIntrinsicID != Intrinsic::not_intrinsic;
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
   FunctionType *VFTy = nullptr;
   if (Variant)
     VFTy = Variant->getFunctionType();

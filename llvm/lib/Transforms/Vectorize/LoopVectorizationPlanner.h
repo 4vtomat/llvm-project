@@ -168,11 +168,14 @@ public:
 
 #if SIFIVE_CUSTOMIZATION
   VPValue *createSelect(VPValue *Cond, VPValue *TrueVal, VPValue *FalseVal,
-                        FastMathFlags FMFs, DebugLoc DL,
+                        std::optional<FastMathFlags> FMFs, DebugLoc DL,
                         const VPSelectInstruction::TailPolicy TP,
                         const Twine &Name = "") {
-    return tryInsertInstruction(
-        new VPSelectInstruction(Cond, TrueVal, FalseVal, FMFs, DL, TP, Name));
+    auto *Select = FMFs ? new VPSelectInstruction(Cond, TrueVal, FalseVal,
+                                                  *FMFs, DL, TP, Name)
+                        : new VPSelectInstruction(Cond, TrueVal, FalseVal, {},
+                                                  DL, TP, Name);
+    return tryInsertInstruction(Select);
   }
   VPValue *createSelect(VPValue *Cond, VPValue *TrueVal, VPValue *FalseVal,
                         FastMathFlags FMFs, DebugLoc DL,
