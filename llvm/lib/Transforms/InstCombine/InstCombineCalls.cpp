@@ -4507,7 +4507,6 @@ InstCombinerImpl::transformCallThroughTrampoline(CallBase &Call,
   Call.setCalledFunction(FTy, NestF);
   return &Call;
 }
-<<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
 Instruction *InstCombinerImpl::foldNeutralVPReduce(Instruction &I) {
@@ -4717,41 +4716,3 @@ Instruction *InstCombinerImpl::foldNeutralVPReduce(Instruction &I) {
   return nullptr;
 }
 #endif // SIFIVE_CUSTOMIZATION
-
-// op(select(%v, %x, %y), select(%v, %y, %x)) --> op(%x, %y)
-Instruction *
-InstCombinerImpl::foldCommutativeIntrinsicOverSelects(IntrinsicInst &II) {
-  assert(II.isCommutative());
-
-  Value *A, *B, *C;
-  if (match(II.getOperand(0), m_Select(m_Value(A), m_Value(B), m_Value(C))) &&
-      match(II.getOperand(1),
-            m_Select(m_Specific(A), m_Specific(C), m_Specific(B)))) {
-    replaceOperand(II, 0, B);
-    replaceOperand(II, 1, C);
-    return &II;
-  }
-
-  return nullptr;
-}
-
-Instruction *
-InstCombinerImpl::foldCommutativeIntrinsicOverPhis(IntrinsicInst &II) {
-  assert(II.isCommutative() && "Instruction should be commutative");
-
-  PHINode *LHS = dyn_cast<PHINode>(II.getOperand(0));
-  PHINode *RHS = dyn_cast<PHINode>(II.getOperand(1));
-
-  if (!LHS || !RHS)
-    return nullptr;
-
-  if (auto P = matchSymmetricPhiNodesPair(LHS, RHS)) {
-    replaceOperand(II, 0, P->first);
-    replaceOperand(II, 1, P->second);
-    return &II;
-  }
-
-  return nullptr;
-}
-=======
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35

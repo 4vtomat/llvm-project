@@ -5834,11 +5834,7 @@ static bool hasMergeOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_RISCV_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-<<<<<<< HEAD
-                    138 && // SIFIVE
-=======
-                    124 &&
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
+                    137 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
@@ -5864,11 +5860,7 @@ static bool hasMaskOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_RISCV_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-<<<<<<< HEAD
-                    138 && // SIFIVE
-=======
-                    124 &&
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
+                    137 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
@@ -17764,22 +17756,18 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     break;
   }
   case RISCVISD::ADD_VL:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (SDValue Result = combineSelectAndBinOp(N, DAG))
       return Result;
 #endif // SIFIVE_CUSTOMIZATION
-    if (SDValue V = combineBinOp_VLToVWBinOp_VL(N, DCI, Subtarget))
-=======
     if (SDValue V = combineBinOp_VLToVWBinOp_VL(N, DCI))
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
       return V;
     return combineToVWMACC(N, DAG, Subtarget);
   case RISCVISD::SUB_VL:
 #if SIFIVE_CUSTOMIZATION
     if (SDValue Result = combineSelectAndBinOp(N, DAG))
       return Result;
-    return combineBinOp_VLToVWBinOp_VL(N, DCI, Subtarget);
+    return combineBinOp_VLToVWBinOp_VL(N, DCI);
   case RISCVISD::OR_VL:
   case RISCVISD::XOR_VL:
     return combineSelectAndBinOp(N, DAG);
@@ -17789,15 +17777,11 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
   case RISCVISD::VWSUB_W_VL:
   case RISCVISD::VWSUBU_W_VL:
   case RISCVISD::MUL_VL:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    if (SDValue V = combineBinOp_VLToVWBinOp_VL(N, DCI, Subtarget))
+    if (SDValue V = combineBinOp_VLToVWBinOp_VL(N, DCI))
       return V;
     return combineVWADDU_W_VL(N, DAG, Subtarget);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    return combineBinOp_VLToVWBinOp_VL(N, DCI);
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
   case RISCVISD::VFMADD_VL:
   case RISCVISD::VFNMADD_VL:
   case RISCVISD::VFMSUB_VL:

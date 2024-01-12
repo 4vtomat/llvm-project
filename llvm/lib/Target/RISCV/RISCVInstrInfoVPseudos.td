@@ -1081,17 +1081,8 @@ class VPseudoUnaryMask<VReg RetClass,
 
 class VPseudoUnaryMaskRoundingMode<VReg RetClass,
                                    VReg OpClass,
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
                                    string Constraint = "",
                                    int TargetConstraintType = 1> :
-#else
-                                   string Constraint = ""> :
-#endif
-=======
-                                   string Constraint = "",
-                                   int TargetConstraintType = 1> :
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
       Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
              (ins GetVRegNoV0<RetClass>.R:$merge, OpClass:$rs2,
                   VMaskOp:$vm, ixlenimm:$rm,
@@ -1101,13 +1092,7 @@ class VPseudoUnaryMaskRoundingMode<VReg RetClass,
   let mayStore = 0;
   let hasSideEffects = 0;
   let Constraints = !interleave([Constraint, "$rd = $merge"], ",");
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
   let TargetOverlapConstraintType = TargetConstraintType;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  let TargetOverlapConstraintType = TargetConstraintType;
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
   let HasVLOp = 1;
   let HasSEWOp = 1;
   let HasVecPolicyOp = 1;
@@ -1157,17 +1142,8 @@ class VPseudoUnaryMask_NoExcept<VReg RetClass,
 
 class VPseudoUnaryNoMask_FRM<VReg RetClass,
                              VReg OpClass,
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
                              string Constraint = "",
                              int TargetConstraintType = 1> :
-#else
-                             string Constraint = ""> :
-#endif
-=======
-                             string Constraint = "",
-                             int TargetConstraintType = 1> :
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
       Pseudo<(outs RetClass:$rd),
              (ins RetClass:$merge, OpClass:$rs2, ixlenimm:$frm,
                   AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
@@ -1176,13 +1152,7 @@ class VPseudoUnaryNoMask_FRM<VReg RetClass,
   let mayStore = 0;
   let hasSideEffects = 0;
   let Constraints = !interleave([Constraint, "$rd = $merge"], ",");
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
   let TargetOverlapConstraintType = TargetConstraintType;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  let TargetOverlapConstraintType = TargetConstraintType;
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
   let HasVLOp = 1;
   let HasSEWOp = 1;
   let HasVecPolicyOp = 1;
@@ -1191,17 +1161,8 @@ class VPseudoUnaryNoMask_FRM<VReg RetClass,
 
 class VPseudoUnaryMask_FRM<VReg RetClass,
                            VReg OpClass,
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
                            string Constraint = "",
                            int TargetConstraintType = 1> :
-#else
-                           string Constraint = ""> :
-#endif
-=======
-                           string Constraint = "",
-                           int TargetConstraintType = 1> :
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
       Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
              (ins GetVRegNoV0<RetClass>.R:$merge, OpClass:$rs2,
                   VMaskOp:$vm, ixlenimm:$frm,
@@ -1211,13 +1172,7 @@ class VPseudoUnaryMask_FRM<VReg RetClass,
   let mayStore = 0;
   let hasSideEffects = 0;
   let Constraints = !interleave([Constraint, "$rd = $merge"], ",");
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
   let TargetOverlapConstraintType = TargetConstraintType;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  let TargetOverlapConstraintType = TargetConstraintType;
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
   let HasVLOp = 1;
   let HasSEWOp = 1;
   let HasVecPolicyOp = 1;
@@ -1613,17 +1568,8 @@ class VPseudoTiedBinaryCarryIn<VReg RetClass,
                                DAGOperand Op2Class,
                                LMULInfo MInfo,
                                bit CarryIn,
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
                                string Constraint,
                                int TargetConstraintType = 1> :
-#else
-                               string Constraint> :
-#endif // SIFIVE_CUSTOMIZATION
-=======
-                               string Constraint,
-                               int TargetConstraintType = 1> :
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
       Pseudo<(outs RetClass:$rd),
              !if(CarryIn,
                 (ins RetClass:$merge, Op1Class:$rs2, Op2Class:$rs1,
@@ -1635,13 +1581,7 @@ class VPseudoTiedBinaryCarryIn<VReg RetClass,
   let mayStore = 0;
   let hasSideEffects = 0;
   let Constraints = !interleave([Constraint, "$rd = $merge"], ",");
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
   let TargetOverlapConstraintType = TargetConstraintType;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  let TargetOverlapConstraintType = TargetConstraintType;
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
   let HasVLOp = 1;
   let HasSEWOp = 1;
   let HasVecPolicyOp = 0;
@@ -2549,25 +2489,11 @@ multiclass VPseudoBinaryV_VM<LMULInfo m, bit CarryOut = 0, bit CarryIn = 1,
                          m.vrclass, m.vrclass, m, CarryIn, Constraint, TargetConstraintType>;
 }
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-multiclass VPseudoTiedBinaryV_VM<LMULInfo m, int TargetConstraintType = 1> {
-#else
-multiclass VPseudoTiedBinaryV_VM<LMULInfo m> {
-#endif // SIFIVE_CUSTOMIZATION
-  def "_VVM" # "_" # m.MX:
-    VPseudoTiedBinaryCarryIn<GetVRegNoV0<m.vrclass>.R,
-                             m.vrclass, m.vrclass, m, 1, "",
-#ifdef SIFIVE_CUSTOMIZATION
-                             TargetConstraintType>;
-#endif // SIFIVE_CUSTOMIZATION
-=======
 multiclass VPseudoTiedBinaryV_VM<LMULInfo m, int TargetConstraintType = 1> {
   def "_VVM" # "_" # m.MX:
     VPseudoTiedBinaryCarryIn<GetVRegNoV0<m.vrclass>.R,
                              m.vrclass, m.vrclass, m, 1, "",
                              TargetConstraintType>;
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
 }
 
 multiclass VPseudoBinaryV_XM<LMULInfo m, bit CarryOut = 0, bit CarryIn = 1,
@@ -2579,25 +2505,11 @@ multiclass VPseudoBinaryV_XM<LMULInfo m, bit CarryOut = 0, bit CarryIn = 1,
                          m.vrclass, GPR, m, CarryIn, Constraint, TargetConstraintType>;
 }
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-multiclass VPseudoTiedBinaryV_XM<LMULInfo m, int TargetConstraintType = 1> {
-#else
-multiclass VPseudoTiedBinaryV_XM<LMULInfo m> {
-#endif // SIFIVE_CUSTOMIZATION
-  def "_VXM" # "_" # m.MX:
-    VPseudoTiedBinaryCarryIn<GetVRegNoV0<m.vrclass>.R,
-                             m.vrclass, GPR, m, 1, "",
-#ifdef SIFIVE_CUSTOMIZATION
-                             TargetConstraintType>;
-#endif // SIFIVE_CUSTOMIZATION
-=======
 multiclass VPseudoTiedBinaryV_XM<LMULInfo m, int TargetConstraintType = 1> {
   def "_VXM" # "_" # m.MX:
     VPseudoTiedBinaryCarryIn<GetVRegNoV0<m.vrclass>.R,
                              m.vrclass, GPR, m, 1, "",
                              TargetConstraintType>;
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
 }
 
 multiclass VPseudoVMRG_FM {
@@ -2728,28 +2640,7 @@ multiclass VPseudoVRCP_V_RM {
   }
 }
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
 multiclass PseudoVEXT_VF2 {
-  defvar constraints = "@earlyclobber $rd";
-  foreach m = MxListVF2 in {
-    defvar mx = m.MX;
-    defvar CurrTypeConstraints = !if(!or(!eq(mx, "MF4"), !eq(mx, "MF2"), !eq(mx, "M1")), 1, 3);
-    let VLMul = m.value in {
-      def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f2vrclass, constraints, CurrTypeConstraints>,
-                     SchedUnary<"WriteVExtV", "ReadVExtV", mx>;
-      def "_" # mx # "_MASK" :
-        VPseudoUnaryMaskTA<m.vrclass, m.f2vrclass, constraints, CurrTypeConstraints>,
-        RISCVMaskedPseudo<MaskIdx=2>,
-        SchedUnary<"WriteVExtV", "ReadVExtV", mx>;
-    }
-  }
-}
-#else
-multiclass PseudoVEXT_VF2<int TargetConstraintType = 1> {
-=======
-multiclass PseudoVEXT_VF2 {
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
   defvar constraints = "@earlyclobber $rd";
   foreach m = MxListVF2 in {
     defvar mx = m.MX;
@@ -2764,30 +2655,8 @@ multiclass PseudoVEXT_VF2 {
     }
   }
 }
-#endif // SIFIVE_CUSTOMIZATION
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
 multiclass PseudoVEXT_VF4 {
-  defvar constraints = "@earlyclobber $rd";
-  foreach m = MxListVF4 in {
-    defvar mx = m.MX;
-    defvar CurrTypeConstraints = !if(!or(!eq(mx, "MF2"), !eq(mx, "M1"), !eq(mx, "M2")), 1, 3);
-    let VLMul = m.value in {
-      def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f4vrclass, constraints, CurrTypeConstraints>,
-                     SchedUnary<"WriteVExtV", "ReadVExtV", mx>;
-      def "_" # mx # "_MASK" :
-        VPseudoUnaryMaskTA<m.vrclass, m.f4vrclass, constraints, CurrTypeConstraints>,
-        RISCVMaskedPseudo<MaskIdx=2>,
-        SchedUnary<"WriteVExtV", "ReadVExtV", mx>;
-    }
-  }
-}
-#else
-multiclass PseudoVEXT_VF4<int TargetConstraintType = 1> {
-=======
-multiclass PseudoVEXT_VF4 {
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
   defvar constraints = "@earlyclobber $rd";
   foreach m = MxListVF4 in {
     defvar mx = m.MX;
@@ -2802,30 +2671,8 @@ multiclass PseudoVEXT_VF4 {
     }
   }
 }
-#endif // SIFIVE_CUSTOMIZATION
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
 multiclass PseudoVEXT_VF8 {
-  defvar constraints = "@earlyclobber $rd";
-  foreach m = MxListVF8 in {
-    defvar mx = m.MX;
-    defvar CurrTypeConstraints = !if(!or(!eq(mx, "M1"), !eq(mx, "M2"), !eq(mx, "M4")), 1, 3);
-    let VLMul = m.value in {
-      def "_" # mx : VPseudoUnaryNoMask<m.vrclass, m.f8vrclass, constraints, CurrTypeConstraints>,
-                     SchedUnary<"WriteVExtV", "ReadVExtV", mx>;
-      def "_" # mx # "_MASK" :
-        VPseudoUnaryMaskTA<m.vrclass, m.f8vrclass, constraints, CurrTypeConstraints>,
-        RISCVMaskedPseudo<MaskIdx=2>,
-        SchedUnary<"WriteVExtV", "ReadVExtV", mx>;
-    }
-  }
-}
-#else
-multiclass PseudoVEXT_VF8<int TargetConstraintType = 1> {
-=======
-multiclass PseudoVEXT_VF8 {
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
   defvar constraints = "@earlyclobber $rd";
   foreach m = MxListVF8 in {
     defvar mx = m.MX;
@@ -2840,7 +2687,6 @@ multiclass PseudoVEXT_VF8 {
     }
   }
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 // The destination EEW is 1 since "For the purposes of register group overlap
 // constraints, mask elements have EEW=1."
@@ -3820,13 +3666,7 @@ multiclass VPseudoConversionRoundingMode<VReg RetClass,
   let VLMul = MInfo.value in {
     def "_" # MInfo.MX : VPseudoUnaryNoMaskRoundingMode<RetClass, Op1Class, Constraint, TargetConstraintType>;
     def "_" # MInfo.MX # "_MASK" : VPseudoUnaryMaskRoundingMode<RetClass, Op1Class,
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
                                                                 Constraint, TargetConstraintType>,
-#endif // SIFIVE_CUSTOMIZATION
-=======
-                                                                Constraint, TargetConstraintType>,
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
                                    RISCVMaskedPseudo<MaskIdx=2>;
   }
 }
@@ -3839,19 +3679,9 @@ multiclass VPseudoConversionRM<VReg RetClass,
                                int TargetConstraintType = 1> {
   let VLMul = MInfo.value in {
     def "_" # MInfo.MX : VPseudoUnaryNoMask_FRM<RetClass, Op1Class,
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-                                                        Constraint, TargetConstraintType>;
-#endif // SIFIVE_CUSTOMIZATION
-    def "_" # MInfo.MX # "_MASK" : VPseudoUnaryMask_FRM<RetClass, Op1Class,
-#ifdef SIFIVE_CUSTOMIZATION
-                                                        Constraint, TargetConstraintType>,
-#endif // SIFIVE_CUSTOMIZATION
-=======
                                                         Constraint, TargetConstraintType>;
     def "_" # MInfo.MX # "_MASK" : VPseudoUnaryMask_FRM<RetClass, Op1Class,
                                                         Constraint, TargetConstraintType>,
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
                                    RISCVMaskedPseudo<MaskIdx=2>;
   }
 }
@@ -3979,13 +3809,7 @@ multiclass VPseudoVNCVTI_W_RM {
 multiclass VPseudoVNCVTI_RM_W {
   defvar constraint = "@earlyclobber $rd";
   foreach m = MxListW in {
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
     defm _W : VPseudoConversionRM<m.vrclass, m.wvrclass, m, constraint, TargetConstraintType=2>,
-#endif // SIFIVE_CUSTOMIZATION
-=======
-    defm _W : VPseudoConversionRM<m.vrclass, m.wvrclass, m, constraint, TargetConstraintType=2>,
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
               SchedUnary<"WriteVFNCvtFToIV", "ReadVFNCvtFToIV", m.MX,
                          forceMergeOpRead=true>;
   }

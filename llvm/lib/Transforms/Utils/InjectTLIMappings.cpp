@@ -42,27 +42,6 @@ static void addVariantDeclaration(CallInst &CI, const ElementCount &VF,
   Module *M = CI.getModule();
   FunctionType *ScalarFTy = CI.getFunctionType();
 
-<<<<<<< HEAD
-  // Add function declaration.
-  Type *RetTy = ToVectorTy(CI.getType(), VF);
-  SmallVector<Type *, 4> Tys;
-  for (Value *ArgOperand : CI.args())
-    Tys.push_back(ToVectorTy(ArgOperand->getType(), VF));
-#if SIFIVE_CUSTOMIZATION
-  // Add explicit VL argument for NF Library functions
-  if (VFName.starts_with(SiFiveNFLibraryPrefix))
-    Tys.push_back(Type::getInt32Ty(M->getContext()));
-#endif
-
-  assert(!CI.getFunctionType()->isVarArg() &&
-         "VarArg functions are not supported.");
-  if (Predicate)
-    Tys.push_back(ToVectorTy(Type::getInt1Ty(RetTy->getContext()), VF));
-  FunctionType *FTy = FunctionType::get(RetTy, Tys, /*isVarArg=*/false);
-  Function *VectorF =
-      Function::Create(FTy, Function::ExternalLinkage, VFName, M);
-  VectorF->copyAttributesFrom(CI.getCalledFunction());
-=======
   assert(!ScalarFTy->isVarArg() && "VarArg functions are not supported.");
 
   const std::optional<VFInfo> Info = VFABI::tryDemangleForVFABI(
@@ -76,7 +55,6 @@ static void addVariantDeclaration(CallInst &CI, const ElementCount &VF,
   Function *VecFunc =
       Function::Create(VectorFTy, Function::ExternalLinkage, VFName, M);
   VecFunc->copyAttributesFrom(CI.getCalledFunction());
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
   ++NumVFDeclAdded;
   LLVM_DEBUG(dbgs() << DEBUG_TYPE << ": Added to the module: `" << VFName
                     << "` of type " << *VectorFTy << "\n");

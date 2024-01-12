@@ -62,7 +62,6 @@ static cl::opt<unsigned> SLPMaxVF(
         "exclusively by SLP vectorizer."),
     cl::Hidden);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<unsigned> VectorPrimaryLMULMinExp(
     "vector-primary-lmul-min",
@@ -391,7 +390,7 @@ RISCVTTIImpl::getBestVectorTypeForLoopIdiom(LLVMContext &Ctx) const {
   return VectorType::get(Type::getInt8Ty(Ctx), EC);
 }
 #endif
-=======
+
 InstructionCost
 RISCVTTIImpl::getRISCVInstructionCost(ArrayRef<unsigned> OpCodes, MVT VT,
                                       TTI::TargetCostKind CostKind) {
@@ -450,7 +449,6 @@ RISCVTTIImpl::getRISCVInstructionCost(ArrayRef<unsigned> OpCodes, MVT VT,
   }
   return Cost;
 }
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
 
 InstructionCost RISCVTTIImpl::getIntImmCost(const APInt &Imm, Type *Ty,
                                             TTI::TargetCostKind CostKind) {

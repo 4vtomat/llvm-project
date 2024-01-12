@@ -1611,6 +1611,12 @@ FunctionType *VFABI::createFunctionType(const VFInfo &Info,
     VecTypes.push_back(OperandTy);
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // Add explicit VL argument for NF Library functions
+  if (Info.ISA == VFISAKind::RVV)
+    VecTypes.push_back(Type::getInt32Ty(ScalarFTy->getContext()));
+#endif // SIFIVE_CUSTOMIZATION
+
   auto *RetTy = ScalarFTy->getReturnType();
   if (!RetTy->isVoidTy())
     RetTy = VectorType::get(RetTy, VF);
