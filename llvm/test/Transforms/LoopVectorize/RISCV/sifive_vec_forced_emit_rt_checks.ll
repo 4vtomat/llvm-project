@@ -1,5 +1,6 @@
 ; RUN: opt -mtriple=riscv64-unknown-linux-gnu -passes="loop-vectorize" -vector-primary-lmul-max=1 -mattr="+v" -debug -S -vectorize-memory-check-threshold=0 -pass-remarks-missed='loop-vectorize'  %s 2>&1 | FileCheck %s --check-prefix=VEC-NOT-FORCED
 ; RUN: opt -mtriple=riscv64-unknown-linux-gnu -passes="loop-vectorize" -vector-primary-lmul-max=1 -mattr="+v" -debug -S -vectorize-memory-check-threshold=0 -pass-remarks='loop-vectorize' -force-vectorization %s 2>&1 | FileCheck %s --check-prefix=VEC-FORCED
+; REQUIRES: asserts
 
 ; VEC-NOT-FORCED: number of checks exceeded threshold
 ; VEC-NOT-FORCED: remark: <unknown>:0:0: loop not vectorized

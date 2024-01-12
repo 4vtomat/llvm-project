@@ -1,4 +1,5 @@
 ; RUN: opt -passes=loop-vectorize -mcpu=sifive-x280  -mtriple riscv64 %s -debug-only=loop-vectorize -disable-output 2>&1 | FileCheck %s
+; REQUIRES: asserts
 
 ; Make sure that given vectorize_width is ignored by the VPlan
 ;

@@ -82,7 +82,7 @@ using namespace llvm;
 
 #define DEBUG_TYPE "sifive-loop-count-profiler"
 
-STATISTIC(NumLoops, "Number of loops");
+STATISTIC(NumOfLoops, "Number of loops");
 
 namespace {
 // Insert instrumentation in header and in exit block of loop
@@ -99,6 +99,9 @@ class InsertCounter {
 
   // Wrapper of string type
   StructType *StringWrapperTy;
+
+  // number of loops in this module
+  uint32_t NumLoops = 0;
 
 public:
   InsertCounter(Module &M) {
@@ -427,6 +430,7 @@ bool InsertCounter::runOnModule(
     }
     NumLoops += generateLoopNames(M, F, GetLI(F));
   }
+  NumOfLoops = NumLoops;
   // No loop in the module
   if (NumLoops <= 0)
     return false;

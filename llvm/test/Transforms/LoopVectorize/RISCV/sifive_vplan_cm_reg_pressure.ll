@@ -1,5 +1,6 @@
 ; RUN: opt -passes=loop-vectorize -mtriple riscv64 -vector-primary-lmul-max=3 -mcpu=sifive-p470 -debug-only=vplan-cost-model,vplan -disable-output %s 2>&1 | FileCheck %s --check-prefix=CHECK-P470
 ; RUN: opt -passes=loop-vectorize -mtriple riscv64 -vector-primary-lmul-max=3 -mcpu=sifive-p670 -debug-only=vplan-cost-model,vplan -disable-output %s 2>&1 | FileCheck %s --check-prefix=CHECK-P670
+; REQUIRES: asserts
 
 ; To minimize the test itself, checks in the test only verify maximum register pressure of the loop for each candidate
 
