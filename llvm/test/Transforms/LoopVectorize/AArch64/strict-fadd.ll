@@ -595,6 +595,7 @@ for.end:
 }
 
 define void @fadd_strict_interleave(ptr noalias nocapture readonly %a, ptr noalias nocapture readonly %b, i64 %n) {
+<<<<<<< HEAD
 ; CHECK-NOT-VECTORIZED-LABEL: define void @fadd_strict_interleave
 ; CHECK-NOT-VECTORIZED-SAME: (ptr noalias nocapture readonly [[A:%.*]], ptr noalias nocapture readonly [[B:%.*]], i64 [[N:%.*]]) {
 ; CHECK-NOT-VECTORIZED-NEXT:  entry:
@@ -751,6 +752,57 @@ define void @fadd_strict_interleave(ptr noalias nocapture readonly %a, ptr noali
 ;
 
 
+=======
+; CHECK-ORDERED-LABEL: @fadd_strict_interleave
+; CHECK-ORDERED: entry
+; CHECK-ORDERED: %[[ARRAYIDX:.*]] = getelementptr inbounds float, ptr %a, i64 1
+; CHECK-ORDERED: %[[LOAD1:.*]] = load float, ptr %a
+; CHECK-ORDERED: %[[LOAD2:.*]] = load float, ptr %[[ARRAYIDX]]
+; CHECK-ORDERED: vector.body
+; CHECK-ORDERED: %[[VEC_PHI1:.*]] = phi float [ %[[LOAD2]], %vector.ph ], [ %[[RDX2:.*]], %vector.body ]
+; CHECK-ORDERED: %[[VEC_PHI2:.*]] = phi float [ %[[LOAD1]], %vector.ph ], [ %[[RDX1:.*]], %vector.body ]
+; CHECK-ORDERED: %[[WIDE_LOAD:.*]] = load <8 x float>, ptr
+; CHECK-ORDERED: %[[STRIDED1:.*]] = shufflevector <8 x float> %[[WIDE_LOAD]], <8 x float> poison, <4 x i32> <i32 0, i32 2, i32 4, i32 6>
+; CHECK-ORDERED: %[[STRIDED2:.*]] = shufflevector <8 x float> %[[WIDE_LOAD]], <8 x float> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
+; CHECK-ORDERED: %[[RDX2]] = call float @llvm.vector.reduce.fadd.v4f32(float %[[VEC_PHI1]], <4 x float> %[[STRIDED2]])
+; CHECK-ORDERED: %[[RDX1]] = call float @llvm.vector.reduce.fadd.v4f32(float %[[VEC_PHI2]], <4 x float> %[[STRIDED1]])
+; CHECK-ORDERED: for.end
+; CHECK-ORDERED: ret void
+
+; CHECK-UNORDERED-LABEL: @fadd_strict_interleave
+; CHECK-UNORDERED: %[[ARRAYIDX:.*]] = getelementptr inbounds float, ptr %a, i64 1
+; CHECK-UNORDERED: %[[LOADA1:.*]] = load float, ptr %a
+; CHECK-UNORDERED: %[[LOADA2:.*]] = load float, ptr %[[ARRAYIDX]]
+; CHECK-UNORDERED: vector.ph
+; CHECK-UNORDERED: %[[INS2:.*]] = insertelement <4 x float> <float -0.000000e+00, float -0.000000e+00, float -0.000000e+00, float -0.000000e+00>, float %[[LOADA2]], i32 0
+; CHECK-UNORDERED: %[[INS1:.*]] = insertelement <4 x float> <float -0.000000e+00, float -0.000000e+00, float -0.000000e+00, float -0.000000e+00>, float %[[LOADA1]], i32 0
+; CHECK-UNORDERED: vector.body
+; CHECK-UNORDERED: %[[VEC_PHI2:.*]] = phi <4 x float> [ %[[INS2]], %vector.ph ], [ %[[VEC_FADD2:.*]], %vector.body ]
+; CHECK-UNORDERED: %[[VEC_PHI1:.*]] = phi <4 x float> [ %[[INS1]], %vector.ph ], [ %[[VEC_FADD1:.*]], %vector.body ]
+; CHECK-UNORDERED: %[[WIDE_LOAD:.*]] = load <8 x float>, ptr
+; CHECK-UNORDERED: %[[STRIDED1:.*]] = shufflevector <8 x float> %[[WIDE_LOAD]], <8 x float> poison, <4 x i32> <i32 0, i32 2, i32 4, i32 6>
+; CHECK-UNORDERED: %[[STRIDED2:.*]] = shufflevector <8 x float> %[[WIDE_LOAD]], <8 x float> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
+; CHECK-UNORDERED: %[[VEC_FADD1]] = fadd <4 x float> %[[STRIDED1:.*]], %[[VEC_PHI1]]
+; CHECK-UNORDERED: %[[VEC_FADD2]] = fadd <4 x float> %[[STRIDED2:.*]], %[[VEC_PHI2]]
+; CHECK-UNORDERED-NOT: call float @llvm.vector.reduce.fadd
+; CHECK-UNORDERED: middle.block
+; CHECK-UNORDERED: %[[RDX2:.*]] = call float @llvm.vector.reduce.fadd.v4f32(float -0.000000e+00, <4 x float> %[[VEC_FADD2]])
+; CHECK-UNORDERED: %[[RDX1:.*]] = call float @llvm.vector.reduce.fadd.v4f32(float -0.000000e+00, <4 x float> %[[VEC_FADD1]])
+; CHECK-UNORDERED: for.body
+; CHECK-UNORDERED: %[[LOAD1:.*]] = load float, ptr
+; CHECK-UNORDERED: %[[FADD1:.*]] = fadd float %[[LOAD1]], {{.*}}
+; CHECK-UNORDERED: %[[LOAD2:.*]] = load float, ptr
+; CHECK-UNORDERED: %[[FADD2:.*]] = fadd float %[[LOAD2]], {{.*}}
+; CHECK-UNORDERED: for.end
+; CHECK-UNORDERED: %[[SUM1:.*]] = phi float [ %[[FADD1]], %for.body ], [ %[[RDX1]], %middle.block ]
+; CHECK-UNORDERED: %[[SUM2:.*]] = phi float [ %[[FADD2]], %for.body ], [ %[[RDX2]], %middle.block ]
+; CHECK-UNORDERED: store float %[[SUM1]]
+; CHECK-UNORDERED: store float %[[SUM2]]
+; CHECK-UNORDERED: ret void
+
+; CHECK-NOT-VECTORIZED-LABEL: @fadd_strict_interleave
+; CHECK-NOT-VECTORIZED-NOT: vector.body
+>>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
 
 entry:
   %arrayidxa = getelementptr inbounds float, ptr %a, i64 1

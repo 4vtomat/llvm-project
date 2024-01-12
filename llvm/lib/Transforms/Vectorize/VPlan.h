@@ -1245,6 +1245,7 @@ public:
     // Increment the canonical IV separately for each unrolled part.
     CanonicalIVIncrementForPart,
     BranchOnCount,
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     BranchOnCond,
     ExitingCond,
@@ -1258,6 +1259,10 @@ public:
 #else
     BranchOnCond
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    BranchOnCond,
+    ComputeReductionResult,
+>>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
   };
 
 private:
@@ -3789,6 +3794,8 @@ inline bool isUniformAfterVectorization(VPValue *VPV) {
     return Rep->isUniform();
   if (auto *GEP = dyn_cast<VPWidenGEPRecipe>(Def))
     return all_of(GEP->operands(), isUniformAfterVectorization);
+  if (auto *VPI = dyn_cast<VPInstruction>(Def))
+    return VPI->getOpcode() == VPInstruction::ComputeReductionResult;
   return false;
 }
 #if SIFIVE_CUSTOMIZATION

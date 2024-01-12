@@ -28,12 +28,16 @@
 #include "llvm/Support/Debug.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/Transforms/Utils/BasicBlockUtils.h"
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/IR/IntrinsicsRISCV.h"
 #include "llvm/Transforms/Utils/InjectTLIMappings.h"
 #include "llvm/Transforms/Utils/LoopUtils.h"
 #include "llvm/IR/IntrinsicsRISCV.h"
 #endif // SIFIVE_CUSTOMIZATION
+=======
+#include "llvm/Transforms/Utils/LoopUtils.h"
+>>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
 #include "llvm/Transforms/Utils/ScalarEvolutionExpander.h"
 #include <cassert>
 #if SIFIVE_CUSTOMIZATION
@@ -459,6 +463,7 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     Builder.GetInsertBlock()->getTerminator()->eraseFromParent();
     return CondBr;
   }
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case VPInstruction::CSAInitMask: {
     if (Part == 0) {
@@ -628,6 +633,86 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
   case Instruction::Call:
     llvm_unreachable("This opcode is handled by the VPCallInstruction recipe");
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  case VPInstruction::ComputeReductionResult: {
+    if (Part != 0)
+      return State.get(this, 0);
+
+    // FIXME: The cross-recipe dependency on VPReductionPHIRecipe is temporary
+    // and will be removed by breaking up the recipe further.
+    auto *PhiR = cast<VPReductionPHIRecipe>(getOperand(0));
+    auto *OrigPhi = cast<PHINode>(PhiR->getUnderlyingValue());
+    // Get its reduction variable descriptor.
+    const RecurrenceDescriptor &RdxDesc = PhiR->getRecurrenceDescriptor();
+
+    RecurKind RK = RdxDesc.getRecurrenceKind();
+
+    State.setDebugLocFrom(getDebugLoc());
+
+    VPValue *LoopExitingDef = getOperand(1);
+    Type *PhiTy = OrigPhi->getType();
+    VectorParts RdxParts(State.UF);
+    for (unsigned Part = 0; Part < State.UF; ++Part)
+      RdxParts[Part] = State.get(LoopExitingDef, Part);
+
+    // If the vector reduction can be performed in a smaller type, we truncate
+    // then extend the loop exit value to enable InstCombine to evaluate the
+    // entire expression in the smaller type.
+    // TODO: Handle this in truncateToMinBW.
+    if (State.VF.isVector() && PhiTy != RdxDesc.getRecurrenceType()) {
+      Type *RdxVecTy = VectorType::get(RdxDesc.getRecurrenceType(), State.VF);
+      for (unsigned Part = 0; Part < State.UF; ++Part)
+        RdxParts[Part] = Builder.CreateTrunc(RdxParts[Part], RdxVecTy);
+    }
+    // Reduce all of the unrolled parts into a single vector.
+    Value *ReducedPartRdx = RdxParts[0];
+    unsigned Op = RecurrenceDescriptor::getOpcode(RK);
+
+    if (PhiR->isOrdered()) {
+      ReducedPartRdx = RdxParts[State.UF - 1];
+    } else {
+      // Floating-point operations should have some FMF to enable the reduction.
+      IRBuilderBase::FastMathFlagGuard FMFG(Builder);
+      Builder.setFastMathFlags(RdxDesc.getFastMathFlags());
+      for (unsigned Part = 1; Part < State.UF; ++Part) {
+        Value *RdxPart = RdxParts[Part];
+        if (Op != Instruction::ICmp && Op != Instruction::FCmp)
+          ReducedPartRdx = Builder.CreateBinOp(
+              (Instruction::BinaryOps)Op, RdxPart, ReducedPartRdx, "bin.rdx");
+        else if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK)) {
+          TrackingVH<Value> ReductionStartValue =
+              RdxDesc.getRecurrenceStartValue();
+          ReducedPartRdx = createAnyOfOp(Builder, ReductionStartValue, RK,
+                                         ReducedPartRdx, RdxPart);
+        } else
+          ReducedPartRdx = createMinMaxOp(Builder, RK, ReducedPartRdx, RdxPart);
+      }
+    }
+
+    // Create the reduction after the loop. Note that inloop reductions create
+    // the target reduction in the loop using a Reduction recipe.
+    if (State.VF.isVector() && !PhiR->isInLoop()) {
+      ReducedPartRdx =
+          createTargetReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
+      // If the reduction can be performed in a smaller type, we need to extend
+      // the reduction to the wider type before we branch to the original loop.
+      if (PhiTy != RdxDesc.getRecurrenceType())
+        ReducedPartRdx = RdxDesc.isSigned()
+                             ? Builder.CreateSExt(ReducedPartRdx, PhiTy)
+                             : Builder.CreateZExt(ReducedPartRdx, PhiTy);
+    }
+
+    // If there were stores of the reduction value to a uniform memory address
+    // inside the loop, create the final store here.
+    if (StoreInst *SI = RdxDesc.IntermediateStore) {
+      auto *NewSI = Builder.CreateAlignedStore(
+          ReducedPartRdx, SI->getPointerOperand(), SI->getAlign());
+      propagateMetadata(NewSI, SI);
+    }
+
+    return ReducedPartRdx;
+  }
+>>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
   default:
     llvm_unreachable("Unsupported opcode for instruction");
   }
@@ -707,6 +792,7 @@ void VPInstruction::print(raw_ostream &O, const Twine &Indent,
   case VPInstruction::BranchOnCount:
     O << "branch-on-count";
     break;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case VPInstruction::CSAInitMask:
     O << "csa-init-mask";
@@ -733,6 +819,11 @@ void VPInstruction::print(raw_ostream &O, const Twine &Indent,
     O << "exiting-cond";
     break;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  case VPInstruction::ComputeReductionResult:
+    O << "compute-reduction-result";
+    break;
+>>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
   default:
     O << Instruction::getOpcodeName(getOpcode());
   }
@@ -754,6 +845,7 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
          "DbgInfoIntrinsic should have been dropped during VPlan construction");
   State.setDebugLocFrom(CI.getDebugLoc());
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (State.Plan->getRVL()) {
     // Skip if CI doesn't have vp form.
@@ -769,16 +861,19 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
   }
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+  bool UseIntrinsic = VectorIntrinsicID != Intrinsic::not_intrinsic;
+>>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
   FunctionType *VFTy = nullptr;
   if (Variant)
     VFTy = Variant->getFunctionType();
   for (unsigned Part = 0; Part < State.UF; ++Part) {
     SmallVector<Type *, 2> TysForDecl;
     // Add return type if intrinsic is overloaded on it.
-    if (isVectorIntrinsicWithOverloadTypeAtArg(VectorIntrinsicID, -1)) {
+    if (UseIntrinsic &&
+        isVectorIntrinsicWithOverloadTypeAtArg(VectorIntrinsicID, -1))
       TysForDecl.push_back(
           VectorType::get(CI.getType()->getScalarType(), State.VF));
-    }
     SmallVector<Value *, 4> Args;
     for (const auto &I : enumerate(operands())) {
       // Some intrinsics have a scalar argument - don't replace it with a
@@ -787,18 +882,19 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
       // e.g. linear parameters for pointers.
       Value *Arg;
       if ((VFTy && !VFTy->getParamType(I.index())->isVectorTy()) ||
-          (VectorIntrinsicID != Intrinsic::not_intrinsic &&
+          (UseIntrinsic &&
            isVectorIntrinsicWithScalarOpAtArg(VectorIntrinsicID, I.index())))
         Arg = State.get(I.value(), VPIteration(0, 0));
       else
         Arg = State.get(I.value(), Part);
-      if (isVectorIntrinsicWithOverloadTypeAtArg(VectorIntrinsicID, I.index()))
+      if (UseIntrinsic &&
+          isVectorIntrinsicWithOverloadTypeAtArg(VectorIntrinsicID, I.index()))
         TysForDecl.push_back(Arg->getType());
       Args.push_back(Arg);
     }
 
     Function *VectorF;
-    if (VectorIntrinsicID != Intrinsic::not_intrinsic) {
+    if (UseIntrinsic) {
       // Use vector version of the intrinsic.
       Module *M = State.Builder.GetInsertBlock()->getModule();
       VectorF = Intrinsic::getDeclaration(M, VectorIntrinsicID, TysForDecl);

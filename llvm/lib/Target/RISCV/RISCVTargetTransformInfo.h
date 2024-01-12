@@ -49,6 +49,9 @@ class RISCVTTIImpl : public BasicTTIImplBase<RISCVTTIImpl> {
   /// actual target hardware.
   unsigned getEstimatedVLFor(VectorType *Ty);
 
+  InstructionCost getRISCVInstructionCost(ArrayRef<unsigned> OpCodes, MVT VT,
+                                          TTI::TargetCostKind CostKind);
+
   /// Return the cost of accessing a constant pool entry of the specified
   /// type.
   InstructionCost getConstantPoolLoadCost(Type *Ty,

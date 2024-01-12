@@ -2263,6 +2263,7 @@ class ScalarEvolutionVerifierPass
     : public PassInfoMixin<ScalarEvolutionVerifierPass> {
 public:
   PreservedAnalyses run(Function &F, FunctionAnalysisManager &AM);
+  static bool isRequired() { return true; }
 };
 
 /// Printer pass for the \c ScalarEvolutionAnalysis results.
@@ -2274,6 +2275,8 @@ public:
   explicit ScalarEvolutionPrinterPass(raw_ostream &OS) : OS(OS) {}
 
   PreservedAnalyses run(Function &F, FunctionAnalysisManager &AM);
+
+  static bool isRequired() { return true; }
 };
 
 class ScalarEvolutionWrapperPass : public FunctionPass {
