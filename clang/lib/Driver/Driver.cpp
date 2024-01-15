@@ -671,8 +671,14 @@ static llvm::Triple computeTargetTriple(const Driver &D,
     if (Args.hasArg(options::OPT_march_EQ) ||
         Args.hasArg(options::OPT_mcpu_EQ)) {
       StringRef ArchName = tools::riscv::getRISCVArch(Args, Target);
+#if SIFIVE_CUSTOMIZATION
+      auto ISAInfo = llvm::RISCVISAInfo::parseArchString(
+          ArchName, /*EnableExperimentalExtensions=*/true,
+          /*ExperimentalExtensionVersionCheck*/false);
+#else
       auto ISAInfo = llvm::RISCVISAInfo::parseArchString(
           ArchName, /*EnableExperimentalExtensions=*/true);
+#endif // SIFIVE_CUSTOMIZATION
       if (!llvm::errorToBool(ISAInfo.takeError())) {
         unsigned XLen = (*ISAInfo)->getXLen();
         if (XLen == 32)
