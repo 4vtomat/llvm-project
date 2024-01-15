@@ -152,7 +152,7 @@ def FeatureStdExtSswg
                        "[H]S-mode.)", []>;
 
 def FeatureVendorXSiFivecflushdlone
-    : SubtargetFeature<"experimental-xsifivecflushdlone", "HasVendorXSiFivecflushdlone", "true",
+    : SubtargetFeature<"xsifivecflushdlone", "HasVendorXSiFivecflushdlone", "true",
                        "'XSiFivecflushdlone' (Cache Flush/Power Down Instructions)", []>;
 def HasVendorXSiFivecflushdlone :
     Predicate<"Subtarget->hasVendorXSiFivecflushdlone()">,
@@ -160,7 +160,7 @@ def HasVendorXSiFivecflushdlone :
                        "'XSiFivecflushdlone' (Cache Flush/Power Down Instructions)">;
 
 def FeatureVendorXSiFivecdiscarddlone
-    : SubtargetFeature<"experimental-xsifivecdiscarddlone", "HasVendorXSiFivecdiscarddlone", "true",
+    : SubtargetFeature<"xsifivecdiscarddlone", "HasVendorXSiFivecdiscarddlone", "true",
                        "'XSiFivecdiscarddlone' (Cache Flush/Power Down Instructions)", []>;
 def HasVendorXSiFivecdiscarddlone :
     Predicate<"Subtarget->hasVendorXSiFivecdiscarddlone()">,

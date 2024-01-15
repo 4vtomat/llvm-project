@@ -115,6 +115,8 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xsfvqmaccdod", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xsfvqmaccqoq", RISCVExtensionVersion{1, 0}},
     {"xsfvqmaccqoq", RISCVExtensionVersion{0, 1}}, // SIFIVE
+    {"xsifivecdiscarddlone", RISCVExtensionVersion{0, 1}}, // SIFIVE
+    {"xsifivecflushdlone", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xtheadba", RISCVExtensionVersion{1, 0}},
     {"xtheadbb", RISCVExtensionVersion{1, 0}},
     {"xtheadbs", RISCVExtensionVersion{1, 0}},
@@ -127,6 +129,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xtheadsync", RISCVExtensionVersion{1, 0}},
     {"xtheadvdot", RISCVExtensionVersion{1, 0}},
     {"xventanacondops", RISCVExtensionVersion{1, 0}},
+
     {"za64rs", RISCVExtensionVersion{1, 0}}, // SIFIVE
     {"zawrs", RISCVExtensionVersion{1, 0}},
 
@@ -236,8 +239,6 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"smwg", RISCVExtensionVersion{0, 3}}, // SIFIVE
     {"smwgd", RISCVExtensionVersion{0, 3}}, // SIFIVE
     {"sswg", RISCVExtensionVersion{0, 3}}, // SIFIVE
-    {"xsifivecdiscarddlone", RISCVExtensionVersion{0, 1}}, // SIFIVE
-    {"xsifivecflushdlone", RISCVExtensionVersion{0, 1}}, // SIFIVE
 
     {"zacas", RISCVExtensionVersion{1, 0}},
 
