@@ -128,6 +128,35 @@ let TargetPrefix = "riscv" in {
     }
   }
 
+  // We use llvm_anyvector_ty and llvm_anyint_ty for future extensibility purpose
+  // but only EEW=32 is defined for now
+  // Input: (vector_in, vector_in, vector_in/scalar_in, vl, policy)
+  class RISCVSFCustomVQDOTUnMasked<bit HasVV>
+        : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                    [LLVMMatchType<0>, LLVMMatchType<0>,
+                     !if(HasVV, llvm_any_ty, llvm_anyint_ty),
+                     llvm_anyint_ty, LLVMMatchType<2>],
+                    [ImmArg<ArgIndex<4>>, IntrNoMem]>, RISCVVIntrinsic {
+    let ScalarOperand = 2;
+    let VLOperand = 3;
+  }
+  // Input: (vector_in, vector_in, vector_in/scalar_in, mask, vl, policy)
+  class RISCVSFCustomVQDOTMasked<bit HasVV>
+        : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
+                    [LLVMMatchType<0>, LLVMMatchType<0>,
+                     !if(HasVV, llvm_any_ty, llvm_anyint_ty),
+                     LLVMScalarOrSameVectorWidth<0, llvm_i1_ty>,
+                     llvm_anyint_ty, LLVMMatchType<2>],
+                    [ImmArg<ArgIndex<5>>, IntrNoMem]>, RISCVVIntrinsic {
+    let ScalarOperand = 2;
+    let VLOperand = 4;
+  }
+
+  multiclass RISCVSFCustomVQDOT<bit HasVV = 1> {
+    def "int_riscv_" # NAME : RISCVSFCustomVQDOTUnMasked<HasVV=HasVV>;
+    def "int_riscv_" # NAME # "_mask" : RISCVSFCustomVQDOTMasked<HasVV=HasVV>;
+  }
+
   class RISCVSFCustomVMACC
       : DefaultAttrsIntrinsic< [llvm_anyvector_ty],
                    [LLVMMatchType<0>, llvm_anyvector_ty, llvm_anyvector_ty,
@@ -164,6 +193,12 @@ let TargetPrefix = "riscv" in {
   defm "" : RISCVSFCustomVC_XV<["x", "i", "v", "f"]>;
   defm "" : RISCVSFCustomVC_XVV<["x", "i", "v", "f"]>;
   defm "" : RISCVSFCustomVC_XVW<["x", "i", "v", "f"]>;
+
+  // XSfvqdotq
+  defm sf_vqdot   : RISCVSFCustomVQDOT;
+  defm sf_vqdotu  : RISCVSFCustomVQDOT;
+  defm sf_vqdotsu : RISCVSFCustomVQDOT;
+  defm sf_vqdotus : RISCVSFCustomVQDOT<HasVV=0>;
 
   // XSfvqmaccdod
   def int_riscv_sf_vqmaccu_2x8x2  : RISCVSFCustomVMACC;

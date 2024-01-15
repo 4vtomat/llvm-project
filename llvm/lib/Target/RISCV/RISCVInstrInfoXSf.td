@@ -86,6 +86,28 @@ class CustomSiFiveVF<string opcodestr,  RISCVVFormat opv, bits<6> funct6>
   let mayLoad = 0;
   let mayStore = 0;
 }
+
+defvar VQDOTLMuls = [VI32MF2, VI32M1, VI32M2, VI32M4, VI32M8];
+
+// These VPat definitions are for vqdot because they have a different operand
+// order with other ternary instructions (i.e. vop.vx vd, vs2, rs1)
+multiclass VPatTernaryV_VX_AAXASwapped<string intrinsic, string instruction,
+                                       list<VTypeInfo> vtilist> {
+  foreach vti = vtilist in
+    let Predicates = GetVTypePredicates<vti>.Predicates in
+    // we have op1 and op2 swapped here
+    defm : VPatTernaryWithPolicy<intrinsic, instruction,
+                                 "V"#vti.ScalarSuffix,
+                                 vti.Vector, vti.Vector, vti.Scalar, vti.Mask,
+                                 vti.Log2SEW, vti.LMul, vti.RegClass,
+                                 vti.RegClass, vti.ScalarRegClass>;
+}
+
+multiclass VPatTernaryV_VV_VX_AAXASwapped<string intrinsic, string instruction,
+                              list<VTypeInfo> vtilist>
+    // keep the original VV because the order doesn't matter
+    : VPatTernaryV_VV_AAXA<intrinsic, instruction, vtilist>,
+      VPatTernaryV_VX_AAXASwapped<intrinsic, instruction, vtilist>;
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
@@ -760,6 +782,13 @@ let Predicates = [HasVendorXSfvqdotq] in {
   foreach m = MxListVF4 in {
     defm "PseudoVQDOTUS_VX" : VPseudoTernaryWithPolicy<m.vrclass, m.vrclass, GPR, m>;
   }
+}
+
+let Predicates = [HasVendorXSfvqdotq] in {
+  defm : VPatTernaryV_VV_VX_AAXASwapped<"int_riscv_sf_vqdot", "PseudoVQDOT", VQDOTLMuls>;
+  defm : VPatTernaryV_VV_VX_AAXASwapped<"int_riscv_sf_vqdotu", "PseudoVQDOTU", VQDOTLMuls>;
+  defm : VPatTernaryV_VV_VX_AAXASwapped<"int_riscv_sf_vqdotsu", "PseudoVQDOTSU", VQDOTLMuls>;
+  defm : VPatTernaryV_VX_AAXASwapped<"int_riscv_sf_vqdotus", "PseudoVQDOTUS", VQDOTLMuls>;
 }
 
 let Predicates = [HasVendorXSfvfhbfmin], mayRaiseFPException = true in {
