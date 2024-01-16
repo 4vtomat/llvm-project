@@ -93,68 +93,34 @@ vle64.v v1, (a1)
 # CHECK-NEXT: [8]   - SiFive7VS
 
 # CHECK:      Resource pressure per iteration:
-<<<<<<< HEAD
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
-# CHECK-NEXT:  -      -      -     2.00    -      -     24.00  3541.00  -
+# CHECK-NEXT:  -      -      -     2.00    -      -     24.00  229.00  -
 
 # CHECK:      Resource pressure by instruction:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  -      -      -      -      -      -     1.00   513.00  -     vlse8.v	v1, (a1), a2
-# CHECK-NEXT:  -      -      -      -      -      -     1.00   257.00  -     vlse16.v	v1, (a1), a2
+# CHECK-NEXT:  -      -      -      -      -      -     1.00   17.00   -     vlse8.v	v1, (a1), a2
+# CHECK-NEXT:  -      -      -      -      -      -     1.00   17.00   -     vlse16.v	v1, (a1), a2
 # CHECK-NEXT:  -      -      -      -      -      -     1.00   17.00   -     vlse32.v	v1, (a1), a2
-# CHECK-NEXT:  -      -      -      -      -      -     1.00   65.00   -     vlse64.v	v1, (a1), a2
-# CHECK-NEXT:  -      -      -      -      -      -     1.00   513.00  -     vlse8.v	v1, (a1), zero
-# CHECK-NEXT:  -      -      -      -      -      -     1.00   257.00  -     vlse16.v	v1, (a1), zero
+# CHECK-NEXT:  -      -      -      -      -      -     1.00   17.00   -     vlse64.v	v1, (a1), a2
+# CHECK-NEXT:  -      -      -      -      -      -     1.00   17.00   -     vlse8.v	v1, (a1), zero
+# CHECK-NEXT:  -      -      -      -      -      -     1.00   17.00   -     vlse16.v	v1, (a1), zero
 # CHECK-NEXT:  -      -      -      -      -      -     1.00   17.00   -     vlse32.v	v1, (a1), zero
-# CHECK-NEXT:  -      -      -      -      -      -     1.00   65.00   -     vlse64.v	v1, (a1), zero
+# CHECK-NEXT:  -      -      -      -      -      -     1.00   17.00   -     vlse64.v	v1, (a1), zero
 # CHECK-NEXT:  -      -      -      -      -      -     1.00   2.00    -     vle8.v	v1, (a1)
 # CHECK-NEXT:  -      -      -      -      -      -     1.00   2.00    -     vle16.v	v1, (a1)
 # CHECK-NEXT:  -      -      -      -      -      -     1.00   3.00    -     vle32.v	v1, (a1)
 # CHECK-NEXT:  -      -      -      -      -      -     1.00   5.00    -     vle64.v	v1, (a1)
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e64, m1, tu, mu
-# CHECK-NEXT:  -      -      -      -      -      -     1.00   513.00  -     vlse8.v	v1, (a1), a2
-# CHECK-NEXT:  -      -      -      -      -      -     1.00   257.00  -     vlse16.v	v1, (a1), a2
-# CHECK-NEXT:  -      -      -      -      -      -     1.00   129.00  -     vlse32.v	v1, (a1), a2
+# CHECK-NEXT:  -      -      -      -      -      -     1.00   9.00    -     vlse8.v	v1, (a1), a2
+# CHECK-NEXT:  -      -      -      -      -      -     1.00   9.00    -     vlse16.v	v1, (a1), a2
+# CHECK-NEXT:  -      -      -      -      -      -     1.00   9.00    -     vlse32.v	v1, (a1), a2
 # CHECK-NEXT:  -      -      -      -      -      -     1.00   9.00    -     vlse64.v	v1, (a1), a2
-# CHECK-NEXT:  -      -      -      -      -      -     1.00   513.00  -     vlse8.v	v1, (a1), zero
-# CHECK-NEXT:  -      -      -      -      -      -     1.00   257.00  -     vlse16.v	v1, (a1), zero
-# CHECK-NEXT:  -      -      -      -      -      -     1.00   129.00  -     vlse32.v	v1, (a1), zero
+# CHECK-NEXT:  -      -      -      -      -      -     1.00   9.00    -     vlse8.v	v1, (a1), zero
+# CHECK-NEXT:  -      -      -      -      -      -     1.00   9.00    -     vlse16.v	v1, (a1), zero
+# CHECK-NEXT:  -      -      -      -      -      -     1.00   9.00    -     vlse32.v	v1, (a1), zero
 # CHECK-NEXT:  -      -      -      -      -      -     1.00   9.00    -     vlse64.v	v1, (a1), zero
 # CHECK-NEXT:  -      -      -      -      -      -     1.00   2.00    -     vle8.v	v1, (a1)
 # CHECK-NEXT:  -      -      -      -      -      -     1.00   2.00    -     vle16.v	v1, (a1)
 # CHECK-NEXT:  -      -      -      -      -      -     1.00   2.00    -     vle32.v	v1, (a1)
 # CHECK-NEXT:  -      -      -      -      -      -     1.00   3.00    -     vle64.v	v1, (a1)
-=======
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]
-# CHECK-NEXT:  -      -     2.00    -      -     24.00  229.00  -
-
-# CHECK:      Resource pressure by instruction:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    Instructions:
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  -      -      -      -      -     1.00   17.00   -     vlse8.v	v1, (a1), a2
-# CHECK-NEXT:  -      -      -      -      -     1.00   17.00   -     vlse16.v	v1, (a1), a2
-# CHECK-NEXT:  -      -      -      -      -     1.00   17.00   -     vlse32.v	v1, (a1), a2
-# CHECK-NEXT:  -      -      -      -      -     1.00   17.00   -     vlse64.v	v1, (a1), a2
-# CHECK-NEXT:  -      -      -      -      -     1.00   17.00   -     vlse8.v	v1, (a1), zero
-# CHECK-NEXT:  -      -      -      -      -     1.00   17.00   -     vlse16.v	v1, (a1), zero
-# CHECK-NEXT:  -      -      -      -      -     1.00   17.00   -     vlse32.v	v1, (a1), zero
-# CHECK-NEXT:  -      -      -      -      -     1.00   17.00   -     vlse64.v	v1, (a1), zero
-# CHECK-NEXT:  -      -      -      -      -     1.00   2.00    -     vle8.v	v1, (a1)
-# CHECK-NEXT:  -      -      -      -      -     1.00   2.00    -     vle16.v	v1, (a1)
-# CHECK-NEXT:  -      -      -      -      -     1.00   3.00    -     vle32.v	v1, (a1)
-# CHECK-NEXT:  -      -      -      -      -     1.00   5.00    -     vle64.v	v1, (a1)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e64, m1, tu, mu
-# CHECK-NEXT:  -      -      -      -      -     1.00   9.00    -     vlse8.v	v1, (a1), a2
-# CHECK-NEXT:  -      -      -      -      -     1.00   9.00    -     vlse16.v	v1, (a1), a2
-# CHECK-NEXT:  -      -      -      -      -     1.00   9.00    -     vlse32.v	v1, (a1), a2
-# CHECK-NEXT:  -      -      -      -      -     1.00   9.00    -     vlse64.v	v1, (a1), a2
-# CHECK-NEXT:  -      -      -      -      -     1.00   9.00    -     vlse8.v	v1, (a1), zero
-# CHECK-NEXT:  -      -      -      -      -     1.00   9.00    -     vlse16.v	v1, (a1), zero
-# CHECK-NEXT:  -      -      -      -      -     1.00   9.00    -     vlse32.v	v1, (a1), zero
-# CHECK-NEXT:  -      -      -      -      -     1.00   9.00    -     vlse64.v	v1, (a1), zero
-# CHECK-NEXT:  -      -      -      -      -     1.00   2.00    -     vle8.v	v1, (a1)
-# CHECK-NEXT:  -      -      -      -      -     1.00   2.00    -     vle16.v	v1, (a1)
-# CHECK-NEXT:  -      -      -      -      -     1.00   2.00    -     vle32.v	v1, (a1)
-# CHECK-NEXT:  -      -      -      -      -     1.00   3.00    -     vle64.v	v1, (a1)
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
