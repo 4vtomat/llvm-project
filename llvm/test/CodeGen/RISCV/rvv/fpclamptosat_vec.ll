@@ -901,12 +901,7 @@ define <2 x i16> @stest_f64i16(<2 x double> %x) {
 ; CHECK-V-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-V-NEXT:    vfncvt.rtz.x.f.w v8, v8
 ; CHECK-V-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-<<<<<<< HEAD
-; CHECK-V-NEXT:    csrwi vxrm, 0
 ; CHECK-V-NEXT:    vnclip.wi v8, v8, 0
-=======
-; CHECK-V-NEXT:    vnclip.wi v8, v9, 0
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptosi <2 x double> %x to <2 x i32>
@@ -942,12 +937,7 @@ define <2 x i16> @utest_f64i16(<2 x double> %x) {
 ; CHECK-V-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-V-NEXT:    vfncvt.rtz.xu.f.w v8, v8
 ; CHECK-V-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-<<<<<<< HEAD
-; CHECK-V-NEXT:    csrwi vxrm, 0
 ; CHECK-V-NEXT:    vnclipu.wi v8, v8, 0
-=======
-; CHECK-V-NEXT:    vnclipu.wi v8, v9, 0
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptoui <2 x double> %x to <2 x i32>
@@ -4193,12 +4183,7 @@ define <2 x i16> @stest_f64i16_mm(<2 x double> %x) {
 ; CHECK-V-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-V-NEXT:    vfncvt.rtz.x.f.w v8, v8
 ; CHECK-V-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-<<<<<<< HEAD
-; CHECK-V-NEXT:    csrwi vxrm, 0
 ; CHECK-V-NEXT:    vnclip.wi v8, v8, 0
-=======
-; CHECK-V-NEXT:    vnclip.wi v8, v9, 0
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptosi <2 x double> %x to <2 x i32>
@@ -4232,12 +4217,7 @@ define <2 x i16> @utest_f64i16_mm(<2 x double> %x) {
 ; CHECK-V-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-V-NEXT:    vfncvt.rtz.xu.f.w v8, v8
 ; CHECK-V-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-<<<<<<< HEAD
-; CHECK-V-NEXT:    csrwi vxrm, 0
 ; CHECK-V-NEXT:    vnclipu.wi v8, v8, 0
-=======
-; CHECK-V-NEXT:    vnclipu.wi v8, v9, 0
->>>>>>> 376baeb2d535826eb2d8158c4147e37cda493f35
 ; CHECK-V-NEXT:    ret
 entry:
   %conv = fptoui <2 x double> %x to <2 x i32>
