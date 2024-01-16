@@ -545,7 +545,8 @@ enum RVVRequire : uint32_t {
 #if SIFIVE_CUSTOMIZATION
   RVV_REQ_xsfvfhbfmin = 1 << 17,
   RVV_REQ_HasBfloat16 = 1 << 18,
-  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_HasBfloat16)
+  RVV_REQ_xsfvqdotq = 1 << 19,
+  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_xsfvqdotq)
 #else
   LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Experimental)
 #endif // SIFIVE_CUSTOMIZATION

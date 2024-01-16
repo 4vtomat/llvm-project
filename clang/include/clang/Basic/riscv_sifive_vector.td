@@ -128,6 +128,15 @@ multiclass RVVVQMACCQOQBuiltinSet<list<list<string>> suffixes_prototypes> {
     defm NAME : RVVOutOp1Op2BuiltinSet<NAME, "s", suffixes_prototypes>;
 }
 
+multiclass RVVVQDOTQBuiltinSet<list<list<string>> suffixes_prototypes> {
+  let UnMaskedPolicyScheme = HasPolicyOperand,
+      HasMaskedOffOperand = false,
+      OverloadedName = NAME,
+      Log2LMUL = [-1, 0, 1, 2, 3] in {
+    defm NAME : RVVOutOp2BuiltinSet<NAME, "i", suffixes_prototypes>;
+  }
+}
+
 multiclass RVVVFNRCLIPBuiltinSet<string suffix, string prototype, string type_range> {
   let Log2LMUL = [-3, -2, -1, 0, 1, 2],
       Name = NAME,
@@ -208,4 +217,16 @@ let ManualCodegen = [{
   defm sf_vfnrclip_x_f_qf : RVVVFNRCLIPBuiltinSet<"v", "vFqf", "c">;
   defm sf_vfnrclip_xu_f_qf : RVVVFNRCLIPBuiltinSet<"Uv", "UvFqf", "c">;
 }
+}
+
+// Only SEW=32 is defined for Xsfvqdotq so far, and since inputs are in fact
+// four 8-bit integer bundles, we use unsigned type to represent all of them
+let RequiredFeatures = ["Xsfvqdotq"] in {
+  defm sf_vqdot : RVVVQDOTQBuiltinSet<[["vv", "v", "vvUvUv"],
+                                       ["vx", "v", "vvUvUe"]]>;
+  defm sf_vqdotu : RVVVQDOTQBuiltinSet<[["vv", "Uv", "UvUvUvUv"],
+                                        ["vx", "Uv", "UvUvUvUe"]]>;
+  defm sf_vqdotsu : RVVVQDOTQBuiltinSet<[["vv", "v", "vvUvUv"],
+                                         ["vx", "v", "vvUvUe"]]>;
+  defm sf_vqdotus : RVVVQDOTQBuiltinSet<[["vx", "v", "vvUvUe"]]>;
 }

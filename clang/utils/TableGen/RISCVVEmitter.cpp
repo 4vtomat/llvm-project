@@ -777,6 +777,7 @@ void RVVEmitter::createRVVIntrinsics(
 #if SIFIVE_CUSTOMIZATION
               .Case("Xsfvfhbfmin", RVV_REQ_xsfvfhbfmin)
               .Case("HasBfloat16", RVV_REQ_HasBfloat16)
+              .Case("Xsfvqdotq", RVV_REQ_xsfvqdotq)
 #endif // SIFIVE_CUSTOMIZATION
               .Case("Experimental", RVV_REQ_Experimental)
               .Default(RVV_REQ_None);

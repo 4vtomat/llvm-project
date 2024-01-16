@@ -779,6 +779,8 @@ R"(All available -march extensions for RISC-V
     xsfvqmaccdod        0.1
     xsfvqmaccqoq        1.0
     xsfvqmaccqoq        0.1
+    xsifivecdiscarddlone0.1
+    xsifivecflushdlone  0.1
     xtheadba            1.0
     xtheadbb            1.0
     xtheadbs            1.0
@@ -806,8 +808,6 @@ Experimental extensions
     smwg                0.3
     smwgd               0.3
     sswg                0.3
-    xsifivecdiscarddlone0.1
-    xsifivecflushdlone  0.1
 
 Use -march to specify the target's extension.
 For example, clang -march=rv32i_v1p0)";
