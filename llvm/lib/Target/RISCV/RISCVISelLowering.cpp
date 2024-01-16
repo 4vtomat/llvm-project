@@ -11845,11 +11845,11 @@ SDValue RISCVTargetLowering::lowerVPMergeMask(SDValue Op, SelectionDAG &DAG) con
   SDValue SplatZero = DAG.getNode(RISCVISD::VMV_V_X_VL, DL, PromotedVT,
                                   DAG.getUNDEF(PromotedVT),
                                   DAG.getConstant(0, DL, XLenVT), VLMax);
-  TrueVal = DAG.getNode(RISCVISD::VSELECT_VL, DL, PromotedVT, TrueVal,
-                        SplatOne, SplatZero, VL);
+  TrueVal = DAG.getNode(RISCVISD::VMERGE_VL, DL, PromotedVT, TrueVal,
+                        SplatOne, SplatZero, DAG.getUNDEF(PromotedVT), VL);
   // Any element past VL uses FalseVal, so use VLMax
-  FalseVal = DAG.getNode(RISCVISD::VSELECT_VL, DL, PromotedVT, FalseVal,
-                         SplatOne, SplatZero, VLMax);
+  FalseVal = DAG.getNode(RISCVISD::VMERGE_VL, DL, PromotedVT, FalseVal,
+                         SplatOne, SplatZero, DAG.getUNDEF(PromotedVT), VLMax);
 
   // VP_MERGE the two promoted values.
   SDValue VPMerge = DAG.getNode(RISCVISD::VMERGE_VL, DL, PromotedVT,
@@ -15236,7 +15236,7 @@ static SDValue combineSelectAndBinOp(const SDNode *N, SelectionDAG &DAG) {
   // other operand.
   auto MaskedValFromSelect = [&IsMvConst0](SDValue V, SDValue &Mask,
                                            SDValue &MaskedVal) {
-    if (V.getOpcode() != RISCVISD::VSELECT_VL)
+    if (V.getOpcode() != RISCVISD::VMERGE_VL || !V.getOperand(3).isUndef())
       return;
 
     const SDValue X = V.getOperand(1);
@@ -15931,7 +15931,7 @@ static SDValue combineToVFMAX_VFMIN(SDNode *N, SelectionDAG &DAG) {
     return SDValue();
 
   // VL should match.
-  SDValue VL = N->getOperand(N->getOpcode() == RISCVISD::VMERGE_VL ? 4 : 3);
+  SDValue VL = N->getOperand(4);
   if (VL != Cond.getOperand(5))
     return SDValue();
 
@@ -15992,7 +15992,7 @@ static SDValue combineToVFMAX_VFMIN(SDNode *N, SelectionDAG &DAG) {
   }
   }
 
-  if (N->getOpcode() == RISCVISD::VSELECT_VL)
+  if (N->getOperand(3).isUndef())
     return Res;
 
   // If we started with vp_merge_vl, we still need to preserve the tail
@@ -16004,15 +16004,15 @@ static SDValue combineToVFMAX_VFMIN(SDNode *N, SelectionDAG &DAG) {
 }
 
 static SDValue performVSELECT_VLCombine(SDNode *N, SelectionDAG &DAG) {
-  if (SDValue V = combineToVFMAX_VFMIN(N, DAG))
-    return V;
+  if (!N->getOperand(3).isUndef())
+    return SDValue();
 
   // vselect_vl (vmclr_vl, X, Y) -> Y
   SDValue Cond = N->getOperand(0);
   if (Cond.getOpcode() != RISCVISD::VMCLR_VL)
     return SDValue();
 
-  SDValue VL = N->getOperand(3);
+  SDValue VL = N->getOperand(4);
   if (VL != Cond.getOperand(0))
     return SDValue();
 
@@ -18269,8 +18269,6 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     return performVP_REVERSECombine(N, DAG, Subtarget);
   case ISD::VP_STORE:
     return performVP_STORECombine(N, DAG, Subtarget);
-  case RISCVISD::VSELECT_VL:
-    return performVSELECT_VLCombine(N, DAG);
   case RISCVISD::VMAND_VL: {
     // vmand_vl (vmset_vl, Y) -> Y
     // vmand_vl (X, vmset_vl) -> X
@@ -18285,11 +18283,18 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
   case RISCVISD::VMERGE_VL: {
     // Combines below all assume this is a vp.merge.
     // FIXME: Review this.
-    if (N->getOperand(2) != N->getOperand(3))
+    if (N->getOperand(2) != N->getOperand(3) && !N->getOperand(3).isUndef())
       break;
 
     if (SDValue V = combineToVFMAX_VFMIN(N, DAG))
       return V;
+    if (SDValue V = performVSELECT_VLCombine(N, DAG))
+      return V;
+
+    // Combines below all assume this is a vp.merge.
+    // FIXME: Review this.
+    if (N->getOperand(2) != N->getOperand(3))
+      break;
 
     SDValue Mask = N->getOperand(0);
     SDValue VL = N->getOperand(4);
@@ -18310,8 +18315,9 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     //      vmerge_vl (M1, T1, F1, F2, VL)
     //      when M2 is all 1s
     SDValue MergedWhenTrue = N->getOperand(1);
-    if (MergedWhenTrue.getOpcode() == RISCVISD::VSELECT_VL &&
-        MergedWhenTrue.getOperand(3) == VL) {
+    if (MergedWhenTrue.getOpcode() == RISCVISD::VMERGE_VL &&
+        MergedWhenTrue.getOperand(3).isUndef() &&
+        MergedWhenTrue.getOperand(4) == VL) {
       // Now we know the operand we will merge when true is a vp_merge_vl or
       // vselect_vl with the same VL length as it's parent vp_merge_vl N.
       if (ISD::isConstantSplatVectorAllOnes(Mask.getNode())) {
@@ -18331,8 +18337,8 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     if (MergedWhenTrue.getOpcode() == RISCVISD::VMERGE_VL &&
         MergedWhenTrue.getOperand(2) == MergedWhenTrue.getOperand(3) &&
         MergedWhenTrue.getOperand(4) == VL) {
-      // Now we know the operand we will merge when true is a vp_merge_vl or
-      // vselect_vl with the same VL length as it's parent vp_merge_vl N.
+      // Now we know the operand we will merge when true is a vp_merge_vl
+      // with the same VL length as it's parent vp_merge_vl N.
       if (ISD::isConstantSplatVectorAllOnes(Mask.getNode())) {
         return DAG.getNode(RISCVISD::VMERGE_VL, SDLoc(N), N->getValueType(0),
                            MergedWhenTrue.getOperand(0), // M1
