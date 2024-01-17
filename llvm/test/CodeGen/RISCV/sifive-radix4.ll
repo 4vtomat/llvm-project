@@ -18,14 +18,14 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280-NEXT:    slli t1, t1, 1
 ; X280-NEXT:    vlseg2e32.v v12, (a0)
 ; X280-NEXT:    csrr a0, vlenb
-; X280-NEXT:    vs2r.v v8, (a2) # Unknown-size Folded Spill
-; X280-NEXT:    add a2, a2, t1
 ; X280-NEXT:    slli a0, a0, 2
+; X280-NEXT:    vs2r.v v8, (a2) # Unknown-size Folded Spill
 ; X280-NEXT:    add a0, a0, sp
+; X280-NEXT:    add a2, a2, t1
 ; X280-NEXT:    ld t1, 40(a0)
 ; X280-NEXT:    csrr a0, vlenb
-; X280-NEXT:    vs2r.v v10, (a2) # Unknown-size Folded Spill
 ; X280-NEXT:    vlseg2e32.v v16, (a1)
+; X280-NEXT:    vs2r.v v10, (a2) # Unknown-size Folded Spill
 ; X280-NEXT:    slli a0, a0, 2
 ; X280-NEXT:    add a0, a0, sp
 ; X280-NEXT:    ld t2, 32(a0)
@@ -41,56 +41,56 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280-NEXT:    bgeu zero, t1, .LBB0_2
 ; X280-NEXT:  .LBB0_1: # %for.body
 ; X280-NEXT:    # =>This Inner Loop Header: Depth=1
-; X280-NEXT:    vlseg2e32.v v20, (a4)
+; X280-NEXT:    vlseg2e32.v v22, (a4)
 ; X280-NEXT:    csrr t4, vlenb
 ; X280-NEXT:    addi t3, sp, 16
 ; X280-NEXT:    addi t0, t0, 1
 ; X280-NEXT:    add a4, a4, a0
 ; X280-NEXT:    slli t4, t4, 1
-; X280-NEXT:    vlseg2e32.v v24, (a5)
+; X280-NEXT:    vlseg2e32.v v26, (a5)
 ; X280-NEXT:    add a5, a5, a0
-; X280-NEXT:    vfmul.vv v28, v20, v12
-; X280-NEXT:    vfmul.vv v20, v20, v14
+; X280-NEXT:    vfmul.vv v20, v22, v12
+; X280-NEXT:    vfmul.vv v22, v22, v14
 ; X280-NEXT:    vlseg2e32.v v2, (a6)
 ; X280-NEXT:    add a6, a6, a0
-; X280-NEXT:    vfmul.vv v30, v24, v16
-; X280-NEXT:    vfnmsac.vv v28, v22, v14
+; X280-NEXT:    vfmul.vv v30, v26, v16
+; X280-NEXT:    vfnmsac.vv v20, v24, v14
 ; X280-NEXT:    vl2r.v v8, (t3) # Unknown-size Folded Reload
 ; X280-NEXT:    add t3, t3, t4
-; X280-NEXT:    vfmacc.vv v20, v22, v12
+; X280-NEXT:    vfmacc.vv v22, v24, v12
 ; X280-NEXT:    vl2r.v v10, (t3) # Unknown-size Folded Reload
-; X280-NEXT:    vfmul.vv v22, v24, v18
-; X280-NEXT:    vfnmsac.vv v30, v26, v18
-; X280-NEXT:    vfmacc.vv v22, v26, v16
-; X280-NEXT:    vfmul.vv v24, v2, v8
-; X280-NEXT:    vfmul.vv v26, v2, v10
+; X280-NEXT:    vfmul.vv v24, v26, v18
+; X280-NEXT:    vfnmsac.vv v30, v28, v18
+; X280-NEXT:    vfmacc.vv v24, v28, v16
+; X280-NEXT:    vfmul.vv v26, v2, v8
+; X280-NEXT:    vfmul.vv v28, v2, v10
 ; X280-NEXT:    vlseg2e32.v v0, (a3)
 ; X280-NEXT:    add a3, a3, a0
-; X280-NEXT:    vfnmsac.vv v24, v4, v10
-; X280-NEXT:    vfmacc.vv v26, v4, v8
+; X280-NEXT:    vfnmsac.vv v26, v4, v10
+; X280-NEXT:    vfmacc.vv v28, v4, v8
 ; X280-NEXT:    vfadd.vv v4, v0, v30
-; X280-NEXT:    vfadd.vv v6, v2, v22
+; X280-NEXT:    vfadd.vv v6, v2, v24
 ; X280-NEXT:    vfsub.vv v30, v0, v30
-; X280-NEXT:    vfsub.vv v22, v2, v22
-; X280-NEXT:    vfadd.vv v0, v28, v24
-; X280-NEXT:    vfadd.vv v2, v20, v26
-; X280-NEXT:    vfsub.vv v24, v28, v24
+; X280-NEXT:    vfsub.vv v24, v2, v24
+; X280-NEXT:    vfadd.vv v0, v20, v26
+; X280-NEXT:    vfadd.vv v2, v22, v28
+; X280-NEXT:    vfsub.vv v22, v22, v28
+; X280-NEXT:    vfadd.vv v8, v4, v0
+; X280-NEXT:    vfadd.vv v10, v6, v2
 ; X280-NEXT:    vfsub.vv v20, v20, v26
-; X280-NEXT:    vfadd.vv v26, v4, v0
-; X280-NEXT:    vfadd.vv v28, v6, v2
-; X280-NEXT:    vfadd.vv v8, v30, v20
-; X280-NEXT:    vsseg2e32.v v26, (a7)
+; X280-NEXT:    vfadd.vv v26, v30, v22
+; X280-NEXT:    vsseg2e32.v v8, (a7)
 ; X280-NEXT:    add a7, a7, a0
-; X280-NEXT:    vfadd.vv v10, v22, v24
-; X280-NEXT:    vfsub.vv v26, v4, v0
-; X280-NEXT:    vsseg2e32.v v8, (a1)
+; X280-NEXT:    vfadd.vv v28, v24, v20
+; X280-NEXT:    vfsub.vv v8, v4, v0
+; X280-NEXT:    vfsub.vv v10, v6, v2
+; X280-NEXT:    vsseg2e32.v v26, (a1)
 ; X280-NEXT:    add a1, a1, a0
-; X280-NEXT:    vfsub.vv v28, v6, v2
-; X280-NEXT:    vfsub.vv v8, v30, v20
-; X280-NEXT:    vsseg2e32.v v26, (a2)
+; X280-NEXT:    vfsub.vv v22, v30, v22
+; X280-NEXT:    vfsub.vv v24, v24, v20
+; X280-NEXT:    vsseg2e32.v v8, (a2)
 ; X280-NEXT:    add a2, a2, a0
-; X280-NEXT:    vfsub.vv v10, v22, v24
-; X280-NEXT:    vsseg2e32.v v8, (t2)
+; X280-NEXT:    vsseg2e32.v v22, (t2)
 ; X280-NEXT:    add t2, t2, a0
 ; X280-NEXT:    bltu t0, t1, .LBB0_1
 ; X280-NEXT:  .LBB0_2: # %for.cond.cleanup
@@ -114,14 +114,14 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280N-NEXT:    slli t1, t1, 1
 ; X280N-NEXT:    vlseg2e32.v v12, (a0)
 ; X280N-NEXT:    csrr a0, vlenb
-; X280N-NEXT:    vs2r.v v8, (a2) # Unknown-size Folded Spill
-; X280N-NEXT:    add a2, a2, t1
 ; X280N-NEXT:    slli a0, a0, 2
+; X280N-NEXT:    vs2r.v v8, (a2) # Unknown-size Folded Spill
 ; X280N-NEXT:    add a0, a0, sp
+; X280N-NEXT:    add a2, a2, t1
 ; X280N-NEXT:    ld t1, 40(a0)
 ; X280N-NEXT:    csrr a0, vlenb
-; X280N-NEXT:    vs2r.v v10, (a2) # Unknown-size Folded Spill
 ; X280N-NEXT:    vlseg2e32.v v16, (a1)
+; X280N-NEXT:    vs2r.v v10, (a2) # Unknown-size Folded Spill
 ; X280N-NEXT:    slli a0, a0, 2
 ; X280N-NEXT:    add a0, a0, sp
 ; X280N-NEXT:    ld t2, 32(a0)
@@ -137,56 +137,56 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280N-NEXT:    bgeu zero, t1, .LBB0_2
 ; X280N-NEXT:  .LBB0_1: # %for.body
 ; X280N-NEXT:    # =>This Inner Loop Header: Depth=1
-; X280N-NEXT:    vlseg2e32.v v20, (a4)
+; X280N-NEXT:    vlseg2e32.v v22, (a4)
 ; X280N-NEXT:    csrr t4, vlenb
 ; X280N-NEXT:    addi t3, sp, 16
 ; X280N-NEXT:    addi t0, t0, 1
 ; X280N-NEXT:    add a4, a4, a0
 ; X280N-NEXT:    slli t4, t4, 1
-; X280N-NEXT:    vlseg2e32.v v24, (a5)
+; X280N-NEXT:    vlseg2e32.v v26, (a5)
 ; X280N-NEXT:    add a5, a5, a0
-; X280N-NEXT:    vfmul.vv v28, v20, v12
-; X280N-NEXT:    vfmul.vv v20, v20, v14
+; X280N-NEXT:    vfmul.vv v20, v22, v12
+; X280N-NEXT:    vfmul.vv v22, v22, v14
 ; X280N-NEXT:    vlseg2e32.v v2, (a6)
 ; X280N-NEXT:    add a6, a6, a0
-; X280N-NEXT:    vfmul.vv v30, v24, v16
-; X280N-NEXT:    vfnmsac.vv v28, v22, v14
+; X280N-NEXT:    vfmul.vv v30, v26, v16
+; X280N-NEXT:    vfnmsac.vv v20, v24, v14
 ; X280N-NEXT:    vl2r.v v8, (t3) # Unknown-size Folded Reload
 ; X280N-NEXT:    add t3, t3, t4
-; X280N-NEXT:    vfmacc.vv v20, v22, v12
+; X280N-NEXT:    vfmacc.vv v22, v24, v12
 ; X280N-NEXT:    vl2r.v v10, (t3) # Unknown-size Folded Reload
-; X280N-NEXT:    vfmul.vv v22, v24, v18
-; X280N-NEXT:    vfnmsac.vv v30, v26, v18
-; X280N-NEXT:    vfmacc.vv v22, v26, v16
-; X280N-NEXT:    vfmul.vv v24, v2, v8
-; X280N-NEXT:    vfmul.vv v26, v2, v10
+; X280N-NEXT:    vfmul.vv v24, v26, v18
+; X280N-NEXT:    vfnmsac.vv v30, v28, v18
+; X280N-NEXT:    vfmacc.vv v24, v28, v16
+; X280N-NEXT:    vfmul.vv v26, v2, v8
+; X280N-NEXT:    vfmul.vv v28, v2, v10
 ; X280N-NEXT:    vlseg2e32.v v0, (a3)
 ; X280N-NEXT:    add a3, a3, a0
-; X280N-NEXT:    vfnmsac.vv v24, v4, v10
-; X280N-NEXT:    vfmacc.vv v26, v4, v8
+; X280N-NEXT:    vfnmsac.vv v26, v4, v10
+; X280N-NEXT:    vfmacc.vv v28, v4, v8
 ; X280N-NEXT:    vfadd.vv v4, v0, v30
-; X280N-NEXT:    vfadd.vv v6, v2, v22
+; X280N-NEXT:    vfadd.vv v6, v2, v24
 ; X280N-NEXT:    vfsub.vv v30, v0, v30
-; X280N-NEXT:    vfsub.vv v22, v2, v22
-; X280N-NEXT:    vfadd.vv v0, v28, v24
-; X280N-NEXT:    vfadd.vv v2, v20, v26
-; X280N-NEXT:    vfsub.vv v24, v28, v24
+; X280N-NEXT:    vfsub.vv v24, v2, v24
+; X280N-NEXT:    vfadd.vv v0, v20, v26
+; X280N-NEXT:    vfadd.vv v2, v22, v28
+; X280N-NEXT:    vfsub.vv v22, v22, v28
+; X280N-NEXT:    vfadd.vv v8, v4, v0
+; X280N-NEXT:    vfadd.vv v10, v6, v2
 ; X280N-NEXT:    vfsub.vv v20, v20, v26
-; X280N-NEXT:    vfadd.vv v26, v4, v0
-; X280N-NEXT:    vfadd.vv v28, v6, v2
-; X280N-NEXT:    vfadd.vv v8, v30, v20
-; X280N-NEXT:    vsseg2e32.v v26, (a7)
+; X280N-NEXT:    vfadd.vv v26, v30, v22
+; X280N-NEXT:    vsseg2e32.v v8, (a7)
 ; X280N-NEXT:    add a7, a7, a0
-; X280N-NEXT:    vfadd.vv v10, v22, v24
-; X280N-NEXT:    vfsub.vv v26, v4, v0
-; X280N-NEXT:    vsseg2e32.v v8, (a1)
+; X280N-NEXT:    vfadd.vv v28, v24, v20
+; X280N-NEXT:    vfsub.vv v8, v4, v0
+; X280N-NEXT:    vfsub.vv v10, v6, v2
+; X280N-NEXT:    vsseg2e32.v v26, (a1)
 ; X280N-NEXT:    add a1, a1, a0
-; X280N-NEXT:    vfsub.vv v28, v6, v2
-; X280N-NEXT:    vfsub.vv v8, v30, v20
-; X280N-NEXT:    vsseg2e32.v v26, (a2)
+; X280N-NEXT:    vfsub.vv v22, v30, v22
+; X280N-NEXT:    vfsub.vv v24, v24, v20
+; X280N-NEXT:    vsseg2e32.v v8, (a2)
 ; X280N-NEXT:    add a2, a2, a0
-; X280N-NEXT:    vfsub.vv v10, v22, v24
-; X280N-NEXT:    vsseg2e32.v v8, (t2)
+; X280N-NEXT:    vsseg2e32.v v22, (t2)
 ; X280N-NEXT:    add t2, t2, a0
 ; X280N-NEXT:    bltu t0, t1, .LBB0_1
 ; X280N-NEXT:  .LBB0_2: # %for.cond.cleanup

@@ -1,10 +1,14 @@
 # RUN: llc -mtriple=riscv64 -mcpu=sifive-x280 -run-pass=machine-scheduler      \
 # RUN:  -debug-only=machine-scheduler -misched-dump-schedule-trace             \
-# RUN:  -misched-topdown -o - %s 2>&1 | FileCheck %s
+# RUN:  -misched-topdown -o - %s 2>&1 | FileCheck %s --check-prefix=X280
+# RUN: llc -mtriple=riscv64 -mcpu=sifive-x280n -run-pass=machine-scheduler      \
+# RUN:  -debug-only=machine-scheduler -misched-dump-schedule-trace             \
+# RUN:  -misched-topdown -o - %s 2>&1 | FileCheck %s --check-prefix=X280N
+
 # REQUIRES: asserts
 
-# The purpose of this test is to show that the VADD instructions are issued so
-# that the SiFive7VA is saturated.
+# The purpose of this test is to show that the VADD instructions are issued at
+# so that the SiFive7VA and SiFive7NVA are saturated.
 ---
 name:            add_m2
 tracksRegLiveness: true
@@ -12,46 +16,75 @@ body:             |
   bb.0.entry:
     liveins: $v8m2, $v10m2, $v12m2, $v14m2, $x10
 
-    %4:gprnox0 = COPY $x10
-    %3:vrm2 = COPY $v14m2
+    %0:gprnox0 = COPY $x10
+    %1:vrm2 = COPY $v14m2
     %2:vrm2 = COPY $v12m2
-    %1:vrm2 = COPY $v10m2
-    %0:vrm2 = COPY $v8m2
-    dead $x0 = PseudoVSETVLI %4, 217 /* e64, m2, ta, ma */, implicit-def $vl, implicit-def $vtype
-    %5:vrm2 = PseudoVADD_VV_M2 undef %5, %0, %1, $noreg, 6 /* e64 */, 0 /* tu, mu */, implicit $vl, implicit $vtype
-    %6:vrm2 = PseudoVADD_VV_M2 undef %6, %3, %2, $noreg, 6 /* e64 */, 0 /* tu, mu */, implicit $vl, implicit $vtype
-    %7:vrm2 = PseudoVADD_VV_M2 undef %7, %5, %6, $noreg, 6 /* e64 */, 0 /* tu, mu */, implicit $vl, implicit $vtype
+    %3:vrm2 = COPY $v10m2
+    %4:vrm2 = COPY $v8m2
+    dead $x0 = PseudoVSETVLI %0, 153 /* e64, m2, tu, ma */, implicit-def $vl, implicit-def $vtype
+    %5:vrm2 = PseudoVADD_VV_M2 undef %5, %4, %3, $noreg, 6 /* e64 */, 0 /* tu, mu */, implicit $vl, implicit $vtype, implicit $vl, implicit $vtype
+    %6:vrm2 = PseudoVADD_VV_M2 undef %6, %1, %2, $noreg, 6 /* e64 */, 0 /* tu, mu */, implicit $vl, implicit $vtype, implicit $vl, implicit $vtype
+    %7:vrm2 = PseudoVADD_VV_M2 undef %7, %5, %6, $noreg, 6 /* e64 */, 0 /* tu, mu */, implicit $vl, implicit $vtype, implicit $vl, implicit $vtype
     $v8m2 = COPY %7
     PseudoRET implicit $v8m2
 
-# CHECK: *** Final schedule for %bb.0 ***
-# CHECK-NEXT:  * Schedule table (TopDown):
-# CHECK-NEXT:   i: issue
-# CHECK-NEXT:   x: resource booked
-# CHECK-NEXT: Cycle              | 0  | 1  | 2  | 3  | 4  | 5  | 6  | 7  | 8  | 9  | 10 | 11 | 12 | 13 | 14 | 15 | 16 | 17 | 18 |
-# CHECK-NEXT: SU(0)              | i  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
-# CHECK-NEXT:      SiFive7PipeAB | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
-# CHECK-NEXT: SU(1)              | i  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
-# CHECK-NEXT:      SiFive7PipeAB | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
-# CHECK-NEXT: SU(2)              |    | i  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
-# CHECK-NEXT:      SiFive7PipeAB |    | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
-# CHECK-NEXT: SU(3)              |    | i  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
-# CHECK-NEXT:      SiFive7PipeAB |    | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
-# CHECK-NEXT: SU(4)              |    |    | i  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
-# CHECK-NEXT:      SiFive7PipeAB |    |    | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
-# CHECK-NEXT: SU(5)              |    |    | i  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
-# CHECK-NEXT:       SiFive7PipeA |    |    | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
-# CHECK-NEXT:      SiFive7PipeAB |    |    | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
-# CHECK-NEXT: SU(7)              |    |    |    |    | i  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
-# CHECK-NEXT:         SiFive7VCQ |    |    |    |    | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
-# CHECK-NEXT:          SiFive7VA |    |    |    |    |    | x  | x  | x  | x  |    |    |    |    |    |    |    |    |    |    |
-# CHECK-NEXT: SU(6)              |    |    |    |    |    |    |    |    |    | i  |    |    |    |    |    |    |    |    |    |
-# CHECK-NEXT:         SiFive7VCQ |    |    |    |    |    |    |    |    |    | x  |    |    |    |    |    |    |    |    |    |
-# CHECK-NEXT:          SiFive7VA |    |    |    |    |    |    |    |    |    |    | x  | x  | x  | x  |    |    |    |    |    |
-# CHECK-NEXT: SU(8)              |    |    |    |    |    |    |    |    |    |    |    |    |    |    | i  |    |    |    |    |
-# CHECK-NEXT:         SiFive7VCQ |    |    |    |    |    |    |    |    |    |    |    |    |    |    | x  |    |    |    |    |
-# CHECK-NEXT:          SiFive7VA |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    | x  | x  | x  | x  |
-# CHECK-NEXT: SU(9)              |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    | i  |
-# CHECK-NEXT:      SiFive7PipeAB |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    | x  |
+# X280: *** Final schedule for %bb.0 ***
+# X280-NEXT:  * Schedule table (TopDown):
+# X280-NEXT:   i: issue
+# X280-NEXT:   x: resource booked
+# X280-NEXT: Cycle              | 0  | 1  | 2  | 3  | 4  | 5  | 6  | 7  | 8  | 9  | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+# X280-NEXT: SU(0)              | i  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280-NEXT:      SiFive7PipeAB | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280-NEXT: SU(1)              | i  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280-NEXT:      SiFive7PipeAB | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280-NEXT: SU(2)              |    | i  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280-NEXT:      SiFive7PipeAB |    | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280-NEXT: SU(3)              |    | i  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280-NEXT:      SiFive7PipeAB |    | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280-NEXT: SU(4)              |    |    | i  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280-NEXT:      SiFive7PipeAB |    |    | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280-NEXT: SU(5)              |    |    | i  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280-NEXT:       SiFive7PipeA |    |    | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280-NEXT:      SiFive7PipeAB |    |    | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280-NEXT: SU(7)              |    |    |    |    | i  |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280-NEXT:         SiFive7VCQ |    |    |    |    | x  |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280-NEXT:          SiFive7VA |    |    |    |    |    | x  | x  | x  | x  |    |    |    |    |    |    |    |    |
+# X280-NEXT: SU(6)              |    |    |    |    |    |    |    |    | i  |    |    |    |    |    |    |    |    |
+# X280-NEXT:         SiFive7VCQ |    |    |    |    |    |    |    |    | x  |    |    |    |    |    |    |    |    |
+# X280-NEXT:          SiFive7VA |    |    |    |    |    |    |    |    |    | x  | x  | x  | x  |    |    |    |    |
+# X280-NEXT: SU(8)              |    |    |    |    |    |    |    |    |    |    |    |    | i  |    |    |    |    |
+# X280-NEXT:         SiFive7VCQ |    |    |    |    |    |    |    |    |    |    |    |    | x  |    |    |    |    |
+# X280-NEXT:          SiFive7VA |    |    |    |    |    |    |    |    |    |    |    |    |    | x  | x  | x  | x  |
+# X280-NEXT: SU(9)              |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    | i  |
+# X280-NEXT:      SiFive7PipeAB |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    | x  |
 
+# X280N: *** Final schedule for %bb.0 ***
+# X280N-NEXT:  * Schedule table (TopDown):
+# X280N-NEXT:   i: issue
+# X280N-NEXT:   x: resource booked
+# X280N-NEXT: Cycle              | 0  | 1  | 2  | 3  | 4  | 5  | 6  | 7  | 8  | 9  | 10 | 11 | 12 | 13 | 14 | 15 | 16 |
+# X280N-NEXT: SU(0)              | i  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280N-NEXT:     SiFive7NPipeAB | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280N-NEXT: SU(1)              | i  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280N-NEXT:     SiFive7NPipeAB | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280N-NEXT: SU(2)              |    | i  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280N-NEXT:     SiFive7NPipeAB |    | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280N-NEXT: SU(3)              |    | i  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280N-NEXT:     SiFive7NPipeAB |    | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280N-NEXT: SU(4)              |    |    | i  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280N-NEXT:     SiFive7NPipeAB |    |    | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280N-NEXT: SU(5)              |    |    | i  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280N-NEXT:      SiFive7NPipeA |    |    | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280N-NEXT:     SiFive7NPipeAB |    |    | x  |    |    |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280N-NEXT: SU(7)              |    |    |    |    | i  |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280N-NEXT:        SiFive7NVCQ |    |    |    |    | x  |    |    |    |    |    |    |    |    |    |    |    |    |
+# X280N-NEXT:         SiFive7NVA |    |    |    |    |    | x  | x  | x  | x  |    |    |    |    |    |    |    |    |
+# X280N-NEXT: SU(6)              |    |    |    |    |    |    |    |    | i  |    |    |    |    |    |    |    |    |
+# X280N-NEXT:        SiFive7NVCQ |    |    |    |    |    |    |    |    | x  |    |    |    |    |    |    |    |    |
+# X280N-NEXT:         SiFive7NVA |    |    |    |    |    |    |    |    |    | x  | x  | x  | x  |    |    |    |    |
+# X280N-NEXT: SU(8)              |    |    |    |    |    |    |    |    |    |    |    |    | i  |    |    |    |    |
+# X280N-NEXT:        SiFive7NVCQ |    |    |    |    |    |    |    |    |    |    |    |    | x  |    |    |    |    |
+# X280N-NEXT:         SiFive7NVA |    |    |    |    |    |    |    |    |    |    |    |    |    | x  | x  | x  | x  |
+# X280N-NEXT: SU(9)              |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    | i  |
+# X280N-NEXT:     SiFive7NPipeAB |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    |    | x  |
 ...

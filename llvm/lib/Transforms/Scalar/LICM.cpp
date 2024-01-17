@@ -190,7 +190,9 @@ static bool sink(Instruction &I, LoopInfo *LI, DominatorTree *DT,
 #if SIFIVE_CUSTOMIZATION
 static bool maySpillForCandidate(
     Instruction *Inst, const Loop *CurLoop, LiveValues *LV,
-    TargetTransformInfo *TTI, BasicBlock *TargetBB);
+    TargetTransformInfo *TTI, DominatorTree *DT,
+    SmallPtrSetImpl<const Value *> &IgnoreValues,
+    SmallVectorImpl<Use *> &AddValues);
 #endif // SIFIVE_CUSTOMIZATION
 static bool isSafeToExecuteUnconditionally(
     Instruction &Inst, const DominatorTree *DT, const TargetLibraryInfo *TLI,
@@ -210,6 +212,9 @@ static bool pointerInvalidatedByBlock(BasicBlock &BB, MemorySSA &MSSA,
 static bool hoistArithmetics(Instruction &I, Loop &L,
                              ICFLoopSafetyInfo &SafetyInfo,
                              MemorySSAUpdater &MSSAU, AssumptionCache *AC,
+#if SIFIVE_CUSTOMIZATION
+                             LiveValues *LV, TargetTransformInfo *TTI,
+#endif // SIFIVE_CUSTOMIZATION
                              DominatorTree *DT);
 static Instruction *cloneInstructionInExitBlock(
     Instruction &I, BasicBlock &ExitBlock, PHINode &PN, const LoopInfo *LI,
@@ -977,6 +982,8 @@ bool llvm::hoistRegion(DomTreeNode *N, AAResults *AA, LoopInfo *LI,
       // and we have accurately duplicated the control flow from the loop header
       // to that block.
 #if SIFIVE_CUSTOMIZATION
+      SmallPtrSet<const Value *, 4> IgnoreValues;
+      SmallVector<Use *> AddValues;
       bool NewStructTBAAPtrHoisting =
           (isGuaranteedToExecuteForEveryIteration(&I, CurLoop) &&
            AllowSpeculation);
@@ -986,7 +993,8 @@ bool llvm::hoistRegion(DomTreeNode *N, AAResults *AA, LoopInfo *LI,
           isSafeToExecuteUnconditionally(
               I, DT, TLI, CurLoop, SafetyInfo, ORE,
               Preheader->getTerminator(), AC, AllowSpeculation) &&
-          !maySpillForCandidate(&I, CurLoop, LV, TTI, BB)) {
+          !maySpillForCandidate(&I, CurLoop, LV, TTI, DT, IgnoreValues,
+                                AddValues)) {
 #else
       if (CurLoop->hasLoopInvariantOperands(&I) &&
           canSinkOrHoistInst(I, AA, DT, CurLoop, MSSAU, true, Flags, ORE) &&
@@ -1003,8 +1011,18 @@ bool llvm::hoistRegion(DomTreeNode *N, AAResults *AA, LoopInfo *LI,
 
       // Attempt to remove floating point division out of the loop by
       // converting it to a reciprocal multiplication.
+#if SIFIVE_CUSTOMIZATION
+      if (I.getOpcode() == Instruction::FDiv)
+        IgnoreValues.insert(I.getOperand(0));
+
+      if (I.getOpcode() == Instruction::FDiv && I.hasAllowReciprocal() &&
+          CurLoop->isLoopInvariant(I.getOperand(1)) &&
+          !maySpillForCandidate(&I, CurLoop, LV, TTI, DT, IgnoreValues,
+                                AddValues)) {
+#else
       if (I.getOpcode() == Instruction::FDiv && I.hasAllowReciprocal() &&
           CurLoop->isLoopInvariant(I.getOperand(1))) {
+#endif
         auto Divisor = I.getOperand(1);
         auto One = llvm::ConstantFP::get(Divisor->getType(), 1.0);
         auto ReciprocalDivisor = BinaryOperator::CreateFDiv(One, Divisor);
@@ -1036,9 +1054,18 @@ bool llvm::hoistRegion(DomTreeNode *N, AAResults *AA, LoopInfo *LI,
         return SafetyInfo->isGuaranteedToExecute(I, DT, CurLoop) &&
                SafetyInfo->doesNotWriteMemoryBefore(I, CurLoop);
       };
+#if SIFIVE_CUSTOMIZATION
+      IgnoreValues.clear();
+      if ((IsInvariantStart(I) || isGuard(&I)) &&
+          CurLoop->hasLoopInvariantOperands(&I) &&
+          MustExecuteWithoutWritesBefore(I) &&
+          !maySpillForCandidate(&I, CurLoop, LV, TTI, DT, IgnoreValues,
+                                AddValues)) {
+#else
       if ((IsInvariantStart(I) || isGuard(&I)) &&
           CurLoop->hasLoopInvariantOperands(&I) &&
           MustExecuteWithoutWritesBefore(I)) {
+#endif
         hoist(I, DT, CurLoop, CFH.getOrCreateHoistedBlock(BB), SafetyInfo,
               MSSAU, SE, ORE);
         HoistedInstructions.push_back(&I);
@@ -1047,7 +1074,13 @@ bool llvm::hoistRegion(DomTreeNode *N, AAResults *AA, LoopInfo *LI,
       }
 
       if (PHINode *PN = dyn_cast<PHINode>(&I)) {
+#if SIFIVE_CUSTOMIZATION
+        if (CFH.canHoistPHI(PN) &&
+            !maySpillForCandidate(&I, CurLoop, LV, TTI, DT, IgnoreValues,
+                                  AddValues)) {
+#else
         if (CFH.canHoistPHI(PN)) {
+#endif
           // Redirect incoming blocks first to ensure that we create hoisted
           // versions of those blocks before we hoist the phi.
           for (unsigned int i = 0; i < PN->getNumIncomingValues(); ++i)
@@ -1063,10 +1096,17 @@ bool llvm::hoistRegion(DomTreeNode *N, AAResults *AA, LoopInfo *LI,
 
       // Try to reassociate instructions so that part of computations can be
       // done out of loop.
+#if SIFIVE_CUSTOMIZATION
+      if (hoistArithmetics(I, *CurLoop, *SafetyInfo, MSSAU, AC, LV, TTI, DT)) {
+        Changed = true;
+        continue;
+      }
+#else
       if (hoistArithmetics(I, *CurLoop, *SafetyInfo, MSSAU, AC, DT)) {
         Changed = true;
         continue;
       }
+#endif
 
       // Remember possibly hoistable branches so we can actually hoist them
       // later if needed.
@@ -1917,7 +1957,9 @@ static void hoist(Instruction &I, const DominatorTree *DT, const Loop *CurLoop,
 #if SIFIVE_CUSTOMIZATION
 static bool maySpillForCandidate(
     Instruction *Inst, const Loop *CurLoop, LiveValues *LV,
-    TargetTransformInfo *TTI, BasicBlock *TargetBB) {
+    TargetTransformInfo *TTI, DominatorTree *DT,
+    SmallPtrSetImpl<const Value *> &IgnoreValues,
+    SmallVectorImpl<Use *> &AddValues) {
   // Calculate value pressure for the prescribed loop blocks.
   if (LV && LV->haveLiveValueAnalysis()) {
     // Skip vectorized loops for now until vectype/config for lmul is
@@ -1925,16 +1967,24 @@ static bool maySpillForCandidate(
     if (getBooleanLoopAttribute(CurLoop, "llvm.loop.isvectorized"))
       return false;
 
+    BasicBlock *TargetBB = Inst->getParent();
     SmallVector<BasicBlock *, 4> Worklist;
-    for (auto *BB : CurLoop->getBlocks())
-      Worklist.push_back(BB);
+    if (TargetBB == CurLoop->getHeader()) {
+      Worklist.push_back(CurLoop->getLoopPreheader());
+      Worklist.push_back(TargetBB);
+    } else {
+      for (auto *BB : CurLoop->getBlocks())
+        Worklist.push_back(BB);
+    }
 
+    BasicBlock *EndBlock = CurLoop->getLoopLatch();
     LLVMContext &C = TargetBB->getContext();
     unsigned IntRC = TTI->getRegisterClassForType(false, Type::getInt32Ty(C));
     unsigned FpRC = TTI->getRegisterClassForType(false, Type::getFloatTy(C));
     unsigned VecRC = TTI->getRegisterClassForType(true);
     return LV->exceedValuePressureForBlocks(
-        Worklist, TTI->getNumberOfRegisters(IntRC),
+        Worklist, AddValues, IgnoreValues, DT, EndBlock,
+        TTI->getNumberOfRegisters(IntRC),
         TTI->getNumberOfRegisters(FpRC),
         TTI->getNumberOfRegisters(VecRC), Inst);
   }
@@ -2588,8 +2638,14 @@ bool pointerInvalidatedByBlock(BasicBlock &BB, MemorySSA &MSSA, MemoryUse &MU) {
 /// Try to simplify things like (A < INV_1 AND icmp A < INV_2) into (A <
 /// min(INV_1, INV_2)), if INV_1 and INV_2 are both loop invariants and their
 /// minimun can be computed outside of loop, and X is not a loop-invariant.
+#if SIFIVE_CUSTOMIZATION
+static bool hoistMinMax(Instruction &I, Loop &L, ICFLoopSafetyInfo &SafetyInfo,
+                        MemorySSAUpdater &MSSAU, LiveValues *LV,
+                        TargetTransformInfo *TTI, DominatorTree *DT) {
+#else
 static bool hoistMinMax(Instruction &I, Loop &L, ICFLoopSafetyInfo &SafetyInfo,
                         MemorySSAUpdater &MSSAU) {
+#endif
   bool Inverse = false;
   using namespace PatternMatch;
   Value *Cond1, *Cond2;
@@ -2625,6 +2681,12 @@ static bool hoistMinMax(Instruction &I, Loop &L, ICFLoopSafetyInfo &SafetyInfo,
     return false;
   if (P1 != P2 || LHS1 != LHS2)
     return false;
+#if SIFIVE_CUSTOMIZATION
+  SmallPtrSet<const Value *, 4> IgnoreValues;
+  SmallVector<Use *> AddValues;
+  if (maySpillForCandidate(&I, &L, LV, TTI, DT, IgnoreValues, AddValues))
+    return false;
+#endif
 
   // Everything is fine, we can do the transform.
   bool UseMin = ICmpInst::isLT(P1) || ICmpInst::isLE(P1);
@@ -2662,9 +2724,16 @@ static bool hoistMinMax(Instruction &I, Loop &L, ICFLoopSafetyInfo &SafetyInfo,
 
 /// Reassociate gep (gep ptr, idx1), idx2 to gep (gep ptr, idx2), idx1 if
 /// this allows hoisting the inner GEP.
+#if SIFIVE_CUSTOMIZATION
+static bool hoistGEP(Instruction &I, Loop &L, ICFLoopSafetyInfo &SafetyInfo,
+                     MemorySSAUpdater &MSSAU, AssumptionCache *AC,
+                     LiveValues *LV, TargetTransformInfo *TTI,
+                     DominatorTree *DT) {
+#else
 static bool hoistGEP(Instruction &I, Loop &L, ICFLoopSafetyInfo &SafetyInfo,
                      MemorySSAUpdater &MSSAU, AssumptionCache *AC,
                      DominatorTree *DT) {
+#endif
   auto *GEP = dyn_cast<GetElementPtrInst>(&I);
   if (!GEP)
     return false;
@@ -2684,6 +2753,13 @@ static bool hoistGEP(Instruction &I, Loop &L, ICFLoopSafetyInfo &SafetyInfo,
   // The flag exists to prevent metadata dropping, which is not relevant here.
   if (all_of(Src->indices(), LoopInvariant))
     return false;
+
+#if SIFIVE_CUSTOMIZATION
+  SmallPtrSet<const Value *, 4> IgnoreValues;
+  SmallVector<Use *> AddValues;
+  if (maySpillForCandidate(&I, &L, LV, TTI, DT, IgnoreValues, AddValues))
+    return false;
+#endif
 
   // The swapped GEPs are inbounds if both original GEPs are inbounds
   // and the sign of the offsets is the same. For simplicity, only
@@ -2713,10 +2789,18 @@ static bool hoistGEP(Instruction &I, Loop &L, ICFLoopSafetyInfo &SafetyInfo,
 
 /// Try to turn things like "LV + C1 < C2" into "LV < C2 - C1". Here
 /// C1 and C2 are loop invariants and LV is a loop-variant.
+#if SIFIVE_CUSTOMIZATION
+static bool hoistAdd(ICmpInst::Predicate Pred, Value *VariantLHS,
+                     Value *InvariantRHS, ICmpInst &ICmp, Loop &L,
+                     ICFLoopSafetyInfo &SafetyInfo, MemorySSAUpdater &MSSAU,
+                     AssumptionCache *AC, LiveValues *LV,
+                     TargetTransformInfo *TTI, DominatorTree *DT) {
+#else
 static bool hoistAdd(ICmpInst::Predicate Pred, Value *VariantLHS,
                      Value *InvariantRHS, ICmpInst &ICmp, Loop &L,
                      ICFLoopSafetyInfo &SafetyInfo, MemorySSAUpdater &MSSAU,
                      AssumptionCache *AC, DominatorTree *DT) {
+#endif
   assert(ICmpInst::isSigned(Pred) && "Not supported yet!");
   assert(!L.isLoopInvariant(VariantLHS) && "Precondition.");
   assert(L.isLoopInvariant(InvariantRHS) && "Precondition.");
@@ -2745,6 +2829,12 @@ static bool hoistAdd(ICmpInst::Predicate Pred, Value *VariantLHS,
       llvm::OverflowResult::NeverOverflows;
   if (!ProvedNoOverflowAfterReassociate)
     return false;
+#if SIFIVE_CUSTOMIZATION
+  SmallPtrSet<const Value *, 4> IgnoreValues;
+  SmallVector<Use *> AddValues;
+  if (maySpillForCandidate(&ICmp, &L, LV, TTI, DT, IgnoreValues, AddValues))
+    return false;
+#endif
   auto *Preheader = L.getLoopPreheader();
   assert(Preheader && "Loop is not in simplify form?");
   IRBuilder<> Builder(Preheader->getTerminator());
@@ -2760,10 +2850,18 @@ static bool hoistAdd(ICmpInst::Predicate Pred, Value *VariantLHS,
 /// Try to reassociate and hoist the following two patterns:
 /// LV - C1 < C2 --> LV < C1 + C2,
 /// C1 - LV < C2 --> LV > C1 - C2.
+#if SIFIVE_CUSTOMIZATION
+static bool hoistSub(ICmpInst::Predicate Pred, Value *VariantLHS,
+                     Value *InvariantRHS, ICmpInst &ICmp, Loop &L,
+                     ICFLoopSafetyInfo &SafetyInfo, MemorySSAUpdater &MSSAU,
+                     AssumptionCache *AC, LiveValues *LV,
+                     TargetTransformInfo *TTI, DominatorTree *DT) {
+#else
 static bool hoistSub(ICmpInst::Predicate Pred, Value *VariantLHS,
                      Value *InvariantRHS, ICmpInst &ICmp, Loop &L,
                      ICFLoopSafetyInfo &SafetyInfo, MemorySSAUpdater &MSSAU,
                      AssumptionCache *AC, DominatorTree *DT) {
+#endif
   assert(ICmpInst::isSigned(Pred) && "Not supported yet!");
   assert(!L.isLoopInvariant(VariantLHS) && "Precondition.");
   assert(L.isLoopInvariant(InvariantRHS) && "Precondition.");
@@ -2804,6 +2902,12 @@ static bool hoistSub(ICmpInst::Predicate Pred, Value *VariantLHS,
         llvm::OverflowResult::NeverOverflows)
       return false;
   }
+#if SIFIVE_CUSTOMIZATION
+  SmallPtrSet<const Value *, 4> IgnoreValues;
+  SmallVector<Use *> AddValues;
+  if (maySpillForCandidate(&ICmp, &L, LV, TTI, DT, IgnoreValues, AddValues))
+    return false;
+#endif
   auto *Preheader = L.getLoopPreheader();
   assert(Preheader && "Loop is not in simplify form?");
   IRBuilder<> Builder(Preheader->getTerminator());
@@ -2821,9 +2925,16 @@ static bool hoistSub(ICmpInst::Predicate Pred, Value *VariantLHS,
 }
 
 /// Reassociate and hoist add/sub expressions.
+#if SIFIVE_CUSTOMIZATION
+static bool hoistAddSub(Instruction &I, Loop &L, ICFLoopSafetyInfo &SafetyInfo,
+                        MemorySSAUpdater &MSSAU, AssumptionCache *AC,
+                        LiveValues *LV, TargetTransformInfo *TTI,
+                        DominatorTree *DT) {
+#else
 static bool hoistAddSub(Instruction &I, Loop &L, ICFLoopSafetyInfo &SafetyInfo,
                         MemorySSAUpdater &MSSAU, AssumptionCache *AC,
                         DominatorTree *DT) {
+#endif
   using namespace PatternMatch;
   ICmpInst::Predicate Pred;
   Value *LHS, *RHS;
@@ -2846,11 +2957,21 @@ static bool hoistAddSub(Instruction &I, Loop &L, ICFLoopSafetyInfo &SafetyInfo,
 
   // TODO: We could go with smarter context, taking common dominator of all I's
   // users instead of I itself.
+#if SIFIVE_CUSTOMIZATION
+  if (hoistAdd(Pred, LHS, RHS, cast<ICmpInst>(I), L, SafetyInfo, MSSAU, AC, LV,
+               TTI, DT))
+    return true;
+
+  if (hoistSub(Pred, LHS, RHS, cast<ICmpInst>(I), L, SafetyInfo, MSSAU, AC, LV,
+               TTI, DT))
+    return true;
+#else
   if (hoistAdd(Pred, LHS, RHS, cast<ICmpInst>(I), L, SafetyInfo, MSSAU, AC, DT))
     return true;
 
   if (hoistSub(Pred, LHS, RHS, cast<ICmpInst>(I), L, SafetyInfo, MSSAU, AC, DT))
     return true;
+#endif
 
   return false;
 }
@@ -2860,10 +2981,18 @@ static bool hoistAddSub(Instruction &I, Loop &L, ICFLoopSafetyInfo &SafetyInfo,
 /// ((A1 * C * B1) + (A2 * C * B2) + ...) and hoist the (A1 * C), (A2 * C), ...
 /// invariant expressions. This functions returns true only if any hoisting has
 /// actually occured.
+#if SIFIVE_CUSTOMIZATION
+static bool hoistFPAssociation(Instruction &I, Loop &L,
+                               ICFLoopSafetyInfo &SafetyInfo,
+                               MemorySSAUpdater &MSSAU, AssumptionCache *AC,
+                               LiveValues *LV, TargetTransformInfo *TTI,
+                               DominatorTree *DT) {
+#else
 static bool hoistFPAssociation(Instruction &I, Loop &L,
                                ICFLoopSafetyInfo &SafetyInfo,
                                MemorySSAUpdater &MSSAU, AssumptionCache *AC,
                                DominatorTree *DT) {
+#endif
   using namespace PatternMatch;
   Value *VariantOp = nullptr, *InvariantOp = nullptr;
 
@@ -2907,6 +3036,13 @@ static bool hoistFPAssociation(Instruction &I, Loop &L,
   if (Changes.empty())
     return false;
 
+#if SIFIVE_CUSTOMIZATION
+  SmallPtrSet<const Value *, 4> IgnoreValues;
+  IgnoreValues.insert(VariantOp);
+  if (maySpillForCandidate(&I, &L, LV, TTI, DT, IgnoreValues, Changes))
+    return false;
+#endif
+
   // We know we should do it so let's do the transformation.
   auto *Preheader = L.getLoopPreheader();
   assert(Preheader && "Loop is not in simplify form?");
@@ -2925,6 +3061,7 @@ static bool hoistFPAssociation(Instruction &I, Loop &L,
 static bool hoistIntAssociation(Instruction &I, Loop &L,
                                 ICFLoopSafetyInfo &SafetyInfo,
                                 MemorySSAUpdater &MSSAU, AssumptionCache *AC,
+                                LiveValues *LV, TargetTransformInfo *TTI,
                                 DominatorTree *DT) {
   using namespace PatternMatch;
   Value *VariantOp = nullptr, *InvariantOp = nullptr;
@@ -2968,6 +3105,12 @@ static bool hoistIntAssociation(Instruction &I, Loop &L,
   if (Changes.empty())
     return false;
 
+  // Make a list of ignore ops of I.
+  SmallPtrSet<const Value *, 4> IgnoreValues;
+  IgnoreValues.insert(VariantOp);
+  if (maySpillForCandidate(&I, &L, LV, TTI, DT, IgnoreValues, Changes))
+    return false;
+
   // We know we should do it so let's do the transformation.
   auto *Preheader = L.getLoopPreheader();
   assert(Preheader && "Loop is not in simplify form?");
@@ -2982,6 +3125,50 @@ static bool hoistIntAssociation(Instruction &I, Loop &L,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+#if SIFIVE_CUSTOMIZATION
+static bool hoistArithmetics(Instruction &I, Loop &L,
+                             ICFLoopSafetyInfo &SafetyInfo,
+                             MemorySSAUpdater &MSSAU, AssumptionCache *AC,
+                             LiveValues *LV, TargetTransformInfo *TTI,
+                             DominatorTree *DT) {
+  // Optimize complex patterns, such as (x < INV1 && x < INV2), turning them
+  // into (x < min(INV1, INV2)), and hoisting the invariant part of this
+  // expression out of the loop.
+  if (hoistMinMax(I, L, SafetyInfo, MSSAU, LV, TTI, DT)) {
+    ++NumHoisted;
+    ++NumMinMaxHoisted;
+    return true;
+  }
+
+  // Try to hoist GEPs by reassociation.
+  if (hoistGEP(I, L, SafetyInfo, MSSAU, AC, LV, TTI, DT)) {
+    ++NumHoisted;
+    ++NumGEPsHoisted;
+    return true;
+  }
+
+  // Try to hoist add/sub's by reassociation.
+  if (hoistAddSub(I, L, SafetyInfo, MSSAU, AC, LV, TTI, DT)) {
+    ++NumHoisted;
+    ++NumAddSubHoisted;
+    return true;
+  }
+
+  if (hoistFPAssociation(I, L, SafetyInfo, MSSAU, AC, LV, TTI, DT)) {
+    ++NumHoisted;
+    ++NumFPAssociationsHoisted;
+    return true;
+  }
+
+  if (hoistIntAssociation(I, L, SafetyInfo, MSSAU, AC, LV, TTI, DT)) {
+    ++NumHoisted;
+    ++NumIntAssociationsHoisted;
+    return true;
+  }
+
+  return false;
+}
+#else
 static bool hoistArithmetics(Instruction &I, Loop &L,
                              ICFLoopSafetyInfo &SafetyInfo,
                              MemorySSAUpdater &MSSAU, AssumptionCache *AC,
@@ -3015,16 +3202,9 @@ static bool hoistArithmetics(Instruction &I, Loop &L,
     return true;
   }
 
-#if SIFIVE_CUSTOMIZATION
-  if (hoistIntAssociation(I, L, SafetyInfo, MSSAU, AC, DT)) {
-    ++NumHoisted;
-    ++NumIntAssociationsHoisted;
-    return true;
-  }
-#endif
-
   return false;
 }
+#endif
 
 /// Little predicate that returns true if the specified basic block is in
 /// a subloop of the current one, not the current one itself.

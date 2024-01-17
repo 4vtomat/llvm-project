@@ -30,12 +30,16 @@
 #include "llvm/IR/AssemblyAnnotationWriter.h"
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/CFG.h"
+#include "llvm/IR/Dominators.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/IR/PassManager.h"
 #include "llvm/Pass.h"
 #include "llvm/Support/raw_ostream.h"
 #include <list>
+
+#define AGGRESIVE_OPT_INSN_SIZE_THRESHOLD 5000
+#define AGGRESIVE_OPT_NUM_CALLS_THRESHOLD 15
 
 namespace llvm {
 
@@ -90,6 +94,7 @@ private:
 
   ValueSlotInfo::Allocator VSInfoAllocator;
   AssumptionCache *AC = nullptr;
+  unsigned OptLevel = 0;
 
 public:
   using Workqueue = std::list<BasicBlock *>;
@@ -172,23 +177,27 @@ public:
                              MutableArrayRef<PressureTracker> CurPT);
 
   /// Compute incremental Pressure, instruction by instruction for BB.
-  void calculateBlockValuePressure(
-      BasicBlock *BB, BasicBlock *&MaximaBlock,
-      Instruction *TargetI,
+  Instruction *calculateBlockValuePressure(
+      BasicBlock *BB, Instruction *TargetI,
+      MutableArrayRef<PressureTracker> MachinePT,
       MutableArrayRef<PressureTracker> InsnPT,
       MutableArrayRef<PressureTracker> CurPT,
-      MutableArrayRef<PressureTracker> SummaryPT);
+      SmallPtrSetImpl<const Value *> &IgnoreValues,
+      SmallVectorImpl<Use *> &AddValues);
 
   /// Find all values that are no longer used in F and decide
   /// if we need to recalculate DFA.
   bool markResidentValues(
-      Function *F, ArrayRef<PressureTracker> MachinePT);
+      Function *F, ArrayRef<PressureTracker> MachinePT,
+      unsigned &NumInstructions, unsigned &NumCalls);
 
   /// Using a list of blocks, calculate the register pressure
   /// data for each block.
   bool exceedValuePressureForBlocks(
       SmallVectorImpl<BasicBlock *> &Worklist,
-      int NumGprs, int NumFprs, int NumVrs,
+      SmallVectorImpl<Use *> &AddValues,
+      SmallPtrSetImpl<const Value *> &IgnoreValues, DominatorTree *DT,
+      BasicBlock *EndBlock, int NumGprs, int NumFprs, int NumVrs,
       Instruction *TargetI);
 
   /// Function level data flow analysis.
@@ -239,6 +248,8 @@ public:
   ValueSlotInfo::Allocator &getVSInfoAllocator() { return VSInfoAllocator; }
 
   void setAssumptionCache(AssumptionCache *AC) { this->AC = AC; }
+
+  void setOptLevel(unsigned OptLevel) { this->OptLevel = OptLevel; }
 };
 
 /// Analysis pass which computes a \c LiveValues.
