@@ -30,9 +30,12 @@ multiclass SiFive7SchedResources<int VLEN> {
   // Define WriteRes records that are the same across all Bullet derived
   // SchedModels. WriteRes records that are not included in that multiclass should
   // be defined below.
-  defm "SiFive7" : BulletWriteResBase<VLEN, SiFive7PipeA, SiFive7PipeB, SiFive7PipeAB,
-                                      SiFive7Mem, SiFive7IDiv, SiFive7FDiv,
-                                      SiFive7VA, SiFive7VL, SiFive7VS, SiFive7VCQ>;
+  // Pass SiFive7VA for VA1 and VA1OrVA2 since there is only 1 VALU on this
+  // machine.
+  defm "SiFive7"
+      : BulletWriteResBase<VLEN, SiFive7PipeA, SiFive7PipeB, SiFive7PipeAB,
+                           SiFive7Mem, SiFive7IDiv, SiFive7FDiv, SiFive7VA,
+                           SiFive7VA, SiFive7VL, SiFive7VS, SiFive7VCQ>;
 
   // Half precision.
   let Latency = 5 in {
@@ -101,12 +104,11 @@ class SiFive7SchedMachineModel<int vlen> : SchedMachineModel {
 // SiFive7Models with different VLEN
 def SiFive7VLEN256Model : SiFive7SchedMachineModel<256>;
 def SiFive7VLEN512Model : SiFive7SchedMachineModel<512>;
-def SiFive7VLEN1024Model : SiFive7SchedMachineModel<1024>;
 // Some processors do not have vector but reuse the scheduler model that has vector.
 // Create an alias that does not have VLEN in the name.
 defvar SiFive7Model = SiFive7VLEN512Model;
 // Define sched resources for each model.
-foreach model = [SiFive7VLEN256Model, SiFive7VLEN512Model, SiFive7VLEN1024Model] in {
+foreach model = [SiFive7VLEN256Model, SiFive7VLEN512Model] in {
   let SchedModel = model in
   defm "VLEN" # model.VLEN : SiFive7SchedResources<model.VLEN>;
 }

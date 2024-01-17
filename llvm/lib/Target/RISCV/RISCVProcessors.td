@@ -719,22 +719,17 @@ defvar SIFIVE_X392_TuneFeatures = [
   TuneDLen512b
 ];
 
-// FIXME: Create separate SchedModel for x392. x392 is a Bullet processor,
-// so we use the SiFive7Model, which is a Bullet based model, in the meantime.
 def SIFIVE_X392S_SINGLE_VALU
-    : RISCVProcessorModel<"sifive-x392-ea-singlevalu", SiFive7VLEN1024Model,
+    : RISCVProcessorModel<"sifive-x392-ea-singlevalu", SiFive7SVLEN1024Model,
                           SIFIVE_X392_Features, SIFIVE_X392_TuneFeatures>;
 
-// FIXME: Create separate SchedModel for x392. x392 is a Bullet processor,
-// so we use the SiFive7Model, which is a Bullet based model, in the meantime.
-// The SiFive7Model does not represent the dual VALU, which is probably a
-// significant thing to leave out of the model.
 def SIFIVE_X392S_DUAL_VALU
-    : RISCVProcessorModel<"sifive-x392-ea-dualvalu", SiFive7VLEN1024Model,
-                          SIFIVE_X392_Features, SIFIVE_X392_TuneFeatures>;
+    : RISCVProcessorModel<"sifive-x392-ea-dualvalu",
+                          SiFive7SVLEN1024DualVALUModel, SIFIVE_X392_Features,
+                          SIFIVE_X392_TuneFeatures>;
 
 def SIFIVE_X390
-    : RISCVProcessorModel<"sifive-x390", SiFive7VLEN1024Model,
+    : RISCVProcessorModel<"sifive-x390", SiFive7SVLEN1024Model,
                           SIFIVE_X392_Features, SIFIVE_X392_TuneFeatures>;
 
 def SIFIVE_P260T : RISCVProcessorModel<"sifive-p260t", SiFive7NVLEN128Model,
