@@ -221,7 +221,7 @@ static cl::opt<bool> ClInstrumentWrites(
     cl::Hidden, cl::init(true));
 
 static cl::opt<bool>
-    ClUseStackSafety("asan-use-stack-safety", cl::Hidden, cl::init(false),
+    ClUseStackSafety("asan-use-stack-safety", cl::Hidden, cl::init(true),
                      cl::Hidden, cl::desc("Use Stack Safety analysis results"),
                      cl::Optional);
 
@@ -1612,8 +1612,7 @@ void AddressSanitizer::instrumentMaskedLoadOrStore(
       InstrumentedAddress = IRB.CreateExtractElement(Addr, Index);
     } else if (Stride) {
       Index = IRB.CreateMul(Index, Stride);
-      Addr = IRB.CreateBitCast(Addr, PointerType::getUnqual(*C));
-      InstrumentedAddress = IRB.CreateGEP(Type::getInt8Ty(*C), Addr, {Index});
+      InstrumentedAddress = IRB.CreatePtrAdd(Addr, Index);
     } else {
       InstrumentedAddress = IRB.CreateGEP(VTy, Addr, {Zero, Index});
     }
@@ -2109,6 +2108,8 @@ bool ModuleAddressSanitizer::ShouldUseMachOGlobalsSection() const {
   if (TargetTriple.isWatchOS() && !TargetTriple.isOSVersionLT(2))
     return true;
   if (TargetTriple.isDriverKit())
+    return true;
+  if (TargetTriple.isXROS())
     return true;
 
   return false;

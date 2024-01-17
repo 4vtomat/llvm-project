@@ -130,6 +130,7 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
     return expandRV32ZdinxStore(MBB, MBBI);
   case RISCV::PseudoRV32ZdinxLD:
     return expandRV32ZdinxLoad(MBB, MBBI);
+  case RISCV::PseudoCCMOVGPRNoX0:
   case RISCV::PseudoCCMOVGPR:
   case RISCV::PseudoCCADD:
   case RISCV::PseudoCCSUB:
@@ -158,6 +159,9 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   case RISCV::PseudoCCSLLIW:
   case RISCV::PseudoCCSRLIW:
   case RISCV::PseudoCCSRAIW:
+  case RISCV::PseudoCCANDN:
+  case RISCV::PseudoCCORN:
+  case RISCV::PseudoCCXNOR:
     return expandCCOp(MBB, MBBI, NextMBBI);
   case RISCV::PseudoVSETVLI:
   case RISCV::PseudoVSETVLIX0:
@@ -227,10 +231,15 @@ bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
   Register DestReg = MI.getOperand(0).getReg();
   assert(MI.getOperand(4).getReg() == DestReg);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (MI.getOpcode() == RISCV::PseudoCCMOVGPR ||
       MI.getOpcode() == RISCV::PseudoCCMOVGPRNoX0) {
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  if (MI.getOpcode() == RISCV::PseudoCCMOVGPR ||
+      MI.getOpcode() == RISCV::PseudoCCMOVGPRNoX0) {
+>>>>>>> llvm/main
     // Add MV.
     BuildMI(TrueBB, DL, TII->get(RISCV::ADDI), DestReg)
         .add(MI.getOperand(5))
@@ -264,6 +273,9 @@ bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
     case RISCV::PseudoCCSLLIW: NewOpc = RISCV::SLLIW; break;
     case RISCV::PseudoCCSRLIW: NewOpc = RISCV::SRLIW; break;
     case RISCV::PseudoCCSRAIW: NewOpc = RISCV::SRAIW; break;
+    case RISCV::PseudoCCANDN:  NewOpc = RISCV::ANDN;  break;
+    case RISCV::PseudoCCORN:   NewOpc = RISCV::ORN;   break;
+    case RISCV::PseudoCCXNOR:  NewOpc = RISCV::XNOR;  break;
     }
     BuildMI(TrueBB, DL, TII->get(NewOpc), DestReg)
         .add(MI.getOperand(5))
@@ -382,8 +394,10 @@ bool RISCVExpandPseudo::expandRV32ZdinxStore(MachineBasicBlock &MBB,
                                              MachineBasicBlock::iterator MBBI) {
   DebugLoc DL = MBBI->getDebugLoc();
   const TargetRegisterInfo *TRI = STI->getRegisterInfo();
-  Register Lo = TRI->getSubReg(MBBI->getOperand(0).getReg(), RISCV::sub_32);
-  Register Hi = TRI->getSubReg(MBBI->getOperand(0).getReg(), RISCV::sub_32_hi);
+  Register Lo =
+      TRI->getSubReg(MBBI->getOperand(0).getReg(), RISCV::sub_gpr_even);
+  Register Hi =
+      TRI->getSubReg(MBBI->getOperand(0).getReg(), RISCV::sub_gpr_odd);
   BuildMI(MBB, MBBI, DL, TII->get(RISCV::SW))
       .addReg(Lo, getKillRegState(MBBI->getOperand(0).isKill()))
       .addReg(MBBI->getOperand(1).getReg())
@@ -416,8 +430,10 @@ bool RISCVExpandPseudo::expandRV32ZdinxLoad(MachineBasicBlock &MBB,
                                             MachineBasicBlock::iterator MBBI) {
   DebugLoc DL = MBBI->getDebugLoc();
   const TargetRegisterInfo *TRI = STI->getRegisterInfo();
-  Register Lo = TRI->getSubReg(MBBI->getOperand(0).getReg(), RISCV::sub_32);
-  Register Hi = TRI->getSubReg(MBBI->getOperand(0).getReg(), RISCV::sub_32_hi);
+  Register Lo =
+      TRI->getSubReg(MBBI->getOperand(0).getReg(), RISCV::sub_gpr_even);
+  Register Hi =
+      TRI->getSubReg(MBBI->getOperand(0).getReg(), RISCV::sub_gpr_odd);
 
   // If the register of operand 1 is equal to the Lo register, then swap the
   // order of loading the Lo and Hi statements.

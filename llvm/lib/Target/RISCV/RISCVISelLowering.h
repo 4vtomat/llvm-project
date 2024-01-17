@@ -255,6 +255,7 @@ enum NodeType : unsigned {
   SSUBSAT_VL,
   USUBSAT_VL,
 
+<<<<<<< HEAD
   VAADD_VL,  // SIFIVE
   VAADDU_VL, // SIFIVE
   VASUB_VL,  // SIFIVE
@@ -264,6 +265,12 @@ enum NodeType : unsigned {
   VSSRA_VL, // SIFIVE
   VNCLIPU_VL, // SIFIVE
   VNCLIP_VL, // SIFIVE
+=======
+  // Averaging adds of unsigned integers.
+  AVGFLOORU_VL,
+  // Rounding averaging adds of unsigned integers.
+  AVGCEILU_VL,
+>>>>>>> llvm/main
 
   MULHS_VL,
   MULHU_VL,
@@ -652,9 +659,7 @@ public:
     return ISD::SIGN_EXTEND;
   }
 
-  ISD::NodeType getExtendForAtomicCmpSwapArg() const override {
-    return ISD::SIGN_EXTEND;
-  }
+  ISD::NodeType getExtendForAtomicCmpSwapArg() const override;
 
   bool shouldTransformSignedTruncationCheck(EVT XVT,
                                             unsigned KeptBits) const override;
@@ -960,10 +965,14 @@ private:
   SDValue lowerFixedLengthVectorSelectToRVV(SDValue Op,
                                             SelectionDAG &DAG) const;
   SDValue lowerToScalableOp(SDValue Op, SelectionDAG &DAG) const;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   SDValue lowerRVVRMIntrinsics(SDValue Op, SelectionDAG &DAG, unsigned Opc,
                                bool HasMask) const;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  SDValue lowerUnsignedAvgFloor(SDValue Op, SelectionDAG &DAG) const;
+>>>>>>> llvm/main
   SDValue LowerIS_FPCLASS(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPOp(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerLogicVPOp(SDValue Op, SelectionDAG &DAG) const;
@@ -1073,7 +1082,7 @@ bool CC_RISCV_GHC(unsigned ValNo, MVT ValVT, MVT LocVT,
                   CCValAssign::LocInfo LocInfo, ISD::ArgFlagsTy ArgFlags,
                   CCState &State);
 
-ArrayRef<MCPhysReg> getArgGPRs();
+ArrayRef<MCPhysReg> getArgGPRs(const RISCVABI::ABI ABI);
 
 } // end namespace RISCV
 

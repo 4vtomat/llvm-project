@@ -2304,7 +2304,7 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
   // possible accessed by the instruction.  Note that BasicTTI already
   // handles the LT.first term for us.
   if (std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Src);
-      LT.second.isVector())
+      LT.second.isVector() && CostKind != TTI::TCK_CodeSize)
     BaseCost *= TLI->getLMULCost(LT.second);
   return Cost + BaseCost;
 

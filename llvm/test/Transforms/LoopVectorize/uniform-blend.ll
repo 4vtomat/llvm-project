@@ -148,6 +148,7 @@ define void @blend_chain_iv(i1 %c) {
 ; CHECK-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <4 x i1> [[BROADCAST_SPLATINSERT]], <4 x i1> poison, <4 x i32> zeroinitializer
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <4 x i64> [ <i64 0, i64 1, i64 2, i64 3>, [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP0:%.*]] = xor <4 x i1> [[BROADCAST_SPLAT]], <i1 true, i1 true, i1 true, i1 true>
@@ -162,6 +163,18 @@ define void @blend_chain_iv(i1 %c) {
 ; CHECK-NEXT:    [[TMP7:%.*]] = extractelement <4 x i64> [[PREDPHI1]], i32 1
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds [32 x i16], ptr @dst, i16 0, i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = extractelement <4 x i64> [[PREDPHI1]], i32 2
+=======
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %vector.ph ], [ [[INDEX_NEXT:%.*]], %vector.body ]
+; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <4 x i64> [ <i64 0, i64 1, i64 2, i64 3>, %vector.ph ], [ [[VEC_IND_NEXT:%.*]], %vector.body ]
+; CHECK-NEXT:    [[TMP6:%.*]] = select <4 x i1> [[MASK1]], <4 x i1> [[MASK1]], <4 x i1> zeroinitializer
+; CHECK-NEXT:    [[TMP4:%.*]] = xor <4 x i1> [[MASK1]], <i1 true, i1 true, i1 true, i1 true>
+; CHECK-NEXT:    [[TMP5:%.*]] = select <4 x i1> [[MASK1]], <4 x i1> [[TMP4]], <4 x i1> zeroinitializer
+; CHECK-NEXT:    [[TMP8:%.*]] = or <4 x i1> [[TMP6]], [[TMP5]]
+; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP6]], <4 x i64> [[VEC_IND]], <4 x i64> undef
+; CHECK-NEXT:    [[TMP7:%.*]] = xor <4 x i1> [[MASK1]], <i1 true, i1 true, i1 true, i1 true>
+; CHECK-NEXT:    [[PREDPHI1:%.*]] = select <4 x i1> [[TMP8]], <4 x i64> [[PREDPHI]], <4 x i64> undef
+; CHECK-NEXT:    [[TMP9:%.*]] = extractelement <4 x i64> [[PREDPHI1]], i32 0
+>>>>>>> llvm/main
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds [32 x i16], ptr @dst, i16 0, i64 [[TMP9]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = extractelement <4 x i64> [[PREDPHI1]], i32 3
 ; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds [32 x i16], ptr @dst, i16 0, i64 [[TMP11]]

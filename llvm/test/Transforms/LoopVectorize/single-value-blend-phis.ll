@@ -107,6 +107,7 @@ define void @single_incoming_phi_with_blend_mask(i64 %a, i64 %b) {
 ; CHECK-NEXT:    [[TMP1:%.*]] = add i16 [[TMP0]], 0
 ; CHECK-NEXT:    [[TMP2:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; CHECK-NEXT:    [[TMP3:%.*]] = icmp ugt <2 x i64> [[VEC_IND]], [[BROADCAST_SPLAT]]
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP4:%.*]] = xor <2 x i1> [[TMP3]], <i1 true, i1 true>
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr [32 x i16], ptr @src, i16 0, i16 [[TMP1]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i16, ptr [[TMP5]], i32 0
@@ -115,6 +116,16 @@ define void @single_incoming_phi_with_blend_mask(i64 %a, i64 %b) {
 ; CHECK-NEXT:    [[TMP8:%.*]] = xor <2 x i1> [[TMP7]], <i1 true, i1 true>
 ; CHECK-NEXT:    [[TMP9:%.*]] = select <2 x i1> [[TMP3]], <2 x i1> [[TMP8]], <2 x i1> zeroinitializer
 ; CHECK-NEXT:    [[TMP10:%.*]] = select <2 x i1> [[TMP3]], <2 x i1> [[TMP7]], <2 x i1> zeroinitializer
+=======
+; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr [32 x i16], ptr @src, i16 0, i16 [[TMP1]]
+; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i16, ptr [[TMP4]], i32 0
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i16>, ptr [[TMP5]], align 1
+; CHECK-NEXT:    [[TMP6:%.*]] = icmp sgt <2 x i64> [[VEC_IND]], [[BROADCAST_SPLAT]]
+; CHECK-NEXT:    [[TMP10:%.*]] = select <2 x i1> [[TMP3]], <2 x i1> [[TMP6]], <2 x i1> zeroinitializer
+; CHECK-NEXT:    [[TMP8:%.*]] = xor <2 x i1> [[TMP6]], <i1 true, i1 true>
+; CHECK-NEXT:    [[TMP9:%.*]] = select <2 x i1> [[TMP3]], <2 x i1> [[TMP8]], <2 x i1> zeroinitializer
+; CHECK-NEXT:    [[TMP7:%.*]] = xor <2 x i1> [[TMP3]], <i1 true, i1 true>
+>>>>>>> llvm/main
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[TMP9]], <2 x i16> [[WIDE_LOAD]], <2 x i16> zeroinitializer
 ; CHECK-NEXT:    [[PREDPHI1:%.*]] = select <2 x i1> [[TMP10]], <2 x i16> <i16 1, i16 1>, <2 x i16> [[PREDPHI]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds [32 x i16], ptr @dst, i16 0, i64 [[TMP2]]
@@ -305,12 +316,22 @@ define void @single_incoming_needs_predication(i64 %a, i64 %b) {
 ; CHECK-NEXT:    [[TMP14:%.*]] = insertelement <2 x i16> [[TMP9]], i16 [[TMP13]], i32 1
 ; CHECK-NEXT:    br label [[PRED_LOAD_CONTINUE2]]
 ; CHECK:       pred.load.continue2:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP15:%.*]] = phi <2 x i16> [ [[TMP9]], [[PRED_LOAD_CONTINUE]] ], [ [[TMP14]], [[PRED_LOAD_IF1]] ]
 ; CHECK-NEXT:    [[TMP16:%.*]] = icmp sgt <2 x i64> [[VEC_IND]], [[BROADCAST_SPLAT]]
 ; CHECK-NEXT:    [[TMP17:%.*]] = xor <2 x i1> [[TMP16]], <i1 true, i1 true>
 ; CHECK-NEXT:    [[TMP18:%.*]] = select <2 x i1> [[TMP2]], <2 x i1> [[TMP17]], <2 x i1> zeroinitializer
 ; CHECK-NEXT:    [[TMP19:%.*]] = select <2 x i1> [[TMP2]], <2 x i1> [[TMP16]], <2 x i1> zeroinitializer
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[TMP18]], <2 x i16> [[TMP15]], <2 x i16> zeroinitializer
+=======
+; CHECK-NEXT:    [[TMP14:%.*]] = phi <2 x i16> [ [[TMP8]], [[PRED_LOAD_CONTINUE]] ], [ [[TMP13]], [[PRED_LOAD_IF1]] ]
+; CHECK-NEXT:    [[TMP15:%.*]] = icmp sgt <2 x i64> [[VEC_IND]], [[BROADCAST_SPLAT]]
+; CHECK-NEXT:    [[TMP19:%.*]] = select <2 x i1> [[TMP2]], <2 x i1> [[TMP15]], <2 x i1> zeroinitializer
+; CHECK-NEXT:    [[TMP17:%.*]] = xor <2 x i1> [[TMP15]], <i1 true, i1 true>
+; CHECK-NEXT:    [[TMP18:%.*]] = select <2 x i1> [[TMP2]], <2 x i1> [[TMP17]], <2 x i1> zeroinitializer
+; CHECK-NEXT:    [[TMP16:%.*]] = xor <2 x i1> [[TMP2]], <i1 true, i1 true>
+; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[TMP18]], <2 x i16> [[TMP14]], <2 x i16> zeroinitializer
+>>>>>>> llvm/main
 ; CHECK-NEXT:    [[PREDPHI3:%.*]] = select <2 x i1> [[TMP19]], <2 x i16> <i16 1, i16 1>, <2 x i16> [[PREDPHI]]
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr inbounds [32 x i16], ptr @dst, i16 0, i64 [[TMP1]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = getelementptr inbounds i16, ptr [[TMP20]], i32 0

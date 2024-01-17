@@ -17,6 +17,7 @@ def HasStdExtZicsr : Predicate<"Subtarget->hasStdExtZicsr()">,
                                 AssemblerPredicate<(all_of FeatureStdExtZicsr),
                                 "'Zicsr' (CSRs)">;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def FeatureStdExtSdext
     : SubtargetFeature<"sdext", "HasStdExtSdext", "true",
@@ -167,6 +168,14 @@ def HasVendorXSiFivecdiscarddlone :
     AssemblerPredicate<(all_of FeatureVendorXSiFivecdiscarddlone),
                        "'XSiFivecdiscarddlone' (Cache Flush/Power Down Instructions)">;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+def FeatureStdExtI
+    : SubtargetFeature<"i", "HasStdExtI", "true",
+                       "'I' (Base Integer Instruction Set)">;
+def HasStdExtI : Predicate<"Subtarget->hasStdExtI()">,
+                           AssemblerPredicate<(all_of FeatureStdExtI),
+                           "'I' (Base Integer Instruction Set)">;
+>>>>>>> llvm/main
 
 def FeatureStdExtM
     : SubtargetFeature<"m", "HasStdExtM", "true",
@@ -720,11 +729,11 @@ def HasStdExtZvkb : Predicate<"Subtarget->hasStdExtZvkb()">,
 
 def FeatureStdExtZvbb
     : SubtargetFeature<"zvbb", "HasStdExtZvbb", "true",
-                       "'Zvbb' (Vector basic bit-manipulation instructions.)",
+                       "'Zvbb' (Vector basic bit-manipulation instructions)",
                        [FeatureStdExtZvkb]>;
 def HasStdExtZvbb : Predicate<"Subtarget->hasStdExtZvbb()">,
                               AssemblerPredicate<(all_of FeatureStdExtZvbb),
-                              "'Zvbb' (Vector basic bit-manipulation instructions.)">;
+                              "'Zvbb' (Vector basic bit-manipulation instructions)">;
 
 def FeatureStdExtZvbc
     : SubtargetFeature<"zvbc", "HasStdExtZvbc", "true",
@@ -837,40 +846,36 @@ def FeatureStdExtZvkt
 
 def FeatureStdExtZvkn
     : SubtargetFeature<"zvkn", "HasStdExtZvkn", "true",
-                       "This extension is shorthand for the following set of "
-                       "other extensions: Zvkned, Zvknhb, Zvkb and Zvkt.",
+                       "'Zvkn' (shorthand for 'Zvkned', 'Zvknhb', 'Zvkb', and "
+                       "'Zvkt')",
                        [FeatureStdExtZvkned, FeatureStdExtZvknhb,
                         FeatureStdExtZvkb, FeatureStdExtZvkt]>;
 
 def FeatureStdExtZvknc
     : SubtargetFeature<"zvknc", "HasStdExtZvknc", "true",
-                       "This extension is shorthand for the following set of "
-                       "other extensions: Zvkn and Zvbc.",
+                       "'Zvknc' (shorthand for 'Zvknc' and 'Zvbc')",
                        [FeatureStdExtZvkn, FeatureStdExtZvbc]>;
 
 def FeatureStdExtZvkng
     : SubtargetFeature<"zvkng", "HasStdExtZvkng", "true",
-                       "This extension is shorthand for the following set of "
-                       "other extensions: Zvkn and Zvkg.",
+                       "'zvkng' (shorthand for 'Zvkn' and 'Zvkg')",
                        [FeatureStdExtZvkn, FeatureStdExtZvkg]>;
 
 def FeatureStdExtZvks
     : SubtargetFeature<"zvks", "HasStdExtZvks", "true",
-                       "This extension is shorthand for the following set of "
-                       "other extensions: Zvksed, Zvksh, Zvkb and Zvkt.",
+                       "'Zvks' (shorthand for 'Zvksed', 'Zvksh', 'Zvkb', and "
+                       "'Zvkt')",
                        [FeatureStdExtZvksed, FeatureStdExtZvksh,
                         FeatureStdExtZvkb, FeatureStdExtZvkt]>;
 
 def FeatureStdExtZvksc
     : SubtargetFeature<"zvksc", "HasStdExtZvksc", "true",
-                       "This extension is shorthand for the following set of "
-                       "other extensions: Zvks and Zvbc.",
+                       "'Zvksc' (shorthand for 'Zvks' and 'Zvbc')",
                        [FeatureStdExtZvks, FeatureStdExtZvbc]>;
 
 def FeatureStdExtZvksg
     : SubtargetFeature<"zvksg", "HasStdExtZvksg", "true",
-                       "This extension is shorthand for the following set of "
-                       "other extensions: Zvks and Zvkg.",
+                       "'Zvksg' (shorthand for 'Zvks' and 'Zvkg')",
                        [FeatureStdExtZvks, FeatureStdExtZvkg]>;
 
 def FeatureStdExtZicfilp
@@ -911,16 +916,13 @@ def NoHasStdExtZicfiss : Predicate<"!Subtarget->hasStdExtZicfiss()">;
 
 def FeatureStdExtSmaia
     : SubtargetFeature<"smaia", "HasStdExtSmaia", "true",
-                       "'Smaia' (Smaia encompasses all added CSRs and all "
-                       "modifications to interrupt response behavior that the "
-                       "AIA specifies for a hart, over all privilege levels.)",
-                       []>;
+                       "'Smaia' (Advanced Interrupt Architecture Machine "
+                       "Level)", []>;
 
 def FeatureStdExtSsaia
     : SubtargetFeature<"ssaia", "HasStdExtSsaia", "true",
-                       "'Ssaia' (Ssaia is essentially the same as Smaia except "
-                       "excluding the machine-level CSRs and behavior not "
-                       "directly visible to supervisor level.)", []>;
+                       "'Ssaia' (Advanced Interrupt Architecture Supervisor "
+                       "Level)", []>;
 
 def HasHalfFPLoadStoreMove
     : Predicate<"Subtarget->hasHalfFPLoadStoreMove()">,
@@ -936,6 +938,7 @@ def FeatureStdExtZacas
 def HasStdExtZacas : Predicate<"Subtarget->hasStdExtZacas()">,
                                AssemblerPredicate<(all_of FeatureStdExtZacas),
                                "'Zacas' (Atomic Compare-And-Swap Instructions)">;
+def NoStdExtZacas : Predicate<"!Subtarget->hasStdExtZacas()">;
 
 //===----------------------------------------------------------------------===//
 // Vendor extensions
@@ -1282,6 +1285,7 @@ def TuneShortForwardBranchOpt
 def HasShortForwardBranchOpt : Predicate<"Subtarget->hasShortForwardBranchOpt()">;
 def NoShortForwardBranchOpt : Predicate<"!Subtarget->hasShortForwardBranchOpt()">;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def TuneCMOVBranchOpt
     : SubtargetFeature<"cmov-branch-opt", "HasCMOVBranchOpt",
@@ -1337,6 +1341,14 @@ def TuneSiFive6 : SubtargetFeature<"sifive6", "RISCVProcFamily", "SiFive6",
                                    "SiFive 6-Series processors",
                                    [TuneNoDefaultUnroll,
                                     TuneShortForwardBranchOpt]>;
+=======
+def TuneConditionalCompressedMoveFusion
+    : SubtargetFeature<"conditional-cmv-fusion", "HasConditionalCompressedMoveFusion",
+                       "true", "Enable branch+c.mv fusion">;
+def HasConditionalMoveFusion : Predicate<"Subtarget->hasConditionalMoveFusion()">;
+def NoConditionalMoveFusion  : Predicate<"!Subtarget->hasConditionalMoveFusion()">;
+
+>>>>>>> llvm/main
 def TuneSiFive7 : SubtargetFeature<"sifive7", "RISCVProcFamily", "SiFive7",
                                    "SiFive 7-Series processors",
                                    [TuneNoDefaultUnroll,

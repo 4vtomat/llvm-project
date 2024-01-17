@@ -16,6 +16,7 @@
 #include "llvm/ADT/MapVector.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/Analysis/LoopAccessAnalysis.h"
+#include "llvm/IR/VFABIDemangler.h"
 #include "llvm/Support/CheckedArithmetic.h"
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/Support/CommandLine.h"
@@ -24,6 +25,7 @@
 namespace llvm {
 class TargetLibraryInfo;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 extern cl::opt<unsigned> MaxInterleaveGroupFactor;
 #endif // SIFIVE_CUSTOMIZATION
@@ -217,6 +219,8 @@ FunctionType *createFunctionType(const VFInfo &Info,
                                  const FunctionType *ScalarFTy);
 } // end namespace VFABI
 
+=======
+>>>>>>> llvm/main
 /// The Vector Function Database.
 ///
 /// Helper class used to find the vector functions associated to a

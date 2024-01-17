@@ -1568,6 +1568,7 @@ void InterleaveGroup<Instruction>::addMetadata(Instruction *NewInst) const {
                  [](std::pair<int, Instruction *> p) { return p.second; });
   propagateMetadata(NewInst, VL);
 }
+<<<<<<< HEAD
 }
 
 void VFABI::getVectorVariantNames(
@@ -1666,3 +1667,6 @@ bool VFShape::hasValidParameterList() const {
   }
   return true;
 }
+=======
+} // namespace llvm
+>>>>>>> llvm/main

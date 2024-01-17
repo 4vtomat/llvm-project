@@ -137,6 +137,8 @@ def riscv_ctlz_vl       : SDNode<"RISCVISD::CTLZ_VL",       SDT_RISCVIntUnOp_VL>
 def riscv_cttz_vl       : SDNode<"RISCVISD::CTTZ_VL",       SDT_RISCVIntUnOp_VL>;
 def riscv_ctpop_vl      : SDNode<"RISCVISD::CTPOP_VL",      SDT_RISCVIntUnOp_VL>;
 
+def riscv_avgflooru_vl  : SDNode<"RISCVISD::AVGFLOORU_VL", SDT_RISCVIntBinOp_VL, [SDNPCommutative]>;
+def riscv_avgceilu_vl   : SDNode<"RISCVISD::AVGCEILU_VL", SDT_RISCVIntBinOp_VL, [SDNPCommutative]>;
 def riscv_saddsat_vl   : SDNode<"RISCVISD::SADDSAT_VL", SDT_RISCVIntBinOp_VL, [SDNPCommutative]>;
 def riscv_uaddsat_vl   : SDNode<"RISCVISD::UADDSAT_VL", SDT_RISCVIntBinOp_VL, [SDNPCommutative]>;
 def riscv_ssubsat_vl   : SDNode<"RISCVISD::SSUBSAT_VL", SDT_RISCVIntBinOp_VL>;
@@ -2220,6 +2222,25 @@ multiclass VPatSlide1VL_VF<SDNode vop, string instruction_name> {
   }
 }
 
+multiclass VPatAVGADDVL_VV_VX_RM<SDNode vop, int vxrm> {
+  foreach vti = AllIntegerVectors in {
+    let Predicates = GetVTypePredicates<vti>.Predicates in {
+      def : Pat<(vop (vti.Vector vti.RegClass:$rs1),
+                     (vti.Vector vti.RegClass:$rs2),
+                     vti.RegClass:$merge, (vti.Mask V0), VLOpFrag),
+                (!cast<Instruction>("PseudoVAADDU_VV_"#vti.LMul.MX#"_MASK")
+                  vti.RegClass:$merge, vti.RegClass:$rs1, vti.RegClass:$rs2,
+                  (vti.Mask V0), vxrm, GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
+      def : Pat<(vop (vti.Vector vti.RegClass:$rs1),
+                     (vti.Vector (SplatPat (XLenVT GPR:$rs2))),
+                     vti.RegClass:$merge, (vti.Mask V0), VLOpFrag),
+                (!cast<Instruction>("PseudoVAADDU_VX_"#vti.LMul.MX#"_MASK")
+                  vti.RegClass:$merge, vti.RegClass:$rs1, GPR:$rs2,
+                  (vti.Mask V0), vxrm, GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
+    }
+  }
+}
+
 //===----------------------------------------------------------------------===//
 // Patterns.
 //===----------------------------------------------------------------------===//
@@ -2496,6 +2517,7 @@ defm : VPatBinaryVL_VV_VX_VI<riscv_uaddsat_vl, "PseudoVSADDU">;
 defm : VPatBinaryVL_VV_VX<riscv_ssubsat_vl, "PseudoVSSUB">;
 defm : VPatBinaryVL_VV_VX<riscv_usubsat_vl, "PseudoVSSUBU">;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 // 12.2 Vector Single-Width Averaging Add and Subtract
 defm : VPatBinaryRM_VL_VV_VX<riscv_vaadd_vl, "PseudoVAADD">;
@@ -2514,6 +2536,11 @@ defm : VPatBinaryRM_VL_VV_VX_VI<riscv_vssra_vl, "PseudoVSSRA", uimm5>;
 defm : VPatBinaryRM_NVL_WV_WX_WI<riscv_vnclip_vl, "PseudoVNCLIP">;
 defm : VPatBinaryRM_NVL_WV_WX_WI<riscv_vnclipu_vl, "PseudoVNCLIPU">;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+// 12.2. Vector Single-Width Averaging Add and Subtract
+defm : VPatAVGADDVL_VV_VX_RM<riscv_avgflooru_vl, 0b10>;
+defm : VPatAVGADDVL_VV_VX_RM<riscv_avgceilu_vl, 0b00>;
+>>>>>>> llvm/main
 
 // 12.5. Vector Narrowing Fixed-Point Clip Instructions
 class VPatTruncSatClipMaxMinBase<string inst,
@@ -3024,16 +3051,19 @@ foreach mti = AllMasks in {
 // 16. Vector Permutation Instructions
 
 // 16.1. Integer Scalar Move Instructions
-// 16.4. Vector Register Gather Instruction
-foreach vti = AllIntegerVectors in {
+foreach vti = NoGroupIntegerVectors in {
   let Predicates = GetVTypePredicates<vti>.Predicates in {
     def : Pat<(vti.Vector (riscv_vmv_s_x_vl (vti.Vector vti.RegClass:$merge),
                                             vti.ScalarRegClass:$rs1,
                                             VLOpFrag)),
-              (!cast<Instruction>("PseudoVMV_S_X_"#vti.LMul.MX)
-                  vti.RegClass:$merge,
-                  (vti.Scalar vti.ScalarRegClass:$rs1), GPR:$vl, vti.Log2SEW)>;
+              (PseudoVMV_S_X $merge, vti.ScalarRegClass:$rs1, GPR:$vl,
+                             vti.Log2SEW)>;
+  }
+}
 
+// 16.4. Vector Register Gather Instruction
+foreach vti = AllIntegerVectors in {
+  let Predicates = GetVTypePredicates<vti>.Predicates in {
     def : Pat<(vti.Vector (riscv_vrgather_vv_vl vti.RegClass:$rs2,
                                                 vti.RegClass:$rs1,
                                                 vti.RegClass:$merge,
@@ -3081,18 +3111,21 @@ foreach vti = AllIntegerVectors in {
 }
 
 // 16.2. Floating-Point Scalar Move Instructions
-foreach vti = AllFloatVectors in {
+foreach vti = NoGroupFloatVectors in {
   let Predicates = GetVTypePredicates<vti>.Predicates in {
     def : Pat<(vti.Vector (riscv_vfmv_s_f_vl (vti.Vector vti.RegClass:$merge),
                                              (vti.Scalar (fpimm0)),
                                              VLOpFrag)),
-              (!cast<Instruction>("PseudoVMV_S_X_"#vti.LMul.MX)
-                  vti.RegClass:$merge, (XLenVT X0), GPR:$vl, vti.Log2SEW)>;
+              (PseudoVMV_S_X $merge, (XLenVT X0), GPR:$vl, vti.Log2SEW)>;
     def : Pat<(vti.Vector (riscv_vfmv_s_f_vl (vti.Vector vti.RegClass:$merge),
                                              (vti.Scalar (SelectFPImm (XLenVT GPR:$imm))),
                                              VLOpFrag)),
-              (!cast<Instruction>("PseudoVMV_S_X_"#vti.LMul.MX)
-                  vti.RegClass:$merge, GPR:$imm, GPR:$vl, vti.Log2SEW)>;
+              (PseudoVMV_S_X $merge, GPR:$imm, GPR:$vl, vti.Log2SEW)>;
+  }
+}
+
+foreach vti = AllFloatVectors in {
+  let Predicates = GetVTypePredicates<vti>.Predicates in {
     def : Pat<(vti.Vector (riscv_vfmv_s_f_vl (vti.Vector vti.RegClass:$merge),
                                              vti.ScalarRegClass:$rs1,
                                              VLOpFrag)),
