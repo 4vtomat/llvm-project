@@ -90,11 +90,11 @@ static bool getArchFeatures(const Driver &D, StringRef Arch,
                 (*ISAInfo)->getExtensions();
             auto ExtInfoItr = ExtInfo.find(ExtName.str());
             assert(ExtInfoItr != ExtInfo.end());
-            llvm::RISCVExtensionInfo ExtVersion = ExtInfoItr->second;
+            llvm::RISCVISAInfo::ExtensionVersion ExtVersion =
+                ExtInfoItr->second;
 
             D.Diag(diag::warn_drv_require_ext_version)
-                << ExtName << ExtVersion.MajorVersion
-                << ExtVersion.MinorVersion;
+                << ExtName << ExtVersion.Major << ExtVersion.Minor;
           } else {
             D.Diag(diag::err_drv_invalid_riscv_arch_name)
                 << Arch << ErrMsg.getMessage();

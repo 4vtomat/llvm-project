@@ -46,7 +46,7 @@ public:
       OrderedExtensionMap;
 
 #if SIFIVE_CUSTOMIZATION
-  typedef std::multimap<std::string, RISCVExtensionInfo, ExtensionComparator>
+  typedef std::multimap<std::string, ExtensionVersion, ExtensionComparator>
       OrderedExtensionMultiMap;
 #endif
 
