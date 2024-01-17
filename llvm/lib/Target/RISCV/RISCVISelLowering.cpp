@@ -3796,17 +3796,10 @@ static SDValue lowerBuildVectorOfConstants(SDValue Op, SelectionDAG &DAG,
   // would require bit-manipulation instructions to construct the splat value.
   SmallVector<SDValue> Sequence;
   const auto *BV = cast<BuildVectorSDNode>(Op);
-<<<<<<< HEAD
-  if (VT.isInteger() && EltBitSize < Subtarget.getELen() && // SIFIVE
-      ISD::isBuildVectorOfConstantSDNodes(Op.getNode()) &&
-      BV->getRepeatedSequence(Sequence) &&
-      (Sequence.size() * EltBitSize) <= Subtarget.getELen()) { // SIFIVE
-=======
   if (VT.isInteger() && EltBitSize < Subtarget.getELen() &&
       ISD::isBuildVectorOfConstantSDNodes(Op.getNode()) &&
       BV->getRepeatedSequence(Sequence) &&
       (Sequence.size() * EltBitSize) <= Subtarget.getELen()) {
->>>>>>> llvm/main
     unsigned SeqLen = Sequence.size();
     MVT ViaIntVT = MVT::getIntegerVT(EltBitSize * SeqLen);
     assert((ViaIntVT == MVT::i16 || ViaIntVT == MVT::i32 ||
@@ -5842,11 +5835,7 @@ static bool hasMergeOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_RISCV_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-<<<<<<< HEAD
-                    137 && // SIFIVE
-=======
-                    126 &&
->>>>>>> llvm/main
+                    139 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
@@ -5872,11 +5861,7 @@ static bool hasMaskOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_RISCV_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-<<<<<<< HEAD
-                    137 && // SIFIVE
-=======
-                    126 &&
->>>>>>> llvm/main
+                    139 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
@@ -7331,12 +7316,7 @@ static SDValue combineSelectToBinOp(SDNode *N, SelectionDAG &DAG,
   MVT VT = N->getSimpleValueType(0);
   SDLoc DL(N);
 
-<<<<<<< HEAD
-  if (!Subtarget.hasShortForwardBranchOpt() &&
-      !Subtarget.canUseCMOVBranchOpt()) {
-=======
   if (!Subtarget.hasConditionalMoveFusion()) {
->>>>>>> llvm/main
     // (select c, -1, y) -> -c | y
     if (isAllOnesConstant(TrueV)) {
       SDValue Neg = DAG.getNegative(CondV, DL, VT);
@@ -7546,18 +7526,8 @@ SDValue RISCVTargetLowering::lowerSELECT(SDValue Op, SelectionDAG &DAG) const {
       return V;
 
     // (select c, t, f) -> (or (czero_eqz t, c), (czero_nez f, c))
-<<<<<<< HEAD
-    // Unless we have short forward branch or cmov branch optimizations.
-#if SIFIVE_CUSTOMIZATION
-    if (!Subtarget.hasShortForwardBranchOpt() &&
-        !Subtarget.canUseCMOVBranchOpt())
-#else
-    if (!Subtarget.hasShortForwardBranchOpt())
-#endif
-=======
     // Unless we have the short forward branch optimization.
     if (!Subtarget.hasConditionalMoveFusion())
->>>>>>> llvm/main
       return DAG.getNode(
           ISD::OR, DL, VT,
           DAG.getNode(RISCVISD::CZERO_EQZ, DL, VT, TrueV, CondV),
@@ -9192,7 +9162,9 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     return DAG.getNode(RISCVISD::VMERGE_VL, DL, VT, SelectCond, SplattedVal,
                        Vec, DAG.getUNDEF(VT), VL);
   }
-<<<<<<< HEAD
+  case Intrinsic::riscv_vfmv_s_f:
+    return DAG.getNode(RISCVISD::VFMV_S_F_VL, DL, Op.getSimpleValueType(),
+                       Op.getOperand(1), Op.getOperand(2), Op.getOperand(3));
 #if SIFIVE_CUSTOMIZATION
   case Intrinsic::aarch64_neon_fmax:
   case Intrinsic::aarch64_neon_fmin: {
@@ -9472,11 +9444,6 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
         DAG, Subtarget);
   }
 #endif
-=======
-  case Intrinsic::riscv_vfmv_s_f:
-    return DAG.getNode(RISCVISD::VFMV_S_F_VL, DL, Op.getSimpleValueType(),
-                       Op.getOperand(1), Op.getOperand(2), Op.getOperand(3));
->>>>>>> llvm/main
   // EGS * EEW >= 128 bits
   case Intrinsic::riscv_vaesdf_vv:
   case Intrinsic::riscv_vaesdf_vs:
@@ -13720,14 +13687,7 @@ static SDValue combineSelectAndUse(SDNode *N, SDValue Slct, SDValue OtherOp,
   if (VT.isVector())
     return SDValue();
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if ((!Subtarget.hasShortForwardBranchOpt() &&
-       !Subtarget.canUseCMOVBranchOpt())) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
   if (!Subtarget.hasConditionalMoveFusion()) {
->>>>>>> llvm/main
     // (select cond, x, (and x, c)) has custom lowering with Zicond.
     if ((!Subtarget.hasStdExtZicond() &&
          !Subtarget.hasVendorXVentanaCondOps()) ||
@@ -16710,11 +16670,6 @@ static SDValue performSELECTCombine(SDNode *N, SelectionDAG &DAG,
   if (Subtarget.hasConditionalMoveFusion())
     return SDValue();
 
-#if SIFIVE_CUSTOMIZATION
-  if (Subtarget.canUseCMOVBranchOpt())
-    return SDValue();
-#endif // SIFIVE_CUSTOMIZATION
-
   SDValue TrueVal = N->getOperand(1);
   SDValue FalseVal = N->getOperand(2);
   if (SDValue V = tryFoldSelectIntoOp(N, DAG, TrueVal, FalseVal, /*Swapped*/false))
@@ -17463,16 +17418,7 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
       return DAG.getNode(RISCVISD::SELECT_CC, DL, N->getValueType(0),
                          {LHS, RHS, CC, TrueV, FalseV});
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    if (!Subtarget.hasShortForwardBranchOpt() &&
-        !Subtarget.canUseCMOVBranchOpt()) {
-#else
-    if (!Subtarget.hasShortForwardBranchOpt()) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
     if (!Subtarget.hasConditionalMoveFusion()) {
->>>>>>> llvm/main
       // (select c, -1, y) -> -c | y
       if (isAllOnesConstant(TrueV)) {
         SDValue C = DAG.getSetCC(DL, VT, LHS, RHS, CCVal);
@@ -20935,37 +20881,22 @@ SDValue RISCVTargetLowering::LowerCall(CallLoweringInfo &CLI,
   // TargetGlobalAddress/TargetExternalSymbol node so that legalize won't
   // split it and then direct call can be matched by PseudoCALL.
   if (GlobalAddressSDNode *S = dyn_cast<GlobalAddressSDNode>(Callee)) {
-<<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
     if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
       Callee = lowerGlobalAddress(Callee, DAG);
     } else {
       const GlobalValue *GV = S->getGlobal();
-
-      unsigned OpFlags = RISCVII::MO_CALL;
-      if (!getTargetMachine().shouldAssumeDSOLocal(*GV->getParent(), GV))
-        OpFlags = RISCVII::MO_PLT;
-      Callee = DAG.getTargetGlobalAddress(GV, DL, PtrVT, 0, OpFlags);
+      Callee = DAG.getTargetGlobalAddress(GV, DL, PtrVT, 0, RISCVII::MO_CALL);
     }
+#endif // SIFIVE_CUSTOMIZATION
   } else if (ExternalSymbolSDNode *S = dyn_cast<ExternalSymbolSDNode>(Callee)) {
 #if SIFIVE_CUSTOMIZATION
     if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
       Callee = getCompactAddr(S, DAG, RISCVII::MO_GOT_GPREL_HI);
     } else {
-#endif // SIFIVE_CUSTOMIZATION
-      const TargetMachine &TM = getTargetMachine();
-      unsigned OpFlags = RISCVII::MO_CALL;
-      if (!TM.shouldAssumeDSOLocal(*MF.getFunction().getParent(), nullptr))
-        OpFlags = RISCVII::MO_PLT;
-      Callee = DAG.getTargetExternalSymbol(S->getSymbol(), PtrVT, OpFlags);
-#if SIFIVE_CUSTOMIZATION
+      Callee = DAG.getTargetExternalSymbol(S->getSymbol(), PtrVT, RISCVII::MO_CALL);
     }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    const GlobalValue *GV = S->getGlobal();
-    Callee = DAG.getTargetGlobalAddress(GV, DL, PtrVT, 0, RISCVII::MO_CALL);
-  } else if (ExternalSymbolSDNode *S = dyn_cast<ExternalSymbolSDNode>(Callee)) {
-    Callee = DAG.getTargetExternalSymbol(S->getSymbol(), PtrVT, RISCVII::MO_CALL);
->>>>>>> llvm/main
   }
 
   // The first call operand is the chain and the second is the target address.

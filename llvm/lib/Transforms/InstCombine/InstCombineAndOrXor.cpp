@@ -3909,15 +3909,13 @@ Instruction *InstCombinerImpl::visitOr(BinaryOperator &I) {
       return BinaryOperator::CreateAnd(X, ConstantInt::get(Ty, *C1 | *C2));
   }
 
-<<<<<<< HEAD
+  if (Instruction *Res = foldBitwiseLogicWithIntrinsics(I, Builder))
+    return Res;
+
 #if SIFIVE_CUSTOMIZATION
   if (Instruction *NewI = foldNeutralVPReduce(I))
     return NewI;
 #endif
-=======
-  if (Instruction *Res = foldBitwiseLogicWithIntrinsics(I, Builder))
-    return Res;
->>>>>>> llvm/main
 
   return nullptr;
 }
@@ -4831,15 +4829,13 @@ Instruction *InstCombinerImpl::visitXor(BinaryOperator &I) {
   if (Instruction *Res = foldBinOpOfDisplacedShifts(I))
     return Res;
 
-<<<<<<< HEAD
+  if (Instruction *Res = foldBitwiseLogicWithIntrinsics(I, Builder))
+    return Res;
+
 #if SIFIVE_CUSTOMIZATION
   if (Instruction *NewI = foldNeutralVPReduce(I))
     return NewI;
 #endif
-=======
-  if (Instruction *Res = foldBitwiseLogicWithIntrinsics(I, Builder))
-    return Res;
->>>>>>> llvm/main
 
   return nullptr;
 }

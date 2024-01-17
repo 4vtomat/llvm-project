@@ -2517,7 +2517,10 @@ defm : VPatBinaryVL_VV_VX_VI<riscv_uaddsat_vl, "PseudoVSADDU">;
 defm : VPatBinaryVL_VV_VX<riscv_ssubsat_vl, "PseudoVSSUB">;
 defm : VPatBinaryVL_VV_VX<riscv_usubsat_vl, "PseudoVSSUBU">;
 
-<<<<<<< HEAD
+// 12.2. Vector Single-Width Averaging Add and Subtract
+defm : VPatAVGADDVL_VV_VX_RM<riscv_avgflooru_vl, 0b10>;
+defm : VPatAVGADDVL_VV_VX_RM<riscv_avgceilu_vl, 0b00>;
+
 #ifdef SIFIVE_CUSTOMIZATION
 // 12.2 Vector Single-Width Averaging Add and Subtract
 defm : VPatBinaryRM_VL_VV_VX<riscv_vaadd_vl, "PseudoVAADD">;
@@ -2536,11 +2539,6 @@ defm : VPatBinaryRM_VL_VV_VX_VI<riscv_vssra_vl, "PseudoVSSRA", uimm5>;
 defm : VPatBinaryRM_NVL_WV_WX_WI<riscv_vnclip_vl, "PseudoVNCLIP">;
 defm : VPatBinaryRM_NVL_WV_WX_WI<riscv_vnclipu_vl, "PseudoVNCLIPU">;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-// 12.2. Vector Single-Width Averaging Add and Subtract
-defm : VPatAVGADDVL_VV_VX_RM<riscv_avgflooru_vl, 0b10>;
-defm : VPatAVGADDVL_VV_VX_RM<riscv_avgceilu_vl, 0b00>;
->>>>>>> llvm/main
 
 // 12.5. Vector Narrowing Fixed-Point Clip Instructions
 class VPatTruncSatClipMaxMinBase<string inst,

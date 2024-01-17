@@ -1726,12 +1726,6 @@ Instruction *InstCombinerImpl::visitAdd(BinaryOperator &I) {
         I, Builder.CreateIntrinsic(Intrinsic::ctpop, {I.getType()},
                                    {Builder.CreateOr(A, B)}));
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (Instruction *Res = foldNeutralVPReduce(I))
-    return Res;
-#endif
-=======
   // Fold the log2_ceil idiom:
   // zext(ctpop(A) >u/!= 1) + (ctlz(A, true) ^ (BW - 1))
   // -->
@@ -1755,7 +1749,6 @@ Instruction *InstCombinerImpl::visitAdd(BinaryOperator &I) {
         Ctlz, "", /*HasNUW*/ true, /*HasNSW*/ true);
     return replaceInstUsesWith(I, Builder.CreateZExtOrTrunc(Ret, I.getType()));
   }
->>>>>>> llvm/main
 
   if (Instruction *Res = foldSquareSumInt(I))
     return Res;
@@ -1765,6 +1758,11 @@ Instruction *InstCombinerImpl::visitAdd(BinaryOperator &I) {
 
   if (Instruction *Res = foldBinOpOfSelectAndCastOfSelectCondition(I))
     return Res;
+
+#if SIFIVE_CUSTOMIZATION
+  if (Instruction *Res = foldNeutralVPReduce(I))
+    return Res;
+#endif
 
   return Changed ? &I : nullptr;
 }

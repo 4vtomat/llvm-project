@@ -255,7 +255,11 @@ enum NodeType : unsigned {
   SSUBSAT_VL,
   USUBSAT_VL,
 
-<<<<<<< HEAD
+  // Averaging adds of unsigned integers.
+  AVGFLOORU_VL,
+  // Rounding averaging adds of unsigned integers.
+  AVGCEILU_VL,
+
   VAADD_VL,  // SIFIVE
   VAADDU_VL, // SIFIVE
   VASUB_VL,  // SIFIVE
@@ -265,12 +269,6 @@ enum NodeType : unsigned {
   VSSRA_VL, // SIFIVE
   VNCLIPU_VL, // SIFIVE
   VNCLIP_VL, // SIFIVE
-=======
-  // Averaging adds of unsigned integers.
-  AVGFLOORU_VL,
-  // Rounding averaging adds of unsigned integers.
-  AVGCEILU_VL,
->>>>>>> llvm/main
 
   MULHS_VL,
   MULHU_VL,
@@ -965,14 +963,11 @@ private:
   SDValue lowerFixedLengthVectorSelectToRVV(SDValue Op,
                                             SelectionDAG &DAG) const;
   SDValue lowerToScalableOp(SDValue Op, SelectionDAG &DAG) const;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   SDValue lowerRVVRMIntrinsics(SDValue Op, SelectionDAG &DAG, unsigned Opc,
                                bool HasMask) const;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   SDValue lowerUnsignedAvgFloor(SDValue Op, SelectionDAG &DAG) const;
->>>>>>> llvm/main
   SDValue LowerIS_FPCLASS(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPOp(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerLogicVPOp(SDValue Op, SelectionDAG &DAG) const;

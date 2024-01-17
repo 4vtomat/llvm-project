@@ -1422,19 +1422,10 @@ void RISCVInsertVSETVLI::doPRE(MachineBasicBlock &MBB) {
   if (!UnavailablePred || !AvailableInfo.isValid())
     return;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // SIFIVE cherry-picked from #77063
-=======
->>>>>>> llvm/main
   // If we don't know the exact VTYPE, we can't copy the vsetvli to the exit of
   // the unavailable pred.
   if (AvailableInfo.hasSEWLMULRatioOnly())
     return;
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> llvm/main
 
   // Critical edge - TODO: consider splitting?
   if (UnavailablePred->succ_size() != 1)

@@ -139,9 +139,6 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   case RISCV::PseudoCCXOR:
   case RISCV::PseudoCCADDW:
   case RISCV::PseudoCCSUBW:
-#if SIFIVE_CUSTOMIZATION
-  case RISCV::PseudoCCMOVGPRNoX0:
-#endif // SIFIVE_CUSTOMIZATION
   case RISCV::PseudoCCSLL:
   case RISCV::PseudoCCSRL:
   case RISCV::PseudoCCSRA:
@@ -231,15 +228,8 @@ bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
   Register DestReg = MI.getOperand(0).getReg();
   assert(MI.getOperand(4).getReg() == DestReg);
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   if (MI.getOpcode() == RISCV::PseudoCCMOVGPR ||
       MI.getOpcode() == RISCV::PseudoCCMOVGPRNoX0) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  if (MI.getOpcode() == RISCV::PseudoCCMOVGPR ||
-      MI.getOpcode() == RISCV::PseudoCCMOVGPRNoX0) {
->>>>>>> llvm/main
     // Add MV.
     BuildMI(TrueBB, DL, TII->get(RISCV::ADDI), DestReg)
         .add(MI.getOperand(5))

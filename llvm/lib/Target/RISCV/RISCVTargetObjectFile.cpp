@@ -25,12 +25,9 @@ void RISCVELFTargetObjectFile::Initialize(MCContext &Ctx,
                                           const TargetMachine &TM) {
   TargetLoweringObjectFileELF::Initialize(Ctx, TM);
 
-<<<<<<< HEAD
-=======
   PLTRelativeVariantKind = MCSymbolRefExpr::VK_PLT;
   SupportIndirectSymViaGOTPCRel = true;
 
->>>>>>> llvm/main
   SmallDataSection = getContext().getELFSection(
       ".sdata", ELF::SHT_PROGBITS, ELF::SHF_WRITE | ELF::SHF_ALLOC);
   SmallBSSSection = getContext().getELFSection(".sbss", ELF::SHT_NOBITS,

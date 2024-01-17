@@ -2841,9 +2841,6 @@ bool RISCVInstrInfo::findCommutedOpIndices(const MachineInstr &MI,
     return fixCommutedOpIndices(SrcOpIdx1, SrcOpIdx2, 2, 3);
   case RISCV::PseudoCCMOVGPRNoX0:
   case RISCV::PseudoCCMOVGPR:
-#if SIFIVE_CUSTOMIZATION
-  case RISCV::PseudoCCMOVGPRNoX0:
-#endif // SIFIVE_CUSTOMIZATION
     // Operands 4 and 5 are commutable.
     return fixCommutedOpIndices(SrcOpIdx1, SrcOpIdx2, 4, 5);
   case CASE_VFMA_SPLATS(FMADD):
@@ -2999,13 +2996,7 @@ MachineInstr *RISCVInstrInfo::commuteInstructionImpl(MachineInstr &MI,
     return TargetInstrInfo::commuteInstructionImpl(WorkingMI, false, OpIdx1,
                                                    OpIdx2);
   }
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   case RISCV::PseudoCCMOVGPRNoX0:
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  case RISCV::PseudoCCMOVGPRNoX0:
->>>>>>> llvm/main
   case RISCV::PseudoCCMOVGPR: {
     // CCMOV can be commuted by inverting the condition.
     auto CC = static_cast<RISCVCC::CondCode>(MI.getOperand(3).getImm());

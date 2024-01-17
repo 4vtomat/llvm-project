@@ -17,7 +17,6 @@ def HasStdExtZicsr : Predicate<"Subtarget->hasStdExtZicsr()">,
                                 AssemblerPredicate<(all_of FeatureStdExtZicsr),
                                 "'Zicsr' (CSRs)">;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def FeatureStdExtSdext
     : SubtargetFeature<"sdext", "HasStdExtSdext", "true",
@@ -168,14 +167,13 @@ def HasVendorXSiFivecdiscarddlone :
     AssemblerPredicate<(all_of FeatureVendorXSiFivecdiscarddlone),
                        "'XSiFivecdiscarddlone' (Cache Flush/Power Down Instructions)">;
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 def FeatureStdExtI
     : SubtargetFeature<"i", "HasStdExtI", "true",
                        "'I' (Base Integer Instruction Set)">;
 def HasStdExtI : Predicate<"Subtarget->hasStdExtI()">,
                            AssemblerPredicate<(all_of FeatureStdExtI),
                            "'I' (Base Integer Instruction Set)">;
->>>>>>> llvm/main
 
 def FeatureStdExtM
     : SubtargetFeature<"m", "HasStdExtM", "true",
@@ -1285,14 +1283,7 @@ def TuneShortForwardBranchOpt
 def HasShortForwardBranchOpt : Predicate<"Subtarget->hasShortForwardBranchOpt()">;
 def NoShortForwardBranchOpt : Predicate<"!Subtarget->hasShortForwardBranchOpt()">;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-def TuneCMOVBranchOpt
-    : SubtargetFeature<"cmov-branch-opt", "HasCMOVBranchOpt",
-                       "true", "Enable CMOV branch optimization">;
-def CanUseCMOVBranchOpt : Predicate<"Subtarget->canUseCMOVBranchOpt()">;
-def NoCMOVBranchOpt : Predicate<"!Subtarget->canUseCMOVBranchOpt()">;
-
 def TuneFuseLUILoad
     : SubtargetFeature<"fuse-lui-load", "HasFuseLUILoad",
                        "true", "CPU fuses LUI/AUIPC with load">;
@@ -1341,14 +1332,13 @@ def TuneSiFive6 : SubtargetFeature<"sifive6", "RISCVProcFamily", "SiFive6",
                                    "SiFive 6-Series processors",
                                    [TuneNoDefaultUnroll,
                                     TuneShortForwardBranchOpt]>;
-=======
+
 def TuneConditionalCompressedMoveFusion
     : SubtargetFeature<"conditional-cmv-fusion", "HasConditionalCompressedMoveFusion",
                        "true", "Enable branch+c.mv fusion">;
 def HasConditionalMoveFusion : Predicate<"Subtarget->hasConditionalMoveFusion()">;
 def NoConditionalMoveFusion  : Predicate<"!Subtarget->hasConditionalMoveFusion()">;
 
->>>>>>> llvm/main
 def TuneSiFive7 : SubtargetFeature<"sifive7", "RISCVProcFamily", "SiFive7",
                                    "SiFive 7-Series processors",
                                    [TuneNoDefaultUnroll,
@@ -1356,23 +1346,23 @@ def TuneSiFive7 : SubtargetFeature<"sifive7", "RISCVProcFamily", "SiFive7",
 def TuneSiFiveP400 : SubtargetFeature<"sifive-p400", "RISCVProcFamily", "SiFiveP400",
                                       "SiFive P400-Series processors",
                                       [TuneNoDefaultUnroll,
-                                       TuneCMOVBranchOpt,
+                                       TuneConditionalCompressedMoveFusion,
                                        TuneLUIADDIFusion]>;
 def TuneSiFiveP500 : SubtargetFeature<"sifive-p500", "RISCVProcFamily", "SiFiveP500",
                                       "SiFive P500-Series processors",
                                       [TuneNoDefaultUnroll,
-                                       TuneCMOVBranchOpt,
+                                       TuneConditionalCompressedMoveFusion,
                                        TuneLUIADDIFusion]>;
 def TuneSiFiveP600 : SubtargetFeature<"sifive-p600", "RISCVProcFamily", "SiFiveP600",
                                       "SiFive P600-Series processors",
                                       [TuneNoDefaultUnroll,
-                                       TuneCMOVBranchOpt,
+                                       TuneConditionalCompressedMoveFusion,
                                        TuneLUIADDIFusion]>;
 
 def TuneSiFiveP800 : SubtargetFeature<"sifive-p800", "RISCVProcFamily", "SiFiveP800",
                                       "SiFive P800-Series processors",
                                       [TuneNoDefaultUnroll,
-                                       TuneCMOVBranchOpt,
+                                       TuneConditionalCompressedMoveFusion,
                                        TuneLUIADDIFusion]>;
 #endif // SIFIVE_CUSTOMIZATION
 
