@@ -137,8 +137,8 @@ define i32 @callee_half_in_regs(i32 %a, half %b) nounwind {
 ; RV32-ILP32-NEXT:    mv s0, a0
 ; RV32-ILP32-NEXT:    slli a0, a1, 16
 ; RV32-ILP32-NEXT:    srli a0, a0, 16
-; RV32-ILP32-NEXT:    call __extendhfsf2@plt
-; RV32-ILP32-NEXT:    call __fixsfsi@plt
+; RV32-ILP32-NEXT:    call __extendhfsf2
+; RV32-ILP32-NEXT:    call __fixsfsi
 ; RV32-ILP32-NEXT:    add a0, s0, a0
 ; RV32-ILP32-NEXT:    lw ra, 12(sp) # 4-byte Folded Reload
 ; RV32-ILP32-NEXT:    lw s0, 8(sp) # 4-byte Folded Reload

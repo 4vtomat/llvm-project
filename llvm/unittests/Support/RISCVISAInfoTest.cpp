@@ -833,16 +833,11 @@ Experimental extensions
     zfbfmin             1.0
     zcmop               0.2
     ztso                0.1
-<<<<<<< HEAD
-    zvfbfmin            0.8
-    zvfbfwma            0.8
+    zvfbfmin            1.0
+    zvfbfwma            1.0
     smwg                0.3
     smwgd               0.3
     sswg                0.3
-=======
-    zvfbfmin            1.0
-    zvfbfwma            1.0
->>>>>>> llvm/main
 
 Use -march to specify the target's extension.
 For example, clang -march=rv32i_v1p0)";

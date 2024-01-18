@@ -147,21 +147,12 @@ entry:
 }
 
 define void @t2(ptr nocapture %C) nounwind {
-<<<<<<< HEAD
 ; RV32-LABEL: t2:
 ; RV32:       # %bb.0: # %entry
 ; RV32-NEXT:    lui a1, %hi(.L.str2)
 ; RV32-NEXT:    addi a1, a1, %lo(.L.str2)
 ; RV32-NEXT:    li a2, 36
-; RV32-NEXT:    tail memcpy@plt
-=======
-; RV32-BOTH-LABEL: t2:
-; RV32-BOTH:       # %bb.0: # %entry
-; RV32-BOTH-NEXT:    lui a1, %hi(.L.str2)
-; RV32-BOTH-NEXT:    addi a1, a1, %lo(.L.str2)
-; RV32-BOTH-NEXT:    li a2, 36
-; RV32-BOTH-NEXT:    tail memcpy
->>>>>>> llvm/main
+; RV32-NEXT:    tail memcpy
 ;
 ; RV64-LABEL: t2:
 ; RV64:       # %bb.0: # %entry

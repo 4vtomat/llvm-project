@@ -575,15 +575,9 @@ define void @sextw_removal_ccaddw(i1 %c, i32 signext %arg, i32 signext %arg1, i3
 ; RV64SFB-NEXT:  .LBB16_4: # %bb
 ; RV64SFB-NEXT:  .LBB16_1: # %bb2
 ; RV64SFB-NEXT:    # =>This Inner Loop Header: Depth=1
-<<<<<<< HEAD
 ; RV64SFB-NEXT:    mv a0, s1
-; RV64SFB-NEXT:    call bar@plt
-; RV64SFB-NEXT:    sllw s1, s1, s0
-=======
-; RV64SFB-NEXT:    mv a0, s0
 ; RV64SFB-NEXT:    call bar
-; RV64SFB-NEXT:    sllw s0, s0, s1
->>>>>>> llvm/main
+; RV64SFB-NEXT:    sllw s1, s1, s0
 ; RV64SFB-NEXT:    bnez a0, .LBB16_1
 ; RV64SFB-NEXT:  # %bb.2: # %bb7
 ; RV64SFB-NEXT:    ld ra, 24(sp) # 8-byte Folded Reload
@@ -607,15 +601,9 @@ define void @sextw_removal_ccaddw(i1 %c, i32 signext %arg, i32 signext %arg1, i3
 ; ZICOND-NEXT:  .LBB16_4: # %bb
 ; ZICOND-NEXT:  .LBB16_1: # %bb2
 ; ZICOND-NEXT:    # =>This Inner Loop Header: Depth=1
-<<<<<<< HEAD
 ; ZICOND-NEXT:    mv a0, s1
-; ZICOND-NEXT:    call bar@plt
-; ZICOND-NEXT:    sllw s1, s1, s0
-=======
-; ZICOND-NEXT:    mv a0, s0
 ; ZICOND-NEXT:    call bar
-; ZICOND-NEXT:    sllw s0, s0, s1
->>>>>>> llvm/main
+; ZICOND-NEXT:    sllw s1, s1, s0
 ; ZICOND-NEXT:    bnez a0, .LBB16_1
 ; ZICOND-NEXT:  # %bb.2: # %bb7
 ; ZICOND-NEXT:    ld ra, 24(sp) # 8-byte Folded Reload
@@ -639,15 +627,9 @@ define void @sextw_removal_ccaddw(i1 %c, i32 signext %arg, i32 signext %arg1, i3
 ; RV32SFB-NEXT:  .LBB16_4: # %bb
 ; RV32SFB-NEXT:  .LBB16_1: # %bb2
 ; RV32SFB-NEXT:    # =>This Inner Loop Header: Depth=1
-<<<<<<< HEAD
 ; RV32SFB-NEXT:    mv a0, s1
-; RV32SFB-NEXT:    call bar@plt
-; RV32SFB-NEXT:    sll s1, s1, s0
-=======
-; RV32SFB-NEXT:    mv a0, s0
 ; RV32SFB-NEXT:    call bar
-; RV32SFB-NEXT:    sll s0, s0, s1
->>>>>>> llvm/main
+; RV32SFB-NEXT:    sll s1, s1, s0
 ; RV32SFB-NEXT:    bnez a0, .LBB16_1
 ; RV32SFB-NEXT:  # %bb.2: # %bb7
 ; RV32SFB-NEXT:    lw ra, 12(sp) # 4-byte Folded Reload

@@ -729,8 +729,7 @@ define i32 @nocompress(i32 signext %size) {
 ; RV32IZCMP-NEXT:    lw s6, 12(s1)
 ; RV32IZCMP-NEXT:    lw s7, 16(s1)
 ; RV32IZCMP-NEXT:    mv a0, s2
-<<<<<<< HEAD
-; RV32IZCMP-NEXT:    call callee_void@plt
+; RV32IZCMP-NEXT:    call callee_void
 ; RV32IZCMP-NEXT:    sw s7, 16(s1)
 ; RV32IZCMP-NEXT:    sw s6, 12(s1)
 ; RV32IZCMP-NEXT:    sw s5, 8(s1)
@@ -739,19 +738,7 @@ define i32 @nocompress(i32 signext %size) {
 ; RV32IZCMP-NEXT:    mv a0, s2
 ; RV32IZCMP-NEXT:    addi sp, s0, -48
 ; RV32IZCMP-NEXT:    cm.pop {ra, s0-s7}, 48
-; RV32IZCMP-NEXT:    tail callee@plt
-=======
-; RV32IZCMP-NEXT:    call callee_void
-; RV32IZCMP-NEXT:    sw s8, 16(s7)
-; RV32IZCMP-NEXT:    sw s6, %lo(var+12)(s1)
-; RV32IZCMP-NEXT:    sw s5, %lo(var+8)(s1)
-; RV32IZCMP-NEXT:    sw s4, %lo(var+4)(s1)
-; RV32IZCMP-NEXT:    sw s3, %lo(var)(s1)
-; RV32IZCMP-NEXT:    mv a0, s2
-; RV32IZCMP-NEXT:    addi sp, s0, -48
-; RV32IZCMP-NEXT:    cm.pop {ra, s0-s8}, 48
 ; RV32IZCMP-NEXT:    tail callee
->>>>>>> llvm/main
 ;
 ; RV64IZCMP-LABEL: nocompress:
 ; RV64IZCMP:       # %bb.0: # %entry
@@ -782,8 +769,7 @@ define i32 @nocompress(i32 signext %size) {
 ; RV64IZCMP-NEXT:    lw s6, 12(s1)
 ; RV64IZCMP-NEXT:    lw s7, 16(s1)
 ; RV64IZCMP-NEXT:    mv a0, s2
-<<<<<<< HEAD
-; RV64IZCMP-NEXT:    call callee_void@plt
+; RV64IZCMP-NEXT:    call callee_void
 ; RV64IZCMP-NEXT:    sw s7, 16(s1)
 ; RV64IZCMP-NEXT:    sw s6, 12(s1)
 ; RV64IZCMP-NEXT:    sw s5, 8(s1)
@@ -792,19 +778,7 @@ define i32 @nocompress(i32 signext %size) {
 ; RV64IZCMP-NEXT:    mv a0, s2
 ; RV64IZCMP-NEXT:    addi sp, s0, -80
 ; RV64IZCMP-NEXT:    cm.pop {ra, s0-s7}, 80
-; RV64IZCMP-NEXT:    tail callee@plt
-=======
-; RV64IZCMP-NEXT:    call callee_void
-; RV64IZCMP-NEXT:    sw s8, 16(s7)
-; RV64IZCMP-NEXT:    sw s6, %lo(var+12)(s1)
-; RV64IZCMP-NEXT:    sw s5, %lo(var+8)(s1)
-; RV64IZCMP-NEXT:    sw s4, %lo(var+4)(s1)
-; RV64IZCMP-NEXT:    sw s3, %lo(var)(s1)
-; RV64IZCMP-NEXT:    mv a0, s2
-; RV64IZCMP-NEXT:    addi sp, s0, -80
-; RV64IZCMP-NEXT:    cm.pop {ra, s0-s8}, 80
 ; RV64IZCMP-NEXT:    tail callee
->>>>>>> llvm/main
 ;
 ; RV32IZCMP-SR-LABEL: nocompress:
 ; RV32IZCMP-SR:       # %bb.0: # %entry
@@ -833,8 +807,7 @@ define i32 @nocompress(i32 signext %size) {
 ; RV32IZCMP-SR-NEXT:    lw s6, 12(s1)
 ; RV32IZCMP-SR-NEXT:    lw s7, 16(s1)
 ; RV32IZCMP-SR-NEXT:    mv a0, s2
-<<<<<<< HEAD
-; RV32IZCMP-SR-NEXT:    call callee_void@plt
+; RV32IZCMP-SR-NEXT:    call callee_void
 ; RV32IZCMP-SR-NEXT:    sw s7, 16(s1)
 ; RV32IZCMP-SR-NEXT:    sw s6, 12(s1)
 ; RV32IZCMP-SR-NEXT:    sw s5, 8(s1)
@@ -843,19 +816,7 @@ define i32 @nocompress(i32 signext %size) {
 ; RV32IZCMP-SR-NEXT:    mv a0, s2
 ; RV32IZCMP-SR-NEXT:    addi sp, s0, -48
 ; RV32IZCMP-SR-NEXT:    cm.pop {ra, s0-s7}, 48
-; RV32IZCMP-SR-NEXT:    tail callee@plt
-=======
-; RV32IZCMP-SR-NEXT:    call callee_void
-; RV32IZCMP-SR-NEXT:    sw s8, 16(s7)
-; RV32IZCMP-SR-NEXT:    sw s6, %lo(var+12)(s1)
-; RV32IZCMP-SR-NEXT:    sw s5, %lo(var+8)(s1)
-; RV32IZCMP-SR-NEXT:    sw s4, %lo(var+4)(s1)
-; RV32IZCMP-SR-NEXT:    sw s3, %lo(var)(s1)
-; RV32IZCMP-SR-NEXT:    mv a0, s2
-; RV32IZCMP-SR-NEXT:    addi sp, s0, -48
-; RV32IZCMP-SR-NEXT:    cm.pop {ra, s0-s8}, 48
 ; RV32IZCMP-SR-NEXT:    tail callee
->>>>>>> llvm/main
 ;
 ; RV64IZCMP-SR-LABEL: nocompress:
 ; RV64IZCMP-SR:       # %bb.0: # %entry
@@ -886,8 +847,7 @@ define i32 @nocompress(i32 signext %size) {
 ; RV64IZCMP-SR-NEXT:    lw s6, 12(s1)
 ; RV64IZCMP-SR-NEXT:    lw s7, 16(s1)
 ; RV64IZCMP-SR-NEXT:    mv a0, s2
-<<<<<<< HEAD
-; RV64IZCMP-SR-NEXT:    call callee_void@plt
+; RV64IZCMP-SR-NEXT:    call callee_void
 ; RV64IZCMP-SR-NEXT:    sw s7, 16(s1)
 ; RV64IZCMP-SR-NEXT:    sw s6, 12(s1)
 ; RV64IZCMP-SR-NEXT:    sw s5, 8(s1)
@@ -896,19 +856,7 @@ define i32 @nocompress(i32 signext %size) {
 ; RV64IZCMP-SR-NEXT:    mv a0, s2
 ; RV64IZCMP-SR-NEXT:    addi sp, s0, -80
 ; RV64IZCMP-SR-NEXT:    cm.pop {ra, s0-s7}, 80
-; RV64IZCMP-SR-NEXT:    tail callee@plt
-=======
-; RV64IZCMP-SR-NEXT:    call callee_void
-; RV64IZCMP-SR-NEXT:    sw s8, 16(s7)
-; RV64IZCMP-SR-NEXT:    sw s6, %lo(var+12)(s1)
-; RV64IZCMP-SR-NEXT:    sw s5, %lo(var+8)(s1)
-; RV64IZCMP-SR-NEXT:    sw s4, %lo(var+4)(s1)
-; RV64IZCMP-SR-NEXT:    sw s3, %lo(var)(s1)
-; RV64IZCMP-SR-NEXT:    mv a0, s2
-; RV64IZCMP-SR-NEXT:    addi sp, s0, -80
-; RV64IZCMP-SR-NEXT:    cm.pop {ra, s0-s8}, 80
 ; RV64IZCMP-SR-NEXT:    tail callee
->>>>>>> llvm/main
 ;
 ; RV32I-LABEL: nocompress:
 ; RV32I:       # %bb.0: # %entry
@@ -946,21 +894,12 @@ define i32 @nocompress(i32 signext %size) {
 ; RV32I-NEXT:    lw s6, 12(s2)
 ; RV32I-NEXT:    lw s7, 16(s2)
 ; RV32I-NEXT:    mv a0, s1
-<<<<<<< HEAD
-; RV32I-NEXT:    call callee_void@plt
+; RV32I-NEXT:    call callee_void
 ; RV32I-NEXT:    sw s7, 16(s2)
 ; RV32I-NEXT:    sw s6, 12(s2)
 ; RV32I-NEXT:    sw s5, 8(s2)
 ; RV32I-NEXT:    sw s4, 4(s2)
 ; RV32I-NEXT:    sw s3, 0(s2)
-=======
-; RV32I-NEXT:    call callee_void
-; RV32I-NEXT:    sw s8, 16(s7)
-; RV32I-NEXT:    sw s6, %lo(var+12)(s2)
-; RV32I-NEXT:    sw s5, %lo(var+8)(s2)
-; RV32I-NEXT:    sw s4, %lo(var+4)(s2)
-; RV32I-NEXT:    sw s3, %lo(var)(s2)
->>>>>>> llvm/main
 ; RV32I-NEXT:    mv a0, s1
 ; RV32I-NEXT:    addi sp, s0, -48
 ; RV32I-NEXT:    lw ra, 44(sp) # 4-byte Folded Reload
@@ -1013,21 +952,12 @@ define i32 @nocompress(i32 signext %size) {
 ; RV64I-NEXT:    lw s6, 12(s2)
 ; RV64I-NEXT:    lw s7, 16(s2)
 ; RV64I-NEXT:    mv a0, s1
-<<<<<<< HEAD
-; RV64I-NEXT:    call callee_void@plt
+; RV64I-NEXT:    call callee_void
 ; RV64I-NEXT:    sw s7, 16(s2)
 ; RV64I-NEXT:    sw s6, 12(s2)
 ; RV64I-NEXT:    sw s5, 8(s2)
 ; RV64I-NEXT:    sw s4, 4(s2)
 ; RV64I-NEXT:    sw s3, 0(s2)
-=======
-; RV64I-NEXT:    call callee_void
-; RV64I-NEXT:    sw s8, 16(s7)
-; RV64I-NEXT:    sw s6, %lo(var+12)(s2)
-; RV64I-NEXT:    sw s5, %lo(var+8)(s2)
-; RV64I-NEXT:    sw s4, %lo(var+4)(s2)
-; RV64I-NEXT:    sw s3, %lo(var)(s2)
->>>>>>> llvm/main
 ; RV64I-NEXT:    mv a0, s1
 ; RV64I-NEXT:    addi sp, s0, -80
 ; RV64I-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
