@@ -118,11 +118,6 @@ def WriteFST16        : SchedWrite;    // Floating point sp store
 def WriteFST32        : SchedWrite;    // Floating point sp store
 def WriteFST64        : SchedWrite;    // Floating point dp store
 
-#ifdef SIFIVE_CUSTOMIZATION
-// CMOV for Mallard.
-def WriteCMOV       : SchedWrite;
-def ReadCMOV        : SchedRead;
-#endif // SIFIVE_CUSTOMIZATION
 // short forward branch for Bullet
 def WriteSFB        : SchedWrite;
 def ReadSFBJmp      : SchedRead;
@@ -266,16 +261,6 @@ def : ReadAdvance<ReadSFBJmp, 0>;
 def : ReadAdvance<ReadSFBALU, 0>;
 } // Unsupported = true
 }
-
-#ifdef SIFIVE_CUSTOMIZATION
-multiclass UnsupportedSchedCMOV {
-let Unsupported = true in {
-def : WriteRes<WriteCMOV, []>;
-
-def : ReadAdvance<ReadCMOV, 0>;
-} // Unsupported = true
-}
-#endif // SIFIVE_CUSTOMIZATION
 
 multiclass UnsupportedSchedZfa {
 let Unsupported = true in {

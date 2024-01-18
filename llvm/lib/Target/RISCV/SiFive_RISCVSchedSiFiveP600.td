@@ -119,10 +119,11 @@ def : WriteRes<WriteJalr, [SiFiveP600Branch]>;
 }
 
 // CMOV
-def : WriteRes<WriteCMOV, [SiFiveP600Branch, SiFiveP600CMOV]> {
+def P600WriteCMOV : SchedWriteRes<[SiFiveP600Branch, SiFiveP600CMOV]> {
   let Latency = 2;
   let NumMicroOps = 2;
 }
+def : InstRW<[P600WriteCMOV], (instrs PseudoCCMOVGPRNoX0)>;
 
 let Latency = 3 in {
 // Integer multiplication
@@ -832,8 +833,6 @@ def : ReadAdvance<ReadSHXADD, 0>;
 def : ReadAdvance<ReadSHXADD32, 0>;
 def : ReadAdvance<ReadSingleBit, 0>;
 def : ReadAdvance<ReadSingleBitImm, 0>;
-
-def : ReadAdvance<ReadCMOV, 0>;
 
 // 6. Configuration-Setting Instructions
 def : ReadAdvance<ReadVSETVLI, 0>;

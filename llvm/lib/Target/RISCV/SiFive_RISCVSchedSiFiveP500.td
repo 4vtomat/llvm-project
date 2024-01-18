@@ -62,10 +62,11 @@ def : WriteRes<WriteJalr, [SiFiveP500Branch]>;
 }
 
 // CMOV
-def : WriteRes<WriteCMOV, [SiFiveP500Branch, SiFiveP500CMOV]> {
+def P500WriteCMOV : SchedWriteRes<[SiFiveP500Branch, SiFiveP500CMOV]> {
   let Latency = 2;
   let NumMicroOps = 2;
 }
+def : InstRW<[P500WriteCMOV], (instrs PseudoCCMOVGPRNoX0)>;
 
 let Latency = 3 in {
 // Integer multiplication
@@ -334,8 +335,6 @@ def : ReadAdvance<ReadORCB, 0>;
 def : ReadAdvance<ReadREV8, 0>;
 def : ReadAdvance<ReadSHXADD, 0>;
 def : ReadAdvance<ReadSHXADD32, 0>;
-
-def : ReadAdvance<ReadCMOV, 0>;
 
 //===----------------------------------------------------------------------===//
 // Unsupported extensions
