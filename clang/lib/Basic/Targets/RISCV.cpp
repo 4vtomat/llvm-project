@@ -295,6 +295,15 @@ bool RISCVTargetInfo::initFeatureMap(
     llvm::copy_if(llvm::make_range(FeaturesVec.begin(), I),
                   std::back_inserter(OverrideFeatures), IsNonISAExtFeature);
 
+#if SIFIVE_CUSTOMIZATION
+    if (getTargetOpts().SiFiveRecode == "neon") {
+      OverrideFeatures.push_back("+dotprod");
+      if (llvm::is_contained(OverrideFeatures, "+zfh") &&
+          llvm::is_contained(OverrideFeatures, "+zvfh"))
+        OverrideFeatures.push_back("+fullfp16");
+    }
+#endif
+
     return TargetInfo::initFeatureMap(Features, Diags, CPU, OverrideFeatures);
   }
 
@@ -311,37 +320,18 @@ bool RISCVTargetInfo::initFeatureMap(
     return false;
   }
 
-<<<<<<< HEAD
-  // RISCVISAInfo makes implications for ISA features
-  std::vector<std::string> ImpliedFeatures = (*ParseResult)->toFeatureVector();
-
-  // parseFeatures normalizes the feature set by dropping any explicit
-  // negatives, and non-extension features.  We need to preserve the later
-  // for correctness and want to preserve the former for consistency.
-  for (auto &Feature : NewFeaturesVec) {
-     StringRef ExtName = Feature;
-     assert(ExtName.size() > 1 && (ExtName[0] == '+' || ExtName[0] == '-'));
-     ExtName = ExtName.drop_front(1); // Drop '+' or '-'
-     if (!llvm::is_contained(ImpliedFeatures, ("+" + ExtName).str()) &&
-         !llvm::is_contained(ImpliedFeatures, ("-" + ExtName).str()))
-       ImpliedFeatures.push_back(Feature);
-  }
-
 #if SIFIVE_CUSTOMIZATION
   if (getTargetOpts().SiFiveRecode == "neon") {
-    ImpliedFeatures.push_back("+dotprod");
-    if (llvm::is_contained(ImpliedFeatures, "+zfh") &&
-        llvm::is_contained(ImpliedFeatures, "+zvfh"))
-      ImpliedFeatures.push_back("+fullfp16");
+    AllFeatures.push_back("+dotprod");
+    if (llvm::is_contained(AllFeatures, "+zfh") &&
+        llvm::is_contained(AllFeatures, "+zvfh"))
+      AllFeatures.push_back("+fullfp16");
   }
 #endif
 
-  return TargetInfo::initFeatureMap(Features, Diags, CPU, ImpliedFeatures);
-=======
   // Append all features, not just new ones, so we override any negatives.
   llvm::append_range(AllFeatures, (*ParseResult)->toFeatures());
   return TargetInfo::initFeatureMap(Features, Diags, CPU, AllFeatures);
->>>>>>> llvm/main
 }
 
 std::optional<std::pair<unsigned, unsigned>>

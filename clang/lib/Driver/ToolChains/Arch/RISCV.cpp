@@ -66,7 +66,6 @@ static bool getArchFeatures(const Driver &D, StringRef Arch,
     return false;
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Second pass: Check the version and convert errors to warnings if an
   //              experimental extension is missing a version, and emit error
@@ -103,14 +102,9 @@ static bool getArchFeatures(const Driver &D, StringRef Arch,
   }
 #endif
 
-  (*ISAInfo)->toFeatures(
-      Features, [&Args](const Twine &Str) { return Args.MakeArgString(Str); },
-      /*AddAllExtensions=*/true);
-=======
   for (const std::string &Str : (*ISAInfo)->toFeatures(/*AddAllExtension=*/true,
                                                        /*IgnoreUnknown=*/false))
     Features.push_back(Args.MakeArgString(Str));
->>>>>>> llvm/main
 
   if (EnableExperimentalExtensions)
     Features.push_back(Args.MakeArgString("+experimental"));
