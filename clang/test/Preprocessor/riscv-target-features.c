@@ -1351,7 +1351,6 @@
 // CHECK-ZFA-EXT: __riscv_zfa 1000000{{$}}
 
 // RUN: %clang --target=riscv32 -menable-experimental-extensions \
-<<<<<<< HEAD
 // RUN: -march=rv32i_zve64x_zvkb1p0 -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-ZVKB-EXT %s
 // RUN: %clang --target=riscv64 -menable-experimental-extensions \
@@ -1360,10 +1359,7 @@
 // CHECK-ZVKB-EXT: __riscv_zvkb  1000000{{$}}
 
 // RUN: %clang --target=riscv32 -menable-experimental-extensions \
-// RUN: -march=rv32izfbfmin0p8 -x c -E -dM %s \
-=======
 // RUN: -march=rv32izfbfmin1p0 -x c -E -dM %s \
->>>>>>> llvm/main
 // RUN: -o - | FileCheck --check-prefix=CHECK-ZFBFMIN-EXT %s
 // RUN: %clang --target=riscv64 -menable-experimental-extensions \
 // RUN: -march=rv64izfbfmin1p0 -x c -E -dM %s \
