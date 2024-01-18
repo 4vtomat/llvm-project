@@ -10344,24 +10344,13 @@ VPRecipeBase *VPRecipeBuilder::tryToWiden(Instruction *I,
     // div/rem operation itself.  Otherwise fall through to general handling below.
     if (CM.isPredicatedInst(I)) {
       SmallVector<VPValue *> Ops(Operands.begin(), Operands.end());
-<<<<<<< HEAD
-      VPValue *Mask = createBlockInMask(I->getParent(), *Plan);
+      VPValue *Mask = getBlockInMask(I->getParent());
 
 #if SIFIVE_CUSTOMIZATION
       assert((Mask || Legal->useVLAVectorizer()) &&
              "Mask cannot be nullptr for in non RVV VLA vectorization");
       if (Mask) {
-        VPValue *One = Plan->getVPValueOrAddLiveIn(
-            ConstantInt::get(I->getType(), 1u, false));
-        auto *SafeRHS =
-            new VPInstruction(Instruction::Select, {Mask, Ops[1], One},
-                              FastMathFlags(), I->getDebugLoc());
-        VPBB->appendRecipe(SafeRHS);
-        Ops[1] = SafeRHS;
-      }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      VPValue *Mask = getBlockInMask(I->getParent());
       VPValue *One = Plan->getVPValueOrAddLiveIn(
           ConstantInt::get(I->getType(), 1u, false));
       auto *SafeRHS =
@@ -10369,7 +10358,9 @@ VPRecipeBase *VPRecipeBuilder::tryToWiden(Instruction *I,
                            I->getDebugLoc());
       VPBB->appendRecipe(SafeRHS);
       Ops[1] = SafeRHS;
->>>>>>> llvm/main
+#if SIFIVE_CUSTOMIZATION
+      }
+#endif // SIFIVE_CUSTOMIZATION
       return new VPWidenRecipe(*I, make_range(Ops.begin(), Ops.end()));
     }
     [[fallthrough]];
@@ -11014,16 +11005,13 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
       VPBB->setName(BB->getName());
     Builder.setInsertPoint(VPBB);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     Builder.BB2VPBB[BB] = VPBB;
 #endif // SIFIVE_CUSTOMIZATION
-=======
     if (VPBB == HeaderVPBB)
       RecipeBuilder.createHeaderMask(*Plan);
     else if (NeedsMasks)
       RecipeBuilder.createBlockInMask(BB, *Plan);
->>>>>>> llvm/main
 
     // Introduce each ingredient into VPlan.
     // TODO: Model and preserve debug intrinsics in VPlan.
@@ -11464,24 +11452,18 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
       PreviousLink = RedRecipe;
     }
   }
-<<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
-    // FIXME: Work with upstream to address the following issue:
-    // upstream's code tries to dereference iplist's iterator, which is a
-    // Sentinel when VPBB is empty, like when we do uncountable loop
-    // vectorization.
-    Builder.setInsertPoint(LatchVPBB, LatchVPBB->begin());
+  // FIXME: Work with upstream to address the following issue:
+  // upstream's code tries to dereference iplist's iterator, which is a
+  // Sentinel when VPBB is empty, like when we do uncountable loop
+  // vectorization.
+  Builder.setInsertPoint(LatchVPBB, LatchVPBB->begin());
 #else
-    Builder.setInsertPoint(&*LatchVPBB->begin());
-#endif // SIFIVE_CUSTOMIZATION
-    for (VPRecipeBase &R :
-         Plan->getVectorLoopRegion()->getEntryBasicBlock()->phis()) {
-=======
   Builder.setInsertPoint(&*LatchVPBB->begin());
+#endif // SIFIVE_CUSTOMIZATION
   for (VPRecipeBase &R :
        Plan->getVectorLoopRegion()->getEntryBasicBlock()->phis()) {
->>>>>>> llvm/main
     VPReductionPHIRecipe *PhiR = dyn_cast<VPReductionPHIRecipe>(&R);
     if (!PhiR)
       continue;
@@ -11493,16 +11475,11 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
     auto *OrigExitingVPV = PhiR->getBackedgeValue();
     auto *NewExitingVPV = PhiR->getBackedgeValue();
     if (!PhiR->isInLoop() && CM.foldTailByMasking()) {
-<<<<<<< HEAD
-      VPValue *Cond =
-          RecipeBuilder.createBlockInMask(OrigLoop->getHeader(), *Plan);
+      VPValue *Cond = RecipeBuilder.getBlockInMask(OrigLoop->getHeader());
 #if SIFIVE_CUSTOMIZATION
       if (!Cond && Legal->useVLAVectorizer())
         Cond = Plan->getOrCreateAllTrueMask();
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      VPValue *Cond = RecipeBuilder.getBlockInMask(OrigLoop->getHeader());
->>>>>>> llvm/main
       assert(OrigExitingVPV->getDefiningRecipe()->getParent() != LatchVPBB &&
              "reduction recipe must be defined before latch");
       Type *PhiTy = PhiR->getOperand(0)->getLiveInIRValue()->getType();

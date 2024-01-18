@@ -2494,17 +2494,10 @@ void VPReductionPHIRecipe::execute(VPTransformState &State) {
 
   BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
 
-<<<<<<< HEAD
-  // Reductions do not have to start at zero. They can start with
-  // any loop invariant values.
-  VPValue *StartVPV = getStartValue();
-  Value *StartV = StartVPV->getLiveInIRValue();
 #if SIFIVE_CUSTOMIZATION
   bool PostSV = postFixStartValue();
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> llvm/main
   Value *Iden = nullptr;
   RecurKind RK = RdxDesc.getRecurrenceKind();
   if (RecurrenceDescriptor::isMinMaxRecurrenceKind(RK) ||
