@@ -194,6 +194,7 @@ private:
   bool optimizeBitExtractLoop();
   bool replaceBitExtract(Loop *CurLoop, BinaryOperator *BitOrInst, Value *Val,
                          Value *Offset, const SCEV *BECount);
+  bool optimizeCRCLoop();
 #endif // SIFIVE_CUSTOMIZATION
   bool runOnLoopBlock(BasicBlock *BB, const SCEV *BECount,
                       SmallVectorImpl<BasicBlock *> &ExitBlocks);
@@ -308,9 +309,12 @@ bool LoopIdiomRecognize::runOnLoop(Loop *L) {
   HasMemcpy = TLI->has(LibFunc_memcpy);
 
 #if SIFIVE_CUSTOMIZATION
-  if (SE->hasLoopInvariantBackedgeTakenCount(L))
+  if (SE->hasLoopInvariantBackedgeTakenCount(L)) {
     if (optimizeBitExtractLoop())
       return true;
+    if (optimizeCRCLoop())
+      return true;
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   if (HasMemset || HasMemsetPattern || HasMemcpy)
@@ -3079,6 +3083,175 @@ bool LoopIdiomRecognize::optimizeBitExtractLoop() {
         replaceBitExtract(CurLoop, BitOrInst, Val, Offset, BECount))
       return true;
   }
+
+  return false;
+}
+
+static bool optimizeCRC(Loop *CurLoop, PHINode &PN, unsigned TC) {
+  BinaryOperator *Shr;
+  Value *Start, *Step;
+  // Looks for a logical shift right recurrence using the LHS of the shift.
+  if (!matchSimpleRecurrence(&PN, Shr, Start, Step) ||
+      Shr->getOpcode() != Instruction::LShr || Shr->getOperand(0) != &PN)
+    return false;
+
+  // The shift amount should be 1.
+  if (!isa<ConstantInt>(Step) || !cast<ConstantInt>(Step)->isOne())
+    return false;
+
+  // The trip count must equal the size of the recurrence type so we shift out
+  // all bits.
+  if (Shr->getType()->getIntegerBitWidth() != TC)
+    return false;
+
+  BasicBlock *BB = PN.getParent();
+
+  // Look for another user of the phi that is an xor in this loop.
+  Instruction *Xor = nullptr;
+  Value *OtherOp;
+  for (Use &U : PN.uses()) {
+    Instruction *UserI = cast<Instruction>(U.getUser());
+    if (UserI == Shr)
+      continue;
+
+    // If we already found the Xor, we have too many uses.
+    if (Xor)
+      return false;
+
+    // User must be an Xor in this loop.
+    if (UserI->getOpcode() != Instruction::Xor || UserI->getParent() != BB ||
+        !UserI->hasOneUse())
+      return false;
+
+    // We found an Xor, save it and the other operand.
+    Xor = UserI;
+    OtherOp = Xor->getOperand(1 - U.getOperandNo());
+  }
+
+  if (!Xor)
+    return false;
+
+  using namespace PatternMatch;
+
+  Value *MaybePHI = OtherOp;
+
+  // Peek through one use truncate.
+  Value *X;
+  if (match(MaybePHI, m_OneUse(m_Trunc(m_Value(X)))))
+    MaybePHI = X;
+
+  // Is the Xor input produced by another PHINode in this loop? This Xor should
+  // have 2 users, the PHI and a shift we will find later.
+  auto *PN2 = dyn_cast<PHINode>(MaybePHI);
+  if (!PN2 || PN2->getParent() != BB || !PN2->hasNUses(2))
+    return false;
+
+  Value *CRCOut = PN2->getIncomingValueForBlock(BB);
+
+  // CRCOut should be a select.
+  Value *Cond, *True, *False;
+  if (!match(CRCOut, m_Select(m_Value(Cond), m_Value(True), m_Value(False))))
+    return false;
+
+  // The select should be in this loop.
+  auto *CRCOutI = cast<Instruction>(CRCOut);
+  if (CRCOutI->getParent() != BB)
+    return false;
+
+  // The only users of CRCOut must be the Phi or outside the loop.
+  for (User *U : CRCOutI->users()) {
+    if (U == PN2)
+      continue;
+    if (cast<Instruction>(U)->getParent() == BB)
+      return false;
+  }
+
+  // Select operands should form a conditional Xor with constant.
+  // TODO: Handle swapped operand order.
+  if (!match(False, m_OneUse(m_Xor(m_Specific(True), m_ConstantInt()))))
+    return false;
+
+  // Conditional Xor input should be a shift right of the CRC phi.
+  if (!match(True, m_LShr(m_Specific(PN2), m_SpecificInt(1))) ||
+      !True->hasNUses(2))
+    return false;
+
+  // The data operands are correct. Check the condition is checking that bit 0
+  // of the crc and data phis is 0.
+  ICmpInst::Predicate Pred;
+  if (!match(Cond, m_OneUse(m_ICmp(
+                       Pred, m_OneUse(m_And(m_Specific(Xor), m_SpecificInt(1))),
+                       m_ZeroInt()))) ||
+      Pred != ICmpInst::ICMP_EQ)
+    return false;
+
+  // We have a successful match for the idiom.
+  Xor->replaceAllUsesWith(OtherOp);
+
+  BasicBlock *Preheader = CurLoop->getLoopPreheader();
+  IRBuilder<> Builder(Preheader->getTerminator());
+
+  // Widen the type with 0s if needed.
+  if (Start->getType() != PN2->getType())
+    Start = Builder.CreateZExt(Start, PN2->getType());
+
+  Value *PN2Start = PN2->getIncomingValueForBlock(Preheader);
+  PN2Start = Builder.CreateXor(Start, PN2Start);
+  PN2->setIncomingValueForBlock(Preheader, PN2Start);
+
+  return true;
+}
+
+// We wish to optimize
+//
+// uint16_t crc(uint8_t data, uint16_t crc) {
+//     for (int i = 0; i < 8; i++) {
+//         bool do_xor = (uint8_t)((data & 1) ^ ((uint8_t)crc & 1));
+//         data >>= 1;
+//         crc >>= 1;
+//         if (do_xor)
+//             crc ^= CONSTANT;
+//     }
+//     return crc;
+// }
+//
+// into
+//
+// uint16_t crc(uint8_t data, uint16_t crc) {
+//     crc ^= (uint16_t)data;
+//
+//     for (int i = 0; i < 8; i++) {
+//         bool do_xor = (uint8_t)crc & 1;
+//         crc >>= 1;
+//         if (do_xor)
+//             crc ^= CONSTANT;
+//     }
+//     return crc;
+// }
+//
+// Instead of xoring data and crc on each loop iteration, we can do it once
+// before the loop. This works as long all the bits we xor into crc before the
+// loop get shifted out during the loop.
+bool LoopIdiomRecognize::optimizeCRCLoop() {
+  const SCEV *BECount = SE->getBackedgeTakenCount(CurLoop);
+  assert(!isa<SCEVCouldNotCompute>(BECount) &&
+         "runOnCountableLoop() called on a loop without a predictable"
+         "backedge-taken count");
+
+  // Give up if the loop has multiple blocks or multiple backedges.
+  if (CurLoop->getNumBackEdges() != 1 || CurLoop->getNumBlocks() != 1)
+    return false;
+
+  // We need to compare the trip count with the number of bits so it must be
+  // small and constant.
+  unsigned TC = SE->getSmallConstantTripCount(CurLoop);
+  if (TC == 0)
+    return false;
+
+  BasicBlock *LoopHeaderBB = CurLoop->getHeader();
+  for (PHINode &PN : LoopHeaderBB->phis())
+    if (optimizeCRC(CurLoop, PN, TC))
+      return true;
 
   return false;
 }
