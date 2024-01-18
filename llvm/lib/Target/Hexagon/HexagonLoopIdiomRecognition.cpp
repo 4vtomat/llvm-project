@@ -1890,7 +1890,12 @@ bool PolynomialMultiplyRecognize::recognize() {
     if (FoundScan)
       break;
   }
+#if SIFIVE_CUSTOMIZATION
+  if (!FoundScan)
+    return false;
+#else
   assert(FoundScan);
+#endif
 
   LLVM_DEBUG({
     StringRef PP = (PV.M ? "(P+M)" : "P");
