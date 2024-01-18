@@ -16,7 +16,7 @@ define void @foo(ptr %sp) {
 ; CHECK-NEXT:    li a1, 6
 ; CHECK-NEXT:    bne a0, a1, .LBB0_4
 ; CHECK-NEXT:  .LBB0_3: # %if.then.then
-; CHECK-NEXT:    tail bar@plt
+; CHECK-NEXT:    tail bar
 ; CHECK-NEXT:  .LBB0_4: # %if.end
 ; CHECK-NEXT:    ret
 entry:

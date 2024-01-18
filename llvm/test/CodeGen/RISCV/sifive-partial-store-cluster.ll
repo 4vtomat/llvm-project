@@ -38,7 +38,7 @@ define signext i32 @main() {
 ; CHECK-NEXT:    sd a2, 48(sp)
 ; CHECK-NEXT:    sd a2, 16(sp)
 ; CHECK-NEXT:    sd a3, 24(sp)
-; CHECK-NEXT:    call foo@plt
+; CHECK-NEXT:    call foo
 ; CHECK-NEXT:    ld ra, 72(sp) # 8-byte Folded Reload
 ; CHECK-NEXT:    addi sp, sp, 80
 ; CHECK-NEXT:    ret

@@ -14,7 +14,7 @@ define void @xor_snez(i32 signext %0, i32 signext %1) {
 ; NOFUSION-NEXT:    mulw a1, a1, a0
 ; NOFUSION-NEXT:    snez a2, a2
 ; NOFUSION-NEXT:    mv a0, a2
-; NOFUSION-NEXT:    tail bar@plt
+; NOFUSION-NEXT:    tail bar
 ;
 ; FUSION-LABEL: xor_snez:
 ; FUSION:       # %bb.0:
@@ -22,7 +22,7 @@ define void @xor_snez(i32 signext %0, i32 signext %1) {
 ; FUSION-NEXT:    snez a2, a2
 ; FUSION-NEXT:    mulw a1, a1, a0
 ; FUSION-NEXT:    mv a0, a2
-; FUSION-NEXT:    tail bar@plt
+; FUSION-NEXT:    tail bar
   %3 = mul i32 %1, %0
   %4 = icmp ne i32 %0, %1
   tail call void @bar(i1 zeroext %4, i32 signext %3)
@@ -36,7 +36,7 @@ define void @xor_seqz(i32 signext %0, i32 signext %1) {
 ; NOFUSION-NEXT:    mulw a1, a1, a0
 ; NOFUSION-NEXT:    seqz a2, a2
 ; NOFUSION-NEXT:    mv a0, a2
-; NOFUSION-NEXT:    tail bar@plt
+; NOFUSION-NEXT:    tail bar
 ;
 ; FUSION-LABEL: xor_seqz:
 ; FUSION:       # %bb.0:
@@ -44,7 +44,7 @@ define void @xor_seqz(i32 signext %0, i32 signext %1) {
 ; FUSION-NEXT:    seqz a2, a2
 ; FUSION-NEXT:    mulw a1, a1, a0
 ; FUSION-NEXT:    mv a0, a2
-; FUSION-NEXT:    tail bar@plt
+; FUSION-NEXT:    tail bar
   %3 = mul i32 %1, %0
   %4 = icmp eq i32 %0, %1
   tail call void @bar(i1 zeroext %4, i32 signext %3)
@@ -58,7 +58,7 @@ define void @addi_seqz(i32 signext %0, i32 signext %1) {
 ; NOFUSION-NEXT:    mulw a1, a1, a0
 ; NOFUSION-NEXT:    seqz a2, a2
 ; NOFUSION-NEXT:    mv a0, a2
-; NOFUSION-NEXT:    tail bar@plt
+; NOFUSION-NEXT:    tail bar
 ;
 ; FUSION-LABEL: addi_seqz:
 ; FUSION:       # %bb.0:
@@ -66,7 +66,7 @@ define void @addi_seqz(i32 signext %0, i32 signext %1) {
 ; FUSION-NEXT:    seqz a2, a2
 ; FUSION-NEXT:    mulw a1, a1, a0
 ; FUSION-NEXT:    mv a0, a2
-; FUSION-NEXT:    tail bar@plt
+; FUSION-NEXT:    tail bar
   %3 = mul i32 %1, %0
   %4 = icmp eq i32 %0, 5
   tail call void @bar(i1 zeroext %4, i32 signext %3)
@@ -80,7 +80,7 @@ define void @addi_snez(i32 signext %0, i32 signext %1) {
 ; NOFUSION-NEXT:    mulw a1, a1, a0
 ; NOFUSION-NEXT:    snez a2, a2
 ; NOFUSION-NEXT:    mv a0, a2
-; NOFUSION-NEXT:    tail bar@plt
+; NOFUSION-NEXT:    tail bar
 ;
 ; FUSION-LABEL: addi_snez:
 ; FUSION:       # %bb.0:
@@ -88,7 +88,7 @@ define void @addi_snez(i32 signext %0, i32 signext %1) {
 ; FUSION-NEXT:    snez a2, a2
 ; FUSION-NEXT:    mulw a1, a1, a0
 ; FUSION-NEXT:    mv a0, a2
-; FUSION-NEXT:    tail bar@plt
+; FUSION-NEXT:    tail bar
   %3 = mul i32 %1, %0
   %4 = icmp ne i32 %0, 5
   tail call void @bar(i1 zeroext %4, i32 signext %3)
@@ -102,7 +102,7 @@ define void @sub_snez(i64 %0, i64 %1, i64 %2, i64 %3) {
 ; NOFUSION-NEXT:    sub a3, a3, a0
 ; NOFUSION-NEXT:    snez a0, a3
 ; NOFUSION-NEXT:    mul a1, a2, a1
-; NOFUSION-NEXT:    tail baz@plt
+; NOFUSION-NEXT:    tail baz
 ;
 ; FUSION-LABEL: sub_snez:
 ; FUSION:       # %bb.0:
@@ -110,7 +110,7 @@ define void @sub_snez(i64 %0, i64 %1, i64 %2, i64 %3) {
 ; FUSION-NEXT:    sub a3, a3, a0
 ; FUSION-NEXT:    snez a0, a3
 ; FUSION-NEXT:    mul a1, a2, a1
-; FUSION-NEXT:    tail baz@plt
+; FUSION-NEXT:    tail baz
   %5 = sub i64 %3, %0
   %6 = mul i64 %1, %2
   %7 = icmp ne i64 %5, 0

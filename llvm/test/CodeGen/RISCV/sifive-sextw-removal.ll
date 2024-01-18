@@ -19,7 +19,7 @@ define void @test1(i32 %arg) nounwind {
 ; CHECK-NEXT:  .LBB0_1: # %bb2
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    mv a0, s1
-; CHECK-NEXT:    call bar@plt
+; CHECK-NEXT:    call bar
 ; CHECK-NEXT:    sllw s1, s1, s0
 ; CHECK-NEXT:    bnez a0, .LBB0_1
 ; CHECK-NEXT:  # %bb.2: # %bb7
@@ -41,7 +41,7 @@ define void @test1(i32 %arg) nounwind {
 ; NOREMOVAL-NEXT:  .LBB0_1: # %bb2
 ; NOREMOVAL-NEXT:    # =>This Inner Loop Header: Depth=1
 ; NOREMOVAL-NEXT:    sext.w a0, s1
-; NOREMOVAL-NEXT:    call bar@plt
+; NOREMOVAL-NEXT:    call bar
 ; NOREMOVAL-NEXT:    sllw s1, s1, s0
 ; NOREMOVAL-NEXT:    bnez a0, .LBB0_1
 ; NOREMOVAL-NEXT:  # %bb.2: # %bb7
