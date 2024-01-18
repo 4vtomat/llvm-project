@@ -78,15 +78,9 @@ define double @sumIfVector(ptr nocapture readonly %arr) {
 ; SSE-NEXT:    [[TMP2:%.*]] = getelementptr double, ptr [[TMP1]], i32 0
 ; SSE-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x double>, ptr [[TMP2]], align 8
 ; SSE-NEXT:    [[TMP3:%.*]] = fcmp fast une <2 x double> [[WIDE_LOAD]], <double 4.200000e+01, double 4.200000e+01>
-<<<<<<< HEAD
 ; SSE-NEXT:    [[TMP4:%.*]] = xor <2 x i1> [[TMP3]], <i1 true, i1 true>
 ; SSE-NEXT:    [[TMP5:%.*]] = fadd fast <2 x double> [[VEC_PHI]], [[WIDE_LOAD]]
 ; SSE-NEXT:    [[PREDPHI]] = select <2 x i1> [[TMP3]], <2 x double> [[TMP5]], <2 x double> [[VEC_PHI]]
-=======
-; SSE-NEXT:    [[TMP5:%.*]] = xor <2 x i1> [[TMP3]], <i1 true, i1 true>
-; SSE-NEXT:    [[TMP4:%.*]] = fadd fast <2 x double> [[VEC_PHI]], [[WIDE_LOAD]]
-; SSE-NEXT:    [[PREDPHI]] = select <2 x i1> [[TMP3]], <2 x double> [[TMP4]], <2 x double> [[VEC_PHI]]
->>>>>>> llvm/main
 ; SSE-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 2
 ; SSE-NEXT:    [[TMP6:%.*]] = icmp eq i32 [[INDEX_NEXT]], 32
 ; SSE-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
@@ -131,15 +125,9 @@ define double @sumIfVector(ptr nocapture readonly %arr) {
 ; AVX-NEXT:    [[TMP2:%.*]] = getelementptr double, ptr [[TMP1]], i32 0
 ; AVX-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x double>, ptr [[TMP2]], align 8
 ; AVX-NEXT:    [[TMP3:%.*]] = fcmp fast une <4 x double> [[WIDE_LOAD]], <double 4.200000e+01, double 4.200000e+01, double 4.200000e+01, double 4.200000e+01>
-<<<<<<< HEAD
 ; AVX-NEXT:    [[TMP4:%.*]] = xor <4 x i1> [[TMP3]], <i1 true, i1 true, i1 true, i1 true>
 ; AVX-NEXT:    [[TMP5:%.*]] = fadd fast <4 x double> [[VEC_PHI]], [[WIDE_LOAD]]
 ; AVX-NEXT:    [[PREDPHI]] = select <4 x i1> [[TMP3]], <4 x double> [[TMP5]], <4 x double> [[VEC_PHI]]
-=======
-; AVX-NEXT:    [[TMP5:%.*]] = xor <4 x i1> [[TMP3]], <i1 true, i1 true, i1 true, i1 true>
-; AVX-NEXT:    [[TMP4:%.*]] = fadd fast <4 x double> [[VEC_PHI]], [[WIDE_LOAD]]
-; AVX-NEXT:    [[PREDPHI]] = select <4 x i1> [[TMP3]], <4 x double> [[TMP4]], <4 x double> [[VEC_PHI]]
->>>>>>> llvm/main
 ; AVX-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 4
 ; AVX-NEXT:    [[TMP6:%.*]] = icmp eq i32 [[INDEX_NEXT]], 32
 ; AVX-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]

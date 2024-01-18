@@ -109,17 +109,17 @@ define void @cond_uniform_load(ptr nocapture %dst, ptr nocapture readonly %src, 
 ; CHECK-NEXT:    [[TMP4:%.*]] = add i64 [[INDEX6]], 0
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[COND]], i64 [[TMP4]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[TMP5]], i32 0
-; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x i32> @llvm.masked.load.v4i32.p0(ptr [[TMP6]], i32 4, <4 x i1> [[ACTIVE_LANE_MASK]], <4 x i32> poison), !alias.scope !4
+; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x i32> @llvm.masked.load.v4i32.p0(ptr [[TMP6]], i32 4, <4 x i1> [[ACTIVE_LANE_MASK]], <4 x i32> poison), !alias.scope [[META4:![0-9]+]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq <4 x i32> [[WIDE_MASKED_LOAD]], zeroinitializer
 ; CHECK-NEXT:    [[TMP8:%.*]] = xor <4 x i1> [[TMP7]], <i1 true, i1 true, i1 true, i1 true>
 ; CHECK-NEXT:    [[TMP9:%.*]] = select <4 x i1> [[ACTIVE_LANE_MASK]], <4 x i1> [[TMP8]], <4 x i1> zeroinitializer
 ; CHECK-NEXT:    [[TMP10:%.*]] = select <4 x i1> [[ACTIVE_LANE_MASK]], <4 x i1> [[TMP7]], <4 x i1> zeroinitializer
-; CHECK-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <4 x i32> @llvm.masked.gather.v4i32.v4p0(<4 x ptr> [[BROADCAST_SPLAT]], i32 4, <4 x i1> [[TMP9]], <4 x i32> poison), !alias.scope !7
+; CHECK-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <4 x i32> @llvm.masked.gather.v4i32.v4p0(<4 x ptr> [[BROADCAST_SPLAT]], i32 4, <4 x i1> [[TMP9]], <4 x i32> poison), !alias.scope [[META7:![0-9]+]]
+; CHECK-NEXT:    [[TMP11:%.*]] = or <4 x i1> [[TMP9]], [[TMP10]]
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP10]], <4 x i32> zeroinitializer, <4 x i32> [[WIDE_MASKED_GATHER]]
-; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i32, ptr [[DST]], i64 [[TMP4]]
-; CHECK-NEXT:    [[TMP12:%.*]] = or <4 x i1> [[TMP9]], [[TMP10]]
-; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[TMP11]], i32 0
-; CHECK-NEXT:    call void @llvm.masked.store.v4i32.p0(<4 x i32> [[PREDPHI]], ptr [[TMP13]], i32 4, <4 x i1> [[TMP12]]), !alias.scope !9, !noalias !11
+; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[DST]], i64 [[TMP4]]
+; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[TMP12]], i32 0
+; CHECK-NEXT:    call void @llvm.masked.store.v4i32.p0(<4 x i32> [[PREDPHI]], ptr [[TMP13]], i32 4, <4 x i1> [[TMP11]]), !alias.scope [[META9:![0-9]+]], !noalias [[META11:![0-9]+]]
 ; CHECK-NEXT:    [[INDEX_NEXT7]] = add i64 [[INDEX6]], 4
 ; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT]] = call <4 x i1> @llvm.get.active.lane.mask.v4i1.i64(i64 [[INDEX6]], i64 [[TMP3]])
 ; CHECK-NEXT:    [[TMP14:%.*]] = xor <4 x i1> [[ACTIVE_LANE_MASK_NEXT]], <i1 true, i1 true, i1 true, i1 true>
