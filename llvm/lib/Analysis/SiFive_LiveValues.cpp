@@ -562,7 +562,7 @@ Instruction *LiveValues::calculateBlockValuePressure(
     MutableArrayRef<PressureTracker> CurPT,
     SmallPtrSetImpl<const Value *> &IgnoreValues,
     SmallVectorImpl<Use *> &AddValues) {
-  bool NeedFineGranularVP = TargetI->getParent() == BB;
+  bool NeedFineGranularVP = (TargetI) ? (TargetI->getParent() == BB) : false;
   Instruction *FirstMaxPointI = nullptr;
   for (auto It = BB->begin(), E = BB->end(); It != E; ++It) {
     Instruction *I = &*It;
@@ -731,6 +731,93 @@ static bool isFlowRelated(BasicBlock *CurBB, BasicBlock *BB) {
   return false;
 }
 
+Instruction *LiveValues::processBlock(
+    BasicBlock *BB, Instruction *TargetI,
+    MutableArrayRef<PressureTracker> MachinePT,
+    MutableArrayRef<PressureTracker> InsnPT,
+    MutableArrayRef<PressureTracker> CurPT,
+    SmallPtrSetImpl<const Value *> &IgnoreValues,
+    SmallVectorImpl<Use *> &AddValues) {
+  Instruction *FirstMaxPointI = nullptr;
+  auto LiveInIt = LiveIn.find(BB);
+  if (LiveInIt != LiveIn.end()) {
+    // First calculate the initial/final pressure of BB.
+    calculatePressureForBitvector(LiveInIt->second,
+                                  TrackerDescr::Calculate_InitPressure,
+                                  /* CurIndex */ nullptr, CurPT);
+
+    // Adjust inital block pressure with PHINode processing
+    adjustInitialPressure(BB, CurPT);
+
+    // Initialize pressure data with Init pressure
+    for (unsigned Idx = ValueDescr::Types_Integer;
+         Idx < ValueDescr::Types_End; ++Idx) {
+      CurPT[Idx].CurPressure = CurPT[Idx].InitPressure;
+      CurPT[Idx].LocalMaxima = CurPT[Idx].InitPressure;
+    }
+
+    if (auto *I =
+            calculateBlockValuePressure(BB, TargetI, MachinePT, InsnPT, CurPT,
+                                        IgnoreValues, AddValues))
+      FirstMaxPointI = I;
+
+    for (unsigned Idx = ValueDescr::Types_Integer;
+         Idx < ValueDescr::Types_End; ++Idx) {
+      CurPT[Idx].FinalPressure = CurPT[Idx].CurPressure;
+    }
+
+    LLVM_DEBUG(dbgs() << "Block Summary\n");
+    LLVM_DEBUG(printPressureData(CurPT));
+  }
+
+  return FirstMaxPointI;
+}
+
+bool LiveValues::exceedValuePressureForFunction(
+    int NumGprs, int NumFprs, int NumVrs, Function *F) {
+  SmallVector<PressureTracker, ValueDescr::Types_End> InsnPT;
+  SmallVector<PressureTracker, ValueDescr::Types_End> MachinePT;
+  DenseMap<const BasicBlock *,
+          SmallVector<PressureTracker, ValueDescr::Types_End>> PressureMap;
+
+  // Do initializations of collection PressureTrackers
+  MachinePT.resize(ValueDescr::Types_End);
+
+  MachinePT[ValueDescr::Types_Integer].LocalMaxima = NumGprs;
+  MachinePT[ValueDescr::Types_Float].LocalMaxima = NumFprs;
+  MachinePT[ValueDescr::Types_Vector].LocalMaxima = NumVrs;
+
+  SmallPtrSet<const Value *, 4> IgnoreValues;
+  SmallVector<Use *> AddValues;
+
+  Instruction *TargetI = nullptr;
+  unsigned SumInstructions;
+  unsigned NumCalls;
+  markResidentValues(F, MachinePT, SumInstructions, NumCalls);
+
+  // Simulate running out of GP registers if bypass enabled.
+  if (OptLevel == 1 && EnableValuePressureBypass) {
+    unsigned Idx = ValueDescr::Types_Integer;
+    MachinePT[Idx].LocalMaxima = MaxGeneralPurposeRegs;
+  }
+
+  for (BasicBlock &BB : *F) {
+    // Populate empty ValueDescr's for each type in PT.
+    SmallVector<PressureTracker, ValueDescr::Types_End> &PT = PressureMap[&BB];
+    PT.resize(ValueDescr::Types_End);
+
+    // Detect Value Pressure for BB.
+    processBlock(&BB, TargetI, MachinePT, InsnPT, PT, IgnoreValues, AddValues);
+
+    for (unsigned Idx = ValueDescr::Types_Integer;
+         Idx < ValueDescr::Types_End; ++Idx)
+      if (PT[Idx].LocalMaxima > MachinePT[Idx].LocalMaxima)
+        return true;
+  }
+
+  return false;
+}
+
 bool LiveValues::exceedValuePressureForBlocks(
     SmallVectorImpl<BasicBlock *> &Worklist,
     SmallVectorImpl<Use *> &AddValues,
@@ -787,36 +874,9 @@ bool LiveValues::exceedValuePressureForBlocks(
     SmallVector<PressureTracker, ValueDescr::Types_End> &PT = PressureMap[BB];
     PT.resize(ValueDescr::Types_End);
 
-    auto LiveInIt = LiveIn.find(BB);
-    if (LiveInIt != LiveIn.end()) {
-      // First calculate the initial/final pressure of BB.
-      calculatePressureForBitvector(LiveInIt->second,
-                                    TrackerDescr::Calculate_InitPressure,
-                                    /* CurIndex */ nullptr, PT);
-
-      // Adjust inital block pressure with PHINode processing
-      adjustInitialPressure(BB, PT);
-
-      // Initialize pressure data with Init pressure
-      for (unsigned Idx = ValueDescr::Types_Integer;
-           Idx < ValueDescr::Types_End; ++Idx) {
-        PT[Idx].CurPressure = PT[Idx].InitPressure;
-        PT[Idx].LocalMaxima = PT[Idx].InitPressure;
-      }
-
-      if (auto *I =
-              calculateBlockValuePressure(BB, TargetI, MachinePT, InsnPT, PT,
-                                          IgnoreValues, AddValues))
-        FirstMaxPointI = I;
-
-      for (unsigned Idx = ValueDescr::Types_Integer;
-           Idx < ValueDescr::Types_End; ++Idx) {
-        PT[Idx].FinalPressure = PT[Idx].CurPressure;
-      }
-
-      LLVM_DEBUG(dbgs() << "Block Summary\n");
-      LLVM_DEBUG(printPressureData(PT));
-    }
+    if (auto *I = processBlock(BB, TargetI, MachinePT, InsnPT, PT,
+                               IgnoreValues, AddValues))
+      FirstMaxPointI = I;
   }
 
   // Check for BasicBlocks that have LocalMaxima in a RC that exceeds MachinePT
@@ -959,6 +1019,13 @@ bool LiveValues::invalidate(Function &F, const PreservedAnalyses &PA,
   // preserved.
   auto PAC = PA.getChecker<LiveValuesAnalysis>();
   return !(PAC.preserved() || PAC.preservedSet<AllAnalysesOn<Function>>());
+}
+
+unsigned LiveValues::getAndSetOptLevel() {
+  if (OptLevel == 0)
+    setOptLevel(EnableValuePressureAnalysis);
+
+  return OptLevel;
 }
 
 //===----------------------------------------------------------------------===//
