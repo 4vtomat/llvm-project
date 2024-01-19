@@ -166,6 +166,13 @@ def HasVendorXSiFivecdiscarddlone :
     Predicate<"Subtarget->hasVendorXSiFivecdiscarddlone()">,
     AssemblerPredicate<(all_of FeatureVendorXSiFivecdiscarddlone),
                        "'XSiFivecdiscarddlone' (Cache Flush/Power Down Instructions)">;
+def FeatureVendorXSfpgflushdlone :
+  SubtargetFeature<"xsfpgflushdlone", "HasVendorXSfpgflushdlone", "true",
+                   "'XSfpgflushdlone' (Cache Flush/Power Down Instructions)", []>;
+def HasVendorXSfpgflushdlone :
+  Predicate<"Subtarget->hasVendorXSfpgflushdlone()">,
+  AssemblerPredicate<(all_of FeatureVendorXSfpgflushdlone),
+                     "'XSfpgflushdlone' (Cache Flush/Power Down Instructions)">;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtM

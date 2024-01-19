@@ -865,6 +865,14 @@ def CFLUSH_I_L1
   let rs1 = 0;
   let rs2 = 0b00001;
 }
+
+let Predicates = [HasVendorXSfpgflushdlone] in
+def SF_PGFLUSH_D_L1 : RVInstR<0b1111110, 0b000, OPC_SYSTEM, (outs), (ins),
+                              "sf.pgflush.d.l1", "">, Sched<[]> {
+  let rd = 0;
+  let rs1 = 0;
+  let rs2 = 0b00011;
+}
 } // hasNoSchedulingInfo = 1, ...
 #endif // SIFIVE_CUSTOMIZATION
 

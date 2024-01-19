@@ -104,6 +104,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xcvmac", RISCVExtensionVersion{1, 0}},
     {"xcvmem", RISCVExtensionVersion{1, 0}},
     {"xcvsimd", RISCVExtensionVersion{1, 0}},
+    {"xsfpgflushdlone", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xsfvcp", RISCVExtensionVersion{1, 0}},
     {"xsfvfhbfmin", RISCVExtensionVersion{0, 1}}, // SIFIVE
     {"xsfvfnrclipxfqf", RISCVExtensionVersion{1, 0}},
