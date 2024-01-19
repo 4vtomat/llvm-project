@@ -4178,19 +4178,26 @@ static SDValue lowerScalarInsert(SDValue Scalar, SDValue VL, MVT VT,
   if (Scalar.getOpcode() == ISD::EXTRACT_VECTOR_ELT &&
       isNullConstant(Scalar.getOperand(1))) {
     SDValue ExtractedVal = Scalar.getOperand(0);
-    MVT ExtractedVT = ExtractedVal.getSimpleValueType();
-    MVT ExtractedContainerVT = ExtractedVT;
-    if (ExtractedContainerVT.isFixedLengthVector()) {
-      ExtractedContainerVT = getContainerForFixedLengthVector(
-          DAG, ExtractedContainerVT, Subtarget);
-      ExtractedVal = convertToScalableVector(ExtractedContainerVT, ExtractedVal,
-                                             DAG, Subtarget);
-    }
-    if (ExtractedContainerVT.bitsLE(VT))
-      return DAG.getNode(ISD::INSERT_SUBVECTOR, DL, VT, Passthru, ExtractedVal,
+#if SIFIVE_CUSTOMIZATION
+    // SIFIVE: Cherry-picked from #78668
+    // The element types must be the same.
+    if (ExtractedVal.getValueType().getVectorElementType() ==
+        VT.getVectorElementType()) {
+      MVT ExtractedVT = ExtractedVal.getSimpleValueType();
+      MVT ExtractedContainerVT = ExtractedVT;
+      if (ExtractedContainerVT.isFixedLengthVector()) {
+        ExtractedContainerVT = getContainerForFixedLengthVector(
+            DAG, ExtractedContainerVT, Subtarget);
+        ExtractedVal = convertToScalableVector(ExtractedContainerVT, ExtractedVal,
+                                               DAG, Subtarget);
+      }
+      if (ExtractedContainerVT.bitsLE(VT))
+        return DAG.getNode(ISD::INSERT_SUBVECTOR, DL, VT, Passthru, ExtractedVal,
+                           DAG.getConstant(0, DL, XLenVT));
+      return DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, VT, ExtractedVal,
                          DAG.getConstant(0, DL, XLenVT));
-    return DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, VT, ExtractedVal,
-                       DAG.getConstant(0, DL, XLenVT));
+    }
+#endif // SIFIVE_CUSTOMIZATION
   }
 
 
