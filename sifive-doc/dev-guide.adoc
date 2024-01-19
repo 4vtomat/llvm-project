@@ -199,28 +199,28 @@ h|Core IP Version h|Compiler Version h|`-mcpu` h|Default `-march` h|Default `-mt
 |23G2 and above |2023.03.0 and above |sifive-e61 |`rv32imac_zifencei_zba_zbb` |sifive-6-series
 
 |22G1 and above | 2022.08.0 and above |sifive-x280o
-|`rv64imafdcv_zvfh_zba_zbb_zvl512b_xsfvfhbfmin_xsfvqmaccqoq_xsfvfnrclipxfqf_xsfvfwmaccqqq`
+|`rv64imafdcv_zfh_zba_zbb_zvfh_zvl512b_xsfvfhbfmin_xsfvqmaccqoq_xsfvfnrclipxfqf_xsfvfwmaccqqq`
 
 * New optional support for `xsfvcp`
 |sifive-x280o
 
 |21G3 |2021.11.5 and above |sifive-x280n
-|`rv64imafdcv_zvfh_zba_zbb_zvl512b_xsfvfhbfmin_xsfvqmaccqoq_xsfvfnrclipxfqf_xsfvfwmaccqqq`
+|`rv64imafdcv_zfh_zba_zbb_zvfh_zvl512b_xsfvfhbfmin_xsfvqmaccqoq_xsfvfnrclipxfqf_xsfvfwmaccqqq`
 
 * New optional support for `zve64f` and `zve32f`
 |sifive-x280n
 
 |21G2 |2021.06.3 and above |sifive-x280
-|`rv64imafdcv_zvfh_zba_zbb_zvl512b_xsfvfhbfmin_xsfvqmaccqoq`
+|`rv64imafdcv_zfh_zba_zbb_zvfh_zvl512b_xsfvfhbfmin_xsfvqmaccqoq`
 
 |sifive-x280
 
 |21G3 and above |2021.11.5 and above |sifive-p270n
-|`rv64imafdcv_zvfh_zba_zbb_zvl256b`
+|`rv64imafdcv_zfh_zba_zbb_zvfh_zvl256b`
 
 |sifive-p270n
 |21G2 |2021.06.3 and above |sifive-p270
-|`rv64imafdcv_zvfh_zba_zbb_zvl256b`
+|`rv64imafdcv_zfh_zba_zbb_zvfh_zvl256b`
 
 |sifive-p270
 
