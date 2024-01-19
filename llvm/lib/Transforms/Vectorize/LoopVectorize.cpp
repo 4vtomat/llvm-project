@@ -2951,13 +2951,20 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
         Value *RVL32 = Builder.CreateZExtOrTrunc(
             State.get(State.Plan->getRVL(), Part), Builder.getInt32Ty());
         if (Group->isStrided()) {
-          // Generate the stride
-          const SCEV *StrideScev = Group->getStride();
+          // Generate the stride.
+          // The stride in InterleavedAccessInfo is represented in elements, but
+          // the stride in strided load/store intrinsics is represented in
+          // bytes. Therefore, the stride needs to be converted into bytes.
           auto &DL = State.CFG.PrevBB->getModule()->getDataLayout();
-          SCEVExpander Exp(*(State.SE), DL, "stride");
+          ScalarEvolution *SE = State.SE;
+          uint64_t EltSize = DL.getTypeAllocSize(ScalarTy);
+          const SCEV *StrideScev = Group->getStride();
+          const SCEV *StrideInBytesScev = SE->getMulExpr(
+              SE->getConstant(StrideScev->getType(), EltSize), StrideScev);
+          SCEVExpander Exp(*SE, DL, "stride");
           Instruction *InsertPoint = &*State.Builder.GetInsertPoint();
-          Value *Stride =
-              Exp.expandCodeFor(StrideScev, StrideScev->getType(), InsertPoint);
+          Value *StrideInBytes = Exp.expandCodeFor(
+              StrideInBytesScev, StrideInBytesScev->getType(), InsertPoint);
           // Use an integer type with the same width as the element type for
           // strided access. Mainly to support access of float types.
           // TODO: Better to add specific intrinsics to handle strided
@@ -2971,9 +2978,10 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
           auto *StridedVecTy = VectorType::getCombinedVectorType(
               VecTyInBit, Log2_32(InterleaveFactor));
           // Use original RVL instead of RVL * factor
-          Value *Operands[] = {AddrParts[Part], Stride, GroupMask, RVL32};
+          Value *Operands[] = {AddrParts[Part], StrideInBytes, GroupMask,
+                               RVL32};
           Type *Types[] = {StridedVecTy, Operands[0]->getType(),
-                           Stride->getType()};
+                           StrideInBytes->getType()};
           WideLoad = State.Builder.CreateIntrinsic(
               Intrinsic::experimental_vp_strided_load, Types, Operands, nullptr,
               "wide.strided.load");

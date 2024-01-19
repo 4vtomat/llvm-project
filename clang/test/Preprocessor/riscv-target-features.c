@@ -143,6 +143,7 @@
 // CHECK-NOT: __riscv_smwg
 // CHECK-NOT: __riscv_smwgd
 // CHECK-NOT: __riscv_sswg
+// CHECK-NOT: __riscv_xsfpgflushdlone
 // end SIFIVE_CUSTOMIZATION
 
 // Experimental extensions
@@ -1201,7 +1202,15 @@
 // RUN: -march=rv64isswg -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SSWG-EXT %s
 // CHECK-SSWG-EXT: __riscv_sswg  3000{{$}}
-//
+
+// RUN: %clang --target=riscv32 -menable-experimental-extensions \
+// RUN: -march=rv32ixsfpgflushdlone0p1 -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-XSFPGFLUSHDLONE %s
+// RUN: %clang --target=riscv64 -menable-experimental-extensions \
+// RUN: -march=rv64ixsfpgflushdlone0p1 -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-XSFPGFLUSHDLONE %s
+// CHECK-XSFPGFLUSHDLONE: __riscv_xsfpgflushdlone  1000{{$}}
+
 // RUN: %clang --target=riscv64-unknown-linux-gnu -march=rv32gc -x c -E -dM %s \
 // RUN:   -msifive-recode=neon -o - \
 // RUN:   | FileCheck --check-prefix=CHECK-SIFIVE-RECODE-NEON %s

@@ -214,6 +214,17 @@ void RISCV::Linker::ConstructJob(Compilation &C, const JobAction &JA,
     addLTOOptions(ToolChain, Args, CmdArgs, Output, Inputs[0],
                   D.getLTOMode() == LTOK_Thin);
   }
+
+  if (!Args.getLastArgValue(options::OPT_fuse_ld_EQ).equals_insensitive("lld")) {
+    if (Arg *A = Args.getLastArg(options::OPT_O_Group)) {
+      if (A->getOption().matches(options::OPT_O)) {
+        StringRef OOpt = A->getValue();
+        if (OOpt == "s" || OOpt == "z") {
+          CmdArgs.push_back("--relax-zcmt");
+        }
+      }
+    }
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   std::string Linker = getToolChain().GetLinkerPath();

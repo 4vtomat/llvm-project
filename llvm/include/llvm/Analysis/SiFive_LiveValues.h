@@ -191,6 +191,20 @@ public:
       Function *F, ArrayRef<PressureTracker> MachinePT,
       unsigned &NumInstructions, unsigned &NumCalls);
 
+  /// Find any local maxima which exceeds MachinePT in BB.
+  Instruction *processBlock(
+      BasicBlock *BB, Instruction *TargetI,
+      MutableArrayRef<PressureTracker> MachinePT,
+      MutableArrayRef<PressureTracker> InsnPT,
+      MutableArrayRef<PressureTracker> CurPT,
+      SmallPtrSetImpl<const Value *> &IgnoreValues,
+      SmallVectorImpl<Use *> &AddValues);
+
+  /// Calculate register pressure foreach block in F and
+  /// determine if we exceed it for machine RCs.
+  bool exceedValuePressureForFunction(
+    int NumGprs, int NumFprs, int NumVrs, Function *F);
+
   /// Using a list of blocks, calculate the register pressure
   /// data for each block.
   bool exceedValuePressureForBlocks(
@@ -212,6 +226,9 @@ public:
   /// Handle invalidation explicitly.
   bool invalidate(Function &F, const PreservedAnalyses &PA,
                   FunctionAnalysisManager::Invalidator &);
+
+  /// get the local EnableValuePressureAnalysis setting
+  unsigned getAndSetOptLevel();
 
   /// Get the SparseBitVector for LiveIn[BB]
   const SparseBitVector<> &getLiveIn(BasicBlock *BB) { return LiveIn[BB]; }
