@@ -690,6 +690,10 @@ R"(All available -march extensions for RISC-V
     zihintpause         2.0
     zihpm               2.0
     zmmul               1.0
+<<<<<<< HEAD
+=======
+    za128rs             1.0
+>>>>>>> llvm/main
     za64rs              1.0
     zawrs               1.0
     zfa                 1.0
@@ -774,8 +778,12 @@ R"(All available -march extensions for RISC-V
     shvstvala           1.0
     shvstvecd           1.0
     smaia               1.0
+<<<<<<< HEAD
     smstateen           1.0
     ss                  1.12
+=======
+    smepmp              1.0
+>>>>>>> llvm/main
     ssaia               1.0
     ssccptr             1.0
     sscofpmf            1.0

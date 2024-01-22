@@ -705,6 +705,7 @@ def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model,
                                        FeatureStdExtZba,
                                        FeatureStdExtZbb,
                                        FeatureStdExtZbs,
+<<<<<<< HEAD
                                        FeatureStdExtZfhmin,
                                        FeatureStdExtV,
                                        FeatureStdExtZvl128b,
@@ -924,6 +925,12 @@ def SIFIVE_P870S : RISCVProcessorModel<"sifive-p870s", SiFiveP800SModel,
                                        [TuneSiFiveP800, TuneDLen128b,
                                         TuneDontSinkSplatOperands]>;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+                                       FeatureStdExtZfhmin],
+                                      [TuneConditionalCompressedMoveFusion,
+                                       TuneLUIADDIFusion,
+                                       TuneAUIPCADDIFusion]>;
+>>>>>>> llvm/main
 
 def SYNTACORE_SCR1_BASE : RISCVProcessorModel<"syntacore-scr1-base",
                                               SyntacoreSCR1Model,
