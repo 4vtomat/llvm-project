@@ -97,6 +97,9 @@
 .attribute arch, "rv32i_sswg0p3"
 # CHECK: attribute      5, "rv32i2p1_sswg0p3"
 
+.attribute arch, "rv32i_ssnpm0p8"
+# CHECK: attribute      5, "rv32i2p1_ssnpm0p8"
+
 .attribute arch, "rv32i_sscofpmf"
 # CHECK: attribute      5, "rv32i2p1_sscofpmf1p0"
 

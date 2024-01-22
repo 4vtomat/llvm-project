@@ -151,6 +151,10 @@ def FeatureStdExtSswg
                        "slwid CSR, which sets the WID used for modes lower than "
                        "[H]S-mode.)", []>;
 
+def FeatureStdExtSsnpm
+   : SubtargetFeature<"experimental-ssnpm", "HasStdExtSsnpm", "true",
+                      "'Ssnpm' (Supervisor Level Pointer Masking Next Lower Privilege Level)", []>;
+
 def FeatureVendorXSiFivecflushdlone
     : SubtargetFeature<"xsifivecflushdlone", "HasVendorXSiFivecflushdlone", "true",
                        "'XSiFivecflushdlone' (Cache Flush/Power Down Instructions)", []>;
