@@ -939,23 +939,6 @@ public:
   /// \returns an iterator pointing to the element after the erased one
   iplist<VPRecipeBase>::iterator eraseFromParent();
 
-#if SIFIVE_CUSTOMIZATION
-  // TODO: Need by VPlanCostModel. Should that move to VPSingleDefRecipe?
-  /// Returns the underlying instruction, if the recipe is a VPValue or nullptr
-  /// otherwise.
-  Instruction *getUnderlyingInstr() {
-    return cast<Instruction>(getVPSingleValue()->getUnderlyingValue());
-  }
-  const Instruction *getUnderlyingInstr() const {
-    return cast<Instruction>(getVPSingleValue()->getUnderlyingValue());
-  }
-
-  bool hasUnderlyingInstr() const {
-    return getNumDefinedValues() == 1 &&
-           getVPSingleValue()->getUnderlyingValue() != nullptr;
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
   /// Method to support type inquiry through isa, cast, and dyn_cast.
   static inline bool classof(const VPDef *D) {
     // All VPDefs are also VPRecipeBases.
@@ -1083,6 +1066,12 @@ public:
   const Instruction *getUnderlyingInstr() const {
     return cast<Instruction>(getUnderlyingValue());
   }
+
+#if SIFIVE_CUSTOMIZATION
+  bool hasUnderlyingInstr() const {
+    return getVPSingleValue()->getUnderlyingValue() != nullptr;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 /// Class to record LLVM IR flag for a recipe along with it.

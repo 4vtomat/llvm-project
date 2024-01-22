@@ -51,9 +51,10 @@ static ElementCount getElementCount(const RVVPair &RVVP) {
 }
 
 static Type *getRecipeType(const VPRecipeBase *VPR) {
-  if (!VPR->hasUnderlyingInstr())
+  const auto *VPSDR = dyn_cast<VPSingleDefRecipe>(VPR);
+  if (!VPSDR || !VPSDR->hasUnderlyingInstr())
     return nullptr;
-  return VPR->getUnderlyingInstr()->getType();
+  return VPSDR->getUnderlyingInstr()->getType();
 }
 
 namespace llvm {
@@ -187,13 +188,14 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
               [&](const VPInstruction *VPI) -> InstructionCost {
                 return getInstructionCost(VPI, RVL);
               })
-          .Default([&](const VPRecipeBase *R) -> InstructionCost {
+          .Case<VPSingleDefRecipe>([&](const VPSingleDefRecipe *VPSDR)
+                                       -> InstructionCost {
             // FIXME: The code here should not access underlying instruction and
             // should completely rely on information that can be taken directly
             // from VPRecipe or VPInstruction.
-            if (!Recipe->hasUnderlyingInstr())
+            if (!VPSDR->hasUnderlyingInstr())
               return 0;
-            const Instruction *I = Recipe->getUnderlyingInstr();
+            const Instruction *I = VPSDR->getUnderlyingInstr();
             ElementCount VF = getElementCount(RVL);
             unsigned Opcode = I->getOpcode();
             switch (Opcode) {
@@ -358,7 +360,8 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
                                                        VectorTy, CostKind);
             }
             } // end of switch.
-          });
+          })
+          .Default([&](const VPRecipeBase *R) -> InstructionCost { return 0; });
 
   VisitedRecipes.insert(Recipe);
   // Traverse operands of the recipe and if operand is no longer used, free
