@@ -1191,30 +1191,6 @@ def HasStdExtSscofpmf : Predicate<"Subtarget->hasStdExtSscofpmf()">,
                                   AssemblerPredicate<(all_of FeatureStdExtSscofpmf),
                                   "'Sscofpmf' (Count Overflow and Mode-Based Filtering Architecture extension)">;
 
-def FeatureStdExtZicclsm
-    : SubtargetFeature<"zicclsm", "HasStdExtZicclsm", "true",
-                       "Zicclsm (Misaligned loads and stores to main memory regions with both the cacheability and coherence PMAs.)">;
-
-def FeatureStdExtZiccif
-    : SubtargetFeature<"ziccif", "HasStdExtZiccif", "true",
-                       "Ziccif (Main memory regions with both the cacheability and coherence PMAs must support instruction fetch.)">;
-
-def FeatureStdExtZiccamoa
-    : SubtargetFeature<"ziccamoa", "HasStdExtZiccamoa", "true",
-                       "Ziccamoa (Main memory regions with both the cacheability and coherence PMAs must support AMOArithmetic.)">;
-
-def FeatureStdExtZiccrse
-    : SubtargetFeature<"ziccrse", "HasStdExtZiccrse", "true",
-                       "Ziccrse (Main memory regions with both the cacheability and coherence PMAs must support RsrvEventual.)">;
-
-def FeatureStdExtZa64rs
-    : SubtargetFeature<"za64rs", "HasStdExtZa64rs", "true",
-                       "Za64rs (Reservation sets are contiguous, naturally aligned, and a maximum of 64 bytes.)">;
-
-def FeatureStdExtZic64b
-    : SubtargetFeature<"zic64b", "HasStdExtZic64b", "true",
-                       "Zic64b (Cache blocks must be 64 bytes in size, naturally aligned in the address space.)">;
-
 def FeatureRecodeDotprod
     : SubtargetFeature<"dotprod", "HasRecodeDotprod", "true",
                        "dotprod (A corresponding feature for NEON dotprod.)">;

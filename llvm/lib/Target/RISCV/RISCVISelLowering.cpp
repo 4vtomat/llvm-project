@@ -4179,11 +4179,6 @@ static SDValue lowerScalarInsert(SDValue Scalar, SDValue VL, MVT VT,
   if (Scalar.getOpcode() == ISD::EXTRACT_VECTOR_ELT &&
       isNullConstant(Scalar.getOperand(1))) {
     SDValue ExtractedVal = Scalar.getOperand(0);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    // SIFIVE: Cherry-picked from #78668
-=======
->>>>>>> llvm/main
     // The element types must be the same.
     if (ExtractedVal.getValueType().getVectorElementType() ==
         VT.getVectorElementType()) {
@@ -4192,18 +4187,6 @@ static SDValue lowerScalarInsert(SDValue Scalar, SDValue VL, MVT VT,
       if (ExtractedContainerVT.isFixedLengthVector()) {
         ExtractedContainerVT = getContainerForFixedLengthVector(
             DAG, ExtractedContainerVT, Subtarget);
-<<<<<<< HEAD
-        ExtractedVal = convertToScalableVector(ExtractedContainerVT, ExtractedVal,
-                                               DAG, Subtarget);
-      }
-      if (ExtractedContainerVT.bitsLE(VT))
-        return DAG.getNode(ISD::INSERT_SUBVECTOR, DL, VT, Passthru, ExtractedVal,
-                           DAG.getConstant(0, DL, XLenVT));
-      return DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, VT, ExtractedVal,
-                         DAG.getConstant(0, DL, XLenVT));
-    }
-#endif // SIFIVE_CUSTOMIZATION
-=======
         ExtractedVal = convertToScalableVector(ExtractedContainerVT,
                                                ExtractedVal, DAG, Subtarget);
       }
@@ -4213,7 +4196,6 @@ static SDValue lowerScalarInsert(SDValue Scalar, SDValue VL, MVT VT,
       return DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, VT, ExtractedVal,
                          DAG.getConstant(0, DL, XLenVT));
     }
->>>>>>> llvm/main
   }
 
 
@@ -17879,22 +17861,18 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     break;
   }
   case RISCVISD::ADD_VL:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (SDValue Result = combineSelectAndBinOp(N, DAG))
       return Result;
 #endif // SIFIVE_CUSTOMIZATION
-    if (SDValue V = combineBinOp_VLToVWBinOp_VL(N, DCI))
-=======
     if (SDValue V = combineBinOp_VLToVWBinOp_VL(N, DCI, Subtarget))
->>>>>>> llvm/main
       return V;
     return combineToVWMACC(N, DAG, Subtarget);
   case RISCVISD::SUB_VL:
 #if SIFIVE_CUSTOMIZATION
     if (SDValue Result = combineSelectAndBinOp(N, DAG))
       return Result;
-    return combineBinOp_VLToVWBinOp_VL(N, DCI);
+    return combineBinOp_VLToVWBinOp_VL(N, DCI, Subtarget);
   case RISCVISD::OR_VL:
   case RISCVISD::XOR_VL:
     return combineSelectAndBinOp(N, DAG);
@@ -17904,15 +17882,11 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
   case RISCVISD::VWSUB_W_VL:
   case RISCVISD::VWSUBU_W_VL:
   case RISCVISD::MUL_VL:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    if (SDValue V = combineBinOp_VLToVWBinOp_VL(N, DCI))
+    if (SDValue V = combineBinOp_VLToVWBinOp_VL(N, DCI, Subtarget))
       return V;
     return combineVWADDU_W_VL(N, DAG, Subtarget);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    return combineBinOp_VLToVWBinOp_VL(N, DCI, Subtarget);
->>>>>>> llvm/main
   case RISCVISD::VFMADD_VL:
   case RISCVISD::VFNMADD_VL:
   case RISCVISD::VFMSUB_VL:

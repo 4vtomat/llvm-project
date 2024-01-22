@@ -71,12 +71,9 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"shvstvala", {1, 0}}, // SIFIVE
     {"shvstvecd", {1, 0}}, // SIFIVE
     {"smaia", {1, 0}},
-<<<<<<< HEAD
+    {"smepmp", {1, 0}},
     {"smstateen", {1, 0}}, // SIFIVE
     {"ss", {1, 12}}, // SIFIVE
-=======
-    {"smepmp", {1, 0}},
->>>>>>> llvm/main
     {"ssaia", {1, 0}},
     {"ssccptr", {1, 0}}, // SIFIVE
     {"sscofpmf", {1, 0}}, // SIFIVE
@@ -131,12 +128,8 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xtheadvdot", {1, 0}},
     {"xventanacondops", {1, 0}},
 
-<<<<<<< HEAD
-    {"za64rs", {1, 0}}, // SIFIVE
-=======
     {"za128rs", {1, 0}},
     {"za64rs", {1, 0}},
->>>>>>> llvm/main
     {"zawrs", {1, 0}},
 
     {"zba", {1, 0}},
@@ -164,16 +157,6 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
 
     {"zhinx", {1, 0}},
     {"zhinxmin", {1, 0}},
-<<<<<<< HEAD
-    {"zic64b", {1, 0}}, // SIFIVE
-    {"zicbom", {1, 0}},
-    {"zicbop", {1, 0}},
-    {"zicboz", {1, 0}},
-    {"ziccamoa", {1, 0}}, // SIFIVE
-    {"ziccif", {1, 0}}, // SIFIVE
-    {"zicclsm", {1, 0}},// SIFIVE
-    {"ziccrse", {1, 0}}, // SIFIVE
-=======
 
     {"zic64b", {1, 0}},
     {"zicbom", {1, 0}},
@@ -183,7 +166,6 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"ziccif", {1, 0}},
     {"zicclsm", {1, 0}},
     {"ziccrse", {1, 0}},
->>>>>>> llvm/main
     {"zicntr", {2, 0}},
     {"zicsr", {2, 0}},
     {"zifencei", {2, 0}},

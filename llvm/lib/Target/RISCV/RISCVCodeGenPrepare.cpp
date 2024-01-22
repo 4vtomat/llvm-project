@@ -18,16 +18,11 @@
 #include "llvm/ADT/Statistic.h"
 #include "llvm/Analysis/ValueTracking.h"
 #include "llvm/CodeGen/TargetPassConfig.h"
-<<<<<<< HEAD
 #include "llvm/IR/Dominators.h" // SIFIVE
-#include "llvm/IR/IRBuilder.h"  // SIFIVE
-#include "llvm/IR/InstVisitor.h"
-#include "llvm/IR/IntrinsicsRISCV.h" // SIFIVE
-=======
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/InstVisitor.h"
 #include "llvm/IR/Intrinsics.h"
->>>>>>> llvm/main
+#include "llvm/IR/IntrinsicsRISCV.h" // SIFIVE
 #include "llvm/IR/PatternMatch.h"
 #include "llvm/InitializePasses.h"
 #include "llvm/Pass.h"
@@ -62,11 +57,8 @@ public:
 
   bool visitInstruction(Instruction &I) { return false; }
   bool visitAnd(BinaryOperator &BO);
-<<<<<<< HEAD
-  bool visitIntrinsicInst(IntrinsicInst &II); // SIFIVE
-=======
   bool visitIntrinsicInst(IntrinsicInst &I);
->>>>>>> llvm/main
+  bool optimizeReduction(IntrinsicInst &I);
 };
 
 } // end anonymous namespace
@@ -141,6 +133,11 @@ bool RISCVCodeGenPrepare::visitAnd(BinaryOperator &BO) {
 // Which eliminates the scalar -> vector -> scalar crossing during instruction
 // selection.
 bool RISCVCodeGenPrepare::visitIntrinsicInst(IntrinsicInst &I) {
+#if SIFIVE_CUSTOMIZATION
+  if (optimizeReduction(I))
+    return true;
+#endif // SIFIVE_CUSTOMIZATION
+
   if (I.getIntrinsicID() != Intrinsic::vector_reduce_fadd)
     return false;
 
@@ -174,7 +171,7 @@ bool RISCVCodeGenPrepare::visitIntrinsicInst(IntrinsicInst &I) {
 // so we don't need a passthru for the vredusum. We can also use the VL for
 // vfmv.s.f if we know if it is non-zero. SelectionDAG will conservatively use
 // a value of 1 to make sure it is non-zero.
-bool RISCVCodeGenPrepare::visitIntrinsicInst(IntrinsicInst &II) {
+bool RISCVCodeGenPrepare::optimizeReduction(IntrinsicInst &II) {
   Intrinsic::ID IID = II.getIntrinsicID();
   // RISCV intrinsic ID.
   Intrinsic::ID RVIID;
