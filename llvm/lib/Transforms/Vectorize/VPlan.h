@@ -939,7 +939,8 @@ public:
   /// \returns an iterator pointing to the element after the erased one
   iplist<VPRecipeBase>::iterator eraseFromParent();
 
-<<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
+  // TODO: Need by VPlanCostModel. Should that move to VPSingleDefRecipe?
   /// Returns the underlying instruction, if the recipe is a VPValue or nullptr
   /// otherwise.
   Instruction *getUnderlyingInstr() {
@@ -949,15 +950,12 @@ public:
     return cast<Instruction>(getVPSingleValue()->getUnderlyingValue());
   }
 
-#if SIFIVE_CUSTOMIZATION
   bool hasUnderlyingInstr() const {
     return getNumDefinedValues() == 1 &&
            getVPSingleValue()->getUnderlyingValue() != nullptr;
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> llvm/main
   /// Method to support type inquiry through isa, cast, and dyn_cast.
   static inline bool classof(const VPDef *D) {
     // All VPDefs are also VPRecipeBases.
@@ -1055,10 +1053,17 @@ public:
     case VPRecipeBase::VPWidenIntOrFpInductionSC:
     case VPRecipeBase::VPWidenPointerInductionSC:
     case VPRecipeBase::VPReductionPHISC:
+#if SIFIVE_CUSTOMIZATION
+    case VPRecipeBase::VPCSADataUpdateSC:
+    case VPRecipeBase::VPCSAExtractScalarSC:
+#endif
       return true;
     case VPRecipeBase::VPInterleaveSC:
     case VPRecipeBase::VPBranchOnMaskSC:
     case VPRecipeBase::VPWidenMemoryInstructionSC:
+#if SIFIVE_CUSTOMIZATION
+    case VPRecipeBase::VPCSAHeaderPHISC:
+#endif
       // TODO: Widened stores don't define a value, but widened loads do. Split
       // the recipes to be able to make widened loads VPSingleDefRecipes.
       return false;
@@ -2455,11 +2460,10 @@ public:
   VPValue *getVPInitData() { return getOperand(0); }
 };
 
-class VPCSADataUpdateRecipe final : public VPRecipeBase, public VPValue {
+class VPCSADataUpdateRecipe final : public VPSingleDefRecipe {
 public:
   VPCSADataUpdateRecipe(SelectInst *SI, ArrayRef<VPValue *> Operands)
-      : VPRecipeBase(VPRecipeBase::VPCSADataUpdateSC, Operands),
-        VPValue(this, SI) {}
+      : VPSingleDefRecipe(VPDef::VPCSADataUpdateSC, Operands, SI) {}
 
   ~VPCSADataUpdateRecipe() override = default;
 
@@ -2496,11 +2500,10 @@ public:
   void setVPAnyActive(VPValue *AnyActive) { addOperand(AnyActive); }
 };
 
-class VPCSAExtractScalarRecipe final : public VPRecipeBase, public VPValue {
+class VPCSAExtractScalarRecipe final : public VPSingleDefRecipe {
 public:
   VPCSAExtractScalarRecipe(ArrayRef<VPValue *> Operands)
-      : VPRecipeBase(VPRecipeBase::VPCSAExtractScalarSC, Operands),
-        VPValue(this) {}
+      : VPSingleDefRecipe(VPDef::VPCSAExtractScalarSC, Operands) {}
 
   ~VPCSAExtractScalarRecipe() override = default;
 
