@@ -971,10 +971,9 @@ declare void @f(ptr)
 define i32 @crash() {
 ; RV32I-LABEL: crash:
 ; RV32I:       # %bb.0: # %entry
-; RV32I-NEXT:    li a0, 1
 ; RV32I-NEXT:    lui a1, %hi(g)
 ; RV32I-NEXT:    addi a1, a1, %lo(g)
-; RV32I-NEXT:    add a0, a1, a0
+; RV32I-NEXT:    addi a0, a1, 1
 ; RV32I-NEXT:    lbu a0, 400(a0)
 ; RV32I-NEXT:    seqz a0, a0
 ; RV32I-NEXT:    sw a0, 0(zero)
@@ -983,11 +982,10 @@ define i32 @crash() {
 ;
 ; RV32I-MEDIUM-LABEL: crash:
 ; RV32I-MEDIUM:       # %bb.0: # %entry
-; RV32I-MEDIUM-NEXT:    li a0, 1
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi14:
 ; RV32I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(g)
 ; RV32I-MEDIUM-NEXT:    addi a1, a1, %pcrel_lo(.Lpcrel_hi14)
-; RV32I-MEDIUM-NEXT:    add a0, a1, a0
+; RV32I-MEDIUM-NEXT:    addi a0, a1, 1
 ; RV32I-MEDIUM-NEXT:    lbu a0, 400(a0)
 ; RV32I-MEDIUM-NEXT:    seqz a0, a0
 ; RV32I-MEDIUM-NEXT:    sw a0, 0(zero)
@@ -996,10 +994,9 @@ define i32 @crash() {
 ;
 ; RV64I-LABEL: crash:
 ; RV64I:       # %bb.0: # %entry
-; RV64I-NEXT:    li a0, 1
 ; RV64I-NEXT:    lui a1, %hi(g)
 ; RV64I-NEXT:    addi a1, a1, %lo(g)
-; RV64I-NEXT:    add a0, a1, a0
+; RV64I-NEXT:    addi a0, a1, 1
 ; RV64I-NEXT:    lbu a0, 400(a0)
 ; RV64I-NEXT:    seqz a0, a0
 ; RV64I-NEXT:    sw a0, 0(zero)
@@ -1008,11 +1005,10 @@ define i32 @crash() {
 ;
 ; RV64I-MEDIUM-LABEL: crash:
 ; RV64I-MEDIUM:       # %bb.0: # %entry
-; RV64I-MEDIUM-NEXT:    li a0, 1
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi14:
 ; RV64I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(g)
 ; RV64I-MEDIUM-NEXT:    addi a1, a1, %pcrel_lo(.Lpcrel_hi14)
-; RV64I-MEDIUM-NEXT:    add a0, a1, a0
+; RV64I-MEDIUM-NEXT:    addi a0, a1, 1
 ; RV64I-MEDIUM-NEXT:    lbu a0, 400(a0)
 ; RV64I-MEDIUM-NEXT:    seqz a0, a0
 ; RV64I-MEDIUM-NEXT:    sw a0, 0(zero)
