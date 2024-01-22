@@ -838,6 +838,7 @@ Experimental extensions
     zvfbfwma            1.0
     smwg                0.3
     smwgd               0.3
+    ssnpm               0.8
     sswg                0.3
 
 Use -march to specify the target's extension.

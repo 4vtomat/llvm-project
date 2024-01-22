@@ -31,6 +31,7 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+experimental-smwg %s -o - | FileCheck --check-prefixes=CHECK,RV32SMWG %s
 ; RUN: llc -mtriple=riscv32 -mattr=+experimental-smwg -mattr=+experimental-smwgd %s -o - | FileCheck --check-prefixes=CHECK,RV32SMWGD %s
 ; RUN: llc -mtriple=riscv32 -mattr=+experimental-sswg %s -o - | FileCheck --check-prefixes=CHECK,RV32SSWG %s
+; RUN: llc -mtriple=riscv32 -mattr=+experimental-ssnpm %s -o - | FileCheck --check-prefixes=CHECK,RV32SSNPM %s
 ; RUN: llc -mtriple=riscv32 -mattr=+xsfpgflushdlone %s -o - | FileCheck --check-prefixes=CHECK,RV32XSFPGFLUSHDLONE %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zicclsm %s -o - | FileCheck --check-prefixes=CHECK,RV64ZICCLSM %s
 ; RUN: llc -mtriple=riscv64 -mattr=+ziccif %s -o - | FileCheck --check-prefixes=CHECK,RV64ZICCIF %s
@@ -63,6 +64,7 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+experimental-smwg %s -o - | FileCheck --check-prefixes=CHECK,RV64SMWG %s
 ; RUN: llc -mtriple=riscv64 -mattr=+experimental-smwg -mattr=+experimental-smwgd %s -o - | FileCheck --check-prefixes=CHECK,RV64SMWGD %s
 ; RUN: llc -mtriple=riscv64 -mattr=+experimental-sswg %s -o - | FileCheck --check-prefixes=CHECK,RV64SSWG %s
+; RUN: llc -mtriple=riscv64 -mattr=+experimental-ssnpm %s -o - | FileCheck --check-prefixes=CHECK,RV64SSNPM %s
 ; RUN: llc -mtriple=riscv64 -mattr=+xsfpgflushdlone %s -o - | FileCheck --check-prefixes=CHECK,RV64XSFPGFLUSHDLONE %s
 
 ; CHECK: .attribute 4, 16
@@ -98,6 +100,7 @@
 ; RV32SMWG: .attribute 5, "rv32i2p1_smwg0p3"
 ; RV32SMWGD: .attribute 5, "rv32i2p1_smwg0p3_smwgd0p3"
 ; RV32SSWG: .attribute 5, "rv32i2p1_sswg0p3"
+; RV32SSNPM: .attribute 5, "rv32i2p1_ssnpm0p8"
 ; RV32XSFPGFLUSHDLONE: .attribute 5, "rv32i2p1_xsfpgflushdlone0p1"
 ; RV64ZICCLSM: .attribute 5, "rv64i2p1_zicclsm1p0"
 ; RV64ZICCIF: .attribute 5, "rv64i2p1_ziccif1p0"
@@ -130,6 +133,7 @@
 ; RV64SMWG: .attribute 5, "rv64i2p1_smwg0p3"
 ; RV64SMWGD: .attribute 5, "rv64i2p1_smwg0p3_smwgd0p3"
 ; RV64SSWG: .attribute 5, "rv64i2p1_sswg0p3"
+; RV64SSNPM: .attribute 5, "rv64i2p1_ssnpm0p8"
 ; RV64XSFPGFLUSHDLONE: .attribute 5, "rv64i2p1_xsfpgflushdlone0p1"
 
 define i32 @addi(i32 %a) {

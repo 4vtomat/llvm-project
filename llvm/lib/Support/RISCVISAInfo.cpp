@@ -236,6 +236,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
 static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"smwg", {0, 3}}, // SIFIVE
     {"smwgd", {0, 3}}, // SIFIVE
+    {"ssnpm", {0, 8}}, // SIFIVE
     {"sswg", {0, 3}}, // SIFIVE
 
     {"zacas", {1, 0}},

@@ -143,6 +143,7 @@
 // CHECK-NOT: __riscv_smwg
 // CHECK-NOT: __riscv_smwgd
 // CHECK-NOT: __riscv_sswg
+// CHECK-NOT: __riscv_ssnpm
 // CHECK-NOT: __riscv_xsfpgflushdlone
 // end SIFIVE_CUSTOMIZATION
 
@@ -1202,6 +1203,14 @@
 // RUN: -march=rv64isswg -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SSWG-EXT %s
 // CHECK-SSWG-EXT: __riscv_sswg  3000{{$}}
+//
+// RUN: %clang --target=riscv32 -menable-experimental-extensions \
+// RUN: -march=rv32issnpm -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SSNPM-EXT %s
+// RUN: %clang --target=riscv64 -menable-experimental-extensions \
+// RUN: -march=rv64issnpm -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-SSNPM-EXT %s
+// CHECK-SSNPM-EXT: __riscv_ssnpm  8000{{$}}
 
 // RUN: %clang --target=riscv32 -menable-experimental-extensions \
 // RUN: -march=rv32ixsfpgflushdlone0p1 -x c -E -dM %s \
