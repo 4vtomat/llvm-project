@@ -259,6 +259,35 @@
 // MCPU-SIFIVE-X280-SAME: "-target-feature" "+zvl512b" "-target-feature" "+zvl64b"
 // MCPU-SIFIVE-X280-SAME: "-target-abi" "lp64d"
 
+<<<<<<< HEAD
+=======
+// RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-p450 | FileCheck -check-prefix=MCPU-SIFIVE-P450 %s
+// MCPU-SIFIVE-P450: "-nostdsysteminc" "-target-cpu" "sifive-p450"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+m"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+a"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+f"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+d"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+c"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+zic64b"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+zicbom"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+zicbop"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+zicboz"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+ziccamoa"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+ziccif"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+zicclsm"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+ziccrse"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+zicsr"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+zifencei"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+zihintntl"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+zihintpause"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+zihpm"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+za64rs"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+zfhmin"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+zba"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+zbb"
+// MCPU-SIFIVE-P450-SAME: "-target-feature" "+zbs"
+// MCPU-SIFIVE-P450-SAME: "-target-abi" "lp64d"
+>>>>>>> llvm/main
 //
 // Check failed cases
 

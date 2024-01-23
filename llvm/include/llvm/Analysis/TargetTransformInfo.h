@@ -952,6 +952,12 @@ public:
   /// Should the Select Optimization pass be enabled and ran.
   bool enableSelectOptimize() const;
 
+  /// Should the Select Optimization pass treat the given instruction like a
+  /// select, potentially converting it to a conditional branch. This can
+  /// include select-like instructions like or(zext(c), x) that can be converted
+  /// to selects.
+  bool shouldTreatInstructionLikeSelect(const Instruction *I) const;
+
   /// Enable matching of interleaved access groups.
   bool enableInterleavedAccessVectorization() const;
 
@@ -1954,6 +1960,7 @@ public:
   getBestVectorTypeForLoopIdiom(LLVMContext &Context) const = 0;
 #endif // SIFIVE_CUSTOMIZATION
   virtual bool enableSelectOptimize() = 0;
+  virtual bool shouldTreatInstructionLikeSelect(const Instruction *I) = 0;
   virtual bool enableInterleavedAccessVectorization() = 0;
   virtual bool enableMaskedInterleavedAccessVectorization() = 0;
   virtual bool isFPVectorizationPotentiallyUnsafe() = 0;
@@ -2527,6 +2534,9 @@ public:
 
   bool enableSelectOptimize() override {
     return Impl.enableSelectOptimize();
+  }
+  bool shouldTreatInstructionLikeSelect(const Instruction *I) override {
+    return Impl.shouldTreatInstructionLikeSelect(I);
   }
   bool enableInterleavedAccessVectorization() override {
     return Impl.enableInterleavedAccessVectorization();

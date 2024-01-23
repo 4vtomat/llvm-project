@@ -326,7 +326,8 @@ bool RISCVAsmPrinter::PrintAsmMemoryOperand(const MachineInstr *MI,
   // RISCVDAGToDAGISel::SelectInlineAsmMemoryOperand).
   if (!AddrReg.isReg())
     return true;
-  if (!Offset.isImm() && !Offset.isGlobal() && !Offset.isBlockAddress())
+  if (!Offset.isImm() && !Offset.isGlobal() && !Offset.isBlockAddress() &&
+      !Offset.isMCSymbol())
     return true;
 
   MCOperand MCO;
@@ -335,7 +336,7 @@ bool RISCVAsmPrinter::PrintAsmMemoryOperand(const MachineInstr *MI,
 
   if (Offset.isImm())
     OS << MCO.getImm();
-  else if (Offset.isGlobal() || Offset.isBlockAddress())
+  else if (Offset.isGlobal() || Offset.isBlockAddress() || Offset.isMCSymbol())
     OS << *MCO.getExpr();
   OS << "(" << RISCVInstPrinter::getRegisterName(AddrReg.getReg()) << ")";
   return false;

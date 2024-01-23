@@ -127,9 +127,8 @@ define void @constraint_m_with_global_1() nounwind {
 ; RV32I-MEDIUM:       # %bb.0:
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi0:
 ; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi0)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    sw zero, 0(a0)
+; RV32I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi0)(a0)
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:    ret
 ;
@@ -137,9 +136,8 @@ define void @constraint_m_with_global_1() nounwind {
 ; RV64I-MEDIUM:       # %bb.0:
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi0:
 ; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg)
-; RV64I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi0)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    sw zero, 0(a0)
+; RV64I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi0)(a0)
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:    ret
   call void asm "sw zero, $0", "=*m"(ptr elementtype(i32) @eg)
@@ -149,39 +147,35 @@ define void @constraint_m_with_global_1() nounwind {
 define void @constraint_m_with_global_2() nounwind {
 ; RV32I-LABEL: constraint_m_with_global_2:
 ; RV32I:       # %bb.0:
-; RV32I-NEXT:    lui a0, %hi(eg)
-; RV32I-NEXT:    addi a0, a0, %lo(eg)
+; RV32I-NEXT:    lui a0, %hi(eg+4)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 4(a0)
+; RV32I-NEXT:    sw zero, %lo(eg+4)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
 ; RV64I-LABEL: constraint_m_with_global_2:
 ; RV64I:       # %bb.0:
-; RV64I-NEXT:    lui a0, %hi(eg)
-; RV64I-NEXT:    addi a0, a0, %lo(eg)
+; RV64I-NEXT:    lui a0, %hi(eg+4)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 4(a0)
+; RV64I-NEXT:    sw zero, %lo(eg+4)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
 ; RV32I-MEDIUM-LABEL: constraint_m_with_global_2:
 ; RV32I-MEDIUM:       # %bb.0:
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi1:
-; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi1)
+; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg+4)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    sw zero, 4(a0)
+; RV32I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi1)(a0)
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:    ret
 ;
 ; RV64I-MEDIUM-LABEL: constraint_m_with_global_2:
 ; RV64I-MEDIUM:       # %bb.0:
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi1:
-; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg)
-; RV64I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi1)
+; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg+4)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    sw zero, 4(a0)
+; RV64I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi1)(a0)
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:    ret
   call void asm "sw zero, $0", "=*m"(ptr elementtype(i32) getelementptr ([400000 x i32], ptr @eg, i32 0, i32 1))
@@ -192,18 +186,16 @@ define void @constraint_m_with_global_3() nounwind {
 ; RV32I-LABEL: constraint_m_with_global_3:
 ; RV32I:       # %bb.0:
 ; RV32I-NEXT:    lui a0, %hi(eg+8000)
-; RV32I-NEXT:    addi a0, a0, %lo(eg+8000)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a0)
+; RV32I-NEXT:    sw zero, %lo(eg+8000)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
 ; RV64I-LABEL: constraint_m_with_global_3:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    lui a0, %hi(eg+8000)
-; RV64I-NEXT:    addi a0, a0, %lo(eg+8000)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a0)
+; RV64I-NEXT:    sw zero, %lo(eg+8000)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
@@ -211,9 +203,8 @@ define void @constraint_m_with_global_3() nounwind {
 ; RV32I-MEDIUM:       # %bb.0:
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi2:
 ; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg+8000)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi2)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    sw zero, 0(a0)
+; RV32I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi2)(a0)
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:    ret
 ;
@@ -221,9 +212,8 @@ define void @constraint_m_with_global_3() nounwind {
 ; RV64I-MEDIUM:       # %bb.0:
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi2:
 ; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg+8000)
-; RV64I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi2)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    sw zero, 0(a0)
+; RV64I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi2)(a0)
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:    ret
   call void asm "sw zero, $0", "=*m"(ptr elementtype(i32) getelementptr ([400000 x i32], ptr @eg, i32 0, i32 2000))
@@ -275,19 +265,17 @@ define void @constraint_m_with_extern_weak_global_1() nounwind {
 define void @constraint_m_with_extern_weak_global_2() nounwind {
 ; RV32I-LABEL: constraint_m_with_extern_weak_global_2:
 ; RV32I:       # %bb.0:
-; RV32I-NEXT:    lui a0, %hi(ewg)
-; RV32I-NEXT:    addi a0, a0, %lo(ewg)
+; RV32I-NEXT:    lui a0, %hi(ewg+4)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 4(a0)
+; RV32I-NEXT:    sw zero, %lo(ewg+4)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
 ; RV64I-LABEL: constraint_m_with_extern_weak_global_2:
 ; RV64I:       # %bb.0:
-; RV64I-NEXT:    lui a0, %hi(ewg)
-; RV64I-NEXT:    addi a0, a0, %lo(ewg)
+; RV64I-NEXT:    lui a0, %hi(ewg+4)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 4(a0)
+; RV64I-NEXT:    sw zero, %lo(ewg+4)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
@@ -318,18 +306,16 @@ define void @constraint_m_with_extern_weak_global_3() nounwind {
 ; RV32I-LABEL: constraint_m_with_extern_weak_global_3:
 ; RV32I:       # %bb.0:
 ; RV32I-NEXT:    lui a0, %hi(ewg+8000)
-; RV32I-NEXT:    addi a0, a0, %lo(ewg+8000)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a0)
+; RV32I-NEXT:    sw zero, %lo(ewg+8000)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
 ; RV64I-LABEL: constraint_m_with_extern_weak_global_3:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    lui a0, %hi(ewg+8000)
-; RV64I-NEXT:    addi a0, a0, %lo(ewg+8000)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a0)
+; RV64I-NEXT:    sw zero, %lo(ewg+8000)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
@@ -389,9 +375,8 @@ define void @constraint_m_with_local_1() nounwind {
 ; RV32I-MEDIUM-NEXT:  # %bb.1: # %label
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi6:
 ; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp0)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi6)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    lw zero, 0(a0)
+; RV32I-MEDIUM-NEXT:    lw zero, %pcrel_lo(.Lpcrel_hi6)(a0)
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:    ret
 ;
@@ -401,9 +386,8 @@ define void @constraint_m_with_local_1() nounwind {
 ; RV64I-MEDIUM-NEXT:  # %bb.1: # %label
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi6:
 ; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp0)
-; RV64I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi6)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    lw zero, 0(a0)
+; RV64I-MEDIUM-NEXT:    lw zero, %pcrel_lo(.Lpcrel_hi6)(a0)
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:    ret
 entry:
@@ -419,10 +403,9 @@ define void @constraint_m_with_local_2() nounwind {
 ; RV32I:       # %bb.0: # %entry
 ; RV32I-NEXT:  .Ltmp1: # Block address taken
 ; RV32I-NEXT:  # %bb.1: # %label
-; RV32I-NEXT:    lui a0, %hi(.Ltmp1)
-; RV32I-NEXT:    addi a0, a0, %lo(.Ltmp1)
+; RV32I-NEXT:    lui a0, %hi(.Ltmp1+4)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    lw zero, 4(a0)
+; RV32I-NEXT:    lw zero, %lo(.Ltmp1+4)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
@@ -430,10 +413,9 @@ define void @constraint_m_with_local_2() nounwind {
 ; RV64I:       # %bb.0: # %entry
 ; RV64I-NEXT:  .Ltmp1: # Block address taken
 ; RV64I-NEXT:  # %bb.1: # %label
-; RV64I-NEXT:    lui a0, %hi(.Ltmp1)
-; RV64I-NEXT:    addi a0, a0, %lo(.Ltmp1)
+; RV64I-NEXT:    lui a0, %hi(.Ltmp1+4)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    lw zero, 4(a0)
+; RV64I-NEXT:    lw zero, %lo(.Ltmp1+4)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
@@ -442,10 +424,9 @@ define void @constraint_m_with_local_2() nounwind {
 ; RV32I-MEDIUM-NEXT:  .Ltmp1: # Block address taken
 ; RV32I-MEDIUM-NEXT:  # %bb.1: # %label
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi7:
-; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp1)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi7)
+; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp1+4)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    lw zero, 4(a0)
+; RV32I-MEDIUM-NEXT:    lw zero, %pcrel_lo(.Lpcrel_hi7)(a0)
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:    ret
 ;
@@ -454,10 +435,9 @@ define void @constraint_m_with_local_2() nounwind {
 ; RV64I-MEDIUM-NEXT:  .Ltmp1: # Block address taken
 ; RV64I-MEDIUM-NEXT:  # %bb.1: # %label
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi7:
-; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp1)
-; RV64I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi7)
+; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp1+4)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    lw zero, 4(a0)
+; RV64I-MEDIUM-NEXT:    lw zero, %pcrel_lo(.Lpcrel_hi7)(a0)
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:    ret
 entry:
@@ -473,10 +453,9 @@ define void @constraint_m_with_local_3() nounwind {
 ; RV32I:       # %bb.0: # %entry
 ; RV32I-NEXT:  .Ltmp2: # Block address taken
 ; RV32I-NEXT:  # %bb.1: # %label
-; RV32I-NEXT:    lui a0, %hi(.Ltmp2)
-; RV32I-NEXT:    addi a0, a0, %lo(.Ltmp2)
+; RV32I-NEXT:    lui a0, %hi(.Ltmp2+2000)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    lw zero, 2000(a0)
+; RV32I-NEXT:    lw zero, %lo(.Ltmp2+2000)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
@@ -484,10 +463,9 @@ define void @constraint_m_with_local_3() nounwind {
 ; RV64I:       # %bb.0: # %entry
 ; RV64I-NEXT:  .Ltmp2: # Block address taken
 ; RV64I-NEXT:  # %bb.1: # %label
-; RV64I-NEXT:    lui a0, %hi(.Ltmp2)
-; RV64I-NEXT:    addi a0, a0, %lo(.Ltmp2)
+; RV64I-NEXT:    lui a0, %hi(.Ltmp2+2000)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    lw zero, 2000(a0)
+; RV64I-NEXT:    lw zero, %lo(.Ltmp2+2000)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
@@ -496,10 +474,9 @@ define void @constraint_m_with_local_3() nounwind {
 ; RV32I-MEDIUM-NEXT:  .Ltmp2: # Block address taken
 ; RV32I-MEDIUM-NEXT:  # %bb.1: # %label
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi8:
-; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp2)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi8)
+; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp2+2000)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    lw zero, 2000(a0)
+; RV32I-MEDIUM-NEXT:    lw zero, %pcrel_lo(.Lpcrel_hi8)(a0)
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:    ret
 ;
@@ -508,10 +485,9 @@ define void @constraint_m_with_local_3() nounwind {
 ; RV64I-MEDIUM-NEXT:  .Ltmp2: # Block address taken
 ; RV64I-MEDIUM-NEXT:  # %bb.1: # %label
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi8:
-; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp2)
-; RV64I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi8)
+; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp2+2000)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    lw zero, 2000(a0)
+; RV64I-MEDIUM-NEXT:    lw zero, %pcrel_lo(.Lpcrel_hi8)(a0)
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:    ret
 entry:
@@ -545,9 +521,8 @@ define void @constraint_m_with_multi_operands() nounwind {
 ; RV32I-MEDIUM:       # %bb.0:
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi9:
 ; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi9)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    sw zero, 0(a0); sw zero, 0(a0)
+; RV32I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi9)(a0); sw zero, %pcrel_lo(.Lpcrel_hi9)(a0)
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:    ret
 ;
@@ -555,9 +530,8 @@ define void @constraint_m_with_multi_operands() nounwind {
 ; RV64I-MEDIUM:       # %bb.0:
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi9:
 ; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg)
-; RV64I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi9)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    sw zero, 0(a0); sw zero, 0(a0)
+; RV64I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi9)(a0); sw zero, %pcrel_lo(.Lpcrel_hi9)(a0)
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:    ret
   call void asm "sw zero, $0; sw zero, $1", "=*m,=*m"(ptr elementtype(i32) @eg, ptr elementtype(i32) @eg)
@@ -593,12 +567,11 @@ define void @constraint_m_with_multi_asm() nounwind {
 ; RV32I-MEDIUM:       # %bb.0:
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi10:
 ; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi10)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    sw zero, 0(a0)
+; RV32I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi10)(a0)
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    sw zero, 0(a0)
+; RV32I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi10)(a0)
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:    ret
 ;
@@ -606,12 +579,11 @@ define void @constraint_m_with_multi_asm() nounwind {
 ; RV64I-MEDIUM:       # %bb.0:
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi10:
 ; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg)
-; RV64I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi10)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    sw zero, 0(a0)
+; RV64I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi10)(a0)
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    sw zero, 0(a0)
+; RV64I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi10)(a0)
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:    ret
   call void asm "sw zero, $0", "=*m"(ptr elementtype(i32) @eg)
@@ -656,9 +628,8 @@ define i32 @constraint_m_with_callbr_multi_operands(i32 %a) {
 ; RV32I-MEDIUM:       # %bb.0: # %entry
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi11:
 ; RV32I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(eg)
-; RV32I-MEDIUM-NEXT:    addi a1, a1, %pcrel_lo(.Lpcrel_hi11)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    sw zero, 0(a1); sw zero, 0(a1); beqz a0, .LBB14_2
+; RV32I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi11)(a1); sw zero, %pcrel_lo(.Lpcrel_hi11)(a1); beqz a0, .LBB14_2
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:  # %bb.1: # %normal
 ; RV32I-MEDIUM-NEXT:    li a0, 0
@@ -673,9 +644,8 @@ define i32 @constraint_m_with_callbr_multi_operands(i32 %a) {
 ; RV64I-MEDIUM:       # %bb.0: # %entry
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi11:
 ; RV64I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(eg)
-; RV64I-MEDIUM-NEXT:    addi a1, a1, %pcrel_lo(.Lpcrel_hi11)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    sw zero, 0(a1); sw zero, 0(a1); beqz a0, .LBB14_2
+; RV64I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi11)(a1); sw zero, %pcrel_lo(.Lpcrel_hi11)(a1); beqz a0, .LBB14_2
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:  # %bb.1: # %normal
 ; RV64I-MEDIUM-NEXT:    li a0, 0
@@ -740,13 +710,12 @@ define i32 @constraint_m_with_multi_callbr_asm(i32 %a) {
 ; RV32I-MEDIUM:       # %bb.0: # %entry
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi12:
 ; RV32I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(eg)
-; RV32I-MEDIUM-NEXT:    addi a1, a1, %pcrel_lo(.Lpcrel_hi12)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    sw zero, 0(a1); beqz a0, .LBB15_3
+; RV32I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi12)(a1); beqz a0, .LBB15_3
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:  # %bb.1: # %normal0
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    sw zero, 0(a1); beqz a0, .LBB15_3
+; RV32I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi12)(a1); beqz a0, .LBB15_3
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:  # %bb.2: # %normal1
 ; RV32I-MEDIUM-NEXT:    li a0, 0
@@ -761,13 +730,12 @@ define i32 @constraint_m_with_multi_callbr_asm(i32 %a) {
 ; RV64I-MEDIUM:       # %bb.0: # %entry
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi12:
 ; RV64I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(eg)
-; RV64I-MEDIUM-NEXT:    addi a1, a1, %pcrel_lo(.Lpcrel_hi12)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    sw zero, 0(a1); beqz a0, .LBB15_3
+; RV64I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi12)(a1); beqz a0, .LBB15_3
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:  # %bb.1: # %normal0
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    sw zero, 0(a1); beqz a0, .LBB15_3
+; RV64I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi12)(a1); beqz a0, .LBB15_3
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:  # %bb.2: # %normal1
 ; RV64I-MEDIUM-NEXT:    li a0, 0
@@ -906,9 +874,8 @@ define void @constraint_o_with_global_1() nounwind {
 ; RV32I-MEDIUM:       # %bb.0:
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi13:
 ; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi13)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    sw zero, 0(a0)
+; RV32I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi13)(a0)
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:    ret
 ;
@@ -916,9 +883,8 @@ define void @constraint_o_with_global_1() nounwind {
 ; RV64I-MEDIUM:       # %bb.0:
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi13:
 ; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg)
-; RV64I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi13)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    sw zero, 0(a0)
+; RV64I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi13)(a0)
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:    ret
   call void asm "sw zero, $0", "=*o"(ptr elementtype(i32) @eg)
@@ -928,39 +894,35 @@ define void @constraint_o_with_global_1() nounwind {
 define void @constraint_o_with_global_2() nounwind {
 ; RV32I-LABEL: constraint_o_with_global_2:
 ; RV32I:       # %bb.0:
-; RV32I-NEXT:    lui a0, %hi(eg)
-; RV32I-NEXT:    addi a0, a0, %lo(eg)
+; RV32I-NEXT:    lui a0, %hi(eg+4)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 4(a0)
+; RV32I-NEXT:    sw zero, %lo(eg+4)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
 ; RV64I-LABEL: constraint_o_with_global_2:
 ; RV64I:       # %bb.0:
-; RV64I-NEXT:    lui a0, %hi(eg)
-; RV64I-NEXT:    addi a0, a0, %lo(eg)
+; RV64I-NEXT:    lui a0, %hi(eg+4)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 4(a0)
+; RV64I-NEXT:    sw zero, %lo(eg+4)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
 ; RV32I-MEDIUM-LABEL: constraint_o_with_global_2:
 ; RV32I-MEDIUM:       # %bb.0:
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi14:
-; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi14)
+; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg+4)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    sw zero, 4(a0)
+; RV32I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi14)(a0)
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:    ret
 ;
 ; RV64I-MEDIUM-LABEL: constraint_o_with_global_2:
 ; RV64I-MEDIUM:       # %bb.0:
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi14:
-; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg)
-; RV64I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi14)
+; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg+4)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    sw zero, 4(a0)
+; RV64I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi14)(a0)
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:    ret
   call void asm "sw zero, $0", "=*o"(ptr elementtype(i32) getelementptr ([400000 x i32], ptr @eg, i32 0, i32 1))
@@ -971,18 +933,16 @@ define void @constraint_o_with_global_3() nounwind {
 ; RV32I-LABEL: constraint_o_with_global_3:
 ; RV32I:       # %bb.0:
 ; RV32I-NEXT:    lui a0, %hi(eg+8000)
-; RV32I-NEXT:    addi a0, a0, %lo(eg+8000)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a0)
+; RV32I-NEXT:    sw zero, %lo(eg+8000)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
 ; RV64I-LABEL: constraint_o_with_global_3:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    lui a0, %hi(eg+8000)
-; RV64I-NEXT:    addi a0, a0, %lo(eg+8000)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a0)
+; RV64I-NEXT:    sw zero, %lo(eg+8000)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
@@ -990,9 +950,8 @@ define void @constraint_o_with_global_3() nounwind {
 ; RV32I-MEDIUM:       # %bb.0:
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi15:
 ; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg+8000)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi15)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    sw zero, 0(a0)
+; RV32I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi15)(a0)
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:    ret
 ;
@@ -1000,9 +959,8 @@ define void @constraint_o_with_global_3() nounwind {
 ; RV64I-MEDIUM:       # %bb.0:
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi15:
 ; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg+8000)
-; RV64I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi15)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    sw zero, 0(a0)
+; RV64I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi15)(a0)
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:    ret
   call void asm "sw zero, $0", "=*o"(ptr elementtype(i32) getelementptr ([400000 x i32], ptr @eg, i32 0, i32 2000))
@@ -1054,19 +1012,17 @@ define void @constraint_o_with_extern_weak_global_1() nounwind {
 define void @constraint_o_with_extern_weak_global_2() nounwind {
 ; RV32I-LABEL: constraint_o_with_extern_weak_global_2:
 ; RV32I:       # %bb.0:
-; RV32I-NEXT:    lui a0, %hi(ewg)
-; RV32I-NEXT:    addi a0, a0, %lo(ewg)
+; RV32I-NEXT:    lui a0, %hi(ewg+4)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 4(a0)
+; RV32I-NEXT:    sw zero, %lo(ewg+4)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
 ; RV64I-LABEL: constraint_o_with_extern_weak_global_2:
 ; RV64I:       # %bb.0:
-; RV64I-NEXT:    lui a0, %hi(ewg)
-; RV64I-NEXT:    addi a0, a0, %lo(ewg)
+; RV64I-NEXT:    lui a0, %hi(ewg+4)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 4(a0)
+; RV64I-NEXT:    sw zero, %lo(ewg+4)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
@@ -1097,18 +1053,16 @@ define void @constraint_o_with_extern_weak_global_3() nounwind {
 ; RV32I-LABEL: constraint_o_with_extern_weak_global_3:
 ; RV32I:       # %bb.0:
 ; RV32I-NEXT:    lui a0, %hi(ewg+8000)
-; RV32I-NEXT:    addi a0, a0, %lo(ewg+8000)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a0)
+; RV32I-NEXT:    sw zero, %lo(ewg+8000)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
 ; RV64I-LABEL: constraint_o_with_extern_weak_global_3:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    lui a0, %hi(ewg+8000)
-; RV64I-NEXT:    addi a0, a0, %lo(ewg+8000)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a0)
+; RV64I-NEXT:    sw zero, %lo(ewg+8000)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
@@ -1164,9 +1118,8 @@ define void @constraint_o_with_multi_operands() nounwind {
 ; RV32I-MEDIUM:       # %bb.0:
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi19:
 ; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi19)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    sw zero, 0(a0) \n sw zero, 0(a0)
+; RV32I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi19)(a0) \n sw zero, %pcrel_lo(.Lpcrel_hi19)(a0)
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:    ret
 ;
@@ -1174,9 +1127,8 @@ define void @constraint_o_with_multi_operands() nounwind {
 ; RV64I-MEDIUM:       # %bb.0:
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi19:
 ; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg)
-; RV64I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi19)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    sw zero, 0(a0) \n sw zero, 0(a0)
+; RV64I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi19)(a0) \n sw zero, %pcrel_lo(.Lpcrel_hi19)(a0)
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:    ret
   call void asm "sw zero, $0 \n sw zero, $1", "=*o,=*o"(ptr elementtype(i32) @eg, ptr elementtype(i32) @eg)
@@ -1212,12 +1164,11 @@ define void @constraint_o_with_multi_asm() nounwind {
 ; RV32I-MEDIUM:       # %bb.0:
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi20:
 ; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi20)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    sw zero, 0(a0)
+; RV32I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi20)(a0)
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    sw zero, 0(a0)
+; RV32I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi20)(a0)
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:    ret
 ;
@@ -1225,12 +1176,11 @@ define void @constraint_o_with_multi_asm() nounwind {
 ; RV64I-MEDIUM:       # %bb.0:
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi20:
 ; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(eg)
-; RV64I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi20)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    sw zero, 0(a0)
+; RV64I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi20)(a0)
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    sw zero, 0(a0)
+; RV64I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi20)(a0)
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:    ret
   call void asm "sw zero, $0", "=*o"(ptr elementtype(i32) @eg)
@@ -1275,9 +1225,8 @@ define i32 @constraint_o_with_callbr_multi_operands(i32 %a) {
 ; RV32I-MEDIUM:       # %bb.0: # %entry
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi21:
 ; RV32I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(eg)
-; RV32I-MEDIUM-NEXT:    addi a1, a1, %pcrel_lo(.Lpcrel_hi21)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    sw zero, 0(a1); sw zero, 0(a1); beqz a0, .LBB27_2
+; RV32I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi21)(a1); sw zero, %pcrel_lo(.Lpcrel_hi21)(a1); beqz a0, .LBB27_2
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:  # %bb.1: # %normal
 ; RV32I-MEDIUM-NEXT:    li a0, 0
@@ -1292,9 +1241,8 @@ define i32 @constraint_o_with_callbr_multi_operands(i32 %a) {
 ; RV64I-MEDIUM:       # %bb.0: # %entry
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi21:
 ; RV64I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(eg)
-; RV64I-MEDIUM-NEXT:    addi a1, a1, %pcrel_lo(.Lpcrel_hi21)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    sw zero, 0(a1); sw zero, 0(a1); beqz a0, .LBB27_2
+; RV64I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi21)(a1); sw zero, %pcrel_lo(.Lpcrel_hi21)(a1); beqz a0, .LBB27_2
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:  # %bb.1: # %normal
 ; RV64I-MEDIUM-NEXT:    li a0, 0
@@ -1359,13 +1307,12 @@ define i32 @constraint_o_with_multi_callbr_asm(i32 %a) {
 ; RV32I-MEDIUM:       # %bb.0: # %entry
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi22:
 ; RV32I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(eg)
-; RV32I-MEDIUM-NEXT:    addi a1, a1, %pcrel_lo(.Lpcrel_hi22)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    sw zero, 0(a1); beqz a0, .LBB28_3
+; RV32I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi22)(a1); beqz a0, .LBB28_3
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:  # %bb.1: # %normal0
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    sw zero, 0(a1); beqz a0, .LBB28_3
+; RV32I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi22)(a1); beqz a0, .LBB28_3
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:  # %bb.2: # %normal1
 ; RV32I-MEDIUM-NEXT:    li a0, 0
@@ -1380,13 +1327,12 @@ define i32 @constraint_o_with_multi_callbr_asm(i32 %a) {
 ; RV64I-MEDIUM:       # %bb.0: # %entry
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi22:
 ; RV64I-MEDIUM-NEXT:    auipc a1, %pcrel_hi(eg)
-; RV64I-MEDIUM-NEXT:    addi a1, a1, %pcrel_lo(.Lpcrel_hi22)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    sw zero, 0(a1); beqz a0, .LBB28_3
+; RV64I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi22)(a1); beqz a0, .LBB28_3
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:  # %bb.1: # %normal0
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    sw zero, 0(a1); beqz a0, .LBB28_3
+; RV64I-MEDIUM-NEXT:    sw zero, %pcrel_lo(.Lpcrel_hi22)(a1); beqz a0, .LBB28_3
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:  # %bb.2: # %normal1
 ; RV64I-MEDIUM-NEXT:    li a0, 0
@@ -1436,9 +1382,8 @@ define void @constraint_o_with_local_1() nounwind {
 ; RV32I-MEDIUM-NEXT:  # %bb.1: # %label
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi23:
 ; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp3)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi23)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    lw zero, 0(a0)
+; RV32I-MEDIUM-NEXT:    lw zero, %pcrel_lo(.Lpcrel_hi23)(a0)
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:    ret
 ;
@@ -1448,9 +1393,8 @@ define void @constraint_o_with_local_1() nounwind {
 ; RV64I-MEDIUM-NEXT:  # %bb.1: # %label
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi23:
 ; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp3)
-; RV64I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi23)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    lw zero, 0(a0)
+; RV64I-MEDIUM-NEXT:    lw zero, %pcrel_lo(.Lpcrel_hi23)(a0)
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:    ret
 entry:
@@ -1466,10 +1410,9 @@ define void @constraint_o_with_local_2() nounwind {
 ; RV32I:       # %bb.0: # %entry
 ; RV32I-NEXT:  .Ltmp4: # Block address taken
 ; RV32I-NEXT:  # %bb.1: # %label
-; RV32I-NEXT:    lui a0, %hi(.Ltmp4)
-; RV32I-NEXT:    addi a0, a0, %lo(.Ltmp4)
+; RV32I-NEXT:    lui a0, %hi(.Ltmp4+4)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    lw zero, 4(a0)
+; RV32I-NEXT:    lw zero, %lo(.Ltmp4+4)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
@@ -1477,10 +1420,9 @@ define void @constraint_o_with_local_2() nounwind {
 ; RV64I:       # %bb.0: # %entry
 ; RV64I-NEXT:  .Ltmp4: # Block address taken
 ; RV64I-NEXT:  # %bb.1: # %label
-; RV64I-NEXT:    lui a0, %hi(.Ltmp4)
-; RV64I-NEXT:    addi a0, a0, %lo(.Ltmp4)
+; RV64I-NEXT:    lui a0, %hi(.Ltmp4+4)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    lw zero, 4(a0)
+; RV64I-NEXT:    lw zero, %lo(.Ltmp4+4)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
@@ -1489,10 +1431,9 @@ define void @constraint_o_with_local_2() nounwind {
 ; RV32I-MEDIUM-NEXT:  .Ltmp4: # Block address taken
 ; RV32I-MEDIUM-NEXT:  # %bb.1: # %label
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi24:
-; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp4)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi24)
+; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp4+4)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    lw zero, 4(a0)
+; RV32I-MEDIUM-NEXT:    lw zero, %pcrel_lo(.Lpcrel_hi24)(a0)
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:    ret
 ;
@@ -1501,10 +1442,9 @@ define void @constraint_o_with_local_2() nounwind {
 ; RV64I-MEDIUM-NEXT:  .Ltmp4: # Block address taken
 ; RV64I-MEDIUM-NEXT:  # %bb.1: # %label
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi24:
-; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp4)
-; RV64I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi24)
+; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp4+4)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    lw zero, 4(a0)
+; RV64I-MEDIUM-NEXT:    lw zero, %pcrel_lo(.Lpcrel_hi24)(a0)
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:    ret
 entry:
@@ -1520,10 +1460,9 @@ define void @constraint_o_with_local_3() nounwind {
 ; RV32I:       # %bb.0: # %entry
 ; RV32I-NEXT:  .Ltmp5: # Block address taken
 ; RV32I-NEXT:  # %bb.1: # %label
-; RV32I-NEXT:    lui a0, %hi(.Ltmp5)
-; RV32I-NEXT:    addi a0, a0, %lo(.Ltmp5)
+; RV32I-NEXT:    lui a0, %hi(.Ltmp5+2000)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    lw zero, 2000(a0)
+; RV32I-NEXT:    lw zero, %lo(.Ltmp5+2000)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
@@ -1531,10 +1470,9 @@ define void @constraint_o_with_local_3() nounwind {
 ; RV64I:       # %bb.0: # %entry
 ; RV64I-NEXT:  .Ltmp5: # Block address taken
 ; RV64I-NEXT:  # %bb.1: # %label
-; RV64I-NEXT:    lui a0, %hi(.Ltmp5)
-; RV64I-NEXT:    addi a0, a0, %lo(.Ltmp5)
+; RV64I-NEXT:    lui a0, %hi(.Ltmp5+2000)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    lw zero, 2000(a0)
+; RV64I-NEXT:    lw zero, %lo(.Ltmp5+2000)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
@@ -1543,10 +1481,9 @@ define void @constraint_o_with_local_3() nounwind {
 ; RV32I-MEDIUM-NEXT:  .Ltmp5: # Block address taken
 ; RV32I-MEDIUM-NEXT:  # %bb.1: # %label
 ; RV32I-MEDIUM-NEXT:  .Lpcrel_hi25:
-; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp5)
-; RV32I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi25)
+; RV32I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp5+2000)
 ; RV32I-MEDIUM-NEXT:    #APP
-; RV32I-MEDIUM-NEXT:    lw zero, 2000(a0)
+; RV32I-MEDIUM-NEXT:    lw zero, %pcrel_lo(.Lpcrel_hi25)(a0)
 ; RV32I-MEDIUM-NEXT:    #NO_APP
 ; RV32I-MEDIUM-NEXT:    ret
 ;
@@ -1555,10 +1492,9 @@ define void @constraint_o_with_local_3() nounwind {
 ; RV64I-MEDIUM-NEXT:  .Ltmp5: # Block address taken
 ; RV64I-MEDIUM-NEXT:  # %bb.1: # %label
 ; RV64I-MEDIUM-NEXT:  .Lpcrel_hi25:
-; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp5)
-; RV64I-MEDIUM-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi25)
+; RV64I-MEDIUM-NEXT:    auipc a0, %pcrel_hi(.Ltmp5+2000)
 ; RV64I-MEDIUM-NEXT:    #APP
-; RV64I-MEDIUM-NEXT:    lw zero, 2000(a0)
+; RV64I-MEDIUM-NEXT:    lw zero, %pcrel_lo(.Lpcrel_hi25)(a0)
 ; RV64I-MEDIUM-NEXT:    #NO_APP
 ; RV64I-MEDIUM-NEXT:    ret
 entry:
