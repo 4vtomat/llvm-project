@@ -63,11 +63,11 @@ private:
 
   bool recognizeAndTransformByteCompare();
   Value *expandFindMismatch(IRBuilder<> &Builder, GetElementPtrInst *GEPA,
-                            GetElementPtrInst *GEPB, Value *Start,
-                            Value *MaxLen);
+                            GetElementPtrInst *GEPB, Instruction *Index,
+                            Value *Start, Value *MaxLen);
   void transformByteCompare(GetElementPtrInst *GEPA, GetElementPtrInst *GEPB,
-                            Value *MaxLen, Value *Index, Value *Start,
-                            bool IncIdx, BasicBlock *FoundBB,
+                            PHINode *IndPhi, Value *MaxLen, Instruction *Index,
+                            Value *Start, bool IncIdx, BasicBlock *FoundBB,
                             BasicBlock *EndBB);
 
   /// @}
@@ -289,20 +289,57 @@ bool RISCVLoopIdiomRecognize::recognizeAndTransformByteCompare() {
   if (IdxA != IdxB || !match(IdxA, m_ZExt(m_Specific(Index))))
     return false;
 
+  // We only ever expect the pre-incremented index value to be used inside the
+  // loop.
+  if (!PN->hasOneUse())
+    return false;
+
+  // Ensure that when the Found and End blocks are identical the PHIs have the
+  // supported format. We don't currently allow cases like this:
+  // while.cond:
+  //   ...
+  //   br i1 %cmp.not, label %while.end, label %while.body
+  //
+  // while.body:
+  //   ...
+  //   br i1 %cmp.not2, label %while.cond, label %while.end
+  //
+  // while.end:
+  //   %final_ptr = phi ptr [ %c, %while.body ], [ %d, %while.cond ]
+  //
+  // Where the incoming values for %final_ptr are unique and from each of the
+  // loop blocks, but not actually defined in the loop. This requires extra
+  // work setting up the byte.compare block, i.e. by introducing a select to
+  // choose the correct value.
+  // TODO: We could add support for this in future.
+  if (FoundBB == EndBB) {
+    for (PHINode &EndPN : EndBB->phis()) {
+      Value *WhileCondVal = EndPN.getIncomingValueForBlock(Header);
+      Value *WhileBodyVal = EndPN.getIncomingValueForBlock(WhileBB);
+
+      // The value of the index when leaving the while.cond block is always the
+      // same as the end value (MaxLen) so we permit either. Otherwise for any
+      // other value defined outside the loop we only allow values that are the
+      // same as the exit value for while.body.
+      if (WhileCondVal != WhileBodyVal &&
+           ((WhileCondVal != Index && WhileCondVal != MaxLen) ||
+            (WhileBodyVal != Index && WhileBodyVal != MaxLen)))
+        return false;
+    }
+  }
+
   LLVM_DEBUG(dbgs() << "FOUND IDIOM IN LOOP: \n"
                     << *(EndBB->getParent()) << "\n\n");
-  transformByteCompare(GEPA, GEPB, MaxLen, Index, StartIdx, true, FoundBB,
+  transformByteCompare(GEPA, GEPB, PN, MaxLen, Index, StartIdx, true, FoundBB,
                        EndBB);
   LLVM_DEBUG(dbgs() << "AFTER IDIOM TRANSFORMATION: \n"
                     << *(EndBB->getParent()) << "\n\n");
   return true;
 }
 
-Value *RISCVLoopIdiomRecognize::expandFindMismatch(IRBuilder<> &Builder,
-                                                   GetElementPtrInst *GEPA,
-                                                   GetElementPtrInst *GEPB,
-                                                   Value *Start,
-                                                   Value *MaxLen) {
+Value *RISCVLoopIdiomRecognize::expandFindMismatch(
+    IRBuilder<> &Builder, GetElementPtrInst *GEPA, GetElementPtrInst *GEPB,
+    Instruction *Index, Value *Start, Value *MaxLen) {
   Value *PtrA = GEPA->getPointerOperand();
   Value *PtrB = GEPB->getPointerOperand();
 
@@ -581,7 +618,9 @@ Value *RISCVLoopIdiomRecognize::expandFindMismatch(IRBuilder<> &Builder,
   Builder.Insert(MatchCmpBr);
   // Have we reached the maximum permitted length for the loop?
   Builder.SetInsertPoint(LoopIncBlock);
-  Value *PhiInc = Builder.CreateAdd(IndexPhi, ConstantInt::get(ResType, 1));
+  Value *PhiInc = Builder.CreateAdd(IndexPhi, ConstantInt::get(ResType, 1), "",
+                                    /*HasNUW=*/Index->hasNoUnsignedWrap(),
+                                    /*HasNSW=*/Index->hasNoSignedWrap());
   IndexPhi->addIncoming(PhiInc, LoopIncBlock);
   Value *IVCmp = Builder.CreateICmpEQ(IndexPhi, MaxLen);
   auto *IVCmpBr = BranchInst::Create(EndBlock, LoopStartBlock, IVCmp);
@@ -608,12 +647,10 @@ Value *RISCVLoopIdiomRecognize::expandFindMismatch(IRBuilder<> &Builder,
   return Builder.CreateTrunc(ResPhi, ResType);
 }
 
-void RISCVLoopIdiomRecognize::transformByteCompare(GetElementPtrInst *GEPA,
-                                                   GetElementPtrInst *GEPB,
-                                                   Value *MaxLen, Value *Index,
-                                                   Value *Start, bool IncIdx,
-                                                   BasicBlock *FoundBB,
-                                                   BasicBlock *EndBB) {
+void RISCVLoopIdiomRecognize::transformByteCompare(
+    GetElementPtrInst *GEPA, GetElementPtrInst *GEPB, PHINode *IndPhi,
+    Value *MaxLen, Instruction *Index, Value *Start, bool IncIdx,
+    BasicBlock *FoundBB, BasicBlock *EndBB) {
 
   // Insert the byte compare intrinsic at the end of the preheader block
   BasicBlock *Preheader = CurLoop->getLoopPreheader();
@@ -626,12 +663,11 @@ void RISCVLoopIdiomRecognize::transformByteCompare(GetElementPtrInst *GEPA,
   if (IncIdx)
     Start = Builder.CreateAdd(Start, ConstantInt::get(Start->getType(), 1));
 
-  Value *ByteCmpRes = expandFindMismatch(Builder, GEPA, GEPB, Start, MaxLen);
+  Value *ByteCmpRes =
+      expandFindMismatch(Builder, GEPA, GEPB, Index, Start, MaxLen);
 
-  // Replaces uses of index & induction Phi with intrinsic (we already
-  // checked that the the first instruction of Header is the Phi above).
-  Value *IndPhi = &Header->front();
-  IndPhi->replaceAllUsesWith(ByteCmpRes);
+  // Replaces uses of index with intrinsic.
+  assert(IndPhi->hasOneUse() && "Index phi node has more than one use!");
   Index->replaceAllUsesWith(ByteCmpRes);
 
   // If no mismatch was found, we can jump to the end block. Create a
