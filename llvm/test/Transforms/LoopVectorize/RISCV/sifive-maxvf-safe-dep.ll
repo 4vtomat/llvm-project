@@ -12,7 +12,7 @@ define void @foo(ptr %a, ptr %b, i32 %N) {
 ; CHECK:       for.body.preheader:
 ; CHECK-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
 ; CHECK-NEXT:    [[TMP0:%.*]] = add nsw i64 [[WIDE_TRIP_COUNT]], -4
-; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_MEMCHECK:%.*]]
+; CHECK-NEXT:    br label [[VECTOR_MEMCHECK:%.*]]
 ; CHECK:       vector.memcheck:
 ; CHECK-NEXT:    [[TMP1:%.*]] = shl nuw nsw i64 [[WIDE_TRIP_COUNT]], 2
 ; CHECK-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP1]]
@@ -21,7 +21,7 @@ define void @foo(ptr %a, ptr %b, i32 %N) {
 ; CHECK-NEXT:    [[BOUND0:%.*]] = icmp ult ptr [[B]], [[SCEVGEP2]]
 ; CHECK-NEXT:    [[BOUND1:%.*]] = icmp ult ptr [[SCEVGEP1]], [[SCEVGEP]]
 ; CHECK-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
-; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
+; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[IND_END:%.*]] = add i64 4, [[TMP0]]
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
@@ -37,22 +37,22 @@ define void @foo(ptr %a, ptr %b, i32 %N) {
 ; CHECK-NEXT:    [[TMP8:%.*]] = add nsw i64 [[TMP7]], -4
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[TMP8]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds float, ptr [[TMP9]], i32 0
-; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 1 x float> @llvm.vp.load.nxv1f32.p0(ptr align 4 [[TMP10]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP6]]), !alias.scope !0, !noalias !3
+; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 1 x float> @llvm.vp.load.nxv1f32.p0(ptr align 4 [[TMP10]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP6]]), !alias.scope [[META0:![0-9]+]], !noalias [[META3:![0-9]+]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds float, ptr [[TMP11]], i32 0
-; CHECK-NEXT:    [[VP_OP_LOAD3:%.*]] = call <vscale x 1 x float> @llvm.vp.load.nxv1f32.p0(ptr align 4 [[TMP12]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP6]]), !alias.scope !3
+; CHECK-NEXT:    [[VP_OP_LOAD3:%.*]] = call <vscale x 1 x float> @llvm.vp.load.nxv1f32.p0(ptr align 4 [[TMP12]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP6]]), !alias.scope [[META3]]
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[VP_OP_LOAD]], <vscale x 1 x float> [[VP_OP_LOAD3]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP6]])
 ; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds float, ptr [[TMP13]], i32 0
-; CHECK-NEXT:    call void @llvm.vp.store.nxv1f32.p0(<vscale x 1 x float> [[VP_OP]], ptr align 4 [[TMP14]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP6]]), !alias.scope !0, !noalias !3
+; CHECK-NEXT:    call void @llvm.vp.store.nxv1f32.p0(<vscale x 1 x float> [[VP_OP]], ptr align 4 [[TMP14]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP6]]), !alias.scope [[META0]], !noalias [[META3]]
 ; CHECK-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP6]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP15]]
 ; CHECK-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP0]]
 ; CHECK-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ 4, [[FOR_BODY_PREHEADER]] ], [ 4, [[VECTOR_MEMCHECK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 4, [[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP]]

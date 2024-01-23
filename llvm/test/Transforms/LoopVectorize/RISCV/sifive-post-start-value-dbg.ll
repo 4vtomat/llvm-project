@@ -132,10 +132,10 @@ define dso_local signext i16 @foo(i16* nocapture readonly %ptr, i32 signext %sta
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP18:%.*]] = trunc i32 [[START]] to i16, !dbg [[DBG10]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP19:%.*]] = add i16 [[TMP18]], [[TMP17]], !dbg [[DBG10]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP20:%.*]] = zext i16 [[TMP19]] to i32, !dbg [[DBG10]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br i1 true, label [[WHILE_END_LOOPEXIT:%.*]], label [[SCALAR_PH]], !dbg [[DBG10]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br label [[WHILE_END_LOOPEXIT:%.*]], !dbg [[DBG10]]
 ; IGNORE-INTERLEAVE-FOR-VLA:       scalar.ph:
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[TMP0]], [[MIDDLE_BLOCK]] ], [ 0, [[WHILE_BODY_PREHEADER]] ]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[START]], [[WHILE_BODY_PREHEADER]] ], [ [[TMP20]], [[MIDDLE_BLOCK]] ]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[WHILE_BODY_PREHEADER]] ]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[START]], [[WHILE_BODY_PREHEADER]] ]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br label [[WHILE_BODY:%.*]], !dbg [[DBG10]]
 ; IGNORE-INTERLEAVE-FOR-VLA:       while.body:
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[WHILE_BODY]] ]

@@ -146,10 +146,10 @@ define i32 @FmoGetLastCodedMBOfSliceGroup(i32 %SliceGroupID, ptr %MBAmap, i32 %P
 ; VP-SCALABLE-NEXT:    [[TMP20:%.*]] = call i32 @llvm.vp.reduce.smax.nxv4i32(i32 -2147483648, <vscale x 4 x i32> [[VP_OP_MERGE]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP19]])
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i32 [[TMP20]], -2147483648
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i32 [[TMP20]], i32 -1
-; VP-SCALABLE-NEXT:    br i1 true, label [[FOR_END_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; VP-SCALABLE-NEXT:    br label [[FOR_END_LOOPEXIT:%.*]]
 ; VP-SCALABLE:       scalar.ph:
-; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_LR_PH]] ]
-; VP-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ -1, [[FOR_BODY_LR_PH]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
+; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_LR_PH]] ]
+; VP-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ -1, [[FOR_BODY_LR_PH]] ]
 ; VP-SCALABLE-NEXT:    br label [[FOR_BODY:%.*]]
 ; VP-SCALABLE:       for.body:
 ; VP-SCALABLE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]

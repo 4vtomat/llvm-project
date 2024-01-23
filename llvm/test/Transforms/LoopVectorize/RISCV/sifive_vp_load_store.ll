@@ -22,9 +22,9 @@ define void @test() {
 ; SCALABLE-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], 7
 ; SCALABLE-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; SCALABLE:       middle.block:
-; SCALABLE-NEXT:    br i1 true, label [[FOR_COND_PREHEADER:%.*]], label [[SCALAR_PH]]
+; SCALABLE-NEXT:    br label [[FOR_COND_PREHEADER:%.*]]
 ; SCALABLE:       scalar.ph:
-; SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 7, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; SCALABLE-NEXT:    br label [[FOR_BODY_I:%.*]]
 ; SCALABLE:       for.body.i:
 ; SCALABLE-NEXT:    [[INDVARS_IV_I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT_I:%.*]], [[FOR_BODY_I]] ]

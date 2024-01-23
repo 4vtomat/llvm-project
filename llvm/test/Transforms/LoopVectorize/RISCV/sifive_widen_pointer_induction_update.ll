@@ -65,11 +65,11 @@ define void @widen_pointer_induction_update() {
 ; CHECK-NEXT:    [[TMP32:%.*]] = sub i32 [[PREV_RVL]], 1
 ; CHECK-NEXT:    [[VECTOR_RECUR_PREV_EXTRACT:%.*]] = extractelement <vscale x 2 x i32> [[VECTOR_RECUR]], i32 [[TMP32]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = select i1 [[TMP31]], i32 [[VECTOR_RECUR_PREV_EXTRACT]], i32 [[VECTOR_RECUR_EXTRACT_FOR_PHI]]
-; CHECK-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_END:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i32 [ [[DOTPRE]], [[ENTRY:%.*]] ], [ [[VECTOR_RECUR_EXTRACT]], [[MIDDLE_BLOCK]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, [[MIDDLE_BLOCK]] ], [ 396, [[ENTRY]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL1:%.*]] = phi ptr [ getelementptr (i8, ptr @state, i64 1584), [[MIDDLE_BLOCK]] ], [ @state, [[ENTRY]] ]
+; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i32 [ [[DOTPRE]], [[ENTRY:%.*]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 396, [[ENTRY]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL1:%.*]] = phi ptr [ @state, [[ENTRY]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[SCALAR_RECUR:%.*]] = phi i32 [ [[SCALAR_RECUR_INIT]], [[SCALAR_PH]] ], [ [[TMP36:%.*]], [[FOR_BODY]] ]

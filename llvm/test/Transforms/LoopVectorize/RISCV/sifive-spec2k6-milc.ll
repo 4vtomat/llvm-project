@@ -13,7 +13,7 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; PROFITABLE-LABEL: define void @eo_fermion_force
 ; PROFITABLE-SAME: (ptr [[A:%.*]], ptr [[B:%.*]], double [[S:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
 ; PROFITABLE-NEXT:  entry:
-; PROFITABLE-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_SCEVCHECK:%.*]]
+; PROFITABLE-NEXT:    br label [[VECTOR_SCEVCHECK:%.*]]
 ; PROFITABLE:       vector.scevcheck:
 ; PROFITABLE-NEXT:    [[TMP0:%.*]] = add i64 [[N]], -1
 ; PROFITABLE-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[A]], i64 40
@@ -68,7 +68,7 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; PROFITABLE-NEXT:    [[TMP27:%.*]] = or i1 [[TMP26]], [[TMP16]]
 ; PROFITABLE-NEXT:    [[TMP28:%.*]] = or i1 [[TMP27]], [[TMP20]]
 ; PROFITABLE-NEXT:    [[TMP29:%.*]] = or i1 [[TMP28]], [[TMP24]]
-; PROFITABLE-NEXT:    br i1 [[TMP29]], label [[SCALAR_PH]], label [[VECTOR_MEMCHECK:%.*]]
+; PROFITABLE-NEXT:    br i1 [[TMP29]], label [[SCALAR_PH:%.*]], label [[VECTOR_MEMCHECK:%.*]]
 ; PROFITABLE:       vector.memcheck:
 ; PROFITABLE-NEXT:    [[TMP30:%.*]] = mul i64 [[N]], 48
 ; PROFITABLE-NEXT:    [[SCEVGEP20:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP30]]
@@ -132,9 +132,9 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; PROFITABLE-NEXT:    [[TMP58:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
 ; PROFITABLE-NEXT:    br i1 [[TMP58]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; PROFITABLE:       middle.block:
-; PROFITABLE-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; PROFITABLE-NEXT:    br label [[EXIT:%.*]]
 ; PROFITABLE:       scalar.ph:
-; PROFITABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ], [ 0, [[VECTOR_SCEVCHECK]] ], [ 0, [[VECTOR_MEMCHECK]] ]
+; PROFITABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ], [ 0, [[VECTOR_MEMCHECK]] ]
 ; PROFITABLE-NEXT:    br label [[LOOP:%.*]]
 ; PROFITABLE:       loop:
 ; PROFITABLE-NEXT:    [[COUNTER:%.*]] = phi i64 [ [[COUNTER_NEXT:%.*]], [[LOOP]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]

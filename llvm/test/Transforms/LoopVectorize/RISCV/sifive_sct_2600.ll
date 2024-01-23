@@ -12,7 +12,7 @@ define void @_ZN5clang22MicrosoftVTableContext31computeVTableRelatedInformationE
 ; CHECK-NEXT:    [[TMP1:%.*]] = ptrtoint ptr [[TMP0]] to i64
 ; CHECK-NEXT:    [[TMP2:%.*]] = lshr i64 [[TMP1]], 4
 ; CHECK-NEXT:    [[TMP3:%.*]] = add nuw nsw i64 [[TMP2]], 1
-; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_MEMCHECK:%.*]]
+; CHECK-NEXT:    br label [[VECTOR_MEMCHECK:%.*]]
 ; CHECK:       vector.memcheck:
 ; CHECK-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[TMP0]], i64 8
 ; CHECK-NEXT:    [[TMP4:%.*]] = lshr i64 [[TMP1]], 4
@@ -22,7 +22,7 @@ define void @_ZN5clang22MicrosoftVTableContext31computeVTableRelatedInformationE
 ; CHECK-NEXT:    [[BOUND0:%.*]] = icmp ult ptr [[TMP0]], [[SCEVGEP1]]
 ; CHECK-NEXT:    [[BOUND1:%.*]] = icmp ult ptr inttoptr (i64 8 to ptr), [[SCEVGEP]]
 ; CHECK-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
-; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
+; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[TMP3]], 16
 ; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr null, i64 [[TMP7]]
@@ -49,15 +49,15 @@ define void @_ZN5clang22MicrosoftVTableContext31computeVTableRelatedInformationE
 ; CHECK-NEXT:    [[VP_OP_ICMP2:%.*]] = call <vscale x 1 x i1> @llvm.vp.icmp.nxv1i64(<vscale x 1 x i64> [[TMP18]], <vscale x 1 x i64> zeroinitializer, metadata !"eq", <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP11]])
 ; CHECK-NEXT:    [[VP_WIDEN_SELECT:%.*]] = call <vscale x 1 x i1> @llvm.vp.select.nxv1i1(<vscale x 1 x i1> [[VP_OP_ICMP]], <vscale x 1 x i1> [[VP_OP_ICMP2]], <vscale x 1 x i1> zeroinitializer, i32 [[TMP11]])
 ; CHECK-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 1 x i1> @llvm.vp.xor.nxv1i1(<vscale x 1 x i1> [[VP_WIDEN_SELECT]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP11]])
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv1p0.nxv1p0(<vscale x 1 x ptr> zeroinitializer, <vscale x 1 x ptr> align 8 [[BROADCAST_SPLAT]], <vscale x 1 x i1> [[PRED_NOT]], i32 [[TMP11]]), !alias.scope !0, !noalias !3
+; CHECK-NEXT:    call void @llvm.vp.scatter.nxv1p0.nxv1p0(<vscale x 1 x ptr> zeroinitializer, <vscale x 1 x ptr> align 8 [[BROADCAST_SPLAT]], <vscale x 1 x i1> [[PRED_NOT]], i32 [[TMP11]]), !alias.scope [[META0:![0-9]+]], !noalias [[META3:![0-9]+]]
 ; CHECK-NEXT:    [[TMP19:%.*]] = zext i32 [[TMP11]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP19]]
 ; CHECK-NEXT:    [[TMP20:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP3]]
 ; CHECK-NEXT:    br i1 [[TMP20]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_I_I_I_I_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_I_I_I_I_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ null, [[ENTRY:%.*]] ], [ null, [[VECTOR_MEMCHECK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ null, [[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY_I_I_I_I:%.*]]
 ; CHECK:       for.cond.cleanup.i.i.i.i.loopexit:
 ; CHECK-NEXT:    ret void

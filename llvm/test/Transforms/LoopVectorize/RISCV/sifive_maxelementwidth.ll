@@ -32,9 +32,9 @@ define void @foo(i64* %x, i64 %n, i64 %y) {
 ; V-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
 ; V-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; V:       middle.block:
-; V-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; V-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; V:       scalar.ph:
-; V-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; V-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; V-NEXT:    br label [[FOR_BODY:%.*]]
 ; V:       for.cond.cleanup.loopexit:
 ; V-NEXT:    br label [[FOR_COND_CLEANUP]]

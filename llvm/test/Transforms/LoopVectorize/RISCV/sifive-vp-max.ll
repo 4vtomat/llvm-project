@@ -40,10 +40,10 @@ define i64 @test_smin(i32 %n, i64 %s, ptr noundef %a) {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP11:%.*]] = trunc i64 [[TMP1]] to i32
 ; CHECK-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vp.reduce.smin.nxv1i64(i64 9223372036854775807, <vscale x 1 x i64> [[VP_OP_MERGE]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP11]])
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[S]], [[FOR_BODY_PREHEADER]] ], [ [[TMP12]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[S]], [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[DOTLCSSA:%.*]] = phi i64 [ [[TMP14:%.*]], [[FOR_BODY]] ], [ [[TMP12]], [[MIDDLE_BLOCK]] ]
@@ -118,10 +118,10 @@ define i64 @test_smax(i32 %n, i64 %s, ptr noundef %a) {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP11:%.*]] = trunc i64 [[TMP1]] to i32
 ; CHECK-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vp.reduce.smax.nxv1i64(i64 -9223372036854775808, <vscale x 1 x i64> [[VP_OP_MERGE]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP11]])
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[S]], [[FOR_BODY_PREHEADER]] ], [ [[TMP12]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[S]], [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[DOTLCSSA:%.*]] = phi i64 [ [[TMP14:%.*]], [[FOR_BODY]] ], [ [[TMP12]], [[MIDDLE_BLOCK]] ]
@@ -196,10 +196,10 @@ define i64 @test_umin(i32 %n, i64 %s, ptr noundef %a) {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP11:%.*]] = trunc i64 [[TMP1]] to i32
 ; CHECK-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vp.reduce.umin.nxv1i64(i64 -1, <vscale x 1 x i64> [[VP_OP_MERGE]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP11]])
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[S]], [[FOR_BODY_PREHEADER]] ], [ [[TMP12]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[S]], [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[DOTLCSSA:%.*]] = phi i64 [ [[TMP14:%.*]], [[FOR_BODY]] ], [ [[TMP12]], [[MIDDLE_BLOCK]] ]
@@ -274,10 +274,10 @@ define i64 @test_umax(i32 %n, i64 %s, ptr noundef %a) {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP11:%.*]] = trunc i64 [[TMP1]] to i32
 ; CHECK-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vp.reduce.umax.nxv1i64(i64 0, <vscale x 1 x i64> [[VP_OP_MERGE]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP11]])
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[S]], [[FOR_BODY_PREHEADER]] ], [ [[TMP12]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[S]], [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[DOTLCSSA:%.*]] = phi i64 [ [[TMP14:%.*]], [[FOR_BODY]] ], [ [[TMP12]], [[MIDDLE_BLOCK]] ]

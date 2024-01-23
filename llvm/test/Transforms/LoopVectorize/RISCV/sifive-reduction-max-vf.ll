@@ -27,10 +27,10 @@ define void @test() {
 ; CHECK-NEXT:    [[TMP8:%.*]] = trunc i64 [[TMP1]] to i32
 ; CHECK-NEXT:    [[TMP9:%.*]] = call reassoc double @llvm.vp.reduce.fadd.nxv8f64(double -0.000000e+00, <vscale x 8 x double> [[VP_OP_MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP8]])
 ; CHECK-NEXT:    [[TMP10:%.*]] = fadd reassoc double 0.000000e+00, [[TMP9]]
-; CHECK-NEXT:    br i1 true, label [[FOR_END277_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_END277_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY264_PREHEADER:%.*]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi double [ 0.000000e+00, [[FOR_BODY264_PREHEADER]] ], [ [[TMP10]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY264_PREHEADER:%.*]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi double [ 0.000000e+00, [[FOR_BODY264_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY264:%.*]]
 ; CHECK:       for.body264:
 ; CHECK-NEXT:    [[INDVARS_IV914:%.*]] = phi i64 [ [[INDVARS_IV_NEXT915:%.*]], [[FOR_BODY264]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
@@ -66,10 +66,10 @@ define void @test() {
 ; CHECK-NO-POSTSV:       middle.block:
 ; CHECK-NO-POSTSV-NEXT:    [[TMP8:%.*]] = trunc i64 [[TMP1]] to i32
 ; CHECK-NO-POSTSV-NEXT:    [[TMP9:%.*]] = call reassoc double @llvm.vp.reduce.fadd.nxv8f64(double -0.000000e+00, <vscale x 8 x double> [[VP_OP_MERGE]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP8]])
-; CHECK-NO-POSTSV-NEXT:    br i1 true, label [[FOR_END277_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NO-POSTSV-NEXT:    br label [[FOR_END277_LOOPEXIT:%.*]]
 ; CHECK-NO-POSTSV:       scalar.ph:
-; CHECK-NO-POSTSV-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY264_PREHEADER:%.*]] ]
-; CHECK-NO-POSTSV-NEXT:    [[BC_MERGE_RDX:%.*]] = phi double [ 0.000000e+00, [[FOR_BODY264_PREHEADER]] ], [ [[TMP9]], [[MIDDLE_BLOCK]] ]
+; CHECK-NO-POSTSV-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY264_PREHEADER:%.*]] ]
+; CHECK-NO-POSTSV-NEXT:    [[BC_MERGE_RDX:%.*]] = phi double [ 0.000000e+00, [[FOR_BODY264_PREHEADER]] ]
 ; CHECK-NO-POSTSV-NEXT:    br label [[FOR_BODY264:%.*]]
 ; CHECK-NO-POSTSV:       for.body264:
 ; CHECK-NO-POSTSV-NEXT:    [[INDVARS_IV914:%.*]] = phi i64 [ [[INDVARS_IV_NEXT915:%.*]], [[FOR_BODY264]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]

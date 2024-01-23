@@ -32,10 +32,10 @@ define float @fadd(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-ORDERED-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
 ; CHECK-ORDERED-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-ORDERED:       middle.block:
-; CHECK-ORDERED-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[SCALAR_PH]]
+; CHECK-ORDERED-NEXT:    br label [[FOR_END:%.*]]
 ; CHECK-ORDERED:       scalar.ph:
-; CHECK-ORDERED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
-; CHECK-ORDERED-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ 0.000000e+00, [[ENTRY]] ], [ [[TMP8]], [[MIDDLE_BLOCK]] ]
+; CHECK-ORDERED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
+; CHECK-ORDERED-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ 0.000000e+00, [[ENTRY]] ]
 ; CHECK-ORDERED-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-ORDERED:       for.body:
 ; CHECK-ORDERED-NEXT:    [[IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]

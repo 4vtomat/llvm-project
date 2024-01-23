@@ -42,10 +42,10 @@ define i32 @foo(i32 %n, ptr %a) {
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP2]] to i32
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP12]])
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[TMP14:%.*]] = add i32 0, [[TMP13]]
-; CHECK-HAS-PROF-RTCHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-HAS-PROF-RTCHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK-HAS-PROF-RTCHECK:       scalar.ph:
-; CHECK-HAS-PROF-RTCHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
-; CHECK-HAS-PROF-RTCHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[TMP14]], [[MIDDLE_BLOCK]] ]
+; CHECK-HAS-PROF-RTCHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-HAS-PROF-RTCHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-HAS-PROF-RTCHECK:       for.cond.cleanup.loopexit:
 ; CHECK-HAS-PROF-RTCHECK-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[TMP14]], [[MIDDLE_BLOCK]] ]
@@ -96,10 +96,10 @@ define i32 @foo(i32 %n, ptr %a) {
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[TMP11:%.*]] = trunc i64 [[TMP1]] to i32
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[TMP12:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP11]])
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[TMP13:%.*]] = add i32 0, [[TMP12]]
-; CHECK-NO-PROF-RTCHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NO-PROF-RTCHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK-NO-PROF-RTCHECK:       scalar.ph:
-; CHECK-NO-PROF-RTCHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
-; CHECK-NO-PROF-RTCHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[TMP13]], [[MIDDLE_BLOCK]] ]
+; CHECK-NO-PROF-RTCHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-NO-PROF-RTCHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NO-PROF-RTCHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-NO-PROF-RTCHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NO-PROF-RTCHECK-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[TMP13]], [[MIDDLE_BLOCK]] ]

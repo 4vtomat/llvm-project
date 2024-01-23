@@ -18,9 +18,9 @@ define void @test() {
 ; CHECK-NEXT:    [[TMP3:%.*]] = icmp eq i32 [[INDEX_NEXT]], 100
 ; CHECK-NEXT:    br i1 [[TMP3]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    br i1 true, label [[FINISH_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FINISH_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 100, [[MIDDLE_BLOCK]] ], [ 0, [[WHILE_BODY380_PREHEADER:%.*]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, [[WHILE_BODY380_PREHEADER:%.*]] ]
 ; CHECK-NEXT:    br label [[WHILE_BODY380:%.*]]
 ; CHECK:       while.body380:
 ; CHECK-NEXT:    [[LEN_4735:%.*]] = phi i32 [ [[DEC378:%.*]], [[WHILE_BODY380]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]

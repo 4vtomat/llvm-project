@@ -115,10 +115,10 @@ define i64 @select_icmp_const_1(ptr nocapture readonly %a, i64 %n) #0 {
 ; VP-SCALABLE-NEXT:    [[TMP21:%.*]] = call i64 @llvm.vp.reduce.smax.nxv2i64(i64 -9223372036854775808, <vscale x 2 x i64> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP20]])
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP21]], -9223372036854775808
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP21]], i64 3
-; VP-SCALABLE-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; VP-SCALABLE-NEXT:    br label [[EXIT:%.*]]
 ; VP-SCALABLE:       scalar.ph:
-; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
-; VP-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ 3, [[ENTRY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
+; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
+; VP-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ 3, [[ENTRY]] ]
 ; VP-SCALABLE-NEXT:    br label [[FOR_BODY:%.*]]
 ; VP-SCALABLE:       for.body:
 ; VP-SCALABLE-NEXT:    [[I_010:%.*]] = phi i64 [ [[INC:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
@@ -263,10 +263,10 @@ define i64 @select_icmp_const_2(ptr nocapture readonly %a, i64 %n) #0 {
 ; VP-SCALABLE-NEXT:    [[TMP21:%.*]] = call i64 @llvm.vp.reduce.smax.nxv2i64(i64 -9223372036854775808, <vscale x 2 x i64> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP20]])
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP21]], -9223372036854775808
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP21]], i64 3
-; VP-SCALABLE-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; VP-SCALABLE-NEXT:    br label [[EXIT:%.*]]
 ; VP-SCALABLE:       scalar.ph:
-; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
-; VP-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ 3, [[ENTRY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
+; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
+; VP-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ 3, [[ENTRY]] ]
 ; VP-SCALABLE-NEXT:    br label [[FOR_BODY:%.*]]
 ; VP-SCALABLE:       for.body:
 ; VP-SCALABLE-NEXT:    [[I_010:%.*]] = phi i64 [ [[INC:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
@@ -411,10 +411,10 @@ define i64 @select_icmp_const_3(ptr nocapture readonly %a, i64 %ii, i64 %n) #0 {
 ; VP-SCALABLE-NEXT:    [[TMP21:%.*]] = call i64 @llvm.vp.reduce.smax.nxv2i64(i64 -9223372036854775808, <vscale x 2 x i64> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP20]])
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP21]], -9223372036854775808
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP21]], i64 [[II]]
-; VP-SCALABLE-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; VP-SCALABLE-NEXT:    br label [[EXIT:%.*]]
 ; VP-SCALABLE:       scalar.ph:
-; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
-; VP-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[II]], [[ENTRY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
+; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
+; VP-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[II]], [[ENTRY]] ]
 ; VP-SCALABLE-NEXT:    br label [[FOR_BODY:%.*]]
 ; VP-SCALABLE:       for.body:
 ; VP-SCALABLE-NEXT:    [[I_010:%.*]] = phi i64 [ [[INC:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
@@ -559,10 +559,10 @@ define i64 @select_fcmp_const_fast(ptr nocapture readonly %a, i64 %n) #0 {
 ; VP-SCALABLE-NEXT:    [[TMP21:%.*]] = call i64 @llvm.vp.reduce.smax.nxv2i64(i64 -9223372036854775808, <vscale x 2 x i64> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP20]])
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP21]], -9223372036854775808
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP21]], i64 2
-; VP-SCALABLE-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; VP-SCALABLE-NEXT:    br label [[EXIT:%.*]]
 ; VP-SCALABLE:       scalar.ph:
-; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
-; VP-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ 2, [[ENTRY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
+; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
+; VP-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ 2, [[ENTRY]] ]
 ; VP-SCALABLE-NEXT:    br label [[FOR_BODY:%.*]]
 ; VP-SCALABLE:       for.body:
 ; VP-SCALABLE-NEXT:    [[I_010:%.*]] = phi i64 [ [[INC:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
@@ -707,10 +707,10 @@ define i64 @select_fcmp_const(ptr nocapture readonly %a, i64 %n) #0 {
 ; VP-SCALABLE-NEXT:    [[TMP21:%.*]] = call i64 @llvm.vp.reduce.smax.nxv2i64(i64 -9223372036854775808, <vscale x 2 x i64> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP20]])
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP21]], -9223372036854775808
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP21]], i64 2
-; VP-SCALABLE-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; VP-SCALABLE-NEXT:    br label [[EXIT:%.*]]
 ; VP-SCALABLE:       scalar.ph:
-; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
-; VP-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ 2, [[ENTRY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
+; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
+; VP-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ 2, [[ENTRY]] ]
 ; VP-SCALABLE-NEXT:    br label [[FOR_BODY:%.*]]
 ; VP-SCALABLE:       for.body:
 ; VP-SCALABLE-NEXT:    [[I_010:%.*]] = phi i64 [ [[INC:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
@@ -863,10 +863,10 @@ define i64 @select_icmp(ptr nocapture readonly %a, ptr nocapture readonly %b, i6
 ; VP-SCALABLE-NEXT:    [[TMP23:%.*]] = call i64 @llvm.vp.reduce.smax.nxv2i64(i64 -9223372036854775808, <vscale x 2 x i64> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP22]])
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP23]], -9223372036854775808
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP23]], i64 [[II]]
-; VP-SCALABLE-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; VP-SCALABLE-NEXT:    br label [[EXIT:%.*]]
 ; VP-SCALABLE:       scalar.ph:
-; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
-; VP-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[II]], [[ENTRY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
+; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
+; VP-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[II]], [[ENTRY]] ]
 ; VP-SCALABLE-NEXT:    br label [[FOR_BODY:%.*]]
 ; VP-SCALABLE:       for.body:
 ; VP-SCALABLE-NEXT:    [[I_010:%.*]] = phi i64 [ [[INC:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
@@ -1023,10 +1023,10 @@ define i64 @select_fcmp(ptr nocapture readonly %a, ptr nocapture readonly %b, i6
 ; VP-SCALABLE-NEXT:    [[TMP23:%.*]] = call i64 @llvm.vp.reduce.smax.nxv2i64(i64 -9223372036854775808, <vscale x 2 x i64> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP22]])
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP23]], -9223372036854775808
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP23]], i64 [[II]]
-; VP-SCALABLE-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; VP-SCALABLE-NEXT:    br label [[EXIT:%.*]]
 ; VP-SCALABLE:       scalar.ph:
-; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
-; VP-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[II]], [[ENTRY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
+; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
+; VP-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[II]], [[ENTRY]] ]
 ; VP-SCALABLE-NEXT:    br label [[FOR_BODY:%.*]]
 ; VP-SCALABLE:       for.body:
 ; VP-SCALABLE-NEXT:    [[I_010:%.*]] = phi i64 [ [[INC:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
@@ -1188,11 +1188,11 @@ define i64 @select_icmp_min_iv_start_value(ptr nocapture readonly %a, ptr nocapt
 ; VP-SCALABLE-NEXT:    [[TMP23:%.*]] = call i64 @llvm.vp.reduce.smax.nxv2i64(i64 -9223372036854775808, <vscale x 2 x i64> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP22]])
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i64 [[TMP23]], -9223372036854775808
 ; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i64 [[TMP23]], i64 [[II]]
-; VP-SCALABLE-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; VP-SCALABLE-NEXT:    br label [[EXIT:%.*]]
 ; VP-SCALABLE:       scalar.ph:
-; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ -9223372036854775807, [[ENTRY:%.*]] ]
-; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL1:%.*]] = phi i64 [ [[N]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ]
-; VP-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[II]], [[ENTRY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
+; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ -9223372036854775807, [[ENTRY:%.*]] ]
+; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL1:%.*]] = phi i64 [ 0, [[ENTRY]] ]
+; VP-SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i64 [ [[II]], [[ENTRY]] ]
 ; VP-SCALABLE-NEXT:    br label [[FOR_BODY:%.*]]
 ; VP-SCALABLE:       for.body:
 ; VP-SCALABLE-NEXT:    [[J_012:%.*]] = phi i64 [ [[INC3:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]

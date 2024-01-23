@@ -27,9 +27,9 @@ define void @test(ptr %A) {
 ; VL0-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1000
 ; VL0-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; VL0:       middle.block:
-; VL0-NEXT:    br i1 true, label [[FOR_COND_CLEANUP:%.*]], label [[SCALAR_PH]]
+; VL0-NEXT:    br label [[FOR_COND_CLEANUP:%.*]]
 ; VL0:       scalar.ph:
-; VL0-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1000, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; VL0-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; VL0-NEXT:    br label [[FOR_BODY:%.*]]
 ; VL0:       for.cond.cleanup:
 ; VL0-NEXT:    ret void
@@ -66,9 +66,9 @@ define void @test(ptr %A) {
 ; VL1-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1000
 ; VL1-NEXT:    br i1 [[TMP9]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; VL1:       middle.block:
-; VL1-NEXT:    br i1 true, label [[FOR_COND_CLEANUP:%.*]], label [[SCALAR_PH]]
+; VL1-NEXT:    br label [[FOR_COND_CLEANUP:%.*]]
 ; VL1:       scalar.ph:
-; VL1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1000, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; VL1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; VL1-NEXT:    br label [[FOR_BODY:%.*]]
 ; VL1:       for.cond.cleanup:
 ; VL1-NEXT:    ret void
@@ -105,9 +105,9 @@ define void @test(ptr %A) {
 ; VL4-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1000
 ; VL4-NEXT:    br i1 [[TMP9]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; VL4:       middle.block:
-; VL4-NEXT:    br i1 true, label [[FOR_COND_CLEANUP:%.*]], label [[SCALAR_PH]]
+; VL4-NEXT:    br label [[FOR_COND_CLEANUP:%.*]]
 ; VL4:       scalar.ph:
-; VL4-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1000, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; VL4-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; VL4-NEXT:    br label [[FOR_BODY:%.*]]
 ; VL4:       for.cond.cleanup:
 ; VL4-NEXT:    ret void

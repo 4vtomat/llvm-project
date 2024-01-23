@@ -71,11 +71,11 @@ define void @Ppmd8_EncodeSymbol(ptr %p, i8 %0) {
 ; CHECK-NEXT:    [[TMP25:%.*]] = sub i32 [[PREV_RVL]], 1
 ; CHECK-NEXT:    [[VECTOR_RECUR_PREV_EXTRACT:%.*]] = extractelement <vscale x 8 x i32> [[VECTOR_RECUR]], i32 [[TMP25]]
 ; CHECK-NEXT:    [[TMP26:%.*]] = select i1 [[TMP24]], i32 [[VECTOR_RECUR_PREV_EXTRACT]], i32 [[VECTOR_RECUR_EXTRACT_FOR_PHI]]
-; CHECK-NEXT:    br i1 true, label [[DO_END234:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[DO_END234:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i32 [ 0, [[DO_BODY220_PREHEADER]] ], [ [[VECTOR_RECUR_EXTRACT]], [[MIDDLE_BLOCK]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ [[S180_06_LCSSA]], [[DO_BODY220_PREHEADER]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL5:%.*]] = phi i32 [ [[IND_END4]], [[MIDDLE_BLOCK]] ], [ [[I182_0_LCSSA]], [[DO_BODY220_PREHEADER]] ]
+; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i32 [ 0, [[DO_BODY220_PREHEADER]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[S180_06_LCSSA]], [[DO_BODY220_PREHEADER]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL5:%.*]] = phi i32 [ [[I182_0_LCSSA]], [[DO_BODY220_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[DO_BODY220:%.*]]
 ; CHECK:       do.body220:
 ; CHECK-NEXT:    [[S180_1:%.*]] = phi ptr [ [[INCDEC_PTR230:%.*]], [[DO_BODY220]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]

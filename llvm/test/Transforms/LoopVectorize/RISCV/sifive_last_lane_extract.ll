@@ -54,9 +54,9 @@ define ptr @Perl_newSV(ptr %call.i) {
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    [[TMP24:%.*]] = sub i32 [[TMP9]], 1
 ; CHECK-NEXT:    [[TMP25:%.*]] = extractelement <vscale x 2 x ptr> [[TMP21]], i32 [[TMP24]]
-; CHECK-NEXT:    br i1 true, label [[PERL_SV_ADD_ARENA_EXIT14_I:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[PERL_SV_ADD_ARENA_EXIT14_I:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 265, [[MIDDLE_BLOCK]] ], [ 1, [[IF_ELSE_I:%.*]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1, [[IF_ELSE_I:%.*]] ]
 ; CHECK-NEXT:    br label [[WHILE_BODY_I11_I:%.*]]
 ; CHECK:       while.body.i11.i:
 ; CHECK-NEXT:    [[SV_026_I6_IDX_I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[SV_026_I6_ADD_I_10:%.*]], [[WHILE_BODY_I11_I]] ]

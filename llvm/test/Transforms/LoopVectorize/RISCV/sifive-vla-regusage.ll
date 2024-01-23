@@ -7,7 +7,7 @@
 define void @convert_to_ssa(ptr %0, ptr %elms.i159, ptr %1) {
 ; CHECK-LABEL: @convert_to_ssa(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_MEMCHECK:%.*]]
+; CHECK-NEXT:    br label [[VECTOR_MEMCHECK:%.*]]
 ; CHECK:       vector.memcheck:
 ; CHECK-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[TMP1:%.*]], i64 48
 ; CHECK-NEXT:    [[SCEVGEP1:%.*]] = getelementptr i8, ptr [[TMP1]], i64 274877906944
@@ -24,7 +24,7 @@ define void @convert_to_ssa(ptr %0, ptr %elms.i159, ptr %1) {
 ; CHECK-NEXT:    [[BOUND18:%.*]] = icmp ult ptr inttoptr (i64 56 to ptr), [[SCEVGEP1]]
 ; CHECK-NEXT:    [[FOUND_CONFLICT9:%.*]] = and i1 [[BOUND07]], [[BOUND18]]
 ; CHECK-NEXT:    [[CONFLICT_RDX10:%.*]] = or i1 [[CONFLICT_RDX]], [[FOUND_CONFLICT9]]
-; CHECK-NEXT:    br i1 [[CONFLICT_RDX10]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
+; CHECK-NEXT:    br i1 [[CONFLICT_RDX10]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[TMP0]], i64 274877906944
 ; CHECK-NEXT:    [[IND_END12:%.*]] = getelementptr i8, ptr [[TMP1]], i64 274877906944
@@ -67,21 +67,21 @@ define void @convert_to_ssa(ptr %0, ptr %elms.i159, ptr %1) {
 ; CHECK-NEXT:    [[VP_STRIDED_LOAD:%.*]] = call <vscale x 8 x i64> @llvm.experimental.vp.strided.load.nxv8i64.p0.i64(ptr align 8 [[TMP22]], i64 64, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP10]])
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i64> @llvm.vp.and.nxv8i64(<vscale x 8 x i64> [[VP_GATHER18]], <vscale x 8 x i64> [[VP_STRIDED_LOAD]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP10]])
 ; CHECK-NEXT:    [[VP_OP19:%.*]] = call <vscale x 8 x i64> @llvm.vp.or.nxv8i64(<vscale x 8 x i64> [[VP_OP]], <vscale x 8 x i64> [[VP_GATHER]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP10]])
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv8i64.p0.i64(<vscale x 8 x i64> [[VP_OP19]], ptr align 8 [[TMP19]], i64 64, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP10]]), !alias.scope !0, !noalias !3
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv8i64.p0.i64(<vscale x 8 x i64> [[VP_OP19]], ptr align 8 [[TMP19]], i64 64, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP10]]), !alias.scope [[META0:![0-9]+]], !noalias [[META3:![0-9]+]]
 ; CHECK-NEXT:    [[VP_STRIDED_LOAD20:%.*]] = call <vscale x 8 x i64> @llvm.experimental.vp.strided.load.nxv8i64.p0.i64(ptr align 8 [[TMP21]], i64 64, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP10]])
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv8i64.p0.i64(<vscale x 8 x i64> [[VP_STRIDED_LOAD20]], ptr align 8 [[TMP20]], i64 64, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP10]]), !alias.scope !0, !noalias !3
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv8i64.p0.i64(<vscale x 8 x i64> [[VP_STRIDED_LOAD20]], ptr align 8 [[TMP20]], i64 64, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP10]]), !alias.scope [[META0]], !noalias [[META3]]
 ; CHECK-NEXT:    [[TMP23:%.*]] = zext i32 [[TMP10]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP23]]
 ; CHECK-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP13]]
 ; CHECK-NEXT:    [[TMP24:%.*]] = icmp eq i64 [[INDEX_NEXT]], 4294967296
 ; CHECK-NEXT:    br i1 [[TMP24]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    br i1 true, label [[FOR_END_LOOPEXIT_UNR_LCSSA_I177_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_END_LOOPEXIT_UNR_LCSSA_I177_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ [[TMP0]], [[ENTRY:%.*]] ], [ [[TMP0]], [[VECTOR_MEMCHECK]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL11:%.*]] = phi ptr [ getelementptr (i8, ptr null, i64 274877906944), [[MIDDLE_BLOCK]] ], [ null, [[ENTRY]] ], [ null, [[VECTOR_MEMCHECK]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL13:%.*]] = phi ptr [ [[IND_END12]], [[MIDDLE_BLOCK]] ], [ [[TMP1]], [[ENTRY]] ], [ [[TMP1]], [[VECTOR_MEMCHECK]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL14:%.*]] = phi i32 [ 0, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY]] ], [ 0, [[VECTOR_MEMCHECK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[TMP0]], [[VECTOR_MEMCHECK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL11:%.*]] = phi ptr [ null, [[VECTOR_MEMCHECK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL13:%.*]] = phi ptr [ [[TMP1]], [[VECTOR_MEMCHECK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL14:%.*]] = phi i32 [ 0, [[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY_I172:%.*]]
 ; CHECK:       for.body.i172:
 ; CHECK-NEXT:    [[CP_010_I:%.*]] = phi ptr [ [[INCDEC_PTR8_7_I:%.*]], [[FOR_BODY_I172]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]

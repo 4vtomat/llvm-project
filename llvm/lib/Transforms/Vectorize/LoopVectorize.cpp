@@ -3643,8 +3643,17 @@ void InnerLoopVectorizer::createVectorLoopSkeleton(StringRef Prefix) {
   BranchInst *BrInst =
       Cost->requiresScalarEpilogue(VF.isVector())
           ? BranchInst::Create(LoopScalarPreHeader)
+#if SIFIVE_CUSTOMIZATION
+      // Use unconditional branch for tail-folding cases to remove dependency
+      // between scalar loop and vector loop
+      : useVLAVectorizer() && Cost->foldTailByMasking()
+          ? BranchInst::Create(LoopExitBlock)
           : BranchInst::Create(LoopExitBlock, LoopScalarPreHeader,
                                Builder.getTrue());
+#else
+          : BranchInst::Create(LoopExitBlock, LoopScalarPreHeader,
+                               Builder.getTrue());
+#endif // SIFIVE_CUSTOMIZATION
   BrInst->setDebugLoc(ScalarLatchTerm->getDebugLoc());
   ReplaceInstWithInst(LoopMiddleBlock->getTerminator(), BrInst);
 
@@ -3697,6 +3706,13 @@ PHINode *InnerLoopVectorizer::createInductionResumeValue(
       EndValueFromAdditionalBypass->setName("ind.end");
     }
   }
+#if SIFIVE_CUSTOMIZATION
+  // Do not need to create resume value values if tails are folded
+  // and BypassBlocks are zero
+  if (useVLAVectorizer() && !Cost->requiresScalarEpilogue(VF.isVector()) &&
+      Cost->foldTailByMasking() && !BypassBlocks.size())
+    return nullptr;
+#endif // SIFIVE_CUSTOMIZATION
 
   // Create phi nodes to merge from the  backedge-taken check block.
   PHINode *BCResumeVal = PHINode::Create(OrigPhi->getType(), 3, "bc.resume.val",
@@ -3704,6 +3720,11 @@ PHINode *InnerLoopVectorizer::createInductionResumeValue(
   // Copy original phi DL over to the new one.
   BCResumeVal->setDebugLoc(OrigPhi->getDebugLoc());
 
+#if SIFIVE_CUSTOMIZATION
+  // Merge values coming from middle block for non-tail-folding cases.
+  if (!useVLAVectorizer() || Cost->requiresScalarEpilogue(VF.isVector()) ||
+      !Cost->foldTailByMasking())
+#endif // SIFIVE_CUSTOMIZATION
   // The new PHI merges the original incoming value, in case of a bypass,
   // or the value at the end of the vectorized loop.
   BCResumeVal->addIncoming(EndValue, LoopMiddleBlock);
@@ -3753,6 +3774,10 @@ void InnerLoopVectorizer::createInductionResumeValues(
     PHINode *BCResumeVal = createInductionResumeValue(
         OrigPhi, II, getExpandedStep(II, ExpandedSCEVs), LoopBypassBlocks,
         AdditionalBypass);
+#if SIFIVE_CUSTOMIZATION
+    // It can be nullptr for tail-folding cases
+    if (BCResumeVal)
+#endif // SIFIVE_CUSTOMIZATION
     OrigPhi->setIncomingValueForBlock(LoopScalarPreHeader, BCResumeVal);
   }
 }
@@ -3855,6 +3880,9 @@ InnerLoopVectorizer::createVectorizedLoopSkeleton(
   // to an incorrect trip count of zero. In this (rare) case we will also jump
   // to the scalar loop.
   emitIterationCountCheck(LoopScalarPreHeader);
+#if SIFIVE_CUSTOMIZATION
+  size_t PrevTCCheckBlockID = LoopBypassBlocks.size() - 1;
+#endif // SIFIVE_CUSTOMIZATION
 
   // Generate the code to check any assumptions that we've made for SCEV
   // expressions.
@@ -3866,8 +3894,30 @@ InnerLoopVectorizer::createVectorizedLoopSkeleton(
   // Generate the code that checks in runtime if arrays overlap. We put the
   // checks into a separate block to make the more common case of few elements
   // faster.
+#if SIFIVE_CUSTOMIZATION
+  BasicBlock *PrevMemCheckBlock =
+#endif // SIFIVE_CUSTOMIZATION
   emitMemRuntimeChecks(LoopScalarPreHeader);
 
+#if SIFIVE_CUSTOMIZATION
+  if (useVLAVectorizer() && (PrevSCEVCheckBlock || PrevMemCheckBlock)) {
+    // Make unconditional branch for TCCheckBlock
+    // if the condition is known to be false and there are other checkblocks
+    // then LoopScalarPreHeader is still reachable from other checkblocks
+    BasicBlock *PrevTCCheckBlock = LoopBypassBlocks[PrevTCCheckBlockID];
+    BranchInst *OrigBr = cast<BranchInst>(PrevTCCheckBlock->getTerminator());
+    ConstantInt *Cond = dyn_cast<ConstantInt>(OrigBr->getCondition());
+    if (Cond && Cond->isZero()) {
+      BasicBlock *Succ = OrigBr->getSuccessor(1);
+      BranchInst *Br = BranchInst::Create(Succ);
+      ReplaceInstWithInst(OrigBr, Br);
+      LoopBypassBlocks.erase(LoopBypassBlocks.begin() + PrevTCCheckBlockID);
+      DT->changeImmediateDominator(LoopScalarPreHeader, Succ);
+      if (!Cost->requiresScalarEpilogue(VF.isVector()))
+        DT->changeImmediateDominator(LoopExitBlock, Succ);
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
   // Emit phis for the new starting index of the scalar loop.
   createInductionResumeValues(ExpandedSCEVs);
 

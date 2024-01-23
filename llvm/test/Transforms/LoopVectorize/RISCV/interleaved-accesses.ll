@@ -95,9 +95,9 @@ define void @load_store_factor2_i32(ptr %p) {
 ; CHECK-VLA-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; CHECK-VLA-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-VLA:       middle.block:
-; CHECK-VLA-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-VLA-NEXT:    br label [[EXIT:%.*]]
 ; CHECK-VLA:       scalar.ph:
-; CHECK-VLA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-VLA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-VLA-NEXT:    br label [[LOOP:%.*]]
 ; CHECK-VLA:       loop:
 ; CHECK-VLA-NEXT:    [[I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
@@ -150,9 +150,9 @@ define void @load_store_factor2_i32(ptr %p) {
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; CHECK-VLA-MAX-LMUL-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-VLA-MAX-LMUL:       middle.block:
-; CHECK-VLA-MAX-LMUL-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-VLA-MAX-LMUL-NEXT:    br label [[EXIT:%.*]]
 ; CHECK-VLA-MAX-LMUL:       scalar.ph:
-; CHECK-VLA-MAX-LMUL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-VLA-MAX-LMUL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-VLA-MAX-LMUL-NEXT:    br label [[LOOP:%.*]]
 ; CHECK-VLA-MAX-LMUL:       loop:
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
@@ -288,9 +288,9 @@ define void @load_store_factor2_i64(ptr %p) {
 ; CHECK-VLA-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; CHECK-VLA-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK-VLA:       middle.block:
-; CHECK-VLA-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-VLA-NEXT:    br label [[EXIT:%.*]]
 ; CHECK-VLA:       scalar.ph:
-; CHECK-VLA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-VLA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-VLA-NEXT:    br label [[LOOP:%.*]]
 ; CHECK-VLA:       loop:
 ; CHECK-VLA-NEXT:    [[I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
@@ -343,9 +343,9 @@ define void @load_store_factor2_i64(ptr %p) {
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; CHECK-VLA-MAX-LMUL-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK-VLA-MAX-LMUL:       middle.block:
-; CHECK-VLA-MAX-LMUL-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-VLA-MAX-LMUL-NEXT:    br label [[EXIT:%.*]]
 ; CHECK-VLA-MAX-LMUL:       scalar.ph:
-; CHECK-VLA-MAX-LMUL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-VLA-MAX-LMUL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-VLA-MAX-LMUL-NEXT:    br label [[LOOP:%.*]]
 ; CHECK-VLA-MAX-LMUL:       loop:
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
@@ -484,9 +484,9 @@ define void @load_store_factor3_i32(ptr %p) {
 ; CHECK-VLA-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; CHECK-VLA-NEXT:    br i1 [[TMP18]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CHECK-VLA:       middle.block:
-; CHECK-VLA-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-VLA-NEXT:    br label [[EXIT:%.*]]
 ; CHECK-VLA:       scalar.ph:
-; CHECK-VLA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-VLA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-VLA-NEXT:    br label [[LOOP:%.*]]
 ; CHECK-VLA:       loop:
 ; CHECK-VLA-NEXT:    [[I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
@@ -547,9 +547,9 @@ define void @load_store_factor3_i32(ptr %p) {
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; CHECK-VLA-MAX-LMUL-NEXT:    br i1 [[TMP18]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CHECK-VLA-MAX-LMUL:       middle.block:
-; CHECK-VLA-MAX-LMUL-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-VLA-MAX-LMUL-NEXT:    br label [[EXIT:%.*]]
 ; CHECK-VLA-MAX-LMUL:       scalar.ph:
-; CHECK-VLA-MAX-LMUL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-VLA-MAX-LMUL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-VLA-MAX-LMUL-NEXT:    br label [[LOOP:%.*]]
 ; CHECK-VLA-MAX-LMUL:       loop:
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
@@ -715,9 +715,9 @@ define void @load_store_factor3_i64(ptr %p) {
 ; CHECK-VLA-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; CHECK-VLA-NEXT:    br i1 [[TMP18]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; CHECK-VLA:       middle.block:
-; CHECK-VLA-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-VLA-NEXT:    br label [[EXIT:%.*]]
 ; CHECK-VLA:       scalar.ph:
-; CHECK-VLA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-VLA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-VLA-NEXT:    br label [[LOOP:%.*]]
 ; CHECK-VLA:       loop:
 ; CHECK-VLA-NEXT:    [[I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
@@ -778,9 +778,9 @@ define void @load_store_factor3_i64(ptr %p) {
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; CHECK-VLA-MAX-LMUL-NEXT:    br i1 [[TMP18]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; CHECK-VLA-MAX-LMUL:       middle.block:
-; CHECK-VLA-MAX-LMUL-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-VLA-MAX-LMUL-NEXT:    br label [[EXIT:%.*]]
 ; CHECK-VLA-MAX-LMUL:       scalar.ph:
-; CHECK-VLA-MAX-LMUL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-VLA-MAX-LMUL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-VLA-MAX-LMUL-NEXT:    br label [[LOOP:%.*]]
 ; CHECK-VLA-MAX-LMUL:       loop:
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
@@ -1011,9 +1011,9 @@ define void @load_store_factor8(ptr %p) {
 ; CHECK-VLA-NEXT:    [[TMP28:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; CHECK-VLA-NEXT:    br i1 [[TMP28]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; CHECK-VLA:       middle.block:
-; CHECK-VLA-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-VLA-NEXT:    br label [[EXIT:%.*]]
 ; CHECK-VLA:       scalar.ph:
-; CHECK-VLA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-VLA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-VLA-NEXT:    br label [[LOOP:%.*]]
 ; CHECK-VLA:       loop:
 ; CHECK-VLA-NEXT:    [[I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
@@ -1114,9 +1114,9 @@ define void @load_store_factor8(ptr %p) {
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP28:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; CHECK-VLA-MAX-LMUL-NEXT:    br i1 [[TMP28]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; CHECK-VLA-MAX-LMUL:       middle.block:
-; CHECK-VLA-MAX-LMUL-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-VLA-MAX-LMUL-NEXT:    br label [[EXIT:%.*]]
 ; CHECK-VLA-MAX-LMUL:       scalar.ph:
-; CHECK-VLA-MAX-LMUL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-VLA-MAX-LMUL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-VLA-MAX-LMUL-NEXT:    br label [[LOOP:%.*]]
 ; CHECK-VLA-MAX-LMUL:       loop:
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
@@ -1310,9 +1310,9 @@ define void @combine_load_factor2_i32(ptr noalias %p, ptr noalias %q) {
 ; CHECK-VLA-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; CHECK-VLA-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; CHECK-VLA:       middle.block:
-; CHECK-VLA-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-VLA-NEXT:    br label [[EXIT:%.*]]
 ; CHECK-VLA:       scalar.ph:
-; CHECK-VLA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-VLA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-VLA-NEXT:    br label [[LOOP:%.*]]
 ; CHECK-VLA:       loop:
 ; CHECK-VLA-NEXT:    [[I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
@@ -1360,9 +1360,9 @@ define void @combine_load_factor2_i32(ptr noalias %p, ptr noalias %q) {
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; CHECK-VLA-MAX-LMUL-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; CHECK-VLA-MAX-LMUL:       middle.block:
-; CHECK-VLA-MAX-LMUL-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-VLA-MAX-LMUL-NEXT:    br label [[EXIT:%.*]]
 ; CHECK-VLA-MAX-LMUL:       scalar.ph:
-; CHECK-VLA-MAX-LMUL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-VLA-MAX-LMUL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-VLA-MAX-LMUL-NEXT:    br label [[LOOP:%.*]]
 ; CHECK-VLA-MAX-LMUL:       loop:
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
@@ -1491,9 +1491,9 @@ define void @combine_load_factor2_i64(ptr noalias %p, ptr noalias %q) {
 ; CHECK-VLA-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; CHECK-VLA-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
 ; CHECK-VLA:       middle.block:
-; CHECK-VLA-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-VLA-NEXT:    br label [[EXIT:%.*]]
 ; CHECK-VLA:       scalar.ph:
-; CHECK-VLA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-VLA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-VLA-NEXT:    br label [[LOOP:%.*]]
 ; CHECK-VLA:       loop:
 ; CHECK-VLA-NEXT:    [[I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
@@ -1541,9 +1541,9 @@ define void @combine_load_factor2_i64(ptr noalias %p, ptr noalias %q) {
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
 ; CHECK-VLA-MAX-LMUL-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
 ; CHECK-VLA-MAX-LMUL:       middle.block:
-; CHECK-VLA-MAX-LMUL-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-VLA-MAX-LMUL-NEXT:    br label [[EXIT:%.*]]
 ; CHECK-VLA-MAX-LMUL:       scalar.ph:
-; CHECK-VLA-MAX-LMUL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; CHECK-VLA-MAX-LMUL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-VLA-MAX-LMUL-NEXT:    br label [[LOOP:%.*]]
 ; CHECK-VLA-MAX-LMUL:       loop:
 ; CHECK-VLA-MAX-LMUL-NEXT:    [[I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[NEXTI:%.*]], [[LOOP]] ]

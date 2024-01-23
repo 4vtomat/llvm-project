@@ -70,9 +70,9 @@ define i32 @simple_csa_int_select_TC78(ptr %data) {
 ; CHECK-NEXT:    [[CSA_EXTRACT:%.*]] = extractelement <vscale x 4 x i32> [[TMP23]], i32 [[TMP27]]
 ; CHECK-NEXT:    [[TMP28:%.*]] = icmp sge i32 [[TMP27]], 0
 ; CHECK-NEXT:    [[TMP29:%.*]] = select i1 [[TMP28]], i32 [[CSA_EXTRACT]], i32 -1
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 78, [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ], [ [[TMP29]], [[MIDDLE_BLOCK]] ]
@@ -254,9 +254,9 @@ define i32 @simple_csa_int_select_TCN(i32 %N, ptr %data) {
 ; CHECK-NEXT:    [[CSA_EXTRACT:%.*]] = extractelement <vscale x 8 x i32> [[TMP23]], i32 [[TMP27]]
 ; CHECK-NEXT:    [[TMP28:%.*]] = icmp sge i32 [[TMP27]], 0
 ; CHECK-NEXT:    [[TMP29:%.*]] = select i1 [[TMP28]], i32 [[CSA_EXTRACT]], i32 -1
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ], [ [[TMP29]], [[MIDDLE_BLOCK]] ]
@@ -375,9 +375,9 @@ define ptr @simple_csa_ptr_select(i32 %N, ptr %data) {
 ; CHECK-NEXT:    [[CSA_EXTRACT:%.*]] = extractelement <vscale x 4 x ptr> [[TMP23]], i32 [[TMP27]]
 ; CHECK-NEXT:    [[TMP28:%.*]] = icmp sge i32 [[TMP27]], 0
 ; CHECK-NEXT:    [[TMP29:%.*]] = select i1 [[TMP28]], ptr [[CSA_EXTRACT]], ptr null
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi ptr [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ], [ [[TMP29]], [[MIDDLE_BLOCK]] ]

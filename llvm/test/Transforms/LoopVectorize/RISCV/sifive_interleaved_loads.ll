@@ -48,10 +48,10 @@ define void @interleaved_load_factor_3(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP18:%.*]] = trunc i64 [[TMP2]] to i32
 ; CHECK-NEXT:    [[TMP19:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP18]])
 ; CHECK-NEXT:    [[TMP20:%.*]] = add i32 [[B_PROMOTED]], [[TMP19]]
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_LR_PH]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[B_PROMOTED]], [[FOR_BODY_LR_PH]] ], [ [[TMP20]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_LR_PH]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[B_PROMOTED]], [[FOR_BODY_LR_PH]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.for.cond.cleanup_crit_edge:
 ; CHECK-NEXT:    [[ADD13_LCSSA:%.*]] = phi i32 [ [[ADD13:%.*]], [[FOR_BODY]] ], [ [[TMP20]], [[MIDDLE_BLOCK]] ]
@@ -165,10 +165,10 @@ define void @interleaved_load_factor_4(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP19:%.*]] = trunc i64 [[TMP2]] to i32
 ; CHECK-NEXT:    [[TMP20:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP19]])
 ; CHECK-NEXT:    [[TMP21:%.*]] = add i32 [[B_PROMOTED]], [[TMP20]]
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_LR_PH]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[B_PROMOTED]], [[FOR_BODY_LR_PH]] ], [ [[TMP21]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_LR_PH]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[B_PROMOTED]], [[FOR_BODY_LR_PH]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.for.cond.cleanup_crit_edge:
 ; CHECK-NEXT:    [[ADD19_LCSSA:%.*]] = phi i32 [ [[ADD19:%.*]], [[FOR_BODY]] ], [ [[TMP21]], [[MIDDLE_BLOCK]] ]
@@ -292,10 +292,10 @@ define void @interleaved_load_factor_5(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP20:%.*]] = trunc i64 [[TMP2]] to i32
 ; CHECK-NEXT:    [[TMP21:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP20]])
 ; CHECK-NEXT:    [[TMP22:%.*]] = add i32 [[B_PROMOTED]], [[TMP21]]
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_LR_PH]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[B_PROMOTED]], [[FOR_BODY_LR_PH]] ], [ [[TMP22]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_LR_PH]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[B_PROMOTED]], [[FOR_BODY_LR_PH]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.for.cond.cleanup_crit_edge:
 ; CHECK-NEXT:    [[ADD25_LCSSA:%.*]] = phi i32 [ [[ADD25:%.*]], [[FOR_BODY]] ], [ [[TMP22]], [[MIDDLE_BLOCK]] ]
@@ -429,10 +429,10 @@ define void @interleaved_load_factor_6(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP21:%.*]] = trunc i64 [[TMP2]] to i32
 ; CHECK-NEXT:    [[TMP22:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP21]])
 ; CHECK-NEXT:    [[TMP23:%.*]] = add i32 [[B_PROMOTED]], [[TMP22]]
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_LR_PH]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[B_PROMOTED]], [[FOR_BODY_LR_PH]] ], [ [[TMP23]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_LR_PH]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[B_PROMOTED]], [[FOR_BODY_LR_PH]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.for.cond.cleanup_crit_edge:
 ; CHECK-NEXT:    [[ADD31_LCSSA:%.*]] = phi i32 [ [[ADD31:%.*]], [[FOR_BODY]] ], [ [[TMP23]], [[MIDDLE_BLOCK]] ]
@@ -576,10 +576,10 @@ define void @interleaved_load_factor_7(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP22:%.*]] = trunc i64 [[TMP2]] to i32
 ; CHECK-NEXT:    [[TMP23:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP22]])
 ; CHECK-NEXT:    [[TMP24:%.*]] = add i32 [[B_PROMOTED]], [[TMP23]]
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_LR_PH]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[B_PROMOTED]], [[FOR_BODY_LR_PH]] ], [ [[TMP24]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_LR_PH]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[B_PROMOTED]], [[FOR_BODY_LR_PH]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.for.cond.cleanup_crit_edge:
 ; CHECK-NEXT:    [[ADD37_LCSSA:%.*]] = phi i32 [ [[ADD37:%.*]], [[FOR_BODY]] ], [ [[TMP24]], [[MIDDLE_BLOCK]] ]
@@ -733,10 +733,10 @@ define void @interleaved_load_factor_8(i32 %n, ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP23:%.*]] = trunc i64 [[TMP2]] to i32
 ; CHECK-NEXT:    [[TMP24:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP23]])
 ; CHECK-NEXT:    [[TMP25:%.*]] = add i32 [[B_PROMOTED]], [[TMP24]]
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_FOR_COND_CLEANUP_CRIT_EDGE:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_LR_PH]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[B_PROMOTED]], [[FOR_BODY_LR_PH]] ], [ [[TMP25]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_LR_PH]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[B_PROMOTED]], [[FOR_BODY_LR_PH]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.for.cond.cleanup_crit_edge:
 ; CHECK-NEXT:    [[ADD43_LCSSA:%.*]] = phi i32 [ [[ADD43:%.*]], [[FOR_BODY]] ], [ [[TMP25]], [[MIDDLE_BLOCK]] ]

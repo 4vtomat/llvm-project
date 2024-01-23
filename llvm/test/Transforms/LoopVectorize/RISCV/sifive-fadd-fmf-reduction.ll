@@ -116,7 +116,7 @@ define float @fadd_fmf_reduction(float* noalias nocapture readonly %a, i64 %n, f
 ; CHECK-SCALABLE-NEXT:    br i1 [[TMP5]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-SCALABLE:       middle.block:
 ; CHECK-SCALABLE-NEXT:    [[TMP6:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float [[START:%.*]], <vscale x 2 x float> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP0]])
-; CHECK-SCALABLE-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[SCALAR_PH]]
+; CHECK-SCALABLE-NEXT:    br label [[FOR_END:%.*]]
 ; CHECK-SCALABLE:       scalar.ph:
 ; CHECK-SCALABLE-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-SCALABLE:       for.body:
@@ -155,7 +155,7 @@ define float @fadd_fmf_reduction(float* noalias nocapture readonly %a, i64 %n, f
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-SCALABLE-NO-POSTSV:       middle.block:
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    [[TMP7:%.*]] = call fast float @llvm.vp.reduce.fadd.nxv2f32(float -0.000000e+00, <vscale x 2 x float> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP0]])
-; CHECK-SCALABLE-NO-POSTSV-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[SCALAR_PH]]
+; CHECK-SCALABLE-NO-POSTSV-NEXT:    br label [[FOR_END:%.*]]
 ; CHECK-SCALABLE-NO-POSTSV:       scalar.ph:
 ; CHECK-SCALABLE-NO-POSTSV-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-SCALABLE-NO-POSTSV:       for.body:

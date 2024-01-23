@@ -71,9 +71,9 @@ define i32 @simple_csa_int_select(i32 %N, ptr %data) {
 ; CHECK-NEXT:    [[CSA_EXTRACT:%.*]] = extractelement <vscale x 2 x i32> [[TMP23]], i32 [[TMP27]]
 ; CHECK-NEXT:    [[TMP28:%.*]] = icmp sge i32 [[TMP27]], 0
 ; CHECK-NEXT:    [[TMP29:%.*]] = select i1 [[TMP28]], i32 [[CSA_EXTRACT]], i32 -1
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ], [ [[TMP29]], [[MIDDLE_BLOCK]] ]
@@ -151,9 +151,9 @@ define i32 @simple_csa_int_select(i32 %N, ptr %data) {
 ; DISABLE-RISCV-CSA-NEXT:    [[CSA_EXTRACT:%.*]] = extractelement <vscale x 2 x i32> [[CSA_DATA_SEL]], i32 [[TMP21]]
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP22:%.*]] = icmp sge i32 [[TMP21]], 0
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP23:%.*]] = select i1 [[TMP22]], i32 [[CSA_EXTRACT]], i32 -1
-; DISABLE-RISCV-CSA-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; DISABLE-RISCV-CSA-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; DISABLE-RISCV-CSA:       scalar.ph:
-; DISABLE-RISCV-CSA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; DISABLE-RISCV-CSA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; DISABLE-RISCV-CSA-NEXT:    br label [[FOR_BODY:%.*]]
 ; DISABLE-RISCV-CSA:       for.cond.cleanup.loopexit:
 ; DISABLE-RISCV-CSA-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ], [ [[TMP23]], [[MIDDLE_BLOCK]] ]
@@ -267,9 +267,9 @@ define float @simple_csa_float_select(i32 %N, ptr %data) {
 ; CHECK-NEXT:    [[CSA_EXTRACT:%.*]] = extractelement <vscale x 2 x float> [[TMP15]], i32 [[TMP19]]
 ; CHECK-NEXT:    [[TMP20:%.*]] = icmp sge i32 [[TMP19]], 0
 ; CHECK-NEXT:    [[TMP21:%.*]] = select i1 [[TMP20]], float [[CSA_EXTRACT]], float 1.000000e+00
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[T_1_LCSSA:%.*]] = phi float [ [[T_1:%.*]], [[FOR_BODY]] ], [ [[TMP21]], [[MIDDLE_BLOCK]] ]
@@ -330,9 +330,9 @@ define float @simple_csa_float_select(i32 %N, ptr %data) {
 ; DISABLE-RISCV-CSA-NEXT:    [[CSA_EXTRACT:%.*]] = extractelement <vscale x 2 x float> [[CSA_DATA_SEL]], i32 [[TMP13]]
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP14:%.*]] = icmp sge i32 [[TMP13]], 0
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP15:%.*]] = select i1 [[TMP14]], float [[CSA_EXTRACT]], float 1.000000e+00
-; DISABLE-RISCV-CSA-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; DISABLE-RISCV-CSA-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; DISABLE-RISCV-CSA:       scalar.ph:
-; DISABLE-RISCV-CSA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; DISABLE-RISCV-CSA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; DISABLE-RISCV-CSA-NEXT:    br label [[FOR_BODY:%.*]]
 ; DISABLE-RISCV-CSA:       for.cond.cleanup.loopexit:
 ; DISABLE-RISCV-CSA-NEXT:    [[T_1_LCSSA:%.*]] = phi float [ [[T_1:%.*]], [[FOR_BODY]] ], [ [[TMP15]], [[MIDDLE_BLOCK]] ]
@@ -682,9 +682,9 @@ define i32 @csa_in_series_int_select(i32 %N, ptr %data0, ptr %data1) {
 ; CHECK-NEXT:    [[CSA_EXTRACT:%.*]] = extractelement <vscale x 2 x i32> [[TMP23]], i32 [[TMP39]]
 ; CHECK-NEXT:    [[TMP40:%.*]] = icmp sge i32 [[TMP39]], 0
 ; CHECK-NEXT:    [[TMP41:%.*]] = select i1 [[TMP40]], i32 [[CSA_EXTRACT]], i32 -1
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ], [ [[TMP41]], [[MIDDLE_BLOCK]] ]
@@ -788,9 +788,9 @@ define i32 @csa_in_series_int_select(i32 %N, ptr %data0, ptr %data1) {
 ; DISABLE-RISCV-CSA-NEXT:    [[CSA_EXTRACT:%.*]] = extractelement <vscale x 2 x i32> [[CSA_DATA_SEL]], i32 [[TMP27]]
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP28:%.*]] = icmp sge i32 [[TMP27]], 0
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP29:%.*]] = select i1 [[TMP28]], i32 [[CSA_EXTRACT]], i32 -1
-; DISABLE-RISCV-CSA-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; DISABLE-RISCV-CSA-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; DISABLE-RISCV-CSA:       scalar.ph:
-; DISABLE-RISCV-CSA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; DISABLE-RISCV-CSA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; DISABLE-RISCV-CSA-NEXT:    br label [[FOR_BODY:%.*]]
 ; DISABLE-RISCV-CSA:       for.cond.cleanup.loopexit:
 ; DISABLE-RISCV-CSA-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ], [ [[TMP29]], [[MIDDLE_BLOCK]] ]
@@ -940,9 +940,9 @@ define float @csa_in_series_float_select(i32 %N, ptr %data0, ptr %data1) {
 ; CHECK-NEXT:    [[CSA_EXTRACT:%.*]] = extractelement <vscale x 2 x float> [[TMP15]], i32 [[TMP31]]
 ; CHECK-NEXT:    [[TMP32:%.*]] = icmp sge i32 [[TMP31]], 0
 ; CHECK-NEXT:    [[TMP33:%.*]] = select i1 [[TMP32]], float [[CSA_EXTRACT]], float 1.000000e+00
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[T_1_LCSSA:%.*]] = phi float [ [[T_1:%.*]], [[FOR_BODY]] ], [ [[TMP33]], [[MIDDLE_BLOCK]] ]
@@ -1027,9 +1027,9 @@ define float @csa_in_series_float_select(i32 %N, ptr %data0, ptr %data1) {
 ; DISABLE-RISCV-CSA-NEXT:    [[CSA_EXTRACT:%.*]] = extractelement <vscale x 2 x float> [[CSA_DATA_SEL]], i32 [[TMP19]]
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP20:%.*]] = icmp sge i32 [[TMP19]], 0
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP21:%.*]] = select i1 [[TMP20]], float [[CSA_EXTRACT]], float 1.000000e+00
-; DISABLE-RISCV-CSA-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; DISABLE-RISCV-CSA-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; DISABLE-RISCV-CSA:       scalar.ph:
-; DISABLE-RISCV-CSA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; DISABLE-RISCV-CSA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; DISABLE-RISCV-CSA-NEXT:    br label [[FOR_BODY:%.*]]
 ; DISABLE-RISCV-CSA:       for.cond.cleanup.loopexit:
 ; DISABLE-RISCV-CSA-NEXT:    [[T_1_LCSSA:%.*]] = phi float [ [[T_1:%.*]], [[FOR_BODY]] ], [ [[TMP21]], [[MIDDLE_BLOCK]] ]
@@ -2734,9 +2734,9 @@ define i64 @idx_scalar(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT:    [[CSA_EXTRACT:%.*]] = extractelement <vscale x 1 x i64> [[TMP24]], i32 [[TMP28]]
 ; CHECK-NEXT:    [[TMP29:%.*]] = icmp sge i32 [[TMP28]], 0
 ; CHECK-NEXT:    [[TMP30:%.*]] = select i1 [[TMP29]], i64 [[CSA_EXTRACT]], i64 [[II:%.*]]
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND:%.*]], [[FOR_BODY]] ], [ [[TMP30]], [[MIDDLE_BLOCK]] ]
@@ -2815,9 +2815,9 @@ define i64 @idx_scalar(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; DISABLE-RISCV-CSA-NEXT:    [[CSA_EXTRACT:%.*]] = extractelement <vscale x 1 x i64> [[CSA_DATA_SEL]], i32 [[TMP22]]
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP23:%.*]] = icmp sge i32 [[TMP22]], 0
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP24:%.*]] = select i1 [[TMP23]], i64 [[CSA_EXTRACT]], i64 [[II:%.*]]
-; DISABLE-RISCV-CSA-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; DISABLE-RISCV-CSA-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; DISABLE-RISCV-CSA:       scalar.ph:
-; DISABLE-RISCV-CSA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; DISABLE-RISCV-CSA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; DISABLE-RISCV-CSA-NEXT:    br label [[FOR_BODY:%.*]]
 ; DISABLE-RISCV-CSA:       for.cond.cleanup.loopexit:
 ; DISABLE-RISCV-CSA-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND:%.*]], [[FOR_BODY]] ], [ [[TMP24]], [[MIDDLE_BLOCK]] ]
@@ -2961,9 +2961,9 @@ define dso_local i64 @idx_scalar_dec(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT:    [[CSA_EXTRACT:%.*]] = extractelement <vscale x 1 x i64> [[TMP34]], i32 [[TMP38]]
 ; CHECK-NEXT:    [[TMP39:%.*]] = icmp sge i32 [[TMP38]], 0
 ; CHECK-NEXT:    [[TMP40:%.*]] = select i1 [[TMP39]], i64 [[CSA_EXTRACT]], i64 [[II:%.*]]
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ [[N]], [[FOR_BODY_PREHEADER]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N]], [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND:%.*]], [[FOR_BODY]] ], [ [[TMP40]], [[MIDDLE_BLOCK]] ]
@@ -3056,9 +3056,9 @@ define dso_local i64 @idx_scalar_dec(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; DISABLE-RISCV-CSA-NEXT:    [[CSA_EXTRACT:%.*]] = extractelement <vscale x 1 x i64> [[CSA_DATA_SEL]], i32 [[TMP32]]
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP33:%.*]] = icmp sge i32 [[TMP32]], 0
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP34:%.*]] = select i1 [[TMP33]], i64 [[CSA_EXTRACT]], i64 [[II:%.*]]
-; DISABLE-RISCV-CSA-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; DISABLE-RISCV-CSA-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; DISABLE-RISCV-CSA:       scalar.ph:
-; DISABLE-RISCV-CSA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ [[N]], [[FOR_BODY_PREHEADER]] ]
+; DISABLE-RISCV-CSA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N]], [[FOR_BODY_PREHEADER]] ]
 ; DISABLE-RISCV-CSA-NEXT:    br label [[FOR_BODY:%.*]]
 ; DISABLE-RISCV-CSA:       for.cond.cleanup.loopexit:
 ; DISABLE-RISCV-CSA-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND:%.*]], [[FOR_BODY]] ], [ [[TMP34]], [[MIDDLE_BLOCK]] ]
@@ -3180,9 +3180,9 @@ define i32 @simple_csa_int_select_neg_cond(i32 %N, ptr %data) {
 ; CHECK-NEXT:    [[CSA_EXTRACT:%.*]] = extractelement <vscale x 2 x i32> [[TMP23]], i32 [[TMP27]]
 ; CHECK-NEXT:    [[TMP28:%.*]] = icmp sge i32 [[TMP27]], 0
 ; CHECK-NEXT:    [[TMP29:%.*]] = select i1 [[TMP28]], i32 [[CSA_EXTRACT]], i32 0
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ], [ [[TMP29]], [[MIDDLE_BLOCK]] ]
@@ -3261,9 +3261,9 @@ define i32 @simple_csa_int_select_neg_cond(i32 %N, ptr %data) {
 ; DISABLE-RISCV-CSA-NEXT:    [[CSA_EXTRACT:%.*]] = extractelement <vscale x 2 x i32> [[CSA_DATA_SEL]], i32 [[TMP21]]
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP22:%.*]] = icmp sge i32 [[TMP21]], 0
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP23:%.*]] = select i1 [[TMP22]], i32 [[CSA_EXTRACT]], i32 0
-; DISABLE-RISCV-CSA-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; DISABLE-RISCV-CSA-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; DISABLE-RISCV-CSA:       scalar.ph:
-; DISABLE-RISCV-CSA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; DISABLE-RISCV-CSA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; DISABLE-RISCV-CSA-NEXT:    br label [[FOR_BODY:%.*]]
 ; DISABLE-RISCV-CSA:       for.cond.cleanup.loopexit:
 ; DISABLE-RISCV-CSA-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ], [ [[TMP23]], [[MIDDLE_BLOCK]] ]
@@ -3381,9 +3381,9 @@ define ptr @simple_csa_ptr_select(i32 %N, ptr %data) {
 ; CHECK-NEXT:    [[CSA_EXTRACT:%.*]] = extractelement <vscale x 1 x ptr> [[TMP22]], i32 [[TMP26]]
 ; CHECK-NEXT:    [[TMP27:%.*]] = icmp sge i32 [[TMP26]], 0
 ; CHECK-NEXT:    [[TMP28:%.*]] = select i1 [[TMP27]], ptr [[CSA_EXTRACT]], ptr null
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi ptr [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ], [ [[TMP28]], [[MIDDLE_BLOCK]] ]
@@ -3462,9 +3462,9 @@ define ptr @simple_csa_ptr_select(i32 %N, ptr %data) {
 ; DISABLE-RISCV-CSA-NEXT:    [[CSA_EXTRACT:%.*]] = extractelement <vscale x 1 x ptr> [[CSA_DATA_SEL]], i32 [[TMP20]]
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP21:%.*]] = icmp sge i32 [[TMP20]], 0
 ; DISABLE-RISCV-CSA-NEXT:    [[TMP22:%.*]] = select i1 [[TMP21]], ptr [[CSA_EXTRACT]], ptr null
-; DISABLE-RISCV-CSA-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; DISABLE-RISCV-CSA-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; DISABLE-RISCV-CSA:       scalar.ph:
-; DISABLE-RISCV-CSA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[WIDE_TRIP_COUNT]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; DISABLE-RISCV-CSA-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
 ; DISABLE-RISCV-CSA-NEXT:    br label [[FOR_BODY:%.*]]
 ; DISABLE-RISCV-CSA:       for.cond.cleanup.loopexit:
 ; DISABLE-RISCV-CSA-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi ptr [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ], [ [[TMP22]], [[MIDDLE_BLOCK]] ]

@@ -27,10 +27,10 @@ define double @foo() {
 ; CHECK-NEXT:    [[TMP8:%.*]] = trunc i64 [[TMP1]] to i32
 ; CHECK-NEXT:    [[TMP9:%.*]] = call fast double @llvm.vp.reduce.fadd.nxv1f64(double -0.000000e+00, <vscale x 1 x double> [[VP_OP_MERGE]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP8]])
 ; CHECK-NEXT:    [[TMP10:%.*]] = fadd fast double 0.000000e+00, [[TMP9]]
-; CHECK-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1, [[MIDDLE_BLOCK]] ], [ 2, [[FOR_BODY_PREHEADER:%.*]] ]
-; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi double [ 0.000000e+00, [[FOR_BODY_PREHEADER]] ], [ [[TMP10]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 2, [[FOR_BODY_PREHEADER:%.*]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi double [ 0.000000e+00, [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
 ; CHECK-NEXT:    [[ADD_LCSSA:%.*]] = phi double [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[TMP10]], [[MIDDLE_BLOCK]] ]
@@ -67,10 +67,10 @@ define double @foo() {
 ; CHECK-NO-POSTSV:       middle.block:
 ; CHECK-NO-POSTSV-NEXT:    [[TMP8:%.*]] = trunc i64 [[TMP1]] to i32
 ; CHECK-NO-POSTSV-NEXT:    [[TMP9:%.*]] = call fast double @llvm.vp.reduce.fadd.nxv1f64(double -0.000000e+00, <vscale x 1 x double> [[VP_OP_MERGE]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP8]])
-; CHECK-NO-POSTSV-NEXT:    br i1 true, label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
+; CHECK-NO-POSTSV-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK-NO-POSTSV:       scalar.ph:
-; CHECK-NO-POSTSV-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1, [[MIDDLE_BLOCK]] ], [ 2, [[FOR_BODY_PREHEADER:%.*]] ]
-; CHECK-NO-POSTSV-NEXT:    [[BC_MERGE_RDX:%.*]] = phi double [ 0.000000e+00, [[FOR_BODY_PREHEADER]] ], [ [[TMP9]], [[MIDDLE_BLOCK]] ]
+; CHECK-NO-POSTSV-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 2, [[FOR_BODY_PREHEADER:%.*]] ]
+; CHECK-NO-POSTSV-NEXT:    [[BC_MERGE_RDX:%.*]] = phi double [ 0.000000e+00, [[FOR_BODY_PREHEADER]] ]
 ; CHECK-NO-POSTSV-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK-NO-POSTSV:       for.cond.cleanup.loopexit:
 ; CHECK-NO-POSTSV-NEXT:    [[ADD_LCSSA:%.*]] = phi double [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[TMP9]], [[MIDDLE_BLOCK]] ]
