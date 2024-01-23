@@ -108,18 +108,16 @@ define void @constraint_m_with_global_1() nounwind {
 ; RV32I-LABEL: constraint_m_with_global_1:
 ; RV32I:       # %bb.0:
 ; RV32I-NEXT:    lui a0, %hi(eg)
-; RV32I-NEXT:    addi a0, a0, %lo(eg)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a0)
+; RV32I-NEXT:    sw zero, %lo(eg)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
 ; RV64I-LABEL: constraint_m_with_global_1:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    lui a0, %hi(eg)
-; RV64I-NEXT:    addi a0, a0, %lo(eg)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a0)
+; RV64I-NEXT:    sw zero, %lo(eg)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
@@ -224,18 +222,16 @@ define void @constraint_m_with_extern_weak_global_1() nounwind {
 ; RV32I-LABEL: constraint_m_with_extern_weak_global_1:
 ; RV32I:       # %bb.0:
 ; RV32I-NEXT:    lui a0, %hi(ewg)
-; RV32I-NEXT:    addi a0, a0, %lo(ewg)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a0)
+; RV32I-NEXT:    sw zero, %lo(ewg)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
 ; RV64I-LABEL: constraint_m_with_extern_weak_global_1:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    lui a0, %hi(ewg)
-; RV64I-NEXT:    addi a0, a0, %lo(ewg)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a0)
+; RV64I-NEXT:    sw zero, %lo(ewg)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
@@ -502,18 +498,16 @@ define void @constraint_m_with_multi_operands() nounwind {
 ; RV32I-LABEL: constraint_m_with_multi_operands:
 ; RV32I:       # %bb.0:
 ; RV32I-NEXT:    lui a0, %hi(eg)
-; RV32I-NEXT:    addi a0, a0, %lo(eg)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a0); sw zero, 0(a0)
+; RV32I-NEXT:    sw zero, %lo(eg)(a0); sw zero, %lo(eg)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
 ; RV64I-LABEL: constraint_m_with_multi_operands:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    lui a0, %hi(eg)
-; RV64I-NEXT:    addi a0, a0, %lo(eg)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a0); sw zero, 0(a0)
+; RV64I-NEXT:    sw zero, %lo(eg)(a0); sw zero, %lo(eg)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
@@ -542,24 +536,22 @@ define void @constraint_m_with_multi_asm() nounwind {
 ; RV32I-LABEL: constraint_m_with_multi_asm:
 ; RV32I:       # %bb.0:
 ; RV32I-NEXT:    lui a0, %hi(eg)
-; RV32I-NEXT:    addi a0, a0, %lo(eg)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a0)
+; RV32I-NEXT:    sw zero, %lo(eg)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a0)
+; RV32I-NEXT:    sw zero, %lo(eg)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
 ; RV64I-LABEL: constraint_m_with_multi_asm:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    lui a0, %hi(eg)
-; RV64I-NEXT:    addi a0, a0, %lo(eg)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a0)
+; RV64I-NEXT:    sw zero, %lo(eg)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a0)
+; RV64I-NEXT:    sw zero, %lo(eg)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
@@ -595,9 +587,8 @@ define i32 @constraint_m_with_callbr_multi_operands(i32 %a) {
 ; RV32I-LABEL: constraint_m_with_callbr_multi_operands:
 ; RV32I:       # %bb.0: # %entry
 ; RV32I-NEXT:    lui a1, %hi(eg)
-; RV32I-NEXT:    addi a1, a1, %lo(eg)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a1); sw zero, 0(a1); beqz a0, .LBB14_2
+; RV32I-NEXT:    sw zero, %lo(eg)(a1); sw zero, %lo(eg)(a1); beqz a0, .LBB14_2
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:  # %bb.1: # %normal
 ; RV32I-NEXT:    li a0, 0
@@ -611,9 +602,8 @@ define i32 @constraint_m_with_callbr_multi_operands(i32 %a) {
 ; RV64I-LABEL: constraint_m_with_callbr_multi_operands:
 ; RV64I:       # %bb.0: # %entry
 ; RV64I-NEXT:    lui a1, %hi(eg)
-; RV64I-NEXT:    addi a1, a1, %lo(eg)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a1); sw zero, 0(a1); beqz a0, .LBB14_2
+; RV64I-NEXT:    sw zero, %lo(eg)(a1); sw zero, %lo(eg)(a1); beqz a0, .LBB14_2
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:  # %bb.1: # %normal
 ; RV64I-NEXT:    li a0, 0
@@ -669,13 +659,12 @@ define i32 @constraint_m_with_multi_callbr_asm(i32 %a) {
 ; RV32I-LABEL: constraint_m_with_multi_callbr_asm:
 ; RV32I:       # %bb.0: # %entry
 ; RV32I-NEXT:    lui a1, %hi(eg)
-; RV32I-NEXT:    addi a1, a1, %lo(eg)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a1); beqz a0, .LBB15_3
+; RV32I-NEXT:    sw zero, %lo(eg)(a1); beqz a0, .LBB15_3
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:  # %bb.1: # %normal0
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a1); beqz a0, .LBB15_3
+; RV32I-NEXT:    sw zero, %lo(eg)(a1); beqz a0, .LBB15_3
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:  # %bb.2: # %normal1
 ; RV32I-NEXT:    li a0, 0
@@ -689,13 +678,12 @@ define i32 @constraint_m_with_multi_callbr_asm(i32 %a) {
 ; RV64I-LABEL: constraint_m_with_multi_callbr_asm:
 ; RV64I:       # %bb.0: # %entry
 ; RV64I-NEXT:    lui a1, %hi(eg)
-; RV64I-NEXT:    addi a1, a1, %lo(eg)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a1); beqz a0, .LBB15_3
+; RV64I-NEXT:    sw zero, %lo(eg)(a1); beqz a0, .LBB15_3
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:  # %bb.1: # %normal0
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a1); beqz a0, .LBB15_3
+; RV64I-NEXT:    sw zero, %lo(eg)(a1); beqz a0, .LBB15_3
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:  # %bb.2: # %normal1
 ; RV64I-NEXT:    li a0, 0
@@ -855,18 +843,16 @@ define void @constraint_o_with_global_1() nounwind {
 ; RV32I-LABEL: constraint_o_with_global_1:
 ; RV32I:       # %bb.0:
 ; RV32I-NEXT:    lui a0, %hi(eg)
-; RV32I-NEXT:    addi a0, a0, %lo(eg)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a0)
+; RV32I-NEXT:    sw zero, %lo(eg)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
 ; RV64I-LABEL: constraint_o_with_global_1:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    lui a0, %hi(eg)
-; RV64I-NEXT:    addi a0, a0, %lo(eg)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a0)
+; RV64I-NEXT:    sw zero, %lo(eg)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
@@ -971,18 +957,16 @@ define void @constraint_o_with_extern_weak_global_1() nounwind {
 ; RV32I-LABEL: constraint_o_with_extern_weak_global_1:
 ; RV32I:       # %bb.0:
 ; RV32I-NEXT:    lui a0, %hi(ewg)
-; RV32I-NEXT:    addi a0, a0, %lo(ewg)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a0)
+; RV32I-NEXT:    sw zero, %lo(ewg)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
 ; RV64I-LABEL: constraint_o_with_extern_weak_global_1:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    lui a0, %hi(ewg)
-; RV64I-NEXT:    addi a0, a0, %lo(ewg)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a0)
+; RV64I-NEXT:    sw zero, %lo(ewg)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
@@ -1099,18 +1083,16 @@ define void @constraint_o_with_multi_operands() nounwind {
 ; RV32I-LABEL: constraint_o_with_multi_operands:
 ; RV32I:       # %bb.0:
 ; RV32I-NEXT:    lui a0, %hi(eg)
-; RV32I-NEXT:    addi a0, a0, %lo(eg)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a0) \n sw zero, 0(a0)
+; RV32I-NEXT:    sw zero, %lo(eg)(a0) \n sw zero, %lo(eg)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
 ; RV64I-LABEL: constraint_o_with_multi_operands:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    lui a0, %hi(eg)
-; RV64I-NEXT:    addi a0, a0, %lo(eg)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a0) \n sw zero, 0(a0)
+; RV64I-NEXT:    sw zero, %lo(eg)(a0) \n sw zero, %lo(eg)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
@@ -1139,24 +1121,22 @@ define void @constraint_o_with_multi_asm() nounwind {
 ; RV32I-LABEL: constraint_o_with_multi_asm:
 ; RV32I:       # %bb.0:
 ; RV32I-NEXT:    lui a0, %hi(eg)
-; RV32I-NEXT:    addi a0, a0, %lo(eg)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a0)
+; RV32I-NEXT:    sw zero, %lo(eg)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a0)
+; RV32I-NEXT:    sw zero, %lo(eg)(a0)
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:    ret
 ;
 ; RV64I-LABEL: constraint_o_with_multi_asm:
 ; RV64I:       # %bb.0:
 ; RV64I-NEXT:    lui a0, %hi(eg)
-; RV64I-NEXT:    addi a0, a0, %lo(eg)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a0)
+; RV64I-NEXT:    sw zero, %lo(eg)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a0)
+; RV64I-NEXT:    sw zero, %lo(eg)(a0)
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:    ret
 ;
@@ -1192,9 +1172,8 @@ define i32 @constraint_o_with_callbr_multi_operands(i32 %a) {
 ; RV32I-LABEL: constraint_o_with_callbr_multi_operands:
 ; RV32I:       # %bb.0: # %entry
 ; RV32I-NEXT:    lui a1, %hi(eg)
-; RV32I-NEXT:    addi a1, a1, %lo(eg)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a1); sw zero, 0(a1); beqz a0, .LBB27_2
+; RV32I-NEXT:    sw zero, %lo(eg)(a1); sw zero, %lo(eg)(a1); beqz a0, .LBB27_2
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:  # %bb.1: # %normal
 ; RV32I-NEXT:    li a0, 0
@@ -1208,9 +1187,8 @@ define i32 @constraint_o_with_callbr_multi_operands(i32 %a) {
 ; RV64I-LABEL: constraint_o_with_callbr_multi_operands:
 ; RV64I:       # %bb.0: # %entry
 ; RV64I-NEXT:    lui a1, %hi(eg)
-; RV64I-NEXT:    addi a1, a1, %lo(eg)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a1); sw zero, 0(a1); beqz a0, .LBB27_2
+; RV64I-NEXT:    sw zero, %lo(eg)(a1); sw zero, %lo(eg)(a1); beqz a0, .LBB27_2
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:  # %bb.1: # %normal
 ; RV64I-NEXT:    li a0, 0
@@ -1266,13 +1244,12 @@ define i32 @constraint_o_with_multi_callbr_asm(i32 %a) {
 ; RV32I-LABEL: constraint_o_with_multi_callbr_asm:
 ; RV32I:       # %bb.0: # %entry
 ; RV32I-NEXT:    lui a1, %hi(eg)
-; RV32I-NEXT:    addi a1, a1, %lo(eg)
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a1); beqz a0, .LBB28_3
+; RV32I-NEXT:    sw zero, %lo(eg)(a1); beqz a0, .LBB28_3
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:  # %bb.1: # %normal0
 ; RV32I-NEXT:    #APP
-; RV32I-NEXT:    sw zero, 0(a1); beqz a0, .LBB28_3
+; RV32I-NEXT:    sw zero, %lo(eg)(a1); beqz a0, .LBB28_3
 ; RV32I-NEXT:    #NO_APP
 ; RV32I-NEXT:  # %bb.2: # %normal1
 ; RV32I-NEXT:    li a0, 0
@@ -1286,13 +1263,12 @@ define i32 @constraint_o_with_multi_callbr_asm(i32 %a) {
 ; RV64I-LABEL: constraint_o_with_multi_callbr_asm:
 ; RV64I:       # %bb.0: # %entry
 ; RV64I-NEXT:    lui a1, %hi(eg)
-; RV64I-NEXT:    addi a1, a1, %lo(eg)
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a1); beqz a0, .LBB28_3
+; RV64I-NEXT:    sw zero, %lo(eg)(a1); beqz a0, .LBB28_3
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:  # %bb.1: # %normal0
 ; RV64I-NEXT:    #APP
-; RV64I-NEXT:    sw zero, 0(a1); beqz a0, .LBB28_3
+; RV64I-NEXT:    sw zero, %lo(eg)(a1); beqz a0, .LBB28_3
 ; RV64I-NEXT:    #NO_APP
 ; RV64I-NEXT:  # %bb.2: # %normal1
 ; RV64I-NEXT:    li a0, 0
