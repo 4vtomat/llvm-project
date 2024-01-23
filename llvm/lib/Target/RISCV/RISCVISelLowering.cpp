@@ -6955,14 +6955,12 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
          !Subtarget.hasVInstructionsF16()))
       return SplitVPOp(Op, DAG);
     return lowerVectorFTRUNC_FCEIL_FFLOOR_FROUND(Op, DAG, Subtarget);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case ISD::VP_FIRST:
     return lowerVPFirst(Op, DAG);
   case ISD::EXPERIMENTAL_VP_POPCOUNT:
     return lowerVPPopcount(Op, DAG);
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case ISD::VP_FMAXIMUM:
   case ISD::VP_FMINIMUM:
     if (Op.getValueType() == MVT::nxv32f16 &&
@@ -6970,7 +6968,6 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
          !Subtarget.hasVInstructionsF16()))
       return SplitVPOp(Op, DAG);
     return lowerFMAXIMUM_FMINIMUM(Op, DAG, Subtarget);
->>>>>>> llvm/main
   case ISD::EXPERIMENTAL_VP_SPLICE:
     return lowerVPSpliceExperimental(Op, DAG);
   case ISD::EXPERIMENTAL_VP_REVERSE:

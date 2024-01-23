@@ -659,7 +659,6 @@ def SIFIVE_P450 : RISCVProcessorModel<"sifive-p450", SiFiveP400Model,
                                        FeatureStdExtF,
                                        FeatureStdExtD,
                                        FeatureStdExtC,
-<<<<<<< HEAD
                                        FeatureVendorXSiFivecdiscarddlone,
                                        FeatureVendorXSiFivecflushdlone,
                                        FeatureStdExtZa64rs,
@@ -691,8 +690,6 @@ def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model,
                                        FeatureStdExtC,
                                        FeatureVendorXSiFivecdiscarddlone,
                                        FeatureVendorXSiFivecflushdlone,
-=======
->>>>>>> llvm/main
                                        FeatureStdExtZa64rs,
                                        FeatureStdExtZic64b,
                                        FeatureStdExtZicbop,
@@ -708,7 +705,6 @@ def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model,
                                        FeatureStdExtZba,
                                        FeatureStdExtZbb,
                                        FeatureStdExtZbs,
-<<<<<<< HEAD
                                        FeatureStdExtZfhmin,
                                        FeatureStdExtV,
                                        FeatureStdExtZvl128b,
@@ -928,13 +924,6 @@ def SIFIVE_P870S : RISCVProcessorModel<"sifive-p870s", SiFiveP800SModel,
                                        [TuneSiFiveP800, TuneDLen128b,
                                         TuneDontSinkSplatOperands]>;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-                                       FeatureStdExtZfhmin],
-                                      [TuneNoDefaultUnroll,
-                                       TuneConditionalCompressedMoveFusion,
-                                       TuneLUIADDIFusion,
-                                       TuneAUIPCADDIFusion]>;
->>>>>>> llvm/main
 
 def SYNTACORE_SCR1_BASE : RISCVProcessorModel<"syntacore-scr1-base",
                                               SyntacoreSCR1Model,

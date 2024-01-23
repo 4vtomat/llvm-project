@@ -537,16 +537,15 @@ bool RISCVMergeBaseOffsetOpt::foldIntoMemoryOps(MachineInstr &Hi,
     }
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Prevent Lo (originally PseudoLIaddr, which is also pointed by Hi) from
   // being erased
   if (Lo.getOpcode() == RISCV::LUI)
     return true;
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   MRI->replaceRegWith(Lo.getOperand(0).getReg(), Hi.getOperand(0).getReg());
->>>>>>> llvm/main
+
   Lo.eraseFromParent();
   return true;
 }
