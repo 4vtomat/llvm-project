@@ -2,7 +2,6 @@
 ; RUN: opt -mtriple riscv64-linux-gnu -mattr=+v,+d -riscv-use-vla-vectorizer=false -passes=loop-vectorize < %s -S -o - | FileCheck %s -check-prefix=OUTLOOP
 ; RUN: opt -mtriple riscv64-linux-gnu -mattr=+v,+d -riscv-use-vla-vectorizer=false -passes=loop-vectorize -prefer-inloop-reductions < %s -S -o - | FileCheck %s -check-prefix=INLOOP
 
-
 target datalayout = "e-m:e-p:64:64-i64:64-i128:128-n64-S128"
 target triple = "riscv64"
 
@@ -116,8 +115,6 @@ define i32 @add_i16_i32(ptr nocapture readonly %x, i32 %n) {
 ; INLOOP-NEXT:    [[R_0_LCSSA:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ], [ [[ADD_LCSSA]], [[FOR_COND_CLEANUP_LOOPEXIT]] ]
 ; INLOOP-NEXT:    ret i32 [[R_0_LCSSA]]
 ;
-
-
 
 entry:
   %cmp6 = icmp sgt i32 %n, 0

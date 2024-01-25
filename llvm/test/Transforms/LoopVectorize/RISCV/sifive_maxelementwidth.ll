@@ -17,20 +17,21 @@ define void @foo(i64* %x, i64 %n, i64 %y) {
 ; V-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; V:       vector.body:
 ; V-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; V-NEXT:    [[TMP0:%.*]] = sub i64 [[N]], [[INDEX]]
-; V-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 1, i1 true)
-; V-NEXT:    [[TMP2:%.*]] = zext i32 [[TMP1]] to i64
-; V-NEXT:    [[TMP3:%.*]] = trunc i64 [[TMP2]] to i32
-; V-NEXT:    [[TMP4:%.*]] = add i64 [[INDEX]], 0
-; V-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i64, ptr [[X:%.*]], i64 [[TMP4]]
-; V-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i64, ptr [[TMP5]], i32 0
-; V-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 1 x i64> @llvm.vp.load.nxv1i64.p0(ptr align 8 [[TMP6]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP3]])
-; V-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[VP_OP_LOAD]], <vscale x 1 x i64> [[BROADCAST_SPLAT]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP3]])
-; V-NEXT:    call void @llvm.vp.store.nxv1i64.p0(<vscale x 1 x i64> [[VP_OP]], ptr align 8 [[TMP6]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP3]])
-; V-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP3]] to i64
-; V-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP7]]
-; V-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
-; V-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; V-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; V-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
+; V-NEXT:    [[TMP1:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
+; V-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP1]], i32 1, i1 true)
+; V-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i64, ptr [[X:%.*]], i64 [[TMP0]]
+; V-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i64, ptr [[TMP3]], i32 0
+; V-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 1 x i64> @llvm.vp.load.nxv1i64.p0(ptr align 8 [[TMP4]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP2]])
+; V-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[VP_OP_LOAD]], <vscale x 1 x i64> [[BROADCAST_SPLAT]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP2]])
+; V-NEXT:    call void @llvm.vp.store.nxv1i64.p0(<vscale x 1 x i64> [[VP_OP]], ptr align 8 [[TMP4]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP2]])
+; V-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP2]] to i64
+; V-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[EVL_BASED_IV]], [[TMP5]]
+; V-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP2]] to i64
+; V-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP6]]
+; V-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
+; V-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; V:       middle.block:
 ; V-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; V:       scalar.ph:
@@ -43,8 +44,8 @@ define void @foo(i64* %x, i64 %n, i64 %y) {
 ; V:       for.body:
 ; V-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
 ; V-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i64, ptr [[X]], i64 [[INDVARS_IV]]
-; V-NEXT:    [[TMP9:%.*]] = load i64, ptr [[ARRAYIDX]], align 8
-; V-NEXT:    [[ADD:%.*]] = add nsw i64 [[TMP9]], [[Y]]
+; V-NEXT:    [[TMP8:%.*]] = load i64, ptr [[ARRAYIDX]], align 8
+; V-NEXT:    [[ADD:%.*]] = add nsw i64 [[TMP8]], [[Y]]
 ; V-NEXT:    store i64 [[ADD]], ptr [[ARRAYIDX]], align 8
 ; V-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; V-NEXT:    [[CMP_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]

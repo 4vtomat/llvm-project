@@ -55,7 +55,7 @@ static Value *widenSelectInstruction(VPTransformState &State,
                                      const unsigned VPOpCode, VPValue *Def,
                                      VPUser &User, const unsigned Part,
                                      const Twine &Name) {
-  VPValue *RVL = State.Plan->getRVL();
+  VPValue *RVL = State.RVL;
   Value *Cond = State.get(User.getOperand(0), Part);
   Value *Op1 = State.get(User.getOperand(1), Part);
   Value *Op2 = State.get(User.getOperand(2), Part);
@@ -68,7 +68,7 @@ namespace llvm {
 Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
                                   VPTransformState &State, VPValue *BlockInMask,
                                   unsigned Part) {
-  VPValue *RVL = State.Plan->getRVL();
+  VPValue *RVL = State.RVL;
   IRBuilderBase &BuilderIR = State.Builder;
   VectorBuilder Builder(BuilderIR);
   auto &&MaskValue = [&](unsigned Part, ElementCount EC) -> Value * {
@@ -260,7 +260,7 @@ void widenPredicatedCall(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
   }
 
   Args.push_back(Builder.getTrueVector(State.VF));
-  Args.push_back(State.get(State.Plan->getRVL(), Part));
+  Args.push_back(State.get(State.RVL, Part));
   CallInst *V =
       Builder.CreateIntrinsic(VPID, TysForDecl, Args, nullptr, "vp.op");
   if (isa<FPMathOperator>(V))
@@ -269,7 +269,7 @@ void widenPredicatedCall(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
 }
 
 void VPSelectInstruction::execute(VPTransformState &State) {
-  if (!State.Plan->getRVL()) {
+  if (!State.RVL) {
     // For non RVV VLA vectorization, reuse existing mechanism to generate the
     // vector code
     VPInstruction::execute(State);
@@ -300,7 +300,7 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
                                  VPTransformState &State, unsigned Part,
                                  ArrayRef<Value *> BlockInMaskParts) {
   assert(Part == 0 && "Cannot support Part > 0 for RVV VLA vectorization");
-  Value *RVLPart = State.get(State.Plan->getRVL(), Part);
+  Value *RVLPart = State.get(State.RVL, Part);
   assert(RVLPart && "RVL must be set prior to generation of vp-intrinsics");
 
   VPValue *VPAddr = VPWMIR.getAddr();
@@ -402,8 +402,11 @@ Instruction *widenPredicatedArithmeticOp(VPTransformState &State,
           (Instruction::isUnaryOp(Opcode) && (Ops.size() == 1))) &&
          "Invalid number of operands.");
   VectorBuilder VBuilder(State.Builder);
-  VPValue *RVL = State.Plan->getRVL();
-  Value *RVLPart = State.get(RVL, Part);
+  VPValue *RVL = State.RVL;
+  Value *RVLPart = State.RVL ? State.get(RVL, Part) : State.RVLPlaceholder;
+  RVLPart =
+      State.Builder.CreateZExtOrTrunc(RVLPart, State.Builder.getInt32Ty());
+  assert(RVLPart && "RVL was not created");
   if (!Mask)
     Mask = State.Builder.getTrueVector(State.VF);
   VBuilder.setMask(Mask).setEVL(RVLPart);

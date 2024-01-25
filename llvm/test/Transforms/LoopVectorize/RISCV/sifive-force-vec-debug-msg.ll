@@ -79,7 +79,6 @@ for.body:                                         ; preds = %for.body.lr.ph, %fo
   br i1 %cmp.not.not, label %for.body, label %for.cond.cleanup
 }
 
-
 ; The following IR is generated from the following code:
 ; int foo(int* a, int n) {
 ;     int res = 0;

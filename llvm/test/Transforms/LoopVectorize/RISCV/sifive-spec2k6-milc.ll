@@ -83,54 +83,55 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; PROFITABLE-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; PROFITABLE:       vector.body:
 ; PROFITABLE-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; PROFITABLE-NEXT:    [[TMP31:%.*]] = sub i64 [[N]], [[INDEX]]
-; PROFITABLE-NEXT:    [[TMP32:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP31]], i32 1, i1 true)
-; PROFITABLE-NEXT:    [[TMP33:%.*]] = zext i32 [[TMP32]] to i64
-; PROFITABLE-NEXT:    [[TMP34:%.*]] = trunc i64 [[TMP33]] to i32
-; PROFITABLE-NEXT:    [[TMP35:%.*]] = add i64 [[INDEX]], 0
-; PROFITABLE-NEXT:    [[TMP36:%.*]] = getelementptr [[STRUCT_SU3_VECTOR:%.*]], ptr [[A]], i64 [[TMP35]]
-; PROFITABLE-NEXT:    [[TMP37:%.*]] = getelementptr [[STRUCT_SU3_VECTOR]], ptr [[B]], i64 [[TMP35]]
-; PROFITABLE-NEXT:    [[TMP38:%.*]] = getelementptr double, ptr [[TMP36]], i32 0
-; PROFITABLE-NEXT:    [[TMP39:%.*]] = mul i32 [[TMP34]], 6
-; PROFITABLE-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 6 x double> @llvm.vp.load.nxv6f64.p0(ptr align 8 [[TMP38]], <vscale x 6 x i1> shufflevector (<vscale x 6 x i1> insertelement (<vscale x 6 x i1> poison, i1 true, i64 0), <vscale x 6 x i1> poison, <vscale x 6 x i32> zeroinitializer), i32 [[TMP39]])
+; PROFITABLE-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; PROFITABLE-NEXT:    [[TMP31:%.*]] = add i64 [[INDEX]], 0
+; PROFITABLE-NEXT:    [[TMP32:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
+; PROFITABLE-NEXT:    [[TMP33:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP32]], i32 1, i1 true)
+; PROFITABLE-NEXT:    [[TMP34:%.*]] = getelementptr [[STRUCT_SU3_VECTOR:%.*]], ptr [[A]], i64 [[TMP31]]
+; PROFITABLE-NEXT:    [[TMP35:%.*]] = getelementptr [[STRUCT_SU3_VECTOR]], ptr [[B]], i64 [[TMP31]]
+; PROFITABLE-NEXT:    [[TMP36:%.*]] = getelementptr double, ptr [[TMP34]], i32 0
+; PROFITABLE-NEXT:    [[TMP37:%.*]] = mul i32 [[TMP33]], 6
+; PROFITABLE-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 6 x double> @llvm.vp.load.nxv6f64.p0(ptr align 8 [[TMP36]], <vscale x 6 x i1> shufflevector (<vscale x 6 x i1> insertelement (<vscale x 6 x i1> poison, i1 true, i64 0), <vscale x 6 x i1> poison, <vscale x 6 x i32> zeroinitializer), i32 [[TMP37]])
 ; PROFITABLE-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } @llvm.experimental.vector.deinterleave6.nxv6f64(<vscale x 6 x double> [[WIDE_MASKED_LOAD]])
-; PROFITABLE-NEXT:    [[TMP40:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 0
-; PROFITABLE-NEXT:    [[TMP41:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 1
-; PROFITABLE-NEXT:    [[TMP42:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 2
-; PROFITABLE-NEXT:    [[TMP43:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 3
-; PROFITABLE-NEXT:    [[TMP44:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 4
-; PROFITABLE-NEXT:    [[TMP45:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 5
-; PROFITABLE-NEXT:    [[TMP46:%.*]] = getelementptr double, ptr [[TMP37]], i32 0
-; PROFITABLE-NEXT:    [[TMP47:%.*]] = mul i32 [[TMP34]], 6
-; PROFITABLE-NEXT:    [[WIDE_MASKED_LOAD22:%.*]] = call <vscale x 6 x double> @llvm.vp.load.nxv6f64.p0(ptr align 8 [[TMP46]], <vscale x 6 x i1> shufflevector (<vscale x 6 x i1> insertelement (<vscale x 6 x i1> poison, i1 true, i64 0), <vscale x 6 x i1> poison, <vscale x 6 x i32> zeroinitializer), i32 [[TMP47]])
+; PROFITABLE-NEXT:    [[TMP38:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 0
+; PROFITABLE-NEXT:    [[TMP39:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 1
+; PROFITABLE-NEXT:    [[TMP40:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 2
+; PROFITABLE-NEXT:    [[TMP41:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 3
+; PROFITABLE-NEXT:    [[TMP42:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 4
+; PROFITABLE-NEXT:    [[TMP43:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 5
+; PROFITABLE-NEXT:    [[TMP44:%.*]] = getelementptr double, ptr [[TMP35]], i32 0
+; PROFITABLE-NEXT:    [[TMP45:%.*]] = mul i32 [[TMP33]], 6
+; PROFITABLE-NEXT:    [[WIDE_MASKED_LOAD22:%.*]] = call <vscale x 6 x double> @llvm.vp.load.nxv6f64.p0(ptr align 8 [[TMP44]], <vscale x 6 x i1> shufflevector (<vscale x 6 x i1> insertelement (<vscale x 6 x i1> poison, i1 true, i64 0), <vscale x 6 x i1> poison, <vscale x 6 x i32> zeroinitializer), i32 [[TMP45]])
 ; PROFITABLE-NEXT:    [[DEINTERLEAVED_RESULTS23:%.*]] = call { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } @llvm.experimental.vector.deinterleave6.nxv6f64(<vscale x 6 x double> [[WIDE_MASKED_LOAD22]])
-; PROFITABLE-NEXT:    [[TMP48:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS23]], 0
-; PROFITABLE-NEXT:    [[TMP49:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS23]], 1
-; PROFITABLE-NEXT:    [[TMP50:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS23]], 2
-; PROFITABLE-NEXT:    [[TMP51:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS23]], 3
-; PROFITABLE-NEXT:    [[TMP52:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS23]], 4
-; PROFITABLE-NEXT:    [[TMP53:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS23]], 5
-; PROFITABLE-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP48]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP34]])
-; PROFITABLE-NEXT:    [[VP_OP24:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP]], <vscale x 1 x double> [[TMP40]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP34]])
-; PROFITABLE-NEXT:    [[VP_OP25:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP49]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP34]])
-; PROFITABLE-NEXT:    [[VP_OP26:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP25]], <vscale x 1 x double> [[TMP41]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP34]])
-; PROFITABLE-NEXT:    [[VP_OP27:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP50]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP34]])
-; PROFITABLE-NEXT:    [[VP_OP28:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP27]], <vscale x 1 x double> [[TMP42]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP34]])
-; PROFITABLE-NEXT:    [[VP_OP29:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP51]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP34]])
-; PROFITABLE-NEXT:    [[VP_OP30:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP29]], <vscale x 1 x double> [[TMP43]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP34]])
-; PROFITABLE-NEXT:    [[VP_OP31:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP52]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP34]])
-; PROFITABLE-NEXT:    [[VP_OP32:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP31]], <vscale x 1 x double> [[TMP44]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP34]])
-; PROFITABLE-NEXT:    [[TMP54:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP36]], i64 0, i64 2, i32 1
-; PROFITABLE-NEXT:    [[VP_OP33:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP53]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP34]])
-; PROFITABLE-NEXT:    [[VP_OP34:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP33]], <vscale x 1 x double> [[TMP45]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP34]])
-; PROFITABLE-NEXT:    [[TMP55:%.*]] = getelementptr double, ptr [[TMP54]], i32 -5
+; PROFITABLE-NEXT:    [[TMP46:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS23]], 0
+; PROFITABLE-NEXT:    [[TMP47:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS23]], 1
+; PROFITABLE-NEXT:    [[TMP48:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS23]], 2
+; PROFITABLE-NEXT:    [[TMP49:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS23]], 3
+; PROFITABLE-NEXT:    [[TMP50:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS23]], 4
+; PROFITABLE-NEXT:    [[TMP51:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS23]], 5
+; PROFITABLE-NEXT:    [[VP_OP:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP46]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP33]])
+; PROFITABLE-NEXT:    [[VP_OP24:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP]], <vscale x 1 x double> [[TMP38]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP33]])
+; PROFITABLE-NEXT:    [[VP_OP25:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP47]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP33]])
+; PROFITABLE-NEXT:    [[VP_OP26:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP25]], <vscale x 1 x double> [[TMP39]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP33]])
+; PROFITABLE-NEXT:    [[VP_OP27:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP48]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP33]])
+; PROFITABLE-NEXT:    [[VP_OP28:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP27]], <vscale x 1 x double> [[TMP40]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP33]])
+; PROFITABLE-NEXT:    [[VP_OP29:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP49]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP33]])
+; PROFITABLE-NEXT:    [[VP_OP30:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP29]], <vscale x 1 x double> [[TMP41]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP33]])
+; PROFITABLE-NEXT:    [[VP_OP31:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP50]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP33]])
+; PROFITABLE-NEXT:    [[VP_OP32:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP31]], <vscale x 1 x double> [[TMP42]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP33]])
+; PROFITABLE-NEXT:    [[TMP52:%.*]] = getelementptr [3 x %struct.complex], ptr [[TMP34]], i64 0, i64 2, i32 1
+; PROFITABLE-NEXT:    [[VP_OP33:%.*]] = call <vscale x 1 x double> @llvm.vp.fmul.nxv1f64(<vscale x 1 x double> [[TMP51]], <vscale x 1 x double> [[BROADCAST_SPLAT]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP33]])
+; PROFITABLE-NEXT:    [[VP_OP34:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP33]], <vscale x 1 x double> [[TMP43]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP33]])
+; PROFITABLE-NEXT:    [[TMP53:%.*]] = getelementptr double, ptr [[TMP52]], i32 -5
 ; PROFITABLE-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 6 x double> @llvm.experimental.vector.interleave6.nxv6f64(<vscale x 1 x double> [[VP_OP24]], <vscale x 1 x double> [[VP_OP26]], <vscale x 1 x double> [[VP_OP28]], <vscale x 1 x double> [[VP_OP30]], <vscale x 1 x double> [[VP_OP32]], <vscale x 1 x double> [[VP_OP34]])
-; PROFITABLE-NEXT:    [[TMP56:%.*]] = mul i32 [[TMP34]], 6
-; PROFITABLE-NEXT:    call void @llvm.vp.store.nxv6f64.p0(<vscale x 6 x double> [[INTERLEAVED_VEC]], ptr align 8 [[TMP55]], <vscale x 6 x i1> shufflevector (<vscale x 6 x i1> insertelement (<vscale x 6 x i1> poison, i1 true, i64 0), <vscale x 6 x i1> poison, <vscale x 6 x i32> zeroinitializer), i32 [[TMP56]])
-; PROFITABLE-NEXT:    [[TMP57:%.*]] = zext i32 [[TMP34]] to i64
-; PROFITABLE-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP57]]
-; PROFITABLE-NEXT:    [[TMP58:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
-; PROFITABLE-NEXT:    br i1 [[TMP58]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; PROFITABLE-NEXT:    [[TMP54:%.*]] = mul i32 [[TMP33]], 6
+; PROFITABLE-NEXT:    call void @llvm.vp.store.nxv6f64.p0(<vscale x 6 x double> [[INTERLEAVED_VEC]], ptr align 8 [[TMP53]], <vscale x 6 x i1> shufflevector (<vscale x 6 x i1> insertelement (<vscale x 6 x i1> poison, i1 true, i64 0), <vscale x 6 x i1> poison, <vscale x 6 x i32> zeroinitializer), i32 [[TMP54]])
+; PROFITABLE-NEXT:    [[TMP55:%.*]] = zext i32 [[TMP33]] to i64
+; PROFITABLE-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[EVL_BASED_IV]], [[TMP55]]
+; PROFITABLE-NEXT:    [[TMP56:%.*]] = zext i32 [[TMP33]] to i64
+; PROFITABLE-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP56]]
+; PROFITABLE-NEXT:    [[TMP57:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
+; PROFITABLE-NEXT:    br i1 [[TMP57]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; PROFITABLE:       middle.block:
 ; PROFITABLE-NEXT:    br label [[EXIT:%.*]]
 ; PROFITABLE:       scalar.ph:

@@ -12,16 +12,17 @@ define void @buf2img() {
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP0:%.*]] = sub i64 0, [[INDEX]]
+; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP0:%.*]] = sub i64 0, [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 32, i1 true)
+; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i16> @llvm.vp.bswap.nxv32i16(<vscale x 32 x i16> zeroinitializer, <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP1]])
+; CHECK-NEXT:    call void @llvm.vp.scatter.nxv32i16.nxv32p0(<vscale x 32 x i16> [[VP_OP]], <vscale x 32 x ptr> align 2 zeroinitializer, <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP1]])
 ; CHECK-NEXT:    [[TMP2:%.*]] = zext i32 [[TMP1]] to i64
-; CHECK-NEXT:    [[TMP3:%.*]] = trunc i64 [[TMP2]] to i32
-; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 32 x i16> @llvm.vp.bswap.nxv32i16(<vscale x 32 x i16> zeroinitializer, <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
-; CHECK-NEXT:    call void @llvm.vp.scatter.nxv32i16.nxv32p0(<vscale x 32 x i16> [[VP_OP]], <vscale x 32 x ptr> align 2 zeroinitializer, <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
-; CHECK-NEXT:    [[TMP4:%.*]] = zext i32 [[TMP3]] to i64
-; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP4]]
-; CHECK-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 0
-; CHECK-NEXT:    br i1 [[TMP5]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[EVL_BASED_IV]], [[TMP2]]
+; CHECK-NEXT:    [[TMP3:%.*]] = zext i32 [[TMP1]] to i64
+; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP3]]
+; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq i64 [[INDEX_NEXT]], 0
+; CHECK-NEXT:    br i1 [[TMP4]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_COND:%.*]]
 ; CHECK:       scalar.ph:
@@ -37,6 +38,7 @@ define void @buf2img() {
 ; CHECK:       for.cond:
 ; CHECK-NEXT:    ret void
 ;
+
 entry:
   br label %for.body
 

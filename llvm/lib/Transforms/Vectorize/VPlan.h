@@ -319,6 +319,7 @@ struct VPTransformState {
                    bool EnableRISCVCSA)
       : VF(VF), UF(UF), LI(LI), DT(DT), Builder(Builder), ILV(ILV), Plan(Plan),
         LVer(nullptr), TypeAnalysis(Ctx),  EnableRISCVCSA(EnableRISCVCSA) {}
+  ~VPTransformState();
 #else
   VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                    DominatorTree *DT, IRBuilderBase &Builder,
@@ -338,6 +339,17 @@ struct VPTransformState {
   unsigned SEW = 0;
 
   unsigned LMULExp = 0;
+
+  /// If RVL is not nullptr, then RVL must be a valid value set during plan
+  /// creation, possibly a default value = whole vector register length. RVL is
+  /// created only if TTI prefers predicated vectorization, thus if RVL is
+  /// not nullptr it also implies preference for predicated vectorization.
+  VPValue *RVL = nullptr;
+
+  /// Some execute functions are done before RVL is computed. This value is used
+  /// as a placeholder in such functions and replaced with RVL at postprocess.
+  /// TODO: Remove when not needed.
+  Value *RVLPlaceholder = nullptr;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Hold the indices to generate specific scalar instructions. Null indicates
@@ -1046,6 +1058,7 @@ public:
     case VPRecipeBase::VPWidenMemoryInstructionSC:
 #if SIFIVE_CUSTOMIZATION
     case VPRecipeBase::VPCSAHeaderPHISC:
+    case VPRecipeBase::VPEVLBasedIVPHISC:
 #endif
       // TODO: Widened stores don't define a value, but widened loads do. Split
       // the recipes to be able to make widened loads VPSingleDefRecipes.
@@ -1325,6 +1338,10 @@ public:
     SLPLoad,
     SLPStore,
     ActiveLaneMask,
+#if SIFIVE_CUSTOMIZATION
+    ExplicitVectorLength,
+    ExplicitVectorLengthIVIncrement,
+#endif // SIFIVE_CUSTOMIZATION
     CalculateTripCountMinusVF,
     // Increment the canonical IV separately for each unrolled part.
     CanonicalIVIncrementForPart,
@@ -1444,6 +1461,10 @@ public:
     default:
       return false;
     case VPInstruction::ActiveLaneMask:
+#if SIFIVE_CUSTOMIZATION
+    case VPInstruction::ExplicitVectorLength:
+    case VPInstruction::ExplicitVectorLengthIVIncrement:
+#endif // SIFIVE_CUSTOMIZATION
     case VPInstruction::CalculateTripCountMinusVF:
     case VPInstruction::CanonicalIVIncrementForPart:
     case VPInstruction::BranchOnCount:
@@ -2930,6 +2951,41 @@ public:
   }
 };
 
+#if SIFIVE_CUSTOMIZATION
+/// A recipe for generating the phi node for the current index of elements,
+/// adjusted in accordance with EVL value. It starts at StartIV value and gets
+/// incremented by EVL in each iteration of the vector loop.
+class VPEVLBasedIVPHIRecipe : public VPHeaderPHIRecipe {
+public:
+  VPEVLBasedIVPHIRecipe(VPValue *StartMask, DebugLoc DL)
+      : VPHeaderPHIRecipe(VPDef::VPEVLBasedIVPHISC, nullptr, StartMask, DL) {}
+
+  ~VPEVLBasedIVPHIRecipe() override = default;
+
+  VP_CLASSOF_IMPL(VPDef::VPEVLBasedIVPHISC)
+
+  static inline bool classof(const VPHeaderPHIRecipe *D) {
+    return D->getVPDefID() == VPDef::VPEVLBasedIVPHISC;
+  }
+
+  /// Generate phi for handling IV based on EVL over iterations correctly.
+  void execute(VPTransformState &State) override;
+
+  /// Returns true if the recipe only uses the first lane of operand \p Op.
+  bool onlyFirstLaneUsed(const VPValue *Op) const override {
+    assert(is_contained(operands(), Op) &&
+           "Op must be an operand of the recipe");
+    return true;
+  }
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
+};
+#endif // SIFIVE_CUSTOMIZATION
+
 /// VPBasicBlock serves as the leaf of the Hierarchical Control-Flow Graph. It
 /// holds a sequence of zero or more VPRecipe's each representing a sequence of
 /// output IR instructions. All PHI-like recipes must come before any non-PHI recipes.
@@ -3192,9 +3248,6 @@ class VPlan {
   VPValue *BackedgeTakenCount = nullptr;
 
 #if SIFIVE_CUSTOMIZATION
-  /// Represent RVL for the predicated loop vectorizer.
-  VPValue *RVL = nullptr;
-
   // RVL on the previous iteration. Represented as a PHI.
   VPValue *PrevRVL = nullptr;
 
@@ -3213,6 +3266,9 @@ class VPlan {
 
   /// Uncountable loops
   bool IsUncountable = false;
+
+  /// Use VLA Vectorizer
+  bool UseVLAVectorizer = false;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Represents the vector trip count.
@@ -3263,6 +3319,9 @@ public:
   VPlan(VPBasicBlock *Preheader, VPBasicBlock *Entry,
         bool IsUncountable = false)
       : Entry(Entry), Preheader(Preheader), IsUncountable(IsUncountable) {
+    // FIXME: Uncountable vectorization should set the flag in a proper xform
+    if (IsUncountable)
+      setUseVLAVectorizer(true);
 #else
   VPlan(VPBasicBlock *Preheader, VPBasicBlock *Entry)
       : Entry(Entry), Preheader(Preheader) {
@@ -3337,25 +3396,16 @@ public:
   /// Return whether the vPlan is uncountable
   bool isUncountable() const { return IsUncountable; }
 
-  /// Returns VPValue for RVL.
-  VPValue *getRVL() const { return RVL; }
-
-  /// Creates RVL VPValue;
-  void createRVL() {
-    if (!RVL)
-      RVL = new VPValue();
-  }
-
   /// Generate vsetvli call.
   Value *getSetVL(VPTransformState &State, Value *RVL);
 
   /// Returns VPValue for PrevRVL.
   VPValue *getPrevRVL() const { return PrevRVL; }
 
-  /// Creates PrevRVL VPValue;
-  void createPrevRVL() {
-    if (!PrevRVL)
-      PrevRVL = new VPValue();
+  /// Sets PrevRVL
+  void setPrevRVL(VPValue *RVL) {
+    assert(!PrevRVL && "PrevRVL can only be set once");
+    PrevRVL = RVL;
   }
 
   /// Returns VPValue for InitRVL
@@ -3387,6 +3437,12 @@ public:
 
   const decltype(LMULTypePairs) &getLMULTypePairs() const {
     return LMULTypePairs;
+  }
+
+  void setUseVLAVectorizer(bool Use) { UseVLAVectorizer = Use; }
+
+  bool useVLAVectorizer() {
+    return UseVLAVectorizer;
   }
 #endif // SIFIVE_CUSTOMIZATION
 

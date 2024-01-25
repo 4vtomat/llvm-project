@@ -2782,9 +2782,8 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
 #if SIFIVE_CUSTOMIZATION
   if (Group->isReverse()) {
     if (Legal->useVLAVectorizer()) {
-      assert(State.Plan->getRVL() &&
-             "RuntimeVL must be initialized at this point");
-      Value *RVL = Builder.CreateZExtOrTrunc(State.get(State.Plan->getRVL(), 0),
+      assert(State.RVL && "RuntimeVL must be initialized at this point");
+      Value *RVL = Builder.CreateZExtOrTrunc(State.get(State.RVL, 0),
                                              Builder.getInt32Ty());
       IndexVal = Builder.CreateAdd(
           IndexVal,
@@ -2946,10 +2945,10 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
           ElementCount EC = Group->isStrided() ? VF : VF * InterleaveFactor;
           GroupMask = State.Builder.getTrueVector(EC);
         }
-        assert(State.Plan->getRVL() &&
+        assert(State.RVL &&
                "RuntimeVL must be initialized at this point");
-        Value *RVL32 = Builder.CreateZExtOrTrunc(
-            State.get(State.Plan->getRVL(), Part), Builder.getInt32Ty());
+        Value *RVL32 = Builder.CreateZExtOrTrunc(State.get(State.RVL, Part),
+                                                 Builder.getInt32Ty());
         if (Group->isStrided()) {
           // Generate the stride.
           // The stride in InterleavedAccessInfo is represented in elements, but
@@ -3029,8 +3028,8 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
 
               Result = Builder.CreateIntrinsic(
                   Intrinsic::experimental_vp_reverse, {Result->getType()},
-                  {Result, TrueVector, State.get(State.Plan->getRVL(), Part)},
-                  nullptr, "deinterleaved.result.reverse");
+                  {Result, TrueVector, State.get(State.RVL, Part)}, nullptr,
+                  "deinterleaved.result.reverse");
           }
           // If this member has different type, cast the result type.
           if (Member->getType() != ScalarTy) {
@@ -3165,8 +3164,8 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
 
           StoredValue = Builder.CreateIntrinsic(
               Intrinsic::experimental_vp_reverse, {StoredValue->getType()},
-              {StoredValue, TrueVector, State.get(State.Plan->getRVL(), Part)},
-              nullptr, "result.reverse");
+              {StoredValue, TrueVector, State.get(State.RVL, Part)}, nullptr,
+              "result.reverse");
         }
         if (StoredValue->getType() != SubVT)
           StoredValue = createBitOrPointerCast(StoredValue, SubVT, DL);
@@ -3186,10 +3185,9 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
             GetVectorInterleaveIntrinsic(InterleaveFactor), {VecTy}, Operands,
             nullptr, "interleaved.vec");
 
-      assert(State.Plan->getRVL() &&
-             "RuntimeVL must be initialized at this point");
-      Value *RVL32 = Builder.CreateZExtOrTrunc(
-          State.get(State.Plan->getRVL(), Part), Builder.getInt32Ty());
+      assert(State.RVL && "RuntimeVL must be initialized at this point");
+      Value *RVL32 = Builder.CreateZExtOrTrunc(State.get(State.RVL, Part),
+                                               Builder.getInt32Ty());
       Value *InterleaveRVL = Builder.CreateMul(
           RVL32, ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor));
       Operands = {StoredVal, AddrParts[Part], GroupMask, InterleaveRVL};
@@ -3322,14 +3320,6 @@ InnerLoopVectorizer::getOrCreateVectorTripCount(BasicBlock *InsertBlock) {
 #if SIFIVE_CUSTOMIZATION
   if (useVLAVectorizer()) {
     Value *TC = getTripCount();
-    // Loop has multiple exits. Make sure scalar remainder executes at least 1
-    // scalar iteration to perform correct jump.
-    if (Cost->requiresScalarEpilogue(VF.isVector())) {
-
-      IRBuilder<> Builder(InsertBlock->getTerminator());
-      TC = Builder.CreateSub(TC, ConstantInt::get(TC->getType(), 1),
-                             "adj.for.rem.tc");
-    }
     return VectorTripCount = TC;
   }
 #endif // SIFIVE_CUSTOMIZATION
@@ -4306,8 +4296,7 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(
   auto *ExtractForScalar = Incoming;
   auto *IdxTy = Builder.getInt32Ty();
 #if SIFIVE_CUSTOMIZATION
-  Value *RVL =
-      State.Plan->getRVL() ? State.get(State.Plan->getRVL(), 0) : nullptr;
+  Value *RVL = State.RVL ? State.get(State.RVL, 0) : nullptr;
 #endif // SIFIVE_CUSTOMIZATION
   Value *RuntimeVF = nullptr;
   if (VF.isVector()) {
@@ -9386,7 +9375,7 @@ LoopVectorizationPlanner::executePlan(
 #if SIFIVE_CUSTOMIZATION
   assert((!Legal->isVectorizableUncountable() ||
           (BestVPlan.isUncountable() && BestVPlan.getInitRVL() &&
-           BestVPlan.getRVL() && !ILV.InitVL)) &&
+           Legal->useVLAVectorizer() && !ILV.InitVL)) &&
          "Uncountable loop is not set up correctly for executing VPlan");
 #endif
   assert(BestVPlan.hasVF(BestVF) &&
@@ -9445,7 +9434,7 @@ LoopVectorizationPlanner::executePlan(
 #if SIFIVE_CUSTOMIZATION
   State.SE = ILV.PSE.getSE();
   State.PreferPredicatedVectorOps = ILV.useVLAVectorizer();
-  if (State.Plan->getRVL()) {
+  if (Legal->useVLAVectorizer()) {
     unsigned SEW;
     Type *SEWType;
     if (std::optional<unsigned> SewHint = Hints.getSEW()) {
@@ -10713,6 +10702,8 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
         VPlanTransforms::truncateToMinimalBitwidths(
             *Plan, CM.getMinimalBitwidths(), PSE.getSE()->getContext());
 #if SIFIVE_CUSTOMIZATION
+      if (Legal->useVLAVectorizer() && !Plan->isUncountable())
+        VPlanTransforms::addExplicitVectorLength(*Plan);
       if (Legal->isVectorizableUncountable())
         VPlanTransforms::optimizeUncountable(*Plan, *PSE.getSE());
       else
@@ -10727,14 +10718,8 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
 
 // Add the necessary canonical IV and branch recipes required to control the
 // loop.
-#if SIFIVE_CUSTOMIZATION
-static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, bool HasNUW,
-                                  DebugLoc DL,
-                                  bool NeedRVL) {
-#else
 static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, bool HasNUW,
                                   DebugLoc DL) {
-#endif // SIFIVE_CUSTOMIZATION
   Value *StartIdx = ConstantInt::get(IdxTy, 0);
   auto *StartV = Plan.getVPValueOrAddLiveIn(StartIdx);
 
@@ -10752,11 +10737,6 @@ static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, bool HasNUW,
   CanonicalIVPHI->addOperand(CanonicalIVIncrement);
 
   VPBasicBlock *EB = TopRegion->getExitingBasicBlock();
-
-#if SIFIVE_CUSTOMIZATION
-  if (NeedRVL)
-    Plan.createRVL();
-#endif // SIFIVE_CUSTOMIZATION
   EB->appendRecipe(CanonicalIVIncrement);
 
   // Add the BranchOnCount VPInstruction to the latch.
@@ -10947,6 +10927,22 @@ static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
 #endif // SIFIVE_CUSTOMIZATION
 }
 
+#if SIFIVE_CUSTOMIZATION
+static const SCEV *createTripCountSCEV(LoopVectorizationLegality &LVL,
+                                       LoopVectorizationCostModel &CM,
+                                       const bool IsUncountable) {
+  if (IsUncountable)
+    return nullptr;
+  PredicatedScalarEvolution &PSE = *LVL.getPredicatedScalarEvolution();
+  const SCEV *TCSCEV =
+      createTripCountSCEV(LVL.getWidestInductionType(), PSE, LVL.getLoop());
+  if (LVL.useVLAVectorizer() && CM.requiresScalarEpilogue(true))
+    return PSE.getSE()->getMinusSCEV(TCSCEV,
+                                     PSE.getSE()->getOne(TCSCEV->getType()));
+  return TCSCEV;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 VPlanPtr
 LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 
@@ -11003,14 +10999,10 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   // loop region contains a header and latch basic blocks.
 #if SIFIVE_CUSTOMIZATION
   const bool IsUncountable = Legal->isVectorizableUncountable();
-  const SCEV *TripCountSCEV =
-      IsUncountable
-          ? nullptr
-          : createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop);
+  const SCEV *TripCountSCEV = ::createTripCountSCEV(*Legal, CM, IsUncountable);
   VPlanPtr Plan =
       VPlan::createInitialVPlan(TripCountSCEV, *PSE.getSE(), IsUncountable);
   if (IsUncountable) {
-    Plan->createRVL();
     Plan->createInitRVL();
   }
 #else
@@ -11042,12 +11034,9 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   // Canonical IV is not available for uncountable loops in general.
   if (!Legal->isVectorizableUncountable()) {
       DL = getDebugLocFromInstOrOperands(Legal->getPrimaryInduction());
-  addCanonicalIVRecipes(
-      *Plan, Legal->getWidestInductionType(), HasNUW,
-      DL, Legal->useVLAVectorizer());
-  addCSAPreprocessRecipes(
-      Legal->getCSAs(), OrigLoop, Plan->getPreheader(), HeaderVPBB,
-      DL, Range, *Plan);
+      addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), HasNUW, DL);
+      addCSAPreprocessRecipes(Legal->getCSAs(), OrigLoop, Plan->getPreheader(),
+                              HeaderVPBB, DL, Range, *Plan);
 #else
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), HasNUW, DL);
 #endif // SIFIVE_CUSTOMIZATION
@@ -11057,8 +11046,7 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   // intrinsic of a fixed order recurrence and CSA
   bool NeedOtherRVLs = !Legal->getFixedOrderRecurrences().empty() ||
                        !Legal->getCSAs().empty();
-  if (Plan->getRVL() && NeedOtherRVLs) {
-    Plan->createPrevRVL();
+  if (Legal->useVLAVectorizer() && NeedOtherRVLs) {
     Plan->createInitRVL();
   }
 #endif // SIFIVE_CUSTOMIZATION
@@ -11348,13 +11336,8 @@ VPlanPtr LoopVectorizationPlanner::buildVPlan(VFRange &Range) {
   // Tail folding is not supported for outer loops, so the induction increment
   // is guaranteed to not wrap.
   bool HasNUW = true;
-#if SIFIVE_CUSTOMIZATION
-  addCanonicalIVRecipes(
-      *Plan, Legal->getWidestInductionType(), HasNUW, DebugLoc(), Legal->useVLAVectorizer());
-#else
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), HasNUW,
                         DebugLoc());
-#endif // SIFIVE_CUSTOMIZATION
   return Plan;
 }
 
@@ -11729,9 +11712,17 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
   Value *ScalarStepValue = State.get(getOperand(1), VPIteration(0, 0));
 #if SIFIVE_CUSTOMIZATION
   Value *RuntimeVF;
-  if (VPValue *RVL = State.Plan->getRVL())
-    RuntimeVF = State.Builder.CreateIntCast(State.get(RVL, 0), PhiType,
+  if (State.Plan->useVLAVectorizer()) {
+    // FIXME: Remove this code with a proper representation of pointer induction
+    // in a VPlan.
+    assert(!State.RVL &&
+           "Runtime VL is available, but code was not updated to use it.");
+    if (!State.RVLPlaceholder)
+      State.RVLPlaceholder = State.Builder.CreateLoad(PhiType,
+                                     UndefValue::get(PhiType->getPointerTo()));
+    RuntimeVF = State.Builder.CreateIntCast(State.RVLPlaceholder, PhiType,
                                             /*IsSigned=*/false);
+  }
   else
     RuntimeVF = getRuntimeVF(State.Builder, PhiType, State.VF);
 #else
@@ -11752,12 +11743,11 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
 
 #if SIFIVE_CUSTOMIZATION
   // To hoist the below calculation to preheader, we switch to vscale
-  if (State.Plan->getRVL()) {
-    auto CurrIP = State.Builder.saveIP();
+  if (State.Plan->useVLAVectorizer()) {
+    IRBuilder<>::InsertPointGuard Guard(State.Builder);
     State.Builder.SetInsertPoint(VectorPH->getTerminator());
     assert(State.UF == 1 && "interleaving should be disabled to use vscale");
     RuntimeVF = getRuntimeVF(State.Builder, PhiType, State.VF);
-    State.Builder.restoreIP(CurrIP);
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -11767,7 +11757,7 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
   for (unsigned Part = 0; Part < State.UF; ++Part) {
 #if SIFIVE_CUSTOMIZATION
     auto CurrIP = State.Builder.saveIP();
-    if (State.Plan->getRVL())
+    if (State.Plan->useVLAVectorizer())
       State.Builder.SetInsertPoint(VectorPH->getTerminator());
 #endif // SIFIVE_CUSTOMIZATION
     Type *VecPhiType = VectorType::get(PhiType, State.VF);
@@ -11779,7 +11769,7 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
     StartOffset = State.Builder.CreateAdd(
         StartOffset, State.Builder.CreateStepVector(VecPhiType));
 #if SIFIVE_CUSTOMIZATION
-    if (State.Plan->getRVL())
+    if (State.Plan->useVLAVectorizer())
       State.Builder.restoreIP(CurrIP);
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -11838,8 +11828,7 @@ void VPReductionRecipe::execute(VPTransformState &State) {
   for (unsigned Part = 0; Part < State.UF; ++Part) {
     Value *NewVecOp = State.get(getVecOp(), Part);
 #if SIFIVE_CUSTOMIZATION
-    Value *RVLPart =
-        State.Plan->getRVL() ? State.get(State.Plan->getRVL(), Part) : nullptr;
+    Value *RVLPart = State.RVL ? State.get(State.RVL, Part) : nullptr;
     Value *NewCond = nullptr;
     if (VPValue *Cond = getCondOp())
       NewCond = State.VF.isVector() ? State.get(Cond, Part)
@@ -11997,7 +11986,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       Value *Mask = State.get(getMask(), Part);
 #if SIFIVE_CUSTOMIZATION
       if (isReverse()) {
-        if (VPValue *RVL = State.Plan->getRVL()) {
+        if (VPValue *RVL = State.RVL) {
           VectorType *MaskTy = cast<VectorType>(Mask->getType());
           Value *BlockInMaskPart =
               Builder.getTrueVector(MaskTy->getElementCount());
@@ -12040,9 +12029,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       // creation, possibly default value = whole vector register length. RVL is
       // created only if TTI prefers predicated vectorization, thus if RVL is
       // not nullptr it also implies preference for predicated vectorization.
-      Value *RVLPart = State.Plan->getRVL()
-                           ? State.get(State.Plan->getRVL(), Part)
-                           : nullptr;
+      Value *RVLPart = State.RVL ? State.get(State.RVL, Part) : nullptr;
 #endif // SIFIVE_CUSTOMIZATION
       if (CreateGatherScatter) {
 #if SIFIVE_CUSTOMIZATION
@@ -12125,8 +12112,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
   for (unsigned Part = 0; Part < State.UF; ++Part) {
     Value *NewLI;
 #if SIFIVE_CUSTOMIZATION
-    Value *RVLPart =
-        State.Plan->getRVL() ? State.get(State.Plan->getRVL(), Part) : nullptr;
+    Value *RVLPart = State.RVL ? State.get(State.RVL, Part) : nullptr;
 #endif // SIFIVE_CUSTOMIZATION
     if (CreateGatherScatter) {
 #if SIFIVE_CUSTOMIZATION
@@ -12194,6 +12180,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       }
     }
 
+#if SIFIVE_CUSTOMIZATION
     if (Speculative) {
       // For FFLoad, we'd like to generate something similar to the following.
       // %a = call { <vscale x 8 x i8>, i32 } @llvm.vp.load.ff.nxv8i8.p0(
@@ -12201,9 +12188,10 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       // %b = extractvalue { <vscale x 8 x i32>, i32 } %a, 0
       // %c = extractvalue { <vscale x 8 x i32>, i32 } %a, 1
       Value *VL = Builder.CreateExtractValue(NewLI, 1);
-      State.set(State.Plan->getRVL(), VL, Part);
+      State.set(State.RVL, VL, Part);
       NewLI = Builder.CreateExtractValue(NewLI, 0);
     }
+#endif // SIFIVE_CUSTOMIZATION
     State.set(getVPSingleValue(), NewLI, Part);
   }
 }
