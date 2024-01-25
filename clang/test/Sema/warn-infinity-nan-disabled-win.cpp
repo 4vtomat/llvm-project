@@ -2,15 +2,15 @@
 // on Windows the NAN macro is defined using INFINITY. See below.
 
 // RUN: %clang_cc1 -x c++ -verify=no-inf-no-nan -triple powerpc64le-unknown-unknown %s \
-// RUN: -menable-no-infs -menable-no-nans
+// RUN: -menable-no-infs -menable-no-nans -Wnan-infinity-disabled
 
-// RUN: %clang_cc1 -x c++ -verify=no-fast -triple powerpc64le-unknown-unknown %s
+// RUN: %clang_cc1 -x c++ -verify=no-fast -triple powerpc64le-unknown-unknown %s -Wnan-infinity-disabled
 
 // RUN: %clang_cc1 -x c++ -verify=no-inf -triple powerpc64le-unknown-unknown %s \
-// RUN: -menable-no-infs
+// RUN: -menable-no-infs -Wnan-infinity-disabled
 
 // RUN: %clang_cc1 -x c++ -verify=no-nan -triple powerpc64le-unknown-unknown %s \
-// RUN: -menable-no-nans
+// RUN: -menable-no-nans -Wnan-infinity-disabled
 
 // no-fast-no-diagnostics
 
