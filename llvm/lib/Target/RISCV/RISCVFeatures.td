@@ -1386,23 +1386,27 @@ def TuneSiFiveP400 : SubtargetFeature<"sifive-p400", "RISCVProcFamily", "SiFiveP
                                       "SiFive P400-Series processors",
                                       [TuneNoDefaultUnroll,
                                        TuneConditionalCompressedMoveFusion,
-                                       TuneLUIADDIFusion]>;
+                                       TuneLUIADDIFusion,
+                                       TuneAUIPCADDIFusion]>;
 def TuneSiFiveP500 : SubtargetFeature<"sifive-p500", "RISCVProcFamily", "SiFiveP500",
                                       "SiFive P500-Series processors",
                                       [TuneNoDefaultUnroll,
                                        TuneConditionalCompressedMoveFusion,
-                                       TuneLUIADDIFusion]>;
+                                       TuneLUIADDIFusion,
+                                       TuneAUIPCADDIFusion]>;
 def TuneSiFiveP600 : SubtargetFeature<"sifive-p600", "RISCVProcFamily", "SiFiveP600",
                                       "SiFive P600-Series processors",
                                       [TuneNoDefaultUnroll,
                                        TuneConditionalCompressedMoveFusion,
-                                       TuneLUIADDIFusion]>;
+                                       TuneLUIADDIFusion,
+                                       TuneAUIPCADDIFusion]>;
 
 def TuneSiFiveP800 : SubtargetFeature<"sifive-p800", "RISCVProcFamily", "SiFiveP800",
                                       "SiFive P800-Series processors",
                                       [TuneNoDefaultUnroll,
                                        TuneConditionalCompressedMoveFusion,
-                                       TuneLUIADDIFusion]>;
+                                       TuneLUIADDIFusion,
+                                       TuneAUIPCADDIFusion]>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def TuneVentanaVeyron : SubtargetFeature<"ventana-veyron", "RISCVProcFamily", "VentanaVeyron",

@@ -172,10 +172,7 @@ static bool isLUIADDI(const MachineInstr *FirstMI,
   if (!FirstMI)
     return true;
 
-#if SIFIVE_CUSTOMIZATION
-  if (FirstMI->getOpcode() != RISCV::LUI &&
-      FirstMI->getOpcode() != RISCV::AUIPC)
-#endif // SIFIVE_CUSTOMIZATION
+  if (FirstMI->getOpcode() != RISCV::LUI)
     return false;
 
   return checkRegisters(FirstMI->getOperand(0).getReg(), SecondMI);
