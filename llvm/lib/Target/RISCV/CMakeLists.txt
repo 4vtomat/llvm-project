@@ -50,6 +50,7 @@ add_llvm_target(RISCVCodeGen
   RISCVMacroFusion.cpp
   RISCVMergeBaseOffset.cpp
   RISCVOptWInstrs.cpp
+  SiFive_RISCVPeephole.cpp
   RISCVPostRAExpandPseudoInsts.cpp
   RISCVRedundantCopyElimination.cpp
   RISCVMoveMerger.cpp

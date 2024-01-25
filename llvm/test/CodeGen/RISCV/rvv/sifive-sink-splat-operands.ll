@@ -49,16 +49,15 @@ declare i64 @llvm.vscale.i64()
 define void @sink_splat_add_scalable(i32* nocapture %a, i32 signext %x) {
 ; CHECK-LABEL: sink_splat_add_scalable:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    csrr a4, vlenb
+; CHECK-NEXT:    csrr a3, vlenb
 ; CHECK-NEXT:    li a2, 1024
-; CHECK-NEXT:    srli a3, a4, 1
-; CHECK-NEXT:    bgeu a2, a3, .LBB1_2
+; CHECK-NEXT:    srli a4, a3, 1
+; CHECK-NEXT:    bgeu a2, a4, .LBB1_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    li a7, 0
 ; CHECK-NEXT:    j .LBB1_5
 ; CHECK-NEXT:  .LBB1_2: # %vector.ph
-; CHECK-NEXT:    addi a2, a3, -1
-; CHECK-NEXT:    slli a4, a4, 1
+; CHECK-NEXT:    addi a2, a4, -1
 ; CHECK-NEXT:    mv a5, a0
 ; CHECK-NEXT:    andi a6, a2, 1024
 ; CHECK-NEXT:    vsetvli a2, zero, e32, m2, ta, ma
@@ -68,10 +67,10 @@ define void @sink_splat_add_scalable(i32* nocapture %a, i32 signext %x) {
 ; CHECK-NEXT:  .LBB1_3: # %vector.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
 ; CHECK-NEXT:    vl2re32.v v10, (a5)
-; CHECK-NEXT:    sub a2, a2, a3
+; CHECK-NEXT:    sub a2, a2, a4
 ; CHECK-NEXT:    vadd.vv v10, v10, v8
 ; CHECK-NEXT:    vs2r.v v10, (a5)
-; CHECK-NEXT:    add a5, a5, a4
+; CHECK-NEXT:    sh1add a5, a3, a5
 ; CHECK-NEXT:    bnez a2, .LBB1_3
 ; CHECK-NEXT:  # %bb.4: # %middle.block
 ; CHECK-NEXT:    beqz a6, .LBB1_7

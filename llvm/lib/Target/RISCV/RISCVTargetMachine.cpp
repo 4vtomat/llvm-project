@@ -160,6 +160,7 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   initializeRISCVInsertWriteVXRMPass(*PR);
   initializeRISCVDAGToDAGISelPass(*PR);
 #if SIFIVE_CUSTOMIZATION
+  initializeRISCVPeepholePass(*PR);
   initializeRISCVVLOptimizerPass(*PR);
   initializeRISCVMachineConstPropagationPass(*PR);
 #endif // SIFIVE_CUSTOMIZATION
@@ -649,6 +650,10 @@ void RISCVPassConfig::addMachineSSAOptimization() {
 
   if (EnableMachineCombiner)
     addPass(&MachineCombinerID);
+
+#if SIFIVE_CUSTOMIZATION
+  addPass(createRISCVPeepholePass());
+#endif
 
   if (TM->getTargetTriple().isRISCV64()) {
     addPass(createRISCVOptWInstrsPass());

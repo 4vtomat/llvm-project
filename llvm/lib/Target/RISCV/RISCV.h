@@ -85,6 +85,9 @@ FunctionPass *createRISCVRedundantCopyEliminationPass();
 void initializeRISCVRedundantCopyEliminationPass(PassRegistry &);
 
 #if SIFIVE_CUSTOMIZATION
+FunctionPass *createRISCVPeepholePass();
+void initializeRISCVPeepholePass(PassRegistry &);
+
 FunctionPass *createRISCVMachineConstPropagationPass();
 void initializeRISCVMachineConstPropagationPass(PassRegistry &);
 
