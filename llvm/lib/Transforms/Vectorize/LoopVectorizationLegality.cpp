@@ -2077,7 +2077,7 @@ bool LoopVectorizationLegality::isSpeculationSafe(
     if (Stride != 1) {
       LLVM_DEBUG(
           dbgs()
-          << "Uncountable Loop: Have specualtive load not striding at 1\n");
+          << "Uncountable Loop: Have speculative load not striding at 1\n");
       return false;
     }
   }

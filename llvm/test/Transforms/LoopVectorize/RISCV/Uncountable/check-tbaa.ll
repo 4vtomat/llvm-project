@@ -18,25 +18,23 @@ define void @strlen(ptr %s) {
 ; CHECK-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 1
 ; CHECK-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP6]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[VECTOR_GEP]], i32 0
-; CHECK-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP0]] to i64
-; CHECK-NEXT:    [[TMP9:%.*]] = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[TMP7]], i64 [[TMP8]]), !tbaa [[TBAA0:![0-9]+]]
-; CHECK-NEXT:    [[TMP10:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 0
-; CHECK-NEXT:    [[TMP11:%.*]] = extractvalue { <vscale x 8 x i8>, i64 } [[TMP9]], 1
-; CHECK-NEXT:    [[TMP12:%.*]] = trunc i64 [[TMP11]] to i32
-; CHECK-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP12]]
-; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP10]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
-; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
-; CHECK-NEXT:    [[TMP14:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP12]])
-; CHECK-NEXT:    [[TMP15:%.*]] = icmp sge i32 [[TMP14]], 0
-; CHECK-NEXT:    br i1 [[TMP15]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-NEXT:    [[VP_OP_LOAD_FF:%.*]] = call { <vscale x 8 x i8>, i32 } @llvm.vp.load.ff.nxv8i8.p0(ptr align 1 [[TMP7]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP0]]), !tbaa [[TBAA0:![0-9]+]]
+; CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 8 x i8>, i32 } [[VP_OP_LOAD_FF]], 1
+; CHECK-NEXT:    [[VECTOR_GEP1]] = getelementptr i8, ptr [[POINTER_PHI]], i32 [[TMP8]]
+; CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 8 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i8(<vscale x 8 x i8> [[TMP9]], <vscale x 8 x i8> zeroinitializer, metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP8]])
+; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i8, ptr [[VECTOR_GEP]], i64 1
+; CHECK-NEXT:    [[TMP11:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP8]])
+; CHECK-NEXT:    [[TMP12:%.*]] = icmp sge i32 [[TMP11]], 0
+; CHECK-NEXT:    br i1 [[TMP12]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       vec.uncountable.middle.block:
 ; CHECK-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; CHECK:       vec.uncountable.scalar.ph:
 ; CHECK-NEXT:    br label [[WHILE_COND:%.*]]
 ; CHECK:       while.cond:
 ; CHECK-NEXT:    [[END_0:%.*]] = phi ptr [ [[S]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
-; CHECK-NEXT:    [[TMP16:%.*]] = load i8, ptr [[END_0]], align 1, !tbaa [[TBAA0]]
-; CHECK-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP16]], 0
+; CHECK-NEXT:    [[TMP13:%.*]] = load i8, ptr [[END_0]], align 1, !tbaa [[TBAA0]]
+; CHECK-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP13]], 0
 ; CHECK-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1
 ; CHECK-NEXT:    br i1 [[CMP_NOT]], label [[WHILE_END]], label [[WHILE_COND]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CHECK:       while.end:

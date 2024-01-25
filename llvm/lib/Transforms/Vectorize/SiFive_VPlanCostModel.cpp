@@ -520,7 +520,7 @@ InstructionCost VPlanCostModel::getMemoryOpCost(const Instruction *I, Type *Ty,
   unsigned AS = getLoadStoreAddressSpace(const_cast<Instruction *>(I));
   if (IsConsecutive) {
     InstructionCost Cost = 0;
-    if (!IsSpeculative || IsMasked) {
+    if (IsSpeculative || IsMasked) {
       Cost += TTI.getMaskedMemoryOpCost(I->getOpcode(), Ty, Alignment, AS,
                                         CostKind);
     } else {

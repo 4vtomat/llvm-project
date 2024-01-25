@@ -12148,71 +12148,31 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       // if RVLPart is not null, we can vectorize using predicated
       // intrinsic.
       if (RVLPart) {
-        if (Speculative) {
-          assert(State.Plan->isUncountable() && "Not an uncountable loop");
-          // For FFLoad, we'd like to generate something like below.
-          // %a = call { <vscale x 8 x i8>, i64 } @llvm.riscv.vleff.nxv8i8(
-          //   <vscale x 8 x i8>* %0, i64 %1)
-          // %b = extractvalue { <vscale x 8 x i8>, i64 } %a, 0
-          // %c = extractvalue { <vscale x 8 x i8>, i64 } %a, 1
-          BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
-          Intrinsic::ID FFLoadIntrinsicId =
-              Function::lookupIntrinsicID("llvm.riscv.vleff");
-          Value *RVL = State.get(State.Plan->getRVL(), 0);
-          assert(RVL && "VL is null for uncountable loops");
-          // llvm.riscv.* intrinsics take i64 VL so cast VL to i64 when needed.
-          // VP intrinsics take i32 VL instead.
-          // TODO: Switch to VP vleff when available.
-          // TODO: Make the types consistent to avoid inserting casts.
-          if (RVL->getType() != State.Builder.getInt64Ty())
-            RVL = Builder.CreateIntCast(RVL, State.Builder.getInt64Ty(),
-                                        /*isSigned=*/false);
+        assert((!Speculative || State.Plan->isUncountable()) &&
+               "Speculative load is only allowed for uncountable loops");
 
-          Function *VPIntr = Intrinsic::getDeclaration(
-              VectorPH->getModule(), FFLoadIntrinsicId,
-              {DataTy, RVL->getType()});
-          Value *FFLI = Builder.CreateCall(
-              VPIntr, {PoisonValue::get(DataTy), VecPtr, RVL});
-          State.addMetadata(FFLI, LI);
-          NewLI = Builder.CreateExtractValue(FFLI, 0);
-          Value *VL = Builder.CreateExtractValue(FFLI, 1);
-          // VP intrinsics expect i32 VL
-          if (VL->getType() != State.Builder.getInt32Ty())
-            VL =
-                State.Builder.CreateZExtOrTrunc(VL, State.Builder.getInt32Ty());
-          State.set(State.Plan->getRVL(), VL, 0);
-        } else {
-          BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
-          Function *VPIntr = Intrinsic::getDeclaration(
-              VectorPH->getModule(), Intrinsic::vp_load,
-              {DataTy, VecPtr->getType()});
+        BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
+        Function *VPIntr = Intrinsic::getDeclaration(
+            VectorPH->getModule(),
+            Speculative ? Intrinsic::vp_load_ff : Intrinsic::vp_load,
+            {DataTy, VecPtr->getType()});
 
-          Value *BlockInMaskPart =
-              isMaskRequired ? MaskValue(Part, DataTy->getElementCount())
-                             : Builder.getTrueVector(DataTy->getElementCount());
-
-          NewLI = Builder.CreateCall(VPIntr, {VecPtr, BlockInMaskPart, RVLPart},
-                                     "vp.op.load");
-          cast<IntrinsicInst>(NewLI)->addParamAttr(
-              0, Attribute::getWithAlignment(NewLI->getContext(), Alignment));
-          State.addMetadata(NewLI, LI);
-        }
+        Value *BlockInMaskPart =
+            isMaskRequired ? MaskValue(Part, DataTy->getElementCount())
+                           : Builder.getTrueVector(DataTy->getElementCount());
+        NewLI =
+            Builder.CreateCall(VPIntr, {VecPtr, BlockInMaskPart, RVLPart},
+                               Speculative ? "vp.op.load.ff" : "vp.op.load");
+        cast<IntrinsicInst>(NewLI)->addParamAttr(
+            0, Attribute::getWithAlignment(NewLI->getContext(), Alignment));
       } else if (isMaskRequired)
 #endif // SIFIVE_CUSTOMIZATION
         NewLI = Builder.CreateMaskedLoad(
             DataTy, VecPtr, Alignment, BlockInMaskParts[Part],
             PoisonValue::get(DataTy), "wide.masked.load");
       else
-#if SIFIVE_CUSTOMIZATION
-      {
-#endif // SIFIVE_CUSTOMIZATION
         NewLI =
             Builder.CreateAlignedLoad(DataTy, VecPtr, Alignment, "wide.load");
-#if SIFIVE_CUSTOMIZATION
-      }
-      // Metadata has been attached to the ffload already
-      if (!Speculative)
-#endif // SIFIVE_CUSTOMIZATION
 
       // Add metadata to the load, but setVectorValue to the reverse shuffle.
       State.addMetadata(NewLI, LI);
@@ -12234,6 +12194,16 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       }
     }
 
+    if (Speculative) {
+      // For FFLoad, we'd like to generate something similar to the following.
+      // %a = call { <vscale x 8 x i8>, i32 } @llvm.vp.load.ff.nxv8i8.p0(
+      //   <vscale x 8 x i8>*, i32)
+      // %b = extractvalue { <vscale x 8 x i32>, i32 } %a, 0
+      // %c = extractvalue { <vscale x 8 x i32>, i32 } %a, 1
+      Value *VL = Builder.CreateExtractValue(NewLI, 1);
+      State.set(State.Plan->getRVL(), VL, Part);
+      NewLI = Builder.CreateExtractValue(NewLI, 0);
+    }
     State.set(getVPSingleValue(), NewLI, Part);
   }
 }
