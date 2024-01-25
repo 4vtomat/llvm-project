@@ -6266,13 +6266,8 @@ void Sema::checkRVVTypeSupport(QualType Ty, SourceLocation Loc, Decl *D) {
     Diag(Loc, diag::err_riscv_type_requires_extension, D)
         << Ty << "zvfh or zvfhmin";
   else if (Info.ElementType->isBFloat16Type() &&
-#if SIFIVE_CUSTOMIZATION
-           !TI.hasFeature("experimental-zvfbfmin") &&
-           !TI.hasFeature("xsfvfhbfmin") &&
-           !TI.hasFeature("xsfvfwmaccqqq"))
-    Diag(Loc, diag::err_riscv_type_requires_extension, D) << Ty
-        << "zvfbfmin' or 'xsfvfhbfmin' or 'xsfvfwmaccqqq";
-#endif
+           !TI.hasFeature("experimental-zvfbfmin"))
+    Diag(Loc, diag::err_riscv_type_requires_extension, D) << Ty << "zvfbfmin";
   else if (Info.ElementType->isSpecificBuiltinType(BuiltinType::Float) &&
            !TI.hasFeature("zve32f"))
     Diag(Loc, diag::err_riscv_type_requires_extension, D) << Ty << "zve32f";

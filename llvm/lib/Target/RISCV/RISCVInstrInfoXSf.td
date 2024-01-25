@@ -71,12 +71,16 @@ let RVVConstraint = VMConstraint, Predicates = [HasVendorXSfvqdotq],
   def VQDOTUS_VX : VALUVX<0b101110, OPMVX, "sf.vqdotus.vx">;
 } // Predicates = [HasVendorXSfvqdotq]
 
-let Predicates = [HasVendorXSfvfhbfmin], DecoderNamespace = "XSfvfhbfmin",
-    Constraints = "@earlyclobber $vd", mayRaiseFPException = true in {
-let RVVConstraint = WidenCvt in
-defm VFWCVT_F_BF16_V : VWCVTF_FV_VS2<"sf.vfwcvt.f.bf16.v", 0b010010, 0b01101>;
-defm VFNCVT_BF16_F_W : VNCVTF_FV_VS2<"sf.vfncvt.bf16.f.w", 0b010010, 0b11101>;
-} // Predicates = [HasVendorXSfvqmaccdod]
+let Predicates = [HasVendorXSfvfhbfmin] in {
+def : InstAlias<"sf.vfwcvt.f.bf16.v $vd, $vs2$vm",
+                (VFWCVTBF16_F_F_V VR:$vd, VR:$vs2, VMaskOp:$vm)>;
+def : InstAlias<"sf.vfwcvt.f.bf16.v $vd, $vs2",
+                (VFWCVTBF16_F_F_V VR:$vd, VR:$vs2, zero_reg)>;
+def : InstAlias<"sf.vfncvt.bf16.f.w $vd, $vs2$vm",
+                (VFNCVTBF16_F_F_W VR:$vd, VR:$vs2, VMaskOp:$vm)>;
+def : InstAlias<"sf.vfncvt.bf16.f.w $vd, $vs2",
+                (VFNCVTBF16_F_F_W VR:$vd, VR:$vs2, zero_reg)>;
+}
 
 class CustomSiFiveVF<string opcodestr,  RISCVVFormat opv, bits<6> funct6>
   : RVInstVXCustom2<funct6, opv, (outs VR:$vd),
@@ -791,11 +795,6 @@ let Predicates = [HasVendorXSfvqdotq] in {
   defm : VPatTernaryV_VX_AAXASwapped<"int_riscv_sf_vqdotus", "PseudoVQDOTUS", VQDOTLMuls>;
 }
 
-let Predicates = [HasVendorXSfvfhbfmin], mayRaiseFPException = true in {
-defm PseudoVFWCVT_F_BF16   : VPseudoVWCVTD_V;
-defm PseudoVFNCVT_BF16_F   : VPseudoVNCVTD_W;
-}
-
 def : Pat<(XLenVT (int_riscv_vgetvxrm)), (ReadVXRM)>;
 
 def : Pat<(int_riscv_vsetvxrm (XLenVT GPR:$rm)),
@@ -804,33 +803,75 @@ def : Pat<(int_riscv_vsetvxrm (XLenVT GPR:$rm)),
 def : Pat<(int_riscv_vsetvxrm uimm5:$rm),
           (WriteVXRMImm uimm5:$rm)>;
 
-multiclass XPatConversionWF_VF <string intrinsic, string instruction> {
-  foreach fvtiToFWti = AllWidenableBFloatToFloatVectors in
-  {
-    defvar fvti = fvtiToFWti.Vti;
-    defvar fwti = fvtiToFWti.Wti;
+class XPatUnaryNoMask<string intrinsic_name,
+                      string inst,
+                      string kind,
+                      ValueType result_type,
+                      ValueType op2_type,
+                      int log2sew,
+                      LMULInfo vlmul,
+                      VReg result_reg_class,
+                      VReg op2_reg_class> :
+  Pat<(result_type (!cast<Intrinsic>(intrinsic_name)
+                   (result_type result_reg_class:$merge),
+                   (op2_type op2_reg_class:$rs2),
+                   VLOpFrag)),
+                   (!cast<Instruction>(inst#"_"#kind#"_"#vlmul.MX)
+                   (result_type result_reg_class:$merge),
+                   (op2_type op2_reg_class:$rs2),
+                   FRM_DYN,
+                   GPR:$vl, log2sew, TU_MU)>;
 
-    defm : VPatConversionTA<intrinsic, instruction, "V",
-                            fwti.Vector, fvti.Vector, fwti.Mask, fvti.Log2SEW,
-                            fvti.LMul, fwti.RegClass, fvti.RegClass>;
-  }
+class XPatUnaryMask<string intrinsic_name,
+                    string inst,
+                    string kind,
+                    ValueType result_type,
+                    ValueType op2_type,
+                    ValueType mask_type,
+                    int log2sew,
+                    LMULInfo vlmul,
+                    VReg result_reg_class,
+                    VReg op2_reg_class> :
+  Pat<(result_type (!cast<Intrinsic>(intrinsic_name#"_mask")
+                   (result_type result_reg_class:$merge),
+                   (op2_type op2_reg_class:$rs2),
+                   (mask_type V0),
+                   VLOpFrag, (XLenVT timm:$policy))),
+                   (!cast<Instruction>(inst#"_"#kind#"_"#vlmul.MX#"_MASK")
+                   (result_type result_reg_class:$merge),
+                   (op2_type op2_reg_class:$rs2),
+                   (mask_type V0), FRM_DYN, GPR:$vl, log2sew, (XLenVT timm:$policy))>;
+
+multiclass XPatConversionTA<string intrinsic,
+                            string inst,
+                            string kind,
+                            ValueType result_type,
+                            ValueType op1_type,
+                            ValueType mask_type,
+                            int sew,
+                            LMULInfo vlmul,
+                            VReg result_reg_class,
+                            VReg op1_reg_class> {
+  def : XPatUnaryNoMask<intrinsic, inst, kind, result_type, op1_type,
+                        sew, vlmul, result_reg_class, op1_reg_class>;
+  def : XPatUnaryMask<intrinsic, inst, kind, result_type, op1_type,
+                      mask_type, sew, vlmul, result_reg_class, op1_reg_class>;
 }
-
 multiclass XPatConversionVF_WF <string intrinsic, string instruction> {
   foreach fvtiToFWti = AllWidenableBFloatToFloatVectors in
   {
     defvar fvti = fvtiToFWti.Vti;
     defvar fwti = fvtiToFWti.Wti;
 
-    defm : VPatConversionTA<intrinsic, instruction, "W",
+    defm : XPatConversionTA<intrinsic, instruction, "W",
                             fvti.Vector, fwti.Vector, fvti.Mask, fvti.Log2SEW,
                             fvti.LMul, fvti.RegClass, fwti.RegClass>;
   }
 }
 
 let Predicates = [HasVendorXSfvfhbfmin] in {
-defm : XPatConversionWF_VF<"int_riscv_sf_vfwcvt_f_bf16_v", "PseudoVFWCVT_F_BF16">;
-defm : XPatConversionVF_WF<"int_riscv_sf_vfncvt_bf16_f_w", "PseudoVFNCVT_BF16_F">;
+defm : VPatConversionWF_VF_BF<"int_riscv_sf_vfwcvt_f_bf16_v", "PseudoVFWCVTBF16_F_F">;
+defm : XPatConversionVF_WF<"int_riscv_sf_vfncvt_bf16_f_w", "PseudoVFNCVTBF16_F_F">;
 }
 
 let isBarrier = 1, isReturn = 1, isTerminator = 1,

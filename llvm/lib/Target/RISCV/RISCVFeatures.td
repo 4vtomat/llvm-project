@@ -1097,7 +1097,7 @@ def HasVendorXSfvcp : Predicate<"Subtarget->hasVendorXSfvcp()">,
 def FeatureVendorXSfvfhbfmin
     : SubtargetFeature<"xsfvfhbfmin", "HasVendorXSfvfhbfmin", "true",
                        "Xsfvfhbfmin (SiFive custom minimal BF16 vector support)",
-                       [FeatureStdExtZve32f]>;
+                       [FeatureStdExtZvfbfmin]>;
 def HasVendorXSfvfhbfmin : Predicate<"Subtarget->hasVendorXSfvfhbfmin()">,
                          AssemblerPredicate<(all_of FeatureVendorXSfvfhbfmin),
                          "'Xsfvfhbfmin' (SiFive custom minimal BF16 vector support)">;
@@ -1130,7 +1130,7 @@ def HasVendorXSfvqmaccqoq : Predicate<"Subtarget->hasVendorXSfvqmaccqoq()">,
 def FeatureVendorXSfvfwmaccqqq
     : SubtargetFeature<"xsfvfwmaccqqq", "HasVendorXSfvfwmaccqqq", "true",
                        "'XSfvfwmaccqqq' (SiFive Matrix Multiply Accumulate Instruction and 4-by-4))",
-                       [FeatureStdExtZve32f]>; // SIFIVE
+                       [FeatureStdExtZve32f, FeatureStdExtZvfbfmin]>;
 def HasVendorXSfvfwmaccqqq : Predicate<"Subtarget->hasVendorXSfvfwmaccqqq()">,
                          AssemblerPredicate<(all_of FeatureVendorXSfvfwmaccqqq),
                          "'XSfvfwmaccqqq' (SiFive Matrix Multiply Accumulate Instruction and 4-by-4))">;

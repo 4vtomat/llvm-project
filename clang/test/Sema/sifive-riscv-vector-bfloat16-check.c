@@ -4,10 +4,10 @@
 // REQUIRES: riscv-registered-target
 #include <riscv_vector.h>
 
-vbfloat16mf4_t foo() { /* expected-error {{RISC-V type 'vbfloat16mf4_t' (aka '__rvv_bfloat16mf4_t') requires the 'zvfbfmin' or 'xsfvfhbfmin' or 'xsfvfwmaccqqq' extension}} */
-  vbfloat16mf4_t bf16m1; /* expected-error {{RISC-V type 'vbfloat16mf4_t' (aka '__rvv_bfloat16mf4_t') requires the 'zvfbfmin' or 'xsfvfhbfmin' or 'xsfvfwmaccqqq' extension}} */
+vbfloat16mf4_t foo() { /* expected-error {{RISC-V type 'vbfloat16mf4_t' (aka '__rvv_bfloat16mf4_t') requires the 'zvfbfmin' extension}} */
+  vbfloat16mf4_t bf16m1; /* expected-error {{RISC-V type 'vbfloat16mf4_t' (aka '__rvv_bfloat16mf4_t') requires the 'zvfbfmin' extension}} */
 
-  (void)bf16m1; /* expected-error {{RISC-V type 'vbfloat16mf4_t' (aka '__rvv_bfloat16mf4_t') requires the 'zvfbfmin' or 'xsfvfhbfmin' or 'xsfvfwmaccqqq' extension}} */
+  (void)bf16m1; /* expected-error {{RISC-V type 'vbfloat16mf4_t' (aka '__rvv_bfloat16mf4_t') requires the 'zvfbfmin' extension}} */
 
-  return bf16m1; /* expected-error {{RISC-V type 'vbfloat16mf4_t' (aka '__rvv_bfloat16mf4_t') requires the 'zvfbfmin' or 'xsfvfhbfmin' or 'xsfvfwmaccqqq' extension}} */
+  return bf16m1; /* expected-error {{RISC-V type 'vbfloat16mf4_t' (aka '__rvv_bfloat16mf4_t') requires the 'zvfbfmin' extension}} */
 }
