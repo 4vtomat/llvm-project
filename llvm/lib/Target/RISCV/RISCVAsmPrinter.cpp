@@ -822,6 +822,7 @@ static MCOperand lowerSymbolOperand(const MachineOperand &MO, MCSymbol *Sym,
   case RISCVII::MO_TLS_GD_HI:
     Kind = RISCVMCExpr::VK_RISCV_TLS_GD_HI;
     break;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case RISCVII::MO_TLS_GOT_GPREL_LO:
     Kind = RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_LO;
@@ -851,6 +852,20 @@ static MCOperand lowerSymbolOperand(const MachineOperand &MO, MCSymbol *Sym,
     Kind = RISCVMCExpr::VK_RISCV_GOT_GPREL_HI;
     break;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  case RISCVII::MO_TLSDESC_HI:
+    Kind = RISCVMCExpr::VK_RISCV_TLSDESC_HI;
+    break;
+  case RISCVII::MO_TLSDESC_LOAD_LO:
+    Kind = RISCVMCExpr::VK_RISCV_TLSDESC_LOAD_LO;
+    break;
+  case RISCVII::MO_TLSDESC_ADD_LO:
+    Kind = RISCVMCExpr::VK_RISCV_TLSDESC_ADD_LO;
+    break;
+  case RISCVII::MO_TLSDESC_CALL:
+    Kind = RISCVMCExpr::VK_RISCV_TLSDESC_CALL;
+    break;
+>>>>>>> llvm/main
   }
 
   const MCExpr *ME =

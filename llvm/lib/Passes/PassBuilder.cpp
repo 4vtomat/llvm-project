@@ -83,6 +83,7 @@
 #include "llvm/CodeGen/ExpandLargeDivRem.h"
 #include "llvm/CodeGen/ExpandLargeFpConvert.h"
 #include "llvm/CodeGen/ExpandMemCmp.h"
+#include "llvm/CodeGen/FreeMachineFunction.h"
 #include "llvm/CodeGen/GCMetadata.h"
 #include "llvm/CodeGen/GlobalMerge.h"
 #include "llvm/CodeGen/HardwareLoops.h"
@@ -415,7 +416,7 @@ PassBuilder::PassBuilder(TargetMachine *TM, PipelineTuningOptions PTO,
   PIC->addClassToPassName(PASS_NAME::name(), NAME);
 #define MACHINE_FUNCTION_PASS(NAME, PASS_NAME, CONSTRUCTOR)                    \
   PIC->addClassToPassName(PASS_NAME::name(), NAME);
-#include "llvm/CodeGen/MachinePassRegistry.def"
+#include "llvm/Passes/MachinePassRegistry.def"
   }
 }
 
@@ -456,7 +457,7 @@ void PassBuilder::registerMachineFunctionAnalyses(
 
 #define MACHINE_FUNCTION_ANALYSIS(NAME, PASS_NAME, CONSTRUCTOR)                \
   MFAM.registerPass([&] { return PASS_NAME(); });
-#include "llvm/CodeGen/MachinePassRegistry.def"
+#include "llvm/Passes/MachinePassRegistry.def"
 
   for (auto &C : MachineFunctionAnalysisRegistrationCallbacks)
     C(MFAM);
@@ -760,6 +761,26 @@ Expected<HWAddressSanitizerOptions> parseHWASanPassOptions(StringRef Params) {
     } else {
       return make_error<StringError>(
           formatv("invalid HWAddressSanitizer pass parameter '{0}' ", ParamName)
+              .str(),
+          inconvertibleErrorCode());
+    }
+  }
+  return Result;
+}
+
+Expected<EmbedBitcodeOptions> parseEmbedBitcodePassOptions(StringRef Params) {
+  EmbedBitcodeOptions Result;
+  while (!Params.empty()) {
+    StringRef ParamName;
+    std::tie(ParamName, Params) = Params.split(';');
+
+    if (ParamName == "thinlto") {
+      Result.IsThinLTO = true;
+    } else if (ParamName == "emit-summary") {
+      Result.EmitLTOSummary = true;
+    } else {
+      return make_error<StringError>(
+          formatv("invalid EmbedBitcode pass parameter '{0}' ", ParamName)
               .str(),
           inconvertibleErrorCode());
     }
@@ -1863,7 +1884,7 @@ Error PassBuilder::parseMachinePass(MachineFunctionPassManager &MFPM,
     MFPM.addPass(PASS_NAME());                                                 \
     return Error::success();                                                   \
   }
-#include "llvm/CodeGen/MachinePassRegistry.def"
+#include "llvm/Passes/MachinePassRegistry.def"
 
   for (auto &C : MachinePipelineParsingCallbacks)
     if (C(Name, MFPM))
@@ -2174,17 +2195,17 @@ void PassBuilder::printPassNames(raw_ostream &OS) {
   OS << "Machine module passes (WIP):\n";
 #define MACHINE_MODULE_PASS(NAME, PASS_NAME, CONSTRUCTOR)                      \
   printPassName(NAME, OS);
-#include "llvm/CodeGen/MachinePassRegistry.def"
+#include "llvm/Passes/MachinePassRegistry.def"
 
   OS << "Machine function passes (WIP):\n";
 #define MACHINE_FUNCTION_PASS(NAME, PASS_NAME, CONSTRUCTOR)                    \
   printPassName(NAME, OS);
-#include "llvm/CodeGen/MachinePassRegistry.def"
+#include "llvm/Passes/MachinePassRegistry.def"
 
   OS << "Machine function analyses (WIP):\n";
 #define MACHINE_FUNCTION_ANALYSIS(NAME, PASS_NAME, CONSTRUCTOR)                \
   printPassName(NAME, OS);
-#include "llvm/CodeGen/MachinePassRegistry.def"
+#include "llvm/Passes/MachinePassRegistry.def"
 }
 
 void PassBuilder::registerParseTopLevelPipelineCallback(

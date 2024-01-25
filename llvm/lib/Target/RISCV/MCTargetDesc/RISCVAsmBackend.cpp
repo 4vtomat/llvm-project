@@ -101,6 +101,12 @@ RISCVAsmBackend::getFixupKindInfo(MCFixupKind Kind) const {
       {"fixup_riscv_call_plt", 0, 64, MCFixupKindInfo::FKF_IsPCRel},
       {"fixup_riscv_relax", 0, 0, 0},
       {"fixup_riscv_align", 0, 0, 0},
+
+      {"fixup_riscv_tlsdesc_hi20", 12, 20,
+       MCFixupKindInfo::FKF_IsPCRel | MCFixupKindInfo::FKF_IsTarget},
+      {"fixup_riscv_tlsdesc_load_lo12", 20, 12, 0},
+      {"fixup_riscv_tlsdesc_add_lo12", 20, 12, 0},
+      {"fixup_riscv_tlsdesc_call", 0, 0, 0},
   };
   static_assert((std::size(Infos)) == RISCV::NumTargetFixupKinds,
                 "Not all fixup kinds added to Infos array");
@@ -141,6 +147,7 @@ bool RISCVAsmBackend::shouldForceRelocation(const MCAssembler &Asm,
   case RISCV::fixup_riscv_got_hi20:
   case RISCV::fixup_riscv_tls_got_hi20:
   case RISCV::fixup_riscv_tls_gd_hi20:
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case RISCV::fixup_riscv_gprel_hi20:
   case RISCV::fixup_riscv_gprel_lo12_i:
@@ -155,6 +162,9 @@ bool RISCVAsmBackend::shouldForceRelocation(const MCAssembler &Asm,
   case RISCV::fixup_riscv_tls_gd_gprel_lo12_i:
   case RISCV::fixup_riscv_tls_gd_gprel_add:
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  case RISCV::fixup_riscv_tlsdesc_hi20:
+>>>>>>> llvm/main
     return true;
   }
 
@@ -440,6 +450,7 @@ static uint64_t adjustFixupValue(const MCFixup &Fixup, uint64_t Value,
   case RISCV::fixup_riscv_got_hi20:
   case RISCV::fixup_riscv_tls_got_hi20:
   case RISCV::fixup_riscv_tls_gd_hi20:
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case RISCV::fixup_riscv_got_gprel_hi20:
   case RISCV::fixup_riscv_got_gprel_lo12_i:
@@ -448,6 +459,9 @@ static uint64_t adjustFixupValue(const MCFixup &Fixup, uint64_t Value,
   case RISCV::fixup_riscv_tls_gd_gprel_hi20:
   case RISCV::fixup_riscv_tls_gd_gprel_lo12_i:
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  case RISCV::fixup_riscv_tlsdesc_hi20:
+>>>>>>> llvm/main
     llvm_unreachable("Relocation should be unconditionally forced\n");
   case FK_Data_1:
   case FK_Data_2:
@@ -458,6 +472,7 @@ static uint64_t adjustFixupValue(const MCFixup &Fixup, uint64_t Value,
   case RISCV::fixup_riscv_lo12_i:
   case RISCV::fixup_riscv_pcrel_lo12_i:
   case RISCV::fixup_riscv_tprel_lo12_i:
+  case RISCV::fixup_riscv_tlsdesc_load_lo12:
     return Value & 0xfff;
   case RISCV::fixup_riscv_12_i:
     if (!isInt<12>(Value)) {
@@ -561,6 +576,7 @@ bool RISCVAsmBackend::evaluateTargetFixup(
   switch (Fixup.getTargetKind()) {
   default:
     llvm_unreachable("Unexpected fixup kind!");
+  case RISCV::fixup_riscv_tlsdesc_hi20:
   case RISCV::fixup_riscv_pcrel_hi20:
     AUIPCFixup = &Fixup;
     AUIPCDF = DF;

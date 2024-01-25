@@ -57,11 +57,18 @@ public:
                           SmallVectorImpl<MCFixup> &Fixups,
                           const MCSubtargetInfo &STI) const;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   void expandAddRegRel(const MCInst &MI, SmallVectorImpl<char> &CB,
                        SmallVectorImpl<MCFixup> &Fixups,
                        const MCSubtargetInfo &STI) const;
 #else
+=======
+  void expandTLSDESCCall(const MCInst &MI, SmallVectorImpl<char> &CB,
+                         SmallVectorImpl<MCFixup> &Fixups,
+                         const MCSubtargetInfo &STI) const;
+
+>>>>>>> llvm/main
   void expandAddTPRel(const MCInst &MI, SmallVectorImpl<char> &CB,
                       SmallVectorImpl<MCFixup> &Fixups,
                       const MCSubtargetInfo &STI) const;
@@ -160,6 +167,7 @@ void RISCVMCCodeEmitter::expandFunctionCall(const MCInst &MI,
   support::endian::write(CB, Binary, llvm::endianness::little);
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // Expand PseudoAddRegRel to a simple ADD with the correct relocation.
 void RISCVMCCodeEmitter::expandAddRegRel(const MCInst &MI,
@@ -222,6 +230,28 @@ void RISCVMCCodeEmitter::expandAddRegRel(const MCInst &MI,
   support::endian::write(CB, Binary, llvm::endianness::little);
 }
 #else
+=======
+void RISCVMCCodeEmitter::expandTLSDESCCall(const MCInst &MI,
+                                           SmallVectorImpl<char> &CB,
+                                           SmallVectorImpl<MCFixup> &Fixups,
+                                           const MCSubtargetInfo &STI) const {
+  MCOperand SrcSymbol = MI.getOperand(3);
+  assert(SrcSymbol.isExpr() &&
+         "Expected expression as first input to TLSDESCCALL");
+  const RISCVMCExpr *Expr = dyn_cast<RISCVMCExpr>(SrcSymbol.getExpr());
+  MCRegister Link = MI.getOperand(0).getReg();
+  MCRegister Dest = MI.getOperand(1).getReg();
+  MCRegister Imm = MI.getOperand(2).getImm();
+  Fixups.push_back(MCFixup::create(
+      0, Expr, MCFixupKind(RISCV::fixup_riscv_tlsdesc_call), MI.getLoc()));
+  MCInst Call =
+      MCInstBuilder(RISCV::JALR).addReg(Link).addReg(Dest).addImm(Imm);
+
+  uint32_t Binary = getBinaryCodeForInstr(Call, Fixups, STI);
+  support::endian::write(CB, Binary, llvm::endianness::little);
+}
+
+>>>>>>> llvm/main
 // Expand PseudoAddTPRel to a simple ADD with the correct relocation.
 void RISCVMCCodeEmitter::expandAddTPRel(const MCInst &MI,
                                         SmallVectorImpl<char> &CB,
@@ -376,6 +406,10 @@ void RISCVMCCodeEmitter::encodeInstruction(const MCInst &MI,
   case RISCV::PseudoLongBGEU:
     expandLongCondBr(MI, CB, Fixups, STI);
     MCNumEmitted += 2;
+    return;
+  case RISCV::PseudoTLSDESCCall:
+    expandTLSDESCCall(MI, CB, Fixups, STI);
+    MCNumEmitted += 1;
     return;
   }
 
@@ -565,6 +599,18 @@ unsigned RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
     case RISCVMCExpr::VK_RISCV_CALL_PLT:
       FixupKind = RISCV::fixup_riscv_call_plt;
       RelaxCandidate = true;
+      break;
+    case RISCVMCExpr::VK_RISCV_TLSDESC_HI:
+      FixupKind = RISCV::fixup_riscv_tlsdesc_hi20;
+      break;
+    case RISCVMCExpr::VK_RISCV_TLSDESC_LOAD_LO:
+      FixupKind = RISCV::fixup_riscv_tlsdesc_load_lo12;
+      break;
+    case RISCVMCExpr::VK_RISCV_TLSDESC_ADD_LO:
+      FixupKind = RISCV::fixup_riscv_tlsdesc_add_lo12;
+      break;
+    case RISCVMCExpr::VK_RISCV_TLSDESC_CALL:
+      FixupKind = RISCV::fixup_riscv_tlsdesc_call;
       break;
     }
   } else if ((Kind == MCExpr::SymbolRef &&

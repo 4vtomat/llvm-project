@@ -27,6 +27,9 @@
 #include "llvm/Target/TargetMachine.h"
 #include <bitset>
 
+#define GET_RISCV_MACRO_FUSION_PRED_DECL
+#include "RISCVGenMacroFusion.inc"
+
 #define GET_SUBTARGETINFO_HEADER
 #include "RISCVGenSubtargetInfo.inc"
 
@@ -250,6 +253,7 @@ public:
     return UserReservedRegister[i];
   }
 
+<<<<<<< HEAD
   bool hasMacroFusion() const {
 #if SIFIVE_CUSTOMIZATION
     if (hasFuseLUILoad() || hasFuseIndexedLoad() || hasFuseArithEqZ() ||
@@ -260,6 +264,8 @@ public:
            hasZExtWFusion() || hasShiftedZExtWFusion() || hasLDADDFusion();
   }
 
+=======
+>>>>>>> llvm/main
   // Vector codegen related methods.
   bool hasVInstructions() const { return HasStdExtZve32x; }
   bool hasVInstructionsI64() const { return HasStdExtZve64x; }

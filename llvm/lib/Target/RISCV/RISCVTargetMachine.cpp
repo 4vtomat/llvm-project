@@ -14,7 +14,6 @@
 #include "MCTargetDesc/RISCVBaseInfo.h"
 #include "RISCV.h"
 #include "RISCVMachineFunctionInfo.h"
-#include "RISCVMacroFusion.h"
 #include "RISCVTargetObjectFile.h"
 #include "RISCVTargetTransformInfo.h"
 #if SIFIVE_CUSTOMIZATION
@@ -29,6 +28,8 @@
 #include "llvm/CodeGen/GlobalISel/RegBankSelect.h"
 #include "llvm/CodeGen/MIRParser/MIParser.h"
 #include "llvm/CodeGen/MIRYamlMapping.h"
+#include "llvm/CodeGen/MachineScheduler.h"
+#include "llvm/CodeGen/MacroFusion.h"
 #include "llvm/CodeGen/Passes.h"
 #include "llvm/CodeGen/RegAllocRegistry.h"
 #include "llvm/CodeGen/TargetLoweringObjectFileImpl.h"
@@ -402,6 +403,7 @@ public:
       DAG->addMutation(createLoadClusterDAGMutation(
           DAG->TII, DAG->TRI, /*ReorderWhileClustering=*/true));
     }
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
       if (!DAG)
@@ -410,8 +412,12 @@ public:
     }
 #endif // SIFIVE_CUSTOMIZATION
     if (ST.hasMacroFusion()) {
+=======
+    const auto &MacroFusions = ST.getMacroFusions();
+    if (!MacroFusions.empty()) {
+>>>>>>> llvm/main
       DAG = DAG ? DAG : createGenericSchedLive(C);
-      DAG->addMutation(createRISCVMacroFusionDAGMutation());
+      DAG->addMutation(createMacroFusionDAGMutation(MacroFusions));
     }
     return DAG;
   }
@@ -419,6 +425,7 @@ public:
   ScheduleDAGInstrs *
   createPostMachineScheduler(MachineSchedContext *C) const override {
     const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     ScheduleDAGMI *DAG = nullptr;
     if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
@@ -433,8 +440,12 @@ public:
     return DAG;
 #else
     if (ST.hasMacroFusion()) {
+=======
+    const auto &MacroFusions = ST.getMacroFusions();
+    if (!MacroFusions.empty()) {
+>>>>>>> llvm/main
       ScheduleDAGMI *DAG = createGenericSchedPostRA(C);
-      DAG->addMutation(createRISCVMacroFusionDAGMutation());
+      DAG->addMutation(createMacroFusionDAGMutation(MacroFusions));
       return DAG;
     }
     return nullptr;

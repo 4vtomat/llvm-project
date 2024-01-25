@@ -88,7 +88,11 @@
 
 // RUN: not %clang_cc1 -triple riscv64 -target-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix RISCV64
 // RISCV64: error: unknown target CPU 'not-a-cpu'
+<<<<<<< HEAD
 // RISCV64: note: valid target CPU values are: generic-rv64, rocket-rv64, sifive-p270, sifive-p270n, sifive-p450, sifive-p470, sifive-p470s, sifive-p550, sifive-p650, sifive-p670, sifive-p670s, sifive-p870s, sifive-s21, sifive-s21r, sifive-s51, sifive-s54, sifive-s61, sifive-s61r, sifive-s76, sifive-s76m, sifive-s76n, sifive-s76r, sifive-u54, sifive-u64, sifive-u64r, sifive-u74, sifive-u74m, sifive-u74n, sifive-u74r, sifive-x280, sifive-x280n, sifive-x280o, sifive-x392-ea-dualvalu, sifive-x392-ea-singlevalu, veyron-v1, xiangshan-nanhu{{$}}
+=======
+// RISCV64-NEXT: note: valid target CPU values are: generic-rv64, rocket-rv64, sifive-p450, sifive-p670, sifive-s21, sifive-s51, sifive-s54, sifive-s76, sifive-u54, sifive-u74, sifive-x280, veyron-v1, xiangshan-nanhu{{$}}
+>>>>>>> llvm/main
 
 // RUN: not %clang_cc1 -triple riscv32 -tune-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix TUNE-RISCV32
 // TUNE-RISCV32: error: unknown target CPU 'not-a-cpu'
@@ -100,4 +104,8 @@
 
 // RUN: not %clang_cc1 -triple riscv64 -tune-cpu not-a-cpu -fsyntax-only %s 2>&1 | FileCheck %s --check-prefix TUNE-RISCV64
 // TUNE-RISCV64: error: unknown target CPU 'not-a-cpu'
+<<<<<<< HEAD
 // TUNE-RISCV64: note: valid target CPU values are: generic-rv64, rocket-rv64, sifive-p270, sifive-p270n, sifive-p450, sifive-p470, sifive-p470s, sifive-p550, sifive-p650, sifive-p670, sifive-p670s, sifive-p870s, sifive-s21, sifive-s21r, sifive-s51, sifive-s54, sifive-s61, sifive-s61r, sifive-s76, sifive-s76m, sifive-s76n, sifive-s76r, sifive-u54, sifive-u64, sifive-u64r, sifive-u74, sifive-u74m, sifive-u74n, sifive-u74r, sifive-x280, sifive-x280n, sifive-x280o, sifive-x392-ea-dualvalu, sifive-x392-ea-singlevalu, veyron-v1, xiangshan-nanhu, generic, rocket, sifive-6-series, sifive-7-series, sifive-7m-series, sifive-7n-series, sifive-7o-series, sifive-8-series, sifive-p400-series, sifive-p500-series, sifive-p600-series{{$}}
+=======
+// TUNE-RISCV64-NEXT: note: valid target CPU values are: generic-rv64, rocket-rv64, sifive-p450, sifive-p670, sifive-s21, sifive-s51, sifive-s54, sifive-s76, sifive-u54, sifive-u74, sifive-x280, veyron-v1, xiangshan-nanhu, generic, rocket, sifive-7-series{{$}}
+>>>>>>> llvm/main

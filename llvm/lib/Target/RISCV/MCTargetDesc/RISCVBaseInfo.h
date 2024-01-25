@@ -299,6 +299,7 @@ enum {
   MO_TPREL_ADD = 10,
   MO_TLS_GOT_HI = 11,
   MO_TLS_GD_HI = 12,
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   MO_GPREL_LO = 13,
   MO_GPREL_HI = 14,
@@ -313,15 +314,25 @@ enum {
   MO_TLS_GD_GPREL_HI = 23,
   MO_TLS_GD_GPREL_ADD = 24,
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  MO_TLSDESC_HI = 13,
+  MO_TLSDESC_LOAD_LO = 14,
+  MO_TLSDESC_ADD_LO = 15,
+  MO_TLSDESC_CALL = 16,
+>>>>>>> llvm/main
 
   // Used to differentiate between target-specific "direct" flags and "bitmask"
   // flags. A machine operand can only have one "direct" flag, but can have
   // multiple "bitmask" flags.
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   MO_DIRECT_FLAG_MASK = 31
 #else
   MO_DIRECT_FLAG_MASK = 15
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  MO_DIRECT_FLAG_MASK = 31
+>>>>>>> llvm/main
 };
 } // namespace RISCVII
 

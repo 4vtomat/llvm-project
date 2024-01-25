@@ -49,6 +49,7 @@ enum ActionType {
   GenClangAttrNodeTraverse,
   GenClangBasicReader,
   GenClangBasicWriter,
+  GenClangBuiltins,
   GenClangDiagsDefs,
   GenClangDiagGroups,
   GenClangDiagsIndexName,
@@ -184,6 +185,8 @@ cl::opt<ActionType> Action(
                    "Generate clang attribute text node dumper"),
         clEnumValN(GenClangAttrNodeTraverse, "gen-clang-attr-node-traverse",
                    "Generate clang attribute traverser"),
+        clEnumValN(GenClangBuiltins, "gen-clang-builtins",
+                   "Generate clang builtins list"),
         clEnumValN(GenClangDiagsDefs, "gen-clang-diags-defs",
                    "Generate Clang diagnostics definitions"),
         clEnumValN(GenClangDiagGroups, "gen-clang-diag-groups",
@@ -403,6 +406,9 @@ bool ClangTableGenMain(raw_ostream &OS, RecordKeeper &Records) {
     break;
   case GenClangAttrNodeTraverse:
     EmitClangAttrNodeTraverse(Records, OS);
+    break;
+  case GenClangBuiltins:
+    EmitClangBuiltins(Records, OS);
     break;
   case GenClangDiagsDefs:
     EmitClangDiagsDefs(Records, OS, ClangComponent);
