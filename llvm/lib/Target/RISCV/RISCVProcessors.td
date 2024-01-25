@@ -653,7 +653,6 @@ def SIFIVE_X280O :
 
 defvar SIFIVE_X392_Features = [
   Feature64Bit,
-  FeatureStdExtZicsr,
   FeatureStdExtZifencei,
   FeatureStdExtM,
   FeatureStdExtA,
