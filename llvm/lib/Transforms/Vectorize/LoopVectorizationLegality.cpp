@@ -2399,7 +2399,7 @@ bool LoopVectorizationLegality::isSafeStrideAccessInfo(
     return false;
 
   SCEVRuntimeStrideChecker StrideChecker(*this);
-  return StrideChecker.visit(SAI.getSCEVStride());
+  return StrideChecker.visit(SAI.getSCEVStrideInBytes());
 }
 
 LoopVectorizationLegality::StrideAccessInfo
@@ -2409,14 +2409,15 @@ LoopVectorizationLegality::computeStrideAccessInfo(Instruction *I) const {
   if (!PtrTy)
     return StrideAccessInfo();
 
-  auto GetSimpleSCEVStride = [](const SCEV *SPtr) -> const SCEVAddRecExpr * {
+  auto GetSimpleSCEVStrideInBytes =
+      [](const SCEV *SPtr) -> const SCEVAddRecExpr * {
     const auto *S = dyn_cast<SCEVAddRecExpr>(SPtr);
     if (!S || !S->isAffine())
       return nullptr;
     return S;
   };
 
-  if (const SCEVAddRecExpr *V = GetSimpleSCEVStride(PSE.getSCEV(Ptr))) {
+  if (const SCEVAddRecExpr *V = GetSimpleSCEVStrideInBytes(PSE.getSCEV(Ptr))) {
     const SCEV *Stride = V->getStepRecurrence(*PSE.getSE());
     return StrideAccessInfo(V, Stride);
   }

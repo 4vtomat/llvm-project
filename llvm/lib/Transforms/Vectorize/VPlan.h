@@ -2570,7 +2570,7 @@ class VPWidenMemoryInstructionRecipe : public VPRecipeBase {
 
 #if SIFIVE_CUSTOMIZATION
   // SCEVExpr that holds stride of that memory access. nullptr if it's indexed
-  const SCEV *Stride = nullptr;
+  const SCEV *StrideInBytes = nullptr;
 
   // Speculative load/store
   bool Speculative = false;
@@ -2580,10 +2580,10 @@ public:
 #if SIFIVE_CUSTOMIZATION
   VPWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
                                  bool Consecutive, bool Reverse,
-                                 const SCEV *Stride = nullptr,
+                                 const SCEV *StrideInBytes = nullptr,
                                  bool Speculative = false)
       : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr}), Ingredient(Load),
-        Consecutive(Consecutive), Reverse(Reverse), Stride(Stride),
+        Consecutive(Consecutive), Reverse(Reverse), StrideInBytes(StrideInBytes),
         Speculative(Speculative) {
 #else
   VPWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
@@ -2600,11 +2600,11 @@ public:
   VPWidenMemoryInstructionRecipe(StoreInst &Store, VPValue *Addr,
                                  VPValue *StoredValue, VPValue *Mask,
                                  bool Consecutive, bool Reverse,
-                                 const SCEV *Stride = nullptr,
+                                 const SCEV *StrideInBytes = nullptr,
                                  bool Speculative = false)
       : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr, StoredValue}),
         Ingredient(Store), Consecutive(Consecutive), Reverse(Reverse),
-        Stride(Stride), Speculative(Speculative) {
+        StrideInBytes(StrideInBytes), Speculative(Speculative) {
     assert(!Speculative && "Speculative store is not yet supported");
 #else
   VPWidenMemoryInstructionRecipe(StoreInst &Store, VPValue *Addr,
@@ -2649,11 +2649,11 @@ public:
 
 #if SIFIVE_CUSTOMIZATION
   // Return wheter NonConsecutive loads/stores can be strided
-  bool isStrided() const { return Stride != nullptr; }
+  bool isStrided() const { return StrideInBytes != nullptr; }
 
-  const SCEV *getStride() const {
+  const SCEV *getStrideInBytes() const {
     assert(isStrided() && "Cannot get stride for non-strided memory access");
-    return Stride;
+    return StrideInBytes;
   }
 
   bool isSpeculative() const { return Speculative; }

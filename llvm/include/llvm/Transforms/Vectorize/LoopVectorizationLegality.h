@@ -507,16 +507,17 @@ public:
   class StrideAccessInfo {
   private:
     const SCEV *SCEVExpr = nullptr;
-    const SCEV *SCEVStride = nullptr;
+    const SCEV *SCEVStrideInBytes = nullptr;
 
   public:
     explicit StrideAccessInfo() = default;
-    explicit StrideAccessInfo(const SCEV *SCEVExpr, const SCEV *SCEVStride)
-        : SCEVExpr(SCEVExpr), SCEVStride(SCEVStride) {}
+    explicit StrideAccessInfo(const SCEV *SCEVExpr,
+                              const SCEV *SCEVStrideInBytes)
+        : SCEVExpr(SCEVExpr), SCEVStrideInBytes(SCEVStrideInBytes) {}
     const SCEV *getSCEVExpr() const { return SCEVExpr; }
-    const SCEV *getSCEVStride() const { return SCEVStride; }
+    const SCEV *getSCEVStrideInBytes() const { return SCEVStrideInBytes; }
 
-    explicit operator bool() const { return SCEVExpr && SCEVStride; }
+    explicit operator bool() const { return SCEVExpr && SCEVStrideInBytes; }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
     void print(raw_ostream &OS) const {
@@ -526,7 +527,7 @@ public:
       if (SCEVExpr) {
         OS << *SCEVExpr;
         OS << "( ";
-        OS << " stride: " << *SCEVStride << ')';
+        OS << " stride (in bytes): " << *SCEVStrideInBytes << ')';
       } else {
         OS << "<<unknown>>";
       }

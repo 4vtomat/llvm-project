@@ -325,15 +325,15 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
 
     if (VPWMIR.isStrided()) {
       Value *Ptr = State.get(VPAddr, VPIteration(0, 0));
-      const SCEV *SCEVStride = VPWMIR.getStride();
+      const SCEV *SCEVStrideInBytes = VPWMIR.getStrideInBytes();
       auto &DL = State.CFG.PrevBB->getModule()->getDataLayout();
       SCEVExpander Exp(*(State.SE), DL, "stride");
       Instruction *InsertPoint = &*State.Builder.GetInsertPoint();
-      assert(Exp.isSafeToExpandAt(SCEVStride, InsertPoint) &&
+      assert(Exp.isSafeToExpandAt(SCEVStrideInBytes, InsertPoint) &&
              "It's not safe to expand that SCEV in the vector loop. That was "
              "not caught by isSafeStrideAccessInfo.");
-      Value *Stride =
-          Exp.expandCodeFor(SCEVStride, SCEVStride->getType(), InsertPoint);
+      Value *Stride = Exp.expandCodeFor(
+          SCEVStrideInBytes, SCEVStrideInBytes->getType(), InsertPoint);
       LLVM_DEBUG(llvm::dbgs()
                  << "Generating strided store for addr = " << *VPAddr
                  << " with a stride = " << *Stride << '\n');
@@ -361,15 +361,15 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
   auto *DataTy = VectorType::get(VPWMIR.getElementType(), State.VF);
   if (VPWMIR.isStrided()) {
     Value *Ptr = State.get(VPAddr, VPIteration(0, 0));
-    const SCEV *SCEVStride = VPWMIR.getStride();
+    const SCEV *SCEVStrideInBytes = VPWMIR.getStrideInBytes();
     auto &DL = State.CFG.PrevBB->getModule()->getDataLayout();
     SCEVExpander Exp(*(State.SE), DL, "stride");
     Instruction *InsertPoint = &*State.Builder.GetInsertPoint();
-    assert(Exp.isSafeToExpandAt(SCEVStride, InsertPoint) &&
+    assert(Exp.isSafeToExpandAt(SCEVStrideInBytes, InsertPoint) &&
            "It's not safe to expand that SCEV in the vector loop. That was "
            "not caught by isSafeStrideAccessInfo.");
-    Value *Stride =
-        Exp.expandCodeFor(SCEVStride, SCEVStride->getType(), InsertPoint);
+    Value *Stride = Exp.expandCodeFor(
+        SCEVStrideInBytes, SCEVStrideInBytes->getType(), InsertPoint);
     auto *PtrTy = cast<PointerType>(Ptr->getType());
     LLVM_DEBUG(llvm::dbgs()
                << "Generating strided load for addr = " << *VPAddr

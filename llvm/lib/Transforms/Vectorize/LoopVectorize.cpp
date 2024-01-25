@@ -10120,7 +10120,7 @@ VPRecipeBase *VPRecipeBuilder::tryToWidenMemory(Instruction *I,
   if (Decision == LoopVectorizationCostModel::CM_Strided) {
     LoopVectorizationLegality::StrideAccessInfo SAI =
         Legal->computeStrideAccessInfo(I);
-    Stride = SAI.getSCEVStride();
+    Stride = SAI.getSCEVStrideInBytes();
   }
 #endif // SIFIVE_CUSTOMIZATION
 
