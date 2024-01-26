@@ -4,20 +4,31 @@
 define void @vpmax_s16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpmax_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vle16.v v9, (a1)
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf2, ta, ma
+; CHECK-NEXT:    vslidedown.vi v10, v8, 2
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
+; CHECK-NEXT:    vwaddu.vv v11, v8, v10
+; CHECK-NEXT:    li a0, -1
+; CHECK-NEXT:    vwmaccu.vx v11, a0, v10
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vid.v v10
 ; CHECK-NEXT:    vadd.vv v10, v10, v10
-; CHECK-NEXT:    vrgather.vv v11, v8, v10
 ; CHECK-NEXT:    vmv.v.i v0, 12
 ; CHECK-NEXT:    vadd.vi v12, v10, -4
 ; CHECK-NEXT:    vrgather.vv v11, v9, v12, v0.t
-; CHECK-NEXT:    vadd.vi v12, v10, 1
-; CHECK-NEXT:    vrgather.vv v13, v8, v12
-; CHECK-NEXT:    vadd.vi v8, v10, -3
-; CHECK-NEXT:    vrgather.vv v13, v9, v8, v0.t
-; CHECK-NEXT:    vmax.vv v8, v11, v13
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf2, ta, ma
+; CHECK-NEXT:    vslidedown.vi v12, v9, 2
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
+; CHECK-NEXT:    vwaddu.vv v13, v9, v12
+; CHECK-NEXT:    vwmaccu.vx v13, a0, v12
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
+; CHECK-NEXT:    vadd.vi v9, v10, 1
+; CHECK-NEXT:    vrgather.vv v10, v8, v9
+; CHECK-NEXT:    vmerge.vvm v8, v10, v13, v0
+; CHECK-NEXT:    vmax.vv v8, v11, v8
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -31,14 +42,14 @@ entry:
 define void @vpmax_s32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpmax_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
 ; CHECK-NEXT:    vrgather.vi v10, v8, 1
 ; CHECK-NEXT:    vmv.v.i v0, 2
 ; CHECK-NEXT:    vslideup.vi v8, v9, 1
-; CHECK-NEXT:    vrgather.vi v10, v9, 1, v0.t
-; CHECK-NEXT:    vmax.vv v8, v8, v10
+; CHECK-NEXT:    vmerge.vvm v9, v10, v9, v0
+; CHECK-NEXT:    vmax.vv v8, v8, v9
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -79,20 +90,31 @@ entry:
 define void @vpmax_u16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpmax_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vle16.v v9, (a1)
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf2, ta, ma
+; CHECK-NEXT:    vslidedown.vi v10, v8, 2
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
+; CHECK-NEXT:    vwaddu.vv v11, v8, v10
+; CHECK-NEXT:    li a0, -1
+; CHECK-NEXT:    vwmaccu.vx v11, a0, v10
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vid.v v10
 ; CHECK-NEXT:    vadd.vv v10, v10, v10
-; CHECK-NEXT:    vrgather.vv v11, v8, v10
 ; CHECK-NEXT:    vmv.v.i v0, 12
 ; CHECK-NEXT:    vadd.vi v12, v10, -4
 ; CHECK-NEXT:    vrgather.vv v11, v9, v12, v0.t
-; CHECK-NEXT:    vadd.vi v12, v10, 1
-; CHECK-NEXT:    vrgather.vv v13, v8, v12
-; CHECK-NEXT:    vadd.vi v8, v10, -3
-; CHECK-NEXT:    vrgather.vv v13, v9, v8, v0.t
-; CHECK-NEXT:    vmaxu.vv v8, v11, v13
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf2, ta, ma
+; CHECK-NEXT:    vslidedown.vi v12, v9, 2
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
+; CHECK-NEXT:    vwaddu.vv v13, v9, v12
+; CHECK-NEXT:    vwmaccu.vx v13, a0, v12
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
+; CHECK-NEXT:    vadd.vi v9, v10, 1
+; CHECK-NEXT:    vrgather.vv v10, v8, v9
+; CHECK-NEXT:    vmerge.vvm v8, v10, v13, v0
+; CHECK-NEXT:    vmaxu.vv v8, v11, v8
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -106,14 +128,14 @@ entry:
 define void @vpmax_u32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpmax_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
 ; CHECK-NEXT:    vrgather.vi v10, v8, 1
 ; CHECK-NEXT:    vmv.v.i v0, 2
 ; CHECK-NEXT:    vslideup.vi v8, v9, 1
-; CHECK-NEXT:    vrgather.vi v10, v9, 1, v0.t
-; CHECK-NEXT:    vmaxu.vv v8, v8, v10
+; CHECK-NEXT:    vmerge.vvm v9, v10, v9, v0
+; CHECK-NEXT:    vmaxu.vv v8, v8, v9
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -181,20 +203,31 @@ entry:
 define void @vpmaxq_s32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpmaxq_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    vsetivli zero, 2, e32, m1, ta, ma
+; CHECK-NEXT:    vslidedown.vi v10, v8, 2
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
+; CHECK-NEXT:    vwaddu.vv v11, v8, v10
+; CHECK-NEXT:    li a0, -1
+; CHECK-NEXT:    vwmaccu.vx v11, a0, v10
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
 ; CHECK-NEXT:    vid.v v10
 ; CHECK-NEXT:    vadd.vv v10, v10, v10
-; CHECK-NEXT:    vrgather.vv v11, v8, v10
 ; CHECK-NEXT:    vmv.v.i v0, 12
 ; CHECK-NEXT:    vadd.vi v12, v10, -4
 ; CHECK-NEXT:    vrgather.vv v11, v9, v12, v0.t
-; CHECK-NEXT:    vadd.vi v12, v10, 1
-; CHECK-NEXT:    vrgather.vv v13, v8, v12
-; CHECK-NEXT:    vadd.vi v8, v10, -3
-; CHECK-NEXT:    vrgather.vv v13, v9, v8, v0.t
-; CHECK-NEXT:    vmax.vv v8, v11, v13
+; CHECK-NEXT:    vsetivli zero, 2, e32, m1, ta, ma
+; CHECK-NEXT:    vslidedown.vi v12, v9, 2
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
+; CHECK-NEXT:    vwaddu.vv v13, v9, v12
+; CHECK-NEXT:    vwmaccu.vx v13, a0, v12
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
+; CHECK-NEXT:    vadd.vi v9, v10, 1
+; CHECK-NEXT:    vrgather.vv v10, v8, v9
+; CHECK-NEXT:    vmerge.vvm v8, v10, v13, v0
+; CHECK-NEXT:    vmax.vv v8, v11, v8
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -265,20 +298,31 @@ entry:
 define void @vpmaxq_u32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpmaxq_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    vsetivli zero, 2, e32, m1, ta, ma
+; CHECK-NEXT:    vslidedown.vi v10, v8, 2
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
+; CHECK-NEXT:    vwaddu.vv v11, v8, v10
+; CHECK-NEXT:    li a0, -1
+; CHECK-NEXT:    vwmaccu.vx v11, a0, v10
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
 ; CHECK-NEXT:    vid.v v10
 ; CHECK-NEXT:    vadd.vv v10, v10, v10
-; CHECK-NEXT:    vrgather.vv v11, v8, v10
 ; CHECK-NEXT:    vmv.v.i v0, 12
 ; CHECK-NEXT:    vadd.vi v12, v10, -4
 ; CHECK-NEXT:    vrgather.vv v11, v9, v12, v0.t
-; CHECK-NEXT:    vadd.vi v12, v10, 1
-; CHECK-NEXT:    vrgather.vv v13, v8, v12
-; CHECK-NEXT:    vadd.vi v8, v10, -3
-; CHECK-NEXT:    vrgather.vv v13, v9, v8, v0.t
-; CHECK-NEXT:    vmaxu.vv v8, v11, v13
+; CHECK-NEXT:    vsetivli zero, 2, e32, m1, ta, ma
+; CHECK-NEXT:    vslidedown.vi v12, v9, 2
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
+; CHECK-NEXT:    vwaddu.vv v13, v9, v12
+; CHECK-NEXT:    vwmaccu.vx v13, a0, v12
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
+; CHECK-NEXT:    vadd.vi v9, v10, 1
+; CHECK-NEXT:    vrgather.vv v10, v8, v9
+; CHECK-NEXT:    vmerge.vvm v8, v10, v13, v0
+; CHECK-NEXT:    vmaxu.vv v8, v11, v8
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -322,20 +366,31 @@ entry:
 define void @vpmin_s16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpmin_s16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vle16.v v9, (a1)
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf2, ta, ma
+; CHECK-NEXT:    vslidedown.vi v10, v8, 2
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
+; CHECK-NEXT:    vwaddu.vv v11, v8, v10
+; CHECK-NEXT:    li a0, -1
+; CHECK-NEXT:    vwmaccu.vx v11, a0, v10
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vid.v v10
 ; CHECK-NEXT:    vadd.vv v10, v10, v10
-; CHECK-NEXT:    vrgather.vv v11, v8, v10
 ; CHECK-NEXT:    vmv.v.i v0, 12
 ; CHECK-NEXT:    vadd.vi v12, v10, -4
 ; CHECK-NEXT:    vrgather.vv v11, v9, v12, v0.t
-; CHECK-NEXT:    vadd.vi v12, v10, 1
-; CHECK-NEXT:    vrgather.vv v13, v8, v12
-; CHECK-NEXT:    vadd.vi v8, v10, -3
-; CHECK-NEXT:    vrgather.vv v13, v9, v8, v0.t
-; CHECK-NEXT:    vmin.vv v8, v11, v13
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf2, ta, ma
+; CHECK-NEXT:    vslidedown.vi v12, v9, 2
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
+; CHECK-NEXT:    vwaddu.vv v13, v9, v12
+; CHECK-NEXT:    vwmaccu.vx v13, a0, v12
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
+; CHECK-NEXT:    vadd.vi v9, v10, 1
+; CHECK-NEXT:    vrgather.vv v10, v8, v9
+; CHECK-NEXT:    vmerge.vvm v8, v10, v13, v0
+; CHECK-NEXT:    vmin.vv v8, v11, v8
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -349,14 +404,14 @@ entry:
 define void @vpmin_s32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpmin_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
 ; CHECK-NEXT:    vrgather.vi v10, v8, 1
 ; CHECK-NEXT:    vmv.v.i v0, 2
 ; CHECK-NEXT:    vslideup.vi v8, v9, 1
-; CHECK-NEXT:    vrgather.vi v10, v9, 1, v0.t
-; CHECK-NEXT:    vmin.vv v8, v8, v10
+; CHECK-NEXT:    vmerge.vvm v9, v10, v9, v0
+; CHECK-NEXT:    vmin.vv v8, v8, v9
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -397,20 +452,31 @@ entry:
 define void @vpmin_u16(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpmin_u16:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vle16.v v9, (a1)
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf2, ta, ma
+; CHECK-NEXT:    vslidedown.vi v10, v8, 2
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
+; CHECK-NEXT:    vwaddu.vv v11, v8, v10
+; CHECK-NEXT:    li a0, -1
+; CHECK-NEXT:    vwmaccu.vx v11, a0, v10
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
 ; CHECK-NEXT:    vid.v v10
 ; CHECK-NEXT:    vadd.vv v10, v10, v10
-; CHECK-NEXT:    vrgather.vv v11, v8, v10
 ; CHECK-NEXT:    vmv.v.i v0, 12
 ; CHECK-NEXT:    vadd.vi v12, v10, -4
 ; CHECK-NEXT:    vrgather.vv v11, v9, v12, v0.t
-; CHECK-NEXT:    vadd.vi v12, v10, 1
-; CHECK-NEXT:    vrgather.vv v13, v8, v12
-; CHECK-NEXT:    vadd.vi v8, v10, -3
-; CHECK-NEXT:    vrgather.vv v13, v9, v8, v0.t
-; CHECK-NEXT:    vminu.vv v8, v11, v13
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf2, ta, ma
+; CHECK-NEXT:    vslidedown.vi v12, v9, 2
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
+; CHECK-NEXT:    vwaddu.vv v13, v9, v12
+; CHECK-NEXT:    vwmaccu.vx v13, a0, v12
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
+; CHECK-NEXT:    vadd.vi v9, v10, 1
+; CHECK-NEXT:    vrgather.vv v10, v8, v9
+; CHECK-NEXT:    vmerge.vvm v8, v10, v13, v0
+; CHECK-NEXT:    vminu.vv v8, v11, v8
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -424,14 +490,14 @@ entry:
 define void @vpmin_u32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpmin_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
 ; CHECK-NEXT:    vrgather.vi v10, v8, 1
 ; CHECK-NEXT:    vmv.v.i v0, 2
 ; CHECK-NEXT:    vslideup.vi v8, v9, 1
-; CHECK-NEXT:    vrgather.vi v10, v9, 1, v0.t
-; CHECK-NEXT:    vminu.vv v8, v8, v10
+; CHECK-NEXT:    vmerge.vvm v9, v10, v9, v0
+; CHECK-NEXT:    vminu.vv v8, v8, v9
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -499,20 +565,31 @@ entry:
 define void @vpminq_s32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpminq_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    vsetivli zero, 2, e32, m1, ta, ma
+; CHECK-NEXT:    vslidedown.vi v10, v8, 2
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
+; CHECK-NEXT:    vwaddu.vv v11, v8, v10
+; CHECK-NEXT:    li a0, -1
+; CHECK-NEXT:    vwmaccu.vx v11, a0, v10
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
 ; CHECK-NEXT:    vid.v v10
 ; CHECK-NEXT:    vadd.vv v10, v10, v10
-; CHECK-NEXT:    vrgather.vv v11, v8, v10
 ; CHECK-NEXT:    vmv.v.i v0, 12
 ; CHECK-NEXT:    vadd.vi v12, v10, -4
 ; CHECK-NEXT:    vrgather.vv v11, v9, v12, v0.t
-; CHECK-NEXT:    vadd.vi v12, v10, 1
-; CHECK-NEXT:    vrgather.vv v13, v8, v12
-; CHECK-NEXT:    vadd.vi v8, v10, -3
-; CHECK-NEXT:    vrgather.vv v13, v9, v8, v0.t
-; CHECK-NEXT:    vmin.vv v8, v11, v13
+; CHECK-NEXT:    vsetivli zero, 2, e32, m1, ta, ma
+; CHECK-NEXT:    vslidedown.vi v12, v9, 2
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
+; CHECK-NEXT:    vwaddu.vv v13, v9, v12
+; CHECK-NEXT:    vwmaccu.vx v13, a0, v12
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
+; CHECK-NEXT:    vadd.vi v9, v10, 1
+; CHECK-NEXT:    vrgather.vv v10, v8, v9
+; CHECK-NEXT:    vmerge.vvm v8, v10, v13, v0
+; CHECK-NEXT:    vmin.vv v8, v11, v8
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -583,20 +660,31 @@ entry:
 define void @vpminq_u32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vpminq_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vle32.v v9, (a1)
+; CHECK-NEXT:    vsetivli zero, 2, e32, m1, ta, ma
+; CHECK-NEXT:    vslidedown.vi v10, v8, 2
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
+; CHECK-NEXT:    vwaddu.vv v11, v8, v10
+; CHECK-NEXT:    li a0, -1
+; CHECK-NEXT:    vwmaccu.vx v11, a0, v10
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, mu
 ; CHECK-NEXT:    vid.v v10
 ; CHECK-NEXT:    vadd.vv v10, v10, v10
-; CHECK-NEXT:    vrgather.vv v11, v8, v10
 ; CHECK-NEXT:    vmv.v.i v0, 12
 ; CHECK-NEXT:    vadd.vi v12, v10, -4
 ; CHECK-NEXT:    vrgather.vv v11, v9, v12, v0.t
-; CHECK-NEXT:    vadd.vi v12, v10, 1
-; CHECK-NEXT:    vrgather.vv v13, v8, v12
-; CHECK-NEXT:    vadd.vi v8, v10, -3
-; CHECK-NEXT:    vrgather.vv v13, v9, v8, v0.t
-; CHECK-NEXT:    vminu.vv v8, v11, v13
+; CHECK-NEXT:    vsetivli zero, 2, e32, m1, ta, ma
+; CHECK-NEXT:    vslidedown.vi v12, v9, 2
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
+; CHECK-NEXT:    vwaddu.vv v13, v9, v12
+; CHECK-NEXT:    vwmaccu.vx v13, a0, v12
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
+; CHECK-NEXT:    vadd.vi v9, v10, 1
+; CHECK-NEXT:    vrgather.vv v10, v8, v9
+; CHECK-NEXT:    vmerge.vvm v8, v10, v13, v0
+; CHECK-NEXT:    vminu.vv v8, v11, v8
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:

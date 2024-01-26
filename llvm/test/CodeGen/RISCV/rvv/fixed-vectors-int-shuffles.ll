@@ -692,17 +692,29 @@ define <8 x i8> @merge_non_contiguous_slideup_slidedown(<8 x i8> %v, <8 x i8> %w
 
 ; This shouldn't generate a vmerge because the elements of %w are not consecutive
 define <8 x i8> @unmergable(<8 x i8> %v, <8 x i8> %w) {
-; CHECK-LABEL: unmergable:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    lui a0, %hi(.LCPI46_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI46_0)
-; CHECK-NEXT:    vle8.v v10, (a0)
-; CHECK-NEXT:    li a0, 234
-; CHECK-NEXT:    vmv.s.x v0, a0
-; CHECK-NEXT:    vslidedown.vi v8, v8, 2
-; CHECK-NEXT:    vrgather.vv v8, v9, v10, v0.t
-; CHECK-NEXT:    ret
+; RV32-LABEL: unmergable:
+; RV32:       # %bb.0:
+; RV32-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
+; RV32-NEXT:    lui a0, %hi(.LCPI46_0)
+; RV32-NEXT:    addi a0, a0, %lo(.LCPI46_0)
+; RV32-NEXT:    vle8.v v10, (a0)
+; RV32-NEXT:    li a0, 234
+; RV32-NEXT:    vmv.s.x v0, a0
+; RV32-NEXT:    vslidedown.vi v8, v8, 2
+; RV32-NEXT:    vrgather.vv v8, v9, v10, v0.t
+; RV32-NEXT:    ret
+;
+; RV64-LABEL: unmergable:
+; RV64:       # %bb.0:
+; RV64-NEXT:    lui a0, %hi(.LCPI46_0)
+; RV64-NEXT:    addi a0, a0, %lo(.LCPI46_0)
+; RV64-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
+; RV64-NEXT:    vle8.v v10, (a0)
+; RV64-NEXT:    li a0, 234
+; RV64-NEXT:    vmv.s.x v0, a0
+; RV64-NEXT:    vslidedown.vi v8, v8, 2
+; RV64-NEXT:    vrgather.vv v8, v9, v10, v0.t
+; RV64-NEXT:    ret
   %res = shufflevector <8 x i8> %v, <8 x i8> %w, <8 x i32> <i32 2, i32 9, i32 4, i32 11, i32 6, i32 13, i32 8, i32 15>
   ret <8 x i8> %res
 }

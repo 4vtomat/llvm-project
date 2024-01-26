@@ -21,7 +21,7 @@ entry:
 define void @test2(float* nocapture readonly %in, float* nocapture writeonly %out) {
 ; CHECK-LABEL: @test2(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = getelementptr float, ptr [[IN:%.*]], i64 3
+; CHECK-NEXT:    [[TMP0:%.*]] = getelementptr i8, ptr [[IN:%.*]], i64 12
 ; CHECK-NEXT:    [[TMP1:%.*]] = load float, ptr [[TMP0]], align 4
 ; CHECK-NEXT:    store float [[TMP1]], ptr [[OUT:%.*]], align 4
 ; CHECK-NEXT:    ret void

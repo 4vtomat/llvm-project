@@ -101,10 +101,9 @@ define void @shufflevector_0_6(ptr %in, ptr %out) {
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
-; CHECK-NEXT:    vrgather.vi v10, v8, 0
-; CHECK-NEXT:    vrgather.vi v10, v12, 2, v0.t
+; CHECK-NEXT:    vrgather.vi v8, v12, 2, v0.t
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; CHECK-NEXT:    vse64.v v10, (a1)
+; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i64>, ptr %in, align 8
@@ -123,10 +122,9 @@ define void @shufflevector_0_7(ptr %in, ptr %out) {
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
-; CHECK-NEXT:    vrgather.vi v10, v8, 0
-; CHECK-NEXT:    vrgather.vi v10, v12, 3, v0.t
+; CHECK-NEXT:    vrgather.vi v8, v12, 3, v0.t
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; CHECK-NEXT:    vse64.v v10, (a1)
+; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i64>, ptr %in, align 8
@@ -483,11 +481,11 @@ define void @shufflevector_3_5(ptr %in, ptr %out) {
 ; CHECK-NEXT:    vmv.v.i v0, 2
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vrgather.vi v10, v8, 3
-; CHECK-NEXT:    vrgather.vi v10, v12, 1, v0.t
+; CHECK-NEXT:    vmerge.vvm v8, v10, v12, v0
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; CHECK-NEXT:    vse64.v v10, (a1)
+; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i64>, ptr %in, align 8
@@ -697,10 +695,10 @@ define void @shufflevector_5_1(ptr %in, ptr %out) {
 ; CHECK-NEXT:    vmv.v.i v0, 2
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vrgather.vi v9, v12, 1
-; CHECK-NEXT:    vrgather.vi v9, v8, 1, v0.t
-; CHECK-NEXT:    vse64.v v9, (a1)
+; CHECK-NEXT:    vmerge.vvm v8, v9, v8, v0
+; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i64>, ptr %in, align 8
@@ -861,10 +859,9 @@ define void @shufflevector_6_1(ptr %in, ptr %out) {
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
-; CHECK-NEXT:    vrgather.vi v10, v8, 1
-; CHECK-NEXT:    vrgather.vi v10, v12, 2, v0.t
+; CHECK-NEXT:    vrgather.vi v8, v12, 2, v0.t
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; CHECK-NEXT:    vse64.v v10, (a1)
+; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i64>, ptr %in, align 8
@@ -1024,10 +1021,9 @@ define void @shufflevector_7_1(ptr %in, ptr %out) {
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m4, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v12, v8, 4
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, mu
-; CHECK-NEXT:    vrgather.vi v10, v8, 1
-; CHECK-NEXT:    vrgather.vi v10, v12, 3, v0.t
+; CHECK-NEXT:    vrgather.vi v8, v12, 3, v0.t
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; CHECK-NEXT:    vse64.v v10, (a1)
+; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i64>, ptr %in, align 8

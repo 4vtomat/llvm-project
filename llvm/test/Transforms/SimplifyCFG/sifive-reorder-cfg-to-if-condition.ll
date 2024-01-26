@@ -9,7 +9,7 @@ define i32 @test(ptr %arc, i32 %red_cost) {
 ; CHECK:       else.if:
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp slt i32 [[RED_COST]], 0
 ; CHECK-NEXT:    [[SPEC_SELECT:%.*]] = select i1 [[CMP]], i32 1, i32 2
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[ARC:%.*]], i64 2
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[ARC:%.*]], i64 8
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
 ; CHECK-NEXT:    [[CMP1:%.*]] = icmp ne i32 [[TMP0]], [[SPEC_SELECT]]
 ; CHECK-NEXT:    br label [[IF_END]]
@@ -47,7 +47,7 @@ define i32 @test2(ptr %arc, i32 %red_cost) {
 ; CHECK:       else.if:
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[RED_COST:%.*]], -1
 ; CHECK-NEXT:    [[SPEC_SELECT:%.*]] = select i1 [[CMP]], i32 1, i32 2
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[ARC:%.*]], i64 2
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[ARC:%.*]], i64 8
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
 ; CHECK-NEXT:    [[CMP1:%.*]] = icmp ne i32 [[TMP0]], [[SPEC_SELECT]]
 ; CHECK-NEXT:    br label [[IF_END]]
@@ -86,7 +86,7 @@ define i32 @test3(ptr %arc, i32 %red_cost) {
 ; CHECK:       else.if:
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp slt i32 [[RED_COST]], 0
 ; CHECK-NEXT:    [[SPEC_SELECT:%.*]] = select i1 [[CMP]], i32 1, i32 2
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[ARC:%.*]], i64 2
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[ARC:%.*]], i64 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
 ; CHECK-NEXT:    [[CMP1:%.*]] = icmp ne i32 [[TMP1]], [[SPEC_SELECT]]
 ; CHECK-NEXT:    br label [[IF_END]]
@@ -125,7 +125,7 @@ define i32 @test4(ptr %arc, i32 %red_cost) {
 ; CHECK:       else.if:
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp slt i32 [[RED_COST]], 0
 ; CHECK-NEXT:    [[SPEC_SELECT:%.*]] = select i1 [[CMP]], i32 1, i32 2
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[ARC:%.*]], i64 2
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[ARC:%.*]], i64 8
 ; CHECK-NEXT:    [[TMP1:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
 ; CHECK-NEXT:    [[CMP1:%.*]] = icmp ne i32 [[TMP1]], [[SPEC_SELECT]]
 ; CHECK-NEXT:    br label [[IF_END]]

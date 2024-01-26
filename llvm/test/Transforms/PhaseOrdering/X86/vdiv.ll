@@ -34,11 +34,10 @@ define void @vdiv(ptr %x, ptr %y, double %a, i32 %N) #0 {
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds double, ptr [[Y]], i64 [[INDEX]]
-; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds double, ptr [[TMP1]], i64 4
-; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds double, ptr [[TMP1]], i64 8
-; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds double, ptr [[TMP1]], i64 12
+; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i8, ptr [[TMP1]], i64 32
+; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i8, ptr [[TMP1]], i64 64
+; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i8, ptr [[TMP1]], i64 96
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x double>, ptr [[TMP1]], align 8, !tbaa [[TBAA3:![0-9]+]]
 ; CHECK-NEXT:    [[WIDE_LOAD6:%.*]] = load <4 x double>, ptr [[TMP2]], align 8, !tbaa [[TBAA3]]
 ; CHECK-NEXT:    [[WIDE_LOAD7:%.*]] = load <4 x double>, ptr [[TMP3]], align 8, !tbaa [[TBAA3]]
@@ -48,35 +47,13 @@ define void @vdiv(ptr %x, ptr %y, double %a, i32 %N) #0 {
 ; CHECK-NEXT:    [[TMP7:%.*]] = fmul fast <4 x double> [[WIDE_LOAD7]], [[BROADCAST_SPLAT]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = fmul fast <4 x double> [[WIDE_LOAD8]], [[BROADCAST_SPLAT]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds double, ptr [[X]], i64 [[INDEX]]
-; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds double, ptr [[TMP9]], i64 4
-; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds double, ptr [[TMP9]], i64 8
-; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds double, ptr [[TMP9]], i64 12
+; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr inbounds i8, ptr [[TMP9]], i64 32
+; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i8, ptr [[TMP9]], i64 64
+; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i8, ptr [[TMP9]], i64 96
 ; CHECK-NEXT:    store <4 x double> [[TMP5]], ptr [[TMP9]], align 8, !tbaa [[TBAA3]]
 ; CHECK-NEXT:    store <4 x double> [[TMP6]], ptr [[TMP10]], align 8, !tbaa [[TBAA3]]
 ; CHECK-NEXT:    store <4 x double> [[TMP7]], ptr [[TMP11]], align 8, !tbaa [[TBAA3]]
 ; CHECK-NEXT:    store <4 x double> [[TMP8]], ptr [[TMP12]], align 8, !tbaa [[TBAA3]]
-=======
-; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds double, ptr [[Y]], i64 [[INDEX]]
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i8, ptr [[TMP5]], i64 32
-; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i8, ptr [[TMP5]], i64 64
-; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i8, ptr [[TMP5]], i64 96
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x double>, ptr [[TMP5]], align 8, !tbaa [[TBAA3:![0-9]+]]
-; CHECK-NEXT:    [[WIDE_LOAD6:%.*]] = load <4 x double>, ptr [[TMP6]], align 8, !tbaa [[TBAA3]]
-; CHECK-NEXT:    [[WIDE_LOAD7:%.*]] = load <4 x double>, ptr [[TMP7]], align 8, !tbaa [[TBAA3]]
-; CHECK-NEXT:    [[WIDE_LOAD8:%.*]] = load <4 x double>, ptr [[TMP8]], align 8, !tbaa [[TBAA3]]
-; CHECK-NEXT:    [[TMP9:%.*]] = fmul fast <4 x double> [[WIDE_LOAD]], [[TMP1]]
-; CHECK-NEXT:    [[TMP10:%.*]] = fmul fast <4 x double> [[WIDE_LOAD6]], [[TMP2]]
-; CHECK-NEXT:    [[TMP11:%.*]] = fmul fast <4 x double> [[WIDE_LOAD7]], [[TMP3]]
-; CHECK-NEXT:    [[TMP12:%.*]] = fmul fast <4 x double> [[WIDE_LOAD8]], [[TMP4]]
-; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr inbounds double, ptr [[X]], i64 [[INDEX]]
-; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i8, ptr [[TMP13]], i64 32
-; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr inbounds i8, ptr [[TMP13]], i64 64
-; CHECK-NEXT:    [[TMP16:%.*]] = getelementptr inbounds i8, ptr [[TMP13]], i64 96
-; CHECK-NEXT:    store <4 x double> [[TMP9]], ptr [[TMP13]], align 8, !tbaa [[TBAA3]]
-; CHECK-NEXT:    store <4 x double> [[TMP10]], ptr [[TMP14]], align 8, !tbaa [[TBAA3]]
-; CHECK-NEXT:    store <4 x double> [[TMP11]], ptr [[TMP15]], align 8, !tbaa [[TBAA3]]
-; CHECK-NEXT:    store <4 x double> [[TMP12]], ptr [[TMP16]], align 8, !tbaa [[TBAA3]]
->>>>>>> llvm/main
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
 ; CHECK-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]

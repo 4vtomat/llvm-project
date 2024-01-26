@@ -26,17 +26,13 @@ define <512 x i8> @single_source(<512 x i8> %a) {
 ; CHECK-NEXT:    vmv.v.x v8, a1
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a0
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v17, v16, 5
-; CHECK-NEXT:    vmv.x.s a0, v17
-; CHECK-NEXT:    vmv.s.x v24, a0
+; CHECK-NEXT:    vslidedown.vi v24, v16, 5
 ; CHECK-NEXT:    li a0, 432
 ; CHECK-NEXT:    li a1, 431
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m8, tu, ma
 ; CHECK-NEXT:    vslideup.vx v8, v24, a1
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vi v16, v16, 4
-; CHECK-NEXT:    vmv.x.s a0, v16
-; CHECK-NEXT:    vmv.s.x v16, a0
 ; CHECK-NEXT:    li a0, 466
 ; CHECK-NEXT:    li a1, 465
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m8, tu, ma
@@ -79,17 +75,13 @@ define <512 x i8> @range_restriction(<512 x i8> %a) {
 ; CHECK-NEXT:    vmv.v.x v8, a1
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a0
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v17, v16, 5
-; CHECK-NEXT:    vmv.x.s a0, v17
-; CHECK-NEXT:    vmv.s.x v24, a0
+; CHECK-NEXT:    vslidedown.vi v24, v16, 5
 ; CHECK-NEXT:    li a0, 432
 ; CHECK-NEXT:    li a1, 431
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m8, tu, ma
 ; CHECK-NEXT:    vslideup.vx v8, v24, a1
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v17, v16, 4
-; CHECK-NEXT:    vmv.x.s a0, v17
-; CHECK-NEXT:    vmv.s.x v24, a0
+; CHECK-NEXT:    vslidedown.vi v24, v16, 4
 ; CHECK-NEXT:    li a0, 466
 ; CHECK-NEXT:    li a1, 465
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m8, tu, ma
@@ -97,8 +89,6 @@ define <512 x i8> @range_restriction(<512 x i8> %a) {
 ; CHECK-NEXT:    li a0, 44
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v16, v16, a0
-; CHECK-NEXT:    vmv.x.s a0, v16
-; CHECK-NEXT:    vmv.s.x v16, a0
 ; CHECK-NEXT:    li a0, 501
 ; CHECK-NEXT:    li a1, 500
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m8, tu, ma
@@ -143,25 +133,19 @@ define <512 x i8> @two_source(<512 x i8> %a, <512 x i8> %b) {
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a1
 ; CHECK-NEXT:    li a0, 36
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vx v17, v16, a0
-; CHECK-NEXT:    vmv.x.s a0, v17
-; CHECK-NEXT:    vmv.s.x v0, a0
+; CHECK-NEXT:    vslidedown.vx v0, v16, a0
 ; CHECK-NEXT:    li a0, 399
 ; CHECK-NEXT:    li a1, 398
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m8, tu, ma
 ; CHECK-NEXT:    vslideup.vx v8, v0, a1
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v17, v24, 5
-; CHECK-NEXT:    vmv.x.s a0, v17
-; CHECK-NEXT:    vmv.s.x v0, a0
+; CHECK-NEXT:    vslidedown.vi v0, v24, 5
 ; CHECK-NEXT:    li a0, 432
 ; CHECK-NEXT:    li a1, 431
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m8, tu, ma
 ; CHECK-NEXT:    vslideup.vx v8, v0, a1
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v17, v24, 4
-; CHECK-NEXT:    vmv.x.s a0, v17
-; CHECK-NEXT:    vmv.s.x v24, a0
+; CHECK-NEXT:    vslidedown.vi v24, v24, 4
 ; CHECK-NEXT:    li a0, 466
 ; CHECK-NEXT:    li a1, 465
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m8, tu, ma
@@ -169,8 +153,6 @@ define <512 x i8> @two_source(<512 x i8> %a, <512 x i8> %b) {
 ; CHECK-NEXT:    li a1, 62
 ; CHECK-NEXT:    vsetivli zero, 1, e8, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v16, v16, a1
-; CHECK-NEXT:    vmv.x.s a1, v16
-; CHECK-NEXT:    vmv.s.x v16, a1
 ; CHECK-NEXT:    li a1, 467
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m8, tu, ma
 ; CHECK-NEXT:    lbu a1, 1497(sp)
