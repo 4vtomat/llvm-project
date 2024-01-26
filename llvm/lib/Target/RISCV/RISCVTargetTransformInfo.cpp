@@ -1742,16 +1742,12 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
   }
 
   // IR Reduction is composed by two vmv and one rvv reduction instruction.
-<<<<<<< HEAD
-  InstructionCost BaseCost = 2;
-
-  if (CostKind == TTI::TCK_CodeSize)
-    return (LT.first - 1) + BaseCost;
-
 #if SIFIVE_CUSTOMIZATION
+  if (ST->isSiFiveCPU() && CostKind == TTI::TCK_CodeSize)
+    return (LT.first - 1) + 2;
+
+  // FIXME: Integrate with upstream.
   // The vector to scalar move is expensive on x280, give it more cost.
-  if (ST->isSiFiveCPU())
-    BaseCost = BaseCost + 12;
   if (ST->getProcFamily() == RISCVSubtarget::SiFive7) {
     // Now assume Vector performs better than scalar when
     // element count >= 19.
@@ -1762,12 +1758,15 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
            ProfitableVF *
                getArithmeticInstrCost(Opcode, Ty->getElementType(), CostKind);
   }
+  if (ST->isSiFiveCPU()) {
+    InstructionCost BaseCost = 14;
+    unsigned VL = getEstimatedVLFor(Ty);
+    if (TTI::requiresOrderedReduction(FMF))
+      return (LT.first - 1) + BaseCost + VL;
+    return (LT.first - 1) + BaseCost + Log2_32_Ceil(VL);
+  }
 #endif // SIFIVE_CUSTOMIZATION
-  unsigned VL = getEstimatedVLFor(Ty);
-  if (TTI::requiresOrderedReduction(FMF))
-    return (LT.first - 1) + BaseCost + VL;
-  return (LT.first - 1) + BaseCost + Log2_32_Ceil(VL);
-=======
+
   if (TTI::requiresOrderedReduction(FMF)) {
     Opcodes.push_back(RISCV::VFMV_S_F);
     for (unsigned i = 0; i < LT.first.getValue(); i++)
@@ -1804,7 +1803,6 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
                            getRISCVInstructionCost(SplitOp, LT.second, CostKind)
                      : 0;
   return SplitCost + getRISCVInstructionCost(Opcodes, LT.second, CostKind);
->>>>>>> llvm/main
 }
 
 #if SIFIVE_CUSTOMIZATION
