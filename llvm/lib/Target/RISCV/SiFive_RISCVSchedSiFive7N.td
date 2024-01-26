@@ -630,7 +630,7 @@ foreach mx = SchedMxListF in {
     let Latency = RedCycles, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, RedCycles)] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVFRedV_From", [SiFive7NVCQ, SiFive7NVA],
                                      mx, sew, IsWorstCase>;
-      defm "" : LMULSEWWriteResMXSEW<"WriteVFRedMinMaxV_From", [SiFive7NVCQ, SiFive7VA],
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFRedMinMaxV_From", [SiFive7NVCQ, SiFive7NVA],
                                      mx, sew, IsWorstCase>;
     }
     defvar OrdRedCycles = BulletGetOrderedReductionCycles<mx, sew, VLEN>.c;
@@ -714,23 +714,23 @@ foreach mx = SchedMxList in {
 
       // Define Narwhal resources
       defvar VRGatherVVLat = !add(7, !div(256, sew)); // 7 + DLEN / SEW
-      def "WriteVRGatherVV_" # mx # "_E" # sew # "_N" : SchedWriteRes<[SiFive7VCQ, SiFive7NVA]> {
+      def "WriteVRGatherVV_" # mx # "_E" # sew # "_N" : SchedWriteRes<[SiFive7NVCQ, SiFive7NVA]> {
         let Latency = VRGatherVVLat;
         let AcquireAtCycles = [0, 1];
         let ReleaseAtCycles = [1, !add(1, !add(4, Cycles))];
       }
-      def "WriteVCompressV_" # mx # "_E" # sew # "_N" : SchedWriteRes<[SiFive7VCQ, SiFive7NVA]> {
+      def "WriteVCompressV_" # mx # "_E" # sew # "_N" : SchedWriteRes<[SiFive7NVCQ, SiFive7NVA]> {
         let Latency = !add(Cycles, 7);
         let AcquireAtCycles = [0, 1];
         let ReleaseAtCycles = [1, !add(1, !add(7, Cycles))];
       }
       // Define Orca resources
-      def "WriteVRGatherVV_" # mx # "_E" # sew # "_O" : SchedWriteRes<[SiFive7VCQ, SiFive7NVA]> {
+      def "WriteVRGatherVV_" # mx # "_E" # sew # "_O" : SchedWriteRes<[SiFive7NVCQ, SiFive7NVA]> {
         let Latency = 4;
         let AcquireAtCycles = [0, 1];
         let ReleaseAtCycles = [1, !add(1, 1)];
       }
-      def "WriteVCompressV_" # mx # "_E" # sew # "_O" : SchedWriteRes<[SiFive7VCQ, SiFive7NVA]> {
+      def "WriteVCompressV_" # mx # "_E" # sew # "_O" : SchedWriteRes<[SiFive7NVCQ, SiFive7NVA]> {
         let Latency = 4;
         let AcquireAtCycles = [0, 1];
         let ReleaseAtCycles = [1, !add(1, 1)];
