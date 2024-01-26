@@ -1321,7 +1321,7 @@ void f() {
 // CHECK-64-NEXT: @global_arr_f32m8 ={{.*}} global [3 x <16 x float>] zeroinitializer, align 8
 // CHECK-64-NEXT: @global_arr_f64m8 ={{.*}} global [3 x <8 x double>] zeroinitializer, align 8
 // CHECK-64-NEXT: @global_arr_bool1 ={{.*}} global [3 x <8 x i8>] zeroinitializer, align 8
-// CHECK-64-NEXT: @global_arr_bool2 ={{.*}} global [3 x <4 x i8>] zeroinitializer, align 4
+// CHECK-64-NEXT: @global_arr_bool2 ={{.*}} global [3 x <4 x i8>] zeroinitializer, align 8
 // CHECK-64-NEXT: @global_arr_bool4 ={{.*}} global [3 x <2 x i8>] zeroinitializer, align 2
 // CHECK-64-NEXT: @global_arr_bool8 ={{.*}} global [3 x <1 x i8>] zeroinitializer, align 1
 
@@ -1367,7 +1367,7 @@ void f() {
 // CHECK-128-NEXT: @global_arr_f64m8 ={{.*}} global [3 x <16 x double>] zeroinitializer, align 8
 // CHECK-128-NEXT: @global_arr_bool1 ={{.*}} global [3 x <16 x i8>] zeroinitializer, align 8
 // CHECK-128-NEXT: @global_arr_bool2 ={{.*}} global [3 x <8 x i8>] zeroinitializer, align 8
-// CHECK-128-NEXT: @global_arr_bool4 ={{.*}} global [3 x <4 x i8>] zeroinitializer, align 4
+// CHECK-128-NEXT: @global_arr_bool4 ={{.*}} global [3 x <4 x i8>] zeroinitializer, align 8
 // CHECK-128-NEXT: @global_arr_bool8 ={{.*}} global [3 x <2 x i8>] zeroinitializer, align 2
 // CHECK-128-NEXT: @global_arr_bool16 ={{.*}} global [3 x <1 x i8>] zeroinitializer, align 1
 
@@ -1414,7 +1414,7 @@ void f() {
 // CHECK-256-NEXT: @global_arr_bool1 ={{.*}} global [3 x <32 x i8>] zeroinitializer, align 8
 // CHECK-256-NEXT: @global_arr_bool2 ={{.*}} global [3 x <16 x i8>] zeroinitializer, align 8
 // CHECK-256-NEXT: @global_arr_bool4 ={{.*}} global [3 x <8 x i8>] zeroinitializer, align 8
-// CHECK-256-NEXT: @global_arr_bool8 ={{.*}} global [3 x <4 x i8>] zeroinitializer, align 4
+// CHECK-256-NEXT: @global_arr_bool8 ={{.*}} global [3 x <4 x i8>] zeroinitializer, align 8
 // CHECK-256-NEXT: @global_arr_bool16 ={{.*}} global [3 x <2 x i8>] zeroinitializer, align 2
 // CHECK-256-NEXT: @global_arr_bool32 ={{.*}} global [3 x <1 x i8>] zeroinitializer, align 1
 
@@ -1462,7 +1462,7 @@ void f() {
 // CHECK-512-NEXT: @global_arr_bool2 ={{.*}} global [3 x <32 x i8>] zeroinitializer, align 8
 // CHECK-512-NEXT: @global_arr_bool4 ={{.*}} global [3 x <16 x i8>] zeroinitializer, align 8
 // CHECK-512-NEXT: @global_arr_bool8 ={{.*}} global [3 x <8 x i8>] zeroinitializer, align 8
-// CHECK-512-NEXT: @global_arr_bool16 ={{.*}} global [3 x <4 x i8>] zeroinitializer, align 4
+// CHECK-512-NEXT: @global_arr_bool16 ={{.*}} global [3 x <4 x i8>] zeroinitializer, align 8
 // CHECK-512-NEXT: @global_arr_bool32 ={{.*}} global [3 x <2 x i8>] zeroinitializer, align 2
 // CHECK-512-NEXT: @global_arr_bool64 ={{.*}} global [3 x <1 x i8>] zeroinitializer, align 1
 
@@ -1511,7 +1511,7 @@ void f() {
 // CHECK-1024-NEXT: @global_arr_bool4 ={{.*}} global [3 x <32 x i8>] zeroinitializer, align 8
 // CHECK-1024-NEXT: @global_arr_bool8 ={{.*}} global [3 x <16 x i8>] zeroinitializer, align 8
 // CHECK-1024-NEXT: @global_arr_bool16 ={{.*}} global [3 x <8 x i8>] zeroinitializer, align 8
-// CHECK-1024-NEXT: @global_arr_bool32 ={{.*}} global [3 x <4 x i8>] zeroinitializer, align 4
+// CHECK-1024-NEXT: @global_arr_bool32 ={{.*}} global [3 x <4 x i8>] zeroinitializer, align 8
 // CHECK-1024-NEXT: @global_arr_bool64 ={{.*}} global [3 x <2 x i8>] zeroinitializer, align 2
 
 //===----------------------------------------------------------------------===//
@@ -1808,7 +1808,7 @@ void f() {
 // CHECK-64-NEXT: %local_arr_i8mf8 = alloca [3 x <1 x i8>], align 1
 // CHECK-64-NEXT: %local_arr_u8mf8 = alloca [3 x <1 x i8>], align 1
 // CHECK-64-NEXT: %local_arr_bool1 = alloca [3 x <8 x i8>], align 8
-// CHECK-64-NEXT: %local_arr_bool2 = alloca [3 x <4 x i8>], align 4
+// CHECK-64-NEXT: %local_arr_bool2 = alloca [3 x <4 x i8>], align 8
 // CHECK-64-NEXT: %local_arr_bool4 = alloca [3 x <2 x i8>], align 2
 // CHECK-64-NEXT: %local_arr_bool8 = alloca [3 x <1 x i8>], align 1
 
@@ -1867,7 +1867,7 @@ void f() {
 // CHECK-128-NEXT: %local_arr_u8mf8 = alloca [3 x <2 x i8>], align 2
 // CHECK-128-NEXT: %local_arr_bool1 = alloca [3 x <16 x i8>], align 8
 // CHECK-128-NEXT: %local_arr_bool2 = alloca [3 x <8 x i8>], align 8
-// CHECK-128-NEXT: %local_arr_bool4 = alloca [3 x <4 x i8>], align 4
+// CHECK-128-NEXT: %local_arr_bool4 = alloca [3 x <4 x i8>], align 8
 // CHECK-128-NEXT: %local_arr_bool8 = alloca [3 x <2 x i8>], align 2
 // CHECK-128-NEXT: %local_arr_bool16 = alloca [3 x <1 x i8>], align 1
 
@@ -1922,19 +1922,14 @@ void f() {
 // CHECK-256-NEXT: %local_arr_i16mf4 = alloca [3 x <4 x i16>], align 8
 // CHECK-256-NEXT: %local_arr_u8mf4 = alloca [3 x <8 x i8>], align 8
 // CHECK-256-NEXT: %local_arr_u16mf4 = alloca [3 x <4 x i16>], align 8
-<<<<<<< HEAD
 // CHECK-256-NEXT: %local_arr_i8mf8 = alloca [3 x <4 x i8>], align 8
 // CHECK-256-NEXT: %local_arr_u8mf8 = alloca [3 x <4 x i8>], align 8
-=======
-// CHECK-256-NEXT: %local_arr_i8mf8 = alloca [3 x <4 x i8>], align 4
-// CHECK-256-NEXT: %local_arr_u8mf8 = alloca [3 x <4 x i8>], align 4
 // CHECK-256-NEXT: %local_arr_bool1 = alloca [3 x <32 x i8>], align 8
 // CHECK-256-NEXT: %local_arr_bool2 = alloca [3 x <16 x i8>], align 8
 // CHECK-256-NEXT: %local_arr_bool4 = alloca [3 x <8 x i8>], align 8
-// CHECK-256-NEXT: %local_arr_bool8 = alloca [3 x <4 x i8>], align 4
+// CHECK-256-NEXT: %local_arr_bool8 = alloca [3 x <4 x i8>], align 8
 // CHECK-256-NEXT: %local_arr_bool16 = alloca [3 x <2 x i8>], align 2
 // CHECK-256-NEXT: %local_arr_bool32 = alloca [3 x <1 x i8>], align 1
->>>>>>> llvm/main
 
 // CHECK-512:      %local_arr_i8 = alloca [3 x <64 x i8>], align 8
 // CHECK-512-NEXT: %local_arr_i16 = alloca [3 x <32 x i16>], align 8
@@ -1993,7 +1988,7 @@ void f() {
 // CHECK-512-NEXT: %local_arr_bool2 = alloca [3 x <32 x i8>], align 8
 // CHECK-512-NEXT: %local_arr_bool4 = alloca [3 x <16 x i8>], align 8
 // CHECK-512-NEXT: %local_arr_bool8 = alloca [3 x <8 x i8>], align 8
-// CHECK-512-NEXT: %local_arr_bool16 = alloca [3 x <4 x i8>], align 4
+// CHECK-512-NEXT: %local_arr_bool16 = alloca [3 x <4 x i8>], align 8
 // CHECK-512-NEXT: %local_arr_bool32 = alloca [3 x <2 x i8>], align 2
 // CHECK-512-NEXT: %local_arr_bool64 = alloca [3 x <1 x i8>], align 1
 
@@ -2055,5 +2050,5 @@ void f() {
 // CHECK-1024-NEXT: %local_arr_bool4 = alloca [3 x <32 x i8>], align 8
 // CHECK-1024-NEXT: %local_arr_bool8 = alloca [3 x <16 x i8>], align 8
 // CHECK-1024-NEXT: %local_arr_bool16 = alloca [3 x <8 x i8>], align 8
-// CHECK-1024-NEXT: %local_arr_bool32 = alloca [3 x <4 x i8>], align 4
+// CHECK-1024-NEXT: %local_arr_bool32 = alloca [3 x <4 x i8>], align 8
 // CHECK-1024-NEXT: %local_arr_bool64 = alloca [3 x <2 x i8>], align 2
