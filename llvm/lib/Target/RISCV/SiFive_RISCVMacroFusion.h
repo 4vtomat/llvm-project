@@ -25,7 +25,7 @@ namespace llvm {
 /// Note that you have to add:
 ///   DAG.addMutation(createRISCVMacroFusionDAGMutation());
 /// to RISCVPassConfig::createMachineScheduler() to have an effect.
-std::unique_ptr<ScheduleDAGMutation> createRISCVMacroFusionDAGMutation();
+std::unique_ptr<ScheduleDAGMutation> createRISCVMacroFusionDAGMutation(const RISCVSubtarget &Subtarget);
 
 } // namespace llvm
 

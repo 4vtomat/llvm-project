@@ -84,6 +84,32 @@ def SIFIVE_7 : RISCVTuneProcessorModel<"sifive-7-series",
                                        [TuneSiFive7]>;
 
 #ifdef SIFIVE_CUSTOMIZATION
+def TuneSiFiveP400 : SubtargetFeature<"sifive-p400", "RISCVProcFamily", "SiFiveP400",
+                                      "SiFive P400-Series processors",
+                                      [TuneNoDefaultUnroll,
+                                       TuneConditionalCompressedMoveFusion,
+                                       TuneLUIADDIFusion,
+                                       TuneAUIPCADDIFusion]>;
+def TuneSiFiveP500 : SubtargetFeature<"sifive-p500", "RISCVProcFamily", "SiFiveP500",
+                                      "SiFive P500-Series processors",
+                                      [TuneNoDefaultUnroll,
+                                       TuneConditionalCompressedMoveFusion,
+                                       TuneLUIADDIFusion,
+                                       TuneAUIPCADDIFusion]>;
+def TuneSiFiveP600 : SubtargetFeature<"sifive-p600", "RISCVProcFamily", "SiFiveP600",
+                                      "SiFive P600-Series processors",
+                                      [TuneNoDefaultUnroll,
+                                       TuneConditionalCompressedMoveFusion,
+                                       TuneLUIADDIFusion,
+                                       TuneAUIPCADDIFusion]>;
+
+def TuneSiFiveP800 : SubtargetFeature<"sifive-p800", "RISCVProcFamily", "SiFiveP800",
+                                      "SiFive P800-Series processors",
+                                      [TuneNoDefaultUnroll,
+                                       TuneConditionalCompressedMoveFusion,
+                                       TuneLUIADDIFusion,
+                                       TuneAUIPCADDIFusion]>;
+
 def SIFIVE_6 : RISCVTuneProcessorModel<"sifive-6-series", SiFive6Model,
                                        [TuneSiFive6], []>;
 def SIFIVE_7M : RISCVTuneProcessorModel<"sifive-7m-series", SiFive7Model,
@@ -754,7 +780,7 @@ def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model,
                                        FeatureStdExtZvksg,
                                        FeatureFastUnalignedAccess],
                                       [TuneSiFiveP400, TuneDLen128b,
-                                       TuneDontSinkSplatOperands]>;
+                                       TuneNoSinkSplatOperands]>;
 
 def SIFIVE_P470S : RISCVProcessorModel<"sifive-p470s", SiFiveP400Model,
                                        [Feature64Bit,
@@ -797,7 +823,7 @@ def SIFIVE_P470S : RISCVProcessorModel<"sifive-p470s", SiFiveP400Model,
                                         FeatureStdExtZvksg,
                                         FeatureFastUnalignedAccess],
                                        [TuneSiFiveP400, TuneDLen128b,
-                                        TuneDontSinkSplatOperands]>;
+                                        TuneNoSinkSplatOperands]>;
 
 def SIFIVE_P550 : RISCVProcessorModel<"sifive-p550", SiFiveP500Model,
                                       [Feature64Bit,
@@ -866,39 +892,6 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
                                        FeatureStdExtZbb,
                                        FeatureStdExtZbs,
                                        FeatureStdExtZfhmin,
-<<<<<<< HEAD
-=======
-                                       FeatureFastUnalignedAccess],
-                                      [TuneNoDefaultUnroll,
-                                       TuneConditionalCompressedMoveFusion,
-                                       TuneLUIADDIFusion,
-                                       TuneAUIPCADDIFusion]>;
-
-def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", NoSchedModel,
-                                      [Feature64Bit,
-                                       FeatureStdExtZifencei,
-                                       FeatureStdExtM,
-                                       FeatureStdExtA,
-                                       FeatureStdExtF,
-                                       FeatureStdExtD,
-                                       FeatureStdExtC,
-                                       FeatureStdExtZa64rs,
-                                       FeatureStdExtZic64b,
-                                       FeatureStdExtZicbop,
-                                       FeatureStdExtZicbom,
-                                       FeatureStdExtZicboz,
-                                       FeatureStdExtZiccamoa,
-                                       FeatureStdExtZiccif,
-                                       FeatureStdExtZicclsm,
-                                       FeatureStdExtZiccrse,
-                                       FeatureStdExtZihintntl,
-                                       FeatureStdExtZihintpause,
-                                       FeatureStdExtZihpm,
-                                       FeatureStdExtZba,
-                                       FeatureStdExtZbb,
-                                       FeatureStdExtZbs,
-                                       FeatureStdExtZfhmin,
->>>>>>> llvm/main
                                        FeatureStdExtV,
                                        FeatureStdExtZvl128b,
                                        FeatureStdExtZvbb,
@@ -907,9 +900,8 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", NoSchedModel,
                                        FeatureStdExtZvksc,
                                        FeatureStdExtZvksg,
                                        FeatureFastUnalignedAccess],
-<<<<<<< HEAD
                                       [TuneSiFiveP600, TuneDLen128b,
-                                       TuneDontSinkSplatOperands]>;
+                                       TuneNoSinkSplatOperands]>;
 
 def SIFIVE_P670S : RISCVProcessorModel<"sifive-p670s", SiFiveP600Model,
                                        [Feature64Bit,
@@ -952,7 +944,7 @@ def SIFIVE_P670S : RISCVProcessorModel<"sifive-p670s", SiFiveP600Model,
                                         FeatureStdExtZvksg,
                                         FeatureFastUnalignedAccess],
                                        [TuneSiFiveP600, TuneDLen128b,
-                                        TuneDontSinkSplatOperands]>;
+                                        TuneNoSinkSplatOperands]>;
 
 def SIFIVE_P870S : RISCVProcessorModel<"sifive-p870s", SiFiveP800SModel,
                                        [Feature64Bit,
@@ -995,14 +987,8 @@ def SIFIVE_P870S : RISCVProcessorModel<"sifive-p870s", SiFiveP800SModel,
                                         FeatureStdExtZvksg,
                                         FeatureFastUnalignedAccess],
                                        [TuneSiFiveP800, TuneDLen128b,
-                                        TuneDontSinkSplatOperands]>;
+                                        TuneNoSinkSplatOperands]>;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-                                      [TuneNoDefaultUnroll,
-                                       TuneConditionalCompressedMoveFusion,
-                                       TuneLUIADDIFusion,
-                                       TuneAUIPCADDIFusion]>;
->>>>>>> llvm/main
 
 def SYNTACORE_SCR1_BASE : RISCVProcessorModel<"syntacore-scr1-base",
                                               SyntacoreSCR1Model,

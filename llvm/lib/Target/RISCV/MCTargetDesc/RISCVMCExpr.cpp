@@ -120,7 +120,10 @@ RISCVMCExpr::VariantKind RISCVMCExpr::getVariantKindForName(StringRef name) {
       .Case("tprel_add", VK_RISCV_TPREL_ADD)
       .Case("tls_ie_pcrel_hi", VK_RISCV_TLS_GOT_HI)
       .Case("tls_gd_pcrel_hi", VK_RISCV_TLS_GD_HI)
-<<<<<<< HEAD
+      .Case("tlsdesc_hi", VK_RISCV_TLSDESC_HI)
+      .Case("tlsdesc_load_lo", VK_RISCV_TLSDESC_LOAD_LO)
+      .Case("tlsdesc_add_lo", VK_RISCV_TLSDESC_ADD_LO)
+      .Case("tlsdesc_call", VK_RISCV_TLSDESC_CALL)
 #if SIFIVE_CUSTOMIZATION
       .Case("gprel_lo", VK_RISCV_GPREL_LO)
       .Case("gprel_hi", VK_RISCV_GPREL_HI)
@@ -135,12 +138,6 @@ RISCVMCExpr::VariantKind RISCVMCExpr::getVariantKindForName(StringRef name) {
       .Case("tls_gd_gprel_hi", VK_RISCV_TLS_GD_GPREL_HI)
       .Case("tls_gd_gprel", VK_RISCV_TLS_GD_GPREL_ADD)
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      .Case("tlsdesc_hi", VK_RISCV_TLSDESC_HI)
-      .Case("tlsdesc_load_lo", VK_RISCV_TLSDESC_LOAD_LO)
-      .Case("tlsdesc_add_lo", VK_RISCV_TLSDESC_ADD_LO)
-      .Case("tlsdesc_call", VK_RISCV_TLSDESC_CALL)
->>>>>>> llvm/main
       .Default(VK_RISCV_Invalid);
 }
 
@@ -249,16 +246,13 @@ void RISCVMCExpr::fixELFSymbolsInTLSFixups(MCAssembler &Asm) const {
   case VK_RISCV_TPREL_HI:
   case VK_RISCV_TLS_GOT_HI:
   case VK_RISCV_TLS_GD_HI:
-<<<<<<< HEAD
+  case VK_RISCV_TLSDESC_HI:
+  case VK_RISCV_TLSDESC_ADD_LO:
+  case VK_RISCV_TLSDESC_LOAD_LO:
 #if SIFIVE_CUSTOMIZATION
   case VK_RISCV_TLS_GOT_GPREL_HI:
   case VK_RISCV_TLS_GD_GPREL_HI:
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  case VK_RISCV_TLSDESC_HI:
-  case VK_RISCV_TLSDESC_ADD_LO:
-  case VK_RISCV_TLSDESC_LOAD_LO:
->>>>>>> llvm/main
     break;
   }
 

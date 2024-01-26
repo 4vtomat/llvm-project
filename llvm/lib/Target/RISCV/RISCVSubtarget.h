@@ -253,19 +253,15 @@ public:
     return UserReservedRegister[i];
   }
 
-<<<<<<< HEAD
-  bool hasMacroFusion() const {
 #if SIFIVE_CUSTOMIZATION
+  bool hasMacroFusion() const {
     if (hasFuseLUILoad() || hasFuseIndexedLoad() || hasFuseArithEqZ() ||
         hasFuseBFX())
       return true;
-#endif // SIFIVE_CUSTOMIZATION
-    return hasLUIADDIFusion() || hasAUIPCADDIFusion() || hasZExtHFusion() ||
-           hasZExtWFusion() || hasShiftedZExtWFusion() || hasLDADDFusion();
+    return false;
   }
+#endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> llvm/main
   // Vector codegen related methods.
   bool hasVInstructions() const { return HasStdExtZve32x; }
   bool hasVInstructionsI64() const { return HasStdExtZve64x; }

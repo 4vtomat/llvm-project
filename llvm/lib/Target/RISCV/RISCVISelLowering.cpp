@@ -2129,23 +2129,13 @@ bool RISCVTargetLowering::shouldSinkOperands(
   if (!I->getType()->isVectorTy() || !Subtarget.hasVInstructions())
     return false;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> llvm/main
   // Don't sink splat operands if the target prefers it. Some targets requires
   // S2V transfer buffers and we can run out of them copying the same value
   // repeatedly.
   // FIXME: It could still be worth doing if it would improve vector register
   // pressure and prevent a vector spill.
-<<<<<<< HEAD
-  if (Subtarget.dontSinkSplatOperands())
-    return false;
-#endif // SIFIVE_CUSTOMIZATION
-=======
   if (!Subtarget.sinkSplatOperands())
     return false;
->>>>>>> llvm/main
 
   for (auto OpIdx : enumerate(I->operands())) {
     if (!canSplatOperand(I, OpIdx.index()))

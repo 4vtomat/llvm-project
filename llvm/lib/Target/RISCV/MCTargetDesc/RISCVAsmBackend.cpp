@@ -147,7 +147,7 @@ bool RISCVAsmBackend::shouldForceRelocation(const MCAssembler &Asm,
   case RISCV::fixup_riscv_got_hi20:
   case RISCV::fixup_riscv_tls_got_hi20:
   case RISCV::fixup_riscv_tls_gd_hi20:
-<<<<<<< HEAD
+  case RISCV::fixup_riscv_tlsdesc_hi20:
 #if SIFIVE_CUSTOMIZATION
   case RISCV::fixup_riscv_gprel_hi20:
   case RISCV::fixup_riscv_gprel_lo12_i:
@@ -162,9 +162,6 @@ bool RISCVAsmBackend::shouldForceRelocation(const MCAssembler &Asm,
   case RISCV::fixup_riscv_tls_gd_gprel_lo12_i:
   case RISCV::fixup_riscv_tls_gd_gprel_add:
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  case RISCV::fixup_riscv_tlsdesc_hi20:
->>>>>>> llvm/main
     return true;
   }
 
@@ -450,7 +447,7 @@ static uint64_t adjustFixupValue(const MCFixup &Fixup, uint64_t Value,
   case RISCV::fixup_riscv_got_hi20:
   case RISCV::fixup_riscv_tls_got_hi20:
   case RISCV::fixup_riscv_tls_gd_hi20:
-<<<<<<< HEAD
+  case RISCV::fixup_riscv_tlsdesc_hi20:
 #if SIFIVE_CUSTOMIZATION
   case RISCV::fixup_riscv_got_gprel_hi20:
   case RISCV::fixup_riscv_got_gprel_lo12_i:
@@ -459,9 +456,6 @@ static uint64_t adjustFixupValue(const MCFixup &Fixup, uint64_t Value,
   case RISCV::fixup_riscv_tls_gd_gprel_hi20:
   case RISCV::fixup_riscv_tls_gd_gprel_lo12_i:
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  case RISCV::fixup_riscv_tlsdesc_hi20:
->>>>>>> llvm/main
     llvm_unreachable("Relocation should be unconditionally forced\n");
   case FK_Data_1:
   case FK_Data_2:

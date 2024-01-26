@@ -238,15 +238,12 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
 // NOTE: This table should be sorted alphabetically by extension name.
 // clang-format off
 static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
-<<<<<<< HEAD
     {"smwg", {0, 3}}, // SIFIVE
     {"smwgd", {0, 3}}, // SIFIVE
     {"ssnpm", {0, 8}}, // SIFIVE
     {"sswg", {0, 3}}, // SIFIVE
 
-=======
     {"zaamo", {0, 2}},
->>>>>>> llvm/main
     {"zacas", {1, 0}},
     {"zalrsc", {0, 2}},
 

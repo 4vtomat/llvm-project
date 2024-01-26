@@ -1500,7 +1500,6 @@ public:
   bool isProfitableToScalarize(Instruction *I, ElementCount VF) const {
     assert(VF.isVector() &&
            "Profitable to scalarize relevant only for VF > 1.");
-<<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
     // For scalable vectors, since actual VF is unknown, we cannot scalarize any
@@ -1510,15 +1509,9 @@ public:
       return false;
 #endif // SIFIVE_CUSTOMIZATION
 
-    // Cost model is not run in the VPlan-native path - return conservative
-    // result until this changes.
-    if (EnableVPlanNativePath)
-      return false;
-=======
     assert(
         TheLoop->isInnermost() &&
         "cost-model should not be used for outer loops (in VPlan-native path)");
->>>>>>> llvm/main
 
     auto Scalars = InstsToScalarize.find(VF);
     assert(Scalars != InstsToScalarize.end() &&

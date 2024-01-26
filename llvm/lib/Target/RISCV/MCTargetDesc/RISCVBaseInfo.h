@@ -299,40 +299,29 @@ enum {
   MO_TPREL_ADD = 10,
   MO_TLS_GOT_HI = 11,
   MO_TLS_GD_HI = 12,
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  MO_GPREL_LO = 13,
-  MO_GPREL_HI = 14,
-  MO_GPREL_ADD = 15,
-  MO_GOT_GPREL_LO = 16,
-  MO_GOT_GPREL_HI = 17,
-  MO_GOT_GPREL_ADD = 18,
-  MO_TLS_GOT_GPREL_LO = 19,
-  MO_TLS_GOT_GPREL_HI = 20,
-  MO_TLS_GOT_GPREL_ADD = 21,
-  MO_TLS_GD_GPREL_LO = 22,
-  MO_TLS_GD_GPREL_HI = 23,
-  MO_TLS_GD_GPREL_ADD = 24,
-#endif // SIFIVE_CUSTOMIZATION
-=======
   MO_TLSDESC_HI = 13,
   MO_TLSDESC_LOAD_LO = 14,
   MO_TLSDESC_ADD_LO = 15,
   MO_TLSDESC_CALL = 16,
->>>>>>> llvm/main
+#if SIFIVE_CUSTOMIZATION
+  MO_GPREL_LO = 17,
+  MO_GPREL_HI = 18,
+  MO_GPREL_ADD = 19,
+  MO_GOT_GPREL_LO = 20,
+  MO_GOT_GPREL_HI = 21,
+  MO_GOT_GPREL_ADD = 22,
+  MO_TLS_GOT_GPREL_LO = 23,
+  MO_TLS_GOT_GPREL_HI = 24,
+  MO_TLS_GOT_GPREL_ADD = 25,
+  MO_TLS_GD_GPREL_LO = 26,
+  MO_TLS_GD_GPREL_HI = 27,
+  MO_TLS_GD_GPREL_ADD = 28,
+#endif // SIFIVE_CUSTOMIZATION
 
   // Used to differentiate between target-specific "direct" flags and "bitmask"
   // flags. A machine operand can only have one "direct" flag, but can have
   // multiple "bitmask" flags.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   MO_DIRECT_FLAG_MASK = 31
-#else
-  MO_DIRECT_FLAG_MASK = 15
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  MO_DIRECT_FLAG_MASK = 31
->>>>>>> llvm/main
 };
 } // namespace RISCVII
 

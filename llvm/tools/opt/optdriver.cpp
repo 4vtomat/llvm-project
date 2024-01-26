@@ -374,6 +374,9 @@ static bool shouldPinPassToLegacyPM(StringRef Pass) {
       "fix-irreducible",
       "expand-large-fp-convert",
       "callbrprepare",
+#if SIFIVE_CUSTOMIZATION
+      "expand-powi",
+#endif // SIFIVE_CUSTOMIZATION
   };
   for (const auto &P : PassNamePrefix)
     if (Pass.starts_with(P))
@@ -425,6 +428,9 @@ extern "C" int optMain(
   initializeExpandLargeDivRemLegacyPassPass(Registry);
   initializeExpandLargeFpConvertLegacyPassPass(Registry);
   initializeExpandMemCmpLegacyPassPass(Registry);
+#if SIFIVE_CUSTOMIZATION
+  initializeExpandPowiLegacyPassPass(Registry);
+#endif // SIFIVE_CUSTOMIZATION
   initializeScalarizeMaskedMemIntrinLegacyPassPass(Registry);
   initializeSelectOptimizePass(Registry);
   initializeCallBrPreparePass(Registry);

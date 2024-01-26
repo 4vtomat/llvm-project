@@ -2547,9 +2547,12 @@ RISCVInstrInfo::getSerializableDirectMachineOperandTargetFlags() const {
       {MO_TPREL_HI, "riscv-tprel-hi"},
       {MO_TPREL_ADD, "riscv-tprel-add"},
       {MO_TLS_GOT_HI, "riscv-tls-got-hi"},
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
       {MO_TLS_GD_HI, "riscv-tls-gd-hi"},
+      {MO_TLSDESC_HI, "riscv-tlsdesc-hi"},
+      {MO_TLSDESC_LOAD_LO, "riscv-tlsdesc-load-lo"},
+      {MO_TLSDESC_ADD_LO, "riscv-tlsdesc-add-lo"},
+#if SIFIVE_CUSTOMIZATION
+      {MO_TLSDESC_CALL, "riscv-tlsdesc-call"},
       {MO_TLS_GOT_GPREL_LO, "riscv-tls-got-gprel-lo"},
       {MO_TLS_GOT_GPREL_HI, "riscv-tls-got-gprel-hi"},
       {MO_TLS_GOT_GPREL_ADD, "riscv-tls-got-gprel-add"},
@@ -2563,15 +2566,8 @@ RISCVInstrInfo::getSerializableDirectMachineOperandTargetFlags() const {
       {MO_GOT_GPREL_HI, "riscv-got-gprel-hi"},
       {MO_GOT_GPREL_ADD, "riscv-got-gprel-add"}};
 #else
-      {MO_TLS_GD_HI, "riscv-tls-gd-hi"}};
-#endif // SIFIVE_CUSTOMIZATION
-=======
-      {MO_TLS_GD_HI, "riscv-tls-gd-hi"},
-      {MO_TLSDESC_HI, "riscv-tlsdesc-hi"},
-      {MO_TLSDESC_LOAD_LO, "riscv-tlsdesc-load-lo"},
-      {MO_TLSDESC_ADD_LO, "riscv-tlsdesc-add-lo"},
       {MO_TLSDESC_CALL, "riscv-tlsdesc-call"}};
->>>>>>> llvm/main
+#endif // SIFIVE_CUSTOMIZATION
   return ArrayRef(TargetFlags);
 }
 bool RISCVInstrInfo::isFunctionSafeToOutlineFrom(

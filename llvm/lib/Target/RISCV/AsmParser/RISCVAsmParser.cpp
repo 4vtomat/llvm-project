@@ -895,21 +895,17 @@ public:
     return IsValid && ((IsConstantImm && VK == RISCVMCExpr::VK_RISCV_None) ||
                        VK == RISCVMCExpr::VK_RISCV_LO ||
                        VK == RISCVMCExpr::VK_RISCV_PCREL_LO ||
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
                        VK == RISCVMCExpr::VK_RISCV_TPREL_LO ||
+                       VK == RISCVMCExpr::VK_RISCV_TLSDESC_LOAD_LO ||
+#if SIFIVE_CUSTOMIZATION
+                       VK == RISCVMCExpr::VK_RISCV_TLSDESC_ADD_LO ||
                        VK == RISCVMCExpr::VK_RISCV_GPREL_LO ||
                        VK == RISCVMCExpr::VK_RISCV_GOT_GPREL_LO ||
                        VK == RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_LO ||
                        VK == RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_LO);
 #else
-                       VK == RISCVMCExpr::VK_RISCV_TPREL_LO);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-                       VK == RISCVMCExpr::VK_RISCV_TPREL_LO ||
-                       VK == RISCVMCExpr::VK_RISCV_TLSDESC_LOAD_LO ||
                        VK == RISCVMCExpr::VK_RISCV_TLSDESC_ADD_LO);
->>>>>>> llvm/main
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   bool isSImm12Lsb0() const { return isBareSimmNLsb0<12>(); }
@@ -1632,15 +1628,12 @@ bool RISCVAsmParser::MatchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
                            "%tprel_add, %gprel, %got_gprel, %tls_ie_gprel "
                            "and %tls_gd_gprel modifier");
   }
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case Match_InvalidTLSDESCCallSymbol: {
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
     return Error(ErrorLoc,
                  "operand must be a symbol with %tlsdesc_call modifier");
   }
->>>>>>> llvm/main
   case Match_InvalidRTZArg: {
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
     return Error(ErrorLoc, "operand must be 'rtz' floating-point rounding mode");

@@ -1322,7 +1322,6 @@ def TuneShortForwardBranchOpt
 def HasShortForwardBranchOpt : Predicate<"Subtarget->hasShortForwardBranchOpt()">;
 def NoShortForwardBranchOpt : Predicate<"!Subtarget->hasShortForwardBranchOpt()">;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def TuneFuseLUILoad
     : SubtargetFeature<"fuse-lui-load", "HasFuseLUILoad",
@@ -1346,13 +1345,6 @@ def TuneFuseBFX
                        "bitfield">;
 def HasFuseBFX : Predicate<"Subtarget->hasFuseBFX()">;
 
-// P670 requires a S2V transfer buffer to move scalars into vectors.
-// FIXME: Forming .vx/.vf can reduce register pressure.
-def TuneDontSinkSplatOperands
-    : SubtargetFeature<"dont-sink-splat-operands", "DontSinkSplatOperands",
-                       "true", "Don't sink splat operands to enable .vx or .vf "
-                       "instructions">;
-
 def TunePseudoLIsimm32
     : SubtargetFeature<"pseudo-li-simm32", "UsePseudoLIsimm32",
                        "true", "Enable treating LUI+ADDI(W) as a single macro instruction in some passes">;
@@ -1375,14 +1367,14 @@ def TuneSiFive6 : SubtargetFeature<"sifive6", "RISCVProcFamily", "SiFive6",
                                    "SiFive 6-Series processors",
                                    [TuneNoDefaultUnroll,
                                     TuneShortForwardBranchOpt]>;
-=======
+
 // Some subtargets require a S2V transfer buffer to move scalars into vectors.
 // FIXME: Forming .vx/.vf/.wx/.wf can reduce register pressure.
 def TuneNoSinkSplatOperands
     : SubtargetFeature<"no-sink-splat-operands", "SinkSplatOperands",
                        "false", "Disable sink splat operands to enable .vx, .vf,"
                        ".wx, and .wf instructions">;
->>>>>>> llvm/main
+#endif // SIFIVE_CUSTOMIZATION
 
 def TuneConditionalCompressedMoveFusion
     : SubtargetFeature<"conditional-cmv-fusion", "HasConditionalCompressedMoveFusion",
@@ -1394,32 +1386,6 @@ def TuneSiFive7 : SubtargetFeature<"sifive7", "RISCVProcFamily", "SiFive7",
                                    "SiFive 7-Series processors",
                                    [TuneNoDefaultUnroll,
                                     TuneShortForwardBranchOpt]>;
-def TuneSiFiveP400 : SubtargetFeature<"sifive-p400", "RISCVProcFamily", "SiFiveP400",
-                                      "SiFive P400-Series processors",
-                                      [TuneNoDefaultUnroll,
-                                       TuneConditionalCompressedMoveFusion,
-                                       TuneLUIADDIFusion,
-                                       TuneAUIPCADDIFusion]>;
-def TuneSiFiveP500 : SubtargetFeature<"sifive-p500", "RISCVProcFamily", "SiFiveP500",
-                                      "SiFive P500-Series processors",
-                                      [TuneNoDefaultUnroll,
-                                       TuneConditionalCompressedMoveFusion,
-                                       TuneLUIADDIFusion,
-                                       TuneAUIPCADDIFusion]>;
-def TuneSiFiveP600 : SubtargetFeature<"sifive-p600", "RISCVProcFamily", "SiFiveP600",
-                                      "SiFive P600-Series processors",
-                                      [TuneNoDefaultUnroll,
-                                       TuneConditionalCompressedMoveFusion,
-                                       TuneLUIADDIFusion,
-                                       TuneAUIPCADDIFusion]>;
-
-def TuneSiFiveP800 : SubtargetFeature<"sifive-p800", "RISCVProcFamily", "SiFiveP800",
-                                      "SiFive P800-Series processors",
-                                      [TuneNoDefaultUnroll,
-                                       TuneConditionalCompressedMoveFusion,
-                                       TuneLUIADDIFusion,
-                                       TuneAUIPCADDIFusion]>;
-#endif // SIFIVE_CUSTOMIZATION
 
 def TuneVentanaVeyron : SubtargetFeature<"ventana-veyron", "RISCVProcFamily", "VentanaVeyron",
                                          "Ventana Veyron-Series processors">;

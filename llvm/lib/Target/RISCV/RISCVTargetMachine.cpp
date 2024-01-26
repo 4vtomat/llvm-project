@@ -18,6 +18,7 @@
 #include "RISCVTargetTransformInfo.h"
 #if SIFIVE_CUSTOMIZATION
 #include "SiFive_RISCVLoopIdiomRecognize.h"
+#include "SiFive_RISCVMacroFusion.h"
 #endif // SIFIVE_CUSTOMIZATION
 #include "TargetInfo/RISCVTargetInfo.h"
 #include "llvm/ADT/STLExtras.h"
@@ -403,47 +404,46 @@ public:
       DAG->addMutation(createLoadClusterDAGMutation(
           DAG->TII, DAG->TRI, /*ReorderWhileClustering=*/true));
     }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
       if (!DAG)
         DAG = createGenericSchedLive(C);
       DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
     }
-#endif // SIFIVE_CUSTOMIZATION
-    if (ST.hasMacroFusion()) {
-=======
+    const auto &MacroFusions = ST.getMacroFusions();
+    if (!MacroFusions.empty() || ST.hasMacroFusion()) {
+      DAG = DAG ? DAG : createGenericSchedLive(C);
+      DAG->addMutation(createRISCVMacroFusionDAGMutation(ST));
+    }
+#else
     const auto &MacroFusions = ST.getMacroFusions();
     if (!MacroFusions.empty()) {
->>>>>>> llvm/main
       DAG = DAG ? DAG : createGenericSchedLive(C);
       DAG->addMutation(createMacroFusionDAGMutation(MacroFusions));
     }
+#endif // SIFIVE_CUSTOMIZATION
     return DAG;
   }
 
   ScheduleDAGInstrs *
   createPostMachineScheduler(MachineSchedContext *C) const override {
     const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     ScheduleDAGMI *DAG = nullptr;
     if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
       DAG = createGenericSchedPostRA(C);
       DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
     }
-    if (ST.hasMacroFusion()) {
+    const auto &MacroFusions = ST.getMacroFusions();
+    if (!MacroFusions.empty() || ST.hasMacroFusion()) {
       if (!DAG)
         DAG = createGenericSchedPostRA(C);
-      DAG->addMutation(createRISCVMacroFusionDAGMutation());
+      DAG->addMutation(createRISCVMacroFusionDAGMutation(ST));
     }
     return DAG;
 #else
-    if (ST.hasMacroFusion()) {
-=======
     const auto &MacroFusions = ST.getMacroFusions();
     if (!MacroFusions.empty()) {
->>>>>>> llvm/main
       ScheduleDAGMI *DAG = createGenericSchedPostRA(C);
       DAG->addMutation(createMacroFusionDAGMutation(MacroFusions));
       return DAG;
