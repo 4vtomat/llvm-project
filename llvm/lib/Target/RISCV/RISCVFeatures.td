@@ -1323,22 +1323,6 @@ def HasShortForwardBranchOpt : Predicate<"Subtarget->hasShortForwardBranchOpt()"
 def NoShortForwardBranchOpt : Predicate<"!Subtarget->hasShortForwardBranchOpt()">;
 
 #ifdef SIFIVE_CUSTOMIZATION
-def TuneFuseLUILoad
-    : SubtargetFeature<"fuse-lui-load", "HasFuseLUILoad",
-                       "true", "CPU fuses LUI/AUIPC with load">;
-
-def TuneFuseIndexedLoad
-    : SubtargetFeature<"fuse-indexed-load", "HasFuseIndexedLoad",
-                       "true", "CPU fuses indexed load">;
-def TuneFuseZbaLoad
-    : SubtargetFeature<"fuse-zba-load", "HasFuseZbaLoad",
-                       "true", "CPU fuses Zba instructions with load",
-                       [TuneFuseIndexedLoad]>;
-
-def TuneFuseArithEqZ
-    : SubtargetFeature<"fuse-arith-eqz", "HasFuseArithEqZ",
-                       "true", "CPU fuses arithmetic with seqz/snez">;
-
 def TuneFuseBFX
     : SubtargetFeature<"fuse-bitfield-extract", "HasFuseBFX",
                        "true", "CPU fuses SLLI with SRLI/SRAI to extract "

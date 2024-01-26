@@ -91,3 +91,91 @@ def TuneLDADDFusion
                    CheckIsImmOperand<2>,
                    CheckImmOperand<2, 0>
                  ]>>;
+
+#ifdef SIFIVE_CUSTOMIZATION
+def TuneFuseLUILoad
+  : SimpleFusion<"fuse-lui-load", "HasFuseLUILoad",
+                 "Enable fusing LUI/AUIPIC with load",
+                 CheckOpcode<[LUI, AUIPC]>,
+                 CheckOpcode<[LBU, LB, LHU, LH, LWU, LW, LD]>>;
+
+def TuneFuseIndexedLoad
+  : SimpleFusion<"fuse-indexed-load", "HasFuseIndexedLoad",
+                 "Enable fusing ADD with load",
+                 CheckOpcode<[ADD]>,
+                 CheckOpcode<[LBU, LB, LHU, LH, LWU, LW, LD]>>;
+
+def TuneFuseZbaLoad
+  : SimpleFusion<"fuse-zba-load", "HasFuseZbaLoad",
+                 "Enable fusing Zba instructions with load",
+                 CheckOpcode<[ADD, SH1ADD, SH2ADD, SH3ADD,
+                              ADD_UW, SH1ADD_UW, SH2ADD_UW, SH3ADD_UW]>,
+                 CheckAll<[
+                   CheckOpcode<[LBU, LB, LHU, LH, LWU, LW, LD]>,
+                   CheckIsImmOperand<2>,
+                   CheckImmOperand<2, 0>
+                 ]>>;
+
+def FuseArithEqZPredicate : FusionPredicateWithCode<[{
+  unsigned SrcOpIdx;
+  switch (SecondMI.getOpcode()) {
+  default:
+    return false;
+  case RISCV::SLTIU:
+    if (SecondMI.getOperand(2).getImm() != 1)
+      return false;
+    SrcOpIdx = 1;
+    break;
+  case RISCV::SLTU:
+    if (SecondMI.getOperand(1).getReg() != RISCV::X0)
+      return false;
+    SrcOpIdx = 2;
+    break;
+  }
+
+  // Assume the 1st instr to be a wildcard if it is unspecified.
+  if (!FirstMI)
+    return true;
+
+  bool PreRA = false;
+  switch (FirstMI->getOpcode()) {
+  default:
+    return false;
+  case RISCV::ADDI:
+  case RISCV::XOR:
+    // Allow these pre-RA because they are the idioms we use for equality
+    // comparisons.
+    PreRA = true;
+    break;
+  case RISCV::SUB:
+  case RISCV::OR:
+    // Do not allow these pre-RA because we can't ensure that SecondMI is the
+    // only user pre-RA.
+    // FIXME: We probably need some pseudoinstructions and an earlier fusion
+    // peephole.
+    break;
+  }
+
+  Register FirstDest = FirstMI->getOperand(0).getReg();
+
+  // The SecondMI source operand should match the FirstMI destination.
+  if (SecondMI.getOperand(SrcOpIdx).getReg() != FirstDest)
+    return false;
+
+  // If the input is virtual make sure this is the only user.
+  if (FirstDest.isVirtual()) {
+    if (!PreRA)
+      return false;
+    return MRI.hasOneNonDBGUse(FirstDest);
+  }
+
+  // If the FirstMI destination is non-virtual, it should match the SecondMI
+  // destination.
+  return SecondMI.getOperand(0).getReg() == FirstDest;
+}]>;
+
+def TuneFuseArithEqZ
+  : Fusion<"fuse-arith-eqz", "HasFuseArithEqZ",
+           "Enable fusiong arithmetic with seqz/snez",
+           [FuseArithEqZPredicate]>;
+#endif

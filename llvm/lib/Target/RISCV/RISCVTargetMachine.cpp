@@ -18,7 +18,6 @@
 #include "RISCVTargetTransformInfo.h"
 #if SIFIVE_CUSTOMIZATION
 #include "SiFive_RISCVLoopIdiomRecognize.h"
-#include "SiFive_RISCVMacroFusion.h"
 #endif // SIFIVE_CUSTOMIZATION
 #include "TargetInfo/RISCVTargetInfo.h"
 #include "llvm/ADT/STLExtras.h"
@@ -406,22 +405,15 @@ public:
     }
 #if SIFIVE_CUSTOMIZATION
     if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
-      if (!DAG)
-        DAG = createGenericSchedLive(C);
+      DAG = DAG ? DAG : createGenericSchedLive(C);
       DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
     }
-    const auto &MacroFusions = ST.getMacroFusions();
-    if (!MacroFusions.empty() || ST.hasMacroFusion()) {
-      DAG = DAG ? DAG : createGenericSchedLive(C);
-      DAG->addMutation(createRISCVMacroFusionDAGMutation(ST));
-    }
-#else
+#endif // SIFIVE_CUSTOMIZATION
     const auto &MacroFusions = ST.getMacroFusions();
     if (!MacroFusions.empty()) {
       DAG = DAG ? DAG : createGenericSchedLive(C);
       DAG->addMutation(createMacroFusionDAGMutation(MacroFusions));
     }
-#endif // SIFIVE_CUSTOMIZATION
     return DAG;
   }
 
@@ -435,10 +427,10 @@ public:
       DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
     }
     const auto &MacroFusions = ST.getMacroFusions();
-    if (!MacroFusions.empty() || ST.hasMacroFusion()) {
+    if (!MacroFusions.empty()) {
       if (!DAG)
         DAG = createGenericSchedPostRA(C);
-      DAG->addMutation(createRISCVMacroFusionDAGMutation(ST));
+      DAG->addMutation(createMacroFusionDAGMutation(MacroFusions));
     }
     return DAG;
 #else

@@ -46,7 +46,6 @@ add_llvm_target(RISCVCodeGen
   RISCVISelLowering.cpp
   SiFive_RISCVLateCodeGenPrepare.cpp
   SiFive_RISCVMachineConstProp.cpp
-  SiFive_RISCVMacroFusion.cpp
   SiFive_RISCVWidenReductionPHI.cpp
   RISCVMachineFunctionInfo.cpp
   RISCVMergeBaseOffset.cpp
