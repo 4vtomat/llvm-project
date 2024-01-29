@@ -1565,10 +1565,15 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
                                              unsigned Intrinsic) const {
   auto &DL = I.getModule()->getDataLayout();
 
+#if SIFIVE_CUSTOMIZATION
   auto SetRVVLoadStoreInfo = [&](unsigned PtrOp, bool IsStore,
-                                 bool IsUnitStrided) {
+                                 bool IsUnitStrided, bool UsePtrVal = false) {
     Info.opc = IsStore ? ISD::INTRINSIC_VOID : ISD::INTRINSIC_W_CHAIN;
-    Info.ptrVal = I.getArgOperand(PtrOp);
+    if (UsePtrVal)
+      Info.ptrVal = I.getArgOperand(PtrOp);
+    else
+      Info.fallbackAddressSpace = I.getArgOperand(PtrOp)->getType()->getPointerAddressSpace();
+#endif // SIFIVE_CUSTOMIZATION
     Type *MemTy;
     if (IsStore) {
       // Store value is the first operand.
@@ -1628,7 +1633,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_seg7_load:
   case Intrinsic::riscv_seg8_load:
     return SetRVVLoadStoreInfo(/*PtrOp*/ 0, /*IsStore*/ false,
-                               /*IsUnitStrided*/ false);
+                               /*IsUnitStrided*/ false, /*UsePtrVal*/ true); // SIFIVE
   case Intrinsic::riscv_seg2_store:
   case Intrinsic::riscv_seg3_store:
   case Intrinsic::riscv_seg4_store:
@@ -1639,19 +1644,19 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
     // Operands are (vec, ..., vec, ptr, vl)
     return SetRVVLoadStoreInfo(/*PtrOp*/ I.arg_size() - 2,
                                /*IsStore*/ true,
-                               /*IsUnitStrided*/ false);
+                               /*IsUnitStrided*/ false, /*UsePtrVal*/ true); // SIFIVE
   case Intrinsic::riscv_vle:
   case Intrinsic::riscv_vle_mask:
   case Intrinsic::riscv_vleff:
   case Intrinsic::riscv_vleff_mask:
     return SetRVVLoadStoreInfo(/*PtrOp*/ 1,
                                /*IsStore*/ false,
-                               /*IsUnitStrided*/ true);
+                               /*IsUnitStrided*/ true, /*UsePtrVal*/ true); // SIFIVE
   case Intrinsic::riscv_vse:
   case Intrinsic::riscv_vse_mask:
     return SetRVVLoadStoreInfo(/*PtrOp*/ 1,
                                /*IsStore*/ true,
-                               /*IsUnitStrided*/ true);
+                               /*IsUnitStrided*/ true, /*UsePtrVal*/ true); // SIFIVE
   case Intrinsic::riscv_vlse:
   case Intrinsic::riscv_vlse_mask:
   case Intrinsic::riscv_vloxei:
@@ -1686,7 +1691,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vlseg8ff:
     return SetRVVLoadStoreInfo(/*PtrOp*/ I.arg_size() - 2,
                                /*IsStore*/ false,
-                               /*IsUnitStrided*/ false);
+                               /*IsUnitStrided*/ false, /*UsePtrVal*/ true); // SIFIVE
   case Intrinsic::riscv_vlseg2_mask:
   case Intrinsic::riscv_vlseg3_mask:
   case Intrinsic::riscv_vlseg4_mask:
@@ -1703,7 +1708,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vlseg8ff_mask:
     return SetRVVLoadStoreInfo(/*PtrOp*/ I.arg_size() - 4,
                                /*IsStore*/ false,
-                               /*IsUnitStrided*/ false);
+                               /*IsUnitStrided*/ false, /*UsePtrVal*/ true); // SIFIVE
   case Intrinsic::riscv_vlsseg2:
   case Intrinsic::riscv_vlsseg3:
   case Intrinsic::riscv_vlsseg4:
@@ -1761,7 +1766,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vsseg8:
     return SetRVVLoadStoreInfo(/*PtrOp*/ I.arg_size() - 2,
                                /*IsStore*/ true,
-                               /*IsUnitStrided*/ false);
+                               /*IsUnitStrided*/ false, /*UsePtrVal*/ true); // SIFIVE
   case Intrinsic::riscv_vsseg2_mask:
   case Intrinsic::riscv_vsseg3_mask:
   case Intrinsic::riscv_vsseg4_mask:
@@ -1771,7 +1776,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vsseg8_mask:
     return SetRVVLoadStoreInfo(/*PtrOp*/ I.arg_size() - 3,
                                /*IsStore*/ true,
-                               /*IsUnitStrided*/ false);
+                               /*IsUnitStrided*/ false, /*UsePtrVal*/ true); // SIFIVE
   case Intrinsic::riscv_vssseg2:
   case Intrinsic::riscv_vssseg3:
   case Intrinsic::riscv_vssseg4:
