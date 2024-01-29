@@ -47,21 +47,19 @@ vadd.vv v12, v12, v12
 # CHECK-NEXT: [6]   - SiFive7NVCQ
 # CHECK-NEXT: [7]   - SiFive7NVL
 # CHECK-NEXT: [8]   - SiFive7NVS
-# CHECK-NEXT: [9]   - SiFive7VA
-# CHECK-NEXT: [10]  - SiFive7VCQ
 
 # CHECK:      Resource pressure per iteration:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]    [10]
-# CHECK-NEXT:  -      -      -     3.00    -     51.00  3.00    -      -      -      -
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
+# CHECK-NEXT:  -      -      -     3.00    -     51.00  3.00    -      -
 
 # CHECK:      Resource pressure by instruction:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]    [10]   Instructions:
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -      -     vsetvli	zero, a0, e8, m2, tu, mu
-# CHECK-NEXT:  -      -      -      -      -     17.00  1.00    -      -      -      -     vadd.vv	v12, v12, v12
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -      -     vsetvli	zero, a0, e8, m1, tu, mu
-# CHECK-NEXT:  -      -      -      -      -     17.00  1.00    -      -      -      -     vadd.vv	v12, v12, v12
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -      -     vsetvli	zero, a0, e8, m8, tu, mu
-# CHECK-NEXT:  -      -      -      -      -     17.00  1.00    -      -      -      -     vadd.vv	v12, v12, v12
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, m2, tu, mu
+# CHECK-NEXT:  -      -      -      -      -     17.00  1.00    -      -     vadd.vv	v12, v12, v12
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, m1, tu, mu
+# CHECK-NEXT:  -      -      -      -      -     17.00  1.00    -      -     vadd.vv	v12, v12, v12
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, m8, tu, mu
+# CHECK-NEXT:  -      -      -      -      -     17.00  1.00    -      -     vadd.vv	v12, v12, v12
 
 # CHECK:      Timeline view:
 # CHECK-NEXT:                     0123456789          0123456789
