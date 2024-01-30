@@ -178,7 +178,6 @@ void emitCodeGenSwitchBody(const RVVIntrinsic *RVVI, raw_ostream &OS) {
   OS << "  PolicyAttrs = " << RVVI->getPolicyAttrsBits() << ";\n";
 
   if (RVVI->hasManualCodegen()) {
-    OS << "  PolicyAttrs = " << RVVI->getPolicyAttrsBits() << ";\n";
     OS << "IsMasked = " << (RVVI->isMasked() ? "true" : "false") << ";\n";
 #if SIFIVE_CUSTOMIZATION
     OS << "  IsNontemporal = " << RVVI->getPolicyAttrs().isNTLPolicy() << ";\n";
