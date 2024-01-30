@@ -82,8 +82,8 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; PROFITABLE-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 1 x double> [[BROADCAST_SPLATINSERT]], <vscale x 1 x double> poison, <vscale x 1 x i32> zeroinitializer
 ; PROFITABLE-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; PROFITABLE:       vector.body:
-; PROFITABLE-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; PROFITABLE-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; PROFITABLE-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; PROFITABLE-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; PROFITABLE-NEXT:    [[TMP31:%.*]] = add i64 [[INDEX]], 0
 ; PROFITABLE-NEXT:    [[TMP32:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; PROFITABLE-NEXT:    [[TMP33:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP32]], i32 1, i1 true)
@@ -129,8 +129,8 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; PROFITABLE-NEXT:    [[TMP55:%.*]] = zext i32 [[TMP33]] to i64
 ; PROFITABLE-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[EVL_BASED_IV]], [[TMP55]]
 ; PROFITABLE-NEXT:    [[TMP56:%.*]] = zext i32 [[TMP33]] to i64
-; PROFITABLE-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP56]]
-; PROFITABLE-NEXT:    [[TMP57:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N]]
+; PROFITABLE-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP56]]
+; PROFITABLE-NEXT:    [[TMP57:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; PROFITABLE-NEXT:    br i1 [[TMP57]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; PROFITABLE:       middle.block:
 ; PROFITABLE-NEXT:    br label [[EXIT:%.*]]

@@ -11,8 +11,8 @@ define void @test(ptr %A) {
 ; VL0:       vector.ph:
 ; VL0-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; VL0:       vector.body:
-; VL0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; VL0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; VL0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; VL0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; VL0-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
 ; VL0-NEXT:    [[TMP1:%.*]] = sub i64 1000, [[EVL_BASED_IV]]
 ; VL0-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP1]], i32 2, i1 true)
@@ -24,8 +24,8 @@ define void @test(ptr %A) {
 ; VL0-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP2]] to i64
 ; VL0-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[EVL_BASED_IV]], [[TMP5]]
 ; VL0-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP2]] to i64
-; VL0-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP6]]
-; VL0-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1000
+; VL0-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP6]]
+; VL0-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1000
 ; VL0-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; VL0:       middle.block:
 ; VL0-NEXT:    br label [[FOR_COND_CLEANUP:%.*]]
@@ -50,8 +50,8 @@ define void @test(ptr %A) {
 ; VL1:       vector.ph:
 ; VL1-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; VL1:       vector.body:
-; VL1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; VL1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; VL1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; VL1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; VL1-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
 ; VL1-NEXT:    [[TMP1:%.*]] = sub i64 1000, [[EVL_BASED_IV]]
 ; VL1-NEXT:    [[TMP2:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP1]], i64 1)
@@ -64,8 +64,8 @@ define void @test(ptr %A) {
 ; VL1-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP3]] to i64
 ; VL1-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[EVL_BASED_IV]], [[TMP6]]
 ; VL1-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP3]] to i64
-; VL1-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP7]]
-; VL1-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1000
+; VL1-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP7]]
+; VL1-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1000
 ; VL1-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; VL1:       middle.block:
 ; VL1-NEXT:    br label [[FOR_COND_CLEANUP:%.*]]
@@ -90,8 +90,8 @@ define void @test(ptr %A) {
 ; VL4:       vector.ph:
 ; VL4-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; VL4:       vector.body:
-; VL4-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; VL4-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; VL4-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; VL4-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; VL4-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
 ; VL4-NEXT:    [[TMP1:%.*]] = sub i64 1000, [[EVL_BASED_IV]]
 ; VL4-NEXT:    [[TMP2:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP1]], i64 4)
@@ -104,8 +104,8 @@ define void @test(ptr %A) {
 ; VL4-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP3]] to i64
 ; VL4-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[EVL_BASED_IV]], [[TMP6]]
 ; VL4-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP3]] to i64
-; VL4-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP7]]
-; VL4-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1000
+; VL4-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP7]]
+; VL4-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1000
 ; VL4-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; VL4:       middle.block:
 ; VL4-NEXT:    br label [[FOR_COND_CLEANUP:%.*]]

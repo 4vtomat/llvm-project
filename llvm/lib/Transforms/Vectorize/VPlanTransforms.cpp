@@ -1327,7 +1327,7 @@ void VPlanTransforms::addExplicitVectorLength(VPlan &Plan) {
   // Replace all uses of VPCanonicalIVPHIRecipe by
   // VPEVLBasedIVPHIRecipe except for VPInstruction::CanonicalIVIncrement.
   CanonicalIVPHI->replaceAllUsesWith(EVLPhi);
-  CanonicalIVIncrement->setOperand(0, CanonicalIVPHI);
+  CanonicalIVIncrement->replaceAllUsesWith(NextEVLIV);
   Plan.getVFxUF().replaceAllUsesWith(VPEVL);
   Plan.setUseVLAVectorizer(true);
 }
