@@ -1919,6 +1919,10 @@ private:
   // C++ Expressions
   ExprResult tryParseCXXIdExpression(CXXScopeSpec &SS, bool isAddressOfOperand,
                                      Token &Replacement);
+
+  ExprResult tryParseCXXPackIndexingExpression(ExprResult PackIdExpression);
+  ExprResult ParseCXXPackIndexingExpression(ExprResult PackIdExpression);
+
   ExprResult ParseCXXIdExpression(bool isAddressOfOperand = false);
 
   bool areTokensAdjacent(const Token &A, const Token &B);
@@ -2411,7 +2415,7 @@ private:
   struct ForRangeInit {
     SourceLocation ColonLoc;
     ExprResult RangeExpr;
-
+    SmallVector<MaterializeTemporaryExpr *, 8> LifetimeExtendTemps;
     bool ParsedForRangeDecl() { return !ColonLoc.isInvalid(); }
   };
   struct ForRangeInfo : ForRangeInit {
@@ -2469,6 +2473,11 @@ private:
       DeclSpec &DS, const ParsedTemplateInfo &TemplateInfo, AccessSpecifier AS,
       DeclSpecContext DSC, LateParsedAttrList *LateAttrs,
       ImplicitTypenameContext AllowImplicitTypename);
+
+  SourceLocation ParsePackIndexingType(DeclSpec &DS);
+  void AnnotateExistingIndexedTypeNamePack(ParsedType T,
+                                           SourceLocation StartLoc,
+                                           SourceLocation EndLoc);
 
   bool DiagnoseMissingSemiAfterTagDefinition(
       DeclSpec &DS, AccessSpecifier AS, DeclSpecContext DSContext,
@@ -3605,6 +3614,14 @@ private:
   /// Parses the 'async-argument', which is an integral value with two
   /// 'special' values that are likely negative (but come from Macros).
   ExprResult ParseOpenACCAsyncArgument();
+  /// Parses the 'size-expr', which is an integral value, or an asterisk.
+  bool ParseOpenACCSizeExpr();
+  /// Parses a comma delimited list of 'size-expr's.
+  bool ParseOpenACCSizeExprList();
+  /// Parses a 'gang-arg-list', used for the 'gang' clause.
+  bool ParseOpenACCGangArgList();
+  /// Parses a 'gang-arg', used for the 'gang' clause.
+  bool ParseOpenACCGangArg();
 
 private:
   //===--------------------------------------------------------------------===//
