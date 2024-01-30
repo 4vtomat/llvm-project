@@ -12,5 +12,5 @@
 vghmac.vv v10, v9, v8
 # CHECK-INST: vghmac.vv v10, v9, v8
 # CHECK-ENCODING: [0x77,0x25,0x94,0xb2]
-# CHECK-ERROR: instruction requires the following: 'Zvkg' (Vector GCM instructions for Cryptography.){{$}}
+# CHECK-ERROR: instruction requires the following: 'Zvkg' (Vector GCM instructions for Cryptography){{$}}
 # CHECK-UNKNOWN: 77 25 94 b2   <unknown>

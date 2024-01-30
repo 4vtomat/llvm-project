@@ -853,26 +853,26 @@ def HasStdExtZvksh : Predicate<"Subtarget->hasStdExtZvksh()">,
 #ifdef SIFIVE_CUSTOMIZATION
 def FeatureStdExtZvkb0p1
     : SubtargetFeature<"zvkb0p1", "HasStdExtZvkb0p1", "true",
-                       "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
+                       "'Zvkb' (Vector Bitmanip instructions for Cryptography)">;
 def HasStdExtZvkb0p1 : Predicate<"Subtarget->hasStdExtZvkb0p1()">,
                               AssemblerPredicate<(all_of FeatureStdExtZvkb0p1),
-                              "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
+                              "'Zvkb' (Vector Bitmanip instructions for Cryptography)">;
 def HasStdExtZvkbOrZvkb0p1
     : Predicate<"Subtarget->hasStdExtZvkb() || Subtarget->hasStdExtZvkb0p1()">,
       AssemblerPredicate<(any_of FeatureStdExtZvkb, FeatureStdExtZvkb0p1),
-                         "'Zvkb' (Vector Bitmanip instructions for Cryptography.)">;
+                         "'Zvkb' (Vector Bitmanip instructions for Cryptography)">;
 
 def HasStdExtZvbcOrZvkb0p1
     : Predicate<"Subtarget->hasStdExtZvbc() || Subtarget->hasStdExtZvkb0p1()">,
       AssemblerPredicate<(any_of FeatureStdExtZvbc, FeatureStdExtZvkb0p1),
-                         "'Zvkb' or 'Zvbc' (Vector Bitmanip instructions for Cryptography.)">;
+                         "'Zvkb' or 'Zvbc' (Vector Bitmanip instructions for Cryptography)">;
 
 def FeatureStdExtZvkg0p1
     : SubtargetFeature<"zvkg0p1", "HasStdExtZvkg0p1", "true",
-                       "'Zvkg' (Vector GCM instructions for Cryptography.)">;
+                       "'Zvkg' (Vector GCM instructions for Cryptography)">;
 def HasStdExtZvkg0p1 : Predicate<"Subtarget->hasStdExtZvkg0p1()">,
                               AssemblerPredicate<(all_of FeatureStdExtZvkg0p1),
-                              "'Zvkg' (Vector GCM instructions for Cryptography.)">;
+                              "'Zvkg' (Vector GCM instructions for Cryptography)">;
 
 def FeatureStdExtZvknha0p1
     : SubtargetFeature<"zvknha0p1", "HasStdExtZvknha0p1", "true",
@@ -892,11 +892,11 @@ def HasStdExtZvknsOrZvkned
 
 def FeatureStdExtZvksed0p1
     : SubtargetFeature<"zvksed0p1", "HasStdExtZvksed0p1", "true",
-                       "'Zvksed' (SM4 Block Cipher Instructions.)">;
+                       "'Zvksed' (SM4 Block Cipher Instructions)">;
 
 def FeatureStdExtZvksh0p1
     : SubtargetFeature<"zvksh0p1", "HasStdExtZvksh0p1", "true",
-                       "'Zvksh' (SM3 Hash Function Instructions.)">;
+                       "'Zvksh' (SM3 Hash Function Instructions)">;
 #endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtZvkt
@@ -1115,7 +1115,7 @@ def HasVendorXSfvcp : Predicate<"Subtarget->hasVendorXSfvcp()">,
 #ifdef SIFIVE_CUSTOMIZATION
 def FeatureVendorXSfvfhbfmin
     : SubtargetFeature<"xsfvfhbfmin", "HasVendorXSfvfhbfmin", "true",
-                       "Xsfvfhbfmin (SiFive custom minimal BF16 vector support)",
+                       "'Xsfvfhbfmin' (SiFive custom minimal BF16 vector support)",
                        [FeatureStdExtZvfbfmin]>;
 def HasVendorXSfvfhbfmin : Predicate<"Subtarget->hasVendorXSfvfhbfmin()">,
                          AssemblerPredicate<(all_of FeatureVendorXSfvfhbfmin),
@@ -1123,7 +1123,7 @@ def HasVendorXSfvfhbfmin : Predicate<"Subtarget->hasVendorXSfvfhbfmin()">,
 
 def FeatureVendorXSfvqdotq
     : SubtargetFeature<"xsfvqdotq", "HasVendorXSfvqdotq", "true",
-                       "Xsfvqdotq (SiFive Vector Quad-Widening 4D Dot Product Instructions)",
+                       "'Xsfvqdotq' (SiFive Vector Quad-Widening 4D Dot Product Instructions)",
                        [FeatureStdExtZve32x]>;
 def HasVendorXSfvqdotq : Predicate<"Subtarget->hasVendorXSfvqdotq()">,
                          AssemblerPredicate<(all_of FeatureVendorXSfvqdotq),
@@ -1237,9 +1237,6 @@ def Feature32Bit
 def FeatureStdExtSscofpmf
     : SubtargetFeature<"sscofpmf", "HasStdExtSscofpmf", "true",
                        "'Sscofpmf' (Count Overflow and Mode-Based Filtering Architecture extension)">;
-def HasStdExtSscofpmf : Predicate<"Subtarget->hasStdExtSscofpmf()">,
-                                  AssemblerPredicate<(all_of FeatureStdExtSscofpmf),
-                                  "'Sscofpmf' (Count Overflow and Mode-Based Filtering Architecture extension)">;
 
 def FeatureRecodeDotprod
     : SubtargetFeature<"dotprod", "HasRecodeDotprod", "true",
