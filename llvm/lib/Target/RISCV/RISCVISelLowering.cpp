@@ -1565,17 +1565,9 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
                                              unsigned Intrinsic) const {
   auto &DL = I.getModule()->getDataLayout();
 
-#if SIFIVE_CUSTOMIZATION
   auto SetRVVLoadStoreInfo = [&](unsigned PtrOp, bool IsStore,
                                  bool IsUnitStrided, bool UsePtrVal = false) {
     Info.opc = IsStore ? ISD::INTRINSIC_VOID : ISD::INTRINSIC_W_CHAIN;
-<<<<<<< HEAD
-    if (UsePtrVal)
-      Info.ptrVal = I.getArgOperand(PtrOp);
-    else
-      Info.fallbackAddressSpace = I.getArgOperand(PtrOp)->getType()->getPointerAddressSpace();
-#endif // SIFIVE_CUSTOMIZATION
-=======
     // We can't use ptrVal if the intrinsic can access memory before the
     // pointer. This means we can't use it for strided or indexed intrinsics.
     if (UsePtrVal)
@@ -1583,7 +1575,6 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
     else
       Info.fallbackAddressSpace =
           I.getArgOperand(PtrOp)->getType()->getPointerAddressSpace();
->>>>>>> llvm/main
     Type *MemTy;
     if (IsStore) {
       // Store value is the first operand.
@@ -1643,11 +1634,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_seg7_load:
   case Intrinsic::riscv_seg8_load:
     return SetRVVLoadStoreInfo(/*PtrOp*/ 0, /*IsStore*/ false,
-<<<<<<< HEAD
-                               /*IsUnitStrided*/ false, /*UsePtrVal*/ true); // SIFIVE
-=======
                                /*IsUnitStrided*/ false, /*UsePtrVal*/ true);
->>>>>>> llvm/main
   case Intrinsic::riscv_seg2_store:
   case Intrinsic::riscv_seg3_store:
   case Intrinsic::riscv_seg4_store:
@@ -1658,33 +1645,21 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
     // Operands are (vec, ..., vec, ptr, vl)
     return SetRVVLoadStoreInfo(/*PtrOp*/ I.arg_size() - 2,
                                /*IsStore*/ true,
-<<<<<<< HEAD
-                               /*IsUnitStrided*/ false, /*UsePtrVal*/ true); // SIFIVE
-=======
                                /*IsUnitStrided*/ false, /*UsePtrVal*/ true);
->>>>>>> llvm/main
   case Intrinsic::riscv_vle:
   case Intrinsic::riscv_vle_mask:
   case Intrinsic::riscv_vleff:
   case Intrinsic::riscv_vleff_mask:
     return SetRVVLoadStoreInfo(/*PtrOp*/ 1,
                                /*IsStore*/ false,
-<<<<<<< HEAD
-                               /*IsUnitStrided*/ true, /*UsePtrVal*/ true); // SIFIVE
-=======
                                /*IsUnitStrided*/ true,
                                /*UsePtrVal*/ true);
->>>>>>> llvm/main
   case Intrinsic::riscv_vse:
   case Intrinsic::riscv_vse_mask:
     return SetRVVLoadStoreInfo(/*PtrOp*/ 1,
                                /*IsStore*/ true,
-<<<<<<< HEAD
-                               /*IsUnitStrided*/ true, /*UsePtrVal*/ true); // SIFIVE
-=======
                                /*IsUnitStrided*/ true,
                                /*UsePtrVal*/ true);
->>>>>>> llvm/main
   case Intrinsic::riscv_vlse:
   case Intrinsic::riscv_vlse_mask:
   case Intrinsic::riscv_vloxei:
@@ -1719,11 +1694,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vlseg8ff:
     return SetRVVLoadStoreInfo(/*PtrOp*/ I.arg_size() - 2,
                                /*IsStore*/ false,
-<<<<<<< HEAD
-                               /*IsUnitStrided*/ false, /*UsePtrVal*/ true); // SIFIVE
-=======
                                /*IsUnitStrided*/ false, /*UsePtrVal*/ true);
->>>>>>> llvm/main
   case Intrinsic::riscv_vlseg2_mask:
   case Intrinsic::riscv_vlseg3_mask:
   case Intrinsic::riscv_vlseg4_mask:
@@ -1740,11 +1711,7 @@ bool RISCVTargetLowering::getTgtMemIntrinsic(IntrinsicInfo &Info,
   case Intrinsic::riscv_vlseg8ff_mask:
     return SetRVVLoadStoreInfo(/*PtrOp*/ I.arg_size() - 4,
                                /*IsStore*/ false,
-<<<<<<< HEAD
-                               /*IsUnitStrided*/ false, /*UsePtrVal*/ true); // SIFIVE
-=======
                                /*IsUnitStrided*/ false, /*UsePtrVal*/ true);
->>>>>>> llvm/main
   case Intrinsic::riscv_vlsseg2:
   case Intrinsic::riscv_vlsseg3:
   case Intrinsic::riscv_vlsseg4:
@@ -4915,14 +4882,7 @@ static SDValue lowerShuffleViaVRegSplitting(ShuffleVectorSDNode *SVN,
     if (SrcVecIdx == -1)
       continue;
     unsigned ExtractIdx = (SrcVecIdx % VRegsPerSrc) * NumOpElts;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    // SIFIVE cherry-picked from upstream
     SDValue SrcVec = (unsigned)SrcVecIdx >= VRegsPerSrc ? V2 : V1;
-#endif
-=======
-    SDValue SrcVec = (unsigned)SrcVecIdx >= VRegsPerSrc ? V2 : V1;
->>>>>>> llvm/main
     SDValue SubVec = DAG.getNode(ISD::EXTRACT_SUBVECTOR, DL, M1VT, SrcVec,
                                  DAG.getVectorIdxConstant(ExtractIdx, DL));
     SubVec = convertFromScalableVector(OneRegVT, SubVec, DAG, Subtarget);
@@ -8733,28 +8693,7 @@ static bool VCIXScalarNeedLegalization(unsigned IntNo) {
   case Intrinsic::riscv_sf_vc_xv_se:
   case Intrinsic::riscv_sf_vc_xvv_se:
   case Intrinsic::riscv_sf_vc_xvw_se:
-  case Intrinsic::riscv_sf_vc_x_se_e8mf8:
-  case Intrinsic::riscv_sf_vc_x_se_e8mf4:
-  case Intrinsic::riscv_sf_vc_x_se_e8mf2:
-  case Intrinsic::riscv_sf_vc_x_se_e8m1:
-  case Intrinsic::riscv_sf_vc_x_se_e8m2:
-  case Intrinsic::riscv_sf_vc_x_se_e8m4:
-  case Intrinsic::riscv_sf_vc_x_se_e8m8:
-  case Intrinsic::riscv_sf_vc_x_se_e16mf4:
-  case Intrinsic::riscv_sf_vc_x_se_e16mf2:
-  case Intrinsic::riscv_sf_vc_x_se_e16m1:
-  case Intrinsic::riscv_sf_vc_x_se_e16m2:
-  case Intrinsic::riscv_sf_vc_x_se_e16m4:
-  case Intrinsic::riscv_sf_vc_x_se_e16m8:
-  case Intrinsic::riscv_sf_vc_x_se_e32mf2:
-  case Intrinsic::riscv_sf_vc_x_se_e32m1:
-  case Intrinsic::riscv_sf_vc_x_se_e32m2:
-  case Intrinsic::riscv_sf_vc_x_se_e32m4:
-  case Intrinsic::riscv_sf_vc_x_se_e32m8:
-  case Intrinsic::riscv_sf_vc_x_se_e64m1:
-  case Intrinsic::riscv_sf_vc_x_se_e64m2:
-  case Intrinsic::riscv_sf_vc_x_se_e64m4:
-  case Intrinsic::riscv_sf_vc_x_se_e64m8:
+  case Intrinsic::riscv_sf_vc_x_se:
     return true;
   }
   return false;
@@ -18162,7 +18101,6 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     if (SDValue V = combineBinOp_VLToVWBinOp_VL(N, DCI, Subtarget))
       return V;
     return combineToVWMACC(N, DAG, Subtarget);
-<<<<<<< HEAD
   case RISCVISD::SUB_VL:
 #if SIFIVE_CUSTOMIZATION
     if (SDValue Result = combineSelectAndBinOp(N, DAG))
@@ -18172,20 +18110,17 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
   case RISCVISD::XOR_VL:
     return combineSelectAndBinOp(N, DAG);
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> llvm/main
   case RISCVISD::VWADD_W_VL:
   case RISCVISD::VWADDU_W_VL:
-    return performVWADDW_VLCombine(N, DCI, Subtarget);
-  case RISCVISD::SUB_VL:
+#if SIFIVE_CUSTOMIZATION
+    if (SDValue V = performVWADDW_VLCombine(N, DCI, Subtarget))
+      return V;
+    return combineVWADDU_W_VL(N, DAG, Subtarget);;
+#endif // SIFIVE_CUSTOMIZATION
   case RISCVISD::VWSUB_W_VL:
   case RISCVISD::VWSUBU_W_VL:
   case RISCVISD::MUL_VL:
-#if SIFIVE_CUSTOMIZATION
-    if (SDValue V = combineBinOp_VLToVWBinOp_VL(N, DCI, Subtarget))
-      return V;
-    return combineVWADDU_W_VL(N, DAG, Subtarget);
-#endif // SIFIVE_CUSTOMIZATION
+    return combineBinOp_VLToVWBinOp_VL(N, DCI, Subtarget);
   case RISCVISD::VFMADD_VL:
   case RISCVISD::VFNMADD_VL:
   case RISCVISD::VFMSUB_VL:

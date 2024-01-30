@@ -1658,14 +1658,13 @@ RISCVTTIImpl::getMinMaxReductionCost(Intrinsic::ID IID, VectorType *Ty,
   }
 
   // IR Reduction is composed by two vmv and one rvv reduction instruction.
-<<<<<<< HEAD
-  InstructionCost BaseCost = 2;
-
-  if (CostKind == TTI::TCK_CodeSize)
-    return (LT.first - 1) + BaseCost;
-
 #if SIFIVE_CUSTOMIZATION
   if (ST->getProcFamily() == RISCVSubtarget::SiFive7) {
+    InstructionCost BaseCost = 2;
+
+    if (CostKind == TTI::TCK_CodeSize)
+      return (LT.first - 1) + BaseCost;
+
     // Now assume Vector performs better than scalar when
     // element count >= 19.
     unsigned CmpOpcode;
@@ -1688,9 +1687,6 @@ RISCVTTIImpl::getMinMaxReductionCost(Intrinsic::ID IID, VectorType *Ty,
                                              CostKind);
   }
 #endif // SIFIVE_CUSTOMIZATION
-  unsigned VL = getEstimatedVLFor(Ty);
-  return (LT.first - 1) + BaseCost + Log2_32_Ceil(VL);
-=======
   unsigned SplitOp;
   SmallVector<unsigned, 3> Opcodes;
   switch (IID) {
@@ -1727,7 +1723,6 @@ RISCVTTIImpl::getMinMaxReductionCost(Intrinsic::ID IID, VectorType *Ty,
                            getRISCVInstructionCost(SplitOp, LT.second, CostKind)
                      : 0;
   return SplitCost + getRISCVInstructionCost(Opcodes, LT.second, CostKind);
->>>>>>> llvm/main
 }
 
 InstructionCost
