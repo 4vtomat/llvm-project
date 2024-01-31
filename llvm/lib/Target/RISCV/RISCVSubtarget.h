@@ -183,6 +183,15 @@ public:
       return false;
     }
   }
+
+  bool isSiFiveBulletCPU() const {
+    switch (RISCVProcFamily) {
+    case RISCVProcFamilyEnum::SiFive7:
+      return true;
+    default:
+      return false;
+    }
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
 #define GET_SUBTARGETINFO_MACRO(ATTRIBUTE, DEFAULT, GETTER) \

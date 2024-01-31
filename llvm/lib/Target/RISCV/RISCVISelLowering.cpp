@@ -17282,6 +17282,58 @@ static SDValue performCONCAT_VECTORSCombine(SDNode *N, SelectionDAG &DAG,
   return DAG.getBitcast(VT.getSimpleVT(), StridedLoad);
 }
 
+#if SIFIVE_CUSTOMIZATION
+static SDValue performSPLAT_VECTORCombine(SDNode *N, SelectionDAG &DAG,
+                                          const RISCVSubtarget &Subtarget,
+                                          const RISCVTargetLowering &TLI) {
+  const MVT VT = N->getSimpleValueType(0);
+  SDValue Scalar = N->getOperand(0);
+
+  // SPLAT_VECTOR const_fp -> SPLAT_VECTOR (load (const_pool const_fp))
+  if (auto *C = dyn_cast<ConstantFPSDNode>(Scalar);
+      C && Subtarget.isSiFiveBulletCPU() && VT.isFloatingPoint()) {
+
+    auto PtrVt = TLI.getPointerTy(DAG.getDataLayout());
+    SDValue CPE =
+        DAG.getConstantPool(C->getConstantFPValue(), PtrVt);
+    MachineFunction &MF = DAG.getMachineFunction();
+    MVT EltTy = VT.getVectorElementType();
+    MachineMemOperand *MMO = MF.getMachineMemOperand(
+        MachinePointerInfo::getConstantPool(MF), MachineMemOperand::MOLoad,
+        LLT(EltTy), cast<ConstantPoolSDNode>(CPE)->getAlign());
+    SDValue Ld = DAG.getLoad(EltTy, SDLoc(Scalar), DAG.getEntryNode(), CPE, MMO);
+    return DAG.getSplatVector(VT, SDLoc(N), Ld);
+  }
+
+  return SDValue();
+}
+
+static SDValue performVFMV_V_F_VLCombine(SDNode *N, SelectionDAG &DAG,
+                                         const RISCVSubtarget &Subtarget,
+                                         const RISCVTargetLowering &TLI) {
+  const MVT VT = N->getSimpleValueType(0);
+  SDValue Passthru = N->getOperand(0);
+  SDValue Scalar = N->getOperand(1);
+  SDValue VL = N->getOperand(2);
+
+  // VFMV const_fp -> VFMV (load (const_pool const_fp))
+  if (auto *C = dyn_cast<ConstantFPSDNode>(Scalar);
+      C && Subtarget.isSiFiveBulletCPU()) {
+    auto PtrVt = TLI.getPointerTy(DAG.getDataLayout());
+    SDValue CPE =
+        DAG.getConstantPool(C->getConstantFPValue(), PtrVt);
+    MachineFunction &MF = DAG.getMachineFunction();
+    MVT EltTy = VT.getVectorElementType();
+    MachineMemOperand *MMO = MF.getMachineMemOperand(
+        MachinePointerInfo::getConstantPool(MF), MachineMemOperand::MOLoad,
+        LLT(EltTy), cast<ConstantPoolSDNode>(CPE)->getAlign());
+    SDValue Ld = DAG.getLoad(EltTy, SDLoc(Scalar), DAG.getEntryNode(), CPE, MMO);
+    return DAG.getNode(RISCVISD::VFMV_V_F_VL, SDLoc(N), VT, Passthru, Ld, VL);
+  }
+  return SDValue();
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 static SDValue combineToVWMACC(SDNode *N, SelectionDAG &DAG,
                                const RISCVSubtarget &Subtarget) {
 
@@ -18255,6 +18307,11 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     if (auto Gather = matchSplatAsGather(N->getOperand(0), VT.getSimpleVT(), N,
                                          DAG, Subtarget))
       return Gather;
+
+#if SIFIVE_CUSTOMIZATION
+    if (SDValue V = performSPLAT_VECTORCombine(N, DAG, Subtarget, *this))
+      return V;
+#endif // SIFIVE_CUSTOMIZATION
     break;
   }
   case ISD::BUILD_VECTOR:
@@ -18278,6 +18335,10 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     // If VL is 1, we can use vfmv.s.f.
     if (isOneConstant(VL))
       return DAG.getNode(RISCVISD::VFMV_S_F_VL, DL, VT, Passthru, Scalar, VL);
+#if SIFIVE_CUSTOMIZATION
+    if (SDValue V = performVFMV_V_F_VLCombine(N, DAG, Subtarget, *this))
+      return V;
+#endif // SIFIVE_CUSTOMIZATION
     break;
   }
   case RISCVISD::VMV_V_X_VL: {
