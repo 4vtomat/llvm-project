@@ -187,12 +187,13 @@ define void @skl_exp_f32(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280-NEXT:    flw fa3, %lo(.LCPI1_2)(t0)
 ; X280-NEXT:    lui t0, %hi(.LCPI1_8)
 ; X280-NEXT:    lui t1, %hi(.LCPI1_9)
+; X280-NEXT:    lui t3, %hi(.LCPI1_10)
 ; X280-NEXT:    li a3, 0
 ; X280-NEXT:    addi a6, a6, %lo(.LCPI1_5)
 ; X280-NEXT:    addi a7, a7, %lo(.LCPI1_7)
 ; X280-NEXT:    addi t0, t0, %lo(.LCPI1_8)
 ; X280-NEXT:    addi t1, t1, %lo(.LCPI1_9)
-; X280-NEXT:    lui t3, 260096
+; X280-NEXT:    addi t3, t3, %lo(.LCPI1_10)
 ; X280-NEXT:    li t4, 127
 ; X280-NEXT:    flw fa2, %lo(.LCPI1_3)(a4)
 ; X280-NEXT:    flw fa1, %lo(.LCPI1_4)(a5)
@@ -223,7 +224,7 @@ define void @skl_exp_f32(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280-NEXT:    vfmacc.vv v16, v8, v20
 ; X280-NEXT:    vlse32.v v20, (t1), zero
 ; X280-NEXT:    vfmacc.vv v20, v8, v16
-; X280-NEXT:    vmv.v.x v16, t3
+; X280-NEXT:    vlse32.v v16, (t3), zero
 ; X280-NEXT:    vfmadd.vv v20, v8, v16
 ; X280-NEXT:    vfmadd.vv v20, v8, v16
 ; X280-NEXT:    vsetvli zero, zero, e16, m2, tu, ma
@@ -258,12 +259,13 @@ define void @skl_exp_f32(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280N-NEXT:    flw fa3, %lo(.LCPI1_2)(t0)
 ; X280N-NEXT:    lui t0, %hi(.LCPI1_8)
 ; X280N-NEXT:    lui t1, %hi(.LCPI1_9)
+; X280N-NEXT:    lui t3, %hi(.LCPI1_10)
 ; X280N-NEXT:    li a3, 0
 ; X280N-NEXT:    addi a6, a6, %lo(.LCPI1_5)
 ; X280N-NEXT:    addi a7, a7, %lo(.LCPI1_7)
 ; X280N-NEXT:    addi t0, t0, %lo(.LCPI1_8)
 ; X280N-NEXT:    addi t1, t1, %lo(.LCPI1_9)
-; X280N-NEXT:    lui t3, 260096
+; X280N-NEXT:    addi t3, t3, %lo(.LCPI1_10)
 ; X280N-NEXT:    li t4, 127
 ; X280N-NEXT:    flw fa2, %lo(.LCPI1_3)(a4)
 ; X280N-NEXT:    flw fa1, %lo(.LCPI1_4)(a5)
@@ -294,7 +296,7 @@ define void @skl_exp_f32(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280N-NEXT:    vfmacc.vv v16, v8, v20
 ; X280N-NEXT:    vlse32.v v20, (t1), zero
 ; X280N-NEXT:    vfmacc.vv v20, v8, v16
-; X280N-NEXT:    vmv.v.x v16, t3
+; X280N-NEXT:    vlse32.v v16, (t3), zero
 ; X280N-NEXT:    vfmadd.vv v20, v8, v16
 ; X280N-NEXT:    vfmadd.vv v20, v8, v16
 ; X280N-NEXT:    vsetvli zero, zero, e16, m2, tu, ma
