@@ -169,7 +169,8 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  unsigned getMinGlobalAlign(uint64_t TypeSize) const override {
+  unsigned getMinGlobalAlign(uint64_t TypeSize,
+                             bool HasNonWeakDef) const override {
     if (TypeSize >= 128)
       return 32;
     return 0;

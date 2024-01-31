@@ -43,7 +43,7 @@ struct RVVIntrinsicDef {
 
 struct RVVOverloadIntrinsicDef {
   // Indexes of RISCVIntrinsicManagerImpl::IntrinsicList.
-  SmallVector<uint16_t, 8> Indexes;
+  SmallVector<uint32_t, 8> Indexes; // SIFIVE
 };
 
 } // namespace
@@ -196,7 +196,7 @@ private:
   // List of all RVV intrinsic.
   std::vector<RVVIntrinsicDef> IntrinsicList;
   // Mapping function name to index of IntrinsicList.
-  StringMap<uint16_t> Intrinsics;
+  StringMap<uint32_t> Intrinsics; // SIFIVE
   // Mapping function name to RVVOverloadIntrinsicDef.
   StringMap<RVVOverloadIntrinsicDef> OverloadIntrinsics;
 
@@ -482,7 +482,7 @@ void RISCVIntrinsicManagerImpl::InitRVVIntrinsic(
                                      Record.HasFRMRoundModeOp);
 
   // Put into IntrinsicList.
-  uint16_t Index = IntrinsicList.size();
+  uint32_t Index = IntrinsicList.size(); // SIFIVE
   assert(IntrinsicList.size() == (size_t)Index &&
          "Intrinsics indices overflow.");
   IntrinsicList.push_back({BuiltinName, Signature});
