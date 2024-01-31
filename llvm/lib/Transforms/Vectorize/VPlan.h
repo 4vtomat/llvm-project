@@ -1056,14 +1056,11 @@ public:
     case VPRecipeBase::VPWidenIntOrFpInductionSC:
     case VPRecipeBase::VPWidenPointerInductionSC:
     case VPRecipeBase::VPReductionPHISC:
-<<<<<<< HEAD
+    case VPRecipeBase::VPScalarCastSC:
 #if SIFIVE_CUSTOMIZATION
     case VPRecipeBase::VPCSADataUpdateSC:
     case VPRecipeBase::VPCSAExtractScalarSC:
 #endif
-=======
-    case VPRecipeBase::VPScalarCastSC:
->>>>>>> llvm/main
       return true;
     case VPRecipeBase::VPInterleaveSC:
     case VPRecipeBase::VPBranchOnMaskSC:
@@ -2045,16 +2042,22 @@ class VPWidenPointerInductionRecipe : public VPHeaderPHIRecipe {
 
   bool IsScalarAfterVectorization;
 
+#if SIFIVE_CUSTOMIZATION
   /// Indicator if only the pointer induction variable is an uniform
   bool IsUncountable = false;
+#endif // SIFIVE_CUSTOMIZATION
 
 public:
   /// Create a new VPWidenPointerInductionRecipe for \p Phi with start value \p
   /// Start.
   VPWidenPointerInductionRecipe(PHINode *Phi, VPValue *Start, VPValue *Step,
                                 const InductionDescriptor &IndDesc,
+#if SIFIVE_CUSTOMIZATION
                                 bool IsScalarAfterVectorization,
                                 bool IsUncountable)
+#else
+                                bool IsScalarAfterVectorization)
+#endif // SIFIVE_CUSTOMIZATION
       : VPHeaderPHIRecipe(VPDef::VPWidenPointerInductionSC, Phi),
         IndDesc(IndDesc),
         IsScalarAfterVectorization(IsScalarAfterVectorization),
@@ -2066,9 +2069,15 @@ public:
   ~VPWidenPointerInductionRecipe() override = default;
 
   VPRecipeBase *clone() override {
+#if SIFIVE_CUSTOMIZATION
+    return new VPWidenPointerInductionRecipe(
+        cast<PHINode>(getUnderlyingInstr()), getOperand(0), getOperand(1),
+        IndDesc, IsScalarAfterVectorization, IsUncountable);
+#else
     return new VPWidenPointerInductionRecipe(
         cast<PHINode>(getUnderlyingInstr()), getOperand(0), getOperand(1),
         IndDesc, IsScalarAfterVectorization);
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   VP_CLASSOF_IMPL(VPDef::VPWidenPointerInductionSC)
@@ -2076,8 +2085,10 @@ public:
   /// Generate vector values for the pointer induction.
   void execute(VPTransformState &State) override;
 
+#if SIFIVE_CUSTOMIZATION
   /// Generate vector values for the pointer induction in an uncountable loop.
   void executeUncountable(VPTransformState &State);
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns true if only scalar values will be generated.
   bool onlyScalarsGenerated(ElementCount VF);
@@ -2085,6 +2096,7 @@ public:
   /// Returns the induction descriptor for the recipe.
   const InductionDescriptor &getInductionDescriptor() const { return IndDesc; }
 
+#if SIFIVE_CUSTOMIZATION
   /// Returns true if only scalar values will be generated.
   bool onlyFirstLaneUsed(const VPValue *Op) const override {
     assert(is_contained(operands(), Op) &&
@@ -2093,7 +2105,6 @@ public:
                   [this](VPUser *U) { return U->onlyFirstLaneUsed(this); });
   }
 
-#if SIFIVE_CUSTOMIZATION
   bool isUncountable() const { return IsUncountable; }
 
   /// Returns whether the pointer iv is an uniform
@@ -2206,19 +2217,17 @@ public:
   /// RdxDesc.
   VPReductionPHIRecipe(PHINode *Phi, const RecurrenceDescriptor &RdxDesc,
                        VPValue &Start, bool IsInLoop = false,
-                       bool IsOrdered = false
 #if SIFIVE_CUSTOMIZATION
-                       ,
-                       bool PostFixStartValue = false
-#endif // SIFIVE_CUSTOMIZATION
-                       )
+                       bool IsOrdered = false,
+                       bool PostFixStartValue = false)
       : VPHeaderPHIRecipe(VPReductionPHISC, Phi, &Start), RdxDesc(RdxDesc),
-        IsInLoop(IsInLoop), IsOrdered(IsOrdered)
-#if SIFIVE_CUSTOMIZATION
-        ,
-        PostFixStartValue(PostFixStartValue)
+        IsInLoop(IsInLoop), IsOrdered(IsOrdered),
+        PostFixStartValue(PostFixStartValue) {
+#else
+                       bool IsOrdered = false)
+      : VPHeaderPHIRecipe(VPDef::VPReductionPHISC, Phi, &Start),
+        RdxDesc(RdxDesc), IsInLoop(IsInLoop), IsOrdered(IsOrdered) {
 #endif // SIFIVE_CUSTOMIZATION
-  {
     assert((!IsOrdered || IsInLoop) && "IsOrdered requires IsInLoop");
 #if SIFIVE_CUSTOMIZATION
     assert((!PostFixStartValue || !IsOrdered || !IsInLoop) &&
@@ -2595,6 +2604,11 @@ public:
 
   ~VPCSAHeaderPHIRecipe() override = default;
 
+  VPRecipeBase *clone() override {
+    return new VPCSAHeaderPHIRecipe(cast<PHINode>(getUnderlyingInstr()),
+                                    getOperand(0));
+  }
+
   void execute(VPTransformState &State) override;
 
   InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const override;
@@ -2620,6 +2634,12 @@ public:
       : VPSingleDefRecipe(VPDef::VPCSADataUpdateSC, Operands, SI) {}
 
   ~VPCSADataUpdateRecipe() override = default;
+
+  VPRecipeBase *clone() override {
+    SmallVector<VPValue *> Ops(operands());
+    return new VPCSADataUpdateRecipe(cast<SelectInst>(getUnderlyingInstr()),
+                                     Ops);
+  }
 
   void execute(VPTransformState &State) override;
 
@@ -2660,6 +2680,11 @@ public:
       : VPSingleDefRecipe(VPDef::VPCSAExtractScalarSC, Operands) {}
 
   ~VPCSAExtractScalarRecipe() override = default;
+
+  VPRecipeBase *clone() override {
+    SmallVector<VPValue *> Ops(operands());
+    return new VPCSAExtractScalarRecipe(Ops);
+  }
 
   void execute(VPTransformState &State) override;
 
@@ -3148,6 +3173,10 @@ public:
       : VPHeaderPHIRecipe(VPDef::VPEVLBasedIVPHISC, nullptr, StartMask, DL) {}
 
   ~VPEVLBasedIVPHIRecipe() override = default;
+
+  VPRecipeBase *clone() override {
+     return new VPEVLBasedIVPHIRecipe(getOperand(0),  getDebugLoc());
+  }
 
   VP_CLASSOF_IMPL(VPDef::VPEVLBasedIVPHISC)
 
@@ -4145,6 +4174,7 @@ bool isPhiThatGeneratesBackedge(const VPRecipeBase &R);
 bool isHeaderPhi(const VPRecipeBase &R);
 #endif // SIFIVE_CUSTOMIZATION
 } // end namespace vputils
+
 } // end namespace llvm
 
 #endif // LLVM_TRANSFORMS_VECTORIZE_VPLAN_H

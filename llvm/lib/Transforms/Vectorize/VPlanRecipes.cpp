@@ -1957,7 +1957,58 @@ void VPReplicateRecipe::print(raw_ostream &O, const Twine &Indent,
 }
 #endif
 
-<<<<<<< HEAD
+/// Checks if \p C is uniform across all VFs and UFs. It is considered as such
+/// if it is either defined outside the vector region or its operand is known to
+/// be uniform across all VFs and UFs (e.g. VPDerivedIV or VPCanonicalIVPHI).
+/// TODO: Uniformity should be associated with a VPValue and there should be a
+/// generic way to check.
+static bool isUniformAcrossVFsAndUFs(VPScalarCastRecipe *C) {
+  return C->isDefinedOutsideVectorRegions() ||
+         isa<VPDerivedIVRecipe>(C->getOperand(0)) ||
+         isa<VPCanonicalIVPHIRecipe>(C->getOperand(0));
+}
+
+Value *VPScalarCastRecipe ::generate(VPTransformState &State, unsigned Part) {
+  assert(vputils::onlyFirstLaneUsed(this) &&
+         "Codegen only implemented for first lane.");
+  switch (Opcode) {
+  case Instruction::SExt:
+  case Instruction::ZExt:
+  case Instruction::Trunc: {
+    // Note: SExt/ZExt not used yet.
+    Value *Op = State.get(getOperand(0), VPIteration(Part, 0));
+    return State.Builder.CreateCast(Instruction::CastOps(Opcode), Op, ResultTy);
+  }
+  default:
+    llvm_unreachable("opcode not implemented yet");
+  }
+}
+
+void VPScalarCastRecipe ::execute(VPTransformState &State) {
+  bool IsUniformAcrossVFsAndUFs = isUniformAcrossVFsAndUFs(this);
+  for (unsigned Part = 0; Part != State.UF; ++Part) {
+    Value *Res;
+    // Only generate a single instance, if the recipe is uniform across UFs and
+    // VFs.
+    if (Part > 0 && IsUniformAcrossVFsAndUFs)
+      Res = State.get(this, VPIteration(0, 0));
+    else
+      Res = generate(State, Part);
+    State.set(this, Res, VPIteration(Part, 0));
+  }
+}
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+void VPScalarCastRecipe ::print(raw_ostream &O, const Twine &Indent,
+                                VPSlotTracker &SlotTracker) const {
+  O << Indent << "SCALAR-CAST ";
+  printAsOperand(O, SlotTracker);
+  O << " = " << Instruction::getOpcodeName(Opcode) << " ";
+  printOperands(O, SlotTracker);
+  O << " to " << *ResultTy;
+}
+#endif
+
 #if SIFIVE_CUSTOMIZATION
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 void VPCSAHeaderPHIRecipe::print(raw_ostream &O, const Twine &Indent,
@@ -2089,51 +2140,10 @@ void VPCSADataUpdateRecipe::execute(VPTransformState &State) {
     if (Part == State.UF - 1)
       cast<PHINode>(DataPhi)->addIncoming(NewData, State.CFG.PrevBB);
     State.set(this, NewData, Part);
-=======
-/// Checks if \p C is uniform across all VFs and UFs. It is considered as such
-/// if it is either defined outside the vector region or its operand is known to
-/// be uniform across all VFs and UFs (e.g. VPDerivedIV or VPCanonicalIVPHI).
-/// TODO: Uniformity should be associated with a VPValue and there should be a
-/// generic way to check.
-static bool isUniformAcrossVFsAndUFs(VPScalarCastRecipe *C) {
-  return C->isDefinedOutsideVectorRegions() ||
-         isa<VPDerivedIVRecipe>(C->getOperand(0)) ||
-         isa<VPCanonicalIVPHIRecipe>(C->getOperand(0));
-}
-
-Value *VPScalarCastRecipe ::generate(VPTransformState &State, unsigned Part) {
-  assert(vputils::onlyFirstLaneUsed(this) &&
-         "Codegen only implemented for first lane.");
-  switch (Opcode) {
-  case Instruction::SExt:
-  case Instruction::ZExt:
-  case Instruction::Trunc: {
-    // Note: SExt/ZExt not used yet.
-    Value *Op = State.get(getOperand(0), VPIteration(Part, 0));
-    return State.Builder.CreateCast(Instruction::CastOps(Opcode), Op, ResultTy);
-  }
-  default:
-    llvm_unreachable("opcode not implemented yet");
-  }
-}
-
-void VPScalarCastRecipe ::execute(VPTransformState &State) {
-  bool IsUniformAcrossVFsAndUFs = isUniformAcrossVFsAndUFs(this);
-  for (unsigned Part = 0; Part != State.UF; ++Part) {
-    Value *Res;
-    // Only generate a single instance, if the recipe is uniform across UFs and
-    // VFs.
-    if (Part > 0 && IsUniformAcrossVFsAndUFs)
-      Res = State.get(this, VPIteration(0, 0));
-    else
-      Res = generate(State, Part);
-    State.set(this, Res, VPIteration(Part, 0));
->>>>>>> llvm/main
   }
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-<<<<<<< HEAD
 void VPCSAExtractScalarRecipe::print(raw_ostream &O, const Twine &Indent,
                                  VPSlotTracker &SlotTracker) const {
   O << Indent << "EMIT ";
@@ -2177,18 +2187,6 @@ void VPCSAExtractScalarRecipe::execute(VPTransformState &State) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
-void VPScalarCastRecipe ::print(raw_ostream &O, const Twine &Indent,
-                                VPSlotTracker &SlotTracker) const {
-  O << Indent << "SCALAR-CAST ";
-  printAsOperand(O, SlotTracker);
-  O << " = " << Instruction::getOpcodeName(Opcode) << " ";
-  printOperands(O, SlotTracker);
-  O << " to " << *ResultTy;
-}
-#endif
-
->>>>>>> llvm/main
 void VPBranchOnMaskRecipe::execute(VPTransformState &State) {
   assert(State.Instance && "Branch on Mask works only on single instance.");
 

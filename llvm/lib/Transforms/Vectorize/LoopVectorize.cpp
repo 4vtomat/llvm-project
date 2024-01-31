@@ -10024,7 +10024,6 @@ VPValue *VPRecipeBuilder::createEdgeMask(BasicBlock *Src, BasicBlock *Dst,
   return EdgeMaskCache[Edge] = EdgeMask;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VPValue *VPRecipeBuilder::getOrCreateIV(VPBasicBlock *VPBB, VPlanPtr &Plan) {
   IVCacheTy::iterator IVEntryIt = IVCache.find(VPBB);
@@ -10048,7 +10047,7 @@ VPValue *VPRecipeBuilder::getOrCreateIV(VPBasicBlock *VPBB, VPlanPtr &Plan) {
   return IV; // TODO: IVCache[VPBB] = IV;
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 VPValue *VPRecipeBuilder::getEdgeMask(BasicBlock *Src, BasicBlock *Dst) const {
   assert(is_contained(predecessors(Dst), Src) && "Invalid edge");
 
@@ -10059,7 +10058,6 @@ VPValue *VPRecipeBuilder::getEdgeMask(BasicBlock *Src, BasicBlock *Dst) const {
          "looking up mask for edge which has not been created");
   return ECEntryIt->second;
 }
->>>>>>> llvm/main
 
 void VPRecipeBuilder::createHeaderMask(VPlan &Plan) {
   BasicBlock *Header = OrigLoop->getHeader();
@@ -10439,21 +10437,15 @@ bool VPRecipeBuilder::shouldWiden(Instruction *I, VFRange &Range) const {
                                                              Range);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool VPRecipeBuilder::preferPredicatedWiden() const {
   return Legal->useVLAVectorizer();
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-VPRecipeBase *VPRecipeBuilder::tryToWiden(Instruction *I,
-                                          ArrayRef<VPValue *> Operands,
-                                          VPBasicBlock *VPBB, VPlanPtr &Plan) {
-=======
 VPWidenRecipe *VPRecipeBuilder::tryToWiden(Instruction *I,
                                            ArrayRef<VPValue *> Operands,
                                            VPBasicBlock *VPBB, VPlanPtr &Plan) {
->>>>>>> llvm/main
   switch (I->getOpcode()) {
   default:
     return nullptr;
@@ -10647,12 +10639,8 @@ VPRecipeBase *VPRecipeBuilder::tryToCreateWidenRecipe(
       PhisToFix.push_back(PhiRecipe);
 #else
     PhisToFix.push_back(PhiRecipe);
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-    return toVPRecipeResult(PhiRecipe);
-=======
     return PhiRecipe;
->>>>>>> llvm/main
   }
 
   if (isa<TruncInst>(Instr) &&
@@ -10679,7 +10667,7 @@ VPRecipeBase *VPRecipeBuilder::tryToCreateWidenRecipe(
         return nullptr;
     }
 
-    return toVPRecipeResult(tryToWidenMemory(Instr, Operands, Range, Plan));
+    return tryToWidenMemory(Instr, Operands, Range, Plan);
   }
 
   if (Legal->isVectorizableUncountable()) {
@@ -10706,17 +10694,13 @@ VPRecipeBase *VPRecipeBuilder::tryToCreateWidenRecipe(
       VPBB->appendRecipe(cast<VPInstruction>(VPCond));
       auto *R = new VPInstruction(VPInstruction::BranchOnCond, {VPCond},
                                   Br->getDebugLoc());
-      return toVPRecipeResult(R);
+      return R;
     }
   }
 #else
   if (isa<LoadInst>(Instr) || isa<StoreInst>(Instr))
-<<<<<<< HEAD
-    return toVPRecipeResult(tryToWidenMemory(Instr, Operands, Range, Plan));
-#endif // SIFIVE_CUSTOMIZATION
-=======
     return tryToWidenMemory(Instr, Operands, Range, Plan);
->>>>>>> llvm/main
+#endif // SIFIVE_CUSTOMIZATION
 
   if (!shouldWiden(Instr, Range))
     return nullptr;
@@ -10726,7 +10710,6 @@ VPRecipeBase *VPRecipeBuilder::tryToCreateWidenRecipe(
                                 make_range(Operands.begin(), Operands.end()));
 
   if (auto *SI = dyn_cast<SelectInst>(Instr)) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     auto CSADescIt = find_if(Legal->getCSAs(), [&](auto CSA) {
       return CSADescriptor::isCSASelect(CSA.second, SI);
@@ -10738,15 +10721,11 @@ VPRecipeBase *VPRecipeBuilder::tryToCreateWidenRecipe(
       auto *R = new VPCSADataUpdateRecipe(
           SI, {VPDataPhi, Operands[0], Operands[1], Operands[2]});
       State->setDataUpdate(R);
-      return toVPRecipeResult(R);
+      return R;
     }
 #endif // SIFIVE_CUSTOMIZATION
-    return toVPRecipeResult(new VPWidenSelectRecipe(
-        *SI, make_range(Operands.begin(), Operands.end())));
-=======
     return new VPWidenSelectRecipe(
         *SI, make_range(Operands.begin(), Operands.end()));
->>>>>>> llvm/main
   }
 
   if (auto *CI = dyn_cast<CastInst>(Instr)) {
@@ -11182,36 +11161,19 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 
       VPRecipeBase *Recipe = RecipeBuilder.tryToCreateWidenRecipe(
           Instr, Operands, Range, VPBB, Plan);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-      if (!RecipeOrValue) {
+      if (!Recipe) {
         // Skip branches that are not vectorized. These are exiting branches
         // with scalar conditions.
         if (isa<BranchInst>(Instr))
           continue;
         else
-          RecipeOrValue = RecipeBuilder.handleReplication(Instr, Range, *Plan);
+          Recipe = RecipeBuilder.handleReplication(Instr, Range, *Plan);
       }
 #else
-      if (!RecipeOrValue)
-        RecipeOrValue = RecipeBuilder.handleReplication(Instr, Range, *Plan);
-#endif // SIFIVE_CUSTOMIZATION
-      // If Instr can be simplified to an existing VPValue, use it.
-      if (isa<VPValue *>(RecipeOrValue)) {
-        auto *VPV = cast<VPValue *>(RecipeOrValue);
-        Plan->addVPValue(Instr, VPV);
-        // If the re-used value is a recipe, register the recipe for the
-        // instruction, in case the recipe for Instr needs to be recorded.
-        if (VPRecipeBase *R = VPV->getDefiningRecipe())
-          RecipeBuilder.setRecipe(Instr, R);
-        continue;
-      }
-      // Otherwise, add the new recipe.
-      VPRecipeBase *Recipe = cast<VPRecipeBase *>(RecipeOrValue);
-=======
       if (!Recipe)
         Recipe = RecipeBuilder.handleReplication(Instr, Range, *Plan);
->>>>>>> llvm/main
+#endif // SIFIVE_CUSTOMIZATION
       for (auto *Def : Recipe->definedValues()) {
         auto *UV = Def->getUnderlyingValue();
 #if SIFIVE_CUSTOMIZATION
