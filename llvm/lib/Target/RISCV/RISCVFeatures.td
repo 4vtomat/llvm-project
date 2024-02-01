@@ -853,26 +853,26 @@ def HasStdExtZvksh : Predicate<"Subtarget->hasStdExtZvksh()">,
 #ifdef SIFIVE_CUSTOMIZATION
 def FeatureStdExtZvkb0p1
     : SubtargetFeature<"zvkb0p1", "HasStdExtZvkb0p1", "true",
-                       "'Zvkb' (Vector Bitmanip instructions for Cryptography)">;
+                       "'Zvkb' (Vector Bit-manipulation used in Cryptography)">;
 def HasStdExtZvkb0p1 : Predicate<"Subtarget->hasStdExtZvkb0p1()">,
-                              AssemblerPredicate<(all_of FeatureStdExtZvkb0p1),
-                              "'Zvkb' (Vector Bitmanip instructions for Cryptography)">;
+                       AssemblerPredicate<(all_of FeatureStdExtZvkb0p1),
+                       "'Zvkb' (Vector Bit-manipulation used in Cryptography)">;
 def HasStdExtZvkbOrZvkb0p1
     : Predicate<"Subtarget->hasStdExtZvkb() || Subtarget->hasStdExtZvkb0p1()">,
       AssemblerPredicate<(any_of FeatureStdExtZvkb, FeatureStdExtZvkb0p1),
-                         "'Zvkb' (Vector Bitmanip instructions for Cryptography)">;
+                         "'Zvkb' (Vector Bit-manipulation used in Cryptography)">;
 
 def HasStdExtZvbcOrZvkb0p1
     : Predicate<"Subtarget->hasStdExtZvbc() || Subtarget->hasStdExtZvkb0p1()">,
       AssemblerPredicate<(any_of FeatureStdExtZvbc, FeatureStdExtZvkb0p1),
-                         "'Zvkb' or 'Zvbc' (Vector Bitmanip instructions for Cryptography)">;
+                         "'Zvbc' (Vector Carryless Multiplication)">;
 
 def FeatureStdExtZvkg0p1
     : SubtargetFeature<"zvkg0p1", "HasStdExtZvkg0p1", "true",
                        "'Zvkg' (Vector GCM instructions for Cryptography)">;
 def HasStdExtZvkg0p1 : Predicate<"Subtarget->hasStdExtZvkg0p1()">,
-                              AssemblerPredicate<(all_of FeatureStdExtZvkg0p1),
-                              "'Zvkg' (Vector GCM instructions for Cryptography)">;
+                       AssemblerPredicate<(all_of FeatureStdExtZvkg0p1),
+                       "'Zvkg' (Vector GCM instructions for Cryptography)">;
 
 def FeatureStdExtZvknha0p1
     : SubtargetFeature<"zvknha0p1", "HasStdExtZvknha0p1", "true",
@@ -887,8 +887,8 @@ def FeatureStdExtZvkns
                        "'Zvkns' (Vector AES Encryption & Decryption (Single Round))">;
 def HasStdExtZvknsOrZvkned
     : Predicate<"Subtarget->hasStdExtZvkns() || Subtarget->hasStdExtZvkned()">,
-                AssemblerPredicate<(any_of FeatureStdExtZvkns, FeatureStdExtZvkned),
-                "'Zvkns' or 'Zvkned' (Vector AES Encryption & Decryption (Single Round))">;
+      AssemblerPredicate<(any_of FeatureStdExtZvkns, FeatureStdExtZvkned),
+          "'Zvkned' (Vector AES Encryption & Decryption (Single Round))">;
 
 def FeatureStdExtZvksed0p1
     : SubtargetFeature<"zvksed0p1", "HasStdExtZvksed0p1", "true",
