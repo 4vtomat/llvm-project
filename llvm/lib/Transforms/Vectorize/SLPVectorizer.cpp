@@ -3892,7 +3892,6 @@ static bool arePointersCompatible(Value *Ptr1, Value *Ptr2,
               .getOpcode());
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 /// Check if \p Order represents reverse order.
 static bool isReverseOrder(ArrayRef<unsigned> Order) {
@@ -4026,18 +4025,6 @@ calculateRtStride(ArrayRef<Value *> PointerOps, Type *ElemTy,
   return Expander.expandCodeFor(Stride, Stride->getType(), Inst);
 }
 
-=======
->>>>>>> llvm/main
-/// Calculates minimal alignment as a common alignment.
-template <typename T>
-static Align computeCommonAlignment(ArrayRef<Value *> VL) {
-  Align CommonAlignment = cast<T>(VL.front())->getAlign();
-  for (Value *V : VL.drop_front())
-    CommonAlignment = std::min(CommonAlignment, cast<T>(V)->getAlign());
-  return CommonAlignment;
-}
-
-<<<<<<< HEAD
 /// Checks if reversed stores can be represented as strided stores with stride
 /// -1.
 static bool isAllowedStridedStore(Module &M, ArrayRef<unsigned> ReorderIndices,
@@ -4047,8 +4034,15 @@ static bool isAllowedStridedStore(Module &M, ArrayRef<unsigned> ReorderIndices,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> llvm/main
+/// Calculates minimal alignment as a common alignment.
+template <typename T>
+static Align computeCommonAlignment(ArrayRef<Value *> VL) {
+  Align CommonAlignment = cast<T>(VL.front())->getAlign();
+  for (Value *V : VL.drop_front())
+    CommonAlignment = std::min(CommonAlignment, cast<T>(V)->getAlign());
+  return CommonAlignment;
+}
+
 /// Checks if the given array of loads can be represented as a vectorized,
 /// scatter or just simple gather.
 static LoadsState canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,

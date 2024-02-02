@@ -3953,17 +3953,15 @@ Instruction *InstCombinerImpl::visitOr(BinaryOperator &I) {
   if (Instruction *Res = foldBitwiseLogicWithIntrinsics(I, Builder))
     return Res;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (Instruction *NewI = foldNeutralVPReduce(I))
-    return NewI;
-#endif
-=======
   if (Value *V = simplifyAndOrWithOpReplaced(Op0, Op1, /*IsAnd*/ false, *this))
     return BinaryOperator::CreateOr(V, Op1);
   if (Value *V = simplifyAndOrWithOpReplaced(Op1, Op0, /*IsAnd*/ false, *this))
     return BinaryOperator::CreateOr(Op0, V);
->>>>>>> llvm/main
+
+#if SIFIVE_CUSTOMIZATION
+  if (Instruction *NewI = foldNeutralVPReduce(I))
+    return NewI;
+#endif
 
   return nullptr;
 }

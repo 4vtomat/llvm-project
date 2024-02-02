@@ -28,104 +28,10 @@ def FeatureStdExtSs
                        "'Ss' (Supervisor Architecture)",
                        []>;
 
-def FeatureStdExtSvbare
-    : SubtargetFeature<"svbare", "HasStdExtSvbare", "true",
-                       "'Svbare'",
-                       []>;
-
-def FeatureStdExtSvade
-    : SubtargetFeature<"svade", "HasStdExtSvade", "true",
-                       "'Svade' (Page-fault exceptions are raised when a page "
-                       "is accessed when A bit is clear, or written when D bit "
-                       "is clear)", []>;
-
-def FeatureStdExtSvadu
-    : SubtargetFeature<"svadu", "HasStdExtSvadu", "true",
-                       "'Svadu' (Extension adds support and CSR controls for "
-                       "hardware updating of PTE A/D bits)", []>;
-
-def FeatureStdExtSsccptr
-    : SubtargetFeature<"ssccptr", "HasStdExtSsccptr", "true",
-                       "'Ssccptr' (Main memory regions with both the "
-                       "cacheability and coherence PMAs must support hardware "
-                       "page-table reads.)", []>;
-
-def FeatureStdExtSstvecd
-    : SubtargetFeature<"sstvecd", "HasStdExtSstvecd", "true",
-                       "'Sstvecd' (stvec.MODE must be capable of holding the "
-                       "value 0 (Direct). When stvec.MODE=Direct, stvec.BASE "
-                       "must be capable of holding any valid four-byte-aligned "
-                       "address.)", []>;
-
-def FeatureStdExtSstvala
-    : SubtargetFeature<"sstvala", "HasStdExtSstvala", "true",
-                       "'Sstvala' (stval must be written with the faulting "
-                       "virtual address for load, store, and instruction "
-                       "page-fault, access-fault, and misaligned exceptions, "
-                       "and for breakpoint exceptions other than those caused "
-                       "by execution of the EBREAK or C.EBREAK instructions. "
-                       "For illegal-instruction exceptions, stval must be "
-                       "written with the faulting instruction.)", []>;
-
-def FeatureStdExtSscounterenw
-    : SubtargetFeature<"sscounterenw", "HasStdExtSscounterenw", "true",
-                       "'Sscounterenw' (For any hpmcounter that is not "
-                       "read-only zero, the corresponding bit in scounteren "
-                       "must be writable.)", []>;
-
-def FeatureStdExtSsu64xl
-    : SubtargetFeature<"ssu64xl", "HasStdExtSsu64xl", "true",
-                       "'Ssu64xl' (sstatus.UXL=64)", []>;
-
-def FeatureStdExtSstc
-    : SubtargetFeature<"sstc", "HasStdExtSstc", "true",
-                       "'Sstc' (supervisor-mode timer interrupts.)", []>;
-
-def FeatureStdExtSsstateen
-    : SubtargetFeature<"ssstateen", "HasStdExtSsstateen", "true",
-                       "'Ssstateen' (Supervisor-mode view of the state-enable "
-                       "extension.)", []>;
-
 def FeatureStdExtSmstateen
     : SubtargetFeature<"smstateen", "HasStdExtSmstateen", "true",
                        "'Smstateen' (Machine-mode view of the state-enable "
                        "extension.)", []>;
-
-def FeatureStdExtShcounterenw
-    : SubtargetFeature<"shcounterenw", "HasStdExtShcounterenw", "true",
-                       "'Shcounterenw' (For any hpmcounter that is not read-only "
-                       "zero, the corresponding bit in hcounteren must be "
-                       "writable.)", []>;
-
-def FeatureStdExtShvstvala
-    : SubtargetFeature<"shvstvala", "HasStdExtShvstvala", "true",
-                       "'Shvstvala' (vstval must be written in all cases "
-                       "described above for stval.)", []>;
-
-def FeatureStdExtShtvala
-    : SubtargetFeature<"shtvala", "HasStdExtShtvala", "true",
-                       "'Shtvala' (htval must be written with the faulting "
-                       "guest physical address in all circumstances permitted "
-                       "by the ISA.)", []>;
-
-def FeatureStdExtShvstvecd
-    : SubtargetFeature<"shvstvecd", "HasStdExtShvstvecd", "true",
-                       "'Shvstvecd' (vstvec.MODE must be capable of holding the "
-                       "value 0 (Direct). When vstvec.MODE=Direct, vstvec.BASE "
-                       "must be capable of holding any valid four-byte-aligned "
-                       "address.)", []>;
-
-def FeatureStdExtShvsatpa
-    : SubtargetFeature<"shvsatpa", "HasStdExtShvsatpa", "true",
-                       "'Shvsatpa' (All translation modes supported in satp "
-                       "must be supported in vsatp.)", []>;
-
-def FeatureStdExtShgatpa
-    : SubtargetFeature<"shgatpa", "HasStdExtShgatpa", "true",
-                       "'Shgatpa' (For each supported virtual memory scheme "
-                       "SvNN supported in satp, the corresponding hgatp SvNNx4 "
-                       "mode must be supported. The hgatp mode Bare must also "
-                       "be supported.)", []>;
 
 def FeatureStdExtSmwg
     : SubtargetFeature<"experimental-smwg", "HasStdExtSmwg", "true",

@@ -226,6 +226,7 @@ def : SchedAlias<ReadMemBase, SiFive7NReadMemBase>;
 defm "" : BulletReadAdvance;
 //===----------------------------------------------------------------------===//
 // Unsupported extensions
+defm : UnsupportedSchedZabha;
 defm : UnsupportedSchedZbc;
 defm : UnsupportedSchedZbkb;
 defm : UnsupportedSchedZbkx;

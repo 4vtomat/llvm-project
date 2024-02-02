@@ -63,43 +63,21 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"i", {2, 1}},
     {"m", {2, 0}},
 
-<<<<<<< HEAD
     {"sdext", {1, 0}}, // SIFIVE
     {"sdtrig", {1, 0}}, // SIFIVE
-    {"shcounterenw", {1, 0}}, // SIFIVE
-    {"shgatpa", {1, 0}}, // SIFIVE
-    {"shtvala", {1, 0}}, // SIFIVE
-    {"shvsatpa", {1, 0}}, // SIFIVE
-    {"shvstvala", {1, 0}}, // SIFIVE
-    {"shvstvecd", {1, 0}}, // SIFIVE
-=======
     {"shcounterenw", {1, 0}},
     {"shgatpa", {1, 0}},
     {"shtvala", {1, 0}},
     {"shvsatpa", {1, 0}},
     {"shvstvala", {1, 0}},
     {"shvstvecd", {1, 0}},
->>>>>>> llvm/main
     {"smaia", {1, 0}},
     {"smepmp", {1, 0}},
     {"smstateen", {1, 0}}, // SIFIVE
     {"ss", {1, 12}}, // SIFIVE
     {"ssaia", {1, 0}},
-<<<<<<< HEAD
-    {"ssccptr", {1, 0}}, // SIFIVE
-    {"sscofpmf", {1, 0}}, // SIFIVE
-    {"sscounterenw", {1, 0}}, // SIFIVE
-    {"ssstateen", {1, 0}}, // SIFIVE
-    {"sstc", {1, 0}}, // SIFIVE
-    {"sstvala", {1, 0}}, // SIFIVE
-    {"sstvecd", {1, 0}}, // SIFIVE
-    {"ssu64xl", {1, 0}}, // SIFIVE
-    {"svade", {1, 0}}, // SIFIVE
-    {"svadu", {1, 0}}, // SIFIVE
-    {"svbare", {1, 0}}, // SIFIVE
-
-=======
     {"ssccptr", {1, 0}},
+    {"sscofpmf", {1, 0}}, // SIFIVE
     {"sscounterenw", {1, 0}},
     {"ssstateen", {1, 0}},
     {"ssstrict", {1, 0}},
@@ -110,7 +88,6 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"svade", {1, 0}},
     {"svadu", {1, 0}},
     {"svbare", {1, 0}},
->>>>>>> llvm/main
     {"svinval", {1, 0}},
     {"svnapot", {1, 0}},
     {"svpbmt", {1, 0}},
