@@ -513,19 +513,6 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  // The inverse operation of getSubdividedVectorType.
-  // This static method returns a vector type with fewer elements but larger
-  // element size. For example, <16 x i8> would become <4 x i32> when NumCombine
-  // is set to 2.
-  // TODO: Support float type as possible.
-  static VectorType *getCombinedVectorType(VectorType *VTy, int NumCombine) {
-    for (int I = 0; I < NumCombine; ++I) {
-      VTy = VectorType::getHalfElementsVectorType(VTy);
-      VTy = VectorType::getExtendedElementVectorType(VTy);
-    }
-    return VTy;
-  }
-
   static VectorType *getOneNthElementsVectorType(VectorType *VTy,
                                                  unsigned Denominator) {
     auto EltCnt = VTy->getElementCount();

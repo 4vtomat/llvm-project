@@ -2949,6 +2949,25 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
     }
 #undef DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE
   };
+
+  // Given scalar/vector type, returns a type with element type as an integer
+  // type of the same width as the original type. For vectors, preserves
+  // element count.
+  auto GetIntegerType = [](const Type *Ty) -> Type * {
+    if (auto *VTy = dyn_cast<VectorType>(Ty))
+      return VectorType::getInteger(const_cast<VectorType *>(VTy));
+    unsigned BitWidth = Ty->getPrimitiveSizeInBits();
+    assert(BitWidth && "BitWidth must be of a non-zero size");
+    return IntegerType::get(Ty->getContext(), BitWidth);
+  };
+
+  // Returns type Num times as wide the input integer type IntTy.
+  auto GetExtendedType = [](const IntegerType *IntTy,
+                            const unsigned Num) -> IntegerType * {
+    assert(Num > 0 && "The extended number must not be zero");
+    return Type::getIntNTy(IntTy->getContext(),
+                           Num * IntTy->getScalarSizeInBits());
+  };
 #endif // SIFIVE_CUSTOMIZATION
 
   // Vectorize the interleaved load group.
@@ -3012,14 +3031,10 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
           // strided access. Mainly to support access of float types.
           // TODO: Better to add specific intrinsics to handle strided
           // interleaved group.
-          auto *VecTyInBit = VecTy->isIntOrIntVectorTy()
-                                 ? VecTy
-                                 : VectorType::getInteger(VecTy);
+          auto *ScalarTyInBits = cast<IntegerType>(GetIntegerType(ScalarTy));
           // Get the combined vector type
-          assert(isPowerOf2_32(InterleaveFactor) &&
-                 "Non-power-of-2 factors are not supported yet");
-          auto *StridedVecTy = VectorType::getCombinedVectorType(
-              VecTyInBit, Log2_32(InterleaveFactor));
+          auto *StridedVecTy = VectorType::get(
+              GetExtendedType(ScalarTyInBits, InterleaveFactor), VF);
           // Use original RVL instead of RVL * factor
           Value *Operands[] = {AddrParts[Part], StrideInBytes, GroupMask,
                                RVL32};
@@ -5071,15 +5086,6 @@ bool LoopVectorizationCostModel::interleavedAccessCanBeWidened(
       if (MemAccessType != CM_Strided) {
         LLVM_DEBUG(dbgs() << "LV: The stride of interleaved group is unsafe to "
                              "be expanded within the vectorized loop\n");
-        return false;
-      }
-
-      // TODO: Support non-power-of-2 interleave factor.
-      if (!isPowerOf2_32(InterleaveFactor)) {
-        LLVM_DEBUG(dbgs() << "LV: The non-power-of-2 factor = "
-                          << InterleaveFactor
-                          << " is not supported yet for the interleaved group "
-                             "with non-const stride\n");
         return false;
       }
 
