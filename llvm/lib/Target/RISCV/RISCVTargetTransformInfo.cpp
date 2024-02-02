@@ -1158,6 +1158,29 @@ InstructionCost RISCVTTIImpl::getGatherScatterOpCost(
   return NumLoads * MemOpCost;
 }
 
+InstructionCost RISCVTTIImpl::getStridedMemoryOpCost(
+    unsigned Opcode, Type *DataTy, const Value *Ptr, bool VariableMask,
+    Align Alignment, TTI::TargetCostKind CostKind, const Instruction *I) {
+  if (((Opcode == Instruction::Load || Opcode == Instruction::Store) &&
+       !isLegalStridedLoadStore(DataTy, Alignment)) ||
+      (Opcode != Instruction::Load && Opcode != Instruction::Store))
+    return BaseT::getStridedMemoryOpCost(Opcode, DataTy, Ptr, VariableMask,
+                                         Alignment, CostKind, I);
+
+  if (CostKind == TTI::TCK_CodeSize)
+    return TTI::TCC_Basic;
+
+  // Cost is proportional to the number of memory operations implied.  For
+  // scalable vectors, we use an estimate on that number since we don't
+  // know exactly what VL will be.
+  auto &VTy = *cast<VectorType>(DataTy);
+  InstructionCost MemOpCost =
+      getMemoryOpCost(Opcode, VTy.getElementType(), Alignment, 0, CostKind,
+                      {TTI::OK_AnyValue, TTI::OP_None}, I);
+  unsigned NumLoads = getEstimatedVLFor(&VTy);
+  return NumLoads * MemOpCost;
+}
+
 // Currently, these represent both throughput and codesize costs
 // for the respective intrinsics.  The costs in this table are simply
 // instruction counts with the following adjustments made:
@@ -1658,6 +1681,7 @@ RISCVTTIImpl::getMinMaxReductionCost(Intrinsic::ID IID, VectorType *Ty,
   }
 
   // IR Reduction is composed by two vmv and one rvv reduction instruction.
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (ST->getProcFamily() == RISCVSubtarget::SiFive7) {
     InstructionCost BaseCost = 2;
@@ -1723,6 +1747,15 @@ RISCVTTIImpl::getMinMaxReductionCost(Intrinsic::ID IID, VectorType *Ty,
                            getRISCVInstructionCost(SplitOp, LT.second, CostKind)
                      : 0;
   return SplitCost + getRISCVInstructionCost(Opcodes, LT.second, CostKind);
+=======
+  InstructionCost BaseCost = 2;
+
+  if (CostKind == TTI::TCK_CodeSize)
+    return (LT.first - 1) + BaseCost;
+
+  unsigned VL = getEstimatedVLFor(Ty);
+  return (LT.first - 1) + BaseCost + Log2_32_Ceil(VL);
+>>>>>>> llvm/main
 }
 
 InstructionCost

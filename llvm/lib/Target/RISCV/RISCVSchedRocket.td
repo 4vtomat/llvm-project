@@ -242,6 +242,7 @@ def : ReadAdvance<ReadFClass64, 0>;
 //===----------------------------------------------------------------------===//
 // Unsupported extensions
 defm : UnsupportedSchedV;
+defm : UnsupportedSchedZabha;
 defm : UnsupportedSchedZba;
 defm : UnsupportedSchedZbb;
 defm : UnsupportedSchedZbc;
