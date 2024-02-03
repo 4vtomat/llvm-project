@@ -1450,7 +1450,7 @@ for.body:                                         ; preds = %for.body.preheader,
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
 
-declare float @ldexpf(float, i32)
+declare float @ldexpf(float, i32 signext)
 define void @test_ldexpf(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_ldexpf(
 ; M1:  call <vscale x 2 x float> @skl_vfldexp_v_f32m1(
@@ -1484,7 +1484,7 @@ for.body:                                         ; preds = %for.body.preheader,
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
 
-declare double @ldexp(double, i32)
+declare double @ldexp(double, i32 signext)
 define void @test_ldexp(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_ldexp(
 ; M1:  call <vscale x 1 x double> @skl_vfldexp_v_f64m1(
@@ -2244,7 +2244,7 @@ for.body:                                         ; preds = %for.body.preheader,
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
 
-declare float @llvm.ldexp.f32.i32(float, i32)
+declare float @llvm.ldexp.f32.i32(float, i32 signext)
 define void @test_llvm_ldexpf32(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_llvm_ldexpf32(
 ; M1:  call <vscale x 2 x float> @skl_vfldexp_v_f32m1(
@@ -2278,7 +2278,7 @@ for.body:                                         ; preds = %for.body.preheader,
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
 
-declare double @llvm.ldexp.f64.i32(double, i32)
+declare double @llvm.ldexp.f64.i32(double, i32 signext)
 define void @test_llvm_ldexpf64(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_llvm_ldexpf64(
 ; M1:  call <vscale x 1 x double> @skl_vfldexp_v_f64m1(
