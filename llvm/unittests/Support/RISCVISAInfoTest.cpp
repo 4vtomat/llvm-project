@@ -826,11 +826,8 @@ R"(All available -march extensions for RISC-V
     zvl8192b            1.0
     zhinx               1.0
     zhinxmin            1.0
-<<<<<<< HEAD
     sdext               1.0
     sdtrig              1.0
-=======
->>>>>>> llvm/main
     shcounterenw        1.0
     shgatpa             1.0
     shtvala             1.0
@@ -843,15 +840,10 @@ R"(All available -march extensions for RISC-V
     ss                  1.12
     ssaia               1.0
     ssccptr             1.0
-<<<<<<< HEAD
     sscofpmf            1.0
     sscounterenw        1.0
     ssstateen           1.0
-=======
-    sscounterenw        1.0
-    ssstateen           1.0
     ssstrict            1.0
->>>>>>> llvm/main
     sstc                1.0
     sstvala             1.0
     sstvecd             1.0
