@@ -56,6 +56,16 @@ static void addVariantDeclaration(CallInst &CI, const ElementCount &VF,
   Function *VecFunc =
       Function::Create(VectorFTy, Function::ExternalLinkage, VFName, M);
   VecFunc->copyAttributesFrom(CI.getCalledFunction());
+ #if SIFIVE_CUSTOMIZATION
+   for (const auto I : enumerate(VectorFTy->params()))
+     if (I.value()->isVectorTy()) {
+       // Vector argument could not have attribute SExt/ZExt.
+       if (VecFunc->hasParamAttribute(I.index(), Attribute::SExt))
+         VecFunc->removeParamAttr(I.index(), Attribute::SExt);
+       if (VecFunc->hasParamAttribute(I.index(), Attribute::ZExt))
+         VecFunc->removeParamAttr(I.index(), Attribute::ZExt);
+     }
+ #endif
   ++NumVFDeclAdded;
   LLVM_DEBUG(dbgs() << DEBUG_TYPE << ": Added to the module: `" << VFName
                     << "` of type " << *VectorFTy << "\n");

@@ -1032,6 +1032,8 @@ private:
   SDValue expandUnalignedRVVStore(SDValue Op, SelectionDAG &DAG) const;
 
 #if SIFIVE_CUSTOMIZATION
+  SDValue expandUnalignedVPLoad(SDValue Op, SelectionDAG &DAG) const;
+  SDValue expandUnalignedVPStore(SDValue Op, SelectionDAG &DAG) const;
   SDValue getSqrtEstimate(SDValue Operand, SelectionDAG &DAG, int Enabled,
                           int &ExtraSteps, bool &UseOneConst,
                           bool Reciprocal) const override;
