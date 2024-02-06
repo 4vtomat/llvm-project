@@ -57,6 +57,17 @@ static Type *getRecipeType(const VPRecipeBase *VPR) {
   return VPSDR->getUnderlyingInstr()->getType();
 }
 
+static Type *getMaskType(const RVVPair &RVVP) {
+  LLVMContext &Ctx = RVVP.getType()->getContext();
+  return ScalableVectorType::get(Type::getInt1Ty(Ctx),
+                                 ::getElementCount(RVVP).getKnownMinValue());
+}
+
+static Type *getVLType(const RVVPair &RVVP) {
+  LLVMContext &Ctx = RVVP.getType()->getContext();
+  return Type::getInt32Ty(Ctx);
+}
+
 namespace llvm {
 ElementCount RVVPair::getElementCount(const int LMULExp, const unsigned SEW) {
   return ::getElementCount(getIntFromLMULKind((LMULKind)LMULExp), SEW);
@@ -184,6 +195,19 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
           .Case<VPReplicateRecipe>([&](const VPReplicateRecipe *VPR) {
             return getReplicateOpCost(VPR, RVL);
           })
+          .Case<VPMonotonicHeaderPHIRecipe>(
+              [&](const VPMonotonicHeaderPHIRecipe *VPM) -> InstructionCost {
+                assert(vputils::isUniformAfterVectorization(
+                           const_cast<VPValue *>(VPM->getVPSingleValue())) &&
+                       "Cost model does not expect non-uniform monotonics");
+                return 1;
+              })
+          .Case<VPMonotonicUpdateInstruction>(
+              [&](const VPMonotonicUpdateInstruction *VPM) -> InstructionCost {
+                return getMonotonicUpdateCost(VPM, RVL);
+              })
+          // NOTE: Keep case for a generic VPInstruction at the bottom of the
+          // switch
           .Case<VPInstruction>(
               [&](const VPInstruction *VPI) -> InstructionCost {
                 return getInstructionCost(VPI, RVL);
@@ -362,6 +386,22 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
             } // end of switch.
           })
           .Default([&](const VPRecipeBase *R) -> InstructionCost { return 0; });
+
+  // Any use of monotonic within a vector context is not allowed
+  if (!isa<VPReplicateRecipe, VPMonotonicHeaderPHIRecipe,
+           VPMonotonicUpdateInstruction>(Recipe))
+    for (const VPValue *Operand : Recipe->operands())
+      if (const VPRecipeBase *DefR = Operand->getDefiningRecipe())
+        if (isa<VPMonotonicHeaderPHIRecipe, VPMonotonicUpdateInstruction>(
+                DefR)) {
+          LLVM_DEBUG(
+              dbgs() << "VPlanCM: VPInstruction "; VPSlotTracker SlotTracker(
+                  (Recipe->getParent()) ? Recipe->getParent()->getPlan()
+                                        : nullptr);
+              Recipe->print(dbgs(), Twine(), SlotTracker);
+              dbgs() << " requires vector representation of monotonic" << '\n');
+          return InstructionCost::getInvalid();
+        }
 
   VisitedRecipes.insert(Recipe);
   // Traverse operands of the recipe and if operand is no longer used, free
@@ -555,10 +595,20 @@ VPlanCostModel::getMemoryOpCost(const VPWidenMemoryInstructionRecipe *VPWMIR,
     const unsigned NumUsedRegs = TTI.getRegUsageForType(VectorTy);
     addRegisterUsage(VPWMIR->getVPSingleValue(), RegID, NumUsedRegs);
     Cost = getRegisterPressureCost(RegID, VectorTy);
+    if (VPWMIR->isMonotonic())
+      // Expand load is not supported yet
+      return InstructionCost::getInvalid();
+  } else if (VPWMIR->isMonotonic()) {
+    Type *MaskTy = getMaskType(RVL);
+    Type *VLTy = getVLType(RVL);
+    Cost += getIntrinsicCost(Intrinsic::experimental_vp_compress, VectorTy,
+                             {PoisonValue::get(VectorTy),
+                              PoisonValue::get(MaskTy), PoisonValue::get(VLTy)},
+                             FastMathFlags());
   }
   return Cost + getMemoryOpCost(I, VectorTy, VPWMIR->isConsecutive(), IsMasked,
                                 VPWMIR->isReverse(), VPWMIR->isSpeculative());
-}
+} // namespace llvm
 
 InstructionCost VPlanCostModel::getInstructionCost(const VPInstruction *VPI,
                                                    const RVVPair &RVL) const {
@@ -742,6 +792,31 @@ InstructionCost VPlanCostModel::getRegisterPressureCost(const unsigned RegID,
     return Cost;
   }
   return 0;
+}
+
+InstructionCost
+VPlanCostModel::getMonotonicUpdateCost(const VPMonotonicUpdateInstruction *VPM,
+                                       const RVVPair &RVL) const {
+  LLVMContext &Ctx = RVL.getType()->getContext();
+  Type *RetTy = Type::getInt32Ty(Ctx);
+
+  Type *MaskTy = getMaskType(RVL);
+  Type *VLTy = getVLType(RVL);
+  PoisonValue *PoisonMask = PoisonValue::get(MaskTy);
+  PoisonValue *PoisonVL = PoisonValue::get(VLTy);
+  return getIntrinsicCost(Intrinsic::experimental_vp_popcount, RetTy,
+                          {PoisonMask, PoisonMask, PoisonVL}, FastMathFlags());
+}
+
+InstructionCost VPlanCostModel::getIntrinsicCost(Intrinsic::ID Id, Type *RetTy,
+                                                 ArrayRef<Value *> Arguments,
+                                                 FastMathFlags FMF) const {
+  SmallVector<Type *> ParamTys;
+  for (Value *V : Arguments)
+    ParamTys.push_back(V->getType());
+
+  IntrinsicCostAttributes CostAttrs(Id, RetTy, Arguments, ParamTys, FMF);
+  return TTI.getIntrinsicInstrCost(CostAttrs, CostKind);
 }
 
 } // namespace llvm

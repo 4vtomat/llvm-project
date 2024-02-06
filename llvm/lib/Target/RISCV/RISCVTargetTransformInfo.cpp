@@ -1474,6 +1474,8 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
     }
     break;
   }
+  case Intrinsic::experimental_vp_popcount:
+    return ST->getVectorToScalarBaseCost() + 1;
 #endif // SIFIVE_CUSTOMIZATION
   }
 
@@ -2649,5 +2651,9 @@ unsigned RISCVTTIImpl::getCSAOverheadFactor() const {
   if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
     return 3;
   return 1;
+}
+
+bool RISCVTTIImpl::enableMonotonicsVectorization() const {
+  return ST->hasVInstructions();
 }
 #endif

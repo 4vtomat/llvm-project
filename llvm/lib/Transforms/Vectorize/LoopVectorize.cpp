@@ -193,6 +193,7 @@ STATISTIC(CSAsVectorized,
           "Number of conditional scalar assignments vectorized");
 STATISTIC(LoopsVectorizedWithDep, "Number of loops vectorized with VL derived "
                                   "from dependence distance information.");
+STATISTIC(NumberOfVectorizableMonotonics, "Number of vectorizable monotonics");
 
 static cl::opt<bool> VectorizerDisableReduceOverheadEstimation(
     "vectorizer-disable-reduce-overhead-estimation", cl::init(false),
@@ -1568,7 +1569,9 @@ public:
     CM_Widen_Reverse, // For consecutive accesses with stride -1.
     CM_Interleave,
 #if SIFIVE_CUSTOMIZATION
-    CM_Strided,       // Non-consecutive accesses with known stride.
+    CM_Strided,          // Non-consecutive accesses with known stride.
+    CM_MonotonicUnit,    // Consecutive memory access with a monotonic stride +1
+    CM_MonotonicStrided, // Non-consecutive memory access with a monotonic
 #endif // SIFIVE_CUSTOMIZATION
     CM_GatherScatter,
     CM_Scalarize,
@@ -4711,6 +4714,8 @@ void LoopVectorizationCostModel::collectLoopScalars(ElementCount VF) {
            "Ptr is neither a value or pointer operand");
 #if SIFIVE_CUSTOMIZATION
     return WideningDecision != CM_GatherScatter &&
+           WideningDecision != CM_MonotonicUnit &&
+           WideningDecision != CM_MonotonicStrided &&
            WideningDecision != CM_Strided;
 #endif // SIFIVE_CUSTOMIZATION
   };
@@ -5266,6 +5271,8 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
             WideningDecision == CM_Widen_Reverse ||
 #if SIFIVE_CUSTOMIZATION
             WideningDecision == CM_Strided ||
+            WideningDecision == CM_MonotonicUnit ||
+            WideningDecision == CM_MonotonicStrided ||
 #endif // SIFIVE_CUSTOMIZATION
             WideningDecision == CM_Interleave);
   };
@@ -5489,7 +5496,10 @@ void LoopVectorizationCostModel::collectLoopUniformsForUncountableLoops(
 
     return WideningDecision == CM_Widen ||
            WideningDecision == CM_Widen_Reverse ||
-           WideningDecision == CM_Strided || WideningDecision == CM_Interleave;
+           WideningDecision == CM_Strided ||
+           WideningDecision == CM_MonotonicUnit ||
+           WideningDecision == CM_MonotonicStrided ||
+           WideningDecision == CM_Interleave;
   };
 
   // Returns true if Ptr is the pointer operand of a memory access instruction
@@ -8248,13 +8258,18 @@ LoopVectorizationCostModel::getMemoryAccessType(Instruction *I) const {
   if (!Legal->isSafeStrideAccessInfo(SAI))
     return CM_GatherScatter;
 
-  const SCEV *SCEVPtr = SAI.getSCEVExpr();
-  assert(isa<SCEVAddRecExpr>(SCEVPtr) &&
-         "Expected return value of isStridedAddressing is SCEVAddRecExpr.");
+  if (!SAI.isMonotonicStride()) {
+    const SCEV *SCEVPtr = SAI.getSCEVExpr();
+    assert(isa<SCEVAddRecExpr>(SCEVPtr) &&
+           "Expected return value of isStridedAddressing is SCEVAddRecExpr.");
 
-  // Need the recurrence of Ptr is for current loop.
-  return cast<SCEVAddRecExpr>(SCEVPtr)->getLoop() == TheLoop ? CM_Strided
-                                                             : CM_GatherScatter;
+    // Need the recurrence of Ptr is for current loop.
+    return cast<SCEVAddRecExpr>(SCEVPtr)->getLoop() == TheLoop
+               ? CM_Strided
+               : CM_GatherScatter;
+  }
+  // Monotonic with a stride = 1
+  return SAI.isUnitStrided() ? CM_MonotonicUnit : CM_MonotonicStrided;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -8324,6 +8339,11 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
           if (UseStridedAccesses && MemAccessType == CM_Strided) {
             setWideningDecision(&I, VF, CM_Strided, GatherScatterCost);
             LLVM_DEBUG(dbgs() << "LV: Can use strided access " << I << '\n');
+          } else if (MemAccessType == CM_MonotonicStrided ||
+                     MemAccessType == CM_MonotonicUnit) {
+            setWideningDecision(&I, VF, MemAccessType, GatherScatterCost);
+            LLVM_DEBUG(dbgs()
+                       << "LV: Will use monotonic memory access " << I << '\n');
           } else {
             if (UseStridedAccesses) {
               LLVM_DEBUG(dbgs() << "Cannot use strided access " << I << '\n');
@@ -8405,6 +8425,11 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
           } else {
             LLVM_DEBUG(dbgs() << "LV: Cannot use strided access " << I << '\n');
           }
+        } else if (MemAccessType == CM_MonotonicStrided ||
+                   MemAccessType == CM_MonotonicUnit) {
+          Decision = MemAccessType;
+          LLVM_DEBUG(dbgs()
+                     << "LV: Will use monotonic memory access " << I << '\n');
         }
 #endif // SIFIVE_CUSTOMIZATION
       } else {
@@ -8984,7 +9009,10 @@ LoopVectorizationCostModel::getInstructionCost(Instruction *I, ElementCount VF,
       case LoopVectorizationCostModel::CM_Widen_Reverse:
         return TTI::CastContextHint::Reversed;
 #if SIFIVE_CUSTOMIZATION
+      case LoopVectorizationCostModel::CM_MonotonicUnit:
+        return TTI::CastContextHint::Masked;
       case LoopVectorizationCostModel::CM_Strided:
+      case LoopVectorizationCostModel::CM_MonotonicStrided:
         return TTI::CastContextHint::GatherScatter;
 #endif // SIFIVE_CUSTOMIZATION
       case LoopVectorizationCostModel::CM_Unknown:
@@ -10179,10 +10207,21 @@ VPRecipeBuilder::tryToWidenMemory(Instruction *I, ArrayRef<VPValue *> Operands,
       Reverse || Decision == LoopVectorizationCostModel::CM_Widen;
 #if SIFIVE_CUSTOMIZATION
   const SCEV *Stride = nullptr;
-  if (Decision == LoopVectorizationCostModel::CM_Strided) {
+  bool IsMonotonic = false;
+  switch (Decision) {
+  case LoopVectorizationCostModel::CM_MonotonicUnit:
+  case LoopVectorizationCostModel::CM_MonotonicStrided:
+    IsMonotonic = true;
+    [[fallthrough]];
+  case LoopVectorizationCostModel::CM_Strided: {
     LoopVectorizationLegality::StrideAccessInfo SAI =
         Legal->computeStrideAccessInfo(I);
     Stride = SAI.getSCEVStrideInBytes();
+    Consecutive = SAI.isUnitStrided();
+    break;
+  }
+  default:
+    break;
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -10201,7 +10240,7 @@ VPRecipeBuilder::tryToWidenMemory(Instruction *I, ArrayRef<VPValue *> Operands,
 #if SIFIVE_CUSTOMIZATION
         Reverse, Stride,
         Legal->isVectorizableUncountable() &&
-            Legal->getSpeculativeLoads().contains(Load));
+            Legal->getSpeculativeLoads().contains(Load), IsMonotonic);
 #else
                                               Consecutive, Reverse);
 #endif // SIFIVE_CUSTOMIZATION
@@ -10209,7 +10248,8 @@ VPRecipeBuilder::tryToWidenMemory(Instruction *I, ArrayRef<VPValue *> Operands,
   StoreInst *Store = cast<StoreInst>(I);
   return new VPWidenMemoryInstructionRecipe(*Store, Ptr, Operands[0], Mask,
 #if SIFIVE_CUSTOMIZATION
-                                            Consecutive, Reverse, Stride);
+                                            Consecutive, Reverse, Stride,
+                                            /*Speculative=*/false, IsMonotonic);
 #else
                                             Consecutive, Reverse);
 #endif // SIFIVE_CUSTOMIZATION
@@ -10626,6 +10666,9 @@ VPRecipeBase *VPRecipeBuilder::tryToCreateWidenRecipe(
       VPValue *InitData = State->getVPInitData();
       PhiRecipe = new VPCSAHeaderPHIRecipe(Phi, InitData);
       State->setPhiRecipe(cast<VPCSAHeaderPHIRecipe>(PhiRecipe));
+    } else if (Legal->isMonotonicPhi(Phi)) {
+      PhiRecipe = new VPMonotonicHeaderPHIRecipe(Phi, StartV);
+      ++NumberOfVectorizableMonotonics;
     } else {
       llvm_unreachable(
       "can only widen reductions and fixed-order recurrences here");
@@ -10702,6 +10745,15 @@ VPRecipeBase *VPRecipeBuilder::tryToCreateWidenRecipe(
                                   Br->getDebugLoc());
       return R;
     }
+  }
+  if (Legal->isMonotonicUpdate(Instr)) {
+    const MonotonicDescriptor *MD = Legal->getMonotonicDescriptor(Instr);
+    assert(MD && "Monotonic descriptor was not found");
+    assert(Operands.size() == 2 &&
+           "Only binary monotonic updates are supported");
+    VPValue *Mask = getBlockInMask(Instr->getParent());
+    return new VPMonotonicUpdateInstruction(Mask, Operands[0], Operands[1],
+                                            Instr->getDebugLoc(), *MD);
   }
 #else
   if (isa<LoadInst>(Instr) || isa<StoreInst>(Instr))
@@ -12029,6 +12081,12 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
   auto *DataTy = VectorType::get(ScalarDataTy, State.VF);
   const Align Alignment = getLoadStoreAlignment(&Ingredient);
   bool CreateGatherScatter = !isConsecutive();
+#if SIFIVE_CUSTOMIZATION
+  // Code generation needs to be refactored, but for now to simplify the logic
+  // set CreateGatherScatter if access is monotonic so that
+  // widenPredicatedMemoryInstruction will be called
+  CreateGatherScatter |= isMonotonic();
+#endif // SIFIVE_CUSTOMIZATION
 
   auto &Builder = State.Builder;
   InnerLoopVectorizer::VectorParts BlockInMaskParts(State.UF);

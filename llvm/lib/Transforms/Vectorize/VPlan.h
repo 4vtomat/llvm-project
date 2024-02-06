@@ -1060,6 +1060,7 @@ public:
 #if SIFIVE_CUSTOMIZATION
     case VPRecipeBase::VPCSADataUpdateSC:
     case VPRecipeBase::VPCSAExtractScalarSC:
+    case VPRecipeBase::VPMonotonicUpdateSC:
 #endif
       return true;
     case VPRecipeBase::VPInterleaveSC:
@@ -1068,6 +1069,7 @@ public:
 #if SIFIVE_CUSTOMIZATION
     case VPRecipeBase::VPCSAHeaderPHISC:
     case VPRecipeBase::VPEVLBasedIVPHISC:
+    case VPRecipeBase::VPMonotonicHeaderPHISC:
 #endif
       // TODO: Widened stores don't define a value, but widened loads do. Split
       // the recipes to be able to make widened loads VPSingleDefRecipes.
@@ -1372,6 +1374,7 @@ public:
     CSAVLPhi,
     CSAVLSel,
     CSAAnyActive,
+    MonotonicUpdate,
 #endif // SIFIVE_CUSTOMIZATION
   };
 
@@ -1759,6 +1762,68 @@ public:
   static inline bool classof(const VPUser *U) {
     auto *R = dyn_cast<VPRecipeBase>(U);
     return R && VPSelectInstruction::classof(R);
+  }
+
+  void execute(VPTransformState &State) override final;
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
+};
+
+class VPMonotonicUpdateInstruction : public VPInstruction {
+private:
+  MonotonicDescriptor MD;
+
+public:
+  explicit VPMonotonicUpdateInstruction(VPValue *Mask, VPValue *Op1,
+                                        VPValue *Op2, DebugLoc DL,
+                                        MonotonicDescriptor MD,
+                                        const Twine &Name = "")
+      : VPInstruction(VPInstruction::MonotonicUpdate, {Op1, Op2}, DL, Name),
+        MD(MD) {
+    addOperand(Mask);
+    setUnderlyingValue(
+        cast<Value>(const_cast<Instruction *>(MD.getUpdateOp())));
+  }
+
+  explicit VPMonotonicUpdateInstruction() = delete;
+  ~VPMonotonicUpdateInstruction() override = default;
+
+  const MonotonicDescriptor &getMonotonicDescriptor() const { return MD; }
+
+  // Returns the incoming value from the loop backedge.
+  VPValue *getIncomingValue() const { return getOperand(0); }
+
+  // Returns the step value from the loop backedge.
+  VPValue *getStepValue() const { return getOperand(1); }
+
+  /// Returns the mask value of the instruction
+  VPValue *getMask() const { return getOperand(2); }
+
+  VPRecipeBase *clone() override {
+    return new VPMonotonicUpdateInstruction(getMask(), getIncomingValue(),
+                                            getStepValue(), getDebugLoc(),
+                                            getMonotonicDescriptor());
+  }
+
+  /// Method to support type inquiry through isa, cast, and dyn_cast.
+  static inline bool classof(const VPDef *D) {
+    auto *R = cast<VPRecipeBase>(D);
+    auto *I = dyn_cast<VPInstruction>(R);
+    return I && I->getOpcode() == VPInstruction::MonotonicUpdate;
+  }
+
+  static inline bool classof(const VPRecipeBase *R) {
+    auto *VPInst = dyn_cast<VPInstruction>(R);
+    return VPInst && VPInst->getOpcode() == VPInstruction::MonotonicUpdate;
+  }
+
+  static inline bool classof(const VPUser *U) {
+    auto *R = dyn_cast<VPRecipeBase>(U);
+    return R && VPMonotonicUpdateInstruction::classof(R);
   }
 
   void execute(VPTransformState &State) override final;
@@ -2699,6 +2764,36 @@ public:
   VPValue *getVPDataSel() const { return getOperand(2); }
   VPValue *getVPCSAVLSel() const { return getOperand(3); }
 };
+
+class VPMonotonicHeaderPHIRecipe final : public VPHeaderPHIRecipe {
+public:
+  VPMonotonicHeaderPHIRecipe(PHINode *Phi, VPValue *StartValue)
+      : VPHeaderPHIRecipe(VPDef::VPMonotonicHeaderPHISC, Phi,
+                          StartValue) {}
+
+  ~VPMonotonicHeaderPHIRecipe() override = default;
+
+  void execute(VPTransformState &State) override;
+
+  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const override;
+
+  VPRecipeBase *clone() override {
+    return new VPMonotonicHeaderPHIRecipe(cast<PHINode>(getUnderlyingInstr()),
+                                          getOperand(0));
+  }
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
+
+  VP_CLASSOF_IMPL(VPDef::VPMonotonicHeaderPHISC)
+
+  static inline bool classof(const VPHeaderPHIRecipe *R) {
+    return R->getVPDefID() == VPDef::VPMonotonicHeaderPHISC;
+  }
+};
 #endif // SIFIVE_CUSTOMIZATION
 
 /// VPPredInstPHIRecipe is a recipe for generating the phi nodes needed when
@@ -2766,8 +2861,11 @@ class VPWidenMemoryInstructionRecipe : public VPRecipeBase {
   // SCEVExpr that holds stride of that memory access. nullptr if it's indexed
   const SCEV *StrideInBytes = nullptr;
 
-  // Speculative load/store
+  /// Speculative load/store
   bool Speculative = false;
+
+  /// Compress store or expand load
+  bool IsMonotonic = false;
 #endif // SIFIVE_CUSTOMIZATION
 
 public:
@@ -2775,10 +2873,12 @@ public:
   VPWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
                                  bool Consecutive, bool Reverse,
                                  const SCEV *StrideInBytes = nullptr,
-                                 bool Speculative = false)
+                                 bool Speculative = false,
+                                 bool IsMonotonic = false)
       : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr}), Ingredient(Load),
-        Consecutive(Consecutive), Reverse(Reverse), StrideInBytes(StrideInBytes),
-        Speculative(Speculative) {
+        Consecutive(Consecutive), Reverse(Reverse),
+        StrideInBytes(StrideInBytes), Speculative(Speculative),
+        IsMonotonic(IsMonotonic) {
 #else
   VPWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
                                  bool Consecutive, bool Reverse)
@@ -2795,10 +2895,12 @@ public:
                                  VPValue *StoredValue, VPValue *Mask,
                                  bool Consecutive, bool Reverse,
                                  const SCEV *StrideInBytes = nullptr,
-                                 bool Speculative = false)
+                                 bool Speculative = false,
+                                 bool IsMonotonic = false)
       : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr, StoredValue}),
         Ingredient(Store), Consecutive(Consecutive), Reverse(Reverse),
-        StrideInBytes(StrideInBytes), Speculative(Speculative) {
+        StrideInBytes(StrideInBytes), Speculative(Speculative),
+        IsMonotonic(IsMonotonic) {
     assert(!Speculative && "Speculative store is not yet supported");
 #else
   VPWidenMemoryInstructionRecipe(StoreInst &Store, VPValue *Addr,
@@ -2861,6 +2963,8 @@ public:
   }
 
   bool isSpeculative() const { return Speculative; }
+
+  bool isMonotonic() const { return IsMonotonic; }
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Generate the wide load/store.
@@ -4157,6 +4261,10 @@ inline bool isUniformAfterVectorization(VPValue *VPV) {
     return Rep->isUniform();
   if (auto *GEP = dyn_cast<VPWidenGEPRecipe>(Def))
     return all_of(GEP->operands(), isUniformAfterVectorization);
+#if SIFIVE_CUSTOMIZATION
+  if (isa<VPMonotonicUpdateInstruction, VPMonotonicHeaderPHIRecipe>(Def))
+    return true;
+#endif // SIFIVE_CUSTOMIZATION
   if (auto *VPI = dyn_cast<VPInstruction>(Def))
     return VPI->getOpcode() == VPInstruction::ComputeReductionResult;
   return false;

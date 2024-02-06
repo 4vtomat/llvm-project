@@ -1817,6 +1817,9 @@ public:
   /// \returns the factor that the cost of the the vector loop overhead should
   /// be scaled up by.
   unsigned getCSAOverheadFactor() const;
+
+  /// \returns true if vectorization of monotonics is supported by the target.
+  bool enableMonotonicsVectorization() const;
 #endif // SIFIVE_CUSTOMIZATION
 
 private:
@@ -2234,6 +2237,7 @@ public:
   virtual bool enableCSAVectorization() const = 0;
   virtual unsigned getCSABodyFactor() const = 0;
   virtual unsigned getCSAOverheadFactor() const = 0;
+  virtual bool enableMonotonicsVectorization() const = 0;
 #endif // SIFIVE_CUSTOMIZATION
 };
 
@@ -3050,6 +3054,10 @@ public:
   }
   unsigned getCSAOverheadFactor() const override {
     return Impl.getCSAOverheadFactor();
+  }
+
+  bool enableMonotonicsVectorization() const override {
+    return Impl.enableMonotonicsVectorization();
   }
 #endif // SIFIVE_CUSTOMIZATION
 };

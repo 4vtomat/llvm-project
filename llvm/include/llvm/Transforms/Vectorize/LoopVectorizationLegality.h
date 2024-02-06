@@ -324,6 +324,9 @@ public:
   /// CSAList contains the CSA descriptors for all the CSAs that were found
   /// in the loop, rooted by their phis.
   using CSAList = MapVector<PHINode *, CSADescriptor>;
+
+  using MonotonicPhiList =
+      MapVector<const PHINode *, MonotonicDescriptor>;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// RecurrenceSet contains the phi nodes that are recurrences other than
@@ -385,6 +388,42 @@ public:
 
   /// Returns true if Phi is the root of a CSA in the loop.
   bool isCSAPhi(PHINode *Phi) const { return CSAs.count(Phi) != 0; }
+
+  /// Returns the Monotonics found in the loop
+  const MonotonicPhiList &getMonotonics() const { return MonotonicPhis; }
+
+  /// Returns the MonotonicDescriptor associated with an \p I instruction
+  /// Returns emtpy descriptor if \p I instruction is non-monotonic.
+  const MonotonicDescriptor *getMonotonicDescriptor(const Instruction *I) const {
+    for (const auto &PMD : getMonotonics()) {
+      if (const auto *Phi = dyn_cast<const PHINode>(I))
+        if (PMD.second.getPhis().contains(const_cast<PHINode *>(Phi)))
+          return &PMD.second;
+      if (PMD.second.getUpdateOp() == I)
+        return &PMD.second;
+    }
+    return nullptr;
+  }
+
+  /// Returns true if \p I instruction is a header phi of the monotonic.
+  bool isMonotonicPhi(const Instruction *I) const {
+    const auto *Phi = dyn_cast<PHINode>(I);
+    return Phi && MonotonicPhis.contains(Phi);
+  }
+
+  /// Returns true if \p V value is a header phi of the monotonic.
+  bool isMonotonicPhi(const Value *V) const {
+    const auto *I = dyn_cast<Instruction>(V);
+    return I && isMonotonicPhi(I);
+  }
+
+  /// Returns true of \p I instruction is an update instruction of the
+  /// monotonic.
+  bool isMonotonicUpdate(const Instruction *I) const {
+    return any_of(getMonotonics(), [I](const auto &PMD) {
+      return PMD.second.getUpdateOp() == I;
+    });
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Returns a pointer to the induction descriptor, if \p Phi is an integer or
@@ -508,14 +547,37 @@ public:
   private:
     const SCEV *SCEVExpr = nullptr;
     const SCEV *SCEVStrideInBytes = nullptr;
+    const unsigned EltSize = 0;
+    const bool IsStrideMonotonic = false;
 
   public:
     explicit StrideAccessInfo() = default;
     explicit StrideAccessInfo(const SCEV *SCEVExpr,
-                              const SCEV *SCEVStrideInBytes)
-        : SCEVExpr(SCEVExpr), SCEVStrideInBytes(SCEVStrideInBytes) {}
+                              const SCEV *SCEVStrideInBytes,
+                              const unsigned EltSize,
+                              const bool IsStrideMonotonic = false)
+        : SCEVExpr(SCEVExpr), SCEVStrideInBytes(SCEVStrideInBytes),
+          EltSize(EltSize), IsStrideMonotonic(IsStrideMonotonic) {}
     const SCEV *getSCEVExpr() const { return SCEVExpr; }
     const SCEV *getSCEVStrideInBytes() const { return SCEVStrideInBytes; }
+    bool isMonotonicStride() const { return IsStrideMonotonic; }
+    bool isConstantStride() const {
+      return !IsStrideMonotonic && SCEVStrideInBytes &&
+             isa<SCEVConstant>(SCEVStrideInBytes);
+    }
+
+    std::optional<int> getConstantStride() const {
+      if (auto *C = dyn_cast<SCEVConstant>(SCEVStrideInBytes))
+        return C->getAPInt().getSExtValue();
+      return std::nullopt;
+    }
+
+    bool isUnitStrided() const {
+      if (std::optional<int> C = getConstantStride())
+        return *C == (int)EltSize;
+      // TODO: Support -1
+      return false;
+    }
 
     explicit operator bool() const { return SCEVExpr && SCEVStrideInBytes; }
 
@@ -527,6 +589,7 @@ public:
       if (SCEVExpr) {
         OS << *SCEVExpr;
         OS << "( ";
+        OS << (IsStrideMonotonic ? "monotonic" : "");
         OS << " stride (in bytes): " << *SCEVStrideInBytes << ')';
       } else {
         OS << "<<unknown>>";
@@ -621,6 +684,11 @@ private:
   void addInductionPhi(PHINode *Phi, const InductionDescriptor &ID,
                        SmallPtrSetImpl<Value *> &AllowedExit);
 
+#if SIFIVE_CUSTOMIZATION
+  /// Add MonotonicDescriptor
+  void addMonotonic(const MonotonicDescriptor &MD);
+#endif // SIFIVE_CUSTOMIZATION
+
   /// The loop that we evaluate.
   Loop *TheLoop;
 
@@ -667,6 +735,9 @@ private:
 #if SIFIVE_CUSTOMIZATION
   /// Holds the conditional scalar assignments
   CSAList CSAs;
+
+  /// Holds the phis of the monotonics
+  MonotonicPhiList MonotonicPhis;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Holds all the casts that participate in the update chain of the induction

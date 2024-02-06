@@ -17,6 +17,7 @@
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Intrinsics.h"
+#include "llvm/IR/IntrinsicsRISCV.h"
 #include "llvm/IR/VectorBuilder.h"
 #include "llvm/Support/Debug.h"
 #include "llvm/Transforms/Utils/ScalarEvolutionExpander.h"
@@ -62,6 +63,28 @@ static Value *widenSelectInstruction(VPTransformState &State,
   Value *RVLArg = State.get(RVL, Part);
   return State.Builder.CreateIntrinsic(VPOpCode, {Op1->getType()},
                                        {Cond, Op1, Op2, RVLArg}, nullptr, Name);
+}
+
+/// Construct vector popcount of the vector \p V
+static Value *createVectorPopcount(IRBuilderBase &Builder, Value *V,
+                                   Value *RVL) {
+  ElementCount EC = cast<VectorType>(V->getType())->getElementCount();
+  Value *Operands[] = {Builder.getTrueVector(EC), V, RVL};
+
+  return Builder.CreateIntrinsic(Intrinsic::experimental_vp_popcount,
+                                 {V->getType()}, Operands);
+}
+
+/// Compress \p VectorToCompress using RVV vcompress intrinsic
+static Value *compressVector(IRBuilderBase &Builder, Value *Mask,
+                             Value *VectorToCompress, Value *RVL) {
+  assert(Mask != nullptr && "Compress mask must be provided");
+  assert(RVL != nullptr && "RVL for RVV-intrinsic must be provided");
+  Type *VTy = VectorToCompress->getType();
+  Value *Operands[] = {VectorToCompress, Mask, RVL};
+  CallInst *Compress = Builder.CreateIntrinsic(
+      Intrinsic::experimental_vp_compress, {VTy}, Operands);
+  return Compress;
 }
 
 namespace llvm {
@@ -289,7 +312,44 @@ void VPSelectInstruction::execute(VPTransformState &State) {
     Value *V = widenSelectInstruction(State, VPOpCode, this, *this, Part, Name);
     State.set(this, V, Part);
   }
+}
 
+/// Generate following sequence to update scalar monotonic variable:
+///   %0 = vp.popcount(%mask, %rvl)
+///   %1 = mul %0, %step          // where %step is a step of monotonic
+///   %monotonic.update = add %monotonic, %1
+void VPMonotonicUpdateInstruction::execute(VPTransformState &State) {
+  assert(State.UF == 1 && "Unrolling is not supported");
+  auto &Builder = State.Builder;
+  Value *V = State.get(getIncomingValue(), 0);
+  Value *Step = State.get(getStepValue(), VPIteration(0, 0));
+  Value *Mask = State.get(getMask(), 0);
+  Value *RVL = State.get(State.RVL, 0);
+  Value *Vpop = createVectorPopcount(Builder, Mask, RVL);
+  Vpop = Builder.CreateZExtOrTrunc(Vpop, Step->getType());
+
+  Value *Mult = Builder.CreateMul(Vpop, Step);
+  const auto *OrigUpdateOp = cast<BinaryOperator>(MD.getUpdateOp());
+
+  Value *NewV = Builder.CreateBinOp(OrigUpdateOp->getOpcode(), V, Mult,
+                                    "monotonic.update");
+  State.set(this, NewV, 0);
+}
+
+/// Generate phi for the monotonic:
+///   %monotonic = phi [%monotonic.update, %vector.latch]
+void VPMonotonicHeaderPHIRecipe::execute(VPTransformState &State) {
+  IRBuilder<>::InsertPointGuard Guard(State.Builder);
+  State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHI());
+
+  Value *StartV = State.get(getStartValue(), VPIteration(0, 0));
+  auto *Phi = State.Builder.CreatePHI(StartV->getType(), 2, "monotonic.phi");
+  BasicBlock *PreheaderBB = State.CFG.getPreheaderBBFor(this);
+  Phi->addIncoming(StartV, PreheaderBB);
+
+  // Use the same Phi for all Parts
+  for (unsigned Part = 0; Part < State.UF; ++Part)
+    State.set(this, Phi, Part);
 }
 
 /// Build and return either `vp.gather`/`vp.scatter` or
@@ -322,26 +382,39 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
   if (VPWMIR.isStore()) {
     VPValue *StoredValue = VPWMIR.getStoredValue();
     Value *StoredVal = State.get(StoredValue, Part);
+    if (VPWMIR.isMonotonic())
+      StoredVal = compressVector(Builder, BlockInMaskPart, StoredVal, RVLPart);
 
     if (VPWMIR.isStrided()) {
       Value *Ptr = State.get(VPAddr, VPIteration(0, 0));
-      const SCEV *SCEVStrideInBytes = VPWMIR.getStrideInBytes();
-      auto &DL = State.CFG.PrevBB->getModule()->getDataLayout();
-      SCEVExpander Exp(*(State.SE), DL, "stride");
-      Instruction *InsertPoint = &*State.Builder.GetInsertPoint();
-      assert(Exp.isSafeToExpandAt(SCEVStrideInBytes, InsertPoint) &&
-             "It's not safe to expand that SCEV in the vector loop. That was "
-             "not caught by isSafeStrideAccessInfo.");
-      Value *Stride = Exp.expandCodeFor(
-          SCEVStrideInBytes, SCEVStrideInBytes->getType(), InsertPoint);
-      LLVM_DEBUG(llvm::dbgs()
-                 << "Generating strided store for addr = " << *VPAddr
-                 << " with a stride = " << *Stride << '\n');
+      const SCEV *SCEVStride = VPWMIR.getStrideInBytes();
       auto *PtrTy = cast<PointerType>(Ptr->getType());
-      Value *Operands[] = {StoredVal, Ptr, Stride, BlockInMaskPart, RVLPart};
-      CallInst *VS = Builder.CreateIntrinsic(
-          Intrinsic::experimental_vp_strided_store,
-          {StoredVal->getType(), PtrTy, Stride->getType()}, Operands);
+      CallInst *VS = nullptr;
+      if (!VPWMIR.isConsecutive()) {
+        auto &DL = State.CFG.PrevBB->getModule()->getDataLayout();
+        SCEVExpander Exp(*State.SE, DL, "stride");
+        Instruction *InsertPoint = &*State.Builder.GetInsertPoint();
+        assert(Exp.isSafeToExpandAt(SCEVStride, InsertPoint) &&
+               "It's not safe to expand that SCEV in the vector loop. That was "
+               "not caught by isSafeStrideAccessInfo.");
+        Value *Stride = Exp.expandCodeFor(
+            SCEVStride, SCEVStride->getType(), InsertPoint);
+        LLVM_DEBUG(llvm::dbgs()
+                   << "Generating strided store for addr = " << *VPAddr
+                   << " with a stride = " << *Stride << '\n');
+        Value *Operands[] = {StoredVal, Ptr, Stride, BlockInMaskPart, RVLPart};
+        VS = Builder.CreateIntrinsic(
+            Intrinsic::experimental_vp_strided_store,
+            {StoredVal->getType(), PtrTy, Stride->getType()}, Operands);
+      } else {
+        if (VPWMIR.isMonotonic()) {
+          RVLPart = createVectorPopcount(Builder, BlockInMaskPart, RVLPart);
+          BlockInMaskPart = Builder.getTrueVector(NumElts);
+        }
+        Value *Operands[] = {StoredVal, Ptr, BlockInMaskPart, RVLPart};
+        VS = Builder.CreateIntrinsic(Intrinsic::vp_store,
+                                     {StoredVal->getType(), PtrTy}, Operands);
+      }
 
       VS->addParamAttr(
           1, Attribute::getWithAlignment(VS->getContext(), Alignment));
@@ -361,15 +434,15 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
   auto *DataTy = VectorType::get(VPWMIR.getElementType(), State.VF);
   if (VPWMIR.isStrided()) {
     Value *Ptr = State.get(VPAddr, VPIteration(0, 0));
-    const SCEV *SCEVStrideInBytes = VPWMIR.getStrideInBytes();
+    const SCEV *SCEVStride = VPWMIR.getStrideInBytes();
     auto &DL = State.CFG.PrevBB->getModule()->getDataLayout();
     SCEVExpander Exp(*(State.SE), DL, "stride");
     Instruction *InsertPoint = &*State.Builder.GetInsertPoint();
-    assert(Exp.isSafeToExpandAt(SCEVStrideInBytes, InsertPoint) &&
+    assert(Exp.isSafeToExpandAt(SCEVStride, InsertPoint) &&
            "It's not safe to expand that SCEV in the vector loop. That was "
            "not caught by isSafeStrideAccessInfo.");
     Value *Stride = Exp.expandCodeFor(
-        SCEVStrideInBytes, SCEVStrideInBytes->getType(), InsertPoint);
+        SCEVStride, SCEVStride->getType(), InsertPoint);
     auto *PtrTy = cast<PointerType>(Ptr->getType());
     LLVM_DEBUG(llvm::dbgs()
                << "Generating strided load for addr = " << *VPAddr

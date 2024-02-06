@@ -72,6 +72,10 @@ struct VPlanTransforms {
   /// If any user of a WidenGEPRecipe is uniform, provide them a Replicate of
   /// underlying valueunderlying value to reduce the needs of vector extracts.
   static void optimizeGEPs(VPlan &Plan);
+
+  /// Simplify usage of monotonics within a VPlan by removing unnecessary blends
+  /// if HCFG has been flattened
+  static void simplifyMonotonics(VPlan &Plan);
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Replace (ICMP_ULE, wide canonical IV, backedge-taken-count) checks with an

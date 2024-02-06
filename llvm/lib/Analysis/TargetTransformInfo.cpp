@@ -1370,6 +1370,10 @@ unsigned TargetTransformInfo::getCSABodyFactor() const {
 unsigned TargetTransformInfo::getCSAOverheadFactor() const {
   return TTIImpl->getCSAOverheadFactor();
 }
+
+bool TargetTransformInfo::enableMonotonicsVectorization() const {
+  return TTIImpl->enableMonotonicsVectorization();
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 TargetTransformInfo::Concept::~Concept() = default;

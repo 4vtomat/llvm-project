@@ -376,6 +376,10 @@ public:
     VPWidenMemoryInstructionSC,
     VPWidenSC,
     VPWidenSelectSC,
+#if SIFIVE_CUSTOMIZATION
+    VPVFirstICmpSC,
+    VPMonotonicUpdateSC,
+#endif
     // START: Phi-like recipes. Need to be kept together.
 #if SIFIVE_CUSTOMIZATION
     VPCSADataUpdateSC,
@@ -396,6 +400,7 @@ public:
     VPWidenPointerInductionSC,
 #if SIFIVE_CUSTOMIZATION
     VPCSAHeaderPHISC,
+    VPMonotonicHeaderPHISC,
 #endif // SIFIVE_CUSTOMIZATION
     VPReductionPHISC,
     // END: SubclassID for recipes that inherit VPHeaderPHIRecipe

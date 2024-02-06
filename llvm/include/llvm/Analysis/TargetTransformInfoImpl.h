@@ -1002,6 +1002,7 @@ public:
   bool enableCSAVectorization() const { return false; }
   unsigned getCSABodyFactor() const { return 1; }
   unsigned getCSAOverheadFactor() const { return 1; }
+  bool enableMonotonicsVectorization() const { return false; }
 #endif // SIFIVE_CUSTOMIZATION
 
 protected:

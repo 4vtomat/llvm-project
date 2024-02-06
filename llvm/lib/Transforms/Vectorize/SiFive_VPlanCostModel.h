@@ -174,9 +174,20 @@ private:
   /// spills/reload required
   InstructionCost getRegisterPressureCost(const unsigned RegID, Type *Ty) const;
 
+  /// Return individual cost of the VPMonotonicUpdateInstruction \p VPM for a
+  /// given \p RVL
+  InstructionCost
+  getMonotonicUpdateCost(const VPMonotonicUpdateInstruction *VPM,
+                         const RVVPair &RVL) const;
+
   /// Associate new registers \p NumRegs of a type \p RegID with VPValue \p VPV.
   void addRegisterUsage(const VPValue *VPV, const unsigned RegID,
                         const unsigned NumRegs);
+
+  /// Convenient method to return cost of an intrinsic
+  InstructionCost getIntrinsicCost(Intrinsic::ID Id, Type *RetTy,
+                                   ArrayRef<Value *> Arguments,
+                                   FastMathFlags FMF) const;
 
   /// VPlan for which cost is computed
   const VPlan &Plan;

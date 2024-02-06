@@ -68,6 +68,7 @@ STATISTIC(NumOfUncountableLoopsWithNonPtrIVs,
           "Number of uncountable loops with non-ptr induction variables");
 STATISTIC(NumOfUncountableLoopsWithNonIVLiveOutValues,
           "Number of uncountable loops with non-IV live out values");
+STATISTIC(NumberOfMonotonics, "Number of monotonics");
 
 namespace UncountableLoopVectorization {
 enum class Option {
@@ -167,6 +168,11 @@ static cl::opt<LoopVectorizeHints::ScalableForceKind>
 static cl::opt<bool>
     EnableCSA("sifive-enable-csa", cl::init(true), cl::Hidden,
               cl::desc("Control whether CSA loop vectorization is enabled"));
+
+static cl::opt<bool>
+    EnableMonotonics("sifive-enable-monotonics", cl::init(true), cl::Hidden,
+                     cl::desc("Control whether vectorization of loops with "
+                              "monotonic variables is enabled"));
 #endif
 
 /// Maximum vectorization interleave count.
@@ -1029,6 +1035,11 @@ void LoopVectorizationLegality::addInductionPhi(
   LLVM_DEBUG(dbgs() << "LV: Found an induction variable.\n");
 }
 
+void LoopVectorizationLegality::addMonotonic(const MonotonicDescriptor &MD) {
+  for (PHINode *P : MD.getPhis())
+    MonotonicPhis[P] = MD;
+}
+
 bool LoopVectorizationLegality::setupOuterLoopInductions() {
   BasicBlock *Header = TheLoop->getHeader();
 
@@ -1189,6 +1200,15 @@ bool LoopVectorizationLegality::canVectorizeInstrs() {
             LLVM_DEBUG(dbgs()
                        << "LV: found legal CSA opportunity" << *Phi << "\n");
             CSAs.insert({Phi, CSADesc});
+            continue;
+          }
+        }
+        if (EnableMonotonics && useVLAVectorizer() &&
+                   TTI->enableMonotonicsVectorization()) {
+          if (auto MD =
+                  MonotonicDescriptor::isMonotonicPHI(Phi, TheLoop, PSE)) {
+            ++NumberOfMonotonics;
+            addMonotonic(MD);
             continue;
           }
         }
@@ -2332,6 +2352,68 @@ bool LoopVectorizationLegality::canVectorizeUncountableLoop(
            UncountableLoopVectorization::Option::AnalysisOnly);
 }
 
+class SCEVMonotonicStrideExpr final
+    : public SCEVVisitor<SCEVMonotonicStrideExpr, bool> {
+private:
+  using RetVal = bool;
+  using Base = SCEVVisitor<SCEVMonotonicStrideExpr, RetVal>;
+
+  const LoopVectorizationLegality &LVL;
+  SmallVector<Instruction *> Monotonics;
+
+  template <typename SCEVT> bool visitExpr(SCEVT *S) {
+    return all_of(S->operands(),
+                  [&](const SCEV *Op) { return Base::visit(Op); });
+  }
+
+public:
+  explicit SCEVMonotonicStrideExpr(const LoopVectorizationLegality &LVL)
+      : LVL(LVL) {}
+
+  ArrayRef<Instruction *> getMonotonics() const { return Monotonics; }
+
+  bool visitUnknown(const SCEVUnknown *S) {
+    if (auto *I = dyn_cast<Instruction>(S->getValue())) {
+      if (LVL.isMonotonicPhi(I)) {
+        if (!Monotonics.empty()) {
+          LLVM_DEBUG(dbgs() << "LV: for now can only support single use of "
+                               "monotonic within address computation\n");
+          return false;
+        }
+        Monotonics.push_back(I);
+      } else if (!LVL.isInvariant(I)) {
+        LLVM_DEBUG(dbgs() << "LV: for now can only support invariant values "
+                             "within address computation\n");
+        return false;
+      }
+    }
+    return true;
+  }
+
+  /// Don't know what to do with this expression. Assume unsafe.
+  bool visitCouldNotCompute(const SCEVCouldNotCompute *S) { return false; }
+
+  /// All other expressions are good and won't prevent SCEV expansion in the
+  /// vector loop
+  bool visitConstant(const SCEVConstant *S) { return true; }
+  bool visitVScale(const SCEVVScale *S) { return true; }
+  bool visitPtrToIntExpr(const SCEVPtrToIntExpr *S) { return visitExpr(S); }
+  bool visitTruncateExpr(const SCEVTruncateExpr *S) { return visitExpr(S); }
+  bool visitZeroExtendExpr(const SCEVZeroExtendExpr *S) { return visitExpr(S); }
+  bool visitSignExtendExpr(const SCEVSignExtendExpr *S) { return visitExpr(S); }
+  bool visitAddExpr(const SCEVAddExpr *S) { return visitExpr(S); }
+  bool visitMulExpr(const SCEVMulExpr *S) { return visitExpr(S); }
+  bool visitUDivExpr(const SCEVUDivExpr *S) { return visitExpr(S); }
+  bool visitAddRecExpr(const SCEVAddRecExpr *S) { return visitExpr(S); }
+  bool visitSMaxExpr(const SCEVSMaxExpr *S) { return visitExpr(S); }
+  bool visitUMaxExpr(const SCEVUMaxExpr *S) { return visitExpr(S); }
+  bool visitSMinExpr(const SCEVSMinExpr *S) { return visitExpr(S); }
+  bool visitUMinExpr(const SCEVUMinExpr *S) { return visitExpr(S); }
+  bool visitSequentialUMinExpr(const SCEVSequentialMinMaxExpr *S) {
+    return visitExpr(S);
+  }
+};
+
 /// Visit SCEVExpr and verifies that it can be expanded safely in the other
 /// loop, i.e. it has not leaf node that is computed within the original loop.
 class SCEVRuntimeStrideChecker final
@@ -2359,9 +2441,9 @@ public:
   /// trying to vectorize
   bool visitUnknown(const SCEVUnknown *S) {
     if (auto *I = dyn_cast<Instruction>(S->getValue()))
-      if (LVL.getLoop()->contains(I)) {
-        LLVM_DEBUG(llvm::dbgs() << "SCEVUnknown = "; S->print(llvm::dbgs());
-                   llvm::dbgs() << " is defined within the loop\n");
+      if (LVL.getLoop()->contains(I) && !LVL.isMonotonicPhi(I)) {
+        LLVM_DEBUG(dbgs() << "SCEVUnknown = "; S->print(dbgs());
+                   dbgs() << " is defined within the loop\n");
         return false;
       }
     return true;
@@ -2406,6 +2488,8 @@ LoopVectorizationLegality::StrideAccessInfo
 LoopVectorizationLegality::computeStrideAccessInfo(Instruction *I) const {
   Value *Ptr = getLoadStorePointerOperand(I);
   auto *PtrTy = dyn_cast<PointerType>(Ptr->getType());
+  const DataLayout &DL = I->getModule()->getDataLayout();
+  unsigned EltSize = DL.getTypeAllocSize(getLoadStoreType(I));
   if (!PtrTy)
     return StrideAccessInfo();
 
@@ -2417,9 +2501,30 @@ LoopVectorizationLegality::computeStrideAccessInfo(Instruction *I) const {
     return S;
   };
 
-  if (const SCEVAddRecExpr *V = GetSimpleSCEVStrideInBytes(PSE.getSCEV(Ptr))) {
-    const SCEV *Stride = V->getStepRecurrence(*PSE.getSE());
-    return StrideAccessInfo(V, Stride);
+  const SCEV *SPtr = PSE.getSCEV(Ptr);
+
+  if (const SCEVAddRecExpr *V = GetSimpleSCEVStrideInBytes(SPtr)) {
+    const SCEV *StrideInBytes = V->getStepRecurrence(*PSE.getSE());
+    return StrideAccessInfo(V, StrideInBytes, EltSize);
+  }
+
+  SCEVMonotonicStrideExpr SMSE(*this);
+  if (SMSE.visit(SPtr) && !SMSE.getMonotonics().empty()) {
+    assert(SMSE.getMonotonics().size() == 1 &&
+           "Currently address computation supports only one monotonic");
+    Instruction *Phi = SMSE.getMonotonics().front();
+    const MonotonicDescriptor &MD =
+        MonotonicPhis.find(cast<PHINode>(Phi))->second;
+    const SCEV *Step = MD.getStep();
+    ScalarEvolution *SE = PSE.getSE();
+    // Note: this stride is currently not used in generated vector code, but is
+    // used to conclude if access is unit-strided
+    // With the support of non-unit-strided monotonics, that SCEV will be
+    // expanded in generated vector code
+    const SCEV *StepInBytes =
+        SE->getMulExpr(Step, SE->getConstant(Step->getType(), EltSize));
+    return StrideAccessInfo(SPtr, StepInBytes, EltSize,
+                            /*IsStrideMonotonic=*/true);
   }
   return StrideAccessInfo();
 }

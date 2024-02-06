@@ -16,6 +16,7 @@
 #if SIFIVE_CUSTOMIZATION
 #include "SiFive_VPlanPredicatedInstructions.h"
 #endif // SIFIVE_CUSTOMIZATION
+#include "VPlanValue.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/Twine.h"
@@ -1068,9 +1069,9 @@ void VPSelectInstruction::print(raw_ostream &O, const Twine &Indent,
   O << " = select ";
   printFlags(O);
   getOperand(0)->printAsOperand(O, SlotTracker);
-  O << " ";
+  O << ' ';
   getOperand(1)->printAsOperand(O, SlotTracker);
-  O << " ";
+  O << ' ';
   getOperand(2)->printAsOperand(O, SlotTracker);
   if (TP != TailPolicy::Unknown) {
     O << " tail policy = ";
@@ -1081,6 +1082,32 @@ void VPSelectInstruction::print(raw_ostream &O, const Twine &Indent,
     O << ", !dbg ";
     DL.print(O);
   }
+}
+
+void VPMonotonicUpdateInstruction::print(raw_ostream &O, const Twine &Indent, VPSlotTracker &SlotTracker) const {
+  O << Indent << "monotonic-update ";
+  printAsOperand(O, SlotTracker);
+  O << " = ";
+  O << MD.getUpdateOp()->getOpcodeName();
+  O << ' ';
+  getOperand(0)->printAsOperand(O, SlotTracker);
+  O << ", ";
+  getOperand(1)->printAsOperand(O, SlotTracker);
+  O << " @";
+  getMask()->printAsOperand(O, SlotTracker);
+
+  if (auto DL = getDebugLoc()) {
+    O << ", !dbg ";
+    DL.print(O);
+  }
+}
+
+void VPMonotonicHeaderPHIRecipe::print(raw_ostream &O, const Twine &Indent,
+                                       VPSlotTracker &SlotTracker) const {
+  O << Indent << "EMIT ";
+  printAsOperand(O, SlotTracker);
+  O << " = monotonic-phi ";
+  printOperands(O, SlotTracker);
 }
 #endif
 #endif // SIFIVE_CUSTOMIZATION
@@ -2184,6 +2211,11 @@ void VPCSAExtractScalarRecipe::execute(VPTransformState &State) {
   Value *ChooseFromVecOrInit =
       State.Builder.CreateSelect(LastIdxGEZero, ExtractFromVec, InitScalar);
   State.set(this, ChooseFromVecOrInit, 0);
+}
+
+InstructionCost VPMonotonicHeaderPHIRecipe::overhead(ElementCount VF,
+                                                     VPCostContext &Ctx) const {
+  return 0;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
