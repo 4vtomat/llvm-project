@@ -97,6 +97,9 @@
 #include "llvm/Transforms/InstCombine/InstCombine.h"
 #include "llvm/Transforms/Utils/BasicBlockUtils.h"
 #include "llvm/Transforms/Utils/Local.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Transforms/Utils/LoopUtils.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include <algorithm>
 #include <cassert>
 #include <cstdint>
@@ -2450,8 +2453,14 @@ Instruction *InstCombinerImpl::visitGetElementPtrInst(GetElementPtrInst &GEP) {
   if (MadeChange)
     return &GEP;
 
+#if SIFIVE_CUSTOMIZATION
+  // Canonicalize constant GEPs to i8 type.
+  if (!EnableLoopDataLayout &&
+      !GEPEltType->isIntegerTy(8) && GEP.hasAllConstantIndices()) {
+#else
   // Canonicalize constant GEPs to i8 type.
   if (!GEPEltType->isIntegerTy(8) && GEP.hasAllConstantIndices()) {
+#endif
     APInt Offset(DL.getIndexTypeSizeInBits(GEPType), 0);
     if (GEP.accumulateConstantOffset(DL, Offset))
       return replaceInstUsesWith(
