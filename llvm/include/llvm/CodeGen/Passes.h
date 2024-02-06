@@ -522,6 +522,7 @@ namespace llvm {
 #if SIFIVE_CUSTOMIZATION
   // Expands powi instructions.
   FunctionPass *createExpandPowiPass();
+  FunctionPass *createExpandVPReductionPass();
 #endif
 
   // This pass expands memcmp() to load/stores.

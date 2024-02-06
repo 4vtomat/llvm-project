@@ -54,6 +54,7 @@ FUNCTION_PASS("expand-large-fp-convert", ExpandLargeFpConvertPass, (TM))
 FUNCTION_PASS("expand-memcmp", ExpandMemCmpPass, (TM))
 #ifdef SIFIVE_CUSTOMIZATION
 FUNCTION_PASS("expand-powi", ExpandPowiPass, ())
+FUNCTION_PASS("expand-vp-reduce", ExpandVPReductionPass, ())
 #endif
 FUNCTION_PASS("expand-reductions", ExpandReductionsPass, ())
 FUNCTION_PASS("expandvp", ExpandVectorPredicationPass, ())

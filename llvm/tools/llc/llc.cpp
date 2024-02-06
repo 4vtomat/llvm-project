@@ -341,6 +341,7 @@ int main(int argc, char **argv) {
   initializeVectorization(*Registry);
 #if SIFIVE_CUSTOMIZATION
   initializeExpandPowiLegacyPassPass(*Registry);
+  initializeExpandVPReductionLegacyPassPass(*Registry);
 #endif // SIFIVE_CUSTOMIZATION
   initializeScalarizeMaskedMemIntrinLegacyPassPass(*Registry);
   initializeExpandReductionsPass(*Registry);

@@ -107,6 +107,7 @@ void initializeExpandMemCmpLegacyPassPass(PassRegistry &);
 void initializeExpandPostRAPass(PassRegistry&);
 #if SIFIVE_CUSTOMIZATION
 void initializeExpandPowiLegacyPassPass(PassRegistry &);
+void initializeExpandVPReductionLegacyPassPass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
 void initializeExpandReductionsPass(PassRegistry&);
 void initializeExpandVectorPredicationPass(PassRegistry &);

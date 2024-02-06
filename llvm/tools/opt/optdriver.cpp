@@ -376,6 +376,7 @@ static bool shouldPinPassToLegacyPM(StringRef Pass) {
       "callbrprepare",
 #if SIFIVE_CUSTOMIZATION
       "expand-powi",
+      "expand-vp-reduce",
 #endif // SIFIVE_CUSTOMIZATION
   };
   for (const auto &P : PassNamePrefix)
@@ -430,6 +431,7 @@ extern "C" int optMain(
   initializeExpandMemCmpLegacyPassPass(Registry);
 #if SIFIVE_CUSTOMIZATION
   initializeExpandPowiLegacyPassPass(Registry);
+  initializeExpandVPReductionLegacyPassPass(Registry);
 #endif // SIFIVE_CUSTOMIZATION
   initializeScalarizeMaskedMemIntrinLegacyPassPass(Registry);
   initializeSelectOptimizePass(Registry);

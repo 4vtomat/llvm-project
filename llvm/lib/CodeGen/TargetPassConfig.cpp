@@ -1060,6 +1060,7 @@ bool TargetPassConfig::addISelPasses() {
   addPass(createExpandLargeFpConvertPass());
 #if SIFIVE_CUSTOMIZATION
   addPass(createExpandPowiPass());
+  addPass(createExpandVPReductionPass());
 #endif
   addIRPasses();
   addCodeGenPrepare();

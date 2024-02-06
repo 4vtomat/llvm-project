@@ -18,6 +18,7 @@
 ; CHECK-NEXT:       Expand large div/rem
 ; CHECK-NEXT:       Expand large fp convert
 ; CHECK-NEXT:       Expand powi functions
+; CHECK-NEXT:       Expand vp.reduce functions
 ; CHECK-NEXT:       Expand Atomic instructions
 ; CHECK-NEXT:       Module Verifier
 ; CHECK-NEXT:       Lower Garbage Collection Instructions
