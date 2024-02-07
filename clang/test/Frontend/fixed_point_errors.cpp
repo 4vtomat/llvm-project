@@ -15,9 +15,6 @@ float accum_flt = 0.0k;  // expected-error{{invalid suffix 'k' on floating const
 float fract_flt = 0.0r;  // expected-error{{invalid suffix 'r' on floating constant}}
 #endif
 
-<<<<<<< HEAD
-=======
 #ifndef WITHOUT_FIXED_POINT
 const char *c = 10.0k;  // expected-error{{cannot initialize a variable of type 'const char *' with an rvalue of type '_Accum'}}
 #endif
->>>>>>> llvm/main
