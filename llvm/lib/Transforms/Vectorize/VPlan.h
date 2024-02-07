@@ -1476,33 +1476,7 @@ public:
   }
 
   /// Returns true if the recipe only uses the first lane of operand \p Op.
-<<<<<<< HEAD
-  bool onlyFirstLaneUsed(const VPValue *Op) const override {
-    assert(is_contained(operands(), Op) &&
-           "Op must be an operand of the recipe");
-    if (getOperand(0) != Op)
-      return false;
-    switch (getOpcode()) {
-    default:
-      return false;
-    case VPInstruction::ActiveLaneMask:
-#if SIFIVE_CUSTOMIZATION
-    case VPInstruction::ExplicitVectorLength:
-    case VPInstruction::ExplicitVectorLengthIVIncrement:
-#endif // SIFIVE_CUSTOMIZATION
-    case VPInstruction::CalculateTripCountMinusVF:
-    case VPInstruction::CanonicalIVIncrementForPart:
-    case VPInstruction::BranchOnCount:
-#if SIFIVE_CUSTOMIZATION
-    case VPInstruction::ExitingCond:
-#endif
-      return true;
-    };
-    llvm_unreachable("switch should return");
-  }
-=======
   bool onlyFirstLaneUsed(const VPValue *Op) const override;
->>>>>>> llvm/main
 
   /// Returns true if the recipe only uses the first part of operand \p Op.
   bool onlyFirstPartUsed(const VPValue *Op) const override {

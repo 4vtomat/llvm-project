@@ -870,9 +870,16 @@ bool VPInstruction::onlyFirstLaneUsed(const VPValue *Op) const {
     // TODO: Cover additional opcodes.
     return vputils::onlyFirstLaneUsed(this);
   case VPInstruction::ActiveLaneMask:
+#if SIFIVE_CUSTOMIZATION
+  case VPInstruction::ExplicitVectorLength:
+  case VPInstruction::ExplicitVectorLengthIVIncrement:
+#endif // SIFIVE_CUSTOMIZATION
   case VPInstruction::CalculateTripCountMinusVF:
   case VPInstruction::CanonicalIVIncrementForPart:
   case VPInstruction::BranchOnCount:
+#if SIFIVE_CUSTOMIZATION
+  case VPInstruction::ExitingCond:
+#endif
     // TODO: Cover additional operands.
     return getOperand(0) == Op;
   };
@@ -2490,7 +2497,7 @@ void VPWidenPointerInductionRecipe::executeUncountable(
     // Determine the number of scalars we need to generate for each unroll
     // iteration. If the instruction is uniform, we only need to generate the
     // first lane. Otherwise, we generate all VF values.
-    if (onlyScalarsGenerated(State.VF)) {
+    if (onlyScalarsGenerated(State.VF.isScalable())) {
       assert(State.VF.isScalable() &&
              "Only scalable VF is supported for uncountable loops");
       Value *StartOffsetScalar =
