@@ -24,6 +24,11 @@
 #include "llvm/Analysis/VectorUtils.h"
 #include "llvm/IR/Intrinsics.h"
 #include "llvm/IR/PatternMatch.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/ADT/DenseMap.h"
+#include "llvm/ADT/SmallPtrSet.h"
+#include <queue>
+#endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
 #define DEBUG_TYPE "loop-vectorize"
@@ -1431,5 +1436,93 @@ void VPlanTransforms::addExplicitVectorLength(VPlan &Plan) {
   CanonicalIVIncrement->replaceAllUsesWith(NextEVLIV);
   Plan.getVFxUF().replaceAllUsesWith(VPEVL);
   Plan.setUseVLAVectorizer(true);
+}
+
+void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
+  // Create ExplicitVectorLengthPhi recipe
+  VPBasicBlock *Header = Plan.getVectorLoopRegion()->getEntryBasicBlock();
+  auto *CanonicalIVPHI = Plan.getCanonicalIV();
+  VPValue *StartV = CanonicalIVPHI->getStartValue();
+  auto *EVLPhi = new VPEVLBasedIVPHIRecipe(StartV, DebugLoc());
+  EVLPhi->insertAfter(CanonicalIVPHI);
+
+  // Create VSetVLIMax recipe
+  auto *VPEVL = new VPInstruction(VPInstruction::ExplicitVectorLength, {});
+  VPEVL->insertBefore(*Header, Header->getFirstNonPhi());
+
+  // Create EVLIncrement recipe
+  auto *CanonicalIVIncrement =
+      cast<VPInstruction>(CanonicalIVPHI->getBackedgeValue());
+  auto *NextEVLIV = new VPInstruction(
+      VPInstruction::ExplicitVectorLengthIVIncrement, {EVLPhi, VPEVL},
+      {CanonicalIVIncrement->hasNoUnsignedWrap(),
+       CanonicalIVIncrement->hasNoSignedWrap()},
+      CanonicalIVIncrement->getDebugLoc(), "index.evl.next");
+  NextEVLIV->insertBefore(CanonicalIVIncrement);
+  EVLPhi->addOperand(NextEVLIV);
+
+  // Replace all uses of VPCanonicalIVPHIRecipe by
+  // VPEVLBasedIVPHIRecipe
+  CanonicalIVPHI->replaceAllUsesWith(EVLPhi);
+  CanonicalIVIncrement->replaceAllUsesWith(NextEVLIV);
+  Plan.getVFxUF().replaceAllUsesWith(VPEVL);
+  Plan.setUseVLAVectorizer(true);
+
+  // Traverse the use of EVL and update them with the latest RVL
+  SmallSet<VPRecipeBase *, 2> EVLUsers;
+  for (VPUser *U : VPEVL->users())
+    if (auto *R = dyn_cast<VPRecipeBase>(U))
+      EVLUsers.insert(R);
+
+  SmallDenseMap<VPBlockBase *, VPValue *> BlockLastRVL;
+
+  std::queue<VPBasicBlock *> WorkList;
+  SmallPtrSet<VPBlockBase *, 4> VisitedBlocks;
+  WorkList.push(Plan.getEntry());
+  VisitedBlocks.insert(Plan.getEntry());
+  while (!WorkList.empty()) {
+    VPBasicBlock *VPBB = WorkList.front();
+    WorkList.pop();
+    for (auto VPBB : VPBB->getSuccessors()) {
+      if (VisitedBlocks.count(VPBB))
+        continue;
+      VPBasicBlock *Entry = VPBB->getEntryBasicBlock();
+      WorkList.push(Entry);
+      VisitedBlocks.insert(Entry);
+    }
+    VPValue *LastRVL = nullptr;
+    if (VPBB->getNumPredecessors() > 0) {
+      // TODO: Create a phi to join LastRVL from predecessors
+      assert(VPBB->getSinglePredecessor() &&
+             "Uncountable loop doesn't support blocks having multiple "
+             "predecessors");
+      LastRVL = BlockLastRVL[VPBB->getSinglePredecessor()];
+    }
+    for (VPRecipeBase &Recipe : *VPBB) {
+      // Check if the recipe updates RVL
+      if (auto *R = dyn_cast<VPWidenMemoryInstructionRecipe>(&Recipe))
+        if (R->isSpeculative()) {
+          LastRVL = R->getVPValue(1);
+          continue;
+        }
+      auto *VPI = dyn_cast<VPInstruction>(&Recipe);
+      if (VPI && (VPI->getOpcode() == VPInstruction::ExplicitVectorLength)) {
+        LastRVL = VPI;
+        continue;
+      }
+
+      // if VPEVL is not udpated, we can skip this early
+      if (LastRVL == VPEVL)
+        continue;
+
+      if (EVLUsers.count(&Recipe)) {
+        for (unsigned I = 0; I < Recipe.getNumOperands(); I++)
+          if (Recipe.getOperand(I) == VPEVL)
+            Recipe.setOperand(I, LastRVL);
+        EVLUsers.erase(&Recipe);
+      }
+    }
+    BlockLastRVL[VPBB] = LastRVL;
+  }
 }
 #endif // SIFIVE_CUSTOMIZATION

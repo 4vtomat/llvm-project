@@ -507,15 +507,6 @@ void VPTransformState::packScalarIntoVectorValue(VPValue *Def,
   set(Def, VectorValue, Instance.Part);
 }
 
-#if SIFIVE_CUSTOMIZATION
-VPTransformState::~VPTransformState() {
-  /// FIXME: Will be dropped after uncountable loops gets explicit RVL
-  /// computation
-  if (Plan->isUncountable())
-    delete RVL;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 BasicBlock *
 VPBasicBlock::createEmptyBasicBlock(VPTransformState::CFGState &CFG) {
   // BB stands for IR BasicBlocks. VPBB stands for VPlan VPBasicBlocks.
@@ -615,13 +606,6 @@ void VPBasicBlock::execute(VPTransformState *State) {
   // 2. Fill the IR basic block with IR instructions.
   LLVM_DEBUG(dbgs() << "LV: vectorizing VPBB:" << getName()
                     << " in BB:" << NewBB->getName() << '\n');
-
-#if SIFIVE_CUSTOMIZATION
-  // If this is the header of the vector loop, insert vsetvlimax.
-  if (getPlan()->isUncountable() &&
-      this == getPlan()->getVectorLoopRegion()->getEntryBasicBlock())
-    getPlan()->getSetVL(*State, nullptr);
-#endif // SIFIVE_CUSTOMIZATION
 
   State->CFG.VPBB2IRBB[this] = NewBB;
   State->CFG.PrevVPBB = this;
@@ -1045,6 +1029,9 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
 
   for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
     State.set(&VectorTripCount, VectorTripCountV, Part);
+#if SIFIVE_CUSTOMIZATION
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   IRBuilder<> Builder(State.CFG.PrevBB->getTerminator());
   // FIXME: Model VF * UF computation completely in VPlan.
@@ -1073,9 +1060,6 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
            "ScalarIVSteps when resetting the start value");
     IV->setOperand(0, VPV);
   }
-#if SIFIVE_CUSTOMIZATION
-  }
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 #if SIFIVE_CUSTOMIZATION

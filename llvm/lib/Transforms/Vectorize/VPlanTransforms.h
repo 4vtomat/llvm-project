@@ -104,6 +104,7 @@ struct VPlanTransforms {
   /// VPCanonicalIVPHIRecipe is only used to control the loop after
   /// this transformation.
   static void addExplicitVectorLength(VPlan &Plan);
+  static void addExplicitVectorLengthUncountable(VPlan &Plan);
 #endif // SIFIVE_CUSTOMIZATION
 
 private:

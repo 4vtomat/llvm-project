@@ -10,13 +10,18 @@ define i64 @strlen_i8(ptr %start) {
 ; VPLANS-EMPTY:
 ; VPLANS-NEXT: <x1> vector loop: {
 ; VPLANS-NEXT:   vector.body:
+; VPLANS-NEXT:     EMIT vp<%2> = CANONICAL-INDUCTION ir<0>, vp<%12>
+; VPLANS-NEXT:     EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%3> = phi ir<0>, vp<%12>
 ; VPLANS-NEXT:     EMIT ir<%end.0> = WIDEN-POINTER-INDUCTION ir<%start>, 1
-; VPLANS-NEXT:     vp<%3> = vector-pointer ir<%end.0>
-; VPLANS-NEXT:     WIDEN-SPECULATIVE-MEMORY-INSTRUCTION ir<%0> = load vp<%3>
+; VPLANS-NEXT:     EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH
+; VPLANS-NEXT:     vp<%6> = vector-pointer ir<%end.0>
+; VPLANS-NEXT:     WIDEN-SPECULATIVE-MEMORY-INSTRUCTION ir<%0>, vp<%8> = load vp<%6>
 ; VPLANS-NEXT:     WIDEN ir<%cmp.not> = icmp eq ir<%0>, ir<0>
 ; VPLANS-NEXT:     CLONE ir<%incdec.ptr> = getelementptr inbounds ir<%end.0>, ir<1>
-; VPLANS-NEXT:     EMIT vp<%7> = exiting-cond ir<%cmp.not>
-; VPLANS-NEXT:     EMIT branch-on-cond vp<%7>
+; VPLANS-NEXT:     EMIT vp<%11> = exiting-cond ir<%cmp.not>
+; VPLANS-NEXT:     EMIT vp<%12> = EXPLICIT-VECTOR-LENGTH + nuw vp<%3>, vp<%8>
+; VPLANS-NEXT:     EMIT vp<%13> = add nuw vp<%3>, vp<%8>
+; VPLANS-NEXT:     EMIT branch-on-cond vp<%11>
 ; VPLANS-NEXT:   No successors
 ; VPLANS-NEXT: }
 entry:

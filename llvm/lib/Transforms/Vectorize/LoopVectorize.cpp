@@ -962,9 +962,6 @@ public:
                     Value *VectorTripCount, Value *EndValue,
                     BasicBlock *MiddleBlock, BasicBlock *VectorHeader,
                     VPlan &Plan, VPTransformState &State) override;
-
-  /// Returns (and creates if needed) the trip count of the widened loop.
-  Value *getOrCreateVectorTripCount(BasicBlock *InsertBlock) override;
 };
 
 class InnerLoopUnroller : public InnerLoopVectorizer {
@@ -3380,6 +3377,11 @@ InnerLoopVectorizer::getOrCreateVectorTripCount(BasicBlock *InsertBlock) {
     return VectorTripCount;
 
 #if SIFIVE_CUSTOMIZATION
+  if (Legal->isVectorizableUncountable()) {
+    // The trip count is unknown for uncountable loop
+    return nullptr;
+  }
+
   if (useVLAVectorizer()) {
     Value *TC = getTripCount();
     return VectorTripCount = TC;
@@ -4667,12 +4669,6 @@ void UncountableInnerLoopVectorizer::fixupIVUsers(
       Plan.removeLiveOut(PHI);
     }
   }
-}
-
-Value *UncountableInnerLoopVectorizer::getOrCreateVectorTripCount(
-    BasicBlock *InsertBlock) {
-  assert(Legal->isVectorizableUncountable() && "Not an uncountable loop");
-  return nullptr;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -10803,15 +10799,23 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
     VFRange SubRange = {VF, MaxVFTimes2};
     if (auto Plan = tryToBuildVPlanWithVPRecipes(SubRange)) {
       // Now optimize the initial VPlan.
+#if SIFIVE_CUSTOMIZATION
+      if (!Plan->hasVF(ElementCount::getFixed(1)) && !Plan->isUncountable())
+#else
       if (!Plan->hasVF(ElementCount::getFixed(1)))
+#endif // SIFIVE_CUSTOMIZATION
         VPlanTransforms::truncateToMinimalBitwidths(
             *Plan, CM.getMinimalBitwidths(), PSE.getSE()->getContext());
 #if SIFIVE_CUSTOMIZATION
-      if (Legal->useVLAVectorizer() && !Plan->isUncountable())
-        VPlanTransforms::addExplicitVectorLength(*Plan);
-      if (Legal->isVectorizableUncountable())
-        VPlanTransforms::optimizeUncountable(*Plan, *PSE.getSE());
-      else
+      if (Legal->useVLAVectorizer()) {
+        if (Plan->isUncountable()) {
+          VPlanTransforms::addExplicitVectorLengthUncountable(*Plan);
+          VPlanTransforms::optimizeUncountable(*Plan, *PSE.getSE());
+        } else {
+          VPlanTransforms::addExplicitVectorLength(*Plan);
+          VPlanTransforms::optimize(*Plan, *PSE.getSE());
+        }
+      } else
 #endif // SIFIVE_CUSTOMIZATION
       VPlanTransforms::optimize(*Plan, *PSE.getSE());
       assert(VPlanVerifier::verifyPlanIsValid(*Plan) && "VPlan is invalid");
@@ -10852,6 +10856,27 @@ static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, bool HasNUW,
 }
 
 #if SIFIVE_CUSTOMIZATION
+static void addCanonicalIVRecipesUncountable(VPlan &Plan, Type *IdxTy,
+                                             bool HasNUW, DebugLoc DL) {
+  Value *StartIdx = ConstantInt::get(IdxTy, 0);
+  auto *StartV = Plan.getVPValueOrAddLiveIn(StartIdx);
+
+  // Add a VPCanonicalIVPHIRecipe starting at 0 to the header.
+  auto *CanonicalIVPHI = new VPCanonicalIVPHIRecipe(StartV, DL);
+  VPRegionBlock *TopRegion = Plan.getVectorLoopRegion();
+  VPBasicBlock *Header = TopRegion->getEntryBasicBlock();
+  Header->insert(CanonicalIVPHI, Header->begin());
+
+  // Add a CanonicalIVIncrement{NUW} VPInstruction to increment the scalar
+  // IV by VF * UF.
+  auto *CanonicalIVIncrement =
+      new VPInstruction(Instruction::Add, {CanonicalIVPHI, &Plan.getVFxUF()},
+                        {HasNUW, false}, DL, "index.next");
+  CanonicalIVPHI->addOperand(CanonicalIVIncrement);
+
+  VPBasicBlock *EB = TopRegion->getExitingBasicBlock();
+  EB->appendRecipe(CanonicalIVIncrement);
+}
 /// Add CSA Recipes that can occur before each instruction in the input IR
 /// is processed and introduced into VPlan.
 static void
@@ -11137,16 +11162,18 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   bool HasNUW = Style == TailFoldingStyle::None;
 #if SIFIVE_CUSTOMIZATION
   // Canonical IV is not available for uncountable loops in general.
-  if (!Legal->isVectorizableUncountable()) {
-      DL = getDebugLocFromInstOrOperands(Legal->getPrimaryInduction());
-      addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), HasNUW, DL);
-      addCSAPreprocessRecipes(Legal->getCSAs(), OrigLoop, Plan->getPreheader(),
-                              HeaderVPBB, DL, Range, *Plan);
+  if (Plan->isUncountable()) {
+    addCanonicalIVRecipesUncountable(*Plan, Legal->getWidestInductionType(),
+                                     HasNUW, DL);
+  } else {
+    addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), HasNUW, DL);
+    addCSAPreprocessRecipes(Legal->getCSAs(), OrigLoop, Plan->getPreheader(),
+                            HeaderVPBB, DL, Range, *Plan);
+  }
 #else
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), HasNUW, DL);
 #endif // SIFIVE_CUSTOMIZATION
 #if SIFIVE_CUSTOMIZATION
-  }
   // Create the node for previous RVL value, required for the splice
   // intrinsic of a fixed order recurrence and CSA
   bool NeedOtherRVLs = !Legal->getFixedOrderRecurrences().empty() ||
@@ -11243,6 +11270,9 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
       }
 
       RecipeBuilder.setRecipe(Instr, Recipe);
+#if SIFIVE_CUSTOMIZATION
+      auto *VPI = dyn_cast<VPInstruction>(Recipe);
+#endif // SIFIVE_CUSTOMIZATION
       if (isa<VPHeaderPHIRecipe>(Recipe)) {
         // VPHeaderPHIRecipes must be kept in the phi section of HeaderVPBB. In
         // the following cases, VPHeaderPHIRecipes may be created after non-phi
@@ -11256,6 +11286,11 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
                 CM.foldTailByMasking() || isa<TruncInst>(Instr)) &&
                "unexpected recipe needs moving");
         Recipe->insertBefore(*HeaderVPBB, HeaderVPBB->getFirstNonPhi());
+#if SIFIVE_CUSTOMIZATION
+      } else if (VPI && (VPI->getOpcode() == VPInstruction::BranchOnCond)) {
+        VPBasicBlock *EB = Plan->getVectorLoopRegion()->getExitingBasicBlock();
+        EB->appendRecipe(VPI);
+#endif // SIFIVE_CUSTOMIZATION
       } else
         VPBB->appendRecipe(Recipe);
     }
@@ -12300,9 +12335,17 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       // %b = extractvalue { <vscale x 8 x i32>, i32 } %a, 0
       // %c = extractvalue { <vscale x 8 x i32>, i32 } %a, 1
       Value *VL = Builder.CreateExtractValue(NewLI, 1);
+      // TODO: If recipes carry their own RVL, State.RVL is no longer needed.
       State.set(State.RVL, VL, Part);
       NewLI = Builder.CreateExtractValue(NewLI, 0);
+      State.set(getVPValue(0), NewLI, Part);
+      // NewVL is going to replace EVL which is i64 type,
+      // Here needs an unsigned extend
+      // TODO: Create a VPScalarCastRecipe for this
+      VL = Builder.CreateZExt(VL, Builder.getInt64Ty());
+      State.set(getVPValue(1), VL, Part);
     }
+    if (!Speculative)
 #endif // SIFIVE_CUSTOMIZATION
     State.set(getVPSingleValue(), NewLI, Part);
   }

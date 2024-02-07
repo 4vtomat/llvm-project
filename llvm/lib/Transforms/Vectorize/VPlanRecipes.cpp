@@ -54,6 +54,19 @@ extern cl::opt<uint64_t> LoopVectorizerVLUpperBound;
 #endif
 
 static Value *GetSetVL(VPTransformState &State, Value *EVL) {
+#if SIFIVE_CUSTOMIZATION
+  if (!EVL) {
+    // Set EVL to all ones to get vlmax
+    Type *I64Type = State.Builder.getInt64Ty();
+    EVL = ConstantInt::get(I64Type, APInt::getAllOnes(64));
+    // TODO: with MaxSafeDist analysis available for uncountable loop, support
+    // it here for correctness"
+    Value *VFArg = State.Builder.getInt32(State.VF.getKnownMinValue());
+    return State.Builder.CreateIntrinsic(
+        State.Builder.getInt32Ty(), Intrinsic::experimental_get_vector_length,
+        {EVL, VFArg, State.Builder.getTrue()});
+  }
+#endif // SIFIVE_CUSTOMIZATION
   assert(EVL->getType()->isIntegerTy() &&
          "Requested vector length should be an integer.");
 
@@ -445,10 +458,16 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     // TODO: Restructure this code with an explicit remainder loop, vsetvli can
     // be outside of the main loop.
     assert(Part == 0 && "No unrolling expected for predicated vectorization.");
-    // Compute VTC - IV as the EVL(requested vector length).
-    Value *Index = State.get(getOperand(0), 0);
-    Value *TripCount = State.get(getOperand(1), VPIteration(0, 0));
-    Value *EVL = State.Builder.CreateSub(TripCount, Index);
+    Value *EVL = nullptr;
+    if (!State.Plan->isUncountable()) {
+      assert(getNumOperands() != 0 &&
+             "Countable loop vectorization must use EVL");
+      // Compute VTC - IV as the EVL(requested vector length).
+      Value *Index = State.get(getOperand(0), 0);
+      Value *TripCount = State.get(getOperand(1), VPIteration(0, 0));
+      EVL = State.Builder.CreateSub(TripCount, Index);
+    }
+    // Set VLMAX if EVL is nullptr
     Value *SetVL = GetSetVL(State, EVL);
     State.RVL = this;
     return SetVL;
@@ -2312,6 +2331,13 @@ void VPWidenMemoryInstructionRecipe::print(raw_ostream &O, const Twine &Indent,
 #endif
 
   if (!isStore()) {
+#if SIFIVE_CUSTOMIZATION
+    if (this->Speculative) {
+      interleaveComma(definedValues(), O, [&O, &SlotTracker](VPValue *Op) {
+        Op->printAsOperand(O, SlotTracker);
+      });
+    } else
+#endif // SIFIVE_CUSTOMIZATION
     getVPSingleValue()->printAsOperand(O, SlotTracker);
     O << " = ";
   }

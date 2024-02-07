@@ -593,7 +593,12 @@ VPlanCostModel::getMemoryOpCost(const VPWidenMemoryInstructionRecipe *VPWMIR,
     const unsigned RegID =
         TTI.getRegisterClassForType(true /*vector*/, VectorTy);
     const unsigned NumUsedRegs = TTI.getRegUsageForType(VectorTy);
-    addRegisterUsage(VPWMIR->getVPSingleValue(), RegID, NumUsedRegs);
+    const VPValue *Data;
+    if (VPWMIR->isSpeculative())
+      Data = VPWMIR->getVPValue(0);
+    else
+      Data = VPWMIR->getVPSingleValue();
+    addRegisterUsage(Data, RegID, NumUsedRegs);
     Cost = getRegisterPressureCost(RegID, VectorTy);
     if (VPWMIR->isMonotonic())
       // Expand load is not supported yet

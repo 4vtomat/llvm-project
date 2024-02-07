@@ -319,7 +319,6 @@ struct VPTransformState {
                    bool EnableRISCVCSA)
       : VF(VF), UF(UF), LI(LI), DT(DT), Builder(Builder), ILV(ILV), Plan(Plan),
         LVer(nullptr), TypeAnalysis(Ctx),  EnableRISCVCSA(EnableRISCVCSA) {}
-  ~VPTransformState();
 #else
   VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                    DominatorTree *DT, IRBuilderBase &Builder,
@@ -2887,6 +2886,8 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
     assert((Consecutive || !Reverse) && "Reverse implies consecutive");
     new VPValue(this, &Load);
+    if (Speculative)
+      new VPValue(this); // newVL
     setMask(Mask);
   }
 
@@ -3891,10 +3892,6 @@ public:
 
   /// Returns the canonical induction recipe of the vector loop.
   VPCanonicalIVPHIRecipe *getCanonicalIV() {
-#if SIFIVE_CUSTOMIZATION
-    assert(!isUncountable() &&
-           "Should not get canonical IV for uncountable loops");
-#endif
     VPBasicBlock *EntryVPBB = getVectorLoopRegion()->getEntryBasicBlock();
     if (EntryVPBB->empty()) {
       // VPlan native path.
