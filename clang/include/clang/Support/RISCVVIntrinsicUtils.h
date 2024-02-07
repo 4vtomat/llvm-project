@@ -539,19 +539,14 @@ enum RVVRequire : uint32_t {
   RVV_REQ_Zvknhb = 1 << 13,
   RVV_REQ_Zvksed = 1 << 14,
   RVV_REQ_Zvksh = 1 << 15,
-<<<<<<< HEAD
-  RVV_REQ_Experimental = 1 << 16,
+  RVV_REQ_Zvfbfwma = 1 << 16,
+  RVV_REQ_Experimental = 1 << 17,
 #if SIFIVE_CUSTOMIZATION
-  RVV_REQ_xsfvfhbfmin = 1 << 17,
+  RVV_REQ_xsfvfhbfmin = 1 << 18,
   RVV_REQ_HasBfloat16 = 1 << 18,
   RVV_REQ_xsfvqdotq = 1 << 19,
   LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_xsfvqdotq)
 #else
-=======
-  RVV_REQ_Zvfbfwma = 1 << 16,
-  RVV_REQ_Experimental = 1 << 17,
-
->>>>>>> llvm/main
   LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Experimental)
 #endif // SIFIVE_CUSTOMIZATION
 };

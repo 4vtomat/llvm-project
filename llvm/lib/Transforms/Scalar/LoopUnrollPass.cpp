@@ -174,7 +174,10 @@ static cl::opt<unsigned>
                            cl::desc("Default threshold (max size of unrolled "
                                     "loop), used in all but O3 optimizations"));
 
-<<<<<<< HEAD
+static cl::opt<unsigned> PragmaUnrollFullMaxIterations(
+    "pragma-unroll-full-max-iterations", cl::init(1'000'000), cl::Hidden,
+    cl::desc("Maximum allowed iterations to unroll under pragma unroll full."));
+
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<bool> AdhocSkipUnrollInPrelink(
     "sifive-unroll-assume-optimizable-strided-accesses", cl::init(false),
@@ -182,11 +185,6 @@ static cl::opt<bool> AdhocSkipUnrollInPrelink(
     cl::desc("Allow the compiler to skip unroll for loops of non-unit "
              "stride memory access(es)"));
 #endif
-=======
-static cl::opt<unsigned> PragmaUnrollFullMaxIterations(
-    "pragma-unroll-full-max-iterations", cl::init(1'000'000), cl::Hidden,
-    cl::desc("Maximum allowed iterations to unroll under pragma unroll full."));
->>>>>>> llvm/main
 
 /// A magic value for use with the Threshold parameter to indicate
 /// that the loop unroll should be performed regardless of how much

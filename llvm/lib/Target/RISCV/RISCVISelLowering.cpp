@@ -18385,18 +18385,14 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
 #endif // SIFIVE_CUSTOMIZATION
   case RISCVISD::VWADD_W_VL:
   case RISCVISD::VWADDU_W_VL:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    if (SDValue V = performVWADDW_VLCombine(N, DCI, Subtarget))
+    if (SDValue V = performVWADDSUBW_VLCombine(N, DCI, Subtarget))
       return V;
     return combineVWADDU_W_VL(N, DAG, Subtarget);;
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> llvm/main
   case RISCVISD::VWSUB_W_VL:
   case RISCVISD::VWSUBU_W_VL:
     return performVWADDSUBW_VLCombine(N, DCI, Subtarget);
-  case RISCVISD::SUB_VL:
   case RISCVISD::MUL_VL:
     return combineBinOp_VLToVWBinOp_VL(N, DCI, Subtarget);
   case RISCVISD::VFMADD_VL:

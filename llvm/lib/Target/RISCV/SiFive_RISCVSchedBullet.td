@@ -777,8 +777,8 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
     let Latency = 4, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVMIotV", [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVMIdxV", [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIotaV", [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIdxV", [VCQ, VA], mx, IsWorstCase>;
     }
   }
   
@@ -1047,7 +1047,7 @@ multiclass BulletReadAdvance {
   defm "" : LMULReadAdvance<"ReadVMPopV", 0>;
   defm "" : LMULReadAdvance<"ReadVMFFSV", 0>;
   defm "" : LMULReadAdvance<"ReadVMSFSV", 0>;
-  defm "" : LMULReadAdvance<"ReadVMIotV", 0>;
+  defm "" : LMULReadAdvance<"ReadVIotaV", 0>;
   
   // 17. Vector Permutation Instructions
   def : ReadAdvance<ReadVIMovVX, 0>;

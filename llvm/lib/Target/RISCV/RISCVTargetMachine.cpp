@@ -402,53 +402,29 @@ public:
       DAG->addMutation(createLoadClusterDAGMutation(
           DAG->TII, DAG->TRI, /*ReorderWhileClustering=*/true));
     }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+    const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
     if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
       DAG = DAG ? DAG : createGenericSchedLive(C);
       DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
     }
 #endif // SIFIVE_CUSTOMIZATION
-    const auto &MacroFusions = ST.getMacroFusions();
-    if (!MacroFusions.empty()) {
-      DAG = DAG ? DAG : createGenericSchedLive(C);
-      DAG->addMutation(createMacroFusionDAGMutation(MacroFusions));
-    }
     return DAG;
   }
 
+#if SIFIVE_CUSTOMIZATION
   ScheduleDAGInstrs *
   createPostMachineScheduler(MachineSchedContext *C) const override {
     const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
-#if SIFIVE_CUSTOMIZATION
     ScheduleDAGMI *DAG = nullptr;
     if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
       DAG = createGenericSchedPostRA(C);
       DAG->addMutation(createStoreClusterDAGMutation(DAG->TII, DAG->TRI));
     }
-    const auto &MacroFusions = ST.getMacroFusions();
-    if (!MacroFusions.empty()) {
-      if (!DAG)
-        DAG = createGenericSchedPostRA(C);
-      DAG->addMutation(createMacroFusionDAGMutation(MacroFusions));
-    }
     return DAG;
-#else
-    const auto &MacroFusions = ST.getMacroFusions();
-    if (!MacroFusions.empty()) {
-      ScheduleDAGMI *DAG = createGenericSchedPostRA(C);
-      DAG->addMutation(createMacroFusionDAGMutation(MacroFusions));
-      return DAG;
-    }
-    return nullptr;
+  }
 #endif // SIFIVE_CUSTOMIZATION
-  }
 
-=======
-    return DAG;
-  }
-
->>>>>>> llvm/main
   void addIRPasses() override;
 #if SIFIVE_CUSTOMIZATION
   void addCodeGenPrepare() override;

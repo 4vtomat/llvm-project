@@ -636,8 +636,8 @@ foreach mx = SchedMxList in {
   }
   defvar LMulLat = SiFiveP600GetLMulCycles<mx>.c;
   let Latency = 1, ReleaseAtCycles = [LMulLat] in {
-    defm "" : LMULWriteResMX<"WriteVMIotV", [SiFiveP600VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVMIdxV", [SiFiveP600VEXQ0], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVIotaV", [SiFiveP600VEXQ0], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVIdxV", [SiFiveP600VEXQ0], mx, IsWorstCase>;
   }
 }
 
@@ -973,7 +973,7 @@ defm "" : LMULReadAdvance<"ReadVMALUV", 0>;
 defm "" : LMULReadAdvance<"ReadVMPopV", 0>;
 defm "" : LMULReadAdvance<"ReadVMFFSV", 0>;
 defm "" : LMULReadAdvance<"ReadVMSFSV", 0>;
-defm "" : LMULReadAdvance<"ReadVMIotV", 0>;
+defm "" : LMULReadAdvance<"ReadVIotaV", 0>;
 
 // 17. Vector Permutation Instructions
 def : ReadAdvance<ReadVIMovVX, 0>;
