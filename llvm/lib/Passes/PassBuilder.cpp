@@ -79,6 +79,7 @@
 #include "llvm/CodeGen/BasicBlockSectionsProfileReader.h"
 #include "llvm/CodeGen/CallBrPrepare.h"
 #include "llvm/CodeGen/CodeGenPrepare.h"
+#include "llvm/CodeGen/DeadMachineInstructionElim.h"
 #include "llvm/CodeGen/DwarfEHPrepare.h"
 #include "llvm/CodeGen/ExpandLargeDivRem.h"
 #include "llvm/CodeGen/ExpandLargeFpConvert.h"
@@ -92,6 +93,7 @@
 #include "llvm/CodeGen/InterleavedLoadCombine.h"
 #include "llvm/CodeGen/JMCInstrumenter.h"
 #include "llvm/CodeGen/LowerEmuTLS.h"
+#include "llvm/CodeGen/MIRPrinter.h"
 #include "llvm/CodeGen/SafeStack.h"
 #include "llvm/CodeGen/SelectOptimize.h"
 #include "llvm/CodeGen/ShadowStackGCLowering.h"
@@ -412,10 +414,10 @@ PassBuilder::PassBuilder(TargetMachine *TM, PipelineTuningOptions PTO,
   PIC->addClassToPassName(decltype(CREATE_PASS)::name(), NAME);
 #include "PassRegistry.def"
 
-#define MACHINE_FUNCTION_ANALYSIS(NAME, PASS_NAME, CONSTRUCTOR)                \
-  PIC->addClassToPassName(PASS_NAME::name(), NAME);
-#define MACHINE_FUNCTION_PASS(NAME, PASS_NAME, CONSTRUCTOR)                    \
-  PIC->addClassToPassName(PASS_NAME::name(), NAME);
+#define MACHINE_FUNCTION_ANALYSIS(NAME, CREATE_PASS)                           \
+  PIC->addClassToPassName(decltype(CREATE_PASS)::name(), NAME);
+#define MACHINE_FUNCTION_PASS(NAME, CREATE_PASS)                               \
+  PIC->addClassToPassName(decltype(CREATE_PASS)::name(), NAME);
 #include "llvm/Passes/MachinePassRegistry.def"
   }
 }
@@ -455,8 +457,8 @@ void PassBuilder::registerFunctionAnalyses(FunctionAnalysisManager &FAM) {
 void PassBuilder::registerMachineFunctionAnalyses(
     MachineFunctionAnalysisManager &MFAM) {
 
-#define MACHINE_FUNCTION_ANALYSIS(NAME, PASS_NAME, CONSTRUCTOR)                \
-  MFAM.registerPass([&] { return PASS_NAME(); });
+#define MACHINE_FUNCTION_ANALYSIS(NAME, CREATE_PASS)                           \
+  MFAM.registerPass([&] { return CREATE_PASS; });
 #include "llvm/Passes/MachinePassRegistry.def"
 
   for (auto &C : MachineFunctionAnalysisRegistrationCallbacks)
@@ -1874,14 +1876,14 @@ Error PassBuilder::parseMachinePass(MachineFunctionPassManager &MFPM,
     return make_error<StringError>("invalid pipeline",
                                    inconvertibleErrorCode());
 
-#define MACHINE_MODULE_PASS(NAME, PASS_NAME, CONSTRUCTOR)                      \
+#define MACHINE_MODULE_PASS(NAME, CREATE_PASS)                                 \
   if (Name == NAME) {                                                          \
-    MFPM.addPass(PASS_NAME());                                                 \
+    MFPM.addPass(CREATE_PASS);                                                 \
     return Error::success();                                                   \
   }
-#define MACHINE_FUNCTION_PASS(NAME, PASS_NAME, CONSTRUCTOR)                    \
+#define MACHINE_FUNCTION_PASS(NAME, CREATE_PASS)                               \
   if (Name == NAME) {                                                          \
-    MFPM.addPass(PASS_NAME());                                                 \
+    MFPM.addPass(CREATE_PASS);                                                 \
     return Error::success();                                                   \
   }
 #include "llvm/Passes/MachinePassRegistry.def"
@@ -2193,18 +2195,15 @@ void PassBuilder::printPassNames(raw_ostream &OS) {
 #include "PassRegistry.def"
 
   OS << "Machine module passes (WIP):\n";
-#define MACHINE_MODULE_PASS(NAME, PASS_NAME, CONSTRUCTOR)                      \
-  printPassName(NAME, OS);
+#define MACHINE_MODULE_PASS(NAME, CREATE_PASS) printPassName(NAME, OS);
 #include "llvm/Passes/MachinePassRegistry.def"
 
   OS << "Machine function passes (WIP):\n";
-#define MACHINE_FUNCTION_PASS(NAME, PASS_NAME, CONSTRUCTOR)                    \
-  printPassName(NAME, OS);
+#define MACHINE_FUNCTION_PASS(NAME, CREATE_PASS) printPassName(NAME, OS);
 #include "llvm/Passes/MachinePassRegistry.def"
 
   OS << "Machine function analyses (WIP):\n";
-#define MACHINE_FUNCTION_ANALYSIS(NAME, PASS_NAME, CONSTRUCTOR)                \
-  printPassName(NAME, OS);
+#define MACHINE_FUNCTION_ANALYSIS(NAME, CREATE_PASS) printPassName(NAME, OS);
 #include "llvm/Passes/MachinePassRegistry.def"
 }
 

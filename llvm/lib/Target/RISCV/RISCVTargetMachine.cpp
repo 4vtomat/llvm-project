@@ -396,13 +396,13 @@ public:
 
   ScheduleDAGInstrs *
   createMachineScheduler(MachineSchedContext *C) const override {
-    const RISCVSubtarget &ST = C->MF->getSubtarget<RISCVSubtarget>();
     ScheduleDAGMILive *DAG = nullptr;
     if (EnableMISchedLoadClustering) {
       DAG = createGenericSchedLive(C);
       DAG->addMutation(createLoadClusterDAGMutation(
           DAG->TII, DAG->TRI, /*ReorderWhileClustering=*/true));
     }
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (ST.getProcFamily() == RISCVSubtarget::SiFive7) {
       DAG = DAG ? DAG : createGenericSchedLive(C);
@@ -444,6 +444,11 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
   }
 
+=======
+    return DAG;
+  }
+
+>>>>>>> llvm/main
   void addIRPasses() override;
 #if SIFIVE_CUSTOMIZATION
   void addCodeGenPrepare() override;

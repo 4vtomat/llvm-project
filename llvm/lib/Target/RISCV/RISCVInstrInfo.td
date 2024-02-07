@@ -1194,6 +1194,7 @@ def assertsexti32 : PatFrag<(ops node:$src), (assertsext node:$src), [{
   return cast<VTSDNode>(N->getOperand(1))->getVT().bitsLE(MVT::i32);
 }]>;
 def sexti16 : ComplexPattern<XLenVT, 1, "selectSExtBits<16>">;
+def sexti16i32 : ComplexPattern<i32, 1, "selectSExtBits<16>">;
 def sexti32 : ComplexPattern<i64, 1, "selectSExtBits<32>">;
 def assertzexti32 : PatFrag<(ops node:$src), (assertzext node:$src), [{
   return cast<VTSDNode>(N->getOperand(1))->getVT().bitsLE(MVT::i32);
@@ -1401,6 +1402,7 @@ def riscv_selectcc_frag : PatFrag<(ops node:$lhs, node:$rhs, node:$cc,
                                                   node:$falsev), [{}],
                                   IntCCtoRISCVCC>;
 
+<<<<<<< HEAD
 let Predicates = [HasShortForwardBranchOpt], isSelect = 1,
     Constraints = "$dst = $falsev", isCommutable = 1, Size = 8 in {
 // This instruction moves $truev to $dst when the condition is true. It will
@@ -1600,6 +1602,8 @@ let Predicates = [HasFuseBFX] in
 def : Pat<(XLenVT (and GPR:$rs, TrailingOnesMask:$mask)),
           (PseudoUBFX $rs, TrailingOnesMask:$mask, TrailingOnesMask:$mask)>;
 
+=======
+>>>>>>> llvm/main
 multiclass SelectCC_GPR_rrirr<DAGOperand valty, ValueType vt> {
   let usesCustomInserter = 1 in
   def _Using_CC_GPR : Pseudo<(outs valty:$dst),
@@ -2130,15 +2134,6 @@ def : Pat<(binop_allwusers<add> GPR:$rs1, (AddiPair:$rs2)),
                  (AddiPairImmSmall AddiPair:$rs2))>;
 }
 
-let Predicates = [HasShortForwardBranchOpt] in
-def : Pat<(XLenVT (abs GPR:$rs1)),
-          (PseudoCCSUB (XLenVT GPR:$rs1), (XLenVT X0), /* COND_LT */ 2,
-           (XLenVT GPR:$rs1), (XLenVT X0), (XLenVT GPR:$rs1))>;
-let Predicates = [HasShortForwardBranchOpt, IsRV64] in
-def : Pat<(sext_inreg (abs 33signbits_node:$rs1), i32),
-          (PseudoCCSUBW (i64 GPR:$rs1), (i64 X0), /* COND_LT */ 2,
-           (i64 GPR:$rs1), (i64 X0), (i64 GPR:$rs1))>;
-
 //===----------------------------------------------------------------------===//
 // Experimental RV64 i32 legalization patterns.
 //===----------------------------------------------------------------------===//
@@ -2281,6 +2276,7 @@ include "RISCVInstrInfoZicfiss.td"
 include "RISCVInstrInfoXVentana.td"
 include "RISCVInstrInfoXTHead.td"
 include "RISCVInstrInfoXSf.td"
+include "RISCVInstrInfoSFB.td"
 include "RISCVInstrInfoXCV.td"
 
 //===----------------------------------------------------------------------===//

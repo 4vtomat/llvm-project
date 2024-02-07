@@ -1119,6 +1119,7 @@ void VPlan::execute(VPTransformState *State) {
         auto *WidenPhi = cast<VPWidenPointerInductionRecipe>(&R);
         // TODO: Split off the case that all users of a pointer phi are scalar
         // from the VPWidenPointerInductionRecipe.
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         // Don't skip pointer IVs for uncountable loops as their incoming value
         // still needs to be fixed.
@@ -1126,6 +1127,9 @@ void VPlan::execute(VPTransformState *State) {
 #else
         if (WidenPhi->onlyScalarsGenerated(State->VF))
 #endif
+=======
+        if (WidenPhi->onlyScalarsGenerated(State->VF.isScalable()))
+>>>>>>> llvm/main
           continue;
 
         auto *GEP = cast<GetElementPtrInst>(State->get(WidenPhi, 0));
@@ -1765,15 +1769,19 @@ void VPSlotTracker::assignSlots(const VPBasicBlock *VPBB) {
       assignSlot(Def);
 }
 
+<<<<<<< HEAD
 
 bool vputils::onlyFirstLaneUsed(VPValue *Def) {
+=======
+bool vputils::onlyFirstLaneUsed(const VPValue *Def) {
+>>>>>>> llvm/main
   return all_of(Def->users(),
-                [Def](VPUser *U) { return U->onlyFirstLaneUsed(Def); });
+                [Def](const VPUser *U) { return U->onlyFirstLaneUsed(Def); });
 }
 
-bool vputils::onlyFirstPartUsed(VPValue *Def) {
+bool vputils::onlyFirstPartUsed(const VPValue *Def) {
   return all_of(Def->users(),
-                [Def](VPUser *U) { return U->onlyFirstPartUsed(Def); });
+                [Def](const VPUser *U) { return U->onlyFirstPartUsed(Def); });
 }
 
 VPValue *vputils::getOrCreateVPValueForSCEVExpr(VPlan &Plan, const SCEV *Expr,

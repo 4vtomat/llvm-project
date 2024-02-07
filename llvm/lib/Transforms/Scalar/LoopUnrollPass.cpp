@@ -174,6 +174,7 @@ static cl::opt<unsigned>
                            cl::desc("Default threshold (max size of unrolled "
                                     "loop), used in all but O3 optimizations"));
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<bool> AdhocSkipUnrollInPrelink(
     "sifive-unroll-assume-optimizable-strided-accesses", cl::init(false),
@@ -181,6 +182,11 @@ static cl::opt<bool> AdhocSkipUnrollInPrelink(
     cl::desc("Allow the compiler to skip unroll for loops of non-unit "
              "stride memory access(es)"));
 #endif
+=======
+static cl::opt<unsigned> PragmaUnrollFullMaxIterations(
+    "pragma-unroll-full-max-iterations", cl::init(1'000'000), cl::Hidden,
+    cl::desc("Maximum allowed iterations to unroll under pragma unroll full."));
+>>>>>>> llvm/main
 
 /// A magic value for use with the Threshold parameter to indicate
 /// that the loop unroll should be performed regardless of how much
@@ -455,7 +461,15 @@ static std::optional<EstimatedUnrollCost> analyzeLoopUnrollCost(
 
         // First accumulate the cost of this instruction.
         if (!Cost.IsFree) {
-          UnrolledCost += TTI.getInstructionCost(I, CostKind);
+          // Consider simplified operands in instruction cost.
+          SmallVector<Value *, 4> Operands;
+          transform(I->operands(), std::back_inserter(Operands),
+                    [&](Value *Op) {
+                      if (auto Res = SimplifiedValues.lookup(Op))
+                        return Res;
+                      return Op;
+                    });
+          UnrolledCost += TTI.getInstructionCost(I, Operands, CostKind);
           LLVM_DEBUG(dbgs() << "Adding cost of instruction (iteration "
                             << Iteration << "): ");
           LLVM_DEBUG(I->dump());
@@ -785,8 +799,17 @@ shouldPragmaUnroll(Loop *L, const PragmaInfo &PInfo,
       return PInfo.PragmaCount;
   }
 
-  if (PInfo.PragmaFullUnroll && TripCount != 0)
+  if (PInfo.PragmaFullUnroll && TripCount != 0) {
+    // Certain cases with UBSAN can cause trip count to be calculated as
+    // INT_MAX, Block full unrolling at a reasonable limit so that the compiler
+    // doesn't hang trying to unroll the loop. See PR77842
+    if (TripCount > PragmaUnrollFullMaxIterations) {
+      LLVM_DEBUG(dbgs() << "Won't unroll; trip count is too large\n");
+      return std::nullopt;
+    }
+
     return TripCount;
+  }
 
   if (PInfo.PragmaEnableUnroll && !TripCount && MaxTripCount &&
       MaxTripCount <= UP.MaxUpperBound)
@@ -1317,7 +1340,7 @@ tryToUnrollLoop(Loop *L, DominatorTree &DT, LoopInfo *LI, ScalarEvolution &SE,
   // end SIFIVE
 
   // Do not attempt partial/runtime unrolling in FullLoopUnrolling
-  if (OnlyFullUnroll && !(UP.Count >= MaxTripCount)) {
+  if (OnlyFullUnroll && (UP.Count < TripCount || UP.Count < MaxTripCount)) {
     LLVM_DEBUG(
         dbgs() << "Not attempting partial/runtime unroll in FullLoopUnroll.\n");
     return LoopUnrollResult::Unmodified;

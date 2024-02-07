@@ -902,10 +902,19 @@ Experimental extensions
     ztso                0.1
     zvfbfmin            1.0
     zvfbfwma            1.0
+<<<<<<< HEAD
     smwg                0.3
     smwgd               0.3
     ssnpm               0.8
     sswg                0.3
+=======
+    smmpm               0.8
+    smnpm               0.8
+    ssnpm               0.8
+    sspm                0.8
+    ssqosid             1.0
+    supm                0.8
+>>>>>>> llvm/main
 
 Use -march to specify the target's extension.
 For example, clang -march=rv32i_v1p0)";
