@@ -1051,12 +1051,8 @@ define float @fmul_fdiv_factor_extra_use(float %x, float %y) {
   ret float %mul
 }
 
-<<<<<<< HEAD
 ; Make sure we don't sink this invariant fdiv into the loop.
-define void @fmul_loop_invariant_fdiv(float* %a, float %x) {
-=======
 define void @fmul_loop_invariant_fdiv(ptr %a, float %x) {
->>>>>>> llvm/main
 ; CHECK-LABEL: @fmul_loop_invariant_fdiv(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[D:%.*]] = fdiv fast float 1.000000e+00, [[X:%.*]]
