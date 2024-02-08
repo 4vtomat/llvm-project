@@ -37,9 +37,12 @@ public:
   void processFunctionBeforeFrameFinalized(MachineFunction &MF,
                                            RegScavenger *RS) const override;
 
-  void
-  processFunctionBeforeFrameIndicesReplaced(MachineFunction &MF,
-                                            RegScavenger *RS) const override;
+#if SIFIVE_CUSTOMIZATION
+// SIFIVE Reverted due to breakage of IPRA.
+//  void
+//  processFunctionBeforeFrameIndicesReplaced(MachineFunction &MF,
+//                                            RegScavenger *RS) const override;
+#endif // SIFIVE_CUSTOMIZATION
 
   bool hasFP(const MachineFunction &MF) const override;
 
