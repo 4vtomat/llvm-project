@@ -4583,6 +4583,11 @@ void UncountableInnerLoopVectorizer::fixupIVUsers(
   assert(!VectorTripCount && "VectorTripCount not null for uncountable loop");
   assert(!EndValue && "EndValue not null for uncountable loop");
 
+  // Compute trip count as (CanonicalIVPHI + VFirst)
+  // FIXME: This only works on strlen(). When loop exits normally (not early),
+  // the vfirst is -1 and cannot be used.
+  Value *CanonicalIVPHI = State.get(Plan.getCanonicalIV(), 0);
+
   // ATM, all IVs in uncountable loops have their exiting values routed to the
   // penultimate value (the value that feeds into the phi from the loop latch).
   // This makes their exit values to penultimate value + last iteration's VL.
@@ -4603,41 +4608,23 @@ void UncountableInnerLoopVectorizer::fixupIVUsers(
       B.setFastMathFlags(II.getInductionBinOp()->getFastMathFlags());
 
     LLVM_DEBUG(dbgs() << "Uncountable Loop: MiddleBlock before fixupIVUsers\n";
-               MiddleBlock->dump();
-
-               dbgs() << "Uncountable Loop: Vector loop PHIs\n";
-               State.VectorLoopIVMap[OrigPhi]->dump(););
+               MiddleBlock->dump(););
 
     // Fix liveout values of IVs in the middle block i.e. vector loop IV
     // PHI+VFirst+1. This is because VFirst starts from 0.
-    auto MapIt = State.VectorLoopIVMap.find(OrigPhi);
-    assert(MapIt != State.VectorLoopIVMap.end() &&
-           "VectorLoopPHINode is null for uncountable loops");
-    Value *VectorLoopPHINode = MapIt->second;
     Value *VFirst = State.getVFirst();
     assert(VFirst && "VFirst is null for uncountable loops");
-    VFirst = B.CreateSExtOrTrunc(VFirst, Builder.getInt64Ty());
-    Value *Cast = nullptr;
-    if (VectorLoopPHINode->getType()->isVectorTy()) {
-      // Fp inductions are not supported yet
-      assert(II.getKind() == InductionDescriptor::IK_IntInduction &&
-             "Not Int IV");
-      Value *Extract = B.CreateExtractElement(
-          VectorLoopPHINode, State.Builder.getInt32(0), "vector.iv.extract");
-      Cast = B.CreateBitOrPointerCast(Extract, State.Builder.getInt64Ty());
-    } else {
-      assert(II.getKind() == InductionDescriptor::IK_PtrInduction &&
-             "Not pointer IV");
-      Cast = B.CreateBitOrPointerCast(VectorLoopPHINode,
-                                      State.Builder.getInt64Ty());
-    }
-
-    Value *IterNumInLastVectIter =
-        AddOne ? B.CreateAdd(VFirst, State.Builder.getInt64(1)) : VFirst;
-    ConstantInt *Step = II.getConstIntStepValue();
-    Value *Delta = B.CreateMul(IterNumInLastVectIter, Step);
-    Value *IVExitValue = B.CreateAdd(Cast, Delta);
-    Value *Escape = B.CreateBitOrPointerCast(IVExitValue, OrigPhi->getType());
+    Value *LastValidVL =
+        AddOne ? B.CreateAdd(VFirst, ConstantInt::get(VFirst->getType(), 1))
+               : VFirst;
+    VPValue *StepVPV = Plan.getSCEVExpansion(II.getStep());
+    Value *Step = StepVPV->isLiveIn() ? StepVPV->getLiveInIRValue()
+                                      : State.get(StepVPV, {0, 0});
+    if (LastValidVL->getType() != CanonicalIVPHI->getType())
+      LastValidVL = B.CreateZExtOrTrunc(LastValidVL, CanonicalIVPHI->getType());
+    Value *Count = B.CreateAdd(CanonicalIVPHI, LastValidVL);
+    Value *Escape = emitTransformedIndex(B, Count, II.getStartValue(), Step,
+                                         II.getKind(), II.getInductionBinOp());
     Escape->setName("ind.escape");
     MissingVals[UI] = Escape;
   };
@@ -11798,10 +11785,6 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
   assert(cast<PHINode>(getUnderlyingInstr())->getType()->isPointerTy() &&
          "Unexpected type.");
 
-#if SIFIVE_CUSTOMIZATION
-  if (isUncountable())
-    return executeUncountable(State);
-#endif // SIFIVE_CUSTOMIZATION
   auto *IVR = getParent()->getPlan()->getCanonicalIV();
   PHINode *CanonicalIV = cast<PHINode>(State.get(IVR, 0));
 

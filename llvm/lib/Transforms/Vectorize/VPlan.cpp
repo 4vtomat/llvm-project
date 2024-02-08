@@ -1119,47 +1119,14 @@ void VPlan::execute(VPTransformState *State) {
         auto *WidenPhi = cast<VPWidenPointerInductionRecipe>(&R);
         // TODO: Split off the case that all users of a pointer phi are scalar
         // from the VPWidenPointerInductionRecipe.
-#if SIFIVE_CUSTOMIZATION
-        // Don't skip pointer IVs for uncountable loops as their incoming value
-        // still needs to be fixed.
-        if (WidenPhi->onlyScalarsGenerated(State->VF) && !isUncountable())
-#else
         if (WidenPhi->onlyScalarsGenerated(State->VF))
-#endif
           continue;
 
         auto *GEP = cast<GetElementPtrInst>(State->get(WidenPhi, 0));
         Phi = cast<PHINode>(GEP->getPointerOperand());
-#if SIFIVE_CUSTOMIZATION
-        if (isUncountable()) {
-          // Create IV stepping after the last instruction updating vl to ensure
-          // the step is based on the proper vl.
-          Value *RVL = State->get(State->RVL, 0);
-          if (GEP != RVL) {
-            State->Builder.SetInsertPoint(
-                cast<Instruction>(RVL)->getNextNode());
-            Value *NewGEP =
-                State->Builder.CreateGEP(GEP->getSourceElementType(),
-                                         GEP->getOperand(0), RVL, "vector.gep");
-            // TODO: Need to update any state?
-            Phi->setIncomingValue(1, NewGEP);
-
-            // If GEP has only one use i.e Phi, remove it. Note the condition
-            // checks hasNUses(0) because the def of its only use i.e. Phi has
-            // been updated above.
-            if (GEP->hasNUses(0))
-              GEP->eraseFromParent();
-          }
-        }
-#endif // SIFIVE_CUSTOMIZATION
       }
 
       Phi->setIncomingBlock(1, VectorLatchBB);
-
-#if SIFIVE_CUSTOMIZATION
-      if (isUncountable())
-        continue;
-#endif
 
       // Move the last step to the end of the latch block. This ensures
       // consistent placement of all induction updates.
