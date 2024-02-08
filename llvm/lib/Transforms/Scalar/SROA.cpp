@@ -2319,6 +2319,31 @@ static VectorType *isVectorPromotionViable(Partition &P, const DataLayout &DL) {
     if (S.beginOffset() == P.beginOffset() && S.endOffset() == P.endOffset())
       CheckCandidateType(Ty);
   }
+#if SIFIVE_CUSTOMIZATION
+  // Consider additional vector types where the element type size is a
+  // multiple of load/store element size.
+  for (Type *Ty : LoadStoreTys) {
+    if (!VectorType::isValidElementType(Ty))
+      continue;
+    // Skip pointers.
+    if (Ty->isPointerTy())
+      continue;
+    unsigned TypeSize = DL.getTypeSizeInBits(Ty).getFixedValue();
+    // Make a copy of CandidateTys and iterate through it, because we might
+    // append to CandidateTys in the loop.
+    SmallVector<VectorType *, 4> CandidateTysCopy = CandidateTys;
+    for (VectorType *&VTy : CandidateTysCopy) {
+      unsigned VectorSize = DL.getTypeSizeInBits(VTy).getFixedValue();
+      unsigned ElementSize =
+          DL.getTypeSizeInBits(VTy->getElementType()).getFixedValue();
+      if (TypeSize != VectorSize && TypeSize != ElementSize &&
+          VectorSize % TypeSize == 0) {
+        VectorType *NewVTy = VectorType::get(Ty, VectorSize / TypeSize, false);
+        CheckCandidateType(NewVTy);
+      }
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   if (auto *VTy = checkVectorTypesForPromotion(
           P, DL, CandidateTys, HaveCommonEltTy, CommonEltTy, HaveVecPtrTy,
@@ -2330,6 +2355,10 @@ static VectorType *isVectorPromotionViable(Partition &P, const DataLayout &DL) {
   for (Type *Ty : LoadStoreTys) {
     if (!VectorType::isValidElementType(Ty))
       continue;
+#if SIFIVE_CUSTOMIZATION
+    if (!Ty->isPointerTy())
+      continue;
+#endif // SIFIVE_CUSTOMIZATION
     unsigned TypeSize = DL.getTypeSizeInBits(Ty).getFixedValue();
     // Make a copy of CandidateTys and iterate through it, because we might
     // append to CandidateTys in the loop.

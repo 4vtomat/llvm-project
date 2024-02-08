@@ -9,14 +9,11 @@ define <4 x i32> @foo([2 x i64] %cond.coerce) {
 ; CHECK-SAME: [2 x i64] [[COND_COERCE:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[COND_COERCE_FCA_0_EXTRACT:%.*]] = extractvalue [2 x i64] [[COND_COERCE]], 0
-; CHECK-NEXT:    [[TMP0:%.*]] = bitcast i64 [[COND_COERCE_FCA_0_EXTRACT]] to <2 x i32>
-; CHECK-NEXT:    [[COND_SROA_0_0_VEC_EXPAND:%.*]] = shufflevector <2 x i32> [[TMP0]], <2 x i32> poison, <4 x i32> <i32 0, i32 1, i32 poison, i32 poison>
-; CHECK-NEXT:    [[COND_SROA_0_0_VECBLEND:%.*]] = select <4 x i1> <i1 true, i1 true, i1 false, i1 false>, <4 x i32> [[COND_SROA_0_0_VEC_EXPAND]], <4 x i32> undef
+; CHECK-NEXT:    [[COND_SROA_0_0_VEC_INSERT:%.*]] = insertelement <2 x i64> undef, i64 [[COND_COERCE_FCA_0_EXTRACT]], i32 0
 ; CHECK-NEXT:    [[COND_COERCE_FCA_1_EXTRACT:%.*]] = extractvalue [2 x i64] [[COND_COERCE]], 1
-; CHECK-NEXT:    [[TMP1:%.*]] = bitcast i64 [[COND_COERCE_FCA_1_EXTRACT]] to <2 x i32>
-; CHECK-NEXT:    [[COND_SROA_0_8_VEC_EXPAND:%.*]] = shufflevector <2 x i32> [[TMP1]], <2 x i32> poison, <4 x i32> <i32 poison, i32 poison, i32 0, i32 1>
-; CHECK-NEXT:    [[COND_SROA_0_8_VECBLEND:%.*]] = select <4 x i1> <i1 false, i1 false, i1 true, i1 true>, <4 x i32> [[COND_SROA_0_8_VEC_EXPAND]], <4 x i32> [[COND_SROA_0_0_VECBLEND]]
-; CHECK-NEXT:    ret <4 x i32> [[COND_SROA_0_8_VECBLEND]]
+; CHECK-NEXT:    [[COND_SROA_0_8_VEC_INSERT:%.*]] = insertelement <2 x i64> [[COND_SROA_0_0_VEC_INSERT]], i64 [[COND_COERCE_FCA_1_EXTRACT]], i32 1
+; CHECK-NEXT:    [[TMP0:%.*]] = bitcast <2 x i64> [[COND_SROA_0_8_VEC_INSERT]] to <4 x i32>
+; CHECK-NEXT:    ret <4 x i32> [[TMP0]]
 ;
 entry:
   %cond = alloca %struct.vmask4, align 8
