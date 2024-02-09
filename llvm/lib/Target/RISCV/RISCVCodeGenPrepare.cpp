@@ -173,6 +173,19 @@ bool RISCVCodeGenPrepare::visitIntrinsicInst(IntrinsicInst &I) {
 // a value of 1 to make sure it is non-zero.
 bool RISCVCodeGenPrepare::optimizeReduction(IntrinsicInst &II) {
   Intrinsic::ID IID = II.getIntrinsicID();
+
+  bool Changed = false;
+  // Canonicalize the start value of vp.reduce.fadd from -0.0 to 0.0
+  // if nsz flag is present.
+  if (IID == Intrinsic::vp_reduce_fadd &&
+      II.getFastMathFlags().noSignedZeros()) {
+    using namespace PatternMatch;
+    if (match(II.getOperand(0), m_NegZeroFP())) {
+      II.setOperand(0, ConstantFP::getZero(II.getOperand(0)->getType()));
+      Changed = true;
+    }
+  }
+
   // RISCV intrinsic ID.
   Intrinsic::ID RVIID;
   switch (IID) {
@@ -212,24 +225,24 @@ bool RISCVCodeGenPrepare::optimizeReduction(IntrinsicInst &II) {
     RVIID = Intrinsic::riscv_vredxor;
     break;
   default:
-    return false;
+    return Changed;
   }
 
   // Must be unordered for fadd reduction.
   if (IID == Intrinsic::vp_reduce_fadd && !II.getFastMathFlags().allowReassoc())
-    return false;
+    return Changed;
 
   Value *Vec = II.getArgOperand(1);
 
   // FIXME: Only handle scalable vectors for now.
   auto *VecTy = dyn_cast<ScalableVectorType>(Vec->getType());
   if (!VecTy)
-    return false;
+    return Changed;
 
   // TODO: Handle masks that aren't all ones?
   auto *ConstMask = dyn_cast<Constant>(II.getArgOperand(2));
   if (!ConstMask || !ConstMask->isAllOnesValue())
-    return false;
+    return Changed;
 
   // Get the LMUL1 type and ensure that we didn't exceed LMUL=8.
   // FIXME: Support larger LMUL.
@@ -242,14 +255,14 @@ bool RISCVCodeGenPrepare::optimizeReduction(IntrinsicInst &II) {
       (ScalarTy->isHalfTy() && !ST->hasVInstructionsF16()) ||
       // Boolean vector (i.e. mask) is a legal type, but it's not valid here.
       SizeInBits == 1)
-    return false;
+    return Changed;
   ScalableVectorType *LMul1Ty =
       ScalableVectorType::get(ScalarTy, RISCV::RVVBitsPerBlock / SizeInBits);
 
   // Try to prove the VL is non-zero.
   Value *VL = II.getArgOperand(3);
   if (!isKnownNonZero(VL, *DL, 0, nullptr, &II, DT))
-    return false;
+    return Changed;
 
   // Found non-zero VL, let's rewrite.
   Value *Scalar = II.getArgOperand(0);

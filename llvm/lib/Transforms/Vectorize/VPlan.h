@@ -368,12 +368,6 @@ struct VPTransformState {
     DenseMap<VPValue *, ScalarsPerPartValuesTy> PerPartScalars;
   } Data;
 
-#if SIFIVE_CUSTOMIZATION
-  /// Map scalar loop induction variables' PHINodes to their vector loop
-  /// counterpart
-  SmallDenseMap<PHINode *, PHINode *> VectorLoopIVMap;
-#endif
-
   /// Get the generated Value for a given VPValue and a given Part. Note that
   /// as some Defs are still created by ILV and managed in its ValueMap, this
   /// method will delegate the call to ILV in such cases in order to provide
@@ -2126,11 +2120,6 @@ public:
 
   /// Generate vector values for the pointer induction.
   void execute(VPTransformState &State) override;
-
-#if SIFIVE_CUSTOMIZATION
-  /// Generate vector values for the pointer induction in an uncountable loop.
-  void executeUncountable(VPTransformState &State);
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns true if only scalar values will be generated.
   bool onlyScalarsGenerated(bool IsScalable);

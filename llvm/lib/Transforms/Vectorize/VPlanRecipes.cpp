@@ -2434,6 +2434,7 @@ void VPWidenPointerInductionRecipe::print(raw_ostream &O, const Twine &Indent,
 }
 #endif
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // Unlike induction variables in countable loops, induction variables in
 // uncountable loops don't have the canonical IV to leverage so always have
@@ -2535,6 +2536,8 @@ void VPWidenPointerInductionRecipe::executeUncountable(
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> origin/sifive-dev
 void VPExpandSCEVRecipe::execute(VPTransformState &State) {
   assert(!State.Instance && "cannot be used in per-lane");
   const DataLayout &DL = State.CFG.PrevBB->getModule()->getDataLayout();
