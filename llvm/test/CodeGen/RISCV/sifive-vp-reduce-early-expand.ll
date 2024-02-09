@@ -16,6 +16,19 @@ define float @vpreduce_fadd_nxv4f32(float %s, <vscale x 4 x float> %v) {
   ret float %r
 }
 
+; -0.0 should be canonicalized into 0.0 when nsz is present.
+define float @vpreduce_fadd_nxv4f32_nsz(<vscale x 4 x float> %v) {
+; CHECK-LABEL: define float @vpreduce_fadd_nxv4f32_nsz(
+; CHECK-SAME: <vscale x 4 x float> [[V:%.*]]) #[[ATTR0]] {
+; CHECK-NEXT:    [[R:%.*]] = call nsz float @llvm.vp.reduce.fadd.nxv4f32(float 0.000000e+00, <vscale x 4 x float> [[V]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 32)
+; CHECK-NEXT:    ret float [[R]]
+;
+  %r = call nsz float @llvm.vp.reduce.fadd.nxv4f32(float -0.0, <vscale x 4 x float> %v,
+  <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer),
+  i32 32)
+  ret float %r
+}
+
 define float @vpreduce_fmax_nxv4f32(float %s, <vscale x 4 x float> %v) {
 ; CHECK-LABEL: define float @vpreduce_fmax_nxv4f32(
 ; CHECK-SAME: float [[S:%.*]], <vscale x 4 x float> [[V:%.*]]) #[[ATTR0]] {
