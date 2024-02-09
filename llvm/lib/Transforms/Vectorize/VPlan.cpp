@@ -1119,18 +1119,7 @@ void VPlan::execute(VPTransformState *State) {
         auto *WidenPhi = cast<VPWidenPointerInductionRecipe>(&R);
         // TODO: Split off the case that all users of a pointer phi are scalar
         // from the VPWidenPointerInductionRecipe.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-        // Don't skip pointer IVs for uncountable loops as their incoming value
-        // still needs to be fixed.
-        if (WidenPhi->onlyScalarsGenerated(State->VF.isScalable()) &&
-            !isUncountable())
-#else
         if (WidenPhi->onlyScalarsGenerated(State->VF.isScalable()))
-#endif
-=======
-        if (WidenPhi->onlyScalarsGenerated(State->VF))
->>>>>>> origin/sifive-dev
           continue;
 
         auto *GEP = cast<GetElementPtrInst>(State->get(WidenPhi, 0));
