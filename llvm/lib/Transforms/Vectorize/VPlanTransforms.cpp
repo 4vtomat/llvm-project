@@ -1167,6 +1167,8 @@ void VPlanTransforms::optimize(VPlan &Plan, ScalarEvolution &SE) {
 // Here provides basic passes for uncountable loops
 // TODO: Merge with VPlanTransforms::optimize if more optimization are needed
 void VPlanTransforms::optimizeUncountable(VPlan &Plan, ScalarEvolution &SE) {
+  removeDeadRecipes(Plan);
+
   mergeBlocksIntoPredecessors(Plan);
 }
 #endif // SIFIVE_CUSTOMIZATION
