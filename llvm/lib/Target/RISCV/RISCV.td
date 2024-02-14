@@ -44,6 +44,7 @@ include "RISCVSchedRocket.td"
 //include "RISCVSchedSiFive7.td" // SIFIVE
 //include "RISCVSchedSiFiveP400.td" // SIFIVE
 include "RISCVSchedSyntacoreSCR1.td"
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 include "SiFive_RISCVSchedBullet.td"
 include "SiFive_RISCVSchedSiFive6.td"
@@ -54,6 +55,9 @@ include "SiFive_RISCVSchedSiFiveP500.td"
 include "SiFive_RISCVSchedSiFiveP600.td"
 include "SiFive_RISCVSchedSiFiveP800S.td"
 #endif // SIFIVE_CUSTOMIZATION
+=======
+include "RISCVSchedXiangShanNanHu.td"
+>>>>>>> llvm/main
 
 //===----------------------------------------------------------------------===//
 // RISC-V processors supported.

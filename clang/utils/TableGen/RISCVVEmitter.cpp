@@ -71,7 +71,9 @@ struct SemaRecord {
   bool IsV0p11Deprecated : 1;
 #endif // SIFIVE_CUSTOMIZATION
   bool IsTuple : 1;
+  LLVM_PREFERRED_TYPE(PolicyScheme)
   uint8_t UnMaskedPolicyScheme : 2;
+  LLVM_PREFERRED_TYPE(PolicyScheme)
   uint8_t MaskedPolicyScheme : 2;
 };
 

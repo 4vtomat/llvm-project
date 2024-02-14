@@ -163,7 +163,7 @@ namespace clang {
 #endif
     LastRVVBuiltin = RISCVVector::FirstTSBuiltin - 1,
 #define BUILTIN(ID, TYPE, ATTRS) BI##ID,
-#include "clang/Basic/BuiltinsRISCV.def"
+#include "clang/Basic/BuiltinsRISCV.inc"
     LastTSBuiltin
   };
   } // namespace RISCV

@@ -1037,7 +1037,7 @@ def VENTANA_VEYRON_V1 : RISCVProcessorModel<"veyron-v1",
                                               TuneLDADDFusion]>;
 
 def XIANGSHAN_NANHU : RISCVProcessorModel<"xiangshan-nanhu",
-                                          NoSchedModel,
+                                          XiangShanNanHuModel,
                                           [Feature64Bit,
                                            FeatureStdExtZicsr,
                                            FeatureStdExtZifencei,
@@ -1055,4 +1055,8 @@ def XIANGSHAN_NANHU : RISCVProcessorModel<"xiangshan-nanhu",
                                            FeatureStdExtZksh,
                                            FeatureStdExtSvinval,
                                            FeatureStdExtZicbom,
-                                           FeatureStdExtZicboz]>;
+                                           FeatureStdExtZicboz],
+                                           [TuneNoDefaultUnroll,
+                                            TuneZExtHFusion,
+                                            TuneZExtWFusion,
+                                            TuneShiftedZExtWFusion]>;

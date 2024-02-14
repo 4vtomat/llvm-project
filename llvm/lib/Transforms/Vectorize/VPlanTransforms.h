@@ -97,6 +97,7 @@ struct VPlanTransforms {
                              const MapVector<Instruction *, uint64_t> &MinBWs,
                              LLVMContext &Ctx);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// Add a VPEVLBasedIVPHIRecipe and related recipes to \p Plan and
   /// replaces all uses except the canonical IV increment of
@@ -106,6 +107,22 @@ struct VPlanTransforms {
   static void addExplicitVectorLength(VPlan &Plan);
   static void addExplicitVectorLengthUncountable(VPlan &Plan);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  /// Drop poison flags from recipes that may generate a poison value that is
+  /// used after vectorization, even when their operands are not poison. Those
+  /// recipes meet the following conditions:
+  ///  * Contribute to the address computation of a recipe generating a widen
+  ///    memory load/store (VPWidenMemoryInstructionRecipe or
+  ///    VPInterleaveRecipe).
+  ///  * Such a widen memory load/store has at least one underlying Instruction
+  ///    that is in a basic block that needs predication and after vectorization
+  ///    the generated instruction won't be predicated.
+  /// Uses \p BlockNeedsPredication to check if a block needs predicating.
+  /// TODO: Replace BlockNeedsPredication callback with retrieving info from
+  ///       VPlan directly.
+  static void dropPoisonGeneratingRecipes(
+      VPlan &Plan, function_ref<bool(BasicBlock *)> BlockNeedsPredication);
+>>>>>>> llvm/main
 
 private:
   /// Remove redundant VPBasicBlocks by merging them into their predecessor if

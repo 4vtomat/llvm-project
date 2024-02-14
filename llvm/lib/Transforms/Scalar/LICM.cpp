@@ -114,11 +114,17 @@ STATISTIC(NumAddSubHoisted, "Number of add/subtract expressions reassociated "
                             "and hoisted out of the loop");
 STATISTIC(NumFPAssociationsHoisted, "Number of invariant FP expressions "
                                     "reassociated and hoisted out of the loop");
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 STATISTIC(NumIntAssociationsHoisted,
           "Number of invariant int expressions "
           "reassociated and hoisted out of the loop");
 #endif
+=======
+STATISTIC(NumIntAssociationsHoisted,
+          "Number of invariant int expressions "
+          "reassociated and hoisted out of the loop");
+>>>>>>> llvm/main
 
 /// Memory promotion is enabled by default.
 static cl::opt<bool>
@@ -144,13 +150,19 @@ static cl::opt<unsigned> FPAssociationUpperLimit(
         "Set upper limit for the number of transformations performed "
         "during a single round of hoisting the reassociated expressions."));
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> llvm/main
 cl::opt<unsigned> IntAssociationUpperLimit(
     "licm-max-num-int-reassociations", cl::init(5U), cl::Hidden,
     cl::desc(
         "Set upper limit for the number of transformations performed "
         "during a single round of hoisting the reassociated expressions."));
+<<<<<<< HEAD
 #endif
+=======
+>>>>>>> llvm/main
 
 // Experimental option to allow imprecision in LICM in pathological cases, in
 // exchange for faster compile. This is to be removed if MemorySSA starts to
@@ -2976,11 +2988,22 @@ static bool hoistAddSub(Instruction &I, Loop &L, ICFLoopSafetyInfo &SafetyInfo,
   return false;
 }
 
+static bool isReassociableOp(Instruction *I, unsigned IntOpcode,
+                             unsigned FPOpcode) {
+  if (I->getOpcode() == IntOpcode)
+    return true;
+  if (I->getOpcode() == FPOpcode && I->hasAllowReassoc() &&
+      I->hasNoSignedZeros())
+    return true;
+  return false;
+}
+
 /// Try to reassociate expressions like ((A1 * B1) + (A2 * B2) + ...) * C where
 /// A1, A2, ... and C are loop invariants into expressions like
 /// ((A1 * C * B1) + (A2 * C * B2) + ...) and hoist the (A1 * C), (A2 * C), ...
 /// invariant expressions. This functions returns true only if any hoisting has
 /// actually occured.
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static bool hoistFPAssociation(Instruction &I, Loop &L,
                                ICFLoopSafetyInfo &SafetyInfo,
@@ -2998,7 +3021,16 @@ static bool hoistFPAssociation(Instruction &I, Loop &L,
 
   if (!match(&I, m_FMul(m_Value(VariantOp), m_Value(InvariantOp))) ||
       !I.hasAllowReassoc() || !I.hasNoSignedZeros())
+=======
+static bool hoistMulAddAssociation(Instruction &I, Loop &L,
+                                   ICFLoopSafetyInfo &SafetyInfo,
+                                   MemorySSAUpdater &MSSAU, AssumptionCache *AC,
+                                   DominatorTree *DT) {
+  if (!isReassociableOp(&I, Instruction::Mul, Instruction::FMul))
+>>>>>>> llvm/main
     return false;
+  Value *VariantOp = I.getOperand(0);
+  Value *InvariantOp = I.getOperand(1);
   if (L.isLoopInvariant(VariantOp))
     std::swap(VariantOp, InvariantOp);
   if (L.isLoopInvariant(VariantOp) || !L.isLoopInvariant(InvariantOp))
@@ -3012,15 +3044,17 @@ static bool hoistFPAssociation(Instruction &I, Loop &L,
     Worklist.push_back(VariantBinOp);
   while (!Worklist.empty()) {
     BinaryOperator *BO = Worklist.pop_back_val();
-    if (!BO->hasOneUse() || !BO->hasAllowReassoc() || !BO->hasNoSignedZeros())
+    if (!BO->hasOneUse())
       return false;
-    BinaryOperator *Op0, *Op1;
-    if (match(BO, m_FAdd(m_BinOp(Op0), m_BinOp(Op1)))) {
-      Worklist.push_back(Op0);
-      Worklist.push_back(Op1);
+    if (isReassociableOp(BO, Instruction::Add, Instruction::FAdd) &&
+        isa<BinaryOperator>(BO->getOperand(0)) &&
+        isa<BinaryOperator>(BO->getOperand(1))) {
+      Worklist.push_back(cast<BinaryOperator>(BO->getOperand(0)));
+      Worklist.push_back(cast<BinaryOperator>(BO->getOperand(1)));
       continue;
     }
-    if (BO->getOpcode() != Instruction::FMul || L.isLoopInvariant(BO))
+    if (!isReassociableOp(BO, Instruction::Mul, Instruction::FMul) ||
+        L.isLoopInvariant(BO))
       return false;
     Use &U0 = BO->getOperandUse(0);
     Use &U1 = BO->getOperandUse(1);
@@ -3030,7 +3064,10 @@ static bool hoistFPAssociation(Instruction &I, Loop &L,
       Changes.push_back(&U1);
     else
       return false;
-    if (Changes.size() > FPAssociationUpperLimit)
+    unsigned Limit = I.getType()->isIntOrIntVectorTy()
+                         ? IntAssociationUpperLimit
+                         : FPAssociationUpperLimit;
+    if (Changes.size() > Limit)
       return false;
   }
   if (Changes.empty())
@@ -3050,7 +3087,12 @@ static bool hoistFPAssociation(Instruction &I, Loop &L,
   for (auto *U : Changes) {
     assert(L.isLoopInvariant(U->get()));
     Instruction *Ins = cast<Instruction>(U->getUser());
-    U->set(Builder.CreateFMulFMF(U->get(), Factor, Ins, "factor.op.fmul"));
+    Value *Mul;
+    if (I.getType()->isIntOrIntVectorTy())
+      Mul = Builder.CreateMul(U->get(), Factor, "factor.op.mul");
+    else
+      Mul = Builder.CreateFMulFMF(U->get(), Factor, Ins, "factor.op.fmul");
+    U->set(Mul);
   }
   I.replaceAllUsesWith(VariantOp);
   eraseInstruction(I, SafetyInfo, MSSAU);
@@ -3196,9 +3238,13 @@ static bool hoistArithmetics(Instruction &I, Loop &L,
     return true;
   }
 
-  if (hoistFPAssociation(I, L, SafetyInfo, MSSAU, AC, DT)) {
+  bool IsInt = I.getType()->isIntOrIntVectorTy();
+  if (hoistMulAddAssociation(I, L, SafetyInfo, MSSAU, AC, DT)) {
     ++NumHoisted;
-    ++NumFPAssociationsHoisted;
+    if (IsInt)
+      ++NumIntAssociationsHoisted;
+    else
+      ++NumFPAssociationsHoisted;
     return true;
   }
 

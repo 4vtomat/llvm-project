@@ -359,22 +359,21 @@ bool TypePromotionImpl::isSafeWrap(Instruction *I) {
   if (!OverflowConst.isNonPositive())
     return false;
 
+  SafeWrap.insert(I);
+
   // Using C1 = OverflowConst and C2 = ICmpConst, we can either prove that:
   //   zext(x) + sext(C1) <u zext(C2)  if C1 < 0 and C1 >s C2
   //   zext(x) + sext(C1) <u sext(C2)  if C1 < 0 and C1 <=s C2
   if (OverflowConst.sgt(ICmpConst)) {
     LLVM_DEBUG(dbgs() << "IR Promotion: Allowing safe overflow for sext "
                       << "const of " << *I << "\n");
-    SafeWrap.insert(I);
-    return true;
-  } else {
-    LLVM_DEBUG(dbgs() << "IR Promotion: Allowing safe overflow for sext "
-                      << "const of " << *I << " and " << *CI << "\n");
-    SafeWrap.insert(I);
-    SafeWrap.insert(CI);
     return true;
   }
-  return false;
+
+  LLVM_DEBUG(dbgs() << "IR Promotion: Allowing safe overflow for sext "
+                    << "const of " << *I << " and " << *CI << "\n");
+  SafeWrap.insert(CI);
+  return true;
 }
 
 bool TypePromotionImpl::shouldPromote(Value *V) {
@@ -996,6 +995,7 @@ bool TypePromotionImpl::run(Function &F, const TargetMachine *TM,
       return 0;
 
     EVT PromotedVT = TLI->getTypeToTransformTo(*Ctx, SrcVT);
+<<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
     // Don't promote if sext is cheaper. RISC-V has it's own pass that
@@ -1003,6 +1003,10 @@ bool TypePromotionImpl::run(Function &F, const TargetMachine *TM,
     if (TLI->isSExtCheaperThanZExt(SrcVT, PromotedVT))
       return 0;
 #endif
+=======
+    if (TLI->isSExtCheaperThanZExt(SrcVT, PromotedVT))
+      return 0;
+>>>>>>> llvm/main
     if (RegisterBitWidth < PromotedVT.getFixedSizeInBits()) {
       LLVM_DEBUG(dbgs() << "IR Promotion: Couldn't find target register "
                         << "for promoted type\n");

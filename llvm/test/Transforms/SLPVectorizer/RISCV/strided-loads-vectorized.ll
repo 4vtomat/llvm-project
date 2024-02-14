@@ -7,8 +7,13 @@ define void @test(ptr %p, ptr noalias %s) {
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds [48 x float], ptr [[P:%.*]], i64 0, i64 0
 ; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds [48 x float], ptr [[P]], i64 0, i64 30
 ; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds float, ptr [[S:%.*]], i64 0
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP0:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0.i64(<8 x float> poison, ptr align 4 [[ARRAYIDX]], i64 16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0.i64(<8 x float> poison, ptr align 4 [[ARRAYIDX1]], i64 -16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
+=======
+; CHECK-NEXT:    [[TMP0:%.*]] = call <8 x float> @llvm.experimental.vp.strided.load.v8f32.p0.i64(ptr align 4 [[ARRAYIDX]], i64 16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 8)
+; CHECK-NEXT:    [[TMP1:%.*]] = call <8 x float> @llvm.experimental.vp.strided.load.v8f32.p0.i64(ptr align 4 [[ARRAYIDX1]], i64 -16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 8)
+>>>>>>> llvm/main
 ; CHECK-NEXT:    [[TMP2:%.*]] = fsub fast <8 x float> [[TMP1]], [[TMP0]]
 ; CHECK-NEXT:    store <8 x float> [[TMP2]], ptr [[ARRAYIDX2]], align 4
 ; CHECK-NEXT:    ret void
@@ -161,12 +166,47 @@ define void @test2(ptr %p, ptr noalias %s, i32 %stride) {
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds [48 x float], ptr [[P:%.*]], i64 0, i64 2
 ; CHECK-NEXT:    [[ST6:%.*]] = mul i64 [[STR]], 7
 ; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds [48 x float], ptr [[P]], i64 0, i64 [[ST6]]
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds float, ptr [[S:%.*]], i64 0
 ; CHECK-NEXT:    [[TMP0:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0.i64(<8 x float> poison, ptr align 4 [[ARRAYIDX]], i64 16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
 ; CHECK-NEXT:    [[TMP1:%.*]] = mul i64 [[STR]], -4
 ; CHECK-NEXT:    [[TMP2:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0.i64(<8 x float> poison, ptr align 4 [[ARRAYIDX1]], i64 [[TMP1]], <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
 ; CHECK-NEXT:    [[TMP3:%.*]] = fsub fast <8 x float> [[TMP2]], [[TMP0]]
 ; CHECK-NEXT:    store <8 x float> [[TMP3]], ptr [[ARRAYIDX2]], align 4
+=======
+; CHECK-NEXT:    [[I1:%.*]] = load float, ptr [[ARRAYIDX1]], align 4
+; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds float, ptr [[S:%.*]], i64 0
+; CHECK-NEXT:    [[ST5:%.*]] = mul i64 [[STR]], 6
+; CHECK-NEXT:    [[ARRAYIDX6:%.*]] = getelementptr inbounds [48 x float], ptr [[P]], i64 0, i64 [[ST5]]
+; CHECK-NEXT:    [[I3:%.*]] = load float, ptr [[ARRAYIDX6]], align 4
+; CHECK-NEXT:    [[ST4:%.*]] = mul i64 [[STR]], 5
+; CHECK-NEXT:    [[ARRAYIDX13:%.*]] = getelementptr inbounds [48 x float], ptr [[P]], i64 0, i64 [[ST4]]
+; CHECK-NEXT:    [[I5:%.*]] = load float, ptr [[ARRAYIDX13]], align 4
+; CHECK-NEXT:    [[ST3:%.*]] = mul i64 [[STR]], 4
+; CHECK-NEXT:    [[ARRAYIDX20:%.*]] = getelementptr inbounds [48 x float], ptr [[P]], i64 0, i64 [[ST3]]
+; CHECK-NEXT:    [[I7:%.*]] = load float, ptr [[ARRAYIDX20]], align 4
+; CHECK-NEXT:    [[ST2:%.*]] = mul i64 [[STR]], 3
+; CHECK-NEXT:    [[ARRAYIDX27:%.*]] = getelementptr inbounds [48 x float], ptr [[P]], i64 0, i64 [[ST2]]
+; CHECK-NEXT:    [[I9:%.*]] = load float, ptr [[ARRAYIDX27]], align 4
+; CHECK-NEXT:    [[ST1:%.*]] = mul i64 [[STR]], 2
+; CHECK-NEXT:    [[ARRAYIDX34:%.*]] = getelementptr inbounds [48 x float], ptr [[P]], i64 0, i64 [[ST1]]
+; CHECK-NEXT:    [[I11:%.*]] = load float, ptr [[ARRAYIDX34]], align 4
+; CHECK-NEXT:    [[ARRAYIDX41:%.*]] = getelementptr inbounds [48 x float], ptr [[P]], i64 0, i64 [[STR]]
+; CHECK-NEXT:    [[I13:%.*]] = load float, ptr [[ARRAYIDX41]], align 4
+; CHECK-NEXT:    [[ARRAYIDX48:%.*]] = getelementptr inbounds [48 x float], ptr [[P]], i64 0, i64 0
+; CHECK-NEXT:    [[I15:%.*]] = load float, ptr [[ARRAYIDX48]], align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = call <8 x float> @llvm.experimental.vp.strided.load.v8f32.p0.i64(ptr align 4 [[ARRAYIDX]], i64 16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 8)
+; CHECK-NEXT:    [[TMP1:%.*]] = insertelement <8 x float> poison, float [[I1]], i32 0
+; CHECK-NEXT:    [[TMP2:%.*]] = insertelement <8 x float> [[TMP1]], float [[I3]], i32 1
+; CHECK-NEXT:    [[TMP3:%.*]] = insertelement <8 x float> [[TMP2]], float [[I5]], i32 2
+; CHECK-NEXT:    [[TMP4:%.*]] = insertelement <8 x float> [[TMP3]], float [[I7]], i32 3
+; CHECK-NEXT:    [[TMP5:%.*]] = insertelement <8 x float> [[TMP4]], float [[I9]], i32 4
+; CHECK-NEXT:    [[TMP6:%.*]] = insertelement <8 x float> [[TMP5]], float [[I11]], i32 5
+; CHECK-NEXT:    [[TMP7:%.*]] = insertelement <8 x float> [[TMP6]], float [[I13]], i32 6
+; CHECK-NEXT:    [[TMP8:%.*]] = insertelement <8 x float> [[TMP7]], float [[I15]], i32 7
+; CHECK-NEXT:    [[TMP9:%.*]] = fsub fast <8 x float> [[TMP8]], [[TMP0]]
+; CHECK-NEXT:    store <8 x float> [[TMP9]], ptr [[ARRAYIDX2]], align 4
+>>>>>>> llvm/main
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -242,10 +282,19 @@ define void @test3(ptr %p, ptr noalias %s) {
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds [48 x float], ptr [[P:%.*]], i64 0, i64 0
 ; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds [48 x float], ptr [[P]], i64 0, i64 30
 ; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds float, ptr [[S:%.*]], i64 0
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP0:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0.i64(<8 x float> poison, ptr align 4 [[ARRAYIDX]], i64 16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <8 x float> @llvm.riscv.masked.strided.load.v8f32.p0.i64(<8 x float> poison, ptr align 4 [[ARRAYIDX1]], i64 -4, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>)
 ; CHECK-NEXT:    [[TMP2:%.*]] = fsub fast <8 x float> [[TMP1]], [[TMP0]]
 ; CHECK-NEXT:    store <8 x float> [[TMP2]], ptr [[ARRAYIDX2]], align 4
+=======
+; CHECK-NEXT:    [[ARRAYIDX48:%.*]] = getelementptr inbounds [48 x float], ptr [[P]], i64 0, i64 23
+; CHECK-NEXT:    [[TMP0:%.*]] = call <8 x float> @llvm.experimental.vp.strided.load.v8f32.p0.i64(ptr align 4 [[ARRAYIDX]], i64 16, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 8)
+; CHECK-NEXT:    [[TMP1:%.*]] = load <8 x float>, ptr [[ARRAYIDX48]], align 4
+; CHECK-NEXT:    [[TMP2:%.*]] = shufflevector <8 x float> [[TMP1]], <8 x float> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
+; CHECK-NEXT:    [[TMP3:%.*]] = fsub fast <8 x float> [[TMP2]], [[TMP0]]
+; CHECK-NEXT:    store <8 x float> [[TMP3]], ptr [[ARRAYIDX2]], align 4
+>>>>>>> llvm/main
 ; CHECK-NEXT:    ret void
 ;
 entry:
