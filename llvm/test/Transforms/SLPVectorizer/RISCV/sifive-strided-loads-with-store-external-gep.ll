@@ -9,7 +9,7 @@ define ptr @test() {
 ; CHECK-NEXT:    [[ARRAYIDX2_I3237:%.*]] = getelementptr double, ptr null, i64 1
 ; CHECK-NEXT:    [[ARRAYIDX6_I3238:%.*]] = getelementptr double, ptr null, i64 2
 ; CHECK-NEXT:    [[TMP0:%.*]] = load double, ptr [[ARRAYIDX6_I3238]], align 8
-; CHECK-NEXT:    [[TMP1:%.*]] = call <2 x double> @llvm.riscv.masked.strided.load.v2f64.p0.i64(<2 x double> poison, ptr align 8 [[ARRAYIDX_I]], i64 -16, <2 x i1> <i1 true, i1 true>)
+; CHECK-NEXT:    [[TMP1:%.*]] = call <2 x double> @llvm.experimental.vp.strided.load.v2f64.p0.i64(ptr align 8 [[ARRAYIDX_I]], i64 -16, <2 x i1> <i1 true, i1 true>, i32 2)
 ; CHECK-NEXT:    store <2 x double> [[TMP1]], ptr [[ARRAYIDX2_I3237]], align 8
 ; CHECK-NEXT:    ret ptr null
 ;

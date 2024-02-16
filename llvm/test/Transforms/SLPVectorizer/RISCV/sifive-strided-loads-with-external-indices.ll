@@ -10,10 +10,10 @@ define void @test() {
 ; CHECK-NEXT:    br label [[BODY:%.*]]
 ; CHECK:       body:
 ; CHECK-NEXT:    [[ADD_I_I62_US:%.*]] = shl i64 0, 0
-; CHECK-NEXT:    [[SUB4_I_I65_US:%.*]] = or disjoint i64 0, 1
 ; CHECK-NEXT:    [[MUL_I_I63_US:%.*]] = or disjoint i64 [[ADD_I_I62_US]], 0
 ; CHECK-NEXT:    [[ADD_PTR_I_I_I64_US:%.*]] = getelementptr [[CLASS_A:%.*]], ptr null, i64 [[MUL_I_I63_US]]
-; CHECK-NEXT:    [[TMP0:%.*]] = call <2 x i32> @llvm.riscv.masked.strided.load.v2i32.p0.i64(<2 x i32> poison, ptr align 4 [[ADD_PTR_I_I_I64_US]], i64 8, <2 x i1> <i1 true, i1 true>)
+; CHECK-NEXT:    [[SUB4_I_I65_US:%.*]] = or disjoint i64 0, 1
+; CHECK-NEXT:    [[TMP0:%.*]] = call <2 x i32> @llvm.experimental.vp.strided.load.v2i32.p0.i64(ptr align 4 [[ADD_PTR_I_I_I64_US]], i64 8, <2 x i1> <i1 true, i1 true>, i32 2)
 ; CHECK-NEXT:    [[TMP1:%.*]] = extractelement <2 x i32> [[TMP0]], i32 0
 ; CHECK-NEXT:    [[TMP2:%.*]] = extractelement <2 x i32> [[TMP0]], i32 1
 ; CHECK-NEXT:    [[CMP_I_I_I_I67_US:%.*]] = icmp slt i32 [[TMP1]], [[TMP2]]

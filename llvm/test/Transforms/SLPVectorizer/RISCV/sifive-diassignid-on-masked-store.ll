@@ -7,7 +7,7 @@ define i32 @test() {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[ARRAYIDX_I:%.*]] = getelementptr i8, ptr null, i64 3
 ; CHECK-NEXT:    [[TMP0:%.*]] = load <4 x i8>, ptr null, align 4
-; CHECK-NEXT:    call void @llvm.riscv.masked.strided.store.v4i8.p0.i64(<4 x i8> [[TMP0]], ptr align 1 [[ARRAYIDX_I]], i64 -1, <4 x i1> <i1 true, i1 true, i1 true, i1 true>), !DIAssignID [[DIASSIGNID1:![0-9]+]]
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.v4i8.p0.i64(<4 x i8> [[TMP0]], ptr align 1 [[ARRAYIDX_I]], i64 -1, <4 x i1> <i1 true, i1 true, i1 true, i1 true>, i32 4), !DIAssignID [[DIASSIGNID1:![0-9]+]]
 ; CHECK-NEXT:    ret i32 0
 ;
 entry:
