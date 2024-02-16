@@ -686,6 +686,12 @@ VPlanCostModel::getInterleavedMemoryOpCost(const VPInterleaveRecipe *VPI,
       I->getOpcode(), WideVecTy, InterleaveFactor, /*Indices=*/{},
       Group->getAlign(), AS, CostKind, IsMasked, /*UseMaskForGaps=*/false);
 
+  if (Group->isStrided()) {
+    Cost *= InterleaveFactor;
+    Cost *= 2; // TODO: Move this into TTI. For now it mimics cost of
+               // transpose buffer
+  }
+
   for (const VPValue *VPV : VPI->definedValues()) {
     const unsigned NumUsedRegs = TTI.getRegUsageForType(VectorTy);
     addRegisterUsage(VPV, RegID, NumUsedRegs);

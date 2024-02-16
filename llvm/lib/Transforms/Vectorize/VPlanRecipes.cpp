@@ -2375,6 +2375,17 @@ void VPWidenMemoryInstructionRecipe::print(raw_ostream &O, const Twine &Indent,
 #endif // SIFIVE_CUSTOMIZATION
 
   printOperands(O, SlotTracker);
+#if SIFIVE_CUSTOMIZATION
+  O << '\t';
+  if (isConsecutive()) {
+    O << "unit-strided";
+  } else if (isStrided()) {
+    O << "stride (in bytes) = ";
+    getStrideInBytes()->print(O);
+  } else {
+    O << "indexed";
+  }
+#endif // SIFIVE_CUSTOMIZATION
 }
 #endif
 

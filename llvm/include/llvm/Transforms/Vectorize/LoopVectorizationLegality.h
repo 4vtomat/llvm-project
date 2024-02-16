@@ -155,9 +155,12 @@ public:
   void setAlreadyVectorized();
 
 #if SIFIVE_CUSTOMIZATION
-  /// Mark the loop \p L as the one that should be revectorized without strides
+  /// Mark the loop as the one that should be revectorized without strides
   /// checks.
   void setRevectorizeWithoutStrideChecks();
+
+  /// Mark the loop as the one that should be vectorized without strides checks.
+  void setVectorizeWithoutStrideChecks();
 
   /// Parse `llvm.loop.vectorize.lmul_sew` metadata and set corresponding hint
   void setLmulSewHint(StringRef Name, ArrayRef<Metadata *> Args,

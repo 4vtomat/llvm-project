@@ -638,11 +638,16 @@ bool getBooleanLoopAttribute(const Loop *TheLoop, StringRef Name);
 struct LoopMetaData {
   /// Do not generate SCEV checks for stride==1 for vectorized loops.
   static constexpr const StringRef NoScevChecks = "llvm.loop.no_scev_checks";
+  static constexpr const StringRef NoScevStrideChecks = "llvm.loop.no_scev_stride_checks";
 };
 
 /// Checks if the loop \p L is marked to be revectorized without strides
 /// checks.
 bool isRevectorizeWithoutStrideChecks(const Loop &L);
+
+/// Checks if the loop \p L is marked to be vectorized without strides
+/// checks.
+bool isVectorizeWithoutStrideChecks(const Loop &L);
 
 /// Checks if only the loop with consecutive accesses should be emitted.
 bool doNotRevectorizeWithoutStrideChecks();

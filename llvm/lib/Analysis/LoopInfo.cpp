@@ -1123,6 +1123,10 @@ bool llvm::isRevectorizeWithoutStrideChecks(const Loop &L) {
   return getBooleanLoopAttribute(&L, LoopMetaData::NoScevChecks);
 }
 
+bool llvm::isVectorizeWithoutStrideChecks(const Loop &L) {
+  return getBooleanLoopAttribute(&L, LoopMetaData::NoScevStrideChecks);
+}
+
 bool llvm::doNotRevectorizeWithoutStrideChecks() {
   return RISCVLoopVectorizationRuntimeStride ==
          RISCVRuntimeStrideVectorizationMode::ConsecutiveOnly;

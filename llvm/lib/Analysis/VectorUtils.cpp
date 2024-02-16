@@ -35,12 +35,15 @@ using namespace llvm::PatternMatch;
 /// Maximum factor for an interleaved memory access.
 #if SIFIVE_CUSTOMIZATION
 cl::opt<unsigned> llvm::MaxInterleaveGroupFactor(
+    "max-interleave-group-factor", cl::Hidden,
+    cl::desc("Maximum factor for an interleaved access group (default = 16)"),
+    cl::init(16));
 #else
 static cl::opt<unsigned> MaxInterleaveGroupFactor(
-#endif // SIFIVE_CUSTOMIZATION
     "max-interleave-group-factor", cl::Hidden,
     cl::desc("Maximum factor for an interleaved access group (default = 8)"),
     cl::init(8));
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Return true if all of the intrinsic's arguments and return type are scalars
 /// for the scalar form of the intrinsic, and vectors for the vector form of the
@@ -1160,13 +1163,18 @@ void InterleavedAccessInfo::collectConstStrideAccesses(
 // bottom-up order does not imply that WAW dependences should not be checked.
 #if SIFIVE_CUSTOMIZATION
 void InterleavedAccessInfo::analyzeInterleaving(
-    bool EnablePredicatedInterleavedMemAccesses, bool EnableNonConstStride) {
+    bool EnablePredicatedInterleavedMemAccesses, bool EnableNonConstStride,
+    bool EnableRTStrideChecks) {
+  LLVM_DEBUG(dbgs() << "LV: Analyzing interleaved accesses...\n");
+  const auto &Strides = EnableRTStrideChecks
+                            ? LAI->getSymbolicStrides()
+                            : DenseMap<Value *, const SCEV *>();
 #else
 void InterleavedAccessInfo::analyzeInterleaving(
                                  bool EnablePredicatedInterleavedMemAccesses) {
-#endif // SIFIVE_CUSTOMIZATION
   LLVM_DEBUG(dbgs() << "LV: Analyzing interleaved accesses...\n");
   const auto &Strides = LAI->getSymbolicStrides();
+#endif // SIFIVE_CUSTOMIZATION
 
   // Holds all accesses with a constant stride.
   MapVector<Instruction *, StrideDescriptor> AccessStrideInfo;

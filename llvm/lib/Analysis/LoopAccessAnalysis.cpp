@@ -2381,6 +2381,7 @@ void LoopAccessInfo::analyzeLoop(AAResults *AA, LoopInfo *LI,
       EnableMemAccessVersioning &&
 #if SIFIVE_CUSTOMIZATION
       !(isRevectorizeWithoutStrideChecks(*TheLoop) ||
+        isVectorizeWithoutStrideChecks(*TheLoop) ||
         vectorizeWithoutStrideChecks()) &&
 #endif // SIFIVE_CUSTOMIZATION
       !TheLoop->getHeader()->getParent()->hasOptSize();
@@ -3057,7 +3058,7 @@ const LoopAccessInfo &LoopAccessInfoManager::getInfo(Loop &L) {
   auto I = LoopAccessInfoMap.insert({&L, nullptr});
 
 #if SIFIVE_CUSTOMIZATION
-  if (isRevectorizeWithoutStrideChecks(L))
+  if (isRevectorizeWithoutStrideChecks(L) || isVectorizeWithoutStrideChecks(L))
     I = LoopAccessInfoNoStridesMap.insert({&L, nullptr});
 #endif // SIFIVE_CUSTOMIZATION
   if (I.second)
