@@ -551,3 +551,926 @@ bb131:                                            ; preds = %bb129
 }
 
 declare i32 @snork(i32)
+
+define void @wobble() {
+; CHECK-LABEL: define void @wobble() {
+; CHECK-NEXT:  bb:
+; CHECK-NEXT:    br label [[BB1:%.*]]
+; CHECK:       bb1:
+; CHECK-NEXT:    [[PHI:%.*]] = phi i32 [ 0, [[BB:%.*]] ], [ [[ADD:%.*]], [[BB129:%.*]] ]
+; CHECK-NEXT:    switch i32 [[PHI]], label [[BB128:%.*]] [
+; CHECK-NEXT:      i32 0, label [[BB129]]
+; CHECK-NEXT:      i32 1, label [[BB2:%.*]]
+; CHECK-NEXT:      i32 2, label [[BB3:%.*]]
+; CHECK-NEXT:      i32 3, label [[BB4:%.*]]
+; CHECK-NEXT:      i32 4, label [[BB5:%.*]]
+; CHECK-NEXT:      i32 5, label [[BB6:%.*]]
+; CHECK-NEXT:      i32 6, label [[BB7:%.*]]
+; CHECK-NEXT:      i32 7, label [[BB8:%.*]]
+; CHECK-NEXT:      i32 8, label [[BB9:%.*]]
+; CHECK-NEXT:      i32 9, label [[BB10:%.*]]
+; CHECK-NEXT:      i32 10, label [[BB11:%.*]]
+; CHECK-NEXT:      i32 11, label [[BB12:%.*]]
+; CHECK-NEXT:      i32 12, label [[BB13:%.*]]
+; CHECK-NEXT:      i32 13, label [[BB14:%.*]]
+; CHECK-NEXT:      i32 14, label [[BB15:%.*]]
+; CHECK-NEXT:      i32 15, label [[BB16:%.*]]
+; CHECK-NEXT:      i32 16, label [[BB17:%.*]]
+; CHECK-NEXT:      i32 17, label [[BB18:%.*]]
+; CHECK-NEXT:      i32 18, label [[BB19:%.*]]
+; CHECK-NEXT:      i32 19, label [[BB20:%.*]]
+; CHECK-NEXT:      i32 20, label [[BB21:%.*]]
+; CHECK-NEXT:      i32 21, label [[BB22:%.*]]
+; CHECK-NEXT:      i32 22, label [[BB23:%.*]]
+; CHECK-NEXT:      i32 23, label [[BB24:%.*]]
+; CHECK-NEXT:      i32 24, label [[BB25:%.*]]
+; CHECK-NEXT:      i32 25, label [[BB26:%.*]]
+; CHECK-NEXT:      i32 26, label [[BB27:%.*]]
+; CHECK-NEXT:      i32 27, label [[BB28:%.*]]
+; CHECK-NEXT:      i32 28, label [[BB29:%.*]]
+; CHECK-NEXT:      i32 29, label [[BB30:%.*]]
+; CHECK-NEXT:      i32 30, label [[BB31:%.*]]
+; CHECK-NEXT:      i32 31, label [[BB32:%.*]]
+; CHECK-NEXT:      i32 32, label [[BB33:%.*]]
+; CHECK-NEXT:      i32 33, label [[BB34:%.*]]
+; CHECK-NEXT:      i32 34, label [[BB35:%.*]]
+; CHECK-NEXT:      i32 35, label [[BB36:%.*]]
+; CHECK-NEXT:      i32 36, label [[BB37:%.*]]
+; CHECK-NEXT:      i32 37, label [[BB38:%.*]]
+; CHECK-NEXT:      i32 38, label [[BB39:%.*]]
+; CHECK-NEXT:      i32 39, label [[BB40:%.*]]
+; CHECK-NEXT:      i32 40, label [[BB41:%.*]]
+; CHECK-NEXT:      i32 41, label [[BB42:%.*]]
+; CHECK-NEXT:      i32 42, label [[BB43:%.*]]
+; CHECK-NEXT:      i32 43, label [[BB44:%.*]]
+; CHECK-NEXT:      i32 44, label [[BB45:%.*]]
+; CHECK-NEXT:      i32 45, label [[BB46:%.*]]
+; CHECK-NEXT:      i32 46, label [[BB47:%.*]]
+; CHECK-NEXT:      i32 47, label [[BB48:%.*]]
+; CHECK-NEXT:      i32 48, label [[BB49:%.*]]
+; CHECK-NEXT:      i32 49, label [[BB50:%.*]]
+; CHECK-NEXT:      i32 50, label [[BB51:%.*]]
+; CHECK-NEXT:      i32 51, label [[BB52:%.*]]
+; CHECK-NEXT:      i32 52, label [[BB53:%.*]]
+; CHECK-NEXT:      i32 53, label [[BB54:%.*]]
+; CHECK-NEXT:      i32 54, label [[BB55:%.*]]
+; CHECK-NEXT:      i32 55, label [[BB56:%.*]]
+; CHECK-NEXT:      i32 56, label [[BB57:%.*]]
+; CHECK-NEXT:      i32 57, label [[BB58:%.*]]
+; CHECK-NEXT:      i32 58, label [[BB59:%.*]]
+; CHECK-NEXT:      i32 59, label [[BB60:%.*]]
+; CHECK-NEXT:      i32 60, label [[BB61:%.*]]
+; CHECK-NEXT:      i32 61, label [[BB62:%.*]]
+; CHECK-NEXT:      i32 62, label [[BB63:%.*]]
+; CHECK-NEXT:      i32 63, label [[BB64:%.*]]
+; CHECK-NEXT:      i32 64, label [[BB65:%.*]]
+; CHECK-NEXT:      i32 65, label [[BB66:%.*]]
+; CHECK-NEXT:      i32 66, label [[BB67:%.*]]
+; CHECK-NEXT:      i32 67, label [[BB68:%.*]]
+; CHECK-NEXT:      i32 68, label [[BB69:%.*]]
+; CHECK-NEXT:      i32 69, label [[BB70:%.*]]
+; CHECK-NEXT:      i32 70, label [[BB71:%.*]]
+; CHECK-NEXT:      i32 71, label [[BB72:%.*]]
+; CHECK-NEXT:      i32 72, label [[BB73:%.*]]
+; CHECK-NEXT:      i32 73, label [[BB74:%.*]]
+; CHECK-NEXT:      i32 74, label [[BB75:%.*]]
+; CHECK-NEXT:      i32 75, label [[BB76:%.*]]
+; CHECK-NEXT:      i32 76, label [[BB77:%.*]]
+; CHECK-NEXT:      i32 77, label [[BB78:%.*]]
+; CHECK-NEXT:      i32 78, label [[BB79:%.*]]
+; CHECK-NEXT:      i32 79, label [[BB80:%.*]]
+; CHECK-NEXT:      i32 80, label [[BB81:%.*]]
+; CHECK-NEXT:      i32 81, label [[BB82:%.*]]
+; CHECK-NEXT:      i32 82, label [[BB83:%.*]]
+; CHECK-NEXT:      i32 83, label [[BB84:%.*]]
+; CHECK-NEXT:      i32 84, label [[BB85:%.*]]
+; CHECK-NEXT:      i32 85, label [[BB86:%.*]]
+; CHECK-NEXT:      i32 86, label [[BB87:%.*]]
+; CHECK-NEXT:      i32 87, label [[BB88:%.*]]
+; CHECK-NEXT:      i32 88, label [[BB89:%.*]]
+; CHECK-NEXT:      i32 89, label [[BB90:%.*]]
+; CHECK-NEXT:      i32 90, label [[BB91:%.*]]
+; CHECK-NEXT:      i32 91, label [[BB92:%.*]]
+; CHECK-NEXT:      i32 92, label [[BB93:%.*]]
+; CHECK-NEXT:      i32 93, label [[BB94:%.*]]
+; CHECK-NEXT:      i32 94, label [[BB95:%.*]]
+; CHECK-NEXT:      i32 95, label [[BB96:%.*]]
+; CHECK-NEXT:      i32 96, label [[BB97:%.*]]
+; CHECK-NEXT:      i32 97, label [[BB98:%.*]]
+; CHECK-NEXT:      i32 98, label [[BB99:%.*]]
+; CHECK-NEXT:      i32 99, label [[BB100:%.*]]
+; CHECK-NEXT:      i32 100, label [[BB101:%.*]]
+; CHECK-NEXT:      i32 101, label [[BB102:%.*]]
+; CHECK-NEXT:      i32 102, label [[BB103:%.*]]
+; CHECK-NEXT:      i32 103, label [[BB104:%.*]]
+; CHECK-NEXT:      i32 104, label [[BB105:%.*]]
+; CHECK-NEXT:      i32 105, label [[BB106:%.*]]
+; CHECK-NEXT:      i32 106, label [[BB107:%.*]]
+; CHECK-NEXT:      i32 107, label [[BB108:%.*]]
+; CHECK-NEXT:      i32 108, label [[BB109:%.*]]
+; CHECK-NEXT:      i32 109, label [[BB110:%.*]]
+; CHECK-NEXT:      i32 110, label [[BB111:%.*]]
+; CHECK-NEXT:      i32 111, label [[BB112:%.*]]
+; CHECK-NEXT:      i32 112, label [[BB113:%.*]]
+; CHECK-NEXT:      i32 113, label [[BB114:%.*]]
+; CHECK-NEXT:      i32 114, label [[BB115:%.*]]
+; CHECK-NEXT:      i32 115, label [[BB116:%.*]]
+; CHECK-NEXT:      i32 116, label [[BB117:%.*]]
+; CHECK-NEXT:      i32 117, label [[BB118:%.*]]
+; CHECK-NEXT:      i32 118, label [[BB119:%.*]]
+; CHECK-NEXT:      i32 119, label [[BB120:%.*]]
+; CHECK-NEXT:      i32 120, label [[BB121:%.*]]
+; CHECK-NEXT:      i32 121, label [[BB122:%.*]]
+; CHECK-NEXT:      i32 122, label [[BB123:%.*]]
+; CHECK-NEXT:      i32 123, label [[BB124:%.*]]
+; CHECK-NEXT:      i32 124, label [[BB125:%.*]]
+; CHECK-NEXT:      i32 125, label [[BB126:%.*]]
+; CHECK-NEXT:      i32 126, label [[BB131:%.*]]
+; CHECK-NEXT:    ]
+; CHECK:       bb2:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb3:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb4:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb5:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb6:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb7:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb8:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb9:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb10:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb11:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb12:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb13:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb14:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb15:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb16:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb17:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb18:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb19:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb20:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb21:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb22:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb23:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb24:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb25:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb26:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb27:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb28:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb29:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb30:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb31:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb32:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb33:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb34:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb35:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb36:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb37:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb38:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb39:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb40:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb41:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb42:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb43:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb44:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb45:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb46:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb47:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb48:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb49:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb50:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb51:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb52:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb53:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb54:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb55:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb56:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb57:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb58:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb59:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb60:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb61:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb62:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb63:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb64:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb65:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb66:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb67:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb68:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb69:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb70:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb71:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb72:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb73:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb74:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb75:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb76:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb77:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb78:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb79:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb80:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb81:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb82:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb83:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb84:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb85:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb86:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb87:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb88:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb89:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb90:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb91:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb92:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb93:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb94:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb95:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb96:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb97:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb98:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb99:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb100:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb101:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb102:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb103:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb104:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb105:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb106:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb107:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb108:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb109:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb110:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb111:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb112:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb113:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb114:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb115:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb116:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb117:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb118:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb119:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb120:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb121:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb122:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb123:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb124:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb125:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb126:
+; CHECK-NEXT:    br label [[BB129]]
+; CHECK:       bb128:
+; CHECK-NEXT:    unreachable
+; CHECK:       bb129:
+; CHECK-NEXT:    [[PHI130:%.*]] = phi i32 [ 6, [[BB2]] ], [ 7, [[BB3]] ], [ 8, [[BB4]] ], [ 9, [[BB5]] ], [ 10, [[BB6]] ], [ 11, [[BB7]] ], [ 12, [[BB8]] ], [ 13, [[BB9]] ], [ 14, [[BB10]] ], [ 15, [[BB11]] ], [ 16, [[BB12]] ], [ 17, [[BB13]] ], [ 18, [[BB14]] ], [ 19, [[BB15]] ], [ 20, [[BB16]] ], [ 21, [[BB17]] ], [ 22, [[BB18]] ], [ 23, [[BB19]] ], [ 24, [[BB20]] ], [ 25, [[BB21]] ], [ 26, [[BB22]] ], [ 27, [[BB23]] ], [ 28, [[BB24]] ], [ 29, [[BB25]] ], [ 30, [[BB26]] ], [ 31, [[BB27]] ], [ 32, [[BB28]] ], [ 33, [[BB29]] ], [ 34, [[BB30]] ], [ 35, [[BB31]] ], [ 36, [[BB32]] ], [ 37, [[BB33]] ], [ 38, [[BB34]] ], [ 39, [[BB35]] ], [ 40, [[BB36]] ], [ 41, [[BB37]] ], [ 42, [[BB38]] ], [ 43, [[BB39]] ], [ 44, [[BB40]] ], [ 45, [[BB41]] ], [ 46, [[BB42]] ], [ 47, [[BB43]] ], [ 48, [[BB44]] ], [ 49, [[BB45]] ], [ 50, [[BB46]] ], [ 51, [[BB47]] ], [ 52, [[BB48]] ], [ 53, [[BB49]] ], [ 54, [[BB50]] ], [ 55, [[BB51]] ], [ 56, [[BB52]] ], [ 57, [[BB53]] ], [ 58, [[BB54]] ], [ 59, [[BB55]] ], [ 60, [[BB56]] ], [ 61, [[BB57]] ], [ 62, [[BB58]] ], [ 63, [[BB59]] ], [ 64, [[BB60]] ], [ 65, [[BB61]] ], [ 66, [[BB62]] ], [ 67, [[BB63]] ], [ 68, [[BB64]] ], [ 69, [[BB65]] ], [ 70, [[BB66]] ], [ 71, [[BB67]] ], [ 72, [[BB68]] ], [ 73, [[BB69]] ], [ 74, [[BB70]] ], [ 75, [[BB71]] ], [ 76, [[BB72]] ], [ 77, [[BB73]] ], [ 78, [[BB74]] ], [ 79, [[BB75]] ], [ 80, [[BB76]] ], [ 81, [[BB77]] ], [ 82, [[BB78]] ], [ 83, [[BB79]] ], [ 84, [[BB80]] ], [ 85, [[BB81]] ], [ 86, [[BB82]] ], [ 87, [[BB83]] ], [ 88, [[BB84]] ], [ 89, [[BB85]] ], [ 90, [[BB86]] ], [ 91, [[BB87]] ], [ 92, [[BB88]] ], [ 93, [[BB89]] ], [ 94, [[BB90]] ], [ 95, [[BB91]] ], [ 96, [[BB92]] ], [ 97, [[BB93]] ], [ 98, [[BB94]] ], [ 99, [[BB95]] ], [ 100, [[BB96]] ], [ 101, [[BB97]] ], [ 102, [[BB98]] ], [ 103, [[BB99]] ], [ 104, [[BB100]] ], [ 105, [[BB101]] ], [ 106, [[BB102]] ], [ 107, [[BB103]] ], [ 108, [[BB104]] ], [ 109, [[BB105]] ], [ 110, [[BB106]] ], [ 111, [[BB107]] ], [ 112, [[BB108]] ], [ 113, [[BB109]] ], [ 114, [[BB110]] ], [ 115, [[BB111]] ], [ 116, [[BB112]] ], [ 117, [[BB113]] ], [ 118, [[BB114]] ], [ 119, [[BB115]] ], [ 120, [[BB116]] ], [ 121, [[BB117]] ], [ 122, [[BB118]] ], [ 123, [[BB119]] ], [ 124, [[BB120]] ], [ 125, [[BB121]] ], [ 126, [[BB122]] ], [ 127, [[BB123]] ], [ 128, [[BB124]] ], [ 129, [[BB125]] ], [ 130, [[BB126]] ], [ 5, [[BB1]] ]
+; CHECK-NEXT:    [[CALL:%.*]] = tail call signext i32 @snork(i32 noundef signext [[PHI130]])
+; CHECK-NEXT:    [[ADD]] = add nuw nsw i32 [[PHI]], 1
+; CHECK-NEXT:    br label [[BB1]]
+; CHECK:       bb131:
+; CHECK-NEXT:    [[CALL2:%.*]] = tail call signext i32 @snork(i32 noundef signext 131)
+; CHECK-NEXT:    ret void
+;
+bb:
+  br label %bb1
+
+bb1:                                              ; preds = %bb129, %bb
+  %phi = phi i32 [ 0, %bb ], [ %add, %bb129 ]
+  switch i32 %phi, label %bb128 [
+  i32 0, label %bb129
+  i32 1, label %bb2
+  i32 2, label %bb3
+  i32 3, label %bb4
+  i32 4, label %bb5
+  i32 5, label %bb6
+  i32 6, label %bb7
+  i32 7, label %bb8
+  i32 8, label %bb9
+  i32 9, label %bb10
+  i32 10, label %bb11
+  i32 11, label %bb12
+  i32 12, label %bb13
+  i32 13, label %bb14
+  i32 14, label %bb15
+  i32 15, label %bb16
+  i32 16, label %bb17
+  i32 17, label %bb18
+  i32 18, label %bb19
+  i32 19, label %bb20
+  i32 20, label %bb21
+  i32 21, label %bb22
+  i32 22, label %bb23
+  i32 23, label %bb24
+  i32 24, label %bb25
+  i32 25, label %bb26
+  i32 26, label %bb27
+  i32 27, label %bb28
+  i32 28, label %bb29
+  i32 29, label %bb30
+  i32 30, label %bb31
+  i32 31, label %bb32
+  i32 32, label %bb33
+  i32 33, label %bb34
+  i32 34, label %bb35
+  i32 35, label %bb36
+  i32 36, label %bb37
+  i32 37, label %bb38
+  i32 38, label %bb39
+  i32 39, label %bb40
+  i32 40, label %bb41
+  i32 41, label %bb42
+  i32 42, label %bb43
+  i32 43, label %bb44
+  i32 44, label %bb45
+  i32 45, label %bb46
+  i32 46, label %bb47
+  i32 47, label %bb48
+  i32 48, label %bb49
+  i32 49, label %bb50
+  i32 50, label %bb51
+  i32 51, label %bb52
+  i32 52, label %bb53
+  i32 53, label %bb54
+  i32 54, label %bb55
+  i32 55, label %bb56
+  i32 56, label %bb57
+  i32 57, label %bb58
+  i32 58, label %bb59
+  i32 59, label %bb60
+  i32 60, label %bb61
+  i32 61, label %bb62
+  i32 62, label %bb63
+  i32 63, label %bb64
+  i32 64, label %bb65
+  i32 65, label %bb66
+  i32 66, label %bb67
+  i32 67, label %bb68
+  i32 68, label %bb69
+  i32 69, label %bb70
+  i32 70, label %bb71
+  i32 71, label %bb72
+  i32 72, label %bb73
+  i32 73, label %bb74
+  i32 74, label %bb75
+  i32 75, label %bb76
+  i32 76, label %bb77
+  i32 77, label %bb78
+  i32 78, label %bb79
+  i32 79, label %bb80
+  i32 80, label %bb81
+  i32 81, label %bb82
+  i32 82, label %bb83
+  i32 83, label %bb84
+  i32 84, label %bb85
+  i32 85, label %bb86
+  i32 86, label %bb87
+  i32 87, label %bb88
+  i32 88, label %bb89
+  i32 89, label %bb90
+  i32 90, label %bb91
+  i32 91, label %bb92
+  i32 92, label %bb93
+  i32 93, label %bb94
+  i32 94, label %bb95
+  i32 95, label %bb96
+  i32 96, label %bb97
+  i32 97, label %bb98
+  i32 98, label %bb99
+  i32 99, label %bb100
+  i32 100, label %bb101
+  i32 101, label %bb102
+  i32 102, label %bb103
+  i32 103, label %bb104
+  i32 104, label %bb105
+  i32 105, label %bb106
+  i32 106, label %bb107
+  i32 107, label %bb108
+  i32 108, label %bb109
+  i32 109, label %bb110
+  i32 110, label %bb111
+  i32 111, label %bb112
+  i32 112, label %bb113
+  i32 113, label %bb114
+  i32 114, label %bb115
+  i32 115, label %bb116
+  i32 116, label %bb117
+  i32 117, label %bb118
+  i32 118, label %bb119
+  i32 119, label %bb120
+  i32 120, label %bb121
+  i32 121, label %bb122
+  i32 122, label %bb123
+  i32 123, label %bb124
+  i32 124, label %bb125
+  i32 125, label %bb126
+  i32 126, label %bb127
+  ]
+
+bb2:                                              ; preds = %bb1
+  br label %bb129
+
+bb3:                                              ; preds = %bb1
+  br label %bb129
+
+bb4:                                              ; preds = %bb1
+  br label %bb129
+
+bb5:                                              ; preds = %bb1
+  br label %bb129
+
+bb6:                                              ; preds = %bb1
+  br label %bb129
+
+bb7:                                              ; preds = %bb1
+  br label %bb129
+
+bb8:                                              ; preds = %bb1
+  br label %bb129
+
+bb9:                                              ; preds = %bb1
+  br label %bb129
+
+bb10:                                             ; preds = %bb1
+  br label %bb129
+
+bb11:                                             ; preds = %bb1
+  br label %bb129
+
+bb12:                                             ; preds = %bb1
+  br label %bb129
+
+bb13:                                             ; preds = %bb1
+  br label %bb129
+
+bb14:                                             ; preds = %bb1
+  br label %bb129
+
+bb15:                                             ; preds = %bb1
+  br label %bb129
+
+bb16:                                             ; preds = %bb1
+  br label %bb129
+
+bb17:                                             ; preds = %bb1
+  br label %bb129
+
+bb18:                                             ; preds = %bb1
+  br label %bb129
+
+bb19:                                             ; preds = %bb1
+  br label %bb129
+
+bb20:                                             ; preds = %bb1
+  br label %bb129
+
+bb21:                                             ; preds = %bb1
+  br label %bb129
+
+bb22:                                             ; preds = %bb1
+  br label %bb129
+
+bb23:                                             ; preds = %bb1
+  br label %bb129
+
+bb24:                                             ; preds = %bb1
+  br label %bb129
+
+bb25:                                             ; preds = %bb1
+  br label %bb129
+
+bb26:                                             ; preds = %bb1
+  br label %bb129
+
+bb27:                                             ; preds = %bb1
+  br label %bb129
+
+bb28:                                             ; preds = %bb1
+  br label %bb129
+
+bb29:                                             ; preds = %bb1
+  br label %bb129
+
+bb30:                                             ; preds = %bb1
+  br label %bb129
+
+bb31:                                             ; preds = %bb1
+  br label %bb129
+
+bb32:                                             ; preds = %bb1
+  br label %bb129
+
+bb33:                                             ; preds = %bb1
+  br label %bb129
+
+bb34:                                             ; preds = %bb1
+  br label %bb129
+
+bb35:                                             ; preds = %bb1
+  br label %bb129
+
+bb36:                                             ; preds = %bb1
+  br label %bb129
+
+bb37:                                             ; preds = %bb1
+  br label %bb129
+
+bb38:                                             ; preds = %bb1
+  br label %bb129
+
+bb39:                                             ; preds = %bb1
+  br label %bb129
+
+bb40:                                             ; preds = %bb1
+  br label %bb129
+
+bb41:                                             ; preds = %bb1
+  br label %bb129
+
+bb42:                                             ; preds = %bb1
+  br label %bb129
+
+bb43:                                             ; preds = %bb1
+  br label %bb129
+
+bb44:                                             ; preds = %bb1
+  br label %bb129
+
+bb45:                                             ; preds = %bb1
+  br label %bb129
+
+bb46:                                             ; preds = %bb1
+  br label %bb129
+
+bb47:                                             ; preds = %bb1
+  br label %bb129
+
+bb48:                                             ; preds = %bb1
+  br label %bb129
+
+bb49:                                             ; preds = %bb1
+  br label %bb129
+
+bb50:                                             ; preds = %bb1
+  br label %bb129
+
+bb51:                                             ; preds = %bb1
+  br label %bb129
+
+bb52:                                             ; preds = %bb1
+  br label %bb129
+
+bb53:                                             ; preds = %bb1
+  br label %bb129
+
+bb54:                                             ; preds = %bb1
+  br label %bb129
+
+bb55:                                             ; preds = %bb1
+  br label %bb129
+
+bb56:                                             ; preds = %bb1
+  br label %bb129
+
+bb57:                                             ; preds = %bb1
+  br label %bb129
+
+bb58:                                             ; preds = %bb1
+  br label %bb129
+
+bb59:                                             ; preds = %bb1
+  br label %bb129
+
+bb60:                                             ; preds = %bb1
+  br label %bb129
+
+bb61:                                             ; preds = %bb1
+  br label %bb129
+
+bb62:                                             ; preds = %bb1
+  br label %bb129
+
+bb63:                                             ; preds = %bb1
+  br label %bb129
+
+bb64:                                             ; preds = %bb1
+  br label %bb129
+
+bb65:                                             ; preds = %bb1
+  br label %bb129
+
+bb66:                                             ; preds = %bb1
+  br label %bb129
+
+bb67:                                             ; preds = %bb1
+  br label %bb129
+
+bb68:                                             ; preds = %bb1
+  br label %bb129
+
+bb69:                                             ; preds = %bb1
+  br label %bb129
+
+bb70:                                             ; preds = %bb1
+  br label %bb129
+
+bb71:                                             ; preds = %bb1
+  br label %bb129
+
+bb72:                                             ; preds = %bb1
+  br label %bb129
+
+bb73:                                             ; preds = %bb1
+  br label %bb129
+
+bb74:                                             ; preds = %bb1
+  br label %bb129
+
+bb75:                                             ; preds = %bb1
+  br label %bb129
+
+bb76:                                             ; preds = %bb1
+  br label %bb129
+
+bb77:                                             ; preds = %bb1
+  br label %bb129
+
+bb78:                                             ; preds = %bb1
+  br label %bb129
+
+bb79:                                             ; preds = %bb1
+  br label %bb129
+
+bb80:                                             ; preds = %bb1
+  br label %bb129
+
+bb81:                                             ; preds = %bb1
+  br label %bb129
+
+bb82:                                             ; preds = %bb1
+  br label %bb129
+
+bb83:                                             ; preds = %bb1
+  br label %bb129
+
+bb84:                                             ; preds = %bb1
+  br label %bb129
+
+bb85:                                             ; preds = %bb1
+  br label %bb129
+
+bb86:                                             ; preds = %bb1
+  br label %bb129
+
+bb87:                                             ; preds = %bb1
+  br label %bb129
+
+bb88:                                             ; preds = %bb1
+  br label %bb129
+
+bb89:                                             ; preds = %bb1
+  br label %bb129
+
+bb90:                                             ; preds = %bb1
+  br label %bb129
+
+bb91:                                             ; preds = %bb1
+  br label %bb129
+
+bb92:                                             ; preds = %bb1
+  br label %bb129
+
+bb93:                                             ; preds = %bb1
+  br label %bb129
+
+bb94:                                             ; preds = %bb1
+  br label %bb129
+
+bb95:                                             ; preds = %bb1
+  br label %bb129
+
+bb96:                                             ; preds = %bb1
+  br label %bb129
+
+bb97:                                             ; preds = %bb1
+  br label %bb129
+
+bb98:                                             ; preds = %bb1
+  br label %bb129
+
+bb99:                                             ; preds = %bb1
+  br label %bb129
+
+bb100:                                            ; preds = %bb1
+  br label %bb129
+
+bb101:                                            ; preds = %bb1
+  br label %bb129
+
+bb102:                                            ; preds = %bb1
+  br label %bb129
+
+bb103:                                            ; preds = %bb1
+  br label %bb129
+
+bb104:                                            ; preds = %bb1
+  br label %bb129
+
+bb105:                                            ; preds = %bb1
+  br label %bb129
+
+bb106:                                            ; preds = %bb1
+  br label %bb129
+
+bb107:                                            ; preds = %bb1
+  br label %bb129
+
+bb108:                                            ; preds = %bb1
+  br label %bb129
+
+bb109:                                            ; preds = %bb1
+  br label %bb129
+
+bb110:                                            ; preds = %bb1
+  br label %bb129
+
+bb111:                                            ; preds = %bb1
+  br label %bb129
+
+bb112:                                            ; preds = %bb1
+  br label %bb129
+
+bb113:                                            ; preds = %bb1
+  br label %bb129
+
+bb114:                                            ; preds = %bb1
+  br label %bb129
+
+bb115:                                            ; preds = %bb1
+  br label %bb129
+
+bb116:                                            ; preds = %bb1
+  br label %bb129
+
+bb117:                                            ; preds = %bb1
+  br label %bb129
+
+bb118:                                            ; preds = %bb1
+  br label %bb129
+
+bb119:                                            ; preds = %bb1
+  br label %bb129
+
+bb120:                                            ; preds = %bb1
+  br label %bb129
+
+bb121:                                            ; preds = %bb1
+  br label %bb129
+
+bb122:                                            ; preds = %bb1
+  br label %bb129
+
+bb123:                                            ; preds = %bb1
+  br label %bb129
+
+bb124:                                            ; preds = %bb1
+  br label %bb129
+
+bb125:                                            ; preds = %bb1
+  br label %bb129
+
+bb126:                                            ; preds = %bb1
+  br label %bb129
+
+bb127:                                            ; preds = %bb1
+  br label %bb129
+
+bb128:                                            ; preds = %bb1
+  unreachable
+
+bb129:                                            ; preds = %bb127, %bb126, %bb125, %bb124, %bb123, %bb122, %bb121, %bb120, %bb119, %bb118, %bb117, %bb116, %bb115, %bb114, %bb113, %bb112, %bb111, %bb110, %bb109, %bb108, %bb107, %bb106, %bb105, %bb104, %bb103, %bb102, %bb101, %bb100, %bb99, %bb98, %bb97, %bb96, %bb95, %bb94, %bb93, %bb92, %bb91, %bb90, %bb89, %bb88, %bb87, %bb86, %bb85, %bb84, %bb83, %bb82, %bb81, %bb80, %bb79, %bb78, %bb77, %bb76, %bb75, %bb74, %bb73, %bb72, %bb71, %bb70, %bb69, %bb68, %bb67, %bb66, %bb65, %bb64, %bb63, %bb62, %bb61, %bb60, %bb59, %bb58, %bb57, %bb56, %bb55, %bb54, %bb53, %bb52, %bb51, %bb50, %bb49, %bb48, %bb47, %bb46, %bb45, %bb44, %bb43, %bb42, %bb41, %bb40, %bb39, %bb38, %bb37, %bb36, %bb35, %bb34, %bb33, %bb32, %bb31, %bb30, %bb29, %bb28, %bb27, %bb26, %bb25, %bb24, %bb23, %bb22, %bb21, %bb20, %bb19, %bb18, %bb17, %bb16, %bb15, %bb14, %bb13, %bb12, %bb11, %bb10, %bb9, %bb8, %bb7, %bb6, %bb5, %bb4, %bb3, %bb2, %bb1
+  %phi130 = phi i32 [ 6, %bb2 ], [ 7, %bb3 ], [ 8, %bb4 ], [ 9, %bb5 ], [ 10, %bb6 ], [ 11, %bb7 ], [ 12, %bb8 ], [ 13, %bb9 ], [ 14, %bb10 ], [ 15, %bb11 ], [ 16, %bb12 ], [ 17, %bb13 ], [ 18, %bb14 ], [ 19, %bb15 ], [ 20, %bb16 ], [ 21, %bb17 ], [ 22, %bb18 ], [ 23, %bb19 ], [ 24, %bb20 ], [ 25, %bb21 ], [ 26, %bb22 ], [ 27, %bb23 ], [ 28, %bb24 ], [ 29, %bb25 ], [ 30, %bb26 ], [ 31, %bb27 ], [ 32, %bb28 ], [ 33, %bb29 ], [ 34, %bb30 ], [ 35, %bb31 ], [ 36, %bb32 ], [ 37, %bb33 ], [ 38, %bb34 ], [ 39, %bb35 ], [ 40, %bb36 ], [ 41, %bb37 ], [ 42, %bb38 ], [ 43, %bb39 ], [ 44, %bb40 ], [ 45, %bb41 ], [ 46, %bb42 ], [ 47, %bb43 ], [ 48, %bb44 ], [ 49, %bb45 ], [ 50, %bb46 ], [ 51, %bb47 ], [ 52, %bb48 ], [ 53, %bb49 ], [ 54, %bb50 ], [ 55, %bb51 ], [ 56, %bb52 ], [ 57, %bb53 ], [ 58, %bb54 ], [ 59, %bb55 ], [ 60, %bb56 ], [ 61, %bb57 ], [ 62, %bb58 ], [ 63, %bb59 ], [ 64, %bb60 ], [ 65, %bb61 ], [ 66, %bb62 ], [ 67, %bb63 ], [ 68, %bb64 ], [ 69, %bb65 ], [ 70, %bb66 ], [ 71, %bb67 ], [ 72, %bb68 ], [ 73, %bb69 ], [ 74, %bb70 ], [ 75, %bb71 ], [ 76, %bb72 ], [ 77, %bb73 ], [ 78, %bb74 ], [ 79, %bb75 ], [ 80, %bb76 ], [ 81, %bb77 ], [ 82, %bb78 ], [ 83, %bb79 ], [ 84, %bb80 ], [ 85, %bb81 ], [ 86, %bb82 ], [ 87, %bb83 ], [ 88, %bb84 ], [ 89, %bb85 ], [ 90, %bb86 ], [ 91, %bb87 ], [ 92, %bb88 ], [ 93, %bb89 ], [ 94, %bb90 ], [ 95, %bb91 ], [ 96, %bb92 ], [ 97, %bb93 ], [ 98, %bb94 ], [ 99, %bb95 ], [ 100, %bb96 ], [ 101, %bb97 ], [ 102, %bb98 ], [ 103, %bb99 ], [ 104, %bb100 ], [ 105, %bb101 ], [ 106, %bb102 ], [ 107, %bb103 ], [ 108, %bb104 ], [ 109, %bb105 ], [ 110, %bb106 ], [ 111, %bb107 ], [ 112, %bb108 ], [ 113, %bb109 ], [ 114, %bb110 ], [ 115, %bb111 ], [ 116, %bb112 ], [ 117, %bb113 ], [ 118, %bb114 ], [ 119, %bb115 ], [ 120, %bb116 ], [ 121, %bb117 ], [ 122, %bb118 ], [ 123, %bb119 ], [ 124, %bb120 ], [ 125, %bb121 ], [ 126, %bb122 ], [ 127, %bb123 ], [ 128, %bb124 ], [ 129, %bb125 ], [ 130, %bb126 ], [ 131, %bb127 ], [ 5, %bb1 ]
+  %call = tail call signext i32 @snork(i32 noundef signext %phi130)
+  %add = add nuw nsw i32 %phi, 1
+  %icmp = icmp ult i32 %phi, 126
+  br i1 %icmp, label %bb1, label %bb131
+
+bb131:                                            ; preds = %bb129
+  ret void
+}
