@@ -12,7 +12,7 @@
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half> } @test_vluxseg6ei64_v_f16mf4x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0:[0-9]+]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half> } @llvm.riscv.vluxseg6.nxv1f16.nxv1i64.i64(<vscale x 1 x half> poison, <vscale x 1 x half> poison, <vscale x 1 x half> poison, <vscale x 1 x half> poison, <vscale x 1 x half> poison, <vscale x 1 x half> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half> } @llvm.riscv.vluxseg6.nxv1f16.nxv1i64.i64(<vscale x 1 x half> poison, <vscale x 1 x half> poison, <vscale x 1 x half> poison, <vscale x 1 x half> poison, <vscale x 1 x half> poison, <vscale x 1 x half> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6:![0-9]+]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half> } [[TMP0]]
 //
 vfloat16mf4x6_t test_vluxseg6ei64_v_f16mf4x6_ntl_S1(const _Float16 *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -22,7 +22,7 @@ vfloat16mf4x6_t test_vluxseg6ei64_v_f16mf4x6_ntl_S1(const _Float16 *base, vuint6
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half> } @test_vluxseg6ei64_v_f16mf2x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half> } @llvm.riscv.vluxseg6.nxv2f16.nxv2i64.i64(<vscale x 2 x half> poison, <vscale x 2 x half> poison, <vscale x 2 x half> poison, <vscale x 2 x half> poison, <vscale x 2 x half> poison, <vscale x 2 x half> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half> } @llvm.riscv.vluxseg6.nxv2f16.nxv2i64.i64(<vscale x 2 x half> poison, <vscale x 2 x half> poison, <vscale x 2 x half> poison, <vscale x 2 x half> poison, <vscale x 2 x half> poison, <vscale x 2 x half> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half> } [[TMP0]]
 //
 vfloat16mf2x6_t test_vluxseg6ei64_v_f16mf2x6_ntl_S1(const _Float16 *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -32,7 +32,7 @@ vfloat16mf2x6_t test_vluxseg6ei64_v_f16mf2x6_ntl_S1(const _Float16 *base, vuint6
 // CHECK-RV64-LABEL: define dso_local { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half> } @test_vluxseg6ei64_v_f16m1x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half> } @llvm.riscv.vluxseg6.nxv4f16.nxv4i64.i64(<vscale x 4 x half> poison, <vscale x 4 x half> poison, <vscale x 4 x half> poison, <vscale x 4 x half> poison, <vscale x 4 x half> poison, <vscale x 4 x half> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half> } @llvm.riscv.vluxseg6.nxv4f16.nxv4i64.i64(<vscale x 4 x half> poison, <vscale x 4 x half> poison, <vscale x 4 x half> poison, <vscale x 4 x half> poison, <vscale x 4 x half> poison, <vscale x 4 x half> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half> } [[TMP0]]
 //
 vfloat16m1x6_t test_vluxseg6ei64_v_f16m1x6_ntl_S1(const _Float16 *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -42,7 +42,7 @@ vfloat16m1x6_t test_vluxseg6ei64_v_f16m1x6_ntl_S1(const _Float16 *base, vuint64m
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float> } @test_vluxseg6ei64_v_f32mf2x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float> } @llvm.riscv.vluxseg6.nxv1f32.nxv1i64.i64(<vscale x 1 x float> poison, <vscale x 1 x float> poison, <vscale x 1 x float> poison, <vscale x 1 x float> poison, <vscale x 1 x float> poison, <vscale x 1 x float> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float> } @llvm.riscv.vluxseg6.nxv1f32.nxv1i64.i64(<vscale x 1 x float> poison, <vscale x 1 x float> poison, <vscale x 1 x float> poison, <vscale x 1 x float> poison, <vscale x 1 x float> poison, <vscale x 1 x float> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float> } [[TMP0]]
 //
 vfloat32mf2x6_t test_vluxseg6ei64_v_f32mf2x6_ntl_S1(const float *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -52,7 +52,7 @@ vfloat32mf2x6_t test_vluxseg6ei64_v_f32mf2x6_ntl_S1(const float *base, vuint64m1
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } @test_vluxseg6ei64_v_f32m1x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } @llvm.riscv.vluxseg6.nxv2f32.nxv2i64.i64(<vscale x 2 x float> poison, <vscale x 2 x float> poison, <vscale x 2 x float> poison, <vscale x 2 x float> poison, <vscale x 2 x float> poison, <vscale x 2 x float> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } @llvm.riscv.vluxseg6.nxv2f32.nxv2i64.i64(<vscale x 2 x float> poison, <vscale x 2 x float> poison, <vscale x 2 x float> poison, <vscale x 2 x float> poison, <vscale x 2 x float> poison, <vscale x 2 x float> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[TMP0]]
 //
 vfloat32m1x6_t test_vluxseg6ei64_v_f32m1x6_ntl_S1(const float *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -62,7 +62,7 @@ vfloat32m1x6_t test_vluxseg6ei64_v_f32m1x6_ntl_S1(const float *base, vuint64m2_t
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } @test_vluxseg6ei64_v_f64m1x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } @llvm.riscv.vluxseg6.nxv1f64.nxv1i64.i64(<vscale x 1 x double> poison, <vscale x 1 x double> poison, <vscale x 1 x double> poison, <vscale x 1 x double> poison, <vscale x 1 x double> poison, <vscale x 1 x double> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } @llvm.riscv.vluxseg6.nxv1f64.nxv1i64.i64(<vscale x 1 x double> poison, <vscale x 1 x double> poison, <vscale x 1 x double> poison, <vscale x 1 x double> poison, <vscale x 1 x double> poison, <vscale x 1 x double> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[TMP0]]
 //
 vfloat64m1x6_t test_vluxseg6ei64_v_f64m1x6_ntl_S1(const double *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -72,7 +72,7 @@ vfloat64m1x6_t test_vluxseg6ei64_v_f64m1x6_ntl_S1(const double *base, vuint64m1_
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @test_vluxseg6ei64_v_i8mf8x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @llvm.riscv.vluxseg6.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @llvm.riscv.vluxseg6.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } [[TMP0]]
 //
 vint8mf8x6_t test_vluxseg6ei64_v_i8mf8x6_ntl_S1(const int8_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -82,7 +82,7 @@ vint8mf8x6_t test_vluxseg6ei64_v_i8mf8x6_ntl_S1(const int8_t *base, vuint64m1_t 
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @test_vluxseg6ei64_v_i8mf4x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @llvm.riscv.vluxseg6.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @llvm.riscv.vluxseg6.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } [[TMP0]]
 //
 vint8mf4x6_t test_vluxseg6ei64_v_i8mf4x6_ntl_S1(const int8_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -92,7 +92,7 @@ vint8mf4x6_t test_vluxseg6ei64_v_i8mf4x6_ntl_S1(const int8_t *base, vuint64m2_t 
 // CHECK-RV64-LABEL: define dso_local { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @test_vluxseg6ei64_v_i8mf2x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.riscv.vluxseg6.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.riscv.vluxseg6.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[TMP0]]
 //
 vint8mf2x6_t test_vluxseg6ei64_v_i8mf2x6_ntl_S1(const int8_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -102,7 +102,7 @@ vint8mf2x6_t test_vluxseg6ei64_v_i8mf2x6_ntl_S1(const int8_t *base, vuint64m4_t 
 // CHECK-RV64-LABEL: define dso_local { <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8> } @test_vluxseg6ei64_v_i8m1x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8> } @llvm.riscv.vluxseg6.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, ptr [[BASE]], <vscale x 8 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8> } @llvm.riscv.vluxseg6.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, ptr [[BASE]], <vscale x 8 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8> } [[TMP0]]
 //
 vint8m1x6_t test_vluxseg6ei64_v_i8m1x6_ntl_S1(const int8_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -112,7 +112,7 @@ vint8m1x6_t test_vluxseg6ei64_v_i8m1x6_ntl_S1(const int8_t *base, vuint64m8_t bi
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16> } @test_vluxseg6ei64_v_i16mf4x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16> } @llvm.riscv.vluxseg6.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16> } @llvm.riscv.vluxseg6.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16> } [[TMP0]]
 //
 vint16mf4x6_t test_vluxseg6ei64_v_i16mf4x6_ntl_S1(const int16_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -122,7 +122,7 @@ vint16mf4x6_t test_vluxseg6ei64_v_i16mf4x6_ntl_S1(const int16_t *base, vuint64m1
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16> } @test_vluxseg6ei64_v_i16mf2x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16> } @llvm.riscv.vluxseg6.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16> } @llvm.riscv.vluxseg6.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16> } [[TMP0]]
 //
 vint16mf2x6_t test_vluxseg6ei64_v_i16mf2x6_ntl_S1(const int16_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -132,7 +132,7 @@ vint16mf2x6_t test_vluxseg6ei64_v_i16mf2x6_ntl_S1(const int16_t *base, vuint64m2
 // CHECK-RV64-LABEL: define dso_local { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16> } @test_vluxseg6ei64_v_i16m1x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16> } @llvm.riscv.vluxseg6.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16> } @llvm.riscv.vluxseg6.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16> } [[TMP0]]
 //
 vint16m1x6_t test_vluxseg6ei64_v_i16m1x6_ntl_S1(const int16_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -142,7 +142,7 @@ vint16m1x6_t test_vluxseg6ei64_v_i16m1x6_ntl_S1(const int16_t *base, vuint64m4_t
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @test_vluxseg6ei64_v_i32mf2x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg6.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg6.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP0]]
 //
 vint32mf2x6_t test_vluxseg6ei64_v_i32mf2x6_ntl_S1(const int32_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -152,7 +152,7 @@ vint32mf2x6_t test_vluxseg6ei64_v_i32mf2x6_ntl_S1(const int32_t *base, vuint64m1
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @test_vluxseg6ei64_v_i32m1x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.riscv.vluxseg6.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.riscv.vluxseg6.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } [[TMP0]]
 //
 vint32m1x6_t test_vluxseg6ei64_v_i32m1x6_ntl_S1(const int32_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -162,7 +162,7 @@ vint32m1x6_t test_vluxseg6ei64_v_i32m1x6_ntl_S1(const int32_t *base, vuint64m2_t
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64> } @test_vluxseg6ei64_v_i64m1x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64> } @llvm.riscv.vluxseg6.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64> } @llvm.riscv.vluxseg6.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64> } [[TMP0]]
 //
 vint64m1x6_t test_vluxseg6ei64_v_i64m1x6_ntl_S1(const int64_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -172,7 +172,7 @@ vint64m1x6_t test_vluxseg6ei64_v_i64m1x6_ntl_S1(const int64_t *base, vuint64m1_t
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @test_vluxseg6ei64_v_u8mf8x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @llvm.riscv.vluxseg6.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @llvm.riscv.vluxseg6.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } [[TMP0]]
 //
 vuint8mf8x6_t test_vluxseg6ei64_v_u8mf8x6_ntl_S1(const uint8_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -182,7 +182,7 @@ vuint8mf8x6_t test_vluxseg6ei64_v_u8mf8x6_ntl_S1(const uint8_t *base, vuint64m1_
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @test_vluxseg6ei64_v_u8mf4x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @llvm.riscv.vluxseg6.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @llvm.riscv.vluxseg6.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } [[TMP0]]
 //
 vuint8mf4x6_t test_vluxseg6ei64_v_u8mf4x6_ntl_S1(const uint8_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -192,7 +192,7 @@ vuint8mf4x6_t test_vluxseg6ei64_v_u8mf4x6_ntl_S1(const uint8_t *base, vuint64m2_
 // CHECK-RV64-LABEL: define dso_local { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @test_vluxseg6ei64_v_u8mf2x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.riscv.vluxseg6.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.riscv.vluxseg6.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[TMP0]]
 //
 vuint8mf2x6_t test_vluxseg6ei64_v_u8mf2x6_ntl_S1(const uint8_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -202,7 +202,7 @@ vuint8mf2x6_t test_vluxseg6ei64_v_u8mf2x6_ntl_S1(const uint8_t *base, vuint64m4_
 // CHECK-RV64-LABEL: define dso_local { <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8> } @test_vluxseg6ei64_v_u8m1x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8> } @llvm.riscv.vluxseg6.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, ptr [[BASE]], <vscale x 8 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8> } @llvm.riscv.vluxseg6.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, ptr [[BASE]], <vscale x 8 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8> } [[TMP0]]
 //
 vuint8m1x6_t test_vluxseg6ei64_v_u8m1x6_ntl_S1(const uint8_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -212,7 +212,7 @@ vuint8m1x6_t test_vluxseg6ei64_v_u8m1x6_ntl_S1(const uint8_t *base, vuint64m8_t 
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16> } @test_vluxseg6ei64_v_u16mf4x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16> } @llvm.riscv.vluxseg6.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16> } @llvm.riscv.vluxseg6.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16> } [[TMP0]]
 //
 vuint16mf4x6_t test_vluxseg6ei64_v_u16mf4x6_ntl_S1(const uint16_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -222,7 +222,7 @@ vuint16mf4x6_t test_vluxseg6ei64_v_u16mf4x6_ntl_S1(const uint16_t *base, vuint64
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16> } @test_vluxseg6ei64_v_u16mf2x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16> } @llvm.riscv.vluxseg6.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16> } @llvm.riscv.vluxseg6.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16> } [[TMP0]]
 //
 vuint16mf2x6_t test_vluxseg6ei64_v_u16mf2x6_ntl_S1(const uint16_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -232,7 +232,7 @@ vuint16mf2x6_t test_vluxseg6ei64_v_u16mf2x6_ntl_S1(const uint16_t *base, vuint64
 // CHECK-RV64-LABEL: define dso_local { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16> } @test_vluxseg6ei64_v_u16m1x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16> } @llvm.riscv.vluxseg6.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16> } @llvm.riscv.vluxseg6.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16> } [[TMP0]]
 //
 vuint16m1x6_t test_vluxseg6ei64_v_u16m1x6_ntl_S1(const uint16_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -242,7 +242,7 @@ vuint16m1x6_t test_vluxseg6ei64_v_u16m1x6_ntl_S1(const uint16_t *base, vuint64m4
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @test_vluxseg6ei64_v_u32mf2x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg6.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg6.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP0]]
 //
 vuint32mf2x6_t test_vluxseg6ei64_v_u32mf2x6_ntl_S1(const uint32_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -252,7 +252,7 @@ vuint32mf2x6_t test_vluxseg6ei64_v_u32mf2x6_ntl_S1(const uint32_t *base, vuint64
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @test_vluxseg6ei64_v_u32m1x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.riscv.vluxseg6.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.riscv.vluxseg6.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } [[TMP0]]
 //
 vuint32m1x6_t test_vluxseg6ei64_v_u32m1x6_ntl_S1(const uint32_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -262,7 +262,7 @@ vuint32m1x6_t test_vluxseg6ei64_v_u32m1x6_ntl_S1(const uint32_t *base, vuint64m2
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64> } @test_vluxseg6ei64_v_u64m1x6_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64> } @llvm.riscv.vluxseg6.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64> } @llvm.riscv.vluxseg6.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64> } [[TMP0]]
 //
 vuint64m1x6_t test_vluxseg6ei64_v_u64m1x6_ntl_S1(const uint64_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -272,7 +272,7 @@ vuint64m1x6_t test_vluxseg6ei64_v_u64m1x6_ntl_S1(const uint64_t *base, vuint64m1
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half> } @test_vluxseg6ei64_v_f16mf4x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half> } @llvm.riscv.vluxseg6.mask.nxv1f16.nxv1i64.i64(<vscale x 1 x half> poison, <vscale x 1 x half> poison, <vscale x 1 x half> poison, <vscale x 1 x half> poison, <vscale x 1 x half> poison, <vscale x 1 x half> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half> } @llvm.riscv.vluxseg6.mask.nxv1f16.nxv1i64.i64(<vscale x 1 x half> poison, <vscale x 1 x half> poison, <vscale x 1 x half> poison, <vscale x 1 x half> poison, <vscale x 1 x half> poison, <vscale x 1 x half> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half> } [[TMP0]]
 //
 vfloat16mf4x6_t test_vluxseg6ei64_v_f16mf4x6_m_ntl_S1(vbool64_t mask, const _Float16 *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -282,7 +282,7 @@ vfloat16mf4x6_t test_vluxseg6ei64_v_f16mf4x6_m_ntl_S1(vbool64_t mask, const _Flo
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half> } @test_vluxseg6ei64_v_f16mf2x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 2 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half> } @llvm.riscv.vluxseg6.mask.nxv2f16.nxv2i64.i64(<vscale x 2 x half> poison, <vscale x 2 x half> poison, <vscale x 2 x half> poison, <vscale x 2 x half> poison, <vscale x 2 x half> poison, <vscale x 2 x half> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half> } @llvm.riscv.vluxseg6.mask.nxv2f16.nxv2i64.i64(<vscale x 2 x half> poison, <vscale x 2 x half> poison, <vscale x 2 x half> poison, <vscale x 2 x half> poison, <vscale x 2 x half> poison, <vscale x 2 x half> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half> } [[TMP0]]
 //
 vfloat16mf2x6_t test_vluxseg6ei64_v_f16mf2x6_m_ntl_S1(vbool32_t mask, const _Float16 *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -292,7 +292,7 @@ vfloat16mf2x6_t test_vluxseg6ei64_v_f16mf2x6_m_ntl_S1(vbool32_t mask, const _Flo
 // CHECK-RV64-LABEL: define dso_local { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half> } @test_vluxseg6ei64_v_f16m1x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 4 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half> } @llvm.riscv.vluxseg6.mask.nxv4f16.nxv4i64.i64(<vscale x 4 x half> poison, <vscale x 4 x half> poison, <vscale x 4 x half> poison, <vscale x 4 x half> poison, <vscale x 4 x half> poison, <vscale x 4 x half> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half> } @llvm.riscv.vluxseg6.mask.nxv4f16.nxv4i64.i64(<vscale x 4 x half> poison, <vscale x 4 x half> poison, <vscale x 4 x half> poison, <vscale x 4 x half> poison, <vscale x 4 x half> poison, <vscale x 4 x half> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half> } [[TMP0]]
 //
 vfloat16m1x6_t test_vluxseg6ei64_v_f16m1x6_m_ntl_S1(vbool16_t mask, const _Float16 *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -302,7 +302,7 @@ vfloat16m1x6_t test_vluxseg6ei64_v_f16m1x6_m_ntl_S1(vbool16_t mask, const _Float
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float> } @test_vluxseg6ei64_v_f32mf2x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float> } @llvm.riscv.vluxseg6.mask.nxv1f32.nxv1i64.i64(<vscale x 1 x float> poison, <vscale x 1 x float> poison, <vscale x 1 x float> poison, <vscale x 1 x float> poison, <vscale x 1 x float> poison, <vscale x 1 x float> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float> } @llvm.riscv.vluxseg6.mask.nxv1f32.nxv1i64.i64(<vscale x 1 x float> poison, <vscale x 1 x float> poison, <vscale x 1 x float> poison, <vscale x 1 x float> poison, <vscale x 1 x float> poison, <vscale x 1 x float> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float>, <vscale x 1 x float> } [[TMP0]]
 //
 vfloat32mf2x6_t test_vluxseg6ei64_v_f32mf2x6_m_ntl_S1(vbool64_t mask, const float *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -312,7 +312,7 @@ vfloat32mf2x6_t test_vluxseg6ei64_v_f32mf2x6_m_ntl_S1(vbool64_t mask, const floa
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } @test_vluxseg6ei64_v_f32m1x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 2 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } @llvm.riscv.vluxseg6.mask.nxv2f32.nxv2i64.i64(<vscale x 2 x float> poison, <vscale x 2 x float> poison, <vscale x 2 x float> poison, <vscale x 2 x float> poison, <vscale x 2 x float> poison, <vscale x 2 x float> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } @llvm.riscv.vluxseg6.mask.nxv2f32.nxv2i64.i64(<vscale x 2 x float> poison, <vscale x 2 x float> poison, <vscale x 2 x float> poison, <vscale x 2 x float> poison, <vscale x 2 x float> poison, <vscale x 2 x float> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float>, <vscale x 2 x float> } [[TMP0]]
 //
 vfloat32m1x6_t test_vluxseg6ei64_v_f32m1x6_m_ntl_S1(vbool32_t mask, const float *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -322,7 +322,7 @@ vfloat32m1x6_t test_vluxseg6ei64_v_f32m1x6_m_ntl_S1(vbool32_t mask, const float 
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } @test_vluxseg6ei64_v_f64m1x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } @llvm.riscv.vluxseg6.mask.nxv1f64.nxv1i64.i64(<vscale x 1 x double> poison, <vscale x 1 x double> poison, <vscale x 1 x double> poison, <vscale x 1 x double> poison, <vscale x 1 x double> poison, <vscale x 1 x double> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } @llvm.riscv.vluxseg6.mask.nxv1f64.nxv1i64.i64(<vscale x 1 x double> poison, <vscale x 1 x double> poison, <vscale x 1 x double> poison, <vscale x 1 x double> poison, <vscale x 1 x double> poison, <vscale x 1 x double> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[TMP0]]
 //
 vfloat64m1x6_t test_vluxseg6ei64_v_f64m1x6_m_ntl_S1(vbool64_t mask, const double *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -332,7 +332,7 @@ vfloat64m1x6_t test_vluxseg6ei64_v_f64m1x6_m_ntl_S1(vbool64_t mask, const double
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @test_vluxseg6ei64_v_i8mf8x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @llvm.riscv.vluxseg6.mask.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @llvm.riscv.vluxseg6.mask.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } [[TMP0]]
 //
 vint8mf8x6_t test_vluxseg6ei64_v_i8mf8x6_m_ntl_S1(vbool64_t mask, const int8_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -342,7 +342,7 @@ vint8mf8x6_t test_vluxseg6ei64_v_i8mf8x6_m_ntl_S1(vbool64_t mask, const int8_t *
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @test_vluxseg6ei64_v_i8mf4x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 2 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @llvm.riscv.vluxseg6.mask.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @llvm.riscv.vluxseg6.mask.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } [[TMP0]]
 //
 vint8mf4x6_t test_vluxseg6ei64_v_i8mf4x6_m_ntl_S1(vbool32_t mask, const int8_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -352,7 +352,7 @@ vint8mf4x6_t test_vluxseg6ei64_v_i8mf4x6_m_ntl_S1(vbool32_t mask, const int8_t *
 // CHECK-RV64-LABEL: define dso_local { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @test_vluxseg6ei64_v_i8mf2x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 4 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.riscv.vluxseg6.mask.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.riscv.vluxseg6.mask.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[TMP0]]
 //
 vint8mf2x6_t test_vluxseg6ei64_v_i8mf2x6_m_ntl_S1(vbool16_t mask, const int8_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -362,7 +362,7 @@ vint8mf2x6_t test_vluxseg6ei64_v_i8mf2x6_m_ntl_S1(vbool16_t mask, const int8_t *
 // CHECK-RV64-LABEL: define dso_local { <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8> } @test_vluxseg6ei64_v_i8m1x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 8 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8> } @llvm.riscv.vluxseg6.mask.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, ptr [[BASE]], <vscale x 8 x i64> [[BINDEX]], <vscale x 8 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8> } @llvm.riscv.vluxseg6.mask.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, ptr [[BASE]], <vscale x 8 x i64> [[BINDEX]], <vscale x 8 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8> } [[TMP0]]
 //
 vint8m1x6_t test_vluxseg6ei64_v_i8m1x6_m_ntl_S1(vbool8_t mask, const int8_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -372,7 +372,7 @@ vint8m1x6_t test_vluxseg6ei64_v_i8m1x6_m_ntl_S1(vbool8_t mask, const int8_t *bas
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16> } @test_vluxseg6ei64_v_i16mf4x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16> } @llvm.riscv.vluxseg6.mask.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16> } @llvm.riscv.vluxseg6.mask.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16> } [[TMP0]]
 //
 vint16mf4x6_t test_vluxseg6ei64_v_i16mf4x6_m_ntl_S1(vbool64_t mask, const int16_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -382,7 +382,7 @@ vint16mf4x6_t test_vluxseg6ei64_v_i16mf4x6_m_ntl_S1(vbool64_t mask, const int16_
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16> } @test_vluxseg6ei64_v_i16mf2x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 2 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16> } @llvm.riscv.vluxseg6.mask.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16> } @llvm.riscv.vluxseg6.mask.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16> } [[TMP0]]
 //
 vint16mf2x6_t test_vluxseg6ei64_v_i16mf2x6_m_ntl_S1(vbool32_t mask, const int16_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -392,7 +392,7 @@ vint16mf2x6_t test_vluxseg6ei64_v_i16mf2x6_m_ntl_S1(vbool32_t mask, const int16_
 // CHECK-RV64-LABEL: define dso_local { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16> } @test_vluxseg6ei64_v_i16m1x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 4 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16> } @llvm.riscv.vluxseg6.mask.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16> } @llvm.riscv.vluxseg6.mask.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16> } [[TMP0]]
 //
 vint16m1x6_t test_vluxseg6ei64_v_i16m1x6_m_ntl_S1(vbool16_t mask, const int16_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -402,7 +402,7 @@ vint16m1x6_t test_vluxseg6ei64_v_i16m1x6_m_ntl_S1(vbool16_t mask, const int16_t 
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @test_vluxseg6ei64_v_i32mf2x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg6.mask.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg6.mask.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP0]]
 //
 vint32mf2x6_t test_vluxseg6ei64_v_i32mf2x6_m_ntl_S1(vbool64_t mask, const int32_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -412,7 +412,7 @@ vint32mf2x6_t test_vluxseg6ei64_v_i32mf2x6_m_ntl_S1(vbool64_t mask, const int32_
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @test_vluxseg6ei64_v_i32m1x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 2 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.riscv.vluxseg6.mask.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.riscv.vluxseg6.mask.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } [[TMP0]]
 //
 vint32m1x6_t test_vluxseg6ei64_v_i32m1x6_m_ntl_S1(vbool32_t mask, const int32_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -422,7 +422,7 @@ vint32m1x6_t test_vluxseg6ei64_v_i32m1x6_m_ntl_S1(vbool32_t mask, const int32_t 
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64> } @test_vluxseg6ei64_v_i64m1x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64> } @llvm.riscv.vluxseg6.mask.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64> } @llvm.riscv.vluxseg6.mask.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64> } [[TMP0]]
 //
 vint64m1x6_t test_vluxseg6ei64_v_i64m1x6_m_ntl_S1(vbool64_t mask, const int64_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -432,7 +432,7 @@ vint64m1x6_t test_vluxseg6ei64_v_i64m1x6_m_ntl_S1(vbool64_t mask, const int64_t 
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @test_vluxseg6ei64_v_u8mf8x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @llvm.riscv.vluxseg6.mask.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } @llvm.riscv.vluxseg6.mask.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, <vscale x 1 x i8> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8>, <vscale x 1 x i8> } [[TMP0]]
 //
 vuint8mf8x6_t test_vluxseg6ei64_v_u8mf8x6_m_ntl_S1(vbool64_t mask, const uint8_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -442,7 +442,7 @@ vuint8mf8x6_t test_vluxseg6ei64_v_u8mf8x6_m_ntl_S1(vbool64_t mask, const uint8_t
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @test_vluxseg6ei64_v_u8mf4x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 2 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @llvm.riscv.vluxseg6.mask.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } @llvm.riscv.vluxseg6.mask.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, <vscale x 2 x i8> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8>, <vscale x 2 x i8> } [[TMP0]]
 //
 vuint8mf4x6_t test_vluxseg6ei64_v_u8mf4x6_m_ntl_S1(vbool32_t mask, const uint8_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -452,7 +452,7 @@ vuint8mf4x6_t test_vluxseg6ei64_v_u8mf4x6_m_ntl_S1(vbool32_t mask, const uint8_t
 // CHECK-RV64-LABEL: define dso_local { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @test_vluxseg6ei64_v_u8mf2x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 4 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.riscv.vluxseg6.mask.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } @llvm.riscv.vluxseg6.mask.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, <vscale x 4 x i8> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8>, <vscale x 4 x i8> } [[TMP0]]
 //
 vuint8mf2x6_t test_vluxseg6ei64_v_u8mf2x6_m_ntl_S1(vbool16_t mask, const uint8_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -462,7 +462,7 @@ vuint8mf2x6_t test_vluxseg6ei64_v_u8mf2x6_m_ntl_S1(vbool16_t mask, const uint8_t
 // CHECK-RV64-LABEL: define dso_local { <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8> } @test_vluxseg6ei64_v_u8m1x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 8 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8> } @llvm.riscv.vluxseg6.mask.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, ptr [[BASE]], <vscale x 8 x i64> [[BINDEX]], <vscale x 8 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8> } @llvm.riscv.vluxseg6.mask.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, <vscale x 8 x i8> poison, ptr [[BASE]], <vscale x 8 x i64> [[BINDEX]], <vscale x 8 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8>, <vscale x 8 x i8> } [[TMP0]]
 //
 vuint8m1x6_t test_vluxseg6ei64_v_u8m1x6_m_ntl_S1(vbool8_t mask, const uint8_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -472,7 +472,7 @@ vuint8m1x6_t test_vluxseg6ei64_v_u8m1x6_m_ntl_S1(vbool8_t mask, const uint8_t *b
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16> } @test_vluxseg6ei64_v_u16mf4x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16> } @llvm.riscv.vluxseg6.mask.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16> } @llvm.riscv.vluxseg6.mask.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, <vscale x 1 x i16> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16> } [[TMP0]]
 //
 vuint16mf4x6_t test_vluxseg6ei64_v_u16mf4x6_m_ntl_S1(vbool64_t mask, const uint16_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -482,7 +482,7 @@ vuint16mf4x6_t test_vluxseg6ei64_v_u16mf4x6_m_ntl_S1(vbool64_t mask, const uint1
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16> } @test_vluxseg6ei64_v_u16mf2x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 2 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16> } @llvm.riscv.vluxseg6.mask.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16> } @llvm.riscv.vluxseg6.mask.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, <vscale x 2 x i16> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16> } [[TMP0]]
 //
 vuint16mf2x6_t test_vluxseg6ei64_v_u16mf2x6_m_ntl_S1(vbool32_t mask, const uint16_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -492,7 +492,7 @@ vuint16mf2x6_t test_vluxseg6ei64_v_u16mf2x6_m_ntl_S1(vbool32_t mask, const uint1
 // CHECK-RV64-LABEL: define dso_local { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16> } @test_vluxseg6ei64_v_u16m1x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 4 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16> } @llvm.riscv.vluxseg6.mask.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16> } @llvm.riscv.vluxseg6.mask.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, <vscale x 4 x i16> poison, ptr [[BASE]], <vscale x 4 x i64> [[BINDEX]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16> } [[TMP0]]
 //
 vuint16m1x6_t test_vluxseg6ei64_v_u16m1x6_m_ntl_S1(vbool16_t mask, const uint16_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -502,7 +502,7 @@ vuint16m1x6_t test_vluxseg6ei64_v_u16m1x6_m_ntl_S1(vbool16_t mask, const uint16_
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @test_vluxseg6ei64_v_u32mf2x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg6.mask.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg6.mask.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, <vscale x 1 x i32> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP0]]
 //
 vuint32mf2x6_t test_vluxseg6ei64_v_u32mf2x6_m_ntl_S1(vbool64_t mask, const uint32_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -512,7 +512,7 @@ vuint32mf2x6_t test_vluxseg6ei64_v_u32mf2x6_m_ntl_S1(vbool64_t mask, const uint3
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @test_vluxseg6ei64_v_u32m1x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 2 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.riscv.vluxseg6.mask.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.riscv.vluxseg6.mask.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, <vscale x 2 x i32> poison, ptr [[BASE]], <vscale x 2 x i64> [[BINDEX]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } [[TMP0]]
 //
 vuint32m1x6_t test_vluxseg6ei64_v_u32m1x6_m_ntl_S1(vbool32_t mask, const uint32_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -522,7 +522,7 @@ vuint32m1x6_t test_vluxseg6ei64_v_u32m1x6_m_ntl_S1(vbool32_t mask, const uint32_
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64> } @test_vluxseg6ei64_v_u64m1x6_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64> } @llvm.riscv.vluxseg6.mask.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64> } @llvm.riscv.vluxseg6.mask.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, <vscale x 1 x i64> poison, ptr [[BASE]], <vscale x 1 x i64> [[BINDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret { <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64>, <vscale x 1 x i64> } [[TMP0]]
 //
 vuint64m1x6_t test_vluxseg6ei64_v_u64m1x6_m_ntl_S1(vbool64_t mask, const uint64_t *base, vuint64m1_t bindex, size_t vl, int domain) {

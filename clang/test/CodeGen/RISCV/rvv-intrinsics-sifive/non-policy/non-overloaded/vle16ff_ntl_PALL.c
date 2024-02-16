@@ -14,7 +14,7 @@
 #include <riscv_ntlh.h>
 // CHECK-LABEL: @test_vle16ff_v_f16mf4_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x half>, i64 } @llvm.riscv.vleff.nxv1f16.i64(<vscale x 1 x half> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x half>, i64 } @llvm.riscv.vleff.nxv1f16.i64(<vscale x 1 x half> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6:![0-9]+]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x half>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x half>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -26,7 +26,7 @@ vfloat16mf4_t test_vle16ff_v_f16mf4_ntl_PALL(const _Float16 *base, size_t *new_v
 
 // CHECK-LABEL: @test_vle16ff_v_f16mf2_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x half>, i64 } @llvm.riscv.vleff.nxv2f16.i64(<vscale x 2 x half> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x half>, i64 } @llvm.riscv.vleff.nxv2f16.i64(<vscale x 2 x half> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x half>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x half>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -38,7 +38,7 @@ vfloat16mf2_t test_vle16ff_v_f16mf2_ntl_PALL(const _Float16 *base, size_t *new_v
 
 // CHECK-LABEL: @test_vle16ff_v_f16m1_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x half>, i64 } @llvm.riscv.vleff.nxv4f16.i64(<vscale x 4 x half> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x half>, i64 } @llvm.riscv.vleff.nxv4f16.i64(<vscale x 4 x half> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x half>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x half>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -50,7 +50,7 @@ vfloat16m1_t test_vle16ff_v_f16m1_ntl_PALL(const _Float16 *base, size_t *new_vl,
 
 // CHECK-LABEL: @test_vle16ff_v_f16m2_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x half>, i64 } @llvm.riscv.vleff.nxv8f16.i64(<vscale x 8 x half> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x half>, i64 } @llvm.riscv.vleff.nxv8f16.i64(<vscale x 8 x half> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x half>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x half>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -62,7 +62,7 @@ vfloat16m2_t test_vle16ff_v_f16m2_ntl_PALL(const _Float16 *base, size_t *new_vl,
 
 // CHECK-LABEL: @test_vle16ff_v_f16m4_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x half>, i64 } @llvm.riscv.vleff.nxv16f16.i64(<vscale x 16 x half> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x half>, i64 } @llvm.riscv.vleff.nxv16f16.i64(<vscale x 16 x half> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 16 x half>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x half>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -74,7 +74,7 @@ vfloat16m4_t test_vle16ff_v_f16m4_ntl_PALL(const _Float16 *base, size_t *new_vl,
 
 // CHECK-LABEL: @test_vle16ff_v_f16m8_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 32 x half>, i64 } @llvm.riscv.vleff.nxv32f16.i64(<vscale x 32 x half> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 32 x half>, i64 } @llvm.riscv.vleff.nxv32f16.i64(<vscale x 32 x half> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 32 x half>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x half>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -86,7 +86,7 @@ vfloat16m8_t test_vle16ff_v_f16m8_ntl_PALL(const _Float16 *base, size_t *new_vl,
 
 // CHECK-LABEL: @test_vle16ff_v_i16mf4_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, i64 } @llvm.riscv.vleff.nxv1i16.i64(<vscale x 1 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, i64 } @llvm.riscv.vleff.nxv1i16.i64(<vscale x 1 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -98,7 +98,7 @@ vint16mf4_t test_vle16ff_v_i16mf4_ntl_PALL(const int16_t *base, size_t *new_vl, 
 
 // CHECK-LABEL: @test_vle16ff_v_i16mf2_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, i64 } @llvm.riscv.vleff.nxv2i16.i64(<vscale x 2 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, i64 } @llvm.riscv.vleff.nxv2i16.i64(<vscale x 2 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -110,7 +110,7 @@ vint16mf2_t test_vle16ff_v_i16mf2_ntl_PALL(const int16_t *base, size_t *new_vl, 
 
 // CHECK-LABEL: @test_vle16ff_v_i16m1_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, i64 } @llvm.riscv.vleff.nxv4i16.i64(<vscale x 4 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, i64 } @llvm.riscv.vleff.nxv4i16.i64(<vscale x 4 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -122,7 +122,7 @@ vint16m1_t test_vle16ff_v_i16m1_ntl_PALL(const int16_t *base, size_t *new_vl, si
 
 // CHECK-LABEL: @test_vle16ff_v_i16m2_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i16>, i64 } @llvm.riscv.vleff.nxv8i16.i64(<vscale x 8 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i16>, i64 } @llvm.riscv.vleff.nxv8i16.i64(<vscale x 8 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -134,7 +134,7 @@ vint16m2_t test_vle16ff_v_i16m2_ntl_PALL(const int16_t *base, size_t *new_vl, si
 
 // CHECK-LABEL: @test_vle16ff_v_i16m4_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i16>, i64 } @llvm.riscv.vleff.nxv16i16.i64(<vscale x 16 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i16>, i64 } @llvm.riscv.vleff.nxv16i16.i64(<vscale x 16 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 16 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -146,7 +146,7 @@ vint16m4_t test_vle16ff_v_i16m4_ntl_PALL(const int16_t *base, size_t *new_vl, si
 
 // CHECK-LABEL: @test_vle16ff_v_i16m8_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 32 x i16>, i64 } @llvm.riscv.vleff.nxv32i16.i64(<vscale x 32 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 32 x i16>, i64 } @llvm.riscv.vleff.nxv32i16.i64(<vscale x 32 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 32 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -158,7 +158,7 @@ vint16m8_t test_vle16ff_v_i16m8_ntl_PALL(const int16_t *base, size_t *new_vl, si
 
 // CHECK-LABEL: @test_vle16ff_v_u16mf4_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, i64 } @llvm.riscv.vleff.nxv1i16.i64(<vscale x 1 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, i64 } @llvm.riscv.vleff.nxv1i16.i64(<vscale x 1 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -170,7 +170,7 @@ vuint16mf4_t test_vle16ff_v_u16mf4_ntl_PALL(const uint16_t *base, size_t *new_vl
 
 // CHECK-LABEL: @test_vle16ff_v_u16mf2_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, i64 } @llvm.riscv.vleff.nxv2i16.i64(<vscale x 2 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, i64 } @llvm.riscv.vleff.nxv2i16.i64(<vscale x 2 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -182,7 +182,7 @@ vuint16mf2_t test_vle16ff_v_u16mf2_ntl_PALL(const uint16_t *base, size_t *new_vl
 
 // CHECK-LABEL: @test_vle16ff_v_u16m1_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, i64 } @llvm.riscv.vleff.nxv4i16.i64(<vscale x 4 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, i64 } @llvm.riscv.vleff.nxv4i16.i64(<vscale x 4 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -194,7 +194,7 @@ vuint16m1_t test_vle16ff_v_u16m1_ntl_PALL(const uint16_t *base, size_t *new_vl, 
 
 // CHECK-LABEL: @test_vle16ff_v_u16m2_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i16>, i64 } @llvm.riscv.vleff.nxv8i16.i64(<vscale x 8 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i16>, i64 } @llvm.riscv.vleff.nxv8i16.i64(<vscale x 8 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -206,7 +206,7 @@ vuint16m2_t test_vle16ff_v_u16m2_ntl_PALL(const uint16_t *base, size_t *new_vl, 
 
 // CHECK-LABEL: @test_vle16ff_v_u16m4_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i16>, i64 } @llvm.riscv.vleff.nxv16i16.i64(<vscale x 16 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i16>, i64 } @llvm.riscv.vleff.nxv16i16.i64(<vscale x 16 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 16 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -218,7 +218,7 @@ vuint16m4_t test_vle16ff_v_u16m4_ntl_PALL(const uint16_t *base, size_t *new_vl, 
 
 // CHECK-LABEL: @test_vle16ff_v_u16m8_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 32 x i16>, i64 } @llvm.riscv.vleff.nxv32i16.i64(<vscale x 32 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 32 x i16>, i64 } @llvm.riscv.vleff.nxv32i16.i64(<vscale x 32 x i16> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 32 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -230,7 +230,7 @@ vuint16m8_t test_vle16ff_v_u16m8_ntl_PALL(const uint16_t *base, size_t *new_vl, 
 
 // CHECK-LABEL: @test_vle16ff_v_f16mf4_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x half>, i64 } @llvm.riscv.vleff.mask.nxv1f16.i64(<vscale x 1 x half> poison, ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x half>, i64 } @llvm.riscv.vleff.mask.nxv1f16.i64(<vscale x 1 x half> poison, ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x half>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x half>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -242,7 +242,7 @@ vfloat16mf4_t test_vle16ff_v_f16mf4_m_ntl_PALL(vbool64_t mask, const _Float16 *b
 
 // CHECK-LABEL: @test_vle16ff_v_f16mf2_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x half>, i64 } @llvm.riscv.vleff.mask.nxv2f16.i64(<vscale x 2 x half> poison, ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x half>, i64 } @llvm.riscv.vleff.mask.nxv2f16.i64(<vscale x 2 x half> poison, ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x half>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x half>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -254,7 +254,7 @@ vfloat16mf2_t test_vle16ff_v_f16mf2_m_ntl_PALL(vbool32_t mask, const _Float16 *b
 
 // CHECK-LABEL: @test_vle16ff_v_f16m1_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x half>, i64 } @llvm.riscv.vleff.mask.nxv4f16.i64(<vscale x 4 x half> poison, ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x half>, i64 } @llvm.riscv.vleff.mask.nxv4f16.i64(<vscale x 4 x half> poison, ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x half>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x half>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -266,7 +266,7 @@ vfloat16m1_t test_vle16ff_v_f16m1_m_ntl_PALL(vbool16_t mask, const _Float16 *bas
 
 // CHECK-LABEL: @test_vle16ff_v_f16m2_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x half>, i64 } @llvm.riscv.vleff.mask.nxv8f16.i64(<vscale x 8 x half> poison, ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x half>, i64 } @llvm.riscv.vleff.mask.nxv8f16.i64(<vscale x 8 x half> poison, ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x half>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x half>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -278,7 +278,7 @@ vfloat16m2_t test_vle16ff_v_f16m2_m_ntl_PALL(vbool8_t mask, const _Float16 *base
 
 // CHECK-LABEL: @test_vle16ff_v_f16m4_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x half>, i64 } @llvm.riscv.vleff.mask.nxv16f16.i64(<vscale x 16 x half> poison, ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x half>, i64 } @llvm.riscv.vleff.mask.nxv16f16.i64(<vscale x 16 x half> poison, ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 16 x half>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x half>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -290,7 +290,7 @@ vfloat16m4_t test_vle16ff_v_f16m4_m_ntl_PALL(vbool4_t mask, const _Float16 *base
 
 // CHECK-LABEL: @test_vle16ff_v_f16m8_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 32 x half>, i64 } @llvm.riscv.vleff.mask.nxv32f16.i64(<vscale x 32 x half> poison, ptr [[BASE:%.*]], <vscale x 32 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 32 x half>, i64 } @llvm.riscv.vleff.mask.nxv32f16.i64(<vscale x 32 x half> poison, ptr [[BASE:%.*]], <vscale x 32 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 32 x half>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x half>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -302,7 +302,7 @@ vfloat16m8_t test_vle16ff_v_f16m8_m_ntl_PALL(vbool2_t mask, const _Float16 *base
 
 // CHECK-LABEL: @test_vle16ff_v_i16mf4_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, i64 } @llvm.riscv.vleff.mask.nxv1i16.i64(<vscale x 1 x i16> poison, ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, i64 } @llvm.riscv.vleff.mask.nxv1i16.i64(<vscale x 1 x i16> poison, ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -314,7 +314,7 @@ vint16mf4_t test_vle16ff_v_i16mf4_m_ntl_PALL(vbool64_t mask, const int16_t *base
 
 // CHECK-LABEL: @test_vle16ff_v_i16mf2_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, i64 } @llvm.riscv.vleff.mask.nxv2i16.i64(<vscale x 2 x i16> poison, ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, i64 } @llvm.riscv.vleff.mask.nxv2i16.i64(<vscale x 2 x i16> poison, ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -326,7 +326,7 @@ vint16mf2_t test_vle16ff_v_i16mf2_m_ntl_PALL(vbool32_t mask, const int16_t *base
 
 // CHECK-LABEL: @test_vle16ff_v_i16m1_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, i64 } @llvm.riscv.vleff.mask.nxv4i16.i64(<vscale x 4 x i16> poison, ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, i64 } @llvm.riscv.vleff.mask.nxv4i16.i64(<vscale x 4 x i16> poison, ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -338,7 +338,7 @@ vint16m1_t test_vle16ff_v_i16m1_m_ntl_PALL(vbool16_t mask, const int16_t *base, 
 
 // CHECK-LABEL: @test_vle16ff_v_i16m2_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i16>, i64 } @llvm.riscv.vleff.mask.nxv8i16.i64(<vscale x 8 x i16> poison, ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i16>, i64 } @llvm.riscv.vleff.mask.nxv8i16.i64(<vscale x 8 x i16> poison, ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -350,7 +350,7 @@ vint16m2_t test_vle16ff_v_i16m2_m_ntl_PALL(vbool8_t mask, const int16_t *base, s
 
 // CHECK-LABEL: @test_vle16ff_v_i16m4_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i16>, i64 } @llvm.riscv.vleff.mask.nxv16i16.i64(<vscale x 16 x i16> poison, ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i16>, i64 } @llvm.riscv.vleff.mask.nxv16i16.i64(<vscale x 16 x i16> poison, ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 16 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -362,7 +362,7 @@ vint16m4_t test_vle16ff_v_i16m4_m_ntl_PALL(vbool4_t mask, const int16_t *base, s
 
 // CHECK-LABEL: @test_vle16ff_v_i16m8_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 32 x i16>, i64 } @llvm.riscv.vleff.mask.nxv32i16.i64(<vscale x 32 x i16> poison, ptr [[BASE:%.*]], <vscale x 32 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 32 x i16>, i64 } @llvm.riscv.vleff.mask.nxv32i16.i64(<vscale x 32 x i16> poison, ptr [[BASE:%.*]], <vscale x 32 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 32 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -374,7 +374,7 @@ vint16m8_t test_vle16ff_v_i16m8_m_ntl_PALL(vbool2_t mask, const int16_t *base, s
 
 // CHECK-LABEL: @test_vle16ff_v_u16mf4_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, i64 } @llvm.riscv.vleff.mask.nxv1i16.i64(<vscale x 1 x i16> poison, ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, i64 } @llvm.riscv.vleff.mask.nxv1i16.i64(<vscale x 1 x i16> poison, ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -386,7 +386,7 @@ vuint16mf4_t test_vle16ff_v_u16mf4_m_ntl_PALL(vbool64_t mask, const uint16_t *ba
 
 // CHECK-LABEL: @test_vle16ff_v_u16mf2_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, i64 } @llvm.riscv.vleff.mask.nxv2i16.i64(<vscale x 2 x i16> poison, ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, i64 } @llvm.riscv.vleff.mask.nxv2i16.i64(<vscale x 2 x i16> poison, ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -398,7 +398,7 @@ vuint16mf2_t test_vle16ff_v_u16mf2_m_ntl_PALL(vbool32_t mask, const uint16_t *ba
 
 // CHECK-LABEL: @test_vle16ff_v_u16m1_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, i64 } @llvm.riscv.vleff.mask.nxv4i16.i64(<vscale x 4 x i16> poison, ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, i64 } @llvm.riscv.vleff.mask.nxv4i16.i64(<vscale x 4 x i16> poison, ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -410,7 +410,7 @@ vuint16m1_t test_vle16ff_v_u16m1_m_ntl_PALL(vbool16_t mask, const uint16_t *base
 
 // CHECK-LABEL: @test_vle16ff_v_u16m2_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i16>, i64 } @llvm.riscv.vleff.mask.nxv8i16.i64(<vscale x 8 x i16> poison, ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i16>, i64 } @llvm.riscv.vleff.mask.nxv8i16.i64(<vscale x 8 x i16> poison, ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -422,7 +422,7 @@ vuint16m2_t test_vle16ff_v_u16m2_m_ntl_PALL(vbool8_t mask, const uint16_t *base,
 
 // CHECK-LABEL: @test_vle16ff_v_u16m4_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i16>, i64 } @llvm.riscv.vleff.mask.nxv16i16.i64(<vscale x 16 x i16> poison, ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i16>, i64 } @llvm.riscv.vleff.mask.nxv16i16.i64(<vscale x 16 x i16> poison, ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 16 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -434,7 +434,7 @@ vuint16m4_t test_vle16ff_v_u16m4_m_ntl_PALL(vbool4_t mask, const uint16_t *base,
 
 // CHECK-LABEL: @test_vle16ff_v_u16m8_m_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 32 x i16>, i64 } @llvm.riscv.vleff.mask.nxv32i16.i64(<vscale x 32 x i16> poison, ptr [[BASE:%.*]], <vscale x 32 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 32 x i16>, i64 } @llvm.riscv.vleff.mask.nxv32i16.i64(<vscale x 32 x i16> poison, ptr [[BASE:%.*]], <vscale x 32 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 32 x i16>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 32 x i16>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8

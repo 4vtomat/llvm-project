@@ -12,7 +12,7 @@
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x float>, <vscale x 1 x float> } @test_vlseg2e32ff_v_f32mf2x2_ntl_ALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0:[0-9]+]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x float>, <vscale x 1 x float>, i64 } @llvm.riscv.vlseg2ff.nxv1f32.i64(<vscale x 1 x float> poison, <vscale x 1 x float> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x float>, <vscale x 1 x float>, i64 } @llvm.riscv.vlseg2ff.nxv1f32.i64(<vscale x 1 x float> poison, <vscale x 1 x float> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal [[META6:![0-9]+]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x float>, <vscale x 1 x float>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 1 x float>, <vscale x 1 x float> } poison, <vscale x 1 x float> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 1 x float>, <vscale x 1 x float>, i64 } [[TMP0]], 1
@@ -28,7 +28,7 @@ vfloat32mf2x2_t test_vlseg2e32ff_v_f32mf2x2_ntl_ALL(const float *base, size_t *n
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x float>, <vscale x 2 x float> } @test_vlseg2e32ff_v_f32m1x2_ntl_ALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x float>, <vscale x 2 x float>, i64 } @llvm.riscv.vlseg2ff.nxv2f32.i64(<vscale x 2 x float> poison, <vscale x 2 x float> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x float>, <vscale x 2 x float>, i64 } @llvm.riscv.vlseg2ff.nxv2f32.i64(<vscale x 2 x float> poison, <vscale x 2 x float> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 2 x float>, <vscale x 2 x float> } poison, <vscale x 2 x float> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, i64 } [[TMP0]], 1
@@ -44,7 +44,7 @@ vfloat32m1x2_t test_vlseg2e32ff_v_f32m1x2_ntl_ALL(const float *base, size_t *new
 // CHECK-RV64-LABEL: define dso_local { <vscale x 4 x float>, <vscale x 4 x float> } @test_vlseg2e32ff_v_f32m2x2_ntl_ALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x float>, <vscale x 4 x float>, i64 } @llvm.riscv.vlseg2ff.nxv4f32.i64(<vscale x 4 x float> poison, <vscale x 4 x float> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x float>, <vscale x 4 x float>, i64 } @llvm.riscv.vlseg2ff.nxv4f32.i64(<vscale x 4 x float> poison, <vscale x 4 x float> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x float>, <vscale x 4 x float>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 4 x float>, <vscale x 4 x float> } poison, <vscale x 4 x float> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 4 x float>, <vscale x 4 x float>, i64 } [[TMP0]], 1
@@ -60,7 +60,7 @@ vfloat32m2x2_t test_vlseg2e32ff_v_f32m2x2_ntl_ALL(const float *base, size_t *new
 // CHECK-RV64-LABEL: define dso_local { <vscale x 8 x float>, <vscale x 8 x float> } @test_vlseg2e32ff_v_f32m4x2_ntl_ALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x float>, <vscale x 8 x float>, i64 } @llvm.riscv.vlseg2ff.nxv8f32.i64(<vscale x 8 x float> poison, <vscale x 8 x float> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x float>, <vscale x 8 x float>, i64 } @llvm.riscv.vlseg2ff.nxv8f32.i64(<vscale x 8 x float> poison, <vscale x 8 x float> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x float>, <vscale x 8 x float>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 8 x float>, <vscale x 8 x float> } poison, <vscale x 8 x float> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 8 x float>, <vscale x 8 x float>, i64 } [[TMP0]], 1
@@ -76,7 +76,7 @@ vfloat32m4x2_t test_vlseg2e32ff_v_f32m4x2_ntl_ALL(const float *base, size_t *new
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i32>, <vscale x 1 x i32> } @test_vlseg2e32ff_v_i32mf2x2_ntl_ALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, <vscale x 1 x i32>, i64 } @llvm.riscv.vlseg2ff.nxv1i32.i64(<vscale x 1 x i32> poison, <vscale x 1 x i32> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, <vscale x 1 x i32>, i64 } @llvm.riscv.vlseg2ff.nxv1i32.i64(<vscale x 1 x i32> poison, <vscale x 1 x i32> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 1 x i32>, <vscale x 1 x i32> } poison, <vscale x 1 x i32> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, i64 } [[TMP0]], 1
@@ -92,7 +92,7 @@ vint32mf2x2_t test_vlseg2e32ff_v_i32mf2x2_ntl_ALL(const int32_t *base, size_t *n
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x i32>, <vscale x 2 x i32> } @test_vlseg2e32ff_v_i32m1x2_ntl_ALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32>, i64 } @llvm.riscv.vlseg2ff.nxv2i32.i64(<vscale x 2 x i32> poison, <vscale x 2 x i32> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32>, i64 } @llvm.riscv.vlseg2ff.nxv2i32.i64(<vscale x 2 x i32> poison, <vscale x 2 x i32> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 2 x i32>, <vscale x 2 x i32> } poison, <vscale x 2 x i32> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, i64 } [[TMP0]], 1
@@ -108,7 +108,7 @@ vint32m1x2_t test_vlseg2e32ff_v_i32m1x2_ntl_ALL(const int32_t *base, size_t *new
 // CHECK-RV64-LABEL: define dso_local { <vscale x 4 x i32>, <vscale x 4 x i32> } @test_vlseg2e32ff_v_i32m2x2_ntl_ALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, <vscale x 4 x i32>, i64 } @llvm.riscv.vlseg2ff.nxv4i32.i64(<vscale x 4 x i32> poison, <vscale x 4 x i32> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, <vscale x 4 x i32>, i64 } @llvm.riscv.vlseg2ff.nxv4i32.i64(<vscale x 4 x i32> poison, <vscale x 4 x i32> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i32>, <vscale x 4 x i32>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 4 x i32>, <vscale x 4 x i32> } poison, <vscale x 4 x i32> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 4 x i32>, <vscale x 4 x i32>, i64 } [[TMP0]], 1
@@ -124,7 +124,7 @@ vint32m2x2_t test_vlseg2e32ff_v_i32m2x2_ntl_ALL(const int32_t *base, size_t *new
 // CHECK-RV64-LABEL: define dso_local { <vscale x 8 x i32>, <vscale x 8 x i32> } @test_vlseg2e32ff_v_i32m4x2_ntl_ALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, <vscale x 8 x i32>, i64 } @llvm.riscv.vlseg2ff.nxv8i32.i64(<vscale x 8 x i32> poison, <vscale x 8 x i32> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, <vscale x 8 x i32>, i64 } @llvm.riscv.vlseg2ff.nxv8i32.i64(<vscale x 8 x i32> poison, <vscale x 8 x i32> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x i32>, <vscale x 8 x i32>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 8 x i32>, <vscale x 8 x i32> } poison, <vscale x 8 x i32> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 8 x i32>, <vscale x 8 x i32>, i64 } [[TMP0]], 1
@@ -140,7 +140,7 @@ vint32m4x2_t test_vlseg2e32ff_v_i32m4x2_ntl_ALL(const int32_t *base, size_t *new
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i32>, <vscale x 1 x i32> } @test_vlseg2e32ff_v_u32mf2x2_ntl_ALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, <vscale x 1 x i32>, i64 } @llvm.riscv.vlseg2ff.nxv1i32.i64(<vscale x 1 x i32> poison, <vscale x 1 x i32> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, <vscale x 1 x i32>, i64 } @llvm.riscv.vlseg2ff.nxv1i32.i64(<vscale x 1 x i32> poison, <vscale x 1 x i32> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 1 x i32>, <vscale x 1 x i32> } poison, <vscale x 1 x i32> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, i64 } [[TMP0]], 1
@@ -156,7 +156,7 @@ vuint32mf2x2_t test_vlseg2e32ff_v_u32mf2x2_ntl_ALL(const uint32_t *base, size_t 
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x i32>, <vscale x 2 x i32> } @test_vlseg2e32ff_v_u32m1x2_ntl_ALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32>, i64 } @llvm.riscv.vlseg2ff.nxv2i32.i64(<vscale x 2 x i32> poison, <vscale x 2 x i32> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32>, i64 } @llvm.riscv.vlseg2ff.nxv2i32.i64(<vscale x 2 x i32> poison, <vscale x 2 x i32> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 2 x i32>, <vscale x 2 x i32> } poison, <vscale x 2 x i32> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, i64 } [[TMP0]], 1
@@ -172,7 +172,7 @@ vuint32m1x2_t test_vlseg2e32ff_v_u32m1x2_ntl_ALL(const uint32_t *base, size_t *n
 // CHECK-RV64-LABEL: define dso_local { <vscale x 4 x i32>, <vscale x 4 x i32> } @test_vlseg2e32ff_v_u32m2x2_ntl_ALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, <vscale x 4 x i32>, i64 } @llvm.riscv.vlseg2ff.nxv4i32.i64(<vscale x 4 x i32> poison, <vscale x 4 x i32> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, <vscale x 4 x i32>, i64 } @llvm.riscv.vlseg2ff.nxv4i32.i64(<vscale x 4 x i32> poison, <vscale x 4 x i32> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i32>, <vscale x 4 x i32>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 4 x i32>, <vscale x 4 x i32> } poison, <vscale x 4 x i32> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 4 x i32>, <vscale x 4 x i32>, i64 } [[TMP0]], 1
@@ -188,7 +188,7 @@ vuint32m2x2_t test_vlseg2e32ff_v_u32m2x2_ntl_ALL(const uint32_t *base, size_t *n
 // CHECK-RV64-LABEL: define dso_local { <vscale x 8 x i32>, <vscale x 8 x i32> } @test_vlseg2e32ff_v_u32m4x2_ntl_ALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, <vscale x 8 x i32>, i64 } @llvm.riscv.vlseg2ff.nxv8i32.i64(<vscale x 8 x i32> poison, <vscale x 8 x i32> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, <vscale x 8 x i32>, i64 } @llvm.riscv.vlseg2ff.nxv8i32.i64(<vscale x 8 x i32> poison, <vscale x 8 x i32> poison, ptr [[BASE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x i32>, <vscale x 8 x i32>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 8 x i32>, <vscale x 8 x i32> } poison, <vscale x 8 x i32> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 8 x i32>, <vscale x 8 x i32>, i64 } [[TMP0]], 1
@@ -204,7 +204,7 @@ vuint32m4x2_t test_vlseg2e32ff_v_u32m4x2_ntl_ALL(const uint32_t *base, size_t *n
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x float>, <vscale x 1 x float> } @test_vlseg2e32ff_v_f32mf2x2_m_ntl_ALL
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x float>, <vscale x 1 x float>, i64 } @llvm.riscv.vlseg2ff.mask.nxv1f32.i64(<vscale x 1 x float> poison, <vscale x 1 x float> poison, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x float>, <vscale x 1 x float>, i64 } @llvm.riscv.vlseg2ff.mask.nxv1f32.i64(<vscale x 1 x float> poison, <vscale x 1 x float> poison, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x float>, <vscale x 1 x float>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 1 x float>, <vscale x 1 x float> } poison, <vscale x 1 x float> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 1 x float>, <vscale x 1 x float>, i64 } [[TMP0]], 1
@@ -220,7 +220,7 @@ vfloat32mf2x2_t test_vlseg2e32ff_v_f32mf2x2_m_ntl_ALL(vbool64_t mask, const floa
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x float>, <vscale x 2 x float> } @test_vlseg2e32ff_v_f32m1x2_m_ntl_ALL
 // CHECK-RV64-SAME: (<vscale x 2 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x float>, <vscale x 2 x float>, i64 } @llvm.riscv.vlseg2ff.mask.nxv2f32.i64(<vscale x 2 x float> poison, <vscale x 2 x float> poison, ptr [[BASE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x float>, <vscale x 2 x float>, i64 } @llvm.riscv.vlseg2ff.mask.nxv2f32.i64(<vscale x 2 x float> poison, <vscale x 2 x float> poison, ptr [[BASE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 2 x float>, <vscale x 2 x float> } poison, <vscale x 2 x float> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float>, i64 } [[TMP0]], 1
@@ -236,7 +236,7 @@ vfloat32m1x2_t test_vlseg2e32ff_v_f32m1x2_m_ntl_ALL(vbool32_t mask, const float 
 // CHECK-RV64-LABEL: define dso_local { <vscale x 4 x float>, <vscale x 4 x float> } @test_vlseg2e32ff_v_f32m2x2_m_ntl_ALL
 // CHECK-RV64-SAME: (<vscale x 4 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x float>, <vscale x 4 x float>, i64 } @llvm.riscv.vlseg2ff.mask.nxv4f32.i64(<vscale x 4 x float> poison, <vscale x 4 x float> poison, ptr [[BASE]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x float>, <vscale x 4 x float>, i64 } @llvm.riscv.vlseg2ff.mask.nxv4f32.i64(<vscale x 4 x float> poison, <vscale x 4 x float> poison, ptr [[BASE]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x float>, <vscale x 4 x float>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 4 x float>, <vscale x 4 x float> } poison, <vscale x 4 x float> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 4 x float>, <vscale x 4 x float>, i64 } [[TMP0]], 1
@@ -252,7 +252,7 @@ vfloat32m2x2_t test_vlseg2e32ff_v_f32m2x2_m_ntl_ALL(vbool16_t mask, const float 
 // CHECK-RV64-LABEL: define dso_local { <vscale x 8 x float>, <vscale x 8 x float> } @test_vlseg2e32ff_v_f32m4x2_m_ntl_ALL
 // CHECK-RV64-SAME: (<vscale x 8 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x float>, <vscale x 8 x float>, i64 } @llvm.riscv.vlseg2ff.mask.nxv8f32.i64(<vscale x 8 x float> poison, <vscale x 8 x float> poison, ptr [[BASE]], <vscale x 8 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x float>, <vscale x 8 x float>, i64 } @llvm.riscv.vlseg2ff.mask.nxv8f32.i64(<vscale x 8 x float> poison, <vscale x 8 x float> poison, ptr [[BASE]], <vscale x 8 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x float>, <vscale x 8 x float>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 8 x float>, <vscale x 8 x float> } poison, <vscale x 8 x float> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 8 x float>, <vscale x 8 x float>, i64 } [[TMP0]], 1
@@ -268,7 +268,7 @@ vfloat32m4x2_t test_vlseg2e32ff_v_f32m4x2_m_ntl_ALL(vbool8_t mask, const float *
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i32>, <vscale x 1 x i32> } @test_vlseg2e32ff_v_i32mf2x2_m_ntl_ALL
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, <vscale x 1 x i32>, i64 } @llvm.riscv.vlseg2ff.mask.nxv1i32.i64(<vscale x 1 x i32> poison, <vscale x 1 x i32> poison, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, <vscale x 1 x i32>, i64 } @llvm.riscv.vlseg2ff.mask.nxv1i32.i64(<vscale x 1 x i32> poison, <vscale x 1 x i32> poison, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 1 x i32>, <vscale x 1 x i32> } poison, <vscale x 1 x i32> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, i64 } [[TMP0]], 1
@@ -284,7 +284,7 @@ vint32mf2x2_t test_vlseg2e32ff_v_i32mf2x2_m_ntl_ALL(vbool64_t mask, const int32_
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x i32>, <vscale x 2 x i32> } @test_vlseg2e32ff_v_i32m1x2_m_ntl_ALL
 // CHECK-RV64-SAME: (<vscale x 2 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32>, i64 } @llvm.riscv.vlseg2ff.mask.nxv2i32.i64(<vscale x 2 x i32> poison, <vscale x 2 x i32> poison, ptr [[BASE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32>, i64 } @llvm.riscv.vlseg2ff.mask.nxv2i32.i64(<vscale x 2 x i32> poison, <vscale x 2 x i32> poison, ptr [[BASE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 2 x i32>, <vscale x 2 x i32> } poison, <vscale x 2 x i32> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, i64 } [[TMP0]], 1
@@ -300,7 +300,7 @@ vint32m1x2_t test_vlseg2e32ff_v_i32m1x2_m_ntl_ALL(vbool32_t mask, const int32_t 
 // CHECK-RV64-LABEL: define dso_local { <vscale x 4 x i32>, <vscale x 4 x i32> } @test_vlseg2e32ff_v_i32m2x2_m_ntl_ALL
 // CHECK-RV64-SAME: (<vscale x 4 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, <vscale x 4 x i32>, i64 } @llvm.riscv.vlseg2ff.mask.nxv4i32.i64(<vscale x 4 x i32> poison, <vscale x 4 x i32> poison, ptr [[BASE]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, <vscale x 4 x i32>, i64 } @llvm.riscv.vlseg2ff.mask.nxv4i32.i64(<vscale x 4 x i32> poison, <vscale x 4 x i32> poison, ptr [[BASE]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i32>, <vscale x 4 x i32>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 4 x i32>, <vscale x 4 x i32> } poison, <vscale x 4 x i32> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 4 x i32>, <vscale x 4 x i32>, i64 } [[TMP0]], 1
@@ -316,7 +316,7 @@ vint32m2x2_t test_vlseg2e32ff_v_i32m2x2_m_ntl_ALL(vbool16_t mask, const int32_t 
 // CHECK-RV64-LABEL: define dso_local { <vscale x 8 x i32>, <vscale x 8 x i32> } @test_vlseg2e32ff_v_i32m4x2_m_ntl_ALL
 // CHECK-RV64-SAME: (<vscale x 8 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, <vscale x 8 x i32>, i64 } @llvm.riscv.vlseg2ff.mask.nxv8i32.i64(<vscale x 8 x i32> poison, <vscale x 8 x i32> poison, ptr [[BASE]], <vscale x 8 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, <vscale x 8 x i32>, i64 } @llvm.riscv.vlseg2ff.mask.nxv8i32.i64(<vscale x 8 x i32> poison, <vscale x 8 x i32> poison, ptr [[BASE]], <vscale x 8 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x i32>, <vscale x 8 x i32>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 8 x i32>, <vscale x 8 x i32> } poison, <vscale x 8 x i32> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 8 x i32>, <vscale x 8 x i32>, i64 } [[TMP0]], 1
@@ -332,7 +332,7 @@ vint32m4x2_t test_vlseg2e32ff_v_i32m4x2_m_ntl_ALL(vbool8_t mask, const int32_t *
 // CHECK-RV64-LABEL: define dso_local { <vscale x 1 x i32>, <vscale x 1 x i32> } @test_vlseg2e32ff_v_u32mf2x2_m_ntl_ALL
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, <vscale x 1 x i32>, i64 } @llvm.riscv.vlseg2ff.mask.nxv1i32.i64(<vscale x 1 x i32> poison, <vscale x 1 x i32> poison, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, <vscale x 1 x i32>, i64 } @llvm.riscv.vlseg2ff.mask.nxv1i32.i64(<vscale x 1 x i32> poison, <vscale x 1 x i32> poison, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 1 x i32>, <vscale x 1 x i32> } poison, <vscale x 1 x i32> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, i64 } [[TMP0]], 1
@@ -348,7 +348,7 @@ vuint32mf2x2_t test_vlseg2e32ff_v_u32mf2x2_m_ntl_ALL(vbool64_t mask, const uint3
 // CHECK-RV64-LABEL: define dso_local { <vscale x 2 x i32>, <vscale x 2 x i32> } @test_vlseg2e32ff_v_u32m1x2_m_ntl_ALL
 // CHECK-RV64-SAME: (<vscale x 2 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32>, i64 } @llvm.riscv.vlseg2ff.mask.nxv2i32.i64(<vscale x 2 x i32> poison, <vscale x 2 x i32> poison, ptr [[BASE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32>, i64 } @llvm.riscv.vlseg2ff.mask.nxv2i32.i64(<vscale x 2 x i32> poison, <vscale x 2 x i32> poison, ptr [[BASE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 2 x i32>, <vscale x 2 x i32> } poison, <vscale x 2 x i32> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, i64 } [[TMP0]], 1
@@ -364,7 +364,7 @@ vuint32m1x2_t test_vlseg2e32ff_v_u32m1x2_m_ntl_ALL(vbool32_t mask, const uint32_
 // CHECK-RV64-LABEL: define dso_local { <vscale x 4 x i32>, <vscale x 4 x i32> } @test_vlseg2e32ff_v_u32m2x2_m_ntl_ALL
 // CHECK-RV64-SAME: (<vscale x 4 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, <vscale x 4 x i32>, i64 } @llvm.riscv.vlseg2ff.mask.nxv4i32.i64(<vscale x 4 x i32> poison, <vscale x 4 x i32> poison, ptr [[BASE]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, <vscale x 4 x i32>, i64 } @llvm.riscv.vlseg2ff.mask.nxv4i32.i64(<vscale x 4 x i32> poison, <vscale x 4 x i32> poison, ptr [[BASE]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i32>, <vscale x 4 x i32>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 4 x i32>, <vscale x 4 x i32> } poison, <vscale x 4 x i32> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 4 x i32>, <vscale x 4 x i32>, i64 } [[TMP0]], 1
@@ -380,7 +380,7 @@ vuint32m2x2_t test_vlseg2e32ff_v_u32m2x2_m_ntl_ALL(vbool16_t mask, const uint32_
 // CHECK-RV64-LABEL: define dso_local { <vscale x 8 x i32>, <vscale x 8 x i32> } @test_vlseg2e32ff_v_u32m4x2_m_ntl_ALL
 // CHECK-RV64-SAME: (<vscale x 8 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], ptr noundef [[NEW_VL:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, <vscale x 8 x i32>, i64 } @llvm.riscv.vlseg2ff.mask.nxv8i32.i64(<vscale x 8 x i32> poison, <vscale x 8 x i32> poison, ptr [[BASE]], <vscale x 8 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, <vscale x 8 x i32>, i64 } @llvm.riscv.vlseg2ff.mask.nxv8i32.i64(<vscale x 8 x i32> poison, <vscale x 8 x i32> poison, ptr [[BASE]], <vscale x 8 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x i32>, <vscale x 8 x i32>, i64 } [[TMP0]], 0
 // CHECK-RV64-NEXT:    [[TMP2:%.*]] = insertvalue { <vscale x 8 x i32>, <vscale x 8 x i32> } poison, <vscale x 8 x i32> [[TMP1]], 0
 // CHECK-RV64-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 8 x i32>, <vscale x 8 x i32>, i64 } [[TMP0]], 1

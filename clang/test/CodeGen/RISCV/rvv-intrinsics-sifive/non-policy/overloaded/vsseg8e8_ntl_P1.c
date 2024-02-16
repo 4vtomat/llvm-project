@@ -13,7 +13,7 @@
 #include <riscv_ntlh.h>
 // CHECK-LABEL: @test_vsseg8e8_v_i8mf8_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    call void @llvm.riscv.vsseg8.nxv1i8.i64(<vscale x 1 x i8> [[V0:%.*]], <vscale x 1 x i8> [[V1:%.*]], <vscale x 1 x i8> [[V2:%.*]], <vscale x 1 x i8> [[V3:%.*]], <vscale x 1 x i8> [[V4:%.*]], <vscale x 1 x i8> [[V5:%.*]], <vscale x 1 x i8> [[V6:%.*]], <vscale x 1 x i8> [[V7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    call void @llvm.riscv.vsseg8.nxv1i8.i64(<vscale x 1 x i8> [[V0:%.*]], <vscale x 1 x i8> [[V1:%.*]], <vscale x 1 x i8> [[V2:%.*]], <vscale x 1 x i8> [[V3:%.*]], <vscale x 1 x i8> [[V4:%.*]], <vscale x 1 x i8> [[V5:%.*]], <vscale x 1 x i8> [[V6:%.*]], <vscale x 1 x i8> [[V7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6:![0-9]+]]
 // CHECK-NEXT:    ret void
 //
 void test_vsseg8e8_v_i8mf8_ntl_P1(int8_t *base, vint8mf8_t v0, vint8mf8_t v1, vint8mf8_t v2, vint8mf8_t v3, vint8mf8_t v4, vint8mf8_t v5, vint8mf8_t v6, vint8mf8_t v7, size_t vl, int domain) {
@@ -22,7 +22,7 @@ void test_vsseg8e8_v_i8mf8_ntl_P1(int8_t *base, vint8mf8_t v0, vint8mf8_t v1, vi
 
 // CHECK-LABEL: @test_vsseg8e8_v_i8mf4_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    call void @llvm.riscv.vsseg8.nxv2i8.i64(<vscale x 2 x i8> [[V0:%.*]], <vscale x 2 x i8> [[V1:%.*]], <vscale x 2 x i8> [[V2:%.*]], <vscale x 2 x i8> [[V3:%.*]], <vscale x 2 x i8> [[V4:%.*]], <vscale x 2 x i8> [[V5:%.*]], <vscale x 2 x i8> [[V6:%.*]], <vscale x 2 x i8> [[V7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    call void @llvm.riscv.vsseg8.nxv2i8.i64(<vscale x 2 x i8> [[V0:%.*]], <vscale x 2 x i8> [[V1:%.*]], <vscale x 2 x i8> [[V2:%.*]], <vscale x 2 x i8> [[V3:%.*]], <vscale x 2 x i8> [[V4:%.*]], <vscale x 2 x i8> [[V5:%.*]], <vscale x 2 x i8> [[V6:%.*]], <vscale x 2 x i8> [[V7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret void
 //
 void test_vsseg8e8_v_i8mf4_ntl_P1(int8_t *base, vint8mf4_t v0, vint8mf4_t v1, vint8mf4_t v2, vint8mf4_t v3, vint8mf4_t v4, vint8mf4_t v5, vint8mf4_t v6, vint8mf4_t v7, size_t vl, int domain) {
@@ -31,7 +31,7 @@ void test_vsseg8e8_v_i8mf4_ntl_P1(int8_t *base, vint8mf4_t v0, vint8mf4_t v1, vi
 
 // CHECK-LABEL: @test_vsseg8e8_v_i8mf2_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    call void @llvm.riscv.vsseg8.nxv4i8.i64(<vscale x 4 x i8> [[V0:%.*]], <vscale x 4 x i8> [[V1:%.*]], <vscale x 4 x i8> [[V2:%.*]], <vscale x 4 x i8> [[V3:%.*]], <vscale x 4 x i8> [[V4:%.*]], <vscale x 4 x i8> [[V5:%.*]], <vscale x 4 x i8> [[V6:%.*]], <vscale x 4 x i8> [[V7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    call void @llvm.riscv.vsseg8.nxv4i8.i64(<vscale x 4 x i8> [[V0:%.*]], <vscale x 4 x i8> [[V1:%.*]], <vscale x 4 x i8> [[V2:%.*]], <vscale x 4 x i8> [[V3:%.*]], <vscale x 4 x i8> [[V4:%.*]], <vscale x 4 x i8> [[V5:%.*]], <vscale x 4 x i8> [[V6:%.*]], <vscale x 4 x i8> [[V7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret void
 //
 void test_vsseg8e8_v_i8mf2_ntl_P1(int8_t *base, vint8mf2_t v0, vint8mf2_t v1, vint8mf2_t v2, vint8mf2_t v3, vint8mf2_t v4, vint8mf2_t v5, vint8mf2_t v6, vint8mf2_t v7, size_t vl, int domain) {
@@ -40,7 +40,7 @@ void test_vsseg8e8_v_i8mf2_ntl_P1(int8_t *base, vint8mf2_t v0, vint8mf2_t v1, vi
 
 // CHECK-LABEL: @test_vsseg8e8_v_i8m1_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    call void @llvm.riscv.vsseg8.nxv8i8.i64(<vscale x 8 x i8> [[V0:%.*]], <vscale x 8 x i8> [[V1:%.*]], <vscale x 8 x i8> [[V2:%.*]], <vscale x 8 x i8> [[V3:%.*]], <vscale x 8 x i8> [[V4:%.*]], <vscale x 8 x i8> [[V5:%.*]], <vscale x 8 x i8> [[V6:%.*]], <vscale x 8 x i8> [[V7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    call void @llvm.riscv.vsseg8.nxv8i8.i64(<vscale x 8 x i8> [[V0:%.*]], <vscale x 8 x i8> [[V1:%.*]], <vscale x 8 x i8> [[V2:%.*]], <vscale x 8 x i8> [[V3:%.*]], <vscale x 8 x i8> [[V4:%.*]], <vscale x 8 x i8> [[V5:%.*]], <vscale x 8 x i8> [[V6:%.*]], <vscale x 8 x i8> [[V7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret void
 //
 void test_vsseg8e8_v_i8m1_ntl_P1(int8_t *base, vint8m1_t v0, vint8m1_t v1, vint8m1_t v2, vint8m1_t v3, vint8m1_t v4, vint8m1_t v5, vint8m1_t v6, vint8m1_t v7, size_t vl, int domain) {
@@ -49,7 +49,7 @@ void test_vsseg8e8_v_i8m1_ntl_P1(int8_t *base, vint8m1_t v0, vint8m1_t v1, vint8
 
 // CHECK-LABEL: @test_vsseg8e8_v_u8mf8_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    call void @llvm.riscv.vsseg8.nxv1i8.i64(<vscale x 1 x i8> [[V0:%.*]], <vscale x 1 x i8> [[V1:%.*]], <vscale x 1 x i8> [[V2:%.*]], <vscale x 1 x i8> [[V3:%.*]], <vscale x 1 x i8> [[V4:%.*]], <vscale x 1 x i8> [[V5:%.*]], <vscale x 1 x i8> [[V6:%.*]], <vscale x 1 x i8> [[V7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    call void @llvm.riscv.vsseg8.nxv1i8.i64(<vscale x 1 x i8> [[V0:%.*]], <vscale x 1 x i8> [[V1:%.*]], <vscale x 1 x i8> [[V2:%.*]], <vscale x 1 x i8> [[V3:%.*]], <vscale x 1 x i8> [[V4:%.*]], <vscale x 1 x i8> [[V5:%.*]], <vscale x 1 x i8> [[V6:%.*]], <vscale x 1 x i8> [[V7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret void
 //
 void test_vsseg8e8_v_u8mf8_ntl_P1(uint8_t *base, vuint8mf8_t v0, vuint8mf8_t v1, vuint8mf8_t v2, vuint8mf8_t v3, vuint8mf8_t v4, vuint8mf8_t v5, vuint8mf8_t v6, vuint8mf8_t v7, size_t vl, int domain) {
@@ -58,7 +58,7 @@ void test_vsseg8e8_v_u8mf8_ntl_P1(uint8_t *base, vuint8mf8_t v0, vuint8mf8_t v1,
 
 // CHECK-LABEL: @test_vsseg8e8_v_u8mf4_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    call void @llvm.riscv.vsseg8.nxv2i8.i64(<vscale x 2 x i8> [[V0:%.*]], <vscale x 2 x i8> [[V1:%.*]], <vscale x 2 x i8> [[V2:%.*]], <vscale x 2 x i8> [[V3:%.*]], <vscale x 2 x i8> [[V4:%.*]], <vscale x 2 x i8> [[V5:%.*]], <vscale x 2 x i8> [[V6:%.*]], <vscale x 2 x i8> [[V7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    call void @llvm.riscv.vsseg8.nxv2i8.i64(<vscale x 2 x i8> [[V0:%.*]], <vscale x 2 x i8> [[V1:%.*]], <vscale x 2 x i8> [[V2:%.*]], <vscale x 2 x i8> [[V3:%.*]], <vscale x 2 x i8> [[V4:%.*]], <vscale x 2 x i8> [[V5:%.*]], <vscale x 2 x i8> [[V6:%.*]], <vscale x 2 x i8> [[V7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret void
 //
 void test_vsseg8e8_v_u8mf4_ntl_P1(uint8_t *base, vuint8mf4_t v0, vuint8mf4_t v1, vuint8mf4_t v2, vuint8mf4_t v3, vuint8mf4_t v4, vuint8mf4_t v5, vuint8mf4_t v6, vuint8mf4_t v7, size_t vl, int domain) {
@@ -67,7 +67,7 @@ void test_vsseg8e8_v_u8mf4_ntl_P1(uint8_t *base, vuint8mf4_t v0, vuint8mf4_t v1,
 
 // CHECK-LABEL: @test_vsseg8e8_v_u8mf2_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    call void @llvm.riscv.vsseg8.nxv4i8.i64(<vscale x 4 x i8> [[V0:%.*]], <vscale x 4 x i8> [[V1:%.*]], <vscale x 4 x i8> [[V2:%.*]], <vscale x 4 x i8> [[V3:%.*]], <vscale x 4 x i8> [[V4:%.*]], <vscale x 4 x i8> [[V5:%.*]], <vscale x 4 x i8> [[V6:%.*]], <vscale x 4 x i8> [[V7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    call void @llvm.riscv.vsseg8.nxv4i8.i64(<vscale x 4 x i8> [[V0:%.*]], <vscale x 4 x i8> [[V1:%.*]], <vscale x 4 x i8> [[V2:%.*]], <vscale x 4 x i8> [[V3:%.*]], <vscale x 4 x i8> [[V4:%.*]], <vscale x 4 x i8> [[V5:%.*]], <vscale x 4 x i8> [[V6:%.*]], <vscale x 4 x i8> [[V7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret void
 //
 void test_vsseg8e8_v_u8mf2_ntl_P1(uint8_t *base, vuint8mf2_t v0, vuint8mf2_t v1, vuint8mf2_t v2, vuint8mf2_t v3, vuint8mf2_t v4, vuint8mf2_t v5, vuint8mf2_t v6, vuint8mf2_t v7, size_t vl, int domain) {
@@ -76,7 +76,7 @@ void test_vsseg8e8_v_u8mf2_ntl_P1(uint8_t *base, vuint8mf2_t v0, vuint8mf2_t v1,
 
 // CHECK-LABEL: @test_vsseg8e8_v_u8m1_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    call void @llvm.riscv.vsseg8.nxv8i8.i64(<vscale x 8 x i8> [[V0:%.*]], <vscale x 8 x i8> [[V1:%.*]], <vscale x 8 x i8> [[V2:%.*]], <vscale x 8 x i8> [[V3:%.*]], <vscale x 8 x i8> [[V4:%.*]], <vscale x 8 x i8> [[V5:%.*]], <vscale x 8 x i8> [[V6:%.*]], <vscale x 8 x i8> [[V7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    call void @llvm.riscv.vsseg8.nxv8i8.i64(<vscale x 8 x i8> [[V0:%.*]], <vscale x 8 x i8> [[V1:%.*]], <vscale x 8 x i8> [[V2:%.*]], <vscale x 8 x i8> [[V3:%.*]], <vscale x 8 x i8> [[V4:%.*]], <vscale x 8 x i8> [[V5:%.*]], <vscale x 8 x i8> [[V6:%.*]], <vscale x 8 x i8> [[V7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret void
 //
 void test_vsseg8e8_v_u8m1_ntl_P1(uint8_t *base, vuint8m1_t v0, vuint8m1_t v1, vuint8m1_t v2, vuint8m1_t v3, vuint8m1_t v4, vuint8m1_t v5, vuint8m1_t v6, vuint8m1_t v7, size_t vl, int domain) {
@@ -85,7 +85,7 @@ void test_vsseg8e8_v_u8m1_ntl_P1(uint8_t *base, vuint8m1_t v0, vuint8m1_t v1, vu
 
 // CHECK-LABEL: @test_vsseg8e8_v_i8mf8_m_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    call void @llvm.riscv.vsseg8.mask.nxv1i8.i64(<vscale x 1 x i8> [[V0:%.*]], <vscale x 1 x i8> [[V1:%.*]], <vscale x 1 x i8> [[V2:%.*]], <vscale x 1 x i8> [[V3:%.*]], <vscale x 1 x i8> [[V4:%.*]], <vscale x 1 x i8> [[V5:%.*]], <vscale x 1 x i8> [[V6:%.*]], <vscale x 1 x i8> [[V7:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    call void @llvm.riscv.vsseg8.mask.nxv1i8.i64(<vscale x 1 x i8> [[V0:%.*]], <vscale x 1 x i8> [[V1:%.*]], <vscale x 1 x i8> [[V2:%.*]], <vscale x 1 x i8> [[V3:%.*]], <vscale x 1 x i8> [[V4:%.*]], <vscale x 1 x i8> [[V5:%.*]], <vscale x 1 x i8> [[V6:%.*]], <vscale x 1 x i8> [[V7:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret void
 //
 void test_vsseg8e8_v_i8mf8_m_ntl_P1(vbool64_t mask, int8_t *base, vint8mf8_t v0, vint8mf8_t v1, vint8mf8_t v2, vint8mf8_t v3, vint8mf8_t v4, vint8mf8_t v5, vint8mf8_t v6, vint8mf8_t v7, size_t vl, int domain) {
@@ -94,7 +94,7 @@ void test_vsseg8e8_v_i8mf8_m_ntl_P1(vbool64_t mask, int8_t *base, vint8mf8_t v0,
 
 // CHECK-LABEL: @test_vsseg8e8_v_i8mf4_m_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    call void @llvm.riscv.vsseg8.mask.nxv2i8.i64(<vscale x 2 x i8> [[V0:%.*]], <vscale x 2 x i8> [[V1:%.*]], <vscale x 2 x i8> [[V2:%.*]], <vscale x 2 x i8> [[V3:%.*]], <vscale x 2 x i8> [[V4:%.*]], <vscale x 2 x i8> [[V5:%.*]], <vscale x 2 x i8> [[V6:%.*]], <vscale x 2 x i8> [[V7:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    call void @llvm.riscv.vsseg8.mask.nxv2i8.i64(<vscale x 2 x i8> [[V0:%.*]], <vscale x 2 x i8> [[V1:%.*]], <vscale x 2 x i8> [[V2:%.*]], <vscale x 2 x i8> [[V3:%.*]], <vscale x 2 x i8> [[V4:%.*]], <vscale x 2 x i8> [[V5:%.*]], <vscale x 2 x i8> [[V6:%.*]], <vscale x 2 x i8> [[V7:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret void
 //
 void test_vsseg8e8_v_i8mf4_m_ntl_P1(vbool32_t mask, int8_t *base, vint8mf4_t v0, vint8mf4_t v1, vint8mf4_t v2, vint8mf4_t v3, vint8mf4_t v4, vint8mf4_t v5, vint8mf4_t v6, vint8mf4_t v7, size_t vl, int domain) {
@@ -103,7 +103,7 @@ void test_vsseg8e8_v_i8mf4_m_ntl_P1(vbool32_t mask, int8_t *base, vint8mf4_t v0,
 
 // CHECK-LABEL: @test_vsseg8e8_v_i8mf2_m_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    call void @llvm.riscv.vsseg8.mask.nxv4i8.i64(<vscale x 4 x i8> [[V0:%.*]], <vscale x 4 x i8> [[V1:%.*]], <vscale x 4 x i8> [[V2:%.*]], <vscale x 4 x i8> [[V3:%.*]], <vscale x 4 x i8> [[V4:%.*]], <vscale x 4 x i8> [[V5:%.*]], <vscale x 4 x i8> [[V6:%.*]], <vscale x 4 x i8> [[V7:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    call void @llvm.riscv.vsseg8.mask.nxv4i8.i64(<vscale x 4 x i8> [[V0:%.*]], <vscale x 4 x i8> [[V1:%.*]], <vscale x 4 x i8> [[V2:%.*]], <vscale x 4 x i8> [[V3:%.*]], <vscale x 4 x i8> [[V4:%.*]], <vscale x 4 x i8> [[V5:%.*]], <vscale x 4 x i8> [[V6:%.*]], <vscale x 4 x i8> [[V7:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret void
 //
 void test_vsseg8e8_v_i8mf2_m_ntl_P1(vbool16_t mask, int8_t *base, vint8mf2_t v0, vint8mf2_t v1, vint8mf2_t v2, vint8mf2_t v3, vint8mf2_t v4, vint8mf2_t v5, vint8mf2_t v6, vint8mf2_t v7, size_t vl, int domain) {
@@ -112,7 +112,7 @@ void test_vsseg8e8_v_i8mf2_m_ntl_P1(vbool16_t mask, int8_t *base, vint8mf2_t v0,
 
 // CHECK-LABEL: @test_vsseg8e8_v_i8m1_m_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    call void @llvm.riscv.vsseg8.mask.nxv8i8.i64(<vscale x 8 x i8> [[V0:%.*]], <vscale x 8 x i8> [[V1:%.*]], <vscale x 8 x i8> [[V2:%.*]], <vscale x 8 x i8> [[V3:%.*]], <vscale x 8 x i8> [[V4:%.*]], <vscale x 8 x i8> [[V5:%.*]], <vscale x 8 x i8> [[V6:%.*]], <vscale x 8 x i8> [[V7:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    call void @llvm.riscv.vsseg8.mask.nxv8i8.i64(<vscale x 8 x i8> [[V0:%.*]], <vscale x 8 x i8> [[V1:%.*]], <vscale x 8 x i8> [[V2:%.*]], <vscale x 8 x i8> [[V3:%.*]], <vscale x 8 x i8> [[V4:%.*]], <vscale x 8 x i8> [[V5:%.*]], <vscale x 8 x i8> [[V6:%.*]], <vscale x 8 x i8> [[V7:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret void
 //
 void test_vsseg8e8_v_i8m1_m_ntl_P1(vbool8_t mask, int8_t *base, vint8m1_t v0, vint8m1_t v1, vint8m1_t v2, vint8m1_t v3, vint8m1_t v4, vint8m1_t v5, vint8m1_t v6, vint8m1_t v7, size_t vl, int domain) {
@@ -121,7 +121,7 @@ void test_vsseg8e8_v_i8m1_m_ntl_P1(vbool8_t mask, int8_t *base, vint8m1_t v0, vi
 
 // CHECK-LABEL: @test_vsseg8e8_v_u8mf8_m_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    call void @llvm.riscv.vsseg8.mask.nxv1i8.i64(<vscale x 1 x i8> [[V0:%.*]], <vscale x 1 x i8> [[V1:%.*]], <vscale x 1 x i8> [[V2:%.*]], <vscale x 1 x i8> [[V3:%.*]], <vscale x 1 x i8> [[V4:%.*]], <vscale x 1 x i8> [[V5:%.*]], <vscale x 1 x i8> [[V6:%.*]], <vscale x 1 x i8> [[V7:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    call void @llvm.riscv.vsseg8.mask.nxv1i8.i64(<vscale x 1 x i8> [[V0:%.*]], <vscale x 1 x i8> [[V1:%.*]], <vscale x 1 x i8> [[V2:%.*]], <vscale x 1 x i8> [[V3:%.*]], <vscale x 1 x i8> [[V4:%.*]], <vscale x 1 x i8> [[V5:%.*]], <vscale x 1 x i8> [[V6:%.*]], <vscale x 1 x i8> [[V7:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret void
 //
 void test_vsseg8e8_v_u8mf8_m_ntl_P1(vbool64_t mask, uint8_t *base, vuint8mf8_t v0, vuint8mf8_t v1, vuint8mf8_t v2, vuint8mf8_t v3, vuint8mf8_t v4, vuint8mf8_t v5, vuint8mf8_t v6, vuint8mf8_t v7, size_t vl, int domain) {
@@ -130,7 +130,7 @@ void test_vsseg8e8_v_u8mf8_m_ntl_P1(vbool64_t mask, uint8_t *base, vuint8mf8_t v
 
 // CHECK-LABEL: @test_vsseg8e8_v_u8mf4_m_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    call void @llvm.riscv.vsseg8.mask.nxv2i8.i64(<vscale x 2 x i8> [[V0:%.*]], <vscale x 2 x i8> [[V1:%.*]], <vscale x 2 x i8> [[V2:%.*]], <vscale x 2 x i8> [[V3:%.*]], <vscale x 2 x i8> [[V4:%.*]], <vscale x 2 x i8> [[V5:%.*]], <vscale x 2 x i8> [[V6:%.*]], <vscale x 2 x i8> [[V7:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    call void @llvm.riscv.vsseg8.mask.nxv2i8.i64(<vscale x 2 x i8> [[V0:%.*]], <vscale x 2 x i8> [[V1:%.*]], <vscale x 2 x i8> [[V2:%.*]], <vscale x 2 x i8> [[V3:%.*]], <vscale x 2 x i8> [[V4:%.*]], <vscale x 2 x i8> [[V5:%.*]], <vscale x 2 x i8> [[V6:%.*]], <vscale x 2 x i8> [[V7:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret void
 //
 void test_vsseg8e8_v_u8mf4_m_ntl_P1(vbool32_t mask, uint8_t *base, vuint8mf4_t v0, vuint8mf4_t v1, vuint8mf4_t v2, vuint8mf4_t v3, vuint8mf4_t v4, vuint8mf4_t v5, vuint8mf4_t v6, vuint8mf4_t v7, size_t vl, int domain) {
@@ -139,7 +139,7 @@ void test_vsseg8e8_v_u8mf4_m_ntl_P1(vbool32_t mask, uint8_t *base, vuint8mf4_t v
 
 // CHECK-LABEL: @test_vsseg8e8_v_u8mf2_m_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    call void @llvm.riscv.vsseg8.mask.nxv4i8.i64(<vscale x 4 x i8> [[V0:%.*]], <vscale x 4 x i8> [[V1:%.*]], <vscale x 4 x i8> [[V2:%.*]], <vscale x 4 x i8> [[V3:%.*]], <vscale x 4 x i8> [[V4:%.*]], <vscale x 4 x i8> [[V5:%.*]], <vscale x 4 x i8> [[V6:%.*]], <vscale x 4 x i8> [[V7:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    call void @llvm.riscv.vsseg8.mask.nxv4i8.i64(<vscale x 4 x i8> [[V0:%.*]], <vscale x 4 x i8> [[V1:%.*]], <vscale x 4 x i8> [[V2:%.*]], <vscale x 4 x i8> [[V3:%.*]], <vscale x 4 x i8> [[V4:%.*]], <vscale x 4 x i8> [[V5:%.*]], <vscale x 4 x i8> [[V6:%.*]], <vscale x 4 x i8> [[V7:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret void
 //
 void test_vsseg8e8_v_u8mf2_m_ntl_P1(vbool16_t mask, uint8_t *base, vuint8mf2_t v0, vuint8mf2_t v1, vuint8mf2_t v2, vuint8mf2_t v3, vuint8mf2_t v4, vuint8mf2_t v5, vuint8mf2_t v6, vuint8mf2_t v7, size_t vl, int domain) {
@@ -148,7 +148,7 @@ void test_vsseg8e8_v_u8mf2_m_ntl_P1(vbool16_t mask, uint8_t *base, vuint8mf2_t v
 
 // CHECK-LABEL: @test_vsseg8e8_v_u8m1_m_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    call void @llvm.riscv.vsseg8.mask.nxv8i8.i64(<vscale x 8 x i8> [[V0:%.*]], <vscale x 8 x i8> [[V1:%.*]], <vscale x 8 x i8> [[V2:%.*]], <vscale x 8 x i8> [[V3:%.*]], <vscale x 8 x i8> [[V4:%.*]], <vscale x 8 x i8> [[V5:%.*]], <vscale x 8 x i8> [[V6:%.*]], <vscale x 8 x i8> [[V7:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    call void @llvm.riscv.vsseg8.mask.nxv8i8.i64(<vscale x 8 x i8> [[V0:%.*]], <vscale x 8 x i8> [[V1:%.*]], <vscale x 8 x i8> [[V2:%.*]], <vscale x 8 x i8> [[V3:%.*]], <vscale x 8 x i8> [[V4:%.*]], <vscale x 8 x i8> [[V5:%.*]], <vscale x 8 x i8> [[V6:%.*]], <vscale x 8 x i8> [[V7:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret void
 //
 void test_vsseg8e8_v_u8m1_m_ntl_P1(vbool8_t mask, uint8_t *base, vuint8m1_t v0, vuint8m1_t v1, vuint8m1_t v2, vuint8m1_t v3, vuint8m1_t v4, vuint8m1_t v5, vuint8m1_t v6, vuint8m1_t v7, size_t vl, int domain) {

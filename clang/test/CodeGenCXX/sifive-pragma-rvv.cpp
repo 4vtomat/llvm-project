@@ -27,7 +27,7 @@
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP3:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP5:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -56,7 +56,7 @@ void mf8_e8(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP8:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP10:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -85,7 +85,7 @@ void mf4_e8(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP10:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP12:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -114,7 +114,7 @@ void mf2_e8(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP12:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP14:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -143,7 +143,7 @@ void m1_e8(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP14:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP16:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -172,7 +172,7 @@ void m2_e8(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP16:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP18:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -201,7 +201,7 @@ void m4_e8(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP18:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP20:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -232,7 +232,7 @@ void m8_e8(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP20:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP22:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -261,7 +261,7 @@ void mf4_e16(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP22:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP24:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -290,7 +290,7 @@ void mf2_e16(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP24:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP26:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -319,7 +319,7 @@ void m1_e16(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP26:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP28:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -348,7 +348,7 @@ void m2_e16(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP28:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP30:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -377,7 +377,7 @@ void m4_e16(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP30:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP32:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -408,7 +408,7 @@ void m8_e16(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP32:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP34:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -437,7 +437,7 @@ void mf2_e32(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP34:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP36:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -466,7 +466,7 @@ void m1_e32(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP36:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP38:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -495,7 +495,7 @@ void m2_e32(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP38:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP40:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -524,7 +524,7 @@ void m4_e32(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP40:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP42:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -555,7 +555,7 @@ void m8_e32(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP42:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP44:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -584,7 +584,7 @@ void m1_e64(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP44:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP46:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -613,7 +613,7 @@ void m2_e64(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP46:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP48:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -642,7 +642,7 @@ void m4_e64(int *a, int *b, int *c, int n) {
 // CHECK-NEXT:    br label [[FOR_INC]]
 // CHECK:       for.inc:
 // CHECK-NEXT:    [[INC]] = add nsw i32 [[I_0]], 1
-// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP48:![0-9]+]]
+// CHECK-NEXT:    br label [[FOR_COND]], !llvm.loop [[LOOP50:![0-9]+]]
 // CHECK:       for.end:
 // CHECK-NEXT:    ret void
 //
@@ -651,56 +651,58 @@ void m8_e64(int *a, int *b, int *c, int n) {
   DUMMY_LOOP;
 }
 //.
-// CHECK: attributes #0 = { mustprogress noinline nounwind vscale_range(1,1024) "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-features"="+64bit,+zicsr,+zve32x,+zve64x,+zvl32b,+zvl64b" }
+// CHECK: attributes #[[ATTR0:[0-9]+]] = { mustprogress noinline nounwind vscale_range(1,1024) "no-trapping-math"="true" "stack-protector-buffer-size"="8" "target-features"="+64bit,+zicsr,+zve32x,+zve64x,+zvl32b,+zvl64b" }
 //.
-// CHECK: !0 = !{i32 1, !"wchar_size", i32 4}
-// CHECK: !1 = !{i32 1, !"target-abi", !"lp64"}
-// CHECK: !2 = !{i32 8, !"SmallDataLimit", i32 0}
-// CHECK: !3 = distinct !{!3, !4, !5, !6, !7}
-// CHECK: !4 = !{!"llvm.loop.mustprogress"}
-// CHECK: !5 = !{!"llvm.loop.vectorize.lmul_sew", i32 -3, i32 8}
-// CHECK: !6 = !{!"llvm.loop.vectorize.scalable.enable", i1 true}
-// CHECK: !7 = !{!"llvm.loop.vectorize.enable", i1 true}
-// CHECK: !8 = distinct !{!8, !4, !9, !6, !7}
-// CHECK: !9 = !{!"llvm.loop.vectorize.lmul_sew", i32 -2, i32 8}
-// CHECK: !10 = distinct !{!10, !4, !11, !6, !7}
-// CHECK: !11 = !{!"llvm.loop.vectorize.lmul_sew", i32 -1, i32 8}
-// CHECK: !12 = distinct !{!12, !4, !13, !6, !7}
-// CHECK: !13 = !{!"llvm.loop.vectorize.lmul_sew", i32 0, i32 8}
-// CHECK: !14 = distinct !{!14, !4, !15, !6, !7}
-// CHECK: !15 = !{!"llvm.loop.vectorize.lmul_sew", i32 1, i32 8}
-// CHECK: !16 = distinct !{!16, !4, !17, !6, !7}
-// CHECK: !17 = !{!"llvm.loop.vectorize.lmul_sew", i32 2, i32 8}
-// CHECK: !18 = distinct !{!18, !4, !19, !6, !7}
-// CHECK: !19 = !{!"llvm.loop.vectorize.lmul_sew", i32 3, i32 8}
-// CHECK: !20 = distinct !{!20, !4, !21, !6, !7}
-// CHECK: !21 = !{!"llvm.loop.vectorize.lmul_sew", i32 -2, i32 16}
-// CHECK: !22 = distinct !{!22, !4, !23, !6, !7}
-// CHECK: !23 = !{!"llvm.loop.vectorize.lmul_sew", i32 -1, i32 16}
-// CHECK: !24 = distinct !{!24, !4, !25, !6, !7}
-// CHECK: !25 = !{!"llvm.loop.vectorize.lmul_sew", i32 0, i32 16}
-// CHECK: !26 = distinct !{!26, !4, !27, !6, !7}
-// CHECK: !27 = !{!"llvm.loop.vectorize.lmul_sew", i32 1, i32 16}
-// CHECK: !28 = distinct !{!28, !4, !29, !6, !7}
-// CHECK: !29 = !{!"llvm.loop.vectorize.lmul_sew", i32 2, i32 16}
-// CHECK: !30 = distinct !{!30, !4, !31, !6, !7}
-// CHECK: !31 = !{!"llvm.loop.vectorize.lmul_sew", i32 3, i32 16}
-// CHECK: !32 = distinct !{!32, !4, !33, !6, !7}
-// CHECK: !33 = !{!"llvm.loop.vectorize.lmul_sew", i32 -1, i32 32}
-// CHECK: !34 = distinct !{!34, !4, !35, !6, !7}
-// CHECK: !35 = !{!"llvm.loop.vectorize.lmul_sew", i32 0, i32 32}
-// CHECK: !36 = distinct !{!36, !4, !37, !6, !7}
-// CHECK: !37 = !{!"llvm.loop.vectorize.lmul_sew", i32 1, i32 32}
-// CHECK: !38 = distinct !{!38, !4, !39, !6, !7}
-// CHECK: !39 = !{!"llvm.loop.vectorize.lmul_sew", i32 2, i32 32}
-// CHECK: !40 = distinct !{!40, !4, !41, !6, !7}
-// CHECK: !41 = !{!"llvm.loop.vectorize.lmul_sew", i32 3, i32 32}
-// CHECK: !42 = distinct !{!42, !4, !43, !6, !7}
-// CHECK: !43 = !{!"llvm.loop.vectorize.lmul_sew", i32 0, i32 64}
-// CHECK: !44 = distinct !{!44, !4, !45, !6, !7}
-// CHECK: !45 = !{!"llvm.loop.vectorize.lmul_sew", i32 1, i32 64}
-// CHECK: !46 = distinct !{!46, !4, !47, !6, !7}
-// CHECK: !47 = !{!"llvm.loop.vectorize.lmul_sew", i32 2, i32 64}
-// CHECK: !48 = distinct !{!48, !4, !49, !6, !7}
-// CHECK: !49 = !{!"llvm.loop.vectorize.lmul_sew", i32 3, i32 64}
+// CHECK: [[META0:![0-9]+]] = !{i32 1, !"wchar_size", i32 4}
+// CHECK: [[META1:![0-9]+]] = !{i32 1, !"target-abi", !"lp64"}
+// CHECK: [[META2:![0-9]+]] = !{i32 6, !"riscv-isa", [[META3:![0-9]+]]}
+// CHECK: [[META3]] = !{!"rv64i2p1_zicsr2p0_zve32x1p0_zve64x1p0_zvl32b1p0_zvl64b1p0"}
+// CHECK: [[META4:![0-9]+]] = !{i32 8, !"SmallDataLimit", i32 0}
+// CHECK: [[LOOP5]] = distinct !{[[LOOP5]], [[META6:![0-9]+]], [[META7:![0-9]+]], [[META8:![0-9]+]], [[META9:![0-9]+]]}
+// CHECK: [[META6]] = !{!"llvm.loop.mustprogress"}
+// CHECK: [[META7]] = !{!"llvm.loop.vectorize.lmul_sew", i32 -3, i32 8}
+// CHECK: [[META8]] = !{!"llvm.loop.vectorize.scalable.enable", i1 true}
+// CHECK: [[META9]] = !{!"llvm.loop.vectorize.enable", i1 true}
+// CHECK: [[LOOP10]] = distinct !{[[LOOP10]], [[META6]], [[META11:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META11]] = !{!"llvm.loop.vectorize.lmul_sew", i32 -2, i32 8}
+// CHECK: [[LOOP12]] = distinct !{[[LOOP12]], [[META6]], [[META13:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META13]] = !{!"llvm.loop.vectorize.lmul_sew", i32 -1, i32 8}
+// CHECK: [[LOOP14]] = distinct !{[[LOOP14]], [[META6]], [[META15:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META15]] = !{!"llvm.loop.vectorize.lmul_sew", i32 0, i32 8}
+// CHECK: [[LOOP16]] = distinct !{[[LOOP16]], [[META6]], [[META17:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META17]] = !{!"llvm.loop.vectorize.lmul_sew", i32 1, i32 8}
+// CHECK: [[LOOP18]] = distinct !{[[LOOP18]], [[META6]], [[META19:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META19]] = !{!"llvm.loop.vectorize.lmul_sew", i32 2, i32 8}
+// CHECK: [[LOOP20]] = distinct !{[[LOOP20]], [[META6]], [[META21:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META21]] = !{!"llvm.loop.vectorize.lmul_sew", i32 3, i32 8}
+// CHECK: [[LOOP22]] = distinct !{[[LOOP22]], [[META6]], [[META23:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META23]] = !{!"llvm.loop.vectorize.lmul_sew", i32 -2, i32 16}
+// CHECK: [[LOOP24]] = distinct !{[[LOOP24]], [[META6]], [[META25:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META25]] = !{!"llvm.loop.vectorize.lmul_sew", i32 -1, i32 16}
+// CHECK: [[LOOP26]] = distinct !{[[LOOP26]], [[META6]], [[META27:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META27]] = !{!"llvm.loop.vectorize.lmul_sew", i32 0, i32 16}
+// CHECK: [[LOOP28]] = distinct !{[[LOOP28]], [[META6]], [[META29:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META29]] = !{!"llvm.loop.vectorize.lmul_sew", i32 1, i32 16}
+// CHECK: [[LOOP30]] = distinct !{[[LOOP30]], [[META6]], [[META31:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META31]] = !{!"llvm.loop.vectorize.lmul_sew", i32 2, i32 16}
+// CHECK: [[LOOP32]] = distinct !{[[LOOP32]], [[META6]], [[META33:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META33]] = !{!"llvm.loop.vectorize.lmul_sew", i32 3, i32 16}
+// CHECK: [[LOOP34]] = distinct !{[[LOOP34]], [[META6]], [[META35:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META35]] = !{!"llvm.loop.vectorize.lmul_sew", i32 -1, i32 32}
+// CHECK: [[LOOP36]] = distinct !{[[LOOP36]], [[META6]], [[META37:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META37]] = !{!"llvm.loop.vectorize.lmul_sew", i32 0, i32 32}
+// CHECK: [[LOOP38]] = distinct !{[[LOOP38]], [[META6]], [[META39:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META39]] = !{!"llvm.loop.vectorize.lmul_sew", i32 1, i32 32}
+// CHECK: [[LOOP40]] = distinct !{[[LOOP40]], [[META6]], [[META41:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META41]] = !{!"llvm.loop.vectorize.lmul_sew", i32 2, i32 32}
+// CHECK: [[LOOP42]] = distinct !{[[LOOP42]], [[META6]], [[META43:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META43]] = !{!"llvm.loop.vectorize.lmul_sew", i32 3, i32 32}
+// CHECK: [[LOOP44]] = distinct !{[[LOOP44]], [[META6]], [[META45:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META45]] = !{!"llvm.loop.vectorize.lmul_sew", i32 0, i32 64}
+// CHECK: [[LOOP46]] = distinct !{[[LOOP46]], [[META6]], [[META47:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META47]] = !{!"llvm.loop.vectorize.lmul_sew", i32 1, i32 64}
+// CHECK: [[LOOP48]] = distinct !{[[LOOP48]], [[META6]], [[META49:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META49]] = !{!"llvm.loop.vectorize.lmul_sew", i32 2, i32 64}
+// CHECK: [[LOOP50]] = distinct !{[[LOOP50]], [[META6]], [[META51:![0-9]+]], [[META8]], [[META9]]}
+// CHECK: [[META51]] = !{!"llvm.loop.vectorize.lmul_sew", i32 3, i32 64}
 //.

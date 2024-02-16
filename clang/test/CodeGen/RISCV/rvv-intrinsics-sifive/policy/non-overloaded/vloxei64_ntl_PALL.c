@@ -14,7 +14,7 @@
 #include <riscv_ntlh.h>
 // CHECK-LABEL: @test_vloxei64_v_f16mf4_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x half> @llvm.riscv.vloxei.nxv1f16.nxv1i64.i64(<vscale x 1 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x half> @llvm.riscv.vloxei.nxv1f16.nxv1i64.i64(<vscale x 1 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6:![0-9]+]]
 // CHECK-NEXT:    ret <vscale x 1 x half> [[TMP0]]
 //
 vfloat16mf4_t test_vloxei64_v_f16mf4_tu_ntl_PALL(vfloat16mf4_t maskedoff, const _Float16 *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -23,7 +23,7 @@ vfloat16mf4_t test_vloxei64_v_f16mf4_tu_ntl_PALL(vfloat16mf4_t maskedoff, const 
 
 // CHECK-LABEL: @test_vloxei64_v_f16mf2_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x half> @llvm.riscv.vloxei.nxv2f16.nxv2i64.i64(<vscale x 2 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x half> @llvm.riscv.vloxei.nxv2f16.nxv2i64.i64(<vscale x 2 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x half> [[TMP0]]
 //
 vfloat16mf2_t test_vloxei64_v_f16mf2_tu_ntl_PALL(vfloat16mf2_t maskedoff, const _Float16 *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -32,7 +32,7 @@ vfloat16mf2_t test_vloxei64_v_f16mf2_tu_ntl_PALL(vfloat16mf2_t maskedoff, const 
 
 // CHECK-LABEL: @test_vloxei64_v_f16m1_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x half> @llvm.riscv.vloxei.nxv4f16.nxv4i64.i64(<vscale x 4 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x half> @llvm.riscv.vloxei.nxv4f16.nxv4i64.i64(<vscale x 4 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x half> [[TMP0]]
 //
 vfloat16m1_t test_vloxei64_v_f16m1_tu_ntl_PALL(vfloat16m1_t maskedoff, const _Float16 *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -41,7 +41,7 @@ vfloat16m1_t test_vloxei64_v_f16m1_tu_ntl_PALL(vfloat16m1_t maskedoff, const _Fl
 
 // CHECK-LABEL: @test_vloxei64_v_f16m2_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x half> @llvm.riscv.vloxei.nxv8f16.nxv8i64.i64(<vscale x 8 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x half> @llvm.riscv.vloxei.nxv8f16.nxv8i64.i64(<vscale x 8 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x half> [[TMP0]]
 //
 vfloat16m2_t test_vloxei64_v_f16m2_tu_ntl_PALL(vfloat16m2_t maskedoff, const _Float16 *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -50,7 +50,7 @@ vfloat16m2_t test_vloxei64_v_f16m2_tu_ntl_PALL(vfloat16m2_t maskedoff, const _Fl
 
 // CHECK-LABEL: @test_vloxei64_v_f32mf2_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x float> @llvm.riscv.vloxei.nxv1f32.nxv1i64.i64(<vscale x 1 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x float> @llvm.riscv.vloxei.nxv1f32.nxv1i64.i64(<vscale x 1 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x float> [[TMP0]]
 //
 vfloat32mf2_t test_vloxei64_v_f32mf2_tu_ntl_PALL(vfloat32mf2_t maskedoff, const float *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -59,7 +59,7 @@ vfloat32mf2_t test_vloxei64_v_f32mf2_tu_ntl_PALL(vfloat32mf2_t maskedoff, const 
 
 // CHECK-LABEL: @test_vloxei64_v_f32m1_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x float> @llvm.riscv.vloxei.nxv2f32.nxv2i64.i64(<vscale x 2 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x float> @llvm.riscv.vloxei.nxv2f32.nxv2i64.i64(<vscale x 2 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x float> [[TMP0]]
 //
 vfloat32m1_t test_vloxei64_v_f32m1_tu_ntl_PALL(vfloat32m1_t maskedoff, const float *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -68,7 +68,7 @@ vfloat32m1_t test_vloxei64_v_f32m1_tu_ntl_PALL(vfloat32m1_t maskedoff, const flo
 
 // CHECK-LABEL: @test_vloxei64_v_f32m2_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x float> @llvm.riscv.vloxei.nxv4f32.nxv4i64.i64(<vscale x 4 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x float> @llvm.riscv.vloxei.nxv4f32.nxv4i64.i64(<vscale x 4 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x float> [[TMP0]]
 //
 vfloat32m2_t test_vloxei64_v_f32m2_tu_ntl_PALL(vfloat32m2_t maskedoff, const float *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -77,7 +77,7 @@ vfloat32m2_t test_vloxei64_v_f32m2_tu_ntl_PALL(vfloat32m2_t maskedoff, const flo
 
 // CHECK-LABEL: @test_vloxei64_v_f32m4_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x float> @llvm.riscv.vloxei.nxv8f32.nxv8i64.i64(<vscale x 8 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x float> @llvm.riscv.vloxei.nxv8f32.nxv8i64.i64(<vscale x 8 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x float> [[TMP0]]
 //
 vfloat32m4_t test_vloxei64_v_f32m4_tu_ntl_PALL(vfloat32m4_t maskedoff, const float *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -86,7 +86,7 @@ vfloat32m4_t test_vloxei64_v_f32m4_tu_ntl_PALL(vfloat32m4_t maskedoff, const flo
 
 // CHECK-LABEL: @test_vloxei64_v_f64m1_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x double> @llvm.riscv.vloxei.nxv1f64.nxv1i64.i64(<vscale x 1 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x double> @llvm.riscv.vloxei.nxv1f64.nxv1i64.i64(<vscale x 1 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x double> [[TMP0]]
 //
 vfloat64m1_t test_vloxei64_v_f64m1_tu_ntl_PALL(vfloat64m1_t maskedoff, const double *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -95,7 +95,7 @@ vfloat64m1_t test_vloxei64_v_f64m1_tu_ntl_PALL(vfloat64m1_t maskedoff, const dou
 
 // CHECK-LABEL: @test_vloxei64_v_f64m2_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x double> @llvm.riscv.vloxei.nxv2f64.nxv2i64.i64(<vscale x 2 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x double> @llvm.riscv.vloxei.nxv2f64.nxv2i64.i64(<vscale x 2 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x double> [[TMP0]]
 //
 vfloat64m2_t test_vloxei64_v_f64m2_tu_ntl_PALL(vfloat64m2_t maskedoff, const double *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -104,7 +104,7 @@ vfloat64m2_t test_vloxei64_v_f64m2_tu_ntl_PALL(vfloat64m2_t maskedoff, const dou
 
 // CHECK-LABEL: @test_vloxei64_v_f64m4_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x double> @llvm.riscv.vloxei.nxv4f64.nxv4i64.i64(<vscale x 4 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x double> @llvm.riscv.vloxei.nxv4f64.nxv4i64.i64(<vscale x 4 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x double> [[TMP0]]
 //
 vfloat64m4_t test_vloxei64_v_f64m4_tu_ntl_PALL(vfloat64m4_t maskedoff, const double *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -113,7 +113,7 @@ vfloat64m4_t test_vloxei64_v_f64m4_tu_ntl_PALL(vfloat64m4_t maskedoff, const dou
 
 // CHECK-LABEL: @test_vloxei64_v_f64m8_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x double> @llvm.riscv.vloxei.nxv8f64.nxv8i64.i64(<vscale x 8 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x double> @llvm.riscv.vloxei.nxv8f64.nxv8i64.i64(<vscale x 8 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x double> [[TMP0]]
 //
 vfloat64m8_t test_vloxei64_v_f64m8_tu_ntl_PALL(vfloat64m8_t maskedoff, const double *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -122,7 +122,7 @@ vfloat64m8_t test_vloxei64_v_f64m8_tu_ntl_PALL(vfloat64m8_t maskedoff, const dou
 
 // CHECK-LABEL: @test_vloxei64_v_i8mf8_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vloxei.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vloxei.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i8> [[TMP0]]
 //
 vint8mf8_t test_vloxei64_v_i8mf8_tu_ntl_PALL(vint8mf8_t maskedoff, const int8_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -131,7 +131,7 @@ vint8mf8_t test_vloxei64_v_i8mf8_tu_ntl_PALL(vint8mf8_t maskedoff, const int8_t 
 
 // CHECK-LABEL: @test_vloxei64_v_i8mf4_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vloxei.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vloxei.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i8> [[TMP0]]
 //
 vint8mf4_t test_vloxei64_v_i8mf4_tu_ntl_PALL(vint8mf4_t maskedoff, const int8_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -140,7 +140,7 @@ vint8mf4_t test_vloxei64_v_i8mf4_tu_ntl_PALL(vint8mf4_t maskedoff, const int8_t 
 
 // CHECK-LABEL: @test_vloxei64_v_i8mf2_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vloxei.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vloxei.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i8> [[TMP0]]
 //
 vint8mf2_t test_vloxei64_v_i8mf2_tu_ntl_PALL(vint8mf2_t maskedoff, const int8_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -149,7 +149,7 @@ vint8mf2_t test_vloxei64_v_i8mf2_tu_ntl_PALL(vint8mf2_t maskedoff, const int8_t 
 
 // CHECK-LABEL: @test_vloxei64_v_i8m1_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vloxei.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vloxei.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i8> [[TMP0]]
 //
 vint8m1_t test_vloxei64_v_i8m1_tu_ntl_PALL(vint8m1_t maskedoff, const int8_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -158,7 +158,7 @@ vint8m1_t test_vloxei64_v_i8m1_tu_ntl_PALL(vint8m1_t maskedoff, const int8_t *ba
 
 // CHECK-LABEL: @test_vloxei64_v_i16mf4_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vloxei.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vloxei.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i16> [[TMP0]]
 //
 vint16mf4_t test_vloxei64_v_i16mf4_tu_ntl_PALL(vint16mf4_t maskedoff, const int16_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -167,7 +167,7 @@ vint16mf4_t test_vloxei64_v_i16mf4_tu_ntl_PALL(vint16mf4_t maskedoff, const int1
 
 // CHECK-LABEL: @test_vloxei64_v_i16mf2_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vloxei.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vloxei.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP0]]
 //
 vint16mf2_t test_vloxei64_v_i16mf2_tu_ntl_PALL(vint16mf2_t maskedoff, const int16_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -176,7 +176,7 @@ vint16mf2_t test_vloxei64_v_i16mf2_tu_ntl_PALL(vint16mf2_t maskedoff, const int1
 
 // CHECK-LABEL: @test_vloxei64_v_i16m1_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vloxei.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vloxei.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i16> [[TMP0]]
 //
 vint16m1_t test_vloxei64_v_i16m1_tu_ntl_PALL(vint16m1_t maskedoff, const int16_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -185,7 +185,7 @@ vint16m1_t test_vloxei64_v_i16m1_tu_ntl_PALL(vint16m1_t maskedoff, const int16_t
 
 // CHECK-LABEL: @test_vloxei64_v_i16m2_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vloxei.nxv8i16.nxv8i64.i64(<vscale x 8 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vloxei.nxv8i16.nxv8i64.i64(<vscale x 8 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i16> [[TMP0]]
 //
 vint16m2_t test_vloxei64_v_i16m2_tu_ntl_PALL(vint16m2_t maskedoff, const int16_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -194,7 +194,7 @@ vint16m2_t test_vloxei64_v_i16m2_tu_ntl_PALL(vint16m2_t maskedoff, const int16_t
 
 // CHECK-LABEL: @test_vloxei64_v_i32mf2_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vloxei.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vloxei.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP0]]
 //
 vint32mf2_t test_vloxei64_v_i32mf2_tu_ntl_PALL(vint32mf2_t maskedoff, const int32_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -203,7 +203,7 @@ vint32mf2_t test_vloxei64_v_i32mf2_tu_ntl_PALL(vint32mf2_t maskedoff, const int3
 
 // CHECK-LABEL: @test_vloxei64_v_i32m1_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vloxei.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vloxei.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i32> [[TMP0]]
 //
 vint32m1_t test_vloxei64_v_i32m1_tu_ntl_PALL(vint32m1_t maskedoff, const int32_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -212,7 +212,7 @@ vint32m1_t test_vloxei64_v_i32m1_tu_ntl_PALL(vint32m1_t maskedoff, const int32_t
 
 // CHECK-LABEL: @test_vloxei64_v_i32m2_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vloxei.nxv4i32.nxv4i64.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vloxei.nxv4i32.nxv4i64.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP0]]
 //
 vint32m2_t test_vloxei64_v_i32m2_tu_ntl_PALL(vint32m2_t maskedoff, const int32_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -221,7 +221,7 @@ vint32m2_t test_vloxei64_v_i32m2_tu_ntl_PALL(vint32m2_t maskedoff, const int32_t
 
 // CHECK-LABEL: @test_vloxei64_v_i32m4_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vloxei.nxv8i32.nxv8i64.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vloxei.nxv8i32.nxv8i64.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i32> [[TMP0]]
 //
 vint32m4_t test_vloxei64_v_i32m4_tu_ntl_PALL(vint32m4_t maskedoff, const int32_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -230,7 +230,7 @@ vint32m4_t test_vloxei64_v_i32m4_tu_ntl_PALL(vint32m4_t maskedoff, const int32_t
 
 // CHECK-LABEL: @test_vloxei64_v_i64m1_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vloxei.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vloxei.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i64> [[TMP0]]
 //
 vint64m1_t test_vloxei64_v_i64m1_tu_ntl_PALL(vint64m1_t maskedoff, const int64_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -239,7 +239,7 @@ vint64m1_t test_vloxei64_v_i64m1_tu_ntl_PALL(vint64m1_t maskedoff, const int64_t
 
 // CHECK-LABEL: @test_vloxei64_v_i64m2_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vloxei.nxv2i64.nxv2i64.i64(<vscale x 2 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vloxei.nxv2i64.nxv2i64.i64(<vscale x 2 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i64> [[TMP0]]
 //
 vint64m2_t test_vloxei64_v_i64m2_tu_ntl_PALL(vint64m2_t maskedoff, const int64_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -248,7 +248,7 @@ vint64m2_t test_vloxei64_v_i64m2_tu_ntl_PALL(vint64m2_t maskedoff, const int64_t
 
 // CHECK-LABEL: @test_vloxei64_v_i64m4_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vloxei.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vloxei.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i64> [[TMP0]]
 //
 vint64m4_t test_vloxei64_v_i64m4_tu_ntl_PALL(vint64m4_t maskedoff, const int64_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -257,7 +257,7 @@ vint64m4_t test_vloxei64_v_i64m4_tu_ntl_PALL(vint64m4_t maskedoff, const int64_t
 
 // CHECK-LABEL: @test_vloxei64_v_i64m8_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vloxei.nxv8i64.nxv8i64.i64(<vscale x 8 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vloxei.nxv8i64.nxv8i64.i64(<vscale x 8 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i64> [[TMP0]]
 //
 vint64m8_t test_vloxei64_v_i64m8_tu_ntl_PALL(vint64m8_t maskedoff, const int64_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -266,7 +266,7 @@ vint64m8_t test_vloxei64_v_i64m8_tu_ntl_PALL(vint64m8_t maskedoff, const int64_t
 
 // CHECK-LABEL: @test_vloxei64_v_u8mf8_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vloxei.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vloxei.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i8> [[TMP0]]
 //
 vuint8mf8_t test_vloxei64_v_u8mf8_tu_ntl_PALL(vuint8mf8_t maskedoff, const uint8_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -275,7 +275,7 @@ vuint8mf8_t test_vloxei64_v_u8mf8_tu_ntl_PALL(vuint8mf8_t maskedoff, const uint8
 
 // CHECK-LABEL: @test_vloxei64_v_u8mf4_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vloxei.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vloxei.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i8> [[TMP0]]
 //
 vuint8mf4_t test_vloxei64_v_u8mf4_tu_ntl_PALL(vuint8mf4_t maskedoff, const uint8_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -284,7 +284,7 @@ vuint8mf4_t test_vloxei64_v_u8mf4_tu_ntl_PALL(vuint8mf4_t maskedoff, const uint8
 
 // CHECK-LABEL: @test_vloxei64_v_u8mf2_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vloxei.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vloxei.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i8> [[TMP0]]
 //
 vuint8mf2_t test_vloxei64_v_u8mf2_tu_ntl_PALL(vuint8mf2_t maskedoff, const uint8_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -293,7 +293,7 @@ vuint8mf2_t test_vloxei64_v_u8mf2_tu_ntl_PALL(vuint8mf2_t maskedoff, const uint8
 
 // CHECK-LABEL: @test_vloxei64_v_u8m1_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vloxei.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vloxei.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i8> [[TMP0]]
 //
 vuint8m1_t test_vloxei64_v_u8m1_tu_ntl_PALL(vuint8m1_t maskedoff, const uint8_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -302,7 +302,7 @@ vuint8m1_t test_vloxei64_v_u8m1_tu_ntl_PALL(vuint8m1_t maskedoff, const uint8_t 
 
 // CHECK-LABEL: @test_vloxei64_v_u16mf4_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vloxei.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vloxei.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i16> [[TMP0]]
 //
 vuint16mf4_t test_vloxei64_v_u16mf4_tu_ntl_PALL(vuint16mf4_t maskedoff, const uint16_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -311,7 +311,7 @@ vuint16mf4_t test_vloxei64_v_u16mf4_tu_ntl_PALL(vuint16mf4_t maskedoff, const ui
 
 // CHECK-LABEL: @test_vloxei64_v_u16mf2_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vloxei.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vloxei.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP0]]
 //
 vuint16mf2_t test_vloxei64_v_u16mf2_tu_ntl_PALL(vuint16mf2_t maskedoff, const uint16_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -320,7 +320,7 @@ vuint16mf2_t test_vloxei64_v_u16mf2_tu_ntl_PALL(vuint16mf2_t maskedoff, const ui
 
 // CHECK-LABEL: @test_vloxei64_v_u16m1_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vloxei.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vloxei.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i16> [[TMP0]]
 //
 vuint16m1_t test_vloxei64_v_u16m1_tu_ntl_PALL(vuint16m1_t maskedoff, const uint16_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -329,7 +329,7 @@ vuint16m1_t test_vloxei64_v_u16m1_tu_ntl_PALL(vuint16m1_t maskedoff, const uint1
 
 // CHECK-LABEL: @test_vloxei64_v_u16m2_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vloxei.nxv8i16.nxv8i64.i64(<vscale x 8 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vloxei.nxv8i16.nxv8i64.i64(<vscale x 8 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i16> [[TMP0]]
 //
 vuint16m2_t test_vloxei64_v_u16m2_tu_ntl_PALL(vuint16m2_t maskedoff, const uint16_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -338,7 +338,7 @@ vuint16m2_t test_vloxei64_v_u16m2_tu_ntl_PALL(vuint16m2_t maskedoff, const uint1
 
 // CHECK-LABEL: @test_vloxei64_v_u32mf2_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vloxei.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vloxei.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP0]]
 //
 vuint32mf2_t test_vloxei64_v_u32mf2_tu_ntl_PALL(vuint32mf2_t maskedoff, const uint32_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -347,7 +347,7 @@ vuint32mf2_t test_vloxei64_v_u32mf2_tu_ntl_PALL(vuint32mf2_t maskedoff, const ui
 
 // CHECK-LABEL: @test_vloxei64_v_u32m1_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vloxei.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vloxei.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i32> [[TMP0]]
 //
 vuint32m1_t test_vloxei64_v_u32m1_tu_ntl_PALL(vuint32m1_t maskedoff, const uint32_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -356,7 +356,7 @@ vuint32m1_t test_vloxei64_v_u32m1_tu_ntl_PALL(vuint32m1_t maskedoff, const uint3
 
 // CHECK-LABEL: @test_vloxei64_v_u32m2_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vloxei.nxv4i32.nxv4i64.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vloxei.nxv4i32.nxv4i64.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP0]]
 //
 vuint32m2_t test_vloxei64_v_u32m2_tu_ntl_PALL(vuint32m2_t maskedoff, const uint32_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -365,7 +365,7 @@ vuint32m2_t test_vloxei64_v_u32m2_tu_ntl_PALL(vuint32m2_t maskedoff, const uint3
 
 // CHECK-LABEL: @test_vloxei64_v_u32m4_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vloxei.nxv8i32.nxv8i64.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vloxei.nxv8i32.nxv8i64.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i32> [[TMP0]]
 //
 vuint32m4_t test_vloxei64_v_u32m4_tu_ntl_PALL(vuint32m4_t maskedoff, const uint32_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -374,7 +374,7 @@ vuint32m4_t test_vloxei64_v_u32m4_tu_ntl_PALL(vuint32m4_t maskedoff, const uint3
 
 // CHECK-LABEL: @test_vloxei64_v_u64m1_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vloxei.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vloxei.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i64> [[TMP0]]
 //
 vuint64m1_t test_vloxei64_v_u64m1_tu_ntl_PALL(vuint64m1_t maskedoff, const uint64_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -383,7 +383,7 @@ vuint64m1_t test_vloxei64_v_u64m1_tu_ntl_PALL(vuint64m1_t maskedoff, const uint6
 
 // CHECK-LABEL: @test_vloxei64_v_u64m2_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vloxei.nxv2i64.nxv2i64.i64(<vscale x 2 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vloxei.nxv2i64.nxv2i64.i64(<vscale x 2 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i64> [[TMP0]]
 //
 vuint64m2_t test_vloxei64_v_u64m2_tu_ntl_PALL(vuint64m2_t maskedoff, const uint64_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -392,7 +392,7 @@ vuint64m2_t test_vloxei64_v_u64m2_tu_ntl_PALL(vuint64m2_t maskedoff, const uint6
 
 // CHECK-LABEL: @test_vloxei64_v_u64m4_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vloxei.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vloxei.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i64> [[TMP0]]
 //
 vuint64m4_t test_vloxei64_v_u64m4_tu_ntl_PALL(vuint64m4_t maskedoff, const uint64_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -401,7 +401,7 @@ vuint64m4_t test_vloxei64_v_u64m4_tu_ntl_PALL(vuint64m4_t maskedoff, const uint6
 
 // CHECK-LABEL: @test_vloxei64_v_u64m8_tu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vloxei.nxv8i64.nxv8i64.i64(<vscale x 8 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vloxei.nxv8i64.nxv8i64.i64(<vscale x 8 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i64> [[TMP0]]
 //
 vuint64m8_t test_vloxei64_v_u64m8_tu_ntl_PALL(vuint64m8_t maskedoff, const uint64_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -410,7 +410,7 @@ vuint64m8_t test_vloxei64_v_u64m8_tu_ntl_PALL(vuint64m8_t maskedoff, const uint6
 
 // CHECK-LABEL: @test_vloxei64_v_f16mf4_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x half> @llvm.riscv.vloxei.mask.nxv1f16.nxv1i64.i64(<vscale x 1 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x half> @llvm.riscv.vloxei.mask.nxv1f16.nxv1i64.i64(<vscale x 1 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x half> [[TMP0]]
 //
 vfloat16mf4_t test_vloxei64_v_f16mf4_tum_ntl_PALL(vbool64_t mask, vfloat16mf4_t maskedoff, const _Float16 *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -419,7 +419,7 @@ vfloat16mf4_t test_vloxei64_v_f16mf4_tum_ntl_PALL(vbool64_t mask, vfloat16mf4_t 
 
 // CHECK-LABEL: @test_vloxei64_v_f16mf2_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x half> @llvm.riscv.vloxei.mask.nxv2f16.nxv2i64.i64(<vscale x 2 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x half> @llvm.riscv.vloxei.mask.nxv2f16.nxv2i64.i64(<vscale x 2 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x half> [[TMP0]]
 //
 vfloat16mf2_t test_vloxei64_v_f16mf2_tum_ntl_PALL(vbool32_t mask, vfloat16mf2_t maskedoff, const _Float16 *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -428,7 +428,7 @@ vfloat16mf2_t test_vloxei64_v_f16mf2_tum_ntl_PALL(vbool32_t mask, vfloat16mf2_t 
 
 // CHECK-LABEL: @test_vloxei64_v_f16m1_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x half> @llvm.riscv.vloxei.mask.nxv4f16.nxv4i64.i64(<vscale x 4 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x half> @llvm.riscv.vloxei.mask.nxv4f16.nxv4i64.i64(<vscale x 4 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x half> [[TMP0]]
 //
 vfloat16m1_t test_vloxei64_v_f16m1_tum_ntl_PALL(vbool16_t mask, vfloat16m1_t maskedoff, const _Float16 *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -437,7 +437,7 @@ vfloat16m1_t test_vloxei64_v_f16m1_tum_ntl_PALL(vbool16_t mask, vfloat16m1_t mas
 
 // CHECK-LABEL: @test_vloxei64_v_f16m2_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x half> @llvm.riscv.vloxei.mask.nxv8f16.nxv8i64.i64(<vscale x 8 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x half> @llvm.riscv.vloxei.mask.nxv8f16.nxv8i64.i64(<vscale x 8 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x half> [[TMP0]]
 //
 vfloat16m2_t test_vloxei64_v_f16m2_tum_ntl_PALL(vbool8_t mask, vfloat16m2_t maskedoff, const _Float16 *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -446,7 +446,7 @@ vfloat16m2_t test_vloxei64_v_f16m2_tum_ntl_PALL(vbool8_t mask, vfloat16m2_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_f32mf2_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x float> @llvm.riscv.vloxei.mask.nxv1f32.nxv1i64.i64(<vscale x 1 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x float> @llvm.riscv.vloxei.mask.nxv1f32.nxv1i64.i64(<vscale x 1 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x float> [[TMP0]]
 //
 vfloat32mf2_t test_vloxei64_v_f32mf2_tum_ntl_PALL(vbool64_t mask, vfloat32mf2_t maskedoff, const float *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -455,7 +455,7 @@ vfloat32mf2_t test_vloxei64_v_f32mf2_tum_ntl_PALL(vbool64_t mask, vfloat32mf2_t 
 
 // CHECK-LABEL: @test_vloxei64_v_f32m1_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x float> @llvm.riscv.vloxei.mask.nxv2f32.nxv2i64.i64(<vscale x 2 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x float> @llvm.riscv.vloxei.mask.nxv2f32.nxv2i64.i64(<vscale x 2 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x float> [[TMP0]]
 //
 vfloat32m1_t test_vloxei64_v_f32m1_tum_ntl_PALL(vbool32_t mask, vfloat32m1_t maskedoff, const float *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -464,7 +464,7 @@ vfloat32m1_t test_vloxei64_v_f32m1_tum_ntl_PALL(vbool32_t mask, vfloat32m1_t mas
 
 // CHECK-LABEL: @test_vloxei64_v_f32m2_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x float> @llvm.riscv.vloxei.mask.nxv4f32.nxv4i64.i64(<vscale x 4 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x float> @llvm.riscv.vloxei.mask.nxv4f32.nxv4i64.i64(<vscale x 4 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x float> [[TMP0]]
 //
 vfloat32m2_t test_vloxei64_v_f32m2_tum_ntl_PALL(vbool16_t mask, vfloat32m2_t maskedoff, const float *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -473,7 +473,7 @@ vfloat32m2_t test_vloxei64_v_f32m2_tum_ntl_PALL(vbool16_t mask, vfloat32m2_t mas
 
 // CHECK-LABEL: @test_vloxei64_v_f32m4_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x float> @llvm.riscv.vloxei.mask.nxv8f32.nxv8i64.i64(<vscale x 8 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x float> @llvm.riscv.vloxei.mask.nxv8f32.nxv8i64.i64(<vscale x 8 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x float> [[TMP0]]
 //
 vfloat32m4_t test_vloxei64_v_f32m4_tum_ntl_PALL(vbool8_t mask, vfloat32m4_t maskedoff, const float *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -482,7 +482,7 @@ vfloat32m4_t test_vloxei64_v_f32m4_tum_ntl_PALL(vbool8_t mask, vfloat32m4_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_f64m1_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x double> @llvm.riscv.vloxei.mask.nxv1f64.nxv1i64.i64(<vscale x 1 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x double> @llvm.riscv.vloxei.mask.nxv1f64.nxv1i64.i64(<vscale x 1 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x double> [[TMP0]]
 //
 vfloat64m1_t test_vloxei64_v_f64m1_tum_ntl_PALL(vbool64_t mask, vfloat64m1_t maskedoff, const double *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -491,7 +491,7 @@ vfloat64m1_t test_vloxei64_v_f64m1_tum_ntl_PALL(vbool64_t mask, vfloat64m1_t mas
 
 // CHECK-LABEL: @test_vloxei64_v_f64m2_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x double> @llvm.riscv.vloxei.mask.nxv2f64.nxv2i64.i64(<vscale x 2 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x double> @llvm.riscv.vloxei.mask.nxv2f64.nxv2i64.i64(<vscale x 2 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x double> [[TMP0]]
 //
 vfloat64m2_t test_vloxei64_v_f64m2_tum_ntl_PALL(vbool32_t mask, vfloat64m2_t maskedoff, const double *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -500,7 +500,7 @@ vfloat64m2_t test_vloxei64_v_f64m2_tum_ntl_PALL(vbool32_t mask, vfloat64m2_t mas
 
 // CHECK-LABEL: @test_vloxei64_v_f64m4_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x double> @llvm.riscv.vloxei.mask.nxv4f64.nxv4i64.i64(<vscale x 4 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x double> @llvm.riscv.vloxei.mask.nxv4f64.nxv4i64.i64(<vscale x 4 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x double> [[TMP0]]
 //
 vfloat64m4_t test_vloxei64_v_f64m4_tum_ntl_PALL(vbool16_t mask, vfloat64m4_t maskedoff, const double *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -509,7 +509,7 @@ vfloat64m4_t test_vloxei64_v_f64m4_tum_ntl_PALL(vbool16_t mask, vfloat64m4_t mas
 
 // CHECK-LABEL: @test_vloxei64_v_f64m8_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x double> @llvm.riscv.vloxei.mask.nxv8f64.nxv8i64.i64(<vscale x 8 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x double> @llvm.riscv.vloxei.mask.nxv8f64.nxv8i64.i64(<vscale x 8 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x double> [[TMP0]]
 //
 vfloat64m8_t test_vloxei64_v_f64m8_tum_ntl_PALL(vbool8_t mask, vfloat64m8_t maskedoff, const double *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -518,7 +518,7 @@ vfloat64m8_t test_vloxei64_v_f64m8_tum_ntl_PALL(vbool8_t mask, vfloat64m8_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_i8mf8_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vloxei.mask.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vloxei.mask.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i8> [[TMP0]]
 //
 vint8mf8_t test_vloxei64_v_i8mf8_tum_ntl_PALL(vbool64_t mask, vint8mf8_t maskedoff, const int8_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -527,7 +527,7 @@ vint8mf8_t test_vloxei64_v_i8mf8_tum_ntl_PALL(vbool64_t mask, vint8mf8_t maskedo
 
 // CHECK-LABEL: @test_vloxei64_v_i8mf4_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vloxei.mask.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vloxei.mask.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i8> [[TMP0]]
 //
 vint8mf4_t test_vloxei64_v_i8mf4_tum_ntl_PALL(vbool32_t mask, vint8mf4_t maskedoff, const int8_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -536,7 +536,7 @@ vint8mf4_t test_vloxei64_v_i8mf4_tum_ntl_PALL(vbool32_t mask, vint8mf4_t maskedo
 
 // CHECK-LABEL: @test_vloxei64_v_i8mf2_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vloxei.mask.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vloxei.mask.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i8> [[TMP0]]
 //
 vint8mf2_t test_vloxei64_v_i8mf2_tum_ntl_PALL(vbool16_t mask, vint8mf2_t maskedoff, const int8_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -545,7 +545,7 @@ vint8mf2_t test_vloxei64_v_i8mf2_tum_ntl_PALL(vbool16_t mask, vint8mf2_t maskedo
 
 // CHECK-LABEL: @test_vloxei64_v_i8m1_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vloxei.mask.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vloxei.mask.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i8> [[TMP0]]
 //
 vint8m1_t test_vloxei64_v_i8m1_tum_ntl_PALL(vbool8_t mask, vint8m1_t maskedoff, const int8_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -554,7 +554,7 @@ vint8m1_t test_vloxei64_v_i8m1_tum_ntl_PALL(vbool8_t mask, vint8m1_t maskedoff, 
 
 // CHECK-LABEL: @test_vloxei64_v_i16mf4_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vloxei.mask.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vloxei.mask.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i16> [[TMP0]]
 //
 vint16mf4_t test_vloxei64_v_i16mf4_tum_ntl_PALL(vbool64_t mask, vint16mf4_t maskedoff, const int16_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -563,7 +563,7 @@ vint16mf4_t test_vloxei64_v_i16mf4_tum_ntl_PALL(vbool64_t mask, vint16mf4_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_i16mf2_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vloxei.mask.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vloxei.mask.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP0]]
 //
 vint16mf2_t test_vloxei64_v_i16mf2_tum_ntl_PALL(vbool32_t mask, vint16mf2_t maskedoff, const int16_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -572,7 +572,7 @@ vint16mf2_t test_vloxei64_v_i16mf2_tum_ntl_PALL(vbool32_t mask, vint16mf2_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_i16m1_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vloxei.mask.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vloxei.mask.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i16> [[TMP0]]
 //
 vint16m1_t test_vloxei64_v_i16m1_tum_ntl_PALL(vbool16_t mask, vint16m1_t maskedoff, const int16_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -581,7 +581,7 @@ vint16m1_t test_vloxei64_v_i16m1_tum_ntl_PALL(vbool16_t mask, vint16m1_t maskedo
 
 // CHECK-LABEL: @test_vloxei64_v_i16m2_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vloxei.mask.nxv8i16.nxv8i64.i64(<vscale x 8 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vloxei.mask.nxv8i16.nxv8i64.i64(<vscale x 8 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i16> [[TMP0]]
 //
 vint16m2_t test_vloxei64_v_i16m2_tum_ntl_PALL(vbool8_t mask, vint16m2_t maskedoff, const int16_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -590,7 +590,7 @@ vint16m2_t test_vloxei64_v_i16m2_tum_ntl_PALL(vbool8_t mask, vint16m2_t maskedof
 
 // CHECK-LABEL: @test_vloxei64_v_i32mf2_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vloxei.mask.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vloxei.mask.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP0]]
 //
 vint32mf2_t test_vloxei64_v_i32mf2_tum_ntl_PALL(vbool64_t mask, vint32mf2_t maskedoff, const int32_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -599,7 +599,7 @@ vint32mf2_t test_vloxei64_v_i32mf2_tum_ntl_PALL(vbool64_t mask, vint32mf2_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_i32m1_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vloxei.mask.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vloxei.mask.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i32> [[TMP0]]
 //
 vint32m1_t test_vloxei64_v_i32m1_tum_ntl_PALL(vbool32_t mask, vint32m1_t maskedoff, const int32_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -608,7 +608,7 @@ vint32m1_t test_vloxei64_v_i32m1_tum_ntl_PALL(vbool32_t mask, vint32m1_t maskedo
 
 // CHECK-LABEL: @test_vloxei64_v_i32m2_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vloxei.mask.nxv4i32.nxv4i64.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vloxei.mask.nxv4i32.nxv4i64.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP0]]
 //
 vint32m2_t test_vloxei64_v_i32m2_tum_ntl_PALL(vbool16_t mask, vint32m2_t maskedoff, const int32_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -617,7 +617,7 @@ vint32m2_t test_vloxei64_v_i32m2_tum_ntl_PALL(vbool16_t mask, vint32m2_t maskedo
 
 // CHECK-LABEL: @test_vloxei64_v_i32m4_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vloxei.mask.nxv8i32.nxv8i64.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vloxei.mask.nxv8i32.nxv8i64.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i32> [[TMP0]]
 //
 vint32m4_t test_vloxei64_v_i32m4_tum_ntl_PALL(vbool8_t mask, vint32m4_t maskedoff, const int32_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -626,7 +626,7 @@ vint32m4_t test_vloxei64_v_i32m4_tum_ntl_PALL(vbool8_t mask, vint32m4_t maskedof
 
 // CHECK-LABEL: @test_vloxei64_v_i64m1_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vloxei.mask.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vloxei.mask.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i64> [[TMP0]]
 //
 vint64m1_t test_vloxei64_v_i64m1_tum_ntl_PALL(vbool64_t mask, vint64m1_t maskedoff, const int64_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -635,7 +635,7 @@ vint64m1_t test_vloxei64_v_i64m1_tum_ntl_PALL(vbool64_t mask, vint64m1_t maskedo
 
 // CHECK-LABEL: @test_vloxei64_v_i64m2_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vloxei.mask.nxv2i64.nxv2i64.i64(<vscale x 2 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vloxei.mask.nxv2i64.nxv2i64.i64(<vscale x 2 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i64> [[TMP0]]
 //
 vint64m2_t test_vloxei64_v_i64m2_tum_ntl_PALL(vbool32_t mask, vint64m2_t maskedoff, const int64_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -644,7 +644,7 @@ vint64m2_t test_vloxei64_v_i64m2_tum_ntl_PALL(vbool32_t mask, vint64m2_t maskedo
 
 // CHECK-LABEL: @test_vloxei64_v_i64m4_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vloxei.mask.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vloxei.mask.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i64> [[TMP0]]
 //
 vint64m4_t test_vloxei64_v_i64m4_tum_ntl_PALL(vbool16_t mask, vint64m4_t maskedoff, const int64_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -653,7 +653,7 @@ vint64m4_t test_vloxei64_v_i64m4_tum_ntl_PALL(vbool16_t mask, vint64m4_t maskedo
 
 // CHECK-LABEL: @test_vloxei64_v_i64m8_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vloxei.mask.nxv8i64.nxv8i64.i64(<vscale x 8 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vloxei.mask.nxv8i64.nxv8i64.i64(<vscale x 8 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i64> [[TMP0]]
 //
 vint64m8_t test_vloxei64_v_i64m8_tum_ntl_PALL(vbool8_t mask, vint64m8_t maskedoff, const int64_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -662,7 +662,7 @@ vint64m8_t test_vloxei64_v_i64m8_tum_ntl_PALL(vbool8_t mask, vint64m8_t maskedof
 
 // CHECK-LABEL: @test_vloxei64_v_u8mf8_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vloxei.mask.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vloxei.mask.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i8> [[TMP0]]
 //
 vuint8mf8_t test_vloxei64_v_u8mf8_tum_ntl_PALL(vbool64_t mask, vuint8mf8_t maskedoff, const uint8_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -671,7 +671,7 @@ vuint8mf8_t test_vloxei64_v_u8mf8_tum_ntl_PALL(vbool64_t mask, vuint8mf8_t maske
 
 // CHECK-LABEL: @test_vloxei64_v_u8mf4_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vloxei.mask.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vloxei.mask.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i8> [[TMP0]]
 //
 vuint8mf4_t test_vloxei64_v_u8mf4_tum_ntl_PALL(vbool32_t mask, vuint8mf4_t maskedoff, const uint8_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -680,7 +680,7 @@ vuint8mf4_t test_vloxei64_v_u8mf4_tum_ntl_PALL(vbool32_t mask, vuint8mf4_t maske
 
 // CHECK-LABEL: @test_vloxei64_v_u8mf2_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vloxei.mask.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vloxei.mask.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i8> [[TMP0]]
 //
 vuint8mf2_t test_vloxei64_v_u8mf2_tum_ntl_PALL(vbool16_t mask, vuint8mf2_t maskedoff, const uint8_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -689,7 +689,7 @@ vuint8mf2_t test_vloxei64_v_u8mf2_tum_ntl_PALL(vbool16_t mask, vuint8mf2_t maske
 
 // CHECK-LABEL: @test_vloxei64_v_u8m1_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vloxei.mask.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vloxei.mask.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i8> [[TMP0]]
 //
 vuint8m1_t test_vloxei64_v_u8m1_tum_ntl_PALL(vbool8_t mask, vuint8m1_t maskedoff, const uint8_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -698,7 +698,7 @@ vuint8m1_t test_vloxei64_v_u8m1_tum_ntl_PALL(vbool8_t mask, vuint8m1_t maskedoff
 
 // CHECK-LABEL: @test_vloxei64_v_u16mf4_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vloxei.mask.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vloxei.mask.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i16> [[TMP0]]
 //
 vuint16mf4_t test_vloxei64_v_u16mf4_tum_ntl_PALL(vbool64_t mask, vuint16mf4_t maskedoff, const uint16_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -707,7 +707,7 @@ vuint16mf4_t test_vloxei64_v_u16mf4_tum_ntl_PALL(vbool64_t mask, vuint16mf4_t ma
 
 // CHECK-LABEL: @test_vloxei64_v_u16mf2_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vloxei.mask.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vloxei.mask.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP0]]
 //
 vuint16mf2_t test_vloxei64_v_u16mf2_tum_ntl_PALL(vbool32_t mask, vuint16mf2_t maskedoff, const uint16_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -716,7 +716,7 @@ vuint16mf2_t test_vloxei64_v_u16mf2_tum_ntl_PALL(vbool32_t mask, vuint16mf2_t ma
 
 // CHECK-LABEL: @test_vloxei64_v_u16m1_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vloxei.mask.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vloxei.mask.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i16> [[TMP0]]
 //
 vuint16m1_t test_vloxei64_v_u16m1_tum_ntl_PALL(vbool16_t mask, vuint16m1_t maskedoff, const uint16_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -725,7 +725,7 @@ vuint16m1_t test_vloxei64_v_u16m1_tum_ntl_PALL(vbool16_t mask, vuint16m1_t maske
 
 // CHECK-LABEL: @test_vloxei64_v_u16m2_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vloxei.mask.nxv8i16.nxv8i64.i64(<vscale x 8 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vloxei.mask.nxv8i16.nxv8i64.i64(<vscale x 8 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i16> [[TMP0]]
 //
 vuint16m2_t test_vloxei64_v_u16m2_tum_ntl_PALL(vbool8_t mask, vuint16m2_t maskedoff, const uint16_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -734,7 +734,7 @@ vuint16m2_t test_vloxei64_v_u16m2_tum_ntl_PALL(vbool8_t mask, vuint16m2_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_u32mf2_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vloxei.mask.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vloxei.mask.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP0]]
 //
 vuint32mf2_t test_vloxei64_v_u32mf2_tum_ntl_PALL(vbool64_t mask, vuint32mf2_t maskedoff, const uint32_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -743,7 +743,7 @@ vuint32mf2_t test_vloxei64_v_u32mf2_tum_ntl_PALL(vbool64_t mask, vuint32mf2_t ma
 
 // CHECK-LABEL: @test_vloxei64_v_u32m1_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vloxei.mask.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vloxei.mask.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i32> [[TMP0]]
 //
 vuint32m1_t test_vloxei64_v_u32m1_tum_ntl_PALL(vbool32_t mask, vuint32m1_t maskedoff, const uint32_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -752,7 +752,7 @@ vuint32m1_t test_vloxei64_v_u32m1_tum_ntl_PALL(vbool32_t mask, vuint32m1_t maske
 
 // CHECK-LABEL: @test_vloxei64_v_u32m2_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vloxei.mask.nxv4i32.nxv4i64.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vloxei.mask.nxv4i32.nxv4i64.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP0]]
 //
 vuint32m2_t test_vloxei64_v_u32m2_tum_ntl_PALL(vbool16_t mask, vuint32m2_t maskedoff, const uint32_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -761,7 +761,7 @@ vuint32m2_t test_vloxei64_v_u32m2_tum_ntl_PALL(vbool16_t mask, vuint32m2_t maske
 
 // CHECK-LABEL: @test_vloxei64_v_u32m4_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vloxei.mask.nxv8i32.nxv8i64.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vloxei.mask.nxv8i32.nxv8i64.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i32> [[TMP0]]
 //
 vuint32m4_t test_vloxei64_v_u32m4_tum_ntl_PALL(vbool8_t mask, vuint32m4_t maskedoff, const uint32_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -770,7 +770,7 @@ vuint32m4_t test_vloxei64_v_u32m4_tum_ntl_PALL(vbool8_t mask, vuint32m4_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_u64m1_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vloxei.mask.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vloxei.mask.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i64> [[TMP0]]
 //
 vuint64m1_t test_vloxei64_v_u64m1_tum_ntl_PALL(vbool64_t mask, vuint64m1_t maskedoff, const uint64_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -779,7 +779,7 @@ vuint64m1_t test_vloxei64_v_u64m1_tum_ntl_PALL(vbool64_t mask, vuint64m1_t maske
 
 // CHECK-LABEL: @test_vloxei64_v_u64m2_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vloxei.mask.nxv2i64.nxv2i64.i64(<vscale x 2 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vloxei.mask.nxv2i64.nxv2i64.i64(<vscale x 2 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i64> [[TMP0]]
 //
 vuint64m2_t test_vloxei64_v_u64m2_tum_ntl_PALL(vbool32_t mask, vuint64m2_t maskedoff, const uint64_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -788,7 +788,7 @@ vuint64m2_t test_vloxei64_v_u64m2_tum_ntl_PALL(vbool32_t mask, vuint64m2_t maske
 
 // CHECK-LABEL: @test_vloxei64_v_u64m4_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vloxei.mask.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vloxei.mask.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i64> [[TMP0]]
 //
 vuint64m4_t test_vloxei64_v_u64m4_tum_ntl_PALL(vbool16_t mask, vuint64m4_t maskedoff, const uint64_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -797,7 +797,7 @@ vuint64m4_t test_vloxei64_v_u64m4_tum_ntl_PALL(vbool16_t mask, vuint64m4_t maske
 
 // CHECK-LABEL: @test_vloxei64_v_u64m8_tum_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vloxei.mask.nxv8i64.nxv8i64.i64(<vscale x 8 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vloxei.mask.nxv8i64.nxv8i64.i64(<vscale x 8 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i64> [[TMP0]]
 //
 vuint64m8_t test_vloxei64_v_u64m8_tum_ntl_PALL(vbool8_t mask, vuint64m8_t maskedoff, const uint64_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -806,7 +806,7 @@ vuint64m8_t test_vloxei64_v_u64m8_tum_ntl_PALL(vbool8_t mask, vuint64m8_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_f16mf4_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x half> @llvm.riscv.vloxei.mask.nxv1f16.nxv1i64.i64(<vscale x 1 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x half> @llvm.riscv.vloxei.mask.nxv1f16.nxv1i64.i64(<vscale x 1 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x half> [[TMP0]]
 //
 vfloat16mf4_t test_vloxei64_v_f16mf4_tumu_ntl_PALL(vbool64_t mask, vfloat16mf4_t maskedoff, const _Float16 *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -815,7 +815,7 @@ vfloat16mf4_t test_vloxei64_v_f16mf4_tumu_ntl_PALL(vbool64_t mask, vfloat16mf4_t
 
 // CHECK-LABEL: @test_vloxei64_v_f16mf2_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x half> @llvm.riscv.vloxei.mask.nxv2f16.nxv2i64.i64(<vscale x 2 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x half> @llvm.riscv.vloxei.mask.nxv2f16.nxv2i64.i64(<vscale x 2 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x half> [[TMP0]]
 //
 vfloat16mf2_t test_vloxei64_v_f16mf2_tumu_ntl_PALL(vbool32_t mask, vfloat16mf2_t maskedoff, const _Float16 *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -824,7 +824,7 @@ vfloat16mf2_t test_vloxei64_v_f16mf2_tumu_ntl_PALL(vbool32_t mask, vfloat16mf2_t
 
 // CHECK-LABEL: @test_vloxei64_v_f16m1_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x half> @llvm.riscv.vloxei.mask.nxv4f16.nxv4i64.i64(<vscale x 4 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x half> @llvm.riscv.vloxei.mask.nxv4f16.nxv4i64.i64(<vscale x 4 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x half> [[TMP0]]
 //
 vfloat16m1_t test_vloxei64_v_f16m1_tumu_ntl_PALL(vbool16_t mask, vfloat16m1_t maskedoff, const _Float16 *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -833,7 +833,7 @@ vfloat16m1_t test_vloxei64_v_f16m1_tumu_ntl_PALL(vbool16_t mask, vfloat16m1_t ma
 
 // CHECK-LABEL: @test_vloxei64_v_f16m2_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x half> @llvm.riscv.vloxei.mask.nxv8f16.nxv8i64.i64(<vscale x 8 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x half> @llvm.riscv.vloxei.mask.nxv8f16.nxv8i64.i64(<vscale x 8 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x half> [[TMP0]]
 //
 vfloat16m2_t test_vloxei64_v_f16m2_tumu_ntl_PALL(vbool8_t mask, vfloat16m2_t maskedoff, const _Float16 *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -842,7 +842,7 @@ vfloat16m2_t test_vloxei64_v_f16m2_tumu_ntl_PALL(vbool8_t mask, vfloat16m2_t mas
 
 // CHECK-LABEL: @test_vloxei64_v_f32mf2_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x float> @llvm.riscv.vloxei.mask.nxv1f32.nxv1i64.i64(<vscale x 1 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x float> @llvm.riscv.vloxei.mask.nxv1f32.nxv1i64.i64(<vscale x 1 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x float> [[TMP0]]
 //
 vfloat32mf2_t test_vloxei64_v_f32mf2_tumu_ntl_PALL(vbool64_t mask, vfloat32mf2_t maskedoff, const float *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -851,7 +851,7 @@ vfloat32mf2_t test_vloxei64_v_f32mf2_tumu_ntl_PALL(vbool64_t mask, vfloat32mf2_t
 
 // CHECK-LABEL: @test_vloxei64_v_f32m1_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x float> @llvm.riscv.vloxei.mask.nxv2f32.nxv2i64.i64(<vscale x 2 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x float> @llvm.riscv.vloxei.mask.nxv2f32.nxv2i64.i64(<vscale x 2 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x float> [[TMP0]]
 //
 vfloat32m1_t test_vloxei64_v_f32m1_tumu_ntl_PALL(vbool32_t mask, vfloat32m1_t maskedoff, const float *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -860,7 +860,7 @@ vfloat32m1_t test_vloxei64_v_f32m1_tumu_ntl_PALL(vbool32_t mask, vfloat32m1_t ma
 
 // CHECK-LABEL: @test_vloxei64_v_f32m2_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x float> @llvm.riscv.vloxei.mask.nxv4f32.nxv4i64.i64(<vscale x 4 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x float> @llvm.riscv.vloxei.mask.nxv4f32.nxv4i64.i64(<vscale x 4 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x float> [[TMP0]]
 //
 vfloat32m2_t test_vloxei64_v_f32m2_tumu_ntl_PALL(vbool16_t mask, vfloat32m2_t maskedoff, const float *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -869,7 +869,7 @@ vfloat32m2_t test_vloxei64_v_f32m2_tumu_ntl_PALL(vbool16_t mask, vfloat32m2_t ma
 
 // CHECK-LABEL: @test_vloxei64_v_f32m4_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x float> @llvm.riscv.vloxei.mask.nxv8f32.nxv8i64.i64(<vscale x 8 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x float> @llvm.riscv.vloxei.mask.nxv8f32.nxv8i64.i64(<vscale x 8 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x float> [[TMP0]]
 //
 vfloat32m4_t test_vloxei64_v_f32m4_tumu_ntl_PALL(vbool8_t mask, vfloat32m4_t maskedoff, const float *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -878,7 +878,7 @@ vfloat32m4_t test_vloxei64_v_f32m4_tumu_ntl_PALL(vbool8_t mask, vfloat32m4_t mas
 
 // CHECK-LABEL: @test_vloxei64_v_f64m1_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x double> @llvm.riscv.vloxei.mask.nxv1f64.nxv1i64.i64(<vscale x 1 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x double> @llvm.riscv.vloxei.mask.nxv1f64.nxv1i64.i64(<vscale x 1 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x double> [[TMP0]]
 //
 vfloat64m1_t test_vloxei64_v_f64m1_tumu_ntl_PALL(vbool64_t mask, vfloat64m1_t maskedoff, const double *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -887,7 +887,7 @@ vfloat64m1_t test_vloxei64_v_f64m1_tumu_ntl_PALL(vbool64_t mask, vfloat64m1_t ma
 
 // CHECK-LABEL: @test_vloxei64_v_f64m2_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x double> @llvm.riscv.vloxei.mask.nxv2f64.nxv2i64.i64(<vscale x 2 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x double> @llvm.riscv.vloxei.mask.nxv2f64.nxv2i64.i64(<vscale x 2 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x double> [[TMP0]]
 //
 vfloat64m2_t test_vloxei64_v_f64m2_tumu_ntl_PALL(vbool32_t mask, vfloat64m2_t maskedoff, const double *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -896,7 +896,7 @@ vfloat64m2_t test_vloxei64_v_f64m2_tumu_ntl_PALL(vbool32_t mask, vfloat64m2_t ma
 
 // CHECK-LABEL: @test_vloxei64_v_f64m4_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x double> @llvm.riscv.vloxei.mask.nxv4f64.nxv4i64.i64(<vscale x 4 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x double> @llvm.riscv.vloxei.mask.nxv4f64.nxv4i64.i64(<vscale x 4 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x double> [[TMP0]]
 //
 vfloat64m4_t test_vloxei64_v_f64m4_tumu_ntl_PALL(vbool16_t mask, vfloat64m4_t maskedoff, const double *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -905,7 +905,7 @@ vfloat64m4_t test_vloxei64_v_f64m4_tumu_ntl_PALL(vbool16_t mask, vfloat64m4_t ma
 
 // CHECK-LABEL: @test_vloxei64_v_f64m8_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x double> @llvm.riscv.vloxei.mask.nxv8f64.nxv8i64.i64(<vscale x 8 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x double> @llvm.riscv.vloxei.mask.nxv8f64.nxv8i64.i64(<vscale x 8 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x double> [[TMP0]]
 //
 vfloat64m8_t test_vloxei64_v_f64m8_tumu_ntl_PALL(vbool8_t mask, vfloat64m8_t maskedoff, const double *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -914,7 +914,7 @@ vfloat64m8_t test_vloxei64_v_f64m8_tumu_ntl_PALL(vbool8_t mask, vfloat64m8_t mas
 
 // CHECK-LABEL: @test_vloxei64_v_i8mf8_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vloxei.mask.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vloxei.mask.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i8> [[TMP0]]
 //
 vint8mf8_t test_vloxei64_v_i8mf8_tumu_ntl_PALL(vbool64_t mask, vint8mf8_t maskedoff, const int8_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -923,7 +923,7 @@ vint8mf8_t test_vloxei64_v_i8mf8_tumu_ntl_PALL(vbool64_t mask, vint8mf8_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_i8mf4_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vloxei.mask.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vloxei.mask.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i8> [[TMP0]]
 //
 vint8mf4_t test_vloxei64_v_i8mf4_tumu_ntl_PALL(vbool32_t mask, vint8mf4_t maskedoff, const int8_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -932,7 +932,7 @@ vint8mf4_t test_vloxei64_v_i8mf4_tumu_ntl_PALL(vbool32_t mask, vint8mf4_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_i8mf2_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vloxei.mask.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vloxei.mask.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i8> [[TMP0]]
 //
 vint8mf2_t test_vloxei64_v_i8mf2_tumu_ntl_PALL(vbool16_t mask, vint8mf2_t maskedoff, const int8_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -941,7 +941,7 @@ vint8mf2_t test_vloxei64_v_i8mf2_tumu_ntl_PALL(vbool16_t mask, vint8mf2_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_i8m1_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vloxei.mask.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vloxei.mask.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i8> [[TMP0]]
 //
 vint8m1_t test_vloxei64_v_i8m1_tumu_ntl_PALL(vbool8_t mask, vint8m1_t maskedoff, const int8_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -950,7 +950,7 @@ vint8m1_t test_vloxei64_v_i8m1_tumu_ntl_PALL(vbool8_t mask, vint8m1_t maskedoff,
 
 // CHECK-LABEL: @test_vloxei64_v_i16mf4_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vloxei.mask.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vloxei.mask.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i16> [[TMP0]]
 //
 vint16mf4_t test_vloxei64_v_i16mf4_tumu_ntl_PALL(vbool64_t mask, vint16mf4_t maskedoff, const int16_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -959,7 +959,7 @@ vint16mf4_t test_vloxei64_v_i16mf4_tumu_ntl_PALL(vbool64_t mask, vint16mf4_t mas
 
 // CHECK-LABEL: @test_vloxei64_v_i16mf2_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vloxei.mask.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vloxei.mask.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP0]]
 //
 vint16mf2_t test_vloxei64_v_i16mf2_tumu_ntl_PALL(vbool32_t mask, vint16mf2_t maskedoff, const int16_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -968,7 +968,7 @@ vint16mf2_t test_vloxei64_v_i16mf2_tumu_ntl_PALL(vbool32_t mask, vint16mf2_t mas
 
 // CHECK-LABEL: @test_vloxei64_v_i16m1_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vloxei.mask.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vloxei.mask.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i16> [[TMP0]]
 //
 vint16m1_t test_vloxei64_v_i16m1_tumu_ntl_PALL(vbool16_t mask, vint16m1_t maskedoff, const int16_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -977,7 +977,7 @@ vint16m1_t test_vloxei64_v_i16m1_tumu_ntl_PALL(vbool16_t mask, vint16m1_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_i16m2_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vloxei.mask.nxv8i16.nxv8i64.i64(<vscale x 8 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vloxei.mask.nxv8i16.nxv8i64.i64(<vscale x 8 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i16> [[TMP0]]
 //
 vint16m2_t test_vloxei64_v_i16m2_tumu_ntl_PALL(vbool8_t mask, vint16m2_t maskedoff, const int16_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -986,7 +986,7 @@ vint16m2_t test_vloxei64_v_i16m2_tumu_ntl_PALL(vbool8_t mask, vint16m2_t maskedo
 
 // CHECK-LABEL: @test_vloxei64_v_i32mf2_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vloxei.mask.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vloxei.mask.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP0]]
 //
 vint32mf2_t test_vloxei64_v_i32mf2_tumu_ntl_PALL(vbool64_t mask, vint32mf2_t maskedoff, const int32_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -995,7 +995,7 @@ vint32mf2_t test_vloxei64_v_i32mf2_tumu_ntl_PALL(vbool64_t mask, vint32mf2_t mas
 
 // CHECK-LABEL: @test_vloxei64_v_i32m1_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vloxei.mask.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vloxei.mask.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i32> [[TMP0]]
 //
 vint32m1_t test_vloxei64_v_i32m1_tumu_ntl_PALL(vbool32_t mask, vint32m1_t maskedoff, const int32_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -1004,7 +1004,7 @@ vint32m1_t test_vloxei64_v_i32m1_tumu_ntl_PALL(vbool32_t mask, vint32m1_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_i32m2_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vloxei.mask.nxv4i32.nxv4i64.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vloxei.mask.nxv4i32.nxv4i64.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP0]]
 //
 vint32m2_t test_vloxei64_v_i32m2_tumu_ntl_PALL(vbool16_t mask, vint32m2_t maskedoff, const int32_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -1013,7 +1013,7 @@ vint32m2_t test_vloxei64_v_i32m2_tumu_ntl_PALL(vbool16_t mask, vint32m2_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_i32m4_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vloxei.mask.nxv8i32.nxv8i64.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vloxei.mask.nxv8i32.nxv8i64.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i32> [[TMP0]]
 //
 vint32m4_t test_vloxei64_v_i32m4_tumu_ntl_PALL(vbool8_t mask, vint32m4_t maskedoff, const int32_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -1022,7 +1022,7 @@ vint32m4_t test_vloxei64_v_i32m4_tumu_ntl_PALL(vbool8_t mask, vint32m4_t maskedo
 
 // CHECK-LABEL: @test_vloxei64_v_i64m1_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vloxei.mask.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vloxei.mask.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i64> [[TMP0]]
 //
 vint64m1_t test_vloxei64_v_i64m1_tumu_ntl_PALL(vbool64_t mask, vint64m1_t maskedoff, const int64_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -1031,7 +1031,7 @@ vint64m1_t test_vloxei64_v_i64m1_tumu_ntl_PALL(vbool64_t mask, vint64m1_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_i64m2_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vloxei.mask.nxv2i64.nxv2i64.i64(<vscale x 2 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vloxei.mask.nxv2i64.nxv2i64.i64(<vscale x 2 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i64> [[TMP0]]
 //
 vint64m2_t test_vloxei64_v_i64m2_tumu_ntl_PALL(vbool32_t mask, vint64m2_t maskedoff, const int64_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -1040,7 +1040,7 @@ vint64m2_t test_vloxei64_v_i64m2_tumu_ntl_PALL(vbool32_t mask, vint64m2_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_i64m4_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vloxei.mask.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vloxei.mask.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i64> [[TMP0]]
 //
 vint64m4_t test_vloxei64_v_i64m4_tumu_ntl_PALL(vbool16_t mask, vint64m4_t maskedoff, const int64_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -1049,7 +1049,7 @@ vint64m4_t test_vloxei64_v_i64m4_tumu_ntl_PALL(vbool16_t mask, vint64m4_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_i64m8_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vloxei.mask.nxv8i64.nxv8i64.i64(<vscale x 8 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vloxei.mask.nxv8i64.nxv8i64.i64(<vscale x 8 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i64> [[TMP0]]
 //
 vint64m8_t test_vloxei64_v_i64m8_tumu_ntl_PALL(vbool8_t mask, vint64m8_t maskedoff, const int64_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -1058,7 +1058,7 @@ vint64m8_t test_vloxei64_v_i64m8_tumu_ntl_PALL(vbool8_t mask, vint64m8_t maskedo
 
 // CHECK-LABEL: @test_vloxei64_v_u8mf8_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vloxei.mask.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vloxei.mask.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i8> [[TMP0]]
 //
 vuint8mf8_t test_vloxei64_v_u8mf8_tumu_ntl_PALL(vbool64_t mask, vuint8mf8_t maskedoff, const uint8_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -1067,7 +1067,7 @@ vuint8mf8_t test_vloxei64_v_u8mf8_tumu_ntl_PALL(vbool64_t mask, vuint8mf8_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_u8mf4_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vloxei.mask.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vloxei.mask.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i8> [[TMP0]]
 //
 vuint8mf4_t test_vloxei64_v_u8mf4_tumu_ntl_PALL(vbool32_t mask, vuint8mf4_t maskedoff, const uint8_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -1076,7 +1076,7 @@ vuint8mf4_t test_vloxei64_v_u8mf4_tumu_ntl_PALL(vbool32_t mask, vuint8mf4_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_u8mf2_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vloxei.mask.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vloxei.mask.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i8> [[TMP0]]
 //
 vuint8mf2_t test_vloxei64_v_u8mf2_tumu_ntl_PALL(vbool16_t mask, vuint8mf2_t maskedoff, const uint8_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -1085,7 +1085,7 @@ vuint8mf2_t test_vloxei64_v_u8mf2_tumu_ntl_PALL(vbool16_t mask, vuint8mf2_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_u8m1_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vloxei.mask.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vloxei.mask.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i8> [[TMP0]]
 //
 vuint8m1_t test_vloxei64_v_u8m1_tumu_ntl_PALL(vbool8_t mask, vuint8m1_t maskedoff, const uint8_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -1094,7 +1094,7 @@ vuint8m1_t test_vloxei64_v_u8m1_tumu_ntl_PALL(vbool8_t mask, vuint8m1_t maskedof
 
 // CHECK-LABEL: @test_vloxei64_v_u16mf4_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vloxei.mask.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vloxei.mask.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i16> [[TMP0]]
 //
 vuint16mf4_t test_vloxei64_v_u16mf4_tumu_ntl_PALL(vbool64_t mask, vuint16mf4_t maskedoff, const uint16_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -1103,7 +1103,7 @@ vuint16mf4_t test_vloxei64_v_u16mf4_tumu_ntl_PALL(vbool64_t mask, vuint16mf4_t m
 
 // CHECK-LABEL: @test_vloxei64_v_u16mf2_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vloxei.mask.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vloxei.mask.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP0]]
 //
 vuint16mf2_t test_vloxei64_v_u16mf2_tumu_ntl_PALL(vbool32_t mask, vuint16mf2_t maskedoff, const uint16_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -1112,7 +1112,7 @@ vuint16mf2_t test_vloxei64_v_u16mf2_tumu_ntl_PALL(vbool32_t mask, vuint16mf2_t m
 
 // CHECK-LABEL: @test_vloxei64_v_u16m1_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vloxei.mask.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vloxei.mask.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i16> [[TMP0]]
 //
 vuint16m1_t test_vloxei64_v_u16m1_tumu_ntl_PALL(vbool16_t mask, vuint16m1_t maskedoff, const uint16_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -1121,7 +1121,7 @@ vuint16m1_t test_vloxei64_v_u16m1_tumu_ntl_PALL(vbool16_t mask, vuint16m1_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_u16m2_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vloxei.mask.nxv8i16.nxv8i64.i64(<vscale x 8 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vloxei.mask.nxv8i16.nxv8i64.i64(<vscale x 8 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i16> [[TMP0]]
 //
 vuint16m2_t test_vloxei64_v_u16m2_tumu_ntl_PALL(vbool8_t mask, vuint16m2_t maskedoff, const uint16_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -1130,7 +1130,7 @@ vuint16m2_t test_vloxei64_v_u16m2_tumu_ntl_PALL(vbool8_t mask, vuint16m2_t maske
 
 // CHECK-LABEL: @test_vloxei64_v_u32mf2_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vloxei.mask.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vloxei.mask.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP0]]
 //
 vuint32mf2_t test_vloxei64_v_u32mf2_tumu_ntl_PALL(vbool64_t mask, vuint32mf2_t maskedoff, const uint32_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -1139,7 +1139,7 @@ vuint32mf2_t test_vloxei64_v_u32mf2_tumu_ntl_PALL(vbool64_t mask, vuint32mf2_t m
 
 // CHECK-LABEL: @test_vloxei64_v_u32m1_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vloxei.mask.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vloxei.mask.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i32> [[TMP0]]
 //
 vuint32m1_t test_vloxei64_v_u32m1_tumu_ntl_PALL(vbool32_t mask, vuint32m1_t maskedoff, const uint32_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -1148,7 +1148,7 @@ vuint32m1_t test_vloxei64_v_u32m1_tumu_ntl_PALL(vbool32_t mask, vuint32m1_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_u32m2_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vloxei.mask.nxv4i32.nxv4i64.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vloxei.mask.nxv4i32.nxv4i64.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP0]]
 //
 vuint32m2_t test_vloxei64_v_u32m2_tumu_ntl_PALL(vbool16_t mask, vuint32m2_t maskedoff, const uint32_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -1157,7 +1157,7 @@ vuint32m2_t test_vloxei64_v_u32m2_tumu_ntl_PALL(vbool16_t mask, vuint32m2_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_u32m4_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vloxei.mask.nxv8i32.nxv8i64.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vloxei.mask.nxv8i32.nxv8i64.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i32> [[TMP0]]
 //
 vuint32m4_t test_vloxei64_v_u32m4_tumu_ntl_PALL(vbool8_t mask, vuint32m4_t maskedoff, const uint32_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -1166,7 +1166,7 @@ vuint32m4_t test_vloxei64_v_u32m4_tumu_ntl_PALL(vbool8_t mask, vuint32m4_t maske
 
 // CHECK-LABEL: @test_vloxei64_v_u64m1_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vloxei.mask.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vloxei.mask.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i64> [[TMP0]]
 //
 vuint64m1_t test_vloxei64_v_u64m1_tumu_ntl_PALL(vbool64_t mask, vuint64m1_t maskedoff, const uint64_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -1175,7 +1175,7 @@ vuint64m1_t test_vloxei64_v_u64m1_tumu_ntl_PALL(vbool64_t mask, vuint64m1_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_u64m2_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vloxei.mask.nxv2i64.nxv2i64.i64(<vscale x 2 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vloxei.mask.nxv2i64.nxv2i64.i64(<vscale x 2 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i64> [[TMP0]]
 //
 vuint64m2_t test_vloxei64_v_u64m2_tumu_ntl_PALL(vbool32_t mask, vuint64m2_t maskedoff, const uint64_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -1184,7 +1184,7 @@ vuint64m2_t test_vloxei64_v_u64m2_tumu_ntl_PALL(vbool32_t mask, vuint64m2_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_u64m4_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vloxei.mask.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vloxei.mask.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i64> [[TMP0]]
 //
 vuint64m4_t test_vloxei64_v_u64m4_tumu_ntl_PALL(vbool16_t mask, vuint64m4_t maskedoff, const uint64_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -1193,7 +1193,7 @@ vuint64m4_t test_vloxei64_v_u64m4_tumu_ntl_PALL(vbool16_t mask, vuint64m4_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_u64m8_tumu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vloxei.mask.nxv8i64.nxv8i64.i64(<vscale x 8 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vloxei.mask.nxv8i64.nxv8i64.i64(<vscale x 8 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i64> [[TMP0]]
 //
 vuint64m8_t test_vloxei64_v_u64m8_tumu_ntl_PALL(vbool8_t mask, vuint64m8_t maskedoff, const uint64_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -1202,7 +1202,7 @@ vuint64m8_t test_vloxei64_v_u64m8_tumu_ntl_PALL(vbool8_t mask, vuint64m8_t maske
 
 // CHECK-LABEL: @test_vloxei64_v_f16mf4_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x half> @llvm.riscv.vloxei.mask.nxv1f16.nxv1i64.i64(<vscale x 1 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x half> @llvm.riscv.vloxei.mask.nxv1f16.nxv1i64.i64(<vscale x 1 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x half> [[TMP0]]
 //
 vfloat16mf4_t test_vloxei64_v_f16mf4_mu_ntl_PALL(vbool64_t mask, vfloat16mf4_t maskedoff, const _Float16 *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -1211,7 +1211,7 @@ vfloat16mf4_t test_vloxei64_v_f16mf4_mu_ntl_PALL(vbool64_t mask, vfloat16mf4_t m
 
 // CHECK-LABEL: @test_vloxei64_v_f16mf2_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x half> @llvm.riscv.vloxei.mask.nxv2f16.nxv2i64.i64(<vscale x 2 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x half> @llvm.riscv.vloxei.mask.nxv2f16.nxv2i64.i64(<vscale x 2 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x half> [[TMP0]]
 //
 vfloat16mf2_t test_vloxei64_v_f16mf2_mu_ntl_PALL(vbool32_t mask, vfloat16mf2_t maskedoff, const _Float16 *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -1220,7 +1220,7 @@ vfloat16mf2_t test_vloxei64_v_f16mf2_mu_ntl_PALL(vbool32_t mask, vfloat16mf2_t m
 
 // CHECK-LABEL: @test_vloxei64_v_f16m1_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x half> @llvm.riscv.vloxei.mask.nxv4f16.nxv4i64.i64(<vscale x 4 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x half> @llvm.riscv.vloxei.mask.nxv4f16.nxv4i64.i64(<vscale x 4 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x half> [[TMP0]]
 //
 vfloat16m1_t test_vloxei64_v_f16m1_mu_ntl_PALL(vbool16_t mask, vfloat16m1_t maskedoff, const _Float16 *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -1229,7 +1229,7 @@ vfloat16m1_t test_vloxei64_v_f16m1_mu_ntl_PALL(vbool16_t mask, vfloat16m1_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_f16m2_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x half> @llvm.riscv.vloxei.mask.nxv8f16.nxv8i64.i64(<vscale x 8 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x half> @llvm.riscv.vloxei.mask.nxv8f16.nxv8i64.i64(<vscale x 8 x half> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x half> [[TMP0]]
 //
 vfloat16m2_t test_vloxei64_v_f16m2_mu_ntl_PALL(vbool8_t mask, vfloat16m2_t maskedoff, const _Float16 *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -1238,7 +1238,7 @@ vfloat16m2_t test_vloxei64_v_f16m2_mu_ntl_PALL(vbool8_t mask, vfloat16m2_t maske
 
 // CHECK-LABEL: @test_vloxei64_v_f32mf2_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x float> @llvm.riscv.vloxei.mask.nxv1f32.nxv1i64.i64(<vscale x 1 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x float> @llvm.riscv.vloxei.mask.nxv1f32.nxv1i64.i64(<vscale x 1 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x float> [[TMP0]]
 //
 vfloat32mf2_t test_vloxei64_v_f32mf2_mu_ntl_PALL(vbool64_t mask, vfloat32mf2_t maskedoff, const float *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -1247,7 +1247,7 @@ vfloat32mf2_t test_vloxei64_v_f32mf2_mu_ntl_PALL(vbool64_t mask, vfloat32mf2_t m
 
 // CHECK-LABEL: @test_vloxei64_v_f32m1_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x float> @llvm.riscv.vloxei.mask.nxv2f32.nxv2i64.i64(<vscale x 2 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x float> @llvm.riscv.vloxei.mask.nxv2f32.nxv2i64.i64(<vscale x 2 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x float> [[TMP0]]
 //
 vfloat32m1_t test_vloxei64_v_f32m1_mu_ntl_PALL(vbool32_t mask, vfloat32m1_t maskedoff, const float *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -1256,7 +1256,7 @@ vfloat32m1_t test_vloxei64_v_f32m1_mu_ntl_PALL(vbool32_t mask, vfloat32m1_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_f32m2_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x float> @llvm.riscv.vloxei.mask.nxv4f32.nxv4i64.i64(<vscale x 4 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x float> @llvm.riscv.vloxei.mask.nxv4f32.nxv4i64.i64(<vscale x 4 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x float> [[TMP0]]
 //
 vfloat32m2_t test_vloxei64_v_f32m2_mu_ntl_PALL(vbool16_t mask, vfloat32m2_t maskedoff, const float *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -1265,7 +1265,7 @@ vfloat32m2_t test_vloxei64_v_f32m2_mu_ntl_PALL(vbool16_t mask, vfloat32m2_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_f32m4_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x float> @llvm.riscv.vloxei.mask.nxv8f32.nxv8i64.i64(<vscale x 8 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x float> @llvm.riscv.vloxei.mask.nxv8f32.nxv8i64.i64(<vscale x 8 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x float> [[TMP0]]
 //
 vfloat32m4_t test_vloxei64_v_f32m4_mu_ntl_PALL(vbool8_t mask, vfloat32m4_t maskedoff, const float *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -1274,7 +1274,7 @@ vfloat32m4_t test_vloxei64_v_f32m4_mu_ntl_PALL(vbool8_t mask, vfloat32m4_t maske
 
 // CHECK-LABEL: @test_vloxei64_v_f64m1_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x double> @llvm.riscv.vloxei.mask.nxv1f64.nxv1i64.i64(<vscale x 1 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x double> @llvm.riscv.vloxei.mask.nxv1f64.nxv1i64.i64(<vscale x 1 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x double> [[TMP0]]
 //
 vfloat64m1_t test_vloxei64_v_f64m1_mu_ntl_PALL(vbool64_t mask, vfloat64m1_t maskedoff, const double *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -1283,7 +1283,7 @@ vfloat64m1_t test_vloxei64_v_f64m1_mu_ntl_PALL(vbool64_t mask, vfloat64m1_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_f64m2_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x double> @llvm.riscv.vloxei.mask.nxv2f64.nxv2i64.i64(<vscale x 2 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x double> @llvm.riscv.vloxei.mask.nxv2f64.nxv2i64.i64(<vscale x 2 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x double> [[TMP0]]
 //
 vfloat64m2_t test_vloxei64_v_f64m2_mu_ntl_PALL(vbool32_t mask, vfloat64m2_t maskedoff, const double *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -1292,7 +1292,7 @@ vfloat64m2_t test_vloxei64_v_f64m2_mu_ntl_PALL(vbool32_t mask, vfloat64m2_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_f64m4_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x double> @llvm.riscv.vloxei.mask.nxv4f64.nxv4i64.i64(<vscale x 4 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x double> @llvm.riscv.vloxei.mask.nxv4f64.nxv4i64.i64(<vscale x 4 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x double> [[TMP0]]
 //
 vfloat64m4_t test_vloxei64_v_f64m4_mu_ntl_PALL(vbool16_t mask, vfloat64m4_t maskedoff, const double *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -1301,7 +1301,7 @@ vfloat64m4_t test_vloxei64_v_f64m4_mu_ntl_PALL(vbool16_t mask, vfloat64m4_t mask
 
 // CHECK-LABEL: @test_vloxei64_v_f64m8_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x double> @llvm.riscv.vloxei.mask.nxv8f64.nxv8i64.i64(<vscale x 8 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x double> @llvm.riscv.vloxei.mask.nxv8f64.nxv8i64.i64(<vscale x 8 x double> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x double> [[TMP0]]
 //
 vfloat64m8_t test_vloxei64_v_f64m8_mu_ntl_PALL(vbool8_t mask, vfloat64m8_t maskedoff, const double *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -1310,7 +1310,7 @@ vfloat64m8_t test_vloxei64_v_f64m8_mu_ntl_PALL(vbool8_t mask, vfloat64m8_t maske
 
 // CHECK-LABEL: @test_vloxei64_v_i8mf8_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vloxei.mask.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vloxei.mask.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i8> [[TMP0]]
 //
 vint8mf8_t test_vloxei64_v_i8mf8_mu_ntl_PALL(vbool64_t mask, vint8mf8_t maskedoff, const int8_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -1319,7 +1319,7 @@ vint8mf8_t test_vloxei64_v_i8mf8_mu_ntl_PALL(vbool64_t mask, vint8mf8_t maskedof
 
 // CHECK-LABEL: @test_vloxei64_v_i8mf4_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vloxei.mask.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vloxei.mask.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i8> [[TMP0]]
 //
 vint8mf4_t test_vloxei64_v_i8mf4_mu_ntl_PALL(vbool32_t mask, vint8mf4_t maskedoff, const int8_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -1328,7 +1328,7 @@ vint8mf4_t test_vloxei64_v_i8mf4_mu_ntl_PALL(vbool32_t mask, vint8mf4_t maskedof
 
 // CHECK-LABEL: @test_vloxei64_v_i8mf2_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vloxei.mask.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vloxei.mask.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i8> [[TMP0]]
 //
 vint8mf2_t test_vloxei64_v_i8mf2_mu_ntl_PALL(vbool16_t mask, vint8mf2_t maskedoff, const int8_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -1337,7 +1337,7 @@ vint8mf2_t test_vloxei64_v_i8mf2_mu_ntl_PALL(vbool16_t mask, vint8mf2_t maskedof
 
 // CHECK-LABEL: @test_vloxei64_v_i8m1_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vloxei.mask.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vloxei.mask.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i8> [[TMP0]]
 //
 vint8m1_t test_vloxei64_v_i8m1_mu_ntl_PALL(vbool8_t mask, vint8m1_t maskedoff, const int8_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -1346,7 +1346,7 @@ vint8m1_t test_vloxei64_v_i8m1_mu_ntl_PALL(vbool8_t mask, vint8m1_t maskedoff, c
 
 // CHECK-LABEL: @test_vloxei64_v_i16mf4_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vloxei.mask.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vloxei.mask.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i16> [[TMP0]]
 //
 vint16mf4_t test_vloxei64_v_i16mf4_mu_ntl_PALL(vbool64_t mask, vint16mf4_t maskedoff, const int16_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -1355,7 +1355,7 @@ vint16mf4_t test_vloxei64_v_i16mf4_mu_ntl_PALL(vbool64_t mask, vint16mf4_t maske
 
 // CHECK-LABEL: @test_vloxei64_v_i16mf2_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vloxei.mask.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vloxei.mask.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP0]]
 //
 vint16mf2_t test_vloxei64_v_i16mf2_mu_ntl_PALL(vbool32_t mask, vint16mf2_t maskedoff, const int16_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -1364,7 +1364,7 @@ vint16mf2_t test_vloxei64_v_i16mf2_mu_ntl_PALL(vbool32_t mask, vint16mf2_t maske
 
 // CHECK-LABEL: @test_vloxei64_v_i16m1_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vloxei.mask.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vloxei.mask.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i16> [[TMP0]]
 //
 vint16m1_t test_vloxei64_v_i16m1_mu_ntl_PALL(vbool16_t mask, vint16m1_t maskedoff, const int16_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -1373,7 +1373,7 @@ vint16m1_t test_vloxei64_v_i16m1_mu_ntl_PALL(vbool16_t mask, vint16m1_t maskedof
 
 // CHECK-LABEL: @test_vloxei64_v_i16m2_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vloxei.mask.nxv8i16.nxv8i64.i64(<vscale x 8 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vloxei.mask.nxv8i16.nxv8i64.i64(<vscale x 8 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i16> [[TMP0]]
 //
 vint16m2_t test_vloxei64_v_i16m2_mu_ntl_PALL(vbool8_t mask, vint16m2_t maskedoff, const int16_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -1382,7 +1382,7 @@ vint16m2_t test_vloxei64_v_i16m2_mu_ntl_PALL(vbool8_t mask, vint16m2_t maskedoff
 
 // CHECK-LABEL: @test_vloxei64_v_i32mf2_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vloxei.mask.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vloxei.mask.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP0]]
 //
 vint32mf2_t test_vloxei64_v_i32mf2_mu_ntl_PALL(vbool64_t mask, vint32mf2_t maskedoff, const int32_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -1391,7 +1391,7 @@ vint32mf2_t test_vloxei64_v_i32mf2_mu_ntl_PALL(vbool64_t mask, vint32mf2_t maske
 
 // CHECK-LABEL: @test_vloxei64_v_i32m1_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vloxei.mask.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vloxei.mask.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i32> [[TMP0]]
 //
 vint32m1_t test_vloxei64_v_i32m1_mu_ntl_PALL(vbool32_t mask, vint32m1_t maskedoff, const int32_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -1400,7 +1400,7 @@ vint32m1_t test_vloxei64_v_i32m1_mu_ntl_PALL(vbool32_t mask, vint32m1_t maskedof
 
 // CHECK-LABEL: @test_vloxei64_v_i32m2_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vloxei.mask.nxv4i32.nxv4i64.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vloxei.mask.nxv4i32.nxv4i64.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP0]]
 //
 vint32m2_t test_vloxei64_v_i32m2_mu_ntl_PALL(vbool16_t mask, vint32m2_t maskedoff, const int32_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -1409,7 +1409,7 @@ vint32m2_t test_vloxei64_v_i32m2_mu_ntl_PALL(vbool16_t mask, vint32m2_t maskedof
 
 // CHECK-LABEL: @test_vloxei64_v_i32m4_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vloxei.mask.nxv8i32.nxv8i64.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vloxei.mask.nxv8i32.nxv8i64.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i32> [[TMP0]]
 //
 vint32m4_t test_vloxei64_v_i32m4_mu_ntl_PALL(vbool8_t mask, vint32m4_t maskedoff, const int32_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -1418,7 +1418,7 @@ vint32m4_t test_vloxei64_v_i32m4_mu_ntl_PALL(vbool8_t mask, vint32m4_t maskedoff
 
 // CHECK-LABEL: @test_vloxei64_v_i64m1_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vloxei.mask.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vloxei.mask.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i64> [[TMP0]]
 //
 vint64m1_t test_vloxei64_v_i64m1_mu_ntl_PALL(vbool64_t mask, vint64m1_t maskedoff, const int64_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -1427,7 +1427,7 @@ vint64m1_t test_vloxei64_v_i64m1_mu_ntl_PALL(vbool64_t mask, vint64m1_t maskedof
 
 // CHECK-LABEL: @test_vloxei64_v_i64m2_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vloxei.mask.nxv2i64.nxv2i64.i64(<vscale x 2 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vloxei.mask.nxv2i64.nxv2i64.i64(<vscale x 2 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i64> [[TMP0]]
 //
 vint64m2_t test_vloxei64_v_i64m2_mu_ntl_PALL(vbool32_t mask, vint64m2_t maskedoff, const int64_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -1436,7 +1436,7 @@ vint64m2_t test_vloxei64_v_i64m2_mu_ntl_PALL(vbool32_t mask, vint64m2_t maskedof
 
 // CHECK-LABEL: @test_vloxei64_v_i64m4_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vloxei.mask.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vloxei.mask.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i64> [[TMP0]]
 //
 vint64m4_t test_vloxei64_v_i64m4_mu_ntl_PALL(vbool16_t mask, vint64m4_t maskedoff, const int64_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -1445,7 +1445,7 @@ vint64m4_t test_vloxei64_v_i64m4_mu_ntl_PALL(vbool16_t mask, vint64m4_t maskedof
 
 // CHECK-LABEL: @test_vloxei64_v_i64m8_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vloxei.mask.nxv8i64.nxv8i64.i64(<vscale x 8 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vloxei.mask.nxv8i64.nxv8i64.i64(<vscale x 8 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i64> [[TMP0]]
 //
 vint64m8_t test_vloxei64_v_i64m8_mu_ntl_PALL(vbool8_t mask, vint64m8_t maskedoff, const int64_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -1454,7 +1454,7 @@ vint64m8_t test_vloxei64_v_i64m8_mu_ntl_PALL(vbool8_t mask, vint64m8_t maskedoff
 
 // CHECK-LABEL: @test_vloxei64_v_u8mf8_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vloxei.mask.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vloxei.mask.nxv1i8.nxv1i64.i64(<vscale x 1 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i8> [[TMP0]]
 //
 vuint8mf8_t test_vloxei64_v_u8mf8_mu_ntl_PALL(vbool64_t mask, vuint8mf8_t maskedoff, const uint8_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -1463,7 +1463,7 @@ vuint8mf8_t test_vloxei64_v_u8mf8_mu_ntl_PALL(vbool64_t mask, vuint8mf8_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_u8mf4_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vloxei.mask.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vloxei.mask.nxv2i8.nxv2i64.i64(<vscale x 2 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i8> [[TMP0]]
 //
 vuint8mf4_t test_vloxei64_v_u8mf4_mu_ntl_PALL(vbool32_t mask, vuint8mf4_t maskedoff, const uint8_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -1472,7 +1472,7 @@ vuint8mf4_t test_vloxei64_v_u8mf4_mu_ntl_PALL(vbool32_t mask, vuint8mf4_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_u8mf2_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vloxei.mask.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vloxei.mask.nxv4i8.nxv4i64.i64(<vscale x 4 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i8> [[TMP0]]
 //
 vuint8mf2_t test_vloxei64_v_u8mf2_mu_ntl_PALL(vbool16_t mask, vuint8mf2_t maskedoff, const uint8_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -1481,7 +1481,7 @@ vuint8mf2_t test_vloxei64_v_u8mf2_mu_ntl_PALL(vbool16_t mask, vuint8mf2_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_u8m1_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vloxei.mask.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vloxei.mask.nxv8i8.nxv8i64.i64(<vscale x 8 x i8> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i8> [[TMP0]]
 //
 vuint8m1_t test_vloxei64_v_u8m1_mu_ntl_PALL(vbool8_t mask, vuint8m1_t maskedoff, const uint8_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -1490,7 +1490,7 @@ vuint8m1_t test_vloxei64_v_u8m1_mu_ntl_PALL(vbool8_t mask, vuint8m1_t maskedoff,
 
 // CHECK-LABEL: @test_vloxei64_v_u16mf4_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vloxei.mask.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.vloxei.mask.nxv1i16.nxv1i64.i64(<vscale x 1 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i16> [[TMP0]]
 //
 vuint16mf4_t test_vloxei64_v_u16mf4_mu_ntl_PALL(vbool64_t mask, vuint16mf4_t maskedoff, const uint16_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -1499,7 +1499,7 @@ vuint16mf4_t test_vloxei64_v_u16mf4_mu_ntl_PALL(vbool64_t mask, vuint16mf4_t mas
 
 // CHECK-LABEL: @test_vloxei64_v_u16mf2_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vloxei.mask.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vloxei.mask.nxv2i16.nxv2i64.i64(<vscale x 2 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP0]]
 //
 vuint16mf2_t test_vloxei64_v_u16mf2_mu_ntl_PALL(vbool32_t mask, vuint16mf2_t maskedoff, const uint16_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -1508,7 +1508,7 @@ vuint16mf2_t test_vloxei64_v_u16mf2_mu_ntl_PALL(vbool32_t mask, vuint16mf2_t mas
 
 // CHECK-LABEL: @test_vloxei64_v_u16m1_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vloxei.mask.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.vloxei.mask.nxv4i16.nxv4i64.i64(<vscale x 4 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i16> [[TMP0]]
 //
 vuint16m1_t test_vloxei64_v_u16m1_mu_ntl_PALL(vbool16_t mask, vuint16m1_t maskedoff, const uint16_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -1517,7 +1517,7 @@ vuint16m1_t test_vloxei64_v_u16m1_mu_ntl_PALL(vbool16_t mask, vuint16m1_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_u16m2_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vloxei.mask.nxv8i16.nxv8i64.i64(<vscale x 8 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.vloxei.mask.nxv8i16.nxv8i64.i64(<vscale x 8 x i16> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i16> [[TMP0]]
 //
 vuint16m2_t test_vloxei64_v_u16m2_mu_ntl_PALL(vbool8_t mask, vuint16m2_t maskedoff, const uint16_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -1526,7 +1526,7 @@ vuint16m2_t test_vloxei64_v_u16m2_mu_ntl_PALL(vbool8_t mask, vuint16m2_t maskedo
 
 // CHECK-LABEL: @test_vloxei64_v_u32mf2_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vloxei.mask.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vloxei.mask.nxv1i32.nxv1i64.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP0]]
 //
 vuint32mf2_t test_vloxei64_v_u32mf2_mu_ntl_PALL(vbool64_t mask, vuint32mf2_t maskedoff, const uint32_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -1535,7 +1535,7 @@ vuint32mf2_t test_vloxei64_v_u32mf2_mu_ntl_PALL(vbool64_t mask, vuint32mf2_t mas
 
 // CHECK-LABEL: @test_vloxei64_v_u32m1_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vloxei.mask.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vloxei.mask.nxv2i32.nxv2i64.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i32> [[TMP0]]
 //
 vuint32m1_t test_vloxei64_v_u32m1_mu_ntl_PALL(vbool32_t mask, vuint32m1_t maskedoff, const uint32_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -1544,7 +1544,7 @@ vuint32m1_t test_vloxei64_v_u32m1_mu_ntl_PALL(vbool32_t mask, vuint32m1_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_u32m2_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vloxei.mask.nxv4i32.nxv4i64.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vloxei.mask.nxv4i32.nxv4i64.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP0]]
 //
 vuint32m2_t test_vloxei64_v_u32m2_mu_ntl_PALL(vbool16_t mask, vuint32m2_t maskedoff, const uint32_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -1553,7 +1553,7 @@ vuint32m2_t test_vloxei64_v_u32m2_mu_ntl_PALL(vbool16_t mask, vuint32m2_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_u32m4_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vloxei.mask.nxv8i32.nxv8i64.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vloxei.mask.nxv8i32.nxv8i64.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i32> [[TMP0]]
 //
 vuint32m4_t test_vloxei64_v_u32m4_mu_ntl_PALL(vbool8_t mask, vuint32m4_t maskedoff, const uint32_t *base, vuint64m8_t bindex, size_t vl, int domain) {
@@ -1562,7 +1562,7 @@ vuint32m4_t test_vloxei64_v_u32m4_mu_ntl_PALL(vbool8_t mask, vuint32m4_t maskedo
 
 // CHECK-LABEL: @test_vloxei64_v_u64m1_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vloxei.mask.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i64> @llvm.riscv.vloxei.mask.nxv1i64.nxv1i64.i64(<vscale x 1 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i64> [[BINDEX:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i64> [[TMP0]]
 //
 vuint64m1_t test_vloxei64_v_u64m1_mu_ntl_PALL(vbool64_t mask, vuint64m1_t maskedoff, const uint64_t *base, vuint64m1_t bindex, size_t vl, int domain) {
@@ -1571,7 +1571,7 @@ vuint64m1_t test_vloxei64_v_u64m1_mu_ntl_PALL(vbool64_t mask, vuint64m1_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_u64m2_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vloxei.mask.nxv2i64.nxv2i64.i64(<vscale x 2 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i64> @llvm.riscv.vloxei.mask.nxv2i64.nxv2i64.i64(<vscale x 2 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i64> [[BINDEX:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i64> [[TMP0]]
 //
 vuint64m2_t test_vloxei64_v_u64m2_mu_ntl_PALL(vbool32_t mask, vuint64m2_t maskedoff, const uint64_t *base, vuint64m2_t bindex, size_t vl, int domain) {
@@ -1580,7 +1580,7 @@ vuint64m2_t test_vloxei64_v_u64m2_mu_ntl_PALL(vbool32_t mask, vuint64m2_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_u64m4_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vloxei.mask.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vloxei.mask.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i64> [[BINDEX:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i64> [[TMP0]]
 //
 vuint64m4_t test_vloxei64_v_u64m4_mu_ntl_PALL(vbool16_t mask, vuint64m4_t maskedoff, const uint64_t *base, vuint64m4_t bindex, size_t vl, int domain) {
@@ -1589,7 +1589,7 @@ vuint64m4_t test_vloxei64_v_u64m4_mu_ntl_PALL(vbool16_t mask, vuint64m4_t masked
 
 // CHECK-LABEL: @test_vloxei64_v_u64m8_mu_ntl_PALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vloxei.mask.nxv8i64.nxv8i64.i64(<vscale x 8 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i64> @llvm.riscv.vloxei.mask.nxv8i64.nxv8i64.i64(<vscale x 8 x i64> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i64> [[BINDEX:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i64> [[TMP0]]
 //
 vuint64m8_t test_vloxei64_v_u64m8_mu_ntl_PALL(vbool8_t mask, vuint64m8_t maskedoff, const uint64_t *base, vuint64m8_t bindex, size_t vl, int domain) {

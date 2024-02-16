@@ -12,7 +12,7 @@
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_f16mf4_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 1 x half> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0:[0-9]+]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv1f16.i64(<vscale x 1 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv1f16.i64(<vscale x 1 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6:![0-9]+]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_f16mf4_ntl_S1(_Float16 *base, ptrdiff_t bstride, vfloat16mf4_t value, size_t vl, int domain) {
@@ -22,7 +22,7 @@ void test_vsse16_v_f16mf4_ntl_S1(_Float16 *base, ptrdiff_t bstride, vfloat16mf4_
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_f16mf2_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 2 x half> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv2f16.i64(<vscale x 2 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv2f16.i64(<vscale x 2 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_f16mf2_ntl_S1(_Float16 *base, ptrdiff_t bstride, vfloat16mf2_t value, size_t vl, int domain) {
@@ -32,7 +32,7 @@ void test_vsse16_v_f16mf2_ntl_S1(_Float16 *base, ptrdiff_t bstride, vfloat16mf2_
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_f16m1_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 4 x half> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv4f16.i64(<vscale x 4 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv4f16.i64(<vscale x 4 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_f16m1_ntl_S1(_Float16 *base, ptrdiff_t bstride, vfloat16m1_t value, size_t vl, int domain) {
@@ -42,7 +42,7 @@ void test_vsse16_v_f16m1_ntl_S1(_Float16 *base, ptrdiff_t bstride, vfloat16m1_t 
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_f16m2_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 8 x half> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv8f16.i64(<vscale x 8 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv8f16.i64(<vscale x 8 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_f16m2_ntl_S1(_Float16 *base, ptrdiff_t bstride, vfloat16m2_t value, size_t vl, int domain) {
@@ -52,7 +52,7 @@ void test_vsse16_v_f16m2_ntl_S1(_Float16 *base, ptrdiff_t bstride, vfloat16m2_t 
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_f16m4_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 16 x half> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv16f16.i64(<vscale x 16 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv16f16.i64(<vscale x 16 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_f16m4_ntl_S1(_Float16 *base, ptrdiff_t bstride, vfloat16m4_t value, size_t vl, int domain) {
@@ -62,7 +62,7 @@ void test_vsse16_v_f16m4_ntl_S1(_Float16 *base, ptrdiff_t bstride, vfloat16m4_t 
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_f16m8_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 32 x half> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv32f16.i64(<vscale x 32 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv32f16.i64(<vscale x 32 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_f16m8_ntl_S1(_Float16 *base, ptrdiff_t bstride, vfloat16m8_t value, size_t vl, int domain) {
@@ -72,7 +72,7 @@ void test_vsse16_v_f16m8_ntl_S1(_Float16 *base, ptrdiff_t bstride, vfloat16m8_t 
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_i16mf4_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 1 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv1i16.i64(<vscale x 1 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv1i16.i64(<vscale x 1 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_i16mf4_ntl_S1(int16_t *base, ptrdiff_t bstride, vint16mf4_t value, size_t vl, int domain) {
@@ -82,7 +82,7 @@ void test_vsse16_v_i16mf4_ntl_S1(int16_t *base, ptrdiff_t bstride, vint16mf4_t v
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_i16mf2_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 2 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv2i16.i64(<vscale x 2 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv2i16.i64(<vscale x 2 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_i16mf2_ntl_S1(int16_t *base, ptrdiff_t bstride, vint16mf2_t value, size_t vl, int domain) {
@@ -92,7 +92,7 @@ void test_vsse16_v_i16mf2_ntl_S1(int16_t *base, ptrdiff_t bstride, vint16mf2_t v
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_i16m1_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 4 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv4i16.i64(<vscale x 4 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv4i16.i64(<vscale x 4 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_i16m1_ntl_S1(int16_t *base, ptrdiff_t bstride, vint16m1_t value, size_t vl, int domain) {
@@ -102,7 +102,7 @@ void test_vsse16_v_i16m1_ntl_S1(int16_t *base, ptrdiff_t bstride, vint16m1_t val
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_i16m2_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 8 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv8i16.i64(<vscale x 8 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv8i16.i64(<vscale x 8 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_i16m2_ntl_S1(int16_t *base, ptrdiff_t bstride, vint16m2_t value, size_t vl, int domain) {
@@ -112,7 +112,7 @@ void test_vsse16_v_i16m2_ntl_S1(int16_t *base, ptrdiff_t bstride, vint16m2_t val
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_i16m4_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 16 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv16i16.i64(<vscale x 16 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv16i16.i64(<vscale x 16 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_i16m4_ntl_S1(int16_t *base, ptrdiff_t bstride, vint16m4_t value, size_t vl, int domain) {
@@ -122,7 +122,7 @@ void test_vsse16_v_i16m4_ntl_S1(int16_t *base, ptrdiff_t bstride, vint16m4_t val
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_i16m8_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 32 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv32i16.i64(<vscale x 32 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv32i16.i64(<vscale x 32 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_i16m8_ntl_S1(int16_t *base, ptrdiff_t bstride, vint16m8_t value, size_t vl, int domain) {
@@ -132,7 +132,7 @@ void test_vsse16_v_i16m8_ntl_S1(int16_t *base, ptrdiff_t bstride, vint16m8_t val
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_u16mf4_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 1 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv1i16.i64(<vscale x 1 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv1i16.i64(<vscale x 1 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_u16mf4_ntl_S1(uint16_t *base, ptrdiff_t bstride, vuint16mf4_t value, size_t vl, int domain) {
@@ -142,7 +142,7 @@ void test_vsse16_v_u16mf4_ntl_S1(uint16_t *base, ptrdiff_t bstride, vuint16mf4_t
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_u16mf2_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 2 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv2i16.i64(<vscale x 2 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv2i16.i64(<vscale x 2 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_u16mf2_ntl_S1(uint16_t *base, ptrdiff_t bstride, vuint16mf2_t value, size_t vl, int domain) {
@@ -152,7 +152,7 @@ void test_vsse16_v_u16mf2_ntl_S1(uint16_t *base, ptrdiff_t bstride, vuint16mf2_t
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_u16m1_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 4 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv4i16.i64(<vscale x 4 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv4i16.i64(<vscale x 4 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_u16m1_ntl_S1(uint16_t *base, ptrdiff_t bstride, vuint16m1_t value, size_t vl, int domain) {
@@ -162,7 +162,7 @@ void test_vsse16_v_u16m1_ntl_S1(uint16_t *base, ptrdiff_t bstride, vuint16m1_t v
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_u16m2_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 8 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv8i16.i64(<vscale x 8 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv8i16.i64(<vscale x 8 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_u16m2_ntl_S1(uint16_t *base, ptrdiff_t bstride, vuint16m2_t value, size_t vl, int domain) {
@@ -172,7 +172,7 @@ void test_vsse16_v_u16m2_ntl_S1(uint16_t *base, ptrdiff_t bstride, vuint16m2_t v
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_u16m4_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 16 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv16i16.i64(<vscale x 16 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv16i16.i64(<vscale x 16 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_u16m4_ntl_S1(uint16_t *base, ptrdiff_t bstride, vuint16m4_t value, size_t vl, int domain) {
@@ -182,7 +182,7 @@ void test_vsse16_v_u16m4_ntl_S1(uint16_t *base, ptrdiff_t bstride, vuint16m4_t v
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_u16m8_ntl_S1
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 32 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv32i16.i64(<vscale x 32 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.nxv32i16.i64(<vscale x 32 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_u16m8_ntl_S1(uint16_t *base, ptrdiff_t bstride, vuint16m8_t value, size_t vl, int domain) {
@@ -192,7 +192,7 @@ void test_vsse16_v_u16m8_ntl_S1(uint16_t *base, ptrdiff_t bstride, vuint16m8_t v
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_f16mf4_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 1 x half> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv1f16.i64(<vscale x 1 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv1f16.i64(<vscale x 1 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_f16mf4_m_ntl_S1(vbool64_t mask, _Float16 *base, ptrdiff_t bstride, vfloat16mf4_t value, size_t vl, int domain) {
@@ -202,7 +202,7 @@ void test_vsse16_v_f16mf4_m_ntl_S1(vbool64_t mask, _Float16 *base, ptrdiff_t bst
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_f16mf2_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 2 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 2 x half> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv2f16.i64(<vscale x 2 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv2f16.i64(<vscale x 2 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_f16mf2_m_ntl_S1(vbool32_t mask, _Float16 *base, ptrdiff_t bstride, vfloat16mf2_t value, size_t vl, int domain) {
@@ -212,7 +212,7 @@ void test_vsse16_v_f16mf2_m_ntl_S1(vbool32_t mask, _Float16 *base, ptrdiff_t bst
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_f16m1_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 4 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 4 x half> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv4f16.i64(<vscale x 4 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 4 x i1> [[MASK]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv4f16.i64(<vscale x 4 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 4 x i1> [[MASK]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_f16m1_m_ntl_S1(vbool16_t mask, _Float16 *base, ptrdiff_t bstride, vfloat16m1_t value, size_t vl, int domain) {
@@ -222,7 +222,7 @@ void test_vsse16_v_f16m1_m_ntl_S1(vbool16_t mask, _Float16 *base, ptrdiff_t bstr
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_f16m2_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 8 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 8 x half> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv8f16.i64(<vscale x 8 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 8 x i1> [[MASK]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv8f16.i64(<vscale x 8 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 8 x i1> [[MASK]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_f16m2_m_ntl_S1(vbool8_t mask, _Float16 *base, ptrdiff_t bstride, vfloat16m2_t value, size_t vl, int domain) {
@@ -232,7 +232,7 @@ void test_vsse16_v_f16m2_m_ntl_S1(vbool8_t mask, _Float16 *base, ptrdiff_t bstri
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_f16m4_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 16 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 16 x half> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv16f16.i64(<vscale x 16 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 16 x i1> [[MASK]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv16f16.i64(<vscale x 16 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 16 x i1> [[MASK]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_f16m4_m_ntl_S1(vbool4_t mask, _Float16 *base, ptrdiff_t bstride, vfloat16m4_t value, size_t vl, int domain) {
@@ -242,7 +242,7 @@ void test_vsse16_v_f16m4_m_ntl_S1(vbool4_t mask, _Float16 *base, ptrdiff_t bstri
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_f16m8_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 32 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 32 x half> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv32f16.i64(<vscale x 32 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 32 x i1> [[MASK]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv32f16.i64(<vscale x 32 x half> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 32 x i1> [[MASK]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_f16m8_m_ntl_S1(vbool2_t mask, _Float16 *base, ptrdiff_t bstride, vfloat16m8_t value, size_t vl, int domain) {
@@ -252,7 +252,7 @@ void test_vsse16_v_f16m8_m_ntl_S1(vbool2_t mask, _Float16 *base, ptrdiff_t bstri
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_i16mf4_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 1 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv1i16.i64(<vscale x 1 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv1i16.i64(<vscale x 1 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_i16mf4_m_ntl_S1(vbool64_t mask, int16_t *base, ptrdiff_t bstride, vint16mf4_t value, size_t vl, int domain) {
@@ -262,7 +262,7 @@ void test_vsse16_v_i16mf4_m_ntl_S1(vbool64_t mask, int16_t *base, ptrdiff_t bstr
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_i16mf2_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 2 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 2 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv2i16.i64(<vscale x 2 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv2i16.i64(<vscale x 2 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_i16mf2_m_ntl_S1(vbool32_t mask, int16_t *base, ptrdiff_t bstride, vint16mf2_t value, size_t vl, int domain) {
@@ -272,7 +272,7 @@ void test_vsse16_v_i16mf2_m_ntl_S1(vbool32_t mask, int16_t *base, ptrdiff_t bstr
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_i16m1_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 4 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 4 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv4i16.i64(<vscale x 4 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 4 x i1> [[MASK]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv4i16.i64(<vscale x 4 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 4 x i1> [[MASK]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_i16m1_m_ntl_S1(vbool16_t mask, int16_t *base, ptrdiff_t bstride, vint16m1_t value, size_t vl, int domain) {
@@ -282,7 +282,7 @@ void test_vsse16_v_i16m1_m_ntl_S1(vbool16_t mask, int16_t *base, ptrdiff_t bstri
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_i16m2_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 8 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 8 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv8i16.i64(<vscale x 8 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 8 x i1> [[MASK]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv8i16.i64(<vscale x 8 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 8 x i1> [[MASK]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_i16m2_m_ntl_S1(vbool8_t mask, int16_t *base, ptrdiff_t bstride, vint16m2_t value, size_t vl, int domain) {
@@ -292,7 +292,7 @@ void test_vsse16_v_i16m2_m_ntl_S1(vbool8_t mask, int16_t *base, ptrdiff_t bstrid
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_i16m4_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 16 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 16 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv16i16.i64(<vscale x 16 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 16 x i1> [[MASK]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv16i16.i64(<vscale x 16 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 16 x i1> [[MASK]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_i16m4_m_ntl_S1(vbool4_t mask, int16_t *base, ptrdiff_t bstride, vint16m4_t value, size_t vl, int domain) {
@@ -302,7 +302,7 @@ void test_vsse16_v_i16m4_m_ntl_S1(vbool4_t mask, int16_t *base, ptrdiff_t bstrid
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_i16m8_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 32 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 32 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv32i16.i64(<vscale x 32 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 32 x i1> [[MASK]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv32i16.i64(<vscale x 32 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 32 x i1> [[MASK]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_i16m8_m_ntl_S1(vbool2_t mask, int16_t *base, ptrdiff_t bstride, vint16m8_t value, size_t vl, int domain) {
@@ -312,7 +312,7 @@ void test_vsse16_v_i16m8_m_ntl_S1(vbool2_t mask, int16_t *base, ptrdiff_t bstrid
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_u16mf4_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 1 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv1i16.i64(<vscale x 1 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv1i16.i64(<vscale x 1 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_u16mf4_m_ntl_S1(vbool64_t mask, uint16_t *base, ptrdiff_t bstride, vuint16mf4_t value, size_t vl, int domain) {
@@ -322,7 +322,7 @@ void test_vsse16_v_u16mf4_m_ntl_S1(vbool64_t mask, uint16_t *base, ptrdiff_t bst
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_u16mf2_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 2 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 2 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv2i16.i64(<vscale x 2 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv2i16.i64(<vscale x 2 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_u16mf2_m_ntl_S1(vbool32_t mask, uint16_t *base, ptrdiff_t bstride, vuint16mf2_t value, size_t vl, int domain) {
@@ -332,7 +332,7 @@ void test_vsse16_v_u16mf2_m_ntl_S1(vbool32_t mask, uint16_t *base, ptrdiff_t bst
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_u16m1_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 4 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 4 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv4i16.i64(<vscale x 4 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 4 x i1> [[MASK]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv4i16.i64(<vscale x 4 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 4 x i1> [[MASK]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_u16m1_m_ntl_S1(vbool16_t mask, uint16_t *base, ptrdiff_t bstride, vuint16m1_t value, size_t vl, int domain) {
@@ -342,7 +342,7 @@ void test_vsse16_v_u16m1_m_ntl_S1(vbool16_t mask, uint16_t *base, ptrdiff_t bstr
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_u16m2_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 8 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 8 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv8i16.i64(<vscale x 8 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 8 x i1> [[MASK]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv8i16.i64(<vscale x 8 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 8 x i1> [[MASK]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_u16m2_m_ntl_S1(vbool8_t mask, uint16_t *base, ptrdiff_t bstride, vuint16m2_t value, size_t vl, int domain) {
@@ -352,7 +352,7 @@ void test_vsse16_v_u16m2_m_ntl_S1(vbool8_t mask, uint16_t *base, ptrdiff_t bstri
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_u16m4_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 16 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 16 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv16i16.i64(<vscale x 16 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 16 x i1> [[MASK]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv16i16.i64(<vscale x 16 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 16 x i1> [[MASK]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_u16m4_m_ntl_S1(vbool4_t mask, uint16_t *base, ptrdiff_t bstride, vuint16m4_t value, size_t vl, int domain) {
@@ -362,7 +362,7 @@ void test_vsse16_v_u16m4_m_ntl_S1(vbool4_t mask, uint16_t *base, ptrdiff_t bstri
 // CHECK-RV64-LABEL: define dso_local void @test_vsse16_v_u16m8_m_ntl_S1
 // CHECK-RV64-SAME: (<vscale x 32 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], <vscale x 32 x i16> [[VALUE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv32i16.i64(<vscale x 32 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 32 x i1> [[MASK]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    call void @llvm.riscv.vsse.mask.nxv32i16.i64(<vscale x 32 x i16> [[VALUE]], ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 32 x i1> [[MASK]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret void
 //
 void test_vsse16_v_u16m8_m_ntl_S1(vbool2_t mask, uint16_t *base, ptrdiff_t bstride, vuint16m8_t value, size_t vl, int domain) {

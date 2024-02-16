@@ -14,7 +14,7 @@
 #include <riscv_ntlh.h>
 // CHECK-LABEL: @test_vle32_v_f32mf2_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x float> @llvm.riscv.vle.nxv1f32.i64(<vscale x 1 x float> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6:![0-9]+]]
 // CHECK-NEXT:    ret <vscale x 1 x float> [[TMP0]]
 //
 vfloat32mf2_t test_vle32_v_f32mf2_ntl_S1(const float *base, size_t vl, int domain) {
@@ -23,7 +23,7 @@ vfloat32mf2_t test_vle32_v_f32mf2_ntl_S1(const float *base, size_t vl, int domai
 
 // CHECK-LABEL: @test_vle32_v_f32m1_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x float> @llvm.riscv.vle.nxv2f32.i64(<vscale x 2 x float> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x float> @llvm.riscv.vle.nxv2f32.i64(<vscale x 2 x float> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x float> [[TMP0]]
 //
 vfloat32m1_t test_vle32_v_f32m1_ntl_S1(const float *base, size_t vl, int domain) {
@@ -32,7 +32,7 @@ vfloat32m1_t test_vle32_v_f32m1_ntl_S1(const float *base, size_t vl, int domain)
 
 // CHECK-LABEL: @test_vle32_v_f32m2_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x float> @llvm.riscv.vle.nxv4f32.i64(<vscale x 4 x float> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x float> @llvm.riscv.vle.nxv4f32.i64(<vscale x 4 x float> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x float> [[TMP0]]
 //
 vfloat32m2_t test_vle32_v_f32m2_ntl_S1(const float *base, size_t vl, int domain) {
@@ -41,7 +41,7 @@ vfloat32m2_t test_vle32_v_f32m2_ntl_S1(const float *base, size_t vl, int domain)
 
 // CHECK-LABEL: @test_vle32_v_f32m4_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x float> @llvm.riscv.vle.nxv8f32.i64(<vscale x 8 x float> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x float> @llvm.riscv.vle.nxv8f32.i64(<vscale x 8 x float> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x float> [[TMP0]]
 //
 vfloat32m4_t test_vle32_v_f32m4_ntl_S1(const float *base, size_t vl, int domain) {
@@ -50,7 +50,7 @@ vfloat32m4_t test_vle32_v_f32m4_ntl_S1(const float *base, size_t vl, int domain)
 
 // CHECK-LABEL: @test_vle32_v_f32m8_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x float> @llvm.riscv.vle.nxv16f32.i64(<vscale x 16 x float> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x float> @llvm.riscv.vle.nxv16f32.i64(<vscale x 16 x float> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 16 x float> [[TMP0]]
 //
 vfloat32m8_t test_vle32_v_f32m8_ntl_S1(const float *base, size_t vl, int domain) {
@@ -59,7 +59,7 @@ vfloat32m8_t test_vle32_v_f32m8_ntl_S1(const float *base, size_t vl, int domain)
 
 // CHECK-LABEL: @test_vle32_v_i32mf2_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vle.nxv1i32.i64(<vscale x 1 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vle.nxv1i32.i64(<vscale x 1 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP0]]
 //
 vint32mf2_t test_vle32_v_i32mf2_ntl_S1(const int32_t *base, size_t vl, int domain) {
@@ -68,7 +68,7 @@ vint32mf2_t test_vle32_v_i32mf2_ntl_S1(const int32_t *base, size_t vl, int domai
 
 // CHECK-LABEL: @test_vle32_v_i32m1_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.i64(<vscale x 2 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.i64(<vscale x 2 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i32> [[TMP0]]
 //
 vint32m1_t test_vle32_v_i32m1_ntl_S1(const int32_t *base, size_t vl, int domain) {
@@ -77,7 +77,7 @@ vint32m1_t test_vle32_v_i32m1_ntl_S1(const int32_t *base, size_t vl, int domain)
 
 // CHECK-LABEL: @test_vle32_v_i32m2_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vle.nxv4i32.i64(<vscale x 4 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vle.nxv4i32.i64(<vscale x 4 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP0]]
 //
 vint32m2_t test_vle32_v_i32m2_ntl_S1(const int32_t *base, size_t vl, int domain) {
@@ -86,7 +86,7 @@ vint32m2_t test_vle32_v_i32m2_ntl_S1(const int32_t *base, size_t vl, int domain)
 
 // CHECK-LABEL: @test_vle32_v_i32m4_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vle.nxv8i32.i64(<vscale x 8 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vle.nxv8i32.i64(<vscale x 8 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i32> [[TMP0]]
 //
 vint32m4_t test_vle32_v_i32m4_ntl_S1(const int32_t *base, size_t vl, int domain) {
@@ -95,7 +95,7 @@ vint32m4_t test_vle32_v_i32m4_ntl_S1(const int32_t *base, size_t vl, int domain)
 
 // CHECK-LABEL: @test_vle32_v_i32m8_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i32> @llvm.riscv.vle.nxv16i32.i64(<vscale x 16 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i32> @llvm.riscv.vle.nxv16i32.i64(<vscale x 16 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 16 x i32> [[TMP0]]
 //
 vint32m8_t test_vle32_v_i32m8_ntl_S1(const int32_t *base, size_t vl, int domain) {
@@ -104,7 +104,7 @@ vint32m8_t test_vle32_v_i32m8_ntl_S1(const int32_t *base, size_t vl, int domain)
 
 // CHECK-LABEL: @test_vle32_v_u32mf2_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vle.nxv1i32.i64(<vscale x 1 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vle.nxv1i32.i64(<vscale x 1 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP0]]
 //
 vuint32mf2_t test_vle32_v_u32mf2_ntl_S1(const uint32_t *base, size_t vl, int domain) {
@@ -113,7 +113,7 @@ vuint32mf2_t test_vle32_v_u32mf2_ntl_S1(const uint32_t *base, size_t vl, int dom
 
 // CHECK-LABEL: @test_vle32_v_u32m1_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.i64(<vscale x 2 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vle.nxv2i32.i64(<vscale x 2 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i32> [[TMP0]]
 //
 vuint32m1_t test_vle32_v_u32m1_ntl_S1(const uint32_t *base, size_t vl, int domain) {
@@ -122,7 +122,7 @@ vuint32m1_t test_vle32_v_u32m1_ntl_S1(const uint32_t *base, size_t vl, int domai
 
 // CHECK-LABEL: @test_vle32_v_u32m2_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vle.nxv4i32.i64(<vscale x 4 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vle.nxv4i32.i64(<vscale x 4 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP0]]
 //
 vuint32m2_t test_vle32_v_u32m2_ntl_S1(const uint32_t *base, size_t vl, int domain) {
@@ -131,7 +131,7 @@ vuint32m2_t test_vle32_v_u32m2_ntl_S1(const uint32_t *base, size_t vl, int domai
 
 // CHECK-LABEL: @test_vle32_v_u32m4_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vle.nxv8i32.i64(<vscale x 8 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vle.nxv8i32.i64(<vscale x 8 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i32> [[TMP0]]
 //
 vuint32m4_t test_vle32_v_u32m4_ntl_S1(const uint32_t *base, size_t vl, int domain) {
@@ -140,7 +140,7 @@ vuint32m4_t test_vle32_v_u32m4_ntl_S1(const uint32_t *base, size_t vl, int domai
 
 // CHECK-LABEL: @test_vle32_v_u32m8_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i32> @llvm.riscv.vle.nxv16i32.i64(<vscale x 16 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i32> @llvm.riscv.vle.nxv16i32.i64(<vscale x 16 x i32> poison, ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 16 x i32> [[TMP0]]
 //
 vuint32m8_t test_vle32_v_u32m8_ntl_S1(const uint32_t *base, size_t vl, int domain) {
@@ -149,7 +149,7 @@ vuint32m8_t test_vle32_v_u32m8_ntl_S1(const uint32_t *base, size_t vl, int domai
 
 // CHECK-LABEL: @test_vle32_v_f32mf2_m_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x float> @llvm.riscv.vle.mask.nxv1f32.i64(<vscale x 1 x float> poison, ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x float> @llvm.riscv.vle.mask.nxv1f32.i64(<vscale x 1 x float> poison, ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x float> [[TMP0]]
 //
 vfloat32mf2_t test_vle32_v_f32mf2_m_ntl_S1(vbool64_t mask, const float *base, size_t vl, int domain) {
@@ -158,7 +158,7 @@ vfloat32mf2_t test_vle32_v_f32mf2_m_ntl_S1(vbool64_t mask, const float *base, si
 
 // CHECK-LABEL: @test_vle32_v_f32m1_m_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x float> @llvm.riscv.vle.mask.nxv2f32.i64(<vscale x 2 x float> poison, ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x float> @llvm.riscv.vle.mask.nxv2f32.i64(<vscale x 2 x float> poison, ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x float> [[TMP0]]
 //
 vfloat32m1_t test_vle32_v_f32m1_m_ntl_S1(vbool32_t mask, const float *base, size_t vl, int domain) {
@@ -167,7 +167,7 @@ vfloat32m1_t test_vle32_v_f32m1_m_ntl_S1(vbool32_t mask, const float *base, size
 
 // CHECK-LABEL: @test_vle32_v_f32m2_m_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x float> @llvm.riscv.vle.mask.nxv4f32.i64(<vscale x 4 x float> poison, ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x float> @llvm.riscv.vle.mask.nxv4f32.i64(<vscale x 4 x float> poison, ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x float> [[TMP0]]
 //
 vfloat32m2_t test_vle32_v_f32m2_m_ntl_S1(vbool16_t mask, const float *base, size_t vl, int domain) {
@@ -176,7 +176,7 @@ vfloat32m2_t test_vle32_v_f32m2_m_ntl_S1(vbool16_t mask, const float *base, size
 
 // CHECK-LABEL: @test_vle32_v_f32m4_m_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x float> @llvm.riscv.vle.mask.nxv8f32.i64(<vscale x 8 x float> poison, ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x float> @llvm.riscv.vle.mask.nxv8f32.i64(<vscale x 8 x float> poison, ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x float> [[TMP0]]
 //
 vfloat32m4_t test_vle32_v_f32m4_m_ntl_S1(vbool8_t mask, const float *base, size_t vl, int domain) {
@@ -185,7 +185,7 @@ vfloat32m4_t test_vle32_v_f32m4_m_ntl_S1(vbool8_t mask, const float *base, size_
 
 // CHECK-LABEL: @test_vle32_v_f32m8_m_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x float> @llvm.riscv.vle.mask.nxv16f32.i64(<vscale x 16 x float> poison, ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x float> @llvm.riscv.vle.mask.nxv16f32.i64(<vscale x 16 x float> poison, ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 16 x float> [[TMP0]]
 //
 vfloat32m8_t test_vle32_v_f32m8_m_ntl_S1(vbool4_t mask, const float *base, size_t vl, int domain) {
@@ -194,7 +194,7 @@ vfloat32m8_t test_vle32_v_f32m8_m_ntl_S1(vbool4_t mask, const float *base, size_
 
 // CHECK-LABEL: @test_vle32_v_i32mf2_m_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vle.mask.nxv1i32.i64(<vscale x 1 x i32> poison, ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vle.mask.nxv1i32.i64(<vscale x 1 x i32> poison, ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP0]]
 //
 vint32mf2_t test_vle32_v_i32mf2_m_ntl_S1(vbool64_t mask, const int32_t *base, size_t vl, int domain) {
@@ -203,7 +203,7 @@ vint32mf2_t test_vle32_v_i32mf2_m_ntl_S1(vbool64_t mask, const int32_t *base, si
 
 // CHECK-LABEL: @test_vle32_v_i32m1_m_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vle.mask.nxv2i32.i64(<vscale x 2 x i32> poison, ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vle.mask.nxv2i32.i64(<vscale x 2 x i32> poison, ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i32> [[TMP0]]
 //
 vint32m1_t test_vle32_v_i32m1_m_ntl_S1(vbool32_t mask, const int32_t *base, size_t vl, int domain) {
@@ -212,7 +212,7 @@ vint32m1_t test_vle32_v_i32m1_m_ntl_S1(vbool32_t mask, const int32_t *base, size
 
 // CHECK-LABEL: @test_vle32_v_i32m2_m_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vle.mask.nxv4i32.i64(<vscale x 4 x i32> poison, ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vle.mask.nxv4i32.i64(<vscale x 4 x i32> poison, ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP0]]
 //
 vint32m2_t test_vle32_v_i32m2_m_ntl_S1(vbool16_t mask, const int32_t *base, size_t vl, int domain) {
@@ -221,7 +221,7 @@ vint32m2_t test_vle32_v_i32m2_m_ntl_S1(vbool16_t mask, const int32_t *base, size
 
 // CHECK-LABEL: @test_vle32_v_i32m4_m_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vle.mask.nxv8i32.i64(<vscale x 8 x i32> poison, ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vle.mask.nxv8i32.i64(<vscale x 8 x i32> poison, ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i32> [[TMP0]]
 //
 vint32m4_t test_vle32_v_i32m4_m_ntl_S1(vbool8_t mask, const int32_t *base, size_t vl, int domain) {
@@ -230,7 +230,7 @@ vint32m4_t test_vle32_v_i32m4_m_ntl_S1(vbool8_t mask, const int32_t *base, size_
 
 // CHECK-LABEL: @test_vle32_v_i32m8_m_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i32> @llvm.riscv.vle.mask.nxv16i32.i64(<vscale x 16 x i32> poison, ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i32> @llvm.riscv.vle.mask.nxv16i32.i64(<vscale x 16 x i32> poison, ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 16 x i32> [[TMP0]]
 //
 vint32m8_t test_vle32_v_i32m8_m_ntl_S1(vbool4_t mask, const int32_t *base, size_t vl, int domain) {
@@ -239,7 +239,7 @@ vint32m8_t test_vle32_v_i32m8_m_ntl_S1(vbool4_t mask, const int32_t *base, size_
 
 // CHECK-LABEL: @test_vle32_v_u32mf2_m_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vle.mask.nxv1i32.i64(<vscale x 1 x i32> poison, ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vle.mask.nxv1i32.i64(<vscale x 1 x i32> poison, ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP0]]
 //
 vuint32mf2_t test_vle32_v_u32mf2_m_ntl_S1(vbool64_t mask, const uint32_t *base, size_t vl, int domain) {
@@ -248,7 +248,7 @@ vuint32mf2_t test_vle32_v_u32mf2_m_ntl_S1(vbool64_t mask, const uint32_t *base, 
 
 // CHECK-LABEL: @test_vle32_v_u32m1_m_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vle.mask.nxv2i32.i64(<vscale x 2 x i32> poison, ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vle.mask.nxv2i32.i64(<vscale x 2 x i32> poison, ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 2 x i32> [[TMP0]]
 //
 vuint32m1_t test_vle32_v_u32m1_m_ntl_S1(vbool32_t mask, const uint32_t *base, size_t vl, int domain) {
@@ -257,7 +257,7 @@ vuint32m1_t test_vle32_v_u32m1_m_ntl_S1(vbool32_t mask, const uint32_t *base, si
 
 // CHECK-LABEL: @test_vle32_v_u32m2_m_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vle.mask.nxv4i32.i64(<vscale x 4 x i32> poison, ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vle.mask.nxv4i32.i64(<vscale x 4 x i32> poison, ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 4 x i32> [[TMP0]]
 //
 vuint32m2_t test_vle32_v_u32m2_m_ntl_S1(vbool16_t mask, const uint32_t *base, size_t vl, int domain) {
@@ -266,7 +266,7 @@ vuint32m2_t test_vle32_v_u32m2_m_ntl_S1(vbool16_t mask, const uint32_t *base, si
 
 // CHECK-LABEL: @test_vle32_v_u32m4_m_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vle.mask.nxv8i32.i64(<vscale x 8 x i32> poison, ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i32> @llvm.riscv.vle.mask.nxv8i32.i64(<vscale x 8 x i32> poison, ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 8 x i32> [[TMP0]]
 //
 vuint32m4_t test_vle32_v_u32m4_m_ntl_S1(vbool8_t mask, const uint32_t *base, size_t vl, int domain) {
@@ -275,7 +275,7 @@ vuint32m4_t test_vle32_v_u32m4_m_ntl_S1(vbool8_t mask, const uint32_t *base, siz
 
 // CHECK-LABEL: @test_vle32_v_u32m8_m_ntl_S1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i32> @llvm.riscv.vle.mask.nxv16i32.i64(<vscale x 16 x i32> poison, ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i32> @llvm.riscv.vle.mask.nxv16i32.i64(<vscale x 16 x i32> poison, ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 3), !nontemporal [[META6]]
 // CHECK-NEXT:    ret <vscale x 16 x i32> [[TMP0]]
 //
 vuint32m8_t test_vle32_v_u32m8_m_ntl_S1(vbool4_t mask, const uint32_t *base, size_t vl, int domain) {

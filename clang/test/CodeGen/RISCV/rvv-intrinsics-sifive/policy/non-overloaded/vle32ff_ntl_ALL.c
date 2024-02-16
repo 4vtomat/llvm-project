@@ -14,7 +14,7 @@
 #include <riscv_ntlh.h>
 // CHECK-LABEL: @test_vle32ff_v_f32mf2_tu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x float>, i64 } @llvm.riscv.vleff.nxv1f32.i64(<vscale x 1 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x float>, i64 } @llvm.riscv.vleff.nxv1f32.i64(<vscale x 1 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6:![0-9]+]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 4
@@ -26,7 +26,7 @@ vfloat32mf2_t test_vle32ff_v_f32mf2_tu_ntl_ALL(vfloat32mf2_t maskedoff, const fl
 
 // CHECK-LABEL: @test_vle32ff_v_f32m1_tu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x float>, i64 } @llvm.riscv.vleff.nxv2f32.i64(<vscale x 2 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x float>, i64 } @llvm.riscv.vleff.nxv2f32.i64(<vscale x 2 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 4
@@ -38,7 +38,7 @@ vfloat32m1_t test_vle32ff_v_f32m1_tu_ntl_ALL(vfloat32m1_t maskedoff, const float
 
 // CHECK-LABEL: @test_vle32ff_v_f32m2_tu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x float>, i64 } @llvm.riscv.vleff.nxv4f32.i64(<vscale x 4 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x float>, i64 } @llvm.riscv.vleff.nxv4f32.i64(<vscale x 4 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 4
@@ -50,7 +50,7 @@ vfloat32m2_t test_vle32ff_v_f32m2_tu_ntl_ALL(vfloat32m2_t maskedoff, const float
 
 // CHECK-LABEL: @test_vle32ff_v_f32m4_tu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x float>, i64 } @llvm.riscv.vleff.nxv8f32.i64(<vscale x 8 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x float>, i64 } @llvm.riscv.vleff.nxv8f32.i64(<vscale x 8 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 4
@@ -62,7 +62,7 @@ vfloat32m4_t test_vle32ff_v_f32m4_tu_ntl_ALL(vfloat32m4_t maskedoff, const float
 
 // CHECK-LABEL: @test_vle32ff_v_f32m8_tu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x float>, i64 } @llvm.riscv.vleff.nxv16f32.i64(<vscale x 16 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x float>, i64 } @llvm.riscv.vleff.nxv16f32.i64(<vscale x 16 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 16 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 4
@@ -74,7 +74,7 @@ vfloat32m8_t test_vle32ff_v_f32m8_tu_ntl_ALL(vfloat32m8_t maskedoff, const float
 
 // CHECK-LABEL: @test_vle32ff_v_i32mf2_tu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, i64 } @llvm.riscv.vleff.nxv1i32.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, i64 } @llvm.riscv.vleff.nxv1i32.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 4
@@ -86,7 +86,7 @@ vint32mf2_t test_vle32ff_v_i32mf2_tu_ntl_ALL(vint32mf2_t maskedoff, const int32_
 
 // CHECK-LABEL: @test_vle32ff_v_i32m1_tu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.nxv2i32.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.nxv2i32.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 4
@@ -98,7 +98,7 @@ vint32m1_t test_vle32ff_v_i32m1_tu_ntl_ALL(vint32m1_t maskedoff, const int32_t *
 
 // CHECK-LABEL: @test_vle32ff_v_i32m2_tu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, i64 } @llvm.riscv.vleff.nxv4i32.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, i64 } @llvm.riscv.vleff.nxv4i32.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 4
@@ -110,7 +110,7 @@ vint32m2_t test_vle32ff_v_i32m2_tu_ntl_ALL(vint32m2_t maskedoff, const int32_t *
 
 // CHECK-LABEL: @test_vle32ff_v_i32m4_tu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, i64 } @llvm.riscv.vleff.nxv8i32.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, i64 } @llvm.riscv.vleff.nxv8i32.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 4
@@ -122,7 +122,7 @@ vint32m4_t test_vle32ff_v_i32m4_tu_ntl_ALL(vint32m4_t maskedoff, const int32_t *
 
 // CHECK-LABEL: @test_vle32ff_v_i32m8_tu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i32>, i64 } @llvm.riscv.vleff.nxv16i32.i64(<vscale x 16 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i32>, i64 } @llvm.riscv.vleff.nxv16i32.i64(<vscale x 16 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 16 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 4
@@ -134,7 +134,7 @@ vint32m8_t test_vle32ff_v_i32m8_tu_ntl_ALL(vint32m8_t maskedoff, const int32_t *
 
 // CHECK-LABEL: @test_vle32ff_v_u32mf2_tu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, i64 } @llvm.riscv.vleff.nxv1i32.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, i64 } @llvm.riscv.vleff.nxv1i32.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 4
@@ -146,7 +146,7 @@ vuint32mf2_t test_vle32ff_v_u32mf2_tu_ntl_ALL(vuint32mf2_t maskedoff, const uint
 
 // CHECK-LABEL: @test_vle32ff_v_u32m1_tu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.nxv2i32.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.nxv2i32.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 4
@@ -158,7 +158,7 @@ vuint32m1_t test_vle32ff_v_u32m1_tu_ntl_ALL(vuint32m1_t maskedoff, const uint32_
 
 // CHECK-LABEL: @test_vle32ff_v_u32m2_tu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, i64 } @llvm.riscv.vleff.nxv4i32.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, i64 } @llvm.riscv.vleff.nxv4i32.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 4
@@ -170,7 +170,7 @@ vuint32m2_t test_vle32ff_v_u32m2_tu_ntl_ALL(vuint32m2_t maskedoff, const uint32_
 
 // CHECK-LABEL: @test_vle32ff_v_u32m4_tu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, i64 } @llvm.riscv.vleff.nxv8i32.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, i64 } @llvm.riscv.vleff.nxv8i32.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 4
@@ -182,7 +182,7 @@ vuint32m4_t test_vle32ff_v_u32m4_tu_ntl_ALL(vuint32m4_t maskedoff, const uint32_
 
 // CHECK-LABEL: @test_vle32ff_v_u32m8_tu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i32>, i64 } @llvm.riscv.vleff.nxv16i32.i64(<vscale x 16 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i32>, i64 } @llvm.riscv.vleff.nxv16i32.i64(<vscale x 16 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 16 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 4
@@ -194,7 +194,7 @@ vuint32m8_t test_vle32ff_v_u32m8_tu_ntl_ALL(vuint32m8_t maskedoff, const uint32_
 
 // CHECK-LABEL: @test_vle32ff_v_f32mf2_tum_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x float>, i64 } @llvm.riscv.vleff.mask.nxv1f32.i64(<vscale x 1 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x float>, i64 } @llvm.riscv.vleff.mask.nxv1f32.i64(<vscale x 1 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -206,7 +206,7 @@ vfloat32mf2_t test_vle32ff_v_f32mf2_tum_ntl_ALL(vbool64_t mask, vfloat32mf2_t ma
 
 // CHECK-LABEL: @test_vle32ff_v_f32m1_tum_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x float>, i64 } @llvm.riscv.vleff.mask.nxv2f32.i64(<vscale x 2 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x float>, i64 } @llvm.riscv.vleff.mask.nxv2f32.i64(<vscale x 2 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -218,7 +218,7 @@ vfloat32m1_t test_vle32ff_v_f32m1_tum_ntl_ALL(vbool32_t mask, vfloat32m1_t maske
 
 // CHECK-LABEL: @test_vle32ff_v_f32m2_tum_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x float>, i64 } @llvm.riscv.vleff.mask.nxv4f32.i64(<vscale x 4 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x float>, i64 } @llvm.riscv.vleff.mask.nxv4f32.i64(<vscale x 4 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -230,7 +230,7 @@ vfloat32m2_t test_vle32ff_v_f32m2_tum_ntl_ALL(vbool16_t mask, vfloat32m2_t maske
 
 // CHECK-LABEL: @test_vle32ff_v_f32m4_tum_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x float>, i64 } @llvm.riscv.vleff.mask.nxv8f32.i64(<vscale x 8 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x float>, i64 } @llvm.riscv.vleff.mask.nxv8f32.i64(<vscale x 8 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -242,7 +242,7 @@ vfloat32m4_t test_vle32ff_v_f32m4_tum_ntl_ALL(vbool8_t mask, vfloat32m4_t masked
 
 // CHECK-LABEL: @test_vle32ff_v_f32m8_tum_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x float>, i64 } @llvm.riscv.vleff.mask.nxv16f32.i64(<vscale x 16 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x float>, i64 } @llvm.riscv.vleff.mask.nxv16f32.i64(<vscale x 16 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 16 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -254,7 +254,7 @@ vfloat32m8_t test_vle32ff_v_f32m8_tum_ntl_ALL(vbool4_t mask, vfloat32m8_t masked
 
 // CHECK-LABEL: @test_vle32ff_v_i32mf2_tum_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, i64 } @llvm.riscv.vleff.mask.nxv1i32.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, i64 } @llvm.riscv.vleff.mask.nxv1i32.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -266,7 +266,7 @@ vint32mf2_t test_vle32ff_v_i32mf2_tum_ntl_ALL(vbool64_t mask, vint32mf2_t masked
 
 // CHECK-LABEL: @test_vle32ff_v_i32m1_tum_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.mask.nxv2i32.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.mask.nxv2i32.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -278,7 +278,7 @@ vint32m1_t test_vle32ff_v_i32m1_tum_ntl_ALL(vbool32_t mask, vint32m1_t maskedoff
 
 // CHECK-LABEL: @test_vle32ff_v_i32m2_tum_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, i64 } @llvm.riscv.vleff.mask.nxv4i32.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, i64 } @llvm.riscv.vleff.mask.nxv4i32.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -290,7 +290,7 @@ vint32m2_t test_vle32ff_v_i32m2_tum_ntl_ALL(vbool16_t mask, vint32m2_t maskedoff
 
 // CHECK-LABEL: @test_vle32ff_v_i32m4_tum_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, i64 } @llvm.riscv.vleff.mask.nxv8i32.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, i64 } @llvm.riscv.vleff.mask.nxv8i32.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -302,7 +302,7 @@ vint32m4_t test_vle32ff_v_i32m4_tum_ntl_ALL(vbool8_t mask, vint32m4_t maskedoff,
 
 // CHECK-LABEL: @test_vle32ff_v_i32m8_tum_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i32>, i64 } @llvm.riscv.vleff.mask.nxv16i32.i64(<vscale x 16 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i32>, i64 } @llvm.riscv.vleff.mask.nxv16i32.i64(<vscale x 16 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 16 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -314,7 +314,7 @@ vint32m8_t test_vle32ff_v_i32m8_tum_ntl_ALL(vbool4_t mask, vint32m8_t maskedoff,
 
 // CHECK-LABEL: @test_vle32ff_v_u32mf2_tum_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, i64 } @llvm.riscv.vleff.mask.nxv1i32.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, i64 } @llvm.riscv.vleff.mask.nxv1i32.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -326,7 +326,7 @@ vuint32mf2_t test_vle32ff_v_u32mf2_tum_ntl_ALL(vbool64_t mask, vuint32mf2_t mask
 
 // CHECK-LABEL: @test_vle32ff_v_u32m1_tum_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.mask.nxv2i32.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.mask.nxv2i32.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -338,7 +338,7 @@ vuint32m1_t test_vle32ff_v_u32m1_tum_ntl_ALL(vbool32_t mask, vuint32m1_t maskedo
 
 // CHECK-LABEL: @test_vle32ff_v_u32m2_tum_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, i64 } @llvm.riscv.vleff.mask.nxv4i32.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, i64 } @llvm.riscv.vleff.mask.nxv4i32.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -350,7 +350,7 @@ vuint32m2_t test_vle32ff_v_u32m2_tum_ntl_ALL(vbool16_t mask, vuint32m2_t maskedo
 
 // CHECK-LABEL: @test_vle32ff_v_u32m4_tum_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, i64 } @llvm.riscv.vleff.mask.nxv8i32.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, i64 } @llvm.riscv.vleff.mask.nxv8i32.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -362,7 +362,7 @@ vuint32m4_t test_vle32ff_v_u32m4_tum_ntl_ALL(vbool8_t mask, vuint32m4_t maskedof
 
 // CHECK-LABEL: @test_vle32ff_v_u32m8_tum_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i32>, i64 } @llvm.riscv.vleff.mask.nxv16i32.i64(<vscale x 16 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i32>, i64 } @llvm.riscv.vleff.mask.nxv16i32.i64(<vscale x 16 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 16 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -374,7 +374,7 @@ vuint32m8_t test_vle32ff_v_u32m8_tum_ntl_ALL(vbool4_t mask, vuint32m8_t maskedof
 
 // CHECK-LABEL: @test_vle32ff_v_f32mf2_tumu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x float>, i64 } @llvm.riscv.vleff.mask.nxv1f32.i64(<vscale x 1 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x float>, i64 } @llvm.riscv.vleff.mask.nxv1f32.i64(<vscale x 1 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -386,7 +386,7 @@ vfloat32mf2_t test_vle32ff_v_f32mf2_tumu_ntl_ALL(vbool64_t mask, vfloat32mf2_t m
 
 // CHECK-LABEL: @test_vle32ff_v_f32m1_tumu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x float>, i64 } @llvm.riscv.vleff.mask.nxv2f32.i64(<vscale x 2 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x float>, i64 } @llvm.riscv.vleff.mask.nxv2f32.i64(<vscale x 2 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -398,7 +398,7 @@ vfloat32m1_t test_vle32ff_v_f32m1_tumu_ntl_ALL(vbool32_t mask, vfloat32m1_t mask
 
 // CHECK-LABEL: @test_vle32ff_v_f32m2_tumu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x float>, i64 } @llvm.riscv.vleff.mask.nxv4f32.i64(<vscale x 4 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x float>, i64 } @llvm.riscv.vleff.mask.nxv4f32.i64(<vscale x 4 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -410,7 +410,7 @@ vfloat32m2_t test_vle32ff_v_f32m2_tumu_ntl_ALL(vbool16_t mask, vfloat32m2_t mask
 
 // CHECK-LABEL: @test_vle32ff_v_f32m4_tumu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x float>, i64 } @llvm.riscv.vleff.mask.nxv8f32.i64(<vscale x 8 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x float>, i64 } @llvm.riscv.vleff.mask.nxv8f32.i64(<vscale x 8 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -422,7 +422,7 @@ vfloat32m4_t test_vle32ff_v_f32m4_tumu_ntl_ALL(vbool8_t mask, vfloat32m4_t maske
 
 // CHECK-LABEL: @test_vle32ff_v_f32m8_tumu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x float>, i64 } @llvm.riscv.vleff.mask.nxv16f32.i64(<vscale x 16 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x float>, i64 } @llvm.riscv.vleff.mask.nxv16f32.i64(<vscale x 16 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 16 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -434,7 +434,7 @@ vfloat32m8_t test_vle32ff_v_f32m8_tumu_ntl_ALL(vbool4_t mask, vfloat32m8_t maske
 
 // CHECK-LABEL: @test_vle32ff_v_i32mf2_tumu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, i64 } @llvm.riscv.vleff.mask.nxv1i32.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, i64 } @llvm.riscv.vleff.mask.nxv1i32.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -446,7 +446,7 @@ vint32mf2_t test_vle32ff_v_i32mf2_tumu_ntl_ALL(vbool64_t mask, vint32mf2_t maske
 
 // CHECK-LABEL: @test_vle32ff_v_i32m1_tumu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.mask.nxv2i32.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.mask.nxv2i32.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -458,7 +458,7 @@ vint32m1_t test_vle32ff_v_i32m1_tumu_ntl_ALL(vbool32_t mask, vint32m1_t maskedof
 
 // CHECK-LABEL: @test_vle32ff_v_i32m2_tumu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, i64 } @llvm.riscv.vleff.mask.nxv4i32.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, i64 } @llvm.riscv.vleff.mask.nxv4i32.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -470,7 +470,7 @@ vint32m2_t test_vle32ff_v_i32m2_tumu_ntl_ALL(vbool16_t mask, vint32m2_t maskedof
 
 // CHECK-LABEL: @test_vle32ff_v_i32m4_tumu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, i64 } @llvm.riscv.vleff.mask.nxv8i32.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, i64 } @llvm.riscv.vleff.mask.nxv8i32.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -482,7 +482,7 @@ vint32m4_t test_vle32ff_v_i32m4_tumu_ntl_ALL(vbool8_t mask, vint32m4_t maskedoff
 
 // CHECK-LABEL: @test_vle32ff_v_i32m8_tumu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i32>, i64 } @llvm.riscv.vleff.mask.nxv16i32.i64(<vscale x 16 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i32>, i64 } @llvm.riscv.vleff.mask.nxv16i32.i64(<vscale x 16 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 16 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -494,7 +494,7 @@ vint32m8_t test_vle32ff_v_i32m8_tumu_ntl_ALL(vbool4_t mask, vint32m8_t maskedoff
 
 // CHECK-LABEL: @test_vle32ff_v_u32mf2_tumu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, i64 } @llvm.riscv.vleff.mask.nxv1i32.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, i64 } @llvm.riscv.vleff.mask.nxv1i32.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -506,7 +506,7 @@ vuint32mf2_t test_vle32ff_v_u32mf2_tumu_ntl_ALL(vbool64_t mask, vuint32mf2_t mas
 
 // CHECK-LABEL: @test_vle32ff_v_u32m1_tumu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.mask.nxv2i32.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.mask.nxv2i32.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -518,7 +518,7 @@ vuint32m1_t test_vle32ff_v_u32m1_tumu_ntl_ALL(vbool32_t mask, vuint32m1_t masked
 
 // CHECK-LABEL: @test_vle32ff_v_u32m2_tumu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, i64 } @llvm.riscv.vleff.mask.nxv4i32.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, i64 } @llvm.riscv.vleff.mask.nxv4i32.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -530,7 +530,7 @@ vuint32m2_t test_vle32ff_v_u32m2_tumu_ntl_ALL(vbool16_t mask, vuint32m2_t masked
 
 // CHECK-LABEL: @test_vle32ff_v_u32m4_tumu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, i64 } @llvm.riscv.vleff.mask.nxv8i32.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, i64 } @llvm.riscv.vleff.mask.nxv8i32.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -542,7 +542,7 @@ vuint32m4_t test_vle32ff_v_u32m4_tumu_ntl_ALL(vbool8_t mask, vuint32m4_t maskedo
 
 // CHECK-LABEL: @test_vle32ff_v_u32m8_tumu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i32>, i64 } @llvm.riscv.vleff.mask.nxv16i32.i64(<vscale x 16 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i32>, i64 } @llvm.riscv.vleff.mask.nxv16i32.i64(<vscale x 16 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 16 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -554,7 +554,7 @@ vuint32m8_t test_vle32ff_v_u32m8_tumu_ntl_ALL(vbool4_t mask, vuint32m8_t maskedo
 
 // CHECK-LABEL: @test_vle32ff_v_f32mf2_mu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x float>, i64 } @llvm.riscv.vleff.mask.nxv1f32.i64(<vscale x 1 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x float>, i64 } @llvm.riscv.vleff.mask.nxv1f32.i64(<vscale x 1 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -566,7 +566,7 @@ vfloat32mf2_t test_vle32ff_v_f32mf2_mu_ntl_ALL(vbool64_t mask, vfloat32mf2_t mas
 
 // CHECK-LABEL: @test_vle32ff_v_f32m1_mu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x float>, i64 } @llvm.riscv.vleff.mask.nxv2f32.i64(<vscale x 2 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x float>, i64 } @llvm.riscv.vleff.mask.nxv2f32.i64(<vscale x 2 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -578,7 +578,7 @@ vfloat32m1_t test_vle32ff_v_f32m1_mu_ntl_ALL(vbool32_t mask, vfloat32m1_t masked
 
 // CHECK-LABEL: @test_vle32ff_v_f32m2_mu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x float>, i64 } @llvm.riscv.vleff.mask.nxv4f32.i64(<vscale x 4 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x float>, i64 } @llvm.riscv.vleff.mask.nxv4f32.i64(<vscale x 4 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -590,7 +590,7 @@ vfloat32m2_t test_vle32ff_v_f32m2_mu_ntl_ALL(vbool16_t mask, vfloat32m2_t masked
 
 // CHECK-LABEL: @test_vle32ff_v_f32m4_mu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x float>, i64 } @llvm.riscv.vleff.mask.nxv8f32.i64(<vscale x 8 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x float>, i64 } @llvm.riscv.vleff.mask.nxv8f32.i64(<vscale x 8 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -602,7 +602,7 @@ vfloat32m4_t test_vle32ff_v_f32m4_mu_ntl_ALL(vbool8_t mask, vfloat32m4_t maskedo
 
 // CHECK-LABEL: @test_vle32ff_v_f32m8_mu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x float>, i64 } @llvm.riscv.vleff.mask.nxv16f32.i64(<vscale x 16 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x float>, i64 } @llvm.riscv.vleff.mask.nxv16f32.i64(<vscale x 16 x float> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 16 x float>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x float>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -614,7 +614,7 @@ vfloat32m8_t test_vle32ff_v_f32m8_mu_ntl_ALL(vbool4_t mask, vfloat32m8_t maskedo
 
 // CHECK-LABEL: @test_vle32ff_v_i32mf2_mu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, i64 } @llvm.riscv.vleff.mask.nxv1i32.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, i64 } @llvm.riscv.vleff.mask.nxv1i32.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -626,7 +626,7 @@ vint32mf2_t test_vle32ff_v_i32mf2_mu_ntl_ALL(vbool64_t mask, vint32mf2_t maskedo
 
 // CHECK-LABEL: @test_vle32ff_v_i32m1_mu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.mask.nxv2i32.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.mask.nxv2i32.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -638,7 +638,7 @@ vint32m1_t test_vle32ff_v_i32m1_mu_ntl_ALL(vbool32_t mask, vint32m1_t maskedoff,
 
 // CHECK-LABEL: @test_vle32ff_v_i32m2_mu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, i64 } @llvm.riscv.vleff.mask.nxv4i32.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, i64 } @llvm.riscv.vleff.mask.nxv4i32.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -650,7 +650,7 @@ vint32m2_t test_vle32ff_v_i32m2_mu_ntl_ALL(vbool16_t mask, vint32m2_t maskedoff,
 
 // CHECK-LABEL: @test_vle32ff_v_i32m4_mu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, i64 } @llvm.riscv.vleff.mask.nxv8i32.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, i64 } @llvm.riscv.vleff.mask.nxv8i32.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -662,7 +662,7 @@ vint32m4_t test_vle32ff_v_i32m4_mu_ntl_ALL(vbool8_t mask, vint32m4_t maskedoff, 
 
 // CHECK-LABEL: @test_vle32ff_v_i32m8_mu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i32>, i64 } @llvm.riscv.vleff.mask.nxv16i32.i64(<vscale x 16 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i32>, i64 } @llvm.riscv.vleff.mask.nxv16i32.i64(<vscale x 16 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 16 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -674,7 +674,7 @@ vint32m8_t test_vle32ff_v_i32m8_mu_ntl_ALL(vbool4_t mask, vint32m8_t maskedoff, 
 
 // CHECK-LABEL: @test_vle32ff_v_u32mf2_mu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, i64 } @llvm.riscv.vleff.mask.nxv1i32.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i32>, i64 } @llvm.riscv.vleff.mask.nxv1i32.i64(<vscale x 1 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -686,7 +686,7 @@ vuint32mf2_t test_vle32ff_v_u32mf2_mu_ntl_ALL(vbool64_t mask, vuint32mf2_t maske
 
 // CHECK-LABEL: @test_vle32ff_v_u32m1_mu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.mask.nxv2i32.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i32>, i64 } @llvm.riscv.vleff.mask.nxv2i32.i64(<vscale x 2 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -698,7 +698,7 @@ vuint32m1_t test_vle32ff_v_u32m1_mu_ntl_ALL(vbool32_t mask, vuint32m1_t maskedof
 
 // CHECK-LABEL: @test_vle32ff_v_u32m2_mu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, i64 } @llvm.riscv.vleff.mask.nxv4i32.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i32>, i64 } @llvm.riscv.vleff.mask.nxv4i32.i64(<vscale x 4 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -710,7 +710,7 @@ vuint32m2_t test_vle32ff_v_u32m2_mu_ntl_ALL(vbool16_t mask, vuint32m2_t maskedof
 
 // CHECK-LABEL: @test_vle32ff_v_u32m4_mu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, i64 } @llvm.riscv.vleff.mask.nxv8i32.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 8 x i32>, i64 } @llvm.riscv.vleff.mask.nxv8i32.i64(<vscale x 8 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 8 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 8 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 8 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8
@@ -722,7 +722,7 @@ vuint32m4_t test_vle32ff_v_u32m4_mu_ntl_ALL(vbool8_t mask, vuint32m4_t maskedoff
 
 // CHECK-LABEL: @test_vle32ff_v_u32m8_mu_ntl_ALL(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i32>, i64 } @llvm.riscv.vleff.mask.nxv16i32.i64(<vscale x 16 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal !4
+// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 16 x i32>, i64 } @llvm.riscv.vleff.mask.nxv16i32.i64(<vscale x 16 x i32> [[MASKEDOFF:%.*]], ptr [[BASE:%.*]], <vscale x 16 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
 // CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 16 x i32>, i64 } [[TMP0]], 0
 // CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 16 x i32>, i64 } [[TMP0]], 1
 // CHECK-NEXT:    store i64 [[TMP2]], ptr [[NEW_VL:%.*]], align 8

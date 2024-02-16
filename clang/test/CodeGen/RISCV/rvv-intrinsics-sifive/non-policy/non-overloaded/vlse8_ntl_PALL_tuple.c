@@ -11,7 +11,7 @@
 // CHECK-RV64-LABEL: define dso_local <vscale x 1 x i8> @test_vlse8_v_i8mf8_ntl_PALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0:[0-9]+]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vlse.nxv1i8.i64(<vscale x 1 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vlse.nxv1i8.i64(<vscale x 1 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6:![0-9]+]]
 // CHECK-RV64-NEXT:    ret <vscale x 1 x i8> [[TMP0]]
 //
 vint8mf8_t test_vlse8_v_i8mf8_ntl_PALL(const int8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -21,7 +21,7 @@ vint8mf8_t test_vlse8_v_i8mf8_ntl_PALL(const int8_t *base, ptrdiff_t bstride, si
 // CHECK-RV64-LABEL: define dso_local <vscale x 2 x i8> @test_vlse8_v_i8mf4_ntl_PALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vlse.nxv2i8.i64(<vscale x 2 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vlse.nxv2i8.i64(<vscale x 2 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 2 x i8> [[TMP0]]
 //
 vint8mf4_t test_vlse8_v_i8mf4_ntl_PALL(const int8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -31,7 +31,7 @@ vint8mf4_t test_vlse8_v_i8mf4_ntl_PALL(const int8_t *base, ptrdiff_t bstride, si
 // CHECK-RV64-LABEL: define dso_local <vscale x 4 x i8> @test_vlse8_v_i8mf2_ntl_PALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vlse.nxv4i8.i64(<vscale x 4 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vlse.nxv4i8.i64(<vscale x 4 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 4 x i8> [[TMP0]]
 //
 vint8mf2_t test_vlse8_v_i8mf2_ntl_PALL(const int8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -41,7 +41,7 @@ vint8mf2_t test_vlse8_v_i8mf2_ntl_PALL(const int8_t *base, ptrdiff_t bstride, si
 // CHECK-RV64-LABEL: define dso_local <vscale x 8 x i8> @test_vlse8_v_i8m1_ntl_PALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vlse.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vlse.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 8 x i8> [[TMP0]]
 //
 vint8m1_t test_vlse8_v_i8m1_ntl_PALL(const int8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -51,7 +51,7 @@ vint8m1_t test_vlse8_v_i8m1_ntl_PALL(const int8_t *base, ptrdiff_t bstride, size
 // CHECK-RV64-LABEL: define dso_local <vscale x 16 x i8> @test_vlse8_v_i8m2_ntl_PALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vlse.nxv16i8.i64(<vscale x 16 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vlse.nxv16i8.i64(<vscale x 16 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 16 x i8> [[TMP0]]
 //
 vint8m2_t test_vlse8_v_i8m2_ntl_PALL(const int8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -61,7 +61,7 @@ vint8m2_t test_vlse8_v_i8m2_ntl_PALL(const int8_t *base, ptrdiff_t bstride, size
 // CHECK-RV64-LABEL: define dso_local <vscale x 32 x i8> @test_vlse8_v_i8m4_ntl_PALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x i8> @llvm.riscv.vlse.nxv32i8.i64(<vscale x 32 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x i8> @llvm.riscv.vlse.nxv32i8.i64(<vscale x 32 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 32 x i8> [[TMP0]]
 //
 vint8m4_t test_vlse8_v_i8m4_ntl_PALL(const int8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -71,7 +71,7 @@ vint8m4_t test_vlse8_v_i8m4_ntl_PALL(const int8_t *base, ptrdiff_t bstride, size
 // CHECK-RV64-LABEL: define dso_local <vscale x 64 x i8> @test_vlse8_v_i8m8_ntl_PALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 64 x i8> @llvm.riscv.vlse.nxv64i8.i64(<vscale x 64 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 64 x i8> @llvm.riscv.vlse.nxv64i8.i64(<vscale x 64 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 64 x i8> [[TMP0]]
 //
 vint8m8_t test_vlse8_v_i8m8_ntl_PALL(const int8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -81,7 +81,7 @@ vint8m8_t test_vlse8_v_i8m8_ntl_PALL(const int8_t *base, ptrdiff_t bstride, size
 // CHECK-RV64-LABEL: define dso_local <vscale x 1 x i8> @test_vlse8_v_u8mf8_ntl_PALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vlse.nxv1i8.i64(<vscale x 1 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vlse.nxv1i8.i64(<vscale x 1 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 1 x i8> [[TMP0]]
 //
 vuint8mf8_t test_vlse8_v_u8mf8_ntl_PALL(const uint8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -91,7 +91,7 @@ vuint8mf8_t test_vlse8_v_u8mf8_ntl_PALL(const uint8_t *base, ptrdiff_t bstride, 
 // CHECK-RV64-LABEL: define dso_local <vscale x 2 x i8> @test_vlse8_v_u8mf4_ntl_PALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vlse.nxv2i8.i64(<vscale x 2 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vlse.nxv2i8.i64(<vscale x 2 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 2 x i8> [[TMP0]]
 //
 vuint8mf4_t test_vlse8_v_u8mf4_ntl_PALL(const uint8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -101,7 +101,7 @@ vuint8mf4_t test_vlse8_v_u8mf4_ntl_PALL(const uint8_t *base, ptrdiff_t bstride, 
 // CHECK-RV64-LABEL: define dso_local <vscale x 4 x i8> @test_vlse8_v_u8mf2_ntl_PALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vlse.nxv4i8.i64(<vscale x 4 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vlse.nxv4i8.i64(<vscale x 4 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 4 x i8> [[TMP0]]
 //
 vuint8mf2_t test_vlse8_v_u8mf2_ntl_PALL(const uint8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -111,7 +111,7 @@ vuint8mf2_t test_vlse8_v_u8mf2_ntl_PALL(const uint8_t *base, ptrdiff_t bstride, 
 // CHECK-RV64-LABEL: define dso_local <vscale x 8 x i8> @test_vlse8_v_u8m1_ntl_PALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vlse.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vlse.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 8 x i8> [[TMP0]]
 //
 vuint8m1_t test_vlse8_v_u8m1_ntl_PALL(const uint8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -121,7 +121,7 @@ vuint8m1_t test_vlse8_v_u8m1_ntl_PALL(const uint8_t *base, ptrdiff_t bstride, si
 // CHECK-RV64-LABEL: define dso_local <vscale x 16 x i8> @test_vlse8_v_u8m2_ntl_PALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vlse.nxv16i8.i64(<vscale x 16 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vlse.nxv16i8.i64(<vscale x 16 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 16 x i8> [[TMP0]]
 //
 vuint8m2_t test_vlse8_v_u8m2_ntl_PALL(const uint8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -131,7 +131,7 @@ vuint8m2_t test_vlse8_v_u8m2_ntl_PALL(const uint8_t *base, ptrdiff_t bstride, si
 // CHECK-RV64-LABEL: define dso_local <vscale x 32 x i8> @test_vlse8_v_u8m4_ntl_PALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x i8> @llvm.riscv.vlse.nxv32i8.i64(<vscale x 32 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x i8> @llvm.riscv.vlse.nxv32i8.i64(<vscale x 32 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 32 x i8> [[TMP0]]
 //
 vuint8m4_t test_vlse8_v_u8m4_ntl_PALL(const uint8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -141,7 +141,7 @@ vuint8m4_t test_vlse8_v_u8m4_ntl_PALL(const uint8_t *base, ptrdiff_t bstride, si
 // CHECK-RV64-LABEL: define dso_local <vscale x 64 x i8> @test_vlse8_v_u8m8_ntl_PALL
 // CHECK-RV64-SAME: (ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 64 x i8> @llvm.riscv.vlse.nxv64i8.i64(<vscale x 64 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 64 x i8> @llvm.riscv.vlse.nxv64i8.i64(<vscale x 64 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], i64 [[VL]]), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 64 x i8> [[TMP0]]
 //
 vuint8m8_t test_vlse8_v_u8m8_ntl_PALL(const uint8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -151,7 +151,7 @@ vuint8m8_t test_vlse8_v_u8m8_ntl_PALL(const uint8_t *base, ptrdiff_t bstride, si
 // CHECK-RV64-LABEL: define dso_local <vscale x 1 x i8> @test_vlse8_v_i8mf8_m_ntl_PALL
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vlse.mask.nxv1i8.i64(<vscale x 1 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vlse.mask.nxv1i8.i64(<vscale x 1 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 1 x i8> [[TMP0]]
 //
 vint8mf8_t test_vlse8_v_i8mf8_m_ntl_PALL(vbool64_t mask, const int8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -161,7 +161,7 @@ vint8mf8_t test_vlse8_v_i8mf8_m_ntl_PALL(vbool64_t mask, const int8_t *base, ptr
 // CHECK-RV64-LABEL: define dso_local <vscale x 2 x i8> @test_vlse8_v_i8mf4_m_ntl_PALL
 // CHECK-RV64-SAME: (<vscale x 2 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vlse.mask.nxv2i8.i64(<vscale x 2 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vlse.mask.nxv2i8.i64(<vscale x 2 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 2 x i8> [[TMP0]]
 //
 vint8mf4_t test_vlse8_v_i8mf4_m_ntl_PALL(vbool32_t mask, const int8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -171,7 +171,7 @@ vint8mf4_t test_vlse8_v_i8mf4_m_ntl_PALL(vbool32_t mask, const int8_t *base, ptr
 // CHECK-RV64-LABEL: define dso_local <vscale x 4 x i8> @test_vlse8_v_i8mf2_m_ntl_PALL
 // CHECK-RV64-SAME: (<vscale x 4 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vlse.mask.nxv4i8.i64(<vscale x 4 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vlse.mask.nxv4i8.i64(<vscale x 4 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 4 x i8> [[TMP0]]
 //
 vint8mf2_t test_vlse8_v_i8mf2_m_ntl_PALL(vbool16_t mask, const int8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -181,7 +181,7 @@ vint8mf2_t test_vlse8_v_i8mf2_m_ntl_PALL(vbool16_t mask, const int8_t *base, ptr
 // CHECK-RV64-LABEL: define dso_local <vscale x 8 x i8> @test_vlse8_v_i8m1_m_ntl_PALL
 // CHECK-RV64-SAME: (<vscale x 8 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vlse.mask.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 8 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vlse.mask.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 8 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 8 x i8> [[TMP0]]
 //
 vint8m1_t test_vlse8_v_i8m1_m_ntl_PALL(vbool8_t mask, const int8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -191,7 +191,7 @@ vint8m1_t test_vlse8_v_i8m1_m_ntl_PALL(vbool8_t mask, const int8_t *base, ptrdif
 // CHECK-RV64-LABEL: define dso_local <vscale x 16 x i8> @test_vlse8_v_i8m2_m_ntl_PALL
 // CHECK-RV64-SAME: (<vscale x 16 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vlse.mask.nxv16i8.i64(<vscale x 16 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 16 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vlse.mask.nxv16i8.i64(<vscale x 16 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 16 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 16 x i8> [[TMP0]]
 //
 vint8m2_t test_vlse8_v_i8m2_m_ntl_PALL(vbool4_t mask, const int8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -201,7 +201,7 @@ vint8m2_t test_vlse8_v_i8m2_m_ntl_PALL(vbool4_t mask, const int8_t *base, ptrdif
 // CHECK-RV64-LABEL: define dso_local <vscale x 32 x i8> @test_vlse8_v_i8m4_m_ntl_PALL
 // CHECK-RV64-SAME: (<vscale x 32 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x i8> @llvm.riscv.vlse.mask.nxv32i8.i64(<vscale x 32 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 32 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x i8> @llvm.riscv.vlse.mask.nxv32i8.i64(<vscale x 32 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 32 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 32 x i8> [[TMP0]]
 //
 vint8m4_t test_vlse8_v_i8m4_m_ntl_PALL(vbool2_t mask, const int8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -211,7 +211,7 @@ vint8m4_t test_vlse8_v_i8m4_m_ntl_PALL(vbool2_t mask, const int8_t *base, ptrdif
 // CHECK-RV64-LABEL: define dso_local <vscale x 64 x i8> @test_vlse8_v_i8m8_m_ntl_PALL
 // CHECK-RV64-SAME: (<vscale x 64 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 64 x i8> @llvm.riscv.vlse.mask.nxv64i8.i64(<vscale x 64 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 64 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 64 x i8> @llvm.riscv.vlse.mask.nxv64i8.i64(<vscale x 64 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 64 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 64 x i8> [[TMP0]]
 //
 vint8m8_t test_vlse8_v_i8m8_m_ntl_PALL(vbool1_t mask, const int8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -221,7 +221,7 @@ vint8m8_t test_vlse8_v_i8m8_m_ntl_PALL(vbool1_t mask, const int8_t *base, ptrdif
 // CHECK-RV64-LABEL: define dso_local <vscale x 1 x i8> @test_vlse8_v_u8mf8_m_ntl_PALL
 // CHECK-RV64-SAME: (<vscale x 1 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vlse.mask.nxv1i8.i64(<vscale x 1 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i8> @llvm.riscv.vlse.mask.nxv1i8.i64(<vscale x 1 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 1 x i8> [[TMP0]]
 //
 vuint8mf8_t test_vlse8_v_u8mf8_m_ntl_PALL(vbool64_t mask, const uint8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -231,7 +231,7 @@ vuint8mf8_t test_vlse8_v_u8mf8_m_ntl_PALL(vbool64_t mask, const uint8_t *base, p
 // CHECK-RV64-LABEL: define dso_local <vscale x 2 x i8> @test_vlse8_v_u8mf4_m_ntl_PALL
 // CHECK-RV64-SAME: (<vscale x 2 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vlse.mask.nxv2i8.i64(<vscale x 2 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i8> @llvm.riscv.vlse.mask.nxv2i8.i64(<vscale x 2 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 2 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 2 x i8> [[TMP0]]
 //
 vuint8mf4_t test_vlse8_v_u8mf4_m_ntl_PALL(vbool32_t mask, const uint8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -241,7 +241,7 @@ vuint8mf4_t test_vlse8_v_u8mf4_m_ntl_PALL(vbool32_t mask, const uint8_t *base, p
 // CHECK-RV64-LABEL: define dso_local <vscale x 4 x i8> @test_vlse8_v_u8mf2_m_ntl_PALL
 // CHECK-RV64-SAME: (<vscale x 4 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vlse.mask.nxv4i8.i64(<vscale x 4 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i8> @llvm.riscv.vlse.mask.nxv4i8.i64(<vscale x 4 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 4 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 4 x i8> [[TMP0]]
 //
 vuint8mf2_t test_vlse8_v_u8mf2_m_ntl_PALL(vbool16_t mask, const uint8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -251,7 +251,7 @@ vuint8mf2_t test_vlse8_v_u8mf2_m_ntl_PALL(vbool16_t mask, const uint8_t *base, p
 // CHECK-RV64-LABEL: define dso_local <vscale x 8 x i8> @test_vlse8_v_u8m1_m_ntl_PALL
 // CHECK-RV64-SAME: (<vscale x 8 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vlse.mask.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 8 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i8> @llvm.riscv.vlse.mask.nxv8i8.i64(<vscale x 8 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 8 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 8 x i8> [[TMP0]]
 //
 vuint8m1_t test_vlse8_v_u8m1_m_ntl_PALL(vbool8_t mask, const uint8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -261,7 +261,7 @@ vuint8m1_t test_vlse8_v_u8m1_m_ntl_PALL(vbool8_t mask, const uint8_t *base, ptrd
 // CHECK-RV64-LABEL: define dso_local <vscale x 16 x i8> @test_vlse8_v_u8m2_m_ntl_PALL
 // CHECK-RV64-SAME: (<vscale x 16 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vlse.mask.nxv16i8.i64(<vscale x 16 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 16 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i8> @llvm.riscv.vlse.mask.nxv16i8.i64(<vscale x 16 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 16 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 16 x i8> [[TMP0]]
 //
 vuint8m2_t test_vlse8_v_u8m2_m_ntl_PALL(vbool4_t mask, const uint8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -271,7 +271,7 @@ vuint8m2_t test_vlse8_v_u8m2_m_ntl_PALL(vbool4_t mask, const uint8_t *base, ptrd
 // CHECK-RV64-LABEL: define dso_local <vscale x 32 x i8> @test_vlse8_v_u8m4_m_ntl_PALL
 // CHECK-RV64-SAME: (<vscale x 32 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x i8> @llvm.riscv.vlse.mask.nxv32i8.i64(<vscale x 32 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 32 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x i8> @llvm.riscv.vlse.mask.nxv32i8.i64(<vscale x 32 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 32 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 32 x i8> [[TMP0]]
 //
 vuint8m4_t test_vlse8_v_u8m4_m_ntl_PALL(vbool2_t mask, const uint8_t *base, ptrdiff_t bstride, size_t vl, int domain) {
@@ -281,7 +281,7 @@ vuint8m4_t test_vlse8_v_u8m4_m_ntl_PALL(vbool2_t mask, const uint8_t *base, ptrd
 // CHECK-RV64-LABEL: define dso_local <vscale x 64 x i8> @test_vlse8_v_u8m8_m_ntl_PALL
 // CHECK-RV64-SAME: (<vscale x 64 x i1> [[MASK:%.*]], ptr noundef [[BASE:%.*]], i64 noundef [[BSTRIDE:%.*]], i64 noundef [[VL:%.*]], i32 noundef signext [[DOMAIN:%.*]]) #[[ATTR0]] {
 // CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 64 x i8> @llvm.riscv.vlse.mask.nxv64i8.i64(<vscale x 64 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 64 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal !4
+// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 64 x i8> @llvm.riscv.vlse.mask.nxv64i8.i64(<vscale x 64 x i8> poison, ptr [[BASE]], i64 [[BSTRIDE]], <vscale x 64 x i1> [[MASK]], i64 [[VL]], i64 3), !nontemporal [[META6]]
 // CHECK-RV64-NEXT:    ret <vscale x 64 x i8> [[TMP0]]
 //
 vuint8m8_t test_vlse8_v_u8m8_m_ntl_PALL(vbool1_t mask, const uint8_t *base, ptrdiff_t bstride, size_t vl, int domain) {

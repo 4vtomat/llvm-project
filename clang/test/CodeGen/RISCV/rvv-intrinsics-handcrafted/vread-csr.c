@@ -7,7 +7,7 @@
 
 // CHECK-LABEL: @vread_csr_vstart(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = tail call i64 asm sideeffect "csrr\09$0, vstart", "=r,~{memory}"() #[[ATTR1:[0-9]+]], !srcloc !4
+// CHECK-NEXT:    [[TMP0:%.*]] = tail call i64 asm sideeffect "csrr\09$0, vstart", "=r,~{memory}"() #[[ATTR1:[0-9]+]], !srcloc [[META6:![0-9]+]]
 // CHECK-NEXT:    ret i64 [[TMP0]]
 //
 unsigned long vread_csr_vstart(void) {
@@ -16,7 +16,7 @@ unsigned long vread_csr_vstart(void) {
 
 // CHECK-LABEL: @vread_csr_vxsat(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = tail call i64 asm sideeffect "csrr\09$0, vxsat", "=r,~{memory}"() #[[ATTR1]], !srcloc !5
+// CHECK-NEXT:    [[TMP0:%.*]] = tail call i64 asm sideeffect "csrr\09$0, vxsat", "=r,~{memory}"() #[[ATTR1]], !srcloc [[META7:![0-9]+]]
 // CHECK-NEXT:    ret i64 [[TMP0]]
 //
 unsigned long vread_csr_vxsat(void) {
@@ -25,7 +25,7 @@ unsigned long vread_csr_vxsat(void) {
 
 // CHECK-LABEL: @vread_csr_vxrm(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = tail call i64 asm sideeffect "csrr\09$0, vxrm", "=r,~{memory}"() #[[ATTR1]], !srcloc !6
+// CHECK-NEXT:    [[TMP0:%.*]] = tail call i64 asm sideeffect "csrr\09$0, vxrm", "=r,~{memory}"() #[[ATTR1]], !srcloc [[META8:![0-9]+]]
 // CHECK-NEXT:    ret i64 [[TMP0]]
 //
 unsigned long vread_csr_vxrm(void) {
@@ -34,7 +34,7 @@ unsigned long vread_csr_vxrm(void) {
 
 // CHECK-LABEL: @vread_csr_vcsr(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = tail call i64 asm sideeffect "csrr\09$0, vcsr", "=r,~{memory}"() #[[ATTR1]], !srcloc !7
+// CHECK-NEXT:    [[TMP0:%.*]] = tail call i64 asm sideeffect "csrr\09$0, vcsr", "=r,~{memory}"() #[[ATTR1]], !srcloc [[META9:![0-9]+]]
 // CHECK-NEXT:    ret i64 [[TMP0]]
 //
 unsigned long vread_csr_vcsr(void) {
