@@ -1648,13 +1648,13 @@ static bool isSwitchLookupTable(const SwitchInst *SI,
       return false;
   }
 
-  // For now, only handle switches where the default is also a constant.
-  bool HasDefaultResults =
-      doesCaseProduceConstantInt(SI, SI->getDefaultDest(), &CommonDest, TTI);
-  if (!HasDefaultResults)
-    return false;
+  // For now, only handle switches where the default is also a constant or
+  // unreachable.
+  if (isa<UnreachableInst>(SI->getDefaultDest()->getFirstNonPHIOrDbg()))
+    return true;
 
-  return true;
+  return doesCaseProduceConstantInt(SI, SI->getDefaultDest(), &CommonDest,
+                                    TTI);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
