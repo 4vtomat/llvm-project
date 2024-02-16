@@ -97,17 +97,6 @@ struct VPlanTransforms {
                              const MapVector<Instruction *, uint64_t> &MinBWs,
                              LLVMContext &Ctx);
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  /// Add a VPEVLBasedIVPHIRecipe and related recipes to \p Plan and
-  /// replaces all uses except the canonical IV increment of
-  /// VPCanonicalIVPHIRecipe with a VPEVLBasedIVPHIRecipe.
-  /// VPCanonicalIVPHIRecipe is only used to control the loop after
-  /// this transformation.
-  static void addExplicitVectorLength(VPlan &Plan);
-  static void addExplicitVectorLengthUncountable(VPlan &Plan);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   /// Drop poison flags from recipes that may generate a poison value that is
   /// used after vectorization, even when their operands are not poison. Those
   /// recipes meet the following conditions:
@@ -122,7 +111,16 @@ struct VPlanTransforms {
   ///       VPlan directly.
   static void dropPoisonGeneratingRecipes(
       VPlan &Plan, function_ref<bool(BasicBlock *)> BlockNeedsPredication);
->>>>>>> llvm/main
+
+#if SIFIVE_CUSTOMIZATION
+  /// Add a VPEVLBasedIVPHIRecipe and related recipes to \p Plan and
+  /// replaces all uses except the canonical IV increment of
+  /// VPCanonicalIVPHIRecipe with a VPEVLBasedIVPHIRecipe.
+  /// VPCanonicalIVPHIRecipe is only used to control the loop after
+  /// this transformation.
+  static void addExplicitVectorLength(VPlan &Plan);
+  static void addExplicitVectorLengthUncountable(VPlan &Plan);
+#endif // SIFIVE_CUSTOMIZATION
 
 private:
   /// Remove redundant VPBasicBlocks by merging them into their predecessor if

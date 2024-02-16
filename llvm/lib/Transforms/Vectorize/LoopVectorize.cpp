@@ -11267,16 +11267,14 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   // in ways that accessing values using original IR values is incorrect.
   Plan->disableValue2VPValue();
 
-<<<<<<< HEAD
+  VPlanTransforms::dropPoisonGeneratingRecipes(*Plan, [this](BasicBlock *BB) {
+    return Legal->blockNeedsPredication(BB);
+  });
+
 #if SIFIVE_CUSTOMIZATION
   if (Legal->useVLAVectorizer())
     VPlanTransforms::optimizeGEPs(*Plan);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  VPlanTransforms::dropPoisonGeneratingRecipes(*Plan, [this](BasicBlock *BB) {
-    return Legal->blockNeedsPredication(BB);
-  });
->>>>>>> llvm/main
 
   // Sink users of fixed-order recurrence past the recipe defining the previous
   // value and introduce FirstOrderRecurrenceSplice VPInstructions.

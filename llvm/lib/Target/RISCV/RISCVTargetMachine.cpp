@@ -426,9 +426,6 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
 
   void addIRPasses() override;
-#if SIFIVE_CUSTOMIZATION
-  void addCodeGenPrepare() override;
-#endif // SIFIVE_CUSTOMIZATION
   bool addPreISel() override;
   void addCodeGenPrepare() override;
   bool addInstSelector() override;
@@ -516,17 +513,6 @@ void RISCVPassConfig::addIRPasses() {
 #endif // SIFIVE_CUSTOMIZATION
 }
 
-#if SIFIVE_CUSTOMIZATION
-void RISCVPassConfig::addCodeGenPrepare() {
-  if (getOptLevel() != CodeGenOptLevel::None) {
-    addPass(createRISCVLateCodeGenPreparePass());
-    addPass(createRISCVTypePromotionPass());
-    addPass(createTypePromotionLegacyPass());
-  }
-  TargetPassConfig::addCodeGenPrepare();
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 bool RISCVPassConfig::addPreISel() {
   if (TM->getOptLevel() != CodeGenOptLevel::None) {
     // Add a barrier before instruction selection so that we will not get
@@ -545,8 +531,13 @@ bool RISCVPassConfig::addPreISel() {
 }
 
 void RISCVPassConfig::addCodeGenPrepare() {
-  if (getOptLevel() != CodeGenOptLevel::None)
+#if SIFIVE_CUSTOMIZATION
+  if (getOptLevel() != CodeGenOptLevel::None) {
+    addPass(createRISCVLateCodeGenPreparePass());
+    addPass(createRISCVTypePromotionPass());
     addPass(createTypePromotionLegacyPass());
+  }
+#endif // SIFIVE_CUSTOMIZATION
   TargetPassConfig::addCodeGenPrepare();
 }
 

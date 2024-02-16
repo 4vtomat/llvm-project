@@ -1527,9 +1527,7 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
     BlockLastRVL[VPBB] = LastRVL;
   }
 }
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-=======
 
 void VPlanTransforms::dropPoisonGeneratingRecipes(
     VPlan &Plan, function_ref<bool(BasicBlock *)> BlockNeedsPredication) {
@@ -1613,4 +1611,3 @@ void VPlanTransforms::dropPoisonGeneratingRecipes(
     }
   }
 }
->>>>>>> llvm/main
