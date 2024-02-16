@@ -17199,8 +17199,11 @@ static SDValue useInversedSetcc(SDNode *N, SelectionDAG &DAG,
     ISD::CondCode CC = cast<CondCodeSDNode>(Cond.getOperand(2))->get();
     if (CC == ISD::SETEQ && LHS.getOpcode() == ISD::AND &&
         isa<ConstantSDNode>(LHS.getOperand(1)) && isNullConstant(RHS)) {
-      uint64_t MaskVal = LHS.getConstantOperandVal(1);
-      if (isPowerOf2_64(MaskVal) && !isInt<12>(MaskVal))
+#if SIFIVE_CUSTOMIZATION
+      // SIFIVE This change will be upstreamed.
+      const APInt &MaskVal = LHS.getConstantOperandAPInt(1);
+      if (MaskVal.isPowerOf2() && !MaskVal.isSignedIntN(12))
+#endif // SIFIVE_CUSTOMIZATION
         return DAG.getSelect(DL, VT,
                              DAG.getSetCC(DL, CondVT, LHS, RHS, ISD::SETNE),
                              False, True);
