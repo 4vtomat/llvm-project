@@ -207,8 +207,8 @@ define <8 x i64> @stepvector_v8i64() {
 ; RV32-NEXT:    lui a0, %hi(.LCPI15_0)
 ; RV32-NEXT:    addi a0, a0, %lo(.LCPI15_0)
 ; RV32-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
-; RV32-NEXT:    vle8.v v12, (a0)
-; RV32-NEXT:    vsext.vf4 v8, v12
+; RV32-NEXT:    vle8.v v11, (a0)
+; RV32-NEXT:    vsext.vf4 v8, v11
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: stepvector_v8i64:
@@ -229,8 +229,8 @@ define <16 x i64> @stepvector_v16i64() {
 ; RV32-NEXT:    addi a0, a0, %lo(.LCPI16_0)
 ; RV32-NEXT:    li a1, 32
 ; RV32-NEXT:    vsetvli zero, a1, e32, m8, ta, ma
-; RV32-NEXT:    vle8.v v16, (a0)
-; RV32-NEXT:    vsext.vf4 v8, v16
+; RV32-NEXT:    vle8.v v14, (a0)
+; RV32-NEXT:    vsext.vf4 v8, v14
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: stepvector_v16i64:

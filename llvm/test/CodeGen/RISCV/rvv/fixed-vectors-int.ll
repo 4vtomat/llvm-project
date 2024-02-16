@@ -3423,87 +3423,6 @@ define void @mulhu_v8i32(ptr %x) {
 }
 
 define void @mulhu_v4i64(ptr %x) {
-<<<<<<< HEAD
-; LMULMAX2-RV32-LABEL: mulhu_v4i64:
-; LMULMAX2-RV32:       # %bb.0:
-; LMULMAX2-RV32-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-; LMULMAX2-RV32-NEXT:    vle64.v v8, (a0)
-; LMULMAX2-RV32-NEXT:    lui a1, %hi(.LCPI184_0)
-; LMULMAX2-RV32-NEXT:    addi a1, a1, %lo(.LCPI184_0)
-; LMULMAX2-RV32-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; LMULMAX2-RV32-NEXT:    vle32.v v10, (a1)
-; LMULMAX2-RV32-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-; LMULMAX2-RV32-NEXT:    vmulhu.vv v10, v8, v10
-; LMULMAX2-RV32-NEXT:    vsub.vv v8, v8, v10
-; LMULMAX2-RV32-NEXT:    lui a1, 524288
-; LMULMAX2-RV32-NEXT:    vmv.s.x v12, a1
-; LMULMAX2-RV32-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; LMULMAX2-RV32-NEXT:    vmv.v.i v14, 0
-; LMULMAX2-RV32-NEXT:    vsetivli zero, 6, e32, m2, tu, ma
-; LMULMAX2-RV32-NEXT:    vslideup.vi v14, v12, 5
-; LMULMAX2-RV32-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-; LMULMAX2-RV32-NEXT:    vmulhu.vv v8, v8, v14
-; LMULMAX2-RV32-NEXT:    vadd.vv v8, v8, v10
-; LMULMAX2-RV32-NEXT:    lui a1, %hi(.LCPI184_1)
-; LMULMAX2-RV32-NEXT:    addi a1, a1, %lo(.LCPI184_1)
-; LMULMAX2-RV32-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-; LMULMAX2-RV32-NEXT:    vle8.v v10, (a1)
-; LMULMAX2-RV32-NEXT:    vsext.vf4 v12, v10
-; LMULMAX2-RV32-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-; LMULMAX2-RV32-NEXT:    vsrl.vv v8, v8, v12
-; LMULMAX2-RV32-NEXT:    vse64.v v8, (a0)
-; LMULMAX2-RV32-NEXT:    ret
-;
-; LMULMAX2-RV64-LABEL: mulhu_v4i64:
-; LMULMAX2-RV64:       # %bb.0:
-; LMULMAX2-RV64-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-; LMULMAX2-RV64-NEXT:    vle64.v v8, (a0)
-; LMULMAX2-RV64-NEXT:    lui a1, %hi(.LCPI184_0)
-; LMULMAX2-RV64-NEXT:    addi a1, a1, %lo(.LCPI184_0)
-; LMULMAX2-RV64-NEXT:    vle64.v v10, (a1)
-; LMULMAX2-RV64-NEXT:    vmulhu.vv v10, v8, v10
-; LMULMAX2-RV64-NEXT:    vsub.vv v8, v8, v10
-; LMULMAX2-RV64-NEXT:    li a1, -1
-; LMULMAX2-RV64-NEXT:    slli a1, a1, 63
-; LMULMAX2-RV64-NEXT:    vmv.s.x v12, a1
-; LMULMAX2-RV64-NEXT:    vmv.v.i v14, 0
-; LMULMAX2-RV64-NEXT:    vsetivli zero, 3, e64, m2, tu, ma
-; LMULMAX2-RV64-NEXT:    vslideup.vi v14, v12, 2
-; LMULMAX2-RV64-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-; LMULMAX2-RV64-NEXT:    vmulhu.vv v8, v8, v14
-; LMULMAX2-RV64-NEXT:    vadd.vv v8, v8, v10
-; LMULMAX2-RV64-NEXT:    lui a1, 12320
-; LMULMAX2-RV64-NEXT:    addi a1, a1, 513
-; LMULMAX2-RV64-NEXT:    vmv.s.x v10, a1
-; LMULMAX2-RV64-NEXT:    vsext.vf8 v12, v10
-; LMULMAX2-RV64-NEXT:    vsrl.vv v8, v8, v12
-; LMULMAX2-RV64-NEXT:    vse64.v v8, (a0)
-; LMULMAX2-RV64-NEXT:    ret
-;
-; LMULMAX1-RV32-LABEL: mulhu_v4i64:
-; LMULMAX1-RV32:       # %bb.0:
-; LMULMAX1-RV32-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; LMULMAX1-RV32-NEXT:    vle64.v v8, (a0)
-; LMULMAX1-RV32-NEXT:    addi a1, a0, 16
-; LMULMAX1-RV32-NEXT:    vle64.v v9, (a1)
-; LMULMAX1-RV32-NEXT:    lui a2, 144
-; LMULMAX1-RV32-NEXT:    addi a2, a2, 7
-; LMULMAX1-RV32-NEXT:    vmv.s.x v10, a2
-; LMULMAX1-RV32-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; LMULMAX1-RV32-NEXT:    vsext.vf4 v11, v10
-; LMULMAX1-RV32-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; LMULMAX1-RV32-NEXT:    vdivu.vv v9, v9, v11
-; LMULMAX1-RV32-NEXT:    lui a2, 80
-; LMULMAX1-RV32-NEXT:    addi a2, a2, 3
-; LMULMAX1-RV32-NEXT:    vmv.s.x v10, a2
-; LMULMAX1-RV32-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; LMULMAX1-RV32-NEXT:    vsext.vf4 v11, v10
-; LMULMAX1-RV32-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; LMULMAX1-RV32-NEXT:    vdivu.vv v8, v8, v11
-; LMULMAX1-RV32-NEXT:    vse64.v v8, (a0)
-; LMULMAX1-RV32-NEXT:    vse64.v v9, (a1)
-; LMULMAX1-RV32-NEXT:    ret
-=======
 ; RV32-LABEL: mulhu_v4i64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
@@ -3533,25 +3452,24 @@ define void @mulhu_v4i64(ptr %x) {
 ; RV32-NEXT:    vsrl.vv v8, v8, v12
 ; RV32-NEXT:    vse64.v v8, (a0)
 ; RV32-NEXT:    ret
->>>>>>> llvm/main
 ;
 ; RV64-LABEL: mulhu_v4i64:
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; RV64-NEXT:    vle64.v v8, (a0)
-; RV64-NEXT:    li a1, -1
-; RV64-NEXT:    slli a1, a1, 63
-; RV64-NEXT:    vmv.s.x v10, a1
-; RV64-NEXT:    vmv.v.i v12, 0
-; RV64-NEXT:    vsetivli zero, 3, e64, m2, tu, ma
-; RV64-NEXT:    vslideup.vi v12, v10, 2
 ; RV64-NEXT:    lui a1, %hi(.LCPI184_0)
 ; RV64-NEXT:    addi a1, a1, %lo(.LCPI184_0)
-; RV64-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; RV64-NEXT:    vle64.v v10, (a1)
 ; RV64-NEXT:    vmulhu.vv v10, v8, v10
 ; RV64-NEXT:    vsub.vv v8, v8, v10
-; RV64-NEXT:    vmulhu.vv v8, v8, v12
+; RV64-NEXT:    li a1, -1
+; RV64-NEXT:    slli a1, a1, 63
+; RV64-NEXT:    vmv.s.x v12, a1
+; RV64-NEXT:    vmv.v.i v14, 0
+; RV64-NEXT:    vsetivli zero, 3, e64, m2, tu, ma
+; RV64-NEXT:    vslideup.vi v14, v12, 2
+; RV64-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
+; RV64-NEXT:    vmulhu.vv v8, v8, v14
 ; RV64-NEXT:    vadd.vv v8, v8, v10
 ; RV64-NEXT:    lui a1, 12320
 ; RV64-NEXT:    addi a1, a1, 513

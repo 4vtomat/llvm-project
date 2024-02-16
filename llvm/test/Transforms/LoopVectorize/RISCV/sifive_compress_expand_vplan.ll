@@ -25,7 +25,7 @@
 ; CHECK-NEXT:     WIDEN ir<%tobool.not> = icmp eq ir<%0>, ir<0>
 ; CHECK-NEXT:     EMIT vp<%11> = not ir<%tobool.not>
 ; CHECK-NEXT:     CLONE ir<%idx.ext> = sext ir<%ret.011>
-; CHECK-NEXT:     CLONE ir<%add.ptr> = getelementptr inbounds ir<%a>, ir<%idx.ext>
+; CHECK-NEXT:     CLONE ir<%add.ptr> = getelementptr ir<%a>, ir<%idx.ext>
 ; CHECK-NEXT:     vp<%14> = vector-pointer ir<%add.ptr>
 ; CHECK-NEXT:     WIDEN store vp<%14>, ir<%0>, vp<%11>
 ; CHECK-NEXT:     monotonic-update ir<%inc> = add ir<%ret.011>, ir<1> @vp<%11>

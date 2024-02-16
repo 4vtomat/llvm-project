@@ -67,28 +67,33 @@ define <12 x i8> @load_v12i8(ptr %p) {
 ; CHECK-NEXT:    lbu a1, 11(a0)
 ; CHECK-NEXT:    lbu a2, 10(a0)
 ; CHECK-NEXT:    lbu a3, 9(a0)
-; CHECK-NEXT:    lbu a4, 8(a0)
-; CHECK-NEXT:    lbu a5, 7(a0)
-; CHECK-NEXT:    lbu a6, 6(a0)
-; CHECK-NEXT:    lbu a7, 5(a0)
-; CHECK-NEXT:    lbu t0, 4(a0)
-; CHECK-NEXT:    lbu t1, 3(a0)
-; CHECK-NEXT:    lbu t2, 2(a0)
-; CHECK-NEXT:    lbu t3, 1(a0)
+; CHECK-NEXT:    lbu a4, 7(a0)
+; CHECK-NEXT:    lbu a5, 6(a0)
+; CHECK-NEXT:    lbu a6, 5(a0)
+; CHECK-NEXT:    lbu a7, 4(a0)
+; CHECK-NEXT:    lbu t0, 3(a0)
+; CHECK-NEXT:    lbu t1, 2(a0)
+; CHECK-NEXT:    lbu t2, 1(a0)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
 ; CHECK-NEXT:    vlse8.v v8, (a0), zero
-; CHECK-NEXT:    vslide1down.vx v8, v8, t3
 ; CHECK-NEXT:    vslide1down.vx v8, v8, t2
 ; CHECK-NEXT:    vslide1down.vx v8, v8, t1
 ; CHECK-NEXT:    vslide1down.vx v8, v8, t0
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a7
+; CHECK-NEXT:    addi a0, a0, 8
+; CHECK-NEXT:    vlse8.v v9, (a0), zero
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a6
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a5
-; CHECK-NEXT:    vslide1down.vx v8, v8, a4
-; CHECK-NEXT:    vslide1down.vx v8, v8, a3
+; CHECK-NEXT:    vslide1down.vx v10, v8, a4
+; CHECK-NEXT:    vslide1down.vx v8, v9, a3
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a2
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a1
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 4
+; CHECK-NEXT:    li a0, 255
+; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
+; CHECK-NEXT:    vmv.s.x v0, a0
+; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, mu
+; CHECK-NEXT:    vslidedown.vi v8, v10, 8, v0.t
 ; CHECK-NEXT:    ret
   %x = load <12 x i8>, ptr %p
   ret <12 x i8> %x

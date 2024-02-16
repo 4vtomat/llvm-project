@@ -161,49 +161,15 @@ define void @splat_zeros_v32i1(ptr %x) {
 }
 
 define void @splat_v32i1(ptr %x, i1 %y) {
-<<<<<<< HEAD
-; LMULMAX2-LABEL: splat_v32i1:
-; LMULMAX2:       # %bb.0:
-; LMULMAX2-NEXT:    andi a1, a1, 1
-; LMULMAX2-NEXT:    li a2, 32
-; LMULMAX2-NEXT:    vsetvli zero, a2, e8, m2, ta, ma
-; LMULMAX2-NEXT:    vmv.v.x v8, a1
-; LMULMAX2-NEXT:    vmsne.vi v8, v8, 0
-; LMULMAX2-NEXT:    vsm.v v8, (a0)
-; LMULMAX2-NEXT:    ret
-;
-; LMULMAX1-RV32-LABEL: splat_v32i1:
-; LMULMAX1-RV32:       # %bb.0:
-; LMULMAX1-RV32-NEXT:    andi a1, a1, 1
-; LMULMAX1-RV32-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; LMULMAX1-RV32-NEXT:    vmv.v.x v8, a1
-; LMULMAX1-RV32-NEXT:    vmsne.vi v8, v8, 0
-; LMULMAX1-RV32-NEXT:    addi a1, a0, 2
-; LMULMAX1-RV32-NEXT:    vsm.v v8, (a1)
-; LMULMAX1-RV32-NEXT:    vsm.v v8, (a0)
-; LMULMAX1-RV32-NEXT:    ret
-;
-; LMULMAX1-RV64-LABEL: splat_v32i1:
-; LMULMAX1-RV64:       # %bb.0:
-; LMULMAX1-RV64-NEXT:    andi a1, a1, 1
-; LMULMAX1-RV64-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; LMULMAX1-RV64-NEXT:    vmv.v.x v8, a1
-; LMULMAX1-RV64-NEXT:    vmsne.vi v8, v8, 0
-; LMULMAX1-RV64-NEXT:    addi a1, a0, 2
-; LMULMAX1-RV64-NEXT:    vsm.v v8, (a1)
-; LMULMAX1-RV64-NEXT:    vsm.v v8, (a0)
-; LMULMAX1-RV64-NEXT:    ret
-=======
 ; CHECK-LABEL: splat_v32i1:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    andi a1, a1, 1
 ; CHECK-NEXT:    li a2, 32
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m2, ta, ma
 ; CHECK-NEXT:    vmv.v.x v8, a1
-; CHECK-NEXT:    vmsne.vi v10, v8, 0
-; CHECK-NEXT:    vsm.v v10, (a0)
+; CHECK-NEXT:    vmsne.vi v8, v8, 0
+; CHECK-NEXT:    vsm.v v8, (a0)
 ; CHECK-NEXT:    ret
->>>>>>> llvm/main
   %a = insertelement <32 x i1> poison, i1 %y, i32 0
   %b = shufflevector <32 x i1> %a, <32 x i1> poison, <32 x i32> zeroinitializer
   store <32 x i1> %b, ptr %x
@@ -229,59 +195,15 @@ define void @splat_ones_v64i1(ptr %x) {
 }
 
 define void @splat_v64i1(ptr %x, i1 %y) {
-<<<<<<< HEAD
-; LMULMAX2-LABEL: splat_v64i1:
-; LMULMAX2:       # %bb.0:
-; LMULMAX2-NEXT:    andi a1, a1, 1
-; LMULMAX2-NEXT:    li a2, 32
-; LMULMAX2-NEXT:    vsetvli zero, a2, e8, m2, ta, ma
-; LMULMAX2-NEXT:    vmv.v.x v8, a1
-; LMULMAX2-NEXT:    vmsne.vi v8, v8, 0
-; LMULMAX2-NEXT:    addi a1, a0, 4
-; LMULMAX2-NEXT:    vsm.v v8, (a1)
-; LMULMAX2-NEXT:    vsm.v v8, (a0)
-; LMULMAX2-NEXT:    ret
-;
-; LMULMAX1-RV32-LABEL: splat_v64i1:
-; LMULMAX1-RV32:       # %bb.0:
-; LMULMAX1-RV32-NEXT:    andi a1, a1, 1
-; LMULMAX1-RV32-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; LMULMAX1-RV32-NEXT:    vmv.v.x v8, a1
-; LMULMAX1-RV32-NEXT:    vmsne.vi v8, v8, 0
-; LMULMAX1-RV32-NEXT:    addi a1, a0, 6
-; LMULMAX1-RV32-NEXT:    vsm.v v8, (a1)
-; LMULMAX1-RV32-NEXT:    addi a1, a0, 4
-; LMULMAX1-RV32-NEXT:    vsm.v v8, (a1)
-; LMULMAX1-RV32-NEXT:    addi a1, a0, 2
-; LMULMAX1-RV32-NEXT:    vsm.v v8, (a1)
-; LMULMAX1-RV32-NEXT:    vsm.v v8, (a0)
-; LMULMAX1-RV32-NEXT:    ret
-;
-; LMULMAX1-RV64-LABEL: splat_v64i1:
-; LMULMAX1-RV64:       # %bb.0:
-; LMULMAX1-RV64-NEXT:    andi a1, a1, 1
-; LMULMAX1-RV64-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; LMULMAX1-RV64-NEXT:    vmv.v.x v8, a1
-; LMULMAX1-RV64-NEXT:    vmsne.vi v8, v8, 0
-; LMULMAX1-RV64-NEXT:    addi a1, a0, 6
-; LMULMAX1-RV64-NEXT:    vsm.v v8, (a1)
-; LMULMAX1-RV64-NEXT:    addi a1, a0, 4
-; LMULMAX1-RV64-NEXT:    vsm.v v8, (a1)
-; LMULMAX1-RV64-NEXT:    addi a1, a0, 2
-; LMULMAX1-RV64-NEXT:    vsm.v v8, (a1)
-; LMULMAX1-RV64-NEXT:    vsm.v v8, (a0)
-; LMULMAX1-RV64-NEXT:    ret
-=======
 ; CHECK-LABEL: splat_v64i1:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    andi a1, a1, 1
 ; CHECK-NEXT:    li a2, 64
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m4, ta, ma
 ; CHECK-NEXT:    vmv.v.x v8, a1
-; CHECK-NEXT:    vmsne.vi v12, v8, 0
-; CHECK-NEXT:    vsm.v v12, (a0)
+; CHECK-NEXT:    vmsne.vi v8, v8, 0
+; CHECK-NEXT:    vsm.v v8, (a0)
 ; CHECK-NEXT:    ret
->>>>>>> llvm/main
   %a = insertelement <64 x i1> poison, i1 %y, i32 0
   %b = shufflevector <64 x i1> %a, <64 x i1> poison, <64 x i32> zeroinitializer
   store <64 x i1> %b, ptr %x

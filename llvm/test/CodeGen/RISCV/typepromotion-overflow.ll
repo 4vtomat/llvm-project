@@ -321,8 +321,7 @@ define i8 @convert_add_order(i8 zeroext %arg) {
 ; CHECK-NEXT:    li a2, 50
 ; CHECK-NEXT:    bltu a1, a2, .LBB19_2
 ; CHECK-NEXT:  # %bb.1:
-; CHECK-NEXT:    li a1, 255
-; CHECK-NEXT:    and a0, a1, a0
+; CHECK-NEXT:    andi a0, a0, 255
 ; CHECK-NEXT:    ret
 ; CHECK-NEXT:  .LBB19_2:
 ; CHECK-NEXT:    addi a1, a1, -40

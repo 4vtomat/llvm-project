@@ -3061,7 +3061,6 @@ define void @callee_no_irq() nounwind{
   ret void
 }
 
-; SIFIVE_CUSTOMIZATION
 declare void @bar(ptr, ptr)
 declare ptr @llvm.frameaddress.p0(i32 immarg)
 
@@ -3181,9 +3180,6 @@ entry:
   call void @bar(ptr %0, ptr %var)
   ret i32 %x
 }
-<<<<<<< HEAD
-; SIFIVE_CUSTOMIZATION
-=======
 
 define void @spill_x10() {
 ; RV32IZCMP-LABEL: spill_x10:
@@ -3255,4 +3251,3 @@ entry:
   tail call void asm sideeffect "li s10, 0", "~{s10}"()
   ret void
 }
->>>>>>> llvm/main

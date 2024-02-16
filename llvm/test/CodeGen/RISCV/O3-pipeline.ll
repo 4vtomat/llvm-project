@@ -75,13 +75,10 @@
 ; CHECK-NEXT:       Expand reduction intrinsics
 ; CHECK-NEXT:       Natural Loop Information
 ; CHECK-NEXT:       TLS Variable Hoist
-<<<<<<< HEAD
 ; CHECK-NEXT:       RISC-V Late CodeGenPrepare
 ; CHECK-NEXT:       RISC-V Type Promotion
 ; CHECK-NEXT:       Dominator Tree Construction
 ; CHECK-NEXT:       Natural Loop Information
-=======
->>>>>>> llvm/main
 ; CHECK-NEXT:       Type Promotion
 ; CHECK-NEXT:       CodeGen Prepare
 ; CHECK-NEXT:       Dominator Tree Construction
