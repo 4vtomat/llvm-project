@@ -6049,8 +6049,15 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
 #if SIFIVE_CUSTOMIZATION
     // When code is not optimized for size, allow low trip count loops to be
     // vectorized with RVV VLA
-    if (Legal->useVLAVectorizer())
+    if (Legal->useVLAVectorizer()) {
+      // Bail if runtime checks are required, which are not good when optimising
+      // for size. Enabling this path will cause to assert failure since
+      // memblock is generated
+      if (TheLoop->getHeader()->getParent()->hasOptSize() &&
+          runtimeChecksRequired())
+        return FixedScalableVFPair::getNone();
       break;
+    }
     [[fallthrough]];
 #endif // SIFIVE_CUSTOMIZATION
     // fallthrough as a special case of OptForSize
