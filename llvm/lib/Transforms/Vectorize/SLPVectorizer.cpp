@@ -4838,7 +4838,12 @@ bool BoUpSLP::canReorderOperands(
   for (unsigned I = 0, E = UserTE->getNumOperands(); I < E; ++I) {
     if (any_of(Edges, [I](const std::pair<unsigned, TreeEntry *> &OpData) {
           return OpData.first == I &&
+#if SIFIVE_CUSTOMIZATION
+                 (OpData.second->State == TreeEntry::Vectorize ||
+                  OpData.second->State == TreeEntry::StridedVectorize);
+#else
                  OpData.second->State == TreeEntry::Vectorize;
+#endif // SIFIVE_CUSTOMIZATION
         }))
       continue;
     if (TreeEntry *TE = getVectorizedOperand(UserTE, I)) {
@@ -4855,6 +4860,9 @@ bool BoUpSLP::canReorderOperands(
       // If there are reused scalars, process this node as a regular vectorize
       // node, just reorder reuses mask.
       if (TE->State != TreeEntry::Vectorize &&
+#if SIFIVE_CUSTOMIZATION
+          TE->State != TreeEntry::StridedVectorize &&
+#endif // SIFIVE_CUSTOMIZATION
           TE->ReuseShuffleIndices.empty() && TE->ReorderIndices.empty())
         GatherOps.push_back(TE);
       continue;
