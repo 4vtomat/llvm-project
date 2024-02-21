@@ -899,6 +899,7 @@ Experimental extensions
     zalrsc              0.2
     zfbfmin             1.0
     zcmop               0.2
+    zjid                0.0
     ztso                0.1
     zvfbfmin            1.0
     zvfbfwma            1.0

@@ -1027,6 +1027,15 @@ def FeatureStdExtSupm
     : SubtargetFeature<"experimental-supm", "HasStdExtSupm", "true",
                        "'Supm' (Indicates User-mode Pointer Masking)">;
 
+#ifdef SIFIVE_CUSTOMIZATION
+def FeatureStdExtZjid
+    : SubtargetFeature<"experimental-zjid", "HasStdExtZjid", "true",
+                       "'Zjid' (Instruction/Data Cache Synchronization)">;
+
+def HasStdExtZjid : Predicate<"Subtarget->hasStdExtZjid()">,
+                    AssemblerPredicate<(all_of FeatureStdExtZjid),
+                                        "'Zjid' (Instruction/Data Cache Synchronization)">;
+#endif // SIFIVE_CUSTOMIZATION
 //===----------------------------------------------------------------------===//
 // Vendor extensions
 //===----------------------------------------------------------------------===//

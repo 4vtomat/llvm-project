@@ -2082,6 +2082,7 @@ include "RISCVInstrInfoZicbo.td"
 include "RISCVInstrInfoCompactPseudos.td" // SIFIVE
 include "RISCVInstrInfoZicond.td"
 include "RISCVInstrInfoZicfiss.td"
+include "SiFive_RISCVInstrInfoZjid.td" // SIFIVE
 
 //===----------------------------------------------------------------------===//
 // Vendor extensions
