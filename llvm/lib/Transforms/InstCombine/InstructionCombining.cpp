@@ -145,6 +145,15 @@ static cl::opt<unsigned>
 MaxArraySize("instcombine-maxarray-size", cl::init(1024),
              cl::desc("Maximum array size considered when doing a combine"));
 
+#if SIFIVE_CUSTOMIZATION
+// SIFIVE This comes from a revert of upstream 9dd2c59312bfae3526cee5e836a6b67b2e9b4989
+// TODO: Remove this option
+static cl::opt<bool> EnableSimplifyDemandedUseFPClass(
+    "instcombine-simplify-demanded-fp-class",
+    cl::desc("Enable demanded floating-point class optimizations"),
+    cl::init(false));
+#endif // SIFIVE_CUSTOMIZATION
+
 // FIXME: Remove this flag when it is no longer necessary to convert
 // llvm.dbg.declare to avoid inaccurate debug info. Setting this to false
 // increases variable availability at the cost of accuracy. Variables that
@@ -3114,6 +3123,12 @@ Instruction *InstCombinerImpl::visitFree(CallInst &FI, Value *Op) {
 }
 
 Instruction *InstCombinerImpl::visitReturnInst(ReturnInst &RI) {
+#if SIFIVE_CUSTOMIZATION
+// SIFIVE This comes from a revert of upstream 9dd2c59312bfae3526cee5e836a6b67b2e9b4989
+  if (!EnableSimplifyDemandedUseFPClass)
+    return nullptr;
+#endif // SIFIVE_CUSTOMIZATION
+
   Value *RetVal = RI.getReturnValue();
   if (!RetVal || !AttributeFuncs::isNoFPClassCompatibleType(RetVal->getType()))
     return nullptr;
