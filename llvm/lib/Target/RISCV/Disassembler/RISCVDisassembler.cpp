@@ -582,6 +582,8 @@ DecodeStatus RISCVDisassembler::getInstruction(MCInst &MI, uint64_t &Size,
     TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXTHeadVdot, DecoderTableXTHeadVdot32,
                           "XTHeadVdot custom opcode table");
 #if SIFIVE_CUSTOMIZATION
+    TRY_TO_DECODE_FEATURE(RISCV::FeatureStdExtZjid, DecoderTableRVZjid32,
+                          "Zjid opcode table (I/D Cache Synchronization)");
     TRY_TO_DECODE(STI.hasFeature(RISCV::FeatureStdExtZvkb0p1) ||
                       STI.hasFeature(RISCV::FeatureStdExtZvkg0p1),
                   DecoderTableZvk0p132,

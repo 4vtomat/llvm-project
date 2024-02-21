@@ -8922,29 +8922,6 @@ SDValue RISCVTargetLowering::lowerEXTRACT_VECTOR_ELT(SDValue Op,
   return DAG.getNode(ISD::TRUNCATE, DL, EltVT, Elt0);
 }
 
-#if SIFIVE_CUSTOMIZATION
-static bool VCIXScalarNeedLegalization(unsigned IntNo) {
-  switch (IntNo) {
-  default:
-    break; // Don't need to promote the scalar.
-  case Intrinsic::riscv_sf_vc_v_x:
-  case Intrinsic::riscv_sf_vc_v_xv:
-  case Intrinsic::riscv_sf_vc_v_xvv:
-  case Intrinsic::riscv_sf_vc_v_xvw:
-  case Intrinsic::riscv_sf_vc_v_x_se:
-  case Intrinsic::riscv_sf_vc_v_xv_se:
-  case Intrinsic::riscv_sf_vc_v_xvv_se:
-  case Intrinsic::riscv_sf_vc_v_xvw_se:
-  case Intrinsic::riscv_sf_vc_xv_se:
-  case Intrinsic::riscv_sf_vc_xvv_se:
-  case Intrinsic::riscv_sf_vc_xvw_se:
-  case Intrinsic::riscv_sf_vc_x_se:
-    return true;
-  }
-  return false;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 // Some RVV intrinsics may claim that they want an integer operand to be
 // promoted or expanded.
 static SDValue lowerVectorIntrinsicScalars(SDValue Op, SelectionDAG &DAG,
@@ -8960,9 +8937,6 @@ static SDValue lowerVectorIntrinsicScalars(SDValue Op, SelectionDAG &DAG,
   bool HasChain = Op.getOpcode() == ISD::INTRINSIC_VOID ||
                   Op.getOpcode() == ISD::INTRINSIC_W_CHAIN;
   unsigned IntNo = Op.getConstantOperandVal(HasChain ? 1 : 0);
-#if SIFIVE_CUSTOMIZATION
-  bool VCIX = VCIXScalarNeedLegalization(IntNo);
-#endif // SIFIVE_CUSTOMIZATION
   SDLoc DL(Op);
 
   const RISCVVIntrinsicsTable::RISCVVIntrinsicInfo *II =
@@ -8982,13 +8956,6 @@ static SDValue lowerVectorIntrinsicScalars(SDValue Op, SelectionDAG &DAG,
   if (!OpVT.isScalarInteger() || OpVT == XLenVT)
     return SDValue();
 
-#if SIFIVE_CUSTOMIZATION
-  // Assert when VCIX scalar operand is larger than XLenVT.
-  if (VCIX)
-    assert(!XLenVT.bitsLT(OpVT) &&
-           "Unexpected scalar operand since SEW > XLenVT!");
-#endif // SIFIVE_CUSTOMIZATION
-
   // Simplest case is that the operand needs to be promoted to XLenVT.
   if (OpVT.bitsLT(XLenVT)) {
     // If the operand is a constant, sign extend to increase our chances
@@ -9000,12 +8967,6 @@ static SDValue lowerVectorIntrinsicScalars(SDValue Op, SelectionDAG &DAG,
     ScalarOp = DAG.getNode(ExtOpc, DL, XLenVT, ScalarOp);
     return DAG.getNode(Op->getOpcode(), DL, Op->getVTList(), Operands);
   }
-
-#if SIFIVE_CUSTOMIZATION
-  // Don't need to do the further promotion for VCIX.
-  if (VCIX)
-    return SDValue();
-#endif // SIFIVE_CUSTOMIZATION
 
   // Use the previous operand to get the vXi64 VT. The result might be a mask
   // VT for compares. Using the previous operand assumes that the previous
@@ -17294,8 +17255,11 @@ static SDValue useInversedSetcc(SDNode *N, SelectionDAG &DAG,
     ISD::CondCode CC = cast<CondCodeSDNode>(Cond.getOperand(2))->get();
     if (CC == ISD::SETEQ && LHS.getOpcode() == ISD::AND &&
         isa<ConstantSDNode>(LHS.getOperand(1)) && isNullConstant(RHS)) {
-      uint64_t MaskVal = LHS.getConstantOperandVal(1);
-      if (isPowerOf2_64(MaskVal) && !isInt<12>(MaskVal))
+#if SIFIVE_CUSTOMIZATION
+      // SIFIVE This change will be upstreamed.
+      const APInt &MaskVal = LHS.getConstantOperandAPInt(1);
+      if (MaskVal.isPowerOf2() && !MaskVal.isSignedIntN(12))
+#endif // SIFIVE_CUSTOMIZATION
         return DAG.getSelect(DL, VT,
                              DAG.getSetCC(DL, CondVT, LHS, RHS, ISD::SETNE),
                              False, True);

@@ -154,14 +154,15 @@
 #include <utility>
 
 #if SIFIVE_CUSTOMIZATION
-#include "SiFive_VPlanPredicatedInstructions.h"
 #include "SiFive_VPlanCostModel.h"
+#include "SiFive_VPlanPredicatedInstructions.h"
 #include "VPlanValue.h"
+#include "llvm/ADT/TypeSwitch.h"
 #include "llvm/IR/IntrinsicsRISCV.h"
-#include <llvm/IR/VectorBuilder.h>
 #include "llvm/Support/TypeSize.h"
 #include "llvm/TargetParser/Triple.h"
 #include "llvm/Transforms/Utils/Local.h"
+#include <llvm/IR/VectorBuilder.h>
 #endif // SIFIVE_CUSTOMIZATION
 
 using namespace llvm;
@@ -464,9 +465,10 @@ namespace SiFiveInterleavedAccess {
   };
 } // namespace SiFiveInterleavedAccess
 
+// TODO: Switch to cl::list to have better fine-grained control
 cl::opt<SiFiveInterleavedAccess::Level> SiFiveEnableInterleavedAccess(
     "sifive-loop-vectorizer-enable-interleaved-access",
-    cl::init(SiFiveInterleavedAccess::ConstStride), cl::Hidden,
+    cl::init(SiFiveInterleavedAccess::InvariantStride), cl::Hidden,
     cl::desc("Enable interleaved access in RVV VLA vectorization"),
     cl::values(
         clEnumValN(SiFiveInterleavedAccess::NoInterleaved, "no-interleaved",
@@ -481,6 +483,12 @@ static cl::opt<bool> EnableRISCVCSA(
     "sifive-enable-riscv-csa", cl::init(true), cl::Hidden,
     cl::desc("Control whether the RISCV specific implementation of CSA "
              "vectorization is enabled."));
+
+static cl::opt<bool> EnableSLPCostModelInLV(
+    "sifive-enable-slp-cost-model-in-lv", cl::init(true), cl::Hidden,
+    cl::desc(
+        "Enables special heuristics in loop vectorizer to estimate scalar loop "
+        "body cost as if it's vectorized by SLP."));
 #endif // SIFIVE_CUSTOMIZATION
 
 static cl::opt<cl::boolOrDefault> ForceSafeDivisor(
@@ -1841,6 +1849,9 @@ private:
   FixedScalableVFPair computeFeasibleMaxVFScalableOnly(unsigned ConstTripCount,
                                                        ElementCount UserVF,
                                                        bool FoldTailByMasking);
+
+  /// Return cost of the loop body as if it's vectorized by SLP
+  InstructionCost loopBodyCostWithSLP();
 #endif // SIFIVE_CUSTOMIZATION
 
   /// \return the maximized element count based on the targets vector
@@ -5941,6 +5952,20 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
                << "vector loop.\n");
     break;
   case CM_ScalarEpilogueNotAllowedLowTripLoop:
+#if SIFIVE_CUSTOMIZATION
+    // When code is not optimized for size, allow low trip count loops to be
+    // vectorized with RVV VLA
+    if (Legal->useVLAVectorizer()) {
+      // Bail if runtime checks are required, which are not good when optimising
+      // for size. Enabling this path will cause to assert failure since
+      // memblock is generated
+      if (TheLoop->getHeader()->getParent()->hasOptSize() &&
+          runtimeChecksRequired())
+        return FixedScalableVFPair::getNone();
+      break;
+    }
+    [[fallthrough]];
+#endif // SIFIVE_CUSTOMIZATION
     // fallthrough as a special case of OptForSize
   case CM_ScalarEpilogueNotAllowedOptSize:
     if (ScalarEpilogueStatus == CM_ScalarEpilogueNotAllowedOptSize)
@@ -7537,6 +7562,139 @@ InstructionCost LoopVectorizationCostModel::expectedOverhead(ElementCount VF) {
   }
   return Overhead;
 }
+InstructionCost LoopVectorizationCostModel::loopBodyCostWithSLP() {
+  // For now pattern-match some cases which are known to be better with SLP
+  // vectorization than with loop vectorization
+  // One of these examples is SCT-3158
+  if (!EnableSLPCostModelInLV || TheLoop->getNumBlocks() != 1 ||
+      !Legal->getLAI())
+    return InstructionCost::getInvalid();
+
+  // Need to reanalyze interleaved accesses if the loop has symbolic strides and
+  // predicated SCEV has multiversioned them, otherwise interleaved groups are
+  // not built for memaccesses with these strides.
+  // TODO: reanalyze the loop only iff it has symbolic strides and
+  // isRevectorizeWithoutStrideChecks is false. To make it correct, PSE should
+  // have same lifetime as InterleavedGroups
+  PredicatedScalarEvolution UnpredicatedSE(*PSE.getSE(), *TheLoop);
+  InterleavedAccessInfo InterleavedGroups(
+      UnpredicatedSE, TheLoop, Legal->getDominatorTree(), LI, Legal->getLAI());
+  InterleavedGroups.analyzeInterleaving(useMaskedInterleavedAccesses(TTI),
+                                       // FIXME: Apply TTI
+                                       SiFiveEnableInterleavedAccess >
+                                           SiFiveInterleavedAccess::ConstStride,
+                                       /*EnableRTStrideChecks=*/false);
+  DenseMap<unsigned, std::pair<unsigned, Instruction *>> NumOps;
+  unsigned Factor = 0;
+  Intrinsic::ID VID = 0;
+
+  for (BasicBlock *BB : TheLoop->blocks()) {
+    // For each instruction in the old loop.
+    for (Instruction &I : BB->instructionsWithoutDebug()) {
+      // Skip ignored values.
+      if (ValuesToIgnore.count(&I))
+        continue;
+      auto It = NumOps.find(I.getOpcode());
+      if (It == NumOps.end())
+        It = NumOps.try_emplace(I.getOpcode(), 0, &I).first;
+      ++It->second.first;
+
+      if (auto *LI = dyn_cast<LoadInst>(&I)) {
+        auto *IG = InterleavedGroups.getInterleaveGroup(LI);
+        if (!IG)
+          return InstructionCost::getInvalid();
+        if (Factor != 0 && Factor != IG->getFactor())
+          return InstructionCost::getInvalid();
+        Factor = IG->getFactor();
+      } else if (auto *CI = dyn_cast<CallInst>(&I)) {
+        Intrinsic::ID ID =
+            getVectorIntrinsicIDForCall(CI, TLI, Legal->useVLAVectorizer());
+        if (VID != 0 && VID != ID)
+          return InstructionCost::getInvalid();
+        VID = ID;
+      }
+    }
+  }
+
+  // The loop body might not be SLP-vectorized
+  if (Factor == 0)
+    return InstructionCost::getInvalid();
+
+  const enum TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput;
+  InstructionCost Cost = 0;
+  const auto VF = ElementCount::getFixed(Factor);
+  // Expect most of instructions to be multiple of Factor
+  for (auto It = NumOps.begin(), E = NumOps.end(); It != E; ++It) {
+    Instruction *I = It->second.second;
+    switch (It->first) {
+    case Instruction::Call:
+      if ((It->second.first % Factor) != 0)
+        return InstructionCost::getInvalid();
+      Cost += getVectorIntrinsicCost(cast<CallInst>(I), VF);
+      break;
+    case Instruction::ZExt:
+    case Instruction::Sub: {
+      if ((It->second.first % Factor) != 0)
+        return InstructionCost::getInvalid();
+      auto *VectorTy = cast<VectorType>(ToVectorTy(I->getType(), VF));
+      Cost += TTI.getArithmeticInstrCost(It->first, VectorTy, CostKind);
+      break;
+     }
+    case Instruction::Load: {
+      if ((It->second.first % Factor) != 0)
+        return InstructionCost::getInvalid();
+      Type *ValTy = getLoadStoreType(I);
+      auto *VectorTy = cast<VectorType>(ToVectorTy(ValTy, VF));
+      TTI::OperandValueInfo OpInfo = TTI::getOperandInfo(I->getOperand(0));
+      const Align Alignment = getLoadStoreAlignment(I);
+      unsigned AS = getLoadStoreAddressSpace(I);
+      Cost += (It->first / Factor) *
+              TTI.getMemoryOpCost(Instruction::Load, VectorTy, Alignment, AS,
+                                  CostKind, OpInfo, I);
+      break;
+    }
+    case Instruction::Add: {
+      // Add instruction is also used to increment IV
+      if (It->second.first < Factor || (It->second.first % Factor) != 1)
+        return InstructionCost::getInvalid();
+      auto *VectorTy = cast<VectorType>(ToVectorTy(I->getType(), VF));
+      Cost += TTI.getArithmeticInstrCost(It->first, VectorTy, CostKind);
+      break;
+     }
+    case Instruction::Br:
+    case Instruction::ICmp:
+      if (It->second.first != 1)
+        return InstructionCost::getInvalid();
+      break;
+    case Instruction::PHI:
+      if (It->second.first != 4)
+        return InstructionCost::getInvalid();
+      break;
+    case Instruction::GetElementPtr:
+      // Ignore geps to simplify the logic
+      break;
+    }
+  }
+  for (const auto &Reduction : Legal->getReductionVars()) {
+    const RecurrenceDescriptor RdxDesc = Reduction.second;
+    auto *VectorTy =
+        cast<VectorType>(ToVectorTy(RdxDesc.getRecurrenceType(), VF));
+    Cost += TTI.getArithmeticReductionCost(
+        RdxDesc.getOpcode(), VectorTy, RdxDesc.getFastMathFlags(), CostKind);
+  }
+
+  if (!isRevectorizeWithoutStrideChecks(*TheLoop) &&
+      !Legal->getLAI()->getSymbolicStrides().empty() &&
+      !PSE.getPredicate().isAlwaysTrue()) {
+    // One vector version of the loop with stride=1 will always beat SLP cost,
+    // which is not quite right since the version may not be executed a lot.
+    // Ideally, we should have multiversioning on a VPlan and in this case we
+    // can make much better decision.
+    // For now the best thing is to reduce SLP cost for version with stride=1.
+    Cost /= 3;
+  }
+  return Cost;
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 LoopVectorizationCostModel::VectorizationCostTy
@@ -7595,6 +7753,21 @@ LoopVectorizationCostModel::expectedCost(
     Cost.first += BlockCost.first;
     Cost.second |= BlockCost.second;
   }
+
+#if SIFIVE_CUSTOMIZATION
+  if (VF.isScalar()) {
+    InstructionCost SLPCost = loopBodyCostWithSLP();
+    if (SLPCost.isValid()) {
+      LLVM_DEBUG(dbgs() << "LV: loop body cost with SLP = " << SLPCost
+                        << "; scalar loop cost = " << Cost.first << '\n');
+      if (SLPCost < Cost.first) {
+        LLVM_DEBUG(dbgs() << "LV: Override scalar cost of the loop body with "
+                             "estimated cost by SLP vectorization\n");
+        Cost.first = SLPCost;
+      }
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   return Cost;
 }
@@ -12805,6 +12978,9 @@ bool LoopVectorizePass::processLoop(Loop *L) {
                << "loop not vectorized: cannot prove it is safe to reorder "
                   "memory operations";
       });
+#if SIFIVE_CUSTOMIZATION
+      Hints.setVectorizeWithoutStrideChecks();
+#endif // SIFIVE_CUSTOMIZATION
       LLVM_DEBUG(dbgs() << "LV: Too many memory checks needed.\n");
       Hints.emitRemarkWithHints();
       return false;
@@ -13250,7 +13426,7 @@ LoopVectorizeResult LoopVectorizePass::runImpl(
 
     Changed |= CFGChanged |= processLoop(L);
 #if SIFIVE_CUSTOMIZATION
-    if (isRevectorizeWithoutStrideChecks(*L)) {
+    if (isRevectorizeWithoutStrideChecks(*L) || isVectorizeWithoutStrideChecks(*L)) {
       if (LoopsTried.insert(L).second) {
         Worklist.push_back(L);
       } else {
@@ -13259,7 +13435,9 @@ LoopVectorizeResult LoopVectorizePass::runImpl(
 
         MDNode *LoopID = L->getLoopID();
         MDNode *NewLoopID = makePostTransformationMetadata(
-            Context, LoopID, {LoopMetaData::NoScevChecks}, std::nullopt);
+            Context, LoopID,
+            {LoopMetaData::NoScevChecks, LoopMetaData::NoScevStrideChecks},
+            std::nullopt);
         L->setLoopID(NewLoopID);
       }
     }

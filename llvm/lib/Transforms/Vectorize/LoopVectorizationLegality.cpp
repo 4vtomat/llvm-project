@@ -103,7 +103,11 @@ static cl::opt<bool>
                        cl::desc("Enable if-conversion during vectorization."));
 
 static cl::opt<bool>
+#if SIFIVE_CUSTOMIZATION
+AllowStridedPointerIVs("lv-strided-pointer-ivs", cl::init(true), cl::Hidden,
+#else
 AllowStridedPointerIVs("lv-strided-pointer-ivs", cl::init(false), cl::Hidden,
+#endif // SIFIVE_CUSTOMIZATION
                        cl::desc("Enable recognition of non-constant strided "
                                 "pointer induction variables."));
 
@@ -352,6 +356,19 @@ void LoopVectorizeHints::setRevectorizeWithoutStrideChecks() {
   MDNode *RevectorizeMD = MDNode::get(
       Context,
       {MDString::get(Context, LoopMetaData::NoScevChecks),
+       ConstantAsMetadata::get(ConstantInt::get(Context, APInt(32, 1)))});
+  MDNode *LoopID = TheLoop->getLoopID();
+  MDNode *NewLoopID = makePostTransformationMetadata(
+      Context, LoopID, std::nullopt, {RevectorizeMD});
+  TheLoop->setLoopID(NewLoopID);
+}
+
+void LoopVectorizeHints::setVectorizeWithoutStrideChecks() {
+  LLVMContext &Context = TheLoop->getHeader()->getContext();
+
+  MDNode *RevectorizeMD = MDNode::get(
+      Context,
+      {MDString::get(Context, LoopMetaData::NoScevStrideChecks),
        ConstantAsMetadata::get(ConstantInt::get(Context, APInt(32, 1)))});
   MDNode *LoopID = TheLoop->getLoopID();
   MDNode *NewLoopID = makePostTransformationMetadata(

@@ -647,8 +647,12 @@ public:
   /// \p EnableMaskedInterleavedGroup is true.
   /// Consider non-constant stride accesses in the analysis if \p
   /// EnableNonConstStride is true.
+  /// Use information of symbolic strides from PredicatedScalarEvolution if \p
+  /// EnableRTStrideChecks is true. NOTE: `false` must only be used for
+  /// heuristic purposes and not emit code.
   void analyzeInterleaving(bool EnableMaskedInterleavedGroup,
-                           bool EnableNonConstStride = false);
+                           bool EnableNonConstStride = false,
+                           bool EnableRTStrideChecks = true);
 #else
   /// Analyze the interleaved accesses and collect them in interleave
   /// groups. Substitute symbolic strides using \p Strides.

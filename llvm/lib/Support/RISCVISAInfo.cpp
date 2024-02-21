@@ -265,6 +265,8 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
 
     {"zimop", {0, 1}},
 
+    {"zjid", {0, 0}}, // SIFIVE
+
     {"ztso", {0, 1}},
 
     {"zvfbfmin", {1, 0}},
