@@ -70,10 +70,6 @@ def : WriteRes<WriteFMA64, [SiFive7PipeB]>;
 // resource, we do not need to use LMULSEWXXX constructors. However, we do
 // use the SEW from the name to determine the number of Cycles.
 
-// This predicate is true when the rs2 operand of vlse or vsse is x0, false
-// otherwise.
-def VLDSX0Pred : MCSchedPredicate<CheckRegOperand<3, X0>>;
-
 foreach mx = SchedMxList in {
   defvar VLDSX0Cycles = BulletGetCyclesDefault<mx>.c;
   defvar Cycles = BulletGetCyclesOnePerElement<mx, 8, VLEN>.c;
