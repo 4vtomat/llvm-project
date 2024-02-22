@@ -75,24 +75,6 @@ multiclass SiFive7SchedResources {
 
   //===----------------------------------------------------------------------===//
   // Bypass and advance
-  def SiFive7ReadMemBaseOffset0 : SchedReadAdvance<1, [WriteLDB, WriteLDH, WriteLDW, WriteLDD]>;
-  defvar SiFive7ReadMemBaseOffset0 =
-      !cast<SchedReadAdvance>(NAME #SiFive7ReadMemBaseOffset0);
-
-  def SiFive7MemBaseOffset0PredVar
-      : SchedVar<MemBaseOffset0Pred, [SiFive7ReadMemBaseOffset0]>;
-  def SiFive7MemBaseOffset0NoPredVar
-      : SchedVar<NoSchedPred, [NoReadAdvance]>;
-  defvar MemBaseOffset0PredVar = !cast<SchedVar>(NAME #SiFive7MemBaseOffset0PredVar);
-  defvar MemBaseOffset0NoPredVar = !cast<SchedVar>(NAME #SiFive7MemBaseOffset0NoPredVar);
-
-  // Bypass the AG stage of a dependendent memory op after a load if the offset is
-  // zero.
-  def SiFive7ReadMemBase
-      : SchedReadVariant<[MemBaseOffset0PredVar, MemBaseOffset0NoPredVar]>;
-
-  defvar SiFive7ReadMemBase = !cast<SchedReadVariant>(NAME # SiFive7ReadMemBase);
-  def : SchedAlias<ReadMemBase, SiFive7ReadMemBase>;
 
   defm "SiFive7" : BulletReadAdvance;
   //===----------------------------------------------------------------------===//
