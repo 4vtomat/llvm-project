@@ -826,6 +826,9 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
   def : WriteRes<WriteNop, []>;
   let Latency = 3 in
     def : WriteRes<WriteRdVLENB, [PipeB]>;
+
+  // FIXME: This could be better modeled by looking at the regclasses of the operands.
+  def : InstRW<[WriteIALU, ReadIALU], (instrs COPY)>;
 }
 
 multiclass BulletReadAdvance {

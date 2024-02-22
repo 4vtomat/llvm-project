@@ -221,9 +221,6 @@ multiclass SiFive7NSchedResources {
     }
   }
 
-  // FIXME: This could be better modeled by looking at the regclasses of the operands.
-  def : InstRW<[WriteIALU, ReadIALU], (instrs COPY)>;
-
   //===----------------------------------------------------------------------===//
   // Bypass and advance
   def SiFive7NReadMemBaseOffset0 : SchedReadAdvance<1, [WriteLDB, WriteLDH, WriteLDW, WriteLDD]>;
