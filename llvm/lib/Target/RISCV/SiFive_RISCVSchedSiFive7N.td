@@ -8,7 +8,7 @@
 //
 //===----------------------------------------------------------------------===//
 
-multiclass SiFive7NSchedResources {
+multiclass SiFive7NSchedResources<int VLEN> {
   let BufferSize = 0 in
   defm SiFive7N : BulletProcResources;
   def SiFive7NPipeAB : ProcResGroup<[
@@ -27,11 +27,6 @@ multiclass SiFive7NSchedResources {
   defvar SiFive7NVL = !cast<ProcResource>(NAME # SiFive7NVL);
   defvar SiFive7NVS = !cast<ProcResource>(NAME # SiFive7NVS);
   defvar SiFive7NVCQ = !cast<ProcResource>(NAME # SiFive7NVCQ);
-
-  // FIXME: On SiFive7N, VLEN is 512. Although a user can request the compiler
-  // to use a different VLEN, this model will not make scheduling decisions
-  // based on the user specified VLEN.
-  defvar VLEN = 512;
 
   // Define WriteRes records that are the same across all Bullet derived
   // SchedModels. WriteRes records that are not included in that multiclass should
@@ -157,7 +152,7 @@ multiclass SiFive7NSchedResources {
 }
 
 // SiFive7N machine model for scheduling and other instruction cost heuristics.
-def SiFive7NModel : SchedMachineModel {
+class SiFive7NSchedMachineModel<int vlen> : SchedMachineModel {
   let MicroOpBufferSize = 0; // Explicitly set to zero since SiFive7N is in-order.
   let IssueWidth = 2;        // 2 micro-ops are dispatched per cycle.
   let LoadLatency = 3;
@@ -170,8 +165,16 @@ def SiFive7NModel : SchedMachineModel {
                              HasStdExtZksed, HasStdExtZksh, HasStdExtZkr,
                              HasVendorXSfvqmaccqoq, HasVendorXSfvqmaccdod, // SIFIVE
                              HasVendorXSfvfhbfmin]; // SIFIVE
+  int VLEN = vlen;
 }
 
-let SchedModel = SiFive7NModel in
-defm "" : SiFive7NSchedResources;
-
+def SiFive7NVLEN256Model : SiFive7NSchedMachineModel<256>;
+def SiFive7NVLEN512Model : SiFive7NSchedMachineModel<512>;
+// Some processors do not have vector but reuse the scheduler model that has vector.
+// Create an alias that does not have VLEN in the name.
+defvar SiFive7NModel = SiFive7NVLEN512Model;
+// Define sched resources for each model.
+foreach model = [SiFive7NVLEN256Model, SiFive7NVLEN512Model] in {
+  let SchedModel = model in
+  defm "VLEN" # model.VLEN : SiFive7NSchedResources<model.VLEN>;
+}
