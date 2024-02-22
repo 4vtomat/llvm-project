@@ -450,7 +450,89 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
     let Latency = 1, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in
       defm "" : LMULWriteResMX<"WriteVSTM",    [VCQ, VS], mx, IsWorstCase>;
   }
+
+  // Strided loads and stores operate at one element per cycle and should be
+  // scheduled accordingly. Indexed loads and stores operate at one element per
+  // cycle, and they stall the machine until all addresses have been generated,
+  // so they cannot be scheduled. Indexed and strided loads and stores have LMUL
+  // specific suffixes, but since SEW is already encoded in the name of the
+  // resource, we do not need to use LMULSEWXXX constructors. However, we do
+  // use the SEW from the name to determine the number of Cycles.
+
+  // This predicate is true when the rs2 operand of vlse or vsse is x0, false
+  // otherwise.
+  def VLDSX0Pred : MCSchedPredicate<CheckRegOperand<3, X0>>;
+  defvar VLDSX0Pred = !cast<MCSchedPredicate>(NAME # VLDSX0Pred);
   
+  foreach mx = SchedMxList in {
+    defvar VLDSX0Cycles = BulletGetCyclesDefault<mx>.c;
+    defvar Cycles = BulletGetCyclesOnePerElement<mx, 8, VLEN>.c;
+    defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
+    defm "" : LMULWriteResMXVariant<"WriteVLDS8",  VLDSX0Pred, [VCQ, VL],
+                                         4, [0, 1], [1, !add(1, VLDSX0Cycles)], !add(3, Cycles),
+                                         [0, 1], [1, !add(1, Cycles)], mx, IsWorstCase>;
+    let Latency = !add(3, Cycles), AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
+      defm "" : LMULWriteResMX<"WriteVLDUX8", [VCQ, VL], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVLDOX8", [VCQ, VL], mx, IsWorstCase>;
+    }
+    let Latency = 1, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
+      defm "" : LMULWriteResMX<"WriteVSTS8",  [VCQ, VS], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVSTUX8", [VCQ, VS], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVSTOX8", [VCQ, VS], mx, IsWorstCase>;
+    }
+  }
+  foreach mx = ["MF4", "MF2", "M1", "M2", "M4", "M8"] in {
+    defvar VLDSX0Cycles = BulletGetCyclesDefault<mx>.c;
+    defvar Cycles = BulletGetCyclesOnePerElement<mx, 16, VLEN>.c;
+    defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
+    defm "" : LMULWriteResMXVariant<"WriteVLDS16",  VLDSX0Pred, [VCQ, VL],
+                                         4, [0, 1], [1, !add(1, VLDSX0Cycles)], !add(3, Cycles),
+                                         [0, 1], [1, !add(1, Cycles)], mx, IsWorstCase>;
+    let Latency = !add(3, Cycles), AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
+      defm "" : LMULWriteResMX<"WriteVLDUX16", [VCQ, VL], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVLDOX16", [VCQ, VL], mx, IsWorstCase>;
+    }
+    let Latency = 1, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
+      defm "" : LMULWriteResMX<"WriteVSTS16",  [VCQ, VS], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVSTUX16", [VCQ, VS], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVSTOX16", [VCQ, VS], mx, IsWorstCase>;
+    }
+  }
+  foreach mx = ["MF2", "M1", "M2", "M4", "M8"] in {
+    defvar VLDSX0Cycles = BulletGetCyclesDefault<mx>.c;
+    defvar Cycles = BulletGetCyclesOnePerElement<mx, 32, VLEN>.c;
+    defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
+    defm "" : LMULWriteResMXVariant<"WriteVLDS32",  VLDSX0Pred, [VCQ, VL],
+                                         4, [0, 1], [1, !add(1, VLDSX0Cycles)], !add(3, Cycles),
+                                         [0, 1], [1, !add(1, Cycles)], mx, IsWorstCase>;
+    let Latency = !add(3, Cycles), AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
+      defm "" : LMULWriteResMX<"WriteVLDUX32", [VCQ, VL], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVLDOX32", [VCQ, VL], mx, IsWorstCase>;
+    }
+    let Latency = 1, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
+      defm "" : LMULWriteResMX<"WriteVSTS32",  [VCQ, VS], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVSTUX32", [VCQ, VS], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVSTOX32", [VCQ, VS], mx, IsWorstCase>;
+    }
+  }
+  foreach mx = ["M1", "M2", "M4", "M8"] in {
+    defvar VLDSX0Cycles = BulletGetCyclesDefault<mx>.c;
+    defvar Cycles = BulletGetCyclesOnePerElement<mx, 64, VLEN>.c;
+    defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
+    defm "" : LMULWriteResMXVariant<"WriteVLDS64",  VLDSX0Pred, [VCQ, VL],
+                                         4, [0, 1], [1, !add(1, VLDSX0Cycles)], !add(3, Cycles),
+                                         [0, 1], [1, !add(1, Cycles)], mx, IsWorstCase>;
+    let Latency = !add(3, Cycles), AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
+      defm "" : LMULWriteResMX<"WriteVLDUX64", [VCQ, VL], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVLDOX64", [VCQ, VL], mx, IsWorstCase>;
+    }
+    let Latency = 1, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
+      defm "" : LMULWriteResMX<"WriteVSTS64",  [VCQ, VS], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVSTUX64", [VCQ, VS], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVSTOX64", [VCQ, VS], mx, IsWorstCase>;
+    }
+  }
+
   // VLD*R is LMUL aware
   let Latency = 4, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, 2)] in
     def : WriteRes<WriteVLD1R,  [VCQ, VL]>;
