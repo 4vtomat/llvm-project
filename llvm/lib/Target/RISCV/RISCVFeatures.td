@@ -1358,6 +1358,9 @@ def TunePseudoLIsimm32
     : SubtargetFeature<"pseudo-li-simm32", "UsePseudoLIsimm32",
                        "true", "Enable treating LUI+ADDI(W) as a single macro instruction in some passes">;
 
+def TuneDLen64b : SubtargetFeature<"dlen64b", "DLen", "64",
+                                   "'DLen' (SiFive datapath length) 64">;
+
 def TuneDLen128b : SubtargetFeature<"dlen128b", "DLen", "128",
                                     "'DLen' (SiFive datapath length) 128">;
 
