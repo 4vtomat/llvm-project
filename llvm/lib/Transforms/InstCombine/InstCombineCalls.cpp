@@ -1453,8 +1453,7 @@ static Instruction *foldBitOrderCrossLogicOp(Value *V,
 }
 
 #if SIFIVE_CUSTOMIZATION
-static bool canEvaluateVPReversed(Value *V, Value *Mask, Value *VL,
-                                  unsigned Depth = 5) {
+static bool canEvaluateVPReversed(Value *V, Value *VL, unsigned Depth = 5) {
   // Splats can be freely reversed.
   if (isSplatValue(V))
     return true;
@@ -1470,7 +1469,7 @@ static bool canEvaluateVPReversed(Value *V, Value *Mask, Value *VL,
     return false;
 
   // Mask must be a splat and VL must match.
-  if (!isSplatValue(Mask) || VPI->getVectorLengthParam() != VL)
+  if (!isSplatValue(VPI->getMaskParam()) || VPI->getVectorLengthParam() != VL)
     return false;
 
   switch (VPI->getIntrinsicID()) {
@@ -1498,8 +1497,8 @@ static bool canEvaluateVPReversed(Value *V, Value *Mask, Value *VL,
   case Intrinsic::vp_fadd:
   case Intrinsic::vp_fsub:
   case Intrinsic::vp_fmul: {
-    return canEvaluateVPReversed(VPI->getArgOperand(0), Mask, VL, Depth - 1) &&
-           canEvaluateVPReversed(VPI->getArgOperand(1), Mask, VL, Depth - 1);
+    return canEvaluateVPReversed(VPI->getArgOperand(0), VL, Depth - 1) &&
+           canEvaluateVPReversed(VPI->getArgOperand(1), VL, Depth - 1);
   }
   // FIXME: Add more unary, ternary, etc. operations.
   }
@@ -3349,7 +3348,7 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     Value *Vec = II->getArgOperand(0);
     Value *Mask = II->getArgOperand(1);
     Value *VL = II->getArgOperand(2);
-    if (canEvaluateVPReversed(Vec, Mask, VL)) {
+    if (isSplatValue(Mask) && canEvaluateVPReversed(Vec, VL)) {
       Value *V = evaluateVPReversed(Vec, *this);
       return replaceInstUsesWith(CI, V);
     }
