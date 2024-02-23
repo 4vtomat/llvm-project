@@ -468,7 +468,7 @@ namespace SiFiveInterleavedAccess {
 // TODO: Switch to cl::list to have better fine-grained control
 cl::opt<SiFiveInterleavedAccess::Level> SiFiveEnableInterleavedAccess(
     "sifive-loop-vectorizer-enable-interleaved-access",
-    cl::init(SiFiveInterleavedAccess::InvariantStride), cl::Hidden,
+    cl::init(SiFiveInterleavedAccess::ConstStride), cl::Hidden,
     cl::desc("Enable interleaved access in RVV VLA vectorization"),
     cl::values(
         clEnumValN(SiFiveInterleavedAccess::NoInterleaved, "no-interleaved",

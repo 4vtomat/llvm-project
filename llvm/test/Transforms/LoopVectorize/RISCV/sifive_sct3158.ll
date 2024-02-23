@@ -1,4 +1,4 @@
-; RUN: opt -passes=loop-vectorize -mcpu=sifive-p470 -mtriple riscv64 -debug-only=loop-vectorize -disable-output %s 2>&1 | FileCheck %s
+; RUN: opt -passes=loop-vectorize -mcpu=sifive-p470 -mtriple riscv64 -sifive-loop-vectorizer-enable-interleaved-access=invariant-stride -debug-only=loop-vectorize -disable-output %s 2>&1 | FileCheck %s
 ; REQUIRES: asserts
 
 ; CHECK-LABLE: LV: Checking a loop in 'test_16x16
