@@ -245,8 +245,13 @@ declare <vscale x 2 x i32> @llvm.experimental.vp.strided.load.nxv2i32.p0.i64(ptr
 ; FIXME: We can't reverse this because the mask on the vp.add isn't a splat.
 define <vscale x 2 x i32> @reverse_vpadd_nonsplat_mask(<vscale x 2 x i32> %x, <vscale x 2 x i32> %y, i1 %m, <vscale x 2 x i1> %addmask, i32 %vl) {
 ; CHECK-LABEL: @reverse_vpadd_nonsplat_mask(
-; CHECK-NEXT:    [[C:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[X:%.*]], <vscale x 2 x i32> [[Y:%.*]], <vscale x 2 x i1> [[ADDMASK:%.*]], i32 [[VL:%.*]])
-; CHECK-NEXT:    ret <vscale x 2 x i32> [[C]]
+; CHECK-NEXT:    [[INS:%.*]] = insertelement <vscale x 2 x i1> poison, i1 [[M:%.*]], i64 0
+; CHECK-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 2 x i1> [[INS]], <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 2 x i32> @llvm.experimental.vp.reverse.nxv2i32(<vscale x 2 x i32> [[X:%.*]], <vscale x 2 x i1> [[MASK]], i32 [[VL:%.*]])
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 2 x i32> @llvm.experimental.vp.reverse.nxv2i32(<vscale x 2 x i32> [[Y:%.*]], <vscale x 2 x i1> [[MASK]], i32 [[VL]])
+; CHECK-NEXT:    [[C:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[A]], <vscale x 2 x i32> [[B]], <vscale x 2 x i1> [[ADDMASK:%.*]], i32 [[VL]])
+; CHECK-NEXT:    [[D:%.*]] = call <vscale x 2 x i32> @llvm.experimental.vp.reverse.nxv2i32(<vscale x 2 x i32> [[C]], <vscale x 2 x i1> [[MASK]], i32 [[VL]])
+; CHECK-NEXT:    ret <vscale x 2 x i32> [[D]]
 ;
   %ins = insertelement <vscale x 2 x i1> poison, i1 %m, i32 0
   %mask = shufflevector <vscale x 2 x i1> %ins, <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer
