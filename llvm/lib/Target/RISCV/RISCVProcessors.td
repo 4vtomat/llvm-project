@@ -716,7 +716,7 @@ def SIFIVE_X392S_DUAL_VALU
     : RISCVProcessorModel<"sifive-x392-ea-dualvalu", SiFive7Model,
                           SIFIVE_X392_Features, SIFIVE_X392_TuneFeatures>;
 
-def SIFIVE_P260T : RISCVProcessorModel<"sifive-p260t", SiFive7Model,
+def SIFIVE_P260T : RISCVProcessorModel<"sifive-p260t", SiFive7NModel,
                                        [Feature64Bit,
                                         FeatureStdExtM,
                                         FeatureStdExtA,
