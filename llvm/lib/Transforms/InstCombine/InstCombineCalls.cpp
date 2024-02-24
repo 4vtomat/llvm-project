@@ -1500,10 +1500,6 @@ static bool canEvaluateVPReversed(Value *V, Value *VL, unsigned Depth = 5) {
     return canEvaluateVPReversed(VPI->getArgOperand(0), VL, Depth - 1) &&
            canEvaluateVPReversed(VPI->getArgOperand(1), VL, Depth - 1);
   }
-  case Intrinsic::vp_trunc:
-  case Intrinsic::vp_sext:
-  case Intrinsic::vp_zext:
-    return canEvaluateVPReversed(VPI->getArgOperand(0), VL, Depth - 1);
   // FIXME: Add more unary, ternary, etc. operations.
   }
 
@@ -1538,20 +1534,6 @@ static Value *evaluateVPReversed(Value *V, InstCombinerImpl &IC) {
     if (NewOp0 != VPI->getArgOperand(0) || NewOp1 != VPI->getArgOperand(1)) {
       Function *F = Intrinsic::getDeclaration(VPI->getModule(), VPI->getIntrinsicID(), VPI->getType());
       Instruction *Intrin = CallInst::Create(F, {NewOp0, NewOp1, Mask, VL});
-      Intrin->takeName(VPI);
-      return IC.InsertNewInstWith(Intrin, VPI->getIterator());
-    }
-
-    return V;
-  }
-  case Intrinsic::vp_sext:
-  case Intrinsic::vp_zext:
-  case Intrinsic::vp_trunc: {
-    Value *NewOp = evaluateVPReversed(VPI->getArgOperand(0), IC);
-    // If we get the same operands, we don't need to create a new intrinsic.
-    if (NewOp != VPI->getArgOperand(0)) {
-      Function *F = Intrinsic::getDeclaration(VPI->getModule(), VPI->getIntrinsicID(), {VPI->getType(), NewOp->getType()});
-      Instruction *Intrin = CallInst::Create(F, {NewOp, Mask, VL});
       Intrin->takeName(VPI);
       return IC.InsertNewInstWith(Intrin, VPI->getIterator());
     }
