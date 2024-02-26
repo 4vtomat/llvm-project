@@ -4,21 +4,21 @@
 define <vscale x 16 x half> @foo(<vscale x 16 x half> %x, <vscale x 16 x half> %one, i64 noundef %vl) {
 ; CHECK-LABEL: foo:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vmv4r.v v16, v8
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, mu
+; CHECK-NEXT:    vfrsqrt7.v v16, v8
 ; CHECK-NEXT:    fmv.h.x fa5, zero
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_1)
-; CHECK-NEXT:    vfrsqrt7.v v8, v8
-; CHECK-NEXT:    vmfne.vf v24, v16, fa5
+; CHECK-NEXT:    vmfne.vf v20, v8, fa5
 ; CHECK-NEXT:    flh fa5, %lo(.LCPI0_1)(a0)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_0)
-; CHECK-NEXT:    vfmul.vv v20, v16, v8
-; CHECK-NEXT:    vmfne.vf v16, v16, fa5
+; CHECK-NEXT:    vfmul.vv v24, v8, v16
+; CHECK-NEXT:    vmfne.vf v8, v8, fa5
 ; CHECK-NEXT:    flh fa5, %lo(.LCPI0_0)(a0)
-; CHECK-NEXT:    vfmsub.vv v20, v8, v12
-; CHECK-NEXT:    vfmul.vf v12, v8, fa5
-; CHECK-NEXT:    vmand.mm v0, v24, v16
-; CHECK-NEXT:    vfnmsac.vv v8, v12, v20, v0.t
+; CHECK-NEXT:    vfmsub.vv v24, v16, v12
+; CHECK-NEXT:    vmand.mm v0, v20, v8
+; CHECK-NEXT:    vfmul.vf v8, v16, fa5
+; CHECK-NEXT:    vfnmsac.vv v16, v8, v24, v0.t
+; CHECK-NEXT:    vmv.v.v v8, v16
 ; CHECK-NEXT:    ret
 entry:
   %0 = tail call <vscale x 16 x half> @llvm.riscv.vfrsqrt7.nxv16f16.i64(<vscale x 16 x half> poison, <vscale x 16 x half> %x, i64 %vl)
