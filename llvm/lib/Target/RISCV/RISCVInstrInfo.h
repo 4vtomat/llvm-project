@@ -275,6 +275,12 @@ public:
   ArrayRef<std::pair<MachineMemOperand::Flags, const char *>>
   getSerializableMachineMemOperandTargetFlags() const override;
 
+#if SIFIVE_CUSTOMIZATION
+  ScheduleHazardRecognizer *
+  CreateTargetMIHazardRecognizer(const InstrItineraryData *II,
+                                 const ScheduleDAGMI *DAG) const override;
+#endif // SIFIVE_CUSTOMIZATION
+
 protected:
   const RISCVSubtarget &STI;
 
