@@ -3,26 +3,26 @@
 
 // RUN: %clang_cc1 -x c++ -verify=no-inf-no-nan \
 // RUN: -triple powerpc64le-unknown-unknown %s -menable-no-infs \
-// RUN: -menable-no-nans -std=c++23 -Wnan-infinity-disabled
+// RUN: -menable-no-nans -std=c++23
 
 // RUN: %clang_cc1 -x c++ -verify=no-inf-no-nan \
 // RUN: -triple powerpc64le-unknown-unknown %s -menable-no-infs \
-// RUN: -menable-no-nans -funsafe-math-optimizations -std=c++23 -Wnan-infinity-disabled
+// RUN: -menable-no-nans -funsafe-math-optimizations -std=c++23
 
 // RUN: %clang_cc1 -x c++ -verify=no-fast -triple powerpc64le-unknown-unknown \
-// RUN: %s -std=c++23 -Wnan-infinity-disabled
+// RUN: %s -std=c++23
 
 // RUN: %clang_cc1 -x c++ -verify=no-inf -triple powerpc64le-unknown-unknown %s \
-// RUN: -menable-no-infs -std=c++23 -Wnan-infinity-disabled
+// RUN: -menable-no-infs -std=c++23
 
 // RUN: %clang_cc1 -x c++ -verify=no-inf -triple powerpc64le-unknown-unknown %s \
-// RUN: -menable-no-infs -funsafe-math-optimizations -std=c++23 -Wnan-infinity-disabled
+// RUN: -menable-no-infs -funsafe-math-optimizations -std=c++23
 
 // RUN: %clang_cc1 -x c++ -verify=no-nan -triple powerpc64le-unknown-unknown %s \
-// RUN: -menable-no-nans -std=c++23  -Wnan-infinity-disabled
+// RUN: -menable-no-nans -std=c++23
 
 // RUN: %clang_cc1 -x c++ -verify=no-nan -triple powerpc64le-unknown-unknown %s \
-// RUN: -funsafe-math-optimizations -menable-no-nans -std=c++23 -Wnan-infinity-disabled
+// RUN: -funsafe-math-optimizations -menable-no-nans -std=c++23
 
 // RUN: %clang_cc1 -x c++ -verify=no-fast -triple powerpc64le-unknown-unknown \
 // RUN: %s -Wno-nan-infinity-disabled -menable-no-infs -std=c++23

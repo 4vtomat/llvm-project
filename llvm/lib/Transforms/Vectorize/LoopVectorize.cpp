@@ -2662,7 +2662,7 @@ static bool isIndvarOverflowCheckKnownFalse(
 
 #if SIFIVE_CUSTOMIZATION
 bool InnerLoopVectorizer::useVLAVectorizer() const {
-  return TTI->useVLAVectorizer();
+  return !EnableVPlanNativePath && TTI->useVLAVectorizer();
 }
 #endif // SIFIVE_CUSTOMIZATION
 
