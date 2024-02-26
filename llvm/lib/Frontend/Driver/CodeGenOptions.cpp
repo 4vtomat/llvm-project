@@ -52,6 +52,10 @@ TargetLibraryInfoImpl *createTLII(llvm::Triple &TargetTriple,
     TLII->addVectorizableFunctionsFromVecLib(TargetLibraryInfoImpl::ArmPL,
                                              TargetTriple);
     break;
+  case VectorLibrary::AMDLIBM:
+    TLII->addVectorizableFunctionsFromVecLib(TargetLibraryInfoImpl::AMDLIBM,
+                                             TargetTriple);
+    break;
   default:
     break;
   }

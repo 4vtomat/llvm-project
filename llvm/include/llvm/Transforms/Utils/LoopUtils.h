@@ -383,8 +383,17 @@ bool canSinkOrHoistInst(Instruction &I, AAResults *AA, DominatorTree *DT,
 #endif // SIFIVE_CUSTOMIZATION
                         OptimizationRemarkEmitter *ORE = nullptr);
 
+/// Returns the arithmetic instruction opcode used when expanding a reduction.
+unsigned getArithmeticReductionInstruction(Intrinsic::ID RdxID);
+
+/// Returns the min/max intrinsic used when expanding a min/max reduction.
+Intrinsic::ID getMinMaxReductionIntrinsicOp(Intrinsic::ID RdxID);
+
 /// Returns the min/max intrinsic used when expanding a min/max reduction.
 Intrinsic::ID getMinMaxReductionIntrinsicOp(RecurKind RK);
+
+/// Returns the recurence kind used when expanding a min/max reduction.
+RecurKind getMinMaxReductionRecurKind(Intrinsic::ID RdxID);
 
 /// Returns the comparison predicate used when expanding a min/max reduction.
 CmpInst::Predicate getMinMaxReductionPredicate(RecurKind RK);

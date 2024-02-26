@@ -111,6 +111,7 @@ struct VPlanTransforms {
   ///       VPlan directly.
   static void dropPoisonGeneratingRecipes(
       VPlan &Plan, function_ref<bool(BasicBlock *)> BlockNeedsPredication);
+<<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
   /// Add a VPEVLBasedIVPHIRecipe and related recipes to \p Plan and
@@ -151,6 +152,8 @@ private:
   /// them with already existing recipes expanding the same SCEV expression.
   static void removeRedundantExpandSCEVRecipes(VPlan &Plan);
 
+=======
+>>>>>>> 9466c4e629ecff3060b7fef3cb189179e25c4f5f
 };
 
 } // namespace llvm

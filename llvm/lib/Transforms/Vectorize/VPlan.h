@@ -1390,9 +1390,6 @@ private:
   bool isFPMathOp() const;
 #endif
 
-protected:
-  void setUnderlyingInstr(Instruction *I) { setUnderlyingValue(I); }
-
 public:
   VPInstruction(unsigned Opcode, ArrayRef<VPValue *> Operands, DebugLoc DL,
                 const Twine &Name = "")
