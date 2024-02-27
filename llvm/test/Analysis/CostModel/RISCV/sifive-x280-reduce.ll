@@ -31,8 +31,8 @@ declare i64 @llvm.vector.reduce.add.v64i64(<64 x i64>)
 
 define void @reduce_add() {
 ; THROUGHPUT-LABEL: 'reduce_add'
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %1 = call i1 @llvm.vector.reduce.add.v16i1(<16 x i1> undef)
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %2 = call i1 @llvm.vector.reduce.add.v32i1(<32 x i1> undef)
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %1 = call i1 @llvm.vector.reduce.add.v16i1(<16 x i1> undef)
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %2 = call i1 @llvm.vector.reduce.add.v32i1(<32 x i1> undef)
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 28 for instruction: %3 = call i8 @llvm.vector.reduce.add.v16i8(<16 x i8> undef)
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 28 for instruction: %4 = call i8 @llvm.vector.reduce.add.v32i8(<32 x i8> undef)
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 29 for instruction: %5 = call i8 @llvm.vector.reduce.add.v64i8(<64 x i8> undef)
@@ -253,8 +253,8 @@ declare i64 @llvm.vector.reduce.smax.v64i64(<64 x i64>)
 
 define void @reduce_smax() {
 ; THROUGHPUT-LABEL: 'reduce_smax'
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %1 = call i1 @llvm.vector.reduce.smax.v16i1(<16 x i1> undef)
-; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %2 = call i1 @llvm.vector.reduce.smax.v32i1(<32 x i1> undef)
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 10 for instruction: %1 = call i1 @llvm.vector.reduce.smax.v16i1(<16 x i1> undef)
+; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 10 for instruction: %2 = call i1 @llvm.vector.reduce.smax.v32i1(<32 x i1> undef)
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 28 for instruction: %3 = call i8 @llvm.vector.reduce.smax.v16i8(<16 x i8> undef)
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 28 for instruction: %4 = call i8 @llvm.vector.reduce.smax.v32i8(<32 x i8> undef)
 ; THROUGHPUT-NEXT:  Cost Model: Found an estimated cost of 29 for instruction: %5 = call i8 @llvm.vector.reduce.smax.v64i8(<64 x i8> undef)

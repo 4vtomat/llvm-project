@@ -441,12 +441,23 @@ RISCVTTIImpl::getRISCVInstructionCost(ArrayRef<unsigned> OpCodes, MVT VT,
       Cost += VL;
       break;
     }
+#if SIFIVE_CUSTOMIZATION
+    case RISCV::VMV_X_S:
+    case RISCV::VFMV_F_S:
+    case RISCV::VCPOP_M:
+      Cost += ST->getVectorToScalarBaseCost();
+      break;
+    case RISCV::VMV_S_X:
+    case RISCV::VFMV_S_F:
+    case RISCV::VMNAND_MM:
+#else
     case RISCV::VMV_X_S:
     case RISCV::VMV_S_X:
     case RISCV::VFMV_F_S:
     case RISCV::VFMV_S_F:
     case RISCV::VMNAND_MM:
     case RISCV::VCPOP_M:
+#endif
       Cost += 1;
       break;
     default:
@@ -2647,7 +2658,7 @@ unsigned RISCVTTIImpl::getCSABodyFactor() const {
 
 unsigned RISCVTTIImpl::getCSAOverheadFactor() const {
   if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
-    return 3;
+    return 4;
   return 1;
 }
 
