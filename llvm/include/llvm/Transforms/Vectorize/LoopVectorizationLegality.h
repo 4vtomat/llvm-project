@@ -523,9 +523,7 @@ public:
 
 #if SIFIVE_CUSTOMIZATION
   /// Returns true if TTI says useVLAVectorizer() is enabled for the target.
-  bool useVLAVectorizer() const {
-    return TTI->useVLAVectorizer();
-  }
+  bool useVLAVectorizer() const;
 
   /// Returns true if an uncountable loop is safe for speculation
   bool isSpeculationSafe(PredicatedScalarEvolution &PSE);

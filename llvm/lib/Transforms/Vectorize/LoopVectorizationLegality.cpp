@@ -37,6 +37,10 @@
 using namespace llvm;
 using namespace PatternMatch;
 
+namespace llvm {
+extern cl::opt<bool> EnableVPlanNativePath;
+}
+
 #define LV_NAME "loop-vectorize"
 #define DEBUG_TYPE LV_NAME
 
@@ -274,12 +278,13 @@ LoopVectorizeHints::LoopVectorizeHints(const Loop *L,
     Scalable.Value = SK_ScalableOnly;
 
   if (TTI && TTI->useVLAVectorizer() &&
+      !EnableVPlanNativePath &&
       ForceScalableVectorization == SK_Unspecified)
     Scalable.Value = SK_ScalableOnly;
 
   // Forced vector width from the metadata should be ignored if VLA is enabled
   // if it is suggesting a fixed vector width.
-  if (TTI && TTI->useVLAVectorizer() && Width.Value) {
+  if (TTI && TTI->useVLAVectorizer() && !EnableVPlanNativePath && Width.Value) {
     Width.Value = VectorizerParams::DefaultVectorizationFactor;
     ORE.emit([&]() {
       return DiagnosticInfoOptimizationFailure(DEBUG_TYPE, "IgnoreUserVF",
@@ -1972,6 +1977,10 @@ bool LoopVectorizationLegality::prepareToFoldTailByMasking() {
 }
 
 #if SIFIVE_CUSTOMIZATION
+bool LoopVectorizationLegality::useVLAVectorizer() const {
+  return !EnableVPlanNativePath && TTI->useVLAVectorizer();
+}
+
 // Return: true - good for vectorization
 //         false - bad for vectorization
 bool LoopVectorizationLegality::isSpeculationSafe(
