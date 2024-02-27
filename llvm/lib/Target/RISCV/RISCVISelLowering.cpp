@@ -2123,6 +2123,10 @@ bool RISCVTargetLowering::canSplatOperand(Instruction *I, int Operand) const {
   case Intrinsic::vp_sdiv:
   case Intrinsic::vp_urem:
   case Intrinsic::vp_srem:
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::vp_ssub_sat:
+  case Intrinsic::vp_usub_sat:
+#endif // SIFIVE_CUSTOMIZATION
     return Operand == 1;
     // These intrinsics are commutative.
   case Intrinsic::vp_add:
@@ -2130,6 +2134,10 @@ bool RISCVTargetLowering::canSplatOperand(Instruction *I, int Operand) const {
   case Intrinsic::vp_and:
   case Intrinsic::vp_or:
   case Intrinsic::vp_xor:
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::vp_sadd_sat:
+  case Intrinsic::vp_uadd_sat:
+#endif
   case Intrinsic::vp_fadd:
   case Intrinsic::vp_fmul:
   case Intrinsic::vp_icmp:
