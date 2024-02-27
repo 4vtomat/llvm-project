@@ -136,13 +136,13 @@ define <4 x i32> @interleave_addsub_5(<4 x i8> %x, <4 x i8> %y) {
 ; CHECK-LABEL: interleave_addsub_5:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vzext.vf2 v10, v9
-; CHECK-NEXT:    vzext.vf2 v9, v8
-; CHECK-NEXT:    vwaddu.vv v8, v9, v10
-; CHECK-NEXT:    vwsubu.vv v11, v9, v10
+; CHECK-NEXT:    vzext.vf2 v10, v8
+; CHECK-NEXT:    vzext.vf2 v8, v9
+; CHECK-NEXT:    vwaddu.vv v9, v10, v8
+; CHECK-NEXT:    vwsubu.vv v11, v10, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vsll.vi v9, v11, 8
-; CHECK-NEXT:    vor.vv v8, v9, v8
+; CHECK-NEXT:    vsll.vi v8, v11, 8
+; CHECK-NEXT:    vor.vv v8, v8, v9
 ; CHECK-NEXT:    ret
   %a = zext <4 x i8> %x to <4 x i32>
   %b = zext <4 x i8> %y to <4 x i32>
