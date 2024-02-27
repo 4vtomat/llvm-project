@@ -3236,21 +3236,14 @@ def fno_experimental_isel : Flag<["-"], "fno-experimental-isel">, Group<f_clang_
 def fveclib : Joined<["-"], "fveclib=">, Group<f_Group>,
   Visibility<[ClangOption, CC1Option, FlangOption, FC1Option]>,
     HelpText<"Use the given vector functions library">,
-<<<<<<< HEAD
 // SIFIVE_CUSTOMIZATION
-    Values<"Accelerate,libmvec,MASSV,SiFive_NF,SVML,SLEEF,Darwin_libsystem_m,ArmPL,none">,
+    Values<"Accelerate,libmvec,MASSV,SiFive_NF,SVML,SLEEF,Darwin_libsystem_m,ArmPL,AMDLIBM,none">,
 // end SIFIVE_CUSTOMIZATION
     NormalizedValuesScope<"llvm::driver::VectorLibrary">,
 // SIFIVE_CUSTOMIZATION
     NormalizedValues<["Accelerate", "LIBMVEC", "MASSV", "SiFive_NF", "SVML", "SLEEF",
-                      "Darwin_libsystem_m", "ArmPL", "NoLibrary"]>,
-// end SIFIVE_CUSTOMIZATION
-=======
-    Values<"Accelerate,libmvec,MASSV,SVML,SLEEF,Darwin_libsystem_m,ArmPL,AMDLIBM,none">,
-    NormalizedValuesScope<"llvm::driver::VectorLibrary">,
-    NormalizedValues<["Accelerate", "LIBMVEC", "MASSV", "SVML", "SLEEF",
                       "Darwin_libsystem_m", "ArmPL", "AMDLIBM", "NoLibrary"]>,
->>>>>>> 9466c4e629ecff3060b7fef3cb189179e25c4f5f
+// end SIFIVE_CUSTOMIZATION
     MarshallingInfoEnum<CodeGenOpts<"VecLib">, "NoLibrary">;
 def fno_lax_vector_conversions : Flag<["-"], "fno-lax-vector-conversions">, Group<f_Group>,
   Alias<flax_vector_conversions_EQ>, AliasArgs<["none"]>;

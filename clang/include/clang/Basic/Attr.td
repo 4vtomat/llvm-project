@@ -3937,11 +3937,12 @@ def RvvHint : Attr {
   let Spellings = [Pragma<"clang", "rvv">];
 
   let Args = [
-    EnumArgument<"Option", "OptionType", ["lmul_sew"], ["ForceRVVLmulSew"]>,
-    EnumArgument<"RvvLmulValue", "RvvLmulValueType",
+    EnumArgument<"Option", "OptionType", /*is_string=*/false,
+      ["lmul_sew"], ["ForceRVVLmulSew"]>,
+    EnumArgument<"RvvLmulValue", "RvvLmulValueType", /*is_string=*/false,
       ["mf8", "mf4", "mf2", "m1", "m2", "m4", "m8"],
       ["Mf8", "Mf4", "Mf2", "M1", "M2", "M4", "M8"]>,
-    EnumArgument<"RvvSewValue", "RvvSewValueType",
+    EnumArgument<"RvvSewValue", "RvvSewValueType", /*is_string=*/false,
       ["e8", "e16", "e32", "e64"],
       ["E8", "E16", "E32", "E64"]>
   ];

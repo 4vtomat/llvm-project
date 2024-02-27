@@ -17257,16 +17257,8 @@ static SDValue useInversedSetcc(SDNode *N, SelectionDAG &DAG,
     ISD::CondCode CC = cast<CondCodeSDNode>(Cond.getOperand(2))->get();
     if (CC == ISD::SETEQ && LHS.getOpcode() == ISD::AND &&
         isa<ConstantSDNode>(LHS.getOperand(1)) && isNullConstant(RHS)) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-      // SIFIVE This change will be upstreamed.
       const APInt &MaskVal = LHS.getConstantOperandAPInt(1);
       if (MaskVal.isPowerOf2() && !MaskVal.isSignedIntN(12))
-#endif // SIFIVE_CUSTOMIZATION
-=======
-      const APInt &MaskVal = LHS.getConstantOperandAPInt(1);
-      if (MaskVal.isPowerOf2() && !MaskVal.isSignedIntN(12))
->>>>>>> 9466c4e629ecff3060b7fef3cb189179e25c4f5f
         return DAG.getSelect(DL, VT,
                              DAG.getSetCC(DL, CondVT, LHS, RHS, ISD::SETNE),
                              False, True);
@@ -17935,6 +17927,10 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
                        DAG.getConstant(~SignBit, DL, VT));
   }
   case ISD::ABS: {
+#if SIFIVE_CUSTOMIZATION
+    if (SDValue V = performABSCombine(N, DAG))
+      return V;
+#endif // SIFIVE_CUSTOMIZATION
     EVT VT = N->getValueType(0);
     SDValue N0 = N->getOperand(0);
     // abs (sext) -> zext (abs)
@@ -17965,10 +17961,6 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     return performORCombine(N, DCI, Subtarget);
   case ISD::XOR:
     return performXORCombine(N, DAG, Subtarget);
-#if SIFIVE_CUSTOMIZATION
-  case ISD::ABS:
-    return performABSCombine(N, DAG);
-#endif // SIFIVE_CUSTOMIZATION
   case ISD::MUL:
     if (SDValue V = combineBinOp_VLToVWBinOp_VL(N, DCI, Subtarget))
       return V;
