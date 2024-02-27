@@ -573,7 +573,7 @@ def SIFIVE_U74R : RISCVProcessorModel<"sifive-u74r", SiFive7NModel,
                                       [TuneSiFive7, TunePseudoLIsimm32]>;
 
 def SIFIVE_P270 :
-  RISCVProcessorModel<"sifive-p270", SiFive7Model,
+  RISCVProcessorModel<"sifive-p270", SiFive7VLEN256Model,
                       [Feature64Bit,
                        FeatureStdExtZifencei,
                        FeatureStdExtM,
@@ -590,7 +590,7 @@ def SIFIVE_P270 :
                       [TuneSiFive7, TuneDLen128b]>;
 
 def SIFIVE_P270N :
-  RISCVProcessorModel<"sifive-p270n", SiFive7NModel,
+  RISCVProcessorModel<"sifive-p270n", SiFive7NVLEN256Model,
                       [Feature64Bit,
                        FeatureStdExtZifencei,
                        FeatureStdExtM,
@@ -605,9 +605,8 @@ def SIFIVE_P270N :
                        FeatureStdExtZba,
                        FeatureStdExtZbb],
                       [TuneSiFive7, TuneDLen128b, TunePseudoLIsimm32]>;
-#endif // SIFIVE_CUSTOMIZATION
 
-def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7Model,
+def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7VLEN512Model,
                                       [Feature64Bit,
                                        FeatureStdExtZifencei,
                                        FeatureStdExtM,
@@ -627,9 +626,8 @@ def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7Model,
                                        TuneDLenFactor2, // SIFIVE
                                        TuneDLen256b]>; // SIFIVE
 
-#ifdef SIFIVE_CUSTOMIZATION
 def SIFIVE_X280N :
-  RISCVProcessorModel<"sifive-x280n", SiFive7NModel,
+  RISCVProcessorModel<"sifive-x280n", SiFive7NVLEN512Model,
                       [Feature64Bit,
                        FeatureStdExtZifencei,
                        FeatureStdExtM,
@@ -653,7 +651,7 @@ def SIFIVE_X280N :
                        TunePseudoLIsimm32]>;
 
 def SIFIVE_X280O :
-  RISCVProcessorModel<"sifive-x280o", SiFive7NModel,
+  RISCVProcessorModel<"sifive-x280o", SiFive7NVLEN512Model,
                       [Feature64Bit,
                        FeatureStdExtZifencei,
                        FeatureStdExtM,
@@ -705,7 +703,7 @@ defvar SIFIVE_X392_TuneFeatures = [
 // FIXME: Create separate SchedModel for x392. x392 is a Bullet processor,
 // so we use the SiFive7Model, which is a Bullet based model, in the meantime.
 def SIFIVE_X392S_SINGLE_VALU
-    : RISCVProcessorModel<"sifive-x392-ea-singlevalu", SiFive7Model,
+    : RISCVProcessorModel<"sifive-x392-ea-singlevalu", SiFive7VLEN1024Model,
                           SIFIVE_X392_Features, SIFIVE_X392_TuneFeatures>;
 
 // FIXME: Create separate SchedModel for x392. x392 is a Bullet processor,
@@ -713,7 +711,7 @@ def SIFIVE_X392S_SINGLE_VALU
 // The SiFive7Model does not represent the dual VALU, which is probably a
 // significant thing to leave out of the model.
 def SIFIVE_X392S_DUAL_VALU
-    : RISCVProcessorModel<"sifive-x392-ea-dualvalu", SiFive7Model,
+    : RISCVProcessorModel<"sifive-x392-ea-dualvalu", SiFive7VLEN1024Model,
                           SIFIVE_X392_Features, SIFIVE_X392_TuneFeatures>;
 
 def SIFIVE_P260T : RISCVProcessorModel<"sifive-p260t", SiFive7NModel,

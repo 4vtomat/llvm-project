@@ -2130,8 +2130,10 @@ InstructionCost VPCSAHeaderPHIRecipe::overhead(ElementCount VF,
   // be removed.
 
   // All True/False Mask
-  C += Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, MaskTy);
-  C += Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, MaskTy);
+  // Expects a vmset.m for true mask and a vmclr.m for false mask
+  IntrinsicCostAttributes ICA(Intrinsic::vp_icmp, MaskTy, {MaskTy, MaskTy});
+  C += Ctx.TTI->getIntrinsicInstrCost(ICA, CostKind);
+  C += Ctx.TTI->getIntrinsicInstrCost(ICA, CostKind);
 
   // CSAInitMask
   C += Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);

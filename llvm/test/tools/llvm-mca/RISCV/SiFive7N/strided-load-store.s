@@ -244,15 +244,15 @@ vlse64.v v1, (a1), a2
 # CHECK-NEXT:  1      67    65.00   *                   vlse64.v	v1, (a1), a2
 
 # CHECK:      Resources:
-# CHECK-NEXT: [0]   - SiFive7NFDiv
-# CHECK-NEXT: [1]   - SiFive7NIDiv
-# CHECK-NEXT: [2]   - SiFive7NMem
-# CHECK-NEXT: [3]   - SiFive7NPipeA
-# CHECK-NEXT: [4]   - SiFive7NPipeB
-# CHECK-NEXT: [5]   - SiFive7NVA
-# CHECK-NEXT: [6]   - SiFive7NVCQ
-# CHECK-NEXT: [7]   - SiFive7NVL
-# CHECK-NEXT: [8]   - SiFive7NVS
+# CHECK-NEXT: [0]   - VLEN512SiFive7NFDiv
+# CHECK-NEXT: [1]   - VLEN512SiFive7NIDiv
+# CHECK-NEXT: [2]   - VLEN512SiFive7NMem
+# CHECK-NEXT: [3]   - VLEN512SiFive7NPipeA
+# CHECK-NEXT: [4]   - VLEN512SiFive7NPipeB
+# CHECK-NEXT: [5]   - VLEN512SiFive7NVA
+# CHECK-NEXT: [6]   - VLEN512SiFive7NVCQ
+# CHECK-NEXT: [7]   - VLEN512SiFive7NVL
+# CHECK-NEXT: [8]   - VLEN512SiFive7NVS
 
 # CHECK:      Resource pressure per iteration:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]

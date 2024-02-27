@@ -12420,7 +12420,7 @@ static ScalarEpilogueLowering getScalarEpilogueLowering(
 
   // 2) If set, obey the directives
 #if SIFIVE_CUSTOMIZATION
-  if (TTI->useVLAVectorizer())
+  if (TTI->useVLAVectorizer() && !EnableVPlanNativePath)
     return CM_ScalarEpilogueNotAllowedUsePredicate;
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -13045,7 +13045,7 @@ bool LoopVectorizePass::processLoop(Loop *L) {
 
 #if SIFIVE_CUSTOMIZATION
   // Do not vectorize loops with small trip count and reductions.
-  if (ExpectedTC && TTI->useVLAVectorizer())
+  if (ExpectedTC && LVL.useVLAVectorizer())
     if (auto ProfitableVectorTripCount = CM.getProfitableVectorTripCount())
       if (*ExpectedTC <=
           *ProfitableVectorTripCount * LVL.getReductionVars().size() * IC) {

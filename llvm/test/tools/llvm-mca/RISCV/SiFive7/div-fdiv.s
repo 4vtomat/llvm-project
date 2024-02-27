@@ -28,15 +28,15 @@ fdiv.s f1, f2, f3
 # CHECK-NEXT:  1      27    26.00                       fdiv.s	ft1, ft2, ft3
 
 # CHECK:      Resources:
-# CHECK-NEXT: [0]   - SiFive7FDiv
-# CHECK-NEXT: [1]   - SiFive7IDiv
-# CHECK-NEXT: [2]   - SiFive7Mem
-# CHECK-NEXT: [3]   - SiFive7PipeA
-# CHECK-NEXT: [4]   - SiFive7PipeB
-# CHECK-NEXT: [5]   - SiFive7VA
-# CHECK-NEXT: [6]   - SiFive7VCQ
-# CHECK-NEXT: [7]   - SiFive7VL
-# CHECK-NEXT: [8]   - SiFive7VS
+# CHECK-NEXT: [0]   - VLEN512SiFive7FDiv
+# CHECK-NEXT: [1]   - VLEN512SiFive7IDiv
+# CHECK-NEXT: [2]   - VLEN512SiFive7Mem
+# CHECK-NEXT: [3]   - VLEN512SiFive7PipeA
+# CHECK-NEXT: [4]   - VLEN512SiFive7PipeB
+# CHECK-NEXT: [5]   - VLEN512SiFive7VA
+# CHECK-NEXT: [6]   - VLEN512SiFive7VCQ
+# CHECK-NEXT: [7]   - VLEN512SiFive7VL
+# CHECK-NEXT: [8]   - VLEN512SiFive7VS
 
 # CHECK:      Resource pressure per iteration:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]

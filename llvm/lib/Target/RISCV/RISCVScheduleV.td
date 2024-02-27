@@ -9,6 +9,11 @@
 //===----------------------------------------------------------------------===//
 /// Define scheduler resources associated with def operands.
 
+#ifdef SIFIVE_CUSTOMIZATION
+// This predicate is true when the rs2 operand is x0, false otherwise.
+def VLDSX0Pred : MCSchedPredicate<CheckRegOperand<3, X0>>;
+#endif // SIFIVE_CUSTOMIZATION
+
 defvar SchedMxList = ["MF8", "MF4", "MF2", "M1", "M2", "M4", "M8"];
 // Used for widening and narrowing instructions as it doesn't contain M8.
 defvar SchedMxListW = !listremove(SchedMxList, ["M8"]);
@@ -88,20 +93,25 @@ multiclass LMULWriteResMXVariant<string name, SchedPredicateBase Pred,
     let ReleaseAtCycles = noPredReleaseCycles;
   }
 
+  // Define SchedVars
+  def nameMX # PredSchedVar
+      : SchedVar<Pred, [!cast<SchedWriteRes>(NAME # nameMX # "_Pred")]>;
+  def nameMX # NoPredSchedVar
+      : SchedVar<NoSchedPred, [!cast<SchedWriteRes>(NAME # nameMX #"_NoPred")]>;
+  // Allow multiclass to refer to SchedVars -- need to have NAME prefix.
+  defvar PredSchedVar = !cast<SchedVar>(NAME # nameMX # PredSchedVar);
+  defvar NoPredSchedVar = !cast<SchedVar>(NAME # nameMX # NoPredSchedVar);
+
   // Tie behavior to predicate
-  def NAME # nameMX # "_Variant" : SchedWriteVariant<[
-    SchedVar<Pred, [!cast<SchedWriteRes>(NAME # nameMX # "_Pred")]>,
-    SchedVar<NoSchedPred, [!cast<SchedWriteRes>(NAME # nameMX # "_NoPred")]>
-  ]>;
+  def NAME # nameMX # "_Variant"
+      : SchedWriteVariant<[PredSchedVar, NoPredSchedVar]>;
   def : SchedAlias<
     !cast<SchedReadWrite>(nameMX),
     !cast<SchedReadWrite>(NAME # nameMX # "_Variant")>;
 
   if IsWorstCase then {
-    def NAME # name # "_WorstCase_Variant" : SchedWriteVariant<[
-      SchedVar<Pred, [!cast<SchedWriteRes>(NAME # nameMX # "_Pred")]>,
-      SchedVar<NoSchedPred, [!cast<SchedWriteRes>(NAME # nameMX # "_NoPred")]>
-    ]>;
+    def NAME # name # "_WorstCase_Variant"
+      : SchedWriteVariant<[PredSchedVar, NoPredSchedVar]>;
     def : SchedAlias<
       !cast<SchedReadWrite>(name # "_WorstCase"),
       !cast<SchedReadWrite>(NAME # name # "_WorstCase_Variant")>;
