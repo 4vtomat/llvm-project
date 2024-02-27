@@ -1487,6 +1487,10 @@ static bool canEvaluateVPReversed(Value *V, Value *VL, unsigned Depth = 5) {
   case Intrinsic::vp_add:
   case Intrinsic::vp_sub:
   case Intrinsic::vp_mul:
+  case Intrinsic::vp_sadd_sat:
+  case Intrinsic::vp_ssub_sat:
+  case Intrinsic::vp_uadd_sat:
+  case Intrinsic::vp_usub_sat:
   case Intrinsic::vp_fadd:
   case Intrinsic::vp_fsub:
   case Intrinsic::vp_fmul: {
@@ -1522,6 +1526,10 @@ static Value *evaluateVPReversed(Value *V, InstCombinerImpl &IC) {
   case Intrinsic::vp_add:
   case Intrinsic::vp_sub:
   case Intrinsic::vp_mul:
+  case Intrinsic::vp_sadd_sat:
+  case Intrinsic::vp_ssub_sat:
+  case Intrinsic::vp_uadd_sat:
+  case Intrinsic::vp_usub_sat:
   case Intrinsic::vp_fadd:
   case Intrinsic::vp_fsub:
   case Intrinsic::vp_fmul: {
