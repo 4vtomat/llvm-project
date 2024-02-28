@@ -1308,6 +1308,19 @@ void PassBuilder::addVectorPasses(OptimizationLevel Level,
     FPM.addPass(BDCEPass());
   }
 
+#if SIFIVE_CUSTOMIZATION
+  if (IsFullLTO) {
+    // Optimize parallel scalar instruction chains into SIMD instructions.
+    if (PTO.SLPVectorization) {
+      FPM.addPass(SLPVectorizerPass());
+      if (Level.getSpeedupLevel() > 1 && ExtraVectorizerPasses) {
+        FPM.addPass(EarlyCSEPass());
+      }
+    }
+    // Enhance/cleanup vector code.
+    FPM.addPass(VectorCombinePass());
+  }
+#else
   // Optimize parallel scalar instruction chains into SIMD instructions.
   if (PTO.SLPVectorization) {
     FPM.addPass(SLPVectorizerPass());
@@ -1317,6 +1330,7 @@ void PassBuilder::addVectorPasses(OptimizationLevel Level,
   }
   // Enhance/cleanup vector code.
   FPM.addPass(VectorCombinePass());
+#endif
 
   if (!IsFullLTO) {
     FPM.addPass(InstCombinePass());
@@ -1337,6 +1351,16 @@ void PassBuilder::addVectorPasses(OptimizationLevel Level,
                                          /*OnlyWhenForced=*/!PTO.LoopUnrolling,
                                          PTO.ForgetAllSCEVInLoopUnroll),
                        IsLTOPreLink));
+
+    // Optimize parallel scalar instruction chains into SIMD instructions.
+    if (PTO.SLPVectorization) {
+      FPM.addPass(SLPVectorizerPass());
+      if (Level.getSpeedupLevel() > 1 && ExtraVectorizerPasses) {
+        FPM.addPass(EarlyCSEPass());
+      }
+    }
+    // Enhance/cleanup vector code.
+    FPM.addPass(VectorCombinePass());
 #else
     FPM.addPass(LoopUnrollPass(LoopUnrollOptions(
         Level.getSpeedupLevel(), /*OnlyWhenForced=*/!PTO.LoopUnrolling,

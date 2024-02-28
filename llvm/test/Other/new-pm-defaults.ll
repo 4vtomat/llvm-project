@@ -260,12 +260,12 @@
 ; CHECK-O-NEXT: Running pass: LoopLoadEliminationPass
 ; CHECK-O-NEXT: Running pass: InstCombinePass
 ; CHECK-O-NEXT: Running pass: SimplifyCFGPass
+; CHECK-O-NEXT: Running pass: InstCombinePass
+; CHECK-O-NEXT: Running pass: LoopUnrollPass
 ; CHECK-O2-NEXT: Running pass: SLPVectorizerPass
 ; CHECK-O3-NEXT: Running pass: SLPVectorizerPass
 ; CHECK-Os-NEXT: Running pass: SLPVectorizerPass
 ; CHECK-O-NEXT: Running pass: VectorCombinePass
-; CHECK-O-NEXT: Running pass: InstCombinePass
-; CHECK-O-NEXT: Running pass: LoopUnrollPass
 ; CHECK-O-NEXT: Running pass: WarnMissedTransformationsPass
 ; CHECK-O-NEXT: Running pass: SROAPass
 ; CHECK-O-NEXT: Running pass: InferAlignmentPass
