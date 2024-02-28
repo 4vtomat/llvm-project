@@ -83,6 +83,9 @@ public:
   bool tryShrinkShlLogicImm(SDNode *Node);
   bool trySignedBitfieldExtract(SDNode *Node);
   bool tryIndexedLoad(SDNode *Node);
+#if SIFIVE_CUSTOMIZATION
+  bool tryFixREV8W(SDNode *Node);
+#endif
 
   bool selectShiftMask(SDValue N, unsigned ShiftWidth, SDValue &ShAmt);
   bool selectShiftMaskXLen(SDValue N, SDValue &ShAmt) {

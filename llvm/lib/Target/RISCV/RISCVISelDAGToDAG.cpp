@@ -827,6 +827,89 @@ bool RISCVDAGToDAGISel::tryIndexedLoad(SDNode *Node) {
   return true;
 }
 
+#if SIFIVE_CUSTOMIZATION
+// Try to create (SRLI (SRLI (REV8 X), 32), (C - 32)) if this would make the
+// SRLI 32 the only user of the REV8 and the SRLI 32 has at least 4 uses
+// already. This reduces the number of live values in some workloads that
+// feature this pattern multiple times. The value of 4 was chosen as the minimum
+// value needed for one such workload. If we had a REV8W instruction we would
+// not need this optimization.
+bool RISCVDAGToDAGISel::tryFixREV8W(SDNode *Node) {
+  if (Node->getValueType(0) != MVT::i64)
+    return false;
+
+  SDValue N0 = Node->getOperand(0);
+  if (N0.getOpcode() != ISD::BSWAP || N0.hasOneUse())
+    return false;
+
+  auto *N1C = dyn_cast<ConstantSDNode>(Node->getOperand(1));
+  if (!N1C)
+    return false;
+
+  unsigned ShAmt = N1C->getZExtValue();
+  if (ShAmt <= 32)
+    return false;
+
+  bool FoundSRLI32 = false;
+  // All the other uses should be a SRLI with 32 or a another srl that can be
+  // optimized.
+  for (auto UI = N0->use_begin(), UE = N0->use_end(); UI != UE; ++UI) {
+    SDNode *User = *UI;
+
+    // Handle already selected user.
+    if (User->isMachineOpcode()) {
+      // If we found an SRLI 32, note it and continue.
+      if (User->getMachineOpcode() == RISCV::SRLI &&
+          isa<ConstantSDNode>(User->getOperand(1)) &&
+          cast<ConstantSDNode>(User->getOperand(1))->getZExtValue() == 32 &&
+          hasNItemsOrMore(User->use_begin(), User->use_end(), 4)) {
+        FoundSRLI32 = true;
+        continue;
+      }
+
+      // Some other selected instruction we can't optimize.
+      return false;
+    }
+
+    // Handle unselected user.
+    if (User->getOpcode() == ISD::SRL &&
+        isa<ConstantSDNode>(User->getOperand(1))) {
+      unsigned ShAmt2 =
+          cast<ConstantSDNode>(User->getOperand(1))->getZExtValue();
+      // If this is an unselected shift that will become an SRLI 32, note it
+      // and continue.
+      if (ShAmt2 == 32 &&
+          hasNItemsOrMore(User->use_begin(), User->use_end(), 4)) {
+        FoundSRLI32 = true;
+        continue;
+      }
+      // If the shift amount is more than 32, this is Node or another shift we
+      // do this transform on.
+      if (ShAmt > 32)
+        continue;
+    }
+
+    // This is some other instruction that we can't optimize.
+    return false;
+  }
+
+  // If we didn't find a SRLI 32 we should not do the transform.
+  if (!FoundSRLI32)
+    return false;
+
+  // Create 2 shifts. We will select the bswap via tablegen later.
+  SDLoc DL(Node);
+  SDNode *InnerSRLI =
+      CurDAG->getMachineNode(RISCV::SRLI, DL, MVT::i64, N0,
+                             CurDAG->getTargetConstant(32, DL, MVT::i64));
+  SDNode *OuterSRLI = CurDAG->getMachineNode(
+      RISCV::SRLI, DL, MVT::i64, SDValue(InnerSRLI, 0),
+      CurDAG->getTargetConstant(ShAmt - 32, DL, MVT::i64));
+  ReplaceNode(Node, OuterSRLI);
+  return true;
+}
+#endif
+
 void RISCVDAGToDAGISel::selectSF_VC_X_SE(SDNode *Node) {
   if (!Subtarget->hasVInstructions())
     return;
@@ -1070,6 +1153,11 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
     break;
   }
   case ISD::SRL: {
+#if SIFIVE_CUSTOMIZATION
+    if (tryFixREV8W(Node))
+      return;
+#endif // SIFIVE_CUSTOMIZATION
+
     auto *N1C = dyn_cast<ConstantSDNode>(Node->getOperand(1));
     if (!N1C)
       break;
