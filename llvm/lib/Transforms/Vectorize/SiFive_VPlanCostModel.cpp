@@ -122,8 +122,11 @@ Type *VPlanCostModel::getVectorType(Type *Ty, const RVVPair &RVVP) {
   assert(!isa_and_nonnull<VectorType>(Ty) &&
          "Cannot convert non-scalar type to VectorType for a given (LMUL, SEW) "
          "pair");
-  if (!RVVP)
-    return nullptr;
+  // Note: getCost() returns immediately when LMUL is unsupported.
+  // Thus valid ElementCount can be generated from RVVPair.
+  // And recipes with invalid type and valid ElementCount would be caught by
+  // TTI.
+  assert(RVVP && "RVVPair must have valid LMUL");
 
   if (Ty->isVoidTy() || Ty->isMetadataTy())
     return Ty;
@@ -176,8 +179,12 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
               [&](const VPWidenIntOrFpInductionRecipe *IVR) -> InstructionCost {
                 Value *Start = IVR->getStartValue()->getLiveInIRValue();
                 const TruncInst *Trunc = IVR->getTruncInst();
-                Type *VectorTy = Trunc ? getVectorType(Trunc->getType(), RVL)
-                                       : getVectorType(Start->getType(), RVL);
+
+                Type *SrcTy = Trunc ? Trunc->getType() : Start->getType();
+                if (!RVVPair::isValidType(SrcTy, RVL))
+                  return InstructionCost::getInvalid();
+
+                Type *VectorTy = getVectorType(SrcTy, RVL);
                 Instruction::BinaryOps AddOp;
                 const InductionDescriptor &ID = IVR->getInductionDescriptor();
                 if (Start->getType()->isIntegerTy())
@@ -237,6 +244,8 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
             case Instruction::SDiv:
             case Instruction::URem:
             case Instruction::SRem: {
+              if (!RVVPair::isValidType(I->getType(), RVL))
+                return InstructionCost::getInvalid();
               Type *VectorTy = getVectorType(I->getType(), RVL);
               return TTI.getArithmeticInstrCost(Opcode, VectorTy, CostKind);
             }
@@ -254,6 +263,8 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
             case Instruction::And:
             case Instruction::Or:
             case Instruction::Xor: {
+              if (!RVVPair::isValidType(I->getType(), RVL))
+                return InstructionCost::getInvalid();
               Type *VectorTy = getVectorType(I->getType(), RVL);
               // Certain instructions can be cheaper to vectorize if they have a
               // constant second vector operand. One example of this are shifts
@@ -277,6 +288,8 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
                                 Op2Info, Operands, I);
             }
             case Instruction::FNeg: {
+              if (!RVVPair::isValidType(I->getType(), RVL))
+                return InstructionCost::getInvalid();
               Type *VectorTy = getVectorType(I->getType(), RVL);
               const unsigned RegID =
                   TTI.getRegisterClassForType(true /*vector*/, VectorTy);
@@ -292,6 +305,8 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
                                 I->getOperand(0), I);
             }
             case Instruction::Select: {
+              if (!RVVPair::isValidType(I->getType(), RVL))
+                return InstructionCost::getInvalid();
               Type *VectorTy = getVectorType(I->getType(), RVL);
               const SelectInst *SI = cast<SelectInst>(I);
               Type *CondTy = SI->getCondition()->getType();
@@ -308,6 +323,8 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
             }
             case Instruction::ICmp:
             case Instruction::FCmp: {
+              if (!RVVPair::isValidType(I->getType(), RVL))
+                return InstructionCost::getInvalid();
               Type *VectorTy = getVectorType(I->getType(), RVL);
               const unsigned RegID =
                   TTI.getRegisterClassForType(true /*vector*/, VectorTy);
@@ -333,12 +350,16 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
             case Instruction::UIToFP:
             case Instruction::Trunc:
             case Instruction::FPTrunc: {
+              if (!RVVPair::isValidType(I->getType(), RVL))
+                return InstructionCost::getInvalid();
               Type *VectorTy = getVectorType(I->getType(), RVL);
               // Computes the CastContextHint from a Load/Store instruction.
 
               unsigned Opcode = I->getOpcode();
               TTI::CastContextHint CCH = TTI::CastContextHint::None;
               Type *SrcScalarTy = I->getOperand(0)->getType();
+              if (!RVVPair::isValidType(SrcScalarTy, RVL))
+                return InstructionCost::getInvalid();
               Type *SrcVecTy = VectorTy->isVectorTy()
                                    ? ToVectorTy(SrcScalarTy, VF)
                                    : SrcScalarTy;
@@ -363,13 +384,16 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
             case Instruction::ExtractValue:
               return TTI.getInstructionCost(I, CostKind);
             case Instruction::Load:
-            case Instruction::Store:
-              return getMemoryOpCost(
-                  I, getLoadStoreType(const_cast<Instruction *>(I)),
-                  /*IsConsecutive=*/true,
-                  /*IsMasked=*/false, /*IsReverse=*/false,
-                  /*Speculative=*/false);
+            case Instruction::Store: {
+              Type *Ty = getLoadStoreType(const_cast<Instruction *>(I));
+              return getMemoryOpCost(I, Ty,
+                                     /*IsConsecutive=*/true,
+                                     /*IsMasked=*/false, /*IsReverse=*/false,
+                                     /*Speculative=*/false);
+            }
             default: {
+              if (!RVVPair::isValidType(I->getType(), RVL))
+                return InstructionCost::getInvalid();
               Type *VectorTy = getVectorType(I->getType(), RVL);
               const unsigned RegID =
                   TTI.getRegisterClassForType(true /*vector*/, VectorTy);
@@ -453,6 +477,8 @@ InstructionCost VPlanCostModel::getVectorCallCost(const CallInst *CI,
                                                   const RVVPair &RVL) const {
   Function *F = CI->getCalledFunction();
   Type *ScalarRetTy = CI->getType();
+  if (!RVVPair::isValidType(ScalarRetTy, RVL))
+    return InstructionCost::getInvalid();
   SmallVector<Type *, 4> Tys, ScalarTys;
   for (auto &ArgOp : CI->args())
     ScalarTys.push_back(ArgOp->getType());
@@ -521,6 +547,8 @@ VPlanCostModel::getVectorIntrinsicCost(const CallInst *CI,
   Intrinsic::ID ID =
       getVectorIntrinsicIDForCall(CI, &TLI, Legal.useVLAVectorizer());
   assert(ID && "Expected intrinsic call!");
+  if (!RVVPair::isValidType(CI->getType(), RVL))
+    return InstructionCost::getInvalid();
   Type *RetTy = getVectorType(CI->getType(), RVL);
   FastMathFlags FMF;
   if (auto *FPMO = dyn_cast<FPMathOperator>(CI))
@@ -586,6 +614,8 @@ VPlanCostModel::getMemoryOpCost(const VPWidenMemoryInstructionRecipe *VPWMIR,
   const Instruction *I = &VPWMIR->getIngredient();
   Type *ValTy = VPWMIR->getElementType();
   const bool IsMasked = VPWMIR->getMask() != nullptr;
+  if (!RVVPair::isValidType(ValTy, RVL))
+    return InstructionCost::getInvalid();
   auto *VectorTy = cast<VectorType>(getVectorType(ValTy, RVL));
 
   InstructionCost Cost = 0;
@@ -622,6 +652,8 @@ InstructionCost VPlanCostModel::getInstructionCost(const VPInstruction *VPI,
     const Value *UV = VPI->getOperand(0)->getUnderlyingValue();
     if (!UV)
       return 0;
+    if (!RVVPair::isValidType(UV->getType(), RVL))
+      return InstructionCost::getInvalid();
     Type *VectorTy = getVectorType(UV->getType(), RVL);
     return TTI.getArithmeticInstrCost(Instruction::FMul, VectorTy, CostKind);
   }
@@ -641,6 +673,8 @@ InstructionCost VPlanCostModel::getInstructionCost(const VPInstruction *VPI,
   }
   case VPInstruction::FirstOrderRecurrenceSplice: {
     auto *V = VPI->getOperand(0)->getUnderlyingValue();
+    if (!RVVPair::isValidType(V->getType(), RVL))
+      return InstructionCost::getInvalid();
     auto *VectorTy = getVectorType(V->getType(), RVL);
     return TTI.getShuffleCost(TargetTransformInfo::SK_Splice,
                               cast<VectorType>(VectorTy), std::nullopt,
@@ -662,6 +696,9 @@ VPlanCostModel::getInterleavedMemoryOpCost(const VPInterleaveRecipe *VPI,
   unsigned AS = getLoadStoreAddressSpace(const_cast<Instruction *>(I));
   Type *ValTy = getLoadStoreType(const_cast<Instruction *>(I));
   const bool IsMasked = VPI->getMask() != nullptr;
+
+  if (!RVVPair::isValidType(ValTy, RVL))
+    return InstructionCost::getInvalid();
   auto *VectorTy = cast<VectorType>(getVectorType(ValTy, RVL));
   ElementCount VF = getElementCount(RVL);
   auto *WideVecTy = VectorType::get(ValTy, VF * InterleaveFactor);
@@ -712,6 +749,8 @@ InstructionCost VPlanCostModel::getReductionCost(const VPReductionRecipe *VPR,
 
   RecurKind RdxKind = RdxDesc.getRecurrenceKind();
   Type *ElementTy = RdxDesc.getRecurrenceType();
+  if (!RVVPair::isValidType(ElementTy, RVL))
+    return InstructionCost::getInvalid();
   auto *VectorTy = cast<VectorType>(getVectorType(ElementTy, RVL));
   switch (RdxKind) {
   case RecurKind::Add:
@@ -758,6 +797,8 @@ InstructionCost VPlanCostModel::getReplicateOpCost(const VPReplicateRecipe *VPR,
     // We cannot easily widen alloca to a scalable alloca, as
     // the result would need to be a vector of pointers.
     if (VF.isScalable())
+      return InstructionCost::getInvalid();
+    if (!RVVPair::isValidType(I->getType(), RVL))
       return InstructionCost::getInvalid();
     Type *VectorTy = getVectorType(I->getType(), RVL);
     // This opcode is unknown. Assume that it is the same as 'mul'.

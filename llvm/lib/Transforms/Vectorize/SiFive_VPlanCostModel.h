@@ -61,8 +61,23 @@ public:
   static RVVPair getWithExponent(Type *Ty, const int LMULExp,
                                  const DataLayout &DL);
 
+  static bool isValidType(Type *Ty, const DataLayout &DL) {
+    const unsigned SEW = DL.getTypeSizeInBits(Ty);
+    if (SEW != 1 && SEW != 8 && SEW != 16 && SEW != 32 && SEW != 64)
+      return false;
+    return true;
+  }
+  static bool isValidType(Type *Ty, const RVVPair &RVVP) {
+    return RVVPair::isValidType(Ty, RVVP.DL);
+  }
+
   static RVVPair get(Type *Ty, ElementCount EC, const DataLayout &DL) {
-    const unsigned Numerator = DL.getTypeSizeInBits(Ty) * EC.getKnownMinValue();
+    // Check if the size is supported by RVV
+    if (!RVVPair::isValidType(Ty, DL))
+      return RVVPair(Ty, LMULKind::Unsupported, DL);
+
+    const unsigned SEW = DL.getTypeSizeInBits(Ty);
+    const unsigned Numerator = SEW * EC.getKnownMinValue();
     const unsigned Denominator = RISCV::RVVBitsPerBlock;
     const int LMULExp = Log2_32(Numerator / Denominator);
     return getWithExponent(Ty, LMULExp, DL);
@@ -126,10 +141,10 @@ public:
   /// Return cost of the VPlan for a given \p RVL
   InstructionCost getCost(const RVVPair &RVL);
 
+private:
   /// Return VectorType that corresponds to the specified (LMUL, SEW) pair
   static Type *getVectorType(Type *Ty, const RVVPair &RVVP);
 
-private:
   /// Return individual cost of the \p VPBasicBlock for a given \p RVL
   InstructionCost getCost(const VPBlockBase *Block, const RVVPair &RVL);
 
