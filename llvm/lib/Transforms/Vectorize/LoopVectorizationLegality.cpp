@@ -2507,10 +2507,10 @@ bool LoopVectorizationLegality::isSafeStrideAccessInfo(
     return false;
 
   SCEVRuntimeStrideChecker StrideChecker(*this);
-  return StrideChecker.visit(SAI.getSCEVStrideInBytes());
+  return StrideChecker.visit(SAI.getSCEVStride());
 }
 
-LoopVectorizationLegality::StrideAccessInfo
+StrideAccessInfo
 LoopVectorizationLegality::computeStrideAccessInfo(Instruction *I) const {
   Value *Ptr = getLoadStorePointerOperand(I);
   auto *PtrTy = dyn_cast<PointerType>(Ptr->getType());
@@ -2519,20 +2519,9 @@ LoopVectorizationLegality::computeStrideAccessInfo(Instruction *I) const {
   if (!PtrTy)
     return StrideAccessInfo();
 
-  auto GetSimpleSCEVStrideInBytes =
-      [](const SCEV *SPtr) -> const SCEVAddRecExpr * {
-    const auto *S = dyn_cast<SCEVAddRecExpr>(SPtr);
-    if (!S || !S->isAffine())
-      return nullptr;
-    return S;
-  };
-
   const SCEV *SPtr = PSE.getSCEV(Ptr);
-
-  if (const SCEVAddRecExpr *V = GetSimpleSCEVStrideInBytes(SPtr)) {
-    const SCEV *StrideInBytes = V->getStepRecurrence(*PSE.getSE());
-    return StrideAccessInfo(V, StrideInBytes, EltSize);
-  }
+  if (StrideAccessInfo SAI = getSimpleSCEVStride(*I, PSE, /*InBytes=*/true))
+    return SAI;
 
   SCEVMonotonicStrideExpr SMSE(*this);
   if (SMSE.visit(SPtr) && !SMSE.getMonotonics().empty()) {
@@ -2549,19 +2538,10 @@ LoopVectorizationLegality::computeStrideAccessInfo(Instruction *I) const {
     // expanded in generated vector code
     const SCEV *StepInBytes =
         SE->getMulExpr(Step, SE->getConstant(Step->getType(), EltSize));
-    return StrideAccessInfo(SPtr, StepInBytes, EltSize,
+    return StrideAccessInfo(SPtr, StepInBytes, EltSize, /*InBytes=*/true,
                             /*IsStrideMonotonic=*/true);
   }
   return StrideAccessInfo();
 }
-
-#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-raw_ostream &
-operator<<(raw_ostream &OS,
-           const LoopVectorizationLegality::StrideAccessInfo &SAI) {
-  SAI.print(OS);
-  return OS;
-}
-#endif // !NDEBUG || LLVM_ENABLE_DUMP
 #endif // SIFIVE_CUSTOMIZATION
 } // namespace llvm

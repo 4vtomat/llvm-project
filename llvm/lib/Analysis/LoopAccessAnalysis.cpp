@@ -2843,12 +2843,7 @@ static Value *getUniqueCastUse(Value *Ptr, Loop *Lp, Type *Ty) {
 
 /// Get the stride of a pointer access in a loop. Looks for symbolic
 /// strides "a[i*stride]". Returns the symbolic stride, or null otherwise.
-#if SIFIVE_CUSTOMIZATION
-const SCEV *llvm::getStrideFromPointer(Value *Ptr, ScalarEvolution *SE,
-                                       Loop *Lp) {
-#else
 static const SCEV *getStrideFromPointer(Value *Ptr, ScalarEvolution *SE, Loop *Lp) {
-#endif // SIFIVE_CUSTOMIZATION
   auto *PtrTy = dyn_cast<PointerType>(Ptr->getType());
   if (!PtrTy || PtrTy->isAggregateType())
     return nullptr;

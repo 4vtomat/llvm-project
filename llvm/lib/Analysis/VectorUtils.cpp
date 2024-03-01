@@ -1111,11 +1111,10 @@ void InterleavedAccessInfo::collectConstStrideAccesses(
 #if SIFIVE_CUSTOMIZATION
       // Consider non-constant stride
       if (EnableNonConstStride && !Stride) {
-        const SCEV *StrideExpr =
-            getStrideFromPointer(Ptr, PSE.getSE(), TheLoop);
-        if (StrideExpr) {
-          AccessStrideInfo[&I] = StrideDescriptor(StrideExpr, Scev, Size,
-                                                  getLoadStoreAlignment(&I));
+        StrideAccessInfo SAI = getSimpleSCEVStride(I, PSE, /*InBytes=*/false);
+        if (SAI) {
+          AccessStrideInfo[&I] = StrideDescriptor(
+              SAI.getSCEVStride(), Scev, Size, getLoadStoreAlignment(&I));
           continue;
         }
       }
@@ -1576,4 +1575,45 @@ void InterleaveGroup<Instruction>::addMetadata(Instruction *NewInst) const {
                  [](std::pair<int, Instruction *> p) { return p.second; });
   propagateMetadata(NewInst, VL);
 }
+
+#if SIFIVE_CUSTOMIZATION
+StrideAccessInfo getSimpleSCEVStride(Instruction &I,
+                                     PredicatedScalarEvolution &PSE,
+                                     bool InBytes) {
+  Value *Ptr = getLoadStorePointerOperand(&I);
+  auto *PtrTy = dyn_cast<PointerType>(Ptr->getType());
+  const DataLayout &DL = I.getModule()->getDataLayout();
+  unsigned EltSize = DL.getTypeAllocSize(getLoadStoreType(&I));
+  if (!PtrTy)
+    return StrideAccessInfo();
+
+  if (const SCEVAddRecExpr *AddRec = PSE.getAsAddRec(Ptr)) {
+    const SCEV *StrideInBytes = AddRec->getStepRecurrence(*PSE.getSE());
+    if (!InBytes) {
+      if (const auto *C = dyn_cast<SCEVConstant>(StrideInBytes))
+        if (C->isOne() && EltSize != 1)
+          // SCT-3256: most likely it's a bug in memory access versioning as it
+          // creates a version of the stride=1 byte for floating point access,
+          // i.e. that version should never be executed.
+          // Not to introduce zero stride by division by EltSize, return that
+          // stride cannot be computed
+          return StrideAccessInfo();
+      // Always assume that the stride in bytes in AddRec. Convert it into
+      // element stride by simple divide of it by element size
+      ScalarEvolution &SE = *PSE.getSE();
+      StrideInBytes = SE.getUDivExpr(
+          StrideInBytes, SE.getConstant(StrideInBytes->getType(), EltSize));
+    }
+    return StrideAccessInfo(AddRec, StrideInBytes, EltSize, InBytes);
+  }
+  return StrideAccessInfo();
+}
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+raw_ostream &operator<<(raw_ostream &OS, const StrideAccessInfo &SAI) {
+  SAI.print(OS);
+  return OS;
+}
+#endif // !NDEBUG || LLVM_ENABLE_DUMP
+#endif // SIFIVE_CUSTOMIZATION
 } // namespace llvm

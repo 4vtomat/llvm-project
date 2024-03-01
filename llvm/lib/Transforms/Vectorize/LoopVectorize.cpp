@@ -468,7 +468,7 @@ namespace SiFiveInterleavedAccess {
 // TODO: Switch to cl::list to have better fine-grained control
 cl::opt<SiFiveInterleavedAccess::Level> SiFiveEnableInterleavedAccess(
     "sifive-loop-vectorizer-enable-interleaved-access",
-    cl::init(SiFiveInterleavedAccess::ConstStride), cl::Hidden,
+    cl::init(SiFiveInterleavedAccess::InvariantStride), cl::Hidden,
     cl::desc("Enable interleaved access in RVV VLA vectorization"),
     cl::values(
         clEnumValN(SiFiveInterleavedAccess::NoInterleaved, "no-interleaved",
@@ -8302,8 +8302,7 @@ LoopVectorizationCostModel::getMemoryAccessType(Instruction *I) const {
     // for RVV VLA vectorization
     return CM_GatherScatter;
 
-  LoopVectorizationLegality::StrideAccessInfo SAI =
-      Legal->computeStrideAccessInfo(I);
+  StrideAccessInfo SAI = Legal->computeStrideAccessInfo(I);
   if (!Legal->isSafeStrideAccessInfo(SAI))
     return CM_GatherScatter;
 
@@ -10261,9 +10260,8 @@ VPRecipeBuilder::tryToWidenMemory(Instruction *I, ArrayRef<VPValue *> Operands,
     IsMonotonic = true;
     [[fallthrough]];
   case LoopVectorizationCostModel::CM_Strided: {
-    LoopVectorizationLegality::StrideAccessInfo SAI =
-        Legal->computeStrideAccessInfo(I);
-    Stride = SAI.getSCEVStrideInBytes();
+    StrideAccessInfo SAI = Legal->computeStrideAccessInfo(I);
+    Stride = SAI.getSCEVStride();
     Consecutive = SAI.isUnitStrided();
     break;
   }

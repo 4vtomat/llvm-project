@@ -905,6 +905,79 @@ private:
   }
 };
 
+#if SIFIVE_CUSTOMIZATION
+// Helper class to hold the information about strided memory access
+class StrideAccessInfo {
+private:
+  const SCEV *SCEVExpr = nullptr;
+  const SCEV *SCEVStride = nullptr;
+  const unsigned EltSize = 0;
+  const bool InBytes = true;
+  const bool IsStrideMonotonic = false;
+
+public:
+  explicit StrideAccessInfo() = default;
+  explicit StrideAccessInfo(const SCEV *SCEVExpr, const SCEV *SCEVStride,
+                            const unsigned EltSize, const bool InBytes = true,
+                            const bool IsStrideMonotonic = false)
+      : SCEVExpr(SCEVExpr), SCEVStride(SCEVStride), EltSize(EltSize),
+        InBytes(InBytes), IsStrideMonotonic(IsStrideMonotonic) {}
+  const SCEV *getSCEVExpr() const { return SCEVExpr; }
+  const SCEV *getSCEVStride() const { return SCEVStride; }
+  const SCEV *getSCEVStide() const { return SCEVStride; }
+  bool isMonotonicStride() const { return IsStrideMonotonic; }
+  bool isConstantStride() const {
+    return !IsStrideMonotonic && SCEVStride &&
+           isa<SCEVConstant>(SCEVStride);
+  }
+  bool isInBytes() const { return InBytes; }
+
+  std::optional<int> getConstantStride() const {
+    if (auto *C = dyn_cast<SCEVConstant>(SCEVStride))
+      return C->getAPInt().getSExtValue();
+    return std::nullopt;
+  }
+
+  bool isUnitStrided() const {
+    if (std::optional<int> C = getConstantStride())
+      return *C == (int)EltSize;
+    // TODO: Support -1
+    return false;
+  }
+
+  explicit operator bool() const { return SCEVExpr && SCEVStride; }
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  void print(raw_ostream &OS) const {
+    OS << "StrideAccessInfo: ";
+
+    OS << "SCEV: ";
+    if (SCEVExpr) {
+      OS << *SCEVExpr;
+      OS << "( ";
+      OS << (IsStrideMonotonic ? "monotonic" : "");
+      OS << " stride " << (InBytes ? "(in bytes)" : "") << ": " << *SCEVStride
+         << ')';
+    } else {
+      OS << "<<unknown>>";
+    }
+  }
+
+  void dump() const { print(llvm::dbgs()); }
+#endif // !NDEBUG || LLVM_ENABLE_DUMP
+};
+
+/// Return stride of a memory access \p I. By default SCEV stride is represented
+/// in bytes, unless \p InBytes is false.
+StrideAccessInfo getSimpleSCEVStride(Instruction &I,
+                                     PredicatedScalarEvolution &PSE,
+                                     bool InBytes = true);
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+raw_ostream &operator<<(raw_ostream &OS, const StrideAccessInfo &SAI);
+#endif // !NDEBUG || LLVM_ENABLE_DUMP
+#endif // SIFIVE_CUSTOMIZATION
+
 } // llvm namespace
 
 #endif

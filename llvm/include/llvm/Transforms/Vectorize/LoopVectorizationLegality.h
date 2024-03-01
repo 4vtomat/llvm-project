@@ -33,6 +33,7 @@
 #include "llvm/Transforms/Utils/LoopUtils.h"
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/Analysis/SiFive_CSADescriptors.h"
+#include "llvm/Analysis/VectorUtils.h"
 #endif // SIFIVE_CUSTOMIZATION
 
 namespace llvm {
@@ -543,64 +544,6 @@ public:
     IsVectorizableUncountable = true;
   };
 
-  // Helper class to hold the information about strided memory access
-  class StrideAccessInfo {
-  private:
-    const SCEV *SCEVExpr = nullptr;
-    const SCEV *SCEVStrideInBytes = nullptr;
-    const unsigned EltSize = 0;
-    const bool IsStrideMonotonic = false;
-
-  public:
-    explicit StrideAccessInfo() = default;
-    explicit StrideAccessInfo(const SCEV *SCEVExpr,
-                              const SCEV *SCEVStrideInBytes,
-                              const unsigned EltSize,
-                              const bool IsStrideMonotonic = false)
-        : SCEVExpr(SCEVExpr), SCEVStrideInBytes(SCEVStrideInBytes),
-          EltSize(EltSize), IsStrideMonotonic(IsStrideMonotonic) {}
-    const SCEV *getSCEVExpr() const { return SCEVExpr; }
-    const SCEV *getSCEVStrideInBytes() const { return SCEVStrideInBytes; }
-    bool isMonotonicStride() const { return IsStrideMonotonic; }
-    bool isConstantStride() const {
-      return !IsStrideMonotonic && SCEVStrideInBytes &&
-             isa<SCEVConstant>(SCEVStrideInBytes);
-    }
-
-    std::optional<int> getConstantStride() const {
-      if (auto *C = dyn_cast<SCEVConstant>(SCEVStrideInBytes))
-        return C->getAPInt().getSExtValue();
-      return std::nullopt;
-    }
-
-    bool isUnitStrided() const {
-      if (std::optional<int> C = getConstantStride())
-        return *C == (int)EltSize;
-      // TODO: Support -1
-      return false;
-    }
-
-    explicit operator bool() const { return SCEVExpr && SCEVStrideInBytes; }
-
-#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-    void print(raw_ostream &OS) const {
-      OS << "StrideAccessInfo: ";
-
-      OS << "SCEV: ";
-      if (SCEVExpr) {
-        OS << *SCEVExpr;
-        OS << "( ";
-        OS << (IsStrideMonotonic ? "monotonic" : "");
-        OS << " stride (in bytes): " << *SCEVStrideInBytes << ')';
-      } else {
-        OS << "<<unknown>>";
-      }
-    }
-
-    void dump() const { print(llvm::dbgs()); }
-#endif // !NDEBUG || LLVM_ENABLE_DUMP
-  };
-
   /// Returns true if it's safe to emit special intrinsic for non-unit strided
   /// accesses by simply reusing scalar address as a base address of the
   /// intrinsic
@@ -793,13 +736,6 @@ private:
   /// the use of those function variants.
   bool VecCallVariantsFound = false;
 };
-
-#if SIFIVE_CUSTOMIZATION
-#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-raw_ostream &operator<<(raw_ostream &OS,
-                        const LoopVectorizationLegality::StrideAccessInfo &SAI);
-#endif // !NDEBUG || LLVM_ENABLE_DUMP
-#endif // SIFIVE_CUSTOMIZATION
 
 } // namespace llvm
 

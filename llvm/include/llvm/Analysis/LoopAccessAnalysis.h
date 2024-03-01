@@ -729,10 +729,6 @@ const SCEV *
 replaceSymbolicStrideSCEV(PredicatedScalarEvolution &PSE,
                           const DenseMap<Value *, const SCEV *> &PtrToStride,
                           Value *Ptr);
-#if SIFIVE_CUSTOMIZATION
-/// Return the symbolic stride for the given pointer \p Ptr.
-const SCEV *getStrideFromPointer(Value *Ptr, ScalarEvolution *SE, Loop *Lp);
-#endif // SIFIVE_CUSTOMIZATION
 
 /// If the pointer has a constant stride return it in units of the access type
 /// size.  Otherwise return std::nullopt.
