@@ -183,13 +183,15 @@ void DAGTypeLegalizer::PromoteIntegerResult(SDNode *N, unsigned ResNo) {
   case ISD::VP_SUB:
   case ISD::VP_MUL:      Res = PromoteIntRes_SimpleIntBinOp(N); break;
 
-  case ISD::VP_SMIN: case ISD::VP_SMAX: // SIFIVE
+  case ISD::VP_SMIN:
+  case ISD::VP_SMAX:
   case ISD::SDIV:
   case ISD::SREM:
   case ISD::VP_SDIV:
   case ISD::VP_SREM:     Res = PromoteIntRes_SExtIntBinOp(N); break;
 
-  case ISD::VP_UMIN: case ISD::VP_UMAX: // SIFIVE
+  case ISD::VP_UMIN:
+  case ISD::VP_UMAX:
   case ISD::UDIV:
   case ISD::UREM:
   case ISD::VP_UDIV:
@@ -215,10 +217,6 @@ void DAGTypeLegalizer::PromoteIntegerResult(SDNode *N, unsigned ResNo) {
   case ISD::SSUBSAT:
   case ISD::USUBSAT:
   case ISD::SSHLSAT:
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 4df364bc93af
   case ISD::USHLSAT:
     Res = PromoteIntRes_ADDSUBSHLSAT<EmptyMatchContext>(N);
     break;
@@ -228,10 +226,6 @@ void DAGTypeLegalizer::PromoteIntegerResult(SDNode *N, unsigned ResNo) {
   case ISD::VP_USUBSAT:
     Res = PromoteIntRes_ADDSUBSHLSAT<VPMatchContext>(N);
     break;
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 4df364bc93af
 
   case ISD::SMULFIX:
   case ISD::SMULFIXSAT:
@@ -954,10 +948,6 @@ SDValue DAGTypeLegalizer::PromoteIntRes_Overflow(SDNode *N) {
   return DAG.getBoolExtOrTrunc(Res.getValue(1), dl, NVT, VT);
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 4df364bc93af
 template <class MatchContextClass>
 SDValue DAGTypeLegalizer::PromoteIntRes_ADDSUBSHLSAT(SDNode *N) {
   // If the promoted type is legal, we can convert this to:
@@ -1047,7 +1037,6 @@ SDValue DAGTypeLegalizer::PromoteIntRes_ADDSUBSHLSAT(SDNode *N) {
   Result = matcher.getNode(ISD::SMAX, dl, PromotedType, Result, SatMin);
   return Result;
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 SDValue DAGTypeLegalizer::PromoteIntRes_MULFIX(SDNode *N) {
   // Can just promote the operands then continue with operation.

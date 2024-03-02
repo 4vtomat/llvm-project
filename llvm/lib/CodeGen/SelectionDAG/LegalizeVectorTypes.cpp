@@ -1182,18 +1182,10 @@ void DAGTypeLegalizer::SplitVectorResult(SDNode *N, unsigned ResNo) {
   case ISD::SMAX: case ISD::VP_SMAX:
   case ISD::UMIN: case ISD::VP_UMIN:
   case ISD::UMAX: case ISD::VP_UMAX:
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 4df364bc93af
   case ISD::SADDSAT: case ISD::VP_SADDSAT:
   case ISD::UADDSAT: case ISD::VP_UADDSAT:
   case ISD::SSUBSAT: case ISD::VP_SSUBSAT:
   case ISD::USUBSAT: case ISD::VP_USUBSAT:
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 4df364bc93af
   case ISD::SSHLSAT:
   case ISD::USHLSAT:
   case ISD::ROTL:
@@ -4344,18 +4336,10 @@ void DAGTypeLegalizer::WidenVectorResult(SDNode *N, unsigned ResNo) {
   case ISD::SMAX: case ISD::VP_SMAX:
   case ISD::UMIN: case ISD::VP_UMIN:
   case ISD::UMAX: case ISD::VP_UMAX:
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 4df364bc93af
   case ISD::UADDSAT: case ISD::VP_UADDSAT:
   case ISD::SADDSAT: case ISD::VP_SADDSAT:
   case ISD::USUBSAT: case ISD::VP_USUBSAT:
   case ISD::SSUBSAT: case ISD::VP_SSUBSAT:
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 4df364bc93af
   case ISD::SSHLSAT:
   case ISD::USHLSAT:
   case ISD::ROTL:

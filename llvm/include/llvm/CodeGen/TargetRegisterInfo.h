@@ -1177,7 +1177,6 @@ public:
     return false;
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   virtual bool enableTargetInterference() const { return false; }
 
@@ -1192,7 +1191,7 @@ public:
     return false;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   /// Returns the Largest Super Class that is being initialized. There
   /// should be a Pseudo Instruction implemented for the super class
   /// that is being returned to ensure that Init Undef can apply the
@@ -1214,7 +1213,6 @@ public:
   doesRegClassHavePseudoInitUndef(const TargetRegisterClass *RC) const {
     return false;
   }
->>>>>>> 4df364bc93af
 };
 
 //===----------------------------------------------------------------------===//

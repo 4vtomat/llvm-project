@@ -76,11 +76,7 @@
 #include <utility>
 #include <variant>
 
-<<<<<<< HEAD
-#include "MatchContext.h" // SFIVE
-=======
 #include "MatchContext.h"
->>>>>>> 4df364bc93af
 
 using namespace llvm;
 
