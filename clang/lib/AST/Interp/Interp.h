@@ -113,6 +113,10 @@ bool CheckThis(InterpState &S, CodePtr OpPC, const Pointer &This);
 /// Checks if a method is pure virtual.
 bool CheckPure(InterpState &S, CodePtr OpPC, const CXXMethodDecl *MD);
 
+/// Checks if all the arguments annotated as 'nonnull' are in fact not null.
+bool CheckNonNullArgs(InterpState &S, CodePtr OpPC, const Function *F,
+                      const CallExpr *CE, unsigned ArgSize);
+
 /// Sets the given integral value to the pointer, which is of
 /// a std::{weak,partial,strong}_ordering type.
 bool SetThreeWayComparisonField(InterpState &S, CodePtr OpPC,
@@ -135,7 +139,7 @@ bool CheckShift(InterpState &S, CodePtr OpPC, const LT &LHS, const RT &RHS,
     const APSInt Val = RHS.toAPSInt();
     QualType Ty = E->getType();
     S.CCEDiag(E, diag::note_constexpr_large_shift) << Val << Ty << Bits;
-    return false;
+    return true; // We will do the shift anyway but fix up the shift amount.
   }
 
   if (LHS.isSigned() && !S.getLangOpts().CPlusPlus20) {
@@ -804,7 +808,8 @@ bool CMP3(InterpState &S, CodePtr OpPC, const ComparisonCategoryInfo *CmpInfo) {
   }
 
   assert(CmpInfo);
-  const auto *CmpValueInfo = CmpInfo->getValueInfo(CmpResult);
+  const auto *CmpValueInfo =
+      CmpInfo->getValueInfo(CmpInfo->makeWeakResult(CmpResult));
   assert(CmpValueInfo);
   assert(CmpValueInfo->hasValidIntValue());
   const APSInt &IntValue = CmpValueInfo->getIntValue();
@@ -1043,7 +1048,7 @@ bool InitGlobal(InterpState &S, CodePtr OpPC, uint32_t I) {
 
 /// 1) Converts the value on top of the stack to an APValue
 /// 2) Sets that APValue on \Temp
-/// 3) Initialized global with index \I with that
+/// 3) Initializes global with index \I with that
 template <PrimType Name, class T = typename PrimConv<Name>::T>
 bool InitGlobalTemp(InterpState &S, CodePtr OpPC, uint32_t I,
                     const LifetimeExtendedTemporaryDecl *Temp) {
@@ -1275,14 +1280,14 @@ inline bool GetPtrThisBase(InterpState &S, CodePtr OpPC, uint32_t Off) {
   return true;
 }
 
-inline bool InitPtrPop(InterpState &S, CodePtr OpPC) {
+inline bool FinishInitPop(InterpState &S, CodePtr OpPC) {
   const Pointer &Ptr = S.Stk.pop<Pointer>();
   if (Ptr.canBeInitialized())
     Ptr.initialize();
   return true;
 }
 
-inline bool InitPtr(InterpState &S, CodePtr OpPC) {
+inline bool FinishInit(InterpState &S, CodePtr OpPC) {
   const Pointer &Ptr = S.Stk.peek<Pointer>();
 
   if (Ptr.canBeInitialized())
@@ -1391,6 +1396,19 @@ bool StoreBitFieldPop(InterpState &S, CodePtr OpPC) {
     Ptr.deref<T>() = Value.truncate(FD->getBitWidthValue(S.getCtx()));
   else
     Ptr.deref<T>() = Value;
+  return true;
+}
+
+template <PrimType Name, class T = typename PrimConv<Name>::T>
+bool Init(InterpState &S, CodePtr OpPC) {
+  const T &Value = S.Stk.pop<T>();
+  const Pointer &Ptr = S.Stk.peek<Pointer>();
+  if (!CheckInit(S, OpPC, Ptr)) {
+    assert(false);
+    return false;
+  }
+  Ptr.initialize();
+  new (&Ptr.deref<T>()) T(Value);
   return true;
 }
 
@@ -1662,7 +1680,7 @@ bool CastFloatingIntegral(InterpState &S, CodePtr OpPC) {
     auto Status = F.convertToInteger(Result);
 
     // Float-to-Integral overflow check.
-    if ((Status & APFloat::opStatus::opInvalidOp) && F.isFinite()) {
+    if ((Status & APFloat::opStatus::opInvalidOp)) {
       const Expr *E = S.Current->getExpr(OpPC);
       QualType Type = E->getType();
 
@@ -1798,11 +1816,17 @@ inline bool Shr(InterpState &S, CodePtr OpPC) {
   if (!CheckShift(S, OpPC, LHS, RHS, Bits))
     return false;
 
+  // Limit the shift amount to Bits - 1. If this happened,
+  // it has already been diagnosed by CheckShift() above,
+  // but we still need to handle it.
   typename LT::AsUnsigned R;
-  LT::AsUnsigned::shiftRight(LT::AsUnsigned::from(LHS),
-                             LT::AsUnsigned::from(RHS), Bits, &R);
+  if (RHS > RT::from(Bits - 1, RHS.bitWidth()))
+    LT::AsUnsigned::shiftRight(LT::AsUnsigned::from(LHS),
+                               LT::AsUnsigned::from(Bits - 1), Bits, &R);
+  else
+    LT::AsUnsigned::shiftRight(LT::AsUnsigned::from(LHS),
+                               LT::AsUnsigned::from(RHS, Bits), Bits, &R);
   S.Stk.push<LT>(LT::from(R));
-
   return true;
 }
 
@@ -1817,9 +1841,17 @@ inline bool Shl(InterpState &S, CodePtr OpPC) {
   if (!CheckShift(S, OpPC, LHS, RHS, Bits))
     return false;
 
+  // Limit the shift amount to Bits - 1. If this happened,
+  // it has already been diagnosed by CheckShift() above,
+  // but we still need to handle it.
   typename LT::AsUnsigned R;
-  LT::AsUnsigned::shiftLeft(LT::AsUnsigned::from(LHS),
-                            LT::AsUnsigned::from(RHS, Bits), Bits, &R);
+  if (RHS > RT::from(Bits - 1, RHS.bitWidth()))
+    LT::AsUnsigned::shiftLeft(LT::AsUnsigned::from(LHS),
+                              LT::AsUnsigned::from(Bits - 1), Bits, &R);
+  else
+    LT::AsUnsigned::shiftLeft(LT::AsUnsigned::from(LHS),
+                              LT::AsUnsigned::from(RHS, Bits), Bits, &R);
+
   S.Stk.push<LT>(LT::from(R));
   return true;
 }
@@ -1901,7 +1933,7 @@ inline bool ArrayElemPop(InterpState &S, CodePtr OpPC, uint32_t Index) {
 inline bool ArrayDecay(InterpState &S, CodePtr OpPC) {
   const Pointer &Ptr = S.Stk.pop<Pointer>();
 
-  if (Ptr.isDummy()) {
+  if (Ptr.isZero() || Ptr.isDummy()) {
     S.Stk.push<Pointer>(Ptr);
     return true;
   }
@@ -1966,6 +1998,7 @@ inline bool CallVar(InterpState &S, CodePtr OpPC, const Function *Func,
 
   return false;
 }
+
 inline bool Call(InterpState &S, CodePtr OpPC, const Function *Func,
                  uint32_t VarArgSize) {
   if (Func->hasThisPointer()) {
@@ -2069,11 +2102,24 @@ inline bool CallBI(InterpState &S, CodePtr &PC, const Function *Func,
   return false;
 }
 
-inline bool CallPtr(InterpState &S, CodePtr OpPC, uint32_t ArgSize) {
+inline bool CallPtr(InterpState &S, CodePtr OpPC, uint32_t ArgSize,
+                    const CallExpr *CE) {
   const FunctionPointer &FuncPtr = S.Stk.pop<FunctionPointer>();
 
   const Function *F = FuncPtr.getFunction();
+  if (!F) {
+    const Expr *E = S.Current->getExpr(OpPC);
+    S.FFDiag(E, diag::note_constexpr_null_callee)
+        << const_cast<Expr *>(E) << E->getSourceRange();
+    return false;
+  }
   assert(F);
+
+  // Check argument nullability state.
+  if (F->hasNonNullAttr()) {
+    if (!CheckNonNullArgs(S, OpPC, F, CE, ArgSize))
+      return false;
+  }
 
   assert(ArgSize >= F->getWrittenArgSize());
   uint32_t VarArgSize = ArgSize - F->getWrittenArgSize();
@@ -2129,6 +2175,18 @@ inline bool OffsetOf(InterpState &S, CodePtr OpPC, const OffsetOfExpr *E) {
   S.Stk.push<T>(T::from(Result));
 
   return true;
+}
+
+template <PrimType Name, class T = typename PrimConv<Name>::T>
+inline bool CheckNonNullArg(InterpState &S, CodePtr OpPC) {
+  const T &Arg = S.Stk.peek<T>();
+  if (!Arg.isZero())
+    return true;
+
+  const SourceLocation &Loc = S.Current->getLocation(OpPC);
+  S.CCEDiag(Loc, diag::note_non_null_attribute_failed);
+
+  return false;
 }
 
 //===----------------------------------------------------------------------===//

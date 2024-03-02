@@ -1117,7 +1117,9 @@ void DAGTypeLegalizer::SplitVectorResult(SDNode *N, unsigned ResNo) {
   case ISD::FRINT:
   case ISD::VP_FRINT:
   case ISD::LRINT:
+  case ISD::VP_LRINT:
   case ISD::LLRINT:
+  case ISD::VP_LLRINT:
   case ISD::FROUND:
   case ISD::VP_FROUND:
   case ISD::FROUNDEVEN:
@@ -1180,12 +1182,18 @@ void DAGTypeLegalizer::SplitVectorResult(SDNode *N, unsigned ResNo) {
   case ISD::SMAX: case ISD::VP_SMAX:
   case ISD::UMIN: case ISD::VP_UMIN:
   case ISD::UMAX: case ISD::VP_UMAX:
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 4df364bc93af
   case ISD::SADDSAT: case ISD::VP_SADDSAT:
   case ISD::UADDSAT: case ISD::VP_UADDSAT:
   case ISD::SSUBSAT: case ISD::VP_SSUBSAT:
   case ISD::USUBSAT: case ISD::VP_USUBSAT:
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 4df364bc93af
   case ISD::SSHLSAT:
   case ISD::USHLSAT:
   case ISD::ROTL:
@@ -4336,12 +4344,18 @@ void DAGTypeLegalizer::WidenVectorResult(SDNode *N, unsigned ResNo) {
   case ISD::SMAX: case ISD::VP_SMAX:
   case ISD::UMIN: case ISD::VP_UMIN:
   case ISD::UMAX: case ISD::VP_UMAX:
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 4df364bc93af
   case ISD::UADDSAT: case ISD::VP_UADDSAT:
   case ISD::SADDSAT: case ISD::VP_SADDSAT:
   case ISD::USUBSAT: case ISD::VP_USUBSAT:
   case ISD::SSUBSAT: case ISD::VP_SSUBSAT:
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 4df364bc93af
   case ISD::SSHLSAT:
   case ISD::USHLSAT:
   case ISD::ROTL:
@@ -4461,6 +4475,8 @@ void DAGTypeLegalizer::WidenVectorResult(SDNode *N, unsigned ResNo) {
 
   case ISD::LRINT:
   case ISD::LLRINT:
+  case ISD::VP_LRINT:
+  case ISD::VP_LLRINT:
     Res = WidenVecRes_XRINT(N);
     break;
 
@@ -5067,7 +5083,15 @@ SDValue DAGTypeLegalizer::WidenVecRes_XRINT(SDNode *N) {
   if (WidenNumElts != SrcVT.getVectorElementCount())
     return DAG.UnrollVectorOp(N, WidenNumElts.getKnownMinValue());
 
-  return DAG.getNode(N->getOpcode(), dl, WidenVT, Src);
+  if (N->getNumOperands() == 1)
+    return DAG.getNode(N->getOpcode(), dl, WidenVT, Src);
+
+  assert(N->getNumOperands() == 3 && "Unexpected number of operands!");
+  assert(N->isVPOpcode() && "Expected VP opcode");
+
+  SDValue Mask =
+      GetWidenedMask(N->getOperand(1), WidenVT.getVectorElementCount());
+  return DAG.getNode(N->getOpcode(), dl, WidenVT, Src, Mask, N->getOperand(2));
 }
 
 SDValue DAGTypeLegalizer::WidenVecRes_Convert_StrictFP(SDNode *N) {

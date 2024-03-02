@@ -2198,8 +2198,14 @@ define <vscale x 64 x i1> @fcmp_oeq_vv_nxv64f16(<vscale x 64 x half> %va, <vscal
 ; ZVFH-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
 ; ZVFH-NEXT:    vmfeq.vv v0, v8, v24, v0.t
 ; ZVFH-NEXT:    add a0, a1, a1
+<<<<<<< HEAD
 ; ZVFH-NEXT:    vsetvli zero, a0, e8, m1, tu, ma
 ; ZVFH-NEXT:    vslideup.vx v0, v16, a1
+=======
+; ZVFH-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
+; ZVFH-NEXT:    vslideup.vx v16, v1, a1
+; ZVFH-NEXT:    vmv.v.v v0, v16
+>>>>>>> 4df364bc93af
 ; ZVFH-NEXT:    csrr a0, vlenb
 ; ZVFH-NEXT:    slli a0, a0, 4
 ; ZVFH-NEXT:    add sp, sp, a0
@@ -2297,8 +2303,13 @@ define <vscale x 64 x i1> @fcmp_oeq_vv_nxv64f16(<vscale x 64 x half> %va, <vscal
 ; ZVFHMIN-NEXT:  # %bb.3:
 ; ZVFHMIN-NEXT:    mv a2, a5
 ; ZVFHMIN-NEXT:  .LBB85_4:
+<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e8, mf2, tu, ma
 ; ZVFHMIN-NEXT:    vslideup.vx v16, v26, a3
+=======
+; ZVFHMIN-NEXT:    vsetvli zero, a0, e8, mf2, ta, ma
+; ZVFHMIN-NEXT:    vslideup.vx v2, v26, a3
+>>>>>>> 4df364bc93af
 ; ZVFHMIN-NEXT:    sub a5, a2, a4
 ; ZVFHMIN-NEXT:    sltu a6, a2, a5
 ; ZVFHMIN-NEXT:    addi a6, a6, -1
@@ -2348,6 +2359,7 @@ define <vscale x 64 x i1> @fcmp_oeq_vv_nxv64f16(<vscale x 64 x half> %va, <vscal
 ; ZVFHMIN-NEXT:    vl8r.v v0, (a4) # Unknown-size Folded Reload
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v0
 ; ZVFHMIN-NEXT:    vsetvli zero, a2, e32, m8, ta, ma
+<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vmv1r.v v0, v18
 ; ZVFHMIN-NEXT:    vmfeq.vv v0, v24, v8, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e8, mf2, tu, ma
@@ -2355,6 +2367,16 @@ define <vscale x 64 x i1> @fcmp_oeq_vv_nxv64f16(<vscale x 64 x half> %va, <vscal
 ; ZVFHMIN-NEXT:    add a0, a1, a1
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e8, m1, tu, ma
 ; ZVFHMIN-NEXT:    vslideup.vx v0, v16, a1
+=======
+; ZVFHMIN-NEXT:    vmv1r.v v0, v1
+; ZVFHMIN-NEXT:    vmfeq.vv v8, v16, v24, v0.t
+; ZVFHMIN-NEXT:    vsetvli zero, a0, e8, mf2, ta, ma
+; ZVFHMIN-NEXT:    vslideup.vx v8, v3, a3
+; ZVFHMIN-NEXT:    add a0, a1, a1
+; ZVFHMIN-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
+; ZVFHMIN-NEXT:    vslideup.vx v8, v2, a1
+; ZVFHMIN-NEXT:    vmv.v.v v0, v8
+>>>>>>> 4df364bc93af
 ; ZVFHMIN-NEXT:    csrr a0, vlenb
 ; ZVFHMIN-NEXT:    li a1, 34
 ; ZVFHMIN-NEXT:    mul a0, a0, a1
@@ -3562,9 +3584,15 @@ define <vscale x 32 x i1> @fcmp_oeq_vv_nxv32f64(<vscale x 32 x double> %va, <vsc
 ; CHECK-NEXT:    slli a0, a1, 1
 ; CHECK-NEXT:    add a0, a0, a1
 ; CHECK-NEXT:    add a1, a0, a1
+<<<<<<< HEAD
 ; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, tu, ma
 ; CHECK-NEXT:    vslideup.vx v8, v9, a0
 ; CHECK-NEXT:    vmv1r.v v0, v8
+=======
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, ta, ma
+; CHECK-NEXT:    vslideup.vx v17, v16, a0
+; CHECK-NEXT:    vmv1r.v v0, v17
+>>>>>>> 4df364bc93af
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 40
 ; CHECK-NEXT:    mul a0, a0, a1

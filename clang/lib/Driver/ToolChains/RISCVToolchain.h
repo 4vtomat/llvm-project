@@ -39,9 +39,14 @@ public:
   RuntimeLibType GetDefaultRuntimeLibType() const override;
   UnwindLibType
   GetUnwindLibType(const llvm::opt::ArgList &Args) const override;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool HasNativeLLVMSupport() const override { return true; }
 #endif
+=======
+  UnwindTableLevel
+  getDefaultUnwindTableLevel(const llvm::opt::ArgList &Args) const override;
+>>>>>>> 4df364bc93af
   void
   AddClangSystemIncludeArgs(const llvm::opt::ArgList &DriverArgs,
                             llvm::opt::ArgStringList &CC1Args) const override;

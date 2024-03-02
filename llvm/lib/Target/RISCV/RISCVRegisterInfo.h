@@ -96,6 +96,7 @@ struct RISCVRegisterInfo : public RISCVGenRegisterInfo {
                              SmallVectorImpl<MCPhysReg> &Hints,
                              const MachineFunction &MF, const VirtRegMap *VRM,
                              const LiveRegMatrix *Matrix) const override;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool enableTargetInterference() const override;
 
@@ -116,6 +117,29 @@ struct RISCVRegisterInfo : public RISCVGenRegisterInfo {
                                     unsigned SrcRegIndex, unsigned SrcRegLMUL);
 
 #endif // SIFIVE_CUSTOMIZATION
+=======
+
+  const TargetRegisterClass *
+  getLargestSuperClass(const TargetRegisterClass *RC) const override {
+    if (RISCV::VRM8RegClass.hasSubClassEq(RC))
+      return &RISCV::VRM8RegClass;
+    if (RISCV::VRM4RegClass.hasSubClassEq(RC))
+      return &RISCV::VRM4RegClass;
+    if (RISCV::VRM2RegClass.hasSubClassEq(RC))
+      return &RISCV::VRM2RegClass;
+    if (RISCV::VRRegClass.hasSubClassEq(RC))
+      return &RISCV::VRRegClass;
+    return RC;
+  }
+
+  bool doesRegClassHavePseudoInitUndef(
+      const TargetRegisterClass *RC) const override {
+    return RISCV::VRRegClass.hasSubClassEq(RC) ||
+           RISCV::VRM2RegClass.hasSubClassEq(RC) ||
+           RISCV::VRM4RegClass.hasSubClassEq(RC) ||
+           RISCV::VRM8RegClass.hasSubClassEq(RC);
+  }
+>>>>>>> 4df364bc93af
 };
 }
 

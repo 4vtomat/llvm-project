@@ -15,7 +15,11 @@
 #ifndef LLVM_LIB_CODEGEN_SELECTIONDAG_LEGALIZETYPES_H
 #define LLVM_LIB_CODEGEN_SELECTIONDAG_LEGALIZETYPES_H
 
+<<<<<<< HEAD
 #include "MatchContext.h" // SIFIVE
+=======
+#include "MatchContext.h"
+>>>>>>> 4df364bc93af
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/CodeGen/SelectionDAG.h"
 #include "llvm/CodeGen/TargetLowering.h"
@@ -275,20 +279,6 @@ private:
     return DAG.getZeroExtendInReg(Op, dl, OldVT);
   }
 
-  // Get a promoted operand and sign or zero extend it to the final size
-  // (depending on TargetLoweringInfo::isSExtCheaperThanZExt). For a given
-  // subtarget and type, the choice of sign or zero-extension will be
-  // consistent.
-  SDValue SExtOrZExtPromotedInteger(SDValue Op) {
-    EVT OldVT = Op.getValueType();
-    SDLoc DL(Op);
-    Op = GetPromotedInteger(Op);
-    if (TLI.isSExtCheaperThanZExt(OldVT, Op.getValueType()))
-      return DAG.getNode(ISD::SIGN_EXTEND_INREG, DL, Op.getValueType(), Op,
-                         DAG.getValueType(OldVT));
-    return DAG.getZeroExtendInReg(Op, DL, OldVT);
-  }
-
   // Promote the given operand V (vector or scalar) according to N's specific
   // reduction kind. N must be an integer VECREDUCE_* or VP_REDUCE_*. Returns
   // the nominal extension opcode (ISD::(ANY|ZERO|SIGN)_EXTEND) and the
@@ -356,7 +346,11 @@ private:
   SDValue PromoteIntRes_VAARG(SDNode *N);
   SDValue PromoteIntRes_VSCALE(SDNode *N);
   SDValue PromoteIntRes_XMULO(SDNode *N, unsigned ResNo);
+<<<<<<< HEAD
   template <class MatchContextClass> // SIFIVE
+=======
+  template <class MatchContextClass>
+>>>>>>> 4df364bc93af
   SDValue PromoteIntRes_ADDSUBSHLSAT(SDNode *N);
   SDValue PromoteIntRes_MULFIX(SDNode *N);
   SDValue PromoteIntRes_DIVFIX(SDNode *N);
@@ -418,6 +412,7 @@ private:
   SDValue PromoteIntOp_VP_STRIDED(SDNode *N, unsigned OpNo);
   SDValue PromoteIntOp_VP_SPLICE(SDNode *N, unsigned OpNo);
 
+  void SExtOrZExtPromotedOperands(SDValue &LHS, SDValue &RHS);
   void PromoteSetCCOperands(SDValue &LHS,SDValue &RHS, ISD::CondCode Code);
 
   //===--------------------------------------------------------------------===//

@@ -64,7 +64,7 @@ define <vscale x 2 x i8> @vfptoui_nxv2i8_nxv2f16_unmasked(<vscale x 2 x half> %v
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; ZVFHMIN-NEXT:    vnsrl.wi v8, v8, 0
 ; ZVFHMIN-NEXT:    ret
-  %v = call <vscale x 2 x i8> @llvm.vp.fptoui.nxv2i8.nxv2f16(<vscale x 2 x half> %va, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> undef, i1 true, i32 0), <vscale x 2 x i1> undef, <vscale x 2 x i32> zeroinitializer), i32 %evl)
+  %v = call <vscale x 2 x i8> @llvm.vp.fptoui.nxv2i8.nxv2f16(<vscale x 2 x half> %va, <vscale x 2 x i1> splat (i1 true), i32 %evl)
   ret <vscale x 2 x i8> %v
 }
 
@@ -102,7 +102,7 @@ define <vscale x 2 x i16> @vfptoui_nxv2i16_nxv2f16_unmasked(<vscale x 2 x half> 
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; ZVFHMIN-NEXT:    vfncvt.rtz.xu.f.w v8, v9
 ; ZVFHMIN-NEXT:    ret
-  %v = call <vscale x 2 x i16> @llvm.vp.fptoui.nxv2i16.nxv2f16(<vscale x 2 x half> %va, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> undef, i1 true, i32 0), <vscale x 2 x i1> undef, <vscale x 2 x i32> zeroinitializer), i32 %evl)
+  %v = call <vscale x 2 x i16> @llvm.vp.fptoui.nxv2i16.nxv2f16(<vscale x 2 x half> %va, <vscale x 2 x i1> splat (i1 true), i32 %evl)
   ret <vscale x 2 x i16> %v
 }
 
@@ -142,7 +142,7 @@ define <vscale x 2 x i32> @vfptoui_nxv2i32_nxv2f16_unmasked(<vscale x 2 x half> 
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfcvt.rtz.xu.f.v v8, v9
 ; ZVFHMIN-NEXT:    ret
-  %v = call <vscale x 2 x i32> @llvm.vp.fptoui.nxv2i32.nxv2f16(<vscale x 2 x half> %va, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> undef, i1 true, i32 0), <vscale x 2 x i1> undef, <vscale x 2 x i32> zeroinitializer), i32 %evl)
+  %v = call <vscale x 2 x i32> @llvm.vp.fptoui.nxv2i32.nxv2f16(<vscale x 2 x half> %va, <vscale x 2 x i1> splat (i1 true), i32 %evl)
   ret <vscale x 2 x i32> %v
 }
 
@@ -184,7 +184,7 @@ define <vscale x 2 x i64> @vfptoui_nxv2i64_nxv2f16_unmasked(<vscale x 2 x half> 
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.rtz.xu.f.v v8, v9
 ; ZVFHMIN-NEXT:    ret
-  %v = call <vscale x 2 x i64> @llvm.vp.fptoui.nxv2i64.nxv2f16(<vscale x 2 x half> %va, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> undef, i1 true, i32 0), <vscale x 2 x i1> undef, <vscale x 2 x i32> zeroinitializer), i32 %evl)
+  %v = call <vscale x 2 x i64> @llvm.vp.fptoui.nxv2i64.nxv2f16(<vscale x 2 x half> %va, <vscale x 2 x i1> splat (i1 true), i32 %evl)
   ret <vscale x 2 x i64> %v
 }
 
@@ -210,7 +210,7 @@ define <vscale x 2 x i8> @vfptoui_nxv2i8_nxv2f32_unmasked(<vscale x 2 x float> %
 ; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-NEXT:    ret
-  %v = call <vscale x 2 x i8> @llvm.vp.fptoui.nxv2i8.nxv2f32(<vscale x 2 x float> %va, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> undef, i1 true, i32 0), <vscale x 2 x i1> undef, <vscale x 2 x i32> zeroinitializer), i32 %evl)
+  %v = call <vscale x 2 x i8> @llvm.vp.fptoui.nxv2i8.nxv2f32(<vscale x 2 x float> %va, <vscale x 2 x i1> splat (i1 true), i32 %evl)
   ret <vscale x 2 x i8> %v
 }
 
@@ -232,7 +232,7 @@ define <vscale x 2 x i16> @vfptoui_nxv2i16_nxv2f32_unmasked(<vscale x 2 x float>
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfncvt.rtz.xu.f.w v8, v8
 ; CHECK-NEXT:    ret
-  %v = call <vscale x 2 x i16> @llvm.vp.fptoui.nxv2i16.nxv2f32(<vscale x 2 x float> %va, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> undef, i1 true, i32 0), <vscale x 2 x i1> undef, <vscale x 2 x i32> zeroinitializer), i32 %evl)
+  %v = call <vscale x 2 x i16> @llvm.vp.fptoui.nxv2i16.nxv2f32(<vscale x 2 x float> %va, <vscale x 2 x i1> splat (i1 true), i32 %evl)
   ret <vscale x 2 x i16> %v
 }
 
@@ -254,7 +254,7 @@ define <vscale x 2 x i32> @vfptoui_nxv2i32_nxv2f32_unmasked(<vscale x 2 x float>
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
 ; CHECK-NEXT:    ret
-  %v = call <vscale x 2 x i32> @llvm.vp.fptoui.nxv2i32.nxv2f32(<vscale x 2 x float> %va, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> undef, i1 true, i32 0), <vscale x 2 x i1> undef, <vscale x 2 x i32> zeroinitializer), i32 %evl)
+  %v = call <vscale x 2 x i32> @llvm.vp.fptoui.nxv2i32.nxv2f32(<vscale x 2 x float> %va, <vscale x 2 x i1> splat (i1 true), i32 %evl)
   ret <vscale x 2 x i32> %v
 }
 
@@ -278,7 +278,7 @@ define <vscale x 2 x i64> @vfptoui_nxv2i64_nxv2f32_unmasked(<vscale x 2 x float>
 ; CHECK-NEXT:    vfwcvt.rtz.xu.f.v v10, v8
 ; CHECK-NEXT:    vmv2r.v v8, v10
 ; CHECK-NEXT:    ret
-  %v = call <vscale x 2 x i64> @llvm.vp.fptoui.nxv2i64.nxv2f32(<vscale x 2 x float> %va, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> undef, i1 true, i32 0), <vscale x 2 x i1> undef, <vscale x 2 x i32> zeroinitializer), i32 %evl)
+  %v = call <vscale x 2 x i64> @llvm.vp.fptoui.nxv2i64.nxv2f32(<vscale x 2 x float> %va, <vscale x 2 x i1> splat (i1 true), i32 %evl)
   ret <vscale x 2 x i64> %v
 }
 
@@ -308,7 +308,7 @@ define <vscale x 2 x i8> @vfptoui_nxv2i8_nxv2f64_unmasked(<vscale x 2 x double> 
 ; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-NEXT:    ret
-  %v = call <vscale x 2 x i8> @llvm.vp.fptoui.nxv2i8.nxv2f64(<vscale x 2 x double> %va, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> undef, i1 true, i32 0), <vscale x 2 x i1> undef, <vscale x 2 x i32> zeroinitializer), i32 %evl)
+  %v = call <vscale x 2 x i8> @llvm.vp.fptoui.nxv2i8.nxv2f64(<vscale x 2 x double> %va, <vscale x 2 x i1> splat (i1 true), i32 %evl)
   ret <vscale x 2 x i8> %v
 }
 
@@ -334,7 +334,7 @@ define <vscale x 2 x i16> @vfptoui_nxv2i16_nxv2f64_unmasked(<vscale x 2 x double
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-NEXT:    ret
-  %v = call <vscale x 2 x i16> @llvm.vp.fptoui.nxv2i16.nxv2f64(<vscale x 2 x double> %va, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> undef, i1 true, i32 0), <vscale x 2 x i1> undef, <vscale x 2 x i32> zeroinitializer), i32 %evl)
+  %v = call <vscale x 2 x i16> @llvm.vp.fptoui.nxv2i16.nxv2f64(<vscale x 2 x double> %va, <vscale x 2 x i1> splat (i1 true), i32 %evl)
   ret <vscale x 2 x i16> %v
 }
 
@@ -356,7 +356,7 @@ define <vscale x 2 x i32> @vfptoui_nxv2i32_nxv2f64_unmasked(<vscale x 2 x double
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    vfncvt.rtz.xu.f.w v8, v8
 ; CHECK-NEXT:    ret
-  %v = call <vscale x 2 x i32> @llvm.vp.fptoui.nxv2i32.nxv2f64(<vscale x 2 x double> %va, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> undef, i1 true, i32 0), <vscale x 2 x i1> undef, <vscale x 2 x i32> zeroinitializer), i32 %evl)
+  %v = call <vscale x 2 x i32> @llvm.vp.fptoui.nxv2i32.nxv2f64(<vscale x 2 x double> %va, <vscale x 2 x i1> splat (i1 true), i32 %evl)
   ret <vscale x 2 x i32> %v
 }
 
@@ -378,7 +378,7 @@ define <vscale x 2 x i64> @vfptoui_nxv2i64_nxv2f64_unmasked(<vscale x 2 x double
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
 ; CHECK-NEXT:    ret
-  %v = call <vscale x 2 x i64> @llvm.vp.fptoui.nxv2i64.nxv2f64(<vscale x 2 x double> %va, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> undef, i1 true, i32 0), <vscale x 2 x i1> undef, <vscale x 2 x i32> zeroinitializer), i32 %evl)
+  %v = call <vscale x 2 x i64> @llvm.vp.fptoui.nxv2i64.nxv2f64(<vscale x 2 x double> %va, <vscale x 2 x i1> splat (i1 true), i32 %evl)
   ret <vscale x 2 x i64> %v
 }
 
@@ -459,6 +459,6 @@ define <vscale x 32 x i32> @vfptoui_nxv32i32_nxv32f32_unmasked(<vscale x 32 x fl
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
 ; CHECK-NEXT:    vfcvt.rtz.xu.f.v v8, v8
 ; CHECK-NEXT:    ret
-  %v = call <vscale x 32 x i32> @llvm.vp.fptoui.nxv32i32.nxv32f32(<vscale x 32 x float> %va, <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> undef, i1 true, i32 0), <vscale x 32 x i1> undef, <vscale x 32 x i32> zeroinitializer), i32 %evl)
+  %v = call <vscale x 32 x i32> @llvm.vp.fptoui.nxv32i32.nxv32f32(<vscale x 32 x float> %va, <vscale x 32 x i1> splat (i1 true), i32 %evl)
   ret <vscale x 32 x i32> %v
 }

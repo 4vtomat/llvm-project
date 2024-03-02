@@ -84,6 +84,7 @@ void initializeRISCVInsertWriteVXRMPass(PassRegistry &);
 FunctionPass *createRISCVRedundantCopyEliminationPass();
 void initializeRISCVRedundantCopyEliminationPass(PassRegistry &);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 FunctionPass *createRISCVPeepholePass();
 void initializeRISCVPeepholePass(PassRegistry &);
@@ -99,6 +100,8 @@ FunctionPass *createRISCVInitUndefPass();
 void initializeRISCVInitUndefPass(PassRegistry &);
 extern char &RISCVInitUndefID;
 
+=======
+>>>>>>> 4df364bc93af
 FunctionPass *createRISCVMoveMergePass();
 void initializeRISCVMoveMergePass(PassRegistry &);
 

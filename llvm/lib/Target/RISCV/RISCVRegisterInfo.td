@@ -533,6 +533,7 @@ def VR : VReg<!listconcat(VM1VTs, VMaskVTs),
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+<<<<<<< HEAD
 def VRNoV0 : VReg<!listconcat(VM1VTs, VMaskVTs),
                   (add (sequence "V%u", 8, 31),
 #ifdef SIFIVE_CUSTOMIZATION
@@ -543,6 +544,9 @@ def VRNoV0 : VReg<!listconcat(VM1VTs, VMaskVTs),
   }];
 }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+def VRNoV0 : VReg<!listconcat(VM1VTs, VMaskVTs), (sub VR, V0), 1>;
+>>>>>>> 4df364bc93af
 
 def VRM2 : VReg<VM2VTs, (add (sequence "V%uM2", 8, 31, 2),
 #ifdef SIFIVE_CUSTOMIZATION
@@ -554,6 +558,7 @@ def VRM2 : VReg<VM2VTs, (add (sequence "V%uM2", 8, 31, 2),
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+<<<<<<< HEAD
 def VRM2NoV0 : VReg<VM2VTs, (add (sequence "V%uM2", 8, 31, 2),
 #ifdef SIFIVE_CUSTOMIZATION
                                  (sequence "V%uM2", 2, 7, 2)), 2> {
@@ -583,10 +588,18 @@ def VRM4NoV0 : VReg<VM4VTs,
   }];
 }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+def VRM2NoV0 : VReg<VM2VTs, (sub VRM2, V0M2), 2>;
+
+def VRM4 : VReg<VM4VTs, (add V8M4, V12M4, V16M4, V20M4,
+                             V24M4, V28M4, V0M4, V4M4), 4>;
+
+def VRM4NoV0 : VReg<VM4VTs, (sub VRM4, V0M4), 4>;
+>>>>>>> 4df364bc93af
 
 def VRM8 : VReg<VM8VTs, (add V8M8, V16M8, V24M8, V0M8), 8>;
 
-def VRM8NoV0 : VReg<VM8VTs, (add V8M8, V16M8, V24M8), 8>;
+def VRM8NoV0 : VReg<VM8VTs, (sub VRM8, V0M8), 8>;
 
 def VMV0 : RegisterClass<"RISCV", VMaskVTs, 64, (add V0)> {
   let Size = 64;

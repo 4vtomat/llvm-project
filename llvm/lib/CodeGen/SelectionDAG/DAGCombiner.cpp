@@ -76,7 +76,11 @@
 #include <utility>
 #include <variant>
 
+<<<<<<< HEAD
 #include "MatchContext.h" // SFIVE
+=======
+#include "MatchContext.h"
+>>>>>>> 4df364bc93af
 
 using namespace llvm;
 
@@ -13677,8 +13681,12 @@ SDValue DAGCombiner::visitZERO_EXTEND(SDNode *N) {
 
   // fold (zext (zext x)) -> (zext x)
   // fold (zext (aext x)) -> (zext x)
-  if (N0.getOpcode() == ISD::ZERO_EXTEND || N0.getOpcode() == ISD::ANY_EXTEND)
-    return DAG.getNode(ISD::ZERO_EXTEND, DL, VT, N0.getOperand(0));
+  if (N0.getOpcode() == ISD::ZERO_EXTEND || N0.getOpcode() == ISD::ANY_EXTEND) {
+    SDNodeFlags Flags;
+    if (N0.getOpcode() == ISD::ZERO_EXTEND)
+      Flags.setNonNeg(N0->getFlags().hasNonNeg());
+    return DAG.getNode(ISD::ZERO_EXTEND, DL, VT, N0.getOperand(0), Flags);
+  }
 
   // fold (zext (aext_extend_vector_inreg x)) -> (zext_extend_vector_inreg x)
   // fold (zext (zext_extend_vector_inreg x)) -> (zext_extend_vector_inreg x)
@@ -13724,6 +13732,32 @@ SDValue DAGCombiner::visitZERO_EXTEND(SDNode *N) {
 
     EVT SrcVT = N0.getOperand(0).getValueType();
     EVT MinVT = N0.getValueType();
+
+    if (N->getFlags().hasNonNeg()) {
+      SDValue Op = N0.getOperand(0);
+      unsigned OpBits = SrcVT.getScalarSizeInBits();
+      unsigned MidBits = MinVT.getScalarSizeInBits();
+      unsigned DestBits = VT.getScalarSizeInBits();
+      unsigned NumSignBits = DAG.ComputeNumSignBits(Op);
+
+      if (OpBits == DestBits) {
+        // Op is i32, Mid is i8, and Dest is i32.  If Op has more than 24 sign
+        // bits, it is already ready.
+        if (NumSignBits > DestBits - MidBits)
+          return Op;
+      } else if (OpBits < DestBits) {
+        // Op is i32, Mid is i8, and Dest is i64.  If Op has more than 24 sign
+        // bits, just sext from i32.
+        // FIXME: This can probably be ZERO_EXTEND nneg?
+        if (NumSignBits > OpBits - MidBits)
+          return DAG.getNode(ISD::SIGN_EXTEND, DL, VT, Op);
+      } else {
+        // Op is i64, Mid is i8, and Dest is i32.  If Op has more than 56 sign
+        // bits, just truncate to i32.
+        if (NumSignBits > OpBits - MidBits)
+          return DAG.getNode(ISD::TRUNCATE, DL, VT, Op);
+      }
+    }
 
     // Try to mask before the extension to avoid having to generate a larger mask,
     // possibly over several sub-vectors.
@@ -13934,6 +13968,13 @@ SDValue DAGCombiner::visitZERO_EXTEND(SDNode *N) {
   if (SDValue Res = tryToFoldExtendSelectLoad(N, TLI, DAG, Level))
     return Res;
 
+  // CSE zext nneg with sext if the zext is not free.
+  if (N->getFlags().hasNonNeg() && !TLI.isZExtFree(N0.getValueType(), VT)) {
+    SDNode *CSENode = DAG.getNodeIfExists(ISD::SIGN_EXTEND, N->getVTList(), N0);
+    if (CSENode)
+      return SDValue(CSENode, 0);
+  }
+
   return SDValue();
 }
 
@@ -13952,10 +13993,13 @@ SDValue DAGCombiner::visitANY_EXTEND(SDNode *N) {
   // fold (aext (aext x)) -> (aext x)
   // fold (aext (zext x)) -> (zext x)
   // fold (aext (sext x)) -> (sext x)
-  if (N0.getOpcode() == ISD::ANY_EXTEND  ||
-      N0.getOpcode() == ISD::ZERO_EXTEND ||
-      N0.getOpcode() == ISD::SIGN_EXTEND)
-    return DAG.getNode(N0.getOpcode(), DL, VT, N0.getOperand(0));
+  if (N0.getOpcode() == ISD::ANY_EXTEND || N0.getOpcode() == ISD::ZERO_EXTEND ||
+      N0.getOpcode() == ISD::SIGN_EXTEND) {
+    SDNodeFlags Flags;
+    if (N0.getOpcode() == ISD::ZERO_EXTEND)
+      Flags.setNonNeg(N0->getFlags().hasNonNeg());
+    return DAG.getNode(N0.getOpcode(), DL, VT, N0.getOperand(0), Flags);
+  }
 
   // fold (aext (aext_extend_vector_inreg x)) -> (aext_extend_vector_inreg x)
   // fold (aext (zext_extend_vector_inreg x)) -> (zext_extend_vector_inreg x)
@@ -28589,7 +28633,7 @@ bool DAGCombiner::mayAlias(SDNode *Op0, SDNode *Op1) const {
     bool IsAtomic;
     SDValue BasePtr;
     int64_t Offset;
-    std::optional<int64_t> NumBytes;
+    LocationSize NumBytes;
     MachineMemOperand *MMO;
   };
 
@@ -28597,18 +28641,18 @@ bool DAGCombiner::mayAlias(SDNode *Op0, SDNode *Op1) const {
     if (const auto *LSN = dyn_cast<LSBaseSDNode>(N)) {
       int64_t Offset = 0;
       if (auto *C = dyn_cast<ConstantSDNode>(LSN->getOffset()))
-        Offset = (LSN->getAddressingMode() == ISD::PRE_INC)
-                     ? C->getSExtValue()
-                     : (LSN->getAddressingMode() == ISD::PRE_DEC)
-                           ? -1 * C->getSExtValue()
-                           : 0;
+        Offset = (LSN->getAddressingMode() == ISD::PRE_INC) ? C->getSExtValue()
+                 : (LSN->getAddressingMode() == ISD::PRE_DEC)
+                     ? -1 * C->getSExtValue()
+                     : 0;
       uint64_t Size =
           MemoryLocation::getSizeOrUnknown(LSN->getMemoryVT().getStoreSize());
       return {LSN->isVolatile(),
               LSN->isAtomic(),
               LSN->getBasePtr(),
               Offset /*base offset*/,
-              std::optional<int64_t>(Size),
+              Size != ~UINT64_C(0) ? LocationSize::precise(Size)
+                                   : LocationSize::beforeOrAfterPointer(),
               LSN->getMemOperand()};
     }
     if (const auto *LN = cast<LifetimeSDNode>(N))
@@ -28616,13 +28660,15 @@ bool DAGCombiner::mayAlias(SDNode *Op0, SDNode *Op1) const {
               /*isAtomic*/ false,
               LN->getOperand(1),
               (LN->hasOffset()) ? LN->getOffset() : 0,
-              (LN->hasOffset()) ? std::optional<int64_t>(LN->getSize())
-                                : std::optional<int64_t>(),
+              (LN->hasOffset()) ? LocationSize::precise(LN->getSize())
+                                : LocationSize::beforeOrAfterPointer(),
               (MachineMemOperand *)nullptr};
     // Default.
     return {false /*isvolatile*/,
-            /*isAtomic*/ false,          SDValue(),
-            (int64_t)0 /*offset*/,       std::optional<int64_t>() /*size*/,
+            /*isAtomic*/ false,
+            SDValue(),
+            (int64_t)0 /*offset*/,
+            LocationSize::beforeOrAfterPointer() /*size*/,
             (MachineMemOperand *)nullptr};
   };
 
@@ -28677,18 +28723,20 @@ bool DAGCombiner::mayAlias(SDNode *Op0, SDNode *Op1) const {
   int64_t SrcValOffset1 = MUC1.MMO->getOffset();
   Align OrigAlignment0 = MUC0.MMO->getBaseAlign();
   Align OrigAlignment1 = MUC1.MMO->getBaseAlign();
-  auto &Size0 = MUC0.NumBytes;
-  auto &Size1 = MUC1.NumBytes;
+  LocationSize Size0 = MUC0.NumBytes;
+  LocationSize Size1 = MUC1.NumBytes;
   if (OrigAlignment0 == OrigAlignment1 && SrcValOffset0 != SrcValOffset1 &&
-      Size0.has_value() && Size1.has_value() && *Size0 == *Size1 &&
-      OrigAlignment0 > *Size0 && SrcValOffset0 % *Size0 == 0 &&
-      SrcValOffset1 % *Size1 == 0) {
+      Size0.hasValue() && Size1.hasValue() && Size0 == Size1 &&
+      OrigAlignment0 > Size0.getValue() &&
+      SrcValOffset0 % Size0.getValue() == 0 &&
+      SrcValOffset1 % Size1.getValue() == 0) {
     int64_t OffAlign0 = SrcValOffset0 % OrigAlignment0.value();
     int64_t OffAlign1 = SrcValOffset1 % OrigAlignment1.value();
 
     // There is no overlap between these relatively aligned accesses of
     // similar size. Return no alias.
-    if ((OffAlign0 + *Size0) <= OffAlign1 || (OffAlign1 + *Size1) <= OffAlign0)
+    if ((OffAlign0 + (int64_t)Size0.getValue()) <= OffAlign1 ||
+        (OffAlign1 + (int64_t)Size1.getValue()) <= OffAlign0)
       return false;
   }
 
@@ -28701,12 +28749,12 @@ bool DAGCombiner::mayAlias(SDNode *Op0, SDNode *Op1) const {
     UseAA = false;
 #endif
 
-  if (UseAA && AA && MUC0.MMO->getValue() && MUC1.MMO->getValue() && Size0 &&
-      Size1) {
+  if (UseAA && AA && MUC0.MMO->getValue() && MUC1.MMO->getValue() &&
+      Size0.hasValue() && Size1.hasValue()) {
     // Use alias analysis information.
     int64_t MinOffset = std::min(SrcValOffset0, SrcValOffset1);
-    int64_t Overlap0 = *Size0 + SrcValOffset0 - MinOffset;
-    int64_t Overlap1 = *Size1 + SrcValOffset1 - MinOffset;
+    int64_t Overlap0 = Size0.getValue() + SrcValOffset0 - MinOffset;
+    int64_t Overlap1 = Size1.getValue() + SrcValOffset1 - MinOffset;
     if (AA->isNoAlias(
             MemoryLocation(MUC0.MMO->getValue(), Overlap0,
                            UseTBAA ? MUC0.MMO->getAAInfo() : AAMDNodes()),

@@ -60,6 +60,7 @@
 #include "VPlanAnalysis.h"
 #include "VPlanHCFGBuilder.h"
 #include "VPlanTransforms.h"
+#include "VPlanVerifier.h"
 #include "llvm/ADT/APInt.h"
 #include "llvm/ADT/ArrayRef.h"
 #include "llvm/ADT/DenseMap.h"
@@ -365,12 +366,6 @@ static cl::opt<bool> EnableLoadStoreRuntimeInterleave(
     "enable-loadstore-runtime-interleave", cl::init(true), cl::Hidden,
     cl::desc(
         "Enable runtime interleaving until load/store ports are saturated"));
-
-/// Interleave small loops with scalar reductions.
-static cl::opt<bool> InterleaveSmallLoopScalarReduction(
-    "interleave-small-loop-scalar-reduction", cl::init(false), cl::Hidden,
-    cl::desc("Enable interleaving for loops with small iteration counts that "
-             "contain scalar reductions to expose ILP."));
 
 /// The number of stores in a loop that are allowed to need predication.
 static cl::opt<unsigned> NumberOfStoresToPredicate(
@@ -1740,19 +1735,36 @@ public:
   }
 
   /// Returns the TailFoldingStyle that is best for the current loop.
-  TailFoldingStyle
-  getTailFoldingStyle(bool IVUpdateMayOverflow = true) const {
-    if (!CanFoldTailByMasking)
-      return TailFoldingStyle::None;
+  TailFoldingStyle getTailFoldingStyle(bool IVUpdateMayOverflow = true) const {
+    return IVUpdateMayOverflow ? ChosenTailFoldingStyle.first
+                               : ChosenTailFoldingStyle.second;
+  }
 
-    if (ForceTailFoldingStyle.getNumOccurrences())
-      return ForceTailFoldingStyle;
+  /// Selects and saves TailFoldingStyle for 2 options - if IV update may
+  /// overflow or not.
+  void setTailFoldingStyles() {
+    assert(ChosenTailFoldingStyle.first == TailFoldingStyle::None &&
+           ChosenTailFoldingStyle.second == TailFoldingStyle::None &&
+           "Tail folding must not be selected yet.");
+    if (!Legal->prepareToFoldTailByMasking())
+      return;
 
-    return TTI.getPreferredTailFoldingStyle(IVUpdateMayOverflow);
+    if (ForceTailFoldingStyle.getNumOccurrences()) {
+      ChosenTailFoldingStyle.first = ChosenTailFoldingStyle.second =
+          ForceTailFoldingStyle;
+      return;
+    }
+
+    ChosenTailFoldingStyle.first =
+        TTI.getPreferredTailFoldingStyle(/*IVUpdateMayOverflow=*/true);
+    ChosenTailFoldingStyle.second =
+        TTI.getPreferredTailFoldingStyle(/*IVUpdateMayOverflow=*/false);
   }
 
   /// Returns true if all loop blocks should be masked to fold tail loop.
   bool foldTailByMasking() const {
+    // TODO: check if it is possible to check for None style independent of
+    // IVUpdateMayOverflow flag in getTailFoldingStyle.
     return getTailFoldingStyle() != TailFoldingStyle::None;
   }
 
@@ -1941,8 +1953,10 @@ private:
   /// iterations to execute in the scalar loop.
   ScalarEpilogueLowering ScalarEpilogueStatus = CM_ScalarEpilogueAllowed;
 
-  /// All blocks of loop are to be masked to fold tail of scalar iterations.
-  bool CanFoldTailByMasking = false;
+  /// Control finally chosen tail folding style. The first element is used if
+  /// the IV update may overflow, the second element - if it does not.
+  std::pair<TailFoldingStyle, TailFoldingStyle> ChosenTailFoldingStyle =
+      std::make_pair(TailFoldingStyle::None, TailFoldingStyle::None);
 
   /// A map holding scalar costs for different vectorization factors. The
   /// presence of a cost for an instruction in the mapping indicates that the
@@ -6062,12 +6076,16 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
   // found modulo the vectorization factor is not zero, try to fold the tail
   // by masking.
   // FIXME: look for a smaller MaxVF that does divide TC rather than masking.
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Legal->useVLAVectorizer() || Legal->prepareToFoldTailByMasking()) {
 #endif // SIFIVE_CUSTOMIZATION
     CanFoldTailByMasking = true;
+=======
+  setTailFoldingStyles();
+  if (foldTailByMasking())
+>>>>>>> 4df364bc93af
     return MaxFactors;
-  }
 
   // If there was a tail-folding hint/switch, but we can't fold the tail by
   // masking, fallback to a vectorization with a scalar epilogue.
@@ -7108,8 +7126,7 @@ LoopVectorizationCostModel::selectInterleaveCount(ElementCount VF,
 
     // If there are scalar reductions and TTI has enabled aggressive
     // interleaving for reductions, we will interleave to expose ILP.
-    if (InterleaveSmallLoopScalarReduction && VF.isScalar() &&
-        AggressivelyInterleaveReductions) {
+    if (VF.isScalar() && AggressivelyInterleaveReductions) {
       LLVM_DEBUG(dbgs() << "LV: Interleaving to expose ILP.\n");
       // Interleave no less than SmallIC but not as aggressive as the normal IC
       // to satisfy the rare situation when resources are too limited.
@@ -9525,14 +9542,22 @@ LoopVectorizationPlanner::executePlan(
       (IsEpilogueVectorization || !ExpandedSCEVs) &&
       "expanded SCEVs to reuse can only be used during epilogue vectorization");
 
+<<<<<<< HEAD
   LLVM_DEBUG(dbgs() << "Executing best plan with VF=" << BestVF << ", UF=" << BestUF
                     << '\n');
 
 #if SIFIVE_CUSTOMIZATION
   if (!BestVPlan.isUncountable())
 #endif
+=======
+>>>>>>> 4df364bc93af
   if (!IsEpilogueVectorization)
     VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
+
+  LLVM_DEBUG(dbgs() << "Executing best plan with VF=" << BestVF
+                    << ", UF=" << BestUF << '\n');
+  BestVPlan.setName("Final VPlan");
+  LLVM_DEBUG(BestVPlan.dump());
 
   // Perform the actual loop transformation.
 #if SIFIVE_CUSTOMIZATION
@@ -10867,7 +10892,7 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
       } else
 #endif // SIFIVE_CUSTOMIZATION
       VPlanTransforms::optimize(*Plan, *PSE.getSE());
-      assert(VPlanVerifier::verifyPlanIsValid(*Plan) && "VPlan is invalid");
+      assert(verifyVPlanIsValid(*Plan) && "VPlan is invalid");
       VPlans.push_back(std::move(Plan));
     }
     VF = SubRange.End;
@@ -11517,6 +11542,7 @@ VPlanPtr LoopVectorizationPlanner::buildVPlan(VFRange &Range) {
   bool HasNUW = true;
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), HasNUW,
                         DebugLoc());
+  assert(verifyVPlanIsValid(*Plan) && "VPlan is invalid");
   return Plan;
 }
 
@@ -11847,7 +11873,7 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
          "Unexpected type.");
 
   auto *IVR = getParent()->getPlan()->getCanonicalIV();
-  PHINode *CanonicalIV = cast<PHINode>(State.get(IVR, 0));
+  PHINode *CanonicalIV = cast<PHINode>(State.get(IVR, 0, /*IsScalar*/ true));
 
   if (onlyScalarsGenerated(State.VF.isScalable())) {
     // This is the normalized GEP that starts counting at zero.
@@ -12004,7 +12030,7 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
 
 void VPReductionRecipe::execute(VPTransformState &State) {
   assert(!State.Instance && "Reduction being replicated.");
-  Value *PrevInChain = State.get(getChainOp(), 0);
+  Value *PrevInChain = State.get(getChainOp(), 0, /*IsScalar*/ true);
   RecurKind Kind = RdxDesc.getRecurrenceKind();
   bool IsOrdered = State.ILV->useOrderedReductions(RdxDesc);
   // Propagate the fast-math flags carried by the underlying instruction.
@@ -12021,9 +12047,13 @@ void VPReductionRecipe::execute(VPTransformState &State) {
     if (NewCond && !RVLPart) {
 #else
     if (VPValue *Cond = getCondOp()) {
+<<<<<<< HEAD
       Value *NewCond = State.VF.isVector() ? State.get(Cond, Part)
                                            : State.get(Cond, {Part, 0});
 #endif // SIFIVE_CUSTOMIZATION
+=======
+      Value *NewCond = State.get(Cond, Part, State.VF.isScalar());
+>>>>>>> 4df364bc93af
       VectorType *VecTy = dyn_cast<VectorType>(NewVecOp->getType());
       Type *ElementTy = VecTy ? VecTy->getElementType() : NewVecOp->getType();
       Value *Iden = RdxDesc.getRecurrenceIdentity(Kind, ElementTy,
@@ -12062,6 +12092,7 @@ void VPReductionRecipe::execute(VPTransformState &State) {
 #endif // SIFIVE_CUSTOMIZATION
       PrevInChain = NewRed;
     } else {
+<<<<<<< HEAD
       PrevInChain = State.get(getChainOp(), Part);
 #if SIFIVE_CUSTOMIZATION
       if (RVLPart)
@@ -12070,6 +12101,9 @@ void VPReductionRecipe::execute(VPTransformState &State) {
       else
         NewRed = createTargetReduction(State.Builder, RdxDesc, NewVecOp);
 #else
+=======
+      PrevInChain = State.get(getChainOp(), Part, /*IsScalar*/ true);
+>>>>>>> 4df364bc93af
       NewRed = createTargetReduction(State.Builder, RdxDesc, NewVecOp);
 #endif // SIFIVE_CUSTOMIZATION
     }
@@ -12081,7 +12115,7 @@ void VPReductionRecipe::execute(VPTransformState &State) {
     else
       NextInChain = State.Builder.CreateBinOp(
           (Instruction::BinaryOps)RdxDesc.getOpcode(Kind), NewRed, PrevInChain);
-    State.set(this, NextInChain, Part);
+    State.set(this, NextInChain, Part, /*IsScalar*/ true);
   }
 }
 
@@ -12261,6 +12295,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
           }
 #endif // SIFIVE_CUSTOMIZATION
         }
+<<<<<<< HEAD
         auto *VecPtr = State.get(getAddr(), Part);
 #if SIFIVE_CUSTOMIZATION
         // if RVLPart is not null, we can vectorize using predicated
@@ -12282,6 +12317,10 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
               1, Attribute::getWithAlignment(NewSI->getContext(), Alignment));
         } else if (isMaskRequired) {
 #endif // SIFIVE_CUSTOMIZATION
+=======
+        auto *VecPtr = State.get(getAddr(), Part, /*IsScalar*/ true);
+        if (isMaskRequired)
+>>>>>>> 4df364bc93af
           NewSI = Builder.CreateMaskedStore(StoredVal, VecPtr, Alignment,
                                             BlockInMaskParts[Part]);
 #if SIFIVE_CUSTOMIZATION
@@ -12320,6 +12359,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       }
 #endif // SIFIVE_CUSTOMIZATION
     } else {
+<<<<<<< HEAD
       auto *VecPtr = State.get(getAddr(), Part);
 #if SIFIVE_CUSTOMIZATION
       // if RVLPart is not null, we can vectorize using predicated
@@ -12344,6 +12384,10 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
             0, Attribute::getWithAlignment(NewLI->getContext(), Alignment));
       } else if (isMaskRequired)
 #endif // SIFIVE_CUSTOMIZATION
+=======
+      auto *VecPtr = State.get(getAddr(), Part, /*IsScalar*/ true);
+      if (isMaskRequired)
+>>>>>>> 4df364bc93af
         NewLI = Builder.CreateMaskedLoad(
             DataTy, VecPtr, Alignment, BlockInMaskParts[Part],
             PoisonValue::get(DataTy), "wide.masked.load");
@@ -13206,6 +13250,8 @@ bool LoopVectorizePass::processLoop(Loop *L) {
           auto *ExpandedVal = BestEpiPlan.getVPValueOrAddLiveIn(
               ExpandedSCEVs.find(ExpandR->getSCEV())->second);
           ExpandR->replaceAllUsesWith(ExpandedVal);
+          if (BestEpiPlan.getTripCount() == ExpandR)
+            BestEpiPlan.resetTripCount(ExpandedVal);
           ExpandR->eraseFromParent();
         }
 

@@ -2785,10 +2785,7 @@ void ARMFrameLowering::determineCalleeSaves(MachineFunction &MF,
   AFI->setLRIsSpilled(SavedRegs.test(ARM::LR));
 }
 
-void ARMFrameLowering::processFunctionBeforeFrameFinalized(
-    MachineFunction &MF, RegScavenger *RS) const {
-  TargetFrameLowering::processFunctionBeforeFrameFinalized(MF, RS);
-
+void ARMFrameLowering::updateLRRestored(MachineFunction &MF) {
   MachineFrameInfo &MFI = MF.getFrameInfo();
   if (!MFI.isCalleeSavedInfoValid())
     return;
@@ -2810,6 +2807,12 @@ void ARMFrameLowering::processFunctionBeforeFrameFinalized(
       break;
     }
   }
+}
+
+void ARMFrameLowering::processFunctionBeforeFrameFinalized(
+    MachineFunction &MF, RegScavenger *RS) const {
+  TargetFrameLowering::processFunctionBeforeFrameFinalized(MF, RS);
+  updateLRRestored(MF);
 }
 
 void ARMFrameLowering::getCalleeSaves(const MachineFunction &MF,

@@ -321,6 +321,14 @@ VPBasicBlock::iterator VPBasicBlock::getFirstNonPhi() {
   return It;
 }
 
+VPTransformState::VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
+                                   DominatorTree *DT, IRBuilderBase &Builder,
+                                   InnerLoopVectorizer *ILV, VPlan *Plan,
+                                   LLVMContext &Ctx)
+    : VF(VF), UF(UF), LI(LI), DT(DT), Builder(Builder), ILV(ILV), Plan(Plan),
+      LVer(nullptr),
+      TypeAnalysis(Plan->getCanonicalIV()->getScalarType(), Ctx) {}
+
 Value *VPTransformState::get(VPValue *Def, const VPIteration &Instance) {
   if (Def->isLiveIn())
     return Def->getLiveInIRValue();
@@ -352,7 +360,16 @@ Value *VPTransformState::get(VPValue *Def, const VPIteration &Instance) {
   return Extract;
 }
 
-Value *VPTransformState::get(VPValue *Def, unsigned Part) {
+Value *VPTransformState::get(VPValue *Def, unsigned Part, bool NeedsScalar) {
+  if (NeedsScalar) {
+    assert((VF.isScalar() || Def->isLiveIn() ||
+            (hasScalarValue(Def, VPIteration(Part, 0)) &&
+             Data.PerPartScalars[Def][Part].size() == 1)) &&
+           "Trying to access a single scalar per part but has multiple scalars "
+           "per part.");
+    return get(Def, VPIteration(Part, 0));
+  }
+
   // If Values have been set for this Def return the one relevant for \p Part.
   if (hasVectorValue(Def, Part))
     return Data.PerPartOutput[Def][Part];
@@ -677,7 +694,8 @@ static bool hasConditionalTerminator(const VPBasicBlock *VPBB) {
                VPI->getOpcode() == VPInstruction::BranchOnCount));
   (void)IsCondBranch;
 
-  if (VPBB->getNumSuccessors() >= 2 || VPBB->isExiting()) {
+  if (VPBB->getNumSuccessors() >= 2 ||
+      (VPBB->isExiting() && !VPBB->getParent()->isReplicator())) {
     assert(IsCondBranch && "block with multiple successors not terminated by "
                            "conditional branch recipe");
 
@@ -703,7 +721,7 @@ const VPRecipeBase *VPBasicBlock::getTerminator() const {
 }
 
 bool VPBasicBlock::isExiting() const {
-  return getParent()->getExitingBasicBlock() == this;
+  return getParent() && getParent()->getExitingBasicBlock() == this;
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
@@ -1020,13 +1038,10 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
     auto *TCMO = Builder.CreateSub(TripCountV,
                                    ConstantInt::get(TripCountV->getType(), 1),
                                    "trip.count.minus.1");
-    auto VF = State.VF;
-    Value *VTCMO =
-        VF.isScalar() ? TCMO : Builder.CreateVectorSplat(VF, TCMO, "broadcast");
-    for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
-      State.set(BackedgeTakenCount, VTCMO, Part);
+    BackedgeTakenCount->setUnderlyingValue(TCMO);
   }
 
+<<<<<<< HEAD
   for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
     State.set(&VectorTripCount, VectorTripCountV, Part);
 #if SIFIVE_CUSTOMIZATION
@@ -1041,6 +1056,14 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
   State.set(&VFxUF,
             createStepForVF(Builder, TripCountV->getType(), State.VF, State.UF),
             0);
+=======
+  VectorTripCount.setUnderlyingValue(VectorTripCountV);
+
+  IRBuilder<> Builder(State.CFG.PrevBB->getTerminator());
+  // FIXME: Model VF * UF computation completely in VPlan.
+  VFxUF.setUnderlyingValue(
+      createStepForVF(Builder, TripCountV->getType(), State.VF, State.UF));
+>>>>>>> 4df364bc93af
 
   // When vectorizing the epilogue loop, the canonical induction start value
   // needs to be changed from zero to the value after the main vector loop.
@@ -1081,10 +1104,6 @@ void VPlan::initializeMasks(VPTransformState &State) {
 /// Assumes a single pre-header basic-block was created for this. Introduce
 /// additional basic-blocks as needed, and fill them all.
 void VPlan::execute(VPTransformState *State) {
-  // Set the reverse mapping from VPValues to Values for code generation.
-  for (auto &Entry : Value2VPValue)
-    State->VPValue2Value[Entry.second] = Entry.first;
-
   // Initialize CFG state.
   State->CFG.PrevVPBB = nullptr;
   State->CFG.ExitBB = State->CFG.PrevBB->getSingleSuccessor();
@@ -1146,8 +1165,12 @@ void VPlan::execute(VPTransformState *State) {
                             isa<VPFirstOrderRecurrencePHIRecipe>(PhiR) ||
                             (isa<VPReductionPHIRecipe>(PhiR) &&
                              cast<VPReductionPHIRecipe>(PhiR)->isOrdered());
+    bool NeedsScalar = isa<VPCanonicalIVPHIRecipe>(PhiR) ||
+                       (isa<VPReductionPHIRecipe>(PhiR) &&
+                        cast<VPReductionPHIRecipe>(PhiR)->isInLoop());
     unsigned LastPartForNewPhi = SinglePartNeeded ? 1 : State->UF;
     for (unsigned Part = 0; Part < LastPartForNewPhi; ++Part) {
+<<<<<<< HEAD
       Value *Phi = State->get(PhiR, Part);
       Value *Val = State->get(PhiR->getBackedgeValue(),
                               SinglePartNeeded ? State->UF - 1 : Part);
@@ -1159,6 +1182,12 @@ void VPlan::execute(VPTransformState *State) {
         Val = State->Builder.CreateZExtOrTrunc(Val, Phi->getType());
       }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+      Value *Phi = State->get(PhiR, Part, NeedsScalar);
+      Value *Val =
+          State->get(PhiR->getBackedgeValue(),
+                     SinglePartNeeded ? State->UF - 1 : Part, NeedsScalar);
+>>>>>>> 4df364bc93af
       cast<PHINode>(Phi)->addIncoming(Val, VectorLatchBB);
     }
   }
@@ -1655,11 +1684,15 @@ void VPInterleavedAccessInfo::visitBlock(VPBlockBase *Block, Old2NewTy &Old2New,
                                          InterleavedAccessInfo &IAI) {
   if (VPBasicBlock *VPBB = dyn_cast<VPBasicBlock>(Block)) {
     for (VPRecipeBase &VPI : *VPBB) {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       if (vputils::isHeaderPhi(VPI))
 #else
       if (isa<VPHeaderPHIRecipe>(&VPI))
 #endif // SIFIVE_CUSTOMIZATION
+=======
+      if (isa<VPWidenPHIRecipe>(&VPI))
+>>>>>>> 4df364bc93af
         continue;
       assert(isa<VPInstruction>(&VPI) && "Can only handle VPInstructions");
       auto *VPInst = cast<VPInstruction>(&VPI);

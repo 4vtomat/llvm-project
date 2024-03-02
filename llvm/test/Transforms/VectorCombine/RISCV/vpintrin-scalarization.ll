@@ -51,7 +51,7 @@ define <vscale x 1 x i64> @add_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %y
 ; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
 ; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
@@ -68,7 +68,7 @@ define <vscale x 1 x i64> @add_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %y
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -77,13 +77,13 @@ define <vscale x 1 x i64> @add_nxv1i64_anymask(<vscale x 1 x i64> %x, i64 %y, <v
 ; ALL-LABEL: @add_nxv1i64_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.add.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -103,7 +103,7 @@ define <vscale x 1 x i64> @sub_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %y
 ; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
 ; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.sub.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.sub.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
@@ -120,7 +120,7 @@ define <vscale x 1 x i64> @sub_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %y
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.sub.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.sub.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -129,13 +129,13 @@ define <vscale x 1 x i64> @sub_nxv1i64_anymask(<vscale x 1 x i64> %x, i64 %y, <v
 ; ALL-LABEL: @sub_nxv1i64_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.sub.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.sub.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.sub.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.sub.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -155,7 +155,7 @@ define <vscale x 1 x i64> @mul_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %y
 ; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
 ; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
@@ -172,7 +172,7 @@ define <vscale x 1 x i64> @mul_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %y
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -181,13 +181,13 @@ define <vscale x 1 x i64> @mul_nxv1i64_anymask(<vscale x 1 x i64> %x, i64 %y, <v
 ; ALL-LABEL: @mul_nxv1i64_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -207,7 +207,7 @@ define <vscale x 1 x i64> @sdiv_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %
 ; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
 ; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.sdiv.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.sdiv.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
@@ -224,7 +224,7 @@ define <vscale x 1 x i64> @sdiv_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.sdiv.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.sdiv.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -233,13 +233,13 @@ define <vscale x 1 x i64> @sdiv_nxv1i64_anymask(<vscale x 1 x i64> %x, i64 %y, <
 ; ALL-LABEL: @sdiv_nxv1i64_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.sdiv.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.sdiv.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.sdiv.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.sdiv.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -280,7 +280,7 @@ define <vscale x 1 x i64> @udiv_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %
 ; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
 ; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.udiv.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.udiv.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
@@ -297,7 +297,7 @@ define <vscale x 1 x i64> @udiv_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.udiv.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.udiv.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -306,13 +306,13 @@ define <vscale x 1 x i64> @udiv_nxv1i64_anymask(<vscale x 1 x i64> %x, i64 %y, <
 ; ALL-LABEL: @udiv_nxv1i64_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.udiv.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.udiv.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.udiv.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.udiv.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -353,7 +353,7 @@ define <vscale x 1 x i64> @srem_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %
 ; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
 ; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.srem.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.srem.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
@@ -370,7 +370,7 @@ define <vscale x 1 x i64> @srem_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.srem.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.srem.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -379,13 +379,13 @@ define <vscale x 1 x i64> @srem_nxv1i64_anymask(<vscale x 1 x i64> %x, i64 %y, <
 ; ALL-LABEL: @srem_nxv1i64_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.srem.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.srem.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.srem.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.srem.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -426,7 +426,7 @@ define <vscale x 1 x i64> @urem_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %
 ; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
 ; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.urem.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.urem.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
@@ -443,7 +443,7 @@ define <vscale x 1 x i64> @urem_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.urem.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.urem.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -452,13 +452,13 @@ define <vscale x 1 x i64> @urem_nxv1i64_anymask(<vscale x 1 x i64> %x, i64 %y, <
 ; ALL-LABEL: @urem_nxv1i64_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.urem.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.urem.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.urem.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.urem.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -675,7 +675,7 @@ define <vscale x 1 x i64> @ashr_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %
 ; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
 ; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.ashr.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.ashr.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
@@ -692,7 +692,7 @@ define <vscale x 1 x i64> @ashr_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.ashr.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.ashr.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -701,13 +701,13 @@ define <vscale x 1 x i64> @ashr_nxv1i64_anymask(<vscale x 1 x i64> %x, i64 %y, <
 ; ALL-LABEL: @ashr_nxv1i64_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.ashr.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.ashr.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.ashr.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.ashr.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -727,7 +727,7 @@ define <vscale x 1 x i64> @lshr_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %
 ; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
 ; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.lshr.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.lshr.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
@@ -744,7 +744,7 @@ define <vscale x 1 x i64> @lshr_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.lshr.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.lshr.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -753,13 +753,13 @@ define <vscale x 1 x i64> @lshr_nxv1i64_anymask(<vscale x 1 x i64> %x, i64 %y, <
 ; ALL-LABEL: @lshr_nxv1i64_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.lshr.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.lshr.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.lshr.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.lshr.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -779,7 +779,7 @@ define <vscale x 1 x i64> @shl_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %y
 ; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
 ; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.shl.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.shl.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
@@ -796,7 +796,7 @@ define <vscale x 1 x i64> @shl_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %y
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.shl.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.shl.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -805,13 +805,13 @@ define <vscale x 1 x i64> @shl_nxv1i64_anymask(<vscale x 1 x i64> %x, i64 %y, <v
 ; ALL-LABEL: @shl_nxv1i64_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.shl.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.shl.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.shl.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.shl.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -831,7 +831,7 @@ define <vscale x 1 x i64> @or_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %y,
 ; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
 ; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.or.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.or.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
@@ -848,7 +848,7 @@ define <vscale x 1 x i64> @or_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %y,
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.or.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.or.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -857,13 +857,13 @@ define <vscale x 1 x i64> @or_nxv1i64_anymask(<vscale x 1 x i64> %x, i64 %y, <vs
 ; ALL-LABEL: @or_nxv1i64_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.or.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.or.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.or.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.or.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -883,7 +883,7 @@ define <vscale x 1 x i64> @and_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %y
 ; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
 ; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.and.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.and.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
@@ -900,7 +900,7 @@ define <vscale x 1 x i64> @and_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %y
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.and.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.and.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -909,13 +909,13 @@ define <vscale x 1 x i64> @and_nxv1i64_anymask(<vscale x 1 x i64> %x, i64 %y, <v
 ; ALL-LABEL: @and_nxv1i64_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.and.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.and.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.and.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.and.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -935,7 +935,7 @@ define <vscale x 1 x i64> @xor_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %y
 ; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
 ; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.xor.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.xor.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
@@ -952,7 +952,7 @@ define <vscale x 1 x i64> @xor_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %y
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.xor.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.xor.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -961,18 +961,19 @@ define <vscale x 1 x i64> @xor_nxv1i64_anymask(<vscale x 1 x i64> %x, i64 %y, <v
 ; ALL-LABEL: @xor_nxv1i64_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.xor.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.xor.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.xor.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.xor.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
 
 define <vscale x 1 x i64> @smin_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %y, i32 zeroext %evl) {
+<<<<<<< HEAD
 ; ALL-LABEL: @smin_nxv1i64_allonesmask(
 ; ALL-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
 ; ALL-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
@@ -981,12 +982,31 @@ define <vscale x 1 x i64> @smin_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %
 ; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.smin.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
+=======
+; VEC-COMBINE-LABEL: @smin_nxv1i64_allonesmask(
+; VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP1:%.*]] = call i64 @llvm.smin.i64(i64 [[Y:%.*]], i64 42)
+; VEC-COMBINE-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP1]], i64 0
+; VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[DOTSPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP2]], <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP3]]
+;
+; NO-VEC-COMBINE-LABEL: @smin_nxv1i64_allonesmask(
+; NO-VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
+; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.smin.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
+; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
+>>>>>>> 4df364bc93af
 ;
   %splat = insertelement <vscale x 1 x i1> poison, i1 -1, i32 0
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.smin.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.smin.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -995,18 +1015,19 @@ define <vscale x 1 x i64> @smin_nxv1i64_anymask(<vscale x 1 x i64> %x, i64 %y, <
 ; ALL-LABEL: @smin_nxv1i64_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.smin.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.smin.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.smin.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.smin.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
 
 define <vscale x 1 x i64> @smax_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %y, i32 zeroext %evl) {
+<<<<<<< HEAD
 ; ALL-LABEL: @smax_nxv1i64_allonesmask(
 ; ALL-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
 ; ALL-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
@@ -1015,12 +1036,31 @@ define <vscale x 1 x i64> @smax_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %
 ; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.smax.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
+=======
+; VEC-COMBINE-LABEL: @smax_nxv1i64_allonesmask(
+; VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP1:%.*]] = call i64 @llvm.smax.i64(i64 [[Y:%.*]], i64 42)
+; VEC-COMBINE-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP1]], i64 0
+; VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[DOTSPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP2]], <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP3]]
+;
+; NO-VEC-COMBINE-LABEL: @smax_nxv1i64_allonesmask(
+; NO-VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
+; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.smax.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
+; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
+>>>>>>> 4df364bc93af
 ;
   %splat = insertelement <vscale x 1 x i1> poison, i1 -1, i32 0
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.smax.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.smax.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -1029,18 +1069,19 @@ define <vscale x 1 x i64> @smax_nxv1i64_anymask(<vscale x 1 x i64> %x, i64 %y, <
 ; ALL-LABEL: @smax_nxv1i64_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.smax.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.smax.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.smax.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.smax.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
 
 define <vscale x 1 x i64> @umin_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %y, i32 zeroext %evl) {
+<<<<<<< HEAD
 ; ALL-LABEL: @umin_nxv1i64_allonesmask(
 ; ALL-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
 ; ALL-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
@@ -1049,17 +1090,37 @@ define <vscale x 1 x i64> @umin_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %
 ; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.umin.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
+=======
+; VEC-COMBINE-LABEL: @umin_nxv1i64_allonesmask(
+; VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP1:%.*]] = call i64 @llvm.umin.i64(i64 [[Y:%.*]], i64 42)
+; VEC-COMBINE-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP1]], i64 0
+; VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[DOTSPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP2]], <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP3]]
+;
+; NO-VEC-COMBINE-LABEL: @umin_nxv1i64_allonesmask(
+; NO-VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
+; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.umin.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
+; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
+>>>>>>> 4df364bc93af
 ;
   %splat = insertelement <vscale x 1 x i1> poison, i1 -1, i32 0
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.umin.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.umin.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
 
 define <vscale x 1 x i64> @umax_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %y, i32 zeroext %evl) {
+<<<<<<< HEAD
 ; ALL-LABEL: @umax_nxv1i64_allonesmask(
 ; ALL-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
 ; ALL-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
@@ -1068,12 +1129,31 @@ define <vscale x 1 x i64> @umax_nxv1i64_allonesmask(<vscale x 1 x i64> %x, i64 %
 ; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.umax.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
+=======
+; VEC-COMBINE-LABEL: @umax_nxv1i64_allonesmask(
+; VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP1:%.*]] = call i64 @llvm.umax.i64(i64 [[Y:%.*]], i64 42)
+; VEC-COMBINE-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[TMP1]], i64 0
+; VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[DOTSPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP2]], <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP3]]
+;
+; NO-VEC-COMBINE-LABEL: @umax_nxv1i64_allonesmask(
+; NO-VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
+; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.umax.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
+; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
+>>>>>>> 4df364bc93af
 ;
   %splat = insertelement <vscale x 1 x i1> poison, i1 -1, i32 0
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.umax.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.umax.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
@@ -1082,18 +1162,19 @@ define <vscale x 1 x i64> @umax_nxv1i64_anymask(<vscale x 1 x i64> %x, i64 %y, <
 ; ALL-LABEL: @umax_nxv1i64_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x i64> [[TMP1]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.umax.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x i64> @llvm.vp.umax.nxv1i64(<vscale x 1 x i64> [[TMP2]], <vscale x 1 x i64> shufflevector (<vscale x 1 x i64> insertelement (<vscale x 1 x i64> poison, i64 42, i64 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> [[X:%.*]], <vscale x 1 x i64> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x i64> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x i64> poison, i64 %y, i64 0
   %2 = shufflevector <vscale x 1 x i64> %1, <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x i64> @llvm.vp.umax.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> shufflevector(<vscale x 1 x i64> insertelement(<vscale x 1 x i64> poison, i64 42, i32 0), <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x i64> @llvm.vp.umax.nxv1i64(<vscale x 1 x i64> %2, <vscale x 1 x i64> splat (i64 42), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x i64> @llvm.vp.mul.nxv1i64(<vscale x 1 x i64> %x, <vscale x 1 x i64> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x i64> %4
 }
 
 define <vscale x 1 x float> @fadd_nxv1f32_allonesmask(<vscale x 1 x float> %x, float %y, i32 zeroext %evl) {
+<<<<<<< HEAD
 ; ALL-LABEL: @fadd_nxv1f32_allonesmask(
 ; ALL-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
 ; ALL-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
@@ -1102,12 +1183,31 @@ define <vscale x 1 x float> @fadd_nxv1f32_allonesmask(<vscale x 1 x float> %x, f
 ; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x float> [[TMP4]]
+=======
+; VEC-COMBINE-LABEL: @fadd_nxv1f32_allonesmask(
+; VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP1:%.*]] = fadd float [[Y:%.*]], 4.200000e+01
+; VEC-COMBINE-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x float> poison, float [[TMP1]], i64 0
+; VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[DOTSPLATINSERT]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP2]], <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; VEC-COMBINE-NEXT:    ret <vscale x 1 x float> [[TMP3]]
+;
+; NO-VEC-COMBINE-LABEL: @fadd_nxv1f32_allonesmask(
+; NO-VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x float> poison, float [[Y:%.*]], i64 0
+; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[TMP1]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
+; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x float> [[TMP4]]
+>>>>>>> 4df364bc93af
 ;
   %splat = insertelement <vscale x 1 x i1> poison, i1 -1, i32 0
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x float> poison, float %y, i64 0
   %2 = shufflevector <vscale x 1 x float > %1, <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> shufflevector(<vscale x 1 x float> insertelement(<vscale x 1 x float> poison, float 42.0, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> splat (float 42.0), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %x, <vscale x 1 x float> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x float> %4
 }
@@ -1116,18 +1216,19 @@ define <vscale x 1 x float> @fadd_nxv1f32_anymask(<vscale x 1 x float> %x, float
 ; ALL-LABEL: @fadd_nxv1f32_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x float> poison, float [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[TMP1]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x float> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x float> poison, float %y, i64 0
   %2 = shufflevector <vscale x 1 x float> %1, <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> shufflevector(<vscale x 1 x float> insertelement(<vscale x 1 x float> poison, float 42.0, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> splat (float 42.0), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %x, <vscale x 1 x float> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x float> %4
 }
 
 define <vscale x 1 x float> @fsub_nxv1f32_allonesmask(<vscale x 1 x float> %x, float %y, i32 zeroext %evl) {
+<<<<<<< HEAD
 ; ALL-LABEL: @fsub_nxv1f32_allonesmask(
 ; ALL-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
 ; ALL-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
@@ -1136,12 +1237,31 @@ define <vscale x 1 x float> @fsub_nxv1f32_allonesmask(<vscale x 1 x float> %x, f
 ; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fsub.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x float> [[TMP4]]
+=======
+; VEC-COMBINE-LABEL: @fsub_nxv1f32_allonesmask(
+; VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP1:%.*]] = fsub float [[Y:%.*]], 4.200000e+01
+; VEC-COMBINE-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x float> poison, float [[TMP1]], i64 0
+; VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[DOTSPLATINSERT]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP2]], <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; VEC-COMBINE-NEXT:    ret <vscale x 1 x float> [[TMP3]]
+;
+; NO-VEC-COMBINE-LABEL: @fsub_nxv1f32_allonesmask(
+; NO-VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x float> poison, float [[Y:%.*]], i64 0
+; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[TMP1]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fsub.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
+; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x float> [[TMP4]]
+>>>>>>> 4df364bc93af
 ;
   %splat = insertelement <vscale x 1 x i1> poison, i1 -1, i32 0
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x float> poison, float %y, i64 0
   %2 = shufflevector <vscale x 1 x float > %1, <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x float> @llvm.vp.fsub.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> shufflevector(<vscale x 1 x float> insertelement(<vscale x 1 x float> poison, float 42.0, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x float> @llvm.vp.fsub.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> splat (float 42.0), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %x, <vscale x 1 x float> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x float> %4
 }
@@ -1150,18 +1270,19 @@ define <vscale x 1 x float> @fsub_nxv1f32_anymask(<vscale x 1 x float> %x, float
 ; ALL-LABEL: @fsub_nxv1f32_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x float> poison, float [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[TMP1]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fsub.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fsub.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x float> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x float> poison, float %y, i64 0
   %2 = shufflevector <vscale x 1 x float> %1, <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x float> @llvm.vp.fsub.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> shufflevector(<vscale x 1 x float> insertelement(<vscale x 1 x float> poison, float 42.0, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x float> @llvm.vp.fsub.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> splat (float 42.0), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %x, <vscale x 1 x float> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x float> %4
 }
 
 define <vscale x 1 x float> @fdiv_nxv1f32_allonesmask(<vscale x 1 x float> %x, float %y, i32 zeroext %evl) {
+<<<<<<< HEAD
 ; ALL-LABEL: @fdiv_nxv1f32_allonesmask(
 ; ALL-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
 ; ALL-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
@@ -1170,12 +1291,31 @@ define <vscale x 1 x float> @fdiv_nxv1f32_allonesmask(<vscale x 1 x float> %x, f
 ; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x float> [[TMP4]]
+=======
+; VEC-COMBINE-LABEL: @fdiv_nxv1f32_allonesmask(
+; VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP1:%.*]] = fdiv float [[Y:%.*]], 4.200000e+01
+; VEC-COMBINE-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x float> poison, float [[TMP1]], i64 0
+; VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[DOTSPLATINSERT]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP2]], <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; VEC-COMBINE-NEXT:    ret <vscale x 1 x float> [[TMP3]]
+;
+; NO-VEC-COMBINE-LABEL: @fdiv_nxv1f32_allonesmask(
+; NO-VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x float> poison, float [[Y:%.*]], i64 0
+; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[TMP1]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
+; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x float> [[TMP4]]
+>>>>>>> 4df364bc93af
 ;
   %splat = insertelement <vscale x 1 x i1> poison, i1 -1, i32 0
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x float> poison, float %y, i64 0
   %2 = shufflevector <vscale x 1 x float > %1, <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> shufflevector(<vscale x 1 x float> insertelement(<vscale x 1 x float> poison, float 42.0, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> splat (float 42.0), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %x, <vscale x 1 x float> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x float> %4
 }
@@ -1184,18 +1324,19 @@ define <vscale x 1 x float> @fdiv_nxv1f32_anymask(<vscale x 1 x float> %x, float
 ; ALL-LABEL: @fdiv_nxv1f32_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x float> poison, float [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[TMP1]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x float> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x float> poison, float %y, i64 0
   %2 = shufflevector <vscale x 1 x float> %1, <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> shufflevector(<vscale x 1 x float> insertelement(<vscale x 1 x float> poison, float 42.0, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> splat (float 42.0), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %x, <vscale x 1 x float> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x float> %4
 }
 
 define <vscale x 1 x float> @frem_nxv1f32_allonesmask(<vscale x 1 x float> %x, float %y, i32 zeroext %evl) {
+<<<<<<< HEAD
 ; ALL-LABEL: @frem_nxv1f32_allonesmask(
 ; ALL-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
 ; ALL-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
@@ -1204,12 +1345,31 @@ define <vscale x 1 x float> @frem_nxv1f32_allonesmask(<vscale x 1 x float> %x, f
 ; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.frem.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x float> [[TMP4]]
+=======
+; VEC-COMBINE-LABEL: @frem_nxv1f32_allonesmask(
+; VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP1:%.*]] = frem float [[Y:%.*]], 4.200000e+01
+; VEC-COMBINE-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x float> poison, float [[TMP1]], i64 0
+; VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[DOTSPLATINSERT]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP2]], <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; VEC-COMBINE-NEXT:    ret <vscale x 1 x float> [[TMP3]]
+;
+; NO-VEC-COMBINE-LABEL: @frem_nxv1f32_allonesmask(
+; NO-VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x float> poison, float [[Y:%.*]], i64 0
+; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[TMP1]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.frem.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
+; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x float> [[TMP4]]
+>>>>>>> 4df364bc93af
 ;
   %splat = insertelement <vscale x 1 x i1> poison, i1 -1, i32 0
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x float> poison, float %y, i64 0
   %2 = shufflevector <vscale x 1 x float > %1, <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x float> @llvm.vp.frem.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> shufflevector(<vscale x 1 x float> insertelement(<vscale x 1 x float> poison, float 42.0, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x float> @llvm.vp.frem.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> splat (float 42.0), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %x, <vscale x 1 x float> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x float> %4
   }
@@ -1218,18 +1378,19 @@ define <vscale x 1 x float> @frem_nxv1f32_allonesmask(<vscale x 1 x float> %x, f
 ; ALL-LABEL: @frem_nxv1f32_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x float> poison, float [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[TMP1]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.frem.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.frem.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x float> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x float> poison, float %y, i64 0
   %2 = shufflevector <vscale x 1 x float> %1, <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x float> @llvm.vp.frem.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> shufflevector(<vscale x 1 x float> insertelement(<vscale x 1 x float> poison, float 42.0, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x float> @llvm.vp.frem.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> splat (float 42.0), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %x, <vscale x 1 x float> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x float> %4
 }
 
 define <vscale x 1 x float> @fdiv_nxv1f32_allonesmask_knownvl(<vscale x 1 x float> %x, float %y) {
+<<<<<<< HEAD
 ; ALL-LABEL: @fdiv_nxv1f32_allonesmask_knownvl(
 ; ALL-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
 ; ALL-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
@@ -1238,12 +1399,31 @@ define <vscale x 1 x float> @fdiv_nxv1f32_allonesmask_knownvl(<vscale x 1 x floa
 ; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 4)
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 4)
 ; ALL-NEXT:    ret <vscale x 1 x float> [[TMP4]]
+=======
+; VEC-COMBINE-LABEL: @fdiv_nxv1f32_allonesmask_knownvl(
+; VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP1:%.*]] = fdiv float [[Y:%.*]], 4.200000e+01
+; VEC-COMBINE-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x float> poison, float [[TMP1]], i64 0
+; VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[DOTSPLATINSERT]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP2]], <vscale x 1 x i1> [[MASK]], i32 4)
+; VEC-COMBINE-NEXT:    ret <vscale x 1 x float> [[TMP3]]
+;
+; NO-VEC-COMBINE-LABEL: @fdiv_nxv1f32_allonesmask_knownvl(
+; NO-VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x float> poison, float [[Y:%.*]], i64 0
+; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[TMP1]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 4)
+; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 4)
+; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x float> [[TMP4]]
+>>>>>>> 4df364bc93af
 ;
   %splat = insertelement <vscale x 1 x i1> poison, i1 -1, i32 0
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x float> poison, float %y, i64 0
   %2 = shufflevector <vscale x 1 x float > %1, <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> shufflevector(<vscale x 1 x float> insertelement(<vscale x 1 x float> poison, float 42.0, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 4)
+  %3 = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> splat (float 42.0), <vscale x 1 x i1> %mask, i32 4)
   %4 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %x, <vscale x 1 x float> %3, <vscale x 1 x i1> %mask, i32 4)
   ret <vscale x 1 x float> %4
 }
@@ -1252,18 +1432,19 @@ define <vscale x 1 x float> @fdiv_nxv1f32_anymask_knownvl(<vscale x 1 x float> %
 ; ALL-LABEL: @fdiv_nxv1f32_anymask_knownvl(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x float> poison, float [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[TMP1]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 4)
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 4)
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 4)
 ; ALL-NEXT:    ret <vscale x 1 x float> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x float> poison, float %y, i64 0
   %2 = shufflevector <vscale x 1 x float> %1, <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> shufflevector(<vscale x 1 x float> insertelement(<vscale x 1 x float> poison, float 42.0, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 4)
+  %3 = call <vscale x 1 x float> @llvm.vp.fdiv.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> splat (float 42.0), <vscale x 1 x i1> %mask, i32 4)
   %4 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %x, <vscale x 1 x float> %3, <vscale x 1 x i1> %mask, i32 4)
   ret <vscale x 1 x float> %4
 }
 
 define <vscale x 1 x float> @frem_nxv1f32_allonesmask_knownvl(<vscale x 1 x float> %x, float %y) {
+<<<<<<< HEAD
 ; ALL-LABEL: @frem_nxv1f32_allonesmask_knownvl(
 ; ALL-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
 ; ALL-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
@@ -1272,12 +1453,31 @@ define <vscale x 1 x float> @frem_nxv1f32_allonesmask_knownvl(<vscale x 1 x floa
 ; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.frem.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 4)
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 4)
 ; ALL-NEXT:    ret <vscale x 1 x float> [[TMP4]]
+=======
+; VEC-COMBINE-LABEL: @frem_nxv1f32_allonesmask_knownvl(
+; VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP1:%.*]] = frem float [[Y:%.*]], 4.200000e+01
+; VEC-COMBINE-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 1 x float> poison, float [[TMP1]], i64 0
+; VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[DOTSPLATINSERT]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP2]], <vscale x 1 x i1> [[MASK]], i32 4)
+; VEC-COMBINE-NEXT:    ret <vscale x 1 x float> [[TMP3]]
+;
+; NO-VEC-COMBINE-LABEL: @frem_nxv1f32_allonesmask_knownvl(
+; NO-VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 1 x i1> poison, i1 true, i32 0
+; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x float> poison, float [[Y:%.*]], i64 0
+; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[TMP1]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.frem.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 4)
+; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 4)
+; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x float> [[TMP4]]
+>>>>>>> 4df364bc93af
 ;
   %splat = insertelement <vscale x 1 x i1> poison, i1 -1, i32 0
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x float> poison, float %y, i64 0
   %2 = shufflevector <vscale x 1 x float > %1, <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x float> @llvm.vp.frem.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> shufflevector(<vscale x 1 x float> insertelement(<vscale x 1 x float> poison, float 42.0, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 4)
+  %3 = call <vscale x 1 x float> @llvm.vp.frem.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> splat (float 42.0), <vscale x 1 x i1> %mask, i32 4)
   %4 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %x, <vscale x 1 x float> %3, <vscale x 1 x i1> %mask, i32 4)
   ret <vscale x 1 x float> %4
 }
@@ -1286,13 +1486,13 @@ define <vscale x 1 x float> @frem_nxv1f32_allonesmask_knownvl(<vscale x 1 x floa
 ; ALL-LABEL: @frem_nxv1f32_anymask_knownvl(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x float> poison, float [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[TMP1]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.frem.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 4)
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.frem.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 4)
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 4)
 ; ALL-NEXT:    ret <vscale x 1 x float> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x float> poison, float %y, i64 0
   %2 = shufflevector <vscale x 1 x float> %1, <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x float> @llvm.vp.frem.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> shufflevector(<vscale x 1 x float> insertelement(<vscale x 1 x float> poison, float 42.0, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 4)
+  %3 = call <vscale x 1 x float> @llvm.vp.frem.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> splat (float 42.0), <vscale x 1 x i1> %mask, i32 4)
   %4 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %x, <vscale x 1 x float> %3, <vscale x 1 x i1> %mask, i32 4)
   ret <vscale x 1 x float> %4
 }
@@ -1312,7 +1512,7 @@ define <vscale x 1 x float> @copysign_nxv1f32_allonesmask(<vscale x 1 x float> %
 ; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
 ; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x float> poison, float [[Y:%.*]], i64 0
 ; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[TMP1]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.copysign.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.copysign.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x float> [[TMP4]]
 ;
@@ -1320,7 +1520,7 @@ define <vscale x 1 x float> @copysign_nxv1f32_allonesmask(<vscale x 1 x float> %
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x float> poison, float %y, i64 0
   %2 = shufflevector <vscale x 1 x float > %1, <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x float> @llvm.vp.copysign.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> shufflevector(<vscale x 1 x float> insertelement(<vscale x 1 x float> poison, float 42.0, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x float> @llvm.vp.copysign.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> splat (float 42.0), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %x, <vscale x 1 x float> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x float> %4
 }
@@ -1329,13 +1529,13 @@ define <vscale x 1 x float> @copysign_nxv1f32_anymask(<vscale x 1 x float> %x, f
 ; ALL-LABEL: @copysign_nxv1f32_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x float> poison, float [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[TMP1]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.copysign.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.copysign.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x float> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x float> poison, float %y, i64 0
   %2 = shufflevector <vscale x 1 x float> %1, <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x float> @llvm.vp.copysign.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> shufflevector(<vscale x 1 x float> insertelement(<vscale x 1 x float> poison, float 42.0, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x float> @llvm.vp.copysign.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> splat (float 42.0), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %x, <vscale x 1 x float> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x float> %4
 }
@@ -1355,7 +1555,7 @@ define <vscale x 1 x float> @minnum_nxv1f32_allonesmask(<vscale x 1 x float> %x,
 ; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
 ; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x float> poison, float [[Y:%.*]], i64 0
 ; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[TMP1]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.minnum.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.minnum.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x float> [[TMP4]]
 ;
@@ -1363,7 +1563,7 @@ define <vscale x 1 x float> @minnum_nxv1f32_allonesmask(<vscale x 1 x float> %x,
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x float> poison, float %y, i64 0
   %2 = shufflevector <vscale x 1 x float > %1, <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x float> @llvm.vp.minnum.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> shufflevector(<vscale x 1 x float> insertelement(<vscale x 1 x float> poison, float 42.0, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x float> @llvm.vp.minnum.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> splat (float 42.0), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %x, <vscale x 1 x float> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x float> %4
 }
@@ -1372,13 +1572,13 @@ define <vscale x 1 x float> @minnum_nxv1f32_anymask(<vscale x 1 x float> %x, flo
 ; ALL-LABEL: @minnum_nxv1f32_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x float> poison, float [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[TMP1]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.minnum.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.minnum.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x float> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x float> poison, float %y, i64 0
   %2 = shufflevector <vscale x 1 x float> %1, <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x float> @llvm.vp.minnum.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> shufflevector(<vscale x 1 x float> insertelement(<vscale x 1 x float> poison, float 42.0, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x float> @llvm.vp.minnum.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> splat (float 42.0), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %x, <vscale x 1 x float> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x float> %4
 }
@@ -1398,7 +1598,7 @@ define <vscale x 1 x float> @maxnum_nxv1f32_allonesmask(<vscale x 1 x float> %x,
 ; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 1 x i1> [[SPLAT]], <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
 ; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x float> poison, float [[Y:%.*]], i64 0
 ; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[TMP1]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.maxnum.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.maxnum.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; NO-VEC-COMBINE-NEXT:    ret <vscale x 1 x float> [[TMP4]]
 ;
@@ -1406,7 +1606,7 @@ define <vscale x 1 x float> @maxnum_nxv1f32_allonesmask(<vscale x 1 x float> %x,
   %mask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
   %1 = insertelement <vscale x 1 x float> poison, float %y, i64 0
   %2 = shufflevector <vscale x 1 x float > %1, <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x float> @llvm.vp.maxnum.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> shufflevector(<vscale x 1 x float> insertelement(<vscale x 1 x float> poison, float 42.0, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x float> @llvm.vp.maxnum.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> splat (float 42.0), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %x, <vscale x 1 x float> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x float> %4
 }
@@ -1415,13 +1615,13 @@ define <vscale x 1 x float> @maxnum_nxv1f32_anymask(<vscale x 1 x float> %x, flo
 ; ALL-LABEL: @maxnum_nxv1f32_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 1 x float> poison, float [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 1 x float> [[TMP1]], <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.maxnum.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 1 x float> @llvm.vp.maxnum.nxv1f32(<vscale x 1 x float> [[TMP2]], <vscale x 1 x float> shufflevector (<vscale x 1 x float> insertelement (<vscale x 1 x float> poison, float 4.200000e+01, i64 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> [[X:%.*]], <vscale x 1 x float> [[TMP3]], <vscale x 1 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 1 x float> [[TMP4]]
 ;
   %1 = insertelement <vscale x 1 x float> poison, float %y, i64 0
   %2 = shufflevector <vscale x 1 x float> %1, <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer
-  %3 = call <vscale x 1 x float> @llvm.vp.maxnum.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> shufflevector(<vscale x 1 x float> insertelement(<vscale x 1 x float> poison, float 42.0, i32 0), <vscale x 1 x float> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 1 x float> @llvm.vp.maxnum.nxv1f32(<vscale x 1 x float> %2, <vscale x 1 x float> splat (float 42.0), <vscale x 1 x i1> %mask, i32 %evl)
   %4 = call <vscale x 1 x float> @llvm.vp.fadd.nxv1f32(<vscale x 1 x float> %x, <vscale x 1 x float> %3, <vscale x 1 x i1> %mask, i32 %evl)
   ret <vscale x 1 x float> %4
 }
@@ -1441,7 +1641,7 @@ define <vscale x 8 x i8> @add_nxv8i8_allonesmask(<vscale x 8 x i8> %x, i8 %y, i3
 ; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 8 x i1> [[SPLAT]], <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer
 ; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 8 x i8> poison, i8 [[Y:%.*]], i64 0
 ; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 8 x i8> [[TMP1]], <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer
-; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 8 x i8> @llvm.vp.add.nxv8i8(<vscale x 8 x i8> [[TMP2]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 42, i32 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 8 x i8> @llvm.vp.add.nxv8i8(<vscale x 8 x i8> [[TMP2]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 42, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 8 x i8> @llvm.vp.mul.nxv8i8(<vscale x 8 x i8> [[X:%.*]], <vscale x 8 x i8> [[TMP3]], <vscale x 8 x i1> [[MASK]], i32 [[EVL]])
 ; NO-VEC-COMBINE-NEXT:    ret <vscale x 8 x i8> [[TMP4]]
 ;
@@ -1449,7 +1649,7 @@ define <vscale x 8 x i8> @add_nxv8i8_allonesmask(<vscale x 8 x i8> %x, i8 %y, i3
   %mask = shufflevector <vscale x 8 x i1> %splat, <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer
   %1 = insertelement <vscale x 8 x i8> poison, i8 %y, i64 0
   %2 = shufflevector <vscale x 8 x i8> %1, <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer
-  %3 = call <vscale x 8 x i8>  @llvm.vp.add.nxv8i8(<vscale x 8 x i8> %2, <vscale x 8 x i8> shufflevector(<vscale x 8 x i8> insertelement(<vscale x 8 x i8> poison, i8 42, i32 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 8 x i8>  @llvm.vp.add.nxv8i8(<vscale x 8 x i8> %2, <vscale x 8 x i8> splat (i8 42), <vscale x 8 x i1> %mask, i32 %evl)
   %4 = call <vscale x 8 x i8> @llvm.vp.mul.nxv8i8(<vscale x 8 x i8> %x, <vscale x 8 x i8> %3,  <vscale x 8 x i1> %mask, i32 %evl)
   ret <vscale x 8 x i8> %4
 }
@@ -1458,18 +1658,19 @@ define <vscale x 8 x i8> @add_nxv8i8_anymask(<vscale x 8 x i8> %x, i8 %y, <vscal
 ; ALL-LABEL: @add_nxv8i8_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 8 x i8> poison, i8 [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 8 x i8> [[TMP1]], <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 8 x i8> @llvm.vp.add.nxv8i8(<vscale x 8 x i8> [[TMP2]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 42, i32 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 8 x i8> @llvm.vp.add.nxv8i8(<vscale x 8 x i8> [[TMP2]], <vscale x 8 x i8> shufflevector (<vscale x 8 x i8> insertelement (<vscale x 8 x i8> poison, i8 42, i64 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 8 x i8> @llvm.vp.mul.nxv8i8(<vscale x 8 x i8> [[X:%.*]], <vscale x 8 x i8> [[TMP3]], <vscale x 8 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 8 x i8> [[TMP4]]
 ;
   %1 = insertelement <vscale x 8 x i8> poison, i8 %y, i64 0
   %2 = shufflevector <vscale x 8 x i8> %1, <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer
-  %3 = call <vscale x 8 x i8>  @llvm.vp.add.nxv8i8(<vscale x 8 x i8> %2, <vscale x 8 x i8> shufflevector(<vscale x 8 x i8> insertelement(<vscale x 8 x i8> poison, i8 42, i32 0), <vscale x 8 x i8> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 8 x i8>  @llvm.vp.add.nxv8i8(<vscale x 8 x i8> %2, <vscale x 8 x i8> splat (i8 42), <vscale x 8 x i1> %mask, i32 %evl)
   %4 = call <vscale x 8 x i8> @llvm.vp.mul.nxv8i8(<vscale x 8 x i8> %x, <vscale x 8 x i8> %3,  <vscale x 8 x i1> %mask, i32 %evl)
   ret <vscale x 8 x i8> %4
 }
 
 define <vscale x 8 x half> @fadd_nxv1f16_allonesmask(<vscale x 8 x half> %x, half %y, i32 zeroext %evl) {
+<<<<<<< HEAD
 ; ALL-LABEL: @fadd_nxv1f16_allonesmask(
 ; ALL-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 8 x i1> poison, i1 true, i32 0
 ; ALL-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 8 x i1> [[SPLAT]], <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer
@@ -1478,12 +1679,31 @@ define <vscale x 8 x half> @fadd_nxv1f16_allonesmask(<vscale x 8 x half> %x, hal
 ; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 8 x half> @llvm.vp.fadd.nxv8f16(<vscale x 8 x half> [[TMP2]], <vscale x 8 x half> shufflevector (<vscale x 8 x half> insertelement (<vscale x 8 x half> poison, half 0xH5140, i32 0), <vscale x 8 x half> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> [[MASK]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 8 x half> @llvm.vp.fadd.nxv8f16(<vscale x 8 x half> [[X:%.*]], <vscale x 8 x half> [[TMP3]], <vscale x 8 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 8 x half> [[TMP4]]
+=======
+; VEC-COMBINE-LABEL: @fadd_nxv1f16_allonesmask(
+; VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 8 x i1> poison, i1 true, i32 0
+; VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 8 x i1> [[SPLAT]], <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP1:%.*]] = fadd half [[Y:%.*]], 0xH5140
+; VEC-COMBINE-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 8 x half> poison, half [[TMP1]], i64 0
+; VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 8 x half> [[DOTSPLATINSERT]], <vscale x 8 x half> poison, <vscale x 8 x i32> zeroinitializer
+; VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 8 x half> @llvm.vp.fadd.nxv8f16(<vscale x 8 x half> [[X:%.*]], <vscale x 8 x half> [[TMP2]], <vscale x 8 x i1> [[MASK]], i32 [[EVL:%.*]])
+; VEC-COMBINE-NEXT:    ret <vscale x 8 x half> [[TMP3]]
+;
+; NO-VEC-COMBINE-LABEL: @fadd_nxv1f16_allonesmask(
+; NO-VEC-COMBINE-NEXT:    [[SPLAT:%.*]] = insertelement <vscale x 8 x i1> poison, i1 true, i32 0
+; NO-VEC-COMBINE-NEXT:    [[MASK:%.*]] = shufflevector <vscale x 8 x i1> [[SPLAT]], <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 8 x half> poison, half [[Y:%.*]], i64 0
+; NO-VEC-COMBINE-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 8 x half> [[TMP1]], <vscale x 8 x half> poison, <vscale x 8 x i32> zeroinitializer
+; NO-VEC-COMBINE-NEXT:    [[TMP3:%.*]] = call <vscale x 8 x half> @llvm.vp.fadd.nxv8f16(<vscale x 8 x half> [[TMP2]], <vscale x 8 x half> shufflevector (<vscale x 8 x half> insertelement (<vscale x 8 x half> poison, half 0xH5140, i64 0), <vscale x 8 x half> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> [[MASK]], i32 [[EVL:%.*]])
+; NO-VEC-COMBINE-NEXT:    [[TMP4:%.*]] = call <vscale x 8 x half> @llvm.vp.fadd.nxv8f16(<vscale x 8 x half> [[X:%.*]], <vscale x 8 x half> [[TMP3]], <vscale x 8 x i1> [[MASK]], i32 [[EVL]])
+; NO-VEC-COMBINE-NEXT:    ret <vscale x 8 x half> [[TMP4]]
+>>>>>>> 4df364bc93af
 ;
   %splat = insertelement <vscale x 8 x i1> poison, i1 -1, i32 0
   %mask = shufflevector <vscale x 8 x i1> %splat, <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer
   %1 = insertelement <vscale x 8 x half> poison, half %y, i64 0
   %2 = shufflevector <vscale x 8 x half> %1, <vscale x 8 x half> poison, <vscale x 8 x i32> zeroinitializer
-  %3 = call <vscale x 8 x half> @llvm.vp.fadd.nxv8f16(<vscale x 8 x half> %2, <vscale x 8 x half> shufflevector(<vscale x 8 x half> insertelement(<vscale x 8 x half> poison, half 42.0, i32 0), <vscale x 8 x half> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 8 x half> @llvm.vp.fadd.nxv8f16(<vscale x 8 x half> %2, <vscale x 8 x half> splat (half 42.0), <vscale x 8 x i1> %mask, i32 %evl)
   %4 = call <vscale x 8 x half> @llvm.vp.fadd.nxv8f16(<vscale x 8 x half> %x, <vscale x 8 x half> %3, <vscale x 8 x i1> %mask, i32 %evl)
   ret <vscale x 8 x half> %4
 }
@@ -1492,13 +1712,13 @@ define <vscale x 8 x half> @fadd_nxv8f16_anymask(<vscale x 8 x half> %x, half %y
 ; ALL-LABEL: @fadd_nxv8f16_anymask(
 ; ALL-NEXT:    [[TMP1:%.*]] = insertelement <vscale x 8 x half> poison, half [[Y:%.*]], i64 0
 ; ALL-NEXT:    [[TMP2:%.*]] = shufflevector <vscale x 8 x half> [[TMP1]], <vscale x 8 x half> poison, <vscale x 8 x i32> zeroinitializer
-; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 8 x half> @llvm.vp.fadd.nxv8f16(<vscale x 8 x half> [[TMP2]], <vscale x 8 x half> shufflevector (<vscale x 8 x half> insertelement (<vscale x 8 x half> poison, half 0xH5140, i32 0), <vscale x 8 x half> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
+; ALL-NEXT:    [[TMP3:%.*]] = call <vscale x 8 x half> @llvm.vp.fadd.nxv8f16(<vscale x 8 x half> [[TMP2]], <vscale x 8 x half> shufflevector (<vscale x 8 x half> insertelement (<vscale x 8 x half> poison, half 0xH5140, i64 0), <vscale x 8 x half> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> [[MASK:%.*]], i32 [[EVL:%.*]])
 ; ALL-NEXT:    [[TMP4:%.*]] = call <vscale x 8 x half> @llvm.vp.fadd.nxv8f16(<vscale x 8 x half> [[X:%.*]], <vscale x 8 x half> [[TMP3]], <vscale x 8 x i1> [[MASK]], i32 [[EVL]])
 ; ALL-NEXT:    ret <vscale x 8 x half> [[TMP4]]
 ;
   %1 = insertelement <vscale x 8 x half> poison, half %y, i64 0
   %2 = shufflevector <vscale x 8 x half> %1, <vscale x 8 x half> poison, <vscale x 8 x i32> zeroinitializer
-  %3 = call <vscale x 8 x half> @llvm.vp.fadd.nxv8f16(<vscale x 8 x half> %2, <vscale x 8 x half> shufflevector(<vscale x 8 x half> insertelement(<vscale x 8 x half> poison, half 42.0, i32 0), <vscale x 8 x half> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> %mask, i32 %evl)
+  %3 = call <vscale x 8 x half> @llvm.vp.fadd.nxv8f16(<vscale x 8 x half> %2, <vscale x 8 x half> splat (half 42.0), <vscale x 8 x i1> %mask, i32 %evl)
   %4 = call <vscale x 8 x half> @llvm.vp.fadd.nxv8f16(<vscale x 8 x half> %x, <vscale x 8 x half> %3, <vscale x 8 x i1> %mask, i32 %evl)
   ret <vscale x 8 x half> %4
 }

@@ -61,10 +61,13 @@ run by the parser after parsing input assembly and by the optimizer
 before it outputs bitcode. The violations pointed out by the verifier
 pass indicate bugs in transformation passes or input to the parser.
 
+Syntax
+======
+
 .. _identifiers:
 
 Identifiers
-===========
+-----------
 
 LLVM identifiers come in two basic types: global and local. Global
 identifiers (functions, global variables) begin with the ``'@'``
@@ -139,6 +142,34 @@ lexical features of LLVM:
 It also shows a convention that we follow in this document. When
 demonstrating instructions, we will follow an instruction with a comment
 that defines the type and name of value produced.
+
+.. _strings:
+
+String constants
+----------------
+
+Strings in LLVM programs are delimited by ``"`` characters. Within a
+string, all bytes are treated literally with the exception of ``\``
+characters, which start escapes, and the first ``"`` character, which
+ends the string.
+
+There are two kinds of escapes.
+
+* ``\\`` represents a single ``\`` character.
+
+* ``\`` followed by two hexadecimal characters (0-9, a-f, or A-F)
+  represents the byte with the given value (e.g. \x00 represents a
+  null byte).
+
+To represent a ``"`` character, use ``\22``. (``\"`` will end the string
+with a trailing ``\``.)
+
+Newlines do not terminate string constants; strings can span multiple
+lines.
+
+The interpretation of string constants (e.g. their character encoding)
+depends on context.
+
 
 High Level Structure
 ====================
@@ -4333,7 +4364,7 @@ constants and smaller complex constants.
 
     When creating a vector whose elements have the same constant value, the
     preferred syntax is ``splat (<Ty> Val)``. For example: "``splat (i32 11)``".
-    These vector constants must have ::ref:`vector type <t_vector>` with an
+    These vector constants must have :ref:`vector type <t_vector>` with an
     element type that matches the ``splat`` operand.
 **Zero initialization**
     The string '``zeroinitializer``' can be used to zero initialize a
@@ -15992,6 +16023,8 @@ functions would, but without setting errno. If the rounded value is
 too large to be stored in the result type, the return value is a
 non-deterministic value (equivalent to `freeze poison`).
 
+.. _int_lrint:
+
 '``llvm.lrint.*``' Intrinsic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
@@ -16036,6 +16069,8 @@ This function returns the same values as the libm ``lrint`` functions
 would, but without setting errno. If the rounded value is too large to
 be stored in the result type, the return value is a non-deterministic
 value (equivalent to `freeze poison`).
+
+.. _int_llrint:
 
 '``llvm.llrint.*``' Intrinsic
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -23401,6 +23436,100 @@ Examples:
 
       %t = call <4 x float> @llvm.trunc.v4f32(<4 x float> %a)
       %also.r = select <4 x i1> %mask, <4 x float> %t, <4 x float> poison
+
+.. _int_vp_lrint:
+
+'``llvm.vp.lrint.*``' Intrinsics
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Syntax:
+"""""""
+This is an overloaded intrinsic.
+
+::
+
+      declare <16 x i32> @llvm.vp.lrint.v16i32.v16f32(<16 x float> <op>, <16 x i1> <mask>, i32 <vector_length>)
+      declare <vscale x 4 x i32> @llvm.vp.lrint.nxv4i32.nxv4f32(<vscale x 4 x float> <op>, <vscale x 4 x i1> <mask>, i32 <vector_length>)
+      declare <256 x i64> @llvm.vp.lrint.v256i64.v256f64(<256 x double> <op>, <256 x i1> <mask>, i32 <vector_length>)
+
+Overview:
+"""""""""
+
+Predicated lrint of a vector of floating-point values.
+
+
+Arguments:
+""""""""""
+
+The result is an integer vector and the first operand is a vector of :ref:`floating-point <t_floating>`
+type with the same number of elements as the result vector type. The second
+operand is the vector mask and has the same number of elements as the result
+vector type. The third operand is the explicit vector length of the operation.
+
+Semantics:
+""""""""""
+
+The '``llvm.vp.lrint``' intrinsic performs lrint (:ref:`lrint <int_lrint>`) of
+the first vector operand on each enabled lane. The result on disabled lanes is a
+:ref:`poison value <poisonvalues>`.
+
+Examples:
+"""""""""
+
+.. code-block:: llvm
+
+      %r = call <4 x i32> @llvm.vp.lrint.v4i32.v4f32(<4 x float> %a, <4 x i1> %mask, i32 %evl)
+      ;; For all lanes below %evl, %r is lane-wise equivalent to %also.r
+
+      %t = call <4 x i32> @llvm.lrint.v4f32(<4 x float> %a)
+      %also.r = select <4 x i1> %mask, <4 x i32> %t, <4 x i32> poison
+
+.. _int_vp_llrint:
+
+'``llvm.vp.llrint.*``' Intrinsics
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+Syntax:
+"""""""
+This is an overloaded intrinsic.
+
+::
+
+      declare <16 x i32> @llvm.vp.llrint.v16i32.v16f32(<16 x float> <op>, <16 x i1> <mask>, i32 <vector_length>)
+      declare <vscale x 4 x i32> @llvm.vp.llrint.nxv4i32.nxv4f32(<vscale x 4 x float> <op>, <vscale x 4 x i1> <mask>, i32 <vector_length>)
+      declare <256 x i64> @llvm.vp.llrint.v256i64.v256f64(<256 x double> <op>, <256 x i1> <mask>, i32 <vector_length>)
+
+Overview:
+"""""""""
+
+Predicated llrint of a vector of floating-point values.
+
+
+Arguments:
+""""""""""
+The result is an integer vector and the first operand is a vector of :ref:`floating-point <t_floating>`
+type with the same number of elements as the result vector type. The second
+operand is the vector mask and has the same number of elements as the result
+vector type. The third operand is the explicit vector length of the operation.
+
+Semantics:
+""""""""""
+
+The '``llvm.vp.llrint``' intrinsic performs lrint (:ref:`llrint <int_llrint>`) of
+the first vector operand on each enabled lane. The result on disabled lanes is a
+:ref:`poison value <poisonvalues>`.
+
+Examples:
+"""""""""
+
+.. code-block:: llvm
+
+      %r = call <4 x i32> @llvm.vp.llrint.v4i32.v4f32(<4 x float> %a, <4 x i1> %mask, i32 %evl)
+      ;; For all lanes below %evl, %r is lane-wise equivalent to %also.r
+
+      %t = call <4 x i32> @llvm.llrint.v4f32(<4 x float> %a)
+      %also.r = select <4 x i1> %mask, <4 x i32> %t, <4 x i32> poison
+
 
 .. _int_vp_bitreverse:
 

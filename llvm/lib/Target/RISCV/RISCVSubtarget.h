@@ -199,6 +199,10 @@ public:
 #include "RISCVGenSubtargetInfo.inc"
 
   bool hasStdExtCOrZca() const { return HasStdExtC || HasStdExtZca; }
+  bool hasStdExtCOrZcd() const { return HasStdExtC || HasStdExtZcd; }
+  bool hasStdExtCOrZcfOrZce() const {
+    return HasStdExtC || HasStdExtZcf || HasStdExtZce;
+  }
   bool hasStdExtZvl() const { return ZvlLen != 0; }
 #if SIFIVE_CUSTOMIZATION
   bool hasKnownDLen() const { return DLen != 0; }
@@ -251,6 +255,14 @@ public:
     unsigned VLen = getMaxRVVVectorSizeInBits();
     return VLen == 0 ? 65536 : VLen;
   }
+  // If we know the exact VLEN, return it.  Otherwise, return std::nullopt.
+  std::optional<unsigned> getRealVLen() const {
+    unsigned Min = getRealMinVLen();
+    if (Min != getRealMaxVLen())
+      return std::nullopt;
+    return Min;
+  }
+
   RISCVABI::ABI getTargetABI() const { return TargetABI; }
   bool isSoftFPABI() const {
     return TargetABI == RISCVABI::ABI_LP64 ||
@@ -354,6 +366,8 @@ public:
   };
 
   unsigned getMinimumJumpTableEntries() const;
+
+  bool supportsInitUndef() const override { return hasVInstructions(); }
 };
 } // End llvm namespace
 
