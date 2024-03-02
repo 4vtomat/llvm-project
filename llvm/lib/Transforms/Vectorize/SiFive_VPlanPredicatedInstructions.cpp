@@ -60,7 +60,7 @@ static Value *widenSelectInstruction(VPTransformState &State,
   Value *Cond = State.get(User.getOperand(0), Part);
   Value *Op1 = State.get(User.getOperand(1), Part);
   Value *Op2 = State.get(User.getOperand(2), Part);
-  Value *RVLArg = State.get(RVL, Part);
+  Value *RVLArg = State.get(RVL, Part, /*NeedsScalar=*/true);
   return State.Builder.CreateIntrinsic(VPOpCode, {Op1->getType()},
                                        {Cond, Op1, Op2, RVLArg}, nullptr, Name);
 }
@@ -116,7 +116,7 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     // are enabled.
     // Since LV is targeting RVV, use all-true mask for conversions.
     Builder.setMask(BuilderIR.getTrueVector(SrcTy->getElementCount()));
-    Builder.setEVL(State.get(RVL, Part));
+    Builder.setEVL(State.get(RVL, Part, /*NeedsScalar=*/true));
     return Builder.createVectorInstruction(CI->getOpcode(), DestTy, {SrcVal},
                                            "vp.cast");
   };
@@ -127,7 +127,7 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     Value *A = State.get(User.getOperand(0), Part);
     auto *PredTy = cast<VectorType>(A->getType());
     Value *MaskArg = BuilderIR.getTrueVector(State.VF);
-    Value *RVLArg = State.get(RVL, Part);
+    Value *RVLArg = State.get(RVL, Part, /*NeedsScalar=*/true);
     Builder.setMask(MaskArg).setEVL(RVLArg);
     return Builder.createVectorInstruction(Instruction::Xor, PredTy,
                                            {A, MaskArg}, "pred.not");
@@ -150,7 +150,7 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     VectorType *OpTy = cast<VectorType>(A->getType());
     Value *MaskArg = MaskValue(Part, OpTy->getElementCount());
     Builder.setMask(MaskArg);
-    Value *RVLArg = State.get(RVL, Part);
+    Value *RVLArg = State.get(RVL, Part, /*NeedsScalar=*/true);
     Builder.setEVL(RVLArg);
 
     StringRef PredicateStr = CmpInst::getPredicateName(Cmp->getPredicate());
@@ -283,7 +283,7 @@ void widenPredicatedCall(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
   }
 
   Args.push_back(Builder.getTrueVector(State.VF));
-  Args.push_back(State.get(State.RVL, Part));
+  Args.push_back(State.get(State.RVL, Part, /*NeedsScalar=*/ true));
   CallInst *V =
       Builder.CreateIntrinsic(VPID, TysForDecl, Args, nullptr, "vp.op");
   if (isa<FPMathOperator>(V))
@@ -321,10 +321,10 @@ void VPSelectInstruction::execute(VPTransformState &State) {
 void VPMonotonicUpdateInstruction::execute(VPTransformState &State) {
   assert(State.UF == 1 && "Unrolling is not supported");
   auto &Builder = State.Builder;
-  Value *V = State.get(getIncomingValue(), 0);
-  Value *Step = State.get(getStepValue(), VPIteration(0, 0));
+  Value *V = State.get(getIncomingValue(), 0, /*NeedsScalar=*/true);
+  Value *Step = State.get(getStepValue(), 0, /*NeedsScalar=*/true);
   Value *Mask = State.get(getMask(), 0);
-  Value *RVL = State.get(State.RVL, 0);
+  Value *RVL = State.get(State.RVL, 0, /*NeedsScalar=*/true);
   Value *Vpop = createVectorPopcount(Builder, Mask, RVL);
   Vpop = Builder.CreateZExtOrTrunc(Vpop, Step->getType());
 
@@ -333,7 +333,7 @@ void VPMonotonicUpdateInstruction::execute(VPTransformState &State) {
 
   Value *NewV = Builder.CreateBinOp(OrigUpdateOp->getOpcode(), V, Mult,
                                     "monotonic.update");
-  State.set(this, NewV, 0);
+  State.set(this, NewV, 0, /*IsScalar=*/true);
 }
 
 /// Generate phi for the monotonic:
@@ -342,14 +342,14 @@ void VPMonotonicHeaderPHIRecipe::execute(VPTransformState &State) {
   IRBuilder<>::InsertPointGuard Guard(State.Builder);
   State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHI());
 
-  Value *StartV = State.get(getStartValue(), VPIteration(0, 0));
+  Value *StartV = State.get(getStartValue(), 0, /*NeedsScalar=*/true);
   auto *Phi = State.Builder.CreatePHI(StartV->getType(), 2, "monotonic.phi");
   BasicBlock *PreheaderBB = State.CFG.getPreheaderBBFor(this);
   Phi->addIncoming(StartV, PreheaderBB);
 
   // Use the same Phi for all Parts
   for (unsigned Part = 0; Part < State.UF; ++Part)
-    State.set(this, Phi, Part);
+    State.set(this, Phi, Part, /*IsScalar*/ true);
 }
 
 /// Build and return either `vp.gather`/`vp.scatter` or
@@ -360,7 +360,7 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
                                  VPTransformState &State, unsigned Part,
                                  ArrayRef<Value *> BlockInMaskParts) {
   assert(Part == 0 && "Cannot support Part > 0 for RVV VLA vectorization");
-  Value *RVLPart = State.get(State.RVL, Part);
+  Value *RVLPart = State.get(State.RVL, Part, /*NeedsScalar=*/true);
   assert(RVLPart && "RVL must be set prior to generation of vp-intrinsics");
 
   VPValue *VPAddr = VPWMIR.getAddr();
@@ -476,7 +476,8 @@ Instruction *widenPredicatedArithmeticOp(VPTransformState &State,
          "Invalid number of operands.");
   VectorBuilder VBuilder(State.Builder);
   VPValue *RVL = State.RVL;
-  Value *RVLPart = State.RVL ? State.get(RVL, Part) : State.RVLPlaceholder;
+  Value *RVLPart = State.RVL ? State.get(RVL, Part, /*NeedsScalar=*/true)
+                             : State.RVLPlaceholder;
   RVLPart =
       State.Builder.CreateZExtOrTrunc(RVLPart, State.Builder.getInt32Ty());
   assert(RVLPart && "RVL was not created");

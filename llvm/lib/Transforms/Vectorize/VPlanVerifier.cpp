@@ -41,15 +41,11 @@ static bool verifyPhiRecipes(const VPBasicBlock *VPBB) {
     if (isa<VPActiveLaneMaskPHIRecipe>(RecipeI))
       NumActiveLaneMaskPhiRecipes++;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    if (IsHeaderVPBB && !vputils::isHeaderPhi(*RecipeI)) {
+    if (!IsHeaderVPBB && vputils::isHeaderPhi(*RecipeI)) {
 #else
-    if (IsHeaderVPBB && !isa<VPHeaderPHIRecipe>(*RecipeI)) {    
-#endif // SIFIVE_CUSTOMIZATION
-=======
     if (IsHeaderVPBB && !isa<VPHeaderPHIRecipe, VPWidenPHIRecipe>(*RecipeI)) {
->>>>>>> 4df364bc93af
+#endif // SIFIVE_CUSTOMIZATION
       errs() << "Found non-header PHI recipe in header VPBB";
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
       errs() << ": ";
@@ -164,17 +160,8 @@ static bool verifyVPBasicBlock(const VPBasicBlock *VPBB,
       for (const VPUser *U : V->users()) {
         auto *UI = dyn_cast<VPRecipeBase>(U);
         // TODO: check dominance of incoming values for phis properly.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-        if (!UI || vputils::isHeaderPhi(*UI) ||
-            isa<VPPredInstPHIRecipe>(UI))
-#else
-        if (!UI || isa<VPHeaderPHIRecipe>(UI) || isa<VPPredInstPHIRecipe>(UI))
-#endif // SIFIVE_CUSTOMIZATION
-=======
         if (!UI ||
             isa<VPHeaderPHIRecipe, VPWidenPHIRecipe, VPPredInstPHIRecipe>(UI))
->>>>>>> 4df364bc93af
           continue;
 
         // If the user is in the same block, check it comes after R in the

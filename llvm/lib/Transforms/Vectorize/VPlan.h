@@ -316,20 +316,12 @@ struct VPTransformState {
   VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                    DominatorTree *DT, IRBuilderBase &Builder,
                    InnerLoopVectorizer *ILV, VPlan *Plan, LLVMContext &Ctx,
-                   bool EnableRISCVCSA)
-      : VF(VF), UF(UF), LI(LI), DT(DT), Builder(Builder), ILV(ILV), Plan(Plan),
-        LVer(nullptr), TypeAnalysis(Ctx),  EnableRISCVCSA(EnableRISCVCSA) {}
+                   bool EnableRISCVCSA);
 #else
   VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                    DominatorTree *DT, IRBuilderBase &Builder,
-<<<<<<< HEAD
-                   InnerLoopVectorizer *ILV, VPlan *Plan, LLVMContext &Ctx)
-      : VF(VF), UF(UF), LI(LI), DT(DT), Builder(Builder), ILV(ILV), Plan(Plan),
-        LVer(nullptr), TypeAnalysis(Ctx) {}
-#endif // SIFIVE_CUSTOMIZATION
-=======
                    InnerLoopVectorizer *ILV, VPlan *Plan, LLVMContext &Ctx);
->>>>>>> 4df364bc93af
+#endif // SIFIVE_CUSTOMIZATION
 
   /// The chosen Vectorization and Unroll Factors of the loop being vectorized.
   ElementCount VF;
@@ -436,6 +428,11 @@ struct VPTransformState {
     unsigned CacheIdx = Instance.Lane.mapToCacheIndex(VF);
     while (Scalars.size() <= CacheIdx)
       Scalars.push_back(nullptr);
+#if SIFIVE_CUSTOMIZATION
+    // For now it's legal for Uncountable loop vectorization to  overwrite
+    // existing value of RVL
+    if (this->RVL != Def)
+#endif // SIFIVE_CUSTOMIZATION
     assert(!Scalars[CacheIdx] && "should overwrite existing value");
     Scalars[CacheIdx] = V;
   }
@@ -511,11 +508,6 @@ struct VPTransformState {
   /// Hold a reference to the IRBuilder used to generate output IR code.
   IRBuilderBase &Builder;
 
-<<<<<<< HEAD
-  VPValue2ValueTy VPValue2Value;
-
-  /// Hold the canonical scalar IV of the vector loop (start=0, step=VF*UF).
-  Value *CanonicalIV = nullptr;
 #if SIFIVE_CUSTOMIZATION
   /// Hold a pointer to ScalarEvolution which will be used during the IR
   /// generation.
@@ -539,8 +531,6 @@ struct VPTransformState {
   Value *getVFirst() const { return VFirst; }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> 4df364bc93af
   /// Hold a pointer to InnerLoopVectorizer to reuse its IR generation methods.
   InnerLoopVectorizer *ILV;
 

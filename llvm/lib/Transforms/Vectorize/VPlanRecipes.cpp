@@ -341,9 +341,8 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     if (Part != 0 && vputils::onlyFirstPartUsed(this))
       return State.get(this, 0, OnlyFirstLaneUsed);
 
-<<<<<<< HEAD
-    Value *A = State.get(getOperand(0), Part);
-    Value *B = State.get(getOperand(1), Part);
+    Value *A = State.get(getOperand(0), Part, OnlyFirstLaneUsed);
+    Value *B = State.get(getOperand(1), Part, OnlyFirstLaneUsed);
 #if SIFIVE_CUSTOMIZATION
     if (State.Plan->useVLAVectorizer() && A->getType()->isVectorTy())
       return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
@@ -359,10 +358,6 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
         B = Builder.CreateZExtOrTrunc(B, A->getType());
     }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    Value *A = State.get(getOperand(0), Part, OnlyFirstLaneUsed);
-    Value *B = State.get(getOperand(1), Part, OnlyFirstLaneUsed);
->>>>>>> 4df364bc93af
     auto *Res =
         Builder.CreateBinOp((Instruction::BinaryOps)getOpcode(), A, B, Name);
     if (auto *I = dyn_cast<Instruction>(Res))
@@ -435,8 +430,9 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
 #if SIFIVE_CUSTOMIZATION
     if (State.Plan->useVLAVectorizer()) {
       Value *V2 = State.get(getOperand(1), Part);
-      Value *PrevRVL = State.get(State.Plan->getPrevRVL(), Part);
-      Value *RVL = State.get(State.RVL, Part);
+      Value *PrevRVL =
+          State.get(State.Plan->getPrevRVL(), Part, /*NeedsScalar=*/true);
+      Value *RVL = State.get(State.RVL, Part, /*NeedsScalar=*/true);
 
       auto *IdxTy = Builder.getInt32Ty();
       Value *Shift = ConstantInt::get(IdxTy, -1);
@@ -469,7 +465,7 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
       assert(getNumOperands() != 0 &&
              "Countable loop vectorization must use EVL");
       // Compute VTC - IV as the EVL(requested vector length).
-      Value *Index = State.get(getOperand(0), 0);
+      Value *Index = State.get(getOperand(0), 0, /*IsScalar*/ true);
       Value *TripCount = State.get(getOperand(1), VPIteration(0, 0));
       EVL = State.Builder.CreateSub(TripCount, Index);
     }
@@ -480,8 +476,8 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
   }
   case VPInstruction::ExplicitVectorLengthIVIncrement: {
     assert(Part == 0 && "Expected unroll factor 1 for VP vectorization.");
-    Value *Phi = State.get(getOperand(0), 0);
-    Value *EVL = State.get(getOperand(1), 0);
+    Value *Phi = State.get(getOperand(0), 0, /*IsScalar*/ true);
+    Value *EVL = State.get(getOperand(1), 0, /*IsScalar*/ true);
     assert(EVL->getType()->getScalarSizeInBits() <=
                Phi->getType()->getScalarSizeInBits() &&
            "EVL type must be smaller than Phi type.");
@@ -554,7 +550,6 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
       return InitMask;
     }
     Value *V = State.get(this, Part - 1);
-    State.set(this, V, Part);
     return V;
   }
   case VPInstruction::CSAInitData: {
@@ -565,7 +560,6 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
       return InitData;
     }
     Value *V = State.get(this, Part - 1);
-    State.set(this, V, Part);
     return V;
   }
   case VPInstruction::CSAMaskPhi: {
@@ -581,14 +575,13 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
       return MaskPhi;
     }
     Value *V =State.get(this, Part - 1);
-    State.set(this, V, Part);
     return V;
   }
   case VPInstruction::CSAMaskSel: {
     if (!State.EnableRISCVCSA) {
       Value *WidenedCond = State.get(getOperand(0), Part);
       Value *MaskPhi = State.get(getOperand(1), Part);
-      Value *AnyActive = State.get(getOperand(4), Part);
+      Value *AnyActive = State.get(getOperand(4), Part, /*NeedsScalar=*/true);
       // If not the first Part, use the mask from the previous unrolled Part
       Value *OldMask = Part == 0 ? MaskPhi : State.get(this, Part - 1);
       Value *MaskSel = State.Builder.CreateSelect(AnyActive, WidenedCond,
@@ -597,7 +590,6 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
       // that corresponds to the last Part.
       if (Part == State.UF - 1)
         cast<PHINode>(MaskPhi)->addIncoming(MaskSel, State.CFG.PrevBB);
-      State.set(this, MaskSel, Part);
       return MaskSel;
     }
 
@@ -607,7 +599,7 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     Value *AllFalse = State.get(getOperand(3), Part);
     Value *RVL =
         State.Plan->useVLAVectorizer()
-            ? State.get(State.RVL, Part)
+            ? State.get(State.RVL, Part, /*NeedsScalar=*/true)
             : getRuntimeVF(Builder, State.Builder.getInt32Ty(), State.VF);
 
     Value *UndistCond = State.Builder.CreateIntrinsic(
@@ -616,7 +608,7 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
 
     Value *InitRVL =
         State.Plan->useVLAVectorizer()
-            ? State.get(State.Plan->getInitRVL(), Part)
+            ? State.get(State.Plan->getInitRVL(), Part, /*NeedsScalar=*/true)
             : getRuntimeVF(Builder, State.Builder.getInt32Ty(), State.VF);
 
     Value *InitRVL64 =
@@ -649,7 +641,7 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
 
     Value *RVL =
         State.Plan->useVLAVectorizer()
-            ? State.get(State.RVL, Part)
+            ? State.get(State.RVL, Part, /*NeedsScalar=*/true)
             : getRuntimeVF(Builder, State.Builder.getInt32Ty(), State.VF);
 
     Value *StartValue =
@@ -658,7 +650,6 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
         WidenedCond->getType()->getScalarType(), Intrinsic::vp_reduce_or,
         {StartValue, WidenedCond, AllOnesMask, RVL}, nullptr,
         "csa.cond.anyactive");
-    State.set(this, AnyActive, Part);
     return AnyActive;
   }
   case VPInstruction::CSAVLPhi: {
@@ -671,21 +662,19 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     PHINode *VLPhi =
         State.Builder.CreatePHI(InitVL->getType(), 2, "csa.vl.phi");
     VLPhi->addIncoming(InitVL, PreheaderBB);
-    State.set(this, VLPhi, Part);
     return VLPhi;
   }
   case VPInstruction::CSAVLSel: {
-    Value *AnyActive = State.get(getOperand(0), Part);
-    Value *VLPhi = State.get(getOperand(1), Part);
+    Value *AnyActive = State.get(getOperand(0), Part, /*NeedsScalar=*/true);
+    Value *VLPhi = State.get(getOperand(1), Part, /*NeedsScalar=*/true);
     Value *RVL =
         State.Plan->useVLAVectorizer()
-            ? State.get(State.RVL, Part)
+            ? State.get(State.RVL, Part, /*NeedsScalar=*/true)
             : getRuntimeVF(Builder, State.Builder.getInt32Ty(), State.VF);
 
     Value *VLSel =
         State.Builder.CreateSelect(AnyActive, RVL, VLPhi, "csa.vl.sel");
     cast<PHINode>(VLPhi)->addIncoming(VLSel, State.CFG.PrevBB);
-    State.set(this, VLSel, Part);
     return VLSel;
   }
   case VPInstruction::ExitingCond: {
@@ -693,7 +682,7 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     assert(VPVectorCond && "Mask cannot be null for vfirst");
     // Create vfirst
     Value *Mask = State.get(VPVectorCond, Part);
-    Value *RVL = State.get(State.RVL, 0);
+    Value *RVL = State.get(State.RVL, Part, /*NeedsScalar=*/true);
     assert(RVL && "VL is null for uncountable loops");
     Value *VFirstI = Builder.CreateIntrinsic(
         Intrinsic::vp_first, {Mask->getType()},
@@ -706,7 +695,6 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     // Create cmp
     Value *Cond = Builder.CreateICmp(ICmpInst::ICMP_SGE, VFirstI,
                                      ConstantInt::get(VFirstI->getType(), 0));
-    State.set(this, Cond, Part);
     return Cond;
   }
   // TODO: This case can be removed when support for Call instruction is added
@@ -779,7 +767,8 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
     if (State.VF.isVector() && !PhiR->isInLoop()) {
 #if SIFIVE_CUSTOMIZATION
       if (State.Plan->useVLAVectorizer()) {
-        Value *InitRVL = State.get(State.Plan->getInitRVL(), 0);
+        Value *InitRVL =
+            State.get(State.Plan->getInitRVL(), 0, /*NeedsScalar=*/true);
         assert(InitRVL &&
                "InitRVL must be initialized in emitIterationCountCheck when "
                "using VP intrinsic to generate unordered reduction");
@@ -864,9 +853,18 @@ void VPInstruction::execute(VPTransformState &State) {
 
     bool IsVector = GeneratedValue->getType()->isVectorTy();
     State.set(this, GeneratedValue, Part, !IsVector);
+#if SIFIVE_CUSTOMIZATION
+    assert((IsVector || getOpcode() == VPInstruction::ComputeReductionResult ||
+            getOpcode() == VPInstruction::CSAVLSel ||
+            getOpcode() == VPInstruction::ExitingCond ||
+            getOpcode() == VPInstruction::CSAAnyActive || State.VF.isScalar() ||
+            vputils::onlyFirstLaneUsed(this)) &&
+           "scalar value but not only first lane used");
+#else
     assert((IsVector || getOpcode() == VPInstruction::ComputeReductionResult ||
             State.VF.isScalar() || vputils::onlyFirstLaneUsed(this)) &&
            "scalar value but not only first lane used");
+#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
@@ -889,15 +887,13 @@ bool VPInstruction::onlyFirstLaneUsed(const VPValue *Op) const {
   case VPInstruction::CalculateTripCountMinusVF:
   case VPInstruction::CanonicalIVIncrementForPart:
   case VPInstruction::BranchOnCount:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case VPInstruction::ExitingCond:
+  case VPInstruction::CSAVLPhi:
+  case VPInstruction::CSAVLSel:
+  case VPInstruction::CSAAnyActive:
 #endif
-    // TODO: Cover additional operands.
-    return getOperand(0) == Op;
-=======
     return true;
->>>>>>> 4df364bc93af
   };
   llvm_unreachable("switch should return");
 }
@@ -1063,7 +1059,7 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
       // Add VL as an explicit final argument to SiFive NF Library functions
       if (VectorF->getName().starts_with(SiFiveNFLibraryPrefix) &&
           State.Plan->useVLAVectorizer()) {
-        Value *RVL = State.get(State.RVL, Part);
+        Value *RVL = State.get(State.RVL, Part, /*NeedsScalar=*/true);
         Args.push_back(RVL);
       }
 #endif // SIFIVE_CUSTOMIZATION
@@ -1192,7 +1188,7 @@ void VPWidenSelectRecipe::execute(VPTransformState &State) {
 #if SIFIVE_CUSTOMIZATION
     Value *Sel;
     if (State.Plan->useVLAVectorizer() && Cond->getType()->isVectorTy()) {
-      Value *RVLArg = State.get(State.RVL, Part);
+      Value *RVLArg = State.get(State.RVL, Part, /*NeedsScalar=*/true);
       Sel = State.Builder.CreateIntrinsic(Intrinsic::vp_select, {Op0->getType()},
                                           {Cond, Op0, Op1, RVLArg}, nullptr,
                                           "vp.widen.select");
@@ -1877,7 +1873,7 @@ void VPVectorPointerRecipe ::execute(VPTransformState &State) {
         VPValue *RVL = State.RVL;
         // If RVL is not nullptr, then RVL must be a valid value set during plan
         // creation and must be used to correctly reverse the address
-        RunTimeVF = State.get(RVL, Part);
+        RunTimeVF = State.get(RVL, Part, /*NeedsScalar=*/true);
         if (RunTimeVF->getType() != IndexTy)
           RunTimeVF = Builder.CreateZExtOrTrunc(RunTimeVF, IndexTy);
       } else {
@@ -1948,7 +1944,7 @@ void VPBlendRecipe::execute(VPTransformState &State) {
         Value *Cond = State.get(getMask(In), Part);
 #if SIFIVE_CUSTOMIZATION
         if (State.Plan->useVLAVectorizer() && Cond->getType()->isVectorTy()) {
-          Value *RVLArg = State.get(State.RVL, Part);
+          Value *RVLArg = State.get(State.RVL, Part, /*NeedsScalar=*/true);
           Entry[Part] = State.Builder.CreateIntrinsic(
               Intrinsic::vp_select, {In0->getType()},
               {Cond, In0, Entry[Part], RVLArg}, nullptr, "predphi");
@@ -2192,7 +2188,8 @@ void VPCSADataUpdateRecipe::print(raw_ostream &O, const Twine &Indent,
 void VPCSADataUpdateRecipe::execute(VPTransformState &State) {
   if (!State.EnableRISCVCSA) {
     for (unsigned Part = 0; Part < State.UF; ++Part) {
-      Value *AnyActive = State.get(getVPAnyActive(), Part);
+      Value *AnyActive =
+          State.get(getVPAnyActive(), Part, /*NeedsScalar=*/true);
       Value *DataUpdate = getVPDataPhi() == getVPTrue()
                               ? State.get(getVPFalse(), Part)
                               : State.get(getVPTrue(), Part);
@@ -2220,7 +2217,7 @@ void VPCSADataUpdateRecipe::execute(VPTransformState &State) {
                             : State.get(getVPTrue(), Part);
     Value *RVL =
         State.Plan->useVLAVectorizer()
-            ? State.get(State.RVL, Part)
+            ? State.get(State.RVL, Part, /*NeedsScalar=*/true)
             : getRuntimeVF(State.Builder, State.Builder.getInt32Ty(), State.VF);
     Value *RVL32 =
         State.Builder.CreateZExtOrTrunc(RVL, State.Builder.getInt32Ty());
@@ -2254,13 +2251,14 @@ void VPCSAExtractScalarRecipe::execute(VPTransformState &State) {
   Value *DataSel = State.get(getVPDataSel(), LastPart);
   Value *InitRVL =
       State.Plan->useVLAVectorizer()
-          ? State.get(State.Plan->getInitRVL(), 0)
+          ? State.get(State.Plan->getInitRVL(), 0, /*NeedsScalar=*/true)
           : getRuntimeVF(State.Builder, State.Builder.getInt32Ty(), State.VF);
   Value *InitRVL32 =
       State.Builder.CreateZExtOrTrunc(InitRVL, State.Builder.getInt32Ty());
 
-  Value *VLToUse =
-      State.EnableRISCVCSA ? InitRVL32 : State.get(getVPCSAVLSel(), LastPart);
+  Value *VLToUse = State.EnableRISCVCSA ? InitRVL32
+                                        : State.get(getVPCSAVLSel(), LastPart,
+                                                    /*NeedsScalar=*/true);
   Value *InitScalar = getVPInitScalar()->getLiveInIRValue();
 
   Value *IndexVec = State.Builder.CreateStepVector(
@@ -2275,7 +2273,7 @@ void VPCSAExtractScalarRecipe::execute(VPTransformState &State) {
   Value *LastIdxGEZero = State.Builder.CreateICmpSGE(LastIdx, Zero);
   Value *ChooseFromVecOrInit =
       State.Builder.CreateSelect(LastIdxGEZero, ExtractFromVec, InitScalar);
-  State.set(this, ChooseFromVecOrInit, 0);
+  State.set(this, ChooseFromVecOrInit, 0, /*IsScalar=*/true);
 }
 
 InstructionCost VPMonotonicHeaderPHIRecipe::overhead(ElementCount VF,
@@ -2539,7 +2537,8 @@ void VPFirstOrderRecurrencePHIRecipe::execute(VPTransformState &State) {
       assert(State.Plan->getInitRVL() &&
              "InitRVL must be constructed to correctly handle "
              "VPFirstOrderRecurrencePHIRecipe");
-      Value *InitRVL = State.get(State.Plan->getInitRVL(), 0);
+      Value *InitRVL =
+          State.get(State.Plan->getInitRVL(), 0, /*NeedsScalar=*/true);
       RuntimeVF = State.Builder.CreateTrunc(InitRVL, IdxTy);
     } else {
       RuntimeVF = getRuntimeVF(Builder, IdxTy, State.VF);
@@ -2809,16 +2808,17 @@ void VPEVLBasedIVPHIRecipe::execute(VPTransformState &State) {
     IRBuilder<>::InsertPointGuard Guard(State.Builder);
     BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
     State.Builder.SetInsertPoint(VectorPH->getTerminator());
-    Start = GetSetVL(State, State.get(&State.Plan->getVectorTripCount(), 0));
-    State.set(State.Plan->getInitRVL(), Start, 0);
+    Start = GetSetVL(State, State.get(&State.Plan->getVectorTripCount(), 0,
+                                      /*IsScalar=*/true));
+    State.set(State.Plan->getInitRVL(), Start, 0, /*IsScalar=*/true);
   } else {
-    Start = State.get(getOperand(0), VPIteration(0, 0));
+    Start = State.get(getOperand(0), 0, /*NeedsScalar=*/true);
   }
   PHINode *EntryPart =
       State.Builder.CreatePHI(Start->getType(), 2, "evl.based.iv");
   EntryPart->addIncoming(Start, VectorPH);
   EntryPart->setDebugLoc(getDebugLoc());
-  State.set(this, EntryPart, 0);
+  State.set(this, EntryPart, 0, /*IsScalar=*/true);
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)

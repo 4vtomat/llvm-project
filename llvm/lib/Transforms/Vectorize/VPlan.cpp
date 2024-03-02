@@ -324,13 +324,19 @@ VPBasicBlock::iterator VPBasicBlock::getFirstNonPhi() {
 VPTransformState::VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                                    DominatorTree *DT, IRBuilderBase &Builder,
                                    InnerLoopVectorizer *ILV, VPlan *Plan,
-                                   LLVMContext &Ctx)
+                                   LLVMContext &Ctx, bool EnableRISCVCSA) // SIFIVE
     : VF(VF), UF(UF), LI(LI), DT(DT), Builder(Builder), ILV(ILV), Plan(Plan),
       LVer(nullptr),
-      TypeAnalysis(Plan->getCanonicalIV()->getScalarType(), Ctx) {}
+#if SIFIVE_CUSTOMIZATION
+      TypeAnalysis(Plan->getCanonicalIV()->getScalarType(), Ctx),
+      EnableRISCVCSA(EnableRISCVCSA) {}
+#endif // SIFIVE_CUSTOMIZATION
 
 Value *VPTransformState::get(VPValue *Def, const VPIteration &Instance) {
   if (Def->isLiveIn())
+#if SIFIVE_CUSTOMIZATION
+    if (Def->getUnderlyingValue())
+#endif // SIFIVE_CUSTOMIZATION
     return Def->getLiveInIRValue();
 
   if (hasScalarValue(Def, Instance)) {
@@ -351,7 +357,7 @@ Value *VPTransformState::get(VPValue *Def, const VPIteration &Instance) {
   // VLA, however when the last lane needs to be extracted, we need to use
   // RuntimeVL (RVL) to extract that element
   Value *Lane =
-      Instance.Lane.getAsRuntimeExpr(Builder, VF, RVL ? get(RVL, 0) : nullptr);
+      Instance.Lane.getAsRuntimeExpr(Builder, VF, RVL ? get(RVL, 0, /*IsScalar*/ true) : nullptr);
 #else
   Value *Lane = Instance.Lane.getAsRuntimeExpr(Builder, VF);
 #endif // SIFIVE_CUSTOMIZATION
@@ -891,9 +897,9 @@ Value *VPlan::getSetVL(VPTransformState &State, Value *RVL) {
                                       {I64Type}, {RVLArg, VFArg, IsScalable});
     Value *VLMax32 =
         State.Builder.CreateTrunc(VLMax64, State.Builder.getInt32Ty());
-    State.set(State.Plan->getInitRVL(), VLMax32, 0);
+    State.set(State.Plan->getInitRVL(), VLMax32, 0, /*IsScalar=*/true);
     State.RVL = new VPValue();
-    State.set(State.RVL, VLMax32, 0);
+    State.set(State.RVL, VLMax32, 0, /*IsScalar=*/true);
     return nullptr;
   }
 
@@ -1041,9 +1047,7 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
     BackedgeTakenCount->setUnderlyingValue(TCMO);
   }
 
-<<<<<<< HEAD
-  for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
-    State.set(&VectorTripCount, VectorTripCountV, Part);
+  VectorTripCount.setUnderlyingValue(VectorTripCountV);
 #if SIFIVE_CUSTOMIZATION
   }
 #endif // SIFIVE_CUSTOMIZATION
@@ -1053,17 +1057,8 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
 #if SIFIVE_CUSTOMIZATION
   if (VFxUF.getNumUsers() > 0)
 #endif // SIFIVE_CUSTOMIZATION
-  State.set(&VFxUF,
-            createStepForVF(Builder, TripCountV->getType(), State.VF, State.UF),
-            0);
-=======
-  VectorTripCount.setUnderlyingValue(VectorTripCountV);
-
-  IRBuilder<> Builder(State.CFG.PrevBB->getTerminator());
-  // FIXME: Model VF * UF computation completely in VPlan.
   VFxUF.setUnderlyingValue(
       createStepForVF(Builder, TripCountV->getType(), State.VF, State.UF));
->>>>>>> 4df364bc93af
 
   // When vectorizing the epilogue loop, the canonical induction start value
   // needs to be changed from zero to the value after the main vector loop.
@@ -1166,14 +1161,18 @@ void VPlan::execute(VPTransformState *State) {
                             (isa<VPReductionPHIRecipe>(PhiR) &&
                              cast<VPReductionPHIRecipe>(PhiR)->isOrdered());
     bool NeedsScalar = isa<VPCanonicalIVPHIRecipe>(PhiR) ||
+#if SIFIVE_CUSTOMIZATION
+                       isa<VPEVLBasedIVPHIRecipe>(PhiR) ||
+                       isa<VPMonotonicHeaderPHIRecipe>(PhiR) ||
+#endif // SIFIVE_CUSTOMIZATION
                        (isa<VPReductionPHIRecipe>(PhiR) &&
                         cast<VPReductionPHIRecipe>(PhiR)->isInLoop());
     unsigned LastPartForNewPhi = SinglePartNeeded ? 1 : State->UF;
     for (unsigned Part = 0; Part < LastPartForNewPhi; ++Part) {
-<<<<<<< HEAD
-      Value *Phi = State->get(PhiR, Part);
-      Value *Val = State->get(PhiR->getBackedgeValue(),
-                              SinglePartNeeded ? State->UF - 1 : Part);
+      Value *Phi = State->get(PhiR, Part, NeedsScalar);
+      Value *Val =
+          State->get(PhiR->getBackedgeValue(),
+                     SinglePartNeeded ? State->UF - 1 : Part, NeedsScalar);
 #if SIFIVE_CUSTOMIZATION
       if (Val->getType()->isIntegerTy()) {
         IRBuilder<>::InsertPointGuard Guard(State->Builder);
@@ -1182,12 +1181,6 @@ void VPlan::execute(VPTransformState *State) {
         Val = State->Builder.CreateZExtOrTrunc(Val, Phi->getType());
       }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      Value *Phi = State->get(PhiR, Part, NeedsScalar);
-      Value *Val =
-          State->get(PhiR->getBackedgeValue(),
-                     SinglePartNeeded ? State->UF - 1 : Part, NeedsScalar);
->>>>>>> 4df364bc93af
       cast<PHINode>(Phi)->addIncoming(Val, VectorLatchBB);
     }
   }
@@ -1195,7 +1188,7 @@ void VPlan::execute(VPTransformState *State) {
 #if SIFIVE_CUSTOMIZATION
   if (Value *RVLPlaceholder = State->RVLPlaceholder) {
     assert(State->RVL && "RVL must be available after VPlan is executed");
-    Value *RVL = State->get(State->RVL, 0);
+    Value *RVL = State->get(State->RVL, 0, /*IsScalar*/ true);
     IRBuilder<>::InsertPointGuard Guard(State->Builder);
     State->Builder.SetInsertPoint(
         *cast<Instruction>(RVL)->getInsertionPointAfterDef());
@@ -1684,15 +1677,7 @@ void VPInterleavedAccessInfo::visitBlock(VPBlockBase *Block, Old2NewTy &Old2New,
                                          InterleavedAccessInfo &IAI) {
   if (VPBasicBlock *VPBB = dyn_cast<VPBasicBlock>(Block)) {
     for (VPRecipeBase &VPI : *VPBB) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-      if (vputils::isHeaderPhi(VPI))
-#else
-      if (isa<VPHeaderPHIRecipe>(&VPI))
-#endif // SIFIVE_CUSTOMIZATION
-=======
       if (isa<VPWidenPHIRecipe>(&VPI))
->>>>>>> 4df364bc93af
         continue;
       assert(isa<VPInstruction>(&VPI) && "Can only handle VPInstructions");
       auto *VPInst = cast<VPInstruction>(&VPI);
@@ -1793,8 +1778,10 @@ VPValue *vputils::getOrCreateVPValueForSCEVExpr(VPlan &Plan, const SCEV *Expr,
 }
 
 #if SIFIVE_CUSTOMIZATION
+// FIXME: Represent CSA instructions through VPHeaderPHIRecipe
 bool vputils::isPhi(const VPRecipeBase &R) {
-  if (isa<VPHeaderPHIRecipe, VPBlendRecipe, VPPredInstPHIRecipe>(&R))
+  if (isa<VPHeaderPHIRecipe, VPBlendRecipe, VPPredInstPHIRecipe,
+          VPWidenPHIRecipe>(&R))
     return true;
   if (auto *VPInst = dyn_cast<VPInstruction>(&R))
     return VPInst->getOpcode() == VPInstruction::CSAMaskPhi ||
