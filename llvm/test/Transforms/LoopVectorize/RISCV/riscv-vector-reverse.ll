@@ -120,12 +120,6 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found a vectorizable loop (vscale x 4) in <stdin>
 ; CHECK-NEXT:  LEV: Epilogue vectorization is not profitable for this loop
 ; CHECK-NEXT:  Executing best plan with VF=vscale x 4, UF=1
-<<<<<<< HEAD
-; CHECK-NEXT:  LV: Interleaving disabled by the pass manager
-=======
-; CHECK:       LV: Interleaving disabled by the pass manager
-; CHECK-NEXT:  LV: Vectorizing: innermost loop.
->>>>>>> 4df364bc93af
 ;
 entry:
   %cmp7 = icmp sgt i32 %n, 0
@@ -264,12 +258,6 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Found a vectorizable loop (vscale x 4) in <stdin>
 ; CHECK-NEXT:  LEV: Epilogue vectorization is not profitable for this loop
 ; CHECK-NEXT:  Executing best plan with VF=vscale x 4, UF=1
-<<<<<<< HEAD
-; CHECK-NEXT:  LV: Interleaving disabled by the pass manager
-=======
-; CHECK:       LV: Interleaving disabled by the pass manager
-; CHECK-NEXT:  LV: Vectorizing: innermost loop.
->>>>>>> 4df364bc93af
 ;
 entry:
   %cmp7 = icmp sgt i32 %n, 0

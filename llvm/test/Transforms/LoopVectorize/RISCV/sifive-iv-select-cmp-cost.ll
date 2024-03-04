@@ -2,7 +2,7 @@
 ; RUN: opt < %s -mtriple riscv64-linux-gnu -mattr=+v -riscv-use-vla-vectorizer=true -passes=loop-vectorize -S -debug-only=loop-vectorize,vplan 2>&1 | FileCheck %s
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_icmp'
-; CHECK: LV: Found an estimated overhead of 5 for VF vscale x 1 For recipe: WIDEN-REDUCTION-PHI ir<%idx.09> = phi ir<%ii>, vp<%16>
+; CHECK: LV: Found an estimated overhead of 5 for VF vscale x 1 For recipe: WIDEN-REDUCTION-PHI ir<%idx.09> = phi ir<%ii>, vp<%18>
 
 define i64 @select_icmp(ptr %a, ptr %b, i64 %ii, i64 %n) {
 entry:
@@ -26,7 +26,7 @@ exit:                                             ; preds = %for.body
 }
 
 ; CHECK-LABEL: LV: Checking a loop in 'select_fcmp'
-; CHECK: LV: Found an estimated overhead of 5 for VF vscale x 1 For recipe: WIDEN-REDUCTION-PHI ir<%idx.09> = phi ir<%ii>, vp<%16>
+; CHECK: LV: Found an estimated overhead of 5 for VF vscale x 1 For recipe: WIDEN-REDUCTION-PHI ir<%idx.09> = phi ir<%ii>, vp<%18>
 
 define i64 @select_fcmp(ptr %a, ptr %b, i64 %ii, i64 %n) {
 entry:
