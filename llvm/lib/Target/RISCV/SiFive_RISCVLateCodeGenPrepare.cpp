@@ -80,6 +80,12 @@ static cl::opt<unsigned>
                                "(default value: riscv-mem-to-rvv)."),
                       cl::init(0));
 
+static cl::opt<unsigned>
+    PreferUnrollThreshold("riscv-mem-to-rvv-unroll-threshold", cl::Hidden,
+                          cl::desc("Configure size for unroll expansion "
+                                   "(default value: 8 * vlen)."),
+                          cl::init(0));
+
 namespace {
 
 class RISCVLateCodeGenPrepare
@@ -100,8 +106,8 @@ public:
   bool runOnFunction(Function &F) override;
 
   static constexpr unsigned MinCopySize = 64;
-  static constexpr unsigned MaxUnrollTimes = 8;
 
+  unsigned UnrollThreshold;
   unsigned MemcpyLMUL;
   unsigned MemsetLMUL;
   unsigned MemmoveLMUL;
@@ -131,6 +137,7 @@ public:
                             BasicBlock *PostLoopBB, Value *SrcAddr,
                             Value *DstAddr, Value *CopyLen, unsigned LMUL,
                             bool IsBackward = false, uint64_t UnrollCount = 1);
+  void getMemToRVVConfig();
 };
 
 } // end anonymous namespace
@@ -1132,13 +1139,10 @@ bool RISCVLateCodeGenPrepare::expandMemIntrinsic(MemIntrinsic *MI) {
   switch (MI->getIntrinsicID()) {
   case Intrinsic::memcpy: {
     if (auto *CI = dyn_cast<ConstantInt>(MI->getLength())) {
-      unsigned MinVLenInBytes = ST->getRealMinVLen() / 8;
-
       // If Copy length within MinCopySize, then use scalar load and store.
       if (CI->getZExtValue() < MinCopySize)
         return false;
-      // We only deal with the size of VLen * LMUL * MaxUnrollTimes.
-      if (CI->getZExtValue() < (MinVLenInBytes * MemcpyLMUL * MaxUnrollTimes)) {
+      if (CI->getZExtValue() <= UnrollThreshold) {
         expandMemCpyKnownSize(cast<MemCpyInst>(MI));
         return true;
       }
@@ -1153,13 +1157,10 @@ bool RISCVLateCodeGenPrepare::expandMemIntrinsic(MemIntrinsic *MI) {
   }
   case Intrinsic::memset: {
     if (auto *CI = dyn_cast<ConstantInt>(MI->getLength())) {
-      unsigned MinVLenInBytes = ST->getRealMinVLen() / 8;
-
       // If Copy length within MinCopySize, then use scalar load and store.
       if (CI->getZExtValue() < MinCopySize)
         return false;
-      // We only deal with the size of VLen * LMUL * MaxUnrollTimes.
-      if (CI->getZExtValue() < (MinVLenInBytes * MemsetLMUL * MaxUnrollTimes)) {
+      if (CI->getZExtValue() <= UnrollThreshold) {
         expandMemSetKnownSize(cast<MemSetInst>(MI));
         return true;
       }
@@ -1174,14 +1175,10 @@ bool RISCVLateCodeGenPrepare::expandMemIntrinsic(MemIntrinsic *MI) {
   }
   case Intrinsic::memmove: {
     if (auto *CI = dyn_cast<ConstantInt>(MI->getLength())) {
-      unsigned MinVLenInBytes = ST->getRealMinVLen() / 8;
-
       // If Copy length within MinCopySize, then use scalar load and store.
       if (CI->getZExtValue() < MinCopySize)
         return false;
-      // We only deal with the size of VLen * LMUL * MaxUnrollTimes.
-      if (CI->getZExtValue() <
-          (MinVLenInBytes * MemmoveLMUL * MaxUnrollTimes)) {
+      if (CI->getZExtValue() <= UnrollThreshold) {
         expandMemmoveKnownSize(cast<MemMoveInst>(MI));
         return true;
       }
@@ -1289,23 +1286,13 @@ bool RISCVLateCodeGenPrepare::visitMemIntrinsic(MemIntrinsic &MI) {
   return false;
 }
 
-bool RISCVLateCodeGenPrepare::runOnFunction(Function &F) {
-  if (skipFunction(F))
-    return false;
-
-  auto *TPC = getAnalysisIfAvailable<TargetPassConfig>();
-  if (!TPC)
-    return false;
-
-  auto &TM = TPC->getTM<RISCVTargetMachine>();
-
-  ST = TM.getSubtargetImpl(F);
-
+void RISCVLateCodeGenPrepare::getMemToRVVConfig() {
   unsigned MemLMULLocal = ST->getMemToRVVLMUL();
   if (MemLMUL.getNumOccurrences())
     MemLMULLocal = MemLMUL;
 
-  if (MemLMULLocal != 8 && MemLMULLocal != 4 && MemLMULLocal != 2 && MemLMULLocal != 1) {
+  if (MemLMULLocal != 8 && MemLMULLocal != 4 && MemLMULLocal != 2 &&
+      MemLMULLocal != 1) {
     errs() << "Invalid LMUL for memcpy/memmove/memset expansion,"
            << "set to default value: 8.\n";
     MemLMULLocal = 8;
@@ -1338,9 +1325,35 @@ bool RISCVLateCodeGenPrepare::runOnFunction(Function &F) {
           << "Invalid LMUL for memmove expansion, set to default lmul value.\n";
   }
 
+  // This is old threshold 8 * MemLMULLocal * MinVLenInBytes - 1
+  UnrollThreshold = 8 * MemLMULLocal * (ST->getRealMinVLen() / 8) - 1;
+  // FIXME: Tune this threshold for each sifive cpu.
+  if (ST->getProcFamily() == RISCVSubtarget::SiFiveP400)
+    UnrollThreshold = 4 * (ST->getDLen() / 8);
+
+  // TODO: Maybe need specific options for memset/memcpy/memmove?
+  if (PreferUnrollThreshold.getNumOccurrences())
+    UnrollThreshold = PreferUnrollThreshold;
+}
+
+bool RISCVLateCodeGenPrepare::runOnFunction(Function &F) {
+  if (skipFunction(F))
+    return false;
+
+  auto *TPC = getAnalysisIfAvailable<TargetPassConfig>();
+  if (!TPC)
+    return false;
+
+  auto &TM = TPC->getTM<RISCVTargetMachine>();
+
+  ST = TM.getSubtargetImpl(F);
+
   DL = &F.getParent()->getDataLayout();
 
   MemCalls.clear();
+
+  if (ST->hasVInstructions())
+    getMemToRVVConfig();
 
   bool MadeChange = false;
   for (auto &BB : F)
