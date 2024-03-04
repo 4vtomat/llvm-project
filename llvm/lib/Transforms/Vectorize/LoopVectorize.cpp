@@ -2662,7 +2662,7 @@ static bool isIndvarOverflowCheckKnownFalse(
 
 #if SIFIVE_CUSTOMIZATION
 bool InnerLoopVectorizer::useVLAVectorizer() const {
-  return !EnableVPlanNativePath && TTI->useVLAVectorizer();
+  return Legal->useVLAVectorizer();
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -12418,7 +12418,7 @@ static ScalarEpilogueLowering getScalarEpilogueLowering(
 
   // 2) If set, obey the directives
 #if SIFIVE_CUSTOMIZATION
-  if (TTI->useVLAVectorizer() && !EnableVPlanNativePath)
+  if (LVL.useVLAVectorizer())
     return CM_ScalarEpilogueNotAllowedUsePredicate;
 #endif // SIFIVE_CUSTOMIZATION
 
