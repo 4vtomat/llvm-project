@@ -618,10 +618,18 @@ bool InterleavedAccessImpl::lowerDeinterleaveIntrinsic(
   // Match
   //   %x = vp.strided.load  ;; VPStridedLoad
   //   %y = bitcast %x       ;; BitCast
+  //   %y' = inttoptr %y
   //   %z = deinterleave %y  ;; DI
-  if (auto *BitCast = dyn_cast<BitCastInst>(DI->getOperand(0))) {
+  if (isa<BitCastInst, IntToPtrInst>(DI->getOperand(0))) {
+    auto *BitCast = cast<Instruction>(DI->getOperand(0));
     if (!BitCast->hasOneUse())
       return false;
+
+    Instruction *IntToPtrCast = nullptr;
+    if (auto *BC = dyn_cast<BitCastInst>(BitCast->getOperand(0))) {
+      IntToPtrCast = BitCast;
+      BitCast = BC;
+    }
 
     // Match the type is
     //   <VF x (factor * elementTy)> bitcast to <(VF * factor) x elementTy>
@@ -646,6 +654,8 @@ bool InterleavedAccessImpl::lowerDeinterleaveIntrinsic(
         return false;
 
       DeadInsts.push_back(DI);
+      if (IntToPtrCast)
+        DeadInsts.push_back(IntToPtrCast);
       DeadInsts.push_back(BitCast);
       DeadInsts.push_back(VPStridedLoad);
       return true;

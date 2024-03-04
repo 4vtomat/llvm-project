@@ -2865,10 +2865,10 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
   // Given scalar/vector type, returns a type with element type as an integer
   // type of the same width as the original type. For vectors, preserves
   // element count.
-  auto GetIntegerType = [](const Type *Ty) -> Type * {
+  auto GetIntegerType = [DL](Type *Ty) -> Type * {
     if (auto *VTy = dyn_cast<VectorType>(Ty))
       return VectorType::getInteger(const_cast<VectorType *>(VTy));
-    unsigned BitWidth = Ty->getPrimitiveSizeInBits();
+    unsigned BitWidth = DL.getTypeAllocSizeInBits(Ty);
     assert(BitWidth && "BitWidth must be of a non-zero size");
     return IntegerType::get(Ty->getContext(), BitWidth);
   };
@@ -2975,9 +2975,18 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
       //   <VF x (elementTy * factor)> strided.load
       //   bitcast <VF x (elementTy * factor)> to <(VF * factor) x elementTy>
       if (Group->isStrided())
-        for (unsigned Part = 0; Part < UF; ++Part)
-          NewLoads[Part] = State.Builder.CreateBitCast(
+        for (unsigned Part = 0; Part < UF; ++Part) {
+          if (ScalarTy->isPointerTy()) {
+            Type *IntTy =
+                State.Builder.getIntNTy(DL.getTypeAllocSizeInBits(ScalarTy));
+            auto *IntVecTy = VectorType::get(IntTy, VecTy->getElementCount());
+            NewLoads[Part] = State.Builder.CreateBitOrPointerCast(
+                NewLoads[Part], IntVecTy,
+                NewLoads[Part]->getName() + ".intcast");
+          }
+          NewLoads[Part] = State.Builder.CreateBitOrPointerCast(
               NewLoads[Part], VecTy, NewLoads[Part]->getName() + ".cast");
+        }
 
       // For each member in the group, shuffle out the appropriate data from the
       // wide loads.

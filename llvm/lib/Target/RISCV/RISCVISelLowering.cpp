@@ -23666,7 +23666,8 @@ bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
   [[maybe_unused]] auto *DISrcTy =
       cast<VectorType>(DI->getOperand(0)->getType());
   [[maybe_unused]] auto *LTy = cast<VectorType>(StridedLoad->getType());
-  assert(DISrcTy->getPrimitiveSizeInBits() == LTy->getPrimitiveSizeInBits() &&
+  auto &DL = StridedLoad->getModule()->getDataLayout();
+  assert(DL.getTypeAllocSizeInBits(DISrcTy) == DL.getTypeAllocSizeInBits(LTy) &&
          "The primitive size of strided load and the source of deinterleave "
          "should be the same.");
   assert(DISrcTy->getElementCount() == LTy->getElementCount() * Factor &&
@@ -23679,8 +23680,7 @@ bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
       cast<VPIntrinsic>(StridedLoad)->getPointerAlignment().valueOrOne();
   if (!isLegalInterleavedAccessType(
           ResTy, Factor, Alignment,
-          BasePtr->getType()->getPointerAddressSpace(),
-          StridedLoad->getModule()->getDataLayout()))
+          BasePtr->getType()->getPointerAddressSpace(), DL))
     return false;
 
   IRBuilder<> Builder(StridedLoad);
