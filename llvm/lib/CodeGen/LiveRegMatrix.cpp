@@ -187,7 +187,8 @@ LiveRegMatrix::getTargetInterferenceLiveI(const LiveInterval &VirtReg,
       while (LiveUnionI != LiveUnion.end()) {
         const LiveRange *LiveR = *LiveUnionI;
         LiveRange NewLiveR = copyLiveRange(*LiveR);
-        if (TRI->needUpdateECSlot(LiveR, NewLiveR))
+        if (TRI->needUpdateECSlot(LiveR, NewLiveR) &&
+            !llvm::is_contained(LiveIs, *LiveUnionI))
           LiveIs.push_back(*LiveUnionI);
         ++LiveUnionI;
       }
