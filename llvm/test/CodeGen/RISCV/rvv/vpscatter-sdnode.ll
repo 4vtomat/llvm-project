@@ -473,8 +473,9 @@ define void @vpscatter_baseidx_vpsext_nxv8i32_nxv8i16(<vscale x 8 x i16> %val, p
 ; RV32-NEXT:    vsext.vf2 v16, v12, v0.t
 ; RV32-NEXT:    vsetvli a2, zero, e32, m4, ta, ma
 ; RV32-NEXT:    vnsrl.wi v12, v16, 0
+; RV32-NEXT:    vsetvli zero, a1, e32, m4, ta, ma
 ; RV32-NEXT:    vadd.vv v12, v12, v12
-; RV32-NEXT:    vsetvli zero, a1, e16, m2, ta, ma
+; RV32-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
 ; RV32-NEXT:    vsoxei32.v v8, (a0), v12, v0.t
 ; RV32-NEXT:    ret
 ;
@@ -499,8 +500,9 @@ define void @vpscatter_baseidx_vpzext_nxv8i32_nxv8i16(<vscale x 8 x i16> %val, p
 ; RV32-NEXT:    vzext.vf2 v16, v12, v0.t
 ; RV32-NEXT:    vsetvli a2, zero, e32, m4, ta, ma
 ; RV32-NEXT:    vnsrl.wi v12, v16, 0
+; RV32-NEXT:    vsetvli zero, a1, e32, m4, ta, ma
 ; RV32-NEXT:    vadd.vv v12, v12, v12
-; RV32-NEXT:    vsetvli zero, a1, e16, m2, ta, ma
+; RV32-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
 ; RV32-NEXT:    vsoxei32.v v8, (a0), v12, v0.t
 ; RV32-NEXT:    ret
 ;

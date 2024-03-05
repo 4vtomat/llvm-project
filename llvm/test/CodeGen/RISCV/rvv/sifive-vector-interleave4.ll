@@ -51,7 +51,7 @@ define <vscale x 64 x i1> @vector_interleave_nxv64i1_nxv16i1(<vscale x 16 x i1> 
 ; CHECK-NEXT:    add a0, a1, a0
 ; CHECK-NEXT:    vsetvli a2, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v8, 0
-; CHECK-NEXT:    vsetvli zero, a0, e8, m1, tu, ma
+; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v8, a1
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3

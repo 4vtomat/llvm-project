@@ -39,13 +39,13 @@ define void @main() {
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vs4r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vmclr.m v1
+; CHECK-NEXT:    vmclr.m v3
 ; CHECK-NEXT:    li a0, 108
 ; CHECK-NEXT:    vsetivli zero, 0, e8, mf2, ta, mu
-; CHECK-NEXT:    vmv1r.v v2, v1
+; CHECK-NEXT:    vmv1r.v v2, v3
 ; CHECK-NEXT:    lui a1, %hi(.LCPI0_1)
 ; CHECK-NEXT:    ld a1, %lo(.LCPI0_1)(a1)
-; CHECK-NEXT:    vmv1r.v v0, v1
+; CHECK-NEXT:    vmv1r.v v0, v3
 ; CHECK-NEXT:    vmsne.vx v2, v8, a0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
 ; CHECK-NEXT:    vmv1r.v v0, v2
@@ -118,7 +118,7 @@ define void @main() {
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_3)
 ; CHECK-NEXT:    ld a0, %lo(.LCPI0_3)(a0)
-; CHECK-NEXT:    vmv1r.v v0, v1
+; CHECK-NEXT:    vmv1r.v v0, v3
 ; CHECK-NEXT:    vnsrl.wi v8, v12, 0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
 ; CHECK-NEXT:    vmadd.vx v16, a0, v8, v0.t

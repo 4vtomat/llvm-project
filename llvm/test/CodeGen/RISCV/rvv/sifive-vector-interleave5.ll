@@ -75,7 +75,7 @@ define <vscale x 80 x i1> @vector_interleave_nxv80i1_nxv16i1(<vscale x 16 x i1> 
 ; CHECK-NEXT:    li a4, 6
 ; CHECK-NEXT:    mul a3, a3, a4
 ; CHECK-NEXT:    add a1, a3, a1
-; CHECK-NEXT:    vsetvli zero, a1, e8, m1, tu, ma
+; CHECK-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
 ; CHECK-NEXT:    add a2, a2, a0
 ; CHECK-NEXT:    vl1r.v v10, (a2)
 ; CHECK-NEXT:    add a0, a2, a0

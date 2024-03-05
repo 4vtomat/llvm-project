@@ -105,7 +105,7 @@ define <vscale x 112 x i1> @vector_interleave_nxv112i1_nxv16i1(<vscale x 16 x i1
 ; CHECK-NEXT:    add a2, a0, a2
 ; CHECK-NEXT:    vsetvli a1, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v9, v10, 0
-; CHECK-NEXT:    vsetvli zero, a2, e8, m1, tu, ma
+; CHECK-NEXT:    vsetvli zero, a2, e8, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v9, a0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 14

@@ -2243,10 +2243,9 @@ define void @vshl_u8(ptr nocapture noundef readonly %in_0, i8 noundef signext %i
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    bgez a1, .LBB55_4
 ; CHECK-NEXT:  .LBB55_3:
-; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    vsrl.vi v8, v8, 1
-; CHECK-NEXT:    li a1, 248
-; CHECK-NEXT:    maxu a0, a0, a1
+; CHECK-NEXT:    li a0, -8
+; CHECK-NEXT:    maxu a0, a1, a0
 ; CHECK-NEXT:    not a0, a0
 ; CHECK-NEXT:    vsrl.vx v9, v8, a0
 ; CHECK-NEXT:  .LBB55_4: # %entry
@@ -2511,10 +2510,9 @@ define void @vshlq_u8(ptr nocapture noundef readonly %in_0, i8 noundef signext %
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    bgez a1, .LBB63_4
 ; CHECK-NEXT:  .LBB63_3:
-; CHECK-NEXT:    andi a0, a1, 255
 ; CHECK-NEXT:    vsrl.vi v8, v8, 1
-; CHECK-NEXT:    li a1, 248
-; CHECK-NEXT:    maxu a0, a0, a1
+; CHECK-NEXT:    li a0, -8
+; CHECK-NEXT:    maxu a0, a1, a0
 ; CHECK-NEXT:    not a0, a0
 ; CHECK-NEXT:    vsrl.vx v9, v8, a0
 ; CHECK-NEXT:  .LBB63_4: # %entry

@@ -796,7 +796,7 @@ define i32 @masked_load_store_factor2_v2_shared_mask_extract(<vscale x 2 x i1> %
 ; RV32-NEXT:    vmsne.vi v0, v11, 0
 ; RV32-NEXT:    vmerge.vim v9, v9, 1, v0
 ; RV32-NEXT:    add a3, a2, a2
-; RV32-NEXT:    vsetvli zero, a3, e8, mf2, tu, ma
+; RV32-NEXT:    vsetvli zero, a3, e8, mf2, ta, ma
 ; RV32-NEXT:    vslideup.vx v10, v9, a2
 ; RV32-NEXT:    vsetvli a2, zero, e8, mf2, ta, ma
 ; RV32-NEXT:    vmsne.vi v0, v10, 0
@@ -834,7 +834,7 @@ define i32 @masked_load_store_factor2_v2_shared_mask_extract(<vscale x 2 x i1> %
 ; RV64-NEXT:    vmsne.vi v0, v11, 0
 ; RV64-NEXT:    vmerge.vim v9, v9, 1, v0
 ; RV64-NEXT:    add a3, a2, a2
-; RV64-NEXT:    vsetvli zero, a3, e8, mf2, tu, ma
+; RV64-NEXT:    vsetvli zero, a3, e8, mf2, ta, ma
 ; RV64-NEXT:    vslideup.vx v10, v9, a2
 ; RV64-NEXT:    vsetvli a2, zero, e8, mf2, ta, ma
 ; RV64-NEXT:    vmsne.vi v0, v10, 0

@@ -1139,7 +1139,7 @@ define <128 x i1> @fcmp_oeq_vv_v128f16(<128 x half> %va, <128 x half> %vb, <128 
 ; ZVFH32-NEXT:    vs8r.v v24, (a1) # Unknown-size Folded Spill
 ; ZVFH32-NEXT:    vle16.v v24, (a0)
 ; ZVFH32-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
-; ZVFH32-NEXT:    vslidedown.vi v1, v0, 8
+; ZVFH32-NEXT:    vslidedown.vi v7, v0, 8
 ; ZVFH32-NEXT:    mv a0, a2
 ; ZVFH32-NEXT:    bltu a2, a3, .LBB43_2
 ; ZVFH32-NEXT:  # %bb.1:
@@ -1152,7 +1152,7 @@ define <128 x i1> @fcmp_oeq_vv_v128f16(<128 x half> %va, <128 x half> %vb, <128 
 ; ZVFH32-NEXT:    addi a1, a1, -1
 ; ZVFH32-NEXT:    and a0, a1, a0
 ; ZVFH32-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
-; ZVFH32-NEXT:    vmv1r.v v0, v1
+; ZVFH32-NEXT:    vmv1r.v v0, v7
 ; ZVFH32-NEXT:    addi a0, sp, 16
 ; ZVFH32-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
 ; ZVFH32-NEXT:    vmfeq.vv v9, v16, v24, v0.t
@@ -1187,7 +1187,7 @@ define <128 x i1> @fcmp_oeq_vv_v128f16(<128 x half> %va, <128 x half> %vb, <128 
 ; ZVFH64-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
 ; ZVFH64-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
 ; ZVFH64-NEXT:    mv a0, a2
-; ZVFH64-NEXT:    vslidedown.vi v1, v0, 8
+; ZVFH64-NEXT:    vslidedown.vi v7, v0, 8
 ; ZVFH64-NEXT:    bltu a2, a3, .LBB43_2
 ; ZVFH64-NEXT:  # %bb.1:
 ; ZVFH64-NEXT:    li a0, 64
@@ -1201,7 +1201,7 @@ define <128 x i1> @fcmp_oeq_vv_v128f16(<128 x half> %va, <128 x half> %vb, <128 
 ; ZVFH64-NEXT:    addi a1, a1, -1
 ; ZVFH64-NEXT:    and a0, a1, a0
 ; ZVFH64-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
-; ZVFH64-NEXT:    vmv1r.v v0, v1
+; ZVFH64-NEXT:    vmv1r.v v0, v7
 ; ZVFH64-NEXT:    csrr a0, vlenb
 ; ZVFH64-NEXT:    slli a0, a0, 3
 ; ZVFH64-NEXT:    add a0, sp, a0
@@ -2853,7 +2853,7 @@ define <32 x i1> @fcmp_oeq_vv_v32f64(<32 x double> %va, <32 x double> %vb, <32 x
 ; CHECK-NEXT:    addi a1, sp, 16
 ; CHECK-NEXT:    vs8r.v v24, (a1) # Unknown-size Folded Spill
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
-; CHECK-NEXT:    vslidedown.vi v1, v0, 2
+; CHECK-NEXT:    vslidedown.vi v7, v0, 2
 ; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
 ; CHECK-NEXT:    vle64.v v24, (a0)
 ; CHECK-NEXT:    li a1, 16
@@ -2869,7 +2869,7 @@ define <32 x i1> @fcmp_oeq_vv_v32f64(<32 x double> %va, <32 x double> %vb, <32 x
 ; CHECK-NEXT:    addi a1, a1, -1
 ; CHECK-NEXT:    and a0, a1, a0
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
-; CHECK-NEXT:    vmv1r.v v0, v1
+; CHECK-NEXT:    vmv1r.v v0, v7
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vmfeq.vv v9, v16, v24, v0.t

@@ -68,22 +68,22 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280-NEXT:    add a3, a3, a0
 ; X280-NEXT:    vfnmsac.vv v26, v4, v10
 ; X280-NEXT:    vfmacc.vv v28, v4, v8
-; X280-NEXT:    vfadd.vv v4, v0, v30
-; X280-NEXT:    vfadd.vv v6, v2, v24
+; X280-NEXT:    vfadd.vv v6, v0, v30
+; X280-NEXT:    vfadd.vv v4, v2, v24
 ; X280-NEXT:    vfsub.vv v30, v0, v30
 ; X280-NEXT:    vfsub.vv v24, v2, v24
-; X280-NEXT:    vfadd.vv v0, v20, v26
-; X280-NEXT:    vfadd.vv v2, v22, v28
+; X280-NEXT:    vfadd.vv v2, v20, v26
+; X280-NEXT:    vfadd.vv v0, v22, v28
 ; X280-NEXT:    vfsub.vv v22, v22, v28
-; X280-NEXT:    vfadd.vv v8, v4, v0
-; X280-NEXT:    vfadd.vv v10, v6, v2
+; X280-NEXT:    vfadd.vv v8, v6, v2
+; X280-NEXT:    vfadd.vv v10, v4, v0
 ; X280-NEXT:    vfsub.vv v20, v20, v26
 ; X280-NEXT:    vfadd.vv v26, v30, v22
 ; X280-NEXT:    vsseg2e32.v v8, (a7)
 ; X280-NEXT:    add a7, a7, a0
 ; X280-NEXT:    vfadd.vv v28, v24, v20
-; X280-NEXT:    vfsub.vv v8, v4, v0
-; X280-NEXT:    vfsub.vv v10, v6, v2
+; X280-NEXT:    vfsub.vv v8, v6, v2
+; X280-NEXT:    vfsub.vv v10, v4, v0
 ; X280-NEXT:    vsseg2e32.v v26, (a1)
 ; X280-NEXT:    add a1, a1, a0
 ; X280-NEXT:    vfsub.vv v22, v30, v22
@@ -164,22 +164,22 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280N-NEXT:    add a3, a3, a0
 ; X280N-NEXT:    vfnmsac.vv v26, v4, v10
 ; X280N-NEXT:    vfmacc.vv v28, v4, v8
-; X280N-NEXT:    vfadd.vv v4, v0, v30
-; X280N-NEXT:    vfadd.vv v6, v2, v24
+; X280N-NEXT:    vfadd.vv v6, v0, v30
+; X280N-NEXT:    vfadd.vv v4, v2, v24
 ; X280N-NEXT:    vfsub.vv v30, v0, v30
 ; X280N-NEXT:    vfsub.vv v24, v2, v24
-; X280N-NEXT:    vfadd.vv v0, v20, v26
-; X280N-NEXT:    vfadd.vv v2, v22, v28
+; X280N-NEXT:    vfadd.vv v2, v20, v26
+; X280N-NEXT:    vfadd.vv v0, v22, v28
 ; X280N-NEXT:    vfsub.vv v22, v22, v28
-; X280N-NEXT:    vfadd.vv v8, v4, v0
-; X280N-NEXT:    vfadd.vv v10, v6, v2
+; X280N-NEXT:    vfadd.vv v8, v6, v2
+; X280N-NEXT:    vfadd.vv v10, v4, v0
 ; X280N-NEXT:    vfsub.vv v20, v20, v26
 ; X280N-NEXT:    vfadd.vv v26, v30, v22
 ; X280N-NEXT:    vsseg2e32.v v8, (a7)
 ; X280N-NEXT:    add a7, a7, a0
 ; X280N-NEXT:    vfadd.vv v28, v24, v20
-; X280N-NEXT:    vfsub.vv v8, v4, v0
-; X280N-NEXT:    vfsub.vv v10, v6, v2
+; X280N-NEXT:    vfsub.vv v8, v6, v2
+; X280N-NEXT:    vfsub.vv v10, v4, v0
 ; X280N-NEXT:    vsseg2e32.v v26, (a1)
 ; X280N-NEXT:    add a1, a1, a0
 ; X280N-NEXT:    vfsub.vv v22, v30, v22
