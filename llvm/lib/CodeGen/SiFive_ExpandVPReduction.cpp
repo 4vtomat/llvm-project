@@ -6,7 +6,8 @@
 //
 //===----------------------------------------------------------------------===//
 //
-// This pass implements IR expansion for vp reductions.
+// This pass implements IR expansion for vp reductions and scalable vector
+// reductions.
 //
 //===----------------------------------------------------------------------===//
 
@@ -29,20 +30,49 @@
 
 using namespace llvm;
 
-static void expandReductionMul(IntrinsicInst *II) {
-  assert(II->getIntrinsicID() == Intrinsic::vp_reduce_mul);
+class ExpandVPReduction {
+  IntrinsicInst *II;
+  Value *Start, *Vec, *VL;
+  Value *True;
+  VectorType *VecTy;
+  Type *ScalarTy, *i32Ty, *XLenTy;
 
+public:
+  ExpandVPReduction(IntrinsicInst *II);
+  void expand();
+};
+
+ExpandVPReduction::ExpandVPReduction(IntrinsicInst *_II) {
+  II = _II;
+  unsigned VecIdx = (II->getIntrinsicID() == Intrinsic::vp_reduce_mul) ? 1 : 0;
+  Vec = II->getArgOperand(VecIdx);
+  ScalarTy = II->getType();
+  VecTy = cast<VectorType>(Vec->getType());
   LLVMContext &C = II->getContext();
-  Value *Start = II->getArgOperand(0);
-  Value *Vec = II->getArgOperand(1);
-  Value *VL = II->getArgOperand(3);
-  Type *VecTy = Vec->getType();
+  i32Ty = Type::getInt32Ty(C);
+  XLenTy = II->getModule()->getDataLayout().getLargestLegalIntType(C);
   Type *MaskTy = VecTy->getWithNewBitWidth(1);
-  Type *ScalarTy = II->getType();
-  Type *i32Ty = Type::getInt32Ty(C);
-  Type *XLenTy = II->getModule()->getDataLayout().getLargestLegalIntType(C);
-  Value *True = ConstantInt::get(MaskTy, 1);
+  True = ConstantInt::get(MaskTy, 1);
 
+  IRBuilder<> IB(II);
+  if (II->getIntrinsicID() == Intrinsic::vp_reduce_mul) {
+    Start = II->getArgOperand(0);
+    VL = II->getArgOperand(3);
+    // For inactive lanes, replace original elements by identities.
+    Value *Mask = II->getArgOperand(2);
+    auto *SC = dyn_cast_or_null<ConstantInt>(getSplatValue(Mask));
+    if (!SC || !SC->isAllOnesValue()) {
+      Vec = IB.CreateIntrinsic(VecTy, Intrinsic::vp_select,
+                               {Mask, Vec, ConstantInt::get(VecTy, 1), VL});
+    }
+  } else if (II->getIntrinsicID() == Intrinsic::vector_reduce_mul) {
+    Start = ConstantInt::get(ScalarTy, 1);
+    VL = IB.CreateElementCount(i32Ty, VecTy->getElementCount());
+  } else
+    llvm_unreachable("Only support mul-reduce now.");
+}
+
+void ExpandVPReduction::expand() {
   BasicBlock *StartBB = II->getParent();
   IRBuilder<> IB(II);
   Value *VLNotZero = IB.CreateICmpNE(VL, ConstantInt::get(i32Ty, 0));
@@ -147,15 +177,17 @@ static bool runImpl(Function &F) {
   for (auto &I : instructions(F)) {
     if (auto *II = dyn_cast<IntrinsicInst>(&I)) {
       switch (II->getIntrinsicID()) {
-      // TODO: Also support vp.reduce.fmul.
-      case Intrinsic::vp_reduce_mul: {
-        Value *Mask = II->getArgOperand(2);
-        auto *SC = dyn_cast_or_null<ConstantInt>(getSplatValue(Mask));
-        // Only support true mask now.
-        if (SC && SC->isAllOnesValue())
+      case Intrinsic::vp_reduce_mul:
+      case Intrinsic::vector_reduce_mul:
+        // Since we use rvv intrinsics to expand, we need to use scalable vector
+        // and legal sew.
+        unsigned VecIdx =
+            II->getIntrinsicID() == Intrinsic::vp_reduce_mul ? 1 : 0;
+        if (!isa<ScalableVectorType>(II->getArgOperand(VecIdx)->getType()))
+          break;
+        unsigned RetSize = II->getType()->getScalarSizeInBits();
+        if (RetSize == 8 || RetSize == 16 || RetSize == 32 || RetSize == 64)
           Replaces.push_back(II);
-        break;
-      }
       }
     }
   }
@@ -163,8 +195,10 @@ static bool runImpl(Function &F) {
   if (Replaces.empty())
     return false;
 
-  for (IntrinsicInst *II : Replaces)
-    expandReductionMul(II);
+  for (IntrinsicInst *II : Replaces) {
+    auto Expander = ExpandVPReduction(II);
+    Expander.expand();
+  }
 
   return true;
 }
