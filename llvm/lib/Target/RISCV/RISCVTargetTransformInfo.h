@@ -422,6 +422,7 @@ public:
 #if SIFIVE_CUSTOMIZATION
     case RecurKind::IFindLastIV:
     case RecurKind::FFindLastIV:
+    case RecurKind::Mul:
 #endif // SIFIVE_CUSTOMIZATION
       return true;
     default:
