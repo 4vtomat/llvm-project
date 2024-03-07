@@ -74,6 +74,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"smaia", {1, 0}},
     {"smepmp", {1, 0}},
     {"smstateen", {1, 0}}, // SIFIVE
+    {"ss", {1, 13}}, // SIFIVE
     {"ss", {1, 12}}, // SIFIVE
     {"ssaia", {1, 0}},
     {"ssccptr", {1, 0}},

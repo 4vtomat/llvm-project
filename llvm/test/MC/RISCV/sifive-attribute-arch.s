@@ -37,8 +37,11 @@
 .attribute arch, "rv32isdtrig"
 # CHECK: attribute      5, "rv32i2p1_sdtrig1p0"
 
-.attribute arch, "rv32iss"
+.attribute arch, "rv32iss1p12"
 # CHECK: attribute      5, "rv32i2p1_ss1p12"
+
+.attribute arch, "rv32iss1p13"
+# CHECK: attribute      5, "rv32i2p1_ss1p13"
 
 .attribute arch, "rv32isvbare"
 # CHECK: attribute      5, "rv32i2p1_svbare1p0"
