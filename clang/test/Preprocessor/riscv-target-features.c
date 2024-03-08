@@ -1251,7 +1251,7 @@
 // RUN: -o - | FileCheck --check-prefix=CHECK-SS-EXT %s
 // RUN: %clang --target=riscv64 -march=rv64iss  -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SS-EXT %s
-// CHECK-SS-EXT: __riscv_ss  1012000{{$}}
+// CHECK-SS-EXT: __riscv_ss  1013000{{$}}
 
 // RUN: %clang --target=riscv32 -march=rv32ismstateen -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SMSTATEEN-EXT %s

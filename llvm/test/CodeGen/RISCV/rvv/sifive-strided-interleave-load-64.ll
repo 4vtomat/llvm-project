@@ -190,6 +190,25 @@ define {<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 
   ret { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } %res7
 }
 
+define {<vscale x 2 x ptr>, <vscale x 2 x ptr>} @strided_load_factor2_v2_ptr(ptr %ptr, i64 %stride, i32 %rvl) {
+; CHECK-LABEL: strided_load_factor2_v2_ptr:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    slli a2, a2, 32
+; CHECK-NEXT:    srli a2, a2, 32
+; CHECK-NEXT:    vsetvli zero, a2, e64, m2, ta, ma
+; CHECK-NEXT:    vlsseg2e64.v v8, (a0), a1
+; CHECK-NEXT:    ret
+  %wide.strided.load = call <vscale x 2 x i128> @llvm.experimental.vp.strided.load.nxv2i128.p0.i64(ptr align 8 %ptr, i64 %stride, <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 %rvl)
+  %wide.strided.load.intcast = bitcast <vscale x 2 x i128> %wide.strided.load to <vscale x 4 x i64>
+  %wide.strided.load.cast = inttoptr <vscale x 4 x i64> %wide.strided.load.intcast to <vscale x 4 x ptr>
+  %deinterleaved.results = call { <vscale x 2 x ptr>, <vscale x 2 x ptr> } @llvm.experimental.vector.deinterleave2.nxv4p0(<vscale x 4 x ptr> %wide.strided.load.cast)
+  %t0 = extractvalue { <vscale x 2 x ptr>, <vscale x 2 x ptr> } %deinterleaved.results, 0
+  %t1 = extractvalue { <vscale x 2 x ptr>, <vscale x 2 x ptr> } %deinterleaved.results, 1
+  %res0 = insertvalue { <vscale x 2 x ptr>, <vscale x 2 x ptr> } undef, <vscale x 2 x ptr> %t0, 0
+  %res1 = insertvalue { <vscale x 2 x ptr>, <vscale x 2 x ptr> } %res0, <vscale x 2 x ptr> %t1, 1
+  ret { <vscale x 2 x ptr>, <vscale x 2 x ptr> } %res1
+}
+
 ; Negative test
 
 define {<vscale x 2 x i32>, <vscale x 2 x i32>} @noalign_info_factor2_v2(ptr %ptr, i64 %stride, i32 %rvl) {
@@ -250,4 +269,3 @@ define {<vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 
   %res3 = insertvalue { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } %res2, <vscale x 2 x i32> %t3, 3
   ret { <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32>, <vscale x 2 x i32> } %res3
 }
-

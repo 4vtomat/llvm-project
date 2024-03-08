@@ -61,8 +61,45 @@ define i32 @agnostic_mask(i32 %s, <vscale x 1 x i32> %v, <vscale x 1 x i1> %m, i
 ; CHECK-LABEL: define i32 @agnostic_mask(
 ; CHECK-SAME: i32 [[S:%.*]], <vscale x 1 x i32> [[V:%.*]], <vscale x 1 x i1> [[M:%.*]], i32 signext [[EVL:%.*]]) #[[ATTR1]] {
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.vp.reduce.mul.nxv1i32(i32 [[S]], <vscale x 1 x i32> [[V]], <vscale x 1 x i1> [[M]], i32 [[EVL]])
-; CHECK-NEXT:    ret i32 [[TMP0]]
+; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.vp.select.nxv1i32(<vscale x 1 x i1> [[M]], <vscale x 1 x i32> [[V]], <vscale x 1 x i32> shufflevector (<vscale x 1 x i32> insertelement (<vscale x 1 x i32> poison, i32 1, i64 0), <vscale x 1 x i32> poison, <vscale x 1 x i32> zeroinitializer), i32 [[EVL]])
+; CHECK-NEXT:    [[TMP1:%.*]] = icmp ne i32 [[EVL]], 0
+; CHECK-NEXT:    br i1 [[TMP1]], label [[TMP2:%.*]], label [[TMP26:%.*]]
+; CHECK:       2:
+; CHECK-NEXT:    [[TMP3:%.*]] = icmp ne i32 [[EVL]], 1
+; CHECK-NEXT:    br i1 [[TMP3]], label [[TMP4:%.*]], label [[TMP22:%.*]]
+; CHECK:       4:
+; CHECK-NEXT:    [[TMP5:%.*]] = call i32 @llvm.ctpop.i32(i32 [[EVL]])
+; CHECK-NEXT:    [[TMP6:%.*]] = icmp ne i32 [[TMP5]], 1
+; CHECK-NEXT:    br i1 [[TMP6]], label [[TMP7:%.*]], label [[TMP14:%.*]]
+; CHECK:       7:
+; CHECK-NEXT:    [[TMP8:%.*]] = call i32 @llvm.ctlz.i32(i32 [[EVL]], i1 false)
+; CHECK-NEXT:    [[TMP9:%.*]] = sub i32 32, [[TMP8]]
+; CHECK-NEXT:    [[TMP10:%.*]] = shl i32 1, [[TMP9]]
+; CHECK-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP10]] to i64
+; CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vmv.v.x.nxv1i32.i64(<vscale x 1 x i32> undef, i32 1, i64 [[TMP11]])
+; CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 1 x i32> @llvm.vp.merge.nxv1i32(<vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), <vscale x 1 x i32> [[TMP0]], <vscale x 1 x i32> [[TMP12]], i32 [[EVL]])
+; CHECK-NEXT:    br label [[TMP14]]
+; CHECK:       14:
+; CHECK-NEXT:    [[TMP15:%.*]] = phi <vscale x 1 x i32> [ [[TMP0]], [[TMP4]] ], [ [[TMP13]], [[TMP7]] ]
+; CHECK-NEXT:    [[TMP16:%.*]] = phi i32 [ [[EVL]], [[TMP4]] ], [ [[TMP10]], [[TMP7]] ]
+; CHECK-NEXT:    br label [[LOOP:%.*]]
+; CHECK:       loop:
+; CHECK-NEXT:    [[VEC:%.*]] = phi <vscale x 1 x i32> [ [[TMP15]], [[TMP14]] ], [ [[TMP20:%.*]], [[LOOP]] ]
+; CHECK-NEXT:    [[VL:%.*]] = phi i32 [ [[TMP16]], [[TMP14]] ], [ [[TMP17:%.*]], [[LOOP]] ]
+; CHECK-NEXT:    [[TMP17]] = lshr i32 [[VL]], 1
+; CHECK-NEXT:    [[TMP18:%.*]] = zext i32 [[TMP17]] to i64
+; CHECK-NEXT:    [[TMP19:%.*]] = call <vscale x 1 x i32> @llvm.riscv.vslidedown.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> [[VEC]], i64 [[TMP18]], i64 [[TMP18]], i64 1)
+; CHECK-NEXT:    [[TMP20]] = call <vscale x 1 x i32> @llvm.vp.mul.nxv1i32(<vscale x 1 x i32> [[VEC]], <vscale x 1 x i32> [[TMP19]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP17]])
+; CHECK-NEXT:    [[TMP21:%.*]] = icmp eq i32 [[TMP17]], 1
+; CHECK-NEXT:    br i1 [[TMP21]], label [[TMP22]], label [[LOOP]]
+; CHECK:       22:
+; CHECK-NEXT:    [[TMP23:%.*]] = phi <vscale x 1 x i32> [ [[TMP0]], [[TMP2]] ], [ [[TMP20]], [[LOOP]] ]
+; CHECK-NEXT:    [[TMP24:%.*]] = extractelement <vscale x 1 x i32> [[TMP23]], i32 0
+; CHECK-NEXT:    [[TMP25:%.*]] = mul i32 [[TMP24]], [[S]]
+; CHECK-NEXT:    br label [[TMP26]]
+; CHECK:       26:
+; CHECK-NEXT:    [[TMP27:%.*]] = phi i32 [ [[TMP25]], [[TMP22]] ], [ [[S]], [[ENTRY:%.*]] ]
+; CHECK-NEXT:    ret i32 [[TMP27]]
 ;
 entry:
   %0 = call i32 @llvm.vp.reduce.mul.nxv1i32(i32 %s, <vscale x 1 x i32> %v, <vscale x 1 x i1> %m, i32 %evl)

@@ -321,22 +321,28 @@ for.end:
   ret float %.sroa.speculated
 }
 
-; Reduction cannot be vectorized
+; SIFIVE CUSTOMIZATION
+; Integer mul reduction for scalable vector can be expanded by ExpandVPReductionPass
+; SIFIVE CUSTOMIZATION
 
 ; MUL
 
-; CHECK-REMARK: Scalable vectorization not supported for the reduction operations found in this loop.
-; CHECK-REMARK: vectorized loop (vectorization width: 8, interleaved count: 2)
+; SIFIVE CUSTOMIZATION
+; CHECK-REMARK-NOT: Scalable vectorization not supported for the reduction operations found in this loop.
+; CHECK-REMARK: vectorized loop (vectorization width: vscale x 8, interleaved count: 2)
+; SIFIVE CUSTOMIZATION
 define i32 @mul(ptr nocapture %a, ptr nocapture readonly %b, i64 %n) {
+; SIFIVE CUSTOMIZATION
 ; CHECK-LABEL: @mul
 ; CHECK: vector.body:
-; CHECK: %[[LOAD1:.*]] = load <8 x i32>
-; CHECK: %[[LOAD2:.*]] = load <8 x i32>
-; CHECK: %[[MUL1:.*]] = mul <8 x i32> %[[LOAD1]]
-; CHECK: %[[MUL2:.*]] = mul <8 x i32> %[[LOAD2]]
+; CHECK: %[[LOAD1:.*]] = load <vscale x 8 x i32>
+; CHECK: %[[LOAD2:.*]] = load <vscale x 8 x i32>
+; CHECK: %[[MUL1:.*]] = mul <vscale x 8 x i32> %[[LOAD1]]
+; CHECK: %[[MUL2:.*]] = mul <vscale x 8 x i32> %[[LOAD2]]
 ; CHECK: middle.block:
-; CHECK: %[[RDX:.*]] = mul <8 x i32> %[[MUL2]], %[[MUL1]]
-; CHECK: call i32 @llvm.vector.reduce.mul.v8i32(<8 x i32> %[[RDX]])
+; CHECK: %[[RDX:.*]] = mul <vscale x 8 x i32> %[[MUL2]], %[[MUL1]]
+; CHECK: call i32 @llvm.vector.reduce.mul.nxv8i32(<vscale x 8 x i32> %[[RDX]])
+; SIFIVE CUSTOMIZATION
 entry:
   br label %for.body
 
@@ -355,22 +361,26 @@ for.end:                                 ; preds = %for.body, %entry
 }
 
 ; Note: This test was added to ensure we always check the legality of reductions (and emit a warning if necessary) before checking for memory dependencies
-; CHECK-REMARK: Scalable vectorization not supported for the reduction operations found in this loop.
-; CHECK-REMARK: vectorized loop (vectorization width: 8, interleaved count: 2)
+; SIFIVE CUSTOMIZATION
+; CHECK-REMARK-NOT: Scalable vectorization not supported for the reduction operations found in this loop.
+; CHECK-REMARK: vectorized loop (vectorization width: vscale x 8, interleaved count: 2)
+; SIFIVE CUSTOMIZATION
 define i32 @memory_dependence(ptr noalias nocapture %a, ptr noalias nocapture readonly %b, i64 %n) {
+; SIFIVE CUSTOMIZATION
 ; CHECK-LABEL: @memory_dependence
 ; CHECK: vector.body:
-; CHECK: %[[LOAD1:.*]] = load <8 x i32>
-; CHECK: %[[LOAD2:.*]] = load <8 x i32>
-; CHECK: %[[LOAD3:.*]] = load <8 x i32>
-; CHECK: %[[LOAD4:.*]] = load <8 x i32>
-; CHECK: %[[ADD1:.*]] = add nsw <8 x i32> %[[LOAD3]], %[[LOAD1]]
-; CHECK: %[[ADD2:.*]] = add nsw <8 x i32> %[[LOAD4]], %[[LOAD2]]
-; CHECK: %[[MUL1:.*]] = mul <8 x i32> %[[LOAD3]]
-; CHECK: %[[MUL2:.*]] = mul <8 x i32> %[[LOAD4]]
+; CHECK: %[[LOAD1:.*]] = load <vscale x 8 x i32>
+; CHECK: %[[LOAD2:.*]] = load <vscale x 8 x i32>
+; CHECK: %[[LOAD3:.*]] = load <vscale x 8 x i32>
+; CHECK: %[[LOAD4:.*]] = load <vscale x 8 x i32>
+; CHECK: %[[ADD1:.*]] = add nsw <vscale x 8 x i32> %[[LOAD3]], %[[LOAD1]]
+; CHECK: %[[ADD2:.*]] = add nsw <vscale x 8 x i32> %[[LOAD4]], %[[LOAD2]]
+; CHECK: %[[MUL1:.*]] = mul <vscale x 8 x i32> %[[LOAD3]]
+; CHECK: %[[MUL2:.*]] = mul <vscale x 8 x i32> %[[LOAD4]]
 ; CHECK: middle.block:
-; CHECK: %[[RDX:.*]] = mul <8 x i32> %[[MUL2]], %[[MUL1]]
-; CHECK: call i32 @llvm.vector.reduce.mul.v8i32(<8 x i32> %[[RDX]])
+; CHECK: %[[RDX:.*]] = mul <vscale x 8 x i32> %[[MUL2]], %[[MUL1]]
+; CHECK: call i32 @llvm.vector.reduce.mul.nxv8i32(<vscale x 8 x i32> %[[RDX]])
+; SIFIVE CUSTOMIZATION
 entry:
   br label %for.body
 

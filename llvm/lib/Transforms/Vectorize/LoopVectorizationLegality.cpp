@@ -37,10 +37,6 @@
 using namespace llvm;
 using namespace PatternMatch;
 
-namespace llvm {
-extern cl::opt<bool> EnableVPlanNativePath;
-}
-
 #define LV_NAME "loop-vectorize"
 #define DEBUG_TYPE LV_NAME
 
@@ -209,6 +205,19 @@ bool LoopVectorizeHints::Hint::validate(unsigned Val) {
   return false;
 }
 
+#if SIFIVE_CUSTOMIZATION
+// Return true if vectorizer is able to support VLA vectorization for the loop
+// \p L.
+static bool allowVLAVectorizer(const TargetTransformInfo &TTI, const Loop &L) {
+  // TODO: Support outer loop VLA vectorization
+  if (!L.isInnermost())
+    return false;
+
+  // TODO: Add an override option, like -sifive-enable-vla-vectorizer.
+  return TTI.useVLAVectorizer();
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 LoopVectorizeHints::LoopVectorizeHints(const Loop *L,
                                        bool InterleaveOnlyWhenForced,
                                        OptimizationRemarkEmitter &ORE,
@@ -277,14 +286,13 @@ LoopVectorizeHints::LoopVectorizeHints(const Loop *L,
     // loop hint.
     Scalable.Value = SK_ScalableOnly;
 
-  if (TTI && TTI->useVLAVectorizer() &&
-      !EnableVPlanNativePath &&
-      ForceScalableVectorization == SK_Unspecified)
+  bool UseVLAVectorizer = TTI && allowVLAVectorizer(*TTI, *L);
+  if (UseVLAVectorizer && ForceScalableVectorization == SK_Unspecified)
     Scalable.Value = SK_ScalableOnly;
 
   // Forced vector width from the metadata should be ignored if VLA is enabled
   // if it is suggesting a fixed vector width.
-  if (TTI && TTI->useVLAVectorizer() && !EnableVPlanNativePath && Width.Value) {
+  if (UseVLAVectorizer && Width.Value) {
     Width.Value = VectorizerParams::DefaultVectorizationFactor;
     ORE.emit([&]() {
       return DiagnosticInfoOptimizationFailure(DEBUG_TYPE, "IgnoreUserVF",
@@ -1978,7 +1986,7 @@ bool LoopVectorizationLegality::prepareToFoldTailByMasking() {
 
 #if SIFIVE_CUSTOMIZATION
 bool LoopVectorizationLegality::useVLAVectorizer() const {
-  return !EnableVPlanNativePath && TTI->useVLAVectorizer();
+  return allowVLAVectorizer(*TTI, *TheLoop);
 }
 
 // Return: true - good for vectorization

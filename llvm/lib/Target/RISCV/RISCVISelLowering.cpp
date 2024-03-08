@@ -3354,7 +3354,12 @@ struct VIDSequence {
 
 static std::optional<uint64_t> getExactInteger(const APFloat &APF,
                                                uint32_t BitWidth) {
-  APSInt ValInt(BitWidth, !APF.isNegative());
+#if SIFIVE_CUSTOMIZATION
+  // SIFIVE cherry-picked from upstream
+  // We will use a SINT_TO_FP to materialize this constant so we should use a
+  // signed APSInt here.
+  APSInt ValInt(BitWidth, /*IsUnsigned*/ false);
+#endif // SIFIVE_CUSTOMIZATION
   // We use an arbitrary rounding mode here. If a floating-point is an exact
   // integer (e.g., 1.0), the rounding mode does not affect the output value. If
   // the rounding mode changes the output value, then it is not an exact
@@ -23769,7 +23774,8 @@ bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
   [[maybe_unused]] auto *DISrcTy =
       cast<VectorType>(DI->getOperand(0)->getType());
   [[maybe_unused]] auto *LTy = cast<VectorType>(StridedLoad->getType());
-  assert(DISrcTy->getPrimitiveSizeInBits() == LTy->getPrimitiveSizeInBits() &&
+  auto &DL = StridedLoad->getModule()->getDataLayout();
+  assert(DL.getTypeAllocSizeInBits(DISrcTy) == DL.getTypeAllocSizeInBits(LTy) &&
          "The primitive size of strided load and the source of deinterleave "
          "should be the same.");
   assert(DISrcTy->getElementCount() == LTy->getElementCount() * Factor &&
@@ -23782,8 +23788,7 @@ bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
       cast<VPIntrinsic>(StridedLoad)->getPointerAlignment().valueOrOne();
   if (!isLegalInterleavedAccessType(
           ResTy, Factor, Alignment,
-          BasePtr->getType()->getPointerAddressSpace(),
-          StridedLoad->getModule()->getDataLayout()))
+          BasePtr->getType()->getPointerAddressSpace(), DL))
     return false;
 
   IRBuilder<> Builder(StridedLoad);
