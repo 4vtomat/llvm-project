@@ -10023,7 +10023,11 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_W_CHAIN(SDValue Op,
 
     // TODO: We restrict this to unmasked loads currently in consideration of
     // the complexity of hanlding all falses masks.
-    if (IsUnmasked && isNullConstant(Stride)) {
+#if SIFIVE_CUSTOMIZATION
+    // SIFIVE Disable this for FP types. We need to use a different type of load
+    // and handle illegal FP types to do this correctly.
+    if (IsUnmasked && isNullConstant(Stride) && ContainerVT.isInteger()) {
+#endif // SIFIVE_CUSTOMIZATION
       MVT ScalarVT = ContainerVT.getVectorElementType();
       SDValue ScalarLoad =
           DAG.getExtLoad(ISD::ZEXTLOAD, DL, XLenVT, Load->getChain(), Ptr,
