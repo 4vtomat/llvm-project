@@ -1745,6 +1745,8 @@ public:
            "Tail folding must not be selected yet.");
 #if SIFIVE_CUSTOMIZATION
     if (!Legal->useVLAVectorizer() && !Legal->prepareToFoldTailByMasking())
+#else
+    if (!Legal->prepareToFoldTailByMasking())
 #endif // SIFIVE_CUSTOMIZATION
       return;
 
