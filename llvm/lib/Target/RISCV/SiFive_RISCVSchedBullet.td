@@ -840,16 +840,15 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
   }
   
   // 15. Vector Mask Instructions
+  // Simple mask logical
   foreach mx = SchedMxList in {
     defvar Cycles = BulletGetCyclesVMask<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
-    let Latency = 4, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
+    let Latency = 4, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in
       defm "" : LMULWriteResMX<"WriteVMALUV", [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVMPopV", [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVMFFSV", [VCQ, VA], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVMSFSV", [VCQ, VA], mx, IsWorstCase>;
-    }
   }
+  // Simple mask logical used in series
   foreach mx = SchedMxList in {
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
@@ -858,7 +857,15 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
       defm "" : LMULWriteResMX<"WriteVIdxV", [VCQ, VA], mx, IsWorstCase>;
     }
   }
-  
+  // Mask reduction
+  foreach mx = SchedMxList in {
+    defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
+    let Latency = 11, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, 11)] in {
+      defm "" : LMULWriteResMX<"WriteVMFFSV", [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVMPopV", [VCQ, VA], mx, IsWorstCase>;
+    }
+  }
+
   // 16. Vector Permutation Instructions
   let Latency = 11, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, 11)] in {
     def : WriteRes<WriteVIMovVX, [VCQ, VA]>;
