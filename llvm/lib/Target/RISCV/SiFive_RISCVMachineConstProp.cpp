@@ -43,6 +43,10 @@ using namespace llvm;
 
 #define DEBUG_TYPE "riscv-mc-constprop"
 
+static cl::opt<bool>
+    Disabled("disable-riscv-mc-constprop", cl::Hidden, cl::init(false),
+             cl::desc("Disable RISC-V Machine Constant Propagation pass."));
+
 namespace {
 class RISCVMachineConstPropagation : public MachineFunctionPass {
   const TargetRegisterInfo *TRI;
@@ -292,7 +296,7 @@ bool RISCVMachineConstPropagation::optimizeBlock(MachineBasicBlock &MBB) {
 }
 
 bool RISCVMachineConstPropagation::runOnMachineFunction(MachineFunction &MF) {
-  if (skipFunction(MF.getFunction()))
+  if (skipFunction(MF.getFunction()) || Disabled)
     return false;
 
   TRI = MF.getSubtarget().getRegisterInfo();
