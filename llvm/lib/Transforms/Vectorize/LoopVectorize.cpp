@@ -5970,15 +5970,8 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
 #if SIFIVE_CUSTOMIZATION
     // When code is not optimized for size, allow low trip count loops to be
     // vectorized with RVV VLA
-    if (Legal->useVLAVectorizer()) {
-      // Bail if runtime checks are required, which are not good when optimising
-      // for size. Enabling this path will cause to assert failure since
-      // memblock is generated
-      if (TheLoop->getHeader()->getParent()->hasOptSize() &&
-          runtimeChecksRequired())
-        return FixedScalableVFPair::getNone();
+    if (Legal->useVLAVectorizer())
       break;
-    }
     [[fallthrough]];
 #endif // SIFIVE_CUSTOMIZATION
     // fallthrough as a special case of OptForSize
@@ -12845,6 +12838,14 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         // `areRuntimeChecksProfitable` determine if vectorization is beneficial
         // for the loop.
         if (SEL != CM_ScalarEpilogueNotNeededUsePredicate)
+#if SIFIVE_CUSTOMIZATION
+          // Loops that are optimized for size due to Os/Oz or PGO for cold
+          // loops will lead to ICE if loops require runtime checks.
+          // FIXME: getScalarEpilogueLowering, runtimeChecksRequired and
+          // emitSCEVChecks should be intact with each other when optimizing for
+          // size and runtime checks are required.
+          if (SEL != CM_ScalarEpilogueNotAllowedOptSize)
+#endif // SIFIVE_CUSTOMIZATION
           SEL = CM_ScalarEpilogueNotAllowedLowTripLoop;
       } else {
         LLVM_DEBUG(dbgs() << " But the target considers the trip count too "
