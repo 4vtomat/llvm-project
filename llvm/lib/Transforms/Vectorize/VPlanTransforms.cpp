@@ -1405,7 +1405,7 @@ void VPlanTransforms::addActiveLaneMask(
 // ...
 // %P = EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI [ %StartV, %vector.ph ], [ %NextEVL,
 // %vector.body ]
-// %EVL = EXPLICIT-VECTOR-LENGTH %P, original TC
+// %EVL = EXPLICIT-VECTOR-LENGTH %P, Vector TC
 // ...
 // %NextEVL = EXPLICIT-VECTOR-LENGTH + %P, %EVL
 // ...
@@ -1434,7 +1434,7 @@ void VPlanTransforms::addExplicitVectorLength(VPlan &Plan) {
   }
 
   auto *VPEVL = new VPInstruction(VPInstruction::ExplicitVectorLength,
-                                  {EVLPhi, Plan.getTripCount()});
+                                  {EVLPhi, &Plan.getVectorTripCount()});
   VPEVL->insertBefore(*Header, Header->getFirstNonPhi());
 
   auto *CanonicalIVIncrement =

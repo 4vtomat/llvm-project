@@ -464,8 +464,8 @@ Value *VPInstruction::generateInstruction(VPTransformState &State,
              "Countable loop vectorization must use EVL");
       // Compute VTC - IV as the EVL(requested vector length).
       Value *Index = State.get(getOperand(0), 0);
-      Value *TripCount = State.get(getOperand(1), VPIteration(0, 0));
-      EVL = State.Builder.CreateSub(TripCount, Index);
+      Value *VectorTripCount = State.get(getOperand(1), 0);
+      EVL = State.Builder.CreateSub(VectorTripCount, Index);
     }
     // Set VLMAX if EVL is nullptr
     Value *SetVL = GetSetVL(State, EVL);

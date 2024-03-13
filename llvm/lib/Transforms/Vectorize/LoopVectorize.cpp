@@ -3305,6 +3305,12 @@ InnerLoopVectorizer::getOrCreateVectorTripCount(BasicBlock *InsertBlock) {
 
   if (useVLAVectorizer()) {
     Value *TC = getTripCount();
+    if (Cost->requiresScalarEpilogue(VF.isVector())) {
+      IRBuilder<> Builder(InsertBlock->getTerminator());
+      VectorTripCount =
+          Builder.CreateSub(TC, ConstantInt::get(TC->getType(), 1), "n.vec");
+      return VectorTripCount;
+    }
     return VectorTripCount = TC;
   }
 #endif // SIFIVE_CUSTOMIZATION
@@ -11110,22 +11116,6 @@ static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
 #endif // SIFIVE_CUSTOMIZATION
 }
 
-#if SIFIVE_CUSTOMIZATION
-static const SCEV *createTripCountSCEV(LoopVectorizationLegality &LVL,
-                                       LoopVectorizationCostModel &CM,
-                                       const bool IsUncountable) {
-  if (IsUncountable)
-    return nullptr;
-  PredicatedScalarEvolution &PSE = *LVL.getPredicatedScalarEvolution();
-  const SCEV *TCSCEV =
-      createTripCountSCEV(LVL.getWidestInductionType(), PSE, LVL.getLoop());
-  if (LVL.useVLAVectorizer() && CM.requiresScalarEpilogue(true))
-    return PSE.getSE()->getMinusSCEV(TCSCEV,
-                                     PSE.getSE()->getOne(TCSCEV->getType()));
-  return TCSCEV;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 VPlanPtr
 LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 
@@ -11182,7 +11172,10 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   // loop region contains a header and latch basic blocks.
 #if SIFIVE_CUSTOMIZATION
   const bool IsUncountable = Legal->isVectorizableUncountable();
-  const SCEV *TripCountSCEV = ::createTripCountSCEV(*Legal, CM, IsUncountable);
+  const SCEV *TripCountSCEV = nullptr;
+  if (!IsUncountable)
+    TripCountSCEV =
+        createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop);
   VPlanPtr Plan =
       VPlan::createInitialVPlan(TripCountSCEV, *PSE.getSE(), IsUncountable);
   if (IsUncountable) {

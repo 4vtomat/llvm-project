@@ -18,7 +18,7 @@
 ; CHECK-NEXT:     EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%3> = phi ir<0>, vp<%16>
 ; CHECK-NEXT:     EMIT ir<%ret.011> = monotonic-phi ir<0>, ir<%inc>
 ; CHECK-NEXT:     vp<%5> = SCALAR-STEPS vp<%2>, ir<1>
-; CHECK-NEXT:     EMIT vp<%6> = EXPLICIT-VECTOR-LENGTH vp<%3>, vp<%1>
+; CHECK-NEXT:     EMIT vp<%6> = EXPLICIT-VECTOR-LENGTH vp<%3>, vp<%0>
 ; CHECK-NEXT:     CLONE ir<%arrayidx> = getelementptr inbounds ir<%b>, vp<%5>
 ; CHECK-NEXT:     vp<%8> = vector-pointer ir<%arrayidx>
 ; CHECK-NEXT:     WIDEN ir<%0> = load vp<%8>
