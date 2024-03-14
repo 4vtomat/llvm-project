@@ -3334,6 +3334,12 @@ InnerLoopVectorizer::getOrCreateVectorTripCount(BasicBlock *InsertBlock) {
 
   if (useVLAVectorizer()) {
     Value *TC = getTripCount();
+    if (Cost->requiresScalarEpilogue(VF.isVector())) {
+      IRBuilder<> Builder(InsertBlock->getTerminator());
+      VectorTripCount =
+          Builder.CreateSub(TC, ConstantInt::get(TC->getType(), 1), "n.vec");
+      return VectorTripCount;
+    }
     return VectorTripCount = TC;
   }
 #endif // SIFIVE_CUSTOMIZATION
@@ -5982,15 +5988,8 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
 #if SIFIVE_CUSTOMIZATION
     // When code is not optimized for size, allow low trip count loops to be
     // vectorized with RVV VLA
-    if (Legal->useVLAVectorizer()) {
-      // Bail if runtime checks are required, which are not good when optimising
-      // for size. Enabling this path will cause to assert failure since
-      // memblock is generated
-      if (TheLoop->getHeader()->getParent()->hasOptSize() &&
-          runtimeChecksRequired())
-        return FixedScalableVFPair::getNone();
+    if (Legal->useVLAVectorizer())
       break;
-    }
     [[fallthrough]];
 #endif // SIFIVE_CUSTOMIZATION
     // fallthrough as a special case of OptForSize
@@ -11113,22 +11112,6 @@ static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
 #endif // SIFIVE_CUSTOMIZATION
 }
 
-#if SIFIVE_CUSTOMIZATION
-static const SCEV *createTripCountSCEV(LoopVectorizationLegality &LVL,
-                                       LoopVectorizationCostModel &CM,
-                                       const bool IsUncountable) {
-  if (IsUncountable)
-    return nullptr;
-  PredicatedScalarEvolution &PSE = *LVL.getPredicatedScalarEvolution();
-  const SCEV *TCSCEV =
-      createTripCountSCEV(LVL.getWidestInductionType(), PSE, LVL.getLoop());
-  if (LVL.useVLAVectorizer() && CM.requiresScalarEpilogue(true))
-    return PSE.getSE()->getMinusSCEV(TCSCEV,
-                                     PSE.getSE()->getOne(TCSCEV->getType()));
-  return TCSCEV;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 VPlanPtr
 LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 
@@ -11185,7 +11168,10 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   // loop region contains a header and latch basic blocks.
 #if SIFIVE_CUSTOMIZATION
   const bool IsUncountable = Legal->isVectorizableUncountable();
-  const SCEV *TripCountSCEV = ::createTripCountSCEV(*Legal, CM, IsUncountable);
+  const SCEV *TripCountSCEV = nullptr;
+  if (!IsUncountable)
+    TripCountSCEV =
+        createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop);
   VPlanPtr Plan =
       VPlan::createInitialVPlan(TripCountSCEV, *PSE.getSE(), IsUncountable);
   if (IsUncountable) {
@@ -12857,6 +12843,14 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         // `areRuntimeChecksProfitable` determine if vectorization is beneficial
         // for the loop.
         if (SEL != CM_ScalarEpilogueNotNeededUsePredicate)
+#if SIFIVE_CUSTOMIZATION
+          // Loops that are optimized for size due to Os/Oz or PGO for cold
+          // loops will lead to ICE if loops require runtime checks.
+          // FIXME: getScalarEpilogueLowering, runtimeChecksRequired and
+          // emitSCEVChecks should be intact with each other when optimizing for
+          // size and runtime checks are required.
+          if (SEL != CM_ScalarEpilogueNotAllowedOptSize)
+#endif // SIFIVE_CUSTOMIZATION
           SEL = CM_ScalarEpilogueNotAllowedLowTripLoop;
       } else {
         LLVM_DEBUG(dbgs() << " But the target considers the trip count too "

@@ -181,7 +181,7 @@ class LLVM_LIBRARY_VISIBILITY RISCV64TargetInfo : public RISCVTargetInfo {
 public:
   RISCV64TargetInfo(const llvm::Triple &Triple, const TargetOptions &Opts)
       : RISCVTargetInfo(Triple, Opts) {
-    LargeArrayMinWidth = 64; // SIFIVE
+    LargeArrayMinWidth = 128; // SIFIVE
     LargeArrayAlign = 64; // SIFIVE
     LongWidth = LongAlign = PointerWidth = PointerAlign = 64;
     IntMaxType = Int64Type = SignedLong;

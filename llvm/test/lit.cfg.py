@@ -359,6 +359,9 @@ if config.host_ldflags.find("-m32") < 0 and any(
     config.available_features.add("llvm-64-bits")
 
 config.available_features.add("host-byteorder-" + sys.byteorder + "-endian")
+# if SIFIVE_CUSTOMIZATION
+config.available_features.add("sifive-customization")
+# end SIFIVE_CUSTOMIZATION
 
 if sys.platform in ["win32"]:
     # ExecutionEngine, no weak symbols in COFF.

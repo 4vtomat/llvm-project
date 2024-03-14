@@ -16,6 +16,7 @@
   define void @case3_postpone_kill() { ret void }
   define void @case1_followed_by_case2() { ret void }
   define void @case3_twouse() { ret void }
+  define void @inline_asm() { ret void }
 ...
 ---
 name: case1_fold
@@ -218,3 +219,25 @@ body:             |
     ; RV32-NEXT: renamable $x10 = SH1ADD killed renamable $x12, renamable $x12
     renamable $x12 = ADD $x0, $x10
     renamable $x10 = SH1ADD killed renamable $x12, renamable $x12
+...
+---
+name: inline_asm
+tracksRegLiveness: true
+body:             |
+  bb.0:
+    liveins: $x10
+    ; RV64-LABEL: name: inline_asm
+    ; RV64: liveins: $x10
+    ; RV64-NEXT: {{  $}}
+    ; RV64-NEXT: renamable $x12 = ADDI $x0, 1
+    ; RV64-NEXT: INLINEASM &"", 1 /* sideeffect attdialect */
+    ; RV64-NEXT: renamable $x10 = XOR killed renamable $x10, killed renamable $x12
+    ; RV32-LABEL: name: inline_asm
+    ; RV32: liveins: $x10
+    ; RV32-NEXT: {{  $}}
+    ; RV32-NEXT: renamable $x12 = ADDI $x0, 1
+    ; RV32-NEXT: INLINEASM &"", 1 /* sideeffect attdialect */
+    ; RV32-NEXT: renamable $x10 = XOR killed renamable $x10, killed renamable $x12
+    renamable $x12 = ADDI $x0, 1
+    INLINEASM &"", 1
+    renamable $x10 = XOR killed renamable $x10, killed renamable $x12

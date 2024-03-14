@@ -43,6 +43,10 @@ using namespace llvm;
 
 #define DEBUG_TYPE "riscv-mc-constprop"
 
+static cl::opt<bool>
+    Disabled("disable-riscv-mc-constprop", cl::Hidden, cl::init(false),
+             cl::desc("Disable RISC-V Machine Constant Propagation pass."));
+
 namespace {
 class RISCVMachineConstPropagation : public MachineFunctionPass {
   const TargetRegisterInfo *TRI;
@@ -147,6 +151,10 @@ static bool tryFoldBinOp(const TargetInstrInfo *TII, MachineInstr &Root) {
           if (any_of(MI.operands(), [&MO](const MachineOperand &Op) {
                 return Op.isReg() && Op.getReg() == MO.getReg();
               }))
+            break;
+
+          // TODO: Handle inline assembly
+          if (MI.isInlineAsm())
             break;
 
           if (MI.getOperand(0).isReg())
@@ -288,7 +296,7 @@ bool RISCVMachineConstPropagation::optimizeBlock(MachineBasicBlock &MBB) {
 }
 
 bool RISCVMachineConstPropagation::runOnMachineFunction(MachineFunction &MF) {
-  if (skipFunction(MF.getFunction()))
+  if (skipFunction(MF.getFunction()) || Disabled)
     return false;
 
   TRI = MF.getSubtarget().getRegisterInfo();
