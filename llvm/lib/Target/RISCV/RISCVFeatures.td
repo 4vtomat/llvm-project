@@ -1266,10 +1266,6 @@ def Feature32Bit
     : SubtargetFeature<"32bit", "IsRV32", "true", "Implements RV32">;
 
 #ifdef SIFIVE_CUSTOMIZATION
-def FeatureStdExtSscofpmf
-    : SubtargetFeature<"sscofpmf", "HasStdExtSscofpmf", "true",
-                       "'Sscofpmf' (Count Overflow and Mode-Based Filtering Architecture extension)">;
-
 def FeatureRecodeDotprod
     : SubtargetFeature<"dotprod", "HasRecodeDotprod", "true",
                        "dotprod (A corresponding feature for NEON dotprod.)">;

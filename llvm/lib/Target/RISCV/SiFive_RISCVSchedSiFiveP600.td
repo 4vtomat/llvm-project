@@ -144,6 +144,16 @@ def : WriteRes<WriteIDiv32,  [SiFiveP600MulI2F, SiFiveP600Div]> {
   let ReleaseAtCycles = [1, 19];
 }
 
+// Integer remainder
+def : WriteRes<WriteIRem, [SiFiveP600MulI2F, SiFiveP600Div]> {
+  let Latency = 35;
+  let ReleaseAtCycles = [1, 34];
+}
+def : WriteRes<WriteIRem32,  [SiFiveP600MulI2F, SiFiveP600Div]> {
+  let Latency = 20;
+  let ReleaseAtCycles = [1, 19];
+}
+
 let Latency = 1 in {
 // Bitmanip
 def : WriteRes<WriteRotateImm, [SiFiveP600IntArith]>;
@@ -749,6 +759,8 @@ def : ReadAdvance<ReadShiftReg, 0>;
 def : ReadAdvance<ReadShiftReg32, 0>;
 def : ReadAdvance<ReadIDiv, 0>;
 def : ReadAdvance<ReadIDiv32, 0>;
+def : ReadAdvance<ReadIRem, 0>;
+def : ReadAdvance<ReadIRem32, 0>;
 def : ReadAdvance<ReadIMul, 0>;
 def : ReadAdvance<ReadIMul32, 0>;
 def : ReadAdvance<ReadAtomicWA, 0>;

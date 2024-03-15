@@ -78,11 +78,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"ss", {1, 12}}, // SIFIVE
     {"ssaia", {1, 0}},
     {"ssccptr", {1, 0}},
-<<<<<<< HEAD
-    {"sscofpmf", {1, 0}}, // SIFIVE
-=======
     {"sscofpmf", {1, 0}},
->>>>>>> abfac56
     {"sscounterenw", {1, 0}},
     {"ssstateen", {1, 0}},
     {"ssstrict", {1, 0}},
@@ -740,6 +736,7 @@ static Error getExtensionVersion(StringRef Ext, StringRef In, unsigned &Major,
         errc::invalid_argument,
         "multi-character extensions must be separated by underscores");
 
+#if SIFIVE_CUSTOMIZATION
   auto getUnsupportedError = [=](bool IsExperimental = false) {
     std::string Error = "unsupported version number " + MajorStr.str();
     if (!MinorStr.empty())
@@ -757,6 +754,7 @@ static Error getExtensionVersion(StringRef Ext, StringRef In, unsigned &Major,
     Error += ")";
     return createStringError(errc::invalid_argument, Error);
   };
+#endif // SIFIVE_CUSTOMIZATION
 
   // If experimental extension, require use of current version number
   if (auto ExperimentalExtension = isExperimentalExtension(Ext)) {
@@ -814,18 +812,12 @@ static Error getExtensionVersion(StringRef Ext, StringRef In, unsigned &Major,
   if (RISCVISAInfo::isSupportedExtension(Ext, Major, Minor))
     return Error::success();
 
-<<<<<<< HEAD
-  return getUnsupportedError();
-=======
   if (!RISCVISAInfo::isSupportedExtension(Ext))
     return getStringErrorForInvalidExt(Ext);
 
-  std::string Error = "unsupported version number " + std::string(MajorStr);
-  if (!MinorStr.empty())
-    Error += "." + MinorStr.str();
-  Error += " for extension '" + Ext.str() + "'";
-  return createStringError(errc::invalid_argument, Error);
->>>>>>> abfac56
+#if SIFIVE_CUSTOMIZATION
+  return getUnsupportedError();
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 llvm::Expected<std::unique_ptr<RISCVISAInfo>>

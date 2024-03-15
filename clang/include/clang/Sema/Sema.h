@@ -1837,20 +1837,10 @@ public:
   void ActOnPragmaVisibility(const IdentifierInfo *VisType,
                              SourceLocation PragmaLoc);
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  /// Indicate whether RISC-V v0p11 vector builtn functions are enabled or not.
-  bool DeclareRISCVVectorV0p11Builtins = false;
-#endif
-
-private:
-  std::unique_ptr<sema::RISCVIntrinsicManager> RVIntrinsicManager;
-=======
   /// ActOnPragmaFPContract - Called on well formed
   /// \#pragma {STDC,OPENCL} FP_CONTRACT and
   /// \#pragma clang fp contract
   void ActOnPragmaFPContract(SourceLocation Loc, LangOptions::FPModeKind FPC);
->>>>>>> abfac56
 
   /// Called on well formed
   /// \#pragma clang fp reassociate
@@ -13054,6 +13044,11 @@ public:
 
   /// Indicate RISC-V SiFive vector builtin functions enabled or not.
   bool DeclareRISCVSiFiveVectorBuiltins = false;
+
+#if SIFIVE_CUSTOMIZATION
+  /// Indicate whether RISC-V v0p11 vector builtn functions are enabled or not.
+  bool DeclareRISCVVectorV0p11Builtins = false;
+#endif
 
 private:
   std::unique_ptr<sema::RISCVIntrinsicManager> RVIntrinsicManager;

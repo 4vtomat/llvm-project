@@ -67,9 +67,6 @@ static cl::opt<unsigned> RISCVMaxBuildIntsCost(
 static cl::opt<bool> UseAltGPROrder("riscv-use-alt-gpr-order", cl::init(false),
                                     cl::desc("Enable alternate GPR order."),
                                     cl::ReallyHidden);
-static cl::opt<bool> UseAltVROrder("riscv-use-alt-vr-order", cl::init(false),
-                                   cl::desc("Enable alternate VR order."),
-                                   cl::ReallyHidden);
 #endif // SIFIVE_CUSTOMIZATION
 static cl::opt<bool> UseAA("riscv-use-aa", cl::init(true),
                            cl::desc("Enable the use of AA during codegen."));
@@ -246,7 +243,6 @@ void RISCVSubtarget::overrideSchedPolicy(MachineSchedPolicy &Policy,
 }
 
 bool RISCVSubtarget::useAltGPROrder() const { return UseAltGPROrder; }
-bool RISCVSubtarget::useAltVROrder() const { return UseAltVROrder; }
 
 unsigned RISCVSubtarget::getMemToRVVLMUL() const {
   return 8;

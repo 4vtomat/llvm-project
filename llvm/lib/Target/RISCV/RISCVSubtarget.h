@@ -343,7 +343,6 @@ public:
   void overrideSchedPolicy(MachineSchedPolicy &Policy,
                            unsigned NumRegionInstrs) const override;
   bool useAltGPROrder() const;
-  bool useAltVROrder() const;
 
   unsigned getMemToRVVLMUL() const;
 #endif // SIFIVE_CUSTOMIZATION

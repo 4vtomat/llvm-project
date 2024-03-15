@@ -426,18 +426,13 @@ struct VPTransformState {
       PerPartVec.resize(Instance.Part + 1);
     auto &Scalars = PerPartVec[Instance.Part];
     unsigned CacheIdx = Instance.Lane.mapToCacheIndex(VF);
-<<<<<<< HEAD
-    while (Scalars.size() <= CacheIdx)
-      Scalars.push_back(nullptr);
+    if (Scalars.size() <= CacheIdx)
+      Scalars.resize(CacheIdx + 1);
 #if SIFIVE_CUSTOMIZATION
     // For now it's legal for Uncountable loop vectorization to  overwrite
     // existing value of RVL
     if (this->RVL != Def)
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    if (Scalars.size() <= CacheIdx)
-      Scalars.resize(CacheIdx + 1);
->>>>>>> abfac56
     assert(!Scalars[CacheIdx] && "should overwrite existing value");
     Scalars[CacheIdx] = V;
   }

@@ -71,6 +71,16 @@ def : WriteRes<WriteIDiv32,  [SiFive6Pipe, SiFive6IDiv]> {
   let ReleaseAtCycles = [1, 15];
 }
 
+// Integer remainder
+def : WriteRes<WriteIRem, [SiFive6Pipe, SiFive6IDiv]> {
+  let Latency = 16;
+  let ReleaseAtCycles = [1, 15];
+}
+def : WriteRes<WriteIRem32,  [SiFive6Pipe, SiFive6IDiv]> {
+  let Latency = 16;
+  let ReleaseAtCycles = [1, 15];
+}
+
 // Bitmanip
 let Latency = 3 in {
 // Rotates are in the late-B ALU.
@@ -257,6 +267,8 @@ def : BulletAnyToGPRBypass<ReadShiftReg>;
 def : BulletAnyToGPRBypass<ReadShiftReg32>;
 def : ReadAdvance<ReadIDiv, 0>;
 def : ReadAdvance<ReadIDiv32, 0>;
+def : ReadAdvance<ReadIRem, 0>;
+def : ReadAdvance<ReadIRem32, 0>;
 def : ReadAdvance<ReadIMul, 0>;
 def : ReadAdvance<ReadIMul32, 0>;
 def : ReadAdvance<ReadAtomicWA, 0>;

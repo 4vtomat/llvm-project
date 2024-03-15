@@ -2126,17 +2126,10 @@ bool RISCVTargetLowering::canSplatOperand(Instruction *I, int Operand) const {
   case Intrinsic::vp_sdiv:
   case Intrinsic::vp_urem:
   case Intrinsic::vp_srem:
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  case Intrinsic::vp_ssub_sat:
-  case Intrinsic::vp_usub_sat:
-#endif // SIFIVE_CUSTOMIZATION
-=======
   case Intrinsic::ssub_sat:
   case Intrinsic::vp_ssub_sat:
   case Intrinsic::usub_sat:
   case Intrinsic::vp_usub_sat:
->>>>>>> abfac56
     return Operand == 1;
     // These intrinsics are commutative.
   case Intrinsic::vp_add:
@@ -2144,10 +2137,6 @@ bool RISCVTargetLowering::canSplatOperand(Instruction *I, int Operand) const {
   case Intrinsic::vp_and:
   case Intrinsic::vp_or:
   case Intrinsic::vp_xor:
-#if SIFIVE_CUSTOMIZATION
-  case Intrinsic::vp_sadd_sat:
-  case Intrinsic::vp_uadd_sat:
-#endif
   case Intrinsic::vp_fadd:
   case Intrinsic::vp_fmul:
   case Intrinsic::vp_icmp:
@@ -3373,18 +3362,9 @@ struct VIDSequence {
 
 static std::optional<uint64_t> getExactInteger(const APFloat &APF,
                                                uint32_t BitWidth) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // SIFIVE cherry-picked from upstream
   // We will use a SINT_TO_FP to materialize this constant so we should use a
   // signed APSInt here.
   APSInt ValInt(BitWidth, /*IsUnsigned*/ false);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  // We will use a SINT_TO_FP to materialize this constant so we should use a
-  // signed APSInt here.
-  APSInt ValInt(BitWidth, /*IsUnsigned*/ false);
->>>>>>> abfac56
   // We use an arbitrary rounding mode here. If a floating-point is an exact
   // integer (e.g., 1.0), the rounding mode does not affect the output value. If
   // the rounding mode changes the output value, then it is not an exact

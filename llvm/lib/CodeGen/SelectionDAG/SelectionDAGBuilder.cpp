@@ -7955,7 +7955,6 @@ void SelectionDAGBuilder::visitIntrinsicCall(const CallInst &I,
   case Intrinsic::experimental_vector_deinterleave7:
     visitVectorDeinterleave(I, 7);
     return;
-<<<<<<< HEAD
   case Intrinsic::experimental_vector_deinterleave8:
     visitVectorDeinterleave(I, 8);
     return;
@@ -7964,12 +7963,10 @@ void SelectionDAGBuilder::visitIntrinsicCall(const CallInst &I,
     visitTargetIntrinsic(I, Intrinsic);
     return;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case Intrinsic::experimental_convergence_anchor:
   case Intrinsic::experimental_convergence_entry:
   case Intrinsic::experimental_convergence_loop:
     visitConvergenceControl(I, Intrinsic);
->>>>>>> abfac56
   }
 }
 
