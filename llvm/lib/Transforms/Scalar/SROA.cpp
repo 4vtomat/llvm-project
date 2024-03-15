@@ -1853,7 +1853,7 @@ static void rewriteMemOpOfSelect(SelectInst &SI, T &I,
   Tail->setName(Head->getName() + ".cont");
   PHINode *PN;
   if (isa<LoadInst>(I))
-    PN = PHINode::Create(I.getType(), 2, "", &I);
+    PN = PHINode::Create(I.getType(), 2, "", I.getIterator());
   for (BasicBlock *SuccBB : successors(Head)) {
     bool IsThen = SuccBB == HeadBI->getSuccessor(0);
     int SuccIdx = IsThen ? 0 : 1;
@@ -2257,6 +2257,41 @@ checkVectorTypesForPromotion(Partition &P, const DataLayout &DL,
   return nullptr;
 }
 
+static VectorType *createAndCheckVectorTypesForPromotion(
+    SetVector<Type *> &OtherTys, ArrayRef<VectorType *> CandidateTysCopy,
+    function_ref<void(Type *)> CheckCandidateType, Partition &P,
+    const DataLayout &DL, SmallVectorImpl<VectorType *> &CandidateTys,
+    bool &HaveCommonEltTy, Type *&CommonEltTy, bool &HaveVecPtrTy,
+    bool &HaveCommonVecPtrTy, VectorType *&CommonVecPtrTy) {
+  [[maybe_unused]] VectorType *OriginalElt =
+      CandidateTysCopy.size() ? CandidateTysCopy[0] : nullptr;
+  // Consider additional vector types where the element type size is a
+  // multiple of load/store element size.
+  for (Type *Ty : OtherTys) {
+    if (!VectorType::isValidElementType(Ty))
+      continue;
+    unsigned TypeSize = DL.getTypeSizeInBits(Ty).getFixedValue();
+    // Make a copy of CandidateTys and iterate through it, because we
+    // might append to CandidateTys in the loop.
+    for (VectorType *const VTy : CandidateTysCopy) {
+      // The elements in the copy should remain invariant throughout the loop
+      assert(CandidateTysCopy[0] == OriginalElt && "Different Element");
+      unsigned VectorSize = DL.getTypeSizeInBits(VTy).getFixedValue();
+      unsigned ElementSize =
+          DL.getTypeSizeInBits(VTy->getElementType()).getFixedValue();
+      if (TypeSize != VectorSize && TypeSize != ElementSize &&
+          VectorSize % TypeSize == 0) {
+        VectorType *NewVTy = VectorType::get(Ty, VectorSize / TypeSize, false);
+        CheckCandidateType(NewVTy);
+      }
+    }
+  }
+
+  return checkVectorTypesForPromotion(P, DL, CandidateTys, HaveCommonEltTy,
+                                      CommonEltTy, HaveVecPtrTy,
+                                      HaveCommonVecPtrTy, CommonVecPtrTy);
+}
+
 /// Test whether the given alloca partitioning and range of slices can be
 /// promoted to a vector.
 ///
@@ -2271,6 +2306,7 @@ static VectorType *isVectorPromotionViable(Partition &P, const DataLayout &DL) {
   // we have different element types.
   SmallVector<VectorType *, 4> CandidateTys;
   SetVector<Type *> LoadStoreTys;
+  SetVector<Type *> DeferredTys;
   Type *CommonEltTy = nullptr;
   VectorType *CommonVecPtrTy = nullptr;
   bool HaveVecPtrTy = false;
@@ -2314,6 +2350,14 @@ static VectorType *isVectorPromotionViable(Partition &P, const DataLayout &DL) {
       Ty = SI->getValueOperand()->getType();
     else
       continue;
+
+    auto CandTy = Ty->getScalarType();
+    if (CandTy->isPointerTy() && (S.beginOffset() != P.beginOffset() ||
+                                  S.endOffset() != P.endOffset())) {
+      DeferredTys.insert(Ty);
+      continue;
+    }
+
     LoadStoreTys.insert(Ty);
     // Consider any loads or stores that are the exact size of the slice.
     if (S.beginOffset() == P.beginOffset() && S.endOffset() == P.endOffset())
@@ -2345,11 +2389,14 @@ static VectorType *isVectorPromotionViable(Partition &P, const DataLayout &DL) {
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-  if (auto *VTy = checkVectorTypesForPromotion(
-          P, DL, CandidateTys, HaveCommonEltTy, CommonEltTy, HaveVecPtrTy,
+  SmallVector<VectorType *, 4> CandidateTysCopy = CandidateTys;
+  if (auto *VTy = createAndCheckVectorTypesForPromotion(
+          LoadStoreTys, CandidateTysCopy, CheckCandidateType, P, DL,
+          CandidateTys, HaveCommonEltTy, CommonEltTy, HaveVecPtrTy,
           HaveCommonVecPtrTy, CommonVecPtrTy))
     return VTy;
 
+<<<<<<< HEAD
   // Consider additional vector types where the element type size is a
   // multiple of load/store element size.
   for (Type *Ty : LoadStoreTys) {
@@ -2379,6 +2426,13 @@ static VectorType *isVectorPromotionViable(Partition &P, const DataLayout &DL) {
   return checkVectorTypesForPromotion(P, DL, CandidateTys, HaveCommonEltTy,
                                       CommonEltTy, HaveVecPtrTy,
                                       HaveCommonVecPtrTy, CommonVecPtrTy);
+=======
+  CandidateTys.clear();
+  return createAndCheckVectorTypesForPromotion(
+      DeferredTys, CandidateTysCopy, CheckCandidateType, P, DL, CandidateTys,
+      HaveCommonEltTy, CommonEltTy, HaveVecPtrTy, HaveCommonVecPtrTy,
+      CommonVecPtrTy);
+>>>>>>> abfac56
 }
 
 /// Test whether a slice of an alloca is valid for integer widening.
@@ -4065,10 +4119,14 @@ private:
   bool unfoldGEPPhi(GetElementPtrInst &GEPI) {
     // To prevent infinitely expanding recursive phis, bail if the GEP pointer
     // operand (looking through the phi if it is the phi we want to unfold) is
-    // an instruction besides an alloca.
+    // an instruction besides a static alloca.
     PHINode *Phi = dyn_cast<PHINode>(GEPI.getPointerOperand());
     auto IsInvalidPointerOperand = [](Value *V) {
-      return isa<Instruction>(V) && !isa<AllocaInst>(V);
+      if (!isa<Instruction>(V))
+        return false;
+      if (auto *AI = dyn_cast<AllocaInst>(V))
+        return !AI->isStaticAlloca();
+      return true;
     };
     if (Phi) {
       if (any_of(Phi->operands(), IsInvalidPointerOperand))
@@ -4119,16 +4177,20 @@ private:
     bool IsInBounds = GEPI.isInBounds();
     Type *SourceTy = GEPI.getSourceElementType();
     // We only handle arguments, constants, and static allocas here, so we can
-    // insert GEPs at the beginning of the function after static allocas.
-    IRB.SetInsertPointPastAllocas(GEPI.getFunction());
+    // insert GEPs at the end of the entry block.
+    IRB.SetInsertPoint(GEPI.getFunction()->getEntryBlock().getTerminator());
     for (unsigned I = 0, E = Phi->getNumIncomingValues(); I != E; ++I) {
       Value *Op = Phi->getIncomingValue(I);
       BasicBlock *BB = Phi->getIncomingBlock(I);
-      SmallVector<Value *> NewOps = GetNewOps(Op);
-
-      Value *NewGEP =
-          IRB.CreateGEP(SourceTy, NewOps[0], ArrayRef(NewOps).drop_front(),
-                        Phi->getName() + ".sroa.gep", IsInBounds);
+      Value *NewGEP;
+      if (int NI = NewPhi->getBasicBlockIndex(BB); NI >= 0) {
+        NewGEP = NewPhi->getIncomingValue(NI);
+      } else {
+        SmallVector<Value *> NewOps = GetNewOps(Op);
+        NewGEP =
+            IRB.CreateGEP(SourceTy, NewOps[0], ArrayRef(NewOps).drop_front(),
+                          Phi->getName() + ".sroa.gep", IsInBounds);
+      }
       NewPhi->addIncoming(NewGEP, BB);
     }
 
@@ -4908,7 +4970,8 @@ AllocaInst *SROA::rewritePartition(AllocaInst &AI, AllocaSlices &AS,
     NewAI = new AllocaInst(
         SliceTy, AI.getAddressSpace(), nullptr,
         IsUnconstrained ? DL.getPrefTypeAlign(SliceTy) : Alignment,
-        AI.getName() + ".sroa." + Twine(P.begin() - AS.begin()), &AI);
+        AI.getName() + ".sroa." + Twine(P.begin() - AS.begin()),
+        AI.getIterator());
     // Copy the old AI debug location over to the new one.
     NewAI->setDebugLoc(AI.getDebugLoc());
     ++NumNewAllocas;

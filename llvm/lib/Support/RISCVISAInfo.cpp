@@ -78,7 +78,11 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"ss", {1, 12}}, // SIFIVE
     {"ssaia", {1, 0}},
     {"ssccptr", {1, 0}},
+<<<<<<< HEAD
     {"sscofpmf", {1, 0}}, // SIFIVE
+=======
+    {"sscofpmf", {1, 0}},
+>>>>>>> abfac56
     {"sscounterenw", {1, 0}},
     {"ssstateen", {1, 0}},
     {"ssstrict", {1, 0}},
@@ -132,6 +136,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
 
     {"za128rs", {1, 0}},
     {"za64rs", {1, 0}},
+    {"zacas", {1, 0}},
     {"zawrs", {1, 0}},
 
     {"zba", {1, 0}},
@@ -253,7 +258,6 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
 
     {"zaamo", {0, 2}},
     {"zabha", {1, 0}},
-    {"zacas", {1, 0}},
     {"zalasr", {0, 1}},
     {"zalrsc", {0, 2}},
 
@@ -674,6 +678,17 @@ std::vector<std::string> RISCVISAInfo::toFeatures(bool AddAllExtensions,
   return Features;
 }
 
+static Error getStringErrorForInvalidExt(std::string_view ExtName) {
+  if (ExtName.size() == 1) {
+    return createStringError(errc::invalid_argument,
+                             "unsupported standard user-level extension '" +
+                                 ExtName + "'");
+  }
+  return createStringError(errc::invalid_argument,
+                           "unsupported " + getExtensionTypeDesc(ExtName) +
+                               " '" + ExtName + "'");
+}
+
 // Extensions may have a version number, and may be separated by
 // an underscore '_' e.g.: rv32i2_m2.
 // Version number is divided into major and minor version numbers,
@@ -799,7 +814,18 @@ static Error getExtensionVersion(StringRef Ext, StringRef In, unsigned &Major,
   if (RISCVISAInfo::isSupportedExtension(Ext, Major, Minor))
     return Error::success();
 
+<<<<<<< HEAD
   return getUnsupportedError();
+=======
+  if (!RISCVISAInfo::isSupportedExtension(Ext))
+    return getStringErrorForInvalidExt(Ext);
+
+  std::string Error = "unsupported version number " + std::string(MajorStr);
+  if (!MinorStr.empty())
+    Error += "." + MinorStr.str();
+  Error += " for extension '" + Ext.str() + "'";
+  return createStringError(errc::invalid_argument, Error);
+>>>>>>> abfac56
 }
 
 llvm::Expected<std::unique_ptr<RISCVISAInfo>>
@@ -1154,16 +1180,8 @@ RISCVISAInfo::parseArchString(StringRef Arch, bool EnableExperimentalExtension,
     const std::string &ExtName = SeenExtAndVers.first;
     RISCVISAInfo::ExtensionVersion ExtVers = SeenExtAndVers.second;
 
-    if (!RISCVISAInfo::isSupportedExtension(ExtName)) {
-      if (ExtName.size() == 1) {
-        return createStringError(errc::invalid_argument,
-                                 "unsupported standard user-level extension '" +
-                                     ExtName + "'");
-      }
-      return createStringError(errc::invalid_argument,
-                               "unsupported " + getExtensionTypeDesc(ExtName) +
-                                   " '" + ExtName + "'");
-    }
+    if (!RISCVISAInfo::isSupportedExtension(ExtName))
+      return getStringErrorForInvalidExt(ExtName);
     ISAInfo->addExtension(ExtName, ExtVers);
   }
 

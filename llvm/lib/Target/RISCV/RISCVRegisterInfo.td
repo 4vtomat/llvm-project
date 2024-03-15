@@ -532,6 +532,7 @@ def VR : VReg<!listconcat(VM1VTs, VMaskVTs),
               (add (sequence "V%u", 8, 31),
                    (sequence "V%u", 7, 0)), 1>;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def VRNoV0 : VReg<!listconcat(VM1VTs, VMaskVTs), (sub VR, V0), 1> {
   let AltOrders = [(sequence "V%u", 1, 31)];
@@ -540,10 +541,14 @@ def VRNoV0 : VReg<!listconcat(VM1VTs, VMaskVTs), (sub VR, V0), 1> {
   }];
 }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+def VRNoV0 : VReg<!listconcat(VM1VTs, VMaskVTs), (sub VR, V0), 1>;
+>>>>>>> abfac56
 
 def VRM2 : VReg<VM2VTs, (add (sequence "V%uM2", 8, 31, 2),
                              (sequence "V%uM2", 6, 0, 2)), 2>;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def VRM2NoV0 : VReg<VM2VTs, (sub VRM2, V0M2), 2> {
   let AltOrders = [(sequence "V%uM2", 2, 31, 2)];
@@ -552,10 +557,14 @@ def VRM2NoV0 : VReg<VM2VTs, (sub VRM2, V0M2), 2> {
   }];
 }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+def VRM2NoV0 : VReg<VM2VTs, (sub VRM2, V0M2), 2>;
+>>>>>>> abfac56
 
 def VRM4 : VReg<VM4VTs, (add V8M4, V12M4, V16M4, V20M4,
                              V24M4, V28M4, V4M4, V0M4), 4>;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def VRM4NoV0 : VReg<VM4VTs, (sub VRM4, V0M4), 4> {
   let AltOrders = [(add V4M4, V8M4, V12M4, V16M4, V20M4, V24M4, V28M4)];
@@ -564,6 +573,9 @@ def VRM4NoV0 : VReg<VM4VTs, (sub VRM4, V0M4), 4> {
   }];
 }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+def VRM4NoV0 : VReg<VM4VTs, (sub VRM4, V0M4), 4>;
+>>>>>>> abfac56
 
 def VRM8 : VReg<VM8VTs, (add V8M8, V16M8, V24M8, V0M8), 8>;
 
@@ -622,9 +634,7 @@ def GPRPair : RegisterClass<"RISCV", [XLenPairFVT], 64, (add
 )>;
 
 // The register class is added for inline assembly for vector mask types.
-def VM : VReg<VMaskVTs,
-           (add (sequence "V%u", 8, 31),
-                (sequence "V%u", 0, 7)), 1>;
+def VM : VReg<VMaskVTs, (add VR), 1>;
 
 foreach m = LMULList in {
   foreach nf = NFList<m>.L in {

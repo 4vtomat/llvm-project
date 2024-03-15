@@ -33,6 +33,7 @@
 
 using namespace llvm;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<bool> DisableCostPerUse("riscv-disable-cost-per-use",
                                        cl::init(false), cl::Hidden);
@@ -41,6 +42,10 @@ static cl::opt<bool>
                                 cl::desc("Enable RVV overlap constraints."),
                                 cl::init(true), cl::Hidden);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+static cl::opt<bool> DisableCostPerUse("riscv-disable-cost-per-use",
+                                       cl::init(false), cl::Hidden);
+>>>>>>> abfac56
 static cl::opt<bool>
     DisableRegAllocHints("riscv-disable-regalloc-hints", cl::Hidden,
                          cl::init(false),
@@ -723,11 +728,18 @@ void RISCVRegisterInfo::getOffsetOpcodes(const StackOffset &Offset,
 
 unsigned
 RISCVRegisterInfo::getRegisterCostTableIndex(const MachineFunction &MF) const {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (DisableCostPerUse)
     return 0;
 #endif
   return MF.getSubtarget<RISCVSubtarget>().hasStdExtCOrZca() ? 1 : 0;
+=======
+  return MF.getSubtarget<RISCVSubtarget>().hasStdExtCOrZca() &&
+                 !DisableCostPerUse
+             ? 1
+             : 0;
+>>>>>>> abfac56
 }
 
 // Add two address hints to improve chances of being able to use a compressed

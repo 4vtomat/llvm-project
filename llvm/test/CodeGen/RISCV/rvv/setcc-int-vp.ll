@@ -1173,7 +1173,11 @@ define <vscale x 128 x i1> @icmp_eq_vv_nxv128i8(<vscale x 128 x i8> %va, <vscale
 ; CHECK-NEXT:    addi a2, a2, -1
 ; CHECK-NEXT:    and a0, a2, a0
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
+<<<<<<< HEAD
 ; CHECK-NEXT:    vmseq.vv v16, v16, v24, v0.t
+=======
+; CHECK-NEXT:    vmseq.vv v7, v16, v8, v0.t
+>>>>>>> abfac56
 ; CHECK-NEXT:    bltu a3, a1, .LBB96_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    mv a3, a1
@@ -1182,8 +1186,14 @@ define <vscale x 128 x i1> @icmp_eq_vv_nxv128i8(<vscale x 128 x i8> %va, <vscale
 ; CHECK-NEXT:    vmv1r.v v0, v7
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
+<<<<<<< HEAD
 ; CHECK-NEXT:    vmseq.vv v0, v24, v8, v0.t
 ; CHECK-NEXT:    vmv1r.v v8, v16
+=======
+; CHECK-NEXT:    vmseq.vv v16, v8, v24, v0.t
+; CHECK-NEXT:    vmv1r.v v0, v16
+; CHECK-NEXT:    vmv1r.v v8, v7
+>>>>>>> abfac56
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0
@@ -2338,7 +2348,11 @@ define <vscale x 32 x i1> @icmp_eq_vv_nxv32i32(<vscale x 32 x i32> %va, <vscale 
 ; CHECK-NEXT:    vs8r.v v0, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    vslidedown.vx v0, v24, a1
 ; CHECK-NEXT:    vsetvli zero, a4, e32, m8, ta, ma
+<<<<<<< HEAD
 ; CHECK-NEXT:    vmseq.vv v16, v16, v8, v0.t
+=======
+; CHECK-NEXT:    vmseq.vv v7, v16, v8, v0.t
+>>>>>>> abfac56
 ; CHECK-NEXT:    bltu a2, a3, .LBB189_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    mv a2, a3
@@ -2355,7 +2369,12 @@ define <vscale x 32 x i1> @icmp_eq_vv_nxv32i32(<vscale x 32 x i32> %va, <vscale 
 ; CHECK-NEXT:    vmseq.vv v0, v8, v24, v0.t
 ; CHECK-NEXT:    add a0, a1, a1
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, ta, ma
+<<<<<<< HEAD
 ; CHECK-NEXT:    vslideup.vx v0, v16, a1
+=======
+; CHECK-NEXT:    vslideup.vx v16, v7, a1
+; CHECK-NEXT:    vmv1r.v v0, v16
+>>>>>>> abfac56
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 4
 ; CHECK-NEXT:    add sp, sp, a0
