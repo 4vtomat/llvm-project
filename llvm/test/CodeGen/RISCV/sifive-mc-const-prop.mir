@@ -124,6 +124,7 @@ body:             |
     ; RV64: liveins: $x6, $x13
     ; RV64-NEXT: {{  $}}
     ; RV64-NEXT: renamable $x13 = ORI killed $x6, 1
+    ;
     ; RV32-LABEL: name: case3_fold2
     ; RV32: liveins: $x6, $x13
     ; RV32-NEXT: {{  $}}
@@ -230,14 +231,14 @@ body:             |
     ; RV64: liveins: $x10
     ; RV64-NEXT: {{  $}}
     ; RV64-NEXT: renamable $x12 = ADDI $x0, 1
-    ; RV64-NEXT: INLINEASM &"", 1 /* sideeffect attdialect */
+    ; RV64-NEXT: INLINEASM &"", 1 /* sideeffect attdialect */, 10 /* regdef */, implicit-def $x12
     ; RV64-NEXT: renamable $x10 = XOR killed renamable $x10, killed renamable $x12
     ; RV32-LABEL: name: inline_asm
     ; RV32: liveins: $x10
     ; RV32-NEXT: {{  $}}
     ; RV32-NEXT: renamable $x12 = ADDI $x0, 1
-    ; RV32-NEXT: INLINEASM &"", 1 /* sideeffect attdialect */
+    ; RV32-NEXT: INLINEASM &"", 1 /* sideeffect attdialect */, 10 /* regdef */, implicit-def $x12
     ; RV32-NEXT: renamable $x10 = XOR killed renamable $x10, killed renamable $x12
     renamable $x12 = ADDI $x0, 1
-    INLINEASM &"", 1
+    INLINEASM &"", 1, 10, implicit-def $x12
     renamable $x10 = XOR killed renamable $x10, killed renamable $x12
