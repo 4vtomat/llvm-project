@@ -16,6 +16,9 @@
 #include "GISel/RISCVRegisterBankInfo.h"
 #include "RISCV.h"
 #include "RISCVFrameLowering.h"
+#if SIFIVE_CUSTOMIZATION
+#include "SiFive_RISCVMaskInstDAGMutation.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "RISCVTargetMachine.h"
 #include "llvm/CodeGen/MacroFusion.h"
 #include "llvm/CodeGen/MachineScheduler.h"

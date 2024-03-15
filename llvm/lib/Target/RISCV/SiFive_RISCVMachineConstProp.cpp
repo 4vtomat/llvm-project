@@ -153,12 +153,10 @@ static bool tryFoldBinOp(const TargetInstrInfo *TII, MachineInstr &Root) {
               }))
             break;
 
-          // TODO: Handle inline assembly
-          if (MI.isInlineAsm())
-            break;
-
-          if (MI.getOperand(0).isReg())
-            DefRegs.insert(MI.getOperand(0).getReg());
+          for_each(MI.operands(), [&](const MachineOperand &Op) {
+            if (Op.isReg() && Op.isDef())
+              DefRegs.insert(Op.getReg());
+          });
         }
         DefRegs.clear();
       }

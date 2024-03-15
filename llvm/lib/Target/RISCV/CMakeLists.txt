@@ -48,6 +48,7 @@ add_llvm_target(RISCVCodeGen
   SiFive_RISCVMachineConstProp.cpp
   SiFive_RISCVWidenReductionPHI.cpp
   RISCVMachineFunctionInfo.cpp
+  SiFive_RISCVMaskInstDAGMutation.cpp
   RISCVMergeBaseOffset.cpp
   RISCVOptWInstrs.cpp
   SiFive_RISCVPeephole.cpp
@@ -63,6 +64,7 @@ add_llvm_target(RISCVCodeGen
   SiFive_RISCVTypePromotion.cpp
   SiFive_RISCVVLOptimizer.cpp
   SiFive_RISCVLoopIdiomRecognize.cpp
+  SiFive_RISCVHazardRecognizer.cpp
   GISel/RISCVCallLowering.cpp
   GISel/RISCVInstructionSelector.cpp
   GISel/RISCVLegalizerInfo.cpp

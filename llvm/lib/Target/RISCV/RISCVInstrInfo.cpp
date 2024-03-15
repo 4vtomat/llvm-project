@@ -16,6 +16,9 @@
 #include "RISCVMachineFunctionInfo.h"
 #include "RISCVSubtarget.h"
 #include "RISCVTargetMachine.h"
+#if SIFIVE_CUSTOMIZATION
+#include "SiFive_RISCVHazardRecognizer.h"
+#endif  // SIFIVE_CUSTOMIZATION
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/Analysis/MemoryLocation.h"
@@ -3465,6 +3468,19 @@ RISCVInstrInfo::getSerializableMachineMemOperandTargetFlags() const {
        {MONontemporalBit1, "riscv-nontemporal-domain-bit-1"}};
   return ArrayRef(TargetFlags);
 }
+
+#if SIFIVE_CUSTOMIZATION
+ScheduleHazardRecognizer *
+RISCVInstrInfo::CreateTargetMIHazardRecognizer(const InstrItineraryData *II,
+                                               const ScheduleDAGMI *DAG) const {
+
+  const RISCVSubtarget *ST = static_cast<const RISCVSubtarget *>(&STI);
+  if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+    return new RISCVMaskInstrHazardRecognizer();
+
+  return TargetInstrInfo::CreateTargetMIHazardRecognizer(II, DAG);
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 // Returns true if this is the sext.w pattern, addiw rd, rs1, 0.
 bool RISCV::isSEXT_W(const MachineInstr &MI) {
