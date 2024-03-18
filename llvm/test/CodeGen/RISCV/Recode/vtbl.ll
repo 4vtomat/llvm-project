@@ -651,12 +651,9 @@ define void @vtbx1_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
 ; CHECK-NEXT:    vrgather.vv v10, v8, v9
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vmsgtu.vi v0, v9, 15
-; CHECK-NEXT:    vmsgtu.vi v8, v9, 7
-; CHECK-NEXT:    vmerge.vim v9, v10, 0, v0
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vle8.v v9, (a0), v0.t
-; CHECK-NEXT:    vse8.v v9, (a3)
+; CHECK-NEXT:    vmsgtu.vi v0, v9, 7
+; CHECK-NEXT:    vle8.v v10, (a0), v0.t
+; CHECK-NEXT:    vse8.v v10, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -682,12 +679,9 @@ define void @vtbx1_u8(ptr nocapture noundef readonly %in_0, ptr nocapture nounde
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
 ; CHECK-NEXT:    vrgather.vv v10, v8, v9
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
-; CHECK-NEXT:    vmsgtu.vi v0, v9, 15
-; CHECK-NEXT:    vmsgtu.vi v8, v9, 7
-; CHECK-NEXT:    vmerge.vim v9, v10, 0, v0
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vle8.v v9, (a0), v0.t
-; CHECK-NEXT:    vse8.v v9, (a3)
+; CHECK-NEXT:    vmsgtu.vi v0, v9, 7
+; CHECK-NEXT:    vle8.v v10, (a0), v0.t
+; CHECK-NEXT:    vse8.v v10, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -718,15 +712,11 @@ define void @vtbx3_s8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, p
 ; CHECK-NEXT:    vslideup.vi v8, v10, 16
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, ma
 ; CHECK-NEXT:    vrgather.vv v10, v8, v12
-; CHECK-NEXT:    li a1, 31
+; CHECK-NEXT:    li a1, 23
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
 ; CHECK-NEXT:    vmsgtu.vx v0, v12, a1
-; CHECK-NEXT:    li a1, 23
-; CHECK-NEXT:    vmsgtu.vx v8, v12, a1
-; CHECK-NEXT:    vmerge.vim v9, v10, 0, v0
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vle8.v v9, (a0), v0.t
-; CHECK-NEXT:    vse8.v v9, (a3)
+; CHECK-NEXT:    vle8.v v10, (a0), v0.t
+; CHECK-NEXT:    vse8.v v10, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1
@@ -761,15 +751,11 @@ define void @vtbx3_u8(ptr nocapture noundef readonly %in_0, ptr noundef %in_1, p
 ; CHECK-NEXT:    vslideup.vi v8, v10, 16
 ; CHECK-NEXT:    vsetivli zero, 8, e8, m2, ta, ma
 ; CHECK-NEXT:    vrgather.vv v10, v8, v12
-; CHECK-NEXT:    li a1, 31
+; CHECK-NEXT:    li a1, 23
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
 ; CHECK-NEXT:    vmsgtu.vx v0, v12, a1
-; CHECK-NEXT:    li a1, 23
-; CHECK-NEXT:    vmsgtu.vx v8, v12, a1
-; CHECK-NEXT:    vmerge.vim v9, v10, 0, v0
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vle8.v v9, (a0), v0.t
-; CHECK-NEXT:    vse8.v v9, (a3)
+; CHECK-NEXT:    vle8.v v10, (a0), v0.t
+; CHECK-NEXT:    vse8.v v10, (a3)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i8>, ptr %in_0, align 1

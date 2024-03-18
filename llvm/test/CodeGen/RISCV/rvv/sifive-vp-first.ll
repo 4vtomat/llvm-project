@@ -228,8 +228,8 @@ define i32 @vp_first_nxv128i1(<vscale x 128 x i1> %m, <vscale x 128 x i1> %op, i
 ; RV32-NEXT:    vfirst.m a1, v9, v0.t
 ; RV32-NEXT:    bgez a1, .LBB16_4
 ; RV32-NEXT:  # %bb.3:
-; RV32-NEXT:    add a0, a0, a2
 ; RV32-NEXT:    srai a1, a2, 31
+; RV32-NEXT:    add a0, a0, a2
 ; RV32-NEXT:    or a1, a1, a0
 ; RV32-NEXT:  .LBB16_4: # %entry
 ; RV32-NEXT:    mv a0, a1
@@ -257,8 +257,8 @@ define i32 @vp_first_nxv128i1(<vscale x 128 x i1> %m, <vscale x 128 x i1> %op, i
 ; RV64-NEXT:    vfirst.m a1, v9, v0.t
 ; RV64-NEXT:    bgez a1, .LBB16_4
 ; RV64-NEXT:  # %bb.3:
-; RV64-NEXT:    add a0, a0, a2
 ; RV64-NEXT:    srai a1, a2, 63
+; RV64-NEXT:    add a0, a0, a2
 ; RV64-NEXT:    or a1, a1, a0
 ; RV64-NEXT:  .LBB16_4: # %entry
 ; RV64-NEXT:    mv a0, a1
@@ -288,9 +288,9 @@ define i32 @vp_first_nxv128i1_unmasked(<vscale x 128 x i1> %op, i32 zeroext %evl
 ; RV32-NEXT:    and a0, a0, a1
 ; RV32-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; RV32-NEXT:    vfirst.m a0, v8
-; RV32-NEXT:    add a2, a2, a0
-; RV32-NEXT:    srai a0, a0, 31
-; RV32-NEXT:    or a1, a0, a2
+; RV32-NEXT:    srai a1, a0, 31
+; RV32-NEXT:    add a0, a2, a0
+; RV32-NEXT:    or a1, a1, a0
 ; RV32-NEXT:  .LBB17_4: # %entry
 ; RV32-NEXT:    mv a0, a1
 ; RV32-NEXT:    ret
@@ -314,9 +314,9 @@ define i32 @vp_first_nxv128i1_unmasked(<vscale x 128 x i1> %op, i32 zeroext %evl
 ; RV64-NEXT:    and a0, a0, a1
 ; RV64-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; RV64-NEXT:    vfirst.m a0, v8
-; RV64-NEXT:    add a2, a2, a0
-; RV64-NEXT:    srai a0, a0, 63
-; RV64-NEXT:    or a1, a0, a2
+; RV64-NEXT:    srai a1, a0, 63
+; RV64-NEXT:    add a0, a2, a0
+; RV64-NEXT:    or a1, a1, a0
 ; RV64-NEXT:  .LBB17_4: # %entry
 ; RV64-NEXT:    mv a0, a1
 ; RV64-NEXT:    ret

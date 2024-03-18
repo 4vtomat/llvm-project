@@ -142,26 +142,6 @@ define <16 x i32> @concat_4xv4i32(<4 x i32> %a, <4 x i32> %b, <4 x i32> %c, <4 x
 define <16 x i32> @concat_8xv2i32(<2 x i32> %a, <2 x i32> %b, <2 x i32> %c, <2 x i32> %d, <2 x i32> %e, <2 x i32> %f, <2 x i32> %g, <2 x i32> %h) {
 ; CHECK-LABEL: concat_8xv2i32:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-NEXT:    vmv1r.v v16, v15
-; CHECK-NEXT:    vmv1r.v v20, v14
-; CHECK-NEXT:    vmv1r.v v24, v13
-; CHECK-NEXT:    vmv1r.v v28, v11
-; CHECK-NEXT:    vmv1r.v v4, v10
-; CHECK-NEXT:    vmv1r.v v0, v9
-; CHECK-NEXT:    vsetivli zero, 4, e32, m4, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v0, 2
-; CHECK-NEXT:    vsetivli zero, 6, e32, m4, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v4, 4
-; CHECK-NEXT:    vsetivli zero, 8, e32, m4, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v28, 6
-; CHECK-NEXT:    vsetivli zero, 10, e32, m4, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v12, 8
-; CHECK-NEXT:    vsetivli zero, 12, e32, m4, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v24, 10
-; CHECK-NEXT:    vsetivli zero, 14, e32, m4, tu, ma
-; CHECK-NEXT:    vslideup.vi v8, v20, 12
-=======
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vslideup.vi v14, v15, 2
 ; CHECK-NEXT:    vslideup.vi v12, v13, 2
@@ -172,7 +152,6 @@ define <16 x i32> @concat_8xv2i32(<2 x i32> %a, <2 x i32> %b, <2 x i32> %c, <2 x
 ; CHECK-NEXT:    vslideup.vi v8, v9, 2
 ; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-NEXT:    vslideup.vi v8, v10, 4
->>>>>>> abfac56
 ; CHECK-NEXT:    vsetivli zero, 16, e32, m4, ta, ma
 ; CHECK-NEXT:    vslideup.vi v8, v12, 8
 ; CHECK-NEXT:    ret
@@ -239,39 +218,9 @@ define <32 x i32> @concat_4xv8i32(<8 x i32> %a, <8 x i32> %b, <8 x i32> %c, <8 x
 define <32 x i32> @concat_8xv4i32(<4 x i32> %a, <4 x i32> %b, <4 x i32> %c, <4 x i32> %d, <4 x i32> %e, <4 x i32> %f, <4 x i32> %g, <4 x i32> %h) {
 ; VLA-LABEL: concat_8xv4i32:
 ; VLA:       # %bb.0:
-<<<<<<< HEAD
-; VLA-NEXT:    addi sp, sp, -16
-; VLA-NEXT:    .cfi_def_cfa_offset 16
-; VLA-NEXT:    csrr a0, vlenb
-; VLA-NEXT:    slli a0, a0, 5
-; VLA-NEXT:    sub sp, sp, a0
-; VLA-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x20, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 32 * vlenb
-; VLA-NEXT:    vmv1r.v v16, v15
-; VLA-NEXT:    csrr a0, vlenb
-; VLA-NEXT:    slli a0, a0, 3
-; VLA-NEXT:    mv a1, a0
-; VLA-NEXT:    slli a0, a0, 1
-; VLA-NEXT:    add a0, a0, a1
-; VLA-NEXT:    add a0, sp, a0
-; VLA-NEXT:    addi a0, a0, 16
-; VLA-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; VLA-NEXT:    vmv1r.v v16, v14
-; VLA-NEXT:    csrr a0, vlenb
-; VLA-NEXT:    slli a0, a0, 4
-; VLA-NEXT:    add a0, sp, a0
-; VLA-NEXT:    addi a0, a0, 16
-; VLA-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; VLA-NEXT:    vmv1r.v v16, v13
-; VLA-NEXT:    csrr a0, vlenb
-; VLA-NEXT:    slli a0, a0, 3
-; VLA-NEXT:    add a0, sp, a0
-; VLA-NEXT:    addi a0, a0, 16
-; VLA-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-=======
 ; VLA-NEXT:    vmv1r.v v18, v15
 ; VLA-NEXT:    vmv1r.v v20, v14
 ; VLA-NEXT:    vmv1r.v v22, v13
->>>>>>> abfac56
 ; VLA-NEXT:    vmv1r.v v16, v12
 ; VLA-NEXT:    vmv1r.v v14, v11
 ; VLA-NEXT:    vmv1r.v v12, v10
@@ -288,23 +237,7 @@ define <32 x i32> @concat_8xv4i32(<4 x i32> %a, <4 x i32> %b, <4 x i32> %c, <4 x
 ; VLA-NEXT:    vslideup.vi v8, v12, 8
 ; VLA-NEXT:    li a0, 32
 ; VLA-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
-<<<<<<< HEAD
-; VLA-NEXT:    csrr a0, vlenb
-; VLA-NEXT:    slli a0, a0, 3
-; VLA-NEXT:    mv a1, a0
-; VLA-NEXT:    slli a0, a0, 1
-; VLA-NEXT:    add a0, a0, a1
-; VLA-NEXT:    add a0, sp, a0
-; VLA-NEXT:    addi a0, a0, 16
-; VLA-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-; VLA-NEXT:    vslideup.vi v8, v16, 28
-; VLA-NEXT:    csrr a0, vlenb
-; VLA-NEXT:    slli a0, a0, 5
-; VLA-NEXT:    add sp, sp, a0
-; VLA-NEXT:    addi sp, sp, 16
-=======
 ; VLA-NEXT:    vslideup.vi v8, v16, 16
->>>>>>> abfac56
 ; VLA-NEXT:    ret
 ;
 ; VLS-LABEL: concat_8xv4i32:

@@ -809,7 +809,6 @@ define i64 @select_sll(i64 %A, i64 %B, i64 %C, i1 zeroext %cond) {
 ;
 ; RV32SFB-LABEL: select_sll:
 ; RV32SFB:       # %bb.0: # %entry
-<<<<<<< HEAD
 ; RV32SFB-NEXT:    sll a7, a1, a2
 ; RV32SFB-NEXT:    not a1, a2
 ; RV32SFB-NEXT:    srli a3, a0, 1
@@ -820,38 +819,18 @@ define i64 @select_sll(i64 %A, i64 %B, i64 %C, i1 zeroext %cond) {
 ; RV32SFB-NEXT:    bgez a2, .LBB20_2
 ; RV32SFB-NEXT:  # %bb.1: # %entry
 ; RV32SFB-NEXT:    or a1, a7, a3
-=======
-; RV32SFB-NEXT:    sll a3, a0, a2
-; RV32SFB-NEXT:    not a7, a2
-; RV32SFB-NEXT:    srli a0, a0, 1
-; RV32SFB-NEXT:    sll t0, a1, a2
-; RV32SFB-NEXT:    addi a2, a2, -32
-; RV32SFB-NEXT:    srl a0, a0, a7
-; RV32SFB-NEXT:    mv a1, a3
-; RV32SFB-NEXT:    bltz a2, .LBB20_2
-; RV32SFB-NEXT:  # %bb.1: # %entry
-; RV32SFB-NEXT:    li a3, 0
->>>>>>> abfac56
 ; RV32SFB-NEXT:  .LBB20_2: # %entry
-; RV32SFB-NEXT:    bgez a2, .LBB20_4
+; RV32SFB-NEXT:    bltz a2, .LBB20_4
 ; RV32SFB-NEXT:  # %bb.3: # %entry
-<<<<<<< HEAD
 ; RV32SFB-NEXT:    li a0, 0
-=======
-; RV32SFB-NEXT:    or a1, t0, a0
->>>>>>> abfac56
 ; RV32SFB-NEXT:  .LBB20_4: # %entry
 ; RV32SFB-NEXT:    beqz a6, .LBB20_6
 ; RV32SFB-NEXT:  # %bb.5: # %entry
-; RV32SFB-NEXT:    mv a3, a4
+; RV32SFB-NEXT:    mv a1, a5
 ; RV32SFB-NEXT:  .LBB20_6: # %entry
 ; RV32SFB-NEXT:    beqz a6, .LBB20_8
 ; RV32SFB-NEXT:  # %bb.7: # %entry
-<<<<<<< HEAD
 ; RV32SFB-NEXT:    mv a0, a4
-=======
-; RV32SFB-NEXT:    mv a1, a5
->>>>>>> abfac56
 ; RV32SFB-NEXT:  .LBB20_8: # %entry
 ; RV32SFB-NEXT:    ret
 entry:
@@ -890,7 +869,6 @@ define i64 @select_srl(i64 %A, i64 %B, i64 %C, i1 zeroext %cond) {
 ;
 ; RV32SFB-LABEL: select_srl:
 ; RV32SFB:       # %bb.0: # %entry
-<<<<<<< HEAD
 ; RV32SFB-NEXT:    srl a7, a0, a2
 ; RV32SFB-NEXT:    not a0, a2
 ; RV32SFB-NEXT:    slli a3, a1, 1
@@ -901,38 +879,18 @@ define i64 @select_srl(i64 %A, i64 %B, i64 %C, i1 zeroext %cond) {
 ; RV32SFB-NEXT:    bgez a2, .LBB21_2
 ; RV32SFB-NEXT:  # %bb.1: # %entry
 ; RV32SFB-NEXT:    or a0, a7, a3
-=======
-; RV32SFB-NEXT:    srl a3, a1, a2
-; RV32SFB-NEXT:    not a7, a2
-; RV32SFB-NEXT:    slli a1, a1, 1
-; RV32SFB-NEXT:    srl t0, a0, a2
-; RV32SFB-NEXT:    addi a2, a2, -32
-; RV32SFB-NEXT:    sll a1, a1, a7
-; RV32SFB-NEXT:    mv a0, a3
-; RV32SFB-NEXT:    bltz a2, .LBB21_2
-; RV32SFB-NEXT:  # %bb.1: # %entry
-; RV32SFB-NEXT:    li a3, 0
->>>>>>> abfac56
 ; RV32SFB-NEXT:  .LBB21_2: # %entry
-; RV32SFB-NEXT:    bgez a2, .LBB21_4
+; RV32SFB-NEXT:    bltz a2, .LBB21_4
 ; RV32SFB-NEXT:  # %bb.3: # %entry
-<<<<<<< HEAD
 ; RV32SFB-NEXT:    li a1, 0
-=======
-; RV32SFB-NEXT:    or a0, t0, a1
->>>>>>> abfac56
 ; RV32SFB-NEXT:  .LBB21_4: # %entry
 ; RV32SFB-NEXT:    beqz a6, .LBB21_6
 ; RV32SFB-NEXT:  # %bb.5: # %entry
-; RV32SFB-NEXT:    mv a3, a5
+; RV32SFB-NEXT:    mv a0, a4
 ; RV32SFB-NEXT:  .LBB21_6: # %entry
 ; RV32SFB-NEXT:    beqz a6, .LBB21_8
 ; RV32SFB-NEXT:  # %bb.7: # %entry
-<<<<<<< HEAD
 ; RV32SFB-NEXT:    mv a1, a5
-=======
-; RV32SFB-NEXT:    mv a0, a4
->>>>>>> abfac56
 ; RV32SFB-NEXT:  .LBB21_8: # %entry
 ; RV32SFB-NEXT:    ret
 entry:
@@ -976,14 +934,7 @@ define i64 @select_sra(i64 %A, i64 %B, i64 %C, i1 zeroext %cond) {
 ; RV32SFB-NEXT:    slli a3, a1, 1
 ; RV32SFB-NEXT:    sll t0, a3, a0
 ; RV32SFB-NEXT:    sra a3, a1, a2
-<<<<<<< HEAD
-=======
-; RV32SFB-NEXT:    not a7, a2
-; RV32SFB-NEXT:    slli t0, a1, 1
-; RV32SFB-NEXT:    srl t1, a0, a2
->>>>>>> abfac56
 ; RV32SFB-NEXT:    addi a2, a2, -32
-; RV32SFB-NEXT:    sll a7, t0, a7
 ; RV32SFB-NEXT:    mv a0, a3
 ; RV32SFB-NEXT:    bltz a2, .LBB22_2
 ; RV32SFB-NEXT:  # %bb.1: # %entry
@@ -991,11 +942,7 @@ define i64 @select_sra(i64 %A, i64 %B, i64 %C, i1 zeroext %cond) {
 ; RV32SFB-NEXT:  .LBB22_2: # %entry
 ; RV32SFB-NEXT:    bgez a2, .LBB22_4
 ; RV32SFB-NEXT:  # %bb.3: # %entry
-<<<<<<< HEAD
 ; RV32SFB-NEXT:    or a0, a7, t0
-=======
-; RV32SFB-NEXT:    or a0, t1, a7
->>>>>>> abfac56
 ; RV32SFB-NEXT:  .LBB22_4: # %entry
 ; RV32SFB-NEXT:    beqz a6, .LBB22_6
 ; RV32SFB-NEXT:  # %bb.5: # %entry
@@ -1139,11 +1086,11 @@ define i64 @select_andi(i64 %A, i64 %C, i1 zeroext %cond) {
 ; RV32SFB-NEXT:  # %bb.1: # %entry
 ; RV32SFB-NEXT:    andi a2, a0, 567
 ; RV32SFB-NEXT:  .LBB25_2: # %entry
-; RV32SFB-NEXT:    mv a0, a2
 ; RV32SFB-NEXT:    bnez a4, .LBB25_4
 ; RV32SFB-NEXT:  # %bb.3: # %entry
 ; RV32SFB-NEXT:    li a1, 0
 ; RV32SFB-NEXT:  .LBB25_4: # %entry
+; RV32SFB-NEXT:    mv a0, a2
 ; RV32SFB-NEXT:    ret
 entry:
  %0 = and i64 %A, 567

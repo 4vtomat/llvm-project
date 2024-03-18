@@ -4,9 +4,7 @@
 define i8 @or_load_combine(ptr %p) {
 ; CHECK-LABEL: or_load_combine:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
-; CHECK-NEXT:    vle8.v v8, (a0)
-; CHECK-NEXT:    vmv.x.s a0, v8
+; CHECK-NEXT:    lbu a0, 0(a0)
 ; CHECK-NEXT:    ori a0, a0, 1
 ; CHECK-NEXT:    ret
   %load = load <2 x i8>, ptr %p
