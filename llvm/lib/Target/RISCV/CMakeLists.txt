@@ -39,6 +39,9 @@ add_llvm_target(RISCVCodeGen
   RISCVGatherScatterLowering.cpp
   SiFive_RISCVIndirectBranchTracking.cpp
   RISCVInsertVSETVLI.cpp
+#if SIFIVE_CUSTOMIZATION
+  SiFive_RISCVSpillRewrite.cpp
+#endif // SIFIVE_CUSTOMIZATION
   RISCVInsertReadWriteCSR.cpp
   RISCVInsertWriteVXRM.cpp
   RISCVInstrInfo.cpp

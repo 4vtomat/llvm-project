@@ -158,9 +158,11 @@ static inline bool isTiedPseudo(uint64_t TSFlags) {
 static inline bool hasSEWOp(uint64_t TSFlags) {
   return TSFlags & HasSEWOpMask;
 }
+#if SIFIVE_CUSTOMIZATION
 static inline bool isWiden(uint64_t TSFlags) {
   return TSFlags & IsWidenMask;
 }
+#endif // SIFIVE_CUSTOMIZATION
 /// \returns true if there is a VL operand for the instruction.
 static inline bool hasVLOp(uint64_t TSFlags) {
   return TSFlags & HasVLOpMask;

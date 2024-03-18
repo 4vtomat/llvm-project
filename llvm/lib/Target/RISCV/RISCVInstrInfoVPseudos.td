@@ -6206,7 +6206,9 @@ foreach vti = AllIntegerVectors in {
 //===----------------------------------------------------------------------===//
 // 11.2. Vector Widening Integer Add/Subtract
 //===----------------------------------------------------------------------===//
+#ifdef SIFIVE_CUSTOMIZATION
 let IsWiden = 1 in {
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVWADDU : VPseudoVWALU_VV_VX<Commutable=1>;
 defm PseudoVWSUBU : VPseudoVWALU_VV_VX;
 defm PseudoVWADD  : VPseudoVWALU_VV_VX<Commutable=1>;
@@ -6297,7 +6299,9 @@ defm PseudoVREM  : VPseudoVDIV_VV_VX;
 //===----------------------------------------------------------------------===//
 // 11.12. Vector Widening Integer Multiply Instructions
 //===----------------------------------------------------------------------===//
+#ifdef SIFIVE_CUSTOMIZATION
 let IsWiden = 1 in {
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVWMUL   : VPseudoVWMUL_VV_VX<Commutable=1>;
 defm PseudoVWMULU  : VPseudoVWMUL_VV_VX<Commutable=1>;
 defm PseudoVWMULSU : VPseudoVWMUL_VV_VX;
@@ -6314,7 +6318,9 @@ defm PseudoVNMSUB : VPseudoVMAC_VV_VX_AAXA;
 //===----------------------------------------------------------------------===//
 // 11.14. Vector Widening Integer Multiply-Add Instructions
 //===----------------------------------------------------------------------===//
+#ifdef SIFIVE_CUSTOMIZATION
 let IsWiden = 1 in {
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVWMACCU  : VPseudoVWMAC_VV_VX<Commutable=1>;
 defm PseudoVWMACC   : VPseudoVWMAC_VV_VX<Commutable=1>;
 defm PseudoVWMACCSU : VPseudoVWMAC_VV_VX;
@@ -6414,7 +6420,9 @@ defm PseudoVFRSUB : VPseudoVALU_VF_RM;
 //===----------------------------------------------------------------------===//
 // 13.3. Vector Widening Floating-Point Add/Subtract Instructions
 //===----------------------------------------------------------------------===//
+#ifdef SIFIVE_CUSTOMIZATION
 let IsWiden = 1 in {
+#endif // SIFIVE_CUSTOMIZATION
 let mayRaiseFPException = true, hasSideEffects = 0, hasPostISelHook = 1 in {
 defm PseudoVFWADD : VPseudoVFWALU_VV_VF_RM;
 defm PseudoVFWSUB : VPseudoVFWALU_VV_VF_RM;
@@ -6435,7 +6443,9 @@ defm PseudoVFRDIV : VPseudoVFRDIV_VF_RM;
 //===----------------------------------------------------------------------===//
 // 13.5. Vector Widening Floating-Point Multiply
 //===----------------------------------------------------------------------===//
+#ifdef SIFIVE_CUSTOMIZATION
 let IsWiden = 1 in {
+#endif // SIFIVE_CUSTOMIZATION
 let mayRaiseFPException = true, hasSideEffects = 0 in {
 defm PseudoVFWMUL : VPseudoVWMUL_VV_VF_RM;
 }
@@ -6458,7 +6468,9 @@ defm PseudoVFNMSUB : VPseudoVMAC_VV_VF_AAXA_RM;
 //===----------------------------------------------------------------------===//
 // 13.7. Vector Widening Floating-Point Fused Multiply-Add Instructions
 //===----------------------------------------------------------------------===//
+#ifdef SIFIVE_CUSTOMIZATION
 let IsWiden = 1 in {
+#endif // SIFIVE_CUSTOMIZATION
 let mayRaiseFPException = true, hasSideEffects = 0, hasPostISelHook = 1 in {
 defm PseudoVFWMACC  : VPseudoVWMAC_VV_VF_RM;
 defm PseudoVFWNMACC : VPseudoVWMAC_VV_VF_RM;
@@ -6556,7 +6568,9 @@ defm PseudoVFCVT_RM_F_X  : VPseudoVCVTF_RM_V;
 //===----------------------------------------------------------------------===//
 // 13.18. Widening Floating-Point/Integer Type-Convert Instructions
 //===----------------------------------------------------------------------===//
+#ifdef SIFIVE_CUSTOMIZATION
 let IsWiden = 1 in {
+#endif // SIFIVE_CUSTOMIZATION
 let mayRaiseFPException = true in {
 let hasSideEffects = 0, hasPostISelHook = 1 in {
 defm PseudoVFWCVT_XU_F     : VPseudoVWCVTI_V_RM;
@@ -6625,7 +6639,9 @@ defm PseudoVREDMAX  : VPseudoVREDMINMAX_VS;
 //===----------------------------------------------------------------------===//
 // 14.2. Vector Widening Integer Reduction Instructions
 //===----------------------------------------------------------------------===//
+#ifdef SIFIVE_CUSTOMIZATION
 let IsWiden = 1 in {
+#endif // SIFIVE_CUSTOMIZATION
 let IsRVVWideningReduction = 1 in {
 defm PseudoVWREDSUMU   : VPseudoVWRED_VS;
 defm PseudoVWREDSUM    : VPseudoVWRED_VS;
@@ -6650,7 +6666,9 @@ defm PseudoVFREDMAX  : VPseudoVFREDMINMAX_VS;
 //===----------------------------------------------------------------------===//
 // 14.4. Vector Widening Floating-Point Reduction Instructions
 //===----------------------------------------------------------------------===//
+#ifdef SIFIVE_CUSTOMIZATION
 let IsWiden = 1 in {
+#endif // SIFIVE_CUSTOMIZATION
 let IsRVVWideningReduction = 1,
     hasSideEffects = 0,
     mayRaiseFPException = true in {

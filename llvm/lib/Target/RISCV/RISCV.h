@@ -80,6 +80,11 @@ FunctionPass *createRISCVInsertVSETVLIPass();
 void initializeRISCVInsertVSETVLIPass(PassRegistry &);
 extern char &RISCVInsertVSETVLIID;
 
+#if SIFIVE_CUSTOMIZATION
+FunctionPass *createRISCVSpillRewritePass();
+void initializeRISCVSpillRewritePass(PassRegistry &);
+#endif // SIFIVE_CUSTOMIZATION
+
 FunctionPass *createRISCVPostRAExpandPseudoPass();
 void initializeRISCVPostRAExpandPseudoPass(PassRegistry &);
 FunctionPass *createRISCVInsertReadWriteCSRPass();
