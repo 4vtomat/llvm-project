@@ -105,6 +105,11 @@ static cl::opt<bool> EnableVSETVLIAfterRVVRegAlloc(
     "riscv-vsetvli-after-rvv-regalloc", cl::Hidden,
     cl::desc("vsetvl insertion after rvv regalloc"), cl::init(false));
 
+static cl::opt<bool>
+    EnableRISCVSpillRewrite("enable-riscv-spill-rewrite", cl::Hidden,
+                            cl::init(false),
+                            cl::desc("Disable RISC-V Spill Rewrite pass."));
+
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   RegisterTargetMachine<RISCVTargetMachine> X(getTheRISCV32Target());
   RegisterTargetMachine<RISCVTargetMachine> Y(getTheRISCV64Target());
@@ -125,6 +130,7 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   initializeRISCVExpandPseudoPass(*PR);
   initializeRISCVFoldMasksPass(*PR);
   initializeRISCVInsertVSETVLIPass(*PR);
+  initializeRISCVSpillRewritePass(*PR);
   initializeRISCVInsertReadWriteCSRPass(*PR);
   initializeRISCVInsertWriteVXRMPass(*PR);
   initializeRISCVDAGToDAGISelPass(*PR);
@@ -408,6 +414,8 @@ bool RISCVPassConfig::addRegAssignAndRewriteOptimized() {
   if (EnableSplitRegAlloc) {
     addPass(createRVVRegAllocPass(true));
     addPass(createVirtRegRewriter(false));
+    if (EnableRISCVSpillRewrite)
+      addPass(createRISCVSpillRewritePass());
     if (EnableVSETVLIAfterRVVRegAlloc)
       addPass(createRISCVInsertVSETVLIPass());
   }
