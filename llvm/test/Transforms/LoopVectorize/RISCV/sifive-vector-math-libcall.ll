@@ -727,13 +727,13 @@ for.body:                                         ; preds = %for.body.preheader,
 declare float @atan2f(float, float)
 define void @test_atan2f(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_atan2f(
-; M1:  call <vscale x 2 x float> @skl_vfatan2_v_f32m1(
+; M1:  call <vscale x 2 x float> @skl_vfatan2_vv_f32m1(
 ; M2-LABEL: @test_atan2f(
-; M2:  call <vscale x 4 x float> @skl_vfatan2_v_f32m2(
+; M2:  call <vscale x 4 x float> @skl_vfatan2_vv_f32m2(
 ; M4-LABEL: @test_atan2f(
-; M4:  call <vscale x 8 x float> @skl_vfatan2_v_f32m4(
+; M4:  call <vscale x 8 x float> @skl_vfatan2_vv_f32m4(
 ; M8-LABEL: @test_atan2f(
-; M8:  call <vscale x 16 x float> @skl_vfatan2_v_f32m8(
+; M8:  call <vscale x 16 x float> @skl_vfatan2_vv_f32m8(
 entry:
   %cmp10 = icmp sgt i32 %n, 0
   br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
@@ -761,13 +761,13 @@ for.body:                                         ; preds = %for.body.preheader,
 declare double @atan2(double, double)
 define void @test_atan2(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_atan2(
-; M1:  call <vscale x 1 x double> @skl_vfatan2_v_f64m1(
+; M1:  call <vscale x 1 x double> @skl_vfatan2_vv_f64m1(
 ; M2-LABEL: @test_atan2(
-; M2:  call <vscale x 2 x double> @skl_vfatan2_v_f64m2(
+; M2:  call <vscale x 2 x double> @skl_vfatan2_vv_f64m2(
 ; M4-LABEL: @test_atan2(
-; M4:  call <vscale x 4 x double> @skl_vfatan2_v_f64m4(
+; M4:  call <vscale x 4 x double> @skl_vfatan2_vv_f64m4(
 ; M8-LABEL: @test_atan2(
-; M8:  call <vscale x 8 x double> @skl_vfatan2_v_f64m8(
+; M8:  call <vscale x 8 x double> @skl_vfatan2_vv_f64m8(
 entry:
   %cmp10 = icmp sgt i32 %n, 0
   br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
@@ -1251,13 +1251,13 @@ for.body:                                         ; preds = %for.body.preheader,
 declare float @fmodf(float, float)
 define void @test_fmodf(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_fmodf(
-; M1:  call <vscale x 2 x float> @skl_vffmod_v_f32m1(
+; M1:  call <vscale x 2 x float> @skl_vffmod_vv_f32m1(
 ; M2-LABEL: @test_fmodf(
-; M2:  call <vscale x 4 x float> @skl_vffmod_v_f32m2(
+; M2:  call <vscale x 4 x float> @skl_vffmod_vv_f32m2(
 ; M4-LABEL: @test_fmodf(
-; M4:  call <vscale x 8 x float> @skl_vffmod_v_f32m4(
+; M4:  call <vscale x 8 x float> @skl_vffmod_vv_f32m4(
 ; M8-LABEL: @test_fmodf(
-; M8:  call <vscale x 16 x float> @skl_vffmod_v_f32m8(
+; M8:  call <vscale x 16 x float> @skl_vffmod_vv_f32m8(
 entry:
   %cmp10 = icmp sgt i32 %n, 0
   br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
@@ -1285,13 +1285,13 @@ for.body:                                         ; preds = %for.body.preheader,
 declare double @fmod(double, double)
 define void @test_fmod(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_fmod(
-; M1:  call <vscale x 1 x double> @skl_vffmod_v_f64m1(
+; M1:  call <vscale x 1 x double> @skl_vffmod_vv_f64m1(
 ; M2-LABEL: @test_fmod(
-; M2:  call <vscale x 2 x double> @skl_vffmod_v_f64m2(
+; M2:  call <vscale x 2 x double> @skl_vffmod_vv_f64m2(
 ; M4-LABEL: @test_fmod(
-; M4:  call <vscale x 4 x double> @skl_vffmod_v_f64m4(
+; M4:  call <vscale x 4 x double> @skl_vffmod_vv_f64m4(
 ; M8-LABEL: @test_fmod(
-; M8:  call <vscale x 8 x double> @skl_vffmod_v_f64m8(
+; M8:  call <vscale x 8 x double> @skl_vffmod_vv_f64m8(
 entry:
   %cmp10 = icmp sgt i32 %n, 0
   br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
@@ -1319,13 +1319,13 @@ for.body:                                         ; preds = %for.body.preheader,
 declare float @hypotf(float, float)
 define void @test_hypotf(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_hypotf(
-; M1:  call <vscale x 2 x float> @skl_vfhypot_v_f32m1(
+; M1:  call <vscale x 2 x float> @skl_vfhypot_vv_f32m1(
 ; M2-LABEL: @test_hypotf(
-; M2:  call <vscale x 4 x float> @skl_vfhypot_v_f32m2(
+; M2:  call <vscale x 4 x float> @skl_vfhypot_vv_f32m2(
 ; M4-LABEL: @test_hypotf(
-; M4:  call <vscale x 8 x float> @skl_vfhypot_v_f32m4(
+; M4:  call <vscale x 8 x float> @skl_vfhypot_vv_f32m4(
 ; M8-LABEL: @test_hypotf(
-; M8:  call <vscale x 16 x float> @skl_vfhypot_v_f32m8(
+; M8:  call <vscale x 16 x float> @skl_vfhypot_vv_f32m8(
 entry:
   %cmp10 = icmp sgt i32 %n, 0
   br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
@@ -1353,13 +1353,13 @@ for.body:                                         ; preds = %for.body.preheader,
 declare double @hypot(double, double)
 define void @test_hypot(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_hypot(
-; M1:  call <vscale x 1 x double> @skl_vfhypot_v_f64m1(
+; M1:  call <vscale x 1 x double> @skl_vfhypot_vv_f64m1(
 ; M2-LABEL: @test_hypot(
-; M2:  call <vscale x 2 x double> @skl_vfhypot_v_f64m2(
+; M2:  call <vscale x 2 x double> @skl_vfhypot_vv_f64m2(
 ; M4-LABEL: @test_hypot(
-; M4:  call <vscale x 4 x double> @skl_vfhypot_v_f64m4(
+; M4:  call <vscale x 4 x double> @skl_vfhypot_vv_f64m4(
 ; M8-LABEL: @test_hypot(
-; M8:  call <vscale x 8 x double> @skl_vfhypot_v_f64m8(
+; M8:  call <vscale x 8 x double> @skl_vfhypot_vv_f64m8(
 entry:
   %cmp10 = icmp sgt i32 %n, 0
   br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
@@ -1453,13 +1453,13 @@ for.body:                                         ; preds = %for.body.preheader,
 declare float @ldexpf(float, i32 signext)
 define void @test_ldexpf(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_ldexpf(
-; M1:  call <vscale x 2 x float> @skl_vfldexp_v_f32m1(
+; M1:  call <vscale x 2 x float> @skl_vfldexp_vv_f32m1(
 ; M2-LABEL: @test_ldexpf(
-; M2:  call <vscale x 4 x float> @skl_vfldexp_v_f32m2(
+; M2:  call <vscale x 4 x float> @skl_vfldexp_vv_f32m2(
 ; M4-LABEL: @test_ldexpf(
-; M4:  call <vscale x 8 x float> @skl_vfldexp_v_f32m4(
+; M4:  call <vscale x 8 x float> @skl_vfldexp_vv_f32m4(
 ; M8-LABEL: @test_ldexpf(
-; M8:  call <vscale x 16 x float> @skl_vfldexp_v_f32m8(
+; M8:  call <vscale x 16 x float> @skl_vfldexp_vv_f32m8(
 entry:
   %cmp10 = icmp sgt i32 %n, 0
   br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
@@ -1487,13 +1487,13 @@ for.body:                                         ; preds = %for.body.preheader,
 declare double @ldexp(double, i32 signext)
 define void @test_ldexp(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_ldexp(
-; M1:  call <vscale x 1 x double> @skl_vfldexp_v_f64m1(
+; M1:  call <vscale x 1 x double> @skl_vfldexp_vv_f64m1(
 ; M2-LABEL: @test_ldexp(
-; M2:  call <vscale x 2 x double> @skl_vfldexp_v_f64m2(
+; M2:  call <vscale x 2 x double> @skl_vfldexp_vv_f64m2(
 ; M4-LABEL: @test_ldexp(
-; M4:  call <vscale x 4 x double> @skl_vfldexp_v_f64m4(
+; M4:  call <vscale x 4 x double> @skl_vfldexp_vv_f64m4(
 ; M8-LABEL: @test_ldexp(
-; M8:  call <vscale x 8 x double> @skl_vfldexp_v_f64m8(
+; M8:  call <vscale x 8 x double> @skl_vfldexp_vv_f64m8(
 entry:
   %cmp10 = icmp sgt i32 %n, 0
   br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
@@ -1847,13 +1847,13 @@ for.body:                                         ; preds = %for.body.preheader,
 declare float @nextafterf(float, float)
 define void @test_nextafterf(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_nextafterf(
-; M1:  call <vscale x 2 x float> @skl_vfnextafter_v_f32m1(
+; M1:  call <vscale x 2 x float> @skl_vfnextafter_vv_f32m1(
 ; M2-LABEL: @test_nextafterf(
-; M2:  call <vscale x 4 x float> @skl_vfnextafter_v_f32m2(
+; M2:  call <vscale x 4 x float> @skl_vfnextafter_vv_f32m2(
 ; M4-LABEL: @test_nextafterf(
-; M4:  call <vscale x 8 x float> @skl_vfnextafter_v_f32m4(
+; M4:  call <vscale x 8 x float> @skl_vfnextafter_vv_f32m4(
 ; M8-LABEL: @test_nextafterf(
-; M8:  call <vscale x 16 x float> @skl_vfnextafter_v_f32m8(
+; M8:  call <vscale x 16 x float> @skl_vfnextafter_vv_f32m8(
 entry:
   %cmp10 = icmp sgt i32 %n, 0
   br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
@@ -1881,13 +1881,13 @@ for.body:                                         ; preds = %for.body.preheader,
 declare double @nextafter(double, double)
 define void @test_nextafter(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_nextafter(
-; M1:  call <vscale x 1 x double> @skl_vfnextafter_v_f64m1(
+; M1:  call <vscale x 1 x double> @skl_vfnextafter_vv_f64m1(
 ; M2-LABEL: @test_nextafter(
-; M2:  call <vscale x 2 x double> @skl_vfnextafter_v_f64m2(
+; M2:  call <vscale x 2 x double> @skl_vfnextafter_vv_f64m2(
 ; M4-LABEL: @test_nextafter(
-; M4:  call <vscale x 4 x double> @skl_vfnextafter_v_f64m4(
+; M4:  call <vscale x 4 x double> @skl_vfnextafter_vv_f64m4(
 ; M8-LABEL: @test_nextafter(
-; M8:  call <vscale x 8 x double> @skl_vfnextafter_v_f64m8(
+; M8:  call <vscale x 8 x double> @skl_vfnextafter_vv_f64m8(
 entry:
   %cmp10 = icmp sgt i32 %n, 0
   br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
@@ -1915,13 +1915,13 @@ for.body:                                         ; preds = %for.body.preheader,
 declare float @powf(float, float)
 define void @test_powf(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_powf(
-; M1:  call <vscale x 2 x float> @skl_vfpow_v_f32m1(
+; M1:  call <vscale x 2 x float> @skl_vfpow_vv_f32m1(
 ; M2-LABEL: @test_powf(
-; M2:  call <vscale x 4 x float> @skl_vfpow_v_f32m2(
+; M2:  call <vscale x 4 x float> @skl_vfpow_vv_f32m2(
 ; M4-LABEL: @test_powf(
-; M4:  call <vscale x 8 x float> @skl_vfpow_v_f32m4(
+; M4:  call <vscale x 8 x float> @skl_vfpow_vv_f32m4(
 ; M8-LABEL: @test_powf(
-; M8:  call <vscale x 16 x float> @skl_vfpow_v_f32m8(
+; M8:  call <vscale x 16 x float> @skl_vfpow_vv_f32m8(
 entry:
   %cmp10 = icmp sgt i32 %n, 0
   br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
@@ -1949,13 +1949,13 @@ for.body:                                         ; preds = %for.body.preheader,
 declare double @pow(double, double)
 define void @test_pow(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_pow(
-; M1:  call <vscale x 1 x double> @skl_vfpow_v_f64m1(
+; M1:  call <vscale x 1 x double> @skl_vfpow_vv_f64m1(
 ; M2-LABEL: @test_pow(
-; M2:  call <vscale x 2 x double> @skl_vfpow_v_f64m2(
+; M2:  call <vscale x 2 x double> @skl_vfpow_vv_f64m2(
 ; M4-LABEL: @test_pow(
-; M4:  call <vscale x 4 x double> @skl_vfpow_v_f64m4(
+; M4:  call <vscale x 4 x double> @skl_vfpow_vv_f64m4(
 ; M8-LABEL: @test_pow(
-; M8:  call <vscale x 8 x double> @skl_vfpow_v_f64m8(
+; M8:  call <vscale x 8 x double> @skl_vfpow_vv_f64m8(
 entry:
   %cmp10 = icmp sgt i32 %n, 0
   br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
@@ -2247,13 +2247,13 @@ for.body:                                         ; preds = %for.body.preheader,
 declare float @llvm.ldexp.f32.i32(float, i32 signext)
 define void @test_llvm_ldexpf32(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_llvm_ldexpf32(
-; M1:  call <vscale x 2 x float> @skl_vfldexp_v_f32m1(
+; M1:  call <vscale x 2 x float> @skl_vfldexp_vv_f32m1(
 ; M2-LABEL: @test_llvm_ldexpf32(
-; M2:  call <vscale x 4 x float> @skl_vfldexp_v_f32m2(
+; M2:  call <vscale x 4 x float> @skl_vfldexp_vv_f32m2(
 ; M4-LABEL: @test_llvm_ldexpf32(
-; M4:  call <vscale x 8 x float> @skl_vfldexp_v_f32m4(
+; M4:  call <vscale x 8 x float> @skl_vfldexp_vv_f32m4(
 ; M8-LABEL: @test_llvm_ldexpf32(
-; M8:  call <vscale x 16 x float> @skl_vfldexp_v_f32m8(
+; M8:  call <vscale x 16 x float> @skl_vfldexp_vv_f32m8(
 entry:
   %cmp10 = icmp sgt i32 %n, 0
   br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
@@ -2281,13 +2281,13 @@ for.body:                                         ; preds = %for.body.preheader,
 declare double @llvm.ldexp.f64.i32(double, i32 signext)
 define void @test_llvm_ldexpf64(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_llvm_ldexpf64(
-; M1:  call <vscale x 1 x double> @skl_vfldexp_v_f64m1(
+; M1:  call <vscale x 1 x double> @skl_vfldexp_vv_f64m1(
 ; M2-LABEL: @test_llvm_ldexpf64(
-; M2:  call <vscale x 2 x double> @skl_vfldexp_v_f64m2(
+; M2:  call <vscale x 2 x double> @skl_vfldexp_vv_f64m2(
 ; M4-LABEL: @test_llvm_ldexpf64(
-; M4:  call <vscale x 4 x double> @skl_vfldexp_v_f64m4(
+; M4:  call <vscale x 4 x double> @skl_vfldexp_vv_f64m4(
 ; M8-LABEL: @test_llvm_ldexpf64(
-; M8:  call <vscale x 8 x double> @skl_vfldexp_v_f64m8(
+; M8:  call <vscale x 8 x double> @skl_vfldexp_vv_f64m8(
 entry:
   %cmp10 = icmp sgt i32 %n, 0
   br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
@@ -2512,13 +2512,13 @@ for.body:                                         ; preds = %for.body.preheader,
 declare float @llvm.pow.f32(float, float)
 define void @test_llvm_powf32(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_llvm_powf32(
-; M1:  call <vscale x 2 x float> @skl_vfpow_v_f32m1(
+; M1:  call <vscale x 2 x float> @skl_vfpow_vv_f32m1(
 ; M2-LABEL: @test_llvm_powf32(
-; M2:  call <vscale x 4 x float> @skl_vfpow_v_f32m2(
+; M2:  call <vscale x 4 x float> @skl_vfpow_vv_f32m2(
 ; M4-LABEL: @test_llvm_powf32(
-; M4:  call <vscale x 8 x float> @skl_vfpow_v_f32m4(
+; M4:  call <vscale x 8 x float> @skl_vfpow_vv_f32m4(
 ; M8-LABEL: @test_llvm_powf32(
-; M8:  call <vscale x 16 x float> @skl_vfpow_v_f32m8(
+; M8:  call <vscale x 16 x float> @skl_vfpow_vv_f32m8(
 entry:
   %cmp10 = icmp sgt i32 %n, 0
   br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
@@ -2546,13 +2546,13 @@ for.body:                                         ; preds = %for.body.preheader,
 declare double @llvm.pow.f64(double, double)
 define void @test_llvm_powf64(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_llvm_powf64(
-; M1:  call <vscale x 1 x double> @skl_vfpow_v_f64m1(
+; M1:  call <vscale x 1 x double> @skl_vfpow_vv_f64m1(
 ; M2-LABEL: @test_llvm_powf64(
-; M2:  call <vscale x 2 x double> @skl_vfpow_v_f64m2(
+; M2:  call <vscale x 2 x double> @skl_vfpow_vv_f64m2(
 ; M4-LABEL: @test_llvm_powf64(
-; M4:  call <vscale x 4 x double> @skl_vfpow_v_f64m4(
+; M4:  call <vscale x 4 x double> @skl_vfpow_vv_f64m4(
 ; M8-LABEL: @test_llvm_powf64(
-; M8:  call <vscale x 8 x double> @skl_vfpow_v_f64m8(
+; M8:  call <vscale x 8 x double> @skl_vfpow_vv_f64m8(
 entry:
   %cmp10 = icmp sgt i32 %n, 0
   br i1 %cmp10, label %for.body.preheader, label %for.cond.cleanup
