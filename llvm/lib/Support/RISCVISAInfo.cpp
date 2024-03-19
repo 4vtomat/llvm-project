@@ -105,6 +105,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xcvsimd", {1, 0}},
     {"xsfpgflushdlone", {0, 1}}, // SIFIVE
     {"xsfvcp", {1, 0}},
+    {"xsfvfexpa", {0, 1}}, // SIFIVE
     {"xsfvfhbfmin", {0, 1}}, // SIFIVE
     {"xsfvfnrclipxfqf", {1, 0}},
     {"xsfvfnrclipxfqf", {0, 1}}, // SIFIVE
@@ -1247,6 +1248,7 @@ static const char *ImpliedExtsF[] = {"zicsr"};
 static const char *ImpliedExtsV[] = {"zvl128b", "zve64d"};
 static const char *ImpliedExtsXTHeadVdot[] = {"v"};
 static const char *ImpliedExtsXSfvcp[] = {"zve32x"};
+static const char *ImpliedExtsXSfvfexpa[] = {"zve32f"};
 static const char *ImpliedExtsXSfvfnrclipxfqf[] = {"zve32f"};
 static const char *ImpliedExtsXSfvfhbfmin[] = {"zvfbfmin"}; // SIFIVE
 static const char *ImpliedExtsXSfvfwmaccqqq[] = {"zvfbfmin"};
@@ -1322,6 +1324,7 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"f"}, {ImpliedExtsF}},
     {{"v"}, {ImpliedExtsV}},
     {{"xsfvcp"}, {ImpliedExtsXSfvcp}},
+    {{"xsfvfexpa"}, {ImpliedExtsXSfvfexpa}},
     {{"xsfvfhbfmin"}, {ImpliedExtsXSfvfhbfmin}}, // SIFIVE
     {{"xsfvfnrclipxfqf"}, {ImpliedExtsXSfvfnrclipxfqf}},
     {{"xsfvfwmaccqqq"}, {ImpliedExtsXSfvfwmaccqqq}},
