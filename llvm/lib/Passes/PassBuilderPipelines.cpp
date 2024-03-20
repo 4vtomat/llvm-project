@@ -1217,7 +1217,7 @@ PassBuilder::buildModuleSimplificationPipeline(OptimizationLevel Level,
 void PassBuilder::addVectorPasses(OptimizationLevel Level,
 #if SIFIVE_CUSTOMIZATION
                                   FunctionPassManager &FPM, bool IsFullLTO,
-                                  bool IsLTOPreLink) {
+                                  bool IsLTOPreLink, bool IsLTOPostThin) {
   FPM.addPass(LoopVectorizePass(
       LoopVectorizeOptions(!PTO.LoopInterleaving, !PTO.LoopVectorization),
       IsLTOPreLink));
@@ -1372,11 +1372,12 @@ void PassBuilder::addVectorPasses(OptimizationLevel Level,
     }
     // Enhance/cleanup vector code.
     FPM.addPass(VectorCombinePass());
-#else
+
+    if (!IsLTOPostThin)
+#endif
     FPM.addPass(LoopUnrollPass(LoopUnrollOptions(
         Level.getSpeedupLevel(), /*OnlyWhenForced=*/!PTO.LoopUnrolling,
         PTO.ForgetAllSCEVInLoopUnroll)));
-#endif
     FPM.addPass(WarnMissedTransformationsPass());
     // Now that we are done with loop unrolling, be it either by LoopVectorizer,
     // or LoopUnroll passes, some variable-offset GEP's into alloca's could have
@@ -1533,7 +1534,9 @@ PassBuilder::buildModuleOptimizationPipeline(OptimizationLevel Level,
   OptimizePM.addPass(InjectTLIMappings());
 
 #if SIFIVE_CUSTOMIZATION
-  addVectorPasses(Level, OptimizePM, /* IsFullLTO */ false, LTOPreLink);
+  const bool LTOPostThin = (LTOPhase == ThinOrFullLTOPhase::ThinLTOPostLink);
+  addVectorPasses(Level, OptimizePM, /* IsFullLTO */ false,
+                  LTOPreLink, LTOPostThin);
 #else
   addVectorPasses(Level, OptimizePM, /* IsFullLTO */ false);
 #endif
@@ -2064,7 +2067,7 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
 
 #if SIFIVE_CUSTOMIZATION
   addVectorPasses(Level, MainFPM, /* IsFullLTO */ true,
-                  /* IsLTOPreLink */ false);
+                  /* IsLTOPreLink */ false, /* IsLTOPostThin */ false);
 #else
   addVectorPasses(Level, MainFPM, /* IsFullLTO */ true);
 #endif

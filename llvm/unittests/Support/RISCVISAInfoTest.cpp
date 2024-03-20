@@ -880,6 +880,7 @@ R"(All available -march extensions for RISC-V
     xcvsimd             1.0
     xsfpgflushdlone     0.1
     xsfvcp              1.0
+    xsfvfexpa           0.1
     xsfvfhbfmin         0.1
     xsfvfnrclipxfqf     1.0
     xsfvfnrclipxfqf     0.1

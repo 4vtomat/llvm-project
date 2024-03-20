@@ -636,7 +636,7 @@ private:
 
   void addVectorPasses(OptimizationLevel Level, FunctionPassManager &FPM,
 #if SIFIVE_CUSTOMIZATION
-                       bool IsFullLTO, bool ISLTOPreLink);
+                       bool IsFullLTO, bool IsLTOPreLink, bool IsLTOPostThin);
 #else
                        bool IsFullLTO);
 #endif

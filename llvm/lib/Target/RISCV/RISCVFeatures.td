@@ -1145,6 +1145,14 @@ def HasVendorXSfvcp : Predicate<"Subtarget->hasVendorXSfvcp()">,
                           "'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions)">;
 
 #ifdef SIFIVE_CUSTOMIZATION
+def FeatureVendorXSfvfexpa
+    : SubtargetFeature<"xsfvfexpa", "HasVendorXSfvfexpa", "true",
+                       "'Xsfvfexpa' (SiFive Vector Floating-Point Exponential Approximation Instruction)",
+                       [FeatureStdExtZve32f]>;
+def HasVendorXSfvfexpa : Predicate<"Subtarget->hasVendorXSfvfexpa()">,
+                         AssemblerPredicate<(all_of FeatureVendorXSfvfexpa),
+                         "'Xsfvfexpa' (SiFive Vector Floating-Point Exponential Approximation Instruction)">;
+
 def FeatureVendorXSfvfhbfmin
     : SubtargetFeature<"xsfvfhbfmin", "HasVendorXSfvfhbfmin", "true",
                        "'Xsfvfhbfmin' (SiFive custom minimal BF16 vector support)",
