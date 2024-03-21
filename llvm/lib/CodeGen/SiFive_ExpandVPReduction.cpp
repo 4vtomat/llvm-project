@@ -36,6 +36,7 @@ class ExpandVPReduction {
   Value *True;
   VectorType *VecTy;
   Type *ScalarTy, *i32Ty, *XLenTy;
+  unsigned BaseVPOp;
 
 public:
   ExpandVPReduction(IntrinsicInst *II);
@@ -44,32 +45,56 @@ public:
 
 ExpandVPReduction::ExpandVPReduction(IntrinsicInst *_II) {
   II = _II;
-  unsigned VecIdx = (II->getIntrinsicID() == Intrinsic::vp_reduce_mul) ? 1 : 0;
+  unsigned VecIdx =
+      (II->getIntrinsicID() == Intrinsic::vector_reduce_mul) ? 0 : 1;
   Vec = II->getArgOperand(VecIdx);
   ScalarTy = II->getType();
   VecTy = cast<VectorType>(Vec->getType());
   LLVMContext &C = II->getContext();
   i32Ty = Type::getInt32Ty(C);
   XLenTy = II->getModule()->getDataLayout().getLargestLegalIntType(C);
-  Type *MaskTy = VecTy->getWithNewBitWidth(1);
+  Type *MaskTy = VectorType::get(Type::getInt1Ty(C), VecTy);
   True = ConstantInt::get(MaskTy, 1);
 
+  Value *Identities;
+  switch (II->getIntrinsicID()) {
+  case Intrinsic::vp_reduce_mul:
+  case Intrinsic::vector_reduce_mul:
+    BaseVPOp = Intrinsic::vp_mul;
+    Identities = ConstantInt::get(VecTy, 1);
+    break;
+  case Intrinsic::vp_reduce_fmul:
+  case Intrinsic::vector_reduce_fmul:
+    BaseVPOp = Intrinsic::vp_fmul;
+    Identities = ConstantFP::get(VecTy, 1.);
+    break;
+  }
+
   IRBuilder<> IB(II);
-  if (II->getIntrinsicID() == Intrinsic::vp_reduce_mul) {
+  switch (II->getIntrinsicID()) {
+  case Intrinsic::vp_reduce_mul:
+  case Intrinsic::vp_reduce_fmul: {
     Start = II->getArgOperand(0);
     VL = II->getArgOperand(3);
     // For inactive lanes, replace original elements by identities.
     Value *Mask = II->getArgOperand(2);
     auto *SC = dyn_cast_or_null<ConstantInt>(getSplatValue(Mask));
-    if (!SC || !SC->isAllOnesValue()) {
+    if (!SC || !SC->isAllOnesValue())
       Vec = IB.CreateIntrinsic(VecTy, Intrinsic::vp_select,
-                               {Mask, Vec, ConstantInt::get(VecTy, 1), VL});
-    }
-  } else if (II->getIntrinsicID() == Intrinsic::vector_reduce_mul) {
+                               {Mask, Vec, Identities, VL});
+    break;
+  }
+  case Intrinsic::vector_reduce_mul:
     Start = ConstantInt::get(ScalarTy, 1);
     VL = IB.CreateElementCount(i32Ty, VecTy->getElementCount());
-  } else
+    break;
+  case Intrinsic::vector_reduce_fmul:
+    Start = II->getArgOperand(0);
+    VL = IB.CreateElementCount(i32Ty, VecTy->getElementCount());
+    break;
+  default:
     llvm_unreachable("Only support mul-reduce now.");
+  }
 }
 
 void ExpandVPReduction::expand() {
@@ -103,13 +128,23 @@ void ExpandVPReduction::expand() {
       IB.CreateIntrinsic(i32Ty, Intrinsic::ctlz, {VL, IB.getFalse()});
   Value *Offset = IB.CreateSub(ConstantInt::get(i32Ty, 32), VLCTLZ);
   Value *NewVL = IB.CreateShl(ConstantInt::get(i32Ty, 1), Offset);
-  // Could we implement it by llvm IR?
-  Value *Ones =
-      IB.CreateIntrinsic(VecTy, Intrinsic::riscv_vmv_v_x,
-                         {UndefValue::get(VecTy), ConstantInt::get(ScalarTy, 1),
-                          IB.CreateZExt(NewVL, XLenTy)});
-  Value *NewVec =
-      IB.CreateIntrinsic(VecTy, Intrinsic::vp_merge, {True, Vec, Ones, VL});
+
+  Value *Identities;
+  if (ScalarTy->isFloatingPointTy()) {
+    // Could we implement it by llvm IR?
+    Identities = IB.CreateIntrinsic(VecTy, Intrinsic::riscv_vfmv_v_f,
+                                    {UndefValue::get(VecTy),
+                                     ConstantFP::get(ScalarTy, 1.),
+                                     IB.CreateZExt(NewVL, XLenTy)});
+  } else {
+    // Could we implement it by llvm IR?
+    Identities = IB.CreateIntrinsic(VecTy, Intrinsic::riscv_vmv_v_x,
+                                    {UndefValue::get(VecTy),
+                                     ConstantInt::get(ScalarTy, 1),
+                                     IB.CreateZExt(NewVL, XLenTy)});
+  }
+  Value *NewVec = IB.CreateIntrinsic(VecTy, Intrinsic::vp_merge,
+                                     {True, Vec, Identities, VL});
 
   auto GetElseBB = [](BasicBlock *BB) {
     return cast<BranchInst>(BB->getTerminator())->getSuccessor(1);
@@ -147,8 +182,8 @@ void ExpandVPReduction::expand() {
       IB.CreateIntrinsic(VecTy, Intrinsic::riscv_vslidedown,
                          {UndefValue::get(VecTy), VecPhi, XLenHalfVL,
                           XLenHalfVL, ConstantInt::get(XLenTy, 1)});
-  Value *NextVec = IB.CreateIntrinsic(VecTy, Intrinsic::vp_mul,
-                                      {VecPhi, UpperVec, True, HalfVL});
+  Value *NextVec =
+      IB.CreateIntrinsic(VecTy, BaseVPOp, {VecPhi, UpperVec, True, HalfVL});
   VecPhi->addIncoming(NextVec, LoopBody);
 
   IB.CreateCondBr(IB.CreateICmpEQ(HalfVL, ConstantInt::get(i32Ty, 1)),
@@ -158,9 +193,18 @@ void ExpandVPReduction::expand() {
   PHINode *ScalarVec = IB.CreatePHI(VecTy, 2);
   ScalarVec->addIncoming(Vec, ReductionGuardBB);
   ScalarVec->addIncoming(NextVec, LoopBody);
-  Value *Red =
-      IB.CreateExtractElement(ScalarVec, ConstantInt::get(ScalarTy, 0));
-  Value *RedMulStart = IB.CreateMul(Red, Start);
+  Value *Red = IB.CreateExtractElement(ScalarVec, ConstantInt::get(i32Ty, 0));
+  Value *RedMulStart;
+  switch (II->getIntrinsicID()) {
+  case Intrinsic::vp_reduce_mul:
+  case Intrinsic::vector_reduce_mul:
+    RedMulStart = IB.CreateMul(Red, Start);
+    break;
+  case Intrinsic::vp_reduce_fmul:
+  case Intrinsic::vector_reduce_fmul:
+    RedMulStart = IB.CreateFMul(Red, Start);
+    break;
+  }
 
   // Result
   BasicBlock *ResBB = GetElseBB(StartBB);
@@ -177,12 +221,17 @@ static bool runImpl(Function &F) {
   for (auto &I : instructions(F)) {
     if (auto *II = dyn_cast<IntrinsicInst>(&I)) {
       switch (II->getIntrinsicID()) {
+      case Intrinsic::vp_reduce_fmul:
+      case Intrinsic::vector_reduce_fmul:
+        if (!II->hasAllowReassoc())
+          break;
+        [[fallthrough]];
       case Intrinsic::vp_reduce_mul:
       case Intrinsic::vector_reduce_mul:
         // Since we use rvv intrinsics to expand, we need to use scalable vector
         // and legal sew.
         unsigned VecIdx =
-            II->getIntrinsicID() == Intrinsic::vp_reduce_mul ? 1 : 0;
+            II->getIntrinsicID() == Intrinsic::vector_reduce_mul ? 0 : 1;
         if (!isa<ScalableVectorType>(II->getArgOperand(VecIdx)->getType()))
           break;
         unsigned RetSize = II->getType()->getScalarSizeInBits();
