@@ -102,6 +102,8 @@ def : WriteRes<WriteCPOP32, [SiFive6Pipe]>;
 // orc.b is in the late-B ALU.
 def : WriteRes<WriteORCB, [SiFive6Pipe]>;
 
+def : WriteRes<WriteIMinMax, [SiFive6Pipe]>;
+
 // rev8 is in the late-A and late-B ALUs.
 def : WriteRes<WriteREV8, [SiFive6Pipe]>;
 
@@ -348,6 +350,7 @@ def : BulletAnyToGPRBypass<ReadCTZ32>;
 def : ReadAdvance<ReadCPOP, 0>;
 def : ReadAdvance<ReadCPOP32, 0>;
 def : BulletAnyToGPRBypass<ReadORCB>;
+def : BulletAnyToGPRBypass<ReadIMinMax>;
 def : BulletAnyToGPRBypass<ReadREV8>;
 def : BulletAnyToGPRBypass<ReadSHXADD>;
 def : BulletAnyToGPRBypass<ReadSHXADD32>;

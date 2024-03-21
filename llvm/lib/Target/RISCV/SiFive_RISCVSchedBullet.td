@@ -178,7 +178,7 @@ class BulletAnyToGPRBypass<SchedRead read, int cycles = 2>
                                WriteBEXT, WriteBEXTI,
                                WriteCLZ, WriteCLZ32, WriteCTZ,
                                WriteCTZ32, WriteCPOP, WriteCPOP32,
-                               WriteREV8, WriteORCB, WriteSFB,
+                               WriteREV8, WriteORCB, WriteIMinMax, WriteSFB,
                                WriteIMul, WriteIMul32, WriteLDB,
                                WriteLDH, WriteLDW, WriteLDW, WriteLDD,
                                WriteFMovF16ToI16, WriteFMovF32ToI32,
@@ -312,6 +312,9 @@ multiclass BulletWriteResBase<
     
     // orc.b is in the late-B ALU.
     def : WriteRes<WriteORCB, [PipeB]>;
+
+    // min/max are in the late-B ALU
+    def : WriteRes<WriteIMinMax, [PipeB]>;
     
     // rev8 is in the late-A and late-B ALUs.
     def : WriteRes<WriteREV8, [PipeAB]>;
@@ -1223,6 +1226,7 @@ multiclass BulletReadAdvance {
   def : ReadAdvance<ReadCPOP, 0>;
   def : ReadAdvance<ReadCPOP32, 0>;
   def : BulletAnyToGPRBypass<ReadORCB>;
+  def : BulletAnyToGPRBypass<ReadIMinMax>;
   def : BulletAnyToGPRBypass<ReadREV8>;
   def : BulletAnyToGPRBypass<ReadSHXADD>;
   def : BulletAnyToGPRBypass<ReadSHXADD32>;
