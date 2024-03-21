@@ -184,6 +184,11 @@ static cl::opt<bool> AdhocSkipUnrollInPrelink(
     cl::Hidden,
     cl::desc("Allow the compiler to skip unroll for loops of non-unit "
              "stride memory access(es)"));
+
+static cl::opt<bool> DetectVectorLoopsForUnrolling(
+    "sifive-unroll-detect-vector-loops", cl::init(false),
+    cl::Hidden,
+    cl::desc("Allow the compiler to skip non vector loops for unrolling"));
 #endif
 
 /// A magic value for use with the Threshold parameter to indicate
@@ -1713,6 +1718,31 @@ PreservedAnalyses LoopUnrollPass::run(Function &F,
           dbgs() << "Bail out loop unroll in pre-link stage when there is only "
                     "non-unit stride memory accesses.\n");
       continue;
+    }
+
+    if (DetectVectorLoopsForUnrolling)
+      DetectVectorLoops = true;
+
+    // For Unrolling requested with Vectorization detection, we examine L and
+    // proceed only if Vector ops are present.
+    if (DetectVectorLoops) {
+      bool LoopHasVectorInsns = getBooleanLoopAttribute(&L, "llvm.loop.isvectorized");
+      if (!LoopHasVectorInsns) {
+        // check for vector ops and if not found, skip this loop.
+        for (auto *BB : L.getBlocks()) {
+          for (Instruction &I : *BB) {
+            if (isa<VectorType>(I.getType())) {
+              LoopHasVectorInsns = true;
+              break;
+            }
+          }
+          if (LoopHasVectorInsns)
+            break;
+        }
+        // Skip the loop if it is not vectorized.
+        if (!LoopHasVectorInsns)
+          continue;
+      }
     }
 #endif
 
