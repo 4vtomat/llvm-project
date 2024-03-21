@@ -2665,6 +2665,20 @@ bool RISCVTTIImpl::isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
 }
 
 #if SIFIVE_CUSTOMIZATION
+bool RISCVTTIImpl::enableUncountableVectorization() const {
+  switch (ST->getProcFamily()) {
+  default:
+    return false;
+  case RISCVSubtarget::SiFive7:
+    // Note: x280 requires the strlen longer than 32 to be profitable
+    // revisit this when more loops are recognized
+    return false;
+  case RISCVSubtarget::SiFiveP400:
+  case RISCVSubtarget::SiFiveP600:
+    return true;
+  }
+}
+
 bool RISCVTTIImpl::enableCSAVectorization() const {
   return ST->hasVInstructions() &&
          ST->getProcFamily() == RISCVSubtarget::SiFive7;

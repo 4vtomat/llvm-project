@@ -1806,6 +1806,10 @@ public:
   /// @}
 
 #if SIFIVE_CUSTOMIZATION
+  /// \returns true if the loop vectorizer should vectorize uncountable
+  /// loop vectorization for the target.
+  bool enableUncountableVectorization() const;
+
   /// \returns true if the loop vectorizer should vectorize conditional
   /// scalar assignments for the target.
   bool enableCSAVectorization() const;
@@ -2234,6 +2238,7 @@ public:
   virtual bool hasArmWideBranch(bool Thumb) const = 0;
   virtual unsigned getMaxNumArgs() const = 0;
 #if SIFIVE_CUSTOMIZATION
+  virtual bool enableUncountableVectorization() const = 0;
   virtual bool enableCSAVectorization() const = 0;
   virtual unsigned getCSABodyFactor() const = 0;
   virtual unsigned getCSAOverheadFactor() const = 0;
@@ -3045,6 +3050,10 @@ public:
     return Impl.getMaxNumArgs();
   }
 #if SIFIVE_CUSTOMIZATION
+  bool enableUncountableVectorization() const override {
+    return Impl.enableUncountableVectorization();
+  }
+
   bool enableCSAVectorization() const override {
     return Impl.enableCSAVectorization();
   }

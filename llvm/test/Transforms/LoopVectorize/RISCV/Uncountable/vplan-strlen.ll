@@ -1,4 +1,4 @@
-; RUN: opt -S -riscv-use-vla-vectorizer -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v -sifive-uncountable-loop-vectorization=on -debug-only=loop-vectorize < %s 2>&1 | FileCheck %s --check-prefix=VPLANS
+; RUN: opt -S -riscv-use-vla-vectorizer -passes=loop-vectorize -mtriple=riscv64-unknown-linux-gnu -mattr=+v -sifive-uncountable-loop-vectorization=stress -debug-only=loop-vectorize < %s 2>&1 | FileCheck %s --check-prefix=VPLANS
 ; REQUIRES: asserts
 
 define i64 @strlen_i8(ptr %start) {
