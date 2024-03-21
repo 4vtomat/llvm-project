@@ -1362,6 +1362,11 @@ bool TargetTransformInfo::isLegalVectorInterleave(VectorType *VTy,
                                                   const DataLayout &DL) const {
   return TTIImpl->isLegalVectorInterleave(VTy, Factor, DL);
 }
+
+bool TargetTransformInfo::enableUncountableVectorization() const {
+  return TTIImpl->enableUncountableVectorization();
+}
+
 bool TargetTransformInfo::enableCSAVectorization() const {
   return TTIImpl->enableCSAVectorization();
 }

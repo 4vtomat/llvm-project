@@ -83,7 +83,7 @@ enum class Option {
 static cl::opt<UncountableLoopVectorization::Option>
     UncountableLoopVectorizationOption(
         "sifive-uncountable-loop-vectorization",
-        cl::init(UncountableLoopVectorization::Option::Off), cl::Hidden,
+        cl::init(UncountableLoopVectorization::Option::On), cl::Hidden,
         cl::desc("Knobs for the uncountable loop vectorization pipeline."),
         cl::values(
             clEnumValN(UncountableLoopVectorization::Option::On, "on",
@@ -2158,9 +2158,14 @@ bool LoopVectorizationLegality::canVectorizeUncountableLoop(
                        "for vectorization opportunity\n");
   NumOfUncountableLoopsAnalyzedForVectorization++;
 
+  bool VectorizationDisabled = (UncountableLoopVectorizationOption !=
+                                UncountableLoopVectorization::Option::Stress) &&
+                               (UncountableLoopVectorizationOption ==
+                                    UncountableLoopVectorization::Option::Off ||
+                                !TTI->enableUncountableVectorization());
+
   // !!!BIG RED SWITCH!!!
-  if (UncountableLoopVectorizationOption ==
-      UncountableLoopVectorization::Option::Off) {
+  if (VectorizationDisabled) {
     ORE->emit([&]() {
       return OptimizationRemarkAnalysis(
                  Hints->vectorizeAnalysisPassName(),
