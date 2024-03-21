@@ -9309,6 +9309,24 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
 
   // Check if any of the gather node forms an insertelement buildvector
   // somewhere.
+#if SIFIVE_CUSTOMIZATION
+  bool IsAllowedSingleBVNode =
+      VectorizableTree.size() > 1 ||
+      (VectorizableTree.size() == 1 && VectorizableTree.front()->getOpcode() &&
+       allSameBlock(VectorizableTree.front()->Scalars));
+  if (any_of(VectorizableTree, [&](const std::unique_ptr<TreeEntry> &TE) {
+        return TE->State == TreeEntry::NeedToGather &&
+               all_of(TE->Scalars, [&](Value *V) {
+                 return isa<ExtractElementInst, UndefValue>(V) ||
+                        (IsAllowedSingleBVNode &&
+                         (!V->hasNUsesOrMore(UsesLimit) &&
+                          any_of(V->users(), [](User *U) {
+                            return isa<InsertElementInst>(U);
+                          })));
+               });
+      }))
+    return false;
+#else
   if (any_of(VectorizableTree, [](const std::unique_ptr<TreeEntry> &TE) {
         return TE->State == TreeEntry::NeedToGather &&
                all_of(TE->Scalars, [](Value *V) {
@@ -9320,6 +9338,7 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
                });
       }))
     return false;
+#endif // SIFIVE_CUSTOMIZATION
 
   assert(VectorizableTree.empty()
              ? ExternalUses.empty()
