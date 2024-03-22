@@ -246,12 +246,12 @@ define void @store_i24(ptr %p, i24 %v) {
 define void @store_i32(ptr %p, i32 %v) {
 ; X280-LABEL: store_i32:
 ; X280:       # %bb.0:
-; X280-NEXT:    srli a2, a1, 24
-; X280-NEXT:    srli a3, a1, 8
+; X280-NEXT:    srli a2, a1, 8
 ; X280-NEXT:    sb a1, 0(a0)
+; X280-NEXT:    srli a3, a1, 24
 ; X280-NEXT:    srli a1, a1, 16
-; X280-NEXT:    sb a3, 1(a0)
-; X280-NEXT:    sb a2, 3(a0)
+; X280-NEXT:    sb a2, 1(a0)
+; X280-NEXT:    sb a3, 3(a0)
 ; X280-NEXT:    sb a1, 2(a0)
 ; X280-NEXT:    ret
 ;

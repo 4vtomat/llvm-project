@@ -933,7 +933,7 @@ multiclass BulletReadAdvance {
   def : BulletAnyToGPRBypass<ReadJmp>;
   def : BulletAnyToGPRBypass<ReadJalr>;
   def : ReadAdvance<ReadCSR, 0>;
-  def : ReadAdvance<ReadStoreData, 0>;
+  def : BulletAnyToGPRBypass<ReadStoreData>;
   def : BulletAnyToGPRBypass<ReadIALU>;
   def : BulletAnyToGPRBypass<ReadIALU32>;
   def : BulletAnyToGPRBypass<ReadShiftImm>;
