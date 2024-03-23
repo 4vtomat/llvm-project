@@ -12,10 +12,8 @@ define void @test_guard_less_than_non_const(ptr nocapture %a, i32 %iv_start, i32
 ; CHECK-NEXT:    --> {(1 + %iv_start),+,1}<nsw><%for.body> U: full-set S: full-set Exits: %n LoopDispositions: { %for.body: Computable }
 ; CHECK-NEXT:  Determining loop execution counts for: @test_guard_less_than_non_const
 ; CHECK-NEXT:  Loop %for.body: backedge-taken count is (-1 + (-1 * %iv_start) + %n)
-; CHECK-NEXT:  Loop %for.body: constant max backedge-taken count is -2
+; CHECK-NEXT:  Loop %for.body: constant max backedge-taken count is i32 -2
 ; CHECK-NEXT:  Loop %for.body: symbolic max backedge-taken count is (-1 + (-1 * %iv_start) + %n)
-; CHECK-NEXT:  Loop %for.body: Predicated backedge-taken count is (-1 + (-1 * %iv_start) + %n)
-; CHECK-NEXT:   Predicates:
 ; CHECK-NEXT:  Loop %for.body: Trip multiple is 1
 ;
 entry:
@@ -51,10 +49,8 @@ define void @test_guard_less_than_non_const_sext(ptr nocapture %a, i32 %iv_start
 ; CHECK-NEXT:    --> {(1 + (sext i32 %iv_start to i64))<nsw>,+,1}<nsw><%for.body> U: [-2147483647,-9223372036854775808) S: [-2147483647,-9223372036854775808) Exits: (sext i32 %n to i64) LoopDispositions: { %for.body: Computable }
 ; CHECK-NEXT:  Determining loop execution counts for: @test_guard_less_than_non_const_sext
 ; CHECK-NEXT:  Loop %for.body: backedge-taken count is (-1 + (sext i32 %n to i64) + (-1 * (sext i32 %iv_start to i64))<nsw>)
-; CHECK-NEXT:  Loop %for.body: constant max backedge-taken count is -1
+; CHECK-NEXT:  Loop %for.body: constant max backedge-taken count is i64 -2
 ; CHECK-NEXT:  Loop %for.body: symbolic max backedge-taken count is (-1 + (sext i32 %n to i64) + (-1 * (sext i32 %iv_start to i64))<nsw>)
-; CHECK-NEXT:  Loop %for.body: Predicated backedge-taken count is (-1 + (sext i32 %n to i64) + (-1 * (sext i32 %iv_start to i64))<nsw>)
-; CHECK-NEXT:   Predicates:
 ; CHECK-NEXT:  Loop %for.body: Trip multiple is 1
 ;
 entry:
