@@ -109,6 +109,15 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xcvmem", {1, 0}},
     {"xcvsimd", {1, 0}},
     {"xsfcease", {1, 0}},
+    {"xsfmm128t", {0, 2}}, // SIFIVE
+    {"xsfmm32a", {0, 2}}, // SIFIVE
+    {"xsfmm32a4i", {0, 2}}, // SIFIVE
+    {"xsfmm32a8f", {0, 2}}, // SIFIVE
+    {"xsfmm32ea", {0, 2}}, // SIFIVE
+    {"xsfmm32t", {0, 2}}, // SIFIVE
+    {"xsfmm64a", {0, 2}}, // SIFIVE
+    {"xsfmm64t", {0, 2}}, // SIFIVE
+    {"xsfmmbase", {0, 2}}, // SIFIVE
     {"xsfpgflushdlone", {0, 1}}, // SIFIVE
     {"xsfvcp", {1, 0}},
     {"xsfvfexpa", {0, 1}}, // SIFIVE
@@ -1333,6 +1342,15 @@ static const char *ImpliedExtsXSfvfhbfmin[] = {"zvfbfmin"}; // SIFIVE
 static const char *ImpliedExtsXSfvfwmaccqqq[] = {"zvfbfmin"};
 static const char *ImpliedExtsXSfvqmaccdod[] = {"zve32x"};
 static const char *ImpliedExtsXSfvqmaccqoq[] = {"zve32x"};
+static const char *ImpliedExtsXSfmm32ea[] = {"v"};
+static const char *ImpliedExtsXSfmmbase[] = {"v"};
+static const char *ImpliedExtsXSfmm32a[] = {"xsfmmbase"};
+static const char *ImpliedExtsXSfmm32a8f[] = {"xsfmmbase"};
+static const char *ImpliedExtsXSfmm32a4i[] = {"xsfmmbase"};
+static const char *ImpliedExtsXSfmm64a[] = {"xsfmmbase"};
+static const char *ImpliedExtsXSfmm128t[] = {"xsfmmbase"};
+static const char *ImpliedExtsXSfmm64t[] = {"xsfmmbase"};
+static const char *ImpliedExtsXSfmm32t[] = {"xsfmmbase"};
 static const char *ImpliedExtsZabha[] = {"a"};
 static const char *ImpliedExtsZacas[] = {"a"};
 static const char *ImpliedExtsZcb[] = {"zca"};
@@ -1402,6 +1420,15 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"d"}, {ImpliedExtsD}},
     {{"f"}, {ImpliedExtsF}},
     {{"v"}, {ImpliedExtsV}},
+    {{"xsfmm128t"}, {ImpliedExtsXSfmm128t}},
+    {{"xsfmm32a"}, {ImpliedExtsXSfmm32a}},
+    {{"xsfmm32a4i"}, {ImpliedExtsXSfmm32a4i}},
+    {{"xsfmm32a8f"}, {ImpliedExtsXSfmm32a8f}},
+    {{"xsfmm32ea"}, {ImpliedExtsXSfmm32ea}},
+    {{"xsfmm32t"}, {ImpliedExtsXSfmm32t}},
+    {{"xsfmm64a"}, {ImpliedExtsXSfmm64a}},
+    {{"xsfmm64t"}, {ImpliedExtsXSfmm64t}},
+    {{"xsfmmbase"}, {ImpliedExtsXSfmmbase}},
     {{"xsfvcp"}, {ImpliedExtsXSfvcp}},
     {{"xsfvfexpa"}, {ImpliedExtsXSfvfexpa}},
     {{"xsfvfhbfmin"}, {ImpliedExtsXSfvfhbfmin}}, // SIFIVE

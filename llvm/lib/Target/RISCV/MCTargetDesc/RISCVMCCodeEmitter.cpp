@@ -99,6 +99,16 @@ public:
                        SmallVectorImpl<MCFixup> &Fixups,
                        const MCSubtargetInfo &STI) const;
 
+#if SIFIVE_CUSTOMIZATION
+  unsigned getTRM2Reg(const MCInst &MI, unsigned OpNo,
+                      SmallVectorImpl<MCFixup> &Fixups,
+                      const MCSubtargetInfo &STI) const;
+
+  unsigned getTRM4Reg(const MCInst &MI, unsigned OpNo,
+                      SmallVectorImpl<MCFixup> &Fixups,
+                      const MCSubtargetInfo &STI) const;
+#endif // SIFIVE_CUSTOMIZATION
+
   unsigned getRlistOpValue(const MCInst &MI, unsigned OpNo,
                            SmallVectorImpl<MCFixup> &Fixups,
                            const MCSubtargetInfo &STI) const;
@@ -660,6 +670,46 @@ unsigned RISCVMCCodeEmitter::getVMaskReg(const MCInst &MI, unsigned OpNo,
     return 1;
   }
 }
+
+#if SIFIVE_CUSTOMIZATION
+unsigned RISCVMCCodeEmitter::getTRM2Reg(const MCInst &MI, unsigned OpNo,
+                                        SmallVectorImpl<MCFixup> &Fixups,
+                                        const MCSubtargetInfo &STI) const {
+  const MCOperand &MO = MI.getOperand(OpNo);
+  assert(MO.isReg() && "Expected a register.");
+
+  switch (MO.getReg()) {
+  default:
+    llvm_unreachable("Invalid TRM2 register.");
+  case RISCV::T0:
+  case RISCV::T2:
+  case RISCV::T4:
+  case RISCV::T6:
+  case RISCV::T8:
+  case RISCV::T10:
+  case RISCV::T12:
+  case RISCV::T14:
+    return Ctx.getRegisterInfo()->getEncodingValue(MO.getReg()) / 2;
+  }
+}
+
+unsigned RISCVMCCodeEmitter::getTRM4Reg(const MCInst &MI, unsigned OpNo,
+                                        SmallVectorImpl<MCFixup> &Fixups,
+                                        const MCSubtargetInfo &STI) const {
+  MCOperand MO = MI.getOperand(OpNo);
+  assert(MO.isReg() && "Expected a register.");
+
+  switch (MO.getReg()) {
+  default:
+    llvm_unreachable("Invalid TRM4 register.");
+  case RISCV::T0:
+  case RISCV::T4:
+  case RISCV::T8:
+  case RISCV::T12:
+    return Ctx.getRegisterInfo()->getEncodingValue(MO.getReg()) / 4;
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 unsigned RISCVMCCodeEmitter::getRlistOpValue(const MCInst &MI, unsigned OpNo,
                                              SmallVectorImpl<MCFixup> &Fixups,

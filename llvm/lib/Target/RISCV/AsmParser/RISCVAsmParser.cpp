@@ -76,6 +76,14 @@ class RISCVAsmParser : public MCTargetAsmParser {
     VTypeState_Done,
   };
 
+#if SIFIVE_CUSTOMIZATION
+  enum WWEEState{
+      WWEEState_Widen,
+      WWEEState_SEW,
+      WWEEState_Done,
+  };
+#endif // SIFIVE_CUSTOMIZATION
+
   SmallVector<FeatureBitset, 4> FeatureBitStack;
 
   SmallVector<ParserOptionsSet, 4> ParserOptionsStack;
@@ -121,6 +129,12 @@ class RISCVAsmParser : public MCTargetAsmParser {
                        unsigned &Lmul, bool &Fractional, bool &TailAgnostic,
                        bool &MaskAgnostic);
   bool generateVTypeError(SMLoc ErrorLoc);
+
+#if SIFIVE_CUSTOMIZATION
+  bool parseMammothWWEEToken(StringRef Identifier, WWEEState &State,
+                             unsigned &WW, unsigned &EE);
+  bool generateMammothWWEEError(SMLoc ErrorLoc);
+#endif // SIFIVE_CUSTOMIZATION
 
   // Helper to actually emit an instruction to the MCStreamer. Also, when
   // possible, compression of the instruction is performed.
@@ -225,6 +239,9 @@ class RISCVAsmParser : public MCTargetAsmParser {
   ParseStatus parseFenceArg(OperandVector &Operands);
   ParseStatus parseReglist(OperandVector &Operands);
   ParseStatus parseRegReg(OperandVector &Operands);
+#if SIFIVE_CUSTOMIZATION
+  ParseStatus parseMammothWWEE(OperandVector &Operands);
+#endif // SIFIVE_CUSTOMIZATION
   ParseStatus parseRetval(OperandVector &Operands);
   ParseStatus parseZcmpSpimm(OperandVector &Operands);
 
@@ -576,6 +593,16 @@ public:
             VK == RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_ADD ||
             VK == RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_ADD);
   }
+
+  bool isTRM2Op() const {
+    return Kind == KindTy::Register &&
+           RISCVMCRegisterClasses[RISCV::TRM2RegClassID].contains(Reg.RegNum);
+  }
+
+  bool isTRM4Op() const {
+    return Kind == KindTy::Register &&
+           RISCVMCRegisterClasses[RISCV::TRM4RegClassID].contains(Reg.RegNum);
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   bool isTLSDESCCallSymbol() const {
@@ -611,6 +638,20 @@ public:
       return isVTypeImm(11);
     return Kind == KindTy::VType;
   }
+
+#if SIFIVE_CUSTOMIZATION
+  bool isMammothWWEE() const {
+    int64_t Imm;
+    RISCVMCExpr::VariantKind VK = RISCVMCExpr::VK_RISCV_None;
+    if (!isImm())
+      return false;
+    if (!evaluateConstantImm(getImm(), Imm, VK) ||
+        VK != RISCVMCExpr::VK_RISCV_None)
+      return false;
+
+    return RISCVII::isValidMammothWWEE(Imm);
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Return true if the operand is a valid for the fence instruction e.g.
   /// ('iorw').
@@ -1629,6 +1670,10 @@ bool RISCVAsmParser::MatchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
                            "%tprel_add, %gprel, %got_gprel, %tls_ie_gprel "
                            "and %tls_gd_gprel modifier");
   }
+  case Match_InvalidMammothWWEE: {
+    SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
+    return generateMammothWWEEError(ErrorLoc);
+  }
 #endif // SIFIVE_CUSTOMIZATION
   case Match_InvalidTLSDESCCallSymbol: {
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
@@ -2278,6 +2323,85 @@ bool RISCVAsmParser::generateVTypeError(SMLoc ErrorLoc) {
       "operand must be "
       "e[8|16|32|64|128|256|512|1024],m[1|2|4|8|f2|f4|f8],[ta|tu],[ma|mu]");
 }
+
+#if SIFIVE_CUSTOMIZATION
+bool RISCVAsmParser::parseMammothWWEEToken(StringRef Identifier,
+                                           WWEEState &State, unsigned &WW,
+                                           unsigned &EE) {
+  switch (State) {
+  case WWEEState_SEW:
+    if (!Identifier.consume_front("e"))
+      break;
+    if (Identifier.getAsInteger(10, EE))
+      break;
+    if (!RISCVVType::isValidSEW(EE) || EE > 64)
+      break;
+    State = WWEEState_Widen;
+    return false;
+  case WWEEState_Widen:
+    if (!Identifier.consume_front("w"))
+      break;
+    if (Identifier.getAsInteger(10, WW))
+      break;
+    if (WW != 1 && WW != 2 && WW != 4)
+      break;
+    State = WWEEState_Done;
+    return false;
+  case WWEEState_Done:
+    // Extra token?
+    break;
+  }
+
+  return true;
+}
+
+ParseStatus RISCVAsmParser::parseMammothWWEE(OperandVector &Operands) {
+  SMLoc S = getLoc();
+
+  unsigned TWiden = 0;
+  unsigned SEW = 0;
+
+  WWEEState State = WWEEState_SEW;
+
+  if (getLexer().isNot(AsmToken::Identifier))
+    return generateMammothWWEEError(S);
+
+  StringRef Identifier = getTok().getIdentifier();
+
+  if (parseMammothWWEEToken(Identifier, State, TWiden, SEW))
+    return generateMammothWWEEError(S);
+
+  getLexer().Lex();
+
+  if (!parseOptionalToken(AsmToken::Comma))
+    return generateMammothWWEEError(S);
+
+  if (getLexer().isNot(AsmToken::Identifier))
+    return generateMammothWWEEError(S);
+
+  Identifier = getTok().getIdentifier();
+
+  if (parseMammothWWEEToken(Identifier, State, TWiden, SEW))
+    return generateMammothWWEEError(S);
+
+  getLexer().Lex();
+
+  if (getLexer().is(AsmToken::EndOfStatement) && State == WWEEState_Done) {
+    Operands.push_back(RISCVOperand::createImm(
+        MCConstantExpr::create(((Log2_64(TWiden) + 1) << 3) |
+                                   ((Log2_64(SEW) - 3) << 1),
+                               getContext()),
+        S, S, isRV64()));
+    return ParseStatus::Success;
+  }
+
+  return generateMammothWWEEError(S);
+}
+
+bool RISCVAsmParser::generateMammothWWEEError(SMLoc ErrorLoc) {
+  return Error(ErrorLoc, "operand must be e[8|16|32|64],w[1|2|4]");
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 ParseStatus RISCVAsmParser::parseMaskReg(OperandVector &Operands) {
   if (getLexer().isNot(AsmToken::Identifier))

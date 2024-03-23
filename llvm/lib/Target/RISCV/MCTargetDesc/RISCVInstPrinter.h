@@ -48,6 +48,10 @@ public:
                             const MCSubtargetInfo &STI, raw_ostream &O);
   void printVTypeI(const MCInst *MI, unsigned OpNo, const MCSubtargetInfo &STI,
                    raw_ostream &O);
+#if SIFIVE_CUSTOMIZATION
+  void printMammothWWEE(const MCInst *MI, unsigned OpNo,
+                        const MCSubtargetInfo &STI, raw_ostream &O);
+#endif // SIFIVE_CUSTOMIZATION
   void printVMaskReg(const MCInst *MI, unsigned OpNo,
                      const MCSubtargetInfo &STI, raw_ostream &O);
   void printRlist(const MCInst *MI, unsigned OpNo, const MCSubtargetInfo &STI,
