@@ -133,12 +133,15 @@ struct LoopUnrollOptions {
 class LoopUnrollPass : public PassInfoMixin<LoopUnrollPass> {
   LoopUnrollOptions UnrollOpts;
   bool IsLTOPrelink; // SIFIVE
+  bool DetectVectorLoops; // SIFIVE
 
 public:
 #if SIFIVE_CUSTOMIZATION
   explicit LoopUnrollPass(LoopUnrollOptions UnrollOpts = {},
-                          bool IsLTOPrelink = false)
-      : UnrollOpts(UnrollOpts), IsLTOPrelink(IsLTOPrelink) {}
+                          bool IsLTOPrelink = false,
+                          bool DetectVectorLoops = false)
+      : UnrollOpts(UnrollOpts), IsLTOPrelink(IsLTOPrelink),
+        DetectVectorLoops(DetectVectorLoops) {}
 #else
   /// This uses the target information (or flags) to control the thresholds for
   /// different unrolling stategies but supports all of them.

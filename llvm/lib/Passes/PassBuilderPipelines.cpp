@@ -1247,7 +1247,7 @@ void PassBuilder::addVectorPasses(OptimizationLevel Level,
         LoopUnrollPass(LoopUnrollOptions(Level.getSpeedupLevel(),
                                          /*OnlyWhenForced=*/!PTO.LoopUnrolling,
                                          PTO.ForgetAllSCEVInLoopUnroll),
-                       IsLTOPreLink));
+                       IsLTOPreLink, /* DetectVectorLoops*/ false));
 #else
     FPM.addPass(LoopUnrollPass(LoopUnrollOptions(
         Level.getSpeedupLevel(), /*OnlyWhenForced=*/!PTO.LoopUnrolling,
@@ -1361,7 +1361,7 @@ void PassBuilder::addVectorPasses(OptimizationLevel Level,
         LoopUnrollPass(LoopUnrollOptions(Level.getSpeedupLevel(),
                                          /*OnlyWhenForced=*/!PTO.LoopUnrolling,
                                          PTO.ForgetAllSCEVInLoopUnroll),
-                       IsLTOPreLink));
+                       IsLTOPreLink, /* DetectVectorLoops */ false));
 
     // Optimize parallel scalar instruction chains into SIMD instructions.
     if (PTO.SLPVectorization) {
@@ -1374,10 +1374,16 @@ void PassBuilder::addVectorPasses(OptimizationLevel Level,
     FPM.addPass(VectorCombinePass());
 
     if (!IsLTOPostThin)
-#endif
+      FPM.addPass(
+          LoopUnrollPass(LoopUnrollOptions(Level.getSpeedupLevel(),
+                                           /*OnlyWhenForced=*/!PTO.LoopUnrolling,
+                                           PTO.ForgetAllSCEVInLoopUnroll),
+                         IsLTOPreLink, /* DetectVectorLoops */ true));
+#else
     FPM.addPass(LoopUnrollPass(LoopUnrollOptions(
         Level.getSpeedupLevel(), /*OnlyWhenForced=*/!PTO.LoopUnrolling,
         PTO.ForgetAllSCEVInLoopUnroll)));
+#endif
     FPM.addPass(WarnMissedTransformationsPass());
     // Now that we are done with loop unrolling, be it either by LoopVectorizer,
     // or LoopUnroll passes, some variable-offset GEP's into alloca's could have
