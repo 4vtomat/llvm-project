@@ -136,11 +136,12 @@ define <vscale x 1 x float> @before_call1(<vscale x 1 x float> %0, <vscale x 1 x
 ; CHECK-NEXT:    fsrmi a0, 0
 ; CHECK-NEXT:    vfadd.vv v8, v8, v9
 ; CHECK-NEXT:    addi a1, sp, 32
-; CHECK-NEXT:    vs1r.v v8, (a1) # Unknown-size Folded Spill
+; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    call foo
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    addi a0, sp, 32
-; CHECK-NEXT:    vl1r.v v8, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 1
 ; CHECK-NEXT:    add sp, sp, a0
@@ -159,11 +160,12 @@ define <vscale x 1 x float> @before_call1(<vscale x 1 x float> %0, <vscale x 1 x
 ; UNOPT-NEXT:    fsrmi a0, 0
 ; UNOPT-NEXT:    vfadd.vv v8, v8, v9
 ; UNOPT-NEXT:    addi a1, sp, 32
-; UNOPT-NEXT:    vs1r.v v8, (a1) # Unknown-size Folded Spill
+; UNOPT-NEXT:    vse32.v v8, (a1)
 ; UNOPT-NEXT:    fsrm a0
 ; UNOPT-NEXT:    call foo
+; UNOPT-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
 ; UNOPT-NEXT:    addi a0, sp, 32
-; UNOPT-NEXT:    vl1r.v v8, (a0) # Unknown-size Folded Reload
+; UNOPT-NEXT:    vle32.v v8, (a0)
 ; UNOPT-NEXT:    csrr a0, vlenb
 ; UNOPT-NEXT:    slli a0, a0, 1
 ; UNOPT-NEXT:    add sp, sp, a0
@@ -191,10 +193,11 @@ define <vscale x 1 x float> @before_call2(<vscale x 1 x float> %0, <vscale x 1 x
 ; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
 ; CHECK-NEXT:    vfadd.vv v8, v8, v9
 ; CHECK-NEXT:    addi a0, sp, 32
-; CHECK-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
+; CHECK-NEXT:    vse32.v v8, (a0)
 ; CHECK-NEXT:    call foo
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    addi a0, sp, 32
-; CHECK-NEXT:    vl1r.v v8, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 1
 ; CHECK-NEXT:    add sp, sp, a0
@@ -212,10 +215,11 @@ define <vscale x 1 x float> @before_call2(<vscale x 1 x float> %0, <vscale x 1 x
 ; UNOPT-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
 ; UNOPT-NEXT:    vfadd.vv v8, v8, v9
 ; UNOPT-NEXT:    addi a0, sp, 32
-; UNOPT-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
+; UNOPT-NEXT:    vse32.v v8, (a0)
 ; UNOPT-NEXT:    call foo
+; UNOPT-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
 ; UNOPT-NEXT:    addi a0, sp, 32
-; UNOPT-NEXT:    vl1r.v v8, (a0) # Unknown-size Folded Reload
+; UNOPT-NEXT:    vle32.v v8, (a0)
 ; UNOPT-NEXT:    csrr a0, vlenb
 ; UNOPT-NEXT:    slli a0, a0, 1
 ; UNOPT-NEXT:    add sp, sp, a0
@@ -244,11 +248,12 @@ define <vscale x 1 x float> @after_call1(<vscale x 1 x float> %0, <vscale x 1 x 
 ; CHECK-NEXT:    fsrmi a0, 0
 ; CHECK-NEXT:    vfadd.vv v8, v8, v9
 ; CHECK-NEXT:    addi a1, sp, 32
-; CHECK-NEXT:    vs1r.v v8, (a1) # Unknown-size Folded Spill
+; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    fsrm a0
 ; CHECK-NEXT:    call foo
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    addi a0, sp, 32
-; CHECK-NEXT:    vl1r.v v8, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 1
 ; CHECK-NEXT:    add sp, sp, a0
@@ -267,11 +272,12 @@ define <vscale x 1 x float> @after_call1(<vscale x 1 x float> %0, <vscale x 1 x 
 ; UNOPT-NEXT:    fsrmi a0, 0
 ; UNOPT-NEXT:    vfadd.vv v8, v8, v9
 ; UNOPT-NEXT:    addi a1, sp, 32
-; UNOPT-NEXT:    vs1r.v v8, (a1) # Unknown-size Folded Spill
+; UNOPT-NEXT:    vse32.v v8, (a1)
 ; UNOPT-NEXT:    fsrm a0
 ; UNOPT-NEXT:    call foo
+; UNOPT-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
 ; UNOPT-NEXT:    addi a0, sp, 32
-; UNOPT-NEXT:    vl1r.v v8, (a0) # Unknown-size Folded Reload
+; UNOPT-NEXT:    vle32.v v8, (a0)
 ; UNOPT-NEXT:    csrr a0, vlenb
 ; UNOPT-NEXT:    slli a0, a0, 1
 ; UNOPT-NEXT:    add sp, sp, a0
@@ -299,10 +305,11 @@ define <vscale x 1 x float> @after_call2(<vscale x 1 x float> %0, <vscale x 1 x 
 ; CHECK-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
 ; CHECK-NEXT:    vfadd.vv v8, v8, v9
 ; CHECK-NEXT:    addi a0, sp, 32
-; CHECK-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
+; CHECK-NEXT:    vse32.v v8, (a0)
 ; CHECK-NEXT:    call foo
+; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    addi a0, sp, 32
-; CHECK-NEXT:    vl1r.v v8, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 1
 ; CHECK-NEXT:    add sp, sp, a0
@@ -320,10 +327,11 @@ define <vscale x 1 x float> @after_call2(<vscale x 1 x float> %0, <vscale x 1 x 
 ; UNOPT-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
 ; UNOPT-NEXT:    vfadd.vv v8, v8, v9
 ; UNOPT-NEXT:    addi a0, sp, 32
-; UNOPT-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
+; UNOPT-NEXT:    vse32.v v8, (a0)
 ; UNOPT-NEXT:    call foo
+; UNOPT-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
 ; UNOPT-NEXT:    addi a0, sp, 32
-; UNOPT-NEXT:    vl1r.v v8, (a0) # Unknown-size Folded Reload
+; UNOPT-NEXT:    vle32.v v8, (a0)
 ; UNOPT-NEXT:    csrr a0, vlenb
 ; UNOPT-NEXT:    slli a0, a0, 1
 ; UNOPT-NEXT:    add sp, sp, a0

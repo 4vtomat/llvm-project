@@ -477,7 +477,7 @@ define <vscale x 32 x half> @vfmax_vv_nxv32f16(<vscale x 32 x half> %va, <vscale
 ; ZVFHMIN-NEXT:    vs1r.v v0, (a4) # Unknown-size Folded Spill
 ; ZVFHMIN-NEXT:    vslidedown.vx v0, v0, a2
 ; ZVFHMIN-NEXT:    addi a2, sp, 16
-; ZVFHMIN-NEXT:    vs1r.v v0, (a2) # Unknown-size Folded Spill
+; ZVFHMIN-NEXT:    vse8.v v0, (a2)
 ; ZVFHMIN-NEXT:    vsetvli a2, zero, e16, m4, ta, ma
 ; ZVFHMIN-NEXT:    csrr a2, vlenb
 ; ZVFHMIN-NEXT:    slli a2, a2, 4
@@ -503,8 +503,10 @@ define <vscale x 32 x half> @vfmax_vv_nxv32f16(<vscale x 32 x half> %va, <vscale
 ; ZVFHMIN-NEXT:    add a2, sp, a2
 ; ZVFHMIN-NEXT:    addi a2, a2, 16
 ; ZVFHMIN-NEXT:    vs8r.v v8, (a2) # Unknown-size Folded Spill
+; ZVFHMIN-NEXT:    vsetvli a2, zero, e8, mf2, ta, ma
 ; ZVFHMIN-NEXT:    addi a2, sp, 16
-; ZVFHMIN-NEXT:    vl1r.v v8, (a2) # Unknown-size Folded Reload
+; ZVFHMIN-NEXT:    vle8.v v8, (a2)
+; ZVFHMIN-NEXT:    vsetvli zero, a3, e32, m8, ta, ma
 ; ZVFHMIN-NEXT:    vmv1r.v v0, v8
 ; ZVFHMIN-NEXT:    vmfeq.vv v12, v16, v16, v0.t
 ; ZVFHMIN-NEXT:    vmv1r.v v0, v12

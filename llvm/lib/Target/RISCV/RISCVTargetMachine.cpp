@@ -121,6 +121,7 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   initializeRISCVExpandPseudoPass(*PR);
   initializeRISCVFoldMasksPass(*PR);
   initializeRISCVInsertVSETVLIPass(*PR);
+  initializeRISCVSpillRewritePass(*PR);
   initializeRISCVInsertReadWriteCSRPass(*PR);
   initializeRISCVInsertWriteVXRMPass(*PR);
   initializeRISCVDAGToDAGISelPass(*PR);
@@ -401,6 +402,7 @@ bool RISCVPassConfig::addRegAssignAndRewriteOptimized() {
   if (EnableSplitRegAlloc) {
     addPass(createRVVRegAllocPass(true));
     addPass(createVirtRegRewriter(false));
+    addPass(createRISCVSpillRewritePass());
   }
   return TargetPassConfig::addRegAssignAndRewriteOptimized();
 }
