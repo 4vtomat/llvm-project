@@ -6278,6 +6278,7 @@ foreach vti = AllIntegerVectors in {
 //===----------------------------------------------------------------------===//
 // 11.2. Vector Widening Integer Add/Subtract
 //===----------------------------------------------------------------------===//
+let IsWiden = 1 in {
 defm PseudoVWADDU : VPseudoVWALU_VV_VX;
 defm PseudoVWSUBU : VPseudoVWALU_VV_VX;
 defm PseudoVWADD  : VPseudoVWALU_VV_VX;
@@ -6286,6 +6287,7 @@ defm PseudoVWADDU : VPseudoVWALU_WV_WX;
 defm PseudoVWSUBU : VPseudoVWALU_WV_WX;
 defm PseudoVWADD  : VPseudoVWALU_WV_WX;
 defm PseudoVWSUB  : VPseudoVWALU_WV_WX;
+}
 
 //===----------------------------------------------------------------------===//
 // 11.3. Vector Integer Extension
@@ -6367,9 +6369,11 @@ defm PseudoVREM  : VPseudoVDIV_VV_VX;
 //===----------------------------------------------------------------------===//
 // 11.12. Vector Widening Integer Multiply Instructions
 //===----------------------------------------------------------------------===//
+let IsWiden = 1 in {
 defm PseudoVWMUL   : VPseudoVWMUL_VV_VX;
 defm PseudoVWMULU  : VPseudoVWMUL_VV_VX;
 defm PseudoVWMULSU : VPseudoVWMUL_VV_VX;
+}
 
 //===----------------------------------------------------------------------===//
 // 11.13. Vector Single-Width Integer Multiply-Add Instructions
@@ -6382,10 +6386,12 @@ defm PseudoVNMSUB : VPseudoVMAC_VV_VX_AAXA;
 //===----------------------------------------------------------------------===//
 // 11.14. Vector Widening Integer Multiply-Add Instructions
 //===----------------------------------------------------------------------===//
+let IsWiden = 1 in {
 defm PseudoVWMACCU  : VPseudoVWMAC_VV_VX;
 defm PseudoVWMACC   : VPseudoVWMAC_VV_VX;
 defm PseudoVWMACCSU : VPseudoVWMAC_VV_VX;
 defm PseudoVWMACCUS : VPseudoVWMAC_VX;
+}
 
 //===----------------------------------------------------------------------===//
 // 11.15. Vector Integer Merge Instructions
@@ -6459,11 +6465,13 @@ defm PseudoVFRSUB : VPseudoVALU_VF_RM;
 //===----------------------------------------------------------------------===//
 // 13.3. Vector Widening Floating-Point Add/Subtract Instructions
 //===----------------------------------------------------------------------===//
+let IsWiden = 1 in {
 let mayRaiseFPException = true, hasSideEffects = 0, hasPostISelHook = 1 in {
 defm PseudoVFWADD : VPseudoVFWALU_VV_VF_RM;
 defm PseudoVFWSUB : VPseudoVFWALU_VV_VF_RM;
 defm PseudoVFWADD : VPseudoVFWALU_WV_WF_RM;
 defm PseudoVFWSUB : VPseudoVFWALU_WV_WF_RM;
+}
 }
 
 //===----------------------------------------------------------------------===//
@@ -6478,8 +6486,10 @@ defm PseudoVFRDIV : VPseudoVFRDIV_VF_RM;
 //===----------------------------------------------------------------------===//
 // 13.5. Vector Widening Floating-Point Multiply
 //===----------------------------------------------------------------------===//
+let IsWiden = 1 in {
 let mayRaiseFPException = true, hasSideEffects = 0 in {
 defm PseudoVFWMUL : VPseudoVWMUL_VV_VF_RM;
+}
 }
 
 //===----------------------------------------------------------------------===//
@@ -6499,6 +6509,7 @@ defm PseudoVFNMSUB : VPseudoVMAC_VV_VF_AAXA_RM;
 //===----------------------------------------------------------------------===//
 // 13.7. Vector Widening Floating-Point Fused Multiply-Add Instructions
 //===----------------------------------------------------------------------===//
+let IsWiden = 1 in {
 let mayRaiseFPException = true, hasSideEffects = 0, hasPostISelHook = 1 in {
 defm PseudoVFWMACC  : VPseudoVWMAC_VV_VF_RM;
 defm PseudoVFWNMACC : VPseudoVWMAC_VV_VF_RM;
@@ -6506,6 +6517,7 @@ defm PseudoVFWMSAC  : VPseudoVWMAC_VV_VF_RM;
 defm PseudoVFWNMSAC : VPseudoVWMAC_VV_VF_RM;
 let Predicates = [HasStdExtZvfbfwma] in
 defm PseudoVFWMACCBF16  : VPseudoVWMAC_VV_VF_BF_RM;
+}
 }
 
 //===----------------------------------------------------------------------===//
@@ -6595,6 +6607,7 @@ defm PseudoVFCVT_RM_F_X  : VPseudoVCVTF_RM_V;
 //===----------------------------------------------------------------------===//
 // 13.18. Widening Floating-Point/Integer Type-Convert Instructions
 //===----------------------------------------------------------------------===//
+let IsWiden = 1 in {
 let mayRaiseFPException = true in {
 let hasSideEffects = 0, hasPostISelHook = 1 in {
 defm PseudoVFWCVT_XU_F     : VPseudoVWCVTI_V_RM;
@@ -6612,6 +6625,7 @@ defm PseudoVFWCVT_F_X      : VPseudoVWCVTF_V;
 defm PseudoVFWCVT_F_F      : VPseudoVWCVTD_V;
 defm PseudoVFWCVTBF16_F_F :  VPseudoVWCVTD_V;
 } // mayRaiseFPException = true
+}
 
 //===----------------------------------------------------------------------===//
 // 13.19. Narrowing Floating-Point/Integer Type-Convert Instructions
@@ -6662,11 +6676,13 @@ defm PseudoVREDMAX  : VPseudoVREDMINMAX_VS;
 //===----------------------------------------------------------------------===//
 // 14.2. Vector Widening Integer Reduction Instructions
 //===----------------------------------------------------------------------===//
+let IsWiden = 1 in {
 let IsRVVWideningReduction = 1 in {
 defm PseudoVWREDSUMU   : VPseudoVWRED_VS;
 defm PseudoVWREDSUM    : VPseudoVWRED_VS;
 }
 } // Predicates = [HasVInstructions]
+}
 
 let Predicates = [HasVInstructionsAnyF] in {
 //===----------------------------------------------------------------------===//
@@ -6685,6 +6701,7 @@ defm PseudoVFREDMAX  : VPseudoVFREDMINMAX_VS;
 //===----------------------------------------------------------------------===//
 // 14.4. Vector Widening Floating-Point Reduction Instructions
 //===----------------------------------------------------------------------===//
+let IsWiden = 1 in {
 let IsRVVWideningReduction = 1,
     hasSideEffects = 0,
     mayRaiseFPException = true in {
@@ -6693,6 +6710,7 @@ defm PseudoVFWREDOSUM  : VPseudoVFWREDO_VS_RM;
 }
 
 } // Predicates = [HasVInstructionsAnyF]
+}
 
 //===----------------------------------------------------------------------===//
 // 15. Vector Mask Instructions
