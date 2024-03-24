@@ -131,6 +131,9 @@ enum {
   // 2 -> Is altfmt(BF16).
   AltfmtTypeShift = TargetOverlapConstraintTypeShift + 2,
   AltfmtTypeMask = 3ULL << AltfmtTypeShift,
+
+  IsWidenShift = AltfmtTypeShift + 2,
+  IsWidenMask = 1 << IsWidenShift,
 #endif // SIFIVE_CUSTOMIZATION
 };
 
@@ -154,6 +157,9 @@ static inline bool isTiedPseudo(uint64_t TSFlags) {
 /// \returns true if there is a SEW operand for the instruction.
 static inline bool hasSEWOp(uint64_t TSFlags) {
   return TSFlags & HasSEWOpMask;
+}
+static inline bool isWiden(uint64_t TSFlags) {
+  return TSFlags & IsWidenMask;
 }
 /// \returns true if there is a VL operand for the instruction.
 static inline bool hasVLOp(uint64_t TSFlags) {

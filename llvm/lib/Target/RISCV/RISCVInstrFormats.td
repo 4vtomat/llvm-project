@@ -230,6 +230,9 @@ class RVInstCommon<dag outs, dag ins, string opcodestr, string argstr,
   // 2 -> Is altfmt(BF16).
   bits<2> AltfmtType = 0;
   let TSFlags{24-23} = AltfmtType;
+
+  bit IsWiden = 0;
+  let TSFlags{25} = IsWiden;
 #endif // SIFIVE_CUSTOMIZATION
 }
 
