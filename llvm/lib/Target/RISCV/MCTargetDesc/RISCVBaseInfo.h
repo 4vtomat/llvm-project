@@ -123,6 +123,9 @@ enum {
   // 3 -> widening case
   TargetOverlapConstraintTypeShift = UsesVXRMShift + 1,
   TargetOverlapConstraintTypeMask = 3ULL << TargetOverlapConstraintTypeShift,
+
+  IsWidenShift = TargetOverlapConstraintTypeShift + 2,
+  IsWidenMask = 1 << IsWidenShift,
 };
 
 // Helper functions to read TSFlags.
@@ -145,6 +148,9 @@ static inline bool isTiedPseudo(uint64_t TSFlags) {
 /// \returns true if there is a SEW operand for the instruction.
 static inline bool hasSEWOp(uint64_t TSFlags) {
   return TSFlags & HasSEWOpMask;
+}
+static inline bool isWiden(uint64_t TSFlags) {
+  return TSFlags & IsWidenMask;
 }
 /// \returns true if there is a VL operand for the instruction.
 static inline bool hasVLOp(uint64_t TSFlags) {

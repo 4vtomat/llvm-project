@@ -260,6 +260,8 @@ bool RISCVSpillRewrite::tryToRewriteSpill(MachineBasicBlock &MBB,
       SEW = TempI->getOperand(RISCVII::getSEWOpNum(Desc)).getImm();
       switch (RISCVII::getLMul(TSFlags)) {
       case RISCVII::LMUL_F2:
+        if (RISCVII::isWiden(TSFlags))
+          break;
         if (SEW == 3)
           Opcode = RISCV::PseudoVSE8_V_MF2;
         else if (SEW == 4)
@@ -268,14 +270,26 @@ bool RISCVSpillRewrite::tryToRewriteSpill(MachineBasicBlock &MBB,
           Opcode = RISCV::PseudoVSE32_V_MF2;
         break;
       case RISCVII::LMUL_F4:
-        if (SEW == 3)
-          Opcode = RISCV::PseudoVSE8_V_MF4;
-        else if (SEW == 4)
-          Opcode = RISCV::PseudoVSE16_V_MF4;
+        if (RISCVII::isWiden(TSFlags)) {
+          if (SEW == 3)
+            Opcode = RISCV::PseudoVSE8_V_MF2;
+          else if (SEW == 4)
+            Opcode = RISCV::PseudoVSE16_V_MF2;
+        } else {
+          if (SEW == 3)
+            Opcode = RISCV::PseudoVSE8_V_MF4;
+          else if (SEW == 4)
+            Opcode = RISCV::PseudoVSE16_V_MF4;
+        }
         break;
       case RISCVII::LMUL_F8:
-        if (SEW == 3)
-          Opcode = RISCV::PseudoVSE8_V_MF8;
+        if (RISCVII::isWiden(TSFlags)) {
+          if (SEW == 3)
+            Opcode = RISCV::PseudoVSE8_V_MF4;
+        } else {
+          if (SEW == 3)
+            Opcode = RISCV::PseudoVSE8_V_MF8;
+        }
         break;
       default:
         break;
