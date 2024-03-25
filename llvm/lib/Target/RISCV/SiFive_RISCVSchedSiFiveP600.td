@@ -681,12 +681,12 @@ foreach mx = ["M8", "M4", "M2"] in {
 }
 
 let Latency = 2, ReleaseAtCycles = [1] in {
-  def : WriteRes<WriteVIMovVX, [SiFiveP600VectorArith]>;
-  def : WriteRes<WriteVIMovXV, [SiFiveP600VectorArith]>;
+  def : WriteRes<WriteVMovXS, [SiFiveP600VectorArith]>;
+  def : WriteRes<WriteVMovSX, [SiFiveP600VectorArith]>;
 }
 let Latency = 6, ReleaseAtCycles = [1] in {
-  def : WriteRes<WriteVFMovVF, [SiFiveP600VectorArith]>;
-  def : WriteRes<WriteVFMovFV, [SiFiveP600VectorArith]>;
+  def : WriteRes<WriteVMovFS, [SiFiveP600VectorArith]>;
+  def : WriteRes<WriteVMovSF, [SiFiveP600VectorArith]>;
 }
 
 // Simple Gather and Compress
@@ -988,12 +988,12 @@ defm "" : LMULReadAdvance<"ReadVMSFSV", 0>;
 defm "" : LMULReadAdvance<"ReadVIotaV", 0>;
 
 // 17. Vector Permutation Instructions
-def : ReadAdvance<ReadVIMovVX, 0>;
-def : ReadAdvance<ReadVIMovXV, 0>;
-def : ReadAdvance<ReadVIMovXX, 0>;
-def : ReadAdvance<ReadVFMovVF, 0>;
-def : ReadAdvance<ReadVFMovFV, 0>;
-def : ReadAdvance<ReadVFMovFX, 0>;
+def : ReadAdvance<ReadVMovXS, 0>;
+def : ReadAdvance<ReadVMovSX_V, 0>;
+def : ReadAdvance<ReadVMovSX_X, 0>;
+def : ReadAdvance<ReadVMovFS, 0>;
+def : ReadAdvance<ReadVMovSF_V, 0>;
+def : ReadAdvance<ReadVMovSF_F, 0>;
 defm "" : LMULReadAdvance<"ReadVISlideV", 0>;
 defm "" : LMULReadAdvance<"ReadVISlideX", 0>;
 defm "" : LMULReadAdvance<"ReadVFSlideV", 0>;
