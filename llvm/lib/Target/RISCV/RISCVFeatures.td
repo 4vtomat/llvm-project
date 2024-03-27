@@ -33,6 +33,10 @@ def FeatureStdExtSmstateen
                        "'Smstateen' (Machine-mode view of the state-enable "
                        "extension.)", []>;
 
+def FeaturesSmrnmi
+    : SubtargetFeature<"experimental-smrnmi", "HasStdExtSmrnmi", "true",
+                       "'Smrnmi' (Resumable Non-Maskable Interrupts)", []>;
+
 def FeatureStdExtSmwg
     : SubtargetFeature<"experimental-smwg", "HasStdExtSmwg", "true",
                        "'Smwg' (The Smwg extension adds the mlwid CSR, which is "

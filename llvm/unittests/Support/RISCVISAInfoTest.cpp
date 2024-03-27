@@ -922,6 +922,7 @@ Experimental extensions
     zvfbfwma            1.0
     smmpm               0.8
     smnpm               0.8
+    smrnmi              0.5
     smwg                0.3
     smwgd               0.3
     ssnpm               0.8

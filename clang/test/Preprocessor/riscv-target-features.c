@@ -165,6 +165,7 @@
 // CHECK-NOT: __riscv_smstateen
 // CHECK-NOT: __sifive_recode_neon
 // CHECK-NOT: __riscv_zvkns
+// CHECK-NOT: __riscv_smrnmi
 // CHECK-NOT: __riscv_smwg
 // CHECK-NOT: __riscv_smwgd
 // CHECK-NOT: __riscv_sswg
@@ -1275,6 +1276,14 @@
 // RUN: %clang --target=riscv64 -march=rv64ismstateen  -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-SMSTATEEN-EXT %s
 // CHECK-SMSTATEEN-EXT: __riscv_smstateen  1000000{{$}}
+
+// RUN: %clang --target=riscv32 -menable-experimental-extensions \
+// RUN:   -march=rv32i_smrnmi0p5 -E -dM %s \
+// RUN:   -o - | FileCheck --check-prefix=CHECK-SMRNMI-EXT %s
+// RUN: %clang --target=riscv64 -menable-experimental-extensions \
+// RUN:   -march=rv64i_smrnmi0p5 -E -dM %s \
+// RUN:   -o - | FileCheck --check-prefix=CHECK-SMRNMI-EXT %s
+// CHECK-SMRNMI-EXT: __riscv_smrnmi 5000{{$}}
 
 // RUN: %clang --target=riscv32 -menable-experimental-extensions \
 // RUN: -march=rv32ismwg -x c -E -dM %s \
