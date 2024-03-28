@@ -13865,6 +13865,9 @@ unsigned BoUpSLP::getVectorElementSize(Value *V) {
   // Traverse the expression tree in bottom-up order looking for loads. If we
   // encounter an instruction we don't yet handle, we give up.
   auto Width = 0u;
+#if SIFIVE_CUSTOMIZATION
+  Value *FirstNonBool = V->getType() == Builder.getInt1Ty() ? nullptr : V;
+#endif // SIFIVE_CUSTOMIZATION
   while (!Worklist.empty()) {
     Instruction *I;
     BasicBlock *Parent;
@@ -13875,6 +13878,10 @@ unsigned BoUpSLP::getVectorElementSize(Value *V) {
     auto *Ty = I->getType();
     if (isa<VectorType>(Ty))
       continue;
+#if SIFIVE_CUSTOMIZATION
+    if (!FirstNonBool && Ty != Builder.getInt1Ty())
+      FirstNonBool = I;
+#endif // SIFIVE_CUSTOMIZATION
 
     // If the current instruction is a load, update MaxWidth to reflect the
     // width of the loaded value.
@@ -13887,11 +13894,24 @@ unsigned BoUpSLP::getVectorElementSize(Value *V) {
     // user or the use is a PHI node, we add it to the worklist.
     else if (isa<PHINode, CastInst, GetElementPtrInst, CmpInst, SelectInst,
                  BinaryOperator, UnaryOperator>(I)) {
+#if SIFIVE_CUSTOMIZATION
+      for (Use &U : I->operands()) {
+        if (auto *J = dyn_cast<Instruction>(U.get()))
+          if (Visited.insert(J).second &&
+              (isa<PHINode>(I) || J->getParent() == Parent)) {
+            Worklist.emplace_back(J, J->getParent());
+            continue;
+          }
+        if (!FirstNonBool && U.get()->getType() != Builder.getInt1Ty())
+          FirstNonBool = U.get();
+      }
+#else
       for (Use &U : I->operands())
         if (auto *J = dyn_cast<Instruction>(U.get()))
           if (Visited.insert(J).second &&
               (isa<PHINode>(I) || J->getParent() == Parent))
             Worklist.emplace_back(J, J->getParent());
+#endif // SIFIVE_CUSTOMIZATION
     } else {
       break;
     }
@@ -13901,8 +13921,13 @@ unsigned BoUpSLP::getVectorElementSize(Value *V) {
   // gave up for some reason, just return the width of V. Otherwise, return the
   // maximum width we found.
   if (!Width) {
+#if SIFIVE_CUSTOMIZATION
+    if (V->getType() == Builder.getInt1Ty() && FirstNonBool)
+      V = FirstNonBool;
+#else
     if (auto *CI = dyn_cast<CmpInst>(V))
       V = CI->getOperand(0);
+#endif // SIFIVE_CUSTOMIZATION
     Width = DL->getTypeSizeInBits(V->getType());
   }
 
@@ -15526,8 +15551,15 @@ public:
       unsigned MaxElts =
           RegMaxNumber * llvm::bit_floor(MaxVecRegSize / EltSize);
 
+#if SIFIVE_CUSTOMIZATION
+      unsigned ReduxWidth = std::min<unsigned>(
+          llvm::bit_floor(NumReducedVals),
+          std::clamp<unsigned>(MaxElts, RedValsMaxNumber,
+                               RegMaxNumber * RedValsMaxNumber));
+#else
       unsigned ReduxWidth = std::min<unsigned>(
           llvm::bit_floor(NumReducedVals), std::max(RedValsMaxNumber, MaxElts));
+#endif // SIFIVE_CUSTOMIZATION
       unsigned Start = 0;
       unsigned Pos = Start;
       // Restarts vectorization attempt with lower vector factor.
