@@ -8,9 +8,9 @@
 //
 //===----------------------------------------------------------------------===//
 
-multiclass SiFive7NSchedResources<int VLEN> {
+multiclass SiFive7NSchedResources<int VLEN, bit ExtraVALU = false> {
   let BufferSize = 0 in
-  defm SiFive7N : BulletProcResources;
+  defm SiFive7N : BulletProcResources<ExtraVALU>;
   def SiFive7NPipeAB : ProcResGroup<[
     !cast<ProcResource>(NAME #SiFive7NPipeA),
     !cast<ProcResource>(NAME #SiFive7NPipeB)
@@ -23,17 +23,27 @@ multiclass SiFive7NSchedResources<int VLEN> {
   defvar SiFive7NMem = !cast<ProcResource>(NAME # SiFive7NMem);
   defvar SiFive7NIDiv = !cast<ProcResource>(NAME # SiFive7NIDiv);
   defvar SiFive7NFDiv = !cast<ProcResource>(NAME # SiFive7NFDiv);
+  // Pass SiFive7NVA for VA1 and VA1OrVA2 if there is only 1 VALU.
+  defvar SiFive7NVA1 = !if (ExtraVALU,
+                            !cast<ProcResource>(NAME # SiFive7NVA1),
+                            !cast<ProcResource>(NAME # SiFive7NVA));
+  defvar SiFive7NVA1OrVA2 = !if (ExtraVALU,
+                            !cast<ProcResGroup>(NAME # SiFive7NVA1OrVA2),
+                            !cast<ProcResource>(NAME # SiFive7NVA));
   defvar SiFive7NVA = !cast<ProcResource>(NAME # SiFive7NVA);
   defvar SiFive7NVL = !cast<ProcResource>(NAME # SiFive7NVL);
   defvar SiFive7NVS = !cast<ProcResource>(NAME # SiFive7NVS);
   defvar SiFive7NVCQ = !cast<ProcResource>(NAME # SiFive7NVCQ);
 
+
   // Define WriteRes records that are the same across all Bullet derived
   // SchedModels. WriteRes records that are not included in that multiclass should
   // be defined below.
-  defm "SiFive7N" : BulletWriteResBase<VLEN, SiFive7NPipeA, SiFive7NPipeB, SiFive7NPipeAB,
-                               SiFive7NMem, SiFive7NIDiv, SiFive7NFDiv,
-                               SiFive7NVA, SiFive7NVL, SiFive7NVS, SiFive7NVCQ>;
+  defm "SiFive7N"
+      : BulletWriteResBase<VLEN, SiFive7NPipeA, SiFive7NPipeB, SiFive7NPipeAB,
+                           SiFive7NMem, SiFive7NIDiv, SiFive7NFDiv, SiFive7NVA1,
+                           SiFive7NVA1OrVA2, SiFive7NVL, SiFive7NVS,
+                           SiFive7NVCQ>;
 
   // Half precision.
   let Latency = 4 in {
@@ -70,8 +80,8 @@ multiclass SiFive7NSchedResources<int VLEN> {
 
       // Define defaults
       let Latency = !add(Cycles, 3), AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-        defm "" : LMULSEWWriteResMXSEW<"WriteVRGatherVV", [SiFive7NVCQ, SiFive7NVA], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVCompressV", [SiFive7NVCQ, SiFive7NVA], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVRGatherVV", [SiFive7NVCQ, SiFive7NVA1], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVCompressV", [SiFive7NVCQ, SiFive7NVA1], mx, sew, IsWorstCase>;
       }
 
       if !or(!or(!eq(mx, "MF2"), !eq(mx, "MF4")), !eq(mx, "MF8")) then {
@@ -80,23 +90,23 @@ multiclass SiFive7NSchedResources<int VLEN> {
 
         // Define Narwhal resources
         defvar VRGatherVVLat = !add(7, !div(256, sew)); // 7 + DLEN / SEW
-        def "WriteVRGatherVV_" # mx # "_E" # sew # "_N" : SchedWriteRes<[SiFive7NVCQ, SiFive7NVA]> {
+        def "WriteVRGatherVV_" # mx # "_E" # sew # "_N" : SchedWriteRes<[SiFive7NVCQ, SiFive7NVA1]> {
           let Latency = VRGatherVVLat;
           let AcquireAtCycles = [0, 1];
           let ReleaseAtCycles = [1, !add(1, !add(4, Cycles))];
         }
-        def "WriteVCompressV_" # mx # "_E" # sew # "_N" : SchedWriteRes<[SiFive7NVCQ, SiFive7NVA]> {
+        def "WriteVCompressV_" # mx # "_E" # sew # "_N" : SchedWriteRes<[SiFive7NVCQ, SiFive7NVA1]> {
           let Latency = !add(Cycles, 7);
           let AcquireAtCycles = [0, 1];
           let ReleaseAtCycles = [1, !add(1, !add(7, Cycles))];
         }
         // Define Orca resources
-        def "WriteVRGatherVV_" # mx # "_E" # sew # "_O" : SchedWriteRes<[SiFive7NVCQ, SiFive7NVA]> {
+        def "WriteVRGatherVV_" # mx # "_E" # sew # "_O" : SchedWriteRes<[SiFive7NVCQ, SiFive7NVA1]> {
           let Latency = 4;
           let AcquireAtCycles = [0, 1];
           let ReleaseAtCycles = [1, !add(1, 1)];
         }
-        def "WriteVCompressV_" # mx # "_E" # sew # "_O" : SchedWriteRes<[SiFive7NVCQ, SiFive7NVA]> {
+        def "WriteVCompressV_" # mx # "_E" # sew # "_O" : SchedWriteRes<[SiFive7NVCQ, SiFive7NVA1]> {
           let Latency = 4;
           let AcquireAtCycles = [0, 1];
           let ReleaseAtCycles = [1, !add(1, 1)];
@@ -152,7 +162,7 @@ multiclass SiFive7NSchedResources<int VLEN> {
 }
 
 // SiFive7N machine model for scheduling and other instruction cost heuristics.
-class SiFive7NSchedMachineModel<int vlen> : SchedMachineModel {
+class SiFive7NSchedMachineModel<int vlen, bit extraVALU = false> : SchedMachineModel {
   let MicroOpBufferSize = 0; // Explicitly set to zero since SiFive7N is in-order.
   let IssueWidth = 2;        // 2 micro-ops are dispatched per cycle.
   let LoadLatency = 3;
@@ -166,17 +176,27 @@ class SiFive7NSchedMachineModel<int vlen> : SchedMachineModel {
                              HasVendorXSfvqmaccqoq, HasVendorXSfvqmaccdod, // SIFIVE
                              HasVendorXSfvfhbfmin]; // SIFIVE
   int VLEN = vlen;
+  bit ExtraVALU = extraVALU;
 }
 
 def SiFive7NVLEN128Model : SiFive7NSchedMachineModel<128>;
 def SiFive7NVLEN256Model : SiFive7NSchedMachineModel<256>;
 def SiFive7NVLEN512Model : SiFive7NSchedMachineModel<512>;
+def SiFive7SVLEN1024Model : SiFive7NSchedMachineModel<1024>;
+def SiFive7SVLEN1024DualVALUModel
+    : SiFive7NSchedMachineModel<1024, true>;
 // Some processors do not have vector but reuse the scheduler model that has vector.
 // Create an alias that does not have VLEN in the name.
 defvar SiFive7NModel = SiFive7NVLEN512Model;
 // Define sched resources for each model.
-foreach model =
-    [SiFive7NVLEN128Model, SiFive7NVLEN256Model, SiFive7NVLEN512Model] in {
+foreach model = [
+  SiFive7NVLEN128Model,
+  SiFive7NVLEN256Model,
+  SiFive7NVLEN512Model,
+  SiFive7SVLEN1024Model,
+  SiFive7SVLEN1024DualVALUModel,
+] in {
+  defvar name = "VLEN" # model.VLEN # !if(model.ExtraVALU, "DualVALU","");
   let SchedModel = model in
-  defm "VLEN" # model.VLEN : SiFive7NSchedResources<model.VLEN>;
+  defm name : SiFive7NSchedResources<model.VLEN, model.ExtraVALU>;
 }

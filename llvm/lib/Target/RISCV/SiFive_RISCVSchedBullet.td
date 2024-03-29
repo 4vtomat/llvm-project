@@ -201,16 +201,28 @@ class BulletAnyToFPRBypass<SchedRead read, int cycles = 1>
 // Pipe A can handle memory, integer alu and vector operations.
 // Pipe B can handle integer alu, control flow, integer multiply and divide,
 // and floating point computation.
-// The V pipeline is modeled by the VCQ, VA, VL, and VS resources.
-// numVALUs describes the number of ALUs that make up the vector arithmetic
-// sequencer.
-multiclass BulletProcResources<int numVALUs = 1> {
+// The V pipeline is modeled by the VCQ, one (VA1) or two (VA1OrVA2)
+// arithmetic sequencers, VL, and VS.
+multiclass BulletProcResources<bit extraVALU = false> {
   def PipeA : ProcResource<1>;
   def PipeB : ProcResource<1>;
   def Mem   : ProcResource<1>; // Memory
   def IDiv  : ProcResource<1>; // Int Division
   def FDiv  : ProcResource<1>; // FP Division/Sqrt
-  def VA    : ProcResource<numVALUs>; // Arithmetic sequencer
+  // Bullet CPUs can have either one or two vector arithmetic sequencers
+  // The VALUs are not symmetric. The first vector arithmetic sequencer can
+  // take any vector arithmetic instruction, but the second takes only a
+  // subset of vector arithmetic instructions. Instructions that execute on
+  // either arithmetic sequencer should use VA1OrVA2. Instructions that
+  // execute only on the first sequencer should use VA1.
+  if extraVALU then {
+    def VA1 : ProcResource<1>;
+    def VA2 : ProcResource<1>;
+    def VA1OrVA2 : ProcResGroup<[!cast<ProcResource>(NAME # "VA1"),
+                                 !cast<ProcResource>(NAME # "VA2")]>;
+  } else {
+    def VA : ProcResource<1>;
+  }
   def VL    : ProcResource<1>; // Load sequencer
   def VS    : ProcResource<1>; // Store sequencer
   // The VCQ accepts instructions from the the A Pipe and holds them until the
@@ -225,11 +237,11 @@ multiclass BulletProcResources<int numVALUs = 1> {
   def VCQ   : ProcResource<1>; // Vector Command Queue
 }
 
-multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind PipeB,
-                              ProcResourceKind PipeAB, ProcResourceKind Mem,
-                              ProcResourceKind IDiv, ProcResourceKind FDiv,
-                              ProcResourceKind VA, ProcResourceKind VL,
-                              ProcResourceKind VS, ProcResourceKind VCQ> {
+multiclass BulletWriteResBase<
+    int VLEN, ProcResourceKind PipeA, ProcResourceKind PipeB,
+    ProcResourceKind PipeAB, ProcResourceKind Mem, ProcResourceKind IDiv,
+    ProcResourceKind FDiv, ProcResourceKind VA1, ProcResourceKind VA1OrVA2,
+    ProcResourceKind VL, ProcResourceKind VS, ProcResourceKind VCQ> {
 
   // Branching
   let Latency = 3 in {
@@ -612,36 +624,39 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
     let Latency = 4, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVIALUV",     [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIALUX",     [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIALUI",     [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVICALUV",    [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVICALUX",    [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVICALUI",    [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVShiftV",    [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVShiftX",    [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVShiftI",    [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIMinMaxV",  [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIMinMaxX",  [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIMergeV",   [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIMergeX",   [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIMergeI",   [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIMovV",     [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIMovX",     [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIMovI",     [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVExtV",      [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIALUV",     [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIALUX",     [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIALUI",     [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      // vmadc requires mask
+      defm "" : LMULWriteResMX<"WriteVICALUV",    [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVICALUX",    [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVICALUI",    [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVShiftV",    [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVShiftX",    [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVShiftI",    [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      // min max requires merge
+      defm "" : LMULWriteResMX<"WriteVIMinMaxV",  [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIMinMaxX",  [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIMergeV",   [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIMergeX",   [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIMergeI",   [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIMovV",     [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIMovX",     [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIMovI",     [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      // VZEXT and VSEXT reuse the slide instruction's permutation network
+      defm "" : LMULWriteResMX<"WriteVExtV",      [VCQ, VA1], mx, IsWorstCase>;
     }
     let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVIMulV",     [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIMulX",     [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIMulAddV",  [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIMulAddX",  [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIMulV",     [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIMulX",     [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIMulAddV",  [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIMulAddX",  [VCQ, VA1OrVA2], mx, IsWorstCase>;
     }
     // Mask results can't chain.
     let Latency = !add(Cycles, 3), AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVICmpV",     [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVICmpX",     [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVICmpI",     [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVICmpV",     [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVICmpX",     [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVICmpI",     [VCQ, VA1], mx, IsWorstCase>;
     }
   }
   foreach mx = SchedMxList in {
@@ -653,8 +668,8 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
           !mul(sew, !div(!add(3, BulletGetCyclesOnePerElement<mx, sew, VLEN>.c), 4));
       defvar IsWorstCase = BulletIsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
       let Latency = Cycles, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-        defm "" : LMULSEWWriteResMXSEW<"WriteVIDivV", [VCQ, VA], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVIDivX", [VCQ, VA], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVIDivV", [VCQ, VA1], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVIDivX", [VCQ, VA1], mx, sew, IsWorstCase>;
       }
     }
   }
@@ -663,13 +678,13 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxListW>.c;
     let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVIWALUV",    [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIWALUX",    [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIWALUI",    [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIWMulV",    [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIWMulX",    [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIWMulAddV", [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIWMulAddX", [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIWALUV",    [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIWALUX",    [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIWALUI",    [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIWMulV",    [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIWMulX",    [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIWMulAddV", [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIWMulAddX", [VCQ, VA1OrVA2], mx, IsWorstCase>;
     }
   }
   // Narrowing
@@ -677,9 +692,9 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
     defvar Cycles = BulletGetCyclesNarrowing<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxListW>.c;
     let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVNShiftV",   [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVNShiftX",   [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVNShiftI",   [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVNShiftV",   [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVNShiftX",   [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVNShiftI",   [VCQ, VA1OrVA2], mx, IsWorstCase>;
     }
   }
   
@@ -688,16 +703,16 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
     let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVSALUV",   [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVSALUX",   [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVSALUI",   [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVAALUV",   [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVAALUX",   [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVSMulV",   [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVSMulX",   [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVSShiftV", [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVSShiftX", [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVSShiftI", [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVSALUV",   [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVSALUX",   [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVSALUI",   [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVAALUV",   [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVAALUX",   [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVSMulV",   [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVSMulX",   [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVSShiftV", [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVSShiftX", [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVSShiftI", [VCQ, VA1OrVA2], mx, IsWorstCase>;
     }
   }
   // Narrowing
@@ -705,9 +720,9 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
     defvar Cycles = BulletGetCyclesNarrowing<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxListW>.c;
     let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVNClipV",  [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVNClipX",  [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVNClipI",  [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVNClipV",  [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVNClipX",  [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVNClipI",  [VCQ, VA1OrVA2], mx, IsWorstCase>;
     }
   }
   
@@ -716,29 +731,31 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
     let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVFALUV",      [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFALUF",      [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFMulV",      [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFMulF",      [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFMulAddV",   [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFMulAddF",   [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFRecpV",     [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFCvtIToFV",  [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFCvtFToIV",  [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFALUV",      [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFALUF",      [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFMulV",      [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFMulF",      [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFMulAddV",   [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFMulAddF",   [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFRecpV",     [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFCvtIToFV",  [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFCvtFToIV",  [VCQ, VA1], mx, IsWorstCase>;
     }
     let Latency = 4, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVFSgnjV",     [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFSgnjF",     [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFMinMaxV",   [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFMinMaxF",   [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFClassV",    [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFMergeV",    [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFMovV",      [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFSgnjV",     [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFSgnjF",     [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      // minmax requires merge
+      defm "" : LMULWriteResMX<"WriteVFMinMaxV",   [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFMinMaxF",   [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFClassV",    [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFMergeV",    [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFMovV",      [VCQ, VA1OrVA2], mx, IsWorstCase>;
     }
     // Mask results can't chain.
     let Latency = !add(Cycles, 3), AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVFCmpV",      [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFCmpF",      [VCQ, VA], mx, IsWorstCase>;
+      // fcmp requires mask
+      defm "" : LMULWriteResMX<"WriteVFCmpV",      [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFCmpF",      [VCQ, VA1], mx, IsWorstCase>;
     }
   }
   foreach mx = SchedMxListF in {
@@ -747,9 +764,9 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
                            !div(BulletGetCyclesOnePerElement<mx, sew, VLEN>.c, 4));
       defvar IsWorstCase = BulletIsWorstCaseMXSEW<mx, sew, SchedMxListF, 1>.c;
       let Latency = Cycles, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFSqrtV", [VCQ, VA], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFDivV",  [VCQ, VA], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFDivF",  [VCQ, VA], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFSqrtV", [VCQ, VA1], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFDivV",  [VCQ, VA1], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFDivF",  [VCQ, VA1], mx, sew, IsWorstCase>;
       }
     }
   }
@@ -759,7 +776,7 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxListW>.c;
     let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVFWCvtIToFV", [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFWCvtIToFV", [VCQ, VA1], mx, IsWorstCase>;
     }
   }
   
@@ -767,14 +784,14 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxListFW>.c;
     let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVFWALUV",     [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFWMulV",     [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFWMulAddV",  [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFWCvtFToIV", [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFWCvtFToFV", [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFWMulAddF",  [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFWMulF",     [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFWALUF",     [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFWALUV",     [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFWMulV",     [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFWMulAddV",  [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFWCvtFToIV", [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFWCvtFToFV", [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFWMulAddF",  [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFWMulF",     [VCQ, VA1OrVA2], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFWALUF",     [VCQ, VA1OrVA2], mx, IsWorstCase>;
     }
   }
   // Narrowing
@@ -782,15 +799,15 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
     defvar Cycles = BulletGetCyclesNarrowing<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxListW>.c;
     let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVFNCvtFToIV", [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFNCvtFToIV", [VCQ, VA1], mx, IsWorstCase>;
     }
   }
   foreach mx = SchedMxListFW in {
     defvar Cycles = BulletGetCyclesNarrowing<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxListFW>.c;
     let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVFNCvtIToFV", [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFNCvtFToFV", [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFNCvtIToFV", [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFNCvtFToFV", [VCQ, VA1], mx, IsWorstCase>;
     }
   }
   
@@ -800,9 +817,9 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
       defvar Cycles = BulletGetReductionCycles<mx, sew, VLEN>.c;
       defvar IsWorstCase = BulletIsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
       let Latency = Cycles, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-        defm "" : LMULSEWWriteResMXSEW<"WriteVIRedV_From", [VCQ, VA],
+        defm "" : LMULSEWWriteResMXSEW<"WriteVIRedV_From", [VCQ, VA1],
                                        mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVIRedMinMaxV_From", [VCQ, VA],
+        defm "" : LMULSEWWriteResMXSEW<"WriteVIRedMinMaxV_From", [VCQ, VA1],
                                        mx, sew, IsWorstCase>;
       }
     }
@@ -813,7 +830,7 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
       defvar Cycles = BulletGetReductionCycles<mx, sew, VLEN>.c;
       defvar IsWorstCase = BulletIsWorstCaseMXSEW<mx, sew, SchedMxListWRed>.c;
       let Latency = Cycles, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in
-      defm "" : LMULSEWWriteResMXSEW<"WriteVIWRedV_From", [VCQ, VA],
+      defm "" : LMULSEWWriteResMXSEW<"WriteVIWRedV_From", [VCQ, VA1],
                                      mx, sew, IsWorstCase>;
     }
   }
@@ -823,14 +840,14 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
       defvar RedCycles = BulletGetReductionCycles<mx, sew, VLEN>.c;
       defvar IsWorstCase = BulletIsWorstCaseMXSEW<mx, sew, SchedMxListF, 1>.c;
       let Latency = RedCycles, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, RedCycles)] in {
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFRedV_From", [VCQ, VA],
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFRedV_From", [VCQ, VA1],
                                        mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFRedMinMaxV_From", [VCQ, VA],
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFRedMinMaxV_From", [VCQ, VA1],
                                        mx, sew, IsWorstCase>;
       }
       defvar OrdRedCycles = BulletGetOrderedReductionCycles<mx, sew, VLEN>.c;
       let Latency = OrdRedCycles, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, OrdRedCycles)] in
-      defm "" : LMULSEWWriteResMXSEW<"WriteVFRedOV_From", [VCQ, VA],
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFRedOV_From", [VCQ, VA1],
                                      mx, sew, IsWorstCase>;
     }
   }
@@ -840,11 +857,11 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
       defvar RedCycles = BulletGetReductionCycles<mx, sew, VLEN>.c;
       defvar IsWorstCase = BulletIsWorstCaseMXSEW<mx, sew, SchedMxListFWRed, 1>.c;
       let Latency = RedCycles, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, RedCycles)] in
-      defm "" : LMULSEWWriteResMXSEW<"WriteVFWRedV_From", [VCQ, VA],
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFWRedV_From", [VCQ, VA1],
                                      mx, sew, IsWorstCase>;
       defvar OrdRedCycles = BulletGetOrderedReductionCycles<mx, sew, VLEN>.c;
       let Latency = OrdRedCycles, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, OrdRedCycles)] in
-      defm "" : LMULSEWWriteResMXSEW<"WriteVFWRedOV_From", [VCQ, VA],
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFWRedOV_From", [VCQ, VA1],
                                      mx, sew, IsWorstCase>;
     }
   }
@@ -855,42 +872,42 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
     defvar Cycles = BulletGetCyclesVMask<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
     let Latency = 4, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in
-      defm "" : LMULWriteResMX<"WriteVMALUV", [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVMSFSV", [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVMALUV", [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVMSFSV", [VCQ, VA1], mx, IsWorstCase>;
   }
   // Simple mask logical used in series
   foreach mx = SchedMxList in {
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
     let Latency = 4, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVIotaV", [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVIdxV", [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIotaV", [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVIdxV", [VCQ, VA1], mx, IsWorstCase>;
     }
   }
   // Mask reduction
   foreach mx = SchedMxList in {
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
     let Latency = 11, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, 11)] in {
-      defm "" : LMULWriteResMX<"WriteVMFFSV", [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVMPopV", [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVMFFSV", [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVMPopV", [VCQ, VA1], mx, IsWorstCase>;
     }
   }
 
   // 16. Vector Permutation Instructions
   let Latency = 11, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, 11)] in {
-    def : WriteRes<WriteVMovXS, [VCQ, VA]>;
-    def : WriteRes<WriteVMovFS, [VCQ, VA]>;
+    def : WriteRes<WriteVMovXS, [VCQ, VA1]>;
+    def : WriteRes<WriteVMovFS, [VCQ, VA1]>;
   }
   let Latency = 4, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, 1)] in {
-    def : WriteRes<WriteVMovSX, [VCQ, VA]>;
-    def : WriteRes<WriteVMovSF, [VCQ, VA]>;
+    def : WriteRes<WriteVMovSX, [VCQ, VA1OrVA2]>;
+    def : WriteRes<WriteVMovSF, [VCQ, VA1OrVA2]>;
   }
   foreach mx = SchedMxList in {
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
     let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVRGatherVX",    [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVRGatherVI",    [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVRGatherVX",    [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVRGatherVI",    [VCQ, VA1], mx, IsWorstCase>;
     }
   }
   
@@ -898,22 +915,22 @@ multiclass BulletWriteResBase<int VLEN, ProcResourceKind PipeA, ProcResourceKind
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
     let Latency = 4, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVISlideX",   [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVISlideI",   [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVISlide1X",  [VCQ, VA], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFSlide1F",  [VCQ, VA], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVISlideX",   [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVISlideI",   [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVISlide1X",  [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVFSlide1F",  [VCQ, VA1], mx, IsWorstCase>;
     }
   }
   
   // VMov*V is LMUL Aware
   let Latency = 4, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, 2)] in
-    def : WriteRes<WriteVMov1V,     [VCQ, VA]>;
+    def : WriteRes<WriteVMov1V,     [VCQ, VA1OrVA2]>;
   let Latency = 4, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, 4)] in
-    def : WriteRes<WriteVMov2V,     [VCQ, VA]>;
+    def : WriteRes<WriteVMov2V,     [VCQ, VA1OrVA2]>;
   let Latency = 4, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, 8)] in
-    def : WriteRes<WriteVMov4V,     [VCQ, VA]>;
+    def : WriteRes<WriteVMov4V,     [VCQ, VA1OrVA2]>;
   let Latency = 4, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, 16)] in
-    def : WriteRes<WriteVMov8V,     [VCQ, VA]>;
+    def : WriteRes<WriteVMov8V,     [VCQ, VA1OrVA2]>;
   
   // Others
   def : WriteRes<WriteCSR, [PipeB]>;

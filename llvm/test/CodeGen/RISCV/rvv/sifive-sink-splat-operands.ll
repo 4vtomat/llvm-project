@@ -182,9 +182,9 @@ for.cond.cleanup:                                 ; preds = %vector.body
 define void @sink_splat_fadd(float* nocapture %a, float %x) {
 ; CHECK-LABEL: sink_splat_fadd:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    lui a1, 1
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v8, fa0
+; CHECK-NEXT:    lui a1, 1
 ; CHECK-NEXT:    add a1, a1, a0
 ; CHECK-NEXT:  .LBB3_1: # %vector.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
@@ -313,9 +313,9 @@ declare <4 x float> @llvm.vp.fadd.v4i32(<4 x float>, <4 x float>, <4 x i1>, i32)
 define void @sink_splat_vp_fadd(float* nocapture %a, float %x, <4 x i1> %m, i32 zeroext %vl) {
 ; CHECK-LABEL: sink_splat_vp_fadd:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    lui a2, 1
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v8, fa0
+; CHECK-NEXT:    lui a2, 1
 ; CHECK-NEXT:    add a2, a2, a0
 ; CHECK-NEXT:  .LBB5_1: # %vector.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
