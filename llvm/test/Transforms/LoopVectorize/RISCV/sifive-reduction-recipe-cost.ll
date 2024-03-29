@@ -5,23 +5,23 @@
 ; RUN: opt -passes=loop-vectorize -mtriple riscv64 -vector-primary-lmul-max=3 -mcpu=sifive-p670 -debug-only=vplan-cost-model,vplan -disable-output %s 2>&1 | FileCheck %s --check-prefix=CHECK-P670
 
 ; CHECK-X280: VPlanCM: cost 6 for RVL (mf2, float) for VPInstruction: EMIT vp<%13> = fmul ir<%sub>, ir<%sub>
-; CHECK-X280: VPlanCM: cost 47 for RVL (mf2, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%13>)
+; CHECK-X280: VPlanCM: cost 57 for RVL (mf2, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%13>)
 ; CHECK-X280: LV: Found an estimated overhead of 0 for VF vscale x 1 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
-; CHECK-X280: VPlanCM: cost 12 for RVL (m1, float) for VPInstruction: EMIT vp<%13> = fmul ir<%sub>, ir<%sub>
-; CHECK-X280: VPlanCM: cost 48 for RVL (m1, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%13>)
+; CHECK-X280: VPlanCM: cost 7 for RVL (m1, float) for VPInstruction: EMIT vp<%13> = fmul ir<%sub>, ir<%sub>
+; CHECK-X280: VPlanCM: cost 105 for RVL (m1, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%13>)
 ; CHECK-X280: LV: Found an estimated overhead of 0 for VF vscale x 2 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
-; CHECK-X280: VPlanCM: cost 24 for RVL (m2, float) for VPInstruction: EMIT vp<%13> = fmul ir<%sub>, ir<%sub>
-; CHECK-X280: VPlanCM: cost 50 for RVL (m2, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%13>)
+; CHECK-X280: VPlanCM: cost 9 for RVL (m2, float) for VPInstruction: EMIT vp<%13> = fmul ir<%sub>, ir<%sub>
+; CHECK-X280: VPlanCM: cost 201 for RVL (m2, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%13>)
 ; CHECK-X280: LV: Found an estimated overhead of 0 for VF vscale x 4 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
-; CHECK-X280: VPlanCM: cost 48 for RVL (m4, float) for VPInstruction: EMIT vp<%13> = fmul ir<%sub>, ir<%sub>
-; CHECK-X280: VPlanCM: cost 54 for RVL (m4, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%13>)
+; CHECK-X280: VPlanCM: cost 13 for RVL (m4, float) for VPInstruction: EMIT vp<%13> = fmul ir<%sub>, ir<%sub>
+; CHECK-X280: VPlanCM: cost 393 for RVL (m4, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%13>)
 ; CHECK-X280: LV: Found an estimated overhead of 0 for VF vscale x 8 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
-; CHECK-X280: VPlanCM: cost 96 for RVL (m8, float) for VPInstruction: EMIT vp<%13> = fmul ir<%sub>, ir<%sub>
-; CHECK-X280: VPlanCM: cost 62 for RVL (m8, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%13>)
+; CHECK-X280: VPlanCM: cost 21 for RVL (m8, float) for VPInstruction: EMIT vp<%13> = fmul ir<%sub>, ir<%sub>
+; CHECK-X280: VPlanCM: cost 777 for RVL (m8, float) for VPInstruction: REDUCE ir<%2> = ir<%weighted_MSE.07> + reduce.fadd (vp<%13>)
 ; CHECK-X280: LV: Found an estimated overhead of 0 for VF vscale x 16 For recipe: WIDEN-REDUCTION-PHI ir<%weighted_MSE.07> = phi ir<0.000000e+00>, ir<%2>
 
 
