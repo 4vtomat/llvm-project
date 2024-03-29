@@ -391,6 +391,23 @@ RISCVTTIImpl::getBestVectorTypeForLoopIdiom(LLVMContext &Ctx) const {
 }
 #endif
 
+#if SIFIVE_CUSTOMIZATION
+static InstructionCost getSiFive7ReductionCost(unsigned VL) {
+  // This reduction cost equation is fitted by reduction test result
+  //    6.53 + 10 * (ln(VL)), VL >= 4
+  // After changing the base and eliminate floating point
+  //    6 + 7 * Log2_32_Ceil(VL), VL >= 4
+  // For the cases with small VL, we use a lookup table for accurate
+  // cost estimation.
+  unsigned LookUpSiFive7ReduceLatency[] = {0, 20, 27, 32, 34, 38, 40, 41, 42};
+  if (VL <= 32)
+    return LookUpSiFive7ReduceLatency[(VL + 3) >> 2];
+  else
+    return 6 + 7 * Log2_32_Ceil(VL);
+}
+
+#endif // SIFIVE_CUSTOMIZATION
+
 InstructionCost
 RISCVTTIImpl::getRISCVInstructionCost(ArrayRef<unsigned> OpCodes, MVT VT,
                                       TTI::TargetCostKind CostKind) {
@@ -434,6 +451,12 @@ RISCVTTIImpl::getRISCVInstructionCost(ArrayRef<unsigned> OpCodes, MVT VT,
       unsigned VL = VT.getVectorMinNumElements();
       if (!VT.isFixedLengthVector())
         VL *= *getVScaleForTuning();
+#if SIFIVE_CUSTOMIZATION
+      if (ST->getProcFamily() == RISCVSubtarget::SiFive7) {
+        Cost += getSiFive7ReductionCost(VL);
+        break;
+      }
+#endif // SIFIVE_CUSTOMIZATION
       Cost += Log2_32_Ceil(VL);
       break;
     }
@@ -441,6 +464,12 @@ RISCVTTIImpl::getRISCVInstructionCost(ArrayRef<unsigned> OpCodes, MVT VT,
       unsigned VL = VT.getVectorMinNumElements();
       if (!VT.isFixedLengthVector())
         VL *= *getVScaleForTuning();
+#if SIFIVE_CUSTOMIZATION
+      if (ST->getProcFamily() == RISCVSubtarget::SiFive7) {
+        Cost += VL * 6;
+        break;
+      }
+#endif // SIFIVE_CUSTOMIZATION
       Cost += VL;
       break;
     }
@@ -1726,31 +1755,16 @@ RISCVTTIImpl::getMinMaxReductionCost(Intrinsic::ID IID, VectorType *Ty,
   // IR Reduction is composed by two vmv and one rvv reduction instruction.
 #if SIFIVE_CUSTOMIZATION
   if (ST->getProcFamily() == RISCVSubtarget::SiFive7) {
+    unsigned VL = getEstimatedVLFor(Ty);
     InstructionCost BaseCost = 2;
 
     if (CostKind == TTI::TCK_CodeSize)
       return (LT.first - 1) + BaseCost;
 
-    // Now assume Vector performs better than scalar when
-    // element count >= 19.
-    unsigned CmpOpcode;
-    Type *ScalarTy = Ty->getElementType();
-    VectorType *CondTy = cast<VectorType>(CmpInst::makeCmpResultType(Ty));
-    Type *ScalarCondTy = CondTy->getElementType();
-    if (Ty->isFPOrFPVectorTy()) {
-      CmpOpcode = Instruction::FCmp;
-    } else {
-      assert(Ty->isIntOrIntVectorTy() &&
-             "expecting floating point or integer type for min/max reduction");
-      CmpOpcode = Instruction::ICmp;
-    }
-    constexpr int ProfitableVF = 19;
     return TLI->getLMULCost(LT.second) +
            getVectorInstrCost(Instruction::ExtractElement, Ty, CostKind, 0,
                               nullptr, nullptr) +
-           ProfitableVF * getCmpSelInstrCost(CmpOpcode, ScalarTy, ScalarCondTy,
-                                             CmpInst::BAD_ICMP_PREDICATE,
-                                             CostKind);
+           getSiFive7ReductionCost(VL);
   }
 #endif // SIFIVE_CUSTOMIZATION
   InstructionCost BaseCost = 2;
@@ -1823,18 +1837,7 @@ RISCVTTIImpl::getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
     return (LT.first - 1) + 2;
 
   // FIXME: Integrate with upstream.
-  // The vector to scalar move is expensive on x280, give it more cost.
-  if (ST->getProcFamily() == RISCVSubtarget::SiFive7) {
-    // Now assume Vector performs better than scalar when
-    // element count >= 19.
-    constexpr int ProfitableVF = 19;
-    return TLI->getLMULCost(LT.second) +
-           getVectorInstrCost(Instruction::ExtractElement, Ty, CostKind, 0,
-                              nullptr, nullptr) +
-           ProfitableVF *
-               getArithmeticInstrCost(Opcode, Ty->getElementType(), CostKind);
-  }
-  if (ST->isSiFiveCPU()) {
+  if (ST->isSiFiveCPU() && ST->getProcFamily() != RISCVSubtarget::SiFive7) {
     InstructionCost BaseCost = 14;
     unsigned VL = getEstimatedVLFor(Ty);
     if (TTI::requiresOrderedReduction(FMF))
@@ -2426,8 +2429,12 @@ InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
 #if SIFIVE_CUSTOMIZATION
     // Make cost of the vector instruction the same as the cost of two scalar
     // INT instructions
-    if (ST->isSiFiveCPU())
-      return ConstantMatCost + TLI->getLMULCost(LT.second) * LT.first * 2;
+    if (ST->isSiFiveCPU()) {
+      if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+        return ConstantMatCost + (TLI->getLMULCost(LT.second) - 1) +
+               LT.first * 2;
+      return ConstantMatCost + (TLI->getLMULCost(LT.second)) * LT.first * 2;
+    }
     [[fallthrough]];
 #endif // SIFIVE_CUSTOMIZATION
   case ISD::FADD:
@@ -2439,12 +2446,15 @@ InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
       // Make cost of the vector instruction the same as the cost of two scalar
       // FP instructions
       return ConstantMatCost + TLI->getLMULCost(LT.second) * LT.first * 4;
-    } else if (ST->isSiFiveCPU()) {
-      // X280, P670 and the rest SiFive cores fall into this case.
+    }
+    if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+      return ConstantMatCost + (TLI->getLMULCost(LT.second) - 1) + LT.first * 6;
+    if (ST->isSiFiveCPU()) {
+      // P670 and the rest SiFive cores fall into this case.
       // P670 has two FP pipes so we make the vector cost higher than P470
-      // Make cost of the vector instruction the same as the cost of three scalar
-      // FP instructions
-      return ConstantMatCost + TLI->getLMULCost(LT.second) * LT.first * 6;
+      // Make cost of the vector instruction the same as the cost of three
+      // scalar FP instructions
+      return ConstantMatCost + (TLI->getLMULCost(LT.second)) * LT.first * 6;
     }
 #endif // SIFIVE_CUSTOMIZATION
     return ConstantMatCost + TLI->getLMULCost(LT.second) * LT.first * 1;
@@ -2704,7 +2714,7 @@ unsigned RISCVTTIImpl::getCSABodyFactor() const {
 
 unsigned RISCVTTIImpl::getCSAOverheadFactor() const {
   if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
-    return 4;
+    return 3;
   return 1;
 }
 
