@@ -1681,3 +1681,91 @@ define i32 @compare_bytes_simple3(ptr %a, ptr %b, ptr %c, i32 %d, i32 %len, i32 
   store i32 %final_val, ptr %c
   ret i32 %final_val
 }
+
+; Disable the optimization when noimplicitfloat is present.
+define i32 @no_implicit_float(ptr %a, ptr %b, i32 %len, i32 %n) noimplicitfloat {
+; CHECK-LABEL: define i32 @no_implicit_float(
+; CHECK-SAME: ptr [[A:%.*]], ptr [[B:%.*]], i32 [[LEN:%.*]], i32 [[N:%.*]]) #[[ATTR1:[0-9]+]] {
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    br label [[WHILE_COND:%.*]]
+; CHECK:       while.cond:
+; CHECK-NEXT:    [[LEN_ADDR:%.*]] = phi i32 [ [[LEN]], [[ENTRY:%.*]] ], [ [[INC:%.*]], [[WHILE_BODY:%.*]] ]
+; CHECK-NEXT:    [[INC]] = add i32 [[LEN_ADDR]], 1
+; CHECK-NEXT:    [[CMP_NOT:%.*]] = icmp eq i32 [[INC]], [[N]]
+; CHECK-NEXT:    br i1 [[CMP_NOT]], label [[WHILE_END:%.*]], label [[WHILE_BODY]]
+; CHECK:       while.body:
+; CHECK-NEXT:    [[IDXPROM:%.*]] = zext i32 [[INC]] to i64
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[IDXPROM]]
+; CHECK-NEXT:    [[TMP0:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
+; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 [[IDXPROM]]
+; CHECK-NEXT:    [[TMP1:%.*]] = load i8, ptr [[ARRAYIDX2]], align 1
+; CHECK-NEXT:    [[CMP_NOT2:%.*]] = icmp eq i8 [[TMP0]], [[TMP1]]
+; CHECK-NEXT:    br i1 [[CMP_NOT2]], label [[WHILE_COND]], label [[WHILE_END]]
+; CHECK:       while.end:
+; CHECK-NEXT:    [[INC_LCSSA:%.*]] = phi i32 [ [[INC]], [[WHILE_BODY]] ], [ [[INC]], [[WHILE_COND]] ]
+; CHECK-NEXT:    ret i32 [[INC_LCSSA]]
+;
+; LMUL8-LABEL: define i32 @no_implicit_float(
+; LMUL8-SAME: ptr [[A:%.*]], ptr [[B:%.*]], i32 [[LEN:%.*]], i32 [[N:%.*]]) #[[ATTR1:[0-9]+]] {
+; LMUL8-NEXT:  entry:
+; LMUL8-NEXT:    br label [[WHILE_COND:%.*]]
+; LMUL8:       while.cond:
+; LMUL8-NEXT:    [[LEN_ADDR:%.*]] = phi i32 [ [[LEN]], [[ENTRY:%.*]] ], [ [[INC:%.*]], [[WHILE_BODY:%.*]] ]
+; LMUL8-NEXT:    [[INC]] = add i32 [[LEN_ADDR]], 1
+; LMUL8-NEXT:    [[CMP_NOT:%.*]] = icmp eq i32 [[INC]], [[N]]
+; LMUL8-NEXT:    br i1 [[CMP_NOT]], label [[WHILE_END:%.*]], label [[WHILE_BODY]]
+; LMUL8:       while.body:
+; LMUL8-NEXT:    [[IDXPROM:%.*]] = zext i32 [[INC]] to i64
+; LMUL8-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[IDXPROM]]
+; LMUL8-NEXT:    [[TMP0:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
+; LMUL8-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 [[IDXPROM]]
+; LMUL8-NEXT:    [[TMP1:%.*]] = load i8, ptr [[ARRAYIDX2]], align 1
+; LMUL8-NEXT:    [[CMP_NOT2:%.*]] = icmp eq i8 [[TMP0]], [[TMP1]]
+; LMUL8-NEXT:    br i1 [[CMP_NOT2]], label [[WHILE_COND]], label [[WHILE_END]]
+; LMUL8:       while.end:
+; LMUL8-NEXT:    [[INC_LCSSA:%.*]] = phi i32 [ [[INC]], [[WHILE_BODY]] ], [ [[INC]], [[WHILE_COND]] ]
+; LMUL8-NEXT:    ret i32 [[INC_LCSSA]]
+;
+; LOOP-DEL-LABEL: define i32 @no_implicit_float(
+; LOOP-DEL-SAME: ptr [[A:%.*]], ptr [[B:%.*]], i32 [[LEN:%.*]], i32 [[N:%.*]]) #[[ATTR1:[0-9]+]] {
+; LOOP-DEL-NEXT:  entry:
+; LOOP-DEL-NEXT:    br label [[WHILE_COND:%.*]]
+; LOOP-DEL:       while.cond:
+; LOOP-DEL-NEXT:    [[LEN_ADDR:%.*]] = phi i32 [ [[LEN]], [[ENTRY:%.*]] ], [ [[INC:%.*]], [[WHILE_BODY:%.*]] ]
+; LOOP-DEL-NEXT:    [[INC]] = add i32 [[LEN_ADDR]], 1
+; LOOP-DEL-NEXT:    [[CMP_NOT:%.*]] = icmp eq i32 [[INC]], [[N]]
+; LOOP-DEL-NEXT:    br i1 [[CMP_NOT]], label [[WHILE_END:%.*]], label [[WHILE_BODY]]
+; LOOP-DEL:       while.body:
+; LOOP-DEL-NEXT:    [[IDXPROM:%.*]] = zext i32 [[INC]] to i64
+; LOOP-DEL-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i8, ptr [[A]], i64 [[IDXPROM]]
+; LOOP-DEL-NEXT:    [[TMP0:%.*]] = load i8, ptr [[ARRAYIDX]], align 1
+; LOOP-DEL-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 [[IDXPROM]]
+; LOOP-DEL-NEXT:    [[TMP1:%.*]] = load i8, ptr [[ARRAYIDX2]], align 1
+; LOOP-DEL-NEXT:    [[CMP_NOT2:%.*]] = icmp eq i8 [[TMP0]], [[TMP1]]
+; LOOP-DEL-NEXT:    br i1 [[CMP_NOT2]], label [[WHILE_COND]], label [[WHILE_END]]
+; LOOP-DEL:       while.end:
+; LOOP-DEL-NEXT:    [[INC_LCSSA:%.*]] = phi i32 [ [[INC]], [[WHILE_BODY]] ], [ [[INC]], [[WHILE_COND]] ]
+; LOOP-DEL-NEXT:    ret i32 [[INC_LCSSA]]
+;
+entry:
+  br label %while.cond
+
+while.cond:
+  %len.addr = phi i32 [ %len, %entry ], [ %inc, %while.body ]
+  %inc = add i32 %len.addr, 1
+  %cmp.not = icmp eq i32 %inc, %n
+  br i1 %cmp.not, label %while.end, label %while.body
+
+while.body:
+  %idxprom = zext i32 %inc to i64
+  %arrayidx = getelementptr inbounds i8, ptr %a, i64 %idxprom
+  %0 = load i8, ptr %arrayidx
+  %arrayidx2 = getelementptr inbounds i8, ptr %b, i64 %idxprom
+  %1 = load i8, ptr %arrayidx2
+  %cmp.not2 = icmp eq i8 %0, %1
+  br i1 %cmp.not2, label %while.cond, label %while.end
+
+while.end:
+  %inc.lcssa = phi i32 [ %inc, %while.body ], [ %inc, %while.cond ]
+  ret i32 %inc.lcssa
+}

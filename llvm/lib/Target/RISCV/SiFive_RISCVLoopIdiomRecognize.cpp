@@ -81,6 +81,13 @@ RISCVLoopIdiomRecognizePass::run(Loop &L, LoopAnalysisManager &AM,
   if (DisableAll)
     return PreservedAnalyses::all();
 
+  Function &F = *L.getHeader()->getParent();
+  if (F.hasFnAttribute(Attribute::NoImplicitFloat)) {
+    LLVM_DEBUG(dbgs() << DEBUG_TYPE << " is disabled on " << F.getName()
+                      << " due to its NoImplicitFloat attribute");
+    return PreservedAnalyses::all();
+  }
+
   // Only enabled on RV64 for now.
   if (L.getHeader()->getModule()->getDataLayout().getPointerSizeInBits() != 64)
     return PreservedAnalyses::all();
