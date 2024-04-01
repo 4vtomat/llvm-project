@@ -2731,7 +2731,6 @@ bool RISCVTTIImpl::isLSRCostLess(const TargetTransformInfo::LSRCost &C1,
                   C2.ScaleCost, C2.ImmCost, C2.SetupCost);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool RISCVTTIImpl::enableUncountableVectorization() const {
   switch (ST->getProcFamily()) {
@@ -2768,7 +2767,7 @@ bool RISCVTTIImpl::enableMonotonicsVectorization() const {
   return ST->hasVInstructions();
 }
 #endif
-=======
+
 bool RISCVTTIImpl::isLegalMaskedCompressStore(Type *DataTy, Align Alignment) {
   auto *VTy = dyn_cast<VectorType>(DataTy);
   if (!VTy || VTy->isScalableTy())
@@ -2778,4 +2777,3 @@ bool RISCVTTIImpl::isLegalMaskedCompressStore(Type *DataTy, Align Alignment) {
     return false;
   return true;
 }
->>>>>>> a9d1fead961440d415f931bc22c160dec88e03fd
