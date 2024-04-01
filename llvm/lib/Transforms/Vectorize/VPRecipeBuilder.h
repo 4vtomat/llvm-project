@@ -56,7 +56,6 @@ class VPRecipeBuilder {
   EdgeMaskCacheTy EdgeMaskCache;
   BlockMaskCacheTy BlockMaskCache;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// Hold a mapping of Basic block to the canonical vector induction VPValue
   /// inserted for that block or the primary induction if it exists.
@@ -64,13 +63,8 @@ class VPRecipeBuilder {
   IVCacheTy IVCache;
 #endif // SIFIVE_CUSTOMIZATION
 
-  // VPlan-VPlan transformations support: Hold a mapping from ingredients to
-  // their recipe. To save on memory, only do so for selected ingredients,
-  // marked by having a nullptr entry in this map.
-=======
   // VPlan construction support: Hold a mapping from ingredients to
   // their recipe.
->>>>>>> a9d1fead961440d415f931bc22c160dec88e03fd
   DenseMap<Instruction *, VPRecipeBase *> Ingredient2Recipe;
 
   /// Cross-iteration reduction & first-order recurrence phis for which we need
