@@ -14419,7 +14419,6 @@ static SDValue transformAddImmMulImm(SDNode *N, SelectionDAG &DAG,
   return DAG.getNode(ISD::ADD, DL, VT, New1, DAG.getConstant(CB, DL, VT));
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // Reassociate (add X, (add Y, SImm12)) -> (add (add X, Y), SImm12) if the
 // the result is only used by scalar loads/stores. This allows the SImm12 to
@@ -14474,7 +14473,7 @@ static SDValue reassociateAddressArith(SDNode *N, SDValue N0, SDValue N1,
   return DAG.getNode(ISD::ADD, dl, VT, OpNode, N01);
 }
 #endif
-=======
+
 // add (zext, zext) -> zext (add (zext, zext))
 // sub (zext, zext) -> sext (sub (zext, zext))
 //
@@ -14523,7 +14522,6 @@ static SDValue combineBinOpOfZExt(SDNode *N, SelectionDAG &DAG) {
       OuterExtend, SDLoc(N), VT,
       DAG.getNode(N->getOpcode(), SDLoc(N), NarrowVT, Src0, Src1));
 }
->>>>>>> a9d1fead961440d415f931bc22c160dec88e03fd
 
 // Try to turn (add (xor bool, 1) -1) into (neg bool).
 static SDValue combineAddOfBooleanXor(SDNode *N, SelectionDAG &DAG) {
