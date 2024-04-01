@@ -8474,7 +8474,6 @@ const BoUpSLP::TreeEntry *BoUpSLP::getOperandEntry(const TreeEntry *E,
   return It->get();
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool BoUpSLP::isRISCVStridedNode(const TreeEntry *E) const {
   return enabledRISCVExtensions(*F->getEntryBlock().getModule(), *TTI) &&
@@ -8485,7 +8484,7 @@ bool BoUpSLP::isRISCVStridedNode(const TreeEntry *E) const {
            isReverseOrder(E->ReorderIndices)));
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 TTI::CastContextHint BoUpSLP::getCastContextHint(const TreeEntry &TE) const {
   if (TE.State == TreeEntry::ScatterVectorize ||
       TE.State == TreeEntry::StridedVectorize)
@@ -8501,7 +8500,6 @@ TTI::CastContextHint BoUpSLP::getCastContextHint(const TreeEntry &TE) const {
   }
   return TTI::CastContextHint::None;
 }
->>>>>>> a9d1fead961440d415f931bc22c160dec88e03fd
 
 InstructionCost
 BoUpSLP::getEntryCost(const TreeEntry *E, ArrayRef<Value *> VectorizedVals,
@@ -9375,10 +9373,6 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
 
   // Check if any of the gather node forms an insertelement buildvector
   // somewhere.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> a9d1fead961440d415f931bc22c160dec88e03fd
   bool IsAllowedSingleBVNode =
       VectorizableTree.size() > 1 ||
       (VectorizableTree.size() == 1 && VectorizableTree.front()->getOpcode() &&
@@ -9386,22 +9380,6 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
        VectorizableTree.front()->getOpcode() != Instruction::GetElementPtr &&
        allSameBlock(VectorizableTree.front()->Scalars));
   if (any_of(VectorizableTree, [&](const std::unique_ptr<TreeEntry> &TE) {
-<<<<<<< HEAD
-        return TE->State == TreeEntry::NeedToGather &&
-               all_of(TE->Scalars, [&](Value *V) {
-                 return isa<ExtractElementInst, UndefValue>(V) ||
-                        (IsAllowedSingleBVNode &&
-                         (!V->hasNUsesOrMore(UsesLimit) &&
-                          any_of(V->users(), [](User *U) {
-                            return isa<InsertElementInst>(U);
-                          })));
-               });
-      }))
-    return false;
-#else
-  if (any_of(VectorizableTree, [](const std::unique_ptr<TreeEntry> &TE) {
-=======
->>>>>>> a9d1fead961440d415f931bc22c160dec88e03fd
         return TE->State == TreeEntry::NeedToGather &&
                all_of(TE->Scalars, [&](Value *V) {
                  return isa<ExtractElementInst, UndefValue>(V) ||
@@ -9413,7 +9391,6 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
                });
       }))
     return false;
-#endif // SIFIVE_CUSTOMIZATION
 
   assert(VectorizableTree.empty()
              ? ExternalUses.empty()
