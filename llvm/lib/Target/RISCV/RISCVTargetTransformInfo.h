@@ -372,6 +372,8 @@ public:
     return TLI->isLegalStridedLoadStore(DataTypeVT, Alignment);
   }
 
+  bool isLegalMaskedCompressStore(Type *DataTy, Align Alignment);
+
   bool isVScaleKnownToBeAPowerOfTwo() const {
 #if SIFIVE_CUSTOMIZATION
     // Return false to avoid SVE-specific VF computations in LoopVectorizer.

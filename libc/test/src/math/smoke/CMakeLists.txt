@@ -840,6 +840,198 @@ add_fp_unittest(
 )
 
 add_fp_unittest(
+  fromfp_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    fromfp_test.cpp
+  HDRS
+    FromfpTest.h
+  DEPENDS
+    libc.src.math.fromfp
+)
+
+add_fp_unittest(
+  fromfpf_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    fromfpf_test.cpp
+  HDRS
+    FromfpTest.h
+  DEPENDS
+    libc.src.math.fromfpf
+)
+
+add_fp_unittest(
+  fromfpl_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    fromfpl_test.cpp
+  HDRS
+    FromfpTest.h
+  DEPENDS
+    libc.src.math.fromfpl
+)
+
+add_fp_unittest(
+  fromfpf128_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    fromfpf128_test.cpp
+  HDRS
+    FromfpTest.h
+  DEPENDS
+    libc.src.math.fromfpf128
+)
+
+add_fp_unittest(
+  fromfpx_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    fromfpx_test.cpp
+  HDRS
+    FromfpxTest.h
+  DEPENDS
+    libc.src.math.fromfpx
+)
+
+add_fp_unittest(
+  fromfpxf_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    fromfpxf_test.cpp
+  HDRS
+    FromfpxTest.h
+  DEPENDS
+    libc.src.math.fromfpxf
+)
+
+add_fp_unittest(
+  fromfpxl_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    fromfpxl_test.cpp
+  HDRS
+    FromfpxTest.h
+  DEPENDS
+    libc.src.math.fromfpxl
+)
+
+add_fp_unittest(
+  fromfpxf128_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    fromfpxf128_test.cpp
+  HDRS
+    FromfpxTest.h
+  DEPENDS
+    libc.src.math.fromfpxf128
+)
+
+add_fp_unittest(
+  ufromfp_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    ufromfp_test.cpp
+  HDRS
+    UfromfpTest.h
+  DEPENDS
+    libc.src.math.ufromfp
+)
+
+add_fp_unittest(
+  ufromfpf_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    ufromfpf_test.cpp
+  HDRS
+    UfromfpTest.h
+  DEPENDS
+    libc.src.math.ufromfpf
+)
+
+add_fp_unittest(
+  ufromfpl_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    ufromfpl_test.cpp
+  HDRS
+    UfromfpTest.h
+  DEPENDS
+    libc.src.math.ufromfpl
+)
+
+add_fp_unittest(
+  ufromfpf128_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    ufromfpf128_test.cpp
+  HDRS
+    UfromfpTest.h
+  DEPENDS
+    libc.src.math.ufromfpf128
+)
+
+add_fp_unittest(
+  ufromfpx_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    ufromfpx_test.cpp
+  HDRS
+    UfromfpxTest.h
+  DEPENDS
+    libc.src.math.ufromfpx
+)
+
+add_fp_unittest(
+  ufromfpxf_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    ufromfpxf_test.cpp
+  HDRS
+    UfromfpxTest.h
+  DEPENDS
+    libc.src.math.ufromfpxf
+)
+
+add_fp_unittest(
+  ufromfpxl_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    ufromfpxl_test.cpp
+  HDRS
+    UfromfpxTest.h
+  DEPENDS
+    libc.src.math.ufromfpxl
+)
+
+add_fp_unittest(
+  ufromfpxf128_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    ufromfpxf128_test.cpp
+  HDRS
+    UfromfpxTest.h
+  DEPENDS
+    libc.src.math.ufromfpxf128
+)
+
+add_fp_unittest(
   ilogb_test
   SUITE
     libc-math-smoke-tests
@@ -1507,6 +1699,22 @@ add_fp_unittest(
 )
 
 add_fp_unittest(
+  nanf128_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    nanf128_test.cpp
+  DEPENDS
+    libc.include.math
+    libc.include.signal
+    libc.src.math.nanf128
+    libc.src.__support.FPUtil.fp_bits
+  # FIXME: The nan tests currently have death tests, which aren't supported for
+  # hermetic tests.
+  UNIT_TEST_ONLY
+)
+
+add_fp_unittest(
   nextafter_test
   SUITE
     libc-math-smoke-tests
@@ -1547,6 +1755,21 @@ add_fp_unittest(
   DEPENDS
     libc.include.math
     libc.src.math.nextafterl
+    libc.src.__support.FPUtil.basic_operations
+    libc.src.__support.FPUtil.fp_bits
+)
+
+add_fp_unittest(
+  nextafterf128_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    nextafterf128_test.cpp
+  HDRS
+    NextAfterTest.h
+  DEPENDS
+    libc.include.math
+    libc.src.math.nextafterf128
     libc.src.__support.FPUtil.basic_operations
     libc.src.__support.FPUtil.fp_bits
 )
@@ -1597,6 +1820,118 @@ add_fp_unittest(
     libc.src.math.nexttowardl
     libc.src.__support.FPUtil.basic_operations
     libc.src.__support.FPUtil.fp_bits
+)
+
+add_fp_unittest(
+  nextdown_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    nextdown_test.cpp
+  HDRS
+    NextDownTest.h
+  DEPENDS
+    libc.include.math
+    libc.src.math.nextdown
+    libc.src.__support.FPUtil.manipulation_functions
+)
+
+add_fp_unittest(
+  nextdownf_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    nextdownf_test.cpp
+  HDRS
+    NextDownTest.h
+  DEPENDS
+    libc.include.math
+    libc.src.math.nextdownf
+    libc.src.__support.FPUtil.manipulation_functions
+)
+
+add_fp_unittest(
+  nextdownl_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    nextdownl_test.cpp
+  HDRS
+    NextDownTest.h
+  DEPENDS
+    libc.include.math
+    libc.src.math.nextdownl
+    libc.src.__support.FPUtil.manipulation_functions
+)
+
+add_fp_unittest(
+  nextdownf128_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    nextdownf128_test.cpp
+  HDRS
+    NextDownTest.h
+  DEPENDS
+    libc.include.math
+    libc.src.math.nextdownf128
+    libc.src.__support.FPUtil.manipulation_functions
+)
+
+add_fp_unittest(
+  nextup_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    nextup_test.cpp
+  HDRS
+    NextUpTest.h
+  DEPENDS
+    libc.include.math
+    libc.src.math.nextup
+    libc.src.__support.FPUtil.manipulation_functions
+)
+
+add_fp_unittest(
+  nextupf_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    nextupf_test.cpp
+  HDRS
+    NextUpTest.h
+  DEPENDS
+    libc.include.math
+    libc.src.math.nextupf
+    libc.src.__support.FPUtil.manipulation_functions
+)
+
+add_fp_unittest(
+  nextupl_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    nextupl_test.cpp
+  HDRS
+    NextUpTest.h
+  DEPENDS
+    libc.include.math
+    libc.src.math.nextupl
+    libc.src.__support.FPUtil.manipulation_functions
+)
+
+add_fp_unittest(
+  nextupf128_test
+  SUITE
+    libc-math-smoke-tests
+  SRCS
+    nextupf128_test.cpp
+  HDRS
+    NextUpTest.h
+  DEPENDS
+    libc.include.math
+    libc.src.math.nextupf128
+    libc.src.__support.FPUtil.manipulation_functions
 )
 
 # TODO(lntue): The current implementation of fputil::general::fma<float> is only
