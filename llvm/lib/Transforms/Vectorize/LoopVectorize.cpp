@@ -11058,15 +11058,12 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
 // original exit block.
 #if SIFIVE_CUSTOMIZATION
 static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
-                                VPlan &Plan, LoopVectorizationLegality *Legal) {
+                                VPRecipeBuilder &Builder, VPlan &Plan,
+                                LoopVectorizationLegality *Legal) {
 #else
 static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
-<<<<<<< HEAD
-                                VPlan &Plan) {
-#endif
-=======
                                 VPRecipeBuilder &Builder, VPlan &Plan) {
->>>>>>> a9d1fead961440d415f931bc22c160dec88e03fd
+#endif // SIFIVE_CUSTOMIZATION
   BasicBlock *ExitBB = OrigLoop->getUniqueExitBlock();
   BasicBlock *ExitingBB = OrigLoop->getExitingBlock();
   // Only handle single-exit loops with unique exit blocks for now.
@@ -11386,15 +11383,11 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     // and there is nothing to fix from vector loop; phis should have incoming
     // from scalar loop only.
   } else
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    addUsersInExitBlock(HeaderVPBB, OrigLoop, *Plan, Legal);
+    addUsersInExitBlock(HeaderVPBB, OrigLoop, RecipeBuilder, *Plan, Legal);
 #else
-    addUsersInExitBlock(HeaderVPBB, OrigLoop, *Plan);
-#endif // SIFIVE_CUSTOMIZATION
-=======
     addUsersInExitBlock(HeaderVPBB, OrigLoop, RecipeBuilder, *Plan);
->>>>>>> a9d1fead961440d415f931bc22c160dec88e03fd
+#endif // SIFIVE_CUSTOMIZATION
 
   assert(isa<VPRegionBlock>(Plan->getVectorLoopRegion()) &&
          !Plan->getVectorLoopRegion()->getEntryBasicBlock()->empty() &&
