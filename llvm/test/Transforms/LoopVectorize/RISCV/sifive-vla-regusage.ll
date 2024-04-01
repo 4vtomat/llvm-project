@@ -26,8 +26,8 @@ define void @convert_to_ssa(ptr %0, ptr %elms.i159, ptr %1) {
 ; CHECK-NEXT:    [[CONFLICT_RDX10:%.*]] = or i1 [[CONFLICT_RDX]], [[FOUND_CONFLICT9]]
 ; CHECK-NEXT:    br i1 [[CONFLICT_RDX10]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[TMP0]], i64 274877906944
-; CHECK-NEXT:    [[IND_END12:%.*]] = getelementptr i8, ptr [[TMP1]], i64 274877906944
+; CHECK-NEXT:    [[IND_END:%.*]] = getelementptr i8, ptr [[TMP0]], i64 274877906880
+; CHECK-NEXT:    [[IND_END12:%.*]] = getelementptr i8, ptr [[TMP1]], i64 274877906880
 ; CHECK-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 8
 ; CHECK-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 0
@@ -52,7 +52,7 @@ define void @convert_to_ssa(ptr %0, ptr %elms.i159, ptr %1) {
 ; CHECK-NEXT:    [[TMP10:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-NEXT:    [[TMP11:%.*]] = mul i64 [[TMP10]], 64
 ; CHECK-NEXT:    [[NEXT_GEP15:%.*]] = getelementptr i8, ptr [[TMP1]], i64 [[TMP11]]
-; CHECK-NEXT:    [[TMP12:%.*]] = sub i64 4294967296, [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP12:%.*]] = sub i64 4294967295, [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP12]], i32 8, i1 true)
 ; CHECK-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP13]] to i64
 ; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr inbounds i64, ptr [[NEXT_GEP15]], i64 6
@@ -74,15 +74,15 @@ define void @convert_to_ssa(ptr %0, ptr %elms.i159, ptr %1) {
 ; CHECK-NEXT:    [[TMP21:%.*]] = mul i64 [[TMP14]], 1
 ; CHECK-NEXT:    [[TMP22:%.*]] = mul i64 64, [[TMP21]]
 ; CHECK-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP22]]
-; CHECK-NEXT:    [[TMP23:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 4294967296
+; CHECK-NEXT:    [[TMP23:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 4294967295
 ; CHECK-NEXT:    br i1 [[TMP23]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP7:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    br label [[FOR_END_LOOPEXIT_UNR_LCSSA_I177_LOOPEXIT:%.*]]
+; CHECK-NEXT:    br label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[TMP0]], [[VECTOR_MEMCHECK]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL11:%.*]] = phi ptr [ null, [[VECTOR_MEMCHECK]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL13:%.*]] = phi ptr [ [[TMP1]], [[VECTOR_MEMCHECK]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL14:%.*]] = phi i32 [ 0, [[VECTOR_MEMCHECK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ [[TMP0]], [[VECTOR_MEMCHECK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL11:%.*]] = phi ptr [ getelementptr (i8, ptr null, i64 274877906880), [[MIDDLE_BLOCK]] ], [ null, [[VECTOR_MEMCHECK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL13:%.*]] = phi ptr [ [[IND_END12]], [[MIDDLE_BLOCK]] ], [ [[TMP1]], [[VECTOR_MEMCHECK]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL14:%.*]] = phi i32 [ -1, [[MIDDLE_BLOCK]] ], [ 0, [[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY_I172:%.*]]
 ; CHECK:       for.body.i172:
 ; CHECK-NEXT:    [[CP_010_I:%.*]] = phi ptr [ [[INCDEC_PTR8_7_I:%.*]], [[FOR_BODY_I172]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
@@ -105,7 +105,7 @@ define void @convert_to_ssa(ptr %0, ptr %elms.i159, ptr %1) {
 ; CHECK-NEXT:    store i64 [[TMP27]], ptr [[INCDEC_PTR_6_I]], align 8
 ; CHECK-NEXT:    [[NITER_NEXT_7_I]] = add i32 [[NITER_I]], 1
 ; CHECK-NEXT:    [[NITER_NCMP_7_NOT_I:%.*]] = icmp eq i32 [[NITER_NEXT_7_I]], 0
-; CHECK-NEXT:    br i1 [[NITER_NCMP_7_NOT_I]], label [[FOR_END_LOOPEXIT_UNR_LCSSA_I177_LOOPEXIT]], label [[FOR_BODY_I172]], !llvm.loop [[LOOP10:![0-9]+]]
+; CHECK-NEXT:    br i1 [[NITER_NCMP_7_NOT_I]], label [[FOR_END_LOOPEXIT_UNR_LCSSA_I177_LOOPEXIT:%.*]], label [[FOR_BODY_I172]], !llvm.loop [[LOOP10:![0-9]+]]
 ; CHECK:       for.end.loopexit.unr-lcssa.i177.loopexit:
 ; CHECK-NEXT:    ret void
 ;
