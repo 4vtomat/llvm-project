@@ -10556,19 +10556,14 @@ VPWidenRecipe *VPRecipeBuilder::tryToWiden(Instruction *I,
     if (CM.isPredicatedInst(I)) {
       SmallVector<VPValue *> Ops(Operands.begin(), Operands.end());
       VPValue *Mask = getBlockInMask(I->getParent());
-<<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
       assert((Mask || Legal->useVLAVectorizer()) &&
              "Mask cannot be nullptr for in non RVV VLA vectorization");
       if (Mask) {
 #endif // SIFIVE_CUSTOMIZATION
-      VPValue *One = Plan->getVPValueOrAddLiveIn(
-          ConstantInt::get(I->getType(), 1u, false));
-=======
       VPValue *One =
           Plan.getVPValueOrAddLiveIn(ConstantInt::get(I->getType(), 1u, false));
->>>>>>> a9d1fead961440d415f931bc22c160dec88e03fd
       auto *SafeRHS =
          new VPInstruction(Instruction::Select, {Mask, Ops[1], One},
                            I->getDebugLoc());
@@ -10715,7 +10710,7 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
       PhiRecipe = new VPFirstOrderRecurrencePHIRecipe(Phi, *StartV);
 #if SIFIVE_CUSTOMIZATION
     } else if (Legal->isCSAPhi(Phi)) {
-      VPCSAState *State = Plan->getCSAStates().find(Phi)->second;
+      VPCSAState *State = Plan.getCSAStates().find(Phi)->second;
       VPValue *InitData = State->getVPInitData();
       PhiRecipe = new VPCSAHeaderPHIRecipe(Phi, InitData);
       State->setPhiRecipe(cast<VPCSAHeaderPHIRecipe>(PhiRecipe));
@@ -10771,7 +10766,7 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
         return nullptr;
     }
 
-    return tryToWidenMemory(Instr, Operands, Range, Plan);
+    return tryToWidenMemory(Instr, Operands, Range);
   }
 
   if (Legal->isVectorizableUncountable()) {
@@ -10812,12 +10807,8 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
   }
 #else
   if (isa<LoadInst>(Instr) || isa<StoreInst>(Instr))
-<<<<<<< HEAD
-    return tryToWidenMemory(Instr, Operands, Range, Plan);
-#endif // SIFIVE_CUSTOMIZATION
-=======
     return tryToWidenMemory(Instr, Operands, Range);
->>>>>>> a9d1fead961440d415f931bc22c160dec88e03fd
+#endif // SIFIVE_CUSTOMIZATION
 
   if (!shouldWiden(Instr, Range))
     return nullptr;
@@ -10833,7 +10824,7 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
     });
     if (CSADescIt != Legal->getCSAs().end()) {
       PHINode *CSAPhi = CSADescIt->first;
-      VPCSAState *State = Plan->getCSAStates().find(CSAPhi)->second;
+      VPCSAState *State = Plan.getCSAStates().find(CSAPhi)->second;
       VPValue *VPDataPhi = State->getPhiRecipe();
       auto *R = new VPCSADataUpdateRecipe(
           SI, {VPDataPhi, Operands[0], Operands[1], Operands[2]});
@@ -11326,9 +11317,8 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
           Legal->isInvariantAddressOfReduction(SI->getPointerOperand()))
         continue;
 
-<<<<<<< HEAD
-      VPRecipeBase *Recipe = RecipeBuilder.tryToCreateWidenRecipe(
-          Instr, Operands, Range, VPBB, Plan);
+      VPRecipeBase *Recipe =
+          RecipeBuilder.tryToCreateWidenRecipe(Instr, Operands, Range, VPBB);
 #if SIFIVE_CUSTOMIZATION
       if (!Recipe) {
         // Skip branches that are not vectorized. These are exiting branches
@@ -11336,11 +11326,11 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
         if (isa<BranchInst>(Instr))
           continue;
         else
-          Recipe = RecipeBuilder.handleReplication(Instr, Range, *Plan);
+          Recipe = RecipeBuilder.handleReplication(Instr, Range);
       }
 #else
       if (!Recipe)
-        Recipe = RecipeBuilder.handleReplication(Instr, Range, *Plan);
+        Recipe = RecipeBuilder.handleReplication(Instr, Range);
 #endif // SIFIVE_CUSTOMIZATION
       for (auto *Def : Recipe->definedValues()) {
         auto *UV = Def->getUnderlyingValue();
@@ -11351,12 +11341,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 #endif // SIFIVE_CUSTOMIZATION
         Plan->addVPValue(UV, Def);
       }
-=======
-      VPRecipeBase *Recipe =
-          RecipeBuilder.tryToCreateWidenRecipe(Instr, Operands, Range, VPBB);
-      if (!Recipe)
-        Recipe = RecipeBuilder.handleReplication(Instr, Range);
->>>>>>> a9d1fead961440d415f931bc22c160dec88e03fd
 
       RecipeBuilder.setRecipe(Instr, Recipe);
 #if SIFIVE_CUSTOMIZATION
