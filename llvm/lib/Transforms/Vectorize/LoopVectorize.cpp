@@ -10723,21 +10723,10 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
     }
 #endif // SIFIVE_CUSTOMIZATION
 
-<<<<<<< HEAD
-    // Record the incoming value from the backedge, so we can add the incoming
-    // value from the backedge after all recipes have been created.
-    auto *Inc = cast<Instruction>(
-        Phi->getIncomingValueForBlock(OrigLoop->getLoopLatch()));
-    auto RecipeIter = Ingredient2Recipe.find(Inc);
-    if (RecipeIter == Ingredient2Recipe.end())
-      recordRecipeOf(Inc);
-
 #if SIFIVE_CUSTOMIZATION
     if (!Legal->isCSAPhi(Phi))
       PhisToFix.push_back(PhiRecipe);
 #else
-=======
->>>>>>> a9d1fead961440d415f931bc22c160dec88e03fd
     PhisToFix.push_back(PhiRecipe);
 #endif // SIFIVE_CUSTOMIZATION
     return PhiRecipe;
@@ -11112,49 +11101,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 
   SmallPtrSet<const InterleaveGroup<Instruction> *, 1> InterleaveGroups;
 
-<<<<<<< HEAD
-  VPRecipeBuilder RecipeBuilder(OrigLoop, TLI, Legal, CM, PSE, Builder);
-
-  // ---------------------------------------------------------------------------
-  // Pre-construction: record ingredients whose recipes we'll need to further
-  // process after constructing the initial VPlan.
-  // ---------------------------------------------------------------------------
-
-  // For each interleave group which is relevant for this (possibly trimmed)
-  // Range, add it to the set of groups to be later applied to the VPlan and add
-  // placeholders for its members' Recipes which we'll be replacing with a
-  // single VPInterleaveRecipe.
-  for (InterleaveGroup<Instruction> *IG : IAI.getInterleaveGroups()) {
-#if SIFIVE_CUSTOMIZATION
-    assert(!Legal->isVectorizableUncountable() &&
-           "Interleaving is not supported for uncountable loops yet");
-#endif
-    auto applyIG = [IG, this](ElementCount VF) -> bool {
-      bool Result = (VF.isVector() && // Query is illegal for VF == 1
-                     CM.getWideningDecision(IG->getInsertPos(), VF) ==
-                         LoopVectorizationCostModel::CM_Interleave);
-      // For scalable vectors, the only interleave factor currently supported
-      // is 2 since we require the (de)interleave2 intrinsics instead of
-      // shufflevectors.
-#if SIFIVE_CUSTOMIZATION
-      assert((!Result || !VF.isScalable() || IG->getFactor() <= 8) &&
-             "Unsupported interleave factor for scalable vectors");
-#else
-      assert((!Result || !VF.isScalable() || IG->getFactor() == 2) &&
-             "Unsupported interleave factor for scalable vectors");
-#endif // SIFIVE_CUSTOMIZATION
-      return Result;
-    };
-    if (!getDecisionAndClampRange(applyIG, Range))
-      continue;
-    InterleaveGroups.insert(IG);
-    for (unsigned i = 0; i < IG->getFactor(); i++)
-      if (Instruction *Member = IG->getMember(i))
-        RecipeBuilder.recordRecipeOf(Member);
-  };
-
-=======
->>>>>>> a9d1fead961440d415f931bc22c160dec88e03fd
   // ---------------------------------------------------------------------------
   // Build initial VPlan: Scan the body of the loop in a topological order to
   // visit each basic block after having visited its predecessor basic blocks.
@@ -11233,6 +11179,10 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   // placeholders for its members' Recipes which we'll be replacing with a
   // single VPInterleaveRecipe.
   for (InterleaveGroup<Instruction> *IG : IAI.getInterleaveGroups()) {
+#if SIFIVE_CUSTOMIZATION
+    assert(!Legal->isVectorizableUncountable() &&
+           "Interleaving is not supported for uncountable loops yet");
+#endif
     auto applyIG = [IG, this](ElementCount VF) -> bool {
       bool Result = (VF.isVector() && // Query is illegal for VF == 1
                      CM.getWideningDecision(IG->getInsertPos(), VF) ==
@@ -11240,8 +11190,13 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
       // For scalable vectors, the only interleave factor currently supported
       // is 2 since we require the (de)interleave2 intrinsics instead of
       // shufflevectors.
+#if SIFIVE_CUSTOMIZATION
+      assert((!Result || !VF.isScalable() || IG->getFactor() <= 8) &&
+             "Unsupported interleave factor for scalable vectors");
+#else
       assert((!Result || !VF.isScalable() || IG->getFactor() == 2) &&
              "Unsupported interleave factor for scalable vectors");
+#endif // SIFIVE_CUSTOMIZATION
       return Result;
     };
     if (!getDecisionAndClampRange(applyIG, Range))
