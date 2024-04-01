@@ -593,16 +593,6 @@ public:
             VK == RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_ADD ||
             VK == RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_ADD);
   }
-
-  bool isTRM2Op() const {
-    return Kind == KindTy::Register &&
-           RISCVMCRegisterClasses[RISCV::TRM2RegClassID].contains(Reg.RegNum);
-  }
-
-  bool isTRM4Op() const {
-    return Kind == KindTy::Register &&
-           RISCVMCRegisterClasses[RISCV::TRM4RegClassID].contains(Reg.RegNum);
-  }
 #endif // SIFIVE_CUSTOMIZATION
 
   bool isTLSDESCCallSymbol() const {
