@@ -18,37 +18,13 @@ define void @simple_memset(i32 %val, ptr %ptr, i64 %n) #0 {
 ; CHECK-NEXT:    [[N_RND_UP:%.*]] = add i64 [[UMAX]], [[TMP4]]
 ; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], [[TMP1]]
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
-; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 16
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP7:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP8:%.*]] = mul i64 [[TMP7]], 16
-; CHECK-NEXT:    [[TMP9:%.*]] = sub i64 [[UMAX]], [[TMP8]]
-; CHECK-NEXT:    [[TMP10:%.*]] = icmp ugt i64 [[UMAX]], [[TMP8]]
-; CHECK-NEXT:    [[TMP11:%.*]] = select i1 [[TMP10]], i64 [[TMP9]], i64 0
-; CHECK-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP13:%.*]] = mul i64 [[TMP12]], 16
-; CHECK-NEXT:    [[TMP14:%.*]] = sub i64 [[UMAX]], [[TMP13]]
-; CHECK-NEXT:    [[TMP15:%.*]] = icmp ugt i64 [[UMAX]], [[TMP13]]
-; CHECK-NEXT:    [[TMP16:%.*]] = select i1 [[TMP15]], i64 [[TMP14]], i64 0
 ; CHECK-NEXT:    [[TMP17:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP17]], 16
-; CHECK-NEXT:    [[TMP19:%.*]] = sub i64 [[UMAX]], [[TMP18]]
-; CHECK-NEXT:    [[TMP20:%.*]] = icmp ugt i64 [[UMAX]], [[TMP18]]
-; CHECK-NEXT:    [[TMP21:%.*]] = select i1 [[TMP20]], i64 [[TMP19]], i64 0
 ; CHECK-NEXT:    [[TMP22:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP23:%.*]] = mul i64 [[TMP22]], 16
 ; CHECK-NEXT:    [[TMP24:%.*]] = sub i64 [[UMAX]], [[TMP23]]
 ; CHECK-NEXT:    [[TMP25:%.*]] = icmp ugt i64 [[UMAX]], [[TMP23]]
 ; CHECK-NEXT:    [[TMP26:%.*]] = select i1 [[TMP25]], i64 [[TMP24]], i64 0
-=======
-; CHECK-NEXT:    [[TMP7:%.*]] = sub i64 [[UMAX]], [[TMP6]]
-; CHECK-NEXT:    [[TMP8:%.*]] = icmp ugt i64 [[UMAX]], [[TMP6]]
-; CHECK-NEXT:    [[TMP9:%.*]] = select i1 [[TMP8]], i64 [[TMP7]], i64 0
-; CHECK-NEXT:    [[TMP25:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP26:%.*]] = mul i64 [[TMP25]], 4
-; CHECK-NEXT:    [[INDEX_PART_NEXT:%.*]] = add i64 0, [[TMP26]]
->>>>>>> a9d1fead961440d415f931bc22c160dec88e03fd
 ; CHECK-NEXT:    [[TMP27:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP28:%.*]] = mul i64 [[TMP27]], 4
 ; CHECK-NEXT:    [[INDEX_PART_NEXT:%.*]] = add i64 0, [[TMP28]]
@@ -105,7 +81,7 @@ define void @simple_memset(i32 %val, ptr %ptr, i64 %n) #0 {
 ; CHECK-NEXT:    call void @llvm.masked.store.nxv4i32.p0(<vscale x 4 x i32> [[BROADCAST_SPLAT]], ptr [[TMP56]], i32 4, <vscale x 4 x i1> [[ACTIVE_LANE_MASK7]])
 ; CHECK-NEXT:    call void @llvm.masked.store.nxv4i32.p0(<vscale x 4 x i32> [[BROADCAST_SPLAT]], ptr [[TMP59]], i32 4, <vscale x 4 x i1> [[ACTIVE_LANE_MASK8]])
 ; CHECK-NEXT:    call void @llvm.masked.store.nxv4i32.p0(<vscale x 4 x i32> [[BROADCAST_SPLAT]], ptr [[TMP62]], i32 4, <vscale x 4 x i1> [[ACTIVE_LANE_MASK9]])
-; CHECK-NEXT:    [[INDEX_NEXT10]] = add i64 [[INDEX6]], [[TMP6]]
+; CHECK-NEXT:    [[INDEX_NEXT10]] = add i64 [[INDEX6]], [[TMP18]]
 ; CHECK-NEXT:    [[TMP63:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP64:%.*]] = mul i64 [[TMP63]], 4
 ; CHECK-NEXT:    [[TMP65:%.*]] = add i64 [[INDEX6]], [[TMP64]]
@@ -115,17 +91,10 @@ define void @simple_memset(i32 %val, ptr %ptr, i64 %n) #0 {
 ; CHECK-NEXT:    [[TMP69:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP70:%.*]] = mul i64 [[TMP69]], 12
 ; CHECK-NEXT:    [[TMP71:%.*]] = add i64 [[INDEX6]], [[TMP70]]
-<<<<<<< HEAD
-; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[INDEX6]], i64 [[TMP11]])
-; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT11]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[TMP65]], i64 [[TMP16]])
-; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT12]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[TMP68]], i64 [[TMP21]])
+; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[INDEX6]], i64 [[TMP26]])
+; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT11]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[TMP65]], i64 [[TMP26]])
+; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT12]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[TMP68]], i64 [[TMP26]])
 ; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT13]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[TMP71]], i64 [[TMP26]])
-=======
-; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[INDEX6]], i64 [[TMP9]])
-; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT11]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[TMP65]], i64 [[TMP9]])
-; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT12]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[TMP68]], i64 [[TMP9]])
-; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT13]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[TMP71]], i64 [[TMP9]])
->>>>>>> a9d1fead961440d415f931bc22c160dec88e03fd
 ; CHECK-NEXT:    [[TMP72:%.*]] = xor <vscale x 4 x i1> [[ACTIVE_LANE_MASK_NEXT]], shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP73:%.*]] = xor <vscale x 4 x i1> [[ACTIVE_LANE_MASK_NEXT11]], shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP74:%.*]] = xor <vscale x 4 x i1> [[ACTIVE_LANE_MASK_NEXT12]], shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer)
@@ -176,37 +145,13 @@ define void @cond_memset(i32 %val, ptr noalias readonly %cond_ptr, ptr noalias %
 ; CHECK-NEXT:    [[N_RND_UP:%.*]] = add i64 [[UMAX]], [[TMP4]]
 ; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], [[TMP1]]
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
-; CHECK-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 16
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP7:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP8:%.*]] = mul i64 [[TMP7]], 16
-; CHECK-NEXT:    [[TMP9:%.*]] = sub i64 [[UMAX]], [[TMP8]]
-; CHECK-NEXT:    [[TMP10:%.*]] = icmp ugt i64 [[UMAX]], [[TMP8]]
-; CHECK-NEXT:    [[TMP11:%.*]] = select i1 [[TMP10]], i64 [[TMP9]], i64 0
-; CHECK-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP13:%.*]] = mul i64 [[TMP12]], 16
-; CHECK-NEXT:    [[TMP14:%.*]] = sub i64 [[UMAX]], [[TMP13]]
-; CHECK-NEXT:    [[TMP15:%.*]] = icmp ugt i64 [[UMAX]], [[TMP13]]
-; CHECK-NEXT:    [[TMP16:%.*]] = select i1 [[TMP15]], i64 [[TMP14]], i64 0
 ; CHECK-NEXT:    [[TMP17:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP18:%.*]] = mul i64 [[TMP17]], 16
-; CHECK-NEXT:    [[TMP19:%.*]] = sub i64 [[UMAX]], [[TMP18]]
-; CHECK-NEXT:    [[TMP20:%.*]] = icmp ugt i64 [[UMAX]], [[TMP18]]
-; CHECK-NEXT:    [[TMP21:%.*]] = select i1 [[TMP20]], i64 [[TMP19]], i64 0
 ; CHECK-NEXT:    [[TMP22:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP23:%.*]] = mul i64 [[TMP22]], 16
 ; CHECK-NEXT:    [[TMP24:%.*]] = sub i64 [[UMAX]], [[TMP23]]
 ; CHECK-NEXT:    [[TMP25:%.*]] = icmp ugt i64 [[UMAX]], [[TMP23]]
 ; CHECK-NEXT:    [[TMP26:%.*]] = select i1 [[TMP25]], i64 [[TMP24]], i64 0
-=======
-; CHECK-NEXT:    [[TMP7:%.*]] = sub i64 [[UMAX]], [[TMP6]]
-; CHECK-NEXT:    [[TMP8:%.*]] = icmp ugt i64 [[UMAX]], [[TMP6]]
-; CHECK-NEXT:    [[TMP9:%.*]] = select i1 [[TMP8]], i64 [[TMP7]], i64 0
-; CHECK-NEXT:    [[TMP25:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP26:%.*]] = mul i64 [[TMP25]], 4
-; CHECK-NEXT:    [[INDEX_PART_NEXT:%.*]] = add i64 0, [[TMP26]]
->>>>>>> a9d1fead961440d415f931bc22c160dec88e03fd
 ; CHECK-NEXT:    [[TMP27:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP28:%.*]] = mul i64 [[TMP27]], 4
 ; CHECK-NEXT:    [[INDEX_PART_NEXT:%.*]] = add i64 0, [[TMP28]]
@@ -289,7 +234,7 @@ define void @cond_memset(i32 %val, ptr noalias readonly %cond_ptr, ptr noalias %
 ; CHECK-NEXT:    call void @llvm.masked.store.nxv4i32.p0(<vscale x 4 x i32> [[BROADCAST_SPLAT]], ptr [[TMP78]], i32 4, <vscale x 4 x i1> [[TMP68]])
 ; CHECK-NEXT:    call void @llvm.masked.store.nxv4i32.p0(<vscale x 4 x i32> [[BROADCAST_SPLAT]], ptr [[TMP81]], i32 4, <vscale x 4 x i1> [[TMP69]])
 ; CHECK-NEXT:    call void @llvm.masked.store.nxv4i32.p0(<vscale x 4 x i32> [[BROADCAST_SPLAT]], ptr [[TMP84]], i32 4, <vscale x 4 x i1> [[TMP70]])
-; CHECK-NEXT:    [[INDEX_NEXT13]] = add i64 [[INDEX6]], [[TMP6]]
+; CHECK-NEXT:    [[INDEX_NEXT13]] = add i64 [[INDEX6]], [[TMP18]]
 ; CHECK-NEXT:    [[TMP85:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP86:%.*]] = mul i64 [[TMP85]], 4
 ; CHECK-NEXT:    [[TMP87:%.*]] = add i64 [[INDEX6]], [[TMP86]]
@@ -299,17 +244,10 @@ define void @cond_memset(i32 %val, ptr noalias readonly %cond_ptr, ptr noalias %
 ; CHECK-NEXT:    [[TMP91:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    [[TMP92:%.*]] = mul i64 [[TMP91]], 12
 ; CHECK-NEXT:    [[TMP93:%.*]] = add i64 [[INDEX6]], [[TMP92]]
-<<<<<<< HEAD
-; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[INDEX6]], i64 [[TMP11]])
-; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT14]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[TMP87]], i64 [[TMP16]])
-; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT15]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[TMP90]], i64 [[TMP21]])
+; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[INDEX6]], i64 [[TMP26]])
+; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT14]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[TMP87]], i64 [[TMP26]])
+; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT15]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[TMP90]], i64 [[TMP26]])
 ; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT16]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[TMP93]], i64 [[TMP26]])
-=======
-; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[INDEX6]], i64 [[TMP9]])
-; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT14]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[TMP87]], i64 [[TMP9]])
-; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT15]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[TMP90]], i64 [[TMP9]])
-; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT16]] = call <vscale x 4 x i1> @llvm.get.active.lane.mask.nxv4i1.i64(i64 [[TMP93]], i64 [[TMP9]])
->>>>>>> a9d1fead961440d415f931bc22c160dec88e03fd
 ; CHECK-NEXT:    [[TMP94:%.*]] = xor <vscale x 4 x i1> [[ACTIVE_LANE_MASK_NEXT]], shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP95:%.*]] = xor <vscale x 4 x i1> [[ACTIVE_LANE_MASK_NEXT14]], shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP96:%.*]] = xor <vscale x 4 x i1> [[ACTIVE_LANE_MASK_NEXT15]], shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer)

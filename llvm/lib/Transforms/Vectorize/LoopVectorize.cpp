@@ -10050,7 +10050,17 @@ VPRecipeBuilder::mapToVPValues(User::op_range Operands) {
   std::function<VPValue *(Value *)> Fn = [this](Value *Op) {
     if (auto *I = dyn_cast<Instruction>(Op)) {
       if (auto *R = Ingredient2Recipe.lookup(I))
+#if SIFIVE_CUSTOMIZATION
+      {
+        if (auto *VPSL = dyn_cast<VPWidenMemoryInstructionRecipe>(R)) {
+          if (VPSL->isSpeculative())
+            return VPSL->getVPValue(0);
+        }
         return R->getVPSingleValue();
+      }
+#else
+        return R->getVPSingleValue();
+#endif // SIFIVE_CUSTOMIZATION
     }
     return Plan.getVPValueOrAddLiveIn(Op);
   };
@@ -10967,7 +10977,8 @@ addCSAPreprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
 /// Add CSA Recipes that must occur after each instruction in the input IR
 /// is processed and introduced into VPlan.
 static void
-addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
+addCSAPostprocessRecipes(VPRecipeBuilder &RecipeBuilder,
+                         const LoopVectorizationLegality::CSAList &CSAs,
                          VPBasicBlock *MiddleVPBB, DebugLoc DL, VFRange &Range,
                          VPlan &Plan) {
   // Don't build CSA for VF=ElementCount::getFixed(1)
@@ -10983,7 +10994,10 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
            "VPDataUpdate must have been introduced prior to postprocess");
     assert(CSA.second.getCond() &&
            "CSADescriptor must know how to describe the condition");
-    VPValue *WidenedCond = Plan.getVPValue(CSA.second.getCond());
+    auto GetVPValue = [&](Value *I) {
+      return RecipeBuilder.getRecipe(cast<Instruction>(I))->getVPSingleValue();
+    };
+    VPValue *WidenedCond = GetVPValue(CSA.second.getCond());
     VPValue *AllTrueMask = Plan.getOrCreateAllTrueMask();
     VPValue *VPInitScalar = CSAState->getVPInitScalar();
 
@@ -10995,9 +11009,9 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
     VPValue *CondToUse = WidenedCond;
     if (cast<SelectInst>(CSA.second.getAssignment())->getTrueValue() ==
         CSA.first) {
-      auto VPNotCond = new VPInstruction(VPInstruction::Not, WidenedCond, DL);
+      auto *VPNotCond = new VPInstruction(VPInstruction::Not, WidenedCond, DL);
       VPNotCond->insertBefore(
-          Plan.getVPValue(CSA.second.getAssignment())->getDefiningRecipe());
+          GetVPValue(CSA.second.getAssignment())->getDefiningRecipe());
       CondToUse = VPNotCond;
     }
 
@@ -11007,7 +11021,7 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
                                             {CondToUse, AllTrueMask}, DL,
                                             "csa.cond.anyactive");
       VPAnyActive->insertBefore(
-          Plan.getVPValue(CSA.second.getAssignment())->getDefiningRecipe());
+          GetVPValue(CSA.second.getAssignment())->getDefiningRecipe());
 
       VPValue *VLPhi = CSAState->getVPVLPhi();
       auto *VPVLSel = new VPInstruction(VPInstruction::CSAVLSel,
@@ -11030,7 +11044,7 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
            Plan.getOrCreateAllFalseMask()},
           DL, "csa.mask.sel");
       VPMaskSel->insertBefore(
-          Plan.getVPValue(CSA.second.getAssignment())->getDefiningRecipe());
+          GetVPValue(CSA.second.getAssignment())->getDefiningRecipe());
       VPDataUpdate->setVPNewMask(VPMaskSel);
       VPDataUpdate->setVPCondToUse(CondToUse);
       ExtractScalarRecipe =
@@ -11277,22 +11291,12 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
         // with scalar conditions.
         if (isa<BranchInst>(Instr))
           continue;
-        else
-          Recipe = RecipeBuilder.handleReplication(Instr, Range);
+        Recipe = RecipeBuilder.handleReplication(Instr, Range);
       }
 #else
       if (!Recipe)
         Recipe = RecipeBuilder.handleReplication(Instr, Range);
 #endif // SIFIVE_CUSTOMIZATION
-      for (auto *Def : Recipe->definedValues()) {
-        auto *UV = Def->getUnderlyingValue();
-#if SIFIVE_CUSTOMIZATION
-        // Only add VPValue that has an underlying value.
-        // VPInstructions like BranchOnCond don't have one.
-        if (UV)
-#endif // SIFIVE_CUSTOMIZATION
-        Plan->addVPValue(UV, Def);
-      }
 
       RecipeBuilder.setRecipe(Instr, Recipe);
 #if SIFIVE_CUSTOMIZATION
@@ -11327,7 +11331,8 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 #if SIFIVE_CUSTOMIZATION
   VPBasicBlock *MiddleVPBB =
       cast<VPBasicBlock>(Plan->getVectorLoopRegion()->getSingleSuccessor());
-  addCSAPostprocessRecipes(Legal->getCSAs(), MiddleVPBB, DL, Range, *Plan);
+  addCSAPostprocessRecipes(RecipeBuilder, Legal->getCSAs(), MiddleVPBB, DL,
+                           Range, *Plan);
 #endif // SIFIVE_CUSTOMIZATION
 
   // After here, VPBB should not be used.
