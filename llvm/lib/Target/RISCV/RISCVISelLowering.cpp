@@ -4746,6 +4746,14 @@ static SDValue getWideningInterleave(SDValue EvenV, SDValue OddV,
   SDValue Passthru = DAG.getUNDEF(WideContainerVT);
 
   SDValue Interleaved;
+#if SIFIVE_CUSTOMIZATION
+  if (OddV.isUndef()) {
+    // FIXME: This is a hack to work around lack of freeze semantics in MIR and
+    // to generate better code when the OddV operand is undef.
+    Interleaved = DAG.getNode(RISCVISD::VZEXT_VL, DL, WideContainerVT, EvenV,
+                              Mask, VL);
+  } else
+#endif // SIFIVE_CUSTOMIZATION
   if (Subtarget.hasStdExtZvbb()) {
     // Interleaved = (OddV << VecVT.getScalarSizeInBits()) + EvenV.
     SDValue OffsetVec =
