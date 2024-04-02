@@ -5589,7 +5589,7 @@ SDValue RISCVTargetLowering::expandUnalignedVPStore(SDValue Op,
 
   StoredVal = DAG.getBitcast(NewVT, StoredVal);
 
-  uint64_t Size = MemoryLocation::getSizeOrUnknown(NewVT.getStoreSize());
+  LocationSize Size = LocationSize::precise(NewVT.getStoreSize());
   MachineFunction &MF = DAG.getMachineFunction();
   MachineMemOperand *MMO = MF.getMachineMemOperand(
       Store->getPointerInfo(), Store->getMemOperand()->getFlags(), Size,
