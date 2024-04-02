@@ -3829,8 +3829,8 @@ Instruction *InstCombinerImpl::visitSelectInst(SelectInst &SI) {
     if (match(TrueVal,
               m_Sub(m_SpecificInt(APInt::getOneBitSet(WideWidth, BitWidth)),
                     m_Specific(FalseVal)))) {
-      Instruction *Abs = Builder.CreateBinaryIntrinsic(Intrinsic::abs, V,
-                                                       Builder.getInt1(false));
+      Value *Abs = Builder.CreateBinaryIntrinsic(Intrinsic::abs, V,
+                                                 Builder.getInt1(false));
       return new ZExtInst(Abs, SelType);
     }
   }
