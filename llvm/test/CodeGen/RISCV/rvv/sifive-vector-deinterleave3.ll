@@ -72,13 +72,13 @@ define {<vscale x 16 x i8>, <vscale x 16 x i8>, <vscale x 16 x i8>} @vector_dein
 ; CHECK-NEXT:    vrgather.vv v16, v8, v24
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vadd.vi v0, v24, 1
-; CHECK-NEXT:    vrgather.vv v16, v8, v0
-; CHECK-NEXT:    vadd.vi v24, v24, 2
-; CHECK-NEXT:    vrgather.vv v0, v8, v24
+; CHECK-NEXT:    vadd.vi v16, v24, 1
+; CHECK-NEXT:    vrgather.vv v0, v8, v16
+; CHECK-NEXT:    vadd.vi v16, v24, 2
+; CHECK-NEXT:    vrgather.vv v24, v8, v16
 ; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmv2r.v v10, v16
-; CHECK-NEXT:    vmv2r.v v12, v0
+; CHECK-NEXT:    vmv2r.v v10, v0
+; CHECK-NEXT:    vmv2r.v v12, v24
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0
@@ -104,13 +104,13 @@ define {<vscale x 8 x i16>, <vscale x 8 x i16>, <vscale x 8 x i16>} @vector_dein
 ; CHECK-NEXT:    vrgather.vv v16, v8, v24
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vadd.vi v0, v24, 1
-; CHECK-NEXT:    vrgather.vv v16, v8, v0
-; CHECK-NEXT:    vadd.vi v24, v24, 2
-; CHECK-NEXT:    vrgather.vv v0, v8, v24
+; CHECK-NEXT:    vadd.vi v16, v24, 1
+; CHECK-NEXT:    vrgather.vv v0, v8, v16
+; CHECK-NEXT:    vadd.vi v16, v24, 2
+; CHECK-NEXT:    vrgather.vv v24, v8, v16
 ; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmv2r.v v10, v16
-; CHECK-NEXT:    vmv2r.v v12, v0
+; CHECK-NEXT:    vmv2r.v v10, v0
+; CHECK-NEXT:    vmv2r.v v12, v24
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0
@@ -136,13 +136,13 @@ define {<vscale x 4 x i32>, <vscale x 4 x i32>, <vscale x 4 x i32>} @vector_dein
 ; CHECK-NEXT:    vrgather.vv v16, v8, v24
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vadd.vi v0, v24, 1
-; CHECK-NEXT:    vrgather.vv v16, v8, v0
-; CHECK-NEXT:    vadd.vi v24, v24, 2
-; CHECK-NEXT:    vrgather.vv v0, v8, v24
+; CHECK-NEXT:    vadd.vi v16, v24, 1
+; CHECK-NEXT:    vrgather.vv v0, v8, v16
+; CHECK-NEXT:    vadd.vi v16, v24, 2
+; CHECK-NEXT:    vrgather.vv v24, v8, v16
 ; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmv2r.v v10, v16
-; CHECK-NEXT:    vmv2r.v v12, v0
+; CHECK-NEXT:    vmv2r.v v10, v0
+; CHECK-NEXT:    vmv2r.v v12, v24
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add sp, sp, a0
@@ -168,12 +168,12 @@ define {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>} @vector_dein
 ; RV32-NEXT:    vrgather.vv v16, v8, v24
 ; RV32-NEXT:    addi a0, sp, 16
 ; RV32-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; RV32-NEXT:    vadd.vi v24, v24, 1
-; RV32-NEXT:    vrgather.vv v0, v8, v24
-; RV32-NEXT:    vadd.vi v24, v24, 1
-; RV32-NEXT:    vrgather.vv v16, v8, v24
+; RV32-NEXT:    vadd.vi v0, v24, 1
+; RV32-NEXT:    vrgather.vv v24, v8, v0
+; RV32-NEXT:    vadd.vi v0, v0, 1
+; RV32-NEXT:    vrgather.vv v16, v8, v0
 ; RV32-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; RV32-NEXT:    vmv2r.v v10, v0
+; RV32-NEXT:    vmv2r.v v10, v24
 ; RV32-NEXT:    vmv2r.v v12, v16
 ; RV32-NEXT:    csrr a0, vlenb
 ; RV32-NEXT:    slli a0, a0, 3
@@ -194,13 +194,13 @@ define {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>} @vector_dein
 ; RV64-NEXT:    vrgather.vv v16, v8, v24
 ; RV64-NEXT:    addi a0, sp, 16
 ; RV64-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; RV64-NEXT:    vadd.vi v0, v24, 1
-; RV64-NEXT:    vrgather.vv v16, v8, v0
-; RV64-NEXT:    vadd.vi v24, v24, 2
-; RV64-NEXT:    vrgather.vv v0, v8, v24
+; RV64-NEXT:    vadd.vi v16, v24, 1
+; RV64-NEXT:    vrgather.vv v0, v8, v16
+; RV64-NEXT:    vadd.vi v16, v24, 2
+; RV64-NEXT:    vrgather.vv v24, v8, v16
 ; RV64-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; RV64-NEXT:    vmv2r.v v10, v16
-; RV64-NEXT:    vmv2r.v v12, v0
+; RV64-NEXT:    vmv2r.v v10, v0
+; RV64-NEXT:    vmv2r.v v12, v24
 ; RV64-NEXT:    csrr a0, vlenb
 ; RV64-NEXT:    slli a0, a0, 3
 ; RV64-NEXT:    add sp, sp, a0
