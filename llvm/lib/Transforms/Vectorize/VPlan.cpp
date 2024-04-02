@@ -89,10 +89,10 @@ static void moveStepComputationsToIVUpdate(VPTransformState *State,
 
   auto MatchRVLPlaceholder = [&State](Instruction *I) -> Value * {
     Value *V;
-    if (PatternMatch::match(I, m_SExt(m_Value(V))) ||
-        PatternMatch::match(I, m_ZExt(m_Value(V))) ||
-        PatternMatch::match(I, m_Trunc(m_Value(V))) ||
-        PatternMatch::match(I, m_UIToFP(m_Value(V))))
+    if (PatternMatch::match(I, PatternMatch::m_SExt(m_Value(V))) ||
+        PatternMatch::match(I, PatternMatch::m_ZExt(m_Value(V))) ||
+        PatternMatch::match(I, PatternMatch::m_Trunc(m_Value(V))) ||
+        PatternMatch::match(I, PatternMatch::m_UIToFP(m_Value(V))))
       return V;
     return I == State->RVLPlaceholder ? I : nullptr;
   };
