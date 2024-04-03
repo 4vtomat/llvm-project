@@ -10,7 +10,7 @@
 ; CHECK-P470-NEXT:   ir<%38> = load from index 2
 ; CHECK-P470-NEXT:   ir<%39> = load from index 3
 ; CHECK-P470-NEXT: VPlanCM: Current registers usage:	RISCV::VRRC = 29
-; CHECK-P470: VPlanCM: (mf2, float) vec_iter_cost = 179
+; CHECK-P470: VPlanCM: (mf2, float) vec_iter_cost = 173
 ; ...
 ; CHECK-P470: VPlanCM: cost 5 for RVL (m1, float) for VPInstruction: INTERLEAVE-GROUP with factor 4 at %36, ir<%add.ptr53.i>
 ; CHECK-P470-NEXT:   ir<%36> = load from index 0
@@ -18,7 +18,7 @@
 ; CHECK-P470-NEXT:   ir<%38> = load from index 2
 ; CHECK-P470-NEXT:   ir<%39> = load from index 3
 ; CHECK-P470-NEXT: VPlanCM: Current registers usage:	RISCV::VRRC = 29
-; CHECK-P470: VPlanCM: (m1, float) vec_iter_cost = 221
+; CHECK-P470: VPlanCM: (m1, float) vec_iter_cost = 203
 
 ; CHECK-P670: VPlanCM: cost 3 for RVL (mf2, float) for VPInstruction: INTERLEAVE-GROUP with factor 4 at %36, ir<%add.ptr53.i>
 ; CHECK-P670-NEXT:   ir<%36> = load from index 0
@@ -26,7 +26,7 @@
 ; CHECK-P670-NEXT:   ir<%38> = load from index 2
 ; CHECK-P670-NEXT:   ir<%39> = load from index 3
 ; CHECK-P670-NEXT: VPlanCM: Current registers usage:	RISCV::VRRC = 29
-; CHECK-P670: VPlanCM: (mf2, float) vec_iter_cost = 235
+; CHECK-P670: VPlanCM: (mf2, float) vec_iter_cost = 229
 ; ...
 ; CHECK-P670: VPlanCM: cost 5 for RVL (m1, float) for VPInstruction: INTERLEAVE-GROUP with factor 4 at %36, ir<%add.ptr53.i>
 ; CHECK-P670-NEXT:   ir<%36> = load from index 0
@@ -34,7 +34,7 @@
 ; CHECK-P670-NEXT:   ir<%38> = load from index 2
 ; CHECK-P670-NEXT:   ir<%39> = load from index 3
 ; CHECK-P670-NEXT: VPlanCM: Current registers usage:	RISCV::VRRC = 29
-; CHECK-P670: VPlanCM: (m1, float) vec_iter_cost = 277
+; CHECK-P670: VPlanCM: (m1, float) vec_iter_cost = 259
 
 define void @test(ptr %ei, ptr %dweight, ptr %tweight, ptr %arrayidx2.i, ptr %arrayidx7.i902, ptr %arrayidx12.i, ptr %tfweight, ptr %arrayidx36.i, ptr %arrayidx43.i, ptr %arrayidx50.i, i64 %0) {
 entry:

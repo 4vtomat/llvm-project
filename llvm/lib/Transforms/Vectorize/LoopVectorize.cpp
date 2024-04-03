@@ -2905,6 +2905,28 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
     return Type::getIntNTy(IntTy->getContext(),
                            Num * IntTy->getScalarSizeInBits());
   };
+
+  // Like createBitMaskForGaps, but VF can be scalable.
+  auto CreateMaskForGaps =
+      [GetVectorInterleaveIntrinsic,
+       InterleaveFactor](IRBuilderBase &Builder, ElementCount VF,
+                         const InterleaveGroup<Instruction> &Group) -> Value * {
+    // Return nullptr if the the group is fully interleaved.
+    if (Group.getNumMembers() == InterleaveFactor)
+      return nullptr;
+
+    SmallVector<Value *> Masks;
+    for (unsigned I = 0; I < InterleaveFactor; ++I) {
+      Value *Mask = Group.getMember(I) ? Builder.getTrueVector(VF)
+                                       : Builder.getFalseVector(VF);
+      Masks.push_back(Mask);
+    }
+    Type *Types[] = {VectorType::get(Type::getInt1Ty(Builder.getContext()),
+                                     VF * InterleaveFactor)};
+    return Builder.CreateIntrinsic(
+        GetVectorInterleaveIntrinsic(InterleaveFactor), Types, Masks, nullptr,
+        "interleaved.gaps.mask");
+  };
 #endif // SIFIVE_CUSTOMIZATION
 
   // Vectorize the interleaved load group.
@@ -2912,11 +2934,15 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
     Value *MaskForGaps = nullptr;
     if (NeedsMaskForGaps) {
 #if SIFIVE_CUSTOMIZATION
-      assert(!Legal->useVLAVectorizer() &&
-             "Gaps are not supported with VLA vectorizer");
-#endif // SIFIVE_CUSTOMIZATION
+      if (Legal->useVLAVectorizer())
+        MaskForGaps = CreateMaskForGaps(Builder, VF, *Group);
+      else
+        MaskForGaps =
+            createBitMaskForGaps(Builder, VF.getKnownMinValue(), *Group);
+#else
       MaskForGaps =
           createBitMaskForGaps(Builder, VF.getKnownMinValue(), *Group);
+#endif // SIFIVE_CUSTOMIZATION
       assert(MaskForGaps && "Mask for Gaps is required but it is null");
     }
 
@@ -2927,19 +2953,41 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
       for (unsigned Part = 0; Part < UF; ++Part) {
         CallInst *WideLoad;
         Value *GroupMask;
-        if (BlockInMask) {
+        if (BlockInMask || MaskForGaps) {
           assert(useMaskedInterleavedAccesses(*TTI) &&
                  "masked interleaved groups are not allowed.");
-          Value *BlockInMaskPart = State.get(BlockInMask, Part);
-          if (Group->isStrided()) {
-            GroupMask = BlockInMaskPart;
+          if (!BlockInMask) {
+            assert(!Group->isStrided() &&
+                   "Non-const strided group with gaps is unsupported");
+            GroupMask = MaskForGaps;
           } else {
-            SmallVector<Value *, 8> Operands(InterleaveFactor, BlockInMaskPart);
-            Type *Types[] = {VectorType::get(
-                Type::getInt1Ty(Builder.getContext()), VF * InterleaveFactor)};
-            GroupMask = State.Builder.CreateIntrinsic(
-                GetVectorInterleaveIntrinsic(InterleaveFactor), Types, Operands,
-                nullptr, "interleaved.mask");
+            Value *BlockInMaskPart = State.get(BlockInMask, Part);
+            if (Group->isStrided()) {
+              assert(!MaskForGaps &&
+                     "Non-const strided group with gaps is unsupported");
+              GroupMask = BlockInMaskPart;
+            } else {
+              SmallVector<Value *, 8> Operands(InterleaveFactor,
+                                               BlockInMaskPart);
+              Type *Types[] = {
+                  VectorType::get(Type::getInt1Ty(Builder.getContext()),
+                                  VF * InterleaveFactor)};
+              GroupMask = State.Builder.CreateIntrinsic(
+                  GetVectorInterleaveIntrinsic(InterleaveFactor), Types,
+                  Operands, nullptr, "interleaved.mask");
+              if (MaskForGaps) {
+                Value *RVL32 = Builder.CreateZExtOrTrunc(
+                    State.get(State.RVL, Part, /*NeedsScalar=*/true),
+                    Builder.getInt32Ty());
+                Value *InterleaveRVL = Builder.CreateMul(
+                    RVL32,
+                    ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor));
+                GroupMask = Builder.CreateIntrinsic(
+                    Intrinsic::vp_select, {Types},
+                    {MaskForGaps, GroupMask, MaskForGaps, InterleaveRVL},
+                    nullptr, "interleaved.group.mask");
+              }
+            }
           }
         } else {
           ElementCount EC = Group->isStrided() ? VF : VF * InterleaveFactor;
@@ -3023,6 +3071,7 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
             GetVectorDeinterleaveIntrinsic(InterleaveFactor), Types,
             {NewLoads[Part]}, nullptr, "deinterleaved.results");
 
+        unsigned LoadIdx = 0;
         for (unsigned I = 0; I < InterleaveFactor; ++I) {
           Instruction *Member = Group->getMember(I);
           if (!Member)
@@ -3043,7 +3092,8 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
             VectorType *OtherVTy = VectorType::get(Member->getType(), VF);
             Result = createBitOrPointerCast(Result, OtherVTy, DL);
           }
-          State.set(VPDefs[I], Result, Part);
+          State.set(VPDefs[LoadIdx], Result, Part);
+          ++LoadIdx;
         }
       }
       return;
@@ -5029,6 +5079,13 @@ bool LoopVectorizationCostModel::interleavedAccessCanBeWidened(
                              "not supported\n");
         return false;
       }
+
+      // TODO: Support gaps
+      if (Group->getNumMembers() < InterleaveFactor) {
+        LLVM_DEBUG(dbgs() << "LV: The non-const strided interleaved group with "
+                             "gaps is not supported\n");
+        return false;
+      }
     }
 
     if (!SiFiveEnableInterleavedAccess) {
@@ -5036,8 +5093,9 @@ bool LoopVectorizationCostModel::interleavedAccessCanBeWidened(
                            "disabled by the option\n");
       return false;
     }
-    if (InterleaveFactor > 8 || Group->getNumMembers() < InterleaveFactor) {
-      // TODO: Support gaps
+    if (InterleaveFactor > 8 ||
+        (isa<StoreInst>(I) && Group->getNumMembers() < InterleaveFactor)) {
+      // TODO: Support interleaved stores with gaps
       // Since VLA vectorizer uses `llvm.experimental.vector.deinterleave[2-8]`
       // and `llvm.experimental.vector.interleave[2-8]` intrinsics, only support
       // cases with stride >= 2 && stride <= 8
@@ -6033,6 +6091,14 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
 #endif // SIFIVE_CUSTOMIZATION
     return FixedScalableVFPair::getNone();
   }
+
+#if SIFIVE_CUSTOMIZATION
+  // Allow scalar epilogue if interleaved groups required it.
+  if (Legal->useVLAVectorizer() && InterleaveInfo.requiresScalarEpilogue())
+    if (ScalarEpilogueStatus != CM_ScalarEpilogueNotAllowedLowTripLoop &&
+        ScalarEpilogueStatus != CM_ScalarEpilogueNotAllowedOptSize)
+      ScalarEpilogueStatus = CM_ScalarEpilogueAllowed;
+#endif // SIFIVE_CUSTOMIZATION
 
   // Now try the tail folding
 
