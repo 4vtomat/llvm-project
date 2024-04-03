@@ -1111,7 +1111,7 @@ InstructionCost RISCVTTIImpl::getInterleavedMemoryOpCost(
     Align Alignment, unsigned AddressSpace, TTI::TargetCostKind CostKind,
     bool UseMaskForCond, bool UseMaskForGaps) {
 #if SIFIVE_CUSTOMIZATION
-  if (isa<ScalableVectorType>(VecTy) &&
+  if (isa<ScalableVectorType>(VecTy) && !UseMaskForGaps &&
       Factor <= TLI->getMaxSupportedInterleaveFactor()) {
     // Only supported deinterleave2/interleave2 for scalable vectors in upstream
     // vectorizer.
