@@ -437,7 +437,7 @@ defm "" : LMULSEWSchedWritesFW<"WriteVFWMulAddF">;
 defm "" : LMULSEWSchedWritesF<"WriteVFSqrtV">;
 // 13.9. Vector Floating-Point Reciprocal Square-Root Estimate Instruction
 // 13.10. Vector Floating-Point Reciprocal Estimate Instruction
-defm "" : LMULSchedWrites<"WriteVFRecpV">;
+defm "" : LMULSEWSchedWritesF<"WriteVFRecpV">;
 // 13.11. Vector Floating-Point MIN/MAX Instructions
 defm "" : LMULSchedWrites<"WriteVFMinMaxV">;
 defm "" : LMULSchedWrites<"WriteVFMinMaxF">;
@@ -662,7 +662,7 @@ defm "" : LMULSEWSchedReadsFW<"ReadVFWMulAddF">;
 defm "" : LMULSEWSchedReadsF<"ReadVFSqrtV">;
 // 13.9. Vector Floating-Point Reciprocal Square-Root Estimate Instruction
 // 13.10. Vector Floating-Point Reciprocal Estimate Instruction
-defm "" : LMULSchedReads<"ReadVFRecpV">;
+defm "" : LMULSEWSchedReadsF<"ReadVFRecpV">;
 // 13.11. Vector Floating-Point MIN/MAX Instructions
 defm "" : LMULSchedReads<"ReadVFMinMaxV">;
 defm "" : LMULSchedReads<"ReadVFMinMaxF">;
@@ -900,7 +900,7 @@ defm "" : LMULSEWWriteResF<"WriteVFMulAddF", []>;
 defm "" : LMULSEWWriteResFW<"WriteVFWMulAddV", []>;
 defm "" : LMULSEWWriteResFW<"WriteVFWMulAddF", []>;
 defm "" : LMULSEWWriteResF<"WriteVFSqrtV", []>;
-defm "" : LMULWriteRes<"WriteVFRecpV", []>;
+defm "" : LMULSEWWriteResF<"WriteVFRecpV", []>;
 defm "" : LMULWriteRes<"WriteVFMinMaxV", []>;
 defm "" : LMULWriteRes<"WriteVFMinMaxF", []>;
 defm "" : LMULWriteRes<"WriteVFSgnjV", []>;
@@ -1056,7 +1056,7 @@ defm "" : LMULSEWReadAdvanceF<"ReadVFMulAddF", 0>;
 defm "" : LMULSEWReadAdvanceFW<"ReadVFWMulAddV", 0>;
 defm "" : LMULSEWReadAdvanceFW<"ReadVFWMulAddF", 0>;
 defm "" : LMULSEWReadAdvanceF<"ReadVFSqrtV", 0>;
-defm "" : LMULReadAdvance<"ReadVFRecpV", 0>;
+defm "" : LMULSEWReadAdvanceF<"ReadVFRecpV", 0>;
 defm "" : LMULReadAdvance<"ReadVFMinMaxV", 0>;
 defm "" : LMULReadAdvance<"ReadVFMinMaxF", 0>;
 defm "" : LMULReadAdvance<"ReadVFSgnjV", 0>;
