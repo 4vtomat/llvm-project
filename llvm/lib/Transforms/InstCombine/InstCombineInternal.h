@@ -455,6 +455,23 @@ private:
 
 #if SIFIVE_CUSTOMIZATION
   Instruction *foldNeutralVPReduce(Instruction &I);
+
+  /// Replace a tree of vector reduces and scalar updates with a vector
+  /// accumulator and one reduce:
+  ///
+  /// %t0 = llvm.reduce.<op> %start1, %vec1
+  /// %red0 = <op> %red, %t0
+  ///
+  /// %t1 = llvm.reduce.<op> %start2, %vec2
+  /// %red1 = <op> %red0, %t1
+  ///
+  /// =>
+  ///
+  /// %red0 = <op> %red, %start0
+  /// %vec3 = <op> %vec1, %vec2
+  /// %t1 = llvm.reduce.<op> %start2, %vec3
+  /// %red1 = <op> %red0, %t1
+  Value *simplifyVectorReductionTree(CallInst &CI);
 #endif
 
   Instruction *hoistFNegAboveFMulFDiv(Value *FNegOp, Instruction &FMFSource);
