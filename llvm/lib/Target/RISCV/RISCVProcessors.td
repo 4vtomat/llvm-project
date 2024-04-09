@@ -719,17 +719,8 @@ defvar SIFIVE_X392_TuneFeatures = [
   TuneDLen512b
 ];
 
-def SIFIVE_X392S_SINGLE_VALU
-    : RISCVProcessorModel<"sifive-x392-ea-singlevalu", SiFive7SVLEN1024Model,
-                          SIFIVE_X392_Features, SIFIVE_X392_TuneFeatures>;
-
-def SIFIVE_X392S_DUAL_VALU
-    : RISCVProcessorModel<"sifive-x392-ea-dualvalu",
-                          SiFive7SVLEN1024DualVALUModel, SIFIVE_X392_Features,
-                          SIFIVE_X392_TuneFeatures>;
-
 def SIFIVE_X390
-    : RISCVProcessorModel<"sifive-x390", SiFive7SVLEN1024Model,
+    : RISCVProcessorModel<"sifive-x390", SiFive7SVLEN1024DualVALUModel,
                           SIFIVE_X392_Features, SIFIVE_X392_TuneFeatures>;
 
 def SIFIVE_P260T : RISCVProcessorModel<"sifive-p260t", SiFive7NVLEN128Model,

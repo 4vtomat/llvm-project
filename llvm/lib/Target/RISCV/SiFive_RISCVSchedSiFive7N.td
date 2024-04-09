@@ -182,9 +182,7 @@ class SiFive7NSchedMachineModel<int vlen, bit extraVALU = false> : SchedMachineM
 def SiFive7NVLEN128Model : SiFive7NSchedMachineModel<128>;
 def SiFive7NVLEN256Model : SiFive7NSchedMachineModel<256>;
 def SiFive7NVLEN512Model : SiFive7NSchedMachineModel<512>;
-def SiFive7SVLEN1024Model : SiFive7NSchedMachineModel<1024>;
-def SiFive7SVLEN1024DualVALUModel
-    : SiFive7NSchedMachineModel<1024, true>;
+def SiFive7SVLEN1024DualVALUModel : SiFive7NSchedMachineModel<1024, true>;
 // Some processors do not have vector but reuse the scheduler model that has vector.
 // Create an alias that does not have VLEN in the name.
 defvar SiFive7NModel = SiFive7NVLEN512Model;
@@ -193,7 +191,6 @@ foreach model = [
   SiFive7NVLEN128Model,
   SiFive7NVLEN256Model,
   SiFive7NVLEN512Model,
-  SiFive7SVLEN1024Model,
   SiFive7SVLEN1024DualVALUModel,
 ] in {
   defvar name = "VLEN" # model.VLEN # !if(model.ExtraVALU, "DualVALU","");
