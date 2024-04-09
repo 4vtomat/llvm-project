@@ -493,17 +493,31 @@ foreach mx = SchedMxList in {
 }
 
 // 13. Vector Floating-Point Instructions
+foreach mx = SchedMxListF in {
+  foreach sew = SchedSEWSet<mx, isF=1>.val in {
+    defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
+    defvar IsWorstCase = SiFiveP400IsWorstCaseMXSEW<mx, sew, SchedMxListF, isF=1>.c;
+    let Latency = 6, ReleaseAtCycles = [LMulLat] in {
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFALUV",  [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFALUF",  [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFMulV",  [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFMulF",  [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFMulAddV", [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFMulAddF", [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
+    }
+  }
+}
+foreach mx = SchedMxListF in {
+  foreach sew = SchedSEWSet<mx, isF=1>.val in {
+    defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
+    defvar IsWorstCase = SiFiveP400IsWorstCaseMXSEW<mx, sew, SchedMxListF, isF=1>.c;
+    let Latency = 2, ReleaseAtCycles = [LMulLat] in
+    defm "" : LMULSEWWriteResMXSEW<"WriteVFRecpV", [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
+  }
+}
 foreach mx = SchedMxList in {
   defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxList>.c;
-  let Latency = 6, ReleaseAtCycles = [LMulLat] in {
-    defm "" : LMULWriteResMX<"WriteVFALUV",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFALUF",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFMulV",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFMulF",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFMulAddV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFMulAddF", [SiFiveP400VEXQ0], mx, IsWorstCase>;
-  }
   let Latency = 3, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVFCvtIToFV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFCvtFToIV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
@@ -511,7 +525,6 @@ foreach mx = SchedMxList in {
   let Latency = 2, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVFCmpV",  [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVFCmpF",  [SiFiveP400VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFRecpV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
   let Latency = 2, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVFSgnjV",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
@@ -541,15 +554,17 @@ foreach mx = SchedMxListFW in {
   }
 }
 foreach mx = SchedMxListFW in {
-  defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
-  defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxListFW>.c;
-  let Latency = 6, ReleaseAtCycles = [LMulLat] in {
-    defm "" : LMULWriteResMX<"WriteVFWALUV",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFWMulV",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFWMulAddV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFWMulAddF", [SiFiveP400VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFWMulF",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFWALUF",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
+  foreach sew = SchedSEWSet<mx, isF=1, isWidening=1>.val in {
+    defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
+    defvar IsWorstCase = SiFiveP400IsWorstCaseMXSEW<mx, sew, SchedMxListFW, isF=1>.c;
+    let Latency = 6, ReleaseAtCycles = [LMulLat] in {
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFWALUV", [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFWALUF", [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFWMulV", [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFWMulF", [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFWMulAddV", [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFWMulAddF", [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
+    }
   }
 }
 // Narrowing
@@ -931,22 +946,22 @@ defm "" : LMULReadAdvanceW<"ReadVNClipV", 0>;
 defm "" : LMULReadAdvanceW<"ReadVNClipX", 0>;
 
 // 14. Vector Floating-Point Instructions
-defm "" : LMULReadAdvance<"ReadVFALUV", 0>;
-defm "" : LMULReadAdvance<"ReadVFALUF", 0>;
-defm "" : LMULReadAdvanceFW<"ReadVFWALUV", 0>;
-defm "" : LMULReadAdvanceFW<"ReadVFWALUF", 0>;
-defm "" : LMULReadAdvance<"ReadVFMulV", 0>;
-defm "" : LMULReadAdvance<"ReadVFMulF", 0>;
+defm "" : LMULSEWReadAdvanceF<"ReadVFALUV", 0>;
+defm "" : LMULSEWReadAdvanceF<"ReadVFALUF", 0>;
+defm "" : LMULSEWReadAdvanceFW<"ReadVFWALUV", 0>;
+defm "" : LMULSEWReadAdvanceFW<"ReadVFWALUF", 0>;
+defm "" : LMULSEWReadAdvanceF<"ReadVFMulV", 0>;
+defm "" : LMULSEWReadAdvanceF<"ReadVFMulF", 0>;
 defm "" : LMULSEWReadAdvanceF<"ReadVFDivV", 0>;
 defm "" : LMULSEWReadAdvanceF<"ReadVFDivF", 0>;
-defm "" : LMULReadAdvanceFW<"ReadVFWMulV", 0>;
-defm "" : LMULReadAdvanceFW<"ReadVFWMulF", 0>;
-defm "" : LMULReadAdvance<"ReadVFMulAddV", 0>;
-defm "" : LMULReadAdvance<"ReadVFMulAddF", 0>;
-defm "" : LMULReadAdvanceFW<"ReadVFWMulAddV", 0>;
-defm "" : LMULReadAdvanceFW<"ReadVFWMulAddF", 0>;
+defm "" : LMULSEWReadAdvanceFW<"ReadVFWMulV", 0>;
+defm "" : LMULSEWReadAdvanceFW<"ReadVFWMulF", 0>;
+defm "" : LMULSEWReadAdvanceF<"ReadVFMulAddV", 0>;
+defm "" : LMULSEWReadAdvanceF<"ReadVFMulAddF", 0>;
+defm "" : LMULSEWReadAdvanceFW<"ReadVFWMulAddV", 0>;
+defm "" : LMULSEWReadAdvanceFW<"ReadVFWMulAddF", 0>;
 defm "" : LMULSEWReadAdvanceF<"ReadVFSqrtV", 0>;
-defm "" : LMULReadAdvance<"ReadVFRecpV", 0>;
+defm "" : LMULSEWReadAdvanceF<"ReadVFRecpV", 0>;
 defm "" : LMULReadAdvance<"ReadVFCmpV", 0>;
 defm "" : LMULReadAdvance<"ReadVFCmpF", 0>;
 defm "" : LMULReadAdvance<"ReadVFMinMaxV", 0>;
