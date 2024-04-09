@@ -241,7 +241,8 @@ multiclass BulletWriteResBase<
     int VLEN, ProcResourceKind PipeA, ProcResourceKind PipeB,
     ProcResourceKind PipeAB, ProcResourceKind Mem, ProcResourceKind IDiv,
     ProcResourceKind FDiv, ProcResourceKind VA1, ProcResourceKind VA1OrVA2,
-    ProcResourceKind VL, ProcResourceKind VS, ProcResourceKind VCQ> {
+    ProcResourceKind VL, ProcResourceKind VS, ProcResourceKind VCQ,
+    bit hasSlowFP64Vec = false> {
 
   // Branching
   let Latency = 3 in {
@@ -732,15 +733,19 @@ multiclass BulletWriteResBase<
   // 13. Vector Floating-Point Instructions
   foreach mx = SchedMxListF in {
     foreach sew = SchedSEWSet<mx, isF=1>.val in {
-      defvar Cycles = BulletGetCyclesDefault<mx>.c;
+      defvar Cycles = !if(!and(hasSlowFP64Vec, !eq(sew, 64)),
+                          BulletGetCyclesOnePerElement<mx, sew, VLEN>.c,
+                          BulletGetCyclesDefault<mx>.c);
+      defvar Lat = !if(!and(hasSlowFP64Vec, !eq(sew, 64)), Cycles, 8);
+      defvar VA = !if(!and(hasSlowFP64Vec, !eq(sew, 64)), VA1, VA1OrVA2);
       defvar IsWorstCase = BulletIsWorstCaseMXSEW<mx, sew, SchedMxListF, isF=1>.c;
-      let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFALUV",  [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFALUF",  [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFMulV",  [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFMulF",  [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFMulAddV", [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFMulAddF", [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
+      let Latency = Lat, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFALUV",  [VCQ, VA], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFALUF",  [VCQ, VA], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFMulV",  [VCQ, VA], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFMulF",  [VCQ, VA], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFMulAddV", [VCQ, VA], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFMulAddF", [VCQ, VA], mx, sew, IsWorstCase>;
         defm "" : LMULSEWWriteResMXSEW<"WriteVFRecpV",   [VCQ, VA1], mx, sew, IsWorstCase>;
       }
     }

@@ -1361,41 +1361,17 @@
 // RUN:   | FileCheck --check-prefix=CHECK-SIFIVE-RECODE-OFF %s
 // CHECK-SIFIVE-RECODE-OFF-NOT: __sifive_recode_neon
 //
-// RUN: %clang --target=riscv64-unknown-linux-gnu -mtune=sifive-x392-ea-singlevalu -E -dM %s \
-// RUN:   -o - | FileCheck --check-prefix=CHECK-MTUNE-X392-SINGLE-SLOW-VECTOR-FP64 %s
-// CHECK-MTUNE-X392-SINGLE-SLOW-VECTOR-FP64: __sifive_slow_vector_fp64
-//
-// RUN: %clang --target=riscv64-unknown-linux-gnu -mtune=sifive-x392-ea-dualvalu -E -dM %s \
-// RUN:   -o - | FileCheck --check-prefix=CHECK-MTUNE-X392-DUAL-SLOW-VECTOR-FP64 %s
-// CHECK-MTUNE-X392-DUAL-SLOW-VECTOR-FP64: __sifive_slow_vector_fp64
-//
 // RUN: %clang --target=riscv64-unknown-linux-gnu -mtune=sifive-x390 -E -dM %s \
 // RUN:   -o - | FileCheck --check-prefix=CHECK-MTUNE-X390-SLOW-VECTOR-FP64 %s
 // CHECK-MTUNE-X390-SLOW-VECTOR-FP64: __sifive_slow_vector_fp64
-//
-// RUN: %clang --target=riscv64-unknown-linux-gnu -mcpu=sifive-x392-ea-singlevalu -E -dM %s \
-// RUN:   -o - | FileCheck --check-prefix=CHECK-MCPU-X392-SINGLE-SLOW-VECTOR-FP64 %s
-// CHECK-MCPU-X392-SINGLE-SLOW-VECTOR-FP64: __sifive_slow_vector_fp64
-//
-// RUN: %clang --target=riscv64-unknown-linux-gnu -mcpu=sifive-x392-ea-dualvalu -E -dM %s \
-// RUN:   -o - | FileCheck --check-prefix=CHECK-MCPU-X392-DUAL-SLOW-VECTOR-FP64 %s
-// CHECK-MCPU-X392-DUAL-SLOW-VECTOR-FP64: __sifive_slow_vector_fp64
 //
 // RUN: %clang --target=riscv64-unknown-linux-gnu -mcpu=sifive-x390 -E -dM %s \
 // RUN:   -o - | FileCheck --check-prefix=CHECK-MCPU-X390-SLOW-VECTOR-FP64 %s
 // CHECK-MCPU-X390-SLOW-VECTOR-FP64: __sifive_slow_vector_fp64
 //
-// RUN: %clang --target=riscv64-unknown-linux-gnu -mtune=rocket -mcpu=sifive-x392-ea-singlevalu -E -dM %s \
-// RUN:   -o - | FileCheck --check-prefix=CHECK-TUNE-MCPU-X392-SINGLE-SLOW-VECTOR-FP64 %s
-// CHECK-TUNE-MCPU-X392-SINGLE-SLOW-VECTOR-FP64-NOT: __sifive_slow_vector_fp64
-//
-// RUN: %clang --target=riscv64-unknown-linux-gnu -mtune=rocket -mcpu=sifive-x392-ea-dualvalu -E -dM %s \
-// RUN:   -o - | FileCheck --check-prefix=CHECK-TUNE-MCPU-X392-DUAL-SLOW-VECTOR-FP64 %s
-// CHECK-TUNE-MCPU-X392-DUAL-SLOW-VECTOR-FP64-NOT: __sifive_slow_vector_fp64
-//
-// RUN: %clang --target=riscv64-unknown-linux-gnu -mtune=rocket -mcpu=sifive-x390 -E -dM %s \
-// RUN:   -o - | FileCheck --check-prefix=CHECK-TUNE-MCPU-X390-SLOW-VECTOR-FP64 %s
-// CHECK-TUNE-MCPU-X390-SLOW-VECTOR-FP64-NOT: __sifive_slow_vector_fp64
+// RUN: %clang --target=riscv64-unknown-linux-gnu -mtune=rocket -mcpu=sifive-x390-fast-fp64 -E -dM %s \
+// RUN:   -o - | FileCheck --check-prefix=CHECK-TUNE-MCPU-X390-FAST-VECTOR-FP64 %s
+// CHECK-TUNE-MCPU-X390-FAST-VECTOR-FP64-NOT: __sifive_slow_vector_fp64
 // end SIFIVE_CUSTOMIZATION
 
 // RUN: %clang --target=riscv32-unknown-linux-gnu \
