@@ -24,9 +24,10 @@
 #include "llvm/IR/ConstantRange.h"
 #include "llvm/IR/DataLayout.h"
 #include "llvm/IR/IntrinsicInst.h"
-#include "llvm/IR/IntrinsicsRISCV.h"
+#include "llvm/IR/IntrinsicsRISCV.h" // SIFIVE
 #include "llvm/IR/PatternMatch.h"
 #include "llvm/Support/KnownBits.h"
+#include "llvm/TargetParser/RISCVTargetParser.h" // SIFIVE
 #include "llvm/Transforms/InstCombine/InstCombiner.h"
 #include <bitset>
 
@@ -7047,11 +7048,6 @@ static Instruction *foldVSetvliRecurrence(ICmpInst &Cmp, InstCombiner &IC) {
   if (Pred != ICmpInst::ICMP_EQ)
     return nullptr;
 
-  // RHS should be a non-zero constant. This is our starting AVL.
-  auto *CI = dyn_cast<ConstantInt>(RHS);
-  if (!CI || CI->isZero())
-    return nullptr;
-
   // Left hand side should be an add.
   auto *BO = dyn_cast<BinaryOperator>(LHS);
   if (!BO || BO->getOpcode() != Instruction::Add)
@@ -7068,18 +7064,18 @@ static Instruction *foldVSetvliRecurrence(ICmpInst &Cmp, InstCombiner &IC) {
     return nullptr;
 
   // Recurrence step should be an experimental_get_vector_length.
-  Value *AVL;
+  Value *VL;
   uint64_t VF, Scalable;
   if (!match(Step,
              m_ZExt(m_Intrinsic<Intrinsic::experimental_get_vector_length>(
-                 m_Value(AVL), m_ConstantInt(VF), m_ConstantInt(Scalable)))))
+                 m_Value(VL), m_ConstantInt(VF), m_ConstantInt(Scalable)))))
     return nullptr;
 
   if (!Scalable)
     return nullptr;
 
-  // AVL should be (sub RHS, PN).
-  if (!match(AVL, m_Sub(m_Specific(RHS), m_Specific(PN))))
+  // VL should be (sub RHS, PN).
+  if (!match(VL, m_Sub(m_Specific(RHS), m_Specific(PN))))
     return nullptr;
 
   Function *F = Cmp.getFunction();
@@ -7090,10 +7086,25 @@ static Instruction *foldVSetvliRecurrence(ICmpInst &Cmp, InstCombiner &IC) {
   unsigned AttrMin = Attr.getVScaleRangeMin();
   unsigned MinElts = AttrMin * VF;
 
-  if (CI->getValue().ugt(MinElts))
-    return nullptr;
+  if (auto *CI = dyn_cast<ConstantInt>(RHS); CI && CI->getValue().ule(MinElts))
+    return IC.replaceInstUsesWith(Cmp, ConstantInt::getTrue(Cmp.getType()));
 
-  return IC.replaceInstUsesWith(Cmp, ConstantInt::getTrue(Cmp.getType()));
+  uint64_t VSEW, VLMUL;
+  if (match(RHS, m_TruncOrSelf(m_Intrinsic<Intrinsic::riscv_vsetvli>(
+                     m_Value(), m_ConstantInt(VSEW), m_ConstantInt(VLMUL)))) &&
+      VSEW < 4 && VLMUL < 8 && VLMUL != 4) {
+    unsigned MinVectorLength = RISCV::RVVBitsPerBlock;
+    if (VLMUL < 4)
+      MinVectorLength <<= VLMUL;
+    else
+      MinVectorLength >>= (8 - VLMUL);
+
+    unsigned Elts = MinVectorLength >> (VSEW + 3);
+    if (Elts <= VF)
+      IC.replaceInstUsesWith(Cmp, ConstantInt::getTrue(Cmp.getType()));
+  }
+
+  return nullptr;
 }
 #endif
 
