@@ -62,10 +62,9 @@ define i32 @reduction_sum(ptr noalias nocapture %A, ptr noalias nocapture %B) {
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP0]], align 4
 ; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[B:%.*]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[WIDE_LOAD1:%.*]] = load <4 x i32>, ptr [[TMP1]], align 4
-; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[VEC_IND]])
-; CHECK-NEXT:    [[TMP3:%.*]] = add i32 [[TMP2]], [[VEC_PHI]]
-; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[WIDE_LOAD]])
-; CHECK-NEXT:    [[TMP5:%.*]] = add i32 [[TMP4]], [[TMP3]]
+; CHECK-NEXT:    [[COMBINED_REDUCE:%.*]] = add <4 x i32> [[VEC_IND]], [[WIDE_LOAD]]
+; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[COMBINED_REDUCE]])
+; CHECK-NEXT:    [[TMP5:%.*]] = add i32 [[TMP2]], [[VEC_PHI]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[WIDE_LOAD1]])
 ; CHECK-NEXT:    [[TMP7]] = add i32 [[TMP6]], [[TMP5]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
@@ -825,10 +824,9 @@ define i32 @reduction_predicated(ptr noalias nocapture %A, ptr noalias nocapture
 ; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP0]], align 4
 ; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds i32, ptr [[B:%.*]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[WIDE_LOAD1:%.*]] = load <4 x i32>, ptr [[TMP1]], align 4
-; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[VEC_IND]])
-; CHECK-NEXT:    [[TMP3:%.*]] = add i32 [[TMP2]], [[VEC_PHI]]
-; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[WIDE_LOAD]])
-; CHECK-NEXT:    [[TMP5:%.*]] = add i32 [[TMP4]], [[TMP3]]
+; CHECK-NEXT:    [[COMBINED_REDUCE:%.*]] = add <4 x i32> [[VEC_IND]], [[WIDE_LOAD]]
+; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[COMBINED_REDUCE]])
+; CHECK-NEXT:    [[TMP5:%.*]] = add i32 [[TMP2]], [[VEC_PHI]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[WIDE_LOAD1]])
 ; CHECK-NEXT:    [[TMP7]] = add i32 [[TMP6]], [[TMP5]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4

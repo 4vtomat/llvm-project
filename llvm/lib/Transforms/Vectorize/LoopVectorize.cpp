@@ -3581,13 +3581,31 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
   // Update dominator for Bypass & LoopExit (if needed).
   DT->changeImmediateDominator(Bypass, TCCheckBlock);
 #if SIFIVE_CUSTOMIZATION
-  if (!isRevectorizeWithoutStrideChecks(*OrigLoop))
-#endif // SIFIVE_CUSTOMIZATION
+  if (!Cost->requiresScalarEpilogue(VF.isVector())) {
+    // If there is an epilogue which must run, there's no edge from the
+    // middle block to exit blocks  and thus no need to update the immediate
+    // dominator of the exit blocks.
+    // Update the immediate dominator of exit block to preheader block when
+    // revectorizing the loop without requiring an epilogue. However, during
+    // the first vectorization, the level of the exit block's immediate
+    // dominator may be less than that of preheader block. Therefore, the
+    // common nearest dominator for exit block and preheader block is used as
+    // the final immediate dominator of exit block.
+    // TODO: The clear approach would be to update the immediate dominator based
+    // on whether the epilogue was required by the first vectorization.
+    BasicBlock *NewIDom =
+        isRevectorizeWithoutStrideChecks(*OrigLoop)
+            ? DT->findNearestCommonDominator(LoopExitBlock, TCCheckBlock)
+            : TCCheckBlock;
+    DT->changeImmediateDominator(LoopExitBlock, NewIDom);
+  }
+#else
   if (!Cost->requiresScalarEpilogue(VF.isVector()))
     // If there is an epilogue which must run, there's no edge from the
     // middle block to exit blocks  and thus no need to update the immediate
     // dominator of the exit blocks.
     DT->changeImmediateDominator(LoopExitBlock, TCCheckBlock);
+#endif // SIFIVE_CUSTOMIZATION
 
   BranchInst &BI =
       *BranchInst::Create(Bypass, LoopVectorPreHeader, CheckMinIters);
@@ -3703,8 +3721,22 @@ void InnerLoopVectorizer::createVectorLoopSkeleton(StringRef Prefix) {
   ReplaceInstWithInst(LoopMiddleBlock->getTerminator(), BrInst);
 
 #if SIFIVE_CUSTOMIZATION
-  if (isRevectorizeWithoutStrideChecks(*OrigLoop))
+  if (isRevectorizeWithoutStrideChecks(*OrigLoop)) {
+    if (!Cost->requiresScalarEpilogue(VF.isVector())) {
+      // Update the immediate dominator of exit block to preheader block when
+      // revectorizing the loop without requiring an epilogue. However, during
+      // the first vectorization, the level of the exit block's immediate
+      // dominator may be less than that of preheader block. Therefore, the
+      // common nearest dominator for exit block and preheader block is used as
+      // the final immediate dominator of exit block.
+      // TODO: The clear approach would be to update the immediate dominator
+      // based on whether the epilogue was required by the first vectorization.
+      BasicBlock *NewIDom =
+          DT->findNearestCommonDominator(LoopExitBlock, LoopVectorPreHeader);
+      DT->changeImmediateDominator(LoopExitBlock, NewIDom);
+    }
     return;
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   // Update dominator for loop exit. During skeleton creation, only the vector

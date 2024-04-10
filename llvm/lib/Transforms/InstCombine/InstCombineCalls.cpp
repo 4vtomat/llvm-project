@@ -74,6 +74,9 @@
 #include <optional>
 #include <utility>
 #include <vector>
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Analysis/OptimizationRemarkEmitter.h"
+#endif // SIFIVE_CUSTOMIZATION
 
 #define DEBUG_TYPE "instcombine"
 #include "llvm/Transforms/Utils/InstructionWorklist.h"
@@ -88,6 +91,13 @@ static cl::opt<unsigned> GuardWideningWindow(
     cl::init(3),
     cl::desc("How wide an instruction window to bypass looking for "
              "another guard"));
+
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<unsigned> MaxAllowedDepthToSimplifyReductionTree(
+    "sifive-instcombine-reduction-tree-allowed-depth", cl::init(5),
+    cl::desc("Control maximum allowed depth during use-def/def-use tranversal "
+             "to find another reduction to combine with"));
+#endif // SIFIVE_CUSTOMIZATION
 
 /// Return the specified type promoted as it would be to pass though a va_arg
 /// area.
@@ -3525,6 +3535,10 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     [[fallthrough]];
   }
   case Intrinsic::vector_reduce_add: {
+#if SIFIVE_CUSTOMIZATION
+    if (Value *Res = simplifyVectorReductionTree(CI))
+      return replaceInstUsesWith(CI, Res);
+#endif // SIFIVE_CUSTOMIZATION
     if (IID == Intrinsic::vector_reduce_add) {
       // Convert vector_reduce_add(ZExt(<n x i1>)) to
       // ZExtOrTrunc(ctpop(bitcast <n x i1> to in)).
@@ -3666,6 +3680,10 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
   case Intrinsic::vector_reduce_fmin:
   case Intrinsic::vector_reduce_fadd:
   case Intrinsic::vector_reduce_fmul: {
+#if SIFIVE_CUSTOMIZATION
+    if (Value *Res = simplifyVectorReductionTree(CI))
+      return replaceInstUsesWith(CI, Res);
+#endif // SIFIVE_CUSTOMIZATION
     bool CanBeReassociated = (IID != Intrinsic::vector_reduce_fadd &&
                               IID != Intrinsic::vector_reduce_fmul) ||
                              II->hasAllowReassoc();
@@ -4805,5 +4823,139 @@ Instruction *InstCombinerImpl::foldNeutralVPReduce(Instruction &I) {
   }
 
   return nullptr;
+}
+
+Value *InstCombinerImpl::simplifyVectorReductionTree(CallInst &Reduce) {
+  if (!Reduce.hasOneUse())
+    return nullptr;
+
+  CallInst *CombineReduce = nullptr;
+  SmallPtrSet<Value *, 32> Visited = {&Reduce};
+
+  using MatchAddTy = function_ref<bool(Value *, Value *&, Value *&)>;
+  using MatchReduceAddTy = function_ref<bool(Value *)>;
+
+  auto MatchFAdd = [](Value *V, Value *&Op1, Value *&Op2) {
+    FastMathFlags ReassocFMF;
+    ReassocFMF.setAllowReassoc();
+    return match(
+        V, m_CombineAnd(m_FAdd(m_Value(Op1), m_Value(Op2)), m_FMF(ReassocFMF)));
+  };
+
+  auto MatchReduceFAdd = [](Value *V) {
+    return match(V, m_OneUse(m_Intrinsic<Intrinsic::vector_reduce_fadd>(
+                        m_Value(), m_Value())));
+  };
+
+  auto MatchAdd = [](Value *V, Value *&Op1, Value *&Op2) {
+    return match(V, m_Add(m_Value(Op1), m_Value(Op2)));
+  };
+
+  auto MatchReduceAdd = [](Value *V) {
+    return match(
+        V, m_OneUse(m_Intrinsic<Intrinsic::vector_reduce_add>(m_Value())));
+  };
+
+  std::function<void(Value *, MatchAddTy, MatchReduceAddTy, const unsigned)>
+      AnalyzeUseDefTree = [&](Value *V, MatchAddTy AddMatcher,
+                              MatchReduceAddTy ReduceMatcher,
+                              const unsigned Depth) {
+        if (Depth == 0 || Visited.contains(V) || CombineReduce)
+          return;
+        // Ignore values that dominate Reduce
+        if (DT.dominates(V, &Reduce))
+          return;
+
+        Visited.insert(V);
+
+        Value *Op1, *Op2;
+        if (!AddMatcher(V, Op1, Op2))
+          return;
+        if (Op1 != &Reduce && ReduceMatcher(Op1)) {
+          CombineReduce = cast<CallInst>(Op1);
+          return;
+        }
+        if (Op2 != &Reduce && ReduceMatcher(Op2)) {
+          CombineReduce = cast<CallInst>(Op2);
+          return;
+        }
+        AnalyzeUseDefTree(Op1, AddMatcher, ReduceMatcher, Depth - 1);
+        AnalyzeUseDefTree(Op2, AddMatcher, ReduceMatcher, Depth - 1);
+      };
+
+  std::function<void(Value *, MatchAddTy, MatchReduceAddTy, const unsigned)>
+      AnalyzeDefUseTree = [&](Value *V, MatchAddTy AddMatcher,
+                              MatchReduceAddTy ReduceMatcher,
+                              const unsigned Depth) {
+        if (Depth == 0 || !V->hasOneUse())
+          return;
+
+        [[maybe_unused]] Value *Op1, *Op2;
+        if (!AddMatcher(V, Op1, Op2))
+          return;
+
+        AnalyzeUseDefTree(V, AddMatcher, ReduceMatcher,
+                          MaxAllowedDepthToSimplifyReductionTree);
+
+        AnalyzeDefUseTree(V->user_back(), AddMatcher, ReduceMatcher, Depth - 1);
+      };
+
+  const bool IsFPReduce = Reduce.getType()->isFloatTy();
+  if (IsFPReduce)
+    AnalyzeDefUseTree(Reduce.user_back(), MatchFAdd, MatchReduceFAdd,
+                      MaxAllowedDepthToSimplifyReductionTree);
+  else
+    AnalyzeDefUseTree(Reduce.user_back(), MatchAdd, MatchReduceAdd,
+                      MaxAllowedDepthToSimplifyReductionTree);
+
+  if (!CombineReduce)
+    return nullptr;
+
+  const unsigned VecOpIdx = IsFPReduce ? 1 : 0;
+
+  // TODO: Support different VFs in reduces
+  if (CombineReduce->getOperand(VecOpIdx)->getType() !=
+      Reduce.getOperand(VecOpIdx)->getType()) {
+    ORE.emit([&]() {
+      return OptimizationRemarkMissed(DEBUG_TYPE, "SimplifiedReductionTree",
+                                      Reduce.getDebugLoc(), Reduce.getParent())
+             << "cannot optimize reduction tree using accumulator: "
+                "operands "
+                "have different type";
+    });
+    return nullptr;
+  }
+
+  // Replace use of the Reduce by initial value of a Reduce intrinsic, add
+  // vector add with an operand of Reduce before CombineReduce and remove
+  // Reduce intrinsic.
+  Value *AccAdd = nullptr;
+  Value *Start = nullptr;
+
+  BuilderTy::InsertPointGuard InsertGuard(Builder);
+  Builder.SetInsertPoint(CombineReduce->getIterator());
+  if (IsFPReduce) {
+    BuilderTy::FastMathFlagGuard FMFGuard(Builder);
+    Builder.setFastMathFlags(Reduce.getFastMathFlags());
+
+    AccAdd = Builder.CreateFAdd(Reduce.getOperand(VecOpIdx),
+                                CombineReduce->getOperand(VecOpIdx),
+                                "combined.reduce");
+    Start = Reduce.getOperand(0);
+  } else {
+    AccAdd = Builder.CreateAdd(Reduce.getOperand(VecOpIdx),
+                               CombineReduce->getOperand(VecOpIdx),
+                               "combined.reduce");
+    Start = ConstantInt::get(Reduce.getType(), 0);
+  }
+  replaceOperand(*CombineReduce, VecOpIdx, AccAdd);
+
+  ORE.emit([&]() {
+    return OptimizationRemark(DEBUG_TYPE, "SimplifiedReductionTree",
+                              Reduce.getDebugLoc(), Reduce.getParent())
+           << "optimized reduction tree using accumulator";
+  });
+
+  return Start;
 }
 #endif // SIFIVE_CUSTOMIZATION

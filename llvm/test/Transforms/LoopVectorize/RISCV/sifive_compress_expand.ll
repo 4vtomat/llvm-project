@@ -97,9 +97,9 @@ define i32 @compress_store(i32 %n, ptr noalias %a, ptr noalias %b) {
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr [[A]], i64 [[TMP5]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i32, ptr [[TMP6]], i32 0
 ; CHECK-NEXT:    [[TMP8:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vp.compress.nxv8i32(<vscale x 8 x i32> [[VP_OP_LOAD]], <vscale x 8 x i1> [[PRED_NOT]], i32 [[TMP2]])
-; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> [[PRED_NOT]], i32 [[TMP2]])
+; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[PRED_NOT]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP2]])
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[TMP8]], ptr align 4 [[TMP7]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP9]])
-; CHECK-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> [[PRED_NOT]], i32 [[TMP2]])
+; CHECK-NEXT:    [[TMP10:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[PRED_NOT]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP2]])
 ; CHECK-NEXT:    [[TMP11:%.*]] = mul i32 [[TMP10]], 1
 ; CHECK-NEXT:    [[MONOTONIC_UPDATE]] = add i32 [[MONOTONIC_PHI]], [[TMP11]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP2]] to i64

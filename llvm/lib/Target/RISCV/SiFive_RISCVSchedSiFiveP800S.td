@@ -400,7 +400,7 @@ foreach LMul = [1, 2, 4, 8] in {
     def : WriteRes<!cast<SchedWrite>("WriteVLD" # LMul # "R"), [SiFiveP800SVLD]>;
     def : WriteRes<!cast<SchedWrite>("WriteVST" # LMul # "R"), [SiFiveP800SVST]>;
   }
-  let Latency = LMul, ReleaseAtCycles = [LMul] in {
+  let Latency = 2, ReleaseAtCycles = [LMul] in {
     def : WriteRes<!cast<SchedWrite>("WriteVMov" # LMul # "V"), [SiFiveP800SVectorArith]>;
   }
 }
