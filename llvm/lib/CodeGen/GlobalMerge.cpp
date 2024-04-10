@@ -189,11 +189,17 @@ public:
   }
 
   explicit GlobalMerge(const TargetMachine *TM, unsigned MaximalOffset,
-                       bool OnlyOptimizeForSize, bool MergeExternalGlobals)
+                       bool OnlyOptimizeForSize, bool MergeExternalGlobals,
+#if SIFIVE_CUSTOMIZATION
+                       unsigned MinSize)
+#endif // SIFIVE_CUSTOMIZATION
       : FunctionPass(ID), TM(TM) {
     Opt.MaxOffset = MaximalOffset;
     Opt.SizeOnly = OnlyOptimizeForSize;
     Opt.MergeExternal = MergeExternalGlobals;
+#if SIFIVE_CUSTOMIZATION
+    Opt.MinSize = MinSize;
+#endif // SIFIVE_CUSTOMIZATION
     initializeGlobalMergePass(*PassRegistry::getPassRegistry());
   }
 
@@ -670,7 +676,12 @@ bool GlobalMergeImpl::run(Module &M) {
       continue;
 
     Type *Ty = GV.getValueType();
+#if SIFIVE_CUSTOMIZATION
+    TypeSize AllocSize = DL.getTypeAllocSize(Ty);
+    if (AllocSize < Opt.MaxOffset && AllocSize >= Opt.MinSize) {
+#else
     if (DL.getTypeAllocSize(Ty) < Opt.MaxOffset) {
+#endif // SIFIVE_CUSTOMIZATION
       if (TM &&
           TargetLoweringObjectFile::getKindForGlobal(&GV, *TM).isBSS())
         BSSGlobals[{AddressSpace, Section}].push_back(&GV);
@@ -699,8 +710,18 @@ bool GlobalMergeImpl::run(Module &M) {
 
 Pass *llvm::createGlobalMergePass(const TargetMachine *TM, unsigned Offset,
                                   bool OnlyOptimizeForSize,
-                                  bool MergeExternalByDefault) {
-  bool MergeExternal = (EnableGlobalMergeOnExternal == cl::BOU_UNSET) ?
-    MergeExternalByDefault : (EnableGlobalMergeOnExternal == cl::BOU_TRUE);
+                                  bool MergeExternalByDefault,
+#if SIFIVE_CUSTOMIZATION
+                                  unsigned MinSize) {
+#endif // SIFIVE_CUSTOMIZATION
+  bool MergeExternal = (EnableGlobalMergeOnExternal == cl::BOU_UNSET)
+                           ? MergeExternalByDefault
+                           : (EnableGlobalMergeOnExternal == cl::BOU_TRUE);
+#if SIFIVE_CUSTOMIZATION
+  return new GlobalMerge(TM, Offset, OnlyOptimizeForSize, MergeExternal,
+                         MinSize);
+#else
   return new GlobalMerge(TM, Offset, OnlyOptimizeForSize, MergeExternal);
+#endif // SIFIVE_CUSTOMIZATION
 }
+

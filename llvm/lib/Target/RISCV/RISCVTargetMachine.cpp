@@ -65,6 +65,12 @@ static cl::opt<bool>
     EnableSLSROpt("riscv-slsr-opt", cl::Hidden,
                   cl::desc("Enable optimizations on SLSR"),
                   cl::init(false));
+
+static cl::opt<unsigned>
+    GlobalMergeMinDataSize("riscv-global-merge-min-data-size",
+                           cl::desc("The minimum size in bytes of each global "
+                                    "that should considered in merging."),
+                           cl::init(0), cl::Hidden);
 #endif // SIFIVE_CUSTOMIZATION
 // FIXME: Unify control over GlobalMerge.
 static cl::opt<cl::boolOrDefault>
@@ -506,7 +512,10 @@ bool RISCVPassConfig::addPreISel() {
   if (EnableGlobalMerge == cl::BOU_TRUE) {
     addPass(createGlobalMergePass(TM, /* MaxOffset */ 2047,
                                   /* OnlyOptimizeForSize */ false,
-                                  /* MergeExternalByDefault */ true));
+                                  /* MergeExternalByDefault */ true,
+#if SIFIVE_CUSTOMIZATION
+                                  GlobalMergeMinDataSize));
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   return false;

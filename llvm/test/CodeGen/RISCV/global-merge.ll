@@ -3,6 +3,13 @@
 ; RUN:   | FileCheck %s -check-prefix=RV32
 ; RUN: llc -mtriple=riscv64 -riscv-enable-global-merge -verify-machineinstrs < %s \
 ; RUN:   | FileCheck %s -check-prefix=RV64
+; RUN: llc -mtriple=riscv32 -riscv-enable-global-merge \
+; RUN:   -riscv-global-merge-min-data-size=16 -verify-machineinstrs < %s \
+; RUN:   | FileCheck %s -check-prefix=RV32-MINSIZE
+; RUN: llc -mtriple=riscv64 -riscv-enable-global-merge \
+; RUN:   -riscv-global-merge-min-data-size=16 -verify-machineinstrs < %s \
+; RUN:   | FileCheck %s -check-prefix=RV64-MINSIZE
+
 
 @ig1 = internal global i32 0, align 4
 @ig2 = internal global i32 0, align 4
@@ -34,6 +41,30 @@ define void @f1(i32 %a) nounwind {
 ; RV64-NEXT:    sw a0, 8(a1)
 ; RV64-NEXT:    sw a0, 12(a1)
 ; RV64-NEXT:    ret
+;
+; RV32-MINSIZE-LABEL: f1:
+; RV32-MINSIZE:       # %bb.0:
+; RV32-MINSIZE-NEXT:    lui a1, %hi(ig1)
+; RV32-MINSIZE-NEXT:    sw a0, %lo(ig1)(a1)
+; RV32-MINSIZE-NEXT:    lui a1, %hi(ig2)
+; RV32-MINSIZE-NEXT:    sw a0, %lo(ig2)(a1)
+; RV32-MINSIZE-NEXT:    lui a1, %hi(eg1)
+; RV32-MINSIZE-NEXT:    sw a0, %lo(eg1)(a1)
+; RV32-MINSIZE-NEXT:    lui a1, %hi(eg2)
+; RV32-MINSIZE-NEXT:    sw a0, %lo(eg2)(a1)
+; RV32-MINSIZE-NEXT:    ret
+;
+; RV64-MINSIZE-LABEL: f1:
+; RV64-MINSIZE:       # %bb.0:
+; RV64-MINSIZE-NEXT:    lui a1, %hi(ig1)
+; RV64-MINSIZE-NEXT:    sw a0, %lo(ig1)(a1)
+; RV64-MINSIZE-NEXT:    lui a1, %hi(ig2)
+; RV64-MINSIZE-NEXT:    sw a0, %lo(ig2)(a1)
+; RV64-MINSIZE-NEXT:    lui a1, %hi(eg1)
+; RV64-MINSIZE-NEXT:    sw a0, %lo(eg1)(a1)
+; RV64-MINSIZE-NEXT:    lui a1, %hi(eg2)
+; RV64-MINSIZE-NEXT:    sw a0, %lo(eg2)(a1)
+; RV64-MINSIZE-NEXT:    ret
   store i32 %a, ptr @ig1, align 4
   store i32 %a, ptr @ig2, align 4
   store i32 %a, ptr @eg1, align 4
