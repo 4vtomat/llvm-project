@@ -62,6 +62,10 @@ static cl::opt<bool> EnableSimplifyCFGHoistingCall(
     "experimental-riscv-simplifycfg-hoist-call",
     cl::desc("Enable SimplifyCFG hoisting call instructions."), cl::init(false),
     cl::Hidden);
+static cl::opt<bool>
+    PreventRegOverlapOnVLUX("riscv-prevent-vlux-reg-overlap", cl::Hidden,
+                            cl::desc("Prevent register overlap on VLUX"),
+                            cl::init(true));
 #endif
 
 STATISTIC(NumTailCalls, "Number of tail calls");
@@ -20550,6 +20554,16 @@ RISCVTargetLowering::EmitInstrWithCustomInserter(MachineInstr &MI,
 void RISCVTargetLowering::AdjustInstrPostInstrSelection(MachineInstr &MI,
                                                         SDNode *Node) const {
 #if SIFIVE_CUSTOMIZATION
+  const RISCVVPseudosTable::PseudoInfo *RVV =
+      RISCVVPseudosTable::getPseudoInfo(MI.getOpcode());
+  if (PreventRegOverlapOnVLUX &&
+      Subtarget.getProcFamily() == RISCVSubtarget::SiFive7 && RVV &&
+      (RVV->BaseInstr == RISCV::VLUXEI8_V ||
+       RVV->BaseInstr == RISCV::VLUXEI16_V ||
+       RVV->BaseInstr == RISCV::VLUXEI32_V ||
+       RVV->BaseInstr == RISCV::VLUXEI64_V))
+    MI.getOperand(0).setIsEarlyClobber(true);
+
   // Add VXRM dependency to vector fixed-point instructions with dynamic
   // rounding mode.
   int VRMIdx = RISCVII::getVXRMOpNum(MI.getDesc());
