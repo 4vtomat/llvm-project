@@ -419,10 +419,14 @@ foreach mx = SchedMxList in {
     defm "" : LMULWriteResMX<"WriteVIMovX",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMovI",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
-  let Latency = 6, ReleaseAtCycles = [LMulLat] in {
+
+  let Latency = !if(!lt(LMulLat, 2), 2, LMulLat), ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVShiftV",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVShiftX",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVShiftI",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
+  }
+
+  let Latency = !if(!eq(mx, "M8"), 9, 6), ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVIMulV",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMulX",    [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMulAddV", [SiFiveP400VEXQ0], mx, IsWorstCase>;
