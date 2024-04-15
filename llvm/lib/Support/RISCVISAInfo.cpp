@@ -108,11 +108,8 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xcvmac", {1, 0}},
     {"xcvmem", {1, 0}},
     {"xcvsimd", {1, 0}},
-<<<<<<< HEAD
     {"xsfpgflushdlone", {0, 1}}, // SIFIVE
-=======
     {"xsfcease", {1, 0}},
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
     {"xsfvcp", {1, 0}},
     {"xsfvfexpa", {0, 1}}, // SIFIVE
     {"xsfvfhbfmin", {0, 1}}, // SIFIVE
@@ -124,14 +121,9 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xsfvqmaccdod", {1, 0}},
     {"xsfvqmaccdod", {0, 1}}, // SIFIVE
     {"xsfvqmaccqoq", {1, 0}},
-<<<<<<< HEAD
     {"xsfvqmaccqoq", {0, 1}}, // SIFIVE
-    {"xsifivecdiscarddlone", {0, 1}}, // SIFIVE
-    {"xsifivecflushdlone", {0, 1}}, // SIFIVE
-=======
     {"xsifivecdiscarddlone", {1, 0}},
     {"xsifivecflushdlone", {1, 0}},
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
     {"xtheadba", {1, 0}},
     {"xtheadbb", {1, 0}},
     {"xtheadbs", {1, 0}},
@@ -280,13 +272,8 @@ static const RISCVSupportedExtension SupportedExperimentalExtensions[] = {
     {"zicfilp", {0, 4}},
     {"zicfiss", {0, 4}},
 
-<<<<<<< HEAD
-    {"zimop", {0, 1}},
-
     {"zjid", {0, 0}}, // SIFIVE
 
-=======
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
     {"ztso", {0, 1}},
 
     {"zvfbfmin", {1, 0}},
