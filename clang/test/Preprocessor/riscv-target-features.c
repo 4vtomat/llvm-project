@@ -175,6 +175,8 @@
 // CHECK-NOT: __riscv_smwgd
 // CHECK-NOT: __riscv_sswg
 // CHECK-NOT: __riscv_xsfpgflushdlone
+// CHECK-NOT: __riscv_xsfvfexpa
+// CHECK-NOT: __riscv_xsfvfexpa64e
 // end SIFIVE_CUSTOMIZATION
 
 // Experimental extensions
@@ -1351,6 +1353,22 @@
 // RUN: -march=rv64ixsfpgflushdlone0p1 -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-XSFPGFLUSHDLONE %s
 // CHECK-XSFPGFLUSHDLONE: __riscv_xsfpgflushdlone  1000{{$}}
+
+// RUN: %clang --target=riscv32 -menable-experimental-extensions \
+// RUN: -march=rv32ixsfvfexpa0p2 -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-XSFVFEXPA %s
+// RUN: %clang --target=riscv64 -menable-experimental-extensions \
+// RUN: -march=rv64ixsfvfexpa0p2 -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-XSFVFEXPA %s
+// CHECK-XSFVFEXPA: __riscv_xsfvfexpa  2000{{$}}
+
+// RUN: %clang --target=riscv32 -menable-experimental-extensions \
+// RUN: -march=rv32ixsfvfexpa64e0p2 -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-XSFVFEXPA64E %s
+// RUN: %clang --target=riscv64 -menable-experimental-extensions \
+// RUN: -march=rv64ixsfvfexpa64e0p2 -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-XSFVFEXPA64E %s
+// CHECK-XSFVFEXPA64E: __riscv_xsfvfexpa64e  2000{{$}}
 
 // RUN: %clang --target=riscv64-unknown-linux-gnu -march=rv32gc -x c -E -dM %s \
 // RUN:   -msifive-recode=neon -o - \

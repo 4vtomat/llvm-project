@@ -1148,6 +1148,14 @@ def HasVendorXSfvfexpa : Predicate<"Subtarget->hasVendorXSfvfexpa()">,
                          AssemblerPredicate<(all_of FeatureVendorXSfvfexpa),
                          "'Xsfvfexpa' (SiFive Vector Floating-Point Exponential Approximation Instruction)">;
 
+def FeatureVendorXSfvfexpa64e
+    : SubtargetFeature<"xsfvfexpa64e", "HasVendorXSfvfexpa64e", "true",
+                       "'Xsfvfexpa64e' (SiFive Vector Floating-Point Exponential Approximation Instruction with Double-Percision)",
+                       [FeatureVendorXSfvfexpa, FeatureStdExtZve64d]>;
+def HasVendorXSfvfexpa64e : Predicate<"Subtarget->hasVendorXSfvfexpa64e()">,
+                            AssemblerPredicate<(all_of FeatureVendorXSfvfexpa64e),
+                            "'Xsfvfexpa64e' (SiFive Vector Floating-Point Exponential Approximation Instruction with Double-Percision)">;
+
 def FeatureVendorXSfvfhbfmin
     : SubtargetFeature<"xsfvfhbfmin", "HasVendorXSfvfhbfmin", "true",
                        "'Xsfvfhbfmin' (SiFive custom minimal BF16 vector support)",
