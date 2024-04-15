@@ -555,20 +555,18 @@ def err_drv_extract_api_wrong_kind : Error<
   "header file '%0' input '%1' does not match the type of prior input "
   "in api extraction; use '-x %2' to override">;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def warn_drv_multilib_fallback : Warning<
   "%0 option unrecognized in multi-lib configuration when parsing config "
   "from GCC, falling back to built-in multi-lib configuration.">,
   InGroup<MultilibFallback>;
 #endif
-=======
+
 def err_drv_missing_symbol_graph_dir: Error<
   "Must provide a symbol graph output directory using --symbol-graph-dir=<directory>">;
 
 def err_drv_unexpected_symbol_graph_output : Error<
   "Unexpected output symbol graph '%1'; please provide --symbol-graph-dir=<directory> instead">;
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 
 def warn_slash_u_filename : Warning<"'/U%0' treated as the '/U' option">,
   InGroup<DiagGroup<"slash-u-filename">>;

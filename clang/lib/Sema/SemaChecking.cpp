@@ -5789,64 +5789,10 @@ static bool CheckInvalidVLENandLMUL(const TargetInfo &TI, CallExpr *TheCall,
 bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
                                          unsigned BuiltinID,
                                          CallExpr *TheCall) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (BuiltinID >= NEON::LastTIBuiltin && BuiltinID < NEON::FirstTSBuiltin)
     return CheckNeonBuiltinFunctionCall(TI, BuiltinID, TheCall);
 #endif
-  // CodeGenFunction can also detect this, but this gives a better error
-  // message.
-  bool FeatureMissing = false;
-  SmallVector<StringRef> ReqFeatures;
-  StringRef Features = Context.BuiltinInfo.getRequiredFeatures(BuiltinID);
-  Features.split(ReqFeatures, ',', -1, false);
-
-  // Check if each required feature is included
-  for (StringRef F : ReqFeatures) {
-    SmallVector<StringRef> ReqOpFeatures;
-    F.split(ReqOpFeatures, '|');
-
-    if (llvm::none_of(ReqOpFeatures,
-                      [&TI](StringRef OF) { return TI.hasFeature(OF); })) {
-      std::string FeatureStrs;
-      bool IsExtension = true;
-      for (StringRef OF : ReqOpFeatures) {
-        // If the feature is 64bit, alter the string so it will print better in
-        // the diagnostic.
-        if (OF == "64bit") {
-          assert(ReqOpFeatures.size() == 1 && "Expected '64bit' to be alone");
-          OF = "RV64";
-          IsExtension = false;
-        }
-        if (OF == "32bit") {
-          assert(ReqOpFeatures.size() == 1 && "Expected '32bit' to be alone");
-          OF = "RV32";
-          IsExtension = false;
-        }
-
-        // Convert features like "zbr" and "experimental-zbr" to "Zbr".
-        OF.consume_front("experimental-");
-        std::string FeatureStr = OF.str();
-        FeatureStr[0] = std::toupper(FeatureStr[0]);
-        // Combine strings.
-        FeatureStrs += FeatureStrs.empty() ? "" : ", ";
-        FeatureStrs += "'";
-        FeatureStrs += FeatureStr;
-        FeatureStrs += "'";
-      }
-      // Error message
-      FeatureMissing = true;
-      Diag(TheCall->getBeginLoc(), diag::err_riscv_builtin_requires_extension)
-          << IsExtension
-          << TheCall->getSourceRange() << StringRef(FeatureStrs);
-    }
-  }
-
-  if (FeatureMissing)
-    return true;
-
-=======
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
   // vmulh.vv, vmulh.vx, vmulhu.vv, vmulhu.vx, vmulhsu.vv, vmulhsu.vx,
   // vsmul.vv, vsmul.vx are not included for EEW=64 in Zve64*.
   switch (BuiltinID) {
@@ -6132,7 +6078,6 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_vnclip_wx:
   case RISCVVector::BI__builtin_rvv_vnclipu_wv:
   case RISCVVector::BI__builtin_rvv_vnclipu_wx:
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   {
     llvm::APSInt Result;
@@ -6146,9 +6091,6 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
 #else
     return SemaBuiltinConstantArgRange(TheCall, 2, 0, 3);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    return BuiltinConstantArgRange(TheCall, 2, 0, 3);
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_tu:
   case RISCVVector::BI__builtin_rvv_vaaddu_vx_tu:
   case RISCVVector::BI__builtin_rvv_vaadd_vv_tu:
@@ -6185,7 +6127,6 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_vnclip_wx_m:
   case RISCVVector::BI__builtin_rvv_vnclipu_wv_m:
   case RISCVVector::BI__builtin_rvv_vnclipu_wx_m:
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   {
     llvm::APSInt Result;
@@ -6199,9 +6140,6 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
 #else
     return SemaBuiltinConstantArgRange(TheCall, 3, 0, 3);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    return BuiltinConstantArgRange(TheCall, 3, 0, 3);
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_tum:
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_tumu:
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_mu:
@@ -6256,7 +6194,6 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_vnclip_wx_tumu:
   case RISCVVector::BI__builtin_rvv_vnclipu_wv_tumu:
   case RISCVVector::BI__builtin_rvv_vnclipu_wx_tumu:
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   {
     llvm::APSInt Result;
@@ -6270,9 +6207,6 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
 #else
     return SemaBuiltinConstantArgRange(TheCall, 4, 0, 3);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    return BuiltinConstantArgRange(TheCall, 4, 0, 3);
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
   case RISCVVector::BI__builtin_rvv_vfsqrt_v_rm:
   case RISCVVector::BI__builtin_rvv_vfrec7_v_rm:
   case RISCVVector::BI__builtin_rvv_vfcvt_x_f_v_rm:

@@ -303,7 +303,6 @@ public:
   /// Set no progress for the next loop pushed.
   void setMustProgress(bool P) { StagedAttrs.MustProgress = P; }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// Add Lmul specified
   void setForceLmulSew(int Lmul, int Sew) {
@@ -314,9 +313,6 @@ public:
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-private:
-=======
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
   /// Returns true if there is LoopInfo on the stack.
   bool hasInfo() const { return !Active.empty(); }
   /// Return the LoopInfo for the current loop. HasInfo should be called
