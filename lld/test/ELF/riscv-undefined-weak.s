@@ -79,8 +79,6 @@ branch:
 # RELOC-NEXT: 0x8 R_RISCV_32 target 0x4
 # HEX:      section '.data':
 # HEX-NEXT: 03000000 00000000 04000000
-<<<<<<< HEAD
-=======
 # HEX-WITHOUT-PLT-SAME: 00000000
 
 ## A plt entry is created for target, so this is the offset between the
@@ -89,7 +87,6 @@ branch:
 ##   S - A + P = -0x0x20ec = 0xffffdf14
 # HEX-WITH-PLT-SAME: 14dfffff
 
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 .data
 .p2align 3
 .quad target+3
