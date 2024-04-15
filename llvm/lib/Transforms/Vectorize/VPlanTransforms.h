@@ -112,15 +112,21 @@ struct VPlanTransforms {
   static void dropPoisonGeneratingRecipes(
       VPlan &Plan, function_ref<bool(BasicBlock *)> BlockNeedsPredication);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
   /// Add a VPEVLBasedIVPHIRecipe and related recipes to \p Plan and
   /// replaces all uses except the canonical IV increment of
   /// VPCanonicalIVPHIRecipe with a VPEVLBasedIVPHIRecipe.
   /// VPCanonicalIVPHIRecipe is only used to control the loop after
   /// this transformation.
   static void addExplicitVectorLength(VPlan &Plan);
+<<<<<<< HEAD
   static void addExplicitVectorLengthUncountable(VPlan &Plan);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 };
 
 } // namespace llvm

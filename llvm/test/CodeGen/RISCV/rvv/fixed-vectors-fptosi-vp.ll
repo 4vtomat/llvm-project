@@ -64,7 +64,7 @@ define <4 x i8> @vfptosi_v4i8_v4f16_unmasked(<4 x half> %va, i32 zeroext %evl) {
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; ZVFHMIN-NEXT:    vnsrl.wi v8, v8, 0
 ; ZVFHMIN-NEXT:    ret
-  %v = call <4 x i8> @llvm.vp.fptosi.v4i8.v4f16(<4 x half> %va, <4 x i1> shufflevector (<4 x i1> insertelement (<4 x i1> undef, i1 true, i32 0), <4 x i1> undef, <4 x i32> zeroinitializer), i32 %evl)
+  %v = call <4 x i8> @llvm.vp.fptosi.v4i8.v4f16(<4 x half> %va, <4 x i1> splat (i1 true), i32 %evl)
   ret <4 x i8> %v
 }
 
@@ -102,7 +102,7 @@ define <4 x i16> @vfptosi_v4i16_v4f16_unmasked(<4 x half> %va, i32 zeroext %evl)
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; ZVFHMIN-NEXT:    vfncvt.rtz.x.f.w v8, v9
 ; ZVFHMIN-NEXT:    ret
-  %v = call <4 x i16> @llvm.vp.fptosi.v4i16.v4f16(<4 x half> %va, <4 x i1> shufflevector (<4 x i1> insertelement (<4 x i1> undef, i1 true, i32 0), <4 x i1> undef, <4 x i32> zeroinitializer), i32 %evl)
+  %v = call <4 x i16> @llvm.vp.fptosi.v4i16.v4f16(<4 x half> %va, <4 x i1> splat (i1 true), i32 %evl)
   ret <4 x i16> %v
 }
 
@@ -142,7 +142,7 @@ define <4 x i32> @vfptosi_v4i32_v4f16_unmasked(<4 x half> %va, i32 zeroext %evl)
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfcvt.rtz.x.f.v v8, v9
 ; ZVFHMIN-NEXT:    ret
-  %v = call <4 x i32> @llvm.vp.fptosi.v4i32.v4f16(<4 x half> %va, <4 x i1> shufflevector (<4 x i1> insertelement (<4 x i1> undef, i1 true, i32 0), <4 x i1> undef, <4 x i32> zeroinitializer), i32 %evl)
+  %v = call <4 x i32> @llvm.vp.fptosi.v4i32.v4f16(<4 x half> %va, <4 x i1> splat (i1 true), i32 %evl)
   ret <4 x i32> %v
 }
 
@@ -184,7 +184,7 @@ define <4 x i64> @vfptosi_v4i64_v4f16_unmasked(<4 x half> %va, i32 zeroext %evl)
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; ZVFHMIN-NEXT:    vfwcvt.rtz.x.f.v v8, v9
 ; ZVFHMIN-NEXT:    ret
-  %v = call <4 x i64> @llvm.vp.fptosi.v4i64.v4f16(<4 x half> %va, <4 x i1> shufflevector (<4 x i1> insertelement (<4 x i1> undef, i1 true, i32 0), <4 x i1> undef, <4 x i32> zeroinitializer), i32 %evl)
+  %v = call <4 x i64> @llvm.vp.fptosi.v4i64.v4f16(<4 x half> %va, <4 x i1> splat (i1 true), i32 %evl)
   ret <4 x i64> %v
 }
 
@@ -210,7 +210,7 @@ define <4 x i8> @vfptosi_v4i8_v4f32_unmasked(<4 x float> %va, i32 zeroext %evl) 
 ; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-NEXT:    ret
-  %v = call <4 x i8> @llvm.vp.fptosi.v4i8.v4f32(<4 x float> %va, <4 x i1> shufflevector (<4 x i1> insertelement (<4 x i1> undef, i1 true, i32 0), <4 x i1> undef, <4 x i32> zeroinitializer), i32 %evl)
+  %v = call <4 x i8> @llvm.vp.fptosi.v4i8.v4f32(<4 x float> %va, <4 x i1> splat (i1 true), i32 %evl)
   ret <4 x i8> %v
 }
 
@@ -232,7 +232,7 @@ define <4 x i16> @vfptosi_v4i16_v4f32_unmasked(<4 x float> %va, i32 zeroext %evl
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfncvt.rtz.x.f.w v8, v8
 ; CHECK-NEXT:    ret
-  %v = call <4 x i16> @llvm.vp.fptosi.v4i16.v4f32(<4 x float> %va, <4 x i1> shufflevector (<4 x i1> insertelement (<4 x i1> undef, i1 true, i32 0), <4 x i1> undef, <4 x i32> zeroinitializer), i32 %evl)
+  %v = call <4 x i16> @llvm.vp.fptosi.v4i16.v4f32(<4 x float> %va, <4 x i1> splat (i1 true), i32 %evl)
   ret <4 x i16> %v
 }
 
@@ -254,7 +254,7 @@ define <4 x i32> @vfptosi_v4i32_v4f32_unmasked(<4 x float> %va, i32 zeroext %evl
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
 ; CHECK-NEXT:    ret
-  %v = call <4 x i32> @llvm.vp.fptosi.v4i32.v4f32(<4 x float> %va, <4 x i1> shufflevector (<4 x i1> insertelement (<4 x i1> undef, i1 true, i32 0), <4 x i1> undef, <4 x i32> zeroinitializer), i32 %evl)
+  %v = call <4 x i32> @llvm.vp.fptosi.v4i32.v4f32(<4 x float> %va, <4 x i1> splat (i1 true), i32 %evl)
   ret <4 x i32> %v
 }
 
@@ -278,7 +278,7 @@ define <4 x i64> @vfptosi_v4i64_v4f32_unmasked(<4 x float> %va, i32 zeroext %evl
 ; CHECK-NEXT:    vfwcvt.rtz.x.f.v v10, v8
 ; CHECK-NEXT:    vmv2r.v v8, v10
 ; CHECK-NEXT:    ret
-  %v = call <4 x i64> @llvm.vp.fptosi.v4i64.v4f32(<4 x float> %va, <4 x i1> shufflevector (<4 x i1> insertelement (<4 x i1> undef, i1 true, i32 0), <4 x i1> undef, <4 x i32> zeroinitializer), i32 %evl)
+  %v = call <4 x i64> @llvm.vp.fptosi.v4i64.v4f32(<4 x float> %va, <4 x i1> splat (i1 true), i32 %evl)
   ret <4 x i64> %v
 }
 
@@ -308,7 +308,7 @@ define <4 x i8> @vfptosi_v4i8_v4f64_unmasked(<4 x double> %va, i32 zeroext %evl)
 ; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-NEXT:    ret
-  %v = call <4 x i8> @llvm.vp.fptosi.v4i8.v4f64(<4 x double> %va, <4 x i1> shufflevector (<4 x i1> insertelement (<4 x i1> undef, i1 true, i32 0), <4 x i1> undef, <4 x i32> zeroinitializer), i32 %evl)
+  %v = call <4 x i8> @llvm.vp.fptosi.v4i8.v4f64(<4 x double> %va, <4 x i1> splat (i1 true), i32 %evl)
   ret <4 x i8> %v
 }
 
@@ -334,7 +334,7 @@ define <4 x i16> @vfptosi_v4i16_v4f64_unmasked(<4 x double> %va, i32 zeroext %ev
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v8, v8, 0
 ; CHECK-NEXT:    ret
-  %v = call <4 x i16> @llvm.vp.fptosi.v4i16.v4f64(<4 x double> %va, <4 x i1> shufflevector (<4 x i1> insertelement (<4 x i1> undef, i1 true, i32 0), <4 x i1> undef, <4 x i32> zeroinitializer), i32 %evl)
+  %v = call <4 x i16> @llvm.vp.fptosi.v4i16.v4f64(<4 x double> %va, <4 x i1> splat (i1 true), i32 %evl)
   ret <4 x i16> %v
 }
 
@@ -356,7 +356,7 @@ define <4 x i32> @vfptosi_v4i32_v4f64_unmasked(<4 x double> %va, i32 zeroext %ev
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    vfncvt.rtz.x.f.w v8, v8
 ; CHECK-NEXT:    ret
-  %v = call <4 x i32> @llvm.vp.fptosi.v4i32.v4f64(<4 x double> %va, <4 x i1> shufflevector (<4 x i1> insertelement (<4 x i1> undef, i1 true, i32 0), <4 x i1> undef, <4 x i32> zeroinitializer), i32 %evl)
+  %v = call <4 x i32> @llvm.vp.fptosi.v4i32.v4f64(<4 x double> %va, <4 x i1> splat (i1 true), i32 %evl)
   ret <4 x i32> %v
 }
 
@@ -378,7 +378,7 @@ define <4 x i64> @vfptosi_v4i64_v4f64_unmasked(<4 x double> %va, i32 zeroext %ev
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v8, v8
 ; CHECK-NEXT:    ret
-  %v = call <4 x i64> @llvm.vp.fptosi.v4i64.v4f64(<4 x double> %va, <4 x i1> shufflevector (<4 x i1> insertelement (<4 x i1> undef, i1 true, i32 0), <4 x i1> undef, <4 x i32> zeroinitializer), i32 %evl)
+  %v = call <4 x i64> @llvm.vp.fptosi.v4i64.v4f64(<4 x double> %va, <4 x i1> splat (i1 true), i32 %evl)
   ret <4 x i64> %v
 }
 
@@ -427,6 +427,6 @@ define <32 x i64> @vfptosi_v32i64_v32f64_unmasked(<32 x double> %va, i32 zeroext
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
 ; CHECK-NEXT:    vfcvt.rtz.x.f.v v16, v16
 ; CHECK-NEXT:    ret
-  %v = call <32 x i64> @llvm.vp.fptosi.v32i64.v32f64(<32 x double> %va, <32 x i1> shufflevector (<32 x i1> insertelement (<32 x i1> undef, i1 true, i32 0), <32 x i1> undef, <32 x i32> zeroinitializer), i32 %evl)
+  %v = call <32 x i64> @llvm.vp.fptosi.v32i64.v32f64(<32 x double> %va, <32 x i1> splat (i1 true), i32 %evl)
   ret <32 x i64> %v
 }

@@ -274,7 +274,7 @@ Instruction *InstCombinerImpl::SimplifyAnyMemSet(AnyMemSetInst *MI) {
         DbgAssign->replaceVariableLocationOp(FillC, FillVal);
     };
     for_each(at::getAssignmentMarkers(S), replaceOpForAssignmentMarkers);
-    for_each(at::getDPVAssignmentMarkers(S), replaceOpForAssignmentMarkers);
+    for_each(at::getDVRAssignmentMarkers(S), replaceOpForAssignmentMarkers);
 
     S->setAlignment(Alignment);
     if (isa<AtomicMemSetInst>(MI))
@@ -529,6 +529,11 @@ static Instruction *foldCttzCtlz(IntrinsicInst &II, InstCombinerImpl &IC) {
     return IC.replaceInstUsesWith(II, ConstantInt::getNullValue(II.getType()));
   }
 
+  // If ctlz/cttz is only used as a shift amount, set is_zero_poison to true.
+  if (II.hasOneUse() && match(Op1, m_Zero()) &&
+      match(II.user_back(), m_Shift(m_Value(), m_Specific(&II))))
+    return IC.replaceOperand(II, 1, IC.Builder.getTrue());
+
   Constant *C;
 
   if (IsTZ) {
@@ -621,8 +626,8 @@ static Instruction *foldCttzCtlz(IntrinsicInst &II, InstCombinerImpl &IC) {
   // then change the 'ZeroIsPoison' parameter to 'true'
   // because we know the zero behavior can't affect the result.
   if (!Known.One.isZero() ||
-      isKnownNonZero(Op0, IC.getDataLayout(), 0, &IC.getAssumptionCache(), &II,
-                     &IC.getDominatorTree())) {
+      isKnownNonZero(Op0, /*Depth=*/0,
+                     IC.getSimplifyQuery().getWithInstruction(&II))) {
     if (!match(II.getArgOperand(1), m_One()))
       return IC.replaceOperand(II, 1, IC.Builder.getTrue());
   }
@@ -1962,7 +1967,7 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
       // We don't have a "nabs" intrinsic, so negate if needed based on the
       // max/min operation.
       if (IID == Intrinsic::smin || IID == Intrinsic::umax)
-        Abs = Builder.CreateNeg(Abs, "nabs", /* NUW */ false, IntMinIsPoison);
+        Abs = Builder.CreateNeg(Abs, "nabs", IntMinIsPoison);
       return replaceInstUsesWith(CI, Abs);
     }
 
@@ -2237,7 +2242,8 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     // See if we can deduce non-null.
     if (!CI.hasRetAttr(Attribute::NonNull) &&
         (Known.isNonZero() ||
-         isKnownNonZero(II, DL, /*Depth*/ 0, &AC, II, &DT))) {
+         isKnownNonZero(II, /*Depth=*/0,
+                        getSimplifyQuery().getWithInstruction(II)))) {
       CI.addRetAttr(Attribute::NonNull);
       Changed = true;
     }
@@ -2269,8 +2275,9 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     Value *Arg0 = II->getArgOperand(0);
     Value *Arg1 = II->getArgOperand(1);
     bool IsSigned = IID == Intrinsic::sadd_with_overflow;
-    bool HasNWAdd = IsSigned ? match(Arg0, m_NSWAdd(m_Value(X), m_APInt(C0)))
-                             : match(Arg0, m_NUWAdd(m_Value(X), m_APInt(C0)));
+    bool HasNWAdd = IsSigned
+                        ? match(Arg0, m_NSWAddLike(m_Value(X), m_APInt(C0)))
+                        : match(Arg0, m_NUWAddLike(m_Value(X), m_APInt(C0)));
     if (HasNWAdd && match(Arg1, m_APInt(C1))) {
       bool Overflow;
       APInt NewC =
@@ -2470,13 +2477,14 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
         default:
           llvm_unreachable("unexpected intrinsic ID");
         }
-        Instruction *NewCall = Builder.CreateBinaryIntrinsic(
+        Value *V = Builder.CreateBinaryIntrinsic(
             IID, X, ConstantFP::get(Arg0->getType(), Res), II);
         // TODO: Conservatively intersecting FMF. If Res == C2, the transform
         //       was a simplification (so Arg0 and its original flags could
         //       propagate?)
-        NewCall->andIRFlags(M);
-        return replaceInstUsesWith(*II, NewCall);
+        if (auto *CI = dyn_cast<CallInst>(V))
+          CI->andIRFlags(M);
+        return replaceInstUsesWith(*II, V);
       }
     }
 
@@ -2652,6 +2660,16 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     Value *X;
     if (match(Sign, m_Intrinsic<Intrinsic::copysign>(m_Value(), m_Value(X))))
       return replaceOperand(*II, 1, X);
+
+    // Clear sign-bit of constant magnitude:
+    // copysign -MagC, X --> copysign MagC, X
+    // TODO: Support constant folding for fabs
+    const APFloat *MagC;
+    if (match(Mag, m_APFloat(MagC)) && MagC->isNegative()) {
+      APFloat PosMagC = *MagC;
+      PosMagC.clearSign();
+      return replaceOperand(*II, 0, ConstantFP::get(Mag->getType(), PosMagC));
+    }
 
     // Peek through changes of magnitude's sign-bit. This call rewrites those:
     // copysign (fabs X), Sign --> copysign X, Sign
@@ -3924,7 +3942,8 @@ Instruction *InstCombinerImpl::visitCallBase(CallBase &Call) {
   for (Value *V : Call.args()) {
     if (V->getType()->isPointerTy() &&
         !Call.paramHasAttr(ArgNo, Attribute::NonNull) &&
-        isKnownNonZero(V, DL, 0, &AC, &Call, &DT))
+        isKnownNonZero(V, /*Depth=*/0,
+                       getSimplifyQuery().getWithInstruction(&Call)))
       ArgNos.push_back(ArgNo);
     ArgNo++;
   }
@@ -4104,7 +4123,8 @@ Instruction *InstCombinerImpl::visitCallBase(CallBase &Call) {
 
         // isKnownNonNull -> nonnull attribute
         if (!GCR.hasRetAttr(Attribute::NonNull) &&
-            isKnownNonZero(DerivedPtr, DL, 0, &AC, &Call, &DT)) {
+            isKnownNonZero(DerivedPtr, /*Depth=*/0,
+                           getSimplifyQuery().getWithInstruction(&Call))) {
           GCR.addRetAttr(Attribute::NonNull);
           // We discovered new fact, re-check users.
           Worklist.pushUsersToWorkList(GCR);

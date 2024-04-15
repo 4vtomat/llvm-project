@@ -14,7 +14,6 @@ define void @blend_uniform_iv_trunc(i1 %c) {
 ; CHECK-NEXT:    [[TMP2:%.*]] = add i16 [[TMP1]], 0
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <4 x i16> poison, i16 [[TMP2]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT2:%.*]] = shufflevector <4 x i16> [[BROADCAST_SPLATINSERT1]], <4 x i16> poison, <4 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP3:%.*]] = xor <4 x i1> [[MASK1]], <i1 true, i1 true, i1 true, i1 true>
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[MASK1]], <4 x i16> [[BROADCAST_SPLAT2]], <4 x i16> undef
 ; CHECK-NEXT:    [[TMP4:%.*]] = extractelement <4 x i16> [[PREDPHI]], i32 0
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds [32 x i16], ptr @dst, i16 0, i16 [[TMP4]]
@@ -58,7 +57,6 @@ define void @blend_uniform_iv(i1 %c) {
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
 ; CHECK-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <4 x i64> poison, i64 [[TMP0]], i64 0
 ; CHECK-NEXT:    [[BROADCAST_SPLAT2:%.*]] = shufflevector <4 x i64> [[BROADCAST_SPLATINSERT1]], <4 x i64> poison, <4 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP1:%.*]] = xor <4 x i1> [[MASK1]], <i1 true, i1 true, i1 true, i1 true>
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[MASK1]], <4 x i64> [[BROADCAST_SPLAT2]], <4 x i64> undef
 ; CHECK-NEXT:    [[TMP2:%.*]] = extractelement <4 x i64> [[PREDPHI]], i32 0
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds [32 x i16], ptr @dst, i16 0, i64 [[TMP2]]

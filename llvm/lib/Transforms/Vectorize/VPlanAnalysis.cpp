@@ -44,6 +44,9 @@ Type *VPTypeAnalysis::inferScalarTypeForRecipe(const VPInstruction *R) {
     CachedTypes[OtherV] = ResTy;
     return ResTy;
   }
+  case VPInstruction::PtrAdd:
+    // Return the type based on the pointer argument (i.e. first operand).
+    return inferScalarType(R->getOperand(0));
   default:
     break;
   }
@@ -215,7 +218,11 @@ Type *VPTypeAnalysis::inferScalarType(const VPValue *V) {
           .Case<VPCanonicalIVPHIRecipe, VPFirstOrderRecurrencePHIRecipe,
                 VPReductionPHIRecipe, VPWidenPointerInductionRecipe,
                 VPEVLBasedIVPHIRecipe>([this](const auto *R) {
+<<<<<<< HEAD
             // Handle header phi recipes, except VPWienIntOrFpInduction
+=======
+            // Handle header phi recipes, except VPWidenIntOrFpInduction
+>>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
             // which needs special handling due it being possibly truncated.
             // TODO: consider inferring/caching type of siblings, e.g.,
             // backedge value, here and in cases below.

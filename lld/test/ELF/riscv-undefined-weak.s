@@ -1,4 +1,6 @@
 # REQUIRES: riscv
+# RUN: llvm-mc -filetype=obj -triple=riscv64 /dev/null -o %t2.o
+# RUN: ld.lld -shared -soname=t2 %t2.o -o %t2.so
 # RUN: llvm-mc -filetype=obj -triple=riscv64 -riscv-asm-relax-branches=0 %s -o %t.o
 # RUN: llvm-readobj -r %t.o | FileCheck --check-prefix=RELOC %s
 
@@ -6,7 +8,7 @@
 # RUN: llvm-objdump -d --no-show-raw-insn %t | FileCheck --check-prefixes=CHECK,PC %s
 # RUN: llvm-readelf -x .data %t | FileCheck --check-prefixes=HEX %s
 
-# RUN: ld.lld -e absolute %t.o -o %t --export-dynamic
+# RUN: ld.lld -e absolute %t.o -o %t %t2.so
 # RUN: llvm-objdump -d --no-show-raw-insn %t | FileCheck --check-prefixes=CHECK,PLT %s
 # RUN: llvm-readelf -x .data %t | FileCheck --check-prefixes=HEX %s
 
@@ -34,11 +36,11 @@ absolute:
 # CHECK-LABEL: <relative>:
 # CHECK-NEXT:  11{{...}}: auipc a1, 0xfffef
 # PC-NEXT:     addi a1, a1, -0x160
-# PLT-NEXT:    addi a1, a1, -0x318
+# PLT-NEXT:    addi a1, a1, -0x290
 # CHECK-LABEL: <.Lpcrel_hi1>:
 # CHECK-NEXT:  11{{...}}: auipc t1, 0xfffef
 # PC-NEXT:     sd a2, -0x166(t1)
-# PLT-NEXT:    sd a2, -0x31e(t1)
+# PLT-NEXT:    sd a2, -0x296(t1)
 relative:
   la a1, target
   sd a2, target+2, t1
@@ -62,7 +64,7 @@ relative:
 ## We create a PLT entry and redirect the reference to it.
 # PLT-LABEL:   <branch>:
 # PLT-NEXT:    auipc ra, 0x0
-# PLT-NEXT:    jalr 0x38(ra)
+# PLT-NEXT:    jalr 0x30(ra)
 # PLT-NEXT:    [[#%x,ADDR:]]:
 # PLT-SAME:                   j 0x[[#ADDR]]
 # PLT-NEXT:    [[#%x,ADDR:]]:
@@ -77,6 +79,17 @@ branch:
 # RELOC-NEXT: 0x8 R_RISCV_32 target 0x4
 # HEX:      section '.data':
 # HEX-NEXT: 03000000 00000000 04000000
+<<<<<<< HEAD
+=======
+# HEX-WITHOUT-PLT-SAME: 00000000
+
+## A plt entry is created for target, so this is the offset between the
+## plt entry and this address.
+##
+##   S - A + P = -0x0x20ec = 0xffffdf14
+# HEX-WITH-PLT-SAME: 14dfffff
+
+>>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 .data
 .p2align 3
 .quad target+3

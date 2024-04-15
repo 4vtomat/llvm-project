@@ -369,6 +369,7 @@ void RVVEmitter::createHeader(raw_ostream &OS) {
   OS << "#include <stdint.h>\n";
   OS << "#include <stddef.h>\n\n";
 
+<<<<<<< HEAD
   OS << "#ifndef __riscv_vector\n";
   OS << "#error \"Vector intrinsics require the vector extension.\"\n";
   OS << "#endif\n\n";
@@ -379,6 +380,8 @@ void RVVEmitter::createHeader(raw_ostream &OS) {
   OS << "#endif\n";
 #endif
 
+=======
+>>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
   OS << "#ifdef __cplusplus\n";
   OS << "extern \"C\" {\n";
   OS << "#endif\n\n";

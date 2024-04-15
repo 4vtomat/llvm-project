@@ -43,9 +43,15 @@ define i32 @predicated_sdiv_masked_load(ptr %a, ptr %b, i32 %x, i1 %c) {
 ; CHECK-NEXT:    [[TMP14:%.*]] = insertelement <2 x i32> [[TMP10]], i32 [[TMP13]], i32 1
 ; CHECK-NEXT:    br label [[PRED_SDIV_CONTINUE2]]
 ; CHECK:       pred.sdiv.continue2:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP15:%.*]] = phi <2 x i32> [ [[TMP10]], [[PRED_SDIV_CONTINUE]] ], [ [[TMP14]], [[PRED_SDIV_IF1]] ]
 ; CHECK-NEXT:    [[TMP16:%.*]] = add nsw <2 x i32> [[TMP15]], [[WIDE_LOAD]]
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[BROADCAST_SPLAT]], <2 x i32> [[TMP16]], <2 x i32> [[WIDE_LOAD]]
+=======
+; CHECK-NEXT:    [[TMP14:%.*]] = phi <2 x i32> [ [[TMP9]], [[PRED_SDIV_CONTINUE]] ], [ [[TMP13]], [[PRED_SDIV_IF1]] ]
+; CHECK-NEXT:    [[TMP15:%.*]] = add nsw <2 x i32> [[TMP14]], [[WIDE_LOAD]]
+; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[BROADCAST_SPLAT]], <2 x i32> [[TMP15]], <2 x i32> [[WIDE_LOAD]]
+>>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 ; CHECK-NEXT:    [[TMP17]] = add <2 x i32> [[VEC_PHI]], [[PREDPHI]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
 ; CHECK-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[INDEX_NEXT]], 10000
@@ -143,9 +149,15 @@ define i32 @predicated_sdiv_masked_load(ptr %a, ptr %b, i32 %x, i1 %c) {
 ; SINK-GATHER-NEXT:    [[TMP44:%.*]] = insertelement <8 x i32> [[TMP40]], i32 [[TMP43]], i32 7
 ; SINK-GATHER-NEXT:    br label [[PRED_SDIV_CONTINUE14]]
 ; SINK-GATHER:       pred.sdiv.continue14:
+<<<<<<< HEAD
 ; SINK-GATHER-NEXT:    [[TMP45:%.*]] = phi <8 x i32> [ [[TMP40]], [[PRED_SDIV_CONTINUE12]] ], [ [[TMP44]], [[PRED_SDIV_IF13]] ]
 ; SINK-GATHER-NEXT:    [[TMP46:%.*]] = add nsw <8 x i32> [[TMP45]], [[WIDE_LOAD]]
 ; SINK-GATHER-NEXT:    [[PREDPHI:%.*]] = select <8 x i1> [[BROADCAST_SPLAT]], <8 x i32> [[TMP46]], <8 x i32> [[WIDE_LOAD]]
+=======
+; SINK-GATHER-NEXT:    [[TMP44:%.*]] = phi <8 x i32> [ [[TMP39]], [[PRED_SDIV_CONTINUE12]] ], [ [[TMP43]], [[PRED_SDIV_IF13]] ]
+; SINK-GATHER-NEXT:    [[TMP45:%.*]] = add nsw <8 x i32> [[TMP44]], [[WIDE_LOAD]]
+; SINK-GATHER-NEXT:    [[PREDPHI:%.*]] = select <8 x i1> [[BROADCAST_SPLAT]], <8 x i32> [[TMP45]], <8 x i32> [[WIDE_LOAD]]
+>>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 ; SINK-GATHER-NEXT:    [[TMP47]] = add <8 x i32> [[VEC_PHI]], [[PREDPHI]]
 ; SINK-GATHER-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 8
 ; SINK-GATHER-NEXT:    [[TMP48:%.*]] = icmp eq i64 [[INDEX_NEXT]], 10000
@@ -253,9 +265,15 @@ define i32 @scalarize_and_sink_gather(ptr %a, i1 %c, i32 %x, i64 %n) {
 ; CHECK-NEXT:    [[TMP15:%.*]] = insertelement <2 x i32> [[TMP9]], i32 [[TMP14]], i32 1
 ; CHECK-NEXT:    br label [[PRED_UDIV_CONTINUE2]]
 ; CHECK:       pred.udiv.continue2:
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP16:%.*]] = phi i32 [ poison, [[PRED_UDIV_CONTINUE]] ], [ [[TMP13]], [[PRED_UDIV_IF1]] ]
 ; CHECK-NEXT:    [[TMP17:%.*]] = phi <2 x i32> [ [[TMP9]], [[PRED_UDIV_CONTINUE]] ], [ [[TMP15]], [[PRED_UDIV_IF1]] ]
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[BROADCAST_SPLAT]], <2 x i32> [[TMP17]], <2 x i32> [[BROADCAST_SPLAT4]]
+=======
+; CHECK-NEXT:    [[TMP15:%.*]] = phi i32 [ poison, [[PRED_UDIV_CONTINUE]] ], [ [[TMP12]], [[PRED_UDIV_IF1]] ]
+; CHECK-NEXT:    [[TMP16:%.*]] = phi <2 x i32> [ [[TMP8]], [[PRED_UDIV_CONTINUE]] ], [ [[TMP14]], [[PRED_UDIV_IF1]] ]
+; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[BROADCAST_SPLAT]], <2 x i32> [[TMP16]], <2 x i32> [[BROADCAST_SPLAT4]]
+>>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 ; CHECK-NEXT:    [[TMP18]] = add <2 x i32> [[VEC_PHI]], [[PREDPHI]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
 ; CHECK-NEXT:    [[VEC_IND_NEXT]] = add <2 x i64> [[VEC_IND]], <i64 2, i64 2>
@@ -402,9 +420,15 @@ define i32 @scalarize_and_sink_gather(ptr %a, i1 %c, i32 %x, i64 %n) {
 ; SINK-GATHER-NEXT:    [[TMP63:%.*]] = insertelement <8 x i32> [[TMP57]], i32 [[TMP62]], i32 7
 ; SINK-GATHER-NEXT:    br label [[PRED_UDIV_CONTINUE14]]
 ; SINK-GATHER:       pred.udiv.continue14:
+<<<<<<< HEAD
 ; SINK-GATHER-NEXT:    [[TMP64:%.*]] = phi i32 [ poison, [[PRED_UDIV_CONTINUE12]] ], [ [[TMP61]], [[PRED_UDIV_IF13]] ]
 ; SINK-GATHER-NEXT:    [[TMP65:%.*]] = phi <8 x i32> [ [[TMP57]], [[PRED_UDIV_CONTINUE12]] ], [ [[TMP63]], [[PRED_UDIV_IF13]] ]
 ; SINK-GATHER-NEXT:    [[PREDPHI:%.*]] = select <8 x i1> [[BROADCAST_SPLAT]], <8 x i32> [[TMP65]], <8 x i32> [[BROADCAST_SPLAT16]]
+=======
+; SINK-GATHER-NEXT:    [[TMP63:%.*]] = phi i32 [ poison, [[PRED_UDIV_CONTINUE12]] ], [ [[TMP60]], [[PRED_UDIV_IF13]] ]
+; SINK-GATHER-NEXT:    [[TMP64:%.*]] = phi <8 x i32> [ [[TMP56]], [[PRED_UDIV_CONTINUE12]] ], [ [[TMP62]], [[PRED_UDIV_IF13]] ]
+; SINK-GATHER-NEXT:    [[PREDPHI:%.*]] = select <8 x i1> [[BROADCAST_SPLAT]], <8 x i32> [[TMP64]], <8 x i32> [[BROADCAST_SPLAT16]]
+>>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 ; SINK-GATHER-NEXT:    [[TMP66]] = add <8 x i32> [[VEC_PHI]], [[PREDPHI]]
 ; SINK-GATHER-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 8
 ; SINK-GATHER-NEXT:    [[VEC_IND_NEXT]] = add <8 x i64> [[VEC_IND]], <i64 8, i64 8, i64 8, i64 8, i64 8, i64 8, i64 8, i64 8>

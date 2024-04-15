@@ -677,7 +677,7 @@ bool RISCVOptWInstrs::stripWSuffixes(MachineFunction &MF,
                                      const RISCVInstrInfo &TII,
                                      const RISCVSubtarget &ST,
                                      MachineRegisterInfo &MRI) {
-  if (DisableStripWSuffix)
+  if (DisableStripWSuffix || !ST.enableStripWSuffix())
     return false;
 
   bool MadeChange = false;
