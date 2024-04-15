@@ -173,31 +173,23 @@ let Predicates = [HasStdExtZvknhaOrZvknhb], RVVConstraint = Sha2Constraint in {
   def VSHA2MS_VV : PALUVVNoVmTernary<0b101101, OPMVV, "vsha2ms.vv">;
 } // Predicates = [HasStdExtZvknhaOrZvknhb]
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 let Predicates = [HasStdExtZvknsOrZvkned], RVVConstraint = NoConstraint in {
-#endif // SIFIVE_CUSTOMIZATION
-=======
+#else
 let Predicates = [HasStdExtZvkned]in {
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
+#endif // SIFIVE_CUSTOMIZATION
   defm VAESDF     : VAES_MV_V_S<0b101000, 0b101001, 0b00001, OPMVV, "vaesdf">;
   defm VAESDM     : VAES_MV_V_S<0b101000, 0b101001, 0b00000, OPMVV, "vaesdm">;
   defm VAESEF     : VAES_MV_V_S<0b101000, 0b101001, 0b00011, OPMVV, "vaesef">;
   defm VAESEM     : VAES_MV_V_S<0b101000, 0b101001, 0b00010, OPMVV, "vaesem">;
-<<<<<<< HEAD
   def  VAESKF1_VI : VAESKF_MV_I<0b100010, "vaeskf1.vi", uimm5>;
   def  VAESKF2_VI : VAESKF_MV_I<0b101010, "vaeskf2.vi", uimm5>;
   def  VAESZ_VS   : PALUVs2NoVm<0b101001, 0b00111, OPMVV, "vaesz.vs">;
 #ifdef SIFIVE_CUSTOMIZATION
 } // Predicates = [HasStdExtZvknsOrZvkned]
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  def  VAESKF1_VI : PALUVINoVm<0b100010, "vaeskf1.vi", uimm5>;
-  def  VAESKF2_VI : PALUVINoVmBinary<0b101010, "vaeskf2.vi", uimm5>;
-  let RVVConstraint = VS2Constraint in
-  def  VAESZ_VS   : PALUVs2NoVmBinary<0b101001, 0b00111, OPMVV, "vaesz.vs">;
+#else
 } // Predicates = [HasStdExtZvkned]
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
+#endif // SIFIVE_CUSTOMIZATION
 
 let Predicates = [HasStdExtZvksed] in {
   let RVVConstraint = NoConstraint in

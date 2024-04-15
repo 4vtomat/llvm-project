@@ -102,14 +102,10 @@ public:
   bool emitDirectiveOptionArch();
 
 private:
-<<<<<<< HEAD
-  void emitAttributes();
 #if SIFIVE_CUSTOMIZATION
   void emitCompactStub();
 #endif // SIFIVE_CUSTOMIZATION
-=======
   void emitAttributes(const MCSubtargetInfo &SubtargetInfo);
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 
   void emitNTLHint(const MachineInstr *MI);
 

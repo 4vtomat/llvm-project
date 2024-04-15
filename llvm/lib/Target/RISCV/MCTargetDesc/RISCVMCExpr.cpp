@@ -247,15 +247,10 @@ void RISCVMCExpr::fixELFSymbolsInTLSFixups(MCAssembler &Asm) const {
   case VK_RISCV_TLS_GOT_HI:
   case VK_RISCV_TLS_GD_HI:
   case VK_RISCV_TLSDESC_HI:
-<<<<<<< HEAD
-  case VK_RISCV_TLSDESC_ADD_LO:
-  case VK_RISCV_TLSDESC_LOAD_LO:
 #if SIFIVE_CUSTOMIZATION
   case VK_RISCV_TLS_GOT_GPREL_HI:
   case VK_RISCV_TLS_GD_GPREL_HI:
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
     break;
   }
 

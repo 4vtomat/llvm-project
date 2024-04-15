@@ -801,11 +801,7 @@ def SIFIVE_P450 : RISCVProcessorModel<"sifive-p450", SiFiveP400Model,
                                        FeatureFastUnalignedAccess],
                                       [TuneSiFiveP400]>;
 
-<<<<<<< HEAD
 def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model,
-=======
-def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
                                       [Feature64Bit,
                                        FeatureStdExtZifencei,
                                        FeatureStdExtM,

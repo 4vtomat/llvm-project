@@ -1271,13 +1271,10 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         setOperationAction(
             {ISD::SMIN, ISD::SMAX, ISD::UMIN, ISD::UMAX, ISD::ABS}, VT, Custom);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         setOperationAction({ISD::SSHLSAT, ISD::USHLSAT}, VT, Custom);
 #endif // SIFIVE_CUSTOMIZATION
-=======
         setOperationAction({ISD::ABDS, ISD::ABDU}, VT, Custom);
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 
         // vXi64 MULHS/MULHU requires the V extension instead of Zve64*.
         if (VT.getVectorElementType() != MVT::i64 || Subtarget.hasStdExtV())
@@ -14459,7 +14456,6 @@ static SDValue transformAddImmMulImm(SDNode *N, SelectionDAG &DAG,
   return DAG.getNode(ISD::ADD, DL, VT, New1, DAG.getConstant(CB, DL, VT));
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // Reassociate (add X, (add Y, SImm12)) -> (add (add X, Y), SImm12) if the
 // the result is only used by scalar loads/stores. This allows the SImm12 to
@@ -14514,7 +14510,7 @@ static SDValue reassociateAddressArith(SDNode *N, SDValue N0, SDValue N1,
   return DAG.getNode(ISD::ADD, dl, VT, OpNode, N01);
 }
 #endif
-=======
+
 // add (zext, zext) -> zext (add (zext, zext))
 // sub (zext, zext) -> sext (sub (zext, zext))
 // mul (zext, zext) -> zext (mul (zext, zext))
@@ -14566,7 +14562,6 @@ static SDValue combineBinOpOfZExt(SDNode *N, SelectionDAG &DAG) {
       OuterExtend, SDLoc(N), VT,
       DAG.getNode(N->getOpcode(), SDLoc(N), NarrowVT, Src0, Src1));
 }
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 
 // Try to turn (add (xor bool, 1) -1) into (neg bool).
 static SDValue combineAddOfBooleanXor(SDNode *N, SelectionDAG &DAG) {
