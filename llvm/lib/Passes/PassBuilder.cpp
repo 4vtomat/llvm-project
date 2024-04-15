@@ -178,13 +178,10 @@
 #include "llvm/Transforms/Instrumentation/InstrOrderFile.h"
 #include "llvm/Transforms/Instrumentation/InstrProfiling.h"
 #include "llvm/Transforms/Instrumentation/KCFI.h"
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/Transforms/Instrumentation/SiFive_LoopCountProfiler.h"
 #endif // SIFIVE_CUSTOMIZATION
-=======
 #include "llvm/Transforms/Instrumentation/LowerAllowCheckPass.h"
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 #include "llvm/Transforms/Instrumentation/MemProfiler.h"
 #include "llvm/Transforms/Instrumentation/MemorySanitizer.h"
 #include "llvm/Transforms/Instrumentation/PGOForceFunctionAttrs.h"
