@@ -3047,20 +3047,17 @@ static bool hoistMulAddAssociation(Instruction &I, Loop &L,
   if (Changes.empty())
     return false;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   SmallPtrSet<const Value *, 4> IgnoreValues;
   IgnoreValues.insert(VariantOp);
   if (maySpillForCandidate(&I, &L, LV, TTI, DT, IgnoreValues, Changes))
     return false;
 #endif
-=======
   // Drop the poison flags for any adds we looked through.
   if (I.getType()->isIntOrIntVectorTy()) {
     for (auto *Add : Adds)
       Add->dropPoisonGeneratingFlags();
   }
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 
   // We know we should do it so let's do the transformation.
   auto *Preheader = L.getLoopPreheader();

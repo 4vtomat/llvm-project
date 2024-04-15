@@ -1059,16 +1059,6 @@ CmpInst::Predicate llvm::getMinMaxReductionPredicate(RecurKind RK) {
   }
 }
 
-<<<<<<< HEAD
-Value *llvm::createAnyOfOp(IRBuilderBase &Builder, Value *StartVal,
-                           RecurKind RK, Value *Left, Value *Right) {
-  if (auto VTy = dyn_cast<VectorType>(Left->getType()))
-    StartVal = Builder.CreateVectorSplat(VTy->getElementCount(), StartVal);
-  Value *Cmp =
-      Builder.CreateCmp(CmpInst::ICMP_NE, Left, StartVal, "rdx.select.cmp");
-  return Builder.CreateSelect(Cmp, Left, Right, "rdx.select");
-}
-
 #if SIFIVE_CUSTOMIZATION
 Value *llvm::createFindLastIVOp(IRBuilderBase &Builder, Value *Left,
                                 Value *Right) {
@@ -1076,8 +1066,6 @@ Value *llvm::createFindLastIVOp(IRBuilderBase &Builder, Value *Left,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 Value *llvm::createMinMaxOp(IRBuilderBase &Builder, RecurKind RK, Value *Left,
                             Value *Right) {
   Type *Ty = Left->getType();
