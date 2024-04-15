@@ -1304,6 +1304,10 @@ def FeatureRecodeFullfp16
     : SubtargetFeature<"fullfp16", "HasRecodeFullfp16", "true",
                        "fullfp16 (A corresponding feature for NEON fullfp16.)",
                        [FeatureStdExtZfh, FeatureStdExtZvfh]>;
+
+def FeatureSlowVectorFP64
+   : SubtargetFeature<"slow-vector-fp64", "HasSlowVectorFP64", "true",
+                      "Has expensive cost for zve64d">;
 #endif // SIFIVE_CUSTOMIZATION
 
 def Feature64Bit
