@@ -1441,6 +1441,13 @@ void VPlanTransforms::addExplicitVectorLength(VPlan &Plan) {
   // Now create the ExplicitVectorLengthPhi recipe in the main loop.
   auto *EVLPhi = new VPEVLBasedIVPHIRecipe(StartV, DebugLoc());
   EVLPhi->insertAfter(CanonicalIVPHI);
+#if SIFIVE_CUSTOMIZATION
+  VPEVLBasedIVPHIRecipe *PrevEVLPhi = nullptr;
+  if (Plan.getInitEVL()) {
+    PrevEVLPhi = new VPEVLBasedIVPHIRecipe(Plan.getInitEVL(), DebugLoc());
+    PrevEVLPhi->insertAfter(EVLPhi);
+  }
+#endif // SIFIVE_CUSTOMIZATION
   auto *VPEVL = new VPInstruction(VPInstruction::ExplicitVectorLength,
                                   {EVLPhi, Plan.getTripCount()});
   VPEVL->insertBefore(*Header, Header->getFirstNonPhi());
@@ -1455,81 +1462,23 @@ void VPlanTransforms::addExplicitVectorLength(VPlan &Plan) {
                                      OpVPEVL, CanonicalIVPHI->getScalarType());
     OpVPEVL->insertBefore(CanonicalIVIncrement);
   }
-}
 
 #if SIFIVE_CUSTOMIZATION
-// Add a VPEVLBasedIVPHIRecipe and related recipes to \p Plan and
-// replaces all uses except the canonical IV increment of VPCanonicalIVPHIRecipe
-// with a VPEVLBasedIVPHIRecipe. VPCanonicalIVPHIRecipe is used only
-// for loop iterations counting after this transformation.
-//
-// The function uses the following definitions:
-//  %StartV is the canonical induction start value.
-//
-// The function adds the following recipes:
-//
-// vector.ph:
-// ...
-//
-// vector.body:
-// ...
-// %P = EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI [ %StartV, %vector.ph ], [ %NextEVL,
-// %vector.body ]
-// %EVL = EXPLICIT-VECTOR-LENGTH %P, Vector TC
-// ...
-// %NextEVL = EXPLICIT-VECTOR-LENGTH + %P, %EVL
-// ...
-//
-void VPlanTransforms::addExplicitVectorLength(VPlan &Plan) {
-  VPBasicBlock *Header = Plan.getVectorLoopRegion()->getEntryBasicBlock();
-  auto *CanonicalIVPHI = Plan.getCanonicalIV();
-  VPValue *StartV = CanonicalIVPHI->getStartValue();
-
-  // Walk users of WideCanonicalIV and replace all compares of the form
-  // (ICMP_ULE, WideCanonicalIV, backedge-taken-count) with an
-  // all-true-mask.
-  Value *TrueMask =
-      ConstantInt::getTrue(CanonicalIVPHI->getScalarType()->getContext());
-  VPValue *VPTrueMask = Plan.getVPValueOrAddLiveIn(TrueMask);
-  replaceHeaderPredicateWithIdiom(Plan, *VPTrueMask, [](VPUser &U, unsigned) {
-    return isa<VPWidenMemoryInstructionRecipe>(U);
-  });
-  // Now create the ExplicitVectorLengthPhi recipe in the main loop.
-  auto *EVLPhi = new VPEVLBasedIVPHIRecipe(StartV, DebugLoc());
-  EVLPhi->insertAfter(CanonicalIVPHI);
-  VPEVLBasedIVPHIRecipe *PrevEVLPhi = nullptr;
-  if (Plan.getInitRVL()) {
-    PrevEVLPhi = new VPEVLBasedIVPHIRecipe(Plan.getInitRVL(), DebugLoc());
-    PrevEVLPhi->insertAfter(EVLPhi);
-  }
-
-  auto *VPEVL = new VPInstruction(VPInstruction::ExplicitVectorLength,
-                                  {EVLPhi, &Plan.getVectorTripCount()});
-  VPEVL->insertBefore(*Header, Header->getFirstNonPhi());
-
-  auto *CanonicalIVIncrement =
-      cast<VPInstruction>(CanonicalIVPHI->getBackedgeValue());
-  auto *NextEVLIV = new VPInstruction(
-      VPInstruction::ExplicitVectorLengthIVIncrement, {EVLPhi, VPEVL},
-      {CanonicalIVIncrement->hasNoUnsignedWrap(),
-       CanonicalIVIncrement->hasNoSignedWrap()},
-      CanonicalIVIncrement->getDebugLoc(), "index.evl.next");
-  NextEVLIV->insertBefore(CanonicalIVIncrement);
-  EVLPhi->addOperand(NextEVLIV);
-
   if (PrevEVLPhi) {
-    Plan.setPrevRVL(PrevEVLPhi);
+    Plan.setPrevEVL(PrevEVLPhi);
     PrevEVLPhi->addOperand(VPEVL);
   }
 
   // Replace all uses of VPCanonicalIVPHIRecipe by
   // VPEVLBasedIVPHIRecipe except for VPInstruction::CanonicalIVIncrement.
   CanonicalIVPHI->replaceAllUsesWith(EVLPhi);
-  CanonicalIVIncrement->replaceAllUsesWith(NextEVLIV);
+  CanonicalIVIncrement->replaceAllUsesWith(CanonicalIVIncrement);
   Plan.getVFxUF().replaceAllUsesWith(VPEVL);
   Plan.setUseVLAVectorizer(true);
+#endif // SIFIVE_CUSTOMIZATION
 }
 
+#if SIFIVE_CUSTOMIZATION
 void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
   // Create ExplicitVectorLengthPhi recipe
   VPBasicBlock *Header = Plan.getVectorLoopRegion()->getEntryBasicBlock();
@@ -1564,18 +1513,17 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
   // Replace all uses of VPCanonicalIVPHIRecipe with
   // VPEVLBasedIVPHIRecipe
   CanonicalIVPHI->replaceAllUsesWith(EVLPhi);
-#if SIFIVE_CUSTOMIZATION
   CanonicalIVIncrement->replaceAllUsesWith(NextEVLIV);
   Plan.getVFxUF().replaceAllUsesWith(VPEVL);
   Plan.setUseVLAVectorizer(true);
 
-  // Traverse the use of EVL and update them with the latest RVL
+  // Traverse the use of EVL and update them with the latest EVL
   SmallSet<VPRecipeBase *, 2> EVLUsers;
   for (VPUser *U : VPEVL->users())
     if (auto *R = dyn_cast<VPRecipeBase>(U))
       EVLUsers.insert(R);
 
-  SmallDenseMap<VPBlockBase *, VPValue *> BlockLastRVL;
+  SmallDenseMap<VPBlockBase *, VPValue *> BlockLastEVL;
 
   std::queue<VPBasicBlock *> WorkList;
   SmallPtrSet<VPBlockBase *, 4> VisitedBlocks;
@@ -1591,45 +1539,45 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
       WorkList.push(Entry);
       VisitedBlocks.insert(Entry);
     }
-    VPValue *LastRVL = nullptr;
+    VPValue *LastEVL = nullptr;
     if (VPBB->getNumPredecessors() > 0) {
-      // TODO: Create a phi to join LastRVL from predecessors
+      // TODO: Create a phi to join LastEVL from predecessors
       assert(VPBB->getSinglePredecessor() &&
              "Uncountable loop doesn't support blocks having multiple "
              "predecessors");
-      LastRVL = BlockLastRVL[VPBB->getSinglePredecessor()];
+      LastEVL = BlockLastEVL[VPBB->getSinglePredecessor()];
     }
     for (VPRecipeBase &Recipe : *VPBB) {
-      // Check if the recipe updates RVL
+      // Check if the recipe updates EVL
       if (auto *R = dyn_cast<VPWidenMemoryInstructionRecipe>(&Recipe))
         if (R->isSpeculative()) {
-          LastRVL = R->getVPValue(1);
+          LastEVL = R->getVPValue(1);
           continue;
         }
       auto *VPI = dyn_cast<VPInstruction>(&Recipe);
       if (VPI && (VPI->getOpcode() == VPInstruction::ExplicitVectorLength)) {
-        LastRVL = VPI;
+        LastEVL = VPI;
         continue;
       }
 
       // if VPEVL is not udpated, we can skip this early
-      if (LastRVL == VPEVL)
+      if (LastEVL == VPEVL)
         continue;
 
       if (EVLUsers.count(&Recipe)) {
         for (unsigned I = 0; I < Recipe.getNumOperands(); I++)
           if (Recipe.getOperand(I) == VPEVL)
-            Recipe.setOperand(I, LastRVL);
+            Recipe.setOperand(I, LastEVL);
         EVLUsers.erase(&Recipe);
       }
     }
-    BlockLastRVL[VPBB] = LastRVL;
+    BlockLastEVL[VPBB] = LastEVL;
   }
-#endif // SIFIVE_CUSTOMIZATION
   CanonicalIVIncrement->setOperand(0, CanonicalIVPHI);
   // TODO: support unroll factor > 1.
   Plan.setUF(1);
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 void VPlanTransforms::dropPoisonGeneratingRecipes(
     VPlan &Plan, function_ref<bool(BasicBlock *)> BlockNeedsPredication) {

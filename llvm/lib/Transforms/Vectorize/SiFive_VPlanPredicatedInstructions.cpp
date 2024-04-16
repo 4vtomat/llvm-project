@@ -56,20 +56,20 @@ static Value *widenSelectInstruction(VPTransformState &State,
                                      const unsigned VPOpCode, VPValue *Def,
                                      VPUser &User, const unsigned Part,
                                      const Twine &Name) {
-  VPValue *RVL = State.RVL;
+  VPValue *EVL = State.EVL;
   Value *Cond = State.get(User.getOperand(0), Part);
   Value *Op1 = State.get(User.getOperand(1), Part);
   Value *Op2 = State.get(User.getOperand(2), Part);
-  Value *RVLArg = State.get(RVL, Part, /*NeedsScalar=*/true);
+  Value *EVLArg = State.get(EVL, Part, /*NeedsScalar=*/true);
   return State.Builder.CreateIntrinsic(VPOpCode, {Op1->getType()},
-                                       {Cond, Op1, Op2, RVLArg}, nullptr, Name);
+                                       {Cond, Op1, Op2, EVLArg}, nullptr, Name);
 }
 
 /// Construct vector popcount of the vector \p V
 static Value *createVectorPopcount(IRBuilderBase &Builder, Value *V,
-                                   Value *RVL) {
+                                   Value *EVL) {
   ElementCount EC = cast<VectorType>(V->getType())->getElementCount();
-  Value *Operands[] = {Builder.getTrueVector(EC), V, RVL};
+  Value *Operands[] = {Builder.getTrueVector(EC), V, EVL};
 
   return Builder.CreateIntrinsic(Intrinsic::experimental_vp_popcount,
                                  {V->getType()}, Operands);
@@ -77,11 +77,11 @@ static Value *createVectorPopcount(IRBuilderBase &Builder, Value *V,
 
 /// Compress \p VectorToCompress using RVV vcompress intrinsic
 static Value *compressVector(IRBuilderBase &Builder, Value *Mask,
-                             Value *VectorToCompress, Value *RVL) {
+                             Value *VectorToCompress, Value *EVL) {
   assert(Mask != nullptr && "Compress mask must be provided");
-  assert(RVL != nullptr && "RVL for RVV-intrinsic must be provided");
+  assert(EVL != nullptr && "EVL for RVV-intrinsic must be provided");
   Type *VTy = VectorToCompress->getType();
-  Value *Operands[] = {VectorToCompress, Mask, RVL};
+  Value *Operands[] = {VectorToCompress, Mask, EVL};
   CallInst *Compress = Builder.CreateIntrinsic(
       Intrinsic::experimental_vp_compress, {VTy}, Operands);
   return Compress;
@@ -91,13 +91,13 @@ namespace llvm {
 Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
                                   VPTransformState &State, VPValue *BlockInMask,
                                   unsigned Part) {
-  VPValue *RVL = State.RVL;
+  VPValue *EVL = State.EVL;
   IRBuilderBase &BuilderIR = State.Builder;
   VectorBuilder Builder(BuilderIR);
   auto &&MaskValue = [&](unsigned Part, ElementCount EC) -> Value * {
     if (!BlockInMask)
       return BuilderIR.getTrueVector(State.VF);
-    // The outermost mask can be lowered as an all ones mask when using RVL.
+    // The outermost mask can be lowered as an all ones mask when using EVL.
     if (auto *VPI = dyn_cast<VPInstruction>(BlockInMask))
       if (VPI && VPI->getOpcode() == VPInstruction::ActiveLaneMask)
         return BuilderIR.getTrueVector(EC);
@@ -116,7 +116,7 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     // are enabled.
     // Since LV is targeting RVV, use all-true mask for conversions.
     Builder.setMask(BuilderIR.getTrueVector(SrcTy->getElementCount()));
-    Builder.setEVL(State.get(RVL, Part, /*NeedsScalar=*/true));
+    Builder.setEVL(State.get(EVL, Part, /*NeedsScalar=*/true));
     return Builder.createVectorInstruction(CI->getOpcode(), DestTy, {SrcVal},
                                            "vp.cast");
   };
@@ -127,8 +127,8 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     Value *A = State.get(User.getOperand(0), Part);
     auto *PredTy = cast<VectorType>(A->getType());
     Value *MaskArg = BuilderIR.getTrueVector(State.VF);
-    Value *RVLArg = State.get(RVL, Part, /*NeedsScalar=*/true);
-    Builder.setMask(MaskArg).setEVL(RVLArg);
+    Value *EVLArg = State.get(EVL, Part, /*NeedsScalar=*/true);
+    Builder.setMask(MaskArg).setEVL(EVLArg);
     return Builder.createVectorInstruction(Instruction::Xor, PredTy,
                                            {A, MaskArg}, "pred.not");
   }
@@ -150,8 +150,8 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     VectorType *OpTy = cast<VectorType>(A->getType());
     Value *MaskArg = MaskValue(Part, OpTy->getElementCount());
     Builder.setMask(MaskArg);
-    Value *RVLArg = State.get(RVL, Part, /*NeedsScalar=*/true);
-    Builder.setEVL(RVLArg);
+    Value *EVLArg = State.get(EVL, Part, /*NeedsScalar=*/true);
+    Builder.setEVL(EVLArg);
 
     StringRef PredicateStr = CmpInst::getPredicateName(Cmp->getPredicate());
     auto *PredicateMDS = MDString::get(Cmp->getContext(), PredicateStr);
@@ -283,7 +283,7 @@ void widenPredicatedCall(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
   }
 
   Args.push_back(Builder.getTrueVector(State.VF));
-  Args.push_back(State.get(State.RVL, Part, /*NeedsScalar=*/ true));
+  Args.push_back(State.get(State.EVL, Part, /*NeedsScalar=*/ true));
   CallInst *V =
       Builder.CreateIntrinsic(VPID, TysForDecl, Args, nullptr, "vp.op");
   if (isa<FPMathOperator>(V))
@@ -292,7 +292,7 @@ void widenPredicatedCall(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
 }
 
 void VPSelectInstruction::execute(VPTransformState &State) {
-  if (!State.RVL) {
+  if (!State.EVL) {
     // For non RVV VLA vectorization, reuse existing mechanism to generate the
     // vector code
     VPInstruction::execute(State);
@@ -324,8 +324,8 @@ void VPMonotonicUpdateInstruction::execute(VPTransformState &State) {
   Value *V = State.get(getIncomingValue(), 0, /*NeedsScalar=*/true);
   Value *Step = State.get(getStepValue(), 0, /*NeedsScalar=*/true);
   Value *Mask = State.get(getMask(), 0);
-  Value *RVL = State.get(State.RVL, 0, /*NeedsScalar=*/true);
-  Value *Vpop = createVectorPopcount(Builder, Mask, RVL);
+  Value *EVL = State.get(State.EVL, 0, /*NeedsScalar=*/true);
+  Value *Vpop = createVectorPopcount(Builder, Mask, EVL);
   Vpop = Builder.CreateZExtOrTrunc(Vpop, Step->getType());
 
   Value *Mult = Builder.CreateMul(Vpop, Step);
@@ -360,8 +360,8 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
                                  VPTransformState &State, unsigned Part,
                                  ArrayRef<Value *> BlockInMaskParts) {
   assert(Part == 0 && "Cannot support Part > 0 for RVV VLA vectorization");
-  Value *RVLPart = State.get(State.RVL, Part, /*NeedsScalar=*/true);
-  assert(RVLPart && "RVL must be set prior to generation of vp-intrinsics");
+  Value *EVLPart = State.get(State.EVL, Part, /*NeedsScalar=*/true);
+  assert(EVLPart && "EVL must be set prior to generation of vp-intrinsics");
 
   VPValue *VPAddr = VPWMIR.getAddr();
   ElementCount NumElts = State.VF;
@@ -370,7 +370,7 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
 
   auto MaskValue = [&](unsigned Part, ElementCount EC) -> Value * {
     // The outermost mask can be lowered as an all ones mask when using
-    // RVL.
+    // EVL.
     VPValue *Mask = VPWMIR.getMask();
     if (!Mask)
       return Builder.getTrueVector(EC);
@@ -383,7 +383,7 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
     VPValue *StoredValue = VPWMIR.getStoredValue();
     Value *StoredVal = State.get(StoredValue, Part);
     if (VPWMIR.isMonotonic())
-      StoredVal = compressVector(Builder, BlockInMaskPart, StoredVal, RVLPart);
+      StoredVal = compressVector(Builder, BlockInMaskPart, StoredVal, EVLPart);
 
     if (VPWMIR.isStrided()) {
       Value *Ptr = State.get(VPAddr, VPIteration(0, 0));
@@ -402,16 +402,16 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
         LLVM_DEBUG(llvm::dbgs()
                    << "Generating strided store for addr = " << *VPAddr
                    << " with a stride = " << *Stride << '\n');
-        Value *Operands[] = {StoredVal, Ptr, Stride, BlockInMaskPart, RVLPart};
+        Value *Operands[] = {StoredVal, Ptr, Stride, BlockInMaskPart, EVLPart};
         VS = Builder.CreateIntrinsic(
             Intrinsic::experimental_vp_strided_store,
             {StoredVal->getType(), PtrTy, Stride->getType()}, Operands);
       } else {
         if (VPWMIR.isMonotonic()) {
-          RVLPart = createVectorPopcount(Builder, BlockInMaskPart, RVLPart);
+          EVLPart = createVectorPopcount(Builder, BlockInMaskPart, EVLPart);
           BlockInMaskPart = Builder.getTrueVector(NumElts);
         }
-        Value *Operands[] = {StoredVal, Ptr, BlockInMaskPart, RVLPart};
+        Value *Operands[] = {StoredVal, Ptr, BlockInMaskPart, EVLPart};
         VS = Builder.CreateIntrinsic(Intrinsic::vp_store,
                                      {StoredVal->getType(), PtrTy}, Operands);
       }
@@ -423,7 +423,7 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
     auto *DataTy = cast<VectorType>(StoredVal->getType());
     LLVM_DEBUG(llvm::dbgs() << "Indexed store for " << *VPAddr << "\n");
     Value *VectorGep = State.get(VPAddr, Part);
-    Value *Operands[] = {StoredVal, VectorGep, BlockInMaskPart, RVLPart};
+    Value *Operands[] = {StoredVal, VectorGep, BlockInMaskPart, EVLPart};
     auto *PtrsTy = cast<VectorType>(VectorGep->getType());
     CallInst *VS = Builder.CreateIntrinsic(Intrinsic::vp_scatter,
                                            {DataTy, PtrsTy}, Operands);
@@ -447,7 +447,7 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
     LLVM_DEBUG(llvm::dbgs()
                << "Generating strided load for addr = " << *VPAddr
                << " with a stride = " << *Stride << '\n');
-    Value *Operands[] = {Ptr, Stride, BlockInMaskPart, RVLPart};
+    Value *Operands[] = {Ptr, Stride, BlockInMaskPart, EVLPart};
     CallInst *VL =
         Builder.CreateIntrinsic(Intrinsic::experimental_vp_strided_load,
                                 {DataTy, PtrTy, Stride->getType()}, Operands,
@@ -458,7 +458,7 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
   }
   LLVM_DEBUG(llvm::dbgs() << "Indexed load for " << VPAddr << "\n");
   Value *VectorGep = State.get(VPAddr, Part);
-  Value *Operands[] = {VectorGep, BlockInMaskPart, RVLPart};
+  Value *Operands[] = {VectorGep, BlockInMaskPart, EVLPart};
   auto *PtrsTy = cast<VectorType>(VectorGep->getType());
   CallInst *VL = Builder.CreateIntrinsic(
       Intrinsic::vp_gather, {DataTy, PtrsTy}, Operands, nullptr, "vp.gather");
@@ -475,15 +475,15 @@ Instruction *widenPredicatedArithmeticOp(VPTransformState &State,
           (Instruction::isUnaryOp(Opcode) && (Ops.size() == 1))) &&
          "Invalid number of operands.");
   VectorBuilder VBuilder(State.Builder);
-  VPValue *RVL = State.RVL;
-  Value *RVLPart = State.RVL ? State.get(RVL, Part, /*NeedsScalar=*/true)
-                             : State.RVLPlaceholder;
-  RVLPart =
-      State.Builder.CreateZExtOrTrunc(RVLPart, State.Builder.getInt32Ty());
-  assert(RVLPart && "RVL was not created");
+  VPValue *EVL = State.EVL;
+  Value *EVLPart = State.EVL ? State.get(EVL, Part, /*NeedsScalar=*/true)
+                             : State.EVLPlaceholder;
+  EVLPart =
+      State.Builder.CreateZExtOrTrunc(EVLPart, State.Builder.getInt32Ty());
+  assert(EVLPart && "EVL was not created");
   if (!Mask)
     Mask = State.Builder.getTrueVector(State.VF);
-  VBuilder.setMask(Mask).setEVL(RVLPart);
+  VBuilder.setMask(Mask).setEVL(EVLPart);
   return cast<Instruction>(
       VBuilder.createVectorInstruction(Opcode, Ops[0]->getType(), Ops, Name));
 }

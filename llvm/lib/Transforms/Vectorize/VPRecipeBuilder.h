@@ -107,14 +107,6 @@ class VPRecipeBuilder {
   VPWidenRecipe *tryToWiden(Instruction *I, ArrayRef<VPValue *> Operands,
                             VPBasicBlock *VPBB);
 
-#if SIFIVE_CUSTOMIZATION
-  /// Check if we want to use vector predicated intrinsics for widening.
-  bool preferPredicatedWiden() const;
-
-  /// Insert and Cache Induction Variable
-  VPValue *getOrCreateIV(VPBasicBlock *VPBB, VPlanPtr &Plan);
-#endif // SIFIVE_CUSTOMIZATION
-
 public:
   VPRecipeBuilder(VPlan &Plan, Loop *OrigLoop, const TargetLibraryInfo *TLI,
                   LoopVectorizationLegality *Legal,

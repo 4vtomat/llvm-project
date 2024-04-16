@@ -1362,21 +1362,17 @@ public:
     SLPLoad,
     SLPStore,
     ActiveLaneMask,
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     ExplicitVectorLength,
-    ExplicitVectorLengthIVIncrement,
-#endif // SIFIVE_CUSTOMIZATION
-=======
-    ExplicitVectorLength,
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
     CalculateTripCountMinusVF,
     // Increment the canonical IV separately for each unrolled part.
     CanonicalIVIncrementForPart,
     BranchOnCount,
     BranchOnCond,
     ComputeReductionResult,
-<<<<<<< HEAD
+    // Add an offset in bytes (second operand) to a base pointer (first
+    // operand). Only generates scalar values (either for the first lane only or
+    // for all lanes, depending on its uses).
+    PtrAdd,
 #if SIFIVE_CUSTOMIZATION
     ExitingCond,
     CSAInitMask,
@@ -1388,12 +1384,6 @@ public:
     CSAAnyActive,
     MonotonicUpdate,
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    // Add an offset in bytes (second operand) to a base pointer (first
-    // operand). Only generates scalar values (either for the first lane only or
-    // for all lanes, depending on its uses).
-    PtrAdd,
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
   };
 
 private:
@@ -1829,7 +1819,7 @@ public:
   /// Returns the mask value of the instruction
   VPValue *getMask() const { return getOperand(2); }
 
-  VPRecipeBase *clone() override {
+  VPMonotonicUpdateInstruction *clone() override {
     return new VPMonotonicUpdateInstruction(getMask(), getIncomingValue(),
                                             getStepValue(), getDebugLoc(),
                                             getMonotonicDescriptor());
@@ -2159,16 +2149,12 @@ public:
 
   ~VPWidenPointerInductionRecipe() override = default;
 
-<<<<<<< HEAD
-  VPRecipeBase *clone() override {
+  VPWidenPointerInductionRecipe *clone() override {
 #if SIFIVE_CUSTOMIZATION
     return new VPWidenPointerInductionRecipe(
         cast<PHINode>(getUnderlyingInstr()), getOperand(0), getOperand(1),
         IndDesc, IsScalarAfterVectorization, IsUncountable);
 #else
-=======
-  VPWidenPointerInductionRecipe *clone() override {
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
     return new VPWidenPointerInductionRecipe(
         cast<PHINode>(getUnderlyingInstr()), getOperand(0), getOperand(1),
         IndDesc, IsScalarAfterVectorization);
@@ -2704,7 +2690,7 @@ public:
 
   ~VPCSAHeaderPHIRecipe() override = default;
 
-  VPRecipeBase *clone() override {
+  VPCSAHeaderPHIRecipe *clone() override {
     return new VPCSAHeaderPHIRecipe(cast<PHINode>(getUnderlyingInstr()),
                                     getOperand(0));
   }
@@ -2735,7 +2721,7 @@ public:
 
   ~VPCSADataUpdateRecipe() override = default;
 
-  VPRecipeBase *clone() override {
+  VPCSADataUpdateRecipe *clone() override {
     SmallVector<VPValue *> Ops(operands());
     return new VPCSADataUpdateRecipe(cast<SelectInst>(getUnderlyingInstr()),
                                      Ops);
@@ -2781,7 +2767,7 @@ public:
 
   ~VPCSAExtractScalarRecipe() override = default;
 
-  VPRecipeBase *clone() override {
+  VPCSAExtractScalarRecipe *clone() override {
     SmallVector<VPValue *> Ops(operands());
     return new VPCSAExtractScalarRecipe(Ops);
   }
@@ -2812,7 +2798,7 @@ public:
 
   InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const override;
 
-  VPRecipeBase *clone() override {
+  VPMonotonicHeaderPHIRecipe *clone() override {
     return new VPMonotonicHeaderPHIRecipe(cast<PHINode>(getUnderlyingInstr()),
                                           getOperand(0));
   }
@@ -3343,45 +3329,6 @@ public:
     return true;
   }
 };
-
-#if SIFIVE_CUSTOMIZATION
-/// A recipe for generating the phi node for the current index of elements,
-/// adjusted in accordance with EVL value. It starts at StartIV value and gets
-/// incremented by EVL in each iteration of the vector loop.
-class VPEVLBasedIVPHIRecipe : public VPHeaderPHIRecipe {
-public:
-  VPEVLBasedIVPHIRecipe(VPValue *StartMask, DebugLoc DL)
-      : VPHeaderPHIRecipe(VPDef::VPEVLBasedIVPHISC, nullptr, StartMask, DL) {}
-
-  ~VPEVLBasedIVPHIRecipe() override = default;
-
-  VPRecipeBase *clone() override {
-     return new VPEVLBasedIVPHIRecipe(getOperand(0),  getDebugLoc());
-  }
-
-  VP_CLASSOF_IMPL(VPDef::VPEVLBasedIVPHISC)
-
-  static inline bool classof(const VPHeaderPHIRecipe *D) {
-    return D->getVPDefID() == VPDef::VPEVLBasedIVPHISC;
-  }
-
-  /// Generate phi for handling IV based on EVL over iterations correctly.
-  void execute(VPTransformState &State) override;
-
-  /// Returns true if the recipe only uses the first lane of operand \p Op.
-  bool onlyFirstLaneUsed(const VPValue *Op) const override {
-    assert(is_contained(operands(), Op) &&
-           "Op must be an operand of the recipe");
-    return true;
-  }
-
-#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-  /// Print the recipe.
-  void print(raw_ostream &O, const Twine &Indent,
-             VPSlotTracker &SlotTracker) const override;
-#endif
-};
-#endif // SIFIVE_CUSTOMIZATION
 
 /// VPBasicBlock serves as the leaf of the Hierarchical Control-Flow Graph. It
 /// holds a sequence of zero or more VPRecipe's each representing a sequence of

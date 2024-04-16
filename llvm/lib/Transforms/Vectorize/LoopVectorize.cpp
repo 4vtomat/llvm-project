@@ -2719,7 +2719,7 @@ static bool isIndvarOverflowCheckKnownFalse(
 }
 
 #if SIFIVE_CUSTOMIZATION
-static bool needOtherRVLs(LoopVectorizationLegality &Legal,
+static bool needOtherEVLs(LoopVectorizationLegality &Legal,
                           const LoopVectorizationCostModel &Cost) {
   return !Legal.getFixedOrderRecurrences().empty() ||
          !Legal.getCSAs().empty() ||
@@ -2806,12 +2806,12 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
 #if SIFIVE_CUSTOMIZATION
   if (Group->isReverse()) {
     if (Legal->useVLAVectorizer()) {
-      assert(State.RVL && "RuntimeVL must be initialized at this point");
-      Value *RVL = Builder.CreateZExtOrTrunc(
-          State.get(State.RVL, 0, /*NeedsScalar=*/true), Builder.getInt32Ty());
+      assert(State.EVL && "RuntimeVL must be initialized at this point");
+      Value *EVL = Builder.CreateZExtOrTrunc(
+          State.get(State.EVL, 0, /*NeedsScalar=*/true), Builder.getInt32Ty());
       IndexVal = Builder.CreateAdd(
           IndexVal,
-          Builder.CreateMul(Builder.CreateSub(RVL, Builder.getInt32(1)),
+          Builder.CreateMul(Builder.CreateSub(EVL, Builder.getInt32(1)),
                             Builder.getInt32(InterleaveFactor)));
     } else {
       IndexVal = Builder.CreateAdd(
@@ -3019,15 +3019,15 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
                   GetVectorInterleaveIntrinsic(InterleaveFactor), Types,
                   Operands, nullptr, "interleaved.mask");
               if (MaskForGaps) {
-                Value *RVL32 = Builder.CreateZExtOrTrunc(
-                    State.get(State.RVL, Part, /*NeedsScalar=*/true),
+                Value *EVL32 = Builder.CreateZExtOrTrunc(
+                    State.get(State.EVL, Part, /*NeedsScalar=*/true),
                     Builder.getInt32Ty());
-                Value *InterleaveRVL = Builder.CreateMul(
-                    RVL32,
+                Value *InterleaveEVL = Builder.CreateMul(
+                    EVL32,
                     ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor));
                 GroupMask = Builder.CreateIntrinsic(
                     Intrinsic::vp_select, {Types},
-                    {MaskForGaps, GroupMask, MaskForGaps, InterleaveRVL},
+                    {MaskForGaps, GroupMask, MaskForGaps, InterleaveEVL},
                     nullptr, "interleaved.group.mask");
               }
             }
@@ -3036,10 +3036,10 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
           ElementCount EC = Group->isStrided() ? VF : VF * InterleaveFactor;
           GroupMask = State.Builder.getTrueVector(EC);
         }
-        assert(State.RVL &&
+        assert(State.EVL &&
                "RuntimeVL must be initialized at this point");
-        Value *RVL32 = Builder.CreateZExtOrTrunc(
-            State.get(State.RVL, Part, /*NeedsScalar=*/true),
+        Value *EVL32 = Builder.CreateZExtOrTrunc(
+            State.get(State.EVL, Part, /*NeedsScalar=*/true),
             Builder.getInt32Ty());
         if (Group->isStrided()) {
           // Generate the stride.
@@ -3064,18 +3064,18 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
           // Get the combined vector type
           auto *StridedVecTy = VectorType::get(
               GetExtendedType(ScalarTyInBits, InterleaveFactor), VF);
-          // Use original RVL instead of RVL * factor
+          // Use original EVL instead of EVL * factor
           Value *Operands[] = {AddrParts[Part], StrideInBytes, GroupMask,
-                               RVL32};
+                               EVL32};
           Type *Types[] = {StridedVecTy, Operands[0]->getType(),
                            StrideInBytes->getType()};
           WideLoad = State.Builder.CreateIntrinsic(
               Intrinsic::experimental_vp_strided_load, Types, Operands, nullptr,
               "wide.strided.load");
         } else {
-          Value *InterleaveRVL = Builder.CreateMul(
-              RVL32, ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor));
-          Value *Operands[] = {AddrParts[Part], GroupMask, InterleaveRVL};
+          Value *InterleaveEVL = Builder.CreateMul(
+              EVL32, ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor));
+          Value *Operands[] = {AddrParts[Part], GroupMask, InterleaveEVL};
           Type *Types[] = {VecTy, Operands[0]->getType()};
           WideLoad = State.Builder.CreateIntrinsic(
               Intrinsic::vp_load, Types, Operands, nullptr, "wide.masked.load");
@@ -3127,7 +3127,7 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
               Result = Builder.CreateIntrinsic(
                   Intrinsic::experimental_vp_reverse, {Result->getType()},
                   {Result, TrueVector,
-                   State.get(State.RVL, Part, /*NeedsScalar=*/true)},
+                   State.get(State.EVL, Part, /*NeedsScalar=*/true)},
                   nullptr, "deinterleaved.result.reverse");
           }
           // If this member has different type, cast the result type.
@@ -3265,7 +3265,7 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
           StoredValue = Builder.CreateIntrinsic(
               Intrinsic::experimental_vp_reverse, {StoredValue->getType()},
               {StoredValue, TrueVector,
-               State.get(State.RVL, Part, /*NeedsScalar=*/true)},
+               State.get(State.EVL, Part, /*NeedsScalar=*/true)},
               nullptr, "result.reverse");
         }
         if (StoredValue->getType() != SubVT)
@@ -3286,13 +3286,13 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
             GetVectorInterleaveIntrinsic(InterleaveFactor), {VecTy}, Operands,
             nullptr, "interleaved.vec");
 
-      assert(State.RVL && "RuntimeVL must be initialized at this point");
-      Value *RVL32 = Builder.CreateZExtOrTrunc(
-          State.get(State.RVL, Part, /*NeedsScalar=*/true),
+      assert(State.EVL && "RuntimeVL must be initialized at this point");
+      Value *EVL32 = Builder.CreateZExtOrTrunc(
+          State.get(State.EVL, Part, /*NeedsScalar=*/true),
           Builder.getInt32Ty());
-      Value *InterleaveRVL = Builder.CreateMul(
-          RVL32, ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor));
-      Operands = {StoredVal, AddrParts[Part], GroupMask, InterleaveRVL};
+      Value *InterleaveEVL = Builder.CreateMul(
+          EVL32, ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor));
+      Operands = {StoredVal, AddrParts[Part], GroupMask, InterleaveEVL};
       CallInst *WideStore = State.Builder.CreateIntrinsic(
           Intrinsic::vp_store, {VecTy, AddrParts[Part]->getType()}, Operands,
           nullptr);
@@ -4395,8 +4395,8 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(
   auto *ExtractForScalar = Incoming;
   auto *IdxTy = Builder.getInt32Ty();
 #if SIFIVE_CUSTOMIZATION
-  Value *RVL =
-      State.RVL ? State.get(State.RVL, 0, /*NeedsScalar=*/true) : nullptr;
+  Value *EVL =
+      State.EVL ? State.get(State.EVL, 0, /*NeedsScalar=*/true) : nullptr;
 #endif // SIFIVE_CUSTOMIZATION
   Value *RuntimeVF = nullptr;
   if (VF.isVector()) {
@@ -4408,7 +4408,7 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(
     // current function in VPLane is it does use different lane kind for fixed
     // and scalable vectors, which makes it hard to use here. Also for RVV VLA
     // we have to provide offset from the last lane.
-    RuntimeVF = RVL ? RVL : getRuntimeVF(Builder, IdxTy, VF);
+    RuntimeVF = EVL ? EVL : getRuntimeVF(Builder, IdxTy, VF);
 #endif // SIFIVE_CUSTOMIZATION
     auto *LastIdx = Builder.CreateSub(RuntimeVF, One);
     ExtractForScalar =
@@ -4437,9 +4437,9 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(
       ExtractForPhiUsedOutsideLoop = Builder.CreateExtractElement(
           Incoming, Idx, "vector.recur.extract.for.phi");
 #if SIFIVE_CUSTOMIZATION
-      if (RVL) {
+      if (EVL) {
         // Take care of the corner case when last vector iteration processed just
-        // one element. In this case extract of the `RVL-2` element of the
+        // one element. In this case extract of the `EVL-2` element of the
         // `PreviousDef`(`v2`) doesn't make sense as it will be overwritten on the
         // last iteration.
         //
@@ -4460,12 +4460,12 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(
         //
         // Take the value of the `PhiR`(`v1`) as it contains value from the
         // previous iteration (or the initial value) and extract last lane using
-        // `PrevRVL`(`prev.rvl`)
+        // `PrevEVL`(`prev.rvl`)
         Value *Cond =
-            Builder.CreateICmpEQ(RVL, ConstantInt::get(RVL->getType(), 1));
+            Builder.CreateICmpEQ(EVL, ConstantInt::get(EVL->getType(), 1));
 
         Idx = Builder.CreateSub(
-            State.get(State.Plan->getPrevRVL(), 0, /*NeedsScalar=*/true),
+            State.get(State.Plan->getPrevEVL(), 0, /*NeedsScalar=*/true),
             ConstantInt::get(IdxTy, 1));
         Value *PreviousValue = Builder.CreateExtractElement(
             State.get(PhiR, UF - 1), Idx, "vector.recur.prev.extract");
@@ -8894,7 +8894,7 @@ static InstructionCost getCSACost(PHINode *Phi, VectorType *&VTy,
   C += TTI.getArithmeticInstrCost(Instruction::Select, VTy, CostKind);
   // Convert the non masked mask to mask type
   C += TTI.getArithmeticInstrCost(Instruction::ICmp, MaskTy, CostKind);
-  // ZExt init RVL
+  // ZExt init EVL
   C += TTI.getArithmeticInstrCost(
       Instruction::ZExt, IntegerType::getInt32Ty(VTy->getContext()), CostKind);
   // RISCV_VMSBF
@@ -9641,7 +9641,7 @@ LoopVectorizationPlanner::executePlan(
     const DenseMap<const SCEV *, Value *> *ExpandedSCEVs) {
 #if SIFIVE_CUSTOMIZATION
   assert((!Legal->isVectorizableUncountable() ||
-          (BestVPlan.isUncountable() && BestVPlan.getInitRVL() &&
+          (BestVPlan.isUncountable() && BestVPlan.getInitEVL() &&
            Legal->useVLAVectorizer())) &&
          "Uncountable loop is not set up correctly for executing VPlan");
 #endif
@@ -9702,7 +9702,6 @@ LoopVectorizationPlanner::executePlan(
                                                      : State.ExpandedSCEVs);
 #if SIFIVE_CUSTOMIZATION
   State.SE = ILV.PSE.getSE();
-  State.PreferPredicatedVectorOps = ILV.useVLAVectorizer();
   if (Legal->useVLAVectorizer()) {
     unsigned SEW;
     Type *SEWType;
@@ -10231,30 +10230,6 @@ VPValue *VPRecipeBuilder::createEdgeMask(BasicBlock *Src, BasicBlock *Dst) {
   return EdgeMaskCache[Edge] = EdgeMask;
 }
 
-#if SIFIVE_CUSTOMIZATION
-VPValue *VPRecipeBuilder::getOrCreateIV(VPBasicBlock *VPBB, VPlanPtr &Plan) {
-  IVCacheTy::iterator IVEntryIt = IVCache.find(VPBB);
-  if (IVEntryIt != IVCache.end())
-    return IVEntryIt->second;
-
-  VPValue *IV = nullptr;
-  // TODO: Re-enable this code with proper analysis to avoid inefficient code
-  // generation, otherwise there are some lit tests that are failng due to
-  // inefficient lowering of the primary induction that is scalarized.
-  //  if (Legal->getPrimaryInduction()) {
-  //    IV = Plan->getOrAddVPValue(Legal->getPrimaryInduction());
-  //  } else
-  {
-    VPBasicBlock *HeaderVPBB = Plan->getVectorLoopRegion()->getEntryBasicBlock();
-    auto NewInsertionPoint = HeaderVPBB->getFirstNonPhi();
-    auto *IVRecipe = new VPWidenCanonicalIVRecipe(Plan->getCanonicalIV());
-    HeaderVPBB->insert(IVRecipe, NewInsertionPoint);
-    IV = IVRecipe;
-  }
-  return IV; // TODO: IVCache[VPBB] = IV;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 VPValue *VPRecipeBuilder::getEdgeMask(BasicBlock *Src, BasicBlock *Dst) const {
   assert(is_contained(predecessors(Dst), Src) && "Invalid edge");
 
@@ -10661,12 +10636,6 @@ bool VPRecipeBuilder::shouldWiden(Instruction *I, VFRange &Range) const {
                                                              Range);
 }
 
-#if SIFIVE_CUSTOMIZATION
-bool VPRecipeBuilder::preferPredicatedWiden() const {
-  return Legal->useVLAVectorizer();
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 VPWidenRecipe *VPRecipeBuilder::tryToWiden(Instruction *I,
                                            ArrayRef<VPValue *> Operands,
                                            VPBasicBlock *VPBB) {
@@ -10872,7 +10841,7 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
 
 #if SIFIVE_CUSTOMIZATION
   if (isa<LoadInst, StoreInst>(Instr)) {
-    if (preferPredicatedWiden()) {
+    if (Legal->useVLAVectorizer()) {
       // Note: VLS skips this check with CM_Scalarize
       // We add it here for VLA
       StoreInst *SI;
@@ -10881,7 +10850,7 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
         return nullptr;
     }
 
-    return tryToWidenMemory(Instr, Operands, Range, Plan);
+    return tryToWidenMemory(Instr, Operands, Range);
   }
 
   if (Legal->isVectorizableUncountable()) {
@@ -10934,12 +10903,12 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
 
   if (auto *SI = dyn_cast<SelectInst>(Instr)) {
 #if SIFIVE_CUSTOMIZATION
-    auto CSADescIt = find_if(Legal->getCSAs(), [&](auto CSA) {
+    auto *CSADescIt = find_if(Legal->getCSAs(), [&](auto CSA) {
       return CSADescriptor::isCSASelect(CSA.second, SI);
     });
     if (CSADescIt != Legal->getCSAs().end()) {
       PHINode *CSAPhi = CSADescIt->first;
-      VPCSAState *State = Plan->getCSAStates().find(CSAPhi)->second;
+      VPCSAState *State = Plan.getCSAStates().find(CSAPhi)->second;
       VPValue *VPDataPhi = State->getPhiRecipe();
       auto *R = new VPCSADataUpdateRecipe(
           SI, {VPDataPhi, Operands[0], Operands[1], Operands[2]});
@@ -11026,7 +10995,7 @@ static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, bool HasNUW,
 static void addCanonicalIVRecipesUncountable(VPlan &Plan, Type *IdxTy,
                                              bool HasNUW, DebugLoc DL) {
   Value *StartIdx = ConstantInt::get(IdxTy, 0);
-  auto *StartV = Plan.getVPValueOrAddLiveIn(StartIdx);
+  auto *StartV = Plan.getOrAddLiveIn(StartIdx);
 
   // Add a VPCanonicalIVPHIRecipe starting at 0 to the header.
   auto *CanonicalIVPHI = new VPCanonicalIVPHIRecipe(StartV, DL);
@@ -11057,7 +11026,7 @@ addCSAPreprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
       [&](ElementCount VF) { return VF.isScalar(); }, Range);
 
   for (const auto &CSA : CSAs) {
-    VPValue *VPInitScalar = Plan.getVPValueOrAddLiveIn(
+    VPValue *VPInitScalar = Plan.getOrAddLiveIn(
         CSA.first->getIncomingValueForBlock(OrigLoop->getLoopPreheader()));
 
     // Scalar VF builds the scalar version of the loop. In that case,
@@ -11096,7 +11065,8 @@ addCSAPreprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
 /// Add CSA Recipes that must occur after each instruction in the input IR
 /// is processed and introduced into VPlan.
 static void
-addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
+addCSAPostprocessRecipes(VPRecipeBuilder &RecipeBuilder,
+                         const LoopVectorizationLegality::CSAList &CSAs,
                          VPBasicBlock *MiddleVPBB, DebugLoc DL, VFRange &Range,
                          VPlan &Plan) {
   // Don't build CSA for VF=ElementCount::getFixed(1)
@@ -11112,7 +11082,10 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
            "VPDataUpdate must have been introduced prior to postprocess");
     assert(CSA.second.getCond() &&
            "CSADescriptor must know how to describe the condition");
-    VPValue *WidenedCond = Plan.getVPValue(CSA.second.getCond());
+    auto GetVPValue = [&](Value *I) {
+      return RecipeBuilder.getRecipe(cast<Instruction>(I))->getVPSingleValue();
+    };
+    VPValue *WidenedCond = GetVPValue(CSA.second.getCond());
     VPValue *AllTrueMask = Plan.getOrCreateAllTrueMask();
     VPValue *VPInitScalar = CSAState->getVPInitScalar();
 
@@ -11124,9 +11097,9 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
     VPValue *CondToUse = WidenedCond;
     if (cast<SelectInst>(CSA.second.getAssignment())->getTrueValue() ==
         CSA.first) {
-      auto VPNotCond = new VPInstruction(VPInstruction::Not, WidenedCond, DL);
+      auto *VPNotCond = new VPInstruction(VPInstruction::Not, WidenedCond, DL);
       VPNotCond->insertBefore(
-          Plan.getVPValue(CSA.second.getAssignment())->getDefiningRecipe());
+          GetVPValue(CSA.second.getAssignment())->getDefiningRecipe());
       CondToUse = VPNotCond;
     }
 
@@ -11136,7 +11109,7 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
                                             {CondToUse, AllTrueMask}, DL,
                                             "csa.cond.anyactive");
       VPAnyActive->insertBefore(
-          Plan.getVPValue(CSA.second.getAssignment())->getDefiningRecipe());
+          GetVPValue(CSA.second.getAssignment())->getDefiningRecipe());
 
       VPValue *VLPhi = CSAState->getVPVLPhi();
       auto *VPVLSel = new VPInstruction(VPInstruction::CSAVLSel,
@@ -11159,7 +11132,7 @@ addCSAPostprocessRecipes(const LoopVectorizationLegality::CSAList &CSAs,
            Plan.getOrCreateAllFalseMask()},
           DL, "csa.mask.sel");
       VPMaskSel->insertBefore(
-          Plan.getVPValue(CSA.second.getAssignment())->getDefiningRecipe());
+          GetVPValue(CSA.second.getAssignment())->getDefiningRecipe());
       VPDataUpdate->setVPNewMask(VPMaskSel);
       VPDataUpdate->setVPCondToUse(CondToUse);
       ExtractScalarRecipe =
@@ -11248,7 +11221,7 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   VPlanPtr Plan =
       VPlan::createInitialVPlan(TripCountSCEV, *PSE.getSE(), IsUncountable);
   if (IsUncountable) {
-    Plan->createInitRVL();
+    Plan->createInitEVL();
   }
 #else
   VPlanPtr Plan = VPlan::createInitialVPlan(
@@ -11289,10 +11262,10 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   addCanonicalIVRecipes(*Plan, Legal->getWidestInductionType(), HasNUW, DL);
 #endif // SIFIVE_CUSTOMIZATION
 #if SIFIVE_CUSTOMIZATION
-  // Create the node for previous RVL value, required for the splice
+  // Create the node for previous EVL value, required for the splice
   // intrinsic of a fixed order recurrence and CSA
-  if (Legal->useVLAVectorizer() && needOtherRVLs(*Legal, CM)) {
-    Plan->createInitRVL();
+  if (Legal->useVLAVectorizer() && needOtherEVLs(*Legal, CM)) {
+    Plan->createInitEVL();
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -11447,7 +11420,8 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 #if SIFIVE_CUSTOMIZATION
   VPBasicBlock *MiddleVPBB =
       cast<VPBasicBlock>(Plan->getVectorLoopRegion()->getSingleSuccessor());
-  addCSAPostprocessRecipes(Legal->getCSAs(), MiddleVPBB, DL, Range, *Plan);
+  addCSAPostprocessRecipes(RecipeBuilder, Legal->getCSAs(), MiddleVPBB, DL,
+                           Range, *Plan);
 #endif // SIFIVE_CUSTOMIZATION
 
   // After here, VPBB should not be used.
@@ -12012,12 +11986,12 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
   if (State.Plan->useVLAVectorizer()) {
     // FIXME: Remove this code with a proper representation of pointer induction
     // in a VPlan.
-    assert(!State.RVL &&
+    assert(!State.EVL &&
            "Runtime VL is available, but code was not updated to use it.");
-    if (!State.RVLPlaceholder)
-      State.RVLPlaceholder = State.Builder.CreateLoad(PhiType,
+    if (!State.EVLPlaceholder)
+      State.EVLPlaceholder = State.Builder.CreateLoad(PhiType,
                                      UndefValue::get(PhiType->getPointerTo()));
-    RuntimeVF = State.Builder.CreateIntCast(State.RVLPlaceholder, PhiType,
+    RuntimeVF = State.Builder.CreateIntCast(State.EVLPlaceholder, PhiType,
                                             /*IsSigned=*/false);
   }
   else
@@ -12167,6 +12141,7 @@ void VPReplicateRecipe::execute(VPTransformState &State) {
       State.ILV->scalarizeInstruction(UI, this, VPIteration(Part, Lane), State);
 }
 
+#if !SIFIVE_CUSTOMIZATION
 /// Creates either vp_store or vp_scatter intrinsics calls to represent
 /// predicated store/scatter.
 static Instruction *
@@ -12212,6 +12187,7 @@ static Instruction *lowerLoadUsingVectorIntrinsics(IRBuilderBase &Builder,
       0, Attribute::getWithAlignment(Call->getContext(), Alignment));
   return Call;
 }
+#endif // !SIFIVE_CUSTOMIZATION
 
 void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
   VPValue *StoredValue = isStore() ? getStoredValue() : nullptr;
@@ -12246,7 +12222,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       Value *Mask = State.get(getMask(), Part);
 #if SIFIVE_CUSTOMIZATION
       if (isReverse()) {
-        if (VPValue *RVL = State.RVL) {
+        if (VPValue *EVL = State.EVL) {
           VectorType *MaskTy = cast<VectorType>(Mask->getType());
           Value *BlockInMaskPart =
               Builder.getTrueVector(MaskTy->getElementCount());
@@ -12254,7 +12230,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
           Mask = Builder.CreateIntrinsic(
               Intrinsic::experimental_vp_reverse, {MaskTy},
               {Mask, BlockInMaskPart,
-               State.get(RVL, Part, /*NeedsScalar=*/true)});
+               State.get(EVL, Part, /*NeedsScalar=*/true)});
         } else {
           Mask = Builder.CreateVectorReverse(Mask, "reverse");
         }
@@ -12269,7 +12245,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
     VPValue *Mask = getMask();
     assert(Mask && "MaskValue must be called for recipes with set mask");
     // The outermost mask can be lowered as an all ones mask when using
-    // RVL.
+    // EVL.
     if (auto *IMask = dyn_cast<VPInstruction>(Mask))
       if (IMask->getOpcode() == CmpInst::ICMP_ULE)
         return Builder.getTrueVector(EC);
@@ -12347,7 +12323,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
         }
         auto *VecPtr = State.get(getAddr(), Part, /*IsScalar*/ true);
 #if SIFIVE_CUSTOMIZATION
-        // if RVLPart is not null, we can vectorize using predicated
+        // if EVLPart is not null, we can vectorize using predicated
         // intrinsic.
         if (State.EVL) {
           auto *StoredValTy = cast<VectorType>(StoredVal->getType());
@@ -12423,7 +12399,7 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
     } else {
       auto *VecPtr = State.get(getAddr(), Part, /*IsScalar*/ true);
 #if SIFIVE_CUSTOMIZATION
-      // if RVLPart is not null, we can vectorize using predicated
+      // if EVLPart is not null, we can vectorize using predicated
       // intrinsic.
       if (State.EVL) {
         assert((!Speculative || State.Plan->isUncountable()) &&
@@ -12482,8 +12458,8 @@ void VPWidenMemoryInstructionRecipe::execute(VPTransformState &State) {
       // %b = extractvalue { <vscale x 8 x i32>, i32 } %a, 0
       // %c = extractvalue { <vscale x 8 x i32>, i32 } %a, 1
       Value *VL = Builder.CreateExtractValue(NewLI, 1);
-      // TODO: If recipes carry their own RVL, State.RVL is no longer needed.
-      State.set(State.RVL, VL, Part, /*IsScalar=*/true);
+      // TODO: If recipes carry their own EVL, State.EVL is no longer needed.
+      State.set(State.EVL, VL, Part, /*IsScalar=*/true);
       NewLI = Builder.CreateExtractValue(NewLI, 0);
       State.set(getVPValue(0), NewLI, Part);
       // NewVL is going to replace EVL which is i64 type,
