@@ -1143,22 +1143,6 @@ void VPlan::execute(VPTransformState *State) {
     }
 
     auto *PhiR = cast<VPHeaderPHIRecipe>(&R);
-<<<<<<< HEAD
-    // For first-order recurrences and in-order reduction phis, only a single
-    // part is generated, which provides the last part from the previous
-    // iteration. Otherwise all UF parts are generated.
-    bool SinglePartNeeded = isa<VPCanonicalIVPHIRecipe>(PhiR) ||
-                            isa<VPFirstOrderRecurrencePHIRecipe>(PhiR) ||
-                            (isa<VPReductionPHIRecipe>(PhiR) &&
-                             cast<VPReductionPHIRecipe>(PhiR)->isOrdered());
-    bool NeedsScalar = isa<VPCanonicalIVPHIRecipe>(PhiR) ||
-#if SIFIVE_CUSTOMIZATION
-                       isa<VPEVLBasedIVPHIRecipe>(PhiR) ||
-                       isa<VPMonotonicHeaderPHIRecipe>(PhiR) ||
-#endif // SIFIVE_CUSTOMIZATION
-                       (isa<VPReductionPHIRecipe>(PhiR) &&
-                        cast<VPReductionPHIRecipe>(PhiR)->isInLoop());
-=======
     // For  canonical IV, first-order recurrences and in-order reduction phis,
     // only a single part is generated, which provides the last part from the
     // previous iteration. For non-ordered reductions all UF parts are
@@ -1170,9 +1154,12 @@ void VPlan::execute(VPTransformState *State) {
          cast<VPReductionPHIRecipe>(PhiR)->isOrdered());
     bool NeedsScalar =
         isa<VPCanonicalIVPHIRecipe, VPEVLBasedIVPHIRecipe>(PhiR) ||
+#if SIFIVE_CUSTOMIZATION
+                       isa<VPEVLBasedIVPHIRecipe>(PhiR) ||
+                       isa<VPMonotonicHeaderPHIRecipe>(PhiR) ||
+#endif // SIFIVE_CUSTOMIZATION
         (isa<VPReductionPHIRecipe>(PhiR) &&
          cast<VPReductionPHIRecipe>(PhiR)->isInLoop());
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
     unsigned LastPartForNewPhi = SinglePartNeeded ? 1 : State->UF;
     for (unsigned Part = 0; Part < LastPartForNewPhi; ++Part) {
       Value *Phi = State->get(PhiR, Part, NeedsScalar);

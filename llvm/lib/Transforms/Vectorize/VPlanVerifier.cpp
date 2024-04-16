@@ -108,56 +108,6 @@ static bool verifyVPBasicBlock(const VPBasicBlock *VPBB,
   for (const VPRecipeBase &R : *VPBB)
     RecipeNumbering[&R] = Cnt++;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // Check if EVL recipes exist only in Entry block and only once.
-  DenseSet<unsigned> EVLFound;
-  const VPBlockBase *Header = nullptr;
-  const VPBlockBase *Exit = nullptr;
-  const VPlan *Plan = VPBB->getPlan();
-  if (Plan && Plan->getEntry()->getNumSuccessors() == 1) {
-    Header = Plan->getVectorLoopRegion()->getEntry();
-    Exit = Plan->getVectorLoopRegion()->getExiting();
-  }
-  auto CheckEVLRecipiesInsts = [&](const VPRecipeBase *R) {
-    if (isa<VPEVLBasedIVPHIRecipe>(R)) {
-      if (!Header || VPBB != Header) {
-        errs() << "EVL PHI recipe not in entry block!\n";
-        return false;
-      }
-      EVLFound.insert(VPDef::VPEVLBasedIVPHISC);
-      return true;
-    }
-    auto *RInst = dyn_cast<VPInstruction>(R);
-    if (!RInst)
-      return true;
-    switch (RInst->getOpcode()) {
-    case VPInstruction::ExplicitVectorLength:
-      if (!Header || VPBB != Header) {
-        errs() << "EVL instruction not in entry block!\n";
-        return false;
-      }
-      break;
-    case VPInstruction::ExplicitVectorLengthIVIncrement:
-      if (!Exit || VPBB != Exit) {
-        errs() << "EVL inc instruction not in exit block!\n";
-        return false;
-      }
-      break;
-    default:
-      return true;
-    }
-    EVLFound.insert(RInst->getOpcode() + VPDef::VPLastPHISC);
-    return true;
-  };
-#endif // SIFIVE_CUSTOMIZATION
-
-  for (const VPRecipeBase &R : *VPBB) {
-#if SIFIVE_CUSTOMIZATION
-    if (!CheckEVLRecipiesInsts(&R))
-      return false;
-#endif // SIFIVE_CUSTOMIZATION
-=======
   // Set of recipe types along with VPInstruction Opcodes of all EVL-related
   // recipes that must appear at most once in the header block.
   DenseSet<unsigned> EVLFound;
@@ -202,7 +152,6 @@ static bool verifyVPBasicBlock(const VPBasicBlock *VPBB,
   for (const VPRecipeBase &R : *VPBB) {
     if (!CheckEVLRecipiesInsts(&R))
       return false;
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
     for (const VPValue *V : R.definedValues()) {
       for (const VPUser *U : V->users()) {
         auto *UI = dyn_cast<VPRecipeBase>(U);

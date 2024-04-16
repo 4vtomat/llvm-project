@@ -492,26 +492,7 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
     Value *Zero = ConstantInt::get(ScalarTC->getType(), 0);
     return Builder.CreateSelect(Cmp, Sub, Zero);
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  case VPInstruction::ExplicitVectorLength: {
-    // TODO: Restructure this code with an explicit remainder loop, vsetvli can
-    // be outside of the main loop.
-    assert(Part == 0 && "No unrolling expected for predicated vectorization.");
-    Value *EVL = nullptr;
-    if (!State.Plan->isUncountable()) {
-      assert(getNumOperands() != 0 &&
-             "Countable loop vectorization must use EVL");
-      // Compute VTC - IV as the EVL(requested vector length).
-      Value *Index = State.get(getOperand(0), 0, /*IsScalar*/ true);
-      Value *VectorTripCount = State.get(getOperand(1), VPIteration(0, 0));
-      EVL = State.Builder.CreateSub(VectorTripCount, Index);
-    }
-    // Set VLMAX if EVL is nullptr
-    Value *SetVL = GetSetVL(State, EVL);
-    State.RVL = this;
-    return SetVL;
-  }
   case VPInstruction::ExplicitVectorLengthIVIncrement: {
     assert(Part == 0 && "Expected unroll factor 1 for VP vectorization.");
     Value *Phi = State.get(getOperand(0), 0, /*IsScalar*/ true);
@@ -524,8 +505,21 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
                              hasNoSignedWrap());
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case VPInstruction::ExplicitVectorLength: {
+#if SIFIVE_CUSTOMIZATION
+    assert(Part == 0 && "No unrolling expected for predicated vectorization.");
+    Value *EVL = nullptr;
+    if (!State.Plan->isUncountable()) {
+      assert(getNumOperands() != 0 &&
+             "Countable loop vectorization must use EVL");
+      // Compute VTC - IV as the EVL(requested vector length).
+      Value *Index = State.get(getOperand(0), 0, /*IsScalar*/ true);
+      Value *VectorTripCount = State.get(getOperand(1), VPIteration(0, 0));
+      EVL = State.Builder.CreateSub(VectorTripCount, Index);
+    }
+    // Set VLMAX if EVL is nullptr
+    Value *SetVL = GetSetVL(State, EVL);
+#else
     // Compute EVL
     auto GetEVL = [=](VPTransformState &State, Value *AVL) {
       assert(AVL->getType()->isIntegerTy() &&
@@ -549,10 +543,10 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
     Value *AVL = State.Builder.CreateSub(TripCount, Index);
     Value *EVL = GetEVL(State, AVL);
     assert(!State.EVL && "multiple EVL recipes");
+#endif // SIFIVE_CUSTOMIZATION
     State.EVL = this;
     return EVL;
   }
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
   case VPInstruction::CanonicalIVIncrementForPart: {
     auto *IV = State.get(getOperand(0), VPIteration(0, 0));
     if (Part == 0)
@@ -815,41 +809,26 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
         if (Op != Instruction::ICmp && Op != Instruction::FCmp)
           ReducedPartRdx = Builder.CreateBinOp(
               (Instruction::BinaryOps)Op, RdxPart, ReducedPartRdx, "bin.rdx");
-<<<<<<< HEAD
-        else if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK)) {
-          TrackingVH<Value> ReductionStartValue =
-              RdxDesc.getRecurrenceStartValue();
-          ReducedPartRdx = createAnyOfOp(Builder, ReductionStartValue, RK,
-                                         ReducedPartRdx, RdxPart);
 #if SIFIVE_CUSTOMIZATION
-        }  else if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK)) {
+        else if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
           ReducedPartRdx = createFindLastIVOp(Builder, ReducedPartRdx, RdxPart);
 #endif // SIFIVE_CUSTOMIZATION
-        } else
-=======
         else
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
           ReducedPartRdx = createMinMaxOp(Builder, RK, ReducedPartRdx, RdxPart);
       }
     }
 
     // Create the reduction after the loop. Note that inloop reductions create
     // the target reduction in the loop using a Reduction recipe.
-<<<<<<< HEAD
-    if (State.VF.isVector() && !PhiR->isInLoop()) {
 #if SIFIVE_CUSTOMIZATION
-      if (State.Plan->useVLAVectorizer()) {
+    if (State.VF.isVector() && !PhiR->isInLoop() && State.Plan->useVLAVectorizer()) {
         Value *InitRVL =
-            State.get(State.Plan->getInitRVL(), 0, /*NeedsScalar=*/true);
+            State.get(State.Plan->getInitEVL(), 0, /*NeedsScalar=*/true);
         assert(InitRVL &&
                "InitRVL must be initialized in emitIterationCountCheck when "
                "using VP intrinsic to generate unordered reduction");
         ReducedPartRdx = createTargetReduction(Builder, RdxDesc, ReducedPartRdx,
                                                InitRVL, OrigPhi);
-      } else {
-        ReducedPartRdx =
-            createTargetReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
-      }
       // Adjust the final scalar result after the loop if the target prefers
       // that.
       // FIXME: Handle situation that the start value and identity are equal.
@@ -863,15 +842,19 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
         ReducedPartRdx = Builder.CreateBinOp((Instruction::BinaryOps)Op, StartV,
                                              ReducedPartRdx);
       }
-#else
-=======
+      // If the reduction can be performed in a smaller type, we need to extend
+      // the reduction to the wider type before we branch to the original loop.
+      if (PhiTy != RdxDesc.getRecurrenceType())
+        ReducedPartRdx = RdxDesc.isSigned()
+                             ? Builder.CreateSExt(ReducedPartRdx, PhiTy)
+                             : Builder.CreateZExt(ReducedPartRdx, PhiTy);
+    } else
+#endif // SIFIVE_CUSTOMIZATION
     if ((State.VF.isVector() ||
          RecurrenceDescriptor::isAnyOfRecurrenceKind(RK)) &&
         !PhiR->isInLoop()) {
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
       ReducedPartRdx =
           createTargetReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
-#endif // SIFIVE_CUSTOMIZATION
       // If the reduction can be performed in a smaller type, we need to extend
       // the reduction to the wider type before we branch to the original loop.
       if (PhiTy != RdxDesc.getRecurrenceType())
@@ -946,22 +929,6 @@ void VPInstruction::execute(VPTransformState &State) {
       continue;
     }
 
-<<<<<<< HEAD
-    bool IsVector = GeneratedValue->getType()->isVectorTy();
-    State.set(this, GeneratedValue, Part, !IsVector);
-#if SIFIVE_CUSTOMIZATION
-    assert((IsVector || getOpcode() == VPInstruction::ComputeReductionResult ||
-            getOpcode() == VPInstruction::CSAVLSel ||
-            getOpcode() == VPInstruction::ExitingCond ||
-            getOpcode() == VPInstruction::CSAAnyActive || State.VF.isScalar() ||
-            vputils::onlyFirstLaneUsed(this)) &&
-           "scalar value but not only first lane used");
-#else
-    assert((IsVector || getOpcode() == VPInstruction::ComputeReductionResult ||
-            State.VF.isScalar() || vputils::onlyFirstLaneUsed(this)) &&
-           "scalar value but not only first lane used");
-#endif // SIFIVE_CUSTOMIZATION
-=======
     Value *GeneratedValue = generatePerPart(State, Part);
     if (!hasResult())
       continue;
@@ -972,7 +939,6 @@ void VPInstruction::execute(VPTransformState &State) {
            "scalar value but not only first lane defined");
     State.set(this, GeneratedValue, Part,
               /*IsScalar*/ GeneratesPerFirstLaneOnly);
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
   }
 }
 
@@ -989,14 +955,10 @@ bool VPInstruction::onlyFirstLaneUsed(const VPValue *Op) const {
     // TODO: Cover additional opcodes.
     return vputils::onlyFirstLaneUsed(this);
   case VPInstruction::ActiveLaneMask:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  case VPInstruction::ExplicitVectorLength:
   case VPInstruction::ExplicitVectorLengthIVIncrement:
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case VPInstruction::ExplicitVectorLength:
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
   case VPInstruction::CalculateTripCountMinusVF:
   case VPInstruction::CanonicalIVIncrementForPart:
   case VPInstruction::BranchOnCount:
@@ -1060,11 +1022,7 @@ void VPInstruction::print(raw_ostream &O, const Twine &Indent,
   case VPInstruction::ComputeReductionResult:
     O << "compute-reduction-result";
     break;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  case VPInstruction::ExplicitVectorLength:
-    O << "EXPLICIT-VECTOR-LENGTH";
-    break;
   case VPInstruction::ExplicitVectorLengthIVIncrement:
     O << "EXPLICIT-VECTOR-LENGTH +";
     break;
@@ -1093,11 +1051,9 @@ void VPInstruction::print(raw_ostream &O, const Twine &Indent,
     O << "exiting-cond";
     break;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case VPInstruction::PtrAdd:
     O << "ptradd";
     break;
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
   default:
     O << Instruction::getOpcodeName(getOpcode());
   }
@@ -2114,8 +2070,17 @@ void VPReductionRecipe::execute(VPTransformState &State) {
   State.Builder.setFastMathFlags(RdxDesc.getFastMathFlags());
   for (unsigned Part = 0; Part < State.UF; ++Part) {
     Value *NewVecOp = State.get(getVecOp(), Part);
+#if SIFIVE_CUSTOMIZATION
+    Value *RVLPart =
+        State.RVL ? State.get(State.RVL, Part, /*NeedsScalar=*/true) : nullptr;
+    Value *NewCond = nullptr;
+    if (VPValue *Cond = getCondOp())
+      NewCond = State.get(Cond, Part, State.VF.isScalar());
+    if (NewCond && !RVLPart) {
+#else
     if (VPValue *Cond = getCondOp()) {
       Value *NewCond = State.get(Cond, Part, State.VF.isScalar());
+#endif // SIFIVE_CUSTOMIZATION
       VectorType *VecTy = dyn_cast<VectorType>(NewVecOp->getType());
       Type *ElementTy = VecTy ? VecTy->getElementType() : NewVecOp->getType();
       Value *Iden = RdxDesc.getRecurrenceIdentity(Kind, ElementTy,
@@ -2130,17 +2095,39 @@ void VPReductionRecipe::execute(VPTransformState &State) {
     Value *NewRed;
     Value *NextInChain;
     if (IsOrdered) {
+#if SIFIVE_CUSTOMIZATION
+      if (State.VF.isVector()) {
+        if (RVLPart)
+          NewRed = createOrderedReduction(State.Builder, RdxDesc, NewVecOp,
+                                          PrevInChain, RVLPart, NewCond);
+        else
+          NewRed = createOrderedReduction(State.Builder, RdxDesc, NewVecOp,
+                                          PrevInChain);
+      } else {
+#else
       if (State.VF.isVector())
         NewRed = createOrderedReduction(State.Builder, RdxDesc, NewVecOp,
                                         PrevInChain);
       else
+#endif // SIFIVE_CUSTOMIZATION
         NewRed = State.Builder.CreateBinOp(
             (Instruction::BinaryOps)RdxDesc.getOpcode(Kind), PrevInChain,
             NewVecOp);
+#if SIFIVE_CUSTOMIZATION
+      }
+#endif // SIFIVE_CUSTOMIZATION
       PrevInChain = NewRed;
     } else {
       PrevInChain = State.get(getChainOp(), Part, /*IsScalar*/ true);
+#if SIFIVE_CUSTOMIZATION
+      if (RVLPart)
+        NewRed = createTargetReduction(State.Builder, RdxDesc, NewVecOp,
+                                       RVLPart, nullptr, NewCond);
+      else
+        NewRed = createTargetReduction(State.Builder, RdxDesc, NewVecOp);
+#else
       NewRed = createTargetReduction(State.Builder, RdxDesc, NewVecOp);
+#endif // SIFIVE_CUSTOMIZATION
     }
     if (RecurrenceDescriptor::isMinMaxRecurrenceKind(Kind)) {
       NextInChain = createMinMaxOp(State.Builder, RdxDesc.getRecurrenceKind(),
@@ -2972,11 +2959,10 @@ void VPActiveLaneMaskPHIRecipe::print(raw_ostream &O, const Twine &Indent,
 }
 #endif
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
 void VPEVLBasedIVPHIRecipe::execute(VPTransformState &State) {
   BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
   assert(State.UF == 1 && "Expected unroll factor 1 for VP vectorization.");
+#if SIFIVE_CUSTOMIZATION
   // FIXME: Initial VL must be explicitly represented in VPlan, but as a
   // temporary solution emit initial computation of VL here
   Value *Start = nullptr;
@@ -2987,15 +2973,9 @@ void VPEVLBasedIVPHIRecipe::execute(VPTransformState &State) {
     Start = GetSetVL(State, State.get(&State.Plan->getVectorTripCount(), 0,
                                       /*IsScalar=*/true));
     State.set(State.Plan->getInitRVL(), Start, 0, /*IsScalar=*/true);
-  } else {
-    Start = State.get(getOperand(0), 0, /*NeedsScalar=*/true);
-  }
-=======
-void VPEVLBasedIVPHIRecipe::execute(VPTransformState &State) {
-  BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
-  assert(State.UF == 1 && "Expected unroll factor 1 for VP vectorization.");
+  } else
+#endif // SIFIVE_CUSTOMIZATION
   Value *Start = State.get(getOperand(0), VPIteration(0, 0));
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
   PHINode *EntryPart =
       State.Builder.CreatePHI(Start->getType(), 2, "evl.based.iv");
   EntryPart->addIncoming(Start, VectorPH);
@@ -3013,7 +2993,3 @@ void VPEVLBasedIVPHIRecipe::print(raw_ostream &O, const Twine &Indent,
   printOperands(O, SlotTracker);
 }
 #endif
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d

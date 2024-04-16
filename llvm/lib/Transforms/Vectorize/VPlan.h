@@ -200,7 +200,7 @@ public:
   /// runtime.
 #if SIFIVE_CUSTOMIZATION
   Value *getAsRuntimeExpr(IRBuilderBase &Builder, const ElementCount &VF,
-                          Value *RVL = nullptr) const;
+                          Value *EVL = nullptr) const;
 #else
   Value *getAsRuntimeExpr(IRBuilderBase &Builder, const ElementCount &VF) const;
 #endif // SIFIVE_CUSTOMIZATION
@@ -327,27 +327,16 @@ struct VPTransformState {
   ElementCount VF;
   unsigned UF;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  // Generate predicated vector intrinsics?
-  bool PreferPredicatedVectorOps;
-
   unsigned SEW = 0;
 
   unsigned LMULExp = 0;
 
-  /// If RVL is not nullptr, then RVL must be a valid value set during plan
-  /// creation, possibly a default value = whole vector register length. RVL is
-  /// created only if TTI prefers predicated vectorization, thus if RVL is
-  /// not nullptr it also implies preference for predicated vectorization.
-  VPValue *RVL = nullptr;
-
-  /// Some execute functions are done before RVL is computed. This value is used
-  /// as a placeholder in such functions and replaced with RVL at postprocess.
+  /// Some execute functions are done before EVL is computed. This value is used
+  /// as a placeholder in such functions and replaced with EVL at postprocess.
   /// TODO: Remove when not needed.
-  Value *RVLPlaceholder = nullptr;
+  Value *EVLPlaceholder = nullptr;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   /// If EVL (Explicit Vector Length) is not nullptr, then EVL must be a valid
   /// value set during plan transformation, possibly a default value = whole
   /// vector register length. EVL is created only if TTI prefers predicated
@@ -356,7 +345,6 @@ struct VPTransformState {
   /// TODO: this is a temporarily solution, the EVL must be explicitly used by
   /// the recipes and must be removed here.
   VPValue *EVL = nullptr;
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 
   /// Hold the indices to generate specific scalar instructions. Null indicates
   /// that all instances are to be generated, using either scalar or vector
@@ -441,8 +429,8 @@ struct VPTransformState {
       Scalars.resize(CacheIdx + 1);
 #if SIFIVE_CUSTOMIZATION
     // For now it's legal for Uncountable loop vectorization to  overwrite
-    // existing value of RVL
-    if (this->RVL != Def)
+    // existing value of EVL
+    if (this->EVL != Def)
 #endif // SIFIVE_CUSTOMIZATION
     assert(!Scalars[CacheIdx] && "should overwrite existing value");
     Scalars[CacheIdx] = V;
@@ -2918,7 +2906,7 @@ class VPWidenMemoryInstructionRecipe : public VPRecipeBase {
 public:
 #if SIFIVE_CUSTOMIZATION
   VPWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
-                                 bool Consecutive, bool Reverse,
+                                 bool Consecutive, bool Reverse, DebugLoc DL,
                                  const SCEV *StrideInBytes = nullptr,
                                  bool Speculative = false,
                                  bool IsMonotonic = false)
@@ -2928,13 +2916,8 @@ public:
         IsMonotonic(IsMonotonic) {
 #else
   VPWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
-<<<<<<< HEAD
-                                 bool Consecutive, bool Reverse)
-      : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr}),
-=======
                                  bool Consecutive, bool Reverse, DebugLoc DL)
       : VPRecipeBase(VPDef::VPWidenMemoryInstructionSC, {Addr}, DL),
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
         Ingredient(Load), Consecutive(Consecutive), Reverse(Reverse) {
 #endif // SIFIVE_CUSTOMIZATION
     assert((Consecutive || !Reverse) && "Reverse implies consecutive");
@@ -2947,7 +2930,7 @@ public:
 #if SIFIVE_CUSTOMIZATION
   VPWidenMemoryInstructionRecipe(StoreInst &Store, VPValue *Addr,
                                  VPValue *StoredValue, VPValue *Mask,
-                                 bool Consecutive, bool Reverse,
+                                 bool Consecutive, bool Reverse, DebugLoc DL,
                                  const SCEV *StrideInBytes = nullptr,
                                  bool Speculative = false,
                                  bool IsMonotonic = false)
@@ -3675,12 +3658,12 @@ class VPlan {
   VPValue *BackedgeTakenCount = nullptr;
 
 #if SIFIVE_CUSTOMIZATION
-  // RVL on the previous iteration. Represented as a PHI.
-  VPValue *PrevRVL = nullptr;
+  // EVL on the previous iteration. Represented as a PHI.
+  VPValue *PrevEVL = nullptr;
 
-  /// Represent initial RVL, i.e. RVL of the first vector iteration for the
+  /// Represent initial EVL, i.e. EVL of the first vector iteration for the
   /// predicated loop vectorizer.
-  VPValue *InitRVL = nullptr;
+  VPValue *InitEVL = nullptr;
 
   /// Represents constant all true mask.
   VPValue *AllTrueMask = nullptr;
@@ -3828,24 +3811,24 @@ public:
   bool isUncountable() const { return IsUncountable; }
 
   /// Generate vsetvli call.
-  Value *getSetVL(VPTransformState &State, Value *RVL);
+  Value *getSetVL(VPTransformState &State, Value *EVL);
 
-  /// Returns VPValue for PrevRVL.
-  VPValue *getPrevRVL() const { return PrevRVL; }
+  /// Returns VPValue for PrevEVL.
+  VPValue *getPrevEVL() const { return PrevEVL; }
 
-  /// Sets PrevRVL
-  void setPrevRVL(VPValue *RVL) {
-    assert(!PrevRVL && "PrevRVL can only be set once");
-    PrevRVL = RVL;
+  /// Sets PrevEVL
+  void setPrevEVL(VPValue *EVL) {
+    assert(!PrevEVL && "PrevEVL can only be set once");
+    PrevEVL = EVL;
   }
 
-  /// Returns VPValue for InitRVL
-  VPValue *getInitRVL() const { return InitRVL; }
+  /// Returns VPValue for InitEVL
+  VPValue *getInitEVL() const { return InitEVL; }
 
-  /// Creates InitRVL VPValue
-  void createInitRVL() {
-    if (!InitRVL)
-      InitRVL = new VPValue();
+  /// Creates InitEVL VPValue
+  void createInitEVL() {
+    if (!InitEVL)
+      InitEVL = new VPValue();
   }
 
   /// Gets or creates a constant all-true mask VPValue.

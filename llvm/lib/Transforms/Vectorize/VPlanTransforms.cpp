@@ -520,7 +520,6 @@ static void removeDeadRecipes(VPlan &Plan) {
   }
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 void VPlanTransforms::optimizeGEPs(VPlan &Plan) {
   ReversePostOrderTraversal<VPBlockDeepTraversalWrapper<VPBlockBase *>> RPOT(
@@ -612,13 +611,11 @@ void VPlanTransforms::simplifyMonotonics(VPlan &Plan) {
     }
 }
 #endif // SIFIVE_CUSTOMIZATION
-static VPValue *createScalarIVSteps(VPlan &Plan, const InductionDescriptor &ID,
-=======
+
 static VPValue *createScalarIVSteps(VPlan &Plan,
                                     InductionDescriptor::InductionKind Kind,
                                     Instruction::BinaryOps InductionOpcode,
                                     FPMathOperator *FPBinOp,
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
                                     ScalarEvolution &SE, Instruction *TruncI,
                                     VPValue *StartV, VPValue *Step,
                                     VPBasicBlock::iterator IP) {
@@ -1333,20 +1330,11 @@ static VPActiveLaneMaskPHIRecipe *addVPLaneMaskPhiAndUpdateExitBranch(
   return LaneMaskPhi;
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-/// Replaces (ICMP_ULE, WideCanonicalIV, backedge-taken-count) pattern using
-/// the given idiom \p Idiom.
-static void replaceHeaderPredicateWithIdiom(
-    VPlan &Plan, VPValue &Idiom,
-    function_ref<bool(VPUser &, unsigned)> Cond = {}) {
-=======
 /// Replaces (ICMP_ULE, WideCanonicalIV, backedge-taken-count) pattern using
 /// the given \p Idiom.
 static void
 replaceHeaderPredicateWith(VPlan &Plan, VPValue &Idiom,
                            function_ref<bool(VPUser &, unsigned)> Cond = {}) {
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
   auto *FoundWidenCanonicalIVUser =
       find_if(Plan.getCanonicalIV()->users(),
               [](VPUser *U) { return isa<VPWidenCanonicalIVRecipe>(U); });
@@ -1380,10 +1368,6 @@ replaceHeaderPredicateWith(VPlan &Plan, VPValue &Idiom,
   if (!WideCanonicalIV->getNumUsers())
     WideCanonicalIV->eraseFromParent();
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 
 void VPlanTransforms::addActiveLaneMask(
     VPlan &Plan, bool UseActiveLaneMaskForControlFlow,
@@ -1411,9 +1395,6 @@ void VPlanTransforms::addActiveLaneMask(
                               "active.lane.mask");
   }
 
-#if SIFIVE_CUSTOMIZATION
-  replaceHeaderPredicateWithIdiom(Plan, *LaneMask->getVPSingleValue());
-#else
   // Walk users of WideCanonicalIV and replace all compares of the form
   // (ICMP_ULE, WideCanonicalIV, backedge-taken-count) with an
   // active-lane-mask.
@@ -1474,8 +1455,6 @@ void VPlanTransforms::addExplicitVectorLength(VPlan &Plan) {
                                      OpVPEVL, CanonicalIVPHI->getScalarType());
     OpVPEVL->insertBefore(CanonicalIVIncrement);
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 #if SIFIVE_CUSTOMIZATION
@@ -1566,25 +1545,26 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
   // Create EVLIncrement recipe
   auto *CanonicalIVIncrement =
       cast<VPInstruction>(CanonicalIVPHI->getBackedgeValue());
-  auto *NextEVLIV = new VPInstruction(
-      VPInstruction::ExplicitVectorLengthIVIncrement, {EVLPhi, VPEVL},
-      {CanonicalIVIncrement->hasNoUnsignedWrap(),
-       CanonicalIVIncrement->hasNoSignedWrap()},
-      CanonicalIVIncrement->getDebugLoc(), "index.evl.next");
-=======
+  VPSingleDefRecipe *OpVPEVL = VPEVL;
+  if (unsigned IVSize = CanonicalIVPHI->getScalarType()->getScalarSizeInBits();
+      IVSize != 32) {
+    OpVPEVL = new VPScalarCastRecipe(IVSize < 32 ? Instruction::Trunc
+                                                 : Instruction::ZExt,
+                                     OpVPEVL, CanonicalIVPHI->getScalarType());
+    OpVPEVL->insertBefore(CanonicalIVIncrement);
+  }
   auto *NextEVLIV =
       new VPInstruction(Instruction::Add, {OpVPEVL, EVLPhi},
                         {CanonicalIVIncrement->hasNoUnsignedWrap(),
                          CanonicalIVIncrement->hasNoSignedWrap()},
                         CanonicalIVIncrement->getDebugLoc(), "index.evl.next");
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
   NextEVLIV->insertBefore(CanonicalIVIncrement);
   EVLPhi->addOperand(NextEVLIV);
 
-  // Replace all uses of VPCanonicalIVPHIRecipe by
-<<<<<<< HEAD
+  // Replace all uses of VPCanonicalIVPHIRecipe with
   // VPEVLBasedIVPHIRecipe
   CanonicalIVPHI->replaceAllUsesWith(EVLPhi);
+#if SIFIVE_CUSTOMIZATION
   CanonicalIVIncrement->replaceAllUsesWith(NextEVLIV);
   Plan.getVFxUF().replaceAllUsesWith(VPEVL);
   Plan.setUseVLAVectorizer(true);
@@ -1604,7 +1584,7 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
   while (!WorkList.empty()) {
     VPBasicBlock *VPBB = WorkList.front();
     WorkList.pop();
-    for (auto VPBB : VPBB->getSuccessors()) {
+    for (auto *VPBB : VPBB->getSuccessors()) {
       if (VisitedBlocks.count(VPBB))
         continue;
       VPBasicBlock *Entry = VPBB->getEntryBasicBlock();
@@ -1645,15 +1625,11 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
     }
     BlockLastRVL[VPBB] = LastRVL;
   }
-=======
-  // VPEVLBasedIVPHIRecipe except for the canonical IV increment.
-  CanonicalIVPHI->replaceAllUsesWith(EVLPhi);
+#endif // SIFIVE_CUSTOMIZATION
   CanonicalIVIncrement->setOperand(0, CanonicalIVPHI);
   // TODO: support unroll factor > 1.
   Plan.setUF(1);
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 void VPlanTransforms::dropPoisonGeneratingRecipes(
     VPlan &Plan, function_ref<bool(BasicBlock *)> BlockNeedsPredication) {

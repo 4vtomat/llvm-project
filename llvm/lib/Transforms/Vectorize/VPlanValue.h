@@ -392,13 +392,7 @@ public:
     // VPHeaderPHIRecipe need to be kept together.
     VPCanonicalIVPHISC,
     VPActiveLaneMaskPHISC,
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     VPEVLBasedIVPHISC,
-#endif // SIFIVE_CUSTOMIZATION
-=======
-    VPEVLBasedIVPHISC,
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
     VPFirstOrderRecurrencePHISC,
     VPWidenIntOrFpInductionSC,
     VPWidenPointerInductionSC,
