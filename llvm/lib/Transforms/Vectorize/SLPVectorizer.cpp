@@ -8684,7 +8684,6 @@ const BoUpSLP::TreeEntry *BoUpSLP::getOperandEntry(const TreeEntry *E,
   return It->get();
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool BoUpSLP::isRISCVStridedNode(const TreeEntry *E) const {
   return enabledRISCVExtensions(*F->getEntryBlock().getModule(), *TTI) &&
@@ -8695,7 +8694,7 @@ bool BoUpSLP::isRISCVStridedNode(const TreeEntry *E) const {
            isReverseOrder(E->ReorderIndices)));
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 TTI::CastContextHint BoUpSLP::getCastContextHint(const TreeEntry &TE) const {
   if (TE.State == TreeEntry::ScatterVectorize ||
       TE.State == TreeEntry::StridedVectorize)
@@ -8735,7 +8734,6 @@ static SmallVector<Type *> buildIntrinsicArgTypes(const CallInst *CI,
   }
   return ArgTys;
 }
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 
 InstructionCost
 BoUpSLP::getEntryCost(const TreeEntry *E, ArrayRef<Value *> VectorizedVals,
@@ -9635,10 +9633,6 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
 
   // Check if any of the gather node forms an insertelement buildvector
   // somewhere.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
   bool IsAllowedSingleBVNode =
       VectorizableTree.size() > 1 ||
       (VectorizableTree.size() == 1 && VectorizableTree.front()->getOpcode() &&
@@ -9646,7 +9640,6 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
        VectorizableTree.front()->getOpcode() != Instruction::GetElementPtr &&
        allSameBlock(VectorizableTree.front()->Scalars));
   if (any_of(VectorizableTree, [&](const std::unique_ptr<TreeEntry> &TE) {
-<<<<<<< HEAD
         return TE->State == TreeEntry::NeedToGather &&
                all_of(TE->Scalars, [&](Value *V) {
                  return isa<ExtractElementInst, UndefValue>(V) ||
@@ -9658,20 +9651,6 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
                });
       }))
     return false;
-#else
-  if (any_of(VectorizableTree, [](const std::unique_ptr<TreeEntry> &TE) {
-=======
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
-        return TE->State == TreeEntry::NeedToGather &&
-               all_of(TE->Scalars, [&](Value *V) {
-                 return isa<ExtractElementInst, UndefValue>(V) ||
-                        (IsAllowedSingleBVNode &&
-                         !V->hasNUsesOrMore(UsesLimit) &&
-                         any_of(V->users(), IsaPred<InsertElementInst>));
-               });
-      }))
-    return false;
-#endif // SIFIVE_CUSTOMIZATION
 
   assert(VectorizableTree.empty()
              ? ExternalUses.empty()
@@ -12821,7 +12800,6 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
       setInsertPointAfterBundle(E);
 
       Value *VecValue = vectorizeOperand(E, 0, PostponedPHIs);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       // Consecutive but reversed stores are just strided stores with the stride
       // -1.
@@ -12854,13 +12832,10 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
         return V;
       }
 #endif // SIFIVE_CUSTOMIZATION
-      VecValue = FinalShuffle(VecValue, E, VecTy, IsSigned);
-=======
       if (VecValue->getType() != VecTy)
         VecValue =
             Builder.CreateIntCast(VecValue, VecTy, GetOperandSignedness(0));
       VecValue = FinalShuffle(VecValue, E, VecTy);
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 
       Value *Ptr = SI->getPointerOperand();
       StoreInst *ST =
@@ -14426,13 +14401,7 @@ unsigned BoUpSLP::getVectorElementSize(Value *V) {
   // Traverse the expression tree in bottom-up order looking for loads. If we
   // encounter an instruction we don't yet handle, we give up.
   auto Width = 0u;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  Value *FirstNonBool = V->getType() == Builder.getInt1Ty() ? nullptr : V;
-#endif // SIFIVE_CUSTOMIZATION
-=======
   Value *FirstNonBool = nullptr;
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
   while (!Worklist.empty()) {
     auto [I, Parent, Level] = Worklist.pop_back_val();
 
@@ -14441,17 +14410,10 @@ unsigned BoUpSLP::getVectorElementSize(Value *V) {
     auto *Ty = I->getType();
     if (isa<VectorType>(Ty))
       continue;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    if (!FirstNonBool && Ty != Builder.getInt1Ty())
-      FirstNonBool = I;
-#endif // SIFIVE_CUSTOMIZATION
-=======
     if (Ty != Builder.getInt1Ty() && !FirstNonBool)
       FirstNonBool = I;
     if (Level > RecursionMaxDepth)
       continue;
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 
     // If the current instruction is a load, update MaxWidth to reflect the
     // width of the loaded value.
@@ -14464,26 +14426,11 @@ unsigned BoUpSLP::getVectorElementSize(Value *V) {
     // user or the use is a PHI node, we add it to the worklist.
     else if (isa<PHINode, CastInst, GetElementPtrInst, CmpInst, SelectInst,
                  BinaryOperator, UnaryOperator>(I)) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-      for (Use &U : I->operands()) {
-        if (auto *J = dyn_cast<Instruction>(U.get()))
-          if (Visited.insert(J).second &&
-              (isa<PHINode>(I) || J->getParent() == Parent)) {
-            Worklist.emplace_back(J, J->getParent());
-            continue;
-          }
-        if (!FirstNonBool && U.get()->getType() != Builder.getInt1Ty())
-          FirstNonBool = U.get();
-      }
-#else
       for (Use &U : I->operands())
         if (auto *J = dyn_cast<Instruction>(U.get()))
           if (Visited.insert(J).second &&
               (isa<PHINode>(I) || J->getParent() == Parent))
             Worklist.emplace_back(J, J->getParent());
-#endif // SIFIVE_CUSTOMIZATION
-=======
       for (Use &U : I->operands()) {
         if (auto *J = dyn_cast<Instruction>(U.get()))
           if (Visited.insert(J).second &&
@@ -14494,7 +14441,6 @@ unsigned BoUpSLP::getVectorElementSize(Value *V) {
         if (!FirstNonBool && U.get()->getType() != Builder.getInt1Ty())
           FirstNonBool = U.get();
       }
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
     } else {
       break;
     }
@@ -14504,18 +14450,8 @@ unsigned BoUpSLP::getVectorElementSize(Value *V) {
   // gave up for some reason, just return the width of V. Otherwise, return the
   // maximum width we found.
   if (!Width) {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     if (V->getType() == Builder.getInt1Ty() && FirstNonBool)
       V = FirstNonBool;
-#else
-    if (auto *CI = dyn_cast<CmpInst>(V))
-      V = CI->getOperand(0);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-    if (V->getType() == Builder.getInt1Ty() && FirstNonBool)
-      V = FirstNonBool;
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
     Width = DL->getTypeSizeInBits(V->getType());
   }
 
@@ -16471,21 +16407,10 @@ public:
       unsigned MaxElts =
           RegMaxNumber * llvm::bit_floor(MaxVecRegSize / EltSize);
 
-#if SIFIVE_CUSTOMIZATION
       unsigned ReduxWidth = std::min<unsigned>(
           llvm::bit_floor(NumReducedVals),
           std::clamp<unsigned>(MaxElts, RedValsMaxNumber,
                                RegMaxNumber * RedValsMaxNumber));
-#else
-      unsigned ReduxWidth = std::min<unsigned>(
-<<<<<<< HEAD
-          llvm::bit_floor(NumReducedVals), std::max(RedValsMaxNumber, MaxElts));
-#endif // SIFIVE_CUSTOMIZATION
-=======
-          llvm::bit_floor(NumReducedVals),
-          std::clamp<unsigned>(MaxElts, RedValsMaxNumber,
-                               RegMaxNumber * RedValsMaxNumber));
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
       unsigned Start = 0;
       unsigned Pos = Start;
       // Restarts vectorization attempt with lower vector factor.
