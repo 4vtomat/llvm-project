@@ -14426,11 +14426,6 @@ unsigned BoUpSLP::getVectorElementSize(Value *V) {
     // user or the use is a PHI node, we add it to the worklist.
     else if (isa<PHINode, CastInst, GetElementPtrInst, CmpInst, SelectInst,
                  BinaryOperator, UnaryOperator>(I)) {
-      for (Use &U : I->operands())
-        if (auto *J = dyn_cast<Instruction>(U.get()))
-          if (Visited.insert(J).second &&
-              (isa<PHINode>(I) || J->getParent() == Parent))
-            Worklist.emplace_back(J, J->getParent());
       for (Use &U : I->operands()) {
         if (auto *J = dyn_cast<Instruction>(U.get()))
           if (Visited.insert(J).second &&
