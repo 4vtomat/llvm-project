@@ -6081,15 +6081,15 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
 #ifdef SIFIVE_CUSTOMIZATION
   {
     llvm::APSInt Result;
-    if (SemaBuiltinConstantArg(TheCall, /* ArgNum = */ 2, Result))
+    if (BuiltinConstantArg(TheCall, /* ArgNum = */ 2, Result))
       return true;
     // 7 indicates no rounding mode (vxrm) change.
     if (Result.getSExtValue() == 7)
       return false;
-    return SemaBuiltinConstantArgRange(TheCall, 2, 0, 3);
+    return BuiltinConstantArgRange(TheCall, 2, 0, 3);
   }
 #else
-    return SemaBuiltinConstantArgRange(TheCall, 2, 0, 3);
+    return BuiltinConstantArgRange(TheCall, 2, 0, 3);
 #endif // SIFIVE_CUSTOMIZATION
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_tu:
   case RISCVVector::BI__builtin_rvv_vaaddu_vx_tu:
@@ -6130,15 +6130,15 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
 #ifdef SIFIVE_CUSTOMIZATION
   {
     llvm::APSInt Result;
-    if (SemaBuiltinConstantArg(TheCall, /* ArgNum = */ 3, Result))
+    if (BuiltinConstantArg(TheCall, /* ArgNum = */ 3, Result))
       return true;
     // 7 indicates no rounding mode (vxrm) change.
     if (Result.getSExtValue() == 7)
       return false;
-    return SemaBuiltinConstantArgRange(TheCall, 3, 0, 3);
+    return BuiltinConstantArgRange(TheCall, 3, 0, 3);
   }
 #else
-    return SemaBuiltinConstantArgRange(TheCall, 3, 0, 3);
+    return BuiltinConstantArgRange(TheCall, 3, 0, 3);
 #endif // SIFIVE_CUSTOMIZATION
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_tum:
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_tumu:
@@ -6197,12 +6197,12 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
 #ifdef SIFIVE_CUSTOMIZATION
   {
     llvm::APSInt Result;
-    if (SemaBuiltinConstantArg(TheCall, /* ArgNum = */ 4, Result))
+    if (BuiltinConstantArg(TheCall, /* ArgNum = */ 4, Result))
       return true;
     // 7 indicates no rounding mode (vxrm) change.
     if (Result.getSExtValue() == 7)
       return false;
-    return SemaBuiltinConstantArgRange(TheCall, 4, 0, 3);
+    return BuiltinConstantArgRange(TheCall, 4, 0, 3);
   }
 #else
     return SemaBuiltinConstantArgRange(TheCall, 4, 0, 3);
