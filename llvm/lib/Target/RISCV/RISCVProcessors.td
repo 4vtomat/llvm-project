@@ -800,7 +800,8 @@ def SIFIVE_P450 : RISCVProcessorModel<"sifive-p450", SiFiveP400Model,
                                        FeatureStdExtZbb,
                                        FeatureStdExtZbs,
                                        FeatureStdExtZfhmin,
-                                       FeatureFastUnalignedAccess],
+                                       FeatureUnalignedScalarMem,
+                                       FeatureUnalignedVectorMem],
                                       [TuneSiFiveP400]>;
 
 def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model,
@@ -836,7 +837,8 @@ def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model,
                                        FeatureStdExtZvkng,
                                        FeatureStdExtZvksc,
                                        FeatureStdExtZvksg,
-                                       FeatureFastUnalignedAccess],
+                                       FeatureUnalignedScalarMem,
+                                       FeatureUnalignedVectorMem],
                                       [TuneSiFiveP400, TuneDLen128b,
                                        TuneNoSinkSplatOperands]>;
 
@@ -885,7 +887,8 @@ def SIFIVE_P470S : RISCVProcessorModel<"sifive-p470s", SiFiveP400Model,
                                         FeatureStdExtZvkng,
                                         FeatureStdExtZvksc,
                                         FeatureStdExtZvksg,
-                                        FeatureFastUnalignedAccess],
+                                        FeatureUnalignedScalarMem,
+                                        FeatureUnalignedVectorMem],
                                        [TuneSiFiveP400, TuneDLen128b,
                                         TuneNoSinkSplatOperands]>;
 
@@ -927,7 +930,8 @@ def SIFIVE_P650 : RISCVProcessorModel<"sifive-p650", SiFiveP600Model,
                                        FeatureStdExtZbb,
                                        FeatureStdExtZbs,
                                        FeatureStdExtZfhmin,
-                                       FeatureFastUnalignedAccess],
+                                       FeatureUnalignedScalarMem,
+                                       FeatureUnalignedVectorMem],
                                       [TuneSiFiveP600]>;
 
 def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
@@ -963,7 +967,8 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
                                        FeatureStdExtZvkng,
                                        FeatureStdExtZvksc,
                                        FeatureStdExtZvksg,
-                                       FeatureFastUnalignedAccess],
+                                       FeatureUnalignedScalarMem,
+                                       FeatureUnalignedVectorMem],
                                       [TuneSiFiveP600, TuneDLen128b,
                                        TuneNoSinkSplatOperands]>;
 
@@ -1013,7 +1018,8 @@ def SIFIVE_P670S : RISCVProcessorModel<"sifive-p670s", SiFiveP600Model,
                                         FeatureStdExtZvkng,
                                         FeatureStdExtZvksc,
                                         FeatureStdExtZvksg,
-                                        FeatureFastUnalignedAccess],
+                                        FeatureUnalignedScalarMem,
+                                        FeatureUnalignedVectorMem],
                                        [TuneSiFiveP600, TuneDLen128b,
                                         TuneNoSinkSplatOperands]>;
 
@@ -1063,7 +1069,8 @@ def SIFIVE_P870S : RISCVProcessorModel<"sifive-p870s", SiFiveP800SModel,
                                         FeatureStdExtZvkng,
                                         FeatureStdExtZvksc,
                                         FeatureStdExtZvksg,
-                                        FeatureFastUnalignedAccess],
+                                        FeatureUnalignedScalarMem,
+                                        FeatureUnalignedVectorMem],
                                        [TuneSiFiveP800, TuneDLen128b,
                                         TuneNoSinkSplatOperands]>;
 #endif // SIFIVE_CUSTOMIZATION

@@ -402,7 +402,8 @@ bool RISCVTargetInfo::handleTargetFeatures(std::vector<std::string> &Features,
   if (ISAInfo->hasExtension("zfh") || ISAInfo->hasExtension("zhinx"))
     HasLegalHalfType = true;
 
-  FastUnalignedAccess = llvm::is_contained(Features, "+fast-unaligned-access");
+  FastUnalignedAccess = llvm::is_contained(Features, "+unaligned-scalar-mem") &&
+                        llvm::is_contained(Features, "+unaligned-vector-mem");
 #if SIFIVE_CUSTOMIZATION
   SlowVectorFP64 = llvm::is_contained(Features, "+slow-vector-fp64");
 #endif // SIFIVE_CUSTOMIZATION
