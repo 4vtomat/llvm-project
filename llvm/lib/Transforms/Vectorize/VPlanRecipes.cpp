@@ -782,8 +782,6 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
     // Reduce all of the unrolled parts into a single vector.
     Value *ReducedPartRdx = RdxParts[0];
     unsigned Op = RecurrenceDescriptor::getOpcode(RK);
-    if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK))
-      Op = Instruction::Or;
 
     if (PhiR->isOrdered()) {
       ReducedPartRdx = RdxParts[State.UF - 1];
@@ -796,26 +794,36 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
         if (Op != Instruction::ICmp && Op != Instruction::FCmp)
           ReducedPartRdx = Builder.CreateBinOp(
               (Instruction::BinaryOps)Op, RdxPart, ReducedPartRdx, "bin.rdx");
+        else if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK)) {
+          TrackingVH<Value> ReductionStartValue =
+              RdxDesc.getRecurrenceStartValue();
+          ReducedPartRdx = createAnyOfOp(Builder, ReductionStartValue, RK,
+                                         ReducedPartRdx, RdxPart);
 #if SIFIVE_CUSTOMIZATION
-        else if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
+        }  else if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK)) {
           ReducedPartRdx = createFindLastIVOp(Builder, ReducedPartRdx, RdxPart);
 #endif // SIFIVE_CUSTOMIZATION
-        else
+        } else
           ReducedPartRdx = createMinMaxOp(Builder, RK, ReducedPartRdx, RdxPart);
       }
     }
 
     // Create the reduction after the loop. Note that inloop reductions create
     // the target reduction in the loop using a Reduction recipe.
+    if (State.VF.isVector() && !PhiR->isInLoop()) {
 #if SIFIVE_CUSTOMIZATION
-    if (State.VF.isVector() && !PhiR->isInLoop() && State.Plan->useVLAVectorizer()) {
+      if (State.Plan->useVLAVectorizer()) {
         Value *InitEVL =
             State.get(State.Plan->getInitEVL(), 0, /*NeedsScalar=*/true);
         assert(InitEVL &&
-               "InitEVL must be initialized in emitIterationCountCheck when "
+               "InitRVL must be initialized in emitIterationCountCheck when "
                "using VP intrinsic to generate unordered reduction");
         ReducedPartRdx = createTargetReduction(Builder, RdxDesc, ReducedPartRdx,
                                                InitEVL, OrigPhi);
+      } else {
+        ReducedPartRdx =
+            createTargetReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
+      }
       // Adjust the final scalar result after the loop if the target prefers
       // that.
       // FIXME: Handle situation that the start value and identity are equal.
@@ -829,19 +837,10 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
         ReducedPartRdx = Builder.CreateBinOp((Instruction::BinaryOps)Op, StartV,
                                              ReducedPartRdx);
       }
-      // If the reduction can be performed in a smaller type, we need to extend
-      // the reduction to the wider type before we branch to the original loop.
-      if (PhiTy != RdxDesc.getRecurrenceType())
-        ReducedPartRdx = RdxDesc.isSigned()
-                             ? Builder.CreateSExt(ReducedPartRdx, PhiTy)
-                             : Builder.CreateZExt(ReducedPartRdx, PhiTy);
-    } else
-#endif // SIFIVE_CUSTOMIZATION
-    if ((State.VF.isVector() ||
-         RecurrenceDescriptor::isAnyOfRecurrenceKind(RK)) &&
-        !PhiR->isInLoop()) {
+#else
       ReducedPartRdx =
           createTargetReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
+#endif // SIFIVE_CUSTOMIZATION
       // If the reduction can be performed in a smaller type, we need to extend
       // the reduction to the wider type before we branch to the original loop.
       if (PhiTy != RdxDesc.getRecurrenceType())
