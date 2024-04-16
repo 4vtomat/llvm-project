@@ -56,21 +56,6 @@ def FeatureStdExtSswg
                        "slwid CSR, which sets the WID used for modes lower than "
                        "[H]S-mode.)", []>;
 
-def FeatureVendorXSiFivecflushdlone
-    : SubtargetFeature<"xsifivecflushdlone", "HasVendorXSiFivecflushdlone", "true",
-                       "'XSiFivecflushdlone' (Cache Flush/Power Down Instructions)", []>;
-def HasVendorXSiFivecflushdlone :
-    Predicate<"Subtarget->hasVendorXSiFivecflushdlone()">,
-    AssemblerPredicate<(all_of FeatureVendorXSiFivecflushdlone),
-                       "'XSiFivecflushdlone' (Cache Flush/Power Down Instructions)">;
-
-def FeatureVendorXSiFivecdiscarddlone
-    : SubtargetFeature<"xsifivecdiscarddlone", "HasVendorXSiFivecdiscarddlone", "true",
-                       "'XSiFivecdiscarddlone' (Cache Flush/Power Down Instructions)", []>;
-def HasVendorXSiFivecdiscarddlone :
-    Predicate<"Subtarget->hasVendorXSiFivecdiscarddlone()">,
-    AssemblerPredicate<(all_of FeatureVendorXSiFivecdiscarddlone),
-                       "'XSiFivecdiscarddlone' (Cache Flush/Power Down Instructions)">;
 def FeatureVendorXSfpgflushdlone :
   SubtargetFeature<"xsfpgflushdlone", "HasVendorXSfpgflushdlone", "true",
                    "'XSfpgflushdlone' (Cache Flush/Power Down Instructions)", []>;

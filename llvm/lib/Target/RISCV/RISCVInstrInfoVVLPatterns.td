@@ -2672,11 +2672,10 @@ defm : VPatFPMulAccVL_VV_VF_RM<riscv_vfnmsub_vl_oneuse, "PseudoVFNMSAC">;
 
 #ifdef SIFIVE_CUSTOMIZATION
 foreach vti = AllFloatVectors in {
-  defvar suffix = vti.LMul.MX;
   def : Pat<(vti.Vector (riscv_vfnmsac_vl vti.RegClass:$rd, vti.RegClass:$rs1,
                                           vti.RegClass:$rs2, (vti.Mask V0),
                                           VLOpFrag)),
-            (!cast<Instruction>("PseudoVFNMSAC_VV_"# suffix #"_MASK")
+            (!cast<Instruction>("PseudoVFNMSAC_VV_"# vti.LMul.MX # "_E" # vti.SEW #"_MASK")
                  vti.RegClass:$rd, vti.RegClass:$rs1, vti.RegClass:$rs2,
                  (vti.Mask V0),
                  // Value to indicate no rounding mode change in
@@ -2731,14 +2730,14 @@ foreach vti = AllFloatVectors in {
     // 13.9. Vector Floating-Point Reciprocal Square-Root Estimate Instruction
     def : Pat<(riscv_vfrsqrt7_vl (vti.Vector vti.RegClass:$rs2),
                                 (vti.Mask true_mask), VLOpFrag),
-              (!cast<Instruction>("PseudoVFRSQRT7_V_"# vti.LMul.MX)
+              (!cast<Instruction>("PseudoVFRSQRT7_V_"# vti.LMul.MX # "_E" # vti.SEW)
                   (vti.Vector (IMPLICIT_DEF)),
                   vti.RegClass:$rs2, GPR:$vl, vti.Log2SEW,
                   TA_MA)>;
     // 13.10. Vector Floating-Point Reciprocal Estimate Instruction
     def : Pat<(riscv_vfrec7_vl (vti.Vector vti.RegClass:$rs2),
                               (vti.Mask true_mask), VLOpFrag),
-              (!cast<Instruction>("PseudoVFREC7_V_"# vti.LMul.MX)
+              (!cast<Instruction>("PseudoVFREC7_V_"# vti.LMul.MX # "_E" # vti.SEW)
                   (vti.Vector (IMPLICIT_DEF)),
                   vti.RegClass:$rs2,
                   // Value to indicate no rounding mode change in

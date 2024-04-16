@@ -108,8 +108,8 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xcvmac", {1, 0}},
     {"xcvmem", {1, 0}},
     {"xcvsimd", {1, 0}},
-    {"xsfpgflushdlone", {0, 1}}, // SIFIVE
     {"xsfcease", {1, 0}},
+    {"xsfpgflushdlone", {0, 1}}, // SIFIVE
     {"xsfvcp", {1, 0}},
     {"xsfvfexpa", {0, 1}}, // SIFIVE
     {"xsfvfhbfmin", {0, 1}}, // SIFIVE
@@ -213,25 +213,19 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
 
     // vector crypto
     {"zvkb", {1, 0}},
-    {"zvkb", {0, 1}}, // SIFIVE
     {"zvkg", {1, 0}},
-    {"zvkg", {0, 1}}, // SIFIVE
     {"zvkn", {1, 0}},
     {"zvknc", {1, 0}},
     {"zvkned", {1, 0}},
     {"zvkng", {1, 0}},
     {"zvknha", {1, 0}},
-    {"zvknha", {0, 1}}, // SIFIVE
     {"zvknhb", {1, 0}},
-    {"zvknhb", {0, 1}}, // SIFIVE
     {"zvkns", {0, 1}}, // SIFIVE
     {"zvks", {1, 0}},
     {"zvksc", {1, 0}},
     {"zvksed", {1, 0}},
-    {"zvksed", {0, 1}}, // SIFIVE
     {"zvksg", {1, 0}},
     {"zvksh", {1, 0}},
-    {"zvksh", {0, 1}}, // SIFIVE
     {"zvkt", {1, 0}},
 
     {"zvl1024b", {1, 0}},
