@@ -69,11 +69,7 @@ static Value *widenSelectInstruction(VPTransformState &State,
 static Value *createVectorPopcount(IRBuilderBase &Builder, Value *V,
                                    Value *EVL) {
   ElementCount EC = cast<VectorType>(V->getType())->getElementCount();
-<<<<<<< HEAD
-  Value *Operands[] = {Builder.getTrueVector(EC), V, EVL};
-=======
-  Value *Operands[] = {V, Builder.getTrueVector(EC), RVL};
->>>>>>> origin/sifive-dev
+  Value *Operands[] = {V, Builder.getTrueVector(EC), EVL};
 
   return Builder.CreateIntrinsic(Intrinsic::experimental_vp_popcount,
                                  {V->getType()}, Operands);

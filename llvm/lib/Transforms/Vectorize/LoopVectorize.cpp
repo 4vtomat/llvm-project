@@ -10700,11 +10700,7 @@ VPWidenRecipe *VPRecipeBuilder::tryToWiden(Instruction *I,
       if (Mask) {
 #endif // SIFIVE_CUSTOMIZATION
       VPValue *One =
-<<<<<<< HEAD
           Plan.getOrAddLiveIn(ConstantInt::get(I->getType(), 1u, false));
-=======
-          Plan.getVPValueOrAddLiveIn(ConstantInt::get(I->getType(), 1u, false));
->>>>>>> origin/sifive-dev
       auto *SafeRHS =
          new VPInstruction(Instruction::Select, {Mask, Ops[1], One},
                            I->getDebugLoc());
@@ -11200,11 +11196,7 @@ static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
 #else
 static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
                                 VPRecipeBuilder &Builder, VPlan &Plan) {
-<<<<<<< HEAD
 #endif
-=======
-#endif // SIFIVE_CUSTOMIZATION
->>>>>>> origin/sifive-dev
   BasicBlock *ExitBB = OrigLoop->getUniqueExitBlock();
   BasicBlock *ExitingBB = OrigLoop->getExitingBlock();
   // Only handle single-exit loops with unique exit blocks for now.
@@ -11421,33 +11413,20 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
           Legal->isInvariantAddressOfReduction(SI->getPointerOperand()))
         continue;
 
-<<<<<<< HEAD
       VPRecipeBase *Recipe = RecipeBuilder.tryToCreateWidenRecipe(
           Instr, Operands, Range, VPBB);
-=======
-      VPRecipeBase *Recipe =
-          RecipeBuilder.tryToCreateWidenRecipe(Instr, Operands, Range, VPBB);
->>>>>>> origin/sifive-dev
 #if SIFIVE_CUSTOMIZATION
       if (!Recipe) {
         // Skip branches that are not vectorized. These are exiting branches
         // with scalar conditions.
         if (isa<BranchInst>(Instr))
           continue;
-<<<<<<< HEAD
         else
           Recipe = RecipeBuilder.handleReplication(Instr, Range);
       }
 #else
       if (!Recipe)
         Recipe = RecipeBuilder.handleReplication(Instr, Range, *Plan);
-=======
-        Recipe = RecipeBuilder.handleReplication(Instr, Range);
-      }
-#else
-      if (!Recipe)
-        Recipe = RecipeBuilder.handleReplication(Instr, Range);
->>>>>>> origin/sifive-dev
 #endif // SIFIVE_CUSTOMIZATION
 
       RecipeBuilder.setRecipe(Instr, Recipe);

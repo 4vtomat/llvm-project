@@ -88,17 +88,10 @@ static void moveStepComputationsToIVUpdate(VPTransformState *State,
 
   auto MatchEVLPlaceholder = [&State](Instruction *I) -> Value * {
     Value *V;
-<<<<<<< HEAD
-    if (PatternMatch::match(I, llvm::PatternMatch::m_SExt(m_Value(V))) ||
-        PatternMatch::match(I, llvm::PatternMatch::m_ZExt(m_Value(V))) ||
-        PatternMatch::match(I, llvm::PatternMatch::m_Trunc(m_Value(V))) ||
-        PatternMatch::match(I, llvm::PatternMatch::m_UIToFP(m_Value(V))))
-=======
     if (PatternMatch::match(I, PatternMatch::m_SExt(m_Value(V))) ||
         PatternMatch::match(I, PatternMatch::m_ZExt(m_Value(V))) ||
         PatternMatch::match(I, PatternMatch::m_Trunc(m_Value(V))) ||
         PatternMatch::match(I, PatternMatch::m_UIToFP(m_Value(V))))
->>>>>>> origin/sifive-dev
       return V;
     return I == State->EVLPlaceholder ? I : nullptr;
   };
