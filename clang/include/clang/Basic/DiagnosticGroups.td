@@ -878,12 +878,20 @@ def ZeroLengthArray : DiagGroup<"zero-length-array">;
 def GNUZeroLineDirective : DiagGroup<"gnu-zero-line-directive">;
 def GNUZeroVariadicMacroArguments : DiagGroup<"gnu-zero-variadic-macro-arguments">;
 def MisleadingIndentation : DiagGroup<"misleading-indentation">;
+<<<<<<< HEAD
+=======
+def PtrAuthNullPointers : DiagGroup<"ptrauth-null-pointers">;
+
+>>>>>>> origin/sifive-dev
 #ifdef SIFIVE_CUSTOMIZATION
 def MultilibFallback : DiagGroup<"multilib-fallback">;
 def RISCVVectorPragma : DiagGroup<"riscv-vector-pragma">;
 def RISCVImplicitExtensionVersion : DiagGroup<"riscv-implicit-extension-version">;
 #endif // SIFIVE_CUSTOMIZATION
+<<<<<<< HEAD
 def PtrAuthNullPointers : DiagGroup<"ptrauth-null-pointers">;
+=======
+>>>>>>> origin/sifive-dev
 
 // This covers both the deprecated case (in C++98)
 // and the extension case (in C++11 onwards).

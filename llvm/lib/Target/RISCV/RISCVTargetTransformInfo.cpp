@@ -1116,7 +1116,7 @@ InstructionCost RISCVTTIImpl::getInterleavedMemoryOpCost(
     Align Alignment, unsigned AddressSpace, TTI::TargetCostKind CostKind,
     bool UseMaskForCond, bool UseMaskForGaps) {
 #if SIFIVE_CUSTOMIZATION
-  if (isa<ScalableVectorType>(VecTy) &&
+  if (isa<ScalableVectorType>(VecTy) && !UseMaskForGaps &&
       Factor <= TLI->getMaxSupportedInterleaveFactor()) {
     // Only supported deinterleave2/interleave2 for scalable vectors in upstream
     // vectorizer.
@@ -2886,6 +2886,7 @@ bool RISCVTTIImpl::isLegalMaskedCompressStore(Type *DataTy, Align Alignment) {
     return false;
   return true;
 }
+<<<<<<< HEAD
 
 bool RISCVTTIImpl::areInlineCompatible(const Function *Caller,
                                        const Function *Callee) const {
@@ -2900,3 +2901,5 @@ bool RISCVTTIImpl::areInlineCompatible(const Function *Caller,
   // target-features.
   return (CallerBits & CalleeBits) == CalleeBits;
 }
+=======
+>>>>>>> origin/sifive-dev

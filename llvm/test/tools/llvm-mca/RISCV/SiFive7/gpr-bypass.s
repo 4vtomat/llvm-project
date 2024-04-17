@@ -226,8 +226,11 @@ jr a0
 
 # CHECK:      Resource pressure per iteration:
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/sifive-dev
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
-# CHECK-NEXT:  -      -     7.00   36.00  48.00   -      -      -      -
+# CHECK-NEXT:  -      -     7.00   34.00  50.00   -      -      -      -
 
 # CHECK:      Resource pressure by instruction:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
@@ -291,9 +294,9 @@ jr a0
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     sext.h	a0, a0
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     zext.h	a0, a0
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     min	a0, a0, a0
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     minu	a0, a0, a0
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     minu	a0, a0, a0
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     max	a0, a0, a0
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     maxu	a0, a0, a0
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     maxu	a0, a0, a0
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     rol	a0, a0, a0
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     ror	a0, a0, a0
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     rori	a0, a0, 1
@@ -322,6 +325,7 @@ jr a0
 # CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lwu	a0, 0(a0)
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     addw	a0, a0, a0
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     jr	a0
+<<<<<<< HEAD
 =======
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]
 # CHECK-NEXT:  -      -     37.00  54.00   -      -      -      -
@@ -420,6 +424,8 @@ jr a0
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -     addw	a0, a0, a0
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -     jr	a0
 >>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
+=======
+>>>>>>> origin/sifive-dev
 
 # CHECK:      Timeline view:
 # CHECK-NEXT:                     0123456789          0123456789          0123456789          0123456789          0123456789

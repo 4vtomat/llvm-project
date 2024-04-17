@@ -2179,7 +2179,6 @@ define i64 @SingleBlock4(ptr %start) {
 ; DEFAULT-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
 ; DEFAULT-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP3]] to i64
 ; DEFAULT-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP4]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
-; DEFAULT-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i8, ptr [[NEXT_GEP]], i64 1
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = icmp sge i32 [[TMP7]], 0
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[EVL_BASED_IV]], [[TMP5]]
@@ -2221,7 +2220,6 @@ define i64 @SingleBlock4(ptr %start) {
 ; ON-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
 ; ON-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP3]] to i64
 ; ON-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP4]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
-; ON-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i8, ptr [[NEXT_GEP]], i64 1
 ; ON-NEXT:    [[TMP7:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; ON-NEXT:    [[TMP8:%.*]] = icmp sge i32 [[TMP7]], 0
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[EVL_BASED_IV]], [[TMP5]]
@@ -2295,7 +2293,6 @@ define i64 @SingleBlock4(ptr %start) {
 ; stress-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
 ; stress-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP3]] to i64
 ; stress-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP4]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
-; stress-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i8, ptr [[NEXT_GEP]], i64 1
 ; stress-NEXT:    [[TMP7:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; stress-NEXT:    [[TMP8:%.*]] = icmp sge i32 [[TMP7]], 0
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[EVL_BASED_IV]], [[TMP5]]
@@ -2353,7 +2350,6 @@ define i64 @SingleBlock4(ptr %start) {
 ; IF0-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
 ; IF0-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP3]] to i64
 ; IF0-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP4]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
-; IF0-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i8, ptr [[NEXT_GEP]], i64 1
 ; IF0-NEXT:    [[TMP7:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF0-NEXT:    [[TMP8:%.*]] = icmp sge i32 [[TMP7]], 0
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[EVL_BASED_IV]], [[TMP5]]
@@ -2395,7 +2391,6 @@ define i64 @SingleBlock4(ptr %start) {
 ; IF1-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
 ; IF1-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP3]] to i64
 ; IF1-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP4]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
-; IF1-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i8, ptr [[NEXT_GEP]], i64 1
 ; IF1-NEXT:    [[TMP7:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF1-NEXT:    [[TMP8:%.*]] = icmp sge i32 [[TMP7]], 0
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[EVL_BASED_IV]], [[TMP5]]
@@ -2437,7 +2432,6 @@ define i64 @SingleBlock4(ptr %start) {
 ; IF2-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 32 x i8>, i32 } [[VP_OP_LOAD_FF]], 0
 ; IF2-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP3]] to i64
 ; IF2-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 32 x i1> @llvm.vp.icmp.nxv32i8(<vscale x 32 x i8> [[TMP4]], <vscale x 32 x i8> zeroinitializer, metadata !"eq", <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
-; IF2-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i8, ptr [[NEXT_GEP]], i64 1
 ; IF2-NEXT:    [[TMP7:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF2-NEXT:    [[TMP8:%.*]] = icmp sge i32 [[TMP7]], 0
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[EVL_BASED_IV]], [[TMP5]]

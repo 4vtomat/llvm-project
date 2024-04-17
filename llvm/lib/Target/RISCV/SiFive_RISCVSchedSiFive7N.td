@@ -8,7 +8,8 @@
 //
 //===----------------------------------------------------------------------===//
 
-multiclass SiFive7NSchedResources<int VLEN, bit ExtraVALU = false> {
+multiclass SiFive7NSchedResources<int VLEN, bit ExtraVALU = false,
+                                  bit HasSlowFP64 = false> {
   let BufferSize = 0 in
   defm SiFive7N : BulletProcResources<ExtraVALU>;
   def SiFive7NPipeAB : ProcResGroup<[
@@ -43,7 +44,7 @@ multiclass SiFive7NSchedResources<int VLEN, bit ExtraVALU = false> {
       : BulletWriteResBase<VLEN, SiFive7NPipeA, SiFive7NPipeB, SiFive7NPipeAB,
                            SiFive7NMem, SiFive7NIDiv, SiFive7NFDiv, SiFive7NVA1,
                            SiFive7NVA1OrVA2, SiFive7NVL, SiFive7NVS,
-                           SiFive7NVCQ>;
+                           SiFive7NVCQ, HasSlowFP64>;
 
   // Half precision.
   let Latency = 4 in {
@@ -162,7 +163,8 @@ multiclass SiFive7NSchedResources<int VLEN, bit ExtraVALU = false> {
 }
 
 // SiFive7N machine model for scheduling and other instruction cost heuristics.
-class SiFive7NSchedMachineModel<int vlen, bit extraVALU = false> : SchedMachineModel {
+class SiFive7NSchedMachineModel<int vlen, bit extraVALU = false,
+                                bit hasSlowFP64 = false> : SchedMachineModel {
   let MicroOpBufferSize = 0; // Explicitly set to zero since SiFive7N is in-order.
   let IssueWidth = 2;        // 2 micro-ops are dispatched per cycle.
   let LoadLatency = 3;
@@ -177,14 +179,16 @@ class SiFive7NSchedMachineModel<int vlen, bit extraVALU = false> : SchedMachineM
                              HasVendorXSfvfhbfmin]; // SIFIVE
   int VLEN = vlen;
   bit ExtraVALU = extraVALU;
+  bit HasSlowFP64 = hasSlowFP64;
 }
 
 def SiFive7NVLEN128Model : SiFive7NSchedMachineModel<128>;
 def SiFive7NVLEN256Model : SiFive7NSchedMachineModel<256>;
 def SiFive7NVLEN512Model : SiFive7NSchedMachineModel<512>;
-def SiFive7SVLEN1024Model : SiFive7NSchedMachineModel<1024>;
-def SiFive7SVLEN1024DualVALUModel
-    : SiFive7NSchedMachineModel<1024, true>;
+def SiFive7SVLEN1024DualVALUSlowFP64Model
+    : SiFive7NSchedMachineModel<1024, extraVALU = true, hasSlowFP64 = true>;
+def SiFive7SVLEN1024DualVALUFastFP64Model
+    : SiFive7NSchedMachineModel<1024, extraVALU = true, hasSlowFP64 = false>;
 // Some processors do not have vector but reuse the scheduler model that has vector.
 // Create an alias that does not have VLEN in the name.
 defvar SiFive7NModel = SiFive7NVLEN512Model;
@@ -193,10 +197,11 @@ foreach model = [
   SiFive7NVLEN128Model,
   SiFive7NVLEN256Model,
   SiFive7NVLEN512Model,
-  SiFive7SVLEN1024Model,
-  SiFive7SVLEN1024DualVALUModel,
+  SiFive7SVLEN1024DualVALUSlowFP64Model,
+  SiFive7SVLEN1024DualVALUFastFP64Model,
 ] in {
-  defvar name = "VLEN" # model.VLEN # !if(model.ExtraVALU, "DualVALU","");
+  defvar name = "VLEN" #model.VLEN # !if(model.ExtraVALU, "DualVALU","") #
+                !if(model.HasSlowFP64, "SlowFP64", "FastFP64");
   let SchedModel = model in
-  defm name : SiFive7NSchedResources<model.VLEN, model.ExtraVALU>;
+  defm name : SiFive7NSchedResources<model.VLEN, model.ExtraVALU, model.HasSlowFP64>;
 }

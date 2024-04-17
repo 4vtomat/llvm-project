@@ -96,6 +96,9 @@ define dso_local double @fld_fsd_global(double %a, double %b) nounwind {
 ; RV32IZFINXZDINX-NEXT:    fadd.d a0, a0, a2
 ; RV32IZFINXZDINX-NEXT:    lui a2, %hi(G)
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+>>>>>>> origin/sifive-dev
 ; RV32IZFINXZDINX-NEXT:    addi a2, a2, %lo(G)
 ; RV32IZFINXZDINX-NEXT:    lw a4, 0(a2)
 ; RV32IZFINXZDINX-NEXT:    lw a5, 4(a2)
@@ -105,6 +108,7 @@ define dso_local double @fld_fsd_global(double %a, double %b) nounwind {
 ; RV32IZFINXZDINX-NEXT:    lw a5, 76(a2)
 ; RV32IZFINXZDINX-NEXT:    sw a0, 72(a2)
 ; RV32IZFINXZDINX-NEXT:    sw a1, 76(a2)
+<<<<<<< HEAD
 ; RV32IZFINXZDINX-NEXT:    sw a0, 8(sp)
 ; RV32IZFINXZDINX-NEXT:    sw a1, 12(sp)
 ; RV32IZFINXZDINX-NEXT:    lw a0, 8(sp)
@@ -121,6 +125,8 @@ define dso_local double @fld_fsd_global(double %a, double %b) nounwind {
 ; RV32IZFINXZDINX-NEXT:    sw a0, 72(a3)
 ; RV32IZFINXZDINX-NEXT:    sw a1, 76(a3)
 >>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
+=======
+>>>>>>> origin/sifive-dev
 ; RV32IZFINXZDINX-NEXT:    ret
 ;
 ; RV64IZFINXZDINX-LABEL: fld_fsd_global:

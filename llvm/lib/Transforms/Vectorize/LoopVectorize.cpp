@@ -3624,13 +3624,31 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
   // Update dominator for Bypass & LoopExit (if needed).
   DT->changeImmediateDominator(Bypass, TCCheckBlock);
 #if SIFIVE_CUSTOMIZATION
-  if (!isRevectorizeWithoutStrideChecks(*OrigLoop))
-#endif // SIFIVE_CUSTOMIZATION
+  if (!Cost->requiresScalarEpilogue(VF.isVector())) {
+    // If there is an epilogue which must run, there's no edge from the
+    // middle block to exit blocks  and thus no need to update the immediate
+    // dominator of the exit blocks.
+    // Update the immediate dominator of exit block to preheader block when
+    // revectorizing the loop without requiring an epilogue. However, during
+    // the first vectorization, the level of the exit block's immediate
+    // dominator may be less than that of preheader block. Therefore, the
+    // common nearest dominator for exit block and preheader block is used as
+    // the final immediate dominator of exit block.
+    // TODO: The clear approach would be to update the immediate dominator based
+    // on whether the epilogue was required by the first vectorization.
+    BasicBlock *NewIDom =
+        isRevectorizeWithoutStrideChecks(*OrigLoop)
+            ? DT->findNearestCommonDominator(LoopExitBlock, TCCheckBlock)
+            : TCCheckBlock;
+    DT->changeImmediateDominator(LoopExitBlock, NewIDom);
+  }
+#else
   if (!Cost->requiresScalarEpilogue(VF.isVector()))
     // If there is an epilogue which must run, there's no edge from the
     // middle block to exit blocks  and thus no need to update the immediate
     // dominator of the exit blocks.
     DT->changeImmediateDominator(LoopExitBlock, TCCheckBlock);
+#endif // SIFIVE_CUSTOMIZATION
 
   BranchInst &BI =
       *BranchInst::Create(Bypass, LoopVectorPreHeader, CheckMinIters);
@@ -3746,8 +3764,22 @@ void InnerLoopVectorizer::createVectorLoopSkeleton(StringRef Prefix) {
   ReplaceInstWithInst(LoopMiddleBlock->getTerminator(), BrInst);
 
 #if SIFIVE_CUSTOMIZATION
-  if (isRevectorizeWithoutStrideChecks(*OrigLoop))
+  if (isRevectorizeWithoutStrideChecks(*OrigLoop)) {
+    if (!Cost->requiresScalarEpilogue(VF.isVector())) {
+      // Update the immediate dominator of exit block to preheader block when
+      // revectorizing the loop without requiring an epilogue. However, during
+      // the first vectorization, the level of the exit block's immediate
+      // dominator may be less than that of preheader block. Therefore, the
+      // common nearest dominator for exit block and preheader block is used as
+      // the final immediate dominator of exit block.
+      // TODO: The clear approach would be to update the immediate dominator
+      // based on whether the epilogue was required by the first vectorization.
+      BasicBlock *NewIDom =
+          DT->findNearestCommonDominator(LoopExitBlock, LoopVectorPreHeader);
+      DT->changeImmediateDominator(LoopExitBlock, NewIDom);
+    }
     return;
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   // Update dominator for loop exit. During skeleton creation, only the vector
@@ -10167,7 +10199,17 @@ VPRecipeBuilder::mapToVPValues(User::op_range Operands) {
   std::function<VPValue *(Value *)> Fn = [this](Value *Op) {
     if (auto *I = dyn_cast<Instruction>(Op)) {
       if (auto *R = Ingredient2Recipe.lookup(I))
+#if SIFIVE_CUSTOMIZATION
+      {
+        if (auto *VPSL = dyn_cast<VPWidenMemoryInstructionRecipe>(R)) {
+          if (VPSL->isSpeculative())
+            return VPSL->getVPValue(0);
+        }
         return R->getVPSingleValue();
+      }
+#else
+        return R->getVPSingleValue();
+#endif // SIFIVE_CUSTOMIZATION
     }
     return Plan.getOrAddLiveIn(Op);
   };
@@ -10658,7 +10700,11 @@ VPWidenRecipe *VPRecipeBuilder::tryToWiden(Instruction *I,
       if (Mask) {
 #endif // SIFIVE_CUSTOMIZATION
       VPValue *One =
+<<<<<<< HEAD
           Plan.getOrAddLiveIn(ConstantInt::get(I->getType(), 1u, false));
+=======
+          Plan.getVPValueOrAddLiveIn(ConstantInt::get(I->getType(), 1u, false));
+>>>>>>> origin/sifive-dev
       auto *SafeRHS =
          new VPInstruction(Instruction::Select, {Mask, Ops[1], One},
                            I->getDebugLoc());
@@ -11154,7 +11200,11 @@ static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
 #else
 static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
                                 VPRecipeBuilder &Builder, VPlan &Plan) {
+<<<<<<< HEAD
 #endif
+=======
+#endif // SIFIVE_CUSTOMIZATION
+>>>>>>> origin/sifive-dev
   BasicBlock *ExitBB = OrigLoop->getUniqueExitBlock();
   BasicBlock *ExitingBB = OrigLoop->getExitingBlock();
   // Only handle single-exit loops with unique exit blocks for now.
@@ -11371,20 +11421,33 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
           Legal->isInvariantAddressOfReduction(SI->getPointerOperand()))
         continue;
 
+<<<<<<< HEAD
       VPRecipeBase *Recipe = RecipeBuilder.tryToCreateWidenRecipe(
           Instr, Operands, Range, VPBB);
+=======
+      VPRecipeBase *Recipe =
+          RecipeBuilder.tryToCreateWidenRecipe(Instr, Operands, Range, VPBB);
+>>>>>>> origin/sifive-dev
 #if SIFIVE_CUSTOMIZATION
       if (!Recipe) {
         // Skip branches that are not vectorized. These are exiting branches
         // with scalar conditions.
         if (isa<BranchInst>(Instr))
           continue;
+<<<<<<< HEAD
         else
           Recipe = RecipeBuilder.handleReplication(Instr, Range);
       }
 #else
       if (!Recipe)
         Recipe = RecipeBuilder.handleReplication(Instr, Range, *Plan);
+=======
+        Recipe = RecipeBuilder.handleReplication(Instr, Range);
+      }
+#else
+      if (!Recipe)
+        Recipe = RecipeBuilder.handleReplication(Instr, Range);
+>>>>>>> origin/sifive-dev
 #endif // SIFIVE_CUSTOMIZATION
 
       RecipeBuilder.setRecipe(Instr, Recipe);

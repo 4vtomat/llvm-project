@@ -669,6 +669,7 @@ define <vscale x 8 x i32> @vector_interleave_nxv8i32_nxv4i32_poison(<vscale x 4 
   ret <vscale x 8 x i32> %res
 }
 
+<<<<<<< HEAD
 define <vscale x 8 x i32> @vector_interleave_nxv8i32_nxv4i32_poison2(<vscale x 4 x i32> %a) {
 ; CHECK-LABEL: vector_interleave_nxv8i32_nxv4i32_poison2:
 ; CHECK:       # %bb.0:
@@ -689,6 +690,8 @@ define <vscale x 8 x i32> @vector_interleave_nxv8i32_nxv4i32_poison2(<vscale x 4
   ret <vscale x 8 x i32> %res
 }
 
+=======
+>>>>>>> origin/sifive-dev
 declare <vscale x 64 x half> @llvm.experimental.vector.interleave2.nxv64f16(<vscale x 32 x half>, <vscale x 32 x half>)
 declare <vscale x 32 x float> @llvm.experimental.vector.interleave2.nxv32f32(<vscale x 16 x float>, <vscale x 16 x float>)
 declare <vscale x 16 x double> @llvm.experimental.vector.interleave2.nxv16f64(<vscale x 8 x double>, <vscale x 8 x double>)

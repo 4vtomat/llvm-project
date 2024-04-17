@@ -5,6 +5,7 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+ziccamoa %s -o - | FileCheck --check-prefixes=CHECK,RV32ZICCAMOA %s
 ; RUN: llc -mtriple=riscv32 -mattr=+ziccrse %s -o - | FileCheck --check-prefixes=CHECK,RV32ZICCRSE %s
 ; RUN: llc -mtriple=riscv32 -mattr=+za64rs %s -o - | FileCheck --check-prefixes=CHECK,RV32ZA64RS %s
+; RUN: llc -mtriple=riscv32 -mattr=+zama16b %s -o - | FileCheck --check-prefixes=CHECK,RV32ZAMA16B %s
 ; RUN: llc -mtriple=riscv32 -mattr=+zic64b %s -o - | FileCheck --check-prefixes=CHECK,RV32ZIC64B %s
 ; RUN: llc -mtriple=riscv32 -mattr=+sdext %s -o - | FileCheck --check-prefixes=CHECK,RV32SDEXT %s
 ; RUN: llc -mtriple=riscv32 -mattr=+sdtrig %s -o - | FileCheck --check-prefixes=CHECK,RV32SDTRIG %s
@@ -41,6 +42,7 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+ziccamoa %s -o - | FileCheck --check-prefixes=CHECK,RV64ZICCAMOA %s
 ; RUN: llc -mtriple=riscv64 -mattr=+ziccrse %s -o - | FileCheck --check-prefixes=CHECK,RV64ZICCRSE %s
 ; RUN: llc -mtriple=riscv64 -mattr=+za64rs %s -o - | FileCheck --check-prefixes=CHECK,RV64ZA64RS %s
+; RUN: llc -mtriple=riscv64 -mattr=+zama16b %s -o - | FileCheck --check-prefixes=CHECK,RV64ZAMA16B %s
 ; RUN: llc -mtriple=riscv64 -mattr=+zic64b %s -o - | FileCheck --check-prefixes=CHECK,RV64ZIC64B %s
 ; RUN: llc -mtriple=riscv64 -mattr=+sdext %s -o - | FileCheck --check-prefixes=CHECK,RV64SDEXT %s
 ; RUN: llc -mtriple=riscv64 -mattr=+sdtrig %s -o - | FileCheck --check-prefixes=CHECK,RV64SDTRIG %s
@@ -80,6 +82,7 @@
 ; RV32ZICCAMOA: .attribute 5, "rv32i2p1_ziccamoa1p0"
 ; RV32ZICCRSE: .attribute 5, "rv32i2p1_ziccrse1p0"
 ; RV32ZA64RS: .attribute 5, "rv32i2p1_za64rs1p0"
+; RV32ZAMA16B: .attribute 5, "rv32i2p1_zama16b1p0"
 ; RV32ZIC64B: .attribute 5, "rv32i2p1_zic64b1p0"
 ; RV32ZJID: .attribute 5, "rv32i2p1_zjid0p0"
 ; RV32ZVKB0P1: .attribute 5, "rv32i2p1_zicsr2p0_zve32x1p0_zve64x1p0_zvkb0p1_zvl32b1p0_zvl64b1p0"
@@ -116,6 +119,7 @@
 ; RV64ZICCAMOA: .attribute 5, "rv64i2p1_ziccamoa1p0"
 ; RV64ZICCRSE: .attribute 5, "rv64i2p1_ziccrse1p0"
 ; RV64ZA64RS: .attribute 5, "rv64i2p1_za64rs1p0"
+; RV64ZAMA16B: .attribute 5, "rv64i2p1_zama16b1p0"
 ; RV64ZIC64B: .attribute 5, "rv64i2p1_zic64b1p0"
 ; RV64ZJID: .attribute 5, "rv64i2p1_zjid0p0"
 ; RV64SDEXT: .attribute 5, "rv64i2p1_sdext1p0"

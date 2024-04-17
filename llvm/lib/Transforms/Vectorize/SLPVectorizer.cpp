@@ -8710,6 +8710,7 @@ TTI::CastContextHint BoUpSLP::getCastContextHint(const TreeEntry &TE) const {
   }
   return TTI::CastContextHint::None;
 }
+<<<<<<< HEAD
 
 /// Builds the arguments types vector for the given call instruction with the
 /// given \p ID for the specified vector factor.
@@ -8734,6 +8735,8 @@ static SmallVector<Type *> buildIntrinsicArgTypes(const CallInst *CI,
   }
   return ArgTys;
 }
+=======
+>>>>>>> origin/sifive-dev
 
 InstructionCost
 BoUpSLP::getEntryCost(const TreeEntry *E, ArrayRef<Value *> VectorizedVals,
@@ -9644,10 +9647,17 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
                all_of(TE->Scalars, [&](Value *V) {
                  return isa<ExtractElementInst, UndefValue>(V) ||
                         (IsAllowedSingleBVNode &&
+<<<<<<< HEAD
                          (!V->hasNUsesOrMore(UsesLimit) &&
                           any_of(V->users(), [](User *U) {
                             return isa<InsertElementInst>(U);
                           })));
+=======
+                         !V->hasNUsesOrMore(UsesLimit) &&
+                         any_of(V->users(), [](User *U) {
+                           return isa<InsertElementInst>(U);
+                         }));
+>>>>>>> origin/sifive-dev
                });
       }))
     return false;
@@ -12800,6 +12810,12 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
       setInsertPointAfterBundle(E);
 
       Value *VecValue = vectorizeOperand(E, 0, PostponedPHIs);
+<<<<<<< HEAD
+=======
+      if (VecValue->getType() != VecTy)
+        VecValue =
+            Builder.CreateIntCast(VecValue, VecTy, GetOperandSignedness(0));
+>>>>>>> origin/sifive-dev
 #if SIFIVE_CUSTOMIZATION
       // Consecutive but reversed stores are just strided stores with the stride
       // -1.
@@ -12832,9 +12848,12 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
         return V;
       }
 #endif // SIFIVE_CUSTOMIZATION
+<<<<<<< HEAD
       if (VecValue->getType() != VecTy)
         VecValue =
             Builder.CreateIntCast(VecValue, VecTy, GetOperandSignedness(0));
+=======
+>>>>>>> origin/sifive-dev
       VecValue = FinalShuffle(VecValue, E, VecTy);
 
       Value *Ptr = SI->getPointerOperand();

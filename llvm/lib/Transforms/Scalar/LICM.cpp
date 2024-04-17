@@ -3053,6 +3053,10 @@ static bool hoistMulAddAssociation(Instruction &I, Loop &L,
   if (maySpillForCandidate(&I, &L, LV, TTI, DT, IgnoreValues, Changes))
     return false;
 #endif
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/sifive-dev
   // Drop the poison flags for any adds we looked through.
   if (I.getType()->isIntOrIntVectorTy()) {
     for (auto *Add : Adds)

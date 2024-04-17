@@ -65,10 +65,6 @@ static cl::opt<bool>
     EnableSLSROpt("riscv-slsr-opt", cl::Hidden,
                   cl::desc("Enable optimizations on SLSR"),
                   cl::init(false));
-
-static cl::opt<bool> EnableSplitRA("riscv-split-RA", cl::Hidden,
-                                   cl::desc("Enable Split RA for RVV"),
-                                   cl::init(false));
 #endif // SIFIVE_CUSTOMIZATION
 // FIXME: Unify control over GlobalMerge.
 static cl::opt<cl::boolOrDefault>

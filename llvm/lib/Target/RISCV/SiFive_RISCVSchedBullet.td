@@ -178,7 +178,7 @@ class BulletAnyToGPRBypass<SchedRead read, int cycles = 2>
                                WriteBEXT, WriteBEXTI,
                                WriteCLZ, WriteCLZ32, WriteCTZ,
                                WriteCTZ32, WriteCPOP, WriteCPOP32,
-                               WriteREV8, WriteORCB, WriteSFB,
+                               WriteREV8, WriteORCB, WriteIMinMax, WriteSFB,
                                WriteIMul, WriteIMul32, WriteLDB,
                                WriteLDH, WriteLDW, WriteLDW, WriteLDD,
                                WriteFMovF16ToI16, WriteFMovF32ToI32,
@@ -241,7 +241,8 @@ multiclass BulletWriteResBase<
     int VLEN, ProcResourceKind PipeA, ProcResourceKind PipeB,
     ProcResourceKind PipeAB, ProcResourceKind Mem, ProcResourceKind IDiv,
     ProcResourceKind FDiv, ProcResourceKind VA1, ProcResourceKind VA1OrVA2,
-    ProcResourceKind VL, ProcResourceKind VS, ProcResourceKind VCQ> {
+    ProcResourceKind VL, ProcResourceKind VS, ProcResourceKind VCQ,
+    bit hasSlowFP64Vec = false> {
 
   // Branching
   let Latency = 3 in {
@@ -312,6 +313,9 @@ multiclass BulletWriteResBase<
     
     // orc.b is in the late-B ALU.
     def : WriteRes<WriteORCB, [PipeB]>;
+
+    // min/max are in the late-B ALU
+    def : WriteRes<WriteIMinMax, [PipeB]>;
     
     // rev8 is in the late-A and late-B ALUs.
     def : WriteRes<WriteREV8, [PipeAB]>;
@@ -728,6 +732,28 @@ multiclass BulletWriteResBase<
   
   // 13. Vector Floating-Point Instructions
   foreach mx = SchedMxListF in {
+<<<<<<< HEAD
+=======
+    foreach sew = SchedSEWSet<mx, isF=1>.val in {
+      defvar Cycles = !if(!and(hasSlowFP64Vec, !eq(sew, 64)),
+                          BulletGetCyclesOnePerElement<mx, sew, VLEN>.c,
+                          BulletGetCyclesDefault<mx>.c);
+      defvar Lat = !if(!and(hasSlowFP64Vec, !eq(sew, 64)), Cycles, 8);
+      defvar VA = !if(!and(hasSlowFP64Vec, !eq(sew, 64)), VA1, VA1OrVA2);
+      defvar IsWorstCase = BulletIsWorstCaseMXSEW<mx, sew, SchedMxListF, isF=1>.c;
+      let Latency = Lat, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFALUV",  [VCQ, VA], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFALUF",  [VCQ, VA], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFMulV",  [VCQ, VA], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFMulF",  [VCQ, VA], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFMulAddV", [VCQ, VA], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFMulAddF", [VCQ, VA], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFRecpV",   [VCQ, VA1], mx, sew, IsWorstCase>;
+      }
+    }
+  }
+  foreach mx = SchedMxList in {
+>>>>>>> origin/sifive-dev
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
     foreach sew = SchedSEWSet<mx, isF=1>.val in {
@@ -783,7 +809,20 @@ multiclass BulletWriteResBase<
       defm "" : LMULWriteResMX<"WriteVFWCvtIToFV", [VCQ, VA1], mx, IsWorstCase>;
     }
   }
-  
+  foreach mx = SchedMxListFW in {
+    foreach sew = SchedSEWSet<mx, isF=1, isWidening=1>.val in {
+      defvar Cycles = BulletGetCyclesDefault<mx>.c;
+      defvar IsWorstCase = BulletIsWorstCaseMXSEW<mx, sew, SchedMxListFW, isF=1>.c;
+      let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFWALUV", [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFWALUF", [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFWMulV", [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFWMulF", [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFWMulAddV", [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFWMulAddF", [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
+      }
+    }
+  }
   foreach mx = SchedMxListFW in {
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxListFW>.c;
@@ -1131,22 +1170,22 @@ multiclass BulletReadAdvance {
   defm "" : LMULReadAdvanceW<"ReadVNClipX", 0>;
   
   // 14. Vector Floating-Point Instructions
-  defm "" : LMULReadAdvance<"ReadVFALUV", 0>;
-  defm "" : LMULReadAdvance<"ReadVFALUF", 0>;
-  defm "" : LMULReadAdvanceFW<"ReadVFWALUV", 0>;
-  defm "" : LMULReadAdvanceFW<"ReadVFWALUF", 0>;
-  defm "" : LMULReadAdvance<"ReadVFMulV", 0>;
-  defm "" : LMULReadAdvance<"ReadVFMulF", 0>;
+  defm "" : LMULSEWReadAdvanceF<"ReadVFALUV", 0>;
+  defm "" : LMULSEWReadAdvanceF<"ReadVFALUF", 0>;
+  defm "" : LMULSEWReadAdvanceFW<"ReadVFWALUV", 0>;
+  defm "" : LMULSEWReadAdvanceFW<"ReadVFWALUF", 0>;
+  defm "" : LMULSEWReadAdvanceF<"ReadVFMulV", 0>;
+  defm "" : LMULSEWReadAdvanceF<"ReadVFMulF", 0>;
   defm "" : LMULSEWReadAdvanceF<"ReadVFDivV", 0>;
   defm "" : LMULSEWReadAdvanceF<"ReadVFDivF", 0>;
-  defm "" : LMULReadAdvanceFW<"ReadVFWMulV", 0>;
-  defm "" : LMULReadAdvanceFW<"ReadVFWMulF", 0>;
-  defm "" : LMULReadAdvance<"ReadVFMulAddV", 0>;
-  defm "" : LMULReadAdvance<"ReadVFMulAddF", 0>;
-  defm "" : LMULReadAdvanceFW<"ReadVFWMulAddV", 0>;
-  defm "" : LMULReadAdvanceFW<"ReadVFWMulAddF", 0>;
+  defm "" : LMULSEWReadAdvanceFW<"ReadVFWMulV", 0>;
+  defm "" : LMULSEWReadAdvanceFW<"ReadVFWMulF", 0>;
+  defm "" : LMULSEWReadAdvanceF<"ReadVFMulAddV", 0>;
+  defm "" : LMULSEWReadAdvanceF<"ReadVFMulAddF", 0>;
+  defm "" : LMULSEWReadAdvanceFW<"ReadVFWMulAddV", 0>;
+  defm "" : LMULSEWReadAdvanceFW<"ReadVFWMulAddF", 0>;
   defm "" : LMULSEWReadAdvanceF<"ReadVFSqrtV", 0>;
-  defm "" : LMULReadAdvance<"ReadVFRecpV", 0>;
+  defm "" : LMULSEWReadAdvanceF<"ReadVFRecpV", 0>;
   defm "" : LMULReadAdvance<"ReadVFMinMaxV", 0>;
   defm "" : LMULReadAdvance<"ReadVFMinMaxF", 0>;
   defm "" : LMULReadAdvance<"ReadVFSgnjV", 0>;
@@ -1231,6 +1270,7 @@ multiclass BulletReadAdvance {
   def : ReadAdvance<ReadCPOP, 0>;
   def : ReadAdvance<ReadCPOP32, 0>;
   def : BulletAnyToGPRBypass<ReadORCB>;
+  def : BulletAnyToGPRBypass<ReadIMinMax>;
   def : BulletAnyToGPRBypass<ReadREV8>;
   def : BulletAnyToGPRBypass<ReadSHXADD>;
   def : BulletAnyToGPRBypass<ReadSHXADD32>;

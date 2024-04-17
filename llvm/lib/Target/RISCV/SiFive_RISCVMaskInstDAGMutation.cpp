@@ -110,7 +110,7 @@ void RISCVMaskInstDAGMutation::apply(ScheduleDAGInstrs *DAG) {
       SUnit *SU = DAG->getSUnit(&MI);
       SUnit *MaskSU = DAG->getSUnit(MaskMI);
 
-      if (SU == MaskSU)
+      if (!SU || !MaskSU || SU == MaskSU)
         continue;
 
       if (DAG->canAddEdge(SU, MaskSU)) {

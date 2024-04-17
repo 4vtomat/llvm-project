@@ -79,6 +79,7 @@
 // CHECK-NOT: __riscv_za128rs {{.*$}}
 // CHECK-NOT: __riscv_za64rs {{.*$}}
 // CHECK-NOT: __riscv_zacas {{.*$}}
+// CHECK-NOT: __riscv_zama16b {{.*$}}
 // CHECK-NOT: __riscv_zawrs {{.*$}}
 // CHECK-NOT: __riscv_zba {{.*$}}
 // CHECK-NOT: __riscv_zbb {{.*$}}
@@ -169,6 +170,7 @@
 // CHECK-NOT: __riscv_ss
 // CHECK-NOT: __riscv_smstateen
 // CHECK-NOT: __sifive_recode_neon
+// CHECK-NOT: __sifive_slow_vector_fp64
 // CHECK-NOT: __riscv_zvkns
 // CHECK-NOT: __riscv_smrnmi
 // CHECK-NOT: __riscv_smwg
@@ -587,7 +589,7 @@
 // RUN: %clang --target=riscv64-unknown-linux-gnu \
 // RUN:   -march=rv64ixsifivecdiscarddlone -E -dM %s \
 // RUN:   -o - | FileCheck --check-prefix=CHECK-XSIFIVECDISCARDDLONE-EXT %s
-// CHECK-XSIFIVECDISCARDDLONE-EXT: __riscv_xsifivecdiscarddlone 1000000{{$}}
+// CHECK-XSIFIVECDISCARDDLONE-EXT: __riscv_xsifivecdiscarddlone 1000{{$}}
 
 // RUN: %clang --target=riscv32-unknown-linux-gnu \
 // RUN:   -march=rv32ixsifivecflushdlone -E -dM %s \
@@ -595,7 +597,7 @@
 // RUN: %clang --target=riscv64-unknown-linux-gnu \
 // RUN:   -march=rv64ixsifivecflushdlone -E -dM %s \
 // RUN:   -o - | FileCheck --check-prefix=CHECK-XSIFIVECFLUSHDLONE-EXT %s
-// CHECK-XSIFIVECFLUSHDLONE-EXT: __riscv_xsifivecflushdlone 1000000{{$}}
+// CHECK-XSIFIVECFLUSHDLONE-EXT: __riscv_xsifivecflushdlone 1000{{$}}
 
 // RUN: %clang --target=riscv32-unknown-linux-gnu \
 // RUN:   -march=rv32ixtheadba -E -dM %s \
@@ -716,6 +718,12 @@
 // RUN:   -march=rv64i_zacas1p0 -E -dM %s \
 // RUN:   -o - | FileCheck --check-prefix=CHECK-ZACAS-EXT %s
 // CHECK-ZACAS-EXT: __riscv_zacas 1000000{{$}}
+
+// RUN: %clang --target=riscv32 -march=rv32izama16b -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZAMA16B-EXT %s
+// RUN: %clang --target=riscv64 -march=rv64izama16b  -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-ZAMA16B-EXT %s
+// CHECK-ZAMA16B-EXT: __riscv_zama16b  1000000{{$}}
 
 // RUN: %clang --target=riscv32-unknown-linux-gnu \
 // RUN:   -march=rv32izawrs -E -dM %s \
@@ -1368,6 +1376,18 @@
 // RUN:   -msifive-recode=off -o - \
 // RUN:   | FileCheck --check-prefix=CHECK-SIFIVE-RECODE-OFF %s
 // CHECK-SIFIVE-RECODE-OFF-NOT: __sifive_recode_neon
+//
+// RUN: %clang --target=riscv64-unknown-linux-gnu -mtune=sifive-x390 -E -dM %s \
+// RUN:   -o - | FileCheck --check-prefix=CHECK-MTUNE-X390-SLOW-VECTOR-FP64 %s
+// CHECK-MTUNE-X390-SLOW-VECTOR-FP64: __sifive_slow_vector_fp64
+//
+// RUN: %clang --target=riscv64-unknown-linux-gnu -mcpu=sifive-x390 -E -dM %s \
+// RUN:   -o - | FileCheck --check-prefix=CHECK-MCPU-X390-SLOW-VECTOR-FP64 %s
+// CHECK-MCPU-X390-SLOW-VECTOR-FP64: __sifive_slow_vector_fp64
+//
+// RUN: %clang --target=riscv64-unknown-linux-gnu -mtune=rocket -mcpu=sifive-x390-fast-fp64 -E -dM %s \
+// RUN:   -o - | FileCheck --check-prefix=CHECK-TUNE-MCPU-X390-FAST-VECTOR-FP64 %s
+// CHECK-TUNE-MCPU-X390-FAST-VECTOR-FP64-NOT: __sifive_slow_vector_fp64
 // end SIFIVE_CUSTOMIZATION
 
 // RUN: %clang --target=riscv32-unknown-linux-gnu \

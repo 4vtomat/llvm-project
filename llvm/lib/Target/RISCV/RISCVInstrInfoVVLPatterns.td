@@ -2672,6 +2672,10 @@ defm : VPatFPMulAccVL_VV_VF_RM<riscv_vfnmsub_vl_oneuse, "PseudoVFNMSAC">;
 
 #ifdef SIFIVE_CUSTOMIZATION
 foreach vti = AllFloatVectors in {
+<<<<<<< HEAD
+=======
+  defvar suffix = vti.LMul.MX # "_E" # vti.SEW;
+>>>>>>> origin/sifive-dev
   def : Pat<(vti.Vector (riscv_vfnmsac_vl vti.RegClass:$rd, vti.RegClass:$rs1,
                                           vti.RegClass:$rs2, (vti.Mask V0),
                                           VLOpFrag)),

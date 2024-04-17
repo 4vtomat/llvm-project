@@ -180,10 +180,10 @@ jr a0
 # CHECK-NEXT:  1      3     0.50                        sext.b	a0, a0
 # CHECK-NEXT:  1      3     0.50                        sext.h	a0, a0
 # CHECK-NEXT:  1      3     0.50                        zext.h	a0, a0
-# CHECK-NEXT:  1      3     0.50                        min	a0, a0, a0
-# CHECK-NEXT:  1      3     0.50                        minu	a0, a0, a0
-# CHECK-NEXT:  1      3     0.50                        max	a0, a0, a0
-# CHECK-NEXT:  1      3     0.50                        maxu	a0, a0, a0
+# CHECK-NEXT:  1      3     1.00                        min	a0, a0, a0
+# CHECK-NEXT:  1      3     1.00                        minu	a0, a0, a0
+# CHECK-NEXT:  1      3     1.00                        max	a0, a0, a0
+# CHECK-NEXT:  1      3     1.00                        maxu	a0, a0, a0
 # CHECK-NEXT:  1      3     1.00                        rol	a0, a0, a0
 # CHECK-NEXT:  1      3     1.00                        ror	a0, a0, a0
 # CHECK-NEXT:  1      3     1.00                        rori	a0, a0, 1
@@ -214,19 +214,19 @@ jr a0
 # CHECK-NEXT:  1      3     1.00                        jr	a0
 
 # CHECK:      Resources:
-# CHECK-NEXT: [0]   - VLEN512SiFive7NFDiv
-# CHECK-NEXT: [1]   - VLEN512SiFive7NIDiv
-# CHECK-NEXT: [2]   - VLEN512SiFive7NMem
-# CHECK-NEXT: [3]   - VLEN512SiFive7NPipeA
-# CHECK-NEXT: [4]   - VLEN512SiFive7NPipeB
-# CHECK-NEXT: [5]   - VLEN512SiFive7NVA
-# CHECK-NEXT: [6]   - VLEN512SiFive7NVCQ
-# CHECK-NEXT: [7]   - VLEN512SiFive7NVL
-# CHECK-NEXT: [8]   - VLEN512SiFive7NVS
+# CHECK-NEXT: [0]   - VLEN512FastFP64SiFive7NFDiv
+# CHECK-NEXT: [1]   - VLEN512FastFP64SiFive7NIDiv
+# CHECK-NEXT: [2]   - VLEN512FastFP64SiFive7NMem
+# CHECK-NEXT: [3]   - VLEN512FastFP64SiFive7NPipeA
+# CHECK-NEXT: [4]   - VLEN512FastFP64SiFive7NPipeB
+# CHECK-NEXT: [5]   - VLEN512FastFP64SiFive7NVA
+# CHECK-NEXT: [6]   - VLEN512FastFP64SiFive7NVCQ
+# CHECK-NEXT: [7]   - VLEN512FastFP64SiFive7NVL
+# CHECK-NEXT: [8]   - VLEN512FastFP64SiFive7NVS
 
 # CHECK:      Resource pressure per iteration:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
-# CHECK-NEXT:  -      -     7.00   36.00  48.00   -      -      -      -
+# CHECK-NEXT:  -      -     7.00   34.00  50.00   -      -      -      -
 
 # CHECK:      Resource pressure by instruction:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
@@ -290,9 +290,9 @@ jr a0
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     sext.h	a0, a0
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     zext.h	a0, a0
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     min	a0, a0, a0
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     minu	a0, a0, a0
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     minu	a0, a0, a0
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     max	a0, a0, a0
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     maxu	a0, a0, a0
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     maxu	a0, a0, a0
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     rol	a0, a0, a0
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     ror	a0, a0, a0
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -     rori	a0, a0, 1
