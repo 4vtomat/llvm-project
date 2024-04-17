@@ -639,7 +639,7 @@ static Instruction *foldVFirstWithCompare(InstCombiner &IC, IntrinsicInst &II) {
 
   // The remaining cases are vl is not zero or we don't know it.
   // If we don't know it, skip the folding.
-  if (!isKnownNonZero(VL, IC.getDataLayout()))
+  if (!isKnownNonZero(VL, 0, {IC.getDataLayout()}))
     return nullptr;
 
   auto *ValII = dyn_cast<IntrinsicInst>(Val);

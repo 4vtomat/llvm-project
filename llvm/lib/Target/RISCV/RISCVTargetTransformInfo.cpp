@@ -1650,19 +1650,21 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
   int ISD = TLI->InstructionOpcodeToISD(Opcode);
   assert(ISD && "Invalid opcode");
 
+#if !SIFIVE_CUSTOMIZATION
   int PowDiff = (int)Log2_32(Dst->getScalarSizeInBits()) -
                 (int)Log2_32(Src->getScalarSizeInBits());
+#endif // SIFIVE_CUSTOMIZATION
   switch (ISD) {
   case ISD::SIGN_EXTEND:
   case ISD::ZERO_EXTEND: {
     const unsigned SrcEltSize = Src->getScalarSizeInBits();
 #if SIFIVE_CUSTOMIZATION
-    if (SrcEltSize == 1) {
-      if (SrcEltSize == 1)
-        return DstLT.first * 2 * DstLMULCost;
+    if (SrcEltSize == 1)
+      return DstLT.first * 2 * DstLMULCost;
 
-      return SrcLT.first * 1 * SrcLMULCost;
+    return SrcLT.first * 1 * SrcLMULCost;
 #else
+    if (SrcEltSize == 1) {
       // We do not use vsext/vzext to extend from mask vector.
       // Instead we use the following instructions to extend from mask vector:
       // vmv.v.i v8, 0
@@ -1750,6 +1752,7 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
         }
       }
       return SrcLT.first * PowDiffCost;
+  }
 #else
     if (Src->getScalarSizeInBits() == 1 || Dst->getScalarSizeInBits() == 1) {
       // The cost of convert from or to mask vector is different from other
@@ -1773,6 +1776,7 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
       return 2;
     // Counts of narrow/widen instructions.
     return std::abs(PowDiff);
+  }
 #endif // SIFIVE_CUSTOMIZATION
   }
   return BaseT::getCastInstrCost(Opcode, Dst, Src, CCH, CostKind, I);
@@ -1814,8 +1818,7 @@ RISCVTTIImpl::getMinMaxReductionCost(Intrinsic::ID IID, VectorType *Ty,
     //   vector_reduce_{smax,umin}(<n x i1>) --> vector_reduce_and(<n x i1>)
     if (IID == Intrinsic::umax || IID == Intrinsic::smin)
       return getArithmeticReductionCost(Instruction::Or, Ty, FMF, CostKind);
-    else
-      return getArithmeticReductionCost(Instruction::And, Ty, FMF, CostKind);
+    return getArithmeticReductionCost(Instruction::And, Ty, FMF, CostKind);
   }
 
   // IR Reduction is composed by two vmv and one rvv reduction instruction.
@@ -1833,7 +1836,6 @@ RISCVTTIImpl::getMinMaxReductionCost(Intrinsic::ID IID, VectorType *Ty,
            getSiFive7ReductionCost(VL);
   }
 #endif // SIFIVE_CUSTOMIZATION
-  InstructionCost BaseCost = 2;
   if (IID == Intrinsic::maximum || IID == Intrinsic::minimum) {
     SmallVector<unsigned, 3> Opcodes;
     InstructionCost ExtraCost = 0;

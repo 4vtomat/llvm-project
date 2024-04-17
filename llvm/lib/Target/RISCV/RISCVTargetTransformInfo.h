@@ -61,7 +61,6 @@ public:
       : BaseT(TM, F.getParent()->getDataLayout()), ST(TM->getSubtargetImpl(F)),
         TLI(ST->getTargetLowering()) {}
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   std::optional<Instruction *> instCombineIntrinsic(InstCombiner &IC,
                                                     IntrinsicInst &II) const;
@@ -70,10 +69,9 @@ public:
 
   VectorType *getBestVectorTypeForLoopIdiom(LLVMContext &Ctx) const;
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   bool areInlineCompatible(const Function *Caller,
                            const Function *Callee) const;
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 
   /// Return the cost of materializing an immediate for a value operand of
   /// a store instruction.
@@ -90,7 +88,6 @@ public:
                                       const APInt &Imm, Type *Ty,
                                       TTI::TargetCostKind CostKind);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// Estimate a cost of shuffle as a sequence of extract and insert
   /// operations.
@@ -185,7 +182,7 @@ public:
   }
 
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   /// \name EVL Support for predicated vectorization.
   /// Whether the target supports the %evl parameter of VP intrinsic efficiently
   /// in hardware, for the given opcode and type/alignment. (see LLVM Language
@@ -201,7 +198,6 @@ public:
   /// predicated version support.
   bool hasActiveVectorLength(unsigned Opcode, Type *DataType,
                              Align Alignment) const;
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 
   TargetTransformInfo::PopcntSupportKind getPopcntSupport(unsigned TyWidth);
 

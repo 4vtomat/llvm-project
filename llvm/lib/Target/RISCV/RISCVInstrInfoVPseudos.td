@@ -2973,14 +2973,6 @@ multiclass VPseudoVALU_VV_VF_RM {
                             f.SEW, forceMergeOpRead=true>;
     }
   }
-
-  foreach f = FPList in {
-    foreach m = f.MxList in {
-      defm "" : VPseudoBinaryV_VF_RM<m, f, "", sew=f.SEW>,
-                SchedBinary<"WriteVFALUF", "ReadVFALUV", "ReadVFALUF", m.MX,
-                            f.SEW, forceMergeOpRead=true>;
-    }
-  }
 }
 
 multiclass VPseudoVALU_VF_RM {
