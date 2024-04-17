@@ -505,7 +505,7 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
       EVL = State.Builder.CreateSub(VectorTripCount, Index);
     }
     // Set VLMAX if EVL is nullptr
-    Value *SetVL = GetSetVL(State, EVL);
+    EVL = GetSetVL(State, EVL);
 #else
     // Compute EVL
     auto GetEVL = [=](VPTransformState &State, Value *AVL) {
@@ -904,6 +904,12 @@ void VPInstruction::execute(VPTransformState &State) {
       canGenerateScalarForFirstLane() &&
       (vputils::onlyFirstLaneUsed(this) ||
        getOpcode() == VPInstruction::ComputeReductionResult);
+#if SIFIVE_CUSTOMIZATION
+  GeneratesPerFirstLaneOnly = GeneratesPerFirstLaneOnly ||
+    getOpcode() == VPInstruction::CSAVLSel ||
+    getOpcode() == VPInstruction::CSAAnyActive ||
+    getOpcode() == VPInstruction::ExitingCond;
+#endif // SIFIVE_CUSTOMIZATION
   bool GeneratesPerAllLanes = doesGeneratePerAllLanes();
   for (unsigned Part = 0; Part < State.UF; ++Part) {
     if (GeneratesPerAllLanes) {
@@ -2954,6 +2960,8 @@ void VPEVLBasedIVPHIRecipe::execute(VPTransformState &State) {
     Start = GetSetVL(State, State.get(&State.Plan->getVectorTripCount(), 0,
                                       /*IsScalar=*/true));
     State.set(State.Plan->getInitEVL(), Start, 0, /*IsScalar=*/true);
+  } else {
+    Start = State.get(getOperand(0), VPIteration(0, 0));
   }
 #else
   Value *Start = State.get(getOperand(0), VPIteration(0, 0));

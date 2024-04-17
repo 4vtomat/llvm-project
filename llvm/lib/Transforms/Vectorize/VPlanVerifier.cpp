@@ -121,10 +121,12 @@ static bool verifyVPBasicBlock(const VPBasicBlock *VPBB,
         errs() << "EVL PHI recipe not in entry block!\n";
         return false;
       }
+#if !SIFIVE_CUSTOMIZATION
       if (!EVLFound.insert(VPDef::VPEVLBasedIVPHISC).second) {
         errs() << "EVL PHI recipe inserted more than once!\n";
         return false;
       }
+#endif // !SIFIVE_CUSTOMIZATION
       return true;
     }
     if (const auto *RInst = dyn_cast<VPInstruction>(R);

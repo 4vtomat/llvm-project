@@ -1220,6 +1220,7 @@ void VPlanTransforms::optimize(VPlan &Plan, ScalarEvolution &SE) {
 // Here provides basic passes for uncountable loops
 // TODO: Merge with VPlanTransforms::optimize if more optimization are needed
 void VPlanTransforms::optimizeUncountable(VPlan &Plan, ScalarEvolution &SE) {
+  legalizeAndOptimizeInductions(Plan, SE);
   removeDeadRecipes(Plan);
 
   mergeBlocksIntoPredecessors(Plan);
@@ -1462,20 +1463,33 @@ void VPlanTransforms::addExplicitVectorLength(VPlan &Plan) {
                                      OpVPEVL, CanonicalIVPHI->getScalarType());
     OpVPEVL->insertBefore(CanonicalIVIncrement);
   }
+  auto *NextEVLIV =
+      new VPInstruction(Instruction::Add, {OpVPEVL, EVLPhi},
+                        {CanonicalIVIncrement->hasNoUnsignedWrap(),
+                         CanonicalIVIncrement->hasNoSignedWrap()},
+                        CanonicalIVIncrement->getDebugLoc(), "index.evl.next");
+  NextEVLIV->insertBefore(CanonicalIVIncrement);
+  EVLPhi->addOperand(NextEVLIV);
 
 #if SIFIVE_CUSTOMIZATION
   if (PrevEVLPhi) {
     Plan.setPrevEVL(PrevEVLPhi);
     PrevEVLPhi->addOperand(VPEVL);
   }
+#endif // SIFIVE_CUSTOMIZATION
 
   // Replace all uses of VPCanonicalIVPHIRecipe by
   // VPEVLBasedIVPHIRecipe except for VPInstruction::CanonicalIVIncrement.
   CanonicalIVPHI->replaceAllUsesWith(EVLPhi);
+#if SIFIVE_CUSTOMIZATION
   CanonicalIVIncrement->replaceAllUsesWith(CanonicalIVIncrement);
   Plan.getVFxUF().replaceAllUsesWith(VPEVL);
   Plan.setUseVLAVectorizer(true);
+#else
+  CanonicalIVIncrement->setOperand(0, CanonicalIVPHI);
 #endif // SIFIVE_CUSTOMIZATION
+  // TODO: support unroll factor > 1.
+  Plan.setUF(1);
 }
 
 #if SIFIVE_CUSTOMIZATION

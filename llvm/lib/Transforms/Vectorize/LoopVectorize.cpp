@@ -10989,18 +10989,21 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
 #if SIFIVE_CUSTOMIZATION
       if (Legal->useVLAVectorizer()) {
         if (Plan->isUncountable()) {
-          VPlanTransforms::addExplicitVectorLengthUncountable(*Plan);
           VPlanTransforms::optimizeUncountable(*Plan, *PSE.getSE());
+          VPlanTransforms::addExplicitVectorLengthUncountable(*Plan);
         } else {
-          VPlanTransforms::addExplicitVectorLength(*Plan);
           VPlanTransforms::optimize(*Plan, *PSE.getSE());
+          VPlanTransforms::addExplicitVectorLength(*Plan);
         }
-      } else
+      } else {
 #endif // SIFIVE_CUSTOMIZATION
       VPlanTransforms::optimize(*Plan, *PSE.getSE());
       // TODO: try to put it close to addActiveLaneMask().
       if (CM.foldTailWithEVL())
         VPlanTransforms::addExplicitVectorLength(*Plan);
+#if SIFIVE_CUSTOMIZATION
+      }
+#endif // SIFIVE_CUSTOMIZATION
       assert(verifyVPlanIsValid(*Plan) && "VPlan is invalid");
       VPlans.push_back(std::move(Plan));
     }
