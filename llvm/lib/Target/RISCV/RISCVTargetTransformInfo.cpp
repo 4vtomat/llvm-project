@@ -2886,7 +2886,6 @@ bool RISCVTTIImpl::isLegalMaskedCompressStore(Type *DataTy, Align Alignment) {
     return false;
   return true;
 }
-<<<<<<< HEAD
 
 bool RISCVTTIImpl::areInlineCompatible(const Function *Caller,
                                        const Function *Callee) const {
@@ -2901,5 +2900,3 @@ bool RISCVTTIImpl::areInlineCompatible(const Function *Caller,
   // target-features.
   return (CallerBits & CalleeBits) == CalleeBits;
 }
-=======
->>>>>>> origin/sifive-dev

@@ -732,8 +732,6 @@ multiclass BulletWriteResBase<
   
   // 13. Vector Floating-Point Instructions
   foreach mx = SchedMxListF in {
-<<<<<<< HEAD
-=======
     foreach sew = SchedSEWSet<mx, isF=1>.val in {
       defvar Cycles = !if(!and(hasSlowFP64Vec, !eq(sew, 64)),
                           BulletGetCyclesOnePerElement<mx, sew, VLEN>.c,
@@ -753,20 +751,8 @@ multiclass BulletWriteResBase<
     }
   }
   foreach mx = SchedMxList in {
->>>>>>> origin/sifive-dev
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
-    foreach sew = SchedSEWSet<mx, isF=1>.val in {
-      let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFALUV",      [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFALUF",      [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFMulV",      [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFMulF",      [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFMulAddV",   [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFMulAddF",   [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFRecpV",     [VCQ, VA1], mx, sew, IsWorstCase>;
-      }
-    }
     let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
       defm "" : LMULWriteResMX<"WriteVFCvtIToFV",  [VCQ, VA1], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVFCvtFToIV",  [VCQ, VA1], mx, IsWorstCase>;
@@ -826,16 +812,6 @@ multiclass BulletWriteResBase<
   foreach mx = SchedMxListFW in {
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxListFW>.c;
-    foreach sew = SchedSEWSet<mx, isF=1, isWidening=1>.val in {
-      let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFWALUV",     [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFWMulV",     [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFWMulAddV",  [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFWMulAddF",  [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFWMulF",     [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFWALUF",     [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
-      }
-    }
     let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
       defm "" : LMULWriteResMX<"WriteVFWCvtFToIV", [VCQ, VA1], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVFWCvtFToFV", [VCQ, VA1], mx, IsWorstCase>;

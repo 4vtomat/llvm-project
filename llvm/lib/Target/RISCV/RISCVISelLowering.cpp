@@ -4752,7 +4752,6 @@ static SDValue getWideningInterleave(SDValue EvenV, SDValue OddV,
   SDValue Passthru = DAG.getUNDEF(WideContainerVT);
 
   SDValue Interleaved;
-<<<<<<< HEAD
   if (OddV.isUndef()) {
     // If OddV is undef, this is a zero extend.
     // FIXME: Not only does this optimize the code, it fixes some correctness
@@ -4760,17 +4759,6 @@ static SDValue getWideningInterleave(SDValue EvenV, SDValue OddV,
     Interleaved =
         DAG.getNode(RISCVISD::VZEXT_VL, DL, WideContainerVT, EvenV, Mask, VL);
   } else if (Subtarget.hasStdExtZvbb()) {
-=======
-#if SIFIVE_CUSTOMIZATION
-  if (OddV.isUndef()) {
-    // FIXME: This is a hack to work around lack of freeze semantics in MIR and
-    // to generate better code when the OddV operand is undef.
-    Interleaved = DAG.getNode(RISCVISD::VZEXT_VL, DL, WideContainerVT, EvenV,
-                              Mask, VL);
-  } else
-#endif // SIFIVE_CUSTOMIZATION
-  if (Subtarget.hasStdExtZvbb()) {
->>>>>>> origin/sifive-dev
     // Interleaved = (OddV << VecVT.getScalarSizeInBits()) + EvenV.
     SDValue OffsetVec =
         DAG.getConstant(VecVT.getScalarSizeInBits(), DL, VecContainerVT);
@@ -14525,23 +14513,15 @@ static SDValue reassociateAddressArith(SDNode *N, SDValue N0, SDValue N1,
 
 // add (zext, zext) -> zext (add (zext, zext))
 // sub (zext, zext) -> sext (sub (zext, zext))
-<<<<<<< HEAD
 // mul (zext, zext) -> zext (mul (zext, zext))
 // sdiv (zext, zext) -> zext (sdiv (zext, zext))
 // udiv (zext, zext) -> zext (udiv (zext, zext))
 // srem (zext, zext) -> zext (srem (zext, zext))
 // urem (zext, zext) -> zext (urem (zext, zext))
-=======
->>>>>>> origin/sifive-dev
 //
 // where the sum of the extend widths match, and the the range of the bin op
 // fits inside the width of the narrower bin op. (For profitability on rvv, we
 // use a power of two for both inner and outer extend.)
-<<<<<<< HEAD
-=======
-//
-// TODO: Extend this to other binary ops
->>>>>>> origin/sifive-dev
 static SDValue combineBinOpOfZExt(SDNode *N, SelectionDAG &DAG) {
 
   EVT VT = N->getValueType(0);

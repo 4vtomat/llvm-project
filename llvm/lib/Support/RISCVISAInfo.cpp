@@ -122,13 +122,8 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xsfvqmaccdod", {0, 1}}, // SIFIVE
     {"xsfvqmaccqoq", {1, 0}},
     {"xsfvqmaccqoq", {0, 1}}, // SIFIVE
-<<<<<<< HEAD
-    {"xsifivecdiscarddlone", {1, 0}},
-=======
-    {"xsifivecdiscarddlone", {0, 1}}, // SIFIVE
     {"xsifivecdiscarddlone", {1, 0}},
     {"xsifivecflushdlone", {0, 1}}, // SIFIVE
->>>>>>> origin/sifive-dev
     {"xsifivecflushdlone", {1, 0}},
     {"xtheadba", {1, 0}},
     {"xtheadbb", {1, 0}},

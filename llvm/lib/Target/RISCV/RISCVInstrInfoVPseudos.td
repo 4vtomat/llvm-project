@@ -2254,12 +2254,8 @@ multiclass VPseudoTiedBinaryRoundingMode<VReg RetClass,
     def suffix # "_TIED":
       VPseudoTiedBinaryNoMaskRoundingMode<RetClass, Op2Class, Constraint, TargetConstraintType>;
     def suffix # "_MASK_TIED" :
-<<<<<<< HEAD
       VPseudoTiedBinaryMaskRoundingMode<RetClass, Op2Class, Constraint, TargetConstraintType>,
       RISCVMaskedPseudo<MaskIdx=2>;
-=======
-      VPseudoTiedBinaryMaskRoundingMode<RetClass, Op2Class, Constraint, TargetConstraintType>;
->>>>>>> origin/sifive-dev
   }
 }
 
@@ -2968,8 +2964,6 @@ multiclass VPseudoVALU_VV_VF_RM {
       defm "" : VPseudoBinaryFV_VV_RM<m, "", sew=e>,
                 SchedBinary<"WriteVFALUV", "ReadVFALUV", "ReadVFALUV", m.MX, e,
                             forceMergeOpRead=true>;
-<<<<<<< HEAD
-=======
   }
 
   foreach f = FPList in {
@@ -2978,7 +2972,6 @@ multiclass VPseudoVALU_VV_VF_RM {
                 SchedBinary<"WriteVFALUF", "ReadVFALUV", "ReadVFALUF", m.MX,
                             f.SEW, forceMergeOpRead=true>;
     }
->>>>>>> origin/sifive-dev
   }
 
   foreach f = FPList in {

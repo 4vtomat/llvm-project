@@ -41,15 +41,9 @@ include "RISCVMacroFusion.td"
 //===----------------------------------------------------------------------===//
 
 include "RISCVSchedRocket.td"
-<<<<<<< HEAD
-//include "RISCVSchedSiFive7.td"
-//include "RISCVSchedSiFiveP400.td"
-//include "RISCVSchedSiFiveP600.td"
-=======
 //include "RISCVSchedSiFive7.td" // SIFIVE
 //include "RISCVSchedSiFiveP400.td" // SIFIVE
 //include "RISCVSchedSiFiveP600.td" // SIFIVE
->>>>>>> origin/sifive-dev
 include "RISCVSchedSyntacoreSCR1.td"
 include "RISCVSchedXiangShanNanHu.td"
 #ifdef SIFIVE_CUSTOMIZATION
