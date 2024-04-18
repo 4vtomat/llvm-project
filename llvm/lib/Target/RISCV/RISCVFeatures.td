@@ -68,9 +68,7 @@ def HasVendorXSfpgflushdlone :
 def FeatureStdExtI
     : SubtargetFeature<"i", "HasStdExtI", "true",
                        "'I' (Base Integer Instruction Set)">;
-def HasStdExtI : Predicate<"Subtarget->hasStdExtI()">,
-                 AssemblerPredicate<(all_of FeatureStdExtI),
-                                    "'I' (Base Integer Instruction Set)">;
+
 def FeatureStdExtZic64b
     : SubtargetFeature<"zic64b", "HasStdExtZic64b", "true",
                        "'Zic64b' (Cache Block Size Is 64 Bytes)">;
@@ -1393,8 +1391,6 @@ def RV64           : HwMode<"+64bit", [IsRV64]>;
 def FeatureRVE
     : SubtargetFeature<"e", "IsRVE", "true",
                        "Implements RV{32,64}E (provides 16 rather than 32 GPRs)">;
-def IsRVE : Predicate<"Subtarget->isRVE()">,
-            AssemblerPredicate<(all_of FeatureRVE)>;
 
 def FeatureRelax
     : SubtargetFeature<"relax", "EnableLinkerRelax", "true",
