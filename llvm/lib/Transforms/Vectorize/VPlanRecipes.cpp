@@ -905,9 +905,10 @@ void VPInstruction::execute(VPTransformState &State) {
        getOpcode() == VPInstruction::ComputeReductionResult);
 #if SIFIVE_CUSTOMIZATION
   GeneratesPerFirstLaneOnly = GeneratesPerFirstLaneOnly ||
-    getOpcode() == VPInstruction::CSAVLSel ||
-    getOpcode() == VPInstruction::CSAAnyActive ||
-    getOpcode() == VPInstruction::ExitingCond;
+                              getOpcode() == VPInstruction::CSAVLSel ||
+                              getOpcode() == VPInstruction::CSAVLPhi ||
+                              getOpcode() == VPInstruction::CSAAnyActive ||
+                              getOpcode() == VPInstruction::ExitingCond;
 #endif // SIFIVE_CUSTOMIZATION
   bool GeneratesPerAllLanes = doesGeneratePerAllLanes();
   for (unsigned Part = 0; Part < State.UF; ++Part) {

@@ -410,7 +410,7 @@ define <vscale x 4 x i32> @test_vmulh_scalar(i32 %x, i32 %y) {
 ; CHECK-NEXT:    [[TMP2:%.*]] = sext i32 [[X:%.*]] to i64
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul nsw i64 [[TMP1]], [[TMP2]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = lshr i64 [[TMP3]], 32
-; CHECK-NEXT:    [[TMP5:%.*]] = trunc i64 [[TMP4]] to i32
+; CHECK-NEXT:    [[TMP5:%.*]] = trunc nuw i64 [[TMP4]] to i32
 ; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP5]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[B]]
 ;
@@ -446,7 +446,7 @@ define <vscale x 4 x i32> @test_vmulhu_scalar(i32 %x, i32 %y) {
 ; CHECK-NEXT:    [[TMP2:%.*]] = zext i32 [[X:%.*]] to i64
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP1]], [[TMP2]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = lshr i64 [[TMP3]], 32
-; CHECK-NEXT:    [[TMP5:%.*]] = trunc i64 [[TMP4]] to i32
+; CHECK-NEXT:    [[TMP5:%.*]] = trunc nuw i64 [[TMP4]] to i32
 ; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP5]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[B]]
 ;

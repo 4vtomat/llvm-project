@@ -83,10 +83,10 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; PROFITABLE-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; PROFITABLE:       vector.body:
 ; PROFITABLE-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
-; PROFITABLE-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; PROFITABLE-NEXT:    [[TMP31:%.*]] = add i64 [[INDEX]], 0
+; PROFITABLE-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT1:%.*]], [[VECTOR_BODY]] ]
 ; PROFITABLE-NEXT:    [[TMP32:%.*]] = sub i64 [[N]], [[EVL_BASED_IV]]
 ; PROFITABLE-NEXT:    [[TMP33:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP32]], i32 1, i1 true)
+; PROFITABLE-NEXT:    [[TMP31:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; PROFITABLE-NEXT:    [[TMP34:%.*]] = getelementptr [[STRUCT_SU3_VECTOR:%.*]], ptr [[A]], i64 [[TMP31]]
 ; PROFITABLE-NEXT:    [[TMP35:%.*]] = getelementptr [[STRUCT_SU3_VECTOR]], ptr [[B]], i64 [[TMP31]]
 ; PROFITABLE-NEXT:    [[TMP36:%.*]] = getelementptr double, ptr [[TMP34]], i32 0
@@ -127,9 +127,9 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; PROFITABLE-NEXT:    [[TMP54:%.*]] = mul i32 [[TMP33]], 6
 ; PROFITABLE-NEXT:    call void @llvm.vp.store.nxv6f64.p0(<vscale x 6 x double> [[INTERLEAVED_VEC]], ptr align 8 [[TMP53]], <vscale x 6 x i1> shufflevector (<vscale x 6 x i1> insertelement (<vscale x 6 x i1> poison, i1 true, i64 0), <vscale x 6 x i1> poison, <vscale x 6 x i32> zeroinitializer), i32 [[TMP54]])
 ; PROFITABLE-NEXT:    [[TMP55:%.*]] = zext i32 [[TMP33]] to i64
-; PROFITABLE-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[EVL_BASED_IV]], [[TMP55]]
+; PROFITABLE-NEXT:    [[INDEX_EVL_NEXT1]] = add i64 [[TMP55]], [[EVL_BASED_IV]]
 ; PROFITABLE-NEXT:    [[TMP56:%.*]] = zext i32 [[TMP33]] to i64
-; PROFITABLE-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP56]]
+; PROFITABLE-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[EVL_BASED_IV]], [[TMP56]]
 ; PROFITABLE-NEXT:    [[TMP57:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; PROFITABLE-NEXT:    br i1 [[TMP57]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; PROFITABLE:       middle.block:

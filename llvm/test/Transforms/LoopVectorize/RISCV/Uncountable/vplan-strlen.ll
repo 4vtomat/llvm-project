@@ -3,7 +3,7 @@
 
 define i64 @strlen_i8(ptr %start) {
 ; VPLANS-LABEL: Checking a loop in 'strlen_i8'
-; VPLANS: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2,vscale x 4,vscale x 8},UF>=1' {
+; VPLANS: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2,vscale x 4,vscale x 8},UF={1}' {
 ; VPLANS-EMPTY:
 ; VPLANS-NEXT: vector.ph:
 ; VPLANS-NEXT: Successor(s): vector loop
@@ -12,15 +12,17 @@ define i64 @strlen_i8(ptr %start) {
 ; VPLANS-NEXT:   vector.body:
 ; VPLANS-NEXT:     EMIT vp<%2> = CANONICAL-INDUCTION ir<0>, vp<%11>
 ; VPLANS-NEXT:     EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%3> = phi ir<0>, vp<%11>
-; VPLANS-NEXT:     EMIT ir<%end.0> = WIDEN-POINTER-INDUCTION ir<%start>, 1
-; VPLANS-NEXT:     EMIT vp<%5> = EXPLICIT-VECTOR-LENGTH
-; VPLANS-NEXT:     vp<%6> = vector-pointer ir<%end.0>
-; VPLANS-NEXT:     WIDEN-SPECULATIVE-MEMORY-INSTRUCTION ir<%0>, vp<%8> = load vp<%6>
+; VPLANS-NEXT:     EMIT vp<%4> = EXPLICIT-VECTOR-LENGTH
+; VPLANS-NEXT:     vp<%5> = SCALAR-STEPS vp<%3>, ir<1>
+; VPLANS-NEXT:     EMIT vp<%6> = ptradd ir<%start>, vp<%5>
+; VPLANS-NEXT:     vp<%7> = vector-pointer vp<%6>
+; VPLANS-NEXT:     WIDEN-SPECULATIVE-MEMORY-INSTRUCTION ir<%0>, vp<%8> = load vp<%7>	unit-strided
 ; VPLANS-NEXT:     WIDEN ir<%cmp.not> = icmp eq ir<%0>, ir<0>
-; VPLANS-NEXT:     EMIT vp<%10> = exiting-cond ir<%cmp.not>
-; VPLANS-NEXT:     EMIT vp<%11> = EXPLICIT-VECTOR-LENGTH + nuw vp<%3>, vp<%8>
-; VPLANS-NEXT:     EMIT vp<%12> = add nuw vp<%3>, vp<%8>
-; VPLANS-NEXT:     EMIT branch-on-cond vp<%10>
+; VPLANS-NEXT:     EMIT vp<%9> = exiting-cond ir<%cmp.not>
+; VPLANS-NEXT:     SCALAR-CAST vp<%10> = zext vp<%8> to i64
+; VPLANS-NEXT:     EMIT vp<%11> = add nuw vp<%10>, vp<%3>
+; VPLANS-NEXT:     EMIT vp<%12> = add nuw vp<%2>, vp<%8>
+; VPLANS-NEXT:     EMIT branch-on-cond vp<%9>
 ; VPLANS-NEXT:   No successors
 ; VPLANS-NEXT: }
 entry:

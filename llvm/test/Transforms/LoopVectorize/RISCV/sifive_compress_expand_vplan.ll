@@ -1,7 +1,7 @@
 ; REQUIRES: asserts
 ; RUN: opt -passes=loop-vectorize -mcpu=sifive-x280 -disable-output -debug-only=loop-vectorize %s -mtriple riscv64 2>&1 | FileCheck %s
 
-; CHECK: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2,vscale x 4,vscale x 8},UF>=1' {
+; CHECK: VPlan 'Initial VPlan for VF={vscale x 1,vscale x 2,vscale x 4,vscale x 8},UF={1}' {
 ; CHECK-NEXT: Live-in vp<%0> = vector-trip-count
 ; CHECK-NEXT: vp<%1> = original trip-count
 ; CHECK-EMPTY:
@@ -14,24 +14,25 @@
 ; CHECK-EMPTY:
 ; CHECK-NEXT: <x1> vector loop: {
 ; CHECK-NEXT:   vector.body:
-; CHECK-NEXT:     EMIT vp<%2> = CANONICAL-INDUCTION ir<0>, vp<%16>
-; CHECK-NEXT:     EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%3> = phi ir<0>, vp<%16>
+; CHECK-NEXT:     EMIT vp<%2> = CANONICAL-INDUCTION ir<0>, vp<%11>
+; CHECK-NEXT:     EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%3> = phi ir<0>, vp<%10>
 ; CHECK-NEXT:     EMIT ir<%ret.011> = monotonic-phi ir<0>, ir<%inc>
-; CHECK-NEXT:     vp<%5> = SCALAR-STEPS vp<%2>, ir<1>
-; CHECK-NEXT:     EMIT vp<%6> = EXPLICIT-VECTOR-LENGTH vp<%3>, vp<%0>
+; CHECK-NEXT:     EMIT vp<%4> = EXPLICIT-VECTOR-LENGTH vp<%3>, vp<%1>
+; CHECK-NEXT:     vp<%5> = SCALAR-STEPS vp<%3>, ir<1>
 ; CHECK-NEXT:     CLONE ir<%arrayidx> = getelementptr inbounds ir<%b>, vp<%5>
-; CHECK-NEXT:     vp<%8> = vector-pointer ir<%arrayidx>
-; CHECK-NEXT:     WIDEN ir<%0> = load vp<%8>
+; CHECK-NEXT:     vp<%6> = vector-pointer ir<%arrayidx>
+; CHECK-NEXT:     WIDEN ir<%0> = load vp<%6>	unit-strided
 ; CHECK-NEXT:     WIDEN ir<%tobool.not> = icmp eq ir<%0>, ir<0>
-; CHECK-NEXT:     EMIT vp<%11> = not ir<%tobool.not>
+; CHECK-NEXT:     EMIT vp<%7> = not ir<%tobool.not>
 ; CHECK-NEXT:     CLONE ir<%idx.ext> = sext ir<%ret.011>
 ; CHECK-NEXT:     CLONE ir<%add.ptr> = getelementptr ir<%a>, ir<%idx.ext>
-; CHECK-NEXT:     vp<%14> = vector-pointer ir<%add.ptr>
-; CHECK-NEXT:     WIDEN store vp<%14>, ir<%0>, vp<%11>
-; CHECK-NEXT:     monotonic-update ir<%inc> = add ir<%ret.011>, ir<1> @vp<%11>
-; CHECK-NEXT:     EMIT vp<%16> = EXPLICIT-VECTOR-LENGTH + vp<%3>, vp<%6>
-; CHECK-NEXT:     EMIT vp<%17> = add vp<%3>, vp<%6>
-; CHECK-NEXT:     EMIT branch-on-count vp<%16>, vp<%0>
+; CHECK-NEXT:     vp<%8> = vector-pointer ir<%add.ptr>
+; CHECK-NEXT:     WIDEN store vp<%8>, ir<%0>, vp<%7>	unit-strided
+; CHECK-NEXT:     monotonic-update ir<%inc> = add ir<%ret.011>, ir<1> @vp<%7>
+; CHECK-NEXT:     SCALAR-CAST vp<%9> = zext vp<%4> to i64
+; CHECK-NEXT:     EMIT vp<%10> = add vp<%9>, vp<%3>
+; CHECK-NEXT:     EMIT vp<%11> = add vp<%3>, vp<%4>
+; CHECK-NEXT:     EMIT branch-on-count vp<%11>, vp<%0>
 ; CHECK-NEXT:   No successors
 ; CHECK-NEXT: }
 ; CHECK-NEXT: Successor(s): middle.block
