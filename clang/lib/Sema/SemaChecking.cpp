@@ -6205,7 +6205,7 @@ bool Sema::CheckRISCVBuiltinFunctionCall(const TargetInfo &TI,
     return BuiltinConstantArgRange(TheCall, 4, 0, 3);
   }
 #else
-    return SemaBuiltinConstantArgRange(TheCall, 4, 0, 3);
+    return BuiltinConstantArgRange(TheCall, 4, 0, 3);
 #endif // SIFIVE_CUSTOMIZATION
   case RISCVVector::BI__builtin_rvv_vfsqrt_v_rm:
   case RISCVVector::BI__builtin_rvv_vfrec7_v_rm:
