@@ -89,18 +89,21 @@ def TuneSiFiveP400 : SubtargetFeature<"sifive-p400", "RISCVProcFamily", "SiFiveP
                                       [TuneNoDefaultUnroll,
                                        TuneConditionalCompressedMoveFusion,
                                        TuneLUIADDIFusion,
+                                       TuneNoOptimizedZeroStrideLoad,
                                        TuneAUIPCADDIFusion]>;
 def TuneSiFiveP500 : SubtargetFeature<"sifive-p500", "RISCVProcFamily", "SiFiveP500",
                                       "SiFive P500-Series processors",
                                       [TuneNoDefaultUnroll,
                                        TuneConditionalCompressedMoveFusion,
                                        TuneLUIADDIFusion,
+                                       TuneNoOptimizedZeroStrideLoad,
                                        TuneAUIPCADDIFusion]>;
 def TuneSiFiveP600 : SubtargetFeature<"sifive-p600", "RISCVProcFamily", "SiFiveP600",
                                       "SiFive P600-Series processors",
                                       [TuneNoDefaultUnroll,
                                        TuneConditionalCompressedMoveFusion,
                                        TuneLUIADDIFusion,
+                                       TuneNoOptimizedZeroStrideLoad,
                                        TuneAUIPCADDIFusion]>;
 
 def TuneSiFiveP800 : SubtargetFeature<"sifive-p800", "RISCVProcFamily", "SiFiveP800",
@@ -108,6 +111,7 @@ def TuneSiFiveP800 : SubtargetFeature<"sifive-p800", "RISCVProcFamily", "SiFiveP
                                       [TuneNoDefaultUnroll,
                                        TuneConditionalCompressedMoveFusion,
                                        TuneLUIADDIFusion,
+                                       TuneNoOptimizedZeroStrideLoad,
                                        TuneAUIPCADDIFusion]>;
 
 def SIFIVE_6 : RISCVTuneProcessorModel<"sifive-6-series", SiFive6Model,

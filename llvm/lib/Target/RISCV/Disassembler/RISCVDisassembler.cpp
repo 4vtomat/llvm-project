@@ -255,6 +255,49 @@ static DecodeStatus DecodeVRM8RegisterClass(MCInst &Inst, uint32_t RegNo,
   return MCDisassembler::Success;
 }
 
+#if SIFIVE_CUSTOMIZATION
+static DecodeStatus DecodeTRRegisterClass(MCInst &Inst, uint32_t RegNo,
+                                          uint64_t Address,
+                                          const MCDisassembler *Decoder) {
+  if (RegNo > 15)
+    return MCDisassembler::Fail;
+
+  MCRegister Reg = RISCV::T0 + RegNo;
+  Inst.addOperand(MCOperand::createReg(Reg));
+  return MCDisassembler::Success;
+}
+
+static DecodeStatus DecodeTRM2RegisterClass(MCInst &Inst, uint32_t RegNo,
+                                            uint64_t Address,
+                                            const MCDisassembler *Decoder) {
+  if (RegNo > 15 || RegNo % 2)
+    return MCDisassembler::Fail;
+
+  MCRegister Reg = RISCV::T0 + RegNo;
+  Inst.addOperand(MCOperand::createReg(Reg));
+  return MCDisassembler::Success;
+}
+
+static DecodeStatus DecodeTRM4RegisterClass(MCInst &Inst, uint32_t RegNo,
+                                            uint64_t Address,
+                                            const MCDisassembler *Decoder) {
+  if (RegNo > 15 || RegNo % 4)
+    return MCDisassembler::Fail;
+
+  MCRegister Reg = RISCV::T0 + RegNo;
+  Inst.addOperand(MCOperand::createReg(Reg));
+  return MCDisassembler::Success;
+}
+
+static DecodeStatus decodeMammothWWEE(MCInst &Inst, uint32_t Imm,
+                                      int64_t Address,
+                                      const MCDisassembler *Decoder) {
+  assert(RISCVII::isValidMammothWWEE(Imm) && "Invalid Mammoth wwee.");
+  Inst.addOperand(MCOperand::createImm(Imm));
+  return MCDisassembler::Success;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 static DecodeStatus decodeVMaskReg(MCInst &Inst, uint64_t RegNo,
                                    uint64_t Address,
                                    const MCDisassembler *Decoder) {
@@ -629,6 +672,35 @@ DecodeStatus RISCVDisassembler::getInstruction(MCInst &MI, uint64_t &Size,
                           "SiFive sf.cflush.d.l1 custom opcode table");
     TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfcease, DecoderTableXSfcease32,
                           "SiFive sf.cease custom opcode table");
+    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfmmbase,
+                          DecoderTableXSfmmbase32,
+                          "SiFive XSfmmbase extension custom opcode table");
+    TRY_TO_DECODE_FEATURE(
+        RISCV::FeatureVendorXSfmm32ea, DecoderTableXSfmm32eaOrXSfmmbase32,
+        "SiFive XSfmm32ea/XSfmmbase extension custom opcode table");
+    TRY_TO_DECODE_FEATURE(
+        RISCV::FeatureVendorXSfmmbase, DecoderTableXSfmm32eaOrXSfmmbase32,
+        "SiFive XSfmm32ea/XSfmmbase extension custom opcode table");
+    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfmm32a, DecoderTableXSfmm32a32,
+                          "SiFive XSfmm32a extension custom opcode table");
+    TRY_TO_DECODE_FEATURE(
+        RISCV::FeatureVendorXSfmm32a,
+        DecoderTableXSfmm32eaOrXSfmm32aOrXSfmm64a32,
+        "SiFive XSfmm32ea/XSfmm32a/XSfmm64a extension custom opcode table");
+    TRY_TO_DECODE_FEATURE(
+        RISCV::FeatureVendorXSfmm64a,
+        DecoderTableXSfmm32eaOrXSfmm32aOrXSfmm64a32,
+        "SiFive XSfmm32ea/XSfmm32a/XSfmm64a extension custom opcode table");
+    TRY_TO_DECODE_FEATURE(
+        RISCV::FeatureVendorXSfmm32ea,
+        DecoderTableXSfmm32eaOrXSfmm32aOrXSfmm64a32,
+        "SiFive XSfmm32ea/XSfmm32a/XSfmm64a extension custom opcode table");
+    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfmm32a8f,
+                          DecoderTableXSfmm32a8f32,
+                          "SiFive XSfmm32a8f extension custom opcode table");
+    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfmm32a4i,
+                          DecoderTableXSfmm32a4i32,
+                          "SiFive XSfmm32a4i extension custom opcode table");
     TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXCVbitmanip,
                           DecoderTableXCVbitmanip32,
                           "CORE-V Bit Manipulation custom opcode table");

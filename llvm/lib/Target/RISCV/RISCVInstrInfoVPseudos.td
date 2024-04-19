@@ -6233,7 +6233,9 @@ defm PseudoVSS : VPseudoSStore;
 //===----------------------------------------------------------------------===//
 
 // Vector Indexed Loads and Stores
+let hasPostISelHook=1 in {
 defm PseudoVLUX : VPseudoILoad<Ordered=false>;
+} // hasPostISelHook=1
 defm PseudoVLOX : VPseudoILoad<Ordered=true>;
 defm PseudoVSOX : VPseudoIStore<Ordered=true>;
 defm PseudoVSUX : VPseudoIStore<Ordered=false>;

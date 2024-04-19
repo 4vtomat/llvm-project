@@ -216,6 +216,18 @@ void RISCVInstPrinter::printVTypeI(const MCInst *MI, unsigned OpNo,
   RISCVVType::printVType(Imm, O);
 }
 
+#if SIFIVE_CUSTOMIZATION
+void RISCVInstPrinter::printMammothWWEE(const MCInst *MI, unsigned OpNo,
+                                        const MCSubtargetInfo &STI,
+                                        raw_ostream &O) {
+  unsigned Imm = MI->getOperand(OpNo).getImm();
+  unsigned SEW = 1 << (((Imm >> 1) & 3) + 3);
+  O << "e" << SEW;
+  unsigned TWiden = 1 << (((Imm >> 3) & 3) - 1);
+  O << ", w" << TWiden;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 void RISCVInstPrinter::printRlist(const MCInst *MI, unsigned OpNo,
                                   const MCSubtargetInfo &STI, raw_ostream &O) {
   unsigned Imm = MI->getOperand(OpNo).getImm();

@@ -16,6 +16,7 @@
 #include "MCTargetDesc/RISCVMCTargetDesc.h"
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/APInt.h"
+#include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/StringRef.h"
 #include "llvm/ADT/StringSwitch.h"
 #include "llvm/MC/MCInstrDesc.h"
@@ -307,6 +308,19 @@ enum {
   // multiple "bitmask" flags.
   MO_DIRECT_FLAG_MASK = 31
 };
+
+#if SIFIVE_CUSTOMIZATION
+static inline bool isValidMammothWWEE(unsigned WWEE) {
+  // check 0wwee0 & ~0b11110 == 0
+  // also check wwee can't be reserved:
+  //  0000, 0001, 0010, 1110, 0011, 1011, 1111
+  constexpr unsigned ReservedList[] = {0x0, 0x1, 0x2, 0xe, 0x3, 0xb, 0xf};
+  return (WWEE & ~0x1e) == 0 &&
+         llvm::all_of(ReservedList, [&](unsigned Reserved) {
+           return ((WWEE >> 1) & 15) != Reserved;
+         });
+}
+#endif // SIFIVE_CUSTOMIZATION
 } // namespace RISCVII
 
 namespace RISCVOp {
@@ -346,8 +360,15 @@ enum OperandType : unsigned {
   OPERAND_RVKRNUM_0_7,
   OPERAND_RVKRNUM_1_10,
   OPERAND_RVKRNUM_2_14,
+<<<<<<< HEAD
   OPERAND_SPIMM,
   OPERAND_LAST_RISCV_IMM = OPERAND_SPIMM,
+=======
+#if SIFIVE_CUSTOMIZATION
+  OPERAND_MammothWWEE,
+  OPERAND_LAST_RISCV_IMM = OPERAND_MammothWWEE,
+#endif // SIFIVE_CUSTOMIZATION
+>>>>>>> origin/sifive-dev
   // Operand is either a register or uimm5, this is used by V extension pseudo
   // instructions to represent a value that be passed as AVL to either vsetvli
   // or vsetivli.
