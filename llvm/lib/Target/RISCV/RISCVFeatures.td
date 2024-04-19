@@ -69,6 +69,10 @@ def FeatureStdExtI
     : SubtargetFeature<"i", "HasStdExtI", "true",
                        "'I' (Base Integer Instruction Set)">;
 
+def FeatureStdExtE
+    : SubtargetFeature<"e", "HasStdExtE", "true",
+                       "Implements RV{32,64}E (provides 16 rather than 32 GPRs)">;
+
 def FeatureStdExtZic64b
     : SubtargetFeature<"zic64b", "HasStdExtZic64b", "true",
                        "'Zic64b' (Cache Block Size Is 64 Bytes)">;
@@ -1387,10 +1391,6 @@ def IsRV32 : Predicate<"!Subtarget->is64Bit()">,
 
 defvar RV32 = DefaultMode;
 def RV64           : HwMode<"+64bit", [IsRV64]>;
-
-def FeatureRVE
-    : SubtargetFeature<"e", "IsRVE", "true",
-                       "Implements RV{32,64}E (provides 16 rather than 32 GPRs)">;
 
 def FeatureRelax
     : SubtargetFeature<"relax", "EnableLinkerRelax", "true",
