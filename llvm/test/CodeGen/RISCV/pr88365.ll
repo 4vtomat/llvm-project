@@ -13,8 +13,7 @@ define void @foo() {
 ; CHECK-NEXT:    .cfi_def_cfa_offset -16
 ; CHECK-NEXT:    addi a0, sp, 4
 ; CHECK-NEXT:    call use
-; CHECK-NEXT:    li a0, -2048
-; CHECK-NEXT:    add sp, sp, a0
+; CHECK-NEXT:    addi sp, sp, -2048
 ; CHECK-NEXT:    lw ra, 2028(sp) # 4-byte Folded Reload
 ; CHECK-NEXT:    addi sp, sp, 2032
 ; CHECK-NEXT:    ret

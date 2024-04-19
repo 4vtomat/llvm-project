@@ -525,17 +525,6 @@ define <vscale x 32 x half> @vp_roundtozero_nxv32f16_unmasked(<vscale x 32 x hal
 ;
 ; ZVFHMIN-LABEL: vp_roundtozero_nxv32f16_unmasked:
 ; ZVFHMIN:       # %bb.0:
-<<<<<<< HEAD
-; ZVFHMIN-NEXT:    vsetvli a1, zero, e8, m4, ta, ma
-; ZVFHMIN-NEXT:    vmset.m v16
-=======
-; ZVFHMIN-NEXT:    addi sp, sp, -16
-; ZVFHMIN-NEXT:    .cfi_def_cfa_offset 16
-; ZVFHMIN-NEXT:    csrr a1, vlenb
-; ZVFHMIN-NEXT:    slli a1, a1, 3
-; ZVFHMIN-NEXT:    sub sp, sp, a1
-; ZVFHMIN-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * vlenb
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
 ; ZVFHMIN-NEXT:    csrr a2, vlenb
 ; ZVFHMIN-NEXT:    slli a1, a2, 1
 ; ZVFHMIN-NEXT:    sub a3, a0, a1

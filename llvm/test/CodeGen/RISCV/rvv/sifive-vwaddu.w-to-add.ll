@@ -10,20 +10,22 @@ declare <vscale x 1 x i32> @llvm.vp.add.nxv1i32(<vscale x 1 x i32>, <vscale x 1 
 define <vscale x 1 x i32> @add_splat(<vscale x 1 x i16> %a, <vscale x 1 x i16> %b, i32 %evl)
 ; RV32-LABEL: add_splat:
 ; RV32:       # %bb.0: # %entry
+; RV32-NEXT:    li a1, 1
 ; RV32-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
-; RV32-NEXT:    vwaddu.vv v10, v9, v8
-; RV32-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; RV32-NEXT:    vadd.vi v8, v10, 1
+; RV32-NEXT:    vwaddu.vx v10, v8, a1
+; RV32-NEXT:    vwaddu.wv v10, v10, v9
+; RV32-NEXT:    vmv1r.v v8, v10
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: add_splat:
 ; RV64:       # %bb.0: # %entry
 ; RV64-NEXT:    slli a0, a0, 32
 ; RV64-NEXT:    srli a0, a0, 32
+; RV64-NEXT:    li a1, 1
 ; RV64-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
-; RV64-NEXT:    vwaddu.vv v10, v9, v8
-; RV64-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
-; RV64-NEXT:    vadd.vi v8, v10, 1
+; RV64-NEXT:    vwaddu.vx v10, v8, a1
+; RV64-NEXT:    vwaddu.wv v10, v10, v9
+; RV64-NEXT:    vmv1r.v v8, v10
 ; RV64-NEXT:    ret
   nounwind {
 entry:

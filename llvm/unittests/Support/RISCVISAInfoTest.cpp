@@ -739,202 +739,6 @@ TEST(RiscvExtensionsHelp, CheckExtensions) {
   std::string ExpectedOutput =
 R"(All available -march extensions for RISC-V
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-    Name                Version   Description
-    i                   2.1       This is a long dummy description
-    e                   2.0
-    m                   2.0
-    a                   2.1
-    f                   2.2
-    d                   2.2
-    c                   2.0
-    v                   1.0
-    h                   1.0
-    zic64b              1.0
-    zicbom              1.0
-    zicbop              1.0
-    zicboz              1.0
-    ziccamoa            1.0
-    ziccif              1.0
-    zicclsm             1.0
-    ziccrse             1.0
-    zicntr              2.0
-    zicond              1.0
-    zicsr               2.0
-    zifencei            2.0
-    zihintntl           1.0
-    zihintpause         2.0
-    zihpm               2.0
-    zmmul               1.0
-    za128rs             1.0
-    za64rs              1.0
-    zacas               1.0
-    zawrs               1.0
-    zfa                 1.0
-    zfh                 1.0
-    zfhmin              1.0
-    zfinx               1.0
-    zdinx               1.0
-    zca                 1.0
-    zcb                 1.0
-    zcd                 1.0
-    zce                 1.0
-    zcf                 1.0
-    zcmp                1.0
-    zcmt                1.0
-    zba                 1.0
-    zbb                 1.0
-    zbc                 1.0
-    zbkb                1.0
-    zbkc                1.0
-    zbkx                1.0
-    zbs                 1.0
-    zk                  1.0
-    zkn                 1.0
-    zknd                1.0
-    zkne                1.0
-    zknh                1.0
-    zkr                 1.0
-    zks                 1.0
-    zksed               1.0
-    zksh                1.0
-    zkt                 1.0
-    zvbb                1.0
-    zvbc                1.0
-    zve32f              1.0
-    zve32x              1.0
-    zve64d              1.0
-    zve64f              1.0
-    zve64x              1.0
-    zvfh                1.0
-    zvfhmin             1.0
-    zvkb                1.0
-    zvkb                0.1
-    zvkg                1.0
-    zvkg                0.1
-    zvkn                1.0
-    zvknc               1.0
-    zvkned              1.0
-    zvkng               1.0
-    zvknha              1.0
-    zvknha              0.1
-    zvknhb              1.0
-    zvknhb              0.1
-    zvkns               0.1
-    zvks                1.0
-    zvksc               1.0
-    zvksed              1.0
-    zvksed              0.1
-    zvksg               1.0
-    zvksh               1.0
-    zvksh               0.1
-    zvkt                1.0
-    zvl1024b            1.0
-    zvl128b             1.0
-    zvl16384b           1.0
-    zvl2048b            1.0
-    zvl256b             1.0
-    zvl32768b           1.0
-    zvl32b              1.0
-    zvl4096b            1.0
-    zvl512b             1.0
-    zvl64b              1.0
-    zvl65536b           1.0
-    zvl8192b            1.0
-    zhinx               1.0
-    zhinxmin            1.0
-    sdext               1.0
-    sdtrig              1.0
-    shcounterenw        1.0
-    shgatpa             1.0
-    shtvala             1.0
-    shvsatpa            1.0
-    shvstvala           1.0
-    shvstvecd           1.0
-    smaia               1.0
-    smepmp              1.0
-    smstateen           1.0
-    ss                  1.13
-    ss                  1.12
-    ssaia               1.0
-    ssccptr             1.0
-    sscofpmf            1.0
-    sscounterenw        1.0
-    ssstateen           1.0
-    ssstrict            1.0
-    sstc                1.0
-    sstvala             1.0
-    sstvecd             1.0
-    ssu64xl             1.0
-    svade               1.0
-    svadu               1.0
-    svbare              1.0
-    svinval             1.0
-    svnapot             1.0
-    svpbmt              1.0
-    xcvalu              1.0
-    xcvbi               1.0
-    xcvbitmanip         1.0
-    xcvelw              1.0
-    xcvmac              1.0
-    xcvmem              1.0
-    xcvsimd             1.0
-    xsfpgflushdlone     0.1
-    xsfvcp              1.0
-    xsfvfexpa           0.1
-    xsfvfhbfmin         0.1
-    xsfvfnrclipxfqf     1.0
-    xsfvfnrclipxfqf     0.1
-    xsfvfwmaccqqq       1.0
-    xsfvfwmaccqqq       0.1
-    xsfvqdotq           0.1
-    xsfvqmaccdod        1.0
-    xsfvqmaccdod        0.1
-    xsfvqmaccqoq        1.0
-    xsfvqmaccqoq        0.1
-    xsifivecdiscarddlone0.1
-    xsifivecflushdlone  0.1
-    xtheadba            1.0
-    xtheadbb            1.0
-    xtheadbs            1.0
-    xtheadcmo           1.0
-    xtheadcondmov       1.0
-    xtheadfmemidx       1.0
-    xtheadmac           1.0
-    xtheadmemidx        1.0
-    xtheadmempair       1.0
-    xtheadsync          1.0
-    xtheadvdot          1.0
-    xventanacondops     1.0
-
-Experimental extensions
-    zicfilp             0.4       This is a long dummy description
-    zicfiss             0.4
-    zimop               0.1
-    zaamo               0.2
-    zabha               1.0
-    zalasr              0.1
-    zalrsc              0.2
-    zfbfmin             1.0
-    zcmop               0.2
-    zjid                0.0
-    ztso                0.1
-    zvfbfmin            1.0
-    zvfbfwma            1.0
-    smmpm               0.8
-    smnpm               0.8
-    smrnmi              0.5
-    smwg                0.3
-    smwgd               0.3
-    ssnpm               0.8
-    sspm                0.8
-    ssqosid             1.0
-    sswg                0.3
-    supm                0.8
-=======
-=======
->>>>>>> origin/sifive-dev
     Name                 Version   Description
     i                    2.1       This is a long dummy description
     e                    2.0
@@ -960,18 +764,12 @@ Experimental extensions
     zihintntl            1.0
     zihintpause          2.0
     zihpm                2.0
-<<<<<<< HEAD
     zimop                1.0
-=======
->>>>>>> origin/sifive-dev
     zmmul                1.0
     za128rs              1.0
     za64rs               1.0
     zacas                1.0
-<<<<<<< HEAD
-=======
     zama16b              1.0
->>>>>>> origin/sifive-dev
     zawrs                1.0
     zfa                  1.0
     zfh                  1.0
@@ -983,10 +781,7 @@ Experimental extensions
     zcd                  1.0
     zce                  1.0
     zcf                  1.0
-<<<<<<< HEAD
     zcmop                1.0
-=======
->>>>>>> origin/sifive-dev
     zcmp                 1.0
     zcmt                 1.0
     zba                  1.0
@@ -1016,38 +811,19 @@ Experimental extensions
     zvfh                 1.0
     zvfhmin              1.0
     zvkb                 1.0
-<<<<<<< HEAD
     zvkg                 1.0
-=======
-    zvkb                 0.1
-    zvkg                 1.0
-    zvkg                 0.1
->>>>>>> origin/sifive-dev
     zvkn                 1.0
     zvknc                1.0
     zvkned               1.0
     zvkng                1.0
     zvknha               1.0
-<<<<<<< HEAD
     zvknhb               1.0
-    zvks                 1.0
-    zvksc                1.0
-    zvksed               1.0
-    zvksg                1.0
-    zvksh                1.0
-=======
-    zvknha               0.1
-    zvknhb               1.0
-    zvknhb               0.1
     zvkns                0.1
     zvks                 1.0
     zvksc                1.0
     zvksed               1.0
-    zvksed               0.1
     zvksg                1.0
     zvksh                1.0
-    zvksh                0.1
->>>>>>> origin/sifive-dev
     zvkt                 1.0
     zvl1024b             1.0
     zvl128b              1.0
@@ -1063,11 +839,8 @@ Experimental extensions
     zvl8192b             1.0
     zhinx                1.0
     zhinxmin             1.0
-<<<<<<< HEAD
-=======
     sdext                1.0
     sdtrig               1.0
->>>>>>> origin/sifive-dev
     shcounterenw         1.0
     shgatpa              1.0
     shtvala              1.0
@@ -1076,12 +849,9 @@ Experimental extensions
     shvstvecd            1.0
     smaia                1.0
     smepmp               1.0
-<<<<<<< HEAD
-=======
     smstateen            1.0
     ss                   1.13
     ss                   1.12
->>>>>>> origin/sifive-dev
     ssaia                1.0
     ssccptr              1.0
     sscofpmf             1.0
@@ -1106,14 +876,6 @@ Experimental extensions
     xcvmem               1.0
     xcvsimd              1.0
     xsfcease             1.0
-<<<<<<< HEAD
-    xsfvcp               1.0
-    xsfvfnrclipxfqf      1.0
-    xsfvfwmaccqqq        1.0
-    xsfvqmaccdod         1.0
-    xsfvqmaccqoq         1.0
-    xsifivecdiscarddlone 1.0
-=======
     xsfpgflushdlone      0.1
     xsfvcp               1.0
     xsfvfexpa            0.1
@@ -1127,10 +889,8 @@ Experimental extensions
     xsfvqmaccdod         0.1
     xsfvqmaccqoq         1.0
     xsfvqmaccqoq         0.1
-    xsifivecdiscarddlone 0.1
     xsifivecdiscarddlone 1.0
     xsifivecflushdlone   0.1
->>>>>>> origin/sifive-dev
     xsifivecflushdlone   1.0
     xtheadba             1.0
     xtheadbb             1.0
@@ -1148,32 +908,17 @@ Experimental extensions
 Experimental extensions
     zicfilp              0.4       This is a long dummy description
     zicfiss              0.4
-<<<<<<< HEAD
-=======
-    zimop                0.1
->>>>>>> origin/sifive-dev
     zaamo                0.2
     zabha                1.0
     zalasr               0.1
     zalrsc               0.2
     zfbfmin              1.0
-<<<<<<< HEAD
-=======
-    zcmop                0.2
     zjid                 0.0
->>>>>>> origin/sifive-dev
     ztso                 0.1
     zvfbfmin             1.0
     zvfbfwma             1.0
     smmpm                0.8
     smnpm                0.8
-<<<<<<< HEAD
-    ssnpm                0.8
-    sspm                 0.8
-    ssqosid              1.0
-    supm                 0.8
->>>>>>> 6f1e23b47d428d792866993ed26f4173d479d43d
-=======
     smrnmi               0.5
     smwg                 0.3
     smwgd                0.3
@@ -1182,7 +927,6 @@ Experimental extensions
     ssqosid              1.0
     sswg                 0.3
     supm                 0.8
->>>>>>> origin/sifive-dev
 
 Use -march to specify the target's extension.
 For example, clang -march=rv32i_v1p0)";

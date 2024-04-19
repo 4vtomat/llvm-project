@@ -704,8 +704,8 @@ define <vscale x 2 x i64> @vwsll_vx_i32_nxv2i64_nxv2i8_sext(<vscale x 2 x i8> %a
 ; CHECK-NEXT:    vmv.v.x v9, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
 ; CHECK-NEXT:    vzext.vf8 v10, v8
-; CHECK-NEXT:    vsext.vf2 v12, v9
-; CHECK-NEXT:    vsll.vv v8, v10, v12
+; CHECK-NEXT:    vsext.vf2 v8, v9
+; CHECK-NEXT:    vsll.vv v8, v10, v8
 ; CHECK-NEXT:    ret
 ;
 ; CHECK-ZVBB-LABEL: vwsll_vx_i32_nxv2i64_nxv2i8_sext:
@@ -714,8 +714,8 @@ define <vscale x 2 x i64> @vwsll_vx_i32_nxv2i64_nxv2i8_sext(<vscale x 2 x i8> %a
 ; CHECK-ZVBB-NEXT:    vmv.v.x v9, a0
 ; CHECK-ZVBB-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
 ; CHECK-ZVBB-NEXT:    vzext.vf8 v10, v8
-; CHECK-ZVBB-NEXT:    vsext.vf2 v12, v9
-; CHECK-ZVBB-NEXT:    vsll.vv v8, v10, v12
+; CHECK-ZVBB-NEXT:    vsext.vf2 v8, v9
+; CHECK-ZVBB-NEXT:    vsll.vv v8, v10, v8
 ; CHECK-ZVBB-NEXT:    ret
   %head = insertelement <vscale x 2 x i32> poison, i32 %b, i32 0
   %splat = shufflevector <vscale x 2 x i32> %head, <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
@@ -732,15 +732,15 @@ define <vscale x 2 x i64> @vwsll_vx_i32_nxv2i64_nxv2i8_zext(<vscale x 2 x i8> %a
 ; CHECK-NEXT:    vmv.v.x v9, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
 ; CHECK-NEXT:    vzext.vf8 v10, v8
-; CHECK-NEXT:    vzext.vf2 v12, v9
-; CHECK-NEXT:    vsll.vv v8, v10, v12
+; CHECK-NEXT:    vzext.vf2 v8, v9
+; CHECK-NEXT:    vsll.vv v8, v10, v8
 ; CHECK-NEXT:    ret
 ;
 ; CHECK-ZVBB-LABEL: vwsll_vx_i32_nxv2i64_nxv2i8_zext:
 ; CHECK-ZVBB:       # %bb.0:
 ; CHECK-ZVBB-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
-; CHECK-ZVBB-NEXT:    vzext.vf4 v10, v8
-; CHECK-ZVBB-NEXT:    vwsll.vx v8, v10, a0
+; CHECK-ZVBB-NEXT:    vzext.vf4 v9, v8
+; CHECK-ZVBB-NEXT:    vwsll.vx v8, v9, a0
 ; CHECK-ZVBB-NEXT:    ret
   %head = insertelement <vscale x 2 x i32> poison, i32 %b, i32 0
   %splat = shufflevector <vscale x 2 x i32> %head, <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer
@@ -792,8 +792,8 @@ define <vscale x 2 x i64> @vwsll_vx_i16_nxv2i64_nxv2i8_zext(<vscale x 2 x i8> %a
 ; CHECK-ZVBB-LABEL: vwsll_vx_i16_nxv2i64_nxv2i8_zext:
 ; CHECK-ZVBB:       # %bb.0:
 ; CHECK-ZVBB-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
-; CHECK-ZVBB-NEXT:    vzext.vf4 v10, v8
-; CHECK-ZVBB-NEXT:    vwsll.vx v8, v10, a0
+; CHECK-ZVBB-NEXT:    vzext.vf4 v9, v8
+; CHECK-ZVBB-NEXT:    vwsll.vx v8, v9, a0
 ; CHECK-ZVBB-NEXT:    ret
   %head = insertelement <vscale x 2 x i16> poison, i16 %b, i32 0
   %splat = shufflevector <vscale x 2 x i16> %head, <vscale x 2 x i16> poison, <vscale x 2 x i32> zeroinitializer
@@ -845,8 +845,8 @@ define <vscale x 2 x i64> @vwsll_vx_i8_nxv2i64_nxv2i8_zext(<vscale x 2 x i8> %a,
 ; CHECK-ZVBB-LABEL: vwsll_vx_i8_nxv2i64_nxv2i8_zext:
 ; CHECK-ZVBB:       # %bb.0:
 ; CHECK-ZVBB-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
-; CHECK-ZVBB-NEXT:    vzext.vf4 v10, v8
-; CHECK-ZVBB-NEXT:    vwsll.vx v8, v10, a0
+; CHECK-ZVBB-NEXT:    vzext.vf4 v9, v8
+; CHECK-ZVBB-NEXT:    vwsll.vx v8, v9, a0
 ; CHECK-ZVBB-NEXT:    ret
   %head = insertelement <vscale x 2 x i8> poison, i8 %b, i32 0
   %splat = shufflevector <vscale x 2 x i8> %head, <vscale x 2 x i8> poison, <vscale x 2 x i32> zeroinitializer
@@ -874,8 +874,8 @@ define <vscale x 2 x i64> @vwsll_vi_nxv2i64_nxv2i8(<vscale x 2 x i8> %a) {
 ; RV64ZVBB-LABEL: vwsll_vi_nxv2i64_nxv2i8:
 ; RV64ZVBB:       # %bb.0:
 ; RV64ZVBB-NEXT:    vsetvli a0, zero, e32, m1, ta, ma
-; RV64ZVBB-NEXT:    vzext.vf4 v10, v8
-; RV64ZVBB-NEXT:    vwsll.vi v8, v10, 2
+; RV64ZVBB-NEXT:    vzext.vf4 v9, v8
+; RV64ZVBB-NEXT:    vwsll.vi v8, v9, 2
 ; RV64ZVBB-NEXT:    ret
   %x = zext <vscale x 2 x i8> %a to <vscale x 2 x i64>
   %z = shl <vscale x 2 x i64> %x, splat (i64 2)
