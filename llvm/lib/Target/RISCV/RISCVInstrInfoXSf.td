@@ -1210,7 +1210,7 @@ class RVInstMatmulF<bits<2> rd_lsb2, dag outs, dag ins, string opcodestr,
   let Inst{14-12} = OPFVV.Value;
   let Inst{11-9} = rd{3-1};
   let Inst{8-7} = rd_lsb2;
-  let Inst{6-0} = OPC_OP_P.Value;
+  let Inst{6-0} = OPC_OP_VE.Value;
 
   let Uses = [VTYPE, VL];
 }
@@ -1231,7 +1231,7 @@ class RVInstMatmulF8<bits<2> funct6_lsb2, bits<2> rd_lsb2, dag outs, dag ins,
   let Inst{11-10} = rd{3-2};
   let Inst{9} = 0;
   let Inst{8-7} = rd_lsb2;
-  let Inst{6-0} = OPC_OP_P.Value;
+  let Inst{6-0} = OPC_OP_VE.Value;
 
   let Uses = [VTYPE, VL];
 }
@@ -1263,7 +1263,7 @@ class RVInstMatmulI8<bit funct6_lsb2, bit funct6_lsb1, bit rd_lsb1, dag outs, da
   let Inst{11-10} = rd{3-2};
   let Inst{9-8} = 0b00;
   let Inst{7} = rd_lsb1;
-  let Inst{6-0} = OPC_OP_P.Value;
+  let Inst{6-0} = OPC_OP_VE.Value;
 
   let Uses = [VTYPE, VL];
 }
