@@ -360,15 +360,13 @@ enum OperandType : unsigned {
   OPERAND_RVKRNUM_0_7,
   OPERAND_RVKRNUM_1_10,
   OPERAND_RVKRNUM_2_14,
-<<<<<<< HEAD
   OPERAND_SPIMM,
-  OPERAND_LAST_RISCV_IMM = OPERAND_SPIMM,
-=======
 #if SIFIVE_CUSTOMIZATION
   OPERAND_MammothWWEE,
   OPERAND_LAST_RISCV_IMM = OPERAND_MammothWWEE,
+#else
+  OPERAND_LAST_RISCV_IMM = OPERAND_SPIMM,
 #endif // SIFIVE_CUSTOMIZATION
->>>>>>> origin/sifive-dev
   // Operand is either a register or uimm5, this is used by V extension pseudo
   // instructions to represent a value that be passed as AVL to either vsetvli
   // or vsetivli.
