@@ -29,7 +29,7 @@ using namespace llvm;
 static cl::opt<unsigned>
     InliningThresholdMultiplier("riscv-inlining-threshold-multiplier",
                                 cl::desc("Higher numbers increase inlining."),
-                                cl::init(2), cl::Hidden);
+                                cl::init(1), cl::Hidden);
 
 static cl::opt<bool>
     UseVLAVectorizer("riscv-use-vla-vectorizer",
