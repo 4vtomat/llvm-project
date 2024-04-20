@@ -698,6 +698,7 @@ defvar SIFIVE_X390_Features = [
   FeatureStdExtZicond,
   FeatureStdExtZfa,
   FeatureStdExtZkt,
+  FeatureStdExtZicbom,
   FeatureStdExtZicbop,
   FeatureStdExtZicboz,
   FeatureStdExtZicsr,
