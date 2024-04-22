@@ -1448,9 +1448,12 @@ void VPlanTransforms::addExplicitVectorLength(VPlan &Plan) {
     PrevEVLPhi = new VPEVLBasedIVPHIRecipe(Plan.getInitEVL(), DebugLoc());
     PrevEVLPhi->insertAfter(EVLPhi);
   }
-#endif // SIFIVE_CUSTOMIZATION
+  auto *VPEVL = new VPInstruction(VPInstruction::ExplicitVectorLength,
+                                  {EVLPhi, &Plan.getVectorTripCount()});
+#else
   auto *VPEVL = new VPInstruction(VPInstruction::ExplicitVectorLength,
                                   {EVLPhi, Plan.getTripCount()});
+#endif // SIFIVE_CUSTOMIZATION
   VPEVL->insertBefore(*Header, Header->getFirstNonPhi());
 
   auto *CanonicalIVIncrement =

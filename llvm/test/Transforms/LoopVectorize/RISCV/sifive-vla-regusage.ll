@@ -46,7 +46,7 @@ define void @convert_to_ssa(ptr %0, ptr %elms.i159, ptr %1) {
 ; CHECK-NEXT:    [[TMP8:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT1:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VECTOR_GEP:%.*]] = mul <vscale x 8 x i64> [[TMP6]], shufflevector (<vscale x 8 x i64> insertelement (<vscale x 8 x i64> poison, i64 64, i64 0), <vscale x 8 x i64> poison, <vscale x 8 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 8 x i64> [[VECTOR_GEP]]
-; CHECK-NEXT:    [[TMP10:%.*]] = sub i64 4294967296, [[TMP8]]
+; CHECK-NEXT:    [[TMP10:%.*]] = sub i64 4294967295, [[TMP8]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP10]], i32 8, i1 true)
 ; CHECK-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP13]] to i64
 ; CHECK-NEXT:    [[TMP9:%.*]] = mul i64 [[TMP8]], 64
