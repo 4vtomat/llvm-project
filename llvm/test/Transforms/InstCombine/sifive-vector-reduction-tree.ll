@@ -1,11 +1,10 @@
-; RUN: opt < %s -passes=instcombine -pass-remarks='instcombine' -pass-remarks-missed='instcombine' -pass-remarks-output=%t -S 2>&1 | FileCheck %s
+; RUN: opt < %s -passes='instcombine<no-verify-fixpoint>' -pass-remarks='instcombine' -pass-remarks-missed='instcombine' -pass-remarks-output=%t -S 2>&1 | FileCheck %s
 ; RUN: cat %t | FileCheck --check-prefix=CHECK-REMARKS %s
 
 ; CHECK-REMARKS: optimized reduction tree using accumulator
 ; CHECK-REMARKS: optimized reduction tree using accumulator
 ; CHECK-REMARKS: optimized reduction tree using accumulator
-; CHECK-REMARKS: cannot optimize reduction tree using accumulator: operands have different type
-; CHECK-REMARKS: cannot optimize reduction tree using accumulator: operands have different type
+; CHECK-REMARKS: optimized reduction tree using accumulator
 ; CHECK-REMARKS: cannot optimize reduction tree using accumulator: operands have different type
 ; CHECK-REMARKS: cannot optimize reduction tree using accumulator: operands have different type
 ; CHECK-REMARKS: cannot optimize reduction tree using accumulator: operands have different type
@@ -74,6 +73,24 @@ define i32 @trivial_tree_sums_v16i32(i32 %start, <16 x i32> %v0, <16 x i32> %v1)
   %op.rdx420.1 = add  i32 %op.rdx419, %op.rdx419.1
 
   ret i32 %op.rdx420.1
+}
+
+define i32 @reduce_before_use(<4 x i32> %0, <4 x i32> %1) {
+; CHECK-LABEL: define i32 @reduce_before_use(
+; CHECK-SAME: <4 x i32> [[TMP0:%.*]], <4 x i32> [[TMP1:%.*]]) {
+; CHECK-NEXT:    [[TMP3:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[TMP0]])
+; CHECK-NEXT:    [[COMBINED_REDUCE:%.*]] = shl <4 x i32> [[TMP1]], <i32 1, i32 1, i32 1, i32 1>
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[COMBINED_REDUCE]])
+; CHECK-NEXT:    [[TMP5:%.*]] = add i32 [[TMP4]], [[TMP3]]
+; CHECK-NEXT:    ret i32 [[TMP5]]
+;
+  %3 = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> %0)
+  %4 = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> %1)
+  %5 = call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> %1)
+  %6 = add i32 %4, %5
+  %7 = or i32 %6, 0
+  %8 = add i32 %7, %3
+  ret i32 %8
 }
 
 ; Negative tests

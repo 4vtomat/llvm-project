@@ -4908,7 +4908,7 @@ Value *InstCombinerImpl::simplifyVectorReductionTree(CallInst &Reduce) {
     AnalyzeDefUseTree(Reduce.user_back(), MatchAdd, MatchReduceAdd,
                       MaxAllowedDepthToSimplifyReductionTree);
 
-  if (!CombineReduce)
+  if (!CombineReduce || DT.dominates(CombineReduce, &Reduce))
     return nullptr;
 
   const unsigned VecOpIdx = IsFPReduce ? 1 : 0;
