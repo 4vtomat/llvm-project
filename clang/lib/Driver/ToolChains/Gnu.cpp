@@ -31,8 +31,8 @@
 #include "llvm/Support/CodeGen.h"
 #include "llvm/Support/FileUtilities.h" // SIFIVE
 #include "llvm/Support/Path.h"
-#include "llvm/Support/RISCVISAInfo.h"
 #include "llvm/Support/VirtualFileSystem.h"
+#include "llvm/TargetParser/RISCVISAInfo.h"
 #include "llvm/TargetParser/TargetParser.h"
 #include <system_error>
 

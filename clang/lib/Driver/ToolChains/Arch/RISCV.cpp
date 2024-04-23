@@ -16,9 +16,9 @@
 #include "llvm/ADT/StringExtras.h" // SIFIVE
 #include "llvm/Option/ArgList.h"
 #include "llvm/Support/Error.h"
-#include "llvm/Support/RISCVISAInfo.h"
 #include "llvm/Support/raw_ostream.h"
 #include "llvm/TargetParser/Host.h"
+#include "llvm/TargetParser/RISCVISAInfo.h"
 #include "llvm/TargetParser/RISCVTargetParser.h"
 
 using namespace clang::driver;
@@ -89,7 +89,7 @@ static bool getArchFeatures(const Driver &D, StringRef Arch,
                 (*ISAInfo)->getExtensions();
             auto ExtInfoItr = ExtInfo.find(ExtName.str());
             assert(ExtInfoItr != ExtInfo.end());
-            llvm::RISCVISAInfo::ExtensionVersion ExtVersion =
+            llvm::RISCVISAUtils::ExtensionVersion ExtVersion =
                 ExtInfoItr->second;
 
             D.Diag(diag::warn_drv_require_ext_version)
