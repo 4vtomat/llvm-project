@@ -1252,6 +1252,16 @@ Error RISCVISAInfo::checkDependency() {
     return createStringError(errc::invalid_argument,
                              "'zcf' is only supported for 'rv32'");
 
+  if (Exts.count("zacas") && !(Exts.count("a") || Exts.count("zamo")))
+    return createStringError(
+        errc::invalid_argument,
+        "'zacas' requires 'a' or 'zaamo' extension to also be specified");
+
+  if (Exts.count("zabha") && !(Exts.count("a") || Exts.count("zamo")))
+    return createStringError(
+        errc::invalid_argument,
+        "'zabha' requires 'a' or 'zaamo' extension to also be specified");
+
   return Error::success();
 }
 
@@ -1276,8 +1286,6 @@ static const char *ImpliedExtsXSfmm64a[] = {"xsfmmbase"};
 static const char *ImpliedExtsXSfmm128t[] = {"xsfmmbase"};
 static const char *ImpliedExtsXSfmm64t[] = {"xsfmmbase"};
 static const char *ImpliedExtsXSfmm32t[] = {"xsfmmbase"};
-static const char *ImpliedExtsZabha[] = {"a"};
-static const char *ImpliedExtsZacas[] = {"a"};
 static const char *ImpliedExtsZcb[] = {"zca"};
 static const char *ImpliedExtsZcd[] = {"d", "zca"};
 static const char *ImpliedExtsZce[] = {"zcb", "zcmp", "zcmt"};
@@ -1363,8 +1371,6 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"xsfvqmaccdod"}, {ImpliedExtsXSfvqmaccdod}},
     {{"xsfvqmaccqoq"}, {ImpliedExtsXSfvqmaccqoq}},
     {{"xtheadvdot"}, {ImpliedExtsXTHeadVdot}},
-    {{"zabha"}, {ImpliedExtsZabha}},
-    {{"zacas"}, {ImpliedExtsZacas}},
     {{"zcb"}, {ImpliedExtsZcb}},
     {{"zcd"}, {ImpliedExtsZcd}},
     {{"zce"}, {ImpliedExtsZce}},
