@@ -228,3 +228,9 @@ sf.p2mm.s.s mt12, v8, v9
 # CHECK-ERROR: instruction requires the following: XSfmm32ea/XSfmmbase{{$}}
 # CHECK-UNKNOWN: 57 6f e0 43 <unknown>
 sf.vtzero.t mt15
+
+# CHECK-INST: vsetvl a2, a0, a1
+# CHECK-ENCODING: [0x57,0x76,0xb5,0x80]
+# CHECK-ERROR: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32x' (Vector Extensions for Embedded Processors)
+# CHECK-UNKNOWN: 57 76 b5 80 <unknown>
+vsetvl a2, a0, a1
