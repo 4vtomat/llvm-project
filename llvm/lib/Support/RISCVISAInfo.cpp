@@ -109,15 +109,15 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xcvmem", {1, 0}},
     {"xcvsimd", {1, 0}},
     {"xsfcease", {1, 0}},
-    {"xsfmm128t", {0, 2}}, // SIFIVE
-    {"xsfmm32a", {0, 2}}, // SIFIVE
-    {"xsfmm32a4i", {0, 2}}, // SIFIVE
-    {"xsfmm32a8f", {0, 2}}, // SIFIVE
-    {"xsfmm32ea", {0, 2}}, // SIFIVE
-    {"xsfmm32t", {0, 2}}, // SIFIVE
-    {"xsfmm64a", {0, 2}}, // SIFIVE
-    {"xsfmm64t", {0, 2}}, // SIFIVE
-    {"xsfmmbase", {0, 2}}, // SIFIVE
+    {"xsfmm128t", {0, 3}}, // SIFIVE
+    {"xsfmm32a", {0, 3}}, // SIFIVE
+    {"xsfmm32a4i", {0, 3}}, // SIFIVE
+    {"xsfmm32a8f", {0, 3}}, // SIFIVE
+    {"xsfmm32ea", {0, 3}}, // SIFIVE
+    {"xsfmm32t", {0, 3}}, // SIFIVE
+    {"xsfmm64a", {0, 3}}, // SIFIVE
+    {"xsfmm64t", {0, 3}}, // SIFIVE
+    {"xsfmmbase", {0, 3}}, // SIFIVE
     {"xsfpgflushdlone", {0, 1}}, // SIFIVE
     {"xsfvcp", {1, 0}},
     {"xsfvfexpa", {0, 1}}, // SIFIVE

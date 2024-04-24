@@ -1379,7 +1379,7 @@
 // RUN: %clang --target=riscv64 \
 // RUN: -march=rv64i_zve32x_xsfmm128t -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-XSFMM128T %s
-// CHECK-XSFMM128T: __riscv_xsfmm128t  2000{{$}}
+// CHECK-XSFMM128T: __riscv_xsfmm128t  3000{{$}}
 
 // RUN: %clang --target=riscv32 \
 // RUN: -march=rv32i_zve32x_xsfmm32a -x c -E -dM %s \
@@ -1387,7 +1387,7 @@
 // RUN: %clang --target=riscv64 \
 // RUN: -march=rv64i_zve32x_xsfmm32a -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-XSFMM32A %s
-// CHECK-XSFMM32A: __riscv_xsfmm32a  2000{{$}}
+// CHECK-XSFMM32A: __riscv_xsfmm32a  3000{{$}}
 
 // RUN: %clang --target=riscv32 \
 // RUN: -march=rv32i_zve32x_xsfmm32a4i -x c -E -dM %s \
@@ -1395,7 +1395,7 @@
 // RUN: %clang --target=riscv64 \
 // RUN: -march=rv64i_zve32x_xsfmm32a4i -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-XSFMM32A4I %s
-// CHECK-XSFMM32A4I: __riscv_xsfmm32a4i  2000{{$}}
+// CHECK-XSFMM32A4I: __riscv_xsfmm32a4i  3000{{$}}
 
 // RUN: %clang --target=riscv32 \
 // RUN: -march=rv32i_zve32x_xsfmm32a8f -x c -E -dM %s \
@@ -1403,7 +1403,7 @@
 // RUN: %clang --target=riscv64 \
 // RUN: -march=rv64i_zve32x_xsfmm32a8f -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-XSFMM32A8F %s
-// CHECK-XSFMM32A8F: __riscv_xsfmm32a8f  2000{{$}}
+// CHECK-XSFMM32A8F: __riscv_xsfmm32a8f  3000{{$}}
 
 // RUN: %clang --target=riscv32 \
 // RUN: -march=rv32i_zve32x_xsfmm32ea -x c -E -dM %s \
@@ -1411,7 +1411,7 @@
 // RUN: %clang --target=riscv64 \
 // RUN: -march=rv64i_zve32x_xsfmm32ea -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-XSFMM32EA %s
-// CHECK-XSFMM32EA: __riscv_xsfmm32ea  2000{{$}}
+// CHECK-XSFMM32EA: __riscv_xsfmm32ea  3000{{$}}
 
 // RUN: %clang --target=riscv32 \
 // RUN: -march=rv32i_zve32x_xsfmm32t -x c -E -dM %s \
@@ -1419,7 +1419,7 @@
 // RUN: %clang --target=riscv64 \
 // RUN: -march=rv64i_zve32x_xsfmm32t -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-XSFMM32T %s
-// CHECK-XSFMM32T: __riscv_xsfmm32t  2000{{$}}
+// CHECK-XSFMM32T: __riscv_xsfmm32t  3000{{$}}
 
 // RUN: %clang --target=riscv32 \
 // RUN: -march=rv32i_zve32x_xsfmm64a -x c -E -dM %s \
@@ -1427,7 +1427,7 @@
 // RUN: %clang --target=riscv64 \
 // RUN: -march=rv64i_zve32x_xsfmm64a -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-XSFMM64A %s
-// CHECK-XSFMM64A: __riscv_xsfmm64a  2000{{$}}
+// CHECK-XSFMM64A: __riscv_xsfmm64a  3000{{$}}
 
 // RUN: %clang --target=riscv32 \
 // RUN: -march=rv32i_zve32x_xsfmm64t -x c -E -dM %s \
@@ -1435,7 +1435,7 @@
 // RUN: %clang --target=riscv64 \
 // RUN: -march=rv64i_zve32x_xsfmm64t -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-XSFMM64T %s
-// CHECK-XSFMM64T: __riscv_xsfmm64t  2000{{$}}
+// CHECK-XSFMM64T: __riscv_xsfmm64t  3000{{$}}
 
 // RUN: %clang --target=riscv32 \
 // RUN: -march=rv32i_zve32x_xsfmmbase -x c -E -dM %s \
@@ -1443,7 +1443,7 @@
 // RUN: %clang --target=riscv64 \
 // RUN: -march=rv64i_zve32x_xsfmmbase -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-XSFMMBASE %s
-// CHECK-XSFMMBASE: __riscv_xsfmmbase  2000{{$}}
+// CHECK-XSFMMBASE: __riscv_xsfmmbase  3000{{$}}
 // end SIFIVE_CUSTOMIZATION
 
 // RUN: %clang --target=riscv32-unknown-linux-gnu \
