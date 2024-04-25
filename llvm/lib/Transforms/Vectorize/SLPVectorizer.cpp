@@ -9636,6 +9636,9 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
   bool IsAllowedSingleBVNode =
       VectorizableTree.size() > 1 ||
       (VectorizableTree.size() == 1 && VectorizableTree.front()->getOpcode() &&
+#if SIFIVE_CUSTOMIZATION
+       !VectorizableTree.front()->isAltShuffle() &&
+#endif // SIFIVE_CUSTOMIZATION
        VectorizableTree.front()->getOpcode() != Instruction::PHI &&
        VectorizableTree.front()->getOpcode() != Instruction::GetElementPtr &&
        allSameBlock(VectorizableTree.front()->Scalars));
@@ -10998,7 +11001,14 @@ Instruction &BoUpSLP::getLastInstructionInBundle(const TreeEntry *E) {
                         isUsedOutsideBlock(V);
                }) ||
         (E->State == TreeEntry::NeedToGather && E->Idx == 0 &&
+#if SIFIVE_CUSTOMIZATION
+         all_of(E->Scalars, [](Value *V) {
+           return isa<ExtractElementInst, UndefValue>(V) ||
+                  areAllOperandsNonInsts(V);
+         })))
+#else
          all_of(E->Scalars, IsaPred<ExtractElementInst, UndefValue>)))
+#endif // SIFIVE_CUSTOMIZATION
       Res.second = FindLastInst();
     else
       Res.second = FindFirstInst();
