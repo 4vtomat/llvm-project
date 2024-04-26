@@ -209,9 +209,9 @@ public:
 #if SIFIVE_CUSTOMIZATION
     auto GetSmallDataLimit = [](Module &M) -> std::optional<uint64_t> {
       Metadata *SDL = M.getModuleFlag("SmallDataLimit");
-      return SDL ? std::make_optional<uint64_t>(
-                       mdconst::extract<ConstantInt>(SDL)->getZExtValue())
-                 : std::nullopt;
+      if (!SDL)
+        return std::nullopt;
+      return mdconst::extract<ConstantInt>(SDL)->getZExtValue();
     };
     if (GlobalMergeMinDataSize.getNumOccurrences())
       Opt.MinSize = GlobalMergeMinDataSize;
