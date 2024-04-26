@@ -116,6 +116,7 @@ public:
   bool visitZExtInst(ZExtInst &I);
   bool optimizeZExtWUses(ZExtInst &I);
   bool visitAnd(BinaryOperator &BO);
+  bool visitXor(BinaryOperator &BO);
   bool optimizeAndUses(BinaryOperator &BO);
   bool visitICmp(ICmpInst &ICmp);
   bool visitIntrinsicInst(IntrinsicInst &I);
@@ -309,6 +310,79 @@ bool RISCVLateCodeGenPrepare::visitAnd(BinaryOperator &BO) {
     return false;
 
   return optimizeAndUses(BO);
+}
+
+// Try to sink Xor with 255 if it helps SelectionDAG recognize a blend pattern
+// like (add (mul (xor (zext A), 255), (zext X)), (mul (zext A), (zext Y))).
+// This is needed so SelectionDAG can recognize that the pattern produces a 16
+// bit result. Naive analysis in computeKnownBits think it produces a 17 bit
+// result. SelectionDAG needs the xor sunk so everything is in one basic block.
+// MachineCSE/MachineLICM should hoist it again in the motivating case.
+bool RISCVLateCodeGenPrepare::visitXor(BinaryOperator &BO) {
+  if (!BO.getType()->isIntegerTy(16))
+    return false;
+
+  auto *CI = dyn_cast<ConstantInt>(BO.getOperand(1));
+  if (!CI || CI->getZExtValue() != 255)
+    return false;
+
+  KnownBits Known = computeKnownBits(BO.getOperand(0), *DL);
+  if (Known.countMaxActiveBits() > 8)
+    return false;
+
+  DenseMap<BasicBlock *, BinaryOperator *> InsertedXors;
+
+  BasicBlock *DefBB = BO.getParent();
+
+  bool MadeChange = false;
+  for (auto UI = BO.user_begin(), E = BO.user_end(); UI != E;) {
+    Use &TheUse = UI.getUse();
+    Instruction *User = cast<Instruction>(*UI);
+
+    // Preincrement use iterator so we don't invalidate it.
+    ++UI;
+
+    BasicBlock *UserBB = User->getParent();
+
+    // If this user is in the same block as the xor, don't create a new xor.
+    if (UserBB == DefBB)
+      continue;
+
+    if (User->getOpcode() != Instruction::Mul || !User->hasOneUse())
+      continue;
+
+    Instruction *User2 = cast<Instruction>(*User->user_begin());
+    Value *A, *X, *Y;
+    if (!match(User2,
+               m_c_Add(m_c_Mul(m_c_Xor(m_ZExt(m_Value(A)), m_SpecificInt(255)),
+                               m_ZExt(m_Value(X))),
+                       m_c_Mul(m_ZExt(m_Deferred(A)), m_ZExt(m_Value(Y))))))
+      continue;
+
+    // If we have already inserted an xor into this block, use it.
+    BinaryOperator *&InsertedXor = InsertedXors[UserBB];
+
+    if (!InsertedXor) {
+      BasicBlock::iterator InsertPt = UserBB->getFirstInsertionPt();
+      assert(InsertPt != UserBB->end());
+      InsertedXor = BinaryOperator::CreateXor(BO.getOperand(0),
+                                              BO.getOperand(1), "", &*InsertPt);
+      // Propagate the debug info.
+      InsertedXor->setDebugLoc(BO.getDebugLoc());
+    }
+
+    // Replace a use of the xor with a use of the new xor.
+    TheUse = InsertedXor;
+    MadeChange = true;
+  }
+
+  // If the original xor has become dead, remove it.
+  if (BO.use_empty()) {
+    BO.eraseFromParent();
+    MadeChange = true;
+  }
+
+  return MadeChange;
 }
 
 bool RISCVLateCodeGenPrepare::visitICmp(ICmpInst &ICmp) {

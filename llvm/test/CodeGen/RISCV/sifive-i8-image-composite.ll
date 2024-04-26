@@ -52,9 +52,10 @@ define void @composite_loop(i32 signext %width, i32 signext %channels, ptr %othe
 ; RV32-NEXT:  # %bb.2: # %for.body.us.preheader
 ; RV32-NEXT:    lbu a4, 3(a2)
 ; RV32-NEXT:    li a5, 0
-; RV32-NEXT:    xori a6, a4, 255
 ; RV32-NEXT:    add a1, a3, a1
-; RV32-NEXT:    lui a7, 526352
+; RV32-NEXT:    xori a6, a4, 255
+; RV32-NEXT:    lui a7, 8
+; RV32-NEXT:    addi a7, a7, 129
 ; RV32-NEXT:  .LBB1_3: # %for.body.us
 ; RV32-NEXT:    # =>This Loop Header: Depth=1
 ; RV32-NEXT:    # Child Loop BB1_4 Depth 2
@@ -68,8 +69,7 @@ define void @composite_loop(i32 signext %width, i32 signext %channels, ptr %othe
 ; RV32-NEXT:    mul t2, t2, a4
 ; RV32-NEXT:    mul t3, a6, t3
 ; RV32-NEXT:    add t2, t3, t2
-; RV32-NEXT:    slli t2, t2, 16
-; RV32-NEXT:    mulhu t2, t2, a7
+; RV32-NEXT:    mul t2, t2, a7
 ; RV32-NEXT:    srli t2, t2, 23
 ; RV32-NEXT:    sb t2, 0(t1)
 ; RV32-NEXT:    addi t1, t1, 1
@@ -88,16 +88,16 @@ define void @composite_loop(i32 signext %width, i32 signext %channels, ptr %othe
 ; RV64-NEXT:  # %bb.1: # %for.body.lr.ph
 ; RV64-NEXT:    blez a1, .LBB1_6
 ; RV64-NEXT:  # %bb.2: # %for.body.us.preheader
-; RV64-NEXT:    lbu a4, 3(a2)
-; RV64-NEXT:    li a5, 0
-; RV64-NEXT:    xori a6, a4, 255
+; RV64-NEXT:    li a4, 0
+; RV64-NEXT:    lbu a5, 3(a2)
 ; RV64-NEXT:    addi a1, a1, -1
 ; RV64-NEXT:    slli a1, a1, 32
 ; RV64-NEXT:    srli a1, a1, 32
 ; RV64-NEXT:    add a1, a1, a3
 ; RV64-NEXT:    addi a1, a1, 1
-; RV64-NEXT:    lui a7, 32897
-; RV64-NEXT:    slli a7, a7, 4
+; RV64-NEXT:    xori a6, a5, 255
+; RV64-NEXT:    lui a7, 8
+; RV64-NEXT:    addi a7, a7, 129
 ; RV64-NEXT:  .LBB1_3: # %for.body.us
 ; RV64-NEXT:    # =>This Loop Header: Depth=1
 ; RV64-NEXT:    # Child Loop BB1_4 Depth 2
@@ -108,11 +108,10 @@ define void @composite_loop(i32 signext %width, i32 signext %channels, ptr %othe
 ; RV64-NEXT:    # => This Inner Loop Header: Depth=2
 ; RV64-NEXT:    lbu t2, 0(t0)
 ; RV64-NEXT:    lbu t3, 0(t1)
-; RV64-NEXT:    mul t2, t2, a4
+; RV64-NEXT:    mul t2, t2, a5
 ; RV64-NEXT:    mul t3, a6, t3
 ; RV64-NEXT:    add t2, t3, t2
-; RV64-NEXT:    slli t2, t2, 48
-; RV64-NEXT:    mulhu t2, t2, a7
+; RV64-NEXT:    mul t2, t2, a7
 ; RV64-NEXT:    srli t2, t2, 23
 ; RV64-NEXT:    sb t2, 0(t1)
 ; RV64-NEXT:    addi t1, t1, 1
@@ -120,8 +119,8 @@ define void @composite_loop(i32 signext %width, i32 signext %channels, ptr %othe
 ; RV64-NEXT:    bne t1, a1, .LBB1_4
 ; RV64-NEXT:  # %bb.5: # %for.cond1.for.cond.cleanup4_crit_edge.us
 ; RV64-NEXT:    # in Loop: Header=BB1_3 Depth=1
-; RV64-NEXT:    addiw a5, a5, 1
-; RV64-NEXT:    bne a5, a0, .LBB1_3
+; RV64-NEXT:    addiw a4, a4, 1
+; RV64-NEXT:    bne a4, a0, .LBB1_3
 ; RV64-NEXT:  .LBB1_6: # %for.cond.cleanup
 ; RV64-NEXT:    ret
 entry:

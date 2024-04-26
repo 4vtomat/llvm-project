@@ -28,6 +28,7 @@
 #include "llvm/CodeGen/MachineInstrBuilder.h"
 #include "llvm/CodeGen/MachineJumpTableInfo.h"
 #include "llvm/CodeGen/MachineRegisterInfo.h"
+#include "llvm/CodeGen/SDPatternMatch.h" // SIFIVE
 #include "llvm/CodeGen/SelectionDAGAddressAnalysis.h"
 #include "llvm/CodeGen/TargetLoweringObjectFileImpl.h"
 #include "llvm/CodeGen/ValueTypes.h"
@@ -14761,6 +14762,41 @@ static SDValue performTRUNCATECombine(SDNode *N, SelectionDAG &DAG,
   return SDValue();
 }
 
+#if SIFIVE_CUSTOMIZATION
+// Look for (and (add (mul (xor A, 255), X), (mul A, Y)), 65535). Where A, X,
+// and Y all fit in 8 bits. The AND can be removed in this case. computeKnowBits
+// will think the add requires 17 bits. The inverse relationship of
+// A and (xor A, 255) places a stricter upper bound of 65025(255 * 255) on the
+// result which fits in 16 bits.
+static SDValue combineBlendPattern(SDNode *N, SelectionDAG &DAG) {
+  using namespace SDPatternMatch;
+
+  EVT VT = N->getValueType(0);
+  if (VT != MVT::i32 && VT != MVT::i64)
+    return SDValue();
+
+  if (!isa<ConstantSDNode>(N->getOperand(1)) ||
+      N->getConstantOperandVal(1) != 65535)
+    return SDValue();
+
+  SDValue A, X, Y;
+
+  SDValue N0 = N->getOperand(0);
+  if (!sd_match(N0,
+                m_Add(m_Mul(m_Xor(m_Value(A), m_SpecificInt(255)), m_Value(X)),
+                      m_Mul(m_Deferred(A), m_Value(Y)))))
+    return SDValue();
+
+  APInt Mask = APInt::getBitsSetFrom(VT.getSizeInBits(), 8);
+  if (!DAG.MaskedValueIsZero(A, Mask) || !DAG.MaskedValueIsZero(X, Mask) ||
+      !DAG.MaskedValueIsZero(Y, Mask))
+    return SDValue();
+
+  // N0 fits in 16 bits, We can drop the AND.
+  return N0;
+}
+#endif
+
 // Combines two comparison operation and logic operation to one selection
 // operation(min, max) and logic operation. Returns new constructed Node if
 // conditions for optimization are satisfied.
@@ -14796,6 +14832,11 @@ static SDValue performANDCombine(SDNode *N,
   if (DCI.isAfterLegalizeDAG())
     if (SDValue V = combineDeMorganOfBoolean(N, DAG))
       return V;
+
+#if SIFIVE_CUSTOMIZATION
+  if (SDValue V = combineBlendPattern(N, DAG))
+    return V;
+#endif
 
   // fold (and (select lhs, rhs, cc, -1, y), x) ->
   //      (select lhs, rhs, cc, x, (and x, y))
