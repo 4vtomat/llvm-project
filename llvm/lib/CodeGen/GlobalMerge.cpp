@@ -134,6 +134,14 @@ static cl::opt<cl::boolOrDefault>
 EnableGlobalMergeOnExternal("global-merge-on-external", cl::Hidden,
      cl::desc("Enable global merge pass on external linkage"));
 
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<unsigned>
+    GlobalMergeMinDataSize("global-merge-min-data-size",
+                           cl::desc("The minimum size in bytes of each global "
+                                    "that should considered in merging."),
+                           cl::init(0), cl::Hidden);
+#endif // SIFIVE_CUSTOMIZATION
+
 STATISTIC(NumMerged, "Number of globals merged");
 
 namespace {
@@ -189,22 +197,31 @@ public:
   }
 
   explicit GlobalMerge(const TargetMachine *TM, unsigned MaximalOffset,
-                       bool OnlyOptimizeForSize, bool MergeExternalGlobals,
-#if SIFIVE_CUSTOMIZATION
-                       unsigned MinSize)
-#endif // SIFIVE_CUSTOMIZATION
+                       bool OnlyOptimizeForSize, bool MergeExternalGlobals)
       : FunctionPass(ID), TM(TM) {
     Opt.MaxOffset = MaximalOffset;
     Opt.SizeOnly = OnlyOptimizeForSize;
     Opt.MergeExternal = MergeExternalGlobals;
-#if SIFIVE_CUSTOMIZATION
-    Opt.MinSize = MinSize;
-#endif // SIFIVE_CUSTOMIZATION
     initializeGlobalMergePass(*PassRegistry::getPassRegistry());
   }
 
   bool doInitialization(Module &M) override {
+#if SIFIVE_CUSTOMIZATION
+    auto GetSmallDataLimit = [](Module &M) -> std::optional<uint64_t> {
+      Metadata *SDL = M.getModuleFlag("SmallDataLimit");
+      return SDL ? std::make_optional<uint64_t>(
+                       mdconst::extract<ConstantInt>(SDL)->getZExtValue())
+                 : std::nullopt;
+    };
+    if (GlobalMergeMinDataSize.getNumOccurrences())
+      Opt.MinSize = GlobalMergeMinDataSize;
+    else if(auto SDL = GetSmallDataLimit(M); SDL && *SDL > 0)
+      Opt.MinSize = *SDL + 1;
+    else
+      Opt.MinSize = 0;
+#endif // SIFIVE_CUSTOMIZATION
     GlobalMergeImpl P(TM, Opt);
+
     return P.run(M);
   }
   bool runOnFunction(Function &F) override { return false; }
@@ -710,18 +727,10 @@ bool GlobalMergeImpl::run(Module &M) {
 
 Pass *llvm::createGlobalMergePass(const TargetMachine *TM, unsigned Offset,
                                   bool OnlyOptimizeForSize,
-                                  bool MergeExternalByDefault,
-#if SIFIVE_CUSTOMIZATION
-                                  unsigned MinSize) {
-#endif // SIFIVE_CUSTOMIZATION
+                                  bool MergeExternalByDefault) {
   bool MergeExternal = (EnableGlobalMergeOnExternal == cl::BOU_UNSET)
                            ? MergeExternalByDefault
                            : (EnableGlobalMergeOnExternal == cl::BOU_TRUE);
-#if SIFIVE_CUSTOMIZATION
-  return new GlobalMerge(TM, Offset, OnlyOptimizeForSize, MergeExternal,
-                         MinSize);
-#else
   return new GlobalMerge(TM, Offset, OnlyOptimizeForSize, MergeExternal);
-#endif // SIFIVE_CUSTOMIZATION
 }
 
