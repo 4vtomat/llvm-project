@@ -131,7 +131,7 @@ class RISCVAsmParser : public MCTargetAsmParser {
   bool generateVTypeError(SMLoc ErrorLoc);
 
 #if SIFIVE_CUSTOMIZATION
-  bool parseMammothWWEEToken(StringRef Identifier, WWEEState &State,
+  bool parseMammothWWEEToken(const AsmToken &Tok, WWEEState &State,
                              unsigned &WW, unsigned &EE);
   bool generateMammothWWEEError(SMLoc ErrorLoc);
 #endif // SIFIVE_CUSTOMIZATION
@@ -2315,9 +2315,14 @@ bool RISCVAsmParser::generateVTypeError(SMLoc ErrorLoc) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-bool RISCVAsmParser::parseMammothWWEEToken(StringRef Identifier,
+bool RISCVAsmParser::parseMammothWWEEToken(const AsmToken &Tok,
                                            WWEEState &State, unsigned &WW,
                                            unsigned &EE) {
+  if (getLexer().isNot(AsmToken::Identifier))
+    return true;
+
+  StringRef Identifier = getTok().getIdentifier();
+
   switch (State) {
   case WWEEState_SEW:
     if (!Identifier.consume_front("e"))
@@ -2353,12 +2358,7 @@ ParseStatus RISCVAsmParser::parseMammothWWEE(OperandVector &Operands) {
 
   WWEEState State = WWEEState_SEW;
 
-  if (getLexer().isNot(AsmToken::Identifier))
-    return generateMammothWWEEError(S);
-
-  StringRef Identifier = getTok().getIdentifier();
-
-  if (parseMammothWWEEToken(Identifier, State, TWiden, SEW))
+  if (parseMammothWWEEToken(getTok(), State, TWiden, SEW))
     return generateMammothWWEEError(S);
 
   getLexer().Lex();
@@ -2366,12 +2366,7 @@ ParseStatus RISCVAsmParser::parseMammothWWEE(OperandVector &Operands) {
   if (!parseOptionalToken(AsmToken::Comma))
     return generateMammothWWEEError(S);
 
-  if (getLexer().isNot(AsmToken::Identifier))
-    return generateMammothWWEEError(S);
-
-  Identifier = getTok().getIdentifier();
-
-  if (parseMammothWWEEToken(Identifier, State, TWiden, SEW))
+  if (parseMammothWWEEToken(getTok(), State, TWiden, SEW))
     return generateMammothWWEEError(S);
 
   getLexer().Lex();
