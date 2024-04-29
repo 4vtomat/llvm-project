@@ -736,10 +736,10 @@ multiclass BulletWriteResBase<
       defvar Cycles = !if(!and(hasSlowFP64Vec, !eq(sew, 64)),
                           BulletGetCyclesOnePerElement<mx, sew, VLEN>.c,
                           BulletGetCyclesDefault<mx>.c);
-      defvar Lat = !if(!and(hasSlowFP64Vec, !eq(sew, 64)), Cycles, 8);
+      defvar Lat8 = !if(!and(hasSlowFP64Vec, !eq(sew, 64)), Cycles, 8);
       defvar VA = !if(!and(hasSlowFP64Vec, !eq(sew, 64)), VA1, VA1OrVA2);
       defvar IsWorstCase = BulletIsWorstCaseMXSEW<mx, sew, SchedMxListF, isF=1>.c;
-      let Latency = Lat, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
+      let Latency = Lat8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
         defm "" : LMULSEWWriteResMXSEW<"WriteVFALUV",  [VCQ, VA], mx, sew, IsWorstCase>;
         defm "" : LMULSEWWriteResMXSEW<"WriteVFALUF",  [VCQ, VA], mx, sew, IsWorstCase>;
         defm "" : LMULSEWWriteResMXSEW<"WriteVFMulV",  [VCQ, VA], mx, sew, IsWorstCase>;
@@ -747,6 +747,15 @@ multiclass BulletWriteResBase<
         defm "" : LMULSEWWriteResMXSEW<"WriteVFMulAddV", [VCQ, VA], mx, sew, IsWorstCase>;
         defm "" : LMULSEWWriteResMXSEW<"WriteVFMulAddF", [VCQ, VA], mx, sew, IsWorstCase>;
         defm "" : LMULSEWWriteResMXSEW<"WriteVFRecpV",   [VCQ, VA1], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFCvtIToFV", [VCQ, VA1], mx, sew, IsWorstCase>;
+      }
+      defvar Lat4 = !if(!and(hasSlowFP64Vec, !eq(sew, 64)), Cycles, 4);
+      let Latency = Lat4, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFSgnjV", [VCQ, VA], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFSgnjF", [VCQ, VA], mx, sew, IsWorstCase>;
+        // minmax requires merge
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFMinMaxV", [VCQ, VA1], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFMinMaxF", [VCQ, VA1], mx, sew, IsWorstCase>;
       }
     }
   }
@@ -754,15 +763,9 @@ multiclass BulletWriteResBase<
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
     let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVFCvtIToFV",  [VCQ, VA1], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVFCvtFToIV",  [VCQ, VA1], mx, IsWorstCase>;
     }
     let Latency = 4, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVFSgnjV",     [VCQ, VA1OrVA2], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFSgnjF",     [VCQ, VA1OrVA2], mx, IsWorstCase>;
-      // minmax requires merge
-      defm "" : LMULWriteResMX<"WriteVFMinMaxV",   [VCQ, VA1], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFMinMaxF",   [VCQ, VA1], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVFClassV",    [VCQ, VA1OrVA2], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVFMergeV",    [VCQ, VA1], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVFMovV",      [VCQ, VA1OrVA2], mx, IsWorstCase>;
@@ -789,10 +792,11 @@ multiclass BulletWriteResBase<
   
   // Widening
   foreach mx = SchedMxListW in {
-    defvar Cycles = BulletGetCyclesDefault<mx>.c;
-    defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxListW>.c;
-    let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVFWCvtIToFV", [VCQ, VA1], mx, IsWorstCase>;
+    foreach sew = SchedSEWSet<mx, isF=0, isWidening=1>.val in {
+      defvar Cycles = BulletGetCyclesDefault<mx>.c;
+      defvar IsWorstCase = BulletIsWorstCaseMXSEW<mx, sew, SchedMxListW>.c;
+      let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFWCvtIToFV", [VCQ, VA1], mx, sew, IsWorstCase>;
     }
   }
   foreach mx = SchedMxListFW in {
@@ -806,16 +810,13 @@ multiclass BulletWriteResBase<
         defm "" : LMULSEWWriteResMXSEW<"WriteVFWMulF", [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
         defm "" : LMULSEWWriteResMXSEW<"WriteVFWMulAddV", [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
         defm "" : LMULSEWWriteResMXSEW<"WriteVFWMulAddF", [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFWCvtFToFV", [VCQ, VA1], mx, sew, IsWorstCase>;
       }
     }
-  }
-  foreach mx = SchedMxListFW in {
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxListFW>.c;
-    let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVFWCvtFToIV", [VCQ, VA1], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFWCvtFToFV", [VCQ, VA1], mx, IsWorstCase>;
-    }
+    let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in
+    defm "" : LMULWriteResMX<"WriteVFWCvtFToIV", [VCQ, VA1], mx, IsWorstCase>;
   }
   // Narrowing
   foreach mx = SchedMxListW in {
@@ -826,11 +827,13 @@ multiclass BulletWriteResBase<
     }
   }
   foreach mx = SchedMxListFW in {
-    defvar Cycles = BulletGetCyclesNarrowing<mx>.c;
-    defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxListFW>.c;
-    let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVFNCvtIToFV", [VCQ, VA1], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVFNCvtFToFV", [VCQ, VA1], mx, IsWorstCase>;
+    foreach sew = SchedSEWSet<mx, isF=1, isWidening=1>.val in {
+      defvar Cycles = BulletGetCyclesNarrowing<mx>.c;
+      defvar IsWorstCase = BulletIsWorstCaseMXSEW<mx, sew, SchedMxListFW, isF=1>.c;
+      let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFNCvtIToFV", [VCQ, VA1], mx, sew, IsWorstCase>;
+        defm "" : LMULSEWWriteResMXSEW<"WriteVFNCvtFToFV", [VCQ, VA1], mx, sew, IsWorstCase>;
+      }
     }
   }
   
@@ -1162,24 +1165,24 @@ multiclass BulletReadAdvance {
   defm "" : LMULSEWReadAdvanceFW<"ReadVFWMulAddF", 0>;
   defm "" : LMULSEWReadAdvanceF<"ReadVFSqrtV", 0>;
   defm "" : LMULSEWReadAdvanceF<"ReadVFRecpV", 0>;
-  defm "" : LMULReadAdvance<"ReadVFMinMaxV", 0>;
-  defm "" : LMULReadAdvance<"ReadVFMinMaxF", 0>;
-  defm "" : LMULReadAdvance<"ReadVFSgnjV", 0>;
-  defm "" : LMULReadAdvance<"ReadVFSgnjF", 0>;
+  defm "" : LMULSEWReadAdvanceF<"ReadVFMinMaxV", 0>;
+  defm "" : LMULSEWReadAdvanceF<"ReadVFMinMaxF", 0>;
+  defm "" : LMULSEWReadAdvanceF<"ReadVFSgnjV", 0>;
+  defm "" : LMULSEWReadAdvanceF<"ReadVFSgnjF", 0>;
   defm "" : LMULReadAdvance<"ReadVFCmpV", 0>;
   defm "" : LMULReadAdvance<"ReadVFCmpF", 0>;
   defm "" : LMULReadAdvance<"ReadVFClassV", 0>;
   defm "" : LMULReadAdvance<"ReadVFMergeV", 0>;
   defm "" : LMULReadAdvance<"ReadVFMergeF", 0>;
   defm "" : LMULReadAdvance<"ReadVFMovF", 0>;
-  defm "" : LMULReadAdvance<"ReadVFCvtIToFV", 0>;
+  defm "" : LMULSEWReadAdvanceF<"ReadVFCvtIToFV", 0>;
   defm "" : LMULReadAdvance<"ReadVFCvtFToIV", 0>;
-  defm "" : LMULReadAdvanceW<"ReadVFWCvtIToFV", 0>;
+  defm "" : LMULSEWReadAdvanceW<"ReadVFWCvtIToFV", 0>;
   defm "" : LMULReadAdvanceFW<"ReadVFWCvtFToIV", 0>;
-  defm "" : LMULReadAdvanceFW<"ReadVFWCvtFToFV", 0>;
-  defm "" : LMULReadAdvanceFW<"ReadVFNCvtIToFV", 0>;
+  defm "" : LMULSEWReadAdvanceFW<"ReadVFWCvtFToFV", 0>;
+  defm "" : LMULSEWReadAdvanceFW<"ReadVFNCvtIToFV", 0>;
   defm "" : LMULReadAdvanceW<"ReadVFNCvtFToIV", 0>;
-  defm "" : LMULReadAdvanceFW<"ReadVFNCvtFToFV", 0>;
+  defm "" : LMULSEWReadAdvanceFW<"ReadVFNCvtFToFV", 0>;
   
   // 15. Vector Reduction Operations
   def : ReadAdvance<ReadVIRedV, 0>;
