@@ -1147,7 +1147,6 @@ def FeatureVendorXSfvfexpa
 def HasVendorXSfvfexpa : Predicate<"Subtarget->hasVendorXSfvfexpa()">,
                          AssemblerPredicate<(all_of FeatureVendorXSfvfexpa),
                          "'Xsfvfexpa' (SiFive Vector Floating-Point Exponential Approximation Instruction)">;
-def HasVendorXSfvfexpaAndF16 : Predicate<"Subtarget->hasVendorXSfvfexpa() && Subtarget->hasVInstructionsF16()">;
 
 def FeatureVendorXSfvfexpa64e
     : SubtargetFeature<"xsfvfexpa64e", "HasVendorXSfvfexpa64e", "true",

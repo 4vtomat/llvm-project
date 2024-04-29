@@ -1107,7 +1107,7 @@ let Predicates = [HasVendorXSfvfexpa] in {
                       [VF32MF2, VF32M1, VF32M2, VF32M4, VF32M8], isSEWAware=1>;
 }
 
-let Predicates = [HasVendorXSfvfexpaAndF16] in {
+let Predicates = [HasVendorXSfvfexpa, HasVInstructionsF16] in {
   defm : VPatUnaryV_V<"int_riscv_sf_vfexpa", "PseudoVFEXPA",
                       [VF16MF4, VF16MF2, VF16M1, VF16M2, VF16M4, VF16M8],
                       isSEWAware=1>;
