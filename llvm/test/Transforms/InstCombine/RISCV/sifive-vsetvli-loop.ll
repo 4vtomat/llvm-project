@@ -122,7 +122,7 @@ define void @test4(ptr %arg, ptr %arg1, i64 %avl) vscale_range(1) {
 ; CHECK-NEXT:    [[VL:%.*]] = tail call i64 @llvm.riscv.vsetvli.i64(i64 [[AVL]], i64 3, i64 2)
 ; CHECK-NEXT:    br label [[BB2:%.*]]
 ; CHECK:       bb2:
-; CHECK-NEXT:    [[CALL:%.*]] = trunc i64 [[VL]] to i32
+; CHECK-NEXT:    [[CALL:%.*]] = trunc nuw nsw i64 [[VL]] to i32
 ; CHECK-NEXT:    [[CALL4:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[ARG1]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[CALL]])
 ; CHECK-NEXT:    [[CALL5:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[ARG]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[CALL]])
 ; CHECK-NEXT:    tail call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[CALL5]], ptr align 8 [[ARG1]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[CALL]])
@@ -162,7 +162,7 @@ define void @test5(ptr %arg, ptr %arg1, i64 %avl) vscale_range(1) {
 ; CHECK-NEXT:    [[VL:%.*]] = tail call i64 @llvm.riscv.vsetvli.i64(i64 [[AVL]], i64 3, i64 1)
 ; CHECK-NEXT:    br label [[BB2:%.*]]
 ; CHECK:       bb2:
-; CHECK-NEXT:    [[CALL:%.*]] = trunc i64 [[VL]] to i32
+; CHECK-NEXT:    [[CALL:%.*]] = trunc nuw nsw i64 [[VL]] to i32
 ; CHECK-NEXT:    [[CALL4:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[ARG1]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[CALL]])
 ; CHECK-NEXT:    [[CALL5:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[ARG]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[CALL]])
 ; CHECK-NEXT:    tail call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[CALL5]], ptr align 8 [[ARG1]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[CALL]])
