@@ -109,18 +109,19 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xcvmem", {1, 0}},
     {"xcvsimd", {1, 0}},
     {"xsfcease", {1, 0}},
-    {"xsfmm128t", {0, 2}}, // SIFIVE
-    {"xsfmm32a", {0, 2}}, // SIFIVE
-    {"xsfmm32a4i", {0, 2}}, // SIFIVE
-    {"xsfmm32a8f", {0, 2}}, // SIFIVE
-    {"xsfmm32ea", {0, 2}}, // SIFIVE
-    {"xsfmm32t", {0, 2}}, // SIFIVE
-    {"xsfmm64a", {0, 2}}, // SIFIVE
-    {"xsfmm64t", {0, 2}}, // SIFIVE
-    {"xsfmmbase", {0, 2}}, // SIFIVE
+    {"xsfmm128t", {0, 3}}, // SIFIVE
+    {"xsfmm32a", {0, 3}}, // SIFIVE
+    {"xsfmm32a4i", {0, 3}}, // SIFIVE
+    {"xsfmm32a8f", {0, 3}}, // SIFIVE
+    {"xsfmm32ea", {0, 3}}, // SIFIVE
+    {"xsfmm32t", {0, 3}}, // SIFIVE
+    {"xsfmm64a", {0, 3}}, // SIFIVE
+    {"xsfmm64t", {0, 3}}, // SIFIVE
+    {"xsfmmbase", {0, 3}}, // SIFIVE
     {"xsfpgflushdlone", {0, 1}}, // SIFIVE
     {"xsfvcp", {1, 0}},
-    {"xsfvfexpa", {0, 1}}, // SIFIVE
+    {"xsfvfexpa", {0, 2}}, // SIFIVE
+    {"xsfvfexpa64e", {0, 2}}, // SIFIVE
     {"xsfvfhbfmin", {0, 1}}, // SIFIVE
     {"xsfvfnrclipxfqf", {1, 0}},
     {"xsfvfnrclipxfqf", {0, 1}}, // SIFIVE
@@ -1335,6 +1336,7 @@ static const char *ImpliedExtsV[] = {"zvl128b", "zve64d"};
 static const char *ImpliedExtsXTHeadVdot[] = {"v"};
 static const char *ImpliedExtsXSfvcp[] = {"zve32x"};
 static const char *ImpliedExtsXSfvfexpa[] = {"zve32f"};
+static const char *ImpliedExtsXSfvfexpa64e[] = {"xsfvfexpa", "zve64d"};
 static const char *ImpliedExtsXSfvfnrclipxfqf[] = {"zve32f"};
 static const char *ImpliedExtsXSfvfhbfmin[] = {"zvfbfmin"}; // SIFIVE
 static const char *ImpliedExtsXSfvfwmaccqqq[] = {"zvfbfmin"};
@@ -1429,6 +1431,7 @@ static constexpr ImpliedExtsEntry ImpliedExts[] = {
     {{"xsfmmbase"}, {ImpliedExtsXSfmmbase}},
     {{"xsfvcp"}, {ImpliedExtsXSfvcp}},
     {{"xsfvfexpa"}, {ImpliedExtsXSfvfexpa}},
+    {{"xsfvfexpa64e"}, {ImpliedExtsXSfvfexpa64e}},
     {{"xsfvfhbfmin"}, {ImpliedExtsXSfvfhbfmin}}, // SIFIVE
     {{"xsfvfnrclipxfqf"}, {ImpliedExtsXSfvfnrclipxfqf}},
     {{"xsfvfwmaccqqq"}, {ImpliedExtsXSfvfwmaccqqq}},

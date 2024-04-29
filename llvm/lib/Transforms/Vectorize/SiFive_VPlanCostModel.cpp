@@ -243,12 +243,7 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
             case Instruction::UDiv:
             case Instruction::SDiv:
             case Instruction::URem:
-            case Instruction::SRem: {
-              if (!RVVPair::isValidType(I->getType(), RVL))
-                return InstructionCost::getInvalid();
-              Type *VectorTy = getVectorType(I->getType(), RVL);
-              return TTI.getArithmeticInstrCost(Opcode, VectorTy, CostKind);
-            }
+            case Instruction::SRem:
             case Instruction::Add:
             case Instruction::FAdd:
             case Instruction::Sub:

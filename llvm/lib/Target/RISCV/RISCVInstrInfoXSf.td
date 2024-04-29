@@ -543,6 +543,10 @@ let Predicates = [HasVendorXSfvfnrclipxfqf] in {
   defm VFNRCLIP_X_F_QF : VPseudoSiFiveVFNRCLIP;
 }
 
+let Predicates = [HasVendorXSfvfexpa] in {
+  defm PseudoVFEXPA : VPseudoVRCP_V;
+}
+
 // SDNode
 def SDT_SF_VC_V_X : SDTypeProfile<1, 4, [SDTCisVec<0>,
                                          SDTCisVT<1, XLenVT>,
@@ -1095,7 +1099,23 @@ let Predicates = [HasVendorXSfcease] in {
                               "sf.cease", "">, Sched<[]> {
     let rs1 = 0b00000;
     let rd = 0b00000;
+  }
 }
+
+let Predicates = [HasVendorXSfvfexpa] in {
+  defm : VPatUnaryV_V<"int_riscv_sf_vfexpa", "PseudoVFEXPA",
+                      [VF32MF2, VF32M1, VF32M2, VF32M4, VF32M8], isSEWAware=1>;
+}
+
+let Predicates = [HasVendorXSfvfexpaAndF16] in {
+  defm : VPatUnaryV_V<"int_riscv_sf_vfexpa", "PseudoVFEXPA",
+                      [VF16MF4, VF16MF2, VF16M1, VF16M2, VF16M4, VF16M8],
+                      isSEWAware=1>;
+}
+
+let Predicates = [HasVendorXSfvfexpa64e] in {
+  defm : VPatUnaryV_V<"int_riscv_sf_vfexpa", "PseudoVFEXPA",
+                      [VF64M1, VF64M2, VF64M4, VF64M8], isSEWAware=1>;
 }
 
 #ifdef SIFIVE_CUSTOMIZATION

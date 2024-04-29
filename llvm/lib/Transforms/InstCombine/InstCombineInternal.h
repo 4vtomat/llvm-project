@@ -297,6 +297,15 @@ private:
   Instruction *simplifyMaskedScatter(IntrinsicInst &II);
 #if SIFIVE_CUSTOMIZATION
   Instruction *simplifyVPGather(IntrinsicInst &II);
+
+  // Fold scalable load(store(x, alloca)) sequence to x.
+  Instruction *simplifyVLALoad(IntrinsicInst &II, DominatorTree &DT);
+
+  // Remove store if its pointer operand is defined by alloca and has one use.
+  Instruction *simplifyVLAStore(IntrinsicInst &II);
+
+  // Fold get.vector.length and riscv.vsetvli intrinsics when possible.
+  Instruction *simplifyGetVectorLength(IntrinsicInst &VL);
 #endif
 
   /// Transform (zext icmp) to bitwise / integer operations in order to

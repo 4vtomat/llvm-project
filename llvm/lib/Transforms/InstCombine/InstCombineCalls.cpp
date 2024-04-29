@@ -76,6 +76,8 @@
 #include <vector>
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/Analysis/OptimizationRemarkEmitter.h"
+#include "llvm/IR/IntrinsicsRISCV.h"
+#include "llvm/TargetParser/RISCVTargetParser.h"
 #endif // SIFIVE_CUSTOMIZATION
 
 #define DEBUG_TYPE "instcombine"
@@ -381,6 +383,128 @@ Instruction *InstCombinerImpl::simplifyVPGather(IntrinsicInst &II) {
       Load->addParamAttr(
           0, Attribute::getWithAlignment(Load->getContext(), *Alignment));
     return replaceInstUsesWith(II, Load);
+  }
+
+  return nullptr;
+}
+
+Instruction *InstCombinerImpl::simplifyVLALoad(IntrinsicInst &Load,
+                                               DominatorTree &DT) {
+  Value *Ptr;
+  Value *VL;
+
+  switch (Load.getIntrinsicID()) {
+  case Intrinsic::vp_load:
+    Ptr = cast<VPIntrinsic>(&Load)->getMemoryPointerParam();
+    VL = cast<VPIntrinsic>(&Load)->getVectorLengthParam();
+    break;
+  case Intrinsic::riscv_vle:
+    if (!match(Load.getOperand(0), m_Undef()))
+      return nullptr;
+    Ptr = Load.getOperand(1);
+    VL = Load.getOperand(2);
+    break;
+  default:
+    return nullptr;
+  }
+
+  // TODO: Infer origin of pointer operand if needed.
+  if (!isa<AllocaInst>(Ptr))
+    return nullptr;
+
+  auto AreIdenticalVLParams = [](Value *VL1, Value *VL2) {
+    return match(VL1, m_ZExtOrSelf(m_Specific(VL2))) ||
+           match(VL2, m_ZExtOrSelf(m_Specific(VL1))) ||
+           match(VL1, m_TruncOrSelf(m_Specific(VL2))) ||
+           match(VL2, m_TruncOrSelf(m_Specific(VL1)));
+  };
+
+  IntrinsicInst *Store = nullptr;
+
+  // Before folding make sure pointer is only accessed by loads and a single
+  // store that dominates current Load
+  for (User *U : Ptr->users()) {
+    auto *II = dyn_cast<IntrinsicInst>(U);
+    if (!II)
+      return nullptr;
+    if (II->getIntrinsicID() == Intrinsic::vp_load ||
+        II->getIntrinsicID() == Intrinsic::riscv_vle)
+      continue;
+    if (II->getIntrinsicID() == Intrinsic::vp_store ||
+        II->getIntrinsicID() == Intrinsic::riscv_vse) {
+      if (Store)
+        return nullptr;
+      Store = II;
+      continue;
+    }
+    return nullptr;
+  }
+
+  // If load dominates store, it's not a good candidate for folding
+  if (DT.dominates(&Load, Store))
+    return nullptr;
+
+  Value *StoreVL;
+  Value *StoredVal;
+  if (auto *VPI = dyn_cast<VPIntrinsic>(Store)) {
+    StoreVL = VPI->getVectorLengthParam();
+    StoredVal = VPI->getMemoryDataParam();
+  } else {
+    StoreVL = Store->getOperand(2);
+    StoredVal = Store->getOperand(0);
+  }
+
+  if (StoredVal->getType() != Load.getType() ||
+      !AreIdenticalVLParams(StoreVL, VL))
+    return nullptr;
+
+  return replaceInstUsesWith(Load, StoredVal);
+}
+
+Instruction *InstCombinerImpl::simplifyVLAStore(IntrinsicInst &Store)
+{
+  Value *Ptr;
+
+  switch (Store.getIntrinsicID()) {
+  case Intrinsic::vp_store:
+    Ptr = cast<VPIntrinsic>(&Store)->getMemoryPointerParam();
+    break;
+  case Intrinsic::riscv_vse:
+    Ptr = Store.getOperand(1);
+    break;
+  default:
+    return nullptr;
+  }
+  // If the RHS is an alloca with a single use, zapify the store, making the
+  // alloca dead.
+  if (Ptr->hasOneUse())
+    if (isa<AllocaInst>(Ptr))
+      return eraseInstFromFunction(Store);
+  return nullptr;
+}
+
+Instruction *InstCombinerImpl::simplifyGetVectorLength(IntrinsicInst &VL) {
+  if (!cast<ConstantInt>(VL.getOperand(2))->isOne())
+    return nullptr;
+
+  unsigned Elts = cast<ConstantInt>(VL.getOperand(1))->getZExtValue();
+
+  uint64_t SEW, LMUL;
+  Value *Vsetvli = VL.getOperand(0);
+  if (match(Vsetvli, m_Intrinsic<Intrinsic::riscv_vsetvli>(
+                         m_Value(), m_ConstantInt(SEW), m_ConstantInt(LMUL))) &&
+      SEW < 4 && LMUL < 8 && LMUL != 4) {
+    unsigned MinVectorLength = RISCV::RVVBitsPerBlock;
+    if (LMUL < 4)
+      MinVectorLength <<= LMUL;
+    else
+      MinVectorLength >>= (8 - LMUL);
+
+    if (MinVectorLength >> (SEW + 3) > Elts)
+      return nullptr;
+    Value *NewVL = Builder.CreateZExtOrTrunc(Vsetvli, VL.getType());
+
+    return replaceInstUsesWith(VL, NewVL);
   }
 
   return nullptr;
@@ -2110,6 +2234,14 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
 #if SIFIVE_CUSTOMIZATION
   case Intrinsic::vp_gather:
     return simplifyVPGather(*II);
+  case Intrinsic::vp_load:
+  case Intrinsic::riscv_vle:
+    return simplifyVLALoad(*II, DT);
+  case Intrinsic::vp_store:
+  case Intrinsic::riscv_vse:
+    return simplifyVLAStore(*II);
+  case Intrinsic::experimental_get_vector_length:
+    return simplifyGetVectorLength(*II);
 #endif
   case Intrinsic::launder_invariant_group:
   case Intrinsic::strip_invariant_group:
