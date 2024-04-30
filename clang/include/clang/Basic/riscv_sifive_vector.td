@@ -117,6 +117,7 @@ multiclass RVVVQMACCQOQBuiltinSet<list<list<string>> suffixes_prototypes> {
     defm NAME : RVVOutOp1Op2BuiltinSet<NAME, "s", suffixes_prototypes>;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
 multiclass RVVVQDOTQBuiltinSet<list<list<string>> suffixes_prototypes> {
   let UnMaskedPolicyScheme = HasPolicyOperand,
       HasMaskedOffOperand = false,
@@ -126,7 +127,6 @@ multiclass RVVVQDOTQBuiltinSet<list<list<string>> suffixes_prototypes> {
   }
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
 multiclass RVVVFEXPABuiltinSet<list<list<string>> suffixes_prototypes, string type_range> {
   let UnMaskedPolicyScheme = HasPassthruOperand,
       OverloadedName = NAME,
@@ -218,6 +218,7 @@ let ManualCodegen = [{
 }
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
 // Only SEW=32 is defined for Xsfvqdotq so far, and since inputs are in fact
 // four 8-bit integer bundles, we use unsigned type to represent all of them
 let RequiredFeatures = ["Xsfvqdotq"] in {
@@ -230,7 +231,6 @@ let RequiredFeatures = ["Xsfvqdotq"] in {
   defm sf_vqdotus : RVVVQDOTQBuiltinSet<[["vx", "v", "vvUvUe"]]>;
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
 let RequiredFeatures = ["Xsfvfexpa"] in {
 defm sf_vfexpa : RVVVFEXPABuiltinSet<[["v", "v", "vv"]], "xf">;
 }
