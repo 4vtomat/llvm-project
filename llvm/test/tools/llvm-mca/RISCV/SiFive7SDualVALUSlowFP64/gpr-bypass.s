@@ -214,16 +214,16 @@ jr a0
 # CHECK-NEXT:  1      3     1.00                        jr	a0
 
 # CHECK:      Resources:
-# CHECK-NEXT: [0]   - VLEN1024DualVALUSlowFP64SiFive7NFDiv
-# CHECK-NEXT: [1]   - VLEN1024DualVALUSlowFP64SiFive7NIDiv
-# CHECK-NEXT: [2]   - VLEN1024DualVALUSlowFP64SiFive7NMem
-# CHECK-NEXT: [3]   - VLEN1024DualVALUSlowFP64SiFive7NPipeA
-# CHECK-NEXT: [4]   - VLEN1024DualVALUSlowFP64SiFive7NPipeB
-# CHECK-NEXT: [5]   - VLEN1024DualVALUSlowFP64SiFive7NVA1
-# CHECK-NEXT: [6]   - VLEN1024DualVALUSlowFP64SiFive7NVA2
-# CHECK-NEXT: [7]   - VLEN1024DualVALUSlowFP64SiFive7NVCQ
-# CHECK-NEXT: [8]   - VLEN1024DualVALUSlowFP64SiFive7NVL
-# CHECK-NEXT: [9]   - VLEN1024DualVALUSlowFP64SiFive7NVS
+# CHECK-NEXT: [0]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NFDiv
+# CHECK-NEXT: [1]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NIDiv
+# CHECK-NEXT: [2]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NMem
+# CHECK-NEXT: [3]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA
+# CHECK-NEXT: [4]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeB
+# CHECK-NEXT: [5]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1
+# CHECK-NEXT: [6]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA2
+# CHECK-NEXT: [7]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ
+# CHECK-NEXT: [8]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVL
+# CHECK-NEXT: [9]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVS
 
 # CHECK:      Resource pressure per iteration:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]

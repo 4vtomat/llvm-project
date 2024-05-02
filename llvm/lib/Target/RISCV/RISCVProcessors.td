@@ -696,7 +696,8 @@ def SIFIVE_X280N :
                        TunePseudoLIsimm32]>;
 
 def SIFIVE_X280O :
-  RISCVProcessorModel<"sifive-x280o", SiFive7NVLEN512Model,
+  RISCVProcessorModel<"sifive-x280o",
+                      SiFive7NVLEN512FastGatherModel,
                       [Feature64Bit,
                        FeatureStdExtI,
                        FeatureStdExtZifencei,
@@ -719,8 +720,7 @@ def SIFIVE_X280O :
                       [TuneSiFive7,
                        TuneDLenFactor2,
                        TuneDLen256b,
-                       TunePseudoLIsimm32,
-                       TuneOptimizedVRGatherVCompress]>;
+                       TunePseudoLIsimm32]>;
 
 defvar SIFIVE_X390_Features = [
   Feature64Bit,
@@ -817,8 +817,7 @@ def SIFIVE_P260T : RISCVProcessorModel<"sifive-p260t", SiFive7NVLEN128Model,
                                        [TuneSiFive7,
                                         TuneDLenFactor2,
                                         TuneDLen64b,
-                                        TunePseudoLIsimm32,
-                                        TuneOptimizedVRGatherVCompress]>;
+                                        TunePseudoLIsimm32]>;
 
 def SIFIVE_P450 : RISCVProcessorModel<"sifive-p450", SiFiveP400Model,
                                       [Feature64Bit,

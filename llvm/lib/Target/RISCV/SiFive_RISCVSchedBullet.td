@@ -86,27 +86,9 @@ class BulletGetCyclesSegmentedSeg2<string mx> {
   );
 }
 
-// Cycles for segmented loads and stores are calculated using the
-// formula vl * ceil((SEW * nf) / DLEN), where SEW * nf is the segment size.
-class BulletGetCyclesSegmented<string mx, int sew, int nf, int VLEN> {
-  // (VLEN * LMUL) / SEW
-  defvar VLUpperBound  = !cond(
-    !eq(mx, "M1") : !div(VLEN, sew),
-    !eq(mx, "M2") : !div(!mul(VLEN, 2), sew),
-    !eq(mx, "M4") : !div(!mul(VLEN, 4), sew),
-    !eq(mx, "M8") : !div(!mul(VLEN, 8), sew),
-    !eq(mx, "MF2") : !div(!div(VLEN, 2), sew),
-    !eq(mx, "MF4") : !div(!div(VLEN, 4), sew),
-    !eq(mx, "MF8") : !div(!div(VLEN, 8), sew),
-  );
-  // We can calculate ceil(a/b) using (a + b - 1) / b.
-  defvar a = !mul(sew, nf);
-  defvar b = !div(VLEN, 2); // DLEN
-  int c = !mul(VLUpperBound, !div(!sub(!add(a, b), 1), b));
-}
-
 class BulletGetCyclesOnePerElement<string mx, int sew, int VLEN> {
   // c = ceil(VLEN / SEW) * LMUL
+  // TODO: fix ceil to account for VLEN != 512
   // Note: c >= 1 since the smallest VLEN is 512 / 8 = 8, and the
   // largest division performed on VLEN is in MF8 case with division
   // by 8. Therefore, there is no need to ceil the result.
@@ -121,6 +103,18 @@ class BulletGetCyclesOnePerElement<string mx, int sew, int VLEN> {
     !eq(mx, "MF8") : !div(a, 8)
   );
 }
+
+// Cycles for segmented loads and stores are calculated using the
+// formula vl * ceil((SEW * nf) / DLEN), where SEW * nf is the segment size.
+class BulletGetCyclesSegmented<string mx, int sew, int nf, int VLEN> {
+  defvar VLUpperBound = BulletGetCyclesOnePerElement<mx, sew, VLEN>.c;
+  // We can calculate ceil(a/b) using (a + b - 1) / b.
+  defvar a = !mul(sew, nf);
+  defvar b = !div(VLEN, 2); // DLEN
+  int c = !mul(VLUpperBound, !div(!sub(!add(a, b), 1), b));
+}
+
+
 
 class BulletGetDivOrSqrtFactor<int sew> {
   int c = !cond(
@@ -153,17 +147,70 @@ class BulletGetReductionCycles<string mx, int sew, int VLEN> {
 
 /// Cycles for ordered reductions take approximatley 6*VL cycles
 class BulletGetOrderedReductionCycles<string mx, int sew, int VLEN> {
-  // (VLEN * LMUL) / SEW
-  defvar VLUpperBound  = !cond(
-    !eq(mx, "M1") : !div(VLEN, sew),
-    !eq(mx, "M2") : !div(!mul(VLEN, 2), sew),
-    !eq(mx, "M4") : !div(!mul(VLEN, 4), sew),
-    !eq(mx, "M8") : !div(!mul(VLEN, 8), sew),
-    !eq(mx, "MF2") : !div(!div(VLEN, 2), sew),
-    !eq(mx, "MF4") : !div(!div(VLEN, 4), sew),
-    !eq(mx, "MF8") : !div(!div(VLEN, 8), sew),
-  );
+  defvar VLUpperBound = BulletGetCyclesOnePerElement<mx, sew, VLEN>.c;
   int c = !mul(6, VLUpperBound);
+}
+
+class isSingleDLEN<string mx> {
+  bit c = !or(!eq(mx, "MF2"), !or(!eq(mx, "MF4"), !eq(mx, "MF8")));
+}
+
+class BulletGetCyclesVRGather<string mx, int sew, int VLEN,
+                              bit hasFastLargeGather,
+                              bit hasFastGather> {
+  assert !or(!not(hasFastLargeGather), hasFastGather),
+         "hasFastLargeGather must imply hasFastGather";
+
+  // if (hasFastGather && isSingleDLEN(mx))
+  //   c = 1;
+  //  else if (hasFastLargeGather && (log2(SEW/8) + log2(LMUL) <= log2(DLEN / 32))
+  //   c = LMUL * 2 * ceil(vl * SEW / DLEN);
+  //  else
+  //   c = vl;
+
+  defvar y = !logtwo(!div(sew, 8));
+  defvar x = !cond(
+    !eq(mx, "M1") : y,
+    !eq(mx, "M2") : !add(y, 1),
+    !eq(mx, "M4") : !add(y, 2),
+    !eq(mx, "M8") : !add(y, 3),
+    // Give isSingleDLEN(mx) cases a garbage value to avoid build failures,
+    // even though x will go unused.
+    true : 1
+  );
+  // LMUL * 2 * ceil(vl * SEW / DLEN) = LMUL * 2 * ceil(2 * LMUL)
+  defvar z = !cond(
+    !eq(mx, "M1") : 4,
+    !eq(mx, "M2") : 16,
+    !eq(mx, "M4") : 64,
+    !eq(mx, "M8") : 256,
+    // Give isSingleDLEN(mx) cases a garbage value to avoid build failures,
+    // even though z will go unused.
+    true : 1 
+  );
+  defvar VLUpperBound = BulletGetCyclesOnePerElement<mx, sew, VLEN>.c;
+  bit IsSingleDLEN = isSingleDLEN<mx>.c;
+
+  int c = !cond(
+    !and(hasFastGather, IsSingleDLEN) : 1,
+    !and(hasFastLargeGather, !le(x, !logtwo(!div(VLEN, 64)))) : z,
+    true: VLUpperBound
+  );
+}
+
+class BulletGetCyclesVCompress<string mx, int sew, int VLEN,
+                               bit hasFastGather> {
+
+  // if (hasFastGather && isSingleDLEN(mx))
+  //   c = 1
+  // else
+  //   c = vl
+  defvar VLUpperBound = BulletGetCyclesOnePerElement<mx, sew, VLEN>.c;
+  bit IsSingleDLEN = isSingleDLEN<mx>.c;
+
+  int c = !if(!and(hasFastGather, IsSingleDLEN),
+              1,
+              VLUpperBound);
 }
 
 // ALU, ALU_B, IMUL, LOAD, F2I, SFB bypass to ALU, ALU_B, Branch
@@ -242,7 +289,9 @@ multiclass BulletWriteResBase<
     ProcResourceKind PipeAB, ProcResourceKind Mem, ProcResourceKind IDiv,
     ProcResourceKind FDiv, ProcResourceKind VA1, ProcResourceKind VA1OrVA2,
     ProcResourceKind VL, ProcResourceKind VS, ProcResourceKind VCQ,
-    bit hasSlowFP64Vec = false> {
+    bit hasSlowFP64Vec = false,
+    bit hasFastGather = false,
+    bit hasFastLargeGather = false> {
 
   // Branching
   let Latency = 3 in {
@@ -932,8 +981,33 @@ multiclass BulletWriteResBase<
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
     let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVRGatherVX",    [VCQ, VA1], mx, IsWorstCase>;
-      defm "" : LMULWriteResMX<"WriteVRGatherVI",    [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVRGatherVX", [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVRGatherVI", [VCQ, VA1], mx, IsWorstCase>;
+    }
+  }
+  foreach mx = SchedMxList in {
+    foreach sew = SchedSEWSet<mx>.val in {
+      defvar GatherCycles =
+        BulletGetCyclesVRGather<mx, sew, VLEN, hasFastLargeGather,
+                                hasFastGather>.c;
+      defvar IsSingleDLEN = isSingleDLEN<mx>.c;
+      defvar GatherLat = !if(!or(!and(hasFastGather, IsSingleDLEN),
+                                 hasFastLargeGather),
+                              !add(3, GatherCycles),
+                              // 7 + DLEN/ SEW
+                              !add(7, !div(!div(VLEN, 2), sew)));
+      defvar IsWorstCase = BulletIsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
+      let Latency = GatherLat, AcquireAtCycles = [0, 1],
+          ReleaseAtCycles = [1, !add(5, GatherCycles)] in
+      defm "" : LMULSEWWriteResMXSEW<"WriteVRGatherVV", [VCQ, VA1], mx, sew, IsWorstCase>;
+
+      defvar CompressCycles = BulletGetCyclesVCompress<mx, sew, VLEN, hasFastGather>.c;
+      defvar CompressLat = !if(!and(hasFastGather, IsSingleDLEN),
+                               4,
+                               !add(7, CompressCycles)); // 7 + VL
+      let Latency = CompressLat, AcquireAtCycles = [0, 1],
+          ReleaseAtCycles = [1, !add(8, CompressCycles)] in
+      defm "" : LMULSEWWriteResMXSEW<"WriteVCompressV", [VCQ, VA1], mx, sew, IsWorstCase>;
     }
   }
   

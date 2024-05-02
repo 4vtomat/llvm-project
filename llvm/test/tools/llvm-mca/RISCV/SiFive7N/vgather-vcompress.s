@@ -99,23 +99,23 @@ vcompress.vm v8, v16, v24
 
 # X280N:      Iterations:        1
 # X280N-NEXT: Instructions:      88
-# X280N-NEXT: Total Cycles:      5867
+# X280N-NEXT: Total Cycles:      6074
 # X280N-NEXT: Total uOps:        88
 
 # X280O:      Iterations:        1
 # X280O-NEXT: Instructions:      88
-# X280O-NEXT: Total Cycles:      5867
+# X280O-NEXT: Total Cycles:      5817
 # X280O-NEXT: Total uOps:        88
 
 # X280N:      Dispatch Width:    2
 # X280N-NEXT: uOps Per Cycle:    0.01
 # X280N-NEXT: IPC:               0.01
-# X280N-NEXT: Block RThroughput: 5820.0
+# X280N-NEXT: Block RThroughput: 6060.0
 
 # X280O:      Dispatch Width:    2
-# X280O-NEXT: uOps Per Cycle:    0.01
-# X280O-NEXT: IPC:               0.01
-# X280O-NEXT: Block RThroughput: 5820.0
+# X280O-NEXT: uOps Per Cycle:    0.02
+# X280O-NEXT: IPC:               0.02
+# X280O-NEXT: Block RThroughput: 5814.0
 
 # X280N:      Instruction Info:
 # X280N-NEXT: [1]: #uOps
@@ -147,21 +147,21 @@ vcompress.vm v8, v16, v24
 # X280N-NEXT:  1      39    37.00                       vrgatherei16.vv	v8, v16, v24
 # X280N-NEXT:  1      39    40.00                       vcompress.vm	v8, v16, v24
 # X280N-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m1, tu, mu
-# X280N-NEXT:  1      67    65.00                       vrgather.vv	v8, v16, v24
-# X280N-NEXT:  1      67    65.00                       vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  1      67    65.00                       vcompress.vm	v8, v16, v24
+# X280N-NEXT:  1      39    69.00                       vrgather.vv	v8, v16, v24
+# X280N-NEXT:  1      39    69.00                       vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  1      71    72.00                       vcompress.vm	v8, v16, v24
 # X280N-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m2, tu, mu
-# X280N-NEXT:  1      131   129.00                      vrgather.vv	v8, v16, v24
-# X280N-NEXT:  1      131   129.00                      vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  1      131   129.00                      vcompress.vm	v8, v16, v24
+# X280N-NEXT:  1      39    133.00                      vrgather.vv	v8, v16, v24
+# X280N-NEXT:  1      39    133.00                      vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  1      135   136.00                      vcompress.vm	v8, v16, v24
 # X280N-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
-# X280N-NEXT:  1      259   257.00                      vrgather.vv	v8, v16, v24
-# X280N-NEXT:  1      259   257.00                      vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  1      259   257.00                      vcompress.vm	v8, v16, v24
+# X280N-NEXT:  1      39    261.00                      vrgather.vv	v8, v16, v24
+# X280N-NEXT:  1      39    261.00                      vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  1      263   264.00                      vcompress.vm	v8, v16, v24
 # X280N-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
-# X280N-NEXT:  1      515   513.00                      vrgather.vv	v8, v16, v24
-# X280N-NEXT:  1      515   513.00                      vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  1      515   513.00                      vcompress.vm	v8, v16, v24
+# X280N-NEXT:  1      39    517.00                      vrgather.vv	v8, v16, v24
+# X280N-NEXT:  1      39    517.00                      vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  1      519   520.00                      vcompress.vm	v8, v16, v24
 # X280N-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
 # X280N-NEXT:  1      23    13.00                       vrgather.vv	v8, v16, v24
 # X280N-NEXT:  1      23    13.00                       vrgatherei16.vv	v8, v16, v24
@@ -171,147 +171,147 @@ vcompress.vm v8, v16, v24
 # X280N-NEXT:  1      23    21.00                       vrgatherei16.vv	v8, v16, v24
 # X280N-NEXT:  1      23    24.00                       vcompress.vm	v8, v16, v24
 # X280N-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
-# X280N-NEXT:  1      35    33.00                       vrgather.vv	v8, v16, v24
-# X280N-NEXT:  1      35    33.00                       vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  1      35    33.00                       vcompress.vm	v8, v16, v24
+# X280N-NEXT:  1      23    37.00                       vrgather.vv	v8, v16, v24
+# X280N-NEXT:  1      23    37.00                       vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  1      39    40.00                       vcompress.vm	v8, v16, v24
 # X280N-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m2, tu, mu
-# X280N-NEXT:  1      67    65.00                       vrgather.vv	v8, v16, v24
-# X280N-NEXT:  1      67    65.00                       vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  1      67    65.00                       vcompress.vm	v8, v16, v24
+# X280N-NEXT:  1      23    69.00                       vrgather.vv	v8, v16, v24
+# X280N-NEXT:  1      23    69.00                       vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  1      71    72.00                       vcompress.vm	v8, v16, v24
 # X280N-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
-# X280N-NEXT:  1      131   129.00                      vrgather.vv	v8, v16, v24
-# X280N-NEXT:  1      131   129.00                      vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  1      131   129.00                      vcompress.vm	v8, v16, v24
+# X280N-NEXT:  1      23    133.00                      vrgather.vv	v8, v16, v24
+# X280N-NEXT:  1      23    133.00                      vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  1      135   136.00                      vcompress.vm	v8, v16, v24
 # X280N-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
-# X280N-NEXT:  1      259   257.00                      vrgather.vv	v8, v16, v24
-# X280N-NEXT:  1      259   257.00                      vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  1      259   257.00                      vcompress.vm	v8, v16, v24
+# X280N-NEXT:  1      23    261.00                      vrgather.vv	v8, v16, v24
+# X280N-NEXT:  1      23    261.00                      vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  1      263   264.00                      vcompress.vm	v8, v16, v24
 # X280N-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
 # X280N-NEXT:  1      15    13.00                       vrgather.vv	v8, v16, v24
 # X280N-NEXT:  1      15    13.00                       vrgatherei16.vv	v8, v16, v24
 # X280N-NEXT:  1      15    16.00                       vcompress.vm	v8, v16, v24
 # X280N-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# X280N-NEXT:  1      19    17.00                       vrgather.vv	v8, v16, v24
-# X280N-NEXT:  1      19    17.00                       vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  1      19    17.00                       vcompress.vm	v8, v16, v24
+# X280N-NEXT:  1      15    21.00                       vrgather.vv	v8, v16, v24
+# X280N-NEXT:  1      15    21.00                       vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  1      23    24.00                       vcompress.vm	v8, v16, v24
 # X280N-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
-# X280N-NEXT:  1      35    33.00                       vrgather.vv	v8, v16, v24
-# X280N-NEXT:  1      35    33.00                       vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  1      35    33.00                       vcompress.vm	v8, v16, v24
+# X280N-NEXT:  1      15    37.00                       vrgather.vv	v8, v16, v24
+# X280N-NEXT:  1      15    37.00                       vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  1      39    40.00                       vcompress.vm	v8, v16, v24
 # X280N-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
-# X280N-NEXT:  1      67    65.00                       vrgather.vv	v8, v16, v24
-# X280N-NEXT:  1      67    65.00                       vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  1      67    65.00                       vcompress.vm	v8, v16, v24
+# X280N-NEXT:  1      15    69.00                       vrgather.vv	v8, v16, v24
+# X280N-NEXT:  1      15    69.00                       vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  1      71    72.00                       vcompress.vm	v8, v16, v24
 # X280N-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
-# X280N-NEXT:  1      131   129.00                      vrgather.vv	v8, v16, v24
-# X280N-NEXT:  1      131   129.00                      vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  1      131   129.00                      vcompress.vm	v8, v16, v24
+# X280N-NEXT:  1      15    133.00                      vrgather.vv	v8, v16, v24
+# X280N-NEXT:  1      15    133.00                      vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  1      135   136.00                      vcompress.vm	v8, v16, v24
 # X280N-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m1, tu, mu
-# X280N-NEXT:  1      11    9.00                        vrgather.vv	v8, v16, v24
-# X280N-NEXT:  1      11    9.00                        vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  1      11    9.00                        vcompress.vm	v8, v16, v24
+# X280N-NEXT:  1      11    13.00                       vrgather.vv	v8, v16, v24
+# X280N-NEXT:  1      11    13.00                       vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  1      15    16.00                       vcompress.vm	v8, v16, v24
 # X280N-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m2, tu, mu
-# X280N-NEXT:  1      19    17.00                       vrgather.vv	v8, v16, v24
-# X280N-NEXT:  1      19    17.00                       vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  1      19    17.00                       vcompress.vm	v8, v16, v24
+# X280N-NEXT:  1      11    21.00                       vrgather.vv	v8, v16, v24
+# X280N-NEXT:  1      11    21.00                       vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  1      23    24.00                       vcompress.vm	v8, v16, v24
 # X280N-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m4, tu, mu
-# X280N-NEXT:  1      35    33.00                       vrgather.vv	v8, v16, v24
-# X280N-NEXT:  1      35    33.00                       vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  1      35    33.00                       vcompress.vm	v8, v16, v24
+# X280N-NEXT:  1      11    37.00                       vrgather.vv	v8, v16, v24
+# X280N-NEXT:  1      11    37.00                       vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  1      39    40.00                       vcompress.vm	v8, v16, v24
 # X280N-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
-# X280N-NEXT:  1      67    65.00                       vrgather.vv	v8, v16, v24
-# X280N-NEXT:  1      67    65.00                       vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  1      67    65.00                       vcompress.vm	v8, v16, v24
+# X280N-NEXT:  1      11    69.00                       vrgather.vv	v8, v16, v24
+# X280N-NEXT:  1      11    69.00                       vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  1      71    72.00                       vcompress.vm	v8, v16, v24
 
 # X280O:      [1]    [2]    [3]    [4]    [5]    [6]    Instructions:
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf8, tu, mu
-# X280O-NEXT:  1      39    13.00                       vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      39    13.00                       vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      15    16.00                       vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      4     6.00                        vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      4     6.00                        vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      4     9.00                        vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf4, tu, mu
-# X280O-NEXT:  1      39    21.00                       vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      39    21.00                       vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      23    24.00                       vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      4     6.00                        vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      4     6.00                        vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      4     9.00                        vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf2, tu, mu
-# X280O-NEXT:  1      39    37.00                       vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      39    37.00                       vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      39    40.00                       vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      4     6.00                        vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      4     6.00                        vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      4     9.00                        vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m1, tu, mu
-# X280O-NEXT:  1      67    65.00                       vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      67    65.00                       vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      67    65.00                       vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      39    69.00                       vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      39    69.00                       vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      71    72.00                       vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m2, tu, mu
-# X280O-NEXT:  1      131   129.00                      vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      131   129.00                      vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      131   129.00                      vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      39    133.00                      vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      39    133.00                      vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      135   136.00                      vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
-# X280O-NEXT:  1      259   257.00                      vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      259   257.00                      vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      259   257.00                      vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      39    261.00                      vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      39    261.00                      vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      263   264.00                      vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
-# X280O-NEXT:  1      515   513.00                      vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      515   513.00                      vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      515   513.00                      vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      39    517.00                      vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      39    517.00                      vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      519   520.00                      vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
-# X280O-NEXT:  1      23    13.00                       vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      23    13.00                       vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      15    16.00                       vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      4     6.00                        vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      4     6.00                        vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      4     9.00                        vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu
-# X280O-NEXT:  1      23    21.00                       vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      23    21.00                       vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      23    24.00                       vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      4     6.00                        vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      4     6.00                        vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      4     9.00                        vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
-# X280O-NEXT:  1      35    33.00                       vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      35    33.00                       vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      35    33.00                       vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      23    37.00                       vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      23    37.00                       vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      39    40.00                       vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m2, tu, mu
-# X280O-NEXT:  1      67    65.00                       vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      67    65.00                       vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      67    65.00                       vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      23    69.00                       vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      23    69.00                       vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      71    72.00                       vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
-# X280O-NEXT:  1      131   129.00                      vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      131   129.00                      vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      131   129.00                      vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      23    133.00                      vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      23    133.00                      vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      135   136.00                      vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
-# X280O-NEXT:  1      259   257.00                      vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      259   257.00                      vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      259   257.00                      vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      23    261.00                      vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      23    261.00                      vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      263   264.00                      vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
-# X280O-NEXT:  1      15    13.00                       vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      15    13.00                       vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      15    16.00                       vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      4     6.00                        vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      4     6.00                        vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      4     9.00                        vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# X280O-NEXT:  1      19    17.00                       vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      19    17.00                       vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      19    17.00                       vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      15    21.00                       vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      15    21.00                       vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      23    24.00                       vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
-# X280O-NEXT:  1      35    33.00                       vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      35    33.00                       vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      35    33.00                       vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      15    37.00                       vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      15    37.00                       vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      39    40.00                       vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
-# X280O-NEXT:  1      67    65.00                       vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      67    65.00                       vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      67    65.00                       vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      15    69.00                       vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      15    69.00                       vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      71    72.00                       vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
-# X280O-NEXT:  1      131   129.00                      vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      131   129.00                      vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      131   129.00                      vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      15    133.00                      vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      15    133.00                      vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      135   136.00                      vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m1, tu, mu
-# X280O-NEXT:  1      11    9.00                        vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      11    9.00                        vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      11    9.00                        vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      11    13.00                       vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      11    13.00                       vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      15    16.00                       vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m2, tu, mu
-# X280O-NEXT:  1      19    17.00                       vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      19    17.00                       vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      19    17.00                       vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      11    21.00                       vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      11    21.00                       vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      23    24.00                       vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m4, tu, mu
-# X280O-NEXT:  1      35    33.00                       vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      35    33.00                       vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      35    33.00                       vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      11    37.00                       vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      11    37.00                       vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      39    40.00                       vcompress.vm	v8, v16, v24
 # X280O-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
-# X280O-NEXT:  1      67    65.00                       vrgather.vv	v8, v16, v24
-# X280O-NEXT:  1      67    65.00                       vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  1      67    65.00                       vcompress.vm	v8, v16, v24
+# X280O-NEXT:  1      11    69.00                       vrgather.vv	v8, v16, v24
+# X280O-NEXT:  1      11    69.00                       vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  1      71    72.00                       vcompress.vm	v8, v16, v24
 
 # X280N:      Resources:
 # X280N-NEXT: [0]   - VLEN512FastFP64SiFive7NFDiv
@@ -325,23 +325,23 @@ vcompress.vm v8, v16, v24
 # X280N-NEXT: [8]   - VLEN512FastFP64SiFive7NVS
 
 # X280O:      Resources:
-# X280O-NEXT: [0]   - VLEN512FastFP64SiFive7NFDiv
-# X280O-NEXT: [1]   - VLEN512FastFP64SiFive7NIDiv
-# X280O-NEXT: [2]   - VLEN512FastFP64SiFive7NMem
-# X280O-NEXT: [3]   - VLEN512FastFP64SiFive7NPipeA
-# X280O-NEXT: [4]   - VLEN512FastFP64SiFive7NPipeB
-# X280O-NEXT: [5]   - VLEN512FastFP64SiFive7NVA
-# X280O-NEXT: [6]   - VLEN512FastFP64SiFive7NVCQ
-# X280O-NEXT: [7]   - VLEN512FastFP64SiFive7NVL
-# X280O-NEXT: [8]   - VLEN512FastFP64SiFive7NVS
+# X280O-NEXT: [0]   - VLEN512FastFP64FastGatherSiFive7NFDiv
+# X280O-NEXT: [1]   - VLEN512FastFP64FastGatherSiFive7NIDiv
+# X280O-NEXT: [2]   - VLEN512FastFP64FastGatherSiFive7NMem
+# X280O-NEXT: [3]   - VLEN512FastFP64FastGatherSiFive7NPipeA
+# X280O-NEXT: [4]   - VLEN512FastFP64FastGatherSiFive7NPipeB
+# X280O-NEXT: [5]   - VLEN512FastFP64FastGatherSiFive7NVA
+# X280O-NEXT: [6]   - VLEN512FastFP64FastGatherSiFive7NVCQ
+# X280O-NEXT: [7]   - VLEN512FastFP64FastGatherSiFive7NVL
+# X280O-NEXT: [8]   - VLEN512FastFP64FastGatherSiFive7NVS
 
 # X280N:      Resource pressure per iteration:
 # X280N-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
-# X280N-NEXT:  -      -      -     22.00   -     5820.00 66.00  -      -
+# X280N-NEXT:  -      -      -     22.00   -     6060.00 66.00  -      -
 
 # X280O:      Resource pressure per iteration:
 # X280O-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
-# X280O-NEXT:  -      -      -     22.00   -     5820.00 66.00  -      -
+# X280O-NEXT:  -      -      -     22.00   -     5814.00 66.00  -      -
 
 # X280N:      Resource pressure by instruction:
 # X280N-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
@@ -358,21 +358,21 @@ vcompress.vm v8, v16, v24
 # X280N-NEXT:  -      -      -      -      -     37.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # X280N-NEXT:  -      -      -      -      -     40.00  1.00    -      -     vcompress.vm	v8, v16, v24
 # X280N-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e8, m1, tu, mu
-# X280N-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vcompress.vm	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     69.00  1.00    -      -     vrgather.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     69.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     72.00  1.00    -      -     vcompress.vm	v8, v16, v24
 # X280N-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e8, m2, tu, mu
-# X280N-NEXT:  -      -      -      -      -     129.00 1.00    -      -     vrgather.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     129.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     129.00 1.00    -      -     vcompress.vm	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     133.00 1.00    -      -     vrgather.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     133.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     136.00 1.00    -      -     vcompress.vm	v8, v16, v24
 # X280N-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e8, m4, tu, mu
-# X280N-NEXT:  -      -      -      -      -     257.00 1.00    -      -     vrgather.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     257.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     257.00 1.00    -      -     vcompress.vm	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     261.00 1.00    -      -     vrgather.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     261.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     264.00 1.00    -      -     vcompress.vm	v8, v16, v24
 # X280N-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e8, m8, tu, mu
-# X280N-NEXT:  -      -      -      -      -     513.00 1.00    -      -     vrgather.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     513.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     513.00 1.00    -      -     vcompress.vm	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     517.00 1.00    -      -     vrgather.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     517.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     520.00 1.00    -      -     vcompress.vm	v8, v16, v24
 # X280N-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e16, mf4, tu, mu
 # X280N-NEXT:  -      -      -      -      -     13.00  1.00    -      -     vrgather.vv	v8, v16, v24
 # X280N-NEXT:  -      -      -      -      -     13.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
@@ -382,145 +382,145 @@ vcompress.vm v8, v16, v24
 # X280N-NEXT:  -      -      -      -      -     21.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # X280N-NEXT:  -      -      -      -      -     24.00  1.00    -      -     vcompress.vm	v8, v16, v24
 # X280N-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e16, m1, tu, mu
-# X280N-NEXT:  -      -      -      -      -     33.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     33.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     33.00  1.00    -      -     vcompress.vm	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     37.00  1.00    -      -     vrgather.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     37.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     40.00  1.00    -      -     vcompress.vm	v8, v16, v24
 # X280N-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e16, m2, tu, mu
-# X280N-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vcompress.vm	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     69.00  1.00    -      -     vrgather.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     69.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     72.00  1.00    -      -     vcompress.vm	v8, v16, v24
 # X280N-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e16, m4, tu, mu
-# X280N-NEXT:  -      -      -      -      -     129.00 1.00    -      -     vrgather.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     129.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     129.00 1.00    -      -     vcompress.vm	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     133.00 1.00    -      -     vrgather.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     133.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     136.00 1.00    -      -     vcompress.vm	v8, v16, v24
 # X280N-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e16, m8, tu, mu
-# X280N-NEXT:  -      -      -      -      -     257.00 1.00    -      -     vrgather.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     257.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     257.00 1.00    -      -     vcompress.vm	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     261.00 1.00    -      -     vrgather.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     261.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     264.00 1.00    -      -     vcompress.vm	v8, v16, v24
 # X280N-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, mf2, tu, mu
 # X280N-NEXT:  -      -      -      -      -     13.00  1.00    -      -     vrgather.vv	v8, v16, v24
 # X280N-NEXT:  -      -      -      -      -     13.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # X280N-NEXT:  -      -      -      -      -     16.00  1.00    -      -     vcompress.vm	v8, v16, v24
 # X280N-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, m1, tu, mu
-# X280N-NEXT:  -      -      -      -      -     17.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     17.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     17.00  1.00    -      -     vcompress.vm	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     21.00  1.00    -      -     vrgather.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     21.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     24.00  1.00    -      -     vcompress.vm	v8, v16, v24
 # X280N-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, m2, tu, mu
-# X280N-NEXT:  -      -      -      -      -     33.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     33.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     33.00  1.00    -      -     vcompress.vm	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     37.00  1.00    -      -     vrgather.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     37.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     40.00  1.00    -      -     vcompress.vm	v8, v16, v24
 # X280N-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, m4, tu, mu
-# X280N-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vcompress.vm	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     69.00  1.00    -      -     vrgather.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     69.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     72.00  1.00    -      -     vcompress.vm	v8, v16, v24
 # X280N-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, m8, tu, mu
-# X280N-NEXT:  -      -      -      -      -     129.00 1.00    -      -     vrgather.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     129.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     129.00 1.00    -      -     vcompress.vm	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     133.00 1.00    -      -     vrgather.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     133.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     136.00 1.00    -      -     vcompress.vm	v8, v16, v24
 # X280N-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e64, m1, tu, mu
-# X280N-NEXT:  -      -      -      -      -     9.00   1.00    -      -     vrgather.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     9.00   1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     9.00   1.00    -      -     vcompress.vm	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     13.00  1.00    -      -     vrgather.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     13.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     16.00  1.00    -      -     vcompress.vm	v8, v16, v24
 # X280N-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e64, m2, tu, mu
-# X280N-NEXT:  -      -      -      -      -     17.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     17.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     17.00  1.00    -      -     vcompress.vm	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     21.00  1.00    -      -     vrgather.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     21.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     24.00  1.00    -      -     vcompress.vm	v8, v16, v24
 # X280N-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e64, m4, tu, mu
-# X280N-NEXT:  -      -      -      -      -     33.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     33.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     33.00  1.00    -      -     vcompress.vm	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     37.00  1.00    -      -     vrgather.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     37.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     40.00  1.00    -      -     vcompress.vm	v8, v16, v24
 # X280N-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e64, m8, tu, mu
-# X280N-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280N-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vcompress.vm	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     69.00  1.00    -      -     vrgather.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     69.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280N-NEXT:  -      -      -      -      -     72.00  1.00    -      -     vcompress.vm	v8, v16, v24
 
 # X280O:      Resource pressure by instruction:
 # X280O-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
 # X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e8, mf8, tu, mu
-# X280O-NEXT:  -      -      -      -      -     13.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     13.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     16.00  1.00    -      -     vcompress.vm	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     6.00   1.00    -      -     vrgather.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     6.00   1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     9.00   1.00    -      -     vcompress.vm	v8, v16, v24
 # X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e8, mf4, tu, mu
-# X280O-NEXT:  -      -      -      -      -     21.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     21.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     24.00  1.00    -      -     vcompress.vm	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     6.00   1.00    -      -     vrgather.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     6.00   1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     9.00   1.00    -      -     vcompress.vm	v8, v16, v24
 # X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e8, mf2, tu, mu
+# X280O-NEXT:  -      -      -      -      -     6.00   1.00    -      -     vrgather.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     6.00   1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     9.00   1.00    -      -     vcompress.vm	v8, v16, v24
+# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e8, m1, tu, mu
+# X280O-NEXT:  -      -      -      -      -     69.00  1.00    -      -     vrgather.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     69.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     72.00  1.00    -      -     vcompress.vm	v8, v16, v24
+# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e8, m2, tu, mu
+# X280O-NEXT:  -      -      -      -      -     133.00 1.00    -      -     vrgather.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     133.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     136.00 1.00    -      -     vcompress.vm	v8, v16, v24
+# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e8, m4, tu, mu
+# X280O-NEXT:  -      -      -      -      -     261.00 1.00    -      -     vrgather.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     261.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     264.00 1.00    -      -     vcompress.vm	v8, v16, v24
+# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e8, m8, tu, mu
+# X280O-NEXT:  -      -      -      -      -     517.00 1.00    -      -     vrgather.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     517.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     520.00 1.00    -      -     vcompress.vm	v8, v16, v24
+# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e16, mf4, tu, mu
+# X280O-NEXT:  -      -      -      -      -     6.00   1.00    -      -     vrgather.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     6.00   1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     9.00   1.00    -      -     vcompress.vm	v8, v16, v24
+# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e16, mf2, tu, mu
+# X280O-NEXT:  -      -      -      -      -     6.00   1.00    -      -     vrgather.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     6.00   1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     9.00   1.00    -      -     vcompress.vm	v8, v16, v24
+# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e16, m1, tu, mu
 # X280O-NEXT:  -      -      -      -      -     37.00  1.00    -      -     vrgather.vv	v8, v16, v24
 # X280O-NEXT:  -      -      -      -      -     37.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # X280O-NEXT:  -      -      -      -      -     40.00  1.00    -      -     vcompress.vm	v8, v16, v24
-# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e8, m1, tu, mu
-# X280O-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vcompress.vm	v8, v16, v24
-# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e8, m2, tu, mu
-# X280O-NEXT:  -      -      -      -      -     129.00 1.00    -      -     vrgather.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     129.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     129.00 1.00    -      -     vcompress.vm	v8, v16, v24
-# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e8, m4, tu, mu
-# X280O-NEXT:  -      -      -      -      -     257.00 1.00    -      -     vrgather.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     257.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     257.00 1.00    -      -     vcompress.vm	v8, v16, v24
-# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e8, m8, tu, mu
-# X280O-NEXT:  -      -      -      -      -     513.00 1.00    -      -     vrgather.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     513.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     513.00 1.00    -      -     vcompress.vm	v8, v16, v24
-# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e16, mf4, tu, mu
-# X280O-NEXT:  -      -      -      -      -     13.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     13.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     16.00  1.00    -      -     vcompress.vm	v8, v16, v24
-# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e16, mf2, tu, mu
+# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e16, m2, tu, mu
+# X280O-NEXT:  -      -      -      -      -     69.00  1.00    -      -     vrgather.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     69.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     72.00  1.00    -      -     vcompress.vm	v8, v16, v24
+# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e16, m4, tu, mu
+# X280O-NEXT:  -      -      -      -      -     133.00 1.00    -      -     vrgather.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     133.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     136.00 1.00    -      -     vcompress.vm	v8, v16, v24
+# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e16, m8, tu, mu
+# X280O-NEXT:  -      -      -      -      -     261.00 1.00    -      -     vrgather.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     261.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     264.00 1.00    -      -     vcompress.vm	v8, v16, v24
+# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, mf2, tu, mu
+# X280O-NEXT:  -      -      -      -      -     6.00   1.00    -      -     vrgather.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     6.00   1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     9.00   1.00    -      -     vcompress.vm	v8, v16, v24
+# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, m1, tu, mu
 # X280O-NEXT:  -      -      -      -      -     21.00  1.00    -      -     vrgather.vv	v8, v16, v24
 # X280O-NEXT:  -      -      -      -      -     21.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # X280O-NEXT:  -      -      -      -      -     24.00  1.00    -      -     vcompress.vm	v8, v16, v24
-# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e16, m1, tu, mu
-# X280O-NEXT:  -      -      -      -      -     33.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     33.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     33.00  1.00    -      -     vcompress.vm	v8, v16, v24
-# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e16, m2, tu, mu
-# X280O-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vcompress.vm	v8, v16, v24
-# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e16, m4, tu, mu
-# X280O-NEXT:  -      -      -      -      -     129.00 1.00    -      -     vrgather.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     129.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     129.00 1.00    -      -     vcompress.vm	v8, v16, v24
-# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e16, m8, tu, mu
-# X280O-NEXT:  -      -      -      -      -     257.00 1.00    -      -     vrgather.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     257.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     257.00 1.00    -      -     vcompress.vm	v8, v16, v24
-# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, mf2, tu, mu
+# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, m2, tu, mu
+# X280O-NEXT:  -      -      -      -      -     37.00  1.00    -      -     vrgather.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     37.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     40.00  1.00    -      -     vcompress.vm	v8, v16, v24
+# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, m4, tu, mu
+# X280O-NEXT:  -      -      -      -      -     69.00  1.00    -      -     vrgather.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     69.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     72.00  1.00    -      -     vcompress.vm	v8, v16, v24
+# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, m8, tu, mu
+# X280O-NEXT:  -      -      -      -      -     133.00 1.00    -      -     vrgather.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     133.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     136.00 1.00    -      -     vcompress.vm	v8, v16, v24
+# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e64, m1, tu, mu
 # X280O-NEXT:  -      -      -      -      -     13.00  1.00    -      -     vrgather.vv	v8, v16, v24
 # X280O-NEXT:  -      -      -      -      -     13.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # X280O-NEXT:  -      -      -      -      -     16.00  1.00    -      -     vcompress.vm	v8, v16, v24
-# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, m1, tu, mu
-# X280O-NEXT:  -      -      -      -      -     17.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     17.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     17.00  1.00    -      -     vcompress.vm	v8, v16, v24
-# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, m2, tu, mu
-# X280O-NEXT:  -      -      -      -      -     33.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     33.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     33.00  1.00    -      -     vcompress.vm	v8, v16, v24
-# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, m4, tu, mu
-# X280O-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vcompress.vm	v8, v16, v24
-# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, m8, tu, mu
-# X280O-NEXT:  -      -      -      -      -     129.00 1.00    -      -     vrgather.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     129.00 1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     129.00 1.00    -      -     vcompress.vm	v8, v16, v24
-# X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e64, m1, tu, mu
-# X280O-NEXT:  -      -      -      -      -     9.00   1.00    -      -     vrgather.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     9.00   1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     9.00   1.00    -      -     vcompress.vm	v8, v16, v24
 # X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e64, m2, tu, mu
-# X280O-NEXT:  -      -      -      -      -     17.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     17.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     17.00  1.00    -      -     vcompress.vm	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     21.00  1.00    -      -     vrgather.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     21.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     24.00  1.00    -      -     vcompress.vm	v8, v16, v24
 # X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e64, m4, tu, mu
-# X280O-NEXT:  -      -      -      -      -     33.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     33.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     33.00  1.00    -      -     vcompress.vm	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     37.00  1.00    -      -     vrgather.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     37.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     40.00  1.00    -      -     vcompress.vm	v8, v16, v24
 # X280O-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e64, m8, tu, mu
-# X280O-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vrgather.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
-# X280O-NEXT:  -      -      -      -      -     65.00  1.00    -      -     vcompress.vm	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     69.00  1.00    -      -     vrgather.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     69.00  1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# X280O-NEXT:  -      -      -      -      -     72.00  1.00    -      -     vcompress.vm	v8, v16, v24
