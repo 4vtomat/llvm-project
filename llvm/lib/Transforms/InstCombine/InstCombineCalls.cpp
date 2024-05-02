@@ -440,8 +440,8 @@ Instruction *InstCombinerImpl::simplifyVLALoad(IntrinsicInst &Load,
     return nullptr;
   }
 
-  // If load dominates store, it's not a good candidate for folding
-  if (DT.dominates(&Load, Store))
+  // If store does not dominate load, it's not a good candidate for folding
+  if (!DT.dominates(Store, &Load))
     return nullptr;
 
   Value *StoreVL;
