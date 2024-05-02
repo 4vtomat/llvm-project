@@ -98,7 +98,7 @@ private:
   ///
   /// \return minimum number of bits to which the chain ending with the
   /// truncate's operand can be shrunk to.
-  unsigned getMinBitWidth();
+  unsigned getMinBitWidth(bool HadBlend); // SIFIVE
 
   /// Build an expression graph dominated by the current processed TruncInst and
   /// Check if it is eligible to be reduced to a smaller type.

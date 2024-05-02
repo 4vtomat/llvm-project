@@ -172,7 +172,7 @@ bool TruncInstCombine::buildTruncExpressionGraph() {
   return true;
 }
 
-unsigned TruncInstCombine::getMinBitWidth() {
+unsigned TruncInstCombine::getMinBitWidth(bool HadBlend) { // SIFIVE
   SmallVector<Value *, 8> Worklist;
   SmallVector<Instruction *, 8> Stack;
 
@@ -245,6 +245,12 @@ unsigned TruncInstCombine::getMinBitWidth() {
     // sub-optimal code.
     if (DstTy->isVectorTy())
       return OrigBitWidth;
+#if SIFIVE_CUSTOMIZATION
+    // If we found a blend, we should shrink even if the type isn't legal.
+    if (HadBlend && MinBitWidth == 16)
+      return MinBitWidth;
+#endif
+
     // Use the smallest integer type in the range [MinBitWidth, OrigBitWidth).
     Type *Ty = DL.getSmallestLegalIntType(DstTy->getContext(), MinBitWidth);
     // Update minimum bit-width with the new destination type bit-width if
@@ -262,6 +268,28 @@ unsigned TruncInstCombine::getMinBitWidth() {
   }
   return MinBitWidth;
 }
+
+#if SIFIVE_CUSTOMIZATION
+// Detect (255 - zext(A)) * zext(X) + zext(A) * zext(Y). If A, X, and Y are all
+// 8 bits the result will fit in 16 bits. computeKnownBits will naively think
+// that both multiplies require 16 bits and that the sum requires 17 bits.
+// NOTE: The (255 - zext(A)) will have been changed to Xor by InstCombine.
+static bool detectBlendPattern(Value *Op) {
+  using namespace PatternMatch;
+
+  Value *A, *X, *Y;
+  if (!match(Op, m_c_Add(m_c_Mul(m_Xor(m_ZExt(m_Value(A)), m_SpecificInt(255)),
+                                 m_ZExt(m_Value(X))),
+                         m_c_Mul(m_ZExt(m_Deferred(A)), m_ZExt(m_Value(Y))))))
+    return false;
+
+  if (!A->getType()->isIntegerTy(8) || !X->getType()->isIntegerTy(8) ||
+      !Y->getType()->isIntegerTy(8))
+    return false;
+
+  return true;
+}
+#endif
 
 Type *TruncInstCombine::getBestTruncatedType() {
   if (!buildTruncExpressionGraph())
@@ -295,6 +323,10 @@ Type *TruncInstCombine::getBestTruncatedType() {
 
   unsigned OrigBitWidth =
       CurrentTruncInst->getOperand(0)->getType()->getScalarSizeInBits();
+
+#if SIFIVE_CUSTOMIZATION
+  bool HadBlend = false;
+#endif // SIFIVE_CUSTOMIZATION
 
   // Initialize MinBitWidth for shift instructions with the minimum number
   // that is greater than shift amount (i.e. shift amount + 1).
@@ -331,8 +363,21 @@ Type *TruncInstCombine::getBestTruncatedType() {
       unsigned MinBitWidth = 0;
       for (const auto &Op : I->operands()) {
         KnownBits Known = computeKnownBits(Op);
+
+#if SIFIVE_CUSTOMIZATION
+        if (Known.getMaxValue().getActiveBits() == 17 &&
+            detectBlendPattern(Op)) {
+          HadBlend = true;
+          MinBitWidth = std::max(16U, MinBitWidth);
+        } else {
+          MinBitWidth =
+              std::max(Known.getMaxValue().getActiveBits(), MinBitWidth);
+        }
+#else
         MinBitWidth =
             std::max(Known.getMaxValue().getActiveBits(), MinBitWidth);
+#endif // SIFIVE_CUSTOMIZATION
+
         if (MinBitWidth >= OrigBitWidth)
           return nullptr;
       }
@@ -342,7 +387,7 @@ Type *TruncInstCombine::getBestTruncatedType() {
 
   // Calculate minimum allowed bit-width allowed for shrinking the currently
   // visited truncate's operand.
-  unsigned MinBitWidth = getMinBitWidth();
+  unsigned MinBitWidth = getMinBitWidth(HadBlend); // SIFIVE
 
   // Check that we can shrink to smaller bit-width than original one and that
   // it is similar to the DesiredBitWidth is such exists.
