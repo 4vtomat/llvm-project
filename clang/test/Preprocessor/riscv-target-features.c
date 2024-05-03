@@ -543,7 +543,15 @@
 // RUN: %clang --target=riscv64-unknown-linux-gnu \
 // RUN:   -march=rv64ixsfcease -E -dM %s \
 // RUN:   -o - | FileCheck --check-prefix=CHECK-XSFCEASE-EXT %s
-// CHECK-XSFCEASE-EXT: __riscv_xsfcease 1000000{{$}}
+// CHECK-XSFCEASE-EXT: __riscv_xsfcease 1000{{$}}
+
+// RUN: %clang --target=riscv32-unknown-linux-gnu \
+// RUN:   -march=rv32ixsfcease0p1 -E -dM %s \
+// RUN:   -o - | FileCheck --check-prefix=CHECK-XSFCEASE0P1-EXT %s
+// RUN: %clang --target=riscv64-unknown-linux-gnu \
+// RUN:   -march=rv64ixsfcease0p1 -E -dM %s \
+// RUN:   -o - | FileCheck --check-prefix=CHECK-XSFCEASE0P1-EXT %s
+// CHECK-XSFCEASE0P1-EXT: __riscv_xsfcease 1000{{$}}
 
 // RUN: %clang --target=riscv32-unknown-linux-gnu \
 // RUN:   -march=rv32ixsfvcp -E -dM %s \

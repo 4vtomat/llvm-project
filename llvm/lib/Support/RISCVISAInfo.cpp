@@ -108,6 +108,7 @@ static const RISCVSupportedExtension SupportedExtensions[] = {
     {"xcvmac", {1, 0}},
     {"xcvmem", {1, 0}},
     {"xcvsimd", {1, 0}},
+    {"xsfcease", {0, 1}}, // SIFIVE
     {"xsfcease", {1, 0}},
     {"xsfmm128t", {0, 3}}, // SIFIVE
     {"xsfmm32a", {0, 3}}, // SIFIVE
