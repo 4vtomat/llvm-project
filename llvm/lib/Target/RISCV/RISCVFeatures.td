@@ -35,6 +35,11 @@ class RISCVExtension<string name, int major, int minor, string desc,
 
   // Experimental - Does extension require -menable-experimental-extensions.
   bit Experimental = false;
+
+#ifdef SIFIVE_CUSTOMIZATION
+  // AdditionalVersions - Pairs of additional major and minor versions.
+  list<list<int>> AdditionalVersions = [];
+#endif
 }
 
 // Version of RISCVExtension to be used for Experimental extensions. This
@@ -59,6 +64,7 @@ def FeatureStdExtSdtrig
     : RISCVExtension<"sdtrig", 1, 0,
                      "'Sdtrig' (Debugging Triggers)">;
 
+let AdditionalVersions = [[1, 12]] in // SIFIVE
 def FeatureStdExtSs
     : RISCVExtension<"ss", 1, 13,
                      "'Ss' (Supervisor Architecture)">;
@@ -730,6 +736,7 @@ def HasStdExtZfhOrZvfh
 
 // Vector Cryptography and Bitmanip Extensions
 
+let AdditionalVersions = [[0, 1]]  in // SIFIVE
 def FeatureStdExtZvkb
     : RISCVExtension<"zvkb", 1, 0,
                      "'Zvkb' (Vector Bit-manipulation used in Cryptography)">;
@@ -752,6 +759,7 @@ def HasStdExtZvbc : Predicate<"Subtarget->hasStdExtZvbc()">,
                     AssemblerPredicate<(all_of FeatureStdExtZvbc),
                         "'Zvbc' (Vector Carryless Multiplication)">;
 
+let AdditionalVersions = [[0, 1]]  in // SIFIVE
 def FeatureStdExtZvkg
     : RISCVExtension<"zvkg", 1, 0,
                      "'Zvkg' (Vector GCM instructions for Cryptography)">;
@@ -766,6 +774,7 @@ def HasStdExtZvkned : Predicate<"Subtarget->hasStdExtZvkned()">,
                       AssemblerPredicate<(all_of FeatureStdExtZvkned),
                           "'Zvkned' (Vector AES Encryption & Decryption (Single Round))">;
 
+let AdditionalVersions = [[0, 1]]  in // SIFIVE
 def FeatureStdExtZvknha
     : RISCVExtension<"zvknha", 1, 0,
                      "'Zvknha' (Vector SHA-2 (SHA-256 only))">;
@@ -773,6 +782,7 @@ def HasStdExtZvknha : Predicate<"Subtarget->hasStdExtZvknha()">,
                       AssemblerPredicate<(all_of FeatureStdExtZvknha),
                           "'Zvknha' (Vector SHA-2 (SHA-256 only))">;
 
+let AdditionalVersions = [[0, 1]]  in // SIFIVE
 def FeatureStdExtZvknhb
     : RISCVExtension<"zvknhb", 1, 0,
                      "'Zvknhb' (Vector SHA-2 (SHA-256 and SHA-512))",
@@ -785,6 +795,7 @@ def HasStdExtZvknhaOrZvknhb : Predicate<"Subtarget->hasStdExtZvknha() || Subtarg
                               AssemblerPredicate<(any_of FeatureStdExtZvknha, FeatureStdExtZvknhb),
                                   "'Zvknha' or 'Zvknhb' (Vector SHA-2)">;
 
+let AdditionalVersions = [[0, 1]]  in // SIFIVE
 def FeatureStdExtZvksed
     : RISCVExtension<"zvksed", 1, 0,
                      "'Zvksed' (SM4 Block Cipher Instructions)">;
@@ -792,6 +803,7 @@ def HasStdExtZvksed : Predicate<"Subtarget->hasStdExtZvksed()">,
                       AssemblerPredicate<(all_of FeatureStdExtZvksed),
                           "'Zvksed' (SM4 Block Cipher Instructions)">;
 
+let AdditionalVersions = [[0, 1]]  in // SIFIVE
 def FeatureStdExtZvksh
     : RISCVExtension<"zvksh", 1, 0,
                      "'Zvksh' (SM3 Hash Function Instructions)">;
@@ -1272,6 +1284,7 @@ def FeatureVendorXSfmm64t
                      [FeatureVendorXSfmmbase]>;
 #endif // SIFIVE_CUSTOMIZATION
 
+let AdditionalVersions = [[0, 1]]  in // SIFIVE
 def FeatureVendorXSfvqmaccdod
     : RISCVExtension<"xsfvqmaccdod", 1, 0,
                      "'XSfvqmaccdod' (SiFive Int8 Matrix Multiplication Instructions (2-by-8 and 8-by-2))",
@@ -1281,6 +1294,7 @@ def HasVendorXSfvqmaccdod
       AssemblerPredicate<(all_of FeatureVendorXSfvqmaccdod),
                          "'XSfvqmaccdod' (SiFive Int8 Matrix Multiplication Instructions (2-by-8 and 8-by-2))">;
 
+let AdditionalVersions = [[0, 1]]  in // SIFIVE
 def FeatureVendorXSfvqmaccqoq
     : RISCVExtension<"xsfvqmaccqoq", 1, 0,
                      "'XSfvqmaccqoq' (SiFive Int8 Matrix Multiplication Instructions (4-by-8 and 8-by-4))",
@@ -1290,6 +1304,7 @@ def HasVendorXSfvqmaccqoq
       AssemblerPredicate<(all_of FeatureVendorXSfvqmaccqoq),
                          "'XSfvqmaccqoq' (SiFive Int8 Matrix Multiplication Instructions (4-by-8 and 8-by-4))">;
 
+let AdditionalVersions = [[0, 1]]  in // SIFIVE
 def FeatureVendorXSfvfwmaccqqq
     : RISCVExtension<"xsfvfwmaccqqq", 1, 0,
                      "'XSfvfwmaccqqq' (SiFive Matrix Multiply Accumulate Instruction and 4-by-4))",
@@ -1299,6 +1314,7 @@ def HasVendorXSfvfwmaccqqq
       AssemblerPredicate<(all_of FeatureVendorXSfvfwmaccqqq),
                          "'XSfvfwmaccqqq' (SiFive Matrix Multiply Accumulate Instruction and 4-by-4))">;
 
+let AdditionalVersions = [[0, 1]]  in // SIFIVE
 def FeatureVendorXSfvfnrclipxfqf
     : RISCVExtension<"xsfvfnrclipxfqf", 1, 0,
                      "'XSfvfnrclipxfqf' (SiFive FP32-to-int8 Ranged Clip Instructions)",
@@ -1308,6 +1324,7 @@ def HasVendorXSfvfnrclipxfqf
       AssemblerPredicate<(all_of FeatureVendorXSfvfnrclipxfqf),
                          "'XSfvfnrclipxfqf' (SiFive FP32-to-int8 Ranged Clip Instructions)">;
 
+let AdditionalVersions = [[1, 0]]  in // SIFIVE
 def FeatureVendorXSiFivecdiscarddlone
     : RISCVExtension<"xsifivecdiscarddlone", 0, 1, // SIFIVE
                      "'XSiFivecdiscarddlone' (SiFive sf.cdiscard.d.l1 Instruction)", []>;
@@ -1316,6 +1333,7 @@ def HasVendorXSiFivecdiscarddlone
       AssemblerPredicate<(all_of FeatureVendorXSiFivecdiscarddlone),
                          "'XSiFivecdiscarddlone' (SiFive sf.cdiscard.d.l1 Instruction)">;
 
+let AdditionalVersions = [[1, 0]]  in // SIFIVE
 def FeatureVendorXSiFivecflushdlone
     : RISCVExtension<"xsifivecflushdlone", 0, 1, // SIFIVE
                      "'XSiFivecflushdlone' (SiFive sf.cflush.d.l1 Instruction)", []>;
@@ -1324,6 +1342,7 @@ def HasVendorXSiFivecflushdlone
       AssemblerPredicate<(all_of FeatureVendorXSiFivecflushdlone),
                          "'XSiFivecflushdlone' (SiFive sf.cflush.d.l1 Instruction)">;
 
+let AdditionalVersions = [[1, 0]]  in // SIFIVE
 def FeatureVendorXSfcease
     : RISCVExtension<"xsfcease", 0, 1, // SIFIVE
                      "'XSfcease' (SiFive sf.cease Instruction)", []>;
