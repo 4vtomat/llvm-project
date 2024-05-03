@@ -294,6 +294,13 @@ public:
   /// Otherwise return null.
   BlockT *getUniqueExitBlock() const;
 
+#if SIFIVE_CUSTOMIZATION
+  /// Cherry-pick from #88385
+  /// Return the exit block for the latch if one exists. This function assumes
+  /// the loop has a latch.
+  BlockT *getLatchExitBlock() const;
+#endif // SIFIVE_CUSTOMIZATION
+
   /// Return true if this loop does not have any exit blocks.
   bool hasNoExitBlocks() const;
 

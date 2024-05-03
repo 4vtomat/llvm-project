@@ -10898,33 +10898,6 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
     return tryToWidenMemory(Instr, Operands, Range);
   }
 
-  if (Legal->isVectorizableUncountable()) {
-    // For uncountable loops, if the condition of a BranchInst is vectorized,
-    // generate BranchOnVFirstCmp; otherwise, keep it in scalar.
-    // TODO: This only works for single block uncountable loops.
-    if (auto *Br = dyn_cast<BranchInst>(Instr)) {
-      assert(Br->isConditional() && "Branch is not conditional");
-      auto *Cond = Br->getCondition();
-      if (!shouldWiden(cast<Instruction>(Cond), Range))
-        return nullptr;
-
-      // The branch has two possible ways to hook with its successors.
-      VPValue *VPV = nullptr;
-      if (Br->getSuccessor(0) != OrigLoop->getHeader()) {
-        VPV = Operands[0];
-      } else {
-        VPV = new VPInstruction(VPInstruction::Not, {Operands[0]});
-        VPBB->appendRecipe(cast<VPInstruction>(VPV));
-      }
-
-      auto *VPCond = new VPInstruction(VPInstruction::ExitingCond, {VPV},
-                                       Br->getDebugLoc(), "exitcond");
-      VPBB->appendRecipe(cast<VPInstruction>(VPCond));
-      auto *R = new VPInstruction(VPInstruction::BranchOnCond, {VPCond},
-                                  Br->getDebugLoc());
-      return R;
-    }
-  }
   if (Legal->isMonotonicUpdate(Instr)) {
     const MonotonicDescriptor *MD = Legal->getMonotonicDescriptor(Instr);
     assert(MD && "Monotonic descriptor was not found");
@@ -11199,21 +11172,22 @@ addCSAPostprocessRecipes(VPRecipeBuilder &RecipeBuilder,
 static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
                                 VPRecipeBuilder &Builder, VPlan &Plan,
                                 LoopVectorizationLegality *Legal) {
-#else
-static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
-                                VPRecipeBuilder &Builder, VPlan &Plan) {
-#endif
-  BasicBlock *ExitBB = OrigLoop->getUniqueExitBlock();
-  BasicBlock *ExitingBB = OrigLoop->getExitingBlock();
-  // Only handle single-exit loops with unique exit blocks for now.
-  if (!ExitBB || !ExitBB->getSinglePredecessor() || !ExitingBB)
-#if SIFIVE_CUSTOMIZATION
-    if (!ExitBB || !ExitingBB || !isRevectorizeWithoutStrideChecks(*OrigLoop) ||
-        !ExitBB->hasNPredecessors(2))
-#endif // SIFIVE_CUSTOMIZATION
-    return;
+  /// Cherry-pick from #88385
+  BasicBlock *ExitBB, *ExitingBB;
 
-#if SIFIVE_CUSTOMIZATION
+  if (Plan.isUncountable()) {
+    ExitingBB = OrigLoop->getLoopLatch();
+    ExitBB = OrigLoop->getLatchExitBlock();
+  } else {
+    ExitBB = OrigLoop->getUniqueExitBlock();
+    ExitingBB = OrigLoop->getExitingBlock();
+    // Only handle single-exit loops with unique exit blocks for now.
+    if (!ExitBB || !ExitBB->getSinglePredecessor() || !ExitingBB)
+      if (!ExitBB || !ExitingBB ||
+          !isRevectorizeWithoutStrideChecks(*OrigLoop) ||
+          !ExitBB->hasNPredecessors(2))
+        return;
+  }
   if (Plan.isUncountable()) {
     // TODO: This whole LiveOut thing may not work properly when multiple
     // exiting blocks exist. Revisit this part later.
@@ -11232,7 +11206,16 @@ static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
           Plan.addLiveOut(&ExitPhi, V, Legal->isInductionVariable(IncomingValue));
       }
     }
-  } else {
+    return;
+  }
+#else
+static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
+                                VPRecipeBuilder &Builder, VPlan &Plan) {
+  BasicBlock *ExitBB = OrigLoop->getUniqueExitBlock();
+  BasicBlock *ExitingBB = OrigLoop->getExitingBlock();
+  // Only handle single-exit loops with unique exit blocks for now.
+  if (!ExitBB || !ExitBB->getSinglePredecessor() || !ExitingBB)
+    return;
 #endif // SIFIVE_CUSTOMIZATION
   // Introduce VPUsers modeling the exit values.
   for (PHINode &ExitPhi : ExitBB->phis()) {
@@ -11241,9 +11224,6 @@ static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
     VPValue *V = Builder.getVPValueOrAddLiveIn(IncomingValue, Plan);
     Plan.addLiveOut(&ExitPhi, V);
   }
-#if SIFIVE_CUSTOMIZATION
-  }
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 VPlanPtr
@@ -11283,6 +11263,17 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   Plan->getVectorLoopRegion()->setEntry(HeaderVPBB);
   Plan->getVectorLoopRegion()->setExiting(LatchVPBB);
 
+#if SIFIVE_CUSTOMIZATION
+  BasicBlock *CouldNotComputeExitingBB =
+      Legal->getCouldNotComputeExitingBlock();
+  VPRecipeBase *VPDataDepExitCond = nullptr;
+  Value *DataDepExitCond = nullptr;
+  if (CouldNotComputeExitingBB) {
+    BranchInst *BI =
+        cast<BranchInst>(CouldNotComputeExitingBB->getTerminator());
+    DataDepExitCond = BI->getCondition();
+  }
+#endif // SIFIVE_CUSTOMIZATION
   // Don't use getDecisionAndClampRange here, because we don't know the UF
   // so this function is better to be conservative, rather than to split
   // it up into different VPlans.
@@ -11388,21 +11379,9 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 
     // Introduce each ingredient into VPlan.
     // TODO: Model and preserve debug intrinsics in VPlan.
-#if SIFIVE_CUSTOMIZATION
-    auto InstrList = Legal->isVectorizableUncountable()
-                         ? BB->instructionsWithoutDebug(false)
-                         : drop_end(BB->instructionsWithoutDebug(
-                               false));
-    for (Instruction &I : InstrList) {
-#else
     for (Instruction &I : drop_end(BB->instructionsWithoutDebug(false))) {
-#endif // SIFIVE_CUSTOMIZATION
       Instruction *Instr = &I;
       SmallVector<VPValue *, 4> Operands;
-#if SIFIVE_CUSTOMIZATION
-      if (isa<BranchInst>(Instr) && !Legal->isVectorizableUncountable())
-        continue;
-#endif // SIFIVE_CUSTOMIZATION
       auto *Phi = dyn_cast<PHINode>(Instr);
       if (Phi && Phi->getParent() == HeaderBB) {
         Operands.push_back(Plan->getOrAddLiveIn(
@@ -11422,23 +11401,13 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
       VPRecipeBase *Recipe = RecipeBuilder.tryToCreateWidenRecipe(
           Instr, Operands, Range, VPBB);
 #if SIFIVE_CUSTOMIZATION
-      if (!Recipe) {
-        // Skip branches that are not vectorized. These are exiting branches
-        // with scalar conditions.
-        if (isa<BranchInst>(Instr))
-          continue;
-        else
-          Recipe = RecipeBuilder.handleReplication(Instr, Range);
-      }
-#else
-      if (!Recipe)
-        Recipe = RecipeBuilder.handleReplication(Instr, Range, *Plan);
+      if (&I == DataDepExitCond)
+        VPDataDepExitCond = Recipe;
 #endif // SIFIVE_CUSTOMIZATION
+      if (!Recipe)
+        Recipe = RecipeBuilder.handleReplication(Instr, Range);
 
       RecipeBuilder.setRecipe(Instr, Recipe);
-#if SIFIVE_CUSTOMIZATION
-      auto *VPI = dyn_cast<VPInstruction>(Recipe);
-#endif // SIFIVE_CUSTOMIZATION
       if (isa<VPHeaderPHIRecipe>(Recipe)) {
         // VPHeaderPHIRecipes must be kept in the phi section of HeaderVPBB. In
         // the following cases, VPHeaderPHIRecipes may be created after non-phi
@@ -11452,15 +11421,28 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
                 CM.foldTailByMasking() || isa<TruncInst>(Instr)) &&
                "unexpected recipe needs moving");
         Recipe->insertBefore(*HeaderVPBB, HeaderVPBB->getFirstNonPhi());
-#if SIFIVE_CUSTOMIZATION
-      } else if (VPI && (VPI->getOpcode() == VPInstruction::BranchOnCond)) {
-        VPBasicBlock *EB = Plan->getVectorLoopRegion()->getExitingBasicBlock();
-        EB->appendRecipe(VPI);
-#endif // SIFIVE_CUSTOMIZATION
       } else
         VPBB->appendRecipe(Recipe);
     }
 
+#if SIFIVE_CUSTOMIZATION
+    if (BB == CouldNotComputeExitingBB) {
+      // TODO: Handle loop-invariant condition
+      auto *BI = cast<BranchInst>(CouldNotComputeExitingBB->getTerminator());
+      bool NeedsInvert = OrigLoop->contains(BI->getSuccessor(0));
+      VPValue *ExitMask = VPDataDepExitCond->getVPSingleValue();
+      if (NeedsInvert)
+        ExitMask = Builder.createNot(ExitMask);
+      auto *VPCond = new VPInstruction(VPInstruction::ExitingCond, {ExitMask},
+                                       BI->getDebugLoc(), "exitcond");
+      VPBB->appendRecipe(cast<VPInstruction>(VPCond));
+      VPValue *ScalarExitCond = VPCond;
+      auto *NewBR =
+          new VPInstruction(VPInstruction::BranchOnCond, {ScalarExitCond});
+      VPBasicBlock *EB = Plan->getVectorLoopRegion()->getExitingBasicBlock();
+      EB->appendRecipe(NewBR);
+    }
+#endif // SIFIVE_CUSTOMIZATION
     VPBlockUtils::insertBlockAfter(new VPBasicBlock(), VPBB);
     VPBB = cast<VPBasicBlock>(VPBB->getSingleSuccessor());
   }

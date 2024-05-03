@@ -2249,6 +2249,11 @@ bool LoopVectorizationLegality::canVectorizeUncountableLoop(
       NumOfUncountableLoopsNotEndingWithConditionalBranch++;
       return false;
     }
+    ScalarEvolution::ExitLimit EL = PSE.getSE()->computeExitLimitFromCond(
+        TheLoop, BI->getCondition(), /*ExitIfTrue*/ true,
+        /*ControlsOnlyExit*/ true);
+    if (isa<SCEVCouldNotCompute>(EL.SymbolicMaxNotTaken))
+      CouldNotComputeExitingBlock = ExitingBB;
   }
 
   // Exclude integer induction variables first.

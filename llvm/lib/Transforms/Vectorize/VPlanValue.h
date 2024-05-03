@@ -377,7 +377,6 @@ public:
     VPWidenSC,
     VPWidenSelectSC,
 #if SIFIVE_CUSTOMIZATION
-    VPVFirstICmpSC,
     VPMonotonicUpdateSC,
 #endif
     // START: Phi-like recipes. Need to be kept together.
