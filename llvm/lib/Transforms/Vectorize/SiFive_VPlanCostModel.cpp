@@ -625,9 +625,16 @@ VPlanCostModel::getMemoryOpCost(const VPWidenMemoryInstructionRecipe *VPWMIR,
       Data = VPWMIR->getVPSingleValue();
     addRegisterUsage(Data, RegID, NumUsedRegs);
     Cost = getRegisterPressureCost(RegID, VectorTy);
-    if (VPWMIR->isMonotonic())
-      // Expand load is not supported yet
-      return InstructionCost::getInvalid();
+
+    if (VPWMIR->isMonotonic()) {
+      Type *MaskTy = getMaskType(RVL);
+      Type *VLTy = getVLType(RVL);
+      Cost +=
+          getIntrinsicCost(Intrinsic::experimental_vp_expand, VectorTy,
+                           {PoisonValue::get(VectorTy),
+                            PoisonValue::get(MaskTy), PoisonValue::get(VLTy)},
+                           FastMathFlags());
+    }
   } else if (VPWMIR->isMonotonic()) {
     Type *MaskTy = getMaskType(RVL);
     Type *VLTy = getVLType(RVL);

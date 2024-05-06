@@ -311,24 +311,61 @@ for.inc:
 }
 
 
-define i32 @expand_store(i32 %n, ptr noalias %a, ptr noalias %b) {
-; CHECK-LABEL: define i32 @expand_store(
+define i32 @expand_load(i32 %n, ptr noalias %a, ptr noalias %b) {
+; CHECK-LABEL: define i32 @expand_load(
 ; CHECK-SAME: i32 [[N:%.*]], ptr noalias [[A:%.*]], ptr noalias [[B:%.*]]) #[[ATTR0]] {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[CMP11:%.*]] = icmp sgt i32 [[N]], 0
 ; CHECK-NEXT:    br i1 [[CMP11]], label [[FOR_BODY_PREHEADER:%.*]], label [[FOR_COND_CLEANUP:%.*]]
 ; CHECK:       for.body.preheader:
 ; CHECK-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
+; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK:       vector.ph:
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK:       vector.body:
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[MONOTONIC_PHI:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[MONOTONIC_UPDATE:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[TMP18:%.*]] = sub i64 [[WIDE_TRIP_COUNT]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP19:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP18]], i32 8, i1 true)
+; CHECK-NEXT:    [[TMP2:%.*]] = add i64 [[EVL_BASED_IV]], 0
+; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP2]]
+; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i32, ptr [[TMP3]], i32 0
+; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP4]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP19]])
+; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = call <vscale x 8 x i1> @llvm.vp.icmp.nxv8i32(<vscale x 8 x i32> [[VP_OP_LOAD]], <vscale x 8 x i32> zeroinitializer, metadata !"eq", <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP19]])
+; CHECK-NEXT:    [[PRED_NOT:%.*]] = call <vscale x 8 x i1> @llvm.vp.xor.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP19]])
+; CHECK-NEXT:    [[TMP5:%.*]] = sext i32 [[MONOTONIC_PHI]] to i64
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr [[B]], i64 [[TMP5]]
+; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i32, ptr [[TMP6]], i32 0
+; CHECK-NEXT:    [[TMP8:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[PRED_NOT]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP19]])
+; CHECK-NEXT:    [[TMP9:%.*]] = call <vscale x 8 x i32> @llvm.vp.load.nxv8i32.p0(ptr align 4 [[TMP7]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP8]])
+; CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i32> @llvm.experimental.vp.expand.nxv8i32(<vscale x 8 x i32> [[TMP9]], <vscale x 8 x i1> [[PRED_NOT]], i32 [[TMP19]])
+; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[A]], i64 [[TMP2]]
+; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr i32, ptr [[TMP11]], i32 0
+; CHECK-NEXT:    call void @llvm.vp.store.nxv8i32.p0(<vscale x 8 x i32> [[TMP10]], ptr align 4 [[TMP12]], <vscale x 8 x i1> [[PRED_NOT]], i32 [[TMP19]])
+; CHECK-NEXT:    [[TMP13:%.*]] = call i32 @llvm.experimental.vp.popcount.nxv8i1(<vscale x 8 x i1> [[PRED_NOT]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP19]])
+; CHECK-NEXT:    [[TMP14:%.*]] = mul i32 [[TMP13]], 1
+; CHECK-NEXT:    [[MONOTONIC_UPDATE]] = add i32 [[MONOTONIC_PHI]], [[TMP14]]
+; CHECK-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP19]] to i64
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP15]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP16:%.*]] = zext i32 [[TMP19]] to i64
+; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[EVL_BASED_IV]], [[TMP16]]
+; CHECK-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[WIDE_TRIP_COUNT]]
+; CHECK-NEXT:    br i1 [[TMP17]], label [[MIDDLE_BLOCK:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; CHECK:       middle.block:
+; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
+; CHECK:       scalar.ph:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-NEXT:    br label [[FOR_BODY1:%.*]]
 ; CHECK:       for.cond.cleanup.loopexit:
-; CHECK-NEXT:    [[RET_1_LCSSA:%.*]] = phi i32 [ [[RET_1:%.*]], [[FOR_INC:%.*]] ]
+; CHECK-NEXT:    [[RET_1_LCSSA:%.*]] = phi i32 [ [[RET_1:%.*]], [[FOR_INC:%.*]] ], [ [[MONOTONIC_UPDATE]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP]]
 ; CHECK:       for.cond.cleanup:
-; CHECK-NEXT:    [[RET_0_LCSSA:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ], [ [[RET_1_LCSSA]], [[FOR_COND_CLEANUP_LOOPEXIT:%.*]] ]
+; CHECK-NEXT:    [[RET_0_LCSSA:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ], [ [[RET_1_LCSSA]], [[FOR_COND_CLEANUP_LOOPEXIT]] ]
 ; CHECK-NEXT:    ret i32 [[RET_0_LCSSA]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_INC]] ]
-; CHECK-NEXT:    [[RET_012:%.*]] = phi i32 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[RET_1]], [[FOR_INC]] ]
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_INC]] ]
+; CHECK-NEXT:    [[RET_012:%.*]] = phi i32 [ 0, [[SCALAR_PH]] ], [ [[RET_1]], [[FOR_INC]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[INDVARS_IV]]
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
 ; CHECK-NEXT:    [[TOBOOL_NOT:%.*]] = icmp eq i32 [[TMP0]], 0
@@ -342,10 +379,10 @@ define i32 @expand_store(i32 %n, ptr noalias %a, ptr noalias %b) {
 ; CHECK-NEXT:    [[ADD:%.*]] = add nsw i32 [[RET_012]], 1
 ; CHECK-NEXT:    br label [[FOR_INC]]
 ; CHECK:       for.inc:
-; CHECK-NEXT:    [[RET_1]] = phi i32 [ [[ADD]], [[IF_THEN]] ], [ [[RET_012]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[RET_1]] = phi i32 [ [[ADD]], [[IF_THEN]] ], [ [[RET_012]], [[FOR_BODY1]] ]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY]]
+; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY1]], !llvm.loop [[LOOP5:![0-9]+]]
 ;
 entry:
   %cmp11 = icmp sgt i32 %n, 0
@@ -384,8 +421,8 @@ for.inc:
 }
 
 
-define i32 @expand_store_strided(i32 %n, ptr noalias %a, ptr noalias %b) {
-; CHECK-LABEL: define i32 @expand_store_strided(
+define i32 @expand_load_strided(i32 %n, ptr noalias %a, ptr noalias %b) {
+; CHECK-LABEL: define i32 @expand_load_strided(
 ; CHECK-SAME: i32 [[N:%.*]], ptr noalias [[A:%.*]], ptr noalias [[B:%.*]]) #[[ATTR0]] {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[CMP11:%.*]] = icmp sgt i32 [[N]], 0
@@ -457,8 +494,8 @@ for.inc:
 }
 
 
-define i32 @expand_store_reverse(i32 %n, ptr noalias %a, ptr noalias %b) {
-; CHECK-LABEL: define i32 @expand_store_reverse(
+define i32 @expand_load_reverse(i32 %n, ptr noalias %a, ptr noalias %b) {
+; CHECK-LABEL: define i32 @expand_load_reverse(
 ; CHECK-SAME: i32 [[N:%.*]], ptr noalias [[A:%.*]], ptr noalias [[B:%.*]]) #[[ATTR0]] {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[CMP11:%.*]] = icmp sgt i32 [[N]], 0
@@ -597,9 +634,3 @@ for.inc:
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
-;.
-; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
-; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
-;.

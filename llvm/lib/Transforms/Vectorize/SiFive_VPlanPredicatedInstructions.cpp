@@ -87,6 +87,17 @@ static Value *compressVector(IRBuilderBase &Builder, Value *Mask,
   return Compress;
 }
 
+static Value *expandVector(IRBuilderBase &Builder, Value *Mask,
+                           Value *VectorToExpand, Value *EVL) {
+  assert(Mask != nullptr && "Expand mask must be provided");
+  assert(EVL != nullptr && "EVL for RVV-intrinsic must be provided");
+  Type *VTy = VectorToExpand->getType();
+  Value *Operands[] = {VectorToExpand, Mask, EVL};
+  CallInst *Expand = Builder.CreateIntrinsic(Intrinsic::experimental_vp_expand,
+                                             {VTy}, Operands);
+  return Expand;
+}
+
 namespace llvm {
 Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
                                   VPTransformState &State, VPValue *BlockInMask,
@@ -431,39 +442,55 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
                      Attribute::getWithAlignment(VS->getContext(), Alignment));
     return VS;
   }
+  // Handle loads: strided (consecutive or non-consecutive), indexed
   auto *DataTy = VectorType::get(VPWMIR.getElementType(), State.VF);
+  CallInst *VL = nullptr;
   if (VPWMIR.isStrided()) {
     Value *Ptr = State.get(VPAddr, VPIteration(0, 0));
-    const SCEV *SCEVStride = VPWMIR.getStrideInBytes();
-    auto &DL = State.CFG.PrevBB->getModule()->getDataLayout();
-    SCEVExpander Exp(*(State.SE), DL, "stride");
-    Instruction *InsertPoint = &*State.Builder.GetInsertPoint();
-    assert(Exp.isSafeToExpandAt(SCEVStride, InsertPoint) &&
-           "It's not safe to expand that SCEV in the vector loop. That was "
-           "not caught by isSafeStrideAccessInfo.");
-    Value *Stride = Exp.expandCodeFor(
-        SCEVStride, SCEVStride->getType(), InsertPoint);
     auto *PtrTy = cast<PointerType>(Ptr->getType());
-    LLVM_DEBUG(llvm::dbgs()
-               << "Generating strided load for addr = " << *VPAddr
-               << " with a stride = " << *Stride << '\n');
-    Value *Operands[] = {Ptr, Stride, BlockInMaskPart, EVLPart};
-    CallInst *VL =
-        Builder.CreateIntrinsic(Intrinsic::experimental_vp_strided_load,
-                                {DataTy, PtrTy, Stride->getType()}, Operands,
-                                nullptr, "vp.strided.load");
-    VL->addParamAttr(
-        0, Attribute::getWithAlignment(VL->getContext(), Alignment));
-    return VL;
+    if (!VPWMIR.isConsecutive()) {
+      const SCEV *SCEVStride = VPWMIR.getStrideInBytes();
+      auto &DL = State.CFG.PrevBB->getModule()->getDataLayout();
+      SCEVExpander Exp(*(State.SE), DL, "stride");
+      Instruction *InsertPoint = &*State.Builder.GetInsertPoint();
+      assert(Exp.isSafeToExpandAt(SCEVStride, InsertPoint) &&
+             "It's not safe to expand that SCEV in the vector loop. That was "
+             "not caught by isSafeStrideAccessInfo.");
+      Value *Stride = Exp.expandCodeFor(
+          SCEVStride, SCEVStride->getType(), InsertPoint);
+      LLVM_DEBUG(llvm::dbgs()
+                 << "Generating strided load for addr = " << *VPAddr
+                 << " with a stride = " << *Stride << '\n');
+      Value *Operands[] = {Ptr, Stride, BlockInMaskPart, EVLPart};
+      VL = Builder.CreateIntrinsic(Intrinsic::experimental_vp_strided_load,
+                                   {DataTy, PtrTy, Stride->getType()}, Operands,
+                                   nullptr, "vp.strided.load");
+    } else {
+      Value *Operands[] = {Ptr, BlockInMaskPart, EVLPart};
+      // Expand load requires to load only necessary number of elements, which is
+      // determined by vcpop. The load needs to be done without a mask.
+      if (VPWMIR.isMonotonic()) {
+        Operands[1] = Builder.getTrueVector(NumElts);
+        Operands[2] = createVectorPopcount(Builder, BlockInMaskPart, EVLPart);
+      }
+
+      VL = Builder.CreateIntrinsic(Intrinsic::vp_load, {DataTy, PtrTy}, Operands);
+    }
+  } else {
+    LLVM_DEBUG(llvm::dbgs() << "Indexed load for " << VPAddr << "\n");
+    Value *VectorGep = State.get(VPAddr, Part);
+    Value *Operands[] = {VectorGep, BlockInMaskPart, EVLPart};
+    auto *PtrsTy = cast<VectorType>(VectorGep->getType());
+    VL = Builder.CreateIntrinsic(Intrinsic::vp_gather, {DataTy, PtrsTy},
+                                 Operands, nullptr, "vp.gather");
   }
-  LLVM_DEBUG(llvm::dbgs() << "Indexed load for " << VPAddr << "\n");
-  Value *VectorGep = State.get(VPAddr, Part);
-  Value *Operands[] = {VectorGep, BlockInMaskPart, EVLPart};
-  auto *PtrsTy = cast<VectorType>(VectorGep->getType());
-  CallInst *VL = Builder.CreateIntrinsic(
-      Intrinsic::vp_gather, {DataTy, PtrsTy}, Operands, nullptr, "vp.gather");
   VL->addParamAttr(0,
                    Attribute::getWithAlignment(VL->getContext(), Alignment));
+
+  // For expand load expand the data according to the mask
+  if (VPWMIR.isMonotonic())
+    return cast<Instruction>(
+        expandVector(Builder, BlockInMaskPart, VL, EVLPart));
   return VL;
 }
 
