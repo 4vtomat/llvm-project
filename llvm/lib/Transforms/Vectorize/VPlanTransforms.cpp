@@ -520,7 +520,6 @@ static void removeDeadRecipes(VPlan &Plan) {
   }
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 void VPlanTransforms::optimizeGEPs(VPlan &Plan) {
   ReversePostOrderTraversal<VPBlockDeepTraversalWrapper<VPBlockBase *>> RPOT(
@@ -613,21 +612,12 @@ void VPlanTransforms::simplifyMonotonics(VPlan &Plan) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-static VPValue *createScalarIVSteps(VPlan &Plan,
-                                    InductionDescriptor::InductionKind Kind,
-                                    Instruction::BinaryOps InductionOpcode,
-                                    FPMathOperator *FPBinOp,
-                                    ScalarEvolution &SE, Instruction *TruncI,
-                                    VPValue *StartV, VPValue *Step,
-                                    VPBasicBlock::iterator IP) {
-=======
 static VPScalarIVStepsRecipe *
 createScalarIVSteps(VPlan &Plan, InductionDescriptor::InductionKind Kind,
                     Instruction::BinaryOps InductionOpcode,
                     FPMathOperator *FPBinOp, ScalarEvolution &SE,
                     Instruction *TruncI, VPValue *StartV, VPValue *Step,
                     VPBasicBlock::iterator IP) {
->>>>>>> b329179
   VPBasicBlock *HeaderVPBB = Plan.getVectorLoopRegion()->getEntryBasicBlock();
   VPCanonicalIVPHIRecipe *CanonicalIV = Plan.getCanonicalIV();
   VPSingleDefRecipe *BaseIV = CanonicalIV;
@@ -1478,7 +1468,6 @@ void VPlanTransforms::addExplicitVectorLength(VPlan &Plan) {
   NextEVLIV->insertBefore(CanonicalIVIncrement);
   EVLPhi->addOperand(NextEVLIV);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (PrevEVLPhi) {
     Plan.setPrevEVL(PrevEVLPhi);
@@ -1486,7 +1475,6 @@ void VPlanTransforms::addExplicitVectorLength(VPlan &Plan) {
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
   for (VPValue *HeaderMask : collectAllHeaderMasks(Plan)) {
     for (VPUser *U : collectUsersRecursively(HeaderMask)) {
       auto *MemR = dyn_cast<VPWidenMemoryRecipe>(U);
@@ -1512,7 +1500,6 @@ void VPlanTransforms::addExplicitVectorLength(VPlan &Plan) {
     }
     recursivelyDeleteDeadRecipes(HeaderMask);
   }
->>>>>>> b329179
   // Replace all uses of VPCanonicalIVPHIRecipe by
   // VPEVLBasedIVPHIRecipe except for VPInstruction::CanonicalIVIncrement.
   CanonicalIVPHI->replaceAllUsesWith(EVLPhi);
