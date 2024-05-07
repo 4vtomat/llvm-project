@@ -1185,101 +1185,6 @@ define <8 x i1> @icmp_sle_vi_swap_v8i32(<8 x i32> %va, <8 x i1> %m, i32 zeroext 
 declare <64 x i1> @llvm.vp.icmp.v64i32(<64 x i32>, <64 x i32>, metadata, <64 x i1>, i32)
 
 define <64 x i1> @icmp_eq_vv_v64i32(<64 x i32> %va, <64 x i32> %vb, <64 x i1> %m, i32 zeroext %evl) {
-<<<<<<< HEAD
-; RV32-LABEL: icmp_eq_vv_v64i32:
-; RV32:       # %bb.0:
-; RV32-NEXT:    addi sp, sp, -16
-; RV32-NEXT:    .cfi_def_cfa_offset 16
-; RV32-NEXT:    csrr a1, vlenb
-; RV32-NEXT:    slli a1, a1, 3
-; RV32-NEXT:    sub sp, sp, a1
-; RV32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * vlenb
-; RV32-NEXT:    addi a1, a0, 128
-; RV32-NEXT:    li a3, 32
-; RV32-NEXT:    vsetvli zero, a3, e32, m8, ta, ma
-; RV32-NEXT:    vle32.v v24, (a1)
-; RV32-NEXT:    addi a1, sp, 16
-; RV32-NEXT:    vs8r.v v24, (a1) # Unknown-size Folded Spill
-; RV32-NEXT:    vle32.v v24, (a0)
-; RV32-NEXT:    vsetivli zero, 4, e8, mf2, ta, ma
-; RV32-NEXT:    vslidedown.vi v7, v0, 4
-; RV32-NEXT:    mv a0, a2
-; RV32-NEXT:    bltu a2, a3, .LBB99_2
-; RV32-NEXT:  # %bb.1:
-; RV32-NEXT:    li a0, 32
-; RV32-NEXT:  .LBB99_2:
-; RV32-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
-; RV32-NEXT:    vmseq.vv v8, v8, v24, v0.t
-; RV32-NEXT:    addi a0, a2, -32
-; RV32-NEXT:    sltu a1, a2, a0
-; RV32-NEXT:    addi a1, a1, -1
-; RV32-NEXT:    and a0, a1, a0
-; RV32-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
-; RV32-NEXT:    vmv1r.v v0, v7
-; RV32-NEXT:    addi a0, sp, 16
-; RV32-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
-; RV32-NEXT:    vmseq.vv v9, v16, v24, v0.t
-; RV32-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; RV32-NEXT:    vslideup.vi v8, v9, 4
-; RV32-NEXT:    vmv1r.v v0, v8
-; RV32-NEXT:    csrr a0, vlenb
-; RV32-NEXT:    slli a0, a0, 3
-; RV32-NEXT:    add sp, sp, a0
-; RV32-NEXT:    addi sp, sp, 16
-; RV32-NEXT:    ret
-;
-; RV64-LABEL: icmp_eq_vv_v64i32:
-; RV64:       # %bb.0:
-; RV64-NEXT:    addi sp, sp, -16
-; RV64-NEXT:    .cfi_def_cfa_offset 16
-; RV64-NEXT:    csrr a1, vlenb
-; RV64-NEXT:    slli a1, a1, 4
-; RV64-NEXT:    sub sp, sp, a1
-; RV64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * vlenb
-; RV64-NEXT:    addi a1, a0, 128
-; RV64-NEXT:    li a3, 32
-; RV64-NEXT:    vsetvli zero, a3, e32, m8, ta, ma
-; RV64-NEXT:    vle32.v v24, (a1)
-; RV64-NEXT:    csrr a1, vlenb
-; RV64-NEXT:    slli a1, a1, 3
-; RV64-NEXT:    add a1, sp, a1
-; RV64-NEXT:    addi a1, a1, 16
-; RV64-NEXT:    vs8r.v v24, (a1) # Unknown-size Folded Spill
-; RV64-NEXT:    vle32.v v24, (a0)
-; RV64-NEXT:    addi a0, sp, 16
-; RV64-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
-; RV64-NEXT:    vsetivli zero, 4, e8, mf2, ta, ma
-; RV64-NEXT:    mv a0, a2
-; RV64-NEXT:    vslidedown.vi v7, v0, 4
-; RV64-NEXT:    bltu a2, a3, .LBB99_2
-; RV64-NEXT:  # %bb.1:
-; RV64-NEXT:    li a0, 32
-; RV64-NEXT:  .LBB99_2:
-; RV64-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
-; RV64-NEXT:    addi a0, sp, 16
-; RV64-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
-; RV64-NEXT:    vmseq.vv v8, v8, v24, v0.t
-; RV64-NEXT:    addi a0, a2, -32
-; RV64-NEXT:    sltu a1, a2, a0
-; RV64-NEXT:    addi a1, a1, -1
-; RV64-NEXT:    and a0, a1, a0
-; RV64-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
-; RV64-NEXT:    vmv1r.v v0, v7
-; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 3
-; RV64-NEXT:    add a0, sp, a0
-; RV64-NEXT:    addi a0, a0, 16
-; RV64-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
-; RV64-NEXT:    vmseq.vv v9, v16, v24, v0.t
-; RV64-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; RV64-NEXT:    vslideup.vi v8, v9, 4
-; RV64-NEXT:    vmv1r.v v0, v8
-; RV64-NEXT:    csrr a0, vlenb
-; RV64-NEXT:    slli a0, a0, 4
-; RV64-NEXT:    add sp, sp, a0
-; RV64-NEXT:    addi sp, sp, 16
-; RV64-NEXT:    ret
-=======
 ; CHECK-LABEL: icmp_eq_vv_v64i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    addi sp, sp, -16
@@ -1331,7 +1236,6 @@ define <64 x i1> @icmp_eq_vv_v64i32(<64 x i32> %va, <64 x i32> %vb, <64 x i1> %m
 ; CHECK-NEXT:    add sp, sp, a0
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
->>>>>>> b329179
   %v = call <64 x i1> @llvm.vp.icmp.v64i32(<64 x i32> %va, <64 x i32> %vb, metadata !"eq", <64 x i1> %m, i32 %evl)
   ret <64 x i1> %v
 }
