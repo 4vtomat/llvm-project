@@ -3,10 +3,7 @@
 ; RUN: opt -passes=loop-vectorize -force-vector-interleave=2 -force-vector-width=1 -S < %s | FileCheck %s --check-prefix=CHECK-VF1IC2
 
 define i32 @pred_select_const_i32_from_icmp(ptr noalias nocapture readonly %src1, ptr noalias nocapture readonly %src2, i64 %n) {
-<<<<<<< HEAD
 ;
-=======
->>>>>>> b329179
 ; CHECK-VF2IC1-LABEL: define i32 @pred_select_const_i32_from_icmp(
 ; CHECK-VF2IC1-SAME: ptr noalias nocapture readonly [[SRC1:%.*]], ptr noalias nocapture readonly [[SRC2:%.*]], i64 [[N:%.*]]) {
 ; CHECK-VF2IC1-NEXT:  entry:
