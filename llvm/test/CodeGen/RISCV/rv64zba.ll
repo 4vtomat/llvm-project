@@ -2620,8 +2620,6 @@ define ptr @test_gep_gep_dont_crash(ptr %p, i64 %a1, i64 %a2) {
   %gep2 = getelementptr i64, ptr %gep1, i64 %a1
   ret ptr %gep2
 }
-<<<<<<< HEAD
-=======
 
 define i64 @regression(i32 signext %x, i32 signext %y) {
 ; RV64I-LABEL: regression:
@@ -2855,4 +2853,3 @@ entry:
   ret i64 %6
 }
 
->>>>>>> b329179
