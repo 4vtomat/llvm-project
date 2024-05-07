@@ -536,12 +536,7 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
     Value *TripCount = State.get(getOperand(1), VPIteration(0, 0));
     Value *AVL = State.Builder.CreateSub(TripCount, Index);
     Value *EVL = GetEVL(State, AVL);
-<<<<<<< HEAD
-    assert(!State.EVL && "multiple EVL recipes");
 #endif // SIFIVE_CUSTOMIZATION
-    State.EVL = this;
-=======
->>>>>>> b329179
     return EVL;
   }
   case VPInstruction::CanonicalIVIncrementForPart: {
@@ -809,13 +804,10 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
               RdxDesc.getRecurrenceStartValue();
           ReducedPartRdx = createAnyOfOp(Builder, ReductionStartValue, RK,
                                          ReducedPartRdx, RdxPart);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         }  else if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK)) {
           ReducedPartRdx = createFindLastIVOp(Builder, ReducedPartRdx, RdxPart);
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> b329179
         } else
           ReducedPartRdx = createMinMaxOp(Builder, RK, ReducedPartRdx, RdxPart);
       }
@@ -824,7 +816,6 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
     // Create the reduction after the loop. Note that inloop reductions create
     // the target reduction in the loop using a Reduction recipe.
     if (State.VF.isVector() && !PhiR->isInLoop()) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       if (State.Plan->useVLAVectorizer()) {
         Value *InitEVL =
@@ -852,8 +843,6 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
                                              ReducedPartRdx);
       }
 #else
-=======
->>>>>>> b329179
       ReducedPartRdx =
           createTargetReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
 #endif // SIFIVE_CUSTOMIZATION
@@ -2528,35 +2517,6 @@ void VPPredInstPHIRecipe::print(raw_ostream &O, const Twine &Indent,
   printOperands(O, SlotTracker);
 }
 
-<<<<<<< HEAD
-void VPWidenMemoryInstructionRecipe::print(raw_ostream &O, const Twine &Indent,
-                                           VPSlotTracker &SlotTracker) const {
-#if SIFIVE_CUSTOMIZATION
-  if (this->Speculative)
-    O << Indent << "WIDEN-SPECULATIVE-MEMORY-INSTRUCTION ";
-  else
-    O << Indent << "WIDEN ";
-#else
-  O << Indent << "WIDEN ";
-#endif
-
-  if (!isStore()) {
-#if SIFIVE_CUSTOMIZATION
-    if (this->Speculative) {
-      interleaveComma(definedValues(), O, [&O, &SlotTracker](VPValue *Op) {
-        Op->printAsOperand(O, SlotTracker);
-      });
-    } else
-#endif // SIFIVE_CUSTOMIZATION
-    getVPSingleValue()->printAsOperand(O, SlotTracker);
-    O << " = ";
-  }
-#if SIFIVE_CUSTOMIZATION
-  O << Instruction::getOpcodeName(getIngredient().getOpcode()) << " ";
-#else
-  O << Instruction::getOpcodeName(Ingredient.getOpcode()) << " ";
-#endif // SIFIVE_CUSTOMIZATION
-=======
 void VPWidenLoadRecipe::print(raw_ostream &O, const Twine &Indent,
                               VPSlotTracker &SlotTracker) const {
   O << Indent << "WIDEN ";
@@ -2572,7 +2532,6 @@ void VPWidenLoadEVLRecipe::print(raw_ostream &O, const Twine &Indent,
   O << " = vp.load ";
   printOperands(O, SlotTracker);
 }
->>>>>>> b329179
 
 void VPWidenStoreRecipe::print(raw_ostream &O, const Twine &Indent,
                                VPSlotTracker &SlotTracker) const {
