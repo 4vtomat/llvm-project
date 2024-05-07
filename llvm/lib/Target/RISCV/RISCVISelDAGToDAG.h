@@ -265,13 +265,6 @@ struct VLX_VSXPseudo {
   uint16_t Pseudo;
 };
 
-struct RISCVMaskedPseudoInfo {
-  uint16_t MaskedPseudo;
-  uint16_t UnmaskedPseudo;
-  uint8_t MaskOpIdx;
-  uint8_t MaskAffectsResult : 1;
-};
-
 #define GET_RISCVVSSEGTable_DECL
 #define GET_RISCVVLSEGTable_DECL
 #define GET_RISCVVLXSEGTable_DECL
@@ -280,8 +273,6 @@ struct RISCVMaskedPseudoInfo {
 #define GET_RISCVVSETable_DECL
 #define GET_RISCVVLXTable_DECL
 #define GET_RISCVVSXTable_DECL
-#define GET_RISCVMaskedPseudosTable_DECL
-#include "RISCVGenSearchableTables.inc"
 } // namespace RISCV
 
 } // namespace llvm

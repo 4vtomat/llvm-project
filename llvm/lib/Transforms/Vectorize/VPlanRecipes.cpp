@@ -102,9 +102,9 @@ bool VPRecipeBase::mayWriteToMemory() const {
   switch (getVPDefID()) {
   case VPInterleaveSC:
     return cast<VPInterleaveRecipe>(this)->getNumStoreOperands() > 0;
-  case VPWidenMemoryInstructionSC: {
-    return cast<VPWidenMemoryInstructionRecipe>(this)->isStore();
-  }
+  case VPWidenStoreEVLSC:
+  case VPWidenStoreSC:
+    return true;
   case VPReplicateSC:
   case VPWidenCallSC:
     return cast<Instruction>(getVPSingleValue()->getUnderlyingValue())
@@ -119,6 +119,8 @@ bool VPRecipeBase::mayWriteToMemory() const {
   case VPWidenCastSC:
   case VPWidenGEPSC:
   case VPWidenIntOrFpInductionSC:
+  case VPWidenLoadEVLSC:
+  case VPWidenLoadSC:
   case VPWidenPHISC:
   case VPWidenSC:
   case VPWidenSelectSC: {
@@ -136,16 +138,18 @@ bool VPRecipeBase::mayWriteToMemory() const {
 
 bool VPRecipeBase::mayReadFromMemory() const {
   switch (getVPDefID()) {
-  case VPWidenMemoryInstructionSC: {
-    return !cast<VPWidenMemoryInstructionRecipe>(this)->isStore();
-  }
+  case VPWidenLoadEVLSC:
+  case VPWidenLoadSC:
+    return true;
   case VPReplicateSC:
   case VPWidenCallSC:
     return cast<Instruction>(getVPSingleValue()->getUnderlyingValue())
         ->mayReadFromMemory();
   case VPBranchOnMaskSC:
-  case VPScalarIVStepsSC:
   case VPPredInstPHISC:
+  case VPScalarIVStepsSC:
+  case VPWidenStoreEVLSC:
+  case VPWidenStoreSC:
     return false;
   case VPBlendSC:
   case VPReductionSC:
@@ -213,12 +217,15 @@ bool VPRecipeBase::mayHaveSideEffects() const {
   }
   case VPInterleaveSC:
     return mayWriteToMemory();
-  case VPWidenMemoryInstructionSC:
-    assert(cast<VPWidenMemoryInstructionRecipe>(this)
-                   ->getIngredient()
-                   .mayHaveSideEffects() == mayWriteToMemory() &&
-           "mayHaveSideffects result for ingredient differs from this "
-           "implementation");
+  case VPWidenLoadEVLSC:
+  case VPWidenLoadSC:
+  case VPWidenStoreEVLSC:
+  case VPWidenStoreSC:
+    assert(
+        cast<VPWidenMemoryRecipe>(this)->getIngredient().mayHaveSideEffects() ==
+            mayWriteToMemory() &&
+        "mayHaveSideffects result for ingredient differs from this "
+        "implementation");
     return mayWriteToMemory();
   case VPReplicateSC: {
     auto *R = cast<VPReplicateRecipe>(this);
@@ -529,9 +536,12 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
     Value *TripCount = State.get(getOperand(1), VPIteration(0, 0));
     Value *AVL = State.Builder.CreateSub(TripCount, Index);
     Value *EVL = GetEVL(State, AVL);
+<<<<<<< HEAD
     assert(!State.EVL && "multiple EVL recipes");
 #endif // SIFIVE_CUSTOMIZATION
     State.EVL = this;
+=======
+>>>>>>> b329179
     return EVL;
   }
   case VPInstruction::CanonicalIVIncrementForPart: {
@@ -799,10 +809,13 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
               RdxDesc.getRecurrenceStartValue();
           ReducedPartRdx = createAnyOfOp(Builder, ReductionStartValue, RK,
                                          ReducedPartRdx, RdxPart);
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         }  else if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK)) {
           ReducedPartRdx = createFindLastIVOp(Builder, ReducedPartRdx, RdxPart);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> b329179
         } else
           ReducedPartRdx = createMinMaxOp(Builder, RK, ReducedPartRdx, RdxPart);
       }
@@ -811,6 +824,7 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
     // Create the reduction after the loop. Note that inloop reductions create
     // the target reduction in the loop using a Reduction recipe.
     if (State.VF.isVector() && !PhiR->isInLoop()) {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       if (State.Plan->useVLAVectorizer()) {
         Value *InitEVL =
@@ -838,6 +852,8 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
                                              ReducedPartRdx);
       }
 #else
+=======
+>>>>>>> b329179
       ReducedPartRdx =
           createTargetReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
 #endif // SIFIVE_CUSTOMIZATION
@@ -2512,6 +2528,7 @@ void VPPredInstPHIRecipe::print(raw_ostream &O, const Twine &Indent,
   printOperands(O, SlotTracker);
 }
 
+<<<<<<< HEAD
 void VPWidenMemoryInstructionRecipe::print(raw_ostream &O, const Twine &Indent,
                                            VPSlotTracker &SlotTracker) const {
 #if SIFIVE_CUSTOMIZATION
@@ -2539,7 +2556,33 @@ void VPWidenMemoryInstructionRecipe::print(raw_ostream &O, const Twine &Indent,
 #else
   O << Instruction::getOpcodeName(Ingredient.getOpcode()) << " ";
 #endif // SIFIVE_CUSTOMIZATION
+=======
+void VPWidenLoadRecipe::print(raw_ostream &O, const Twine &Indent,
+                              VPSlotTracker &SlotTracker) const {
+  O << Indent << "WIDEN ";
+  printAsOperand(O, SlotTracker);
+  O << " = load ";
+  printOperands(O, SlotTracker);
+}
 
+void VPWidenLoadEVLRecipe::print(raw_ostream &O, const Twine &Indent,
+                                 VPSlotTracker &SlotTracker) const {
+  O << Indent << "WIDEN ";
+  printAsOperand(O, SlotTracker);
+  O << " = vp.load ";
+  printOperands(O, SlotTracker);
+}
+>>>>>>> b329179
+
+void VPWidenStoreRecipe::print(raw_ostream &O, const Twine &Indent,
+                               VPSlotTracker &SlotTracker) const {
+  O << Indent << "WIDEN store ";
+  printOperands(O, SlotTracker);
+}
+
+void VPWidenStoreEVLRecipe::print(raw_ostream &O, const Twine &Indent,
+                                  VPSlotTracker &SlotTracker) const {
+  O << Indent << "WIDEN vp.store ";
   printOperands(O, SlotTracker);
 #if SIFIVE_CUSTOMIZATION
   O << '\t';

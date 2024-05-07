@@ -108,6 +108,7 @@ static bool verifyVPBasicBlock(const VPBasicBlock *VPBB,
   for (const VPRecipeBase &R : *VPBB)
     RecipeNumbering[&R] = Cnt++;
 
+<<<<<<< HEAD
   // Set of recipe types along with VPInstruction Opcodes of all EVL-related
   // recipes that must appear at most once in the header block.
   DenseSet<unsigned> EVLFound;
@@ -151,9 +152,9 @@ static bool verifyVPBasicBlock(const VPBasicBlock *VPBB,
     return true;
   };
 
+=======
+>>>>>>> b329179
   for (const VPRecipeBase &R : *VPBB) {
-    if (!CheckEVLRecipiesInsts(&R))
-      return false;
     for (const VPValue *V : R.definedValues()) {
       for (const VPUser *U : V->users()) {
         auto *UI = dyn_cast<VPRecipeBase>(U);

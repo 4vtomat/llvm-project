@@ -404,9 +404,12 @@ bool RISCVTargetInfo::handleTargetFeatures(std::vector<std::string> &Features,
 
   FastUnalignedAccess = llvm::is_contained(Features, "+unaligned-scalar-mem") &&
                         llvm::is_contained(Features, "+unaligned-vector-mem");
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   SlowVectorFP64 = llvm::is_contained(Features, "+slow-vector-fp64");
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> b329179
 
   if (llvm::is_contained(Features, "+experimental"))
     HasExperimental = true;

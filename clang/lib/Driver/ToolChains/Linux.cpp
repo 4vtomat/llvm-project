@@ -244,8 +244,9 @@ Linux::Linux(const Driver &D, const llvm::Triple &Triple, const ArgList &Args)
       // Android ARM uses max-page-size=4096 to reduce VMA usage.
       ExtraOpts.push_back("-z");
       ExtraOpts.push_back("max-page-size=4096");
-    } else if (Triple.isAArch64()) {
+    } else if (Triple.isAArch64() || Triple.getArch() == llvm::Triple::x86_64) {
       // Android AArch64 uses max-page-size=16384 to support 4k/16k page sizes.
+      // Android emulates a 16k page size for app testing on x86_64 machines.
       ExtraOpts.push_back("-z");
       ExtraOpts.push_back("max-page-size=16384");
     }
@@ -841,6 +842,7 @@ void Linux::addProfileRTLibs(const llvm::opt::ArgList &Args,
   ToolChain::addProfileRTLibs(Args, CmdArgs);
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 void Linux::addLoopProfileRTLibs(const llvm::opt::ArgList &Args,
                                  llvm::opt::ArgStringList &CmdArgs) const {
@@ -872,6 +874,8 @@ Linux::getDefaultDenormalModeForType(const llvm::opt::ArgList &DriverArgs,
   }
 }
 
+=======
+>>>>>>> b329179
 void Linux::addExtraOpts(llvm::opt::ArgStringList &CmdArgs) const {
   for (const auto &Opt : ExtraOpts)
     CmdArgs.push_back(Opt.c_str());

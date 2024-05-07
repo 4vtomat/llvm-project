@@ -1059,6 +1059,7 @@ CmpInst::Predicate llvm::getMinMaxReductionPredicate(RecurKind RK) {
   }
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 Value *llvm::createFindLastIVOp(IRBuilderBase &Builder, Value *Left,
                                 Value *Right) {
@@ -1066,6 +1067,8 @@ Value *llvm::createFindLastIVOp(IRBuilderBase &Builder, Value *Left,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> b329179
 Value *llvm::createAnyOfOp(IRBuilderBase &Builder, Value *StartVal,
                            RecurKind RK, Value *Left, Value *Right) {
   if (auto VTy = dyn_cast<VectorType>(Left->getType()))
@@ -1190,6 +1193,7 @@ Value *llvm::createAnyOfTargetReduction(IRBuilderBase &Builder, Value *Src,
   Value *Cmp =
       Builder.CreateCmp(CmpInst::ICMP_NE, Src, Right, "rdx.select.cmp");
 
+<<<<<<< HEAD
   // If any predicate is true it means that we want to select the new value.
   Cmp = Builder.CreateOrReduce(Cmp);
   return Builder.CreateSelect(Cmp, NewVal, InitVal, "rdx.select");
@@ -1253,6 +1257,11 @@ Value *llvm::createFindLastIVTargetReduction(IRBuilderBase &Builder,
              Desc.getRecurrenceKind()) &&
          "Unexpected reduction kind");
   return Builder.CreateIntMaxReduce(Src, RVL, true);
+=======
+  // If any predicate is true it means that we want to select the new value.
+  Cmp = Builder.CreateOrReduce(Cmp);
+  return Builder.CreateSelect(Cmp, NewVal, InitVal, "rdx.select");
+>>>>>>> b329179
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -2118,10 +2127,12 @@ llvm::hasPartialIVCondition(const Loop &L, unsigned MSSAThreshold,
   if (!TI || !TI->isConditional())
     return {};
 
-  auto *CondI = dyn_cast<CmpInst>(TI->getCondition());
+  auto *CondI = dyn_cast<Instruction>(TI->getCondition());
   // The case with the condition outside the loop should already be handled
   // earlier.
-  if (!CondI || !L.contains(CondI))
+  // Allow CmpInst and TruncInsts as they may be users of load instructions
+  // and have potential for partial unswitching
+  if (!CondI || !isa<CmpInst, TruncInst>(CondI) || !L.contains(CondI))
     return {};
 
   SmallVector<Instruction *> InstToDuplicate;

@@ -29,7 +29,7 @@ define <2 x i1> @reverse_v2i1(<2 x i1> %a) {
 ; ZVBB-NEXT:    vbrev.v v8, v0
 ; ZVBB-NEXT:    vsrl.vi v0, v8, 6
 ; ZVBB-NEXT:    ret
-  %res = call <2 x i1> @llvm.experimental.vector.reverse.v2i1(<2 x i1> %a)
+  %res = call <2 x i1> @llvm.vector.reverse.v2i1(<2 x i1> %a)
   ret <2 x i1> %res
 }
 
@@ -51,7 +51,7 @@ define <4 x i1> @reverse_v4i1(<4 x i1> %a) {
 ; ZVBB-NEXT:    vbrev.v v8, v0
 ; ZVBB-NEXT:    vsrl.vi v0, v8, 4
 ; ZVBB-NEXT:    ret
-  %res = call <4 x i1> @llvm.experimental.vector.reverse.v4i1(<4 x i1> %a)
+  %res = call <4 x i1> @llvm.vector.reverse.v4i1(<4 x i1> %a)
   ret <4 x i1> %res
 }
 
@@ -72,7 +72,7 @@ define <8 x i1> @reverse_v8i1(<8 x i1> %a) {
 ; ZVBB-NEXT:    vsetivli zero, 1, e8, mf8, ta, ma
 ; ZVBB-NEXT:    vbrev.v v0, v0
 ; ZVBB-NEXT:    ret
-  %res = call <8 x i1> @llvm.experimental.vector.reverse.v8i1(<8 x i1> %a)
+  %res = call <8 x i1> @llvm.vector.reverse.v8i1(<8 x i1> %a)
   ret <8 x i1> %res
 }
 
@@ -93,7 +93,7 @@ define <16 x i1> @reverse_v16i1(<16 x i1> %a) {
 ; ZVBB-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
 ; ZVBB-NEXT:    vbrev.v v0, v0
 ; ZVBB-NEXT:    ret
-  %res = call <16 x i1> @llvm.experimental.vector.reverse.v16i1(<16 x i1> %a)
+  %res = call <16 x i1> @llvm.vector.reverse.v16i1(<16 x i1> %a)
   ret <16 x i1> %res
 }
 
@@ -116,7 +116,7 @@ define <32 x i1> @reverse_v32i1(<32 x i1> %a) {
 ; ZVBB-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; ZVBB-NEXT:    vbrev.v v0, v0
 ; ZVBB-NEXT:    ret
-  %res = call <32 x i1> @llvm.experimental.vector.reverse.v32i1(<32 x i1> %a)
+  %res = call <32 x i1> @llvm.vector.reverse.v32i1(<32 x i1> %a)
   ret <32 x i1> %res
 }
 
@@ -139,7 +139,7 @@ define <64 x i1> @reverse_v64i1(<64 x i1> %a) {
 ; ZVBB-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; ZVBB-NEXT:    vbrev.v v0, v0
 ; ZVBB-NEXT:    ret
-  %res = call <64 x i1> @llvm.experimental.vector.reverse.v64i1(<64 x i1> %a)
+  %res = call <64 x i1> @llvm.vector.reverse.v64i1(<64 x i1> %a)
   ret <64 x i1> %res
 }
 
@@ -156,7 +156,7 @@ define <128 x i1> @reverse_v128i1(<128 x i1> %a) {
 ; CHECK-NEXT:    vrgather.vv v24, v16, v8
 ; CHECK-NEXT:    vmsne.vi v0, v24, 0
 ; CHECK-NEXT:    ret
-  %res = call <128 x i1> @llvm.experimental.vector.reverse.v128i1(<128 x i1> %a)
+  %res = call <128 x i1> @llvm.vector.reverse.v128i1(<128 x i1> %a)
   ret <128 x i1> %res
 }
 
@@ -164,7 +164,7 @@ define <1 x i8> @reverse_v1i8(<1 x i8> %a) {
 ; CHECK-LABEL: reverse_v1i8:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    ret
-  %res = call <1 x i8> @llvm.experimental.vector.reverse.v1i8(<1 x i8> %a)
+  %res = call <1 x i8> @llvm.vector.reverse.v1i8(<1 x i8> %a)
   ret <1 x i8> %res
 }
 
@@ -182,7 +182,7 @@ define <2 x i8> @reverse_v2i8(<2 x i8> %a) {
 ; ZVBB-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
 ; ZVBB-NEXT:    vrev8.v v8, v8
 ; ZVBB-NEXT:    ret
-  %res = call <2 x i8> @llvm.experimental.vector.reverse.v2i8(<2 x i8> %a)
+  %res = call <2 x i8> @llvm.vector.reverse.v2i8(<2 x i8> %a)
   ret <2 x i8> %res
 }
 
@@ -195,7 +195,7 @@ define <4 x i8> @reverse_v4i8(<4 x i8> %a) {
 ; CHECK-NEXT:    vrgather.vv v9, v8, v10
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
-  %res = call <4 x i8> @llvm.experimental.vector.reverse.v4i8(<4 x i8> %a)
+  %res = call <4 x i8> @llvm.vector.reverse.v4i8(<4 x i8> %a)
   ret <4 x i8> %res
 }
 
@@ -208,7 +208,7 @@ define <8 x i8> @reverse_v8i8(<8 x i8> %a) {
 ; CHECK-NEXT:    vrgather.vv v9, v8, v10
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
-  %res = call <8 x i8> @llvm.experimental.vector.reverse.v8i8(<8 x i8> %a)
+  %res = call <8 x i8> @llvm.vector.reverse.v8i8(<8 x i8> %a)
   ret <8 x i8> %res
 }
 
@@ -221,11 +221,12 @@ define <16 x i8> @reverse_v16i8(<16 x i8> %a) {
 ; CHECK-NEXT:    vrgather.vv v9, v8, v10
 ; CHECK-NEXT:    vmv.v.v v8, v9
 ; CHECK-NEXT:    ret
-  %res = call <16 x i8> @llvm.experimental.vector.reverse.v16i8(<16 x i8> %a)
+  %res = call <16 x i8> @llvm.vector.reverse.v16i8(<16 x i8> %a)
   ret <16 x i8> %res
 }
 
 define <32 x i8> @reverse_v32i8(<32 x i8> %a) {
+<<<<<<< HEAD
 ; RV32-BITS-UNKNOWN-LABEL: reverse_v32i8:
 ; RV32-BITS-UNKNOWN:       # %bb.0:
 ; RV32-BITS-UNKNOWN-NEXT:    lui a0, %hi(.LCPI12_0)
@@ -314,10 +315,24 @@ define <32 x i8> @reverse_v32i8(<32 x i8> %a) {
 ; RV64-ZVBB-NEXT:    vmv.v.v v8, v10
 ; RV64-ZVBB-NEXT:    ret
   %res = call <32 x i8> @llvm.experimental.vector.reverse.v32i8(<32 x i8> %a)
+=======
+; CHECK-LABEL: reverse_v32i8:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    lui a0, %hi(.LCPI12_0)
+; CHECK-NEXT:    addi a0, a0, %lo(.LCPI12_0)
+; CHECK-NEXT:    li a1, 32
+; CHECK-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
+; CHECK-NEXT:    vle8.v v12, (a0)
+; CHECK-NEXT:    vrgather.vv v10, v8, v12
+; CHECK-NEXT:    vmv.v.v v8, v10
+; CHECK-NEXT:    ret
+  %res = call <32 x i8> @llvm.vector.reverse.v32i8(<32 x i8> %a)
+>>>>>>> b329179
   ret <32 x i8> %res
 }
 
 define <64 x i8> @reverse_v64i8(<64 x i8> %a) {
+<<<<<<< HEAD
 ; RV32-BITS-UNKNOWN-LABEL: reverse_v64i8:
 ; RV32-BITS-UNKNOWN:       # %bb.0:
 ; RV32-BITS-UNKNOWN-NEXT:    lui a0, %hi(.LCPI13_0)
@@ -406,6 +421,19 @@ define <64 x i8> @reverse_v64i8(<64 x i8> %a) {
 ; RV64-ZVBB-NEXT:    vmv.v.v v8, v12
 ; RV64-ZVBB-NEXT:    ret
   %res = call <64 x i8> @llvm.experimental.vector.reverse.v64i8(<64 x i8> %a)
+=======
+; CHECK-LABEL: reverse_v64i8:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    lui a0, %hi(.LCPI13_0)
+; CHECK-NEXT:    addi a0, a0, %lo(.LCPI13_0)
+; CHECK-NEXT:    li a1, 64
+; CHECK-NEXT:    vsetvli zero, a1, e8, m4, ta, ma
+; CHECK-NEXT:    vle8.v v16, (a0)
+; CHECK-NEXT:    vrgather.vv v12, v8, v16
+; CHECK-NEXT:    vmv.v.v v8, v12
+; CHECK-NEXT:    ret
+  %res = call <64 x i8> @llvm.vector.reverse.v64i8(<64 x i8> %a)
+>>>>>>> b329179
   ret <64 x i8> %res
 }
 
@@ -413,7 +441,7 @@ define <1 x i16> @reverse_v1i16(<1 x i16> %a) {
 ; CHECK-LABEL: reverse_v1i16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    ret
-  %res = call <1 x i16> @llvm.experimental.vector.reverse.v1i16(<1 x i16> %a)
+  %res = call <1 x i16> @llvm.vector.reverse.v1i16(<1 x i16> %a)
   ret <1 x i16> %res
 }
 
@@ -431,7 +459,7 @@ define <2 x i16> @reverse_v2i16(<2 x i16> %a) {
 ; ZVBB-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; ZVBB-NEXT:    vror.vi v8, v8, 16
 ; ZVBB-NEXT:    ret
-  %res = call <2 x i16> @llvm.experimental.vector.reverse.v2i16(<2 x i16> %a)
+  %res = call <2 x i16> @llvm.vector.reverse.v2i16(<2 x i16> %a)
   ret <2 x i16> %res
 }
 
@@ -444,7 +472,7 @@ define <4 x i16> @reverse_v4i16(<4 x i16> %a) {
 ; CHECK-NEXT:    vrgather.vv v9, v8, v10
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
-  %res = call <4 x i16> @llvm.experimental.vector.reverse.v4i16(<4 x i16> %a)
+  %res = call <4 x i16> @llvm.vector.reverse.v4i16(<4 x i16> %a)
   ret <4 x i16> %res
 }
 
@@ -457,7 +485,7 @@ define <8 x i16> @reverse_v8i16(<8 x i16> %a) {
 ; CHECK-NEXT:    vrgather.vv v9, v8, v10
 ; CHECK-NEXT:    vmv.v.v v8, v9
 ; CHECK-NEXT:    ret
-  %res = call <8 x i16> @llvm.experimental.vector.reverse.v8i16(<8 x i16> %a)
+  %res = call <8 x i16> @llvm.vector.reverse.v8i16(<8 x i16> %a)
   ret <8 x i16> %res
 }
 
@@ -470,11 +498,12 @@ define <16 x i16> @reverse_v16i16(<16 x i16> %a) {
 ; CHECK-NEXT:    vrgather.vv v10, v8, v12
 ; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    ret
-  %res = call <16 x i16> @llvm.experimental.vector.reverse.v16i16(<16 x i16> %a)
+  %res = call <16 x i16> @llvm.vector.reverse.v16i16(<16 x i16> %a)
   ret <16 x i16> %res
 }
 
 define <32 x i16> @reverse_v32i16(<32 x i16> %a) {
+<<<<<<< HEAD
 ; RV32-BITS-UNKNOWN-LABEL: reverse_v32i16:
 ; RV32-BITS-UNKNOWN:       # %bb.0:
 ; RV32-BITS-UNKNOWN-NEXT:    lui a0, %hi(.LCPI19_0)
@@ -571,6 +600,20 @@ define <32 x i16> @reverse_v32i16(<32 x i16> %a) {
 ; RV64-ZVBB-NEXT:    vmv.v.v v8, v12
 ; RV64-ZVBB-NEXT:    ret
   %res = call <32 x i16> @llvm.experimental.vector.reverse.v32i16(<32 x i16> %a)
+=======
+; CHECK-LABEL: reverse_v32i16:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    lui a0, %hi(.LCPI19_0)
+; CHECK-NEXT:    addi a0, a0, %lo(.LCPI19_0)
+; CHECK-NEXT:    li a1, 32
+; CHECK-NEXT:    vsetvli zero, a1, e16, m4, ta, ma
+; CHECK-NEXT:    vle8.v v12, (a0)
+; CHECK-NEXT:    vsext.vf2 v16, v12
+; CHECK-NEXT:    vrgather.vv v12, v8, v16
+; CHECK-NEXT:    vmv.v.v v8, v12
+; CHECK-NEXT:    ret
+  %res = call <32 x i16> @llvm.vector.reverse.v32i16(<32 x i16> %a)
+>>>>>>> b329179
   ret <32 x i16> %res
 }
 
@@ -578,7 +621,7 @@ define <1 x i32> @reverse_v1i32(<1 x i32> %a) {
 ; CHECK-LABEL: reverse_v1i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    ret
-  %res = call <1 x i32> @llvm.experimental.vector.reverse.v1i32(<1 x i32> %a)
+  %res = call <1 x i32> @llvm.vector.reverse.v1i32(<1 x i32> %a)
   ret <1 x i32> %res
 }
 
@@ -596,7 +639,7 @@ define <2 x i32> @reverse_v2i32(<2 x i32> %a) {
 ; ZVBB-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; ZVBB-NEXT:    vror.vi v8, v8, 32
 ; ZVBB-NEXT:    ret
-  %res = call <2 x i32> @llvm.experimental.vector.reverse.v2i32(<2 x i32> %a)
+  %res = call <2 x i32> @llvm.vector.reverse.v2i32(<2 x i32> %a)
   ret <2 x i32> %res
 }
 
@@ -609,7 +652,7 @@ define <4 x i32> @reverse_v4i32(<4 x i32> %a) {
 ; CHECK-NEXT:    vrgather.vv v9, v8, v10
 ; CHECK-NEXT:    vmv.v.v v8, v9
 ; CHECK-NEXT:    ret
-  %res = call <4 x i32> @llvm.experimental.vector.reverse.v4i32(<4 x i32> %a)
+  %res = call <4 x i32> @llvm.vector.reverse.v4i32(<4 x i32> %a)
   ret <4 x i32> %res
 }
 
@@ -623,7 +666,7 @@ define <8 x i32> @reverse_v8i32(<8 x i32> %a) {
 ; CHECK-NEXT:    vrgatherei16.vv v10, v8, v12
 ; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    ret
-  %res = call <8 x i32> @llvm.experimental.vector.reverse.v8i32(<8 x i32> %a)
+  %res = call <8 x i32> @llvm.vector.reverse.v8i32(<8 x i32> %a)
   ret <8 x i32> %res
 }
 
@@ -637,7 +680,7 @@ define <16 x i32> @reverse_v16i32(<16 x i32> %a) {
 ; CHECK-NEXT:    vrgatherei16.vv v12, v8, v16
 ; CHECK-NEXT:    vmv.v.v v8, v12
 ; CHECK-NEXT:    ret
-  %res = call <16 x i32> @llvm.experimental.vector.reverse.v16i32(<16 x i32> %a)
+  %res = call <16 x i32> @llvm.vector.reverse.v16i32(<16 x i32> %a)
   ret <16 x i32> %res
 }
 
@@ -645,7 +688,7 @@ define <1 x i64> @reverse_v1i64(<1 x i64> %a) {
 ; CHECK-LABEL: reverse_v1i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    ret
-  %res = call <1 x i64> @llvm.experimental.vector.reverse.v1i64(<1 x i64> %a)
+  %res = call <1 x i64> @llvm.vector.reverse.v1i64(<1 x i64> %a)
   ret <1 x i64> %res
 }
 
@@ -657,7 +700,7 @@ define <2 x i64> @reverse_v2i64(<2 x i64> %a) {
 ; CHECK-NEXT:    vslideup.vi v9, v8, 1
 ; CHECK-NEXT:    vmv.v.v v8, v9
 ; CHECK-NEXT:    ret
-  %res = call <2 x i64> @llvm.experimental.vector.reverse.v2i64(<2 x i64> %a)
+  %res = call <2 x i64> @llvm.vector.reverse.v2i64(<2 x i64> %a)
   ret <2 x i64> %res
 }
 
@@ -671,7 +714,7 @@ define <4 x i64> @reverse_v4i64(<4 x i64> %a) {
 ; CHECK-NEXT:    vrgatherei16.vv v10, v8, v12
 ; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    ret
-  %res = call <4 x i64> @llvm.experimental.vector.reverse.v4i64(<4 x i64> %a)
+  %res = call <4 x i64> @llvm.vector.reverse.v4i64(<4 x i64> %a)
   ret <4 x i64> %res
 }
 
@@ -685,7 +728,7 @@ define <8 x i64> @reverse_v8i64(<8 x i64> %a) {
 ; CHECK-NEXT:    vrgatherei16.vv v12, v8, v16
 ; CHECK-NEXT:    vmv.v.v v8, v12
 ; CHECK-NEXT:    ret
-  %res = call <8 x i64> @llvm.experimental.vector.reverse.v8i64(<8 x i64> %a)
+  %res = call <8 x i64> @llvm.vector.reverse.v8i64(<8 x i64> %a)
   ret <8 x i64> %res
 }
 
@@ -694,7 +737,7 @@ define <1 x half> @reverse_v1f16(<1 x half> %a) {
 ; CHECK-LABEL: reverse_v1f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    ret
-  %res = call <1 x half> @llvm.experimental.vector.reverse.v1f16(<1 x half> %a)
+  %res = call <1 x half> @llvm.vector.reverse.v1f16(<1 x half> %a)
   ret <1 x half> %res
 }
 
@@ -712,7 +755,7 @@ define <2 x half> @reverse_v2f16(<2 x half> %a) {
 ; ZVBB-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
 ; ZVBB-NEXT:    vror.vi v8, v8, 16
 ; ZVBB-NEXT:    ret
-  %res = call <2 x half> @llvm.experimental.vector.reverse.v2f16(<2 x half> %a)
+  %res = call <2 x half> @llvm.vector.reverse.v2f16(<2 x half> %a)
   ret <2 x half> %res
 }
 
@@ -725,7 +768,7 @@ define <4 x half> @reverse_v4f16(<4 x half> %a) {
 ; CHECK-NEXT:    vrgather.vv v9, v8, v10
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:    ret
-  %res = call <4 x half> @llvm.experimental.vector.reverse.v4f16(<4 x half> %a)
+  %res = call <4 x half> @llvm.vector.reverse.v4f16(<4 x half> %a)
   ret <4 x half> %res
 }
 
@@ -738,7 +781,7 @@ define <8 x half> @reverse_v8f16(<8 x half> %a) {
 ; CHECK-NEXT:    vrgather.vv v9, v8, v10
 ; CHECK-NEXT:    vmv.v.v v8, v9
 ; CHECK-NEXT:    ret
-  %res = call <8 x half> @llvm.experimental.vector.reverse.v8f16(<8 x half> %a)
+  %res = call <8 x half> @llvm.vector.reverse.v8f16(<8 x half> %a)
   ret <8 x half> %res
 }
 
@@ -751,11 +794,12 @@ define <16 x half> @reverse_v16f16(<16 x half> %a) {
 ; CHECK-NEXT:    vrgather.vv v10, v8, v12
 ; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    ret
-  %res = call <16 x half> @llvm.experimental.vector.reverse.v16f16(<16 x half> %a)
+  %res = call <16 x half> @llvm.vector.reverse.v16f16(<16 x half> %a)
   ret <16 x half> %res
 }
 
 define <32 x half> @reverse_v32f16(<32 x half> %a) {
+<<<<<<< HEAD
 ; RV32-BITS-UNKNOWN-LABEL: reverse_v32f16:
 ; RV32-BITS-UNKNOWN:       # %bb.0:
 ; RV32-BITS-UNKNOWN-NEXT:    lui a0, %hi(.LCPI34_0)
@@ -852,6 +896,20 @@ define <32 x half> @reverse_v32f16(<32 x half> %a) {
 ; RV64-ZVBB-NEXT:    vmv.v.v v8, v12
 ; RV64-ZVBB-NEXT:    ret
   %res = call <32 x half> @llvm.experimental.vector.reverse.v32f16(<32 x half> %a)
+=======
+; CHECK-LABEL: reverse_v32f16:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    lui a0, %hi(.LCPI34_0)
+; CHECK-NEXT:    addi a0, a0, %lo(.LCPI34_0)
+; CHECK-NEXT:    li a1, 32
+; CHECK-NEXT:    vsetvli zero, a1, e16, m4, ta, ma
+; CHECK-NEXT:    vle8.v v12, (a0)
+; CHECK-NEXT:    vsext.vf2 v16, v12
+; CHECK-NEXT:    vrgather.vv v12, v8, v16
+; CHECK-NEXT:    vmv.v.v v8, v12
+; CHECK-NEXT:    ret
+  %res = call <32 x half> @llvm.vector.reverse.v32f16(<32 x half> %a)
+>>>>>>> b329179
   ret <32 x half> %res
 }
 
@@ -859,7 +917,7 @@ define <1 x float> @reverse_v1f32(<1 x float> %a) {
 ; CHECK-LABEL: reverse_v1f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    ret
-  %res = call <1 x float> @llvm.experimental.vector.reverse.v1f32(<1 x float> %a)
+  %res = call <1 x float> @llvm.vector.reverse.v1f32(<1 x float> %a)
   ret <1 x float> %res
 }
 
@@ -877,7 +935,7 @@ define <2 x float> @reverse_v2f32(<2 x float> %a) {
 ; ZVBB-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
 ; ZVBB-NEXT:    vror.vi v8, v8, 32
 ; ZVBB-NEXT:    ret
-  %res = call <2 x float> @llvm.experimental.vector.reverse.v2f32(<2 x float> %a)
+  %res = call <2 x float> @llvm.vector.reverse.v2f32(<2 x float> %a)
   ret <2 x float> %res
 }
 
@@ -890,7 +948,7 @@ define <4 x float> @reverse_v4f32(<4 x float> %a) {
 ; CHECK-NEXT:    vrgather.vv v9, v8, v10
 ; CHECK-NEXT:    vmv.v.v v8, v9
 ; CHECK-NEXT:    ret
-  %res = call <4 x float> @llvm.experimental.vector.reverse.v4f32(<4 x float> %a)
+  %res = call <4 x float> @llvm.vector.reverse.v4f32(<4 x float> %a)
   ret <4 x float> %res
 }
 
@@ -904,7 +962,7 @@ define <8 x float> @reverse_v8f32(<8 x float> %a) {
 ; CHECK-NEXT:    vrgatherei16.vv v10, v8, v12
 ; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    ret
-  %res = call <8 x float> @llvm.experimental.vector.reverse.v8f32(<8 x float> %a)
+  %res = call <8 x float> @llvm.vector.reverse.v8f32(<8 x float> %a)
   ret <8 x float> %res
 }
 
@@ -918,7 +976,7 @@ define <16 x float> @reverse_v16f32(<16 x float> %a) {
 ; CHECK-NEXT:    vrgatherei16.vv v12, v8, v16
 ; CHECK-NEXT:    vmv.v.v v8, v12
 ; CHECK-NEXT:    ret
-  %res = call <16 x float> @llvm.experimental.vector.reverse.v16f32(<16 x float> %a)
+  %res = call <16 x float> @llvm.vector.reverse.v16f32(<16 x float> %a)
   ret <16 x float> %res
 }
 
@@ -926,7 +984,7 @@ define <1 x double> @reverse_v1f64(<1 x double> %a) {
 ; CHECK-LABEL: reverse_v1f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    ret
-  %res = call <1 x double> @llvm.experimental.vector.reverse.v1f64(<1 x double> %a)
+  %res = call <1 x double> @llvm.vector.reverse.v1f64(<1 x double> %a)
   ret <1 x double> %res
 }
 
@@ -938,7 +996,7 @@ define <2 x double> @reverse_v2f64(<2 x double> %a) {
 ; CHECK-NEXT:    vslideup.vi v9, v8, 1
 ; CHECK-NEXT:    vmv.v.v v8, v9
 ; CHECK-NEXT:    ret
-  %res = call <2 x double> @llvm.experimental.vector.reverse.v2f64(<2 x double> %a)
+  %res = call <2 x double> @llvm.vector.reverse.v2f64(<2 x double> %a)
   ret <2 x double> %res
 }
 
@@ -952,7 +1010,7 @@ define <4 x double> @reverse_v4f64(<4 x double> %a) {
 ; CHECK-NEXT:    vrgatherei16.vv v10, v8, v12
 ; CHECK-NEXT:    vmv.v.v v8, v10
 ; CHECK-NEXT:    ret
-  %res = call <4 x double> @llvm.experimental.vector.reverse.v4f64(<4 x double> %a)
+  %res = call <4 x double> @llvm.vector.reverse.v4f64(<4 x double> %a)
   ret <4 x double> %res
 }
 
@@ -966,7 +1024,7 @@ define <8 x double> @reverse_v8f64(<8 x double> %a) {
 ; CHECK-NEXT:    vrgatherei16.vv v12, v8, v16
 ; CHECK-NEXT:    vmv.v.v v8, v12
 ; CHECK-NEXT:    ret
-  %res = call <8 x double> @llvm.experimental.vector.reverse.v8f64(<8 x double> %a)
+  %res = call <8 x double> @llvm.vector.reverse.v8f64(<8 x double> %a)
   ret <8 x double> %res
 }
 
@@ -1051,7 +1109,7 @@ define <3 x i64> @reverse_v3i64(<3 x i64> %a) {
 ; RV64-ZVBB-NEXT:    vrgatherei16.vv v10, v8, v12
 ; RV64-ZVBB-NEXT:    vmv.v.v v8, v10
 ; RV64-ZVBB-NEXT:    ret
-  %res = call <3 x i64> @llvm.experimental.vector.reverse.v3i64(<3 x i64> %a)
+  %res = call <3 x i64> @llvm.vector.reverse.v3i64(<3 x i64> %a)
   ret <3 x i64> %res
 }
 
@@ -1135,7 +1193,7 @@ define <6 x i64> @reverse_v6i64(<6 x i64> %a) {
 ; RV64-ZVBB-NEXT:    vrgatherei16.vv v12, v8, v16
 ; RV64-ZVBB-NEXT:    vmv.v.v v8, v12
 ; RV64-ZVBB-NEXT:    ret
-  %res = call <6 x i64> @llvm.experimental.vector.reverse.v6i64(<6 x i64> %a)
+  %res = call <6 x i64> @llvm.vector.reverse.v6i64(<6 x i64> %a)
   ret <6 x i64> %res
 }
 
@@ -1223,54 +1281,54 @@ define <12 x i64> @reverse_v12i64(<12 x i64> %a) {
 ; RV64-ZVBB-NEXT:    vrgatherei16.vv v16, v8, v24
 ; RV64-ZVBB-NEXT:    vmv.v.v v8, v16
 ; RV64-ZVBB-NEXT:    ret
-  %res = call <12 x i64> @llvm.experimental.vector.reverse.v12i64(<12 x i64> %a)
+  %res = call <12 x i64> @llvm.vector.reverse.v12i64(<12 x i64> %a)
   ret <12 x i64> %res
 }
 
-declare <2 x i1> @llvm.experimental.vector.reverse.v2i1(<2 x i1>)
-declare <4 x i1> @llvm.experimental.vector.reverse.v4i1(<4 x i1>)
-declare <8 x i1> @llvm.experimental.vector.reverse.v8i1(<8 x i1>)
-declare <16 x i1> @llvm.experimental.vector.reverse.v16i1(<16 x i1>)
-declare <32 x i1> @llvm.experimental.vector.reverse.v32i1(<32 x i1>)
-declare <64 x i1> @llvm.experimental.vector.reverse.v64i1(<64 x i1>)
-declare <128 x i1> @llvm.experimental.vector.reverse.v128i1(<128 x i1>)
-declare <1 x i8> @llvm.experimental.vector.reverse.v1i8(<1 x i8>)
-declare <2 x i8> @llvm.experimental.vector.reverse.v2i8(<2 x i8>)
-declare <4 x i8> @llvm.experimental.vector.reverse.v4i8(<4 x i8>)
-declare <8 x i8> @llvm.experimental.vector.reverse.v8i8(<8 x i8>)
-declare <16 x i8> @llvm.experimental.vector.reverse.v16i8(<16 x i8>)
-declare <32 x i8> @llvm.experimental.vector.reverse.v32i8(<32 x i8>)
-declare <64 x i8> @llvm.experimental.vector.reverse.v64i8(<64 x i8>)
-declare <1 x i16> @llvm.experimental.vector.reverse.v1i16(<1 x i16>)
-declare <2 x i16> @llvm.experimental.vector.reverse.v2i16(<2 x i16>)
-declare <4 x i16> @llvm.experimental.vector.reverse.v4i16(<4 x i16>)
-declare <8 x i16> @llvm.experimental.vector.reverse.v8i16(<8 x i16>)
-declare <16 x i16> @llvm.experimental.vector.reverse.v16i16(<16 x i16>)
-declare <32 x i16> @llvm.experimental.vector.reverse.v32i16(<32 x i16>)
-declare <1 x i32> @llvm.experimental.vector.reverse.v1i32(<1 x i32>)
-declare <2 x i32> @llvm.experimental.vector.reverse.v2i32(<2 x i32>)
-declare <4 x i32> @llvm.experimental.vector.reverse.v4i32(<4 x i32>)
-declare <8 x i32> @llvm.experimental.vector.reverse.v8i32(<8 x i32>)
-declare <16 x i32> @llvm.experimental.vector.reverse.v16i32(<16 x i32>)
-declare <1 x i64> @llvm.experimental.vector.reverse.v1i64(<1 x i64>)
-declare <2 x i64> @llvm.experimental.vector.reverse.v2i64(<2 x i64>)
-declare <4 x i64> @llvm.experimental.vector.reverse.v4i64(<4 x i64>)
-declare <8 x i64> @llvm.experimental.vector.reverse.v8i64(<8 x i64>)
-declare <1 x half> @llvm.experimental.vector.reverse.v1f16(<1 x half>)
-declare <2 x half> @llvm.experimental.vector.reverse.v2f16(<2 x half>)
-declare <4 x half> @llvm.experimental.vector.reverse.v4f16(<4 x half>)
-declare <8 x half> @llvm.experimental.vector.reverse.v8f16(<8 x half>)
-declare <16 x half> @llvm.experimental.vector.reverse.v16f16(<16 x half>)
-declare <32 x half> @llvm.experimental.vector.reverse.v32f16(<32 x half>)
-declare <1 x float> @llvm.experimental.vector.reverse.v1f32(<1 x float>)
-declare <2 x float> @llvm.experimental.vector.reverse.v2f32(<2 x float>)
-declare <4 x float> @llvm.experimental.vector.reverse.v4f32(<4 x float>)
-declare <8 x float> @llvm.experimental.vector.reverse.v8f32(<8 x float>)
-declare <16 x float> @llvm.experimental.vector.reverse.v16f32(<16 x float>)
-declare <1 x double> @llvm.experimental.vector.reverse.v1f64(<1 x double>)
-declare <2 x double> @llvm.experimental.vector.reverse.v2f64(<2 x double>)
-declare <4 x double> @llvm.experimental.vector.reverse.v4f64(<4 x double>)
-declare <8 x double> @llvm.experimental.vector.reverse.v8f64(<8 x double>)
-declare <3 x i64> @llvm.experimental.vector.reverse.v3i64(<3 x i64>)
-declare <6 x i64> @llvm.experimental.vector.reverse.v6i64(<6 x i64>)
-declare <12 x i64> @llvm.experimental.vector.reverse.v12i64(<12 x i64>)
+declare <2 x i1> @llvm.vector.reverse.v2i1(<2 x i1>)
+declare <4 x i1> @llvm.vector.reverse.v4i1(<4 x i1>)
+declare <8 x i1> @llvm.vector.reverse.v8i1(<8 x i1>)
+declare <16 x i1> @llvm.vector.reverse.v16i1(<16 x i1>)
+declare <32 x i1> @llvm.vector.reverse.v32i1(<32 x i1>)
+declare <64 x i1> @llvm.vector.reverse.v64i1(<64 x i1>)
+declare <128 x i1> @llvm.vector.reverse.v128i1(<128 x i1>)
+declare <1 x i8> @llvm.vector.reverse.v1i8(<1 x i8>)
+declare <2 x i8> @llvm.vector.reverse.v2i8(<2 x i8>)
+declare <4 x i8> @llvm.vector.reverse.v4i8(<4 x i8>)
+declare <8 x i8> @llvm.vector.reverse.v8i8(<8 x i8>)
+declare <16 x i8> @llvm.vector.reverse.v16i8(<16 x i8>)
+declare <32 x i8> @llvm.vector.reverse.v32i8(<32 x i8>)
+declare <64 x i8> @llvm.vector.reverse.v64i8(<64 x i8>)
+declare <1 x i16> @llvm.vector.reverse.v1i16(<1 x i16>)
+declare <2 x i16> @llvm.vector.reverse.v2i16(<2 x i16>)
+declare <4 x i16> @llvm.vector.reverse.v4i16(<4 x i16>)
+declare <8 x i16> @llvm.vector.reverse.v8i16(<8 x i16>)
+declare <16 x i16> @llvm.vector.reverse.v16i16(<16 x i16>)
+declare <32 x i16> @llvm.vector.reverse.v32i16(<32 x i16>)
+declare <1 x i32> @llvm.vector.reverse.v1i32(<1 x i32>)
+declare <2 x i32> @llvm.vector.reverse.v2i32(<2 x i32>)
+declare <4 x i32> @llvm.vector.reverse.v4i32(<4 x i32>)
+declare <8 x i32> @llvm.vector.reverse.v8i32(<8 x i32>)
+declare <16 x i32> @llvm.vector.reverse.v16i32(<16 x i32>)
+declare <1 x i64> @llvm.vector.reverse.v1i64(<1 x i64>)
+declare <2 x i64> @llvm.vector.reverse.v2i64(<2 x i64>)
+declare <4 x i64> @llvm.vector.reverse.v4i64(<4 x i64>)
+declare <8 x i64> @llvm.vector.reverse.v8i64(<8 x i64>)
+declare <1 x half> @llvm.vector.reverse.v1f16(<1 x half>)
+declare <2 x half> @llvm.vector.reverse.v2f16(<2 x half>)
+declare <4 x half> @llvm.vector.reverse.v4f16(<4 x half>)
+declare <8 x half> @llvm.vector.reverse.v8f16(<8 x half>)
+declare <16 x half> @llvm.vector.reverse.v16f16(<16 x half>)
+declare <32 x half> @llvm.vector.reverse.v32f16(<32 x half>)
+declare <1 x float> @llvm.vector.reverse.v1f32(<1 x float>)
+declare <2 x float> @llvm.vector.reverse.v2f32(<2 x float>)
+declare <4 x float> @llvm.vector.reverse.v4f32(<4 x float>)
+declare <8 x float> @llvm.vector.reverse.v8f32(<8 x float>)
+declare <16 x float> @llvm.vector.reverse.v16f32(<16 x float>)
+declare <1 x double> @llvm.vector.reverse.v1f64(<1 x double>)
+declare <2 x double> @llvm.vector.reverse.v2f64(<2 x double>)
+declare <4 x double> @llvm.vector.reverse.v4f64(<4 x double>)
+declare <8 x double> @llvm.vector.reverse.v8f64(<8 x double>)
+declare <3 x i64> @llvm.vector.reverse.v3i64(<3 x i64>)
+declare <6 x i64> @llvm.vector.reverse.v6i64(<6 x i64>)
+declare <12 x i64> @llvm.vector.reverse.v12i64(<12 x i64>)

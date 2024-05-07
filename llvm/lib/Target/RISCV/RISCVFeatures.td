@@ -35,11 +35,14 @@ class RISCVExtension<string name, int major, int minor, string desc,
 
   // Experimental - Does extension require -menable-experimental-extensions.
   bit Experimental = false;
+<<<<<<< HEAD
 
 #ifdef SIFIVE_CUSTOMIZATION
   // AdditionalVersions - Pairs of additional major and minor versions.
   list<list<int>> AdditionalVersions = [];
 #endif
+=======
+>>>>>>> b329179
 }
 
 // Version of RISCVExtension to be used for Experimental extensions. This
@@ -303,11 +306,17 @@ def HasStdExtAOrZalrsc
                          "'A' (Atomic Instructions) or "
                          "'Zalrsc' (Load-Reserved/Store-Conditional)">;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def FeatureStdExtZama16b
     : RISCVExtension<"zama16b", 1, 0,
                      "'Zama16b' (Atomic 16-byte misaligned loads, stores and AMOs)">;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+def FeatureStdExtZama16b
+    : RISCVExtension<"zama16b", 1, 0,
+                     "'Zama16b' (Atomic 16-byte misaligned loads, stores and AMOs)">;
+>>>>>>> b329179
 
 def FeatureStdExtZawrs : RISCVExtension<"zawrs", 1, 0,
                                         "'Zawrs' (Wait on Reservation Set)">;
@@ -1075,6 +1084,7 @@ def FeatureStdExtSupm
     : RISCVExperimentalExtension<"supm", 0, 8,
                                  "'Supm' (Indicates User-mode Pointer Masking)">;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def FeatureStdExtZjid
     : RISCVExperimentalExtension<"zjid", 0, 0,
@@ -1084,6 +1094,8 @@ def HasStdExtZjid : Predicate<"Subtarget->hasStdExtZjid()">,
                     AssemblerPredicate<(all_of FeatureStdExtZjid),
                                         "'Zjid' (Instruction/Data Cache Synchronization)">;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> b329179
 //===----------------------------------------------------------------------===//
 // Vendor extensions
 //===----------------------------------------------------------------------===//
@@ -1326,7 +1338,11 @@ def HasVendorXSfvfnrclipxfqf
 
 let AdditionalVersions = [[1, 0]]  in // SIFIVE
 def FeatureVendorXSiFivecdiscarddlone
+<<<<<<< HEAD
     : RISCVExtension<"xsifivecdiscarddlone", 0, 1, // SIFIVE
+=======
+    : RISCVExtension<"xsifivecdiscarddlone", 1, 0,
+>>>>>>> b329179
                      "'XSiFivecdiscarddlone' (SiFive sf.cdiscard.d.l1 Instruction)", []>;
 def HasVendorXSiFivecdiscarddlone
     : Predicate<"Subtarget->hasVendorXSiFivecdiscarddlone()">,
@@ -1335,7 +1351,11 @@ def HasVendorXSiFivecdiscarddlone
 
 let AdditionalVersions = [[1, 0]]  in // SIFIVE
 def FeatureVendorXSiFivecflushdlone
+<<<<<<< HEAD
     : RISCVExtension<"xsifivecflushdlone", 0, 1, // SIFIVE
+=======
+    : RISCVExtension<"xsifivecflushdlone", 1, 0,
+>>>>>>> b329179
                      "'XSiFivecflushdlone' (SiFive sf.cflush.d.l1 Instruction)", []>;
 def HasVendorXSiFivecflushdlone
     : Predicate<"Subtarget->hasVendorXSiFivecflushdlone()">,
@@ -1344,7 +1364,11 @@ def HasVendorXSiFivecflushdlone
 
 let AdditionalVersions = [[1, 0]]  in // SIFIVE
 def FeatureVendorXSfcease
+<<<<<<< HEAD
     : RISCVExtension<"xsfcease", 0, 1, // SIFIVE
+=======
+    : RISCVExtension<"xsfcease", 1, 0,
+>>>>>>> b329179
                      "'XSfcease' (SiFive sf.cease Instruction)", []>;
 def HasVendorXSfcease
     : Predicate<"Subtarget->hasVendorXSfcease()">,
@@ -1544,9 +1568,9 @@ def TuneNoSinkSplatOperands
                        ".wx, and .wf instructions">;
 #endif // SIFIVE_CUSTOMIZATION
 
-def TuneNoStripWSuffix
-    : SubtargetFeature<"no-strip-w-suffix", "EnableStripWSuffix", "false",
-                       "Disable strip W suffix">;
+def TunePreferWInst
+    : SubtargetFeature<"prefer-w-inst", "PreferWInst", "true",
+                       "Prefer instructions with W suffix">;
 
 def TuneConditionalCompressedMoveFusion
     : SubtargetFeature<"conditional-cmv-fusion", "HasConditionalCompressedMoveFusion",

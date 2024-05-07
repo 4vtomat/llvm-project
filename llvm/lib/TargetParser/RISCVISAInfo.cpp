@@ -46,11 +46,14 @@ struct RISCVProfile {
 
 } // end anonymous namespace
 
+<<<<<<< HEAD:llvm/lib/TargetParser/RISCVISAInfo.cpp
 #if SIFIVE_CUSTOMIZATION
 static std::optional<std::pair<StringRef, RISCVISAUtils::ExtensionVersion>>
 tryDecodeExtWithVersion(StringRef Ext);
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> b329179:llvm/lib/Support/RISCVISAInfo.cpp
 static const char *RISCVGImplications[] = {
   "i", "m", "a", "f", "d", "zicsr", "zifencei"
 };
@@ -58,6 +61,7 @@ static const char *RISCVGImplications[] = {
 #define GET_SUPPORTED_EXTENSIONS
 #include "llvm/TargetParser/RISCVTargetParserDef.inc"
 
+<<<<<<< HEAD:llvm/lib/TargetParser/RISCVISAInfo.cpp
 static constexpr RISCVProfile SupportedProfiles[] = {
     {"rvi20u32", "rv32i"},
     {"rvi20u64", "rv64i"},
@@ -93,6 +97,10 @@ static constexpr RISCVProfile SupportedProfiles[] = {
     {"rvm23u32", "rv32im_zicbop_zicond_zicsr_zihintntl_zihintpause_zimop_zca_"
                  "zcb_zce_zcmop_zcmp_zcmt_zba_zbb_zbs"},
 };
+=======
+#define GET_SUPPORTED_PROFILES
+#include "llvm/TargetParser/RISCVTargetParserDef.inc"
+>>>>>>> b329179:llvm/lib/Support/RISCVISAInfo.cpp
 
 static void verifyTables() {
 #ifndef NDEBUG
@@ -120,8 +128,12 @@ void llvm::riscvExtensionsHelp(StringMap<StringRef> DescMap) {
   outs() << "All available -march extensions for RISC-V\n\n";
   PrintExtension("Name", "Version", (DescMap.empty() ? "" : "Description"));
 
+<<<<<<< HEAD:llvm/lib/TargetParser/RISCVISAInfo.cpp
 #if SIFIVE_CUSTOMIZATION
   RISCVISAInfo::OrderedExtensionMultiMap ExtMap;
+=======
+  RISCVISAUtils::OrderedExtensionMap ExtMap;
+>>>>>>> b329179:llvm/lib/Support/RISCVISAInfo.cpp
   for (const auto &E : SupportedExtensions)
     ExtMap.insert({E.Name, {E.Version.Major, E.Version.Minor}});
 #endif
@@ -347,6 +359,7 @@ bool RISCVISAInfo::hasExtension(StringRef Ext) const {
   return Exts.count(Ext.str()) != 0;
 }
 
+<<<<<<< HEAD:llvm/lib/TargetParser/RISCVISAInfo.cpp
 #if SIFIVE_CUSTOMIZATION
 // If the extension version is not default, append the version number
 // after its extension name, otherwise return its extension name.
@@ -371,6 +384,8 @@ tryAppendVersionInfo(const StringRef Name,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> b329179:llvm/lib/Support/RISCVISAInfo.cpp
 std::vector<std::string> RISCVISAInfo::toFeatures(bool AddAllExtensions,
                                                   bool IgnoreUnknown) const {
   std::vector<std::string> Features;
@@ -839,7 +854,8 @@ RISCVISAInfo::parseArchString(StringRef Arch, bool EnableExperimentalExtension,
   switch (Baseline) {
   default:
     return createStringError(errc::invalid_argument,
-                             "first letter should be 'e', 'i' or 'g'");
+                             "first letter after \'" + Arch.slice(0, 4) +
+                                 "\' should be 'e', 'i' or 'g'");
   case 'e':
   case 'i':
     break;
@@ -897,11 +913,11 @@ RISCVISAInfo::parseArchString(StringRef Arch, bool EnableExperimentalExtension,
   Exts = Exts.drop_front(ConsumeLength);
   Exts.consume_front("_");
 
-  std::vector<std::string> SplittedExts;
-  if (auto E = splitExtsByUnderscore(Exts, SplittedExts))
+  std::vector<std::string> SplitExts;
+  if (auto E = splitExtsByUnderscore(Exts, SplitExts))
     return std::move(E);
 
-  for (auto &Ext : SplittedExts) {
+  for (auto &Ext : SplitExts) {
     StringRef CurrExt = Ext;
     while (!CurrExt.empty()) {
       if (RISCVISAUtils::AllStdExts.contains(CurrExt.front())) {
