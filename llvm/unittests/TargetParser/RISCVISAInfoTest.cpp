@@ -255,11 +255,7 @@ TEST(ParseArchString, IgnoresUnrecognizedExtensionNamesWithIgnoreUnknown) {
   auto MaybeISAInfo =
       RISCVISAInfo::parseArchString("rv32i_zbc1p0_xmadeup", true, false, true);
   ASSERT_THAT_EXPECTED(MaybeISAInfo, Succeeded());
-<<<<<<< HEAD:llvm/unittests/TargetParser/RISCVISAInfoTest.cpp
   RISCVISAInfo::OrderedExtensionMap Exts = (*MaybeISAInfo)->getExtensions();
-=======
-  const auto &Exts = (*MaybeISAInfo)->getExtensions();
->>>>>>> b329179:llvm/unittests/Support/RISCVISAInfoTest.cpp
   EXPECT_TRUE(Exts.at("zbc") == (RISCVISAUtils::ExtensionVersion{1, 0}));
 }
 
@@ -267,21 +263,13 @@ TEST(ParseArchString, AcceptsVersionInLongOrShortForm) {
   for (StringRef Input : {"rv64i2p1"}) {
     auto MaybeISAInfo = RISCVISAInfo::parseArchString(Input, true);
     ASSERT_THAT_EXPECTED(MaybeISAInfo, Succeeded());
-<<<<<<< HEAD:llvm/unittests/TargetParser/RISCVISAInfoTest.cpp
     RISCVISAInfo::OrderedExtensionMap Exts = (*MaybeISAInfo)->getExtensions();
-=======
-    const auto &Exts = (*MaybeISAInfo)->getExtensions();
->>>>>>> b329179:llvm/unittests/Support/RISCVISAInfoTest.cpp
     EXPECT_TRUE(Exts.at("i") == (RISCVISAUtils::ExtensionVersion{2, 1}));
   }
   for (StringRef Input : {"rv32i_zfinx1", "rv32i_zfinx1p0"}) {
     auto MaybeISAInfo = RISCVISAInfo::parseArchString(Input, true);
     ASSERT_THAT_EXPECTED(MaybeISAInfo, Succeeded());
-<<<<<<< HEAD:llvm/unittests/TargetParser/RISCVISAInfoTest.cpp
     RISCVISAInfo::OrderedExtensionMap Exts = (*MaybeISAInfo)->getExtensions();
-=======
-    const auto &Exts = (*MaybeISAInfo)->getExtensions();
->>>>>>> b329179:llvm/unittests/Support/RISCVISAInfoTest.cpp
     EXPECT_TRUE(Exts.at("zfinx") == (RISCVISAUtils::ExtensionVersion{1, 0}));
   }
 }
