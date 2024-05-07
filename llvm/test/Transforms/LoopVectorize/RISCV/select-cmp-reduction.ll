@@ -112,7 +112,6 @@ define i32 @select_icmp(i32 %x, i32 %y, ptr nocapture readonly %c, i64 %n) #0 {
 ; SCALABLE:       for.end:
 ; SCALABLE-NEXT:    [[COND_LCSSA:%.*]] = phi i32 [ [[COND]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; SCALABLE-NEXT:    ret i32 [[COND_LCSSA]]
-<<<<<<< HEAD
 ;
 ; VP_SCALABLE-LABEL: define i32 @select_icmp(
 ; VP_SCALABLE-SAME: i32 [[X:%.*]], i32 [[Y:%.*]], ptr nocapture readonly [[C:%.*]], i64 [[N:%.*]]) #[[ATTR0:[0-9]+]] {
@@ -169,8 +168,6 @@ define i32 @select_icmp(i32 %x, i32 %y, ptr nocapture readonly %c, i64 %n) #0 {
 ; VP_SCALABLE:       for.end:
 ; VP_SCALABLE-NEXT:    [[COND_LCSSA:%.*]] = phi i32 [ [[COND]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; VP_SCALABLE-NEXT:    ret i32 [[COND_LCSSA]]
-=======
->>>>>>> b329179
 ;
 entry:
   br label %for.body
@@ -294,7 +291,6 @@ define i32 @select_fcmp(float %x, i32 %y, ptr nocapture readonly %c, i64 %n) #0 
 ; SCALABLE:       for.end:
 ; SCALABLE-NEXT:    [[COND_LCSSA:%.*]] = phi i32 [ [[COND]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; SCALABLE-NEXT:    ret i32 [[COND_LCSSA]]
-<<<<<<< HEAD
 ;
 ; VP_SCALABLE-LABEL: define i32 @select_fcmp(
 ; VP_SCALABLE-SAME: float [[X:%.*]], i32 [[Y:%.*]], ptr nocapture readonly [[C:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
@@ -351,8 +347,6 @@ define i32 @select_fcmp(float %x, i32 %y, ptr nocapture readonly %c, i64 %n) #0 
 ; VP_SCALABLE:       for.end:
 ; VP_SCALABLE-NEXT:    [[COND_LCSSA:%.*]] = phi i32 [ [[COND]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; VP_SCALABLE-NEXT:    ret i32 [[COND_LCSSA]]
-=======
->>>>>>> b329179
 ;
 entry:
   br label %for.body
@@ -468,7 +462,6 @@ define i32 @select_const_i32_from_icmp(ptr nocapture readonly %v, i64 %n) #0 {
 ; SCALABLE:       exit:
 ; SCALABLE-NEXT:    [[DOTLCSSA:%.*]] = phi i32 [ [[TMP18]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; SCALABLE-NEXT:    ret i32 [[DOTLCSSA]]
-<<<<<<< HEAD
 ;
 ; VP_SCALABLE-LABEL: define i32 @select_const_i32_from_icmp(
 ; VP_SCALABLE-SAME: ptr nocapture readonly [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
@@ -521,8 +514,6 @@ define i32 @select_const_i32_from_icmp(ptr nocapture readonly %v, i64 %n) #0 {
 ; VP_SCALABLE:       exit:
 ; VP_SCALABLE-NEXT:    [[DOTLCSSA:%.*]] = phi i32 [ [[TMP16]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; VP_SCALABLE-NEXT:    ret i32 [[DOTLCSSA]]
-=======
->>>>>>> b329179
 ;
 entry:
   br label %for.body
@@ -650,7 +641,6 @@ define i32 @select_i32_from_icmp(ptr nocapture readonly %v, i32 %a, i32 %b, i64 
 ; SCALABLE:       exit:
 ; SCALABLE-NEXT:    [[DOTLCSSA:%.*]] = phi i32 [ [[TMP18]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; SCALABLE-NEXT:    ret i32 [[DOTLCSSA]]
-<<<<<<< HEAD
 ;
 ; VP_SCALABLE-LABEL: define i32 @select_i32_from_icmp(
 ; VP_SCALABLE-SAME: ptr nocapture readonly [[V:%.*]], i32 [[A:%.*]], i32 [[B:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
@@ -709,8 +699,6 @@ define i32 @select_i32_from_icmp(ptr nocapture readonly %v, i32 %a, i32 %b, i64 
 ; VP_SCALABLE:       exit:
 ; VP_SCALABLE-NEXT:    [[DOTLCSSA:%.*]] = phi i32 [ [[TMP16]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; VP_SCALABLE-NEXT:    ret i32 [[DOTLCSSA]]
-=======
->>>>>>> b329179
 ;
 entry:
   br label %for.body
@@ -826,7 +814,6 @@ define i32 @select_const_i32_from_fcmp(ptr nocapture readonly %v, i64 %n) #0 {
 ; SCALABLE:       exit:
 ; SCALABLE-NEXT:    [[DOTLCSSA:%.*]] = phi i32 [ [[TMP18]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; SCALABLE-NEXT:    ret i32 [[DOTLCSSA]]
-<<<<<<< HEAD
 ;
 ; VP_SCALABLE-LABEL: define i32 @select_const_i32_from_fcmp(
 ; VP_SCALABLE-SAME: ptr nocapture readonly [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
@@ -879,8 +866,6 @@ define i32 @select_const_i32_from_fcmp(ptr nocapture readonly %v, i64 %n) #0 {
 ; VP_SCALABLE:       exit:
 ; VP_SCALABLE-NEXT:    [[DOTLCSSA:%.*]] = phi i32 [ [[TMP16]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; VP_SCALABLE-NEXT:    ret i32 [[DOTLCSSA]]
-=======
->>>>>>> b329179
 ;
 entry:
   br label %for.body
@@ -936,7 +921,6 @@ define float @select_const_f32_from_icmp(ptr nocapture readonly %v, i64 %n) #0 {
 ; SCALABLE:       exit:
 ; SCALABLE-NEXT:    [[DOTLCSSA:%.*]] = phi float [ [[TMP5]], [[FOR_BODY]] ]
 ; SCALABLE-NEXT:    ret float [[DOTLCSSA]]
-<<<<<<< HEAD
 ;
 ; VP_SCALABLE-LABEL: define float @select_const_f32_from_icmp(
 ; VP_SCALABLE-SAME: ptr nocapture readonly [[V:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
@@ -955,8 +939,6 @@ define float @select_const_f32_from_icmp(ptr nocapture readonly %v, i64 %n) #0 {
 ; VP_SCALABLE:       exit:
 ; VP_SCALABLE-NEXT:    [[DOTLCSSA:%.*]] = phi float [ [[TMP5]], [[FOR_BODY]] ]
 ; VP_SCALABLE-NEXT:    ret float [[DOTLCSSA]]
-=======
->>>>>>> b329179
 ;
 entry:
   br label %for.body
@@ -1098,7 +1080,6 @@ define i32 @pred_select_const_i32_from_icmp(ptr noalias nocapture readonly %src1
 ; SCALABLE:       for.end.loopexit:
 ; SCALABLE-NEXT:    [[R_1_LCSSA:%.*]] = phi i32 [ [[R_1]], [[FOR_INC]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; SCALABLE-NEXT:    ret i32 [[R_1_LCSSA]]
-<<<<<<< HEAD
 ;
 ; VP_SCALABLE-LABEL: define i32 @pred_select_const_i32_from_icmp(
 ; VP_SCALABLE-SAME: ptr noalias nocapture readonly [[SRC1:%.*]], ptr noalias nocapture readonly [[SRC2:%.*]], i64 [[N:%.*]]) #[[ATTR0]] {
@@ -1164,8 +1145,6 @@ define i32 @pred_select_const_i32_from_icmp(ptr noalias nocapture readonly %src1
 ; VP_SCALABLE:       for.end.loopexit:
 ; VP_SCALABLE-NEXT:    [[R_1_LCSSA:%.*]] = phi i32 [ [[R_1]], [[FOR_INC]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; VP_SCALABLE-NEXT:    ret i32 [[R_1_LCSSA]]
-=======
->>>>>>> b329179
 ;
 entry:
   br label %for.body
@@ -1228,7 +1207,6 @@ attributes #0 = { "target-features"="+f,+v" }
 ; SCALABLE: [[LOOP12]] = distinct !{[[LOOP12]], [[META1]], [[META2]]}
 ; SCALABLE: [[LOOP13]] = distinct !{[[LOOP13]], [[META2]], [[META1]]}
 ;.
-<<<<<<< HEAD
 ; VP_SCALABLE: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
 ; VP_SCALABLE: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
 ; VP_SCALABLE: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
@@ -1244,5 +1222,3 @@ attributes #0 = { "target-features"="+f,+v" }
 ; VP_SCALABLE: [[LOOP12]] = distinct !{[[LOOP12]], [[META1]], [[META2]]}
 ; VP_SCALABLE: [[LOOP13]] = distinct !{[[LOOP13]], [[META2]], [[META1]]}
 ;.
-=======
->>>>>>> b329179
