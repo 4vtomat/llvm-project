@@ -378,7 +378,7 @@ public:
     VPWidenStoreSC,
     VPWidenSC,
     VPWidenSelectSC,
-<<<<<<< HEAD
+    VPBlendSC,
 #if SIFIVE_CUSTOMIZATION
     VPMonotonicUpdateSC,
 #endif
@@ -387,10 +387,6 @@ public:
     VPCSADataUpdateSC,
     VPCSAExtractScalarSC,
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> b329179
-    VPBlendSC,
-    // START: Phi-like recipes. Need to be kept together.
     VPWidenPHISC,
     VPPredInstPHISC,
     // START: SubclassID for recipes that inherit VPHeaderPHIRecipe.
