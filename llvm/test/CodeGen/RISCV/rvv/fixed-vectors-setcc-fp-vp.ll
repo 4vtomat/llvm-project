@@ -1123,101 +1123,6 @@ define <8 x i1> @fcmp_uno_vf_swap_v8f16(<8 x half> %va, half %b, <8 x i1> %m, i3
 declare <128 x i1> @llvm.vp.fcmp.v128f16(<128 x half>, <128 x half>, metadata, <128 x i1>, i32)
 
 define <128 x i1> @fcmp_oeq_vv_v128f16(<128 x half> %va, <128 x half> %vb, <128 x i1> %m, i32 zeroext %evl) {
-<<<<<<< HEAD
-; ZVFH32-LABEL: fcmp_oeq_vv_v128f16:
-; ZVFH32:       # %bb.0:
-; ZVFH32-NEXT:    addi sp, sp, -16
-; ZVFH32-NEXT:    .cfi_def_cfa_offset 16
-; ZVFH32-NEXT:    csrr a1, vlenb
-; ZVFH32-NEXT:    slli a1, a1, 3
-; ZVFH32-NEXT:    sub sp, sp, a1
-; ZVFH32-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * vlenb
-; ZVFH32-NEXT:    addi a1, a0, 128
-; ZVFH32-NEXT:    li a3, 64
-; ZVFH32-NEXT:    vsetvli zero, a3, e16, m8, ta, ma
-; ZVFH32-NEXT:    vle16.v v24, (a1)
-; ZVFH32-NEXT:    addi a1, sp, 16
-; ZVFH32-NEXT:    vs8r.v v24, (a1) # Unknown-size Folded Spill
-; ZVFH32-NEXT:    vle16.v v24, (a0)
-; ZVFH32-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
-; ZVFH32-NEXT:    vslidedown.vi v7, v0, 8
-; ZVFH32-NEXT:    mv a0, a2
-; ZVFH32-NEXT:    bltu a2, a3, .LBB43_2
-; ZVFH32-NEXT:  # %bb.1:
-; ZVFH32-NEXT:    li a0, 64
-; ZVFH32-NEXT:  .LBB43_2:
-; ZVFH32-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
-; ZVFH32-NEXT:    vmfeq.vv v8, v8, v24, v0.t
-; ZVFH32-NEXT:    addi a0, a2, -64
-; ZVFH32-NEXT:    sltu a1, a2, a0
-; ZVFH32-NEXT:    addi a1, a1, -1
-; ZVFH32-NEXT:    and a0, a1, a0
-; ZVFH32-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
-; ZVFH32-NEXT:    vmv1r.v v0, v7
-; ZVFH32-NEXT:    addi a0, sp, 16
-; ZVFH32-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
-; ZVFH32-NEXT:    vmfeq.vv v9, v16, v24, v0.t
-; ZVFH32-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; ZVFH32-NEXT:    vslideup.vi v8, v9, 8
-; ZVFH32-NEXT:    vmv.v.v v0, v8
-; ZVFH32-NEXT:    csrr a0, vlenb
-; ZVFH32-NEXT:    slli a0, a0, 3
-; ZVFH32-NEXT:    add sp, sp, a0
-; ZVFH32-NEXT:    addi sp, sp, 16
-; ZVFH32-NEXT:    ret
-;
-; ZVFH64-LABEL: fcmp_oeq_vv_v128f16:
-; ZVFH64:       # %bb.0:
-; ZVFH64-NEXT:    addi sp, sp, -16
-; ZVFH64-NEXT:    .cfi_def_cfa_offset 16
-; ZVFH64-NEXT:    csrr a1, vlenb
-; ZVFH64-NEXT:    slli a1, a1, 4
-; ZVFH64-NEXT:    sub sp, sp, a1
-; ZVFH64-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * vlenb
-; ZVFH64-NEXT:    addi a1, a0, 128
-; ZVFH64-NEXT:    li a3, 64
-; ZVFH64-NEXT:    vsetvli zero, a3, e16, m8, ta, ma
-; ZVFH64-NEXT:    vle16.v v24, (a1)
-; ZVFH64-NEXT:    csrr a1, vlenb
-; ZVFH64-NEXT:    slli a1, a1, 3
-; ZVFH64-NEXT:    add a1, sp, a1
-; ZVFH64-NEXT:    addi a1, a1, 16
-; ZVFH64-NEXT:    vs8r.v v24, (a1) # Unknown-size Folded Spill
-; ZVFH64-NEXT:    vle16.v v24, (a0)
-; ZVFH64-NEXT:    addi a0, sp, 16
-; ZVFH64-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
-; ZVFH64-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
-; ZVFH64-NEXT:    mv a0, a2
-; ZVFH64-NEXT:    vslidedown.vi v7, v0, 8
-; ZVFH64-NEXT:    bltu a2, a3, .LBB43_2
-; ZVFH64-NEXT:  # %bb.1:
-; ZVFH64-NEXT:    li a0, 64
-; ZVFH64-NEXT:  .LBB43_2:
-; ZVFH64-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
-; ZVFH64-NEXT:    addi a0, sp, 16
-; ZVFH64-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
-; ZVFH64-NEXT:    vmfeq.vv v8, v8, v24, v0.t
-; ZVFH64-NEXT:    addi a0, a2, -64
-; ZVFH64-NEXT:    sltu a1, a2, a0
-; ZVFH64-NEXT:    addi a1, a1, -1
-; ZVFH64-NEXT:    and a0, a1, a0
-; ZVFH64-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
-; ZVFH64-NEXT:    vmv1r.v v0, v7
-; ZVFH64-NEXT:    csrr a0, vlenb
-; ZVFH64-NEXT:    slli a0, a0, 3
-; ZVFH64-NEXT:    add a0, sp, a0
-; ZVFH64-NEXT:    addi a0, a0, 16
-; ZVFH64-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
-; ZVFH64-NEXT:    vmfeq.vv v9, v16, v24, v0.t
-; ZVFH64-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; ZVFH64-NEXT:    vslideup.vi v8, v9, 8
-; ZVFH64-NEXT:    vmv.v.v v0, v8
-; ZVFH64-NEXT:    csrr a0, vlenb
-; ZVFH64-NEXT:    slli a0, a0, 4
-; ZVFH64-NEXT:    add sp, sp, a0
-; ZVFH64-NEXT:    addi sp, sp, 16
-; ZVFH64-NEXT:    ret
-=======
 ; ZVFH-LABEL: fcmp_oeq_vv_v128f16:
 ; ZVFH:       # %bb.0:
 ; ZVFH-NEXT:    addi sp, sp, -16
@@ -1269,7 +1174,6 @@ define <128 x i1> @fcmp_oeq_vv_v128f16(<128 x half> %va, <128 x half> %vb, <128 
 ; ZVFH-NEXT:    add sp, sp, a0
 ; ZVFH-NEXT:    addi sp, sp, 16
 ; ZVFH-NEXT:    ret
->>>>>>> b329179
 ;
 ; ZVFHMIN32-LABEL: fcmp_oeq_vv_v128f16:
 ; ZVFHMIN32:       # %bb.0:
