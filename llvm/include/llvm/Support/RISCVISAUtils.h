@@ -14,10 +14,7 @@
 #define LLVM_SUPPORT_RISCVISAUTILS_H
 
 #include "llvm/ADT/StringRef.h"
-<<<<<<< HEAD
-=======
 #include <map>
->>>>>>> b329179
 #include <string>
 
 namespace llvm {
@@ -39,15 +36,12 @@ struct ExtensionComparator {
     return compareExtension(LHS, RHS);
   }
 };
-<<<<<<< HEAD
-=======
 
 /// OrderedExtensionMap is std::map, it's specialized to keep entries
 /// in canonical order of extension.
 typedef std::map<std::string, ExtensionVersion, ExtensionComparator>
     OrderedExtensionMap;
 
->>>>>>> b329179
 } // namespace RISCVISAUtils
 
 } // namespace llvm
