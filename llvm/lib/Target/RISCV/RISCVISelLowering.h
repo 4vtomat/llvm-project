@@ -831,9 +831,6 @@ public:
 
   bool shouldRemoveExtendFromGSIndex(SDValue Extend, EVT DataVT) const override;
 
-  bool shouldExpandGetVectorLength(EVT TripCountVT, unsigned VF,
-                                   bool IsScalable) const override;
-
   bool isLegalElementTypeForRVV(EVT ScalarTy) const;
 
   bool shouldConvertFpToSat(unsigned Op, EVT FPVT, EVT VT) const override;
@@ -1075,14 +1072,11 @@ private:
 
   MVT getVPExplicitVectorLengthTy() const override;
 
-<<<<<<< HEAD
-=======
   bool shouldExpandGetVectorLength(EVT TripCountVT, unsigned VF,
                                    bool IsScalable) const override;
 
   bool shouldExpandCttzElements(EVT VT) const override;
 
->>>>>>> b329179
   /// RVV code generation for fixed length vectors does not lower all
   /// BUILD_VECTORs. This makes BUILD_VECTOR legalisation a source of stores to
   /// merge. However, merging them creates a BUILD_VECTOR that is just as
