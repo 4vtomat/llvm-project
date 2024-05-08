@@ -3003,17 +3003,13 @@ static bool isKnownNonZeroFromOperator(const Operator *I,
       case Intrinsic::vscale:
         return true;
       case Intrinsic::experimental_get_vector_length:
-<<<<<<< HEAD
-        return isKnownNonZero(I->getOperand(0), Depth, Q);
+        return isKnownNonZero(I->getOperand(0), Q, Depth);
 #if SIFIVE_CUSTOMIZATION
       case Intrinsic::riscv_vsetvlimax:
         return true;
       case Intrinsic::riscv_vsetvli:
-        return isKnownNonZero(I->getOperand(0), Depth, Q);
-#endif
-=======
         return isKnownNonZero(I->getOperand(0), Q, Depth);
->>>>>>> b329179
+#endif
       default:
         break;
       }
