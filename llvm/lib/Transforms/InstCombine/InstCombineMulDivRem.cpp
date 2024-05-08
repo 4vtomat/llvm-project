@@ -708,7 +708,6 @@ Instruction *InstCombinerImpl::foldFMulReassoc(BinaryOperator &I) {
   }
 
   Value *Z;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Sink division: (X / Y) * Z --> (X * Z) / Y
   // Don't sink if the fdiv is in a different basic block as this might pull a
@@ -722,7 +721,8 @@ Instruction *InstCombinerImpl::foldFMulReassoc(BinaryOperator &I) {
       cast<Instruction>(Op1)->getParent() == I.getParent()) {
     Value *NewFMul = Builder.CreateFMulFMF(X, Op0, &I);
     return BinaryOperator::CreateFDivFMF(NewFMul, Y, &I);
-=======
+  }
+#else
   if (match(&I,
             m_c_FMul(m_AllowReassoc(m_OneUse(m_FDiv(m_Value(X), m_Value(Y)))),
                      m_Value(Z)))) {
@@ -735,9 +735,7 @@ Instruction *InstCombinerImpl::foldFMulReassoc(BinaryOperator &I) {
       auto *NewFMul = Builder.CreateFMul(X, Z);
       return BinaryOperator::CreateFDivFMF(NewFMul, Y, FMF);
     }
->>>>>>> b329179
   }
-
 #endif // SIFIVE_CUSTOMIZATION
 
   // sqrt(X) * sqrt(Y) -> sqrt(X * Y)
