@@ -266,8 +266,8 @@ static std::optional<Value *> getMask(Value *WideMask, unsigned Factor) {
     switch (IMI->getIntrinsicID()) {
     default:
       return std::nullopt;
-#define TRY_DEINTERLEAVE_MASK(N)                                               \
-  case Intrinsic::experimental_vector_interleave##N:                           \
+#define TRY_DEINTERLEAVE_MASK(N, PREFIX)                                       \
+  case Intrinsic::PREFIX##vector_interleave##N:                                \
     assert(Factor == N && "Interleave factor of a data and mask don't match"); \
     for (unsigned I = 0; I < N; ++I)                                           \
       if (IMI->getOperand(0) != IMI->getOperand(I))                            \
@@ -275,13 +275,13 @@ static std::optional<Value *> getMask(Value *WideMask, unsigned Factor) {
                                                                                \
     return IMI->getOperand(0);
 
-      TRY_DEINTERLEAVE_MASK(2);
-      TRY_DEINTERLEAVE_MASK(3);
-      TRY_DEINTERLEAVE_MASK(4);
-      TRY_DEINTERLEAVE_MASK(5);
-      TRY_DEINTERLEAVE_MASK(6);
-      TRY_DEINTERLEAVE_MASK(7);
-      TRY_DEINTERLEAVE_MASK(8);
+      TRY_DEINTERLEAVE_MASK(2,);
+      TRY_DEINTERLEAVE_MASK(3, experimental_);
+      TRY_DEINTERLEAVE_MASK(4, experimental_);
+      TRY_DEINTERLEAVE_MASK(5, experimental_);
+      TRY_DEINTERLEAVE_MASK(6, experimental_);
+      TRY_DEINTERLEAVE_MASK(7, experimental_);
+      TRY_DEINTERLEAVE_MASK(8, experimental_);
 #undef TRY_DEINTERLEAVE_MASK
     }
   }
@@ -292,7 +292,7 @@ static std::optional<Value *> getMask(Value *WideMask, unsigned Factor) {
 
 static unsigned getFactorFromVectorInterleaveIntrinsic(IntrinsicInst *II) {
     switch (II->getIntrinsicID()) {
-    case Intrinsic::experimental_vector_interleave2:
+    case Intrinsic::vector_interleave2:
       return 2;
     case Intrinsic::experimental_vector_interleave3:
       return 3;
@@ -725,23 +725,17 @@ bool InterleavedAccessImpl::runOnFunction(Function &F) {
     if (auto *II = dyn_cast<IntrinsicInst>(&I)) {
       // At present, we only have intrinsics to represent (de)interleaving
       // with a factor of 2.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       if (getFactorFromVectorDeInterleaveIntrinsic(II) != 0)
 #else
-      if (II->getIntrinsicID() == Intrinsic::experimental_vector_deinterleave2)
+      if (II->getIntrinsicID() == Intrinsic::vector_deinterleave2)
 #endif // SIFIVE_CUSTOMIZATION
         Changed |= lowerDeinterleaveIntrinsic(II, DeadInsts);
 #if SIFIVE_CUSTOMIZATION
       if (getFactorFromVectorInterleaveIntrinsic(II) != 0)
 #else
-      if (II->getIntrinsicID() == Intrinsic::experimental_vector_interleave2)
-#endif // SIFIVE_CUSTOMIZATION
-=======
-      if (II->getIntrinsicID() == Intrinsic::vector_deinterleave2)
-        Changed |= lowerDeinterleaveIntrinsic(II, DeadInsts);
       if (II->getIntrinsicID() == Intrinsic::vector_interleave2)
->>>>>>> b329179
+#endif // SIFIVE_CUSTOMIZATION
         Changed |= lowerInterleaveIntrinsic(II, DeadInsts);
     }
   }
