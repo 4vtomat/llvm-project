@@ -262,7 +262,6 @@ static DecodeStatus DecodeVRM8RegisterClass(MCInst &Inst, uint32_t RegNo,
   return MCDisassembler::Success;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static DecodeStatus DecodeTRRegisterClass(MCInst &Inst, uint32_t RegNo,
                                           uint64_t Address,
@@ -308,10 +307,7 @@ static DecodeStatus decodeMammothWWEE(MCInst &Inst, uint32_t Imm,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-static DecodeStatus decodeVMaskReg(MCInst &Inst, uint64_t RegNo,
-=======
 static DecodeStatus decodeVMaskReg(MCInst &Inst, uint32_t RegNo,
->>>>>>> b329179
                                    uint64_t Address,
                                    const MCDisassembler *Decoder) {
   if (RegNo >= 2)
@@ -580,158 +576,12 @@ void RISCVDisassembler::addSPOperands(MCInst &MI) const {
 #define TRY_TO_DECODE_FEATURE(FEATURE, DECODER_TABLE, DESC)                    \
   TRY_TO_DECODE(STI.hasFeature(FEATURE), DECODER_TABLE, DESC)
 
-<<<<<<< HEAD
-  // It's a 32 bit instruction if bit 0 and 1 are 1.
-  if ((Bytes[0] & 0x3) == 0x3) {
-    if (Bytes.size() < 4) {
-      Size = 0;
-      return MCDisassembler::Fail;
-    }
-    Size = 4;
-
-    Insn = support::endian::read32le(Bytes.data());
-
-    TRY_TO_DECODE(STI.hasFeature(RISCV::FeatureStdExtZdinx) &&
-                      !STI.hasFeature(RISCV::Feature64Bit),
-                  DecoderTableRV32Zdinx32,
-                  "RV32Zdinx table (Double in Integer and rv32)");
-    TRY_TO_DECODE(STI.hasFeature(RISCV::FeatureStdExtZacas) &&
-                      !STI.hasFeature(RISCV::Feature64Bit),
-                  DecoderTableRV32Zacas32,
-                  "RV32Zacas table (Compare-And-Swap and rv32)");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureStdExtZfinx, DecoderTableRVZfinx32,
-                          "RVZfinx table (Float in Integer)");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXVentanaCondOps,
-                          DecoderTableXVentana32, "Ventana custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXTHeadBa, DecoderTableXTHeadBa32,
-                          "XTHeadBa custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXTHeadBb, DecoderTableXTHeadBb32,
-                          "XTHeadBb custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXTHeadBs, DecoderTableXTHeadBs32,
-                          "XTHeadBs custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXTHeadCondMov,
-                          DecoderTableXTHeadCondMov32,
-                          "XTHeadCondMov custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXTHeadCmo, DecoderTableXTHeadCmo32,
-                          "XTHeadCmo custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXTHeadFMemIdx,
-                          DecoderTableXTHeadFMemIdx32,
-                          "XTHeadFMemIdx custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXTHeadMac, DecoderTableXTHeadMac32,
-                          "XTHeadMac custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXTHeadMemIdx,
-                          DecoderTableXTHeadMemIdx32,
-                          "XTHeadMemIdx custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXTHeadMemPair,
-                          DecoderTableXTHeadMemPair32,
-                          "XTHeadMemPair custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXTHeadSync,
-                          DecoderTableXTHeadSync32,
-                          "XTHeadSync custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXTHeadVdot, DecoderTableXTHeadVdot32,
-                          "XTHeadVdot custom opcode table");
-#if SIFIVE_CUSTOMIZATION
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureStdExtZjid, DecoderTableRVZjid32,
-                          "Zjid opcode table (I/D Cache Synchronization)");
-    TRY_TO_DECODE(STI.hasFeature(RISCV::FeatureStdExtZvkb0p1) ||
-                      STI.hasFeature(RISCV::FeatureStdExtZvkg0p1),
-                  DecoderTableZvk0p132,
-                  "zvk0p1 custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvfexpa,
-                          DecoderTableXSfvfexpa32,
-                          "SiFive vfexpa custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvqdotq,
-                          DecoderTableXSfvqdotq32,
-                          "SiFive vqdotq custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvqmaccdod,
-                          DecoderTableXSfvqmaccdod32,
-                          "SiFive vqmaccdod custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvqmaccqoq,
-                          DecoderTableXSfvqmaccqoq32,
-                          "SiFive vqmaccqoq custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvfwmaccqqq,
-                          DecoderTableXSfvfwmaccqqq32,
-                          "SiFive vfwmaccqqq custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvfnrclipxfqf,
-                          DecoderTableXSfvfnrclipxfqf32,
-                          "SiFive vfnrclipxfqf custom opcode table");
-#endif // SIFIVE_CUSTOMIZATION
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvcp, DecoderTableXSfvcp32,
-                          "SiFive VCIX custom opcode table");
-    TRY_TO_DECODE_FEATURE(
-        RISCV::FeatureVendorXSfvqmaccdod, DecoderTableXSfvqmaccdod32,
-        "SiFive Matrix Multiplication (2x8 and 8x2) Instruction opcode table");
-    TRY_TO_DECODE_FEATURE(
-        RISCV::FeatureVendorXSfvqmaccqoq, DecoderTableXSfvqmaccqoq32,
-        "SiFive Matrix Multiplication (4x8 and 8x4) Instruction opcode table");
-    TRY_TO_DECODE_FEATURE(
-        RISCV::FeatureVendorXSfvfwmaccqqq, DecoderTableXSfvfwmaccqqq32,
-        "SiFive Matrix Multiplication Instruction opcode table");
-    TRY_TO_DECODE_FEATURE(
-        RISCV::FeatureVendorXSfvfnrclipxfqf, DecoderTableXSfvfnrclipxfqf32,
-        "SiFive FP32-to-int8 Ranged Clip Instructions opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSiFivecdiscarddlone,
-                          DecoderTableXSiFivecdiscarddlone32,
-                          "SiFive sf.cdiscard.d.l1 custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSiFivecflushdlone,
-                          DecoderTableXSiFivecflushdlone32,
-                          "SiFive sf.cflush.d.l1 custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfcease, DecoderTableXSfcease32,
-                          "SiFive sf.cease custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfmmbase,
-                          DecoderTableXSfmmbase32,
-                          "SiFive XSfmmbase extension custom opcode table");
-    TRY_TO_DECODE_FEATURE(
-        RISCV::FeatureVendorXSfmm32ea, DecoderTableXSfmm32eaOrXSfmmbase32,
-        "SiFive XSfmm32ea/XSfmmbase extension custom opcode table");
-    TRY_TO_DECODE_FEATURE(
-        RISCV::FeatureVendorXSfmmbase, DecoderTableXSfmm32eaOrXSfmmbase32,
-        "SiFive XSfmm32ea/XSfmmbase extension custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfmm32a, DecoderTableXSfmm32a32,
-                          "SiFive XSfmm32a extension custom opcode table");
-    TRY_TO_DECODE_FEATURE(
-        RISCV::FeatureVendorXSfmm32a,
-        DecoderTableXSfmm32eaOrXSfmm32aOrXSfmm64a32,
-        "SiFive XSfmm32ea/XSfmm32a/XSfmm64a extension custom opcode table");
-    TRY_TO_DECODE_FEATURE(
-        RISCV::FeatureVendorXSfmm64a,
-        DecoderTableXSfmm32eaOrXSfmm32aOrXSfmm64a32,
-        "SiFive XSfmm32ea/XSfmm32a/XSfmm64a extension custom opcode table");
-    TRY_TO_DECODE_FEATURE(
-        RISCV::FeatureVendorXSfmm32ea,
-        DecoderTableXSfmm32eaOrXSfmm32aOrXSfmm64a32,
-        "SiFive XSfmm32ea/XSfmm32a/XSfmm64a extension custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfmm32a8f,
-                          DecoderTableXSfmm32a8f32,
-                          "SiFive XSfmm32a8f extension custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfmm32a4i,
-                          DecoderTableXSfmm32a4i32,
-                          "SiFive XSfmm32a4i extension custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXCVbitmanip,
-                          DecoderTableXCVbitmanip32,
-                          "CORE-V Bit Manipulation custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXCVelw, DecoderTableXCVelw32,
-                          "CORE-V Event load custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXCVmac, DecoderTableXCVmac32,
-                          "CORE-V MAC custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXCVmem, DecoderTableXCVmem32,
-                          "CORE-V MEM custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXCValu, DecoderTableXCValu32,
-                          "CORE-V ALU custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXCVsimd, DecoderTableXCVsimd32,
-                          "CORE-V SIMD extensions custom opcode table");
-    TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXCVbi, DecoderTableXCVbi32,
-                          "CORE-V Immediate Branching custom opcode table");
-    TRY_TO_DECODE(true, DecoderTable32, "RISCV32 table");
-
-=======
 DecodeStatus RISCVDisassembler::getInstruction32(MCInst &MI, uint64_t &Size,
                                                  ArrayRef<uint8_t> Bytes,
                                                  uint64_t Address,
                                                  raw_ostream &CS) const {
   if (Bytes.size() < 4) {
     Size = 0;
->>>>>>> b329179
     return MCDisassembler::Fail;
   }
   Size = 4;
@@ -775,9 +625,34 @@ DecodeStatus RISCVDisassembler::getInstruction32(MCInst &MI, uint64_t &Size,
   TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXTHeadSync,
                         DecoderTableXTHeadSync32,
                         "XTHeadSync custom opcode table");
-  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXTHeadVdot,
-                        DecoderTableXTHeadVdot32,
+  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXTHeadVdot, DecoderTableXTHeadVdot32,
                         "XTHeadVdot custom opcode table");
+#if SIFIVE_CUSTOMIZATION
+  TRY_TO_DECODE_FEATURE(RISCV::FeatureStdExtZjid, DecoderTableRVZjid32,
+                        "Zjid opcode table (I/D Cache Synchronization)");
+  TRY_TO_DECODE(STI.hasFeature(RISCV::FeatureStdExtZvkb0p1) ||
+                    STI.hasFeature(RISCV::FeatureStdExtZvkg0p1),
+                DecoderTableZvk0p132,
+                "zvk0p1 custom opcode table");
+  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvfexpa,
+                        DecoderTableXSfvfexpa32,
+                        "SiFive vfexpa custom opcode table");
+  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvqdotq,
+                        DecoderTableXSfvqdotq32,
+                        "SiFive vqdotq custom opcode table");
+  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvqmaccdod,
+                        DecoderTableXSfvqmaccdod32,
+                        "SiFive vqmaccdod custom opcode table");
+  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvqmaccqoq,
+                        DecoderTableXSfvqmaccqoq32,
+                        "SiFive vqmaccqoq custom opcode table");
+  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvfwmaccqqq,
+                        DecoderTableXSfvfwmaccqqq32,
+                        "SiFive vfwmaccqqq custom opcode table");
+  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvfnrclipxfqf,
+                        DecoderTableXSfvfnrclipxfqf32,
+                        "SiFive vfnrclipxfqf custom opcode table");
+#endif // SIFIVE_CUSTOMIZATION
   TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvcp, DecoderTableXSfvcp32,
                         "SiFive VCIX custom opcode table");
   TRY_TO_DECODE_FEATURE(
@@ -800,6 +675,35 @@ DecodeStatus RISCVDisassembler::getInstruction32(MCInst &MI, uint64_t &Size,
                         "SiFive sf.cflush.d.l1 custom opcode table");
   TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfcease, DecoderTableXSfcease32,
                         "SiFive sf.cease custom opcode table");
+  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfmmbase,
+                        DecoderTableXSfmmbase32,
+                        "SiFive XSfmmbase extension custom opcode table");
+  TRY_TO_DECODE_FEATURE(
+      RISCV::FeatureVendorXSfmm32ea, DecoderTableXSfmm32eaOrXSfmmbase32,
+      "SiFive XSfmm32ea/XSfmmbase extension custom opcode table");
+  TRY_TO_DECODE_FEATURE(
+      RISCV::FeatureVendorXSfmmbase, DecoderTableXSfmm32eaOrXSfmmbase32,
+      "SiFive XSfmm32ea/XSfmmbase extension custom opcode table");
+  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfmm32a, DecoderTableXSfmm32a32,
+                        "SiFive XSfmm32a extension custom opcode table");
+  TRY_TO_DECODE_FEATURE(
+      RISCV::FeatureVendorXSfmm32a,
+      DecoderTableXSfmm32eaOrXSfmm32aOrXSfmm64a32,
+      "SiFive XSfmm32ea/XSfmm32a/XSfmm64a extension custom opcode table");
+  TRY_TO_DECODE_FEATURE(
+      RISCV::FeatureVendorXSfmm64a,
+      DecoderTableXSfmm32eaOrXSfmm32aOrXSfmm64a32,
+      "SiFive XSfmm32ea/XSfmm32a/XSfmm64a extension custom opcode table");
+  TRY_TO_DECODE_FEATURE(
+      RISCV::FeatureVendorXSfmm32ea,
+      DecoderTableXSfmm32eaOrXSfmm32aOrXSfmm64a32,
+      "SiFive XSfmm32ea/XSfmm32a/XSfmm64a extension custom opcode table");
+  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfmm32a8f,
+                        DecoderTableXSfmm32a8f32,
+                        "SiFive XSfmm32a8f extension custom opcode table");
+  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfmm32a4i,
+                        DecoderTableXSfmm32a4i32,
+                        "SiFive XSfmm32a4i extension custom opcode table");
   TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXCVbitmanip,
                         DecoderTableXCVbitmanip32,
                         "CORE-V Bit Manipulation custom opcode table");
