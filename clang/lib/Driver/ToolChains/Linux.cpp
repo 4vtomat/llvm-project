@@ -842,7 +842,6 @@ void Linux::addProfileRTLibs(const llvm::opt::ArgList &Args,
   ToolChain::addProfileRTLibs(Args, CmdArgs);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 void Linux::addLoopProfileRTLibs(const llvm::opt::ArgList &Args,
                                  llvm::opt::ArgStringList &CmdArgs) const {
@@ -874,8 +873,6 @@ Linux::getDefaultDenormalModeForType(const llvm::opt::ArgList &DriverArgs,
   }
 }
 
-=======
->>>>>>> b329179
 void Linux::addExtraOpts(llvm::opt::ArgStringList &CmdArgs) const {
   for (const auto &Opt : ExtraOpts)
     CmdArgs.push_back(Opt.c_str());
