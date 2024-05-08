@@ -132,7 +132,6 @@ static void getRISCFeaturesFromMcpu(const Driver &D, const Arg *A,
     Features.push_back("+unaligned-scalar-mem");
     Features.push_back("+unaligned-vector-mem");
   }
-<<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
   bool HasNoSlowVectorFp64 = llvm::is_contained(Features, "-slow-vector-fp64");
@@ -141,8 +140,6 @@ static void getRISCFeaturesFromMcpu(const Driver &D, const Arg *A,
        Mcpu == "sifive-x392-ea-dualvalu"))
     Features.push_back("+slow-vector-fp64");
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> b329179
 }
 
 void riscv::getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
