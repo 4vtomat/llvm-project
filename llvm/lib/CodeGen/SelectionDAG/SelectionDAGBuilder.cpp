@@ -7943,9 +7943,8 @@ void SelectionDAGBuilder::visitIntrinsicCall(const CallInst &I,
   case Intrinsic::callbr_landingpad:
     visitCallBrLandingPad(I);
     return;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  case Intrinsic::experimental_vector_interleave2:
+  case Intrinsic::vector_interleave2:
     visitVectorInterleave(I, 2);
     return;
   case Intrinsic::experimental_vector_interleave3:
@@ -7966,7 +7965,7 @@ void SelectionDAGBuilder::visitIntrinsicCall(const CallInst &I,
   case Intrinsic::experimental_vector_interleave8:
     visitVectorInterleave(I, 8);
     return;
-  case Intrinsic::experimental_vector_deinterleave2:
+  case Intrinsic::vector_deinterleave2:
     visitVectorDeinterleave(I, 2);
     return;
   case Intrinsic::experimental_vector_deinterleave3:
@@ -7983,13 +7982,6 @@ void SelectionDAGBuilder::visitIntrinsicCall(const CallInst &I,
     return;
   case Intrinsic::experimental_vector_deinterleave7:
     visitVectorDeinterleave(I, 7);
-=======
-  case Intrinsic::vector_interleave2:
-    visitVectorInterleave(I);
-    return;
-  case Intrinsic::vector_deinterleave2:
-    visitVectorDeinterleave(I);
->>>>>>> b329179
     return;
   case Intrinsic::experimental_vector_deinterleave8:
     visitVectorDeinterleave(I, 8);
