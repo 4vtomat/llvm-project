@@ -454,13 +454,6 @@ StringRef riscv::getRISCVCodeModel(const llvm::opt::ArgList &Args) {
 void riscv::addRISCVTargetLTOArgs(const ToolChain &ToolChain,
                                   const llvm::opt::ArgList &Args,
                                   llvm::opt::ArgStringList &CmdArgs) {
-  // We need to pass target-abi option to check it is equal to module's
-  // target-abi information.
-  const llvm::Triple &Triple = ToolChain.getTriple();
-  StringRef ABIName = getRISCVABI(Args, Triple);
-  CmdArgs.push_back(
-      Args.MakeArgString(Twine("-plugin-opt=-target-abi=") + ABIName));
-
   if (Args.hasFlag(options::OPT_fno_use_vla_vectorizer,
                    options::OPT_fuse_vla_vectorizer, false)) {
     CmdArgs.push_back("-plugin-opt=-riscv-use-vla-vectorizer=false");
