@@ -26,23 +26,13 @@ public:
   RISCVISAInfo(const RISCVISAInfo &) = delete;
   RISCVISAInfo &operator=(const RISCVISAInfo &) = delete;
 
-<<<<<<< HEAD:llvm/include/llvm/TargetParser/RISCVISAInfo.h
-  /// OrderedExtensionMap is std::map, it's specialized to keep entries
-  /// in canonical order of extension.
-  typedef std::map<std::string, RISCVISAUtils::ExtensionVersion,
-                   RISCVISAUtils::ExtensionComparator>
-      OrderedExtensionMap;
-
 #if SIFIVE_CUSTOMIZATION
   typedef std::multimap<std::string, RISCVISAUtils::ExtensionVersion,
                         RISCVISAUtils::ExtensionComparator>
       OrderedExtensionMultiMap;
 #endif
 
-  RISCVISAInfo(unsigned XLen, OrderedExtensionMap &Exts)
-=======
   RISCVISAInfo(unsigned XLen, RISCVISAUtils::OrderedExtensionMap &Exts)
->>>>>>> b329179:llvm/include/llvm/Support/RISCVISAInfo.h
       : XLen(XLen), FLen(0), MinVLen(0), MaxELen(0), MaxELenFp(0), Exts(Exts) {}
 
   /// Parse RISC-V ISA info from arch string.
