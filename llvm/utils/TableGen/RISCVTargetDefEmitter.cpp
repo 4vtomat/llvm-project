@@ -38,7 +38,6 @@ static void printExtensionTable(raw_ostream &OS,
     OS << "    {\"" << getExtensionName(R) << "\", {"
        << R->getValueAsInt("MajorVersion") << ", "
        << R->getValueAsInt("MinorVersion") << "}},\n";
-<<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
     ListInit *AdditionalVersions = R->getValueAsListInit("AdditionalVersions");
@@ -50,8 +49,6 @@ static void printExtensionTable(raw_ostream &OS,
          << cast<IntInit>(VersionLI->getElement(1))->getValue() << "}},\n";
     }
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> b329179
   }
 
   OS << "};\n\n";
@@ -103,23 +100,12 @@ static void emitRISCVExtensions(RecordKeeper &Records, raw_ostream &OS) {
 //
 // This is almost the same as RISCVFeatures::parseFeatureBits, except that we
 // get feature name from feature records instead of feature bits.
-<<<<<<< HEAD
-static void printMArch(raw_ostream &OS, const Record &Rec) {
-  std::map<std::string, RISCVISAUtils::ExtensionVersion,
-           RISCVISAUtils::ExtensionComparator>
-      Extensions;
-  unsigned XLen = 0;
-
-  // Convert features to FeatureVector.
-  for (auto *Feature : Rec.getValueAsListOfDefs("Features")) {
-=======
 static void printMArch(raw_ostream &OS, const std::vector<Record *> &Features) {
   RISCVISAUtils::OrderedExtensionMap Extensions;
   unsigned XLen = 0;
 
   // Convert features to FeatureVector.
   for (auto *Feature : Features) {
->>>>>>> b329179
     StringRef FeatureName = getExtensionName(Feature);
     if (Feature->isSubClassOf("RISCVExtension")) {
       unsigned Major = Feature->getValueAsInt("MajorVersion");
@@ -135,22 +121,14 @@ static void printMArch(raw_ostream &OS, const std::vector<Record *> &Features) {
   }
 
   assert(XLen != 0 && "Unable to determine XLen");
-<<<<<<< HEAD
 
   OS << "rv" << XLen;
 
-=======
-
-  OS << "rv" << XLen;
-
->>>>>>> b329179
   ListSeparator LS("_");
   for (auto const &Ext : Extensions)
     OS << LS << Ext.first << Ext.second.Major << 'p' << Ext.second.Minor;
 }
 
-<<<<<<< HEAD
-=======
 static void emitRISCVProfiles(RecordKeeper &Records, raw_ostream &OS) {
   OS << "#ifdef GET_SUPPORTED_PROFILES\n";
   OS << "#undef GET_SUPPORTED_PROFILES\n\n";
@@ -168,7 +146,6 @@ static void emitRISCVProfiles(RecordKeeper &Records, raw_ostream &OS) {
   OS << "#endif // GET_SUPPORTED_PROFILES\n\n";
 }
 
->>>>>>> b329179
 static void emitRISCVProcs(RecordKeeper &RK, raw_ostream &OS) {
   OS << "#ifndef PROC\n"
      << "#define PROC(ENUM, NAME, DEFAULT_MARCH, FAST_UNALIGNED_ACCESS)\n"
@@ -176,24 +153,6 @@ static void emitRISCVProcs(RecordKeeper &RK, raw_ostream &OS) {
 
   // Iterate on all definition records.
   for (const Record *Rec : RK.getAllDerivedDefinitions("RISCVProcessorModel")) {
-<<<<<<< HEAD
-    bool FastScalarUnalignedAccess =
-        any_of(Rec->getValueAsListOfDefs("Features"), [&](auto &Feature) {
-          return Feature->getValueAsString("Name") == "unaligned-scalar-mem";
-        });
-
-    bool FastVectorUnalignedAccess =
-        any_of(Rec->getValueAsListOfDefs("Features"), [&](auto &Feature) {
-          return Feature->getValueAsString("Name") == "unaligned-vector-mem";
-        });
-
-    bool FastUnalignedAccess =
-        FastScalarUnalignedAccess && FastVectorUnalignedAccess;
-
-    OS << "PROC(" << Rec->getName() << ", {\"" << Rec->getValueAsString("Name")
-       << "\"}, {\"";
-
-=======
     const std::vector<Record *> &Features =
         Rec->getValueAsListOfDefs("Features");
     bool FastScalarUnalignedAccess = any_of(Features, [&](auto &Feature) {
@@ -210,16 +169,11 @@ static void emitRISCVProcs(RecordKeeper &RK, raw_ostream &OS) {
     OS << "PROC(" << Rec->getName() << ", {\"" << Rec->getValueAsString("Name")
        << "\"}, {\"";
 
->>>>>>> b329179
     StringRef MArch = Rec->getValueAsString("DefaultMarch");
 
     // Compute MArch from features if we don't specify it.
     if (MArch.empty())
-<<<<<<< HEAD
-      printMArch(OS, *Rec);
-=======
       printMArch(OS, Features);
->>>>>>> b329179
     else
       OS << MArch;
     OS << "\"}, " << FastUnalignedAccess << ")\n";
@@ -241,10 +195,7 @@ static void emitRISCVProcs(RecordKeeper &RK, raw_ostream &OS) {
 
 static void EmitRISCVTargetDef(RecordKeeper &RK, raw_ostream &OS) {
   emitRISCVExtensions(RK, OS);
-<<<<<<< HEAD
-=======
   emitRISCVProfiles(RK, OS);
->>>>>>> b329179
   emitRISCVProcs(RK, OS);
 }
 
