@@ -319,19 +319,16 @@ def IIT_FUNCREF : IIT_VT<funcref, 55>;
 def IIT_I2 : IIT_Int<2, 57>;
 def IIT_I4 : IIT_Int<4, 58>;
 def IIT_AARCH64_SVCOUNT : IIT_VT<aarch64svcount, 59>;
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-def IIT_ONE_THIRD_VEC_TYPE_ARG : IIT_Base<60>;
-def IIT_ONE_FOURTH_VEC_TYPE_ARG : IIT_Base<61> ;
-def IIT_ONE_FIFTH_VEC_TYPE_ARG : IIT_Base<62>;
-def IIT_ONE_SIXTH_VEC_TYPE_ARG : IIT_Base<63>;
-def IIT_ONE_SEVENTH_VEC_TYPE_ARG : IIT_Base<64>;
-def IIT_ONE_EIGHTH_VEC_TYPE_ARG : IIT_Base<65>;
-#endif // SIFIVE_CUSTOMIZATION
-=======
 def IIT_V6 : IIT_Vec<6, 60>;
 def IIT_V10 : IIT_Vec<10, 61>;
->>>>>>> b329179
+#ifdef SIFIVE_CUSTOMIZATION
+def IIT_ONE_THIRD_VEC_TYPE_ARG : IIT_Base<62>;
+def IIT_ONE_FOURTH_VEC_TYPE_ARG : IIT_Base<63> ;
+def IIT_ONE_FIFTH_VEC_TYPE_ARG : IIT_Base<64>;
+def IIT_ONE_SIXTH_VEC_TYPE_ARG : IIT_Base<65>;
+def IIT_ONE_SEVENTH_VEC_TYPE_ARG : IIT_Base<66>;
+def IIT_ONE_EIGHTH_VEC_TYPE_ARG : IIT_Base<67>;
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 defvar IIT_all_FixedTypes = !filter(iit, IIT_all,
@@ -2667,11 +2664,15 @@ def int_vector_interleave2   : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
                                                       LLVMHalfElementsVectorType<0>],
                                                      [IntrNoMem]>;
 
-<<<<<<< HEAD
 def int_experimental_vector_deinterleave2 : DefaultAttrsIntrinsic<[LLVMHalfElementsVectorType<0>,
                                                                    LLVMHalfElementsVectorType<0>],
                                                                   [llvm_anyvector_ty],
                                                                   [IntrNoMem]>;
+
+def int_vector_deinterleave2 : DefaultAttrsIntrinsic<[LLVMHalfElementsVectorType<0>,
+                                                      LLVMHalfElementsVectorType<0>],
+                                                     [llvm_anyvector_ty],
+                                                     [IntrNoMem]>;
 #ifdef SIFIVE_CUSTOMIZATION
 // Interleave/Deinterleave 3 vectors
 def int_experimental_vector_interleave3   : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
@@ -2781,12 +2782,6 @@ def int_experimental_vector_deinterleave8 : DefaultAttrsIntrinsic<[LLVMOneEighth
                                                                   [llvm_anyvector_ty],
                                                                   [IntrNoMem]>;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-def int_vector_deinterleave2 : DefaultAttrsIntrinsic<[LLVMHalfElementsVectorType<0>,
-                                                      LLVMHalfElementsVectorType<0>],
-                                                     [llvm_anyvector_ty],
-                                                     [IntrNoMem]>;
->>>>>>> b329179
 
 //===----------------- Pointer Authentication Intrinsics ------------------===//
 //
