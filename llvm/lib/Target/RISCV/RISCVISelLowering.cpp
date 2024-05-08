@@ -9637,17 +9637,14 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
   }
   case Intrinsic::experimental_get_vector_length:
     return lowerGetVectorLength(Op.getNode(), DAG, Subtarget);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case Intrinsic::experimental_vp_compress:
     return lowerVPCompressExperimental(Op, DAG);
   case Intrinsic::experimental_vp_expand:
     return lowerVPExpandExperimental(Op, DAG);
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case Intrinsic::experimental_cttz_elts:
     return lowerCttzElts(Op.getNode(), DAG, Subtarget);
->>>>>>> b329179
   case Intrinsic::riscv_vmv_x_s: {
     SDValue Res = DAG.getNode(RISCVISD::VMV_X_S, DL, XLenVT, Op.getOperand(1));
     return DAG.getNode(ISD::TRUNCATE, DL, Op.getValueType(), Res);
@@ -15165,7 +15162,6 @@ static SDValue performXORCombine(SDNode *N, SelectionDAG &DAG,
   return combineSelectAndUseCommutative(N, DAG, /*AllOnes*/ false, Subtarget);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // (mul (and (lshr X, 15), 65537), 65535) -> (bitcast (sra (bitcast X), 15)))
 static SDValue combineVectorMulToSraBitcast(SDNode *N, SelectionDAG &DAG) {
@@ -15309,19 +15305,10 @@ static SDValue performABSCombine(SDNode *N, SelectionDAG &DAG) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-static SDValue performMULCombine(SDNode *N, SelectionDAG &DAG) {
-#if SIFIVE_CUSTOMIZATION
-  if (SDValue V = combineVectorMulToSraBitcast(N, DAG))
-    return V;
-  if (SDValue V = combineVectorSquareDifference(N, DAG))
-    return V;
-#endif
-=======
 // Try to expand a scalar multiply to a faster sequence.
 static SDValue expandMul(SDNode *N, SelectionDAG &DAG,
                          TargetLowering::DAGCombinerInfo &DCI,
                          const RISCVSubtarget &Subtarget) {
->>>>>>> b329179
 
   EVT VT = N->getValueType(0);
 
@@ -15440,6 +15427,12 @@ static SDValue expandMul(SDNode *N, SelectionDAG &DAG,
 static SDValue performMULCombine(SDNode *N, SelectionDAG &DAG,
                                  TargetLowering::DAGCombinerInfo &DCI,
                                  const RISCVSubtarget &Subtarget) {
+#if SIFIVE_CUSTOMIZATION
+  if (SDValue V = combineVectorMulToSraBitcast(N, DAG))
+    return V;
+  if (SDValue V = combineVectorSquareDifference(N, DAG))
+    return V;
+#endif
   EVT VT = N->getValueType(0);
   if (!VT.isVector())
     return expandMul(N, DAG, DCI, Subtarget);
