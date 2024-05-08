@@ -250,7 +250,7 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
       {"zvksed", RVV_REQ_Zvksed},
       {"zvksh", RVV_REQ_Zvksh},
       {"zvfbfwma", RVV_REQ_Zvfbfwma},
-<<<<<<< HEAD
+      {"zvfbfmin", RVV_REQ_Zvfbfmin},
 #if SIFIVE_CUSTOMIZATION
       {"experimental", RVV_REQ_Experimental},
       {"xsfvfhbfmin", RVV_REQ_Xsfvfhbfmin},
@@ -258,9 +258,6 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
       {"xsfvfexpa", RVV_REQ_Xsfvfexpa},
       {"xsfvfexpa64e", RVV_REQ_Xsfvfexpa64e}};
 #else
-=======
-      {"zvfbfmin", RVV_REQ_Zvfbfmin},
->>>>>>> b329179
       {"experimental", RVV_REQ_Experimental}};
 #endif // SIFIVE_CUSTOMIZATION
 
