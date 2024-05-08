@@ -3963,16 +3963,14 @@ Instruction *InstCombinerImpl::visitOr(BinaryOperator &I) {
                                       /*SimplifyOnly*/ false, *this))
     return BinaryOperator::CreateOr(Op0, V);
 
-<<<<<<< HEAD
+  if (cast<PossiblyDisjointInst>(I).isDisjoint())
+    if (Value *V = SimplifyAddWithRemainder(I))
+      return replaceInstUsesWith(I, V);
+
 #if SIFIVE_CUSTOMIZATION
   if (Instruction *NewI = foldNeutralVPReduce(I))
     return NewI;
 #endif
-=======
-  if (cast<PossiblyDisjointInst>(I).isDisjoint())
-    if (Value *V = SimplifyAddWithRemainder(I))
-      return replaceInstUsesWith(I, V);
->>>>>>> b329179
 
   return nullptr;
 }
