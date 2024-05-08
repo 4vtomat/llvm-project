@@ -3821,18 +3821,12 @@ multiclass VPseudoVNCVTF_W_RM {
 multiclass VPseudoVNCVTF_RM_W {
   defvar constraint = "@earlyclobber $rd";
   foreach m = MxListFW in {
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-    defm _W : VPseudoConversionRM<m.vrclass, m.wvrclass, m, constraint, TargetConstraintType=2>,
-#endif // SIFIVE_CUSTOMIZATION
-              SchedUnary<"WriteVFNCvtIToFV", "ReadVFNCvtIToFV", m.MX,
-                         forceMergeOpRead=true>;
-=======
     foreach e = SchedSEWSet<m.MX, isF=1, isWidening=1>.val in
-      defm _W : VPseudoConversionRM<m.vrclass, m.wvrclass, m, constraint, sew=e>,
+#ifdef SIFIVE_CUSTOMIZATION
+      defm _W : VPseudoConversionRM<m.vrclass, m.wvrclass, m, constraint, sew=e, TargetConstraintType=2>,
+#endif // SIFIVE_CUSTOMIZATION
                 SchedUnary<"WriteVFNCvtIToFV", "ReadVFNCvtIToFV", m.MX, e,
                            forceMergeOpRead=true>;
->>>>>>> b329179
   }
 }
 
@@ -6531,16 +6525,11 @@ let Defs = [VXSAT], hasSideEffects = 1 in {
 //===----------------------------------------------------------------------===//
 // 12.2. Vector Single-Width Averaging Add and Subtract
 //===----------------------------------------------------------------------===//
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 let hasPostISelHook = 1 in {
 #endif
-defm PseudoVAADDU : VPseudoVAALU_VV_VX_RM;
-defm PseudoVAADD  : VPseudoVAALU_VV_VX_RM;
-=======
 defm PseudoVAADDU : VPseudoVAALU_VV_VX_RM<Commutable=1>;
 defm PseudoVAADD  : VPseudoVAALU_VV_VX_RM<Commutable=1>;
->>>>>>> b329179
 defm PseudoVASUBU : VPseudoVAALU_VV_VX_RM;
 defm PseudoVASUB  : VPseudoVAALU_VV_VX_RM;
 #ifdef SIFIVE_CUSTOMIZATION
