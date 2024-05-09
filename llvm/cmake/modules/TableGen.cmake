@@ -84,7 +84,7 @@ function(tablegen project ofn)
     list(APPEND LLVM_TABLEGEN_FLAGS "-no-warn-on-unused-template-args")
   endif()
 
-  if (NOT project STREQUAL MLIR_PDLL)
+  if (NOT project STREQUAL MLIR_PDLL AND NOT project STREQUAL MLIR_SRC_SHARDER)
     list(APPEND LLVM_TABLEGEN_FLAGS "-DSIFIVE_CUSTOMIZATION") # SIFIVE
   endif()
 
