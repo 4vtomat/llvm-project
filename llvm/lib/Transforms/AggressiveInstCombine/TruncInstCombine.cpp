@@ -33,6 +33,9 @@
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Instruction.h"
 #include "llvm/Support/KnownBits.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/IR/PatternMatch.h"
+#endif // SIFIVE_CUSTOMIZATION
 
 using namespace llvm;
 
