@@ -545,7 +545,6 @@ bool RISCVMergeBaseOffsetOpt::foldIntoMemoryOps(MachineInstr &Hi,
 #endif // SIFIVE_CUSTOMIZATION
 
   MRI->replaceRegWith(Lo.getOperand(0).getReg(), Hi.getOperand(0).getReg());
-
   Lo.eraseFromParent();
   return true;
 }
