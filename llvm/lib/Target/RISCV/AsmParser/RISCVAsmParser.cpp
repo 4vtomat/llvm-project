@@ -2377,9 +2377,8 @@ ParseStatus RISCVAsmParser::parseMammothWWEE(OperandVector &Operands) {
 
   if (getLexer().is(AsmToken::EndOfStatement) && State == WWEEState_Done) {
     Operands.push_back(RISCVOperand::createImm(
-        MCConstantExpr::create(((Log2_64(TWiden) + 1) << 3) |
-                                   ((Log2_64(SEW) - 3) << 1),
-                               getContext()),
+        MCConstantExpr::create(
+            ((Log2_64(TWiden) + 1) << 2) | (Log2_64(SEW) - 3), getContext()),
         S, S, isRV64()));
     return ParseStatus::Success;
   }

@@ -25,11 +25,11 @@
 # RUN:     --mattr=+xsfmm32a,+xsfmm32a8f,+xsfmm32a4i,+xsfmm64a %s \
 # RUN:        | llvm-objdump -d - | FileCheck %s --check-prefix=CHECK-UNKNOWN
 
-# CHECK-INST: sf.vsettnm a0, a1, a2, e8, w1
-# CHECK-ENCODING: [0x57,0xf5,0xc5,0x90]
+# CHECK-INST: sf.vsettnt a0, a1, e8, w1
+# CHECK-ENCODING: [0x57,0xf5,0x05,0x10]
 # CHECK-ERROR: instruction requires the following: XSfmm32ea/XSfmmbase{{$}}
-# CHECK-UNKNOWN: 57 f5 c5 90 <unknown>
-sf.vsettnm a0, a1, a2, e8, w1
+# CHECK-UNKNOWN: 57 f5 05 10 <unknown>
+sf.vsettnt a0, a1, e8, w1
 
 # CHECK-INST: sf.vsettn a0, a1
 # CHECK-ENCODING: [0x57,0xf5,0x05,0x84]

@@ -311,14 +311,10 @@ enum {
 
 #if SIFIVE_CUSTOMIZATION
 static inline bool isValidMammothWWEE(unsigned WWEE) {
-  // check 0wwee0 & ~0b11110 == 0
-  // also check wwee can't be reserved:
-  //  0000, 0001, 0010, 1110, 0011, 1011, 1111
-  constexpr unsigned ReservedList[] = {0x0, 0x1, 0x2, 0xe, 0x3, 0xb, 0xf};
-  return (WWEE & ~0x1e) == 0 &&
-         llvm::all_of(ReservedList, [&](unsigned Reserved) {
-           return ((WWEE >> 1) & 15) != Reserved;
-         });
+  // check wwee & ~0b1111 == 0
+  // also check ww can't be 0b00 and sew * twiden <= 64
+  return (WWEE & ~0xf) == 0 && (WWEE & 0xc) != 0 &&
+         (1 << ((WWEE & 0x3) + 3)) * (1 << (((WWEE >> 2) & 0x3) - 1)) <= 64;
 }
 #endif // SIFIVE_CUSTOMIZATION
 } // namespace RISCVII

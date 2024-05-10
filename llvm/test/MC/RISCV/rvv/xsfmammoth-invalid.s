@@ -6,8 +6,8 @@
 # RUN:        | FileCheck %s --check-prefix=CHECK-ERROR
 
 # CHECK-ERROR: operand must be e[8|16|32|64],w[1|2|4]
-# CHECK-ERROR-LABEL: sf.vsettnm a0, a1, a2, e128, w1{{$}}
-sf.vsettnm a0, a1, a2, e128, w1
+# CHECK-ERROR-LABEL: sf.vsettnt a0, a1, a2, e128, w1{{$}}
+sf.vsettnt a0, a1, a2, e128, w1
 
 # CHECK-ERROR: invalid operand for instruction
 # CHECK-ERROR-LABEL: sf.mm.f.f mt1, v8, v9{{$}}

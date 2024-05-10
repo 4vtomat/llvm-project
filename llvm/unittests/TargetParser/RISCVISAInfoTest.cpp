@@ -883,15 +883,15 @@ R"(All available -march extensions for RISC-V
     xcvsimd              1.0
     xsfcease             0.1
     xsfcease             1.0
-    xsfmm128t            0.3
-    xsfmm32a             0.3
-    xsfmm32a4i           0.3
-    xsfmm32a8f           0.3
-    xsfmm32ea            0.3
-    xsfmm32t             0.3
-    xsfmm64a             0.3
-    xsfmm64t             0.3
-    xsfmmbase            0.3
+    xsfmm128t            0.4
+    xsfmm32a             0.4
+    xsfmm32a4i           0.4
+    xsfmm32a8f           0.4
+    xsfmm32ea            0.4
+    xsfmm32t             0.4
+    xsfmm64a             0.4
+    xsfmm64t             0.4
+    xsfmmbase            0.4
     xsfpgflushdlone      0.1
     xsfvcp               1.0
     xsfvfexpa            0.2

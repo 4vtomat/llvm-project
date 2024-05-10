@@ -1140,18 +1140,17 @@ def MammothWWEEOp : RISCVOp {
   let OperandType = "OPERAND_MammothWWEE";
 }
 
-class RVInstSetTnm<dag outs, dag ins, string opcodestr, string argstr>
+class RVInstSetTnt<dag outs, dag ins, string opcodestr, string argstr>
     : RVInst<outs, ins, opcodestr, argstr, [], InstFormatI> {
-  bits<6> funct6;
-  bits<5> rs2;
   bits<5> rs1;
   bits<5> rd;
+  bits<4> wwee;
 
-  let Inst{31} = 1;
-  let Inst{30} = 0;
-  let Inst{29-26} = funct6{4-1};
-  let Inst{25} = 0;
-  let Inst{24-20} = rs2;
+  let Inst{31-30} = 0;
+  let Inst{29-28} = wwee{3-2};
+  let Inst{27-25} = 0b000;
+  let Inst{24-23} = wwee{1-0};
+  let Inst{22-20} = 0b000;
   let Inst{19-15} = rs1;
   let Inst{14-12} = OPCFG.Value;
   let Inst{11-7} = rd;
@@ -1321,17 +1320,29 @@ class RVInstSetZero<dag outs, dag ins, string opcodestr, string argstr>
   let Uses = [VTYPE, VL];
 }
 
+class RVInstVtDiscard<string opcodestr>
+    : RVInst<(outs), (ins), opcodestr, "", [], InstFormatR> {
+  let Inst{31-26} = 0b010000;
+  let Inst{25} = 1;
+  let Inst{24-20} = 0b11100;
+  let Inst{19-15} = 0b00000;
+  let Inst{14-12} = OPMVX.Value;
+  let Inst{11-7} = 0b00000;
+  let Inst{6-0} = OPC_OP_V.Value;
+}
+
 let Predicates = [HasVendorXSfmm32eaOrXSfmmbase], DecoderNamespace = "XSfmm32eaOrXSfmmbase" in {
 let hasSideEffects = 1, mayLoad = 0, mayStore = 0 in {
-  def SF_VSETTNM : RVInstSetTnm<(outs GPR:$rd),
-                                (ins GPR:$rs1, GPR:$rs2, MammothWWEEOp:$funct6),
-                                "sf.vsettnm", "$rd, $rs1, $rs2, $funct6">;
+  def SF_VSETTNT : RVInstSetTnt<(outs GPR:$rd),
+                                (ins GPR:$rs1, MammothWWEEOp:$wwee),
+                                "sf.vsettnt", "$rd, $rs1, $wwee">;
   def SF_VSETTN : RVInstSetSingle<(outs GPR:$rd), (ins GPR:$rs1), 0b00000,
                                   "sf.vsettn", "$rd, $rs1">;
   def SF_VSETTM : RVInstSetSingle<(outs GPR:$rd), (ins GPR:$rs1), 0b00001,
                                   "sf.vsettm", "$rd, $rs1">;
   def SF_VSETTK  : RVInstSetSingle<(outs GPR:$rd), (ins GPR:$rs1), 0b00010,
                                    "sf.vsettk", "$rd, $rs1">;
+  def SF_VTDISCARD : RVInstVtDiscard<"sf.vtdiscard">;
 }
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {

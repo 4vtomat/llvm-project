@@ -221,9 +221,9 @@ void RISCVInstPrinter::printMammothWWEE(const MCInst *MI, unsigned OpNo,
                                         const MCSubtargetInfo &STI,
                                         raw_ostream &O) {
   unsigned Imm = MI->getOperand(OpNo).getImm();
-  unsigned SEW = 1 << (((Imm >> 1) & 3) + 3);
+  unsigned SEW = 1 << ((Imm & 3) + 3);
   O << "e" << SEW;
-  unsigned TWiden = 1 << (((Imm >> 3) & 3) - 1);
+  unsigned TWiden = 1 << (((Imm >> 2) & 3) - 1);
   O << ", w" << TWiden;
 }
 #endif // SIFIVE_CUSTOMIZATION
