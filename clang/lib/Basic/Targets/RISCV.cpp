@@ -255,6 +255,28 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
     else
       Builder.defineMacro("__riscv_32e");
   }
+
+#if SIFIVE_CUSTOMIZATION
+// cherry-picked from upstream #109600
+  if (Opts.CFProtectionBranch) {
+    auto Scheme = Opts.getCFBranchLabelScheme();
+    if (Scheme == CFBranchLabelSchemeKind::Default)
+      Scheme = getDefaultCFBranchLabelScheme();
+
+    Builder.defineMacro("__riscv_landing_pad", "1");
+    switch (Scheme) {
+    case CFBranchLabelSchemeKind::Unlabeled:
+      Builder.defineMacro("__riscv_landing_pad_unlabeled", "1");
+      break;
+    case CFBranchLabelSchemeKind::FuncSig:
+      Builder.defineMacro("__riscv_landing_pad_func_sig", "1");
+      break;
+    case CFBranchLabelSchemeKind::Default:
+      llvm_unreachable("default cf-branch-label scheme should already be "
+                       "transformed to other scheme");
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 static constexpr Builtin::Info BuiltinInfo[] = {
