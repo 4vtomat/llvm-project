@@ -85,7 +85,7 @@ static bool getArchFeatures(const Driver &D, StringRef Arch,
             StringRef ExtName =
                 Msg.substr(ExtNameBegin + 1, ExtNameEnd - ExtNameBegin - 1);
             // Get version infomation for that extension.
-            const llvm::RISCVISAInfo::OrderedExtensionMap &ExtInfo =
+            const llvm::RISCVISAUtils::OrderedExtensionMap &ExtInfo =
                 (*ISAInfo)->getExtensions();
             auto ExtInfoItr = ExtInfo.find(ExtName.str());
             assert(ExtInfoItr != ExtInfo.end());
