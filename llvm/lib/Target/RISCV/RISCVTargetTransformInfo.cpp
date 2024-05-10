@@ -2544,6 +2544,12 @@ InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
         EltSize = EltTy->getFPMantissaWidth();
         if (EltTy->isDoubleTy())
           NumDivideUnits = 2;
+      } else if (EltTy->isIntegerTy(16) && Op2Info.isUniform() && Op2Info.isConstant() &&
+                 ST->getProcFamily() == RISCVSubtarget::SiFiveP600) {
+        // This will be converted to a magic multiply.
+        // FIXME: At least one important benchmark regresses on p470 so we
+        // restrict to p670 and i16 for now.
+        NumDivideUnits = 2;
       } else {
         // [SCT-1962] FIXME: With more precise cost model, change it back to '4'.
         // Currently '4' won't help to make hot loop not profitable to vectorize,

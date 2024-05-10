@@ -1084,7 +1084,11 @@ defm "" : LMULReadAdvance<"ReadVFCvtFToIV", 0>;
 defm "" : LMULSEWReadAdvanceW<"ReadVFWCvtIToFV", 0>;
 defm "" : LMULReadAdvanceFW<"ReadVFWCvtFToIV", 0>;
 defm "" : LMULSEWReadAdvanceFW<"ReadVFWCvtFToFV", 0>;
+<<<<<<< HEAD
 defm "" : LMULSEWReadAdvanceFW<"ReadVFNCvtIToFV", 0>;
+=======
+defm "" : LMULSEWReadAdvanceFW<"SEWReadVFNCvtIToFV", 0>;
+>>>>>>> origin/sifive-dev
 defm "" : LMULReadAdvanceW<"ReadVFNCvtFToIV", 0>;
 defm "" : LMULSEWReadAdvanceFW<"ReadVFNCvtFToFV", 0>;
 

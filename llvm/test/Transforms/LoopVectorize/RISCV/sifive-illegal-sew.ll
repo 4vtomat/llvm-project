@@ -1,4 +1,5 @@
 ; RUN: opt < %s -riscv-use-vla-vectorizer=true -passes=loop-vectorize -mtriple riscv64-linux-gnu -mattr=+v -S 2>&1 -debug-only=loop-vectorize,vplan-cost-model | FileCheck %s
+; REQUIRES: asserts
 
 ; Check that illegal sew won't crash the vplan cost model
 

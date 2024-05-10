@@ -193,12 +193,91 @@ static void emitRISCVProcs(RecordKeeper &RK, raw_ostream &OS) {
   OS << "\n#undef TUNE_PROC\n";
 }
 
+#if SIFIVE_CUSTOMIZATION
+static void emitRISCVExtensionInfoJSON(const std::vector<Record *> &Extensions,
+                                       raw_ostream &OS) {
+  // Dump supported RISC-V extensions like the following format:
+  // {
+  //   "supported_extensions": {
+  //     "i": {
+  //       "version": 2.1,
+  //       "experimental": False
+  //     }
+  OS << "{\n";
+  OS << "  \"supported_extensions\": {";
+  ListSeparator extSep(",");
+  for (const Record *R : Extensions) {
+    OS << extSep << "\n    \"" << getExtensionName(R) << "\": {\n";
+    OS << "      \"major_version\": " << R->getValueAsInt("MajorVersion")
+       << ",\n";
+    OS << "      \"minor_version\": " << R->getValueAsInt("MinorVersion")
+       << ",\n";
+    OS << "      \"experimental\": "
+       << (R->getValueAsBit("Experimental") ? "true" : "false") << "\n";
+    OS << "    }";
+  }
+  OS << "\n  },\n";
+}
+#endif // SIFIVE_CUSTOMIZATION
+
+#if SIFIVE_CUSTOMIZATION
+static void
+emitRISCVImpliedExtensionInfoJSON(const std::vector<Record *> &Extensions,
+                                  raw_ostream &OS) {
+  // Dump implied RISC-V extensions like the following format:
+  //  "implied_extensions": {
+  //      "d": ["f"],
+  //      "f": ["zicsr"],
+  //      "v": ["zve64d", "zvl128b"]
+  //   }
+  // }
+  OS << "  \"implied_extensions\": {\n";
+  ListSeparator extSep(",\n");
+  for (Record *Ext : Extensions) {
+    auto ImpliesList = Ext->getValueAsListOfDefs("Implies");
+    if (ImpliesList.empty())
+      continue;
+    StringRef Name = getExtensionName(Ext);
+    OS << extSep << "    \"" << Name << "\": [";
+    ListSeparator impliedSep(", ");
+    for (auto *ImpliedExt : ImpliesList) {
+      if (!ImpliedExt->isSubClassOf("RISCVExtension"))
+        continue;
+      OS << impliedSep << "\"" << getExtensionName(ImpliedExt) << "\"";
+    }
+    OS << "]";
+  }
+  if (!Extensions.empty())
+    OS << "\n";
+  OS << "  }\n";
+  OS << "}\n";
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 static void EmitRISCVTargetDef(RecordKeeper &RK, raw_ostream &OS) {
   emitRISCVExtensions(RK, OS);
   emitRISCVProfiles(RK, OS);
   emitRISCVProcs(RK, OS);
 }
 
+#if SIFIVE_CUSTOMIZATION
+static void EmitRISCVISAInfoJSON(RecordKeeper &RK, raw_ostream &OS) {
+  std::vector<Record *> Extensions =
+      RK.getAllDerivedDefinitions("RISCVExtension");
+  llvm::sort(Extensions, [](const Record *Rec1, const Record *Rec2) {
+    return getExtensionName(Rec1) < getExtensionName(Rec2);
+  });
+  emitRISCVExtensionInfoJSON(Extensions, OS);
+  emitRISCVImpliedExtensionInfoJSON(Extensions, OS);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 static TableGen::Emitter::Opt X("gen-riscv-target-def", EmitRISCVTargetDef,
                                 "Generate the list of CPUs and extensions for "
                                 "RISC-V");
+
+#if SIFIVE_CUSTOMIZATION
+static TableGen::Emitter::Opt Y("gen-riscv-isa-info-json", EmitRISCVISAInfoJSON,
+                                "Generate the JSON file of supported extensions"
+                                " and implied rules for RISC-V.");
+#endif // SIFIVE_CUSTOMIZATION
