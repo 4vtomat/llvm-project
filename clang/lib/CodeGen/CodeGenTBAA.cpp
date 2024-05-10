@@ -140,7 +140,7 @@ static bool isMayAliasType(const RecordType *TTy, bool &IsClass,
 
   // Examine Struct/Class fields.
   for (FieldDecl *Field : RD->fields()) {
-    if (Field->isZeroSize(Ctx) || Field->isUnnamedBitfield())
+    if (Field->isZeroSize(Ctx) || Field->isUnnamedBitField())
       continue;
     QualType FieldQTy = Field->getType();
     const Type *FieldTy = Ctx.getCanonicalType(FieldQTy).getTypePtr();
