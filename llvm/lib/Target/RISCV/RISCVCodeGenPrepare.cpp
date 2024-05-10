@@ -261,7 +261,7 @@ bool RISCVCodeGenPrepare::optimizeReduction(IntrinsicInst &II) {
 
   // Try to prove the VL is non-zero.
   Value *VL = II.getArgOperand(3);
-  if (!isKnownNonZero(VL, 0, {*DL, DT, nullptr, &II}))
+  if (!isKnownNonZero(VL, {*DL, DT, nullptr, &II}))
     return Changed;
 
   // Found non-zero VL, let's rewrite.
