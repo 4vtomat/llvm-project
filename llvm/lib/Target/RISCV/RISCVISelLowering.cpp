@@ -20867,7 +20867,8 @@ void RISCVTargetLowering::AdjustInstrPostInstrSelection(MachineInstr &MI,
   int VRMIdx = RISCVII::getVXRMOpNum(MI.getDesc());
   if (VRMIdx >= 0) {
     unsigned VXRMImm = MI.getOperand(VRMIdx).getImm();
-    if (VXRMImm == RISCVVXRndMode::DYN && !MI.readsRegister(RISCV::VXRM)) {
+    if (VXRMImm == RISCVVXRndMode::DYN &&
+        !MI.readsRegister(RISCV::VXRM, /*TRI=*/nullptr)) {
       MI.addOperand(MachineOperand::CreateReg(RISCV::VXRM, /*isDef*/ false,
                                               /*isImp*/ true));
     }
