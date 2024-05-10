@@ -1065,7 +1065,7 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
       Info.getAVLReg().isVirtual()) {
     if (MachineInstr *DefMI = MRI->getVRegDef(Info.getAVLReg())) {
       if (isVectorConfigInstr(*DefMI)) {
-        VSETVLIInfo DefInfo = getInfoForVSETVLI(*DefMI);
+        VSETVLIInfo DefInfo = getInfoForVSETVLI(*DefMI, *MRI);
         if (DefInfo.hasSameAVL(PrevInfo) && DefInfo.hasSameVLMAX(PrevInfo)) {
           BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoVSETVLIX0))
               .addReg(RISCV::X0, RegState::Define | RegState::Dead)
