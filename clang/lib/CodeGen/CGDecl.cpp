@@ -2202,30 +2202,6 @@ void CodeGenFunction::pushDestroy(CleanupKind cleanupKind, Address addr,
                                      destroyer, useEHCleanupForArray);
 }
 
-<<<<<<< HEAD
-// Pushes a destroy and defers its deactivation until its
-// CleanupDeactivationScope is exited.
-void CodeGenFunction::pushDestroyAndDeferDeactivation(
-    QualType::DestructionKind dtorKind, Address addr, QualType type) {
-  assert(dtorKind && "cannot push destructor for trivial type");
-
-  CleanupKind cleanupKind = getCleanupKind(dtorKind);
-  pushDestroyAndDeferDeactivation(
-      cleanupKind, addr, type, getDestroyer(dtorKind), cleanupKind & EHCleanup);
-}
-
-void CodeGenFunction::pushDestroyAndDeferDeactivation(
-    CleanupKind cleanupKind, Address addr, QualType type, Destroyer *destroyer,
-    bool useEHCleanupForArray) {
-  llvm::Instruction *DominatingIP =
-      Builder.CreateFlagLoad(llvm::Constant::getNullValue(Int8PtrTy));
-  pushDestroy(cleanupKind, addr, type, destroyer, useEHCleanupForArray);
-  DeferredDeactivationCleanupStack.push_back(
-      {EHStack.stable_begin(), DominatingIP});
-}
-
-=======
->>>>>>> origin/sifive-dev
 void CodeGenFunction::pushStackRestore(CleanupKind Kind, Address SPMem) {
   EHStack.pushCleanup<CallStackRestore>(Kind, SPMem);
 }
@@ -2266,21 +2242,6 @@ void CodeGenFunction::pushLifetimeExtendedDestroy(CleanupKind cleanupKind,
   AllocaTrackerRAII DeactivationAllocas(*this);
   Address ActiveFlagForDeactivation = createCleanupActiveFlag();
 
-<<<<<<< HEAD
-  pushCleanupAndDeferDeactivation<ConditionalCleanupType>(
-      cleanupKind, SavedAddr, type, destroyer, useEHCleanupForArray);
-  initFullExprCleanupWithFlag(ActiveFlagForDeactivation);
-  EHCleanupScope &cleanup = cast<EHCleanupScope>(*EHStack.begin());
-  // Erase the active flag if the cleanup was not emitted.
-  cleanup.AddAuxAllocas(std::move(DeactivationAllocas).Take());
-
-  // Since this is lifetime-extended, push it once again to the EHStack after
-  // the full expression.
-  // The previous active flag would always be 'false' due to forced deferred
-  // deactivation. Use a separate flag for lifetime-extension to correctly
-  // remember if this branch was taken and the object was initialized.
-  Address ActiveFlagForLifetimeExt = createCleanupActiveFlag();
-=======
   if (cleanupKind & EHCleanup) {
     EHStack.pushCleanup<ConditionalCleanupType>(
         static_cast<CleanupKind>(cleanupKind & ~NormalCleanup), SavedAddr, type,
@@ -2288,7 +2249,6 @@ void CodeGenFunction::pushLifetimeExtendedDestroy(CleanupKind cleanupKind,
     initFullExprCleanupWithFlag(ActiveFlag);
   }
 
->>>>>>> origin/sifive-dev
   pushCleanupAfterFullExprWithActiveFlag<ConditionalCleanupType>(
       cleanupKind, ActiveFlagForLifetimeExt, SavedAddr, type, destroyer,
       useEHCleanupForArray);
