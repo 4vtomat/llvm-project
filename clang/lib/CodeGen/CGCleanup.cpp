@@ -674,7 +674,8 @@ void CodeGenFunction::PopCleanupBlock(bool FallthroughIsBranchThrough,
 
   // - whether there's a fallthrough
   llvm::BasicBlock *FallthroughSource = Builder.GetInsertBlock();
-  bool HasFallthrough = (FallthroughSource != nullptr && IsActive);
+  bool HasFallthrough =
+      FallthroughSource != nullptr && (IsActive || HasExistingBranches);
 
   // Branch-through fall-throughs leave the insertion point set to the
   // end of the last cleanup, which points to the current scope.  The
@@ -699,7 +700,11 @@ void CodeGenFunction::PopCleanupBlock(bool FallthroughIsBranchThrough,
 
   // If we have a prebranched fallthrough into an inactive normal
   // cleanup, rewrite it so that it leads to the appropriate place.
-  if (Scope.isNormalCleanup() && HasPrebranchedFallthrough && !IsActive) {
+  if (Scope.isNormalCleanup() && HasPrebranchedFallthrough &&
+      !RequiresNormalCleanup) {
+    // FIXME: Come up with a program which would need forwarding prebranched
+    // fallthrough and add tests. Otherwise delete this and assert against it.
+    assert(!IsActive);
     llvm::BasicBlock *prebranchDest;
 
     // If the prebranch is semantically branching through the next
@@ -781,6 +786,7 @@ void CodeGenFunction::PopCleanupBlock(bool FallthroughIsBranchThrough,
         NormalDeactivateOrigIP = Builder.saveAndClearIP();
     }
     destroyOptimisticNormalEntry(*this, Scope);
+    Scope.MarkEmitted();
     EHStack.popCleanup();
   } else {
     // If we have a fallthrough and no other need for the cleanup,
@@ -797,6 +803,7 @@ void CodeGenFunction::PopCleanupBlock(bool FallthroughIsBranchThrough,
       }
 
       destroyOptimisticNormalEntry(*this, Scope);
+      Scope.MarkEmitted();
       EHStack.popCleanup();
 
       EmitCleanup(*this, Fn, cleanupFlags, NormalActiveFlag);
@@ -932,6 +939,7 @@ void CodeGenFunction::PopCleanupBlock(bool FallthroughIsBranchThrough,
       }
 
       // IV.  Pop the cleanup and emit it.
+      Scope.MarkEmitted();
       EHStack.popCleanup();
       assert(EHStack.hasNormalCleanups() == HasEnclosingCleanups);
 
