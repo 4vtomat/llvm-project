@@ -45,6 +45,16 @@ RISCVTargetELFStreamer::RISCVTargetELFStreamer(MCStreamer &S,
   // its ParseInstruction may call setForceRelocs as well.
   if (STI.hasFeature(RISCV::FeatureRelax))
     static_cast<RISCVAsmBackend &>(MAB).setForceRelocs();
+
+#if SIFIVE_CUSTOMIZATION
+  // TODO: Also consider software control features right after having them.
+  GNUNoteFlags = 0;
+  if (Features[RISCV::FeatureStdExtZicfilp])
+    GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_ZICFILP;
+
+  if (Features[RISCV::FeatureStdExtZicfiss])
+    GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_ZICFISS;
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 RISCVELFStreamer &RISCVTargetELFStreamer::getStreamer() {
@@ -85,6 +95,37 @@ void RISCVTargetELFStreamer::finishAttributeSection() {
                           ELF::SHT_RISCV_ATTRIBUTES, AttributeSection);
 }
 
+#if SIFIVE_CUSTOMIZATION
+void RISCVTargetELFStreamer::emitNoteSection(unsigned Flags) {
+  if (Flags == 0)
+    return;
+
+  MCStreamer &OutStreamer = getStreamer();
+  MCContext &Context = OutStreamer.getContext();
+  MCSectionELF *Nt = Context.getELFSection(".note.gnu.property", ELF::SHT_NOTE,
+                                           ELF::SHF_ALLOC);
+  MCSection *Cur = OutStreamer.getCurrentSectionOnly();
+  OutStreamer.switchSection(Nt);
+
+  // Emit the note header.
+  OutStreamer.emitValueToAlignment(Align(8));
+  OutStreamer.emitIntValue(4, 4);     // data size for note name
+  OutStreamer.emitIntValue(4 * 4, 4); // data size
+  OutStreamer.emitIntValue(ELF::NT_GNU_PROPERTY_TYPE_0, 4); // note type
+  OutStreamer.emitBytes(StringRef("GNU", 4));               // note name
+
+  // Emit the CFI(ZICFILP/ZICFISS) properties.
+  OutStreamer.emitIntValue(ELF::GNU_PROPERTY_RISCV_FEATURE_1_AND,
+                           4);        // and property
+  OutStreamer.emitIntValue(4, 4);     // data size
+  OutStreamer.emitIntValue(Flags, 4); // data
+  OutStreamer.emitIntValue(0, 4);     // pad
+
+  OutStreamer.endSection(Nt);
+  OutStreamer.switchSection(Cur);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 void RISCVTargetELFStreamer::finish() {
   RISCVTargetStreamer::finish();
   MCAssembler &MCA = getStreamer().getAssembler();
@@ -118,6 +159,10 @@ void RISCVTargetELFStreamer::finish() {
   }
 
   MCA.setELFHeaderEFlags(EFlags);
+
+#if SIFIVE_CUSTOMIZATION
+  emitNoteSection(GNUNoteFlags);
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 void RISCVTargetELFStreamer::reset() {

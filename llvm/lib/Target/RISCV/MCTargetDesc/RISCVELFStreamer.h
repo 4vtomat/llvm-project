@@ -46,6 +46,7 @@ private:
   StringRef CurrentVendor;
 
   MCSection *AttributeSection = nullptr;
+  unsigned GNUNoteFlags; // SIFIVE.
 
   void emitAttribute(unsigned Attribute, unsigned Value) override;
   void emitTextAttribute(unsigned Attribute, StringRef String) override;
@@ -70,6 +71,7 @@ public:
   void emitDirectiveVariantCC(MCSymbol &Symbol) override;
 
   void finish() override;
+  void emitNoteSection(unsigned Flags); // SIFIVE.
 };
 
 MCELFStreamer *createRISCVELFStreamer(MCContext &C,
