@@ -133,46 +133,12 @@ static QualType RVVType2Qual(ASTContext &Context, const RVVType *Type) {
   case Undefined:
     llvm_unreachable("Unhandled type.");
   }
-#if SIFIVE_CUSTOMIZATION
   if (Type->isVector()) {
-    if (Type->getScalarType() == ScalarTypeKind::BFloat) {
-      // Context.getScalableVectorType isn't work for bfloat16 since we didn't
-      // support scalar bfloat16, so bfloat16 can't get correct type
-      // info like alignment and size, and then can't query right result.
-      switch (*Type->getScale()) {
-      case 1:
-        QT = Context.RvvBFloat16mf4Ty;
-        break;
-      case 2:
-        QT = Context.RvvBFloat16mf2Ty;
-        break;
-      case 4:
-        QT = Context.RvvBFloat16m1Ty;
-        break;
-      case 8:
-        QT = Context.RvvBFloat16m2Ty;
-        break;
-      case 16:
-        QT = Context.RvvBFloat16m4Ty;
-        break;
-      case 32:
-        QT = Context.RvvBFloat16m8Ty;
-        break;
-      default:
-        llvm_unreachable("Unknown scale value!");
-      }
-    } else {
-      if (Type->isTuple())
-        QT =
-            Context.getScalableVectorType(QT, *Type->getScale(), Type->getNF());
-      else
-        QT = Context.getScalableVectorType(QT, *Type->getScale());
-    }
+    if (Type->isTuple())
+      QT = Context.getScalableVectorType(QT, *Type->getScale(), Type->getNF());
+    else
+      QT = Context.getScalableVectorType(QT, *Type->getScale());
   }
-#else
-  if (Type->isVector())
-    QT = Context.getScalableVectorType(QT, *Type->getScale());
-#endif
 
   if (Type->isConstant())
     QT = Context.getConstType(QT);
