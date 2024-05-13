@@ -23,13 +23,13 @@
 ; CHECK-NEXT:     vp<%5> = SCALAR-STEPS vp<%3>, ir<1>
 ; CHECK-NEXT:     CLONE ir<%arrayidx> = getelementptr inbounds ir<%b>, vp<%5>
 ; CHECK-NEXT:     vp<%6> = vector-pointer ir<%arrayidx>
-; CHECK-NEXT:     WIDEN ir<%0> = load vp<%6>	unit-strided
+; CHECK-NEXT:     WIDEN ir<%0> = vp.load vp<%6>, vp<%4>	unit-strided
 ; CHECK-NEXT:     WIDEN ir<%tobool.not> = icmp eq ir<%0>, ir<0>
 ; CHECK-NEXT:     EMIT vp<%7> = not ir<%tobool.not>
 ; CHECK-NEXT:     CLONE ir<%idx.ext> = sext ir<%ret.011>
 ; CHECK-NEXT:     CLONE ir<%add.ptr> = getelementptr ir<%a>, ir<%idx.ext>
 ; CHECK-NEXT:     vp<%8> = vector-pointer ir<%add.ptr>
-; CHECK-NEXT:     WIDEN store vp<%8>, ir<%0>, vp<%7>	unit-strided
+; CHECK-NEXT:     WIDEN vp.store vp<%8>, ir<%0>, vp<%4>, vp<%7>	unit-strided
 
 define i32 @compress_store(i32 %n, ptr noalias %a, ptr noalias %b) {
 entry:
@@ -87,16 +87,16 @@ for.inc:
 ; CHECK-NEXT:     vp<%5> = SCALAR-STEPS vp<%3>, ir<1>
 ; CHECK-NEXT:     CLONE ir<%arrayidx> = getelementptr inbounds ir<%b>, vp<%5>
 ; CHECK-NEXT:     vp<%6> = vector-pointer ir<%arrayidx>
-; CHECK-NEXT:     WIDEN ir<%0> = load vp<%6>	unit-strided
+; CHECK-NEXT:     WIDEN ir<%0> = vp.load vp<%6>, vp<%4>	unit-strided
 ; CHECK-NEXT:     WIDEN ir<%tobool.not> = icmp eq ir<%0>, ir<0>
 ; CHECK-NEXT:     EMIT vp<%7> = not ir<%tobool.not>
 ; CHECK-NEXT:     CLONE ir<%idxprom1> = sext ir<%ret.013>
 ; CHECK-NEXT:     CLONE ir<%arrayidx2> = getelementptr ir<%b>, ir<%idxprom1>
 ; CHECK-NEXT:     vp<%8> = vector-pointer ir<%arrayidx2>
-; CHECK-NEXT:     WIDEN ir<%1> = load vp<%8>, vp<%7>	unit-strided
+; CHECK-NEXT:     WIDEN ir<%1> = vp.load vp<%8>, vp<%4>, vp<%7>	unit-strided
 ; CHECK-NEXT:     CLONE ir<%arrayidx4> = getelementptr ir<%a>, vp<%5>
 ; CHECK-NEXT:     vp<%9> = vector-pointer ir<%arrayidx4>
-; CHECK-NEXT:     WIDEN store vp<%9>, ir<%1>, vp<%7>	unit-strided
+; CHECK-NEXT:     WIDEN vp.store vp<%9>, ir<%1>, vp<%4>, vp<%7>	unit-strided
 ; CHECK-NEXT:     monotonic-update ir<%inc> = add ir<%ret.013>, ir<1> @vp<%7>
 
 define i32 @expand_load(i32 %n, ptr noalias %a, ptr noalias %b) {

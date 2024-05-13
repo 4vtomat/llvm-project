@@ -1400,20 +1400,20 @@ define void @foo6(ptr nocapture readonly %in, ptr nocapture %out, i32 %size, ptr
 ; AVX2-NEXT:    [[TMP30:%.*]] = getelementptr double, ptr [[TMP20]], i32 -12
 ; AVX2-NEXT:    [[TMP31:%.*]] = getelementptr double, ptr [[TMP30]], i32 -3
 ; AVX2-NEXT:    [[REVERSE12:%.*]] = shufflevector <4 x i1> [[TMP16]], <4 x i1> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
-; AVX2-NEXT:    [[REVERSE13:%.*]] = shufflevector <4 x i1> [[TMP17]], <4 x i1> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
-; AVX2-NEXT:    [[REVERSE14:%.*]] = shufflevector <4 x i1> [[TMP18]], <4 x i1> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
-; AVX2-NEXT:    [[REVERSE15:%.*]] = shufflevector <4 x i1> [[TMP19]], <4 x i1> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
 ; AVX2-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <4 x double> @llvm.masked.load.v4f64.p0(ptr [[TMP25]], i32 8, <4 x i1> [[REVERSE12]], <4 x double> poison), !alias.scope [[META21:![0-9]+]]
-; AVX2-NEXT:    [[REVERSE16:%.*]] = shufflevector <4 x double> [[WIDE_MASKED_LOAD]], <4 x double> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
-; AVX2-NEXT:    [[WIDE_MASKED_LOAD17:%.*]] = call <4 x double> @llvm.masked.load.v4f64.p0(ptr [[TMP27]], i32 8, <4 x i1> [[REVERSE13]], <4 x double> poison), !alias.scope [[META21]]
-; AVX2-NEXT:    [[REVERSE18:%.*]] = shufflevector <4 x double> [[WIDE_MASKED_LOAD17]], <4 x double> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
-; AVX2-NEXT:    [[WIDE_MASKED_LOAD19:%.*]] = call <4 x double> @llvm.masked.load.v4f64.p0(ptr [[TMP29]], i32 8, <4 x i1> [[REVERSE14]], <4 x double> poison), !alias.scope [[META21]]
-; AVX2-NEXT:    [[REVERSE20:%.*]] = shufflevector <4 x double> [[WIDE_MASKED_LOAD19]], <4 x double> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
-; AVX2-NEXT:    [[WIDE_MASKED_LOAD21:%.*]] = call <4 x double> @llvm.masked.load.v4f64.p0(ptr [[TMP31]], i32 8, <4 x i1> [[REVERSE15]], <4 x double> poison), !alias.scope [[META21]]
+; AVX2-NEXT:    [[REVERSE13:%.*]] = shufflevector <4 x double> [[WIDE_MASKED_LOAD]], <4 x double> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
+; AVX2-NEXT:    [[REVERSE14:%.*]] = shufflevector <4 x i1> [[TMP17]], <4 x i1> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
+; AVX2-NEXT:    [[WIDE_MASKED_LOAD15:%.*]] = call <4 x double> @llvm.masked.load.v4f64.p0(ptr [[TMP27]], i32 8, <4 x i1> [[REVERSE14]], <4 x double> poison), !alias.scope [[META21]]
+; AVX2-NEXT:    [[REVERSE16:%.*]] = shufflevector <4 x double> [[WIDE_MASKED_LOAD15]], <4 x double> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
+; AVX2-NEXT:    [[REVERSE17:%.*]] = shufflevector <4 x i1> [[TMP18]], <4 x i1> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
+; AVX2-NEXT:    [[WIDE_MASKED_LOAD18:%.*]] = call <4 x double> @llvm.masked.load.v4f64.p0(ptr [[TMP29]], i32 8, <4 x i1> [[REVERSE17]], <4 x double> poison), !alias.scope [[META21]]
+; AVX2-NEXT:    [[REVERSE19:%.*]] = shufflevector <4 x double> [[WIDE_MASKED_LOAD18]], <4 x double> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
+; AVX2-NEXT:    [[REVERSE20:%.*]] = shufflevector <4 x i1> [[TMP19]], <4 x i1> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
+; AVX2-NEXT:    [[WIDE_MASKED_LOAD21:%.*]] = call <4 x double> @llvm.masked.load.v4f64.p0(ptr [[TMP31]], i32 8, <4 x i1> [[REVERSE20]], <4 x double> poison), !alias.scope [[META21]]
 ; AVX2-NEXT:    [[REVERSE22:%.*]] = shufflevector <4 x double> [[WIDE_MASKED_LOAD21]], <4 x double> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
-; AVX2-NEXT:    [[TMP32:%.*]] = fadd <4 x double> [[REVERSE16]], <double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01>
-; AVX2-NEXT:    [[TMP33:%.*]] = fadd <4 x double> [[REVERSE18]], <double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01>
-; AVX2-NEXT:    [[TMP34:%.*]] = fadd <4 x double> [[REVERSE20]], <double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01>
+; AVX2-NEXT:    [[TMP32:%.*]] = fadd <4 x double> [[REVERSE13]], <double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01>
+; AVX2-NEXT:    [[TMP33:%.*]] = fadd <4 x double> [[REVERSE16]], <double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01>
+; AVX2-NEXT:    [[TMP34:%.*]] = fadd <4 x double> [[REVERSE19]], <double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01>
 ; AVX2-NEXT:    [[TMP35:%.*]] = fadd <4 x double> [[REVERSE22]], <double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01>
 ; AVX2-NEXT:    [[TMP36:%.*]] = getelementptr double, ptr [[OUT]], i64 [[TMP0]]
 ; AVX2-NEXT:    [[TMP37:%.*]] = getelementptr double, ptr [[OUT]], i64 [[TMP1]]
@@ -1427,14 +1427,14 @@ define void @foo6(ptr nocapture readonly %in, ptr nocapture %out, i32 %size, ptr
 ; AVX2-NEXT:    [[TMP45:%.*]] = getelementptr double, ptr [[TMP44]], i32 -3
 ; AVX2-NEXT:    [[TMP46:%.*]] = getelementptr double, ptr [[TMP36]], i32 -12
 ; AVX2-NEXT:    [[TMP47:%.*]] = getelementptr double, ptr [[TMP46]], i32 -3
-; AVX2-NEXT:    [[REVERSE27:%.*]] = shufflevector <4 x double> [[TMP32]], <4 x double> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
-; AVX2-NEXT:    call void @llvm.masked.store.v4f64.p0(<4 x double> [[REVERSE27]], ptr [[TMP41]], i32 8, <4 x i1> [[REVERSE12]]), !alias.scope [[META23:![0-9]+]], !noalias [[META25:![0-9]+]]
-; AVX2-NEXT:    [[REVERSE28:%.*]] = shufflevector <4 x double> [[TMP33]], <4 x double> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
-; AVX2-NEXT:    call void @llvm.masked.store.v4f64.p0(<4 x double> [[REVERSE28]], ptr [[TMP43]], i32 8, <4 x i1> [[REVERSE13]]), !alias.scope [[META23]], !noalias [[META25]]
-; AVX2-NEXT:    [[REVERSE29:%.*]] = shufflevector <4 x double> [[TMP34]], <4 x double> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
-; AVX2-NEXT:    call void @llvm.masked.store.v4f64.p0(<4 x double> [[REVERSE29]], ptr [[TMP45]], i32 8, <4 x i1> [[REVERSE14]]), !alias.scope [[META23]], !noalias [[META25]]
+; AVX2-NEXT:    [[REVERSE24:%.*]] = shufflevector <4 x double> [[TMP32]], <4 x double> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
+; AVX2-NEXT:    call void @llvm.masked.store.v4f64.p0(<4 x double> [[REVERSE24]], ptr [[TMP41]], i32 8, <4 x i1> [[REVERSE12]]), !alias.scope [[META23:![0-9]+]], !noalias [[META25:![0-9]+]]
+; AVX2-NEXT:    [[REVERSE26:%.*]] = shufflevector <4 x double> [[TMP33]], <4 x double> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
+; AVX2-NEXT:    call void @llvm.masked.store.v4f64.p0(<4 x double> [[REVERSE26]], ptr [[TMP43]], i32 8, <4 x i1> [[REVERSE14]]), !alias.scope [[META23]], !noalias [[META25]]
+; AVX2-NEXT:    [[REVERSE28:%.*]] = shufflevector <4 x double> [[TMP34]], <4 x double> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
+; AVX2-NEXT:    call void @llvm.masked.store.v4f64.p0(<4 x double> [[REVERSE28]], ptr [[TMP45]], i32 8, <4 x i1> [[REVERSE17]]), !alias.scope [[META23]], !noalias [[META25]]
 ; AVX2-NEXT:    [[REVERSE30:%.*]] = shufflevector <4 x double> [[TMP35]], <4 x double> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
-; AVX2-NEXT:    call void @llvm.masked.store.v4f64.p0(<4 x double> [[REVERSE30]], ptr [[TMP47]], i32 8, <4 x i1> [[REVERSE15]]), !alias.scope [[META23]], !noalias [[META25]]
+; AVX2-NEXT:    call void @llvm.masked.store.v4f64.p0(<4 x double> [[REVERSE30]], ptr [[TMP47]], i32 8, <4 x i1> [[REVERSE20]]), !alias.scope [[META23]], !noalias [[META25]]
 ; AVX2-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
 ; AVX2-NEXT:    [[TMP48:%.*]] = icmp eq i64 [[INDEX_NEXT]], 4096
 ; AVX2-NEXT:    br i1 [[TMP48]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP26:![0-9]+]]
@@ -1524,20 +1524,20 @@ define void @foo6(ptr nocapture readonly %in, ptr nocapture %out, i32 %size, ptr
 ; AVX512-NEXT:    [[TMP30:%.*]] = getelementptr double, ptr [[TMP20]], i32 -24
 ; AVX512-NEXT:    [[TMP31:%.*]] = getelementptr double, ptr [[TMP30]], i32 -7
 ; AVX512-NEXT:    [[REVERSE12:%.*]] = shufflevector <8 x i1> [[TMP16]], <8 x i1> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
-; AVX512-NEXT:    [[REVERSE13:%.*]] = shufflevector <8 x i1> [[TMP17]], <8 x i1> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
-; AVX512-NEXT:    [[REVERSE14:%.*]] = shufflevector <8 x i1> [[TMP18]], <8 x i1> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
-; AVX512-NEXT:    [[REVERSE15:%.*]] = shufflevector <8 x i1> [[TMP19]], <8 x i1> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
 ; AVX512-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <8 x double> @llvm.masked.load.v8f64.p0(ptr [[TMP25]], i32 8, <8 x i1> [[REVERSE12]], <8 x double> poison), !alias.scope [[META34:![0-9]+]]
-; AVX512-NEXT:    [[REVERSE16:%.*]] = shufflevector <8 x double> [[WIDE_MASKED_LOAD]], <8 x double> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
-; AVX512-NEXT:    [[WIDE_MASKED_LOAD17:%.*]] = call <8 x double> @llvm.masked.load.v8f64.p0(ptr [[TMP27]], i32 8, <8 x i1> [[REVERSE13]], <8 x double> poison), !alias.scope [[META34]]
-; AVX512-NEXT:    [[REVERSE18:%.*]] = shufflevector <8 x double> [[WIDE_MASKED_LOAD17]], <8 x double> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
-; AVX512-NEXT:    [[WIDE_MASKED_LOAD19:%.*]] = call <8 x double> @llvm.masked.load.v8f64.p0(ptr [[TMP29]], i32 8, <8 x i1> [[REVERSE14]], <8 x double> poison), !alias.scope [[META34]]
-; AVX512-NEXT:    [[REVERSE20:%.*]] = shufflevector <8 x double> [[WIDE_MASKED_LOAD19]], <8 x double> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
-; AVX512-NEXT:    [[WIDE_MASKED_LOAD21:%.*]] = call <8 x double> @llvm.masked.load.v8f64.p0(ptr [[TMP31]], i32 8, <8 x i1> [[REVERSE15]], <8 x double> poison), !alias.scope [[META34]]
+; AVX512-NEXT:    [[REVERSE13:%.*]] = shufflevector <8 x double> [[WIDE_MASKED_LOAD]], <8 x double> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
+; AVX512-NEXT:    [[REVERSE14:%.*]] = shufflevector <8 x i1> [[TMP17]], <8 x i1> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
+; AVX512-NEXT:    [[WIDE_MASKED_LOAD15:%.*]] = call <8 x double> @llvm.masked.load.v8f64.p0(ptr [[TMP27]], i32 8, <8 x i1> [[REVERSE14]], <8 x double> poison), !alias.scope [[META34]]
+; AVX512-NEXT:    [[REVERSE16:%.*]] = shufflevector <8 x double> [[WIDE_MASKED_LOAD15]], <8 x double> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
+; AVX512-NEXT:    [[REVERSE17:%.*]] = shufflevector <8 x i1> [[TMP18]], <8 x i1> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
+; AVX512-NEXT:    [[WIDE_MASKED_LOAD18:%.*]] = call <8 x double> @llvm.masked.load.v8f64.p0(ptr [[TMP29]], i32 8, <8 x i1> [[REVERSE17]], <8 x double> poison), !alias.scope [[META34]]
+; AVX512-NEXT:    [[REVERSE19:%.*]] = shufflevector <8 x double> [[WIDE_MASKED_LOAD18]], <8 x double> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
+; AVX512-NEXT:    [[REVERSE20:%.*]] = shufflevector <8 x i1> [[TMP19]], <8 x i1> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
+; AVX512-NEXT:    [[WIDE_MASKED_LOAD21:%.*]] = call <8 x double> @llvm.masked.load.v8f64.p0(ptr [[TMP31]], i32 8, <8 x i1> [[REVERSE20]], <8 x double> poison), !alias.scope [[META34]]
 ; AVX512-NEXT:    [[REVERSE22:%.*]] = shufflevector <8 x double> [[WIDE_MASKED_LOAD21]], <8 x double> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
-; AVX512-NEXT:    [[TMP32:%.*]] = fadd <8 x double> [[REVERSE16]], <double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01>
-; AVX512-NEXT:    [[TMP33:%.*]] = fadd <8 x double> [[REVERSE18]], <double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01>
-; AVX512-NEXT:    [[TMP34:%.*]] = fadd <8 x double> [[REVERSE20]], <double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01>
+; AVX512-NEXT:    [[TMP32:%.*]] = fadd <8 x double> [[REVERSE13]], <double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01>
+; AVX512-NEXT:    [[TMP33:%.*]] = fadd <8 x double> [[REVERSE16]], <double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01>
+; AVX512-NEXT:    [[TMP34:%.*]] = fadd <8 x double> [[REVERSE19]], <double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01>
 ; AVX512-NEXT:    [[TMP35:%.*]] = fadd <8 x double> [[REVERSE22]], <double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01, double 5.000000e-01>
 ; AVX512-NEXT:    [[TMP36:%.*]] = getelementptr double, ptr [[OUT]], i64 [[TMP0]]
 ; AVX512-NEXT:    [[TMP37:%.*]] = getelementptr double, ptr [[OUT]], i64 [[TMP1]]
@@ -1551,14 +1551,14 @@ define void @foo6(ptr nocapture readonly %in, ptr nocapture %out, i32 %size, ptr
 ; AVX512-NEXT:    [[TMP45:%.*]] = getelementptr double, ptr [[TMP44]], i32 -7
 ; AVX512-NEXT:    [[TMP46:%.*]] = getelementptr double, ptr [[TMP36]], i32 -24
 ; AVX512-NEXT:    [[TMP47:%.*]] = getelementptr double, ptr [[TMP46]], i32 -7
-; AVX512-NEXT:    [[REVERSE27:%.*]] = shufflevector <8 x double> [[TMP32]], <8 x double> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
-; AVX512-NEXT:    call void @llvm.masked.store.v8f64.p0(<8 x double> [[REVERSE27]], ptr [[TMP41]], i32 8, <8 x i1> [[REVERSE12]]), !alias.scope [[META36:![0-9]+]], !noalias [[META38:![0-9]+]]
-; AVX512-NEXT:    [[REVERSE28:%.*]] = shufflevector <8 x double> [[TMP33]], <8 x double> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
-; AVX512-NEXT:    call void @llvm.masked.store.v8f64.p0(<8 x double> [[REVERSE28]], ptr [[TMP43]], i32 8, <8 x i1> [[REVERSE13]]), !alias.scope [[META36]], !noalias [[META38]]
-; AVX512-NEXT:    [[REVERSE29:%.*]] = shufflevector <8 x double> [[TMP34]], <8 x double> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
-; AVX512-NEXT:    call void @llvm.masked.store.v8f64.p0(<8 x double> [[REVERSE29]], ptr [[TMP45]], i32 8, <8 x i1> [[REVERSE14]]), !alias.scope [[META36]], !noalias [[META38]]
+; AVX512-NEXT:    [[REVERSE24:%.*]] = shufflevector <8 x double> [[TMP32]], <8 x double> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
+; AVX512-NEXT:    call void @llvm.masked.store.v8f64.p0(<8 x double> [[REVERSE24]], ptr [[TMP41]], i32 8, <8 x i1> [[REVERSE12]]), !alias.scope [[META36:![0-9]+]], !noalias [[META38:![0-9]+]]
+; AVX512-NEXT:    [[REVERSE26:%.*]] = shufflevector <8 x double> [[TMP33]], <8 x double> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
+; AVX512-NEXT:    call void @llvm.masked.store.v8f64.p0(<8 x double> [[REVERSE26]], ptr [[TMP43]], i32 8, <8 x i1> [[REVERSE14]]), !alias.scope [[META36]], !noalias [[META38]]
+; AVX512-NEXT:    [[REVERSE28:%.*]] = shufflevector <8 x double> [[TMP34]], <8 x double> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
+; AVX512-NEXT:    call void @llvm.masked.store.v8f64.p0(<8 x double> [[REVERSE28]], ptr [[TMP45]], i32 8, <8 x i1> [[REVERSE17]]), !alias.scope [[META36]], !noalias [[META38]]
 ; AVX512-NEXT:    [[REVERSE30:%.*]] = shufflevector <8 x double> [[TMP35]], <8 x double> poison, <8 x i32> <i32 7, i32 6, i32 5, i32 4, i32 3, i32 2, i32 1, i32 0>
-; AVX512-NEXT:    call void @llvm.masked.store.v8f64.p0(<8 x double> [[REVERSE30]], ptr [[TMP47]], i32 8, <8 x i1> [[REVERSE15]]), !alias.scope [[META36]], !noalias [[META38]]
+; AVX512-NEXT:    call void @llvm.masked.store.v8f64.p0(<8 x double> [[REVERSE30]], ptr [[TMP47]], i32 8, <8 x i1> [[REVERSE20]]), !alias.scope [[META36]], !noalias [[META38]]
 ; AVX512-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 32
 ; AVX512-NEXT:    [[TMP48:%.*]] = icmp eq i64 [[INDEX_NEXT]], 4096
 ; AVX512-NEXT:    br i1 [[TMP48]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP39:![0-9]+]]

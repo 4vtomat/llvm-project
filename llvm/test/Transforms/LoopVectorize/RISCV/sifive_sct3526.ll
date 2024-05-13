@@ -33,7 +33,7 @@ define void @test(ptr %a, ptr %b, i64 %stride) {
 ; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr float, ptr [[TMP10]], i32 0
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 2 x i64> @llvm.experimental.vp.strided.load.nxv2i64.p0.i64(ptr align 4 [[TMP11]], i64 [[TMP5]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP9]])
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD_CAST:%.*]] = bitcast <vscale x 2 x i64> [[WIDE_STRIDED_LOAD]] to <vscale x 4 x float>
-; CHECK-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 2 x float>, <vscale x 2 x float> } @llvm.experimental.vector.deinterleave2.nxv4f32(<vscale x 4 x float> [[WIDE_STRIDED_LOAD_CAST]])
+; CHECK-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 2 x float>, <vscale x 2 x float> } @llvm.vector.deinterleave2.nxv4f32(<vscale x 4 x float> [[WIDE_STRIDED_LOAD_CAST]])
 ; CHECK-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 0
 ; CHECK-NEXT:    [[TMP13:%.*]] = extractvalue { <vscale x 2 x float>, <vscale x 2 x float> } [[DEINTERLEAVED_RESULTS]], 1
 ; CHECK-NEXT:    [[VP_CAST:%.*]] = call <vscale x 2 x double> @llvm.vp.fpext.nxv2f64.nxv2f32(<vscale x 2 x float> [[TMP12]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP9]])

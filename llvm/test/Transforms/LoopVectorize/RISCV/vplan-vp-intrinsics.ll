@@ -32,14 +32,14 @@ define void @foo(ptr noalias %a, ptr noalias %b, ptr noalias %c, i64 %N) {
 ; IF-EVL-NEXT:    vp<[[ST:%[0-9]+]]> = SCALAR-STEPS vp<[[EVL_PHI]]>, ir<1>
 ; IF-EVL-NEXT:    CLONE ir<[[GEP1:%.+]]> = getelementptr inbounds ir<%b>, vp<[[ST]]>
 ; IF-EVL-NEXT:    vp<[[PTR1:%[0-9]+]]> = vector-pointer ir<[[GEP1]]>
-; IF-EVL-NEXT:    WIDEN ir<[[LD1:%.+]]> = load vp<[[PTR1]]>
+; IF-EVL-NEXT:    WIDEN ir<[[LD1:%.+]]> = vp.load vp<[[PTR1]]>, vp<[[EVL]]> unit-strided
 ; IF-EVL-NEXT:    CLONE ir<[[GEP2:%.+]]> = getelementptr inbounds ir<%c>, vp<[[ST]]>
 ; IF-EVL-NEXT:    vp<[[PTR2:%[0-9]+]]> = vector-pointer ir<[[GEP2]]>
-; IF-EVL-NEXT:    WIDEN ir<[[LD2:%.+]]> = load vp<[[PTR2]]>
+; IF-EVL-NEXT:    WIDEN ir<[[LD2:%.+]]> = vp.load vp<[[PTR2]]>, vp<[[EVL]]> unit-strided
 ; IF-EVL-NEXT:    WIDEN ir<[[ADD:%.+]]> = add nsw ir<[[LD2]]>, ir<[[LD1]]>
 ; IF-EVL-NEXT:    CLONE ir<[[GEP3:%.+]]> = getelementptr inbounds ir<%a>, vp<[[ST]]>
 ; IF-EVL-NEXT:    vp<[[PTR3:%[0-9]+]]> = vector-pointer ir<[[GEP3]]>
-; IF-EVL-NEXT:    WIDEN store vp<[[PTR3]]>, ir<[[ADD]]>
+; IF-EVL-NEXT:    WIDEN vp.store vp<[[PTR3]]>, ir<[[ADD]]>, vp<[[EVL]]> unit-strided
 ; IF-EVL-NEXT:    SCALAR-CAST vp<[[CAST:%[0-9]+]]> = zext vp<[[EVL]]> to i64
 ; IF-EVL-NEXT:    EMIT vp<[[IV_NEXT]]> = add vp<[[CAST]]>, vp<[[EVL_PHI]]>
 ; IF-EVL-NEXT:    EMIT vp<[[IV_NEXT_EXIT:%[0-9]+]]> = add vp<[[EVL_PHI]]>, vp<[[EVL]]>
@@ -110,11 +110,11 @@ define void @safe_dep(ptr %p) {
 ; CHECK-EVL-NEXT:    vp<%4> = SCALAR-STEPS vp<%2>, ir<1>
 ; CHECK-EVL-NEXT:    CLONE ir<%a1> = getelementptr ir<%p>, vp<%4>
 ; CHECK-EVL-NEXT:    vp<%5> = vector-pointer ir<%a1>
-; CHECK-EVL-NEXT:    WIDEN ir<%v> = load vp<%5>	unit-strided
+; CHECK-EVL-NEXT:    WIDEN ir<%v> = vp.load vp<%5>, vp<%3>	unit-strided
 ; CHECK-EVL-NEXT:    CLONE ir<%offset> = add vp<%4>, ir<100>
 ; CHECK-EVL-NEXT:    CLONE ir<%a2> = getelementptr ir<%p>, ir<%offset>
 ; CHECK-EVL-NEXT:    vp<%6> = vector-pointer ir<%a2>
-; CHECK-EVL-NEXT:    WIDEN store vp<%6>, ir<%v>	unit-strided
+; CHECK-EVL-NEXT:    WIDEN vp.store vp<%6>, ir<%v>, vp<%3>	unit-strided
 ; CHECK-EVL-NEXT:    SCALAR-CAST vp<%7> = zext vp<%3> to i64
 ; CHECK-EVL-NEXT:    EMIT vp<%8> = add vp<%7>, vp<%2>
 ; CHECK-EVL-NEXT:    EMIT vp<%9> = add vp<%2>, vp<%3>

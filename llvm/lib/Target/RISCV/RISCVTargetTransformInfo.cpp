@@ -2544,7 +2544,8 @@ InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
         EltSize = EltTy->getFPMantissaWidth();
         if (EltTy->isDoubleTy())
           NumDivideUnits = 2;
-      } else if (EltTy->isIntegerTy(16) && Op2Info.isUniform() && Op2Info.isConstant() &&
+      } else if (EltTy->isIntegerTy(16) && Op2Info.isUniform() &&
+                 Op2Info.isConstant() &&
                  ST->getProcFamily() == RISCVSubtarget::SiFiveP600) {
         // This will be converted to a magic multiply.
         // FIXME: At least one important benchmark regresses on p470 so we

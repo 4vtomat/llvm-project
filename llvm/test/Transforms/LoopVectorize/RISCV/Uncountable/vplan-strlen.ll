@@ -16,7 +16,7 @@ define i64 @strlen_i8(ptr %start) {
 ; VPLANS-NEXT:     vp<%5> = SCALAR-STEPS vp<%3>, ir<1>
 ; VPLANS-NEXT:     EMIT vp<%6> = ptradd ir<%start>, vp<%5>
 ; VPLANS-NEXT:     vp<%7> = vector-pointer vp<%6>
-; VPLANS-NEXT:     WIDEN-SPECULATIVE-MEMORY-INSTRUCTION ir<%0>, vp<%8> = load vp<%7>	unit-strided
+; VPLANS-NEXT:     WIDEN-SPECULATIVE-INSTRUCTION ir<%0> = vp.load vp<%7>, vp<%4>	unit-strided
 ; VPLANS-NEXT:     WIDEN ir<%cmp.not> = icmp eq ir<%0>, ir<0>
 ; VPLANS-NEXT:     EMIT vp<%9> = exiting-cond ir<%cmp.not>
 ; VPLANS-NEXT:     SCALAR-CAST vp<%10> = zext vp<%8> to i64

@@ -57,7 +57,7 @@ define void @test(i32 %0, i64 %conv, ptr %call5.i.i.i4.i.i101) {
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 1 x i128> @llvm.experimental.vp.strided.load.nxv1i128.p0.i64(ptr align 8 [[TMP27]], i64 [[TMP17]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP22]])
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD_INTCAST:%.*]] = bitcast <vscale x 1 x i128> [[WIDE_STRIDED_LOAD]] to <vscale x 2 x i64>
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD_INTCAST_CAST:%.*]] = inttoptr <vscale x 2 x i64> [[WIDE_STRIDED_LOAD_INTCAST]] to <vscale x 2 x ptr>
-; CHECK-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x ptr>, <vscale x 1 x ptr> } @llvm.experimental.vector.deinterleave2.nxv2p0(<vscale x 2 x ptr> [[WIDE_STRIDED_LOAD_INTCAST_CAST]])
+; CHECK-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x ptr>, <vscale x 1 x ptr> } @llvm.vector.deinterleave2.nxv2p0(<vscale x 2 x ptr> [[WIDE_STRIDED_LOAD_INTCAST_CAST]])
 ; CHECK-NEXT:    [[TMP28:%.*]] = extractvalue { <vscale x 1 x ptr>, <vscale x 1 x ptr> } [[DEINTERLEAVED_RESULTS]], 0
 ; CHECK-NEXT:    [[TMP29:%.*]] = extractvalue { <vscale x 1 x ptr>, <vscale x 1 x ptr> } [[DEINTERLEAVED_RESULTS]], 1
 ; CHECK-NEXT:    [[VP_CAST:%.*]] = call <vscale x 1 x i64> @llvm.vp.ptrtoint.nxv1i64.nxv1p0(<vscale x 1 x ptr> [[TMP29]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP22]])

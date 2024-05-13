@@ -160,7 +160,7 @@ private:
                                          const RVVPair &RVL) const;
 
   /// Return cost of the individual memory operation for a given \p RVL
-  InstructionCost getMemoryOpCost(const VPWidenMemoryInstructionRecipe *VPWMIR,
+  InstructionCost getMemoryOpCost(const VPWidenMemoryRecipe *VPWMIR,
                                   const RVVPair &RVL);
 
   /// Return cost of the interleavedmemory operation for a given \p RVL

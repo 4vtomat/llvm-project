@@ -2664,11 +2664,6 @@ def int_vector_interleave2   : DefaultAttrsIntrinsic<[llvm_anyvector_ty],
                                                       LLVMHalfElementsVectorType<0>],
                                                      [IntrNoMem]>;
 
-def int_experimental_vector_deinterleave2 : DefaultAttrsIntrinsic<[LLVMHalfElementsVectorType<0>,
-                                                                   LLVMHalfElementsVectorType<0>],
-                                                                  [llvm_anyvector_ty],
-                                                                  [IntrNoMem]>;
-
 def int_vector_deinterleave2 : DefaultAttrsIntrinsic<[LLVMHalfElementsVectorType<0>,
                                                       LLVMHalfElementsVectorType<0>],
                                                      [llvm_anyvector_ty],

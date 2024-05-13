@@ -29,7 +29,7 @@ void widenPredicatedCall(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
 /// `vp.strided_load`/`vp.strided_store` if previous analysis indicated it's
 /// possible to be used
 Instruction *
-widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
+widenPredicatedMemoryInstruction(VPWidenMemoryRecipe &VPWMIR,
                                  VPTransformState &State, unsigned Part,
                                  ArrayRef<Value *> BlockInMaskParts);
 

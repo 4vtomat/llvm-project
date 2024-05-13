@@ -125,6 +125,11 @@ bool VPRecipeBase::mayWriteToMemory() const {
   case VPWidenSC:
   case VPWidenSelectSC: {
     const Instruction *I =
+#if SIFIVE_CUSTOMIZATION
+        (getVPDefID() == VPWidenLoadSC ||
+         getVPDefID() == VPWidenLoadEVLSC) ?
+        dyn_cast_or_null<Instruction>(getVPValue(0)->getUnderlyingValue()) :
+#endif
         dyn_cast_or_null<Instruction>(getVPSingleValue()->getUnderlyingValue());
     (void)I;
     assert((!I || !I->mayWriteToMemory()) &&
@@ -513,6 +518,8 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
     }
     // Set VLMAX if EVL is nullptr
     EVL = GetSetVL(State, EVL);
+    assert(!State.EVL && "multiple EVL recipes");
+    State.EVL = this;
 #else
     // Compute EVL
     auto GetEVL = [=](VPTransformState &State, Value *AVL) {
@@ -2527,10 +2534,26 @@ void VPWidenLoadRecipe::print(raw_ostream &O, const Twine &Indent,
 
 void VPWidenLoadEVLRecipe::print(raw_ostream &O, const Twine &Indent,
                                  VPSlotTracker &SlotTracker) const {
+#if SIFIVE_CUSTOMIZATION
+  if (Speculative)
+    O << Indent << "WIDEN-SPECULATIVE-INSTRUCTION ";
+  else
+#endif
   O << Indent << "WIDEN ";
   printAsOperand(O, SlotTracker);
   O << " = vp.load ";
   printOperands(O, SlotTracker);
+#if SIFIVE_CUSTOMIZATION
+  O << '\t';
+  if (isConsecutive()) {
+    O << "unit-strided";
+  } else if (isStrided()) {
+    O << "stride (in bytes) = ";
+    getStrideInBytes()->print(O);
+  } else {
+    O << "indexed";
+  }
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 void VPWidenStoreRecipe::print(raw_ostream &O, const Twine &Indent,
@@ -2541,6 +2564,11 @@ void VPWidenStoreRecipe::print(raw_ostream &O, const Twine &Indent,
 
 void VPWidenStoreEVLRecipe::print(raw_ostream &O, const Twine &Indent,
                                   VPSlotTracker &SlotTracker) const {
+#if SIFIVE_CUSTOMIZATION
+  if (Speculative)
+    O << Indent << "WIDEN-SPECULATIVE-INSTRUCTION vp.store";
+  else
+#endif
   O << Indent << "WIDEN vp.store ";
   printOperands(O, SlotTracker);
 #if SIFIVE_CUSTOMIZATION

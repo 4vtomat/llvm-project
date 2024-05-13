@@ -535,7 +535,8 @@ void VPlanTransforms::optimizeGEPs(VPlan &Plan) {
           }))
         continue;
 
-      auto *Recipe = new VPReplicateRecipe(Inst, WideGEP->operands(), /*IsUniform*/ true);
+      auto *Recipe =
+          new VPReplicateRecipe(Inst, WideGEP->operands(), /*IsUniform*/ true);
       VPValue *V = Recipe->getVPValue(0);
 
       Recipe->insertBefore(WideGEP);
@@ -1473,8 +1474,32 @@ void VPlanTransforms::addExplicitVectorLength(VPlan &Plan) {
     Plan.setPrevEVL(PrevEVLPhi);
     PrevEVLPhi->addOperand(VPEVL);
   }
-#endif // SIFIVE_CUSTOMIZATION
+  ReversePostOrderTraversal<VPBlockDeepTraversalWrapper<VPBlockBase *>> RPOT(
+      Plan.getEntry());
 
+  for (VPBasicBlock *VPBB : VPBlockUtils::blocksOnly<VPBasicBlock>(RPOT)) {
+    // The recipes in the block are processed in reverse order, to catch chains
+    // of dead recipes.
+    for (VPRecipeBase &R : make_early_inc_range(reverse(*VPBB))) {
+      auto *MemR = dyn_cast<VPWidenMemoryRecipe>(&R);
+      if (!MemR)
+        continue;
+      VPValue *OrigMask = MemR->getMask();
+      if (auto *L = dyn_cast<VPWidenLoadRecipe>(MemR)) {
+        auto *N = new VPWidenLoadEVLRecipe(L, VPEVL, OrigMask);
+        N->insertBefore(L);
+        L->replaceAllUsesWith(N);
+        L->eraseFromParent();
+      } else if (auto *S = dyn_cast<VPWidenStoreRecipe>(MemR)) {
+        auto *N = new VPWidenStoreEVLRecipe(S, VPEVL, OrigMask);
+        N->insertBefore(S);
+        S->eraseFromParent();
+      } else {
+        llvm_unreachable("unsupported recipe");
+      }
+    }
+  }
+#else
   for (VPValue *HeaderMask : collectAllHeaderMasks(Plan)) {
     for (VPUser *U : collectUsersRecursively(HeaderMask)) {
       auto *MemR = dyn_cast<VPWidenMemoryRecipe>(U);
@@ -1500,6 +1525,8 @@ void VPlanTransforms::addExplicitVectorLength(VPlan &Plan) {
     }
     recursivelyDeleteDeadRecipes(HeaderMask);
   }
+#endif // SIFIVE_CUSTOMIZATION
+
   // Replace all uses of VPCanonicalIVPHIRecipe by
   // VPEVLBasedIVPHIRecipe except for VPInstruction::CanonicalIVIncrement.
   CanonicalIVPHI->replaceAllUsesWith(EVLPhi);
@@ -1583,13 +1610,18 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
              "predecessors");
       LastEVL = BlockLastEVL[VPBB->getSinglePredecessor()];
     }
-    for (VPRecipeBase &Recipe : *VPBB) {
+    for (VPRecipeBase &Recipe : make_early_inc_range(*VPBB)) {
       // Check if the recipe updates EVL
-      if (auto *R = dyn_cast<VPWidenMemoryInstructionRecipe>(&Recipe))
-        if (R->isSpeculative()) {
-          LastEVL = R->getVPValue(1);
+      if (auto *R = dyn_cast<VPWidenLoadRecipe>(&Recipe)) {
+        auto *N = new VPWidenLoadEVLRecipe(R, VPEVL, R->getMask());
+        N->insertBefore(R);
+        R->replaceAllUsesWith(N);
+        R->eraseFromParent();
+        if (N->isSpeculative()) {
+          LastEVL = N->getVPValue(1);
           continue;
         }
+      }
       auto *VPI = dyn_cast<VPInstruction>(&Recipe);
       if (VPI && (VPI->getOpcode() == VPInstruction::ExplicitVectorLength)) {
         LastEVL = VPI;

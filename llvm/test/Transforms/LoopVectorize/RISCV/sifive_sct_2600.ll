@@ -40,7 +40,7 @@ define void @_ZN5clang22MicrosoftVTableContext31computeVTableRelatedInformationE
 ; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr ptr, ptr [[NEXT_GEP]], i32 0
 ; CHECK-NEXT:    [[TMP13:%.*]] = mul i32 [[TMP11]], 2
 ; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 2 x ptr> @llvm.vp.load.nxv2p0.p0(ptr align 8 [[TMP12]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP13]])
-; CHECK-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x ptr>, <vscale x 1 x ptr> } @llvm.experimental.vector.deinterleave2.nxv2p0(<vscale x 2 x ptr> [[WIDE_MASKED_LOAD]])
+; CHECK-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x ptr>, <vscale x 1 x ptr> } @llvm.vector.deinterleave2.nxv2p0(<vscale x 2 x ptr> [[WIDE_MASKED_LOAD]])
 ; CHECK-NEXT:    [[TMP14:%.*]] = extractvalue { <vscale x 1 x ptr>, <vscale x 1 x ptr> } [[DEINTERLEAVED_RESULTS]], 0
 ; CHECK-NEXT:    [[TMP15:%.*]] = extractvalue { <vscale x 1 x ptr>, <vscale x 1 x ptr> } [[DEINTERLEAVED_RESULTS]], 1
 ; CHECK-NEXT:    [[TMP16:%.*]] = ptrtoint <vscale x 1 x ptr> [[TMP15]] to <vscale x 1 x i64>

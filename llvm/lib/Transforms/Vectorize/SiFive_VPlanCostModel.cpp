@@ -168,10 +168,9 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
                                         const RVVPair &RVL) {
   InstructionCost Cost =
       TypeSwitch<const VPRecipeBase *, InstructionCost>(Recipe)
-          .Case<VPWidenMemoryInstructionRecipe>(
-              [&](const VPWidenMemoryInstructionRecipe *VPWMIR) {
-                return getMemoryOpCost(VPWMIR, RVL);
-              })
+          .Case<VPWidenMemoryRecipe>([&](const VPWidenMemoryRecipe *VPWMIR) {
+            return getMemoryOpCost(VPWMIR, RVL);
+          })
           .Case<VPInterleaveRecipe>([&](const VPInterleaveRecipe *VPI) {
             return getInterleavedMemoryOpCost(VPI, RVL);
           })
@@ -604,7 +603,7 @@ InstructionCost VPlanCostModel::getMemoryOpCost(const Instruction *I, Type *Ty,
 }
 
 InstructionCost
-VPlanCostModel::getMemoryOpCost(const VPWidenMemoryInstructionRecipe *VPWMIR,
+VPlanCostModel::getMemoryOpCost(const VPWidenMemoryRecipe *VPWMIR,
                                 const RVVPair &RVL) {
   const Instruction *I = &VPWMIR->getIngredient();
   Type *ValTy = VPWMIR->getElementType();
@@ -614,7 +613,7 @@ VPlanCostModel::getMemoryOpCost(const VPWidenMemoryInstructionRecipe *VPWMIR,
   auto *VectorTy = cast<VectorType>(getVectorType(ValTy, RVL));
 
   InstructionCost Cost = 0;
-  if (!VPWMIR->isStore()) {
+  if (isa<VPWidenLoadEVLRecipe, VPWidenLoadRecipe>(VPWMIR)) {
     const unsigned RegID =
         TTI.getRegisterClassForType(true /*vector*/, VectorTy);
     const unsigned NumUsedRegs = TTI.getRegUsageForType(VectorTy);
@@ -819,7 +818,13 @@ InstructionCost VPlanCostModel::getReplicateOpCost(const VPReplicateRecipe *VPR,
 
 void VPlanCostModel::addRegisterUsage(const VPValue *VPV, const unsigned RegID,
                                       const unsigned NumRegs) {
-  LLVM_DEBUG(dbgs() << "VPlanCM: " << *VPV << " will use " << NumRegs << ' '
+  LLVM_DEBUG(dbgs() << "VPlanCM: ";
+             const auto *Instr = VPV->getDefiningRecipe();
+             VPSlotTracker SlotTracker((Instr && Instr->getParent())
+                                           ? Instr->getParent()->getPlan()
+                                           : nullptr);
+             Instr->print(dbgs(), Twine(), SlotTracker);
+             dbgs() << " will use " << NumRegs << ' '
                     << TTI.getRegisterClassName(RegID) << " registers\n");
   RegistersUsage.LiveRecipes[VPV][RegID] += NumRegs;
   RegistersUsage.LiveRegister[RegID] += NumRegs;

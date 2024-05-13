@@ -295,7 +295,7 @@ define i32 @non_const_strided_masked_2(i64 %n, ptr %a, ptr %cond, i64 %stride) {
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i32, ptr [[TMP31]], i32 0
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 2 x i64> @llvm.experimental.vp.strided.load.nxv2i64.p0.i64(ptr align 4 [[TMP32]], i64 [[TMP22]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP25]])
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD_CAST:%.*]] = bitcast <vscale x 2 x i64> [[WIDE_STRIDED_LOAD]] to <vscale x 4 x i32>
-; CHECK-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.experimental.vector.deinterleave2.nxv4i32(<vscale x 4 x i32> [[WIDE_STRIDED_LOAD_CAST]])
+; CHECK-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.vector.deinterleave2.nxv4i32(<vscale x 4 x i32> [[WIDE_STRIDED_LOAD_CAST]])
 ; CHECK-NEXT:    [[TMP33:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 0
 ; CHECK-NEXT:    [[TMP34:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 1
 ; CHECK-NEXT:    [[VP_OP21:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[PREDPHI20]], <vscale x 2 x i32> [[TMP33]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP25]])
@@ -701,7 +701,7 @@ define i32 @non_const_strided_masked_3(i64 %n, ptr %a, ptr %cond1, ptr %cond2, i
 ; CHECK-NEXT:    [[TMP37:%.*]] = getelementptr i32, ptr [[TMP36]], i32 0
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD:%.*]] = call <vscale x 2 x i64> @llvm.experimental.vp.strided.load.nxv2i64.p0.i64(ptr align 4 [[TMP37]], i64 [[TMP24]], <vscale x 2 x i1> [[VP_OP_SELECT31]], i32 [[TMP27]])
 ; CHECK-NEXT:    [[WIDE_STRIDED_LOAD_CAST:%.*]] = bitcast <vscale x 2 x i64> [[WIDE_STRIDED_LOAD]] to <vscale x 4 x i32>
-; CHECK-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.experimental.vector.deinterleave2.nxv4i32(<vscale x 4 x i32> [[WIDE_STRIDED_LOAD_CAST]])
+; CHECK-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 2 x i32>, <vscale x 2 x i32> } @llvm.vector.deinterleave2.nxv4i32(<vscale x 4 x i32> [[WIDE_STRIDED_LOAD_CAST]])
 ; CHECK-NEXT:    [[TMP38:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 0
 ; CHECK-NEXT:    [[TMP39:%.*]] = extractvalue { <vscale x 2 x i32>, <vscale x 2 x i32> } [[DEINTERLEAVED_RESULTS]], 1
 ; CHECK-NEXT:    [[VP_OP33:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[TMP38]], <vscale x 2 x i32> [[PREDPHI27]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP27]])

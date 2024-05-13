@@ -313,7 +313,7 @@ static unsigned getFactorFromVectorInterleaveIntrinsic(IntrinsicInst *II) {
 
 static unsigned getFactorFromVectorDeInterleaveIntrinsic(IntrinsicInst *DI) {
     switch (DI->getIntrinsicID()) {
-    case Intrinsic::experimental_vector_deinterleave2:
+    case Intrinsic::vector_deinterleave2:
       return 2;
     case Intrinsic::experimental_vector_deinterleave3:
       return 3;

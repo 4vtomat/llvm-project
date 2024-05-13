@@ -580,7 +580,7 @@ define void @fadd_strict_interleave(ptr noalias nocapture readonly %a, ptr noali
 ; CHECK-UNORDERED-NEXT:    [[TMP12:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[TMP11]]
 ; CHECK-UNORDERED-NEXT:    [[TMP13:%.*]] = getelementptr inbounds float, ptr [[TMP12]], i32 0
 ; CHECK-UNORDERED-NEXT:    [[WIDE_VEC:%.*]] = load <vscale x 8 x float>, ptr [[TMP13]], align 4
-; CHECK-UNORDERED-NEXT:    [[STRIDED_VEC:%.*]] = call { <vscale x 4 x float>, <vscale x 4 x float> } @llvm.experimental.vector.deinterleave2.nxv8f32(<vscale x 8 x float> [[WIDE_VEC]])
+; CHECK-UNORDERED-NEXT:    [[STRIDED_VEC:%.*]] = call { <vscale x 4 x float>, <vscale x 4 x float> } @llvm.vector.deinterleave2.nxv8f32(<vscale x 8 x float> [[WIDE_VEC]])
 ; CHECK-UNORDERED-NEXT:    [[TMP14:%.*]] = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } [[STRIDED_VEC]], 0
 ; CHECK-UNORDERED-NEXT:    [[TMP15:%.*]] = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } [[STRIDED_VEC]], 1
 ; CHECK-UNORDERED-NEXT:    [[TMP16]] = fadd <vscale x 4 x float> [[TMP14]], [[VEC_PHI1]]
@@ -650,7 +650,7 @@ define void @fadd_strict_interleave(ptr noalias nocapture readonly %a, ptr noali
 ; CHECK-ORDERED-NEXT:    [[TMP10:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[TMP9]]
 ; CHECK-ORDERED-NEXT:    [[TMP11:%.*]] = getelementptr inbounds float, ptr [[TMP10]], i32 0
 ; CHECK-ORDERED-NEXT:    [[WIDE_VEC:%.*]] = load <vscale x 8 x float>, ptr [[TMP11]], align 4
-; CHECK-ORDERED-NEXT:    [[STRIDED_VEC:%.*]] = call { <vscale x 4 x float>, <vscale x 4 x float> } @llvm.experimental.vector.deinterleave2.nxv8f32(<vscale x 8 x float> [[WIDE_VEC]])
+; CHECK-ORDERED-NEXT:    [[STRIDED_VEC:%.*]] = call { <vscale x 4 x float>, <vscale x 4 x float> } @llvm.vector.deinterleave2.nxv8f32(<vscale x 8 x float> [[WIDE_VEC]])
 ; CHECK-ORDERED-NEXT:    [[TMP12:%.*]] = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } [[STRIDED_VEC]], 0
 ; CHECK-ORDERED-NEXT:    [[TMP13:%.*]] = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } [[STRIDED_VEC]], 1
 ; CHECK-ORDERED-NEXT:    [[TMP14]] = call float @llvm.vector.reduce.fadd.nxv4f32(float [[VEC_PHI]], <vscale x 4 x float> [[TMP13]])
@@ -725,9 +725,9 @@ define void @fadd_strict_interleave(ptr noalias nocapture readonly %a, ptr noali
 ; CHECK-ORDERED-TF-NEXT:    [[TMP15:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; CHECK-ORDERED-TF-NEXT:    [[TMP16:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[TMP15]]
 ; CHECK-ORDERED-TF-NEXT:    [[TMP17:%.*]] = getelementptr inbounds float, ptr [[TMP16]], i32 0
-; CHECK-ORDERED-TF-NEXT:    [[INTERLEAVED_MASK:%.*]] = call <vscale x 8 x i1> @llvm.experimental.vector.interleave2.nxv8i1(<vscale x 4 x i1> [[ACTIVE_LANE_MASK]], <vscale x 4 x i1> [[ACTIVE_LANE_MASK]])
+; CHECK-ORDERED-TF-NEXT:    [[INTERLEAVED_MASK:%.*]] = call <vscale x 8 x i1> @llvm.vector.interleave2.nxv8i1(<vscale x 4 x i1> [[ACTIVE_LANE_MASK]], <vscale x 4 x i1> [[ACTIVE_LANE_MASK]])
 ; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_VEC:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP17]], i32 4, <vscale x 8 x i1> [[INTERLEAVED_MASK]], <vscale x 8 x float> poison)
-; CHECK-ORDERED-TF-NEXT:    [[STRIDED_VEC:%.*]] = call { <vscale x 4 x float>, <vscale x 4 x float> } @llvm.experimental.vector.deinterleave2.nxv8f32(<vscale x 8 x float> [[WIDE_MASKED_VEC]])
+; CHECK-ORDERED-TF-NEXT:    [[STRIDED_VEC:%.*]] = call { <vscale x 4 x float>, <vscale x 4 x float> } @llvm.vector.deinterleave2.nxv8f32(<vscale x 8 x float> [[WIDE_MASKED_VEC]])
 ; CHECK-ORDERED-TF-NEXT:    [[TMP18:%.*]] = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } [[STRIDED_VEC]], 0
 ; CHECK-ORDERED-TF-NEXT:    [[TMP19:%.*]] = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } [[STRIDED_VEC]], 1
 ; CHECK-ORDERED-TF-NEXT:    [[TMP20:%.*]] = select <vscale x 4 x i1> [[ACTIVE_LANE_MASK]], <vscale x 4 x float> [[TMP19]], <vscale x 4 x float> shufflevector (<vscale x 4 x float> insertelement (<vscale x 4 x float> poison, float -0.000000e+00, i64 0), <vscale x 4 x float> poison, <vscale x 4 x i32> zeroinitializer)

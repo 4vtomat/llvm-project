@@ -327,7 +327,6 @@ struct VPTransformState {
   ElementCount VF;
   unsigned UF;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   unsigned SEW = 0;
 
@@ -337,7 +336,7 @@ struct VPTransformState {
   /// as a placeholder in such functions and replaced with EVL at postprocess.
   /// TODO: Remove when not needed.
   Value *EVLPlaceholder = nullptr;
-#endif // SIFIVE_CUSTOMIZATION
+
   /// If EVL (Explicit Vector Length) is not nullptr, then EVL must be a valid
   /// value set during plan transformation, possibly a default value = whole
   /// vector register length. EVL is created only if TTI prefers predicated
@@ -346,9 +345,8 @@ struct VPTransformState {
   /// TODO: this is a temporarily solution, the EVL must be explicitly used by
   /// the recipes and must be removed here.
   VPValue *EVL = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> b329179
   /// Hold the indices to generate specific scalar instructions. Null indicates
   /// that all instances are to be generated, using either scalar or vector
   /// instructions.
@@ -966,12 +964,10 @@ public:
   /// Returns true if the recipe may have side-effects.
   bool mayHaveSideEffects() const;
 
-#ifndef SIFIVE_CUSTOMIZATION
    /// Returns true for PHI-like recipes.
    bool isPhi() const {
     return getVPDefID() >= VPFirstPHISC && getVPDefID() <= VPLastPHISC;
   }
-#endif // SIFIVE_CUSTOMIZATION
 
   /// Returns true if the recipe may read from memory.
   bool mayReadFromMemory() const;
@@ -1059,19 +1055,15 @@ public:
       return true;
     case VPRecipeBase::VPInterleaveSC:
     case VPRecipeBase::VPBranchOnMaskSC:
-<<<<<<< HEAD
-    case VPRecipeBase::VPWidenMemoryInstructionSC:
 #if SIFIVE_CUSTOMIZATION
     case VPRecipeBase::VPCSAHeaderPHISC:
     case VPRecipeBase::VPEVLBasedIVPHISC:
     case VPRecipeBase::VPMonotonicHeaderPHISC:
 #endif
-=======
     case VPRecipeBase::VPWidenLoadEVLSC:
     case VPRecipeBase::VPWidenLoadSC:
     case VPRecipeBase::VPWidenStoreEVLSC:
     case VPRecipeBase::VPWidenStoreSC:
->>>>>>> b329179
       // TODO: Widened stores don't define a value, but widened loads do. Split
       // the recipes to be able to make widened loads VPSingleDefRecipes.
       return false;
@@ -2416,7 +2408,7 @@ public:
 #endif
 
   /// Returns true if the recipe only uses the first lane of operand \p Op.
-  bool onlyFirstLaneUsed(const VPValue *Op) const override {
+  virtual bool onlyFirstLaneUsed(const VPValue *Op) const override {
     assert(is_contained(operands(), Op) &&
            "Op must be an operand of the recipe");
     // Recursing through Blend recipes only, must terminate at header phi's the
@@ -2891,16 +2883,8 @@ protected:
     IsMasked = true;
   }
 
-  VPWidenMemoryRecipe(const char unsigned SC, Instruction &I,
-                      std::initializer_list<VPValue *> Operands,
-                      bool Consecutive, bool Reverse, DebugLoc DL)
-      : VPRecipeBase(SC, Operands, DL), Ingredient(I), Consecutive(Consecutive),
-        Reverse(Reverse) {
-    assert((Consecutive || !Reverse) && "Reverse implies consecutive");
-  }
-
 #if SIFIVE_CUSTOMIZATION
-  // SCEVExpr that holds stride of that memory access. nullptr if it's indexed
+  /// SCEVExpr that holds stride of that memory access. nullptr if it's indexed
   const SCEV *StrideInBytes = nullptr;
 
   /// Speculative load/store
@@ -2908,56 +2892,26 @@ protected:
 
   /// Compress store or expand load
   bool IsMonotonic = false;
-#endif // SIFIVE_CUSTOMIZATION
 
-public:
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  VPWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
-                                 bool Consecutive, bool Reverse, DebugLoc DL,
-                                 const SCEV *StrideInBytes = nullptr,
-                                 bool Speculative = false,
-                                 bool IsMonotonic = false)
-      : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr}), Ingredient(Load),
-        Consecutive(Consecutive), Reverse(Reverse),
-        StrideInBytes(StrideInBytes), Speculative(Speculative),
-        IsMonotonic(IsMonotonic) {
+  VPWidenMemoryRecipe(const char unsigned SC, Instruction &I,
+                      std::initializer_list<VPValue *> Operands,
+                      bool Consecutive, bool Reverse, DebugLoc DL,
+                      const SCEV *StrideInBytes = nullptr,
+                      bool Speculative = false, bool IsMonotonic = false)
+      : VPRecipeBase(SC, Operands, DL), Ingredient(I), Consecutive(Consecutive),
+        Reverse(Reverse), StrideInBytes(StrideInBytes),
+        Speculative(Speculative), IsMonotonic(IsMonotonic) {
 #else
-  VPWidenMemoryInstructionRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
-                                 bool Consecutive, bool Reverse, DebugLoc DL)
-      : VPRecipeBase(VPDef::VPWidenMemoryInstructionSC, {Addr}, DL),
-        Ingredient(Load), Consecutive(Consecutive), Reverse(Reverse) {
+  VPWidenMemoryRecipe(const char unsigned SC, Instruction &I,
+                      std::initializer_list<VPValue *> Operands,
+                      bool Consecutive, bool Reverse, DebugLoc DL)
+      : VPRecipeBase(SC, Operands, DL), Ingredient(I), Consecutive(Consecutive),
+        Reverse(Reverse) {
 #endif // SIFIVE_CUSTOMIZATION
     assert((Consecutive || !Reverse) && "Reverse implies consecutive");
-    new VPValue(this, &Load);
-    if (Speculative)
-      new VPValue(this); // newVL
-    setMask(Mask);
   }
 
-#if SIFIVE_CUSTOMIZATION
-  VPWidenMemoryInstructionRecipe(StoreInst &Store, VPValue *Addr,
-                                 VPValue *StoredValue, VPValue *Mask,
-                                 bool Consecutive, bool Reverse, DebugLoc DL,
-                                 const SCEV *StrideInBytes = nullptr,
-                                 bool Speculative = false,
-                                 bool IsMonotonic = false)
-      : VPRecipeBase(VPWidenMemoryInstructionSC, {Addr, StoredValue}),
-        Ingredient(Store), Consecutive(Consecutive), Reverse(Reverse),
-        StrideInBytes(StrideInBytes), Speculative(Speculative),
-        IsMonotonic(IsMonotonic) {
-    assert(!Speculative && "Speculative store is not yet supported");
-#else
-  VPWidenMemoryInstructionRecipe(StoreInst &Store, VPValue *Addr,
-                                 VPValue *StoredValue, VPValue *Mask,
-                                 bool Consecutive, bool Reverse, DebugLoc DL)
-      : VPRecipeBase(VPDef::VPWidenMemoryInstructionSC, {Addr, StoredValue},
-                     DL),
-        Ingredient(Store), Consecutive(Consecutive), Reverse(Reverse) {
-#endif // SIFIVE_CUSTOMIZATION
-    assert((Consecutive || !Reverse) && "Reverse implies consecutive");
-    setMask(Mask);
-=======
+public:
   VPWidenMemoryRecipe *clone() override {
     llvm_unreachable("cloning not supported");
   }
@@ -2967,7 +2921,6 @@ public:
            R->getVPDefID() == VPRecipeBase::VPWidenStoreSC ||
            R->getVPDefID() == VPRecipeBase::VPWidenLoadEVLSC ||
            R->getVPDefID() == VPRecipeBase::VPWidenStoreEVLSC;
->>>>>>> b329179
   }
 
   static inline bool classof(const VPUser *U) {
@@ -2995,34 +2948,6 @@ public:
     return isMasked() ? getOperand(getNumOperands() - 1) : nullptr;
   }
 
-  /// Generate the wide load/store.
-  void execute(VPTransformState &State) override {
-    llvm_unreachable("VPWidenMemoryRecipe should not be instantiated.");
-  }
-
-  Instruction &getIngredient() const { return Ingredient; }
-};
-
-/// A recipe for widening load operations, using the address to load from and an
-/// optional mask.
-struct VPWidenLoadRecipe final : public VPWidenMemoryRecipe, public VPValue {
-  VPWidenLoadRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
-                    bool Consecutive, bool Reverse, DebugLoc DL)
-      : VPWidenMemoryRecipe(VPDef::VPWidenLoadSC, Load, {Addr}, Consecutive,
-                            Reverse, DL),
-        VPValue(this, &Load) {
-    setMask(Mask);
-  }
-
-  VPWidenLoadRecipe *clone() override {
-    return new VPWidenLoadRecipe(cast<LoadInst>(Ingredient), getAddr(),
-                                 getMask(), Consecutive, Reverse,
-                                 getDebugLoc());
-  }
-
-  VP_CLASSOF_IMPL(VPDef::VPWidenLoadSC);
-
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Return wheter NonConsecutive loads/stores can be strided
   bool isStrided() const { return StrideInBytes != nullptr; }
@@ -3035,10 +2960,60 @@ struct VPWidenLoadRecipe final : public VPWidenMemoryRecipe, public VPValue {
   bool isSpeculative() const { return Speculative; }
 
   bool isMonotonic() const { return IsMonotonic; }
+
+  // FIXME: That should live in the base class
+  Type *getElementType() const {
+    return getLoadStoreType(&Ingredient);
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Generate the wide load/store.
-=======
+  void execute(VPTransformState &State) override {
+    llvm_unreachable("VPWidenMemoryRecipe should not be instantiated.");
+  }
+
+  Instruction &getIngredient() const { return Ingredient; }
+};
+
+/// A recipe for widening load operations, using the address to load from and an
+/// optional mask.
+struct VPWidenLoadRecipe final : public VPWidenMemoryRecipe, public VPValue {
+#if SIFIVE_CUSTOMIZATION
+  VPWidenLoadRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
+                    bool Consecutive, bool Reverse, DebugLoc DL,
+                    const SCEV *StrideInBytes = nullptr,
+                    bool Speculative = false, bool IsMonotonic = false)
+      : VPWidenMemoryRecipe(VPDef::VPWidenLoadSC, Load, {Addr}, Consecutive,
+                            Reverse, DL, StrideInBytes, Speculative,
+                            IsMonotonic),
+#else
+  VPWidenLoadRecipe(LoadInst &Load, VPValue *Addr, VPValue *Mask,
+                    bool Consecutive, bool Reverse, DebugLoc DL)
+      : VPWidenMemoryRecipe(VPDef::VPWidenLoadSC, Load, {Addr}, Consecutive,
+                            Reverse, DL),
+#endif // SIFIVE_CUSTOMIZATION
+        VPValue(this, &Load) {
+#if SIFIVE_CUSTOMIZATION
+    if (Speculative)
+      new VPValue(this); // newVL
+#endif // SIFIVE_CUSTOMIZATION
+    setMask(Mask);
+  }
+
+  VPWidenLoadRecipe *clone() override {
+    return new VPWidenLoadRecipe(cast<LoadInst>(Ingredient), getAddr(),
+                                 getMask(), Consecutive, Reverse,
+#if SIFIVE_CUSTOMIZATION
+                                 getDebugLoc(),
+                                 isStrided() ? getStrideInBytes() : nullptr,
+                                 isSpeculative(), isMonotonic());
+#else
+                                 getDebugLoc());
+#endif // SIFIVE_CUSTOMIZATION
+  }
+
+  VP_CLASSOF_IMPL(VPDef::VPWidenLoadSC);
+
   /// Generate a wide load or gather.
   void execute(VPTransformState &State) override;
 
@@ -3064,9 +3039,20 @@ struct VPWidenLoadRecipe final : public VPWidenMemoryRecipe, public VPValue {
 struct VPWidenLoadEVLRecipe final : public VPWidenMemoryRecipe, public VPValue {
   VPWidenLoadEVLRecipe(VPWidenLoadRecipe *L, VPValue *EVL, VPValue *Mask)
       : VPWidenMemoryRecipe(VPDef::VPWidenLoadEVLSC, L->getIngredient(),
+#if SIFIVE_CUSTOMIZATION
+                            {L->getAddr(), EVL}, L->isConsecutive(),
+                            L->isReverse(), L->getDebugLoc(),
+                            L->isStrided() ? L->getStrideInBytes() : nullptr,
+                            L->isSpeculative(), L->isMonotonic()),
+#else
                             {L->getAddr(), EVL}, L->isConsecutive(), false,
                             L->getDebugLoc()),
+#endif // SIFIVE_CUSTOMIZATION
         VPValue(this, &getIngredient()) {
+#if SIFIVE_CUSTOMIZATION
+    if (Speculative)
+      new VPValue(this); // newVL
+#endif // SIFIVE_CUSTOMIZATION
     setMask(Mask);
   }
 
@@ -3090,24 +3076,54 @@ struct VPWidenLoadEVLRecipe final : public VPWidenMemoryRecipe, public VPValue {
            "Op must be an operand of the recipe");
     // Widened loads only demand the first lane of EVL and consecutive loads
     // only demand the first lane of their address.
+#if SIFIVE_CUSTOMIZATION
+    return Op == getEVL() ||
+           (Op == getAddr() && (isConsecutive() || isStrided()));
+#else
     return Op == getEVL() || (Op == getAddr() && isConsecutive());
+#endif // SIFIVE_CUSTOMIZATION
   }
+
+#if SIFIVE_CUSTOMIZATION
+  bool onlyFirstLaneUsed(const VPValue *Op, unsigned Index) const override {
+    assert(is_contained(operands(), Op) &&
+           "Op must be an operand of the recipe");
+
+    return Op == getAddr() && (isConsecutive() || isStrided()) && Index == 0;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 /// A recipe for widening store operations, using the stored value, the address
 /// to store to and an optional mask.
 struct VPWidenStoreRecipe final : public VPWidenMemoryRecipe {
+#if SIFIVE_CUSTOMIZATION
+  VPWidenStoreRecipe(StoreInst &Store, VPValue *Addr, VPValue *StoredVal,
+                     VPValue *Mask, bool Consecutive, bool Reverse, DebugLoc DL,
+                     const SCEV *StrideInBytes = nullptr,
+                     bool IsMonotonic = false)
+      : VPWidenMemoryRecipe(VPDef::VPWidenStoreSC, Store, {Addr, StoredVal},
+                            Consecutive, Reverse, DL, StrideInBytes, false,
+                            IsMonotonic) {
+#else
   VPWidenStoreRecipe(StoreInst &Store, VPValue *Addr, VPValue *StoredVal,
                      VPValue *Mask, bool Consecutive, bool Reverse, DebugLoc DL)
       : VPWidenMemoryRecipe(VPDef::VPWidenStoreSC, Store, {Addr, StoredVal},
                             Consecutive, Reverse, DL) {
+#endif // SIFIVE_CUSTOMIZATION
     setMask(Mask);
   }
 
   VPWidenStoreRecipe *clone() override {
     return new VPWidenStoreRecipe(cast<StoreInst>(Ingredient), getAddr(),
                                   getStoredValue(), getMask(), Consecutive,
+#if SIFIVE_CUSTOMIZATION
+                                  Reverse, getDebugLoc(),
+                                  isStrided() ? getStrideInBytes() : nullptr,
+                                  isMonotonic());
+#else
                                   Reverse, getDebugLoc());
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   VP_CLASSOF_IMPL(VPDef::VPWidenStoreSC);
@@ -3116,8 +3132,13 @@ struct VPWidenStoreRecipe final : public VPWidenMemoryRecipe {
   VPValue *getStoredValue() const { return getOperand(1); }
 
   /// Generate a wide store or scatter.
->>>>>>> b329179
   void execute(VPTransformState &State) override;
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  /// Print the recipe.
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
 
   /// Returns true if the recipe only uses the first lane of operand \p Op.
   bool onlyFirstLaneUsed(const VPValue *Op) const override {
@@ -3136,7 +3157,14 @@ struct VPWidenStoreEVLRecipe final : public VPWidenMemoryRecipe {
   VPWidenStoreEVLRecipe(VPWidenStoreRecipe *S, VPValue *EVL, VPValue *Mask)
       : VPWidenMemoryRecipe(VPDef::VPWidenStoreEVLSC, S->getIngredient(),
                             {S->getAddr(), S->getStoredValue(), EVL},
+#if SIFIVE_CUSTOMIZATION
+                            S->isConsecutive(), S->isReverse(),
+                            S->getDebugLoc(),
+                            S->isStrided() ? S->getStrideInBytes() : nullptr,
+                            S->isSpeculative(), S->isMonotonic()) {
+#else
                             S->isConsecutive(), false, S->getDebugLoc()) {
+#endif // SIFIVE_CUSTOMIZATION
     setMask(Mask);
   }
 
@@ -3168,9 +3196,14 @@ struct VPWidenStoreEVLRecipe final : public VPWidenMemoryRecipe {
     // Widened, consecutive memory operations only demand the first lane of
     // their address, unless the same operand is also stored. That latter can
     // happen with opaque pointers.
+#if SIFIVE_CUSTOMIZATION
+    return Op == getAddr() && (isConsecutive() || isStrided()) &&
+           Op != getStoredValue();
+#else
     return Op == getAddr() && isConsecutive() && Op != getStoredValue();
+#endif // SIFIVE_CUSTOMIZATION
   }
-<<<<<<< HEAD
+
 #if SIFIVE_CUSTOMIZATION
   bool onlyFirstLaneUsed(const VPValue *Op, unsigned Index) const override {
     assert(is_contained(operands(), Op) &&
@@ -3179,25 +3212,6 @@ struct VPWidenStoreEVLRecipe final : public VPWidenMemoryRecipe {
     return Op == getAddr() && (isConsecutive() || isStrided()) && Index == 0;
   }
 #endif // SIFIVE_CUSTOMIZATION
-
-  Instruction &getIngredient() const { return Ingredient; }
-
-#if SIFIVE_CUSTOMIZATION
-  // FIXME: That should live in the base class
-  Type *getElementType() const {
-    return getLoadStoreType(&Ingredient);
-  }
-
-  bool getReverse() const { return Reverse; }
-#endif // SIFIVE_CUSTOMIZATION
-
-#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
-  /// Print the recipe.
-  void print(raw_ostream &O, const Twine &Indent,
-             VPSlotTracker &SlotTracker) const override;
-#endif
-=======
->>>>>>> b329179
 };
 
 /// Recipe to expand a SCEV expression.

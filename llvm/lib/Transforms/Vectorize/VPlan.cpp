@@ -54,7 +54,7 @@
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/Intrinsics.h"
-#include "llvm/IR/IntrinsicsRISCV.h"
+#include "llvm/IR/PatternMatch.h"
 #endif // SIFIVE_CUSTOMIZATION
 
 using namespace llvm;
@@ -1741,11 +1741,11 @@ void VPSlotTracker::assignNames(const VPlan &Plan) {
 
 #if SIFIVE_CUSTOMIZATION
   if (Plan.InitEVL)
-    assignSlot(Plan.InitEVL);
+    assignName(Plan.InitEVL);
   if (Plan.AllTrueMask)
-    assignSlot(Plan.AllTrueMask);
+    assignName(Plan.AllTrueMask);
   if (Plan.AllFalseMask)
-    assignSlot(Plan.AllFalseMask);
+    assignName(Plan.AllFalseMask);
 #endif // SIFIVE_CUSTOMIZATION
 
   ReversePostOrderTraversal<VPBlockDeepTraversalWrapper<const VPBlockBase *>>
@@ -1819,8 +1819,7 @@ VPValue *vputils::getOrCreateVPValueForSCEVExpr(VPlan &Plan, const SCEV *Expr,
 #if SIFIVE_CUSTOMIZATION
 // FIXME: Represent CSA instructions through VPHeaderPHIRecipe
 bool vputils::isPhi(const VPRecipeBase &R) {
-  if (isa<VPHeaderPHIRecipe, VPBlendRecipe, VPPredInstPHIRecipe,
-          VPWidenPHIRecipe>(&R))
+  if (R.isPhi())
     return true;
   if (auto *VPInst = dyn_cast<VPInstruction>(&R))
     return VPInst->getOpcode() == VPInstruction::CSAMaskPhi ||

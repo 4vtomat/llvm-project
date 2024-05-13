@@ -367,7 +367,7 @@ void VPMonotonicHeaderPHIRecipe::execute(VPTransformState &State) {
 /// `vp.strided_load`/`vp.strided_store` if previous analysis indicated it's
 /// possible to be used
 Instruction *
-widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
+widenPredicatedMemoryInstruction(VPWidenMemoryRecipe &VPWMIR,
                                  VPTransformState &State, unsigned Part,
                                  ArrayRef<Value *> BlockInMaskParts) {
   assert(Part == 0 && "Cannot support Part > 0 for RVV VLA vectorization");
@@ -390,8 +390,8 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
   };
   Value *BlockInMaskPart = MaskValue(Part, NumElts);
 
-  if (VPWMIR.isStore()) {
-    VPValue *StoredValue = VPWMIR.getStoredValue();
+  if (auto *VPWMSIR = dyn_cast<VPWidenStoreEVLRecipe>(&VPWMIR)) {
+    VPValue *StoredValue = VPWMSIR->getStoredValue();
     Value *StoredVal = State.get(StoredValue, Part);
     if (VPWMIR.isMonotonic())
       StoredVal = compressVector(Builder, BlockInMaskPart, StoredVal, EVLPart);
@@ -410,9 +410,13 @@ widenPredicatedMemoryInstruction(VPWidenMemoryInstructionRecipe &VPWMIR,
                "not caught by isSafeStrideAccessInfo.");
         Value *Stride = Exp.expandCodeFor(
             SCEVStride, SCEVStride->getType(), InsertPoint);
-        LLVM_DEBUG(llvm::dbgs()
-                   << "Generating strided store for addr = " << *VPAddr
-                   << " with a stride = " << *Stride << '\n');
+        LLVM_DEBUG(llvm::dbgs() << "Generating strided store for addr = ";
+                   const auto *Instr = VPAddr->getDefiningRecipe();
+                   VPSlotTracker SlotTracker((Instr && Instr->getParent())
+                                                 ? Instr->getParent()->getPlan()
+                                                 : nullptr);
+                   Instr->print(dbgs(), Twine(), SlotTracker);
+                   dbgs() << " with a stride = " << *Stride << '\n');
         Value *Operands[] = {StoredVal, Ptr, Stride, BlockInMaskPart, EVLPart};
         VS = Builder.CreateIntrinsic(
             Intrinsic::experimental_vp_strided_store,
