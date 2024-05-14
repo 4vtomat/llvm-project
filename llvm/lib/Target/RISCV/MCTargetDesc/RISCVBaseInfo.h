@@ -308,15 +308,6 @@ enum {
   // multiple "bitmask" flags.
   MO_DIRECT_FLAG_MASK = 31
 };
-
-#if SIFIVE_CUSTOMIZATION
-static inline bool isValidMammothWWEE(unsigned WWEE) {
-  // check wwee & ~0b1111 == 0
-  // also check ww can't be 0b00 and sew * twiden <= 64
-  return (WWEE & ~0xf) == 0 && (WWEE & 0xc) != 0 &&
-         (1 << ((WWEE & 0x3) + 3)) * (1 << (((WWEE >> 2) & 0x3) - 1)) <= 64;
-}
-#endif // SIFIVE_CUSTOMIZATION
 } // namespace RISCVII
 
 namespace RISCVOp {

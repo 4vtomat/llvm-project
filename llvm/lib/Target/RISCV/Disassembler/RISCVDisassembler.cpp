@@ -292,7 +292,7 @@ static DecodeStatus DecodeTRM4RegisterClass(MCInst &Inst, uint32_t RegNo,
 static DecodeStatus decodeMammothWWEE(MCInst &Inst, uint32_t Imm,
                                       int64_t Address,
                                       const MCDisassembler *Decoder) {
-  if (!RISCVII::isValidMammothWWEE(Imm))
+  if (!RISCVVType::isValidMammothWWEE(Imm))
     return MCDisassembler::Fail;
 
   Inst.addOperand(MCOperand::createImm(Imm));

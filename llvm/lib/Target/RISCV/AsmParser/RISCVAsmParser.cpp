@@ -635,15 +635,7 @@ public:
 
 #if SIFIVE_CUSTOMIZATION
   bool isMammothWWEE() const {
-    int64_t Imm;
-    RISCVMCExpr::VariantKind VK = RISCVMCExpr::VK_RISCV_None;
-    if (!isImm())
-      return false;
-    if (!evaluateConstantImm(getImm(), Imm, VK) ||
-        VK != RISCVMCExpr::VK_RISCV_None)
-      return false;
-
-    return RISCVII::isValidMammothWWEE(Imm);
+    return Kind == KindTy::VType && RISCVVType::isValidMammothWWEE(VType.Val);
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -2357,12 +2349,12 @@ bool RISCVAsmParser::parseMammothWWEEToken(const AsmToken &Tok,
 ParseStatus RISCVAsmParser::parseMammothWWEE(OperandVector &Operands) {
   SMLoc S = getLoc();
 
-  unsigned TWiden = 0;
+  unsigned Widen = 0;
   unsigned SEW = 0;
 
   WWEEState State = WWEEState_SEW;
 
-  if (parseMammothWWEEToken(getTok(), State, TWiden, SEW))
+  if (parseMammothWWEEToken(getTok(), State, Widen, SEW))
     return generateMammothWWEEError(S);
 
   getLexer().Lex();
@@ -2370,16 +2362,14 @@ ParseStatus RISCVAsmParser::parseMammothWWEE(OperandVector &Operands) {
   if (!parseOptionalToken(AsmToken::Comma))
     return generateMammothWWEEError(S);
 
-  if (parseMammothWWEEToken(getTok(), State, TWiden, SEW))
+  if (parseMammothWWEEToken(getTok(), State, Widen, SEW))
     return generateMammothWWEEError(S);
 
   getLexer().Lex();
 
   if (getLexer().is(AsmToken::EndOfStatement) && State == WWEEState_Done) {
-    Operands.push_back(RISCVOperand::createImm(
-        MCConstantExpr::create(
-            ((Log2_64(TWiden) + 1) << 2) | (Log2_64(SEW) - 3), getContext()),
-        S, S, isRV64()));
+    Operands.push_back(RISCVOperand::createVType(
+        RISCVVType::encodeMammothWWEE(SEW, Widen), S));
     return ParseStatus::Success;
   }
 

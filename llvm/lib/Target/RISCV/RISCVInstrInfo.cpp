@@ -2263,7 +2263,7 @@ bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
           break;
 #if SIFIVE_CUSTOMIZATION
         case RISCVOp::OPERAND_MammothWWEE:
-          Ok = RISCVII::isValidMammothWWEE(Imm);
+          Ok = RISCVVType::isValidMammothWWEE(Imm);
           break;
 #endif // SIFIVE_CUSTOMIZATION
         case RISCVOp::OPERAND_SIMM12:
