@@ -12,4 +12,4 @@ sf.vfexpa.v v2, v5, v0.t
 # CHECK-INST: sf.vfexpa.v v2, v5, v0.t
 # CHECK-ENCODING: [0x57,0x11,0x53,0x4c]
 # CHECK-ERROR: instruction requires the following: 'Xsfvfexpa' (SiFive Vector Floating-Point Exponential Approximation Instruction){{$}}
-# CHECK-UNKNOWN: 57 11 53 4c <unknown>
+# CHECK-UNKNOWN: 4c531157 <unknown>
