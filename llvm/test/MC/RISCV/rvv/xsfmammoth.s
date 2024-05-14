@@ -31,6 +31,12 @@
 # CHECK-UNKNOWN: 57 f5 05 10 <unknown>
 sf.vsettnt a0, a1, e8, w1
 
+# CHECK-INST: sf.vsettnt a0, a1, e8, w1
+# CHECK-ENCODING: [0x57,0xf5,0x05,0x10]
+# CHECK-ERROR: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32x' (Vector Extensions for Embedded Processors)
+# CHECK-UNKNOWN: 57 f5 05 10 <unknown>
+vsetvli a0, a1, 0x100
+
 # CHECK-INST: sf.vsettn a0, a1
 # CHECK-ENCODING: [0x57,0xf5,0x05,0x84]
 # CHECK-ERROR: instruction requires the following: XSfmm32ea/XSfmmbase{{$}}
@@ -204,3 +210,9 @@ sf.vtzero.t mt15
 # CHECK-ERROR: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32x' (Vector Extensions for Embedded Processors)
 # CHECK-UNKNOWN: 57 76 b5 80 <unknown>
 vsetvl a2, a0, a1
+
+# CHECK-INST:  vsetvli a0, a1, e8, m1, tu, mu
+# CHECK-ENCODING: [0x57,0xf5,0x05,0x00]
+# CHECK-ERROR: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32x' (Vector Extensions for Embedded Processors)
+# CHECK-UNKNOWN: 57 f5 05 00 <unknown>
+vsetvli a0, a1, e8, m1, tu, mu
