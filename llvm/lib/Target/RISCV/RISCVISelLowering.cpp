@@ -7921,6 +7921,8 @@ foldBinOpIntoSelectIfProfitable(SDNode *BO, SelectionDAG &DAG,
 }
 
 #if SIFIVE_CUSTOMIZATION
+// Combine (vwaddu_w_vl (vwaddu_vl 1, X), X) -> (vadd (vwaddu X, Y), 1)
+// FIXME: vwaddu_vl is commutable
 static SDValue combineVWADDU_W_VL(SDNode *N, SelectionDAG &DAG,
                                   const RISCVSubtarget &Subtarget) {
   if (N->getOpcode() != RISCVISD::VWADDU_W_VL)
@@ -7931,7 +7933,7 @@ static SDValue combineVWADDU_W_VL(SDNode *N, SelectionDAG &DAG,
   SDValue Mask = N->getOperand(3);
   SDValue VL = N->getOperand(4);
 
-  if (Sum.getOpcode() != RISCVISD::VWADDU_W_VL || !N->getOperand(2).isUndef() ||
+  if (Sum.getOpcode() != RISCVISD::VWADDU_VL || !N->getOperand(2).isUndef() ||
       !Sum.hasOneUse())
     return SDValue();
 
