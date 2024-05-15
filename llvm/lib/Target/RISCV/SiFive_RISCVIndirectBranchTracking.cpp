@@ -31,6 +31,7 @@ public:
 private:
   static char ID;
   const Align LpadAlign = Align(4);
+  static constexpr uint32_t FixedLabel = 1;
 };
 
 } // end anonymous namespace
@@ -41,10 +42,11 @@ FunctionPass *llvm::createRISCVIndirectBranchTrackingPass() {
   return new RISCVIndirectBranchTrackingPass();
 }
 
-static void emitLpad(MachineBasicBlock &MBB, const RISCVInstrInfo *TII) {
+static void emitLpad(MachineBasicBlock &MBB, const RISCVInstrInfo *TII,
+                     uint32_t Label) {
   auto I = MBB.begin();
   BuildMI(MBB, I, MBB.findDebugLoc(I), TII->get(RISCV::AUIPC), RISCV::X0)
-    .addImm(1);
+    .addImm(Label);
 }
 
 bool
@@ -63,7 +65,10 @@ RISCVIndirectBranchTrackingPass::runOnMachineFunction(MachineFunction &MF) {
           continue;
 
       if (F.hasAddressTaken() || !F.hasLocalLinkage()) {
-        emitLpad(MBB, TII);
+        unsigned Label = FixedLabel;
+        if (auto *MD = F.getMetadata(LLVMContext::MD_riscv_cfi_type))
+          Label = mdconst::extract<ConstantInt>(MD->getOperand(0))->getZExtValue();
+        emitLpad(MBB, TII, Label);
         if (MF.getAlignment() < LpadAlign)
           MF.setAlignment(LpadAlign);
         Changed = true;
@@ -72,7 +77,7 @@ RISCVIndirectBranchTrackingPass::runOnMachineFunction(MachineFunction &MF) {
     }
 
     if (MBB.hasAddressTaken()) {
-      emitLpad(MBB, TII);
+      emitLpad(MBB, TII, FixedLabel);
       if (MBB.getAlignment() < LpadAlign)
         MBB.setAlignment(LpadAlign);
       Changed = true;

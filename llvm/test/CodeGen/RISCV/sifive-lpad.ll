@@ -173,3 +173,33 @@ define void @interrupt() "interrupt"="user" {
 ; RV64-NEXT:    mret
   ret void
 }
+
+; Check interrupt function does not needs landing pad.
+define void @specific_label() !riscv_cfi_type !0 {
+; RV32-LABEL: specific_label:
+; RV32:       # %bb.0:
+; RV32-NEXT:    lpad 14
+; RV32-NEXT:    ret
+;
+; RV64-LABEL: specific_label:
+; RV64:       # %bb.0:
+; RV64-NEXT:    lpad 14
+; RV64-NEXT:    ret
+  ret void
+}
+
+define internal void @call_specific_label(ptr %0) {
+; RV32-LABEL: call_specific_label:
+; RV32:       # %bb.0:
+; RV32-NEXT:    lui t2, 14
+; RV32-NEXT:    jr a0
+;
+; RV64-LABEL: call_specific_label:
+; RV64:       # %bb.0:
+; RV64-NEXT:    lui t2, 14
+; RV64-NEXT:    jr a0
+  tail call void %0() ["riscv_cfi"(i32 14)]
+  ret void
+}
+
+!0 = !{i32 14}

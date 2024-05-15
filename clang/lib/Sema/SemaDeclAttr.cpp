@@ -8160,6 +8160,23 @@ static void handleX86ForceAlignArgPointerAttr(Sema &S, Decl *D,
   D->addAttr(::new (S.Context) X86ForceAlignArgPointerAttr(S.Context, AL));
 }
 
+#if SIFIVE_CUSTOMIZATION
+static void handleRISCVLandingPadTypeAttr(Sema &S, Decl *D,
+                                          const ParsedAttr &AL) {
+  uint32_t Label = 0;
+  Expr *LabelExpr = AL.getArgAsExpr(0);
+  if (!checkUInt32Argument(S, AL, LabelExpr, Label))
+    return;
+
+  if (!llvm::isUInt<20>(Label)) {
+    S.Diag(AL.getLoc(), diag::err_invalid_landingpad_val) << Label;
+    return;
+  }
+
+  D->addAttr(::new (S.Context) RISCVLandingPadAttr(S.Context, AL, Label));
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 static void handleLayoutVersion(Sema &S, Decl *D, const ParsedAttr &AL) {
   uint32_t Version;
   Expr *VersionExpr = static_cast<Expr *>(AL.getArgAsExpr(0));
@@ -9663,6 +9680,12 @@ ProcessDeclAttribute(Sema &S, Scope *scope, Decl *D, const ParsedAttr &AL,
   case ParsedAttr::AT_CountedBy:
     handleCountedByAttrField(S, D, AL);
     break;
+
+#if SIFIVE_CUSTOMIZATION
+  case ParsedAttr::AT_RISCVLandingPad:
+    handleRISCVLandingPadTypeAttr(S, D, AL);
+    break;
+#endif // SIFIVE_CUSTOMIZATION
 
   // Microsoft attributes:
   case ParsedAttr::AT_LayoutVersion:
