@@ -69,6 +69,11 @@ def riscv_brcc      : SDNode<"RISCVISD::BR_CC", SDT_RISCVBrCC,
 def riscv_tail      : SDNode<"RISCVISD::TAIL", SDT_RISCVCall,
                              [SDNPHasChain, SDNPOptInGlue, SDNPOutGlue,
                               SDNPVariadic]>;
+#ifdef SIFIVE_CUSTOMIZATION
+// Cherry-picked from upstream #66762.
+def riscv_sw_guarded_brind : SDNode<"RISCVISD::SW_GUARDED_BRIND",
+                                    SDTBrind, [SDNPHasChain]>;
+#endif // SIFIVE_CUSTOMIZATION
 def riscv_sllw      : SDNode<"RISCVISD::SLLW", SDT_RISCVIntBinOpW>;
 def riscv_sraw      : SDNode<"RISCVISD::SRAW", SDT_RISCVIntBinOpW>;
 def riscv_srlw      : SDNode<"RISCVISD::SRLW", SDT_RISCVIntBinOpW>;
@@ -1516,9 +1521,13 @@ def PseudoBRIND : Pseudo<(outs), (ins GPRJALR:$rs1, simm12:$imm12), []>,
                   PseudoInstExpansion<(JALR X0, GPR:$rs1, simm12:$imm12)>;
 
 let Predicates = [HasStdExtZicfilp],
-    isBarrier = 1, isBranch = 1, isIndirectBranch = 1, isTerminator = 1 in
+    isBarrier = 1, isBranch = 1, isIndirectBranch = 1, isTerminator = 1 in {
 def PseudoBRINDNonX7 : Pseudo<(outs), (ins GPRJALRNonX7:$rs1, simm12:$imm12), []>,
                        PseudoInstExpansion<(JALR X0, GPR:$rs1, simm12:$imm12)>;
+// Cherry-picked from upstream #66762.
+def PseudoBRINDX7 : Pseudo<(outs), (ins GPRX7:$rs1, simm12:$imm12), []>,
+                    PseudoInstExpansion<(JALR X0, GPR:$rs1, simm12:$imm12)>;
+}
 
 // For Zicfilp, need to avoid using X7/T2 for indirect branches which need
 // landing pad.
@@ -1526,6 +1535,11 @@ let Predicates = [HasStdExtZicfilp] in {
 def : Pat<(brind GPRJALRNonX7:$rs1), (PseudoBRINDNonX7 GPRJALRNonX7:$rs1, 0)>;
 def : Pat<(brind (add GPRJALRNonX7:$rs1, simm12:$imm12)),
           (PseudoBRINDNonX7 GPRJALRNonX7:$rs1, simm12:$imm12)>;
+
+// Cherry-picked from upstream #66762.
+def : Pat<(riscv_sw_guarded_brind GPRX7:$rs1), (PseudoBRINDX7 GPRX7:$rs1, 0)>;
+def : Pat<(riscv_sw_guarded_brind (add GPRX7:$rs1, simm12:$imm12)),
+          (PseudoBRINDX7 GPRX7:$rs1, simm12:$imm12)>;
 }
 
 let Predicates = [NoStdExtZicfilp] in {

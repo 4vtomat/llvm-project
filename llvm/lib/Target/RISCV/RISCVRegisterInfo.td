@@ -190,6 +190,11 @@ def GPRNoX0 : GPRRegisterClass<(sub GPR, X0)>;
 
 def GPRNoX0X2 : GPRRegisterClass<(sub GPR, X0, X2)>;
 
+#ifdef SIFIVE_CUSTOMIZATION
+// Cherry-picked from upstream #66762.
+def GPRX7 : GPRRegisterClass<(add X7)>;
+#endif //SIFIVE_CUSTOMIZATION
+
 // Don't use X1 or X5 for JALR since that is a hint to pop the return address
 // stack on some microarchitectures. Also remove the reserved registers X0, X2,
 // X3, and X4 as it reduces the number of register classes that get synthesized

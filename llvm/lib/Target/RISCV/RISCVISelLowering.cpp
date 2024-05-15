@@ -22321,6 +22321,10 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(CLMULR)
   NODE_NAME_CASE(MOPR)
   NODE_NAME_CASE(MOPRR)
+#if SIFIVE_CUSTOMIZATION
+  // This is a miss in upstream #66762.
+  NODE_NAME_CASE(SW_GUARDED_BRIND)
+#endif // SIFIVE_CUSTOMIZATION
   NODE_NAME_CASE(SHA256SIG0)
   NODE_NAME_CASE(SHA256SIG1)
   NODE_NAME_CASE(SHA256SUM0)
@@ -24270,6 +24274,23 @@ bool RISCVTargetLowering::shouldFoldSelectWithSingleBitTest(
 unsigned RISCVTargetLowering::getMinimumJumpTableEntries() const {
   return Subtarget.getMinimumJumpTableEntries();
 }
+
+#if SIFIVE_CUSTOMIZATION
+// Cherry-picked from upstream #66762.
+SDValue RISCVTargetLowering::expandIndirectJTBranch(const SDLoc &dl,
+                                                    SDValue Value, SDValue Addr,
+                                                    int JTI,
+                                                    SelectionDAG &DAG) const {
+  if (Subtarget.hasStdExtZicfilp()) {
+    // When Zicfilp enabled, we need to use software guarded branch for jump
+    // table branch.
+    SDValue JTInfo = DAG.getJumpTableDebugInfo(JTI, Value, dl);
+    return DAG.getNode(RISCVISD::SW_GUARDED_BRIND, dl, MVT::Other, JTInfo,
+                       Addr);
+  }
+  return TargetLowering::expandIndirectJTBranch(dl, Value, Addr, JTI, DAG);
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 namespace llvm::RISCVVIntrinsicsTable {
 
