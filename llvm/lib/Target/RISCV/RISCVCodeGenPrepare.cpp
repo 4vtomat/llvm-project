@@ -58,7 +58,7 @@ public:
   bool visitInstruction(Instruction &I) { return false; }
   bool visitAnd(BinaryOperator &BO);
   bool visitIntrinsicInst(IntrinsicInst &I);
-  bool optimizeReduction(IntrinsicInst &I);
+  bool optimizeReduction(IntrinsicInst &I); // SIFIVE
 };
 
 } // end anonymous namespace
