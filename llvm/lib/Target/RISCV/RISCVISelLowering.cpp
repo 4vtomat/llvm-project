@@ -18975,39 +18975,40 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     SDValue VL = N->getOperand(2);
 #if SIFIVE_CUSTOMIZATION
     if (Scalar.getOpcode() == RISCVISD::VMV_X_S &&
-        Scalar.getOperand(0).getValueType() == N->getValueType(0) &&
-        isa<ConstantSDNode>(N->getOperand(2))) {
+        Scalar.getOperand(0).getValueType() == N->getValueType(0)) {
       if (N->getOperand(0).isUndef())
         return Scalar.getOperand(0);
-      if (cast<ConstantSDNode>(N->getOperand(2))->getZExtValue() == 0)
+      if (isNullConstant(N->getOperand(2)))
         return N->getOperand(0);
-      SDLoc DL(N);
-      if (Scalar.getOperand(0).getOpcode() == RISCVISD::VSLIDEDOWN_VL &&
-          Scalar.getOperand(0).getOperand(0).isUndef()) {
-        auto Slidedown = Scalar.getOperand(0);
-        if (isa<ConstantSDNode>(Slidedown.getOperand(4)) &&
-            cast<ConstantSDNode>(Slidedown.getOperand(4))->getZExtValue() == 0)
-          return N->getOperand(0);
-        if ((!isa<ConstantSDNode>(Slidedown.getOperand(4)) ||
-             1 < cast<ConstantSDNode>(Slidedown.getOperand(4))
-                     ->getZExtValue()) &&
-            !Slidedown.hasOneUse())
-          return SDValue();
-        return getVSlidedown(DAG, Subtarget, DL, Slidedown.getValueType(),
-                             N->getOperand(0), Slidedown.getOperand(1),
-                             Slidedown.getOperand(2), Slidedown.getOperand(3),
-                             Slidedown.getOperand(4));
+      // These transforms require knowing the VL isn't zero. Conservatively,
+      // check if the VL is a constant. We already checked for null constant
+      // so any other constant is non-zero.
+      // FIXME: Use isKnownNonZero?
+      if (isa<ConstantSDNode>(N->getOperand(2))) {
+        SDLoc DL(N);
+        if (Scalar.getOperand(0).getOpcode() == RISCVISD::VSLIDEDOWN_VL &&
+            Scalar.getOperand(0).getOperand(0).isUndef()) {
+          auto Slidedown = Scalar.getOperand(0);
+          if (isNullConstant(Slidedown.getOperand(4)))
+            return N->getOperand(0);
+          if (!isOneConstant(Slidedown.getOperand(4)) && !Slidedown.hasOneUse())
+            return SDValue();
+          return getVSlidedown(DAG, Subtarget, DL, Slidedown.getValueType(),
+                               N->getOperand(0), Slidedown.getOperand(1),
+                               Slidedown.getOperand(2), Slidedown.getOperand(3),
+                               Slidedown.getOperand(4));
+        }
+        MVT VecVT = N->getSimpleValueType(0);
+        MVT XLenVT = Subtarget.getXLenVT();
+        SDValue Mask, VL;
+        std::tie(Mask, VL) = getDefaultScalableVLOps(VecVT, DL, DAG, Subtarget);
+        SDValue Zero = DAG.getConstant(0, DL, XLenVT);
+        SDValue OneVL = DAG.getConstant(1, DL, XLenVT);
+        // FIXME: Use tail undisturbed vmv.v.v when RISCVISD::VMV_V_V_VL gets
+        // pulled down.
+        return getVSlideup(DAG, Subtarget, DL, VecVT, N->getOperand(0),
+                           Scalar.getOperand(0), Zero, Mask, OneVL);
       }
-      MVT VecVT = N->getSimpleValueType(0);
-      MVT XLenVT = Subtarget.getXLenVT();
-      SDValue Mask, VL;
-      std::tie(Mask, VL) = getDefaultScalableVLOps(VecVT, DL, DAG, Subtarget);
-      SDValue Zero = DAG.getConstant(0, DL, XLenVT);
-      SDValue OneVL = DAG.getConstant(1, DL, XLenVT);
-      // FIXME: Use tail undisturbed vmv.v.v when RISCVISD::VMV_V_V_VL gets
-      // pulled down.
-      return getVSlideup(DAG, Subtarget, DL, VecVT, N->getOperand(0),
-                         Scalar.getOperand(0), Zero, Mask, OneVL);
     }
 #endif // SIFIVE_CUSTOMIZATION
 

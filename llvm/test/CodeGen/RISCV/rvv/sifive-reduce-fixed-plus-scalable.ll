@@ -7,9 +7,7 @@ define i32 @quux(<8 x i32> %arg, <vscale x 8 x i32> %arg1, i32 zeroext %arg2) {
 ; CHECK-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
 ; CHECK-NEXT:    vmv.s.x v10, zero
 ; CHECK-NEXT:    vredsum.vs v8, v8, v10
-; CHECK-NEXT:    vmv.x.s a1, v8
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
-; CHECK-NEXT:    vmv.s.x v8, a1
 ; CHECK-NEXT:    vredsum.vs v8, v12, v8
 ; CHECK-NEXT:    vmv.x.s a0, v8
 ; CHECK-NEXT:    ret
