@@ -13,9 +13,9 @@ define void @_Z8rvv_slsrPKammPammm(i8* nocapture  readonly %A, i64  %M, i64  %K,
 ; CHECK-NEXT:  # %bb.3: # %for.cond2.preheader.us.preheader
 ; CHECK-NEXT:    li a7, 0
 ; CHECK-NEXT:    slli t0, a6, 7
+; CHECK-NEXT:    slli t1, a6, 9
 ; CHECK-NEXT:    add a0, a0, t0
-; CHECK-NEXT:    slli t0, a6, 9
-; CHECK-NEXT:    add a3, a3, t0
+; CHECK-NEXT:    add a3, a3, t1
 ; CHECK-NEXT:    # implicit-def: $v8m2
 ; CHECK-NEXT:  .LBB0_4: # %for.cond2.preheader.us
 ; CHECK-NEXT:    # =>This Loop Header: Depth=1

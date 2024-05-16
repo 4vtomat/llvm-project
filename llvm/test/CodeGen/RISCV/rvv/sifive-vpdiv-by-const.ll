@@ -190,7 +190,6 @@ define <vscale x 4 x i16> @vpudiv_by_shl2_nxv4i16(<vscale x 4 x i16> %va, i16 %b
 define <vscale x 2 x i32> @vpudiv_by_shl2_nxv2i32(<vscale x 2 x i32> %va, i32 %b, <vscale x 2 x i1> %m, i32 zeroext %evl) {
 ; CHECK-LABEL: vpudiv_by_shl2_nxv2i32:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    andi a0, a0, -1
 ; CHECK-NEXT:    addi a0, a0, 1
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m1, ta, ma
 ; CHECK-NEXT:    vsrl.vx v8, v8, a0, v0.t

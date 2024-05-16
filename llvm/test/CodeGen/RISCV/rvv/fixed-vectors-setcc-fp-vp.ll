@@ -1128,21 +1128,16 @@ define <128 x i1> @fcmp_oeq_vv_v128f16(<128 x half> %va, <128 x half> %vb, <128 
 ; ZVFH-NEXT:    addi sp, sp, -16
 ; ZVFH-NEXT:    .cfi_def_cfa_offset 16
 ; ZVFH-NEXT:    csrr a1, vlenb
-; ZVFH-NEXT:    slli a1, a1, 4
+; ZVFH-NEXT:    slli a1, a1, 3
 ; ZVFH-NEXT:    sub sp, sp, a1
-; ZVFH-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 16 * vlenb
+; ZVFH-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * vlenb
 ; ZVFH-NEXT:    addi a1, a0, 128
 ; ZVFH-NEXT:    li a3, 64
 ; ZVFH-NEXT:    vsetvli zero, a3, e16, m8, ta, ma
 ; ZVFH-NEXT:    vle16.v v24, (a1)
-; ZVFH-NEXT:    csrr a1, vlenb
-; ZVFH-NEXT:    slli a1, a1, 3
-; ZVFH-NEXT:    add a1, sp, a1
-; ZVFH-NEXT:    addi a1, a1, 16
+; ZVFH-NEXT:    addi a1, sp, 16
 ; ZVFH-NEXT:    vs8r.v v24, (a1) # Unknown-size Folded Spill
 ; ZVFH-NEXT:    vle16.v v24, (a0)
-; ZVFH-NEXT:    addi a0, sp, 16
-; ZVFH-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
 ; ZVFH-NEXT:    vsetivli zero, 8, e8, m1, ta, ma
 ; ZVFH-NEXT:    vslidedown.vi v7, v0, 8
 ; ZVFH-NEXT:    mv a0, a2
@@ -1151,26 +1146,21 @@ define <128 x i1> @fcmp_oeq_vv_v128f16(<128 x half> %va, <128 x half> %vb, <128 
 ; ZVFH-NEXT:    li a0, 64
 ; ZVFH-NEXT:  .LBB43_2:
 ; ZVFH-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
-; ZVFH-NEXT:    addi a0, sp, 16
-; ZVFH-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
-; ZVFH-NEXT:    vmfeq.vv v6, v8, v24, v0.t
+; ZVFH-NEXT:    vmfeq.vv v8, v8, v24, v0.t
 ; ZVFH-NEXT:    addi a0, a2, -64
 ; ZVFH-NEXT:    sltu a1, a2, a0
 ; ZVFH-NEXT:    addi a1, a1, -1
 ; ZVFH-NEXT:    and a0, a1, a0
 ; ZVFH-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
 ; ZVFH-NEXT:    vmv1r.v v0, v7
+; ZVFH-NEXT:    addi a0, sp, 16
+; ZVFH-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
+; ZVFH-NEXT:    vmfeq.vv v9, v16, v24, v0.t
+; ZVFH-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
+; ZVFH-NEXT:    vslideup.vi v8, v9, 8
+; ZVFH-NEXT:    vmv.v.v v0, v8
 ; ZVFH-NEXT:    csrr a0, vlenb
 ; ZVFH-NEXT:    slli a0, a0, 3
-; ZVFH-NEXT:    add a0, sp, a0
-; ZVFH-NEXT:    addi a0, a0, 16
-; ZVFH-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; ZVFH-NEXT:    vmfeq.vv v24, v16, v8, v0.t
-; ZVFH-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; ZVFH-NEXT:    vslideup.vi v6, v24, 8
-; ZVFH-NEXT:    vmv.v.v v0, v6
-; ZVFH-NEXT:    csrr a0, vlenb
-; ZVFH-NEXT:    slli a0, a0, 4
 ; ZVFH-NEXT:    add sp, sp, a0
 ; ZVFH-NEXT:    addi sp, sp, 16
 ; ZVFH-NEXT:    ret

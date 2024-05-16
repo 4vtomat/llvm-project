@@ -15,9 +15,9 @@ define void @KnownSize1(i8* nocapture readonly %src, i8* nocapture %dst) {
 ; MIN-512-NEXT:    vle8.v v8, (a0)
 ; MIN-512-NEXT:    add a1, a1, a2
 ; MIN-512-NEXT:    vse8.v v8, (a1)
+; MIN-512-NEXT:    add a0, a0, a2
 ; MIN-512-NEXT:    li a3, 313
 ; MIN-512-NEXT:    vsetvli zero, a3, e8, m8, ta, ma
-; MIN-512-NEXT:    add a0, a0, a2
 ; MIN-512-NEXT:    vle8.v v8, (a0)
 ; MIN-512-NEXT:    add a1, a1, a2
 ; MIN-512-NEXT:    vse8.v v8, (a1)

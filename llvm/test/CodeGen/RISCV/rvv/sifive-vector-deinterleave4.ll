@@ -44,29 +44,28 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
-; CHECK-NEXT:    vadd.vi v8, v24, 1
-; CHECK-NEXT:    vrgather.vv v0, v16, v8
+; CHECK-NEXT:    vadd.vi v0, v24, 1
+; CHECK-NEXT:    vrgather.vv v8, v16, v0
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vmsne.vi v8, v0, 0
+; CHECK-NEXT:    vmsne.vi v8, v8, 0
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vs1r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
 ; CHECK-NEXT:    vadd.vi v0, v24, 2
 ; CHECK-NEXT:    vrgather.vv v8, v16, v0
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vmsne.vi v11, v8, 0
+; CHECK-NEXT:    vmsne.vi v10, v8, 0
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m8, ta, ma
 ; CHECK-NEXT:    vadd.vi v24, v24, 3
 ; CHECK-NEXT:    vrgather.vv v0, v16, v24
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vmsne.vi v10, v0, 0
+; CHECK-NEXT:    vmsne.vi v11, v0, 0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vl1r.v v0, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl1r.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmv1r.v v9, v11
+; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    vl1r.v v9, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 1
 ; CHECK-NEXT:    add sp, sp, a0

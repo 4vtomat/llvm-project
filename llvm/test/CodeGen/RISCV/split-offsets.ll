@@ -77,12 +77,12 @@ define void @test2(ptr %sp, ptr %t, i32 %n) {
 ; RV64I-LABEL: test2:
 ; RV64I:       # %bb.0: # %entry
 ; RV64I-NEXT:    li a3, 0
-; RV64I-NEXT:    ld a0, 0(a0)
 ; RV64I-NEXT:    lui a4, 20
+; RV64I-NEXT:    ld a0, 0(a0)
 ; RV64I-NEXT:    addiw a4, a4, -1920
 ; RV64I-NEXT:    add a1, a1, a4
-; RV64I-NEXT:    add a0, a0, a4
 ; RV64I-NEXT:    sext.w a2, a2
+; RV64I-NEXT:    add a0, a0, a4
 ; RV64I-NEXT:    blez a2, .LBB1_2
 ; RV64I-NEXT:  .LBB1_1: # %while_body
 ; RV64I-NEXT:    # =>This Inner Loop Header: Depth=1

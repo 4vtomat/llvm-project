@@ -140,8 +140,8 @@ define void @trunc_sat_i16i32_notopt(ptr %x, ptr %y) {
 ; CHECK-NEXT:    lui a0, 8
 ; CHECK-NEXT:    vmin.vx v8, v8, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vnsrl.wi v10, v8, 0
-; CHECK-NEXT:    vs1r.v v10, (a1)
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0
+; CHECK-NEXT:    vs1r.v v8, (a1)
 ; CHECK-NEXT:    ret
   %1 = load <vscale x 4 x i32>, ptr %x, align 32
   %2 = tail call <vscale x 4 x i32> @llvm.smax.v4i32(<vscale x 4 x i32> %1, <vscale x 4 x i32> splat (i32 -32767))
@@ -192,8 +192,8 @@ define void @trunc_sat_u16u32_notopt(ptr %x, ptr %y) {
 ; CHECK-NEXT:    vsetvli a2, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    vminu.vx v8, v8, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vnsrl.wi v10, v8, 0
-; CHECK-NEXT:    vs1r.v v10, (a1)
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0
+; CHECK-NEXT:    vs1r.v v8, (a1)
 ; CHECK-NEXT:    ret
   %1 = load <vscale x 4 x i32>, ptr %x, align 32
   %2 = tail call <vscale x 4 x i32> @llvm.umin.v4i32(<vscale x 4 x i32> %1, <vscale x 4 x i32> splat (i32 32767))
@@ -260,8 +260,8 @@ define void @trunc_sat_i32i64_notopt(ptr %x, ptr %y) {
 ; CHECK-NEXT:    slli a0, a0, 31
 ; CHECK-NEXT:    vmin.vx v8, v8, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v12, v8, 0
-; CHECK-NEXT:    vs2r.v v12, (a1)
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0
+; CHECK-NEXT:    vs2r.v v8, (a1)
 ; CHECK-NEXT:    ret
   %1 = load <vscale x 4 x i64>, ptr %x, align 64
   %2 = tail call <vscale x 4 x i64> @llvm.smax.v4i64(<vscale x 4 x i64> %1, <vscale x 4 x i64> splat (i64 -2147483647))
@@ -313,8 +313,8 @@ define void @trunc_sat_u32u64_notopt(ptr %x, ptr %y) {
 ; CHECK-NEXT:    vsetvli a2, zero, e64, m4, ta, ma
 ; CHECK-NEXT:    vminu.vx v8, v8, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v12, v8, 0
-; CHECK-NEXT:    vs2r.v v12, (a1)
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0
+; CHECK-NEXT:    vs2r.v v8, (a1)
 ; CHECK-NEXT:    ret
   %1 = load <vscale x 4 x i64>, ptr %x, align 64
   %2 = tail call <vscale x 4 x i64> @llvm.umin.v4i64(<vscale x 4 x i64> %1, <vscale x 4 x i64> splat (i64 2147483647))
