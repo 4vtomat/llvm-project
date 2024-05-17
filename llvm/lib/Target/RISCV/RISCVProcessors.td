@@ -849,10 +849,7 @@ def SIFIVE_P450 : RISCVProcessorModel<"sifive-p450", SiFiveP400Model,
                                        FeatureStdExtZfhmin,
                                        FeatureUnalignedScalarMem,
                                        FeatureUnalignedVectorMem],
-                                      [TuneNoDefaultUnroll,
-                                       TuneConditionalCompressedMoveFusion,
-                                       TuneLUIADDIFusion,
-                                       TuneAUIPCADDIFusion]>;
+                                      [TuneSiFiveP400]>;
 
 def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model,
                                       [Feature64Bit,
@@ -1024,11 +1021,7 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
                                        FeatureStdExtZvksg,
                                        FeatureUnalignedScalarMem,
                                        FeatureUnalignedVectorMem],
-                                      [TuneSiFiveP600, TuneDLen128b, // SIFIVE
-                                       TuneNoDefaultUnroll,
-                                       TuneConditionalCompressedMoveFusion,
-                                       TuneLUIADDIFusion,
-                                       TuneAUIPCADDIFusion,
+                                      [TuneSiFiveP600, TuneDLen128b,
                                        TuneNoSinkSplatOperands]>;
 
 def SIFIVE_P670S : RISCVProcessorModel<"sifive-p670s", SiFiveP600Model,
