@@ -177,6 +177,7 @@
 // CHECK-NOT: __riscv_smwgd
 // CHECK-NOT: __riscv_sswg
 // CHECK-NOT: __riscv_xsfpgflushdlone
+// CHECK-NOT: __riscv_xsfpmpmt
 // CHECK-NOT: __riscv_xsfvfexpa
 // CHECK-NOT: __riscv_xsfvfexpa64e
 // end SIFIVE_CUSTOMIZATION
@@ -1378,6 +1379,14 @@
 // RUN: -march=rv64ixsfpgflushdlone0p1 -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-XSFPGFLUSHDLONE %s
 // CHECK-XSFPGFLUSHDLONE: __riscv_xsfpgflushdlone  1000{{$}}
+
+// RUN: %clang --target=riscv32 -menable-experimental-extensions \
+// RUN: -march=rv32ixsfpmpmt0p1 -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-XSFPMPMT %s
+// RUN: %clang --target=riscv64 -menable-experimental-extensions \
+// RUN: -march=rv64ixsfpmpmt0p1 -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-XSFPMPMT %s
+// CHECK-XSFPMPMT: __riscv_xsfpmpmt  1000{{$}}
 
 // RUN: %clang --target=riscv32 -menable-experimental-extensions \
 // RUN: -march=rv32ixsfvfexpa0p2 -x c -E -dM %s \

@@ -1193,6 +1193,10 @@ def HasVendorXSfvcp : Predicate<"Subtarget->hasVendorXSfvcp()">,
                           "'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions)">;
 
 #ifdef SIFIVE_CUSTOMIZATION
+def FeatureVendorXSfpmpmt
+    : RISCVExtension<"xsfpmpmt", 0, 1,
+                     "'Xsfpmpmt' (SiFive PMP-based Memory Types Extension)">;
+
 def FeatureVendorXSfvfexpa
     : RISCVExtension<"xsfvfexpa", 0, 2,
                      "'Xsfvfexpa' (SiFive Vector Floating-Point Exponential Approximation Instruction)",
