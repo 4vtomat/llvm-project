@@ -652,29 +652,6 @@ DecodeStatus RISCVDisassembler::getInstruction32(MCInst &MI, uint64_t &Size,
   TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvfnrclipxfqf,
                         DecoderTableXSfvfnrclipxfqf32,
                         "SiFive vfnrclipxfqf custom opcode table");
-#endif // SIFIVE_CUSTOMIZATION
-  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvcp, DecoderTableXSfvcp32,
-                        "SiFive VCIX custom opcode table");
-  TRY_TO_DECODE_FEATURE(
-      RISCV::FeatureVendorXSfvqmaccdod, DecoderTableXSfvqmaccdod32,
-      "SiFive Matrix Multiplication (2x8 and 8x2) Instruction opcode table");
-  TRY_TO_DECODE_FEATURE(
-      RISCV::FeatureVendorXSfvqmaccqoq, DecoderTableXSfvqmaccqoq32,
-      "SiFive Matrix Multiplication (4x8 and 8x4) Instruction opcode table");
-  TRY_TO_DECODE_FEATURE(
-      RISCV::FeatureVendorXSfvfwmaccqqq, DecoderTableXSfvfwmaccqqq32,
-      "SiFive Matrix Multiplication Instruction opcode table");
-  TRY_TO_DECODE_FEATURE(
-      RISCV::FeatureVendorXSfvfnrclipxfqf, DecoderTableXSfvfnrclipxfqf32,
-      "SiFive FP32-to-int8 Ranged Clip Instructions opcode table");
-  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSiFivecdiscarddlone,
-                        DecoderTableXSiFivecdiscarddlone32,
-                        "SiFive sf.cdiscard.d.l1 custom opcode table");
-  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSiFivecflushdlone,
-                        DecoderTableXSiFivecflushdlone32,
-                        "SiFive sf.cflush.d.l1 custom opcode table");
-  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfcease, DecoderTableXSfcease32,
-                        "SiFive sf.cease custom opcode table");
   TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfmmbase,
                         DecoderTableXSfmmbase32,
                         "SiFive XSfmmbase extension custom opcode table");
@@ -704,6 +681,29 @@ DecodeStatus RISCVDisassembler::getInstruction32(MCInst &MI, uint64_t &Size,
   TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfmm32a4i,
                         DecoderTableXSfmm32a4i32,
                         "SiFive XSfmm32a4i extension custom opcode table");
+#endif // SIFIVE_CUSTOMIZATION
+  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfvcp, DecoderTableXSfvcp32,
+                        "SiFive VCIX custom opcode table");
+  TRY_TO_DECODE_FEATURE(
+      RISCV::FeatureVendorXSfvqmaccdod, DecoderTableXSfvqmaccdod32,
+      "SiFive Matrix Multiplication (2x8 and 8x2) Instruction opcode table");
+  TRY_TO_DECODE_FEATURE(
+      RISCV::FeatureVendorXSfvqmaccqoq, DecoderTableXSfvqmaccqoq32,
+      "SiFive Matrix Multiplication (4x8 and 8x4) Instruction opcode table");
+  TRY_TO_DECODE_FEATURE(
+      RISCV::FeatureVendorXSfvfwmaccqqq, DecoderTableXSfvfwmaccqqq32,
+      "SiFive Matrix Multiplication Instruction opcode table");
+  TRY_TO_DECODE_FEATURE(
+      RISCV::FeatureVendorXSfvfnrclipxfqf, DecoderTableXSfvfnrclipxfqf32,
+      "SiFive FP32-to-int8 Ranged Clip Instructions opcode table");
+  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSiFivecdiscarddlone,
+                        DecoderTableXSiFivecdiscarddlone32,
+                        "SiFive sf.cdiscard.d.l1 custom opcode table");
+  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSiFivecflushdlone,
+                        DecoderTableXSiFivecflushdlone32,
+                        "SiFive sf.cflush.d.l1 custom opcode table");
+  TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXSfcease, DecoderTableXSfcease32,
+                        "SiFive sf.cease custom opcode table");
   TRY_TO_DECODE_FEATURE(RISCV::FeatureVendorXCVbitmanip,
                         DecoderTableXCVbitmanip32,
                         "CORE-V Bit Manipulation custom opcode table");
