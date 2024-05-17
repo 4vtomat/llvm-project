@@ -176,7 +176,7 @@ let Predicates = [HasStdExtZvknhaOrZvknhb], RVVConstraint = Sha2Constraint in {
 #ifdef SIFIVE_CUSTOMIZATION
 let Predicates = [HasStdExtZvknsOrZvkned] in {
 #else
-let Predicates = [HasStdExtZvkned]in {
+let Predicates = [HasStdExtZvkned] in {
 #endif // SIFIVE_CUSTOMIZATION
   defm VAESDF     : VAES_MV_V_S<0b101000, 0b101001, 0b00001, OPMVV, "vaesdf">;
   defm VAESDM     : VAES_MV_V_S<0b101000, 0b101001, 0b00000, OPMVV, "vaesdm">;
