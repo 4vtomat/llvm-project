@@ -967,29 +967,6 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
     }
   }
 
-#if SIFIVE_CUSTOMIZATION
-  // If our AVL is a virtual register, it might be defined by a VSET(I)VLI. If
-  // it has the same VLMAX we want and the last VL/VTYPE we observed is the
-  // same, we can use the X0, X0 form.
-  if (PrevInfo.isValid() && !PrevInfo.isUnknown() &&
-      Info.hasSameVLMAX(PrevInfo) && Info.hasAVLReg() &&
-      Info.getAVLReg().isVirtual()) {
-    if (MachineInstr *DefMI = MRI->getVRegDef(Info.getAVLReg())) {
-      if (isVectorConfigInstr(*DefMI)) {
-        VSETVLIInfo DefInfo = getInfoForVSETVLI(*DefMI);
-        if (DefInfo.hasSameAVL(PrevInfo) && DefInfo.hasSameVLMAX(PrevInfo)) {
-          BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoVSETVLIX0))
-              .addReg(RISCV::X0, RegState::Define | RegState::Dead)
-              .addReg(RISCV::X0, RegState::Kill)
-              .addImm(Info.encodeVTYPE())
-              .addReg(RISCV::VL, RegState::Implicit);
-          return;
-        }
-      }
-    }
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
   if (Info.hasAVLImm()) {
     BuildMI(MBB, InsertPt, DL, TII->get(RISCV::PseudoVSETIVLI))
         .addReg(RISCV::X0, RegState::Define | RegState::Dead)
