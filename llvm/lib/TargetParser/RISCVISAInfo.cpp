@@ -976,11 +976,6 @@ Error RISCVISAInfo::checkDependency() {
     return createStringError(
         errc::invalid_argument,
         "smwgd requires smwg extension to also be specified");
-
-  if (Exts.count("xsfvqdotq") && !HasVector)
-    return createStringError(
-        errc::invalid_argument,
-        "'xsfvqdotq' requires 'v' or 'zve*' extension to also be specified");
 #endif // SIFIVE_CUSTOMIZATION
 
   if (Exts.count("zvbb") && !HasVector)
