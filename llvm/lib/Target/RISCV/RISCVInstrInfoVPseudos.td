@@ -3404,11 +3404,21 @@ multiclass VPseudoVMAC_VV_VF_AAXA_RM<string Constraint = ""> {
 }
 
 multiclass VPseudoVSLD_VX_VI<Operand ImmType = simm5, string Constraint = ""> {
+#ifdef SIFIVE_CUSTOMIZATION
+  defvar WriteSlideX = !if(!ge(!find(NAME, "SLIDEUP"), 0),
+                           "WriteVISlideUpX", "WriteVISlideDownX");
+#endif // SIFIVE_CUSTOMIZATION
   foreach m = MxList in {
     defvar mx = m.MX;
+#ifdef SIFIVE_CUSTOMIZATION
+    defm "" : VPseudoVSLDV_VX<m, Constraint>,
+              SchedTernary<WriteSlideX, "ReadVISlideV", "ReadVISlideV",
+                           "ReadVISlideX", mx>;
+#else
     defm "" : VPseudoVSLDV_VX<m, Constraint>,
               SchedTernary<"WriteVISlideX", "ReadVISlideV", "ReadVISlideV",
                            "ReadVISlideX", mx>;
+#endif // SIFIVE_CUSTOMIZATION
     defm "" : VPseudoVSLDV_VI<ImmType, m, Constraint>,
               SchedBinary<"WriteVISlideI", "ReadVISlideV", "ReadVISlideV", mx>;
   }

@@ -941,7 +941,8 @@ multiclass BulletWriteResBase<
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxList>.c;
     let Latency = 4, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-      defm "" : LMULWriteResMX<"WriteVISlideX",   [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVISlideUpX",     [VCQ, VA1], mx, IsWorstCase>;
+      defm "" : LMULWriteResMX<"WriteVISlideDownX",   [VCQ, VA1], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVISlideI",   [VCQ, VA1], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVISlide1X",  [VCQ, VA1], mx, IsWorstCase>;
       defm "" : LMULWriteResMX<"WriteVFSlide1F",  [VCQ, VA1], mx, IsWorstCase>;

@@ -50,6 +50,65 @@ class SiFiveP400GetCyclesSegmented<string mx, int sew, int nf> {
   int c = !mul(VLUpperBound, nf);
 }
 
+// Both variants of floating point vector reductions are based on numbers collected
+// from llvm-exegesis.
+class VFReduceBaseCycles<int sew> {
+  // The latency for simple unordered VFReduce is `C + 6 * log2(LMUL)`,
+  // and `C * LMUL` for ordered VFReduce. This helper class provides the `C`.
+  int val = !cond(!eq(sew, 16): 16,
+                  !eq(sew, 32): 10,
+                  !eq(sew, 64): 6);
+}
+
+class AdvancedVFReduceCycles<int sew, string mx> {
+  // SEW = 64 has lower latencies and RThroughputs than other SEWs.
+  int latency = !cond(!eq(mx, "M1"): !if(!eq(sew, 64), 4, 6),
+                      !eq(mx, "M2"): !if(!eq(sew, 64), 6, 8),
+                      !eq(mx, "M4"): !if(!eq(sew, 64), 8, 10),
+                      !eq(mx, "M8"): !if(!eq(sew, 64), 11, 13),
+                      true: !if(!eq(sew, 64), 4, 6));
+  int rthroughput = !cond(!eq(mx, "M1"): !if(!eq(sew, 64), 2, 3),
+                          !eq(mx, "M2"): !if(!eq(sew, 64), 3, 4),
+                          !eq(mx, "M4"): !if(!eq(sew, 64), 5, 6),
+                          !eq(mx, "M8"): !if(!eq(sew, 64), 10, 12),
+                          true: !if(!eq(sew, 64), 2, 3));
+}
+
+// Both variants of integer vector reductions are based on numbers collected
+// from llvm-exegesis.
+// TODO: Fractional LMUL's latency and rthroughput.
+class SimpleVIReduceCycles<string mx> {
+  defvar LMul = SiFiveP400GetLMulCycles<mx>.c;
+  int latency = !mul(LMul, 2);
+  int rthroughput = !cond(
+                      !eq(mx, "M1"): 1,
+                      !eq(mx, "M2"): 2,
+                      !eq(mx, "M4"): 4,
+                      !eq(mx, "M8"): 9,
+                      true: 1);
+}
+
+class AdvancedVIReduceCycles<int sew, string mx> {
+  // `2 * log2(SEW) + C`, where `C` = 16.1, 18.1, 20.1, and 23.8 for
+  // M1/2/4/8, respectively.
+  int latency = !cond(!eq(mx, "M1"): !sub(16, !mul(2, !logtwo(sew))),
+                      !eq(mx, "M2"): !sub(18, !mul(2, !logtwo(sew))),
+                      !eq(mx, "M4"): !sub(20, !mul(2, !logtwo(sew))),
+                      !eq(mx, "M8"): !sub(23, !mul(2, !logtwo(sew))),
+                      true: 4);
+  int rthroughput = !cond(
+                      // `8.3 - 1.02 * log2(SEW)`
+                      !eq(mx, "M1"): !sub(8, !logtwo(sew)),
+                      // `10.0 - 1.16 * log2(SEW)`. Note that `9 - log2(SEW)`
+                      // is closer to the floor value of the original formula.
+                      !eq(mx, "M2"): !sub(9, !logtwo(sew)),
+                      // `14.2 - 1.53 * log2(SEW)`
+                      !eq(mx, "M4"): !div(!sub(1420, !mul(153, !logtwo(sew))), 100),
+                      // `24.1 - 2.3 * log2(SEW)`
+                      !eq(mx, "M8"): !div(!sub(241, !mul(23, !logtwo(sew))), 10),
+                      true: 1);
+}
+
 // SiFiveP400 machine model for scheduling and other instruction cost heuristics.
 // https://github.com/sifive/federation/blob/master/specs/design/standard/u84.json
 def SiFiveP400Model : SchedMachineModel {
@@ -607,21 +666,26 @@ foreach mx = SchedMxListF in {
 // 14. Vector Reduction Operations
 foreach mx = SchedMxList in {
   foreach sew = SchedSEWSet<mx>.val in {
-    defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
     defvar IsWorstCase = SiFiveP400IsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
-    let Latency = !add(2, !mul(2, LMulLat)), ReleaseAtCycles = [LMulLat] in {
-      defm "" : LMULSEWWriteResMXSEW<"WriteVIRedV_From",  [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
-      defm "" : LMULSEWWriteResMXSEW<"WriteVIRedMinMaxV_From", [SiFiveP400VEXQ0],
-                                     mx, sew, IsWorstCase>;
-    }
+
+    // Simple reduction
+    defvar SimpleC = SimpleVIReduceCycles<mx>;
+    let Latency = SimpleC.latency, ReleaseAtCycles = [SimpleC.rthroughput] in
+    defm "" : LMULSEWWriteResMXSEW<"WriteVIRedV_From",  [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
+
+    // Advanced reduction
+    defvar AdvancedC = AdvancedVIReduceCycles<sew, mx>;
+    let Latency = AdvancedC.latency, ReleaseAtCycles = [AdvancedC.rthroughput] in
+    defm "" : LMULSEWWriteResMXSEW<"WriteVIRedMinMaxV_From", [SiFiveP400VEXQ0],
+                                   mx, sew, IsWorstCase>;
   }
 }
 
 foreach mx = SchedMxListWRed in {
   foreach sew = SchedSEWSet<mx, 0, 1>.val in {
-    defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
     defvar IsWorstCase = SiFiveP400IsWorstCaseMXSEW<mx, sew, SchedMxListWRed>.c;
-    let Latency = !add(2, !mul(2, LMulLat)), ReleaseAtCycles = [LMulLat] in {
+    defvar SimpleC = SimpleVIReduceCycles<mx>;
+    let Latency = SimpleC.latency, ReleaseAtCycles = [SimpleC.rthroughput] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVIWRedV_From", [SiFiveP400VEXQ0],
                                       mx, sew, IsWorstCase>;
     }
@@ -632,14 +696,23 @@ foreach mx = SchedMxListF in {
   foreach sew = SchedSEWSet<mx, 1>.val in {
     defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
     defvar IsWorstCase = SiFiveP400IsWorstCaseMXSEW<mx, sew, SchedMxListF, 1>.c;
-    let Latency = !add(6, !mul(6, LMulLat)), ReleaseAtCycles = [LMulLat] in {
-      defm "" : LMULSEWWriteResMXSEW<"WriteVFRedV_From", [SiFiveP400VEXQ0],
-                                     mx, sew, IsWorstCase>;
-      defm "" : LMULSEWWriteResMXSEW<"WriteVFRedMinMaxV_From",
-                                     [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
-      defm "" : LMULSEWWriteResMXSEW<"WriteVFRedOV_From", [SiFiveP400VEXQ0],
-                                      mx, sew, IsWorstCase>;
-    }
+
+    // Simple reduction.
+    defvar BaseC = VFReduceBaseCycles<sew>.val;
+    let Latency = !add(BaseC, !mul(6, !logtwo(LMulLat))), ReleaseAtCycles = [BaseC] in
+    defm "" : LMULSEWWriteResMXSEW<"WriteVFRedV_From", [SiFiveP400VEXQ0],
+                                   mx, sew, IsWorstCase>;
+
+    // Advanced reduction.
+    defvar AdvancedC = AdvancedVFReduceCycles<sew, mx>;
+    let Latency = AdvancedC.latency, ReleaseAtCycles = [AdvancedC.rthroughput] in
+    defm "" : LMULSEWWriteResMXSEW<"WriteVFRedMinMaxV_From",
+                                   [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
+
+    defvar OrderedRedCycles = !mul(BaseC, LMulLat);
+    let Latency = OrderedRedCycles, ReleaseAtCycles = [OrderedRedCycles] in
+    defm "" : LMULSEWWriteResMXSEW<"WriteVFRedOV_From", [SiFiveP400VEXQ0],
+                                    mx, sew, IsWorstCase>;
   }
 }
 
@@ -650,9 +723,12 @@ foreach mx = SchedMxListFWRed in {
     let Latency = !add(6, !mul(6, LMulLat)), ReleaseAtCycles = [LMulLat] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVFWRedV_From",  [SiFiveP400VEXQ0],
                                      mx, sew, IsWorstCase>;
-      defm "" : LMULSEWWriteResMXSEW<"WriteVFWRedOV_From", [SiFiveP400VEXQ0],
-                                     mx, sew, IsWorstCase>;
     }
+
+    defvar OrderedRedCycles = !mul(VFReduceBaseCycles<sew>.val, LMulLat);
+    let Latency = OrderedRedCycles, ReleaseAtCycles = [OrderedRedCycles] in
+    defm "" : LMULSEWWriteResMXSEW<"WriteVFWRedOV_From", [SiFiveP400VEXQ0],
+                                   mx, sew, IsWorstCase>;
   }
 }
 
@@ -688,7 +764,8 @@ foreach mx = SchedMxList in {
 foreach mx = ["MF8", "MF4", "MF2", "M1"] in {
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxList>.c;
   let Latency = 2, ReleaseAtCycles = [1] in {
-    defm "" : LMULWriteResMX<"WriteVISlideX", [SiFiveP400VEXQ0], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVISlideUpX",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVISlideDownX", [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
 }
 
@@ -696,16 +773,22 @@ foreach mx = ["MF8", "MF4", "MF2", "M1"] in {
 foreach mx = ["M2", "M4", "M8"] in {
   defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
   defvar IsWorstCase = SiFiveP400IsWorstCaseMX<mx, SchedMxList>.c;
-  let Latency = !add(4, LMulLat), ReleaseAtCycles = [LMulLat] in {
-    defm "" : LMULWriteResMX<"WriteVISlideX", [SiFiveP400VEXQ0], mx, IsWorstCase>;
+
+  defvar UpLatAndCycles = !add(8, LMulLat);
+  let Latency = UpLatAndCycles, ReleaseAtCycles = [UpLatAndCycles] in {
+    defm "" : LMULWriteResMX<"WriteVISlideUpX", [SiFiveP400VEXQ0], mx, IsWorstCase>;
+  }
+  defvar DownLatAndCycles = !add(8, !div(!mul(LMulLat, 3), 2));
+  let Latency = DownLatAndCycles, ReleaseAtCycles = [DownLatAndCycles] in {
+    defm "" : LMULWriteResMX<"WriteVISlideDownX", [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
 }
 
-let Latency = 2, ReleaseAtCycles = [1] in {
+let Latency = 2, ReleaseAtCycles = [2] in {
   def : WriteRes<WriteVMovXS, [SiFiveP400VEXQ0]>;
   def : WriteRes<WriteVMovSX, [SiFiveP400VEXQ0]>;
 }
-let Latency = 6, ReleaseAtCycles = [1] in {
+let Latency = 6, ReleaseAtCycles = [2] in {
   def : WriteRes<WriteVMovFS, [SiFiveP400VEXQ0]>;
   def : WriteRes<WriteVMovSF, [SiFiveP400VEXQ0]>;
 }
@@ -741,7 +824,7 @@ foreach mx = ["M2", "M4", "M8"] in {
   foreach sew = SchedSEWSet<mx>.val in {
     defvar LMulLat = SiFiveP400GetLMulCycles<mx>.c;
     defvar IsWorstCase = SiFiveP400IsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
-    let Latency = 6, ReleaseAtCycles = [LMulLat] in {
+    let Latency = 6, ReleaseAtCycles = [!add(!mul(LMulLat, 2), 8)] in {
       defm "" : LMULSEWWriteResMXSEW<"WriteVRGatherVV", [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
       defm "" : LMULSEWWriteResMXSEW<"WriteVCompressV", [SiFiveP400VEXQ0], mx, sew, IsWorstCase>;
     }
