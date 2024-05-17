@@ -121,59 +121,29 @@ sf.mm.f.f mt2, v8, v9
 # CHECK-UNKNOWN: f7 94 84 f2 <unknown>
 sf.mm.bf.bf mt4, v8, v9
 
-# CHECK-INST: sf.mm.f8p3.f8p3 mt0, v8, v9
-# CHECK-ENCODING: [0xf7,0x90,0x84,0xf6]
+# CHECK-INST: sf.mm.e5m2.e5m2 mt0, v8, v9
+# CHECK-ENCODING: [0x77,0x90,0x84,0xfa]
 # CHECK-ERROR: instruction requires the following: 'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8{{$}}
-# CHECK-UNKNOWN: f7 90 84 f6 <unknown>
-sf.mm.f8p3.f8p3 mt0, v8, v9
+# CHECK-UNKNOWN: 77 90 84 fa <unknown>
+sf.mm.e5m2.e5m2 mt0, v8, v9
 
-# CHECK-INST: sf.mm.f8p3.f8p4 mt4, v8, v9
-# CHECK-ENCODING: [0x77,0x95,0x84,0xf6]
+# CHECK-INST: sf.mm.e5m2.e4m3 mt4, v8, v9
+# CHECK-ENCODING: [0xf7,0x94,0x84,0xfa]
 # CHECK-ERROR: instruction requires the following: 'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8{{$}}
-# CHECK-UNKNOWN: 77 95 84 f6 <unknown>
-sf.mm.f8p3.f8p4 mt4, v8, v9
+# CHECK-UNKNOWN: f7 94 84 fa <unknown>
+sf.mm.e5m2.e4m3 mt4, v8, v9
 
-# CHECK-INST: sf.mm.f8p3.f8p5 mt8, v8, v9
-# CHECK-ENCODING: [0xf7,0x99,0x84,0xf6]
+# CHECK-INST: sf.mm.e4m3.e5m2 mt8, v8, v9
+# CHECK-ENCODING: [0x77,0x98,0x84,0xfe]
 # CHECK-ERROR: instruction requires the following: 'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8{{$}}
-# CHECK-UNKNOWN: f7 99 84 f6 <unknown>
-sf.mm.f8p3.f8p5 mt8, v8, v9
+# CHECK-UNKNOWN: 77 98 84 fe <unknown>
+sf.mm.e4m3.e5m2 mt8, v8, v9
 
-# CHECK-INST: sf.mm.f8p4.f8p3 mt12, v8, v9
-# CHECK-ENCODING: [0xf7,0x9c,0x84,0xfa]
+# CHECK-INST: sf.mm.e4m3.e4m3 mt12, v8, v9
+# CHECK-ENCODING: [0xf7,0x9c,0x84,0xfe]
 # CHECK-ERROR: instruction requires the following: 'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8{{$}}
-# CHECK-UNKNOWN: f7 9c 84 fa <unknown>
-sf.mm.f8p4.f8p3 mt12, v8, v9
-
-# CHECK-INST: sf.mm.f8p4.f8p4 mt0, v8, v9
-# CHECK-ENCODING: [0x77,0x91,0x84,0xfa]
-# CHECK-ERROR: instruction requires the following: 'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8{{$}}
-# CHECK-UNKNOWN: 77 91 84 fa <unknown>
-sf.mm.f8p4.f8p4 mt0, v8, v9
-
-# CHECK-INST: sf.mm.f8p4.f8p5 mt0, v8, v9
-# CHECK-ENCODING: [0xf7,0x91,0x84,0xfa]
-# CHECK-ERROR: instruction requires the following: 'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8{{$}}
-# CHECK-UNKNOWN: f7 91 84 fa <unknown>
-sf.mm.f8p4.f8p5 mt0, v8, v9
-
-# CHECK-INST: sf.mm.f8p5.f8p3 mt0, v8, v9
-# CHECK-ENCODING: [0xf7,0x90,0x84,0xfe]
-# CHECK-ERROR: instruction requires the following: 'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8{{$}}
-# CHECK-UNKNOWN: f7 90 84 fe <unknown>
-sf.mm.f8p5.f8p3 mt0, v8, v9
-
-# CHECK-INST: sf.mm.f8p5.f8p4 mt0, v8, v9
-# CHECK-ENCODING: [0x77,0x91,0x84,0xfe]
-# CHECK-ERROR: instruction requires the following: 'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8{{$}}
-# CHECK-UNKNOWN: 77 91 84 fe <unknown>
-sf.mm.f8p5.f8p4 mt0, v8, v9
-
-# CHECK-INST: sf.mm.f8p5.f8p5 mt0, v8, v9
-# CHECK-ENCODING: [0xf7,0x91,0x84,0xfe]
-# CHECK-ERROR: instruction requires the following: 'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8{{$}}
-# CHECK-UNKNOWN: f7 91 84 fe <unknown>
-sf.mm.f8p5.f8p5 mt0, v8, v9
+# CHECK-UNKNOWN: f7 9c 84 fe <unknown>
+sf.mm.e4m3.e4m3 mt12, v8, v9
 
 # CHECK-INST: sf.mm.u.u mt0, v8, v9
 # CHECK-ENCODING: [0x77,0x80,0x84,0xf2]

@@ -1241,36 +1241,35 @@ class RVInstMatmulF<bits<2> rd_lsb2, dag outs, dag ins, string opcodestr,
   let Uses = [VTYPE, VL];
 }
 
-class RVInstMatmulF8<bits<2> funct6_lsb2, bits<2> rd_lsb2, dag outs, dag ins,
+class RVInstMatmulF8<bit funct6_lsb, bit rd_lsb, dag outs, dag ins,
                      string opcodestr, string argstr>
     : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
   bits<5> vs2;
   bits<5> vs1;
   bits<5> rd;
 
-  let Inst{31-28} = 0b1111;
-  let Inst{27-26} = funct6_lsb2;
+  let Inst{31-27} = 0b11111;
+  let Inst{26} = funct6_lsb;
   let Inst{25} = 1;
   let Inst{24-20} = vs2;
   let Inst{19-15} = vs1;
   let Inst{14-12} = OPFVV.Value;
   let Inst{11-10} = rd{3-2};
-  let Inst{9} = 0;
-  let Inst{8-7} = rd_lsb2;
+  let Inst{9-8} = 0b00;
+  let Inst{7} = rd_lsb;
   let Inst{6-0} = OPC_OP_VE.Value;
 
   let Uses = [VTYPE, VL];
 }
 
 
-class F8Encode<bits<2> encode_bits, string encode_name> {
-  bits<2> Bits = encode_bits;
+class F8Encode<bit encode_bit, string encode_name> {
+  bit Bit = encode_bit;
   string Name = encode_name;
 }
 
-defvar F8Encodes = [F8Encode<0b01, "f8p3">,
-                    F8Encode<0b10, "f8p4">,
-                    F8Encode<0b11, "f8p5">];
+defvar F8Encodes = [F8Encode<0b0, "e5m2">,
+                    F8Encode<0b1, "e4m3">];
 
 class RVInstMatmulI8<bit funct6_lsb2, bit funct6_lsb1, bit rd_lsb1, dag outs, dag ins,
                      string opcodestr, string argstr>
@@ -1395,12 +1394,12 @@ let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
 
 let Predicates = [HasVendorXSfmm32a8f], DecoderNamespace = "XSfmm32a8f" in {
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
-  foreach aa = F8Encodes in
-    foreach bb = F8Encodes in
-      def SF_MM_#!toupper(aa.Name)#_#!toupper(bb.Name)
-          : RVInstMatmulF8<aa.Bits, bb.Bits,
+  foreach a = F8Encodes in
+    foreach b = F8Encodes in
+      def SF_MM_#!toupper(a.Name)#_#!toupper(b.Name)
+          : RVInstMatmulF8<a.Bit, b.Bit,
                            (outs), (ins TRM4:$rd, VR:$vs2, VR:$vs1),
-                           "sf.mm."#aa.Name#"."#bb.Name, "$rd, $vs2, $vs1">;
+                           "sf.mm."#a.Name#"."#b.Name, "$rd, $vs2, $vs1">;
 }
 } // Predicates = [HasVendorXSfmm32a8f]
 
