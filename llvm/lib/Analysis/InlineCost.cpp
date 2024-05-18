@@ -89,6 +89,10 @@ static cl::opt<int>
 static cl::opt<bool> InlineParamSize(
     "inline-param-size", cl::Hidden, cl::init(true),
     cl::desc("Decide to inline based on number of parameters and function size"));
+
+static cl::opt<bool> InlineLeafThreshold(
+    "inline-leaf-threshold", cl::Hidden, cl::init(false),
+    cl::desc("Treat leaf functions with greater size theshold"));
 #endif // SIFIVE_CUSTOMIZATION
 
 static cl::opt<bool> InlineEnableCostBenefitAnalysis(
@@ -624,6 +628,11 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
 
   /// Return true if \p Call is a cold callsite.
   bool isColdCallSite(CallBase &Call, BlockFrequencyInfo *CallerBFI);
+
+#if SIFIVE_CUSTOMIZATION
+  /// Return true if the \p Callee is a leaf function.
+  bool isLeafFunction(Function &Callee);
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Update Threshold based on callsite properties such as callee
   /// attributes and callee hotness for PGO builds. The Callee is explicitly
@@ -1931,6 +1940,26 @@ bool InlineCostCallAnalyzer::isColdCallSite(CallBase &Call,
   return CallSiteFreq < CallerEntryFreq * ColdProb;
 }
 
+#if SIFIVE_CUSTOMIZATION
+bool InlineCostCallAnalyzer::isLeafFunction(Function &Callee) {
+  // If enabled determine if this callee is a leaf function or not.
+  if (!InlineLeafThreshold)
+    return false;
+
+  // FIXME: add Invoke to this evaluation for leaf detection.
+  bool IsLeaf = true;
+  for (BasicBlock &BB : Callee)
+    for (Instruction &I : BB)
+      if (isa<CallInst>(&I)) {
+        // TODO: check for artifacts that do not remain as calls.
+        IsLeaf = false;
+        break;
+      }
+
+  return IsLeaf;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 std::optional<int>
 InlineCostCallAnalyzer::getHotCallSiteThreshold(CallBase &Call,
                                                 BlockFrequencyInfo *CallerBFI) {
@@ -2062,8 +2091,19 @@ void InlineCostCallAnalyzer::updateThreshold(CallBase &Call, Function &Callee) {
         // preventing it from being inlined.
         DisallowAllBonuses();
         Threshold = MinIfValid(Threshold, Params.ColdThreshold);
+#if SIFIVE_CUSTOMIZATION
+      } else if (isLeafFunction(Callee)) {
+        // Give leaf calls an extra budget where the multiplier is a modifier.
+        Threshold *= TTI.getInliningThresholdMultiplier();
+      }
+    } else if (isLeafFunction(Callee)) {
+      // Give leaf calls an extra budget where the multiplier is a modifier.
+      Threshold *= TTI.getInliningThresholdMultiplier();
+    }
+#else
       }
     }
+#endif
   }
 
   Threshold += TTI.adjustInliningThreshold(&Call);
