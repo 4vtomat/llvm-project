@@ -577,8 +577,8 @@ public:
 
   bool hasSameAVL(const VSETVLIInfo &Other) const {
     if (hasAVLReg() && Other.hasAVLReg())
-      return AVLRegDef.DefMI == Other.AVLRegDef.DefMI &&
-             AVLRegDef.DefReg == Other.AVLRegDef.DefReg;
+      return getAVLDefMI().isIdenticalTo(Other.getAVLDefMI()) &&
+             getAVLReg() == Other.getAVLReg();
 
     if (hasAVLImm() && Other.hasAVLImm())
       return getAVLImm() == Other.getAVLImm();
