@@ -505,7 +505,14 @@ bool RISCVPassConfig::addPreISel() {
     addPass(createBarrierNoopPass());
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // Enable GlobalMerge pass by default on non-O0 opt levels.
+  if (TM->getOptLevel() != CodeGenOptLevel::None &&
+      (EnableGlobalMerge == cl::BOU_TRUE ||
+       EnableGlobalMerge == cl::BOU_UNSET)) {
+#else
   if (EnableGlobalMerge == cl::BOU_TRUE) {
+#endif // SIFIVE_CUSTOMIZATION
     addPass(createGlobalMergePass(TM, /* MaxOffset */ 2047,
                                   /* OnlyOptimizeForSize */ false,
                                   /* MergeExternalByDefault */ true));

@@ -85,6 +85,9 @@
 ; CHECK-NEXT:       Exception handling preparation
 ; CHECK-NEXT:     A No-Op Barrier Pass
 ; CHECK-NEXT:     FunctionPass Manager
+; SIFIVE_CUSTOMIZATION
+; CHECK-NEXT:       Merge internal globals
+; SIFIVE_CUSTOMIZATION
 ; CHECK-NEXT:       Prepare callbr
 ; CHECK-NEXT:       Safe Stack instrumentation pass
 ; CHECK-NEXT:       Insert stack protectors
