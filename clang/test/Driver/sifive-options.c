@@ -52,4 +52,10 @@
 // RELAX-ZCMT: "--relax-zcmt"
 // NO-RELAX-ZCMT-NOT: "--relax-zcmt"
 
+// -[m,mno-]cfi-ss
+// RUN: %clang -target riscv64-unknown-elf -mcfi-ss -### %s 2>&1 | FileCheck %s --check-prefix=MCFI-SS
+// RUN: %clang -target riscv64-unknown-elf -mcfi-ss -mno-cfi-ss -### %s 2>&1 | FileCheck %s --check-prefix=MNO-CFI-SS
+// MCFI-SS: "-fsanitize=shadow-call-stack"
+// MNO-CFI-SS-NOT: "-fsanitize=shadow-call-stack"
+
 int main() { return 0; }

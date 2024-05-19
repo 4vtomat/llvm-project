@@ -4722,6 +4722,12 @@ def mforced_sw_shadow_stack : Flag<["-"], "mforced-sw-shadow-stack">, Group<m_ri
   HelpText<"Force using software shadow stack when shadow-stack enabled">;
 def mno_forced_sw_shadow_stack : Flag<["-"], "mno-forced-sw-shadow-stack">, Group<m_riscv_Features_Group>,
   HelpText<"Not force using software shadow stack when shadow-stack enabled">;
+def mcfi_ss : Flag<["-"], "mcfi-ss">, Group<m_Group>,
+  Alias<fsanitize_EQ>, AliasArgs<["shadow-call-stack"]>,
+  HelpText<"Enable Zicfiss shadow stack feature.">;
+def mno_cfi_ss : Flag<["-"], "mno-cfi-ss">, Group<m_Group>,
+  Alias<fno_sanitize_EQ>, AliasArgs<["shadow-call-stack"]>,
+  HelpText<"Disable Zicfiss shadow stack feature.">;
 } // let Flags = [TargetSpecific]
 // SIFIVE
 def fuse_vla_vectorizer : Flag<["-"], "fuse-vla-vectorizer">, Group<f_Group>,
