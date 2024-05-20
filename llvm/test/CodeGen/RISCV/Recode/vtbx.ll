@@ -51,10 +51,10 @@ define void @vqtbx1q_s8(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-LABEL: vqtbx1q_s8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v8, (a1)
-; CHECK-NEXT:    vle8.v v9, (a2)
-; CHECK-NEXT:    vrgather.vv v10, v8, v9
-; CHECK-NEXT:    vmsgtu.vi v0, v9, 15
+; CHECK-NEXT:    vle8.v v8, (a2)
+; CHECK-NEXT:    vle8.v v9, (a1)
+; CHECK-NEXT:    vmsgtu.vi v0, v8, 15
+; CHECK-NEXT:    vrgather.vv v10, v9, v8
 ; CHECK-NEXT:    vle8.v v10, (a0), v0.t
 ; CHECK-NEXT:    vse8.v v10, (a3)
 ; CHECK-NEXT:    ret
@@ -71,10 +71,10 @@ define void @vqtbx1q_u8(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-LABEL: vqtbx1q_u8:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, mu
-; CHECK-NEXT:    vle8.v v8, (a1)
-; CHECK-NEXT:    vle8.v v9, (a2)
-; CHECK-NEXT:    vrgather.vv v10, v8, v9
-; CHECK-NEXT:    vmsgtu.vi v0, v9, 15
+; CHECK-NEXT:    vle8.v v8, (a2)
+; CHECK-NEXT:    vle8.v v9, (a1)
+; CHECK-NEXT:    vmsgtu.vi v0, v8, 15
+; CHECK-NEXT:    vrgather.vv v10, v9, v8
 ; CHECK-NEXT:    vle8.v v10, (a0), v0.t
 ; CHECK-NEXT:    vse8.v v10, (a3)
 ; CHECK-NEXT:    ret
