@@ -180,6 +180,9 @@
 ; CHECK-O-NEXT: Running pass: InstCombinePass
 ; CHECK-O-NEXT: Running pass: LoopSimplifyPass
 ; CHECK-O-NEXT: Running pass: LCSSAPass
+; CHECK-O-NEXT: Running pass: SiFiveLoopReassociatePass
+; CHECK-O-NEXT: Running pass: LoopSimplifyPass
+; CHECK-O-NEXT: Running pass: LCSSAPass
 ; CHECK-O-NEXT: Running pass: LICMPass
 ; CHECK-O-NEXT: Running pass: AlignmentFromAssumptionsPass
 ; CHECK-O-NEXT: Running pass: LoopSinkPass
