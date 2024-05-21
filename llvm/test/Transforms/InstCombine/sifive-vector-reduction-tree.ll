@@ -35,6 +35,110 @@ define float @tree_sums_v16f32(float %start, <16 x float> %v0, <16 x float> %v1)
   ret float %op.rdx424.1
 }
 
+define double @tree_sums_v16f64(double %start, <16 x double> %v0, <16 x double> %v1) {
+; CHECK-LABEL: define double @tree_sums_v16f64(
+; CHECK-SAME: double [[START:%.*]], <16 x double> [[V0:%.*]], <16 x double> [[V1:%.*]]) {
+; CHECK-NEXT:    [[COMBINED_REDUCE:%.*]] = fadd fast <16 x double> [[V0]], [[V1]]
+; CHECK-NEXT:    [[OP_RDX419_1:%.*]] = call fast double @llvm.vector.reduce.fadd.v16f64(double [[START]], <16 x double> [[COMBINED_REDUCE]])
+; CHECK-NEXT:    [[OP_RDX420_1:%.*]] = fadd fast double [[START]], [[START]]
+; CHECK-NEXT:    [[OP_RDX422_1:%.*]] = fadd fast double [[OP_RDX419_1]], [[OP_RDX420_1]]
+; CHECK-NEXT:    [[OP_RDX423_1:%.*]] = fmul fast double [[START]], 7.000000e+00
+; CHECK-NEXT:    [[OP_RDX424_1:%.*]] = fadd fast double [[OP_RDX422_1]], [[OP_RDX423_1]]
+; CHECK-NEXT:    ret double [[OP_RDX424_1]]
+;
+  %op.rdx419 = call fast double @llvm.vector.reduce.fadd.v16f64(double %start, <16 x double> %v0)
+  %op.rdx420 = fadd fast double %start, %start
+  %op.rdx421 = fadd fast double %start, %start
+  %op.rdx422 = fadd fast double %op.rdx419, %op.rdx420
+  %op.rdx424 = fadd fast double %op.rdx422, %op.rdx421
+  %op.rdx419.1 = call fast double @llvm.vector.reduce.fadd.v16f64(double %start, <16 x double> %v1)
+  %op.rdx420.1 = fadd fast double %start, %start
+  %op.rdx421.1 = fadd fast double %start, %start
+  %op.rdx422.1 = fadd fast double %op.rdx419.1, %op.rdx420.1
+  %op.rdx423.1 = fadd fast double %op.rdx421.1, %op.rdx424
+  %op.rdx424.1 = fadd fast double %op.rdx422.1, %op.rdx423.1
+
+  ret double %op.rdx424.1
+}
+
+define fp128 @tree_sums_v16f128(fp128 %start, <16 x fp128> %v0, <16 x fp128> %v1) {
+; CHECK-LABEL: define fp128 @tree_sums_v16f128(
+; CHECK-SAME: fp128 [[START:%.*]], <16 x fp128> [[V0:%.*]], <16 x fp128> [[V1:%.*]]) {
+; CHECK-NEXT:    [[COMBINED_REDUCE:%.*]] = fadd fast <16 x fp128> [[V0]], [[V1]]
+; CHECK-NEXT:    [[OP_RDX419_1:%.*]] = call fast fp128 @llvm.vector.reduce.fadd.v16f128(fp128 [[START]], <16 x fp128> [[COMBINED_REDUCE]])
+; CHECK-NEXT:    [[OP_RDX420_1:%.*]] = fadd fast fp128 [[START]], [[START]]
+; CHECK-NEXT:    [[OP_RDX422_1:%.*]] = fadd fast fp128 [[OP_RDX419_1]], [[OP_RDX420_1]]
+; CHECK-NEXT:    [[OP_RDX423_1:%.*]] = fmul fast fp128 [[START]], 0xL00000000000000004001C00000000000
+; CHECK-NEXT:    [[OP_RDX424_1:%.*]] = fadd fast fp128 [[OP_RDX422_1]], [[OP_RDX423_1]]
+; CHECK-NEXT:    ret fp128 [[OP_RDX424_1]]
+;
+  %op.rdx419 = call fast fp128 @llvm.vector.reduce.fadd.v16f128(fp128 %start, <16 x fp128> %v0)
+  %op.rdx420 = fadd fast fp128 %start, %start
+  %op.rdx421 = fadd fast fp128 %start, %start
+  %op.rdx422 = fadd fast fp128 %op.rdx419, %op.rdx420
+  %op.rdx424 = fadd fast fp128 %op.rdx422, %op.rdx421
+  %op.rdx419.1 = call fast fp128 @llvm.vector.reduce.fadd.v16f128(fp128 %start, <16 x fp128> %v1)
+  %op.rdx420.1 = fadd fast fp128 %start, %start
+  %op.rdx421.1 = fadd fast fp128 %start, %start
+  %op.rdx422.1 = fadd fast fp128 %op.rdx419.1, %op.rdx420.1
+  %op.rdx423.1 = fadd fast fp128 %op.rdx421.1, %op.rdx424
+  %op.rdx424.1 = fadd fast fp128 %op.rdx422.1, %op.rdx423.1
+
+  ret fp128 %op.rdx424.1
+}
+
+define half @tree_sums_v16f16(half %start, <16 x half> %v0, <16 x half> %v1) {
+; CHECK-LABEL: define half @tree_sums_v16f16(
+; CHECK-SAME: half [[START:%.*]], <16 x half> [[V0:%.*]], <16 x half> [[V1:%.*]]) {
+; CHECK-NEXT:    [[COMBINED_REDUCE:%.*]] = fadd fast <16 x half> [[V0]], [[V1]]
+; CHECK-NEXT:    [[OP_RDX419_1:%.*]] = call fast half @llvm.vector.reduce.fadd.v16f16(half [[START]], <16 x half> [[COMBINED_REDUCE]])
+; CHECK-NEXT:    [[OP_RDX420_1:%.*]] = fadd fast half [[START]], [[START]]
+; CHECK-NEXT:    [[OP_RDX422_1:%.*]] = fadd fast half [[OP_RDX419_1]], [[OP_RDX420_1]]
+; CHECK-NEXT:    [[OP_RDX423_1:%.*]] = fmul fast half [[START]], 0xH4700
+; CHECK-NEXT:    [[OP_RDX424_1:%.*]] = fadd fast half [[OP_RDX422_1]], [[OP_RDX423_1]]
+; CHECK-NEXT:    ret half [[OP_RDX424_1]]
+;
+  %op.rdx419 = call fast half @llvm.vector.reduce.fadd.v16f16(half %start, <16 x half> %v0)
+  %op.rdx420 = fadd fast half %start, %start
+  %op.rdx421 = fadd fast half %start, %start
+  %op.rdx422 = fadd fast half %op.rdx419, %op.rdx420
+  %op.rdx424 = fadd fast half %op.rdx422, %op.rdx421
+  %op.rdx419.1 = call fast half @llvm.vector.reduce.fadd.v16f16(half %start, <16 x half> %v1)
+  %op.rdx420.1 = fadd fast half %start, %start
+  %op.rdx421.1 = fadd fast half %start, %start
+  %op.rdx422.1 = fadd fast half %op.rdx419.1, %op.rdx420.1
+  %op.rdx423.1 = fadd fast half %op.rdx421.1, %op.rdx424
+  %op.rdx424.1 = fadd fast half %op.rdx422.1, %op.rdx423.1
+
+  ret half %op.rdx424.1
+}
+
+define bfloat @tree_sums_v16bf16(bfloat %start, <16 x bfloat> %v0, <16 x bfloat> %v1) {
+; CHECK-LABEL: define bfloat @tree_sums_v16bf16(
+; CHECK-SAME: bfloat [[START:%.*]], <16 x bfloat> [[V0:%.*]], <16 x bfloat> [[V1:%.*]]) {
+; CHECK-NEXT:    [[COMBINED_REDUCE:%.*]] = fadd fast <16 x bfloat> [[V0]], [[V1]]
+; CHECK-NEXT:    [[OP_RDX419_1:%.*]] = call fast bfloat @llvm.vector.reduce.fadd.v16bf16(bfloat [[START]], <16 x bfloat> [[COMBINED_REDUCE]])
+; CHECK-NEXT:    [[OP_RDX420_1:%.*]] = fadd fast bfloat [[START]], [[START]]
+; CHECK-NEXT:    [[OP_RDX422_1:%.*]] = fadd fast bfloat [[OP_RDX419_1]], [[OP_RDX420_1]]
+; CHECK-NEXT:    [[OP_RDX423_1:%.*]] = fmul fast bfloat [[START]], 0xR40E0
+; CHECK-NEXT:    [[OP_RDX424_1:%.*]] = fadd fast bfloat [[OP_RDX422_1]], [[OP_RDX423_1]]
+; CHECK-NEXT:    ret bfloat [[OP_RDX424_1]]
+;
+  %op.rdx419 = call fast bfloat @llvm.vector.reduce.fadd.v16bf16(bfloat %start, <16 x bfloat> %v0)
+  %op.rdx420 = fadd fast bfloat %start, %start
+  %op.rdx421 = fadd fast bfloat %start, %start
+  %op.rdx422 = fadd fast bfloat %op.rdx419, %op.rdx420
+  %op.rdx424 = fadd fast bfloat %op.rdx422, %op.rdx421
+  %op.rdx419.1 = call fast bfloat @llvm.vector.reduce.fadd.v16bf16(bfloat %start, <16 x bfloat> %v1)
+  %op.rdx420.1 = fadd fast bfloat %start, %start
+  %op.rdx421.1 = fadd fast bfloat %start, %start
+  %op.rdx422.1 = fadd fast bfloat %op.rdx419.1, %op.rdx420.1
+  %op.rdx423.1 = fadd fast bfloat %op.rdx421.1, %op.rdx424
+  %op.rdx424.1 = fadd fast bfloat %op.rdx422.1, %op.rdx423.1
+
+  ret bfloat %op.rdx424.1
+}
+
 define i32 @tree_sums_v16i32(i32 %start, <16 x i32> %v0, <16 x i32> %v1) {
 ; CHECK-LABEL: define i32 @tree_sums_v16i32(
 ; CHECK-SAME: i32 [[START:%.*]], <16 x i32> [[V0:%.*]], <16 x i32> [[V1:%.*]]) {
