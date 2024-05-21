@@ -487,7 +487,25 @@ Instruction *InstCombinerImpl::simplifyGetVectorLength(IntrinsicInst &VL) {
   if (!cast<ConstantInt>(VL.getOperand(2))->isOne())
     return nullptr;
 
-  unsigned Elts = cast<ConstantInt>(VL.getOperand(1))->getZExtValue();
+  unsigned VF = cast<ConstantInt>(VL.getOperand(1))->getZExtValue();
+
+  // If the input is a constant less than or equal to vscale * VF, then the
+  // result is just the constant.
+  if (auto *CI = dyn_cast<ConstantInt>(VL.getOperand(0))) {
+    Function *F = VL.getFunction();
+    Attribute Attr = F->getFnAttribute(Attribute::VScaleRange);
+    if (Attr.isValid()) {
+      unsigned AttrMin = Attr.getVScaleRangeMin();
+      unsigned MinElts = AttrMin * VF;
+
+      if (CI->getValue().ule(MinElts)) {
+        Value *NewVL = Builder.CreateZExtOrTrunc(CI, VL.getType());
+        return replaceInstUsesWith(VL, NewVL);
+      }
+    }
+
+    return nullptr;
+  }
 
   uint64_t SEW, LMUL;
   Value *Vsetvli = VL.getOperand(0);
@@ -500,7 +518,7 @@ Instruction *InstCombinerImpl::simplifyGetVectorLength(IntrinsicInst &VL) {
     else
       MinVectorLength >>= (8 - LMUL);
 
-    if (MinVectorLength >> (SEW + 3) > Elts)
+    if (MinVectorLength >> (SEW + 3) > VF)
       return nullptr;
     Value *NewVL = Builder.CreateZExtOrTrunc(Vsetvli, VL.getType());
 
