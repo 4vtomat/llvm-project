@@ -7,11 +7,10 @@ define void @test1(ptr %arg, ptr %arg1) vscale_range(1) {
 ; CHECK-NEXT:  bb:
 ; CHECK-NEXT:    br label [[BB2:%.*]]
 ; CHECK:       bb2:
-; CHECK-NEXT:    [[CALL:%.*]] = tail call i32 @llvm.experimental.get.vector.length.i64(i64 1, i32 4, i1 true)
-; CHECK-NEXT:    [[CALL4:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[ARG1]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[CALL]])
-; CHECK-NEXT:    [[CALL5:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[ARG]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[CALL]])
-; CHECK-NEXT:    tail call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[CALL5]], ptr align 8 [[ARG1]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[CALL]])
-; CHECK-NEXT:    tail call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[CALL4]], ptr align 8 [[ARG]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[CALL]])
+; CHECK-NEXT:    [[CALL4:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[ARG1]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 1)
+; CHECK-NEXT:    [[CALL5:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[ARG]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 1)
+; CHECK-NEXT:    tail call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[CALL5]], ptr align 8 [[ARG1]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 1)
+; CHECK-NEXT:    tail call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[CALL4]], ptr align 8 [[ARG]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 1)
 ; CHECK-NEXT:    br i1 true, label [[BB6:%.*]], label [[BB2]]
 ; CHECK:       bb6:
 ; CHECK-NEXT:    ret void
@@ -45,11 +44,10 @@ define void @test2(ptr %arg, ptr %arg1) vscale_range(1) {
 ; CHECK-NEXT:  bb:
 ; CHECK-NEXT:    br label [[BB2:%.*]]
 ; CHECK:       bb2:
-; CHECK-NEXT:    [[CALL:%.*]] = tail call i32 @llvm.experimental.get.vector.length.i64(i64 2, i32 4, i1 true)
-; CHECK-NEXT:    [[CALL4:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[ARG1]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[CALL]])
-; CHECK-NEXT:    [[CALL5:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[ARG]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[CALL]])
-; CHECK-NEXT:    tail call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[CALL5]], ptr align 8 [[ARG1]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[CALL]])
-; CHECK-NEXT:    tail call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[CALL4]], ptr align 8 [[ARG]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[CALL]])
+; CHECK-NEXT:    [[CALL4:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[ARG1]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 2)
+; CHECK-NEXT:    [[CALL5:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[ARG]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 2)
+; CHECK-NEXT:    tail call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[CALL5]], ptr align 8 [[ARG1]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 2)
+; CHECK-NEXT:    tail call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[CALL4]], ptr align 8 [[ARG]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 2)
 ; CHECK-NEXT:    br i1 true, label [[BB6:%.*]], label [[BB2]]
 ; CHECK:       bb6:
 ; CHECK-NEXT:    ret void
@@ -83,11 +81,10 @@ define void @test3(ptr %arg, ptr %arg1) vscale_range(1) {
 ; CHECK-NEXT:  bb:
 ; CHECK-NEXT:    br label [[BB2:%.*]]
 ; CHECK:       bb2:
-; CHECK-NEXT:    [[CALL:%.*]] = tail call i32 @llvm.experimental.get.vector.length.i64(i64 4, i32 4, i1 true)
-; CHECK-NEXT:    [[CALL4:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[ARG1]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[CALL]])
-; CHECK-NEXT:    [[CALL5:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[ARG]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[CALL]])
-; CHECK-NEXT:    tail call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[CALL5]], ptr align 8 [[ARG1]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[CALL]])
-; CHECK-NEXT:    tail call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[CALL4]], ptr align 8 [[ARG]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[CALL]])
+; CHECK-NEXT:    [[CALL4:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[ARG1]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 4)
+; CHECK-NEXT:    [[CALL5:%.*]] = tail call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr align 8 [[ARG]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 4)
+; CHECK-NEXT:    tail call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[CALL5]], ptr align 8 [[ARG1]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 4)
+; CHECK-NEXT:    tail call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> [[CALL4]], ptr align 8 [[ARG]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 4)
 ; CHECK-NEXT:    br i1 true, label [[BB6:%.*]], label [[BB2]]
 ; CHECK:       bb6:
 ; CHECK-NEXT:    ret void

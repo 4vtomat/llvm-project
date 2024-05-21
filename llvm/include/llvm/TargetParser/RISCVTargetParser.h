@@ -72,6 +72,10 @@ inline static bool isValidLMUL(unsigned LMUL, bool Fractional) {
 unsigned encodeVTYPE(RISCVII::VLMUL VLMUL, unsigned SEW, bool TailAgnostic,
                      bool MaskAgnostic);
 
+#if SIFIVE_CUSTOMIZATION
+unsigned encodeMammothWWEE(unsigned SEW, unsigned Widen);
+#endif // SIFIVE_CUSTOMIZATION
+
 inline static RISCVII::VLMUL getVLMUL(unsigned VType) {
   unsigned VLMUL = VType & 0x7;
   return static_cast<RISCVII::VLMUL>(VLMUL);
@@ -100,6 +104,24 @@ inline static unsigned getSEW(unsigned VType) {
   unsigned VSEW = (VType >> 3) & 0x7;
   return decodeVSEW(VSEW);
 }
+
+#if SIFIVE_CUSTOMIZATION
+inline static bool hasMammothWiden(unsigned VType) {
+  unsigned TWiden = (VType >> 8) & 0x3;
+  return TWiden != 0;
+}
+
+inline static unsigned getMammothWiden(unsigned VType) {
+  unsigned TWiden = (VType >> 8) & 0x3;
+  assert(TWiden != 0 && "Invalid widen value");
+  return 1 << (TWiden - 1);
+}
+
+static inline bool isValidMammothWWEE(unsigned VTypeI) {
+  return (VTypeI & ~0x338) == 0 && RISCVVType::hasMammothWiden(VTypeI) &&
+         RISCVVType::getSEW(VTypeI) * RISCVVType::getMammothWiden(VTypeI) <= 64;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 inline static bool isTailAgnostic(unsigned VType) { return VType & 0x40; }
 

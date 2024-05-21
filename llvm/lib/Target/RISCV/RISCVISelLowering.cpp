@@ -7930,6 +7930,8 @@ foldBinOpIntoSelectIfProfitable(SDNode *BO, SelectionDAG &DAG,
 }
 
 #if SIFIVE_CUSTOMIZATION
+// Combine (vwaddu_w_vl (vwaddu_vl 1, X), X) -> (vadd (vwaddu X, Y), 1)
+// FIXME: vwaddu_vl is commutable
 static SDValue combineVWADDU_W_VL(SDNode *N, SelectionDAG &DAG,
                                   const RISCVSubtarget &Subtarget) {
   if (N->getOpcode() != RISCVISD::VWADDU_W_VL)
@@ -7940,7 +7942,7 @@ static SDValue combineVWADDU_W_VL(SDNode *N, SelectionDAG &DAG,
   SDValue Mask = N->getOperand(3);
   SDValue VL = N->getOperand(4);
 
-  if (Sum.getOpcode() != RISCVISD::VWADDU_W_VL || !N->getOperand(2).isUndef() ||
+  if (Sum.getOpcode() != RISCVISD::VWADDU_VL || !N->getOperand(2).isUndef() ||
       !Sum.hasOneUse())
     return SDValue();
 
@@ -15248,61 +15250,6 @@ static SDValue combineVectorSquareDifference(SDNode *N,
   Sub = DAG.getNode(ISD::SIGN_EXTEND, SDLoc(Sub), VT, Sub);
   return DAG.getNode(ISD::MUL, SDLoc(N), VT, Sub, Sub);
 }
-
-// Look for (abs (sub (zext X), (zext Y))).
-// Rewrite as (zext (sub (zext (max X, Y), (min X, Y)))) if the user is an add
-// or reduction add. The min/max can be done in parallel and with a lower LMUL
-// than the original code. The two zexts can be folded into widening sub and
-// widening add or widening redsum.
-static SDValue performABSCombine(SDNode *N, SelectionDAG &DAG) {
-  EVT VT = N->getValueType(0);
-  const TargetLowering &TLI = DAG.getTargetLoweringInfo();
-
-  if (!VT.isFixedLengthVector() || VT.getVectorElementType() != MVT::i32 ||
-      !TLI.isTypeLegal(VT))
-    return SDValue();
-
-  SDValue Src = N->getOperand(0);
-  if (Src.getOpcode() != ISD::SUB || !Src.hasOneUse())
-    return SDValue();
-
-  // Make sure the use is an add or reduce add so the zext we create at the end
-  // will be folded.
-  if (!N->hasOneUse() || (N->use_begin()->getOpcode() != ISD::ADD &&
-                          N->use_begin()->getOpcode() != ISD::VECREDUCE_ADD))
-    return SDValue();
-
-  // Inputs to the subtract should be zext.
-  SDValue Op0 = Src.getOperand(0);
-  SDValue Op1 = Src.getOperand(1);
-  if (Op0.getOpcode() != ISD::ZERO_EXTEND || !Op0.hasOneUse() ||
-      Op1.getOpcode() != ISD::ZERO_EXTEND || !Op1.hasOneUse())
-    return SDValue();
-
-  Op0 = Op0.getOperand(0);
-  Op1 = Op1.getOperand(0);
-
-  // Inputs should be i8 vectors.
-  if (Op0.getValueType().getVectorElementType() != MVT::i8 ||
-      Op1.getValueType().getVectorElementType() != MVT::i8)
-    return SDValue();
-
-  SDLoc DL(N);
-
-  SDValue Max = DAG.getNode(ISD::UMAX, DL, Op0.getValueType(), Op0, Op1);
-  SDValue Min = DAG.getNode(ISD::UMIN, DL, Op0.getValueType(), Op0, Op1);
-
-  // The intermediate VT should be i16.
-  EVT IntermediateVT =
-      EVT::getVectorVT(*DAG.getContext(), MVT::i16, VT.getVectorElementCount());
-
-  Max = DAG.getNode(ISD::ZERO_EXTEND, DL, IntermediateVT, Max);
-  Min = DAG.getNode(ISD::ZERO_EXTEND, DL, IntermediateVT, Min);
-
-  SDValue Sub = DAG.getNode(ISD::SUB, DL, IntermediateVT, Max, Min);
-
-  return DAG.getNode(ISD::ZERO_EXTEND, DL, VT, Sub);
-}
 #endif // SIFIVE_CUSTOMIZATION
 
 // Try to expand a scalar multiply to a faster sequence.
@@ -18388,10 +18335,6 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
                        DAG.getConstant(~SignBit, DL, VT));
   }
   case ISD::ABS: {
-#if SIFIVE_CUSTOMIZATION
-    if (SDValue V = performABSCombine(N, DAG))
-      return V;
-#endif // SIFIVE_CUSTOMIZATION
     EVT VT = N->getValueType(0);
     SDValue N0 = N->getOperand(0);
     // abs (sext) -> zext (abs)
@@ -19199,39 +19142,40 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     SDValue VL = N->getOperand(2);
 #if SIFIVE_CUSTOMIZATION
     if (Scalar.getOpcode() == RISCVISD::VMV_X_S &&
-        Scalar.getOperand(0).getValueType() == N->getValueType(0) &&
-        isa<ConstantSDNode>(N->getOperand(2))) {
+        Scalar.getOperand(0).getValueType() == N->getValueType(0)) {
       if (N->getOperand(0).isUndef())
         return Scalar.getOperand(0);
-      if (cast<ConstantSDNode>(N->getOperand(2))->getZExtValue() == 0)
+      if (isNullConstant(N->getOperand(2)))
         return N->getOperand(0);
-      SDLoc DL(N);
-      if (Scalar.getOperand(0).getOpcode() == RISCVISD::VSLIDEDOWN_VL &&
-          Scalar.getOperand(0).getOperand(0).isUndef()) {
-        auto Slidedown = Scalar.getOperand(0);
-        if (isa<ConstantSDNode>(Slidedown.getOperand(4)) &&
-            cast<ConstantSDNode>(Slidedown.getOperand(4))->getZExtValue() == 0)
-          return N->getOperand(0);
-        if ((!isa<ConstantSDNode>(Slidedown.getOperand(4)) ||
-             1 < cast<ConstantSDNode>(Slidedown.getOperand(4))
-                     ->getZExtValue()) &&
-            !Slidedown.hasOneUse())
-          return SDValue();
-        return getVSlidedown(DAG, Subtarget, DL, Slidedown.getValueType(),
-                             N->getOperand(0), Slidedown.getOperand(1),
-                             Slidedown.getOperand(2), Slidedown.getOperand(3),
-                             Slidedown.getOperand(4));
+      // These transforms require knowing the VL isn't zero. Conservatively,
+      // check if the VL is a constant. We already checked for null constant
+      // so any other constant is non-zero.
+      // FIXME: Use isKnownNonZero?
+      if (isa<ConstantSDNode>(N->getOperand(2))) {
+        SDLoc DL(N);
+        if (Scalar.getOperand(0).getOpcode() == RISCVISD::VSLIDEDOWN_VL &&
+            Scalar.getOperand(0).getOperand(0).isUndef()) {
+          auto Slidedown = Scalar.getOperand(0);
+          if (isNullConstant(Slidedown.getOperand(4)))
+            return N->getOperand(0);
+          if (!isOneConstant(Slidedown.getOperand(4)) && !Slidedown.hasOneUse())
+            return SDValue();
+          return getVSlidedown(DAG, Subtarget, DL, Slidedown.getValueType(),
+                               N->getOperand(0), Slidedown.getOperand(1),
+                               Slidedown.getOperand(2), Slidedown.getOperand(3),
+                               Slidedown.getOperand(4));
+        }
+        MVT VecVT = N->getSimpleValueType(0);
+        MVT XLenVT = Subtarget.getXLenVT();
+        SDValue Mask, VL;
+        std::tie(Mask, VL) = getDefaultScalableVLOps(VecVT, DL, DAG, Subtarget);
+        SDValue Zero = DAG.getConstant(0, DL, XLenVT);
+        SDValue OneVL = DAG.getConstant(1, DL, XLenVT);
+        // FIXME: Use tail undisturbed vmv.v.v when RISCVISD::VMV_V_V_VL gets
+        // pulled down.
+        return getVSlideup(DAG, Subtarget, DL, VecVT, N->getOperand(0),
+                           Scalar.getOperand(0), Zero, Mask, OneVL);
       }
-      MVT VecVT = N->getSimpleValueType(0);
-      MVT XLenVT = Subtarget.getXLenVT();
-      SDValue Mask, VL;
-      std::tie(Mask, VL) = getDefaultScalableVLOps(VecVT, DL, DAG, Subtarget);
-      SDValue Zero = DAG.getConstant(0, DL, XLenVT);
-      SDValue OneVL = DAG.getConstant(1, DL, XLenVT);
-      // FIXME: Use tail undisturbed vmv.v.v when RISCVISD::VMV_V_V_VL gets
-      // pulled down.
-      return getVSlideup(DAG, Subtarget, DL, VecVT, N->getOperand(0),
-                         Scalar.getOperand(0), Zero, Mask, OneVL);
     }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -22478,6 +22422,10 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(CLMULR)
   NODE_NAME_CASE(MOPR)
   NODE_NAME_CASE(MOPRR)
+#if SIFIVE_CUSTOMIZATION
+  // This is a miss in upstream #66762.
+  NODE_NAME_CASE(SW_GUARDED_BRIND)
+#endif // SIFIVE_CUSTOMIZATION
   NODE_NAME_CASE(SHA256SIG0)
   NODE_NAME_CASE(SHA256SIG1)
   NODE_NAME_CASE(SHA256SUM0)
@@ -24602,6 +24550,23 @@ MCPhysReg RVVArgDispatcher::getNextPhysReg() {
   assert(CurIdx < AllocatedPhysRegs.size() && "Index out of range");
   return AllocatedPhysRegs[CurIdx++];
 }
+
+#if SIFIVE_CUSTOMIZATION
+// Cherry-picked from upstream #66762.
+SDValue RISCVTargetLowering::expandIndirectJTBranch(const SDLoc &dl,
+                                                    SDValue Value, SDValue Addr,
+                                                    int JTI,
+                                                    SelectionDAG &DAG) const {
+  if (Subtarget.hasStdExtZicfilp()) {
+    // When Zicfilp enabled, we need to use software guarded branch for jump
+    // table branch.
+    SDValue JTInfo = DAG.getJumpTableDebugInfo(JTI, Value, dl);
+    return DAG.getNode(RISCVISD::SW_GUARDED_BRIND, dl, MVT::Other, JTInfo,
+                       Addr);
+  }
+  return TargetLowering::expandIndirectJTBranch(dl, Value, Addr, JTI, DAG);
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 namespace llvm::RISCVVIntrinsicsTable {
 

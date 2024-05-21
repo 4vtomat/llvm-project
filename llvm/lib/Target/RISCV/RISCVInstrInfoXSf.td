@@ -91,7 +91,8 @@ class CustomSiFiveVF<string opcodestr,  RISCVVFormat opv, bits<6> funct6>
   let mayStore = 0;
 }
 
-defvar VQDOTLMuls = [VI32MF2, VI32M1, VI32M2, VI32M4, VI32M8];
+defvar VQDOTLMuls = [VI16MF4, VI16MF2, VI16M1, VI16M2, VI16M4, VI16M8,
+                     VI32MF2, VI32M1, VI32M2, VI32M4, VI32M8];
 
 // These VPat definitions are for vqdot because they have a different operand
 // order with other ternary instructions (i.e. vop.vx vd, vs2, rs1)
@@ -939,7 +940,7 @@ let Predicates = [HasVendorXSfvqmaccqoq] in {
 
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoSiFiveVQDOT<string Constraint = ""> {
-  foreach m = MxListVF4 in {
+  foreach m = MxListVF2 in {
     defm "Pseudo" # NAME # "_VV" : VPseudoTernaryWithPolicy<m.vrclass, m.vrclass, m.vrclass, m, Constraint>;
     defm "Pseudo" # NAME # "_VX" : VPseudoTernaryWithPolicy<m.vrclass, m.vrclass, GPR, m, Constraint>;
   }
@@ -951,7 +952,7 @@ let Predicates = [HasVendorXSfvqdotq] in {
   defm VQDOTSU: VPseudoSiFiveVQDOT;
 
   // VQDOTUS does not have a VV variant
-  foreach m = MxListVF4 in {
+  foreach m = MxListVF2 in {
     defm "PseudoVQDOTUS_VX" : VPseudoTernaryWithPolicy<m.vrclass, m.vrclass, GPR, m>;
   }
 }
@@ -1154,34 +1155,20 @@ def MammothWWEEAsmOperand : AsmOperandClass {
   let Name = "MammothWWEE";
   let ParserMethod = "parseMammothWWEE";
   let DiagnosticType = "InvalidMammothWWEE";
-  let RenderMethod = "addImmOperands";
+  let RenderMethod = "addVTypeIOperands";
 }
 
 def MammothWWEEOp : RISCVOp {
   let ParserMatchClass = MammothWWEEAsmOperand;
   let PrintMethod = "printMammothWWEE";
-  let DecoderMethod = "decodeMammothWWEE";
-  let OperandType = "OPERAND_MammothWWEE";
-}
-
-class RVInstSetTnm<dag outs, dag ins, string opcodestr, string argstr>
-    : RVInst<outs, ins, opcodestr, argstr, [], InstFormatI> {
-  bits<6> funct6;
-  bits<5> rs2;
-  bits<5> rs1;
-  bits<5> rd;
-
-  let Inst{31} = 1;
-  let Inst{30} = 0;
-  let Inst{29-26} = funct6{4-1};
-  let Inst{25} = 0;
-  let Inst{24-20} = rs2;
-  let Inst{19-15} = rs1;
-  let Inst{14-12} = OPCFG.Value;
-  let Inst{11-7} = rd;
-  let Inst{6-0} = OPC_OP_V.Value;
-
-  let Defs = [VTYPE, VL];
+  let MCOperandPredicate = [{
+    int64_t Imm;
+    if (!MCOp.evaluateAsConstantImm(Imm))
+      return false;
+    if (!isUInt<32>(Imm))
+      return false;
+    return RISCVVType::isValidMammothWWEE(Imm);
+  }];
 }
 
 class RVInstSetSingle<dag outs, dag ins, bits<5> rs2, string opcodestr,
@@ -1266,36 +1253,35 @@ class RVInstMatmulF<bits<2> rd_lsb2, dag outs, dag ins, string opcodestr,
   let Uses = [VTYPE, VL];
 }
 
-class RVInstMatmulF8<bits<2> funct6_lsb2, bits<2> rd_lsb2, dag outs, dag ins,
+class RVInstMatmulF8<bit funct6_lsb, bit rd_lsb, dag outs, dag ins,
                      string opcodestr, string argstr>
     : RVInst<outs, ins, opcodestr, argstr, [], InstFormatR> {
   bits<5> vs2;
   bits<5> vs1;
   bits<5> rd;
 
-  let Inst{31-28} = 0b1111;
-  let Inst{27-26} = funct6_lsb2;
+  let Inst{31-27} = 0b11111;
+  let Inst{26} = funct6_lsb;
   let Inst{25} = 1;
   let Inst{24-20} = vs2;
   let Inst{19-15} = vs1;
   let Inst{14-12} = OPFVV.Value;
   let Inst{11-10} = rd{3-2};
-  let Inst{9} = 0;
-  let Inst{8-7} = rd_lsb2;
+  let Inst{9-8} = 0b00;
+  let Inst{7} = rd_lsb;
   let Inst{6-0} = OPC_OP_VE.Value;
 
   let Uses = [VTYPE, VL];
 }
 
 
-class F8Encode<bits<2> encode_bits, string encode_name> {
-  bits<2> Bits = encode_bits;
+class F8Encode<bit encode_bit, string encode_name> {
+  bit Bit = encode_bit;
   string Name = encode_name;
 }
 
-defvar F8Encodes = [F8Encode<0b01, "f8p3">,
-                    F8Encode<0b10, "f8p4">,
-                    F8Encode<0b11, "f8p5">];
+defvar F8Encodes = [F8Encode<0b0, "e5m2">,
+                    F8Encode<0b1, "e4m3">];
 
 class RVInstMatmulI8<bit funct6_lsb2, bit funct6_lsb1, bit rd_lsb1, dag outs, dag ins,
                      string opcodestr, string argstr>
@@ -1345,17 +1331,30 @@ class RVInstSetZero<dag outs, dag ins, string opcodestr, string argstr>
   let Uses = [VTYPE, VL];
 }
 
+class RVInstVtDiscard<string opcodestr>
+    : RVInst<(outs), (ins), opcodestr, "", [], InstFormatR> {
+  let Inst{31-26} = 0b010000;
+  let Inst{25} = 1;
+  let Inst{24-20} = 0b11100;
+  let Inst{19-15} = 0b00000;
+  let Inst{14-12} = OPMVX.Value;
+  let Inst{11-7} = 0b00000;
+  let Inst{6-0} = OPC_OP_V.Value;
+}
+
+let Predicates = [HasVendorXSfmm32eaOrXSfmmbase] in
+def : InstAlias<"sf.vsettnt $rd, $rs1, $vtypei",
+                (VSETVLI GPR:$rd, GPR:$rs1, MammothWWEEOp:$vtypei)>;
+
 let Predicates = [HasVendorXSfmm32eaOrXSfmmbase], DecoderNamespace = "XSfmm32eaOrXSfmmbase" in {
 let hasSideEffects = 1, mayLoad = 0, mayStore = 0 in {
-  def SF_VSETTNM : RVInstSetTnm<(outs GPR:$rd),
-                                (ins GPR:$rs1, GPR:$rs2, MammothWWEEOp:$funct6),
-                                "sf.vsettnm", "$rd, $rs1, $rs2, $funct6">;
   def SF_VSETTN : RVInstSetSingle<(outs GPR:$rd), (ins GPR:$rs1), 0b00000,
                                   "sf.vsettn", "$rd, $rs1">;
   def SF_VSETTM : RVInstSetSingle<(outs GPR:$rd), (ins GPR:$rs1), 0b00001,
                                   "sf.vsettm", "$rd, $rs1">;
   def SF_VSETTK  : RVInstSetSingle<(outs GPR:$rd), (ins GPR:$rs1), 0b00010,
                                    "sf.vsettk", "$rd, $rs1">;
+  def SF_VTDISCARD : RVInstVtDiscard<"sf.vtdiscard">;
 }
 
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
@@ -1408,12 +1407,12 @@ let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
 
 let Predicates = [HasVendorXSfmm32a8f], DecoderNamespace = "XSfmm32a8f" in {
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
-  foreach aa = F8Encodes in
-    foreach bb = F8Encodes in
-      def SF_MM_#!toupper(aa.Name)#_#!toupper(bb.Name)
-          : RVInstMatmulF8<aa.Bits, bb.Bits,
+  foreach a = F8Encodes in
+    foreach b = F8Encodes in
+      def SF_MM_#!toupper(a.Name)#_#!toupper(b.Name)
+          : RVInstMatmulF8<a.Bit, b.Bit,
                            (outs), (ins TRM4:$rd, VR:$vs2, VR:$vs1),
-                           "sf.mm."#aa.Name#"."#bb.Name, "$rd, $vs2, $vs1">;
+                           "sf.mm."#a.Name#"."#b.Name, "$rd, $vs2, $vs1">;
 }
 } // Predicates = [HasVendorXSfmm32a8f]
 

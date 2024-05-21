@@ -774,6 +774,14 @@ vsetvli zero, zero, e64, m8, tu, mu
 vmv.v.v v4, v12
 
 # CHECK:      Iterations:        1
+# CHECK-NEXT: Instructions:      727
+# CHECK-NEXT: Total Cycles:      10928
+# CHECK-NEXT: Total uOps:        727
+
+# CHECK:      Dispatch Width:    2
+# CHECK-NEXT: uOps Per Cycle:    0.07
+# CHECK-NEXT: IPC:               0.07
+# CHECK-NEXT: Block RThroughput: 10389.0
 
 # CHECK:      Instruction Info:
 # CHECK-NEXT: [1]: #uOps
@@ -1524,6 +1532,8 @@ vmv.v.v v4, v12
 # CHECK-NEXT: [8]   - VLEN512SiFive7VS
 
 # CHECK:      Resource pressure per iteration:
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
+# CHECK-NEXT:  -      -      -     342.00  -     10389.00 385.00  -    -
 
 # CHECK:      Resource pressure by instruction:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:

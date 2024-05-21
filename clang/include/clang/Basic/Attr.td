@@ -2041,6 +2041,17 @@ def RISCVRVVVectorBits : TypeAttr {
   let ASTNode = 0;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+def RISCVLandingPad : DeclOrTypeAttr, TargetSpecificAttr<TargetRISCV> {
+  let Spellings = [GCC<"landing_pad_value">,
+                   CXX11<"riscv", "landing_pad_value">,
+                   C23<"riscv", "landing_pad_value">];
+  let Args = [UnsignedArgument<"LandingLabel">];
+  let Subjects = SubjectList<[Function, FunctionPointer]>;
+  let Documentation = [RISCVLandingPadDocs];
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 // This is not a TargetSpecificAttr so that is silently accepted and
 // ignored on other targets as encouraged by the OpenCL spec.
 //

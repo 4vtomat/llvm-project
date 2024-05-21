@@ -211,6 +211,11 @@ def FeatureStdExtZicfilp
 def HasStdExtZicfilp : Predicate<"Subtarget->hasStdExtZicfilp()">,
                        AssemblerPredicate<(all_of FeatureStdExtZicfilp),
                                           "'Zicfilp' (Landing pad)">;
+#ifdef SIFIVE_CUSTOMIZATION
+// Cherry-picked from upstream #68292
+def NoStdExtZicfilp : Predicate<"!Subtarget->hasStdExtZicfilp()">,
+                                 AssemblerPredicate<(all_of (not FeatureStdExtZicfilp))>;
+#endif // SIFIVE_CUSTOMIZATION
 
 def FeatureStdExtZicfiss
     : RISCVExperimentalExtension<"zicfiss", 0, 4,
@@ -1186,6 +1191,10 @@ def HasVendorXSfvcp : Predicate<"Subtarget->hasVendorXSfvcp()">,
                           "'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions)">;
 
 #ifdef SIFIVE_CUSTOMIZATION
+def FeatureVendorXSfpmpmt
+    : RISCVExtension<"xsfpmpmt", 0, 1,
+                     "'Xsfpmpmt' (SiFive PMP-based Memory Types Extension)">;
+
 def FeatureVendorXSfvfexpa
     : RISCVExtension<"xsfvfexpa", 0, 2,
                      "'Xsfvfexpa' (SiFive Vector Floating-Point Exponential Approximation Instruction)",
@@ -1217,12 +1226,12 @@ def HasVendorXSfvqdotq : Predicate<"Subtarget->hasVendorXSfvqdotq()">,
                          "'Xsfvqdotq' (SiFive Vector Quad-Widening 4D Dot Product Instructions)">;
 
 def FeatureVendorXSfmm32ea
-    : RISCVExtension<"xsfmm32ea", 0, 3,
+    : RISCVExtension<"xsfmm32ea", 0, 5,
                      "'XSfmm32ea' (TEW=32-bit accumulation) instructions: sf.vset*, sf.vtmv*, sf.mm.f.f (SEW=32), sf.vtzero",
                      [FeatureStdExtV]>;
 
 def FeatureVendorXSfmmbase
-    : RISCVExtension<"xsfmmbase", 0, 3,
+    : RISCVExtension<"xsfmmbase", 0, 5,
                      "'XSfmmbase' All non arithmetic instructions for all TEWs and sf.vtzero",
                      [FeatureStdExtV]>;
 def HasVendorXSfmmbase : Predicate<"Subtarget->hasVendorXSfmmbase()">,
@@ -1234,7 +1243,7 @@ def HasVendorXSfmm32eaOrXSfmmbase
                     "XSfmm32ea/XSfmmbase">;
 
 def FeatureVendorXSfmm32a
-    : RISCVExtension<"xsfmm32a", 0, 3,
+    : RISCVExtension<"xsfmm32a", 0, 5,
                      "'XSfmm32a' (TEW=32-bit accumulation) operands - int: 8b; float: fp16, bf16, fp32",
                      [FeatureVendorXSfmmbase]>;
 def HasVendorXSfmm32a : Predicate<"Subtarget->hasVendorXSfmm32a()">,
@@ -1242,7 +1251,7 @@ def HasVendorXSfmm32a : Predicate<"Subtarget->hasVendorXSfmm32a()">,
                             "'XSfmm32a' (TEW=32-bit accumulation) operands - int: 8b; float: fp16, bf16, fp32">;
 
 def FeatureVendorXSfmm32a8f
-    : RISCVExtension<"xsfmm32a8f", 0, 3,
+    : RISCVExtension<"xsfmm32a8f", 0, 5,
                      "'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8",
                      [FeatureVendorXSfmmbase]>;
 def HasVendorXSfmm32a8f : Predicate<"Subtarget->hasVendorXSfmm32a8f()">,
@@ -1250,7 +1259,7 @@ def HasVendorXSfmm32a8f : Predicate<"Subtarget->hasVendorXSfmm32a8f()">,
                               "'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8">;
 
 def FeatureVendorXSfmm32a4i
-    : RISCVExtension<"xsfmm32a4i", 0, 3,
+    : RISCVExtension<"xsfmm32a4i", 0, 5,
                      "'XSfmm32a4i' (TEW=32-bit accumulation) operands - int: 4b (packed)",
                      [FeatureVendorXSfmmbase]>;
 def HasVendorXSfmm32a4i : Predicate<"Subtarget->hasVendorXSfmm32a4i()">,
@@ -1258,7 +1267,7 @@ def HasVendorXSfmm32a4i : Predicate<"Subtarget->hasVendorXSfmm32a4i()">,
                               "'XSfmm32a4i' (TEW=32-bit accumulation) operands - int: 4b (packed)">;
 
 def FeatureVendorXSfmm64a
-    : RISCVExtension<"xsfmm64a", 0, 3,
+    : RISCVExtension<"xsfmm64a", 0, 5,
                      "'XSfmm64a' (TEW=64-bit accumulation) operands - float: fp64",
                      [FeatureVendorXSfmmbase]>;
 def HasVendorXSfmm32eaOrXSfmm32aOrXSfmm64a
@@ -1267,17 +1276,17 @@ def HasVendorXSfmm32eaOrXSfmm32aOrXSfmm64a
                     "XSfmm32ea/XSfmm32a/XSfmm64a">;
 
 def FeatureVendorXSfmm128t
-    : RISCVExtension<"xsfmm128t", 0, 3,
+    : RISCVExtension<"xsfmm128t", 0, 5,
                      "'XSfmm128t' TE=128 configuration",
                      [FeatureVendorXSfmmbase]>;
 
 def FeatureVendorXSfmm32t
-    : RISCVExtension<"xsfmm32t", 0, 3,
+    : RISCVExtension<"xsfmm32t", 0, 5,
                      "'XSfmm32t' TE=32 configuration",
                      [FeatureVendorXSfmmbase]>;
 
 def FeatureVendorXSfmm64t
-    : RISCVExtension<"xsfmm64t", 0, 3,
+    : RISCVExtension<"xsfmm64t", 0, 5,
                      "'XSfmm64t' TE=64 configuration",
                      [FeatureVendorXSfmmbase]>;
 #endif // SIFIVE_CUSTOMIZATION
@@ -1523,11 +1532,6 @@ def TuneDLen256b : SubtargetFeature<"dlen256b", "DLen", "256",
 
 def TuneDLen512b : SubtargetFeature<"dlen512b", "DLen", "512",
                                     "'DLen' (SiFive datapath length) 512">;
-
-def TuneOptimizedVRGatherVCompress
-    : SubtargetFeature<"optimized-vrgather-vrcompress",
-                       "HasOptimizedVRGatherVRCompress", "true",
-                       "VRGather and VRCompress are optimized for single DLEN">;
 
 def TuneSiFive6 : SubtargetFeature<"sifive6", "RISCVProcFamily", "SiFive6",
                                    "SiFive 6-Series processors",

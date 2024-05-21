@@ -416,6 +416,13 @@ enum NodeType : unsigned {
   CZERO_EQZ, // vt.maskc for XVentanaCondOps.
   CZERO_NEZ, // vt.maskcn for XVentanaCondOps.
 
+#if SIFIVE_CUSTOMIZATION
+  /// Cherry-picked from upstream #66762.
+  /// Software guarded BRIND node. Operand 0 is the chain operand and
+  /// operand 1 is the target address.
+  SW_GUARDED_BRIND,
+#endif // SIFIVE_CUSTOMIZATION
+
   // FP to 32 bit int conversions for RV64. These are used to keep track of the
   // result being sign extended to 64 bit. These saturate out of range inputs.
   STRICT_FCVT_W_RV64 = ISD::FIRST_TARGET_STRICTFP_OPCODE,
@@ -907,6 +914,12 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
 
   bool supportKCFIBundles() const override { return true; }
+
+#if SIFIVE_CUSTOMIZATION
+  // Cherry-picked from upstream #66762.
+  SDValue expandIndirectJTBranch(const SDLoc &dl, SDValue Value, SDValue Addr,
+                                 int JTI, SelectionDAG &DAG) const override;
+#endif // SIFIVE_CUSTOMIZATION
 
   MachineInstr *EmitKCFICheck(MachineBasicBlock &MBB,
                               MachineBasicBlock::instr_iterator &MBBI,

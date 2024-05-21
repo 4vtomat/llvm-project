@@ -258,15 +258,47 @@ vmv8r.v	v8, v16
 vsetvli zero, zero, e64, m8, tu, mu
 vmv8r.v	v8, v16
 
+vsetvli zero, zero, e64, m1, tu, mu
+vmv.s.x v8, x5
+vmv.x.s x7, v16
+
+vsetvli zero, zero, e64, m2, tu, mu
+vmv.s.x v8, x5
+vmv.x.s x7, v16
+
+vsetvli zero, zero, e64, m4, tu, mu
+vmv.s.x v8, x5
+vmv.x.s x7, v16
+
+vsetvli zero, zero, e64, m8, tu, mu
+vmv.s.x v8, x5
+vmv.x.s x7, v16
+
+vsetvli zero, zero, e64, m1, tu, mu
+vfmv.s.f v8, f5
+vfmv.f.s f7, v16
+
+vsetvli zero, zero, e64, m2, tu, mu
+vfmv.s.f v8, f5
+vfmv.f.s f7, v16
+
+vsetvli zero, zero, e64, m4, tu, mu
+vfmv.s.f v8, f5
+vfmv.f.s f7, v16
+
+vsetvli zero, zero, e64, m8, tu, mu
+vfmv.s.f v8, f5
+vfmv.f.s f7, v16
+
 # CHECK:      Iterations:        1
-# CHECK-NEXT: Instructions:      256
-# CHECK-NEXT: Total Cycles:      477
-# CHECK-NEXT: Total uOps:        256
+# CHECK-NEXT: Instructions:      280
+# CHECK-NEXT: Total Cycles:      523
+# CHECK-NEXT: Total uOps:        280
 
 # CHECK:      Dispatch Width:    3
 # CHECK-NEXT: uOps Per Cycle:    0.54
 # CHECK-NEXT: IPC:               0.54
-# CHECK-NEXT: Block RThroughput: 480.0
+# CHECK-NEXT: Block RThroughput: 512.0
 
 # CHECK:      Instruction Info:
 # CHECK-NEXT: [1]: #uOps
@@ -533,6 +565,30 @@ vmv8r.v	v8, v16
 # CHECK-NEXT:  1      2     8.00                        vmv8r.v	v8, v16
 # CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
 # CHECK-NEXT:  1      2     8.00                        vmv8r.v	v8, v16
+# CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e64, m1, tu, mu
+# CHECK-NEXT:  1      2     2.00                        vmv.s.x	v8, t0
+# CHECK-NEXT:  1      2     2.00                        vmv.x.s	t2, v16
+# CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e64, m2, tu, mu
+# CHECK-NEXT:  1      2     2.00                        vmv.s.x	v8, t0
+# CHECK-NEXT:  1      2     2.00                        vmv.x.s	t2, v16
+# CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e64, m4, tu, mu
+# CHECK-NEXT:  1      2     2.00                        vmv.s.x	v8, t0
+# CHECK-NEXT:  1      2     2.00                        vmv.x.s	t2, v16
+# CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
+# CHECK-NEXT:  1      2     2.00                        vmv.s.x	v8, t0
+# CHECK-NEXT:  1      2     2.00                        vmv.x.s	t2, v16
+# CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e64, m1, tu, mu
+# CHECK-NEXT:  1      6     2.00                        vfmv.s.f	v8, ft5
+# CHECK-NEXT:  1      6     2.00                        vfmv.f.s	ft7, v16
+# CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e64, m2, tu, mu
+# CHECK-NEXT:  1      6     2.00                        vfmv.s.f	v8, ft5
+# CHECK-NEXT:  1      6     2.00                        vfmv.f.s	ft7, v16
+# CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e64, m4, tu, mu
+# CHECK-NEXT:  1      6     2.00                        vfmv.s.f	v8, ft5
+# CHECK-NEXT:  1      6     2.00                        vfmv.f.s	ft7, v16
+# CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
+# CHECK-NEXT:  1      6     2.00                        vfmv.s.f	v8, ft5
+# CHECK-NEXT:  1      6     2.00                        vfmv.f.s	ft7, v16
 
 # CHECK:      Resources:
 # CHECK-NEXT: [0]   - SiFiveP400Div
@@ -551,7 +607,7 @@ vmv8r.v	v8, v16
 
 # CHECK:      Resource pressure per iteration:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]    [10]   [11]   [12]
-# CHECK-NEXT:  -      -      -      -     128.00  -      -      -      -     480.00  -      -      -
+# CHECK-NEXT:  -      -      -      -     136.00  -      -      -      -     512.00  -      -      -
 
 # CHECK:      Resource pressure by instruction:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]    [10]   [11]   [12]   Instructions:
@@ -811,3 +867,27 @@ vmv8r.v	v8, v16
 # CHECK-NEXT:  -      -      -      -      -      -      -      -      -     8.00    -      -      -     vmv8r.v	v8, v16
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -      -      -     vsetvli	zero, zero, e64, m8, tu, mu
 # CHECK-NEXT:  -      -      -      -      -      -      -      -      -     8.00    -      -      -     vmv8r.v	v8, v16
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -      -      -     vsetvli	zero, zero, e64, m1, tu, mu
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -     2.00    -      -      -     vmv.s.x	v8, t0
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -     2.00    -      -      -     vmv.x.s	t2, v16
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -      -      -     vsetvli	zero, zero, e64, m2, tu, mu
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -     2.00    -      -      -     vmv.s.x	v8, t0
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -     2.00    -      -      -     vmv.x.s	t2, v16
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -      -      -     vsetvli	zero, zero, e64, m4, tu, mu
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -     2.00    -      -      -     vmv.s.x	v8, t0
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -     2.00    -      -      -     vmv.x.s	t2, v16
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -      -      -     vsetvli	zero, zero, e64, m8, tu, mu
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -     2.00    -      -      -     vmv.s.x	v8, t0
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -     2.00    -      -      -     vmv.x.s	t2, v16
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -      -      -     vsetvli	zero, zero, e64, m1, tu, mu
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -     2.00    -      -      -     vfmv.s.f	v8, ft5
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -     2.00    -      -      -     vfmv.f.s	ft7, v16
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -      -      -     vsetvli	zero, zero, e64, m2, tu, mu
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -     2.00    -      -      -     vfmv.s.f	v8, ft5
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -     2.00    -      -      -     vfmv.f.s	ft7, v16
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -      -      -     vsetvli	zero, zero, e64, m4, tu, mu
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -     2.00    -      -      -     vfmv.s.f	v8, ft5
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -     2.00    -      -      -     vfmv.f.s	ft7, v16
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -      -      -     vsetvli	zero, zero, e64, m8, tu, mu
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -     2.00    -      -      -     vfmv.s.f	v8, ft5
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -     2.00    -      -      -     vfmv.f.s	ft7, v16

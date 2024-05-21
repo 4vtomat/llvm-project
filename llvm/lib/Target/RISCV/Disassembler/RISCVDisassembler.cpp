@@ -295,16 +295,6 @@ static DecodeStatus DecodeTRM4RegisterClass(MCInst &Inst, uint32_t RegNo,
   Inst.addOperand(MCOperand::createReg(Reg));
   return MCDisassembler::Success;
 }
-
-static DecodeStatus decodeMammothWWEE(MCInst &Inst, uint32_t Imm,
-                                      int64_t Address,
-                                      const MCDisassembler *Decoder) {
-  if (!RISCVII::isValidMammothWWEE(Imm))
-    return MCDisassembler::Fail;
-
-  Inst.addOperand(MCOperand::createImm(Imm));
-  return MCDisassembler::Success;
-}
 #endif // SIFIVE_CUSTOMIZATION
 
 static DecodeStatus decodeVMaskReg(MCInst &Inst, uint32_t RegNo,

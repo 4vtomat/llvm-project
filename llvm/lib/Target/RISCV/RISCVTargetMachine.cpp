@@ -139,6 +139,7 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   initializeRISCVGatherScatterLoweringPass(*PR);
   initializeRISCVCodeGenPreparePass(*PR);
 #if SIFIVE_CUSTOMIZATION
+  initializeRISCVLandingPadSetupPass(*PR);
   initializeRISCVWidenReductionPHIPass(*PR);
   initializeRISCVLateCodeGenPreparePass(*PR);
   initializeRISCVTypePromotionPass(*PR);
@@ -496,7 +497,14 @@ bool RISCVPassConfig::addPreISel() {
     addPass(createBarrierNoopPass());
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // Enable GlobalMerge pass by default on non-O0 opt levels.
+  if (TM->getOptLevel() != CodeGenOptLevel::None &&
+      (EnableGlobalMerge == cl::BOU_TRUE ||
+       EnableGlobalMerge == cl::BOU_UNSET)) {
+#else
   if (EnableGlobalMerge == cl::BOU_TRUE) {
+#endif // SIFIVE_CUSTOMIZATION
     addPass(createGlobalMergePass(TM, /* MaxOffset */ 2047,
                                   /* OnlyOptimizeForSize */ false,
                                   /* MergeExternalByDefault */ true));
@@ -566,6 +574,7 @@ void RISCVPassConfig::addPreEmitPass() {
 #if SIFIVE_CUSTOMIZATION
   if (getOptLevel() != CodeGenOptLevel::None)
     addPass(createRISCVMachineConstPropagationPass());
+  addPass(createRISCVIndirectBranchTrackingPass());
 #endif // SIFIVE_CUSTOMIZATION
   addPass(&BranchRelaxationPassID);
   addPass(createRISCVMakeCompressibleOptPass());
@@ -632,6 +641,9 @@ void RISCVPassConfig::addPreRegAlloc() {
     addPass(createRISCVDeadRegisterDefinitionsPass());
   addPass(createRISCVInsertReadWriteCSRPass());
   addPass(createRISCVInsertWriteVXRMPass());
+#if SIFIVE_CUSTOMIZATION
+  addPass(createRISCVLandingPadSetupPass());
+#endif
 }
 
 void RISCVPassConfig::addFastRegAlloc() {

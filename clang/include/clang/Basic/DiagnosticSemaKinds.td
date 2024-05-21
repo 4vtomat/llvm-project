@@ -1114,6 +1114,10 @@ def err_require_max_vector_element_width_64 : Error<
 def warn_use_lmul_sew_pragma : Warning<
   "use '#pragma clang rvv lmul_sew' instead of vectorize_width for RISC-V vectors"
 >, InGroup<RISCVVectorPragma>;
+def err_invalid_landingpad_val : Error <
+  "expected landing pad value fits in unsigned 20-bits, "
+  "but the input label value is %0"
+>;
 #endif
 
 def err_pragma_attribute_matcher_subrule_contradicts_rule : Error<

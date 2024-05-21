@@ -96,6 +96,9 @@ public:
     OB_ptrauth = 7,                // "ptrauth"
     OB_kcfi = 8,                   // "kcfi"
     OB_convergencectrl = 9,        // "convergencectrl"
+#if SIFIVE_CUSTOMIZATION
+    OB_riscv_cfi = 10,             // "riscv_cfi"
+#endif // SIFIVE_CUSTOMIZATION
   };
 
   /// getMDKindID - Return a unique non-zero ID for the specified metadata kind.

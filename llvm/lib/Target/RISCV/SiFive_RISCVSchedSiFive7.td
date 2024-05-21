@@ -58,19 +58,6 @@ multiclass SiFive7SchedResources<int VLEN> {
   def : WriteRes<WriteFMA64, [SiFive7PipeB]>;
   }
 
-  // 16. Vector Permutation Instructions
-  foreach mx = SchedMxList in {
-    foreach sew = SchedSEWSet<mx>.val in {
-      defvar Cycles = BulletGetCyclesOnePerElement<mx, sew, VLEN>.c;
-      defvar IsWorstCase = BulletIsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
-      defvar VRGatherVVLat = !add(7, !div(256, sew)); // 7 + DLEN / SEW
-      let Latency = VRGatherVVLat, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, !add(4, Cycles))] in
-      defm "" : LMULSEWWriteResMXSEW<"WriteVRGatherVV", [SiFive7VCQ, SiFive7VA], mx, sew, IsWorstCase>;
-      let Latency = !add(Cycles, 7), AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, !add(7, Cycles))] in
-      defm "" : LMULSEWWriteResMXSEW<"WriteVCompressV", [SiFive7VCQ, SiFive7VA], mx, sew, IsWorstCase>;
-    }
-  }
-
   //===----------------------------------------------------------------------===//
   // Bypass and advance
 

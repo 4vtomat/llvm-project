@@ -979,6 +979,17 @@ void CodeGenFunction::StartFunction(GlobalDecl GD, QualType RetTy,
     EmitKernelMetadata(FD, Fn);
   }
 
+#if SIFIVE_CUSTOMIZATION
+  if (FD) {
+    if (auto *A = FD->getAttr<RISCVLandingPadAttr>()) {
+      llvm::Metadata *AttrMDArgs[] = {llvm::ConstantAsMetadata::get(
+          llvm::ConstantInt::get(CGM.Int32Ty, A->getLandingLabel()))};
+      Fn->setMetadata(llvm::LLVMContext::MD_riscv_cfi_type,
+                      llvm::MDNode::get(Fn->getContext(), AttrMDArgs));
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   // If we are checking function types, emit a function type signature as
   // prologue data.
   if (FD && SanOpts.has(SanitizerKind::Function)) {

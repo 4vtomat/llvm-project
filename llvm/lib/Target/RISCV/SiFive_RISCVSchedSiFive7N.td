@@ -9,7 +9,9 @@
 //===----------------------------------------------------------------------===//
 
 multiclass SiFive7NSchedResources<int VLEN, bit ExtraVALU = false,
-                                  bit HasSlowFP64 = false> {
+                                  bit HasSlowFP64 = false,
+                                  bit HasFastGather = false,
+                                  bit HasFastLargeGather = false> {
   let BufferSize = 0 in
   defm SiFive7N : BulletProcResources<ExtraVALU>;
   def SiFive7NPipeAB : ProcResGroup<[
@@ -44,7 +46,9 @@ multiclass SiFive7NSchedResources<int VLEN, bit ExtraVALU = false,
       : BulletWriteResBase<VLEN, SiFive7NPipeA, SiFive7NPipeB, SiFive7NPipeAB,
                            SiFive7NMem, SiFive7NIDiv, SiFive7NFDiv, SiFive7NVA1,
                            SiFive7NVA1OrVA2, SiFive7NVL, SiFive7NVS,
-                           SiFive7NVCQ, HasSlowFP64>;
+                           SiFive7NVCQ, HasSlowFP64,
+                           HasFastGather,
+                           HasFastLargeGather>;
 
   // Half precision.
   let Latency = 4 in {
@@ -67,88 +71,6 @@ multiclass SiFive7NSchedResources<int VLEN, bit ExtraVALU = false,
   def : WriteRes<WriteFMA64, [SiFive7NPipeB]>;
   }
 
-  // 16. Vector Permutation Instructions
-  // The Orca release makes some changes compared to the Narwhal release. Instead
-  // of splitting SiFive7N to SiFive7N and SiFiveO, use SchedVariants to model
-  // the minor changes.
-  def SiFiveOPred : SchedPredicate<[{SchedModel->getSubtargetInfo()->hasFeature(
-                        RISCV::TuneOptimizedVRGatherVCompress)}]>;
-  defvar SiFiveOPred = !cast<SchedPredicate>(NAME # SiFiveOPred);
-  foreach mx = SchedMxList in {
-    foreach sew = SchedSEWSet<mx>.val in {
-      defvar Cycles = BulletGetCyclesOnePerElement<mx, sew, VLEN>.c;
-      defvar IsWorstCase = BulletIsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
-
-      // Define defaults
-      let Latency = !add(Cycles, 3), AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
-        defm "" : LMULSEWWriteResMXSEW<"WriteVRGatherVV", [SiFive7NVCQ, SiFive7NVA1], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVCompressV", [SiFive7NVCQ, SiFive7NVA1], mx, sew, IsWorstCase>;
-      }
-
-      if !or(!or(!eq(mx, "MF2"), !eq(mx, "MF4")), !eq(mx, "MF8")) then {
-        assert !not(IsWorstCase),
-          "On SiFive7N MF2, MF4, and MF8 never lead to WorstCase behavior";
-
-        // Define Narwhal resources
-        defvar VRGatherVVLat = !add(7, !div(256, sew)); // 7 + DLEN / SEW
-        def "WriteVRGatherVV_" # mx # "_E" # sew # "_N" : SchedWriteRes<[SiFive7NVCQ, SiFive7NVA1]> {
-          let Latency = VRGatherVVLat;
-          let AcquireAtCycles = [0, 1];
-          let ReleaseAtCycles = [1, !add(1, !add(4, Cycles))];
-        }
-        def "WriteVCompressV_" # mx # "_E" # sew # "_N" : SchedWriteRes<[SiFive7NVCQ, SiFive7NVA1]> {
-          let Latency = !add(Cycles, 7);
-          let AcquireAtCycles = [0, 1];
-          let ReleaseAtCycles = [1, !add(1, !add(7, Cycles))];
-        }
-        // Define Orca resources
-        def "WriteVRGatherVV_" # mx # "_E" # sew # "_O" : SchedWriteRes<[SiFive7NVCQ, SiFive7NVA1]> {
-          let Latency = 4;
-          let AcquireAtCycles = [0, 1];
-          let ReleaseAtCycles = [1, !add(1, 1)];
-        }
-        def "WriteVCompressV_" # mx # "_E" # sew # "_O" : SchedWriteRes<[SiFive7NVCQ, SiFive7NVA1]> {
-          let Latency = 4;
-          let AcquireAtCycles = [0, 1];
-          let ReleaseAtCycles = [1, !add(1, 1)];
-        }
-
-        def VRGatherPredVar_ # mx # "_E" # sew : SchedVar<SiFiveOPred, [
-          !cast<SchedWriteRes>(NAME # "WriteVRGatherVV_" #mx #"_E" #sew #"_O")
-        ]>;
-        def VRGatherNoPredVar_ # mx # "_E" # sew: SchedVar<NoSchedPred, [
-          !cast<SchedWriteRes>(NAME # "WriteVRGatherVV_" #mx #"_E" #sew #"_N")
-        ]>;
-        defvar VRGatherPredVar = !cast<SchedVar>(NAME # VRGatherPredVar_ # mx # "_E" # sew);
-        defvar VRGatherNoPredVar = !cast<SchedVar>(NAME # VRGatherNoPredVar_ # mx # "_E" # sew);
-
-        def VCompressPredVar_ # mx # "_E" # sew : SchedVar<SiFiveOPred, [
-          !cast<SchedWriteRes>(NAME #"WriteVCompressV_" #mx #"_E" #sew #"_O")
-        ]>;
-        def VCompressNoPredVar_ # mx # "_E" # sew : SchedVar<NoSchedPred, [
-          !cast<SchedWriteRes>(NAME # "WriteVCompressV_" #mx #"_E" #sew #"_N")
-        ]>;
-        defvar VCompressPredVar = !cast<SchedVar>(NAME # VCompressPredVar_ # mx # "_E" # sew);
-        defvar VCompressNoPredVar = !cast<SchedVar>(NAME # VCompressNoPredVar_ # mx # "_E" # sew);
-
-        // Define variants to pick Narwhal or Orca resources
-        def "WriteVRGatherVV_" #mx #"_E" #sew #"Variant"
-            : SchedWriteVariant<[VRGatherPredVar, VRGatherNoPredVar]>;
-        def "WriteVCompressV_" #mx #"_E" #sew #"Variant"
-            : SchedWriteVariant<[VCompressPredVar, VCompressNoPredVar]>;
-
-        // Tie variant choice to the correct instructions. This overrides default
-        // behavior for these instructions that was defined above.
-        def : SchedAlias<
-          !cast<SchedReadWrite>("WriteVRGatherVV_" # mx # "_E" # sew),
-          !cast<SchedReadWrite>(NAME # "WriteVRGatherVV_" # mx # "_E" # sew # "Variant")>;
-        def : SchedAlias<
-          !cast<SchedReadWrite>("WriteVCompressV_" # mx # "_E" # sew),
-          !cast<SchedReadWrite>(NAME # "WriteVCompressV_" # mx # "_E" # sew # "Variant")>;
-        }
-    }
-  }
-
   //===----------------------------------------------------------------------===//
   // Bypass and advance
 
@@ -164,8 +86,10 @@ multiclass SiFive7NSchedResources<int VLEN, bit ExtraVALU = false,
 }
 
 // SiFive7N machine model for scheduling and other instruction cost heuristics.
-class SiFive7NSchedMachineModel<int vlen, bit extraVALU = false,
-                                bit hasSlowFP64 = false> : SchedMachineModel {
+class SiFive7NSchedMachineModel<
+    int vlen, bit extraVALU = false, bit hasSlowFP64 = false,
+    bit hasFastGather = false,
+    bit hasFastLargeGather = false> : SchedMachineModel {
   let MicroOpBufferSize = 0; // Explicitly set to zero since SiFive7N is in-order.
   let IssueWidth = 2;        // 2 micro-ops are dispatched per cycle.
   let LoadLatency = 3;
@@ -181,15 +105,25 @@ class SiFive7NSchedMachineModel<int vlen, bit extraVALU = false,
   int VLEN = vlen;
   bit ExtraVALU = extraVALU;
   bit HasSlowFP64 = hasSlowFP64;
+  bit HasFastGather = hasFastGather;
+  bit HasFastLargeGather = hasFastLargeGather;
 }
 
-def SiFive7NVLEN128Model : SiFive7NSchedMachineModel<128>;
+def SiFive7NVLEN128Model
+    : SiFive7NSchedMachineModel<128,
+                                hasFastGather = true>;
 def SiFive7NVLEN256Model : SiFive7NSchedMachineModel<256>;
 def SiFive7NVLEN512Model : SiFive7NSchedMachineModel<512>;
+def SiFive7NVLEN512FastGatherModel
+    : SiFive7NSchedMachineModel<512, hasFastGather = true>;
 def SiFive7SVLEN1024DualVALUSlowFP64Model
-    : SiFive7NSchedMachineModel<1024, extraVALU = true, hasSlowFP64 = true>;
+    : SiFive7NSchedMachineModel<1024, extraVALU = true, hasSlowFP64 = true,
+                                hasFastGather=true,
+                                hasFastLargeGather=true>;
 def SiFive7SVLEN1024DualVALUFastFP64Model
-    : SiFive7NSchedMachineModel<1024, extraVALU = true, hasSlowFP64 = false>;
+    : SiFive7NSchedMachineModel<1024, extraVALU = true, hasSlowFP64 = false,
+                                hasFastGather=true,
+                                hasFastLargeGather=true>;
 // Some processors do not have vector but reuse the scheduler model that has vector.
 // Create an alias that does not have VLEN in the name.
 defvar SiFive7NModel = SiFive7NVLEN512Model;
@@ -200,9 +134,13 @@ foreach model = [
   SiFive7NVLEN512Model,
   SiFive7SVLEN1024DualVALUSlowFP64Model,
   SiFive7SVLEN1024DualVALUFastFP64Model,
+  SiFive7NVLEN512FastGatherModel
 ] in {
   defvar name = "VLEN" #model.VLEN # !if(model.ExtraVALU, "DualVALU","") #
-                !if(model.HasSlowFP64, "SlowFP64", "FastFP64");
+                !if(model.HasSlowFP64, "SlowFP64", "FastFP64") #
+                !if(model.HasFastGather, "FastGather", "");
   let SchedModel = model in
-  defm name : SiFive7NSchedResources<model.VLEN, model.ExtraVALU, model.HasSlowFP64>;
+  defm name : SiFive7NSchedResources<model.VLEN, model.ExtraVALU, model.HasSlowFP64,
+                                     model.HasFastGather,
+                                     model.HasFastLargeGather>;
 }

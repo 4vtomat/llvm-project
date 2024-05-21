@@ -2524,11 +2524,6 @@ bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
         case RISCVOp::OPERAND_VTYPEI11:
           Ok = isUInt<11>(Imm);
           break;
-#if SIFIVE_CUSTOMIZATION
-        case RISCVOp::OPERAND_MammothWWEE:
-          Ok = RISCVII::isValidMammothWWEE(Imm);
-          break;
-#endif // SIFIVE_CUSTOMIZATION
         case RISCVOp::OPERAND_SIMM12:
           Ok = isInt<12>(Imm);
           break;

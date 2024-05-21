@@ -221,10 +221,11 @@ void RISCVInstPrinter::printMammothWWEE(const MCInst *MI, unsigned OpNo,
                                         const MCSubtargetInfo &STI,
                                         raw_ostream &O) {
   unsigned Imm = MI->getOperand(OpNo).getImm();
-  unsigned SEW = 1 << (((Imm >> 1) & 3) + 3);
+  assert(RISCVVType::isValidMammothWWEE(Imm));
+  unsigned SEW = RISCVVType::getSEW(Imm);
   O << "e" << SEW;
-  unsigned TWiden = 1 << (((Imm >> 3) & 3) - 1);
-  O << ", w" << TWiden;
+  unsigned Widen = RISCVVType::getMammothWiden(Imm);
+  O << ", w" << Widen;
 }
 #endif // SIFIVE_CUSTOMIZATION
 

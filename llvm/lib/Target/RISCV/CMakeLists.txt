@@ -37,6 +37,7 @@ add_llvm_target(RISCVCodeGen
   RISCVFoldMasks.cpp
   RISCVFrameLowering.cpp
   RISCVGatherScatterLowering.cpp
+  SiFive_RISCVIndirectBranchTracking.cpp
   RISCVInsertVSETVLI.cpp
   RISCVInsertReadWriteCSR.cpp
   RISCVInsertWriteVXRM.cpp
@@ -44,6 +45,7 @@ add_llvm_target(RISCVCodeGen
   SiFive_RISCVInstCombineIntrinsic.cpp
   RISCVISelDAGToDAG.cpp
   RISCVISelLowering.cpp
+  SiFive_RISCVLandingPadSetup.cpp
   SiFive_RISCVLateCodeGenPrepare.cpp
   SiFive_RISCVMachineConstProp.cpp
   SiFive_RISCVWidenReductionPHI.cpp

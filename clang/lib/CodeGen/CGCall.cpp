@@ -5704,6 +5704,23 @@ RValue CodeGenFunction::EmitCall(const CGFunctionInfo &CallInfo,
       !isa_and_nonnull<FunctionDecl>(TargetDecl))
     EmitKCFIOperandBundle(ConcreteCallee, BundleList);
 
+#if SIFIVE_CUSTOMIZATION
+  // Emit riscv_cfi bundle for the indirect call whose function pointer has
+  // landing pad attribute.
+  if (TargetDecl && !isa<FunctionDecl>(TargetDecl)) {
+    QualType Ty = cast<ValueDecl>(TargetDecl)->getType();
+    auto *TDefTy = Ty->getAs<TypedefType>();
+    if (TDefTy) {
+      auto *TD = TDefTy->getDecl();
+      if (auto *A = TD->getAttr<RISCVLandingPadAttr>()) {
+        uint32_t Label = A->getLandingLabel();
+        BundleList.emplace_back("riscv_cfi",
+                                llvm::ConstantInt::get(CGM.Int32Ty, Label));
+      }
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   if (const FunctionDecl *FD = dyn_cast_or_null<FunctionDecl>(CurFuncDecl))
     if (FD->hasAttr<StrictFPAttr>())
       // All calls within a strictfp function are marked strictfp

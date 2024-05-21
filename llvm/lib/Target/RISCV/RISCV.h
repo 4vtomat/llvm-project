@@ -27,6 +27,9 @@ class RISCVSubtarget;
 class RISCVTargetMachine;
 
 #if SIFIVE_CUSTOMIZATION
+FunctionPass *createRISCVLandingPadSetupPass();
+void initializeRISCVLandingPadSetupPass(PassRegistry &);
+
 FunctionPass *createRISCVLateCodeGenPreparePass();
 void initializeRISCVLateCodeGenPreparePass(PassRegistry &);
 
@@ -35,6 +38,9 @@ void initializeRISCVTypePromotionPass(PassRegistry &);
 
 Pass *createRISCVWidenReductionPHIPass();
 void initializeRISCVWidenReductionPHIPass(PassRegistry &);
+
+FunctionPass *createRISCVIndirectBranchTrackingPass();
+void initializeRISCVIndirectBranchTrackingPass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
 
 FunctionPass *createRISCVCodeGenPreparePass();

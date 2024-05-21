@@ -125,6 +125,7 @@
 #include "llvm/Transforms/Scalar/SCCP.h"
 #include "llvm/Transforms/Scalar/SROA.h"
 #if SIFIVE_CUSTOMIZATION
+#include "llvm/Transforms/Scalar/SiFive_LoopReassociate.h"
 #include "llvm/Transforms/Scalar/SiFive_LoopReverse.h"
 #endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Transforms/Scalar/SimpleLoopUnswitch.h"
@@ -1405,6 +1406,20 @@ void PassBuilder::addVectorPasses(OptimizationLevel Level,
   if (EnableInferAlignmentPass)
     FPM.addPass(InferAlignmentPass());
   FPM.addPass(InstCombinePass());
+
+#if SIFIVE_CUSTOMIZATION
+  {
+    // Simplify reduction computation within loop that can appear after loop or
+    // SLP vectorizers. Currently target simplification of reductions that these
+    // vectorizers can generate.
+    LoopPassManager LPM;
+    LPM.addPass(SiFiveLoopReassociatePass());
+    FPM.addPass(
+        createFunctionToLoopPassAdaptor(std::move(LPM),
+                                        /*UseMemorySSA=*/false,
+                                        /*UseBlockFrequencyInfo=*/false));
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   // This is needed for two reasons:
   //   1. It works around problems that instcombine introduces, such as sinking

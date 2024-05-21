@@ -6,8 +6,8 @@
 # RUN:        | FileCheck %s --check-prefix=CHECK-ERROR
 
 # CHECK-ERROR: operand must be e[8|16|32|64],w[1|2|4]
-# CHECK-ERROR-LABEL: sf.vsettnm a0, a1, a2, e128, w1{{$}}
-sf.vsettnm a0, a1, a2, e128, w1
+# CHECK-ERROR-LABEL: sf.vsettnt a0, a1, a2, e128, w1{{$}}
+sf.vsettnt a0, a1, a2, e128, w1
 
 # CHECK-ERROR: invalid operand for instruction
 # CHECK-ERROR-LABEL: sf.mm.f.f mt1, v8, v9{{$}}
@@ -18,40 +18,20 @@ sf.mm.f.f mt1, v8, v9
 sf.mm.bf.bf mt3, v8, v9
 
 # CHECK-ERROR: invalid operand for instruction
-# CHECK-ERROR-LABEL: sf.mm.f8p3.f8p3 mt2, v8, v9{{$}}
-sf.mm.f8p3.f8p3 mt2, v8, v9
+# CHECK-ERROR-LABEL: sf.mm.e5m2.e5m2 mt2, v8, v9{{$}}
+sf.mm.e5m2.e5m2 mt2, v8, v9
 
 # CHECK-ERROR: invalid operand for instruction
-# CHECK-ERROR-LABEL: sf.mm.f8p3.f8p4 mt6, v8, v9{{$}}
-sf.mm.f8p3.f8p4 mt6, v8, v9
+# CHECK-ERROR-LABEL: sf.mm.e5m2.e4m3 mt6, v8, v9{{$}}
+sf.mm.e5m2.e4m3 mt6, v8, v9
 
 # CHECK-ERROR: invalid operand for instruction
-# CHECK-ERROR-LABEL: sf.mm.f8p3.f8p5 mt10, v8, v9{{$}}
-sf.mm.f8p3.f8p5 mt10, v8, v9
+# CHECK-ERROR-LABEL: sf.mm.e4m3.e5m2 mt10, v8, v9{{$}}
+sf.mm.e4m3.e5m2 mt10, v8, v9
 
 # CHECK-ERROR: invalid operand for instruction
-# CHECK-ERROR-LABEL: sf.mm.f8p4.f8p3 mt14, v8, v9{{$}}
-sf.mm.f8p4.f8p3 mt14, v8, v9
-
-# CHECK-ERROR: invalid operand for instruction
-# CHECK-ERROR-LABEL: sf.mm.f8p4.f8p4 mt2, v8, v9{{$}}
-sf.mm.f8p4.f8p4 mt2, v8, v9
-
-# CHECK-ERROR: invalid operand for instruction
-# CHECK-ERROR-LABEL: sf.mm.f8p4.f8p5 mt6, v8, v9{{$}}
-sf.mm.f8p4.f8p5 mt6, v8, v9
-
-# CHECK-ERROR: invalid operand for instruction
-# CHECK-ERROR-LABEL: sf.mm.f8p5.f8p3 mt10, v8, v9{{$}}
-sf.mm.f8p5.f8p3 mt10, v8, v9
-
-# CHECK-ERROR: invalid operand for instruction
-# CHECK-ERROR-LABEL: sf.mm.f8p5.f8p4 mt14, v8, v9{{$}}
-sf.mm.f8p5.f8p4 mt14, v8, v9
-
-# CHECK-ERROR: invalid operand for instruction
-# CHECK-ERROR-LABEL: sf.mm.f8p5.f8p5 mt2, v8, v9{{$}}
-sf.mm.f8p5.f8p5 mt2, v8, v9
+# CHECK-ERROR-LABEL: sf.mm.e4m3.e4m3 mt14, v8, v9{{$}}
+sf.mm.e4m3.e4m3 mt14, v8, v9
 
 # CHECK-ERROR: invalid operand for instruction
 # CHECK-ERROR-LABEL: sf.mm.u.u mt1, v8, v9{{$}}

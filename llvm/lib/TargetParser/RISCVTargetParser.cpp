@@ -145,6 +145,17 @@ unsigned encodeVTYPE(RISCVII::VLMUL VLMUL, unsigned SEW, bool TailAgnostic,
   return VTypeI;
 }
 
+#if SIFIVE_CUSTOMIZATION
+unsigned encodeMammothWWEE(unsigned SEW, unsigned Widen) {
+  assert(isValidSEW(SEW) && "Invalid SEW");
+  assert((Widen == 1 || Widen == 2 || Widen == 4) && "Invalid Widen");
+  unsigned VSEWBits = encodeSEW(SEW);
+  unsigned TWiden = Log2_32(Widen) + 1;
+  unsigned VTypeI = (VSEWBits << 3) | TWiden << 8;
+  return VTypeI;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 std::pair<unsigned, bool> decodeVLMUL(RISCVII::VLMUL VLMUL) {
   switch (VLMUL) {
   default:

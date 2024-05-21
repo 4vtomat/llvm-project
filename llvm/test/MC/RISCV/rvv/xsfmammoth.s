@@ -25,11 +25,17 @@
 # RUN:     --mattr=+xsfmm32a,+xsfmm32a8f,+xsfmm32a4i,+xsfmm64a %s \
 # RUN:        | llvm-objdump -d - | FileCheck %s --check-prefix=CHECK-UNKNOWN
 
-# CHECK-INST: sf.vsettnm a0, a1, a2, e8, w1
-# CHECK-ENCODING: [0x57,0xf5,0xc5,0x90]
+# CHECK-INST: sf.vsettnt a0, a1, e8, w1
+# CHECK-ENCODING: [0x57,0xf5,0x05,0x10]
 # CHECK-ERROR: instruction requires the following: XSfmm32ea/XSfmmbase{{$}}
-# CHECK-UNKNOWN: 90c5f557 <unknown>
-sf.vsettnm a0, a1, a2, e8, w1
+# CHECK-UNKNOWN: 1005f557 <unknown>
+sf.vsettnt a0, a1, e8, w1
+
+# CHECK-INST: sf.vsettnt a0, a1, e8, w1
+# CHECK-ENCODING: [0x57,0xf5,0x05,0x10]
+# CHECK-ERROR: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32x' (Vector Extensions for Embedded Processors)
+# CHECK-UNKNOWN: 1005f557 <unknown>
+vsetvli a0, a1, 0x100
 
 # CHECK-INST: sf.vsettn a0, a1
 # CHECK-ENCODING: [0x57,0xf5,0x05,0x84]
@@ -121,59 +127,29 @@ sf.mm.f.f mt2, v8, v9
 # CHECK-UNKNOWN: f28494f7 <unknown>
 sf.mm.bf.bf mt4, v8, v9
 
-# CHECK-INST: sf.mm.f8p3.f8p3 mt0, v8, v9
-# CHECK-ENCODING: [0xf7,0x90,0x84,0xf6]
+# CHECK-INST: sf.mm.e5m2.e5m2 mt0, v8, v9
+# CHECK-ENCODING: [0x77,0x90,0x84,0xfa]
 # CHECK-ERROR: instruction requires the following: 'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8{{$}}
-# CHECK-UNKNOWN: f68490f7 <unknown>
-sf.mm.f8p3.f8p3 mt0, v8, v9
+# CHECK-UNKNOWN: fa849077 <unknown>
+sf.mm.e5m2.e5m2 mt0, v8, v9
 
-# CHECK-INST: sf.mm.f8p3.f8p4 mt4, v8, v9
-# CHECK-ENCODING: [0x77,0x95,0x84,0xf6]
+# CHECK-INST: sf.mm.e5m2.e4m3 mt4, v8, v9
+# CHECK-ENCODING: [0xf7,0x94,0x84,0xfa]
 # CHECK-ERROR: instruction requires the following: 'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8{{$}}
-# CHECK-UNKNOWN: f6849577 <unknown>
-sf.mm.f8p3.f8p4 mt4, v8, v9
+# CHECK-UNKNOWN: fa8494f7 <unknown>
+sf.mm.e5m2.e4m3 mt4, v8, v9
 
-# CHECK-INST: sf.mm.f8p3.f8p5 mt8, v8, v9
-# CHECK-ENCODING: [0xf7,0x99,0x84,0xf6]
+# CHECK-INST: sf.mm.e4m3.e5m2 mt8, v8, v9
+# CHECK-ENCODING: [0x77,0x98,0x84,0xfe]
 # CHECK-ERROR: instruction requires the following: 'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8{{$}}
-# CHECK-UNKNOWN: f68499f7 <unknown>
-sf.mm.f8p3.f8p5 mt8, v8, v9
+# CHECK-UNKNOWN: fe849877 <unknown>
+sf.mm.e4m3.e5m2 mt8, v8, v9
 
-# CHECK-INST: sf.mm.f8p4.f8p3 mt12, v8, v9
-# CHECK-ENCODING: [0xf7,0x9c,0x84,0xfa]
+# CHECK-INST: sf.mm.e4m3.e4m3 mt12, v8, v9
+# CHECK-ENCODING: [0xf7,0x9c,0x84,0xfe]
 # CHECK-ERROR: instruction requires the following: 'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8{{$}}
-# CHECK-UNKNOWN: fa849cf7 <unknown>
-sf.mm.f8p4.f8p3 mt12, v8, v9
-
-# CHECK-INST: sf.mm.f8p4.f8p4 mt0, v8, v9
-# CHECK-ENCODING: [0x77,0x91,0x84,0xfa]
-# CHECK-ERROR: instruction requires the following: 'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8{{$}}
-# CHECK-UNKNOWN: fa849177 <unknown>
-sf.mm.f8p4.f8p4 mt0, v8, v9
-
-# CHECK-INST: sf.mm.f8p4.f8p5 mt0, v8, v9
-# CHECK-ENCODING: [0xf7,0x91,0x84,0xfa]
-# CHECK-ERROR: instruction requires the following: 'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8{{$}}
-# CHECK-UNKNOWN: fa8491f7 <unknown>
-sf.mm.f8p4.f8p5 mt0, v8, v9
-
-# CHECK-INST: sf.mm.f8p5.f8p3 mt0, v8, v9
-# CHECK-ENCODING: [0xf7,0x90,0x84,0xfe]
-# CHECK-ERROR: instruction requires the following: 'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8{{$}}
-# CHECK-UNKNOWN: fe8490f7 <unknown>
-sf.mm.f8p5.f8p3 mt0, v8, v9
-
-# CHECK-INST: sf.mm.f8p5.f8p4 mt0, v8, v9
-# CHECK-ENCODING: [0x77,0x91,0x84,0xfe]
-# CHECK-ERROR: instruction requires the following: 'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8{{$}}
-# CHECK-UNKNOWN: fe849177 <unknown>
-sf.mm.f8p5.f8p4 mt0, v8, v9
-
-# CHECK-INST: sf.mm.f8p5.f8p5 mt0, v8, v9
-# CHECK-ENCODING: [0xf7,0x91,0x84,0xfe]
-# CHECK-ERROR: instruction requires the following: 'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8{{$}}
-# CHECK-UNKNOWN: fe8491f7 <unknown>
-sf.mm.f8p5.f8p5 mt0, v8, v9
+# CHECK-UNKNOWN: fe849cf7 <unknown>
+sf.mm.e4m3.e4m3 mt12, v8, v9
 
 # CHECK-INST: sf.mm.u.u mt0, v8, v9
 # CHECK-ENCODING: [0x77,0x80,0x84,0xf2]
@@ -234,3 +210,9 @@ sf.vtzero.t mt15
 # CHECK-ERROR: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32x' (Vector Extensions for Embedded Processors)
 # CHECK-UNKNOWN: 80b57657 <unknown>
 vsetvl a2, a0, a1
+
+# CHECK-INST:  vsetvli a0, a1, e8, m1, tu, mu
+# CHECK-ENCODING: [0x57,0xf5,0x05,0x00]
+# CHECK-ERROR: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32x' (Vector Extensions for Embedded Processors)
+# CHECK-UNKNOWN: 0005f557 <unknown>
+vsetvli a0, a1, e8, m1, tu, mu

@@ -2472,6 +2472,15 @@ the type is not supported for that value of ``__riscv_v_fixed_vlen``.
 }];
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+def RISCVLandingPadDocs : Documentation {
+  let Category = DocCatType;
+  let Content = [{
+``landing_pad_value(val)`` attribute is used to define specific label value.
+  }];
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 def AVRInterruptDocs : Documentation {
   let Category = DocCatFunction;
   let Heading = "interrupt (AVR)";
