@@ -2606,56 +2606,105 @@ InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
   if (Op2Info.isConstant())
     ConstantMatCost += getConstantMatCost(1, Op2Info);
 
-  switch (TLI->InstructionOpcodeToISD(Opcode)) {
-  case ISD::ADD:
-  case ISD::SUB:
-  case ISD::AND:
-  case ISD::OR:
-  case ISD::XOR:
-  case ISD::SHL:
-  case ISD::SRL:
-  case ISD::SRA:
-  case ISD::MUL:
-  case ISD::MULHS:
-  case ISD::MULHU:
 #if SIFIVE_CUSTOMIZATION
-    // Make cost of the vector instruction the same as the cost of two scalar
-    // INT instructions
-    if (ST->isSiFiveCPU()) {
+  // FIXME: move the customization to getRISCVInstructionCost.
+  if (ST->isSiFiveCPU()) {
+    switch (TLI->InstructionOpcodeToISD(Opcode)) {
+    case ISD::ADD:
+    case ISD::SUB:
+    case ISD::AND:
+    case ISD::OR:
+    case ISD::XOR:
+    case ISD::SHL:
+    case ISD::SRL:
+    case ISD::SRA:
+    case ISD::MUL:
+    case ISD::MULHS:
+    case ISD::MULHU:
+      // Make cost of the vector instruction the same as the cost of two scalar
+      // INT instructions
       if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
         return ConstantMatCost + (TLI->getLMULCost(LT.second) - 1) +
                LT.first * 2;
       return ConstantMatCost + (TLI->getLMULCost(LT.second)) * LT.first * 2;
-    }
-    [[fallthrough]];
-#endif // SIFIVE_CUSTOMIZATION
-  case ISD::FADD:
-  case ISD::FSUB:
-  case ISD::FMUL:
-  case ISD::FNEG: {
-#if SIFIVE_CUSTOMIZATION
-    if (ST->getProcFamily() == RISCVSubtarget::SiFiveP400) {
-      // Make cost of the vector instruction the same as the cost of two scalar
-      // FP instructions
-      return ConstantMatCost + TLI->getLMULCost(LT.second) * LT.first * 4;
-    }
-    if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
-      return ConstantMatCost + (TLI->getLMULCost(LT.second) - 1) + LT.first * 6;
-    if (ST->isSiFiveCPU()) {
+    case ISD::FADD:
+    case ISD::FSUB:
+    case ISD::FMUL:
+    case ISD::FNEG: {
+      if (ST->getProcFamily() == RISCVSubtarget::SiFiveP400) {
+        // Make cost of the vector instruction the same as the cost of two
+        // scalar FP instructions
+        return ConstantMatCost + TLI->getLMULCost(LT.second) * LT.first * 4;
+      }
+      if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
+        return ConstantMatCost + (TLI->getLMULCost(LT.second) - 1) +
+               LT.first * 6;
       // P670 and the rest SiFive cores fall into this case.
       // P670 has two FP pipes so we make the vector cost higher than P470
       // Make cost of the vector instruction the same as the cost of three
       // scalar FP instructions
       return ConstantMatCost + (TLI->getLMULCost(LT.second)) * LT.first * 6;
     }
+    default:
+      return ConstantMatCost +
+             BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind, Op1Info,
+                                           Op2Info, Args, CxtI);
+    }
+  }
 #endif // SIFIVE_CUSTOMIZATION
-    return ConstantMatCost + TLI->getLMULCost(LT.second) * LT.first * 1;
-  }
+  unsigned Op;
+  switch (TLI->InstructionOpcodeToISD(Opcode)) {
+  case ISD::ADD:
+  case ISD::SUB:
+    Op = RISCV::VADD_VV;
+    break;
+  case ISD::SHL:
+  case ISD::SRL:
+  case ISD::SRA:
+    Op = RISCV::VSLL_VV;
+    break;
+  case ISD::AND:
+  case ISD::OR:
+  case ISD::XOR:
+    Op = (Ty->getScalarSizeInBits() == 1) ? RISCV::VMAND_MM : RISCV::VAND_VV;
+    break;
+  case ISD::MUL:
+  case ISD::MULHS:
+  case ISD::MULHU:
+    Op = RISCV::VMUL_VV;
+    break;
+  case ISD::SDIV:
+  case ISD::UDIV:
+    Op = RISCV::VDIV_VV;
+    break;
+  case ISD::SREM:
+  case ISD::UREM:
+    Op = RISCV::VREM_VV;
+    break;
+  case ISD::FADD:
+  case ISD::FSUB:
+    // TODO: Address FP16 with VFHMIN
+    Op = RISCV::VFADD_VV;
+    break;
+  case ISD::FMUL:
+    // TODO: Address FP16 with VFHMIN
+    Op = RISCV::VFMUL_VV;
+    break;
+  case ISD::FDIV:
+    Op = RISCV::VFDIV_VV;
+    break;
+  case ISD::FNEG:
+    Op = RISCV::VFSGNJN_VV;
+    break;
   default:
-    return ConstantMatCost +
-           BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind, Op1Info, Op2Info,
-                                         Args, CxtI);
+    // Assuming all other instructions have the same cost until a need arises to
+    // differentiate them.
+    return ConstantMatCost + BaseT::getArithmeticInstrCost(Opcode, Ty, CostKind,
+                                                           Op1Info, Op2Info,
+                                                           Args, CxtI);
   }
+  return ConstantMatCost +
+         LT.first * getRISCVInstructionCost(Op, LT.second, CostKind);
 }
 
 // TODO: Deduplicate from TargetTransformInfoImplCRTPBase.

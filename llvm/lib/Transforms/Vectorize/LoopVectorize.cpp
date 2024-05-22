@@ -448,6 +448,11 @@ cl::opt<uint64_t> LoopVectorizerVLUpperBound(
     "sifive-loop-vectorizer-clamp-vl", cl::init(0), cl::Hidden,
     cl::desc("Specify the maximum vl of a vectorized loop"));
 
+cl::opt<uint64_t> LoopVectorizerSpeculativeVLUpperBound(
+    "sifive-loop-vectorizer-clamp-speculative-vl", cl::init(16), cl::Hidden,
+    cl::desc("Specify the maximum speculative elements accessed per iteration "
+             "within a loop."));
+
 cl::opt<bool> SiFiveLoopVectorizerUseVPlanBasedCostModel(
     "sifive-loop-vectorizer-use-vplan-based-cost-model", cl::init(true),
     cl::Hidden, cl::desc("Use VPlan-based cost model"));

@@ -29,7 +29,7 @@ define i64 @strlen_i8(ptr %start) {
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; DEFAULT-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; DEFAULT-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; DEFAULT-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; DEFAULT-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; DEFAULT-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -69,7 +69,7 @@ define i64 @strlen_i8(ptr %start) {
 ; ON:       vector.body:
 ; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; ON-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; ON-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; ON-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; ON-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -141,7 +141,7 @@ define i64 @strlen_i8(ptr %start) {
 ; stress:       vector.body:
 ; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; stress-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; stress-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; stress-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; stress-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -197,7 +197,7 @@ define i64 @strlen_i8(ptr %start) {
 ; IF0:       vector.body:
 ; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF0-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF0-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF0-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF0-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; IF0-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -237,7 +237,7 @@ define i64 @strlen_i8(ptr %start) {
 ; IF1:       vector.body:
 ; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF1-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF1-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF1-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF1-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; IF1-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -277,7 +277,7 @@ define i64 @strlen_i8(ptr %start) {
 ; IF2:       vector.body:
 ; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF2-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF2-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF2-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF2-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; IF2-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -336,7 +336,7 @@ define i64 @strlen_i16(ptr %start) {
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; DEFAULT-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 16, i1 true)
+; DEFAULT-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
 ; DEFAULT-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 2
 ; DEFAULT-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; DEFAULT-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP1]]
@@ -379,7 +379,7 @@ define i64 @strlen_i16(ptr %start) {
 ; ON:       vector.body:
 ; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 16, i1 true)
+; ON-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
 ; ON-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 2
 ; ON-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; ON-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP1]]
@@ -456,7 +456,7 @@ define i64 @strlen_i16(ptr %start) {
 ; stress:       vector.body:
 ; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 16, i1 true)
+; stress-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
 ; stress-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 2
 ; stress-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; stress-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP1]]
@@ -516,7 +516,7 @@ define i64 @strlen_i16(ptr %start) {
 ; IF0:       vector.body:
 ; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF0-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 16, i1 true)
+; IF0-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
 ; IF0-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 2
 ; IF0-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; IF0-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP1]]
@@ -559,7 +559,7 @@ define i64 @strlen_i16(ptr %start) {
 ; IF1:       vector.body:
 ; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF1-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 16, i1 true)
+; IF1-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
 ; IF1-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 2
 ; IF1-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; IF1-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP1]]
@@ -602,7 +602,7 @@ define i64 @strlen_i16(ptr %start) {
 ; IF2:       vector.body:
 ; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF2-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 16, i1 true)
+; IF2-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 16, i1 true)
 ; IF2-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 2
 ; IF2-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; IF2-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP1]]
@@ -665,7 +665,7 @@ define i64 @strlen_i32(ptr %start) {
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; DEFAULT-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; DEFAULT-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 8, i1 true)
 ; DEFAULT-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 4
 ; DEFAULT-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; DEFAULT-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP1]]
@@ -708,7 +708,7 @@ define i64 @strlen_i32(ptr %start) {
 ; ON:       vector.body:
 ; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; ON-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 8, i1 true)
 ; ON-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 4
 ; ON-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; ON-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP1]]
@@ -785,7 +785,7 @@ define i64 @strlen_i32(ptr %start) {
 ; stress:       vector.body:
 ; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; stress-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 8, i1 true)
 ; stress-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 4
 ; stress-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; stress-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP1]]
@@ -845,7 +845,7 @@ define i64 @strlen_i32(ptr %start) {
 ; IF0:       vector.body:
 ; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF0-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; IF0-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 8, i1 true)
 ; IF0-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 4
 ; IF0-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; IF0-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP1]]
@@ -888,7 +888,7 @@ define i64 @strlen_i32(ptr %start) {
 ; IF1:       vector.body:
 ; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF1-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; IF1-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 8, i1 true)
 ; IF1-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 4
 ; IF1-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; IF1-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP1]]
@@ -931,7 +931,7 @@ define i64 @strlen_i32(ptr %start) {
 ; IF2:       vector.body:
 ; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF2-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 8, i1 true)
+; IF2-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 8, i1 true)
 ; IF2-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 4
 ; IF2-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; IF2-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP1]]
@@ -994,7 +994,7 @@ define i64 @strlen_i64(ptr %start) {
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; DEFAULT-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 4, i1 true)
+; DEFAULT-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 4, i1 true)
 ; DEFAULT-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 8
 ; DEFAULT-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; DEFAULT-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP1]]
@@ -1037,7 +1037,7 @@ define i64 @strlen_i64(ptr %start) {
 ; ON:       vector.body:
 ; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 4, i1 true)
+; ON-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 4, i1 true)
 ; ON-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 8
 ; ON-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; ON-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP1]]
@@ -1114,7 +1114,7 @@ define i64 @strlen_i64(ptr %start) {
 ; stress:       vector.body:
 ; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 4, i1 true)
+; stress-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 4, i1 true)
 ; stress-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 8
 ; stress-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; stress-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP1]]
@@ -1174,7 +1174,7 @@ define i64 @strlen_i64(ptr %start) {
 ; IF0:       vector.body:
 ; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF0-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 4, i1 true)
+; IF0-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 4, i1 true)
 ; IF0-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 8
 ; IF0-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; IF0-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP1]]
@@ -1217,7 +1217,7 @@ define i64 @strlen_i64(ptr %start) {
 ; IF1:       vector.body:
 ; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF1-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 4, i1 true)
+; IF1-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 4, i1 true)
 ; IF1-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 8
 ; IF1-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; IF1-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP1]]
@@ -1260,7 +1260,7 @@ define i64 @strlen_i64(ptr %start) {
 ; IF2:       vector.body:
 ; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF2-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 4, i1 true)
+; IF2-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 4, i1 true)
 ; IF2-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], 8
 ; IF2-NEXT:    [[TMP1:%.*]] = add i64 [[OFFSET_IDX]], 0
 ; IF2-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP1]]
@@ -1324,7 +1324,7 @@ define i64 @SingleBlock0(ptr %start) {
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; DEFAULT-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; DEFAULT-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; DEFAULT-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; DEFAULT-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; DEFAULT-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -1366,7 +1366,7 @@ define i64 @SingleBlock0(ptr %start) {
 ; ON:       vector.body:
 ; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; ON-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; ON-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; ON-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; ON-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -1442,7 +1442,7 @@ define i64 @SingleBlock0(ptr %start) {
 ; stress:       vector.body:
 ; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; stress-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; stress-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; stress-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; stress-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -1501,7 +1501,7 @@ define i64 @SingleBlock0(ptr %start) {
 ; IF0:       vector.body:
 ; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF0-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF0-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF0-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF0-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; IF0-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -1543,7 +1543,7 @@ define i64 @SingleBlock0(ptr %start) {
 ; IF1:       vector.body:
 ; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF1-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF1-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF1-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF1-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; IF1-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -1585,7 +1585,7 @@ define i64 @SingleBlock0(ptr %start) {
 ; IF2:       vector.body:
 ; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF2-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF2-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF2-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF2-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; IF2-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -2170,7 +2170,7 @@ define i64 @SingleBlock4(ptr %start) {
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; DEFAULT-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; DEFAULT-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; DEFAULT-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; DEFAULT-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; DEFAULT-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -2212,7 +2212,7 @@ define i64 @SingleBlock4(ptr %start) {
 ; ON:       vector.body:
 ; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; ON-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; ON-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; ON-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; ON-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -2286,7 +2286,7 @@ define i64 @SingleBlock4(ptr %start) {
 ; stress:       vector.body:
 ; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; stress-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; stress-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; stress-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; stress-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -2344,7 +2344,7 @@ define i64 @SingleBlock4(ptr %start) {
 ; IF0:       vector.body:
 ; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF0-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF0-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF0-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF0-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; IF0-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -2386,7 +2386,7 @@ define i64 @SingleBlock4(ptr %start) {
 ; IF1:       vector.body:
 ; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF1-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF1-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF1-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF1-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; IF1-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -2428,7 +2428,7 @@ define i64 @SingleBlock4(ptr %start) {
 ; IF2:       vector.body:
 ; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF2-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF2-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF2-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF2-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; IF2-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -2490,7 +2490,7 @@ define i64 @SingleBlock5(ptr %start) {
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; DEFAULT-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; DEFAULT-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; DEFAULT-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; DEFAULT-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; DEFAULT-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -2530,7 +2530,7 @@ define i64 @SingleBlock5(ptr %start) {
 ; ON:       vector.body:
 ; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; ON-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; ON-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; ON-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; ON-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -2602,7 +2602,7 @@ define i64 @SingleBlock5(ptr %start) {
 ; stress:       vector.body:
 ; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; stress-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; stress-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; stress-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; stress-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -2658,7 +2658,7 @@ define i64 @SingleBlock5(ptr %start) {
 ; IF0:       vector.body:
 ; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF0-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF0-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF0-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF0-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; IF0-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -2698,7 +2698,7 @@ define i64 @SingleBlock5(ptr %start) {
 ; IF1:       vector.body:
 ; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF1-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF1-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF1-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF1-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; IF1-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -2738,7 +2738,7 @@ define i64 @SingleBlock5(ptr %start) {
 ; IF2:       vector.body:
 ; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF2-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF2-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF2-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF2-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; IF2-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -3260,7 +3260,7 @@ define i64 @SingleBlock9(ptr %start) {
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; DEFAULT-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; DEFAULT-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; DEFAULT-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; DEFAULT-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; DEFAULT-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -3302,7 +3302,7 @@ define i64 @SingleBlock9(ptr %start) {
 ; ON:       vector.body:
 ; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; ON-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; ON-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; ON-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; ON-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -3378,7 +3378,7 @@ define i64 @SingleBlock9(ptr %start) {
 ; stress:       vector.body:
 ; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; stress-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; stress-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; stress-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; stress-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -3437,7 +3437,7 @@ define i64 @SingleBlock9(ptr %start) {
 ; IF0:       vector.body:
 ; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF0-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF0-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF0-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF0-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; IF0-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -3479,7 +3479,7 @@ define i64 @SingleBlock9(ptr %start) {
 ; IF1:       vector.body:
 ; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF1-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF1-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF1-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF1-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; IF1-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -3521,7 +3521,7 @@ define i64 @SingleBlock9(ptr %start) {
 ; IF2:       vector.body:
 ; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF2-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF2-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF2-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF2-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[START:%.*]], i64 [[TMP0]]
 ; IF2-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -3719,7 +3719,7 @@ define ptr @SingleBlock11(ptr %s) {
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; DEFAULT-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; DEFAULT-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; DEFAULT-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; DEFAULT-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[S:%.*]], i64 [[TMP0]]
 ; DEFAULT-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -3757,7 +3757,7 @@ define ptr @SingleBlock11(ptr %s) {
 ; ON:       vector.body:
 ; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; ON-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; ON-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; ON-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[S:%.*]], i64 [[TMP0]]
 ; ON-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -3821,7 +3821,7 @@ define ptr @SingleBlock11(ptr %s) {
 ; stress:       vector.body:
 ; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; stress-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; stress-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; stress-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[S:%.*]], i64 [[TMP0]]
 ; stress-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -3872,7 +3872,7 @@ define ptr @SingleBlock11(ptr %s) {
 ; IF0:       vector.body:
 ; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF0-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF0-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF0-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF0-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[S:%.*]], i64 [[TMP0]]
 ; IF0-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -3910,7 +3910,7 @@ define ptr @SingleBlock11(ptr %s) {
 ; IF1:       vector.body:
 ; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF1-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF1-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF1-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF1-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[S:%.*]], i64 [[TMP0]]
 ; IF1-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -3948,7 +3948,7 @@ define ptr @SingleBlock11(ptr %s) {
 ; IF2:       vector.body:
 ; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF2-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF2-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF2-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF2-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[S:%.*]], i64 [[TMP0]]
 ; IF2-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -5195,7 +5195,7 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; DEFAULT-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; DEFAULT-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; DEFAULT-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; DEFAULT-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; DEFAULT-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[SRC:%.*]], i64 [[TMP0]]
 ; DEFAULT-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -5239,7 +5239,7 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; ON:       vector.body:
 ; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; ON-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; ON-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; ON-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; ON-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; ON-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[SRC:%.*]], i64 [[TMP0]]
 ; ON-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -5313,7 +5313,7 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; stress:       vector.body:
 ; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; stress-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; stress-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; stress-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; stress-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; stress-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[SRC:%.*]], i64 [[TMP0]]
 ; stress-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -5372,7 +5372,7 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; IF0:       vector.body:
 ; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF0-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF0-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF0-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF0-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF0-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[SRC:%.*]], i64 [[TMP0]]
 ; IF0-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -5416,7 +5416,7 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; IF1:       vector.body:
 ; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF1-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF1-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF1-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF1-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF1-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[SRC:%.*]], i64 [[TMP0]]
 ; IF1-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
@@ -5460,7 +5460,7 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; IF2:       vector.body:
 ; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF2-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; IF2-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 -1, i32 32, i1 true)
+; IF2-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 16, i32 32, i1 true)
 ; IF2-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
 ; IF2-NEXT:    [[NEXT_GEP:%.*]] = getelementptr i8, ptr [[SRC:%.*]], i64 [[TMP0]]
 ; IF2-NEXT:    [[TMP2:%.*]] = getelementptr i8, ptr [[NEXT_GEP]], i32 0
