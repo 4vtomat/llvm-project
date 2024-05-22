@@ -192,7 +192,7 @@ static bool canSimplifyInLoopReduction(Instruction *I, PHINode **LastUse,
 static void simplifyInLoopReduction(CallInst &Reduce, PHINode &LastUse,
                                     LoopInfo &LI) {
   const Loop *L = LI.getLoopFor(Reduce.getParent());
-  const bool IsFPReduce = Reduce.getType()->isFloatTy();
+  const bool IsFPReduce = Reduce.getType()->isIEEELikeFPTy();
   const unsigned VecOpIdx = IsFPReduce ? 1 : 0;
   FastMathFlags FMF = IsFPReduce ? Reduce.getFastMathFlags() : FastMathFlags();
   Value *VecOp = Reduce.getOperand(VecOpIdx);

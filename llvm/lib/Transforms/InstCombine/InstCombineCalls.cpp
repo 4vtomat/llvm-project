@@ -5065,7 +5065,7 @@ Value *InstCombinerImpl::simplifyVectorReductionTree(CallInst &Reduce) {
         AnalyzeDefUseTree(V->user_back(), AddMatcher, ReduceMatcher, Depth - 1);
       };
 
-  const bool IsFPReduce = Reduce.getType()->isFloatTy();
+  const bool IsFPReduce = Reduce.getType()->isIEEELikeFPTy();
   if (IsFPReduce)
     AnalyzeDefUseTree(Reduce.user_back(), MatchFAdd, MatchReduceFAdd,
                       MaxAllowedDepthToSimplifyReductionTree);
