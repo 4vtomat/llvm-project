@@ -51,14 +51,23 @@ extern cl::opt<bool> EnableVPlanNativePath;
 
 #if SIFIVE_CUSTOMIZATION
 extern cl::opt<uint64_t> LoopVectorizerVLUpperBound;
+extern cl::opt<uint64_t> LoopVectorizerSpeculativeVLUpperBound;
 #endif
 
-static Value *GetSetVL(VPTransformState &State, Value *EVL) {
+static Value *GetSetVL(VPTransformState &State, Value *EVL,
+                       bool IsUncountable) {
 #if SIFIVE_CUSTOMIZATION
   if (!EVL) {
-    // Set EVL to all ones to get vlmax
+    // Set EVL to all ones to get vlmax, but clamp it if VLUpperBound is
+    // specified
     Type *I64Type = State.Builder.getInt64Ty();
-    EVL = ConstantInt::get(I64Type, APInt::getAllOnes(64));
+    APInt MaxEVL = APInt::getAllOnes(64);
+    if (IsUncountable && LoopVectorizerSpeculativeVLUpperBound.getValue())
+      MaxEVL = MaxEVL.getLimitedValue(
+          LoopVectorizerSpeculativeVLUpperBound.getValue());
+    if (!IsUncountable && LoopVectorizerVLUpperBound)
+      MaxEVL = MaxEVL.getLimitedValue(LoopVectorizerVLUpperBound.getValue());
+    EVL = ConstantInt::get(I64Type, MaxEVL);
     // TODO: with MaxSafeDist analysis available for uncountable loop, support
     // it here for correctness"
     Value *VFArg = State.Builder.getInt32(State.VF.getKnownMinValue());
@@ -505,7 +514,7 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
       EVL = State.Builder.CreateSub(VectorTripCount, Index);
     }
     // Set VLMAX if EVL is nullptr
-    EVL = GetSetVL(State, EVL);
+    EVL = GetSetVL(State, EVL, State.Plan->isUncountable());
 #else
     // Compute EVL
     auto GetEVL = [=](VPTransformState &State, Value *AVL) {
@@ -2957,8 +2966,10 @@ void VPEVLBasedIVPHIRecipe::execute(VPTransformState &State) {
     IRBuilder<>::InsertPointGuard Guard(State.Builder);
     BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
     State.Builder.SetInsertPoint(VectorPH->getTerminator());
-    Start = GetSetVL(State, State.get(&State.Plan->getVectorTripCount(), 0,
-                                      /*IsScalar=*/true));
+    Start = GetSetVL(State,
+                     State.get(&State.Plan->getVectorTripCount(), 0,
+                               /*IsScalar=*/true),
+                     State.Plan->isUncountable());
     State.set(State.Plan->getInitEVL(), Start, 0, /*IsScalar=*/true);
   } else {
     Start = State.get(getOperand(0), VPIteration(0, 0));
