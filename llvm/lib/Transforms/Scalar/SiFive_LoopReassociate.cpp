@@ -58,7 +58,7 @@ using namespace llvm;
 STATISTIC(NumReassociatedReductions, "Number of reassociated reductions");
 
 static cl::opt<bool>
-    EnableLoopReassociate("sifive-loop-reassociate", cl::Hidden, cl::init(true),
+    EnableLoopReassociate("sifive-loop-reassociate", cl::Hidden, cl::init(false),
                           cl::desc("Reassociate operations across loops"));
 
 /// Check that reduce intrinsic that following properties:
