@@ -91,7 +91,7 @@ static cl::opt<bool> InlineParamSize(
     cl::desc("Decide to inline based on number of parameters and function size"));
 
 static cl::opt<bool> InlineLeafThreshold(
-    "inline-leaf-threshold", cl::Hidden, cl::init(false),
+    "inline-leaf-threshold", cl::Hidden, cl::init(true),
     cl::desc("Treat leaf functions with greater size theshold"));
 #endif // SIFIVE_CUSTOMIZATION
 
