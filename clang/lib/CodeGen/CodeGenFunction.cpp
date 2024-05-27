@@ -981,6 +981,9 @@ void CodeGenFunction::StartFunction(GlobalDecl GD, QualType RetTy,
       Fn->setMetadata(llvm::LLVMContext::MD_riscv_cfi_type,
                       llvm::MDNode::get(Fn->getContext(), AttrMDArgs));
     }
+
+    if (FD->hasAttr<RISCVNoShadowStackAttr>())
+      Fn->removeFnAttr(llvm::Attribute::ShadowCallStack);
   }
 #endif // SIFIVE_CUSTOMIZATION
 

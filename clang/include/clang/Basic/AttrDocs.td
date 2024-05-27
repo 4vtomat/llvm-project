@@ -2479,6 +2479,13 @@ def RISCVLandingPadDocs : Documentation {
 ``landing_pad_value(val)`` attribute is used to define specific label value.
   }];
 }
+
+def RISCVNoShadowStackDocs : Documentation {
+  let Category = DocCatType;
+  let Content = [{
+``no_cfi_ss`` attribute disables Zicfiss shadow stack.
+  }];
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 def AVRInterruptDocs : Documentation {
