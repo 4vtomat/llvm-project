@@ -297,6 +297,10 @@ def : WriteRes<WriteFCvtF64ToI32, [SiFiveP800SF2I]>;
 def : WriteRes<WriteFCvtF64ToI64, [SiFiveP800SF2I]>;
 def : WriteRes<WriteFCvtF64ToF16, [SiFiveP800SFloatArith]>;
 def : WriteRes<WriteFCvtF64ToF32, [SiFiveP800SFloatArith]>;
+// FROUND/FROUNDNX are implemented by `FCVT.f.f`.
+def : WriteRes<WriteFRoundF16, [SiFiveP800SFloatArith]>;
+def : WriteRes<WriteFRoundF32, [SiFiveP800SFloatArith]>;
+def : WriteRes<WriteFRoundF64, [SiFiveP800SFloatArith]>;
 
 def : WriteRes<WriteFClass16, [SiFiveP800SF2I]>;
 def : WriteRes<WriteFClass32, [SiFiveP800SF2I]>;
@@ -310,6 +314,10 @@ def : WriteRes<WriteFMovI32ToF32, [SiFiveP800SI2F]>;
 def : WriteRes<WriteFMovF32ToI32, [SiFiveP800SF2I]>;
 def : WriteRes<WriteFMovI64ToF64, [SiFiveP800SI2F]>;
 def : WriteRes<WriteFMovF64ToI64, [SiFiveP800SF2I]>;
+// FLI is implemented by `FMV.f.x`.
+def : WriteRes<WriteFLI16, [SiFiveP800SI2F]>;
+def : WriteRes<WriteFLI32, [SiFiveP800SI2F]>;
+def : WriteRes<WriteFLI64, [SiFiveP800SI2F]>;
 }
 
 // 6. Configuration-Setting Instructions
@@ -852,6 +860,9 @@ def : ReadAdvance<ReadFCvtF16ToF32, 0>;
 def : ReadAdvance<ReadFCvtF32ToF16, 0>;
 def : ReadAdvance<ReadFCvtF16ToF64, 0>;
 def : ReadAdvance<ReadFCvtF64ToF16, 0>;
+def : ReadAdvance<ReadFRoundF16, 0>;
+def : ReadAdvance<ReadFRoundF32, 0>;
+def : ReadAdvance<ReadFRoundF64, 0>;
 def : ReadAdvance<ReadFMovF16ToI16, 0>;
 def : ReadAdvance<ReadFMovI16ToF16, 0>;
 def : ReadAdvance<ReadFMovF32ToI32, 0>;
@@ -1061,5 +1072,4 @@ defm : UnsupportedSchedZbc;
 defm : UnsupportedSchedZbkb;
 defm : UnsupportedSchedZbkx;
 defm : UnsupportedSchedSFB;
-defm : UnsupportedSchedZfa;
 }
