@@ -46,7 +46,6 @@ private:
   StringRef CurrentVendor;
 
   MCSection *AttributeSection = nullptr;
-  unsigned GNUNoteFlags; // SIFIVE.
 
   void emitAttribute(unsigned Attribute, unsigned Value) override;
   void emitTextAttribute(unsigned Attribute, StringRef String) override;
