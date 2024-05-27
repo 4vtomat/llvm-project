@@ -89,7 +89,7 @@ class SimpleVIReduceCycles<string mx> {
 }
 
 class AdvancedVIReduceCycles<int sew, string mx> {
-  // `2 * log2(SEW) + C`, where `C` = 16.1, 18.1, 20.1, and 23.8 for
+  // `C - 2 * log2(SEW)`, where `C` = 16.1, 18.1, 20.1, and 23.8 for
   // M1/2/4/8, respectively.
   int latency = !cond(!eq(mx, "M1"): !sub(16, !mul(2, !logtwo(sew))),
                       !eq(mx, "M2"): !sub(18, !mul(2, !logtwo(sew))),
