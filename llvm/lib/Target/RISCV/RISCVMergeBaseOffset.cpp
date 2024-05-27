@@ -94,16 +94,10 @@ INITIALIZE_PASS(RISCVMergeBaseOffsetOpt, DEBUG_TYPE,
 bool RISCVMergeBaseOffsetOpt::detectFoldable(MachineInstr &Hi,
                                              MachineInstr *&Lo) {
 #if SIFIVE_CUSTOMIZATION
-  if (Hi.getOpcode() == RISCV::PseudoLIaddr) {
-    // Most of the code should handle it correctly without modification by
-    // setting Lo and Hi both point to PseudoLIaddr
-    Lo = &Hi;
-    return true;
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
-  if (Hi.getOpcode() != RISCV::LUI && Hi.getOpcode() != RISCV::AUIPC)
+  if (Hi.getOpcode() != RISCV::LUI && Hi.getOpcode() != RISCV::AUIPC &&
+      Hi.getOpcode() != RISCV::PseudoLIaddr)
     return false;
+#endif // SIFIVE_CUSTOMIZATION
 
   const MachineOperand &HiOp1 = Hi.getOperand(1);
   unsigned ExpectedFlags =
@@ -115,16 +109,26 @@ bool RISCVMergeBaseOffsetOpt::detectFoldable(MachineInstr &Hi,
       HiOp1.getOffset() != 0)
     return false;
 
-  Register HiDestReg = Hi.getOperand(0).getReg();
-  if (!MRI->hasOneUse(HiDestReg))
-    return false;
+#if SIFIVE_CUSTOMIZATION
+  if (Hi.getOpcode() == RISCV::PseudoLIaddr) {
+    // Most of the code should handle it correctly without modification by
+    // setting Lo and Hi both point to PseudoLIaddr
+    Lo = &Hi;
+  } else {
+    Register HiDestReg = Hi.getOperand(0).getReg();
+    if (!MRI->hasOneUse(HiDestReg))
+      return false;
 
-  Lo = &*MRI->use_instr_begin(HiDestReg);
-  if (Lo->getOpcode() != RISCV::ADDI)
-    return false;
+    Lo = &*MRI->use_instr_begin(HiDestReg);
+    if (Lo->getOpcode() != RISCV::ADDI)
+      return false;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   const MachineOperand &LoOp2 = Lo->getOperand(2);
-  if (Hi.getOpcode() == RISCV::LUI) {
+#if SIFIVE_CUSTOMIZATION
+  if (Hi.getOpcode() == RISCV::LUI || Hi.getOpcode() == RISCV::PseudoLIaddr) {
+#endif // SIFIVE_CUSTOMIZATION
     if (LoOp2.getTargetFlags() != RISCVII::MO_LO ||
         !(LoOp2.isGlobal() || LoOp2.isCPI() || LoOp2.isBlockAddress()) ||
         LoOp2.getOffset() != 0)
