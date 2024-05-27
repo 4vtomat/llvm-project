@@ -1527,7 +1527,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                          ISD::SHL, ISD::STORE, ISD::SPLAT_VECTOR,
                          ISD::BUILD_VECTOR, ISD::CONCAT_VECTORS,
 #if SIFIVE_CUSTOMIZATION
-                         ISD::ABS,
+                         ISD::VP_SUB,
                          ISD::VP_STORE,
                          ISD::SPLAT_VECTOR,
                          ISD::INTRINSIC_WO_CHAIN,
@@ -14516,6 +14516,59 @@ static SDValue reassociateAddressArith(SDNode *N, SDValue N0, SDValue N1,
   SDValue OpNode = DAG.getNode(ISD::ADD, dl, VT, N00, N1);
   return DAG.getNode(ISD::ADD, dl, VT, OpNode, N01);
 }
+
+// vp_sub (vp_zext, vp_zext) -> vp_sext (vp_sub (vp_zext, vp_zext))
+//
+// This is the VP equivalent of combineBinOpOfZExt.
+static SDValue combineVPBinOpOfZExt(SDNode *N, SelectionDAG &DAG) {
+  EVT VT = N->getValueType(0);
+  if (!VT.isVector() || !DAG.getTargetLoweringInfo().isTypeLegal(VT))
+    return SDValue();
+
+  SDValue N0 = N->getOperand(0);
+  SDValue N1 = N->getOperand(1);
+  if (N0.getOpcode() != ISD::VP_ZERO_EXTEND ||
+      N1.getOpcode() != ISD::VP_ZERO_EXTEND)
+    return SDValue();
+  if (!N0.hasOneUse() || !N1.hasOneUse())
+    return SDValue();
+
+  SDValue Mask = N->getOperand(2);
+  SDValue EVL = N->getOperand(3);
+  if (N0.getOperand(1) != Mask || N0.getOperand(2) != EVL ||
+      N1.getOperand(1) != Mask || N1.getOperand(2) != EVL)
+    return SDValue();
+
+  SDValue Src0 = N0.getOperand(0);
+  SDValue Src1 = N1.getOperand(0);
+  EVT SrcVT = Src0.getValueType();
+  if (!DAG.getTargetLoweringInfo().isTypeLegal(SrcVT) ||
+      SrcVT != Src1.getValueType() || SrcVT.getScalarSizeInBits() < 8 ||
+      SrcVT.getScalarSizeInBits() >= VT.getScalarSizeInBits() / 2)
+    return SDValue();
+
+  LLVMContext &C = *DAG.getContext();
+  EVT ElemVT = VT.getVectorElementType().getHalfSizedIntegerVT(C);
+  EVT NarrowVT = EVT::getVectorVT(C, ElemVT, VT.getVectorElementCount());
+
+  Src0 =
+      DAG.getNode(ISD::VP_ZERO_EXTEND, SDLoc(Src0), NarrowVT, Src0, Mask, EVL);
+  Src1 =
+      DAG.getNode(ISD::VP_ZERO_EXTEND, SDLoc(Src1), NarrowVT, Src1, Mask, EVL);
+
+  // Src0 and Src1 are zero extended, so they're always positive if signed.
+  //
+  // sub can produce a negative from two positive operands, so it needs sign
+  // extended. Other nodes produce a positive from two positive operands, so
+  // zero extend instead.
+  unsigned OuterExtend =
+      N->getOpcode() == ISD::VP_SUB ? ISD::VP_SIGN_EXTEND : ISD::VP_ZERO_EXTEND;
+
+  return DAG.getNode(
+      OuterExtend, SDLoc(N), VT,
+      DAG.getNode(N->getOpcode(), SDLoc(N), NarrowVT, Src0, Src1, Mask, EVL),
+      Mask, EVL);
+}
 #endif
 
 // add (zext, zext) -> zext (add (zext, zext))
@@ -19342,6 +19395,8 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
 
     break;
   }
+  case ISD::VP_SUB:
+    return combineVPBinOpOfZExt(N, DAG);
 #endif // SIFIVE_CUSTOMIZATION
   case ISD::BITCAST: {
     assert(Subtarget.useRVVForFixedLengthVectors());
