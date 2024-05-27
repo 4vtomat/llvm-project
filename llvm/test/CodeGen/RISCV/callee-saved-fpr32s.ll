@@ -706,8 +706,8 @@ define void @caller() nounwind {
 ; ILP32-NEXT:    addi sp, sp, -144
 ; ILP32-NEXT:    sw ra, 140(sp) # 4-byte Folded Spill
 ; ILP32-NEXT:    sw s0, 136(sp) # 4-byte Folded Spill
-; ILP32-NEXT:    lui a0, %hi(var)
-; ILP32-NEXT:    addi s0, a0, %lo(var)
+; ILP32-NEXT:    lui s0, %hi(var)
+; ILP32-NEXT:    addi s0, s0, %lo(var)
 ; ILP32-NEXT:    flw fa5, 0(s0)
 ; ILP32-NEXT:    fsw fa5, 132(sp) # 4-byte Folded Spill
 ; ILP32-NEXT:    flw fa5, 4(s0)
@@ -847,8 +847,8 @@ define void @caller() nounwind {
 ; ILP32E-NEXT:    addi sp, sp, -136
 ; ILP32E-NEXT:    sw ra, 132(sp) # 4-byte Folded Spill
 ; ILP32E-NEXT:    sw s0, 128(sp) # 4-byte Folded Spill
-; ILP32E-NEXT:    lui a0, %hi(var)
-; ILP32E-NEXT:    addi s0, a0, %lo(var)
+; ILP32E-NEXT:    lui s0, %hi(var)
+; ILP32E-NEXT:    addi s0, s0, %lo(var)
 ; ILP32E-NEXT:    flw fa5, 0(s0)
 ; ILP32E-NEXT:    fsw fa5, 124(sp) # 4-byte Folded Spill
 ; ILP32E-NEXT:    flw fa5, 4(s0)
@@ -1282,8 +1282,8 @@ define void @caller() nounwind {
 ; ILP32F-NEXT:    fsw fs9, 96(sp) # 4-byte Folded Spill
 ; ILP32F-NEXT:    fsw fs10, 92(sp) # 4-byte Folded Spill
 ; ILP32F-NEXT:    fsw fs11, 88(sp) # 4-byte Folded Spill
-; ILP32F-NEXT:    lui a0, %hi(var)
-; ILP32F-NEXT:    addi s0, a0, %lo(var)
+; ILP32F-NEXT:    lui s0, %hi(var)
+; ILP32F-NEXT:    addi s0, s0, %lo(var)
 ; ILP32F-NEXT:    flw fa5, 0(s0)
 ; ILP32F-NEXT:    fsw fa5, 84(sp) # 4-byte Folded Spill
 ; ILP32F-NEXT:    flw fa5, 4(s0)
@@ -1564,8 +1564,8 @@ define void @caller() nounwind {
 ; ILP32D-NEXT:    fsd fs9, 104(sp) # 8-byte Folded Spill
 ; ILP32D-NEXT:    fsd fs10, 96(sp) # 8-byte Folded Spill
 ; ILP32D-NEXT:    fsd fs11, 88(sp) # 8-byte Folded Spill
-; ILP32D-NEXT:    lui a0, %hi(var)
-; ILP32D-NEXT:    addi s0, a0, %lo(var)
+; ILP32D-NEXT:    lui s0, %hi(var)
+; ILP32D-NEXT:    addi s0, s0, %lo(var)
 ; ILP32D-NEXT:    flw fa5, 0(s0)
 ; ILP32D-NEXT:    fsw fa5, 84(sp) # 4-byte Folded Spill
 ; ILP32D-NEXT:    flw fa5, 4(s0)
