@@ -81,7 +81,7 @@ static bool isVectorInstr(MachineInstr &MI) {
 /// Hoist mask instructions away from there uses by adding weak edges (i.e. my
 /// be violated by the scheduling strategy) in the DAG.
 void RISCVMaskInstDAGMutation::apply(ScheduleDAGInstrs *DAG) {
-  SmallSet<MachineInstr *, 4> MaskInstrs;
+  SetVector<MachineInstr *> MaskInstrs;
   for (MachineInstr &MI : *DAG)
     if (isMaskInstr(MI))
       MaskInstrs.insert(&MI);
