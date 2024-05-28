@@ -38,6 +38,16 @@ class SDep; // SIFIVE
 class SUnit; // SIFIVE
 class StringRef;
 
+namespace RISCVLandingPad {
+
+enum Mode {
+  Disable = 0,
+  Simple,
+  FixedOne,
+  FunctionSignature,
+};
+}
+
 namespace RISCVTuneInfoTable {
 
 struct RISCVTuneInfo {
@@ -346,6 +356,12 @@ public:
   bool useAltGPROrder() const;
 
   unsigned getMemToRVVLMUL() const;
+
+  RISCVLandingPad::Mode getLandingPadMode() const;
+  bool hasZicfilpLandingPad() const {
+    return hasStdExtZicfilp() &&
+           getLandingPadMode() != RISCVLandingPad::Disable;
+  }
 #endif // SIFIVE_CUSTOMIZATION
   bool useAA() const override;
 

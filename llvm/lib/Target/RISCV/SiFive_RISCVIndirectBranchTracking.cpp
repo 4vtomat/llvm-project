@@ -31,7 +31,6 @@ public:
 private:
   static char ID;
   const Align LpadAlign = Align(4);
-  static constexpr uint32_t FixedLabel = 1;
 };
 
 } // end anonymous namespace
@@ -53,8 +52,13 @@ bool
 RISCVIndirectBranchTrackingPass::runOnMachineFunction(MachineFunction &MF) {
   const auto &Subtarget = MF.getSubtarget<RISCVSubtarget>();
   const RISCVInstrInfo *TII = Subtarget.getInstrInfo();
-  if (!Subtarget.hasStdExtZicfilp())
+  if (!Subtarget.hasStdExtZicfilp() ||
+      Subtarget.getLandingPadMode() == RISCVLandingPad::Disable)
     return false;
+
+  int32_t FixedLabel = 1;
+  if (Subtarget.getLandingPadMode() == RISCVLandingPad::Simple)
+    FixedLabel = 0;
 
   bool Changed = false;
   for (MachineBasicBlock &MBB : MF) {
