@@ -2,6 +2,15 @@
 ; RUN: opt -passes=slp-vectorizer -S -mtriple=riscv64 -mcpu=sifive-x280n < %s | FileCheck %s
 
 define void @reverse_store(ptr %a, ptr %b) {
+; CHECK-LABEL: define void @reverse_store(
+; CHECK-SAME: ptr [[A:%.*]], ptr [[B:%.*]]) #[[ATTR0:[0-9]+]] {
+; CHECK-NEXT:    [[DST1:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 12
+; CHECK-NEXT:    [[TMP1:%.*]] = load <4 x i8>, ptr [[A]], align 1, !tbaa [[TBAA0:![0-9]+]]
+; CHECK-NEXT:    [[TMP2:%.*]] = sext <4 x i8> [[TMP1]] to <4 x i32>
+; CHECK-NEXT:    [[TMP3:%.*]] = shufflevector <4 x i32> [[TMP2]], <4 x i32> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.v4i32.p0.i64(<4 x i32> [[TMP3]], ptr align 4 [[DST1]], i64 -4, <4 x i1> <i1 true, i1 true, i1 true, i1 true>, i32 4), !tbaa [[TBAA3:![0-9]+]]
+; CHECK-NEXT:    ret void
+;
   %1 = load i8, ptr %a, align 1, !tbaa !0
   %conv1 = sext i8 %1 to i32
   %dst1 = getelementptr inbounds i8, ptr %b, i64 12
@@ -37,3 +46,10 @@ define void @reverse_store(ptr %a, ptr %b) {
 !11 = !{!6, !7, i64 4}
 !12 = !{!1, !3, i64 3}
 !13 = !{!6, !7, i64 0}
+;.
+; CHECK: [[TBAA0]] = !{[[META1:![0-9]+]], [[META1]], i64 0}
+; CHECK: [[META1]] = !{!"omnipotent char", [[META2:![0-9]+]], i64 0}
+; CHECK: [[META2]] = !{!"Simple C++ TBAA"}
+; CHECK: [[TBAA3]] = !{[[META4:![0-9]+]], [[META4]], i64 0}
+; CHECK: [[META4]] = !{!"int", [[META1]], i64 0}
+;.
