@@ -2480,6 +2480,14 @@ def RISCVLandingPadDocs : Documentation {
   }];
 }
 
+def RISCVNoLandingPadDocs : Documentation {
+  let Category = DocCatType;
+  let Content = [{
+``no_cfi_lp`` attribute disables to insert Zicfilp landing pad for function or
+function pointer.
+  }];
+}
+
 def RISCVNoShadowStackDocs : Documentation {
   let Category = DocCatType;
   let Content = [{

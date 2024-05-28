@@ -188,6 +188,18 @@ define void @specific_label() !riscv_cfi_type !0 {
   ret void
 }
 
+; Check not insert lpad when riscv_cfi_type operand is mimus one.
+define void @specific_label2() !riscv_cfi_type !1 {
+; RV32-LABEL: specific_label2:
+; RV32:       # %bb.0:
+; RV32-NEXT:    ret
+;
+; RV64-LABEL: specific_label2:
+; RV64:       # %bb.0:
+; RV64-NEXT:    ret
+  ret void
+}
+
 define internal void @call_specific_label(ptr %0) {
 ; RV32-LABEL: call_specific_label:
 ; RV32:       # %bb.0:
@@ -202,4 +214,18 @@ define internal void @call_specific_label(ptr %0) {
   ret void
 }
 
+; Check not changed t2 when riscv_cfi operand is mimus one.
+define internal void @call_specific_label2(ptr %0) {
+; RV32-LABEL: call_specific_label2:
+; RV32:       # %bb.0:
+; RV32-NEXT:    jr a0
+;
+; RV64-LABEL: call_specific_label2:
+; RV64:       # %bb.0:
+; RV64-NEXT:    jr a0
+  tail call void %0() ["riscv_cfi"(i32 -1)]
+  ret void
+}
+
 !0 = !{i32 14}
+!1 = !{i32 -1}

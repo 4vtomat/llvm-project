@@ -5707,7 +5707,10 @@ RValue CodeGenFunction::EmitCall(const CGFunctionInfo &CallInfo,
     auto *TDefTy = Ty->getAs<TypedefType>();
     if (TDefTy) {
       auto *TD = TDefTy->getDecl();
-      if (auto *A = TD->getAttr<RISCVLandingPadAttr>()) {
+      if (TD->hasAttr<RISCVNoLandingPadAttr>()) {
+        BundleList.emplace_back("riscv_cfi",
+                                llvm::ConstantInt::get(CGM.Int32Ty, -1));
+      } else if (auto *A = TD->getAttr<RISCVLandingPadAttr>()) {
         uint32_t Label = A->getLandingLabel();
         BundleList.emplace_back("riscv_cfi",
                                 llvm::ConstantInt::get(CGM.Int32Ty, Label));
