@@ -7,8 +7,7 @@ define void @reverse_store(ptr noalias %a, ptr noalias %b) {
 ; CHECK-NEXT:    [[DST1:%.*]] = getelementptr inbounds i8, ptr [[B]], i64 12
 ; CHECK-NEXT:    [[TMP1:%.*]] = load <4 x i8>, ptr [[A]], align 1
 ; CHECK-NEXT:    [[TMP2:%.*]] = sext <4 x i8> [[TMP1]] to <4 x i32>
-; CHECK-NEXT:    [[TMP3:%.*]] = shufflevector <4 x i32> [[TMP2]], <4 x i32> poison, <4 x i32> <i32 3, i32 2, i32 1, i32 0>
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.v4i32.p0.i64(<4 x i32> [[TMP3]], ptr align 4 [[DST1]], i64 -4, <4 x i1> <i1 true, i1 true, i1 true, i1 true>, i32 4)
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.v4i32.p0.i64(<4 x i32> [[TMP2]], ptr align 4 [[DST1]], i64 -4, <4 x i1> <i1 true, i1 true, i1 true, i1 true>, i32 4)
 ; CHECK-NEXT:    ret void
 ;
   %1 = load i8, ptr %a, align 1
