@@ -89,7 +89,7 @@ class SimpleVIReduceCycles<string mx> {
 }
 
 class AdvancedVIReduceCycles<int sew, string mx> {
-  // `2 * log2(SEW) + C`, where `C` = 16.1, 18.1, 20.1, and 23.8 for
+  // `C - 2 * log2(SEW)`, where `C` = 16.1, 18.1, 20.1, and 23.8 for
   // M1/2/4/8, respectively.
   int latency = !cond(!eq(mx, "M1"): !sub(16, !mul(2, !logtwo(sew))),
                       !eq(mx, "M2"): !sub(18, !mul(2, !logtwo(sew))),
@@ -346,6 +346,10 @@ def : WriteRes<WriteFCvtF64ToI32, [SiFiveP400F2I]>;
 def : WriteRes<WriteFCvtF64ToI64, [SiFiveP400F2I]>;
 def : WriteRes<WriteFCvtF64ToF16, [SiFiveP400FloatArith]>;
 def : WriteRes<WriteFCvtF64ToF32, [SiFiveP400FloatArith]>;
+// FROUND/FROUNDNX are implemented by `FCVT.f.f`.
+def : WriteRes<WriteFRoundF16, [SiFiveP400FloatArith]>;
+def : WriteRes<WriteFRoundF32, [SiFiveP400FloatArith]>;
+def : WriteRes<WriteFRoundF64, [SiFiveP400FloatArith]>;
 
 def : WriteRes<WriteFClass16, [SiFiveP400F2I]>;
 def : WriteRes<WriteFClass32, [SiFiveP400F2I]>;
@@ -359,6 +363,10 @@ def : WriteRes<WriteFMovI32ToF32, [SiFiveP400MulI2F]>;
 def : WriteRes<WriteFMovF32ToI32, [SiFiveP400F2I]>;
 def : WriteRes<WriteFMovI64ToF64, [SiFiveP400MulI2F]>;
 def : WriteRes<WriteFMovF64ToI64, [SiFiveP400F2I]>;
+// FLI is implemented by `FMV.f.x`.
+def : WriteRes<WriteFLI16, [SiFiveP400MulI2F]>;
+def : WriteRes<WriteFLI32, [SiFiveP400MulI2F]>;
+def : WriteRes<WriteFLI64, [SiFiveP400MulI2F]>;
 }
 
 // 6. Configuration-Setting Instructions
@@ -922,6 +930,9 @@ def : ReadAdvance<ReadFCvtF16ToF32, 0>;
 def : ReadAdvance<ReadFCvtF32ToF16, 0>;
 def : ReadAdvance<ReadFCvtF16ToF64, 0>;
 def : ReadAdvance<ReadFCvtF64ToF16, 0>;
+def : ReadAdvance<ReadFRoundF16, 0>;
+def : ReadAdvance<ReadFRoundF32, 0>;
+def : ReadAdvance<ReadFRoundF64, 0>;
 def : ReadAdvance<ReadFMovF16ToI16, 0>;
 def : ReadAdvance<ReadFMovI16ToF16, 0>;
 def : ReadAdvance<ReadFMovF32ToI32, 0>;
@@ -1131,6 +1142,5 @@ defm : UnsupportedSchedZbc;
 defm : UnsupportedSchedZbkb;
 defm : UnsupportedSchedZbkx;
 defm : UnsupportedSchedSFB;
-defm : UnsupportedSchedZfa;
 defm : UnsupportedSchedXsfvcp;
 }

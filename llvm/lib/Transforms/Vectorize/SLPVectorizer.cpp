@@ -12971,6 +12971,10 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
       setInsertPointAfterBundle(E);
 
       Value *VecValue = vectorizeOperand(E, 0, PostponedPHIs);
+      if (VecValue->getType() != VecTy)
+        VecValue =
+            Builder.CreateIntCast(VecValue, VecTy, GetOperandSignedness(0));
+
 #if SIFIVE_CUSTOMIZATION
       // Consecutive but reversed stores are just strided stores with the stride
       // -1.
@@ -13003,9 +13007,6 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
         return V;
       }
 #endif // SIFIVE_CUSTOMIZATION
-      if (VecValue->getType() != VecTy)
-        VecValue =
-            Builder.CreateIntCast(VecValue, VecTy, GetOperandSignedness(0));
       VecValue = FinalShuffle(VecValue, E, VecTy);
 
       Value *Ptr = SI->getPointerOperand();

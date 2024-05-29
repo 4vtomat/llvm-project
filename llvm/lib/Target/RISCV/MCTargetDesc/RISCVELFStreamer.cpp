@@ -45,16 +45,6 @@ RISCVTargetELFStreamer::RISCVTargetELFStreamer(MCStreamer &S,
   // its ParseInstruction may call setForceRelocs as well.
   if (STI.hasFeature(RISCV::FeatureRelax))
     static_cast<RISCVAsmBackend &>(MAB).setForceRelocs();
-
-#if SIFIVE_CUSTOMIZATION
-  // TODO: Also consider software control features right after having them.
-  GNUNoteFlags = 0;
-  if (Features[RISCV::FeatureStdExtZicfilp])
-    GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_ZICFILP;
-
-  if (Features[RISCV::FeatureStdExtZicfiss])
-    GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_ZICFISS;
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 RISCVELFStreamer &RISCVTargetELFStreamer::getStreamer() {
@@ -161,6 +151,13 @@ void RISCVTargetELFStreamer::finish() {
   MCA.setELFHeaderEFlags(EFlags);
 
 #if SIFIVE_CUSTOMIZATION
+  // TODO: Also consider software control features right after having them.
+  unsigned GNUNoteFlags = 0;
+  if (hasZicfilp())
+    GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_ZICFILP;
+
+  if (hasZicfiss())
+    GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_ZICFISS;
   emitNoteSection(GNUNoteFlags);
 #endif // SIFIVE_CUSTOMIZATION
 }

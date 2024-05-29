@@ -8710,7 +8710,8 @@ void SelectionDAGBuilder::LowerCallTo(const CallBase &CB, SDValue Callee,
       assert(!CFIType && "Not expected kcfi operand bundles.");
       CFIType = cast<ConstantInt>(Bundle->Inputs[0]);
       assert(CFIType->getType()->isIntegerTy(32) &&
-             isUInt<20>(CFIType->getZExtValue()) && "Invalid CFI type");
+             (isUInt<20>(CFIType->getZExtValue()) || CFIType->isMinusOne()) &&
+             "Invalid CFI type");
     }
 #endif // SIFIVE_CUSTOMIZATION
   }

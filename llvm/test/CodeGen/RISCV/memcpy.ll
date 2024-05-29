@@ -23,18 +23,18 @@
 define i32 @t0() {
 ; RV32-LABEL: t0:
 ; RV32:       # %bb.0: # %entry
-; RV32-NEXT:    lui a0, %hi(dst)
-; RV32-NEXT:    addi a0, a0, %lo(dst)
-; RV32-NEXT:    lui a1, %hi(src)
-; RV32-NEXT:    addi a1, a1, %lo(src)
-; RV32-NEXT:    lbu a2, 10(a1)
-; RV32-NEXT:    lh a3, 8(a1)
-; RV32-NEXT:    lw a4, 4(a1)
-; RV32-NEXT:    lw a1, 0(a1)
-; RV32-NEXT:    sb a2, 10(a0)
-; RV32-NEXT:    sh a3, 8(a0)
-; RV32-NEXT:    sw a4, 4(a0)
-; RV32-NEXT:    sw a1, 0(a0)
+; RV32-NEXT:    lui a0, %hi(src)
+; RV32-NEXT:    addi a0, a0, %lo(src)
+; RV32-NEXT:    lbu a1, 10(a0)
+; RV32-NEXT:    lui a2, %hi(dst)
+; RV32-NEXT:    addi a2, a2, %lo(dst)
+; RV32-NEXT:    lh a3, 8(a0)
+; RV32-NEXT:    lw a4, 4(a0)
+; RV32-NEXT:    lw a0, 0(a0)
+; RV32-NEXT:    sb a1, 10(a2)
+; RV32-NEXT:    sh a3, 8(a2)
+; RV32-NEXT:    sw a4, 4(a2)
+; RV32-NEXT:    sw a0, 0(a2)
 ; RV32-NEXT:    li a0, 0
 ; RV32-NEXT:    ret
 ;
@@ -55,16 +55,16 @@ define i32 @t0() {
 ;
 ; RV32-FAST-LABEL: t0:
 ; RV32-FAST:       # %bb.0: # %entry
-; RV32-FAST-NEXT:    lui a0, %hi(dst)
-; RV32-FAST-NEXT:    lui a1, %hi(src)
-; RV32-FAST-NEXT:    addi a1, a1, %lo(src)
-; RV32-FAST-NEXT:    lw a2, 7(a1)
-; RV32-FAST-NEXT:    lw a3, 4(a1)
-; RV32-FAST-NEXT:    lw a1, 0(a1)
-; RV32-FAST-NEXT:    addi a0, a0, %lo(dst)
-; RV32-FAST-NEXT:    sw a2, 7(a0)
-; RV32-FAST-NEXT:    sw a3, 4(a0)
-; RV32-FAST-NEXT:    sw a1, 0(a0)
+; RV32-FAST-NEXT:    lui a0, %hi(src)
+; RV32-FAST-NEXT:    addi a0, a0, %lo(src)
+; RV32-FAST-NEXT:    lw a1, 7(a0)
+; RV32-FAST-NEXT:    lw a2, 4(a0)
+; RV32-FAST-NEXT:    lw a0, 0(a0)
+; RV32-FAST-NEXT:    lui a3, %hi(dst)
+; RV32-FAST-NEXT:    addi a3, a3, %lo(dst)
+; RV32-FAST-NEXT:    sw a1, 7(a3)
+; RV32-FAST-NEXT:    sw a2, 4(a3)
+; RV32-FAST-NEXT:    sw a0, 0(a3)
 ; RV32-FAST-NEXT:    li a0, 0
 ; RV32-FAST-NEXT:    ret
 ;

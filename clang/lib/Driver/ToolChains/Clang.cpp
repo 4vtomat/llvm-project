@@ -2098,6 +2098,17 @@ void Clang::AddRISCVTargetArgs(const ArgList &Args,
     CmdArgs.append({"-mllvm", "-riscv-use-vla-vectorizer=false"});
     CmdArgs.append({"-mllvm", "-scalable-vectorization=off"});
   }
+
+  if (const Arg *A = Args.getLastArg(options::OPT_mcfi_lp_EQ)) {
+    StringRef Mode = A->getValue();
+    // TODO: Support function-signature mode in the future.
+    if (Mode == "simple" || Mode == "fixed-one" || Mode == "disable")
+      CmdArgs.append(
+          {"-mllvm", Args.MakeArgString("-riscv-prefer-landing-pad=" + Mode)});
+    else
+      getToolChain().getDriver().Diag(diag::err_drv_unsupported_option_argument)
+          << A->getSpelling() << Mode;
+  }
 #endif // SIFIVE_CUSTOMIZATION
   // Handle -mrvv-vector-bits=<bits>
   if (Arg *A = Args.getLastArg(options::OPT_mrvv_vector_bits_EQ)) {

@@ -1531,7 +1531,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                          ISD::SHL, ISD::STORE, ISD::SPLAT_VECTOR,
                          ISD::BUILD_VECTOR, ISD::CONCAT_VECTORS,
 #if SIFIVE_CUSTOMIZATION
-                         ISD::ABS,
+                         ISD::VP_SUB,
                          ISD::VP_STORE,
                          ISD::SPLAT_VECTOR,
                          ISD::INTRINSIC_WO_CHAIN,
@@ -14547,6 +14547,59 @@ static SDValue reassociateAddressArith(SDNode *N, SDValue N0, SDValue N1,
   SDValue OpNode = DAG.getNode(ISD::ADD, dl, VT, N00, N1);
   return DAG.getNode(ISD::ADD, dl, VT, OpNode, N01);
 }
+
+// vp_sub (vp_zext, vp_zext) -> vp_sext (vp_sub (vp_zext, vp_zext))
+//
+// This is the VP equivalent of combineBinOpOfZExt.
+static SDValue combineVPBinOpOfZExt(SDNode *N, SelectionDAG &DAG) {
+  EVT VT = N->getValueType(0);
+  if (!VT.isVector() || !DAG.getTargetLoweringInfo().isTypeLegal(VT))
+    return SDValue();
+
+  SDValue N0 = N->getOperand(0);
+  SDValue N1 = N->getOperand(1);
+  if (N0.getOpcode() != ISD::VP_ZERO_EXTEND ||
+      N1.getOpcode() != ISD::VP_ZERO_EXTEND)
+    return SDValue();
+  if (!N0.hasOneUse() || !N1.hasOneUse())
+    return SDValue();
+
+  SDValue Mask = N->getOperand(2);
+  SDValue EVL = N->getOperand(3);
+  if (N0.getOperand(1) != Mask || N0.getOperand(2) != EVL ||
+      N1.getOperand(1) != Mask || N1.getOperand(2) != EVL)
+    return SDValue();
+
+  SDValue Src0 = N0.getOperand(0);
+  SDValue Src1 = N1.getOperand(0);
+  EVT SrcVT = Src0.getValueType();
+  if (!DAG.getTargetLoweringInfo().isTypeLegal(SrcVT) ||
+      SrcVT != Src1.getValueType() || SrcVT.getScalarSizeInBits() < 8 ||
+      SrcVT.getScalarSizeInBits() >= VT.getScalarSizeInBits() / 2)
+    return SDValue();
+
+  LLVMContext &C = *DAG.getContext();
+  EVT ElemVT = VT.getVectorElementType().getHalfSizedIntegerVT(C);
+  EVT NarrowVT = EVT::getVectorVT(C, ElemVT, VT.getVectorElementCount());
+
+  Src0 =
+      DAG.getNode(ISD::VP_ZERO_EXTEND, SDLoc(Src0), NarrowVT, Src0, Mask, EVL);
+  Src1 =
+      DAG.getNode(ISD::VP_ZERO_EXTEND, SDLoc(Src1), NarrowVT, Src1, Mask, EVL);
+
+  // Src0 and Src1 are zero extended, so they're always positive if signed.
+  //
+  // sub can produce a negative from two positive operands, so it needs sign
+  // extended. Other nodes produce a positive from two positive operands, so
+  // zero extend instead.
+  unsigned OuterExtend =
+      N->getOpcode() == ISD::VP_SUB ? ISD::VP_SIGN_EXTEND : ISD::VP_ZERO_EXTEND;
+
+  return DAG.getNode(
+      OuterExtend, SDLoc(N), VT,
+      DAG.getNode(N->getOpcode(), SDLoc(N), NarrowVT, Src0, Src1, Mask, EVL),
+      Mask, EVL);
+}
 #endif
 
 // add (zext, zext) -> zext (add (zext, zext))
@@ -19509,6 +19562,8 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
 
     break;
   }
+  case ISD::VP_SUB:
+    return combineVPBinOpOfZExt(N, DAG);
 #endif // SIFIVE_CUSTOMIZATION
   case ISD::BITCAST: {
     assert(Subtarget.useRVVForFixedLengthVectors());
@@ -20901,7 +20956,11 @@ ArrayRef<MCPhysReg> RISCV::getArgGPRs(const RISCVABI::ABI ABI) {
   return ArrayRef(ArgIGPRs);
 }
 
-static ArrayRef<MCPhysReg> getFastCCArgGPRs(const RISCVABI::ABI ABI) {
+#if SIFIVE_CUSTOMIZATION
+// Cherry-picked form upstream #93321
+static ArrayRef<MCPhysReg> getFastCCArgGPRs(const RISCVABI::ABI ABI,
+                                            bool HasZicfilp) {
+#endif // SIFIVE_CUSTOMIZATION
   // The GPRs used for passing arguments in the FastCC, X5 and X6 might be used
   // for save-restore libcall, so we don't use them.
   static const MCPhysReg FastCCIGPRs[] = {
@@ -20913,11 +20972,21 @@ static ArrayRef<MCPhysReg> getFastCCArgGPRs(const RISCVABI::ABI ABI) {
   static const MCPhysReg FastCCEGPRs[] = {RISCV::X10, RISCV::X11, RISCV::X12,
                                           RISCV::X13, RISCV::X14, RISCV::X15,
                                           RISCV::X7};
+#if SIFIVE_CUSTOMIZATION
+  // Cherry-picked form upstream #93321
+  // Zicfilp needs x7(t2) as the landing pad label register.
+  static const MCPhysReg FastCCIGPRsNonX7[] = {
+      RISCV::X10, RISCV::X11, RISCV::X12, RISCV::X13, RISCV::X14, RISCV::X15,
+      RISCV::X16, RISCV::X17, RISCV::X28, RISCV::X29, RISCV::X30, RISCV::X31};
+
+  static const MCPhysReg FastCCEGPRsNonX7[] = {
+      RISCV::X10, RISCV::X11, RISCV::X12, RISCV::X13, RISCV::X14, RISCV::X15};
 
   if (ABI == RISCVABI::ABI_ILP32E || ABI == RISCVABI::ABI_LP64E)
-    return ArrayRef(FastCCEGPRs);
+    return HasZicfilp ? ArrayRef(FastCCEGPRsNonX7) : ArrayRef(FastCCEGPRs);
 
-  return ArrayRef(FastCCIGPRs);
+  return HasZicfilp ? ArrayRef(FastCCIGPRsNonX7) : ArrayRef(FastCCIGPRs);
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 // Pass a 2*XLEN argument that has been split into two XLEN values through
@@ -21461,14 +21530,20 @@ bool RISCV::CC_RISCV_FastCC(const DataLayout &DL, RISCVABI::ABI ABI,
                             bool IsFixed, bool IsRet, Type *OrigTy,
                             const RISCVTargetLowering &TLI,
                             RVVArgDispatcher &RVVDispatcher) {
+#if SIFIVE_CUSTOMIZATION
+  // Cherry-picked form upstream #93321
+  const RISCVSubtarget &Subtarget = TLI.getSubtarget();
+  bool HasZicfilp = Subtarget.hasStdExtZicfilp();
+#endif // SIFIVE_CUSTOMIZATION
   if (LocVT == MVT::i32 || LocVT == MVT::i64) {
-    if (unsigned Reg = State.AllocateReg(getFastCCArgGPRs(ABI))) {
+#if SIFIVE_CUSTOMIZATION
+    // Cherry-picked form upstream #93321
+    if (unsigned Reg = State.AllocateReg(getFastCCArgGPRs(ABI, HasZicfilp))) {
+#endif // SIFIVE_CUSTOMIZATION
       State.addLoc(CCValAssign::getReg(ValNo, ValVT, Reg, LocVT, LocInfo));
       return false;
     }
   }
-
-  const RISCVSubtarget &Subtarget = TLI.getSubtarget();
 
   if (LocVT == MVT::f16 &&
       (Subtarget.hasStdExtZfh() || Subtarget.hasStdExtZfhmin())) {
@@ -21513,7 +21588,10 @@ bool RISCV::CC_RISCV_FastCC(const DataLayout &DL, RISCVABI::ABI ABI,
       (LocVT == MVT::f32 && Subtarget.hasStdExtZfinx()) ||
       (LocVT == MVT::f64 && Subtarget.is64Bit() &&
        Subtarget.hasStdExtZdinx())) {
-    if (unsigned Reg = State.AllocateReg(getFastCCArgGPRs(ABI))) {
+#if SIFIVE_CUSTOMIZATION
+    // Cherry-picked form upstream #93321
+    if (unsigned Reg = State.AllocateReg(getFastCCArgGPRs(ABI, HasZicfilp))) {
+#endif // SIFIVE_CUSTOMIZATION
       State.addLoc(CCValAssign::getReg(ValNo, ValVT, Reg, LocVT, LocInfo));
       return false;
     }
@@ -21548,7 +21626,11 @@ bool RISCV::CC_RISCV_FastCC(const DataLayout &DL, RISCVABI::ABI ABI,
           CCValAssign::getReg(ValNo, ValVT, AllocatedVReg, LocVT, LocInfo));
     } else {
       // Try and pass the address via a "fast" GPR.
-      if (unsigned GPRReg = State.AllocateReg(getFastCCArgGPRs(ABI))) {
+#if SIFIVE_CUSTOMIZATION
+    // Cherry-picked form upstream #93321
+      if (unsigned GPRReg =
+              State.AllocateReg(getFastCCArgGPRs(ABI, HasZicfilp))) {
+#endif // SIFIVE_CUSTOMIZATION
         LocInfo = CCValAssign::Indirect;
         LocVT = TLI.getSubtarget().getXLenVT();
         State.addLoc(CCValAssign::getReg(ValNo, ValVT, GPRReg, LocVT, LocInfo));

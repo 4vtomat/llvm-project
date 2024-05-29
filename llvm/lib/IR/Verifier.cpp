@@ -2415,11 +2415,13 @@ void Verifier::verifyFunctionMetadata(
       Constant *C = cast<ConstantAsMetadata>(MD->getOperand(0))->getValue();
       Check(isa<ConstantInt>(C) && isa<IntegerType>(C->getType()),
             "expected a constant integer operand for !riscv_cfi_type", MD);
-      Check(cast<ConstantInt>(C)->getBitWidth() == 32,
+      auto *CI = cast<ConstantInt>(C);
+      Check(CI->getBitWidth() == 32,
             "expected a 32-bit integer constant operand for !riscv_cfi_type",
             MD);
-      Check(isUInt<20>(cast<ConstantInt>(C)->getZExtValue()),
-            "expected a 20-bit integer constant operand for !riscv_cfi_type",
+      Check(isUInt<20>(CI->getZExtValue()) || CI->isMinusOne(),
+            "expected a 20-bit integer constant or minus one operand for "
+            "!riscv_cfi_type",
             MD);
     }
 #endif // SIFIVE_CUSTOMIZATION
@@ -3721,8 +3723,10 @@ void Verifier::visitCallBase(CallBase &Call) {
       Check(isa<ConstantInt>(BU.Inputs[0]) &&
                 BU.Inputs[0]->getType()->isIntegerTy(32),
             "riscv_cfi bundle operand must be an i32 constant", Call);
-      Check(isUInt<20>(cast<ConstantInt>(BU.Inputs[0])->getZExtValue()),
-            "riscv_cfi bundle operand must be fit to 20-bits", Call);
+      auto *C = cast<ConstantInt>(BU.Inputs[0]);
+      Check(isUInt<20>(C->getZExtValue()) || C->isMinusOne(),
+            "riscv_cfi bundle operand must be fit to 20-bits or minus one",
+            Call);
 #endif // SIFIVE_CUSTOMIZATION
     } else if (Tag == LLVMContext::OB_preallocated) {
       Check(!FoundPreallocatedBundle, "Multiple preallocated operand bundles",

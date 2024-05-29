@@ -4763,12 +4763,22 @@ def mforced_sw_shadow_stack : Flag<["-"], "mforced-sw-shadow-stack">, Group<m_ri
   HelpText<"Force using software shadow stack when shadow-stack enabled">;
 def mno_forced_sw_shadow_stack : Flag<["-"], "mno-forced-sw-shadow-stack">, Group<m_riscv_Features_Group>,
   HelpText<"Not force using software shadow stack when shadow-stack enabled">;
+// SIFIVE_CUSTOMIZATION
 def mcfi_ss : Flag<["-"], "mcfi-ss">, Group<m_Group>,
   Alias<fsanitize_EQ>, AliasArgs<["shadow-call-stack"]>,
   HelpText<"Enable Zicfiss shadow stack feature.">;
 def mno_cfi_ss : Flag<["-"], "mno-cfi-ss">, Group<m_Group>,
   Alias<fno_sanitize_EQ>, AliasArgs<["shadow-call-stack"]>,
   HelpText<"Disable Zicfiss shadow stack feature.">;
+def mcfi_lp_EQ : Joined<["-"], "mcfi-lp=">, Group<m_Group>,
+  HelpText<"Set Zicfilp landing pad mode">;
+def mcfi_lp : Flag<["-"], "mcfi-lp">, Group<m_Group>,
+  Alias<mcfi_lp_EQ>, AliasArgs<["fixed-one"]>,
+  HelpText<"Enable Zicfilp landing pad">;
+def mno_cfi_lp : Flag<["-"], "mno-cfi-lp">, Group<m_Group>,
+  Alias<mcfi_lp_EQ>, AliasArgs<["disable"]>,
+  HelpText<"Disable Zicfilp landing pad">;
+// end SIFIVE_CUSTOMIZATION
 } // let Flags = [TargetSpecific]
 // SIFIVE
 def fuse_vla_vectorizer : Flag<["-"], "fuse-vla-vectorizer">, Group<f_Group>,

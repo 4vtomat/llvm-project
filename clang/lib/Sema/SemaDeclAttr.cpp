@@ -8216,6 +8216,15 @@ static void handleRISCVLandingPadTypeAttr(Sema &S, Decl *D,
 
   D->addAttr(::new (S.Context) RISCVLandingPadAttr(S.Context, AL, Label));
 }
+
+static void handleRISCVNoLandingPadTypeAttr(Sema &S, Decl *D,
+                                            const ParsedAttr &AL) {
+  D->addAttr(::new (S.Context) RISCVNoLandingPadAttr(S.Context, AL));
+}
+
+static void handleRISCVNoShadowStack(Sema &S, Decl *D, const ParsedAttr &AL) {
+  D->addAttr(::new (S.Context) RISCVNoShadowStackAttr(S.Context, AL));
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 static void handleLayoutVersion(Sema &S, Decl *D, const ParsedAttr &AL) {
@@ -9728,6 +9737,12 @@ ProcessDeclAttribute(Sema &S, Scope *scope, Decl *D, const ParsedAttr &AL,
 #if SIFIVE_CUSTOMIZATION
   case ParsedAttr::AT_RISCVLandingPad:
     handleRISCVLandingPadTypeAttr(S, D, AL);
+    break;
+  case ParsedAttr::AT_RISCVNoLandingPad:
+    handleRISCVNoLandingPadTypeAttr(S, D, AL);
+    break;
+  case ParsedAttr::AT_RISCVNoShadowStack:
+    handleRISCVNoShadowStack(S, D, AL);
     break;
 #endif // SIFIVE_CUSTOMIZATION
 

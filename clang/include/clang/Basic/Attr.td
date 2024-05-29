@@ -2042,6 +2042,22 @@ def RISCVRVVVectorBits : TypeAttr {
 }
 
 #ifdef SIFIVE_CUSTOMIZATION
+def RISCVNoShadowStack : InheritableAttr, TargetSpecificAttr<TargetRISCV> {
+  let Spellings = [GCC<"no_cfi_ss">,
+                   CXX11<"riscv", "no_cfi_ss">,
+                   C23<"riscv", "no_cfi_ss">];
+  let Subjects = SubjectList<[Function]>;
+  let Documentation = [RISCVNoShadowStackDocs];
+}
+
+def RISCVNoLandingPad : DeclOrTypeAttr, TargetSpecificAttr<TargetRISCV> {
+  let Spellings = [GCC<"no_cfi_lp">,
+                   CXX11<"riscv", "no_cfi_lp">,
+                   C23<"riscv", "no_cfi_lp">];
+  let Subjects = SubjectList<[Function, FunctionPointer]>;
+  let Documentation = [RISCVNoLandingPadDocs];
+}
+
 def RISCVLandingPad : DeclOrTypeAttr, TargetSpecificAttr<TargetRISCV> {
   let Spellings = [GCC<"landing_pad_value">,
                    CXX11<"riscv", "landing_pad_value">,

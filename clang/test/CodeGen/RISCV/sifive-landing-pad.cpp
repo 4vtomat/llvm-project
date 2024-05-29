@@ -22,3 +22,24 @@
 void foo(FuncPtr fptr){
   fptr();
 }
+
+[[riscv::no_cfi_lp]] typedef void (*FuncPtr2)();
+// CHECK-LABEL: define dso_local void @_Z4foo4PFvvE(
+// CHECK-SAME: ptr noundef [[FPTR:%.*]]) #[[ATTR0]] {
+// CHECK-NEXT:  entry:
+// CHECK-NEXT:    [[FPTR_ADDR:%.*]] = alloca ptr, align 8
+// CHECK-NEXT:    store ptr [[FPTR]], ptr [[FPTR_ADDR]], align 8
+// CHECK-NEXT:    [[TMP0:%.*]] = load ptr, ptr [[FPTR_ADDR]], align 8
+// CHECK-NEXT:    call void [[TMP0]]() [ "riscv_cfi"(i32 -1) ]
+// CHECK-NEXT:    ret void
+//
+void foo4(FuncPtr2 fptr){
+  fptr();
+}
+
+// CHECK-LABEL: define dso_local void @_Z4bar2v(
+// CHECK-SAME: ) #[[ATTR0]] !riscv_cfi_type !7 {
+// CHECK-NEXT:  entry:
+// CHECK-NEXT:    ret void
+//
+[[riscv::no_cfi_lp]] void bar2 (void){}
