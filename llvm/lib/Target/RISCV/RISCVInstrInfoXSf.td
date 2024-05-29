@@ -1204,7 +1204,6 @@ class RVInstTileMemOp<dag outs, dag ins, bits<3> nf, bits<7> opcode,
   let Inst{6-0} = opcode;
 
   let Uses = [VTYPE, VL];
-  let RVVConstraint = VMConstraint;
 }
 
 class RVInstTileLoad<bits<3> nf, string opcodestr>
@@ -1231,7 +1230,6 @@ class RVInstTileMoveOp<bits<6> funct6, dag outs, dag ins, string opcodestr,
   let Inst{6-0} = OPC_OP_V.Value;
 
   let Uses = [VTYPE, VL];
-  let RVVConstraint = VMConstraint;
 }
 
 class RVInstMatmulF<bits<2> rd_lsb2, dag outs, dag ins, string opcodestr,
