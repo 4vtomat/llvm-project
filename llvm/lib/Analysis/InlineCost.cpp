@@ -723,13 +723,6 @@ class InlineCostCallAnalyzer final : public CallAnalyzer {
 
   void onFinalizeSwitch(unsigned JumpTableSize, unsigned NumCaseCluster,
                         bool DefaultDestUndefined) override {
-<<<<<<< HEAD
-#if !SIFIVE_CUSTOMIZATION
-    if (!DefaultDestUndefined)
-      addCost(2 * InstrCost);
-#endif
-=======
->>>>>>> 855eef2
     // If suitable for a jump table, consider the cost for the table size and
     // branch to destination.
     // Maximum valid cost increased in this function.
@@ -1226,9 +1219,7 @@ private:
   // heuristics in the ML inliner.
   static constexpr int JTCostMultiplier = 2;
   static constexpr int CaseClusterCostMultiplier = 2;
-#if !SIFIVE_CUSTOMIZATION
   static constexpr int SwitchDefaultDestCostMultiplier = 2;
-#endif
   static constexpr int SwitchCostMultiplier = 2;
 
   // FIXME: These are taken from the heuristic-based cost visitor: we should
@@ -1309,15 +1300,6 @@ private:
 
   void onFinalizeSwitch(unsigned JumpTableSize, unsigned NumCaseCluster,
                         bool DefaultDestUndefined) override {
-<<<<<<< HEAD
-#if !SIFIVE_CUSTOMIZATION
-    if (!DefaultDestUndefined)
-      increment(InlineCostFeatureIndex::switch_default_dest_penalty,
-                SwitchDefaultDestCostMultiplier * InstrCost);
-#endif
-
-=======
->>>>>>> 855eef2
     if (JumpTableSize) {
       if (!DefaultDestUndefined)
         increment(InlineCostFeatureIndex::switch_default_dest_penalty,
