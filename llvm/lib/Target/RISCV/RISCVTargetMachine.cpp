@@ -646,27 +646,19 @@ void RISCVPassConfig::addMachineSSAOptimization() {
 
 void RISCVPassConfig::addPreRegAlloc() {
   addPass(createRISCVPreRAExpandPseudoPass());
+#if SIFIVE_CUSTOMIZATION
   if (TM->getOptLevel() != CodeGenOptLevel::None) {
     addPass(createRISCVMergeBaseOffsetOptPass());
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     if (EnableVLOptimizer)
       addPass(createRISCVVLOptimizerPass()); // SIFIVE
-#endif
   }
-  addPass(createRISCVInsertVSETVLIPass());
-  if (TM->getOptLevel() != CodeGenOptLevel::None &&
-      EnableRISCVDeadRegisterElimination)
-    addPass(createRISCVDeadRegisterDefinitionsPass());
+#endif
+
   addPass(createRISCVInsertReadWriteCSRPass());
   addPass(createRISCVInsertWriteVXRMPass());
 #if SIFIVE_CUSTOMIZATION
   addPass(createRISCVLandingPadSetupPass());
 #endif
-=======
-
-  addPass(createRISCVInsertReadWriteCSRPass());
-  addPass(createRISCVInsertWriteVXRMPass());
 
   // Run RISCVInsertVSETVLI after PHI elimination. On O1 and above do it after
   // register coalescing so needVSETVLIPHI doesn't need to look through COPYs.
@@ -676,7 +668,6 @@ void RISCVPassConfig::addPreRegAlloc() {
     else
       insertPass(&RegisterCoalescerID, &RISCVInsertVSETVLIID);
   }
->>>>>>> 855eef2
 }
 
 void RISCVPassConfig::addFastRegAlloc() {

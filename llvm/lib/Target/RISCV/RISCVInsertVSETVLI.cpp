@@ -45,11 +45,6 @@ static cl::opt<bool> DisableInsertVSETVLPHIOpt(
     "riscv-disable-insert-vsetvl-phi-opt", cl::init(false), cl::Hidden,
     cl::desc("Disable looking through phis when inserting vsetvlis."));
 
-<<<<<<< HEAD
-static cl::opt<bool> UseStrictAsserts(
-    "riscv-insert-vsetvl-strict-asserts", cl::init(true), cl::Hidden,
-    cl::desc("Enable strict assertion checking for the dataflow algorithm"));
-
 #if SIFIVE_CUSTOMIZATION
 cl::opt<bool> ForceTailUndisturbed(
     "riscv-force-tail-undisturbed", cl::init(false), cl::Hidden,
@@ -59,8 +54,6 @@ cl::opt<bool> ForceMaskUndisturbed(
     cl::desc("Force to use mask undisturbed for all vector intrinsics."));
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> 855eef2
 namespace {
 
 /// Given a virtual register \p Reg, return the corresponding VNInfo for it.

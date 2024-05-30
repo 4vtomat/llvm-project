@@ -6310,11 +6310,7 @@ static bool hasMergeOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_RISCV_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-<<<<<<< HEAD
-                    139 && // SIFIVE
-=======
-                    128 &&
->>>>>>> 855eef2
+                    141 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
@@ -6340,11 +6336,7 @@ static bool hasMaskOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_RISCV_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-<<<<<<< HEAD
-                    139 && // SIFIVE
-=======
-                    128 &&
->>>>>>> 855eef2
+                    141 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
@@ -14862,7 +14854,7 @@ static SDValue combineAddOfBooleanXor(SDNode *N, SelectionDAG &DAG) {
 static SDValue performADDCombine(SDNode *N,
                                  TargetLowering::DAGCombinerInfo &DCI,
                                  const RISCVSubtarget &Subtarget) {
-<<<<<<< HEAD
+  SelectionDAG &DAG = DCI.DAG;
 #if SIFIVE_CUSTOMIZATION
   {
     SDValue N0 = N->getOperand(0);
@@ -14873,9 +14865,6 @@ static SDValue performADDCombine(SDNode *N,
       return V;
   }
 #endif
-=======
-  SelectionDAG &DAG = DCI.DAG;
->>>>>>> 855eef2
   if (SDValue V = combineAddOfBooleanXor(N, DAG))
     return V;
   if (SDValue V = transformAddImmMulImm(N, DAG, Subtarget))
@@ -24814,11 +24803,6 @@ MCPhysReg RVVArgDispatcher::getNextPhysReg() {
   return AllocatedPhysRegs[CurIdx++];
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-// Cherry-picked from upstream #66762.
-=======
->>>>>>> 855eef2
 SDValue RISCVTargetLowering::expandIndirectJTBranch(const SDLoc &dl,
                                                     SDValue Value, SDValue Addr,
                                                     int JTI,
@@ -24832,10 +24816,6 @@ SDValue RISCVTargetLowering::expandIndirectJTBranch(const SDLoc &dl,
   }
   return TargetLowering::expandIndirectJTBranch(dl, Value, Addr, JTI, DAG);
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 855eef2
 
 namespace llvm::RISCVVIntrinsicsTable {
 

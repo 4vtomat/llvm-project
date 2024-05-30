@@ -78,7 +78,6 @@
 def riscv_vmv_x_s : SDNode<"RISCVISD::VMV_X_S",
                            SDTypeProfile<1, 1, [SDTCisInt<0>, SDTCisVec<1>,
                                                 SDTCisInt<1>]>>;
-
 def riscv_read_vlenb : SDNode<"RISCVISD::READ_VLENB",
                               SDTypeProfile<1, 0, [SDTCisVT<0, XLenVT>]>>;
 
@@ -3414,28 +3413,14 @@ multiclass VPseudoVMAC_VV_VF_AAXA_RM<string Constraint = ""> {
   }
 }
 
-<<<<<<< HEAD
-multiclass VPseudoVSLD_VX_VI<Operand ImmType = simm5, string Constraint = ""> {
-#ifdef SIFIVE_CUSTOMIZATION
-  defvar WriteSlideX = !if(!ge(!find(NAME, "SLIDEUP"), 0),
-                           "WriteVISlideUpX", "WriteVISlideDownX");
-#endif // SIFIVE_CUSTOMIZATION
-=======
 multiclass VPseudoVSLD_VX_VI<Operand ImmType = simm5, bit slidesUp = false,
                              string Constraint = ""> {
   defvar WriteSlideX = !if(slidesUp, "WriteVSlideUpX", "WriteVSlideDownX");
->>>>>>> 855eef2
   foreach m = MxList in {
     defvar mx = m.MX;
-#ifdef SIFIVE_CUSTOMIZATION
     defm "" : VPseudoVSLDV_VX<m, Constraint>,
               SchedTernary<WriteSlideX, "ReadVISlideV", "ReadVISlideV",
                            "ReadVISlideX", mx>;
-#else
-    defm "" : VPseudoVSLDV_VX<m, Constraint>,
-              SchedTernary<WriteSlideX, "ReadVISlideV", "ReadVISlideV",
-                           "ReadVISlideX", mx>;
-#endif // SIFIVE_CUSTOMIZATION
     defm "" : VPseudoVSLDV_VI<ImmType, m, Constraint>,
               SchedBinary<"WriteVSlideI", "ReadVISlideV", "ReadVISlideV", mx>;
   }
@@ -6556,14 +6541,10 @@ defm PseudoVASUB  : VPseudoVAALU_VV_VX_RM;
 //===----------------------------------------------------------------------===//
 // 12.3. Vector Single-Width Fractional Multiply with Rounding and Saturation
 //===----------------------------------------------------------------------===//
-<<<<<<< HEAD
-let Defs = [VXSAT], hasSideEffects = 1 in {
-  #ifdef SIFIVE_CUSTOMIZATION
-  let hasPostISelHook = 1 in
-  #endif
-=======
 let Defs = [VXSAT] in {
->>>>>>> 855eef2
+#ifdef SIFIVE_CUSTOMIZATION
+  let hasPostISelHook = 1 in
+#endif
   defm PseudoVSMUL : VPseudoVSMUL_VV_VX_RM;
 }
 
@@ -6582,14 +6563,10 @@ defm PseudoVSSRA : VPseudoVSSHT_VV_VX_VI_RM<uimm5>;
 //===----------------------------------------------------------------------===//
 // 12.5. Vector Narrowing Fixed-Point Clip Instructions
 //===----------------------------------------------------------------------===//
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 let hasPostISelHook = 1 in {
 #endif
-let Defs = [VXSAT], hasSideEffects = 1 in {
-=======
 let Defs = [VXSAT] in {
->>>>>>> 855eef2
   defm PseudoVNCLIP  : VPseudoVNCLP_WV_WX_WI_RM;
   defm PseudoVNCLIPU : VPseudoVNCLP_WV_WX_WI_RM;
 }

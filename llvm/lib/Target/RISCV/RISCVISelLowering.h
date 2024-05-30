@@ -420,18 +420,9 @@ enum NodeType : unsigned {
   CZERO_EQZ, // vt.maskc for XVentanaCondOps.
   CZERO_NEZ, // vt.maskcn for XVentanaCondOps.
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  /// Cherry-picked from upstream #66762.
   /// Software guarded BRIND node. Operand 0 is the chain operand and
   /// operand 1 is the target address.
   SW_GUARDED_BRIND,
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  /// Software guarded BRIND node. Operand 0 is the chain operand and
-  /// operand 1 is the target address.
-  SW_GUARDED_BRIND,
->>>>>>> 855eef2
 
   // FP to 32 bit int conversions for RV64. These are used to keep track of the
   // result being sign extended to 64 bit. These saturate out of range inputs.
@@ -927,16 +918,8 @@ public:
 
   bool supportKCFIBundles() const override { return true; }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // Cherry-picked from upstream #66762.
   SDValue expandIndirectJTBranch(const SDLoc &dl, SDValue Value, SDValue Addr,
                                  int JTI, SelectionDAG &DAG) const override;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  SDValue expandIndirectJTBranch(const SDLoc &dl, SDValue Value, SDValue Addr,
-                                 int JTI, SelectionDAG &DAG) const override;
->>>>>>> 855eef2
 
   MachineInstr *EmitKCFICheck(MachineBasicBlock &MBB,
                               MachineBasicBlock::instr_iterator &MBBI,
@@ -1035,14 +1018,10 @@ private:
   SDValue lowerFixedLengthVectorSelectToRVV(SDValue Op,
                                             SelectionDAG &DAG) const;
   SDValue lowerToScalableOp(SDValue Op, SelectionDAG &DAG) const;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   SDValue lowerRVVRMIntrinsics(SDValue Op, SelectionDAG &DAG, unsigned Opc,
                                bool HasMask) const;
 #endif // SIFIVE_CUSTOMIZATION
-  SDValue lowerUnsignedAvgFloor(SDValue Op, SelectionDAG &DAG) const;
-=======
->>>>>>> 855eef2
   SDValue LowerIS_FPCLASS(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPOp(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerLogicVPOp(SDValue Op, SelectionDAG &DAG) const;

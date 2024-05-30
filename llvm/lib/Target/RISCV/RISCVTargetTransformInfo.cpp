@@ -479,6 +479,7 @@ RISCVTTIImpl::getRISCVInstructionCost(ArrayRef<unsigned> OpCodes, MVT VT,
     case RISCV::VMV_X_S:
     case RISCV::VFMV_F_S:
     case RISCV::VCPOP_M:
+    case RISCV::VFIRST_M:
       Cost += ST->getVectorToScalarBaseCost();
       break;
     case RISCV::VMV_S_X:
@@ -495,11 +496,8 @@ RISCVTTIImpl::getRISCVInstructionCost(ArrayRef<unsigned> OpCodes, MVT VT,
     case RISCV::VMANDN_MM:
     case RISCV::VMNAND_MM:
     case RISCV::VCPOP_M:
-<<<<<<< HEAD
-#endif
-=======
     case RISCV::VFIRST_M:
->>>>>>> 855eef2
+#endif
       Cost += 1;
       break;
     default:
@@ -1125,8 +1123,8 @@ InstructionCost RISCVTTIImpl::getInterleavedMemoryOpCost(
     unsigned Opcode, Type *VecTy, unsigned Factor, ArrayRef<unsigned> Indices,
     Align Alignment, unsigned AddressSpace, TTI::TargetCostKind CostKind,
     bool UseMaskForCond, bool UseMaskForGaps) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+  // FIXME: Sync with upstream?
   if (isa<ScalableVectorType>(VecTy) && !UseMaskForGaps &&
       Factor <= TLI->getMaxSupportedInterleaveFactor()) {
     // Only supported deinterleave2/interleave2 for scalable vectors in upstream
@@ -1146,10 +1144,7 @@ InstructionCost RISCVTTIImpl::getInterleavedMemoryOpCost(
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-  if (isa<ScalableVectorType>(VecTy))
-=======
   if (isa<ScalableVectorType>(VecTy) && Factor != 2)
->>>>>>> 855eef2
     return InstructionCost::getInvalid();
 
   // The interleaved memory access pass will lower interleaved memory ops (i.e
@@ -1361,7 +1356,6 @@ InstructionCost
 RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
                                     TTI::TargetCostKind CostKind) {
   auto *RetTy = ICA.getReturnType();
-
   switch (ICA.getID()) {
   case Intrinsic::ceil:
   case Intrinsic::floor:
@@ -1457,7 +1451,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
                  getRISCVInstructionCost(RISCV::VADD_VX, LT.second, CostKind);
     return 1 + (LT.first - 1);
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case Intrinsic::nearbyint: {
     if (isa<ScalableVectorType>(RetTy))
@@ -1532,7 +1525,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
     VP_INTRINSIC_LIST
 #undef VP_INTRINSIC
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case Intrinsic::experimental_cttz_elts: {
     Type *ArgTy = ICA.getArgTypes()[0];
     EVT ArgType = TLI->getValueType(DL, ArgTy, true);
@@ -1553,7 +1545,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
 
     return Cost;
   }
->>>>>>> 855eef2
   case Intrinsic::vp_rint: {
     // RISC-V target uses at least 5 instructions to lower rounding intrinsics.
     unsigned Cost = 5;
@@ -2666,7 +2657,6 @@ InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
   if (Op2Info.isConstant())
     ConstantMatCost += getConstantMatCost(1, Op2Info);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // FIXME: move the customization to getRISCVInstructionCost.
   if (ST->isSiFiveCPU()) {
@@ -2713,8 +2703,6 @@ InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 855eef2
   unsigned Op;
   switch (TLI->InstructionOpcodeToISD(Opcode)) {
   case ISD::ADD:

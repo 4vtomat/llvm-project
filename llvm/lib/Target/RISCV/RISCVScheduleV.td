@@ -519,19 +519,9 @@ def WriteVMovXS : SchedWrite;
 def WriteVMovSF : SchedWrite;
 def WriteVMovFS : SchedWrite;
 // 16.3. Vector Slide Instructions
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-defm "" : LMULSchedWrites<"WriteVISlideUpX">;
-defm "" : LMULSchedWrites<"WriteVISlideDownX">;
-#else
-defm "" : LMULSchedWrites<"WriteVISlideX">;
-#endif // SIFIVE_CUSTOMIZATION
-defm "" : LMULSchedWrites<"WriteVISlideI">;
-=======
 defm "" : LMULSchedWrites<"WriteVSlideUpX">;
 defm "" : LMULSchedWrites<"WriteVSlideDownX">;
 defm "" : LMULSchedWrites<"WriteVSlideI">;
->>>>>>> 855eef2
 defm "" : LMULSchedWrites<"WriteVISlide1X">;
 defm "" : LMULSchedWrites<"WriteVFSlide1F">;
 // 16.4. Vector Register Gather Instructions
@@ -968,19 +958,9 @@ def : WriteRes<WriteVMovSX, []>;
 def : WriteRes<WriteVMovXS, []>;
 def : WriteRes<WriteVMovSF, []>;
 def : WriteRes<WriteVMovFS, []>;
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-defm "" : LMULWriteRes<"WriteVISlideUpX", []>;
-defm "" : LMULWriteRes<"WriteVISlideDownX", []>;
-#else
-defm "" : LMULWriteRes<"WriteVISlideX", []>;
-#endif // SIFIVE_CUSTOMIZATION
-defm "" : LMULWriteRes<"WriteVISlideI", []>;
-=======
 defm "" : LMULWriteRes<"WriteVSlideUpX", []>;
 defm "" : LMULWriteRes<"WriteVSlideDownX", []>;
 defm "" : LMULWriteRes<"WriteVSlideI", []>;
->>>>>>> 855eef2
 defm "" : LMULWriteRes<"WriteVISlide1X", []>;
 defm "" : LMULWriteRes<"WriteVFSlide1F", []>;
 defm "" : LMULSEWWriteRes<"WriteVRGatherVV", []>;

@@ -216,7 +216,6 @@ void RISCVInstPrinter::printVTypeI(const MCInst *MI, unsigned OpNo,
   RISCVVType::printVType(Imm, O);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 void RISCVInstPrinter::printMammothWWEE(const MCInst *MI, unsigned OpNo,
                                         const MCSubtargetInfo &STI,
@@ -230,11 +229,9 @@ void RISCVInstPrinter::printMammothWWEE(const MCInst *MI, unsigned OpNo,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
 // Print a Zcmp RList. If we are printing architectural register names rather
 // than ABI register names, we need to print "{x1, x8-x9, x18-x27}" for all
 // registers. Otherwise, we print "{ra, s0-s11}".
->>>>>>> 855eef2
 void RISCVInstPrinter::printRlist(const MCInst *MI, unsigned OpNo,
                                   const MCSubtargetInfo &STI, raw_ostream &O) {
   unsigned Imm = MI->getOperand(OpNo).getImm();

@@ -975,24 +975,12 @@ multiclass VNCLP_IV_V_X_I<string opcodestr, bits<6> funct6> {
            SchedUnaryMC<"WriteVNClipI", "ReadVNClipV">;
 }
 
-<<<<<<< HEAD
-multiclass VSLD_IV_X_I<string opcodestr, bits<6> funct6> {
-#ifdef SIFIVE_CUSTOMIZATION
-  defvar WriteSlideX = !if(!ge(!find(NAME, "SLIDEUP"), 0), "WriteVISlideUpX", "WriteVISlideDownX");
-  def X  : VALUVX<funct6, OPIVX, opcodestr # ".vx">,
-           SchedBinaryMC<WriteSlideX, "ReadVISlideV", "ReadVISlideX">;
-#else
-  def X  : VALUVX<funct6, OPIVX, opcodestr # ".vx">,
-           SchedBinaryMC<"WriteVISlideX", "ReadVISlideV", "ReadVISlideX">;
-#endif // SIFIVE_CUSTOMIZATION
-=======
 multiclass VSLD_IV_X_I<string opcodestr, bits<6> funct6, bit slidesUp> {
   // Note: In the future, if VISlideI is also split into VSlideUpI and
   // VSlideDownI, it'll probably better to use two separate multiclasses.
   defvar WriteSlideX = !if(slidesUp, "WriteVSlideUpX", "WriteVSlideDownX");
   def X  : VALUVX<funct6, OPIVX, opcodestr # ".vx">,
            SchedBinaryMC<WriteSlideX, "ReadVISlideV", "ReadVISlideX">;
->>>>>>> 855eef2
   def I  : VALUVI<funct6, opcodestr # ".vi", uimm5>,
            SchedUnaryMC<"WriteVSlideI", "ReadVISlideV">;
 }

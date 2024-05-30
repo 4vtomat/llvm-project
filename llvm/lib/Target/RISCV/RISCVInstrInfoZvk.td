@@ -195,15 +195,11 @@ let Predicates = [HasStdExtZvkned] in {
   def  VAESKF2_VI : PALUVINoVmBinary<0b101010, "vaeskf2.vi", uimm5>,
                     SchedBinaryMC<"WriteVAESKF2V", "ReadVAESKF2V", "ReadVAESKF2V">;
   let RVVConstraint = VS2Constraint in
-<<<<<<< HEAD
-  def  VAESZ_VS   : PALUVs2NoVmBinary<0b101001, 0b00111, OPMVV, "vaesz.vs">;
+  def  VAESZ_VS   : PALUVs2NoVmBinary<0b101001, 0b00111, OPMVV, "vaesz.vs">,
+                    SchedBinaryMC<"WriteVAESZV", "ReadVAESZV", "ReadVAESZV">;
 #ifdef SIFIVE_CUSTOMIZATION
 } // Predicates = [HasStdExtZvknsOrZvkned]
 #else
-=======
-  def  VAESZ_VS   : PALUVs2NoVmBinary<0b101001, 0b00111, OPMVV, "vaesz.vs">,
-                    SchedBinaryMC<"WriteVAESZV", "ReadVAESZV", "ReadVAESZV">;
->>>>>>> 855eef2
 } // Predicates = [HasStdExtZvkned]
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -570,15 +566,14 @@ let Predicates = [HasStdExtZvbcOrZvkb0p1] in {
 } // Predicates = [HasStdExtZvbcOrZvkb0p1]
 #endif // SIFIVE_CUSTOMIZATION
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 let Predicates = [HasStdExtZvkbOrZvkb0p1] in {
 #endif // SIFIVE_CUSTOMIZATION
-  defm PseudoVANDN  : VPseudoVALU_VV_VX;
-  defm PseudoVBREV8 : VPseudoVALU_V;
-  defm PseudoVREV8  : VPseudoVALU_V;
-  defm PseudoVROL   : VPseudoVALU_VV_VX;
-  defm PseudoVROR   : VPseudoVALU_VV_VX_VI<uimm6>;
+  defm PseudoVANDN  : VPseudoVANDN;
+  defm PseudoVBREV8 : VPseudoVBREV8;
+  defm PseudoVREV8  : VPseudoVREV8;
+  defm PseudoVROL   : VPseudoVROL;
+  defm PseudoVROR   : VPseudoVROR<uimm6>;
 #ifdef SIFIVE_CUSTOMIZATION
 } // Predicates = [HasStdExtZvkbOrZvkb0p1]
 #endif // SIFIVE_CUSTOMIZATION
@@ -588,15 +583,6 @@ let Predicates = [HasStdExtZvkg0p1] in {
   defm PseudoVGHMAC : VPseudoVALU_VV_NoMask_Zvk;
 } // Predicates = [HasStdExtZvkg0p1]
 #endif // SIFIVE_CUSTOMIZATION
-=======
-let Predicates = [HasStdExtZvkb] in {
-  defm PseudoVANDN  : VPseudoVANDN;
-  defm PseudoVBREV8 : VPseudoVBREV8;
-  defm PseudoVREV8  : VPseudoVREV8;
-  defm PseudoVROL   : VPseudoVROL;
-  defm PseudoVROR   : VPseudoVROR<uimm6>;
-} // Predicates = [HasStdExtZvkb]
->>>>>>> 855eef2
 
 let Predicates = [HasStdExtZvkg] in {
   defm PseudoVGHSH : VPseudoVGHSH;

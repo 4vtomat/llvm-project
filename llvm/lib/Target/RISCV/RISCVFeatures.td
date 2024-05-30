@@ -212,16 +212,8 @@ def FeatureStdExtZicfilp
 def HasStdExtZicfilp : Predicate<"Subtarget->hasStdExtZicfilp()">,
                        AssemblerPredicate<(all_of FeatureStdExtZicfilp),
                                           "'Zicfilp' (Landing pad)">;
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-// Cherry-picked from upstream #68292
 def NoStdExtZicfilp : Predicate<"!Subtarget->hasStdExtZicfilp()">,
                                  AssemblerPredicate<(all_of (not FeatureStdExtZicfilp))>;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-def NoStdExtZicfilp : Predicate<"!Subtarget->hasStdExtZicfilp()">,
-                                 AssemblerPredicate<(all_of (not FeatureStdExtZicfilp))>;
->>>>>>> 855eef2
 
 def FeatureStdExtZicfiss
     : RISCVExperimentalExtension<"zicfiss", 0, 4,

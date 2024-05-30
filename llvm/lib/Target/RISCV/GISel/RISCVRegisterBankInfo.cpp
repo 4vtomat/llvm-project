@@ -117,21 +117,9 @@ RISCVRegisterBankInfo::getRegBankFromRegClass(const TargetRegisterClass &RC,
   case RISCV::GPRNoX0RegClassID:
   case RISCV::GPRNoX0X2RegClassID:
   case RISCV::GPRJALRRegClassID:
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // Cherry-picked from upstream #68292
-  case RISCV::GPRJALRNonX7RegClassID:
-#endif // SIFIVE_CUSTOMIZATION
-  case RISCV::GPRTCRegClassID:
-#if SIFIVE_CUSTOMIZATION
-  // Cherry-picked from upstream #68292
-  case RISCV::GPRTCNonX7RegClassID:
-#endif // SIFIVE_CUSTOMIZATION
-=======
   case RISCV::GPRJALRNonX7RegClassID:
   case RISCV::GPRTCRegClassID:
   case RISCV::GPRTCNonX7RegClassID:
->>>>>>> 855eef2
   case RISCV::GPRC_and_GPRTCRegClassID:
   case RISCV::GPRCRegClassID:
   case RISCV::GPRC_and_SR07RegClassID:

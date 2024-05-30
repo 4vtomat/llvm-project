@@ -3268,7 +3268,10 @@ bool DAGTypeLegalizer::SplitVectorOperand(SDNode *N, unsigned OpNo) {
   case ISD::VP_REDUCE_FMINIMUM:
     Res = SplitVecOp_VP_REDUCE(N, OpNo);
     break;
-<<<<<<< HEAD
+  case ISD::VP_CTTZ_ELTS:
+  case ISD::VP_CTTZ_ELTS_ZERO_UNDEF:
+    Res = SplitVecOp_VP_CttzElements(N);
+    break;
 #if SIFIVE_CUSTOMIZATION
   case ISD::VP_FIRST:
     Res = SplitVecOp_VP_FIRST(N);
@@ -3277,12 +3280,6 @@ bool DAGTypeLegalizer::SplitVectorOperand(SDNode *N, unsigned OpNo) {
     Res = SplitVecOp_VP_POPCOUNT(N, OpNo);
     break;
 #endif
-=======
-  case ISD::VP_CTTZ_ELTS:
-  case ISD::VP_CTTZ_ELTS_ZERO_UNDEF:
-    Res = SplitVecOp_VP_CttzElements(N);
-    break;
->>>>>>> 855eef2
   }
 
   // If the result is null, the sub-method took care of registering results etc.
@@ -4253,7 +4250,29 @@ SDValue DAGTypeLegalizer::SplitVecOp_FP_TO_XINT_SAT(SDNode *N) {
   return DAG.getNode(ISD::CONCAT_VECTORS, dl, ResVT, Lo, Hi);
 }
 
-<<<<<<< HEAD
+SDValue DAGTypeLegalizer::SplitVecOp_VP_CttzElements(SDNode *N) {
+  SDLoc DL(N);
+  EVT ResVT = N->getValueType(0);
+
+  SDValue Lo, Hi;
+  SDValue VecOp = N->getOperand(0);
+  GetSplitVector(VecOp, Lo, Hi);
+
+  auto [MaskLo, MaskHi] = SplitMask(N->getOperand(1));
+  auto [EVLLo, EVLHi] =
+      DAG.SplitEVL(N->getOperand(2), VecOp.getValueType(), DL);
+  SDValue VLo = DAG.getZExtOrTrunc(EVLLo, DL, ResVT);
+
+  // if VP_CTTZ_ELTS(Lo) != EVLLo => VP_CTTZ_ELTS(Lo).
+  // else => EVLLo + (VP_CTTZ_ELTS(Hi) or VP_CTTZ_ELTS_ZERO_UNDEF(Hi)).
+  SDValue ResLo = DAG.getNode(ISD::VP_CTTZ_ELTS, DL, ResVT, Lo, MaskLo, EVLLo);
+  SDValue ResLoNotEVL =
+      DAG.getSetCC(DL, getSetCCResultType(ResVT), ResLo, VLo, ISD::SETNE);
+  SDValue ResHi = DAG.getNode(N->getOpcode(), DL, ResVT, Hi, MaskHi, EVLHi);
+  return DAG.getSelect(DL, ResVT, ResLoNotEVL, ResLo,
+                       DAG.getNode(ISD::ADD, DL, ResVT, VLo, ResHi));
+}
+
 #if SIFIVE_CUSTOMIZATION
 SDValue DAGTypeLegalizer::SplitVecOp_VP_FIRST(SDNode *N) {
   EVT ResVT = N->getValueType(0);
@@ -4309,30 +4328,6 @@ SDValue DAGTypeLegalizer::SplitVecOp_VP_POPCOUNT(SDNode *N, unsigned OpNo) {
   return DAG.getNode(ISD::ADD, dl, ResVT, ResLo, ResHi);
 }
 #endif
-=======
-SDValue DAGTypeLegalizer::SplitVecOp_VP_CttzElements(SDNode *N) {
-  SDLoc DL(N);
-  EVT ResVT = N->getValueType(0);
-
-  SDValue Lo, Hi;
-  SDValue VecOp = N->getOperand(0);
-  GetSplitVector(VecOp, Lo, Hi);
-
-  auto [MaskLo, MaskHi] = SplitMask(N->getOperand(1));
-  auto [EVLLo, EVLHi] =
-      DAG.SplitEVL(N->getOperand(2), VecOp.getValueType(), DL);
-  SDValue VLo = DAG.getZExtOrTrunc(EVLLo, DL, ResVT);
-
-  // if VP_CTTZ_ELTS(Lo) != EVLLo => VP_CTTZ_ELTS(Lo).
-  // else => EVLLo + (VP_CTTZ_ELTS(Hi) or VP_CTTZ_ELTS_ZERO_UNDEF(Hi)).
-  SDValue ResLo = DAG.getNode(ISD::VP_CTTZ_ELTS, DL, ResVT, Lo, MaskLo, EVLLo);
-  SDValue ResLoNotEVL =
-      DAG.getSetCC(DL, getSetCCResultType(ResVT), ResLo, VLo, ISD::SETNE);
-  SDValue ResHi = DAG.getNode(N->getOpcode(), DL, ResVT, Hi, MaskHi, EVLHi);
-  return DAG.getSelect(DL, ResVT, ResLoNotEVL, ResLo,
-                       DAG.getNode(ISD::ADD, DL, ResVT, VLo, ResHi));
-}
->>>>>>> 855eef2
 
 //===----------------------------------------------------------------------===//
 //  Result Vector Widening
@@ -6456,19 +6451,16 @@ bool DAGTypeLegalizer::WidenVectorOperand(SDNode *N, unsigned OpNo) {
   case ISD::VP_REDUCE_FMINIMUM:
     Res = WidenVecOp_VP_REDUCE(N);
     break;
-<<<<<<< HEAD
+  case ISD::VP_CTTZ_ELTS:
+  case ISD::VP_CTTZ_ELTS_ZERO_UNDEF:
+    Res = WidenVecOp_VP_CttzElements(N);
+    break;
 #if SIFIVE_CUSTOMIZATION
   case ISD::VP_FIRST:
   case ISD::EXPERIMENTAL_VP_POPCOUNT:
     Res = WidenVecOp_VP_FIRST_POPCOUNT(N);
     break;
 #endif
-=======
-  case ISD::VP_CTTZ_ELTS:
-  case ISD::VP_CTTZ_ELTS_ZERO_UNDEF:
-    Res = WidenVecOp_VP_CttzElements(N);
-    break;
->>>>>>> 855eef2
   }
 
   // If Res is null, the sub-method took care of registering the result.
@@ -7232,17 +7224,6 @@ SDValue DAGTypeLegalizer::WidenVecOp_VSELECT(SDNode *N) {
                      DAG.getVectorIdxConstant(0, DL));
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-SDValue DAGTypeLegalizer::WidenVecOp_VP_FIRST_POPCOUNT(SDNode *N) {
-  EVT ResVT = N->getValueType(0);
-  SDValue Op = GetWidenedVector(N->getOperand(0));
-  SDValue Mask = GetWidenedVector(N->getOperand(1));
-  return DAG.getNode(N->getOpcode(), SDLoc(N), ResVT, Op, Mask,
-                     N->getOperand(2));
-}
-#endif
-=======
 SDValue DAGTypeLegalizer::WidenVecOp_VP_CttzElements(SDNode *N) {
   SDLoc DL(N);
   SDValue Source = GetWidenedVector(N->getOperand(0));
@@ -7253,7 +7234,16 @@ SDValue DAGTypeLegalizer::WidenVecOp_VP_CttzElements(SDNode *N) {
   return DAG.getNode(N->getOpcode(), DL, N->getValueType(0),
                      {Source, Mask, N->getOperand(2)}, N->getFlags());
 }
->>>>>>> 855eef2
+
+#if SIFIVE_CUSTOMIZATION
+SDValue DAGTypeLegalizer::WidenVecOp_VP_FIRST_POPCOUNT(SDNode *N) {
+  EVT ResVT = N->getValueType(0);
+  SDValue Op = GetWidenedVector(N->getOperand(0));
+  SDValue Mask = GetWidenedVector(N->getOperand(1));
+  return DAG.getNode(N->getOpcode(), SDLoc(N), ResVT, Op, Mask,
+                     N->getOperand(2));
+}
+#endif
 
 //===----------------------------------------------------------------------===//
 // Vector Widening Utilities
