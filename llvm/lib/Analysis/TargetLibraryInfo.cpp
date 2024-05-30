@@ -1301,6 +1301,7 @@ void TargetLibraryInfoImpl::addVectorizableFunctionsFromVecLib(
     const VecDesc VecFuncs[] = {
     #define TLI_DEFINE_SIFIVE_NF_LIBRARY_FUNCS
     #include "llvm/Analysis/VecFuncs.def"
+    #undef TLI_DEFINE_SIFIVE_NF_LIBRARY_FUNCS
     };
     addVectorizableFunctions(VecFuncs);
     break;
