@@ -1612,7 +1612,6 @@ static Instruction *foldBitOrderCrossLogicOp(Value *V,
   return nullptr;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static bool canEvaluateVPReversed(Value *V, Value *VL, unsigned Depth = 5) {
   // Splats can be freely reversed.
@@ -1759,7 +1758,7 @@ static Value *simplifyUsingEVL(Value *V, Value *EVL, IRBuilderBase &Builder) {
   return Res;
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 static Value *simplifyReductionOperand(Value *Arg, bool CanReorderLanes) {
   if (!CanReorderLanes)
     return nullptr;
@@ -1786,7 +1785,6 @@ static Value *simplifyReductionOperand(Value *Arg, bool CanReorderLanes) {
   // other changes.
   return UsedIndices.all() ? V : nullptr;
 }
->>>>>>> 855eef2
 
 /// CallInst simplification. This mostly only handles folding of intrinsic
 /// instructions. For normal calls, it allows visitCallBase to do the heavy
@@ -3903,19 +3901,13 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
   case Intrinsic::vector_reduce_fmin:
   case Intrinsic::vector_reduce_fadd:
   case Intrinsic::vector_reduce_fmul: {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (Value *Res = simplifyVectorReductionTree(CI))
       return replaceInstUsesWith(CI, Res);
 #endif // SIFIVE_CUSTOMIZATION
-    bool CanBeReassociated = (IID != Intrinsic::vector_reduce_fadd &&
-                              IID != Intrinsic::vector_reduce_fmul) ||
-                             II->hasAllowReassoc();
-=======
     bool CanReorderLanes = (IID != Intrinsic::vector_reduce_fadd &&
                             IID != Intrinsic::vector_reduce_fmul) ||
                            II->hasAllowReassoc();
->>>>>>> 855eef2
     const unsigned ArgIdx = (IID == Intrinsic::vector_reduce_fadd ||
                              IID == Intrinsic::vector_reduce_fmul)
                                 ? 1
