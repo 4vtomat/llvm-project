@@ -1322,7 +1322,6 @@ tryToUnrollLoop(Loop *L, DominatorTree &DT, LoopInfo *LI, ScalarEvolution &SE,
              << " iterations";
     });
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     bool PeeledLoop = false;
     if (PP.PeelProlog) {
@@ -1335,12 +1334,7 @@ tryToUnrollLoop(Loop *L, DominatorTree &DT, LoopInfo *LI, ScalarEvolution &SE,
 
     if (PeeledLoop) {
 #endif // SIFIVE_CUSTOMIZATION
-      simplifyLoopAfterUnroll(L, true, LI, &SE, &DT, &AC, &TTI);
-=======
-    ValueToValueMapTy VMap;
-    if (peelLoop(L, PP.PeelCount, LI, &SE, DT, &AC, PreserveLCSSA, VMap)) {
       simplifyLoopAfterUnroll(L, true, LI, &SE, &DT, &AC, &TTI, nullptr);
->>>>>>> 855eef2
       // If the loop was peeled, we already "used up" the profile information
       // we had, so we don't want to unroll or peel again.
       if (PP.PeelProfiledIterations)
