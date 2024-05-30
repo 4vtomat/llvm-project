@@ -560,8 +560,7 @@ RISCVISAInfo::parseFeatures(unsigned XLen,
     assert(ExtName.size() > 1 && (ExtName[0] == '+' || ExtName[0] == '-'));
     bool Add = ExtName[0] == '+';
     ExtName = ExtName.drop_front(1); // Drop '+' or '-'
-<<<<<<< HEAD
-    Experimental = stripExperimentalPrefix(ExtName);
+    bool Experimental = stripExperimentalPrefix(ExtName);
 #if SIFIVE_CUSTOMIZATION
     unsigned Major, Minor;
 
@@ -574,9 +573,6 @@ RISCVISAInfo::parseFeatures(unsigned XLen,
         continue;
     } else {
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    bool Experimental = stripExperimentalPrefix(ExtName);
->>>>>>> 855eef2
     auto ExtensionInfos = Experimental
                               ? ArrayRef(SupportedExperimentalExtensions)
                               : ArrayRef(SupportedExtensions);

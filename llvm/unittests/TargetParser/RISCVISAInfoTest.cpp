@@ -1024,11 +1024,8 @@ R"(All available -march extensions for RISC-V
     smaia                1.0
     smepmp               1.0
     smstateen            1.0
-<<<<<<< HEAD
     ss                   1.13
     ss                   1.12
-=======
->>>>>>> 855eef2
     ssaia                1.0
     ssccptr              1.0
     sscofpmf             1.0
