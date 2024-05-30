@@ -85,7 +85,7 @@ def ROCKET : RISCVTuneProcessorModel<"rocket",
 
 def SIFIVE_7 : RISCVTuneProcessorModel<"sifive-7-series",
                                        SiFive7Model,
-                                       [TuneSiFive7]>;
+                                       [TuneSiFive7, FeaturePostRAScheduler]>;
 
 #ifdef SIFIVE_CUSTOMIZATION
 def TuneSiFiveP400 : SubtargetFeature<"sifive-p400", "RISCVProcFamily", "SiFiveP400",
@@ -197,7 +197,7 @@ def SIFIVE_E76 : RISCVProcessorModel<"sifive-e76",
                                       FeatureStdExtA,
                                       FeatureStdExtF,
                                       FeatureStdExtC],
-                                     [TuneSiFive7]>;
+                                     [TuneSiFive7, FeaturePostRAScheduler]>;
 
 #ifdef SIFIVE_CUSTOMIZATION
 def SIFIVE_E20R : RISCVProcessorModel<"sifive-e20r",
@@ -428,7 +428,7 @@ def SIFIVE_S76 : RISCVProcessorModel<"sifive-s76",
                                       FeatureStdExtD,
                                       FeatureStdExtC,
                                       FeatureStdExtZihintpause],
-                                     [TuneSiFive7]>;
+                                     [TuneSiFive7, FeaturePostRAScheduler]>;
 
 #ifdef SIFIVE_CUSTOMIZATION
 def SIFIVE_S76M : RISCVProcessorModel<"sifive-s76m", SiFive7Model,
@@ -551,7 +551,7 @@ def SIFIVE_U74 : RISCVProcessorModel<"sifive-u74",
                                       FeatureStdExtF,
                                       FeatureStdExtD,
                                       FeatureStdExtC],
-                                     [TuneSiFive7]>;
+                                     [TuneSiFive7, FeaturePostRAScheduler]>;
 
 #ifdef SIFIVE_CUSTOMIZATION
 def SIFIVE_U74M : RISCVProcessorModel<"sifive-u74m", SiFive7Model,
@@ -662,6 +662,7 @@ def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7VLEN512Model,
                                        FeatureStdExtZvfh,
                                        FeatureStdExtZvfbfmin,
                                        FeatureStdExtZba,
+<<<<<<< HEAD
                                        FeatureStdExtZbb,
                                        FeatureVendorXSfvqmaccqoq,   // SIFIVE
                                        FeatureVendorXSfvfhbfmin],   // SIFIVE
@@ -818,6 +819,12 @@ def SIFIVE_P260T : RISCVProcessorModel<"sifive-p260t", SiFive7NVLEN128Model,
                                         TuneDLenFactor2,
                                         TuneDLen64b,
                                         TunePseudoLIsimm32]>;
+=======
+                                       FeatureStdExtZbb],
+                                      [TuneSiFive7,
+                                       FeaturePostRAScheduler,
+                                       TuneDLenFactor2]>;
+>>>>>>> 855eef2
 
 def SIFIVE_P450 : RISCVProcessorModel<"sifive-p450", SiFiveP400Model,
                                       [Feature64Bit,
@@ -848,6 +855,7 @@ def SIFIVE_P450 : RISCVProcessorModel<"sifive-p450", SiFiveP400Model,
                                        FeatureStdExtZfhmin,
                                        FeatureUnalignedScalarMem,
                                        FeatureUnalignedVectorMem],
+<<<<<<< HEAD
                                       [TuneSiFiveP400]>;
 
 def SIFIVE_P470 : RISCVProcessorModel<"sifive-p470", SiFiveP400Model,
@@ -983,6 +991,13 @@ def SIFIVE_P650 : RISCVProcessorModel<"sifive-p650", SiFiveP600Model,
                                        FeatureUnalignedScalarMem,
                                        FeatureUnalignedVectorMem],
                                       [TuneSiFiveP600]>;
+=======
+                                      [TuneNoDefaultUnroll,
+                                       TuneConditionalCompressedMoveFusion,
+                                       TuneLUIADDIFusion,
+                                       TuneAUIPCADDIFusion,
+                                       FeaturePostRAScheduler]>;
+>>>>>>> 855eef2
 
 def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
                                       [Feature64Bit,
@@ -1020,8 +1035,17 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
                                        FeatureStdExtZvksg,
                                        FeatureUnalignedScalarMem,
                                        FeatureUnalignedVectorMem],
+<<<<<<< HEAD
                                       [TuneSiFiveP600, TuneDLen128b,
                                        TuneNoSinkSplatOperands]>;
+=======
+                                      [TuneNoDefaultUnroll,
+                                       TuneConditionalCompressedMoveFusion,
+                                       TuneLUIADDIFusion,
+                                       TuneAUIPCADDIFusion,
+                                       TuneNoSinkSplatOperands,
+                                       FeaturePostRAScheduler]>;
+>>>>>>> 855eef2
 
 def SIFIVE_P670S : RISCVProcessorModel<"sifive-p670s", SiFiveP600Model,
                                        [Feature64Bit,

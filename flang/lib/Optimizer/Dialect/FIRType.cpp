@@ -1324,6 +1324,17 @@ fir::BaseBoxType::getBoxTypeWithNewShape(mlir::Type shapeMold) const {
   return mlir::cast<fir::BaseBoxType>(changeTypeShape(*this, newShape));
 }
 
+fir::BaseBoxType fir::BaseBoxType::getBoxTypeWithNewShape(int rank) const {
+  std::optional<fir::SequenceType::ShapeRef> newShape;
+  fir::SequenceType::Shape shapeVector;
+  if (rank > 0) {
+    shapeVector =
+        fir::SequenceType::Shape(rank, fir::SequenceType::getUnknownExtent());
+    newShape = shapeVector;
+  }
+  return mlir::cast<fir::BaseBoxType>(changeTypeShape(*this, newShape));
+}
+
 bool fir::BaseBoxType::isAssumedRank() const {
   if (auto seqTy =
           mlir::dyn_cast<fir::SequenceType>(fir::unwrapRefType(getEleTy())))
@@ -1340,7 +1351,7 @@ void FIROpsDialect::registerTypes() {
            fir::ComplexType, FieldType, HeapType, fir::IntegerType, LenType,
            LogicalType, LLVMPointerType, PointerType, RealType, RecordType,
            ReferenceType, SequenceType, ShapeType, ShapeShiftType, ShiftType,
-           SliceType, TypeDescType, fir::VectorType>();
+           SliceType, TypeDescType, fir::VectorType, fir::DummyScopeType>();
   fir::ReferenceType::attachInterface<
       OpenMPPointerLikeModel<fir::ReferenceType>>(*getContext());
   fir::ReferenceType::attachInterface<

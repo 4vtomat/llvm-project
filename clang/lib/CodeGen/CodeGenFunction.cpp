@@ -353,6 +353,12 @@ void CodeGenFunction::FinishFunction(SourceLocation EndLoc) {
   assert(DeferredDeactivationCleanupStack.empty() &&
          "mismatched activate/deactivate of cleanups!");
 
+  if (CGM.shouldEmitConvergenceTokens()) {
+    ConvergenceTokenStack.pop_back();
+    assert(ConvergenceTokenStack.empty() &&
+           "mismatched push/pop in convergence stack!");
+  }
+
   bool OnlySimpleReturnStmts = NumSimpleReturnExprs > 0
     && NumSimpleReturnExprs == NumReturnExprs
     && ReturnBlock.getBlock()->use_empty();
@@ -979,6 +985,7 @@ void CodeGenFunction::StartFunction(GlobalDecl GD, QualType RetTy,
     EmitKernelMetadata(FD, Fn);
   }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (FD) {
     if (FD->hasAttr<RISCVNoLandingPadAttr>()) {
@@ -997,6 +1004,12 @@ void CodeGenFunction::StartFunction(GlobalDecl GD, QualType RetTy,
       Fn->removeFnAttr(llvm::Attribute::ShadowCallStack);
   }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  if (FD && FD->hasAttr<ClspvLibclcBuiltinAttr>()) {
+    Fn->setMetadata("clspv_libclc_builtin",
+                    llvm::MDNode::get(getLLVMContext(), {}));
+  }
+>>>>>>> 855eef2
 
   // If we are checking function types, emit a function type signature as
   // prologue data.
@@ -1296,6 +1309,9 @@ void CodeGenFunction::StartFunction(GlobalDecl GD, QualType RetTy,
   if (CurFuncDecl)
     if (const auto *VecWidth = CurFuncDecl->getAttr<MinVectorWidthAttr>())
       LargestVectorWidth = VecWidth->getVectorWidth();
+
+  if (CGM.shouldEmitConvergenceTokens())
+    ConvergenceTokenStack.push_back(getOrEmitConvergenceEntryToken(CurFn));
 }
 
 void CodeGenFunction::EmitFunctionBody(const Stmt *Body) {
@@ -1490,6 +1506,8 @@ void CodeGenFunction::GenerateCode(GlobalDecl GD, llvm::Function *Fn,
 
   // Ensure that the function adheres to the forward progress guarantee, which
   // is required by certain optimizations.
+  // In C++11 and up, the attribute will be removed if the body contains a
+  // trivial empty loop.
   if (checkIfFunctionMustProgress())
     CurFn->addFnAttr(llvm::Attribute::MustProgress);
 
@@ -2481,11 +2499,11 @@ void CodeGenFunction::EmitVariablyModifiedType(QualType type) {
 Address CodeGenFunction::EmitVAListRef(const Expr* E) {
   if (getContext().getBuiltinVaListType()->isArrayType())
     return EmitPointerWithAlignment(E);
-  return EmitLValue(E).getAddress(*this);
+  return EmitLValue(E).getAddress();
 }
 
 Address CodeGenFunction::EmitMSVAListRef(const Expr *E) {
-  return EmitLValue(E).getAddress(*this);
+  return EmitLValue(E).getAddress();
 }
 
 void CodeGenFunction::EmitDeclRefExprDbgValue(const DeclRefExpr *E,
@@ -2778,8 +2796,13 @@ llvm::Value *CodeGenFunction::FormAArch64ResolverCondition(
     const MultiVersionResolverOption &RO) {
   llvm::SmallVector<StringRef, 8> CondFeatures;
   for (const StringRef &Feature : RO.Conditions.Features) {
-    // Form condition for features which are not yet enabled in target
-    if (!getContext().getTargetInfo().hasFeature(Feature))
+    // Optimize the Function Multi Versioning resolver by creating conditions
+    // only for features that are not enabled in the target. The exception is
+    // for features whose extension instructions are executed as NOP on targets
+    // without extension support.
+    if (!getContext().getTargetInfo().hasFeature(Feature) || Feature == "bti" ||
+        Feature == "memtag" || Feature == "memtag2" || Feature == "memtag3" ||
+        Feature == "dgh")
       CondFeatures.push_back(Feature);
   }
   if (!CondFeatures.empty()) {

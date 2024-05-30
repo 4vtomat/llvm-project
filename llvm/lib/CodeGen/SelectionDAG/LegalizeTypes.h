@@ -309,6 +309,7 @@ private:
   SDValue PromoteIntRes_CTLZ(SDNode *N);
   SDValue PromoteIntRes_CTPOP_PARITY(SDNode *N);
   SDValue PromoteIntRes_CTTZ(SDNode *N);
+  SDValue PromoteIntRes_VP_CttzElements(SDNode *N);
   SDValue PromoteIntRes_EXTRACT_VECTOR_ELT(SDNode *N);
   SDValue PromoteIntRes_FP_TO_XINT(SDNode *N);
   SDValue PromoteIntRes_FP_TO_XINT_SAT(SDNode *N);
@@ -571,6 +572,7 @@ private:
   SDValue SoftenFloatRes_FSUB(SDNode *N);
   SDValue SoftenFloatRes_FTRUNC(SDNode *N);
   SDValue SoftenFloatRes_LOAD(SDNode *N);
+  SDValue SoftenFloatRes_ATOMIC_LOAD(SDNode *N);
   SDValue SoftenFloatRes_SELECT(SDNode *N);
   SDValue SoftenFloatRes_SELECT_CC(SDNode *N);
   SDValue SoftenFloatRes_UNDEF(SDNode *N);
@@ -594,6 +596,7 @@ private:
   SDValue SoftenFloatOp_SELECT_CC(SDNode *N);
   SDValue SoftenFloatOp_SETCC(SDNode *N);
   SDValue SoftenFloatOp_STORE(SDNode *N, unsigned OpNo);
+  SDValue SoftenFloatOp_ATOMIC_STORE(SDNode *N, unsigned OpNo);
   SDValue SoftenFloatOp_FCOPYSIGN(SDNode *N);
 
   //===--------------------------------------------------------------------===//
@@ -712,6 +715,7 @@ private:
   SDValue PromoteFloatOp_UnaryOp(SDNode *N, unsigned OpNo);
   SDValue PromoteFloatOp_FP_TO_XINT_SAT(SDNode *N, unsigned OpNo);
   SDValue PromoteFloatOp_STORE(SDNode *N, unsigned OpNo);
+  SDValue PromoteFloatOp_ATOMIC_STORE(SDNode *N, unsigned OpNo);
   SDValue PromoteFloatOp_SELECT_CC(SDNode *N, unsigned OpNo);
   SDValue PromoteFloatOp_SETCC(SDNode *N, unsigned OpNo);
 
@@ -728,6 +732,7 @@ private:
   void SetSoftPromotedHalf(SDValue Op, SDValue Result);
 
   void SoftPromoteHalfResult(SDNode *N, unsigned ResNo);
+  SDValue SoftPromoteHalfRes_ARITH_FENCE(SDNode *N);
   SDValue SoftPromoteHalfRes_BinOp(SDNode *N);
   SDValue SoftPromoteHalfRes_BITCAST(SDNode *N);
   SDValue SoftPromoteHalfRes_ConstantFP(SDNode *N);
@@ -756,6 +761,7 @@ private:
   SDValue SoftPromoteHalfOp_SETCC(SDNode *N);
   SDValue SoftPromoteHalfOp_SELECT_CC(SDNode *N, unsigned OpNo);
   SDValue SoftPromoteHalfOp_STORE(SDNode *N, unsigned OpNo);
+  SDValue SoftPromoteHalfOp_ATOMIC_STORE(SDNode *N, unsigned OpNo);
   SDValue SoftPromoteHalfOp_STACKMAP(SDNode *N, unsigned OpNo);
   SDValue SoftPromoteHalfOp_PATCHPOINT(SDNode *N, unsigned OpNo);
 
@@ -785,6 +791,7 @@ private:
   SDValue ScalarizeVecRes_InregOp(SDNode *N);
   SDValue ScalarizeVecRes_VecInregOp(SDNode *N);
 
+  SDValue ScalarizeVecRes_ADDRSPACECAST(SDNode *N);
   SDValue ScalarizeVecRes_BITCAST(SDNode *N);
   SDValue ScalarizeVecRes_BUILD_VECTOR(SDNode *N);
   SDValue ScalarizeVecRes_EXTRACT_SUBVECTOR(SDNode *N);
@@ -852,6 +859,7 @@ private:
   void SplitVecRes_BinOp(SDNode *N, SDValue &Lo, SDValue &Hi);
   void SplitVecRes_TernaryOp(SDNode *N, SDValue &Lo, SDValue &Hi);
   void SplitVecRes_UnaryOp(SDNode *N, SDValue &Lo, SDValue &Hi);
+  void SplitVecRes_ADDRSPACECAST(SDNode *N, SDValue &Lo, SDValue &Hi);
   void SplitVecRes_FFREXP(SDNode *N, unsigned ResNo, SDValue &Lo, SDValue &Hi);
   void SplitVecRes_ExtendOp(SDNode *N, SDValue &Lo, SDValue &Hi);
   void SplitVecRes_InregOp(SDNode *N, SDValue &Lo, SDValue &Hi);
@@ -918,10 +926,14 @@ private:
   SDValue SplitVecOp_FP_ROUND(SDNode *N);
   SDValue SplitVecOp_FPOpDifferentTypes(SDNode *N);
   SDValue SplitVecOp_FP_TO_XINT_SAT(SDNode *N);
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   SDValue SplitVecOp_VP_FIRST(SDNode *N);
   SDValue SplitVecOp_VP_POPCOUNT(SDNode *N, unsigned OpNo);
 #endif
+=======
+  SDValue SplitVecOp_VP_CttzElements(SDNode *N);
+>>>>>>> 855eef2
 
   //===--------------------------------------------------------------------===//
   // Vector Widening Support: LegalizeVectorTypes.cpp
@@ -961,6 +973,7 @@ private:
   // Widen Vector Result Promotion.
   void WidenVectorResult(SDNode *N, unsigned ResNo);
   SDValue WidenVecRes_MERGE_VALUES(SDNode* N, unsigned ResNo);
+  SDValue WidenVecRes_ADDRSPACECAST(SDNode *N);
   SDValue WidenVecRes_AssertZext(SDNode* N);
   SDValue WidenVecRes_BITCAST(SDNode* N);
   SDValue WidenVecRes_BUILD_VECTOR(SDNode* N);
@@ -1029,9 +1042,13 @@ private:
   SDValue WidenVecOp_VECREDUCE_SEQ(SDNode *N);
   SDValue WidenVecOp_VP_REDUCE(SDNode *N);
   SDValue WidenVecOp_ExpOp(SDNode *N);
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   SDValue WidenVecOp_VP_FIRST_POPCOUNT(SDNode *N);
 #endif
+=======
+  SDValue WidenVecOp_VP_CttzElements(SDNode *N);
+>>>>>>> 855eef2
 
   /// Helper function to generate a set of operations to perform
   /// a vector operation for a wider type.

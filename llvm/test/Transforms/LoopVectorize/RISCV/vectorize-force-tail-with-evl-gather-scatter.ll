@@ -12,6 +12,7 @@
 define void @gather_scatter(ptr noalias %in, ptr noalias %out, ptr noalias %index, i64 %n) {
 ; IF-EVL-LABEL: @gather_scatter(
 ; IF-EVL-NEXT:  entry:
+<<<<<<< HEAD
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
@@ -37,18 +38,20 @@ define void @gather_scatter(ptr noalias %in, ptr noalias %out, ptr noalias %inde
 ; IF-EVL-NEXT:    br label [[FOR_END:%.*]]
 ; IF-EVL:       scalar.ph:
 ; IF-EVL-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
+=======
+>>>>>>> 855eef2
 ; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
 ; IF-EVL:       for.body:
-; IF-EVL-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
-; IF-EVL-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i32, ptr [[INDEX]], i64 [[INDVARS_IV]]
-; IF-EVL-NEXT:    [[TMP25:%.*]] = load i64, ptr [[ARRAYIDX3]], align 8
-; IF-EVL-NEXT:    [[ARRAYIDX5:%.*]] = getelementptr inbounds float, ptr [[IN]], i64 [[TMP25]]
-; IF-EVL-NEXT:    [[TMP26:%.*]] = load float, ptr [[ARRAYIDX5]], align 4
-; IF-EVL-NEXT:    [[ARRAYIDX7:%.*]] = getelementptr inbounds float, ptr [[OUT]], i64 [[TMP25]]
-; IF-EVL-NEXT:    store float [[TMP26]], ptr [[ARRAYIDX7]], align 4
+; IF-EVL-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
+; IF-EVL-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds i32, ptr [[INDEX:%.*]], i64 [[INDVARS_IV]]
+; IF-EVL-NEXT:    [[TMP0:%.*]] = load i64, ptr [[ARRAYIDX3]], align 8
+; IF-EVL-NEXT:    [[ARRAYIDX5:%.*]] = getelementptr inbounds float, ptr [[IN:%.*]], i64 [[TMP0]]
+; IF-EVL-NEXT:    [[TMP1:%.*]] = load float, ptr [[ARRAYIDX5]], align 4
+; IF-EVL-NEXT:    [[ARRAYIDX7:%.*]] = getelementptr inbounds float, ptr [[OUT:%.*]], i64 [[TMP0]]
+; IF-EVL-NEXT:    store float [[TMP1]], ptr [[ARRAYIDX7]], align 4
 ; IF-EVL-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
-; IF-EVL-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
-; IF-EVL-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; IF-EVL-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N:%.*]]
+; IF-EVL-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END:%.*]], label [[FOR_BODY]]
 ; IF-EVL:       for.end:
 ; IF-EVL-NEXT:    ret void
 ;

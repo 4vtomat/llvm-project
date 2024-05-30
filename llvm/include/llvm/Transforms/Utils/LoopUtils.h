@@ -398,6 +398,7 @@ RecurKind getMinMaxReductionRecurKind(Intrinsic::ID RdxID);
 /// Returns the comparison predicate used when expanding a min/max reduction.
 CmpInst::Predicate getMinMaxReductionPredicate(RecurKind RK);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 /// See RecurrenceDescriptor::isFindLastIVPattern for a description of the
 /// pattern we are trying to match. In this pattern, since the selected set of
@@ -415,6 +416,8 @@ Value *createFindLastIVOp(IRBuilderBase &Builder, Value *Left, Value *Right);
 Value *createAnyOfOp(IRBuilderBase &Builder, Value *StartVal, RecurKind RK,
                      Value *Left, Value *Right);
 
+=======
+>>>>>>> 855eef2
 /// Returns a Min/Max operation corresponding to MinMaxRecurrenceKind.
 /// The Builder's fast-math-flags must be set to propagate the expected values.
 Value *createMinMaxOp(IRBuilderBase &Builder, RecurKind RK, Value *Left,

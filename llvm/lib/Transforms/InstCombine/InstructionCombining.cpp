@@ -811,9 +811,12 @@ Instruction *InstCombinerImpl::tryFoldInstWithCtpopWithNot(Instruction *I) {
   Constant *BitWidthC = ConstantInt::get(Ty, Ty->getScalarSizeInBits());
   // Need extra check for icmp. Note if this check is true, it generally means
   // the icmp will simplify to true/false.
-  if (Opc == Instruction::ICmp && !cast<ICmpInst>(I)->isEquality() &&
-      !ConstantExpr::getICmp(ICmpInst::ICMP_UGT, C, BitWidthC)->isZeroValue())
-    return nullptr;
+  if (Opc == Instruction::ICmp && !cast<ICmpInst>(I)->isEquality()) {
+    Constant *Cmp =
+        ConstantFoldCompareInstOperands(ICmpInst::ICMP_UGT, C, BitWidthC, DL);
+    if (!Cmp || !Cmp->isZeroValue())
+      return nullptr;
+  }
 
   // Check we can invert `(not x)` for free.
   bool Consumes = false;
@@ -2714,7 +2717,6 @@ Instruction *InstCombinerImpl::visitGetElementPtrInst(GetElementPtrInst &GEP) {
   SmallVector<Value *, 8> Indices(GEP.indices());
   Type *GEPType = GEP.getType();
   Type *GEPEltType = GEP.getSourceElementType();
-  bool IsGEPSrcEleScalable = GEPEltType->isScalableTy();
   if (Value *V = simplifyGEPInst(GEPEltType, PtrOp, Indices, GEP.isInBounds(),
                                  SQ.getWithInstruction(&GEP)))
     return replaceInstUsesWith(GEP, V);
@@ -2794,6 +2796,14 @@ Instruction *InstCombinerImpl::visitGetElementPtrInst(GetElementPtrInst &GEP) {
       return replaceInstUsesWith(
           GEP, Builder.CreatePtrAdd(PtrOp, Builder.getInt(Offset), "",
                                     GEP.isInBounds()));
+  }
+
+  // Canonicalize scalable GEPs to an explicit offset using the llvm.vscale
+  // intrinsic. This has better support in BasicAA.
+  if (GEPEltType->isScalableTy()) {
+    Value *Offset = EmitGEPOffset(cast<GEPOperator>(&GEP));
+    return replaceInstUsesWith(
+        GEP, Builder.CreatePtrAdd(PtrOp, Offset, "", GEP.isInBounds()));
   }
 
   // Check to see if the inputs to the PHI node are getelementptr instructions.
@@ -2905,9 +2915,7 @@ Instruction *InstCombinerImpl::visitGetElementPtrInst(GetElementPtrInst &GEP) {
     if (Instruction *I = visitGEPOfGEP(GEP, Src))
       return I;
 
-  // Skip if GEP source element type is scalable. The type alloc size is unknown
-  // at compile-time.
-  if (GEP.getNumIndices() == 1 && !IsGEPSrcEleScalable) {
+  if (GEP.getNumIndices() == 1) {
     unsigned AS = GEP.getPointerAddressSpace();
     if (GEP.getOperand(1)->getType()->getScalarSizeInBits() ==
         DL.getIndexSizeInBits(AS)) {
@@ -5001,31 +5009,24 @@ bool InstCombinerImpl::run() {
       BasicBlock *UserParent = nullptr;
       unsigned NumUsers = 0;
 
-      for (auto *U : I->users()) {
-        if (U->isDroppable())
+      for (Use &U : I->uses()) {
+        User *User = U.getUser();
+        if (User->isDroppable())
           continue;
         if (NumUsers > MaxSinkNumUsers)
           return std::nullopt;
 
-        Instruction *UserInst = cast<Instruction>(U);
+        Instruction *UserInst = cast<Instruction>(User);
         // Special handling for Phi nodes - get the block the use occurs in.
-        if (PHINode *PN = dyn_cast<PHINode>(UserInst)) {
-          for (unsigned i = 0; i < PN->getNumIncomingValues(); i++) {
-            if (PN->getIncomingValue(i) == I) {
-              // Bail out if we have uses in different blocks. We don't do any
-              // sophisticated analysis (i.e finding NearestCommonDominator of
-              // these use blocks).
-              if (UserParent && UserParent != PN->getIncomingBlock(i))
-                return std::nullopt;
-              UserParent = PN->getIncomingBlock(i);
-            }
-          }
-          assert(UserParent && "expected to find user block!");
-        } else {
-          if (UserParent && UserParent != UserInst->getParent())
-            return std::nullopt;
-          UserParent = UserInst->getParent();
-        }
+        BasicBlock *UserBB = UserInst->getParent();
+        if (PHINode *PN = dyn_cast<PHINode>(UserInst))
+          UserBB = PN->getIncomingBlock(U);
+        // Bail out if we have uses in different blocks. We don't do any
+        // sophisticated analysis (i.e finding NearestCommonDominator of these
+        // use blocks).
+        if (UserParent && UserParent != UserBB)
+          return std::nullopt;
+        UserParent = UserBB;
 
         // Make sure these checks are done only once, naturally we do the checks
         // the first time we get the userparent, this will save compile time.

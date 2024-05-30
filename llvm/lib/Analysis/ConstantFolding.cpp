@@ -880,7 +880,6 @@ Constant *SymbolicallyEvaluateGEP(const GEPOperator *GEP,
   bool InBounds = GEP->isInBounds();
 
   Type *SrcElemTy = GEP->getSourceElementType();
-  Type *ResElemTy = GEP->getResultElementType();
   Type *ResTy = GEP->getType();
   if (!SrcElemTy->isSized() || isa<ScalableVectorType>(SrcElemTy))
     return nullptr;
@@ -955,43 +954,18 @@ Constant *SymbolicallyEvaluateGEP(const GEPOperator *GEP,
     return ConstantExpr::getIntToPtr(C, ResTy);
   }
 
-  // Otherwise form a regular getelementptr. Recompute the indices so that
-  // we eliminate over-indexing of the notional static type array bounds.
-  // This makes it easy to determine if the getelementptr is "inbounds".
-
-  // For GEPs of GlobalValues, use the value type, otherwise use an i8 GEP.
-  if (auto *GV = dyn_cast<GlobalValue>(Ptr))
-    SrcElemTy = GV->getValueType();
-  else
-    SrcElemTy = Type::getInt8Ty(Ptr->getContext());
-
-  if (!SrcElemTy->isSized())
-    return nullptr;
-
-  Type *ElemTy = SrcElemTy;
-  SmallVector<APInt> Indices = DL.getGEPIndicesForOffset(ElemTy, Offset);
-  if (Offset != 0)
-    return nullptr;
-
-  // Try to add additional zero indices to reach the desired result element
-  // type.
-  // TODO: Should we avoid extra zero indices if ResElemTy can't be reached and
-  // we'll have to insert a bitcast anyway?
-  while (ElemTy != ResElemTy) {
-    Type *NextTy = GetElementPtrInst::getTypeAtIndex(ElemTy, (uint64_t)0);
-    if (!NextTy)
-      break;
-
-    Indices.push_back(APInt::getZero(isa<StructType>(ElemTy) ? 32 : BitWidth));
-    ElemTy = NextTy;
+  // Try to infer inbounds for GEPs of globals.
+  if (!InBounds && Offset.isNonNegative()) {
+    bool CanBeNull, CanBeFreed;
+    uint64_t DerefBytes =
+        Ptr->getPointerDereferenceableBytes(DL, CanBeNull, CanBeFreed);
+    InBounds = DerefBytes != 0 && !CanBeNull && Offset.sle(DerefBytes);
   }
 
-  SmallVector<Constant *, 32> NewIdxs;
-  for (const APInt &Index : Indices)
-    NewIdxs.push_back(ConstantInt::get(
-        Type::getIntNTy(Ptr->getContext(), Index.getBitWidth()), Index));
-
-  return ConstantExpr::getGetElementPtr(SrcElemTy, Ptr, NewIdxs, InBounds,
+  // Otherwise canonicalize this to a single ptradd.
+  LLVMContext &Ctx = Ptr->getContext();
+  return ConstantExpr::getGetElementPtr(Type::getInt8Ty(Ctx), Ptr,
+                                        ConstantInt::get(Ctx, Offset), InBounds,
                                         InRange);
 }
 
@@ -1003,7 +977,8 @@ Constant *SymbolicallyEvaluateGEP(const GEPOperator *GEP,
 Constant *ConstantFoldInstOperandsImpl(const Value *InstOrCE, unsigned Opcode,
                                        ArrayRef<Constant *> Ops,
                                        const DataLayout &DL,
-                                       const TargetLibraryInfo *TLI) {
+                                       const TargetLibraryInfo *TLI,
+                                       bool AllowNonDeterministic) {
   Type *DestTy = InstOrCE->getType();
 
   if (Instruction::isUnaryOp(Opcode))
@@ -1022,7 +997,8 @@ Constant *ConstantFoldInstOperandsImpl(const Value *InstOrCE, unsigned Opcode,
       // TODO: If a constant expression is being folded rather than an
       // instruction, denormals will not be flushed/treated as zero
       if (const auto *I = dyn_cast<Instruction>(InstOrCE)) {
-        return ConstantFoldFPInstOperands(Opcode, Ops[0], Ops[1], DL, I);
+        return ConstantFoldFPInstOperands(Opcode, Ops[0], Ops[1], DL, I,
+                                          AllowNonDeterministic);
       }
     }
     return ConstantFoldBinaryOpOperands(Opcode, Ops[0], Ops[1], DL);
@@ -1040,7 +1016,8 @@ Constant *ConstantFoldInstOperandsImpl(const Value *InstOrCE, unsigned Opcode,
       return C;
 
     return ConstantExpr::getGetElementPtr(SrcElemTy, Ops[0], Ops.slice(1),
-                                          GEP->isInBounds(), GEP->getInRange());
+                                          GEP->getNoWrapFlags(),
+                                          GEP->getInRange());
   }
 
   if (auto *CE = dyn_cast<ConstantExpr>(InstOrCE)) {
@@ -1064,7 +1041,8 @@ Constant *ConstantFoldInstOperandsImpl(const Value *InstOrCE, unsigned Opcode,
     if (auto *F = dyn_cast<Function>(Ops.back())) {
       const auto *Call = cast<CallBase>(InstOrCE);
       if (canConstantFoldCallTo(Call, F))
-        return ConstantFoldCall(Call, F, Ops.slice(0, Ops.size() - 1), TLI);
+        return ConstantFoldCall(Call, F, Ops.slice(0, Ops.size() - 1), TLI,
+                                AllowNonDeterministic);
     }
     return nullptr;
   case Instruction::Select:
@@ -1125,8 +1103,8 @@ ConstantFoldConstantImpl(const Constant *C, const DataLayout &DL,
   }
 
   if (auto *CE = dyn_cast<ConstantExpr>(C)) {
-    if (Constant *Res =
-            ConstantFoldInstOperandsImpl(CE, CE->getOpcode(), Ops, DL, TLI))
+    if (Constant *Res = ConstantFoldInstOperandsImpl(
+            CE, CE->getOpcode(), Ops, DL, TLI, /*AllowNonDeterministic=*/true))
       return Res;
     return const_cast<Constant *>(C);
   }
@@ -1194,8 +1172,10 @@ Constant *llvm::ConstantFoldConstant(const Constant *C, const DataLayout &DL,
 Constant *llvm::ConstantFoldInstOperands(Instruction *I,
                                          ArrayRef<Constant *> Ops,
                                          const DataLayout &DL,
-                                         const TargetLibraryInfo *TLI) {
-  return ConstantFoldInstOperandsImpl(I, I->getOpcode(), Ops, DL, TLI);
+                                         const TargetLibraryInfo *TLI,
+                                         bool AllowNonDeterministic) {
+  return ConstantFoldInstOperandsImpl(I, I->getOpcode(), Ops, DL, TLI,
+                                      AllowNonDeterministic);
 }
 
 Constant *llvm::ConstantFoldCompareInstOperands(
@@ -1279,10 +1259,10 @@ Constant *llvm::ConstantFoldCompareInstOperands(
       Value *Stripped1 =
           Ops1->stripAndAccumulateInBoundsConstantOffsets(DL, Offset1);
       if (Stripped0 == Stripped1)
-        return ConstantExpr::getCompare(
-            ICmpInst::getSignedPredicate(Predicate),
-            ConstantInt::get(CE0->getContext(), Offset0),
-            ConstantInt::get(CE0->getContext(), Offset1));
+        return ConstantInt::getBool(
+            Ops0->getContext(),
+            ICmpInst::compare(Offset0, Offset1,
+                              ICmpInst::getSignedPredicate(Predicate)));
     }
   } else if (isa<ConstantExpr>(Ops1)) {
     // If RHS is a constant expression, but the left side isn't, swap the
@@ -1368,7 +1348,8 @@ Constant *llvm::FlushFPConstant(Constant *Operand, const Instruction *I,
 
 Constant *llvm::ConstantFoldFPInstOperands(unsigned Opcode, Constant *LHS,
                                            Constant *RHS, const DataLayout &DL,
-                                           const Instruction *I) {
+                                           const Instruction *I,
+                                           bool AllowNonDeterministic) {
   if (Instruction::isBinaryOp(Opcode)) {
     // Flush denormal inputs if needed.
     Constant *Op0 = FlushFPConstant(LHS, I, /* IsOutput */ false);
@@ -1378,13 +1359,30 @@ Constant *llvm::ConstantFoldFPInstOperands(unsigned Opcode, Constant *LHS,
     if (!Op1)
       return nullptr;
 
+    // If nsz or an algebraic FMF flag is set, the result of the FP operation
+    // may change due to future optimization. Don't constant fold them if
+    // non-deterministic results are not allowed.
+    if (!AllowNonDeterministic)
+      if (auto *FP = dyn_cast_or_null<FPMathOperator>(I))
+        if (FP->hasNoSignedZeros() || FP->hasAllowReassoc() ||
+            FP->hasAllowContract() || FP->hasAllowReciprocal())
+          return nullptr;
+
     // Calculate constant result.
     Constant *C = ConstantFoldBinaryOpOperands(Opcode, Op0, Op1, DL);
     if (!C)
       return nullptr;
 
     // Flush denormal output if needed.
-    return FlushFPConstant(C, I, /* IsOutput */ true);
+    C = FlushFPConstant(C, I, /* IsOutput */ true);
+    if (!C)
+      return nullptr;
+
+    // The precise NaN value is non-deterministic.
+    if (!AllowNonDeterministic && C->isNaN())
+      return nullptr;
+
+    return C;
   }
   // If instruction lacks a parent/function and the denormal mode cannot be
   // determined, use the default (IEEE).
@@ -3448,7 +3446,8 @@ Constant *llvm::ConstantFoldBinaryIntrinsic(Intrinsic::ID ID, Constant *LHS,
 
 Constant *llvm::ConstantFoldCall(const CallBase *Call, Function *F,
                                  ArrayRef<Constant *> Operands,
-                                 const TargetLibraryInfo *TLI) {
+                                 const TargetLibraryInfo *TLI,
+                                 bool AllowNonDeterministic) {
   if (Call->isNoBuiltin())
     return nullptr;
   if (!F->hasName())
@@ -3464,8 +3463,13 @@ Constant *llvm::ConstantFoldCall(const CallBase *Call, Function *F,
       return nullptr;
   }
 
-  StringRef Name = F->getName();
+  // Conservatively assume that floating-point libcalls may be
+  // non-deterministic.
   Type *Ty = F->getReturnType();
+  if (!AllowNonDeterministic && Ty->isFPOrFPVectorTy())
+    return nullptr;
+
+  StringRef Name = F->getName();
   if (auto *FVTy = dyn_cast<FixedVectorType>(Ty))
     return ConstantFoldFixedVectorCall(
         Name, IID, FVTy, Operands, F->getParent()->getDataLayout(), TLI, Call);

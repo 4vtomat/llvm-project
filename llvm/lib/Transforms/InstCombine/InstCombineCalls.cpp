@@ -739,6 +739,13 @@ static Instruction *foldCttzCtlz(IntrinsicInst &II, InstCombinerImpl &IC) {
           IC.Builder.CreateBinaryIntrinsic(Intrinsic::cttz, C, Op1);
       return BinaryOperator::CreateSub(ConstCttz, X);
     }
+
+    // cttz(add(lshr(UINT_MAX, %val), 1)) --> sub(width, %val)
+    if (match(Op0, m_Add(m_LShr(m_AllOnes(), m_Value(X)), m_One()))) {
+      Value *Width =
+          ConstantInt::get(II.getType(), II.getType()->getScalarSizeInBits());
+      return BinaryOperator::CreateSub(Width, X);
+    }
   } else {
     // ctlz(lshr(%const, %val), 1) --> add(ctlz(%const, 1), %val)
     if (match(Op0, m_LShr(m_ImmConstant(C), m_Value(X))) &&
@@ -1605,6 +1612,7 @@ static Instruction *foldBitOrderCrossLogicOp(Value *V,
   return nullptr;
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static bool canEvaluateVPReversed(Value *V, Value *VL, unsigned Depth = 5) {
   // Splats can be freely reversed.
@@ -1751,6 +1759,34 @@ static Value *simplifyUsingEVL(Value *V, Value *EVL, IRBuilderBase &Builder) {
   return Res;
 }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+static Value *simplifyReductionOperand(Value *Arg, bool CanReorderLanes) {
+  if (!CanReorderLanes)
+    return nullptr;
+
+  Value *V;
+  if (match(Arg, m_VecReverse(m_Value(V))))
+    return V;
+
+  ArrayRef<int> Mask;
+  if (!isa<FixedVectorType>(Arg->getType()) ||
+      !match(Arg, m_Shuffle(m_Value(V), m_Undef(), m_Mask(Mask))) ||
+      !cast<ShuffleVectorInst>(Arg)->isSingleSource())
+    return nullptr;
+
+  int Sz = Mask.size();
+  SmallBitVector UsedIndices(Sz);
+  for (int Idx : Mask) {
+    if (Idx == PoisonMaskElem || UsedIndices.test(Idx))
+      return nullptr;
+    UsedIndices.set(Idx);
+  }
+
+  // Can remove shuffle iff just shuffled elements, no repeats, undefs, or
+  // other changes.
+  return UsedIndices.all() ? V : nullptr;
+}
+>>>>>>> 855eef2
 
 /// CallInst simplification. This mostly only handles folding of intrinsic
 /// instructions. For normal calls, it allows visitCallBase to do the heavy
@@ -2316,7 +2352,8 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
       if (ModuloC != ShAmtC)
         return replaceOperand(*II, 2, ModuloC);
 
-      assert(match(ConstantExpr::getICmp(ICmpInst::ICMP_UGT, WidthC, ShAmtC),
+      assert(match(ConstantFoldCompareInstOperands(ICmpInst::ICMP_UGT, WidthC,
+                                                   ShAmtC, DL),
                    m_One()) &&
              "Shift amount expected to be modulo bitwidth");
 
@@ -2735,17 +2772,6 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     break;
   }
   case Intrinsic::fmuladd: {
-    // Canonicalize fast fmuladd to the separate fmul + fadd.
-    if (II->isFast()) {
-      BuilderTy::FastMathFlagGuard Guard(Builder);
-      Builder.setFastMathFlags(II->getFastMathFlags());
-      Value *Mul = Builder.CreateFMul(II->getArgOperand(0),
-                                      II->getArgOperand(1));
-      Value *Add = Builder.CreateFAdd(Mul, II->getArgOperand(2));
-      Add->takeName(II);
-      return replaceInstUsesWith(*II, Add);
-    }
-
     // Try to simplify the underlying FMul.
     if (Value *V = simplifyFMulInst(II->getArgOperand(0), II->getArgOperand(1),
                                     II->getFastMathFlags(),
@@ -3668,6 +3694,13 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     // %res = cmp eq iReduxWidth %val, 11111
     Value *Arg = II->getArgOperand(0);
     Value *Vect;
+
+    if (Value *NewOp =
+            simplifyReductionOperand(Arg, /*CanReorderLanes=*/true)) {
+      replaceUse(II->getOperandUse(0), NewOp);
+      return II;
+    }
+
     if (match(Arg, m_ZExtOrSExtOrSelf(m_Value(Vect)))) {
       if (auto *FTy = dyn_cast<FixedVectorType>(Vect->getType()))
         if (FTy->getElementType() == Builder.getInt1Ty()) {
@@ -3703,6 +3736,13 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
       // Trunc(ctpop(bitcast <n x i1> to in)).
       Value *Arg = II->getArgOperand(0);
       Value *Vect;
+
+      if (Value *NewOp =
+              simplifyReductionOperand(Arg, /*CanReorderLanes=*/true)) {
+        replaceUse(II->getOperandUse(0), NewOp);
+        return II;
+      }
+
       if (match(Arg, m_ZExtOrSExtOrSelf(m_Value(Vect)))) {
         if (auto *FTy = dyn_cast<FixedVectorType>(Vect->getType()))
           if (FTy->getElementType() == Builder.getInt1Ty()) {
@@ -3731,6 +3771,13 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
       //   ?ext(vector_reduce_add(<n x i1>))
       Value *Arg = II->getArgOperand(0);
       Value *Vect;
+
+      if (Value *NewOp =
+              simplifyReductionOperand(Arg, /*CanReorderLanes=*/true)) {
+        replaceUse(II->getOperandUse(0), NewOp);
+        return II;
+      }
+
       if (match(Arg, m_ZExtOrSExtOrSelf(m_Value(Vect)))) {
         if (auto *FTy = dyn_cast<FixedVectorType>(Vect->getType()))
           if (FTy->getElementType() == Builder.getInt1Ty()) {
@@ -3754,6 +3801,13 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
       //   zext(vector_reduce_and(<n x i1>))
       Value *Arg = II->getArgOperand(0);
       Value *Vect;
+
+      if (Value *NewOp =
+              simplifyReductionOperand(Arg, /*CanReorderLanes=*/true)) {
+        replaceUse(II->getOperandUse(0), NewOp);
+        return II;
+      }
+
       if (match(Arg, m_ZExtOrSExtOrSelf(m_Value(Vect)))) {
         if (auto *FTy = dyn_cast<FixedVectorType>(Vect->getType()))
           if (FTy->getElementType() == Builder.getInt1Ty()) {
@@ -3778,6 +3832,13 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
       //   ?ext(vector_reduce_{and,or}(<n x i1>))
       Value *Arg = II->getArgOperand(0);
       Value *Vect;
+
+      if (Value *NewOp =
+              simplifyReductionOperand(Arg, /*CanReorderLanes=*/true)) {
+        replaceUse(II->getOperandUse(0), NewOp);
+        return II;
+      }
+
       if (match(Arg, m_ZExtOrSExtOrSelf(m_Value(Vect)))) {
         if (auto *FTy = dyn_cast<FixedVectorType>(Vect->getType()))
           if (FTy->getElementType() == Builder.getInt1Ty()) {
@@ -3813,6 +3874,13 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
       //   zext(vector_reduce_{and,or}(<n x i1>))
       Value *Arg = II->getArgOperand(0);
       Value *Vect;
+
+      if (Value *NewOp =
+              simplifyReductionOperand(Arg, /*CanReorderLanes=*/true)) {
+        replaceUse(II->getOperandUse(0), NewOp);
+        return II;
+      }
+
       if (match(Arg, m_ZExtOrSExtOrSelf(m_Value(Vect)))) {
         if (auto *FTy = dyn_cast<FixedVectorType>(Vect->getType()))
           if (FTy->getElementType() == Builder.getInt1Ty()) {
@@ -3835,6 +3903,7 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
   case Intrinsic::vector_reduce_fmin:
   case Intrinsic::vector_reduce_fadd:
   case Intrinsic::vector_reduce_fmul: {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (Value *Res = simplifyVectorReductionTree(CI))
       return replaceInstUsesWith(CI, Res);
@@ -3842,28 +3911,18 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     bool CanBeReassociated = (IID != Intrinsic::vector_reduce_fadd &&
                               IID != Intrinsic::vector_reduce_fmul) ||
                              II->hasAllowReassoc();
+=======
+    bool CanReorderLanes = (IID != Intrinsic::vector_reduce_fadd &&
+                            IID != Intrinsic::vector_reduce_fmul) ||
+                           II->hasAllowReassoc();
+>>>>>>> 855eef2
     const unsigned ArgIdx = (IID == Intrinsic::vector_reduce_fadd ||
                              IID == Intrinsic::vector_reduce_fmul)
                                 ? 1
                                 : 0;
     Value *Arg = II->getArgOperand(ArgIdx);
-    Value *V;
-    ArrayRef<int> Mask;
-    if (!isa<FixedVectorType>(Arg->getType()) || !CanBeReassociated ||
-        !match(Arg, m_Shuffle(m_Value(V), m_Undef(), m_Mask(Mask))) ||
-        !cast<ShuffleVectorInst>(Arg)->isSingleSource())
-      break;
-    int Sz = Mask.size();
-    SmallBitVector UsedIndices(Sz);
-    for (int Idx : Mask) {
-      if (Idx == PoisonMaskElem || UsedIndices.test(Idx))
-        break;
-      UsedIndices.set(Idx);
-    }
-    // Can remove shuffle iff just shuffled elements, no repeats, undefs, or
-    // other changes.
-    if (UsedIndices.all()) {
-      replaceUse(II->getOperandUse(ArgIdx), V);
+    if (Value *NewOp = simplifyReductionOperand(Arg, CanReorderLanes)) {
+      replaceUse(II->getOperandUse(ArgIdx), NewOp);
       return nullptr;
     }
     break;

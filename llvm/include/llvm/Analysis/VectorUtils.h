@@ -103,6 +103,7 @@ public:
   VFDatabase(CallInst &CI)
       : M(CI.getModule()), CI(CI),
         ScalarToVectorMappings(VFDatabase::getMappings(CI)) {}
+
   /// \defgroup VFDatabase query interface.
   ///
   /// @{
@@ -904,9 +905,11 @@ private:
   void collectDependences() {
     if (!areDependencesValid())
       return;
-    auto *Deps = LAI->getDepChecker().getDependences();
+    const auto &DepChecker = LAI->getDepChecker();
+    auto *Deps = DepChecker.getDependences();
     for (auto Dep : *Deps)
-      Dependences[Dep.getSource(*LAI)].insert(Dep.getDestination(*LAI));
+      Dependences[Dep.getSource(DepChecker)].insert(
+          Dep.getDestination(DepChecker));
   }
 };
 

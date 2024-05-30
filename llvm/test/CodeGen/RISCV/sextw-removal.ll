@@ -1027,6 +1027,7 @@ define signext i32 @bug(i32 signext %x) {
 ; CHECK-NEXT:    srli a1, a0, 16
 ; CHECK-NEXT:    beqz a1, .LBB18_3
 ; CHECK-NEXT:  # %bb.2: # %if.end
+<<<<<<< HEAD
 ; CHECK-NEXT:    li a1, 32
 ; CHECK-NEXT:    j .LBB18_4
 ; CHECK-NEXT:  .LBB18_3:
@@ -1062,6 +1063,35 @@ define signext i32 @bug(i32 signext %x) {
 ; CHECK-NEXT:    not a0, a0
 ; CHECK-NEXT:    addw a0, a1, a0
 ; CHECK-NEXT:  .LBB18_9: # %cleanup
+=======
+; CHECK-NEXT:    li a0, 32
+; CHECK-NEXT:  .LBB18_3: # %if.end
+; CHECK-NEXT:    srliw a2, a1, 24
+; CHECK-NEXT:    seqz a2, a2
+; CHECK-NEXT:    slli a3, a2, 3
+; CHECK-NEXT:    sllw a1, a1, a3
+; CHECK-NEXT:    negw a2, a2
+; CHECK-NEXT:    andi a2, a2, -8
+; CHECK-NEXT:    add a0, a0, a2
+; CHECK-NEXT:    srliw a2, a1, 28
+; CHECK-NEXT:    seqz a2, a2
+; CHECK-NEXT:    slli a3, a2, 2
+; CHECK-NEXT:    sllw a1, a1, a3
+; CHECK-NEXT:    negw a2, a2
+; CHECK-NEXT:    andi a2, a2, -4
+; CHECK-NEXT:    add a0, a0, a2
+; CHECK-NEXT:    srliw a2, a1, 30
+; CHECK-NEXT:    seqz a2, a2
+; CHECK-NEXT:    slli a3, a2, 1
+; CHECK-NEXT:    sllw a1, a1, a3
+; CHECK-NEXT:    negw a2, a2
+; CHECK-NEXT:    andi a2, a2, -2
+; CHECK-NEXT:    add a0, a0, a2
+; CHECK-NEXT:    not a1, a1
+; CHECK-NEXT:    srli a1, a1, 31
+; CHECK-NEXT:    addw a0, a0, a1
+; CHECK-NEXT:  .LBB18_4: # %cleanup
+>>>>>>> 855eef2
 ; CHECK-NEXT:    ret
 ;
 ; NOREMOVAL-LABEL: bug:
@@ -1071,6 +1101,7 @@ define signext i32 @bug(i32 signext %x) {
 ; NOREMOVAL-NEXT:    srli a1, a0, 16
 ; NOREMOVAL-NEXT:    beqz a1, .LBB18_3
 ; NOREMOVAL-NEXT:  # %bb.2: # %if.end
+<<<<<<< HEAD
 ; NOREMOVAL-NEXT:    li a1, 32
 ; NOREMOVAL-NEXT:    j .LBB18_4
 ; NOREMOVAL-NEXT:  .LBB18_3:
@@ -1107,6 +1138,35 @@ define signext i32 @bug(i32 signext %x) {
 ; NOREMOVAL-NEXT:    add a0, a1, a0
 ; NOREMOVAL-NEXT:  .LBB18_9: # %cleanup
 ; NOREMOVAL-NEXT:    sext.w a0, a0
+=======
+; NOREMOVAL-NEXT:    li a0, 32
+; NOREMOVAL-NEXT:  .LBB18_3: # %if.end
+; NOREMOVAL-NEXT:    srliw a2, a1, 24
+; NOREMOVAL-NEXT:    seqz a2, a2
+; NOREMOVAL-NEXT:    slli a3, a2, 3
+; NOREMOVAL-NEXT:    sllw a1, a1, a3
+; NOREMOVAL-NEXT:    negw a2, a2
+; NOREMOVAL-NEXT:    andi a2, a2, -8
+; NOREMOVAL-NEXT:    add a0, a0, a2
+; NOREMOVAL-NEXT:    srliw a2, a1, 28
+; NOREMOVAL-NEXT:    seqz a2, a2
+; NOREMOVAL-NEXT:    slli a3, a2, 2
+; NOREMOVAL-NEXT:    sllw a1, a1, a3
+; NOREMOVAL-NEXT:    negw a2, a2
+; NOREMOVAL-NEXT:    andi a2, a2, -4
+; NOREMOVAL-NEXT:    add a0, a0, a2
+; NOREMOVAL-NEXT:    srliw a2, a1, 30
+; NOREMOVAL-NEXT:    seqz a2, a2
+; NOREMOVAL-NEXT:    slli a3, a2, 1
+; NOREMOVAL-NEXT:    sllw a1, a1, a3
+; NOREMOVAL-NEXT:    negw a2, a2
+; NOREMOVAL-NEXT:    andi a2, a2, -2
+; NOREMOVAL-NEXT:    add a0, a0, a2
+; NOREMOVAL-NEXT:    not a1, a1
+; NOREMOVAL-NEXT:    srli a1, a1, 31
+; NOREMOVAL-NEXT:    addw a0, a0, a1
+; NOREMOVAL-NEXT:  .LBB18_4: # %cleanup
+>>>>>>> 855eef2
 ; NOREMOVAL-NEXT:    ret
 entry:
   %tobool.not = icmp eq i32 %x, 0

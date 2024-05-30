@@ -1847,9 +1847,9 @@ define float @vreduce_fminimum_v128f32(ptr %x) {
 ; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * vlenb
 ; CHECK-NEXT:    li a1, 32
+; CHECK-NEXT:    addi a2, a0, 128
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m8, ta, ma
-; CHECK-NEXT:    addi a1, a0, 128
-; CHECK-NEXT:    vle32.v v16, (a1)
+; CHECK-NEXT:    vle32.v v16, (a2)
 ; CHECK-NEXT:    addi a1, a0, 384
 ; CHECK-NEXT:    vle32.v v8, (a1)
 ; CHECK-NEXT:    addi a1, a0, 256
@@ -2182,8 +2182,8 @@ define double @vreduce_fminimum_v64f64(ptr %x) {
 ; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * vlenb
-; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
 ; CHECK-NEXT:    addi a1, a0, 128
+; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
 ; CHECK-NEXT:    vle64.v v16, (a1)
 ; CHECK-NEXT:    addi a1, a0, 384
 ; CHECK-NEXT:    vle64.v v8, (a1)
@@ -2280,9 +2280,9 @@ define double @vreduce_fminimum_v64f64_nonans(ptr %x) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    addi a1, a0, 384
-; CHECK-NEXT:    vle64.v v16, (a1)
 ; CHECK-NEXT:    addi a1, a0, 256
+; CHECK-NEXT:    addi a2, a0, 384
+; CHECK-NEXT:    vle64.v v16, (a2)
 ; CHECK-NEXT:    addi a0, a0, 128
 ; CHECK-NEXT:    vle64.v v24, (a0)
 ; CHECK-NEXT:    vle64.v v0, (a1)
@@ -2557,9 +2557,9 @@ define float @vreduce_fmaximum_v128f32(ptr %x) {
 ; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * vlenb
 ; CHECK-NEXT:    li a1, 32
+; CHECK-NEXT:    addi a2, a0, 128
 ; CHECK-NEXT:    vsetvli zero, a1, e32, m8, ta, ma
-; CHECK-NEXT:    addi a1, a0, 128
-; CHECK-NEXT:    vle32.v v16, (a1)
+; CHECK-NEXT:    vle32.v v16, (a2)
 ; CHECK-NEXT:    addi a1, a0, 384
 ; CHECK-NEXT:    vle32.v v8, (a1)
 ; CHECK-NEXT:    addi a1, a0, 256
@@ -2892,8 +2892,8 @@ define double @vreduce_fmaximum_v64f64(ptr %x) {
 ; CHECK-NEXT:    add a1, a1, a2
 ; CHECK-NEXT:    sub sp, sp, a1
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x18, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 24 * vlenb
-; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
 ; CHECK-NEXT:    addi a1, a0, 128
+; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
 ; CHECK-NEXT:    vle64.v v16, (a1)
 ; CHECK-NEXT:    addi a1, a0, 384
 ; CHECK-NEXT:    vle64.v v8, (a1)
@@ -2990,9 +2990,9 @@ define double @vreduce_fmaximum_v64f64_nonans(ptr %x) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    addi a1, a0, 384
-; CHECK-NEXT:    vle64.v v16, (a1)
 ; CHECK-NEXT:    addi a1, a0, 256
+; CHECK-NEXT:    addi a2, a0, 384
+; CHECK-NEXT:    vle64.v v16, (a2)
 ; CHECK-NEXT:    addi a0, a0, 128
 ; CHECK-NEXT:    vle64.v v24, (a0)
 ; CHECK-NEXT:    vle64.v v0, (a1)

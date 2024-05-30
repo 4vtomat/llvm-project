@@ -1064,7 +1064,7 @@ MDNode *llvm::findOptionMDForLoopID(MDNode *LoopID, StringRef Name) {
     if (!S)
       continue;
     // Return the operand node if MDString holds expected metadata.
-    if (Name.equals(S->getString()))
+    if (Name == S->getString())
       return MD;
   }
 

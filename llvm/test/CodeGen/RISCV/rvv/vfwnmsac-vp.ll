@@ -587,10 +587,24 @@ define <vscale x 16 x float> @vfnmsac_vv_nxv16f32(<vscale x 16 x half> %a, <vsca
 ; ZVFHMIN-LABEL: vfnmsac_vv_nxv16f32:
 ; ZVFHMIN:       # %bb.0:
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
+<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v24, v8, v0.t
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v12, v0.t
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m8, ta, ma
 ; ZVFHMIN-NEXT:    vfnmsub.vv v8, v24, v16, v0.t
+=======
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v16, v8, v0.t
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v24, v12, v0.t
+; ZVFHMIN-NEXT:    addi a0, sp, 16
+; ZVFHMIN-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
+; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m8, ta, ma
+; ZVFHMIN-NEXT:    vfnmsub.vv v24, v16, v8, v0.t
+; ZVFHMIN-NEXT:    vmv.v.v v8, v24
+; ZVFHMIN-NEXT:    csrr a0, vlenb
+; ZVFHMIN-NEXT:    slli a0, a0, 3
+; ZVFHMIN-NEXT:    add sp, sp, a0
+; ZVFHMIN-NEXT:    addi sp, sp, 16
+>>>>>>> 855eef2
 ; ZVFHMIN-NEXT:    ret
   %aext = call <vscale x 16 x float> @llvm.vp.fpext.nxv16f32.nxv16f16(<vscale x 16 x half> %a, <vscale x 16 x i1> %m, i32 %evl)
   %bext = call <vscale x 16 x float> @llvm.vp.fpext.nxv16f32.nxv16f16(<vscale x 16 x half> %b, <vscale x 16 x i1> %m, i32 %evl)
@@ -662,17 +676,26 @@ define <vscale x 16 x float> @vfnmsac_vf_nxv16f32_commute(<vscale x 16 x half> %
 ;
 ; ZVFHMIN-LABEL: vfnmsac_vf_nxv16f32_commute:
 ; ZVFHMIN:       # %bb.0:
+<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vmv4r.v v12, v8
+=======
+>>>>>>> 855eef2
 ; ZVFHMIN-NEXT:    fcvt.s.h fa5, fa0
 ; ZVFHMIN-NEXT:    vsetvli a1, zero, e32, m8, ta, ma
 ; ZVFHMIN-NEXT:    vfmv.v.f v24, fa5
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
 ; ZVFHMIN-NEXT:    vfncvt.f.f.w v4, v24
 ; ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
+<<<<<<< HEAD
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v12, v0.t
 ; ZVFHMIN-NEXT:    vfwcvt.f.f.v v24, v4, v0.t
+=======
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v24, v8, v0.t
+; ZVFHMIN-NEXT:    vfwcvt.f.f.v v8, v4, v0.t
+>>>>>>> 855eef2
 ; ZVFHMIN-NEXT:    vsetvli zero, zero, e32, m8, ta, ma
-; ZVFHMIN-NEXT:    vfnmsub.vv v8, v24, v16, v0.t
+; ZVFHMIN-NEXT:    vfnmsub.vv v24, v8, v16, v0.t
+; ZVFHMIN-NEXT:    vmv.v.v v8, v24
 ; ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <vscale x 16 x half> poison, half %b, i32 0
   %vb = shufflevector <vscale x 16 x half> %elt.head, <vscale x 16 x half> poison, <vscale x 16 x i32> zeroinitializer

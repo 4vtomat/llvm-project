@@ -712,8 +712,8 @@ define <8 x i16> @vwsubu_vx_v8i16_i16(ptr %x, ptr %y) {
 define <4 x i32> @vwsubu_vx_v4i32_i8(ptr %x, ptr %y) {
 ; CHECK-LABEL: vwsubu_vx_v4i32_i8:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    lbu a1, 0(a1)
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vle16.v v9, (a0)
 ; CHECK-NEXT:    vmv.v.x v10, a1
 ; CHECK-NEXT:    vwsubu.vv v8, v10, v9
@@ -767,8 +767,8 @@ define <2 x i64> @vwsubu_vx_v2i64_i8(ptr %x, ptr %y) nounwind {
 ; RV32-LABEL: vwsubu_vx_v2i64_i8:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    addi sp, sp, -16
-; RV32-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; RV32-NEXT:    lbu a1, 0(a1)
+; RV32-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; RV32-NEXT:    vle32.v v9, (a0)
 ; RV32-NEXT:    sw zero, 12(sp)
 ; RV32-NEXT:    sw a1, 8(sp)
@@ -780,8 +780,8 @@ define <2 x i64> @vwsubu_vx_v2i64_i8(ptr %x, ptr %y) nounwind {
 ;
 ; RV64-LABEL: vwsubu_vx_v2i64_i8:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; RV64-NEXT:    lbu a1, 0(a1)
+; RV64-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; RV64-NEXT:    vle32.v v9, (a0)
 ; RV64-NEXT:    vmv.v.x v10, a1
 ; RV64-NEXT:    vwsubu.vv v8, v10, v9
@@ -800,8 +800,8 @@ define <2 x i64> @vwsubu_vx_v2i64_i16(ptr %x, ptr %y) nounwind {
 ; RV32-LABEL: vwsubu_vx_v2i64_i16:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    addi sp, sp, -16
-; RV32-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; RV32-NEXT:    lhu a1, 0(a1)
+; RV32-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; RV32-NEXT:    vle32.v v9, (a0)
 ; RV32-NEXT:    sw zero, 12(sp)
 ; RV32-NEXT:    sw a1, 8(sp)
@@ -813,8 +813,8 @@ define <2 x i64> @vwsubu_vx_v2i64_i16(ptr %x, ptr %y) nounwind {
 ;
 ; RV64-LABEL: vwsubu_vx_v2i64_i16:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; RV64-NEXT:    lhu a1, 0(a1)
+; RV64-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; RV64-NEXT:    vle32.v v9, (a0)
 ; RV64-NEXT:    vmv.v.x v10, a1
 ; RV64-NEXT:    vwsubu.vv v8, v10, v9
@@ -833,8 +833,8 @@ define <2 x i64> @vwsubu_vx_v2i64_i32(ptr %x, ptr %y) nounwind {
 ; RV32-LABEL: vwsubu_vx_v2i64_i32:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    addi sp, sp, -16
-; RV32-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; RV32-NEXT:    lw a1, 0(a1)
+; RV32-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; RV32-NEXT:    vle32.v v9, (a0)
 ; RV32-NEXT:    sw zero, 12(sp)
 ; RV32-NEXT:    sw a1, 8(sp)
@@ -865,9 +865,9 @@ define <2 x i64> @vwsubu_vx_v2i64_i64(ptr %x, ptr %y) nounwind {
 ; RV32-LABEL: vwsubu_vx_v2i64_i64:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    addi sp, sp, -16
-; RV32-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; RV32-NEXT:    lw a2, 4(a1)
 ; RV32-NEXT:    lw a1, 0(a1)
+; RV32-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
 ; RV32-NEXT:    vle32.v v9, (a0)
 ; RV32-NEXT:    sw a2, 12(sp)
 ; RV32-NEXT:    sw a1, 8(sp)

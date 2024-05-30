@@ -9214,8 +9214,25 @@ ScalarEvolution::ExitLimit ScalarEvolution::computeExitLimitFromICmp(
     // Since the loop is finite, an invariant RHS cannot include the boundary
     // value, otherwise it would loop forever.
     if (!EnableFiniteLoopControl || !ControllingFiniteLoop ||
-        !isLoopInvariant(RHS, L))
-      break;
+        !isLoopInvariant(RHS, L)) {
+      // Otherwise, perform the addition in a wider type, to avoid overflow.
+      // If the LHS is an addrec with the appropriate nowrap flag, the
+      // extension will be sunk into it and the exit count can be analyzed.
+      auto *OldType = dyn_cast<IntegerType>(LHS->getType());
+      if (!OldType)
+        break;
+      // Prefer doubling the bitwidth over adding a single bit to make it more
+      // likely that we use a legal type.
+      auto *NewType =
+          Type::getIntNTy(OldType->getContext(), OldType->getBitWidth() * 2);
+      if (ICmpInst::isSigned(Pred)) {
+        LHS = getSignExtendExpr(LHS, NewType);
+        RHS = getSignExtendExpr(RHS, NewType);
+      } else {
+        LHS = getZeroExtendExpr(LHS, NewType);
+        RHS = getZeroExtendExpr(RHS, NewType);
+      }
+    }
     RHS = getAddExpr(getOne(RHS->getType()), RHS);
     [[fallthrough]];
   case ICmpInst::ICMP_SLT:
@@ -9556,7 +9573,8 @@ static Constant *EvaluateExpression(Value *V, const Loop *L,
     Operands[i] = C;
   }
 
-  return ConstantFoldInstOperands(I, Operands, DL, TLI);
+  return ConstantFoldInstOperands(I, Operands, DL, TLI,
+                                  /*AllowNonDeterministic=*/false);
 }
 
 
@@ -10047,7 +10065,8 @@ const SCEV *ScalarEvolution::computeSCEVAtScope(const SCEV *V, const Loop *L) {
 
     Constant *C = nullptr;
     const DataLayout &DL = getDataLayout();
-    C = ConstantFoldInstOperands(I, Operands, DL, &TLI);
+    C = ConstantFoldInstOperands(I, Operands, DL, &TLI,
+                                 /*AllowNonDeterministic=*/false);
     if (!C)
       return V;
     return getSCEV(C);
@@ -10631,9 +10650,7 @@ bool ScalarEvolution::SimplifyICmpOperands(ICmpInst::Predicate &Pred,
   if (const SCEVConstant *LHSC = dyn_cast<SCEVConstant>(LHS)) {
     // Check for both operands constant.
     if (const SCEVConstant *RHSC = dyn_cast<SCEVConstant>(RHS)) {
-      if (ConstantExpr::getICmp(Pred,
-                                LHSC->getValue(),
-                                RHSC->getValue())->isNullValue())
+      if (!ICmpInst::compare(LHSC->getAPInt(), RHSC->getAPInt(), Pred))
         return TrivialCase(false);
       return TrivialCase(true);
     }
@@ -11364,7 +11381,7 @@ bool ScalarEvolution::isKnownPredicateViaNoOverflow(ICmpInst::Predicate Pred,
     [[fallthrough]];
   case ICmpInst::ICMP_ULE:
     // (X + C1)<nuw> u<= (X + C2)<nuw> for C1 u<= C2.
-    if (MatchBinaryAddToConst(RHS, LHS, C2, C1, SCEV::FlagNUW) && C1.ule(C2))
+    if (MatchBinaryAddToConst(LHS, RHS, C1, C2, SCEV::FlagNUW) && C1.ule(C2))
       return true;
 
     break;
@@ -11374,7 +11391,7 @@ bool ScalarEvolution::isKnownPredicateViaNoOverflow(ICmpInst::Predicate Pred,
     [[fallthrough]];
   case ICmpInst::ICMP_ULT:
     // (X + C1)<nuw> u< (X + C2)<nuw> if C1 u< C2.
-    if (MatchBinaryAddToConst(RHS, LHS, C2, C1, SCEV::FlagNUW) && C1.ult(C2))
+    if (MatchBinaryAddToConst(LHS, RHS, C1, C2, SCEV::FlagNUW) && C1.ult(C2))
       return true;
     break;
   }
@@ -14843,7 +14860,9 @@ void SCEVUnionPredicate::add(const SCEVPredicate *N) {
     return;
   }
 
-  Preds.push_back(N);
+  // Only add predicate if it is not already implied by this union predicate.
+  if (!implies(N))
+    Preds.push_back(N);
 }
 
 PredicatedScalarEvolution::PredicatedScalarEvolution(ScalarEvolution &SE,

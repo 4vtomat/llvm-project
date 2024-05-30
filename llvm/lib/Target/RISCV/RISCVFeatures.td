@@ -207,15 +207,21 @@ def HasStdExtZimop : Predicate<"Subtarget->hasStdExtZimop()">,
 
 def FeatureStdExtZicfilp
     : RISCVExperimentalExtension<"zicfilp", 0, 4,
-                                 "'Zicfilp' (Landing pad)">;
+                                 "'Zicfilp' (Landing pad)",
+                                 [FeatureStdExtZicsr]>;
 def HasStdExtZicfilp : Predicate<"Subtarget->hasStdExtZicfilp()">,
                        AssemblerPredicate<(all_of FeatureStdExtZicfilp),
                                           "'Zicfilp' (Landing pad)">;
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 // Cherry-picked from upstream #68292
 def NoStdExtZicfilp : Predicate<"!Subtarget->hasStdExtZicfilp()">,
                                  AssemblerPredicate<(all_of (not FeatureStdExtZicfilp))>;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+def NoStdExtZicfilp : Predicate<"!Subtarget->hasStdExtZicfilp()">,
+                                 AssemblerPredicate<(all_of (not FeatureStdExtZicfilp))>;
+>>>>>>> 855eef2
 
 def FeatureStdExtZicfiss
     : RISCVExperimentalExtension<"zicfiss", 0, 4,
@@ -269,8 +275,8 @@ def FeatureStdExtZa128rs : RISCVExtension<"za128rs", 1, 0,
                                           "'Za128rs' (Reservation Set Size of at Most 128 Bytes)">;
 
 def FeatureStdExtZaamo
-    : RISCVExperimentalExtension<"zaamo", 0, 2,
-                                 "'Zaamo' (Atomic Memory Operations)">;
+    : RISCVExtension<"zaamo", 1, 0,
+                     "'Zaamo' (Atomic Memory Operations)">;
 def HasStdExtAOrZaamo
     : Predicate<"Subtarget->hasStdExtA() || Subtarget->hasStdExtZaamo()">,
       AssemblerPredicate<(any_of FeatureStdExtA, FeatureStdExtZaamo),
@@ -300,8 +306,8 @@ def HasStdExtZalasr : Predicate<"Subtarget->hasStdExtZalasr()">,
                           "'Zalasr' (Load-Acquire and Store-Release Instructions)">;
 
 def FeatureStdExtZalrsc
-    : RISCVExperimentalExtension<"zalrsc", 0, 2,
-                                 "'Zalrsc' (Load-Reserved/Store-Conditional)">;
+    : RISCVExtension<"zalrsc", 1, 0,
+                     "'Zalrsc' (Load-Reserved/Store-Conditional)">;
 def HasStdExtAOrZalrsc
     : Predicate<"Subtarget->hasStdExtA() || Subtarget->hasStdExtZalrsc()">,
       AssemblerPredicate<(any_of FeatureStdExtA, FeatureStdExtZalrsc),
@@ -980,6 +986,9 @@ def FeatureStdExtSscounterenw
                      "'Sscounterenw' (Support writeable scounteren enable "
                      "bit for any hpmcounter that is not read-only zero)">;
 
+def FeatureStdExtSmstateen
+    : RISCVExtension<"smstateen", 1, 0,
+                     "'Smstateen' (Machine-mode view of the state-enable extension)">;
 def FeatureStdExtSsstateen
     : RISCVExtension<"ssstateen", 1, 0,
                      "'Ssstateen' (Supervisor-mode view of the state-enable extension)">;

@@ -519,6 +519,7 @@ def WriteVMovXS : SchedWrite;
 def WriteVMovSF : SchedWrite;
 def WriteVMovFS : SchedWrite;
 // 16.3. Vector Slide Instructions
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 defm "" : LMULSchedWrites<"WriteVISlideUpX">;
 defm "" : LMULSchedWrites<"WriteVISlideDownX">;
@@ -526,10 +527,16 @@ defm "" : LMULSchedWrites<"WriteVISlideDownX">;
 defm "" : LMULSchedWrites<"WriteVISlideX">;
 #endif // SIFIVE_CUSTOMIZATION
 defm "" : LMULSchedWrites<"WriteVISlideI">;
+=======
+defm "" : LMULSchedWrites<"WriteVSlideUpX">;
+defm "" : LMULSchedWrites<"WriteVSlideDownX">;
+defm "" : LMULSchedWrites<"WriteVSlideI">;
+>>>>>>> 855eef2
 defm "" : LMULSchedWrites<"WriteVISlide1X">;
 defm "" : LMULSchedWrites<"WriteVFSlide1F">;
 // 16.4. Vector Register Gather Instructions
 defm "" : LMULSEWSchedWrites<"WriteVRGatherVV">;
+defm "" : LMULSEWSchedWrites<"WriteVRGatherEI16VV">;
 defm "" : LMULSchedWrites<"WriteVRGatherVX">;
 defm "" : LMULSchedWrites<"WriteVRGatherVI">;
 // 16.5. Vector Compress Instruction
@@ -758,6 +765,8 @@ defm "" : LMULSchedReads<"ReadVFSlideF">;
 // 16.4. Vector Register Gather Instructions
 defm "" : LMULSEWSchedReads<"ReadVRGatherVV_data">;
 defm "" : LMULSEWSchedReads<"ReadVRGatherVV_index">;
+defm "" : LMULSEWSchedReads<"ReadVRGatherEI16VV_data">;
+defm "" : LMULSEWSchedReads<"ReadVRGatherEI16VV_index">;
 defm "" : LMULSchedReads<"ReadVRGatherVX_data">;
 defm "" : LMULSchedReads<"ReadVRGatherVX_index">;
 defm "" : LMULSchedReads<"ReadVRGatherVI_data">;
@@ -959,6 +968,7 @@ def : WriteRes<WriteVMovSX, []>;
 def : WriteRes<WriteVMovXS, []>;
 def : WriteRes<WriteVMovSF, []>;
 def : WriteRes<WriteVMovFS, []>;
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 defm "" : LMULWriteRes<"WriteVISlideUpX", []>;
 defm "" : LMULWriteRes<"WriteVISlideDownX", []>;
@@ -966,9 +976,15 @@ defm "" : LMULWriteRes<"WriteVISlideDownX", []>;
 defm "" : LMULWriteRes<"WriteVISlideX", []>;
 #endif // SIFIVE_CUSTOMIZATION
 defm "" : LMULWriteRes<"WriteVISlideI", []>;
+=======
+defm "" : LMULWriteRes<"WriteVSlideUpX", []>;
+defm "" : LMULWriteRes<"WriteVSlideDownX", []>;
+defm "" : LMULWriteRes<"WriteVSlideI", []>;
+>>>>>>> 855eef2
 defm "" : LMULWriteRes<"WriteVISlide1X", []>;
 defm "" : LMULWriteRes<"WriteVFSlide1F", []>;
 defm "" : LMULSEWWriteRes<"WriteVRGatherVV", []>;
+defm "" : LMULSEWWriteRes<"WriteVRGatherEI16VV", []>;
 defm "" : LMULWriteRes<"WriteVRGatherVX", []>;
 defm "" : LMULWriteRes<"WriteVRGatherVI", []>;
 defm "" : LMULSEWWriteRes<"WriteVCompressV", []>;
@@ -1133,6 +1149,8 @@ defm "" : LMULReadAdvance<"ReadVFSlideV", 0>;
 defm "" : LMULReadAdvance<"ReadVFSlideF", 0>;
 defm "" : LMULSEWReadAdvance<"ReadVRGatherVV_data", 0>;
 defm "" : LMULSEWReadAdvance<"ReadVRGatherVV_index", 0>;
+defm "" : LMULSEWReadAdvance<"ReadVRGatherEI16VV_data", 0>;
+defm "" : LMULSEWReadAdvance<"ReadVRGatherEI16VV_index", 0>;
 defm "" : LMULReadAdvance<"ReadVRGatherVX_data", 0>;
 defm "" : LMULReadAdvance<"ReadVRGatherVX_index", 0>;
 defm "" : LMULReadAdvance<"ReadVRGatherVI_data", 0>;
