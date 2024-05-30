@@ -3170,19 +3170,13 @@ void LoopAccessInfo::print(raw_ostream &OS, unsigned Depth) const {
 const LoopAccessInfo &LoopAccessInfoManager::getInfo(Loop &L) {
   auto [It, Inserted] = LoopAccessInfoMap.insert({&L, nullptr});
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (isRevectorizeWithoutStrideChecks(L) || isVectorizeWithoutStrideChecks(L))
-    I = LoopAccessInfoNoStridesMap.insert({&L, nullptr});
+    std::tie(It, Inserted) = LoopAccessInfoNoStridesMap.insert({&L, nullptr});
 #endif // SIFIVE_CUSTOMIZATION
-  if (I.second)
-    I.first->second =
-        std::make_unique<LoopAccessInfo>(&L, &SE, TLI, &AA, &DT, &LI);
-=======
   if (Inserted)
     It->second =
         std::make_unique<LoopAccessInfo>(&L, &SE, TTI, TLI, &AA, &DT, &LI);
->>>>>>> 855eef2
 
   return *It->second;
 }
