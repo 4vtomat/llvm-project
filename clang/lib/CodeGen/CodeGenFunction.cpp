@@ -985,7 +985,11 @@ void CodeGenFunction::StartFunction(GlobalDecl GD, QualType RetTy,
     EmitKernelMetadata(FD, Fn);
   }
 
-<<<<<<< HEAD
+  if (FD && FD->hasAttr<ClspvLibclcBuiltinAttr>()) {
+    Fn->setMetadata("clspv_libclc_builtin",
+                    llvm::MDNode::get(getLLVMContext(), {}));
+  }
+
 #if SIFIVE_CUSTOMIZATION
   if (FD) {
     if (FD->hasAttr<RISCVNoLandingPadAttr>()) {
@@ -1004,12 +1008,6 @@ void CodeGenFunction::StartFunction(GlobalDecl GD, QualType RetTy,
       Fn->removeFnAttr(llvm::Attribute::ShadowCallStack);
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  if (FD && FD->hasAttr<ClspvLibclcBuiltinAttr>()) {
-    Fn->setMetadata("clspv_libclc_builtin",
-                    llvm::MDNode::get(getLLVMContext(), {}));
-  }
->>>>>>> 855eef2
 
   // If we are checking function types, emit a function type signature as
   // prologue data.
