@@ -1000,6 +1000,7 @@ multiclass BulletWriteResBase<
       let Latency = GatherLat, AcquireAtCycles = [0, 1],
           ReleaseAtCycles = [1, !add(5, GatherCycles)] in
       defm "" : LMULSEWWriteResMXSEW<"WriteVRGatherVV", [VCQ, VA1], mx, sew, IsWorstCase>;
+      defm "" : LMULSEWWriteResMXSEW<"WriteVRGatherEI16VV", [VCQ, VA1], mx, sew, IsWorstCase>;
 
       defvar CompressCycles = BulletGetCyclesVCompress<mx, sew, VLEN, hasFastGather>.c;
       defvar CompressLat = !if(!and(hasFastGather, IsSingleDLEN),
@@ -1293,6 +1294,8 @@ multiclass BulletReadAdvance {
   defm "" : LMULReadAdvance<"ReadVFSlideF", 0>;
   defm "" : LMULSEWReadAdvance<"ReadVRGatherVV_data", 0>;
   defm "" : LMULSEWReadAdvance<"ReadVRGatherVV_index", 0>;
+  defm "" : LMULSEWReadAdvance<"ReadVRGatherEI16VV_data", 0>;
+  defm "" : LMULSEWReadAdvance<"ReadVRGatherEI16VV_index", 0>;
   defm "" : LMULReadAdvance<"ReadVRGatherVX_data", 0>;
   defm "" : LMULReadAdvance<"ReadVRGatherVX_index", 0>;
   defm "" : LMULReadAdvance<"ReadVRGatherVI_data", 0>;
