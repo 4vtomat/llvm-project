@@ -98,13 +98,13 @@ vcompress.vm v8, v16, v24
 
 # CHECK:      Iterations:        1
 # CHECK-NEXT: Instructions:      88
-# CHECK-NEXT: Total Cycles:      6481
+# CHECK-NEXT: Total Cycles:      9109
 # CHECK-NEXT: Total uOps:        88
 
 # CHECK:      Dispatch Width:    2
 # CHECK-NEXT: uOps Per Cycle:    0.01
 # CHECK-NEXT: IPC:               0.01
-# CHECK-NEXT: Block RThroughput: 6478.0
+# CHECK-NEXT: Block RThroughput: 9016.0
 
 # CHECK:      Instruction Info:
 # CHECK-NEXT: [1]: #uOps
@@ -117,91 +117,91 @@ vcompress.vm v8, v16, v24
 # CHECK:      [1]    [2]    [3]    [4]    [5]    [6]    Instructions:
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf8, tu, mu
 # CHECK-NEXT:  1      4     6.00                        vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      4     6.00                        vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      71    21.00                       vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      4     9.00                        vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf4, tu, mu
 # CHECK-NEXT:  1      4     6.00                        vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      4     6.00                        vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      71    37.00                       vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      4     9.00                        vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, mf2, tu, mu
 # CHECK-NEXT:  1      4     6.00                        vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      4     6.00                        vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      71    69.00                       vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      4     9.00                        vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m1, tu, mu
 # CHECK-NEXT:  1      7     9.00                        vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      7     9.00                        vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      71    133.00                      vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      135   136.00                      vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m2, tu, mu
 # CHECK-NEXT:  1      19    21.00                       vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      19    21.00                       vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      71    261.00                      vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      263   264.00                      vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m4, tu, mu
 # CHECK-NEXT:  1      67    69.00                       vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      67    69.00                       vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      71    517.00                      vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      519   520.00                      vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e8, m8, tu, mu
 # CHECK-NEXT:  1      259   261.00                      vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      259   261.00                      vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      71    1029.00                      vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      1031   1032.00                      vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
 # CHECK-NEXT:  1      4     6.00                        vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      4     6.00                        vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      39    21.00                       vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      4     9.00                        vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, mf2, tu, mu
 # CHECK-NEXT:  1      4     6.00                        vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      4     6.00                        vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      39    37.00                       vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      4     9.00                        vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m1, tu, mu
 # CHECK-NEXT:  1      7     9.00                        vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      7     9.00                        vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      39    69.00                       vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      71    72.00                       vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m2, tu, mu
 # CHECK-NEXT:  1      19    21.00                       vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      19    21.00                       vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      39    133.00                      vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      135   136.00                      vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
 # CHECK-NEXT:  1      67    69.00                       vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      67    69.00                       vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      39    261.00                      vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      263   264.00                      vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e16, m8, tu, mu
 # CHECK-NEXT:  1      259   261.00                      vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      259   261.00                      vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      39    517.00                      vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      519   520.00                      vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
 # CHECK-NEXT:  1      4     6.00                        vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      4     6.00                        vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      23    21.00                       vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      4     9.00                        vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
 # CHECK-NEXT:  1      7     9.00                        vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      7     9.00                        vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      23    37.00                       vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      39    40.00                       vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
 # CHECK-NEXT:  1      19    21.00                       vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      19    21.00                       vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      23    69.00                       vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      71    72.00                       vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
 # CHECK-NEXT:  1      67    69.00                       vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      67    69.00                       vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      23    133.00                      vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      135   136.00                      vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
 # CHECK-NEXT:  1      259   261.00                      vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      259   261.00                      vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      23    261.00                      vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      263   264.00                      vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m1, tu, mu
 # CHECK-NEXT:  1      7     9.00                        vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      7     9.00                        vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      15    21.00                       vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      23    24.00                       vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m2, tu, mu
 # CHECK-NEXT:  1      19    21.00                       vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      19    21.00                       vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      15    37.00                       vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      39    40.00                       vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m4, tu, mu
 # CHECK-NEXT:  1      67    69.00                       vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      67    69.00                       vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      15    69.00                       vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      71    72.00                       vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
 # CHECK-NEXT:  1      131   133.00                      vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  1      131   133.00                      vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  1      15    133.00                      vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  1      135   136.00                      vcompress.vm	v8, v16, v24
 
 # CHECK:      Resources:
@@ -218,77 +218,77 @@ vcompress.vm v8, v16, v24
 
 # CHECK:      Resource pressure per iteration:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]
-# CHECK-NEXT:  -      -      -     22.00   -     6478.00  -    66.00   -      -
+# CHECK-NEXT:  -      -      -     22.00   -     9016.00  -    66.00   -      -
 
 # CHECK:      Resource pressure by instruction:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]    Instructions:
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e8, mf8, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     6.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     6.00    -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     21.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     9.00    -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e8, mf4, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     6.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     6.00    -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     37.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     9.00    -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e8, mf2, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     6.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     6.00    -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     69.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     9.00    -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e8, m1, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     9.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     9.00    -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     133.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     136.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e8, m2, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     21.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     21.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     261.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     264.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e8, m4, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     69.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     69.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     517.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     520.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e8, m8, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     261.00  -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     261.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     1029.00  -    1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     1032.00  -    1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e16, mf4, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     6.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     6.00    -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     21.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     9.00    -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e16, mf2, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     6.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     6.00    -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     37.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     9.00    -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e16, m1, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     9.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     9.00    -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     69.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     72.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e16, m2, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     21.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     21.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     133.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     136.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e16, m4, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     69.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     69.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     261.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     264.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e16, m8, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     261.00  -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     261.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     517.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     520.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e32, mf2, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     6.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     6.00    -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     21.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     9.00    -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e32, m1, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     9.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     9.00    -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     37.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     40.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e32, m2, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     21.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     21.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     69.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     72.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e32, m4, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     69.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     69.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     133.00  -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     136.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e32, m8, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     261.00  -     1.00    -      -     vrgather.vv	v8, v16, v24
@@ -296,11 +296,11 @@ vcompress.vm v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     264.00  -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e64, m1, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     9.00    -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     9.00    -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     21.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     24.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e64, m2, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     21.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
-# CHECK-NEXT:  -      -      -      -      -     21.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -     37.00   -     1.00    -      -     vrgatherei16.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -     40.00   -     1.00    -      -     vcompress.vm	v8, v16, v24
 # CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     vsetvli	zero, zero, e64, m4, tu, mu
 # CHECK-NEXT:  -      -      -      -      -     69.00   -     1.00    -      -     vrgather.vv	v8, v16, v24
