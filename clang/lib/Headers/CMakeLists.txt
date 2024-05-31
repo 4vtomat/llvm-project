@@ -383,14 +383,9 @@ endfunction(clang_generate_header)
 
 # Copy header files from the source directory to the build directory
 foreach( f ${files} ${cuda_wrapper_files} ${cuda_wrapper_bits_files}
-<<<<<<< HEAD
-           ${ppc_wrapper_files} ${openmp_wrapper_files} ${hlsl_files}
+           ${ppc_wrapper_files} ${openmp_wrapper_files} ${zos_wrapper_files} ${hlsl_files}
            ${llvm_libc_wrapper_files}
            ${rvv_v0p10_compatible_header_file} ${rvv_v0p11_compatible_header_file}) # SIFIVE
-=======
-           ${ppc_wrapper_files} ${openmp_wrapper_files} ${zos_wrapper_files} ${hlsl_files}
-           ${llvm_libc_wrapper_files})
->>>>>>> 855eef2
   copy_header_to_output_dir(${CMAKE_CURRENT_SOURCE_DIR} ${f})
 endforeach( f )
 
@@ -522,15 +517,10 @@ add_header_target("loongarch-resource-headers" "${loongarch_files}")
 add_header_target("mips-resource-headers" "${mips_msa_files}")
 add_header_target("ppc-resource-headers" "${ppc_files};${ppc_wrapper_files}")
 add_header_target("ppc-htm-resource-headers" "${ppc_htm_files}")
-<<<<<<< HEAD
 # SIFIVE_CUSTOMIZATION
 add_header_target("riscv-resource-headers" "${riscv_files};${riscv_generated_files};${rvv_v0p10_compatible_header_file};${rvv_v0p11_compatible_header_file};")
 #end SIFIVE_CUSTOMIZATION
-add_header_target("systemz-resource-headers" "${systemz_files}")
-=======
-add_header_target("riscv-resource-headers" "${riscv_files};${riscv_generated_files}")
 add_header_target("systemz-resource-headers" "${systemz_files};${zos_wrapper_files}")
->>>>>>> 855eef2
 add_header_target("ve-resource-headers" "${ve_files}")
 add_header_target("webassembly-resource-headers" "${webassembly_files}")
 add_header_target("x86-resource-headers" "${x86_files}")
@@ -581,7 +571,6 @@ install(
   DESTINATION ${header_install_dir}/openmp_wrappers
   COMPONENT clang-resource-headers)
 
-<<<<<<< HEAD
 # SIFIVE
 install(
   FILES ${sifive_wrapper_files}
@@ -599,13 +588,11 @@ install(
   COMPONENT clang-resource-headers)
 #end SIFIVE
 
-=======
 install(
   FILES ${zos_wrapper_files}
   DESTINATION ${header_install_dir}/zos_wrappers
   COMPONENT clang-resource-headers)
 
->>>>>>> 855eef2
 #############################################################
 # Install rules for separate header lists
 install(
