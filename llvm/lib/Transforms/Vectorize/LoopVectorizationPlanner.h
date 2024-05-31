@@ -179,7 +179,12 @@ public:
         VPRecipeWithIRFlags::DisjointFlagsTy(false), DL, Name));
   }
 
-<<<<<<< HEAD
+  VPValue *createLogicalAnd(VPValue *LHS, VPValue *RHS, DebugLoc DL = {},
+                            const Twine &Name = "") {
+    return tryInsertInstruction(
+        new VPInstruction(VPInstruction::LogicalAnd, {LHS, RHS}, DL, Name));
+  }
+
 #if SIFIVE_CUSTOMIZATION
   VPValue *createSelect(VPValue *Cond, VPValue *TrueVal, VPValue *FalseVal,
                         std::optional<FastMathFlags> FMFs, DebugLoc DL,
@@ -198,13 +203,6 @@ public:
         Instruction::Select, {Cond, TrueVal, FalseVal}, FMFs, DL, Name));
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  VPValue *createLogicalAnd(VPValue *LHS, VPValue *RHS, DebugLoc DL = {},
-                            const Twine &Name = "") {
-    return tryInsertInstruction(
-        new VPInstruction(VPInstruction::LogicalAnd, {LHS, RHS}, DL, Name));
-  }
->>>>>>> 855eef2
 
   VPValue *createSelect(VPValue *Cond, VPValue *TrueVal, VPValue *FalseVal,
                         DebugLoc DL = {}, const Twine &Name = "",

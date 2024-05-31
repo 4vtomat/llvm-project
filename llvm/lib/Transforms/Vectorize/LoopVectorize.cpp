@@ -10282,26 +10282,10 @@ VPValue *VPRecipeBuilder::createEdgeMask(BasicBlock *Src, BasicBlock *Dst) {
     EdgeMask = Builder.createNot(EdgeMask, BI->getDebugLoc());
 
   if (SrcMask) { // Otherwise block in-mask is all-one, no need to AND.
-<<<<<<< HEAD
-    // The condition is 'SrcMask && EdgeMask', which is equivalent to
-    // 'select i1 SrcMask, i1 EdgeMask, i1 false'.
-    // The select version does not introduce new UB if SrcMask is false and
-    // EdgeMask is poison. Using 'and' here introduces undefined behavior.
-    VPValue *False = Plan.getOrAddLiveIn(
-        ConstantInt::getFalse(BI->getCondition()->getType()));
-    EdgeMask =
-#if SIFIVE_CUSTOMIZATION
-        Builder.createSelect(SrcMask, EdgeMask, False, FastMathFlags(),
-                             BI->getDebugLoc());
-#else
-        Builder.createSelect(SrcMask, EdgeMask, False, BI->getDebugLoc());
-#endif // SIFIVE_CUSTOMIZATION
-=======
     // The bitwise 'And' of SrcMask and EdgeMask introduces new UB if SrcMask
     // is false and EdgeMask is poison. Avoid that by using 'LogicalAnd'
     // instead which generates 'select i1 SrcMask, i1 EdgeMask, i1 false'.
     EdgeMask = Builder.createLogicalAnd(SrcMask, EdgeMask, BI->getDebugLoc());
->>>>>>> 855eef2
   }
 
   return EdgeMaskCache[Edge] = EdgeMask;

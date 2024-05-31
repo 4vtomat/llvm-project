@@ -1064,7 +1064,6 @@ void VPInstruction::print(raw_ostream &O, const Twine &Indent,
   case VPInstruction::ComputeReductionResult:
     O << "compute-reduction-result";
     break;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case VPInstruction::CSAInitMask:
     O << "csa-init-mask";
@@ -1091,11 +1090,9 @@ void VPInstruction::print(raw_ostream &O, const Twine &Indent,
     O << "exiting-cond";
     break;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case VPInstruction::LogicalAnd:
     O << "logical-and";
     break;
->>>>>>> 855eef2
   case VPInstruction::PtrAdd:
     O << "ptradd";
     break;
