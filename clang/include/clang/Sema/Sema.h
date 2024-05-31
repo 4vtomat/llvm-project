@@ -11711,35 +11711,6 @@ public:
   void ProcessAPINotes(Decl *D);
 
   ///@}
-<<<<<<< HEAD
-  //
-  //
-  // -------------------------------------------------------------------------
-  //
-  //
-
-  /// \name Name Lookup for RISC-V Vector Intrinsic
-  /// Implementations are in SemaRISCVVectorLookup.cpp
-  ///@{
-
-public:
-  /// Indicate RISC-V vector builtin functions enabled or not.
-  bool DeclareRISCVVBuiltins = false;
-
-  /// Indicate RISC-V SiFive vector builtin functions enabled or not.
-  bool DeclareRISCVSiFiveVectorBuiltins = false;
-
-#if SIFIVE_CUSTOMIZATION
-  /// Indicate whether RISC-V v0p11 vector builtn functions are enabled or not.
-  bool DeclareRISCVVectorV0p11Builtins = false;
-#endif
-
-private:
-  std::unique_ptr<sema::RISCVIntrinsicManager> RVIntrinsicManager;
-
-  ///@}
-=======
->>>>>>> 855eef2
 };
 
 DeductionFailureInfo

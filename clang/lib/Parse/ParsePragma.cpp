@@ -4305,11 +4305,10 @@ void PragmaRISCVHandler::HandlePragma(Preprocessor &PP,
   if (II->isStr("vector"))
     Actions.RISCV().DeclareRVVBuiltins = true;
   else if (II->isStr("sifive_vector"))
-<<<<<<< HEAD
-    Actions.DeclareRISCVSiFiveVectorBuiltins = true;
+    Actions.RISCV().DeclareSiFiveVectorBuiltins = true;
 #if SIFIVE_CUSTOMIZATION
   else if (II->isStr("v0p11"))
-    Actions.DeclareRISCVVectorV0p11Builtins = true;
+    Actions.RISCV().DeclareVectorV0p11Builtins = true;
 #endif
 }
 
@@ -4365,8 +4364,5 @@ void PragmaRVVHandler::HandlePragma(Preprocessor &PP,
 
   PP.EnterTokenStream(std::move(TokenArray), TokenList.size(),
                       /*DisableMacroExpansion=*/false, /*IsReinject=*/false);
-=======
-    Actions.RISCV().DeclareSiFiveVectorBuiltins = true;
->>>>>>> 855eef2
 }
 #endif // SIFIVE_CUSTOMIZATION

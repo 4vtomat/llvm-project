@@ -557,6 +557,10 @@ static bool CheckInvalidVLENandLMUL(const TargetInfo &TI, CallExpr *TheCall,
 bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
                                          unsigned BuiltinID,
                                          CallExpr *TheCall) {
+#if SIFIVE_CUSTOMIZATION
+  if (BuiltinID >= NEON::LastTIBuiltin && BuiltinID < NEON::FirstTSBuiltin)
+    return CheckNeonBuiltinFunctionCall(TI, BuiltinID, TheCall);
+#endif
   ASTContext &Context = getASTContext();
   // vmulh.vv, vmulh.vx, vmulhu.vv, vmulhu.vx, vmulhsu.vv, vmulhsu.vx,
   // vsmul.vv, vsmul.vx are not included for EEW=64 in Zve64*.
@@ -845,7 +849,19 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_vnclip_wx:
   case RISCVVector::BI__builtin_rvv_vnclipu_wv:
   case RISCVVector::BI__builtin_rvv_vnclipu_wx:
-    return SemaRef.BuiltinConstantArgRange(TheCall, 2, 0, 3);
+#ifdef SIFIVE_CUSTOMIZATION
+  {
+    llvm::APSInt Result;
+    if (BuiltinConstantArg(TheCall, /* ArgNum = */ 2, Result))
+      return true;
+    // 7 indicates no rounding mode (vxrm) change.
+    if (Result.getSExtValue() == 7)
+      return false;
+    return BuiltinConstantArgRange(TheCall, 2, 0, 3);
+  }
+#else
+    return BuiltinConstantArgRange(TheCall, 2, 0, 3);
+#endif // SIFIVE_CUSTOMIZATION
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_tu:
   case RISCVVector::BI__builtin_rvv_vaaddu_vx_tu:
   case RISCVVector::BI__builtin_rvv_vaadd_vv_tu:
@@ -882,7 +898,19 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_vnclip_wx_m:
   case RISCVVector::BI__builtin_rvv_vnclipu_wv_m:
   case RISCVVector::BI__builtin_rvv_vnclipu_wx_m:
-    return SemaRef.BuiltinConstantArgRange(TheCall, 3, 0, 3);
+#ifdef SIFIVE_CUSTOMIZATION
+  {
+    llvm::APSInt Result;
+    if (BuiltinConstantArg(TheCall, /* ArgNum = */ 3, Result))
+      return true;
+    // 7 indicates no rounding mode (vxrm) change.
+    if (Result.getSExtValue() == 7)
+      return false;
+    return BuiltinConstantArgRange(TheCall, 3, 0, 3);
+  }
+#else
+    return BuiltinConstantArgRange(TheCall, 3, 0, 3);
+#endif // SIFIVE_CUSTOMIZATION
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_tum:
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_tumu:
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_mu:
@@ -937,7 +965,19 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
   case RISCVVector::BI__builtin_rvv_vnclip_wx_tumu:
   case RISCVVector::BI__builtin_rvv_vnclipu_wv_tumu:
   case RISCVVector::BI__builtin_rvv_vnclipu_wx_tumu:
-    return SemaRef.BuiltinConstantArgRange(TheCall, 4, 0, 3);
+#ifdef SIFIVE_CUSTOMIZATION
+  {
+    llvm::APSInt Result;
+    if (BuiltinConstantArg(TheCall, /* ArgNum = */ 4, Result))
+      return true;
+    // 7 indicates no rounding mode (vxrm) change.
+    if (Result.getSExtValue() == 7)
+      return false;
+    return BuiltinConstantArgRange(TheCall, 4, 0, 3);
+  }
+#else
+    return BuiltinConstantArgRange(TheCall, 4, 0, 3);
+#endif // SIFIVE_CUSTOMIZATION
   case RISCVVector::BI__builtin_rvv_vfsqrt_v_rm:
   case RISCVVector::BI__builtin_rvv_vfrec7_v_rm:
   case RISCVVector::BI__builtin_rvv_vfcvt_x_f_v_rm:

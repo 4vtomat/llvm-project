@@ -946,20 +946,14 @@ bool Sema::LookupBuiltin(LookupResult &R) {
         }
       }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-      if (DeclareRISCVVBuiltins || DeclareRISCVSiFiveVectorBuiltins ||
-          DeclareRISCVVectorV0p11Builtins) {
+      if (RISCV().DeclareRVVBuiltins || RISCV().DeclareSiFiveVectorBuiltins ||
+          RISCV().DeclareVectorV0p11Builtins) {
 #else
-      if (DeclareRISCVVBuiltins || DeclareRISCVSiFiveVectorBuiltins) {
-#endif
-        if (!RVIntrinsicManager)
-          RVIntrinsicManager = CreateRISCVIntrinsicManager(*this);
-=======
       if (RISCV().DeclareRVVBuiltins || RISCV().DeclareSiFiveVectorBuiltins) {
+#endif
         if (!RISCV().IntrinsicManager)
           RISCV().IntrinsicManager = CreateRISCVIntrinsicManager(*this);
->>>>>>> 855eef2
 
         RISCV().IntrinsicManager->InitIntrinsicList();
 

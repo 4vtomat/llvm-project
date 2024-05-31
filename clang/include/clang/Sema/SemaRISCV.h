@@ -42,6 +42,11 @@ public:
   /// Indicate RISC-V SiFive vector builtin functions enabled or not.
   bool DeclareSiFiveVectorBuiltins = false;
 
+#if SIFIVE_CUSTOMIZATION
+  /// Indicate whether RISC-V v0p11 vector builtn functions are enabled or not.
+  bool DeclareVectorV0p11Builtins = false;
+#endif
+
   std::unique_ptr<sema::RISCVIntrinsicManager> IntrinsicManager;
 };
 
