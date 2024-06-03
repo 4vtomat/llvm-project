@@ -328,13 +328,8 @@ VPBasicBlock::iterator VPBasicBlock::getFirstNonPhi() {
 VPTransformState::VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                                    DominatorTree *DT, IRBuilderBase &Builder,
                                    InnerLoopVectorizer *ILV, VPlan *Plan,
-<<<<<<< HEAD
                                    LLVMContext &Ctx, bool EnableRISCVCSA) // SIFIVE
-    : VF(VF), UF(UF), LI(LI), DT(DT), Builder(Builder), ILV(ILV), Plan(Plan),
-=======
-                                   LLVMContext &Ctx)
     : VF(VF), UF(UF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
->>>>>>> 855eef2
       LVer(nullptr),
 #if SIFIVE_CUSTOMIZATION
       TypeAnalysis(Plan->getCanonicalIV()->getScalarType(), Ctx),
@@ -1190,7 +1185,6 @@ void VPlan::execute(VPTransformState *State) {
     }
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Value *EVLPlaceholder = State->EVLPlaceholder) {
     assert(State->EVL && "EVL must be available after VPlan is executed");
@@ -1204,19 +1198,10 @@ void VPlan::execute(VPTransformState *State) {
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-  // We do not attempt to preserve DT for outer loop vectorization currently.
-  if (!EnableVPlanNativePath) {
-    BasicBlock *VectorHeaderBB = State->CFG.VPBB2IRBB[Header];
-    State->DT->addNewBlock(VectorHeaderBB, VectorPreHeader);
-    updateDominatorTree(State->DT, VectorHeaderBB, VectorLatchBB,
-                        State->CFG.ExitBB);
-  }
-=======
   State->CFG.DTU.flush();
   // DT is currently updated for non-native path only.
   assert(EnableVPlanNativePath || State->CFG.DTU.getDomTree().verify(
                                       DominatorTree::VerificationLevel::Fast));
->>>>>>> 855eef2
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)

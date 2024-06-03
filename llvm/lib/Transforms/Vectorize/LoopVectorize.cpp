@@ -9719,20 +9719,17 @@ LoopVectorizationPlanner::executePlan(
   LLVM_DEBUG(BestVPlan.dump());
 
   // Perform the actual loop transformation.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  VPTransformState State{BestVF,      BestUF, LI,         DT,
-                         ILV.Builder, &ILV,   &BestVPlan, OrigLoop->getHeader()->getContext(), EnableRISCVCSA};
+  VPTransformState State{
+      BestVF,        BestUF, LI,         EnableVPlanNativePath ? nullptr : DT,
+      ILV.Builder,   &ILV,   &BestVPlan, OrigLoop->getHeader()->getContext(),
+      EnableRISCVCSA};
   BestVPlan.initializeMasks(State);
 #else
-  VPTransformState State(BestVF, BestUF, LI, DT, ILV.Builder, &ILV, &BestVPlan,
-                         OrigLoop->getHeader()->getContext());
-#endif // SIFIVE_CUSTOMIZATION
-=======
   VPTransformState State(BestVF, BestUF, LI,
                          EnableVPlanNativePath ? nullptr : DT, ILV.Builder,
                          &ILV, &BestVPlan, OrigLoop->getHeader()->getContext());
->>>>>>> 855eef2
+#endif // SIFIVE_CUSTOMIZATION
 
   // 0. Generate SCEV-dependent code into the preheader, including TripCount,
   // before making any changes to the CFG.
