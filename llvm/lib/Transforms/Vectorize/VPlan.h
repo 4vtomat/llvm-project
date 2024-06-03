@@ -3061,20 +3061,15 @@ struct VPWidenLoadRecipe final : public VPWidenMemoryRecipe, public VPValue {
 struct VPWidenLoadEVLRecipe final : public VPWidenMemoryRecipe, public VPValue {
   VPWidenLoadEVLRecipe(VPWidenLoadRecipe *L, VPValue *EVL, VPValue *Mask)
       : VPWidenMemoryRecipe(VPDef::VPWidenLoadEVLSC, L->getIngredient(),
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
                             {L->getAddr(), EVL}, L->isConsecutive(),
                             L->isReverse(), L->getDebugLoc(),
                             L->isStrided() ? L->getStrideInBytes() : nullptr,
                             L->isSpeculative(), L->isMonotonic()),
 #else
-                            {L->getAddr(), EVL}, L->isConsecutive(), false,
-                            L->getDebugLoc()),
-#endif // SIFIVE_CUSTOMIZATION
-=======
                             {L->getAddr(), EVL}, L->isConsecutive(),
                             L->isReverse(), L->getDebugLoc()),
->>>>>>> 855eef2
+#endif // SIFIVE_CUSTOMIZATION
         VPValue(this, &getIngredient()) {
 #if SIFIVE_CUSTOMIZATION
     if (Speculative)
@@ -3184,19 +3179,15 @@ struct VPWidenStoreEVLRecipe final : public VPWidenMemoryRecipe {
   VPWidenStoreEVLRecipe(VPWidenStoreRecipe *S, VPValue *EVL, VPValue *Mask)
       : VPWidenMemoryRecipe(VPDef::VPWidenStoreEVLSC, S->getIngredient(),
                             {S->getAddr(), S->getStoredValue(), EVL},
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
                             S->isConsecutive(), S->isReverse(),
                             S->getDebugLoc(),
                             S->isStrided() ? S->getStrideInBytes() : nullptr,
                             S->isSpeculative(), S->isMonotonic()) {
 #else
-                            S->isConsecutive(), false, S->getDebugLoc()) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
                             S->isConsecutive(), S->isReverse(),
                             S->getDebugLoc()) {
->>>>>>> 855eef2
+#endif // SIFIVE_CUSTOMIZATION
     setMask(Mask);
   }
 

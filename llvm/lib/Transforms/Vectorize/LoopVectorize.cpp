@@ -12254,14 +12254,6 @@ static Instruction *createReverseEVL(IRBuilderBase &Builder, Value *Operand,
 void VPWidenLoadEVLRecipe::execute(VPTransformState &State) {
   assert(State.UF == 1 && "Expected only UF == 1 when vectorizing with "
                           "explicit vector length.");
-<<<<<<< HEAD
-#ifndef SIFIVE_CUSTOMIZATION
-  // FIXME: Support reverse loading after vp_reverse is added.
-  assert(!isReverse() && "Reverse loads are not implemented yet.");
-#endif // SIFIVE_CUSTOMIZATION
-
-=======
->>>>>>> 855eef2
   auto *LI = cast<LoadInst>(&Ingredient);
 
   Type *ScalarDataTy = getLoadStoreType(&Ingredient);
@@ -12279,23 +12271,19 @@ void VPWidenLoadEVLRecipe::execute(VPTransformState &State) {
                     : State.get(getAddr(), 0, !CreateGather);
 #else
   Value *Addr = State.get(getAddr(), 0, !CreateGather);
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-  Value *Mask = getMask()
-                    ? State.get(getMask(), 0)
-                    : Builder.CreateVectorSplat(State.VF, Builder.getTrue());
+  Value *Mask = nullptr;
+  if (VPValue *VPMask = getMask()) {
+    Mask = State.get(VPMask, 0);
+    if (isReverse())
+      Mask = createReverseEVL(Builder, Mask, EVL, "vp.reverse.mask");
+  } else {
+    Mask = Builder.CreateVectorSplat(State.VF, Builder.getTrue());
+  }
 #if SIFIVE_CUSTOMIZATION
   if (auto *IMask = dyn_cast_if_present<VPInstruction>(getMask());
       IMask && IMask->getOpcode() == CmpInst::ICMP_ULE)
     Mask = Builder.CreateVectorSplat(State.VF, Builder.getTrue());
-  if (Mask != Builder.CreateVectorSplat(State.VF, Builder.getTrue()) &&
-      isReverse()) {
-    VectorType *MaskTy = cast<VectorType>(Mask->getType());
-    Value *BlockInMaskPart = Builder.getTrueVector(MaskTy->getElementCount());
-
-    Mask = Builder.CreateIntrinsic(Intrinsic::experimental_vp_reverse, {MaskTy},
-                                   {Mask, BlockInMaskPart, EVL});
-  }
   if (isStrided() || isMonotonic()) {
     // Upstream compiler only handles EVL for consecutive load/store
     // TODO: Move code from widenPredicatedMemoryInstruction into
@@ -12312,17 +12300,7 @@ void VPWidenLoadEVLRecipe::execute(VPTransformState &State) {
 
   } else
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  Value *Mask = nullptr;
-  if (VPValue *VPMask = getMask()) {
-    Mask = State.get(VPMask, 0);
-    if (isReverse())
-      Mask = createReverseEVL(Builder, Mask, EVL, "vp.reverse.mask");
-  } else {
-    Mask = Builder.CreateVectorSplat(State.VF, Builder.getTrue());
-  }
 
->>>>>>> 855eef2
   if (CreateGather) {
     NewLI =
         Builder.CreateIntrinsic(DataTy, Intrinsic::vp_gather, {Addr, Mask, EVL},
@@ -12339,16 +12317,10 @@ void VPWidenLoadEVLRecipe::execute(VPTransformState &State) {
   NewLI->addParamAttr(
       0, Attribute::getWithAlignment(NewLI->getContext(), Alignment));
   State.addMetadata(NewLI, LI);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   Instruction *Res = NewLI;
-  if (isReverse()) {
-    auto *ValTy = cast<VectorType>(Res->getType());
-    Value *BlockInMaskPart = Builder.getTrueVector(ValTy->getElementCount());
-
-    Res = Builder.CreateIntrinsic(ValTy, Intrinsic::experimental_vp_reverse,
-                                  {Res, BlockInMaskPart, EVL});
-  }
+  if (isReverse())
+    Res = createReverseEVL(Builder, Res, EVL, "vp.reverse");
+#if SIFIVE_CUSTOMIZATION
   if (isSpeculative()) {
     // For FFLoad, we'd like to generate something similar to the following.
     // %a = call { <vscale x 8 x i8>, i32 } @llvm.vp.load.ff.nxv8i8.p0(
@@ -12364,18 +12336,10 @@ void VPWidenLoadEVLRecipe::execute(VPTransformState &State) {
     // TODO: Create a VPScalarCastRecipe for this
     VL = Builder.CreateZExt(VL, Builder.getInt64Ty());
     State.set(getVPValue(1), VL, 0, /*NeedsScalar=*/true);
-  } else {
-    State.set(this, Res, 0);
+    return;
   }
-#else
-  State.set(this, NewLI, 0);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  Instruction *Res = NewLI;
-  if (isReverse())
-    Res = createReverseEVL(Builder, Res, EVL, "vp.reverse");
   State.set(this, Res, 0);
->>>>>>> 855eef2
 }
 
 void VPWidenStoreRecipe::execute(VPTransformState &State) {
@@ -12421,14 +12385,6 @@ void VPWidenStoreRecipe::execute(VPTransformState &State) {
 void VPWidenStoreEVLRecipe::execute(VPTransformState &State) {
   assert(State.UF == 1 && "Expected only UF == 1 when vectorizing with "
                           "explicit vector length.");
-<<<<<<< HEAD
-#ifndef SIFIVE_CUSTOMIZATION
-  // FIXME: Support reverse loading after vp_reverse is added.
-  assert(!isReverse() && "Reverse store are not implemented yet.");
-#endif // SIFIVE_CUSTOMIZATION
-
-=======
->>>>>>> 855eef2
   auto *SI = cast<StoreInst>(&Ingredient);
 
   VPValue *StoredValue = getStoredValue();
@@ -12441,43 +12397,6 @@ void VPWidenStoreEVLRecipe::execute(VPTransformState &State) {
   CallInst *NewSI = nullptr;
   Value *StoredVal = State.get(StoredValue, 0);
   Value *EVL = State.get(getEVL(), VPIteration(0, 0));
-<<<<<<< HEAD
-  // FIXME: Support reverse store after vp_reverse is added.
-#if SIFIVE_CUSTOMIZATION
-  if (isReverse()) {
-    auto *StoredValTy = cast<VectorType>(StoredVal->getType());
-    Value *BlockInMaskPart =
-        Builder.getTrueVector(StoredValTy->getElementCount());
-
-    StoredVal =
-        Builder.CreateIntrinsic(StoredValTy, Intrinsic::experimental_vp_reverse,
-                                {StoredVal, BlockInMaskPart, EVL});
-  }
-#endif // SIFIVE_CUSTOMIZATION
-  Value *Mask = getMask()
-                    ? State.get(getMask(), 0)
-                    : Builder.CreateVectorSplat(State.VF, Builder.getTrue());
-#if SIFIVE_CUSTOMIZATION
-  if (auto *IMask = dyn_cast_if_present<VPInstruction>(getMask());
-      IMask && IMask->getOpcode() == CmpInst::ICMP_ULE)
-    Mask = Builder.CreateVectorSplat(State.VF, Builder.getTrue());
-  if (Mask != Builder.CreateVectorSplat(State.VF, Builder.getTrue()) &&
-      isReverse()) {
-    VectorType *MaskTy = cast<VectorType>(Mask->getType());
-    Value *BlockInMaskPart = Builder.getTrueVector(MaskTy->getElementCount());
-
-    Mask = Builder.CreateIntrinsic(Intrinsic::experimental_vp_reverse, {MaskTy},
-                                   {Mask, BlockInMaskPart, EVL});
-  }
-  if (isStrided() || isMonotonic()) {
-    // Upstream compiler only handles EVL for consecutive load/store
-    // TODO: Move code from widenPredicatedMemoryInstruction into
-    // lowerStoreUsingVectorIntrinsics to simplify pulldown
-    NewSI = cast<CallInst>(
-        llvm::widenPredicatedMemoryInstruction(*this, State, 0, Mask));
-  } else {
-#endif // SIFIVE_CUSTOMIZATION
-=======
   if (isReverse())
     StoredVal = createReverseEVL(Builder, StoredVal, EVL, "vp.reverse");
   Value *Mask = nullptr;
@@ -12488,7 +12407,18 @@ void VPWidenStoreEVLRecipe::execute(VPTransformState &State) {
   } else {
     Mask = Builder.CreateVectorSplat(State.VF, Builder.getTrue());
   }
->>>>>>> 855eef2
+#if SIFIVE_CUSTOMIZATION
+  if (auto *IMask = dyn_cast_if_present<VPInstruction>(getMask());
+      IMask && IMask->getOpcode() == CmpInst::ICMP_ULE)
+    Mask = Builder.CreateVectorSplat(State.VF, Builder.getTrue());
+  if (isStrided() || isMonotonic()) {
+    // Upstream compiler only handles EVL for consecutive load/store
+    // TODO: Move code from widenPredicatedMemoryInstruction into
+    // lowerStoreUsingVectorIntrinsics to simplify pulldown
+    NewSI = cast<CallInst>(
+        llvm::widenPredicatedMemoryInstruction(*this, State, 0, Mask));
+  } else {
+#endif // SIFIVE_CUSTOMIZATION
   Value *Addr = State.get(getAddr(), 0, !CreateScatter);
   if (CreateScatter) {
     NewSI = Builder.CreateIntrinsic(Type::getVoidTy(EVL->getContext()),
