@@ -155,7 +155,7 @@ class isSingleDLEN<string mx> {
   bit c = !or(!eq(mx, "MF2"), !or(!eq(mx, "MF4"), !eq(mx, "MF8")));
 }
 
-class BulletGetCyclesVRGather<string mx, int sew, int VLEN,
+class BulletGetCyclesVRGatherVV<string mx, int sew, int VLEN,
                               bit hasFastLargeGather,
                               bit hasFastGather> {
   assert !or(!not(hasFastLargeGather), hasFastGather),
@@ -987,19 +987,27 @@ multiclass BulletWriteResBase<
   }
   foreach mx = SchedMxList in {
     foreach sew = SchedSEWSet<mx>.val in {
-      defvar GatherCycles =
-        BulletGetCyclesVRGather<mx, sew, VLEN, hasFastLargeGather,
-                                hasFastGather>.c;
-      defvar IsSingleDLEN = isSingleDLEN<mx>.c;
-      defvar GatherLat = !if(!or(!and(hasFastGather, IsSingleDLEN),
-                                 hasFastLargeGather),
-                              !add(3, GatherCycles),
-                              // 7 + DLEN/ SEW
-                              !add(7, !div(!div(VLEN, 2), sew)));
       defvar IsWorstCase = BulletIsWorstCaseMXSEW<mx, sew, SchedMxList>.c;
-      let Latency = GatherLat, AcquireAtCycles = [0, 1],
-          ReleaseAtCycles = [1, !add(5, GatherCycles)] in
+      defvar IsSingleDLEN = isSingleDLEN<mx>.c;
+
+      defvar GatherVVCycles =
+        BulletGetCyclesVRGatherVV<mx, sew, VLEN, hasFastLargeGather,
+                                hasFastGather>.c;
+      // 7 + DLEN/ SEW
+      defvar SlowGatherLat = !add(7, !div(!div(VLEN, 2), sew));
+      defvar GatherVVLat = !if(!or(!and(hasFastGather, IsSingleDLEN),
+                                   hasFastLargeGather),
+                              !add(3, GatherVVCycles), SlowGatherLat);
+
+      let Latency = GatherVVLat, AcquireAtCycles = [0, 1],
+          ReleaseAtCycles = [1, !add(5, GatherVVCycles)] in
       defm "" : LMULSEWWriteResMXSEW<"WriteVRGatherVV", [VCQ, VA1], mx, sew, IsWorstCase>;
+
+      // VRGatherEI16VV is not improved by fastGather or fastLargeGather.
+      defvar GatherEI16VVCycles = BulletGetCyclesOnePerElement<mx, sew, VLEN>.c;
+      let Latency = SlowGatherLat, AcquireAtCycles = [0, 1],
+          ReleaseAtCycles = [1, !add(5, GatherEI16VVCycles)] in
+      defm "" : LMULSEWWriteResMXSEW<"WriteVRGatherEI16VV", [VCQ, VA1], mx, sew, IsWorstCase>;
 
       defvar CompressCycles = BulletGetCyclesVCompress<mx, sew, VLEN, hasFastGather>.c;
       defvar CompressLat = !if(!and(hasFastGather, IsSingleDLEN),
@@ -1293,6 +1301,8 @@ multiclass BulletReadAdvance {
   defm "" : LMULReadAdvance<"ReadVFSlideF", 0>;
   defm "" : LMULSEWReadAdvance<"ReadVRGatherVV_data", 0>;
   defm "" : LMULSEWReadAdvance<"ReadVRGatherVV_index", 0>;
+  defm "" : LMULSEWReadAdvance<"ReadVRGatherEI16VV_data", 0>;
+  defm "" : LMULSEWReadAdvance<"ReadVRGatherEI16VV_index", 0>;
   defm "" : LMULReadAdvance<"ReadVRGatherVX_data", 0>;
   defm "" : LMULReadAdvance<"ReadVRGatherVX_index", 0>;
   defm "" : LMULReadAdvance<"ReadVRGatherVI_data", 0>;

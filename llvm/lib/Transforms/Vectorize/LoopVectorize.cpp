@@ -1584,19 +1584,10 @@ public:
   /// vector intrinsic.
   void collectUniformsAndScalars(ElementCount VF) {
     // Do the analysis once.
-#if SIFIVE_CUSTOMIZATION
-    if (VF.isScalar() || Uniforms.contains(VF) || NonUniforms.contains(VF))
-#else
     if (VF.isScalar() || Uniforms.contains(VF))
-#endif
       return;
     setCostBasedWideningDecision(VF);
     setVectorizedCallDecision(VF);
-#if SIFIVE_CUSTOMIZATION
-    if (Legal->isVectorizableUncountable())
-      collectLoopUniformsForUncountableLoops(VF);
-    else
-#endif
     collectLoopUniforms(VF);
     collectLoopScalars(VF);
   }
@@ -1830,9 +1821,6 @@ public:
     WideningDecisions.clear();
     CallWideningDecisions.clear();
     Uniforms.clear();
-#if SIFIVE_CUSTOMIZATION
-    NonUniforms.clear();
-#endif
     Scalars.clear();
   }
 #if SIFIVE_CUSTOMIZATION
@@ -1846,13 +1834,6 @@ public:
     if (VectorizerProfitableScalarTripCount != 0)
       return VectorizerProfitableScalarTripCount.getValue();
     return std::nullopt;
-  }
-
-  bool hasNonUniforms(ElementCount VF) const {
-    auto NonUniform = NonUniforms.find(VF);
-    if (NonUniform == NonUniforms.end())
-      return false;
-    return !NonUniform->second.empty();
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -1999,12 +1980,6 @@ private:
   /// vectorization factor. The entries are VF-ScalarCostTy pairs.
   DenseMap<ElementCount, ScalarCostsTy> InstsToScalarize;
 
-#if SIFIVE_CUSTOMIZATION
-  /// Holds the instructions known to be non-uniform after vectorization.
-  /// The data is collected per VF.
-  DenseMap<ElementCount, SmallPtrSet<Instruction *, 4>> NonUniforms;
-#endif
-
   /// Holds the instructions known to be uniform after vectorization.
   /// The data is collected per VF.
   DenseMap<ElementCount, SmallPtrSet<Instruction *, 4>> Uniforms;
@@ -2044,10 +2019,6 @@ private:
   /// vectorized loop, each corresponding to an iteration of the original
   /// scalar loop.
   void collectLoopUniforms(ElementCount VF);
-
-#if SIFIVE_CUSTOMIZATION
-  void collectLoopUniformsForUncountableLoops(ElementCount VF);
-#endif
 
   /// Collect the instructions that are scalar after vectorization. An
   /// instruction is scalar if it is known to be uniform or will be scalarized
@@ -5272,11 +5243,23 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
   // branch, it is uniform.
   SmallVector<BasicBlock *> Exiting;
   TheLoop->getExitingBlocks(Exiting);
+#if SIFIVE_CUSTOMIZATION
+  // Exiting condition is non-uniform if the block is not countable.
+  // e.g. in strlen the compare is widened.
+  // Skip this if the loop is uncountable.
+  if (!Legal->isVectorizableUncountable())
+    for (BasicBlock *E : Exiting) {
+      auto *Cmp = dyn_cast<Instruction>(E->getTerminator()->getOperand(0));
+      if (Cmp && TheLoop->contains(Cmp) && Cmp->hasOneUse())
+        addToWorklistIfAllowed(Cmp);
+    }
+#else
   for (BasicBlock *E : Exiting) {
     auto *Cmp = dyn_cast<Instruction>(E->getTerminator()->getOperand(0));
     if (Cmp && TheLoop->contains(Cmp) && Cmp->hasOneUse())
       addToWorklistIfAllowed(Cmp);
   }
+#endif // SIFIVE_CUSTOMIZATION
 
   auto PrevVF = VF.divideCoefficientBy(2);
   // Return true if all lanes perform the same memory operation, and we can
@@ -5491,128 +5474,6 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
   Uniforms[VF].insert(Worklist.begin(), Worklist.end());
 }
 
-#if SIFIVE_CUSTOMIZATION
-// TODO: Merge countable and uncountable uniform analysis
-void LoopVectorizationCostModel::collectLoopUniformsForUncountableLoops(
-    ElementCount VF) {
-  assert(Legal->isVectorizableUncountable() && "Not an uncountable loop");
-  assert(VF.isVector() && Uniforms.find(VF) == Uniforms.end() &&
-         NonUniforms.find(VF) == NonUniforms.end() &&
-         "This function should not be visited twice for the same VF");
-
-  Uniforms[VF].clear();
-  NonUniforms[VF].clear();
-
-  SetVector<Instruction *> NonUniformWorklist;
-
-  // Global values, params and instructions outside of current loop are out of
-  // scope.
-  auto IsOutOfScope = [&](Value *V) -> bool {
-    Instruction *I = dyn_cast<Instruction>(V);
-    return !I || !TheLoop->contains(I);
-  };
-
-  auto AddToWorklistIfAllowed = [&](Instruction *I) {
-    if (IsOutOfScope(I))
-      return;
-    LLVM_DEBUG(dbgs() << "Uncountable Loop: Adding to NonUniformWorklist\n";
-               I->dump(););
-    NonUniformWorklist.insert(I);
-  };
-
-  // Return true if all lanes perform the same memory operation, and we can
-  // thus chose to execute only one.
-  auto IsUniformMemOpUse = [&](Instruction *I) {
-    if (!Legal->isUniformMemOp(*I, VF))
-      return false;
-    if (isa<LoadInst>(I))
-      // Loading the same address always produces the same result - at least
-      // assuming aliasing and ordering which have already been checked.
-      return true;
-    // Storing the same value on every iteration.
-    return TheLoop->isLoopInvariant(cast<StoreInst>(I)->getValueOperand());
-  };
-
-  auto IsUniformDecision = [&](Instruction *I, ElementCount VF) {
-    InstWidening WideningDecision = getWideningDecision(I, VF);
-    assert(WideningDecision != CM_Unknown &&
-           "Widening decision should be ready at this moment");
-
-    if (IsUniformMemOpUse(I) && !Hints->isFixedVectorizationDisabled())
-      return true;
-
-    return WideningDecision == CM_Widen ||
-           WideningDecision == CM_Widen_Reverse ||
-           WideningDecision == CM_Strided ||
-           WideningDecision == CM_MonotonicUnit ||
-           WideningDecision == CM_MonotonicStrided ||
-           WideningDecision == CM_Interleave;
-  };
-
-  // Returns true if Ptr is the pointer operand of a memory access instruction
-  // I, and I is known to not require scalarization.
-  auto IsVectorizedMemAccessUse = [&](Instruction *I, Value *Ptr) -> bool {
-    return getLoadStorePointerOperand(I) == Ptr && IsUniformDecision(I, VF);
-  };
-
-  // Mark root instructions that need to be vectorized.
-  for (auto *BB : TheLoop->blocks()) {
-    for (auto &I : *BB) {
-      if (isa<LoadInst, StoreInst>(&I)) {
-        InstWidening WideningDecision = getWideningDecision(&I, VF);
-        assert(WideningDecision != CM_Unknown &&
-               "Widening decision should be ready at this moment");
-
-        // 1) Loads and stores to vectorize
-        if (WideningDecision != CM_Scalarize) {
-          LLVM_DEBUG(dbgs() << "Adding to NonUniformWorklist\n"; I.dump(););
-          NonUniformWorklist.insert(&I);
-        }
-
-        // 2) Address expressiones to vectorize
-        auto *Ptr = getLoadStorePointerOperand(&I);
-        if (!Ptr)
-          continue;
-
-        if (!IsUniformDecision(&I, VF)) {
-          assert(!IsVectorizedMemAccessUse(&I, Ptr) &&
-                 "Uniform address consistency check");
-          AddToWorklistIfAllowed(&I);
-        }
-      }
-    }
-  }
-
-  // Sweep through the loop body to find all non-uniforms.
-  while (!NonUniformWorklist.empty()) {
-    auto *I = NonUniformWorklist.pop_back_val();
-    assert(!NonUniforms[VF].contains(I) && "Non-uniform has been visited");
-    assert(!IsOutOfScope(I) && "Non-uniform is out of scope");
-    NonUniforms[VF].insert(I);
-    // Mark all users of a non-uniform non-uniform
-    for (auto *U : I->users()) {
-      if (!NonUniforms[VF].contains(cast<Instruction>(U))) {
-        LLVM_DEBUG(dbgs() << "Adding to NonUniformWorklist\n";
-                   cast<Instruction>(U)->dump(););
-        NonUniformWorklist.insert(cast<Instruction>(U));
-      }
-    }
-  }
-
-  // Sweep through the loop body to find all uniforms.
-  for (auto *BB : TheLoop->blocks())
-    for (Instruction &I : *BB)
-      if (!NonUniforms[VF].contains(&I))
-        Uniforms[VF].insert(&I);
-
-  LLVM_DEBUG(dbgs() << "Unforms:\n";
-  for (Instruction *I : Uniforms[VF])
-    I->dump();
-  dbgs() << "NonUniforms:\n";
-  for (Instruction *I : NonUniforms[VF])
-    I->dump(););
-}
-#endif // SIFIVE_CUSTOMIZATION
 bool LoopVectorizationCostModel::runtimeChecksRequired() {
   LLVM_DEBUG(dbgs() << "LV: Performing code size checks.\n");
 
@@ -9486,12 +9347,6 @@ LoopVectorizationPlanner::plan(ElementCount UserVF, unsigned UserIC) {
     if (CM.selectUserVectorizationFactor(UserVF)) {
       LLVM_DEBUG(dbgs() << "LV: Using user VF " << UserVF << ".\n");
       CM.collectInLoopReductions();
-#if SIFIVE_CUSTOMIZATION
-      // Stop vectorizing an uncountable loop if there is no instruction to
-      // vectorize
-      if (Legal->isVectorizableUncountable() && !CM.hasNonUniforms(UserVF))
-        return std::nullopt;
-#endif
       buildVPlansWithVPRecipes(UserVF, UserVF);
       if (!hasPlanWithVF(UserVF)) {
         LLVM_DEBUG(dbgs() << "LV: No VPlan could be built for " << UserVF
@@ -9519,12 +9374,6 @@ LoopVectorizationPlanner::plan(ElementCount UserVF, unsigned UserIC) {
   for (const auto &VF : VFCandidates) {
     // Collect Uniform and Scalar instructions after vectorization with VF.
     CM.collectUniformsAndScalars(VF);
-#if SIFIVE_CUSTOMIZATION
-    // Stop vectorizing an uncountable loop if there is no instruction to
-    // vectorize
-    if (Legal->isVectorizableUncountable() && !CM.hasNonUniforms(VF))
-      return std::nullopt;
-#endif
 
     // Collect the instructions (and their associated costs) that will be more
     // profitable to scalarize.
