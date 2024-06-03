@@ -10465,13 +10465,7 @@ VPRecipeBuilder::tryToWidenMemory(Instruction *I, ArrayRef<VPValue *> Operands,
 static VPWidenIntOrFpInductionRecipe *
 createWidenInductionRecipes(PHINode *Phi, Instruction *PhiOrTrunc,
                             VPValue *Start, const InductionDescriptor &IndDesc,
-<<<<<<< HEAD
-                            VPlan &Plan, 
-                            ScalarEvolution &SE, Loop &OrigLoop,
-                            VFRange &Range) {
-=======
                             VPlan &Plan, ScalarEvolution &SE, Loop &OrigLoop) {
->>>>>>> 855eef2
   assert(IndDesc.getStartValue() ==
          Phi->getIncomingValueForBlock(OrigLoop.getLoopPreheader()));
   assert(SE.isLoopInvariant(IndDesc.getStep(), &OrigLoop) &&
