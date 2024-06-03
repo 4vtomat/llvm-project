@@ -126,6 +126,7 @@
 #include "llvm/Transforms/Scalar/SCCP.h"
 #include "llvm/Transforms/Scalar/SROA.h"
 #if SIFIVE_CUSTOMIZATION
+#include "llvm/Transforms/Scalar/SiFive_LoopConcat.h"
 #include "llvm/Transforms/Scalar/SiFive_LoopReassociate.h"
 #include "llvm/Transforms/Scalar/SiFive_LoopReverse.h"
 #endif // SIFIVE_CUSTOMIZATION
@@ -506,9 +507,16 @@ PassBuilder::buildO1FunctionSimplificationPipeline(OptimizationLevel Level,
   // attention to it.
   if (Phase != ThinOrFullLTOPhase::ThinLTOPreLink || !PGOOpt ||
       PGOOpt->Action != PGOOptions::SampleUse)
+#if SIFIVE_CUSTOMIZATION
+    LPM2.addPass(LoopFullUnrollPass(Level.getSpeedupLevel(),
+                                    /* OnlyWhenForced= */ !PTO.LoopUnrolling,
+                                    PTO.ForgetAllSCEVInLoopUnroll,
+                                    isLTOPreLink(Phase)));
+#else
     LPM2.addPass(LoopFullUnrollPass(Level.getSpeedupLevel(),
                                     /* OnlyWhenForced= */ !PTO.LoopUnrolling,
                                     PTO.ForgetAllSCEVInLoopUnroll));
+#endif
 
   invokeLoopOptimizerEndEPCallbacks(LPM2, Level);
 
@@ -523,6 +531,10 @@ PassBuilder::buildO1FunctionSimplificationPipeline(OptimizationLevel Level,
   FPM.addPass(createFunctionToLoopPassAdaptor(std::move(LPM2),
                                               /*UseMemorySSA=*/false,
                                               /*UseBlockFrequencyInfo=*/false));
+
+#if SIFIVE_CUSTOMIZATION
+  FPM.addPass(LoopConcatPass());
+#endif // SIFIVE_CUSTOMIZATION
 
   // Delete small array after loop unroll.
   FPM.addPass(SROAPass(SROAOptions::ModifyCFG));
@@ -700,9 +712,16 @@ PassBuilder::buildFunctionSimplificationPipeline(OptimizationLevel Level,
   // attention to it.
   if (Phase != ThinOrFullLTOPhase::ThinLTOPreLink || !PGOOpt ||
       PGOOpt->Action != PGOOptions::SampleUse)
+#if SIFIVE_CUSTOMIZATION
+    LPM2.addPass(LoopFullUnrollPass(Level.getSpeedupLevel(),
+                                    /* OnlyWhenForced= */ !PTO.LoopUnrolling,
+                                    PTO.ForgetAllSCEVInLoopUnroll,
+                                    isLTOPreLink(Phase)));
+#else
     LPM2.addPass(LoopFullUnrollPass(Level.getSpeedupLevel(),
                                     /* OnlyWhenForced= */ !PTO.LoopUnrolling,
                                     PTO.ForgetAllSCEVInLoopUnroll));
+#endif // SIFIVE_CUSTOMIZATION
 
   invokeLoopOptimizerEndEPCallbacks(LPM2, Level);
 
@@ -718,6 +737,10 @@ PassBuilder::buildFunctionSimplificationPipeline(OptimizationLevel Level,
   FPM.addPass(createFunctionToLoopPassAdaptor(std::move(LPM2),
                                               /*UseMemorySSA=*/false,
                                               /*UseBlockFrequencyInfo=*/false));
+
+#if SIFIVE_CUSTOMIZATION
+  FPM.addPass(LoopConcatPass());
+#endif // SIFIVE_CUSTOMIZATION
 
   // Delete small array after loop unroll.
   FPM.addPass(SROAPass(SROAOptions::ModifyCFG));
@@ -1572,6 +1595,10 @@ PassBuilder::buildModuleOptimizationPipeline(OptimizationLevel Level,
   OptimizePM.addPass(createFunctionToLoopPassAdaptor(
       std::move(LPM), /*UseMemorySSA=*/false, /*UseBlockFrequencyInfo=*/false));
 
+#if SIFIVE_CUSTOMIZATION
+  OptimizePM.addPass(LoopConcatPass());
+#endif // SIFIVE_CUSTOMIZATION
+
   // Distribute loops to allow partial vectorization.  I.e. isolate dependences
   // into separate loop that would otherwise inhibit vectorization.  This is
   // currently only performed for loops marked with the metadata
@@ -2111,6 +2138,10 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
   // *All* loop passes must preserve it, in order to be able to use it.
   MainFPM.addPass(createFunctionToLoopPassAdaptor(
       std::move(LPM), /*UseMemorySSA=*/false, /*UseBlockFrequencyInfo=*/true));
+
+#if SIFIVE_CUSTOMIZATION
+  MainFPM.addPass(LoopConcatPass());
+#endif // SIFIVE_CUSTOMIZATION
 
   MainFPM.addPass(LoopDistributePass());
 

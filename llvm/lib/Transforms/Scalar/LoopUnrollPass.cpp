@@ -34,6 +34,7 @@
 #include "llvm/Analysis/ProfileSummaryInfo.h"
 #include "llvm/Analysis/ScalarEvolution.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
+#include "llvm/Analysis/VectorUtils.h" // SIFIVE
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/CFG.h"
 #include "llvm/IR/Constant.h"
@@ -1401,6 +1402,79 @@ tryToUnrollLoop(Loop *L, DominatorTree &DT, LoopInfo *LI, ScalarEvolution &SE,
   return UnrollResult;
 }
 
+#if SIFIVE_CUSTOMIZATION
+static bool HasReductionLoop(Loop *L) {
+  for (auto &Phi : L->getHeader()->phis()) {
+    if (Phi.getNumIncomingValues() == 1)
+      continue;
+
+    RecurrenceDescriptor Rdx;
+    if (RecurrenceDescriptor::isReductionPHI(&Phi, L, Rdx))
+      return true;
+  }
+  return false;
+}
+static bool HasOnlyNonUnitStrideMemoryAccesses(
+    ScalarEvolution &SE, ProfileSummaryInfo *PSI,
+    BlockFrequencyInfo *BFI,
+    LoopAccessInfoManager &LAIs, Loop *L) {
+  Function *F = L->getHeader()->getParent();
+  PredicatedScalarEvolution PSE(SE, *L);
+  std::function<const LoopAccessInfo &(Loop &)> GetLAA =
+      [&](Loop &L) -> const LoopAccessInfo & { return LAIs.getInfo(L); };
+
+  // This function mimics LoopVectorizationLegality::isConsecutiveOrUnknownPtr.
+  // The function checks if the pointer is consecutive.
+  // Returns:
+  // None - Stride is unknown.
+  // 0 - Stride is non-consecutive.
+  // 1 - Address is consecutive.
+  // -1 - Address is consecutive, and decreasing.
+  auto IsConsecutiveOrUnknownPtr = [&](Loop *L, Type *AccessTy,
+                                       Value *Ptr) -> std::optional<int64_t> {
+    const LoopAccessInfo *LAI = &GetLAA(*L);
+    const auto &Strides = LAI->getSymbolicStrides();
+    bool OptForSize =
+        F->hasOptSize() || llvm::shouldOptimizeForSize(L->getHeader(), PSI, BFI,
+                                                       PGSOQueryType::IRPass);
+    bool CanAddPredicate = !OptForSize;
+    std::optional<int64_t> Stride =
+        getPtrStride(PSE, AccessTy, Ptr, L, Strides, CanAddPredicate, false);
+    if (!Stride.has_value())
+      return std::nullopt;
+    if (*Stride == 1 || *Stride == -1)
+      return Stride;
+    return 0;
+  };
+
+  // This function is used in below, where this pass iterates through the loops
+  // of LoopInfo.
+  bool HasMemoryAccess = false;
+  for (BasicBlock *BB : L->blocks()) {
+    for (Instruction &I : *BB) {
+      Value *Ptr = getLoadStorePointerOperand(&I);
+      if (!Ptr)
+        continue;
+
+      if (LoopConcatCanonicalize) {
+        auto S = getSimpleSCEVStride(I, PSE, /*InBytes=*/true);
+        if (!S || S.isUnitStrided())
+          return false;
+      } else {
+        std::optional<int64_t> Stride =
+            IsConsecutiveOrUnknownPtr(L, getLoadStoreType(&I), Ptr);
+        if (!Stride.has_value())
+          continue;
+        if (*Stride != 0)
+          return false;
+      }
+      HasMemoryAccess = true;
+    }
+  }
+  return HasMemoryAccess;
+}
+#endif
+
 namespace {
 
 class LoopUnroll : public LoopPass {
@@ -1536,6 +1610,32 @@ PreservedAnalyses LoopFullUnrollPass::run(Loop &L, LoopAnalysisManager &AM,
 
   std::string LoopName = std::string(L.getName());
 
+#if SIFIVE_CUSTOMIZATION
+    // Within SiFive, we have the Loop Concatenation Canonicalize
+    // transformation that delays full unrolling for the simplification
+    // pipelines until during LTO phase.  This allows us to format loops with
+    // shared affine tmp storage for contigous strided regions in sequences
+    // in order to concatenate said loops.  This adhoc approach is driven by
+    // SCT-3136, which we seek to skip the full unrolling when all memory
+    // accesses are non-unit strides or when reductions are present during
+    // the pre-link stage so as to modify inline size cost analysis by
+    // keeping these loop rolled, facilitating their identification.
+    // You can find a similar function
+    // `HasOnlyNonUnitStrideMemoryAccesses` under LoopVectorize.cpp. This
+    // facilitates longer vector usage for concatenated loops, reducing path
+    // length.
+    LoopAccessInfoManager LAIM(AR.SE, AR.AA, AR.DT, AR.LI, /* TLI */ nullptr);
+    if (LoopConcatCanonicalize && IsLTOPrelink && L.isLoopSimplifyForm() &&
+        (HasReductionLoop(&L) ||
+         HasOnlyNonUnitStrideMemoryAccesses(AR.SE, /* PSI */ nullptr,
+                                            /* BFI */ nullptr, LAIM, &L))) {
+      LLVM_DEBUG(
+          dbgs() << "Bail out loop unroll in pre-link stage when there is only "
+                    "non-unit stride memory accesses.\n");
+      return PreservedAnalyses::all();
+    }
+#endif
+
   bool Changed =
       tryToUnrollLoop(&L, AR.DT, &AR.LI, AR.SE, AR.TTI, AR.AC, ORE,
                       /*BFI*/ nullptr, /*PSI*/ nullptr,
@@ -1629,59 +1729,6 @@ PreservedAnalyses LoopUnrollPass::run(Function &F,
 
   bool Changed = false;
 
-#if SIFIVE_CUSTOMIZATION
-  LoopAccessInfoManager &LAIs = AM.getResult<LoopAccessAnalysis>(F);
-  std::function<const LoopAccessInfo &(Loop &)> GetLAA =
-      [&](Loop &L) -> const LoopAccessInfo & { return LAIs.getInfo(L); };
-
-  // This function mimicks LoopVectorizationLegality::isConsecutiveOrUnknownPtr.
-  // The function checks if the pointer is consecutive.
-  // Returns:
-  // None - Stride is unknown.
-  // 0 - Stride is non-consecutive.
-  // 1 - Address is consecutive.
-  // -1 - Address is consecutive, and decreasing.
-  auto IsConsecutiveOrUnknownPtr = [&](Loop *L, Type *AccessTy,
-                                       Value *Ptr) -> std::optional<int64_t> {
-    const LoopAccessInfo *LAI = &GetLAA(*L);
-    PredicatedScalarEvolution PSE(SE, *L);
-    const auto &Strides = LAI->getSymbolicStrides();
-    Function *F = L->getHeader()->getParent();
-    bool OptForSize =
-        F->hasOptSize() || llvm::shouldOptimizeForSize(L->getHeader(), PSI, BFI,
-                                                       PGSOQueryType::IRPass);
-    bool CanAddPredicate = !OptForSize;
-    std::optional<int64_t> Stride =
-        getPtrStride(PSE, AccessTy, Ptr, L, Strides, CanAddPredicate, false);
-    if (!Stride.has_value())
-      return std::nullopt;
-    if (Stride.value() == 1 || Stride.value() == -1)
-      return Stride;
-    return 0;
-  };
-
-  // This function is used in below, where this pass iterates through the loops
-  // of LoopInfo.
-  auto HasOnlyNonUnitStrideMemoryAccesses = [&](Loop *L) {
-    bool HasMemoryAccess = false;
-    for (BasicBlock *BB : L->blocks()) {
-      for (Instruction &I : *BB) {
-        Value *Ptr = getLoadStorePointerOperand(&I);
-        if (!Ptr)
-          continue;
-        std::optional<int64_t> Stride =
-            IsConsecutiveOrUnknownPtr(L, getLoadStoreType(&I), Ptr);
-        if (!Stride.has_value())
-          continue;
-        if (Stride.value() != 0)
-          return false;
-        HasMemoryAccess = true;
-      }
-    }
-    return HasMemoryAccess;
-  };
-#endif
-
   // The unroller requires loops to be in simplified form, and also needs LCSSA.
   // Since simplification may add new inner loops, it has to run before the
   // legality and profitability checks. This means running the loop unroller
@@ -1716,8 +1763,9 @@ PreservedAnalyses LoopUnrollPass::run(Function &F,
     // may perform on those loops we skip vectorization in pre-link, hence we
     // also have to skip these loops in pre-link too. You can find the same
     // function `HasOnlyNonUnitStrideMemoryAccesses` under LoopVectorize.cpp.
+    auto &LAIs = AM.getResult<LoopAccessAnalysis>(F);
     if (EnableLoopDataLayout && IsLTOPrelink &&
-        HasOnlyNonUnitStrideMemoryAccesses(&L)) {
+        HasOnlyNonUnitStrideMemoryAccesses(SE, PSI, BFI, LAIs, &L)) {
       LLVM_DEBUG(
           dbgs() << "Bail out loop unroll in pre-link stage when there is only "
                     "non-unit stride memory accesses.\n");

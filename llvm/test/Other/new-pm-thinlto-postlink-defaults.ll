@@ -124,13 +124,15 @@
 ; CHECK-O-NEXT: Running pass: LoopDeletionPass
 ; CHECK-O-NEXT: Running pass: LoopReversePass
 ; CHECK-O-NEXT: Running pass: LoopFullUnrollPass
+; CHECK-O-NEXT: Running pass: LoopConcatPass
+; CHECK-O-NEXT: Running analysis: DependenceAnalysis
+; CHECK-O-NEXT: Running analysis: PostDominatorTreeAnalysis
 ; CHECK-O-NEXT: Running pass: SROAPass on foo
 ; CHECK-O23SZ-NEXT: Running pass: VectorCombinePass
 ; CHECK-O23SZ-NEXT: Running pass: MergedLoadStoreMotionPass
 ; CHECK-O23SZ-NEXT: Running pass: GVNPass
 ; CHECK-O23SZ-NEXT: Running analysis: MemoryDependenceAnalysis
 ; CHECK-O1-NEXT: Running pass: MemCpyOptPass
-; CHECK-O1-NEXT: Running analysis: PostDominatorTreeAnalysis
 ; CHECK-O-NEXT: Running pass: SCCPPass
 ; CHECK-O-NEXT: Running pass: BDCEPass
 ; CHECK-O-NEXT: Running analysis: DemandedBitsAnalysis
@@ -141,7 +143,6 @@
 ; CHECK-O23SZ-NEXT: Invalidating analysis: LazyValueAnalysis
 ; CHECK-O1-NEXT: Running pass: CoroElidePass
 ; CHECK-O-NEXT: Running pass: ADCEPass
-; CHECK-O23SZ-NEXT: Running analysis: PostDominatorTreeAnalysis
 ; CHECK-O23SZ-NEXT: Running pass: MemCpyOptPass
 ; CHECK-O23SZ-NEXT: Running pass: DSEPass
 ; CHECK-O23SZ-NEXT: Running pass: MoveAutoInitPass on foo
@@ -175,6 +176,7 @@
 ; CHECK-POSTLINK-O-NEXT: Running pass: LoopRotatePass
 ; CHECK-POSTLINK-O-NEXT: Running pass: LoopDeletionPass
 ; CHECK-POSTLINK-O-NEXT: Running pass: LoopReversePass
+; CHECK-POSTLINK-O-NEXT: Running pass: LoopConcatPass
 ; CHECK-POSTLINK-O-NEXT: Running pass: LoopDistributePass
 ; CHECK-POSTLINK-O-NEXT: Running analysis: LoopAccessAnalysis on foo
 ; CHECK-POSTLINK-O-NEXT: Running pass: InjectTLIMappings

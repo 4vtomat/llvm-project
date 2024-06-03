@@ -383,6 +383,9 @@ FUNCTION_PASS("lcssa", LCSSAPass())
 FUNCTION_PASS("libcalls-shrinkwrap", LibCallsShrinkWrapPass())
 FUNCTION_PASS("lint", LintPass())
 FUNCTION_PASS("load-store-vectorizer", LoadStoreVectorizerPass())
+#if SIFIVE_CUSTOMIZATION
+FUNCTION_PASS("loop-concat", LoopConcatPass())
+#endif
 FUNCTION_PASS("loop-data-prefetch", LoopDataPrefetchPass())
 FUNCTION_PASS("loop-distribute", LoopDistributePass())
 FUNCTION_PASS("loop-fusion", LoopFusePass())

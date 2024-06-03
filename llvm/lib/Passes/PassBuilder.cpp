@@ -263,6 +263,7 @@
 #include "llvm/Transforms/Scalar/Scalarizer.h"
 #include "llvm/Transforms/Scalar/SeparateConstOffsetFromGEP.h"
 #if SIFIVE_CUSTOMIZATION
+#include "llvm/Transforms/Scalar/SiFive_LoopConcat.h"
 #include "llvm/Transforms/Scalar/SiFive_LoopReassociate.h"
 #include "llvm/Transforms/Scalar/SiFive_LoopReverse.h"
 #endif // SIFIVE_CUSTOMIZATION

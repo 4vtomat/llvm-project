@@ -110,6 +110,8 @@
 ; CHECK-O-NEXT: Running pass: LoopDeletionPass
 ; CHECK-O-NEXT: Running pass: LoopReversePass
 ; CHECK-O-NEXT: Running pass: LoopFullUnrollPass
+; CHECK-O-NEXT: Running pass: LoopConcatPass
+; CHECK-O-NEXT: Running analysis: DependenceAnalysis
 ; CHECK-O-NEXT: Running pass: SROAPass on foo
 ; CHECK-O23SZ-NEXT: Running pass: VectorCombinePass
 ; CHECK-O23SZ-NEXT: Running pass: MergedLoadStoreMotionPass
@@ -160,6 +162,7 @@
 ; CHECK-O-NEXT: Running pass: LoopRotatePass
 ; CHECK-O-NEXT: Running pass: LoopDeletionPass
 ; CHECK-O-NEXT: Running pass: LoopReversePass
+; CHECK-O-NEXT: Running pass: LoopConcatPass on foo
 ; CHECK-O-NEXT: Running pass: LoopDistributePass
 ; CHECK-O-NEXT: Running analysis: LoopAccessAnalysis on foo
 ; CHECK-O-NEXT: Running pass: InjectTLIMappings

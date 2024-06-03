@@ -36,11 +36,22 @@ class LoopFullUnrollPass : public PassInfoMixin<LoopFullUnrollPass> {
   /// the internal SCEV records. For large loops, the former is faster.
   const bool ForgetSCEV;
 
+  bool IsLTOPrelink; // SIFIVE
+
 public:
+#if SIFIVE_CUSTOMIZATION
+  explicit LoopFullUnrollPass(int OptLevel = 2, bool OnlyWhenForced = false,
+                              bool ForgetSCEV = false,
+                              bool IsLTOPrelink = false)
+      : OptLevel(OptLevel), OnlyWhenForced(OnlyWhenForced),
+        ForgetSCEV(ForgetSCEV),
+        IsLTOPrelink(IsLTOPrelink) {}
+#else
   explicit LoopFullUnrollPass(int OptLevel = 2, bool OnlyWhenForced = false,
                               bool ForgetSCEV = false)
       : OptLevel(OptLevel), OnlyWhenForced(OnlyWhenForced),
         ForgetSCEV(ForgetSCEV) {}
+#endif
 
   PreservedAnalyses run(Loop &L, LoopAnalysisManager &AM,
                         LoopStandardAnalysisResults &AR, LPMUpdater &U);

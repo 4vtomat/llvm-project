@@ -58,6 +58,9 @@ static const char *LLVMLoopDisableLICM = "llvm.licm.disable";
 cl::opt<bool> llvm::EnableLoopDataLayout(
     "loop-data-layout-enable", cl::Hidden, cl::init(false),
     cl::desc("Discover Data Layout Opportunities in Loops"));
+cl::opt<bool> llvm::LoopConcatCanonicalize(
+    "loop-concat-canonicalize", cl::Hidden, cl::init(false),
+    cl::desc("Bypass Full Unrolling for strided loops and LC Canonicalize"));
 #endif // SIFIVE_CUSTOMIZATION
 
 bool llvm::formDedicatedExitBlocks(Loop *L, DominatorTree *DT, LoopInfo *LI,
