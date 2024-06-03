@@ -212,19 +212,13 @@ bool VPRecipeBase::mayHaveSideEffects() const {
     default:
       return true;
     }
-<<<<<<< HEAD
-  case VPWidenCallSC:
-    return cast<Instruction>(getVPSingleValue()->getUnderlyingValue())
-        ->mayHaveSideEffects();
-#if SIFIVE_CUSTOMIZATION
-  case VPVectorPointerSC:
-#endif // SIFIVE_CUSTOMIZATION
-=======
   case VPWidenCallSC: {
     Function *Fn = cast<VPWidenCallRecipe>(this)->getCalledScalarFunction();
     return mayWriteToMemory() || !Fn->doesNotThrow() || !Fn->willReturn();
   }
->>>>>>> 855eef2
+#if SIFIVE_CUSTOMIZATION
+  case VPVectorPointerSC:
+#endif // SIFIVE_CUSTOMIZATION
   case VPBlendSC:
   case VPReductionSC:
   case VPScalarIVStepsSC:
