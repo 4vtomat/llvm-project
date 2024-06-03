@@ -47,7 +47,7 @@ struct RVVIntrinsicDef {
 
 struct RVVOverloadIntrinsicDef {
   // Indexes of RISCVIntrinsicManagerImpl::IntrinsicList.
-  SmallVector<uint16_t, 8> Indexes;
+  SmallVector<uint32_t, 8> Indexes; // SIFIVE
 };
 
 } // namespace
@@ -166,7 +166,7 @@ private:
   // List of all RVV intrinsic.
   std::vector<RVVIntrinsicDef> IntrinsicList;
   // Mapping function name to index of IntrinsicList.
-  StringMap<uint16_t> Intrinsics;
+  StringMap<uint32_t> Intrinsics; // SIFIVE
   // Mapping function name to RVVOverloadIntrinsicDef.
   StringMap<RVVOverloadIntrinsicDef> OverloadIntrinsics;
 
@@ -220,11 +220,26 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
       {"zvksh", RVV_REQ_Zvksh},
       {"zvfbfwma", RVV_REQ_Zvfbfwma},
       {"zvfbfmin", RVV_REQ_Zvfbfmin},
+#if SIFIVE_CUSTOMIZATION
+      {"experimental", RVV_REQ_Experimental},
+      {"xsfvfhbfmin", RVV_REQ_Xsfvfhbfmin},
+      {"xsfvqdotq", RVV_REQ_Xsfvqdotq},
+      {"xsfvfexpa", RVV_REQ_Xsfvfexpa},
+      {"xsfvfexpa64e", RVV_REQ_Xsfvfexpa64e}};
+#else
       {"experimental", RVV_REQ_Experimental}};
+#endif // SIFIVE_CUSTOMIZATION
 
   // Construction of RVVIntrinsicRecords need to sync with createRVVIntrinsics
   // in RISCVVEmitter.cpp.
   for (auto &Record : Recs) {
+#if SIFIVE_CUSTOMIZATION
+    // Do not add the v0.11 intrinsics into the compiler if declaration switch
+    // is not triggered.
+    if (!S.RISCV().DeclareRVVectorV0p11Builtins && Record.IsV0p11Deprecated)
+      continue;
+#endif
+
     // Check requirements.
     if (llvm::any_of(FeatureCheckList, [&](const auto &Item) {
           return (Record.RequiredExtensions & Item.second) == Item.second &&
@@ -247,6 +262,9 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
         static_cast<PolicyScheme>(Record.MaskedPolicyScheme);
 
     const Policy DefaultPolicy;
+#ifdef SIFIVE_CUSTOMIZATION
+    const Policy NonTemporalDefaultPolicy(/* IsNontemporal*/ true);
+#endif
 
     llvm::SmallVector<PrototypeDescriptor> ProtoSeq =
         RVVIntrinsic::computeBuiltinTypes(
@@ -261,6 +279,23 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
           Record.HasVL, Record.NF, MaskedPolicyScheme, DefaultPolicy,
           Record.IsTuple);
 
+#if SIFIVE_CUSTOMIZATION
+    llvm::SmallVector<PrototypeDescriptor> NTLProtoSeq =
+        RVVIntrinsic::computeBuiltinTypes(
+            BasicProtoSeq, /*IsMasked=*/false,
+            /*HasMaskedOffOperand=*/false, Record.HasVL, Record.NF,
+            UnMaskedPolicyScheme, NonTemporalDefaultPolicy, Record.IsTuple);
+#endif // SIFIVE_CUSTOMIZATION
+
+#if SIFIVE_CUSTOMIZATION
+    llvm::SmallVector<PrototypeDescriptor> NTLProtoMaskSeq;
+    if (Record.HasMasked)
+      NTLProtoMaskSeq = RVVIntrinsic::computeBuiltinTypes(
+          BasicProtoSeq, /*IsMasked=*/true, Record.HasMaskedOffOperand,
+          Record.HasVL, Record.NF, MaskedPolicyScheme, NonTemporalDefaultPolicy,
+          Record.IsTuple);
+#endif // SIFIVE_CUSTOMIZATION
+
     bool UnMaskedHasPolicy = UnMaskedPolicyScheme != PolicyScheme::SchemeNone;
     bool MaskedHasPolicy = MaskedPolicyScheme != PolicyScheme::SchemeNone;
     SmallVector<Policy> SupportedUnMaskedPolicies =
@@ -268,6 +303,13 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
     SmallVector<Policy> SupportedMaskedPolicies =
         RVVIntrinsic::getSupportedMaskedPolicies(Record.HasTailPolicy,
                                                  Record.HasMaskPolicy);
+
+#if SIFIVE_CUSTOMIZATION
+    if (Record.HasNontemporalOperand) {
+      RVVIntrinsic::appendNontemporalInPolicyList(SupportedUnMaskedPolicies);
+      RVVIntrinsic::appendNontemporalInPolicyList(SupportedMaskedPolicies);
+    }
+#endif // SIFIVE_CUSTOMIZATION
 
     for (unsigned int TypeRangeMaskShift = 0;
          TypeRangeMaskShift <= static_cast<unsigned int>(BasicType::MaxOffset);
@@ -295,6 +337,11 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
         std::optional<RVVTypes> Types =
             TypeCache.computeTypes(BaseType, Log2LMUL, Record.NF, ProtoSeq);
 
+#if SIFIVE_CUSTOMIZATION
+        std::optional<RVVTypes> NTLTypes =
+            TypeCache.computeTypes(BaseType, Log2LMUL, Record.NF, NTLProtoSeq);
+#endif // SIFIVE_CUSTOMIZATION
+
         // Ignored to create new intrinsic if there are any illegal types.
         if (!Types.has_value())
           continue;
@@ -307,6 +354,14 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
         // Create non-masked intrinsic.
         InitRVVIntrinsic(Record, SuffixStr, OverloadedSuffixStr, false, *Types,
                          UnMaskedHasPolicy, DefaultPolicy);
+
+#if SIFIVE_CUSTOMIZATION
+        // Create NTL non-masked intrinsic.
+        if (Record.HasNontemporalOperand)
+          InitRVVIntrinsic(Record, SuffixStr, OverloadedSuffixStr, false,
+                           *NTLTypes, UnMaskedHasPolicy,
+                           NonTemporalDefaultPolicy);
+#endif // SIFIVE_CUSTOMIZATION
 
         // Create non-masked policy intrinsic.
         if (Record.UnMaskedPolicyScheme != PolicyScheme::SchemeNone) {
@@ -330,6 +385,17 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
             TypeCache.computeTypes(BaseType, Log2LMUL, Record.NF, ProtoMaskSeq);
         InitRVVIntrinsic(Record, SuffixStr, OverloadedSuffixStr, true,
                          *MaskTypes, MaskedHasPolicy, DefaultPolicy);
+
+#if SIFIVE_CUSTOMIZATION
+        // Create NTL masked intrinsic.
+        std::optional<RVVTypes> NTLMaskTypes = TypeCache.computeTypes(
+            BaseType, Log2LMUL, Record.NF, NTLProtoMaskSeq);
+        if (Record.HasNontemporalOperand)
+          InitRVVIntrinsic(Record, SuffixStr, OverloadedSuffixStr, true,
+                           *NTLMaskTypes, MaskedHasPolicy,
+                           NonTemporalDefaultPolicy);
+#endif // SIFIVE_CUSTOMIZATION
+
         if (Record.MaskedPolicyScheme == PolicyScheme::SchemeNone)
           continue;
         // Create masked policy intrinsic.
@@ -390,7 +456,7 @@ void RISCVIntrinsicManagerImpl::InitRVVIntrinsic(
                                      Record.HasFRMRoundModeOp);
 
   // Put into IntrinsicList.
-  uint16_t Index = IntrinsicList.size();
+  uint32_t Index = IntrinsicList.size(); // SIFIVE
   assert(IntrinsicList.size() == (size_t)Index &&
          "Intrinsics indices overflow.");
   IntrinsicList.push_back({BuiltinName, Signature});
