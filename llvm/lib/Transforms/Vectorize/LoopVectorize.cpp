@@ -10995,18 +10995,12 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
 #endif // SIFIVE_CUSTOMIZATION
       VPlanTransforms::optimize(*Plan, *PSE.getSE());
       // TODO: try to put it close to addActiveLaneMask().
-<<<<<<< HEAD
-      if (CM.foldTailWithEVL())
-        VPlanTransforms::addExplicitVectorLength(*Plan);
-#if SIFIVE_CUSTOMIZATION
-      }
-#endif // SIFIVE_CUSTOMIZATION
-=======
-      // Discard the plan if it is not EVL-compatible
       if (CM.foldTailWithEVL() &&
           !VPlanTransforms::tryAddExplicitVectorLength(*Plan))
         break;
->>>>>>> 855eef2
+#if SIFIVE_CUSTOMIZATION
+      }
+#endif // SIFIVE_CUSTOMIZATION
       assert(verifyVPlanIsValid(*Plan) && "VPlan is invalid");
       VPlans.push_back(std::move(Plan));
     }
