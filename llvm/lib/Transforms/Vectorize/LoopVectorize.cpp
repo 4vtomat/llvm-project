@@ -4237,19 +4237,6 @@ LoopVectorizationCostModel::getVectorIntrinsicCost(CallInst *CI,
                                    TargetTransformInfo::TCK_RecipThroughput);
 }
 
-<<<<<<< HEAD
-static Type *smallestIntegerVectorType(Type *T1, Type *T2) {
-  auto *I1 = cast<IntegerType>(cast<VectorType>(T1)->getElementType());
-  auto *I2 = cast<IntegerType>(cast<VectorType>(T2)->getElementType());
-  return I1->getBitWidth() < I2->getBitWidth() ? T1 : T2;
-}
-
-static Type *largestIntegerVectorType(Type *T1, Type *T2) {
-  auto *I1 = cast<IntegerType>(cast<VectorType>(T1)->getElementType());
-  auto *I2 = cast<IntegerType>(cast<VectorType>(T2)->getElementType());
-  return I1->getBitWidth() > I2->getBitWidth() ? T1 : T2;
-}
-
 #if SIFIVE_CUSTOMIZATION
 void InnerLoopVectorizer::fixCSALiveOuts(VPTransformState &State, VPlan &Plan) {
   for (const auto &CSA: Plan.getCSAStates()) {
@@ -4273,8 +4260,6 @@ void InnerLoopVectorizer::fixCSALiveOuts(VPTransformState &State, VPlan &Plan) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> 855eef2
 void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State,
                                             VPlan &Plan) {
   // Fix widened non-induction PHIs by setting up the PHI operands.
