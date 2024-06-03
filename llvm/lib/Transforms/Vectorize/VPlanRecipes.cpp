@@ -825,28 +825,20 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
         if (Op != Instruction::ICmp && Op != Instruction::FCmp)
           ReducedPartRdx = Builder.CreateBinOp(
               (Instruction::BinaryOps)Op, RdxPart, ReducedPartRdx, "bin.rdx");
-<<<<<<< HEAD
-        else if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK)) {
-          TrackingVH<Value> ReductionStartValue =
-              RdxDesc.getRecurrenceStartValue();
-          ReducedPartRdx = createAnyOfOp(Builder, ReductionStartValue, RK,
-                                         ReducedPartRdx, RdxPart);
 #if SIFIVE_CUSTOMIZATION
-        }  else if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK)) {
+        else if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
           ReducedPartRdx = createFindLastIVOp(Builder, ReducedPartRdx, RdxPart);
 #endif // SIFIVE_CUSTOMIZATION
-        } else
-=======
         else
->>>>>>> 855eef2
           ReducedPartRdx = createMinMaxOp(Builder, RK, ReducedPartRdx, RdxPart);
       }
     }
 
     // Create the reduction after the loop. Note that inloop reductions create
     // the target reduction in the loop using a Reduction recipe.
-<<<<<<< HEAD
-    if (State.VF.isVector() && !PhiR->isInLoop()) {
+    if ((State.VF.isVector() ||
+         RecurrenceDescriptor::isAnyOfRecurrenceKind(RK)) &&
+        !PhiR->isInLoop()) {
 #if SIFIVE_CUSTOMIZATION
       if (State.Plan->useVLAVectorizer()) {
         Value *InitEVL =
@@ -874,11 +866,6 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
                                              ReducedPartRdx);
       }
 #else
-=======
-    if ((State.VF.isVector() ||
-         RecurrenceDescriptor::isAnyOfRecurrenceKind(RK)) &&
-        !PhiR->isInLoop()) {
->>>>>>> 855eef2
       ReducedPartRdx =
           createTargetReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
 #endif // SIFIVE_CUSTOMIZATION
