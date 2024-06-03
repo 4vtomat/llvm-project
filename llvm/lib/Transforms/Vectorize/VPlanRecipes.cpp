@@ -2052,32 +2052,6 @@ void VPBlendRecipe::execute(VPTransformState &State) {
   // Note that Mask0 is never used: lanes for which no path reaches this phi and
   // are essentially undef are taken from In0.
  VectorParts Entry(State.UF);
-<<<<<<< HEAD
-  for (unsigned In = 0; In < NumIncoming; ++In) {
-    for (unsigned Part = 0; Part < State.UF; ++Part) {
-      // We might have single edge PHIs (blocks) - use an identity
-      // 'select' for the first PHI operand.
-      Value *In0 = State.get(getIncomingValue(In), Part);
-      if (In == 0)
-        Entry[Part] = In0; // Initialize with the first incoming value.
-      else {
-        // Select between the current value and the previous incoming edge
-        // based on the incoming mask.
-        Value *Cond = State.get(getMask(In), Part);
-#if SIFIVE_CUSTOMIZATION
-        if (State.Plan->useVLAVectorizer() && Cond->getType()->isVectorTy()) {
-          Value *EVLArg = State.get(State.EVL, Part, /*NeedsScalar=*/true);
-          Entry[Part] = State.Builder.CreateIntrinsic(
-              Intrinsic::vp_select, {In0->getType()},
-              {Cond, In0, Entry[Part], EVLArg}, nullptr, "predphi");
-        } else
-#endif // SIFIVE_CUSTOMIZATION
-        Entry[Part] =
-            State.Builder.CreateSelect(Cond, In0, Entry[Part], "predphi");
-      }
-    }
-  }
-=======
  bool OnlyFirstLaneUsed = vputils::onlyFirstLaneUsed(this);
  for (unsigned In = 0; In < NumIncoming; ++In) {
    for (unsigned Part = 0; Part < State.UF; ++Part) {
@@ -2090,12 +2064,19 @@ void VPBlendRecipe::execute(VPTransformState &State) {
        // Select between the current value and the previous incoming edge
        // based on the incoming mask.
        Value *Cond = State.get(getMask(In), Part, OnlyFirstLaneUsed);
+#if SIFIVE_CUSTOMIZATION
+        if (State.Plan->useVLAVectorizer() && Cond->getType()->isVectorTy()) {
+          Value *EVLArg = State.get(State.EVL, Part, /*NeedsScalar=*/true);
+          Entry[Part] = State.Builder.CreateIntrinsic(
+              Intrinsic::vp_select, {In0->getType()},
+              {Cond, In0, Entry[Part], EVLArg}, nullptr, "predphi");
+        } else
+#endif // SIFIVE_CUSTOMIZATION
        Entry[Part] =
            State.Builder.CreateSelect(Cond, In0, Entry[Part], "predphi");
      }
    }
  }
->>>>>>> 855eef2
   for (unsigned Part = 0; Part < State.UF; ++Part)
     State.set(this, Entry[Part], Part, OnlyFirstLaneUsed);
 }
