@@ -69,10 +69,6 @@ def FeatureStdExtSs
     : RISCVExtension<"ss", 1, 13,
                      "'Ss' (Supervisor Architecture)">;
 
-def FeatureStdExtSmstateen
-    : RISCVExtension<"smstateen", 1, 0,
-                     "'Smstateen' (Machine-mode view of the state-enable extension)">;
-
 def FeaturesSmrnmi
     : RISCVExperimentalExtension<"smrnmi", 0, 5,
                                  "'Smrnmi' (Resumable Non-Maskable Interrupts)">;
