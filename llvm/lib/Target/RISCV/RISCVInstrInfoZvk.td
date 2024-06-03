@@ -580,7 +580,10 @@ let Predicates = [HasStdExtZvkbOrZvkb0p1] in {
 
 #ifdef SIFIVE_CUSTOMIZATION
 let Predicates = [HasStdExtZvkg0p1] in {
-  defm PseudoVGHMAC : VPseudoVALU_VV_NoMask_Zvk;
+  // We can use VPseudoVGHSH since it has Muliply-ALU behavior.
+  // This is simpler than defining new scheduler classes that only exist
+  // downstream.
+  defm PseudoVGHMAC : VPseudoVGHSH;
 } // Predicates = [HasStdExtZvkg0p1]
 #endif // SIFIVE_CUSTOMIZATION
 
