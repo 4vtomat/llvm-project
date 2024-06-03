@@ -136,7 +136,7 @@ def SIFIVE_P400 : RISCVTuneProcessorModel<"sifive-p400-series", SiFiveP400Model,
 def SIFIVE_8 : RISCVTuneProcessorModel<"sifive-8-series", SiFiveP500Model,
                                        [TuneSiFiveP500, FeaturePostRAScheduler],
                                        []>;
-def SIFIVE_P500 : RISCVTuneProcessorModel<"sifive-p500-series", SiFiveP500Model,o
+def SIFIVE_P500 : RISCVTuneProcessorModel<"sifive-p500-series", SiFiveP500Model,
                                           [TuneSiFiveP500, FeaturePostRAScheduler],
                                           []>;
 def SIFIVE_P600 : RISCVTuneProcessorModel<"sifive-p600-series", SiFiveP600Model,
@@ -1100,7 +1100,7 @@ def SIFIVE_P670S : RISCVProcessorModel<"sifive-p670s", SiFiveP600Model,
                                         FeatureUnalignedScalarMem,
                                         FeatureUnalignedVectorMem],
                                        [TuneSiFiveP600,
-                                        FeaturePostRAScheduler
+                                        FeaturePostRAScheduler,
                                         TuneDLen128b,
                                         TuneNoSinkSplatOperands]>;
 
