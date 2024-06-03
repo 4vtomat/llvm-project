@@ -58,7 +58,7 @@ using namespace llvm;
 STATISTIC(NumReassociatedReductions, "Number of reassociated reductions");
 
 static cl::opt<bool>
-    EnableLoopReassociate("sifive-loop-reassociate", cl::Hidden, cl::init(false),
+    EnableLoopReassociate("sifive-loop-reassociate", cl::Hidden, cl::init(true),
                           cl::desc("Reassociate operations across loops"));
 
 /// Check that reduce intrinsic that following properties:
@@ -126,7 +126,7 @@ static bool canSimplifyInLoopReduction(Instruction *I, PHINode **LastUse,
   }
 
   auto GetFirstNonSupportedInstruction =
-      [IsFPReduce](Instruction *I) {
+      [IsFPReduce](Instruction *I) -> Instruction * {
     FastMathFlags ReassocFMF;
     ReassocFMF.setAllowReassoc();
     do {
@@ -137,11 +137,12 @@ static bool canSimplifyInLoopReduction(Instruction *I, PHINode **LastUse,
       if ((!IsFPReduce && !match(I, m_Add(m_Value(), m_Value()))) ||
           (IsFPReduce && !match(I, m_CombineAnd(m_FAdd(m_Value(), m_Value()),
                                                 m_FMF(ReassocFMF)))))
-        break;
+        return nullptr;
     } while (I->hasOneUse());
     return I;
   };
 
+  // TODO: Support fsub and sub instructions. See GB5/312
   if ((I = GetFirstNonSupportedInstruction(I)) == nullptr) {
     LLVM_DEBUG(
         dbgs()
@@ -271,12 +272,17 @@ static bool reassociateLoop(Loop &L, LoopInfo &LI) {
 
 PreservedAnalyses
 SiFiveLoopReassociatePass::run(Loop &L, LoopAnalysisManager &AM,
-                               LoopStandardAnalysisResults &AR, LPMUpdater &) {
+                               LoopStandardAnalysisResults &AR,
+                               LPMUpdater &Updater) {
   if (!EnableLoopReassociate)
     return PreservedAnalyses::all();
 
   if (!reassociateLoop(L, AR.LI))
     return PreservedAnalyses::all();
+
+  LLVM_DEBUG(dbgs() << "LoopReassociate: reassociated reduction in "
+                    << *L.getHeader()->getParent() << " function in loop " << L
+                    << '\n');
 
   auto PA = getLoopPassPreservedAnalyses();
   PA.preserveSet<CFGAnalyses>();
