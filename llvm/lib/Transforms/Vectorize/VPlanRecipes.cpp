@@ -1103,10 +1103,11 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
     // Skip if CI doesn't have vp form.
     if (Intrinsic::ID VPID = VPIntrinsic::getVPIntrinsicID(VectorIntrinsicID);
         VPIntrinsic::isVPIntrinsic(VPID)) {
+      auto *CI = cast_or_null<CallInst>(getUnderlyingInstr());
       for (unsigned Part = 0; Part < State.UF; ++Part) {
         llvm::widenPredicatedCall(CI, this, *this, State, VPID, Part);
         Value *V = State.get(this, Part);
-        State.addMetadata(V, &CI);
+        State.addMetadata(V, CI);
       }
       return;
     }

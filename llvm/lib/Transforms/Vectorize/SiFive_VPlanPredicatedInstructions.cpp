@@ -275,11 +275,14 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
   llvm_unreachable("Unexpected opcode.");
 }
 
-void widenPredicatedCall(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
+void widenPredicatedCall(CallInst *CI, VPValue *Def, VPUser &ArgOperands,
                          VPTransformState &State, Intrinsic::ID VPID,
                          unsigned Part) {
   IRBuilderBase &Builder = State.Builder;
-  auto *DestTy = VectorType::get(CI.getType(), State.VF);
+  Function *CalledScalarFn =
+      cast<VPWidenCallRecipe>(Def)->getCalledScalarFunction();
+  Type *RetTy = CalledScalarFn->getReturnType();
+  auto *DestTy = VectorType::get(RetTy, State.VF);
   SmallVector<Type *, 2> TysForDecl = {DestTy};
   SmallVector<Value *, 4> Args;
   for (auto I : enumerate(ArgOperands.operands())) {
@@ -298,7 +301,7 @@ void widenPredicatedCall(CallInst &CI, VPValue *Def, VPUser &ArgOperands,
   CallInst *V =
       Builder.CreateIntrinsic(VPID, TysForDecl, Args, nullptr, "vp.op");
   if (isa<FPMathOperator>(V))
-    V->copyFastMathFlags(&CI);
+    V->copyFastMathFlags(CI);
   State.set(Def, V, Part);
 }
 
