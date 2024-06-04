@@ -1557,6 +1557,7 @@ bool VPlanTransforms::tryAddExplicitVectorLength(VPlan &Plan) {
 #endif // SIFIVE_CUSTOMIZATION
   // TODO: support unroll factor > 1.
   Plan.setUF(1);
+  return true;
 }
 
 #if SIFIVE_CUSTOMIZATION
@@ -1662,7 +1663,6 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
   CanonicalIVIncrement->setOperand(0, CanonicalIVPHI);
   // TODO: support unroll factor > 1.
   Plan.setUF(1);
-  return true;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
