@@ -1060,7 +1060,6 @@ public:
     case VPRecipeBase::VPBranchOnMaskSC:
 #if SIFIVE_CUSTOMIZATION
     case VPRecipeBase::VPCSAHeaderPHISC:
-    case VPRecipeBase::VPEVLBasedIVPHISC:
     case VPRecipeBase::VPMonotonicHeaderPHISC:
 #endif
     case VPRecipeBase::VPWidenLoadEVLSC:
