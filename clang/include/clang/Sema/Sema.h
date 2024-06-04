@@ -2104,8 +2104,14 @@ private:
 
   bool CheckARMBuiltinExclusiveCall(unsigned BuiltinID, CallExpr *TheCall,
                                     unsigned MaxWidth);
+#ifdef SIFIVE_CUSTOMIZATION
+public:
+#endif // SIFIVE_CUSTOMIZATION
   bool CheckNeonBuiltinFunctionCall(const TargetInfo &TI, unsigned BuiltinID,
                                     CallExpr *TheCall);
+#ifdef SIFIVE_CUSTOMIZATION
+private:
+#endif // SIFIVE_CUSTOMIZATION
   bool CheckMVEBuiltinFunctionCall(unsigned BuiltinID, CallExpr *TheCall);
   bool CheckSVEBuiltinFunctionCall(unsigned BuiltinID, CallExpr *TheCall);
   bool ParseSVEImmChecks(CallExpr *TheCall,

@@ -625,7 +625,7 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
                                          CallExpr *TheCall) {
 #if SIFIVE_CUSTOMIZATION
   if (BuiltinID >= NEON::LastTIBuiltin && BuiltinID < NEON::FirstTSBuiltin)
-    return CheckNeonBuiltinFunctionCall(TI, BuiltinID, TheCall);
+    return SemaRef.CheckNeonBuiltinFunctionCall(TI, BuiltinID, TheCall);
 #endif
   ASTContext &Context = getASTContext();
   // vmulh.vv, vmulh.vx, vmulhu.vv, vmulhu.vx, vmulhsu.vv, vmulhsu.vx,
