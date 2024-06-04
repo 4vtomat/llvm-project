@@ -37,6 +37,7 @@ class RISCVTargetStreamer : public MCTargetStreamer {
   bool HasTSO = false;
   bool HasZicfiss = false; // SIFIVE.
   bool HasZicfilp = false; // SIFIVE.
+  bool IsRV64 = false; // SIFIVE
 
 public:
   RISCVTargetStreamer(MCStreamer &S);
@@ -65,8 +66,9 @@ public:
   void setFlagsFromFeatures(const MCSubtargetInfo &STI);
   bool hasRVC() const { return HasRVC; }
   bool hasTSO() const { return HasTSO; }
-  bool hasZicfilp() const { return HasZicfilp; }
-  bool hasZicfiss() const { return HasZicfiss; }
+  bool hasZicfilp() const { return HasZicfilp; } // SIFIVE.
+  bool hasZicfiss() const { return HasZicfiss; } // SIFIVE.
+  bool isRV64() const { return IsRV64; } // SIFIVE.
 };
 
 // This part is for ascii assembly output
