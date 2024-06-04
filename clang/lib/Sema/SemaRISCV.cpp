@@ -918,15 +918,15 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
 #ifdef SIFIVE_CUSTOMIZATION
   {
     llvm::APSInt Result;
-    if (BuiltinConstantArg(TheCall, /* ArgNum = */ 2, Result))
+    if (SemaRef.BuiltinConstantArg(TheCall, /* ArgNum = */ 2, Result))
       return true;
     // 7 indicates no rounding mode (vxrm) change.
     if (Result.getSExtValue() == 7)
       return false;
-    return BuiltinConstantArgRange(TheCall, 2, 0, 3);
+    return SemaRef.BuiltinConstantArgRange(TheCall, 2, 0, 3);
   }
 #else
-    return BuiltinConstantArgRange(TheCall, 2, 0, 3);
+    return SemaRef.BuiltinConstantArgRange(TheCall, 2, 0, 3);
 #endif // SIFIVE_CUSTOMIZATION
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_tu:
   case RISCVVector::BI__builtin_rvv_vaaddu_vx_tu:
@@ -967,15 +967,15 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
 #ifdef SIFIVE_CUSTOMIZATION
   {
     llvm::APSInt Result;
-    if (BuiltinConstantArg(TheCall, /* ArgNum = */ 3, Result))
+    if (SemaRef.BuiltinConstantArg(TheCall, /* ArgNum = */ 3, Result))
       return true;
     // 7 indicates no rounding mode (vxrm) change.
     if (Result.getSExtValue() == 7)
       return false;
-    return BuiltinConstantArgRange(TheCall, 3, 0, 3);
+    return SemaRef.BuiltinConstantArgRange(TheCall, 3, 0, 3);
   }
 #else
-    return BuiltinConstantArgRange(TheCall, 3, 0, 3);
+    return SemaRef.BuiltinConstantArgRange(TheCall, 3, 0, 3);
 #endif // SIFIVE_CUSTOMIZATION
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_tum:
   case RISCVVector::BI__builtin_rvv_vaaddu_vv_tumu:
@@ -1034,15 +1034,15 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
 #ifdef SIFIVE_CUSTOMIZATION
   {
     llvm::APSInt Result;
-    if (BuiltinConstantArg(TheCall, /* ArgNum = */ 4, Result))
+    if (SemaRef.BuiltinConstantArg(TheCall, /* ArgNum = */ 4, Result))
       return true;
     // 7 indicates no rounding mode (vxrm) change.
     if (Result.getSExtValue() == 7)
       return false;
-    return BuiltinConstantArgRange(TheCall, 4, 0, 3);
+    return SemaRef.BuiltinConstantArgRange(TheCall, 4, 0, 3);
   }
 #else
-    return BuiltinConstantArgRange(TheCall, 4, 0, 3);
+    return SemaRef.BuiltinConstantArgRange(TheCall, 4, 0, 3);
 #endif // SIFIVE_CUSTOMIZATION
   case RISCVVector::BI__builtin_rvv_vfsqrt_v_rm:
   case RISCVVector::BI__builtin_rvv_vfrec7_v_rm:
