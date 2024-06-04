@@ -6510,12 +6510,12 @@ SDValue TargetLowering::BuildVPSDIV(SDNode *N, SelectionDAG &DAG,
   }
 
   // Shift right algebraic by shift value.
-  Q = DAG.getNode(ISD::VP_ASHR, DL, VT, Q, Shift, Mask, VL);
+  Q = DAG.getNode(ISD::VP_SRA, DL, VT, Q, Shift, Mask, VL);
   Created.push_back(Q.getNode());
 
   // Extract the sign bit, mask it and add it to the quotient.
   SDValue SignShift = DAG.getConstant(EltBits - 1, DL, ShVT);
-  SDValue T = DAG.getNode(ISD::VP_LSHR, DL, VT, Q, SignShift, Mask, VL);
+  SDValue T = DAG.getNode(ISD::VP_SRL, DL, VT, Q, SignShift, Mask, VL);
   Created.push_back(T.getNode());
   T = DAG.getNode(ISD::VP_AND, DL, VT, T, ShiftMask, Mask, VL);
   Created.push_back(T.getNode());
@@ -6820,7 +6820,7 @@ SDValue TargetLowering::BuildVPUDIV(SDNode *N, SelectionDAG &DAG,
 
   SDValue Q = N0;
   if (UsePreShift) {
-    Q = DAG.getNode(ISD::VP_LSHR, DL, VT, Q, PreShift, Mask, VL);
+    Q = DAG.getNode(ISD::VP_SRL, DL, VT, Q, PreShift, Mask, VL);
     Created.push_back(Q.getNode());
   }
 
@@ -6849,7 +6849,7 @@ SDValue TargetLowering::BuildVPUDIV(SDNode *N, SelectionDAG &DAG,
   }
 
   if (UsePostShift) {
-    Q = DAG.getNode(ISD::VP_LSHR, DL, VT, Q, PostShift, Mask, VL);
+    Q = DAG.getNode(ISD::VP_SRL, DL, VT, Q, PostShift, Mask, VL);
     Created.push_back(Q.getNode());
   }
 

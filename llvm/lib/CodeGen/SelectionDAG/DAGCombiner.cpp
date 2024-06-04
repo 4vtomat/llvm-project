@@ -26813,9 +26813,9 @@ static SDValue foldVPSelectWithIdentityConstant(SDNode *N, SelectionDAG &DAG,
       return ISD::SUB;
     case ISD::VP_SHL:
       return ISD::SHL;
-    case ISD::VP_LSHR:
+    case ISD::VP_SRL:
       return ISD::SRA;
-    case ISD::VP_ASHR:
+    case ISD::VP_SRA:
       return ISD::SRL;
     case ISD::VP_FADD:
       return ISD::FADD;
@@ -27220,7 +27220,7 @@ SDValue DAGCombiner::visitVPUDIVLike(SDValue N0, SDValue N1, SDNode *N) {
     EVT ShiftVT = getShiftAmountTy(N0.getValueType());
     SDValue Trunc = DAG.getZExtOrTrunc(LogBase2, DL, ShiftVT);
     AddToWorklist(Trunc.getNode());
-    return DAG.getNode(ISD::VP_LSHR, DL, VT, N0, Trunc, Mask, VL);
+    return DAG.getNode(ISD::VP_SRL, DL, VT, N0, Trunc, Mask, VL);
   }
 
   // fold (vp.udiv x, (vp.shl c, y)) -> vp.lshr(x, vp.add(log2(c)+y)) iff c is
@@ -27239,7 +27239,7 @@ SDValue DAGCombiner::visitVPUDIVLike(SDValue N0, SDValue N1, SDNode *N) {
       SDValue Add = DAG.getNode(ISD::VP_ADD, DL, ADDVT, N1.getOperand(1), Trunc,
                                 Mask, VL);
       AddToWorklist(Add.getNode());
-      return DAG.getNode(ISD::VP_LSHR, DL, VT, N0, Add, Mask, VL);
+      return DAG.getNode(ISD::VP_SRL, DL, VT, N0, Add, Mask, VL);
     }
   }
 
@@ -27261,7 +27261,7 @@ SDValue DAGCombiner::visitVPUDIVLike(SDValue N0, SDValue N1, SDNode *N) {
         AddToWorklist(Add.getNode());
         SDValue Splat = DAG.getSplatVector(VT, DL, Add);
         AddToWorklist(Splat.getNode());
-        return DAG.getNode(ISD::VP_LSHR, DL, VT, N0, Splat, Mask, VL);
+        return DAG.getNode(ISD::VP_SRL, DL, VT, N0, Splat, Mask, VL);
       }
     }
   }
@@ -27361,18 +27361,18 @@ SDValue DAGCombiner::visitVPSDIVLike(SDValue N0, SDValue N1, SDNode *N) {
     // Splat the sign bit into the register
     EVT VecShiftAmtTy = getShiftAmountTy(N0.getValueType());
     SDValue Sign =
-        DAG.getNode(ISD::VP_ASHR, DL, VT, N0,
+        DAG.getNode(ISD::VP_SRA, DL, VT, N0,
                     DAG.getConstant(BitWidth - 1, DL, VecShiftAmtTy), Mask, VL);
     AddToWorklist(Sign.getNode());
 
     // Add N0, ((N0 < 0) ? abs(N1) - 1 : 0);
     Inexact = DAG.getSplat(VT, DL, Inexact);
     C1 = DAG.getSplat(VT, DL, C1);
-    SDValue Srl = DAG.getNode(ISD::VP_LSHR, DL, VT, Sign, Inexact, Mask, VL);
+    SDValue Srl = DAG.getNode(ISD::VP_SRL, DL, VT, Sign, Inexact, Mask, VL);
     AddToWorklist(Srl.getNode());
     SDValue Add = DAG.getNode(ISD::VP_ADD, DL, VT, N0, Srl, Mask, VL);
     AddToWorklist(Add.getNode());
-    SDValue Sra = DAG.getNode(ISD::VP_ASHR, DL, VT, Add, C1, Mask, VL);
+    SDValue Sra = DAG.getNode(ISD::VP_SRA, DL, VT, Add, C1, Mask, VL);
     AddToWorklist(Sra.getNode());
 
     // Special case: (sdiv X, 1) -> X
