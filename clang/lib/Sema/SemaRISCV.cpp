@@ -236,7 +236,7 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
 #if SIFIVE_CUSTOMIZATION
     // Do not add the v0.11 intrinsics into the compiler if declaration switch
     // is not triggered.
-    if (!S.RISCV().DeclareRVVectorV0p11Builtins && Record.IsV0p11Deprecated)
+    if (!S.RISCV().DeclareVectorV0p11Builtins && Record.IsV0p11Deprecated)
       continue;
 #endif
 
