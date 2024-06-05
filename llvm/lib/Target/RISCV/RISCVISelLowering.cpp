@@ -19497,22 +19497,13 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     case Intrinsic::riscv_vsrl:
     case Intrinsic::riscv_vsra:
     case Intrinsic::riscv_vnsrl:
-    case Intrinsic::riscv_vnsra: {
+    case Intrinsic::riscv_vnsra:
+    case Intrinsic::riscv_vssrl:
+    case Intrinsic::riscv_vssra: {
       // Shift by scalar only demand the lower log2(SEW) bits.
       if (!N->getOperand(3).getSimpleValueType().isVector()) {
         unsigned SEW = N->getOperand(2).getScalarValueSizeInBits();
         if (SimplifyDemandedLowBitsHelper(3, Log2_32(SEW)))
-          return SDValue(N, 0);
-      }
-      break;
-    }
-    case Intrinsic::riscv_vssrl:
-    case Intrinsic::riscv_vssra: {
-      assert(N->getOpcode() == ISD::INTRINSIC_W_CHAIN);
-      // Shift by scalar only demand the lower log2(SEW) bits.
-      if (!N->getOperand(4).getSimpleValueType().isVector()) {
-        unsigned SEW = N->getOperand(3).getScalarValueSizeInBits();
-        if (SimplifyDemandedLowBitsHelper(4, Log2_32(SEW)))
           return SDValue(N, 0);
       }
       break;
