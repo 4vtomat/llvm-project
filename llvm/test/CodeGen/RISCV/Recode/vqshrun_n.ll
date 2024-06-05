@@ -7,8 +7,8 @@ define void @vqrshrun_n_s16(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    csrwi vxrm, 0
+; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 5
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -25,8 +25,8 @@ define void @vqrshrun_n_s32(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
-; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    csrwi vxrm, 0
+; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 1
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -43,8 +43,8 @@ define void @vqrshrun_n_s64(ptr nocapture noundef readonly %in_0, ptr nocapture 
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
-; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
 ; CHECK-NEXT:    csrwi vxrm, 0
+; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 1
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -61,8 +61,8 @@ define void @vqshrun_n_s16(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vle16.v v8, (a0)
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    csrwi vxrm, 2
+; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 6
 ; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -79,8 +79,8 @@ define void @vqshrun_n_s32(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
-; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    csrwi vxrm, 2
+; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 3
 ; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
@@ -97,8 +97,8 @@ define void @vqshrun_n_s64(ptr nocapture noundef readonly %in_0, ptr nocapture n
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
-; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
 ; CHECK-NEXT:    csrwi vxrm, 2
+; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 26
 ; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret

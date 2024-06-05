@@ -180,22 +180,23 @@ entry:
 define void @vdot_s32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vdot_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v9, (a1)
-; CHECK-NEXT:    vle8.v v10, (a2)
-; CHECK-NEXT:    vwmul.vv v11, v9, v10
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v9, v11, 0
-; CHECK-NEXT:    vnsrl.wi v10, v11, 16
-; CHECK-NEXT:    vwadd.vv v11, v9, v10
+; CHECK-NEXT:    vle8.v v8, (a1)
+; CHECK-NEXT:    vle8.v v9, (a2)
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v9, v11, 0
+; CHECK-NEXT:    vle32.v v10, (a0)
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
+; CHECK-NEXT:    vwmul.vv v11, v8, v9
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
+; CHECK-NEXT:    vnsrl.wi v8, v11, 0
+; CHECK-NEXT:    vnsrl.wi v9, v11, 16
+; CHECK-NEXT:    vwadd.vv v11, v8, v9
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
+; CHECK-NEXT:    vnsrl.wi v8, v11, 0
 ; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vnsrl.wx v10, v11, a0
-; CHECK-NEXT:    vadd.vv v9, v9, v10
+; CHECK-NEXT:    vnsrl.wx v9, v11, a0
 ; CHECK-NEXT:    vadd.vv v8, v8, v9
+; CHECK-NEXT:    vadd.vv v8, v10, v8
 ; CHECK-NEXT:    vse32.v v8, (a3)
 ; CHECK-NEXT:    ret
 entry:
@@ -210,22 +211,23 @@ entry:
 define void @vdot_u32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vdot_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
-; CHECK-NEXT:    vle8.v v9, (a1)
-; CHECK-NEXT:    vle8.v v10, (a2)
-; CHECK-NEXT:    vwmulu.vv v11, v9, v10
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v9, v11, 0
-; CHECK-NEXT:    vnsrl.wi v10, v11, 16
-; CHECK-NEXT:    vwaddu.vv v11, v9, v10
+; CHECK-NEXT:    vle8.v v8, (a1)
+; CHECK-NEXT:    vle8.v v9, (a2)
 ; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v9, v11, 0
+; CHECK-NEXT:    vle32.v v10, (a0)
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
+; CHECK-NEXT:    vwmulu.vv v11, v8, v9
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
+; CHECK-NEXT:    vnsrl.wi v8, v11, 0
+; CHECK-NEXT:    vnsrl.wi v9, v11, 16
+; CHECK-NEXT:    vwaddu.vv v11, v8, v9
+; CHECK-NEXT:    vsetivli zero, 2, e32, mf2, ta, ma
+; CHECK-NEXT:    vnsrl.wi v8, v11, 0
 ; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vnsrl.wx v10, v11, a0
-; CHECK-NEXT:    vadd.vv v9, v9, v10
+; CHECK-NEXT:    vnsrl.wx v9, v11, a0
 ; CHECK-NEXT:    vadd.vv v8, v8, v9
+; CHECK-NEXT:    vadd.vv v8, v10, v8
 ; CHECK-NEXT:    vse32.v v8, (a3)
 ; CHECK-NEXT:    ret
 entry:
@@ -416,22 +418,23 @@ entry:
 define void @vdotq_s32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vdotq_s32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v9, (a1)
-; CHECK-NEXT:    vle8.v v10, (a2)
-; CHECK-NEXT:    vwmul.vv v12, v9, v10
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vnsrl.wi v9, v12, 0
-; CHECK-NEXT:    vnsrl.wi v10, v12, 16
-; CHECK-NEXT:    vwadd.vv v12, v9, v10
+; CHECK-NEXT:    vle8.v v8, (a1)
+; CHECK-NEXT:    vle8.v v9, (a2)
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vnsrl.wi v9, v12, 0
+; CHECK-NEXT:    vle32.v v10, (a0)
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
+; CHECK-NEXT:    vwmul.vv v12, v8, v9
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
+; CHECK-NEXT:    vnsrl.wi v8, v12, 0
+; CHECK-NEXT:    vnsrl.wi v9, v12, 16
+; CHECK-NEXT:    vwadd.vv v12, v8, v9
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
+; CHECK-NEXT:    vnsrl.wi v8, v12, 0
 ; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vnsrl.wx v10, v12, a0
-; CHECK-NEXT:    vadd.vv v9, v9, v10
+; CHECK-NEXT:    vnsrl.wx v9, v12, a0
 ; CHECK-NEXT:    vadd.vv v8, v8, v9
+; CHECK-NEXT:    vadd.vv v8, v10, v8
 ; CHECK-NEXT:    vse32.v v8, (a3)
 ; CHECK-NEXT:    ret
 entry:
@@ -446,22 +449,23 @@ entry:
 define void @vdotq_u32(ptr nocapture noundef readonly %in_0, ptr nocapture noundef readonly %in_1, ptr nocapture noundef readonly %in_2, ptr nocapture noundef writeonly %out) {
 ; CHECK-LABEL: vdotq_u32:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v8, (a0)
 ; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
-; CHECK-NEXT:    vle8.v v9, (a1)
-; CHECK-NEXT:    vle8.v v10, (a2)
-; CHECK-NEXT:    vwmulu.vv v12, v9, v10
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vnsrl.wi v9, v12, 0
-; CHECK-NEXT:    vnsrl.wi v10, v12, 16
-; CHECK-NEXT:    vwaddu.vv v12, v9, v10
+; CHECK-NEXT:    vle8.v v8, (a1)
+; CHECK-NEXT:    vle8.v v9, (a2)
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; CHECK-NEXT:    vnsrl.wi v9, v12, 0
+; CHECK-NEXT:    vle32.v v10, (a0)
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
+; CHECK-NEXT:    vwmulu.vv v12, v8, v9
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
+; CHECK-NEXT:    vnsrl.wi v8, v12, 0
+; CHECK-NEXT:    vnsrl.wi v9, v12, 16
+; CHECK-NEXT:    vwaddu.vv v12, v8, v9
+; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
+; CHECK-NEXT:    vnsrl.wi v8, v12, 0
 ; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vnsrl.wx v10, v12, a0
-; CHECK-NEXT:    vadd.vv v9, v9, v10
+; CHECK-NEXT:    vnsrl.wx v9, v12, a0
 ; CHECK-NEXT:    vadd.vv v8, v8, v9
+; CHECK-NEXT:    vadd.vv v8, v10, v8
 ; CHECK-NEXT:    vse32.v v8, (a3)
 ; CHECK-NEXT:    ret
 entry:

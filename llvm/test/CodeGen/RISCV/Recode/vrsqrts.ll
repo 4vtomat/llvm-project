@@ -13,16 +13,16 @@ define void @vrsqrts_f16(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    li a0, 144
-; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    lui a0, %hi(.LCPI0_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI0_0)
-; CHECK-NEXT:    vsetvli a1, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vlse16.v v10, (a0), zero
-; CHECK-NEXT:    lui a0, %hi(.LCPI0_1)
-; CHECK-NEXT:    flh fa5, %lo(.LCPI0_1)(a0)
+; CHECK-NEXT:    lui a1, %hi(.LCPI0_0)
+; CHECK-NEXT:    addi a1, a1, %lo(.LCPI0_0)
+; CHECK-NEXT:    vsetvli a3, zero, e16, mf2, ta, ma
+; CHECK-NEXT:    vlse16.v v11, (a1), zero
+; CHECK-NEXT:    lui a1, %hi(.LCPI0_1)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI0_1)(a1)
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, mu
-; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    vfmul.vf v8, v10, fa5
+; CHECK-NEXT:    vmsne.vx v0, v10, a0
+; CHECK-NEXT:    vfnmsac.vv v11, v8, v9, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v11, fa5
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -76,16 +76,16 @@ define void @vrsqrts_f64(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    li a0, 144
-; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    lui a0, %hi(.LCPI2_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI2_0)
-; CHECK-NEXT:    vsetvli a1, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vlse64.v v10, (a0), zero
-; CHECK-NEXT:    lui a0, %hi(.LCPI2_1)
-; CHECK-NEXT:    fld fa5, %lo(.LCPI2_1)(a0)
+; CHECK-NEXT:    lui a1, %hi(.LCPI2_0)
+; CHECK-NEXT:    addi a1, a1, %lo(.LCPI2_0)
+; CHECK-NEXT:    vsetvli a3, zero, e64, m1, ta, ma
+; CHECK-NEXT:    vlse64.v v11, (a1), zero
+; CHECK-NEXT:    lui a1, %hi(.LCPI2_1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI2_1)(a1)
 ; CHECK-NEXT:    vsetivli zero, 1, e64, m1, ta, mu
-; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    vfmul.vf v8, v10, fa5
+; CHECK-NEXT:    vmsne.vx v0, v10, a0
+; CHECK-NEXT:    vfnmsac.vv v11, v8, v9, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v11, fa5
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -108,16 +108,16 @@ define void @vrsqrtsq_f16(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    li a0, 144
-; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    lui a0, %hi(.LCPI3_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI3_0)
-; CHECK-NEXT:    vsetvli a1, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vlse16.v v10, (a0), zero
-; CHECK-NEXT:    lui a0, %hi(.LCPI3_1)
-; CHECK-NEXT:    flh fa5, %lo(.LCPI3_1)(a0)
+; CHECK-NEXT:    lui a1, %hi(.LCPI3_0)
+; CHECK-NEXT:    addi a1, a1, %lo(.LCPI3_0)
+; CHECK-NEXT:    vsetvli a3, zero, e16, m1, ta, ma
+; CHECK-NEXT:    vlse16.v v11, (a1), zero
+; CHECK-NEXT:    lui a1, %hi(.LCPI3_1)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI3_1)(a1)
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, mu
-; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    vfmul.vf v8, v10, fa5
+; CHECK-NEXT:    vmsne.vx v0, v10, a0
+; CHECK-NEXT:    vfnmsac.vv v11, v8, v9, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v11, fa5
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -171,16 +171,16 @@ define void @vrsqrtsq_f64(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-NEXT:    vfclass.v v11, v11
 ; CHECK-NEXT:    vor.vv v10, v10, v11
 ; CHECK-NEXT:    li a0, 144
-; CHECK-NEXT:    vmsne.vx v0, v10, a0
-; CHECK-NEXT:    lui a0, %hi(.LCPI5_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI5_0)
-; CHECK-NEXT:    vsetvli a1, zero, e64, m1, ta, ma
-; CHECK-NEXT:    vlse64.v v10, (a0), zero
-; CHECK-NEXT:    lui a0, %hi(.LCPI5_1)
-; CHECK-NEXT:    fld fa5, %lo(.LCPI5_1)(a0)
+; CHECK-NEXT:    lui a1, %hi(.LCPI5_0)
+; CHECK-NEXT:    addi a1, a1, %lo(.LCPI5_0)
+; CHECK-NEXT:    vsetvli a3, zero, e64, m1, ta, ma
+; CHECK-NEXT:    vlse64.v v11, (a1), zero
+; CHECK-NEXT:    lui a1, %hi(.LCPI5_1)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI5_1)(a1)
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, mu
-; CHECK-NEXT:    vfnmsac.vv v10, v8, v9, v0.t
-; CHECK-NEXT:    vfmul.vf v8, v10, fa5
+; CHECK-NEXT:    vmsne.vx v0, v10, a0
+; CHECK-NEXT:    vfnmsac.vv v11, v8, v9, v0.t
+; CHECK-NEXT:    vfmul.vf v8, v11, fa5
 ; CHECK-NEXT:    vse64.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
