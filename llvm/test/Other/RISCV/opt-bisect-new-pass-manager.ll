@@ -7,31 +7,31 @@
 ; RUN:     | FileCheck %s --check-prefix=CHECK-ALL-PASS
 ; CHECK-ALL-PASS: BISECT: running pass (1) LoopSimplifyPass on compare_bytes_simple
 ; CHECK-ALL-PASS: BISECT: running pass (2) LCSSAPass on compare_bytes_simple
-; CHECK-ALL-PASS: BISECT: running pass (3) RISCVLoopIdiomRecognizePass on while.cond
+; CHECK-ALL-PASS: BISECT: running pass (3) RISCVLoopIdiomRecognizePass on loop %while.cond
 
 ; RUN: opt -riscv-disable-all-loop-idiom=false -passes=riscv-loop-idiom -mtriple=riscv64-unknown-linux-gnu -mattr=+v -opt-bisect-limit=0 %s 2>&1 \
 ; RUN:     | FileCheck %s --check-prefix=CHECK-NO-PASS
 ; CHECK-NO-PASS: BISECT: NOT running pass (1) LoopSimplifyPass on compare_bytes_simple
 ; CHECK-NO-PASS: BISECT: NOT running pass (2) LCSSAPass on compare_bytes_simple
-; CHECK-NO-PASS: BISECT: NOT running pass (3) RISCVLoopIdiomRecognizePass on while.cond
+; CHECK-NO-PASS: BISECT: NOT running pass (3) RISCVLoopIdiomRecognizePass on loop %while.cond
 
 ; RUN: opt -riscv-disable-all-loop-idiom=false -passes=riscv-loop-idiom -mtriple=riscv64-unknown-linux-gnu -mattr=+v -opt-bisect-limit=1 %s 2>&1 \
 ; RUN:     | FileCheck %s --check-prefix=CHECK-ONE-PASS
 ; CHECK-ONE-PASS: BISECT: running pass (1) LoopSimplifyPass on compare_bytes_simple
 ; CHECK-ONE-PASS: BISECT: NOT running pass (2) LCSSAPass on compare_bytes_simple
-; CHECK-ONE-PASS: BISECT: NOT running pass (3) RISCVLoopIdiomRecognizePass on while.cond
+; CHECK-ONE-PASS: BISECT: NOT running pass (3) RISCVLoopIdiomRecognizePass on loop %while.cond
 
 ; RUN: opt -riscv-disable-all-loop-idiom=false -passes=riscv-loop-idiom -mtriple=riscv64-unknown-linux-gnu -mattr=+v -opt-bisect-limit=2 %s 2>&1 \
 ; RUN:     | FileCheck %s --check-prefix=CHECK-TWO-PASS
 ; CHECK-TWO-PASS: BISECT: running pass (1) LoopSimplifyPass on compare_bytes_simple
 ; CHECK-TWO-PASS: BISECT: running pass (2) LCSSAPass on compare_bytes_simple
-; CHECK-TWO-PASS: BISECT: NOT running pass (3) RISCVLoopIdiomRecognizePass on while.cond
+; CHECK-TWO-PASS: BISECT: NOT running pass (3) RISCVLoopIdiomRecognizePass on loop %while.cond
 
 ; RUN: opt -riscv-disable-all-loop-idiom=false -passes=riscv-loop-idiom -mtriple=riscv64-unknown-linux-gnu -mattr=+v -opt-bisect-limit=3 %s 2>&1 \
 ; RUN:     | FileCheck %s --check-prefix=CHECK-THREE-PASS
 ; CHECK-THREE-PASS: BISECT: running pass (1) LoopSimplifyPass on compare_bytes_simple
 ; CHECK-THREE-PASS: BISECT: running pass (2) LCSSAPass on compare_bytes_simple
-; CHECK-THREE-PASS: BISECT: running pass (3) RISCVLoopIdiomRecognizePass on while.cond
+; CHECK-THREE-PASS: BISECT: running pass (3) RISCVLoopIdiomRecognizePass on loop %while.cond
 
 define i32 @compare_bytes_simple(ptr %a, ptr %b, i32 %len, i32 %n) {
 entry:
