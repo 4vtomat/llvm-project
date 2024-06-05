@@ -1,11 +1,7 @@
 // REQUIRES: x86-registered-target
 // RUN: %clang -O1 -fvectorize -target x86_64-unknown-unknown -mllvm -vectorize-memory-check-threshold=8 -Rpass-analysis=loop-vectorize -emit-llvm -S %s -o - 2>&1 | FileCheck %s
 
-<<<<<<< HEAD
-// CHECK: {{.*}}:10:11: remark: loop not vectorized: cannot prove it is safe to reorder floating-point operations. Consider to use '#pragma clang fp reassociate(on)' to enable vectorization; allow reordering by specifying '#pragma clang fp reassociate(on)' within the loop or by providing the compiler option '-ffast-math'.
-=======
-// CHECK: {{.*}}:10:11: remark: loop not vectorized: cannot prove it is safe to reorder floating-point operations; allow reordering by specifying '#pragma clang loop vectorize(enable)' before the loop or by providing the compiler option '-ffast-math'
->>>>>>> 855eef2
+// CHECK: {{.*}}:10:11: remark: loop not vectorized: cannot prove it is safe to reorder floating-point operations. Consider to use '#pragma clang fp reassociate(on)' to enable vectorization; allow reordering by specifying '#pragma clang fp reassociate(on)' within the loop or by providing the compiler option '-ffast-math'
 
 double foo(int N) {
   double v = 0.0;
@@ -16,11 +12,7 @@ double foo(int N) {
   return v;
 }
 
-<<<<<<< HEAD
-// CHECK: {{.*}}:18:3: remark: loop not vectorized: cannot prove it is safe to reorder memory operations; allow reordering by specifying '#pragma clang fp reassociate(on)' within the loop. If the arrays will always be independent specify '#pragma clang loop vectorize(assume_safety)' before the loop or provide the '__restrict__' qualifier with the independent array arguments. Erroneous results will occur if these options are incorrectly applied!
-=======
-// CHECK: {{.*}}:18:3: remark: loop not vectorized: cannot prove it is safe to reorder memory operations; allow reordering by specifying '#pragma clang loop vectorize(enable)' before the loop; if the arrays will always be independent, specify '#pragma clang loop vectorize(assume_safety)' before the loop or provide the '__restrict__' qualifier with the independent array arguments -- erroneous results will occur if these options are incorrectly applied
->>>>>>> 855eef2
+// CHECK: {{.*}}:18:3: remark: loop not vectorized: cannot prove it is safe to reorder memory operations; allow reordering by specifying '#pragma clang fp reassociate(on)' within the loop; if the arrays will always be independent, specify '#pragma clang loop vectorize(assume_safety)' before the loop or provide the '__restrict__' qualifier with the independent array arguments -- erroneous results will occur if these options are incorrectly applied
 
 void foo2(int *dw, int *uw, int *A, int *B, int *C, int *D, int N) {
   for (long i = 0; i < N; i++) {
