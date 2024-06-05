@@ -216,15 +216,15 @@ define i32 @vp_popcount_nxv128i1(<vscale x 128 x i1> %m, <vscale x 128 x i1> %op
 ; CHECK-NEXT:    sltu a3, a0, a2
 ; CHECK-NEXT:    addi a3, a3, -1
 ; CHECK-NEXT:    and a2, a3, a2
-; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
 ; CHECK-NEXT:    vmv1r.v v0, v11
+; CHECK-NEXT:    vsetvli zero, a2, e8, m8, ta, ma
 ; CHECK-NEXT:    vcpop.m a2, v10, v0.t
 ; CHECK-NEXT:    bltu a0, a1, .LBB16_2
 ; CHECK-NEXT:  # %bb.1: # %entry
 ; CHECK-NEXT:    mv a0, a1
 ; CHECK-NEXT:  .LBB16_2: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; CHECK-NEXT:    vmv1r.v v0, v8
+; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; CHECK-NEXT:    vcpop.m a0, v9, v0.t
 ; CHECK-NEXT:    add a0, a0, a2
 ; CHECK-NEXT:    ret

@@ -1229,6 +1229,10 @@ void SelectionDAGLegalize::LegalizeOp(SDNode *Node) {
     Action = TLI.getOperationAction(
         Node->getOpcode(), Node->getOperand(1).getValueType());
     break;
+#if SIFIVE_CUSTOMIZATION
+  case ISD::VP_FIRST:
+  case ISD::EXPERIMENTAL_VP_POPCOUNT:
+#endif
   case ISD::VP_CTTZ_ELTS:
   case ISD::VP_CTTZ_ELTS_ZERO_UNDEF:
     Action = TLI.getOperationAction(Node->getOpcode(),

@@ -245,8 +245,8 @@ define i32 @vp_popcount_v256i1(<256 x i1> %m, <256 x i1> %op, i32 zeroext %evl) 
 ; CHECK-NEXT:    sltu a0, a0, a2
 ; CHECK-NEXT:    addi a0, a0, -1
 ; CHECK-NEXT:    and a0, a0, a2
-; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; CHECK-NEXT:    vmv1r.v v0, v8
+; CHECK-NEXT:    vsetvli zero, a0, e8, m8, ta, ma
 ; CHECK-NEXT:    vcpop.m a0, v10, v0.t
 ; CHECK-NEXT:    add a0, a1, a0
 ; CHECK-NEXT:    ret
