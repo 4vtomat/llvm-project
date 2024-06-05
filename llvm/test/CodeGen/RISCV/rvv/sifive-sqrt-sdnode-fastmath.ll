@@ -15,9 +15,9 @@ declare <vscale x 8 x double> @llvm.sqrt.nxv8f64(<vscale x 8 x double>) #0
 define <vscale x 2 x half> @sqrt_nxv2f16(<vscale x 2 x half> %a) #0 {
 ; RV32-LABEL: sqrt_nxv2f16:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
 ; RV32-NEXT:    lui a0, %hi(.LCPI0_0)
 ; RV32-NEXT:    addi a0, a0, %lo(.LCPI0_0)
+; RV32-NEXT:    vsetvli a1, zero, e16, mf2, ta, ma
 ; RV32-NEXT:    vlse16.v v9, (a0), zero
 ; RV32-NEXT:    lui a0, %hi(.LCPI0_1)
 ; RV32-NEXT:    flh fa5, %lo(.LCPI0_1)(a0)
@@ -35,9 +35,9 @@ define <vscale x 2 x half> @sqrt_nxv2f16(<vscale x 2 x half> %a) #0 {
 ;
 ; RV64-LABEL: sqrt_nxv2f16:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
 ; RV64-NEXT:    lui a0, %hi(.LCPI0_0)
 ; RV64-NEXT:    addi a0, a0, %lo(.LCPI0_0)
+; RV64-NEXT:    vsetvli a1, zero, e16, mf2, ta, ma
 ; RV64-NEXT:    vlse16.v v9, (a0), zero
 ; RV64-NEXT:    lui a0, %hi(.LCPI0_1)
 ; RV64-NEXT:    flh fa5, %lo(.LCPI0_1)(a0)
@@ -59,9 +59,9 @@ define <vscale x 2 x half> @sqrt_nxv2f16(<vscale x 2 x half> %a) #0 {
 define <vscale x 4 x half> @sqrt_nxv4f16(<vscale x 4 x half> %a) #0 {
 ; RV32-LABEL: sqrt_nxv4f16:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
 ; RV32-NEXT:    lui a0, %hi(.LCPI1_0)
 ; RV32-NEXT:    addi a0, a0, %lo(.LCPI1_0)
+; RV32-NEXT:    vsetvli a1, zero, e16, m1, ta, ma
 ; RV32-NEXT:    vlse16.v v9, (a0), zero
 ; RV32-NEXT:    lui a0, %hi(.LCPI1_1)
 ; RV32-NEXT:    flh fa5, %lo(.LCPI1_1)(a0)
@@ -79,9 +79,9 @@ define <vscale x 4 x half> @sqrt_nxv4f16(<vscale x 4 x half> %a) #0 {
 ;
 ; RV64-LABEL: sqrt_nxv4f16:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
 ; RV64-NEXT:    lui a0, %hi(.LCPI1_0)
 ; RV64-NEXT:    addi a0, a0, %lo(.LCPI1_0)
+; RV64-NEXT:    vsetvli a1, zero, e16, m1, ta, ma
 ; RV64-NEXT:    vlse16.v v9, (a0), zero
 ; RV64-NEXT:    lui a0, %hi(.LCPI1_1)
 ; RV64-NEXT:    flh fa5, %lo(.LCPI1_1)(a0)
@@ -103,9 +103,9 @@ define <vscale x 4 x half> @sqrt_nxv4f16(<vscale x 4 x half> %a) #0 {
 define <vscale x 8 x half> @sqrt_nxv8f16(<vscale x 8 x half> %a) #0 {
 ; RV32-LABEL: sqrt_nxv8f16:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
 ; RV32-NEXT:    lui a0, %hi(.LCPI2_0)
 ; RV32-NEXT:    addi a0, a0, %lo(.LCPI2_0)
+; RV32-NEXT:    vsetvli a1, zero, e16, m2, ta, ma
 ; RV32-NEXT:    vlse16.v v10, (a0), zero
 ; RV32-NEXT:    lui a0, %hi(.LCPI2_1)
 ; RV32-NEXT:    flh fa5, %lo(.LCPI2_1)(a0)
@@ -123,9 +123,9 @@ define <vscale x 8 x half> @sqrt_nxv8f16(<vscale x 8 x half> %a) #0 {
 ;
 ; RV64-LABEL: sqrt_nxv8f16:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
 ; RV64-NEXT:    lui a0, %hi(.LCPI2_0)
 ; RV64-NEXT:    addi a0, a0, %lo(.LCPI2_0)
+; RV64-NEXT:    vsetvli a1, zero, e16, m2, ta, ma
 ; RV64-NEXT:    vlse16.v v10, (a0), zero
 ; RV64-NEXT:    lui a0, %hi(.LCPI2_1)
 ; RV64-NEXT:    flh fa5, %lo(.LCPI2_1)(a0)
@@ -297,9 +297,9 @@ define <vscale x 8 x float> @sqrt_nxv8f32(<vscale x 8 x float> %a) #0 {
 define <vscale x 2 x double> @sqrt_nxv2f64(<vscale x 2 x double> %a) #0 {
 ; RV32-LABEL: sqrt_nxv2f64:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vsetvli a0, zero, e64, m2, ta, ma
 ; RV32-NEXT:    lui a0, %hi(.LCPI6_0)
 ; RV32-NEXT:    addi a0, a0, %lo(.LCPI6_0)
+; RV32-NEXT:    vsetvli a1, zero, e64, m2, ta, ma
 ; RV32-NEXT:    vlse64.v v10, (a0), zero
 ; RV32-NEXT:    lui a0, %hi(.LCPI6_1)
 ; RV32-NEXT:    fld fa5, %lo(.LCPI6_1)(a0)
@@ -325,9 +325,9 @@ define <vscale x 2 x double> @sqrt_nxv2f64(<vscale x 2 x double> %a) #0 {
 ;
 ; RV64-LABEL: sqrt_nxv2f64:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vsetvli a0, zero, e64, m2, ta, ma
 ; RV64-NEXT:    lui a0, %hi(.LCPI6_0)
 ; RV64-NEXT:    addi a0, a0, %lo(.LCPI6_0)
+; RV64-NEXT:    vsetvli a1, zero, e64, m2, ta, ma
 ; RV64-NEXT:    vlse64.v v10, (a0), zero
 ; RV64-NEXT:    lui a0, %hi(.LCPI6_1)
 ; RV64-NEXT:    fld fa5, %lo(.LCPI6_1)(a0)
@@ -357,9 +357,9 @@ define <vscale x 2 x double> @sqrt_nxv2f64(<vscale x 2 x double> %a) #0 {
 define <vscale x 4 x double> @sqrt_nvx4f64(<vscale x 4 x double> %a) #0 {
 ; RV32-LABEL: sqrt_nvx4f64:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vsetvli a0, zero, e64, m4, ta, ma
 ; RV32-NEXT:    lui a0, %hi(.LCPI7_0)
 ; RV32-NEXT:    addi a0, a0, %lo(.LCPI7_0)
+; RV32-NEXT:    vsetvli a1, zero, e64, m4, ta, ma
 ; RV32-NEXT:    vlse64.v v12, (a0), zero
 ; RV32-NEXT:    lui a0, %hi(.LCPI7_1)
 ; RV32-NEXT:    fld fa5, %lo(.LCPI7_1)(a0)
@@ -385,9 +385,9 @@ define <vscale x 4 x double> @sqrt_nvx4f64(<vscale x 4 x double> %a) #0 {
 ;
 ; RV64-LABEL: sqrt_nvx4f64:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vsetvli a0, zero, e64, m4, ta, ma
 ; RV64-NEXT:    lui a0, %hi(.LCPI7_0)
 ; RV64-NEXT:    addi a0, a0, %lo(.LCPI7_0)
+; RV64-NEXT:    vsetvli a1, zero, e64, m4, ta, ma
 ; RV64-NEXT:    vlse64.v v12, (a0), zero
 ; RV64-NEXT:    lui a0, %hi(.LCPI7_1)
 ; RV64-NEXT:    fld fa5, %lo(.LCPI7_1)(a0)
@@ -417,9 +417,9 @@ define <vscale x 4 x double> @sqrt_nvx4f64(<vscale x 4 x double> %a) #0 {
 define <vscale x 8 x double> @sqrt_nvx8f64(<vscale x 8 x double> %a) #0 {
 ; RV32-LABEL: sqrt_nvx8f64:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vsetvli a0, zero, e64, m8, ta, ma
 ; RV32-NEXT:    lui a0, %hi(.LCPI8_0)
 ; RV32-NEXT:    addi a0, a0, %lo(.LCPI8_0)
+; RV32-NEXT:    vsetvli a1, zero, e64, m8, ta, ma
 ; RV32-NEXT:    vlse64.v v16, (a0), zero
 ; RV32-NEXT:    lui a0, %hi(.LCPI8_1)
 ; RV32-NEXT:    fld fa5, %lo(.LCPI8_1)(a0)
@@ -445,9 +445,9 @@ define <vscale x 8 x double> @sqrt_nvx8f64(<vscale x 8 x double> %a) #0 {
 ;
 ; RV64-LABEL: sqrt_nvx8f64:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vsetvli a0, zero, e64, m8, ta, ma
 ; RV64-NEXT:    lui a0, %hi(.LCPI8_0)
 ; RV64-NEXT:    addi a0, a0, %lo(.LCPI8_0)
+; RV64-NEXT:    vsetvli a1, zero, e64, m8, ta, ma
 ; RV64-NEXT:    vlse64.v v16, (a0), zero
 ; RV64-NEXT:    lui a0, %hi(.LCPI8_1)
 ; RV64-NEXT:    fld fa5, %lo(.LCPI8_1)(a0)
@@ -477,9 +477,9 @@ define <vscale x 8 x double> @sqrt_nvx8f64(<vscale x 8 x double> %a) #0 {
 define <vscale x 2 x half> @rsqrt_nxv2f16(<vscale x 2 x half> %a) #0 {
 ; RV32-LABEL: rsqrt_nxv2f16:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
 ; RV32-NEXT:    lui a0, %hi(.LCPI9_0)
 ; RV32-NEXT:    addi a0, a0, %lo(.LCPI9_0)
+; RV32-NEXT:    vsetvli a1, zero, e16, mf2, ta, ma
 ; RV32-NEXT:    vlse16.v v9, (a0), zero
 ; RV32-NEXT:    lui a0, %hi(.LCPI9_1)
 ; RV32-NEXT:    flh fa5, %lo(.LCPI9_1)(a0)
@@ -492,9 +492,9 @@ define <vscale x 2 x half> @rsqrt_nxv2f16(<vscale x 2 x half> %a) #0 {
 ;
 ; RV64-LABEL: rsqrt_nxv2f16:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
 ; RV64-NEXT:    lui a0, %hi(.LCPI9_0)
 ; RV64-NEXT:    addi a0, a0, %lo(.LCPI9_0)
+; RV64-NEXT:    vsetvli a1, zero, e16, mf2, ta, ma
 ; RV64-NEXT:    vlse16.v v9, (a0), zero
 ; RV64-NEXT:    lui a0, %hi(.LCPI9_1)
 ; RV64-NEXT:    flh fa5, %lo(.LCPI9_1)(a0)
@@ -514,9 +514,9 @@ define <vscale x 2 x half> @rsqrt_nxv2f16(<vscale x 2 x half> %a) #0 {
 define <vscale x 4 x half> @rsqrt_nxv4f16(<vscale x 4 x half> %a) #0 {
 ; RV32-LABEL: rsqrt_nxv4f16:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
 ; RV32-NEXT:    lui a0, %hi(.LCPI10_0)
 ; RV32-NEXT:    addi a0, a0, %lo(.LCPI10_0)
+; RV32-NEXT:    vsetvli a1, zero, e16, m1, ta, ma
 ; RV32-NEXT:    vlse16.v v9, (a0), zero
 ; RV32-NEXT:    lui a0, %hi(.LCPI10_1)
 ; RV32-NEXT:    flh fa5, %lo(.LCPI10_1)(a0)
@@ -529,9 +529,9 @@ define <vscale x 4 x half> @rsqrt_nxv4f16(<vscale x 4 x half> %a) #0 {
 ;
 ; RV64-LABEL: rsqrt_nxv4f16:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
 ; RV64-NEXT:    lui a0, %hi(.LCPI10_0)
 ; RV64-NEXT:    addi a0, a0, %lo(.LCPI10_0)
+; RV64-NEXT:    vsetvli a1, zero, e16, m1, ta, ma
 ; RV64-NEXT:    vlse16.v v9, (a0), zero
 ; RV64-NEXT:    lui a0, %hi(.LCPI10_1)
 ; RV64-NEXT:    flh fa5, %lo(.LCPI10_1)(a0)
@@ -551,9 +551,9 @@ define <vscale x 4 x half> @rsqrt_nxv4f16(<vscale x 4 x half> %a) #0 {
 define <vscale x 8 x half> @rsqrt_nxv8f16(<vscale x 8 x half> %a) #0 {
 ; RV32-LABEL: rsqrt_nxv8f16:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
 ; RV32-NEXT:    lui a0, %hi(.LCPI11_0)
 ; RV32-NEXT:    addi a0, a0, %lo(.LCPI11_0)
+; RV32-NEXT:    vsetvli a1, zero, e16, m2, ta, ma
 ; RV32-NEXT:    vlse16.v v10, (a0), zero
 ; RV32-NEXT:    lui a0, %hi(.LCPI11_1)
 ; RV32-NEXT:    flh fa5, %lo(.LCPI11_1)(a0)
@@ -566,9 +566,9 @@ define <vscale x 8 x half> @rsqrt_nxv8f16(<vscale x 8 x half> %a) #0 {
 ;
 ; RV64-LABEL: rsqrt_nxv8f16:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
 ; RV64-NEXT:    lui a0, %hi(.LCPI11_0)
 ; RV64-NEXT:    addi a0, a0, %lo(.LCPI11_0)
+; RV64-NEXT:    vsetvli a1, zero, e16, m2, ta, ma
 ; RV64-NEXT:    vlse16.v v10, (a0), zero
 ; RV64-NEXT:    lui a0, %hi(.LCPI11_1)
 ; RV64-NEXT:    flh fa5, %lo(.LCPI11_1)(a0)
@@ -717,9 +717,9 @@ define <vscale x 8 x float> @rsqrt_nxv8f32(<vscale x 8 x float> %a) #0 {
 define <vscale x 2 x double> @rsqrt_nxv2f64(<vscale x 2 x double> %a) #0 {
 ; RV32-LABEL: rsqrt_nxv2f64:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vsetvli a0, zero, e64, m2, ta, ma
 ; RV32-NEXT:    lui a0, %hi(.LCPI15_0)
 ; RV32-NEXT:    addi a0, a0, %lo(.LCPI15_0)
+; RV32-NEXT:    vsetvli a1, zero, e64, m2, ta, ma
 ; RV32-NEXT:    vlse64.v v10, (a0), zero
 ; RV32-NEXT:    lui a0, %hi(.LCPI15_1)
 ; RV32-NEXT:    fld fa5, %lo(.LCPI15_1)(a0)
@@ -740,9 +740,9 @@ define <vscale x 2 x double> @rsqrt_nxv2f64(<vscale x 2 x double> %a) #0 {
 ;
 ; RV64-LABEL: rsqrt_nxv2f64:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vsetvli a0, zero, e64, m2, ta, ma
 ; RV64-NEXT:    lui a0, %hi(.LCPI15_0)
 ; RV64-NEXT:    addi a0, a0, %lo(.LCPI15_0)
+; RV64-NEXT:    vsetvli a1, zero, e64, m2, ta, ma
 ; RV64-NEXT:    vlse64.v v10, (a0), zero
 ; RV64-NEXT:    lui a0, %hi(.LCPI15_1)
 ; RV64-NEXT:    fld fa5, %lo(.LCPI15_1)(a0)
@@ -770,9 +770,9 @@ define <vscale x 2 x double> @rsqrt_nxv2f64(<vscale x 2 x double> %a) #0 {
 define <vscale x 4 x double> @rsqrt_nxv4f64(<vscale x 4 x double> %a) #0 {
 ; RV32-LABEL: rsqrt_nxv4f64:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vsetvli a0, zero, e64, m4, ta, ma
 ; RV32-NEXT:    lui a0, %hi(.LCPI16_0)
 ; RV32-NEXT:    addi a0, a0, %lo(.LCPI16_0)
+; RV32-NEXT:    vsetvli a1, zero, e64, m4, ta, ma
 ; RV32-NEXT:    vlse64.v v12, (a0), zero
 ; RV32-NEXT:    lui a0, %hi(.LCPI16_1)
 ; RV32-NEXT:    fld fa5, %lo(.LCPI16_1)(a0)
@@ -793,9 +793,9 @@ define <vscale x 4 x double> @rsqrt_nxv4f64(<vscale x 4 x double> %a) #0 {
 ;
 ; RV64-LABEL: rsqrt_nxv4f64:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vsetvli a0, zero, e64, m4, ta, ma
 ; RV64-NEXT:    lui a0, %hi(.LCPI16_0)
 ; RV64-NEXT:    addi a0, a0, %lo(.LCPI16_0)
+; RV64-NEXT:    vsetvli a1, zero, e64, m4, ta, ma
 ; RV64-NEXT:    vlse64.v v12, (a0), zero
 ; RV64-NEXT:    lui a0, %hi(.LCPI16_1)
 ; RV64-NEXT:    fld fa5, %lo(.LCPI16_1)(a0)
@@ -823,9 +823,9 @@ define <vscale x 4 x double> @rsqrt_nxv4f64(<vscale x 4 x double> %a) #0 {
 define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a) #0 {
 ; RV32-LABEL: rsqrt_nxv8f64:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vsetvli a0, zero, e64, m8, ta, ma
 ; RV32-NEXT:    lui a0, %hi(.LCPI17_0)
 ; RV32-NEXT:    addi a0, a0, %lo(.LCPI17_0)
+; RV32-NEXT:    vsetvli a1, zero, e64, m8, ta, ma
 ; RV32-NEXT:    vlse64.v v16, (a0), zero
 ; RV32-NEXT:    lui a0, %hi(.LCPI17_1)
 ; RV32-NEXT:    fld fa5, %lo(.LCPI17_1)(a0)
@@ -846,9 +846,9 @@ define <vscale x 8 x double> @rsqrt_nxv8f64(<vscale x 8 x double> %a) #0 {
 ;
 ; RV64-LABEL: rsqrt_nxv8f64:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vsetvli a0, zero, e64, m8, ta, ma
 ; RV64-NEXT:    lui a0, %hi(.LCPI17_0)
 ; RV64-NEXT:    addi a0, a0, %lo(.LCPI17_0)
+; RV64-NEXT:    vsetvli a1, zero, e64, m8, ta, ma
 ; RV64-NEXT:    vlse64.v v16, (a0), zero
 ; RV64-NEXT:    lui a0, %hi(.LCPI17_1)
 ; RV64-NEXT:    fld fa5, %lo(.LCPI17_1)(a0)

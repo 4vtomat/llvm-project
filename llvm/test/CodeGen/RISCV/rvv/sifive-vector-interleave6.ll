@@ -50,7 +50,6 @@ define <vscale x 96 x i1> @vector_interleave_nxv96i1_nxv16i1(<vscale x 16 x i1> 
 ; CHECK-NEXT:    csrr a2, vlenb
 ; CHECK-NEXT:    add a0, a0, a2
 ; CHECK-NEXT:    vl1r.v v9, (a0)
-; CHECK-NEXT:    vsetvli a3, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    add a3, a1, a2
 ; CHECK-NEXT:    add a4, a3, a2
 ; CHECK-NEXT:    add a5, a4, a2
@@ -58,38 +57,39 @@ define <vscale x 96 x i1> @vector_interleave_nxv96i1_nxv16i1(<vscale x 16 x i1> 
 ; CHECK-NEXT:    vl1r.v v10, (a6)
 ; CHECK-NEXT:    add a6, a6, a2
 ; CHECK-NEXT:    vl1r.v v11, (a6)
+; CHECK-NEXT:    vsetvli a6, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v8, 0
 ; CHECK-NEXT:    vmsne.vi v9, v10, 0
 ; CHECK-NEXT:    srli a6, a2, 2
-; CHECK-NEXT:    add a7, a6, a6
-; CHECK-NEXT:    vsetvli zero, a7, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v9, v8, a6
 ; CHECK-NEXT:    vl1r.v v10, (a4)
 ; CHECK-NEXT:    vl1r.v v11, (a5)
-; CHECK-NEXT:    vsetvli a4, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vl1r.v v12, (a1)
 ; CHECK-NEXT:    vl1r.v v13, (a3)
+; CHECK-NEXT:    add a1, a6, a6
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, ta, ma
+; CHECK-NEXT:    vslideup.vx v9, v8, a6
+; CHECK-NEXT:    vsetvli a3, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmsne.vi v8, v10, 0
 ; CHECK-NEXT:    vmsne.vi v0, v12, 0
-; CHECK-NEXT:    vsetvli zero, a7, e8, mf2, ta, ma
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, ta, ma
 ; CHECK-NEXT:    vslideup.vx v0, v8, a6
-; CHECK-NEXT:    srli a1, a2, 1
-; CHECK-NEXT:    add a3, a1, a1
-; CHECK-NEXT:    vsetvli zero, a3, e8, m1, ta, ma
-; CHECK-NEXT:    vslideup.vx v0, v9, a1
+; CHECK-NEXT:    srli a3, a2, 1
 ; CHECK-NEXT:    add a0, a0, a2
-; CHECK-NEXT:    add a1, a0, a2
-; CHECK-NEXT:    add a3, a1, a2
-; CHECK-NEXT:    vl1r.v v8, (a3)
-; CHECK-NEXT:    add a2, a3, a2
-; CHECK-NEXT:    vl1r.v v9, (a2)
-; CHECK-NEXT:    vsetvli a2, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vl1r.v v10, (a0)
-; CHECK-NEXT:    vl1r.v v11, (a1)
-; CHECK-NEXT:    vmsne.vi v12, v8, 0
-; CHECK-NEXT:    vmsne.vi v8, v10, 0
-; CHECK-NEXT:    vsetvli zero, a7, e8, mf2, ta, ma
-; CHECK-NEXT:    vslideup.vx v8, v12, a6
+; CHECK-NEXT:    add a4, a0, a2
+; CHECK-NEXT:    add a5, a4, a2
+; CHECK-NEXT:    vl1r.v v10, (a5)
+; CHECK-NEXT:    add a2, a5, a2
+; CHECK-NEXT:    vl1r.v v11, (a2)
+; CHECK-NEXT:    vl1r.v v12, (a0)
+; CHECK-NEXT:    vl1r.v v13, (a4)
+; CHECK-NEXT:    add a0, a3, a3
+; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
+; CHECK-NEXT:    vslideup.vx v0, v9, a3
+; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
+; CHECK-NEXT:    vmsne.vi v9, v10, 0
+; CHECK-NEXT:    vmsne.vi v8, v12, 0
+; CHECK-NEXT:    vsetvli zero, a1, e8, mf2, ta, ma
+; CHECK-NEXT:    vslideup.vx v8, v9, a6
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 12
 ; CHECK-NEXT:    mul a0, a0, a1

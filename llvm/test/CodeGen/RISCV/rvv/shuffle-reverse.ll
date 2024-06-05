@@ -230,21 +230,12 @@ define <16 x i16> @v16i16(<16 x i16> %a) {
 define <32 x i16> @v16i16_2(<16 x i16> %a, <16 x i16> %b) {
 ; CHECK-LABEL: v16i16_2:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
 ; CHECK-NEXT:    li a0, 32
 ; CHECK-NEXT:    lui a1, %hi(.LCPI15_0)
 ; CHECK-NEXT:    addi a1, a1, %lo(.LCPI15_0)
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
-; CHECK-NEXT:    vle16.v v20, (a1)
-; CHECK-NEXT:    vmv2r.v v16, v10
-=======
-; CHECK-NEXT:    lui a0, %hi(.LCPI15_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI15_0)
-; CHECK-NEXT:    li a1, 32
-; CHECK-NEXT:    vsetvli zero, a1, e16, m4, ta, ma
-; CHECK-NEXT:    vle16.v v16, (a0)
+; CHECK-NEXT:    vle16.v v16, (a1)
 ; CHECK-NEXT:    vmv2r.v v20, v10
->>>>>>> 855eef2
 ; CHECK-NEXT:    vmv2r.v v12, v8
 ; CHECK-NEXT:    vrgather.vv v8, v12, v16
 ; CHECK-NEXT:    vid.v v12

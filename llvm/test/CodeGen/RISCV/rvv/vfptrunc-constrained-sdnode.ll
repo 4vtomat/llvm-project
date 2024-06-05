@@ -153,9 +153,9 @@ define <vscale x 1 x bfloat> @vfptrunc_nxv1f64_nxv1bf16(<vscale x 1 x double> %v
 ; CHECK-LABEL: vfptrunc_nxv1f64_nxv1bf16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e32, mf2, ta, ma
-; CHECK-NEXT:    vfncvt.rod.f.f.w v9, v8
+; CHECK-NEXT:    vfncvt.rod.f.f.w v8, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf4, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v9
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = call <vscale x 1 x bfloat> @llvm.experimental.constrained.fptrunc.nxv1bf16.nxv1f64(<vscale x 1 x double> %va, metadata !"round.dynamic", metadata !"fpexcept.strict")
   ret <vscale x 1 x bfloat> %evec
@@ -166,8 +166,7 @@ define <vscale x 1 x bfloat> @vfptrunc_nxv1f32_nxv1bf16(<vscale x 1 x float> %va
 ; CHECK-LABEL: vfptrunc_nxv1f32_nxv1bf16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, mf4, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v9, v8
-; CHECK-NEXT:    vmv1r.v v8, v9
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = call <vscale x 1 x bfloat> @llvm.experimental.constrained.fptrunc.nxv1bf16.nxv1f32(<vscale x 1 x float> %va, metadata !"round.dynamic", metadata !"fpexcept.strict")
   ret <vscale x 1 x bfloat> %evec
@@ -178,9 +177,9 @@ define <vscale x 2 x bfloat> @vfptrunc_nxv2f64_nxv2bf16(<vscale x 2 x double> %v
 ; CHECK-LABEL: vfptrunc_nxv2f64_nxv2bf16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vfncvt.rod.f.f.w v10, v8
+; CHECK-NEXT:    vfncvt.rod.f.f.w v8, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v10
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = call <vscale x 2 x bfloat> @llvm.experimental.constrained.fptrunc.nxv2bf16.nxv2f64(<vscale x 2 x double> %va, metadata !"round.dynamic", metadata !"fpexcept.strict")
   ret <vscale x 2 x bfloat> %evec
@@ -191,8 +190,7 @@ define <vscale x 2 x bfloat> @vfptrunc_nxv2f32_nxv2bf16(<vscale x 2 x float> %va
 ; CHECK-LABEL: vfptrunc_nxv2f32_nxv2bf16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v9, v8
-; CHECK-NEXT:    vmv1r.v v8, v9
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = call <vscale x 2 x bfloat> @llvm.experimental.constrained.fptrunc.nxv2bf16.nxv2f32(<vscale x 2 x float> %va, metadata !"round.dynamic", metadata !"fpexcept.strict")
   ret <vscale x 2 x bfloat> %evec
@@ -203,9 +201,9 @@ define <vscale x 4 x bfloat> @vfptrunc_nxv4f64_nxv4bf16(<vscale x 4 x double> %v
 ; CHECK-LABEL: vfptrunc_nxv4f64_nxv4bf16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vfncvt.rod.f.f.w v12, v8
+; CHECK-NEXT:    vfncvt.rod.f.f.w v8, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v12
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = call <vscale x 4 x bfloat> @llvm.experimental.constrained.fptrunc.nxv4bf16.nxv4f64(<vscale x 4 x double> %va, metadata !"round.dynamic", metadata !"fpexcept.strict")
   ret <vscale x 4 x bfloat> %evec
@@ -216,8 +214,7 @@ define <vscale x 4 x bfloat> @vfptrunc_nxv4f32_nxv4bf16(<vscale x 4 x float> %va
 ; CHECK-LABEL: vfptrunc_nxv4f32_nxv4bf16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v10, v8
-; CHECK-NEXT:    vmv.v.v v8, v10
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = call <vscale x 4 x bfloat> @llvm.experimental.constrained.fptrunc.nxv4bf16.nxv4f32(<vscale x 4 x float> %va, metadata !"round.dynamic", metadata !"fpexcept.strict")
   ret <vscale x 4 x bfloat> %evec
@@ -228,9 +225,9 @@ define <vscale x 8 x bfloat> @vfptrunc_nxv8f64_nxv8bf16(<vscale x 8 x double> %v
 ; CHECK-LABEL: vfptrunc_nxv8f64_nxv8bf16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m4, ta, ma
-; CHECK-NEXT:    vfncvt.rod.f.f.w v16, v8
+; CHECK-NEXT:    vfncvt.rod.f.f.w v8, v8
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v16
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = call <vscale x 8 x bfloat> @llvm.experimental.constrained.fptrunc.nxv8bf16.nxv8f64(<vscale x 8 x double> %va, metadata !"round.dynamic", metadata !"fpexcept.strict")
   ret <vscale x 8 x bfloat> %evec
@@ -241,8 +238,7 @@ define <vscale x 8 x bfloat> @vfptrunc_nxv8f32_nxv8bf16(<vscale x 8 x float> %va
 ; CHECK-LABEL: vfptrunc_nxv8f32_nxv8bf16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v12, v8
-; CHECK-NEXT:    vmv.v.v v8, v12
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %evec = call <vscale x 8 x bfloat> @llvm.experimental.constrained.fptrunc.nxv8bf16.nxv8f32(<vscale x 8 x float> %va, metadata !"round.dynamic", metadata !"fpexcept.strict")
   ret <vscale x 8 x bfloat> %evec

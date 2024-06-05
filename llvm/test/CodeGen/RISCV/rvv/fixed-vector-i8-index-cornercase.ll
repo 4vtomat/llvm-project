@@ -124,13 +124,8 @@ define <512 x i8> @two_source(<512 x i8> %a, <512 x i8> %b) {
 ; CHECK-NEXT:    vmv.s.x v24, a3
 ; CHECK-NEXT:    li a1, 478
 ; CHECK-NEXT:    li a2, 477
-<<<<<<< HEAD
-; CHECK-NEXT:    vsetvli zero, a1, e8, m8, tu, ma
-; CHECK-NEXT:    lbu a1, 1012(sp)
-=======
 ; CHECK-NEXT:    lbu a3, 1012(sp)
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m8, tu, ma
->>>>>>> 855eef2
 ; CHECK-NEXT:    vslideup.vx v8, v24, a2
 ; CHECK-NEXT:    vmv.s.x v24, a3
 ; CHECK-NEXT:    li a1, 501

@@ -695,12 +695,7 @@ define <8 x i8> @unmergable(<8 x i8> %v, <8 x i8> %w) {
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI46_0)
 ; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, mu
 ; CHECK-NEXT:    vle8.v v10, (a0)
-<<<<<<< HEAD
-; CHECK-NEXT:    vslidedown.vi v8, v8, 2
-; CHECK-NEXT:    li a0, 234
-=======
 ; CHECK-NEXT:    li a0, -22
->>>>>>> 855eef2
 ; CHECK-NEXT:    vmv.s.x v0, a0
 ; CHECK-NEXT:    vslidedown.vi v8, v8, 2
 ; CHECK-NEXT:    vrgather.vv v8, v9, v10, v0.t

@@ -587,8 +587,8 @@ define float @vreduce_fminimum_nxv4f32(float %start, <vscale x 4 x float> %val, 
 ; CHECK-NEXT:    vfmv.s.f v10, fa0
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    vfredmin.vs v10, v8, v10, v0.t
-; CHECK-NEXT:    vmfne.vv v11, v8, v8, v0.t
-; CHECK-NEXT:    vcpop.m a0, v11, v0.t
+; CHECK-NEXT:    vmfne.vv v8, v8, v8, v0.t
+; CHECK-NEXT:    vcpop.m a0, v8, v0.t
 ; CHECK-NEXT:    feq.s a1, fa0, fa0
 ; CHECK-NEXT:    xori a1, a1, 1
 ; CHECK-NEXT:    or a0, a0, a1
@@ -611,8 +611,8 @@ define float @vreduce_fmaximum_nxv4f32(float %start, <vscale x 4 x float> %val, 
 ; CHECK-NEXT:    vfmv.s.f v10, fa0
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    vfredmax.vs v10, v8, v10, v0.t
-; CHECK-NEXT:    vmfne.vv v11, v8, v8, v0.t
-; CHECK-NEXT:    vcpop.m a0, v11, v0.t
+; CHECK-NEXT:    vmfne.vv v8, v8, v8, v0.t
+; CHECK-NEXT:    vcpop.m a0, v8, v0.t
 ; CHECK-NEXT:    feq.s a1, fa0, fa0
 ; CHECK-NEXT:    xori a1, a1, 1
 ; CHECK-NEXT:    or a0, a0, a1

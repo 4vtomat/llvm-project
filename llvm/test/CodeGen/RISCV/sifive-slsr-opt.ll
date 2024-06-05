@@ -37,8 +37,8 @@ define void @_Z8rvv_slsrPKammPammm(i8* nocapture  readonly %A, i64  %M, i64  %K,
 ; CHECK-NEXT:    vle8.v v10, (t1), v0.t
 ; CHECK-NEXT:    vle8.v v12, (t2), v0.t
 ; CHECK-NEXT:    vmv2r.v v14, v12
-; CHECK-NEXT:    vsetvli zero, a5, e64, m2, ta, ma
 ; CHECK-NEXT:    addi t4, t4, -1
+; CHECK-NEXT:    vsetvli zero, a5, e64, m2, ta, ma
 ; CHECK-NEXT:    vsseg4e64.v v8, (t3)
 ; CHECK-NEXT:    bnez t4, .LBB0_5
 ; CHECK-NEXT:  # %bb.6: # %for.cond2.for.cond.cleanup4_crit_edge.split.us69

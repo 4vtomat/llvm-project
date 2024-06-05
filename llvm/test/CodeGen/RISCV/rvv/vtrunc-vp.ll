@@ -175,12 +175,8 @@ define <vscale x 15 x i16> @vtrunc_nxv15i16_nxv15i64(<vscale x 15 x i64> %a, <vs
 ; CHECK-NEXT:    mv a0, a1
 ; CHECK-NEXT:  .LBB12_2:
 ; CHECK-NEXT:    vmv1r.v v0, v24
-<<<<<<< HEAD
-; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
-=======
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m4, ta, ma
-; CHECK-NEXT:    vnsrl.wi v20, v8, 0, v0.t
->>>>>>> 855eef2
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v16, v8, 0, v0.t
 ; CHECK-NEXT:    vmv4r.v v8, v16
@@ -235,12 +231,8 @@ define <vscale x 32 x i7> @vtrunc_nxv32i7_nxv32i32(<vscale x 32 x i32> %a, <vsca
 ; CHECK-NEXT:    mv a0, a1
 ; CHECK-NEXT:  .LBB15_2:
 ; CHECK-NEXT:    vmv1r.v v0, v24
-<<<<<<< HEAD
-; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
-=======
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
-; CHECK-NEXT:    vnsrl.wi v20, v8, 0, v0.t
->>>>>>> 855eef2
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v16, v8, 0, v0.t
 ; CHECK-NEXT:    vmv4r.v v8, v16
@@ -273,12 +265,8 @@ define <vscale x 32 x i8> @vtrunc_nxv32i8_nxv32i32(<vscale x 32 x i32> %a, <vsca
 ; CHECK-NEXT:    mv a0, a1
 ; CHECK-NEXT:  .LBB16_2:
 ; CHECK-NEXT:    vmv1r.v v0, v24
-<<<<<<< HEAD
-; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
-=======
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
-; CHECK-NEXT:    vnsrl.wi v20, v8, 0, v0.t
->>>>>>> 855eef2
+; CHECK-NEXT:    vnsrl.wi v8, v8, 0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vnsrl.wi v16, v8, 0, v0.t
 ; CHECK-NEXT:    vmv4r.v v8, v16

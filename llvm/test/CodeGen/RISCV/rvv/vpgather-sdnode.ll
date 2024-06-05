@@ -264,12 +264,8 @@ define <vscale x 32 x i8> @vpgather_baseidx_nxv32i8(ptr %base, <vscale x 32 x i8
 ; RV32-NEXT:  .LBB12_2:
 ; RV32-NEXT:    vsetvli zero, a1, e32, m8, ta, ma
 ; RV32-NEXT:    vsext.vf4 v16, v8
-<<<<<<< HEAD
-; RV32-NEXT:    vsetvli zero, zero, e8, m2, ta, ma
-=======
->>>>>>> 855eef2
 ; RV32-NEXT:    vmv1r.v v0, v12
-; RV32-NEXT:    vsetvli zero, a1, e8, m2, ta, ma
+; RV32-NEXT:    vsetvli zero, zero, e8, m2, ta, ma
 ; RV32-NEXT:    vluxei32.v v8, (a0), v16, v0.t
 ; RV32-NEXT:    ret
 ;
@@ -302,12 +298,8 @@ define <vscale x 32 x i8> @vpgather_baseidx_nxv32i8(ptr %base, <vscale x 32 x i8
 ; RV64-NEXT:  .LBB12_2:
 ; RV64-NEXT:    vsetvli zero, a5, e64, m8, ta, ma
 ; RV64-NEXT:    vsext.vf8 v16, v10
-<<<<<<< HEAD
-; RV64-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
-=======
->>>>>>> 855eef2
 ; RV64-NEXT:    vmv1r.v v0, v13
-; RV64-NEXT:    vsetvli zero, a5, e8, m1, ta, ma
+; RV64-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
 ; RV64-NEXT:    vluxei64.v v10, (a0), v16, v0.t
 ; RV64-NEXT:    bltu a1, a3, .LBB12_4
 ; RV64-NEXT:  # %bb.3:
@@ -329,12 +321,8 @@ define <vscale x 32 x i8> @vpgather_baseidx_nxv32i8(ptr %base, <vscale x 32 x i8
 ; RV64-NEXT:  .LBB12_6:
 ; RV64-NEXT:    vsetvli zero, a1, e64, m8, ta, ma
 ; RV64-NEXT:    vsext.vf8 v16, v8
-<<<<<<< HEAD
-; RV64-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
-=======
->>>>>>> 855eef2
 ; RV64-NEXT:    vmv1r.v v0, v12
-; RV64-NEXT:    vsetvli zero, a1, e8, m1, ta, ma
+; RV64-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
 ; RV64-NEXT:    vluxei64.v v8, (a0), v16, v0.t
 ; RV64-NEXT:    ret
   %ptrs = getelementptr inbounds i8, ptr %base, <vscale x 32 x i8> %idxs

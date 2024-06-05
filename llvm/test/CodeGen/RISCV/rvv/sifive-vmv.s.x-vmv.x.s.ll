@@ -38,9 +38,8 @@ define <4 x i32> @test_1_0(<4 x i32> %0, <4 x i32> %1) {
 define <4 x i32> @test_1_1(<4 x i32> %0, <4 x i32> %1) {
 ; CHECK-LABEL: test_1_1:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vi v9, v9, 1
 ; CHECK-NEXT:    vsetivli zero, 2, e32, m1, tu, ma
+; CHECK-NEXT:    vslidedown.vi v9, v9, 1
 ; CHECK-NEXT:    vslideup.vi v8, v9, 1
 ; CHECK-NEXT:    ret
   %3 = extractelement <4 x i32> %1, i64 1

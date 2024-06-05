@@ -20,29 +20,14 @@ define void @constant_folding_crash(ptr %v54, <4 x ptr> %lanes.a, <4 x ptr> %lan
 ; RV32:       # %bb.0: # %entry
 ; RV32-NEXT:    lw a0, 8(a0)
 ; RV32-NEXT:    andi a0, a0, 1
-<<<<<<< HEAD
 ; RV32-NEXT:    beqz a0, .LBB0_2
 ; RV32-NEXT:  # %bb.1: # %entry
 ; RV32-NEXT:    vmv1r.v v8, v9
 ; RV32-NEXT:  .LBB0_2: # %entry
 ; RV32-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
-=======
-; RV32-NEXT:    seqz a0, a0
-; RV32-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
-; RV32-NEXT:    vmv.v.x v10, a0
-; RV32-NEXT:    vmsne.vi v10, v10, 0
-; RV32-NEXT:    vmv1r.v v11, v0
-; RV32-NEXT:    vmv1r.v v0, v10
-; RV32-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; RV32-NEXT:    vmerge.vvm v8, v9, v8, v0
->>>>>>> 855eef2
 ; RV32-NEXT:    vmv.x.s a0, v8
 ; RV32-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
 ; RV32-NEXT:    vmv.v.i v8, 0
-<<<<<<< HEAD
-=======
-; RV32-NEXT:    vmv1r.v v0, v11
->>>>>>> 855eef2
 ; RV32-NEXT:    vmerge.vim v8, v8, 1, v0
 ; RV32-NEXT:    vrgather.vi v9, v8, 0
 ; RV32-NEXT:    vmsne.vi v0, v9, 0
@@ -55,29 +40,14 @@ define void @constant_folding_crash(ptr %v54, <4 x ptr> %lanes.a, <4 x ptr> %lan
 ; RV64:       # %bb.0: # %entry
 ; RV64-NEXT:    ld a0, 8(a0)
 ; RV64-NEXT:    andi a0, a0, 1
-<<<<<<< HEAD
 ; RV64-NEXT:    beqz a0, .LBB0_2
 ; RV64-NEXT:  # %bb.1: # %entry
 ; RV64-NEXT:    vmv2r.v v8, v10
 ; RV64-NEXT:  .LBB0_2: # %entry
 ; RV64-NEXT:    vsetivli zero, 1, e64, m1, ta, ma
-=======
-; RV64-NEXT:    seqz a0, a0
-; RV64-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
-; RV64-NEXT:    vmv.v.x v12, a0
-; RV64-NEXT:    vmsne.vi v12, v12, 0
-; RV64-NEXT:    vmv1r.v v13, v0
-; RV64-NEXT:    vmv1r.v v0, v12
-; RV64-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
-; RV64-NEXT:    vmerge.vvm v8, v10, v8, v0
->>>>>>> 855eef2
 ; RV64-NEXT:    vmv.x.s a0, v8
 ; RV64-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
 ; RV64-NEXT:    vmv.v.i v8, 0
-<<<<<<< HEAD
-=======
-; RV64-NEXT:    vmv1r.v v0, v13
->>>>>>> 855eef2
 ; RV64-NEXT:    vmerge.vim v8, v8, 1, v0
 ; RV64-NEXT:    vrgather.vi v9, v8, 0
 ; RV64-NEXT:    vmsne.vi v0, v9, 0

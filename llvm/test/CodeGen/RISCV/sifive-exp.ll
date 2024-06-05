@@ -27,40 +27,40 @@ define void @skl_exp_f16(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280-NEXT:    flh fa0, %lo(.LCPI0_6)(t0)
 ; X280-NEXT:  .LBB0_2: # %for.body
 ; X280-NEXT:    # =>This Inner Loop Header: Depth=1
-; X280-NEXT:    sh1add a5, a3, a1
-; X280-NEXT:    sub a4, a2, a3
-; X280-NEXT:    vsetvli a4, a4, e16, m8, tu, mu
-; X280-NEXT:    vle16.v v8, (a5)
-; X280-NEXT:    sh1add a5, a3, a0
-; X280-NEXT:    add a3, a3, a4
+; X280-NEXT:    sh1add a4, a3, a1
+; X280-NEXT:    sub a5, a2, a3
+; X280-NEXT:    vsetvli a5, a5, e16, m8, tu, mu
+; X280-NEXT:    vle16.v v8, (a4)
+; X280-NEXT:    sh1add a4, a3, a0
+; X280-NEXT:    add a3, a3, a5
 ; X280-NEXT:    vmfeq.vv v0, v8, v8
 ; X280-NEXT:    vfmax.vf v8, v8, fa5, v0.t
 ; X280-NEXT:    vfmin.vf v8, v8, fa4, v0.t
 ; X280-NEXT:    vfmul.vf v16, v8, fa3
 ; X280-NEXT:    vsetvli zero, zero, e8, m4, tu, ma
-; X280-NEXT:    vfncvt.x.f.w v16, v16
-; X280-NEXT:    vfwcvt.f.x.v v24, v16
+; X280-NEXT:    vfncvt.x.f.w v24, v16
+; X280-NEXT:    vfwcvt.f.x.v v16, v24
 ; X280-NEXT:    vsetvli zero, zero, e16, m8, tu, ma
 ; X280-NEXT:    vlse16.v v0, (a7), zero
-; X280-NEXT:    vfnmsac.vf v8, fa2, v24
-; X280-NEXT:    vfnmsac.vf v8, fa1, v24
-; X280-NEXT:    vlse16.v v24, (a6), zero
-; X280-NEXT:    vfmacc.vf v24, fa0, v8
-; X280-NEXT:    vfmadd.vv v24, v8, v0
-; X280-NEXT:    vfmadd.vv v24, v8, v0
+; X280-NEXT:    vfnmsac.vf v8, fa2, v16
+; X280-NEXT:    vfnmsac.vf v8, fa1, v16
+; X280-NEXT:    vlse16.v v16, (a6), zero
+; X280-NEXT:    vfmacc.vf v16, fa0, v8
+; X280-NEXT:    vfmadd.vv v16, v8, v0
+; X280-NEXT:    vfmadd.vv v16, v8, v0
 ; X280-NEXT:    vsetvli zero, zero, e8, m4, tu, ma
-; X280-NEXT:    vsra.vi v8, v16, 1
-; X280-NEXT:    vsub.vv v12, v16, v8
-; X280-NEXT:    vwadd.vx v16, v12, t1
+; X280-NEXT:    vsra.vi v8, v24, 1
+; X280-NEXT:    vsub.vv v12, v24, v8
+; X280-NEXT:    vwadd.vx v24, v12, t1
 ; X280-NEXT:    vsetvli zero, zero, e16, m8, tu, ma
-; X280-NEXT:    vsll.vi v16, v16, 10
-; X280-NEXT:    vfmul.vv v16, v24, v16
+; X280-NEXT:    vsll.vi v24, v24, 10
+; X280-NEXT:    vfmul.vv v16, v16, v24
 ; X280-NEXT:    vsetvli zero, zero, e8, m4, tu, ma
 ; X280-NEXT:    vwadd.vx v24, v8, t1
 ; X280-NEXT:    vsetvli zero, zero, e16, m8, tu, ma
 ; X280-NEXT:    vsll.vi v8, v24, 10
 ; X280-NEXT:    vfmul.vv v8, v16, v8
-; X280-NEXT:    vse16.v v8, (a5)
+; X280-NEXT:    vse16.v v8, (a4)
 ; X280-NEXT:    bltu a3, a2, .LBB0_2
 ; X280-NEXT:  .LBB0_3: # %for.cond.cleanup
 ; X280-NEXT:    ret
@@ -89,40 +89,40 @@ define void @skl_exp_f16(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280N-NEXT:    flh fa0, %lo(.LCPI0_6)(t0)
 ; X280N-NEXT:  .LBB0_2: # %for.body
 ; X280N-NEXT:    # =>This Inner Loop Header: Depth=1
-; X280N-NEXT:    sh1add a5, a3, a1
-; X280N-NEXT:    sub a4, a2, a3
-; X280N-NEXT:    vsetvli a4, a4, e16, m8, tu, mu
-; X280N-NEXT:    vle16.v v8, (a5)
-; X280N-NEXT:    sh1add a5, a3, a0
-; X280N-NEXT:    add a3, a3, a4
+; X280N-NEXT:    sh1add a4, a3, a1
+; X280N-NEXT:    sub a5, a2, a3
+; X280N-NEXT:    vsetvli a5, a5, e16, m8, tu, mu
+; X280N-NEXT:    vle16.v v8, (a4)
+; X280N-NEXT:    sh1add a4, a3, a0
+; X280N-NEXT:    add a3, a3, a5
 ; X280N-NEXT:    vmfeq.vv v0, v8, v8
 ; X280N-NEXT:    vfmax.vf v8, v8, fa5, v0.t
 ; X280N-NEXT:    vfmin.vf v8, v8, fa4, v0.t
 ; X280N-NEXT:    vfmul.vf v16, v8, fa3
 ; X280N-NEXT:    vsetvli zero, zero, e8, m4, tu, ma
-; X280N-NEXT:    vfncvt.x.f.w v16, v16
-; X280N-NEXT:    vfwcvt.f.x.v v24, v16
+; X280N-NEXT:    vfncvt.x.f.w v24, v16
+; X280N-NEXT:    vfwcvt.f.x.v v16, v24
 ; X280N-NEXT:    vsetvli zero, zero, e16, m8, tu, ma
 ; X280N-NEXT:    vlse16.v v0, (a7), zero
-; X280N-NEXT:    vfnmsac.vf v8, fa2, v24
-; X280N-NEXT:    vfnmsac.vf v8, fa1, v24
-; X280N-NEXT:    vlse16.v v24, (a6), zero
-; X280N-NEXT:    vfmacc.vf v24, fa0, v8
-; X280N-NEXT:    vfmadd.vv v24, v8, v0
-; X280N-NEXT:    vfmadd.vv v24, v8, v0
+; X280N-NEXT:    vfnmsac.vf v8, fa2, v16
+; X280N-NEXT:    vfnmsac.vf v8, fa1, v16
+; X280N-NEXT:    vlse16.v v16, (a6), zero
+; X280N-NEXT:    vfmacc.vf v16, fa0, v8
+; X280N-NEXT:    vfmadd.vv v16, v8, v0
+; X280N-NEXT:    vfmadd.vv v16, v8, v0
 ; X280N-NEXT:    vsetvli zero, zero, e8, m4, tu, ma
-; X280N-NEXT:    vsra.vi v8, v16, 1
-; X280N-NEXT:    vsub.vv v12, v16, v8
-; X280N-NEXT:    vwadd.vx v16, v12, t1
+; X280N-NEXT:    vsra.vi v8, v24, 1
+; X280N-NEXT:    vsub.vv v12, v24, v8
+; X280N-NEXT:    vwadd.vx v24, v12, t1
 ; X280N-NEXT:    vsetvli zero, zero, e16, m8, tu, ma
-; X280N-NEXT:    vsll.vi v16, v16, 10
-; X280N-NEXT:    vfmul.vv v16, v24, v16
+; X280N-NEXT:    vsll.vi v24, v24, 10
+; X280N-NEXT:    vfmul.vv v16, v16, v24
 ; X280N-NEXT:    vsetvli zero, zero, e8, m4, tu, ma
 ; X280N-NEXT:    vwadd.vx v24, v8, t1
 ; X280N-NEXT:    vsetvli zero, zero, e16, m8, tu, ma
 ; X280N-NEXT:    vsll.vi v8, v24, 10
 ; X280N-NEXT:    vfmul.vv v8, v16, v8
-; X280N-NEXT:    vse16.v v8, (a5)
+; X280N-NEXT:    vse16.v v8, (a4)
 ; X280N-NEXT:    bltu a3, a2, .LBB0_2
 ; X280N-NEXT:  .LBB0_3: # %for.cond.cleanup
 ; X280N-NEXT:    ret
@@ -200,12 +200,12 @@ define void @skl_exp_f32(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280-NEXT:    flw fa0, %lo(.LCPI1_6)(t2)
 ; X280-NEXT:  .LBB1_2: # %for.body
 ; X280-NEXT:    # =>This Inner Loop Header: Depth=1
-; X280-NEXT:    sh2add a4, a3, a1
-; X280-NEXT:    sub a5, a2, a3
-; X280-NEXT:    vsetvli a5, a5, e32, m4, tu, mu
-; X280-NEXT:    vle32.v v8, (a4)
-; X280-NEXT:    sh2add a4, a3, a0
-; X280-NEXT:    add a3, a3, a5
+; X280-NEXT:    sh2add a5, a3, a1
+; X280-NEXT:    sub a4, a2, a3
+; X280-NEXT:    vsetvli a4, a4, e32, m4, tu, mu
+; X280-NEXT:    vle32.v v8, (a5)
+; X280-NEXT:    sh2add a5, a3, a0
+; X280-NEXT:    add a3, a3, a4
 ; X280-NEXT:    vmfeq.vv v0, v8, v8
 ; X280-NEXT:    vfmax.vf v8, v8, fa5, v0.t
 ; X280-NEXT:    vfmin.vf v8, v8, fa4, v0.t
@@ -237,7 +237,7 @@ define void @skl_exp_f32(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280-NEXT:    vfmul.vv v8, v20, v8
 ; X280-NEXT:    vsll.vi v12, v16, 23
 ; X280-NEXT:    vfmul.vv v8, v8, v12
-; X280-NEXT:    vse32.v v8, (a4)
+; X280-NEXT:    vse32.v v8, (a5)
 ; X280-NEXT:    bltu a3, a2, .LBB1_2
 ; X280-NEXT:  .LBB1_3: # %for.cond.cleanup
 ; X280-NEXT:    ret
@@ -272,12 +272,12 @@ define void @skl_exp_f32(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280N-NEXT:    flw fa0, %lo(.LCPI1_6)(t2)
 ; X280N-NEXT:  .LBB1_2: # %for.body
 ; X280N-NEXT:    # =>This Inner Loop Header: Depth=1
-; X280N-NEXT:    sh2add a4, a3, a1
-; X280N-NEXT:    sub a5, a2, a3
-; X280N-NEXT:    vsetvli a5, a5, e32, m4, tu, mu
-; X280N-NEXT:    vle32.v v8, (a4)
-; X280N-NEXT:    sh2add a4, a3, a0
-; X280N-NEXT:    add a3, a3, a5
+; X280N-NEXT:    sh2add a5, a3, a1
+; X280N-NEXT:    sub a4, a2, a3
+; X280N-NEXT:    vsetvli a4, a4, e32, m4, tu, mu
+; X280N-NEXT:    vle32.v v8, (a5)
+; X280N-NEXT:    sh2add a5, a3, a0
+; X280N-NEXT:    add a3, a3, a4
 ; X280N-NEXT:    vmfeq.vv v0, v8, v8
 ; X280N-NEXT:    vfmax.vf v8, v8, fa5, v0.t
 ; X280N-NEXT:    vfmin.vf v8, v8, fa4, v0.t
@@ -309,7 +309,7 @@ define void @skl_exp_f32(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280N-NEXT:    vfmul.vv v8, v20, v8
 ; X280N-NEXT:    vsll.vi v12, v16, 23
 ; X280N-NEXT:    vfmul.vv v8, v8, v12
-; X280N-NEXT:    vse32.v v8, (a4)
+; X280N-NEXT:    vse32.v v8, (a5)
 ; X280N-NEXT:    bltu a3, a2, .LBB1_2
 ; X280N-NEXT:  .LBB1_3: # %for.cond.cleanup
 ; X280N-NEXT:    ret

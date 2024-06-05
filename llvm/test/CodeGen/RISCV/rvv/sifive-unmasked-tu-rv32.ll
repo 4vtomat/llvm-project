@@ -11,8 +11,8 @@ declare <vscale x 1 x i8> @llvm.riscv.vadd.nxv1i8.nxv1i8(
 define <vscale x 1 x i8> @switch_tail_policy(<vscale x 1 x i8> %0, <vscale x 1 x i8> %1, i32 %2) nounwind {
 ; CHECK-LABEL: switch_tail_policy:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, tu, ma
 ; CHECK-NEXT:    vmv1r.v v10, v8
+; CHECK-NEXT:    vsetvli zero, a0, e8, mf8, tu, ma
 ; CHECK-NEXT:    vadd.vv v10, v8, v9
 ; CHECK-NEXT:    vsetvli zero, zero, e8, mf8, ta, ma
 ; CHECK-NEXT:    vadd.vv v9, v8, v10

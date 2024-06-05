@@ -44,7 +44,6 @@ define void @constant_fold_barrier_i128(ptr %p) {
 ; RV32-NEXT:    seqz a7, a3
 ; RV32-NEXT:    and a1, a7, a1
 ; RV32-NEXT:    or a1, a4, a1
-; RV32-NEXT:    add a5, a5, zero
 ; RV32-NEXT:    add a1, a5, a1
 ; RV32-NEXT:    sw a2, 0(a0)
 ; RV32-NEXT:    sw a6, 4(a0)

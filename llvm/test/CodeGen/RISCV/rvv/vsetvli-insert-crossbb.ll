@@ -715,15 +715,9 @@ define void @vector_init_vsetvli_N(i64 %N, ptr %c) {
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    blez a0, .LBB14_3
 ; CHECK-NEXT:  # %bb.1: # %for.body.preheader
-<<<<<<< HEAD
-; CHECK-NEXT:    li a3, 0
-; CHECK-NEXT:    slli a4, a2, 3
-=======
 ; CHECK-NEXT:    li a2, 0
 ; CHECK-NEXT:    vsetvli a3, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    slli a4, a3, 3
-; CHECK-NEXT:    vsetvli a5, zero, e64, m1, ta, ma
->>>>>>> 855eef2
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB14_2: # %for.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1

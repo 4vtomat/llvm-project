@@ -28,16 +28,16 @@ define void @UnKnownSize(i8* nocapture %dst, i8 %val, i32 signext %n) {
 ; ALIGN-NEXT:  # %bb.1: # %entry
 ; ALIGN-NEXT:    mv a3, a2
 ; ALIGN-NEXT:  .LBB0_2: # %entry
+; ALIGN-NEXT:    andi a4, a0, 15
+; ALIGN-NEXT:    li a5, 16
+; ALIGN-NEXT:    sub a4, a5, a4
 ; ALIGN-NEXT:    vsetvli zero, a3, e8, m8, ta, ma
-; ALIGN-NEXT:    andi a3, a0, 15
-; ALIGN-NEXT:    li a4, 16
-; ALIGN-NEXT:    sub a3, a4, a3
 ; ALIGN-NEXT:    vmv.v.x v8, a1
-; ALIGN-NEXT:    bltu a3, a2, .LBB0_4
+; ALIGN-NEXT:    bltu a4, a2, .LBB0_4
 ; ALIGN-NEXT:  # %bb.3: # %entry
-; ALIGN-NEXT:    mv a3, a2
+; ALIGN-NEXT:    mv a4, a2
 ; ALIGN-NEXT:  .LBB0_4: # %entry
-; ALIGN-NEXT:    vsetvli a3, a3, e8, m8, ta, ma
+; ALIGN-NEXT:    vsetvli a3, a4, e8, m8, ta, ma
 ; ALIGN-NEXT:    sub a1, a2, a3
 ; ALIGN-NEXT:    vse8.v v8, (a0)
 ; ALIGN-NEXT:    add a0, a0, a3
@@ -59,16 +59,16 @@ define void @UnKnownSize(i8* nocapture %dst, i8 %val, i32 signext %n) {
 ; ALIGN-VLEN-NEXT:  # %bb.1: # %entry
 ; ALIGN-VLEN-NEXT:    li a3, 128
 ; ALIGN-VLEN-NEXT:  .LBB0_2: # %entry
+; ALIGN-VLEN-NEXT:    andi a4, a0, 15
+; ALIGN-VLEN-NEXT:    li a5, 16
+; ALIGN-VLEN-NEXT:    sub a4, a5, a4
 ; ALIGN-VLEN-NEXT:    vsetvli zero, a3, e8, m8, ta, ma
-; ALIGN-VLEN-NEXT:    andi a3, a0, 15
-; ALIGN-VLEN-NEXT:    li a4, 16
-; ALIGN-VLEN-NEXT:    sub a3, a4, a3
 ; ALIGN-VLEN-NEXT:    vmv.v.x v8, a1
-; ALIGN-VLEN-NEXT:    bltu a3, a2, .LBB0_4
+; ALIGN-VLEN-NEXT:    bltu a4, a2, .LBB0_4
 ; ALIGN-VLEN-NEXT:  # %bb.3: # %entry
-; ALIGN-VLEN-NEXT:    mv a3, a2
+; ALIGN-VLEN-NEXT:    mv a4, a2
 ; ALIGN-VLEN-NEXT:  .LBB0_4: # %entry
-; ALIGN-VLEN-NEXT:    vsetvli a3, a3, e8, m8, ta, ma
+; ALIGN-VLEN-NEXT:    vsetvli a3, a4, e8, m8, ta, ma
 ; ALIGN-VLEN-NEXT:    sub a1, a2, a3
 ; ALIGN-VLEN-NEXT:    vse8.v v8, (a0)
 ; ALIGN-VLEN-NEXT:    add a0, a0, a3

@@ -18,24 +18,24 @@ define <vscale x 4 x i1> @test_vp_xor_icmp_combine_not_allones(<vscale x 4 x i64
 ; CHECK-LABEL: test_vp_xor_icmp_combine_not_allones:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vmv.v.i v18, 1
-; CHECK-NEXT:    vmv.v.i v19, 0
+; CHECK-NEXT:    vmv.v.i v18, 0
+; CHECK-NEXT:    vmv.v.i v19, 1
+; CHECK-NEXT:    vmv1r.v v16, v18
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv1r.v v16, v19
-; CHECK-NEXT:    vslideup.vi v16, v18, 1
+; CHECK-NEXT:    vslideup.vi v16, v19, 1
 ; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vand.vi v16, v16, 1
 ; CHECK-NEXT:    vmsne.vi v16, v16, 0
 ; CHECK-NEXT:    vmv1r.v v17, v0
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    vmerge.vim v16, v19, 1, v0
+; CHECK-NEXT:    vmerge.vim v16, v18, 1, v0
 ; CHECK-NEXT:    vsetivli zero, 3, e8, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v16, v18, 2
+; CHECK-NEXT:    vslideup.vi v16, v19, 2
 ; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vand.vi v16, v16, 1
 ; CHECK-NEXT:    vmsne.vi v16, v16, 0
-; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vmv1r.v v0, v17
+; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vmsle.vv v8, v12, v8, v0.t
 ; CHECK-NEXT:    vmxor.mm v0, v8, v16
 ; CHECK-NEXT:    ret
@@ -77,24 +77,24 @@ define <vscale x 4 x i1> @test_vp_xor_fcmp_combine_not_allones(<vscale x 4 x dou
 ; CHECK-LABEL: test_vp_xor_fcmp_combine_not_allones:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vmv.v.i v18, 1
-; CHECK-NEXT:    vmv.v.i v19, 0
+; CHECK-NEXT:    vmv.v.i v18, 0
+; CHECK-NEXT:    vmv.v.i v19, 1
+; CHECK-NEXT:    vmv1r.v v16, v18
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf2, tu, ma
-; CHECK-NEXT:    vmv1r.v v16, v19
-; CHECK-NEXT:    vslideup.vi v16, v18, 1
+; CHECK-NEXT:    vslideup.vi v16, v19, 1
 ; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vand.vi v16, v16, 1
 ; CHECK-NEXT:    vmsne.vi v16, v16, 0
 ; CHECK-NEXT:    vmv1r.v v17, v0
 ; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    vmerge.vim v16, v19, 1, v0
+; CHECK-NEXT:    vmerge.vim v16, v18, 1, v0
 ; CHECK-NEXT:    vsetivli zero, 3, e8, mf2, tu, ma
-; CHECK-NEXT:    vslideup.vi v16, v18, 2
+; CHECK-NEXT:    vslideup.vi v16, v19, 2
 ; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vand.vi v16, v16, 1
 ; CHECK-NEXT:    vmsne.vi v16, v16, 0
-; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vmv1r.v v0, v17
+; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vmflt.vv v8, v8, v12, v0.t
 ; CHECK-NEXT:    vmxnor.mm v0, v8, v16
 ; CHECK-NEXT:    ret

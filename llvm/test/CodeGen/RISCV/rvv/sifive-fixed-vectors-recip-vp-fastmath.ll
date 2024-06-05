@@ -13,8 +13,8 @@ define <2 x half> @recip_v2f16(<2 x half> %a, <2 x i1> %m, i32 zeroext %evl) #0 
 ; CHECK-NEXT:    vfmul.vf v11, v10, fa5, v0.t
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v12, fa5
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; CHECK-NEXT:    vmv1r.v v9, v11
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
 ; CHECK-NEXT:    vfnmsub.vv v9, v8, v12, v0.t
 ; CHECK-NEXT:    vfmadd.vv v9, v10, v11, v0.t
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -36,8 +36,8 @@ define <4 x half> @recip_v4f16(<4 x half> %a, <4 x i1> %m, i32 zeroext %evl) #0 
 ; CHECK-NEXT:    vfmul.vf v11, v10, fa5, v0.t
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v12, fa5
-; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    vmv1r.v v9, v11
+; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    vfnmsub.vv v9, v8, v12, v0.t
 ; CHECK-NEXT:    vfmadd.vv v9, v10, v11, v0.t
 ; CHECK-NEXT:    vmv1r.v v8, v9
@@ -59,8 +59,8 @@ define <8 x half> @recip_v8f16(<8 x half> %a, <8 x i1> %m, i32 zeroext %evl) #0 
 ; CHECK-NEXT:    vfmul.vf v11, v10, fa5, v0.t
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v12, fa5
-; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vmv1r.v v9, v11
+; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vfnmsub.vv v9, v8, v12, v0.t
 ; CHECK-NEXT:    vfmadd.vv v9, v10, v11, v0.t
 ; CHECK-NEXT:    vmv.v.v v8, v9
@@ -81,8 +81,8 @@ define <2 x double> @recip_v2f64(<2 x double> %a, <2 x i1> %m, i32 zeroext %evl)
 ; CHECK-NEXT:    vfrec7.v v9, v8
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v10, fa5
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vmv1r.v v11, v9
+; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vfnmsub.vv v11, v8, v10, v0.t
 ; CHECK-NEXT:    vfmadd.vv v11, v9, v9, v0.t
 ; CHECK-NEXT:    vmv.v.v v12, v11
@@ -110,8 +110,8 @@ define <4 x double> @recip_v4f64(<4 x double> %a, <4 x i1> %m, i32 zeroext %evl)
 ; CHECK-NEXT:    vfrec7.v v10, v8
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v12, fa5
-; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    vmv2r.v v14, v10
+; CHECK-NEXT:    vsetvli zero, a0, e64, m2, ta, ma
 ; CHECK-NEXT:    vfnmsub.vv v14, v8, v12, v0.t
 ; CHECK-NEXT:    vfmadd.vv v14, v10, v10, v0.t
 ; CHECK-NEXT:    vmv.v.v v16, v14
@@ -139,8 +139,8 @@ define <8 x double> @recip_v8f64(<8 x double> %a, <8 x i1> %m, i32 zeroext %evl)
 ; CHECK-NEXT:    vfrec7.v v12, v8
 ; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vfmv.v.f v16, fa5
-; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vmv4r.v v20, v12
+; CHECK-NEXT:    vsetvli zero, a0, e64, m4, ta, ma
 ; CHECK-NEXT:    vfnmsub.vv v20, v8, v16, v0.t
 ; CHECK-NEXT:    vfmadd.vv v20, v12, v12, v0.t
 ; CHECK-NEXT:    vmv.v.v v24, v20

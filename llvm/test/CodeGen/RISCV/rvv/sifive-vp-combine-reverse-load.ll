@@ -75,28 +75,28 @@ define <vscale x 2 x float> @test_differnet_evl(<vscale x 2 x float>* %ptr, i32 
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, tu, ma
 ; CHECK-NEXT:    vslideup.vi v9, v8, 1
 ; CHECK-NEXT:    vsetvli a3, zero, e8, mf4, ta, ma
-; CHECK-NEXT:    vand.vi v8, v9, 1
-; CHECK-NEXT:    vmsne.vi v8, v8, 0
-; CHECK-NEXT:    vmclr.m v9
+; CHECK-NEXT:    vand.vi v9, v9, 1
+; CHECK-NEXT:    vmclr.m v8
+; CHECK-NEXT:    vmsne.vi v9, v9, 0
+; CHECK-NEXT:    vmv1r.v v0, v8
 ; CHECK-NEXT:    vsetvli zero, a1, e16, mf2, ta, ma
-; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vid.v v10, v0.t
 ; CHECK-NEXT:    addi a1, a1, -1
 ; CHECK-NEXT:    vrsub.vx v10, v10, a1, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vmv.v.i v11, 0
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vim v8, v11, 1, v0
 ; CHECK-NEXT:    vmv1r.v v0, v9
-; CHECK-NEXT:    vrgatherei16.vv v11, v8, v10, v0.t
+; CHECK-NEXT:    vmerge.vim v9, v11, 1, v0
+; CHECK-NEXT:    vmv1r.v v0, v8
+; CHECK-NEXT:    vrgatherei16.vv v11, v9, v10, v0.t
 ; CHECK-NEXT:    vmsne.vi v0, v11, 0, v0.t
 ; CHECK-NEXT:    vsetvli zero, a2, e32, m1, ta, ma
-; CHECK-NEXT:    vle32.v v10, (a0), v0.t
-; CHECK-NEXT:    vmv1r.v v0, v9
-; CHECK-NEXT:    vid.v v8, v0.t
+; CHECK-NEXT:    vle32.v v9, (a0), v0.t
+; CHECK-NEXT:    vmv1r.v v0, v8
+; CHECK-NEXT:    vid.v v10, v0.t
 ; CHECK-NEXT:    addi a2, a2, -1
-; CHECK-NEXT:    vrsub.vx v11, v8, a2, v0.t
-; CHECK-NEXT:    vrgather.vv v8, v10, v11, v0.t
+; CHECK-NEXT:    vrsub.vx v10, v10, a2, v0.t
+; CHECK-NEXT:    vrgather.vv v8, v9, v10, v0.t
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 2 x i1> undef, i1 1, i32 1
   %allones = shufflevector <vscale x 2 x i1> %head, <vscale x 2 x i1> undef, <vscale x 2 x i32> zeroinitializer

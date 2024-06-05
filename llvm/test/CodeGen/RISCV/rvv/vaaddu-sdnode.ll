@@ -228,15 +228,7 @@ define <vscale x 8 x i8> @vaaddu_vv_nxv8i8_ceil_sexti16(<vscale x 8 x i8> %x, <v
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    csrwi vxrm, 0
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
-<<<<<<< HEAD
-; CHECK-NEXT:    vwadd.vv v10, v8, v9
-; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
-; CHECK-NEXT:    vadd.vi v8, v10, 1
-; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vnsrl.wi v8, v8, 1
-=======
 ; CHECK-NEXT:    vaadd.vv v8, v8, v9
->>>>>>> 855eef2
 ; CHECK-NEXT:    ret
   %xzv = sext <vscale x 8 x i8> %x to <vscale x 8 x i16>
   %yzv = sext <vscale x 8 x i8> %y to <vscale x 8 x i16>

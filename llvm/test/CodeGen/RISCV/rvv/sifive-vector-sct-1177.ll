@@ -21,7 +21,10 @@ define dso_local void @main() local_unnamed_addr {
 ; CHECK-NEXT:    li a0, 55
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
 ; CHECK-NEXT:    vloxseg2ei32.v v16, (a0), v8
-; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    slli a0, a0, 3
+; CHECK-NEXT:    add a0, sp, a0
+; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    slli a1, a1, 2
 ; CHECK-NEXT:    vs4r.v v16, (a0) # Unknown-size Folded Spill
@@ -32,37 +35,24 @@ define dso_local void @main() local_unnamed_addr {
 ; CHECK-NEXT:    li s0, 36
 ; CHECK-NEXT:    vsetvli zero, s0, e16, m4, ta, ma
 ; CHECK-NEXT:    vfwadd.vv v16, v8, v12, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
+; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    call _Z5checkIjEbPKT_S2_m
-; CHECK-NEXT:    li a0, 32
-; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
-; CHECK-NEXT:    vrgather.vv v16, v8, v12, v0.t
-; CHECK-NEXT:    vsetvli zero, s0, e16, m4, ta, ma
-; CHECK-NEXT:    addi a1, sp, 16
-; CHECK-NEXT:    csrr a2, vlenb
-; CHECK-NEXT:    slli a2, a2, 2
-; CHECK-NEXT:    vl4r.v v20, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    add a1, a1, a2
-; CHECK-NEXT:    vl4r.v v24, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a1, a1, 3
-; CHECK-NEXT:    add a1, sp, a1
-; CHECK-NEXT:    addi a1, a1, 16
-; CHECK-NEXT:    vl8r.v v0, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    vfwsub.wv v8, v0, v20
-; CHECK-NEXT:    vsetvli zero, a0, e16, m4, tu, mu
-; CHECK-NEXT:    vssubu.vv v16, v16, v8, v0.t
-; CHECK-NEXT:    vsetvli zero, s0, e32, m8, tu, mu
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vfdiv.vv v8, v16, v8, v0.t
+; CHECK-NEXT:    csrr a1, vlenb
+; CHECK-NEXT:    slli a1, a1, 2
+; CHECK-NEXT:    vl4r.v v12, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    add a0, a0, a1
+; CHECK-NEXT:    vl4r.v v16, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    addi a0, sp, 16
+; CHECK-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    vsetvli zero, s0, e16, m4, ta, ma
+; CHECK-NEXT:    vfwsub.wv v8, v24, v12
+; CHECK-NEXT:    vsetvli zero, zero, e32, m8, tu, mu
+; CHECK-NEXT:    vfdiv.vv v8, v24, v8, v0.t
 ; CHECK-NEXT:    vse32.v v8, (a0)
 entry:
   %0 = call { <vscale x 16 x half>, <vscale x 16 x half> } @llvm.riscv.vloxseg2.nxv16f16.nxv16i32.i64(<vscale x 16 x half> undef, <vscale x 16 x half> undef, half* nonnull undef, <vscale x 16 x i32> undef, i64 55)

@@ -5,9 +5,9 @@
 define <2 x half> @recip_v2f16(<2 x half> %a) #0 {
 ; CHECK-LABEL: recip_v2f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI0_0)
+; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
 ; CHECK-NEXT:    vlse16.v v9, (a0), zero
 ; CHECK-NEXT:    vfrec7.v v10, v8
 ; CHECK-NEXT:    vfmadd.vv v8, v10, v9
@@ -20,9 +20,9 @@ define <2 x half> @recip_v2f16(<2 x half> %a) #0 {
 define <4 x half> @recip_v4f16(<4 x half> %a) #0 {
 ; CHECK-LABEL: recip_v4f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI1_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI1_0)
+; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
 ; CHECK-NEXT:    vlse16.v v9, (a0), zero
 ; CHECK-NEXT:    vfrec7.v v10, v8
 ; CHECK-NEXT:    vfmadd.vv v8, v10, v9
@@ -35,9 +35,9 @@ define <4 x half> @recip_v4f16(<4 x half> %a) #0 {
 define <8 x half> @recip_v8f16(<8 x half> %a) #0 {
 ; CHECK-LABEL: recip_v8f16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI2_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI2_0)
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
 ; CHECK-NEXT:    vlse16.v v9, (a0), zero
 ; CHECK-NEXT:    vfrec7.v v10, v8
 ; CHECK-NEXT:    vfmadd.vv v8, v10, v9
@@ -101,9 +101,9 @@ define <8 x float> @recip_v8f32(<8 x float> %a) #0 {
 define <2 x double> @recip_v2f64(<2 x double> %a) #0 {
 ; CHECK-LABEL: recip_v2f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI6_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI6_0)
+; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
 ; CHECK-NEXT:    vlse64.v v9, (a0), zero
 ; CHECK-NEXT:    vfrec7.v v10, v8
 ; CHECK-NEXT:    vmv.v.v v11, v10
@@ -122,9 +122,9 @@ define <2 x double> @recip_v2f64(<2 x double> %a) #0 {
 define <4 x double> @recip_v4f64(<4 x double> %a) #0 {
 ; CHECK-LABEL: recip_v4f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI7_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI7_0)
+; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vlse64.v v10, (a0), zero
 ; CHECK-NEXT:    vfrec7.v v12, v8
 ; CHECK-NEXT:    vmv.v.v v14, v12
@@ -143,9 +143,9 @@ define <4 x double> @recip_v4f64(<4 x double> %a) #0 {
 define <8 x double> @recip_v8f64(<8 x double> %a) #0 {
 ; CHECK-LABEL: recip_v8f64:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    lui a0, %hi(.LCPI8_0)
 ; CHECK-NEXT:    addi a0, a0, %lo(.LCPI8_0)
+; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; CHECK-NEXT:    vlse64.v v12, (a0), zero
 ; CHECK-NEXT:    vfrec7.v v16, v8
 ; CHECK-NEXT:    vmv.v.v v20, v16

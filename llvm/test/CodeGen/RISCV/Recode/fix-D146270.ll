@@ -13,13 +13,13 @@ define <8 x i8> @vqshlb_u8() {
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x30, 0x22, 0x11, 0x06, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 48 + 6 * vlenb
 ; CHECK-NEXT:    li a0, 200
 ; CHECK-NEXT:    sb a0, 47(sp)
-; CHECK-NEXT:    li a0, 253
+; CHECK-NEXT:    li a0, -3
 ; CHECK-NEXT:    sb a0, 46(sp)
 ; CHECK-NEXT:    lbu a0, 47(sp)
 ; CHECK-NEXT:    lbu a1, 46(sp)
 ; CHECK-NEXT:    sd a1, 24(sp) # 8-byte Folded Spill
-; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; CHECK-NEXT:    # implicit-def: $v9
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, tu, ma
 ; CHECK-NEXT:    vmv.v.x v9, a0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a2, a0, 1
@@ -30,6 +30,7 @@ define <8 x i8> @vqshlb_u8() {
 ; CHECK-NEXT:    li a0, 256
 ; CHECK-NEXT:    sub a0, a0, a1
 ; CHECK-NEXT:    # implicit-def: $v8
+; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vsrl.vx v8, v9, a0
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    slli a1, a1, 2
@@ -37,6 +38,7 @@ define <8 x i8> @vqshlb_u8() {
 ; CHECK-NEXT:    addi a1, a1, 48
 ; CHECK-NEXT:    vs1r.v v8, (a1) # Unknown-size Folded Spill
 ; CHECK-NEXT:    # implicit-def: $v8
+; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, tu, ma
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    li a1, 8
 ; CHECK-NEXT:    sd a1, 32(sp) # 8-byte Folded Spill
@@ -95,15 +97,15 @@ define <8 x i8> @vqshlb_u8() {
 ; CHECK-NEXT:    vl1r.v v10, (a2) # Unknown-size Folded Reload
 ; CHECK-NEXT:    # implicit-def: $v9
 ; CHECK-NEXT:    vmv.v.x v9, a1
-; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
 ; CHECK-NEXT:    # implicit-def: $v11
+; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
 ; CHECK-NEXT:    vzext.vf2 v11, v9
 ; CHECK-NEXT:    # implicit-def: $v9
 ; CHECK-NEXT:    vzext.vf2 v9, v10
 ; CHECK-NEXT:    # implicit-def: $v10
 ; CHECK-NEXT:    vsll.vv v10, v9, v11
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    # implicit-def: $v9
+; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v9, v10, 0
 ; CHECK-NEXT:    addi a1, sp, 48
 ; CHECK-NEXT:    vs1r.v v9, (a1) # Unknown-size Folded Spill

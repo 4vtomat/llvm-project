@@ -10,171 +10,101 @@
 define void @main() {
 ; CHECK-LABEL: main:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    li a1, 20
-; CHECK-NEXT:    mul a0, a0, a1
-; CHECK-NEXT:    sub sp, sp, a0
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x14, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 20 * vlenb
 ; CHECK-NEXT:    vsetivli zero, 0, e64, m4, ta, ma
-; CHECK-NEXT:    vle64.v v12, (zero)
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    li a1, 12
-; CHECK-NEXT:    mul a0, a0, a1
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a1, a1, 2
-; CHECK-NEXT:    vs4r.v v8, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    add a0, a0, a1
-; CHECK-NEXT:    vs4r.v v12, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vmacc.vv v24, v8, v8
+; CHECK-NEXT:    vmacc.vv v12, v8, v8
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_0)
 ; CHECK-NEXT:    ld a0, %lo(.LCPI0_0)(a0)
-; CHECK-NEXT:    vsetvli a1, zero, e64, m4, ta, ma
-; CHECK-NEXT:    vmv.v.i v28, 0
-; CHECK-NEXT:    vsetivli zero, 0, e64, m4, ta, ma
-; CHECK-NEXT:    vand.vx v8, v28, a0
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vs4r.v v8, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vmclr.m v3
-; CHECK-NEXT:    li a0, 108
+; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
+; CHECK-NEXT:    vmclr.m v28
+; CHECK-NEXT:    li a1, 108
+; CHECK-NEXT:    vmv1r.v v9, v28
+; CHECK-NEXT:    vmv1r.v v0, v28
 ; CHECK-NEXT:    vsetivli zero, 0, e8, mf2, ta, mu
-; CHECK-NEXT:    vmv1r.v v2, v3
+; CHECK-NEXT:    vmsne.vx v9, v8, a1, v0.t
 ; CHECK-NEXT:    lui a1, %hi(.LCPI0_1)
 ; CHECK-NEXT:    ld a1, %lo(.LCPI0_1)(a1)
-; CHECK-NEXT:    vmv1r.v v0, v3
-; CHECK-NEXT:    vmsne.vx v2, v8, a0, v0.t
+; CHECK-NEXT:    vsetvli a2, zero, e64, m4, ta, ma
+; CHECK-NEXT:    vmv.v.i v16, 0
+; CHECK-NEXT:    vsetivli zero, 0, e64, m4, ta, ma
+; CHECK-NEXT:    vand.vx v20, v16, a0
+; CHECK-NEXT:    vmv1r.v v0, v9
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
-; CHECK-NEXT:    vmv1r.v v0, v2
-; CHECK-NEXT:    vnot.v v28, v24, v0.t
-; CHECK-NEXT:    vmv4r.v v20, v8
-; CHECK-NEXT:    vxor.vx v20, v28, a1, v0.t
+; CHECK-NEXT:    vnot.v v16, v12, v0.t
+; CHECK-NEXT:    vxor.vx v20, v16, a1, v0.t
 ; CHECK-NEXT:    vmv4r.v v24, v20
 ; CHECK-NEXT:    lui a0, %hi(__const.main.var_272)
 ; CHECK-NEXT:    addi a0, a0, %lo(__const.main.var_272)
 ; CHECK-NEXT:    vmv4r.v v12, v20
 ; CHECK-NEXT:    vmv4r.v v16, v24
 ; CHECK-NEXT:    vluxseg2ei8.v v12, (a0), v10, v0.t
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 2
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a1, a1, 2
-; CHECK-NEXT:    vs4r.v v12, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    add a0, a0, a1
-; CHECK-NEXT:    vs4r.v v16, (a0) # Unknown-size Folded Spill
+; CHECK-NEXT:    vmv4r.v v4, v12
+; CHECK-NEXT:    vmv4r.v v8, v16
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
+; CHECK-NEXT:    vle64.v v16, (zero)
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_2)
 ; CHECK-NEXT:    ld a0, %lo(.LCPI0_2)(a0)
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    li a2, 12
-; CHECK-NEXT:    mul a1, a1, a2
-; CHECK-NEXT:    add a1, sp, a1
-; CHECK-NEXT:    addi a1, a1, 16
-; CHECK-NEXT:    csrr a2, vlenb
-; CHECK-NEXT:    slli a2, a2, 2
-; CHECK-NEXT:    vl4r.v v12, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    add a1, a1, a2
-; CHECK-NEXT:    vl4r.v v16, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a1, a1, 2
-; CHECK-NEXT:    add a1, sp, a1
-; CHECK-NEXT:    addi a1, a1, 16
-; CHECK-NEXT:    csrr a2, vlenb
-; CHECK-NEXT:    slli a2, a2, 2
-; CHECK-NEXT:    vl4r.v v4, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    add a1, a1, a2
-; CHECK-NEXT:    vl4r.v v8, (a1) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vaaddu.vv v12, v4, v20
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    li a2, 12
-; CHECK-NEXT:    mul a1, a1, a2
-; CHECK-NEXT:    add a1, sp, a1
-; CHECK-NEXT:    addi a1, a1, 16
-; CHECK-NEXT:    csrr a2, vlenb
-; CHECK-NEXT:    slli a2, a2, 2
-; CHECK-NEXT:    vs4r.v v12, (a1) # Unknown-size Folded Spill
-; CHECK-NEXT:    add a1, a1, a2
-; CHECK-NEXT:    vs4r.v v16, (a1) # Unknown-size Folded Spill
-; CHECK-NEXT:    addi a1, sp, 16
-; CHECK-NEXT:    vl4r.v v8, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    vssrl.vi v12, v8, 10, v0.t
+; CHECK-NEXT:    lui a1, %hi(.LCPI0_3)
+; CHECK-NEXT:    ld a1, %lo(.LCPI0_3)(a1)
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    li a2, 12
-; CHECK-NEXT:    mul a1, a1, a2
-; CHECK-NEXT:    add a1, sp, a1
-; CHECK-NEXT:    addi a1, a1, 16
-; CHECK-NEXT:    csrr a2, vlenb
-; CHECK-NEXT:    slli a2, a2, 2
-; CHECK-NEXT:    vl4r.v v16, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    add a1, a1, a2
-; CHECK-NEXT:    vl4r.v v20, (a1) # Unknown-size Folded Reload
-; CHECK-NEXT:    vremu.vx v16, v8, a0, v0.t
+; CHECK-NEXT:    vremu.vx v12, v8, a0, v0.t
+; CHECK-NEXT:    vmv1r.v v0, v28
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    lui a0, %hi(.LCPI0_3)
-; CHECK-NEXT:    ld a0, %lo(.LCPI0_3)(a0)
-; CHECK-NEXT:    vmv1r.v v0, v3
-; CHECK-NEXT:    vnsrl.wi v8, v12, 0, v0.t
+; CHECK-NEXT:    vnsrl.wi v8, v20, 0, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
-; CHECK-NEXT:    vmadd.vx v16, a0, v8, v0.t
+; CHECK-NEXT:    vmadd.vx v12, a1, v8, v0.t
 ; CHECK-NEXT:    lui a0, 854558
 ; CHECK-NEXT:    addi a0, a0, 733
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, tu, mu
 ; CHECK-NEXT:    vnmsac.vx v8, a0, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
-; CHECK-NEXT:    vsseg2e64.v v16, (a0)
+; CHECK-NEXT:    vsseg2e64.v v12, (a0)
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    vsseg2e32.v v8, (a0)
 ;
 ; SUBREG_LIVENESS-LABEL: main:
 ; SUBREG_LIVENESS:       # %bb.0: # %entry
 ; SUBREG_LIVENESS-NEXT:    vsetivli zero, 0, e64, m4, ta, ma
-; SUBREG_LIVENESS-NEXT:    vle64.v v16, (zero)
 ; SUBREG_LIVENESS-NEXT:    vmacc.vv v12, v8, v8
 ; SUBREG_LIVENESS-NEXT:    lui a0, %hi(.LCPI0_0)
 ; SUBREG_LIVENESS-NEXT:    ld a0, %lo(.LCPI0_0)(a0)
-; SUBREG_LIVENESS-NEXT:    vsetvli a1, zero, e64, m4, ta, ma
-; SUBREG_LIVENESS-NEXT:    vmv.v.i v24, 0
-; SUBREG_LIVENESS-NEXT:    vsetivli zero, 0, e64, m4, ta, ma
-; SUBREG_LIVENESS-NEXT:    vand.vx v4, v24, a0
-; SUBREG_LIVENESS-NEXT:    vsetvli a0, zero, e8, mf2, ta, ma
+; SUBREG_LIVENESS-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
 ; SUBREG_LIVENESS-NEXT:    vmclr.m v8
-; SUBREG_LIVENESS-NEXT:    li a0, 108
-; SUBREG_LIVENESS-NEXT:    vsetivli zero, 0, e8, mf2, ta, mu
+; SUBREG_LIVENESS-NEXT:    li a1, 108
 ; SUBREG_LIVENESS-NEXT:    vmv1r.v v9, v8
+; SUBREG_LIVENESS-NEXT:    vmv1r.v v0, v8
+; SUBREG_LIVENESS-NEXT:    vsetivli zero, 0, e8, mf2, ta, mu
+; SUBREG_LIVENESS-NEXT:    vmsne.vx v9, v8, a1, v0.t
 ; SUBREG_LIVENESS-NEXT:    lui a1, %hi(.LCPI0_1)
 ; SUBREG_LIVENESS-NEXT:    ld a1, %lo(.LCPI0_1)(a1)
-; SUBREG_LIVENESS-NEXT:    vmv1r.v v0, v8
-; SUBREG_LIVENESS-NEXT:    vmsne.vx v9, v8, a0, v0.t
-; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
+; SUBREG_LIVENESS-NEXT:    vsetvli a2, zero, e64, m4, ta, ma
+; SUBREG_LIVENESS-NEXT:    vmv.v.i v16, 0
+; SUBREG_LIVENESS-NEXT:    vsetivli zero, 0, e64, m4, ta, ma
+; SUBREG_LIVENESS-NEXT:    vand.vx v20, v16, a0
 ; SUBREG_LIVENESS-NEXT:    vmv1r.v v0, v9
-; SUBREG_LIVENESS-NEXT:    vnot.v v24, v12, v0.t
-; SUBREG_LIVENESS-NEXT:    vmv4r.v v20, v4
-; SUBREG_LIVENESS-NEXT:    vxor.vx v20, v24, a1, v0.t
+; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
+; SUBREG_LIVENESS-NEXT:    vnot.v v16, v12, v0.t
+; SUBREG_LIVENESS-NEXT:    vxor.vx v20, v16, a1, v0.t
 ; SUBREG_LIVENESS-NEXT:    vmv4r.v v24, v20
 ; SUBREG_LIVENESS-NEXT:    lui a0, %hi(__const.main.var_272)
 ; SUBREG_LIVENESS-NEXT:    addi a0, a0, %lo(__const.main.var_272)
-; SUBREG_LIVENESS-NEXT:    vmv4r.v v28, v24
-; SUBREG_LIVENESS-NEXT:    vluxseg2ei8.v v24, (a0), v10, v0.t
+; SUBREG_LIVENESS-NEXT:    vmv4r.v v12, v20
+; SUBREG_LIVENESS-NEXT:    vmv4r.v v16, v24
+; SUBREG_LIVENESS-NEXT:    vluxseg2ei8.v v12, (a0), v10, v0.t
 ; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
+; SUBREG_LIVENESS-NEXT:    vle64.v v16, (zero)
 ; SUBREG_LIVENESS-NEXT:    lui a0, %hi(.LCPI0_2)
 ; SUBREG_LIVENESS-NEXT:    ld a0, %lo(.LCPI0_2)(a0)
-; SUBREG_LIVENESS-NEXT:    vaaddu.vv v12, v24, v20
-; SUBREG_LIVENESS-NEXT:    vssrl.vi v20, v4, 10, v0.t
+; SUBREG_LIVENESS-NEXT:    vaaddu.vv v12, v12, v20
+; SUBREG_LIVENESS-NEXT:    lui a1, %hi(.LCPI0_3)
+; SUBREG_LIVENESS-NEXT:    ld a1, %lo(.LCPI0_3)(a1)
 ; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
 ; SUBREG_LIVENESS-NEXT:    vremu.vx v12, v8, a0, v0.t
-; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; SUBREG_LIVENESS-NEXT:    lui a0, %hi(.LCPI0_3)
-; SUBREG_LIVENESS-NEXT:    ld a0, %lo(.LCPI0_3)(a0)
 ; SUBREG_LIVENESS-NEXT:    vmv1r.v v0, v8
+; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; SUBREG_LIVENESS-NEXT:    vnsrl.wi v8, v20, 0, v0.t
 ; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
-; SUBREG_LIVENESS-NEXT:    vmadd.vx v12, a0, v8, v0.t
+; SUBREG_LIVENESS-NEXT:    vmadd.vx v12, a1, v8, v0.t
 ; SUBREG_LIVENESS-NEXT:    lui a0, 854558
 ; SUBREG_LIVENESS-NEXT:    addi a0, a0, 733
 ; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e32, m2, tu, mu
