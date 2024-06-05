@@ -71,9 +71,11 @@ extern cl::opt<uint64_t> LoopVectorizerVLUpperBound;
 #define DEBUG_TYPE "vplan"
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 raw_ostream &llvm::operator<<(raw_ostream &OS, const VPValue &V) {
-  const VPInstruction *Instr = dyn_cast<VPInstruction>(&V);
-  VPSlotTracker SlotTracker(
-      (Instr && Instr->getParent()) ? Instr->getParent()->getPlan() : nullptr);
+#if SIFIVE_CUSTOMIZATION
+  const VPRecipeBase *R = V.getDefiningRecipe();
+  VPSlotTracker SlotTracker((R && R->getParent()) ? R->getParent()->getPlan()
+                                                  : nullptr);
+#endif // SIFIVE_CUSTOMIZATION
   V.print(OS, SlotTracker);
   return OS;
 }
