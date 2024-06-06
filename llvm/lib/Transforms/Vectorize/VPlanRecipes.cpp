@@ -1105,7 +1105,7 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
         VPIntrinsic::isVPIntrinsic(VPID)) {
       auto *CI = cast_or_null<CallInst>(getUnderlyingInstr());
       for (unsigned Part = 0; Part < State.UF; ++Part) {
-        llvm::widenPredicatedCall(CI, this, *this, State, VPID, Part);
+        llvm::widenPredicatedCall(CI, this, State, VPID, Part);
         Value *V = State.get(this, Part);
         State.addMetadata(V, CI);
       }

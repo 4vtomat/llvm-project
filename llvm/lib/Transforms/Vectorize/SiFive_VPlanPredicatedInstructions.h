@@ -21,9 +21,8 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
                                   VPTransformState &State, VPValue *BlockInMask,
                                   unsigned Part);
 
-void widenPredicatedCall(CallInst *CI, VPValue *Def, VPUser &ArgOperands,
-                         VPTransformState &State, Intrinsic::ID VPID,
-                         unsigned Part);
+void widenPredicatedCall(CallInst *CI, VPValue *Def, VPTransformState &State,
+                         Intrinsic::ID VPID, unsigned Part);
 
 /// Build and return either `vp.gather`/`vp.scatter` or
 /// `vp.strided_load`/`vp.strided_store` if previous analysis indicated it's
