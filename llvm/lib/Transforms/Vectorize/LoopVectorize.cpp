@@ -10811,7 +10811,9 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
           VPlanTransforms::optimizeUncountable(*Plan, *PSE.getSE());
         } else {
           VPlanTransforms::optimize(*Plan, *PSE.getSE());
-          VPlanTransforms::tryAddExplicitVectorLength(*Plan);
+          VPlanTransforms::tryAddExplicitVectorLength(
+              *Plan,
+              /*EnableEVLFuzzing*/ true);
           VPlanTransforms::optimize(*Plan, *PSE.getSE());
           VPlanTransforms::optimizeGEPs(*Plan);
           VPlanTransforms::optimize(*Plan, *PSE.getSE());

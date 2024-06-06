@@ -1441,11 +1441,19 @@ void VPlanTransforms::addActiveLaneMask(
 /// %NextEVLIV = add IVSize (cast i32 %VPEVVL to IVSize), %EVLPhi
 /// ...
 ///
+#if SIFIVE_CUSTOMIZATION
+bool VPlanTransforms::tryAddExplicitVectorLength(VPlan &Plan,
+                                                 bool EnableEVLFuzzing) {
+#else
 bool VPlanTransforms::tryAddExplicitVectorLength(VPlan &Plan) {
+#endif // SIFIVE_CUSTOMIZATION
   VPBasicBlock *Header = Plan.getVectorLoopRegion()->getEntryBasicBlock();
   // The transform updates all users of inductions to work based on EVL, instead
   // of the VF directly. At the moment, widened inductions cannot be updated, so
   // bail out if the plan contains any.
+#if SIFIVE_CUSTOMIZATION
+  if (!EnableEVLFuzzing)
+#endif // SIFIVE_CUSTOMIZATION
   if (any_of(Header->phis(), [](VPRecipeBase &Phi) {
         return (isa<VPWidenIntOrFpInductionRecipe>(&Phi) ||
                 isa<VPWidenPointerInductionRecipe>(&Phi));

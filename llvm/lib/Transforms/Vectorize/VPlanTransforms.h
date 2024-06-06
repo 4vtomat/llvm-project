@@ -118,10 +118,14 @@ struct VPlanTransforms {
   /// VPCanonicalIVPHIRecipe is only used to control the loop after
   /// this transformation.
   /// \returns true if the transformation succeeds, or false if it doesn't.
-  static bool tryAddExplicitVectorLength(VPlan &Plan);
-
 #if SIFIVE_CUSTOMIZATION
+  /// \p EnableEVLFuzzing is used to allow the transform to handle EVL fuzzing.
+  static bool tryAddExplicitVectorLength(VPlan &Plan,
+                                         bool EnableEVLFuzzing = false);
+
   static void addExplicitVectorLengthUncountable(VPlan &Plan);
+#else
+  static bool tryAddExplicitVectorLength(VPlan &Plan);
 #endif // SIFIVE_CUSTOMIZATION
 };
 
