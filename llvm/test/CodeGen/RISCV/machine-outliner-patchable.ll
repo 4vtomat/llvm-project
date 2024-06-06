@@ -1,4 +1,7 @@
 ; RUN: llc < %s -verify-machineinstrs -enable-machine-outliner | FileCheck %s
+; SIFIVE_CUSTOMIZATION
+; RUN: llc < %s -mattr=+experimetal-zicfilp -verify-machineinstrs -enable-machine-outliner | FileCheck --check-prefix=ZICFILP %s
+; end SIFIVE_CUSTOMIZATION
 
 target triple = "riscv64-unknown-linux-gnu"
 
@@ -75,3 +78,9 @@ if.end:
   call void @foo(i32 5, i32 6, i32 7, i32 8)
   ret void
 }
+
+; SIFIVE_CUSTOMIZATION
+; Test there is no a lpad instruction at the start of outlined function.
+; ZICFILP-LABEL: OUTLINED_FUNCTION_1:
+; ZICFILP-NOT:   lpad
+; end SIFIVE_CUSTOMIZATION

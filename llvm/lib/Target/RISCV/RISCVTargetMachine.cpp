@@ -574,7 +574,6 @@ void RISCVPassConfig::addPreEmitPass() {
 #if SIFIVE_CUSTOMIZATION
   if (getOptLevel() != CodeGenOptLevel::None)
     addPass(createRISCVMachineConstPropagationPass());
-  addPass(createRISCVIndirectBranchTrackingPass());
 #endif // SIFIVE_CUSTOMIZATION
   addPass(&BranchRelaxationPassID);
   addPass(createRISCVMakeCompressibleOptPass());
@@ -596,6 +595,9 @@ void RISCVPassConfig::addPreEmitPass2() {
     // ensuring return instruction is detected correctly.
     addPass(createRISCVPushPopOptimizationPass());
   }
+#if SIFIVE_CUSTOMIZATION
+  addPass(createRISCVIndirectBranchTrackingPass());
+#endif // SIFIVE_CUSTOMIZATION
   addPass(createRISCVExpandPseudoPass());
 
   // Schedule the expansion of AMOs at the last possible moment, avoiding the
