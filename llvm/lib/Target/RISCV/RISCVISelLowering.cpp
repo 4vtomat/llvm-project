@@ -18048,6 +18048,80 @@ static SDValue performVFMV_V_F_VLCombine(SDNode *N, SelectionDAG &DAG,
   }
   return SDValue();
 }
+
+// Look for (vzext_vl (sub_vl (maxu_vl X, Y), (minu_vl X, Y))) which is a zero
+// extend of an absolute difference. This subtract won't wrap so we can push
+// part of the zero extend before the subtract by using a vwsub_vl. This can
+// avoid an extract vzext instruction. For now we only do this when the result
+// is used by an addition that produces an i32 result, including reduction.
+static SDValue combineVZEXT_VL(SDNode *N, SelectionDAG &DAG) {
+  EVT VT = N->getValueType(0);
+  SDValue Src = N->getOperand(0);
+  EVT SrcVT = Src.getValueType();
+
+  // Must be extending to i16 or i32 from i8.
+  // FIXME: Support other types?
+  if ((VT.getVectorElementType() != MVT::i32 &&
+       VT.getVectorElementType() != MVT::i16) ||
+      SrcVT.getVectorElementType() != MVT::i8)
+    return SDValue();
+
+  // Make sure this only has a single use.
+  if (!N->hasOneUse())
+    return SDValue();
+
+  SDValue Mask = N->getOperand(1);
+  SDValue EVL = N->getOperand(2);
+
+  // Must we extending a subtract.
+  if (Src.getOpcode() != RISCVISD::SUB_VL || !Src.getOperand(2).isUndef() ||
+      Src.getOperand(3) != Mask || Src.getOperand(4) != EVL)
+    return SDValue();
+
+  // Look for a abdu idiom.
+  SDValue Src0 = Src.getOperand(0);
+  SDValue Src1 = Src.getOperand(1);
+  if (Src0.getOpcode() != RISCVISD::UMAX_VL ||
+      Src1.getOpcode() != RISCVISD::UMIN_VL || !Src0.getOperand(2).isUndef() ||
+      !Src1.getOperand(2).isUndef() || Src0.getOperand(3) != Mask ||
+      Src0.getOperand(4) != EVL || Src1.getOperand(3) != Mask ||
+      Src1.getOperand(4) != EVL)
+    return SDValue();
+
+  // Make sure the min/max operands are the same, handle the commute case too.
+  if (!(Src0.getOperand(0) == Src1.getOperand(0) &&
+        Src0.getOperand(1) == Src1.getOperand(1)) &&
+      !(Src0.getOperand(0) == Src1.getOperand(1) &&
+        Src0.getOperand(1) == Src1.getOperand(0)))
+    return SDValue();
+
+  SDNode *U = *N->use_begin();
+
+  // Result should be part of a sum. We might have already formed a widening
+  // add so we need to check for that too.
+  if (U->getOpcode() != RISCVISD::VECREDUCE_ADD_VL &&
+      U->getOpcode() != RISCVISD::ADD_VL &&
+      U->getOpcode() != RISCVISD::VWADDU_VL &&
+      U->getOpcode() != RISCVISD::VWADDU_W_VL)
+    return SDValue();
+
+  // Sum result should be i32.
+  if (U->getValueType(0).getVectorElementType() != MVT::i32)
+    return SDValue();
+
+  // We found the pattern. Create a widening sub.
+  SDLoc DL(N);
+  MVT I16VT = MVT::getVectorVT(MVT::i16, VT.getVectorElementCount());
+  SDValue Sub = DAG.getNode(RISCVISD::VWSUBU_VL, DL, I16VT, Src0, Src1,
+                            DAG.getUNDEF(I16VT), Mask, EVL);
+
+  // If the original type was an i16 vector, we're done.
+  if (VT == I16VT)
+    return Sub;
+
+  // Otherwise, we need to extend to i32.
+  return DAG.getNode(RISCVISD::VZEXT_VL, DL, VT, Sub, Mask, EVL);
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 static SDValue combineToVWMACC(SDNode *N, SelectionDAG &DAG,
@@ -19543,6 +19617,8 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     return combineVPBinOpOfZExt(N, DAG);
   case ISD::VP_SHL:
     return combineVPShlOfSExt(N, DAG);
+  case RISCVISD::VZEXT_VL:
+    return combineVZEXT_VL(N, DAG);
 #endif // SIFIVE_CUSTOMIZATION
   case ISD::BITCAST: {
     assert(Subtarget.useRVVForFixedLengthVectors());
