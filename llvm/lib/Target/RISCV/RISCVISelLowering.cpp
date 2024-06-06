@@ -9332,7 +9332,6 @@ SDValue RISCVTargetLowering::lowerAArch64_qrshl(SelectionDAG &DAG,
     std::tie(Mask, VL) =
         getDefaultVLOps(VecVT, ContainerVecVT, DL, DAG, Subtarget);
     SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::RNU, DL, XLenVT);
-    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
     SDValue SShift = convertFromScalableVector(
         VecVT,
         DAG.getNode(
@@ -9342,7 +9341,7 @@ SDValue RISCVTargetLowering::lowerAArch64_qrshl(SelectionDAG &DAG,
              convertToScalableVector(ContainerVecVT,
                                      toVectorIfScalar(RShiftAmount), DAG,
                                      Subtarget),
-             Passthru, Mask, RM, VL, Policy}),
+             Passthru, Mask, RM, VL}),
         DAG, Subtarget);
     if (!IsSigned) {
       // If the shift amount is equal to Size, the result depends on MSB. We can
@@ -9833,10 +9832,8 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     SDValue Mask, VL;
     std::tie(Mask, VL) = getDefaultVLOps(VT, VecVT, DL, DAG, Subtarget);
     SDValue RM = DAG.getTargetConstant(RoundingMode, DL, XLenVT);
-    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
     return convertFromScalableVector(
-        VT,
-        DAG.getNode(Opc, DL, VecVT, {Op0, Op1, Passthru, Mask, RM, VL, Policy}),
+        VT, DAG.getNode(Opc, DL, VecVT, {Op0, Op1, Passthru, Mask, RM, VL}),
         DAG, Subtarget);
   }
   case Intrinsic::aarch64_neon_sqabs: {
@@ -9853,7 +9850,6 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
         {Src, DAG.getConstant(0, DL, Src.getValueType()),
          DAG.getCondCode(ISD::SETLT), DAG.getUNDEF(SetccVT), Mask, VL});
     SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::RDN, DL, XLenVT);
-    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
     return convertFromScalableVector(
         VT,
         DAG.getNode(
@@ -9867,7 +9863,7 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
                                      DL, VecVT.getScalarType()),
                      DL, XLenVT),
                  VL),
-             Src, VsmulMask, RM, VL, Policy}),
+             Src, VsmulMask, RM, VL}),
         DAG, Subtarget);
   }
   case Intrinsic::aarch64_neon_sqneg: {
@@ -9879,7 +9875,6 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     SDValue Mask, VL;
     std::tie(Mask, VL) = getDefaultVLOps(VT, VecVT, DL, DAG, Subtarget);
     SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::RDN, DL, XLenVT);
-    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
     return convertFromScalableVector(
         VT,
         DAG.getNode(
@@ -9893,7 +9888,7 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
                                      DL, VecVT.getScalarType()),
                      DL, XLenVT),
                  VL),
-             Passthru, Mask, RM, VL, Policy}),
+             Passthru, Mask, RM, VL}),
         DAG, Subtarget);
   }
   case Intrinsic::aarch64_neon_sqrshrn:
@@ -9931,7 +9926,6 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     SDValue Mask, VL;
     std::tie(Mask, VL) = getDefaultVLOps(VT, VecVT, DL, DAG, Subtarget);
     SDValue RM = DAG.getTargetConstant(RoundingMode, DL, XLenVT);
-    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
     return convertFromScalableVector(
         VT,
         DAG.getNode(
@@ -9940,7 +9934,7 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
              DAG.getNode(RISCVISD::VMV_V_X_VL, DL, VecVT, DAG.getUNDEF(VecVT),
                          DAG.getAnyExtOrTrunc(Op.getOperand(2), DL, XLenVT),
                          VL),
-             Passthru, Mask, RM, VL, Policy}),
+             Passthru, Mask, RM, VL}),
         DAG, Subtarget);
   }
   case Intrinsic::aarch64_neon_sqrshl:
@@ -9981,13 +9975,12 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
         DAG.getNode(RISCVISD::VMV_V_X_VL, DL, VecVT, DAG.getUNDEF(VecVT),
                     DAG.getConstant(0, DL, XLenVT), VL);
     SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::DYN, DL, XLenVT);
-    SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
     return convertFromScalableVector(
         VT,
         DAG.getNode(IntNo == Intrinsic::aarch64_neon_sqxtn
                         ? RISCVISD::VNCLIP_VL
                         : RISCVISD::VNCLIPU_VL,
-                    DL, VecVT, {Src, Zero, Passthru, Mask, RM, VL, Policy}),
+                    DL, VecVT, {Src, Zero, Passthru, Mask, RM, VL}),
         DAG, Subtarget);
   }
 #endif
@@ -11956,7 +11949,6 @@ SDValue RISCVTargetLowering::lowerSHLSAT(const SDLoc &DL, MVT VT, SDValue LHS,
     MulRHS = DAG.getNode(ISD::SHL, DL, VT, DAG.getConstant(1, DL, VT), RHS);
   }
   auto [Mask, VL] = getDefaultVLOps(VT, ContainerVT, DL, DAG, Subtarget);
-  SDValue Policy = DAG.getTargetConstant(RISCVII::TAIL_AGNOSTIC, DL, XLenVT);
   MVT WidenVT = MVT::getVectorVT(MVT::getIntegerVT(EltBitSize * 2),
                                  VT.getVectorNumElements());
   // Widening operation is used. Make sure EltBitSize * 2 is smaller than or
@@ -11993,7 +11985,7 @@ SDValue RISCVTargetLowering::lowerSHLSAT(const SDLoc &DL, MVT VT, SDValue LHS,
           ContainerVT,
           {WidenShl,
            DAG.getSplatVector(ContainerVT, DL, DAG.getConstant(0, DL, XLenVT)),
-           DAG.getUNDEF(ContainerVT), Mask, RM, VL, Policy});
+           DAG.getUNDEF(ContainerVT), Mask, RM, VL});
       return convertFromScalableVector(VT, Nclip, DAG, Subtarget);
     }
   }
