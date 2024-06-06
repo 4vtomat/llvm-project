@@ -1532,6 +1532,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
                          ISD::BUILD_VECTOR, ISD::CONCAT_VECTORS,
 #if SIFIVE_CUSTOMIZATION
                          ISD::VP_SUB,
+                         ISD::VP_SHL,
                          ISD::VP_STORE,
                          ISD::SPLAT_VECTOR,
                          ISD::INTRINSIC_WO_CHAIN,
@@ -14600,6 +14601,43 @@ static SDValue combineVPBinOpOfZExt(SDNode *N, SelectionDAG &DAG) {
       DAG.getNode(N->getOpcode(), SDLoc(N), NarrowVT, Src0, Src1, Mask, EVL),
       Mask, EVL);
 }
+
+// Fold (vp_shl (vp_sext X), C) to (vp_shl (vp_zext X), C) if the extended bits
+// of the vp_sext aren't used. This enables using vwsll with Zvbb and is
+// harmless otherwise.
+// TODO: We should use vp_anyext if it gets created.
+static SDValue combineVPShlOfSExt(SDNode *N, SelectionDAG &DAG) {
+  SDValue N0 = N->getOperand(0);
+  SDValue Mask = N->getOperand(2);
+  SDValue EVL = N->getOperand(3);
+
+  if (N0.getOpcode() != ISD::VP_SIGN_EXTEND || N0.getOperand(1) != Mask ||
+      N0.getOperand(2) != EVL || !N0.hasOneUse())
+    return SDValue();
+
+  EVT VT = N->getValueType(0);
+
+  unsigned BitWidth = VT.getScalarSizeInBits();
+
+  ConstantSDNode *SA = isConstOrConstSplat(N->getOperand(1));
+  if (!SA)
+    return SDValue();
+
+  // Shifting more than the bitwidth is not valid.
+  if (SA->getAPIntValue().uge(BitWidth))
+    return SDValue();
+
+  unsigned ShAmt = SA->getZExtValue();
+
+  EVT SrcVT = N0.getOperand(0).getValueType();
+  if (ShAmt < BitWidth - SrcVT.getScalarSizeInBits())
+    return SDValue();
+
+  SDValue ZExt = DAG.getNode(ISD::VP_ZERO_EXTEND, SDLoc(N0), VT,
+                             N0.getOperand(0), Mask, EVL);
+  return DAG.getNode(ISD::VP_SHL, SDLoc(N), VT, ZExt, N->getOperand(1), Mask,
+                     EVL);
+}
 #endif
 
 // add (zext, zext) -> zext (add (zext, zext))
@@ -19511,6 +19549,8 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
   }
   case ISD::VP_SUB:
     return combineVPBinOpOfZExt(N, DAG);
+  case ISD::VP_SHL:
+    return combineVPShlOfSExt(N, DAG);
 #endif // SIFIVE_CUSTOMIZATION
   case ISD::BITCAST: {
     assert(Subtarget.useRVVForFixedLengthVectors());
