@@ -1187,7 +1187,7 @@ Value *llvm::createAnyOfTargetReduction(IRBuilderBase &Builder, Value *Src,
 Value *llvm::createAnyOfTargetReduction(IRBuilderBase &Builder,
                                         Value *Src,
                                         const RecurrenceDescriptor &Desc,
-                                        PHINode *OrigPhi, Value *RVL) {
+                                        PHINode *OrigPhi, Value *EVL) {
   assert(
       RecurrenceDescriptor::isAnyOfRecurrenceKind(Desc.getRecurrenceKind()) &&
       "Unexpected reduction kind");
@@ -1206,22 +1206,13 @@ Value *llvm::createAnyOfTargetReduction(IRBuilderBase &Builder,
          "One user of the original phi should be a select, and at least one "
          "input to the select should be the original phi");
 
-  // Create a splat vector with the new value and compare this to the vector
-  // we want to reduce.
-  ElementCount EC = cast<VectorType>(Src->getType())->getElementCount();
-  Value *Right = Builder.CreateVectorSplat(EC, InitVal);
-  StringRef PredicateStr = CmpInst::getPredicateName(CmpInst::ICMP_NE);
-  auto *PredicateMDS = MDString::get(Src->getContext(), PredicateStr);
-  Value *Pred = MetadataAsValue::get(Src->getContext(), PredicateMDS);
-  Value *AllTrueMask = Builder.getTrueVector(EC);
-  RVL = Builder.CreateIntCast(RVL, Builder.getInt32Ty(), /*isSigned=*/false);
-  Value *Cmp = Builder.CreateIntrinsic(Intrinsic::vp_icmp, {Src->getType()},
-                                       {Src, Right, Pred, AllTrueMask, RVL},
-                                       nullptr, "rdx.select.cmp");
-
   // If any predicate is true it means that we want to select the new value.
-  Cmp = Builder.CreateOrReduce(Cmp, RVL);
-  return Builder.CreateSelect(Cmp, NewVal, InitVal, "rdx.select");
+  Value *AnyOf =
+      Src->getType()->isVectorTy() ? Builder.CreateOrReduce(Src, EVL) : Src;
+  // The compares in the loop may yield poison, which propagates through the
+  // bitwise ORs. Freeze it here before the condition is used.
+  AnyOf = Builder.CreateFreeze(AnyOf);
+  return Builder.CreateSelect(AnyOf, NewVal, InitVal, "rdx.select");
 }
 
 Value *llvm::createFindLastIVTargetReduction(IRBuilderBase &Builder,
