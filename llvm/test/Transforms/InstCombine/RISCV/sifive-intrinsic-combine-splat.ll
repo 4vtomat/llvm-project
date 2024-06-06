@@ -101,7 +101,6 @@ define void @test_vssra(<vscale x 2 x i16> %var_14) {
 ; CHECK-SAME: (<vscale x 2 x i16> [[VAR_14:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 3, i64 1, i64 7)
-; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vssra.nxv2i16.i64.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> [[VAR_14]], i64 21968, i64 7, i64 3)
 ; CHECK-NEXT:    ret void
 ;
 entry:
@@ -118,7 +117,6 @@ define void @test_vssrl(<vscale x 2 x i16> %var_14) {
 ; CHECK-SAME: (<vscale x 2 x i16> [[VAR_14:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 3, i64 1, i64 7)
-; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vssrl.nxv2i16.i64.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> [[VAR_14]], i64 21968, i64 7, i64 3)
 ; CHECK-NEXT:    ret void
 ;
 entry:

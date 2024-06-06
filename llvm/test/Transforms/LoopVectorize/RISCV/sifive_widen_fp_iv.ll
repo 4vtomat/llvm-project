@@ -27,24 +27,24 @@ define void @test(i32 %input, ptr %0) {
 ; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 4 x double> [[DOTSPLATINSERT]], <vscale x 4 x double> poison, <vscale x 4 x i32> zeroinitializer
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
-; CHECK-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT1:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 4 x double> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP12:%.*]] = sub i32 [[TMP1]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP13:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[TMP12]], i32 4, i1 true)
-; CHECK-NEXT:    [[TMP11:%.*]] = add i32 [[EVL_BASED_IV]], 0
+; CHECK-NEXT:    [[TMP13:%.*]] = sub i32 [[TMP1]], [[EVL_BASED_IV1]]
+; CHECK-NEXT:    [[TMP12:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[TMP13]], i32 4, i1 true)
+; CHECK-NEXT:    [[TMP11:%.*]] = add i32 [[EVL_BASED_IV1]], 0
 ; CHECK-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP11]] to i64
 ; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr [[POINT:%.*]], ptr [[TMP0]], i64 [[TMP14]], i32 0, i32 0, i64 2
-; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VEC_IND]], ptr align 8 [[TMP15]], i64 24, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP13]])
-; CHECK-NEXT:    [[INDEX_EVL_NEXT1]] = add i32 [[TMP13]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i32 [[EVL_BASED_IV]], [[TMP13]]
-; CHECK-NEXT:    [[TMP16:%.*]] = uitofp i32 [[TMP13]] to double
-; CHECK-NEXT:    [[TMP17:%.*]] = fmul reassoc double 1.000000e+00, [[TMP16]]
+; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VEC_IND]], ptr align 8 [[TMP15]], i64 24, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP12]])
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i32 [[TMP12]], [[EVL_BASED_IV1]]
+; CHECK-NEXT:    [[INDEX_EVL_NEXT1]] = add i32 [[EVL_BASED_IV1]], [[TMP12]]
+; CHECK-NEXT:    [[TMP18:%.*]] = uitofp i32 [[TMP12]] to double
+; CHECK-NEXT:    [[TMP17:%.*]] = fmul reassoc double 1.000000e+00, [[TMP18]]
 ; CHECK-NEXT:    [[DOTSPLATINSERT2:%.*]] = insertelement <vscale x 4 x double> poison, double [[TMP17]], i64 0
 ; CHECK-NEXT:    [[DOTSPLAT3:%.*]] = shufflevector <vscale x 4 x double> [[DOTSPLATINSERT2]], <vscale x 4 x double> poison, <vscale x 4 x i32> zeroinitializer
-; CHECK-NEXT:    [[VEC_IND_NEXT]] = call reassoc <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VEC_IND]], <vscale x 4 x double> [[DOTSPLAT3]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP13]])
-; CHECK-NEXT:    [[TMP18:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT]], [[TMP1]]
-; CHECK-NEXT:    br i1 [[TMP18]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    [[VEC_IND_NEXT]] = call reassoc <vscale x 4 x double> @llvm.vp.fadd.nxv4f64(<vscale x 4 x double> [[VEC_IND]], <vscale x 4 x double> [[DOTSPLAT3]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP12]])
+; CHECK-NEXT:    [[TMP16:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT1]], [[TMP1]]
+; CHECK-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:

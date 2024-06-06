@@ -4,29 +4,23 @@
 @dst = external global [32 x i16], align 1
 
 define void @blend_uniform_iv_trunc(i1 %c) {
-<<<<<<< HEAD
 ; CHECK-LABEL: define void @blend_uniform_iv_trunc(
 ; CHECK-SAME: i1 [[C:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[MASK0:%.*]] = insertelement <4 x i1> poison, i1 [[C]], i64 0
-; CHECK-NEXT:    [[MASK1:%.*]] = shufflevector <4 x i1> [[MASK0]], <4 x i1> poison, <4 x i32> zeroinitializer
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
-=======
-; CHECK-LABEL: @blend_uniform_iv_trunc(
->>>>>>> 855eef2
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP1:%.*]] = trunc i64 [[INDEX]] to i16
-; CHECK-NEXT:    [[TMP2:%.*]] = add i16 [[TMP1]], 0
-; CHECK-NEXT:    [[PREDPHI:%.*]] = select i1 %c, i16 [[TMP2]], i16 undef
-; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds [32 x i16], ptr @dst, i16 0, i16 [[PREDPHI]]
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i16, ptr [[TMP5]], i32 0
-; CHECK-NEXT:    store <4 x i16> zeroinitializer, ptr [[TMP6]], align 2
+; CHECK-NEXT:    [[TMP0:%.*]] = trunc i64 [[INDEX]] to i16
+; CHECK-NEXT:    [[TMP1:%.*]] = add i16 [[TMP0]], 0
+; CHECK-NEXT:    [[PREDPHI:%.*]] = select i1 [[C]], i16 [[TMP1]], i16 undef
+; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds [32 x i16], ptr @dst, i16 0, i16 [[PREDPHI]]
+; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i16, ptr [[TMP2]], i32 0
+; CHECK-NEXT:    store <4 x i16> zeroinitializer, ptr [[TMP3]], align 2
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
-; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], 32
-; CHECK-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq i64 [[INDEX_NEXT]], 32
+; CHECK-NEXT:    br i1 [[TMP4]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -78,23 +72,17 @@ define void @blend_uniform_iv(i1 %c) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
-<<<<<<< HEAD
-; CHECK-NEXT:    [[MASK0:%.*]] = insertelement <4 x i1> poison, i1 [[C]], i64 0
-; CHECK-NEXT:    [[MASK1:%.*]] = shufflevector <4 x i1> [[MASK0]], <4 x i1> poison, <4 x i32> zeroinitializer
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
-=======
-
->>>>>>> 855eef2
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
-; CHECK-NEXT:    [[PREDPHI:%.*]] = select i1 %c, i64 [[TMP0]], i64 undef
-; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds [32 x i16], ptr @dst, i16 0, i64 [[PREDPHI]]
-; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i16, ptr [[TMP3]], i32 0
-; CHECK-NEXT:    store <4 x i16> zeroinitializer, ptr [[TMP4]], align 2
+; CHECK-NEXT:    [[PREDPHI:%.*]] = select i1 [[C]], i64 [[TMP0]], i64 undef
+; CHECK-NEXT:    [[TMP1:%.*]] = getelementptr inbounds [32 x i16], ptr @dst, i16 0, i64 [[PREDPHI]]
+; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i16, ptr [[TMP1]], i32 0
+; CHECK-NEXT:    store <4 x i16> zeroinitializer, ptr [[TMP2]], align 2
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
-; CHECK-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[INDEX_NEXT]], 32
-; CHECK-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; CHECK-NEXT:    [[TMP3:%.*]] = icmp eq i64 [[INDEX_NEXT]], 32
+; CHECK-NEXT:    br i1 [[TMP3]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -115,6 +103,7 @@ define void @blend_uniform_iv(i1 %c) {
 ; CHECK:       exit:
 ; CHECK-NEXT:    ret void
 ;
+
 
 entry:
   br label %loop.header

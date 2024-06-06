@@ -432,13 +432,9 @@ define void @debug_loc_vpinstruction(ptr nocapture %asd, ptr nocapture %bsd) !db
 ; CHECK-NEXT:    WIDEN ir<%cmp1> = icmp slt ir<%lsd>, ir<100>
 ; CHECK-NEXT:    EMIT vp<[[NOT1:%.+]]> = not ir<%cmp1>, !dbg /tmp/s.c:5:3
 ; CHECK-NEXT:    WIDEN ir<%cmp2> = icmp sge ir<%lsd>, ir<200>
-<<<<<<< HEAD
-; CHECK-NEXT:    EMIT vp<[[SEL1:%.+]]> = select vp<[[NOT1]]>, ir<%cmp2>, ir<false>, !dbg /tmp/s.c:5:21
-; CHECK-NEXT:    EMIT vp<[[NOT2:%.+]]> = not ir<%cmp2>
-; CHECK-NEXT:    EMIT vp<[[SEL2:%.+]]> = select vp<[[NOT1]]>, vp<[[NOT2]]>, ir<false>
-=======
 ; CHECK-NEXT:    EMIT vp<[[SEL1:%.+]]> = logical-and vp<[[NOT1]]>, ir<%cmp2>, !dbg /tmp/s.c:5:21
->>>>>>> 855eef2
+; CHECK-NEXT:    EMIT vp<[[NOT2:%.+]]> = not ir<%cmp2>, !dbg /tmp/s.c:5:21
+; CHECK-NEXT:    EMIT vp<[[SEL2:%.+]]> = logical-and vp<[[NOT1]]>, vp<[[NOT2]]>, !dbg /tmp/s.c:5:21
 ; CHECK-NEXT:    EMIT vp<[[OR1:%.+]]> = or vp<[[SEL1]]>, ir<%cmp1>
 ; CHECK-NEXT:  Successor(s): pred.sdiv
 ; CHECK-EMPTY:
@@ -458,11 +454,6 @@ define void @debug_loc_vpinstruction(ptr nocapture %asd, ptr nocapture %bsd) !db
 ; CHECK-NEXT:  Successor(s): if.then.0
 ; CHECK-EMPTY:
 ; CHECK-NEXT:  if.then.0:
-<<<<<<< HEAD
-=======
-; CHECK-NEXT:    EMIT vp<[[NOT2:%.+]]> = not ir<%cmp2>
-; CHECK-NEXT:    EMIT vp<[[SEL2:%.+]]> = logical-and vp<[[NOT1]]>, vp<[[NOT2]]>
->>>>>>> 855eef2
 ; CHECK-NEXT:    BLEND ir<%ysd.0> = vp<[[PHI]]> ir<%psd>/vp<[[SEL2]]>
 ; CHECK-NEXT:    vp<[[VEC_PTR2:%.+]]> = vector-pointer ir<%isd>
 ; CHECK-NEXT:    WIDEN store vp<[[VEC_PTR2]]>, ir<%ysd.0>

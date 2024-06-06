@@ -25,7 +25,7 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK-NEXT:    [[TMP8:%.*]] = add nuw nsw i64 [[TMP7]], 4
 ; CHECK-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[K]], i64 [[TMP8]]
 ; CHECK-NEXT:    [[BOUND0:%.*]] = icmp ult ptr @m, [[SCEVGEP]]
-; CHECK-NEXT:    [[BOUND1:%.*]] = icmp ult ptr [[K]], getelementptr inbounds ([[CLASS_A:%.*]], ptr @m, i64 0, i32 1)
+; CHECK-NEXT:    [[BOUND1:%.*]] = icmp ult ptr [[K]], getelementptr inbounds (i8, ptr @m, i64 4)
 ; CHECK-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
@@ -42,7 +42,7 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], [[TMP0]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = mul i64 0, [[TMP0]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = add i64 [[OFFSET_IDX]], [[TMP9]]
-; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr inbounds [[CLASS_A]], ptr [[K]], i64 [[TMP10]]
+; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr inbounds [[CLASS_A:%.*]], ptr [[K]], i64 [[TMP10]]
 ; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, ptr [[TMP13]], i32 0
 ; CHECK-NEXT:    [[TMP15:%.*]] = mul i32 [[TMP12]], 2
 ; CHECK-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 4 x i32> @llvm.vp.load.nxv4i32.p0(ptr align 4 [[TMP14]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP15]])
@@ -82,7 +82,7 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK-NEXT:    [[UMAX:%.*]] = select i1 [[TMP32]], ptr [[SCEVGEP4]], ptr [[SCEVGEP5]]
 ; CHECK-NEXT:    [[SCEVGEP6:%.*]] = getelementptr i8, ptr [[UMAX]], i64 4
 ; CHECK-NEXT:    [[BOUND07:%.*]] = icmp ult ptr @m, [[SCEVGEP6]]
-; CHECK-NEXT:    [[BOUND18:%.*]] = icmp ult ptr [[UMIN]], getelementptr inbounds ([[CLASS_A]], ptr @m, i64 0, i32 1)
+; CHECK-NEXT:    [[BOUND18:%.*]] = icmp ult ptr [[UMIN]], getelementptr inbounds (i8, ptr @m, i64 4)
 ; CHECK-NEXT:    [[FOUND_CONFLICT9:%.*]] = and i1 [[BOUND07]], [[BOUND18]]
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT9]], label [[SCALAR_PH11]], label [[VECTOR_PH12:%.*]]
 ; CHECK:       vector.ph12:

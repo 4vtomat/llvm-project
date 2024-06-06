@@ -115,16 +115,15 @@ define void @cond_uniform_load(ptr nocapture %dst, ptr nocapture readonly %src, 
 ; CHECK-NEXT:    [[TMP9:%.*]] = select <4 x i1> [[ACTIVE_LANE_MASK]], <4 x i1> [[TMP8]], <4 x i1> zeroinitializer
 ; CHECK-NEXT:    [[TMP10:%.*]] = select <4 x i1> [[ACTIVE_LANE_MASK]], <4 x i1> [[TMP7]], <4 x i1> zeroinitializer
 ; CHECK-NEXT:    [[WIDE_MASKED_GATHER:%.*]] = call <4 x i32> @llvm.masked.gather.v4i32.v4p0(<4 x ptr> [[BROADCAST_SPLAT]], i32 4, <4 x i1> [[TMP9]], <4 x i32> poison), !alias.scope [[META7:![0-9]+]]
-; CHECK-NEXT:    [[TMP11:%.*]] = or <4 x i1> [[TMP9]], [[TMP10]]
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP10]], <4 x i32> zeroinitializer, <4 x i32> [[WIDE_MASKED_GATHER]]
-; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[DST]], i64 [[TMP4]]
-; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[TMP12]], i32 0
-; CHECK-NEXT:    call void @llvm.masked.store.v4i32.p0(<4 x i32> [[PREDPHI]], ptr [[TMP13]], i32 4, <4 x i1> [[TMP11]]), !alias.scope [[META9:![0-9]+]], !noalias [[META11:![0-9]+]]
+; CHECK-NEXT:    [[TMP11:%.*]] = getelementptr inbounds i32, ptr [[DST]], i64 [[TMP4]]
+; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr inbounds i32, ptr [[TMP11]], i32 0
+; CHECK-NEXT:    call void @llvm.masked.store.v4i32.p0(<4 x i32> [[PREDPHI]], ptr [[TMP12]], i32 4, <4 x i1> [[ACTIVE_LANE_MASK]]), !alias.scope [[META9:![0-9]+]], !noalias [[META11:![0-9]+]]
 ; CHECK-NEXT:    [[INDEX_NEXT7]] = add i64 [[INDEX6]], 4
 ; CHECK-NEXT:    [[ACTIVE_LANE_MASK_NEXT]] = call <4 x i1> @llvm.get.active.lane.mask.v4i1.i64(i64 [[INDEX6]], i64 [[TMP3]])
-; CHECK-NEXT:    [[TMP14:%.*]] = xor <4 x i1> [[ACTIVE_LANE_MASK_NEXT]], <i1 true, i1 true, i1 true, i1 true>
-; CHECK-NEXT:    [[TMP15:%.*]] = extractelement <4 x i1> [[TMP14]], i32 0
-; CHECK-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
+; CHECK-NEXT:    [[TMP13:%.*]] = xor <4 x i1> [[ACTIVE_LANE_MASK_NEXT]], <i1 true, i1 true, i1 true, i1 true>
+; CHECK-NEXT:    [[TMP14:%.*]] = extractelement <4 x i1> [[TMP13]], i32 0
+; CHECK-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -133,14 +132,14 @@ define void @cond_uniform_load(ptr nocapture %dst, ptr nocapture readonly %src, 
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ [[INDEX_NEXT:%.*]], [[IF_END:%.*]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[COND]], i64 [[INDEX]]
-; CHECK-NEXT:    [[TMP16:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
-; CHECK-NEXT:    [[TOBOOL_NOT:%.*]] = icmp eq i32 [[TMP16]], 0
+; CHECK-NEXT:    [[TMP15:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; CHECK-NEXT:    [[TOBOOL_NOT:%.*]] = icmp eq i32 [[TMP15]], 0
 ; CHECK-NEXT:    br i1 [[TOBOOL_NOT]], label [[IF_END]], label [[IF_THEN:%.*]]
 ; CHECK:       if.then:
-; CHECK-NEXT:    [[TMP17:%.*]] = load i32, ptr [[SRC]], align 4
+; CHECK-NEXT:    [[TMP16:%.*]] = load i32, ptr [[SRC]], align 4
 ; CHECK-NEXT:    br label [[IF_END]]
 ; CHECK:       if.end:
-; CHECK-NEXT:    [[VAL_0:%.*]] = phi i32 [ [[TMP17]], [[IF_THEN]] ], [ 0, [[FOR_BODY]] ]
+; CHECK-NEXT:    [[VAL_0:%.*]] = phi i32 [ [[TMP16]], [[IF_THEN]] ], [ 0, [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ARRAYIDX1:%.*]] = getelementptr inbounds i32, ptr [[DST]], i64 [[INDEX]]
 ; CHECK-NEXT:    store i32 [[VAL_0]], ptr [[ARRAYIDX1]], align 4
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 1
