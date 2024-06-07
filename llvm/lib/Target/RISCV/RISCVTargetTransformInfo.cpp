@@ -2958,10 +2958,10 @@ Type *RISCVTTIImpl::getScalableVectorFromFixed(Type *Ty) const {
 
 bool RISCVTTIImpl::isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
                                            const DataLayout &DL) const {
-  EVT VT = TLI->getValueType(DL, VTy);
   VTy = isa<ScalableVectorType>(VTy)
             ? VTy
             : cast<VectorType>(getScalableVectorFromFixed(VTy));
+  EVT VT = TLI->getValueType(DL, VTy);
   MVT ContainerVT = VT.getSimpleVT();
   auto [LMUL, Fractional] =
       RISCVVType::decodeVLMUL(RISCVTargetLowering::getLMUL(ContainerVT));
