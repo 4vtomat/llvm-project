@@ -1392,7 +1392,7 @@ let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
 
 let Predicates = [HasVendorXSfmm32a], DecoderNamespace = "XSfmm32a" in {
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
-  def SF_MM_BF_BF : RVInstMatmulF<0b01, (outs), (ins TRM2:$rd, VR:$vs2, VR:$vs1),
+  def SF_MM_BF_BF : RVInstMatmulF<0b01, (outs), (ins TRM4:$rd, VR:$vs2, VR:$vs1),
                                   "sf.mm.bf.bf", "$rd, $vs2, $vs1">;
   foreach a = I8Encodes in
     foreach b = I8Encodes in
