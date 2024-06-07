@@ -2,7 +2,6 @@
 ; RUN: opt %s -S -passes=inline -inline-threshold=16 -min-jump-table-entries=4 | FileCheck %s -check-prefix=LOOKUPTABLE
 ; RUN: opt %s -S -passes=inline -inline-threshold=11 -min-jump-table-entries=5 | FileCheck %s -check-prefix=SWITCH
 ; REQUIRES: x86_64-linux
-; XFAIL: sifive-customization
 
 target datalayout = "e-m:e-p270:32:32-p271:32:32-p272:64:64-i64:64-i128:128-f80:128-n8:16:32:64-S128"
 target triple = "x86_64-unknown-linux-gnu"
