@@ -169,8 +169,8 @@ vwsll.vi v8, v4, 8
 
 # CHECK:      [1]    [2]    [3]    [4]    [5]    [6]    Instructions:
 # CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e8, mf8, tu, mu
-# CHECK-NEXT:  1      1     0.50                        vandn.vv	v4, v8, v12
-# CHECK-NEXT:  1      1     0.50                        vandn.vx	v4, v8, a0
+# CHECK-NEXT:  1      2     0.50                        vandn.vv	v4, v8, v12
+# CHECK-NEXT:  1      2     0.50                        vandn.vx	v4, v8, a0
 # CHECK-NEXT:  1      2     0.50                        vbrev.v	v4, v8
 # CHECK-NEXT:  1      2     0.50                        vbrev8.v	v4, v8
 # CHECK-NEXT:  1      2     0.50                        vrev8.v	v4, v8
@@ -186,8 +186,8 @@ vwsll.vi v8, v4, 8
 # CHECK-NEXT:  1      2     0.50                        vwsll.vx	v4, v8, a0
 # CHECK-NEXT:  1      2     0.50                        vwsll.vi	v4, v8, 8
 # CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e16, mf4, tu, mu
-# CHECK-NEXT:  1      1     0.50                        vandn.vv	v4, v8, v12
-# CHECK-NEXT:  1      1     0.50                        vandn.vx	v4, v8, a0
+# CHECK-NEXT:  1      2     0.50                        vandn.vv	v4, v8, v12
+# CHECK-NEXT:  1      2     0.50                        vandn.vx	v4, v8, a0
 # CHECK-NEXT:  1      2     0.50                        vbrev.v	v4, v8
 # CHECK-NEXT:  1      2     0.50                        vbrev8.v	v4, v8
 # CHECK-NEXT:  1      2     0.50                        vrev8.v	v4, v8
@@ -203,8 +203,8 @@ vwsll.vi v8, v4, 8
 # CHECK-NEXT:  1      2     0.50                        vwsll.vx	v4, v8, a0
 # CHECK-NEXT:  1      2     0.50                        vwsll.vi	v4, v8, 8
 # CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e32, mf2, tu, mu
-# CHECK-NEXT:  1      1     0.50                        vandn.vv	v4, v8, v12
-# CHECK-NEXT:  1      1     0.50                        vandn.vx	v4, v8, a0
+# CHECK-NEXT:  1      2     0.50                        vandn.vv	v4, v8, v12
+# CHECK-NEXT:  1      2     0.50                        vandn.vx	v4, v8, a0
 # CHECK-NEXT:  1      2     0.50                        vbrev.v	v4, v8
 # CHECK-NEXT:  1      2     0.50                        vbrev8.v	v4, v8
 # CHECK-NEXT:  1      2     0.50                        vrev8.v	v4, v8
@@ -220,8 +220,8 @@ vwsll.vi v8, v4, 8
 # CHECK-NEXT:  1      2     0.50                        vwsll.vx	v4, v8, a0
 # CHECK-NEXT:  1      2     0.50                        vwsll.vi	v4, v8, 8
 # CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  1      1     0.50                        vandn.vv	v4, v8, v12
-# CHECK-NEXT:  1      1     0.50                        vandn.vx	v4, v8, a0
+# CHECK-NEXT:  1      2     0.50                        vandn.vv	v4, v8, v12
+# CHECK-NEXT:  1      2     0.50                        vandn.vx	v4, v8, a0
 # CHECK-NEXT:  1      2     0.50                        vbrev.v	v4, v8
 # CHECK-NEXT:  1      2     0.50                        vbrev8.v	v4, v8
 # CHECK-NEXT:  1      2     0.50                        vrev8.v	v4, v8
@@ -237,8 +237,8 @@ vwsll.vi v8, v4, 8
 # CHECK-NEXT:  1      2     0.50                        vwsll.vx	v4, v8, a0
 # CHECK-NEXT:  1      2     0.50                        vwsll.vi	v4, v8, 8
 # CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
-# CHECK-NEXT:  1      1     1.00                        vandn.vv	v4, v8, v12
-# CHECK-NEXT:  1      1     1.00                        vandn.vx	v4, v8, a0
+# CHECK-NEXT:  1      2     1.00                        vandn.vv	v4, v8, v12
+# CHECK-NEXT:  1      2     1.00                        vandn.vx	v4, v8, a0
 # CHECK-NEXT:  1      2     1.00                        vbrev.v	v4, v8
 # CHECK-NEXT:  1      2     1.00                        vbrev8.v	v4, v8
 # CHECK-NEXT:  1      2     1.00                        vrev8.v	v4, v8
@@ -254,8 +254,8 @@ vwsll.vi v8, v4, 8
 # CHECK-NEXT:  1      2     1.00                        vwsll.vx	v4, v8, a0
 # CHECK-NEXT:  1      2     1.00                        vwsll.vi	v4, v8, 8
 # CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
-# CHECK-NEXT:  1      1     2.00                        vandn.vv	v4, v8, v12
-# CHECK-NEXT:  1      1     2.00                        vandn.vx	v4, v8, a0
+# CHECK-NEXT:  1      2     2.00                        vandn.vv	v4, v8, v12
+# CHECK-NEXT:  1      2     2.00                        vandn.vx	v4, v8, a0
 # CHECK-NEXT:  1      2     2.00                        vbrev.v	v4, v8
 # CHECK-NEXT:  1      2     2.00                        vbrev8.v	v4, v8
 # CHECK-NEXT:  1      2     2.00                        vrev8.v	v4, v8
@@ -271,8 +271,8 @@ vwsll.vi v8, v4, 8
 # CHECK-NEXT:  1      2     2.00                        vwsll.vx	v8, v4, a0
 # CHECK-NEXT:  1      2     2.00                        vwsll.vi	v8, v4, 8
 # CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
-# CHECK-NEXT:  1      1     4.00                        vandn.vv	v8, v16, v24
-# CHECK-NEXT:  1      1     4.00                        vandn.vx	v8, v16, a0
+# CHECK-NEXT:  1      2     4.00                        vandn.vv	v8, v16, v24
+# CHECK-NEXT:  1      2     4.00                        vandn.vx	v8, v16, a0
 # CHECK-NEXT:  1      2     4.00                        vbrev.v	v8, v16
 # CHECK-NEXT:  1      2     4.00                        vbrev8.v	v8, v16
 # CHECK-NEXT:  1      2     4.00                        vrev8.v	v8, v16
@@ -285,8 +285,8 @@ vwsll.vi v8, v4, 8
 # CHECK-NEXT:  1      2     4.00                        vror.vx	v8, v16, a0
 # CHECK-NEXT:  1      2     4.00                        vror.vi	v8, v16, 8
 # CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e16, m4, tu, mu
-# CHECK-NEXT:  1      1     2.00                        vandn.vv	v4, v8, v12
-# CHECK-NEXT:  1      1     2.00                        vandn.vx	v4, v8, a0
+# CHECK-NEXT:  1      2     2.00                        vandn.vv	v4, v8, v12
+# CHECK-NEXT:  1      2     2.00                        vandn.vx	v4, v8, a0
 # CHECK-NEXT:  1      2     2.00                        vbrev.v	v4, v8
 # CHECK-NEXT:  1      2     2.00                        vbrev8.v	v4, v8
 # CHECK-NEXT:  1      2     2.00                        vrev8.v	v4, v8
