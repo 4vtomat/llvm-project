@@ -2430,7 +2430,8 @@ multiclass VPseudoBinaryV_WV<LMULInfo m, int TargetConstraintType = 1> {
 multiclass VPseudoBinaryV_WV_RM<LMULInfo m> {
   defm _WV : VPseudoBinaryRoundingMode<m.vrclass, m.wvrclass, m.vrclass, m,
                                        !if(!ge(m.octuple, 8),
-                                       "@earlyclobber $rd", "")>;
+                                       "@earlyclobber $rd", ""), // SIFIVE
+                                       TargetConstraintType=2>; // SIFIVE
 }
 
 multiclass VPseudoBinaryV_WX<LMULInfo m, int TargetConstraintType = 1> {
@@ -2441,7 +2442,8 @@ multiclass VPseudoBinaryV_WX<LMULInfo m, int TargetConstraintType = 1> {
 multiclass VPseudoBinaryV_WX_RM<LMULInfo m> {
   defm _WX : VPseudoBinaryRoundingMode<m.vrclass, m.wvrclass, GPR, m,
                                        !if(!ge(m.octuple, 8),
-                                       "@earlyclobber $rd", "")>;
+                                       "@earlyclobber $rd", ""), // SIFIVE
+                                       TargetConstraintType=2>; // SIFIVE
 }
 
 multiclass VPseudoBinaryV_WI<LMULInfo m, int TargetConstraintType = 1> {
@@ -2452,7 +2454,8 @@ multiclass VPseudoBinaryV_WI<LMULInfo m, int TargetConstraintType = 1> {
 multiclass VPseudoBinaryV_WI_RM<LMULInfo m> {
   defm _WI : VPseudoBinaryRoundingMode<m.vrclass, m.wvrclass, uimm5, m,
                                        !if(!ge(m.octuple, 8),
-                                       "@earlyclobber $rd", "")>;
+                                       "@earlyclobber $rd", ""), // SIFIVE
+                                       TargetConstraintType=2>; // SIFIVE
 }
 
 // For vadc and vsbc, the instruction encoding is reserved if the destination

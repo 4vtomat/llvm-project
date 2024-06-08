@@ -276,8 +276,8 @@ define void @trunc_sat_i32i64_maxmin(ptr %x, ptr %y) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vnclip.wi v10, v8, 0
-; CHECK-NEXT:    vse32.v v10, (a1)
+; CHECK-NEXT:    vnclip.wi v8, v8, 0
+; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
   %1 = load <4 x i64>, ptr %x, align 64
   %2 = tail call <4 x i64> @llvm.smax.v4i64(<4 x i64> %1, <4 x i64> <i64 -2147483648, i64 -2147483648, i64 -2147483648, i64 -2147483648>)
@@ -292,8 +292,8 @@ define void @trunc_sat_i32i64_minmax(ptr %x, ptr %y) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vnclip.wi v10, v8, 0
-; CHECK-NEXT:    vse32.v v10, (a1)
+; CHECK-NEXT:    vnclip.wi v8, v8, 0
+; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
   %1 = load <4 x i64>, ptr %x, align 64
   %2 = tail call <4 x i64> @llvm.smin.v4i64(<4 x i64> %1, <4 x i64> <i64 2147483647, i64 2147483647, i64 2147483647, i64 2147483647>)
@@ -328,8 +328,8 @@ define void @trunc_sat_u32u64_min(ptr %x, ptr %y) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vnclipu.wi v10, v8, 0
-; CHECK-NEXT:    vse32.v v10, (a1)
+; CHECK-NEXT:    vnclipu.wi v8, v8, 0
+; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
   %1 = load <4 x i64>, ptr %x, align 64
   %2 = tail call <4 x i64> @llvm.umin.v4i64(<4 x i64> %1, <4 x i64> <i64 4294967295, i64 4294967295, i64 4294967295, i64 4294967295>)
@@ -344,8 +344,8 @@ define void @trunc_sat_u32u64_maxmin(ptr %x, ptr %y) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vnclipu.wi v10, v8, 0
-; CHECK-NEXT:    vse32.v v10, (a1)
+; CHECK-NEXT:    vnclipu.wi v8, v8, 0
+; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
   %1 = load <4 x i64>, ptr %x, align 64
   %2 = tail call <4 x i64> @llvm.umin.v4i64(<4 x i64> %1, <4 x i64> <i64 4294967295, i64 4294967295, i64 4294967295, i64 4294967295>)
@@ -359,8 +359,8 @@ define void @trunc_sat_u32u64_minmax(ptr %x, ptr %y) {
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
 ; CHECK-NEXT:    vle64.v v8, (a0)
-; CHECK-NEXT:    vnclipu.wi v10, v8, 0
-; CHECK-NEXT:    vse32.v v10, (a1)
+; CHECK-NEXT:    vnclipu.wi v8, v8, 0
+; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
   %1 = load <4 x i64>, ptr %x, align 64
   %2 = tail call <4 x i64> @llvm.umin.v4i64(<4 x i64> %1, <4 x i64> <i64 4294967295, i64 4294967295, i64 4294967295, i64 4294967295>)
