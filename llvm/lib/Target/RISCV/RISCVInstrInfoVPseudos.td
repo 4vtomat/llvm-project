@@ -1106,28 +1106,6 @@ class VPseudoUnaryMaskRoundingMode<VReg RetClass,
   let UsesVXRM = 0;
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
-class VPseudoUnaryMaskTA<VReg RetClass, VReg OpClass, string Constraint = "", int TargetConstraintType = 1> :
-#else
-class VPseudoUnaryMaskTA<VReg RetClass, VReg OpClass, string Constraint = ""> :
-#endif // SIFIVE_CUSTOMIZATION
-        Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
-               (ins GetVRegNoV0<RetClass>.R:$merge, OpClass:$rs2,
-                    VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
-        RISCVVPseudo {
-  let mayLoad = 0;
-  let mayStore = 0;
-  let hasSideEffects = 0;
-  let Constraints = !interleave([Constraint, "$rd = $merge"], ",");
-#ifdef SIFIVE_CUSTOMIZATION
-  let TargetOverlapConstraintType = TargetConstraintType;
-#endif // SIFIVE_CUSTOMIZATION
-  let HasVLOp = 1;
-  let HasSEWOp = 1;
-  let HasVecPolicyOp = 1;
-  let UsesMaskPolicy = 1;
-}
-
 class VPseudoUnaryMask_NoExcept<VReg RetClass,
                                 VReg OpClass,
                                 string Constraint = ""> :
