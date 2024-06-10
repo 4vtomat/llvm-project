@@ -710,7 +710,6 @@ VPlanCostModel::getInterleavedMemoryOpCost(const VPInterleaveRecipe *VPI,
                    (VPI->getParent()) ? VPI->getParent()->getPlan() : nullptr);
                VPI->print(dbgs(), Twine(), SlotTracker);
                dbgs() << " is illegal for " << RVL << '\n');
-    assert(0 && "InterleaveGroup is illegal for a given RVL");
     // Even though such candidates should be filtered out before VPlan is
     // constructed, make sure we won't select this candidate for vectorization
     return InstructionCost::getInvalid();
