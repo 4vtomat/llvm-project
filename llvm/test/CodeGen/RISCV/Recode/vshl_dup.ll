@@ -1065,9 +1065,9 @@ define void @vqshlq_s16(ptr nocapture noundef readonly %in_0, i16 noundef signex
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    vzext.vf2 v10, v9
 ; CHECK-NEXT:    vsext.vf2 v12, v8
-; CHECK-NEXT:    vsll.vv v10, v12, v10
+; CHECK-NEXT:    vsll.vv v8, v12, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vnclip.wi v8, v10, 0
+; CHECK-NEXT:    vnclip.wi v8, v8, 0
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 ; CHECK-NEXT:  .LBB24_2:
@@ -1102,9 +1102,9 @@ define void @vqshlq_s32(ptr nocapture noundef readonly %in_0, i32 noundef signex
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
 ; CHECK-NEXT:    vzext.vf2 v10, v9
 ; CHECK-NEXT:    vsext.vf2 v12, v8
-; CHECK-NEXT:    vsll.vv v10, v12, v10
+; CHECK-NEXT:    vsll.vv v8, v12, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vnclip.wi v8, v10, 0
+; CHECK-NEXT:    vnclip.wi v8, v8, 0
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 ; CHECK-NEXT:  .LBB25_2:
@@ -1183,9 +1183,9 @@ define void @vqshlq_s8(ptr nocapture noundef readonly %in_0, i8 noundef signext 
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m2, ta, ma
 ; CHECK-NEXT:    vzext.vf2 v10, v9
 ; CHECK-NEXT:    vsext.vf2 v12, v8
-; CHECK-NEXT:    vsll.vv v10, v12, v10
+; CHECK-NEXT:    vsll.vv v8, v12, v10
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vnclip.wi v8, v10, 0
+; CHECK-NEXT:    vnclip.wi v8, v8, 0
 ; CHECK-NEXT:    vse8.v v8, (a2)
 ; CHECK-NEXT:    ret
 ; CHECK-NEXT:  .LBB27_2:
