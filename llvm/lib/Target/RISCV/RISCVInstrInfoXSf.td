@@ -91,8 +91,7 @@ class CustomSiFiveVF<string opcodestr,  RISCVVFormat opv, bits<6> funct6>
   let mayStore = 0;
 }
 
-defvar VQDOTLMuls = [VI16MF4, VI16MF2, VI16M1, VI16M2, VI16M4, VI16M8,
-                     VI32MF2, VI32M1, VI32M2, VI32M4, VI32M8];
+defvar VQDOTLMuls = [VI32MF2, VI32M1, VI32M2, VI32M4, VI32M8];
 
 // These VPat definitions are for vqdot because they have a different operand
 // order with other ternary instructions (i.e. vop.vx vd, vs2, rs1)
@@ -940,7 +939,7 @@ let Predicates = [HasVendorXSfvqmaccqoq] in {
 
 #ifdef SIFIVE_CUSTOMIZATION
 multiclass VPseudoSiFiveVQDOT<string Constraint = ""> {
-  foreach m = MxListVF2 in {
+  foreach m = MxListVF4 in {
     defm "Pseudo" # NAME # "_VV" : VPseudoTernaryWithPolicy<m.vrclass, m.vrclass, m.vrclass, m, Constraint>;
     defm "Pseudo" # NAME # "_VX" : VPseudoTernaryWithPolicy<m.vrclass, m.vrclass, GPR, m, Constraint>;
   }
@@ -952,7 +951,7 @@ let Predicates = [HasVendorXSfvqdotq] in {
   defm VQDOTSU: VPseudoSiFiveVQDOT;
 
   // VQDOTUS does not have a VV variant
-  foreach m = MxListVF2 in {
+  foreach m = MxListVF4 in {
     defm "PseudoVQDOTUS_VX" : VPseudoTernaryWithPolicy<m.vrclass, m.vrclass, GPR, m>;
   }
 }
