@@ -6,74 +6,8 @@
 
 #include <sifive_vector.h>
 
-// CHECK-RV64-LABEL: define dso_local <vscale x 1 x i16> @test_sf_vqdot_vv_i16mf4(
-// CHECK-RV64-SAME: <vscale x 1 x i16> [[VD:%.*]], <vscale x 1 x i16> [[VS2:%.*]], <vscale x 1 x i16> [[VS1:%.*]], i64 noundef [[VL:%.*]]) #[[ATTR0:[0-9]+]] {
-// CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.sf.vqdot.nxv1i16.nxv1i16.i64(<vscale x 1 x i16> [[VD]], <vscale x 1 x i16> [[VS2]], <vscale x 1 x i16> [[VS1]], i64 [[VL]], i64 3)
-// CHECK-RV64-NEXT:    ret <vscale x 1 x i16> [[TMP0]]
-//
-vint16mf4_t test_sf_vqdot_vv_i16mf4(vint16mf4_t vd, vuint16mf4_t vs2,
-                                    vuint16mf4_t vs1, size_t vl) {
-  return __riscv_sf_vqdot_vv_i16mf4(vd, vs2, vs1, vl);
-}
-
-// CHECK-RV64-LABEL: define dso_local <vscale x 2 x i16> @test_sf_vqdot_vv_i16mf2(
-// CHECK-RV64-SAME: <vscale x 2 x i16> [[VD:%.*]], <vscale x 2 x i16> [[VS2:%.*]], <vscale x 2 x i16> [[VS1:%.*]], i64 noundef [[VL:%.*]]) #[[ATTR0]] {
-// CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.sf.vqdot.nxv2i16.nxv2i16.i64(<vscale x 2 x i16> [[VD]], <vscale x 2 x i16> [[VS2]], <vscale x 2 x i16> [[VS1]], i64 [[VL]], i64 3)
-// CHECK-RV64-NEXT:    ret <vscale x 2 x i16> [[TMP0]]
-//
-vint16mf2_t test_sf_vqdot_vv_i16mf2(vint16mf2_t vd, vuint16mf2_t vs2,
-                                    vuint16mf2_t vs1, size_t vl) {
-  return __riscv_sf_vqdot_vv_i16mf2(vd, vs2, vs1, vl);
-}
-
-// CHECK-RV64-LABEL: define dso_local <vscale x 4 x i16> @test_sf_vqdot_vv_i16m1(
-// CHECK-RV64-SAME: <vscale x 4 x i16> [[VD:%.*]], <vscale x 4 x i16> [[VS2:%.*]], <vscale x 4 x i16> [[VS1:%.*]], i64 noundef [[VL:%.*]]) #[[ATTR0]] {
-// CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.sf.vqdot.nxv4i16.nxv4i16.i64(<vscale x 4 x i16> [[VD]], <vscale x 4 x i16> [[VS2]], <vscale x 4 x i16> [[VS1]], i64 [[VL]], i64 3)
-// CHECK-RV64-NEXT:    ret <vscale x 4 x i16> [[TMP0]]
-//
-vint16m1_t test_sf_vqdot_vv_i16m1(vint16m1_t vd, vuint16m1_t vs2,
-                                  vuint16m1_t vs1, size_t vl) {
-  return __riscv_sf_vqdot_vv_i16m1(vd, vs2, vs1, vl);
-}
-
-// CHECK-RV64-LABEL: define dso_local <vscale x 8 x i16> @test_sf_vqdot_vv_i16m2(
-// CHECK-RV64-SAME: <vscale x 8 x i16> [[VD:%.*]], <vscale x 8 x i16> [[VS2:%.*]], <vscale x 8 x i16> [[VS1:%.*]], i64 noundef [[VL:%.*]]) #[[ATTR0]] {
-// CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.sf.vqdot.nxv8i16.nxv8i16.i64(<vscale x 8 x i16> [[VD]], <vscale x 8 x i16> [[VS2]], <vscale x 8 x i16> [[VS1]], i64 [[VL]], i64 3)
-// CHECK-RV64-NEXT:    ret <vscale x 8 x i16> [[TMP0]]
-//
-vint16m2_t test_sf_vqdot_vv_i16m2(vint16m2_t vd, vuint16m2_t vs2,
-                                  vuint16m2_t vs1, size_t vl) {
-  return __riscv_sf_vqdot_vv_i16m2(vd, vs2, vs1, vl);
-}
-
-// CHECK-RV64-LABEL: define dso_local <vscale x 16 x i16> @test_sf_vqdot_vv_i16m4(
-// CHECK-RV64-SAME: <vscale x 16 x i16> [[VD:%.*]], <vscale x 16 x i16> [[VS2:%.*]], <vscale x 16 x i16> [[VS1:%.*]], i64 noundef [[VL:%.*]]) #[[ATTR0]] {
-// CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i16> @llvm.riscv.sf.vqdot.nxv16i16.nxv16i16.i64(<vscale x 16 x i16> [[VD]], <vscale x 16 x i16> [[VS2]], <vscale x 16 x i16> [[VS1]], i64 [[VL]], i64 3)
-// CHECK-RV64-NEXT:    ret <vscale x 16 x i16> [[TMP0]]
-//
-vint16m4_t test_sf_vqdot_vv_i16m4(vint16m4_t vd, vuint16m4_t vs2,
-                                  vuint16m4_t vs1, size_t vl) {
-  return __riscv_sf_vqdot_vv_i16m4(vd, vs2, vs1, vl);
-}
-
-// CHECK-RV64-LABEL: define dso_local <vscale x 32 x i16> @test_sf_vqdot_vv_i16m8(
-// CHECK-RV64-SAME: <vscale x 32 x i16> [[VD:%.*]], <vscale x 32 x i16> [[VS2:%.*]], <vscale x 32 x i16> [[VS1:%.*]], i64 noundef [[VL:%.*]]) #[[ATTR0]] {
-// CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x i16> @llvm.riscv.sf.vqdot.nxv32i16.nxv32i16.i64(<vscale x 32 x i16> [[VD]], <vscale x 32 x i16> [[VS2]], <vscale x 32 x i16> [[VS1]], i64 [[VL]], i64 3)
-// CHECK-RV64-NEXT:    ret <vscale x 32 x i16> [[TMP0]]
-//
-vint16m8_t test_sf_vqdot_vv_i16m8(vint16m8_t vd, vuint16m8_t vs2,
-                                  vuint16m8_t vs1, size_t vl) {
-  return __riscv_sf_vqdot_vv_i16m8(vd, vs2, vs1, vl);
-}
-
 // CHECK-RV64-LABEL: define dso_local <vscale x 1 x i32> @test_sf_vqdot_vv_i32mf2(
-// CHECK-RV64-SAME: <vscale x 1 x i32> [[VD:%.*]], <vscale x 1 x i32> [[VS2:%.*]], <vscale x 1 x i32> [[VS1:%.*]], i64 noundef [[VL:%.*]]) #[[ATTR0]] {
+// CHECK-RV64-SAME: <vscale x 1 x i32> [[VD:%.*]], <vscale x 1 x i32> [[VS2:%.*]], <vscale x 1 x i32> [[VS1:%.*]], i64 noundef [[VL:%.*]]) #[[ATTR0:[0-9]+]] {
 // CHECK-RV64-NEXT:  entry:
 // CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i32> @llvm.riscv.sf.vqdot.nxv1i32.nxv1i32.i64(<vscale x 1 x i32> [[VD]], <vscale x 1 x i32> [[VS2]], <vscale x 1 x i32> [[VS1]], i64 [[VL]], i64 3)
 // CHECK-RV64-NEXT:    ret <vscale x 1 x i32> [[TMP0]]
@@ -125,75 +59,6 @@ vint32m4_t test_sf_vqdot_vv_i32m4(vint32m4_t vd, vuint32m4_t vs2,
 vint32m8_t test_sf_vqdot_vv_i32m8(vint32m8_t vd, vuint32m8_t vs2,
                                   vuint32m8_t vs1, size_t vl) {
   return __riscv_sf_vqdot_vv_i32m8(vd, vs2, vs1, vl);
-}
-
-// CHECK-RV64-LABEL: define dso_local <vscale x 1 x i16> @test_sf_vqdot_vv_i16mf4_m(
-// CHECK-RV64-SAME: <vscale x 1 x i1> [[VM:%.*]], <vscale x 1 x i16> [[VD:%.*]], <vscale x 1 x i16> [[VS2:%.*]], <vscale x 1 x i16> [[VS1:%.*]], i64 noundef [[VL:%.*]]) #[[ATTR0]] {
-// CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 1 x i16> @llvm.riscv.sf.vqdot.mask.nxv1i16.nxv1i16.i64(<vscale x 1 x i16> [[VD]], <vscale x 1 x i16> [[VS2]], <vscale x 1 x i16> [[VS1]], <vscale x 1 x i1> [[VM]], i64 [[VL]], i64 3)
-// CHECK-RV64-NEXT:    ret <vscale x 1 x i16> [[TMP0]]
-//
-vint16mf4_t test_sf_vqdot_vv_i16mf4_m(vbool64_t vm, vint16mf4_t vd,
-                                      vuint16mf4_t vs2, vuint16mf4_t vs1,
-                                      size_t vl) {
-  return __riscv_sf_vqdot_vv_i16mf4_m(vm, vd, vs2, vs1, vl);
-}
-
-// CHECK-RV64-LABEL: define dso_local <vscale x 2 x i16> @test_sf_vqdot_vv_i16mf2_m(
-// CHECK-RV64-SAME: <vscale x 2 x i1> [[VM:%.*]], <vscale x 2 x i16> [[VD:%.*]], <vscale x 2 x i16> [[VS2:%.*]], <vscale x 2 x i16> [[VS1:%.*]], i64 noundef [[VL:%.*]]) #[[ATTR0]] {
-// CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.sf.vqdot.mask.nxv2i16.nxv2i16.i64(<vscale x 2 x i16> [[VD]], <vscale x 2 x i16> [[VS2]], <vscale x 2 x i16> [[VS1]], <vscale x 2 x i1> [[VM]], i64 [[VL]], i64 3)
-// CHECK-RV64-NEXT:    ret <vscale x 2 x i16> [[TMP0]]
-//
-vint16mf2_t test_sf_vqdot_vv_i16mf2_m(vbool32_t vm, vint16mf2_t vd,
-                                      vuint16mf2_t vs2, vuint16mf2_t vs1,
-                                      size_t vl) {
-  return __riscv_sf_vqdot_vv_i16mf2_m(vm, vd, vs2, vs1, vl);
-}
-
-// CHECK-RV64-LABEL: define dso_local <vscale x 4 x i16> @test_sf_vqdot_vv_i16m1_m(
-// CHECK-RV64-SAME: <vscale x 4 x i1> [[VM:%.*]], <vscale x 4 x i16> [[VD:%.*]], <vscale x 4 x i16> [[VS2:%.*]], <vscale x 4 x i16> [[VS1:%.*]], i64 noundef [[VL:%.*]]) #[[ATTR0]] {
-// CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 4 x i16> @llvm.riscv.sf.vqdot.mask.nxv4i16.nxv4i16.i64(<vscale x 4 x i16> [[VD]], <vscale x 4 x i16> [[VS2]], <vscale x 4 x i16> [[VS1]], <vscale x 4 x i1> [[VM]], i64 [[VL]], i64 3)
-// CHECK-RV64-NEXT:    ret <vscale x 4 x i16> [[TMP0]]
-//
-vint16m1_t test_sf_vqdot_vv_i16m1_m(vbool16_t vm, vint16m1_t vd,
-                                    vuint16m1_t vs2, vuint16m1_t vs1,
-                                    size_t vl) {
-  return __riscv_sf_vqdot_vv_i16m1_m(vm, vd, vs2, vs1, vl);
-}
-
-// CHECK-RV64-LABEL: define dso_local <vscale x 8 x i16> @test_sf_vqdot_vv_i16m2_m(
-// CHECK-RV64-SAME: <vscale x 8 x i1> [[VM:%.*]], <vscale x 8 x i16> [[VD:%.*]], <vscale x 8 x i16> [[VS2:%.*]], <vscale x 8 x i16> [[VS1:%.*]], i64 noundef [[VL:%.*]]) #[[ATTR0]] {
-// CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 8 x i16> @llvm.riscv.sf.vqdot.mask.nxv8i16.nxv8i16.i64(<vscale x 8 x i16> [[VD]], <vscale x 8 x i16> [[VS2]], <vscale x 8 x i16> [[VS1]], <vscale x 8 x i1> [[VM]], i64 [[VL]], i64 3)
-// CHECK-RV64-NEXT:    ret <vscale x 8 x i16> [[TMP0]]
-//
-vint16m2_t test_sf_vqdot_vv_i16m2_m(vbool8_t vm, vint16m2_t vd, vuint16m2_t vs2,
-                                    vuint16m2_t vs1, size_t vl) {
-  return __riscv_sf_vqdot_vv_i16m2_m(vm, vd, vs2, vs1, vl);
-}
-
-// CHECK-RV64-LABEL: define dso_local <vscale x 16 x i16> @test_sf_vqdot_vv_i16m4_m(
-// CHECK-RV64-SAME: <vscale x 16 x i1> [[VM:%.*]], <vscale x 16 x i16> [[VD:%.*]], <vscale x 16 x i16> [[VS2:%.*]], <vscale x 16 x i16> [[VS1:%.*]], i64 noundef [[VL:%.*]]) #[[ATTR0]] {
-// CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 16 x i16> @llvm.riscv.sf.vqdot.mask.nxv16i16.nxv16i16.i64(<vscale x 16 x i16> [[VD]], <vscale x 16 x i16> [[VS2]], <vscale x 16 x i16> [[VS1]], <vscale x 16 x i1> [[VM]], i64 [[VL]], i64 3)
-// CHECK-RV64-NEXT:    ret <vscale x 16 x i16> [[TMP0]]
-//
-vint16m4_t test_sf_vqdot_vv_i16m4_m(vbool4_t vm, vint16m4_t vd, vuint16m4_t vs2,
-                                    vuint16m4_t vs1, size_t vl) {
-  return __riscv_sf_vqdot_vv_i16m4_m(vm, vd, vs2, vs1, vl);
-}
-
-// CHECK-RV64-LABEL: define dso_local <vscale x 32 x i16> @test_sf_vqdot_vv_i16m8_m(
-// CHECK-RV64-SAME: <vscale x 32 x i1> [[VM:%.*]], <vscale x 32 x i16> [[VD:%.*]], <vscale x 32 x i16> [[VS2:%.*]], <vscale x 32 x i16> [[VS1:%.*]], i64 noundef [[VL:%.*]]) #[[ATTR0]] {
-// CHECK-RV64-NEXT:  entry:
-// CHECK-RV64-NEXT:    [[TMP0:%.*]] = call <vscale x 32 x i16> @llvm.riscv.sf.vqdot.mask.nxv32i16.nxv32i16.i64(<vscale x 32 x i16> [[VD]], <vscale x 32 x i16> [[VS2]], <vscale x 32 x i16> [[VS1]], <vscale x 32 x i1> [[VM]], i64 [[VL]], i64 3)
-// CHECK-RV64-NEXT:    ret <vscale x 32 x i16> [[TMP0]]
-//
-vint16m8_t test_sf_vqdot_vv_i16m8_m(vbool2_t vm, vint16m8_t vd, vuint16m8_t vs2,
-                                    vuint16m8_t vs1, size_t vl) {
-  return __riscv_sf_vqdot_vv_i16m8_m(vm, vd, vs2, vs1, vl);
 }
 
 // CHECK-RV64-LABEL: define dso_local <vscale x 1 x i32> @test_sf_vqdot_vv_i32mf2_m(
