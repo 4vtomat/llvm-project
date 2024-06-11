@@ -793,3 +793,111 @@ for.body4:
   %cmp2.3 = icmp ult i64 %indvars.iv, 31980
   br i1 %cmp2.3, label %for.body4, label %for.cond.cleanup
 }
+
+define signext i32 @sub_reduce() {
+; CHECK-LABEL: define signext i32 @sub_reduce() {
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    br label [[FOR_COND1_PREHEADER:%.*]]
+; CHECK:       for.cond1.preheader:
+; CHECK-NEXT:    [[NL_058:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ]
+; CHECK-NEXT:    [[DOT_057:%.*]] = phi float [ 0.000000e+00, [[ENTRY]] ]
+; CHECK-NEXT:    br label [[FOR_BODY4:%.*]]
+; CHECK:       for.cond.cleanup:
+; CHECK-NEXT:    [[OP_RDX67_LCSSA:%.*]] = phi float [ [[OP_RDX67:%.*]], [[FOR_BODY4]] ]
+; CHECK-NEXT:    [[CONV:%.*]] = fptosi float [[OP_RDX67_LCSSA]] to i32
+; CHECK-NEXT:    ret i32 [[CONV]]
+; CHECK:       for.body4:
+; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ 0, [[FOR_COND1_PREHEADER]] ], [ [[INDVARS_IV_NEXT_3:%.*]], [[FOR_BODY4]] ]
+; CHECK-NEXT:    [[DOT_155:%.*]] = phi float [ [[DOT_057]], [[FOR_COND1_PREHEADER]] ], [ [[OP_RDX67]], [[FOR_BODY4]] ]
+; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds [32000 x float], ptr @a, i64 0, i64 [[INDVARS_IV]]
+; CHECK-NEXT:    [[ARRAYIDX6:%.*]] = getelementptr inbounds [32000 x float], ptr @b, i64 0, i64 [[INDVARS_IV]]
+; CHECK-NEXT:    [[TMP0:%.*]] = load <16 x float>, ptr [[ARRAYIDX]], align 8
+; CHECK-NEXT:    [[TMP1:%.*]] = load <16 x float>, ptr [[ARRAYIDX6]], align 8
+; CHECK-NEXT:    [[TMP2:%.*]] = fmul fast <16 x float> [[TMP1]], [[TMP0]]
+; CHECK-NEXT:    [[TMP3:%.*]] = add nuw nsw i64 [[INDVARS_IV]], 16
+; CHECK-NEXT:    [[ARRAYIDX9_3:%.*]] = getelementptr inbounds [32000 x float], ptr @a, i64 0, i64 [[TMP3]]
+; CHECK-NEXT:    [[TMP4:%.*]] = load float, ptr [[ARRAYIDX9_3]], align 8
+; CHECK-NEXT:    [[ARRAYIDX12_3:%.*]] = getelementptr inbounds [32000 x float], ptr @b, i64 0, i64 [[TMP3]]
+; CHECK-NEXT:    [[TMP5:%.*]] = load float, ptr [[ARRAYIDX12_3]], align 8
+; CHECK-NEXT:    [[MUL13_3:%.*]] = fmul fast float [[TMP5]], [[TMP4]]
+; CHECK-NEXT:    [[TMP6:%.*]] = add nuw nsw i64 [[INDVARS_IV]], 17
+; CHECK-NEXT:    [[ARRAYIDX17_3:%.*]] = getelementptr inbounds [32000 x float], ptr @a, i64 0, i64 [[TMP6]]
+; CHECK-NEXT:    [[TMP7:%.*]] = load float, ptr [[ARRAYIDX17_3]], align 4
+; CHECK-NEXT:    [[ARRAYIDX20_3:%.*]] = getelementptr inbounds [32000 x float], ptr @b, i64 0, i64 [[TMP6]]
+; CHECK-NEXT:    [[TMP8:%.*]] = load float, ptr [[ARRAYIDX20_3]], align 4
+; CHECK-NEXT:    [[MUL21_3:%.*]] = fmul fast float [[TMP8]], [[TMP7]]
+; CHECK-NEXT:    [[TMP9:%.*]] = add nuw nsw i64 [[INDVARS_IV]], 18
+; CHECK-NEXT:    [[ARRAYIDX25_3:%.*]] = getelementptr inbounds [32000 x float], ptr @a, i64 0, i64 [[TMP9]]
+; CHECK-NEXT:    [[TMP10:%.*]] = load float, ptr [[ARRAYIDX25_3]], align 8
+; CHECK-NEXT:    [[ARRAYIDX28_3:%.*]] = getelementptr inbounds [32000 x float], ptr @b, i64 0, i64 [[TMP9]]
+; CHECK-NEXT:    [[TMP11:%.*]] = load float, ptr [[ARRAYIDX28_3]], align 8
+; CHECK-NEXT:    [[MUL29_3:%.*]] = fmul fast float [[TMP11]], [[TMP10]]
+; CHECK-NEXT:    [[TMP12:%.*]] = add nuw nsw i64 [[INDVARS_IV]], 19
+; CHECK-NEXT:    [[ARRAYIDX33_3:%.*]] = getelementptr inbounds [32000 x float], ptr @a, i64 0, i64 [[TMP12]]
+; CHECK-NEXT:    [[TMP13:%.*]] = load float, ptr [[ARRAYIDX33_3]], align 4
+; CHECK-NEXT:    [[ARRAYIDX36_3:%.*]] = getelementptr inbounds [32000 x float], ptr @b, i64 0, i64 [[TMP12]]
+; CHECK-NEXT:    [[TMP14:%.*]] = load float, ptr [[ARRAYIDX36_3]], align 4
+; CHECK-NEXT:    [[MUL37_3:%.*]] = fmul fast float [[TMP14]], [[TMP13]]
+; CHECK-NEXT:    [[OP_RDX:%.*]] = call fast float @llvm.vector.reduce.fadd.v16f32(float [[MUL13_3]], <16 x float> [[TMP2]])
+; CHECK-NEXT:    [[OP_RDX64:%.*]] = fadd fast float [[MUL21_3]], [[MUL29_3]]
+; CHECK-NEXT:    [[OP_RDX65:%.*]] = fadd fast float [[MUL37_3]], [[DOT_155]]
+; CHECK-NEXT:    [[OP_RDX66:%.*]] = fadd fast float [[OP_RDX]], [[OP_RDX64]]
+; CHECK-NEXT:    [[OP_RDX67]] = fsub fast float [[OP_RDX66]], [[OP_RDX65]]
+; CHECK-NEXT:    [[INDVARS_IV_NEXT_3]] = add nuw nsw i64 [[INDVARS_IV]], 20
+; CHECK-NEXT:    [[CMP2_3:%.*]] = icmp ult i64 [[INDVARS_IV]], 31980
+; CHECK-NEXT:    br i1 [[CMP2_3]], label [[FOR_BODY4]], label [[FOR_COND_CLEANUP:%.*]]
+;
+entry:
+  br label %for.cond1.preheader
+
+for.cond1.preheader:
+  %nl.058 = phi i32 [ 0, %entry ]
+  %dot.057 = phi float [ 0.000000e+00, %entry ]
+  br label %for.body4
+
+for.cond.cleanup:
+  %op.rdx67.lcssa = phi float [ %op.rdx67, %for.body4 ]
+  %conv = fptosi float %op.rdx67.lcssa to i32
+  ret i32 %conv
+
+for.body4:
+  %indvars.iv = phi i64 [ 0, %for.cond1.preheader ], [ %indvars.iv.next.3, %for.body4 ]
+  %dot.155 = phi float [ %dot.057, %for.cond1.preheader ], [ %op.rdx67, %for.body4 ]
+  %arrayidx = getelementptr inbounds [32000 x float], ptr @a, i64 0, i64 %indvars.iv
+  %arrayidx6 = getelementptr inbounds [32000 x float], ptr @b, i64 0, i64 %indvars.iv
+  %0 = load <16 x float>, ptr %arrayidx, align 8
+  %1 = load <16 x float>, ptr %arrayidx6, align 8
+  %2 = fmul fast <16 x float> %1, %0
+  %3 = add nuw nsw i64 %indvars.iv, 16
+  %arrayidx9.3 = getelementptr inbounds [32000 x float], ptr @a, i64 0, i64 %3
+  %4 = load float, ptr %arrayidx9.3, align 8
+  %arrayidx12.3 = getelementptr inbounds [32000 x float], ptr @b, i64 0, i64 %3
+  %5 = load float, ptr %arrayidx12.3, align 8
+  %mul13.3 = fmul fast float %5, %4
+  %6 = add nuw nsw i64 %indvars.iv, 17
+  %arrayidx17.3 = getelementptr inbounds [32000 x float], ptr @a, i64 0, i64 %6
+  %7 = load float, ptr %arrayidx17.3, align 4
+  %arrayidx20.3 = getelementptr inbounds [32000 x float], ptr @b, i64 0, i64 %6
+  %8 = load float, ptr %arrayidx20.3, align 4
+  %mul21.3 = fmul fast float %8, %7
+  %9 = add nuw nsw i64 %indvars.iv, 18
+  %arrayidx25.3 = getelementptr inbounds [32000 x float], ptr @a, i64 0, i64 %9
+  %10 = load float, ptr %arrayidx25.3, align 8
+  %arrayidx28.3 = getelementptr inbounds [32000 x float], ptr @b, i64 0, i64 %9
+  %11 = load float, ptr %arrayidx28.3, align 8
+  %mul29.3 = fmul fast float %11, %10
+  %12 = add nuw nsw i64 %indvars.iv, 19
+  %arrayidx33.3 = getelementptr inbounds [32000 x float], ptr @a, i64 0, i64 %12
+  %13 = load float, ptr %arrayidx33.3, align 4
+  %arrayidx36.3 = getelementptr inbounds [32000 x float], ptr @b, i64 0, i64 %12
+  %14 = load float, ptr %arrayidx36.3, align 4
+  %mul37.3 = fmul fast float %14, %13
+  %op.rdx = call fast float @llvm.vector.reduce.fadd.v16f32(float %mul13.3, <16 x float> %2)
+  %op.rdx64 = fadd fast float %mul21.3, %mul29.3
+  %op.rdx65 = fadd fast float %mul37.3, %dot.155
+  %op.rdx66 = fadd fast float %op.rdx, %op.rdx64
+  %op.rdx67 = fsub fast float %op.rdx66, %op.rdx65
+  %indvars.iv.next.3 = add nuw nsw i64 %indvars.iv, 20
+  %cmp2.3 = icmp ult i64 %indvars.iv, 31980
+  br i1 %cmp2.3, label %for.body4, label %for.cond.cleanup
+}

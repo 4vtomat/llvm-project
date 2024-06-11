@@ -98,9 +98,11 @@ void RISCVTargetELFStreamer::emitNoteSection(unsigned Flags) {
   OutStreamer.switchSection(Nt);
 
   // Emit the note header.
-  OutStreamer.emitValueToAlignment(Align(8));
+  Align Alignment = isRV64() ? Align(8) : Align(4);
+  uint64_t DataSize = isRV64() ? 4 * 4: 3 * 4;
+  OutStreamer.emitValueToAlignment(Alignment);
   OutStreamer.emitIntValue(4, 4);     // data size for note name
-  OutStreamer.emitIntValue(4 * 4, 4); // data size
+  OutStreamer.emitIntValue(DataSize, 4); // data size
   OutStreamer.emitIntValue(ELF::NT_GNU_PROPERTY_TYPE_0, 4); // note type
   OutStreamer.emitBytes(StringRef("GNU", 4));               // note name
 
@@ -109,7 +111,8 @@ void RISCVTargetELFStreamer::emitNoteSection(unsigned Flags) {
                            4);        // and property
   OutStreamer.emitIntValue(4, 4);     // data size
   OutStreamer.emitIntValue(Flags, 4); // data
-  OutStreamer.emitIntValue(0, 4);     // pad
+  if (isRV64())
+    OutStreamer.emitIntValue(0, 4);   // pad
 
   OutStreamer.endSection(Nt);
   OutStreamer.switchSection(Cur);

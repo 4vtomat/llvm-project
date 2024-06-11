@@ -166,8 +166,8 @@ define void @vqshlq_u16(ptr nocapture noundef readonly %src, ptr nocapture nound
 ; CHECK-NEXT:    vzext.vf2 v10, v8
 ; CHECK-NEXT:    vsll.vi v8, v10, 15
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v10, v8, 0
-; CHECK-NEXT:    vse16.v v10, (a1)
+; CHECK-NEXT:    vnclipu.wi v8, v8, 0
+; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i16>, ptr %src, align 2
@@ -201,8 +201,8 @@ define void @vqshlq_u32(ptr nocapture noundef readonly %src, ptr nocapture nound
 ; CHECK-NEXT:    li a0, 32
 ; CHECK-NEXT:    vsll.vx v8, v10, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v10, v8, 0
-; CHECK-NEXT:    vse32.v v10, (a1)
+; CHECK-NEXT:    vnclipu.wi v8, v8, 0
+; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i32>, ptr %src, align 4

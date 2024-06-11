@@ -29,7 +29,7 @@ define float @blas_dot(i64 %0, float* nocapture readonly %1, i64 %2, float* noca
 ; CHECK-NEXT:    vsetvli a0, a0, e32, m8, ta, ma
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v16, 0
-; CHECK-NEXT:    vsetvli zero, a0, e32, m8, ta, ma
+; CHECK-NEXT:    vsetvli zero, a0, e32, m8, tu, ma
 ; CHECK-NEXT:    vfredusum.vs v16, v8, v16
 ; CHECK-NEXT:    vfmv.f.s fa0, v16
 ; CHECK-NEXT:    ret

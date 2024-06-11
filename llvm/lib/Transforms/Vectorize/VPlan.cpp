@@ -72,9 +72,11 @@ extern cl::opt<uint64_t> LoopVectorizerVLUpperBound;
 #define DEBUG_TYPE "vplan"
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 raw_ostream &llvm::operator<<(raw_ostream &OS, const VPValue &V) {
-  const VPInstruction *Instr = dyn_cast<VPInstruction>(&V);
-  VPSlotTracker SlotTracker(
-      (Instr && Instr->getParent()) ? Instr->getParent()->getPlan() : nullptr);
+#if SIFIVE_CUSTOMIZATION
+  const VPRecipeBase *R = V.getDefiningRecipe();
+  VPSlotTracker SlotTracker((R && R->getParent()) ? R->getParent()->getPlan()
+                                                  : nullptr);
+#endif // SIFIVE_CUSTOMIZATION
   V.print(OS, SlotTracker);
   return OS;
 }
@@ -873,67 +875,6 @@ void VPRegionBlock::print(raw_ostream &O, const Twine &Indent,
 #endif
 
 #if SIFIVE_CUSTOMIZATION
-Value *VPlan::getSetVL(VPTransformState &State, Value *EVL) {
-  assert(State.LMULExp != 4 && State.LMULExp <= 7 &&
-         "LMUL is not supported by the hardware");
-  if (State.Plan->isUncountable()) {
-    assert(State.Plan->getInitEVL() && "InitEVL is null");
-    assert(!EVL && "EVL not expected by uncountable loops");
-
-    Type *I64Type = State.Builder.getInt64Ty();
-    Type *I32Type = State.Builder.getInt32Ty();
-
-    // Set EVL to allOnes to get vlmax
-    Constant *EVLArg = ConstantInt::get(I64Type, APInt::getAllOnes(64));
-    Constant *VFArg = ConstantInt::get(I32Type, State.VF.getKnownMinValue());
-    auto *IsScalable = ConstantInt::getTrue(State.Builder.getContext());
-    Value *VLMax64 =
-        State.Builder.CreateIntrinsic(Intrinsic::experimental_get_vector_length,
-                                      {I64Type}, {EVLArg, VFArg, IsScalable});
-    Value *VLMax32 =
-        State.Builder.CreateTrunc(VLMax64, State.Builder.getInt32Ty());
-    State.set(State.Plan->getInitEVL(), VLMax32, 0, /*IsScalar=*/true);
-    State.EVL = new VPValue();
-    State.set(State.EVL, VLMax32, 0, /*IsScalar=*/true);
-    return nullptr;
-  }
-
-  assert(EVL->getType()->isIntegerTy() &&
-         "Requested vector length should be an integer.");
-  Value *EVLArg = State.Builder.CreateZExtOrTrunc(
-      EVL, Type::getInt64Ty(State.Builder.getContext()));
-
-  assert(State.MaxSafeNumElems != 0 &&
-         "Max safe number of elements that can be vectorized cannot be 0.");
-  // Clamp EVL for finite dependence distances and user provided upper bounds
-  if (State.MaxSafeNumElems != VPTransformState::UnknownNumSafeElems ||
-      LoopVectorizerVLUpperBound) {
-    uint64_t MaxEVL;
-    if (State.MaxSafeNumElems != VPTransformState::UnknownNumSafeElems &&
-        LoopVectorizerVLUpperBound)
-      MaxEVL = std::min(State.MaxSafeNumElems, LoopVectorizerVLUpperBound.getValue());
-    else
-      MaxEVL = State.MaxSafeNumElems != VPTransformState::UnknownNumSafeElems
-                   ? State.MaxSafeNumElems
-                   : LoopVectorizerVLUpperBound;
-
-    Constant *EVLUpperBound = ConstantInt::get(EVLArg->getType(), MaxEVL);
-    EVLArg = State.Builder.CreateBinaryIntrinsic(Intrinsic::umin, EVLArg,
-                                                 EVLUpperBound);
-  }
-
-  Type *I64Type = State.Builder.getInt64Ty();
-  Type *I32Type = State.Builder.getInt32Ty();
-
-  Constant *VFArg = ConstantInt::get(I32Type, State.VF.getKnownMinValue());
-  auto *IsScalable = ConstantInt::getTrue(State.Builder.getContext());
-  Value *GVL =
-      State.Builder.CreateIntrinsic(Intrinsic::experimental_get_vector_length,
-                                    {I64Type}, {EVLArg, VFArg, IsScalable});
-
-  return State.Builder.CreateZExtOrTrunc(GVL, EVL->getType());
-}
-
 InstructionCost VPlan::overhead(ElementCount VF, VPCostContext &Ctx) const {
   InstructionCost Overhead;
   for (VPBlockBase *Block : vp_depth_first_shallow(Entry)) {

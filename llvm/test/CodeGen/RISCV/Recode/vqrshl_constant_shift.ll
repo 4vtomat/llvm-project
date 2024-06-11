@@ -9,8 +9,8 @@ define void @vqrshlq_s8(ptr nocapture noundef readonly %src, ptr nocapture nound
 ; CHECK-NEXT:    vsext.vf2 v10, v8
 ; CHECK-NEXT:    vsll.vi v8, v10, 8
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vnclip.wi v10, v8, 0
-; CHECK-NEXT:    vse8.v v10, (a1)
+; CHECK-NEXT:    vnclip.wi v8, v8, 0
+; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %src, align 1
@@ -74,8 +74,8 @@ define void @vqrshlq_s32(ptr nocapture noundef readonly %src, ptr nocapture noun
 ; CHECK-NEXT:    li a0, 32
 ; CHECK-NEXT:    vsll.vx v8, v10, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vnclip.wi v10, v8, 0
-; CHECK-NEXT:    vse32.v v10, (a1)
+; CHECK-NEXT:    vnclip.wi v8, v8, 0
+; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i32>, ptr %src, align 4
@@ -151,8 +151,8 @@ define void @vqrshlq_u8(ptr nocapture noundef readonly %src, ptr nocapture nound
 ; CHECK-NEXT:    vzext.vf2 v10, v8
 ; CHECK-NEXT:    vsll.vi v8, v10, 8
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v10, v8, 0
-; CHECK-NEXT:    vse8.v v10, (a1)
+; CHECK-NEXT:    vnclipu.wi v8, v8, 0
+; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %src, align 1
@@ -183,8 +183,8 @@ define void @vqrshlq_u16(ptr nocapture noundef readonly %src, ptr nocapture noun
 ; CHECK-NEXT:    vzext.vf2 v10, v8
 ; CHECK-NEXT:    vsll.vi v8, v10, 16
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v10, v8, 0
-; CHECK-NEXT:    vse16.v v10, (a1)
+; CHECK-NEXT:    vnclipu.wi v8, v8, 0
+; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i16>, ptr %src, align 2
@@ -220,8 +220,8 @@ define void @vqrshlq_u32(ptr nocapture noundef readonly %src, ptr nocapture noun
 ; CHECK-NEXT:    li a0, 32
 ; CHECK-NEXT:    vsll.vx v8, v10, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v10, v8, 0
-; CHECK-NEXT:    vse32.v v10, (a1)
+; CHECK-NEXT:    vnclipu.wi v8, v8, 0
+; CHECK-NEXT:    vse32.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <4 x i32>, ptr %src, align 4

@@ -1105,28 +1105,6 @@ class VPseudoUnaryMaskRoundingMode<VReg RetClass,
   let UsesVXRM = 0;
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
-class VPseudoUnaryMaskTA<VReg RetClass, VReg OpClass, string Constraint = "", int TargetConstraintType = 1> :
-#else
-class VPseudoUnaryMaskTA<VReg RetClass, VReg OpClass, string Constraint = ""> :
-#endif // SIFIVE_CUSTOMIZATION
-        Pseudo<(outs GetVRegNoV0<RetClass>.R:$rd),
-               (ins GetVRegNoV0<RetClass>.R:$merge, OpClass:$rs2,
-                    VMaskOp:$vm, AVL:$vl, ixlenimm:$sew, ixlenimm:$policy), []>,
-        RISCVVPseudo {
-  let mayLoad = 0;
-  let mayStore = 0;
-  let hasSideEffects = 0;
-  let Constraints = !interleave([Constraint, "$rd = $merge"], ",");
-#ifdef SIFIVE_CUSTOMIZATION
-  let TargetOverlapConstraintType = TargetConstraintType;
-#endif // SIFIVE_CUSTOMIZATION
-  let HasVLOp = 1;
-  let HasSEWOp = 1;
-  let HasVecPolicyOp = 1;
-  let UsesMaskPolicy = 1;
-}
-
 class VPseudoUnaryMask_NoExcept<VReg RetClass,
                                 VReg OpClass,
                                 string Constraint = ""> :
@@ -2451,7 +2429,8 @@ multiclass VPseudoBinaryV_WV<LMULInfo m, int TargetConstraintType = 1> {
 multiclass VPseudoBinaryV_WV_RM<LMULInfo m> {
   defm _WV : VPseudoBinaryRoundingMode<m.vrclass, m.wvrclass, m.vrclass, m,
                                        !if(!ge(m.octuple, 8),
-                                       "@earlyclobber $rd", "")>;
+                                       "@earlyclobber $rd", ""), // SIFIVE
+                                       TargetConstraintType=2>; // SIFIVE
 }
 
 multiclass VPseudoBinaryV_WX<LMULInfo m, int TargetConstraintType = 1> {
@@ -2462,7 +2441,8 @@ multiclass VPseudoBinaryV_WX<LMULInfo m, int TargetConstraintType = 1> {
 multiclass VPseudoBinaryV_WX_RM<LMULInfo m> {
   defm _WX : VPseudoBinaryRoundingMode<m.vrclass, m.wvrclass, GPR, m,
                                        !if(!ge(m.octuple, 8),
-                                       "@earlyclobber $rd", "")>;
+                                       "@earlyclobber $rd", ""), // SIFIVE
+                                       TargetConstraintType=2>; // SIFIVE
 }
 
 multiclass VPseudoBinaryV_WI<LMULInfo m, int TargetConstraintType = 1> {
@@ -2473,7 +2453,8 @@ multiclass VPseudoBinaryV_WI<LMULInfo m, int TargetConstraintType = 1> {
 multiclass VPseudoBinaryV_WI_RM<LMULInfo m> {
   defm _WI : VPseudoBinaryRoundingMode<m.vrclass, m.wvrclass, uimm5, m,
                                        !if(!ge(m.octuple, 8),
-                                       "@earlyclobber $rd", "")>;
+                                       "@earlyclobber $rd", ""), // SIFIVE
+                                       TargetConstraintType=2>; // SIFIVE
 }
 
 // For vadc and vsbc, the instruction encoding is reserved if the destination
@@ -4505,7 +4486,7 @@ class VPatTernaryNoMask<string intrinsic,
                     op2_kind:$rs2,
                     GPR:$vl, sew)>;
 
-class VPatTernaryNoMaskTA<string intrinsic,
+class VPatTernaryNoMaskTU<string intrinsic, // SIFIVE
                           string inst,
                           string kind,
                           ValueType result_type,
@@ -4525,9 +4506,9 @@ class VPatTernaryNoMaskTA<string intrinsic,
                     result_reg_class:$rs3,
                     (op1_type op1_reg_class:$rs1),
                     op2_kind:$rs2,
-                    GPR:$vl, log2sew, TAIL_AGNOSTIC)>;
+                    GPR:$vl, log2sew, TU_MU)>; // SIFIVE
 
-class VPatTernaryNoMaskTARoundingMode<string intrinsic,
+class VPatTernaryNoMaskTURoundingMode<string intrinsic, // SIFIVE
                           string inst,
                           string kind,
                           ValueType result_type,
@@ -4549,7 +4530,7 @@ class VPatTernaryNoMaskTARoundingMode<string intrinsic,
                     (op1_type op1_reg_class:$rs1),
                     op2_kind:$rs2,
                     (XLenVT timm:$round),
-                    GPR:$vl, log2sew, TAIL_AGNOSTIC)>;
+                    GPR:$vl, log2sew, TU_MU)>; // SIFIVE
 
 class VPatTernaryNoMaskWithPolicy<string intrinsic,
                                   string inst,
@@ -4680,7 +4661,7 @@ class VPatTernaryMaskPolicyRoundingMode<string intrinsic,
                     (XLenVT timm:$round),
                     GPR:$vl, log2sew, (XLenVT timm:$policy))>;
 
-class VPatTernaryMaskTA<string intrinsic,
+class VPatTernaryMaskTU<string intrinsic, // SIFIVE
                         string inst,
                         string kind,
                         ValueType result_type,
@@ -4703,9 +4684,9 @@ class VPatTernaryMaskTA<string intrinsic,
                     (op1_type op1_reg_class:$rs1),
                     op2_kind:$rs2,
                     (mask_type V0),
-                    GPR:$vl, log2sew, TAIL_AGNOSTIC)>;
+                    GPR:$vl, log2sew, TU_MU)>; // SIFIVE
 
-class VPatTernaryMaskTARoundingMode<string intrinsic,
+class VPatTernaryMaskTURoundingMode<string intrinsic, // SIFIVE
                                     string inst,
                                     string kind,
                                     ValueType result_type,
@@ -4730,7 +4711,7 @@ class VPatTernaryMaskTARoundingMode<string intrinsic,
                     op2_kind:$rs2,
                     (mask_type V0),
                     (XLenVT timm:$round),
-                    GPR:$vl, log2sew, TAIL_AGNOSTIC)>;
+                    GPR:$vl, log2sew, TU_MU)>; // SIFIVE
 
 multiclass VPatUnaryS_M<string intrinsic_name,
                              string inst> {
@@ -5706,7 +5687,7 @@ multiclass VPatTernaryWithPolicyRoundingMode<string intrinsic,
                                                 op2_kind, isSEWAware>;
 }
 
-multiclass VPatTernaryTA<string intrinsic,
+multiclass VPatTernaryTU<string intrinsic, // SIFIVE
                          string inst,
                          string kind,
                          ValueType result_type,
@@ -5718,15 +5699,15 @@ multiclass VPatTernaryTA<string intrinsic,
                          VReg result_reg_class,
                          RegisterClass op1_reg_class,
                          DAGOperand op2_kind> {
-  def : VPatTernaryNoMaskTA<intrinsic, inst, kind, result_type, op1_type,
+  def : VPatTernaryNoMaskTU<intrinsic, inst, kind, result_type, op1_type, // SIFIVE
                             op2_type, log2sew, vlmul, result_reg_class,
                             op1_reg_class, op2_kind>;
-  def : VPatTernaryMaskTA<intrinsic, inst, kind, result_type, op1_type,
+  def : VPatTernaryMaskTU<intrinsic, inst, kind, result_type, op1_type, // SIFIVE
                           op2_type, mask_type, log2sew, vlmul,
                           result_reg_class, op1_reg_class, op2_kind>;
 }
 
-multiclass VPatTernaryTARoundingMode<string intrinsic,
+multiclass VPatTernaryTURoundingMode<string intrinsic, // SIFIVE
                                      string inst,
                                      string kind,
                                      ValueType result_type,
@@ -5738,10 +5719,10 @@ multiclass VPatTernaryTARoundingMode<string intrinsic,
                                      VReg result_reg_class,
                                      RegisterClass op1_reg_class,
                                      DAGOperand op2_kind> {
-  def : VPatTernaryNoMaskTARoundingMode<intrinsic, inst, kind, result_type, op1_type,
+  def : VPatTernaryNoMaskTURoundingMode<intrinsic, inst, kind, result_type, op1_type, // SIFIVE
                             op2_type, log2sew, vlmul, result_reg_class,
                             op1_reg_class, op2_kind>;
-  def : VPatTernaryMaskTARoundingMode<intrinsic, inst, kind, result_type, op1_type,
+  def : VPatTernaryMaskTURoundingMode<intrinsic, inst, kind, result_type, op1_type, // SIFIVE
                           op2_type, mask_type, log2sew, vlmul,
                           result_reg_class, op1_reg_class, op2_kind>;
 }
@@ -5919,7 +5900,7 @@ multiclass VPatReductionV_VS<string intrinsic, string instruction, bit IsFloat =
   foreach vti = !if(IsFloat, NoGroupFloatVectors, NoGroupIntegerVectors) in {
     defvar vectorM1 = !cast<VTypeInfo>(!if(IsFloat, "VF", "VI") # vti.SEW # "M1");
     let Predicates = GetVTypePredicates<vti>.Predicates in
-    defm : VPatTernaryTA<intrinsic, instruction, "VS",
+    defm : VPatTernaryTU<intrinsic, instruction, "VS", // SIFIVE
                          vectorM1.Vector, vti.Vector,
                          vectorM1.Vector, vti.Mask,
                          vti.Log2SEW, vti.LMul,
@@ -5927,7 +5908,7 @@ multiclass VPatReductionV_VS<string intrinsic, string instruction, bit IsFloat =
   }
   foreach gvti = !if(IsFloat, GroupFloatVectors, GroupIntegerVectors) in {
     let Predicates = GetVTypePredicates<gvti>.Predicates in
-    defm : VPatTernaryTA<intrinsic, instruction, "VS",
+    defm : VPatTernaryTU<intrinsic, instruction, "VS", // SIFIVE
                          gvti.VectorM1, gvti.Vector,
                          gvti.VectorM1, gvti.Mask,
                          gvti.Log2SEW, gvti.LMul,
@@ -5939,7 +5920,7 @@ multiclass VPatReductionV_VS_RM<string intrinsic, string instruction, bit IsFloa
   foreach vti = !if(IsFloat, NoGroupFloatVectors, NoGroupIntegerVectors) in {
     defvar vectorM1 = !cast<VTypeInfo>(!if(IsFloat, "VF", "VI") # vti.SEW # "M1");
     let Predicates = GetVTypePredicates<vti>.Predicates in
-    defm : VPatTernaryTARoundingMode<intrinsic, instruction, "VS",
+    defm : VPatTernaryTURoundingMode<intrinsic, instruction, "VS", // SIFIVE
                                      vectorM1.Vector, vti.Vector,
                                      vectorM1.Vector, vti.Mask,
                                      vti.Log2SEW, vti.LMul,
@@ -5947,7 +5928,7 @@ multiclass VPatReductionV_VS_RM<string intrinsic, string instruction, bit IsFloa
   }
   foreach gvti = !if(IsFloat, GroupFloatVectors, GroupIntegerVectors) in {
     let Predicates = GetVTypePredicates<gvti>.Predicates in
-    defm : VPatTernaryTARoundingMode<intrinsic, instruction, "VS",
+    defm : VPatTernaryTURoundingMode<intrinsic, instruction, "VS", // SIFIVE
                                      gvti.VectorM1, gvti.Vector,
                                      gvti.VectorM1, gvti.Mask,
                                      gvti.Log2SEW, gvti.LMul,
@@ -5961,7 +5942,7 @@ multiclass VPatReductionW_VS<string intrinsic, string instruction, bit IsFloat =
     if !le(wtiSEW, 64) then {
       defvar wtiM1 = !cast<VTypeInfo>(!if(IsFloat, "VF", "VI") # wtiSEW # "M1");
       let Predicates = GetVTypePredicates<vti>.Predicates in
-      defm : VPatTernaryTA<intrinsic, instruction, "VS",
+      defm : VPatTernaryTU<intrinsic, instruction, "VS", // SIFIVE
                            wtiM1.Vector, vti.Vector,
                            wtiM1.Vector, vti.Mask,
                            vti.Log2SEW, vti.LMul,
@@ -5977,7 +5958,7 @@ multiclass VPatReductionW_VS_RM<string intrinsic, string instruction, bit IsFloa
     if !le(wtiSEW, 64) then {
       defvar wtiM1 = !cast<VTypeInfo>(!if(IsFloat, "VF", "VI") # wtiSEW # "M1");
       let Predicates = GetVTypePredicates<vti>.Predicates in
-      defm : VPatTernaryTARoundingMode<intrinsic, instruction, "VS",
+      defm : VPatTernaryTURoundingMode<intrinsic, instruction, "VS", // SIFIVE
                                        wtiM1.Vector, vti.Vector,
                                        wtiM1.Vector, vti.Mask,
                                        vti.Log2SEW, vti.LMul,

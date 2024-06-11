@@ -56,6 +56,7 @@ void RISCVTargetStreamer::setFlagsFromFeatures(const MCSubtargetInfo &STI) {
 #if SIFIVE_CUSTOMIZATION
   HasZicfilp = STI.hasFeature(RISCV::FeatureStdExtZicfilp);
   HasZicfiss = STI.hasFeature(RISCV::FeatureStdExtZicfiss);
+  IsRV64 = STI.hasFeature(RISCV::Feature64Bit);
 #endif // SIFIVE_CUSTOMIZATION
 }
 

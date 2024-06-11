@@ -14,33 +14,61 @@ define void @foo(ptr align 8 %array, [2 x i64] %black_point.coerce, [2 x i64] %w
 ; NON-PROFITABLE-NEXT:  entry:
 ; NON-PROFITABLE-NEXT:    [[WHITE_POINT_COERCE_FCA_0_EXTRACT:%.*]] = extractvalue [2 x i64] [[WHITE_POINT_COERCE]], 0
 ; NON-PROFITABLE-NEXT:    [[TMP0:%.*]] = extractvalue [2 x i64] [[WHITE_POINT_COERCE]], 1
+; NON-PROFITABLE-NEXT:    [[WHITE_POINT_SROA_0_0_EXTRACT_TRUNC:%.*]] = trunc i64 [[WHITE_POINT_COERCE_FCA_0_EXTRACT]] to i32
 ; NON-PROFITABLE-NEXT:    [[WHITE_POINT_SROA_2_0_EXTRACT_SHIFT:%.*]] = lshr i64 [[WHITE_POINT_COERCE_FCA_0_EXTRACT]], 32
+; NON-PROFITABLE-NEXT:    [[WHITE_POINT_SROA_2_0_EXTRACT_TRUNC:%.*]] = trunc i64 [[WHITE_POINT_SROA_2_0_EXTRACT_SHIFT]] to i32
+; NON-PROFITABLE-NEXT:    [[TMP_COERCE2_SROA_2_0_EXTRACT_TRUNC:%.*]] = trunc i64 [[TMP0]] to i32
+; NON-PROFITABLE-NEXT:    [[TMP1:%.*]] = bitcast i32 [[TMP_COERCE2_SROA_2_0_EXTRACT_TRUNC]] to float
+; NON-PROFITABLE-NEXT:    [[TMP2:%.*]] = bitcast i32 [[WHITE_POINT_SROA_2_0_EXTRACT_TRUNC]] to float
+; NON-PROFITABLE-NEXT:    [[TMP3:%.*]] = bitcast i32 [[WHITE_POINT_SROA_0_0_EXTRACT_TRUNC]] to float
 ; NON-PROFITABLE-NEXT:    [[BLACK_POINT_COERCE_FCA_0_EXTRACT:%.*]] = extractvalue [2 x i64] [[BLACK_POINT_COERCE]], 0
 ; NON-PROFITABLE-NEXT:    [[BLACK_POINT_COERCE_FCA_1_EXTRACT:%.*]] = extractvalue [2 x i64] [[BLACK_POINT_COERCE]], 1
+; NON-PROFITABLE-NEXT:    [[BLACK_POINT_SROA_0_0_EXTRACT_TRUNC:%.*]] = trunc i64 [[BLACK_POINT_COERCE_FCA_0_EXTRACT]] to i32
 ; NON-PROFITABLE-NEXT:    [[BLACK_POINT_SROA_2_0_EXTRACT_SHIFT:%.*]] = lshr i64 [[BLACK_POINT_COERCE_FCA_0_EXTRACT]], 32
+; NON-PROFITABLE-NEXT:    [[BLACK_POINT_SROA_2_0_EXTRACT_TRUNC:%.*]] = trunc i64 [[BLACK_POINT_SROA_2_0_EXTRACT_SHIFT]] to i32
+; NON-PROFITABLE-NEXT:    [[TMP_COERCE_SROA_2_0_EXTRACT_TRUNC:%.*]] = trunc i64 [[BLACK_POINT_COERCE_FCA_1_EXTRACT]] to i32
+; NON-PROFITABLE-NEXT:    [[TMP4:%.*]] = bitcast i32 [[TMP_COERCE_SROA_2_0_EXTRACT_TRUNC]] to float
+; NON-PROFITABLE-NEXT:    [[TMP5:%.*]] = bitcast i32 [[BLACK_POINT_SROA_2_0_EXTRACT_TRUNC]] to float
+; NON-PROFITABLE-NEXT:    [[TMP6:%.*]] = bitcast i32 [[BLACK_POINT_SROA_0_0_EXTRACT_TRUNC]] to float
+; NON-PROFITABLE-NEXT:    [[SUB:%.*]] = fsub fast float [[TMP3]], [[TMP6]]
+; NON-PROFITABLE-NEXT:    [[SUB_1:%.*]] = fsub fast float [[TMP2]], [[TMP5]]
+; NON-PROFITABLE-NEXT:    [[SUB_2:%.*]] = fsub fast float [[TMP1]], [[TMP4]]
+; NON-PROFITABLE-NEXT:    [[DIV:%.*]] = fdiv fast float 1.000000e+00, [[SUB]]
+; NON-PROFITABLE-NEXT:    [[DIV_1:%.*]] = fdiv fast float 1.000000e+00, [[SUB_1]]
+; NON-PROFITABLE-NEXT:    [[DIV_2:%.*]] = fdiv fast float 1.000000e+00, [[SUB_2]]
+; NON-PROFITABLE-NEXT:    [[MUL:%.*]] = fmul fast float [[TMP6]], 2.550000e+02
+; NON-PROFITABLE-NEXT:    [[MUL_1:%.*]] = fmul fast float [[TMP5]], 2.550000e+02
+; NON-PROFITABLE-NEXT:    [[MUL_2:%.*]] = fmul fast float [[TMP4]], 2.550000e+02
 ; NON-PROFITABLE-NEXT:    [[ARRAYIDX_0:%.*]] = getelementptr inbounds i8, ptr [[ARRAY]], i64 0
-; NON-PROFITABLE-NEXT:    [[TMP1:%.*]] = insertelement <3 x i64> poison, i64 [[WHITE_POINT_COERCE_FCA_0_EXTRACT]], i32 0
-; NON-PROFITABLE-NEXT:    [[TMP2:%.*]] = insertelement <3 x i64> [[TMP1]], i64 [[WHITE_POINT_SROA_2_0_EXTRACT_SHIFT]], i32 1
-; NON-PROFITABLE-NEXT:    [[TMP3:%.*]] = insertelement <3 x i64> [[TMP2]], i64 [[TMP0]], i32 2
-; NON-PROFITABLE-NEXT:    [[TMP4:%.*]] = trunc <3 x i64> [[TMP3]] to <3 x i32>
-; NON-PROFITABLE-NEXT:    [[TMP5:%.*]] = bitcast <3 x i32> [[TMP4]] to <3 x float>
-; NON-PROFITABLE-NEXT:    [[TMP6:%.*]] = insertelement <3 x i64> poison, i64 [[BLACK_POINT_COERCE_FCA_0_EXTRACT]], i32 0
-; NON-PROFITABLE-NEXT:    [[TMP7:%.*]] = insertelement <3 x i64> [[TMP6]], i64 [[BLACK_POINT_SROA_2_0_EXTRACT_SHIFT]], i32 1
-; NON-PROFITABLE-NEXT:    [[TMP8:%.*]] = insertelement <3 x i64> [[TMP7]], i64 [[BLACK_POINT_COERCE_FCA_1_EXTRACT]], i32 2
-; NON-PROFITABLE-NEXT:    [[TMP9:%.*]] = trunc <3 x i64> [[TMP8]] to <3 x i32>
-; NON-PROFITABLE-NEXT:    [[TMP10:%.*]] = bitcast <3 x i32> [[TMP9]] to <3 x float>
-; NON-PROFITABLE-NEXT:    [[TMP11:%.*]] = fsub fast <3 x float> [[TMP5]], [[TMP10]]
-; NON-PROFITABLE-NEXT:    [[TMP12:%.*]] = fdiv fast <3 x float> <float 1.000000e+00, float 1.000000e+00, float 1.000000e+00>, [[TMP11]]
-; NON-PROFITABLE-NEXT:    [[TMP13:%.*]] = fmul fast <3 x float> [[TMP10]], <float 2.550000e+02, float 2.550000e+02, float 2.550000e+02>
-; NON-PROFITABLE-NEXT:    [[TMP14:%.*]] = load <3 x i8>, ptr [[ARRAYIDX_0]], align 1
-; NON-PROFITABLE-NEXT:    [[TMP15:%.*]] = uitofp <3 x i8> [[TMP14]] to <3 x float>
-; NON-PROFITABLE-NEXT:    [[TMP16:%.*]] = fsub fast <3 x float> [[TMP15]], [[TMP13]]
-; NON-PROFITABLE-NEXT:    [[TMP17:%.*]] = fmul fast <3 x float> [[TMP16]], [[TMP12]]
-; NON-PROFITABLE-NEXT:    [[TMP18:%.*]] = fcmp fast olt <3 x float> [[TMP17]], zeroinitializer
-; NON-PROFITABLE-NEXT:    [[TMP19:%.*]] = select <3 x i1> [[TMP18]], <3 x float> zeroinitializer, <3 x float> [[TMP17]]
-; NON-PROFITABLE-NEXT:    [[TMP20:%.*]] = call fast <3 x float> @llvm.minnum.v3f32(<3 x float> [[TMP19]], <3 x float> <float 2.550000e+02, float 2.550000e+02, float 2.550000e+02>)
-; NON-PROFITABLE-NEXT:    [[TMP21:%.*]] = fptoui <3 x float> [[TMP20]] to <3 x i8>
-; NON-PROFITABLE-NEXT:    store <3 x i8> [[TMP21]], ptr [[ARRAYIDX_0]], align 1
+; NON-PROFITABLE-NEXT:    [[A14:%.*]] = load i8, ptr [[ARRAYIDX_0]], align 1
+; NON-PROFITABLE-NEXT:    [[CONV26:%.*]] = uitofp i8 [[A14]] to float
+; NON-PROFITABLE-NEXT:    [[SUB29:%.*]] = fsub fast float [[CONV26]], [[MUL]]
+; NON-PROFITABLE-NEXT:    [[MUL32:%.*]] = fmul fast float [[SUB29]], [[DIV]]
+; NON-PROFITABLE-NEXT:    [[CMP1_I:%.*]] = fcmp fast olt float [[MUL32]], 0.000000e+00
+; NON-PROFITABLE-NEXT:    [[MINIMUM_VALUE_VALUE_I:%.*]] = select i1 [[CMP1_I]], float 0.000000e+00, float [[MUL32]]
+; NON-PROFITABLE-NEXT:    [[RETVAL_0_I70:%.*]] = tail call fast float @llvm.minnum.f32(float [[MINIMUM_VALUE_VALUE_I]], float 2.550000e+02)
+; NON-PROFITABLE-NEXT:    [[CONV34:%.*]] = fptoui float [[RETVAL_0_I70]] to i8
+; NON-PROFITABLE-NEXT:    store i8 [[CONV34]], ptr [[ARRAYIDX_0]], align 1
+; NON-PROFITABLE-NEXT:    [[ARRAYIDX_1:%.*]] = getelementptr inbounds i8, ptr [[ARRAY]], i64 1
+; NON-PROFITABLE-NEXT:    [[A15:%.*]] = load i8, ptr [[ARRAYIDX_1]], align 1
+; NON-PROFITABLE-NEXT:    [[CONV26_1:%.*]] = uitofp i8 [[A15]] to float
+; NON-PROFITABLE-NEXT:    [[SUB29_1:%.*]] = fsub fast float [[CONV26_1]], [[MUL_1]]
+; NON-PROFITABLE-NEXT:    [[MUL32_1:%.*]] = fmul fast float [[SUB29_1]], [[DIV_1]]
+; NON-PROFITABLE-NEXT:    [[CMP1_I_1:%.*]] = fcmp fast olt float [[MUL32_1]], 0.000000e+00
+; NON-PROFITABLE-NEXT:    [[MINIMUM_VALUE_VALUE_I_1:%.*]] = select i1 [[CMP1_I_1]], float 0.000000e+00, float [[MUL32_1]]
+; NON-PROFITABLE-NEXT:    [[RETVAL_0_I70_1:%.*]] = tail call fast float @llvm.minnum.f32(float [[MINIMUM_VALUE_VALUE_I_1]], float 2.550000e+02)
+; NON-PROFITABLE-NEXT:    [[CONV34_1:%.*]] = fptoui float [[RETVAL_0_I70_1]] to i8
+; NON-PROFITABLE-NEXT:    store i8 [[CONV34_1]], ptr [[ARRAYIDX_1]], align 1
+; NON-PROFITABLE-NEXT:    [[ARRAYIDX_2:%.*]] = getelementptr inbounds i8, ptr [[ARRAY]], i64 2
+; NON-PROFITABLE-NEXT:    [[A16:%.*]] = load i8, ptr [[ARRAYIDX_2]], align 1
+; NON-PROFITABLE-NEXT:    [[CONV26_2:%.*]] = uitofp i8 [[A16]] to float
+; NON-PROFITABLE-NEXT:    [[SUB29_2:%.*]] = fsub fast float [[CONV26_2]], [[MUL_2]]
+; NON-PROFITABLE-NEXT:    [[MUL32_2:%.*]] = fmul fast float [[SUB29_2]], [[DIV_2]]
+; NON-PROFITABLE-NEXT:    [[CMP1_I_2:%.*]] = fcmp fast olt float [[MUL32_2]], 0.000000e+00
+; NON-PROFITABLE-NEXT:    [[MINIMUM_VALUE_VALUE_I_2:%.*]] = select i1 [[CMP1_I_2]], float 0.000000e+00, float [[MUL32_2]]
+; NON-PROFITABLE-NEXT:    [[RETVAL_0_I70_2:%.*]] = tail call fast float @llvm.minnum.f32(float [[MINIMUM_VALUE_VALUE_I_2]], float 2.550000e+02)
+; NON-PROFITABLE-NEXT:    [[CONV34_2:%.*]] = fptoui float [[RETVAL_0_I70_2]] to i8
+; NON-PROFITABLE-NEXT:    store i8 [[CONV34_2]], ptr [[ARRAYIDX_2]], align 1
 ; NON-PROFITABLE-NEXT:    ret void
 ;
 entry:

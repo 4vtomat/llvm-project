@@ -37,29 +37,27 @@ def SDT_RISCVIntBinOp_VL : SDTypeProfile<1, 5, [SDTCisSameAs<0, 1>,
                                                 SDTCisVT<5, XLenVT>]>;
 
 #ifdef SIFIVE_CUSTOMIZATION
-// Input: (vector, vector, merge, mask, roundmode, vl, policy)
-def SDT_RISCVIntBinOp_RM_VL : SDTypeProfile<1, 7, [SDTCisVec<0>, SDTCisInt<0>,
+// Input: (vector, vector, merge, mask, roundmode, vl)
+def SDT_RISCVIntBinOp_RM_VL : SDTypeProfile<1, 6, [SDTCisVec<0>, SDTCisInt<0>,
                                                    SDTCisSameAs<0, 1>,
                                                    SDTCisSameAs<0, 2>,
                                                    SDTCisSameAs<0, 3>,
                                                    SDTCisSameNumEltsAs<0, 4>,
                                                    SDTCVecEltisVT<4, i1>,
                                                    SDTCisVT<5, XLenVT>,
-                                                   SDTCisVT<6, XLenVT>,
-                                                   SDTCisVT<7, XLenVT>]>;
+                                                   SDTCisVT<6, XLenVT>]>;
 
-// Input: (vector, vector/scalar, merge, mask, roundmode, vl, policy)
-def SDT_RISCVVNBinOp_RM_VL : SDTypeProfile<1, 7, [SDTCisVec<0>, SDTCisInt<0>,
-                                               SDTCisSameAs<0, 3>,
-                                               SDTCisSameNumEltsAs<0, 1>,
-                                               SDTCisVec<1>,
-                                               SDTCisOpSmallerThanOp<2, 1>,
-                                               SDTCisSameAs<0, 2>,
-                                               SDTCisSameNumEltsAs<0, 4>,
-                                               SDTCVecEltisVT<4, i1>,
-                                               SDTCisVT<5, XLenVT>,
-                                               SDTCisVT<6, XLenVT>,
-                                               SDTCisVT<7, XLenVT>]>;
+// Input: (vector, vector/scalar, merge, mask, roundmode, vl)
+def SDT_RISCVVNBinOp_RM_VL : SDTypeProfile<1, 6, [SDTCisVec<0>, SDTCisInt<0>,
+                                                  SDTCisSameAs<0, 3>,
+                                                  SDTCisSameNumEltsAs<0, 1>,
+                                                  SDTCisVec<1>,
+                                                  SDTCisOpSmallerThanOp<2, 1>,
+                                                  SDTCisSameAs<0, 2>,
+                                                  SDTCisSameNumEltsAs<0, 4>,
+                                                  SDTCVecEltisVT<4, i1>,
+                                                  SDTCisVT<5, XLenVT>,
+                                                  SDTCisVT<6, XLenVT>]>;
 #endif // SIFIVE_CUSTOMIZATION
 
 def SDT_RISCVFPUnOp_VL : SDTypeProfile<1, 3, [SDTCisSameAs<0, 1>,
@@ -712,15 +710,14 @@ multiclass VPatBinaryRM_VL_V<SDNode vop,
                          (result_type result_reg_class:$merge),
                          (mask_type V0),
                          (XLenVT timm:$roundmode),
-                         VLOpFrag,
-                         (XLenVT timm:$policy))),
+                         VLOpFrag)),
         (!cast<Instruction>(instruction_name#"_"#suffix#"_"# vlmul.MX#"_MASK")
                      result_reg_class:$merge,
                      op1_reg_class:$rs1,
                      op2_reg_class:$rs2,
                      (mask_type V0),
                      (XLenVT timm:$roundmode),
-                     GPR:$vl, sew, (XLenVT timm:$policy))>;
+                     GPR:$vl, sew, TAIL_AGNOSTIC)>;
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -904,15 +901,14 @@ multiclass VPatBinaryRM_VL_XI<SDNode vop,
                      (result_type result_reg_class:$merge),
                      (mask_type V0),
                      (XLenVT timm:$roundmode),
-                     VLOpFrag,
-                     (XLenVT timm:$policy))),
+                     VLOpFrag)),
         (!cast<Instruction>(instruction_name#_#suffix#_# vlmul.MX#"_MASK")
                      result_reg_class:$merge,
                      vop_reg_class:$rs1,
                      xop_kind:$rs2,
                      (mask_type V0),
                      (XLenVT timm:$roundmode),
-                     GPR:$vl, sew, (XLenVT timm:$policy))>;
+                     GPR:$vl, sew, TAIL_AGNOSTIC)>;
 }
 #endif // SIFIVE_CUSTOMIZATION
 

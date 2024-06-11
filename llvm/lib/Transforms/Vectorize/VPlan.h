@@ -3954,9 +3954,6 @@ public:
   /// Return whether the vPlan is uncountable
   bool isUncountable() const { return IsUncountable; }
 
-  /// Generate vsetvli call.
-  Value *getSetVL(VPTransformState &State, Value *EVL);
-
   /// Returns VPValue for PrevEVL.
   VPValue *getPrevEVL() const { return PrevEVL; }
 

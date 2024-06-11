@@ -480,8 +480,8 @@ define void @vqshlq_n_s8(ptr nocapture noundef readonly %in_0, ptr nocapture nou
 ; CHECK-NEXT:    vsext.vf2 v10, v8
 ; CHECK-NEXT:    vsll.vi v8, v10, 7
 ; CHECK-NEXT:    vsetvli zero, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vnclip.wi v10, v8, 0
-; CHECK-NEXT:    vse8.v v10, (a1)
+; CHECK-NEXT:    vnclip.wi v8, v8, 0
+; CHECK-NEXT:    vse8.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <16 x i8>, ptr %in_0, align 1
@@ -498,8 +498,8 @@ define void @vqshlq_n_u16(ptr nocapture noundef readonly %in_0, ptr nocapture no
 ; CHECK-NEXT:    vzext.vf2 v10, v8
 ; CHECK-NEXT:    vsll.vi v8, v10, 15
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v10, v8, 0
-; CHECK-NEXT:    vse16.v v10, (a1)
+; CHECK-NEXT:    vnclipu.wi v8, v8, 0
+; CHECK-NEXT:    vse16.v v8, (a1)
 ; CHECK-NEXT:    ret
 entry:
   %0 = load <8 x i16>, ptr %in_0, align 2
@@ -717,8 +717,8 @@ define void @vqshlq_u16(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vzext.vf2 v8, v9
 ; CHECK-NEXT:    vsll.vv v8, v8, v12
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v11, v8, 0
-; CHECK-NEXT:    vmerge.vvm v8, v11, v10, v0
+; CHECK-NEXT:    vnclipu.wi v8, v8, 0
+; CHECK-NEXT:    vmerge.vvm v8, v8, v10, v0
 ; CHECK-NEXT:    vse16.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:
@@ -752,8 +752,8 @@ define void @vqshlq_u32(ptr nocapture noundef readonly %in_0, ptr nocapture noun
 ; CHECK-NEXT:    vzext.vf2 v8, v9
 ; CHECK-NEXT:    vsll.vv v8, v8, v12
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v11, v8, 0
-; CHECK-NEXT:    vmerge.vvm v8, v11, v10, v0
+; CHECK-NEXT:    vnclipu.wi v8, v8, 0
+; CHECK-NEXT:    vmerge.vvm v8, v8, v10, v0
 ; CHECK-NEXT:    vse32.v v8, (a2)
 ; CHECK-NEXT:    ret
 entry:

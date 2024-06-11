@@ -842,7 +842,9 @@ multiclass BulletWriteResBase<
   // Widening
   foreach mx = SchedMxListW in {
     foreach sew = SchedSEWSet<mx, isF=0, isWidening=1>.val in {
-      defvar Cycles = BulletGetCyclesDefault<mx>.c;
+      defvar Cycles = !if(!and(hasSlowFP64Vec, !eq(sew, 32)),
+                          BulletGetCyclesOnePerElement<mx, sew, VLEN>.c,
+                          BulletGetCyclesDefault<mx>.c);
       defvar IsWorstCase = BulletIsWorstCaseMXSEW<mx, sew, SchedMxListW>.c;
       let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in
       defm "" : LMULSEWWriteResMXSEW<"WriteVFWCvtIToFV", [VCQ, VA1], mx, sew, IsWorstCase>;
@@ -859,8 +861,12 @@ multiclass BulletWriteResBase<
         defm "" : LMULSEWWriteResMXSEW<"WriteVFWMulF", [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
         defm "" : LMULSEWWriteResMXSEW<"WriteVFWMulAddV", [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
         defm "" : LMULSEWWriteResMXSEW<"WriteVFWMulAddF", [VCQ, VA1OrVA2], mx, sew, IsWorstCase>;
-        defm "" : LMULSEWWriteResMXSEW<"WriteVFWCvtFToFV", [VCQ, VA1], mx, sew, IsWorstCase>;
       }
+      defvar CvtCycles = !if(!and(hasSlowFP64Vec, !eq(sew, 32)),
+                          BulletGetCyclesOnePerElement<mx, sew, VLEN>.c,
+                          BulletGetCyclesDefault<mx>.c);
+      let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, CvtCycles)] in
+      defm "" : LMULSEWWriteResMXSEW<"WriteVFWCvtFToFV", [VCQ, VA1], mx, sew, IsWorstCase>;
     }
     defvar Cycles = BulletGetCyclesDefault<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxListFW>.c;
@@ -872,12 +878,16 @@ multiclass BulletWriteResBase<
     defvar Cycles = BulletGetCyclesNarrowing<mx>.c;
     defvar IsWorstCase = BulletIsWorstCaseMX<mx, SchedMxListW>.c;
     let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
+      // TODO: Once these are SEW aware, this should be one cycle per element
+      // for SEW=32.
       defm "" : LMULWriteResMX<"WriteVFNCvtFToIV", [VCQ, VA1], mx, IsWorstCase>;
     }
   }
   foreach mx = SchedMxListFW in {
     foreach sew = SchedSEWSet<mx, isF=1, isWidening=1>.val in {
-      defvar Cycles = BulletGetCyclesNarrowing<mx>.c;
+      defvar Cycles = !if(!and(hasSlowFP64Vec, !eq(sew, 32)),
+                          BulletGetCyclesOnePerElement<mx, sew, VLEN>.c,
+                          BulletGetCyclesNarrowing<mx>.c);
       defvar IsWorstCase = BulletIsWorstCaseMXSEW<mx, sew, SchedMxListFW, isF=1>.c;
       let Latency = 8, AcquireAtCycles = [0, 1], ReleaseAtCycles = [1, !add(1, Cycles)] in {
         defm "" : LMULSEWWriteResMXSEW<"WriteVFNCvtIToFV", [VCQ, VA1], mx, sew, IsWorstCase>;
