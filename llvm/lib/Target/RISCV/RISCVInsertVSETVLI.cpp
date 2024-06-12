@@ -638,7 +638,11 @@ public:
 
   bool hasSameAVL(const VSETVLIInfo &Other) const {
     if (hasAVLReg() && Other.hasAVLReg())
+#ifdef SIFIVE_CUSTOMIZATION
+      return getAVLVNInfo()->def == Other.getAVLVNInfo()->def &&
+#else
       return getAVLVNInfo()->id == Other.getAVLVNInfo()->id &&
+#endif
              getAVLReg() == Other.getAVLReg();
 
     if (hasAVLImm() && Other.hasAVLImm())
@@ -1190,6 +1194,11 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
   // the case, e.g. PseudoVMV_X_S doesn't have an AVL operand.
   LIS->getInterval(AVLReg).extendInBlock(
       LIS->getMBBStartIdx(&MBB), LIS->getInstructionIndex(*MI).getRegSlot());
+
+#ifdef SIFIVE_CUSTOMIZATION
+  LIS->removeInterval(AVLReg);
+  LIS->createAndComputeVirtRegInterval(AVLReg);
+#endif // SIFIVE_CUSTOMIZATION 
 }
 
 /// Return true if a VSETVLI is required to transition from CurInfo to Require
