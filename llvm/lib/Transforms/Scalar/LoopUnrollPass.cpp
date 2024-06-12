@@ -1624,7 +1624,8 @@ PreservedAnalyses LoopFullUnrollPass::run(Loop &L, LoopAnalysisManager &AM,
     // `HasOnlyNonUnitStrideMemoryAccesses` under LoopVectorize.cpp. This
     // facilitates longer vector usage for concatenated loops, reducing path
     // length.
-    LoopAccessInfoManager LAIM(AR.SE, AR.AA, AR.DT, AR.LI, /* TLI */ nullptr);
+    LoopAccessInfoManager LAIM(AR.SE, AR.AA, AR.DT, AR.LI, /* TTI */ nullptr,
+                               /* TLI */ nullptr);
     if (LoopConcatCanonicalize && IsLTOPrelink && L.isLoopSimplifyForm() &&
         (HasReductionLoop(&L) ||
          HasOnlyNonUnitStrideMemoryAccesses(AR.SE, /* PSI */ nullptr,
