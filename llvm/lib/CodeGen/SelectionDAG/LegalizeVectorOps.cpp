@@ -507,13 +507,8 @@ SDValue VectorLegalizer::LegalizeOp(SDValue Op) {
         break;                                                                 \
     }                                                                          \
     /* Defer non-vector results to LegalizeDAG. */                             \
-<<<<<<< HEAD
-    if (!Node->getValueType(0).isVector() && /* SIFIVE */                      \
-        Node->getValueType(0) != MVT::Other) { /* SIFIVE */                    \
-=======
     if (!Node->getValueType(0).isVector() &&                                   \
         Node->getValueType(0) != MVT::Other) {                                 \
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
       Action = TargetLowering::Legal;                                          \
       break;                                                                   \
     }                                                                          \
