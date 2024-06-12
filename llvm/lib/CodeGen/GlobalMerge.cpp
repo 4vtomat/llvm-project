@@ -134,19 +134,11 @@ static cl::opt<cl::boolOrDefault>
 EnableGlobalMergeOnExternal("global-merge-on-external", cl::Hidden,
      cl::desc("Enable global merge pass on external linkage"));
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 static cl::opt<unsigned>
     GlobalMergeMinDataSize("global-merge-min-data-size",
                            cl::desc("The minimum size in bytes of each global "
                                     "that should considered in merging."),
                            cl::init(0), cl::Hidden);
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 
 STATISTIC(NumMerged, "Number of globals merged");
 
@@ -212,10 +204,6 @@ public:
   }
 
   bool doInitialization(Module &M) override {
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
     auto GetSmallDataLimit = [](Module &M) -> std::optional<uint64_t> {
       Metadata *SDL = M.getModuleFlag("SmallDataLimit");
       if (!SDL)
@@ -224,19 +212,11 @@ public:
     };
     if (GlobalMergeMinDataSize.getNumOccurrences())
       Opt.MinSize = GlobalMergeMinDataSize;
-<<<<<<< HEAD
-    else if(auto SDL = GetSmallDataLimit(M); SDL && *SDL > 0)
-      Opt.MinSize = *SDL + 1;
-    else
-      Opt.MinSize = 0;
-#endif // SIFIVE_CUSTOMIZATION
-=======
     else if (auto SDL = GetSmallDataLimit(M); SDL && *SDL > 0)
       Opt.MinSize = *SDL + 1;
     else
       Opt.MinSize = 0;
 
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
     GlobalMergeImpl P(TM, Opt);
 
     return P.run(M);
@@ -710,17 +690,8 @@ bool GlobalMergeImpl::run(Module &M) {
       continue;
 
     Type *Ty = GV.getValueType();
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
     TypeSize AllocSize = DL.getTypeAllocSize(Ty);
     if (AllocSize < Opt.MaxOffset && AllocSize >= Opt.MinSize) {
-#else
-    if (DL.getTypeAllocSize(Ty) < Opt.MaxOffset) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
-    TypeSize AllocSize = DL.getTypeAllocSize(Ty);
-    if (AllocSize < Opt.MaxOffset && AllocSize >= Opt.MinSize) {
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
       if (TM &&
           TargetLoweringObjectFile::getKindForGlobal(&GV, *TM).isBSS())
         BSSGlobals[{AddressSpace, Section}].push_back(&GV);
