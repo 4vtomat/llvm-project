@@ -3956,7 +3956,8 @@ public:
   /// Create an initial VPlan with preheader and entry blocks. Creates a
   /// VPExpandSCEVRecipe for \p TripCount and uses it as plan's trip count.
   static VPlanPtr createInitialVPlan(const SCEV *TripCount,
-                                     ScalarEvolution &PSE, bool IsUncountable);
+                                     ScalarEvolution &PSE, BasicBlock *PH,
+                                     bool IsUncountable);
 #else
   /// Create initial VPlan skeleton, having an "entry" VPBasicBlock (wrapping
   /// original scalar pre-header \p PH) which contains SCEV expansions that need
@@ -3964,12 +3965,8 @@ public:
   /// pre-header, followed by a region for the vector loop, followed by the
   /// middle VPBasicBlock.
   static VPlanPtr createInitialVPlan(const SCEV *TripCount,
-<<<<<<< HEAD
-                                     ScalarEvolution &PSE);
-#endif // SIFIVE_CUSTOMIZATION
-=======
                                      ScalarEvolution &PSE, BasicBlock *PH);
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Prepare the plan for execution, setting up the required live-in values.
   void prepareToExecute(Value *TripCount, Value *VectorTripCount,

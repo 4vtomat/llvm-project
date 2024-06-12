@@ -11089,20 +11089,17 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     TripCountSCEV =
         createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop);
   VPlanPtr Plan =
-      VPlan::createInitialVPlan(TripCountSCEV, *PSE.getSE(), IsUncountable);
+      VPlan::createInitialVPlan(TripCountSCEV, *PSE.getSE(),
+                                OrigLoop->getLoopPreheader(), IsUncountable);
   if (IsUncountable) {
     Plan->createInitEVL();
   }
 #else
   VPlanPtr Plan = VPlan::createInitialVPlan(
       createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop),
-<<<<<<< HEAD
-      *PSE.getSE());
+      *PSE.getSE(), OrigLoop->getLoopPreheader());
 #endif
 
-=======
-      *PSE.getSE(), OrigLoop->getLoopPreheader());
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
   VPBasicBlock *HeaderVPBB = new VPBasicBlock("vector.body");
   VPBasicBlock *LatchVPBB = new VPBasicBlock("vector.latch");
   VPBlockUtils::insertBlockAfter(LatchVPBB, HeaderVPBB);
@@ -11442,16 +11439,13 @@ VPlanPtr LoopVectorizationPlanner::buildVPlan(VFRange &Range) {
           ? nullptr
           : createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop);
   auto Plan =
-      VPlan::createInitialVPlan(TripCountSCEV, *PSE.getSE(), IsUncountable);
+      VPlan::createInitialVPlan(TripCountSCEV, *PSE.getSE(),
+                                OrigLoop->getLoopPreheader(), IsUncountable);
 #else
   auto Plan = VPlan::createInitialVPlan(
       createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop),
-<<<<<<< HEAD
-      *PSE.getSE());
-#endif // SIFIVE_CUSTOMIZATION
-=======
       *PSE.getSE(), OrigLoop->getLoopPreheader());
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
+#endif // SIFIVE_CUSTOMIZATION
 
   // Build hierarchical CFG
   VPlanHCFGBuilder HCFGBuilder(OrigLoop, LI, *Plan);

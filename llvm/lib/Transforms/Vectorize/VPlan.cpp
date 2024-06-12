@@ -954,19 +954,14 @@ VPlan::~VPlan() {
 #endif // SIFIVE_CUSTOMIZATION
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
-                                   bool IsUncountable) {
+                                   BasicBlock *PH, bool IsUncountable) {
 #else
-VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE) {
-#endif // SIFIVE_CUSTOMIZATION
-  VPBasicBlock *Preheader = new VPBasicBlock("ph");
-=======
 VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
                                    BasicBlock *PH) {
+#endif // SIFIVE_CUSTOMIZATION
   VPIRBasicBlock *Preheader = new VPIRBasicBlock(PH);
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
   VPBasicBlock *VecPreheader = new VPBasicBlock("vector.ph");
 #if SIFIVE_CUSTOMIZATION
   auto Plan = std::make_unique<VPlan>(Preheader, VecPreheader, IsUncountable);
