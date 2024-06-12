@@ -569,6 +569,16 @@ VPBasicBlock::createEmptyBasicBlock(VPTransformState::CFGState &CFG) {
   return NewBB;
 }
 
+void VPIRBasicBlock::execute(VPTransformState *State) {
+  assert(getHierarchicalPredecessors().empty() &&
+         "VPIRBasicBlock cannot have predecessors at the moment");
+  assert(getHierarchicalSuccessors().empty() &&
+         "VPIRBasicBlock cannot have successors at the moment");
+
+  State->Builder.SetInsertPoint(getIRBasicBlock()->getTerminator());
+  executeRecipes(State, getIRBasicBlock());
+}
+
 void VPBasicBlock::execute(VPTransformState *State) {
   bool Replica = State->Instance && !State->Instance->isFirstIteration();
   VPBasicBlock *PrevVPBB = State->CFG.PrevVPBB;
@@ -626,16 +636,7 @@ void VPBasicBlock::execute(VPTransformState *State) {
   }
 
   // 2. Fill the IR basic block with IR instructions.
-  LLVM_DEBUG(dbgs() << "LV: vectorizing VPBB:" << getName()
-                    << " in BB:" << NewBB->getName() << '\n');
-
-  State->CFG.VPBB2IRBB[this] = NewBB;
-  State->CFG.PrevVPBB = this;
-
-  for (VPRecipeBase &Recipe : Recipes)
-    Recipe.execute(*State);
-
-  LLVM_DEBUG(dbgs() << "LV: filled BB:" << *NewBB);
+  executeRecipes(State, NewBB);
 }
 
 void VPBasicBlock::dropAllReferences(VPValue *NewValue) {
@@ -646,6 +647,19 @@ void VPBasicBlock::dropAllReferences(VPValue *NewValue) {
     for (unsigned I = 0, E = R.getNumOperands(); I != E; I++)
       R.setOperand(I, NewValue);
   }
+}
+
+void VPBasicBlock::executeRecipes(VPTransformState *State, BasicBlock *BB) {
+  LLVM_DEBUG(dbgs() << "LV: vectorizing VPBB:" << getName()
+                    << " in BB:" << BB->getName() << '\n');
+
+  State->CFG.VPBB2IRBB[this] = BB;
+  State->CFG.PrevVPBB = this;
+
+  for (VPRecipeBase &Recipe : Recipes)
+    Recipe.execute(*State);
+
+  LLVM_DEBUG(dbgs() << "LV: filled BB:" << *BB);
 }
 
 VPBasicBlock *VPBasicBlock::splitAt(iterator SplitAt) {
@@ -940,6 +954,7 @@ VPlan::~VPlan() {
 #endif // SIFIVE_CUSTOMIZATION
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
                                    bool IsUncountable) {
@@ -947,6 +962,11 @@ VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
 VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE) {
 #endif // SIFIVE_CUSTOMIZATION
   VPBasicBlock *Preheader = new VPBasicBlock("ph");
+=======
+VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
+                                   BasicBlock *PH) {
+  VPIRBasicBlock *Preheader = new VPIRBasicBlock(PH);
+>>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
   VPBasicBlock *VecPreheader = new VPBasicBlock("vector.ph");
 #if SIFIVE_CUSTOMIZATION
   auto Plan = std::make_unique<VPlan>(Preheader, VecPreheader, IsUncountable);
@@ -1140,9 +1160,9 @@ void VPlan::execute(VPTransformState *State) {
 #endif // SIFIVE_CUSTOMIZATION
 
   State->CFG.DTU.flush();
-  // DT is currently updated for non-native path only.
-  assert(EnableVPlanNativePath || State->CFG.DTU.getDomTree().verify(
-                                      DominatorTree::VerificationLevel::Fast));
+  assert(State->CFG.DTU.getDomTree().verify(
+             DominatorTree::VerificationLevel::Fast) &&
+         "DT not preserved correctly");
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)

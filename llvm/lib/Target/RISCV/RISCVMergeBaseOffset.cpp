@@ -93,7 +93,10 @@ INITIALIZE_PASS(RISCVMergeBaseOffsetOpt, DEBUG_TYPE,
 //    3) The offset value in the Global Address or Constant Pool is 0.
 bool RISCVMergeBaseOffsetOpt::detectFoldable(MachineInstr &Hi,
                                              MachineInstr *&Lo) {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
   if (Hi.getOpcode() != RISCV::LUI && Hi.getOpcode() != RISCV::AUIPC &&
       Hi.getOpcode() != RISCV::PseudoMovAddr)
     return false;
@@ -109,7 +112,10 @@ bool RISCVMergeBaseOffsetOpt::detectFoldable(MachineInstr &Hi,
       HiOp1.getOffset() != 0)
     return false;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
   if (Hi.getOpcode() == RISCV::PseudoMovAddr) {
     // Most of the code should handle it correctly without modification by
     // setting Lo and Hi both point to PseudoMovAddr
@@ -123,12 +129,18 @@ bool RISCVMergeBaseOffsetOpt::detectFoldable(MachineInstr &Hi,
     if (Lo->getOpcode() != RISCV::ADDI)
       return false;
   }
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
 
   const MachineOperand &LoOp2 = Lo->getOperand(2);
 #if SIFIVE_CUSTOMIZATION
   if (Hi.getOpcode() == RISCV::LUI || Hi.getOpcode() == RISCV::PseudoMovAddr) {
 #endif // SIFIVE_CUSTOMIZATION
+=======
+
+  const MachineOperand &LoOp2 = Lo->getOperand(2);
+  if (Hi.getOpcode() == RISCV::LUI || Hi.getOpcode() == RISCV::PseudoMovAddr) {
+>>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
     if (LoOp2.getTargetFlags() != RISCVII::MO_LO ||
         !(LoOp2.isGlobal() || LoOp2.isCPI() || LoOp2.isBlockAddress()) ||
         LoOp2.getOffset() != 0)
@@ -498,14 +510,21 @@ bool RISCVMergeBaseOffsetOpt::foldIntoMemoryOps(MachineInstr &Hi,
 
   Hi.getOperand(1).setOffset(NewOffset);
   MachineOperand &ImmOp = Lo.getOperand(2);
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
   // Expand PseudoMovAddr into LUI
   if (Hi.getOpcode() == RISCV::PseudoMovAddr) {
     auto *TII = ST->getInstrInfo();
     Hi.setDesc(TII->get(RISCV::LUI));
     Hi.removeOperand(2);
   }
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+
+>>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
   if (Hi.getOpcode() != RISCV::AUIPC)
     ImmOp.setOffset(NewOffset);
 
@@ -541,12 +560,18 @@ bool RISCVMergeBaseOffsetOpt::foldIntoMemoryOps(MachineInstr &Hi,
     }
   }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
   // Prevent Lo (originally PseudoMovAddr, which is also pointed by Hi) from
   // being erased
   if (&Lo == &Hi)
     return true;
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 
   MRI->replaceRegWith(Lo.getOperand(0).getReg(), Hi.getOperand(0).getReg());
   Lo.eraseFromParent();

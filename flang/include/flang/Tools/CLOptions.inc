@@ -178,13 +178,12 @@ inline void addCodeGenRewritePass(mlir::PassManager &pm, bool preserveDeclare) {
   fir::CodeGenRewriteOptions options;
   options.preserveDeclare = preserveDeclare;
   addPassConditionally(pm, disableCodeGenRewrite,
-      [&]() { return fir::createFirCodeGenRewritePass(options); });
+      [&]() { return fir::createCodeGenRewrite(options); });
 }
 
 inline void addTargetRewritePass(mlir::PassManager &pm) {
-  addPassConditionally(pm, disableTargetRewrite, []() {
-    return fir::createFirTargetRewritePass(fir::TargetRewriteOptions{});
-  });
+  addPassConditionally(pm, disableTargetRewrite,
+      []() { return fir::createTargetRewritePass(); });
 }
 
 inline mlir::LLVM::DIEmissionKind getEmissionKind(
@@ -330,8 +329,8 @@ inline void createHLFIRToFIRPassPipeline(
   }
   pm.addPass(hlfir::createLowerHLFIROrderedAssignments());
   pm.addPass(hlfir::createLowerHLFIRIntrinsics());
-  pm.addPass(hlfir::createBufferizeHLFIRPass());
-  pm.addPass(hlfir::createConvertHLFIRtoFIRPass());
+  pm.addPass(hlfir::createBufferizeHLFIR());
+  pm.addPass(hlfir::createConvertHLFIRtoFIR());
 }
 
 /// Create a pass pipeline for handling certain OpenMP transformations needed
@@ -345,10 +344,11 @@ inline void createHLFIRToFIRPassPipeline(
 /// rather than the host device.
 inline void createOpenMPFIRPassPipeline(
     mlir::PassManager &pm, bool isTargetDevice) {
-  pm.addPass(fir::createOMPMapInfoFinalizationPass());
+  addNestedPassToAllTopLevelOperations(
+      pm, fir::createOMPMapInfoFinalizationPass);
   pm.addPass(fir::createOMPMarkDeclareTargetPass());
   if (isTargetDevice)
-    pm.addPass(fir::createOMPFunctionFilteringPass());
+    pm.addPass(fir::createOMPFunctionFiltering());
 }
 
 #if !defined(FLANG_EXCLUDE_CODEGEN)

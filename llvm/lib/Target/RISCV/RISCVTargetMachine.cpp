@@ -156,15 +156,18 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   initializeRISCVExpandPseudoPass(*PR);
   initializeRISCVFoldMasksPass(*PR);
   initializeRISCVInsertVSETVLIPass(*PR);
-  initializeRISCVCoalesceVSETVLIPass(*PR);
   initializeRISCVInsertReadWriteCSRPass(*PR);
   initializeRISCVInsertWriteVXRMPass(*PR);
+<<<<<<< HEAD
   initializeRISCVDAGToDAGISelPass(*PR);
 #if SIFIVE_CUSTOMIZATION
   initializeRISCVPeepholePass(*PR);
   initializeRISCVVLOptimizerPass(*PR);
   initializeRISCVMachineConstPropagationPass(*PR);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  initializeRISCVDAGToDAGISelLegacyPass(*PR);
+>>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
   initializeRISCVMoveMergePass(*PR);
   initializeRISCVPushPopOptPass(*PR);
 }
@@ -457,7 +460,6 @@ bool RISCVPassConfig::addRegAssignAndRewriteFast() {
   addPass(createRVVRegAllocPass(false));
   if (EnableVSETVLIAfterRVVRegAlloc)
     addPass(createRISCVInsertVSETVLIPass());
-  addPass(createRISCVCoalesceVSETVLIPass());
   if (TM->getOptLevel() != CodeGenOptLevel::None &&
       EnableRISCVDeadRegisterElimination)
     addPass(createRISCVDeadRegisterDefinitionsPass());
@@ -469,7 +471,6 @@ bool RISCVPassConfig::addRegAssignAndRewriteOptimized() {
   addPass(createVirtRegRewriter(false));
   if (EnableVSETVLIAfterRVVRegAlloc)
     addPass(createRISCVInsertVSETVLIPass());
-  addPass(createRISCVCoalesceVSETVLIPass());
   if (TM->getOptLevel() != CodeGenOptLevel::None &&
       EnableRISCVDeadRegisterElimination)
     addPass(createRISCVDeadRegisterDefinitionsPass());

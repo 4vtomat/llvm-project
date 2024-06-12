@@ -61,9 +61,19 @@
 #include "clang/Sema/Scope.h"
 #include "clang/Sema/ScopeInfo.h"
 #include "clang/Sema/Sema.h"
+#include "clang/Sema/SemaAMDGPU.h"
+#include "clang/Sema/SemaARM.h"
+#include "clang/Sema/SemaBPF.h"
+#include "clang/Sema/SemaHexagon.h"
 #include "clang/Sema/SemaInternal.h"
+#include "clang/Sema/SemaLoongArch.h"
+#include "clang/Sema/SemaMIPS.h"
+#include "clang/Sema/SemaNVPTX.h"
 #include "clang/Sema/SemaObjC.h"
+#include "clang/Sema/SemaPPC.h"
 #include "clang/Sema/SemaRISCV.h"
+#include "clang/Sema/SemaSystemZ.h"
+#include "clang/Sema/SemaWasm.h"
 #include "clang/Sema/SemaX86.h"
 #include "llvm/ADT/APFloat.h"
 #include "llvm/ADT/APInt.h"
@@ -2259,23 +2269,23 @@ bool Sema::CheckTSBuiltinFunctionCall(const TargetInfo &TI, unsigned BuiltinID,
   case llvm::Triple::armeb:
   case llvm::Triple::thumb:
   case llvm::Triple::thumbeb:
-    return CheckARMBuiltinFunctionCall(TI, BuiltinID, TheCall);
+    return ARM().CheckARMBuiltinFunctionCall(TI, BuiltinID, TheCall);
   case llvm::Triple::aarch64:
   case llvm::Triple::aarch64_32:
   case llvm::Triple::aarch64_be:
-    return CheckAArch64BuiltinFunctionCall(TI, BuiltinID, TheCall);
+    return ARM().CheckAArch64BuiltinFunctionCall(TI, BuiltinID, TheCall);
   case llvm::Triple::bpfeb:
   case llvm::Triple::bpfel:
-    return CheckBPFBuiltinFunctionCall(BuiltinID, TheCall);
+    return BPF().CheckBPFBuiltinFunctionCall(BuiltinID, TheCall);
   case llvm::Triple::hexagon:
-    return CheckHexagonBuiltinFunctionCall(BuiltinID, TheCall);
+    return Hexagon().CheckHexagonBuiltinFunctionCall(BuiltinID, TheCall);
   case llvm::Triple::mips:
   case llvm::Triple::mipsel:
   case llvm::Triple::mips64:
   case llvm::Triple::mips64el:
-    return CheckMipsBuiltinFunctionCall(TI, BuiltinID, TheCall);
+    return MIPS().CheckMipsBuiltinFunctionCall(TI, BuiltinID, TheCall);
   case llvm::Triple::systemz:
-    return CheckSystemZBuiltinFunctionCall(BuiltinID, TheCall);
+    return SystemZ().CheckSystemZBuiltinFunctionCall(BuiltinID, TheCall);
   case llvm::Triple::x86:
   case llvm::Triple::x86_64:
     return X86().CheckBuiltinFunctionCall(TI, BuiltinID, TheCall);
@@ -2283,21 +2293,22 @@ bool Sema::CheckTSBuiltinFunctionCall(const TargetInfo &TI, unsigned BuiltinID,
   case llvm::Triple::ppcle:
   case llvm::Triple::ppc64:
   case llvm::Triple::ppc64le:
-    return CheckPPCBuiltinFunctionCall(TI, BuiltinID, TheCall);
+    return PPC().CheckPPCBuiltinFunctionCall(TI, BuiltinID, TheCall);
   case llvm::Triple::amdgcn:
-    return CheckAMDGCNBuiltinFunctionCall(BuiltinID, TheCall);
+    return AMDGPU().CheckAMDGCNBuiltinFunctionCall(BuiltinID, TheCall);
   case llvm::Triple::riscv32:
   case llvm::Triple::riscv64:
     return RISCV().CheckBuiltinFunctionCall(TI, BuiltinID, TheCall);
   case llvm::Triple::loongarch32:
   case llvm::Triple::loongarch64:
-    return CheckLoongArchBuiltinFunctionCall(TI, BuiltinID, TheCall);
+    return LoongArch().CheckLoongArchBuiltinFunctionCall(TI, BuiltinID,
+                                                         TheCall);
   case llvm::Triple::wasm32:
   case llvm::Triple::wasm64:
-    return CheckWebAssemblyBuiltinFunctionCall(TI, BuiltinID, TheCall);
+    return Wasm().CheckWebAssemblyBuiltinFunctionCall(TI, BuiltinID, TheCall);
   case llvm::Triple::nvptx:
   case llvm::Triple::nvptx64:
-    return CheckNVPTXBuiltinFunctionCall(TI, BuiltinID, TheCall);
+    return NVPTX().CheckNVPTXBuiltinFunctionCall(TI, BuiltinID, TheCall);
   }
 }
 
@@ -3287,6 +3298,7 @@ Sema::CheckBuiltinFunctionCall(FunctionDecl *FDecl, unsigned BuiltinID,
   return TheCallResult;
 }
 
+<<<<<<< HEAD
 // Get the valid immediate range for the specified NEON type code.
 static unsigned RFT(unsigned t, bool shift = false, bool ForceQuad = false) {
   NeonTypeFlags Type(t);
@@ -5284,6 +5296,8 @@ static bool isPPC_64Builtin(unsigned BuiltinID) {
   return false;
 }
 
+=======
+>>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 /// Returns true if the argument consists of one contiguous run of 1s with any
 /// number of 0s on either side. The 1s are allowed to wrap from LSB to MSB, so
 /// 0x000FFF0, 0x0000FFFF, 0xFF0000FF, 0x0 are all runs. 0x0F0F0000 is not,
@@ -5306,182 +5320,6 @@ bool Sema::ValueIsRunOfOnes(CallExpr *TheCall, unsigned ArgNum) {
   return Diag(TheCall->getBeginLoc(),
               diag::err_argument_not_contiguous_bit_field)
          << ArgNum << Arg->getSourceRange();
-}
-
-bool Sema::CheckPPCBuiltinFunctionCall(const TargetInfo &TI, unsigned BuiltinID,
-                                       CallExpr *TheCall) {
-  unsigned i = 0, l = 0, u = 0;
-  bool IsTarget64Bit = TI.getTypeWidth(TI.getIntPtrType()) == 64;
-  llvm::APSInt Result;
-
-  if (isPPC_64Builtin(BuiltinID) && !IsTarget64Bit)
-    return Diag(TheCall->getBeginLoc(), diag::err_64_bit_builtin_32_bit_tgt)
-           << TheCall->getSourceRange();
-
-  switch (BuiltinID) {
-  default: return false;
-  case PPC::BI__builtin_altivec_crypto_vshasigmaw:
-  case PPC::BI__builtin_altivec_crypto_vshasigmad:
-    return BuiltinConstantArgRange(TheCall, 1, 0, 1) ||
-           BuiltinConstantArgRange(TheCall, 2, 0, 15);
-  case PPC::BI__builtin_altivec_dss:
-    return BuiltinConstantArgRange(TheCall, 0, 0, 3);
-  case PPC::BI__builtin_tbegin:
-  case PPC::BI__builtin_tend:
-    return BuiltinConstantArgRange(TheCall, 0, 0, 1);
-  case PPC::BI__builtin_tsr:
-    return BuiltinConstantArgRange(TheCall, 0, 0, 7);
-  case PPC::BI__builtin_tabortwc:
-  case PPC::BI__builtin_tabortdc:
-    return BuiltinConstantArgRange(TheCall, 0, 0, 31);
-  case PPC::BI__builtin_tabortwci:
-  case PPC::BI__builtin_tabortdci:
-    return BuiltinConstantArgRange(TheCall, 0, 0, 31) ||
-           BuiltinConstantArgRange(TheCall, 2, 0, 31);
-  // According to GCC 'Basic PowerPC Built-in Functions Available on ISA 2.05',
-  // __builtin_(un)pack_longdouble are available only if long double uses IBM
-  // extended double representation.
-  case PPC::BI__builtin_unpack_longdouble:
-    if (BuiltinConstantArgRange(TheCall, 1, 0, 1))
-      return true;
-    [[fallthrough]];
-  case PPC::BI__builtin_pack_longdouble:
-    if (&TI.getLongDoubleFormat() != &llvm::APFloat::PPCDoubleDouble())
-      return Diag(TheCall->getBeginLoc(), diag::err_ppc_builtin_requires_abi)
-             << "ibmlongdouble";
-    return false;
-  case PPC::BI__builtin_altivec_dst:
-  case PPC::BI__builtin_altivec_dstt:
-  case PPC::BI__builtin_altivec_dstst:
-  case PPC::BI__builtin_altivec_dststt:
-    return BuiltinConstantArgRange(TheCall, 2, 0, 3);
-  case PPC::BI__builtin_vsx_xxpermdi:
-  case PPC::BI__builtin_vsx_xxsldwi:
-    return BuiltinVSX(TheCall);
-  case PPC::BI__builtin_unpack_vector_int128:
-    return BuiltinConstantArgRange(TheCall, 1, 0, 1);
-  case PPC::BI__builtin_altivec_vgnb:
-    return BuiltinConstantArgRange(TheCall, 1, 2, 7);
-  case PPC::BI__builtin_vsx_xxeval:
-    return BuiltinConstantArgRange(TheCall, 3, 0, 255);
-  case PPC::BI__builtin_altivec_vsldbi:
-    return BuiltinConstantArgRange(TheCall, 2, 0, 7);
-  case PPC::BI__builtin_altivec_vsrdbi:
-    return BuiltinConstantArgRange(TheCall, 2, 0, 7);
-  case PPC::BI__builtin_vsx_xxpermx:
-    return BuiltinConstantArgRange(TheCall, 3, 0, 7);
-  case PPC::BI__builtin_ppc_tw:
-  case PPC::BI__builtin_ppc_tdw:
-    return BuiltinConstantArgRange(TheCall, 2, 1, 31);
-  case PPC::BI__builtin_ppc_cmprb:
-    return BuiltinConstantArgRange(TheCall, 0, 0, 1);
-  // For __rlwnm, __rlwimi and __rldimi, the last parameter mask must
-  // be a constant that represents a contiguous bit field.
-  case PPC::BI__builtin_ppc_rlwnm:
-    return ValueIsRunOfOnes(TheCall, 2);
-  case PPC::BI__builtin_ppc_rlwimi:
-    return BuiltinConstantArgRange(TheCall, 2, 0, 31) ||
-           ValueIsRunOfOnes(TheCall, 3);
-  case PPC::BI__builtin_ppc_rldimi:
-    return BuiltinConstantArgRange(TheCall, 2, 0, 63) ||
-           ValueIsRunOfOnes(TheCall, 3);
-  case PPC::BI__builtin_ppc_addex: {
-    if (BuiltinConstantArgRange(TheCall, 2, 0, 3))
-      return true;
-    // Output warning for reserved values 1 to 3.
-    int ArgValue =
-        TheCall->getArg(2)->getIntegerConstantExpr(Context)->getSExtValue();
-    if (ArgValue != 0)
-      Diag(TheCall->getBeginLoc(), diag::warn_argument_undefined_behaviour)
-          << ArgValue;
-    return false;
-  }
-  case PPC::BI__builtin_ppc_mtfsb0:
-  case PPC::BI__builtin_ppc_mtfsb1:
-    return BuiltinConstantArgRange(TheCall, 0, 0, 31);
-  case PPC::BI__builtin_ppc_mtfsf:
-    return BuiltinConstantArgRange(TheCall, 0, 0, 255);
-  case PPC::BI__builtin_ppc_mtfsfi:
-    return BuiltinConstantArgRange(TheCall, 0, 0, 7) ||
-           BuiltinConstantArgRange(TheCall, 1, 0, 15);
-  case PPC::BI__builtin_ppc_alignx:
-    return BuiltinConstantArgPower2(TheCall, 0);
-  case PPC::BI__builtin_ppc_rdlam:
-    return ValueIsRunOfOnes(TheCall, 2);
-  case PPC::BI__builtin_vsx_ldrmb:
-  case PPC::BI__builtin_vsx_strmb:
-    return BuiltinConstantArgRange(TheCall, 1, 1, 16);
-  case PPC::BI__builtin_altivec_vcntmbb:
-  case PPC::BI__builtin_altivec_vcntmbh:
-  case PPC::BI__builtin_altivec_vcntmbw:
-  case PPC::BI__builtin_altivec_vcntmbd:
-    return BuiltinConstantArgRange(TheCall, 1, 0, 1);
-  case PPC::BI__builtin_vsx_xxgenpcvbm:
-  case PPC::BI__builtin_vsx_xxgenpcvhm:
-  case PPC::BI__builtin_vsx_xxgenpcvwm:
-  case PPC::BI__builtin_vsx_xxgenpcvdm:
-    return BuiltinConstantArgRange(TheCall, 1, 0, 3);
-  case PPC::BI__builtin_ppc_test_data_class: {
-    // Check if the first argument of the __builtin_ppc_test_data_class call is
-    // valid. The argument must be 'float' or 'double' or '__float128'.
-    QualType ArgType = TheCall->getArg(0)->getType();
-    if (ArgType != QualType(Context.FloatTy) &&
-        ArgType != QualType(Context.DoubleTy) &&
-        ArgType != QualType(Context.Float128Ty))
-      return Diag(TheCall->getBeginLoc(),
-                  diag::err_ppc_invalid_test_data_class_type);
-    return BuiltinConstantArgRange(TheCall, 1, 0, 127);
-  }
-  case PPC::BI__builtin_ppc_maxfe:
-  case PPC::BI__builtin_ppc_minfe:
-  case PPC::BI__builtin_ppc_maxfl:
-  case PPC::BI__builtin_ppc_minfl:
-  case PPC::BI__builtin_ppc_maxfs:
-  case PPC::BI__builtin_ppc_minfs: {
-    if (Context.getTargetInfo().getTriple().isOSAIX() &&
-        (BuiltinID == PPC::BI__builtin_ppc_maxfe ||
-         BuiltinID == PPC::BI__builtin_ppc_minfe))
-      return Diag(TheCall->getBeginLoc(), diag::err_target_unsupported_type)
-             << "builtin" << true << 128 << QualType(Context.LongDoubleTy)
-             << false << Context.getTargetInfo().getTriple().str();
-    // Argument type should be exact.
-    QualType ArgType = QualType(Context.LongDoubleTy);
-    if (BuiltinID == PPC::BI__builtin_ppc_maxfl ||
-        BuiltinID == PPC::BI__builtin_ppc_minfl)
-      ArgType = QualType(Context.DoubleTy);
-    else if (BuiltinID == PPC::BI__builtin_ppc_maxfs ||
-             BuiltinID == PPC::BI__builtin_ppc_minfs)
-      ArgType = QualType(Context.FloatTy);
-    for (unsigned I = 0, E = TheCall->getNumArgs(); I < E; ++I)
-      if (TheCall->getArg(I)->getType() != ArgType)
-        return Diag(TheCall->getBeginLoc(),
-                    diag::err_typecheck_convert_incompatible)
-               << TheCall->getArg(I)->getType() << ArgType << 1 << 0 << 0;
-    return false;
-  }
-#define CUSTOM_BUILTIN(Name, Intr, Types, Acc, Feature)                        \
-  case PPC::BI__builtin_##Name:                                                \
-    return BuiltinPPCMMACall(TheCall, BuiltinID, Types);
-#include "clang/Basic/BuiltinsPPC.def"
-  }
-  return BuiltinConstantArgRange(TheCall, i, l, u);
-}
-
-// Check if the given type is a non-pointer PPC MMA type. This function is used
-// in Sema to prevent invalid uses of restricted PPC MMA types.
-bool Sema::CheckPPCMMAType(QualType Type, SourceLocation TypeLoc) {
-  if (Type->isPointerType() || Type->isArrayType())
-    return false;
-
-  QualType CoreType = Type.getCanonicalType().getUnqualifiedType();
-#define PPC_VECTOR_TYPE(Name, Id, Size) || CoreType == Context.Id##Ty
-  if (false
-#include "clang/Basic/PPCTypes.def"
-     ) {
-    Diag(TypeLoc, diag::err_ppc_invalid_use_mma_type);
-    return true;
-  }
-  return false;
 }
 
 // Helper function for CheckHLSLBuiltinFunctionCall
@@ -5703,201 +5541,6 @@ bool Sema::CheckHLSLBuiltinFunctionCall(unsigned BuiltinID, CallExpr *TheCall) {
     break;
   }
   }
-  return false;
-}
-
-bool Sema::CheckAMDGCNBuiltinFunctionCall(unsigned BuiltinID,
-                                          CallExpr *TheCall) {
-  // position of memory order and scope arguments in the builtin
-  unsigned OrderIndex, ScopeIndex;
-  switch (BuiltinID) {
-  case AMDGPU::BI__builtin_amdgcn_global_load_lds: {
-    constexpr const int SizeIdx = 2;
-    llvm::APSInt Size;
-    Expr *ArgExpr = TheCall->getArg(SizeIdx);
-    ExprResult R = VerifyIntegerConstantExpression(ArgExpr, &Size);
-    if (R.isInvalid())
-      return true;
-    switch (Size.getSExtValue()) {
-    case 1:
-    case 2:
-    case 4:
-      return false;
-    default:
-      Diag(ArgExpr->getExprLoc(),
-           diag::err_amdgcn_global_load_lds_size_invalid_value)
-          << ArgExpr->getSourceRange();
-      Diag(ArgExpr->getExprLoc(),
-           diag::note_amdgcn_global_load_lds_size_valid_value)
-          << ArgExpr->getSourceRange();
-      return true;
-    }
-  }
-  case AMDGPU::BI__builtin_amdgcn_get_fpenv:
-  case AMDGPU::BI__builtin_amdgcn_set_fpenv:
-    return false;
-  case AMDGPU::BI__builtin_amdgcn_atomic_inc32:
-  case AMDGPU::BI__builtin_amdgcn_atomic_inc64:
-  case AMDGPU::BI__builtin_amdgcn_atomic_dec32:
-  case AMDGPU::BI__builtin_amdgcn_atomic_dec64:
-    OrderIndex = 2;
-    ScopeIndex = 3;
-    break;
-  case AMDGPU::BI__builtin_amdgcn_fence:
-    OrderIndex = 0;
-    ScopeIndex = 1;
-    break;
-  default:
-    return false;
-  }
-
-  ExprResult Arg = TheCall->getArg(OrderIndex);
-  auto ArgExpr = Arg.get();
-  Expr::EvalResult ArgResult;
-
-  if (!ArgExpr->EvaluateAsInt(ArgResult, Context))
-    return Diag(ArgExpr->getExprLoc(), diag::err_typecheck_expect_int)
-           << ArgExpr->getType();
-  auto Ord = ArgResult.Val.getInt().getZExtValue();
-
-  // Check validity of memory ordering as per C11 / C++11's memody model.
-  // Only fence needs check. Atomic dec/inc allow all memory orders.
-  if (!llvm::isValidAtomicOrderingCABI(Ord))
-    return Diag(ArgExpr->getBeginLoc(),
-                diag::warn_atomic_op_has_invalid_memory_order)
-           << 0 << ArgExpr->getSourceRange();
-  switch (static_cast<llvm::AtomicOrderingCABI>(Ord)) {
-  case llvm::AtomicOrderingCABI::relaxed:
-  case llvm::AtomicOrderingCABI::consume:
-    if (BuiltinID == AMDGPU::BI__builtin_amdgcn_fence)
-      return Diag(ArgExpr->getBeginLoc(),
-                  diag::warn_atomic_op_has_invalid_memory_order)
-             << 0 << ArgExpr->getSourceRange();
-    break;
-  case llvm::AtomicOrderingCABI::acquire:
-  case llvm::AtomicOrderingCABI::release:
-  case llvm::AtomicOrderingCABI::acq_rel:
-  case llvm::AtomicOrderingCABI::seq_cst:
-    break;
-  }
-
-  Arg = TheCall->getArg(ScopeIndex);
-  ArgExpr = Arg.get();
-  Expr::EvalResult ArgResult1;
-  // Check that sync scope is a constant literal
-  if (!ArgExpr->EvaluateAsConstantExpr(ArgResult1, Context))
-    return Diag(ArgExpr->getExprLoc(), diag::err_expr_not_string_literal)
-           << ArgExpr->getType();
-
-  return false;
-}
-
-bool Sema::CheckSystemZBuiltinFunctionCall(unsigned BuiltinID,
-                                           CallExpr *TheCall) {
-  if (BuiltinID == SystemZ::BI__builtin_tabort) {
-    Expr *Arg = TheCall->getArg(0);
-    if (std::optional<llvm::APSInt> AbortCode =
-            Arg->getIntegerConstantExpr(Context))
-      if (AbortCode->getSExtValue() >= 0 && AbortCode->getSExtValue() < 256)
-        return Diag(Arg->getBeginLoc(), diag::err_systemz_invalid_tabort_code)
-               << Arg->getSourceRange();
-  }
-
-  // For intrinsics which take an immediate value as part of the instruction,
-  // range check them here.
-  unsigned i = 0, l = 0, u = 0;
-  switch (BuiltinID) {
-  default: return false;
-  case SystemZ::BI__builtin_s390_lcbb: i = 1; l = 0; u = 15; break;
-  case SystemZ::BI__builtin_s390_verimb:
-  case SystemZ::BI__builtin_s390_verimh:
-  case SystemZ::BI__builtin_s390_verimf:
-  case SystemZ::BI__builtin_s390_verimg: i = 3; l = 0; u = 255; break;
-  case SystemZ::BI__builtin_s390_vfaeb:
-  case SystemZ::BI__builtin_s390_vfaeh:
-  case SystemZ::BI__builtin_s390_vfaef:
-  case SystemZ::BI__builtin_s390_vfaebs:
-  case SystemZ::BI__builtin_s390_vfaehs:
-  case SystemZ::BI__builtin_s390_vfaefs:
-  case SystemZ::BI__builtin_s390_vfaezb:
-  case SystemZ::BI__builtin_s390_vfaezh:
-  case SystemZ::BI__builtin_s390_vfaezf:
-  case SystemZ::BI__builtin_s390_vfaezbs:
-  case SystemZ::BI__builtin_s390_vfaezhs:
-  case SystemZ::BI__builtin_s390_vfaezfs: i = 2; l = 0; u = 15; break;
-  case SystemZ::BI__builtin_s390_vfisb:
-  case SystemZ::BI__builtin_s390_vfidb:
-    return BuiltinConstantArgRange(TheCall, 1, 0, 15) ||
-           BuiltinConstantArgRange(TheCall, 2, 0, 15);
-  case SystemZ::BI__builtin_s390_vftcisb:
-  case SystemZ::BI__builtin_s390_vftcidb: i = 1; l = 0; u = 4095; break;
-  case SystemZ::BI__builtin_s390_vlbb: i = 1; l = 0; u = 15; break;
-  case SystemZ::BI__builtin_s390_vpdi: i = 2; l = 0; u = 15; break;
-  case SystemZ::BI__builtin_s390_vsldb: i = 2; l = 0; u = 15; break;
-  case SystemZ::BI__builtin_s390_vstrcb:
-  case SystemZ::BI__builtin_s390_vstrch:
-  case SystemZ::BI__builtin_s390_vstrcf:
-  case SystemZ::BI__builtin_s390_vstrczb:
-  case SystemZ::BI__builtin_s390_vstrczh:
-  case SystemZ::BI__builtin_s390_vstrczf:
-  case SystemZ::BI__builtin_s390_vstrcbs:
-  case SystemZ::BI__builtin_s390_vstrchs:
-  case SystemZ::BI__builtin_s390_vstrcfs:
-  case SystemZ::BI__builtin_s390_vstrczbs:
-  case SystemZ::BI__builtin_s390_vstrczhs:
-  case SystemZ::BI__builtin_s390_vstrczfs: i = 3; l = 0; u = 15; break;
-  case SystemZ::BI__builtin_s390_vmslg: i = 3; l = 0; u = 15; break;
-  case SystemZ::BI__builtin_s390_vfminsb:
-  case SystemZ::BI__builtin_s390_vfmaxsb:
-  case SystemZ::BI__builtin_s390_vfmindb:
-  case SystemZ::BI__builtin_s390_vfmaxdb: i = 2; l = 0; u = 15; break;
-  case SystemZ::BI__builtin_s390_vsld: i = 2; l = 0; u = 7; break;
-  case SystemZ::BI__builtin_s390_vsrd: i = 2; l = 0; u = 7; break;
-  case SystemZ::BI__builtin_s390_vclfnhs:
-  case SystemZ::BI__builtin_s390_vclfnls:
-  case SystemZ::BI__builtin_s390_vcfn:
-  case SystemZ::BI__builtin_s390_vcnf: i = 1; l = 0; u = 15; break;
-  case SystemZ::BI__builtin_s390_vcrnfs: i = 2; l = 0; u = 15; break;
-  }
-  return BuiltinConstantArgRange(TheCall, i, l, u);
-}
-
-bool Sema::CheckWebAssemblyBuiltinFunctionCall(const TargetInfo &TI,
-                                               unsigned BuiltinID,
-                                               CallExpr *TheCall) {
-  switch (BuiltinID) {
-  case WebAssembly::BI__builtin_wasm_ref_null_extern:
-    return BuiltinWasmRefNullExtern(TheCall);
-  case WebAssembly::BI__builtin_wasm_ref_null_func:
-    return BuiltinWasmRefNullFunc(TheCall);
-  case WebAssembly::BI__builtin_wasm_table_get:
-    return BuiltinWasmTableGet(TheCall);
-  case WebAssembly::BI__builtin_wasm_table_set:
-    return BuiltinWasmTableSet(TheCall);
-  case WebAssembly::BI__builtin_wasm_table_size:
-    return BuiltinWasmTableSize(TheCall);
-  case WebAssembly::BI__builtin_wasm_table_grow:
-    return BuiltinWasmTableGrow(TheCall);
-  case WebAssembly::BI__builtin_wasm_table_fill:
-    return BuiltinWasmTableFill(TheCall);
-  case WebAssembly::BI__builtin_wasm_table_copy:
-    return BuiltinWasmTableCopy(TheCall);
-  }
-
-  return false;
-}
-
-bool Sema::CheckNVPTXBuiltinFunctionCall(const TargetInfo &TI,
-                                         unsigned BuiltinID,
-                                         CallExpr *TheCall) {
-  switch (BuiltinID) {
-  case NVPTX::BI__nvvm_cp_async_ca_shared_global_4:
-  case NVPTX::BI__nvvm_cp_async_ca_shared_global_8:
-  case NVPTX::BI__nvvm_cp_async_ca_shared_global_16:
-  case NVPTX::BI__nvvm_cp_async_cg_shared_global_16:
-    return checkArgCountAtMost(TheCall, 3);
-  }
-
   return false;
 }
 
@@ -6128,40 +5771,6 @@ static void CheckNonNullArguments(Sema &S,
   }
 }
 
-// 16 byte ByVal alignment not due to a vector member is not honoured by XL
-// on AIX. Emit a warning here that users are generating binary incompatible
-// code to be safe.
-// Here we try to get information about the alignment of the struct member
-// from the struct passed to the caller function. We only warn when the struct
-// is passed byval, hence the series of checks and early returns if we are a not
-// passing a struct byval.
-void Sema::checkAIXMemberAlignment(SourceLocation Loc, const Expr *Arg) {
-  const auto *ICE = dyn_cast<ImplicitCastExpr>(Arg->IgnoreParens());
-  if (!ICE)
-    return;
-
-  const auto *DR = dyn_cast<DeclRefExpr>(ICE->getSubExpr());
-  if (!DR)
-    return;
-
-  const auto *PD = dyn_cast<ParmVarDecl>(DR->getDecl());
-  if (!PD || !PD->getType()->isRecordType())
-    return;
-
-  QualType ArgType = Arg->getType();
-  for (const FieldDecl *FD :
-       ArgType->castAs<RecordType>()->getDecl()->fields()) {
-    if (const auto *AA = FD->getAttr<AlignedAttr>()) {
-      CharUnits Alignment =
-          Context.toCharUnitsFromBits(AA->getAlignment(Context));
-      if (Alignment.getQuantity() == 16) {
-        Diag(FD->getLocation(), diag::warn_not_xl_compatible) << FD;
-        Diag(Loc, diag::note_misaligned_member_used_here) << PD;
-      }
-    }
-  }
-}
-
 /// Warn if a pointer or reference argument passed to a function points to an
 /// object that is less aligned than the parameter. This can happen when
 /// creating a typedef with a lower alignment than the original type and then
@@ -6278,7 +5887,7 @@ void Sema::checkCall(NamedDecl *FDecl, const FunctionProtoType *Proto,
             FDecl->hasLinkage() &&
             FDecl->getFormalLinkage() != Linkage::Internal &&
             CallType == VariadicDoesNotApply)
-          checkAIXMemberAlignment((Arg->getExprLoc()), Arg);
+          PPC().checkAIXMemberAlignment((Arg->getExprLoc()), Arg);
 
         QualType ParamTy = Proto->getParamType(ArgIdx);
         if (ParamTy->isSizelessVectorType())
@@ -6314,10 +5923,10 @@ void Sema::checkCall(NamedDecl *FDecl, const FunctionProtoType *Proto,
       bool IsCalleeStreamingCompatible =
           ExtInfo.AArch64SMEAttributes &
           FunctionType::SME_PStateSMCompatibleMask;
-      ArmStreamingType CallerFnType = getArmStreamingFnType(CallerFD);
+      SemaARM::ArmStreamingType CallerFnType = getArmStreamingFnType(CallerFD);
       if (!IsCalleeStreamingCompatible &&
-          (CallerFnType == ArmStreamingCompatible ||
-           ((CallerFnType == ArmStreaming) ^ IsCalleeStreaming))) {
+          (CallerFnType == SemaARM::ArmStreamingCompatible ||
+           ((CallerFnType == SemaARM::ArmStreaming) ^ IsCalleeStreaming))) {
         if (IsScalableArg)
           Diag(Loc, diag::warn_sme_streaming_pass_return_vl_to_non_streaming)
               << /*IsArg=*/true;
@@ -7177,35 +6786,6 @@ static bool checkBuiltinArgument(Sema &S, CallExpr *E, unsigned ArgIndex) {
     return true;
 
   E->setArg(ArgIndex, Arg.get());
-  return false;
-}
-
-bool Sema::BuiltinWasmRefNullExtern(CallExpr *TheCall) {
-  if (TheCall->getNumArgs() != 0)
-    return true;
-
-  TheCall->setType(Context.getWebAssemblyExternrefType());
-
-  return false;
-}
-
-bool Sema::BuiltinWasmRefNullFunc(CallExpr *TheCall) {
-  if (TheCall->getNumArgs() != 0) {
-    Diag(TheCall->getBeginLoc(), diag::err_typecheck_call_too_many_args)
-        << 0 /*function call*/ << /*expected*/ 0 << TheCall->getNumArgs()
-        << /*is non object*/ 0;
-    return true;
-  }
-
-  // This custom type checking code ensures that the nodes are as expected
-  // in order to later on generate the necessary builtin.
-  QualType Pointee = Context.getFunctionType(Context.VoidTy, {}, {});
-  QualType Type = Context.getPointerType(Pointee);
-  Pointee = Context.getAddrSpaceQualType(Pointee, LangAS::wasm_funcref);
-  Type = Context.getAttributedType(attr::WebAssemblyFuncref, Type,
-                                   Context.getPointerType(Pointee));
-  TheCall->setType(Type);
-
   return false;
 }
 
@@ -8084,55 +7664,6 @@ bool Sema::BuiltinComplex(CallExpr *TheCall) {
   return false;
 }
 
-// Customized Sema Checking for VSX builtins that have the following signature:
-// vector [...] builtinName(vector [...], vector [...], const int);
-// Which takes the same type of vectors (any legal vector type) for the first
-// two arguments and takes compile time constant for the third argument.
-// Example builtins are :
-// vector double vec_xxpermdi(vector double, vector double, int);
-// vector short vec_xxsldwi(vector short, vector short, int);
-bool Sema::BuiltinVSX(CallExpr *TheCall) {
-  unsigned ExpectedNumArgs = 3;
-  if (checkArgCount(TheCall, ExpectedNumArgs))
-    return true;
-
-  // Check the third argument is a compile time constant
-  if (!TheCall->getArg(2)->isIntegerConstantExpr(Context))
-    return Diag(TheCall->getBeginLoc(),
-                diag::err_vsx_builtin_nonconstant_argument)
-           << 3 /* argument index */ << TheCall->getDirectCallee()
-           << SourceRange(TheCall->getArg(2)->getBeginLoc(),
-                          TheCall->getArg(2)->getEndLoc());
-
-  QualType Arg1Ty = TheCall->getArg(0)->getType();
-  QualType Arg2Ty = TheCall->getArg(1)->getType();
-
-  // Check the type of argument 1 and argument 2 are vectors.
-  SourceLocation BuiltinLoc = TheCall->getBeginLoc();
-  if ((!Arg1Ty->isVectorType() && !Arg1Ty->isDependentType()) ||
-      (!Arg2Ty->isVectorType() && !Arg2Ty->isDependentType())) {
-    return Diag(BuiltinLoc, diag::err_vec_builtin_non_vector)
-           << TheCall->getDirectCallee() << /*isMorethantwoArgs*/ false
-           << SourceRange(TheCall->getArg(0)->getBeginLoc(),
-                          TheCall->getArg(1)->getEndLoc());
-  }
-
-  // Check the first two arguments are the same type.
-  if (!Context.hasSameUnqualifiedType(Arg1Ty, Arg2Ty)) {
-    return Diag(BuiltinLoc, diag::err_vec_builtin_incompatible_vector)
-           << TheCall->getDirectCallee() << /*isMorethantwoArgs*/ false
-           << SourceRange(TheCall->getArg(0)->getBeginLoc(),
-                          TheCall->getArg(1)->getEndLoc());
-  }
-
-  // When default clang type checking is turned off and the customized type
-  // checking is used, the returning type of the function must be explicitly
-  // set. Otherwise it is _Bool by default.
-  TheCall->setType(Arg1Ty);
-
-  return false;
-}
-
 /// BuiltinShuffleVector - Handle __builtin_shufflevector.
 // This is declared to take (...), so we have to check everything.
 ExprResult Sema::BuiltinShuffleVector(CallExpr *TheCall) {
@@ -8648,360 +8179,6 @@ bool Sema::BuiltinConstantArgShiftedByteOrXXFF(CallExpr *TheCall, int ArgNum,
   return Diag(TheCall->getBeginLoc(),
               diag::err_argument_not_shifted_byte_or_xxff)
          << Arg->getSourceRange();
-}
-
-/// BuiltinARMMemoryTaggingCall - Handle calls of memory tagging extensions
-bool Sema::BuiltinARMMemoryTaggingCall(unsigned BuiltinID, CallExpr *TheCall) {
-  if (BuiltinID == AArch64::BI__builtin_arm_irg) {
-    if (checkArgCount(TheCall, 2))
-      return true;
-    Expr *Arg0 = TheCall->getArg(0);
-    Expr *Arg1 = TheCall->getArg(1);
-
-    ExprResult FirstArg = DefaultFunctionArrayLvalueConversion(Arg0);
-    if (FirstArg.isInvalid())
-      return true;
-    QualType FirstArgType = FirstArg.get()->getType();
-    if (!FirstArgType->isAnyPointerType())
-      return Diag(TheCall->getBeginLoc(), diag::err_memtag_arg_must_be_pointer)
-               << "first" << FirstArgType << Arg0->getSourceRange();
-    TheCall->setArg(0, FirstArg.get());
-
-    ExprResult SecArg = DefaultLvalueConversion(Arg1);
-    if (SecArg.isInvalid())
-      return true;
-    QualType SecArgType = SecArg.get()->getType();
-    if (!SecArgType->isIntegerType())
-      return Diag(TheCall->getBeginLoc(), diag::err_memtag_arg_must_be_integer)
-               << "second" << SecArgType << Arg1->getSourceRange();
-
-    // Derive the return type from the pointer argument.
-    TheCall->setType(FirstArgType);
-    return false;
-  }
-
-  if (BuiltinID == AArch64::BI__builtin_arm_addg) {
-    if (checkArgCount(TheCall, 2))
-      return true;
-
-    Expr *Arg0 = TheCall->getArg(0);
-    ExprResult FirstArg = DefaultFunctionArrayLvalueConversion(Arg0);
-    if (FirstArg.isInvalid())
-      return true;
-    QualType FirstArgType = FirstArg.get()->getType();
-    if (!FirstArgType->isAnyPointerType())
-      return Diag(TheCall->getBeginLoc(), diag::err_memtag_arg_must_be_pointer)
-               << "first" << FirstArgType << Arg0->getSourceRange();
-    TheCall->setArg(0, FirstArg.get());
-
-    // Derive the return type from the pointer argument.
-    TheCall->setType(FirstArgType);
-
-    // Second arg must be an constant in range [0,15]
-    return BuiltinConstantArgRange(TheCall, 1, 0, 15);
-  }
-
-  if (BuiltinID == AArch64::BI__builtin_arm_gmi) {
-    if (checkArgCount(TheCall, 2))
-      return true;
-    Expr *Arg0 = TheCall->getArg(0);
-    Expr *Arg1 = TheCall->getArg(1);
-
-    ExprResult FirstArg = DefaultFunctionArrayLvalueConversion(Arg0);
-    if (FirstArg.isInvalid())
-      return true;
-    QualType FirstArgType = FirstArg.get()->getType();
-    if (!FirstArgType->isAnyPointerType())
-      return Diag(TheCall->getBeginLoc(), diag::err_memtag_arg_must_be_pointer)
-               << "first" << FirstArgType << Arg0->getSourceRange();
-
-    QualType SecArgType = Arg1->getType();
-    if (!SecArgType->isIntegerType())
-      return Diag(TheCall->getBeginLoc(), diag::err_memtag_arg_must_be_integer)
-               << "second" << SecArgType << Arg1->getSourceRange();
-    TheCall->setType(Context.IntTy);
-    return false;
-  }
-
-  if (BuiltinID == AArch64::BI__builtin_arm_ldg ||
-      BuiltinID == AArch64::BI__builtin_arm_stg) {
-    if (checkArgCount(TheCall, 1))
-      return true;
-    Expr *Arg0 = TheCall->getArg(0);
-    ExprResult FirstArg = DefaultFunctionArrayLvalueConversion(Arg0);
-    if (FirstArg.isInvalid())
-      return true;
-
-    QualType FirstArgType = FirstArg.get()->getType();
-    if (!FirstArgType->isAnyPointerType())
-      return Diag(TheCall->getBeginLoc(), diag::err_memtag_arg_must_be_pointer)
-               << "first" << FirstArgType << Arg0->getSourceRange();
-    TheCall->setArg(0, FirstArg.get());
-
-    // Derive the return type from the pointer argument.
-    if (BuiltinID == AArch64::BI__builtin_arm_ldg)
-      TheCall->setType(FirstArgType);
-    return false;
-  }
-
-  if (BuiltinID == AArch64::BI__builtin_arm_subp) {
-    Expr *ArgA = TheCall->getArg(0);
-    Expr *ArgB = TheCall->getArg(1);
-
-    ExprResult ArgExprA = DefaultFunctionArrayLvalueConversion(ArgA);
-    ExprResult ArgExprB = DefaultFunctionArrayLvalueConversion(ArgB);
-
-    if (ArgExprA.isInvalid() || ArgExprB.isInvalid())
-      return true;
-
-    QualType ArgTypeA = ArgExprA.get()->getType();
-    QualType ArgTypeB = ArgExprB.get()->getType();
-
-    auto isNull = [&] (Expr *E) -> bool {
-      return E->isNullPointerConstant(
-                        Context, Expr::NPC_ValueDependentIsNotNull); };
-
-    // argument should be either a pointer or null
-    if (!ArgTypeA->isAnyPointerType() && !isNull(ArgA))
-      return Diag(TheCall->getBeginLoc(), diag::err_memtag_arg_null_or_pointer)
-        << "first" << ArgTypeA << ArgA->getSourceRange();
-
-    if (!ArgTypeB->isAnyPointerType() && !isNull(ArgB))
-      return Diag(TheCall->getBeginLoc(), diag::err_memtag_arg_null_or_pointer)
-        << "second" << ArgTypeB << ArgB->getSourceRange();
-
-    // Ensure Pointee types are compatible
-    if (ArgTypeA->isAnyPointerType() && !isNull(ArgA) &&
-        ArgTypeB->isAnyPointerType() && !isNull(ArgB)) {
-      QualType pointeeA = ArgTypeA->getPointeeType();
-      QualType pointeeB = ArgTypeB->getPointeeType();
-      if (!Context.typesAreCompatible(
-             Context.getCanonicalType(pointeeA).getUnqualifiedType(),
-             Context.getCanonicalType(pointeeB).getUnqualifiedType())) {
-        return Diag(TheCall->getBeginLoc(), diag::err_typecheck_sub_ptr_compatible)
-          << ArgTypeA <<  ArgTypeB << ArgA->getSourceRange()
-          << ArgB->getSourceRange();
-      }
-    }
-
-    // at least one argument should be pointer type
-    if (!ArgTypeA->isAnyPointerType() && !ArgTypeB->isAnyPointerType())
-      return Diag(TheCall->getBeginLoc(), diag::err_memtag_any2arg_pointer)
-        <<  ArgTypeA << ArgTypeB << ArgA->getSourceRange();
-
-    if (isNull(ArgA)) // adopt type of the other pointer
-      ArgExprA = ImpCastExprToType(ArgExprA.get(), ArgTypeB, CK_NullToPointer);
-
-    if (isNull(ArgB))
-      ArgExprB = ImpCastExprToType(ArgExprB.get(), ArgTypeA, CK_NullToPointer);
-
-    TheCall->setArg(0, ArgExprA.get());
-    TheCall->setArg(1, ArgExprB.get());
-    TheCall->setType(Context.LongLongTy);
-    return false;
-  }
-  assert(false && "Unhandled ARM MTE intrinsic");
-  return true;
-}
-
-/// BuiltinARMSpecialReg - Handle a check if argument ArgNum of CallExpr
-/// TheCall is an ARM/AArch64 special register string literal.
-bool Sema::BuiltinARMSpecialReg(unsigned BuiltinID, CallExpr *TheCall,
-                                int ArgNum, unsigned ExpectedFieldNum,
-                                bool AllowName) {
-  bool IsARMBuiltin = BuiltinID == ARM::BI__builtin_arm_rsr64 ||
-                      BuiltinID == ARM::BI__builtin_arm_wsr64 ||
-                      BuiltinID == ARM::BI__builtin_arm_rsr ||
-                      BuiltinID == ARM::BI__builtin_arm_rsrp ||
-                      BuiltinID == ARM::BI__builtin_arm_wsr ||
-                      BuiltinID == ARM::BI__builtin_arm_wsrp;
-  bool IsAArch64Builtin = BuiltinID == AArch64::BI__builtin_arm_rsr64 ||
-                          BuiltinID == AArch64::BI__builtin_arm_wsr64 ||
-                          BuiltinID == AArch64::BI__builtin_arm_rsr128 ||
-                          BuiltinID == AArch64::BI__builtin_arm_wsr128 ||
-                          BuiltinID == AArch64::BI__builtin_arm_rsr ||
-                          BuiltinID == AArch64::BI__builtin_arm_rsrp ||
-                          BuiltinID == AArch64::BI__builtin_arm_wsr ||
-                          BuiltinID == AArch64::BI__builtin_arm_wsrp;
-  assert((IsARMBuiltin || IsAArch64Builtin) && "Unexpected ARM builtin.");
-
-  // We can't check the value of a dependent argument.
-  Expr *Arg = TheCall->getArg(ArgNum);
-  if (Arg->isTypeDependent() || Arg->isValueDependent())
-    return false;
-
-  // Check if the argument is a string literal.
-  if (!isa<StringLiteral>(Arg->IgnoreParenImpCasts()))
-    return Diag(TheCall->getBeginLoc(), diag::err_expr_not_string_literal)
-           << Arg->getSourceRange();
-
-  // Check the type of special register given.
-  StringRef Reg = cast<StringLiteral>(Arg->IgnoreParenImpCasts())->getString();
-  SmallVector<StringRef, 6> Fields;
-  Reg.split(Fields, ":");
-
-  if (Fields.size() != ExpectedFieldNum && !(AllowName && Fields.size() == 1))
-    return Diag(TheCall->getBeginLoc(), diag::err_arm_invalid_specialreg)
-           << Arg->getSourceRange();
-
-  // If the string is the name of a register then we cannot check that it is
-  // valid here but if the string is of one the forms described in ACLE then we
-  // can check that the supplied fields are integers and within the valid
-  // ranges.
-  if (Fields.size() > 1) {
-    bool FiveFields = Fields.size() == 5;
-
-    bool ValidString = true;
-    if (IsARMBuiltin) {
-      ValidString &= Fields[0].starts_with_insensitive("cp") ||
-                     Fields[0].starts_with_insensitive("p");
-      if (ValidString)
-        Fields[0] = Fields[0].drop_front(
-            Fields[0].starts_with_insensitive("cp") ? 2 : 1);
-
-      ValidString &= Fields[2].starts_with_insensitive("c");
-      if (ValidString)
-        Fields[2] = Fields[2].drop_front(1);
-
-      if (FiveFields) {
-        ValidString &= Fields[3].starts_with_insensitive("c");
-        if (ValidString)
-          Fields[3] = Fields[3].drop_front(1);
-      }
-    }
-
-    SmallVector<int, 5> Ranges;
-    if (FiveFields)
-      Ranges.append({IsAArch64Builtin ? 1 : 15, 7, 15, 15, 7});
-    else
-      Ranges.append({15, 7, 15});
-
-    for (unsigned i=0; i<Fields.size(); ++i) {
-      int IntField;
-      ValidString &= !Fields[i].getAsInteger(10, IntField);
-      ValidString &= (IntField >= 0 && IntField <= Ranges[i]);
-    }
-
-    if (!ValidString)
-      return Diag(TheCall->getBeginLoc(), diag::err_arm_invalid_specialreg)
-             << Arg->getSourceRange();
-  } else if (IsAArch64Builtin && Fields.size() == 1) {
-    // This code validates writes to PSTATE registers.
-
-    // Not a write.
-    if (TheCall->getNumArgs() != 2)
-      return false;
-
-    // The 128-bit system register accesses do not touch PSTATE.
-    if (BuiltinID == AArch64::BI__builtin_arm_rsr128 ||
-        BuiltinID == AArch64::BI__builtin_arm_wsr128)
-      return false;
-
-    // These are the named PSTATE accesses using "MSR (immediate)" instructions,
-    // along with the upper limit on the immediates allowed.
-    auto MaxLimit = llvm::StringSwitch<std::optional<unsigned>>(Reg)
-      .CaseLower("spsel", 15)
-      .CaseLower("daifclr", 15)
-      .CaseLower("daifset", 15)
-      .CaseLower("pan", 15)
-      .CaseLower("uao", 15)
-      .CaseLower("dit", 15)
-      .CaseLower("ssbs", 15)
-      .CaseLower("tco", 15)
-      .CaseLower("allint", 1)
-      .CaseLower("pm", 1)
-      .Default(std::nullopt);
-
-    // If this is not a named PSTATE, just continue without validating, as this
-    // will be lowered to an "MSR (register)" instruction directly
-    if (!MaxLimit)
-      return false;
-
-    // Here we only allow constants in the range for that pstate, as required by
-    // the ACLE.
-    //
-    // While clang also accepts the names of system registers in its ACLE
-    // intrinsics, we prevent this with the PSTATE names used in MSR (immediate)
-    // as the value written via a register is different to the value used as an
-    // immediate to have the same effect. e.g., for the instruction `msr tco,
-    // x0`, it is bit 25 of register x0 that is written into PSTATE.TCO, but
-    // with `msr tco, #imm`, it is bit 0 of xN that is written into PSTATE.TCO.
-    //
-    // If a programmer wants to codegen the MSR (register) form of `msr tco,
-    // xN`, they can still do so by specifying the register using five
-    // colon-separated numbers in a string.
-    return BuiltinConstantArgRange(TheCall, 1, 0, *MaxLimit);
-  }
-
-  return false;
-}
-
-/// BuiltinPPCMMACall - Check the call to a PPC MMA builtin for validity.
-/// Emit an error and return true on failure; return false on success.
-/// TypeStr is a string containing the type descriptor of the value returned by
-/// the builtin and the descriptors of the expected type of the arguments.
-bool Sema::BuiltinPPCMMACall(CallExpr *TheCall, unsigned BuiltinID,
-                             const char *TypeStr) {
-
-  assert((TypeStr[0] != '\0') &&
-         "Invalid types in PPC MMA builtin declaration");
-
-  unsigned Mask = 0;
-  unsigned ArgNum = 0;
-
-  // The first type in TypeStr is the type of the value returned by the
-  // builtin. So we first read that type and change the type of TheCall.
-  QualType type = DecodePPCMMATypeFromStr(Context, TypeStr, Mask);
-  TheCall->setType(type);
-
-  while (*TypeStr != '\0') {
-    Mask = 0;
-    QualType ExpectedType = DecodePPCMMATypeFromStr(Context, TypeStr, Mask);
-    if (ArgNum >= TheCall->getNumArgs()) {
-      ArgNum++;
-      break;
-    }
-
-    Expr *Arg = TheCall->getArg(ArgNum);
-    QualType PassedType = Arg->getType();
-    QualType StrippedRVType = PassedType.getCanonicalType();
-
-    // Strip Restrict/Volatile qualifiers.
-    if (StrippedRVType.isRestrictQualified() ||
-        StrippedRVType.isVolatileQualified())
-      StrippedRVType = StrippedRVType.getCanonicalType().getUnqualifiedType();
-
-    // The only case where the argument type and expected type are allowed to
-    // mismatch is if the argument type is a non-void pointer (or array) and
-    // expected type is a void pointer.
-    if (StrippedRVType != ExpectedType)
-      if (!(ExpectedType->isVoidPointerType() &&
-            (StrippedRVType->isPointerType() || StrippedRVType->isArrayType())))
-        return Diag(Arg->getBeginLoc(),
-                    diag::err_typecheck_convert_incompatible)
-               << PassedType << ExpectedType << 1 << 0 << 0;
-
-    // If the value of the Mask is not 0, we have a constraint in the size of
-    // the integer argument so here we ensure the argument is a constant that
-    // is in the valid range.
-    if (Mask != 0 && BuiltinConstantArgRange(TheCall, ArgNum, 0, Mask, true))
-      return true;
-
-    ArgNum++;
-  }
-
-  // In case we exited early from the previous loop, there are other types to
-  // read from TypeStr. So we need to read them all to ensure we have the right
-  // number of arguments in TheCall and if it is not the case, to display a
-  // better error message.
-  while (*TypeStr != '\0') {
-    (void) DecodePPCMMATypeFromStr(Context, TypeStr, Mask);
-    ArgNum++;
-  }
-  if (checkArgCount(TheCall, ArgNum))
-    return true;
-
-  return false;
 }
 
 /// BuiltinLongjmp - Handle __builtin_longjmp(void *env[5], int val).
@@ -12733,7 +11910,7 @@ Sema::CheckReturnValExpr(Expr *RetValExp, QualType lhsType,
   // PPC MMA non-pointer types are not allowed as return type. Checking the type
   // here prevent the user from using a PPC MMA type as trailing return type.
   if (Context.getTargetInfo().getTriple().isPPC64())
-    CheckPPCMMAType(RetValExp->getType(), ReturnLoc);
+    PPC().CheckPPCMMAType(RetValExp->getType(), ReturnLoc);
 }
 
 /// Check for comparisons of floating-point values using == and !=. Issue a
@@ -18409,168 +17586,6 @@ ExprResult Sema::BuiltinMatrixColumnMajorStore(CallExpr *TheCall,
     return ExprError();
 
   return CallResult;
-}
-
-/// Checks the argument at the given index is a WebAssembly table and if it
-/// is, sets ElTy to the element type.
-static bool CheckWasmBuiltinArgIsTable(Sema &S, CallExpr *E, unsigned ArgIndex,
-                                       QualType &ElTy) {
-  Expr *ArgExpr = E->getArg(ArgIndex);
-  const auto *ATy = dyn_cast<ArrayType>(ArgExpr->getType());
-  if (!ATy || !ATy->getElementType().isWebAssemblyReferenceType()) {
-    return S.Diag(ArgExpr->getBeginLoc(),
-                  diag::err_wasm_builtin_arg_must_be_table_type)
-           << ArgIndex + 1 << ArgExpr->getSourceRange();
-  }
-  ElTy = ATy->getElementType();
-  return false;
-}
-
-/// Checks the argument at the given index is an integer.
-static bool CheckWasmBuiltinArgIsInteger(Sema &S, CallExpr *E,
-                                         unsigned ArgIndex) {
-  Expr *ArgExpr = E->getArg(ArgIndex);
-  if (!ArgExpr->getType()->isIntegerType()) {
-    return S.Diag(ArgExpr->getBeginLoc(),
-                  diag::err_wasm_builtin_arg_must_be_integer_type)
-           << ArgIndex + 1 << ArgExpr->getSourceRange();
-  }
-  return false;
-}
-
-/// Check that the first argument is a WebAssembly table, and the second
-/// is an index to use as index into the table.
-bool Sema::BuiltinWasmTableGet(CallExpr *TheCall) {
-  if (checkArgCount(TheCall, 2))
-    return true;
-
-  QualType ElTy;
-  if (CheckWasmBuiltinArgIsTable(*this, TheCall, 0, ElTy))
-    return true;
-
-  if (CheckWasmBuiltinArgIsInteger(*this, TheCall, 1))
-    return true;
-
-  // If all is well, we set the type of TheCall to be the type of the
-  // element of the table.
-  // i.e. a table.get on an externref table has type externref,
-  // or whatever the type of the table element is.
-  TheCall->setType(ElTy);
-
-  return false;
-}
-
-/// Check that the first argumnet is a WebAssembly table, the second is
-/// an index to use as index into the table and the third is the reference
-/// type to set into the table.
-bool Sema::BuiltinWasmTableSet(CallExpr *TheCall) {
-  if (checkArgCount(TheCall, 3))
-    return true;
-
-  QualType ElTy;
-  if (CheckWasmBuiltinArgIsTable(*this, TheCall, 0, ElTy))
-    return true;
-
-  if (CheckWasmBuiltinArgIsInteger(*this, TheCall, 1))
-    return true;
-
-  if (!Context.hasSameType(ElTy, TheCall->getArg(2)->getType()))
-    return true;
-
-  return false;
-}
-
-/// Check that the argument is a WebAssembly table.
-bool Sema::BuiltinWasmTableSize(CallExpr *TheCall) {
-  if (checkArgCount(TheCall, 1))
-    return true;
-
-  QualType ElTy;
-  if (CheckWasmBuiltinArgIsTable(*this, TheCall, 0, ElTy))
-    return true;
-
-  return false;
-}
-
-/// Check that the first argument is a WebAssembly table, the second is the
-/// value to use for new elements (of a type matching the table type), the
-/// third value is an integer.
-bool Sema::BuiltinWasmTableGrow(CallExpr *TheCall) {
-  if (checkArgCount(TheCall, 3))
-    return true;
-
-  QualType ElTy;
-  if (CheckWasmBuiltinArgIsTable(*this, TheCall, 0, ElTy))
-    return true;
-
-  Expr *NewElemArg = TheCall->getArg(1);
-  if (!Context.hasSameType(ElTy, NewElemArg->getType())) {
-    return Diag(NewElemArg->getBeginLoc(),
-                diag::err_wasm_builtin_arg_must_match_table_element_type)
-           << 2 << 1 << NewElemArg->getSourceRange();
-  }
-
-  if (CheckWasmBuiltinArgIsInteger(*this, TheCall, 2))
-    return true;
-
-  return false;
-}
-
-/// Check that the first argument is a WebAssembly table, the second is an
-/// integer, the third is the value to use to fill the table (of a type
-/// matching the table type), and the fourth is an integer.
-bool Sema::BuiltinWasmTableFill(CallExpr *TheCall) {
-  if (checkArgCount(TheCall, 4))
-    return true;
-
-  QualType ElTy;
-  if (CheckWasmBuiltinArgIsTable(*this, TheCall, 0, ElTy))
-    return true;
-
-  if (CheckWasmBuiltinArgIsInteger(*this, TheCall, 1))
-    return true;
-
-  Expr *NewElemArg = TheCall->getArg(2);
-  if (!Context.hasSameType(ElTy, NewElemArg->getType())) {
-    return Diag(NewElemArg->getBeginLoc(),
-                diag::err_wasm_builtin_arg_must_match_table_element_type)
-           << 3 << 1 << NewElemArg->getSourceRange();
-  }
-
-  if (CheckWasmBuiltinArgIsInteger(*this, TheCall, 3))
-    return true;
-
-  return false;
-}
-
-/// Check that the first argument is a WebAssembly table, the second is also a
-/// WebAssembly table (of the same element type), and the third to fifth
-/// arguments are integers.
-bool Sema::BuiltinWasmTableCopy(CallExpr *TheCall) {
-  if (checkArgCount(TheCall, 5))
-    return true;
-
-  QualType XElTy;
-  if (CheckWasmBuiltinArgIsTable(*this, TheCall, 0, XElTy))
-    return true;
-
-  QualType YElTy;
-  if (CheckWasmBuiltinArgIsTable(*this, TheCall, 1, YElTy))
-    return true;
-
-  Expr *TableYArg = TheCall->getArg(1);
-  if (!Context.hasSameType(XElTy, YElTy)) {
-    return Diag(TableYArg->getBeginLoc(),
-                diag::err_wasm_builtin_arg_must_match_table_element_type)
-           << 2 << 1 << TableYArg->getSourceRange();
-  }
-
-  for (int I = 2; I <= 4; I++) {
-    if (CheckWasmBuiltinArgIsInteger(*this, TheCall, I))
-      return true;
-  }
-
-  return false;
 }
 
 /// \brief Enforce the bounds of a TCB

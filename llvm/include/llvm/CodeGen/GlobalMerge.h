@@ -21,10 +21,15 @@ struct GlobalMergeOptions {
   // functions), see the code that passes in the offset in the ARM backend
   // for more information.
   unsigned MaxOffset = 0;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // The minimum size in bytes of each global that should considered in merging.
   unsigned MinSize = 0;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  // The minimum size in bytes of each global that should considered in merging.
+  unsigned MinSize = 0;
+>>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
   bool GroupByUse = true;
   bool IgnoreSingleUse = true;
   bool MergeConst = false;

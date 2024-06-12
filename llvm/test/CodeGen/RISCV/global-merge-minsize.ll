@@ -14,8 +14,13 @@ define void @f1(i32 %a) nounwind {
 ; RV32-LABEL: f1:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    lui a1, %hi(.L_MergedGlobals)
+<<<<<<< HEAD
 ; RV32-NEXT:    addi a1, a1, %lo(.L_MergedGlobals)
 ; RV32-NEXT:    sw a0, 0(a1)
+=======
+; RV32-NEXT:    sw a0, %lo(.L_MergedGlobals)(a1)
+; RV32-NEXT:    addi a1, a1, %lo(.L_MergedGlobals)
+>>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 ; RV32-NEXT:    sw a0, 4(a1)
 ; RV32-NEXT:    sw a0, 8(a1)
 ; RV32-NEXT:    sw a0, 12(a1)

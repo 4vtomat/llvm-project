@@ -237,6 +237,7 @@ void initializePostDomOnlyViewerWrapperPassPass(PassRegistry &);
 void initializePostDomPrinterWrapperPassPass(PassRegistry &);
 void initializePostDomViewerWrapperPassPass(PassRegistry &);
 void initializePostDominatorTreeWrapperPassPass(PassRegistry&);
+void initializePostInlineEntryExitInstrumenterPass(PassRegistry&);
 void initializePostMachineSchedulerPass(PassRegistry&);
 void initializePostRAHazardRecognizerPass(PassRegistry&);
 void initializePostRAMachineSinkingPass(PassRegistry&);

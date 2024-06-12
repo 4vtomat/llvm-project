@@ -11805,8 +11805,8 @@ public:
       R.eraseInstruction(EI);
     }
     if (NumParts == 1 || UniqueBases.size() == 1) {
-      VecBase = castToScalarTyElem(VecBase);
-      return VecBase;
+      assert(VecBase && "Expected vectorized value.");
+      return castToScalarTyElem(VecBase);
     }
     UseVecBaseAsInput = true;
     auto TransformToIdentity = [](MutableArrayRef<int> Mask) {
@@ -16002,7 +16002,7 @@ bool SLPVectorizerPass::vectorizeStores(
       while (true) {
         ++Repeat;
         bool RepeatChanged = false;
-        bool AnyProfitableGraph;
+        bool AnyProfitableGraph = false;
         for (unsigned Size : CandidateVFs) {
           AnyProfitableGraph = false;
           unsigned StartIdx = std::distance(

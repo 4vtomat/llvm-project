@@ -59,6 +59,7 @@
 #include "VPlan.h"
 #include "VPlanAnalysis.h"
 #include "VPlanHCFGBuilder.h"
+#include "VPlanPatternMatch.h"
 #include "VPlanTransforms.h"
 #include "VPlanVerifier.h"
 #include "llvm/ADT/APInt.h"
@@ -743,10 +744,9 @@ protected:
                     BasicBlock *MiddleBlock, BasicBlock *VectorHeader,
                     VPlan &Plan, VPTransformState &State);
 
-  /// Create the exit value of first order recurrences in the middle block and
-  /// update their users.
-  void fixFixedOrderRecurrence(VPFirstOrderRecurrencePHIRecipe *PhiR,
-                               VPTransformState &State);
+  /// Create the phi node for the resume value of first order recurrences in the
+  /// scalar preheader and update the users in the scalar loop.
+  void fixFixedOrderRecurrence(VPLiveOut *LO, VPTransformState &State);
 
 #if SIFIVE_CUSTOMIZATION
   /// Generate a reduction loop in the loop vectorizer for when the backend
@@ -4238,16 +4238,16 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State,
     fixNonInductionPHIs(Plan, State);
 
   // At this point every instruction in the original loop is widened to a
-  // vector form. Now we need to fix the recurrences in the loop. These PHI
-  // nodes are currently empty because we did not want to introduce cycles.
-  // This is the second stage of vectorizing recurrences. Note that fixing
-  // reduction phis are already modeled in VPlan.
-  // TODO: Also model fixing fixed-order recurrence phis in VPlan.
-  VPRegionBlock *VectorRegion = State.Plan->getVectorLoopRegion();
-  VPBasicBlock *HeaderVPBB = VectorRegion->getEntryBasicBlock();
-  for (VPRecipeBase &R : HeaderVPBB->phis()) {
-    if (auto *FOR = dyn_cast<VPFirstOrderRecurrencePHIRecipe>(&R))
-      fixFixedOrderRecurrence(FOR, State);
+  // vector form. Note that fixing reduction phis, as well as extracting the
+  // exit and resume values for fixed-order recurrences are already modeled in
+  // VPlan. All that remains to do here is to create a phi in the scalar
+  // pre-header for each fixed-order recurrence resume value.
+  // TODO: Also model creating phis in the scalar pre-header in VPlan.
+  for (const auto &[_, LO] : to_vector(Plan.getLiveOuts())) {
+    if (!Legal->isFixedOrderRecurrence(LO->getPhi()))
+      continue;
+    fixFixedOrderRecurrence(LO, State);
+    Plan.removeLiveOut(LO->getPhi());
   }
 
   // Forget the original basic block.
@@ -4263,6 +4263,7 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State,
     for (PHINode &PN : Exit->phis())
       PSE.getSE()->forgetLcssaPhiWithNewPredecessor(OrigLoop, &PN);
 
+  VPRegionBlock *VectorRegion = State.Plan->getVectorLoopRegion();
   VPBasicBlock *LatchVPBB = VectorRegion->getExitingBasicBlock();
   Loop *VectorLoop = LI->getLoopFor(State.CFG.VPBB2IRBB[LatchVPBB]);
   if (Cost->requiresScalarEpilogue(VF.isVector())) {
@@ -4320,59 +4321,11 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State,
                                VF.getKnownMinValue() * UF);
 }
 
-void InnerLoopVectorizer::fixFixedOrderRecurrence(
-    VPFirstOrderRecurrencePHIRecipe *PhiR, VPTransformState &State) {
-  // This is the second phase of vectorizing first-order recurrences. An
-  // overview of the transformation is described below. Suppose we have the
-  // following loop.
-  //
-  //   for (int i = 0; i < n; ++i)
-  //     b[i] = a[i] - a[i - 1];
-  //
-  // There is a first-order recurrence on "a". For this loop, the shorthand
-  // scalar IR looks like:
-  //
-  //   scalar.ph:
-  //     s_init = a[-1]
-  //     br scalar.body
-  //
-  //   scalar.body:
-  //     i = phi [0, scalar.ph], [i+1, scalar.body]
-  //     s1 = phi [s_init, scalar.ph], [s2, scalar.body]
-  //     s2 = a[i]
-  //     b[i] = s2 - s1
-  //     br cond, scalar.body, ...
-  //
-  // In this example, s1 is a recurrence because it's value depends on the
-  // previous iteration. In the first phase of vectorization, we created a
-  // vector phi v1 for s1. We now complete the vectorization and produce the
-  // shorthand vector IR shown below (for VF = 4, UF = 1).
-  //
-  //   vector.ph:
-  //     v_init = vector(..., ..., ..., a[-1])
-  //     br vector.body
-  //
-  //   vector.body
-  //     i = phi [0, vector.ph], [i+4, vector.body]
-  //     v1 = phi [v_init, vector.ph], [v2, vector.body]
-  //     v2 = a[i, i+1, i+2, i+3];
-  //     v3 = vector(v1(3), v2(0, 1, 2))
-  //     b[i, i+1, i+2, i+3] = v2 - v3
-  //     br cond, vector.body, middle.block
-  //
-  //   middle.block:
-  //     x = v2(3)
-  //     br scalar.ph
-  //
-  //   scalar.ph:
-  //     s_init = phi [x, middle.block], [a[-1], otherwise]
-  //     br scalar.body
-  //
-  // After execution completes the vector loop, we extract the next value of
-  // the recurrence (x) to use as the initial value in the scalar loop.
-
+void InnerLoopVectorizer::fixFixedOrderRecurrence(VPLiveOut *LO,
+                                                  VPTransformState &State) {
   // Extract the last vector element in the middle block. This will be the
   // initial value for the recurrence when jumping to the scalar loop.
+<<<<<<< HEAD
   VPValue *PreviousDef = PhiR->getBackedgeValue();
   Value *Incoming = State.get(PreviousDef, UF - 1);
   auto *ExtractForScalar = Incoming;
@@ -4472,19 +4425,29 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(
       State.Plan->removeLiveOut(LCSSAPhi);
     }
   }
+=======
+  VPValue *VPExtract = LO->getOperand(0);
+  using namespace llvm::VPlanPatternMatch;
+  assert(match(VPExtract, m_VPInstruction<VPInstruction::ExtractFromEnd>(
+                              m_VPValue(), m_VPValue())) &&
+         "FOR LiveOut expects to use an extract from end.");
+  Value *ResumeScalarFOR = State.get(VPExtract, UF - 1, true);
+>>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 
   // Fix the initial value of the original recurrence in the scalar loop.
+  PHINode *ScalarHeaderPhi = LO->getPhi();
+  auto *InitScalarFOR =
+      ScalarHeaderPhi->getIncomingValueForBlock(LoopScalarPreHeader);
   Builder.SetInsertPoint(LoopScalarPreHeader, LoopScalarPreHeader->begin());
-  PHINode *Phi = cast<PHINode>(PhiR->getUnderlyingValue());
-  auto *Start = Builder.CreatePHI(Phi->getType(), 2, "scalar.recur.init");
-  auto *ScalarInit = PhiR->getStartValue()->getLiveInIRValue();
+  auto *ScalarPreheaderPhi =
+      Builder.CreatePHI(ScalarHeaderPhi->getType(), 2, "scalar.recur.init");
   for (auto *BB : predecessors(LoopScalarPreHeader)) {
-    auto *Incoming = BB == LoopMiddleBlock ? ExtractForScalar : ScalarInit;
-    Start->addIncoming(Incoming, BB);
+    auto *Incoming = BB == LoopMiddleBlock ? ResumeScalarFOR : InitScalarFOR;
+    ScalarPreheaderPhi->addIncoming(Incoming, BB);
   }
-
-  Phi->setIncomingValueForBlock(LoopScalarPreHeader, Start);
-  Phi->setName("scalar.recur");
+  ScalarHeaderPhi->setIncomingValueForBlock(LoopScalarPreHeader,
+                                            ScalarPreheaderPhi);
+  ScalarHeaderPhi->setName("scalar.recur");
 }
 
 void InnerLoopVectorizer::sinkScalarOperands(Instruction *PredInst) {
@@ -6267,28 +6230,6 @@ bool LoopVectorizationPlanner::isMoreProfitable(
 
   unsigned MaxTripCount = PSE.getSE()->getSmallConstantMaxTripCount(OrigLoop);
 
-  if (!A.Width.isScalable() && !B.Width.isScalable() && MaxTripCount) {
-    // If the trip count is a known (possibly small) constant, the trip count
-    // will be rounded up to an integer number of iterations under
-    // FoldTailByMasking. The total cost in that case will be
-    // VecCost*ceil(TripCount/VF). When not folding the tail, the total
-    // cost will be VecCost*floor(TC/VF) + ScalarCost*(TC%VF). There will be
-    // some extra overheads, but for the purpose of comparing the costs of
-    // different VFs we can use this to compare the total loop-body cost
-    // expected after vectorization.
-    auto GetCostForTC = [MaxTripCount, this](unsigned VF,
-                                             InstructionCost VectorCost,
-                                             InstructionCost ScalarCost) {
-      return CM.foldTailByMasking() ? VectorCost * divideCeil(MaxTripCount, VF)
-                                    : VectorCost * (MaxTripCount / VF) +
-                                          ScalarCost * (MaxTripCount % VF);
-    };
-    auto RTCostA = GetCostForTC(A.Width.getFixedValue(), CostA, A.ScalarCost);
-    auto RTCostB = GetCostForTC(B.Width.getFixedValue(), CostB, B.ScalarCost);
-
-    return RTCostA < RTCostB;
-  }
-
   // Improve estimate for the vector width if it is scalable.
   unsigned EstimatedWidthA = A.Width.getKnownMinValue();
   unsigned EstimatedWidthB = B.Width.getKnownMinValue();
@@ -6324,13 +6265,37 @@ bool LoopVectorizationPlanner::isMoreProfitable(
   // Assume vscale may be larger than 1 (or the value being tuned for),
   // so that scalable vectorization is slightly favorable over fixed-width
   // vectorization.
-  if (A.Width.isScalable() && !B.Width.isScalable())
-    return (CostA * B.Width.getFixedValue()) <= (CostB * EstimatedWidthA);
+  bool PreferScalable = A.Width.isScalable() && !B.Width.isScalable();
+  auto CmpFn = [PreferScalable](const InstructionCost &LHS,
+                                const InstructionCost &RHS) {
+    return PreferScalable ? LHS <= RHS : LHS < RHS;
+  };
 
   // To avoid the need for FP division:
-  //      (CostA / A.Width) < (CostB / B.Width)
-  // <=>  (CostA * B.Width) < (CostB * A.Width)
-  return (CostA * EstimatedWidthB) < (CostB * EstimatedWidthA);
+  //      (CostA / EstimatedWidthA) < (CostB / EstimatedWidthB)
+  // <=>  (CostA * EstimatedWidthB) < (CostB * EstimatedWidthA)
+  if (!MaxTripCount)
+    return CmpFn(CostA * EstimatedWidthB, CostB * EstimatedWidthA);
+
+  auto GetCostForTC = [MaxTripCount, this](unsigned VF,
+                                           InstructionCost VectorCost,
+                                           InstructionCost ScalarCost) {
+    // If the trip count is a known (possibly small) constant, the trip count
+    // will be rounded up to an integer number of iterations under
+    // FoldTailByMasking. The total cost in that case will be
+    // VecCost*ceil(TripCount/VF). When not folding the tail, the total
+    // cost will be VecCost*floor(TC/VF) + ScalarCost*(TC%VF). There will be
+    // some extra overheads, but for the purpose of comparing the costs of
+    // different VFs we can use this to compare the total loop-body cost
+    // expected after vectorization.
+    if (CM.foldTailByMasking())
+      return VectorCost * divideCeil(MaxTripCount, VF);
+    return VectorCost * (MaxTripCount / VF) + ScalarCost * (MaxTripCount % VF);
+  };
+
+  auto RTCostA = GetCostForTC(EstimatedWidthA, CostA, A.ScalarCost);
+  auto RTCostB = GetCostForTC(EstimatedWidthB, CostB, B.ScalarCost);
+  return CmpFn(RTCostA, RTCostB);
 }
 
 #if SIFIVE_CUSTOMIZATION
@@ -9162,14 +9127,33 @@ void LoopVectorizationCostModel::collectValuesToIgnore() {
   // Ignore ephemeral values.
   CodeMetrics::collectEphemeralValues(TheLoop, AC, ValuesToIgnore);
 
-  // Find all stores to invariant variables. Since they are going to sink
-  // outside the loop we do not need calculate cost for them.
   for (BasicBlock *BB : TheLoop->blocks())
     for (Instruction &I : *BB) {
+      // Find all stores to invariant variables. Since they are going to sink
+      // outside the loop we do not need calculate cost for them.
       StoreInst *SI;
       if ((SI = dyn_cast<StoreInst>(&I)) &&
           Legal->isInvariantAddressOfReduction(SI->getPointerOperand()))
         ValuesToIgnore.insert(&I);
+
+      // For interleave groups, we only create a pointer for the start of the
+      // interleave group. Mark single-use ops feeding interleave group mem ops
+      // as free when vectorizing, expect the insert-pos memory op.
+      if (isAccessInterleaved(&I)) {
+        auto *Group = getInterleavedAccessGroup(&I);
+        if (Group->getInsertPos() == &I)
+          continue;
+        Value *PointerOp = getLoadStorePointerOperand(&I);
+        SmallSetVector<Value *, 4> Worklist;
+        Worklist.insert(PointerOp);
+        for (unsigned I = 0; I != Worklist.size(); ++I) {
+          auto *Op = dyn_cast<Instruction>(Worklist[I]);
+          if (!Op || !TheLoop->contains(Op) || !Op->hasOneUse())
+            continue;
+          VecValuesToIgnore.insert(Op);
+          Worklist.insert(Op->op_begin(), Op->op_end());
+        }
+      }
     }
 
   // Ignore type-promoting instructions we identified during reduction
@@ -9540,12 +9524,17 @@ LoopVectorizationPlanner::executePlan(
   assert(
       (IsEpilogueVectorization || !ExpandedSCEVs) &&
       "expanded SCEVs to reuse can only be used during epilogue vectorization");
+  (void)IsEpilogueVectorization;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (!BestVPlan.isUncountable())
 #endif
   if (!IsEpilogueVectorization)
     VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
+=======
+  VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
+>>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 
   LLVM_DEBUG(dbgs() << "Executing best plan with VF=" << BestVF
                     << ", UF=" << BestUF << '\n');
@@ -9553,6 +9542,7 @@ LoopVectorizationPlanner::executePlan(
   LLVM_DEBUG(BestVPlan.dump());
 
   // Perform the actual loop transformation.
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   VPTransformState State{
       BestVF,        BestUF, LI,         EnableVPlanNativePath ? nullptr : DT,
@@ -9564,6 +9554,10 @@ LoopVectorizationPlanner::executePlan(
                          EnableVPlanNativePath ? nullptr : DT, ILV.Builder,
                          &ILV, &BestVPlan, OrigLoop->getHeader()->getContext());
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  VPTransformState State(BestVF, BestUF, LI, DT, ILV.Builder, &ILV, &BestVPlan,
+                         OrigLoop->getHeader()->getContext());
+>>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 
   // 0. Generate SCEV-dependent code into the preheader, including TripCount,
   // before making any changes to the CFG.
@@ -11102,9 +11096,13 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 #else
   VPlanPtr Plan = VPlan::createInitialVPlan(
       createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop),
+<<<<<<< HEAD
       *PSE.getSE());
 #endif
 
+=======
+      *PSE.getSE(), OrigLoop->getLoopPreheader());
+>>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
   VPBasicBlock *HeaderVPBB = new VPBasicBlock("vector.body");
   VPBasicBlock *LatchVPBB = new VPBasicBlock("vector.latch");
   VPBlockUtils::insertBlockAfter(LatchVPBB, HeaderVPBB);
@@ -11448,8 +11446,12 @@ VPlanPtr LoopVectorizationPlanner::buildVPlan(VFRange &Range) {
 #else
   auto Plan = VPlan::createInitialVPlan(
       createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop),
+<<<<<<< HEAD
       *PSE.getSE());
 #endif // SIFIVE_CUSTOMIZATION
+=======
+      *PSE.getSE(), OrigLoop->getLoopPreheader());
+>>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 
   // Build hierarchical CFG
   VPlanHCFGBuilder HCFGBuilder(OrigLoop, LI, *Plan);
@@ -13375,16 +13377,9 @@ PreservedAnalyses LoopVectorizePass::run(Function &F,
         RemoveRedundantDbgInstrs(&BB);
     }
 
-    // We currently do not preserve dominator analyses with outer loop
-    // vectorization. Until this is addressed, mark these analyses as preserved
-    // only for non-VPlan-native path.
-    // TODO: Preserve Dominator analysis for VPlan-native path.
-    if (!EnableVPlanNativePath) {
-      PA.preserve<DominatorTreeAnalysis>();
-      PA.preserve<ScalarEvolutionAnalysis>();
-    }
-
     PA.preserve<LoopAnalysis>();
+    PA.preserve<DominatorTreeAnalysis>();
+    PA.preserve<ScalarEvolutionAnalysis>();
 
     if (Result.MadeCFGChange) {
       // Making CFG changes likely means a loop got vectorized. Indicate that
