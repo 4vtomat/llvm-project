@@ -1,4 +1,4 @@
-//===-- RISCVTargetMachine.cpp - Define TargetMachine for RISC-V ----------===//
+  //===-- RISCVTargetMachine.cpp - Define TargetMachine for RISC-V ----------===//
 //
 // Part of the LLVM Project, under the Apache License v2.0 with LLVM Exceptions.
 // See https://llvm.org/LICENSE.txt for license information.
@@ -158,16 +158,12 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   initializeRISCVInsertVSETVLIPass(*PR);
   initializeRISCVInsertReadWriteCSRPass(*PR);
   initializeRISCVInsertWriteVXRMPass(*PR);
-<<<<<<< HEAD
-  initializeRISCVDAGToDAGISelPass(*PR);
+  initializeRISCVDAGToDAGISelLegacyPass(*PR);
 #if SIFIVE_CUSTOMIZATION
   initializeRISCVPeepholePass(*PR);
   initializeRISCVVLOptimizerPass(*PR);
   initializeRISCVMachineConstPropagationPass(*PR);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  initializeRISCVDAGToDAGISelLegacyPass(*PR);
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
   initializeRISCVMoveMergePass(*PR);
   initializeRISCVPushPopOptPass(*PR);
 }

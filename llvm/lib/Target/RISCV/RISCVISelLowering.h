@@ -275,7 +275,6 @@ enum NodeType : unsigned {
   // Rounding averaging adds of unsigned integers.
   AVGCEILU_VL,
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   VAADD_VL,
   VAADDU_VL,
@@ -284,16 +283,11 @@ enum NodeType : unsigned {
   VSMUL_VL,
   VSSRL_VL,
   VSSRA_VL,
-
-  // Operands are (source, shift, merge, mask, roundmode, vl)
-  VNCLIPU_VL, // SIFIVE
-  VNCLIP_VL, // SIFIVE
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   // Operands are (source, shift, merge, mask, roundmode, vl)
   VNCLIPU_VL,
   VNCLIP_VL,
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 
   MULHS_VL,
   MULHU_VL,

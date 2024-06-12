@@ -423,25 +423,17 @@ inline static bool isValidRoundingMode(unsigned Mode) {
 }
 } // namespace RISCVFPRndMode
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 namespace RISCVVXRndMode {
 enum RoundingMode {
   RNU = 0,
   RNE = 1,
   RDN = 2,
   ROD = 3,
-<<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
   DYN = 7, // Align with RISCVFPRndMode::DYN
-};
-} // namespace RISCVVXRndMode
 #endif // SIFIVE_CUSTOMIZATION
-=======
 };
 } // namespace RISCVVXRndMode
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 
 //===----------------------------------------------------------------------===//
 // Floating-point Immediates

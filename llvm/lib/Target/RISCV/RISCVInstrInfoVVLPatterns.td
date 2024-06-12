@@ -36,7 +36,6 @@ def SDT_RISCVIntBinOp_VL : SDTypeProfile<1, 5, [SDTCisSameAs<0, 1>,
                                                 SDTCisSameNumEltsAs<0, 4>,
                                                 SDTCisVT<5, XLenVT>]>;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 // Input: (vector, vector, merge, mask, roundmode, vl)
 def SDT_RISCVIntBinOp_RM_VL : SDTypeProfile<1, 6, [SDTCisVec<0>, SDTCisInt<0>,
@@ -47,9 +46,8 @@ def SDT_RISCVIntBinOp_RM_VL : SDTypeProfile<1, 6, [SDTCisVec<0>, SDTCisInt<0>,
                                                    SDTCVecEltisVT<4, i1>,
                                                    SDTCisVT<5, XLenVT>,
                                                    SDTCisVT<6, XLenVT>]>;
+#endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 // Input: (vector, vector/scalar, merge, mask, roundmode, vl)
 def SDT_RISCVVNBinOp_RM_VL : SDTypeProfile<1, 6, [SDTCisVec<0>, SDTCisInt<0>,
                                                   SDTCisSameAs<0, 3>,
@@ -61,10 +59,6 @@ def SDT_RISCVVNBinOp_RM_VL : SDTypeProfile<1, 6, [SDTCisVec<0>, SDTCisInt<0>,
                                                   SDTCVecEltisVT<4, i1>,
                                                   SDTCisVT<5, XLenVT>,
                                                   SDTCisVT<6, XLenVT>]>;
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 
 def SDT_RISCVFPUnOp_VL : SDTypeProfile<1, 3, [SDTCisSameAs<0, 1>,
                                               SDTCisVec<0>, SDTCisFP<0>,
@@ -150,7 +144,6 @@ def riscv_uaddsat_vl   : SDNode<"RISCVISD::UADDSAT_VL", SDT_RISCVIntBinOp_VL, [S
 def riscv_ssubsat_vl   : SDNode<"RISCVISD::SSUBSAT_VL", SDT_RISCVIntBinOp_VL>;
 def riscv_usubsat_vl   : SDNode<"RISCVISD::USUBSAT_VL", SDT_RISCVIntBinOp_VL>;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def riscv_vaadd_vl  : SDNode<"RISCVISD::VAADD_VL", SDT_RISCVIntBinOp_RM_VL>;
 def riscv_vaaddu_vl : SDNode<"RISCVISD::VAADDU_VL", SDT_RISCVIntBinOp_RM_VL>;
@@ -159,13 +152,9 @@ def riscv_vasubu_vl : SDNode<"RISCVISD::VASUBU_VL", SDT_RISCVIntBinOp_RM_VL>;
 def riscv_vsmul_vl  : SDNode<"RISCVISD::VSMUL_VL", SDT_RISCVIntBinOp_RM_VL>;
 def riscv_vssrl_vl : SDNode<"RISCVISD::VSSRL_VL", SDT_RISCVIntBinOp_RM_VL>;
 def riscv_vssra_vl : SDNode<"RISCVISD::VSSRA_VL", SDT_RISCVIntBinOp_RM_VL>;
-def riscv_vnclipu_vl : SDNode<"RISCVISD::VNCLIPU_VL", SDT_RISCVVNBinOp_RM_VL>;
-def riscv_vnclip_vl : SDNode<"RISCVISD::VNCLIP_VL", SDT_RISCVVNBinOp_RM_VL>;
 #endif // SIFIVE_CUSTOMIZATION
-=======
 def riscv_vnclipu_vl : SDNode<"RISCVISD::VNCLIPU_VL", SDT_RISCVVNBinOp_RM_VL>;
 def riscv_vnclip_vl : SDNode<"RISCVISD::VNCLIP_VL", SDT_RISCVVNBinOp_RM_VL>;
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 
 def riscv_fadd_vl  : SDNode<"RISCVISD::FADD_VL",  SDT_RISCVFPBinOp_VL, [SDNPCommutative]>;
 def riscv_fsub_vl  : SDNode<"RISCVISD::FSUB_VL",  SDT_RISCVFPBinOp_VL>;
@@ -702,10 +691,6 @@ class VPatBinaryVL_V<SDPatternOperator vop,
                    op2_reg_class:$rs2,
                    (mask_type V0), GPR:$vl, log2sew, TAIL_AGNOSTIC)>;
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 multiclass VPatBinaryRM_VL_V<SDNode vop,
                              string instruction_name,
                              string suffix,
@@ -733,10 +718,6 @@ multiclass VPatBinaryRM_VL_V<SDNode vop,
                      (XLenVT timm:$roundmode),
                      GPR:$vl, sew, TAIL_AGNOSTIC)>;
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 
 class VPatBinaryVL_V_RM<SDPatternOperator vop,
                         string instruction_name,
@@ -898,10 +879,6 @@ class VPatBinaryVL_XI<SDPatternOperator vop,
                    xop_kind:$rs2,
                    (mask_type V0), GPR:$vl, log2sew, TAIL_AGNOSTIC)>;
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 multiclass VPatBinaryRM_VL_XI<SDNode vop,
                               string instruction_name,
                               string suffix,
@@ -930,10 +907,6 @@ multiclass VPatBinaryRM_VL_XI<SDNode vop,
                      (XLenVT timm:$roundmode),
                      GPR:$vl, sew, TAIL_AGNOSTIC)>;
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 
 multiclass VPatBinaryVL_VV_VX<SDPatternOperator vop, string instruction_name,
                               list<VTypeInfo> vtilist = AllIntegerVectors,
@@ -1060,10 +1033,6 @@ multiclass VPatBinaryNVL_WV_WX_WI<SDPatternOperator vop, string instruction_name
   }
 }
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 multiclass VPatBinaryRM_NVL_WV_WX_WI<SDNode vop, string instruction_name> {
   foreach VtiToWti = AllWidenableIntVectors in {
     defvar vti = VtiToWti.Vti;
@@ -1081,32 +1050,6 @@ multiclass VPatBinaryRM_NVL_WV_WX_WI<SDNode vop, string instruction_name> {
                               uimm5>;
   }
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-
-multiclass VPatBinaryVL_VF<SDPatternOperator vop,
-                           string instruction_name,
-                           ValueType result_type,
-                           ValueType vop_type,
-                           ValueType mask_type,
-                           int sew,
-                           LMULInfo vlmul,
-                           VReg result_reg_class,
-                           VReg vop_reg_class,
-                           RegisterClass scalar_reg_class> {
-  def : Pat<(result_type (vop (vop_type vop_reg_class:$rs1),
-                         (vop_type (SplatFPOp scalar_reg_class:$rs2)),
-                         (result_type result_reg_class:$merge),
-                         (mask_type V0),
-                         VLOpFrag)),
-        (!cast<Instruction>(instruction_name#"_"#vlmul.MX#"_MASK")
-                     result_reg_class:$merge,
-                     vop_reg_class:$rs1,
-                     scalar_reg_class:$rs2,
-                     (mask_type V0), GPR:$vl, sew, TAIL_AGNOSTIC)>;
-}
-=======
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 
 class VPatBinaryVL_VF<SDPatternOperator vop,
                       string instruction_name,
@@ -2604,14 +2547,11 @@ defm : VPatBinaryRM_VL_VV_VX<riscv_vsmul_vl, "PseudoVSMUL">;
 // 12.4 Vector Single-Width Scaling Shift Instructions
 defm : VPatBinaryRM_VL_VV_VX_VI<riscv_vssrl_vl, "PseudoVSSRL", uimm5>;
 defm : VPatBinaryRM_VL_VV_VX_VI<riscv_vssra_vl, "PseudoVSSRA", uimm5>;
+#endif // SIFIVE_CUSTOMIZATION
 
 // 12.5. Vector Narrowing Fixed-Point Clip Instructions
 defm : VPatBinaryRM_NVL_WV_WX_WI<riscv_vnclip_vl, "PseudoVNCLIP">;
 defm : VPatBinaryRM_NVL_WV_WX_WI<riscv_vnclipu_vl, "PseudoVNCLIPU">;
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 
 // 13. Vector Floating-Point Instructions
 
