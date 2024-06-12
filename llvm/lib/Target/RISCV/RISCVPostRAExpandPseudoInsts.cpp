@@ -46,7 +46,7 @@ private:
   bool expandMovImm(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
 #if SIFIVE_CUSTOMIZATION
   bool expandLIsimm32(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
-  bool expandLIaddr(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
+  bool expandMovAddr(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
 #endif // SIFIVE_CUSTOMIZATION
 };
 
@@ -82,8 +82,8 @@ bool RISCVPostRAExpandPseudo::expandMI(MachineBasicBlock &MBB,
 #if SIFIVE_CUSTOMIZATION
   case RISCV::PseudoLIsimm32:
     return expandLIsimm32(MBB, MBBI);
-  case RISCV::PseudoLIaddr:
-    return expandLIaddr(MBB, MBBI);
+  case RISCV::PseudoMovAddr:
+    return expandMovAddr(MBB, MBBI);
 #endif // SIFIVE_CUSTOMIZATION
   default:
     return false;
@@ -124,9 +124,23 @@ bool RISCVPostRAExpandPseudo::expandLIsimm32(MachineBasicBlock &MBB,
   return true;
 }
 
-bool RISCVPostRAExpandPseudo::expandLIaddr(MachineBasicBlock &MBB,
-                                           MachineBasicBlock::iterator MBBI) {
-  TII->expandLIaddr(MBB, MBBI);
+bool RISCVPostRAExpandPseudo::expandMovAddr(MachineBasicBlock &MBB,
+                                            MachineBasicBlock::iterator MBBI) {
+  DebugLoc DL = MBBI->getDebugLoc();
+
+  Register DstReg = MBBI->getOperand(0).getReg();
+  bool DstIsDead = MBBI->getOperand(0).isDead();
+  bool Renamable = MBBI->getOperand(0).isRenamable();
+
+  BuildMI(MBB, MBBI, DL, TII->get(RISCV::LUI))
+      .addReg(DstReg, RegState::Define | getRenamableRegState(Renamable))
+      .add(MBBI->getOperand(1));
+  BuildMI(MBB, MBBI, DL, TII->get(RISCV::ADDI))
+      .addReg(DstReg, RegState::Define | getDeadRegState(DstIsDead) |
+                          getRenamableRegState(Renamable))
+      .addReg(DstReg, RegState::Kill | getRenamableRegState(Renamable))
+      .add(MBBI->getOperand(2));
+  MBBI->eraseFromParent();
   return true;
 }
 #endif // SIFIVE_CUSTOMIZATION

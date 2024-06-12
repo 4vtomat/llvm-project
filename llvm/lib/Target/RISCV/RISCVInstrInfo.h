@@ -268,8 +268,6 @@ public:
 
   void expandLIsimm32(MachineBasicBlock &MBB,
                       MachineBasicBlock::iterator MBBI) const;
-  void expandLIaddr(MachineBasicBlock &MBB,
-                    MachineBasicBlock::iterator MBBI) const;
 
   static unsigned getOverlapConstraintsFromMI(const MCInstrDesc &Desc);
 #endif // SIFIVE_CUSTOMIZATION

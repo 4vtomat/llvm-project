@@ -4019,26 +4019,6 @@ void RISCVInstrInfo::expandLIsimm32(MachineBasicBlock &MBB,
   }
   MI.eraseFromParent();
 }
-
-void RISCVInstrInfo::expandLIaddr(MachineBasicBlock &MBB,
-                                  MachineBasicBlock::iterator MBBI) const {
-  MachineInstr &MI = *MBBI;
-  DebugLoc DL = MBBI->getDebugLoc();
-
-  Register DstReg = MI.getOperand(0).getReg();
-  bool DstIsDead = MI.getOperand(0).isDead();
-  bool Renamable = MI.getOperand(0).isRenamable();
-
-  BuildMI(MBB, MBBI, DL, get(RISCV::LUI))
-      .addReg(DstReg, RegState::Define | getRenamableRegState(Renamable))
-      .add(MI.getOperand(1));
-  BuildMI(MBB, MBBI, DL, get(RISCV::ADDI))
-      .addReg(DstReg, RegState::Define | getDeadRegState(DstIsDead) |
-                          getRenamableRegState(Renamable))
-      .addReg(DstReg, RegState::Kill | getRenamableRegState(Renamable))
-      .add(MI.getOperand(2));
-  MI.eraseFromParent();
-}
 #endif // SIFIVE_CUSTOMIZATION
 
 ArrayRef<std::pair<MachineMemOperand::Flags, const char *>>
