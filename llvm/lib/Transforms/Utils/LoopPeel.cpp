@@ -383,11 +383,11 @@ static unsigned peelToTurnInvariantLoadsDerefencebale(Loop &L,
 //    else
 //      ..
 //   }
-// SIFIVE
+#if SIFIVE_CUSTOMIZATION
 static unsigned countToEliminateCompares(Loop &L, unsigned MaxPeelCount,
                                          unsigned TripCount,
                                          ScalarEvolution &SE, bool PeelProlog) {
-  // end SIFIVE
+#endif // SIFIVE_CUSTOMIZATION
   assert(L.isLoopSimplifyForm() && "Loop needs to be in loop simplify form");
   unsigned DesiredPeelCount = 0;
 
@@ -397,6 +397,25 @@ static unsigned countToEliminateCompares(Loop &L, unsigned MaxPeelCount,
     MaxPeelCount =
         std::min((unsigned)SC->getAPInt().getLimitedValue() - 1, MaxPeelCount);
 
+#if SIFIVE_CUSTOMIZATION
+  // Increase PeelCount while (IterVal Pred BoundSCEV) condition is satisfied;
+  // return true if inversed condition become known before reaching the
+  // MaxPeelCount limit.
+  auto PeelWhilePredicateIsKnown =
+      [&](unsigned &PeelCount, const SCEV *&IterVal, const SCEV *BoundSCEV,
+          const SCEV *Step, ICmpInst::Predicate Pred) {
+        while (PeelCount < MaxPeelCount &&
+               SE.isKnownPredicate(Pred, IterVal, BoundSCEV)) {
+          IterVal = PeelProlog ? SE.getAddExpr(IterVal, Step)
+                               : SE.getMinusSCEV(IterVal, Step);
+          ++PeelCount;
+        }
+        if (!PeelProlog)
+          return SE.isKnownPredicate(Pred, IterVal, BoundSCEV);
+        return SE.isKnownPredicate(ICmpInst::getInversePredicate(Pred), IterVal,
+                                   BoundSCEV);
+      };
+#else
   // Increase PeelCount while (IterVal Pred BoundSCEV) condition is satisfied;
   // return true if inversed condition become known before reaching the
   // MaxPeelCount limit.
@@ -411,6 +430,7 @@ static unsigned countToEliminateCompares(Loop &L, unsigned MaxPeelCount,
         return SE.isKnownPredicate(ICmpInst::getInversePredicate(Pred), IterVal,
                                    BoundSCEV);
       };
+#endif
 
   const unsigned MaxDepth = 4;
   std::function<void(Value *, unsigned)> ComputePeelCount =
@@ -475,57 +495,17 @@ static unsigned countToEliminateCompares(Loop &L, unsigned MaxPeelCount,
       Pred = ICmpInst::getInversePredicate(Pred);
 
     const SCEV *Step = LeftAR->getStepRecurrence(SE);
-<<<<<<< HEAD
-    // SIFIVE
-    // Flip the step direction when evaluating epilog peeling.
-    const SCEV *NextIterVal = (PeelProlog) ? SE.getAddExpr(IterVal, Step)
-                                           : SE.getMinusSCEV(IterVal, Step);
-    auto PeelOneMoreIteration = [&IterVal, &NextIterVal, &SE, Step,
-                                 &NewPeelCount, PeelProlog]() {
-      IterVal = NextIterVal;
-      NextIterVal = (PeelProlog) ? SE.getAddExpr(IterVal, Step)
-                                 : SE.getMinusSCEV(IterVal, Step);
-      NewPeelCount++;
-    };
-    // end SIFIVE
-
-    auto CanPeelOneMoreIteration = [&NewPeelCount, &MaxPeelCount]() {
-      return NewPeelCount < MaxPeelCount;
-    };
-
-    while (CanPeelOneMoreIteration() &&
-           SE.isKnownPredicate(Pred, IterVal, RightSCEV))
-      PeelOneMoreIteration();
-
-#if SIFIVE_CUSTOMIZATION
-    // With *that* peel count, does the predicate !Pred become known in the
-    // first iteration of the loop body after prolog peeling?
-    if (PeelProlog && !SE.isKnownPredicate(CmpInst::getInversePredicate(Pred),
-                                           IterVal, RightSCEV))
-      return; // If not, give up.
-
-    // With *that* peel count, is the predicate Pred still known in the
-    // IterVal iteration of the loop body after epilog peeling?  This means we
-    // have reached MaxPeelCount iterations and have not found a partition
-    // point.
-    if (!PeelProlog && SE.isKnownPredicate(Pred, IterVal, RightSCEV))
-      return; // If not, give up.
-#else
-    // first iteration of the loop body after peeling?
-    if (!SE.isKnownPredicate(ICmpInst::getInversePredicate(Pred), IterVal,
-                             RightSCEV))
-      return; // If not, give up.
-#endif // SIFIVE_CUSTOMIZATION
-=======
     if (!PeelWhilePredicateIsKnown(NewPeelCount, IterVal, RightSCEV, Step,
                                    Pred))
       return;
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 
     // However, for equality comparisons, that isn't always sufficient to
     // eliminate the comparsion in loop body, we may need to peel one more
     // iteration. See if that makes !Pred become unknown again.
-    const SCEV *NextIterVal = SE.getAddExpr(IterVal, Step);
+#if SIFIVE_CUSTOMIZATION
+    const SCEV *NextIterVal = PeelProlog ? SE.getAddExpr(IterVal, Step)
+                                         : SE.getMinusSCEV(IterVal, Step);
+#endif // SIFIVE_CUSTOMIZATION
     if (ICmpInst::isEquality(Pred) &&
         !SE.isKnownPredicate(ICmpInst::getInversePredicate(Pred), NextIterVal,
                              RightSCEV) &&
@@ -540,6 +520,10 @@ static unsigned countToEliminateCompares(Loop &L, unsigned MaxPeelCount,
   };
 
   auto ComputePeelCountMinMax = [&](MinMaxIntrinsic *MinMax) {
+#if SIFIVE_CUSTOMIZATION
+    if (!PeelProlog)
+      return;
+#endif
     if (!MinMax->getType()->isIntegerTy())
       return;
     Value *LHS = MinMax->getLHS(), *RHS = MinMax->getRHS();
