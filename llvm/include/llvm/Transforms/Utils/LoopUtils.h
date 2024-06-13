@@ -432,7 +432,7 @@ Value *createSimpleTargetReduction(IRBuilderBase &B, Value *Src,
 
 #if SIFIVE_CUSTOMIZATION
 Value *createSimpleTargetReduction(IRBuilderBase &B, Value *Src,
-                                   RecurKind RdxKind, Value *RVL,
+                                   RecurKind RdxKind, Value *EVL,
                                    Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -446,7 +446,7 @@ Value *createAnyOfTargetReduction(IRBuilderBase &B, Value *Src,
 #if SIFIVE_CUSTOMIZATION
 Value *createAnyOfTargetReduction(IRBuilderBase &B, Value *Src,
                                   const RecurrenceDescriptor &Desc,
-                                  PHINode *OrigPhi, Value *RVL);
+                                  PHINode *OrigPhi, Value *EVL);
 
 /// Create a target reduction of the given vector \p Src for a reduction of the
 /// kind RecurKind::IFindLastIV or RecurKind::FFindLastIV. The reduction
@@ -456,7 +456,7 @@ Value *createFindLastIVTargetReduction(IRBuilderBase &B, Value *Src,
 
 Value *createFindLastIVTargetReduction(IRBuilderBase &B, Value *Src,
                                        const RecurrenceDescriptor &Desc,
-                                       Value *RVL);
+                                       Value *EVL);
 #endif // SIFIVE_CUSTOMIZATION
 
 /// Create a generic target reduction using a recurrence descriptor \p Desc
@@ -465,7 +465,7 @@ Value *createFindLastIVTargetReduction(IRBuilderBase &B, Value *Src,
 /// Fast-math-flags are propagated using the RecurrenceDescriptor.
 #if SIFIVE_CUSTOMIZATION
 Value *createTargetReduction(IRBuilderBase &B, const RecurrenceDescriptor &Desc,
-                             Value *Src, Value *RVL, PHINode *OrigPhi = nullptr,
+                             Value *Src, Value *EVL, PHINode *OrigPhi = nullptr,
                              Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 Value *createTargetReduction(IRBuilderBase &B, const RecurrenceDescriptor &Desc,
@@ -480,7 +480,7 @@ Value *createOrderedReduction(IRBuilderBase &B,
 #if SIFIVE_CUSTOMIZATION
 Value *createOrderedReduction(IRBuilderBase &B,
                               const RecurrenceDescriptor &Desc, Value *Src,
-                              Value *Start, Value *RVL, Value *Mask = nullptr);
+                              Value *Start, Value *EVL, Value *Mask = nullptr);
 
 /// Returns a set of cmp and select instructions as shown below:
 ///   Select(Cmp(NE, Rdx, Iden), Rdx, InitVal)

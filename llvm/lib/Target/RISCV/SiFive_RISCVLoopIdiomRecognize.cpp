@@ -526,7 +526,7 @@ Value *RISCVLoopIdiomRecognize::expandFindMismatch(
   auto *IsScalable = ConstantInt::getBool(
       Builder.getContext(), RVVLoadType->getElementCount().isScalable());
 
-  Value *RVL =
+  Value *EVL =
       Builder.CreateIntrinsic(Intrinsic::experimental_get_vector_length,
                               {I64Type}, {AVL, VF, IsScalable});
   Value *GepOffset = RVVIndexPhi;
@@ -537,25 +537,25 @@ Value *RISCVLoopIdiomRecognize::expandFindMismatch(
   Value *AllTrueMask = Builder.getTrueVector(RVVLoadType->getElementCount());
   Value *RVVLhsLoad = Builder.CreateIntrinsic(
       Intrinsic::vp_load, {RVVLoadType, RVVLhsGep->getType()},
-      {RVVLhsGep, AllTrueMask, RVL}, nullptr, "lhs.load");
+      {RVVLhsGep, AllTrueMask, EVL}, nullptr, "lhs.load");
 
   Value *RVVRhsGep = Builder.CreateGEP(LoadType, PtrB, GepOffset);
   if (GEPB->isInBounds())
     cast<GetElementPtrInst>(RVVRhsGep)->setIsInBounds(true);
   Value *RVVRhsLoad = Builder.CreateIntrinsic(
       Intrinsic::vp_load, {RVVLoadType, RVVLhsGep->getType()},
-      {RVVRhsGep, AllTrueMask, RVL}, nullptr, "rhs.load");
+      {RVVRhsGep, AllTrueMask, EVL}, nullptr, "rhs.load");
 
   StringRef PredicateStr = CmpInst::getPredicateName(CmpInst::ICMP_NE);
   auto *PredicateMDS = MDString::get(RVVLhsLoad->getContext(), PredicateStr);
   Value *Pred = MetadataAsValue::get(RVVLhsLoad->getContext(), PredicateMDS);
   Value *RVVMatchCmp =
       Builder.CreateIntrinsic(Intrinsic::vp_icmp, {RVVLhsLoad->getType()},
-                              {RVVLhsLoad, RVVRhsLoad, Pred, AllTrueMask, RVL},
+                              {RVVLhsLoad, RVVRhsLoad, Pred, AllTrueMask, EVL},
                               nullptr, "mismatch.cmp");
   Value *First = Builder.CreateIntrinsic(
       Intrinsic::vp_first, {RVVMatchCmp->getType()},
-      {RVVMatchCmp, AllTrueMask, RVL}, nullptr, "first");
+      {RVVMatchCmp, AllTrueMask, EVL}, nullptr, "first");
   Value *MismatchFound =
       Builder.CreateICmpSGE(First, ConstantInt::get(First->getType(), 0));
   auto *RVVEarlyExit =
@@ -566,8 +566,8 @@ Value *RISCVLoopIdiomRecognize::expandFindMismatch(
   // iteration of the loop. We branch back to the start of the loop if there
   // is at least one active lane.
   Builder.SetInsertPoint(RVVLoopIncBlock);
-  Value *RVL64 = Builder.CreateZExt(RVL, I64Type);
-  Value *NewRVVIndexPhi = Builder.CreateAdd(RVVIndexPhi, RVL64, "",
+  Value *EVL64 = Builder.CreateZExt(EVL, I64Type);
+  Value *NewRVVIndexPhi = Builder.CreateAdd(RVVIndexPhi, EVL64, "",
                                             /*HasNUW=*/true, /*HasNSW=*/true);
   RVVIndexPhi->addIncoming(NewRVVIndexPhi, RVVLoopIncBlock);
   Value *ExitCond = Builder.CreateICmpNE(NewRVVIndexPhi, ExtEnd);

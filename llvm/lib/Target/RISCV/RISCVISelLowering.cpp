@@ -24490,10 +24490,10 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
     return false;
 
   IRBuilder<> Builder(VPLoad);
-  Value *WideRVL = VPLoad->getOperand(2);
+  Value *WideEVL = VPLoad->getOperand(2);
   auto *XLenTy = Type::getIntNTy(VPLoad->getContext(), Subtarget.getXLen());
-  Value *RVL = Builder.CreateZExtOrTrunc(
-      Builder.CreateUDiv(WideRVL, ConstantInt::get(WideRVL->getType(), Factor)),
+  Value *EVL = Builder.CreateZExtOrTrunc(
+      Builder.CreateUDiv(WideEVL, ConstantInt::get(WideEVL->getType(), Factor)),
       XLenTy);
 
   static const Intrinsic::ID IntrMaskIds[] = {
@@ -24517,14 +24517,14 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
     Operands.push_back(Mask);
   }
 
-  Operands.push_back(RVL);
+  Operands.push_back(EVL);
 
   // Tail-policy
   if (Mask)
     Operands.push_back(ConstantInt::get(XLenTy, 1));
 
   Function *VlsegNFunc = Intrinsic::getDeclaration(
-      VPLoad->getModule(), VlsegNID, {VTy, RVL->getType()});
+      VPLoad->getModule(), VlsegNID, {VTy, EVL->getType()});
   CallInst *VlsegN = Builder.CreateCall(VlsegNFunc, Operands);
   DeinterleaveIntrin->replaceAllUsesWith(VlsegN);
 
@@ -24626,10 +24626,10 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
     }
 
   IRBuilder<> Builder(VPStore);
-  Value *WideRVL = VPStore->getOperand(3);
+  Value *WideEVL = VPStore->getOperand(3);
   auto *XLenTy = Type::getIntNTy(VPStore->getContext(), Subtarget.getXLen());
-  Value *RVL = Builder.CreateZExtOrTrunc(
-      Builder.CreateUDiv(WideRVL, ConstantInt::get(WideRVL->getType(), Factor)),
+  Value *EVL = Builder.CreateZExtOrTrunc(
+      Builder.CreateUDiv(WideEVL, ConstantInt::get(WideEVL->getType(), Factor)),
       XLenTy);
 
   static const Intrinsic::ID IntrMaskIds[] = {
@@ -24652,9 +24652,9 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
     Operands.push_back(Mask);
   }
 
-  Operands.push_back(RVL);
+  Operands.push_back(EVL);
   Function *VssegNFunc = Intrinsic::getDeclaration(
-      VPStore->getModule(), VssegNID, {VTy, RVL->getType()});
+      VPStore->getModule(), VssegNID, {VTy, EVL->getType()});
 
   Builder.CreateCall(VssegNFunc, Operands);
   return true;
@@ -24690,10 +24690,10 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
 bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
     Instruction *StridedLoad, IntrinsicInst *DI, unsigned Factor) const {
   using namespace llvm::PatternMatch;
-  Value *BasePtr, *Stride, *Mask, *RVL;
+  Value *BasePtr, *Stride, *Mask, *EVL;
   if (!match(StridedLoad, m_Intrinsic<Intrinsic::experimental_vp_strided_load>(
                               m_Value(BasePtr), m_Value(Stride), m_Value(Mask),
-                              m_Value(RVL))))
+                              m_Value(EVL))))
     return false;
 
   [[maybe_unused]] auto *DISrcTy =
@@ -24721,7 +24721,7 @@ bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
       Type::getIntNTy(StridedLoad->getContext(), Subtarget.getXLen());
   assert(Stride->getType() == XLenTy &&
          "The type of stride must be the XLEN integer type.");
-  RVL = Builder.CreateZExtOrTrunc(RVL, XLenTy);
+  EVL = Builder.CreateZExtOrTrunc(EVL, XLenTy);
 
   static const Intrinsic::ID IntrMaskIds[] = {
       Intrinsic::riscv_vlsseg2_mask, Intrinsic::riscv_vlsseg3_mask,
@@ -24748,7 +24748,7 @@ bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
     Operands.push_back(Mask);
   }
 
-  Operands.push_back(RVL);
+  Operands.push_back(EVL);
 
   // Set the tail policy to tail-agnostic, mask-agnostic (tama) for masked
   // intrinsics
@@ -24756,7 +24756,7 @@ bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
     Operands.push_back(ConstantInt::get(XLenTy, 3));
 
   Function *VlssegNFunc = Intrinsic::getDeclaration(
-      StridedLoad->getModule(), VlssegNID, {ResTy, RVL->getType()});
+      StridedLoad->getModule(), VlssegNID, {ResTy, EVL->getType()});
   CallInst *VlssegN = Builder.CreateCall(VlssegNFunc, Operands);
   DI->replaceAllUsesWith(VlssegN);
 

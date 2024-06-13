@@ -745,10 +745,10 @@ RISCVTTIImpl::getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
   unsigned MaxRVVVectorSize = MinRVVVectorSize * LMULMax;
 
   if (IsScalable) {
-    // Since RVL would be clamped by the safe dependence distance,
-    // we don't return `vscale x 0` if the smallest vector register size is
-    // still larger than MaxSafeRegisterWidth. Let the cost model make the
-    // vectorization decision.
+    // Since EVL would be clamped by the safe dependence distance, we don't
+    // return `vscale x 0` if the smallest vector register size is still larger
+    // than MaxSafeRegisterWidth. Let the cost model make the vectorization
+    // decision.
 
     int EC = RISCV::RVVBitsPerBlock / ST->getELen();
     int MaxEC = EC;
