@@ -4325,114 +4325,12 @@ void InnerLoopVectorizer::fixFixedOrderRecurrence(VPLiveOut *LO,
                                                   VPTransformState &State) {
   // Extract the last vector element in the middle block. This will be the
   // initial value for the recurrence when jumping to the scalar loop.
-<<<<<<< HEAD
-  VPValue *PreviousDef = PhiR->getBackedgeValue();
-  Value *Incoming = State.get(PreviousDef, UF - 1);
-  auto *ExtractForScalar = Incoming;
-  auto *IdxTy = Builder.getInt32Ty();
-#if SIFIVE_CUSTOMIZATION
-  Value *EVL =
-      State.EVL ? State.get(State.EVL, 0, /*NeedsScalar=*/true) : nullptr;
-#endif // SIFIVE_CUSTOMIZATION
-  Value *RuntimeVF = nullptr;
-  if (VF.isVector()) {
-    auto *One = ConstantInt::get(IdxTy, 1);
-    Builder.SetInsertPoint(LoopMiddleBlock->getTerminator());
-#if SIFIVE_CUSTOMIZATION
-    // TODO: This code is better to be changed to use VPLane::getLastLaneForVF
-    // or even better to have VPLane::getLastLane(unsigned). The problem with
-    // current function in VPLane is it does use different lane kind for fixed
-    // and scalable vectors, which makes it hard to use here. Also for RVV VLA
-    // we have to provide offset from the last lane.
-    RuntimeVF = EVL ? EVL : getRuntimeVF(Builder, IdxTy, VF);
-#endif // SIFIVE_CUSTOMIZATION
-    auto *LastIdx = Builder.CreateSub(RuntimeVF, One);
-    ExtractForScalar =
-        Builder.CreateExtractElement(Incoming, LastIdx, "vector.recur.extract");
-  }
-
-  auto RecurSplice = cast<VPInstruction>(*PhiR->user_begin());
-  assert(PhiR->getNumUsers() == 1 &&
-         RecurSplice->getOpcode() ==
-             VPInstruction::FirstOrderRecurrenceSplice &&
-         "recurrence phi must have a single user: FirstOrderRecurrenceSplice");
-  SmallVector<VPLiveOut *> LiveOuts;
-  for (VPUser *U : RecurSplice->users())
-    if (auto *LiveOut = dyn_cast<VPLiveOut>(U))
-      LiveOuts.push_back(LiveOut);
-
-  if (!LiveOuts.empty()) {
-    // Extract the second last element in the middle block if the
-    // Phi is used outside the loop. We need to extract the phi itself
-    // and not the last element (the phi update in the current iteration). This
-    // will be the value when jumping to the exit block from the
-    // LoopMiddleBlock, when the scalar loop is not run at all.
-    Value *ExtractForPhiUsedOutsideLoop = nullptr;
-    if (VF.isVector()) {
-      auto *Idx = Builder.CreateSub(RuntimeVF, ConstantInt::get(IdxTy, 2));
-      ExtractForPhiUsedOutsideLoop = Builder.CreateExtractElement(
-          Incoming, Idx, "vector.recur.extract.for.phi");
-#if SIFIVE_CUSTOMIZATION
-      if (EVL) {
-        // Take care of the corner case when last vector iteration processed just
-        // one element. In this case extract of the `EVL-2` element of the
-        // `PreviousDef`(`v2`) doesn't make sense as it will be overwritten on the
-        // last iteration.
-        //
-        //   vector.ph:
-        //     v_init = vector(..., ..., ..., a[-1])
-        //     initial_vl = vsetvli tripcount
-        //     br vector.body
-        //
-        //   vector.body
-        //     i = phi [0, vector.ph], [i+4, vector.body]
-        //     v1 = phi [v_init, vector.ph], [v2, vector.body]
-        //     prev.rvl = phi i32 [ %initial_vl, %vector.ph ], [ %rvl, %vector.body ]
-        //
-        //     v2 = a[i, i+1, i+2, i+3];
-        //     v3 = vector(v1(3), v2(0, 1, 2))
-        //     b[i, i+1, i+2, i+3] = v2 - v3
-        //     br cond, vector.body, middle.block
-        //
-        // Take the value of the `PhiR`(`v1`) as it contains value from the
-        // previous iteration (or the initial value) and extract last lane using
-        // `PrevEVL`(`prev.rvl`)
-        Value *Cond =
-            Builder.CreateICmpEQ(EVL, ConstantInt::get(EVL->getType(), 1));
-
-        Idx = Builder.CreateSub(
-            State.get(State.Plan->getPrevEVL(), 0, /*NeedsScalar=*/true),
-            ConstantInt::get(IdxTy, 1));
-        Value *PreviousValue = Builder.CreateExtractElement(
-            State.get(PhiR, UF - 1), Idx, "vector.recur.prev.extract");
-        ExtractForPhiUsedOutsideLoop =
-            Builder.CreateSelect(Cond, PreviousValue, ExtractForPhiUsedOutsideLoop);
-      }
-#endif // SIFIVE_CUSTOMIZATION
-    } else {
-      assert(UF > 1 && "VF and UF cannot both be 1");
-      // When loop is unrolled without vectorizing, initialize
-      // ExtractForPhiUsedOutsideLoop with the value just prior to unrolled
-      // value of `Incoming`. This is analogous to the vectorized case above:
-      // extracting the second last element when VF > 1.
-      ExtractForPhiUsedOutsideLoop = State.get(PreviousDef, UF - 2);
-    }
-
-    for (VPLiveOut *LiveOut : LiveOuts) {
-      assert(!Cost->requiresScalarEpilogue(VF.isVector()));
-      PHINode *LCSSAPhi = LiveOut->getPhi();
-      LCSSAPhi->addIncoming(ExtractForPhiUsedOutsideLoop, LoopMiddleBlock);
-      State.Plan->removeLiveOut(LCSSAPhi);
-    }
-  }
-=======
   VPValue *VPExtract = LO->getOperand(0);
   using namespace llvm::VPlanPatternMatch;
   assert(match(VPExtract, m_VPInstruction<VPInstruction::ExtractFromEnd>(
                               m_VPValue(), m_VPValue())) &&
          "FOR LiveOut expects to use an extract from end.");
   Value *ResumeScalarFOR = State.get(VPExtract, UF - 1, true);
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 
   // Fix the initial value of the original recurrence in the scalar loop.
   PHINode *ScalarHeaderPhi = LO->getPhi();
@@ -9526,15 +9424,10 @@ LoopVectorizationPlanner::executePlan(
       "expanded SCEVs to reuse can only be used during epilogue vectorization");
   (void)IsEpilogueVectorization;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (!BestVPlan.isUncountable())
 #endif
-  if (!IsEpilogueVectorization)
-    VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
-=======
   VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 
   LLVM_DEBUG(dbgs() << "Executing best plan with VF=" << BestVF
                     << ", UF=" << BestUF << '\n');
@@ -9542,22 +9435,16 @@ LoopVectorizationPlanner::executePlan(
   LLVM_DEBUG(BestVPlan.dump());
 
   // Perform the actual loop transformation.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   VPTransformState State{
-      BestVF,        BestUF, LI,         EnableVPlanNativePath ? nullptr : DT,
+      BestVF,        BestUF, LI,         DT,
       ILV.Builder,   &ILV,   &BestVPlan, OrigLoop->getHeader()->getContext(),
       EnableRISCVCSA};
   BestVPlan.initializeMasks(State);
 #else
-  VPTransformState State(BestVF, BestUF, LI,
-                         EnableVPlanNativePath ? nullptr : DT, ILV.Builder,
-                         &ILV, &BestVPlan, OrigLoop->getHeader()->getContext());
-#endif // SIFIVE_CUSTOMIZATION
-=======
   VPTransformState State(BestVF, BestUF, LI, DT, ILV.Builder, &ILV, &BestVPlan,
                          OrigLoop->getHeader()->getContext());
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
+#endif // SIFIVE_CUSTOMIZATION
 
   // 0. Generate SCEV-dependent code into the preheader, including TripCount,
   // before making any changes to the CFG.

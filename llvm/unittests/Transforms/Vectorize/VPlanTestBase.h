@@ -67,21 +67,15 @@ protected:
     assert(!verifyFunction(F) && "input function must be valid");
     doAnalysis(F);
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    auto Plan = VPlan::createInitialVPlan(
-        SE->getBackedgeTakenCount(LI->getLoopFor(LoopHeader)), *SE, false);
-#else
-    auto Plan = VPlan::createInitialVPlan(
-        SE->getBackedgeTakenCount(LI->getLoopFor(LoopHeader)), *SE);
-#endif // SIFIVE_CUSTOMIZATION
-    VPlanHCFGBuilder HCFGBuilder(LI->getLoopFor(LoopHeader), LI.get(), *Plan);
-=======
     Loop *L = LI->getLoopFor(LoopHeader);
+#if SIFIVE_CUSTOMIZATION
+    auto Plan = VPlan::createInitialVPlan(SE->getBackedgeTakenCount(L), *SE,
+                                          L->getLoopPreheader(), false);
+#else
     auto Plan = VPlan::createInitialVPlan(SE->getBackedgeTakenCount(L), *SE,
                                           L->getLoopPreheader());
+#endif // SIFIVE_CUSTOMIZATION
     VPlanHCFGBuilder HCFGBuilder(L, LI.get(), *Plan);
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
     HCFGBuilder.buildHierarchicalCFG();
     return Plan;
   }
@@ -92,21 +86,15 @@ protected:
     assert(!verifyFunction(F) && "input function must be valid");
     doAnalysis(F);
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    auto Plan = VPlan::createInitialVPlan(
-        SE->getBackedgeTakenCount(LI->getLoopFor(LoopHeader)), *SE, false);
-#else
-    auto Plan = VPlan::createInitialVPlan(
-        SE->getBackedgeTakenCount(LI->getLoopFor(LoopHeader)), *SE);
-#endif // SIFIVE_CUSTOMIZATION
-    VPlanHCFGBuilder HCFGBuilder(LI->getLoopFor(LoopHeader), LI.get(), *Plan);
-=======
     Loop *L = LI->getLoopFor(LoopHeader);
+#if SIFIVE_CUSTOMIZATION
+    auto Plan = VPlan::createInitialVPlan(SE->getBackedgeTakenCount(L), *SE,
+                                          L->getLoopPreheader(), false);
+#else
     auto Plan = VPlan::createInitialVPlan(SE->getBackedgeTakenCount(L), *SE,
                                           L->getLoopPreheader());
+#endif // SIFIVE_CUSTOMIZATION
     VPlanHCFGBuilder HCFGBuilder(L, LI.get(), *Plan);
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
     HCFGBuilder.buildPlainCFG();
     return Plan;
   }

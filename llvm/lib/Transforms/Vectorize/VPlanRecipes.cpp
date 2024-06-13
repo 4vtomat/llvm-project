@@ -375,6 +375,12 @@ bool VPInstruction::canGenerateScalarForFirstLane() const {
   case VPInstruction::CanonicalIVIncrementForPart:
   case VPInstruction::PtrAdd:
   case VPInstruction::ExplicitVectorLength:
+#if SIFIVE_CUSTOMIZATION
+  case VPInstruction::CSAVLSel:
+  case VPInstruction::CSAVLPhi:
+  case VPInstruction::CSAAnyActive:
+  case VPInstruction::ExitingCond:
+#endif // SIFIVE_CUSTOMIZATION
     return true;
   default:
     return false;
@@ -894,6 +900,59 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
     return ReducedPartRdx;
   }
   case VPInstruction::ExtractFromEnd: {
+#if SIFIVE_CUSTOMIZATION
+    if (State.EVL && State.VF.isVector()) {
+      auto *FOR = dyn_cast<VPInstruction>(getOperand(0));
+      if (FOR) {
+        if (auto *FORPhi =
+                dyn_cast<VPFirstOrderRecurrencePHIRecipe>(FOR->getOperand(0))) {
+          Value *EVL = State.get(State.EVL, 0, /*NeedsScalar=*/true);
+          auto *IdxTy = Builder.getInt32Ty();
+          auto *Idx = Builder.CreateSub(EVL, ConstantInt::get(IdxTy, 2));
+          VPValue *PreviousDef = FORPhi->getBackedgeValue();
+          Value *Incoming = State.get(PreviousDef, 0);
+          Value *ExtractForPhiUsedOutsideLoop = Builder.CreateExtractElement(
+              Incoming, Idx, "vector.recur.extract.for.phi");
+          // Take care of the corner case when last vector iteration processed
+          // just one element. In this case extract of the `EVL-2` element of
+          // the `PreviousDef`(`v2`) doesn't make sense as it will be
+          // overwritten on the last iteration.
+          //
+          //   vector.ph:
+          //     v_init = vector(..., ..., ..., a[-1])
+          //     initial_vl = vsetvli tripcount
+          //     br vector.body
+          //
+          //   vector.body
+          //     i = phi [0, vector.ph], [i+4, vector.body]
+          //     v1 = phi [v_init, vector.ph], [v2, vector.body]
+          //     prev.rvl = phi i32 [ %initial_vl, %vector.ph ], [ %rvl,
+          //     %vector.body ]
+          //
+          //     v2 = a[i, i+1, i+2, i+3];
+          //     v3 = vector(v1(3), v2(0, 1, 2))
+          //     b[i, i+1, i+2, i+3] = v2 - v3
+          //     br cond, vector.body, middle.block
+          //
+          // Take the value of the `PhiR`(`v1`) as it contains value from the
+          // previous iteration (or the initial value) and extract last lane
+          // using `PrevEVL`(`prev.rvl`)
+          Value *Cond =
+              Builder.CreateICmpEQ(EVL, ConstantInt::get(EVL->getType(), 1));
+
+          Idx = Builder.CreateSub(
+              State.get(State.Plan->getPrevEVL(), 0, /*NeedsScalar=*/true),
+              ConstantInt::get(IdxTy, 1));
+          Value *PreviousValue = Builder.CreateExtractElement(
+              State.get(FORPhi, 0), Idx, "vector.recur.prev.extract");
+          ExtractForPhiUsedOutsideLoop = Builder.CreateSelect(
+              Cond, PreviousValue, ExtractForPhiUsedOutsideLoop);
+          ExtractForPhiUsedOutsideLoop->setName(Name);
+          return ExtractForPhiUsedOutsideLoop;
+        }
+      }
+    }
+#endif // SIFIVE_CUSTOMIZATION
     if (Part != 0)
       return State.get(this, 0, /*IsScalar*/ true);
 
@@ -963,9 +1022,7 @@ void VPInstruction::execute(VPTransformState &State) {
   State.setDebugLocFrom(getDebugLoc());
   bool GeneratesPerFirstLaneOnly =
       canGenerateScalarForFirstLane() &&
-<<<<<<< HEAD
-      (vputils::onlyFirstLaneUsed(this) ||
-       getOpcode() == VPInstruction::ComputeReductionResult);
+      (vputils::onlyFirstLaneUsed(this) || isVectorToScalar());
 #if SIFIVE_CUSTOMIZATION
   GeneratesPerFirstLaneOnly = GeneratesPerFirstLaneOnly ||
                               getOpcode() == VPInstruction::CSAVLSel ||
@@ -973,9 +1030,6 @@ void VPInstruction::execute(VPTransformState &State) {
                               getOpcode() == VPInstruction::CSAAnyActive ||
                               getOpcode() == VPInstruction::ExitingCond;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      (vputils::onlyFirstLaneUsed(this) || isVectorToScalar());
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
   bool GeneratesPerAllLanes = doesGeneratePerAllLanes();
   for (unsigned Part = 0; Part < State.UF; ++Part) {
     if (GeneratesPerAllLanes) {
