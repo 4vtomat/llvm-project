@@ -15105,6 +15105,85 @@ static SDValue combineTruncSelectToSMaxUSat(SDNode *N, SelectionDAG &DAG) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+#if SIFIVE_CUSTOMIZATION
+// Fold (vXi8 (trunc (vselect (setltu, X, 256), X, (sext (setgt X, 0))))) to
+// (vXi8 (trunc (smin (smax X, 0), 255))). This represents saturating a signed
+// value to an unsigned value. This will be lowered to vmax and series of
+// vnclipu instructions later. This can be extended to other truncated types
+// other than i8 by replacing 256 and 255 with the equivalent constants for the
+// type.
+static SDValue combineVPTruncSelectToSMaxUSat(SDNode *N, SelectionDAG &DAG) {
+  EVT VT = N->getValueType(0);
+  SDValue N0 = N->getOperand(0);
+  EVT SrcVT = N0.getValueType();
+
+  const TargetLowering &TLI = DAG.getTargetLoweringInfo();
+  if (!VT.isVector() || !TLI.isTypeLegal(VT) || !TLI.isTypeLegal(SrcVT))
+    return SDValue();
+
+  SDValue Mask = N->getOperand(1);
+  SDValue EVL = N->getOperand(2);
+
+  if (N0.getOpcode() != ISD::VP_SELECT || !N0.hasOneUse() ||
+      N0.getOperand(3) != EVL)
+    return SDValue();
+
+  SDValue Cond = N0.getOperand(0);
+  SDValue True = N0.getOperand(1);
+  SDValue False = N0.getOperand(2);
+
+  if (Cond.getOpcode() != ISD::VP_SETCC || Cond.getOperand(3) != Mask ||
+      Cond.getOperand(4) != EVL)
+    return SDValue();
+
+  // FIXME: Support the version of this pattern with the select operands
+  // swapped.
+  ISD::CondCode CCVal = cast<CondCodeSDNode>(Cond.getOperand(2))->get();
+  if (CCVal != ISD::SETULT)
+    return SDValue();
+
+  SDValue CondLHS = Cond.getOperand(0);
+  SDValue CondRHS = Cond.getOperand(1);
+
+  if (CondLHS != True)
+    return SDValue();
+
+  unsigned ScalarBits = VT.getScalarSizeInBits();
+
+  // FIXME: Support other constants.
+  ConstantSDNode *CondRHSC = isConstOrConstSplat(CondRHS);
+  if (!CondRHSC || CondRHSC->getAPIntValue() != (1ULL << ScalarBits))
+    return SDValue();
+
+  if (False.getOpcode() != ISD::VP_SIGN_EXTEND || False.getOperand(1) != Mask ||
+      False.getOperand(2) != EVL)
+    return SDValue();
+
+  False = False.getOperand(0);
+
+  if (False.getOpcode() != ISD::VP_SETCC || False.getOperand(0) != True ||
+      False.getOperand(3) != Mask || False.getOperand(4) != EVL)
+    return SDValue();
+
+  ConstantSDNode *FalseRHSC = isConstOrConstSplat(False.getOperand(1));
+  if (!FalseRHSC || !FalseRHSC->isZero())
+    return SDValue();
+
+  ISD::CondCode CCVal2 = cast<CondCodeSDNode>(False.getOperand(2))->get();
+  if (CCVal2 != ISD::SETGT)
+    return SDValue();
+
+  // Emit the signed to unsigned saturation pattern.
+  SDLoc DL(N);
+  SDValue Max = DAG.getNode(ISD::VP_SMAX, DL, SrcVT, True,
+                            DAG.getConstant(0, DL, SrcVT), Mask, EVL);
+  SDValue Min = DAG.getNode(
+      ISD::VP_SMIN, DL, SrcVT, Max,
+      DAG.getConstant((1ULL << ScalarBits) - 1, DL, SrcVT), Mask, EVL);
+  return DAG.getNode(ISD::VP_TRUNCATE, DL, VT, Min, Mask, EVL);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 static SDValue performTRUNCATECombine(SDNode *N, SelectionDAG &DAG,
                                       const RISCVSubtarget &Subtarget) {
   SDValue N0 = N->getOperand(0);
@@ -18983,6 +19062,8 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     if (SDValue V = combineTruncOfSraSext(N, DAG))
       return V;
     return combineTruncToVnclip(N, DAG, Subtarget);
+  case ISD::VP_TRUNCATE:
+    return combineVPTruncSelectToSMaxUSat(N, DAG);
 #endif // SIFIVE_CUSTOMIZATION
   case ISD::TRUNCATE:
     return performTRUNCATECombine(N, DAG, Subtarget);
