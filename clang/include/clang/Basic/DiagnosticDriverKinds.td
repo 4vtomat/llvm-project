@@ -553,7 +553,7 @@ def err_drv_extract_api_wrong_kind : Error<
 #ifdef SIFIVE_CUSTOMIZATION
 def warn_drv_multilib_fallback : Warning<
   "%0 option unrecognized in multi-lib configuration when parsing config "
-  "from GCC, falling back to built-in multi-lib configuration.">,
+  "from GCC, falling back to built-in multi-lib configuration">,
   InGroup<MultilibFallback>;
 #endif
 

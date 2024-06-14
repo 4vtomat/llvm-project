@@ -46,7 +46,7 @@
 // RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk_bad \
 // RUN:   --print-multi-lib 2>&1 \
 // RUN:   | FileCheck -check-prefix=C-RV64-GCC-MULTI-LIB-BAD %s
-// C-RV64-GCC-MULTI-LIB-BAD: warning: xxx option unrecognized in multi-lib configuration when parsing config from GCC, falling back to built-in multi-lib configuration. [-Wmultilib-fallback]
+// C-RV64-GCC-MULTI-LIB-BAD: warning: xxx option unrecognized in multi-lib configuration when parsing config from GCC, falling back to built-in multi-lib configuration [-Wmultilib-fallback]
 
 // RUN: %clang %s \
 // RUN:   -### -v \
