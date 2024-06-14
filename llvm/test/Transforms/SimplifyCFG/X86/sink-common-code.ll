@@ -486,7 +486,7 @@ define i32 @test14(i1 zeroext %flag, i32 %w, i32 %x, i32 %y, ptr %s) {
 ; CHECK-NEXT:    [[GEPB:%.*]] = getelementptr inbounds [[STRUCT_ANON]], ptr [[S]], i32 0, i32 1
 ; CHECK-NEXT:    [[SV2:%.*]] = load i32, ptr [[GEPB]], align 4
 ; CHECK-NEXT:    [[CMP2:%.*]] = icmp eq i32 [[SV2]], 57
-; CHECK-NEXT:    call void @llvm.dbg.value(metadata i32 0, metadata [[META7:![0-9]+]], metadata !DIExpression()), !dbg [[DBG9:![0-9]+]]
+; CHECK-NEXT:    tail call void @llvm.dbg.value(metadata i32 0, metadata [[META7:![0-9]+]], metadata !DIExpression()), !dbg [[DBG9:![0-9]+]]
 ; CHECK-NEXT:    br label [[IF_END]]
 ; CHECK:       if.end:
 ; CHECK-NEXT:    [[P:%.*]] = phi i1 [ [[CMP1]], [[IF_THEN]] ], [ [[CMP2]], [[IF_ELSE]] ]
@@ -1576,11 +1576,7 @@ end:
 define void @nontemporal(ptr %ptr, i1 %cond) {
 ; CHECK-LABEL: @nontemporal(
 ; CHECK-NEXT:  entry:
-<<<<<<< HEAD
 ; CHECK-NEXT:    store i64 0, ptr [[PTR:%.*]], align 8, !nontemporal [[META10:![0-9]+]]
-=======
-; CHECK-NEXT:    store i64 0, ptr [[PTR:%.*]], align 8, !nontemporal [[META7:![0-9]+]]
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
 ; CHECK-NEXT:    ret void
 ;
 entry:
