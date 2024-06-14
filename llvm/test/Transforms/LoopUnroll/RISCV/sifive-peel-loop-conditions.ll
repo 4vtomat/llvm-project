@@ -18,9 +18,97 @@ define void @test1_epilog_peeling(i32 %k) {
 ; CHECK-NEXT:    call void @f1()
 ; CHECK-NEXT:    br label [[FOR_INC]]
 ; CHECK:       for.inc:
-; CHECK-NEXT:    [[INC]] = add nsw i32 [[I_05]], 1
-; CHECK-NEXT:    [[CMP:%.*]] = icmp slt i32 [[INC]], [[K:%.*]]
-; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END:%.*]]
+; CHECK-NEXT:    [[INC]] = add nuw nsw i32 [[I_05]], 1
+; CHECK-NEXT:    [[PEELCOUNTXSTEP_EXIT:%.*]] = sub i32 [[K:%.*]], 7
+; CHECK-NEXT:    [[CMP:%.*]] = icmp slt i32 [[INC]], [[PEELCOUNTXSTEP_EXIT]]
+; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_BODY_PEEL_BEGIN:%.*]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK:       for.body.peel.begin:
+; CHECK-NEXT:    [[LABEL:%.*]] = phi i32 [ [[INC]], [[FOR_INC]] ]
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL:%.*]]
+; CHECK:       for.body.peel:
+; CHECK-NEXT:    [[CMP1_PEEL:%.*]] = icmp ult i32 [[LABEL]], 9999
+; CHECK-NEXT:    br i1 [[CMP1_PEEL]], label [[IF_THEN_PEEL:%.*]], label [[FOR_INC_PEEL:%.*]]
+; CHECK:       if.then.peel:
+; CHECK-NEXT:    call void @f1()
+; CHECK-NEXT:    br label [[FOR_INC_PEEL]]
+; CHECK:       for.inc.peel:
+; CHECK-NEXT:    [[INC_PEEL:%.*]] = add nsw i32 [[LABEL]], 1
+; CHECK-NEXT:    [[CMP_PEEL:%.*]] = icmp slt i32 [[INC_PEEL]], [[K]]
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL_NEXT:%.*]]
+; CHECK:       for.body.peel.next:
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL2:%.*]]
+; CHECK:       for.body.peel2:
+; CHECK-NEXT:    [[CMP1_PEEL3:%.*]] = icmp ult i32 [[INC_PEEL]], 9999
+; CHECK-NEXT:    br i1 [[CMP1_PEEL3]], label [[IF_THEN_PEEL4:%.*]], label [[FOR_INC_PEEL5:%.*]]
+; CHECK:       if.then.peel4:
+; CHECK-NEXT:    call void @f1()
+; CHECK-NEXT:    br label [[FOR_INC_PEEL5]]
+; CHECK:       for.inc.peel5:
+; CHECK-NEXT:    [[INC_PEEL6:%.*]] = add nsw i32 [[INC_PEEL]], 1
+; CHECK-NEXT:    [[CMP_PEEL7:%.*]] = icmp slt i32 [[INC_PEEL6]], [[K]]
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL_NEXT1:%.*]]
+; CHECK:       for.body.peel.next1:
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL9:%.*]]
+; CHECK:       for.body.peel9:
+; CHECK-NEXT:    [[CMP1_PEEL10:%.*]] = icmp ult i32 [[INC_PEEL6]], 9999
+; CHECK-NEXT:    br i1 [[CMP1_PEEL10]], label [[IF_THEN_PEEL11:%.*]], label [[FOR_INC_PEEL12:%.*]]
+; CHECK:       if.then.peel11:
+; CHECK-NEXT:    call void @f1()
+; CHECK-NEXT:    br label [[FOR_INC_PEEL12]]
+; CHECK:       for.inc.peel12:
+; CHECK-NEXT:    [[INC_PEEL13:%.*]] = add nsw i32 [[INC_PEEL6]], 1
+; CHECK-NEXT:    [[CMP_PEEL14:%.*]] = icmp slt i32 [[INC_PEEL13]], [[K]]
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL_NEXT8:%.*]]
+; CHECK:       for.body.peel.next8:
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL16:%.*]]
+; CHECK:       for.body.peel16:
+; CHECK-NEXT:    [[CMP1_PEEL17:%.*]] = icmp ult i32 [[INC_PEEL13]], 9999
+; CHECK-NEXT:    br i1 [[CMP1_PEEL17]], label [[IF_THEN_PEEL18:%.*]], label [[FOR_INC_PEEL19:%.*]]
+; CHECK:       if.then.peel18:
+; CHECK-NEXT:    call void @f1()
+; CHECK-NEXT:    br label [[FOR_INC_PEEL19]]
+; CHECK:       for.inc.peel19:
+; CHECK-NEXT:    [[INC_PEEL20:%.*]] = add nsw i32 [[INC_PEEL13]], 1
+; CHECK-NEXT:    [[CMP_PEEL21:%.*]] = icmp slt i32 [[INC_PEEL20]], [[K]]
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL_NEXT15:%.*]]
+; CHECK:       for.body.peel.next15:
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL23:%.*]]
+; CHECK:       for.body.peel23:
+; CHECK-NEXT:    [[CMP1_PEEL24:%.*]] = icmp ult i32 [[INC_PEEL20]], 9999
+; CHECK-NEXT:    br i1 [[CMP1_PEEL24]], label [[IF_THEN_PEEL25:%.*]], label [[FOR_INC_PEEL26:%.*]]
+; CHECK:       if.then.peel25:
+; CHECK-NEXT:    call void @f1()
+; CHECK-NEXT:    br label [[FOR_INC_PEEL26]]
+; CHECK:       for.inc.peel26:
+; CHECK-NEXT:    [[INC_PEEL27:%.*]] = add nsw i32 [[INC_PEEL20]], 1
+; CHECK-NEXT:    [[CMP_PEEL28:%.*]] = icmp slt i32 [[INC_PEEL27]], [[K]]
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL_NEXT22:%.*]]
+; CHECK:       for.body.peel.next22:
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL30:%.*]]
+; CHECK:       for.body.peel30:
+; CHECK-NEXT:    [[CMP1_PEEL31:%.*]] = icmp ult i32 [[INC_PEEL27]], 9999
+; CHECK-NEXT:    br i1 [[CMP1_PEEL31]], label [[IF_THEN_PEEL32:%.*]], label [[FOR_INC_PEEL33:%.*]]
+; CHECK:       if.then.peel32:
+; CHECK-NEXT:    call void @f1()
+; CHECK-NEXT:    br label [[FOR_INC_PEEL33]]
+; CHECK:       for.inc.peel33:
+; CHECK-NEXT:    [[INC_PEEL34:%.*]] = add nsw i32 [[INC_PEEL27]], 1
+; CHECK-NEXT:    [[CMP_PEEL35:%.*]] = icmp slt i32 [[INC_PEEL34]], [[K]]
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL_NEXT29:%.*]]
+; CHECK:       for.body.peel.next29:
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL37:%.*]]
+; CHECK:       for.body.peel37:
+; CHECK-NEXT:    [[CMP1_PEEL38:%.*]] = icmp ult i32 [[INC_PEEL34]], 9999
+; CHECK-NEXT:    br i1 [[CMP1_PEEL38]], label [[IF_THEN_PEEL39:%.*]], label [[FOR_INC_PEEL40:%.*]]
+; CHECK:       if.then.peel39:
+; CHECK-NEXT:    call void @f1()
+; CHECK-NEXT:    br label [[FOR_INC_PEEL40]]
+; CHECK:       for.inc.peel40:
+; CHECK-NEXT:    [[INC_PEEL41:%.*]] = add nsw i32 [[INC_PEEL34]], 1
+; CHECK-NEXT:    [[CMP_PEEL42:%.*]] = icmp slt i32 [[INC_PEEL41]], [[K]]
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL_NEXT36:%.*]]
+; CHECK:       for.body.peel.next36:
+; CHECK-NEXT:    br label [[FOR_END:%.*]]
 ; CHECK:       for.end:
 ; CHECK-NEXT:    ret void
 ;
@@ -53,30 +141,15 @@ define void @test2_epilog_peeling(i32 %k) {
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[I_05:%.*]] = phi i32 [ 0, [[FOR_BODY_LR_PH:%.*]] ], [ [[INC:%.*]], [[FOR_INC:%.*]] ]
-; CHECK-NEXT:    br i1 true, label [[IF_THEN:%.*]], label [[FOR_INC]]
+; CHECK-NEXT:    [[CMP1:%.*]] = icmp ult i32 [[I_05]], [[K:%.*]]
+; CHECK-NEXT:    br i1 [[CMP1]], label [[IF_THEN:%.*]], label [[FOR_INC]]
 ; CHECK:       if.then:
 ; CHECK-NEXT:    call void @f1()
 ; CHECK-NEXT:    br label [[FOR_INC]]
 ; CHECK:       for.inc:
-; CHECK-NEXT:    [[INC]] = add nuw nsw i32 [[I_05]], 1
-; CHECK-NEXT:    [[PEELCOUNTXSTEP_EXIT:%.*]] = sub i32 [[K:%.*]], 1
-; CHECK-NEXT:    [[CMP:%.*]] = icmp ne i32 [[INC]], [[PEELCOUNTXSTEP_EXIT]]
-; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_BODY_PEEL_BEGIN:%.*]], !llvm.loop [[LOOP0:![0-9]+]]
-; CHECK:       for.body.peel.begin:
-; CHECK-NEXT:    [[LABEL:%.*]] = phi i32 [ [[INC]], [[FOR_INC]] ]
-; CHECK-NEXT:    br label [[FOR_BODY_PEEL:%.*]]
-; CHECK:       for.body.peel:
-; CHECK-NEXT:    [[CMP1_PEEL:%.*]] = icmp ult i32 [[LABEL]], [[K]]
-; CHECK-NEXT:    br i1 [[CMP1_PEEL]], label [[IF_THEN_PEEL:%.*]], label [[FOR_INC_PEEL:%.*]]
-; CHECK:       if.then.peel:
-; CHECK-NEXT:    call void @f1()
-; CHECK-NEXT:    br label [[FOR_INC_PEEL]]
-; CHECK:       for.inc.peel:
-; CHECK-NEXT:    [[INC_PEEL:%.*]] = add nsw i32 [[LABEL]], 1
-; CHECK-NEXT:    [[CMP_PEEL:%.*]] = icmp ne i32 [[INC_PEEL]], [[K]]
-; CHECK-NEXT:    br label [[FOR_BODY_PEEL_NEXT:%.*]]
-; CHECK:       for.body.peel.next:
-; CHECK-NEXT:    br label [[FOR_END:%.*]]
+; CHECK-NEXT:    [[INC]] = add nsw i32 [[I_05]], 1
+; CHECK-NEXT:    [[CMP:%.*]] = icmp ne i32 [[INC]], [[K]]
+; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END:%.*]]
 ; CHECK:       for.end:
 ; CHECK-NEXT:    ret void
 ;
@@ -115,9 +188,97 @@ define void @test3_epilog_peeling(i32 %k) {
 ; CHECK-NEXT:    call void @f1()
 ; CHECK-NEXT:    br label [[FOR_INC]]
 ; CHECK:       for.inc:
-; CHECK-NEXT:    [[INC]] = add nsw i32 [[I_05]], 2
-; CHECK-NEXT:    [[CMP:%.*]] = icmp slt i32 [[INC]], [[K:%.*]]
-; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END:%.*]]
+; CHECK-NEXT:    [[INC]] = add nuw nsw i32 [[I_05]], 2
+; CHECK-NEXT:    [[PEELCOUNTXSTEP_EXIT:%.*]] = sub i32 [[K:%.*]], 14
+; CHECK-NEXT:    [[CMP:%.*]] = icmp slt i32 [[INC]], [[PEELCOUNTXSTEP_EXIT]]
+; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_BODY_PEEL_BEGIN:%.*]], !llvm.loop [[LOOP2:![0-9]+]]
+; CHECK:       for.body.peel.begin:
+; CHECK-NEXT:    [[LABEL:%.*]] = phi i32 [ [[INC]], [[FOR_INC]] ]
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL:%.*]]
+; CHECK:       for.body.peel:
+; CHECK-NEXT:    [[CMP1_PEEL:%.*]] = icmp ult i32 [[LABEL]], 2147483644
+; CHECK-NEXT:    br i1 [[CMP1_PEEL]], label [[IF_THEN_PEEL:%.*]], label [[FOR_INC_PEEL:%.*]]
+; CHECK:       if.then.peel:
+; CHECK-NEXT:    call void @f1()
+; CHECK-NEXT:    br label [[FOR_INC_PEEL]]
+; CHECK:       for.inc.peel:
+; CHECK-NEXT:    [[INC_PEEL:%.*]] = add nsw i32 [[LABEL]], 2
+; CHECK-NEXT:    [[CMP_PEEL:%.*]] = icmp slt i32 [[INC_PEEL]], [[K]]
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL_NEXT:%.*]]
+; CHECK:       for.body.peel.next:
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL2:%.*]]
+; CHECK:       for.body.peel2:
+; CHECK-NEXT:    [[CMP1_PEEL3:%.*]] = icmp ult i32 [[INC_PEEL]], 2147483644
+; CHECK-NEXT:    br i1 [[CMP1_PEEL3]], label [[IF_THEN_PEEL4:%.*]], label [[FOR_INC_PEEL5:%.*]]
+; CHECK:       if.then.peel4:
+; CHECK-NEXT:    call void @f1()
+; CHECK-NEXT:    br label [[FOR_INC_PEEL5]]
+; CHECK:       for.inc.peel5:
+; CHECK-NEXT:    [[INC_PEEL6:%.*]] = add nsw i32 [[INC_PEEL]], 2
+; CHECK-NEXT:    [[CMP_PEEL7:%.*]] = icmp slt i32 [[INC_PEEL6]], [[K]]
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL_NEXT1:%.*]]
+; CHECK:       for.body.peel.next1:
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL9:%.*]]
+; CHECK:       for.body.peel9:
+; CHECK-NEXT:    [[CMP1_PEEL10:%.*]] = icmp ult i32 [[INC_PEEL6]], 2147483644
+; CHECK-NEXT:    br i1 [[CMP1_PEEL10]], label [[IF_THEN_PEEL11:%.*]], label [[FOR_INC_PEEL12:%.*]]
+; CHECK:       if.then.peel11:
+; CHECK-NEXT:    call void @f1()
+; CHECK-NEXT:    br label [[FOR_INC_PEEL12]]
+; CHECK:       for.inc.peel12:
+; CHECK-NEXT:    [[INC_PEEL13:%.*]] = add nsw i32 [[INC_PEEL6]], 2
+; CHECK-NEXT:    [[CMP_PEEL14:%.*]] = icmp slt i32 [[INC_PEEL13]], [[K]]
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL_NEXT8:%.*]]
+; CHECK:       for.body.peel.next8:
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL16:%.*]]
+; CHECK:       for.body.peel16:
+; CHECK-NEXT:    [[CMP1_PEEL17:%.*]] = icmp ult i32 [[INC_PEEL13]], 2147483644
+; CHECK-NEXT:    br i1 [[CMP1_PEEL17]], label [[IF_THEN_PEEL18:%.*]], label [[FOR_INC_PEEL19:%.*]]
+; CHECK:       if.then.peel18:
+; CHECK-NEXT:    call void @f1()
+; CHECK-NEXT:    br label [[FOR_INC_PEEL19]]
+; CHECK:       for.inc.peel19:
+; CHECK-NEXT:    [[INC_PEEL20:%.*]] = add nsw i32 [[INC_PEEL13]], 2
+; CHECK-NEXT:    [[CMP_PEEL21:%.*]] = icmp slt i32 [[INC_PEEL20]], [[K]]
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL_NEXT15:%.*]]
+; CHECK:       for.body.peel.next15:
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL23:%.*]]
+; CHECK:       for.body.peel23:
+; CHECK-NEXT:    [[CMP1_PEEL24:%.*]] = icmp ult i32 [[INC_PEEL20]], 2147483644
+; CHECK-NEXT:    br i1 [[CMP1_PEEL24]], label [[IF_THEN_PEEL25:%.*]], label [[FOR_INC_PEEL26:%.*]]
+; CHECK:       if.then.peel25:
+; CHECK-NEXT:    call void @f1()
+; CHECK-NEXT:    br label [[FOR_INC_PEEL26]]
+; CHECK:       for.inc.peel26:
+; CHECK-NEXT:    [[INC_PEEL27:%.*]] = add nsw i32 [[INC_PEEL20]], 2
+; CHECK-NEXT:    [[CMP_PEEL28:%.*]] = icmp slt i32 [[INC_PEEL27]], [[K]]
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL_NEXT22:%.*]]
+; CHECK:       for.body.peel.next22:
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL30:%.*]]
+; CHECK:       for.body.peel30:
+; CHECK-NEXT:    [[CMP1_PEEL31:%.*]] = icmp ult i32 [[INC_PEEL27]], 2147483644
+; CHECK-NEXT:    br i1 [[CMP1_PEEL31]], label [[IF_THEN_PEEL32:%.*]], label [[FOR_INC_PEEL33:%.*]]
+; CHECK:       if.then.peel32:
+; CHECK-NEXT:    call void @f1()
+; CHECK-NEXT:    br label [[FOR_INC_PEEL33]]
+; CHECK:       for.inc.peel33:
+; CHECK-NEXT:    [[INC_PEEL34:%.*]] = add nsw i32 [[INC_PEEL27]], 2
+; CHECK-NEXT:    [[CMP_PEEL35:%.*]] = icmp slt i32 [[INC_PEEL34]], [[K]]
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL_NEXT29:%.*]]
+; CHECK:       for.body.peel.next29:
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL37:%.*]]
+; CHECK:       for.body.peel37:
+; CHECK-NEXT:    [[CMP1_PEEL38:%.*]] = icmp ult i32 [[INC_PEEL34]], 2147483644
+; CHECK-NEXT:    br i1 [[CMP1_PEEL38]], label [[IF_THEN_PEEL39:%.*]], label [[FOR_INC_PEEL40:%.*]]
+; CHECK:       if.then.peel39:
+; CHECK-NEXT:    call void @f1()
+; CHECK-NEXT:    br label [[FOR_INC_PEEL40]]
+; CHECK:       for.inc.peel40:
+; CHECK-NEXT:    [[INC_PEEL41:%.*]] = add nsw i32 [[INC_PEEL34]], 2
+; CHECK-NEXT:    [[CMP_PEEL42:%.*]] = icmp slt i32 [[INC_PEEL41]], [[K]]
+; CHECK-NEXT:    br label [[FOR_BODY_PEEL_NEXT36:%.*]]
+; CHECK:       for.body.peel.next36:
+; CHECK-NEXT:    br label [[FOR_END:%.*]]
 ; CHECK:       for.end:
 ; CHECK-NEXT:    ret void
 ;
@@ -203,32 +364,16 @@ define void @test5_epilog_peeling(i32 noundef signext %L, ptr noundef %hmm, ptr 
 ; CHECK-NEXT:    br label [[FOR_INNER:%.*]]
 ; CHECK:       for.inner:
 ; CHECK-NEXT:    [[IV_INNER:%.*]] = phi i64 [ 1, [[FOR_INNER_PREHEADER]] ], [ [[IV_INNER_NEXT:%.*]], [[FOR_INC_INNER:%.*]] ]
-; CHECK-NEXT:    br i1 true, label [[IF_THEN:%.*]], label [[FOR_INC_INNER]]
+; CHECK-NEXT:    [[CMP2:%.*]] = icmp slt i64 [[IV_INNER]], [[SEXT]]
+; CHECK-NEXT:    br i1 [[CMP2]], label [[IF_THEN:%.*]], label [[FOR_INC_INNER]]
 ; CHECK:       if.then:
 ; CHECK-NEXT:    [[ARRAYIDX174:%.*]] = getelementptr inbounds i32, ptr [[I24]], i64 [[IV_INNER]]
 ; CHECK-NEXT:    store i32 1, ptr [[ARRAYIDX174]], align 4
 ; CHECK-NEXT:    br label [[FOR_INC_INNER]]
 ; CHECK:       for.inc.inner:
 ; CHECK-NEXT:    [[IV_INNER_NEXT]] = add nuw nsw i64 [[IV_INNER]], 1
-; CHECK-NEXT:    [[TMP0:%.*]] = zext i32 [[BOUNDS]] to i64
-; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp ne i64 [[IV_INNER_NEXT]], [[TMP0]]
-; CHECK-NEXT:    br i1 [[EXITCOND]], label [[FOR_INNER]], label [[FOR_INNER_PEEL_BEGIN:%.*]], !llvm.loop [[LOOP2:![0-9]+]]
-; CHECK:       for.inner.peel.begin:
-; CHECK-NEXT:    [[LABEL:%.*]] = phi i64 [ [[IV_INNER_NEXT]], [[FOR_INC_INNER]] ]
-; CHECK-NEXT:    br label [[FOR_INNER_PEEL:%.*]]
-; CHECK:       for.inner.peel:
-; CHECK-NEXT:    [[CMP2_PEEL:%.*]] = icmp slt i64 [[LABEL]], [[SEXT]]
-; CHECK-NEXT:    br i1 [[CMP2_PEEL]], label [[IF_THEN_PEEL:%.*]], label [[FOR_INC_INNER_PEEL:%.*]]
-; CHECK:       if.then.peel:
-; CHECK-NEXT:    [[ARRAYIDX174_PEEL:%.*]] = getelementptr inbounds i32, ptr [[I24]], i64 [[LABEL]]
-; CHECK-NEXT:    store i32 1, ptr [[ARRAYIDX174_PEEL]], align 4
-; CHECK-NEXT:    br label [[FOR_INC_INNER_PEEL]]
-; CHECK:       for.inc.inner.peel:
-; CHECK-NEXT:    [[IV_INNER_NEXT_PEEL:%.*]] = add nuw nsw i64 [[LABEL]], 1
-; CHECK-NEXT:    [[EXITCOND_PEEL:%.*]] = icmp ne i64 [[IV_INNER_NEXT_PEEL]], [[WIDE_TRIP_COUNT]]
-; CHECK-NEXT:    br label [[FOR_INNER_PEEL_NEXT:%.*]]
-; CHECK:       for.inner.peel.next:
-; CHECK-NEXT:    br label [[FOR_INNER_LOOPEXIT:%.*]]
+; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp ne i64 [[IV_INNER_NEXT]], [[WIDE_TRIP_COUNT]]
+; CHECK-NEXT:    br i1 [[EXITCOND]], label [[FOR_INNER]], label [[FOR_INNER_LOOPEXIT:%.*]]
 ; CHECK:       for.inner.loopexit:
 ; CHECK-NEXT:    br label [[FOR_INC_OUTER]]
 ; CHECK:       for.inc.outer:
