@@ -2206,54 +2206,6 @@ private:
 
   void checkFortifiedBuiltinMemoryFunction(FunctionDecl *FD, CallExpr *TheCall);
 
-<<<<<<< HEAD
-  bool CheckARMBuiltinExclusiveCall(unsigned BuiltinID, CallExpr *TheCall,
-                                    unsigned MaxWidth);
-#ifdef SIFIVE_CUSTOMIZATION
-public:
-#endif // SIFIVE_CUSTOMIZATION
-  bool CheckNeonBuiltinFunctionCall(const TargetInfo &TI, unsigned BuiltinID,
-                                    CallExpr *TheCall);
-#ifdef SIFIVE_CUSTOMIZATION
-private:
-#endif // SIFIVE_CUSTOMIZATION
-  bool CheckMVEBuiltinFunctionCall(unsigned BuiltinID, CallExpr *TheCall);
-  bool CheckSVEBuiltinFunctionCall(unsigned BuiltinID, CallExpr *TheCall);
-  bool ParseSVEImmChecks(CallExpr *TheCall,
-                         SmallVector<std::tuple<int, int, int>, 3> &ImmChecks);
-  bool CheckSMEBuiltinFunctionCall(unsigned BuiltinID, CallExpr *TheCall);
-  bool CheckCDEBuiltinFunctionCall(const TargetInfo &TI, unsigned BuiltinID,
-                                   CallExpr *TheCall);
-  bool CheckARMCoprocessorImmediate(const TargetInfo &TI, const Expr *CoprocArg,
-                                    bool WantCDE);
-  bool CheckARMBuiltinFunctionCall(const TargetInfo &TI, unsigned BuiltinID,
-                                   CallExpr *TheCall);
-
-  bool CheckAArch64BuiltinFunctionCall(const TargetInfo &TI, unsigned BuiltinID,
-                                       CallExpr *TheCall);
-  bool CheckBPFBuiltinFunctionCall(unsigned BuiltinID, CallExpr *TheCall);
-  bool CheckHexagonBuiltinFunctionCall(unsigned BuiltinID, CallExpr *TheCall);
-  bool CheckHexagonBuiltinArgument(unsigned BuiltinID, CallExpr *TheCall);
-  bool CheckMipsBuiltinFunctionCall(const TargetInfo &TI, unsigned BuiltinID,
-                                    CallExpr *TheCall);
-  bool CheckMipsBuiltinCpu(const TargetInfo &TI, unsigned BuiltinID,
-                           CallExpr *TheCall);
-  bool CheckMipsBuiltinArgument(unsigned BuiltinID, CallExpr *TheCall);
-  bool CheckSystemZBuiltinFunctionCall(unsigned BuiltinID, CallExpr *TheCall);
-  bool CheckPPCBuiltinFunctionCall(const TargetInfo &TI, unsigned BuiltinID,
-                                   CallExpr *TheCall);
-  bool CheckAMDGCNBuiltinFunctionCall(unsigned BuiltinID, CallExpr *TheCall);
-
-  bool CheckLoongArchBuiltinFunctionCall(const TargetInfo &TI,
-                                         unsigned BuiltinID, CallExpr *TheCall);
-  bool CheckWebAssemblyBuiltinFunctionCall(const TargetInfo &TI,
-                                           unsigned BuiltinID,
-                                           CallExpr *TheCall);
-  bool CheckNVPTXBuiltinFunctionCall(const TargetInfo &TI, unsigned BuiltinID,
-                                     CallExpr *TheCall);
-
-=======
->>>>>>> 53ddc87454669c0d595c0e3d3174e35cdc4b0a61
   bool BuiltinVAStart(unsigned BuiltinID, CallExpr *TheCall);
   bool BuiltinVAStartARMMicrosoft(CallExpr *Call);
   bool BuiltinUnorderedCompare(CallExpr *TheCall, unsigned BuiltinID);

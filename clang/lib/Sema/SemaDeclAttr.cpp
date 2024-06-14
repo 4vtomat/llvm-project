@@ -5569,7 +5569,7 @@ static void handleRISCVLandingPadTypeAttr(Sema &S, Decl *D,
                                           const ParsedAttr &AL) {
   uint32_t Label = 0;
   Expr *LabelExpr = AL.getArgAsExpr(0);
-  if (!checkUInt32Argument(S, AL, LabelExpr, Label))
+  if (!S.checkUInt32Argument(AL, LabelExpr, Label))
     return;
 
   if (!llvm::isUInt<20>(Label)) {

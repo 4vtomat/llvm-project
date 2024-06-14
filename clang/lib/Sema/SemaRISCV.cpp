@@ -23,6 +23,9 @@
 #include "clang/Sema/ParsedAttr.h"
 #include "clang/Sema/RISCVIntrinsicManager.h"
 #include "clang/Sema/Sema.h"
+#if SIFIVE_CUSTOMIZATION
+#include "clang/Sema/SemaARM.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "clang/Support/RISCVVIntrinsicUtils.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/TargetParser/RISCVTargetParser.h"
@@ -627,8 +630,8 @@ bool SemaRISCV::CheckBuiltinFunctionCall(const TargetInfo &TI,
                                          CallExpr *TheCall) {
 #if SIFIVE_CUSTOMIZATION
   if (BuiltinID >= NEON::LastTIBuiltin && BuiltinID < NEON::FirstTSBuiltin)
-    return SemaRef.CheckNeonBuiltinFunctionCall(TI, BuiltinID, TheCall);
-#endif
+    return SemaRef.ARM().CheckNeonBuiltinFunctionCall(TI, BuiltinID, TheCall);
+#endif // SIFIVE_CUSTOMIZATION
   ASTContext &Context = getASTContext();
   // vmulh.vv, vmulh.vx, vmulhu.vv, vmulhu.vx, vmulhsu.vv, vmulhsu.vx,
   // vsmul.vv, vsmul.vx are not included for EEW=64 in Zve64*.
