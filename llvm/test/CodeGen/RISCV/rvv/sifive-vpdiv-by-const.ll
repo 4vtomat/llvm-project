@@ -85,8 +85,7 @@ define <vscale x 8 x i8> @fold_vpudiv_vpurem_nxv8i8(<vscale x 8 x i8> %va, <vsca
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e8, m1, ta, ma
 ; CHECK-NEXT:    vsrl.vi v9, v8, 7, v0.t
-; CHECK-NEXT:    li a0, -128
-; CHECK-NEXT:    vmul.vx v10, v9, a0, v0.t
+; CHECK-NEXT:    vsll.vi v10, v9, 7, v0.t
 ; CHECK-NEXT:    vsub.vv v8, v8, v10, v0.t
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m1, ta, ma
 ; CHECK-NEXT:    vadd.vv v8, v9, v8
@@ -104,8 +103,7 @@ define <vscale x 4 x i16> @fold_vpudiv_vpurem_nxv4i16(<vscale x 4 x i16> %va, <v
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
 ; CHECK-NEXT:    vsrl.vi v9, v8, 14, v0.t
-; CHECK-NEXT:    lui a0, 4
-; CHECK-NEXT:    vmul.vx v10, v9, a0, v0.t
+; CHECK-NEXT:    vsll.vi v10, v9, 14, v0.t
 ; CHECK-NEXT:    vsub.vv v8, v8, v10, v0.t
 ; CHECK-NEXT:    vsetvli a0, zero, e16, m1, ta, ma
 ; CHECK-NEXT:    vadd.vv v8, v9, v8
@@ -123,8 +121,7 @@ define <vscale x 2 x i32> @fold_vpudiv_vpurem_nxv2i32(<vscale x 2 x i32> %va, <v
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; CHECK-NEXT:    vsrl.vi v9, v8, 14, v0.t
-; CHECK-NEXT:    lui a0, 4
-; CHECK-NEXT:    vmul.vx v10, v9, a0, v0.t
+; CHECK-NEXT:    vsll.vi v10, v9, 14, v0.t
 ; CHECK-NEXT:    vsub.vv v8, v8, v10, v0.t
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m1, ta, ma
 ; CHECK-NEXT:    vadd.vv v8, v9, v8
@@ -142,8 +139,7 @@ define <vscale x 1 x i64> @fold_vpudiv_vpurem_nxv1i64(<vscale x 1 x i64> %va, <v
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vsrl.vi v9, v8, 14, v0.t
-; CHECK-NEXT:    lui a0, 4
-; CHECK-NEXT:    vmul.vx v10, v9, a0, v0.t
+; CHECK-NEXT:    vsll.vi v10, v9, 14, v0.t
 ; CHECK-NEXT:    vsub.vv v8, v8, v10, v0.t
 ; CHECK-NEXT:    vsetvli a0, zero, e64, m1, ta, ma
 ; CHECK-NEXT:    vadd.vv v8, v9, v8
