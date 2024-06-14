@@ -1120,6 +1120,12 @@ Supported Profiles
     rva22u64
     rvi20u32
     rvi20u64
+    sfa23
+    sfb23
+    sfe23
+    sfp23
+    sfs23
+    sfx23
 
 Experimental Profiles
     rva23s64
