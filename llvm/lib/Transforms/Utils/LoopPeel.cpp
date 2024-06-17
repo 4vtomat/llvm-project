@@ -495,9 +495,18 @@ static unsigned countToEliminateCompares(Loop &L, unsigned MaxPeelCount,
       Pred = ICmpInst::getInversePredicate(Pred);
 
     const SCEV *Step = LeftAR->getStepRecurrence(SE);
+ #if SIFIVE_CUSTOMIZATION
+    if (PeelProlog && !PeelWhilePredicateIsKnown(NewPeelCount, IterVal,
+                                                 RightSCEV, Step, Pred))
+      return;
+    else if (!PeelProlog && PeelWhilePredicateIsKnown(NewPeelCount, IterVal,
+                                                      RightSCEV, Step, Pred))
+      return;
+  #else
     if (!PeelWhilePredicateIsKnown(NewPeelCount, IterVal, RightSCEV, Step,
                                    Pred))
       return;
+  #endif
 
     // However, for equality comparisons, that isn't always sufficient to
     // eliminate the comparsion in loop body, we may need to peel one more
@@ -505,7 +514,9 @@ static unsigned countToEliminateCompares(Loop &L, unsigned MaxPeelCount,
 #if SIFIVE_CUSTOMIZATION
     const SCEV *NextIterVal = PeelProlog ? SE.getAddExpr(IterVal, Step)
                                          : SE.getMinusSCEV(IterVal, Step);
-#endif // SIFIVE_CUSTOMIZATION
+#else
+    const SCEV *NextIterVal = SE.getAddExpr(IterVal, Step);
+#endif
     if (ICmpInst::isEquality(Pred) &&
         !SE.isKnownPredicate(ICmpInst::getInversePredicate(Pred), NextIterVal,
                              RightSCEV) &&
