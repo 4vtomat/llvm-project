@@ -7,7 +7,7 @@
 ; CHECK-NEXT: Live-in vp<%0> = vector-trip-count
 ; CHECK-NEXT: vp<%1> = original trip-count
 ; CHECK-EMPTY:
-; CHECK-NEXT: ph:
+; CHECK-NEXT: ir-bb<for.body.preheader>:
 ; CHECK-NEXT:   EMIT vp<%1> = EXPAND SCEV (zext i32 %n to i64)
 ; CHECK-NEXT: No successors
 ; CHECK-EMPTY:
@@ -71,7 +71,7 @@ for.inc:
 ; CHECK-NEXT: Live-in vp<%0> = vector-trip-count
 ; CHECK-NEXT: vp<%1> = original trip-count
 ; CHECK-EMPTY:
-; CHECK-NEXT: ph:
+; CHECK-NEXT: ir-bb<for.body.preheader>:
 ; CHECK-NEXT:   EMIT vp<%1> = EXPAND SCEV (zext i32 %n to i64)
 ; CHECK-NEXT: No successors
 ; CHECK-EMPTY:
