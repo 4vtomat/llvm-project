@@ -9,17 +9,17 @@ define void @test() {
 ; SCALABLE-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; SCALABLE:       vector.body:
 ; SCALABLE-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
-; SCALABLE-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT1:%.*]], [[VECTOR_BODY]] ]
-; SCALABLE-NEXT:    [[TMP1:%.*]] = sub i64 7, [[EVL_BASED_IV]]
-; SCALABLE-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP1]], i32 2, i1 true)
-; SCALABLE-NEXT:    [[TMP0:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; SCALABLE-NEXT:    [[TMP3:%.*]] = getelementptr inbounds [125 x i32], ptr undef, i64 0, i64 [[TMP0]]
+; SCALABLE-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; SCALABLE-NEXT:    [[TMP0:%.*]] = sub i64 7, [[EVL_BASED_IV]]
+; SCALABLE-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
+; SCALABLE-NEXT:    [[TMP2:%.*]] = add i64 [[EVL_BASED_IV]], 0
+; SCALABLE-NEXT:    [[TMP3:%.*]] = getelementptr inbounds [125 x i32], ptr undef, i64 0, i64 [[TMP2]]
 ; SCALABLE-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i32, ptr [[TMP3]], i32 0
-; SCALABLE-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> zeroinitializer, ptr align 4 [[TMP4]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP2]])
-; SCALABLE-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP2]] to i64
-; SCALABLE-NEXT:    [[INDEX_EVL_NEXT1]] = add i64 [[TMP5]], [[EVL_BASED_IV]]
-; SCALABLE-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP2]] to i64
-; SCALABLE-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[EVL_BASED_IV]], [[TMP6]]
+; SCALABLE-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> zeroinitializer, ptr align 4 [[TMP4]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP1]])
+; SCALABLE-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP1]] to i64
+; SCALABLE-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP5]], [[EVL_BASED_IV]]
+; SCALABLE-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP1]] to i64
+; SCALABLE-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP6]]
 ; SCALABLE-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 7
 ; SCALABLE-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; SCALABLE:       middle.block:
