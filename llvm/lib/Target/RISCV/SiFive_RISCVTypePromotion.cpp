@@ -209,6 +209,8 @@ void IRPromoter::PromoteTree() {
       Function *F = Intrinsic::getDeclaration(II->getModule(),
                                               II->getIntrinsicID(), ExtTy);
       II->setCalledFunction(F);
+      // FIXME: Promotion should apply to Range.
+      II->removeRetAttr(llvm::Attribute::Range);
     }
   }
 }
