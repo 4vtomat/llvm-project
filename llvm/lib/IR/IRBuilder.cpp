@@ -417,11 +417,11 @@ CallInst *IRBuilderBase::getReductionIntrinsic(Intrinsic::ID ID, Value *Src) {
 #if SIFIVE_CUSTOMIZATION
 CallInst *IRBuilderBase::getReductionIntrinsic(Intrinsic::ID ID, Value *Acc,
                                                Value *Src, Value *Mask,
-                                               Value *RVL) {
+                                               Value *EVL) {
   Module *M = GetInsertBlock()->getParent()->getParent();
   auto *SrcTy = cast<VectorType>(Src->getType());
-  RVL = CreateIntCast(RVL, getInt32Ty(), /*isSigned=*/false);
-  Value *Ops[] = {Acc, Src, Mask, RVL};
+  EVL = CreateIntCast(EVL, getInt32Ty(), /*isSigned=*/false);
+  Value *Ops[] = {Acc, Src, Mask, EVL};
   Type *Tys[] = {SrcTy};
   auto Decl = Intrinsic::getDeclaration(M, ID, Tys);
   return CreateCall(Decl, Ops);
@@ -437,14 +437,14 @@ CallInst *IRBuilderBase::CreateFAddReduce(Value *Acc, Value *Src) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-CallInst *IRBuilderBase::CreateFAddReduce(Value *Acc, Value *Src, Value *RVL,
+CallInst *IRBuilderBase::CreateFAddReduce(Value *Acc, Value *Src, Value *EVL,
                                           Value *Mask) {
   if (!Mask) {
     auto *SrcTy = cast<VectorType>(Src->getType());
     Mask = getTrueVector(SrcTy->getElementCount());
   }
 
-  return getReductionIntrinsic(Intrinsic::vp_reduce_fadd, Acc, Src, Mask, RVL);
+  return getReductionIntrinsic(Intrinsic::vp_reduce_fadd, Acc, Src, Mask, EVL);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -457,14 +457,14 @@ CallInst *IRBuilderBase::CreateFMulReduce(Value *Acc, Value *Src) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-CallInst *IRBuilderBase::CreateFMulReduce(Value *Acc, Value *Src, Value *RVL,
+CallInst *IRBuilderBase::CreateFMulReduce(Value *Acc, Value *Src, Value *EVL,
                                           Value *Mask) {
   if (!Mask) {
     auto *SrcTy = cast<VectorType>(Src->getType());
     Mask = getTrueVector(SrcTy->getElementCount());
   }
 
-  return getReductionIntrinsic(Intrinsic::vp_reduce_fmul, Acc, Src, Mask, RVL);
+  return getReductionIntrinsic(Intrinsic::vp_reduce_fmul, Acc, Src, Mask, EVL);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -473,7 +473,7 @@ CallInst *IRBuilderBase::CreateAddReduce(Value *Src) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-CallInst *IRBuilderBase::CreateAddReduce(Value *Src, Value *RVL, Value *Mask) {
+CallInst *IRBuilderBase::CreateAddReduce(Value *Src, Value *EVL, Value *Mask) {
   auto *SrcTy = cast<VectorType>(Src->getType());
   auto *EltTy = SrcTy->getElementType();
 
@@ -481,7 +481,7 @@ CallInst *IRBuilderBase::CreateAddReduce(Value *Src, Value *RVL, Value *Mask) {
     Mask = getTrueVector(SrcTy->getElementCount());
 
   return getReductionIntrinsic(Intrinsic::vp_reduce_add,
-                               ConstantInt::get(EltTy, 0), Src, Mask, RVL);
+                               ConstantInt::get(EltTy, 0), Src, Mask, EVL);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -490,7 +490,7 @@ CallInst *IRBuilderBase::CreateMulReduce(Value *Src) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-CallInst *IRBuilderBase::CreateMulReduce(Value *Src, Value *RVL, Value *Mask) {
+CallInst *IRBuilderBase::CreateMulReduce(Value *Src, Value *EVL, Value *Mask) {
   auto *SrcTy = cast<VectorType>(Src->getType());
   auto *EltTy = SrcTy->getElementType();
 
@@ -498,7 +498,7 @@ CallInst *IRBuilderBase::CreateMulReduce(Value *Src, Value *RVL, Value *Mask) {
     Mask = getTrueVector(SrcTy->getElementCount());
 
   return getReductionIntrinsic(Intrinsic::vp_reduce_mul,
-                               ConstantInt::get(EltTy, 1), Src, Mask, RVL);
+                               ConstantInt::get(EltTy, 1), Src, Mask, EVL);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -507,7 +507,7 @@ CallInst *IRBuilderBase::CreateAndReduce(Value *Src) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-CallInst *IRBuilderBase::CreateAndReduce(Value *Src, Value *RVL, Value *Mask) {
+CallInst *IRBuilderBase::CreateAndReduce(Value *Src, Value *EVL, Value *Mask) {
   auto *SrcTy = cast<VectorType>(Src->getType());
   auto *EltTy = SrcTy->getElementType();
 
@@ -516,7 +516,7 @@ CallInst *IRBuilderBase::CreateAndReduce(Value *Src, Value *RVL, Value *Mask) {
 
   return getReductionIntrinsic(Intrinsic::vp_reduce_and,
                                Constant::getAllOnesValue(EltTy), Src, Mask,
-                               RVL);
+                               EVL);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -525,7 +525,7 @@ CallInst *IRBuilderBase::CreateOrReduce(Value *Src) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-CallInst *IRBuilderBase::CreateOrReduce(Value *Src, Value *RVL, Value *Mask) {
+CallInst *IRBuilderBase::CreateOrReduce(Value *Src, Value *EVL, Value *Mask) {
   auto *SrcTy = cast<VectorType>(Src->getType());
   auto *EltTy = SrcTy->getElementType();
 
@@ -533,7 +533,7 @@ CallInst *IRBuilderBase::CreateOrReduce(Value *Src, Value *RVL, Value *Mask) {
     Mask = getTrueVector(SrcTy->getElementCount());
 
   return getReductionIntrinsic(Intrinsic::vp_reduce_or,
-                               ConstantInt::get(EltTy, 0), Src, Mask, RVL);
+                               ConstantInt::get(EltTy, 0), Src, Mask, EVL);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -542,7 +542,7 @@ CallInst *IRBuilderBase::CreateXorReduce(Value *Src) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-CallInst *IRBuilderBase::CreateXorReduce(Value *Src, Value *RVL, Value *Mask) {
+CallInst *IRBuilderBase::CreateXorReduce(Value *Src, Value *EVL, Value *Mask) {
   auto *SrcTy = cast<VectorType>(Src->getType());
   auto *EltTy = SrcTy->getElementType();
 
@@ -550,7 +550,7 @@ CallInst *IRBuilderBase::CreateXorReduce(Value *Src, Value *RVL, Value *Mask) {
     Mask = getTrueVector(SrcTy->getElementCount());
 
   return getReductionIntrinsic(Intrinsic::vp_reduce_xor,
-                               ConstantInt::get(EltTy, 0), Src, Mask, RVL);
+                               ConstantInt::get(EltTy, 0), Src, Mask, EVL);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -561,7 +561,7 @@ CallInst *IRBuilderBase::CreateIntMaxReduce(Value *Src, bool IsSigned) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-CallInst *IRBuilderBase::CreateIntMaxReduce(Value *Src, Value *RVL,
+CallInst *IRBuilderBase::CreateIntMaxReduce(Value *Src, Value *EVL,
                                             bool IsSigned, Value *Mask) {
   auto *SrcTy = cast<VectorType>(Src->getType());
   auto *EltTy = SrcTy->getElementType();
@@ -574,7 +574,7 @@ CallInst *IRBuilderBase::CreateIntMaxReduce(Value *Src, Value *RVL,
       IsSigned ? ConstantInt::get(EltTy, APInt::getSignedMinValue(
                                              EltTy->getIntegerBitWidth()))
                : ConstantInt::get(EltTy, 0),
-      Src, Mask, RVL);
+      Src, Mask, EVL);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -585,7 +585,7 @@ CallInst *IRBuilderBase::CreateIntMinReduce(Value *Src, bool IsSigned) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-CallInst *IRBuilderBase::CreateIntMinReduce(Value *Src, Value *RVL,
+CallInst *IRBuilderBase::CreateIntMinReduce(Value *Src, Value *EVL,
                                             bool IsSigned, Value *Mask) {
   auto *SrcTy = cast<VectorType>(Src->getType());
   auto *EltTy = SrcTy->getElementType();
@@ -598,7 +598,7 @@ CallInst *IRBuilderBase::CreateIntMinReduce(Value *Src, Value *RVL,
       IsSigned ? ConstantInt::get(EltTy, APInt::getSignedMaxValue(
                                              EltTy->getIntegerBitWidth()))
                : Constant::getAllOnesValue(EltTy),
-      Src, Mask, RVL);
+      Src, Mask, EVL);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -607,7 +607,7 @@ CallInst *IRBuilderBase::CreateFPMaxReduce(Value *Src) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-CallInst *IRBuilderBase::CreateFPMaxReduce(Value *Src, Value *RVL,
+CallInst *IRBuilderBase::CreateFPMaxReduce(Value *Src, Value *EVL,
                                            Value *Mask) {
   auto *SrcTy = cast<VectorType>(Src->getType());
   auto *EltTy = SrcTy->getElementType();
@@ -626,7 +626,7 @@ CallInst *IRBuilderBase::CreateFPMaxReduce(Value *Src, Value *RVL,
     Mask = getTrueVector(SrcTy->getElementCount());
 
   return getReductionIntrinsic(Intrinsic::vp_reduce_fmax, Neutral, Src, Mask,
-                               RVL);
+                               EVL);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -635,7 +635,7 @@ CallInst *IRBuilderBase::CreateFPMinReduce(Value *Src) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-CallInst *IRBuilderBase::CreateFPMinReduce(Value *Src, Value *RVL,
+CallInst *IRBuilderBase::CreateFPMinReduce(Value *Src, Value *EVL,
                                            Value *Mask) {
   auto *SrcTy = cast<VectorType>(Src->getType());
   auto *EltTy = SrcTy->getElementType();
@@ -654,7 +654,7 @@ CallInst *IRBuilderBase::CreateFPMinReduce(Value *Src, Value *RVL,
     Mask = getTrueVector(SrcTy->getElementCount());
 
   return getReductionIntrinsic(Intrinsic::vp_reduce_fmin, Neutral, Src, Mask,
-                               RVL);
+                               EVL);
 }
 #endif // SIFIVE_CUSTOMIZATION
 CallInst *IRBuilderBase::CreateFPMaximumReduce(Value *Src) {

@@ -15103,6 +15103,85 @@ static SDValue combineTruncSelectToSMaxUSat(SDNode *N, SelectionDAG &DAG) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+#if SIFIVE_CUSTOMIZATION
+// Fold (vXi8 (trunc (vselect (setltu, X, 256), X, (sext (setgt X, 0))))) to
+// (vXi8 (trunc (smin (smax X, 0), 255))). This represents saturating a signed
+// value to an unsigned value. This will be lowered to vmax and series of
+// vnclipu instructions later. This can be extended to other truncated types
+// other than i8 by replacing 256 and 255 with the equivalent constants for the
+// type.
+static SDValue combineVPTruncSelectToSMaxUSat(SDNode *N, SelectionDAG &DAG) {
+  EVT VT = N->getValueType(0);
+  SDValue N0 = N->getOperand(0);
+  EVT SrcVT = N0.getValueType();
+
+  const TargetLowering &TLI = DAG.getTargetLoweringInfo();
+  if (!VT.isVector() || !TLI.isTypeLegal(VT) || !TLI.isTypeLegal(SrcVT))
+    return SDValue();
+
+  SDValue Mask = N->getOperand(1);
+  SDValue EVL = N->getOperand(2);
+
+  if (N0.getOpcode() != ISD::VP_SELECT || !N0.hasOneUse() ||
+      N0.getOperand(3) != EVL)
+    return SDValue();
+
+  SDValue Cond = N0.getOperand(0);
+  SDValue True = N0.getOperand(1);
+  SDValue False = N0.getOperand(2);
+
+  if (Cond.getOpcode() != ISD::VP_SETCC || Cond.getOperand(3) != Mask ||
+      Cond.getOperand(4) != EVL)
+    return SDValue();
+
+  // FIXME: Support the version of this pattern with the select operands
+  // swapped.
+  ISD::CondCode CCVal = cast<CondCodeSDNode>(Cond.getOperand(2))->get();
+  if (CCVal != ISD::SETULT)
+    return SDValue();
+
+  SDValue CondLHS = Cond.getOperand(0);
+  SDValue CondRHS = Cond.getOperand(1);
+
+  if (CondLHS != True)
+    return SDValue();
+
+  unsigned ScalarBits = VT.getScalarSizeInBits();
+
+  // FIXME: Support other constants.
+  ConstantSDNode *CondRHSC = isConstOrConstSplat(CondRHS);
+  if (!CondRHSC || CondRHSC->getAPIntValue() != (1ULL << ScalarBits))
+    return SDValue();
+
+  if (False.getOpcode() != ISD::VP_SIGN_EXTEND || False.getOperand(1) != Mask ||
+      False.getOperand(2) != EVL)
+    return SDValue();
+
+  False = False.getOperand(0);
+
+  if (False.getOpcode() != ISD::VP_SETCC || False.getOperand(0) != True ||
+      False.getOperand(3) != Mask || False.getOperand(4) != EVL)
+    return SDValue();
+
+  ConstantSDNode *FalseRHSC = isConstOrConstSplat(False.getOperand(1));
+  if (!FalseRHSC || !FalseRHSC->isZero())
+    return SDValue();
+
+  ISD::CondCode CCVal2 = cast<CondCodeSDNode>(False.getOperand(2))->get();
+  if (CCVal2 != ISD::SETGT)
+    return SDValue();
+
+  // Emit the signed to unsigned saturation pattern.
+  SDLoc DL(N);
+  SDValue Max = DAG.getNode(ISD::VP_SMAX, DL, SrcVT, True,
+                            DAG.getConstant(0, DL, SrcVT), Mask, EVL);
+  SDValue Min = DAG.getNode(
+      ISD::VP_SMIN, DL, SrcVT, Max,
+      DAG.getConstant((1ULL << ScalarBits) - 1, DL, SrcVT), Mask, EVL);
+  return DAG.getNode(ISD::VP_TRUNCATE, DL, VT, Min, Mask, EVL);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 static SDValue performTRUNCATECombine(SDNode *N, SelectionDAG &DAG,
                                       const RISCVSubtarget &Subtarget) {
   SDValue N0 = N->getOperand(0);
@@ -18980,6 +19059,12 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     if (SDValue V = combineTruncOfSraSext(N, DAG))
       return V;
     return combineTruncToVnclip(N, DAG, Subtarget);
+<<<<<<< HEAD
+=======
+  case ISD::VP_TRUNCATE:
+    return combineVPTruncSelectToSMaxUSat(N, DAG);
+#endif // SIFIVE_CUSTOMIZATION
+>>>>>>> origin/sifive-dev
   case ISD::TRUNCATE:
     return performTRUNCATECombine(N, DAG, Subtarget);
   case ISD::SELECT:
@@ -24486,10 +24571,10 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
     return false;
 
   IRBuilder<> Builder(VPLoad);
-  Value *WideRVL = VPLoad->getOperand(2);
+  Value *WideEVL = VPLoad->getOperand(2);
   auto *XLenTy = Type::getIntNTy(VPLoad->getContext(), Subtarget.getXLen());
-  Value *RVL = Builder.CreateZExtOrTrunc(
-      Builder.CreateUDiv(WideRVL, ConstantInt::get(WideRVL->getType(), Factor)),
+  Value *EVL = Builder.CreateZExtOrTrunc(
+      Builder.CreateUDiv(WideEVL, ConstantInt::get(WideEVL->getType(), Factor)),
       XLenTy);
 
   static const Intrinsic::ID IntrMaskIds[] = {
@@ -24513,14 +24598,14 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
     Operands.push_back(Mask);
   }
 
-  Operands.push_back(RVL);
+  Operands.push_back(EVL);
 
   // Tail-policy
   if (Mask)
     Operands.push_back(ConstantInt::get(XLenTy, 1));
 
   Function *VlsegNFunc = Intrinsic::getDeclaration(
-      VPLoad->getModule(), VlsegNID, {VTy, RVL->getType()});
+      VPLoad->getModule(), VlsegNID, {VTy, EVL->getType()});
   CallInst *VlsegN = Builder.CreateCall(VlsegNFunc, Operands);
   DeinterleaveIntrin->replaceAllUsesWith(VlsegN);
 
@@ -24622,10 +24707,10 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
     }
 
   IRBuilder<> Builder(VPStore);
-  Value *WideRVL = VPStore->getOperand(3);
+  Value *WideEVL = VPStore->getOperand(3);
   auto *XLenTy = Type::getIntNTy(VPStore->getContext(), Subtarget.getXLen());
-  Value *RVL = Builder.CreateZExtOrTrunc(
-      Builder.CreateUDiv(WideRVL, ConstantInt::get(WideRVL->getType(), Factor)),
+  Value *EVL = Builder.CreateZExtOrTrunc(
+      Builder.CreateUDiv(WideEVL, ConstantInt::get(WideEVL->getType(), Factor)),
       XLenTy);
 
   static const Intrinsic::ID IntrMaskIds[] = {
@@ -24648,9 +24733,9 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
     Operands.push_back(Mask);
   }
 
-  Operands.push_back(RVL);
+  Operands.push_back(EVL);
   Function *VssegNFunc = Intrinsic::getDeclaration(
-      VPStore->getModule(), VssegNID, {VTy, RVL->getType()});
+      VPStore->getModule(), VssegNID, {VTy, EVL->getType()});
 
   Builder.CreateCall(VssegNFunc, Operands);
   return true;
@@ -24686,10 +24771,10 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
 bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
     Instruction *StridedLoad, IntrinsicInst *DI, unsigned Factor) const {
   using namespace llvm::PatternMatch;
-  Value *BasePtr, *Stride, *Mask, *RVL;
+  Value *BasePtr, *Stride, *Mask, *EVL;
   if (!match(StridedLoad, m_Intrinsic<Intrinsic::experimental_vp_strided_load>(
                               m_Value(BasePtr), m_Value(Stride), m_Value(Mask),
-                              m_Value(RVL))))
+                              m_Value(EVL))))
     return false;
 
   [[maybe_unused]] auto *DISrcTy =
@@ -24717,7 +24802,7 @@ bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
       Type::getIntNTy(StridedLoad->getContext(), Subtarget.getXLen());
   assert(Stride->getType() == XLenTy &&
          "The type of stride must be the XLEN integer type.");
-  RVL = Builder.CreateZExtOrTrunc(RVL, XLenTy);
+  EVL = Builder.CreateZExtOrTrunc(EVL, XLenTy);
 
   static const Intrinsic::ID IntrMaskIds[] = {
       Intrinsic::riscv_vlsseg2_mask, Intrinsic::riscv_vlsseg3_mask,
@@ -24744,7 +24829,7 @@ bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
     Operands.push_back(Mask);
   }
 
-  Operands.push_back(RVL);
+  Operands.push_back(EVL);
 
   // Set the tail policy to tail-agnostic, mask-agnostic (tama) for masked
   // intrinsics
@@ -24752,7 +24837,7 @@ bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
     Operands.push_back(ConstantInt::get(XLenTy, 3));
 
   Function *VlssegNFunc = Intrinsic::getDeclaration(
-      StridedLoad->getModule(), VlssegNID, {ResTy, RVL->getType()});
+      StridedLoad->getModule(), VlssegNID, {ResTy, EVL->getType()});
   CallInst *VlssegN = Builder.CreateCall(VlssegNFunc, Operands);
   DI->replaceAllUsesWith(VlssegN);
 

@@ -122,8 +122,8 @@ multiclass RVVVQDOTQBuiltinSet<list<list<string>> suffixes_prototypes> {
   let UnMaskedPolicyScheme = HasPolicyOperand,
       HasMaskedOffOperand = false,
       OverloadedName = NAME,
-      Log2LMUL = [-2, -1, 0, 1, 2, 3] in {
-    defm NAME : RVVOutOp2BuiltinSet<NAME, "si", suffixes_prototypes>;
+      Log2LMUL = [-1, 0, 1, 2, 3] in {
+    defm NAME : RVVOutOp2BuiltinSet<NAME, "i", suffixes_prototypes>;
   }
 }
 
@@ -219,8 +219,8 @@ let ManualCodegen = [{
 }
 
 #ifdef SIFIVE_CUSTOMIZATION
-// Since each element of the input is in fact a four-integer bundle,
-// we use unsigned type to represent them
+// Only SEW=32 is defined for Xsfvqdotq so far, and since inputs are in fact
+// four 8-bit integer bundles, we use unsigned type to represent all of them
 let RequiredFeatures = ["Xsfvqdotq"] in {
   defm sf_vqdot : RVVVQDOTQBuiltinSet<[["vv", "v", "vvUvUv"],
                                        ["vx", "v", "vvUvUe"]]>;

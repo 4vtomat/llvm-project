@@ -43,7 +43,7 @@ define void @foo(ptr noalias %a, ptr noalias %b, ptr noalias %c, i64 %N) {
 ; IF-EVL-NEXT:    SCALAR-CAST vp<[[CAST:%[0-9]+]]> = zext vp<[[EVL]]> to i64
 ; IF-EVL-NEXT:    EMIT vp<[[IV_NEXT]]> = add vp<[[CAST]]>, vp<[[EVL_PHI]]>
 ; IF-EVL-NEXT:    EMIT vp<[[IV_NEXT_EXIT:%[0-9]+]]> = add vp<[[EVL_PHI]]>, vp<[[EVL]]>
-; IF-EVL-NEXT:    EMIT branch-on-count  vp<[[IV_NEXT_EXIT]]>, vp<[[VTC]]>
+; IF-EVL-NEXT:    EMIT branch-on-count  vp<[[IV_NEXT]]>, vp<[[VTC]]>
 ; IF-EVL-NEXT:  No successors
 ; IF-EVL-NEXT: }
 
@@ -104,7 +104,7 @@ define void @safe_dep(ptr %p) {
 ; CHECK-EVL-EMPTY:
 ; CHECK-EVL-NEXT: <x1> vector loop: {
 ; CHECK-EVL-NEXT:  vector.body:
-; CHECK-EVL-NEXT:    EMIT vp<%1> = CANONICAL-INDUCTION ir<0>, vp<%9>
+; CHECK-EVL-NEXT:    EMIT vp<%1> = CANONICAL-INDUCTION ir<0>, vp<%8>
 ; CHECK-EVL-NEXT:    EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%2> = phi ir<0>, vp<%8>
 ; CHECK-EVL-NEXT:    EMIT vp<%3> = EXPLICIT-VECTOR-LENGTH vp<%2>, vp<[[VTC]]>
 ; CHECK-EVL-NEXT:    vp<%4> = SCALAR-STEPS vp<%2>, ir<1>
@@ -118,7 +118,7 @@ define void @safe_dep(ptr %p) {
 ; CHECK-EVL-NEXT:    SCALAR-CAST vp<%7> = zext vp<%3> to i64
 ; CHECK-EVL-NEXT:    EMIT vp<%8> = add vp<%7>, vp<%2>
 ; CHECK-EVL-NEXT:    EMIT vp<%9> = add vp<%2>, vp<%3>
-; CHECK-EVL-NEXT:    EMIT branch-on-count vp<%9>, vp<%0>
+; CHECK-EVL-NEXT:    EMIT branch-on-count vp<%8>, vp<%0>
 ; CHECK-EVL-NEXT:  No successors
 ; CHECK-EVL-NEXT: }
 

@@ -16,7 +16,7 @@
 ; CHECK-EMPTY:
 ; CHECK-NEXT: <x1> vector loop: {
 ; CHECK-NEXT:   vector.body:
-; CHECK-NEXT:     EMIT vp<%2> = CANONICAL-INDUCTION ir<0>, vp<%11>
+; CHECK-NEXT:     EMIT vp<%2> = CANONICAL-INDUCTION ir<0>, vp<%10>
 ; CHECK-NEXT:     EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%3> = phi ir<0>, vp<%10>
 ; CHECK-NEXT:     EMIT ir<%ret.011> = monotonic-phi ir<0>, ir<%inc>
 ; CHECK-NEXT:     EMIT vp<%4> = EXPLICIT-VECTOR-LENGTH vp<%3>, vp<%0>
@@ -80,7 +80,7 @@ for.inc:
 ; CHECK-EMPTY:
 ; CHECK-NEXT: <x1> vector loop: {
 ; CHECK-NEXT:   vector.body:
-; CHECK-NEXT:     EMIT vp<%2> = CANONICAL-INDUCTION ir<0>, vp<%12>
+; CHECK-NEXT:     EMIT vp<%2> = CANONICAL-INDUCTION ir<0>, vp<%11>
 ; CHECK-NEXT:     EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%3> = phi ir<0>, vp<%11>
 ; CHECK-NEXT:     EMIT ir<%ret.013> = monotonic-phi ir<0>, ir<%inc>
 ; CHECK-NEXT:     EMIT vp<%4> = EXPLICIT-VECTOR-LENGTH vp<%3>, vp<%0>

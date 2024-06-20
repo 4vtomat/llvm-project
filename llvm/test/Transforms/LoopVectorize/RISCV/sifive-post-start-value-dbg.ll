@@ -104,8 +104,8 @@ define dso_local signext i16 @foo(i16* nocapture readonly %ptr, i32 signext %sta
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP2:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 4, i1 true), !dbg [[DBG10]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br label [[VECTOR_BODY:%.*]], !dbg [[DBG10]]
 ; IGNORE-INTERLEAVE-FOR-VLA:       vector.body:
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ], !dbg [[DBG11:![0-9]+]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ], !dbg [[DBG11:![0-9]+]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP2]], [[VECTOR_PH]] ], [ [[TMP4:%.*]], [[VECTOR_BODY]] ]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 4 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP9:%.*]], [[VECTOR_BODY]] ]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP3:%.*]] = sub i64 [[TMP0]], [[EVL_BASED_IV]]
@@ -123,8 +123,8 @@ define dso_local signext i16 @foo(i16* nocapture readonly %ptr, i32 signext %sta
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP4]] to i64
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP10]], [[EVL_BASED_IV]], !dbg [[DBG11]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP4]] to i64, !dbg [[DBG11]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[INDEX_NEXT]] = add i64 [[EVL_BASED_IV]], [[TMP11]], !dbg [[DBG11]]
-; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP0]], !dbg [[DBG11]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP11]], !dbg [[DBG11]]
+; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP0]], !dbg [[DBG11]]
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !dbg [[DBG11]], !llvm.loop [[LOOP20:![0-9]+]]
 ; IGNORE-INTERLEAVE-FOR-VLA:       middle.block:
 ; IGNORE-INTERLEAVE-FOR-VLA-NEXT:    [[TMP13:%.*]] = trunc <vscale x 4 x i32> [[TMP9]] to <vscale x 4 x i16>, !dbg [[DBG10]]

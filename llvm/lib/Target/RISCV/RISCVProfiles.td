@@ -199,6 +199,74 @@ defvar RVM23U32Features = [Feature32Bit,
                            FeatureStdExtZimop,
                            FeatureStdExtZcmop];
 
+#ifdef SIFIVE_CUSTOMIZATION
+defvar SFA23Features = !listconcat(RVA23S64Features,
+                                   [FeatureStdExtZicfilp,
+                                    FeatureStdExtZicfiss,
+                                    FeatureStdExtZkr,
+                                    FeaturesSsqosid,
+                                    FeatureStdExtSsaia]);
+
+defvar SFX23Features = !listconcat(SFA23Features,
+                                   [FeatureStdExtZfh,
+                                    FeatureStdExtZfbfmin,
+                                    FeatureStdExtZvfh,
+                                    FeatureStdExtZvfbfmin,
+                                    FeatureStdExtZvfbfwma,
+                                    FeatureVendorXSfvfnrclipxfqf,
+                                    FeatureVendorXSfvfexpa]);
+
+defvar SFP23Features = !listconcat(SFA23Features,
+                                   [FeatureStdExtZfh,
+                                    FeatureStdExtZfbfmin,
+                                    FeatureStdExtZvfh,
+                                    FeatureStdExtZvfbfmin,
+                                    FeatureStdExtZvfbfwma,
+                                    FeatureVendorXSfvqdotq]);
+
+defvar SFE23Features = !listconcat(RVI20U32Features,
+                                   [FeatureStdExtM,
+                                    FeatureStdExtC,
+                                    FeatureStdExtZba,
+                                    FeatureStdExtZbb,
+                                    FeatureStdExtZbs,
+                                    FeatureStdExtZaamo,
+                                    FeatureStdExtZicsr,
+                                    FeatureStdExtZifencei,
+                                    FeatureStdExtZicntr,
+                                    FeatureStdExtZihintntl,
+                                    FeatureStdExtZicond,
+                                    FeatureStdExtZicbop,
+                                    FeatureStdExtZimop,
+                                    FeatureStdExtZcmop,
+                                    FeatureStdExtZcb,
+                                    FeatureStdExtZkt]);
+
+defvar SFS23Features = !listconcat(RVI20U64Features,
+                                   [FeatureStdExtM,
+                                    FeatureStdExtC,
+                                    FeatureStdExtZba,
+                                    FeatureStdExtZbb,
+                                    FeatureStdExtZbs,
+                                    FeatureStdExtZaamo,
+                                    FeatureStdExtZicsr,
+                                    FeatureStdExtZifencei,
+                                    FeatureStdExtZicntr,
+                                    FeatureStdExtZihintntl,
+                                    FeatureStdExtZicond,
+                                    FeatureStdExtZicbop,
+                                    FeatureStdExtZimop,
+                                    FeatureStdExtZcmop,
+                                    FeatureStdExtZcb,
+                                    FeatureStdExtZkt]);
+
+defvar SFB23Features = !listconcat(RVB23S64Features,
+                                   [FeatureStdExtZfhmin,
+                                    FeatureStdExtZicfilp,
+                                    FeatureStdExtZicfiss,
+                                    FeatureStdExtSscofpmf]);
+#endif // SIFIVE_CUSTOMIZATION
+
 def RVI20U32 : RISCVProfile<"rvi20u32", RVI20U32Features>;
 def RVI20U64 : RISCVProfile<"rvi20u64", RVI20U64Features>;
 def RVA20U64 : RISCVProfile<"rva20u64", RVA20U64Features>;
@@ -210,3 +278,12 @@ def RVA23S64 : RISCVExperimentalProfile<"rva23s64", RVA23S64Features>;
 def RVB23U64 : RISCVExperimentalProfile<"rvb23u64", RVB23U64Features>;
 def RVB23S64 : RISCVExperimentalProfile<"rvb23s64", RVB23S64Features>;
 def RVM23U32 : RISCVExperimentalProfile<"rvm23u32", RVM23U32Features>;
+
+#ifdef SIFIVE_CUSTOMIZATION
+def SFA23 : RISCVProfile<"sfa23", SFA23Features>;
+def SFX23 : RISCVProfile<"sfx23", SFX23Features>;
+def SFP23 : RISCVProfile<"sfp23", SFP23Features>;
+def SFE23 : RISCVProfile<"sfe23", SFE23Features>;
+def SFS23 : RISCVProfile<"sfs23", SFS23Features>;
+def SFB23 : RISCVProfile<"sfb23", SFB23Features>;
+#endif // SIFIVE_CUSTOMIZATION

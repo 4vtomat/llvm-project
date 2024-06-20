@@ -851,7 +851,7 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
         Value *InitEVL =
             State.get(State.Plan->getInitEVL(), 0, /*NeedsScalar=*/true);
         assert(InitEVL &&
-               "InitRVL must be initialized in emitIterationCountCheck when "
+               "InitEVL must be initialized in emitIterationCountCheck when "
                "using VP intrinsic to generate unordered reduction");
         ReducedPartRdx = createTargetReduction(Builder, RdxDesc, ReducedPartRdx,
                                                InitEVL, OrigPhi);
