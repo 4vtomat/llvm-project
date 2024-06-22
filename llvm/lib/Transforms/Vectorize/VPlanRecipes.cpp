@@ -902,17 +902,24 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
   case VPInstruction::ExtractFromEnd: {
 #if SIFIVE_CUSTOMIZATION
     if (State.EVL && State.VF.isVector()) {
-      auto *FOR = dyn_cast<VPInstruction>(getOperand(0));
-      if (FOR) {
-        if (auto *FORPhi =
-                dyn_cast<VPFirstOrderRecurrencePHIRecipe>(FOR->getOperand(0))) {
-          Value *EVL = State.get(State.EVL, 0, /*NeedsScalar=*/true);
-          auto *IdxTy = Builder.getInt32Ty();
-          auto *Idx = Builder.CreateSub(EVL, ConstantInt::get(IdxTy, 2));
-          VPValue *PreviousDef = FORPhi->getBackedgeValue();
-          Value *Incoming = State.get(PreviousDef, 0);
-          Value *ExtractForPhiUsedOutsideLoop = Builder.CreateExtractElement(
-              Incoming, Idx, "vector.recur.extract.for.phi");
+      // TODO: Explicitly adjust VPlan for EVL vectorization in
+      // VPlanTransforms::adjustFixedOrderRecurrences.
+      auto *FoundFORPhi = find_if(getOperand(0)->users(), [](VPUser *U) {
+        return isa<VPFirstOrderRecurrencePHIRecipe>(U);
+      });
+      if (FoundFORPhi != getOperand(0)->users().end()) {
+        auto *FORPhi = cast<VPFirstOrderRecurrencePHIRecipe>(*FoundFORPhi);
+        auto *CI = cast<ConstantInt>(getOperand(1)->getLiveInIRValue());
+        unsigned Offset = CI->getZExtValue();
+        assert(Offset > 0 && Offset < 3 && "Offset from end must be 1 or 2");
+
+        Value *Incoming = State.get(getOperand(0), 0);
+        Value *EVL = State.get(State.EVL, 0, /*NeedsScalar=*/true);
+        auto *IdxTy = Builder.getInt32Ty();
+        auto *Idx = Builder.CreateSub(
+            EVL, Builder.CreateIntCast(CI, IdxTy, /*isSigned=*/false));
+        Value *Res = Builder.CreateExtractElement(Incoming, Idx);
+        if (Offset == 2) {
           // Take care of the corner case when last vector iteration processed
           // just one element. In this case extract of the `EVL-2` element of
           // the `PreviousDef`(`v2`) doesn't make sense as it will be
@@ -939,17 +946,15 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
           // using `PrevEVL`(`prev.rvl`)
           Value *Cond =
               Builder.CreateICmpEQ(EVL, ConstantInt::get(EVL->getType(), 1));
-
           Idx = Builder.CreateSub(
               State.get(State.Plan->getPrevEVL(), 0, /*NeedsScalar=*/true),
               ConstantInt::get(IdxTy, 1));
           Value *PreviousValue = Builder.CreateExtractElement(
               State.get(FORPhi, 0), Idx, "vector.recur.prev.extract");
-          ExtractForPhiUsedOutsideLoop = Builder.CreateSelect(
-              Cond, PreviousValue, ExtractForPhiUsedOutsideLoop);
-          ExtractForPhiUsedOutsideLoop->setName(Name);
-          return ExtractForPhiUsedOutsideLoop;
+          Res = Builder.CreateSelect(Cond, PreviousValue, Res);
         }
+        Res->setName(Name);
+        return Res;
       }
     }
 #endif // SIFIVE_CUSTOMIZATION
