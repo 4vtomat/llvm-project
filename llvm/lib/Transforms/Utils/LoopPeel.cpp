@@ -1450,7 +1450,7 @@ bool llvm::peelLoopEpilog(Loop *L, unsigned PeelCount, LoopInfo *LI,
   }
 
   for (const auto &[Term, Info] : Weights)
-    setBranchWeights(*Term, Info.Weights);
+    setBranchWeights(*Term, Info.Weights, /*IsExpected=*/false);
 
   // Update Metadata for count of peeled off iterations.
   unsigned AlreadyPeeled = 0;
