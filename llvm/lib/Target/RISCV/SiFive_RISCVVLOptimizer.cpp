@@ -45,7 +45,7 @@ public:
 
   void getAnalysisUsage(AnalysisUsage &AU) const override {
     AU.setPreservesCFG();
-    AU.addRequired<MachineDominatorTree>();
+    AU.addRequired<MachineDominatorTreeWrapperPass>();
     MachineFunctionPass::getAnalysisUsage(AU);
   }
 
@@ -60,7 +60,7 @@ private:
 char RISCVVLOptimizer::ID = 0;
 INITIALIZE_PASS_BEGIN(RISCVVLOptimizer, DEBUG_TYPE, "RISC-V VL Optimizer",
                       false, false)
-INITIALIZE_PASS_DEPENDENCY(MachineDominatorTree)
+INITIALIZE_PASS_DEPENDENCY(MachineDominatorTreeWrapperPass)
 INITIALIZE_PASS_END(RISCVVLOptimizer, DEBUG_TYPE, "RISC-V VL Optimizer", false,
                     false)
 
@@ -1415,7 +1415,7 @@ bool RISCVVLOptimizer::runOnMachineFunction(MachineFunction &MF) {
     return false;
 
   MRI = &MF.getRegInfo();
-  MDT = &getAnalysis<MachineDominatorTree>();
+  MDT = &getAnalysis<MachineDominatorTreeWrapperPass>().getDomTree();
 
   const RISCVSubtarget &ST = MF.getSubtarget<RISCVSubtarget>();
   if (!ST.hasVInstructions())
