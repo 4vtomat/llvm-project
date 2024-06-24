@@ -1932,14 +1932,12 @@ static bool replacingOperandWithVariableIsCheap(const Instruction *I,
 // PHI node (because an operand varies in each input block), add to PHIOperands.
 static bool canSinkInstructions(
     ArrayRef<Instruction *> Insts,
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    DenseMap<Instruction *, SmallVector<Value *, 4>> &PHIOperands,
+    DenseMap<const Use *, SmallVector<Value *, 4>> &PHIOperands,
     const TargetTransformInfo &TTI) {
-#endif
-=======
+#else
     DenseMap<const Use *, SmallVector<Value *, 4>> &PHIOperands) {
->>>>>>> c83d9e9
+#endif // SIFIVE_CUSTOMIZATION
   // Prune out obviously bad instructions to move. Each instruction must have
   // the same number of uses, and we check later that the uses are consistent.
   std::optional<unsigned> NumUses;
@@ -2064,7 +2062,6 @@ static bool canSinkInstructions(
           !canReplaceOperandWithVariable(I0, OI))
         // We can't create a PHI from this GEP.
         return false;
-<<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
       // Return true if I is load/store instruction and OpIdx is pointer index
@@ -2094,9 +2091,7 @@ static bool canSinkInstructions(
         return false;
 #endif
 
-=======
       auto &Ops = PHIOperands[&I0->getOperandUse(OI)];
->>>>>>> c83d9e9
       for (auto *I : Insts)
         Ops.push_back(I->getOperand(OI));
     }
