@@ -127,12 +127,6 @@ static void getRISCFeaturesFromMcpu(const Driver &D, const Arg *A,
       D.Diag(clang::diag::err_drv_unsupported_option_argument)
           << A->getSpelling() << Mcpu;
   }
-<<<<<<< HEAD
-
-  if (llvm::RISCV::hasFastUnalignedAccess(Mcpu)) {
-    Features.push_back("+unaligned-scalar-mem");
-    Features.push_back("+unaligned-vector-mem");
-  }
 
 #if SIFIVE_CUSTOMIZATION
   bool HasNoSlowVectorFp64 = llvm::is_contained(Features, "-slow-vector-fp64");
@@ -141,8 +135,6 @@ static void getRISCFeaturesFromMcpu(const Driver &D, const Arg *A,
        Mcpu == "sifive-x392-ea-dualvalu"))
     Features.push_back("+slow-vector-fp64");
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> c83d9e9
 }
 
 void riscv::getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
@@ -161,7 +153,6 @@ void riscv::getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
   if (!getArchFeatures(D, MArch, Features, Args))
     return;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Arg *A = Args.getLastArg(options::OPT_mtune_EQ)) {
     StringRef Tune = A->getValue();
@@ -172,9 +163,8 @@ void riscv::getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
       Features.push_back("-slow-vector-fp64");
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   bool CPUFastUnaligned = false;
->>>>>>> c83d9e9
 
   // If users give march and mcpu, get std extension feature from MArch
   // and other features (ex. mirco architecture feature) from mcpu
