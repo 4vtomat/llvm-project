@@ -2381,13 +2381,8 @@ multiclass VPseudoBinaryV_WV<LMULInfo m> {
 multiclass VPseudoBinaryV_WV_RM<LMULInfo m> {
   defm _WV : VPseudoBinaryRoundingMode<m.vrclass, m.wvrclass, m.vrclass, m,
                                        !if(!ge(m.octuple, 8),
-<<<<<<< HEAD
-                                       "@earlyclobber $rd", ""), // SIFIVE
-                                       TargetConstraintType=2>; // SIFIVE
-=======
                                        "@earlyclobber $rd", ""),
                                        TargetConstraintType=2>;
->>>>>>> c83d9e9
 }
 
 multiclass VPseudoBinaryV_WX<LMULInfo m> {
@@ -2399,13 +2394,8 @@ multiclass VPseudoBinaryV_WX<LMULInfo m> {
 multiclass VPseudoBinaryV_WX_RM<LMULInfo m> {
   defm _WX : VPseudoBinaryRoundingMode<m.vrclass, m.wvrclass, GPR, m,
                                        !if(!ge(m.octuple, 8),
-<<<<<<< HEAD
-                                       "@earlyclobber $rd", ""), // SIFIVE
-                                       TargetConstraintType=2>; // SIFIVE
-=======
                                        "@earlyclobber $rd", ""),
                                        TargetConstraintType=2>;
->>>>>>> c83d9e9
 }
 
 multiclass VPseudoBinaryV_WI<LMULInfo m> {
@@ -2417,13 +2407,8 @@ multiclass VPseudoBinaryV_WI<LMULInfo m> {
 multiclass VPseudoBinaryV_WI_RM<LMULInfo m> {
   defm _WI : VPseudoBinaryRoundingMode<m.vrclass, m.wvrclass, uimm5, m,
                                        !if(!ge(m.octuple, 8),
-<<<<<<< HEAD
-                                       "@earlyclobber $rd", ""), // SIFIVE
-                                       TargetConstraintType=2>; // SIFIVE
-=======
                                        "@earlyclobber $rd", ""),
                                        TargetConstraintType=2>;
->>>>>>> c83d9e9
 }
 
 // For vadc and vsbc, the instruction encoding is reserved if the destination
@@ -6373,19 +6358,14 @@ let Defs = [VXSAT] in {
 //===----------------------------------------------------------------------===//
 // 12.4. Vector Single-Width Scaling Shift Instructions
 //===----------------------------------------------------------------------===//
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 let hasPostISelHook = 1 in {
 #endif
-defm PseudoVSSRL : VPseudoVSSHT_VV_VX_VI_RM<uimm5>;
-defm PseudoVSSRA : VPseudoVSSHT_VV_VX_VI_RM<uimm5>;
+defm PseudoVSSRL : VPseudoVSSHT_VV_VX_VI_RM;
+defm PseudoVSSRA : VPseudoVSSHT_VV_VX_VI_RM;
 #ifdef SIFIVE_CUSTOMIZATION
 } // hasPostISelHook = 1
 #endif
-=======
-defm PseudoVSSRL : VPseudoVSSHT_VV_VX_VI_RM;
-defm PseudoVSSRA : VPseudoVSSHT_VV_VX_VI_RM;
->>>>>>> c83d9e9
 
 //===----------------------------------------------------------------------===//
 // 12.5. Vector Narrowing Fixed-Point Clip Instructions
