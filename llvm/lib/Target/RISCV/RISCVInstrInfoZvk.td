@@ -564,9 +564,8 @@ let Predicates = [HasStdExtZvkbOrZvkb0p1] in {
   defm PseudoVANDN  : VPseudoVANDN;
   defm PseudoVBREV8 : VPseudoVBREV8;
   defm PseudoVREV8  : VPseudoVREV8;
-<<<<<<< HEAD
-  defm PseudoVROL   : VPseudoVROL;
-  defm PseudoVROR   : VPseudoVROR<uimm6>;
+  defm PseudoVROL   : VPseudoVROT_VV_VX;
+  defm PseudoVROR   : VPseudoVROT_VV_VX_VI;
 #ifdef SIFIVE_CUSTOMIZATION
 } // Predicates = [HasStdExtZvkbOrZvkb0p1]
 #endif // SIFIVE_CUSTOMIZATION
@@ -579,11 +578,6 @@ let Predicates = [HasStdExtZvkg0p1] in {
   defm PseudoVGHMAC : VPseudoVGHSH;
 } // Predicates = [HasStdExtZvkg0p1]
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  defm PseudoVROL   : VPseudoVROT_VV_VX;
-  defm PseudoVROR   : VPseudoVROT_VV_VX_VI;
-} // Predicates = [HasStdExtZvkb]
->>>>>>> c83d9e9
 
 let Predicates = [HasStdExtZvkg] in {
   defm PseudoVGHSH : VPseudoVGHSH;
