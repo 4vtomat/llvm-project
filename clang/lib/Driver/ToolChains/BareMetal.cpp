@@ -493,7 +493,6 @@ void baremetal::Linker::ConstructJob(Compilation &C, const JobAction &JA,
   CmdArgs.push_back(Output.getFilename());
 
 #ifdef SIFIVE_CUSTOMIZATION
-  const Driver &D = TC.getDriver();
   if (D.isUsingLTO()) {
     assert(!Inputs.empty() && "Must have at least one input.");
     addLTOOptions(TC, Args, CmdArgs, Output, Inputs[0],
