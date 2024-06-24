@@ -643,22 +643,17 @@ public:
     return (hasNonZeroAVL(LIS) && Other.hasNonZeroAVL(LIS));
   }
 
-<<<<<<< HEAD
-  bool hasSameAVL(const VSETVLIInfo &Other) const {
-    if (hasAVLReg() && Other.hasAVLReg())
-#ifdef SIFIVE_CUSTOMIZATION
-      return getAVLVNInfo()->def == Other.getAVLVNInfo()->def &&
-#else
-=======
   bool hasSameAVLLatticeValue(const VSETVLIInfo &Other) const {
     if (hasAVLReg() && Other.hasAVLReg()) {
       assert(!getAVLVNInfo() == !Other.getAVLVNInfo() &&
              "we either have intervals or we don't");
       if (!getAVLVNInfo())
         return getAVLReg() == Other.getAVLReg();
->>>>>>> c83d9e9
+#ifdef SIFIVE_CUSTOMIZATION
+      return getAVLVNInfo()->def == Other.getAVLVNInfo()->def &&
+#else
       return getAVLVNInfo()->id == Other.getAVLVNInfo()->id &&
-#endif
+#endif // SIFIVE_CUSTOMIZATION
              getAVLReg() == Other.getAVLReg();
     }
 
@@ -1169,19 +1164,6 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
                 .addReg(RISCV::X0, RegState::Define | RegState::Dead)
                 .addReg(AVLReg)
                 .addImm(Info.encodeVTYPE());
-<<<<<<< HEAD
-  LIS->InsertMachineInstrInMaps(*MI);
-  // Normally the AVL's live range will already extend past the inserted vsetvli
-  // because the pseudos below will already use the AVL. But this isn't always
-  // the case, e.g. PseudoVMV_X_S doesn't have an AVL operand.
-  LIS->getInterval(AVLReg).extendInBlock(
-      LIS->getMBBStartIdx(&MBB), LIS->getInstructionIndex(*MI).getRegSlot());
-
-#ifdef SIFIVE_CUSTOMIZATION
-  LIS->removeInterval(AVLReg);
-  LIS->createAndComputeVirtRegInterval(AVLReg);
-#endif // SIFIVE_CUSTOMIZATION 
-=======
   if (LIS) {
     LIS->InsertMachineInstrInMaps(*MI);
     // Normally the AVL's live range will already extend past the inserted
@@ -1189,8 +1171,11 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
     // isn't always the case, e.g. PseudoVMV_X_S doesn't have an AVL operand.
     LIS->getInterval(AVLReg).extendInBlock(
         LIS->getMBBStartIdx(&MBB), LIS->getInstructionIndex(*MI).getRegSlot());
+#ifdef SIFIVE_CUSTOMIZATION
+    LIS->removeInterval(AVLReg);
+    LIS->createAndComputeVirtRegInterval(AVLReg);
+#endif // SIFIVE_CUSTOMIZATION
   }
->>>>>>> c83d9e9
 }
 
 /// Return true if a VSETVLI is required to transition from CurInfo to Require
