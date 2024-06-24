@@ -204,7 +204,7 @@ defvar SFA23Features = !listconcat(RVA23S64Features,
                                    [FeatureStdExtZicfilp,
                                     FeatureStdExtZicfiss,
                                     FeatureStdExtZkr,
-                                    FeaturesSsqosid,
+                                    FeaturesStdExtSsqosid,
                                     FeatureStdExtSsaia]);
 
 defvar SFX23Features = !listconcat(SFA23Features,
