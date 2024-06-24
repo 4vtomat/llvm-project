@@ -528,6 +528,14 @@ def HasStdExtZbs : Predicate<"Subtarget->hasStdExtZbs()">,
 
 // Bitmanip Extensions for Cryptography Extensions
 
+def FeatureStdExtB
+    : RISCVExtension<"b", 1, 0,
+                     "'B' (the collection of the Zba, Zbb, Zbs extensions)",
+                     [FeatureStdExtZba, FeatureStdExtZbb, FeatureStdExtZbs]>;
+def HasStdExtB : Predicate<"Subtarget->hasStdExtB()">,
+                           AssemblerPredicate<(all_of FeatureStdExtB),
+                           "'B' (the collection of the Zba, Zbb, Zbs extensions)">;
+
 def FeatureStdExtZbkb
     : RISCVExtension<"zbkb", 1, 0,
                      "'Zbkb' (Bitmanip instructions for Cryptography)">;
@@ -953,9 +961,23 @@ def FeatureStdExtSsaia
                      "'Ssaia' (Advanced Interrupt Architecture Supervisor "
                      "Level)">;
 
+def FeatureStdExtSmcsrind
+    : RISCVExtension<"smcsrind", 1, 0,
+                     "'Smcsrind' (Indirect CSR Access Machine Level)">;
+def FeatureStdExtSscsrind
+    : RISCVExtension<"sscsrind", 1, 0,
+                     "'Sscsrind' (Indirect CSR Access Supervisor Level)">;
+
 def FeatureStdExtSmepmp
     : RISCVExtension<"smepmp", 1, 0,
                      "'Smepmp' (Enhanced Physical Memory Protection)">;
+
+def FeatureStdExtSmcdeleg
+    : RISCVExtension<"smcdeleg", 1, 0,
+                     "'Smcdeleg' (Counter Delegation Machine Level)">;
+def FeatureStdExtSsccfg
+    : RISCVExtension<"ssccfg", 1, 0,
+                     "'Ssccfg' (Counter Configuration Supervisor Level)">;
 
 def FeatureStdExtSsccptr
     : RISCVExtension<"ssccptr", 1, 0,
@@ -989,7 +1011,7 @@ def FeatureStdExtSstc
     : RISCVExtension<"sstc", 1, 0,
                      "'Sstc' (Supervisor-mode timer interrupts)">;
 
-def FeaturesSsqosid
+def FeaturesStdExtSsqosid
     : RISCVExperimentalExtension<"ssqosid", 1, 0,
                                  "'Ssqosid' (Quality-of-Service (QoS) Identifiers)">;
 

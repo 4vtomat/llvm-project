@@ -130,9 +130,7 @@ define float @fadd_strict(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-ORDERED-TF:       vector.ph:
 ; CHECK-ORDERED-TF-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-ORDERED-TF-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 8
-; CHECK-ORDERED-TF-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-ORDERED-TF-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 8
-; CHECK-ORDERED-TF-NEXT:    [[TMP4:%.*]] = sub i64 [[TMP3]], 1
+; CHECK-ORDERED-TF-NEXT:    [[TMP4:%.*]] = sub i64 [[TMP1]], 1
 ; CHECK-ORDERED-TF-NEXT:    [[N_RND_UP:%.*]] = add i64 [[N]], [[TMP4]]
 ; CHECK-ORDERED-TF-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], [[TMP1]]
 ; CHECK-ORDERED-TF-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
@@ -386,9 +384,7 @@ define float @fadd_strict_unroll(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-ORDERED-TF:       vector.ph:
 ; CHECK-ORDERED-TF-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-ORDERED-TF-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 32
-; CHECK-ORDERED-TF-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-ORDERED-TF-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 32
-; CHECK-ORDERED-TF-NEXT:    [[TMP4:%.*]] = sub i64 [[TMP3]], 1
+; CHECK-ORDERED-TF-NEXT:    [[TMP4:%.*]] = sub i64 [[TMP1]], 1
 ; CHECK-ORDERED-TF-NEXT:    [[N_RND_UP:%.*]] = add i64 [[N]], [[TMP4]]
 ; CHECK-ORDERED-TF-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], [[TMP1]]
 ; CHECK-ORDERED-TF-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
@@ -445,6 +441,7 @@ define float @fadd_strict_unroll(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-ORDERED-TF-NEXT:    [[TMP40:%.*]] = mul i64 [[TMP39]], 8
 ; CHECK-ORDERED-TF-NEXT:    [[TMP41:%.*]] = getelementptr inbounds float, ptr [[TMP34]], i64 [[TMP40]]
 ; CHECK-ORDERED-TF-NEXT:    [[TMP42:%.*]] = call i64 @llvm.vscale.i64()
+<<<<<<< HEAD
 ; CHECK-ORDERED-TF-NEXT:    [[TMP43:%.*]] = mul i64 [[TMP42]], 16
 ; CHECK-ORDERED-TF-NEXT:    [[TMP44:%.*]] = getelementptr inbounds float, ptr [[TMP34]], i64 [[TMP43]]
 ; CHECK-ORDERED-TF-NEXT:    [[TMP45:%.*]] = call i64 @llvm.vscale.i64()
@@ -482,6 +479,55 @@ define float @fadd_strict_unroll(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-ORDERED-TF-NEXT:    [[TMP68:%.*]] = xor <vscale x 8 x i1> [[ACTIVE_LANE_MASK_NEXT14]], shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer)
 ; CHECK-ORDERED-TF-NEXT:    [[TMP69:%.*]] = extractelement <vscale x 8 x i1> [[TMP65]], i32 0
 ; CHECK-ORDERED-TF-NEXT:    br i1 [[TMP69]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+=======
+; CHECK-ORDERED-TF-NEXT:    [[TMP43:%.*]] = mul i64 [[TMP42]], 24
+; CHECK-ORDERED-TF-NEXT:    [[TMP44:%.*]] = add i64 [[TMP43]], 0
+; CHECK-ORDERED-TF-NEXT:    [[TMP45:%.*]] = mul i64 [[TMP44]], 1
+; CHECK-ORDERED-TF-NEXT:    [[TMP46:%.*]] = add i64 [[INDEX]], [[TMP45]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP47:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP31]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP48:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP36]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP49:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP41]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP50:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP46]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP51:%.*]] = getelementptr inbounds float, ptr [[TMP47]], i32 0
+; CHECK-ORDERED-TF-NEXT:    [[TMP52:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP53:%.*]] = mul i64 [[TMP52]], 8
+; CHECK-ORDERED-TF-NEXT:    [[TMP54:%.*]] = getelementptr inbounds float, ptr [[TMP47]], i64 [[TMP53]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP55:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP56:%.*]] = mul i64 [[TMP55]], 16
+; CHECK-ORDERED-TF-NEXT:    [[TMP57:%.*]] = getelementptr inbounds float, ptr [[TMP47]], i64 [[TMP56]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP58:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP59:%.*]] = mul i64 [[TMP58]], 24
+; CHECK-ORDERED-TF-NEXT:    [[TMP60:%.*]] = getelementptr inbounds float, ptr [[TMP47]], i64 [[TMP59]]
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP51]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD9:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP54]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK6]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD10:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP57]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK7]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD11:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP60]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK8]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[TMP61:%.*]] = select <vscale x 8 x i1> [[ACTIVE_LANE_MASK]], <vscale x 8 x float> [[WIDE_MASKED_LOAD]], <vscale x 8 x float> shufflevector (<vscale x 8 x float> insertelement (<vscale x 8 x float> poison, float -0.000000e+00, i64 0), <vscale x 8 x float> poison, <vscale x 8 x i32> zeroinitializer)
+; CHECK-ORDERED-TF-NEXT:    [[TMP62:%.*]] = call float @llvm.vector.reduce.fadd.nxv8f32(float [[VEC_PHI]], <vscale x 8 x float> [[TMP61]])
+; CHECK-ORDERED-TF-NEXT:    [[TMP63:%.*]] = select <vscale x 8 x i1> [[ACTIVE_LANE_MASK6]], <vscale x 8 x float> [[WIDE_MASKED_LOAD9]], <vscale x 8 x float> shufflevector (<vscale x 8 x float> insertelement (<vscale x 8 x float> poison, float -0.000000e+00, i64 0), <vscale x 8 x float> poison, <vscale x 8 x i32> zeroinitializer)
+; CHECK-ORDERED-TF-NEXT:    [[TMP64:%.*]] = call float @llvm.vector.reduce.fadd.nxv8f32(float [[TMP62]], <vscale x 8 x float> [[TMP63]])
+; CHECK-ORDERED-TF-NEXT:    [[TMP65:%.*]] = select <vscale x 8 x i1> [[ACTIVE_LANE_MASK7]], <vscale x 8 x float> [[WIDE_MASKED_LOAD10]], <vscale x 8 x float> shufflevector (<vscale x 8 x float> insertelement (<vscale x 8 x float> poison, float -0.000000e+00, i64 0), <vscale x 8 x float> poison, <vscale x 8 x i32> zeroinitializer)
+; CHECK-ORDERED-TF-NEXT:    [[TMP66:%.*]] = call float @llvm.vector.reduce.fadd.nxv8f32(float [[TMP64]], <vscale x 8 x float> [[TMP65]])
+; CHECK-ORDERED-TF-NEXT:    [[TMP67:%.*]] = select <vscale x 8 x i1> [[ACTIVE_LANE_MASK8]], <vscale x 8 x float> [[WIDE_MASKED_LOAD11]], <vscale x 8 x float> shufflevector (<vscale x 8 x float> insertelement (<vscale x 8 x float> poison, float -0.000000e+00, i64 0), <vscale x 8 x float> poison, <vscale x 8 x i32> zeroinitializer)
+; CHECK-ORDERED-TF-NEXT:    [[TMP68]] = call float @llvm.vector.reduce.fadd.nxv8f32(float [[TMP66]], <vscale x 8 x float> [[TMP67]])
+; CHECK-ORDERED-TF-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP70]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP71:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP72:%.*]] = mul i64 [[TMP71]], 8
+; CHECK-ORDERED-TF-NEXT:    [[TMP73:%.*]] = add i64 [[INDEX]], [[TMP72]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP74:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP75:%.*]] = mul i64 [[TMP74]], 16
+; CHECK-ORDERED-TF-NEXT:    [[TMP76:%.*]] = add i64 [[INDEX]], [[TMP75]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP77:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP78:%.*]] = mul i64 [[TMP77]], 24
+; CHECK-ORDERED-TF-NEXT:    [[TMP79:%.*]] = add i64 [[INDEX]], [[TMP78]]
+; CHECK-ORDERED-TF-NEXT:    [[ACTIVE_LANE_MASK_NEXT]] = call <vscale x 8 x i1> @llvm.get.active.lane.mask.nxv8i1.i64(i64 [[INDEX]], i64 [[TMP9]])
+; CHECK-ORDERED-TF-NEXT:    [[ACTIVE_LANE_MASK_NEXT12]] = call <vscale x 8 x i1> @llvm.get.active.lane.mask.nxv8i1.i64(i64 [[TMP73]], i64 [[TMP9]])
+; CHECK-ORDERED-TF-NEXT:    [[ACTIVE_LANE_MASK_NEXT13]] = call <vscale x 8 x i1> @llvm.get.active.lane.mask.nxv8i1.i64(i64 [[TMP76]], i64 [[TMP9]])
+; CHECK-ORDERED-TF-NEXT:    [[ACTIVE_LANE_MASK_NEXT14]] = call <vscale x 8 x i1> @llvm.get.active.lane.mask.nxv8i1.i64(i64 [[TMP79]], i64 [[TMP9]])
+; CHECK-ORDERED-TF-NEXT:    [[TMP80:%.*]] = xor <vscale x 8 x i1> [[ACTIVE_LANE_MASK_NEXT]], shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer)
+; CHECK-ORDERED-TF-NEXT:    [[TMP84:%.*]] = extractelement <vscale x 8 x i1> [[TMP80]], i32 0
+; CHECK-ORDERED-TF-NEXT:    br i1 [[TMP84]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+>>>>>>> c83d9e9
 ; CHECK-ORDERED-TF:       middle.block:
 ; CHECK-ORDERED-TF-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[SCALAR_PH]]
 ; CHECK-ORDERED-TF:       scalar.ph:
@@ -700,9 +746,7 @@ define void @fadd_strict_interleave(ptr noalias nocapture readonly %a, ptr noali
 ; CHECK-ORDERED-TF:       vector.ph:
 ; CHECK-ORDERED-TF-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-ORDERED-TF-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 4
-; CHECK-ORDERED-TF-NEXT:    [[TMP5:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-ORDERED-TF-NEXT:    [[TMP6:%.*]] = mul i64 [[TMP5]], 4
-; CHECK-ORDERED-TF-NEXT:    [[TMP7:%.*]] = sub i64 [[TMP6]], 1
+; CHECK-ORDERED-TF-NEXT:    [[TMP7:%.*]] = sub i64 [[TMP4]], 1
 ; CHECK-ORDERED-TF-NEXT:    [[N_RND_UP:%.*]] = add i64 [[TMP2]], [[TMP7]]
 ; CHECK-ORDERED-TF-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], [[TMP4]]
 ; CHECK-ORDERED-TF-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
@@ -958,9 +1002,7 @@ define float @fadd_of_sum(ptr noalias nocapture readonly %a, ptr noalias nocaptu
 ; CHECK-ORDERED-TF:       vector.ph:
 ; CHECK-ORDERED-TF-NEXT:    [[TMP1:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-ORDERED-TF-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP1]], 4
-; CHECK-ORDERED-TF-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-ORDERED-TF-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 4
-; CHECK-ORDERED-TF-NEXT:    [[TMP5:%.*]] = sub i64 [[TMP4]], 1
+; CHECK-ORDERED-TF-NEXT:    [[TMP5:%.*]] = sub i64 [[TMP2]], 1
 ; CHECK-ORDERED-TF-NEXT:    [[N_RND_UP:%.*]] = add i64 [[N]], [[TMP5]]
 ; CHECK-ORDERED-TF-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], [[TMP2]]
 ; CHECK-ORDERED-TF-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
@@ -1195,9 +1237,7 @@ define float @fadd_conditional(ptr noalias nocapture readonly %a, ptr noalias no
 ; CHECK-ORDERED-TF:       vector.ph:
 ; CHECK-ORDERED-TF-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-ORDERED-TF-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 4
-; CHECK-ORDERED-TF-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-ORDERED-TF-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 4
-; CHECK-ORDERED-TF-NEXT:    [[TMP4:%.*]] = sub i64 [[TMP3]], 1
+; CHECK-ORDERED-TF-NEXT:    [[TMP4:%.*]] = sub i64 [[TMP1]], 1
 ; CHECK-ORDERED-TF-NEXT:    [[N_RND_UP:%.*]] = add i64 [[N]], [[TMP4]]
 ; CHECK-ORDERED-TF-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], [[TMP1]]
 ; CHECK-ORDERED-TF-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
@@ -1662,9 +1702,7 @@ define float @fmuladd_strict(ptr %a, ptr %b, i64 %n) #0 {
 ; CHECK-ORDERED-TF:       vector.ph:
 ; CHECK-ORDERED-TF-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-ORDERED-TF-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 32
-; CHECK-ORDERED-TF-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-ORDERED-TF-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 32
-; CHECK-ORDERED-TF-NEXT:    [[TMP4:%.*]] = sub i64 [[TMP3]], 1
+; CHECK-ORDERED-TF-NEXT:    [[TMP4:%.*]] = sub i64 [[TMP1]], 1
 ; CHECK-ORDERED-TF-NEXT:    [[N_RND_UP:%.*]] = add i64 [[N]], [[TMP4]]
 ; CHECK-ORDERED-TF-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], [[TMP1]]
 ; CHECK-ORDERED-TF-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
@@ -1721,6 +1759,7 @@ define float @fmuladd_strict(ptr %a, ptr %b, i64 %n) #0 {
 ; CHECK-ORDERED-TF-NEXT:    [[TMP40:%.*]] = mul i64 [[TMP39]], 8
 ; CHECK-ORDERED-TF-NEXT:    [[TMP41:%.*]] = getelementptr inbounds float, ptr [[TMP34]], i64 [[TMP40]]
 ; CHECK-ORDERED-TF-NEXT:    [[TMP42:%.*]] = call i64 @llvm.vscale.i64()
+<<<<<<< HEAD
 ; CHECK-ORDERED-TF-NEXT:    [[TMP43:%.*]] = mul i64 [[TMP42]], 16
 ; CHECK-ORDERED-TF-NEXT:    [[TMP44:%.*]] = getelementptr inbounds float, ptr [[TMP34]], i64 [[TMP43]]
 ; CHECK-ORDERED-TF-NEXT:    [[TMP45:%.*]] = call i64 @llvm.vscale.i64()
@@ -1780,6 +1819,77 @@ define float @fmuladd_strict(ptr %a, ptr %b, i64 %n) #0 {
 ; CHECK-ORDERED-TF-NEXT:    [[TMP86:%.*]] = xor <vscale x 8 x i1> [[ACTIVE_LANE_MASK_NEXT18]], shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer)
 ; CHECK-ORDERED-TF-NEXT:    [[TMP87:%.*]] = extractelement <vscale x 8 x i1> [[TMP83]], i32 0
 ; CHECK-ORDERED-TF-NEXT:    br i1 [[TMP87]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
+=======
+; CHECK-ORDERED-TF-NEXT:    [[TMP43:%.*]] = mul i64 [[TMP42]], 24
+; CHECK-ORDERED-TF-NEXT:    [[TMP44:%.*]] = add i64 [[TMP43]], 0
+; CHECK-ORDERED-TF-NEXT:    [[TMP45:%.*]] = mul i64 [[TMP44]], 1
+; CHECK-ORDERED-TF-NEXT:    [[TMP46:%.*]] = add i64 [[INDEX]], [[TMP45]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP47:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP31]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP48:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP36]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP49:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP41]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP50:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP46]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP51:%.*]] = getelementptr inbounds float, ptr [[TMP47]], i32 0
+; CHECK-ORDERED-TF-NEXT:    [[TMP52:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP53:%.*]] = mul i64 [[TMP52]], 8
+; CHECK-ORDERED-TF-NEXT:    [[TMP54:%.*]] = getelementptr inbounds float, ptr [[TMP47]], i64 [[TMP53]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP55:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP56:%.*]] = mul i64 [[TMP55]], 16
+; CHECK-ORDERED-TF-NEXT:    [[TMP57:%.*]] = getelementptr inbounds float, ptr [[TMP47]], i64 [[TMP56]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP58:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP59:%.*]] = mul i64 [[TMP58]], 24
+; CHECK-ORDERED-TF-NEXT:    [[TMP60:%.*]] = getelementptr inbounds float, ptr [[TMP47]], i64 [[TMP59]]
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP51]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD9:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP54]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK6]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD10:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP57]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK7]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD11:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP60]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK8]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[TMP61:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[TMP31]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP62:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[TMP36]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP63:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[TMP41]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP64:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[TMP46]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP65:%.*]] = getelementptr inbounds float, ptr [[TMP61]], i32 0
+; CHECK-ORDERED-TF-NEXT:    [[TMP66:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP67:%.*]] = mul i64 [[TMP66]], 8
+; CHECK-ORDERED-TF-NEXT:    [[TMP68:%.*]] = getelementptr inbounds float, ptr [[TMP61]], i64 [[TMP67]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP69:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP70:%.*]] = mul i64 [[TMP69]], 16
+; CHECK-ORDERED-TF-NEXT:    [[TMP71:%.*]] = getelementptr inbounds float, ptr [[TMP61]], i64 [[TMP70]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP72:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP73:%.*]] = mul i64 [[TMP72]], 24
+; CHECK-ORDERED-TF-NEXT:    [[TMP74:%.*]] = getelementptr inbounds float, ptr [[TMP61]], i64 [[TMP73]]
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD12:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP65]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD13:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP68]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK6]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD14:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP71]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK7]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD15:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP74]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK8]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[TMP75:%.*]] = fmul <vscale x 8 x float> [[WIDE_MASKED_LOAD]], [[WIDE_MASKED_LOAD12]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP76:%.*]] = fmul <vscale x 8 x float> [[WIDE_MASKED_LOAD9]], [[WIDE_MASKED_LOAD13]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP77:%.*]] = fmul <vscale x 8 x float> [[WIDE_MASKED_LOAD10]], [[WIDE_MASKED_LOAD14]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP78:%.*]] = fmul <vscale x 8 x float> [[WIDE_MASKED_LOAD11]], [[WIDE_MASKED_LOAD15]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP79:%.*]] = select <vscale x 8 x i1> [[ACTIVE_LANE_MASK]], <vscale x 8 x float> [[TMP75]], <vscale x 8 x float> shufflevector (<vscale x 8 x float> insertelement (<vscale x 8 x float> poison, float -0.000000e+00, i64 0), <vscale x 8 x float> poison, <vscale x 8 x i32> zeroinitializer)
+; CHECK-ORDERED-TF-NEXT:    [[TMP80:%.*]] = call float @llvm.vector.reduce.fadd.nxv8f32(float [[VEC_PHI]], <vscale x 8 x float> [[TMP79]])
+; CHECK-ORDERED-TF-NEXT:    [[TMP81:%.*]] = select <vscale x 8 x i1> [[ACTIVE_LANE_MASK6]], <vscale x 8 x float> [[TMP76]], <vscale x 8 x float> shufflevector (<vscale x 8 x float> insertelement (<vscale x 8 x float> poison, float -0.000000e+00, i64 0), <vscale x 8 x float> poison, <vscale x 8 x i32> zeroinitializer)
+; CHECK-ORDERED-TF-NEXT:    [[TMP82:%.*]] = call float @llvm.vector.reduce.fadd.nxv8f32(float [[TMP80]], <vscale x 8 x float> [[TMP81]])
+; CHECK-ORDERED-TF-NEXT:    [[TMP83:%.*]] = select <vscale x 8 x i1> [[ACTIVE_LANE_MASK7]], <vscale x 8 x float> [[TMP77]], <vscale x 8 x float> shufflevector (<vscale x 8 x float> insertelement (<vscale x 8 x float> poison, float -0.000000e+00, i64 0), <vscale x 8 x float> poison, <vscale x 8 x i32> zeroinitializer)
+; CHECK-ORDERED-TF-NEXT:    [[TMP84:%.*]] = call float @llvm.vector.reduce.fadd.nxv8f32(float [[TMP82]], <vscale x 8 x float> [[TMP83]])
+; CHECK-ORDERED-TF-NEXT:    [[TMP85:%.*]] = select <vscale x 8 x i1> [[ACTIVE_LANE_MASK8]], <vscale x 8 x float> [[TMP78]], <vscale x 8 x float> shufflevector (<vscale x 8 x float> insertelement (<vscale x 8 x float> poison, float -0.000000e+00, i64 0), <vscale x 8 x float> poison, <vscale x 8 x i32> zeroinitializer)
+; CHECK-ORDERED-TF-NEXT:    [[TMP86]] = call float @llvm.vector.reduce.fadd.nxv8f32(float [[TMP84]], <vscale x 8 x float> [[TMP85]])
+; CHECK-ORDERED-TF-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP88]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP89:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP90:%.*]] = mul i64 [[TMP89]], 8
+; CHECK-ORDERED-TF-NEXT:    [[TMP91:%.*]] = add i64 [[INDEX]], [[TMP90]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP92:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP93:%.*]] = mul i64 [[TMP92]], 16
+; CHECK-ORDERED-TF-NEXT:    [[TMP94:%.*]] = add i64 [[INDEX]], [[TMP93]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP95:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP96:%.*]] = mul i64 [[TMP95]], 24
+; CHECK-ORDERED-TF-NEXT:    [[TMP97:%.*]] = add i64 [[INDEX]], [[TMP96]]
+; CHECK-ORDERED-TF-NEXT:    [[ACTIVE_LANE_MASK_NEXT]] = call <vscale x 8 x i1> @llvm.get.active.lane.mask.nxv8i1.i64(i64 [[INDEX]], i64 [[TMP9]])
+; CHECK-ORDERED-TF-NEXT:    [[ACTIVE_LANE_MASK_NEXT16]] = call <vscale x 8 x i1> @llvm.get.active.lane.mask.nxv8i1.i64(i64 [[TMP91]], i64 [[TMP9]])
+; CHECK-ORDERED-TF-NEXT:    [[ACTIVE_LANE_MASK_NEXT17]] = call <vscale x 8 x i1> @llvm.get.active.lane.mask.nxv8i1.i64(i64 [[TMP94]], i64 [[TMP9]])
+; CHECK-ORDERED-TF-NEXT:    [[ACTIVE_LANE_MASK_NEXT18]] = call <vscale x 8 x i1> @llvm.get.active.lane.mask.nxv8i1.i64(i64 [[TMP97]], i64 [[TMP9]])
+; CHECK-ORDERED-TF-NEXT:    [[TMP98:%.*]] = xor <vscale x 8 x i1> [[ACTIVE_LANE_MASK_NEXT]], shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer)
+; CHECK-ORDERED-TF-NEXT:    [[TMP102:%.*]] = extractelement <vscale x 8 x i1> [[TMP98]], i32 0
+; CHECK-ORDERED-TF-NEXT:    br i1 [[TMP102]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
+>>>>>>> c83d9e9
 ; CHECK-ORDERED-TF:       middle.block:
 ; CHECK-ORDERED-TF-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[SCALAR_PH]]
 ; CHECK-ORDERED-TF:       scalar.ph:
@@ -2057,9 +2167,7 @@ define float @fmuladd_strict_fmf(ptr %a, ptr %b, i64 %n) #0 {
 ; CHECK-ORDERED-TF:       vector.ph:
 ; CHECK-ORDERED-TF-NEXT:    [[TMP0:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-ORDERED-TF-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 32
-; CHECK-ORDERED-TF-NEXT:    [[TMP2:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-ORDERED-TF-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 32
-; CHECK-ORDERED-TF-NEXT:    [[TMP4:%.*]] = sub i64 [[TMP3]], 1
+; CHECK-ORDERED-TF-NEXT:    [[TMP4:%.*]] = sub i64 [[TMP1]], 1
 ; CHECK-ORDERED-TF-NEXT:    [[N_RND_UP:%.*]] = add i64 [[N]], [[TMP4]]
 ; CHECK-ORDERED-TF-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N_RND_UP]], [[TMP1]]
 ; CHECK-ORDERED-TF-NEXT:    [[N_VEC:%.*]] = sub i64 [[N_RND_UP]], [[N_MOD_VF]]
@@ -2116,6 +2224,7 @@ define float @fmuladd_strict_fmf(ptr %a, ptr %b, i64 %n) #0 {
 ; CHECK-ORDERED-TF-NEXT:    [[TMP40:%.*]] = mul i64 [[TMP39]], 8
 ; CHECK-ORDERED-TF-NEXT:    [[TMP41:%.*]] = getelementptr inbounds float, ptr [[TMP34]], i64 [[TMP40]]
 ; CHECK-ORDERED-TF-NEXT:    [[TMP42:%.*]] = call i64 @llvm.vscale.i64()
+<<<<<<< HEAD
 ; CHECK-ORDERED-TF-NEXT:    [[TMP43:%.*]] = mul i64 [[TMP42]], 16
 ; CHECK-ORDERED-TF-NEXT:    [[TMP44:%.*]] = getelementptr inbounds float, ptr [[TMP34]], i64 [[TMP43]]
 ; CHECK-ORDERED-TF-NEXT:    [[TMP45:%.*]] = call i64 @llvm.vscale.i64()
@@ -2175,6 +2284,77 @@ define float @fmuladd_strict_fmf(ptr %a, ptr %b, i64 %n) #0 {
 ; CHECK-ORDERED-TF-NEXT:    [[TMP86:%.*]] = xor <vscale x 8 x i1> [[ACTIVE_LANE_MASK_NEXT18]], shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer)
 ; CHECK-ORDERED-TF-NEXT:    [[TMP87:%.*]] = extractelement <vscale x 8 x i1> [[TMP83]], i32 0
 ; CHECK-ORDERED-TF-NEXT:    br i1 [[TMP87]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
+=======
+; CHECK-ORDERED-TF-NEXT:    [[TMP43:%.*]] = mul i64 [[TMP42]], 24
+; CHECK-ORDERED-TF-NEXT:    [[TMP44:%.*]] = add i64 [[TMP43]], 0
+; CHECK-ORDERED-TF-NEXT:    [[TMP45:%.*]] = mul i64 [[TMP44]], 1
+; CHECK-ORDERED-TF-NEXT:    [[TMP46:%.*]] = add i64 [[INDEX]], [[TMP45]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP47:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP31]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP48:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP36]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP49:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP41]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP50:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP46]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP51:%.*]] = getelementptr inbounds float, ptr [[TMP47]], i32 0
+; CHECK-ORDERED-TF-NEXT:    [[TMP52:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP53:%.*]] = mul i64 [[TMP52]], 8
+; CHECK-ORDERED-TF-NEXT:    [[TMP54:%.*]] = getelementptr inbounds float, ptr [[TMP47]], i64 [[TMP53]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP55:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP56:%.*]] = mul i64 [[TMP55]], 16
+; CHECK-ORDERED-TF-NEXT:    [[TMP57:%.*]] = getelementptr inbounds float, ptr [[TMP47]], i64 [[TMP56]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP58:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP59:%.*]] = mul i64 [[TMP58]], 24
+; CHECK-ORDERED-TF-NEXT:    [[TMP60:%.*]] = getelementptr inbounds float, ptr [[TMP47]], i64 [[TMP59]]
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP51]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD9:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP54]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK6]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD10:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP57]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK7]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD11:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP60]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK8]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[TMP61:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[TMP31]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP62:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[TMP36]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP63:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[TMP41]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP64:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[TMP46]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP65:%.*]] = getelementptr inbounds float, ptr [[TMP61]], i32 0
+; CHECK-ORDERED-TF-NEXT:    [[TMP66:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP67:%.*]] = mul i64 [[TMP66]], 8
+; CHECK-ORDERED-TF-NEXT:    [[TMP68:%.*]] = getelementptr inbounds float, ptr [[TMP61]], i64 [[TMP67]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP69:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP70:%.*]] = mul i64 [[TMP69]], 16
+; CHECK-ORDERED-TF-NEXT:    [[TMP71:%.*]] = getelementptr inbounds float, ptr [[TMP61]], i64 [[TMP70]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP72:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP73:%.*]] = mul i64 [[TMP72]], 24
+; CHECK-ORDERED-TF-NEXT:    [[TMP74:%.*]] = getelementptr inbounds float, ptr [[TMP61]], i64 [[TMP73]]
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD12:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP65]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD13:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP68]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK6]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD14:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP71]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK7]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD15:%.*]] = call <vscale x 8 x float> @llvm.masked.load.nxv8f32.p0(ptr [[TMP74]], i32 4, <vscale x 8 x i1> [[ACTIVE_LANE_MASK8]], <vscale x 8 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[TMP75:%.*]] = fmul nnan <vscale x 8 x float> [[WIDE_MASKED_LOAD]], [[WIDE_MASKED_LOAD12]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP76:%.*]] = fmul nnan <vscale x 8 x float> [[WIDE_MASKED_LOAD9]], [[WIDE_MASKED_LOAD13]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP77:%.*]] = fmul nnan <vscale x 8 x float> [[WIDE_MASKED_LOAD10]], [[WIDE_MASKED_LOAD14]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP78:%.*]] = fmul nnan <vscale x 8 x float> [[WIDE_MASKED_LOAD11]], [[WIDE_MASKED_LOAD15]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP79:%.*]] = select nnan <vscale x 8 x i1> [[ACTIVE_LANE_MASK]], <vscale x 8 x float> [[TMP75]], <vscale x 8 x float> shufflevector (<vscale x 8 x float> insertelement (<vscale x 8 x float> poison, float -0.000000e+00, i64 0), <vscale x 8 x float> poison, <vscale x 8 x i32> zeroinitializer)
+; CHECK-ORDERED-TF-NEXT:    [[TMP80:%.*]] = call nnan float @llvm.vector.reduce.fadd.nxv8f32(float [[VEC_PHI]], <vscale x 8 x float> [[TMP79]])
+; CHECK-ORDERED-TF-NEXT:    [[TMP81:%.*]] = select nnan <vscale x 8 x i1> [[ACTIVE_LANE_MASK6]], <vscale x 8 x float> [[TMP76]], <vscale x 8 x float> shufflevector (<vscale x 8 x float> insertelement (<vscale x 8 x float> poison, float -0.000000e+00, i64 0), <vscale x 8 x float> poison, <vscale x 8 x i32> zeroinitializer)
+; CHECK-ORDERED-TF-NEXT:    [[TMP82:%.*]] = call nnan float @llvm.vector.reduce.fadd.nxv8f32(float [[TMP80]], <vscale x 8 x float> [[TMP81]])
+; CHECK-ORDERED-TF-NEXT:    [[TMP83:%.*]] = select nnan <vscale x 8 x i1> [[ACTIVE_LANE_MASK7]], <vscale x 8 x float> [[TMP77]], <vscale x 8 x float> shufflevector (<vscale x 8 x float> insertelement (<vscale x 8 x float> poison, float -0.000000e+00, i64 0), <vscale x 8 x float> poison, <vscale x 8 x i32> zeroinitializer)
+; CHECK-ORDERED-TF-NEXT:    [[TMP84:%.*]] = call nnan float @llvm.vector.reduce.fadd.nxv8f32(float [[TMP82]], <vscale x 8 x float> [[TMP83]])
+; CHECK-ORDERED-TF-NEXT:    [[TMP85:%.*]] = select nnan <vscale x 8 x i1> [[ACTIVE_LANE_MASK8]], <vscale x 8 x float> [[TMP78]], <vscale x 8 x float> shufflevector (<vscale x 8 x float> insertelement (<vscale x 8 x float> poison, float -0.000000e+00, i64 0), <vscale x 8 x float> poison, <vscale x 8 x i32> zeroinitializer)
+; CHECK-ORDERED-TF-NEXT:    [[TMP86]] = call nnan float @llvm.vector.reduce.fadd.nxv8f32(float [[TMP84]], <vscale x 8 x float> [[TMP85]])
+; CHECK-ORDERED-TF-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP88]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP89:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP90:%.*]] = mul i64 [[TMP89]], 8
+; CHECK-ORDERED-TF-NEXT:    [[TMP91:%.*]] = add i64 [[INDEX]], [[TMP90]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP92:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP93:%.*]] = mul i64 [[TMP92]], 16
+; CHECK-ORDERED-TF-NEXT:    [[TMP94:%.*]] = add i64 [[INDEX]], [[TMP93]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP95:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-ORDERED-TF-NEXT:    [[TMP96:%.*]] = mul i64 [[TMP95]], 24
+; CHECK-ORDERED-TF-NEXT:    [[TMP97:%.*]] = add i64 [[INDEX]], [[TMP96]]
+; CHECK-ORDERED-TF-NEXT:    [[ACTIVE_LANE_MASK_NEXT]] = call <vscale x 8 x i1> @llvm.get.active.lane.mask.nxv8i1.i64(i64 [[INDEX]], i64 [[TMP9]])
+; CHECK-ORDERED-TF-NEXT:    [[ACTIVE_LANE_MASK_NEXT16]] = call <vscale x 8 x i1> @llvm.get.active.lane.mask.nxv8i1.i64(i64 [[TMP91]], i64 [[TMP9]])
+; CHECK-ORDERED-TF-NEXT:    [[ACTIVE_LANE_MASK_NEXT17]] = call <vscale x 8 x i1> @llvm.get.active.lane.mask.nxv8i1.i64(i64 [[TMP94]], i64 [[TMP9]])
+; CHECK-ORDERED-TF-NEXT:    [[ACTIVE_LANE_MASK_NEXT18]] = call <vscale x 8 x i1> @llvm.get.active.lane.mask.nxv8i1.i64(i64 [[TMP97]], i64 [[TMP9]])
+; CHECK-ORDERED-TF-NEXT:    [[TMP98:%.*]] = xor <vscale x 8 x i1> [[ACTIVE_LANE_MASK_NEXT]], shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer)
+; CHECK-ORDERED-TF-NEXT:    [[TMP102:%.*]] = extractelement <vscale x 8 x i1> [[TMP98]], i32 0
+; CHECK-ORDERED-TF-NEXT:    br i1 [[TMP102]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
+>>>>>>> c83d9e9
 ; CHECK-ORDERED-TF:       middle.block:
 ; CHECK-ORDERED-TF-NEXT:    br i1 true, label [[FOR_END:%.*]], label [[SCALAR_PH]]
 ; CHECK-ORDERED-TF:       scalar.ph:

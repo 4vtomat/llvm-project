@@ -3253,7 +3253,8 @@ let UnMaskedPolicyScheme = HasPassthruOperand in {
     defm vbrev   : RVVOutBuiltinSetZvbb;
     defm vclz    : RVVOutBuiltinSetZvbb;
     defm vctz    : RVVOutBuiltinSetZvbb;
-    defm vcpopv  : RVVOutBuiltinSetZvbb;
+    let IRName = "vcpopv", MaskedIRName = "vcpopv_mask" in
+    defm vcpop   : RVVOutBuiltinSetZvbb;
     let OverloadedName = "vwsll" in
     defm vwsll   : RVVSignedWidenBinBuiltinSetVwsll;
   }

@@ -14,7 +14,19 @@ define void @iv32(ptr noalias %a, ptr noalias %b, i32 %N) {
 ; IF-EVL-NEXT:  entry:
 ; IF-EVL-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
+<<<<<<< HEAD
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
+=======
+; IF-EVL-NEXT:    [[TMP4:%.*]] = call i32 @llvm.vscale.i32()
+; IF-EVL-NEXT:    [[TMP5:%.*]] = mul i32 [[TMP4]], 4
+; IF-EVL-NEXT:    [[TMP8:%.*]] = sub i32 [[TMP5]], 1
+; IF-EVL-NEXT:    [[N_RND_UP:%.*]] = add i32 [[N]], [[TMP8]]
+; IF-EVL-NEXT:    [[N_MOD_VF:%.*]] = urem i32 [[N_RND_UP]], [[TMP5]]
+; IF-EVL-NEXT:    [[N_VEC:%.*]] = sub i32 [[N_RND_UP]], [[N_MOD_VF]]
+; IF-EVL-NEXT:    [[TMP9:%.*]] = call i32 @llvm.vscale.i32()
+; IF-EVL-NEXT:    [[TMP10:%.*]] = mul i32 [[TMP9]], 4
+; IF-EVL-NEXT:    br label [[FOR_BODY:%.*]]
+>>>>>>> c83d9e9
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; IF-EVL-NEXT:    [[EVL_BASED_IV:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]

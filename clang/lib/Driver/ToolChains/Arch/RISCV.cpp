@@ -127,6 +127,7 @@ static void getRISCFeaturesFromMcpu(const Driver &D, const Arg *A,
       D.Diag(clang::diag::err_drv_unsupported_option_argument)
           << A->getSpelling() << Mcpu;
   }
+<<<<<<< HEAD
 
   if (llvm::RISCV::hasFastUnalignedAccess(Mcpu)) {
     Features.push_back("+unaligned-scalar-mem");
@@ -140,6 +141,8 @@ static void getRISCFeaturesFromMcpu(const Driver &D, const Arg *A,
        Mcpu == "sifive-x392-ea-dualvalu"))
     Features.push_back("+slow-vector-fp64");
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> c83d9e9
 }
 
 void riscv::getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
@@ -158,6 +161,7 @@ void riscv::getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
   if (!getArchFeatures(D, MArch, Features, Args))
     return;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Arg *A = Args.getLastArg(options::OPT_mtune_EQ)) {
     StringRef Tune = A->getValue();
@@ -168,6 +172,9 @@ void riscv::getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
       Features.push_back("-slow-vector-fp64");
   }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  bool CPUFastUnaligned = false;
+>>>>>>> c83d9e9
 
   // If users give march and mcpu, get std extension feature from MArch
   // and other features (ex. mirco architecture feature) from mcpu
@@ -177,6 +184,9 @@ void riscv::getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
       CPU = llvm::sys::getHostCPUName();
 
     getRISCFeaturesFromMcpu(D, A, Triple, CPU, Features);
+
+    if (llvm::RISCV::hasFastUnalignedAccess(CPU))
+      CPUFastUnaligned = true;
   }
 
   // Handle features corresponding to "-ffixed-X" options
@@ -256,17 +266,22 @@ void riscv::getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
     Features.push_back("-relax");
   }
 
-  // Android requires fast unaligned access on RISCV64.
-  if (Triple.isAndroid()) {
+  // If -mstrict-align or -mno-strict-align is passed, use it. Otherwise, the
+  // unaligned-*-mem is enabled if the CPU supports it or the target is
+  // Android.
+  if (const Arg *A = Args.getLastArg(options::OPT_mno_strict_align,
+                                     options::OPT_mstrict_align)) {
+    if (A->getOption().matches(options::OPT_mno_strict_align)) {
+      Features.push_back("+unaligned-scalar-mem");
+      Features.push_back("+unaligned-vector-mem");
+    } else {
+      Features.push_back("-unaligned-scalar-mem");
+      Features.push_back("-unaligned-vector-mem");
+    }
+  } else if (CPUFastUnaligned || Triple.isAndroid()) {
     Features.push_back("+unaligned-scalar-mem");
     Features.push_back("+unaligned-vector-mem");
   }
-
-  // -mstrict-align is default, unless -mno-strict-align is specified.
-  AddTargetFeature(Args, Features, options::OPT_mno_strict_align,
-                   options::OPT_mstrict_align, "unaligned-scalar-mem");
-  AddTargetFeature(Args, Features, options::OPT_mno_strict_align,
-                   options::OPT_mstrict_align, "unaligned-vector-mem");
 
   // Now add any that the user explicitly requested on the command line,
   // which may override the defaults.

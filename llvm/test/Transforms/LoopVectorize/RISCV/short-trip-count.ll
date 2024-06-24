@@ -7,10 +7,17 @@ define void @small_trip_count_min_vlen_128(ptr nocapture %a) nounwind vscale_ran
 ; CHECK-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.vscale.i32()
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.vscale.i32()
 ; CHECK-NEXT:    [[TMP2:%.*]] = sub i32 [[TMP1]], 1
 ; CHECK-NEXT:    [[N_RND_UP:%.*]] = add i32 4, [[TMP2]]
 ; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i32 [[N_RND_UP]], [[TMP0]]
+=======
+; CHECK-NEXT:    [[TMP1:%.*]] = mul i32 [[TMP0]], 2
+; CHECK-NEXT:    [[TMP4:%.*]] = sub i32 [[TMP1]], 1
+; CHECK-NEXT:    [[N_RND_UP:%.*]] = add i32 4, [[TMP4]]
+; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i32 [[N_RND_UP]], [[TMP1]]
+>>>>>>> c83d9e9
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i32 [[N_RND_UP]], [[N_MOD_VF]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i32 @llvm.vscale.i32()
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
@@ -66,9 +73,7 @@ define void @small_trip_count_min_vlen_32(ptr nocapture %a) nounwind vscale_rang
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[TMP0:%.*]] = call i32 @llvm.vscale.i32()
 ; CHECK-NEXT:    [[TMP1:%.*]] = mul i32 [[TMP0]], 4
-; CHECK-NEXT:    [[TMP2:%.*]] = call i32 @llvm.vscale.i32()
-; CHECK-NEXT:    [[TMP3:%.*]] = mul i32 [[TMP2]], 4
-; CHECK-NEXT:    [[TMP4:%.*]] = sub i32 [[TMP3]], 1
+; CHECK-NEXT:    [[TMP4:%.*]] = sub i32 [[TMP1]], 1
 ; CHECK-NEXT:    [[N_RND_UP:%.*]] = add i32 4, [[TMP4]]
 ; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i32 [[N_RND_UP]], [[TMP1]]
 ; CHECK-NEXT:    [[N_VEC:%.*]] = sub i32 [[N_RND_UP]], [[N_MOD_VF]]

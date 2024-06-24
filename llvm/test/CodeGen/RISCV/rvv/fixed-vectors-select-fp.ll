@@ -111,6 +111,7 @@ define <16 x half> @selectcc_v16f16(half %a, half %b, <16 x half> %c, <16 x half
   %v = select i1 %cmp, <16 x half> %c, <16 x half> %d
   ret <16 x half> %v
 }
+<<<<<<< HEAD
 
 define <2 x float> @select_v2f32(i1 zeroext %c, <2 x float> %a, <2 x float> %b) {
 ; CHECK-LABEL: select_v2f32:
@@ -319,3 +320,5 @@ define <16 x double> @selectcc_v16f64(double %a, double %b, <16 x double> %c, <1
   %v = select i1 %cmp, <16 x double> %c, <16 x double> %d
   ret <16 x double> %v
 }
+=======
+>>>>>>> c83d9e9
