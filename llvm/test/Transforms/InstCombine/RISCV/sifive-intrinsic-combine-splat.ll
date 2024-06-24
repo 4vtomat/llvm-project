@@ -11,9 +11,8 @@ define <vscale x 2 x i16> @test_vaadd(<vscale x 2 x i16> %var_14) {
 ; CHECK-LABEL: define <vscale x 2 x i16> @test_vaadd
 ; CHECK-SAME: (<vscale x 2 x i16> [[VAR_14:%.*]]) {
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 3, i64 1, i64 7)
-; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vaadd.nxv2i16.i16.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> [[VAR_14]], i16 21968, i64 7, i64 3)
-; CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP1]]
+; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vaadd.nxv2i16.i16.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> [[VAR_14]], i16 21968, i64 7, i64 3)
+; CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP0]]
 ;
 entry:
   %0 = call <vscale x 2 x i16> @llvm.riscv.vmv.v.x.nxv2i16.i64(<vscale x 2 x i16> poison, i16 21968, i64 7)
@@ -32,9 +31,8 @@ define <vscale x 2 x i16> @test_vaaddu(<vscale x 2 x i16> %var_14) {
 ; CHECK-LABEL: define <vscale x 2 x i16> @test_vaaddu
 ; CHECK-SAME: (<vscale x 2 x i16> [[VAR_14:%.*]]) {
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 3, i64 1, i64 7)
-; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vaaddu.nxv2i16.i16.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> [[VAR_14]], i16 21968, i64 7, i64 3)
-; CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP1]]
+; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vaaddu.nxv2i16.i16.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> [[VAR_14]], i16 21968, i64 7, i64 3)
+; CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP0]]
 ;
 entry:
   %0 = call <vscale x 2 x i16> @llvm.riscv.vmv.v.x.nxv2i16.i64(<vscale x 2 x i16> poison, i16 21968, i64 7)
@@ -49,9 +47,8 @@ define <vscale x 2 x i16> @test_vsmul(<vscale x 2 x i16> %var_14) {
 ; CHECK-LABEL: define <vscale x 2 x i16> @test_vsmul
 ; CHECK-SAME: (<vscale x 2 x i16> [[VAR_14:%.*]]) {
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 3, i64 1, i64 7)
-; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vsmul.nxv2i16.i16.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> [[VAR_14]], i16 21968, i64 7, i64 3)
-; CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP1]]
+; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vsmul.nxv2i16.i16.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> [[VAR_14]], i16 21968, i64 7, i64 3)
+; CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP0]]
 ;
 entry:
   %0 = call <vscale x 2 x i16> @llvm.riscv.vmv.v.x.nxv2i16.i64(<vscale x 2 x i16> poison, i16 21968, i64 7)
@@ -66,9 +63,8 @@ define <vscale x 2 x i16> @test_vasub(<vscale x 2 x i16> %var_14) {
 ; CHECK-LABEL: define <vscale x 2 x i16> @test_vasub
 ; CHECK-SAME: (<vscale x 2 x i16> [[VAR_14:%.*]]) {
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 3, i64 1, i64 7)
-; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vasub.nxv2i16.i16.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> [[VAR_14]], i16 21968, i64 7, i64 3)
-; CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP1]]
+; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vasub.nxv2i16.i16.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> [[VAR_14]], i16 21968, i64 7, i64 3)
+; CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP0]]
 ;
 entry:
   %0 = call <vscale x 2 x i16> @llvm.riscv.vmv.v.x.nxv2i16.i64(<vscale x 2 x i16> poison, i16 21968, i64 7)
@@ -83,9 +79,8 @@ define <vscale x 2 x i16> @test_vasubu(<vscale x 2 x i16> %var_14) {
 ; CHECK-LABEL: define <vscale x 2 x i16> @test_vasubu
 ; CHECK-SAME: (<vscale x 2 x i16> [[VAR_14:%.*]]) {
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 3, i64 1, i64 7)
-; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vasubu.nxv2i16.i16.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> [[VAR_14]], i16 21968, i64 7, i64 3)
-; CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP1]]
+; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vasubu.nxv2i16.i16.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> [[VAR_14]], i16 21968, i64 7, i64 3)
+; CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP0]]
 ;
 entry:
   %0 = call <vscale x 2 x i16> @llvm.riscv.vmv.v.x.nxv2i16.i64(<vscale x 2 x i16> poison, i16 21968, i64 7)
@@ -100,9 +95,8 @@ define <vscale x 2 x i16> @test_vssra(<vscale x 2 x i16> %var_14) {
 ; CHECK-LABEL: define <vscale x 2 x i16> @test_vssra
 ; CHECK-SAME: (<vscale x 2 x i16> [[VAR_14:%.*]]) {
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 3, i64 1, i64 7)
-; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vssra.nxv2i16.i64.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> [[VAR_14]], i64 21968, i64 7, i64 3)
-; CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP1]]
+; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vssra.nxv2i16.i64.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> [[VAR_14]], i64 21968, i64 7, i64 3)
+; CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP0]]
 ;
 entry:
   %0 = call <vscale x 2 x i16> @llvm.riscv.vmv.v.x.nxv2i16.i64(<vscale x 2 x i16> poison, i16 21968, i64 7)
@@ -117,9 +111,8 @@ define <vscale x 2 x i16> @test_vssrl(<vscale x 2 x i16> %var_14) {
 ; CHECK-LABEL: define <vscale x 2 x i16> @test_vssrl
 ; CHECK-SAME: (<vscale x 2 x i16> [[VAR_14:%.*]]) {
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP0:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 3, i64 1, i64 7)
-; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vssrl.nxv2i16.i64.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> [[VAR_14]], i64 21968, i64 7, i64 3)
-; CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP1]]
+; CHECK-NEXT:    [[TMP0:%.*]] = call <vscale x 2 x i16> @llvm.riscv.vssrl.nxv2i16.i64.i64(<vscale x 2 x i16> poison, <vscale x 2 x i16> [[VAR_14]], i64 21968, i64 7, i64 3)
+; CHECK-NEXT:    ret <vscale x 2 x i16> [[TMP0]]
 ;
 entry:
   %0 = call <vscale x 2 x i16> @llvm.riscv.vmv.v.x.nxv2i16.i64(<vscale x 2 x i16> poison, i16 21968, i64 7)

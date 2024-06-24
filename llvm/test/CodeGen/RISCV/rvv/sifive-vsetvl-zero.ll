@@ -32,13 +32,16 @@ define void @test_vsetvl_avl(<vscale x 1 x double>* %v, i64 signext %avl) nounwi
 ;
 ; CHECK-O0-LABEL: test_vsetvl_avl:
 ; CHECK-O0:       # %bb.0:
-; CHECK-O0-NEXT:    vsetvli a1, a1, e64, m1, tu, ma
+; CHECK-O0-NEXT:    vsetvli a1, a1, e64, m1, ta, ma
 ; CHECK-O0-NEXT:    # implicit-def: $v9
+; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, tu, ma
 ; CHECK-O0-NEXT:    vle64.v v9, (a0)
 ; CHECK-O0-NEXT:    # implicit-def: $v8
+; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, tu, ma
 ; CHECK-O0-NEXT:    vfadd.vv v8, v9, v9
 ; CHECK-O0-NEXT:    lui a0, %hi(scratch)
 ; CHECK-O0-NEXT:    addi a0, a0, %lo(scratch)
+; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, ta, ma
 ; CHECK-O0-NEXT:    vse64.v v8, (a0)
 ; CHECK-O0-NEXT:    ret
 ;
@@ -80,13 +83,16 @@ define void @test_vsetvl_zero(<vscale x 1 x double>* %v) nounwind
 ;
 ; CHECK-O0-LABEL: test_vsetvl_zero:
 ; CHECK-O0:       # %bb.0:
-; CHECK-O0-NEXT:    vsetivli a1, 0, e64, m1, tu, ma
+; CHECK-O0-NEXT:    vsetivli a1, 0, e64, m1, ta, ma
 ; CHECK-O0-NEXT:    # implicit-def: $v9
+; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, tu, ma
 ; CHECK-O0-NEXT:    vle64.v v9, (a0)
 ; CHECK-O0-NEXT:    # implicit-def: $v8
+; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, tu, ma
 ; CHECK-O0-NEXT:    vfadd.vv v8, v9, v9
 ; CHECK-O0-NEXT:    lui a0, %hi(scratch)
 ; CHECK-O0-NEXT:    addi a0, a0, %lo(scratch)
+; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, ta, ma
 ; CHECK-O0-NEXT:    vse64.v v8, (a0)
 ; CHECK-O0-NEXT:    ret
 ;
@@ -128,13 +134,16 @@ define void @test_vsetvlmax(<vscale x 1 x double>* %v) nounwind
 ;
 ; CHECK-O0-LABEL: test_vsetvlmax:
 ; CHECK-O0:       # %bb.0:
-; CHECK-O0-NEXT:    vsetvli a1, zero, e64, m1, tu, ma
+; CHECK-O0-NEXT:    vsetvli a1, zero, e64, m1, ta, ma
 ; CHECK-O0-NEXT:    # implicit-def: $v9
+; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, tu, ma
 ; CHECK-O0-NEXT:    vle64.v v9, (a0)
 ; CHECK-O0-NEXT:    # implicit-def: $v8
+; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, tu, ma
 ; CHECK-O0-NEXT:    vfadd.vv v8, v9, v9
 ; CHECK-O0-NEXT:    lui a0, %hi(scratch)
 ; CHECK-O0-NEXT:    addi a0, a0, %lo(scratch)
+; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, ta, ma
 ; CHECK-O0-NEXT:    vse64.v v8, (a0)
 ; CHECK-O0-NEXT:    ret
 ;

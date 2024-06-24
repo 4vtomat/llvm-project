@@ -7,7 +7,6 @@ declare i64 @llvm.riscv.vsetvlimax.i64(i64, i64)
 
 define i1 @vsetvlimax_nonzero() {
 ; CHECK-LABEL: @vsetvlimax_nonzero(
-; CHECK-NEXT:    [[VL:%.*]] = call i64 @llvm.riscv.vsetvlimax.i64(i64 1, i64 1)
 ; CHECK-NEXT:    ret i1 true
 ;
   %vl = call i64 @llvm.riscv.vsetvlimax.i64(i64 1, i64 1)
@@ -19,7 +18,6 @@ define i1 @vsetvli_assume_nonzero(i64 %x) {
 ; CHECK-LABEL: @vsetvli_assume_nonzero(
 ; CHECK-NEXT:    [[Z:%.*]] = icmp ne i64 [[X:%.*]], 0
 ; CHECK-NEXT:    call void @llvm.assume(i1 [[Z]])
-; CHECK-NEXT:    [[VL:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[X]], i64 1, i64 1)
 ; CHECK-NEXT:    ret i1 true
 ;
   %z = icmp ne i64 %x, 0
@@ -31,8 +29,6 @@ define i1 @vsetvli_assume_nonzero(i64 %x) {
 
 define i1 @vsetvli_nonzero(i64 %x) {
 ; CHECK-LABEL: @vsetvli_nonzero(
-; CHECK-NEXT:    [[O:%.*]] = or i64 [[X:%.*]], 4
-; CHECK-NEXT:    [[VL:%.*]] = call i64 @llvm.riscv.vsetvli.i64(i64 [[O]], i64 1, i64 1)
 ; CHECK-NEXT:    ret i1 true
 ;
   %o = or i64 %x, 4

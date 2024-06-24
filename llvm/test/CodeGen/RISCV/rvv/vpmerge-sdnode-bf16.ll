@@ -166,9 +166,9 @@ define <vscale x 32 x bfloat> @vpmerge_vf_nxv32bf16(bfloat %a, <vscale x 32 x bf
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    fcvt.s.bf16 fa5, fa0
 ; CHECK-NEXT:    vsetvli a1, zero, e32, m8, ta, ma
-; CHECK-NEXT:    vfmv.v.f v24, fa5
+; CHECK-NEXT:    vfmv.v.f v16, fa5
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v16, v24
+; CHECK-NEXT:    vfncvtbf16.f.f.w v16, v16
 ; CHECK-NEXT:    vmv.v.v v20, v16
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m8, tu, ma
 ; CHECK-NEXT:    vmerge.vvm v8, v8, v16, v0

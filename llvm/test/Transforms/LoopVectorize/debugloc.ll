@@ -10,61 +10,61 @@ define i32 @f(ptr nocapture %a, ptr %b, i32 %size) !dbg !4 {
 ; CHECK-LABEL: define i32 @f(
 ; CHECK-SAME: ptr nocapture [[A:%.*]], ptr [[B:%.*]], i32 [[SIZE:%.*]]) !dbg [[DBG5:![0-9]+]] {
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    tail call void @llvm.dbg.value(metadata ptr [[A]], metadata [[META13:![0-9]+]], metadata !DIExpression()), !dbg [[DBG18:![0-9]+]]
-; CHECK-NEXT:    tail call void @llvm.dbg.value(metadata i32 [[SIZE]], metadata [[META14:![0-9]+]], metadata !DIExpression()), !dbg [[DBG18]]
-; CHECK-NEXT:    tail call void @llvm.dbg.value(metadata i32 0, metadata [[META15:![0-9]+]], metadata !DIExpression()), !dbg [[DBG19:![0-9]+]]
-; CHECK-NEXT:    tail call void @llvm.dbg.value(metadata i32 0, metadata [[META16:![0-9]+]], metadata !DIExpression()), !dbg [[DBG20:![0-9]+]]
-; CHECK-NEXT:    [[CMP4:%.*]] = icmp eq i32 [[SIZE]], 0, !dbg [[DBG20]]
-; CHECK-NEXT:    br i1 [[CMP4]], label [[FOR_END:%.*]], label [[FOR_BODY_LR_PH:%.*]], !dbg [[DBG20]]
+; CHECK-NEXT:      #dbg_value(ptr [[A]], [[META13:![0-9]+]], !DIExpression(), [[META18:![0-9]+]])
+; CHECK-NEXT:      #dbg_value(i32 [[SIZE]], [[META14:![0-9]+]], !DIExpression(), [[META18]])
+; CHECK-NEXT:      #dbg_value(i32 0, [[META15:![0-9]+]], !DIExpression(), [[META19:![0-9]+]])
+; CHECK-NEXT:      #dbg_value(i32 0, [[META16:![0-9]+]], !DIExpression(), [[META20:![0-9]+]])
+; CHECK-NEXT:    [[CMP4:%.*]] = icmp eq i32 [[SIZE]], 0, !dbg [[META20]]
+; CHECK-NEXT:    br i1 [[CMP4]], label [[FOR_END:%.*]], label [[FOR_BODY_LR_PH:%.*]], !dbg [[META20]]
 ; CHECK:       for.body.lr.ph:
-; CHECK-NEXT:    [[TMP0:%.*]] = zext i32 [[SIZE]] to i64, !dbg [[DBG20]]
-; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[TMP0]], 2, !dbg [[DBG20]]
-; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]], !dbg [[DBG20]]
+; CHECK-NEXT:    [[TMP0:%.*]] = zext i32 [[SIZE]] to i64, !dbg [[META20]]
+; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[TMP0]], 2, !dbg [[META20]]
+; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]], !dbg [[META20]]
 ; CHECK:       vector.ph:
-; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[TMP0]], 2, !dbg [[DBG20]]
-; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 [[TMP0]], [[N_MOD_VF]], !dbg [[DBG20]]
-; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]], !dbg [[DBG20]]
+; CHECK-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[TMP0]], 2, !dbg [[META20]]
+; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 [[TMP0]], [[N_MOD_VF]], !dbg [[META20]]
+; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]], !dbg [[META20]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ], !dbg [[DBG21:![0-9]+]]
 ; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[TMP7:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP1:%.*]] = add i64 [[INDEX]], 0, !dbg [[DBG20]]
-; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP1]], !dbg [[DBG18]]
+; CHECK-NEXT:    [[TMP1:%.*]] = add i64 [[INDEX]], 0, !dbg [[META20]]
+; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[TMP1]], !dbg [[META18]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[TMP1]], !dbg [[DBG21]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i32, ptr [[TMP2]], i32 0, !dbg [[DBG21]]
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i32>, ptr [[TMP4]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <2 x i32>, ptr [[TMP4]], align 4, !dbg [[DBG21]]
 ; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[TMP3]], i32 0, !dbg [[DBG21]]
-; CHECK-NEXT:    [[WIDE_LOAD1:%.*]] = load <2 x i32>, ptr [[TMP5]], align 4
+; CHECK-NEXT:    [[WIDE_LOAD1:%.*]] = load <2 x i32>, ptr [[TMP5]], align 4, !dbg [[DBG21]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = add <2 x i32> [[WIDE_LOAD]], [[WIDE_LOAD1]]
 ; CHECK-NEXT:    [[TMP7]] = add <2 x i32> [[TMP6]], [[VEC_PHI]], !dbg [[DBG21]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2, !dbg [[DBG21]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]], !dbg [[DBG21]]
 ; CHECK-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !dbg [[DBG21]], !llvm.loop [[LOOP22:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.vector.reduce.add.v2i32(<2 x i32> [[TMP7]]), !dbg [[DBG20]]
-; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP0]], [[N_VEC]], !dbg [[DBG20]]
-; CHECK-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_FOR_END_CRIT_EDGE:%.*]], label [[SCALAR_PH]], !dbg [[DBG20]]
+; CHECK-NEXT:    [[TMP9:%.*]] = call i32 @llvm.vector.reduce.add.v2i32(<2 x i32> [[TMP7]]), !dbg [[META20]]
+; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP0]], [[N_VEC]], !dbg [[META20]]
+; CHECK-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_FOR_END_CRIT_EDGE:%.*]], label [[SCALAR_PH]], !dbg [[META20]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_LR_PH]] ]
 ; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ 0, [[FOR_BODY_LR_PH]] ], [ [[TMP9]], [[MIDDLE_BLOCK]] ]
-; CHECK-NEXT:    br label [[FOR_BODY:%.*]], !dbg [[DBG20]]
+; CHECK-NEXT:    br label [[FOR_BODY:%.*]], !dbg [[META20]]
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[SUM:%.*]] = phi i32 [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[SUM_NEXT:%.*]], [[FOR_BODY]] ]
-; CHECK-NEXT:    [[ARRAYIDX_1:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[INDVARS_IV]], !dbg [[DBG18]]
+; CHECK-NEXT:    [[ARRAYIDX_1:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[INDVARS_IV]], !dbg [[META18]]
 ; CHECK-NEXT:    [[ARRAYIDX_2:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[INDVARS_IV]], !dbg [[DBG21]]
 ; CHECK-NEXT:    [[L_1:%.*]] = load i32, ptr [[ARRAYIDX_1]], align 4, !dbg [[DBG21]]
 ; CHECK-NEXT:    [[L_2:%.*]] = load i32, ptr [[ARRAYIDX_2]], align 4, !dbg [[DBG21]]
 ; CHECK-NEXT:    [[ADD_1:%.*]] = add i32 [[L_1]], [[L_2]]
 ; CHECK-NEXT:    [[SUM_NEXT]] = add i32 [[ADD_1]], [[SUM]], !dbg [[DBG21]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add i64 [[INDVARS_IV]], 1, !dbg [[DBG21]]
-; CHECK-NEXT:    tail call void @llvm.dbg.value(metadata [[META2:![0-9]+]], metadata [[META16]], metadata !DIExpression()), !dbg [[DBG21]]
+; CHECK-NEXT:      #dbg_value([[META2:![0-9]+]], [[META16]], !DIExpression(), [[DBG21]])
 ; CHECK-NEXT:    [[LFTR_WIDEIV:%.*]] = trunc i64 [[INDVARS_IV_NEXT]] to i32, !dbg [[DBG21]]
-; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp ne i32 [[LFTR_WIDEIV]], [[SIZE]], !dbg [[DBG20]]
-; CHECK-NEXT:    br i1 [[EXITCOND]], label [[FOR_BODY]], label [[FOR_COND_FOR_END_CRIT_EDGE]], !dbg [[DBG20]], !llvm.loop [[LOOP25:![0-9]+]]
+; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp ne i32 [[LFTR_WIDEIV]], [[SIZE]], !dbg [[META20]]
+; CHECK-NEXT:    br i1 [[EXITCOND]], label [[FOR_BODY]], label [[FOR_COND_FOR_END_CRIT_EDGE]], !dbg [[META20]], !llvm.loop [[LOOP25:![0-9]+]]
 ; CHECK:       for.cond.for.end_crit_edge:
 ; CHECK-NEXT:    [[ADD_LCSSA:%.*]] = phi i32 [ [[SUM_NEXT]], [[FOR_BODY]] ], [ [[TMP9]], [[MIDDLE_BLOCK]] ]
-; CHECK-NEXT:    tail call void @llvm.dbg.value(metadata i32 [[ADD_LCSSA]], metadata [[META15]], metadata !DIExpression()), !dbg [[DBG21]]
-; CHECK-NEXT:    br label [[FOR_END]], !dbg [[DBG20]]
+; CHECK-NEXT:      #dbg_value(i32 [[ADD_LCSSA]], [[META15]], !DIExpression(), [[DBG21]])
+; CHECK-NEXT:    br label [[FOR_END]], !dbg [[META20]]
 ; CHECK:       for.end:
 ; CHECK-NEXT:    [[SUM_0_LCSSA:%.*]] = phi i32 [ [[ADD_LCSSA]], [[FOR_COND_FOR_END_CRIT_EDGE]] ], [ 0, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    ret i32 [[SUM_0_LCSSA]], !dbg [[DBG26:![0-9]+]]
@@ -283,7 +283,7 @@ define void @test_misc(ptr nocapture %a, ptr noalias %b, i64 %size) !dbg !35 {
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp uge <2 x i32> [[WIDE_LOAD]], <i32 10, i32 10>
 ; CHECK-NEXT:    [[TMP5:%.*]] = select <2 x i1> [[TMP4]], <2 x i32> [[WIDE_LOAD]], <2 x i32> zeroinitializer, !dbg [[DBG39:![0-9]+]]
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[TMP2]], i32 0, !dbg [[DBG41:![0-9]+]]
-; CHECK-NEXT:    store <2 x i32> [[TMP5]], ptr [[TMP6]], align 4
+; CHECK-NEXT:    store <2 x i32> [[TMP5]], ptr [[TMP6]], align 4, !dbg [[DBG41]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP42:![0-9]+]]
@@ -387,9 +387,9 @@ declare void @llvm.dbg.value(metadata, metadata, metadata)
 ; CHECK: [[META15]] = !DILocalVariable(name: "sum", scope: [[DBG5]], file: [[META6]], line: 4, type: [[META11]])
 ; CHECK: [[META16]] = !DILocalVariable(name: "i", scope: [[META17:![0-9]+]], file: [[META6]], line: 5, type: [[META11]])
 ; CHECK: [[META17]] = distinct !DILexicalBlock(scope: [[DBG5]], file: [[META6]], line: 5)
-; CHECK: [[DBG18]] = !DILocation(line: 3, scope: [[DBG5]])
-; CHECK: [[DBG19]] = !DILocation(line: 4, scope: [[DBG5]])
-; CHECK: [[DBG20]] = !DILocation(line: 5, scope: [[META17]])
+; CHECK: [[META18]] = !DILocation(line: 3, scope: [[DBG5]])
+; CHECK: [[META19]] = !DILocation(line: 4, scope: [[DBG5]])
+; CHECK: [[META20]] = !DILocation(line: 5, scope: [[META17]])
 ; CHECK: [[DBG21]] = !DILocation(line: 6, scope: [[META17]])
 ; CHECK: [[LOOP22]] = distinct !{[[LOOP22]], [[META23:![0-9]+]], [[META24:![0-9]+]]}
 ; CHECK: [[META23]] = !{!"llvm.loop.isvectorized", i32 1}

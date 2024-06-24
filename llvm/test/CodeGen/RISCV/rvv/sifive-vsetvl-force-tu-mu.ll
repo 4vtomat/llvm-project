@@ -37,12 +37,15 @@ define void @test_vsetvl_avl(<vscale x 1 x double> %value, <vscale x 1 x double>
 ; CHECK-O0-LABEL: test_vsetvl_avl:
 ; CHECK-O0:       # %bb.0:
 ; CHECK-O0-NEXT:    vmv1r.v v9, v8
-; CHECK-O0-NEXT:    vsetvli a1, a1, e64, m1, tu, mu
+; CHECK-O0-NEXT:    vsetvli a1, a1, e64, m1, ta, ma
+; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, tu, mu
 ; CHECK-O0-NEXT:    vle64.v v9, (a0), v0.t
 ; CHECK-O0-NEXT:    # implicit-def: $v8
+; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, tu, ma
 ; CHECK-O0-NEXT:    vfadd.vv v8, v9, v9
 ; CHECK-O0-NEXT:    lui a0, %hi(scratch)
 ; CHECK-O0-NEXT:    addi a0, a0, %lo(scratch)
+; CHECK-O0-NEXT:    vsetvli zero, a1, e64, m1, ta, ma
 ; CHECK-O0-NEXT:    vse64.v v8, (a0)
 ; CHECK-O0-NEXT:    ret
 ;
