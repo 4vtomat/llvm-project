@@ -41,15 +41,9 @@ define <4 x i8> @test_v4i64_v4i8(<4 x i64> %x) {
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
-=======
-; CHECK-NEXT:    vnclipu.wi v10, v8, 0
-; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v10, 0
->>>>>>> c83d9e9
 ; CHECK-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
 ; CHECK-NEXT:    ret
@@ -83,15 +77,9 @@ define <4 x i16> @test_v4i64_v4i16(<4 x i64> %x) {
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
 ; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
-=======
-; CHECK-NEXT:    vnclipu.wi v10, v8, 0
-; CHECK-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v10, 0
->>>>>>> c83d9e9
 ; CHECK-NEXT:    ret
   %a = icmp sgt <4 x i64> %x, zeroinitializer
   %b = sext <4 x i1> %a to <4 x i64>
@@ -105,15 +93,9 @@ define <4 x i32> @test_v4i64_v4i32(<4 x i64> %x) {
 ; CHECK-LABEL: test_v4i64_v4i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
-=======
-; CHECK-NEXT:    vmax.vx v10, v8, zero
-; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v10, 0
->>>>>>> c83d9e9
 ; CHECK-NEXT:    ret
   %a = icmp sgt <4 x i64> %x, zeroinitializer
   %b = sext <4 x i1> %a to <4 x i64>
@@ -145,15 +127,9 @@ define <vscale x 4 x i8> @test_nxv4i32_nxv4i8(<vscale x 4 x i32> %x) {
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
 ; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
-=======
-; CHECK-NEXT:    vnclipu.wi v10, v8, 0
-; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v10, 0
->>>>>>> c83d9e9
 ; CHECK-NEXT:    ret
   %a = icmp sgt <vscale x 4 x i32> %x, zeroinitializer
   %b = sext <vscale x 4 x i1> %a to <vscale x 4 x i32>
@@ -169,15 +145,9 @@ define <vscale x 4 x i8> @test_nxv4i64_nxv4i8(<vscale x 4 x i64> %x) {
 ; CHECK-NEXT:    vsetvli a0, zero, e64, m4, ta, ma
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
-=======
-; CHECK-NEXT:    vnclipu.wi v12, v8, 0
-; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v12, 0
->>>>>>> c83d9e9
 ; CHECK-NEXT:    vsetvli zero, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
 ; CHECK-NEXT:    ret
@@ -193,15 +163,9 @@ define <vscale x 4 x i16> @test_nxv4i32_nxv4i16(<vscale x 4 x i32> %x) {
 ; CHECK-LABEL: test_nxv4i32_nxv4i16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m2, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
-=======
-; CHECK-NEXT:    vmax.vx v10, v8, zero
-; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v10, 0
->>>>>>> c83d9e9
 ; CHECK-NEXT:    ret
   %a = icmp sgt <vscale x 4 x i32> %x, zeroinitializer
   %b = sext <vscale x 4 x i1> %a to <vscale x 4 x i32>
@@ -217,15 +181,9 @@ define <vscale x 4 x i16> @test_nxv4i64_nxv4i16(<vscale x 4 x i64> %x) {
 ; CHECK-NEXT:    vsetvli a0, zero, e64, m4, ta, ma
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
 ; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
-=======
-; CHECK-NEXT:    vnclipu.wi v12, v8, 0
-; CHECK-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v12, 0
->>>>>>> c83d9e9
 ; CHECK-NEXT:    ret
   %a = icmp sgt <vscale x 4 x i64> %x, zeroinitializer
   %b = sext <vscale x 4 x i1> %a to <vscale x 4 x i64>
@@ -239,15 +197,9 @@ define <vscale x 4 x i32> @test_nxv4i64_nxv4i32(<vscale x 4 x i64> %x) {
 ; CHECK-LABEL: test_nxv4i64_nxv4i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli a0, zero, e64, m4, ta, ma
-<<<<<<< HEAD
 ; CHECK-NEXT:    vmax.vx v8, v8, zero
 ; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    vnclipu.wi v8, v8, 0
-=======
-; CHECK-NEXT:    vmax.vx v12, v8, zero
-; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vnclipu.wi v8, v12, 0
->>>>>>> c83d9e9
 ; CHECK-NEXT:    ret
   %a = icmp sgt <vscale x 4 x i64> %x, zeroinitializer
   %b = sext <vscale x 4 x i1> %a to <vscale x 4 x i64>

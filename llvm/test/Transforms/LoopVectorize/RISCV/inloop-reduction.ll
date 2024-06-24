@@ -127,21 +127,7 @@ define i32 @add_i16_i32(ptr nocapture readonly %x, i32 %n) {
 ; IF-EVL-NEXT:    [[TMP0:%.*]] = or i1 false, [[PROF_MIN_ITERS_CHECK]]
 ; IF-EVL-NEXT:    br i1 [[TMP0]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; IF-EVL:       vector.ph:
-<<<<<<< HEAD
 ; IF-EVL-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[N]], i32 2, i1 true)
-=======
-; IF-EVL-NEXT:    [[TMP0:%.*]] = call i32 @llvm.vscale.i32()
-; IF-EVL-NEXT:    [[TMP1:%.*]] = mul i32 [[TMP0]], 4
-; IF-EVL-NEXT:    [[TMP4:%.*]] = sub i32 [[TMP1]], 1
-; IF-EVL-NEXT:    [[N_RND_UP:%.*]] = add i32 [[N]], [[TMP4]]
-; IF-EVL-NEXT:    [[N_MOD_VF:%.*]] = urem i32 [[N_RND_UP]], [[TMP1]]
-; IF-EVL-NEXT:    [[N_VEC:%.*]] = sub i32 [[N_RND_UP]], [[N_MOD_VF]]
-; IF-EVL-NEXT:    [[TRIP_COUNT_MINUS_1:%.*]] = sub i32 [[N]], 1
-; IF-EVL-NEXT:    [[TMP5:%.*]] = call i32 @llvm.vscale.i32()
-; IF-EVL-NEXT:    [[TMP6:%.*]] = mul i32 [[TMP5]], 4
-; IF-EVL-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 4 x i32> poison, i32 [[TRIP_COUNT_MINUS_1]], i64 0
-; IF-EVL-NEXT:    [[BROADCAST_SPLAT2:%.*]] = shufflevector <vscale x 4 x i32> [[BROADCAST_SPLATINSERT1]], <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer
->>>>>>> c83d9e9
 ; IF-EVL-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF-EVL:       vector.body:
 ; IF-EVL-NEXT:    [[INDEX:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
