@@ -1508,6 +1508,18 @@ def HasShortForwardBranchOpt : Predicate<"Subtarget->hasShortForwardBranchOpt()"
 def NoShortForwardBranchOpt : Predicate<"!Subtarget->hasShortForwardBranchOpt()">;
 
 #ifdef SIFIVE_CUSTOMIZATION
+
+def TuneFastGather
+    : SubtargetFeature<"has-fast-gather", "HasFastGather",
+                       "true", "Support fast gather for small vl">;
+def HasFastGather : Predicate<"Subtarget->hasFastGather()">;
+
+def TuneFastLargeGather
+    : SubtargetFeature<"has-fast-large-gather", "HasFastLargeGather",
+                       "true", "Support fast gather for LMUL >= 1",
+                       [TuneFastGather]>;
+def HasFastLargeGather : Predicate<"Subtarget->hasFastLargeGather()">;
+
 def TuneFuseBFX
     : SubtargetFeature<"fuse-bitfield-extract", "HasFuseBFX",
                        "true", "CPU fuses SLLI with SRLI/SRAI to extract "

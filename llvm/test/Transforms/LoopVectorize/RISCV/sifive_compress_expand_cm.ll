@@ -56,7 +56,7 @@ for.inc:
 
 ; VPLAN-CM-X280-LABEL: LV: Checking a loop in 'expand_load'
 ; VPLAN-CM-X280: VPlanCM: cost 1 for RVL (mf2, i32) for VPInstruction: EMIT ir<%ret.013> = monotonic-phi ir<0>, ir<%inc>
-; VPLAN-CM-X280: VPlanCM: cost 6 for RVL (mf2, i32) for VPInstruction: WIDEN ir<%1> = vp.load vp<%8>, vp<%4>, vp<%7> unit-strided
+; VPLAN-CM-X280: VPlanCM: cost 37 for RVL (mf2, i32) for VPInstruction: WIDEN ir<%1> = vp.load vp<%8>, vp<%4>, vp<%7> unit-strided
 ; VPLAN-CM-X280: VPlanCM: cost 9 for RVL (mf2, i32) for VPInstruction: monotonic-update ir<%inc> = add ir<%ret.013>, ir<1> @vp<%7>
 
 ; VPLAN-CM-P470-LABEL: LV: Checking a loop in 'expand_load'

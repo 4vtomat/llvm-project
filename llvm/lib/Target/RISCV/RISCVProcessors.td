@@ -733,6 +733,7 @@ def SIFIVE_X280O :
                        FeatureVendorXSfvfnrclipxfqf,
                        FeatureVendorXSfvfwmaccqqq],
                       [TuneSiFive7,
+                       TuneFastGather,
                        FeaturePostRAScheduler,
                        TuneDLenFactor2,
                        TuneDLen256b,
@@ -780,6 +781,7 @@ defvar SIFIVE_X390_Features = [
 ];
 defvar SIFIVE_X390_TuneFeatures = [
   TuneSiFive7,
+  TuneFastLargeGather,
   FeaturePostRAScheduler,
   TuneDLenFactor2,
   TuneDLen512b

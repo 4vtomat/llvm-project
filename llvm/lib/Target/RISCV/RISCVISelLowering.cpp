@@ -2962,6 +2962,36 @@ InstructionCost RISCVTargetLowering::getLMULCost(MVT VT) const {
 /// is generally quadratic in the number of vreg implied by LMUL.  Note that
 /// operand (index and possibly mask) are handled separately.
 InstructionCost RISCVTargetLowering::getVRGatherVVCost(MVT VT) const {
+#if SIFIVE_CUSTOMIZATION
+  if (Subtarget.getProcFamily() == RISCVSubtarget::SiFive7) {
+    unsigned SEW = VT.getScalarSizeInBits();
+    unsigned VL;
+    bool Fractional;
+    unsigned LMUL;
+    if (VT.isFixedLengthVector()) {
+      VL = VT.getVectorNumElements();
+      Fractional = VT.getSizeInBits() < Subtarget.getRealMinVLen();
+      LMUL = divideCeil(VT.getSizeInBits(), Subtarget.getRealMinVLen());
+    } else {
+      std::tie(LMUL, Fractional) = RISCVVType::decodeVLMUL(getLMUL(VT));
+      VL = LMUL * Subtarget.getRealMinVLen() / SEW;
+    }
+    if (Subtarget.hasFastGather() && Fractional)
+      return 1;
+
+    if (Subtarget.hasFastLargeGather()) {
+      // Criteria from bullet_mas: vl <= 4 || not((log2(SEW/8) + log2(LMUL)) <=
+      // log2(DLEN / 32)) If the criteria is true then the one-element-per-beat
+      // sequence is executed.
+      bool Criteria =
+          Subtarget.hasKnownDLen() &&
+          Log2_64(SEW / 8) + Log2_64(LMUL) <= Log2_64(Subtarget.getDLen() / 32);
+      if ((VL > 4) && Criteria)
+        return getLMULCost(VT) * getLMULCost(VT);
+    }
+    return VL;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   return getLMULCost(VT) * getLMULCost(VT);
 }
 
