@@ -2954,7 +2954,6 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
 
     // For each unroll part, create a wide load for the group.
     SmallVector<Value *, 2> NewLoads;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (Legal->useVLAVectorizer()) {
       for (unsigned Part = 0; Part < UF; ++Part) {
@@ -3106,10 +3105,7 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
       return;
     }
 #endif // SIFIVE_CUSTOMIZATION
-    for (unsigned Part = 0; Part < UF; Part++) {
-=======
     for (unsigned Part = 0; Part < State.UF; Part++) {
->>>>>>> c83d9e9
       Instruction *NewLoad;
       if (BlockInMask || MaskForGaps) {
         assert(useMaskedInterleavedAccesses(*TTI) &&
@@ -3720,7 +3716,6 @@ void InnerLoopVectorizer::createVectorLoopSkeleton(StringRef Prefix) {
   //    exit block.  completeLoopSkeleton will update the condition to use an
   //    iteration check, if required to decide whether to execute the remainder.
   BranchInst *BrInst =
-<<<<<<< HEAD
       Cost->requiresScalarEpilogue(VF.isVector())
           ? BranchInst::Create(LoopScalarPreHeader)
 #if SIFIVE_CUSTOMIZATION
@@ -3734,10 +3729,7 @@ void InnerLoopVectorizer::createVectorLoopSkeleton(StringRef Prefix) {
           : BranchInst::Create(LoopExitBlock, LoopScalarPreHeader,
                                Builder.getTrue());
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      BranchInst::Create(LoopExitBlock, LoopScalarPreHeader, Builder.getTrue());
   auto *ScalarLatchTerm = OrigLoop->getLoopLatch()->getTerminator();
->>>>>>> c83d9e9
   BrInst->setDebugLoc(ScalarLatchTerm->getDebugLoc());
   ReplaceInstWithInst(LoopMiddleBlock->getTerminator(), BrInst);
 
