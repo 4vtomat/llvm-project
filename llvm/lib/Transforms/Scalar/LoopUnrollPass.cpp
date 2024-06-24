@@ -1327,12 +1327,9 @@ tryToUnrollLoop(Loop *L, DominatorTree &DT, LoopInfo *LI, ScalarEvolution &SE,
   if (!UP.Count)
     return LoopUnrollResult::Unmodified;
 
-<<<<<<< HEAD
-  // SIFIVE
-=======
   UP.Runtime &= UCE.ConvergenceAllowsRuntime;
 
->>>>>>> c83d9e9
+#if SIFIVE_CUSTOMIZATION
   if (PP.PeelCount) {
     assert(UP.Count == 1 && "Cannot perform peel and unroll in the same step");
     LLVM_DEBUG(dbgs() << "PEELING loop %" << L->getHeader()->getName()
@@ -1344,7 +1341,6 @@ tryToUnrollLoop(Loop *L, DominatorTree &DT, LoopInfo *LI, ScalarEvolution &SE,
              << " iterations";
     });
 
-#if SIFIVE_CUSTOMIZATION
     bool PeeledLoop = false;
     if (PP.PeelProlog) {
       ValueToValueMapTy VMap;
@@ -1355,7 +1351,6 @@ tryToUnrollLoop(Loop *L, DominatorTree &DT, LoopInfo *LI, ScalarEvolution &SE,
           peelLoopEpilog(L, PP.PeelCount, LI, &SE, DT, &AC, PreserveLCSSA);
 
     if (PeeledLoop) {
-#endif // SIFIVE_CUSTOMIZATION
       simplifyLoopAfterUnroll(L, true, LI, &SE, &DT, &AC, &TTI, nullptr);
       // If the loop was peeled, we already "used up" the profile information
       // we had, so we don't want to unroll or peel again.
@@ -1365,7 +1360,7 @@ tryToUnrollLoop(Loop *L, DominatorTree &DT, LoopInfo *LI, ScalarEvolution &SE,
     }
     return LoopUnrollResult::Unmodified;
   }
-  // end SIFIVE
+#endif // SIFIVE_CUSTOMIZATION
 
   // Do not attempt partial/runtime unrolling in FullLoopUnrolling
   if (OnlyFullUnroll && (UP.Count < TripCount || UP.Count < MaxTripCount)) {
