@@ -1530,9 +1530,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     }
   }
 
-<<<<<<< HEAD
-  EnableExtLdPromotion = true; // SIFIVE
-=======
   if (Subtarget.hasVendorXCVmem()) {
     setIndexedLoadAction(ISD::POST_INC, MVT::i8, Legal);
     setIndexedLoadAction(ISD::POST_INC, MVT::i16, Legal);
@@ -1542,7 +1539,8 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setIndexedStoreAction(ISD::POST_INC, MVT::i16, Legal);
     setIndexedStoreAction(ISD::POST_INC, MVT::i32, Legal);
   }
->>>>>>> c83d9e9
+
+  EnableExtLdPromotion = true; // SIFIVE
 
   // Function alignments.
   const Align FunctionAlignment(Subtarget.hasStdExtCOrZca() ? 2 : 4);
@@ -1573,13 +1571,8 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
   if (Subtarget.hasStdExtZbb())
     setTargetDAGCombine({ISD::UMAX, ISD::UMIN, ISD::SMAX, ISD::SMIN});
 
-<<<<<<< HEAD
-  if ((Subtarget.hasStdExtZbs() && Subtarget.is64Bit()) || // SIFIVE
-      Subtarget.hasStdExtV()) // SIFIVE
-=======
   if ((Subtarget.hasStdExtZbs() && Subtarget.is64Bit()) ||
       Subtarget.hasStdExtV())
->>>>>>> c83d9e9
     setTargetDAGCombine(ISD::TRUNCATE);
 
   if (Subtarget.hasStdExtZbkb())
@@ -15091,11 +15084,6 @@ static SDValue combineDeMorganOfBoolean(SDNode *N, SelectionDAG &DAG) {
   return DAG.getNode(ISD::XOR, DL, VT, Logic, DAG.getConstant(1, DL, VT));
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-// SIFIVE cherry-pick from upstream
-=======
->>>>>>> c83d9e9
 // Fold (vXi8 (trunc (vselect (setltu, X, 256), X, (sext (setgt X, 0))))) to
 // (vXi8 (trunc (smin (smax X, 0), 255))). This represents saturating a signed
 // value to an unsigned value. This will be lowered to vmax and series of
@@ -15165,8 +15153,6 @@ static SDValue combineTruncSelectToSMaxUSat(SDNode *N, SelectionDAG &DAG) {
                   DAG.getConstant((1ULL << ScalarBits) - 1, DL, SrcVT));
   return DAG.getNode(ISD::TRUNCATE, DL, VT, Min);
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
 // Fold (vXi8 (trunc (vselect (setltu, X, 256), X, (sext (setgt X, 0))))) to
@@ -15246,8 +15232,6 @@ static SDValue combineVPTruncSelectToSMaxUSat(SDNode *N, SelectionDAG &DAG) {
   return DAG.getNode(ISD::VP_TRUNCATE, DL, VT, Min, Mask, EVL);
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> c83d9e9
 
 static SDValue performTRUNCATECombine(SDNode *N, SelectionDAG &DAG,
                                       const RISCVSubtarget &Subtarget) {
@@ -15269,8 +15253,7 @@ static SDValue performTRUNCATECombine(SDNode *N, SelectionDAG &DAG,
     return DAG.getNode(ISD::TRUNCATE, SDLoc(N), VT, Srl);
   }
 
-<<<<<<< HEAD
-  return combineTruncSelectToSMaxUSat(N, DAG); // SIFIVE
+  return combineTruncSelectToSMaxUSat(N, DAG);
 }
 
 #if SIFIVE_CUSTOMIZATION
@@ -15305,9 +15288,6 @@ static SDValue combineBlendPattern(SDNode *N, SelectionDAG &DAG) {
 
   // N0 fits in 16 bits, We can drop the AND.
   return N0;
-=======
-  return combineTruncSelectToSMaxUSat(N, DAG);
->>>>>>> c83d9e9
 }
 #endif
 
