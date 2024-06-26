@@ -757,6 +757,31 @@ static Instruction *foldVMV_F_S(InstCombiner &IC, IntrinsicInst &II) {
   return IC.replaceInstUsesWith(II, ValII->getArgOperand(1));
 }
 
+static Instruction *foldVMSNEWithVPCompare(InstCombiner &IC,
+                                           IntrinsicInst &II) {
+  using namespace PatternMatch;
+  // TODO: Reverse predicate if intrinsics compares with one
+  if (!match(II.getOperand(1), m_ZeroInt()))
+    return nullptr;
+
+  Value *Pred, *VL, *Mask;
+  if (!match(II.getOperand(0), m_OneUse(m_Intrinsic<Intrinsic::vp_zext>(
+                                   m_Value(Pred), m_Value(Mask), m_Value(VL)))))
+    return nullptr;
+
+  if (!maskIsAllOneOrUndef(Mask) || !Pred->getType()->isIntOrIntVectorTy(1))
+    return nullptr;
+
+  if (!match(VL, m_TruncOrSelf(m_Specific(II.getOperand(2)))))
+    return nullptr;
+
+  if (auto *VPIntrin = dyn_cast<VPIntrinsic>(Pred))
+    if (VPIntrin->getVectorLengthParam() != VL)
+      return nullptr;
+
+  return IC.replaceInstUsesWith(II, Pred);
+}
+
 // Return true if II is an intrinsic to widen signed elements.
 static bool isSignedWcvt(IntrinsicInst *II) {
   return II->getIntrinsicID() == Intrinsic::riscv_vwadd ||
@@ -1193,8 +1218,11 @@ static Instruction *foldVBroadcast(InstCombiner &IC, IntrinsicInst &II) {
       }
     }
     break;
-  case Intrinsic::riscv_vmseq:
   case Intrinsic::riscv_vmsne:
+    if (Instruction *R = foldVMSNEWithVPCompare(IC, II))
+      return R;
+    [[fallthrough]];
+  case Intrinsic::riscv_vmseq:
   case Intrinsic::riscv_vmslt:
   case Intrinsic::riscv_vmsltu:
   case Intrinsic::riscv_vmsle:
