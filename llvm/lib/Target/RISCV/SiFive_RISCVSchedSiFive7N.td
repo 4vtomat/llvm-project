@@ -14,9 +14,17 @@ multiclass SiFive7NSchedResources<int VLEN, bit ExtraVALU = false,
                                   bit HasFastLargeGather = false> {
   let BufferSize = 0 in
   defm SiFive7N : BulletProcResources<ExtraVALU>;
+  // Don't mark these ProcResGroup as BufferSize = 0, since that will make *all
+  // of* the subresources busy if the group is used. Instead, we want *one of*
+  // the subunits in the group to be used.
   def SiFive7NPipeAB : ProcResGroup<[
     !cast<ProcResource>(NAME #SiFive7NPipeA),
     !cast<ProcResource>(NAME #SiFive7NPipeB)
+  ]>;
+  if ExtraVALU then
+  def SiFive7NVA1OrVA2 : ProcResGroup<[
+    !cast<ProcResource>(NAME # SiFive7NVA1),
+    !cast<ProcResource>(NAME # SiFive7NVA2)
   ]>;
 
   // Pull out defs from BulletProcResources so we can refer to them by name.

@@ -265,8 +265,6 @@ multiclass BulletProcResources<bit extraVALU = false> {
   if extraVALU then {
     def VA1 : ProcResource<1>;
     def VA2 : ProcResource<1>;
-    def VA1OrVA2 : ProcResGroup<[!cast<ProcResource>(NAME # "VA1"),
-                                 !cast<ProcResource>(NAME # "VA2")]>;
   } else {
     def VA : ProcResource<1>;
   }
