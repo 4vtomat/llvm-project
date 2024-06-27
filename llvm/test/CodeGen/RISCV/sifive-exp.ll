@@ -7,24 +7,24 @@ define void @skl_exp_f16(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280:       # %bb.0: # %entry
 ; X280-NEXT:    beqz a2, .LBB0_3
 ; X280-NEXT:  # %bb.1: # %for.body.preheader
-; X280-NEXT:    lui a7, %hi(.LCPI0_0)
-; X280-NEXT:    lui a6, %hi(.LCPI0_1)
-; X280-NEXT:    lui a5, %hi(.LCPI0_2)
-; X280-NEXT:    lui a4, %hi(.LCPI0_3)
-; X280-NEXT:    lui t0, %hi(.LCPI0_6)
+; X280-NEXT:    lui a4, %hi(.LCPI0_0)
+; X280-NEXT:    lui a5, %hi(.LCPI0_1)
+; X280-NEXT:    lui a6, %hi(.LCPI0_2)
+; X280-NEXT:    lui a7, %hi(.LCPI0_3)
 ; X280-NEXT:    li a3, 0
-; X280-NEXT:    flh fa5, %lo(.LCPI0_0)(a7)
-; X280-NEXT:    lui a7, %hi(.LCPI0_4)
-; X280-NEXT:    flh fa4, %lo(.LCPI0_1)(a6)
+; X280-NEXT:    li t0, 15
+; X280-NEXT:    flh fa5, %lo(.LCPI0_0)(a4)
+; X280-NEXT:    lui a4, %hi(.LCPI0_6)
+; X280-NEXT:    flh fa4, %lo(.LCPI0_1)(a5)
+; X280-NEXT:    lui a5, %hi(.LCPI0_4)
+; X280-NEXT:    flh fa3, %lo(.LCPI0_2)(a6)
 ; X280-NEXT:    lui a6, %hi(.LCPI0_5)
-; X280-NEXT:    addi a6, a6, %lo(.LCPI0_5)
-; X280-NEXT:    li t1, 15
-; X280-NEXT:    flh fa1, %lo(.LCPI0_4)(a7)
+; X280-NEXT:    flh fa2, %lo(.LCPI0_3)(a7)
 ; X280-NEXT:    lui a7, %hi(.LCPI0_7)
+; X280-NEXT:    flh fa1, %lo(.LCPI0_4)(a5)
+; X280-NEXT:    addi a6, a6, %lo(.LCPI0_5)
+; X280-NEXT:    flh fa0, %lo(.LCPI0_6)(a4)
 ; X280-NEXT:    addi a7, a7, %lo(.LCPI0_7)
-; X280-NEXT:    flh fa3, %lo(.LCPI0_2)(a5)
-; X280-NEXT:    flh fa2, %lo(.LCPI0_3)(a4)
-; X280-NEXT:    flh fa0, %lo(.LCPI0_6)(t0)
 ; X280-NEXT:  .LBB0_2: # %for.body
 ; X280-NEXT:    # =>This Inner Loop Header: Depth=1
 ; X280-NEXT:    sh1add a4, a3, a1
@@ -51,12 +51,12 @@ define void @skl_exp_f16(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280-NEXT:    vsetvli zero, zero, e8, m4, tu, ma
 ; X280-NEXT:    vsra.vi v8, v24, 1
 ; X280-NEXT:    vsub.vv v12, v24, v8
-; X280-NEXT:    vwadd.vx v24, v12, t1
+; X280-NEXT:    vwadd.vx v24, v12, t0
 ; X280-NEXT:    vsetvli zero, zero, e16, m8, tu, ma
 ; X280-NEXT:    vsll.vi v24, v24, 10
 ; X280-NEXT:    vfmul.vv v16, v16, v24
 ; X280-NEXT:    vsetvli zero, zero, e8, m4, tu, ma
-; X280-NEXT:    vwadd.vx v24, v8, t1
+; X280-NEXT:    vwadd.vx v24, v8, t0
 ; X280-NEXT:    vsetvli zero, zero, e16, m8, tu, ma
 ; X280-NEXT:    vsll.vi v8, v24, 10
 ; X280-NEXT:    vfmul.vv v8, v16, v8
@@ -69,24 +69,24 @@ define void @skl_exp_f16(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280N:       # %bb.0: # %entry
 ; X280N-NEXT:    beqz a2, .LBB0_3
 ; X280N-NEXT:  # %bb.1: # %for.body.preheader
-; X280N-NEXT:    lui a7, %hi(.LCPI0_0)
-; X280N-NEXT:    lui a6, %hi(.LCPI0_1)
-; X280N-NEXT:    lui a5, %hi(.LCPI0_2)
-; X280N-NEXT:    lui a4, %hi(.LCPI0_3)
-; X280N-NEXT:    lui t0, %hi(.LCPI0_6)
+; X280N-NEXT:    lui a4, %hi(.LCPI0_0)
+; X280N-NEXT:    lui a5, %hi(.LCPI0_1)
+; X280N-NEXT:    lui a6, %hi(.LCPI0_2)
+; X280N-NEXT:    lui a7, %hi(.LCPI0_3)
 ; X280N-NEXT:    li a3, 0
-; X280N-NEXT:    flh fa5, %lo(.LCPI0_0)(a7)
-; X280N-NEXT:    lui a7, %hi(.LCPI0_4)
-; X280N-NEXT:    flh fa4, %lo(.LCPI0_1)(a6)
+; X280N-NEXT:    li t0, 15
+; X280N-NEXT:    flh fa5, %lo(.LCPI0_0)(a4)
+; X280N-NEXT:    lui a4, %hi(.LCPI0_6)
+; X280N-NEXT:    flh fa4, %lo(.LCPI0_1)(a5)
+; X280N-NEXT:    lui a5, %hi(.LCPI0_4)
+; X280N-NEXT:    flh fa3, %lo(.LCPI0_2)(a6)
 ; X280N-NEXT:    lui a6, %hi(.LCPI0_5)
-; X280N-NEXT:    addi a6, a6, %lo(.LCPI0_5)
-; X280N-NEXT:    li t1, 15
-; X280N-NEXT:    flh fa1, %lo(.LCPI0_4)(a7)
+; X280N-NEXT:    flh fa2, %lo(.LCPI0_3)(a7)
 ; X280N-NEXT:    lui a7, %hi(.LCPI0_7)
+; X280N-NEXT:    flh fa1, %lo(.LCPI0_4)(a5)
+; X280N-NEXT:    addi a6, a6, %lo(.LCPI0_5)
+; X280N-NEXT:    flh fa0, %lo(.LCPI0_6)(a4)
 ; X280N-NEXT:    addi a7, a7, %lo(.LCPI0_7)
-; X280N-NEXT:    flh fa3, %lo(.LCPI0_2)(a5)
-; X280N-NEXT:    flh fa2, %lo(.LCPI0_3)(a4)
-; X280N-NEXT:    flh fa0, %lo(.LCPI0_6)(t0)
 ; X280N-NEXT:  .LBB0_2: # %for.body
 ; X280N-NEXT:    # =>This Inner Loop Header: Depth=1
 ; X280N-NEXT:    sh1add a4, a3, a1
@@ -113,12 +113,12 @@ define void @skl_exp_f16(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280N-NEXT:    vsetvli zero, zero, e8, m4, tu, ma
 ; X280N-NEXT:    vsra.vi v8, v24, 1
 ; X280N-NEXT:    vsub.vv v12, v24, v8
-; X280N-NEXT:    vwadd.vx v24, v12, t1
+; X280N-NEXT:    vwadd.vx v24, v12, t0
 ; X280N-NEXT:    vsetvli zero, zero, e16, m8, tu, ma
 ; X280N-NEXT:    vsll.vi v24, v24, 10
 ; X280N-NEXT:    vfmul.vv v16, v16, v24
 ; X280N-NEXT:    vsetvli zero, zero, e8, m4, tu, ma
-; X280N-NEXT:    vwadd.vx v24, v8, t1
+; X280N-NEXT:    vwadd.vx v24, v8, t0
 ; X280N-NEXT:    vsetvli zero, zero, e16, m8, tu, ma
 ; X280N-NEXT:    vsll.vi v8, v24, 10
 ; X280N-NEXT:    vfmul.vv v8, v16, v8
@@ -174,30 +174,30 @@ define void @skl_exp_f32(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280:       # %bb.0: # %entry
 ; X280-NEXT:    beqz a2, .LBB1_3
 ; X280-NEXT:  # %bb.1: # %for.body.preheader
-; X280-NEXT:    lui a7, %hi(.LCPI1_0)
+; X280-NEXT:    lui a4, %hi(.LCPI1_0)
+; X280-NEXT:    lui a5, %hi(.LCPI1_2)
 ; X280-NEXT:    lui a6, %hi(.LCPI1_1)
-; X280-NEXT:    lui t0, %hi(.LCPI1_2)
-; X280-NEXT:    lui a4, %hi(.LCPI1_3)
-; X280-NEXT:    lui a5, %hi(.LCPI1_4)
-; X280-NEXT:    lui t2, %hi(.LCPI1_6)
-; X280-NEXT:    flw fa5, %lo(.LCPI1_0)(a7)
-; X280-NEXT:    lui a7, %hi(.LCPI1_7)
-; X280-NEXT:    flw fa4, %lo(.LCPI1_1)(a6)
-; X280-NEXT:    lui a6, %hi(.LCPI1_5)
-; X280-NEXT:    flw fa3, %lo(.LCPI1_2)(t0)
+; X280-NEXT:    lui a7, %hi(.LCPI1_3)
 ; X280-NEXT:    lui t0, %hi(.LCPI1_8)
 ; X280-NEXT:    lui t1, %hi(.LCPI1_9)
-; X280-NEXT:    lui t3, %hi(.LCPI1_10)
+; X280-NEXT:    flw fa5, %lo(.LCPI1_0)(a4)
+; X280-NEXT:    lui a4, %hi(.LCPI1_4)
+; X280-NEXT:    flw fa3, %lo(.LCPI1_2)(a5)
+; X280-NEXT:    lui a5, %hi(.LCPI1_6)
+; X280-NEXT:    flw fa4, %lo(.LCPI1_1)(a6)
+; X280-NEXT:    lui a6, %hi(.LCPI1_5)
+; X280-NEXT:    flw fa2, %lo(.LCPI1_3)(a7)
+; X280-NEXT:    lui a7, %hi(.LCPI1_7)
+; X280-NEXT:    lui t2, %hi(.LCPI1_10)
 ; X280-NEXT:    li a3, 0
+; X280-NEXT:    flw fa1, %lo(.LCPI1_4)(a4)
 ; X280-NEXT:    addi a6, a6, %lo(.LCPI1_5)
+; X280-NEXT:    flw fa0, %lo(.LCPI1_6)(a5)
 ; X280-NEXT:    addi a7, a7, %lo(.LCPI1_7)
 ; X280-NEXT:    addi t0, t0, %lo(.LCPI1_8)
 ; X280-NEXT:    addi t1, t1, %lo(.LCPI1_9)
-; X280-NEXT:    addi t3, t3, %lo(.LCPI1_10)
-; X280-NEXT:    li t4, 127
-; X280-NEXT:    flw fa2, %lo(.LCPI1_3)(a4)
-; X280-NEXT:    flw fa1, %lo(.LCPI1_4)(a5)
-; X280-NEXT:    flw fa0, %lo(.LCPI1_6)(t2)
+; X280-NEXT:    addi t2, t2, %lo(.LCPI1_10)
+; X280-NEXT:    li t3, 127
 ; X280-NEXT:  .LBB1_2: # %for.body
 ; X280-NEXT:    # =>This Inner Loop Header: Depth=1
 ; X280-NEXT:    sh2add a5, a3, a1
@@ -224,14 +224,14 @@ define void @skl_exp_f32(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280-NEXT:    vfmacc.vv v16, v8, v20
 ; X280-NEXT:    vlse32.v v20, (t1), zero
 ; X280-NEXT:    vfmacc.vv v20, v8, v16
-; X280-NEXT:    vlse32.v v16, (t3), zero
+; X280-NEXT:    vlse32.v v16, (t2), zero
 ; X280-NEXT:    vfmadd.vv v20, v8, v16
 ; X280-NEXT:    vfmadd.vv v20, v8, v16
 ; X280-NEXT:    vsetvli zero, zero, e16, m2, tu, ma
 ; X280-NEXT:    vsra.vi v8, v12, 1
 ; X280-NEXT:    vsub.vv v10, v12, v8
-; X280-NEXT:    vwadd.vx v12, v10, t4
-; X280-NEXT:    vwadd.vx v16, v8, t4
+; X280-NEXT:    vwadd.vx v12, v10, t3
+; X280-NEXT:    vwadd.vx v16, v8, t3
 ; X280-NEXT:    vsetvli zero, zero, e32, m4, tu, ma
 ; X280-NEXT:    vsll.vi v8, v12, 23
 ; X280-NEXT:    vfmul.vv v8, v20, v8
@@ -246,30 +246,30 @@ define void @skl_exp_f32(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280N:       # %bb.0: # %entry
 ; X280N-NEXT:    beqz a2, .LBB1_3
 ; X280N-NEXT:  # %bb.1: # %for.body.preheader
-; X280N-NEXT:    lui a7, %hi(.LCPI1_0)
+; X280N-NEXT:    lui a4, %hi(.LCPI1_0)
+; X280N-NEXT:    lui a5, %hi(.LCPI1_2)
 ; X280N-NEXT:    lui a6, %hi(.LCPI1_1)
-; X280N-NEXT:    lui t0, %hi(.LCPI1_2)
-; X280N-NEXT:    lui a4, %hi(.LCPI1_3)
-; X280N-NEXT:    lui a5, %hi(.LCPI1_4)
-; X280N-NEXT:    lui t2, %hi(.LCPI1_6)
-; X280N-NEXT:    flw fa5, %lo(.LCPI1_0)(a7)
-; X280N-NEXT:    lui a7, %hi(.LCPI1_7)
-; X280N-NEXT:    flw fa4, %lo(.LCPI1_1)(a6)
-; X280N-NEXT:    lui a6, %hi(.LCPI1_5)
-; X280N-NEXT:    flw fa3, %lo(.LCPI1_2)(t0)
+; X280N-NEXT:    lui a7, %hi(.LCPI1_3)
 ; X280N-NEXT:    lui t0, %hi(.LCPI1_8)
 ; X280N-NEXT:    lui t1, %hi(.LCPI1_9)
-; X280N-NEXT:    lui t3, %hi(.LCPI1_10)
+; X280N-NEXT:    flw fa5, %lo(.LCPI1_0)(a4)
+; X280N-NEXT:    lui a4, %hi(.LCPI1_4)
+; X280N-NEXT:    flw fa3, %lo(.LCPI1_2)(a5)
+; X280N-NEXT:    lui a5, %hi(.LCPI1_6)
+; X280N-NEXT:    flw fa4, %lo(.LCPI1_1)(a6)
+; X280N-NEXT:    lui a6, %hi(.LCPI1_5)
+; X280N-NEXT:    flw fa2, %lo(.LCPI1_3)(a7)
+; X280N-NEXT:    lui a7, %hi(.LCPI1_7)
+; X280N-NEXT:    lui t2, %hi(.LCPI1_10)
 ; X280N-NEXT:    li a3, 0
+; X280N-NEXT:    flw fa1, %lo(.LCPI1_4)(a4)
 ; X280N-NEXT:    addi a6, a6, %lo(.LCPI1_5)
+; X280N-NEXT:    flw fa0, %lo(.LCPI1_6)(a5)
 ; X280N-NEXT:    addi a7, a7, %lo(.LCPI1_7)
 ; X280N-NEXT:    addi t0, t0, %lo(.LCPI1_8)
 ; X280N-NEXT:    addi t1, t1, %lo(.LCPI1_9)
-; X280N-NEXT:    addi t3, t3, %lo(.LCPI1_10)
-; X280N-NEXT:    li t4, 127
-; X280N-NEXT:    flw fa2, %lo(.LCPI1_3)(a4)
-; X280N-NEXT:    flw fa1, %lo(.LCPI1_4)(a5)
-; X280N-NEXT:    flw fa0, %lo(.LCPI1_6)(t2)
+; X280N-NEXT:    addi t2, t2, %lo(.LCPI1_10)
+; X280N-NEXT:    li t3, 127
 ; X280N-NEXT:  .LBB1_2: # %for.body
 ; X280N-NEXT:    # =>This Inner Loop Header: Depth=1
 ; X280N-NEXT:    sh2add a5, a3, a1
@@ -296,14 +296,14 @@ define void @skl_exp_f32(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280N-NEXT:    vfmacc.vv v16, v8, v20
 ; X280N-NEXT:    vlse32.v v20, (t1), zero
 ; X280N-NEXT:    vfmacc.vv v20, v8, v16
-; X280N-NEXT:    vlse32.v v16, (t3), zero
+; X280N-NEXT:    vlse32.v v16, (t2), zero
 ; X280N-NEXT:    vfmadd.vv v20, v8, v16
 ; X280N-NEXT:    vfmadd.vv v20, v8, v16
 ; X280N-NEXT:    vsetvli zero, zero, e16, m2, tu, ma
 ; X280N-NEXT:    vsra.vi v8, v12, 1
 ; X280N-NEXT:    vsub.vv v10, v12, v8
-; X280N-NEXT:    vwadd.vx v12, v10, t4
-; X280N-NEXT:    vwadd.vx v16, v8, t4
+; X280N-NEXT:    vwadd.vx v12, v10, t3
+; X280N-NEXT:    vwadd.vx v16, v8, t3
 ; X280N-NEXT:    vsetvli zero, zero, e32, m4, tu, ma
 ; X280N-NEXT:    vsll.vi v8, v12, 23
 ; X280N-NEXT:    vfmul.vv v8, v20, v8
@@ -377,14 +377,14 @@ define void @skl_exp_f64(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280-NEXT:    .cfi_offset s1, -16
 ; X280-NEXT:    .cfi_offset s2, -24
 ; X280-NEXT:    .cfi_offset s3, -32
+; X280-NEXT:    lui a4, %hi(.LCPI2_0)
 ; X280-NEXT:    lui a5, %hi(.LCPI2_1)
 ; X280-NEXT:    lui s1, %hi(.LCPI2_2)
 ; X280-NEXT:    lui s0, %hi(.LCPI2_3)
-; X280-NEXT:    lui a4, %hi(.LCPI2_0)
 ; X280-NEXT:    lui a6, %hi(.LCPI2_5)
 ; X280-NEXT:    lui a7, %hi(.LCPI2_6)
-; X280-NEXT:    fld fa4, %lo(.LCPI2_1)(a5)
-; X280-NEXT:    lui a5, %hi(.LCPI2_4)
+; X280-NEXT:    fld fa5, %lo(.LCPI2_0)(a4)
+; X280-NEXT:    lui a4, %hi(.LCPI2_4)
 ; X280-NEXT:    lui t0, %hi(.LCPI2_7)
 ; X280-NEXT:    lui t1, %hi(.LCPI2_8)
 ; X280-NEXT:    lui t2, %hi(.LCPI2_9)
@@ -395,11 +395,13 @@ define void @skl_exp_f64(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280-NEXT:    lui s2, %hi(.LCPI2_14)
 ; X280-NEXT:    lui s3, %hi(.LCPI2_15)
 ; X280-NEXT:    li a3, 0
-; X280-NEXT:    fld fa3, %lo(.LCPI2_2)(s1)
+; X280-NEXT:    fld fa4, %lo(.LCPI2_1)(a5)
 ; X280-NEXT:    addi a6, a6, %lo(.LCPI2_5)
-; X280-NEXT:    fld fa2, %lo(.LCPI2_3)(s0)
+; X280-NEXT:    fld fa3, %lo(.LCPI2_2)(s1)
 ; X280-NEXT:    addi a7, a7, %lo(.LCPI2_6)
+; X280-NEXT:    fld fa2, %lo(.LCPI2_3)(s0)
 ; X280-NEXT:    addi t0, t0, %lo(.LCPI2_7)
+; X280-NEXT:    fld fa1, %lo(.LCPI2_4)(a4)
 ; X280-NEXT:    addi t1, t1, %lo(.LCPI2_8)
 ; X280-NEXT:    addi t2, t2, %lo(.LCPI2_9)
 ; X280-NEXT:    addi t3, t3, %lo(.LCPI2_10)
@@ -410,8 +412,6 @@ define void @skl_exp_f64(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280-NEXT:    addi s3, s3, %lo(.LCPI2_15)
 ; X280-NEXT:    li s0, 1023
 ; X280-NEXT:    li s1, 52
-; X280-NEXT:    fld fa5, %lo(.LCPI2_0)(a4)
-; X280-NEXT:    fld fa1, %lo(.LCPI2_4)(a5)
 ; X280-NEXT:  .LBB2_2: # %for.body
 ; X280-NEXT:    # =>This Inner Loop Header: Depth=1
 ; X280-NEXT:    sh3add a4, a3, a1
@@ -489,14 +489,14 @@ define void @skl_exp_f64(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280N-NEXT:    .cfi_offset s1, -16
 ; X280N-NEXT:    .cfi_offset s2, -24
 ; X280N-NEXT:    .cfi_offset s3, -32
+; X280N-NEXT:    lui a4, %hi(.LCPI2_0)
 ; X280N-NEXT:    lui a5, %hi(.LCPI2_1)
 ; X280N-NEXT:    lui s1, %hi(.LCPI2_2)
 ; X280N-NEXT:    lui s0, %hi(.LCPI2_3)
-; X280N-NEXT:    lui a4, %hi(.LCPI2_0)
 ; X280N-NEXT:    lui a6, %hi(.LCPI2_5)
 ; X280N-NEXT:    lui a7, %hi(.LCPI2_6)
-; X280N-NEXT:    fld fa4, %lo(.LCPI2_1)(a5)
-; X280N-NEXT:    lui a5, %hi(.LCPI2_4)
+; X280N-NEXT:    fld fa5, %lo(.LCPI2_0)(a4)
+; X280N-NEXT:    lui a4, %hi(.LCPI2_4)
 ; X280N-NEXT:    lui t0, %hi(.LCPI2_7)
 ; X280N-NEXT:    lui t1, %hi(.LCPI2_8)
 ; X280N-NEXT:    lui t2, %hi(.LCPI2_9)
@@ -507,11 +507,13 @@ define void @skl_exp_f64(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280N-NEXT:    lui s2, %hi(.LCPI2_14)
 ; X280N-NEXT:    lui s3, %hi(.LCPI2_15)
 ; X280N-NEXT:    li a3, 0
-; X280N-NEXT:    fld fa3, %lo(.LCPI2_2)(s1)
+; X280N-NEXT:    fld fa4, %lo(.LCPI2_1)(a5)
 ; X280N-NEXT:    addi a6, a6, %lo(.LCPI2_5)
-; X280N-NEXT:    fld fa2, %lo(.LCPI2_3)(s0)
+; X280N-NEXT:    fld fa3, %lo(.LCPI2_2)(s1)
 ; X280N-NEXT:    addi a7, a7, %lo(.LCPI2_6)
+; X280N-NEXT:    fld fa2, %lo(.LCPI2_3)(s0)
 ; X280N-NEXT:    addi t0, t0, %lo(.LCPI2_7)
+; X280N-NEXT:    fld fa1, %lo(.LCPI2_4)(a4)
 ; X280N-NEXT:    addi t1, t1, %lo(.LCPI2_8)
 ; X280N-NEXT:    addi t2, t2, %lo(.LCPI2_9)
 ; X280N-NEXT:    addi t3, t3, %lo(.LCPI2_10)
@@ -522,8 +524,6 @@ define void @skl_exp_f64(ptr nocapture noundef %y, ptr nocapture noundef readonl
 ; X280N-NEXT:    addi s3, s3, %lo(.LCPI2_15)
 ; X280N-NEXT:    li s0, 1023
 ; X280N-NEXT:    li s1, 52
-; X280N-NEXT:    fld fa5, %lo(.LCPI2_0)(a4)
-; X280N-NEXT:    fld fa1, %lo(.LCPI2_4)(a5)
 ; X280N-NEXT:  .LBB2_2: # %for.body
 ; X280N-NEXT:    # =>This Inner Loop Header: Depth=1
 ; X280N-NEXT:    sh3add a4, a3, a1

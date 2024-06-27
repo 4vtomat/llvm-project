@@ -756,6 +756,7 @@ defvar SIFIVE_X390_Features = [
   FeatureStdExtZbb,
   FeatureStdExtZbs,
   FeatureStdExtZcb,
+  FeatureStdExtZcmop,
   FeatureStdExtZicond,
   FeatureStdExtZfa,
   FeatureStdExtZkt,
@@ -769,7 +770,9 @@ defvar SIFIVE_X390_Features = [
   FeatureStdExtZiccamoa,
   FeatureStdExtZiccrse,
   FeatureStdExtZihpm,
+  FeatureStdExtZimop,
   FeatureStdExtZa64rs,
+  FeatureStdExtZawrs,
   FeatureStdExtZic64b,
   FeatureStdExtZvfbfmin,
   FeatureStdExtZvbb,
@@ -778,6 +781,9 @@ defvar SIFIVE_X390_Features = [
   FeatureVendorXSiFivecdiscarddlone,
   FeatureVendorXSiFivecflushdlone,
   FeatureVendorXSfvfwmaccqqq,
+  FeatureVendorXSfvqdotq,
+  FeatureVendorXSfvfexpa,
+  FeatureVendorXSfcease,
 ];
 defvar SIFIVE_X390_TuneFeatures = [
   TuneSiFive7,

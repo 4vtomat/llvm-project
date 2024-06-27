@@ -166,9 +166,7 @@ define dso_local <vscale x 16 x i1> @_ZN7attempt23vbinarypred_vv_i32m8_b4Eu15__r
 ; CHECK-NEXT:    tail call void @llvm.assume(i1 [[CMP]])
 ; CHECK-NEXT:    [[TMP1:%.*]] = trunc nuw nsw i64 [[TMP0]] to i32
 ; CHECK-NEXT:    [[VP_OP_ICMP:%.*]] = tail call <vscale x 16 x i1> @llvm.vp.icmp.nxv16i32(<vscale x 16 x i32> [[VX]], <vscale x 16 x i32> [[VY]], metadata !"slt", <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP1]])
-; CHECK-NEXT:    [[TMP4:%.*]] = tail call <vscale x 16 x i8> @llvm.vp.zext.nxv16i8.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP1]])
-; CHECK-NEXT:    [[TMP5:%.*]] = tail call <vscale x 16 x i1> @llvm.riscv.vmsne.nxv16i8.i8.i64(<vscale x 16 x i8> [[TMP4]], i8 0, i64 [[TMP0]])
-; CHECK-NEXT:    ret <vscale x 16 x i1> [[TMP5]]
+; CHECK-NEXT:    ret <vscale x 16 x i1> [[VP_OP_ICMP]]
 ;
 entry:
   %vx.addr = alloca <vscale x 16 x i32>, align 4

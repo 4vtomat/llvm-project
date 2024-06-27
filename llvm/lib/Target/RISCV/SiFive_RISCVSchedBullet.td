@@ -265,8 +265,6 @@ multiclass BulletProcResources<bit extraVALU = false> {
   if extraVALU then {
     def VA1 : ProcResource<1>;
     def VA2 : ProcResource<1>;
-    def VA1OrVA2 : ProcResGroup<[!cast<ProcResource>(NAME # "VA1"),
-                                 !cast<ProcResource>(NAME # "VA2")]>;
   } else {
     def VA : ProcResource<1>;
   }
@@ -405,7 +403,7 @@ multiclass BulletWriteResBase<
     def : WriteRes<WriteLDD, [PipeA, Mem]>;
   }
   
-  let Latency = 2, ReleaseAtCycles = [0, 1] in {
+  let Latency = 3, ReleaseAtCycles = [0, 1] in {
     def : WriteRes<WriteFLD16, [PipeA, Mem]>;
     def : WriteRes<WriteFLD32, [PipeA, Mem]>;
     def : WriteRes<WriteFLD64, [PipeA, Mem]>;
