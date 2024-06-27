@@ -4741,6 +4741,18 @@ static SDValue simplifyDivRem(SDNode *N, SelectionDAG &DAG) {
   if ((N1C && N1C->isOne()) || (VT.getScalarType() == MVT::i1))
     return IsDiv ? N0 : DAG.getConstant(0, DL, VT);
 
+#if SIFIVE_CUSTOMIZATION
+  bool IsSigned = ISD::SDIV == Opc || ISD::SREM == Opc;
+  SDValue X;
+  // If X * Y does not overflow, then:
+  //   X * Y / Y -> X
+  //   X * Y % Y -> 0
+  if (sd_match(N0, m_Mul(m_Value(X), m_Specific(N1))) &&
+      ((!IsSigned && N0->getFlags().hasNoUnsignedWrap()) ||
+       (IsSigned && N0->getFlags().hasNoSignedWrap())))
+    return IsDiv ? X : DAG.getConstant(0, DL, VT);
+#endif // SIFIVE_CUSTOMIZATION
+
   return SDValue();
 }
 
