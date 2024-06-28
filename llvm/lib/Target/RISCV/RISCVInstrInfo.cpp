@@ -3958,24 +3958,6 @@ Register RISCVInstrInfo::getGlobalBaseReg(MachineFunction *MF) const {
   RVFI->setGlobalBaseReg(GlobalBaseReg);
   return GlobalBaseReg;
 }
-
-void RISCVInstrInfo::expandLIsimm32(MachineBasicBlock &MBB,
-                                    MachineBasicBlock::iterator MBBI) const {
-  MachineInstr &MI = *MBBI;
-  DebugLoc DL = MBBI->getDebugLoc();
-
-  int64_t Val = MI.getOperand(1).getImm();
-  assert(isInt<32>(Val) && "Unexpected immediate");
-
-  Register DstReg = MI.getOperand(0).getReg();
-  bool DstIsDead = MI.getOperand(0).isDead();
-  bool Renamable = MI.getOperand(0).isRenamable();
-
-  movImm(MBB, MBBI, DL, DstReg, Val, MachineInstr::NoFlags, Renamable,
-         DstIsDead);
-
-  MI.eraseFromParent();
-}
 #endif // SIFIVE_CUSTOMIZATION
 
 ArrayRef<std::pair<MachineMemOperand::Flags, const char *>>

@@ -120,8 +120,7 @@ bool RISCVPostRAExpandPseudo::expandLIsimm32(MachineBasicBlock &MBB,
   if (!Subtarget.usePseudoLIsimm32() || Subtarget.hasLUIADDIFusion())
     return false;
 
-  TII->expandLIsimm32(MBB, MBBI);
-  return true;
+  return expandMovImm(MBB, MBBI);
 }
 #endif // SIFIVE_CUSTOMIZATION
 

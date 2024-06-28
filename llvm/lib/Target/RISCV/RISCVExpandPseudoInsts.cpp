@@ -294,7 +294,18 @@ bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
 #if SIFIVE_CUSTOMIZATION
 bool RISCVExpandPseudo::expandLIsimm32(MachineBasicBlock &MBB,
                                        MachineBasicBlock::iterator MBBI) {
-  TII->expandLIsimm32(MBB, MBBI);
+  DebugLoc DL = MBBI->getDebugLoc();
+
+  int64_t Val = MBBI->getOperand(1).getImm();
+
+  Register DstReg = MBBI->getOperand(0).getReg();
+  bool DstIsDead = MBBI->getOperand(0).isDead();
+  bool Renamable = MBBI->getOperand(0).isRenamable();
+
+  TII->movImm(MBB, MBBI, DL, DstReg, Val, MachineInstr::NoFlags, Renamable,
+              DstIsDead);
+
+  MBBI->eraseFromParent();
   return true;
 }
 

@@ -266,9 +266,6 @@ public:
   // the register in the function entry block, if necessary.
   Register getGlobalBaseReg(MachineFunction *MF) const;
 
-  void expandLIsimm32(MachineBasicBlock &MBB,
-                      MachineBasicBlock::iterator MBBI) const;
-
   static unsigned getOverlapConstraintsFromMI(const MCInstrDesc &Desc);
 #endif // SIFIVE_CUSTOMIZATION
   void genAlternativeCodeSequence(
