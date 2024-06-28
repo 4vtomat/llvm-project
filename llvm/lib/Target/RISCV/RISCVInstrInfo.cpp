@@ -1473,9 +1473,9 @@ unsigned RISCVInstrInfo::getInstSizeInBytes(const MachineInstr &MI) const {
   // Calculate the size taking that into account.
   // FIXME: Can we expand this before the BranchRelaxation pass so that we don't
   // have to do this manually.
-  if (Opcode == RISCV::PseudoLIsimm32) {
+  if (Opcode == RISCV::PseudoMovImm) {
     unsigned Size = 8; // Worst case is 8 bytes.
-    if (MI.getOperand(1).isImm() &&
+    if (MI.getOperand(1).isImm() && isInt<32>(MI.getOperand(1).getImm()) &&
         STI.getFeatureBits()[RISCV::FeatureStdExtC]) {
       int64_t Val = MI.getOperand(1).getImm();
       int64_t Hi = ((Val + 0x800) >> 12) & 0xFFFFF;

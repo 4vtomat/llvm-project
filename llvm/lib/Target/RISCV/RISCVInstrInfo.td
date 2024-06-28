@@ -1631,13 +1631,6 @@ def PseudoJump : Pseudo<(outs GPR:$rd), (ins pseudo_jump_symbol:$target), [],
                         "jump", "$target, $rd">,
                  Sched<[WriteIALU, WriteJalr, ReadJalr]>;
 
-#ifdef SIFIVE_CUSTOMIZATION
-// Pseudo for LI of simm32.
-let hasSideEffects = 0, mayLoad = 0, mayStore = 0, Size = 8, isCodeGenOnly = 1,
-    isPseudo = 1, isReMaterializable = 1, IsSignExtendingOpW = 1 in
-def PseudoLIsimm32 : Pseudo<(outs GPR:$dst), (ins i32imm:$imm), []>,
-                     Sched<[WriteIALU]>;
-#endif // SIFIVE_CUSTOMIZATION
 // Pseudo for a rematerializable constant materialization sequence.
 // This is an experimental feature enabled by
 // -riscv-use-rematerializable-movimm in RISCVISelDAGToDAG.cpp

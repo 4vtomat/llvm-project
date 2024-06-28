@@ -248,11 +248,12 @@ bool RISCVMergeBaseOffsetOpt::foldLargeOffset(MachineInstr &Hi,
     OffsetTail.eraseFromParent();
     return true;
 #if SIFIVE_CUSTOMIZATION
-  } else if (OffsetTail.getOpcode() == RISCV::PseudoLIsimm32) {
+  } else if (OffsetTail.getOpcode() == RISCV::PseudoMovImm) {
     // The offset value is a simm32. We can always fold it.
     LLVM_DEBUG(dbgs() << "  Offset Instr: " << OffsetTail);
     int64_t Offset = OffsetTail.getOperand(1).getImm();
-    assert(isInt<32>(Offset) && "Unexpected offset");
+    if (!isInt<32>(Offset))
+      return false;
     foldOffset(Hi, Lo, TailAdd, Offset);
     OffsetTail.eraseFromParent();
     return true;

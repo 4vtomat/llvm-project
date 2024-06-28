@@ -47,7 +47,7 @@ private:
   bool expandMI(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
                 MachineBasicBlock::iterator &NextMBBI);
 #if SIFIVE_CUSTOMIZATION
-  bool expandLIsimm32(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
+  bool expandMovImm(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
   bool expandBitfieldExtract(MachineBasicBlock &MBB,
                              MachineBasicBlock::iterator MBBI,
                              unsigned ShOpc);
@@ -119,8 +119,8 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   // tablegen definition for the pseudo.
   switch (MBBI->getOpcode()) {
 #if SIFIVE_CUSTOMIZATION
-  case RISCV::PseudoLIsimm32:
-    return expandLIsimm32(MBB, MBBI);
+  case RISCV::PseudoMovImm:
+    return expandMovImm(MBB, MBBI);
   case RISCV::PseudoUBFX:
     return expandBitfieldExtract(MBB, MBBI, RISCV::SRLI);
   case RISCV::PseudoSBFX:
@@ -292,8 +292,8 @@ bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
 }
 
 #if SIFIVE_CUSTOMIZATION
-bool RISCVExpandPseudo::expandLIsimm32(MachineBasicBlock &MBB,
-                                       MachineBasicBlock::iterator MBBI) {
+bool RISCVExpandPseudo::expandMovImm(MachineBasicBlock &MBB,
+                                     MachineBasicBlock::iterator MBBI) {
   DebugLoc DL = MBBI->getDebugLoc();
 
   int64_t Val = MBBI->getOperand(1).getImm();
