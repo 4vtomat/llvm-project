@@ -2773,8 +2773,11 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
           State.get(State.EVL, 0, /*NeedsScalar=*/true), Builder.getInt32Ty());
       IndexVal = Builder.CreateAdd(
           IndexVal,
-          Builder.CreateMul(Builder.CreateSub(EVL, Builder.getInt32(1)),
-                            Builder.getInt32(InterleaveFactor)));
+          Builder.CreateMul(Builder.CreateSub(EVL, Builder.getInt32(1), "",
+                                              /*NUW=*/true, /*NSW=*/true),
+                            Builder.getInt32(InterleaveFactor), "",
+                            /*NUW=*/true, /*NSW=*/true),
+          "", /*NUW=*/true, /*NSW=*/true);
     } else {
       IndexVal = Builder.CreateAdd(
           IndexVal,
@@ -2987,7 +2990,8 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
                     Builder.getInt32Ty());
                 Value *InterleaveEVL = Builder.CreateMul(
                     EVL32,
-                    ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor));
+                    ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor),
+                    "", /*NUW=*/true, /*NSW=*/true);
                 GroupMask = Builder.CreateIntrinsic(
                     Intrinsic::vp_select, {Types},
                     {MaskForGaps, GroupMask, MaskForGaps, InterleaveEVL},
@@ -3037,7 +3041,8 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
               "wide.strided.load");
         } else {
           Value *InterleaveEVL = Builder.CreateMul(
-              EVL32, ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor));
+              EVL32, ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor),
+              "", /*NUW=*/true, /*NSW=*/true);
           Value *Operands[] = {AddrParts[Part], GroupMask, InterleaveEVL};
           Type *Types[] = {VecTy, Operands[0]->getType()};
           WideLoad = State.Builder.CreateIntrinsic(
@@ -3254,7 +3259,8 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
           State.get(State.EVL, Part, /*NeedsScalar=*/true),
           Builder.getInt32Ty());
       Value *InterleaveEVL = Builder.CreateMul(
-          EVL32, ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor));
+          EVL32, ConstantInt::get(Builder.getInt32Ty(), InterleaveFactor), "",
+          /*NUW=*/true, /*NSW=*/true);
       Operands = {StoredVal, AddrParts[Part], GroupMask, InterleaveEVL};
       CallInst *WideStore = State.Builder.CreateIntrinsic(
           Intrinsic::vp_store, {VecTy, AddrParts[Part]->getType()}, Operands,

@@ -90,7 +90,7 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; PROFITABLE-NEXT:    [[TMP34:%.*]] = getelementptr [[STRUCT_SU3_VECTOR:%.*]], ptr [[A]], i64 [[TMP33]]
 ; PROFITABLE-NEXT:    [[TMP35:%.*]] = getelementptr [[STRUCT_SU3_VECTOR]], ptr [[B]], i64 [[TMP33]]
 ; PROFITABLE-NEXT:    [[TMP36:%.*]] = getelementptr double, ptr [[TMP34]], i32 0
-; PROFITABLE-NEXT:    [[TMP37:%.*]] = mul i32 [[TMP32]], 6
+; PROFITABLE-NEXT:    [[TMP37:%.*]] = mul nuw nsw i32 [[TMP32]], 6
 ; PROFITABLE-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 6 x double> @llvm.vp.load.nxv6f64.p0(ptr align 8 [[TMP36]], <vscale x 6 x i1> shufflevector (<vscale x 6 x i1> insertelement (<vscale x 6 x i1> poison, i1 true, i64 0), <vscale x 6 x i1> poison, <vscale x 6 x i32> zeroinitializer), i32 [[TMP37]])
 ; PROFITABLE-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } @llvm.experimental.vector.deinterleave6.nxv6f64(<vscale x 6 x double> [[WIDE_MASKED_LOAD]])
 ; PROFITABLE-NEXT:    [[TMP38:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 0
@@ -100,7 +100,7 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; PROFITABLE-NEXT:    [[TMP42:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 4
 ; PROFITABLE-NEXT:    [[TMP43:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS]], 5
 ; PROFITABLE-NEXT:    [[TMP44:%.*]] = getelementptr double, ptr [[TMP35]], i32 0
-; PROFITABLE-NEXT:    [[TMP45:%.*]] = mul i32 [[TMP32]], 6
+; PROFITABLE-NEXT:    [[TMP45:%.*]] = mul nuw nsw i32 [[TMP32]], 6
 ; PROFITABLE-NEXT:    [[WIDE_MASKED_LOAD22:%.*]] = call <vscale x 6 x double> @llvm.vp.load.nxv6f64.p0(ptr align 8 [[TMP44]], <vscale x 6 x i1> shufflevector (<vscale x 6 x i1> insertelement (<vscale x 6 x i1> poison, i1 true, i64 0), <vscale x 6 x i1> poison, <vscale x 6 x i32> zeroinitializer), i32 [[TMP45]])
 ; PROFITABLE-NEXT:    [[DEINTERLEAVED_RESULTS23:%.*]] = call { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } @llvm.experimental.vector.deinterleave6.nxv6f64(<vscale x 6 x double> [[WIDE_MASKED_LOAD22]])
 ; PROFITABLE-NEXT:    [[TMP46:%.*]] = extractvalue { <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double>, <vscale x 1 x double> } [[DEINTERLEAVED_RESULTS23]], 0
@@ -124,7 +124,7 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; PROFITABLE-NEXT:    [[VP_OP34:%.*]] = call <vscale x 1 x double> @llvm.vp.fadd.nxv1f64(<vscale x 1 x double> [[VP_OP33]], <vscale x 1 x double> [[TMP43]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP32]])
 ; PROFITABLE-NEXT:    [[TMP53:%.*]] = getelementptr double, ptr [[TMP52]], i32 -5
 ; PROFITABLE-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 6 x double> @llvm.experimental.vector.interleave6.nxv6f64(<vscale x 1 x double> [[VP_OP24]], <vscale x 1 x double> [[VP_OP26]], <vscale x 1 x double> [[VP_OP28]], <vscale x 1 x double> [[VP_OP30]], <vscale x 1 x double> [[VP_OP32]], <vscale x 1 x double> [[VP_OP34]])
-; PROFITABLE-NEXT:    [[TMP54:%.*]] = mul i32 [[TMP32]], 6
+; PROFITABLE-NEXT:    [[TMP54:%.*]] = mul nuw nsw i32 [[TMP32]], 6
 ; PROFITABLE-NEXT:    call void @llvm.vp.store.nxv6f64.p0(<vscale x 6 x double> [[INTERLEAVED_VEC]], ptr align 8 [[TMP53]], <vscale x 6 x i1> shufflevector (<vscale x 6 x i1> insertelement (<vscale x 6 x i1> poison, i1 true, i64 0), <vscale x 6 x i1> poison, <vscale x 6 x i32> zeroinitializer), i32 [[TMP54]])
 ; PROFITABLE-NEXT:    [[TMP55:%.*]] = zext i32 [[TMP32]] to i64
 ; PROFITABLE-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP55]], [[EVL_BASED_IV]]

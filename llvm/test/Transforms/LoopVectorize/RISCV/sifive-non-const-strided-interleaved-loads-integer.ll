@@ -1332,7 +1332,7 @@ define void @x264_pixel_satd_8x4(ptr %pix1, i32 %i_pix1, ptr %pix2, i32 %i_pix2,
 ; CHECK-NEXT:    [[TMP40:%.*]] = getelementptr inbounds [4 x i32], ptr [[TMP]], i64 [[TMP5]], i64 3
 ; CHECK-NEXT:    [[TMP41:%.*]] = getelementptr inbounds i32, ptr [[TMP40]], i32 -3
 ; CHECK-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <vscale x 4 x i32> @llvm.experimental.vector.interleave4.nxv4i32(<vscale x 1 x i32> [[VP_OP61]], <vscale x 1 x i32> [[VP_OP63]], <vscale x 1 x i32> [[VP_OP62]], <vscale x 1 x i32> [[VP_OP64]])
-; CHECK-NEXT:    [[TMP42:%.*]] = mul i32 [[TMP4]], 4
+; CHECK-NEXT:    [[TMP42:%.*]] = mul nuw nsw i32 [[TMP4]], 4
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv4i32.p0(<vscale x 4 x i32> [[INTERLEAVED_VEC]], ptr align 4 [[TMP41]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP42]])
 ; CHECK-NEXT:    [[TMP43:%.*]] = zext i32 [[TMP4]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP43]], [[EVL_BASED_IV]]
@@ -1629,7 +1629,7 @@ define void @x264_pixel_satd_8x4(ptr %pix1, i32 %i_pix1, ptr %pix2, i32 %i_pix2,
 ; CHECK-NEXT:    [[TMP121:%.*]] = getelementptr inbounds [4 x i32], ptr [[TMP]], i64 [[TMP98]], i64 3
 ; CHECK-NEXT:    [[TMP122:%.*]] = getelementptr inbounds i32, ptr [[TMP121]], i32 -3
 ; CHECK-NEXT:    [[INTERLEAVED_VEC265:%.*]] = call <vscale x 4 x i32> @llvm.experimental.vector.interleave4.nxv4i32(<vscale x 1 x i32> [[VP_OP261]], <vscale x 1 x i32> [[VP_OP263]], <vscale x 1 x i32> [[VP_OP262]], <vscale x 1 x i32> [[VP_OP264]])
-; CHECK-NEXT:    [[TMP123:%.*]] = mul i32 [[TMP97]], 4
+; CHECK-NEXT:    [[TMP123:%.*]] = mul nuw nsw i32 [[TMP97]], 4
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv4i32.p0(<vscale x 4 x i32> [[INTERLEAVED_VEC265]], ptr align 4 [[TMP122]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP123]])
 ; CHECK-NEXT:    [[TMP124:%.*]] = zext i32 [[TMP97]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT266]] = add i64 [[TMP124]], [[EVL_BASED_IV217]]
