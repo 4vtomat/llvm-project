@@ -4603,10 +4603,20 @@ Action *Driver::BuildOffloadingActions(Compilation &C,
 
     // Get the product of all bound architectures and toolchains.
     SmallVector<std::pair<const ToolChain *, StringRef>> TCAndArchs;
+#ifdef SIFIVE_CUSTOMIZATION
+    for (const ToolChain *TC : ToolChains) {
+      llvm::DenseSet<StringRef> Arches = getOffloadArchs(C, Args, Kind, TC);
+      SmallVector<StringRef, 0> Sorted(Arches.begin(), Arches.end());
+      llvm::sort(Sorted);
+      for (StringRef Arch : Sorted)
+        TCAndArchs.push_back(std::make_pair(TC, Arch));
+    }
+#else
     for (const ToolChain *TC : ToolChains)
       for (StringRef Arch : getOffloadArchs(C, Args, Kind, TC))
         TCAndArchs.push_back(std::make_pair(TC, Arch));
     llvm::sort(TCAndArchs, llvm::less_second());
+#endif // SIFIVE_CUSTOMIZATION
 
     for (unsigned I = 0, E = TCAndArchs.size(); I != E; ++I)
       DeviceActions.push_back(C.MakeAction<InputAction>(*InputArg, InputType));
