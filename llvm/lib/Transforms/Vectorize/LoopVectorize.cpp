@@ -4050,7 +4050,7 @@ void InnerLoopVectorizer::fixupIVUsers(PHINode *OrigPhi,
   // The simplest way to get this is to recompute it from the constituent SCEVs,
   // that is Start + (Step * (CRD - 1)).
   for (User *U : OrigPhi->users()) {
-    Instruction *UI = cast<Instruction>(U);
+    auto *UI = cast<Instruction>(U);
     if (!OrigLoop->contains(UI)) {
       assert(isa<PHINode>(UI) && "Expected LCSSA form");
       IRBuilder<> B(MiddleBlock->getTerminator());
