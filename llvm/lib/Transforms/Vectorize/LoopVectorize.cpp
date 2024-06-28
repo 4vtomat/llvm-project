@@ -3722,18 +3722,15 @@ void InnerLoopVectorizer::createVectorLoopSkeleton(StringRef Prefix) {
   //    exit block.  completeLoopSkeleton will update the condition to use an
   //    iteration check, if required to decide whether to execute the remainder.
   BranchInst *BrInst =
-      Cost->requiresScalarEpilogue(VF.isVector())
-          ? BranchInst::Create(LoopScalarPreHeader)
 #if SIFIVE_CUSTOMIZATION
       // Use unconditional branch for tail-folding cases to remove dependency
       // between scalar loop and vector loop
-      : useVLAVectorizer() && Cost->foldTailByMasking()
-          ? BranchInst::Create(LoopExitBlock)
-          : BranchInst::Create(LoopExitBlock, LoopScalarPreHeader,
-                               Builder.getTrue());
+      useVLAVectorizer() && Cost->foldTailByMasking()
+        ? BranchInst::Create(LoopExitBlock)
+        : BranchInst::Create(LoopExitBlock, LoopScalarPreHeader,
+                             Builder.getTrue());
 #else
-          : BranchInst::Create(LoopExitBlock, LoopScalarPreHeader,
-                               Builder.getTrue());
+      BranchInst::Create(LoopExitBlock, LoopScalarPreHeader, Builder.getTrue());
 #endif // SIFIVE_CUSTOMIZATION
   auto *ScalarLatchTerm = OrigLoop->getLoopLatch()->getTerminator();
   BrInst->setDebugLoc(ScalarLatchTerm->getDebugLoc());
