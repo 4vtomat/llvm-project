@@ -9,6 +9,9 @@
 #ifndef LLVM_CLANG_TOOLS_EXTRA_CLANGD_INDEX_REMOTE_CLIENT_H
 #define LLVM_CLANG_TOOLS_EXTRA_CLANGD_INDEX_REMOTE_CLIENT_H
 
+#ifdef SIFIVE_CUSTOMIZATION
+#include "index/Index.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/ADT/StringRef.h"
 
 #include <memory>
@@ -16,7 +19,10 @@
 namespace clang {
 namespace clangd {
 
+#ifdef SIFIVE_CUSTOMIZATION
+#else
 class SymbolIndex;
+#endif // SIFIVE_CUSTOMIZATION  
 
 namespace remote {
 
