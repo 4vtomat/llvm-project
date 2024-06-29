@@ -561,6 +561,8 @@ namespace {
     SDValue visitFMULForFMADistributiveCombine(SDNode *N);
 
 #if SIFIVE_CUSTOMIZATION
+    SDValue visitVPABS(SDNode *N);
+    SDValue visitVPTRUNCATE(SDNode *N);
     SDValue visitVPXOR(SDNode *N);
     SDValue visitVPFDIV(SDNode *N);
     SDValue visitVPFMUL(SDNode *N);
@@ -621,7 +623,10 @@ namespace {
     SDValue foldLogicOfSetCCs(bool IsAnd, SDValue N0, SDValue N1,
                               const SDLoc &DL);
     SDValue foldSubToUSubSat(EVT DstVT, SDNode *N, const SDLoc &DL);
+#if SIFIVE_CUSTOMIZATION
+    template <class MatchContextClass = EmptyMatchContext>
     SDValue foldABSToABD(SDNode *N, const SDLoc &DL);
+#endif // SIFIVE_CUSTOMIZATION
     SDValue unfoldMaskedMerge(SDNode *N);
     SDValue unfoldExtremeBitClearingToShifts(SDNode *N);
     SDValue SimplifySetCC(EVT VT, SDValue N0, SDValue N1, ISD::CondCode Cond,
@@ -11047,20 +11052,31 @@ SDValue DAGCombiner::visitSHLSAT(SDNode *N) {
 // (ABS (SUB (EXTEND a), (EXTEND b))).
 // (TRUNC (ABS (SUB (EXTEND a), (EXTEND b)))).
 // Generates UABD/SABD instruction.
+#if SIFIVE_CUSTOMIZATION
+template <class MatchContextClass>
+#endif // SIFIVE_CUSTOMIZATION
 SDValue DAGCombiner::foldABSToABD(SDNode *N, const SDLoc &DL) {
+#if SIFIVE_CUSTOMIZATION
+  const TargetLowering &TLI = DAG.getTargetLoweringInfo();
+  MatchContextClass matcher(DAG, TLI, N);
+#endif // SIFIVE_CUSTOMIZATION
   EVT SrcVT = N->getValueType(0);
 
   if (N->getOpcode() == ISD::TRUNCATE)
     N = N->getOperand(0).getNode();
 
-  if (N->getOpcode() != ISD::ABS)
+#if SIFIVE_CUSTOMIZATION
+  if (!matcher.match(SDValue(N, 0), ISD::ABS))
+#endif // SIFIVE_CUSTOMIZATION
     return SDValue();
 
   EVT VT = N->getValueType(0);
   SDValue AbsOp1 = N->getOperand(0);
   SDValue Op0, Op1;
 
-  if (AbsOp1.getOpcode() != ISD::SUB)
+#if SIFIVE_CUSTOMIZATION
+  if (!matcher.match(AbsOp1, ISD::SUB))
+#endif // SIFIVE_CUSTOMIZATION
     return SDValue();
 
   Op0 = AbsOp1.getOperand(0);
@@ -11071,13 +11087,19 @@ SDValue DAGCombiner::foldABSToABD(SDNode *N, const SDLoc &DL) {
   // Check if the operands of the sub are (zero|sign)-extended.
   // TODO: Should we use ValueTracking instead?
   if (Opc0 != Op1.getOpcode() ||
-      (Opc0 != ISD::ZERO_EXTEND && Opc0 != ISD::SIGN_EXTEND &&
+#if SIFIVE_CUSTOMIZATION
+      (!matcher.match(Op0, ISD::ZERO_EXTEND) &&
+       !matcher.match(Op0, ISD::SIGN_EXTEND) &&
+#endif // SIFIVE_CUSTOMIZATION
        Opc0 != ISD::SIGN_EXTEND_INREG)) {
     // fold (abs (sub nsw x, y)) -> abds(x, y)
-    if (AbsOp1->getFlags().hasNoSignedWrap() && hasOperation(ISD::ABDS, VT) &&
+    if (AbsOp1->getFlags().hasNoSignedWrap() &&
+#if SIFIVE_CUSTOMIZATION
+        matcher.isOperationLegalOrCustom(ISD::ABDS, VT, LegalOperations) &&
         TLI.preferABDSToABSWithNSW(VT)) {
-      SDValue ABD = DAG.getNode(ISD::ABDS, DL, VT, Op0, Op1);
-      return DAG.getZExtOrTrunc(ABD, DL, SrcVT);
+      SDValue ABD = matcher.getNode(ISD::ABDS, DL, VT, Op0, Op1);
+      return matcher.getZExtOrTrunc(ABD, DL, SrcVT);
+#endif // SIFIVE_CUSTOMIZATION
     }
     return SDValue();
   }
@@ -11090,25 +11112,33 @@ SDValue DAGCombiner::foldABSToABD(SDNode *N, const SDLoc &DL) {
     VT0 = Op0.getOperand(0).getValueType();
     VT1 = Op1.getOperand(0).getValueType();
   }
-  unsigned ABDOpcode = (Opc0 == ISD::ZERO_EXTEND) ? ISD::ABDU : ISD::ABDS;
+#if SIFIVE_CUSTOMIZATION
+  unsigned ABDOpcode =
+      matcher.match(Op0, ISD::ZERO_EXTEND) ? ISD::ABDU : ISD::ABDS;
+#endif // SIFIVE_CUSTOMIZATION
 
   // fold abs(sext(x) - sext(y)) -> zext(abds(x, y))
   // fold abs(zext(x) - zext(y)) -> zext(abdu(x, y))
   EVT MaxVT = VT0.bitsGT(VT1) ? VT0 : VT1;
   if ((VT0 == MaxVT || Op0->hasOneUse()) &&
-      (VT1 == MaxVT || Op1->hasOneUse()) && hasOperation(ABDOpcode, MaxVT)) {
-    SDValue ABD = DAG.getNode(ABDOpcode, DL, MaxVT,
-                              DAG.getNode(ISD::TRUNCATE, DL, MaxVT, Op0),
-                              DAG.getNode(ISD::TRUNCATE, DL, MaxVT, Op1));
-    ABD = DAG.getNode(ISD::ZERO_EXTEND, DL, VT, ABD);
-    return DAG.getZExtOrTrunc(ABD, DL, SrcVT);
+      (VT1 == MaxVT || Op1->hasOneUse()) &&
+#if SIFIVE_CUSTOMIZATION
+      matcher.isOperationLegalOrCustom(ABDOpcode, MaxVT, LegalOperations)) {
+    SDValue ABD = matcher.getNode(
+        ABDOpcode, DL, MaxVT, matcher.getNode(ISD::TRUNCATE, DL, MaxVT, Op0),
+        matcher.getNode(ISD::TRUNCATE, DL, MaxVT, Op1));
+    ABD = matcher.getNode(ISD::ZERO_EXTEND, DL, VT, ABD);
+    return matcher.getZExtOrTrunc(ABD, DL, SrcVT);
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   // fold abs(sext(x) - sext(y)) -> abds(sext(x), sext(y))
   // fold abs(zext(x) - zext(y)) -> abdu(zext(x), zext(y))
-  if (hasOperation(ABDOpcode, VT)) {
-    SDValue ABD = DAG.getNode(ABDOpcode, DL, VT, Op0, Op1);
-    return DAG.getZExtOrTrunc(ABD, DL, SrcVT);
+#if SIFIVE_CUSTOMIZATION
+  if (matcher.isOperationLegalOrCustom(ABDOpcode, VT, LegalOperations)) {
+    SDValue ABD = matcher.getNode(ABDOpcode, DL, VT, Op0, Op1);
+    return matcher.getZExtOrTrunc(ABD, DL, SrcVT);
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   return SDValue();
@@ -26812,6 +26842,33 @@ SDValue DAGCombiner::visitVECREDUCE(SDNode *N) {
 }
 
 #if SIFIVE_CUSTOMIZATION
+SDValue DAGCombiner::visitVPABS(SDNode *N) {
+  return foldABSToABD<VPMatchContext>(N, SDLoc(N));
+}
+
+SDValue DAGCombiner::visitVPTRUNCATE(SDNode *N) {
+  SDValue N0 = N->getOperand(0);
+  SDValue Mask = N->getOperand(1);
+  SDValue VL = N->getOperand(2);
+  EVT VT = N->getValueType(0);
+  SDLoc DL(N);
+
+  // fold (truncate (ext x)) -> (ext x) or (truncate x) or x
+  if (N0.getOpcode() == ISD::VP_ZERO_EXTEND ||
+      N0.getOpcode() == ISD::VP_SIGN_EXTEND) {
+    // if the source is smaller than the dest, we still need an extend.
+    if (N0.getOperand(0).getValueType().bitsLT(VT))
+      return DAG.getNode(N0.getOpcode(), DL, VT, N0.getOperand(0), Mask, VL);
+    // if the source is larger than the dest, than we just need the truncate.
+    if (N0.getOperand(0).getValueType().bitsGT(VT))
+      return DAG.getNode(ISD::VP_TRUNCATE, DL, VT, N0.getOperand(0), Mask, VL);
+    // if the source and dest are the same type, we can drop both the extend
+    // and the truncate.
+    return N0.getOperand(0);
+  }
+  return SDValue();
+}
+
 SDValue DAGCombiner::visitVPXOR(SDNode *N) {
   // Fold:
   //    vp.xor(vp.setcc(X, Y, CC, MASK, VL), ALLONES, MASK, VL) ->
@@ -27535,6 +27592,10 @@ SDValue DAGCombiner::visitVPOp(SDNode *N) {
     case ISD::VP_FSUB:
       return visitVP_FSUB(N);
 #if SIFIVE_CUSTOMIZATION
+    case ISD::VP_ABS:
+      return visitVPABS(N);
+    case ISD::VP_TRUNCATE:
+      return visitVPTRUNCATE(N);
     case ISD::VP_XOR:
       return visitVPXOR(N);
     case ISD::VP_FDIV:

@@ -736,6 +736,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         ISD::VP_SMAX,        ISD::VP_UMIN,        ISD::VP_UMAX,
 #if SIFIVE_CUSTOMIZATION
         ISD::VP_MULHU, ISD::VP_MULHS, ISD::EXPERIMENTAL_VP_SPLICE,
+        ISD::VP_ABDS, ISD::VP_ABDU,
 #endif // SIFIVE_CUSTOMIZATION
         ISD::VP_ABS, ISD::EXPERIMENTAL_VP_REVERSE, ISD::EXPERIMENTAL_VP_SPLICE,
         ISD::VP_SADDSAT,     ISD::VP_UADDSAT,     ISD::VP_SSUBSAT,
@@ -7344,6 +7345,24 @@ SDValue RISCVTargetLowering::LowerOperation(SDValue Op,
   case ISD::VP_ABS:
     return lowerABS(Op, DAG);
 #if SIFIVE_CUSTOMIZATION
+  case ISD::VP_ABDS:
+  case ISD::VP_ABDU: {
+    SDLoc DL(Op);
+    EVT VT = Op->getValueType(0);
+    SDValue LHS = DAG.getFreeze(Op->getOperand(0));
+    SDValue RHS = DAG.getFreeze(Op->getOperand(1));
+    SDValue Mask = Op->getOperand(2);
+    SDValue VL = Op->getOperand(3);
+    bool IsSigned = Op->getOpcode() == ISD::VP_ABDS;
+
+    // abds(lhs, rhs) -> sub(smax(lhs,rhs), smin(lhs,rhs))
+    // abdu(lhs, rhs) -> sub(umax(lhs,rhs), umin(lhs,rhs))
+    unsigned MaxOpc = IsSigned ? ISD::VP_SMAX : ISD::VP_UMAX;
+    unsigned MinOpc = IsSigned ? ISD::VP_SMIN : ISD::VP_UMIN;
+    SDValue Max = DAG.getNode(MaxOpc, DL, VT, LHS, RHS, Mask, VL);
+    SDValue Min = DAG.getNode(MinOpc, DL, VT, LHS, RHS, Mask, VL);
+    return DAG.getNode(ISD::VP_SUB, DL, VT, Max, Min, Mask, VL);
+  }
   case ISD::SSHLSAT:
   case ISD::USHLSAT: {
     SDLoc DL(Op);
