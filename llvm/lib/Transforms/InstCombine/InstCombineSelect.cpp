@@ -3685,6 +3685,9 @@ Instruction *InstCombinerImpl::visitSelectInst(SelectInst &SI) {
   auto *TI = dyn_cast<Instruction>(TrueVal);
   auto *FI = dyn_cast<Instruction>(FalseVal);
   if (TI && FI && TI->getOpcode() == FI->getOpcode())
+#if SIFIVE_CUSTOMIZATION
+    if (!SI.hasOneUse() || !isa<LoadInst>(SI.user_back()))
+#endif // SIFIVE_CUSTOMIZATION
     if (Instruction *IV = foldSelectOpOp(SI, TI, FI))
       return IV;
 
