@@ -894,9 +894,8 @@ foreach mx = SchedMxList in {
     defm "" : LMULWriteResMX<"WriteVAESMVV",  [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVAESKF1V", [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVAESKF2V", [SiFiveP400VEXQ0], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVAESZV",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
-  let Latency = 1, ReleaseAtCycles = [LMulLat] in
-  defm "" : LMULWriteResMX<"WriteVAESZV",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
   // Zvksed
   let Latency = 3, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVSM4KV",   [SiFiveP400VEXQ0], mx, IsWorstCase>;

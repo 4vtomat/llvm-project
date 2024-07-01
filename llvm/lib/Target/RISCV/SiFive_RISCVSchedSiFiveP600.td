@@ -820,9 +820,8 @@ foreach mx = SchedMxList in {
     defm "" : LMULWriteResMX<"WriteVAESMVV",  [SiFiveP600VectorArith], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVAESKF1V", [SiFiveP600VectorArith], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVAESKF2V", [SiFiveP600VectorArith], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVAESZV",   [SiFiveP600VectorArith], mx, IsWorstCase>;
   }
-  let Latency = 1, ReleaseAtCycles = [LMulLat] in
-  defm "" : LMULWriteResMX<"WriteVAESZV",   [SiFiveP600VectorArith], mx, IsWorstCase>;
   // Zvksed
   let Latency = 3, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVSM4KV",   [SiFiveP600VEXQ0], mx, IsWorstCase>;

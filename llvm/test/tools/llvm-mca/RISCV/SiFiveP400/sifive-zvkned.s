@@ -60,7 +60,7 @@ vaesz.vs   v8, v16
 
 # CHECK:      Iterations:        1
 # CHECK-NEXT: Instructions:      50
-# CHECK-NEXT: Total Cycles:      141
+# CHECK-NEXT: Total Cycles:      142
 # CHECK-NEXT: Total uOps:        50
 
 # CHECK:      Dispatch Width:    3
@@ -86,7 +86,7 @@ vaesz.vs   v8, v16
 # CHECK-NEXT:  1      2     1.00                        vaesdm.vs	v4, v8
 # CHECK-NEXT:  1      2     1.00                        vaeskf1.vi	v4, v8, 8
 # CHECK-NEXT:  1      2     1.00                        vaeskf2.vi	v4, v8, 8
-# CHECK-NEXT:  1      1     1.00                        vaesz.vs	v4, v8
+# CHECK-NEXT:  1      2     1.00                        vaesz.vs	v4, v8
 # CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e32, m1, tu, mu
 # CHECK-NEXT:  1      2     1.00                        vaesef.vv	v4, v8
 # CHECK-NEXT:  1      2     1.00                        vaesef.vs	v4, v8
@@ -96,7 +96,7 @@ vaesz.vs   v8, v16
 # CHECK-NEXT:  1      2     1.00                        vaesdm.vs	v4, v8
 # CHECK-NEXT:  1      2     1.00                        vaeskf1.vi	v4, v8, 8
 # CHECK-NEXT:  1      2     1.00                        vaeskf2.vi	v4, v8, 8
-# CHECK-NEXT:  1      1     1.00                        vaesz.vs	v4, v8
+# CHECK-NEXT:  1      2     1.00                        vaesz.vs	v4, v8
 # CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e32, m2, tu, mu
 # CHECK-NEXT:  1      2     2.00                        vaesef.vv	v4, v8
 # CHECK-NEXT:  1      2     2.00                        vaesef.vs	v4, v8
@@ -106,7 +106,7 @@ vaesz.vs   v8, v16
 # CHECK-NEXT:  1      2     2.00                        vaesdm.vs	v4, v8
 # CHECK-NEXT:  1      2     2.00                        vaeskf1.vi	v4, v8, 8
 # CHECK-NEXT:  1      2     2.00                        vaeskf2.vi	v4, v8, 8
-# CHECK-NEXT:  1      1     2.00                        vaesz.vs	v4, v8
+# CHECK-NEXT:  1      2     2.00                        vaesz.vs	v4, v8
 # CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e32, m4, tu, mu
 # CHECK-NEXT:  1      2     4.00                        vaesef.vv	v4, v8
 # CHECK-NEXT:  1      2     4.00                        vaesef.vs	v4, v8
@@ -116,7 +116,7 @@ vaesz.vs   v8, v16
 # CHECK-NEXT:  1      2     4.00                        vaesdm.vs	v4, v8
 # CHECK-NEXT:  1      2     4.00                        vaeskf1.vi	v4, v8, 8
 # CHECK-NEXT:  1      2     4.00                        vaeskf2.vi	v4, v8, 8
-# CHECK-NEXT:  1      1     4.00                        vaesz.vs	v4, v8
+# CHECK-NEXT:  1      2     4.00                        vaesz.vs	v4, v8
 # CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e32, m8, tu, mu
 # CHECK-NEXT:  1      2     8.00                        vaesef.vv	v8, v16
 # CHECK-NEXT:  1      2     8.00                        vaesef.vs	v8, v16
@@ -126,7 +126,7 @@ vaesz.vs   v8, v16
 # CHECK-NEXT:  1      2     8.00                        vaesdm.vs	v8, v16
 # CHECK-NEXT:  1      2     8.00                        vaeskf1.vi	v8, v16, 8
 # CHECK-NEXT:  1      2     8.00                        vaeskf2.vi	v8, v16, 8
-# CHECK-NEXT:  1      1     8.00                        vaesz.vs	v8, v16
+# CHECK-NEXT:  1      2     8.00                        vaesz.vs	v8, v16
 
 # CHECK:      Resources:
 # CHECK-NEXT: [0]   - SiFiveP400Div
