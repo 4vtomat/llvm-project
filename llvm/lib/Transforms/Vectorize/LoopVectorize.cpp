@@ -6283,9 +6283,7 @@ static void emitInvalidCostRemarks(SmallVector<InstructionVFPair> InvalidCosts,
   } while (!Tail.empty());
 }
 
-<<<<<<< HEAD
-VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor(
-    const ElementCountSet &VFCandidates) {
+VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
 #if SIFIVE_CUSTOMIZATION
   // Within SiFive, we have AOS to SOA transformation that is only effective
   // during LTO phase. The LoopVectorizer is executed both in pre-link and LTO.
@@ -6300,44 +6298,30 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor(
     return VectorizationFactor::Disabled();
   }
 #endif
-=======
-VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
->>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
   InstructionCost ExpectedCost =
       CM.expectedCost(ElementCount::getFixed(1)).first;
   LLVM_DEBUG(dbgs() << "LV: Scalar loop costs: " << ExpectedCost << ".\n");
   assert(ExpectedCost.isValid() && "Unexpected invalid cost for scalar loop");
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  assert((Hints.isFixedVectorizationDisabled() ||
-          VFCandidates.count(ElementCount::getFixed(1))) &&
-=======
   assert(any_of(VPlans,
                 [](std::unique_ptr<VPlan> &P) {
                   return P->hasVF(ElementCount::getFixed(1));
                 }) &&
->>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
          "Expected Scalar VF to be a candidate");
-#endif // SIFIVE_CUSTOMIZATION
 
   const VectorizationFactor ScalarCost(ElementCount::getFixed(1), ExpectedCost,
                                        ExpectedCost);
   VectorizationFactor ChosenFactor = ScalarCost;
 
   bool ForceVectorization = Hints.getForce() == LoopVectorizeHints::FK_Enabled;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (ForceVectorization &&
-      (VFCandidates.size() > 1 || Hints.isFixedVectorizationDisabled())) {
+      (VPlans.size() > 1 || Hints.isFixedVectorizationDisabled())) {
     // If fixed vectorization is disabled, the VFCandidates will not contain VF
     // = 1.
 #else
-  if (ForceVectorization && VFCandidates.size() > 1) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
   if (ForceVectorization &&
       (VPlans.size() > 1 || !VPlans[0]->hasScalarVFOnly())) {
->>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
+#endif // SIFIVE_CUSTOMIZATION
     // Ignore scalar width, because the user explicitly wants vectorization.
     // Initialize cost to max so that VF = 2 is, at least, chosen during cost
     // evaluation.
@@ -6350,7 +6334,6 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
   }
 
   SmallVector<InstructionVFPair> InvalidCosts;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   unsigned SmallestTypeSize, WidestTypeSize;
   std::tie(SmallestTypeSize, WidestTypeSize) = CM.getSmallestAndWidestTypes();
@@ -6358,10 +6341,11 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
       SiFiveLoopVectorizerUseVPlanBasedCostModel && Legal->useVLAVectorizer();
 #endif
 
-  for (const auto &i : VFCandidates) {
-    // The cost for scalar VF=1 is already calculated, so ignore it.
-    if (i.isScalar())
-      continue;
+  for (auto &P : VPlans) {
+    for (ElementCount VF : P->vectorFactors()) {
+      // The cost for scalar VF=1 is already calculated, so ignore it.
+      if (VF.isScalar())
+        continue;
 
 #if SIFIVE_CUSTOMIZATION
     // Notice that the vector loop needs to be executed less times, so
@@ -6374,40 +6358,29 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
     // scalar loop.
     LoopVectorizationCostModel::VectorizationCostTy C;
     if (UseVPlanCostModel) {
-      VPlanCostModel VPCM(getBestPlanFor(i), *Legal, TTI, *TLI);
+      VPlanCostModel VPCM(getBestPlanFor(VF), *Legal, TTI, *TLI);
       InstructionCost Cost = VPCM.getCost(
-          RVVPair::get(CM.WidestType, i, PSE.getSE()->getDataLayout()));
+          RVVPair::get(CM.WidestType, VF, PSE.getSE()->getDataLayout()));
       C = {Cost, true};
     } else {
-      C = CM.expectedCost(i, &InvalidCosts);
+      C = CM.expectedCost(VF, &InvalidCosts);
     }
     if (!C.first.isValid()) {
-      LLVM_DEBUG(dbgs() << "LV: Vector loop of width " << i
+      LLVM_DEBUG(dbgs() << "LV: Vector loop of width " << VF
                         << " yields an invalid cost. Skipping\n");
       continue;
     }
     VPCostContext Ctx{&TTI};
     InstructionCost Overhead = 0;
     if (Legal->useVLAVectorizer() &&
-        !VectorizerDisableReduceOverheadEstimation && i.isVector())
-      Overhead = getBestPlanFor(i).overhead(i, Ctx);
-    VectorizationFactor Candidate(i, C.first, ScalarCost.ScalarCost, Overhead);
+        !VectorizerDisableReduceOverheadEstimation && VF.isVector())
+      Overhead = getBestPlanFor(VF).overhead(VF, Ctx);
+    VectorizationFactor Candidate(VF, C.first, ScalarCost.ScalarCost, Overhead);
 #else
     LoopVectorizationCostModel::VectorizationCostTy C =
         CM.expectedCost(i, &InvalidCosts);
     VectorizationFactor Candidate(i, C.first, ScalarCost.ScalarCost);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  for (auto &P : VPlans) {
-    for (ElementCount VF : P->vectorFactors()) {
-      // The cost for scalar VF=1 is already calculated, so ignore it.
-      if (VF.isScalar())
-        continue;
-
-      LoopVectorizationCostModel::VectorizationCostTy C =
-          CM.expectedCost(VF, &InvalidCosts);
-      VectorizationFactor Candidate(VF, C.first, ScalarCost.ScalarCost);
->>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 
 #ifndef NDEBUG
       unsigned AssumedMinimumVscale =
@@ -6631,15 +6604,11 @@ std::pair<unsigned, unsigned>
 LoopVectorizationCostModel::getSmallestAndWidestTypes() {
   unsigned MinWidth = -1U;
   unsigned MaxWidth = 8;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   SmallestType = nullptr;
   WidestType = Type::getInt8Ty(TheFunction->getContext());
 #endif // SIFIVE_CUSTOMIZATION
-  const DataLayout &DL = TheFunction->getParent()->getDataLayout();
-=======
   const DataLayout &DL = TheFunction->getDataLayout();
->>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
   // For in-loop reductions, no element types are added to ElementTypesInLoop
   // if there are no loads/stores in the loop. In this case, check through the
   // reduction variables to determine the maximum width.
