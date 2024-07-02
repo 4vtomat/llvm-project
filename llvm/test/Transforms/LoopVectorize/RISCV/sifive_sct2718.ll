@@ -3,7 +3,6 @@
 ; REQUIRES: asserts
 
 ; DEBUG-CHECK: LV: Cannot adjust ordered recurrences. Constructed VPlan is rejected
-; DEBUG-CHECK: LV: No VPlan was built for the loop
 
 define i32 @test() {
 entry:

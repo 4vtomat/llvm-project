@@ -58,6 +58,7 @@ define dso_local signext i16 @foo(i16* nocapture readonly %ptr, i32 signext %sta
 ; CHECK-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]], !dbg [[DBG11]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !dbg [[DBG11]], !llvm.loop [[LOOP20:![0-9]+]]
 ; CHECK:       middle.block:
+; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP0]], [[N_VEC]], !dbg [[DBG10]]
 ; CHECK-NEXT:    [[TMP18:%.*]] = trunc <8 x i32> [[TMP15]] to <8 x i16>, !dbg [[DBG10]]
 ; CHECK-NEXT:    [[TMP19:%.*]] = trunc <8 x i32> [[TMP16]] to <8 x i16>, !dbg [[DBG10]]
 ; CHECK-NEXT:    [[BIN_RDX:%.*]] = add <8 x i16> [[TMP19]], [[TMP18]], !dbg [[DBG10]]
@@ -65,7 +66,6 @@ define dso_local signext i16 @foo(i16* nocapture readonly %ptr, i32 signext %sta
 ; CHECK-NEXT:    [[TMP21:%.*]] = trunc i32 [[START]] to i16, !dbg [[DBG10]]
 ; CHECK-NEXT:    [[TMP22:%.*]] = add i16 [[TMP21]], [[TMP20]], !dbg [[DBG10]]
 ; CHECK-NEXT:    [[TMP23:%.*]] = zext i16 [[TMP22]] to i32, !dbg [[DBG10]]
-; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP0]], [[N_VEC]], !dbg [[DBG10]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], label [[WHILE_END_LOOPEXIT:%.*]], label [[SCALAR_PH]], !dbg [[DBG10]]
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[WHILE_BODY_PREHEADER]] ]

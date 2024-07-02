@@ -3,6 +3,8 @@
 ; REQUIRES: asserts
 
 ; CHECK: LV: Scalarizing:  %exitcond.not = icmp eq i64 %iv.next, 1024
+; CHECK: LV: Loop does not require scalar epilogue
+; CHECK: LV: Loop does not require scalar epilogue
 ; CHECK-NEXT: VPlan 'Initial VPlan for VF={vscale x 1},UF={1}' {
 
 ; If this test sees the LV: Scalarizing debug message, then a call to

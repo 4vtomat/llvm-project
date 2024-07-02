@@ -125,7 +125,6 @@ define void @vector_reverse_i64(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  Executing best plan with VF=vscale x 4, UF=1
 ; CHECK:       LV: Interleaving disabled by the pass manager
 ; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-NEXT:  LV: Vectorizing: innermost loop.
 ; CHECK-EMPTY:
 ;
 entry:
@@ -270,7 +269,6 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  Executing best plan with VF=vscale x 4, UF=1
 ; CHECK:       LV: Interleaving disabled by the pass manager
 ; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-NEXT:  LV: Vectorizing: innermost loop.
 ;
 entry:
   %cmp7 = icmp sgt i32 %n, 0

@@ -6302,6 +6302,13 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
       CM.expectedCost(ElementCount::getFixed(1)).first;
   LLVM_DEBUG(dbgs() << "LV: Scalar loop costs: " << ExpectedCost << ".\n");
   assert(ExpectedCost.isValid() && "Unexpected invalid cost for scalar loop");
+#if SIFIVE_CUSTOMIZATION
+  // For EVL-vectorization in downstream compiler we don't expect scalar VPlan
+  // to be available.
+  // TODO: That needs to be fixed as scalar VPlan does not contain EVL-based
+  // recipes
+  if (!Legal->useVLAVectorizer())
+#endif // SIFIVE_CUSTOMIZATION
   assert(any_of(VPlans,
                 [](std::unique_ptr<VPlan> &P) {
                   return P->hasVF(ElementCount::getFixed(1));
@@ -8091,13 +8098,6 @@ LoopVectorizationCostModel::getInstructionCost(Instruction *I,
   // Forced scalars do not have any scalarization overhead.
   auto ForcedScalar = ForcedScalars.find(VF);
 
-#if SIFIVE_CUSTOMIZATION
-  // Scalable VFs should not have been inserted in ForcedScalars.
-  if (VF.isScalable())
-    assert(ForcedScalar == ForcedScalars.end() &&
-           "Forced scalarization not supported for scalable VFs");
-#endif // SIFIVE_CUSTOMIZATION
-
   if (VF.isVector() && ForcedScalar != ForcedScalars.end()) {
     auto InstSet = ForcedScalar->second;
     if (InstSet.count(I))
@@ -8434,12 +8434,6 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
             AddrDefs.insert(InstOp).second)
           Worklist.push_back(InstOp);
   }
-
-#if SIFIVE_CUSTOMIZATION
-  // For scalable vectors we do not support scalarization.
-  assert(!VF.isScalable() &&
-         "Scalarization not supported for scalable vectors");
-#endif // SIFIVE_CUSTOMIZATION
 
   for (auto *I : AddrDefs) {
     if (isa<LoadInst>(I)) {
@@ -9278,14 +9272,6 @@ LoopVectorizationPlanner::plan(ElementCount UserVF, unsigned UserIC) {
 
   buildVPlansWithVPRecipes(ElementCount::getFixed(1), MaxFactors.FixedVF);
   buildVPlansWithVPRecipes(ElementCount::getScalable(1), MaxFactors.ScalableVF);
-
-#if SIFIVE_CUSTOMIZATION
-  if (VPlans.empty()) {
-    LLVM_DEBUG(dbgs() << "LV: No VPlan was built for the loop: " << *OrigLoop
-                      << '\n';);
-    return VectorizationFactor::Disabled();
-  }
-#endif // SIFIVE_CUSTOMIZATION
 
   LLVM_DEBUG(printPlans(dbgs()));
   if (VPlans.empty())

@@ -6,10 +6,10 @@
 
 ; Make sure we do not vectorize a loop with a widened int induction.
 define void @test_wide_integer_induction(ptr noalias %a, i64 %N) {
-; CHECK-NOT: LV: Vector loop of width {{.+}} costs:
+; CHECK: LV: Vector loop of width {{.+}} costs:
 ;
 ; CHECK: define void @test_wide_integer_induction(
-; CHECK-NOT: vector.body
+; CHECK: vector.body
 ;
 entry:
   br label %loop

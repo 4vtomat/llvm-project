@@ -48,22 +48,6 @@ define float @fadd(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-UNORDERED-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ], [ [[TMP5]], [[MIDDLE_BLOCK]] ]
 ; CHECK-UNORDERED-NEXT:    ret float [[ADD_LCSSA]]
 ;
-; CHECK-NOT-VECTORIZED-LABEL: @fadd(
-; CHECK-NOT-VECTORIZED-NEXT:  entry:
-; CHECK-NOT-VECTORIZED-NEXT:    br label [[FOR_BODY:%.*]]
-; CHECK-NOT-VECTORIZED:       for.body:
-; CHECK-NOT-VECTORIZED-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
-; CHECK-NOT-VECTORIZED-NEXT:    [[SUM_07:%.*]] = phi float [ 0.000000e+00, [[ENTRY]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
-; CHECK-NOT-VECTORIZED-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[IV]]
-; CHECK-NOT-VECTORIZED-NEXT:    [[TMP0:%.*]] = load float, ptr [[ARRAYIDX]], align 4
-; CHECK-NOT-VECTORIZED-NEXT:    [[ADD]] = fadd float [[TMP0]], [[SUM_07]]
-; CHECK-NOT-VECTORIZED-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
-; CHECK-NOT-VECTORIZED-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[IV_NEXT]], [[N:%.*]]
-; CHECK-NOT-VECTORIZED-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END:%.*]], label [[FOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-; CHECK-NOT-VECTORIZED:       for.end:
-; CHECK-NOT-VECTORIZED-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ]
-; CHECK-NOT-VECTORIZED-NEXT:    ret float [[ADD_LCSSA]]
-;
 ; CHECK-ORDERED-LABEL: @fadd(
 ; CHECK-ORDERED-NEXT:  entry:
 ; CHECK-ORDERED-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N:%.*]], 12

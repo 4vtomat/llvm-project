@@ -41,10 +41,10 @@ define i32 @select_icmp_const_truncated_iv_widened_exit(ptr %a, i32 %n) {
 ; CHECK-VF4IC1-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-VF4IC1-NEXT:    br i1 [[TMP5]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-VF4IC1:       middle.block:
+; CHECK-VF4IC1-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[WIDE_TRIP_COUNT]], [[N_VEC]]
 ; CHECK-VF4IC1-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vector.reduce.smax.v4i32(<4 x i32> [[TMP4]])
 ; CHECK-VF4IC1-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i32 [[TMP6]], -2147483648
 ; CHECK-VF4IC1-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i32 [[TMP6]], i32 331
-; CHECK-VF4IC1-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[WIDE_TRIP_COUNT]], [[N_VEC]]
 ; CHECK-VF4IC1-NEXT:    br i1 [[CMP_N]], label [[EXIT_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-VF4IC1:       scalar.ph:
 ; CHECK-VF4IC1-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
@@ -120,13 +120,13 @@ define i32 @select_icmp_const_truncated_iv_widened_exit(ptr %a, i32 %n) {
 ; CHECK-VF4IC4-NEXT:    [[TMP20:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-VF4IC4-NEXT:    br i1 [[TMP20]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-VF4IC4:       middle.block:
+; CHECK-VF4IC4-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[WIDE_TRIP_COUNT]], [[N_VEC]]
 ; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[TMP16]], <4 x i32> [[TMP17]])
 ; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX10:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[RDX_MINMAX]], <4 x i32> [[TMP18]])
 ; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX11:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[RDX_MINMAX10]], <4 x i32> [[TMP19]])
 ; CHECK-VF4IC4-NEXT:    [[TMP21:%.*]] = call i32 @llvm.vector.reduce.smax.v4i32(<4 x i32> [[RDX_MINMAX11]])
 ; CHECK-VF4IC4-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i32 [[TMP21]], -2147483648
 ; CHECK-VF4IC4-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i32 [[TMP21]], i32 331
-; CHECK-VF4IC4-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[WIDE_TRIP_COUNT]], [[N_VEC]]
 ; CHECK-VF4IC4-NEXT:    br i1 [[CMP_N]], label [[EXIT_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-VF4IC4:       scalar.ph:
 ; CHECK-VF4IC4-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
@@ -198,12 +198,12 @@ define i32 @select_icmp_const_truncated_iv_widened_exit(ptr %a, i32 %n) {
 ; CHECK-VF1IC4-NEXT:    [[TMP25:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-VF1IC4-NEXT:    br i1 [[TMP25]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-VF1IC4:       middle.block:
+; CHECK-VF1IC4-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[WIDE_TRIP_COUNT]], [[N_VEC]]
 ; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX:%.*]] = call i32 @llvm.smax.i32(i32 [[TMP21]], i32 [[TMP22]])
 ; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX4:%.*]] = call i32 @llvm.smax.i32(i32 [[RDX_MINMAX]], i32 [[TMP23]])
 ; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX5:%.*]] = call i32 @llvm.smax.i32(i32 [[RDX_MINMAX4]], i32 [[TMP24]])
 ; CHECK-VF1IC4-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i32 [[RDX_MINMAX5]], -2147483648
 ; CHECK-VF1IC4-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i32 [[RDX_MINMAX5]], i32 331
-; CHECK-VF1IC4-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[WIDE_TRIP_COUNT]], [[N_VEC]]
 ; CHECK-VF1IC4-NEXT:    br i1 [[CMP_N]], label [[EXIT_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-VF1IC4:       scalar.ph:
 ; CHECK-VF1IC4-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
@@ -226,8 +226,8 @@ define i32 @select_icmp_const_truncated_iv_widened_exit(ptr %a, i32 %n) {
 ; CHECK-VF1IC4:       exit:
 ; CHECK-VF1IC4-NEXT:    [[RDX_LCSSA:%.*]] = phi i32 [ 331, [[ENTRY:%.*]] ], [ [[SPEC_SELECT_LCSSA]], [[EXIT_LOOPEXIT]] ]
 ; CHECK-VF1IC4-NEXT:    ret i32 [[RDX_LCSSA]]
-; end SIFIVE_CUSTOMIZATION
 ;
+; end SIFIVE_CUSTOMIZATION
 entry:
   %cmp.sgt = icmp sgt i32 %n, 0
   br i1 %cmp.sgt, label %for.body.preheader, label %exit
@@ -443,8 +443,8 @@ define i32 @select_icmp_const_truncated_iv_const_exit(ptr %a) {
 ; CHECK-VF1IC4:       exit:
 ; CHECK-VF1IC4-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; CHECK-VF1IC4-NEXT:    ret i32 [[SPEC_SELECT_LCSSA]]
-; end SIFIVE_CUSTOMIZATION
 ;
+; end SIFIVE_CUSTOMIZATION
 entry:
   br label %for.body
 
@@ -648,8 +648,8 @@ define i32 @select_fcmp_max_valid_const_ub(ptr %a) {
 ; CHECK-VF1IC4:       exit:
 ; CHECK-VF1IC4-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; CHECK-VF1IC4-NEXT:    ret i32 [[SPEC_SELECT_LCSSA]]
-; end SIFIVE_CUSTOMIZATION
 ;
+; end SIFIVE_CUSTOMIZATION
 entry:
   br label %for.body
 
@@ -679,8 +679,80 @@ exit:                                            ; preds = %for.body
 ; We cannot guarantee that %iv won't overflow an i32 value (and hence hit the
 ; sentinel value), and need a runtime-check to vectorize this case.
 define i32 @not_vectorized_select_icmp_const_truncated_iv_unwidened_exit(ptr %a, i64 %n) {
-; CHECK-LABEL: define i32 @not_vectorized_select_icmp_const_truncated_iv_unwidened_exit
-; CHECK-NOT:   vector.body:
+; CHECK-VF4IC1-LABEL: define i32 @not_vectorized_select_icmp_const_truncated_iv_unwidened_exit(
+; CHECK-VF4IC1-SAME: ptr [[A:%.*]], i64 [[N:%.*]]) {
+; CHECK-VF4IC1-NEXT:  entry:
+; CHECK-VF4IC1-NEXT:    [[CMP_SGT:%.*]] = icmp sgt i64 [[N]], 0
+; CHECK-VF4IC1-NEXT:    br i1 [[CMP_SGT]], label [[FOR_BODY_PREHEADER:%.*]], label [[EXIT:%.*]]
+; CHECK-VF4IC1:       for.body.preheader:
+; CHECK-VF4IC1-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-VF4IC1:       for.body:
+; CHECK-VF4IC1-NEXT:    [[IV:%.*]] = phi i64 [ [[INC:%.*]], [[FOR_BODY]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-VF4IC1-NEXT:    [[RDX:%.*]] = phi i32 [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ], [ 331, [[FOR_BODY_PREHEADER]] ]
+; CHECK-VF4IC1-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
+; CHECK-VF4IC1-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; CHECK-VF4IC1-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP0]], 3
+; CHECK-VF4IC1-NEXT:    [[TMP1:%.*]] = trunc i64 [[IV]] to i32
+; CHECK-VF4IC1-NEXT:    [[SPEC_SELECT]] = select i1 [[CMP]], i32 [[TMP1]], i32 [[RDX]]
+; CHECK-VF4IC1-NEXT:    [[INC]] = add nuw nsw i64 [[IV]], 1
+; CHECK-VF4IC1-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], [[N]]
+; CHECK-VF4IC1-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT_LOOPEXIT:%.*]], label [[FOR_BODY]]
+; CHECK-VF4IC1:       exit.loopexit:
+; CHECK-VF4IC1-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ]
+; CHECK-VF4IC1-NEXT:    br label [[EXIT]]
+; CHECK-VF4IC1:       exit:
+; CHECK-VF4IC1-NEXT:    [[RDX_LCSSA:%.*]] = phi i32 [ 331, [[ENTRY:%.*]] ], [ [[SPEC_SELECT_LCSSA]], [[EXIT_LOOPEXIT]] ]
+; CHECK-VF4IC1-NEXT:    ret i32 [[RDX_LCSSA]]
+;
+; CHECK-VF4IC4-LABEL: define i32 @not_vectorized_select_icmp_const_truncated_iv_unwidened_exit(
+; CHECK-VF4IC4-SAME: ptr [[A:%.*]], i64 [[N:%.*]]) {
+; CHECK-VF4IC4-NEXT:  entry:
+; CHECK-VF4IC4-NEXT:    [[CMP_SGT:%.*]] = icmp sgt i64 [[N]], 0
+; CHECK-VF4IC4-NEXT:    br i1 [[CMP_SGT]], label [[FOR_BODY_PREHEADER:%.*]], label [[EXIT:%.*]]
+; CHECK-VF4IC4:       for.body.preheader:
+; CHECK-VF4IC4-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-VF4IC4:       for.body:
+; CHECK-VF4IC4-NEXT:    [[IV:%.*]] = phi i64 [ [[INC:%.*]], [[FOR_BODY]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-VF4IC4-NEXT:    [[RDX:%.*]] = phi i32 [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ], [ 331, [[FOR_BODY_PREHEADER]] ]
+; CHECK-VF4IC4-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
+; CHECK-VF4IC4-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; CHECK-VF4IC4-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP0]], 3
+; CHECK-VF4IC4-NEXT:    [[TMP1:%.*]] = trunc i64 [[IV]] to i32
+; CHECK-VF4IC4-NEXT:    [[SPEC_SELECT]] = select i1 [[CMP]], i32 [[TMP1]], i32 [[RDX]]
+; CHECK-VF4IC4-NEXT:    [[INC]] = add nuw nsw i64 [[IV]], 1
+; CHECK-VF4IC4-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], [[N]]
+; CHECK-VF4IC4-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT_LOOPEXIT:%.*]], label [[FOR_BODY]]
+; CHECK-VF4IC4:       exit.loopexit:
+; CHECK-VF4IC4-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ]
+; CHECK-VF4IC4-NEXT:    br label [[EXIT]]
+; CHECK-VF4IC4:       exit:
+; CHECK-VF4IC4-NEXT:    [[RDX_LCSSA:%.*]] = phi i32 [ 331, [[ENTRY:%.*]] ], [ [[SPEC_SELECT_LCSSA]], [[EXIT_LOOPEXIT]] ]
+; CHECK-VF4IC4-NEXT:    ret i32 [[RDX_LCSSA]]
+;
+; CHECK-VF1IC4-LABEL: define i32 @not_vectorized_select_icmp_const_truncated_iv_unwidened_exit(
+; CHECK-VF1IC4-SAME: ptr [[A:%.*]], i64 [[N:%.*]]) {
+; CHECK-VF1IC4-NEXT:  entry:
+; CHECK-VF1IC4-NEXT:    [[CMP_SGT:%.*]] = icmp sgt i64 [[N]], 0
+; CHECK-VF1IC4-NEXT:    br i1 [[CMP_SGT]], label [[FOR_BODY_PREHEADER:%.*]], label [[EXIT:%.*]]
+; CHECK-VF1IC4:       for.body.preheader:
+; CHECK-VF1IC4-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-VF1IC4:       for.body:
+; CHECK-VF1IC4-NEXT:    [[IV:%.*]] = phi i64 [ [[INC:%.*]], [[FOR_BODY]] ], [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-VF1IC4-NEXT:    [[RDX:%.*]] = phi i32 [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ], [ 331, [[FOR_BODY_PREHEADER]] ]
+; CHECK-VF1IC4-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
+; CHECK-VF1IC4-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; CHECK-VF1IC4-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP0]], 3
+; CHECK-VF1IC4-NEXT:    [[TMP1:%.*]] = trunc i64 [[IV]] to i32
+; CHECK-VF1IC4-NEXT:    [[SPEC_SELECT]] = select i1 [[CMP]], i32 [[TMP1]], i32 [[RDX]]
+; CHECK-VF1IC4-NEXT:    [[INC]] = add nuw nsw i64 [[IV]], 1
+; CHECK-VF1IC4-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], [[N]]
+; CHECK-VF1IC4-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT_LOOPEXIT:%.*]], label [[FOR_BODY]]
+; CHECK-VF1IC4:       exit.loopexit:
+; CHECK-VF1IC4-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ]
+; CHECK-VF1IC4-NEXT:    br label [[EXIT]]
+; CHECK-VF1IC4:       exit:
+; CHECK-VF1IC4-NEXT:    [[RDX_LCSSA:%.*]] = phi i32 [ 331, [[ENTRY:%.*]] ], [ [[SPEC_SELECT_LCSSA]], [[EXIT_LOOPEXIT]] ]
+; CHECK-VF1IC4-NEXT:    ret i32 [[RDX_LCSSA]]
 ;
 entry:
   %cmp.sgt = icmp sgt i64 %n, 0
@@ -711,8 +783,83 @@ exit:                                             ; preds = %for.body, %entry
 ; We cannot guarantee that %iv won't overflow an i32 value (and hence hit the
 ; sentinel value), and need a runtime-check to vectorize this case.
 define i32 @not_vectorized_select_icmp_const_truncated_iv_unsigned_loop_guard(ptr %a, i32 %n) {
-; CHECK-LABEL: define i32 @not_vectorized_select_icmp_const_truncated_iv_unsigned_loop_guard
-; CHECK-NOT:   vector.body:
+; CHECK-VF4IC1-LABEL: define i32 @not_vectorized_select_icmp_const_truncated_iv_unsigned_loop_guard(
+; CHECK-VF4IC1-SAME: ptr [[A:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF4IC1-NEXT:  entry:
+; CHECK-VF4IC1-NEXT:    [[CMP_NOT:%.*]] = icmp eq i32 [[N]], 0
+; CHECK-VF4IC1-NEXT:    br i1 [[CMP_NOT]], label [[EXIT:%.*]], label [[FOR_BODY_PREHEADER:%.*]]
+; CHECK-VF4IC1:       for.body.preheader:
+; CHECK-VF4IC1-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
+; CHECK-VF4IC1-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-VF4IC1:       for.body:
+; CHECK-VF4IC1-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[INC:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC1-NEXT:    [[RDX:%.*]] = phi i32 [ 331, [[FOR_BODY_PREHEADER]] ], [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC1-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
+; CHECK-VF4IC1-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; CHECK-VF4IC1-NEXT:    [[CMP1:%.*]] = icmp sgt i32 [[TMP0]], 3
+; CHECK-VF4IC1-NEXT:    [[TMP1:%.*]] = trunc i64 [[IV]] to i32
+; CHECK-VF4IC1-NEXT:    [[SPEC_SELECT]] = select i1 [[CMP1]], i32 [[TMP1]], i32 [[RDX]]
+; CHECK-VF4IC1-NEXT:    [[INC]] = add nuw nsw i64 [[IV]], 1
+; CHECK-VF4IC1-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], [[WIDE_TRIP_COUNT]]
+; CHECK-VF4IC1-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT_LOOPEXIT:%.*]], label [[FOR_BODY]]
+; CHECK-VF4IC1:       exit.loopexit:
+; CHECK-VF4IC1-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ]
+; CHECK-VF4IC1-NEXT:    br label [[EXIT]]
+; CHECK-VF4IC1:       exit:
+; CHECK-VF4IC1-NEXT:    [[RDX_LCSSA:%.*]] = phi i32 [ 331, [[ENTRY:%.*]] ], [ [[SPEC_SELECT_LCSSA]], [[EXIT_LOOPEXIT]] ]
+; CHECK-VF4IC1-NEXT:    ret i32 [[RDX_LCSSA]]
+;
+; CHECK-VF4IC4-LABEL: define i32 @not_vectorized_select_icmp_const_truncated_iv_unsigned_loop_guard(
+; CHECK-VF4IC4-SAME: ptr [[A:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF4IC4-NEXT:  entry:
+; CHECK-VF4IC4-NEXT:    [[CMP_NOT:%.*]] = icmp eq i32 [[N]], 0
+; CHECK-VF4IC4-NEXT:    br i1 [[CMP_NOT]], label [[EXIT:%.*]], label [[FOR_BODY_PREHEADER:%.*]]
+; CHECK-VF4IC4:       for.body.preheader:
+; CHECK-VF4IC4-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
+; CHECK-VF4IC4-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-VF4IC4:       for.body:
+; CHECK-VF4IC4-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[INC:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC4-NEXT:    [[RDX:%.*]] = phi i32 [ 331, [[FOR_BODY_PREHEADER]] ], [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC4-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
+; CHECK-VF4IC4-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; CHECK-VF4IC4-NEXT:    [[CMP1:%.*]] = icmp sgt i32 [[TMP0]], 3
+; CHECK-VF4IC4-NEXT:    [[TMP1:%.*]] = trunc i64 [[IV]] to i32
+; CHECK-VF4IC4-NEXT:    [[SPEC_SELECT]] = select i1 [[CMP1]], i32 [[TMP1]], i32 [[RDX]]
+; CHECK-VF4IC4-NEXT:    [[INC]] = add nuw nsw i64 [[IV]], 1
+; CHECK-VF4IC4-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], [[WIDE_TRIP_COUNT]]
+; CHECK-VF4IC4-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT_LOOPEXIT:%.*]], label [[FOR_BODY]]
+; CHECK-VF4IC4:       exit.loopexit:
+; CHECK-VF4IC4-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ]
+; CHECK-VF4IC4-NEXT:    br label [[EXIT]]
+; CHECK-VF4IC4:       exit:
+; CHECK-VF4IC4-NEXT:    [[RDX_LCSSA:%.*]] = phi i32 [ 331, [[ENTRY:%.*]] ], [ [[SPEC_SELECT_LCSSA]], [[EXIT_LOOPEXIT]] ]
+; CHECK-VF4IC4-NEXT:    ret i32 [[RDX_LCSSA]]
+;
+; CHECK-VF1IC4-LABEL: define i32 @not_vectorized_select_icmp_const_truncated_iv_unsigned_loop_guard(
+; CHECK-VF1IC4-SAME: ptr [[A:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF1IC4-NEXT:  entry:
+; CHECK-VF1IC4-NEXT:    [[CMP_NOT:%.*]] = icmp eq i32 [[N]], 0
+; CHECK-VF1IC4-NEXT:    br i1 [[CMP_NOT]], label [[EXIT:%.*]], label [[FOR_BODY_PREHEADER:%.*]]
+; CHECK-VF1IC4:       for.body.preheader:
+; CHECK-VF1IC4-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
+; CHECK-VF1IC4-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-VF1IC4:       for.body:
+; CHECK-VF1IC4-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[INC:%.*]], [[FOR_BODY]] ]
+; CHECK-VF1IC4-NEXT:    [[RDX:%.*]] = phi i32 [ 331, [[FOR_BODY_PREHEADER]] ], [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ]
+; CHECK-VF1IC4-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
+; CHECK-VF1IC4-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; CHECK-VF1IC4-NEXT:    [[CMP1:%.*]] = icmp sgt i32 [[TMP0]], 3
+; CHECK-VF1IC4-NEXT:    [[TMP1:%.*]] = trunc i64 [[IV]] to i32
+; CHECK-VF1IC4-NEXT:    [[SPEC_SELECT]] = select i1 [[CMP1]], i32 [[TMP1]], i32 [[RDX]]
+; CHECK-VF1IC4-NEXT:    [[INC]] = add nuw nsw i64 [[IV]], 1
+; CHECK-VF1IC4-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], [[WIDE_TRIP_COUNT]]
+; CHECK-VF1IC4-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT_LOOPEXIT:%.*]], label [[FOR_BODY]]
+; CHECK-VF1IC4:       exit.loopexit:
+; CHECK-VF1IC4-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ]
+; CHECK-VF1IC4-NEXT:    br label [[EXIT]]
+; CHECK-VF1IC4:       exit:
+; CHECK-VF1IC4-NEXT:    [[RDX_LCSSA:%.*]] = phi i32 [ 331, [[ENTRY:%.*]] ], [ [[SPEC_SELECT_LCSSA]], [[EXIT_LOOPEXIT]] ]
+; CHECK-VF1IC4-NEXT:    ret i32 [[RDX_LCSSA]]
 ;
 entry:
   %cmp.not = icmp eq i32 %n, 0
@@ -747,8 +894,62 @@ exit:                                             ; preds = %for.body, %entry
 ; Hence, the i32 will most certainly wrap and hit the sentinel value, and we
 ; cannot vectorize this case.
 define i32 @not_vectorized_select_icmp_truncated_iv_out_of_bound(ptr %a) {
-; CHECK-LABEL: define i32 @not_vectorized_select_icmp_truncated_iv_out_of_bound
-; CHECK-NOT:   vector.body:
+; CHECK-VF4IC1-LABEL: define i32 @not_vectorized_select_icmp_truncated_iv_out_of_bound(
+; CHECK-VF4IC1-SAME: ptr [[A:%.*]]) {
+; CHECK-VF4IC1-NEXT:  entry:
+; CHECK-VF4IC1-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-VF4IC1:       for.body:
+; CHECK-VF4IC1-NEXT:    [[IV:%.*]] = phi i64 [ 2147483646, [[ENTRY:%.*]] ], [ [[INC:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC1-NEXT:    [[RDX:%.*]] = phi i32 [ 331, [[ENTRY]] ], [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC1-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
+; CHECK-VF4IC1-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; CHECK-VF4IC1-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP0]], 3
+; CHECK-VF4IC1-NEXT:    [[CONV:%.*]] = trunc i64 [[IV]] to i32
+; CHECK-VF4IC1-NEXT:    [[SPEC_SELECT]] = select i1 [[CMP]], i32 [[CONV]], i32 [[RDX]]
+; CHECK-VF4IC1-NEXT:    [[INC]] = add nuw nsw i64 [[IV]], 1
+; CHECK-VF4IC1-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], 4294967294
+; CHECK-VF4IC1-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]]
+; CHECK-VF4IC1:       exit:
+; CHECK-VF4IC1-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ]
+; CHECK-VF4IC1-NEXT:    ret i32 [[SPEC_SELECT_LCSSA]]
+;
+; CHECK-VF4IC4-LABEL: define i32 @not_vectorized_select_icmp_truncated_iv_out_of_bound(
+; CHECK-VF4IC4-SAME: ptr [[A:%.*]]) {
+; CHECK-VF4IC4-NEXT:  entry:
+; CHECK-VF4IC4-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-VF4IC4:       for.body:
+; CHECK-VF4IC4-NEXT:    [[IV:%.*]] = phi i64 [ 2147483646, [[ENTRY:%.*]] ], [ [[INC:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC4-NEXT:    [[RDX:%.*]] = phi i32 [ 331, [[ENTRY]] ], [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC4-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
+; CHECK-VF4IC4-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; CHECK-VF4IC4-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP0]], 3
+; CHECK-VF4IC4-NEXT:    [[CONV:%.*]] = trunc i64 [[IV]] to i32
+; CHECK-VF4IC4-NEXT:    [[SPEC_SELECT]] = select i1 [[CMP]], i32 [[CONV]], i32 [[RDX]]
+; CHECK-VF4IC4-NEXT:    [[INC]] = add nuw nsw i64 [[IV]], 1
+; CHECK-VF4IC4-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], 4294967294
+; CHECK-VF4IC4-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]]
+; CHECK-VF4IC4:       exit:
+; CHECK-VF4IC4-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ]
+; CHECK-VF4IC4-NEXT:    ret i32 [[SPEC_SELECT_LCSSA]]
+;
+; CHECK-VF1IC4-LABEL: define i32 @not_vectorized_select_icmp_truncated_iv_out_of_bound(
+; CHECK-VF1IC4-SAME: ptr [[A:%.*]]) {
+; CHECK-VF1IC4-NEXT:  entry:
+; CHECK-VF1IC4-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-VF1IC4:       for.body:
+; CHECK-VF1IC4-NEXT:    [[IV:%.*]] = phi i64 [ 2147483646, [[ENTRY:%.*]] ], [ [[INC:%.*]], [[FOR_BODY]] ]
+; CHECK-VF1IC4-NEXT:    [[RDX:%.*]] = phi i32 [ 331, [[ENTRY]] ], [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ]
+; CHECK-VF1IC4-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
+; CHECK-VF1IC4-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; CHECK-VF1IC4-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP0]], 3
+; CHECK-VF1IC4-NEXT:    [[CONV:%.*]] = trunc i64 [[IV]] to i32
+; CHECK-VF1IC4-NEXT:    [[SPEC_SELECT]] = select i1 [[CMP]], i32 [[CONV]], i32 [[RDX]]
+; CHECK-VF1IC4-NEXT:    [[INC]] = add nuw nsw i64 [[IV]], 1
+; CHECK-VF1IC4-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], 4294967294
+; CHECK-VF1IC4-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]]
+; CHECK-VF1IC4:       exit:
+; CHECK-VF1IC4-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ]
+; CHECK-VF1IC4-NEXT:    ret i32 [[SPEC_SELECT_LCSSA]]
 ;
 entry:
   br label %for.body
@@ -772,8 +973,71 @@ exit:                                             ; preds = %for.body
 ; Forbidding vectorization of the FindLastIV pattern involving a truncated
 ; induction variable in the absence of any loop guard.
 define i32 @not_vectorized_select_iv_icmp_no_guard(ptr %a, ptr %b, i32 %start, i32 %n) {
-; CHECK-LABEL: define i32 @not_vectorized_select_iv_icmp_no_guard
-; CHECK-NOT:   vector.body:
+; CHECK-VF4IC1-LABEL: define i32 @not_vectorized_select_iv_icmp_no_guard(
+; CHECK-VF4IC1-SAME: ptr [[A:%.*]], ptr [[B:%.*]], i32 [[START:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF4IC1-NEXT:  entry:
+; CHECK-VF4IC1-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
+; CHECK-VF4IC1-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-VF4IC1:       for.body:
+; CHECK-VF4IC1-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INC:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC1-NEXT:    [[RDX:%.*]] = phi i32 [ [[START]], [[ENTRY]] ], [ [[COND:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC1-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
+; CHECK-VF4IC1-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; CHECK-VF4IC1-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[IV]]
+; CHECK-VF4IC1-NEXT:    [[TMP1:%.*]] = load i32, ptr [[ARRAYIDX2]], align 4
+; CHECK-VF4IC1-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP0]], [[TMP1]]
+; CHECK-VF4IC1-NEXT:    [[TMP2:%.*]] = trunc i64 [[IV]] to i32
+; CHECK-VF4IC1-NEXT:    [[COND]] = select i1 [[CMP]], i32 [[TMP2]], i32 [[RDX]]
+; CHECK-VF4IC1-NEXT:    [[INC]] = add nuw nsw i64 [[IV]], 1
+; CHECK-VF4IC1-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], [[WIDE_TRIP_COUNT]]
+; CHECK-VF4IC1-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]]
+; CHECK-VF4IC1:       exit:
+; CHECK-VF4IC1-NEXT:    [[COND_LCSSA:%.*]] = phi i32 [ [[COND]], [[FOR_BODY]] ]
+; CHECK-VF4IC1-NEXT:    ret i32 [[COND_LCSSA]]
+;
+; CHECK-VF4IC4-LABEL: define i32 @not_vectorized_select_iv_icmp_no_guard(
+; CHECK-VF4IC4-SAME: ptr [[A:%.*]], ptr [[B:%.*]], i32 [[START:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF4IC4-NEXT:  entry:
+; CHECK-VF4IC4-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
+; CHECK-VF4IC4-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-VF4IC4:       for.body:
+; CHECK-VF4IC4-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INC:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC4-NEXT:    [[RDX:%.*]] = phi i32 [ [[START]], [[ENTRY]] ], [ [[COND:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC4-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
+; CHECK-VF4IC4-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; CHECK-VF4IC4-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[IV]]
+; CHECK-VF4IC4-NEXT:    [[TMP1:%.*]] = load i32, ptr [[ARRAYIDX2]], align 4
+; CHECK-VF4IC4-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP0]], [[TMP1]]
+; CHECK-VF4IC4-NEXT:    [[TMP2:%.*]] = trunc i64 [[IV]] to i32
+; CHECK-VF4IC4-NEXT:    [[COND]] = select i1 [[CMP]], i32 [[TMP2]], i32 [[RDX]]
+; CHECK-VF4IC4-NEXT:    [[INC]] = add nuw nsw i64 [[IV]], 1
+; CHECK-VF4IC4-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], [[WIDE_TRIP_COUNT]]
+; CHECK-VF4IC4-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]]
+; CHECK-VF4IC4:       exit:
+; CHECK-VF4IC4-NEXT:    [[COND_LCSSA:%.*]] = phi i32 [ [[COND]], [[FOR_BODY]] ]
+; CHECK-VF4IC4-NEXT:    ret i32 [[COND_LCSSA]]
+;
+; CHECK-VF1IC4-LABEL: define i32 @not_vectorized_select_iv_icmp_no_guard(
+; CHECK-VF1IC4-SAME: ptr [[A:%.*]], ptr [[B:%.*]], i32 [[START:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF1IC4-NEXT:  entry:
+; CHECK-VF1IC4-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
+; CHECK-VF1IC4-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-VF1IC4:       for.body:
+; CHECK-VF1IC4-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INC:%.*]], [[FOR_BODY]] ]
+; CHECK-VF1IC4-NEXT:    [[RDX:%.*]] = phi i32 [ [[START]], [[ENTRY]] ], [ [[COND:%.*]], [[FOR_BODY]] ]
+; CHECK-VF1IC4-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
+; CHECK-VF1IC4-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; CHECK-VF1IC4-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[IV]]
+; CHECK-VF1IC4-NEXT:    [[TMP1:%.*]] = load i32, ptr [[ARRAYIDX2]], align 4
+; CHECK-VF1IC4-NEXT:    [[CMP:%.*]] = icmp sgt i32 [[TMP0]], [[TMP1]]
+; CHECK-VF1IC4-NEXT:    [[TMP2:%.*]] = trunc i64 [[IV]] to i32
+; CHECK-VF1IC4-NEXT:    [[COND]] = select i1 [[CMP]], i32 [[TMP2]], i32 [[RDX]]
+; CHECK-VF1IC4-NEXT:    [[INC]] = add nuw nsw i64 [[IV]], 1
+; CHECK-VF1IC4-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], [[WIDE_TRIP_COUNT]]
+; CHECK-VF1IC4-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]]
+; CHECK-VF1IC4:       exit:
+; CHECK-VF1IC4-NEXT:    [[COND_LCSSA:%.*]] = phi i32 [ [[COND]], [[FOR_BODY]] ]
+; CHECK-VF1IC4-NEXT:    ret i32 [[COND_LCSSA]]
 ;
 entry:
   %wide.trip.count = zext i32 %n to i64
@@ -802,8 +1066,62 @@ exit:                                             ; preds = %for.body
 ; vectorizer is unable to guarantee that the induction variable is monotonic
 ; increasing.
 define i32 @not_vectorized_select_fcmp_invalid_const_ub(ptr %a) {
-; CHECK-LABEL: define i32 @not_vectorized_select_fcmp_invalid_const_ub
-; CHECK-NOT:   vector.body:
+; CHECK-VF4IC1-LABEL: define i32 @not_vectorized_select_fcmp_invalid_const_ub(
+; CHECK-VF4IC1-SAME: ptr [[A:%.*]]) {
+; CHECK-VF4IC1-NEXT:  entry:
+; CHECK-VF4IC1-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-VF4IC1:       for.body:
+; CHECK-VF4IC1-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INC:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC1-NEXT:    [[RDX:%.*]] = phi i32 [ -1, [[ENTRY]] ], [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC1-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[IV]]
+; CHECK-VF4IC1-NEXT:    [[TMP0:%.*]] = load float, ptr [[ARRAYIDX]], align 4
+; CHECK-VF4IC1-NEXT:    [[CMP:%.*]] = fcmp fast olt float [[TMP0]], 0.000000e+00
+; CHECK-VF4IC1-NEXT:    [[TMP1:%.*]] = trunc i64 [[IV]] to i32
+; CHECK-VF4IC1-NEXT:    [[SPEC_SELECT]] = select i1 [[CMP]], i32 [[TMP1]], i32 [[RDX]]
+; CHECK-VF4IC1-NEXT:    [[INC]] = add nuw nsw i64 [[IV]], 1
+; CHECK-VF4IC1-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], 2147483649
+; CHECK-VF4IC1-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]]
+; CHECK-VF4IC1:       exit:
+; CHECK-VF4IC1-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ]
+; CHECK-VF4IC1-NEXT:    ret i32 [[SPEC_SELECT_LCSSA]]
+;
+; CHECK-VF4IC4-LABEL: define i32 @not_vectorized_select_fcmp_invalid_const_ub(
+; CHECK-VF4IC4-SAME: ptr [[A:%.*]]) {
+; CHECK-VF4IC4-NEXT:  entry:
+; CHECK-VF4IC4-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-VF4IC4:       for.body:
+; CHECK-VF4IC4-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INC:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC4-NEXT:    [[RDX:%.*]] = phi i32 [ -1, [[ENTRY]] ], [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC4-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[IV]]
+; CHECK-VF4IC4-NEXT:    [[TMP0:%.*]] = load float, ptr [[ARRAYIDX]], align 4
+; CHECK-VF4IC4-NEXT:    [[CMP:%.*]] = fcmp fast olt float [[TMP0]], 0.000000e+00
+; CHECK-VF4IC4-NEXT:    [[TMP1:%.*]] = trunc i64 [[IV]] to i32
+; CHECK-VF4IC4-NEXT:    [[SPEC_SELECT]] = select i1 [[CMP]], i32 [[TMP1]], i32 [[RDX]]
+; CHECK-VF4IC4-NEXT:    [[INC]] = add nuw nsw i64 [[IV]], 1
+; CHECK-VF4IC4-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], 2147483649
+; CHECK-VF4IC4-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]]
+; CHECK-VF4IC4:       exit:
+; CHECK-VF4IC4-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ]
+; CHECK-VF4IC4-NEXT:    ret i32 [[SPEC_SELECT_LCSSA]]
+;
+; CHECK-VF1IC4-LABEL: define i32 @not_vectorized_select_fcmp_invalid_const_ub(
+; CHECK-VF1IC4-SAME: ptr [[A:%.*]]) {
+; CHECK-VF1IC4-NEXT:  entry:
+; CHECK-VF1IC4-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-VF1IC4:       for.body:
+; CHECK-VF1IC4-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INC:%.*]], [[FOR_BODY]] ]
+; CHECK-VF1IC4-NEXT:    [[RDX:%.*]] = phi i32 [ -1, [[ENTRY]] ], [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ]
+; CHECK-VF1IC4-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[IV]]
+; CHECK-VF1IC4-NEXT:    [[TMP0:%.*]] = load float, ptr [[ARRAYIDX]], align 4
+; CHECK-VF1IC4-NEXT:    [[CMP:%.*]] = fcmp fast olt float [[TMP0]], 0.000000e+00
+; CHECK-VF1IC4-NEXT:    [[TMP1:%.*]] = trunc i64 [[IV]] to i32
+; CHECK-VF1IC4-NEXT:    [[SPEC_SELECT]] = select i1 [[CMP]], i32 [[TMP1]], i32 [[RDX]]
+; CHECK-VF1IC4-NEXT:    [[INC]] = add nuw nsw i64 [[IV]], 1
+; CHECK-VF1IC4-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], 2147483649
+; CHECK-VF1IC4-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT:%.*]], label [[FOR_BODY]]
+; CHECK-VF1IC4:       exit:
+; CHECK-VF1IC4-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ]
+; CHECK-VF1IC4-NEXT:    ret i32 [[SPEC_SELECT_LCSSA]]
 ;
 entry:
   br label %for.body
@@ -828,8 +1146,89 @@ exit:                                            ; preds = %for.body
 ; instruction is smaller than the trip count type before extension, overflow
 ; could still occur.
 define i16 @not_vectorized_select_iv_icmp_overflow_unwidened_tripcount(ptr %a, ptr %b, i16 %start, i32 %n) {
-; CHECK-LABEL: define i16 @not_vectorized_select_iv_icmp_overflow_unwidened_tripcount
-; CHECK-NOT:   vector.body:
+; CHECK-VF4IC1-LABEL: define i16 @not_vectorized_select_iv_icmp_overflow_unwidened_tripcount(
+; CHECK-VF4IC1-SAME: ptr [[A:%.*]], ptr [[B:%.*]], i16 [[START:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF4IC1-NEXT:  entry:
+; CHECK-VF4IC1-NEXT:    [[CMP9:%.*]] = icmp sgt i32 [[N]], 0
+; CHECK-VF4IC1-NEXT:    br i1 [[CMP9]], label [[FOR_BODY_PREHEADER:%.*]], label [[EXIT:%.*]]
+; CHECK-VF4IC1:       for.body.preheader:
+; CHECK-VF4IC1-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
+; CHECK-VF4IC1-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-VF4IC1:       for.body:
+; CHECK-VF4IC1-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[INC:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC1-NEXT:    [[RDX:%.*]] = phi i16 [ [[START]], [[FOR_BODY_PREHEADER]] ], [ [[COND:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC1-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
+; CHECK-VF4IC1-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; CHECK-VF4IC1-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[IV]]
+; CHECK-VF4IC1-NEXT:    [[TMP1:%.*]] = load i32, ptr [[ARRAYIDX2]], align 4
+; CHECK-VF4IC1-NEXT:    [[CMP3:%.*]] = icmp sgt i32 [[TMP0]], [[TMP1]]
+; CHECK-VF4IC1-NEXT:    [[TMP2:%.*]] = trunc i64 [[IV]] to i16
+; CHECK-VF4IC1-NEXT:    [[COND]] = select i1 [[CMP3]], i16 [[TMP2]], i16 [[RDX]]
+; CHECK-VF4IC1-NEXT:    [[INC]] = add nuw nsw i64 [[IV]], 1
+; CHECK-VF4IC1-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], [[WIDE_TRIP_COUNT]]
+; CHECK-VF4IC1-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT_LOOPEXIT:%.*]], label [[FOR_BODY]]
+; CHECK-VF4IC1:       exit.loopexit:
+; CHECK-VF4IC1-NEXT:    [[COND_LCSSA:%.*]] = phi i16 [ [[COND]], [[FOR_BODY]] ]
+; CHECK-VF4IC1-NEXT:    br label [[EXIT]]
+; CHECK-VF4IC1:       exit:
+; CHECK-VF4IC1-NEXT:    [[RDX_0_LCSSA:%.*]] = phi i16 [ [[START]], [[ENTRY:%.*]] ], [ [[COND_LCSSA]], [[EXIT_LOOPEXIT]] ]
+; CHECK-VF4IC1-NEXT:    ret i16 [[RDX_0_LCSSA]]
+;
+; CHECK-VF4IC4-LABEL: define i16 @not_vectorized_select_iv_icmp_overflow_unwidened_tripcount(
+; CHECK-VF4IC4-SAME: ptr [[A:%.*]], ptr [[B:%.*]], i16 [[START:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF4IC4-NEXT:  entry:
+; CHECK-VF4IC4-NEXT:    [[CMP9:%.*]] = icmp sgt i32 [[N]], 0
+; CHECK-VF4IC4-NEXT:    br i1 [[CMP9]], label [[FOR_BODY_PREHEADER:%.*]], label [[EXIT:%.*]]
+; CHECK-VF4IC4:       for.body.preheader:
+; CHECK-VF4IC4-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
+; CHECK-VF4IC4-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-VF4IC4:       for.body:
+; CHECK-VF4IC4-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[INC:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC4-NEXT:    [[RDX:%.*]] = phi i16 [ [[START]], [[FOR_BODY_PREHEADER]] ], [ [[COND:%.*]], [[FOR_BODY]] ]
+; CHECK-VF4IC4-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
+; CHECK-VF4IC4-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; CHECK-VF4IC4-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[IV]]
+; CHECK-VF4IC4-NEXT:    [[TMP1:%.*]] = load i32, ptr [[ARRAYIDX2]], align 4
+; CHECK-VF4IC4-NEXT:    [[CMP3:%.*]] = icmp sgt i32 [[TMP0]], [[TMP1]]
+; CHECK-VF4IC4-NEXT:    [[TMP2:%.*]] = trunc i64 [[IV]] to i16
+; CHECK-VF4IC4-NEXT:    [[COND]] = select i1 [[CMP3]], i16 [[TMP2]], i16 [[RDX]]
+; CHECK-VF4IC4-NEXT:    [[INC]] = add nuw nsw i64 [[IV]], 1
+; CHECK-VF4IC4-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], [[WIDE_TRIP_COUNT]]
+; CHECK-VF4IC4-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT_LOOPEXIT:%.*]], label [[FOR_BODY]]
+; CHECK-VF4IC4:       exit.loopexit:
+; CHECK-VF4IC4-NEXT:    [[COND_LCSSA:%.*]] = phi i16 [ [[COND]], [[FOR_BODY]] ]
+; CHECK-VF4IC4-NEXT:    br label [[EXIT]]
+; CHECK-VF4IC4:       exit:
+; CHECK-VF4IC4-NEXT:    [[RDX_0_LCSSA:%.*]] = phi i16 [ [[START]], [[ENTRY:%.*]] ], [ [[COND_LCSSA]], [[EXIT_LOOPEXIT]] ]
+; CHECK-VF4IC4-NEXT:    ret i16 [[RDX_0_LCSSA]]
+;
+; CHECK-VF1IC4-LABEL: define i16 @not_vectorized_select_iv_icmp_overflow_unwidened_tripcount(
+; CHECK-VF1IC4-SAME: ptr [[A:%.*]], ptr [[B:%.*]], i16 [[START:%.*]], i32 [[N:%.*]]) {
+; CHECK-VF1IC4-NEXT:  entry:
+; CHECK-VF1IC4-NEXT:    [[CMP9:%.*]] = icmp sgt i32 [[N]], 0
+; CHECK-VF1IC4-NEXT:    br i1 [[CMP9]], label [[FOR_BODY_PREHEADER:%.*]], label [[EXIT:%.*]]
+; CHECK-VF1IC4:       for.body.preheader:
+; CHECK-VF1IC4-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
+; CHECK-VF1IC4-NEXT:    br label [[FOR_BODY:%.*]]
+; CHECK-VF1IC4:       for.body:
+; CHECK-VF1IC4-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[INC:%.*]], [[FOR_BODY]] ]
+; CHECK-VF1IC4-NEXT:    [[RDX:%.*]] = phi i16 [ [[START]], [[FOR_BODY_PREHEADER]] ], [ [[COND:%.*]], [[FOR_BODY]] ]
+; CHECK-VF1IC4-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[IV]]
+; CHECK-VF1IC4-NEXT:    [[TMP0:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; CHECK-VF1IC4-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[IV]]
+; CHECK-VF1IC4-NEXT:    [[TMP1:%.*]] = load i32, ptr [[ARRAYIDX2]], align 4
+; CHECK-VF1IC4-NEXT:    [[CMP3:%.*]] = icmp sgt i32 [[TMP0]], [[TMP1]]
+; CHECK-VF1IC4-NEXT:    [[TMP2:%.*]] = trunc i64 [[IV]] to i16
+; CHECK-VF1IC4-NEXT:    [[COND]] = select i1 [[CMP3]], i16 [[TMP2]], i16 [[RDX]]
+; CHECK-VF1IC4-NEXT:    [[INC]] = add nuw nsw i64 [[IV]], 1
+; CHECK-VF1IC4-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INC]], [[WIDE_TRIP_COUNT]]
+; CHECK-VF1IC4-NEXT:    br i1 [[EXITCOND_NOT]], label [[EXIT_LOOPEXIT:%.*]], label [[FOR_BODY]]
+; CHECK-VF1IC4:       exit.loopexit:
+; CHECK-VF1IC4-NEXT:    [[COND_LCSSA:%.*]] = phi i16 [ [[COND]], [[FOR_BODY]] ]
+; CHECK-VF1IC4-NEXT:    br label [[EXIT]]
+; CHECK-VF1IC4:       exit:
+; CHECK-VF1IC4-NEXT:    [[RDX_0_LCSSA:%.*]] = phi i16 [ [[START]], [[ENTRY:%.*]] ], [ [[COND_LCSSA]], [[EXIT_LOOPEXIT]] ]
+; CHECK-VF1IC4-NEXT:    ret i16 [[RDX_0_LCSSA]]
 ;
 entry:
   %cmp9 = icmp sgt i32 %n, 0
@@ -857,3 +1256,5 @@ exit:                                             ; preds = %for.body, %entry
   %rdx.0.lcssa = phi i16 [ %start, %entry ], [ %cond, %for.body ]
   ret i16 %rdx.0.lcssa
 }
+;; NOTE: These prefixes are unused and the list is autogenerated. Do not add tests below this line:
+; CHECK: {{.*}}
