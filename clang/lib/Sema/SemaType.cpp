@@ -8206,16 +8206,19 @@ static void HandleNeonVectorTypeAttr(QualType &CurType, const ParsedAttr &Attr,
 
   // Target must have NEON (or MVE, whose vectors are similar enough
   // not to need a separate attribute)
-<<<<<<< HEAD
-  if (!(S.Context.getTargetInfo().hasFeature("neon") ||
-        S.Context.getTargetInfo().hasFeature("mve") ||
-        S.Context.getTargetInfo().hasFeature("sve") ||
-        S.Context.getTargetInfo().hasFeature("sme") ||
 #if SIFIVE_CUSTOMIZATION
-        S.Context.getTargetInfo().getTriple().isRISCV64() ||
-#endif
-        IsTargetCUDAAndHostARM) &&
-      VecKind == VectorKind::Neon) {
+  if (!(S.Context.getTargetInfo().hasFeature("mve") ||
+        S.Context.getTargetInfo().getTriple().isRISCV64()) &&
+#else
+    if (!S.Context.getTargetInfo().hasFeature("mve") &&
+#endif // SIFIVE_CUSTOMIZATION
+      VecKind == VectorKind::Neon &&
+#if SIFIVE_CUSTOMIZATION
+      (S.Context.getTargetInfo().getTriple().isArmMClass() || 
+       S.Context.getTargetInfo().getTriple().isRISCV())) {
+#else
+      S.Context.getTargetInfo().getTriple().isArmMClass()) {
+#endif // SIFIVE_CUSTOMIZATION
 #if SIFIVE_CUSTOMIZATION
     if (S.Context.getTargetInfo().getTriple().isRISCV32()) {
       S.Diag(Attr.getLoc(), diag::err_attribute_unsupported)
@@ -8223,16 +8226,9 @@ static void HandleNeonVectorTypeAttr(QualType &CurType, const ParsedAttr &Attr,
       Attr.setInvalid();
       return;
     }
-#endif
-    S.Diag(Attr.getLoc(), diag::err_attribute_unsupported)
-        << Attr << "'neon', 'mve', 'sve' or 'sme'";
-=======
-  if (!S.Context.getTargetInfo().hasFeature("mve") &&
-      VecKind == VectorKind::Neon &&
-      S.Context.getTargetInfo().getTriple().isArmMClass()) {
+#endif // SIFIVE_CUSTOMIZATION
     S.Diag(Attr.getLoc(), diag::err_attribute_unsupported_m_profile)
         << Attr << "'mve'";
->>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
     Attr.setInvalid();
     return;
   }
