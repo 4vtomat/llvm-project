@@ -980,7 +980,6 @@ VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
 #else
 VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
                                    BasicBlock *PH) {
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
   VPIRBasicBlock *Preheader = new VPIRBasicBlock(PH);
   VPBasicBlock *VecPreheader = new VPBasicBlock("vector.ph");
@@ -992,12 +991,9 @@ VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
     Plan->TripCount =
         vputils::getOrCreateVPValueForSCEVExpr(*Plan, TripCount, SE);
 #else
-  auto Plan = std::make_unique<VPlan>(Preheader, VecPreheader);
-=======
   VPIRBasicBlock *Entry = new VPIRBasicBlock(PH);
   VPBasicBlock *VecPreheader = new VPBasicBlock("vector.ph");
   auto Plan = std::make_unique<VPlan>(Entry, VecPreheader);
->>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
   Plan->TripCount =
       vputils::getOrCreateVPValueForSCEVExpr(*Plan, TripCount, SE);
 #endif // SIFIVE_CUSTOMIZATION
@@ -1057,7 +1053,6 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
   }
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 void VPlan::initializeMasks(VPTransformState &State) {
   if (AllTrueMask && AllTrueMask->getNumUsers()) {
@@ -1072,7 +1067,6 @@ void VPlan::initializeMasks(VPTransformState &State) {
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
 /// Replace \p VPBB with a VPIRBasicBlock wrapping \p IRBB. All recipes from \p
 /// VPBB are moved to the newly created VPIRBasicBlock.
 static void replaceVPBBWithIRVPBB(VPBasicBlock *VPBB, BasicBlock *IRBB) {
@@ -1085,7 +1079,6 @@ static void replaceVPBBWithIRVPBB(VPBasicBlock *VPBB, BasicBlock *IRBB) {
   VPBlockUtils::connectBlocks(PredVPBB, IRMiddleVPBB);
   delete VPBB;
 }
->>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 
 /// Generate the code inside the preheader and body of the vectorized loop.
 /// Assumes a single pre-header basic-block was created for this. Introduce
@@ -1783,7 +1776,6 @@ VPValue *vputils::getOrCreateVPValueForSCEVExpr(VPlan &Plan, const SCEV *Expr,
   return Expanded;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // FIXME: Represent CSA instructions through VPHeaderPHIRecipe
 bool vputils::isPhi(const VPRecipeBase &R) {
@@ -1813,7 +1805,6 @@ bool vputils::isHeaderPhi(const VPRecipeBase &R) {
   return false;
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
 bool vputils::isHeaderMask(VPValue *V, VPlan &Plan) {
   if (isa<VPActiveLaneMaskPHIRecipe>(V))
     return true;
@@ -1833,4 +1824,3 @@ bool vputils::isHeaderMask(VPValue *V, VPlan &Plan) {
   return match(V, m_Binary<Instruction::ICmp>(m_VPValue(A), m_VPValue(B))) &&
          IsWideCanonicalIV(A) && B == Plan.getOrCreateBackedgeTakenCount();
 }
->>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
