@@ -702,8 +702,7 @@ bool RISCVTargetMachine::parseMachineFunctionInfo(
 }
 
 #if SIFIVE_CUSTOMIZATION
-void RISCVTargetMachine::registerPassBuilderCallbacks(
-    PassBuilder &PB, bool PopulateClassToPassNames) {
+void RISCVTargetMachine::registerPassBuilderCallbacks(PassBuilder &PB) {
   PB.registerPipelineParsingCallback(
       [](StringRef PassName, LoopPassManager &PM,
          ArrayRef<PassBuilder::PipelineElement>) {
