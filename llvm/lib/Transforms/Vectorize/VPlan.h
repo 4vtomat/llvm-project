@@ -4521,7 +4521,6 @@ inline bool isUniformAfterVectorization(VPValue *VPV) {
     return VPI->isVectorToScalar();
   return false;
 }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 
 /// Returns true for PHI-like recipes.
@@ -4534,12 +4533,10 @@ bool isPhiThatGeneratesBackedge(const VPRecipeBase &R);
 /// block
 bool isHeaderPhi(const VPRecipeBase &R);
 #endif // SIFIVE_CUSTOMIZATION
-=======
 
 /// Return true if \p V is a header mask in \p Plan.
 bool isHeaderMask(VPValue *V, VPlan &Plan);
 
->>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 } // end namespace vputils
 
 } // end namespace llvm
