@@ -1127,12 +1127,8 @@ void InterleavedAccessInfo::collectConstStrideAccesses(
 void InterleavedAccessInfo::collectConstStrideAccesses(
     MapVector<Instruction *, StrideDescriptor> &AccessStrideInfo,
     const DenseMap<Value*, const SCEV*> &Strides) {
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-  auto &DL = TheLoop->getHeader()->getModule()->getDataLayout();
-=======
   auto &DL = TheLoop->getHeader()->getDataLayout();
->>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 
   // Since it's desired that the load/store instructions be maintained in
   // "program order" for the interleaved access analysis, we have to visit the
