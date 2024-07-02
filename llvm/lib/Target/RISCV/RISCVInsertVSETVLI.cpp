@@ -1176,15 +1176,6 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
     LIS->InsertMachineInstrInMaps(*MI);
     // Normally the AVL's live range will already extend past the inserted
     // vsetvli because the pseudos below will already use the AVL. But this
-<<<<<<< HEAD
-    // isn't always the case, e.g. PseudoVMV_X_S doesn't have an AVL operand.
-    LIS->getInterval(AVLReg).extendInBlock(
-        LIS->getMBBStartIdx(&MBB), LIS->getInstructionIndex(*MI).getRegSlot());
-#ifdef SIFIVE_CUSTOMIZATION
-    LIS->removeInterval(AVLReg);
-    LIS->createAndComputeVirtRegInterval(AVLReg);
-#endif // SIFIVE_CUSTOMIZATION
-=======
     // isn't always the case, e.g. PseudoVMV_X_S doesn't have an AVL operand or
     // we've taken the AVL from the VL output of another vsetvli.
     LiveInterval &LI = LIS->getInterval(AVLReg);
@@ -1192,7 +1183,6 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
     VNInfo *VNI = LI.getValNumInfo(Info.getAVLVNInfo()->id);
     LI.addSegment(LiveInterval::Segment(
         VNI->def, LIS->getInstructionIndex(*MI).getRegSlot(), VNI));
->>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
   }
 }
 
