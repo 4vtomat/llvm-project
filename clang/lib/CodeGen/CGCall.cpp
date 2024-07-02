@@ -5700,7 +5700,6 @@ RValue CodeGenFunction::EmitCall(const CGFunctionInfo &CallInfo,
       !isa_and_nonnull<FunctionDecl>(TargetDecl))
     EmitKCFIOperandBundle(ConcreteCallee, BundleList);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Emit riscv_cfi bundle for the indirect call whose function pointer has
   // landing pad attribute.
@@ -5720,10 +5719,8 @@ RValue CodeGenFunction::EmitCall(const CGFunctionInfo &CallInfo,
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   // Add the pointer-authentication bundle.
   EmitPointerAuthOperandBundle(ConcreteCallee.getPointerAuthInfo(), BundleList);
->>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 
   if (const FunctionDecl *FD = dyn_cast_or_null<FunctionDecl>(CurFuncDecl))
     if (FD->hasAttr<StrictFPAttr>())
