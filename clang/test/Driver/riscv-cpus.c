@@ -463,6 +463,7 @@
 
 // RUN: not %clang --target=riscv32 -### -c %s 2>&1 -mcpu=generic-rv32 -march=rv64i | FileCheck -check-prefix=MISMATCH-ARCH %s
 // MISMATCH-ARCH: cpu 'generic-rv32' does not support rv64
+<<<<<<< HEAD
 // mcpu with default march include experimental extensions
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-x280n | FileCheck -check-prefix=MCPU-SIFIVE-X280N %s
 
@@ -789,3 +790,28 @@
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-u64r | FileCheck -check-prefix=MCPU-SIFIVE-U64R %s
 // MCPU-SIFIVE-U64R: "-target-cpu" "sifive-u64r"
 // MCPU-SIFIVE-U64R-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d" "-target-feature" "+c" "-target-feature" "+zic64b" "-target-feature" "+zicbom" "-target-feature" "+zicbop" "-target-feature" "+zicboz" "-target-feature" "+ziccamoa" "-target-feature" "+ziccif" "-target-feature" "+ziccrse" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zihintntl" "-target-feature" "+zihintpause" "-target-feature" "+zihpm" "-target-feature" "+za64rs" "-target-feature" "+zfh" "-target-feature" "+zfhmin" "-target-feature" "+zca" "-target-feature" "+zcb" "-target-feature" "+zba" "-target-feature" "+zbb" "-target-feature" "+zbs" "-target-feature" "+zkt" "-target-feature" "+xsifivecdiscarddlone" "-target-feature" "+xsifivecflushdlone"
+=======
+
+// RUN: %clang --target=riscv32 -### -c %s 2>&1 -mcpu=syntacore-scr3-rv32 | FileCheck -check-prefix=MCPU-SYNTACORE-SCR3-RV32 %s
+// MCPU-SYNTACORE-SCR3-RV32: "-target-cpu" "syntacore-scr3-rv32"
+// MCPU-SYNTACORE-SCR3-RV32-SAME: "-target-feature" "+m"
+// MCPU-SYNTACORE-SCR3-RV32-SAME: "-target-feature" "+c"
+// MCPU-SYNTACORE-SCR3-RV32-SAME: "-target-feature" "+zicsr"
+// MCPU-SYNTACORE-SCR3-RV32-SAME: "-target-feature" "+zifencei"
+// MCPU-SYNTACORE-SCR3-RV32-SAME: "-target-abi" "ilp32"
+
+// RUN: %clang --target=riscv32 -### -c %s 2>&1 -mtune=syntacore-scr3-rv32 | FileCheck -check-prefix=MTUNE-SYNTACORE-SCR3-RV32 %s
+// MTUNE-SYNTACORE-SCR3-RV32: "-tune-cpu" "syntacore-scr3-rv32"
+
+// RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=syntacore-scr3-rv64 | FileCheck -check-prefix=MCPU-SYNTACORE-SCR3-RV64 %s
+// MCPU-SYNTACORE-SCR3-RV64: "-target-cpu" "syntacore-scr3-rv64"
+// MCPU-SYNTACORE-SCR3-RV64-SAME: "-target-feature" "+m"
+// MCPU-SYNTACORE-SCR3-RV64-SAME: "-target-feature" "+a"
+// MCPU-SYNTACORE-SCR3-RV64-SAME: "-target-feature" "+c"
+// MCPU-SYNTACORE-SCR3-RV64-SAME: "-target-feature" "+zicsr"
+// MCPU-SYNTACORE-SCR3-RV64-SAME: "-target-feature" "+zifencei"
+// MCPU-SYNTACORE-SCR3-RV64-SAME: "-target-abi" "lp64"
+
+// RUN: %clang --target=riscv64 -### -c %s 2>&1 -mtune=syntacore-scr3-rv64 | FileCheck -check-prefix=MTUNE-SYNTACORE-SCR3-RV64 %s
+// MTUNE-SYNTACORE-SCR3-RV64: "-tune-cpu" "syntacore-scr3-rv64"
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298

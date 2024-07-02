@@ -767,6 +767,15 @@ public:
       appendPredecessor(Pred);
   }
 
+  /// Set each VPBasicBlock in \p NewSuccss as successor of this VPBlockBase.
+  /// This VPBlockBase must have no successors. This VPBlockBase is not added
+  /// as predecessor of any VPBasicBlock in \p NewSuccs.
+  void setSuccessors(ArrayRef<VPBlockBase *> NewSuccs) {
+    assert(Successors.empty() && "Block successors already set.");
+    for (auto *Succ : NewSuccs)
+      appendSuccessor(Succ);
+  }
+
   /// Remove all the predecessor of this block.
   void clearPredecessors() { Predecessors.clear(); }
 
@@ -4079,6 +4088,12 @@ public:
     return any_of(VFs, [](ElementCount VF) { return VF.isScalable(); });
   }
 
+  /// Returns an iterator range over all VFs of the plan.
+  iterator_range<SmallSetVector<ElementCount, 2>::iterator>
+  vectorFactors() const {
+    return {VFs.begin(), VFs.end()};
+  }
+
   bool hasScalarVFOnly() const { return VFs.size() == 1 && VFs[0].isScalar(); }
 
   bool hasUF(unsigned UF) const { return UFs.empty() || UFs.contains(UF); }
@@ -4506,6 +4521,7 @@ inline bool isUniformAfterVectorization(VPValue *VPV) {
     return VPI->isVectorToScalar();
   return false;
 }
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 
 /// Returns true for PHI-like recipes.
@@ -4518,6 +4534,12 @@ bool isPhiThatGeneratesBackedge(const VPRecipeBase &R);
 /// block
 bool isHeaderPhi(const VPRecipeBase &R);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+
+/// Return true if \p V is a header mask in \p Plan.
+bool isHeaderMask(VPValue *V, VPlan &Plan);
+
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 } // end namespace vputils
 
 } // end namespace llvm

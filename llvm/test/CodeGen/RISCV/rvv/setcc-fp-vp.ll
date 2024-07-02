@@ -3427,15 +3427,20 @@ define <vscale x 32 x i1> @fcmp_oeq_vv_nxv32f64(<vscale x 32 x double> %va, <vsc
 ; CHECK-NEXT:    addi a1, a1, 16
 ; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
 ; CHECK-NEXT:    csrr a4, vlenb
-; CHECK-NEXT:    li a1, 24
-; CHECK-NEXT:    mul t0, a4, a1
-; CHECK-NEXT:    slli t1, a4, 3
+; CHECK-NEXT:    slli t0, a4, 3
+; CHECK-NEXT:    slli a1, a4, 5
+; CHECK-NEXT:    sub t1, a1, t0
 ; CHECK-NEXT:    srli a1, a4, 2
 ; CHECK-NEXT:    vsetvli a3, zero, e8, mf2, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v7, v0, a1
 ; CHECK-NEXT:    srli a3, a4, 3
+<<<<<<< HEAD
 ; CHECK-NEXT:    add a5, a2, t1
 ; CHECK-NEXT:    vl8re64.v v16, (a5)
+=======
+; CHECK-NEXT:    add a5, a2, t0
+; CHECK-NEXT:    vl8re64.v v8, (a5)
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 ; CHECK-NEXT:    slli t3, a4, 4
 ; CHECK-NEXT:    slli a5, a4, 1
 ; CHECK-NEXT:    vsetvli a7, zero, e8, mf4, ta, ma
@@ -3445,8 +3450,8 @@ define <vscale x 32 x i1> @fcmp_oeq_vv_nxv32f64(<vscale x 32 x double> %va, <vsc
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    mv a7, a5
 ; CHECK-NEXT:  .LBB171_2:
-; CHECK-NEXT:    add t2, a2, t0
-; CHECK-NEXT:    add t1, a0, t1
+; CHECK-NEXT:    add t2, a0, t0
+; CHECK-NEXT:    add t1, a2, t1
 ; CHECK-NEXT:    add t0, a2, t3
 ; CHECK-NEXT:    vl8re64.v v8, (a2)
 ; CHECK-NEXT:    csrr a2, vlenb
@@ -3536,7 +3541,11 @@ define <vscale x 32 x i1> @fcmp_oeq_vv_nxv32f64(<vscale x 32 x double> %va, <vsc
 ; CHECK-NEXT:    addi a2, a2, 16
 ; CHECK-NEXT:    vl8r.v v24, (a2) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vsetvli zero, a0, e64, m8, ta, ma
+<<<<<<< HEAD
 ; CHECK-NEXT:    vmfeq.vv v10, v24, v16, v0.t
+=======
+; CHECK-NEXT:    vmfeq.vv v18, v24, v8, v0.t
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 ; CHECK-NEXT:    add a0, a1, a3
 ; CHECK-NEXT:    vsetvli zero, a0, e8, mf2, tu, ma
 ; CHECK-NEXT:    vslideup.vx v8, v9, a1

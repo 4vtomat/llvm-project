@@ -322,7 +322,7 @@ bool RISCVCodeGenPrepare::runOnFunction(Function &F) {
   auto &TM = TPC.getTM<RISCVTargetMachine>();
   ST = &TM.getSubtarget<RISCVSubtarget>(F);
 
-  DL = &F.getParent()->getDataLayout();
+  DL = &F.getDataLayout();
 
   DT = &getAnalysis<DominatorTreeWrapperPass>().getDomTree(); // SIFIVE
 

@@ -115,10 +115,18 @@ define <16 x half> @selectcc_v16f16(half %a, half %b, <16 x half> %c, <16 x half
 define <2 x float> @select_v2f32(i1 zeroext %c, <2 x float> %a, <2 x float> %b) {
 ; CHECK-LABEL: select_v2f32:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    bnez a0, .LBB8_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:  .LBB8_2:
+=======
+; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
+; CHECK-NEXT:    vmv.v.x v10, a0
+; CHECK-NEXT:    vmsne.vi v0, v10, 0
+; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
+; CHECK-NEXT:    vmerge.vvm v8, v9, v8, v0
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 ; CHECK-NEXT:    ret
   %v = select i1 %c, <2 x float> %a, <2 x float> %b
   ret <2 x float> %v
@@ -128,10 +136,18 @@ define <2 x float> @selectcc_v2f32(float %a, float %b, <2 x float> %c, <2 x floa
 ; CHECK-LABEL: selectcc_v2f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    feq.s a0, fa0, fa1
+<<<<<<< HEAD
 ; CHECK-NEXT:    bnez a0, .LBB9_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:  .LBB9_2:
+=======
+; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
+; CHECK-NEXT:    vmv.v.x v10, a0
+; CHECK-NEXT:    vmsne.vi v0, v10, 0
+; CHECK-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
+; CHECK-NEXT:    vmerge.vvm v8, v9, v8, v0
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 ; CHECK-NEXT:    ret
   %cmp = fcmp oeq float %a, %b
   %v = select i1 %cmp, <2 x float> %c, <2 x float> %d
@@ -141,10 +157,18 @@ define <2 x float> @selectcc_v2f32(float %a, float %b, <2 x float> %c, <2 x floa
 define <4 x float> @select_v4f32(i1 zeroext %c, <4 x float> %a, <4 x float> %b) {
 ; CHECK-LABEL: select_v4f32:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    bnez a0, .LBB10_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:  .LBB10_2:
+=======
+; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
+; CHECK-NEXT:    vmv.v.x v10, a0
+; CHECK-NEXT:    vmsne.vi v0, v10, 0
+; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; CHECK-NEXT:    vmerge.vvm v8, v9, v8, v0
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 ; CHECK-NEXT:    ret
   %v = select i1 %c, <4 x float> %a, <4 x float> %b
   ret <4 x float> %v
@@ -154,10 +178,18 @@ define <4 x float> @selectcc_v4f32(float %a, float %b, <4 x float> %c, <4 x floa
 ; CHECK-LABEL: selectcc_v4f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    feq.s a0, fa0, fa1
+<<<<<<< HEAD
 ; CHECK-NEXT:    bnez a0, .LBB11_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:  .LBB11_2:
+=======
+; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
+; CHECK-NEXT:    vmv.v.x v10, a0
+; CHECK-NEXT:    vmsne.vi v0, v10, 0
+; CHECK-NEXT:    vsetvli zero, zero, e32, m1, ta, ma
+; CHECK-NEXT:    vmerge.vvm v8, v9, v8, v0
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 ; CHECK-NEXT:    ret
   %cmp = fcmp oeq float %a, %b
   %v = select i1 %cmp, <4 x float> %c, <4 x float> %d
@@ -167,10 +199,18 @@ define <4 x float> @selectcc_v4f32(float %a, float %b, <4 x float> %c, <4 x floa
 define <8 x float> @select_v8f32(i1 zeroext %c, <8 x float> %a, <8 x float> %b) {
 ; CHECK-LABEL: select_v8f32:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    bnez a0, .LBB12_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv2r.v v8, v10
 ; CHECK-NEXT:  .LBB12_2:
+=======
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
+; CHECK-NEXT:    vmv.v.x v12, a0
+; CHECK-NEXT:    vmsne.vi v0, v12, 0
+; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
+; CHECK-NEXT:    vmerge.vvm v8, v10, v8, v0
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 ; CHECK-NEXT:    ret
   %v = select i1 %c, <8 x float> %a, <8 x float> %b
   ret <8 x float> %v
@@ -180,10 +220,18 @@ define <8 x float> @selectcc_v8f32(float %a, float %b, <8 x float> %c, <8 x floa
 ; CHECK-LABEL: selectcc_v8f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    feq.s a0, fa0, fa1
+<<<<<<< HEAD
 ; CHECK-NEXT:    bnez a0, .LBB13_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv2r.v v8, v10
 ; CHECK-NEXT:  .LBB13_2:
+=======
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
+; CHECK-NEXT:    vmv.v.x v12, a0
+; CHECK-NEXT:    vmsne.vi v0, v12, 0
+; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
+; CHECK-NEXT:    vmerge.vvm v8, v10, v8, v0
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 ; CHECK-NEXT:    ret
   %cmp = fcmp oeq float %a, %b
   %v = select i1 %cmp, <8 x float> %c, <8 x float> %d
@@ -193,10 +241,18 @@ define <8 x float> @selectcc_v8f32(float %a, float %b, <8 x float> %c, <8 x floa
 define <16 x float> @select_v16f32(i1 zeroext %c, <16 x float> %a, <16 x float> %b) {
 ; CHECK-LABEL: select_v16f32:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    bnez a0, .LBB14_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv4r.v v8, v12
 ; CHECK-NEXT:  .LBB14_2:
+=======
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
+; CHECK-NEXT:    vmv.v.x v16, a0
+; CHECK-NEXT:    vmsne.vi v0, v16, 0
+; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
+; CHECK-NEXT:    vmerge.vvm v8, v12, v8, v0
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 ; CHECK-NEXT:    ret
   %v = select i1 %c, <16 x float> %a, <16 x float> %b
   ret <16 x float> %v
@@ -206,10 +262,18 @@ define <16 x float> @selectcc_v16f32(float %a, float %b, <16 x float> %c, <16 x 
 ; CHECK-LABEL: selectcc_v16f32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    feq.s a0, fa0, fa1
+<<<<<<< HEAD
 ; CHECK-NEXT:    bnez a0, .LBB15_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv4r.v v8, v12
 ; CHECK-NEXT:  .LBB15_2:
+=======
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
+; CHECK-NEXT:    vmv.v.x v16, a0
+; CHECK-NEXT:    vmsne.vi v0, v16, 0
+; CHECK-NEXT:    vsetvli zero, zero, e32, m4, ta, ma
+; CHECK-NEXT:    vmerge.vvm v8, v12, v8, v0
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 ; CHECK-NEXT:    ret
   %cmp = fcmp oeq float %a, %b
   %v = select i1 %cmp, <16 x float> %c, <16 x float> %d
@@ -219,10 +283,18 @@ define <16 x float> @selectcc_v16f32(float %a, float %b, <16 x float> %c, <16 x 
 define <2 x double> @select_v2f64(i1 zeroext %c, <2 x double> %a, <2 x double> %b) {
 ; CHECK-LABEL: select_v2f64:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    bnez a0, .LBB16_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:  .LBB16_2:
+=======
+; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
+; CHECK-NEXT:    vmv.v.x v10, a0
+; CHECK-NEXT:    vmsne.vi v0, v10, 0
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
+; CHECK-NEXT:    vmerge.vvm v8, v9, v8, v0
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 ; CHECK-NEXT:    ret
   %v = select i1 %c, <2 x double> %a, <2 x double> %b
   ret <2 x double> %v
@@ -232,10 +304,18 @@ define <2 x double> @selectcc_v2f64(double %a, double %b, <2 x double> %c, <2 x 
 ; CHECK-LABEL: selectcc_v2f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    feq.d a0, fa0, fa1
+<<<<<<< HEAD
 ; CHECK-NEXT:    bnez a0, .LBB17_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv1r.v v8, v9
 ; CHECK-NEXT:  .LBB17_2:
+=======
+; CHECK-NEXT:    vsetivli zero, 2, e8, mf8, ta, ma
+; CHECK-NEXT:    vmv.v.x v10, a0
+; CHECK-NEXT:    vmsne.vi v0, v10, 0
+; CHECK-NEXT:    vsetvli zero, zero, e64, m1, ta, ma
+; CHECK-NEXT:    vmerge.vvm v8, v9, v8, v0
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 ; CHECK-NEXT:    ret
   %cmp = fcmp oeq double %a, %b
   %v = select i1 %cmp, <2 x double> %c, <2 x double> %d
@@ -245,10 +325,18 @@ define <2 x double> @selectcc_v2f64(double %a, double %b, <2 x double> %c, <2 x 
 define <4 x double> @select_v4f64(i1 zeroext %c, <4 x double> %a, <4 x double> %b) {
 ; CHECK-LABEL: select_v4f64:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    bnez a0, .LBB18_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv2r.v v8, v10
 ; CHECK-NEXT:  .LBB18_2:
+=======
+; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
+; CHECK-NEXT:    vmv.v.x v12, a0
+; CHECK-NEXT:    vmsne.vi v0, v12, 0
+; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
+; CHECK-NEXT:    vmerge.vvm v8, v10, v8, v0
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 ; CHECK-NEXT:    ret
   %v = select i1 %c, <4 x double> %a, <4 x double> %b
   ret <4 x double> %v
@@ -258,10 +346,18 @@ define <4 x double> @selectcc_v4f64(double %a, double %b, <4 x double> %c, <4 x 
 ; CHECK-LABEL: selectcc_v4f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    feq.d a0, fa0, fa1
+<<<<<<< HEAD
 ; CHECK-NEXT:    bnez a0, .LBB19_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv2r.v v8, v10
 ; CHECK-NEXT:  .LBB19_2:
+=======
+; CHECK-NEXT:    vsetivli zero, 4, e8, mf4, ta, ma
+; CHECK-NEXT:    vmv.v.x v12, a0
+; CHECK-NEXT:    vmsne.vi v0, v12, 0
+; CHECK-NEXT:    vsetvli zero, zero, e64, m2, ta, ma
+; CHECK-NEXT:    vmerge.vvm v8, v10, v8, v0
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 ; CHECK-NEXT:    ret
   %cmp = fcmp oeq double %a, %b
   %v = select i1 %cmp, <4 x double> %c, <4 x double> %d
@@ -271,10 +367,18 @@ define <4 x double> @selectcc_v4f64(double %a, double %b, <4 x double> %c, <4 x 
 define <8 x double> @select_v8f64(i1 zeroext %c, <8 x double> %a, <8 x double> %b) {
 ; CHECK-LABEL: select_v8f64:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    bnez a0, .LBB20_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv4r.v v8, v12
 ; CHECK-NEXT:  .LBB20_2:
+=======
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
+; CHECK-NEXT:    vmv.v.x v16, a0
+; CHECK-NEXT:    vmsne.vi v0, v16, 0
+; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
+; CHECK-NEXT:    vmerge.vvm v8, v12, v8, v0
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 ; CHECK-NEXT:    ret
   %v = select i1 %c, <8 x double> %a, <8 x double> %b
   ret <8 x double> %v
@@ -284,10 +388,18 @@ define <8 x double> @selectcc_v8f64(double %a, double %b, <8 x double> %c, <8 x 
 ; CHECK-LABEL: selectcc_v8f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    feq.d a0, fa0, fa1
+<<<<<<< HEAD
 ; CHECK-NEXT:    bnez a0, .LBB21_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv4r.v v8, v12
 ; CHECK-NEXT:  .LBB21_2:
+=======
+; CHECK-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
+; CHECK-NEXT:    vmv.v.x v16, a0
+; CHECK-NEXT:    vmsne.vi v0, v16, 0
+; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
+; CHECK-NEXT:    vmerge.vvm v8, v12, v8, v0
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 ; CHECK-NEXT:    ret
   %cmp = fcmp oeq double %a, %b
   %v = select i1 %cmp, <8 x double> %c, <8 x double> %d
@@ -297,10 +409,18 @@ define <8 x double> @selectcc_v8f64(double %a, double %b, <8 x double> %c, <8 x 
 define <16 x double> @select_v16f64(i1 zeroext %c, <16 x double> %a, <16 x double> %b) {
 ; CHECK-LABEL: select_v16f64:
 ; CHECK:       # %bb.0:
+<<<<<<< HEAD
 ; CHECK-NEXT:    bnez a0, .LBB22_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv8r.v v8, v16
 ; CHECK-NEXT:  .LBB22_2:
+=======
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
+; CHECK-NEXT:    vmv.v.x v24, a0
+; CHECK-NEXT:    vmsne.vi v0, v24, 0
+; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
+; CHECK-NEXT:    vmerge.vvm v8, v16, v8, v0
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 ; CHECK-NEXT:    ret
   %v = select i1 %c, <16 x double> %a, <16 x double> %b
   ret <16 x double> %v
@@ -310,10 +430,18 @@ define <16 x double> @selectcc_v16f64(double %a, double %b, <16 x double> %c, <1
 ; CHECK-LABEL: selectcc_v16f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    feq.d a0, fa0, fa1
+<<<<<<< HEAD
 ; CHECK-NEXT:    bnez a0, .LBB23_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    vmv8r.v v8, v16
 ; CHECK-NEXT:  .LBB23_2:
+=======
+; CHECK-NEXT:    vsetivli zero, 16, e8, m1, ta, ma
+; CHECK-NEXT:    vmv.v.x v24, a0
+; CHECK-NEXT:    vmsne.vi v0, v24, 0
+; CHECK-NEXT:    vsetvli zero, zero, e64, m8, ta, ma
+; CHECK-NEXT:    vmerge.vvm v8, v16, v8, v0
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 ; CHECK-NEXT:    ret
   %cmp = fcmp oeq double %a, %b
   %v = select i1 %cmp, <16 x double> %c, <16 x double> %d

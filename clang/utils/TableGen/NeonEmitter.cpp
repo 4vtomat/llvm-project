@@ -2461,10 +2461,6 @@ static void printNEONBegin(raw_ostream &OS) {
         "Please use -mfloat-abi=softfp or -mfloat-abi=hard\"\n";
   OS << "#else\n\n";
 
-  OS << "#if !defined(__ARM_NEON)\n";
-  OS << "#error \"NEON support not enabled\"\n";
-  OS << "#else\n\n";
-
   OS << "#include <stdint.h>\n\n";
 
   OS << "#include <arm_bf16.h>\n";
@@ -2626,12 +2622,19 @@ void NeonEmitter::run(raw_ostream &OS) {
   if (!InGuard.empty())
     OS << "#endif\n";
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (RecodeMode)
     printRecodeNEONEnd(OS);
   else
     printNEONEnd(OS);
 #endif
+=======
+  OS << "\n";
+  OS << "#undef __ai\n\n";
+  OS << "#endif /* if !defined(__ARM_NEON) */\n";
+  OS << "#endif /* ifndef __ARM_FP */\n";
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 }
 
 #if SIFIVE_CUSTOMIZATION

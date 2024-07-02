@@ -299,6 +299,7 @@
 ; avoiding FileCheck complaining about the unused prefix.
 ; CHECK-NOEXT: {{.*}}
 
+<<<<<<< HEAD
 ; RUN: opt -disable-output -disable-verify -verify-analysis-invalidation=0 -debug-pass-manager \
 ; RUN:     -passes='repeat<3>(no-op-module)' %s 2>&1 \
 ; RUN:     | FileCheck %s --check-prefix=CHECK-REPEAT-MODULE-PASS
@@ -354,6 +355,8 @@
 ; CHECK-REPEAT-LOOP-PASS-NEXT: Running pass: NoOpLoopPass
 ; CHECK-REPEAT-LOOP-PASS-NEXT: Running pass: NoOpLoopPass
 
+=======
+>>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 define void @foo(i1 %x, ptr %p1, ptr %p2) {
 entry:
   store i8 42, ptr %p1
