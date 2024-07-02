@@ -1799,7 +1799,7 @@ PreservedAnalyses LoopConcatPass::run(Function &F,
   auto &PDT = AM.getResult<PostDominatorTreeAnalysis>(F);
   auto &ORE = AM.getResult<OptimizationRemarkEmitterAnalysis>(F);
   auto &AC = AM.getResult<AssumptionAnalysis>(F);
-  const DataLayout &DL = F.getParent()->getDataLayout();
+  const DataLayout &DL = F.getDataLayout();
 
   if (!EnableLoopConcatenation)
     return PreservedAnalyses::all();
