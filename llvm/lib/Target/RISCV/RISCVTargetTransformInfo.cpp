@@ -2937,10 +2937,6 @@ bool RISCVTTIImpl::preferPostFixStartValue(unsigned Opcode, Type *Ty) const {
   return PreferPostFixStartValue;
 }
 
-bool RISCVTTIImpl::forceCheckAddressingMode() const {
-  return true;
-}
-
 Type *RISCVTTIImpl::getScalableVectorFromFixed(Type *Ty) const {
   FixedVectorType *VecTy = cast<FixedVectorType>(Ty);
   assert(VecTy->getElementType()->isIntegerTy() ||

@@ -977,8 +977,6 @@ public:
     return false;
   }
 
-  bool forceCheckAddressingMode() const { return false; }
-
   bool isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
                                const DataLayout &DL) const {
     return false;

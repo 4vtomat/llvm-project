@@ -1742,10 +1742,6 @@ public:
   /// start value.
   bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const;
 
-  /// \returns True if the target force to check addressing mode
-  /// in SeparateConstOffsetFromGEP pass.
-  bool forceCheckAddressingMode() const;
-
   /// \returns True if `experimental.vector.interleave` or
   /// `experimental.vector.deinterleave` intrinsics are legal for a given vector
   /// type \p VTy and given interleave factor \p Factor
@@ -2254,7 +2250,6 @@ public:
 #if SIFIVE_CUSTOMIZATION
   virtual bool useVLAVectorizer() const = 0;
   virtual bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const = 0;
-  virtual bool forceCheckAddressingMode() = 0;
   virtual bool isLegalVectorInterleave(VectorType *VTy, unsigned Factor,
                                        const DataLayout &DL) const = 0;
 #endif // SIFIVE_CUSTOMIZATION
@@ -3062,10 +3057,6 @@ public:
 
   bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const override {
     return Impl.preferPostFixStartValue(Opcode, Ty);
-  }
-
-  bool forceCheckAddressingMode() override {
-    return Impl.forceCheckAddressingMode();
   }
 
   bool isLegalVectorInterleave(VectorType *VTy, unsigned Factor,

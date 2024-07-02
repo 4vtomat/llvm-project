@@ -167,7 +167,11 @@ FunctionPass *createPartiallyInlineLibCallsPass();
 //
 // SeparateConstOffsetFromGEP - Split GEPs for better CSE
 //
-FunctionPass *createSeparateConstOffsetFromGEPPass(bool LowerGEP = false);
+#if SIFIVE_CUSTOMIZATION
+FunctionPass *
+createSeparateConstOffsetFromGEPPass(bool LowerGEP = false,
+                                     bool ForceCheckAddressingMode = false);
+#endif
 
 //===----------------------------------------------------------------------===//
 //
