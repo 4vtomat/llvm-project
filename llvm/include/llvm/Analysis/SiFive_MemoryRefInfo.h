@@ -13,6 +13,7 @@
 #ifndef LLVM_SUPPORT_MEMORYREFINFO_H
 #define LLVM_SUPPORT_MEMORYREFINFO_H
 
+#include "llvm/IR/DataLayout.h"
 #include "llvm/IR/Instruction.h"
 
 namespace llvm {
@@ -43,7 +44,7 @@ public:
       : IsWrite(IsWrite), OpType(OpType), Alignment(Alignment),
         MaybeMask(MaybeMask), MaybeEVL(MaybeEVL), MaybeStride(MaybeStride),
         MaybeIndex(MaybeIndex) {
-    const DataLayout &DL = I->getModule()->getDataLayout();
+    const DataLayout &DL = I->getDataLayout();
     TypeStoreSize = DL.getTypeStoreSizeInBits(OpType);
     PtrUse = &I->getOperandUse(OperandNo);
   }
