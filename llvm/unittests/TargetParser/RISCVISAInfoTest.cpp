@@ -1111,25 +1111,16 @@ Experimental extensions
     ztso                 0.1
     zvfbfmin             1.0
     zvfbfwma             1.0
-<<<<<<< HEAD
-    smmpm                0.8
-    smnpm                0.8
+    smmpm                1.0
+    smnpm                1.0
     smrnmi               0.5
     smwg                 0.3
     smwgd                0.3
-    ssnpm                0.8
-    sspm                 0.8
-    ssqosid              1.0
-    sswg                 0.3
-    supm                 0.8
-=======
-    smmpm                1.0
-    smnpm                1.0
     ssnpm                1.0
     sspm                 1.0
     ssqosid              1.0
+    sswg                 0.3
     supm                 1.0
->>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 
 Supported Profiles
     rva20s64
