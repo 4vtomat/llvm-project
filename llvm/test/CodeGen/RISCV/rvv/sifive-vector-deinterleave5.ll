@@ -15,8 +15,8 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16
 ; CHECK-NEXT:    vmv1r.v v9, v0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    srli a1, a0, 3
-; CHECK-NEXT:    li a2, 6
-; CHECK-NEXT:    mul a1, a1, a2
+; CHECK-NEXT:    slli a1, a1, 1
+; CHECK-NEXT:    sub a1, a0, a1
 ; CHECK-NEXT:    vsetvli a2, zero, e8, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v0, v0, a1
 ; CHECK-NEXT:    vsetvli a1, zero, e8, m2, ta, ma

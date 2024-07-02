@@ -30,17 +30,18 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16
 ; CHECK-NEXT:    vid.v v24
 ; CHECK-NEXT:    li a2, 6
 ; CHECK-NEXT:    vmul.vx v24, v24, a2
-; CHECK-NEXT:    csrr a3, vlenb
-; CHECK-NEXT:    li a4, 88
-; CHECK-NEXT:    mul a3, a3, a4
-; CHECK-NEXT:    add a3, sp, a3
-; CHECK-NEXT:    addi a3, a3, 16
-; CHECK-NEXT:    vs8r.v v24, (a3) # Unknown-size Folded Spill
+; CHECK-NEXT:    csrr a2, vlenb
+; CHECK-NEXT:    li a3, 88
+; CHECK-NEXT:    mul a2, a2, a3
+; CHECK-NEXT:    add a2, sp, a2
+; CHECK-NEXT:    addi a2, a2, 16
+; CHECK-NEXT:    vs8r.v v24, (a2) # Unknown-size Folded Spill
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vsetvli a3, zero, e8, m2, ta, ma
+; CHECK-NEXT:    vsetvli a2, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmerge.vim v26, v12, 1, v0
-; CHECK-NEXT:    srli a0, a0, 3
-; CHECK-NEXT:    mul a0, a0, a2
+; CHECK-NEXT:    srli a2, a0, 3
+; CHECK-NEXT:    slli a2, a2, 1
+; CHECK-NEXT:    sub a0, a0, a2
 ; CHECK-NEXT:    vsetvli a2, zero, e8, m1, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v0, v9, a0
 ; CHECK-NEXT:    vslidedown.vx v8, v8, a1

@@ -11,30 +11,29 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 7
 ; CHECK-NEXT:    sub sp, sp, a0
-; CHECK-NEXT:    vmv1r.v v9, v0
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    srli a1, a0, 3
-; CHECK-NEXT:    li a2, 6
-; CHECK-NEXT:    mul a1, a1, a2
-; CHECK-NEXT:    vsetvli a2, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vx v0, v8, a1
-; CHECK-NEXT:    vsetvli a2, zero, e8, m2, ta, ma
+; CHECK-NEXT:    vmv1r.v v12, v0
+; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmv.v.i v6, 0
-; CHECK-NEXT:    srli a2, a0, 1
-; CHECK-NEXT:    vsetvli a3, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vx v10, v8, a2
-; CHECK-NEXT:    vsetvli a3, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vmerge.vim v22, v6, 1, v0
-; CHECK-NEXT:    vmv1r.v v0, v10
-; CHECK-NEXT:    vmerge.vim v20, v6, 1, v0
-; CHECK-NEXT:    srli a0, a0, 2
-; CHECK-NEXT:    vsetvli a3, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vx v10, v8, a0
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    srli a1, a0, 2
+; CHECK-NEXT:    vsetvli a2, zero, e8, m1, ta, ma
+; CHECK-NEXT:    vslidedown.vx v10, v8, a1
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vsetvli a3, zero, e8, m2, ta, ma
+; CHECK-NEXT:    vsetvli a2, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmerge.vim v16, v6, 1, v0
 ; CHECK-NEXT:    vmv1r.v v0, v10
 ; CHECK-NEXT:    vmerge.vim v18, v6, 1, v0
+; CHECK-NEXT:    srli a2, a0, 1
+; CHECK-NEXT:    vsetvli a3, zero, e8, m1, ta, ma
+; CHECK-NEXT:    vslidedown.vx v0, v8, a2
+; CHECK-NEXT:    srli a3, a0, 3
+; CHECK-NEXT:    slli a3, a3, 1
+; CHECK-NEXT:    sub a0, a0, a3
+; CHECK-NEXT:    vslidedown.vx v8, v8, a0
+; CHECK-NEXT:    vsetvli a3, zero, e8, m2, ta, ma
+; CHECK-NEXT:    vmerge.vim v20, v6, 1, v0
+; CHECK-NEXT:    vmv1r.v v0, v8
+; CHECK-NEXT:    vmerge.vim v22, v6, 1, v0
 ; CHECK-NEXT:    csrr a3, vlenb
 ; CHECK-NEXT:    li a4, 120
 ; CHECK-NEXT:    mul a3, a3, a4
@@ -51,19 +50,19 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16
 ; CHECK-NEXT:    addi a3, a3, 16
 ; CHECK-NEXT:    vs8r.v v24, (a3) # Unknown-size Folded Spill
 ; CHECK-NEXT:    vsetvli a3, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vx v0, v9, a1
-; CHECK-NEXT:    vslidedown.vx v8, v9, a2
+; CHECK-NEXT:    vslidedown.vx v10, v12, a1
+; CHECK-NEXT:    vmv1r.v v0, v12
 ; CHECK-NEXT:    vsetvli a1, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vmerge.vim v14, v6, 1, v0
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vim v12, v6, 1, v0
-; CHECK-NEXT:    vsetvli a1, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vslidedown.vx v10, v9, a0
-; CHECK-NEXT:    vmv1r.v v0, v9
-; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmerge.vim v8, v6, 1, v0
 ; CHECK-NEXT:    vmv1r.v v0, v10
 ; CHECK-NEXT:    vmerge.vim v10, v6, 1, v0
+; CHECK-NEXT:    vsetvli a1, zero, e8, m1, ta, ma
+; CHECK-NEXT:    vslidedown.vx v0, v12, a2
+; CHECK-NEXT:    vslidedown.vx v14, v12, a0
+; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
+; CHECK-NEXT:    vmerge.vim v12, v6, 1, v0
+; CHECK-NEXT:    vmv1r.v v0, v14
+; CHECK-NEXT:    vmerge.vim v14, v6, 1, v0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 112
 ; CHECK-NEXT:    mul a0, a0, a1
@@ -91,27 +90,26 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16
 ; CHECK-NEXT:    mul a0, a0, a1
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vadd.vi v16, v8, 2
-; CHECK-NEXT:    vmv8r.v v24, v8
+; CHECK-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    vadd.vi v8, v24, 2
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 96
 ; CHECK-NEXT:    mul a0, a0, a1
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    li a1, 96
-; CHECK-NEXT:    mul a0, a0, a1
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 120
 ; CHECK-NEXT:    mul a0, a0, a1
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    li a1, 96
+; CHECK-NEXT:    mul a0, a0, a1
+; CHECK-NEXT:    add a0, sp, a0
+; CHECK-NEXT:    addi a0, a0, 16
+; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vrgather.vv v0, v8, v16
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 48
@@ -120,17 +118,17 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    vs8r.v v0, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    li a1, 96
-; CHECK-NEXT:    mul a0, a0, a1
-; CHECK-NEXT:    add a0, sp, a0
-; CHECK-NEXT:    addi a0, a0, 16
-; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 112
 ; CHECK-NEXT:    mul a0, a0, a1
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    vl8r.v v8, (a0) # Unknown-size Folded Reload
+; CHECK-NEXT:    csrr a0, vlenb
+; CHECK-NEXT:    li a1, 96
+; CHECK-NEXT:    mul a0, a0, a1
+; CHECK-NEXT:    add a0, sp, a0
+; CHECK-NEXT:    addi a0, a0, 16
+; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vrgather.vv v0, v8, v16
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 88

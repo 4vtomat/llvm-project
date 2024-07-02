@@ -8,8 +8,6 @@
 target triple = "riscv64"
 
 define float @fadd(ptr noalias nocapture readonly %a, i64 %n) #0 {
-<<<<<<< HEAD
-=======
 ; CHECK-UNORDERED-LABEL: @fadd(
 ; CHECK-UNORDERED-NEXT:  entry:
 ; CHECK-UNORDERED-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N:%.*]], 4
@@ -66,7 +64,6 @@ define float @fadd(ptr noalias nocapture readonly %a, i64 %n) #0 {
 ; CHECK-NOT-VECTORIZED-NEXT:    [[ADD_LCSSA:%.*]] = phi float [ [[ADD]], [[FOR_BODY]] ]
 ; CHECK-NOT-VECTORIZED-NEXT:    ret float [[ADD_LCSSA]]
 ;
->>>>>>> 0cc3fe460105c4c0c78139d7a78da557c3502298
 ; CHECK-ORDERED-LABEL: @fadd(
 ; CHECK-ORDERED-NEXT:  entry:
 ; CHECK-ORDERED-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[N:%.*]], 12

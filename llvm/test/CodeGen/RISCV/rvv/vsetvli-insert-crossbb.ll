@@ -723,7 +723,6 @@ define void @vector_init_vsetvli_N(i64 %N, ptr %c) {
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB14_2: # %for.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    add a2, a2, a3
 ; CHECK-NEXT:    add a1, a1, a4
@@ -1043,6 +1042,13 @@ declare <vscale x 4 x i32> @llvm.riscv.vadd.mask.nxv4i32.nxv4i32(
 ; AVL can be from a predecessor block, so make sure we extend its live range
 ; across blocks.
 define <vscale x 2 x i32> @cross_block_avl_extend(i64 %avl, <vscale x 2 x i32> %a, <vscale x 2 x i32> %b) {
+; CHECK-LABEL: cross_block_avl_extend:
+; CHECK:       # %bb.0: # %entry
+; CHECK-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
+; CHECK-NEXT:    vadd.vv v9, v8, v9
+; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
+; CHECK-NEXT:    vadd.vv v8, v8, v9
+; CHECK-NEXT:    ret
 entry:
   ; Get the output vl from a vsetvli
   %vl = call i64 @llvm.riscv.vsetvli.i64(i64 %avl, i64 2, i64 0)
