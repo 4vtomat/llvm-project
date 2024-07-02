@@ -62,8 +62,9 @@ public:
                                 PerFunctionMIParsingState &PFS,
                                 SMDiagnostic &Error,
                                 SMRange &SourceRange) const override;
-  void registerPassBuilderCallbacks(PassBuilder &PB,
-                                    bool PopulateClassToPassNames) override;
+#if SIFIVE_CUSTOMIZATION
+  void registerPassBuilderCallbacks(PassBuilder &PB) override;
+#endif // SIFIVE_CUSTOMIZATION
 };
 } // namespace llvm
 
