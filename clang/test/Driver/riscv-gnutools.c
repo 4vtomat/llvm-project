@@ -21,9 +21,9 @@
 // RUN: 2>&1 | FileCheck -check-prefix=CHECK-RV32-NO-RELAX %s
 
 // CHECK-RV32-NO-RELAX: "{{.*}}as{{(.exe)?}}" "{{.*}}" "-mno-relax"
-// CHECK-RV32IMAC-ILP32: "{{.*}}as{{(.exe)?}}" "-mabi" "ilp32" "-march" "rv32i2p1_m2p0_a2p1_c2p0"
-// CHECK-RV32IMAFDC-ILP32D: "{{.*}}as{{(.exe)?}}" "-mabi" "ilp32d" "-march" "rv32i2p1_m2p0_a2p1_f2p2_d2p2_c2p0_zicsr2p0"
-// CHECK-RV32G-ILP32D: "{{.*}}as{{(.exe)?}}" "-mabi" "ilp32d" "-march" "rv32i2p1_m2p0_a2p1_f2p2_d2p2_zicsr2p0_zifencei2p0"
+// CHECK-RV32IMAC-ILP32: "{{.*}}as{{(.exe)?}}" "-mabi" "ilp32" "-march" "rv32i2p1_m2p0_a2p1_c2p0_zmmul1p0"
+// CHECK-RV32IMAFDC-ILP32D: "{{.*}}as{{(.exe)?}}" "-mabi" "ilp32d" "-march" "rv32i2p1_m2p0_a2p1_f2p2_d2p2_c2p0_zicsr2p0_zmmul1p0"
+// CHECK-RV32G-ILP32D: "{{.*}}as{{(.exe)?}}" "-mabi" "ilp32d" "-march" "rv32i2p1_m2p0_a2p1_f2p2_d2p2_zicsr2p0_zifencei2p0_zmmul1p0"
 
 
 // 64-bit checks
@@ -47,7 +47,7 @@
 // CHECK-RV64-RELAX: "{{.*}}as{{(.exe)?}}"
 // CHECK-RV64-RELAX-NOT: "-mno-relax"
 // SIFIVE_CUSTOMIZATION
-// CHECK-RV64IMAC-LP64: "{{.*}}as{{(.exe)?}}" "-mabi" "lp64d" "-march" "rv64i2p1_m2p0_a2p1_f2p2_d2p2_c2p0_zicsr2p0"
+// CHECK-RV64IMAC-LP64: "{{.*}}as{{(.exe)?}}" "-mabi" "lp64d" "-march" "rv64i2p1_m2p0_a2p1_f2p2_d2p2_c2p0_zicsr2p0_zmmul1p0"
 // end SIFIVE_CUSTOMIZATION
-// CHECK-RV64IMAFDC-LP64D: "{{.*}}as{{(.exe)?}}" "-mabi" "lp64d" "-march" "rv64i2p1_m2p0_a2p1_f2p2_d2p2_c2p0_zicsr2p0"
-// CHECK-RV64G-LP64D: "{{.*}}as{{(.exe)?}}" "-mabi" "lp64d" "-march" "rv64i2p1_m2p0_a2p1_f2p2_d2p2_zicsr2p0_zifencei2p0"
+// CHECK-RV64IMAFDC-LP64D: "{{.*}}as{{(.exe)?}}" "-mabi" "lp64d" "-march" "rv64i2p1_m2p0_a2p1_f2p2_d2p2_c2p0_zicsr2p0_zmmul1p0"
+// CHECK-RV64G-LP64D: "{{.*}}as{{(.exe)?}}" "-mabi" "lp64d" "-march" "rv64i2p1_m2p0_a2p1_f2p2_d2p2_zicsr2p0_zifencei2p0_zmmul1p0"

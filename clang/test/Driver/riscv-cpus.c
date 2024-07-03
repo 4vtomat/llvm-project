@@ -260,14 +260,15 @@
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-u74m -mabi=lp64 | FileCheck -check-prefix=MCPU-ABI-SIFIVE-U74M %s
 // MCPU-ABI-SIFIVE-U74M: "-target-cpu" "sifive-u74m"
 // MCPU-ABI-SIFIVE-U74M: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
-// MCPU-ABI-SIFIVE-U74M: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zba"
+// MCPU-ABI-SIFIVE-U74M: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zmmul"
+// MCPU-ABI-SIFIVE-U74M: "-target-feature" "+zba"
 // MCPU-ABI-SIFIVE-U74M: "-target-feature" "+zbb"
 // MCPU-ABI-SIFIVE-U74M: "-target-abi" "lp64"
 
 // mcpu with mabi option
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-u74r -mabi=lp64 | FileCheck -check-prefix=MCPU-ABI-SIFIVE-U74R %s
 // MCPU-ABI-SIFIVE-U74R: "-target-cpu" "sifive-u74r"
-// MCPU-ABI-SIFIVE-U74R-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d" "-target-feature" "+c" "-target-feature" "+zic64b" "-target-feature" "+zicbom" "-target-feature" "+zicbop" "-target-feature" "+zicboz" "-target-feature" "+ziccamoa" "-target-feature" "+ziccif" "-target-feature" "+ziccrse" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zihintntl" "-target-feature" "+zihintpause" "-target-feature" "+zihpm" "-target-feature" "+za64rs" "-target-feature" "+zfh" "-target-feature" "+zfhmin" "-target-feature" "+zca" "-target-feature" "+zcb" "-target-feature" "+zba" "-target-feature" "+zbb" "-target-feature" "+zbs" "-target-feature" "+zkt" "-target-feature" "+xsifivecdiscarddlone" "-target-feature" "+xsifivecflushdlone"
+// MCPU-ABI-SIFIVE-U74R-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d" "-target-feature" "+c" "-target-feature" "+zic64b" "-target-feature" "+zicbom" "-target-feature" "+zicbop" "-target-feature" "+zicboz" "-target-feature" "+ziccamoa" "-target-feature" "+ziccif" "-target-feature" "+ziccrse" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zihintntl" "-target-feature" "+zihintpause" "-target-feature" "+zihpm" "-target-feature" "+zmmul" "-target-feature" "+za64rs" "-target-feature" "+zfh" "-target-feature" "+zfhmin" "-target-feature" "+zca" "-target-feature" "+zcb" "-target-feature" "+zba" "-target-feature" "+zbb" "-target-feature" "+zbs" "-target-feature" "+zkt" "-target-feature" "+xsifivecdiscarddlone" "-target-feature" "+xsifivecflushdlone"
 
 // march overwrite mcpu's default march
 // RUN: %clang --target=riscv32 -### -c %s 2>&1 -mcpu=sifive-e31 -march=rv32imc | FileCheck -check-prefix=MCPU-MARCH %s
@@ -515,13 +516,13 @@
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-p550 | FileCheck -check-prefix=MCPU-SIFIVE-P550 %s
 // MCPU-SIFIVE-P550: "-target-cpu" "sifive-p550"
 // MCPU-SIFIVE-P550-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
-// MCPU-SIFIVE-P550-SAME: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zba"
+// MCPU-SIFIVE-P550-SAME: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zmmul" "-target-feature" "+zba"
 // MCPU-SIFIVE-P550-SAME: "-target-feature" "+zbb"
 
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-p650 | FileCheck -check-prefix=MCPU-SIFIVE-P650 %s
 // MCPU-SIFIVE-P650: "-target-cpu" "sifive-p650"
 // MCPU-SIFIVE-P650-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
-// MCPU-SIFIVE-P650-SAME: "-target-feature" "+c" "-target-feature" "+zic64b" "-target-feature" "+zicbom" "-target-feature" "+zicbop" "-target-feature" "+zicboz" "-target-feature" "+ziccamoa" "-target-feature" "+ziccif" "-target-feature" "+zicclsm" "-target-feature" "+ziccrse" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zihintntl" "-target-feature" "+zihintpause" "-target-feature" "+zihpm" "-target-feature" "+za64rs" "-target-feature" "+zfhmin"
+// MCPU-SIFIVE-P650-SAME: "-target-feature" "+c" "-target-feature" "+zic64b" "-target-feature" "+zicbom" "-target-feature" "+zicbop" "-target-feature" "+zicboz" "-target-feature" "+ziccamoa" "-target-feature" "+ziccif" "-target-feature" "+zicclsm" "-target-feature" "+ziccrse" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zihintntl" "-target-feature" "+zihintpause" "-target-feature" "+zihpm" "-target-feature" "+zmmul" "-target-feature" "+za64rs" "-target-feature" "+zfhmin"
 // MCPU-SIFIVE-P650-SAME: "-target-feature" "+zba" "-target-feature" "+zbb" "-target-feature" "+zbs"
 // MCPU-SIFIVE-P650-SAME: "-target-abi" "lp64d"
 
@@ -576,7 +577,7 @@
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-p470 | FileCheck -check-prefix=MCPU-SIFIVE-P470 %s
 // MCPU-SIFIVE-P470: "-target-cpu" "sifive-p470"
 // MCPU-SIFIVE-P470-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
-// MCPU-SIFIVE-P470-SAME: "-target-feature" "+c" "-target-feature" "+v" "-target-feature" "+zic64b" "-target-feature" "+zicbom" "-target-feature" "+zicbop" "-target-feature" "+zicboz" "-target-feature" "+ziccamoa" "-target-feature" "+ziccif" "-target-feature" "+zicclsm" "-target-feature" "+ziccrse" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zihintntl" "-target-feature" "+zihintpause" "-target-feature" "+zihpm" "-target-feature" "+za64rs" "-target-feature" "+zfhmin"
+// MCPU-SIFIVE-P470-SAME: "-target-feature" "+c" "-target-feature" "+v" "-target-feature" "+zic64b" "-target-feature" "+zicbom" "-target-feature" "+zicbop" "-target-feature" "+zicboz" "-target-feature" "+ziccamoa" "-target-feature" "+ziccif" "-target-feature" "+zicclsm" "-target-feature" "+ziccrse" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zihintntl" "-target-feature" "+zihintpause" "-target-feature" "+zihpm" "-target-feature" "+zmmul" "-target-feature" "+za64rs" "-target-feature" "+zfhmin"
 // MCPU-SIFIVE-P470-SAME: "-target-feature" "+zba" "-target-feature" "+zbb" "-target-feature" "+zbs"
 // MCPU-SIFIVE-P470-SAME: "-target-feature" "+zvbb" "-target-feature" "+zvbc"
 // MCPU-SIFIVE-P470-SAME: "-target-feature" "+zve32f" "-target-feature" "+zve32x" "-target-feature" "+zve64d" "-target-feature" "+zve64f" "-target-feature" "+zve64x"
@@ -645,7 +646,7 @@
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-p670 | FileCheck -check-prefix=MCPU-SIFIVE-P670 %s
 // MCPU-SIFIVE-P670: "-target-cpu" "sifive-p670"
 // MCPU-SIFIVE-P670-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
-// MCPU-SIFIVE-P670-SAME: "-target-feature" "+c" "-target-feature" "+v" "-target-feature" "+zic64b" "-target-feature" "+zicbom" "-target-feature" "+zicbop" "-target-feature" "+zicboz" "-target-feature" "+ziccamoa" "-target-feature" "+ziccif" "-target-feature" "+zicclsm" "-target-feature" "+ziccrse" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zihintntl" "-target-feature" "+zihintpause" "-target-feature" "+zihpm" "-target-feature" "+za64rs" "-target-feature" "+zfhmin"
+// MCPU-SIFIVE-P670-SAME: "-target-feature" "+c" "-target-feature" "+v" "-target-feature" "+zic64b" "-target-feature" "+zicbom" "-target-feature" "+zicbop" "-target-feature" "+zicboz" "-target-feature" "+ziccamoa" "-target-feature" "+ziccif" "-target-feature" "+zicclsm" "-target-feature" "+ziccrse" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zihintntl" "-target-feature" "+zihintpause" "-target-feature" "+zihpm" "-target-feature" "+zmmul" "-target-feature" "+za64rs" "-target-feature" "+zfhmin"
 // MCPU-SIFIVE-P670-SAME: "-target-feature" "+zba" "-target-feature" "+zbb" "-target-feature" "+zbs"
 // MCPU-SIFIVE-P670-SAME: "-target-feature" "+zvbb" "-target-feature" "+zvbc"
 // MCPU-SIFIVE-P670-SAME: "-target-feature" "+zve32f" "-target-feature" "+zve32x" "-target-feature" "+zve64d" "-target-feature" "+zve64f" "-target-feature" "+zve64x"
@@ -771,24 +772,24 @@
 // RUN: %clang -target riscv32 -### -c %s 2>&1 -mcpu=sifive-e61 | FileCheck -check-prefix=MCPU-SIFIVE-E61 %s
 // MCPU-SIFIVE-E61: "-target-cpu" "sifive-e61"
 // MCPU-SIFIVE-E61-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+c"
-// MCPU-SIFIVE-E61-SAME: "-target-feature" "+zifencei" "-target-feature" "+zba" "-target-feature" "+zbb"
+// MCPU-SIFIVE-E61-SAME: "-target-feature" "+zifencei" "-target-feature" "+zmmul" "-target-feature" "+zba" "-target-feature" "+zbb"
 // MCPU-SIFIVE-E61-SAME: "-target-abi" "ilp32"
 
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-s61 | FileCheck -check-prefix=MCPU-SIFIVE-S61 %s
 // MCPU-SIFIVE-S61: "-target-cpu" "sifive-s61"
 // MCPU-SIFIVE-S61-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+c"
-// MCPU-SIFIVE-S61-SAME: "-target-feature" "+zifencei" "-target-feature" "+zba" "-target-feature" "+zbb"
+// MCPU-SIFIVE-S61-SAME: "-target-feature" "+zifencei" "-target-feature" "+zmmul" "-target-feature" "+zba" "-target-feature" "+zbb"
 // MCPU-SIFIVE-S61-SAME: "-target-abi" "lp64"
 
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-u64 | FileCheck -check-prefix=MCPU-SIFIVE-U64 %s
 // MCPU-SIFIVE-U64: "-target-cpu" "sifive-u64"
 // MCPU-SIFIVE-U64-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d"
-// MCPU-SIFIVE-U64-SAME: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zba" "-target-feature" "+zbb"
+// MCPU-SIFIVE-U64-SAME: "-target-feature" "+c" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zmmul" "-target-feature" "+zba" "-target-feature" "+zbb"
 // MCPU-SIFIVE-U64-SAME: "-target-abi" "lp64d"
 
 // RUN: %clang -target riscv64 -### -c %s 2>&1 -mcpu=sifive-u64r | FileCheck -check-prefix=MCPU-SIFIVE-U64R %s
 // MCPU-SIFIVE-U64R: "-target-cpu" "sifive-u64r"
-// MCPU-SIFIVE-U64R-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d" "-target-feature" "+c" "-target-feature" "+zic64b" "-target-feature" "+zicbom" "-target-feature" "+zicbop" "-target-feature" "+zicboz" "-target-feature" "+ziccamoa" "-target-feature" "+ziccif" "-target-feature" "+ziccrse" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zihintntl" "-target-feature" "+zihintpause" "-target-feature" "+zihpm" "-target-feature" "+za64rs" "-target-feature" "+zfh" "-target-feature" "+zfhmin" "-target-feature" "+zca" "-target-feature" "+zcb" "-target-feature" "+zba" "-target-feature" "+zbb" "-target-feature" "+zbs" "-target-feature" "+zkt" "-target-feature" "+xsifivecdiscarddlone" "-target-feature" "+xsifivecflushdlone"
+// MCPU-SIFIVE-U64R-SAME: "-target-feature" "+m" "-target-feature" "+a" "-target-feature" "+f" "-target-feature" "+d" "-target-feature" "+c" "-target-feature" "+zic64b" "-target-feature" "+zicbom" "-target-feature" "+zicbop" "-target-feature" "+zicboz" "-target-feature" "+ziccamoa" "-target-feature" "+ziccif" "-target-feature" "+ziccrse" "-target-feature" "+zicsr" "-target-feature" "+zifencei" "-target-feature" "+zihintntl" "-target-feature" "+zihintpause" "-target-feature" "+zihpm" "-target-feature" "+zmmul" "-target-feature" "+za64rs" "-target-feature" "+zfh" "-target-feature" "+zfhmin" "-target-feature" "+zca" "-target-feature" "+zcb" "-target-feature" "+zba" "-target-feature" "+zbb" "-target-feature" "+zbs" "-target-feature" "+zkt" "-target-feature" "+xsifivecdiscarddlone" "-target-feature" "+xsifivecflushdlone"
 
 // RUN: %clang --target=riscv32 -### -c %s 2>&1 -mcpu=syntacore-scr3-rv32 | FileCheck -check-prefix=MCPU-SYNTACORE-SCR3-RV32 %s
 // MCPU-SYNTACORE-SCR3-RV32: "-target-cpu" "syntacore-scr3-rv32"
