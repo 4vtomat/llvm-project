@@ -1024,20 +1024,22 @@ llvm::gatherPeelingPreferences(Loop *L, ScalarEvolution &SE,
   PP.AllowPeeling = true;
   PP.AllowLoopNestsPeeling = false;
   PP.PeelProfiledIterations = true;
-  // SIFIVE
+#if SIFIVE_CUSTOMIZATION
   PP.AllowEpilogPeeling = false;
   PP.PeelProlog = true;
   PP.PeelEpilog = false;
-  // end SIFIVE
+#endif // SIFIVE_CUSTOMIZATION
 
   // Get the target specifc values.
   TTI.getPeelingPreferences(L, SE, PP);
 
-  // SIFIVE
-  // check if user has disabled this feature
+#if SIFIVE_CUSTOMIZATION
+  // Check if user has disabled this feature,
+  // If both LoopDistribute and EpilogPeeling are not
+  // specified by the user, the defaults are off.
   if (PP.AllowEpilogPeeling)
-    PP.AllowEpilogPeeling = AllowEpilogPeeling;
-  // end SIFIVE
+    PP.AllowEpilogPeeling = AllowEpilogPeeling || EnableLoopDistributeAndPeel;
+#endif // SIFIVE_CUSTOMIZATION
 
   // User specified values using cl::opt.
   if (UnrollingSpecficValues) {

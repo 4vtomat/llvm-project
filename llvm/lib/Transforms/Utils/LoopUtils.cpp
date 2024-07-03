@@ -61,6 +61,9 @@ cl::opt<bool> llvm::EnableLoopDataLayout(
 cl::opt<bool> llvm::LoopConcatCanonicalize(
     "loop-concat-canonicalize", cl::Hidden, cl::init(false),
     cl::desc("Bypass Full Unrolling for strided loops and LC Canonicalize"));
+cl::opt<bool> llvm::EnableLoopDistributeAndPeel(
+    "enable-loop-distribute-and-peel", cl::Hidden, cl::init(false),
+    cl::desc("Enable Loop Distribution and Epilog Peeling together"));
 #endif // SIFIVE_CUSTOMIZATION
 
 bool llvm::formDedicatedExitBlocks(Loop *L, DominatorTree *DT, LoopInfo *LI,
