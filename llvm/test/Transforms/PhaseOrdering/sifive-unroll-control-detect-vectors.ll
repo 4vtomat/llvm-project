@@ -67,7 +67,7 @@ define i32 @test(ptr nocapture %a, i32 %n) nounwind uwtable readonly {
 ; NODETECT-NEXT:    [[SUM_02_UNR_PH:%.*]] = phi i32 [ [[ADD_7]], [[FOR_BODY]] ]
 ; NODETECT-NEXT:    br label [[FOR_END_LOOPEXIT_UNR_LCSSA]]
 ; NODETECT:       for.end.loopexit.unr-lcssa:
-; NODETECT-NEXT:    [[ADD_LCSSA_PH:%.*]] = phi i32 [ undef, [[FOR_BODY_PREHEADER]] ], [ [[ADD_LCSSA_PH_PH]], [[FOR_END_LOOPEXIT_UNR_LCSSA_LOOPEXIT]] ]
+; NODETECT-NEXT:    [[ADD_LCSSA_PH:%.*]] = phi i32 [ poison, [[FOR_BODY_PREHEADER]] ], [ [[ADD_LCSSA_PH_PH]], [[FOR_END_LOOPEXIT_UNR_LCSSA_LOOPEXIT]] ]
 ; NODETECT-NEXT:    [[INDVARS_IV_UNR:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[INDVARS_IV_UNR_PH]], [[FOR_END_LOOPEXIT_UNR_LCSSA_LOOPEXIT]] ]
 ; NODETECT-NEXT:    [[SUM_02_UNR:%.*]] = phi i32 [ 0, [[FOR_BODY_PREHEADER]] ], [ [[SUM_02_UNR_PH]], [[FOR_END_LOOPEXIT_UNR_LCSSA_LOOPEXIT]] ]
 ; NODETECT-NEXT:    [[LCMP_MOD:%.*]] = icmp ne i32 [[XTRAITER]], 0
