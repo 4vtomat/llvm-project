@@ -774,12 +774,15 @@ void RVVEmitter::createRVVIntrinsics(
               .Case("Zvfbfmin", RVV_REQ_Zvfbfmin)
               .Case("Experimental", RVV_REQ_Experimental)
 #if SIFIVE_CUSTOMIZATION
-              .Case("Xsfvfhbfmin", RVV_REQ_Xsfvfhbfmin)
               .Case("HasBfloat16", RVV_REQ_HasBfloat16)
-              .Case("Xsfvqdotq", RVV_REQ_Xsfvqdotq)
+              .Case("Xsfvfbfa", RVV_REQ_Xsfvfbfa)
+              .Case("Xsfvfbfexp16e", RVV_REQ_Xsfvfbfexp16e)
+              .Case("Xsfvfexp16e", RVV_REQ_Xsfvfexp16e)
+              .Case("Xsfvfexp32e", RVV_REQ_Xsfvfexp32e)
               .Case("Xsfvfexpa", RVV_REQ_Xsfvfexpa)
               .Case("Xsfvfexpa64e", RVV_REQ_Xsfvfexpa64e)
-              .Case("Xsfvfbfa", RVV_REQ_Xsfvfbfa)
+              .Case("Xsfvfhbfmin", RVV_REQ_Xsfvfhbfmin)
+              .Case("Xsfvqdotq", RVV_REQ_Xsfvqdotq)
 #endif // SIFIVE_CUSTOMIZATION
               .Default(RVV_REQ_None);
       assert(RequireExt != RVV_REQ_None && "Unrecognized required feature?");

@@ -127,7 +127,7 @@ multiclass RVVVQDOTQBuiltinSet<list<list<string>> suffixes_prototypes> {
   }
 }
 
-multiclass RVVVFEXPABuiltinSet<list<list<string>> suffixes_prototypes, string type_range> {
+multiclass RVVVFEXPBuiltinSet<list<list<string>> suffixes_prototypes, string type_range> {
   let UnMaskedPolicyScheme = HasPassthruOperand,
       OverloadedName = NAME,
       Log2LMUL = [-2, -1, 0, 1, 2, 3] in {
@@ -231,11 +231,23 @@ let RequiredFeatures = ["Xsfvqdotq"] in {
   defm sf_vqdotus : RVVVQDOTQBuiltinSet<[["vx", "v", "vvUvUe"]]>;
 }
 
+let RequiredFeatures = ["Xsfvfbfexp16e"] in {
+  defm sf_vfexp : RVVVFEXPBuiltinSet<[["v", "v", "vv"]], "y">;
+}
+
+let RequiredFeatures = ["Xsfvfexp16e"] in {
+  defm sf_vfexp : RVVVFEXPBuiltinSet<[["v", "v", "vv"]], "x">;
+}
+
+let RequiredFeatures = ["Xsfvfexp32e"] in {
+  defm sf_vfexp : RVVVFEXPBuiltinSet<[["v", "v", "vv"]], "f">;
+}
+
 let RequiredFeatures = ["Xsfvfexpa"] in {
-defm sf_vfexpa : RVVVFEXPABuiltinSet<[["v", "v", "vv"]], "xf">;
+  defm sf_vfexpa : RVVVFEXPBuiltinSet<[["v", "v", "vv"]], "xf">;
 }
 
 let RequiredFeatures = ["Xsfvfexpa64e"] in {
-defm sf_vfexpa : RVVVFEXPABuiltinSet<[["v", "v", "vv"]], "d">;
+  defm sf_vfexpa : RVVVFEXPBuiltinSet<[["v", "v", "vv"]], "d">;
 }
 #endif // SIFIVE_CUSTOMIZATION
