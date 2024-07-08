@@ -198,6 +198,7 @@ let TargetPrefix = "riscv" in {
   defm "" : RISCVSFCustomVC_XVV<["x", "i", "v", "f"]>;
   defm "" : RISCVSFCustomVC_XVW<["x", "i", "v", "f"]>;
 
+  defm sf_vfexp : RISCVUnaryAA;
   defm sf_vfexpa : RISCVUnaryAA;
 
   // XSfvqdotq
