@@ -220,6 +220,11 @@
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32id -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-DER %s
 // RV32-DER: "-target-feature" "+d"
+
+// RUN: not %clang --target=riscv32-unknown-elf -march=rv32iv_xsfmm32t_xsfmm64t -### %s \
+// RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-MAMMOTH-TE-ER %s
+// RV32-MAMMOTH-TE-ER: error: invalid arch name 'rv32iv_xsfmm32t_xsfmm64t',
+// RV32-MAMMOTH-TE-ER: No more than one xsfmm[16|32|64|128]t can co-exist at the same time.
 // end SIFIVE_CUSTOMIZATION
 
 // RUN: not %clang --target=riscv32-unknown-elf -march=rv32izvl64b -### %s \

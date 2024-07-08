@@ -217,13 +217,16 @@ void RISCVInstPrinter::printVTypeI(const MCInst *MI, unsigned OpNo,
 }
 
 #if SIFIVE_CUSTOMIZATION
-void RISCVInstPrinter::printMammothWWEE(const MCInst *MI, unsigned OpNo,
-                                        const MCSubtargetInfo &STI,
-                                        raw_ostream &O) {
+void RISCVInstPrinter::printMammothVType(const MCInst *MI, unsigned OpNo,
+                                         const MCSubtargetInfo &STI,
+                                         raw_ostream &O) {
   unsigned Imm = MI->getOperand(OpNo).getImm();
-  assert(RISCVVType::isValidMammothWWEE(Imm));
+  assert(RISCVVType::isValidMammothVType(Imm));
   unsigned SEW = RISCVVType::getSEW(Imm);
   O << "e" << SEW;
+  bool Altfmt = RISCVVType::getMammothAltfmt(Imm);
+  if (Altfmt)
+    O << "alt";
   unsigned Widen = RISCVVType::getMammothWiden(Imm);
   O << ", w" << Widen;
 }

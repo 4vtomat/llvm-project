@@ -1150,23 +1150,23 @@ let Predicates = [HasVendorXSfvfexpa64e] in {
 }
 
 #ifdef SIFIVE_CUSTOMIZATION
-def MammothWWEEAsmOperand : AsmOperandClass {
-  let Name = "MammothWWEE";
-  let ParserMethod = "parseMammothWWEE";
-  let DiagnosticType = "InvalidMammothWWEE";
+def MammothVTypeAsmOperand : AsmOperandClass {
+  let Name = "MammothVType";
+  let ParserMethod = "parseMammothVType";
+  let DiagnosticType = "InvalidMammothVType";
   let RenderMethod = "addVTypeIOperands";
 }
 
-def MammothWWEEOp : RISCVOp {
-  let ParserMatchClass = MammothWWEEAsmOperand;
-  let PrintMethod = "printMammothWWEE";
+def MammothVTypeOp : RISCVOp {
+  let ParserMatchClass = MammothVTypeAsmOperand;
+  let PrintMethod = "printMammothVType";
   let MCOperandPredicate = [{
     int64_t Imm;
     if (!MCOp.evaluateAsConstantImm(Imm))
       return false;
     if (!isUInt<32>(Imm))
       return false;
-    return RISCVVType::isValidMammothWWEE(Imm);
+    return RISCVVType::isValidMammothVType(Imm);
   }];
 }
 
@@ -1341,7 +1341,7 @@ class RVInstVtDiscard<string opcodestr>
 
 let Predicates = [HasVendorXSfmm32eaOrXSfmmbase] in
 def : InstAlias<"sf.vsettnt $rd, $rs1, $vtypei",
-                (VSETVLI GPR:$rd, GPR:$rs1, MammothWWEEOp:$vtypei)>;
+                (VSETVLI GPR:$rd, GPR:$rs1, MammothVTypeOp:$vtypei)>;
 
 let Predicates = [HasVendorXSfmm32eaOrXSfmmbase], DecoderNamespace = "XSfmm32eaOrXSfmmbase" in {
 let hasSideEffects = 1, mayLoad = 0, mayStore = 0 in {
@@ -1364,7 +1364,7 @@ let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
 
   def SF_VTZERO_T : RVInstSetZero<(outs), (ins TR:$rd), "sf.vtzero.t", "$rd">;
 }
-} // Predicates = [HasVendorXSfmmbaseOrXSfmm32ea]
+} // Predicates = [HasVendorXSfmm32eaOrXSfmmbase]
 
 let Predicates = [HasVendorXSfmmbase], DecoderNamespace = "XSfmmbase" in {
 let hasSideEffects = 0, mayLoad = 1, mayStore = 0 in {
@@ -1382,17 +1382,16 @@ let hasSideEffects = 0, mayLoad = 0, mayStore = 1 in {
 }
 } // Predicates = [HasVendorXSfmmbase]
 
-let Predicates = [HasVendorXSfmm32eaOrXSfmm32aOrXSfmm64a], DecoderNamespace = "XSfmm32eaOrXSfmm32aOrXSfmm64a" in {
+let Predicates = [HasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f],
+    DecoderNamespace = "HasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f" in {
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
   def SF_MM_F_F   : RVInstMatmulF<0b00, (outs), (ins TRM2:$rd, VR:$vs2, VR:$vs1),
                                   "sf.mm.f.f", "$rd, $vs2, $vs1">;
 }
-} // Predicates = [HasVendorXSfmm32eaOrXSfmm32aOrXSfmm64a]
+} // Predicates = [HasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm64a32fOrXSfmm64a64f]
 
-let Predicates = [HasVendorXSfmm32a], DecoderNamespace = "XSfmm32a" in {
+let Predicates = [HasVendorXSfmm32a8i], DecoderNamespace = "XSfmm32a8i" in {
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
-  def SF_MM_BF_BF : RVInstMatmulF<0b01, (outs), (ins TRM4:$rd, VR:$vs2, VR:$vs1),
-                                  "sf.mm.bf.bf", "$rd, $vs2, $vs1">;
   foreach a = I8Encodes in
     foreach b = I8Encodes in
       def SF_MM_#!toupper(a.Name)#_#!toupper(b.Name)
@@ -1400,7 +1399,7 @@ let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
                            (outs), (ins TRM4:$rd, VR:$vs2, VR:$vs1),
                            "sf.mm."#a.Name#"."#b.Name, "$rd, $vs2, $vs1">;
 }
-} // Predicates = [HasVendorXSfmm32a]
+} // Predicates = [HasVendorXSfmm32a8i]
 
 let Predicates = [HasVendorXSfmm32a8f], DecoderNamespace = "XSfmm32a8f" in {
 let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {

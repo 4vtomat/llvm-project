@@ -1051,15 +1051,19 @@ R"(All available -march extensions for RISC-V
     xcvsimd              1.0
     xsfcease             0.1
     xsfcease             1.0
-    xsfmm128t            0.5
-    xsfmm32a             0.5
-    xsfmm32a4i           0.5
-    xsfmm32a8f           0.5
-    xsfmm32ea            0.5
-    xsfmm32t             0.5
-    xsfmm64a             0.5
-    xsfmm64t             0.5
-    xsfmmbase            0.5
+    xsfmm128t            0.6
+    xsfmm16t             0.6
+    xsfmm32a             0.6
+    xsfmm32a16f          0.6
+    xsfmm32a32f          0.6
+    xsfmm32a4i           0.6
+    xsfmm32a8f           0.6
+    xsfmm32a8i           0.6
+    xsfmm32ea            0.6
+    xsfmm32t             0.6
+    xsfmm64a64f          0.6
+    xsfmm64t             0.6
+    xsfmmbase            0.6
     xsfpgflushdlone      0.1
     xsfpmpmt             0.1
     xsfvcp               1.0
