@@ -10195,20 +10195,10 @@ createWidenInductionRecipes(PHINode *Phi, Instruction *PhiOrTrunc,
   VPValue *Step =
       vputils::getOrCreateVPValueForSCEVExpr(Plan, IndDesc.getStep(), SE);
   if (auto *TruncI = dyn_cast<TruncInst>(PhiOrTrunc)) {
-#if SIFIVE_CUSTOMIZATION
-    return new VPWidenIntOrFpInductionRecipe(
-        Phi, Start, Step, IndDesc, TruncI);
-#else
     return new VPWidenIntOrFpInductionRecipe(Phi, Start, Step, IndDesc, TruncI);
-#endif // SIFIVE_CUSTOMIZATION
   }
   assert(isa<PHINode>(PhiOrTrunc) && "must be a phi node here");
-#if SIFIVE_CUSTOMIZATION
-  return new VPWidenIntOrFpInductionRecipe(
-      Phi, Start, Step, IndDesc);
-#else
   return new VPWidenIntOrFpInductionRecipe(Phi, Start, Step, IndDesc);
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 VPHeaderPHIRecipe *VPRecipeBuilder::tryToOptimizeInductionPHI(
