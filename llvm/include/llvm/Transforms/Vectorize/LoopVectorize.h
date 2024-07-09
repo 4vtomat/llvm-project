@@ -56,7 +56,9 @@
 #ifndef LLVM_TRANSFORMS_VECTORIZE_LOOPVECTORIZE_H
 #define LLVM_TRANSFORMS_VECTORIZE_LOOPVECTORIZE_H
 
+#ifdef SIFIVE_CUSTOMIZATION
 #include "llvm/IR/BasicBlock.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/IR/PassManager.h"
 #include "llvm/Support/CommandLine.h"
 #include <functional>
