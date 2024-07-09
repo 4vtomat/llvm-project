@@ -1067,6 +1067,7 @@ void VPlan::initializeMasks(VPTransformState &State) {
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
+
 /// Replace \p VPBB with a VPIRBasicBlock wrapping \p IRBB. All recipes from \p
 /// VPBB are moved to the newly created VPIRBasicBlock.
 static void replaceVPBBWithIRVPBB(VPBasicBlock *VPBB, BasicBlock *IRBB) {
@@ -1805,6 +1806,7 @@ bool vputils::isHeaderPhi(const VPRecipeBase &R) {
   return false;
 }
 #endif // SIFIVE_CUSTOMIZATION
+
 bool vputils::isHeaderMask(VPValue *V, VPlan &Plan) {
   if (isa<VPActiveLaneMaskPHIRecipe>(V))
     return true;
