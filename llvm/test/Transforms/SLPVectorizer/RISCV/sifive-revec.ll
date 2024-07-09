@@ -7,10 +7,13 @@ define void @test1(ptr %ptr0) {
 ; CHECK-NEXT:    [[ALLOCA0:%.*]] = alloca [12 x float], i32 0, align 16
 ; CHECK-NEXT:    [[GETELEMENTPTR0:%.*]] = getelementptr inbounds i8, ptr [[ALLOCA0]], i64 32
 ; CHECK-NEXT:    [[GETELEMENTPTR1:%.*]] = getelementptr inbounds i8, ptr [[PTR0:%.*]], i64 128
-; CHECK-NEXT:    [[TMP0:%.*]] = call <8 x float> @llvm.experimental.vp.strided.load.v8f32.p0.i64(ptr align 16 [[GETELEMENTPTR0]], i64 -32, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP1:%.*]] = load <8 x float>, ptr [[GETELEMENTPTR1]], align 16
-; CHECK-NEXT:    [[TMP2:%.*]] = fmul <8 x float> [[TMP0]], [[TMP1]]
-; CHECK-NEXT:    store <8 x float> [[TMP2]], ptr [[GETELEMENTPTR1]], align 16
+; CHECK-NEXT:    [[LOAD0:%.*]] = load <4 x float>, ptr [[ALLOCA0]], align 16
+; CHECK-NEXT:    [[LOAD1:%.*]] = load <4 x float>, ptr [[GETELEMENTPTR0]], align 16
+; CHECK-NEXT:    [[TMP0:%.*]] = load <8 x float>, ptr [[GETELEMENTPTR1]], align 16
+; CHECK-NEXT:    [[TMP1:%.*]] = call <8 x float> @llvm.vector.insert.v8f32.v4f32(<8 x float> poison, <4 x float> [[LOAD1]], i64 0)
+; CHECK-NEXT:    [[TMP2:%.*]] = call <8 x float> @llvm.vector.insert.v8f32.v4f32(<8 x float> [[TMP1]], <4 x float> [[LOAD0]], i64 4)
+; CHECK-NEXT:    [[TMP3:%.*]] = fmul <8 x float> [[TMP2]], [[TMP0]]
+; CHECK-NEXT:    store <8 x float> [[TMP3]], ptr [[GETELEMENTPTR1]], align 16
 ; CHECK-NEXT:    ret void
 ;
 entry:

@@ -4745,6 +4745,12 @@ BoUpSLP::LoadsState BoUpSLP::canVectorizeLoads(
   }
 
   Align CommonAlignment = computeCommonAlignment<LoadInst>(VL);
+#if SIFIVE_CUSTOMIZATION
+  // If ScalarTy is a VectorType (when REVEC is enabled), it is hard for being
+  // strided load.
+  bool IsSourceScalarInstruction = !isa<VectorType>(VL[0]->getType());
+  if (IsSourceScalarInstruction)
+#endif // SIFIVE_CUSTOMIZATION
   if (!IsSorted && Sz > MinProfitableStridedLoads && TTI->isTypeLegal(VecTy) &&
       TTI->isLegalStridedLoadStore(VecTy, CommonAlignment) &&
       calculateRtStride(PointerOps, ScalarTy, *DL, *SE, Order))
@@ -4769,6 +4775,9 @@ BoUpSLP::LoadsState BoUpSLP::canVectorizeLoads(
         return LoadsState::Vectorize;
       // Simple check if not a strided access - clear order.
       bool IsPossibleStrided = *Diff % (Sz - 1) == 0;
+#if SIFIVE_CUSTOMIZATION
+      IsPossibleStrided &= IsSourceScalarInstruction;
+#endif // SIFIVE_CUSTOMIZATION
       // Try to generate strided load node if:
       // 1. Target with strided load support is detected.
       // 2. The number of loads is greater than MinProfitableStridedLoads,
