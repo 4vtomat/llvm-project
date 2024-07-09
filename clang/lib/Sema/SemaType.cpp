@@ -8210,7 +8210,7 @@ static void HandleNeonVectorTypeAttr(QualType &CurType, const ParsedAttr &Attr,
   if (!(S.Context.getTargetInfo().hasFeature("mve") ||
         S.Context.getTargetInfo().getTriple().isRISCV64()) &&
 #else
-    if (!S.Context.getTargetInfo().hasFeature("mve") &&
+  if (!S.Context.getTargetInfo().hasFeature("mve") &&
 #endif // SIFIVE_CUSTOMIZATION
       VecKind == VectorKind::Neon &&
 #if SIFIVE_CUSTOMIZATION
