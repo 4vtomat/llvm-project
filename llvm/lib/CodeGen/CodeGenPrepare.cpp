@@ -8040,30 +8040,35 @@ bool CodeGenPrepare::optimizeExtractElementInst(Instruction *Inst) {
 bool CodeGenPrepare::performSimpleCSEAwareReassociation(BasicBlock &BB) {
   bool Changed = false;
 
-  // We try to optimize the pattern where multiple (vp.fsub (vp.fadd X_i, C), M)
+  // We try to optimize the pattern where multiple (fsub (fadd X_i, C), M)
   // share the same `C` and `M` but differ on `X_i`. In which case we can
-  // factor out (vp.fsub C, M) as `K` and turn each of these instances into
-  // (vp.fadd X_i, K).
+  // factor out (fsub C, M) as `K` and turn each of these instances into
+  // (fadd X_i, K).
 
   // {C, M} -> list of candidate instructions.
   DenseMap<std::pair<Value *, Value *>, SmallVector<Instruction *>> Candidates;
 
   using namespace PatternMatch;
+  Value *C, *M;
+  Value *Mask, *VL;
+  auto VPPattern = m_Intrinsic<Intrinsic::vp_fsub>(
+      m_OneUse(m_AllowReassoc(m_Intrinsic<Intrinsic::vp_fadd>(
+          m_Value(), m_Value(C), m_Value(Mask), m_Value(VL)))),
+      m_Value(M),
+      // The mask and VL arguments must match
+      m_Deferred(Mask), m_Deferred(VL));
+  auto ScalarPattern = m_FSub(
+      m_OneUse(m_AllowReassoc(m_FAdd(m_Value(), m_Value(C)))), m_Value(M));
   // Collect all the candidates.
   for (auto &I : BB) {
-    Value *C, *M;
-    Value *Mask, *VL;
-    // We're only interested in vp.fadd and vp.fsub for now.
-    if (!match(&I, m_AllowReassoc(m_Intrinsic<Intrinsic::vp_fsub>(
-                       m_OneUse(m_AllowReassoc(m_Intrinsic<Intrinsic::vp_fadd>(
-                           m_Value(), m_Value(C), m_Value(Mask), m_Value(VL)))),
-                       m_Value(M),
-                       // The mask and VL arguments must match
-                       m_Deferred(Mask), m_Deferred(VL)))))
+    if (!match(&I, m_AllowReassoc(m_CombineOr(VPPattern, ScalarPattern))))
       continue;
 
-    // TODO: Consider the commutative of vp.fadd.
+    // TODO: Consider the commutative of fadd.
     auto &Insts = Candidates.getOrInsertDefault(std::make_pair(C, M));
+    // It's unlikely someone will use _both_ VP and non-VP way to process
+    // the same set of vectors. But we never know.
+    assert(Insts.empty() || Insts.front()->getOpcode() == I.getOpcode());
     Insts.push_back(&I);
   }
 
@@ -8073,26 +8078,31 @@ bool CodeGenPrepare::performSimpleCSEAwareReassociation(BasicBlock &BB) {
       continue;
     Changed = true;
 
-    // Factoring out (vp.sub C, M) as `K`.
+    // Factoring out (fsub C, M) as `K`.
     Instruction *FirstInst = Insts.front();
-    auto *VPI = cast<VPIntrinsic>(FirstInst);
-    Value *Mask = VPI->getMaskParam();
-    Value *VL = VPI->getVectorLengthParam();
-    auto *VPFAdd = cast<Instruction>(FirstInst->getOperand(0));
-    IRBuilder<> Builder(VPFAdd);
-    CallInst *K =
-        Builder.CreateIntrinsic(FirstInst->getType(), Intrinsic::vp_fsub,
-                                {Ops.first, Ops.second, Mask, VL},
-                                /*FMFSource=*/FirstInst);
-    // Copy the tailcall attribute.
-    K->setTailCallKind(VPI->getTailCallKind());
+    auto *FAdd = cast<Instruction>(FirstInst->getOperand(0));
+    IRBuilder<> Builder(FAdd);
+    Value *K;
+    if (auto *VPI = dyn_cast<VPIntrinsic>(FirstInst)) {
+      Mask = VPI->getMaskParam();
+      VL = VPI->getVectorLengthParam();
+      CallInst *Call =
+          Builder.CreateIntrinsic(FirstInst->getType(), Intrinsic::vp_fsub,
+                                  {Ops.first, Ops.second, Mask, VL},
+                                  /*FMFSource=*/FirstInst);
+      // Copy the tailcall attribute.
+      Call->setTailCallKind(VPI->getTailCallKind());
+      K = Call;
+    } else {
+      K = Builder.CreateFSubFMF(Ops.first, Ops.second, /*FMFSource=*/FirstInst);
+    }
 
-    for (Instruction *VPFSub : Insts) {
-      VPFAdd = cast<Instruction>(VPFSub->getOperand(0));
-      assert(VPFAdd->hasOneUse());
-      VPFAdd->setOperand(1, K);
-      VPFSub->replaceAllUsesWith(VPFAdd);
-      VPFSub->eraseFromParent();
+    for (Instruction *FSub : Insts) {
+      FAdd = cast<Instruction>(FSub->getOperand(0));
+      assert(FAdd->hasOneUse());
+      FAdd->setOperand(1, K);
+      FSub->replaceAllUsesWith(FAdd);
+      FSub->eraseFromParent();
       ++NumCSEAwareReassocDeleted;
     }
   }

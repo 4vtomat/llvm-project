@@ -23,6 +23,24 @@ define <vscale x 1 x double> @simple(<vscale x 1 x double> %v1, <vscale x 1 x do
   ret <vscale x 1 x double> %s3
 }
 
+define float @simple_scalar(float %a, float %b) {
+; CHECK-LABEL: define float @simple_scalar(
+; CHECK-SAME: float [[A:%.*]], float [[B:%.*]]) {
+; CHECK-NEXT:    [[TMP1:%.*]] = fsub fast float 1.000000e+00, [[B]]
+; CHECK-NEXT:    [[T1:%.*]] = fadd fast float [[A]], [[TMP1]]
+; CHECK-NEXT:    [[T2:%.*]] = fadd fast float [[T1]], [[TMP1]]
+; CHECK-NEXT:    [[T3:%.*]] = fadd fast float [[T2]], [[TMP1]]
+; CHECK-NEXT:    ret float [[T3]]
+;
+  %t1 = fadd fast float %a, 1.0
+  %r1 = fsub fast float %t1, %b
+  %t2 = fadd fast float %r1, 1.0
+  %r2 = fsub fast float %t2, %b
+  %t3 = fadd fast float %r2, 1.0
+  %r3 = fsub fast float %t3, %b
+  ret float %r3
+}
+
 ; Negative tests
 
 define <vscale x 1 x double> @no_reassc_flag(<vscale x 1 x double> %v1, <vscale x 1 x double> %v2, <vscale x 1 x i1> %mask, i32 %vl) {
@@ -48,4 +66,24 @@ define <vscale x 1 x double> @no_reassc_flag(<vscale x 1 x double> %v1, <vscale 
   %s3 = tail call <vscale x 1 x double> @llvm.vp.fsub.nx1f64(<vscale x 1 x double> %a3, <vscale x 1 x double> %v2, <vscale x 1 x i1> %mask, i32 %vl)
 
   ret <vscale x 1 x double> %s3
+}
+
+define float @no_reassoc_flag_scalar(float %a, float %b) {
+; CHECK-LABEL: define float @no_reassoc_flag_scalar(
+; CHECK-SAME: float [[A:%.*]], float [[B:%.*]]) {
+; CHECK-NEXT:    [[T1:%.*]] = fadd float [[A]], 1.000000e+00
+; CHECK-NEXT:    [[R1:%.*]] = fsub float [[T1]], [[B]]
+; CHECK-NEXT:    [[T2:%.*]] = fadd float [[R1]], 1.000000e+00
+; CHECK-NEXT:    [[R2:%.*]] = fsub float [[T2]], [[B]]
+; CHECK-NEXT:    [[T3:%.*]] = fadd float [[R2]], 1.000000e+00
+; CHECK-NEXT:    [[R3:%.*]] = fsub float [[T3]], [[B]]
+; CHECK-NEXT:    ret float [[R3]]
+;
+  %t1 = fadd float %a, 1.0
+  %r1 = fsub float %t1, %b
+  %t2 = fadd float %r1, 1.0
+  %r2 = fsub float %t2, %b
+  %t3 = fadd float %r2, 1.0
+  %r3 = fsub float %t3, %b
+  ret float %r3
 }
