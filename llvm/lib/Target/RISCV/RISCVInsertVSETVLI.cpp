@@ -1178,11 +1178,16 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
     // vsetvli because the pseudos below will already use the AVL. But this
     // isn't always the case, e.g. PseudoVMV_X_S doesn't have an AVL operand or
     // we've taken the AVL from the VL output of another vsetvli.
+#ifdef SIFIVE_CUSTOMIZATION
+    LIS->removeInterval(AVLReg);
+    LIS->createAndComputeVirtRegInterval(AVLReg);
+#else
     LiveInterval &LI = LIS->getInterval(AVLReg);
     // Need to get non-const VNInfo
     VNInfo *VNI = LI.getValNumInfo(Info.getAVLVNInfo()->id);
     LI.addSegment(LiveInterval::Segment(
         VNI->def, LIS->getInstructionIndex(*MI).getRegSlot(), VNI));
+#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
