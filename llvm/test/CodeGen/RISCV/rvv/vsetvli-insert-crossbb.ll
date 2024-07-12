@@ -242,22 +242,12 @@ define <vscale x 1 x double> @test6(i64 %avl, i8 zeroext %cond, <vscale x 1 x do
 ; CHECK-NEXT:    andi a1, a1, 2
 ; CHECK-NEXT:    beqz a1, .LBB5_4
 ; CHECK-NEXT:  .LBB5_2: # %if.then4
-<<<<<<< HEAD
 ; CHECK-NEXT:    lui a1, %hi(.LCPI5_0)
 ; CHECK-NEXT:    addi a1, a1, %lo(.LCPI5_0)
 ; CHECK-NEXT:    vlse64.v v9, (a1), zero
 ; CHECK-NEXT:    lui a1, %hi(.LCPI5_1)
 ; CHECK-NEXT:    addi a1, a1, %lo(.LCPI5_1)
 ; CHECK-NEXT:    vlse64.v v10, (a1), zero
-=======
-; CHECK-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
-; CHECK-NEXT:    lui a0, %hi(.LCPI5_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI5_0)
-; CHECK-NEXT:    vlse64.v v9, (a0), zero
-; CHECK-NEXT:    lui a0, %hi(.LCPI5_1)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI5_1)
-; CHECK-NEXT:    vlse64.v v10, (a0), zero
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    vfadd.vv v9, v9, v10
 ; CHECK-NEXT:    lui a1, %hi(scratch)
 ; CHECK-NEXT:    addi a1, a1, %lo(scratch)
@@ -733,10 +723,6 @@ define void @vector_init_vsetvli_N(i64 %N, ptr %c) {
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:  .LBB14_2: # %for.body
 ; CHECK-NEXT:    # =>This Inner Loop Header: Depth=1
-<<<<<<< HEAD
-=======
-; CHECK-NEXT:    vsetvli zero, a2, e64, m1, ta, ma
->>>>>>> origin/sifive-dev
 ; CHECK-NEXT:    vse64.v v8, (a1)
 ; CHECK-NEXT:    add a3, a3, a2
 ; CHECK-NEXT:    add a1, a1, a4
