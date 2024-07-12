@@ -89,8 +89,6 @@ bool RISCVPostRAExpandPseudo::expandMovImm(MachineBasicBlock &MBB,
 
   int64_t Val = MBBI->getOperand(1).getImm();
 
-<<<<<<< HEAD
-=======
 #if SIFIVE_CUSTOMIZATION
   const RISCVSubtarget &Subtarget =
       MBB.getParent()->getSubtarget<RISCVSubtarget>();
@@ -98,11 +96,6 @@ bool RISCVPostRAExpandPseudo::expandMovImm(MachineBasicBlock &MBB,
     return false;
 #endif // SIFIVE_CUSTOMIZATION
 
-  RISCVMatInt::InstSeq Seq =
-      RISCVMatInt::generateInstSeq(Val, MBB.getParent()->getSubtarget());
-  assert(!Seq.empty());
-
->>>>>>> origin/sifive-dev
   Register DstReg = MBBI->getOperand(0).getReg();
   bool DstIsDead = MBBI->getOperand(0).isDead();
   bool Renamable = MBBI->getOperand(0).isRenamable();
