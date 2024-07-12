@@ -1120,6 +1120,11 @@ void tools::addLTOOptions(const ToolChain &ToolChain, const ArgList &Args,
   addX86AlignBranchArgs(D, Args, CmdArgs, /*IsLTO=*/true, PluginOptPrefix);
 
 #if SIFIVE_CUSTOMIZATION
+  // Pass option of loop count profiler to LTO
+  if (Args.hasArg(options::OPT_fsifive_loop_count_profile_generate) &&
+      !Args.hasArg(options::OPT_fopenmp))
+    CmdArgs.push_back("-plugin-opt=-sifive-enable-loop-count-profiler");
+
   // pass more options in specific target
   switch (ToolChain.getArch()) {
   default:
