@@ -1,41 +1,53 @@
 # RUN: llvm-mc -triple=riscv32 -show-encoding --mattr=+xsfmm32ea,+xsfmmbase, \
-# RUN:     --mattr=+xsfmm32a,+xsfmm32a8f,+xsfmm32a4i,+xsfmm64a %s \
+# RUN:     --mattr=+xsfmm32a,+xsfmm32a8f,+xsfmm32a4i,+xsfmm64a64f %s \
 # RUN:        | FileCheck %s --check-prefixes=CHECK-ENCODING,CHECK-INST
 # RUN: llvm-mc -triple=riscv64 -show-encoding --mattr=+xsfmm32ea,+xsfmmbase, \
-# RUN:     --mattr=+xsfmm32a,+xsfmm32a8f,+xsfmm32a4i,+xsfmm64a %s \
+# RUN:     --mattr=+xsfmm32a,+xsfmm32a8f,+xsfmm32a4i,+xsfmm64a64f %s \
 # RUN:        | FileCheck %s --check-prefixes=CHECK-ENCODING,CHECK-INST
 # RUN: not llvm-mc -triple=riscv32 -show-encoding %s 2>&1 \
 # RUN:        | FileCheck %s --check-prefix=CHECK-ERROR
 # RUN: not llvm-mc -triple=riscv64 -show-encoding %s 2>&1 \
 # RUN:        | FileCheck %s --check-prefix=CHECK-ERROR
 # RUN: llvm-mc -triple=riscv32 -filetype=obj --mattr=+xsfmm32ea,+xsfmmbase, \
-# RUN:     --mattr=+xsfmm32a,+xsfmm32a8f,+xsfmm32a4i,+xsfmm64a %s \
+# RUN:     --mattr=+xsfmm32a,+xsfmm32a8f,+xsfmm32a4i,+xsfmm64a64f %s \
 # RUN:        | llvm-objdump -d  --mattr=+xsfmm32ea,+xsfmmbase, \
-# RUN:     --mattr=+xsfmm32a,+xsfmm32a8f,+xsfmm32a4i,+xsfmm64a --no-print-imm-hex - \
+# RUN:     --mattr=+xsfmm32a,+xsfmm32a8f,+xsfmm32a4i,+xsfmm64a64f --no-print-imm-hex - \
 # RUN:        | FileCheck %s --check-prefix=CHECK-INST
 # RUN: llvm-mc -triple=riscv64 -filetype=obj --mattr=+xsfmm32ea,+xsfmmbase, \
-# RUN:     --mattr=+xsfmm32a,+xsfmm32a8f,+xsfmm32a4i,+xsfmm64a %s \
+# RUN:     --mattr=+xsfmm32a,+xsfmm32a8f,+xsfmm32a4i,+xsfmm64a64f %s \
 # RUN:        | llvm-objdump -d  --mattr=+xsfmm32ea,+xsfmmbase, \
-# RUN:     --mattr=+xsfmm32a,+xsfmm32a8f,+xsfmm32a4i,+xsfmm64a --no-print-imm-hex - \
+# RUN:     --mattr=+xsfmm32a,+xsfmm32a8f,+xsfmm32a4i,+xsfmm64a64f --no-print-imm-hex - \
 # RUN:        | FileCheck %s --check-prefix=CHECK-INST
 # RUN: llvm-mc -triple=riscv32 -filetype=obj --mattr=+xsfmm32ea,+xsfmmbase, \
-# RUN:     --mattr=+xsfmm32a,+xsfmm32a8f,+xsfmm32a4i,+xsfmm64a %s \
+# RUN:     --mattr=+xsfmm32a,+xsfmm32a8f,+xsfmm32a4i,+xsfmm64a64f %s \
 # RUN:        | llvm-objdump -d - | FileCheck %s --check-prefix=CHECK-UNKNOWN
 # RUN: llvm-mc -triple=riscv64 -filetype=obj --mattr=+xsfmm32ea,+xsfmmbase, \
-# RUN:     --mattr=+xsfmm32a,+xsfmm32a8f,+xsfmm32a4i,+xsfmm64a %s \
+# RUN:     --mattr=+xsfmm32a,+xsfmm32a8f,+xsfmm32a4i,+xsfmm64a64f %s \
 # RUN:        | llvm-objdump -d - | FileCheck %s --check-prefix=CHECK-UNKNOWN
 
 # CHECK-INST: sf.vsettnt a0, a1, e8, w1
-# CHECK-ENCODING: [0x57,0xf5,0x05,0x10]
+# CHECK-ENCODING: [0x57,0xf5,0x05,0x20]
 # CHECK-ERROR: instruction requires the following: XSfmm32ea/XSfmmbase{{$}}
-# CHECK-UNKNOWN: 1005f557 <unknown>
+# CHECK-UNKNOWN: 2005f557 <unknown>
 sf.vsettnt a0, a1, e8, w1
 
+# CHECK-INST: sf.vsettnt a0, a1, e16alt, w1
+# CHECK-ENCODING: [0x57,0xf5,0x85,0x30]
+# CHECK-ERROR: instruction requires the following: XSfmm32ea/XSfmmbase{{$}}
+# CHECK-UNKNOWN: 3085f557 <unknown>
+sf.vsettnt a0, a1, e16alt, w1
+
 # CHECK-INST: sf.vsettnt a0, a1, e8, w1
-# CHECK-ENCODING: [0x57,0xf5,0x05,0x10]
+# CHECK-ENCODING: [0x57,0xf5,0x05,0x20]
 # CHECK-ERROR: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32x' (Vector Extensions for Embedded Processors)
-# CHECK-UNKNOWN: 1005f557 <unknown>
-vsetvli a0, a1, 0x100
+# CHECK-UNKNOWN: 2005f557 <unknown>
+vsetvli a0, a1, 0x200
+
+# CHECK-INST: sf.vsettnt a0, a1, e16alt, w1
+# CHECK-ENCODING: [0x57,0xf5,0x85,0x30]
+# CHECK-ERROR: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32x' (Vector Extensions for Embedded Processors)
+# CHECK-UNKNOWN: 3085f557 <unknown>
+vsetvli a0, a1, 0x308
 
 # CHECK-INST: sf.vsettn a0, a1
 # CHECK-ENCODING: [0x57,0xf5,0x05,0x84]
@@ -117,15 +129,9 @@ sf.vtmv.t.v a0, v8
 
 # CHECK-INST: sf.mm.f.f mt2, v8, v9
 # CHECK-ENCODING: [0x77,0x92,0x84,0xf2]
-# CHECK-ERROR: instruction requires the following: XSfmm32ea/XSfmm32a/XSfmm64a{{$}}
+# CHECK-ERROR: instruction requires the following: XSfmm32ea/XSfmm32a16f/XSfmm32a32f/XSfmm64a64f{{$}}
 # CHECK-UNKNOWN: f2849277 <unknown>
 sf.mm.f.f mt2, v8, v9
-
-# CHECK-INST: sf.mm.bf.bf mt4, v8, v9
-# CHECK-ENCODING: [0xf7,0x94,0x84,0xf2]
-# CHECK-ERROR: instruction requires the following: 'XSfmm32a' (TEW=32-bit accumulation) operands - int: 8b; float: fp16, bf16, fp32{{$}}
-# CHECK-UNKNOWN: f28494f7 <unknown>
-sf.mm.bf.bf mt4, v8, v9
 
 # CHECK-INST: sf.mm.e5m2.e5m2 mt0, v8, v9
 # CHECK-ENCODING: [0x77,0x90,0x84,0xfa]
@@ -153,25 +159,25 @@ sf.mm.e4m3.e4m3 mt12, v8, v9
 
 # CHECK-INST: sf.mm.u.u mt0, v8, v9
 # CHECK-ENCODING: [0x77,0x80,0x84,0xf2]
-# CHECK-ERROR: instruction requires the following: 'XSfmm32a' (TEW=32-bit accumulation) operands - int: 8b; float: fp16, bf16, fp32{{$}}
+# CHECK-ERROR: instruction requires the following: 'XSfmm32a8i' (TEW=32-bit accumulation) operands - int: 8b{{$}}
 # CHECK-UNKNOWN: f2848077 <unknown>
 sf.mm.u.u mt0, v8, v9
 
 # CHECK-INST: sf.mm.s.u mt4, v8, v9
 # CHECK-ENCODING: [0x77,0x84,0x84,0xf6]
-# CHECK-ERROR: instruction requires the following: 'XSfmm32a' (TEW=32-bit accumulation) operands - int: 8b; float: fp16, bf16, fp32{{$}}
+# CHECK-ERROR: instruction requires the following: 'XSfmm32a8i' (TEW=32-bit accumulation) operands - int: 8b{{$}}
 # CHECK-UNKNOWN: f6848477 <unknown>
 sf.mm.s.u mt4, v8, v9
 
 # CHECK-INST: sf.mm.u.s mt8, v8, v9
 # CHECK-ENCODING: [0xf7,0x88,0x84,0xf2]
-# CHECK-ERROR: instruction requires the following: 'XSfmm32a' (TEW=32-bit accumulation) operands - int: 8b; float: fp16, bf16, fp32{{$}}
+# CHECK-ERROR: instruction requires the following: 'XSfmm32a8i' (TEW=32-bit accumulation) operands - int: 8b{{$}}
 # CHECK-UNKNOWN: f28488f7 <unknown>
 sf.mm.u.s mt8, v8, v9
 
 # CHECK-INST: sf.mm.s.s mt12, v8, v9
 # CHECK-ENCODING: [0xf7,0x8c,0x84,0xf6]
-# CHECK-ERROR: instruction requires the following: 'XSfmm32a' (TEW=32-bit accumulation) operands - int: 8b; float: fp16, bf16, fp32{{$}}
+# CHECK-ERROR: instruction requires the following: 'XSfmm32a8i' (TEW=32-bit accumulation) operands - int: 8b{{$}}
 # CHECK-UNKNOWN: f6848cf7 <unknown>
 sf.mm.s.s mt12, v8, v9
 

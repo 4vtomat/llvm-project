@@ -516,8 +516,6 @@ public:
   unsigned getInliningThresholdMultiplier() const;
   bool preferPostFixStartValue(unsigned Opcode, Type *Ty) const;
 
-  bool forceCheckAddressingMode() const;
-
   Type *getScalableVectorFromFixed(Type *Ty) const;
 
   bool isLegalVectorInterleave(VectorType *VTy, unsigned Factor,

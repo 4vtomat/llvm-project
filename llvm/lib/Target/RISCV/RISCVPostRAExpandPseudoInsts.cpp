@@ -45,9 +45,6 @@ private:
                 MachineBasicBlock::iterator &NextMBBI);
   bool expandMovImm(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
   bool expandMovAddr(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
-#if SIFIVE_CUSTOMIZATION
-  bool expandLIsimm32(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
-#endif // SIFIVE_CUSTOMIZATION
 };
 
 char RISCVPostRAExpandPseudo::ID = 0;
@@ -81,10 +78,6 @@ bool RISCVPostRAExpandPseudo::expandMI(MachineBasicBlock &MBB,
     return expandMovImm(MBB, MBBI);
   case RISCV::PseudoMovAddr:
     return expandMovAddr(MBB, MBBI);
-#if SIFIVE_CUSTOMIZATION
-  case RISCV::PseudoLIsimm32:
-    return expandLIsimm32(MBB, MBBI);
-#endif // SIFIVE_CUSTOMIZATION
   default:
     return false;
   }
@@ -96,6 +89,20 @@ bool RISCVPostRAExpandPseudo::expandMovImm(MachineBasicBlock &MBB,
 
   int64_t Val = MBBI->getOperand(1).getImm();
 
+<<<<<<< HEAD
+=======
+#if SIFIVE_CUSTOMIZATION
+  const RISCVSubtarget &Subtarget =
+      MBB.getParent()->getSubtarget<RISCVSubtarget>();
+  if (Subtarget.hasLUIADDIFusion())
+    return false;
+#endif // SIFIVE_CUSTOMIZATION
+
+  RISCVMatInt::InstSeq Seq =
+      RISCVMatInt::generateInstSeq(Val, MBB.getParent()->getSubtarget());
+  assert(!Seq.empty());
+
+>>>>>>> origin/sifive-dev
   Register DstReg = MBBI->getOperand(0).getReg();
   bool DstIsDead = MBBI->getOperand(0).isDead();
   bool Renamable = MBBI->getOperand(0).isRenamable();
@@ -106,19 +113,6 @@ bool RISCVPostRAExpandPseudo::expandMovImm(MachineBasicBlock &MBB,
   MBBI->eraseFromParent();
   return true;
 }
-
-#if SIFIVE_CUSTOMIZATION
-bool RISCVPostRAExpandPseudo::expandLIsimm32(MachineBasicBlock &MBB,
-                                             MachineBasicBlock::iterator MBBI) {
-  const RISCVSubtarget &Subtarget =
-      MBB.getParent()->getSubtarget<RISCVSubtarget>();
-
-  if (!Subtarget.usePseudoLIsimm32() || Subtarget.hasLUIADDIFusion())
-    return false;
-
-  return expandMovImm(MBB, MBBI);
-}
-#endif // SIFIVE_CUSTOMIZATION
 
 bool RISCVPostRAExpandPseudo::expandMovAddr(MachineBasicBlock &MBB,
                                             MachineBasicBlock::iterator MBBI) {

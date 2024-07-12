@@ -136,6 +136,10 @@ STATISTIC(NumRetsDup, "Number of return instructions duplicated");
 STATISTIC(NumDbgValueMoved, "Number of debug value instructions moved");
 STATISTIC(NumSelectsExpanded, "Number of selects turned into branches");
 STATISTIC(NumStoreExtractExposed, "Number of store(extractelement) exposed");
+#if SIFIVE_CUSTOMIZATION
+STATISTIC(NumCSEAwareReassocDeleted,
+          "Number of instructions removed by CSE-aware reassociation.");
+#endif // SIFIVE_CUSTOMIZATION
 
 static cl::opt<bool> DisableBranchOpts(
     "disable-cgp-branch-opts", cl::Hidden, cl::init(false),
@@ -277,6 +281,13 @@ static cl::opt<unsigned>
 static cl::opt<bool>
     DisableDeletePHIs("disable-cgp-delete-phis", cl::Hidden, cl::init(false),
                       cl::desc("Disable elimination of dead PHI nodes."));
+
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<unsigned> CSEAwareReassocThreshold(
+    "cgp-cse-aware-reassoc-threshold", cl::Hidden,
+    cl::desc("The threshold value for performing CSE-aware reassociation."),
+    cl::init(3));
+#endif
 
 namespace {
 
@@ -429,6 +440,9 @@ private:
   bool isMergingEmptyBlockProfitable(BasicBlock *BB, BasicBlock *DestBB,
                                      bool isPreheader);
   bool makeBitReverse(Instruction &I);
+#if SIFIVE_CUSTOMIZATION
+  bool performSimpleCSEAwareReassociation(BasicBlock &BB);
+#endif
   bool optimizeBlock(BasicBlock &BB, ModifyDT &ModifiedDT);
   bool optimizeInst(Instruction *I, ModifyDT &ModifiedDT);
   bool optimizeMemoryInst(Instruction *MemoryInst, Value *Addr, Type *AccessTy,
@@ -8022,6 +8036,81 @@ bool CodeGenPrepare::optimizeExtractElementInst(Instruction *Inst) {
   return false;
 }
 
+#if SIFIVE_CUSTOMIZATION
+bool CodeGenPrepare::performSimpleCSEAwareReassociation(BasicBlock &BB) {
+  bool Changed = false;
+
+  // We try to optimize the pattern where multiple (fsub (fadd X_i, C), M)
+  // share the same `C` and `M` but differ on `X_i`. In which case we can
+  // factor out (fsub C, M) as `K` and turn each of these instances into
+  // (fadd X_i, K).
+
+  // {C, M} -> list of candidate instructions.
+  DenseMap<std::pair<Value *, Value *>, SmallVector<Instruction *>> Candidates;
+
+  using namespace PatternMatch;
+  Value *C, *M;
+  Value *Mask, *VL;
+  auto VPPattern = m_Intrinsic<Intrinsic::vp_fsub>(
+      m_OneUse(m_AllowReassoc(m_Intrinsic<Intrinsic::vp_fadd>(
+          m_Value(), m_Value(C), m_Value(Mask), m_Value(VL)))),
+      m_Value(M),
+      // The mask and VL arguments must match
+      m_Deferred(Mask), m_Deferred(VL));
+  auto ScalarPattern = m_FSub(
+      m_OneUse(m_AllowReassoc(m_FAdd(m_Value(), m_Value(C)))), m_Value(M));
+  // Collect all the candidates.
+  for (auto &I : BB) {
+    if (!match(&I, m_AllowReassoc(m_CombineOr(VPPattern, ScalarPattern))))
+      continue;
+
+    // TODO: Consider the commutative of fadd.
+    auto &Insts = Candidates.getOrInsertDefault(std::make_pair(C, M));
+    // It's unlikely someone will use _both_ VP and non-VP way to process
+    // the same set of vectors. But we never know.
+    assert(Insts.empty() || Insts.front()->getOpcode() == I.getOpcode());
+    Insts.push_back(&I);
+  }
+
+  for (const auto &[Ops, Insts] : Candidates) {
+    // Only do the transformation if it's profitable.
+    if (Insts.size() < CSEAwareReassocThreshold)
+      continue;
+    Changed = true;
+
+    // Factoring out (fsub C, M) as `K`.
+    Instruction *FirstInst = Insts.front();
+    auto *FAdd = cast<Instruction>(FirstInst->getOperand(0));
+    IRBuilder<> Builder(FAdd);
+    Value *K;
+    if (auto *VPI = dyn_cast<VPIntrinsic>(FirstInst)) {
+      Mask = VPI->getMaskParam();
+      VL = VPI->getVectorLengthParam();
+      CallInst *Call =
+          Builder.CreateIntrinsic(FirstInst->getType(), Intrinsic::vp_fsub,
+                                  {Ops.first, Ops.second, Mask, VL},
+                                  /*FMFSource=*/FirstInst);
+      // Copy the tailcall attribute.
+      Call->setTailCallKind(VPI->getTailCallKind());
+      K = Call;
+    } else {
+      K = Builder.CreateFSubFMF(Ops.first, Ops.second, /*FMFSource=*/FirstInst);
+    }
+
+    for (Instruction *FSub : Insts) {
+      FAdd = cast<Instruction>(FSub->getOperand(0));
+      assert(FAdd->hasOneUse());
+      FAdd->setOperand(1, K);
+      FSub->replaceAllUsesWith(FAdd);
+      FSub->eraseFromParent();
+      ++NumCSEAwareReassocDeleted;
+    }
+  }
+
+  return Changed;
+}
+#endif
+
 /// For the instruction sequence of store below, F and I values
 /// are bundled together as an i64 value before being stored into memory.
 /// Sometimes it is more efficient to generate separate stores for F and I,
@@ -8629,6 +8718,10 @@ bool CodeGenPrepare::optimizeBlock(BasicBlock &BB, ModifyDT &ModifiedDT) {
     }
   }
   MadeChange |= dupRetToEnableTailCallOpts(&BB, ModifiedDT);
+
+#if SIFIVE_CUSTOMIZATION
+  MadeChange |= performSimpleCSEAwareReassociation(BB);
+#endif
 
   return MadeChange;
 }

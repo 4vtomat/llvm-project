@@ -152,7 +152,7 @@ To compile a `hello` example for a 21G3 P550 platform:
 $ riscv64-unknown-elf-clang *-march=rv64imafdc_zba_zbb -mtune=sifive-p550* hello.c
 ----
 
-<<table-arch-options>> list the default `-march`/`-mtune` options per each `-mcpu` target. `-mcpu` represents CPU name and may be infixed or suffixed by a letter that corresponds to SiFive Core IP release as specified in the table. For example, `-mcpu=sifive-x280` targets X280 released in 21G2 Core IP release, `-mcpu=sifive-x280n` targets X280 released in 21G3 Core IP release, `-mcpu=sifive-x280o` targets X280 released in 22G1 Core IP release and above.
+<<table-arch-options>> list the default `-march`/`-mtune` options per each `-mcpu` target. `-mcpu` represents CPU name and may be infixed or suffixed by a letter that corresponds to SiFive Core IP release as specified in the table. For example, `-mcpu=sifive-x280` targets X280 released in 21G2 Core IP release, `-mcpu=sifive-x280n` targets X280 released in 21G3 Core IP release, `-mcpu=sifive-x280o` targets X280 released in 22G1 Core IP release and above. A CPU name may be infixed or suffixed by a string that describes a certain core configuration. For example, `-mcpu=sifive-x390` refers to the x390 core configuration with limited performance for vector FP64 operations and `-mcpu=sifive-x390-fast-fp64` refers to the core configuration with full performance for vector FP64 operations.
 Support of options starts from the compiler release specified in the table.
 
 // For PDF formatting
@@ -169,6 +169,10 @@ h|Core IP Version h|Compiler Version h|`-mcpu` h|Default `-march` h|Default `-mt
 |TBD |TBD |sifive-x390
 |`rv64imafdc_v_zic64b_zicbom_zicbop_zicboz_ziccamoa_ziccif_ziccrse_zicntr_zicond_zifencei_zihintntl_zihintpause_zihpm_zimop_za64rs_zawrs_zfa_zfh_zcb_zcmop_zba_zbb_zbs_zkr_zkt_zvbb_zvfbfmin_zvfbfwma_zvfh_zvl1024b_xsfcease_xsfvfexpa_xsfvfnrclipxfqf_xsfvfwmaccqqq_xsfvqdotq_xsfvqmaccqoq_xsifivecdiscarddlone_xsifivecflushdlone`
 |sifive-x390
+
+|TBD |TBD |sifive-x390-fast-fp64
+|`rv64imafdc_v_zic64b_zicbom_zicbop_zicboz_ziccamoa_ziccif_ziccrse_zicntr_zicond_zifencei_zihintntl_zihintpause_zihpm_zimop_za64rs_zawrs_zfa_zfh_zcb_zcmop_zba_zbb_zbs_zkr_zkt_zvbb_zvfbfmin_zvfbfwma_zvfh_zvl1024b_xsfcease_xsfvfexpa_xsfvfnrclipxfqf_xsfvfwmaccqqq_xsfvqdotq_xsfvqmaccqoq_xsifivecdiscarddlone_xsifivecflushdlone`
+|sifive-x390-fast-fp64
 
 |TBD |TBD |sifive-p260t
 |`rv64imafdcvh_zic64b_zicbom_zicbop_zicboz_ziccamoa_ziccif_ziccrse_zicsr_zifencei_zihintntl_zihintpause_zihpm_za64rs_zfh_zfhmin_zca_zcb_zba_zbb_zbs_zkt_zvbb_zvfbfmin_zvfh_xsfvfhbfmin_xsifivecdiscarddlone_xsifivecflushdlone`

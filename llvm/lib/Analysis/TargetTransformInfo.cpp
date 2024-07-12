@@ -1387,10 +1387,6 @@ bool TargetTransformInfo::preferPostFixStartValue(unsigned Opcode,
   return TTIImpl->preferPostFixStartValue(Opcode, Ty);
 }
 
-bool TargetTransformInfo::forceCheckAddressingMode() const {
-  return TTIImpl->forceCheckAddressingMode();
-}
-
 bool TargetTransformInfo::isLegalVectorInterleave(VectorType *VTy,
                                                   unsigned Factor,
                                                   const DataLayout &DL) const {

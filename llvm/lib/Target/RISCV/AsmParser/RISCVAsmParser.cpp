@@ -134,9 +134,9 @@ class RISCVAsmParser : public MCTargetAsmParser {
   bool generateVTypeError(SMLoc ErrorLoc);
 
 #if SIFIVE_CUSTOMIZATION
-  bool parseMammothWWEEToken(const AsmToken &Tok, WWEEState &State,
-                             unsigned &WW, unsigned &EE);
-  bool generateMammothWWEEError(SMLoc ErrorLoc);
+  bool parseMammothVTypeToken(const AsmToken &Tok, WWEEState &State,
+                              unsigned &WW, unsigned &EE, bool &Altfmt);
+  bool generateMammothVTypeError(SMLoc ErrorLoc);
 #endif // SIFIVE_CUSTOMIZATION
 
   // Helper to actually emit an instruction to the MCStreamer. Also, when
@@ -243,7 +243,7 @@ class RISCVAsmParser : public MCTargetAsmParser {
   ParseStatus parseReglist(OperandVector &Operands);
   ParseStatus parseRegReg(OperandVector &Operands);
 #if SIFIVE_CUSTOMIZATION
-  ParseStatus parseMammothWWEE(OperandVector &Operands);
+  ParseStatus parseMammothVType(OperandVector &Operands);
 #endif // SIFIVE_CUSTOMIZATION
   ParseStatus parseRetval(OperandVector &Operands);
   ParseStatus parseZcmpStackAdj(OperandVector &Operands,
@@ -637,8 +637,8 @@ public:
   }
 
 #if SIFIVE_CUSTOMIZATION
-  bool isMammothWWEE() const {
-    return Kind == KindTy::VType && RISCVVType::isValidMammothWWEE(VType.Val);
+  bool isMammothVType() const {
+    return Kind == KindTy::VType && RISCVVType::isValidMammothVType(VType.Val);
   }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -1659,9 +1659,9 @@ bool RISCVAsmParser::MatchAndEmitInstruction(SMLoc IDLoc, unsigned &Opcode,
                            "%tprel_add, %gprel, %got_gprel, %tls_ie_gprel "
                            "and %tls_gd_gprel modifier");
   }
-  case Match_InvalidMammothWWEE: {
+  case Match_InvalidMammothVType: {
     SMLoc ErrorLoc = ((RISCVOperand &)*Operands[ErrorInfo]).getStartLoc();
-    return generateMammothWWEEError(ErrorLoc);
+    return generateMammothVTypeError(ErrorLoc);
   }
 #endif // SIFIVE_CUSTOMIZATION
   case Match_InvalidTLSDESCCallSymbol: {
@@ -2330,9 +2330,9 @@ bool RISCVAsmParser::generateVTypeError(SMLoc ErrorLoc) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-bool RISCVAsmParser::parseMammothWWEEToken(const AsmToken &Tok,
-                                           WWEEState &State, unsigned &WW,
-                                           unsigned &EE) {
+bool RISCVAsmParser::parseMammothVTypeToken(const AsmToken &Tok,
+                                            WWEEState &State, unsigned &WW,
+                                            unsigned &EE, bool &Altfmt) {
   if (getLexer().isNot(AsmToken::Identifier))
     return true;
 
@@ -2342,8 +2342,13 @@ bool RISCVAsmParser::parseMammothWWEEToken(const AsmToken &Tok,
   case WWEEState_SEW:
     if (!Identifier.consume_front("e"))
       break;
-    if (Identifier.getAsInteger(10, EE))
-      break;
+    if (Identifier.getAsInteger(10, EE)) {
+      if (Identifier != "16alt")
+        break;
+
+      Altfmt = true;
+      EE = 16;
+    }
     if (!RISCVVType::isValidSEW(EE) || EE > 64)
       break;
     State = WWEEState_Widen;
@@ -2365,38 +2370,39 @@ bool RISCVAsmParser::parseMammothWWEEToken(const AsmToken &Tok,
   return true;
 }
 
-ParseStatus RISCVAsmParser::parseMammothWWEE(OperandVector &Operands) {
+ParseStatus RISCVAsmParser::parseMammothVType(OperandVector &Operands) {
   SMLoc S = getLoc();
 
   unsigned Widen = 0;
   unsigned SEW = 0;
+  bool Altfmt = false;
 
   WWEEState State = WWEEState_SEW;
 
-  if (parseMammothWWEEToken(getTok(), State, Widen, SEW))
-    return generateMammothWWEEError(S);
+  if (parseMammothVTypeToken(getTok(), State, Widen, SEW, Altfmt))
+    return generateMammothVTypeError(S);
 
   getLexer().Lex();
 
   if (!parseOptionalToken(AsmToken::Comma))
-    return generateMammothWWEEError(S);
+    return generateMammothVTypeError(S);
 
-  if (parseMammothWWEEToken(getTok(), State, Widen, SEW))
-    return generateMammothWWEEError(S);
+  if (parseMammothVTypeToken(getTok(), State, Widen, SEW, Altfmt))
+    return generateMammothVTypeError(S);
 
   getLexer().Lex();
 
   if (getLexer().is(AsmToken::EndOfStatement) && State == WWEEState_Done) {
     Operands.push_back(RISCVOperand::createVType(
-        RISCVVType::encodeMammothWWEE(SEW, Widen), S));
+        RISCVVType::encodeMammothVType(SEW, Widen, Altfmt), S));
     return ParseStatus::Success;
   }
 
-  return generateMammothWWEEError(S);
+  return generateMammothVTypeError(S);
 }
 
-bool RISCVAsmParser::generateMammothWWEEError(SMLoc ErrorLoc) {
-  return Error(ErrorLoc, "operand must be e[8|16|32|64],w[1|2|4]");
+bool RISCVAsmParser::generateMammothVTypeError(SMLoc ErrorLoc) {
+  return Error(ErrorLoc, "operand must be e[8|16|16alt|32|64],w[1|2|4]");
 }
 #endif // SIFIVE_CUSTOMIZATION
 

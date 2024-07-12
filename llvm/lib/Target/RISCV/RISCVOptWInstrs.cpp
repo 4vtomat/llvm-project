@@ -389,6 +389,10 @@ static bool isSignExtendingOpW(const MachineInstr &MI,
     assert(Log2SEW >= 3 && Log2SEW <= 6 && "Unexpected Log2SEW");
     return Log2SEW <= 5;
   }
+#if SIFIVE_CUSTOMIZATION
+  case RISCV::PseudoMovImm:
+    return MI.getOperand(1).isImm() && isInt<32>(MI.getOperand(1).getImm());
+#endif
   }
 
   return false;

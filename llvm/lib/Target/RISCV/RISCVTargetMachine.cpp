@@ -494,7 +494,8 @@ void RISCVPassConfig::addIRPasses() {
   if (getOptLevel() == CodeGenOptLevel::Aggressive &&
       (EnableGEPOpt || EnableSLSROpt)) {
     if (EnableGEPOpt)
-      addPass(createSeparateConstOffsetFromGEPPass(true));
+      addPass(createSeparateConstOffsetFromGEPPass(
+          /*LowerGEP=*/true, /*ForceCheckAddressingMode=*/true));
     if (EnableSLSROpt)
       addPass(createStraightLineStrengthReducePass());
 

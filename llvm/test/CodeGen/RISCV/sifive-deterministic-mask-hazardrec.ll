@@ -62,8 +62,8 @@ define void @baz(ptr %arg) {
 ; CHECK-NEXT:    addi a4, sp, 16
 ; CHECK-NEXT:    vadd.vx v8, v8, a3
 ; CHECK-NEXT:    vmsltu.vx v17, v8, a5
-; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; CHECK-NEXT:    vl8r.v v8, (a4) # Unknown-size Folded Reload
+; CHECK-NEXT:    vsetvli zero, a2, e64, m8, ta, ma
 ; CHECK-NEXT:    add a2, a1, a1
 ; CHECK-NEXT:    vadd.vx v8, v8, a3
 ; CHECK-NEXT:    vmsltu.vx v18, v8, a5

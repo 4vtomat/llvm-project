@@ -6,13 +6,13 @@
 
 ; Test to ensure that the below functions emit PseudoLIsimm32
 ; RUN: [ $(llc -mtriple=riscv64 -mattr=+pseudo-li-simm32 \
-; RUN:     -stop-after=finalize-isel < %s | grep -c "PseudoLIsimm32") \
+; RUN:     -stop-after=finalize-isel < %s | grep -c "PseudoMovImm") \
 ; RUN:   -gt 0 ]
 
 ; Test to ensure that the below functions expand PseudoLIsimm32 afterwards
 ; RUN: [ $(llc -mtriple=riscv64 -mattr=+pseudo-li-simm32 \
 ; RUN:     -stop-after=riscv-expand-pseudolisimm32 < %s \
-; RUN:     | grep -c "PseudoLIsimm32") \
+; RUN:     | grep -c "PseudoMovImm") \
 ; RUN:   -eq 0 ]
 
 ; Various tests for lui+addi fusion.

@@ -344,8 +344,12 @@ class SeparateConstOffsetFromGEPLegacyPass : public FunctionPass {
 public:
   static char ID;
 
-  SeparateConstOffsetFromGEPLegacyPass(bool LowerGEP = false)
-      : FunctionPass(ID), LowerGEP(LowerGEP) {
+#if SIFIVE_CUSTOMIZATION
+  SeparateConstOffsetFromGEPLegacyPass(bool LowerGEP = false,
+                                       bool ForceCheckAddressingMode = false)
+      : FunctionPass(ID), LowerGEP(LowerGEP),
+        ForceCheckAddressingMode(ForceCheckAddressingMode) {
+#endif
     initializeSeparateConstOffsetFromGEPLegacyPassPass(
         *PassRegistry::getPassRegistry());
   }
@@ -362,6 +366,9 @@ public:
 
 private:
   bool LowerGEP;
+#if SIFIVE_CUSTOMIZATION
+  bool ForceCheckAddressingMode;
+#endif
 };
 
 /// A pass that tries to split every GEP in the function into a variadic
@@ -371,8 +378,13 @@ class SeparateConstOffsetFromGEP {
 public:
   SeparateConstOffsetFromGEP(
       DominatorTree *DT, LoopInfo *LI, TargetLibraryInfo *TLI,
-      function_ref<TargetTransformInfo &(Function &)> GetTTI, bool LowerGEP)
-      : DT(DT), LI(LI), TLI(TLI), GetTTI(GetTTI), LowerGEP(LowerGEP) {}
+#if SIFIVE_CUSTOMIZATION
+      function_ref<TargetTransformInfo &(Function &)> GetTTI, bool LowerGEP,
+      bool ForceCheckAddressingMode = false)
+      : DT(DT), LI(LI), TLI(TLI), GetTTI(GetTTI), LowerGEP(LowerGEP),
+        ForceCheckAddressingMode(ForceCheckAddressingMode) {
+  }
+#endif
 
   bool run(Function &F);
 
@@ -482,6 +494,10 @@ private:
   /// multiple GEPs with a single index.
   bool LowerGEP;
 
+#if SIFIVE_CUSTOMIZATION
+  bool ForceCheckAddressingMode;
+#endif
+
   DenseMap<ExprKey, SmallVector<Instruction *, 2>> DominatingAdds;
   DenseMap<ExprKey, SmallVector<Instruction *, 2>> DominatingSubs;
 };
@@ -504,8 +520,13 @@ INITIALIZE_PASS_END(
     "Split GEPs to a variadic base and a constant offset for better CSE", false,
     false)
 
-FunctionPass *llvm::createSeparateConstOffsetFromGEPPass(bool LowerGEP) {
-  return new SeparateConstOffsetFromGEPLegacyPass(LowerGEP);
+#if SIFIVE_CUSTOMIZATION
+FunctionPass *
+llvm::createSeparateConstOffsetFromGEPPass(bool LowerGEP,
+                                           bool ForceCheckAddressingMode) {
+  return new SeparateConstOffsetFromGEPLegacyPass(LowerGEP,
+                                                  ForceCheckAddressingMode);
+#endif
 }
 
 bool ConstantOffsetExtractor::CanTraceInto(bool SignExtended,
@@ -1043,7 +1064,7 @@ bool SeparateConstOffsetFromGEP::splitGEP(GetElementPtrInst *GEP) {
   // of variable indices. Therefore, we don't check for addressing modes in that
   // case.
 #if SIFIVE_CUSTOMIZATION
-  if (!LowerGEP || TTI.forceCheckAddressingMode()) {
+  if (!LowerGEP || ForceCheckAddressingMode) {
 #else
   if (!LowerGEP) {
 #endif // SIFIVE_CUSTOMIZATION
@@ -1175,7 +1196,10 @@ bool SeparateConstOffsetFromGEPLegacyPass::runOnFunction(Function &F) {
   auto GetTTI = [this](Function &F) -> TargetTransformInfo & {
     return this->getAnalysis<TargetTransformInfoWrapperPass>().getTTI(F);
   };
-  SeparateConstOffsetFromGEP Impl(DT, LI, TLI, GetTTI, LowerGEP);
+#if SIFIVE_CUSTOMIZATION
+  SeparateConstOffsetFromGEP Impl(DT, LI, TLI, GetTTI, LowerGEP,
+                                  ForceCheckAddressingMode);
+#endif
   return Impl.run(F);
 }
 

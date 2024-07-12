@@ -933,6 +933,18 @@ Error RISCVISAInfo::checkDependency() {
     return createStringError(
         errc::invalid_argument,
         "smwgd requires smwg extension to also be specified");
+
+  bool HasXSfmmTE = false;
+  for (auto *TE : {"xsfmm16t", "xsfmm32t", "xsfmm64t", "xsfmm128t"}) {
+    if (!Exts.count(TE))
+      continue;
+
+    if (HasXSfmmTE)
+      return createStringError(errc::invalid_argument,
+                               "No more than one xsfmm[16|32|64|128]t can "
+                               "co-exist at the same time.");
+    HasXSfmmTE = true;
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   if (Exts.count("zvbb") && !HasVector)
@@ -1052,6 +1064,9 @@ void RISCVISAInfo::updateImplication() {
 static constexpr StringLiteral CombineIntoExts[] = {
     {"zk"},    {"zkn"},  {"zks"},   {"zvkn"},  {"zvknc"},
     {"zvkng"}, {"zvks"}, {"zvksc"}, {"zvksg"},
+#if SIFIVE_CUSTOMIZATION
+    {"xsfmm32a"},
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 void RISCVISAInfo::updateCombination() {
