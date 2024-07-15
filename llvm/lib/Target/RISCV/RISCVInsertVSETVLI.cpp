@@ -1088,7 +1088,13 @@ RISCVInsertVSETVLI::computeInfoForInstr(const MachineInstr &MI) const {
     if (const MachineInstr *DefMI = InstrInfo.getAVLDefMI(LIS);
         DefMI && isVectorConfigInstr(*DefMI)) {
       VSETVLIInfo DefInstrInfo = getInfoForVSETVLI(*DefMI);
-      if (DefInstrInfo.hasSameVLMAX(InstrInfo))
+#if SIFIVE_CUSTOMIZATION
+      // SIFIVE ported fix from db782b44b3471c0ab41950c3f79d0ea7b916c135
+      // but not without the earlier patch that moves this code to a function.
+      if (DefInstrInfo.hasSameVLMAX(InstrInfo) &&
+          !(DefInstrInfo.hasAVLReg() &&
+            !LIS->getInterval(DefInstrInfo.getAVLReg()).containsOneValue()))
+#endif // SIFIVE_CUSTOMIZATION
         InstrInfo.setAVL(DefInstrInfo);
     }
   }
