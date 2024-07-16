@@ -109,6 +109,14 @@ class AdvancedVIReduceCycles<int sew, string mx> {
                       true: 1);
 }
 
+class SiFiveP400VSM3CCycles<string mx> {
+  // c = ceil(LMUL / 2)
+  int c = !cond(!eq(mx, "M2") : 1,
+                !eq(mx, "M4") : 2,
+                !eq(mx, "M8") : 4,
+                true : 1);
+}
+
 // SiFiveP400 machine model for scheduling and other instruction cost heuristics.
 // https://github.com/sifive/federation/blob/master/specs/design/standard/u84.json
 def SiFiveP400Model : SchedMachineModel {
@@ -897,11 +905,13 @@ foreach mx = SchedMxList in {
     defm "" : LMULWriteResMX<"WriteVAESZV",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
   // Zvksed
+  let Latency = 3, ReleaseAtCycles = [SiFiveP400VSM3CCycles<mx>.c] in
+  defm "" : LMULWriteResMX<"WriteVSM3CV",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
+  let Latency = 6, ReleaseAtCycles = [LMulLat] in
+  defm "" : LMULWriteResMX<"WriteVSM3MEV",  [SiFiveP400VEXQ0], mx, IsWorstCase>;
   let Latency = 3, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVSM4KV",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVSM4RV",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVSM3CV",   [SiFiveP400VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVSM3MEV",  [SiFiveP400VEXQ0], mx, IsWorstCase>;
   }
 }
 
