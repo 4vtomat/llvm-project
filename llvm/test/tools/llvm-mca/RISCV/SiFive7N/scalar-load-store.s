@@ -18,13 +18,13 @@ fsd fa5, 0(sp)
 
 # CHECK:      Iterations:        1
 # CHECK-NEXT: Instructions:      12
-# CHECK-NEXT: Total Cycles:      18
+# CHECK-NEXT: Total Cycles:      14
 # CHECK-NEXT: Total uOps:        12
 
 # CHECK:      Dispatch Width:    2
-# CHECK-NEXT: uOps Per Cycle:    0.67
-# CHECK-NEXT: IPC:               0.67
-# CHECK-NEXT: Block RThroughput: 16.0
+# CHECK-NEXT: uOps Per Cycle:    0.86
+# CHECK-NEXT: IPC:               0.86
+# CHECK-NEXT: Block RThroughput: 12.0
 
 # CHECK:      Instruction Info:
 # CHECK-NEXT: [1]: #uOps
@@ -41,8 +41,8 @@ fsd fa5, 0(sp)
 # CHECK-NEXT:  1      3     1.00    *                   flw	fa2, 0(sp)
 # CHECK-NEXT:  1      3     1.00    *                   ld	t4, 0(sp)
 # CHECK-NEXT:  1      3     1.00    *                   fld	fa4, 0(sp)
-# CHECK-NEXT:  1      1     3.00           *            sh	t1, 0(sp)
-# CHECK-NEXT:  1      1     3.00           *            fsh	fa1, 0(sp)
+# CHECK-NEXT:  1      1     1.00           *            sh	t1, 0(sp)
+# CHECK-NEXT:  1      1     1.00           *            fsh	fa1, 0(sp)
 # CHECK-NEXT:  1      1     1.00           *            sw	t3, 0(sp)
 # CHECK-NEXT:  1      1     1.00           *            fsw	fa3, 0(sp)
 # CHECK-NEXT:  1      1     1.00           *            sd	t5, 0(sp)
@@ -51,49 +51,48 @@ fsd fa5, 0(sp)
 # CHECK:      Resources:
 # CHECK-NEXT: [0]   - VLEN512FastFP64SiFive7NFDiv
 # CHECK-NEXT: [1]   - VLEN512FastFP64SiFive7NIDiv
-# CHECK-NEXT: [2]   - VLEN512FastFP64SiFive7NMem
-# CHECK-NEXT: [3]   - VLEN512FastFP64SiFive7NPipeA
-# CHECK-NEXT: [4]   - VLEN512FastFP64SiFive7NPipeB
-# CHECK-NEXT: [5]   - VLEN512FastFP64SiFive7NVA
-# CHECK-NEXT: [6]   - VLEN512FastFP64SiFive7NVCQ
-# CHECK-NEXT: [7]   - VLEN512FastFP64SiFive7NVL
-# CHECK-NEXT: [8]   - VLEN512FastFP64SiFive7NVS
+# CHECK-NEXT: [2]   - VLEN512FastFP64SiFive7NPipeA
+# CHECK-NEXT: [3]   - VLEN512FastFP64SiFive7NPipeB
+# CHECK-NEXT: [4]   - VLEN512FastFP64SiFive7NVA
+# CHECK-NEXT: [5]   - VLEN512FastFP64SiFive7NVCQ
+# CHECK-NEXT: [6]   - VLEN512FastFP64SiFive7NVL
+# CHECK-NEXT: [7]   - VLEN512FastFP64SiFive7NVS
 
 # CHECK:      Resource pressure per iteration:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
-# CHECK-NEXT:  -      -     16.00   -      -      -      -      -      -
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]
+# CHECK-NEXT:  -      -     12.00   -      -      -      -      -
 
 # CHECK:      Resource pressure by instruction:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lh	t0, 0(sp)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     flh	fa0, 0(sp)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lw	t2, 0(sp)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     flw	fa2, 0(sp)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     ld	t4, 0(sp)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     fld	fa4, 0(sp)
-# CHECK-NEXT:  -      -     3.00    -      -      -      -      -      -     sh	t1, 0(sp)
-# CHECK-NEXT:  -      -     3.00    -      -      -      -      -      -     fsh	fa1, 0(sp)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     sw	t3, 0(sp)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     fsw	fa3, 0(sp)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     sd	t5, 0(sp)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     fsd	fa5, 0(sp)
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    Instructions:
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     lh	t0, 0(sp)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     flh	fa0, 0(sp)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     lw	t2, 0(sp)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     flw	fa2, 0(sp)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     ld	t4, 0(sp)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     fld	fa4, 0(sp)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     sh	t1, 0(sp)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     fsh	fa1, 0(sp)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     sw	t3, 0(sp)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     fsw	fa3, 0(sp)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     sd	t5, 0(sp)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     fsd	fa5, 0(sp)
 
 # CHECK:      Timeline view:
-# CHECK-NEXT:                     01234567
+# CHECK-NEXT:                     0123
 # CHECK-NEXT: Index     0123456789
 
-# CHECK:      [0,0]     DeeE .    .    . .   lh	t0, 0(sp)
-# CHECK-NEXT: [0,1]     .DeeE.    .    . .   flh	fa0, 0(sp)
-# CHECK-NEXT: [0,2]     . DeeE    .    . .   lw	t2, 0(sp)
-# CHECK-NEXT: [0,3]     .  DeeE   .    . .   flw	fa2, 0(sp)
-# CHECK-NEXT: [0,4]     .   DeeE  .    . .   ld	t4, 0(sp)
-# CHECK-NEXT: [0,5]     .    DeeE .    . .   fld	fa4, 0(sp)
-# CHECK-NEXT: [0,6]     .    . DE .    . .   sh	t1, 0(sp)
-# CHECK-NEXT: [0,7]     .    .    DE   . .   fsh	fa1, 0(sp)
-# CHECK-NEXT: [0,8]     .    .    .  DE. .   sw	t3, 0(sp)
-# CHECK-NEXT: [0,9]     .    .    .   DE .   fsw	fa3, 0(sp)
-# CHECK-NEXT: [0,10]    .    .    .    DE.   sd	t5, 0(sp)
-# CHECK-NEXT: [0,11]    .    .    .    .DE   fsd	fa5, 0(sp)
+# CHECK:      [0,0]     DeeE .    .  .   lh	t0, 0(sp)
+# CHECK-NEXT: [0,1]     .DeeE.    .  .   flh	fa0, 0(sp)
+# CHECK-NEXT: [0,2]     . DeeE    .  .   lw	t2, 0(sp)
+# CHECK-NEXT: [0,3]     .  DeeE   .  .   flw	fa2, 0(sp)
+# CHECK-NEXT: [0,4]     .   DeeE  .  .   ld	t4, 0(sp)
+# CHECK-NEXT: [0,5]     .    DeeE .  .   fld	fa4, 0(sp)
+# CHECK-NEXT: [0,6]     .    . DE .  .   sh	t1, 0(sp)
+# CHECK-NEXT: [0,7]     .    .  DE.  .   fsh	fa1, 0(sp)
+# CHECK-NEXT: [0,8]     .    .   DE  .   sw	t3, 0(sp)
+# CHECK-NEXT: [0,9]     .    .    DE .   fsw	fa3, 0(sp)
+# CHECK-NEXT: [0,10]    .    .    .DE.   sd	t5, 0(sp)
+# CHECK-NEXT: [0,11]    .    .    . DE   fsd	fa5, 0(sp)
 
 # CHECK:      Average Wait times (based on the timeline view):
 # CHECK-NEXT: [0]: Executions

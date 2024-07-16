@@ -31,7 +31,6 @@ multiclass SiFive7NSchedResources<int VLEN, bit ExtraVALU = false,
   defvar SiFive7NPipeA = !cast<ProcResource>(NAME # SiFive7NPipeA);
   defvar SiFive7NPipeB = !cast<ProcResource>(NAME # SiFive7NPipeB);
   defvar SiFive7NPipeAB = !cast<ProcResGroup>(NAME # SiFive7NPipeAB);
-  defvar SiFive7NMem = !cast<ProcResource>(NAME # SiFive7NMem);
   defvar SiFive7NIDiv = !cast<ProcResource>(NAME # SiFive7NIDiv);
   defvar SiFive7NFDiv = !cast<ProcResource>(NAME # SiFive7NFDiv);
   // Pass SiFive7NVA for VA1 and VA1OrVA2 if there is only 1 VALU.
@@ -52,7 +51,7 @@ multiclass SiFive7NSchedResources<int VLEN, bit ExtraVALU = false,
   // be defined below.
   defm "SiFive7N"
       : BulletWriteResBase<VLEN, SiFive7NPipeA, SiFive7NPipeB, SiFive7NPipeAB,
-                           SiFive7NMem, SiFive7NIDiv, SiFive7NFDiv, SiFive7NVA1,
+                           SiFive7NIDiv, SiFive7NFDiv, SiFive7NVA1,
                            SiFive7NVA1OrVA2, SiFive7NVL, SiFive7NVS,
                            SiFive7NVCQ, HasSlowFP64,
                            HasFastGather,

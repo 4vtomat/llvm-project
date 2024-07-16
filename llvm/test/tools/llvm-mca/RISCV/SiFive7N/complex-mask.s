@@ -41,25 +41,24 @@ vid.v    v1, v0.t
 # CHECK:      Resources:
 # CHECK-NEXT: [0]   - VLEN512FastFP64SiFive7NFDiv
 # CHECK-NEXT: [1]   - VLEN512FastFP64SiFive7NIDiv
-# CHECK-NEXT: [2]   - VLEN512FastFP64SiFive7NMem
-# CHECK-NEXT: [3]   - VLEN512FastFP64SiFive7NPipeA
-# CHECK-NEXT: [4]   - VLEN512FastFP64SiFive7NPipeB
-# CHECK-NEXT: [5]   - VLEN512FastFP64SiFive7NVA
-# CHECK-NEXT: [6]   - VLEN512FastFP64SiFive7NVCQ
-# CHECK-NEXT: [7]   - VLEN512FastFP64SiFive7NVL
-# CHECK-NEXT: [8]   - VLEN512FastFP64SiFive7NVS
+# CHECK-NEXT: [2]   - VLEN512FastFP64SiFive7NPipeA
+# CHECK-NEXT: [3]   - VLEN512FastFP64SiFive7NPipeB
+# CHECK-NEXT: [4]   - VLEN512FastFP64SiFive7NVA
+# CHECK-NEXT: [5]   - VLEN512FastFP64SiFive7NVCQ
+# CHECK-NEXT: [6]   - VLEN512FastFP64SiFive7NVL
+# CHECK-NEXT: [7]   - VLEN512FastFP64SiFive7NVS
 
 # CHECK:      Resource pressure per iteration:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
-# CHECK-NEXT:  -      -      -     1.00    -     33.00  7.00    -      -
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]
+# CHECK-NEXT:  -      -     1.00    -     33.00  7.00    -      -
 
 # CHECK:      Resource pressure by instruction:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, m1, tu, mu
-# CHECK-NEXT:  -      -      -      -      -     12.00  1.00    -      -     vfirst.m	a0, v2
-# CHECK-NEXT:  -      -      -      -      -     1.00   1.00    -      -     vmsbf.m	v1, v2
-# CHECK-NEXT:  -      -      -      -      -     1.00   1.00    -      -     vmsif.m	v1, v2
-# CHECK-NEXT:  -      -      -      -      -     1.00   1.00    -      -     vmsof.m	v1, v2
-# CHECK-NEXT:  -      -      -      -      -     12.00  1.00    -      -     vcpop.m	a0, v2
-# CHECK-NEXT:  -      -      -      -      -     3.00   1.00    -      -     viota.m	v1, v2
-# CHECK-NEXT:  -      -      -      -      -     3.00   1.00    -      -     vid.v	v1, v0.t
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    Instructions:
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     vsetvli	zero, zero, e32, m1, tu, mu
+# CHECK-NEXT:  -      -      -      -     12.00  1.00    -      -     vfirst.m	a0, v2
+# CHECK-NEXT:  -      -      -      -     1.00   1.00    -      -     vmsbf.m	v1, v2
+# CHECK-NEXT:  -      -      -      -     1.00   1.00    -      -     vmsif.m	v1, v2
+# CHECK-NEXT:  -      -      -      -     1.00   1.00    -      -     vmsof.m	v1, v2
+# CHECK-NEXT:  -      -      -      -     12.00  1.00    -      -     vcpop.m	a0, v2
+# CHECK-NEXT:  -      -      -      -     3.00   1.00    -      -     viota.m	v1, v2
+# CHECK-NEXT:  -      -      -      -     3.00   1.00    -      -     vid.v	v1, v0.t

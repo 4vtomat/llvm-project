@@ -19,7 +19,6 @@ multiclass SiFive7SchedResources<int VLEN> {
   defvar SiFive7PipeA = !cast<ProcResource>(NAME # SiFive7PipeA);
   defvar SiFive7PipeB = !cast<ProcResource>(NAME # SiFive7PipeB);
   defvar SiFive7PipeAB = !cast<ProcResGroup>(NAME # SiFive7PipeAB);
-  defvar SiFive7Mem = !cast<ProcResource>(NAME # SiFive7Mem);
   defvar SiFive7IDiv = !cast<ProcResource>(NAME # SiFive7IDiv);
   defvar SiFive7FDiv = !cast<ProcResource>(NAME # SiFive7FDiv);
   defvar SiFive7VA = !cast<ProcResource>(NAME # SiFive7VA);
@@ -34,7 +33,7 @@ multiclass SiFive7SchedResources<int VLEN> {
   // machine.
   defm "SiFive7"
       : BulletWriteResBase<VLEN, SiFive7PipeA, SiFive7PipeB, SiFive7PipeAB,
-                           SiFive7Mem, SiFive7IDiv, SiFive7FDiv, SiFive7VA,
+                           SiFive7IDiv, SiFive7FDiv, SiFive7VA,
                            SiFive7VA, SiFive7VL, SiFive7VS, SiFive7VCQ>;
 
   // Half precision.

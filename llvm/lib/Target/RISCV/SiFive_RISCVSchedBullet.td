@@ -253,7 +253,6 @@ class BulletAnyToFPRBypass<SchedRead read, int cycles = 1>
 multiclass BulletProcResources<bit extraVALU = false> {
   def PipeA : ProcResource<1>;
   def PipeB : ProcResource<1>;
-  def Mem   : ProcResource<1>; // Memory
   def IDiv  : ProcResource<1>; // Int Division
   def FDiv  : ProcResource<1>; // FP Division/Sqrt
   // Bullet CPUs can have either one or two vector arithmetic sequencers
@@ -284,7 +283,7 @@ multiclass BulletProcResources<bit extraVALU = false> {
 
 multiclass BulletWriteResBase<
     int VLEN, ProcResourceKind PipeA, ProcResourceKind PipeB,
-    ProcResourceKind PipeAB, ProcResourceKind Mem, ProcResourceKind IDiv,
+    ProcResourceKind PipeAB, ProcResourceKind IDiv,
     ProcResourceKind FDiv, ProcResourceKind VA1, ProcResourceKind VA1OrVA2,
     ProcResourceKind VL, ProcResourceKind VS, ProcResourceKind VCQ,
     bit hasSlowFP64Vec = false,
@@ -383,43 +382,38 @@ multiclass BulletWriteResBase<
   }
   
   // Memory
-  let ReleaseAtCycles = [0, 3] in {
-    def : WriteRes<WriteSTB, [PipeA, Mem]>;
-    def : WriteRes<WriteSTH, [PipeA, Mem]>;
-    def : WriteRes<WriteFST16, [PipeA, Mem]>;
+  def : WriteRes<WriteSTB, [PipeA]>;
+  def : WriteRes<WriteSTH, [PipeA]>;
+  def : WriteRes<WriteFST16, [PipeA]>;
+  
+  def : WriteRes<WriteSTW, [PipeA]>;
+  def : WriteRes<WriteSTD, [PipeA]>;
+  def : WriteRes<WriteFST32, [PipeA]>;
+  def : WriteRes<WriteFST64, [PipeA]>;
+  
+  
+  let Latency = 3 in {
+    def : WriteRes<WriteLDB, [PipeA]>;
+    def : WriteRes<WriteLDH, [PipeA]>;
+    def : WriteRes<WriteLDW, [PipeA]>;
+    def : WriteRes<WriteLDD, [PipeA]>;
   }
   
-  let ReleaseAtCycles = [0, 1] in {
-    def : WriteRes<WriteSTW, [PipeA, Mem]>;
-    def : WriteRes<WriteSTD, [PipeA, Mem]>;
-    def : WriteRes<WriteFST32, [PipeA, Mem]>;
-    def : WriteRes<WriteFST64, [PipeA, Mem]>;
-  }
-  
-  let Latency = 3, ReleaseAtCycles = [0, 1] in {
-    def : WriteRes<WriteLDB, [PipeA, Mem]>;
-    def : WriteRes<WriteLDH, [PipeA, Mem]>;
-    def : WriteRes<WriteLDW, [PipeA, Mem]>;
-    def : WriteRes<WriteLDD, [PipeA, Mem]>;
-  }
-  
-  let Latency = 3, ReleaseAtCycles = [0, 1] in {
-    def : WriteRes<WriteFLD16, [PipeA, Mem]>;
-    def : WriteRes<WriteFLD32, [PipeA, Mem]>;
-    def : WriteRes<WriteFLD64, [PipeA, Mem]>;
+  let Latency = 3 in {
+    def : WriteRes<WriteFLD16, [PipeA]>;
+    def : WriteRes<WriteFLD32, [PipeA]>;
+    def : WriteRes<WriteFLD64, [PipeA]>;
   }
   
   // Atomic memory
-  let ReleaseAtCycles = [0, 1] in {
-    def : WriteRes<WriteAtomicSTW, [PipeA, Mem]>;
-    def : WriteRes<WriteAtomicSTD, [PipeA, Mem]>;
-  }
+  def : WriteRes<WriteAtomicSTW, [PipeA]>;
+  def : WriteRes<WriteAtomicSTD, [PipeA]>;
   
-  let Latency = 3, ReleaseAtCycles = [0, 1] in {
-    def : WriteRes<WriteAtomicW, [PipeA, Mem]>;
-    def : WriteRes<WriteAtomicD, [PipeA, Mem]>;
-    def : WriteRes<WriteAtomicLDW, [PipeA, Mem]>;
-    def : WriteRes<WriteAtomicLDD, [PipeA, Mem]>;
+  let Latency = 3 in {
+    def : WriteRes<WriteAtomicW, [PipeA]>;
+    def : WriteRes<WriteAtomicD, [PipeA]>;
+    def : WriteRes<WriteAtomicLDW, [PipeA]>;
+    def : WriteRes<WriteAtomicLDD, [PipeA]>;
   }
   
   // Half Precision

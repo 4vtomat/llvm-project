@@ -30,22 +30,21 @@ fdiv.s f1, f2, f3
 # CHECK:      Resources:
 # CHECK-NEXT: [0]   - VLEN512FastFP64SiFive7NFDiv
 # CHECK-NEXT: [1]   - VLEN512FastFP64SiFive7NIDiv
-# CHECK-NEXT: [2]   - VLEN512FastFP64SiFive7NMem
-# CHECK-NEXT: [3]   - VLEN512FastFP64SiFive7NPipeA
-# CHECK-NEXT: [4]   - VLEN512FastFP64SiFive7NPipeB
-# CHECK-NEXT: [5]   - VLEN512FastFP64SiFive7NVA
-# CHECK-NEXT: [6]   - VLEN512FastFP64SiFive7NVCQ
-# CHECK-NEXT: [7]   - VLEN512FastFP64SiFive7NVL
-# CHECK-NEXT: [8]   - VLEN512FastFP64SiFive7NVS
+# CHECK-NEXT: [2]   - VLEN512FastFP64SiFive7NPipeA
+# CHECK-NEXT: [3]   - VLEN512FastFP64SiFive7NPipeB
+# CHECK-NEXT: [4]   - VLEN512FastFP64SiFive7NVA
+# CHECK-NEXT: [5]   - VLEN512FastFP64SiFive7NVCQ
+# CHECK-NEXT: [6]   - VLEN512FastFP64SiFive7NVL
+# CHECK-NEXT: [7]   - VLEN512FastFP64SiFive7NVS
 
 # CHECK:      Resource pressure per iteration:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
-# CHECK-NEXT: 26.00  65.00   -      -     2.00    -      -      -      -
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]
+# CHECK-NEXT: 26.00  65.00   -     2.00    -      -      -      -
 
 # CHECK:      Resource pressure by instruction:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
-# CHECK-NEXT:  -     65.00   -      -     1.00    -      -      -      -     div	a0, a1, a2
-# CHECK-NEXT: 26.00   -      -      -     1.00    -      -      -      -     fdiv.s	ft1, ft2, ft3
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    Instructions:
+# CHECK-NEXT:  -     65.00   -     1.00    -      -      -      -     div	a0, a1, a2
+# CHECK-NEXT: 26.00   -      -     1.00    -      -      -      -     fdiv.s	ft1, ft2, ft3
 
 # CHECK:      Timeline view:
 # CHECK-NEXT:                     0123456789          0123456789          0123456789
