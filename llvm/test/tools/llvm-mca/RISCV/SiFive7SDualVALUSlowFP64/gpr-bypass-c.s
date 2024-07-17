@@ -68,41 +68,40 @@ c.jr a0
 # CHECK:      Resources:
 # CHECK-NEXT: [0]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NFDiv
 # CHECK-NEXT: [1]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NIDiv
-# CHECK-NEXT: [2]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NMem
-# CHECK-NEXT: [3]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA
-# CHECK-NEXT: [4]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeB
-# CHECK-NEXT: [5]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1
-# CHECK-NEXT: [6]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA2
-# CHECK-NEXT: [7]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ
-# CHECK-NEXT: [8]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVL
-# CHECK-NEXT: [9]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVS
+# CHECK-NEXT: [2]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeA
+# CHECK-NEXT: [3]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NPipeB
+# CHECK-NEXT: [4]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA1
+# CHECK-NEXT: [5]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVA2
+# CHECK-NEXT: [6]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVCQ
+# CHECK-NEXT: [7]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVL
+# CHECK-NEXT: [8]   - VLEN1024DualVALUSlowFP64FastGatherSiFive7NVS
 
 # CHECK:      Resource pressure per iteration:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]
-# CHECK-NEXT:  -      -      -     9.00   11.00   -      -      -      -      -
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
+# CHECK-NEXT:  -      -     9.00   11.00   -      -      -      -      -
 
 # CHECK:      Resource pressure by instruction:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]    Instructions:
-# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -     lui	a0, 1
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     add	a0, a0, a0
-# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -     addi	a0, a0, 1
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     addw	a0, a0, a0
-# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -     addiw	a0, a0, 1
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     sub	a0, a0, a0
-# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -     subw	a0, a0, a0
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     and	a0, a0, a0
-# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -     andi	a0, a0, 1
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     or	a0, a0, a0
-# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -     xor	a0, a0, a0
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     slli	a0, a0, 1
-# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -     srli	a0, a0, 1
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     srai	a0, a0, 1
-# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -     add	a0, a0, a0
-# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -     beqz	a0, .Ltmp0
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     add	a0, a0, a0
-# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -     bnez	a0, .Ltmp1
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -      -     add	a0, a0, a0
-# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -     jr	a0
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     lui	a0, 1
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     add	a0, a0, a0
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     addi	a0, a0, 1
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     addw	a0, a0, a0
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     addiw	a0, a0, 1
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     sub	a0, a0, a0
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     subw	a0, a0, a0
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     and	a0, a0, a0
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     andi	a0, a0, 1
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     or	a0, a0, a0
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     xor	a0, a0, a0
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     slli	a0, a0, 1
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     srli	a0, a0, 1
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     srai	a0, a0, 1
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     add	a0, a0, a0
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     beqz	a0, .Ltmp0
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     add	a0, a0, a0
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     bnez	a0, .Ltmp1
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     add	a0, a0, a0
+# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     jr	a0
 
 # CHECK:      Timeline view:
 # CHECK-NEXT:                     0123456789

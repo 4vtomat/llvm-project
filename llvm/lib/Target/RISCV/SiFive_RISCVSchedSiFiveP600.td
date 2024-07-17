@@ -50,6 +50,14 @@ class SiFiveP600GetCyclesSegmented<string mx, int sew, int nf> {
   int c = !mul(VLUpperBound, nf);
 }
 
+class SiFiveP600VSM3CCycles<string mx> {
+  // c = ceil(LMUL / 2)
+  int c = !cond(!eq(mx, "M2") : 1,
+                !eq(mx, "M4") : 2,
+                !eq(mx, "M8") : 4,
+                true : 1);
+}
+
 // SiFiveP600 machine model for scheduling and other instruction cost heuristics.
 def SiFiveP600Model : SchedMachineModel {
   let IssueWidth = 4;         // 4 micro-ops are dispatched per cycle.
@@ -823,11 +831,13 @@ foreach mx = SchedMxList in {
     defm "" : LMULWriteResMX<"WriteVAESZV",   [SiFiveP600VectorArith], mx, IsWorstCase>;
   }
   // Zvksed
+  let Latency = 3, ReleaseAtCycles = [SiFiveP600VSM3CCycles<mx>.c] in
+  defm "" : LMULWriteResMX<"WriteVSM3CV",   [SiFiveP600VEXQ0], mx, IsWorstCase>;
+  let Latency = 6, ReleaseAtCycles = [LMulLat] in
+  defm "" : LMULWriteResMX<"WriteVSM3MEV",  [SiFiveP600VEXQ0], mx, IsWorstCase>;
   let Latency = 3, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVSM4KV",   [SiFiveP600VEXQ0], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVSM4RV",   [SiFiveP600VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVSM3CV",   [SiFiveP600VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVSM3MEV",  [SiFiveP600VEXQ0], mx, IsWorstCase>;
   }
 }
 

@@ -44,13 +44,13 @@ lwu a0, 0(a0)
 
 # CHECK:      Iterations:        1
 # CHECK-NEXT: Instructions:      33
-# CHECK-NEXT: Total Cycles:      77
+# CHECK-NEXT: Total Cycles:      69
 # CHECK-NEXT: Total uOps:        33
 
 # CHECK:      Dispatch Width:    2
-# CHECK-NEXT: uOps Per Cycle:    0.43
-# CHECK-NEXT: IPC:               0.43
-# CHECK-NEXT: Block RThroughput: 41.0
+# CHECK-NEXT: uOps Per Cycle:    0.48
+# CHECK-NEXT: IPC:               0.48
+# CHECK-NEXT: Block RThroughput: 33.0
 
 # CHECK:      Instruction Info:
 # CHECK-NEXT: [1]: #uOps
@@ -64,15 +64,15 @@ lwu a0, 0(a0)
 # CHECK-NEXT:  1      3     1.00    *                   lb	a0, 1(a2)
 # CHECK-NEXT:  1      3     1.00    *                   lb	a0, 2(a0)
 # CHECK-NEXT:  1      3     1.00    *                   lb	a0, 0(a0)
-# CHECK-NEXT:  1      1     3.00           *            sb	a1, 0(a0)
+# CHECK-NEXT:  1      1     1.00           *            sb	a1, 0(a0)
 # CHECK-NEXT:  1      3     1.00    *                   lb	a0, 1(a2)
-# CHECK-NEXT:  1      1     3.00           *            sb	a1, 1(a0)
+# CHECK-NEXT:  1      1     1.00           *            sb	a1, 1(a0)
 # CHECK-NEXT:  1      3     1.00    *                   lh	a0, 1(a2)
 # CHECK-NEXT:  1      3     1.00    *                   lh	a0, 2(a0)
 # CHECK-NEXT:  1      3     1.00    *                   lh	a0, 0(a0)
-# CHECK-NEXT:  1      1     3.00           *            sh	a1, 0(a0)
+# CHECK-NEXT:  1      1     1.00           *            sh	a1, 0(a0)
 # CHECK-NEXT:  1      3     1.00    *                   lh	a0, 1(a2)
-# CHECK-NEXT:  1      1     3.00           *            sh	a1, 1(a0)
+# CHECK-NEXT:  1      1     1.00           *            sh	a1, 1(a0)
 # CHECK-NEXT:  1      3     1.00    *                   lw	a0, 1(a2)
 # CHECK-NEXT:  1      3     1.00    *                   lw	a0, 2(a0)
 # CHECK-NEXT:  1      3     1.00    *                   lw	a0, 0(a0)
@@ -98,92 +98,91 @@ lwu a0, 0(a0)
 # CHECK:      Resources:
 # CHECK-NEXT: [0]   - VLEN1024DualVALUFastFP64FastGatherSiFive7NFDiv
 # CHECK-NEXT: [1]   - VLEN1024DualVALUFastFP64FastGatherSiFive7NIDiv
-# CHECK-NEXT: [2]   - VLEN1024DualVALUFastFP64FastGatherSiFive7NMem
-# CHECK-NEXT: [3]   - VLEN1024DualVALUFastFP64FastGatherSiFive7NPipeA
-# CHECK-NEXT: [4]   - VLEN1024DualVALUFastFP64FastGatherSiFive7NPipeB
-# CHECK-NEXT: [5]   - VLEN1024DualVALUFastFP64FastGatherSiFive7NVA1
-# CHECK-NEXT: [6]   - VLEN1024DualVALUFastFP64FastGatherSiFive7NVA2
-# CHECK-NEXT: [7]   - VLEN1024DualVALUFastFP64FastGatherSiFive7NVCQ
-# CHECK-NEXT: [8]   - VLEN1024DualVALUFastFP64FastGatherSiFive7NVL
-# CHECK-NEXT: [9]   - VLEN1024DualVALUFastFP64FastGatherSiFive7NVS
+# CHECK-NEXT: [2]   - VLEN1024DualVALUFastFP64FastGatherSiFive7NPipeA
+# CHECK-NEXT: [3]   - VLEN1024DualVALUFastFP64FastGatherSiFive7NPipeB
+# CHECK-NEXT: [4]   - VLEN1024DualVALUFastFP64FastGatherSiFive7NVA1
+# CHECK-NEXT: [5]   - VLEN1024DualVALUFastFP64FastGatherSiFive7NVA2
+# CHECK-NEXT: [6]   - VLEN1024DualVALUFastFP64FastGatherSiFive7NVCQ
+# CHECK-NEXT: [7]   - VLEN1024DualVALUFastFP64FastGatherSiFive7NVL
+# CHECK-NEXT: [8]   - VLEN1024DualVALUFastFP64FastGatherSiFive7NVS
 
 # CHECK:      Resource pressure per iteration:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]
-# CHECK-NEXT:  -      -     41.00   -      -      -      -      -      -      -
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
+# CHECK-NEXT:  -      -     33.00   -      -      -      -      -      -
 
 # CHECK:      Resource pressure by instruction:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    [9]    Instructions:
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lb	a0, 1(a2)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lb	a0, 2(a0)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lb	a0, 0(a0)
-# CHECK-NEXT:  -      -     3.00    -      -      -      -      -      -      -     sb	a1, 0(a0)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lb	a0, 1(a2)
-# CHECK-NEXT:  -      -     3.00    -      -      -      -      -      -      -     sb	a1, 1(a0)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lh	a0, 1(a2)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lh	a0, 2(a0)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lh	a0, 0(a0)
-# CHECK-NEXT:  -      -     3.00    -      -      -      -      -      -      -     sh	a1, 0(a0)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lh	a0, 1(a2)
-# CHECK-NEXT:  -      -     3.00    -      -      -      -      -      -      -     sh	a1, 1(a0)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lw	a0, 1(a2)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lw	a0, 2(a0)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lw	a0, 0(a0)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     sw	a1, 0(a0)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lw	a0, 1(a2)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     sw	a1, 1(a0)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     ld	a0, 1(a2)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     ld	a0, 2(a0)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     ld	a0, 0(a0)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     sd	a1, 0(a0)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     ld	a0, 1(a2)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     sd	a1, 1(a0)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lbu	a0, 1(a2)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lbu	a0, 2(a0)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lbu	a0, 0(a0)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lhu	a0, 1(a2)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lhu	a0, 2(a0)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lhu	a0, 0(a0)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lwu	a0, 1(a2)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lwu	a0, 2(a0)
-# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -      -     lwu	a0, 0(a0)
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lb	a0, 1(a2)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lb	a0, 2(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lb	a0, 0(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     sb	a1, 0(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lb	a0, 1(a2)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     sb	a1, 1(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lh	a0, 1(a2)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lh	a0, 2(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lh	a0, 0(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     sh	a1, 0(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lh	a0, 1(a2)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     sh	a1, 1(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lw	a0, 1(a2)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lw	a0, 2(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lw	a0, 0(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     sw	a1, 0(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lw	a0, 1(a2)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     sw	a1, 1(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     ld	a0, 1(a2)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     ld	a0, 2(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     ld	a0, 0(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     sd	a1, 0(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     ld	a0, 1(a2)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     sd	a1, 1(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lbu	a0, 1(a2)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lbu	a0, 2(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lbu	a0, 0(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lhu	a0, 1(a2)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lhu	a0, 2(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lhu	a0, 0(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lwu	a0, 1(a2)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lwu	a0, 2(a0)
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -      -     lwu	a0, 0(a0)
 
 # CHECK:      Timeline view:
-# CHECK-NEXT:                     0123456789          0123456789          0123456789          0123456
-# CHECK-NEXT: Index     0123456789          0123456789          0123456789          0123456789
+# CHECK-NEXT:                     0123456789          0123456789          0123456789
+# CHECK-NEXT: Index     0123456789          0123456789          0123456789          012345678
 
-# CHECK:      [0,0]     DeeE .    .    .    .    .    .    .    .    .    .    .    .    .    .    ..   lb	a0, 1(a2)
-# CHECK-NEXT: [0,1]     .  DeeE   .    .    .    .    .    .    .    .    .    .    .    .    .    ..   lb	a0, 2(a0)
-# CHECK-NEXT: [0,2]     .    DeeE .    .    .    .    .    .    .    .    .    .    .    .    .    ..   lb	a0, 0(a0)
-# CHECK-NEXT: [0,3]     .    . DE .    .    .    .    .    .    .    .    .    .    .    .    .    ..   sb	a1, 0(a0)
-# CHECK-NEXT: [0,4]     .    .    DeeE .    .    .    .    .    .    .    .    .    .    .    .    ..   lb	a0, 1(a2)
-# CHECK-NEXT: [0,5]     .    .    .  DE.    .    .    .    .    .    .    .    .    .    .    .    ..   sb	a1, 1(a0)
-# CHECK-NEXT: [0,6]     .    .    .    .DeeE.    .    .    .    .    .    .    .    .    .    .    ..   lh	a0, 1(a2)
-# CHECK-NEXT: [0,7]     .    .    .    .   DeeE  .    .    .    .    .    .    .    .    .    .    ..   lh	a0, 2(a0)
-# CHECK-NEXT: [0,8]     .    .    .    .    .DeeE.    .    .    .    .    .    .    .    .    .    ..   lh	a0, 0(a0)
-# CHECK-NEXT: [0,9]     .    .    .    .    .  DE.    .    .    .    .    .    .    .    .    .    ..   sh	a1, 0(a0)
-# CHECK-NEXT: [0,10]    .    .    .    .    .    .DeeE.    .    .    .    .    .    .    .    .    ..   lh	a0, 1(a2)
-# CHECK-NEXT: [0,11]    .    .    .    .    .    .   DE    .    .    .    .    .    .    .    .    ..   sh	a1, 1(a0)
-# CHECK-NEXT: [0,12]    .    .    .    .    .    .    . DeeE    .    .    .    .    .    .    .    ..   lw	a0, 1(a2)
-# CHECK-NEXT: [0,13]    .    .    .    .    .    .    .    DeeE .    .    .    .    .    .    .    ..   lw	a0, 2(a0)
-# CHECK-NEXT: [0,14]    .    .    .    .    .    .    .    . DeeE    .    .    .    .    .    .    ..   lw	a0, 0(a0)
-# CHECK-NEXT: [0,15]    .    .    .    .    .    .    .    .   DE    .    .    .    .    .    .    ..   sw	a1, 0(a0)
-# CHECK-NEXT: [0,16]    .    .    .    .    .    .    .    .    DeeE .    .    .    .    .    .    ..   lw	a0, 1(a2)
-# CHECK-NEXT: [0,17]    .    .    .    .    .    .    .    .    .  DE.    .    .    .    .    .    ..   sw	a1, 1(a0)
-# CHECK-NEXT: [0,18]    .    .    .    .    .    .    .    .    .   DeeE  .    .    .    .    .    ..   ld	a0, 1(a2)
-# CHECK-NEXT: [0,19]    .    .    .    .    .    .    .    .    .    . DeeE    .    .    .    .    ..   ld	a0, 2(a0)
-# CHECK-NEXT: [0,20]    .    .    .    .    .    .    .    .    .    .   DeeE  .    .    .    .    ..   ld	a0, 0(a0)
-# CHECK-NEXT: [0,21]    .    .    .    .    .    .    .    .    .    .    .DE  .    .    .    .    ..   sd	a1, 0(a0)
-# CHECK-NEXT: [0,22]    .    .    .    .    .    .    .    .    .    .    . DeeE    .    .    .    ..   ld	a0, 1(a2)
-# CHECK-NEXT: [0,23]    .    .    .    .    .    .    .    .    .    .    .    DE   .    .    .    ..   sd	a1, 1(a0)
-# CHECK-NEXT: [0,24]    .    .    .    .    .    .    .    .    .    .    .    .DeeE.    .    .    ..   lbu	a0, 1(a2)
-# CHECK-NEXT: [0,25]    .    .    .    .    .    .    .    .    .    .    .    .   DeeE  .    .    ..   lbu	a0, 2(a0)
-# CHECK-NEXT: [0,26]    .    .    .    .    .    .    .    .    .    .    .    .    .DeeE.    .    ..   lbu	a0, 0(a0)
-# CHECK-NEXT: [0,27]    .    .    .    .    .    .    .    .    .    .    .    .    . DeeE    .    ..   lhu	a0, 1(a2)
-# CHECK-NEXT: [0,28]    .    .    .    .    .    .    .    .    .    .    .    .    .    DeeE .    ..   lhu	a0, 2(a0)
-# CHECK-NEXT: [0,29]    .    .    .    .    .    .    .    .    .    .    .    .    .    . DeeE    ..   lhu	a0, 0(a0)
-# CHECK-NEXT: [0,30]    .    .    .    .    .    .    .    .    .    .    .    .    .    .  DeeE   ..   lwu	a0, 1(a2)
-# CHECK-NEXT: [0,31]    .    .    .    .    .    .    .    .    .    .    .    .    .    .    .DeeE..   lwu	a0, 2(a0)
-# CHECK-NEXT: [0,32]    .    .    .    .    .    .    .    .    .    .    .    .    .    .    .  DeeE   lwu	a0, 0(a0)
+# CHECK:      [0,0]     DeeE .    .    .    .    .    .    .    .    .    .    .    .    .  .   lb	a0, 1(a2)
+# CHECK-NEXT: [0,1]     .  DeeE   .    .    .    .    .    .    .    .    .    .    .    .  .   lb	a0, 2(a0)
+# CHECK-NEXT: [0,2]     .    DeeE .    .    .    .    .    .    .    .    .    .    .    .  .   lb	a0, 0(a0)
+# CHECK-NEXT: [0,3]     .    . DE .    .    .    .    .    .    .    .    .    .    .    .  .   sb	a1, 0(a0)
+# CHECK-NEXT: [0,4]     .    .  DeeE   .    .    .    .    .    .    .    .    .    .    .  .   lb	a0, 1(a2)
+# CHECK-NEXT: [0,5]     .    .    .DE  .    .    .    .    .    .    .    .    .    .    .  .   sb	a1, 1(a0)
+# CHECK-NEXT: [0,6]     .    .    . DeeE    .    .    .    .    .    .    .    .    .    .  .   lh	a0, 1(a2)
+# CHECK-NEXT: [0,7]     .    .    .    DeeE .    .    .    .    .    .    .    .    .    .  .   lh	a0, 2(a0)
+# CHECK-NEXT: [0,8]     .    .    .    . DeeE    .    .    .    .    .    .    .    .    .  .   lh	a0, 0(a0)
+# CHECK-NEXT: [0,9]     .    .    .    .   DE    .    .    .    .    .    .    .    .    .  .   sh	a1, 0(a0)
+# CHECK-NEXT: [0,10]    .    .    .    .    DeeE .    .    .    .    .    .    .    .    .  .   lh	a0, 1(a2)
+# CHECK-NEXT: [0,11]    .    .    .    .    .  DE.    .    .    .    .    .    .    .    .  .   sh	a1, 1(a0)
+# CHECK-NEXT: [0,12]    .    .    .    .    .   DeeE  .    .    .    .    .    .    .    .  .   lw	a0, 1(a2)
+# CHECK-NEXT: [0,13]    .    .    .    .    .    . DeeE    .    .    .    .    .    .    .  .   lw	a0, 2(a0)
+# CHECK-NEXT: [0,14]    .    .    .    .    .    .   DeeE  .    .    .    .    .    .    .  .   lw	a0, 0(a0)
+# CHECK-NEXT: [0,15]    .    .    .    .    .    .    .DE  .    .    .    .    .    .    .  .   sw	a1, 0(a0)
+# CHECK-NEXT: [0,16]    .    .    .    .    .    .    . DeeE    .    .    .    .    .    .  .   lw	a0, 1(a2)
+# CHECK-NEXT: [0,17]    .    .    .    .    .    .    .    DE   .    .    .    .    .    .  .   sw	a1, 1(a0)
+# CHECK-NEXT: [0,18]    .    .    .    .    .    .    .    .DeeE.    .    .    .    .    .  .   ld	a0, 1(a2)
+# CHECK-NEXT: [0,19]    .    .    .    .    .    .    .    .   DeeE  .    .    .    .    .  .   ld	a0, 2(a0)
+# CHECK-NEXT: [0,20]    .    .    .    .    .    .    .    .    .DeeE.    .    .    .    .  .   ld	a0, 0(a0)
+# CHECK-NEXT: [0,21]    .    .    .    .    .    .    .    .    .  DE.    .    .    .    .  .   sd	a1, 0(a0)
+# CHECK-NEXT: [0,22]    .    .    .    .    .    .    .    .    .   DeeE  .    .    .    .  .   ld	a0, 1(a2)
+# CHECK-NEXT: [0,23]    .    .    .    .    .    .    .    .    .    . DE .    .    .    .  .   sd	a1, 1(a0)
+# CHECK-NEXT: [0,24]    .    .    .    .    .    .    .    .    .    .  DeeE   .    .    .  .   lbu	a0, 1(a2)
+# CHECK-NEXT: [0,25]    .    .    .    .    .    .    .    .    .    .    .DeeE.    .    .  .   lbu	a0, 2(a0)
+# CHECK-NEXT: [0,26]    .    .    .    .    .    .    .    .    .    .    .  DeeE   .    .  .   lbu	a0, 0(a0)
+# CHECK-NEXT: [0,27]    .    .    .    .    .    .    .    .    .    .    .   DeeE  .    .  .   lhu	a0, 1(a2)
+# CHECK-NEXT: [0,28]    .    .    .    .    .    .    .    .    .    .    .    . DeeE    .  .   lhu	a0, 2(a0)
+# CHECK-NEXT: [0,29]    .    .    .    .    .    .    .    .    .    .    .    .   DeeE  .  .   lhu	a0, 0(a0)
+# CHECK-NEXT: [0,30]    .    .    .    .    .    .    .    .    .    .    .    .    DeeE .  .   lwu	a0, 1(a2)
+# CHECK-NEXT: [0,31]    .    .    .    .    .    .    .    .    .    .    .    .    .  DeeE .   lwu	a0, 2(a0)
+# CHECK-NEXT: [0,32]    .    .    .    .    .    .    .    .    .    .    .    .    .    DeeE   lwu	a0, 0(a0)
 
 # CHECK:      Average Wait times (based on the timeline view):
 # CHECK-NEXT: [0]: Executions

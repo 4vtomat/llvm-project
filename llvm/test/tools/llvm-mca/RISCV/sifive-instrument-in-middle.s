@@ -32,23 +32,22 @@ vadd.vv v12, v12, v12
 # CHECK:      Resources:
 # CHECK-NEXT: [0]   - VLEN512FastFP64SiFive7NFDiv
 # CHECK-NEXT: [1]   - VLEN512FastFP64SiFive7NIDiv
-# CHECK-NEXT: [2]   - VLEN512FastFP64SiFive7NMem
-# CHECK-NEXT: [3]   - VLEN512FastFP64SiFive7NPipeA
-# CHECK-NEXT: [4]   - VLEN512FastFP64SiFive7NPipeB
-# CHECK-NEXT: [5]   - VLEN512FastFP64SiFive7NVA
-# CHECK-NEXT: [6]   - VLEN512FastFP64SiFive7NVCQ
-# CHECK-NEXT: [7]   - VLEN512FastFP64SiFive7NVL
-# CHECK-NEXT: [8]   - VLEN512FastFP64SiFive7NVS
+# CHECK-NEXT: [2]   - VLEN512FastFP64SiFive7NPipeA
+# CHECK-NEXT: [3]   - VLEN512FastFP64SiFive7NPipeB
+# CHECK-NEXT: [4]   - VLEN512FastFP64SiFive7NVA
+# CHECK-NEXT: [5]   - VLEN512FastFP64SiFive7NVCQ
+# CHECK-NEXT: [6]   - VLEN512FastFP64SiFive7NVL
+# CHECK-NEXT: [7]   - VLEN512FastFP64SiFive7NVS
 
 # CHECK:      Resource pressure per iteration:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]
-# CHECK-NEXT:  -      -      -     1.00    -     19.00  2.00    -      -
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]
+# CHECK-NEXT:  -      -     1.00    -     19.00  2.00    -      -
 
 # CHECK:      Resource pressure by instruction:
-# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8]    Instructions:
-# CHECK-NEXT:  -      -      -      -      -     17.00  1.00    -      -     vadd.vv	v12, v12, v12
-# CHECK-NEXT:  -      -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, mf8, tu, mu
-# CHECK-NEXT:  -      -      -      -      -     2.00   1.00    -      -     vadd.vv	v12, v12, v12
+# CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    Instructions:
+# CHECK-NEXT:  -      -      -      -     17.00  1.00    -      -     vadd.vv	v12, v12, v12
+# CHECK-NEXT:  -      -     1.00    -      -      -      -      -     vsetvli	zero, a0, e8, mf8, tu, mu
+# CHECK-NEXT:  -      -      -      -     2.00   1.00    -      -     vadd.vv	v12, v12, v12
 
 # CHECK:      Timeline view:
 # CHECK-NEXT:                     0123456789
