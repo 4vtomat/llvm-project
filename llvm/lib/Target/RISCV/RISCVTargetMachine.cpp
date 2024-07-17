@@ -63,6 +63,12 @@ static cl::opt<unsigned> RVVVectorBitsMaxOpt(
              "with zero meaning no maximum size is assumed."),
     cl::init(0), cl::Hidden);
 
+static cl::opt<unsigned> RISCVABIVLen(
+    "riscv-abi-vlen",
+    cl::desc("This is used for fixed-length vectors to determine the number of "
+             "registers needed for calling convention."),
+    cl::init(0), cl::Hidden);
+
 static cl::opt<int> RVVVectorBitsMinOpt(
     "riscv-v-vector-bits-min",
     cl::desc("Assume V extension vector registers are at least this big, "
@@ -177,6 +183,7 @@ RISCVTargetMachine::getSubtargetImpl(const Function &F) const {
   Attribute CPUAttr = F.getFnAttribute("target-cpu");
   Attribute TuneAttr = F.getFnAttribute("tune-cpu");
   Attribute FSAttr = F.getFnAttribute("target-features");
+  Attribute ABIVLenAttr = F.getFnAttribute("riscv-abi-vlen");
 
   std::string CPU =
       CPUAttr.isValid() ? CPUAttr.getValueAsString().str() : TargetCPU;
@@ -184,6 +191,14 @@ RISCVTargetMachine::getSubtargetImpl(const Function &F) const {
       TuneAttr.isValid() ? TuneAttr.getValueAsString().str() : CPU;
   std::string FS =
       FSAttr.isValid() ? FSAttr.getValueAsString().str() : TargetFS;
+
+  unsigned ABIVLen = RISCVABIVLen;
+  if (ABIVLenAttr.isValid() &&
+       ABIVLenAttr.getValueAsString().getAsInteger(10, ABIVLen))
+    report_fatal_error("Invalid riscv-abi-vlen attributes.");
+ 
+  if (!isPowerOf2_64(ABIVLen))
+    report_fatal_error("riscv-abi-vlen needs to be power of 2.");
 
   unsigned RVVBitsMin = RVVVectorBitsMinOpt;
   unsigned RVVBitsMax = RVVVectorBitsMaxOpt;
@@ -243,8 +258,9 @@ RISCVTargetMachine::getSubtargetImpl(const Function &F) const {
       }
       ABIName = ModuleTargetABI->getString();
     }
-    I = std::make_unique<RISCVSubtarget>(
-        TargetTriple, CPU, TuneCPU, FS, ABIName, RVVBitsMin, RVVBitsMax, *this);
+    I = std::make_unique<RISCVSubtarget>(TargetTriple, CPU, TuneCPU, FS,
+                                         ABIName, ABIVLen, RVVBitsMin,
+                                         RVVBitsMax, *this);
   }
   return I.get();
 }

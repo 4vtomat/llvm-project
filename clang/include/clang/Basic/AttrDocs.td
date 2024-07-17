@@ -5554,6 +5554,18 @@ them if they use them.
  }];
 }
 
+def RISCVABIVLenDocs : Documentation {
+  let Category = DocCatFunction;
+  let Heading = "riscv::abi_vlen, riscv_abi_vlen, clang::riscv_abi_vlen";
+  let Content = [{
+The ``abi_vlen`` refers to the width of a vector register in the calling
+convention variant.
+The ``abi_vlen`` must be no wider than the ISA's VLEN, meaning that the ISA may
+support wider vector registers than the ABI, but the ABI's VLEN cannot exceed
+the ISA's VLEN.
+  }];
+}
+
 def PreferredNameDocs : Documentation {
   let Category = DocCatDecl;
   let Content = [{

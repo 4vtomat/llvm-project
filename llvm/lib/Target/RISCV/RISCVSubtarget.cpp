@@ -90,10 +90,11 @@ RISCVSubtarget::initializeSubtargetDependencies(const Triple &TT, StringRef CPU,
 
 RISCVSubtarget::RISCVSubtarget(const Triple &TT, StringRef CPU,
                                StringRef TuneCPU, StringRef FS,
-                               StringRef ABIName, unsigned RVVVectorBitsMin,
+                               StringRef ABIName, unsigned ABIVLen,
+                               unsigned RVVVectorBitsMin,
                                unsigned RVVVectorBitsMax,
                                const TargetMachine &TM)
-    : RISCVGenSubtargetInfo(TT, CPU, TuneCPU, FS),
+    : RISCVGenSubtargetInfo(TT, CPU, TuneCPU, FS), ABIVLen(ABIVLen),
       RVVVectorBitsMin(RVVVectorBitsMin), RVVVectorBitsMax(RVVVectorBitsMax),
       FrameLowering(
           initializeSubtargetDependencies(TT, CPU, TuneCPU, FS, ABIName)),
@@ -154,7 +155,7 @@ unsigned RISCVSubtarget::getMaxRVVVectorSizeInBits() const {
 unsigned RISCVSubtarget::getMinRVVVectorSizeInBits() const {
   assert(hasVInstructions() &&
          "Tried to get vector length without Zve or V extension support!");
-
+  llvm::dbgs() << "bittttttttt: " << RVVVectorBitsMin << ' ' <<  ZvlLen <<'\n';
   if (RVVVectorBitsMin == -1U)
     return ZvlLen;
 

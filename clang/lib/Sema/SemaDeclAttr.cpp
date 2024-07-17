@@ -3237,6 +3237,23 @@ static void handleMinVectorWidthAttr(Sema &S, Decl *D, const ParsedAttr &AL) {
   D->addAttr(::new (S.Context) MinVectorWidthAttr(S.Context, AL, VecWidth));
 }
 
+static void handleRISCVABIVLenAttr(Sema &S, Decl *D, const ParsedAttr &AL) {
+  Expr *E = AL.getArgAsExpr(0);
+  uint32_t ABIVLen;
+  if (!S.checkUInt32Argument(AL, E, ABIVLen)) {
+    AL.setInvalid();
+    return;
+  }
+
+  // Handle duplicate riscv_abi_vlen attribute.
+  if (D->getAttr<RISCVABIVLenAttr>()) {
+    S.Diag(AL.getLoc(), diag::warn_duplicate_attribute) << AL;
+    return;
+  }
+
+  D->addAttr(::new (S.Context) RISCVABIVLenAttr(S.Context, AL, ABIVLen));
+}
+
 static void handleCleanupAttr(Sema &S, Decl *D, const ParsedAttr &AL) {
   Expr *E = AL.getArgAsExpr(0);
   SourceLocation Loc = E->getExprLoc();
@@ -6924,6 +6941,9 @@ ProcessDeclAttribute(Sema &S, Scope *scope, Decl *D, const ParsedAttr &AL,
   case ParsedAttr::AT_PreserveNone:
   case ParsedAttr::AT_RISCVVectorCC:
     handleCallConvAttr(S, D, AL);
+    break;
+  case ParsedAttr::AT_RISCVABIVLen:
+    handleRISCVABIVLenAttr(S, D, AL);
     break;
   case ParsedAttr::AT_Suppress:
     handleSuppressAttr(S, D, AL);

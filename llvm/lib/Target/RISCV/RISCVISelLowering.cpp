@@ -2593,8 +2593,10 @@ static SDValue getVLOperand(SDValue Op) {
 static bool useRVVForFixedLengthVectorVT(MVT VT,
                                          const RISCVSubtarget &Subtarget) {
   assert(VT.isFixedLengthVector() && "Expected a fixed length vector type!");
+  llvm::dbgs() << "b1\n";
   if (!Subtarget.useRVVForFixedLengthVectors())
     return false;
+  llvm::dbgs() << "b2\n";
 
   // We only support a set of vector types with a consistent maximum fixed size
   // across all supported vector element types to avoid legalization issues.
@@ -2603,7 +2605,9 @@ static bool useRVVForFixedLengthVectorVT(MVT VT,
   if (VT.getFixedSizeInBits() > 1024 * 8)
     return false;
 
+  llvm::dbgs() << "VT: " << VT << '\n';
   unsigned MinVLen = Subtarget.getRealMinVLen();
+  unsigned ABIVLen = Subtarget.getABIVLen();
 
   MVT EltVT = VT.getVectorElementType();
 
@@ -2614,7 +2618,7 @@ static bool useRVVForFixedLengthVectorVT(MVT VT,
     return false;
   case MVT::i1:
     // Masks can only use a single register.
-    if (VT.getVectorNumElements() > MinVLen)
+    if (VT.getVectorNumElements() > MinVLen || VT.getVectorNumElements() > ABIVLen)
       return false;
     MinVLen /= 8;
     break;
@@ -2653,6 +2657,11 @@ static bool useRVVForFixedLengthVectorVT(MVT VT,
   if (LMul > Subtarget.getMaxLMULForFixedLengthVectors())
     return false;
 
+  LMul = divideCeil(VT.getSizeInBits(), ABIVLen);
+  // Don't use RVV for types that don't fit.
+  if (LMul > Subtarget.getMaxLMULForFixedLengthVectors())
+    return false;
+
   // TODO: Perhaps an artificial restriction, but worth having whilst getting
   // the base fixed length RVV support in place.
   if (!VT.isPow2VectorType())
@@ -2674,7 +2683,9 @@ static MVT getContainerForFixedLengthVector(const TargetLowering &TLI, MVT VT,
          "Expected legal fixed length vector!");
 
   unsigned MinVLen = Subtarget.getRealMinVLen();
+  unsigned ABIVLen = Subtarget.getABIVLen();
   unsigned MaxELen = Subtarget.getELen();
+  llvm::dbgs() << "minvvvvvvvvvvvvvv: " << MinVLen << '\n';
 
   MVT EltVT = VT.getVectorElementType();
   switch (EltVT.SimpleTy) {
@@ -2693,7 +2704,8 @@ static MVT getContainerForFixedLengthVector(const TargetLowering &TLI, MVT VT,
     // narrower types. The smallest fractional LMUL we support is 8/ELEN. Within
     // each fractional LMUL we support SEW between 8 and LMUL*ELEN.
     unsigned NumElts =
-        (VT.getVectorNumElements() * RISCV::RVVBitsPerBlock) / MinVLen;
+        (VT.getVectorNumElements() * RISCV::RVVBitsPerBlock) / ABIVLen;
+    llvm::dbgs() << VT << ' ' << ABIVLen << " numeltssssssssssssss: " << EltVT << ' ' << NumElts << '\n';
     NumElts = std::max(NumElts, RISCV::RVVBitsPerBlock / MaxELen);
     assert(isPowerOf2_32(NumElts) && "Expected power of 2 NumElts");
     return MVT::getScalableVectorVT(EltVT, NumElts);
@@ -18950,6 +18962,7 @@ bool RISCV::CC_RISCV(const DataLayout &DL, RISCVABI::ABI ABI, unsigned ValNo,
                      ISD::ArgFlagsTy ArgFlags, CCState &State, bool IsFixed,
                      bool IsRet, Type *OrigTy, const RISCVTargetLowering &TLI,
                      RVVArgDispatcher &RVVDispatcher) {
+    llvm::dbgs() << "vecccccccccccccccc riscv: " << LocVT << ' ' << ValVT << '\n';
   unsigned XLen = DL.getLargestLegalIntTypeSizeInBits();
   assert(XLen == 32 || XLen == 64);
   MVT XLenVT = XLen == 32 ? MVT::i32 : MVT::i64;
@@ -19439,6 +19452,7 @@ bool RISCV::CC_RISCV_FastCC(const DataLayout &DL, RISCVABI::ABI ABI,
                             bool IsFixed, bool IsRet, Type *OrigTy,
                             const RISCVTargetLowering &TLI,
                             RVVArgDispatcher &RVVDispatcher) {
+    llvm::dbgs() << "vecccccccccccccccc: " << LocVT << ' ' << ValVT << '\n';
   if (LocVT == MVT::i32 || LocVT == MVT::i64) {
     if (unsigned Reg = State.AllocateReg(getFastCCArgGPRs(ABI))) {
       State.addLoc(CCValAssign::getReg(ValNo, ValVT, Reg, LocVT, LocInfo));
@@ -19842,6 +19856,42 @@ static Align getPrefTypeAlign(EVT VT, SelectionDAG &DAG) {
       VT.getTypeForEVT(*DAG.getContext()));
 }
 
+// Check that caller and callee has the same ABI VLEN so that the calling
+// convention can be handled correctly.
+static inline void checkVLSCompitableCall(const TargetMachine &TM,
+                                          const Function &Caller,
+                                          const Function &Callee) {
+  const RISCVSubtarget *CallerST =
+      static_cast<const RISCVSubtarget *>(TM.getSubtargetImpl(Caller));
+  const RISCVSubtarget *CalleeST =
+      static_cast<const RISCVSubtarget *>(TM.getSubtargetImpl(Callee));
+  // If the call return type and param types don't have any fixed length vector,
+  // skip the check.
+  auto isFixedLengthVector = [](const Type *Ty) {
+    return Ty->isVectorTy() && !Ty->isScalableTy();
+  };
+  if (!isFixedLengthVector(Caller.getReturnType()) &&
+      !any_of(Caller.getFunctionType()->params(), isFixedLengthVector))
+    return;
+
+  unsigned CallerABIVLen = CallerST->getABIVLen();
+  unsigned CalleeABIVLen = CalleeST->getABIVLen();
+  Attribute CallerABIVLenAttr =
+      Caller.getFnAttribute("riscv-abi-vlen");
+  Attribute CalleeABIVLenAttr = Callee.getFnAttribute("riscv-abi-vlen");
+  if ((CallerABIVLenAttr.isValid() &&
+       CallerABIVLenAttr.getValueAsString().getAsInteger(10, CallerABIVLen)) ||
+      (CalleeABIVLenAttr.isValid() &&
+       CalleeABIVLenAttr.getValueAsString().getAsInteger(10, CalleeABIVLen)))
+    report_fatal_error("Invalid riscv-abi-vlen attributes.");
+
+  if (!isPowerOf2_64(CallerABIVLen) || !isPowerOf2_64(CalleeABIVLen))
+    report_fatal_error("riscv-abi-vlen needs to be power of 2.");
+
+  if (CallerABIVLen != CalleeABIVLen)
+    report_fatal_error("Calling a function with incompatible ABI VLEN.");
+}
+
 // Lower a call to a callseq_start + CALL + callseq_end chain, and add input
 // and output parameter nodes.
 SDValue RISCVTargetLowering::LowerCall(CallLoweringInfo &CLI,
@@ -19860,6 +19910,9 @@ SDValue RISCVTargetLowering::LowerCall(CallLoweringInfo &CLI,
   MVT XLenVT = Subtarget.getXLenVT();
 
   MachineFunction &MF = DAG.getMachineFunction();
+
+  checkVLSCompitableCall(getTargetMachine(), MF.getFunction(),
+                         *CLI.CB->getCalledFunction());
 
   // Analyze the operands of the call, assigning locations to each operand.
   SmallVector<CCValAssign, 16> ArgLocs;

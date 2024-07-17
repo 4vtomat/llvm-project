@@ -552,6 +552,13 @@ Attribute Changes in Clang
   The attributes declare constraints about a function's behavior pertaining to blocking and
   heap memory allocation.
 
+- Introduced a new function type attribute "RISCV ABI VLEN" represented as
+  ``[[clang::riscv_abi_vlen]]``, ``[[riscv::abi_vlen]]`` or
+  ``[[riscv_abi_vlen]]``.
+  The attribute specifies the VLEN for vector calling convention, it implies the
+  number of vector registers used and reserved for arguments when making a
+  function call.
+
 Improvements to Clang's diagnostics
 -----------------------------------
 - Clang now applies syntax highlighting to the code snippets it

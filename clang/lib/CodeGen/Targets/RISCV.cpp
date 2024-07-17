@@ -343,6 +343,7 @@ ABIArgInfo RISCVABIInfo::coerceVLSVector(QualType Ty) const {
   //    * (RVVBitsPerBlock / EltSize)
   llvm::ScalableVectorType *ResType =
       llvm::ScalableVectorType::get(EltType, NumElts / VScale->first);
+  ResType->dump();
   return ABIArgInfo::getDirect(ResType);
 }
 
@@ -351,6 +352,7 @@ ABIArgInfo RISCVABIInfo::classifyArgumentType(QualType Ty, bool IsFixed,
                                               int &ArgFPRsLeft) const {
   assert(ArgGPRsLeft <= NumArgGPRs && "Arg GPR tracking underflow");
   Ty = useFirstFieldIfTransparentUnion(Ty);
+  llvm::dbgs() << "b1\n";
 
   // Structures with either a non-trivial destructor or a non-trivial
   // copy constructor are always passed indirectly.
@@ -361,6 +363,7 @@ ABIArgInfo RISCVABIInfo::classifyArgumentType(QualType Ty, bool IsFixed,
                                            CGCXXABI::RAA_DirectInMemory);
   }
 
+  llvm::dbgs() << "b2\n";
   uint64_t Size = getContext().getTypeSize(Ty);
 
   // Ignore empty structs/unions whose size is zero. According to the calling
@@ -368,12 +371,14 @@ ABIArgInfo RISCVABIInfo::classifyArgumentType(QualType Ty, bool IsFixed,
   if (isEmptyRecord(getContext(), Ty, true) && Size == 0)
     return ABIArgInfo::getIgnore();
 
+  llvm::dbgs() << "b3\n";
   // Pass floating point values via FPRs if possible.
   if (IsFixed && Ty->isFloatingType() && !Ty->isComplexType() &&
       FLen >= Size && ArgFPRsLeft) {
     ArgFPRsLeft--;
     return ABIArgInfo::getDirect();
   }
+  llvm::dbgs() << "b4\n";
 
   // Complex types for the hard float ABI must be passed direct rather than
   // using CoerceAndExpand.
@@ -385,6 +390,7 @@ ABIArgInfo RISCVABIInfo::classifyArgumentType(QualType Ty, bool IsFixed,
     }
   }
 
+  llvm::dbgs() << "b5\n";
   if (IsFixed && FLen && Ty->isStructureOrClassType()) {
     llvm::Type *Field1Ty = nullptr;
     llvm::Type *Field2Ty = nullptr;
@@ -403,6 +409,7 @@ ABIArgInfo RISCVABIInfo::classifyArgumentType(QualType Ty, bool IsFixed,
                                                Field2Off);
     }
   }
+  llvm::dbgs() << "b6\n";
 
   uint64_t NeededAlign = getContext().getTypeAlign(Ty);
   // Determine the number of GPRs needed to pass the current argument
@@ -416,6 +423,7 @@ ABIArgInfo RISCVABIInfo::classifyArgumentType(QualType Ty, bool IsFixed,
     NeededArgGPRs = 2 + (EABI && XLen == 32 ? 0 : (ArgGPRsLeft % 2));
   else if (Size > XLen && Size <= 2 * XLen)
     NeededArgGPRs = 2;
+  llvm::dbgs() << "b7\n";
 
   if (NeededArgGPRs > ArgGPRsLeft) {
     NeededArgGPRs = ArgGPRsLeft;
@@ -441,6 +449,8 @@ ABIArgInfo RISCVABIInfo::classifyArgumentType(QualType Ty, bool IsFixed,
            EIT->getNumBits() > 64))
         return getNaturalAlignIndirect(Ty, /*ByVal=*/false);
     }
+    Ty->dump();
+  llvm::dbgs() << "b8\n";
 
     ABIArgInfo Info = ABIArgInfo::getDirect();
 
@@ -450,11 +460,13 @@ ABIArgInfo RISCVABIInfo::classifyArgumentType(QualType Ty, bool IsFixed,
 
     return Info;
   }
+  llvm::dbgs() << "b9\n";
 
   if (const VectorType *VT = Ty->getAs<VectorType>())
     if (VT->getVectorKind() == VectorKind::RVVFixedLengthData ||
         VT->getVectorKind() == VectorKind::RVVFixedLengthMask)
       return coerceVLSVector(Ty);
+  llvm::dbgs() << "b10\n";
 
   // Aggregates which are <= 2*XLen will be passed in registers if possible,
   // so coerce to integers.
@@ -474,6 +486,7 @@ ABIArgInfo RISCVABIInfo::classifyArgumentType(QualType Ty, bool IsFixed,
           llvm::IntegerType::get(getVMContext(), XLen), 2));
     }
   }
+  llvm::dbgs() << "b11\n";
   return getNaturalAlignIndirect(Ty, /*ByVal=*/false);
 }
 
@@ -538,6 +551,13 @@ public:
     const auto *FD = dyn_cast_or_null<FunctionDecl>(D);
     if (!FD) return;
 
+    auto *Fn = cast<llvm::Function>(GV);
+    if (!Fn)
+      return;
+
+    if (auto *ABIVLenAttr = FD->getAttr<RISCVABIVLenAttr>())
+      Fn->addFnAttr("riscv-abi-vlen", llvm::utostr(ABIVLenAttr->getABIVLen()));
+
     const auto *Attr = FD->getAttr<RISCVInterruptAttr>();
     if (!Attr)
       return;
@@ -547,8 +567,6 @@ public:
     case RISCVInterruptAttr::supervisor: Kind = "supervisor"; break;
     case RISCVInterruptAttr::machine: Kind = "machine"; break;
     }
-
-    auto *Fn = cast<llvm::Function>(GV);
 
     Fn->addFnAttr("interrupt", Kind);
   }

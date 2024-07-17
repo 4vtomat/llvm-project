@@ -3109,6 +3109,15 @@ def RISCVVectorCC: DeclOrTypeAttr, TargetSpecificAttr<TargetRISCV> {
  let Documentation = [RISCVVectorCCDocs];
 }
 
+def RISCVABIVLen : TypeAttr, TargetSpecificAttr<TargetRISCV> {
+  let Spellings = [CXX11<"riscv", "abi_vlen">,
+                   C23<"riscv", "abi_vlen">,
+                   Clang<"riscv_abi_vlen">];
+  let Subjects = SubjectList<[FunctionLike]>;
+  let Args = [UnsignedArgument<"ABIVLen">];
+  let Documentation = [RISCVABIVLenDocs];
+}
+
 def Target : InheritableAttr {
   let Spellings = [GCC<"target">];
   let Args = [StringArgument<"featuresStr">];
