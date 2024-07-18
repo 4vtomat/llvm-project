@@ -656,22 +656,17 @@ void RVVEmitter::createRVVIntrinsics(
             Name, SuffixStr, OverloadedName, OverloadedSuffixStr, IRName,
             /*IsMasked=*/false, /*HasMaskedOffOperand=*/false, HasVL,
             UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
-<<<<<<< HEAD
-            ManualCodegen, *Types, IntrinsicTypes, RequiredFeatures, NF,
-            DefaultPolicy, HasFRMRoundModeOp));
+            ManualCodegen, *Types, IntrinsicTypes, NF, DefaultPolicy,
+            HasFRMRoundModeOp));
 #if SIFIVE_CUSTOMIZATION
         if (HasNontemporalOperand)
           Out.push_back(std::make_unique<RVVIntrinsic>(
               Name, SuffixStr, OverloadedName, OverloadedSuffixStr, IRName,
               /*IsMasked=*/false, /*HasMaskedOffOperand=*/false, HasVL,
               UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
-              ManualCodegen, *NTLTypes, IntrinsicTypes, RequiredFeatures, NF,
+              ManualCodegen, *NTLTypes, IntrinsicTypes, NF,
               NonTemporalDefaultPolicy, HasFRMRoundModeOp));
 #endif // SIFIVE_CUSTOMIZATION
-=======
-            ManualCodegen, *Types, IntrinsicTypes, NF, DefaultPolicy,
-            HasFRMRoundModeOp));
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
         if (UnMaskedPolicyScheme != PolicyScheme::SchemeNone)
           for (auto P : SupportedUnMaskedPolicies) {
             SmallVector<PrototypeDescriptor> PolicyPrototype =
