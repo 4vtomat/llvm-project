@@ -26,18 +26,12 @@ public:
   RISCVISAInfo(const RISCVISAInfo &) = delete;
   RISCVISAInfo &operator=(const RISCVISAInfo &) = delete;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   typedef std::multimap<std::string, RISCVISAUtils::ExtensionVersion,
                         RISCVISAUtils::ExtensionComparator>
       OrderedExtensionMultiMap;
 #endif
 
-  RISCVISAInfo(unsigned XLen, RISCVISAUtils::OrderedExtensionMap &Exts)
-      : XLen(XLen), FLen(0), MinVLen(0), MaxELen(0), MaxELenFp(0), Exts(Exts) {}
-
-=======
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   /// Parse RISC-V ISA info from arch string.
   /// If IgnoreUnknown is set, any unrecognised extension names or
   /// extensions with unrecognised versions will be silently dropped, except

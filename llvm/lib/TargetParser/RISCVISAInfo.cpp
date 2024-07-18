@@ -526,7 +526,6 @@ static Error getExtensionVersion(StringRef Ext, StringRef In, unsigned &Major,
           "experimental extension requires explicit version number `" + Ext +
           "`");
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
     if (ExperimentalExtensionVersionCheck) {
       auto SupportedVersions =
@@ -546,7 +545,9 @@ static Error getExtensionVersion(StringRef Ext, StringRef In, unsigned &Major,
         Major = DefaultVersion->Major;
         Minor = DefaultVersion->Minor;
       }
-=======
+    }
+#endif
+
     auto SupportedVers = *ExperimentalExtension;
     if (ExperimentalExtensionVersionCheck &&
         (Major != SupportedVers.Major || Minor != SupportedVers.Minor)) {
@@ -557,9 +558,7 @@ static Error getExtensionVersion(StringRef Ext, StringRef In, unsigned &Major,
                "' (this compiler supports " + utostr(SupportedVers.Major) +
                "." + utostr(SupportedVers.Minor) + ")";
       return getError(Error);
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
     }
-#endif
     return Error::success();
   }
 
@@ -584,16 +583,9 @@ static Error getExtensionVersion(StringRef Ext, StringRef In, unsigned &Major,
   if (!RISCVISAInfo::isSupportedExtension(Ext))
     return getErrorForInvalidExt(Ext);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   return getUnsupportedError();
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  std::string Error = "unsupported version number " + MajorStr.str();
-  if (!MinorStr.empty())
-    Error += "." + MinorStr.str();
-  Error += " for extension '" + Ext.str() + "'";
-  return getError(Error);
 }
 
 llvm::Expected<std::unique_ptr<RISCVISAInfo>>
@@ -605,7 +597,6 @@ RISCVISAInfo::createFromExtMap(unsigned XLen,
   ISAInfo->Exts = Exts;
 
   return RISCVISAInfo::postProcessAndChecking(std::move(ISAInfo));
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 }
 
 llvm::Expected<std::unique_ptr<RISCVISAInfo>>
@@ -649,9 +640,8 @@ RISCVISAInfo::parseFeatures(unsigned XLen,
     Minor = ExtensionInfoIterator->Version.Minor;
     }
     if (Add)
-<<<<<<< HEAD
-      ISAInfo->addExtension(ExtName,
-                            RISCVISAUtils::ExtensionVersion{Major, Minor});
+      ISAInfo->Exts[ExtName.str()] =
+          RISCVISAUtils::ExtensionVersion{Major, Minor};
     else {
       auto &Exts = ISAInfo->Exts;
       std::string ExtString = ExtName.str();
@@ -661,11 +651,6 @@ RISCVISAInfo::parseFeatures(unsigned XLen,
         ISAInfo->Exts.erase(ExtName.str());
     }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      ISAInfo->Exts[ExtName.str()] = ExtensionInfoIterator->Version;
-    else
-      ISAInfo->Exts.erase(ExtName.str());
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   }
 
   return RISCVISAInfo::postProcessAndChecking(std::move(ISAInfo));
