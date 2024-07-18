@@ -273,13 +273,62 @@ bool RISCVCodeGenPrepare::optimizeReduction(IntrinsicInst &II) {
   if (ST->is64Bit())
     VL = Builder.CreateZExt(VL, Builder.getInt64Ty());
 
-  // Move scalar into vector using vfmv.s.f / vmv.s.x. We need use VecTy to get
-  // the correct LMUL in the vsetvli even though vfmv.s.f / vmv.s.x don't care
-  // about LMUL.
-  Value *ScalarInVec = Builder.CreateIntrinsic(
-      ScalarTy->isFloatingPointTy() ? Intrinsic::riscv_vfmv_s_f
-                                    : Intrinsic::riscv_vmv_s_x,
-      {VecTy, VL->getType()}, {PoisonValue::get(VecTy), Scalar, VL});
+  // If Scalar is already a neutral value, simply use the source vector as
+  // the start value to avoid creating a new vfmv.s.f / vmv.s.x.
+  bool IsScalarNeutral = false;
+  if (const auto *C = dyn_cast<Constant>(Scalar))
+    switch (IID) {
+    case Intrinsic::vp_reduce_umax:
+    case Intrinsic::vp_reduce_or:
+      IsScalarNeutral = C->isZeroValue();
+      break;
+    case Intrinsic::vp_reduce_and:
+    case Intrinsic::vp_reduce_umin:
+      IsScalarNeutral = C->isAllOnesValue();
+      break;
+    case Intrinsic::vp_reduce_fmax: {
+      FastMathFlags FMF = II.getFastMathFlags();
+      const auto &APF = cast<ConstantFP>(C)->getValueAPF();
+      if (FMF.noNaNs())
+        IsScalarNeutral = FMF.noInfs() ? (APF.isLargest() && APF.isNegative())
+                                       : APF.isNegInfinity();
+      else
+        // -QNaN
+        IsScalarNeutral = APF.isNaN() && !APF.isSignaling() && APF.isNegative();
+      break;
+    }
+    case Intrinsic::vp_reduce_smax:
+      IsScalarNeutral = C->isMinSignedValue();
+      break;
+    case Intrinsic::vp_reduce_fmin: {
+      FastMathFlags FMF = II.getFastMathFlags();
+      const auto &APF = cast<ConstantFP>(C)->getValueAPF();
+      if (FMF.noNaNs())
+        IsScalarNeutral = FMF.noInfs() ? (APF.isLargest() && !APF.isNegative())
+                                       : APF.isPosInfinity();
+      else
+        // +QNaN
+        IsScalarNeutral =
+            APF.isNaN() && !APF.isSignaling() && !APF.isNegative();
+      break;
+    }
+    case Intrinsic::vp_reduce_smin:
+      IsScalarNeutral = cast<ConstantInt>(C)->isMaxValue(/*IsSigned=*/true);
+      break;
+    }
+
+  Value *ScalarInVec;
+  if (IsScalarNeutral) {
+    ScalarInVec = Vec;
+  } else {
+    // Move scalar into vector using vfmv.s.f / vmv.s.x. We need use VecTy to
+    // get the correct LMUL in the vsetvli even though vfmv.s.f / vmv.s.x don't
+    // care about LMUL.
+    ScalarInVec = Builder.CreateIntrinsic(
+        ScalarTy->isFloatingPointTy() ? Intrinsic::riscv_vfmv_s_f
+                                      : Intrinsic::riscv_vmv_s_x,
+        {VecTy, VL->getType()}, {PoisonValue::get(VecTy), Scalar, VL});
+  }
 
   // Convert to LMUL1 to match what vfredusum wants.
   if (ElementCount::isKnownLT(LMul1Ty->getElementCount(),

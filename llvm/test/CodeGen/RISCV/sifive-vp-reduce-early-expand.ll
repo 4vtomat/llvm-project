@@ -44,6 +44,36 @@ define float @vpreduce_fmax_nxv4f32(float %s, <vscale x 4 x float> %v) {
   ret float %r
 }
 
+define float @vpreduce_fmax_neutral_nxv4f32(<vscale x 4 x float> %v) {
+  ; neutral = -QNaN
+; CHECK-LABEL: define float @vpreduce_fmax_neutral_nxv4f32(
+; CHECK-SAME: <vscale x 4 x float> [[V:%.*]]) #[[ATTR0]] {
+; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 2 x float> @llvm.vector.extract.nxv2f32.nxv4f32(<vscale x 4 x float> [[V]], i64 0)
+; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x float> @llvm.riscv.vfredmax.nxv2f32.nxv4f32.i64(<vscale x 2 x float> poison, <vscale x 4 x float> [[V]], <vscale x 2 x float> [[TMP1]], i64 32)
+; CHECK-NEXT:    [[R:%.*]] = extractelement <vscale x 2 x float> [[TMP2]], i64 0
+; CHECK-NEXT:    ret float [[R]]
+;
+  %r = call float @llvm.vp.reduce.fmax.nxv4f32(float 0xFFF8000000000000, <vscale x 4 x float> %v,
+  <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer),
+  i32 32)
+  ret float %r
+}
+
+define float @vpreduce_fmax_neutral_nnan_nxv4f32(<vscale x 4 x float> %v) {
+  ; neutral = -Inf
+; CHECK-LABEL: define float @vpreduce_fmax_neutral_nnan_nxv4f32(
+; CHECK-SAME: <vscale x 4 x float> [[V:%.*]]) #[[ATTR0]] {
+; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 2 x float> @llvm.vector.extract.nxv2f32.nxv4f32(<vscale x 4 x float> [[V]], i64 0)
+; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x float> @llvm.riscv.vfredmax.nxv2f32.nxv4f32.i64(<vscale x 2 x float> poison, <vscale x 4 x float> [[V]], <vscale x 2 x float> [[TMP1]], i64 32)
+; CHECK-NEXT:    [[R:%.*]] = extractelement <vscale x 2 x float> [[TMP2]], i64 0
+; CHECK-NEXT:    ret float [[R]]
+;
+  %r = call nnan float @llvm.vp.reduce.fmax.nxv4f32(float 0xFFF0000000000000, <vscale x 4 x float> %v,
+  <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer),
+  i32 32)
+  ret float %r
+}
+
 define float @vpreduce_fmin_nxv4f32(float %s, <vscale x 4 x float> %v) {
 ; CHECK-LABEL: define float @vpreduce_fmin_nxv4f32(
 ; CHECK-SAME: float [[S:%.*]], <vscale x 4 x float> [[V:%.*]]) #[[ATTR0]] {
@@ -54,6 +84,36 @@ define float @vpreduce_fmin_nxv4f32(float %s, <vscale x 4 x float> %v) {
 ; CHECK-NEXT:    ret float [[R]]
 ;
   %r = call float @llvm.vp.reduce.fmin.nxv4f32(float %s, <vscale x 4 x float> %v,
+  <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer),
+  i32 32)
+  ret float %r
+}
+
+define float @vpreduce_fmin_neutral_nxv4f32(<vscale x 4 x float> %v) {
+  ; neutral = QNaN
+; CHECK-LABEL: define float @vpreduce_fmin_neutral_nxv4f32(
+; CHECK-SAME: <vscale x 4 x float> [[V:%.*]]) #[[ATTR0]] {
+; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 2 x float> @llvm.vector.extract.nxv2f32.nxv4f32(<vscale x 4 x float> [[V]], i64 0)
+; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x float> @llvm.riscv.vfredmin.nxv2f32.nxv4f32.i64(<vscale x 2 x float> poison, <vscale x 4 x float> [[V]], <vscale x 2 x float> [[TMP1]], i64 32)
+; CHECK-NEXT:    [[R:%.*]] = extractelement <vscale x 2 x float> [[TMP2]], i64 0
+; CHECK-NEXT:    ret float [[R]]
+;
+  %r = call float @llvm.vp.reduce.fmin.nxv4f32(float 0x7FF8000000000000, <vscale x 4 x float> %v,
+  <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer),
+  i32 32)
+  ret float %r
+}
+
+define float @vpreduce_fmin_neutral_nnan_nxv4f32(<vscale x 4 x float> %v) {
+  ; neutral = Inf
+; CHECK-LABEL: define float @vpreduce_fmin_neutral_nnan_nxv4f32(
+; CHECK-SAME: <vscale x 4 x float> [[V:%.*]]) #[[ATTR0]] {
+; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 2 x float> @llvm.vector.extract.nxv2f32.nxv4f32(<vscale x 4 x float> [[V]], i64 0)
+; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x float> @llvm.riscv.vfredmin.nxv2f32.nxv4f32.i64(<vscale x 2 x float> poison, <vscale x 4 x float> [[V]], <vscale x 2 x float> [[TMP1]], i64 32)
+; CHECK-NEXT:    [[R:%.*]] = extractelement <vscale x 2 x float> [[TMP2]], i64 0
+; CHECK-NEXT:    ret float [[R]]
+;
+  %r = call nnan float @llvm.vp.reduce.fmin.nxv4f32(float 0x7FF0000000000000, <vscale x 4 x float> %v,
   <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer),
   i32 32)
   ret float %r
@@ -89,6 +149,20 @@ define i32 @vpreduce_smax_nxv4i32(i32 %s, <vscale x 4 x i32> %v) {
   ret i32 %r
 }
 
+define i32 @vpreduce_smax_neutral_nxv4i32(<vscale x 4 x i32> %v) {
+; CHECK-LABEL: define i32 @vpreduce_smax_neutral_nxv4i32(
+; CHECK-SAME: <vscale x 4 x i32> [[V:%.*]]) #[[ATTR0]] {
+; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x i32> @llvm.vector.extract.nxv2i32.nxv4i32(<vscale x 4 x i32> [[V]], i64 0)
+; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vredmax.nxv2i32.nxv4i32.i64(<vscale x 2 x i32> poison, <vscale x 4 x i32> [[V]], <vscale x 2 x i32> [[TMP2]], i64 32)
+; CHECK-NEXT:    [[R:%.*]] = extractelement <vscale x 2 x i32> [[TMP3]], i64 0
+; CHECK-NEXT:    ret i32 [[R]]
+;
+  %r = call i32 @llvm.vp.reduce.smax.nxv4i32(i32 -2147483648, <vscale x 4 x i32> %v,
+  <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer),
+  i32 32)
+  ret i32 %r
+}
+
 define i32 @vpreduce_umax_nxv4i32(i32 %s, <vscale x 4 x i32> %v) {
 ; CHECK-LABEL: define i32 @vpreduce_umax_nxv4i32(
 ; CHECK-SAME: i32 [[S:%.*]], <vscale x 4 x i32> [[V:%.*]]) #[[ATTR0]] {
@@ -99,6 +173,20 @@ define i32 @vpreduce_umax_nxv4i32(i32 %s, <vscale x 4 x i32> %v) {
 ; CHECK-NEXT:    ret i32 [[R]]
 ;
   %r = call i32 @llvm.vp.reduce.umax.nxv4i32(i32 %s, <vscale x 4 x i32> %v,
+  <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer),
+  i32 32)
+  ret i32 %r
+}
+
+define i32 @vpreduce_umax_neutral_nxv4i32(<vscale x 4 x i32> %v) {
+; CHECK-LABEL: define i32 @vpreduce_umax_neutral_nxv4i32(
+; CHECK-SAME: <vscale x 4 x i32> [[V:%.*]]) #[[ATTR0]] {
+; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 2 x i32> @llvm.vector.extract.nxv2i32.nxv4i32(<vscale x 4 x i32> [[V]], i64 0)
+; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vredmaxu.nxv2i32.nxv4i32.i64(<vscale x 2 x i32> poison, <vscale x 4 x i32> [[V]], <vscale x 2 x i32> [[TMP1]], i64 32)
+; CHECK-NEXT:    [[R:%.*]] = extractelement <vscale x 2 x i32> [[TMP2]], i64 0
+; CHECK-NEXT:    ret i32 [[R]]
+;
+  %r = call i32 @llvm.vp.reduce.umax.nxv4i32(i32 0, <vscale x 4 x i32> %v,
   <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer),
   i32 32)
   ret i32 %r
@@ -119,6 +207,20 @@ define i32 @vpreduce_smin_nxv4i32(i32 %s, <vscale x 4 x i32> %v) {
   ret i32 %r
 }
 
+define i32 @vpreduce_smin_neutral_nxv4i32(<vscale x 4 x i32> %v) {
+; CHECK-LABEL: define i32 @vpreduce_smin_neutral_nxv4i32(
+; CHECK-SAME: <vscale x 4 x i32> [[V:%.*]]) #[[ATTR0]] {
+; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x i32> @llvm.vector.extract.nxv2i32.nxv4i32(<vscale x 4 x i32> [[V]], i64 0)
+; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vredmin.nxv2i32.nxv4i32.i64(<vscale x 2 x i32> poison, <vscale x 4 x i32> [[V]], <vscale x 2 x i32> [[TMP2]], i64 32)
+; CHECK-NEXT:    [[R:%.*]] = extractelement <vscale x 2 x i32> [[TMP3]], i64 0
+; CHECK-NEXT:    ret i32 [[R]]
+;
+  %r = call i32 @llvm.vp.reduce.smin.nxv4i32(i32 2147483647, <vscale x 4 x i32> %v,
+  <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer),
+  i32 32)
+  ret i32 %r
+}
+
 define i32 @vpreduce_umin_nxv4i32(i32 %s, <vscale x 4 x i32> %v) {
 ; CHECK-LABEL: define i32 @vpreduce_umin_nxv4i32(
 ; CHECK-SAME: i32 [[S:%.*]], <vscale x 4 x i32> [[V:%.*]]) #[[ATTR0]] {
@@ -134,6 +236,20 @@ define i32 @vpreduce_umin_nxv4i32(i32 %s, <vscale x 4 x i32> %v) {
   ret i32 %r
 }
 
+define i32 @vpreduce_umin_neutral_nxv4i32(<vscale x 4 x i32> %v) {
+; CHECK-LABEL: define i32 @vpreduce_umin_neutral_nxv4i32(
+; CHECK-SAME: <vscale x 4 x i32> [[V:%.*]]) #[[ATTR0]] {
+; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 2 x i32> @llvm.vector.extract.nxv2i32.nxv4i32(<vscale x 4 x i32> [[V]], i64 0)
+; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vredminu.nxv2i32.nxv4i32.i64(<vscale x 2 x i32> poison, <vscale x 4 x i32> [[V]], <vscale x 2 x i32> [[TMP1]], i64 32)
+; CHECK-NEXT:    [[R:%.*]] = extractelement <vscale x 2 x i32> [[TMP2]], i64 0
+; CHECK-NEXT:    ret i32 [[R]]
+;
+  %r = call i32 @llvm.vp.reduce.umin.nxv4i32(i32 -1, <vscale x 4 x i32> %v,
+  <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer),
+  i32 32)
+  ret i32 %r
+}
+
 define i32 @vpreduce_and_nxv4i32(i32 %s, <vscale x 4 x i32> %v) {
 ; CHECK-LABEL: define i32 @vpreduce_and_nxv4i32(
 ; CHECK-SAME: i32 [[S:%.*]], <vscale x 4 x i32> [[V:%.*]]) #[[ATTR0]] {
@@ -144,6 +260,20 @@ define i32 @vpreduce_and_nxv4i32(i32 %s, <vscale x 4 x i32> %v) {
 ; CHECK-NEXT:    ret i32 [[R]]
 ;
   %r = call i32 @llvm.vp.reduce.and.nxv4i32(i32 %s, <vscale x 4 x i32> %v,
+  <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer),
+  i32 32)
+  ret i32 %r
+}
+
+define i32 @vpreduce_and_neutral_nxv4i32(<vscale x 4 x i32> %v) {
+; CHECK-LABEL: define i32 @vpreduce_and_neutral_nxv4i32(
+; CHECK-SAME: <vscale x 4 x i32> [[V:%.*]]) #[[ATTR0]] {
+; CHECK-NEXT:    [[TMP1:%.*]] = call <vscale x 2 x i32> @llvm.vector.extract.nxv2i32.nxv4i32(<vscale x 4 x i32> [[V]], i64 0)
+; CHECK-NEXT:    [[TMP2:%.*]] = call <vscale x 2 x i32> @llvm.riscv.vredand.nxv2i32.nxv4i32.i64(<vscale x 2 x i32> poison, <vscale x 4 x i32> [[V]], <vscale x 2 x i32> [[TMP1]], i64 32)
+; CHECK-NEXT:    [[R:%.*]] = extractelement <vscale x 2 x i32> [[TMP2]], i64 0
+; CHECK-NEXT:    ret i32 [[R]]
+;
+  %r = call i32 @llvm.vp.reduce.and.nxv4i32(i32 -1, <vscale x 4 x i32> %v,
   <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer),
   i32 32)
   ret i32 %r
