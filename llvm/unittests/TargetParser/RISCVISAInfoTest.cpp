@@ -1066,14 +1066,6 @@ Experimental extensions
     zicfilp              0.4       This is a long dummy description
     zicfiss              0.4
     zalasr               0.1
-<<<<<<< HEAD
-    zfbfmin              1.0
-    zjid                 0.0
-    ztso                 0.1
-    zvfbfmin             1.0
-    zvfbfwma             1.0
-=======
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
     smmpm                1.0
     smnpm                1.0
     smrnmi               0.5
