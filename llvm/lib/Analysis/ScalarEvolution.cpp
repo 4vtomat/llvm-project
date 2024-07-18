@@ -15594,10 +15594,9 @@ ScalarEvolution::LoopGuards::collect(const Loop *L, ScalarEvolution &SE) {
       if (auto *Cmp = dyn_cast<ICmpInst>(Cond)) {
         auto Predicate =
             EnterIfTrue ? Cmp->getPredicate() : Cmp->getInversePredicate();
-<<<<<<< HEAD
         const auto *LHS = getSCEV(Cmp->getOperand(0));
         const auto *RHS = getSCEV(Cmp->getOperand(1));
-        CollectCondition(Predicate, LHS, RHS, RewriteMap);
+        CollectCondition(Predicate, LHS, RHS, Guards.RewriteMap);
 
 #if SIFIVE_CUSTOMIZATION
         // When the guard condition is of the following form,
@@ -15621,23 +15620,18 @@ ScalarEvolution::LoopGuards::collect(const Loop *L, ScalarEvolution &SE) {
 
           switch (Predicate) {
           case CmpInst::ICMP_SLT:
-            CollectCondition(Predicate, LHS, MaxScev, RewriteMap);
-            CollectCondition(Predicate, MinScev, RHS, RewriteMap);
+            CollectCondition(Predicate, LHS, MaxScev, Guards.RewriteMap);
+            CollectCondition(Predicate, MinScev, RHS, Guards.RewriteMap);
             break;
           case CmpInst::ICMP_SGT:
-            CollectCondition(Predicate, LHS, MinScev, RewriteMap);
-            CollectCondition(Predicate, MaxScev, RHS, RewriteMap);
+            CollectCondition(Predicate, LHS, MinScev, Guards.RewriteMap);
+            CollectCondition(Predicate, MaxScev, RHS, Guards.RewriteMap);
             break;
           default:
             break;
           }
         }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-        const auto *LHS = SE.getSCEV(Cmp->getOperand(0));
-        const auto *RHS = SE.getSCEV(Cmp->getOperand(1));
-        CollectCondition(Predicate, LHS, RHS, Guards.RewriteMap);
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
         continue;
       }
 
