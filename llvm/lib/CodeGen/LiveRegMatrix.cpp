@@ -54,14 +54,10 @@ void LiveRegMatrix::getAnalysisUsage(AnalysisUsage &AU) const {
 
 bool LiveRegMatrix::runOnMachineFunction(MachineFunction &MF) {
   TRI = MF.getSubtarget().getRegisterInfo();
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   MRI = &MF.getRegInfo();
 #endif // SIFIVE_CUSTOMIZATION
-  LIS = &getAnalysis<LiveIntervals>();
-=======
   LIS = &getAnalysis<LiveIntervalsWrapperPass>().getLIS();
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   VRM = &getAnalysis<VirtRegMap>();
 
   unsigned NumRegUnits = TRI->getNumRegUnits();
