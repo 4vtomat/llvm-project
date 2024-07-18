@@ -201,11 +201,8 @@
 ; CHECK-NEXT:       Insert fentry calls
 ; CHECK-NEXT:       Insert XRay ops
 ; CHECK-NEXT:       Implement the 'patchable-function' attribute
-<<<<<<< HEAD
 ; CHECK-NEXT:       RISC-V Machine Constant Propagation
-=======
 ; CHECK-NEXT:       Machine Copy Propagation Pass
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 ; CHECK-NEXT:       Branch relaxation pass
 ; CHECK-NEXT:       RISC-V Make Compressible
 ; CHECK-NEXT:       Contiguously Lay Out Funclets
