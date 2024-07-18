@@ -1383,7 +1383,7 @@ for.body:                                         ; preds = %for.body.preheader,
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
 
-declare i32 @ilogbf(float)
+declare signext i32 @ilogbf(float)
 define void @test_ilogbf(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_ilogbf(
 ; M1:  call <vscale x 2 x i32> @skl_vfilogb_v_f32m1(
@@ -1409,14 +1409,14 @@ for.body:                                         ; preds = %for.body.preheader,
   %arrayidx = getelementptr inbounds float, ptr %a, i64 %indvars.iv
   %arrayidx2 = getelementptr inbounds i32, ptr %b, i64 %indvars.iv
   %0 = load float, ptr %arrayidx, align 4
-  %1 = call i32 @ilogbf(float %0)
+  %1 = call signext i32 @ilogbf(float %0)
   store i32 %1, ptr %arrayidx2, align 4
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
 
-declare i32 @ilogb(double)
+declare signext i32 @ilogb(double)
 define void @test_ilogb(i32 %n, ptr noundef %a, ptr noundef %b) {
 ; M1-LABEL: @test_ilogb(
 ; M1:  call <vscale x 1 x i32> @skl_vfilogb_v_f64m1(
@@ -1442,7 +1442,7 @@ for.body:                                         ; preds = %for.body.preheader,
   %arrayidx = getelementptr inbounds double, ptr %a, i64 %indvars.iv
   %arrayidx2 = getelementptr inbounds i32, ptr %b, i64 %indvars.iv
   %0 = load double, ptr %arrayidx, align 8
-  %1 = call i32 @ilogb(double %0)
+  %1 = call signext i32 @ilogb(double %0)
   store i32 %1, ptr %arrayidx2, align 4
   %indvars.iv.next = add nuw nsw i64 %indvars.iv, 1
   %exitcond.not = icmp eq i64 %indvars.iv.next, %wide.trip.count

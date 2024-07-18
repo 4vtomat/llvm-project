@@ -65,6 +65,12 @@ static void addVariantDeclaration(CallInst &CI, const ElementCount &VF,
        if (VecFunc->hasParamAttribute(I.index(), Attribute::ZExt))
          VecFunc->removeParamAttr(I.index(), Attribute::ZExt);
      }
+   if (VectorFTy->getReturnType()->isVectorTy()) {
+     if (VecFunc->hasRetAttribute(Attribute::SExt))
+       VecFunc->removeRetAttr(Attribute::SExt);
+     if (VecFunc->hasRetAttribute(Attribute::ZExt))
+       VecFunc->removeRetAttr(Attribute::ZExt);
+   }
  #endif
   ++NumVFDeclAdded;
   LLVM_DEBUG(dbgs() << DEBUG_TYPE << ": Added to the module: `" << VFName
