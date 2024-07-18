@@ -6030,7 +6030,6 @@ SDValue DAGTypeLegalizer::PromoteIntRes_VP_REDUCE(SDNode *N) {
                      N->getOperand(1), N->getOperand(2), N->getOperand(3));
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 SDValue DAGTypeLegalizer::PromoteIntRes_VP_FIRST_POPCOUNT(SDNode *N) {
   SDLoc dl(N);
@@ -6038,7 +6037,7 @@ SDValue DAGTypeLegalizer::PromoteIntRes_VP_FIRST_POPCOUNT(SDNode *N) {
   return DAG.getNode(N->getOpcode(), dl, NVT, N->ops());
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 SDValue DAGTypeLegalizer::PromoteIntRes_PATCHPOINT(SDNode *N) {
   EVT NVT = TLI.getTypeToTransformTo(*DAG.getContext(), N->getValueType(0));
   SDLoc dl(N);
@@ -6056,7 +6055,6 @@ SDValue DAGTypeLegalizer::PromoteIntRes_PATCHPOINT(SDNode *N) {
 
   return Res.getValue(0);
 }
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 
 SDValue DAGTypeLegalizer::PromoteIntOp_EXTRACT_VECTOR_ELT(SDNode *N) {
   SDLoc dl(N);
