@@ -2153,8 +2153,7 @@ void Clang::AddRISCVTargetArgs(const ArgList &Args,
 
     // Get minimum VLen from march.
     unsigned MinVLen = 0;
-<<<<<<< HEAD
-    StringRef Arch = riscv::getRISCVArch(Args, Triple);
+    std::string Arch = riscv::getRISCVArch(Args, Triple);
 #if SIFIVE_CUSTOMIZATION
     // Allow user to use unratified extension without version,
     // see SCT-2482.
@@ -2162,9 +2161,6 @@ void Clang::AddRISCVTargetArgs(const ArgList &Args,
         Arch, /*EnableExperimentalExtensions*/ true,
         /*ExperimentalExtensionVersionCheck*/ false);
 #else
-=======
-    std::string Arch = riscv::getRISCVArch(Args, Triple);
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
     auto ISAInfo = llvm::RISCVISAInfo::parseArchString(
         Arch, /*EnableExperimentalExtensions*/ true);
 #endif
@@ -5982,87 +5978,7 @@ void Clang::ConstructJob(Compilation &C, const JobAction &JA,
 
   TC.addClangTargetOptions(Args, CmdArgs, JA.getOffloadingDeviceKind());
 
-<<<<<<< HEAD
-  if (Arg *A = Args.getLastArg(options::OPT_mcmodel_EQ)) {
-    StringRef CM = A->getValue();
-    bool Ok = false;
-    if (Triple.isOSAIX() && CM == "medium")
-      CM = "large";
-    if (Triple.isAArch64(64)) {
-      Ok = CM == "tiny" || CM == "small" || CM == "large";
-      if (CM == "large" && !Triple.isOSBinFormatMachO() &&
-          RelocationModel != llvm::Reloc::Static)
-        D.Diag(diag::err_drv_argument_only_allowed_with)
-            << A->getAsString(Args) << "-fno-pic";
-    } else if (Triple.isLoongArch()) {
-      if (CM == "extreme" &&
-          Args.hasFlagNoClaim(options::OPT_fplt, options::OPT_fno_plt, false))
-        D.Diag(diag::err_drv_argument_not_allowed_with)
-            << A->getAsString(Args) << "-fplt";
-      Ok = CM == "normal" || CM == "medium" || CM == "extreme";
-      // Convert to LLVM recognizable names.
-      if (Ok)
-        CM = llvm::StringSwitch<StringRef>(CM)
-                 .Case("normal", "small")
-                 .Case("extreme", "large")
-                 .Default(CM);
-    } else if (Triple.isPPC64() || Triple.isOSAIX()) {
-      Ok = CM == "small" || CM == "medium" || CM == "large";
-    } else if (Triple.isRISCV()) {
-      if (CM == "medlow")
-        CM = "small";
-      else if (CM == "medany")
-        CM = "medium";
-#if SIFIVE_CUSTOMIZATION
-      Ok = CM == "small" || CM == "medium" || CM == "compact";
-#endif // SIFIVE_CUSTOMIZATION
-    } else if (Triple.getArch() == llvm::Triple::x86_64) {
-      Ok = llvm::is_contained({"small", "kernel", "medium", "large", "tiny"},
-                              CM);
-    } else if (Triple.isNVPTX() || Triple.isAMDGPU() || Triple.isSPIRV()) {
-      // NVPTX/AMDGPU/SPIRV does not care about the code model and will accept
-      // whatever works for the host.
-      Ok = true;
-    } else if (Triple.isSPARC64()) {
-      if (CM == "medlow")
-        CM = "small";
-      else if (CM == "medmid")
-        CM = "medium";
-      else if (CM == "medany")
-        CM = "large";
-      Ok = CM == "small" || CM == "medium" || CM == "large";
-    }
-    if (Ok) {
-      CmdArgs.push_back(Args.MakeArgString("-mcmodel=" + CM));
-    } else {
-      D.Diag(diag::err_drv_unsupported_option_argument_for_target)
-          << A->getSpelling() << CM << TripleStr;
-    }
-  }
-
-  if (Triple.getArch() == llvm::Triple::x86_64) {
-    bool IsMediumCM = false;
-    bool IsLargeCM = false;
-    if (Arg *A = Args.getLastArg(options::OPT_mcmodel_EQ)) {
-      IsMediumCM = StringRef(A->getValue()) == "medium";
-      IsLargeCM = StringRef(A->getValue()) == "large";
-    }
-    if (Arg *A = Args.getLastArg(options::OPT_mlarge_data_threshold_EQ)) {
-      if (!IsMediumCM && !IsLargeCM) {
-        D.Diag(diag::warn_drv_large_data_threshold_invalid_code_model)
-            << A->getOption().getRenderName();
-      } else {
-        A->render(Args, CmdArgs);
-      }
-    } else if (IsMediumCM) {
-      CmdArgs.push_back("-mlarge-data-threshold=65536");
-    } else if (IsLargeCM) {
-      CmdArgs.push_back("-mlarge-data-threshold=0");
-    }
-  }
-=======
   addMCModel(D, Args, Triple, RelocationModel, CmdArgs);
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 
   if (Arg *A = Args.getLastArg(options::OPT_mtls_size_EQ)) {
     StringRef Value = A->getValue();
