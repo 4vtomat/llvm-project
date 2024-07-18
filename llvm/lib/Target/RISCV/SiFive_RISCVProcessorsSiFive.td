@@ -590,7 +590,7 @@ def SIFIVE_X390_FAST_FP64
                           SiFive7SVLEN1024DualVALUFastFP64Model,
                           SIFIVE_X390_Features, SIFIVE_X390_TuneFeatures>;
 
-def SIFIVE_P260T : RISCVProcessorModel<"sifive-p260t", SiFive7NVLEN128Model,
+def SIFIVE_TIGER : RISCVProcessorModel<"sifive-tiger", SiFive7NVLEN128Model,
                                        [Feature64Bit,
                                         FeatureStdExtI,
                                         FeatureStdExtM,
