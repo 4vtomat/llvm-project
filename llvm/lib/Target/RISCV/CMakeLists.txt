@@ -62,14 +62,11 @@ add_llvm_target(RISCVCodeGen
   RISCVTargetMachine.cpp
   RISCVTargetObjectFile.cpp
   RISCVTargetTransformInfo.cpp
-<<<<<<< HEAD
+  RISCVVectorPeephole.cpp
   SiFive_RISCVTypePromotion.cpp
   SiFive_RISCVVLOptimizer.cpp
   SiFive_RISCVLoopIdiomRecognize.cpp
   SiFive_RISCVHazardRecognizer.cpp
-=======
-  RISCVVectorPeephole.cpp
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   GISel/RISCVCallLowering.cpp
   GISel/RISCVInstructionSelector.cpp
   GISel/RISCVLegalizerInfo.cpp
