@@ -9,13 +9,7 @@
 #ifndef LLVM_CLANG_TOOLS_EXTRA_CLANGD_INDEX_REMOTE_CLIENT_H
 #define LLVM_CLANG_TOOLS_EXTRA_CLANGD_INDEX_REMOTE_CLIENT_H
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
 #include "index/Index.h"
-#endif // SIFIVE_CUSTOMIZATION
-=======
-#include "index/Index.h"
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 #include "llvm/ADT/StringRef.h"
 
 #include <memory>
@@ -23,14 +17,6 @@
 namespace clang {
 namespace clangd {
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-#else
-class SymbolIndex;
-#endif // SIFIVE_CUSTOMIZATION  
-
-=======
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 namespace remote {
 
 /// Returns an SymbolIndex client that passes requests to remote index located
