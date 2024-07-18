@@ -780,7 +780,6 @@ void tools::gnutools::Assembler::ConstructJob(Compilation &C,
     std::string MArchName =
         riscv::getRISCVArch(Args, getToolChain().getTriple());
     CmdArgs.push_back("-march");
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     // Canonicalize the arch string before passing to binutils, older binutils
     // need arch string in canonical order.
@@ -793,18 +792,15 @@ void tools::gnutools::Assembler::ConstructJob(Compilation &C,
 
       // Something wrong during canonicalize, just bypass the -march value in
       // this case.
-      CmdArgs.push_back(MArchName.data());
+      CmdArgs.push_back(Args.MakeArgString(MArchName));
     } else {
       auto &ISAInfo = *ParseResult;
       std::string Arch = ISAInfo->toString();
       CmdArgs.push_back(Args.MakeArgStringRef(Arch));
     }
 #else
-    CmdArgs.push_back(MArchName.data());
-#endif // SIFIVE_CUSTOMIZATION
-=======
     CmdArgs.push_back(Args.MakeArgString(MArchName));
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
+#endif // SIFIVE_CUSTOMIZATION
     if (!Args.hasFlag(options::OPT_mrelax, options::OPT_mno_relax, true))
       Args.addOptOutFlag(CmdArgs, options::OPT_mrelax, options::OPT_mno_relax);
     break;
