@@ -376,23 +376,21 @@
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-ZFHMIN %s
 // RV32-ZFHMIN: "-target-feature" "+zfhmin"
 
-// RUN: not %clang --target=riscv32-unknown-elf -march=rv32izalasr -### %s \
-// RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-NOFLAG %s
-// RV32-EXPERIMENTAL-NOFLAG: error: invalid arch name 'rv32izalasr'
-// RV32-EXPERIMENTAL-NOFLAG: requires '-menable-experimental-extensions'
-
-<<<<<<< HEAD
 // COM: SiFive specific logic: Disable version check for integration with FESDK.
 // COM: not %clang --target=riscv32-unknown-elf -march=rv32iztso -menable-experimental-extensions -### %s \
 // COM: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-NOVERS %s
 // COM-RV32-EXPERIMENTAL-NOVERS: error: invalid arch name 'rv32iztso'
 // COM-RV32-EXPERIMENTAL-NOVERS: experimental extension requires explicit version number
-=======
+
+// RUN: not %clang --target=riscv32-unknown-elf -march=rv32izalasr -### %s \
+// RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-NOFLAG %s
+// RV32-EXPERIMENTAL-NOFLAG: error: invalid arch name 'rv32izalasr'
+// RV32-EXPERIMENTAL-NOFLAG: requires '-menable-experimental-extensions'
+
 // RUN: not %clang --target=riscv32-unknown-elf -march=rv32izalasr -menable-experimental-extensions -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-NOVERS %s
 // RV32-EXPERIMENTAL-NOVERS: error: invalid arch name 'rv32izalasr'
 // RV32-EXPERIMENTAL-NOVERS: experimental extension requires explicit version number
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 
 // RUN: not %clang --target=riscv32-unknown-elf -march=rv32izalasr0p7 -menable-experimental-extensions -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-BADVERS %s
