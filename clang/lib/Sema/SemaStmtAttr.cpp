@@ -794,15 +794,12 @@ static Attr *ProcessStmtAttribute(Sema &S, Stmt *St, const ParsedAttr &A,
     return handleFallThroughAttr(S, St, A, Range);
   case ParsedAttr::AT_LoopHint:
     return handleLoopHintAttr(S, St, A, Range);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case ParsedAttr::AT_RvvHint:
     return handleRvvHintAttr(S, St, A, Range);
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case ParsedAttr::AT_HLSLLoopHint:
     return handleHLSLLoopHintAttr(S, St, A, Range);
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   case ParsedAttr::AT_OpenCLUnrollHint:
     return handleOpenCLUnrollHint(S, St, A, Range);
   case ParsedAttr::AT_Suppress:
