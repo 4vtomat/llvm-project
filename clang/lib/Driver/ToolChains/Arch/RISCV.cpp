@@ -153,7 +153,6 @@ void riscv::getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
   if (!getArchFeatures(D, MArch, Features, Args))
     return;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (Arg *A = Args.getLastArg(options::OPT_mtune_EQ)) {
     StringRef Tune = A->getValue();
@@ -165,11 +164,8 @@ void riscv::getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-  bool CPUFastUnaligned = false;
-=======
   bool CPUFastScalarUnaligned = false;
   bool CPUFastVectorUnaligned = false;
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 
   // If users give march and mcpu, get std extension feature from MArch
   // and other features (ex. mirco architecture feature) from mcpu
