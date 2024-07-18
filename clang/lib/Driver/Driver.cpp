@@ -681,16 +681,12 @@ static llvm::Triple computeTargetTriple(const Driver &D,
   if (Target.isRISCV()) {
     if (Args.hasArg(options::OPT_march_EQ) ||
         Args.hasArg(options::OPT_mcpu_EQ)) {
-<<<<<<< HEAD
-      StringRef ArchName = tools::riscv::getRISCVArch(Args, Target);
+      std::string ArchName = tools::riscv::getRISCVArch(Args, Target);
 #if SIFIVE_CUSTOMIZATION
       auto ISAInfo = llvm::RISCVISAInfo::parseArchString(
           ArchName, /*EnableExperimentalExtensions=*/true,
           /*ExperimentalExtensionVersionCheck*/false);
 #else
-=======
-      std::string ArchName = tools::riscv::getRISCVArch(Args, Target);
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
       auto ISAInfo = llvm::RISCVISAInfo::parseArchString(
           ArchName, /*EnableExperimentalExtensions=*/true);
 #endif // SIFIVE_CUSTOMIZATION
@@ -4609,28 +4605,13 @@ Action *Driver::BuildOffloadingActions(Compilation &C,
 
     // Get the product of all bound architectures and toolchains.
     SmallVector<std::pair<const ToolChain *, StringRef>> TCAndArchs;
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
     for (const ToolChain *TC : ToolChains) {
       llvm::DenseSet<StringRef> Arches = getOffloadArchs(C, Args, Kind, TC);
       SmallVector<StringRef, 0> Sorted(Arches.begin(), Arches.end());
       llvm::sort(Sorted);
       for (StringRef Arch : Sorted)
-<<<<<<< HEAD
         TCAndArchs.push_back(std::make_pair(TC, Arch));
     }
-#else
-    for (const ToolChain *TC : ToolChains)
-      for (StringRef Arch : getOffloadArchs(C, Args, Kind, TC))
-        TCAndArchs.push_back(std::make_pair(TC, Arch));
-    llvm::sort(TCAndArchs, llvm::less_second());
-#endif // SIFIVE_CUSTOMIZATION
-=======
-        TCAndArchs.push_back(std::make_pair(TC, Arch));
-    }
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 
     for (unsigned I = 0, E = TCAndArchs.size(); I != E; ++I)
       DeviceActions.push_back(C.MakeAction<InputAction>(*InputArg, InputType));
