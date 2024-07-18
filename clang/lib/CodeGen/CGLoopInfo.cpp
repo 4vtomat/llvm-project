@@ -654,16 +654,13 @@ void LoopInfoStack::push(BasicBlock *Header, clang::ASTContext &Ctx,
     const LoopHintAttr *LH = dyn_cast<LoopHintAttr>(Attr);
     const OpenCLUnrollHintAttr *OpenCLHint =
         dyn_cast<OpenCLUnrollHintAttr>(Attr);
-<<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
     if (const auto *RvvHint = dyn_cast<RvvHintAttr>(Attr))
       setForceLmulSew(RvvHint->getLmul(), RvvHint->getSew());
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
     const HLSLLoopHintAttr *HLSLLoopHint = dyn_cast<HLSLLoopHintAttr>(Attr);
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
     // Skip non loop hint attributes
     if (!LH && !OpenCLHint && !HLSLLoopHint) {
       continue;
