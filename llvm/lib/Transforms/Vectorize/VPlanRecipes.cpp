@@ -45,6 +45,7 @@ using VectorParts = SmallVector<Value *, 2>;
 namespace llvm {
 extern cl::opt<bool> EnableVPlanNativePath;
 }
+extern cl::opt<unsigned> ForceTargetInstructionCost;
 
 #define LV_NAME "loop-vectorize"
 #define DEBUG_TYPE LV_NAME
@@ -261,17 +262,28 @@ bool VPRecipeBase::mayHaveSideEffects() const {
 }
 
 void VPLiveOut::fixPhi(VPlan &Plan, VPTransformState &State) {
-  auto Lane = VPLane::getLastLaneForVF(State.VF);
   VPValue *ExitValue = getOperand(0);
-  if (vputils::isUniformAfterVectorization(ExitValue))
-    Lane = VPLane::getFirstLane();
+  auto Lane = vputils::isUniformAfterVectorization(ExitValue)
+                  ? VPLane::getFirstLane()
+                  : VPLane::getLastLaneForVF(State.VF);
   VPBasicBlock *MiddleVPBB =
       cast<VPBasicBlock>(Plan.getVectorLoopRegion()->getSingleSuccessor());
-  assert(MiddleVPBB->getNumSuccessors() == 0 &&
-         "the middle block must not have any successors");
-  BasicBlock *MiddleBB = State.CFG.VPBB2IRBB[MiddleVPBB];
-  Phi->addIncoming(State.get(ExitValue, VPIteration(State.UF - 1, Lane)),
-                   MiddleBB);
+  VPRecipeBase *ExitingRecipe = ExitValue->getDefiningRecipe();
+  auto *ExitingVPBB = ExitingRecipe ? ExitingRecipe->getParent() : nullptr;
+  // Values leaving the vector loop reach live out phi's in the exiting block
+  // via middle block.
+  auto *PredVPBB = !ExitingVPBB || ExitingVPBB->getEnclosingLoopRegion()
+                       ? MiddleVPBB
+                       : ExitingVPBB;
+  BasicBlock *PredBB = State.CFG.VPBB2IRBB[PredVPBB];
+  // Set insertion point in PredBB in case an extract needs to be generated.
+  // TODO: Model extracts explicitly.
+  State.Builder.SetInsertPoint(PredBB, PredBB->getFirstNonPHIIt());
+  Value *V = State.get(ExitValue, VPIteration(State.UF - 1, Lane));
+  if (Phi->getBasicBlockIndex(PredBB) != -1)
+    Phi->setIncomingValueForBlock(PredBB, V);
+  else
+    Phi->addIncoming(V, PredBB);
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
@@ -327,6 +339,49 @@ void VPRecipeBase::moveBefore(VPBasicBlock &BB,
   insertBefore(BB, I);
 }
 
+/// Return the underlying instruction to be used for computing \p R's cost via
+/// the legacy cost model. Return nullptr if there's no suitable instruction.
+static Instruction *getInstructionForCost(const VPRecipeBase *R) {
+  if (auto *S = dyn_cast<VPSingleDefRecipe>(R))
+    return dyn_cast_or_null<Instruction>(S->getUnderlyingValue());
+  if (auto *IG = dyn_cast<VPInterleaveRecipe>(R))
+    return IG->getInsertPos();
+  if (auto *WidenMem = dyn_cast<VPWidenMemoryRecipe>(R))
+    return &WidenMem->getIngredient();
+  return nullptr;
+}
+
+InstructionCost VPRecipeBase::cost(ElementCount VF, VPCostContext &Ctx) {
+  if (auto *UI = getInstructionForCost(this))
+    if (Ctx.skipCostComputation(UI, VF.isVector()))
+      return 0;
+
+  InstructionCost RecipeCost = computeCost(VF, Ctx);
+  if (ForceTargetInstructionCost.getNumOccurrences() > 0 &&
+      RecipeCost.isValid())
+    RecipeCost = InstructionCost(ForceTargetInstructionCost);
+
+  LLVM_DEBUG({
+    dbgs() << "Cost of " << RecipeCost << " for VF " << VF << ": ";
+    dump();
+  });
+  return RecipeCost;
+}
+
+InstructionCost VPRecipeBase::computeCost(ElementCount VF,
+                                          VPCostContext &Ctx) const {
+  // Compute the cost for the recipe falling back to the legacy cost model using
+  // the underlying instruction. If there is no underlying instruction, returns
+  // 0.
+  Instruction *UI = getInstructionForCost(this);
+  if (UI && isa<VPReplicateRecipe>(this)) {
+    // VPReplicateRecipe may be cloned as part of an existing VPlan-to-VPlan
+    // transform, avoid computing their cost multiple times for now.
+    Ctx.SkipCostComputation.insert(UI);
+  }
+  return UI ? Ctx.getLegacyCost(UI, VF) : 0;
+}
+
 FastMathFlags VPRecipeWithIRFlags::getFastMathFlags() const {
   assert(OpType == OperationType::FPMathOp &&
          "recipe doesn't have fast math flags");
@@ -367,9 +422,10 @@ bool VPInstruction::doesGeneratePerAllLanes() const {
 bool VPInstruction::canGenerateScalarForFirstLane() const {
   if (Instruction::isBinaryOp(getOpcode()))
     return true;
-  if (isVectorToScalar())
+  if (isSingleScalar() || isVectorToScalar())
     return true;
   switch (Opcode) {
+  case Instruction::ICmp:
   case VPInstruction::BranchOnCond:
   case VPInstruction::BranchOnCount:
   case VPInstruction::CalculateTripCountMinusVF:
@@ -438,6 +494,7 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
     return Builder.CreateNot(A, Name);
   }
   case Instruction::ICmp: {
+<<<<<<< HEAD
     Value *A = State.get(getOperand(0), Part);
 #if SIFIVE_CUSTOMIZATION
     if (State.Plan->useVLAVectorizer() && A->getType()->isVectorTy())
@@ -445,6 +502,11 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
                                               nullptr, Part);
 #endif // SIFIVE_CUSTOMIZATION
     Value *B = State.get(getOperand(1), Part);
+=======
+    bool OnlyFirstLaneUsed = vputils::onlyFirstLaneUsed(this);
+    Value *A = State.get(getOperand(0), Part, OnlyFirstLaneUsed);
+    Value *B = State.get(getOperand(1), Part, OnlyFirstLaneUsed);
+>>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
     return Builder.CreateCmp(getPredicate(), A, B, Name);
   }
   case Instruction::Select: {
@@ -991,6 +1053,27 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
     Value *Addend = State.get(getOperand(1), Part, /* IsScalar */ true);
     return Builder.CreatePtrAdd(Ptr, Addend, Name);
   }
+  case VPInstruction::ResumePhi: {
+    if (Part != 0)
+      return State.get(this, 0, /*IsScalar*/ true);
+    Value *IncomingFromVPlanPred =
+        State.get(getOperand(0), Part, /* IsScalar */ true);
+    Value *IncomingFromOtherPreds =
+        State.get(getOperand(1), Part, /* IsScalar */ true);
+    auto *NewPhi =
+        Builder.CreatePHI(IncomingFromOtherPreds->getType(), 2, Name);
+    BasicBlock *VPlanPred =
+        State.CFG
+            .VPBB2IRBB[cast<VPBasicBlock>(getParent()->getSinglePredecessor())];
+    NewPhi->addIncoming(IncomingFromVPlanPred, VPlanPred);
+    for (auto *OtherPred : predecessors(Builder.GetInsertBlock())) {
+      assert(OtherPred != VPlanPred &&
+             "VPlan predecessors should not be connected yet");
+      NewPhi->addIncoming(IncomingFromOtherPreds, OtherPred);
+    }
+    return NewPhi;
+  }
+
   default:
     llvm_unreachable("Unsupported opcode for instruction");
   }
@@ -999,6 +1082,10 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
 bool VPInstruction::isVectorToScalar() const {
   return getOpcode() == VPInstruction::ExtractFromEnd ||
          getOpcode() == VPInstruction::ComputeReductionResult;
+}
+
+bool VPInstruction::isSingleScalar() const {
+  return getOpcode() == VPInstruction::ResumePhi;
 }
 
 #if !defined(NDEBUG)
@@ -1024,6 +1111,7 @@ void VPInstruction::execute(VPTransformState &State) {
   if (hasFastMathFlags())
     State.Builder.setFastMathFlags(getFastMathFlags());
   State.setDebugLocFrom(getDebugLoc());
+<<<<<<< HEAD
   bool GeneratesPerFirstLaneOnly =
       canGenerateScalarForFirstLane() &&
       (vputils::onlyFirstLaneUsed(this) || isVectorToScalar());
@@ -1034,6 +1122,11 @@ void VPInstruction::execute(VPTransformState &State) {
                               getOpcode() == VPInstruction::CSAAnyActive ||
                               getOpcode() == VPInstruction::ExitingCond;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  bool GeneratesPerFirstLaneOnly = canGenerateScalarForFirstLane() &&
+                                   (vputils::onlyFirstLaneUsed(this) ||
+                                    isVectorToScalar() || isSingleScalar());
+>>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   bool GeneratesPerAllLanes = doesGeneratePerAllLanes();
   bool OnlyFirstPartUsed = vputils::onlyFirstPartUsed(this);
   for (unsigned Part = 0; Part < State.UF; ++Part) {
@@ -1084,12 +1177,17 @@ bool VPInstruction::onlyFirstLaneUsed(const VPValue *Op) const {
   case VPInstruction::CalculateTripCountMinusVF:
   case VPInstruction::CanonicalIVIncrementForPart:
   case VPInstruction::BranchOnCount:
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case VPInstruction::ExitingCond:
   case VPInstruction::CSAVLPhi:
   case VPInstruction::CSAVLSel:
   case VPInstruction::CSAAnyActive:
 #endif
+=======
+  case VPInstruction::BranchOnCond:
+  case VPInstruction::ResumePhi:
+>>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
     return true;
   };
   llvm_unreachable("switch should return");
@@ -1141,6 +1239,9 @@ void VPInstruction::print(raw_ostream &O, const Twine &Indent,
     break;
   case VPInstruction::ActiveLaneMask:
     O << "active lane mask";
+    break;
+  case VPInstruction::ResumePhi:
+    O << "resume-phi";
     break;
   case VPInstruction::ExplicitVectorLength:
     O << "EXPLICIT-VECTOR-LENGTH";

@@ -67,6 +67,7 @@ protected:
     assert(!verifyFunction(F) && "input function must be valid");
     doAnalysis(F);
 
+<<<<<<< HEAD
     Loop *L = LI->getLoopFor(LoopHeader);
 #if SIFIVE_CUSTOMIZATION
     auto Plan = VPlan::createInitialVPlan(SE->getBackedgeTakenCount(L), *SE,
@@ -76,6 +77,12 @@ protected:
                                           L->getLoopPreheader());
 #endif // SIFIVE_CUSTOMIZATION
     VPlanHCFGBuilder HCFGBuilder(L, LI.get(), *Plan);
+=======
+    auto Plan = VPlan::createInitialVPlan(
+        SE->getBackedgeTakenCount(LI->getLoopFor(LoopHeader)), *SE, true, false,
+        LI->getLoopFor(LoopHeader));
+    VPlanHCFGBuilder HCFGBuilder(LI->getLoopFor(LoopHeader), LI.get(), *Plan);
+>>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
     HCFGBuilder.buildHierarchicalCFG();
     return Plan;
   }
@@ -86,6 +93,7 @@ protected:
     assert(!verifyFunction(F) && "input function must be valid");
     doAnalysis(F);
 
+<<<<<<< HEAD
     Loop *L = LI->getLoopFor(LoopHeader);
 #if SIFIVE_CUSTOMIZATION
     auto Plan = VPlan::createInitialVPlan(SE->getBackedgeTakenCount(L), *SE,
@@ -95,6 +103,12 @@ protected:
                                           L->getLoopPreheader());
 #endif // SIFIVE_CUSTOMIZATION
     VPlanHCFGBuilder HCFGBuilder(L, LI.get(), *Plan);
+=======
+    auto Plan = VPlan::createInitialVPlan(
+        SE->getBackedgeTakenCount(LI->getLoopFor(LoopHeader)), *SE, true, false,
+        LI->getLoopFor(LoopHeader));
+    VPlanHCFGBuilder HCFGBuilder(LI->getLoopFor(LoopHeader), LI.get(), *Plan);
+>>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
     HCFGBuilder.buildPlainCFG();
     return Plan;
   }

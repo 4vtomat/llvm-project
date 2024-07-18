@@ -116,7 +116,6 @@ static_library("LLVMRISCVCodeGen") {
     "RISCVDeadRegisterDefinitions.cpp",
     "RISCVExpandAtomicPseudoInsts.cpp",
     "RISCVExpandPseudoInsts.cpp",
-    "RISCVFoldMasks.cpp",
     "RISCVFrameLowering.cpp",
     "RISCVGatherScatterLowering.cpp",
     "RISCVISelDAGToDAG.cpp",
@@ -138,7 +137,11 @@ static_library("LLVMRISCVCodeGen") {
     "RISCVTargetMachine.cpp",
     "RISCVTargetObjectFile.cpp",
     "RISCVTargetTransformInfo.cpp",
+<<<<<<< HEAD
     "SiFive_RISCV64LoopIdiomRecognize.cpp",
+=======
+    "RISCVVectorPeephole.cpp",
+>>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   ]
 }
 

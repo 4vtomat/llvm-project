@@ -1266,6 +1266,7 @@ bool SeparateConstOffsetFromGEP::reuniteExts(Instruction *I) {
             new SExtInst(Dom, I->getType(), "", I->getIterator());
         NewSExt->takeName(I);
         I->replaceAllUsesWith(NewSExt);
+        NewSExt->setDebugLoc(I->getDebugLoc());
         RecursivelyDeleteTriviallyDeadInstructions(I);
         return true;
       }
@@ -1278,6 +1279,7 @@ bool SeparateConstOffsetFromGEP::reuniteExts(Instruction *I) {
             new SExtInst(Dom, I->getType(), "", I->getIterator());
         NewSExt->takeName(I);
         I->replaceAllUsesWith(NewSExt);
+        NewSExt->setDebugLoc(I->getDebugLoc());
         RecursivelyDeleteTriviallyDeadInstructions(I);
         return true;
       }

@@ -38,7 +38,7 @@ STATISTIC(NumUnassigned , "Number of registers unassigned");
 char LiveRegMatrix::ID = 0;
 INITIALIZE_PASS_BEGIN(LiveRegMatrix, "liveregmatrix",
                       "Live Register Matrix", false, false)
-INITIALIZE_PASS_DEPENDENCY(LiveIntervals)
+INITIALIZE_PASS_DEPENDENCY(LiveIntervalsWrapperPass)
 INITIALIZE_PASS_DEPENDENCY(VirtRegMap)
 INITIALIZE_PASS_END(LiveRegMatrix, "liveregmatrix",
                     "Live Register Matrix", false, false)
@@ -47,17 +47,21 @@ LiveRegMatrix::LiveRegMatrix() : MachineFunctionPass(ID) {}
 
 void LiveRegMatrix::getAnalysisUsage(AnalysisUsage &AU) const {
   AU.setPreservesAll();
-  AU.addRequiredTransitive<LiveIntervals>();
+  AU.addRequiredTransitive<LiveIntervalsWrapperPass>();
   AU.addRequiredTransitive<VirtRegMap>();
   MachineFunctionPass::getAnalysisUsage(AU);
 }
 
 bool LiveRegMatrix::runOnMachineFunction(MachineFunction &MF) {
   TRI = MF.getSubtarget().getRegisterInfo();
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   MRI = &MF.getRegInfo();
 #endif // SIFIVE_CUSTOMIZATION
   LIS = &getAnalysis<LiveIntervals>();
+=======
+  LIS = &getAnalysis<LiveIntervalsWrapperPass>().getLIS();
+>>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   VRM = &getAnalysis<VirtRegMap>();
 
   unsigned NumRegUnits = TRI->getNumRegUnits();

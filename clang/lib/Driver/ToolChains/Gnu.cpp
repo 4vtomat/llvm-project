@@ -777,8 +777,10 @@ void tools::gnutools::Assembler::ConstructJob(Compilation &C,
     StringRef ABIName = riscv::getRISCVABI(Args, getToolChain().getTriple());
     CmdArgs.push_back("-mabi");
     CmdArgs.push_back(ABIName.data());
-    StringRef MArchName = riscv::getRISCVArch(Args, getToolChain().getTriple());
+    std::string MArchName =
+        riscv::getRISCVArch(Args, getToolChain().getTriple());
     CmdArgs.push_back("-march");
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     // Canonicalize the arch string before passing to binutils, older binutils
     // need arch string in canonical order.
@@ -800,6 +802,9 @@ void tools::gnutools::Assembler::ConstructJob(Compilation &C,
 #else
     CmdArgs.push_back(MArchName.data());
 #endif // SIFIVE_CUSTOMIZATION
+=======
+    CmdArgs.push_back(Args.MakeArgString(MArchName));
+>>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
     if (!Args.hasFlag(options::OPT_mrelax, options::OPT_mno_relax, true))
       Args.addOptOutFlag(CmdArgs, options::OPT_mrelax, options::OPT_mno_relax);
     break;
@@ -2125,7 +2130,7 @@ static void findRISCVBareMetalMultilibs(const Driver &D,
   Multilib::flags_list Flags;
   llvm::StringSet<> Added_ABIs;
   StringRef ABIName = tools::riscv::getRISCVABI(Args, TargetTriple);
-  StringRef MArch = tools::riscv::getRISCVArch(Args, TargetTriple);
+  std::string MArch = tools::riscv::getRISCVArch(Args, TargetTriple);
   for (auto Element : RISCVMultilibSet) {
     addMultilibFlag(MArch == Element.march,
                     Twine("-march=", Element.march).str().c_str(), Flags);
@@ -2819,9 +2824,11 @@ void Generic_GCC::GCCInstallationDetector::AddDefaultGCCPrefixes(
                                                "riscv64-unknown-elf"};
 
   static const char *const SPARCv8LibDirs[] = {"/lib32", "/lib"};
-  static const char *const SPARCv8Triples[] = {"sparcv8-linux-gnu"};
+  static const char *const SPARCv8Triples[] = {"sparc-linux-gnu",
+                                               "sparcv8-linux-gnu"};
   static const char *const SPARCv9LibDirs[] = {"/lib64", "/lib"};
-  static const char *const SPARCv9Triples[] = {"sparcv9-linux-gnu"};
+  static const char *const SPARCv9Triples[] = {"sparc64-linux-gnu",
+                                               "sparcv9-linux-gnu"};
 
   static const char *const SystemZLibDirs[] = {"/lib64", "/lib"};
   static const char *const SystemZTriples[] = {

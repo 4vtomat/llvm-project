@@ -317,7 +317,7 @@
 // RUN: not %clang --target=riscv32-unknown-elf -march=rv32ixabc_ -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-XSEP %s
 // RV32-XSEP: error: invalid arch name 'rv32ixabc_',
-// RV32-XSEP: extension name missing after separator '_'
+// RV32-XSEP: unsupported non-standard user-level extension 'xabc'
 
 // RUN: not %clang --target=riscv32-unknown-elf -march=rv32ixabc_a -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-PREFIX %s
@@ -329,10 +329,10 @@
 // RV32-X-ORDER: error: invalid arch name 'rv32ixdef_sabc',
 // RV32-X-ORDER  unsupported non-standard user-level extension 'xdef'
 
-// RUN: not %clang --target=riscv32-unknown-elf -march=rv32ixabc_xabc -### %s \
+// RUN: not %clang --target=riscv32-unknown-elf -march=rv32im_m -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-XDUP %s
-// RV32-XDUP: error: invalid arch name 'rv32ixabc_xabc',
-// RV32-XDUP: duplicated non-standard user-level extension 'xabc'
+// RV32-XDUP: error: invalid arch name 'rv32im_m',
+// RV32-XDUP: duplicated standard user-level extension 'm'
 
 // RUN: not %clang --target=riscv32-unknown-elf -march=rv32ixabc_xdef -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-X-X-INVAL %s
@@ -376,25 +376,38 @@
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-ZFHMIN %s
 // RV32-ZFHMIN: "-target-feature" "+zfhmin"
 
-// RUN: not %clang --target=riscv32-unknown-elf -march=rv32iztso -### %s \
+// RUN: not %clang --target=riscv32-unknown-elf -march=rv32izalasr -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-NOFLAG %s
-// RV32-EXPERIMENTAL-NOFLAG: error: invalid arch name 'rv32iztso'
+// RV32-EXPERIMENTAL-NOFLAG: error: invalid arch name 'rv32izalasr'
 // RV32-EXPERIMENTAL-NOFLAG: requires '-menable-experimental-extensions'
 
+<<<<<<< HEAD
 // COM: SiFive specific logic: Disable version check for integration with FESDK.
 // COM: not %clang --target=riscv32-unknown-elf -march=rv32iztso -menable-experimental-extensions -### %s \
 // COM: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-NOVERS %s
 // COM-RV32-EXPERIMENTAL-NOVERS: error: invalid arch name 'rv32iztso'
 // COM-RV32-EXPERIMENTAL-NOVERS: experimental extension requires explicit version number
+=======
+// RUN: not %clang --target=riscv32-unknown-elf -march=rv32izalasr -menable-experimental-extensions -### %s \
+// RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-NOVERS %s
+// RV32-EXPERIMENTAL-NOVERS: error: invalid arch name 'rv32izalasr'
+// RV32-EXPERIMENTAL-NOVERS: experimental extension requires explicit version number
+>>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 
-// RUN: not %clang --target=riscv32-unknown-elf -march=rv32iztso0p7 -menable-experimental-extensions -### %s \
+// RUN: not %clang --target=riscv32-unknown-elf -march=rv32izalasr0p7 -menable-experimental-extensions -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-BADVERS %s
-// RV32-EXPERIMENTAL-BADVERS: error: invalid arch name 'rv32iztso0p7'
-// RV32-EXPERIMENTAL-BADVERS: unsupported version number 0.7 for experimental extension 'ztso' (this compiler supports 0.1)
+// RV32-EXPERIMENTAL-BADVERS: error: invalid arch name 'rv32izalasr0p7'
+// RV32-EXPERIMENTAL-BADVERS: unsupported version number 0.7 for experimental extension 'zalasr' (this compiler supports 0.1)
 
-// RUN: %clang --target=riscv32-unknown-elf -march=rv32iztso0p1 -menable-experimental-extensions -### %s \
+// RUN: %clang --target=riscv32-unknown-elf -march=rv32izalasr0p1 -menable-experimental-extensions -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-GOODVERS %s
-// RV32-EXPERIMENTAL-GOODVERS: "-target-feature" "+experimental-ztso"
+// RV32-EXPERIMENTAL-GOODVERS: "-target-feature" "+experimental-zalasr"
+
+// RUN: %clang --target=riscv32-unknown-elf -march=rv32iztso1p0 -### %s \
+// RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-ZTSO %s
+// RUN: %clang --target=riscv32-unknown-elf -march=rv32iztso -### %s \
+// RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-ZTSO %s
+// RV32-ZTSO: "-target-feature" "+ztso"
 
 // RUN: %clang --target=riscv32-unknown-elf -march=rv32izbb1p0 -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-ZBB %s

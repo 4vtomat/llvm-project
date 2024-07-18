@@ -37,9 +37,13 @@
 #include "llvm/CodeGen/TargetPassConfig.h"
 #include "llvm/InitializePasses.h"
 #include "llvm/MC/TargetRegistry.h"
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/Passes/PassBuilder.h"
 #endif
+=======
+#include "llvm/Passes/PassBuilder.h"
+>>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 #include "llvm/Support/FormattedStream.h"
 #include "llvm/Target/TargetOptions.h"
 #include "llvm/Transforms/IPO.h"
@@ -47,6 +51,7 @@
 #include "llvm/Transforms/Utils/SiFive_RecodeExpand.h"
 #endif
 #include "llvm/Transforms/Scalar.h"
+#include "llvm/Transforms/Vectorize/LoopIdiomVectorize.h"
 #include <optional>
 using namespace llvm;
 
@@ -154,7 +159,7 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   initializeRISCVOptWInstrsPass(*PR);
   initializeRISCVPreRAExpandPseudoPass(*PR);
   initializeRISCVExpandPseudoPass(*PR);
-  initializeRISCVFoldMasksPass(*PR);
+  initializeRISCVVectorPeepholePass(*PR);
   initializeRISCVInsertVSETVLIPass(*PR);
   initializeRISCVInsertReadWriteCSRPass(*PR);
   initializeRISCVInsertWriteVXRMPass(*PR);
@@ -587,6 +592,7 @@ void RISCVPassConfig::addPreSched2() {
 }
 
 void RISCVPassConfig::addPreEmitPass() {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (getOptLevel() != CodeGenOptLevel::None)
     addPass(createRISCVMachineConstPropagationPass());
@@ -594,6 +600,8 @@ void RISCVPassConfig::addPreEmitPass() {
   addPass(&BranchRelaxationPassID);
   addPass(createRISCVMakeCompressibleOptPass());
 
+=======
+>>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   // TODO: It would potentially be better to schedule copy propagation after
   // expanding pseudos (in addPreEmitPass2). However, performing copy
   // propagation after the machine outliner (which runs after addPreEmitPass)
@@ -602,6 +610,8 @@ void RISCVPassConfig::addPreEmitPass() {
   if (TM->getOptLevel() >= CodeGenOptLevel::Default &&
       EnableRISCVCopyPropagation)
     addPass(createMachineCopyPropagationPass(true));
+  addPass(&BranchRelaxationPassID);
+  addPass(createRISCVMakeCompressibleOptPass());
 }
 
 void RISCVPassConfig::addPreEmitPass2() {
@@ -628,7 +638,7 @@ void RISCVPassConfig::addPreEmitPass2() {
 }
 
 void RISCVPassConfig::addMachineSSAOptimization() {
-  addPass(createRISCVFoldMasksPass());
+  addPass(createRISCVVectorPeepholePass());
 
   TargetPassConfig::addMachineSSAOptimization();
 
@@ -680,6 +690,13 @@ void RISCVPassConfig::addPostRegAlloc() {
   if (TM->getOptLevel() != CodeGenOptLevel::None &&
       EnableRedundantCopyElimination)
     addPass(createRISCVRedundantCopyEliminationPass());
+}
+
+void RISCVTargetMachine::registerPassBuilderCallbacks(PassBuilder &PB) {
+  PB.registerLateLoopOptimizationsEPCallback([=](LoopPassManager &LPM,
+                                                 OptimizationLevel Level) {
+    LPM.addPass(LoopIdiomVectorizePass(LoopIdiomVectorizeStyle::Predicated));
+  });
 }
 
 yaml::MachineFunctionInfo *

@@ -11,6 +11,7 @@ add_llvm_component_library(LLVMInstrumentation
 # end SIFIVE_CUSTOMIZATION
   MemProfiler.cpp
   MemorySanitizer.cpp
+  NumericalStabilitySanitizer.cpp
   IndirectCallPromotion.cpp
   Instrumentation.cpp
   InstrOrderFile.cpp

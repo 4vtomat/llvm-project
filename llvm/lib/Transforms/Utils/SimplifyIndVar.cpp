@@ -322,6 +322,7 @@ bool SimplifyIndvar::eliminateSDiv(BinaryOperator *SDiv) {
         SDiv->getName() + ".udiv", SDiv->getIterator());
     UDiv->setIsExact(SDiv->isExact());
     SDiv->replaceAllUsesWith(UDiv);
+    UDiv->setDebugLoc(SDiv->getDebugLoc());
     LLVM_DEBUG(dbgs() << "INDVARS: Simplified sdiv: " << *SDiv << '\n');
     ++NumSimplifiedSDiv;
     Changed = true;
@@ -338,6 +339,7 @@ void SimplifyIndvar::replaceSRemWithURem(BinaryOperator *Rem) {
   auto *URem = BinaryOperator::Create(BinaryOperator::URem, N, D,
                                       Rem->getName() + ".urem", Rem->getIterator());
   Rem->replaceAllUsesWith(URem);
+  URem->setDebugLoc(Rem->getDebugLoc());
   LLVM_DEBUG(dbgs() << "INDVARS: Simplified srem: " << *Rem << '\n');
   ++NumSimplifiedSRem;
   Changed = true;
@@ -361,6 +363,7 @@ void SimplifyIndvar::replaceRemWithNumeratorOrZero(BinaryOperator *Rem) {
   SelectInst *Sel =
       SelectInst::Create(ICmp, ConstantInt::get(T, 0), N, "iv.rem", Rem->getIterator());
   Rem->replaceAllUsesWith(Sel);
+  Sel->setDebugLoc(Rem->getDebugLoc());
   LLVM_DEBUG(dbgs() << "INDVARS: Simplified rem: " << *Rem << '\n');
   ++NumElimRem;
   Changed = true;
@@ -445,6 +448,7 @@ bool SimplifyIndvar::eliminateOverflowIntrinsic(WithOverflowInst *WO) {
       else {
         assert(EVI->getIndices()[0] == 0 && "Only two possibilities!");
         EVI->replaceAllUsesWith(NewResult);
+        NewResult->setDebugLoc(EVI->getDebugLoc());
       }
       ToDelete.push_back(EVI);
     }
@@ -474,6 +478,7 @@ bool SimplifyIndvar::eliminateSaturatingIntrinsic(SaturatingInst *SI) {
     BO->setHasNoUnsignedWrap();
 
   SI->replaceAllUsesWith(BO);
+  BO->setDebugLoc(SI->getDebugLoc());
   DeadInsts.emplace_back(SI);
   Changed = true;
   return true;

@@ -24,6 +24,7 @@ void getRISCVTargetFeatures(const Driver &D, const llvm::Triple &Triple,
                             std::vector<llvm::StringRef> &Features);
 StringRef getRISCVABI(const llvm::opt::ArgList &Args,
                       const llvm::Triple &Triple);
+<<<<<<< HEAD
 StringRef getRISCVArch(const llvm::opt::ArgList &Args,
                        const llvm::Triple &Triple);
 
@@ -35,6 +36,10 @@ void addRISCVTargetLTOArgs(const ToolChain &ToolChain,
                            llvm::opt::ArgStringList &CmdArgs);
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+std::string getRISCVArch(const llvm::opt::ArgList &Args,
+                         const llvm::Triple &Triple);
+>>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 std::string getRISCVTargetCPU(const llvm::opt::ArgList &Args,
                               const llvm::Triple &Triple);
 } // end namespace riscv

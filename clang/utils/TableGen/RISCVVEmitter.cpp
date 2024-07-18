@@ -656,6 +656,7 @@ void RVVEmitter::createRVVIntrinsics(
             Name, SuffixStr, OverloadedName, OverloadedSuffixStr, IRName,
             /*IsMasked=*/false, /*HasMaskedOffOperand=*/false, HasVL,
             UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
+<<<<<<< HEAD
             ManualCodegen, *Types, IntrinsicTypes, RequiredFeatures, NF,
             DefaultPolicy, HasFRMRoundModeOp));
 #if SIFIVE_CUSTOMIZATION
@@ -667,6 +668,10 @@ void RVVEmitter::createRVVIntrinsics(
               ManualCodegen, *NTLTypes, IntrinsicTypes, RequiredFeatures, NF,
               NonTemporalDefaultPolicy, HasFRMRoundModeOp));
 #endif // SIFIVE_CUSTOMIZATION
+=======
+            ManualCodegen, *Types, IntrinsicTypes, NF, DefaultPolicy,
+            HasFRMRoundModeOp));
+>>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
         if (UnMaskedPolicyScheme != PolicyScheme::SchemeNone)
           for (auto P : SupportedUnMaskedPolicies) {
             SmallVector<PrototypeDescriptor> PolicyPrototype =
@@ -680,8 +685,8 @@ void RVVEmitter::createRVVIntrinsics(
                 Name, SuffixStr, OverloadedName, OverloadedSuffixStr, IRName,
                 /*IsMask=*/false, /*HasMaskedOffOperand=*/false, HasVL,
                 UnMaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
-                ManualCodegen, *PolicyTypes, IntrinsicTypes, RequiredFeatures,
-                NF, P, HasFRMRoundModeOp));
+                ManualCodegen, *PolicyTypes, IntrinsicTypes, NF, P,
+                HasFRMRoundModeOp));
           }
         if (!HasMasked)
           continue;
@@ -692,6 +697,7 @@ void RVVEmitter::createRVVIntrinsics(
             Name, SuffixStr, OverloadedName, OverloadedSuffixStr, MaskedIRName,
             /*IsMasked=*/true, HasMaskedOffOperand, HasVL, MaskedPolicyScheme,
             SupportOverloading, HasBuiltinAlias, ManualCodegen, *MaskTypes,
+<<<<<<< HEAD
             IntrinsicTypes, RequiredFeatures, NF, DefaultPolicy,
             HasFRMRoundModeOp));
 
@@ -708,6 +714,9 @@ void RVVEmitter::createRVVIntrinsics(
               HasFRMRoundModeOp));
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+            IntrinsicTypes, NF, DefaultPolicy, HasFRMRoundModeOp));
+>>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
         if (MaskedPolicyScheme == PolicyScheme::SchemeNone)
           continue;
         for (auto P : SupportedMaskedPolicies) {
@@ -721,8 +730,8 @@ void RVVEmitter::createRVVIntrinsics(
               Name, SuffixStr, OverloadedName, OverloadedSuffixStr,
               MaskedIRName, /*IsMasked=*/true, HasMaskedOffOperand, HasVL,
               MaskedPolicyScheme, SupportOverloading, HasBuiltinAlias,
-              ManualCodegen, *PolicyTypes, IntrinsicTypes, RequiredFeatures, NF,
-              P, HasFRMRoundModeOp));
+              ManualCodegen, *PolicyTypes, IntrinsicTypes, NF, P,
+              HasFRMRoundModeOp));
         }
       } // End for Log2LMULList
     }   // End for TypeRange

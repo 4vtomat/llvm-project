@@ -34,7 +34,6 @@ add_llvm_target(RISCVCodeGen
   RISCVMakeCompressible.cpp
   RISCVExpandAtomicPseudoInsts.cpp
   RISCVExpandPseudoInsts.cpp
-  RISCVFoldMasks.cpp
   RISCVFrameLowering.cpp
   RISCVGatherScatterLowering.cpp
   SiFive_RISCVIndirectBranchTracking.cpp
@@ -63,10 +62,14 @@ add_llvm_target(RISCVCodeGen
   RISCVTargetMachine.cpp
   RISCVTargetObjectFile.cpp
   RISCVTargetTransformInfo.cpp
+<<<<<<< HEAD
   SiFive_RISCVTypePromotion.cpp
   SiFive_RISCVVLOptimizer.cpp
   SiFive_RISCVLoopIdiomRecognize.cpp
   SiFive_RISCVHazardRecognizer.cpp
+=======
+  RISCVVectorPeephole.cpp
+>>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   GISel/RISCVCallLowering.cpp
   GISel/RISCVInstructionSelector.cpp
   GISel/RISCVLegalizerInfo.cpp
@@ -93,6 +96,7 @@ add_llvm_target(RISCVCodeGen
   Target
   TargetParser
   TransformUtils
+  Vectorize
 
   ADD_TO_COMPONENT
   RISCV

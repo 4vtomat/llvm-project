@@ -513,9 +513,13 @@ public:
   bool isLegalAddImmediate(int64_t Imm) const override;
   bool isTruncateFree(Type *SrcTy, Type *DstTy) const override;
   bool isTruncateFree(EVT SrcVT, EVT DstVT) const override;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool isProfitableToHoist(Instruction *I) const override;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  bool isTruncateFree(SDValue Val, EVT VT2) const override;
+>>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   bool isZExtFree(SDValue Val, EVT VT2) const override;
   bool isSExtCheaperThanZExt(EVT SrcVT, EVT DstVT) const override;
   bool signExtendConstant(const ConstantInt *CI) const override;

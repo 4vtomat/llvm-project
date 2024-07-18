@@ -249,7 +249,7 @@ public:
 
 /// TODO: The following VectorizationFactor was pulled out of
 /// LoopVectorizationCostModel class. LV also deals with
-/// VectorizerParams::VectorizationFactor and VectorizationCostTy.
+/// VectorizerParams::VectorizationFactor.
 /// We need to streamline them.
 
 /// Information about vectorization costs.
@@ -368,10 +368,23 @@ class LoopVectorizationPlanner {
   /// A builder used to construct the current plan.
   VPBuilder Builder;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// (SIFIVE) Whether or not we are in pre-link stage
   bool IsLTOPreLink; // SIFIVE
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  /// Computes the cost of \p Plan for vectorization factor \p VF.
+  ///
+  /// The current implementation requires access to the
+  /// LoopVectorizationLegality to handle inductions and reductions, which is
+  /// why it is kept separate from the VPlan-only cost infrastructure.
+  ///
+  /// TODO: Move to VPlan::cost once the use of LoopVectorizationLegality has
+  /// been retired.
+  InstructionCost cost(VPlan &Plan, ElementCount VF) const;
+
+>>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 public:
   LoopVectorizationPlanner(
       Loop *L, LoopInfo *LI, DominatorTree *DT, const TargetLibraryInfo *TLI,
@@ -402,6 +415,9 @@ public:
 
   /// Return the best VPlan for \p VF.
   VPlan &getBestPlanFor(ElementCount VF) const;
+
+  /// Return the most profitable plan and fix its VF to the most profitable one.
+  VPlan &getBestPlan() const;
 
   /// Generate the IR code for the vectorized loop captured in VPlan \p BestPlan
   /// according to the best selected \p VF and  \p UF.
@@ -476,12 +492,15 @@ private:
   // converted to reductions, with one operand being vector and the other being
   // the scalar reduction chain. For other reductions, a select is introduced
   // between the phi and live-out recipes when folding the tail.
-  void adjustRecipesForReductions(VPBasicBlock *LatchVPBB, VPlanPtr &Plan,
+  void adjustRecipesForReductions(VPlanPtr &Plan,
                                   VPRecipeBuilder &RecipeBuilder,
                                   ElementCount MinVF);
 
   /// \return The most profitable vectorization factor for the available VPlans
   /// and the cost of that VF.
+  /// This is now only used to verify the decisions by the new VPlan-based
+  /// cost-model and will be retired once the VPlan-based cost-model is
+  /// stabilized.
   VectorizationFactor selectVectorizationFactor();
 
   /// Returns true if the per-lane cost of VectorizationFactor A is lower than

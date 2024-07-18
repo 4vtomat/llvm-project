@@ -230,12 +230,16 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
     Builder.defineMacro("__riscv_v_fixed_vlen",
                         Twine(VScale->first * llvm::RISCV::RVVBitsPerBlock));
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (SlowVectorFP64)
     Builder.defineMacro("__sifive_slow_vector_fp64");
 #endif // SIFIVE_CUSTOMIZATION
 
   if (FastUnalignedAccess)
+=======
+  if (FastScalarUnalignedAccess)
+>>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
     Builder.defineMacro("__riscv_misaligned_fast");
   else
     Builder.defineMacro("__riscv_misaligned_avoid");
@@ -402,11 +406,16 @@ bool RISCVTargetInfo::handleTargetFeatures(std::vector<std::string> &Features,
   if (ISAInfo->hasExtension("zfh") || ISAInfo->hasExtension("zhinx"))
     HasLegalHalfType = true;
 
+<<<<<<< HEAD
   FastUnalignedAccess = llvm::is_contained(Features, "+unaligned-scalar-mem") &&
                         llvm::is_contained(Features, "+unaligned-vector-mem");
 #if SIFIVE_CUSTOMIZATION
   SlowVectorFP64 = llvm::is_contained(Features, "+slow-vector-fp64");
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  FastScalarUnalignedAccess =
+      llvm::is_contained(Features, "+unaligned-scalar-mem");
+>>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 
   if (llvm::is_contained(Features, "+experimental"))
     HasExperimental = true;
