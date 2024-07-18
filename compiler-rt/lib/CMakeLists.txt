@@ -53,17 +53,13 @@ if(COMPILER_RT_BUILD_PROFILE)
   compiler_rt_build_runtime(profile)
 endif()
 
-<<<<<<< HEAD
 # SIFIVE_CUSTOMIZATION
 if(COMPILER_RT_HAS_LOOP_PROFILE)
   compiler_rt_build_runtime(loop_profile)
 endif()
 # end SIFIVE_CUSTOMIZATION
 
-if(COMPILER_RT_BUILD_CTX_PROFILE AND COMPILER_RT_HAS_CTX_PROFILE)
-=======
 if(COMPILER_RT_BUILD_CTX_PROFILE)
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   compiler_rt_build_runtime(ctx_profile)
 endif()
 
