@@ -190,6 +190,9 @@
 ; CHECK-POSTLINK-O2-NEXT: Running pass: SLPVectorizerPass
 ; CHECK-POSTLINK-O3-NEXT: Running pass: SLPVectorizerPass
 ; CHECK-POSTLINK-Os-NEXT: Running pass: SLPVectorizerPass
+; CHECK-POSTLINK-O2-NEXT: Running pass: EarlyCSEPass
+; CHECK-POSTLINK-O3-NEXT: Running pass: EarlyCSEPass
+; CHECK-POSTLINK-Os-NEXT: Running pass: EarlyCSEPass
 ; CHECK-POSTLINK-O-NEXT: Running pass: VectorCombinePass
 ; CHECK-POSTLINK-O-NEXT: Running pass: WarnMissedTransformationsPass
 ; CHECK-POSTLINK-O-NEXT: Running pass: SROAPass

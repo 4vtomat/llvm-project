@@ -3321,7 +3321,15 @@ static NonTrivialUnswitchCandidate findBestNonTrivialUnswitchCandidate(
     for (auto &I : *BB) {
       if (EphValues.count(&I))
         continue;
+#if SIFIVE_CUSTOMIZATION
+      auto IC = TTI.getInstructionCost(&I, CostKind);
+      if (!IC.isValid()) {
+        LLVM_DEBUG(dbgs() << "Found invalid instruction cost for " << I << '\n');
+      }
+      Cost += IC;
+#else
       Cost += TTI.getInstructionCost(&I, CostKind);
+#endif // SIFIVE_CUSTOMIZATION
     }
     assert(Cost >= 0 && "Must not have negative costs!");
     LoopCost += Cost;

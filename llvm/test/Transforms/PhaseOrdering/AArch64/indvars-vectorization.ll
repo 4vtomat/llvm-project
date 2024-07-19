@@ -19,7 +19,7 @@ define void @s172(i32 noundef %xa, i32 noundef %xb, ptr noundef %a, ptr noundef 
 ; CHECK-NEXT:    [[TMP3:%.*]] = icmp slt i64 [[TMP2]], 32000
 ; CHECK-NEXT:    [[UMIN8:%.*]] = zext i1 [[TMP3]] to i64
 ; CHECK-NEXT:    [[TMP4:%.*]] = add nsw i64 [[TMP2]], [[UMIN8]]
-; CHECK-NEXT:    [[TMP5:%.*]] = sub i64 [[SMAX7]], [[TMP4]]
+; CHECK-NEXT:    [[TMP5:%.*]] = sub nsw i64 [[SMAX7]], [[TMP4]]
 ; CHECK-NEXT:    [[UMAX9:%.*]] = tail call i64 @llvm.umax.i64(i64 [[TMP1]], i64 1)
 ; CHECK-NEXT:    [[TMP6:%.*]] = udiv i64 [[TMP5]], [[UMAX9]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = add i64 [[TMP6]], [[UMIN8]]
@@ -31,15 +31,9 @@ define void @s172(i32 noundef %xa, i32 noundef %xb, ptr noundef %a, ptr noundef 
 ; CHECK:       vector.memcheck:
 ; CHECK-NEXT:    [[TMP9:%.*]] = shl nsw i64 [[TMP0]], 2
 ; CHECK-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP9]]
-; CHECK-NEXT:    [[TMP10:%.*]] = add nsw i64 [[TMP1]], [[TMP0]]
-; CHECK-NEXT:    [[SMAX:%.*]] = tail call i64 @llvm.smax.i64(i64 [[TMP10]], i64 32000)
-; CHECK-NEXT:    [[TMP11:%.*]] = icmp slt i64 [[TMP10]], 32000
-; CHECK-NEXT:    [[UMIN:%.*]] = zext i1 [[TMP11]] to i64
-; CHECK-NEXT:    [[TMP12:%.*]] = add nsw i64 [[TMP10]], [[UMIN]]
-; CHECK-NEXT:    [[TMP13:%.*]] = sub i64 [[SMAX]], [[TMP12]]
-; CHECK-NEXT:    [[TMP14:%.*]] = add i64 [[TMP13]], [[UMIN]]
-; CHECK-NEXT:    [[TMP15:%.*]] = add i64 [[TMP14]], [[TMP0]]
-; CHECK-NEXT:    [[TMP16:%.*]] = shl i64 [[TMP15]], 2
+; CHECK-NEXT:    [[TMP10:%.*]] = add nsw i64 [[TMP5]], [[UMIN8]]
+; CHECK-NEXT:    [[TMP11:%.*]] = add nsw i64 [[TMP10]], [[TMP0]]
+; CHECK-NEXT:    [[TMP16:%.*]] = shl nsw i64 [[TMP11]], 2
 ; CHECK-NEXT:    [[TMP17:%.*]] = add i64 [[TMP16]], 4
 ; CHECK-NEXT:    [[SCEVGEP4:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP17]]
 ; CHECK-NEXT:    [[SCEVGEP5:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP9]]
@@ -50,7 +44,7 @@ define void @s172(i32 noundef %xa, i32 noundef %xb, ptr noundef %a, ptr noundef 
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label [[FOR_BODY_PREHEADER13]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
 ; CHECK-NEXT:    [[N_VEC:%.*]] = and i64 [[TMP8]], -8
-; CHECK-NEXT:    [[TMP18:%.*]] = mul nuw i64 [[N_VEC]], [[TMP1]]
+; CHECK-NEXT:    [[TMP18:%.*]] = mul nuw nsw i64 [[N_VEC]], [[TMP1]]
 ; CHECK-NEXT:    [[IND_END:%.*]] = add i64 [[TMP18]], [[TMP0]]
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:

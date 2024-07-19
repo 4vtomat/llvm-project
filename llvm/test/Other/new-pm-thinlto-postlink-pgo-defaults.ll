@@ -176,6 +176,9 @@
 ; CHECK-O2-NEXT: Running pass: SLPVectorizerPass
 ; CHECK-O3-NEXT: Running pass: SLPVectorizerPass
 ; CHECK-Os-NEXT: Running pass: SLPVectorizerPass
+; CHECK-O2-NEXT: Running pass: EarlyCSEPass
+; CHECK-O3-NEXT: Running pass: EarlyCSEPass
+; CHECK-Os-NEXT: Running pass: EarlyCSEPass
 ; CHECK-O-NEXT: Running pass: VectorCombinePass
 ; CHECK-O-NEXT: Running pass: WarnMissedTransformationsPass
 ; CHECK-O-NEXT: Running pass: SROAPass

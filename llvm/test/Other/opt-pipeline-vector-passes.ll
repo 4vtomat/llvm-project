@@ -19,9 +19,8 @@
 
 ; Everything runs at -O2.
 ; O2-LABEL:  Running pass: LoopVectorizePass
-; O2-NOT:    Running pass: EarlyCSEPass
-; O2-NOT:    Running pass: LICMPass
 ; O2:        Running pass: SLPVectorizerPass
+; O2:        Running pass: EarlyCSEPass
 ; O2:        Running pass: VectorCombinePass
 
 ; Optionally run cleanup passes.

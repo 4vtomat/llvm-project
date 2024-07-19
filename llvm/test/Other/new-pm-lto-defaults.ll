@@ -134,6 +134,9 @@
 ; CHECK-O2-NEXT: Running pass: SLPVectorizerPass on foo
 ; CHECK-O3-NEXT: Running pass: SLPVectorizerPass on foo
 ; CHECK-OS-NEXT: Running pass: SLPVectorizerPass on foo
+; CHECK-O2-NEXT: Running pass: EarlyCSEPass on foo
+; CHECK-O3-NEXT: Running pass: EarlyCSEPass on foo
+; CHECK-OS-NEXT: Running pass: EarlyCSEPass on foo
 ; CHECK-O23SZ-NEXT: Running pass: VectorCombinePass on foo
 ; CHECK-O23SZ-NEXT: Running pass: InferAlignmentPass on foo
 ; CHECK-O23SZ-NEXT: Running pass: InstCombinePass on foo
