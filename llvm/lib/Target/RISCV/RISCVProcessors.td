@@ -680,7 +680,6 @@ def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7VLEN512Model,
                                        FeatureVendorXSfvfhbfmin],   // SIFIVE
                                       [TuneSiFive7, // SIFIVE
                                        FeaturePostRAScheduler,
-<<<<<<< HEAD
                                        TuneDLenFactor2, // SIFIVE
                                        TuneDLen256b]>; // SIFIVE
 
@@ -847,10 +846,6 @@ def SIFIVE_P260T : RISCVProcessorModel<"sifive-p260t", SiFive7NVLEN128Model,
                                         TuneDLenFactor2,
                                         TuneDLen64b,
                                         TunePseudoLIsimm32]>;
-=======
-                                       TuneDLenFactor2,
-                                       TuneOptimizedZeroStrideLoad]>;
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 
 def SIFIVE_P450 : RISCVProcessorModel<"sifive-p450", SiFiveP400Model,
                                       [Feature64Bit,
