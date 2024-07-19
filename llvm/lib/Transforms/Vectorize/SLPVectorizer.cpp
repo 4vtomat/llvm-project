@@ -11571,19 +11571,10 @@ Instruction &BoUpSLP::getLastInstructionInBundle(const TreeEntry *E) {
                  return !isVectorLikeInstWithConstOps(V) &&
                         isUsedOutsideBlock(V);
                }) ||
-<<<<<<< HEAD
-        (E->State == TreeEntry::NeedToGather && E->Idx == 0 &&
-#if SIFIVE_CUSTOMIZATION
-         all_of(E->Scalars, [](Value *V) {
-=======
         (E->isGather() && E->Idx == 0 && all_of(E->Scalars, [](Value *V) {
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
            return isa<ExtractElementInst, UndefValue>(V) ||
                   areAllOperandsNonInsts(V);
          })))
-#else
-         all_of(E->Scalars, IsaPred<ExtractElementInst, UndefValue>)))
-#endif // SIFIVE_CUSTOMIZATION
       Res.second = FindLastInst();
     else
       Res.second = FindFirstInst();
