@@ -37,13 +37,7 @@
 #include "llvm/CodeGen/TargetPassConfig.h"
 #include "llvm/InitializePasses.h"
 #include "llvm/MC/TargetRegistry.h"
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
 #include "llvm/Passes/PassBuilder.h"
-#endif
-=======
-#include "llvm/Passes/PassBuilder.h"
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 #include "llvm/Support/FormattedStream.h"
 #include "llvm/Target/TargetOptions.h"
 #include "llvm/Transforms/IPO.h"
@@ -592,16 +586,11 @@ void RISCVPassConfig::addPreSched2() {
 }
 
 void RISCVPassConfig::addPreEmitPass() {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (getOptLevel() != CodeGenOptLevel::None)
     addPass(createRISCVMachineConstPropagationPass());
 #endif // SIFIVE_CUSTOMIZATION
-  addPass(&BranchRelaxationPassID);
-  addPass(createRISCVMakeCompressibleOptPass());
 
-=======
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   // TODO: It would potentially be better to schedule copy propagation after
   // expanding pseudos (in addPreEmitPass2). However, performing copy
   // propagation after the machine outliner (which runs after addPreEmitPass)
@@ -693,6 +682,13 @@ void RISCVPassConfig::addPostRegAlloc() {
 }
 
 void RISCVTargetMachine::registerPassBuilderCallbacks(PassBuilder &PB) {
+#if SIFIVE_CUSTOMIZATION
+  PB.registerPipelineStartEPCallback(
+      [](ModulePassManager &MPM, OptimizationLevel Level) {
+        MPM.addPass(createModuleToFunctionPassAdaptor(SiFiveRecodePass()));
+      });
+#endif // SIFIVE_CUSTOMIZATION
+
   PB.registerLateLoopOptimizationsEPCallback([=](LoopPassManager &LPM,
                                                  OptimizationLevel Level) {
     LPM.addPass(LoopIdiomVectorizePass(LoopIdiomVectorizeStyle::Predicated));
@@ -718,26 +714,3 @@ bool RISCVTargetMachine::parseMachineFunctionInfo(
   PFS.MF.getInfo<RISCVMachineFunctionInfo>()->initializeBaseYamlFields(YamlMFI);
   return false;
 }
-
-#if SIFIVE_CUSTOMIZATION
-void RISCVTargetMachine::registerPassBuilderCallbacks(PassBuilder &PB) {
-  PB.registerPipelineParsingCallback(
-      [](StringRef PassName, LoopPassManager &PM,
-         ArrayRef<PassBuilder::PipelineElement>) {
-        if (PassName == "riscv-loop-idiom") {
-          PM.addPass(RISCVLoopIdiomRecognizePass());
-          return true;
-        }
-        return false;
-      });
-  PB.registerPipelineStartEPCallback(
-      [](ModulePassManager &MPM, OptimizationLevel Level) {
-        MPM.addPass(createModuleToFunctionPassAdaptor(SiFiveRecodePass()));
-      });
-
-  PB.registerLateLoopOptimizationsEPCallback(
-      [=](LoopPassManager &LPM, OptimizationLevel Level) {
-        LPM.addPass(RISCVLoopIdiomRecognizePass());
-      });
-}
-#endif
