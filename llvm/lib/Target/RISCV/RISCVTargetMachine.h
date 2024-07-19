@@ -15,9 +15,6 @@
 
 #include "MCTargetDesc/RISCVMCTargetDesc.h"
 #include "RISCVSubtarget.h"
-#if SIFIVE_CUSTOMIZATION
-#include "SiFive_RISCVLoopIdiomRecognize.h"
-#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/CodeGen/SelectionDAGTargetInfo.h"
 #include "llvm/IR/DataLayout.h"
 #include "llvm/Target/TargetMachine.h"

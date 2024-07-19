@@ -17,7 +17,6 @@
 #include "RISCVTargetObjectFile.h"
 #include "RISCVTargetTransformInfo.h"
 #if SIFIVE_CUSTOMIZATION
-#include "SiFive_RISCVLoopIdiomRecognize.h"
 #include "SiFive_RISCVMaskInstDAGMutation.h"
 #endif // SIFIVE_CUSTOMIZATION
 #include "TargetInfo/RISCVTargetInfo.h"
