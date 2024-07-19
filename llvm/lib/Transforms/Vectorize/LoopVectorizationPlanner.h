@@ -368,12 +368,11 @@ class LoopVectorizationPlanner {
   /// A builder used to construct the current plan.
   VPBuilder Builder;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// (SIFIVE) Whether or not we are in pre-link stage
   bool IsLTOPreLink; // SIFIVE
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   /// Computes the cost of \p Plan for vectorization factor \p VF.
   ///
   /// The current implementation requires access to the
@@ -384,7 +383,6 @@ class LoopVectorizationPlanner {
   /// been retired.
   InstructionCost cost(VPlan &Plan, ElementCount VF) const;
 
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 public:
   LoopVectorizationPlanner(
       Loop *L, LoopInfo *LI, DominatorTree *DT, const TargetLibraryInfo *TLI,

@@ -2011,7 +2011,6 @@ bool LoopVectorizationLegality::canFoldTailByMasking() const {
   return true;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool LoopVectorizationLegality::useVLAVectorizer() const {
   return allowVLAVectorizer(*TTI, *TheLoop);
@@ -2590,7 +2589,7 @@ LoopVectorizationLegality::computeStrideAccessInfo(Instruction *I) const {
   return StrideAccessInfo();
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 void LoopVectorizationLegality::prepareToFoldTailByMasking() {
   // The list of pointers that we can safely read and write to remains empty.
   SmallPtrSet<Value *, 8> SafePointers;
@@ -2603,5 +2602,4 @@ void LoopVectorizationLegality::prepareToFoldTailByMasking() {
   }
 }
 
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 } // namespace llvm
