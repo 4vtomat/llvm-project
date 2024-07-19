@@ -75,6 +75,7 @@
 #include "llvm/Analysis/LoopInfo.h"
 #include "llvm/IR/DebugInfo.h"
 #include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/Module.h"
 #include <map>
 #include <vector>
 
