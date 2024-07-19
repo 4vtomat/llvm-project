@@ -41,11 +41,6 @@ using namespace llvm;
 STATISTIC(NumInsertedVSETVL, "Number of VSETVL inst inserted");
 STATISTIC(NumCoalescedVSETVL, "Number of VSETVL inst coalesced");
 
-<<<<<<< HEAD
-static cl::opt<bool> DisableInsertVSETVLPHIOpt(
-    "riscv-disable-insert-vsetvl-phi-opt", cl::init(false), cl::Hidden,
-    cl::desc("Disable looking through phis when inserting vsetvlis."));
-
 #if SIFIVE_CUSTOMIZATION
 cl::opt<bool> ForceTailUndisturbed(
     "riscv-force-tail-undisturbed", cl::init(false), cl::Hidden,
@@ -55,8 +50,6 @@ cl::opt<bool> ForceMaskUndisturbed(
     cl::desc("Force to use mask undisturbed for all vector intrinsics."));
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 namespace {
 
 /// Given a virtual register \p Reg, return the corresponding VNInfo for it.
@@ -1096,26 +1089,7 @@ RISCVInsertVSETVLI::computeInfoForInstr(const MachineInstr &MI) const {
 #endif
   InstrInfo.setVTYPE(VLMul, SEW, TailAgnostic, MaskAgnostic);
 
-<<<<<<< HEAD
-  // If AVL is defined by a vsetvli with the same VLMAX, we can replace the
-  // AVL operand with the AVL of the defining vsetvli.
-  if (InstrInfo.hasAVLReg()) {
-    if (const MachineInstr *DefMI = InstrInfo.getAVLDefMI(LIS);
-        DefMI && isVectorConfigInstr(*DefMI)) {
-      VSETVLIInfo DefInstrInfo = getInfoForVSETVLI(*DefMI);
-#if SIFIVE_CUSTOMIZATION
-      // SIFIVE ported fix from db782b44b3471c0ab41950c3f79d0ea7b916c135
-      // but not without the earlier patch that moves this code to a function.
-      if (DefInstrInfo.hasSameVLMAX(InstrInfo) &&
-          !(DefInstrInfo.hasAVLReg() &&
-            !LIS->getInterval(DefInstrInfo.getAVLReg()).containsOneValue()))
-#endif // SIFIVE_CUSTOMIZATION
-        InstrInfo.setAVL(DefInstrInfo);
-    }
-  }
-=======
   forwardVSETVLIAVL(InstrInfo);
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 
   return InstrInfo;
 }
@@ -1191,22 +1165,6 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
                 .addImm(Info.encodeVTYPE());
   if (LIS) {
     LIS->InsertMachineInstrInMaps(*MI);
-<<<<<<< HEAD
-    // Normally the AVL's live range will already extend past the inserted
-    // vsetvli because the pseudos below will already use the AVL. But this
-    // isn't always the case, e.g. PseudoVMV_X_S doesn't have an AVL operand or
-    // we've taken the AVL from the VL output of another vsetvli.
-#ifdef SIFIVE_CUSTOMIZATION
-    LIS->removeInterval(AVLReg);
-    LIS->createAndComputeVirtRegInterval(AVLReg);
-#else
-    LiveInterval &LI = LIS->getInterval(AVLReg);
-    // Need to get non-const VNInfo
-    VNInfo *VNI = LI.getValNumInfo(Info.getAVLVNInfo()->id);
-    LI.addSegment(LiveInterval::Segment(
-        VNI->def, LIS->getInstructionIndex(*MI).getRegSlot(), VNI));
-#endif // SIFIVE_CUSTOMIZATION
-=======
     LiveInterval &LI = LIS->getInterval(AVLReg);
     SlotIndex SI = LIS->getInstructionIndex(*MI).getRegSlot();
     // If the AVL value isn't live at MI, do a quick check to see if it's easily
@@ -1233,7 +1191,6 @@ void RISCVInsertVSETVLI::insertVSETVLI(MachineBasicBlock &MBB,
         LIS->createAndComputeVirtRegInterval(AVLCopyReg);
       }
     }
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   }
 }
 
