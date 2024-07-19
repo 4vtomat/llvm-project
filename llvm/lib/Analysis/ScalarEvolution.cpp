@@ -15594,8 +15594,8 @@ ScalarEvolution::LoopGuards::collect(const Loop *L, ScalarEvolution &SE) {
       if (auto *Cmp = dyn_cast<ICmpInst>(Cond)) {
         auto Predicate =
             EnterIfTrue ? Cmp->getPredicate() : Cmp->getInversePredicate();
-        const auto *LHS = getSCEV(Cmp->getOperand(0));
-        const auto *RHS = getSCEV(Cmp->getOperand(1));
+        const auto *LHS = SE.getSCEV(Cmp->getOperand(0));
+        const auto *RHS = SE.getSCEV(Cmp->getOperand(1));
         CollectCondition(Predicate, LHS, RHS, Guards.RewriteMap);
 
 #if SIFIVE_CUSTOMIZATION
@@ -15612,11 +15612,11 @@ ScalarEvolution::LoopGuards::collect(const Loop *L, ScalarEvolution &SE) {
             CmpInst::isSigned(Predicate) && isa<SCEVUnknown>(LHS) &&
             isa<SCEVUnknown>(RHS) && !LHS->getType()->isPointerTy()) {
 
-          unsigned BitWidth = getTypeSizeInBits(LHS->getType());
+          unsigned BitWidth = SE.getTypeSizeInBits(LHS->getType());
           APInt MaxAP = APInt::getSignedMaxValue(BitWidth);
           APInt MinAP = APInt::getSignedMinValue(BitWidth);
-          const SCEV *MaxScev = getConstant(MaxAP);
-          const SCEV *MinScev = getConstant(MinAP);
+          const SCEV *MaxScev = SE.getConstant(MaxAP);
+          const SCEV *MinScev = SE.getConstant(MinAP);
 
           switch (Predicate) {
           case CmpInst::ICMP_SLT:
