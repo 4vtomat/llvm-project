@@ -530,6 +530,12 @@ public:
   /// loop for the target
   bool enableUncountableVectorization() const;
 
+  /// \returns true if the non-power-of-2 vectorization in SLP vectorizer for
+  /// float point is profitable.
+  bool enableNonPower2SLPFPVectorization() const {
+    return !ST->isSiFiveBulletCPU();
+  }
+
   /// \returns true if the loop vectorizer should vectorize conditional
   /// scalar assignments for the target.
   bool enableCSAVectorization() const;

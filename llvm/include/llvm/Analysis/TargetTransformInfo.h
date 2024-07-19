@@ -1835,6 +1835,10 @@ public:
   /// loop vectorization for the target.
   bool enableUncountableVectorization() const;
 
+  /// \returns true if the non-power-of-2 vectorization in SLP vectorizer for
+  /// float point is profitable.
+  bool enableNonPower2SLPFPVectorization() const;
+
   /// \returns true if the loop vectorizer should vectorize conditional
   /// scalar assignments for the target.
   bool enableCSAVectorization() const;
@@ -2268,6 +2272,7 @@ public:
   virtual unsigned getMaxNumArgs() const = 0;
 #if SIFIVE_CUSTOMIZATION
   virtual bool enableUncountableVectorization() const = 0;
+  virtual bool enableNonPower2SLPFPVectorization() const = 0;
   virtual bool enableCSAVectorization() const = 0;
   virtual unsigned getCSABodyFactor() const = 0;
   virtual unsigned getCSAOverheadFactor() const = 0;
@@ -3093,6 +3098,10 @@ public:
 #if SIFIVE_CUSTOMIZATION
   bool enableUncountableVectorization() const override {
     return Impl.enableUncountableVectorization();
+  }
+
+  bool enableNonPower2SLPFPVectorization() const override {
+    return Impl.enableNonPower2SLPFPVectorization();
   }
 
   bool enableCSAVectorization() const override {

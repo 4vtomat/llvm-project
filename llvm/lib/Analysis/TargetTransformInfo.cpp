@@ -1401,6 +1401,10 @@ bool TargetTransformInfo::enableUncountableVectorization() const {
   return TTIImpl->enableUncountableVectorization();
 }
 
+bool TargetTransformInfo::enableNonPower2SLPFPVectorization() const {
+  return TTIImpl->enableUncountableVectorization();
+}
+
 bool TargetTransformInfo::enableCSAVectorization() const {
   return TTIImpl->enableCSAVectorization();
 }

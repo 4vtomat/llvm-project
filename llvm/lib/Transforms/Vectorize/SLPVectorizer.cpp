@@ -196,7 +196,11 @@ static cl::opt<bool>
                 cl::desc("Display the SLP trees with Graphviz"));
 
 static cl::opt<bool> VectorizeNonPowerOf2(
+#if SIFIVE_CUSTOMIZATION
+    "slp-vectorize-non-power-of-2", cl::init(true), cl::Hidden,
+#else
     "slp-vectorize-non-power-of-2", cl::init(false), cl::Hidden,
+#endif // SIFIVE_CUSTOMIZATION
     cl::desc("Try to vectorize with non-power-of-2 number of elements."));
 
 // Limit the number of alias checks. The limit is chosen so that
@@ -9977,6 +9981,19 @@ bool BoUpSLP::isLoadCombineCandidate(ArrayRef<Value *> Stores) const {
 }
 
 bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
+#if SIFIVE_CUSTOMIZATION
+  // Disable 3 elements vectorization of GB5.209.Camera benchmark for X280.
+  Triple TargetTriple(F->getEntryBlock().getModule()->getTargetTriple());
+  if (VectorizeNonPowerOf2 && VectorizableTree.front()->Scalars.size() == 3 &&
+      TargetTriple.isRISCV() && !TTI->enableNonPower2SLPFPVectorization() &&
+      any_of(VectorizableTree, [](const std::unique_ptr<TreeEntry> &TE) {
+        return TE->State == TreeEntry::Vectorize &&
+               (TE->getOpcode() == Instruction::FPToUI ||
+                TE->getOpcode() == Instruction::UIToFP) &&
+               !TE->isAltShuffle();
+      }))
+    return true;
+#endif // SIFIVE_CUSTOMIZATION
   // No need to vectorize inserts of gathered values.
   if (VectorizableTree.size() == 2 &&
       isa<InsertElementInst>(VectorizableTree[0]->Scalars[0]) &&

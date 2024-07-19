@@ -1019,6 +1019,7 @@ public:
   unsigned getMaxNumArgs() const { return UINT_MAX; }
 #if SIFIVE_CUSTOMIZATION
   bool enableUncountableVectorization() const { return false; }
+  bool enableNonPower2SLPFPVectorization() const { return false; }
   bool enableCSAVectorization() const { return false; }
   unsigned getCSABodyFactor() const { return 1; }
   unsigned getCSAOverheadFactor() const { return 1; }
