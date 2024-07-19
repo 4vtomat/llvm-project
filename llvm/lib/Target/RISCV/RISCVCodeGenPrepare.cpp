@@ -18,19 +18,11 @@
 #include "llvm/ADT/Statistic.h"
 #include "llvm/Analysis/ValueTracking.h"
 #include "llvm/CodeGen/TargetPassConfig.h"
-<<<<<<< HEAD
-#include "llvm/IR/Dominators.h" // SIFIVE
-#include "llvm/IR/IRBuilder.h"
-#include "llvm/IR/InstVisitor.h"
-#include "llvm/IR/Intrinsics.h"
-#include "llvm/IR/IntrinsicsRISCV.h" // SIFIVE
-=======
 #include "llvm/IR/Dominators.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/InstVisitor.h"
 #include "llvm/IR/Intrinsics.h"
 #include "llvm/IR/IntrinsicsRISCV.h"
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 #include "llvm/IR/PatternMatch.h"
 #include "llvm/InitializePasses.h"
 #include "llvm/Pass.h"
@@ -68,11 +60,8 @@ public:
   bool visitInstruction(Instruction &I) { return false; }
   bool visitAnd(BinaryOperator &BO);
   bool visitIntrinsicInst(IntrinsicInst &I);
-<<<<<<< HEAD
   bool optimizeReduction(IntrinsicInst &I); // SIFIVE
-=======
   bool expandVPStrideLoad(IntrinsicInst &I);
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 };
 
 } // end anonymous namespace
@@ -147,15 +136,13 @@ bool RISCVCodeGenPrepare::visitAnd(BinaryOperator &BO) {
 // Which eliminates the scalar -> vector -> scalar crossing during instruction
 // selection.
 bool RISCVCodeGenPrepare::visitIntrinsicInst(IntrinsicInst &I) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (optimizeReduction(I))
     return true;
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   if (expandVPStrideLoad(I))
     return true;
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 
   if (I.getIntrinsicID() != Intrinsic::vector_reduce_fadd)
     return false;
@@ -184,7 +171,6 @@ bool RISCVCodeGenPrepare::visitIntrinsicInst(IntrinsicInst &I) {
   return true;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // Manually expand unordered reductions with non-zero VL to get better regalloc
 // and vsetvli than SelectionDAG can manage. We need to know the VL is non-zero
@@ -286,23 +272,6 @@ bool RISCVCodeGenPrepare::optimizeReduction(IntrinsicInst &II) {
 
   // Found non-zero VL, let's rewrite.
   Value *Scalar = II.getArgOperand(0);
-=======
-// Always expand zero strided loads so we match more .vx splat patterns, even if
-// we have +optimized-zero-stride-loads. RISCVDAGToDAGISel::Select will convert
-// it back to a strided load if it's optimized.
-bool RISCVCodeGenPrepare::expandVPStrideLoad(IntrinsicInst &II) {
-  Value *BasePtr, *VL;
-
-  using namespace PatternMatch;
-  if (!match(&II, m_Intrinsic<Intrinsic::experimental_vp_strided_load>(
-                      m_Value(BasePtr), m_Zero(), m_AllOnes(), m_Value(VL))))
-    return false;
-
-  if (!isKnownNonZero(VL, {*DL, DT, nullptr, &II}))
-    return false;
-
-  auto *VTy = cast<VectorType>(II.getType());
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 
   IRBuilder<> Builder(&II);
 
@@ -310,7 +279,6 @@ bool RISCVCodeGenPrepare::expandVPStrideLoad(IntrinsicInst &II) {
   if (ST->is64Bit())
     VL = Builder.CreateZExt(VL, Builder.getInt64Ty());
 
-<<<<<<< HEAD
   // If Scalar is already a neutral value, simply use the source vector as
   // the start value to avoid creating a new vfmv.s.f / vmv.s.x.
   bool IsScalarNeutral = false;
@@ -395,7 +363,34 @@ bool RISCVCodeGenPrepare::expandVPStrideLoad(IntrinsicInst &II) {
   // Extract the scalar result to match the original intrinsic result type.
   Value *Res = Builder.CreateExtractElement(Reduce, (uint64_t)0);
   Res->takeName(&II);
-=======
+  II.replaceAllUsesWith(Res);
+  II.eraseFromParent();
+  return true;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
+// Always expand zero strided loads so we match more .vx splat patterns, even if
+// we have +optimized-zero-stride-loads. RISCVDAGToDAGISel::Select will convert
+// it back to a strided load if it's optimized.
+bool RISCVCodeGenPrepare::expandVPStrideLoad(IntrinsicInst &II) {
+  Value *BasePtr, *VL;
+
+  using namespace PatternMatch;
+  if (!match(&II, m_Intrinsic<Intrinsic::experimental_vp_strided_load>(
+                      m_Value(BasePtr), m_Zero(), m_AllOnes(), m_Value(VL))))
+    return false;
+
+  if (!isKnownNonZero(VL, {*DL, DT, nullptr, &II}))
+    return false;
+
+  auto *VTy = cast<VectorType>(II.getType());
+
+  IRBuilder<> Builder(&II);
+
+  // Extend VL from i32 to XLen if needed.
+  if (ST->is64Bit())
+    VL = Builder.CreateZExt(VL, Builder.getInt64Ty());
+
   Type *STy = VTy->getElementType();
   Value *Val = Builder.CreateLoad(STy, BasePtr);
   const auto &TLI = *ST->getTargetLowering();
@@ -411,15 +406,10 @@ bool RISCVCodeGenPrepare::expandVPStrideLoad(IntrinsicInst &II) {
     Res = Builder.CreateVectorSplat(VTy->getElementCount(), Val);
   }
 
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   II.replaceAllUsesWith(Res);
   II.eraseFromParent();
   return true;
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 
 bool RISCVCodeGenPrepare::runOnFunction(Function &F) {
   if (skipFunction(F))
