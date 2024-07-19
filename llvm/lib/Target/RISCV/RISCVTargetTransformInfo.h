@@ -174,6 +174,8 @@ public:
       unsigned WidestType, unsigned MaxSafeRegisterWidth = -1U,
       unsigned RegWidthFactor = 1, bool IsScalable = false) const;
 
+  bool sinkSplatOperands() const;
+
   bool useVLAVectorizer() const;
 
   /// Minimum loop trip count we consider profitable for vectorization.

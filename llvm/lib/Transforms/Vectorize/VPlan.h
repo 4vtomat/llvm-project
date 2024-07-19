@@ -4130,6 +4130,12 @@ public:
   /// Return the live-in VPValue for \p V, if there is one or nullptr otherwise.
   VPValue *getLiveIn(Value *V) const { return Value2VPValue.lookup(V); }
 
+#if SIFIVE_CUSTOMIZATION
+  const ArrayRef<VPValue *> getLiveIns() const {
+    return ArrayRef(VPLiveInsToFree);
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the live-ins of this VPlan to \p O.
   void printLiveIns(raw_ostream &O) const;

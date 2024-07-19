@@ -787,6 +787,8 @@ RISCVTTIImpl::getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
 
   return {LowerBoundVF, UpperBoundVF};
 }
+
+bool RISCVTTIImpl::sinkSplatOperands() const { return ST->sinkSplatOperands(); }
 #endif // SIFIVE_CUSTOMIZATION
 
 bool RISCVTTIImpl::shouldExpandReduction(const IntrinsicInst *II) const {

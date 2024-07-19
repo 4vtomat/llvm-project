@@ -1170,6 +1170,8 @@ public:
       RegisterKind K, unsigned SmallestType, unsigned WidestType,
       unsigned MaxSafeRegisterWidth = -1U, unsigned RegWidthFactor = 1,
       bool IsScalable = false) const;
+
+  bool sinkSplatOperands() const;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// \return The maximum value of vscale if the target specifies an
@@ -2053,6 +2055,7 @@ public:
                         unsigned MaxSafeRegisterWidth = -1U,
                         unsigned RegWidthFactor = 1,
                         bool IsScalable = false) const = 0;
+  virtual bool sinkSplatOperands() const = 0;
 #endif // SIFIVE_CUSTOMIZATION
   virtual unsigned getMinVectorRegisterBitWidth() const = 0;
   virtual std::optional<unsigned> getMaxVScale() const = 0;
@@ -2698,6 +2701,8 @@ public:
                                       MaxSafeRegisterWidth, RegWidthFactor,
                                       IsScalable);
   }
+
+  bool sinkSplatOperands() const override { return Impl.sinkSplatOperands(); }
 #endif // SIFIVE_CUSTOMIZATION
   std::optional<unsigned> getMaxVScale() const override {
     return Impl.getMaxVScale();

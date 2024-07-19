@@ -775,6 +775,10 @@ TargetTransformInfo::getFeasibleMaxVFRange(RegisterKind K,
                                         MaxSafeRegisterWidth, RegWidthFactor,
                                         IsScalable);
 }
+
+bool TargetTransformInfo::sinkSplatOperands() const {
+  return TTIImpl->sinkSplatOperands();
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 std::optional<unsigned> TargetTransformInfo::getMaxVScale() const {

@@ -787,6 +787,7 @@ public:
     return {LowerBoundVF, UpperBoundVF};
   }
 
+  bool sinkSplatOperands() const { return false; }
   unsigned getMaxElementWidth() const { return 64; }
 #endif // SIFIVE_CUSTOMIZATION
 

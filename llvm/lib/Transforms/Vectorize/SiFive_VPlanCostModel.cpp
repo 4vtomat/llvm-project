@@ -32,10 +32,15 @@ using namespace llvm;
 #define DEBUG_TYPE "vplan-cost-model"
 
 #if SIFIVE_CUSTOMIZATION
-static cl::opt<bool> SiFiveEstimateRegesterPressure(
+static cl::opt<bool> SiFiveEstimateRegisterPressure(
     "sifive-vplan-cost-model-estimate-regpressure", cl::init(true), cl::Hidden,
     cl::desc(
         "Control whether cost model should estimate register pressure or not"));
+static cl::opt<bool> SiFiveEstimateLiveInRegisterPressure(
+    "sifive-vplan-cost-model-estimate-livein-regpressure", cl::init(true),
+    cl::Hidden,
+    cl::desc("Control whether cost model should estimate register pressure "
+             "from livein values or not"));
 #endif // SIFIVE_CUSTOMIZATION
 
 static ElementCount getElementCount(const std::pair<unsigned, bool> LMUL,
@@ -138,6 +143,43 @@ InstructionCost VPlanCostModel::getCost(const RVVPair &RVL) {
     LLVM_DEBUG(dbgs() << "VPlanCM: unsupported Runtime VL = " << RVL << '\n');
     return InstructionCost::getInvalid();
   }
+
+  // Initialize register pressure if live-in values have vector uses
+  if (SiFiveEstimateLiveInRegisterPressure && !TTI.sinkSplatOperands())
+    for (const VPValue *VPV : Plan.getLiveIns()) {
+      const Value *V = VPV->getUnderlyingValue();
+      // Skip constants because they are folded into user instructions
+      if (isa<Constant>(V))
+        continue;
+      // Skip if it is not used in loop region, and has no vector use.
+      bool HasAnyVectorUseInLoop = any_of(VPV->users(), [VPV](VPUser *U) {
+        auto *R = dyn_cast<VPRecipeBase>(U);
+        if (!R->getParent()->getEnclosingLoopRegion())
+          return false;
+        if (U->onlyFirstLaneUsed(VPV))
+          return false;
+
+        // NOTE: VPLiveOut is actually a scalar user for PtrIV
+        // because onlyFirstLaneUsed doesn't work with VPLiveOut
+        if (auto *WPtrIV = dyn_cast<VPWidenPointerInductionRecipe>(U))
+          return any_of(WPtrIV->users(), [WPtrIV](VPUser *U) {
+            if (isa<VPLiveOut>(U))
+              return false;
+            return !U->onlyFirstLaneUsed(WPtrIV);
+          });
+        return true;
+      });
+      if (!HasAnyVectorUseInLoop)
+        continue;
+      Type *VectorTy = getVectorType(V->getType(), RVL);
+      const unsigned RegID =
+          TTI.getRegisterClassForType(true /*vector*/, VectorTy);
+      const unsigned NumUsedRegs = TTI.getRegUsageForType(VectorTy);
+      addRegisterUsage(VPV, RegID, NumUsedRegs);
+      // TODO: add the spill cost of preheader to overhead instead of
+      // per-iteration cost
+    }
+
   InstructionCost VectorIterCost = 0;
   for (const VPBlockBase *Block : vp_depth_first_deep(Plan.getEntry()))
     VectorIterCost += getCost(Block, RVL);
@@ -425,6 +467,12 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
   // Traverse operands of the recipe and if operand is no longer used, free
   // registers it occupied.
   for (const VPValue *VPV : Recipe->operands()) {
+    const VPRecipeBase *DefRecipe = VPV->getDefiningRecipe();
+    const VPRegionBlock *DefRegion =
+        DefRecipe ? DefRecipe->getParent()->getParent() : nullptr;
+    // Skip live-in vector and recipes in preheader if use is in loop region
+    if (!DefRegion && Recipe->getParent()->getParent())
+      continue;
     if (llvm::all_of(VPV->users(), [&](const VPUser *VPU) -> bool {
           if (auto *VPRU = dyn_cast<VPRecipeBase>(VPU))
             return VisitedRecipes.count(VPRU);
@@ -437,9 +485,12 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
       for (auto &RegisterUsage : RegUsageIt->second) {
         // Free registers of the VPValue as they're no longer used
         unsigned &RegUsed = RegistersUsage.LiveRegister[RegisterUsage.first];
-        assert(RegisterUsage.second <= RegUsed &&
-               "Invalid number of registers in use");
-        RegUsed -= RegisterUsage.second;
+        if (RegisterUsage.second > RegUsed) {
+          // This happens when register usage execeeds maximum
+          // and they are spilled ahead of this.
+          RegUsed = 0;
+        } else
+          RegUsed -= RegisterUsage.second;
         // zero used number of registers by VPValue to avoid "double free"
         RegisterUsage.second = 0;
       }
@@ -456,7 +507,7 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
                                            : nullptr);
              Recipe->print(dbgs(), Twine(), SlotTracker); dbgs() << '\n');
   LLVM_DEBUG(dbgs() << "VPlanCM: Current registers usage"
-                    << (SiFiveEstimateRegesterPressure ? "" : "(ignored by CM)")
+                    << (SiFiveEstimateRegisterPressure ? "" : "(ignored by CM)")
                     << ':');
   LLVM_DEBUG(for (const auto RegUsage
                   : RegistersUsage.LiveRegister) {
@@ -822,7 +873,12 @@ void VPlanCostModel::addRegisterUsage(const VPValue *VPV, const unsigned RegID,
              VPSlotTracker SlotTracker((Instr && Instr->getParent())
                                            ? Instr->getParent()->getPlan()
                                            : nullptr);
-             Instr->print(dbgs(), Twine(), SlotTracker);
+             if (Instr)
+               Instr->print(dbgs(), Twine(), SlotTracker);
+             else {
+               dbgs() << "Live-In ";
+               VPV->print(dbgs(), SlotTracker);
+             }
              dbgs() << " will use " << NumRegs << ' '
                     << TTI.getRegisterClassName(RegID) << " registers\n");
   RegistersUsage.LiveRecipes[VPV][RegID] += NumRegs;
@@ -830,13 +886,14 @@ void VPlanCostModel::addRegisterUsage(const VPValue *VPV, const unsigned RegID,
 }
 
 InstructionCost VPlanCostModel::getRegisterPressureCost(const unsigned RegID,
-                                                        Type *Ty) const {
-  if (!SiFiveEstimateRegesterPressure)
+                                                        Type *Ty) {
+  if (!SiFiveEstimateRegisterPressure)
     return 0;
 
   const unsigned Count = RegistersUsage.LiveRegister.find(RegID)->second;
   const unsigned MaxNumRegisters = TTI.getNumberOfRegisters(RegID);
   if (Count > MaxNumRegisters) {
+    RegistersUsage.LiveRegister[RegID] = MaxNumRegisters;
     // Need to spill excessive registers, which will require to store them
     // into memory
     InstructionCost Cost =

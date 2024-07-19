@@ -524,6 +524,8 @@ public:
 
     return {LowerBoundVF, UpperBoundVF};
   }
+
+  bool sinkSplatOperands() const { return false; }
 #endif // SIFIVE_CUSTOMIZATION
 
   bool
