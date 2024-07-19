@@ -1536,9 +1536,6 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setIndexedStoreAction(ISD::POST_INC, MVT::i32, Legal);
   }
 
-<<<<<<< HEAD
-  EnableExtLdPromotion = true; // SIFIVE
-=======
   if (Subtarget.hasVendorXCValu()) {
     setOperationAction(ISD::ABS, XLenVT, Legal);
     setOperationAction(ISD::SMIN, XLenVT, Legal);
@@ -1548,7 +1545,8 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setOperationAction(ISD::SIGN_EXTEND_INREG, MVT::i8, Legal);
     setOperationAction(ISD::SIGN_EXTEND_INREG, MVT::i16, Legal);
   }
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
+
+  EnableExtLdPromotion = true; // SIFIVE
 
   // Function alignments.
   const Align FunctionAlignment(Subtarget.hasStdExtCOrZca() ? 2 : 4);
@@ -2006,7 +2004,21 @@ bool RISCVTargetLowering::isTruncateFree(EVT SrcVT, EVT DstVT) const {
   return (SrcBits == 64 && DestBits == 32);
 }
 
-<<<<<<< HEAD
+bool RISCVTargetLowering::isTruncateFree(SDValue Val, EVT VT2) const {
+  EVT SrcVT = Val.getValueType();
+  // free truncate from vnsrl and vnsra
+  if (Subtarget.hasStdExtV() &&
+      (Val.getOpcode() == ISD::SRL || Val.getOpcode() == ISD::SRA) &&
+      SrcVT.isVector() && VT2.isVector()) {
+    unsigned SrcBits = SrcVT.getVectorElementType().getSizeInBits();
+    unsigned DestBits = VT2.getVectorElementType().getSizeInBits();
+    if (SrcBits == DestBits * 2) {
+      return true;
+    }
+  }
+  return TargetLowering::isTruncateFree(Val, VT2);
+}
+
 #if SIFIVE_CUSTOMIZATION
 bool RISCVTargetLowering::isProfitableToHoist(Instruction *I) const {
   // Disable the hoisting of vectors until we have a counter example
@@ -2024,22 +2036,6 @@ bool RISCVTargetLowering::isProfitableToHoist(Instruction *I) const {
   return true;
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-bool RISCVTargetLowering::isTruncateFree(SDValue Val, EVT VT2) const {
-  EVT SrcVT = Val.getValueType();
-  // free truncate from vnsrl and vnsra
-  if (Subtarget.hasStdExtV() &&
-      (Val.getOpcode() == ISD::SRL || Val.getOpcode() == ISD::SRA) &&
-      SrcVT.isVector() && VT2.isVector()) {
-    unsigned SrcBits = SrcVT.getVectorElementType().getSizeInBits();
-    unsigned DestBits = VT2.getVectorElementType().getSizeInBits();
-    if (SrcBits == DestBits * 2) {
-      return true;
-    }
-  }
-  return TargetLowering::isTruncateFree(Val, VT2);
-}
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 
 bool RISCVTargetLowering::isZExtFree(SDValue Val, EVT VT2) const {
   // Zexts are free if they can be combined with a load.
