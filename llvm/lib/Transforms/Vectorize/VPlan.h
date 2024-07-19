@@ -798,16 +798,14 @@ public:
   /// VPBlockBase, thereby "executing" the VPlan.
   virtual void execute(VPTransformState *State) = 0;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   virtual InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const {
     return 0;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   /// Return the cost of the block.
   virtual InstructionCost cost(ElementCount VF, VPCostContext &Ctx) = 0;
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 
   /// Delete all blocks reachable from a given VPBlockBase, inclusive.
   static void deleteCFG(VPBlockBase *Entry);
@@ -973,18 +971,16 @@ public:
   /// this VPRecipe, thereby "executing" the VPlan.
   virtual void execute(VPTransformState &State) = 0;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   virtual InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const {
     return 0;
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   /// Return the cost of this recipe, taking into account if the cost
   /// computation should be skipped and the ForceTargetInstructionCost flag.
   /// Also takes care of printing the cost for debugging.
   virtual InstructionCost cost(ElementCount VF, VPCostContext &Ctx);
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 
   /// Insert an unlinked recipe into a basic block immediately before
   /// the specified recipe.
@@ -3681,15 +3677,13 @@ public:
   /// this VPBasicBlock, thereby "executing" the VPlan.
   void execute(VPTransformState *State) override;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const override;
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   /// Return the cost of this VPBasicBlock.
   InstructionCost cost(ElementCount VF, VPCostContext &Ctx) override;
 
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   /// Return the position of the first non-phi node recipe in the block.
   iterator getFirstNonPhi();
 
@@ -3864,15 +3858,13 @@ public:
   /// this VPRegionBlock, thereby "executing" the VPlan.
   void execute(VPTransformState *State) override;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const override;
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   // Return the cost of this region.
   InstructionCost cost(ElementCount VF, VPCostContext &Ctx) override;
 
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   void dropAllReferences(VPValue *NewValue) override;
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
@@ -4014,7 +4006,6 @@ public:
 
   ~VPlan();
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   void addCSAState(PHINode *Phi, VPCSAState * S) {
     CSAStates.insert({Phi , S});
@@ -4029,26 +4020,18 @@ public:
                                      ScalarEvolution &PSE, BasicBlock *PH,
                                      bool IsUncountable);
 #else
-  /// Create initial VPlan skeleton, having an "entry" VPBasicBlock (wrapping
-  /// original scalar pre-header \p PH) which contains SCEV expansions that need
-=======
   /// Create initial VPlan, having an "entry" VPBasicBlock (wrapping
   /// original scalar pre-header ) which contains SCEV expansions that need
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   /// to happen before the CFG is modified; a VPBasicBlock for the vector
   /// pre-header, followed by a region for the vector loop, followed by the
   /// middle VPBasicBlock. If a check is needed to guard executing the scalar
   /// epilogue loop, it will be added to the middle block, together with
   /// VPBasicBlocks for the scalar preheader and exit blocks.
   static VPlanPtr createInitialVPlan(const SCEV *TripCount,
-<<<<<<< HEAD
-                                     ScalarEvolution &PSE, BasicBlock *PH);
-#endif // SIFIVE_CUSTOMIZATION
-=======
                                      ScalarEvolution &PSE,
                                      bool RequiresScalarEpilogueCheck,
                                      bool TailFolded, Loop *TheLoop);
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
+#endif // SIFIVE_CUSTOMIZATION
 
   /// Prepare the plan for execution, setting up the required live-in values.
   void prepareToExecute(Value *TripCount, Value *VectorTripCount,
@@ -4057,14 +4040,12 @@ public:
   /// Generate the IR code for this VPlan.
   void execute(VPTransformState *State);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const;
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   /// Return the cost of this plan.
   InstructionCost cost(ElementCount VF, VPCostContext &Ctx);
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
 
   VPBasicBlock *getEntry() { return Entry; }
   const VPBasicBlock *getEntry() const { return Entry; }

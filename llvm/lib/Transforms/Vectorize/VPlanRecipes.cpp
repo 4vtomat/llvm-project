@@ -494,19 +494,14 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
     return Builder.CreateNot(A, Name);
   }
   case Instruction::ICmp: {
-<<<<<<< HEAD
-    Value *A = State.get(getOperand(0), Part);
+    bool OnlyFirstLaneUsed = vputils::onlyFirstLaneUsed(this);
+    Value *A = State.get(getOperand(0), Part, OnlyFirstLaneUsed);
 #if SIFIVE_CUSTOMIZATION
     if (State.Plan->useVLAVectorizer() && A->getType()->isVectorTy())
       return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
                                               nullptr, Part);
 #endif // SIFIVE_CUSTOMIZATION
-    Value *B = State.get(getOperand(1), Part);
-=======
-    bool OnlyFirstLaneUsed = vputils::onlyFirstLaneUsed(this);
-    Value *A = State.get(getOperand(0), Part, OnlyFirstLaneUsed);
     Value *B = State.get(getOperand(1), Part, OnlyFirstLaneUsed);
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
     return Builder.CreateCmp(getPredicate(), A, B, Name);
   }
   case Instruction::Select: {
@@ -1111,10 +1106,9 @@ void VPInstruction::execute(VPTransformState &State) {
   if (hasFastMathFlags())
     State.Builder.setFastMathFlags(getFastMathFlags());
   State.setDebugLocFrom(getDebugLoc());
-<<<<<<< HEAD
-  bool GeneratesPerFirstLaneOnly =
-      canGenerateScalarForFirstLane() &&
-      (vputils::onlyFirstLaneUsed(this) || isVectorToScalar());
+  bool GeneratesPerFirstLaneOnly = canGenerateScalarForFirstLane() &&
+                                   (vputils::onlyFirstLaneUsed(this) ||
+                                    isVectorToScalar() || isSingleScalar());
 #if SIFIVE_CUSTOMIZATION
   GeneratesPerFirstLaneOnly = GeneratesPerFirstLaneOnly ||
                               getOpcode() == VPInstruction::CSAVLSel ||
@@ -1122,11 +1116,6 @@ void VPInstruction::execute(VPTransformState &State) {
                               getOpcode() == VPInstruction::CSAAnyActive ||
                               getOpcode() == VPInstruction::ExitingCond;
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  bool GeneratesPerFirstLaneOnly = canGenerateScalarForFirstLane() &&
-                                   (vputils::onlyFirstLaneUsed(this) ||
-                                    isVectorToScalar() || isSingleScalar());
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   bool GeneratesPerAllLanes = doesGeneratePerAllLanes();
   bool OnlyFirstPartUsed = vputils::onlyFirstPartUsed(this);
   for (unsigned Part = 0; Part < State.UF; ++Part) {
@@ -1177,17 +1166,14 @@ bool VPInstruction::onlyFirstLaneUsed(const VPValue *Op) const {
   case VPInstruction::CalculateTripCountMinusVF:
   case VPInstruction::CanonicalIVIncrementForPart:
   case VPInstruction::BranchOnCount:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case VPInstruction::ExitingCond:
   case VPInstruction::CSAVLPhi:
   case VPInstruction::CSAVLSel:
   case VPInstruction::CSAAnyActive:
 #endif
-=======
   case VPInstruction::BranchOnCond:
   case VPInstruction::ResumePhi:
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
     return true;
   };
   llvm_unreachable("switch should return");

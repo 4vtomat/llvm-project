@@ -1028,12 +1028,13 @@ VPlan::~VPlan() {
 #if SIFIVE_CUSTOMIZATION
 VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
                                    BasicBlock *PH, bool IsUncountable) {
+  VPIRBasicBlock *Preheader = new VPIRBasicBlock(PH);
 #else
 VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
-<<<<<<< HEAD
-                                   BasicBlock *PH) {
+                                   bool RequiresScalarEpilogueCheck,
+                                   bool TailFolded, Loop *TheLoop) {
 #endif // SIFIVE_CUSTOMIZATION
-  VPIRBasicBlock *Preheader = new VPIRBasicBlock(PH);
+  VPIRBasicBlock *Entry = new VPIRBasicBlock(TheLoop->getLoopPreheader());
   VPBasicBlock *VecPreheader = new VPBasicBlock("vector.ph");
 #if SIFIVE_CUSTOMIZATION
   auto Plan = std::make_unique<VPlan>(Preheader, VecPreheader, IsUncountable);
@@ -1043,21 +1044,10 @@ VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
     Plan->TripCount =
         vputils::getOrCreateVPValueForSCEVExpr(*Plan, TripCount, SE);
 #else
-  VPIRBasicBlock *Entry = new VPIRBasicBlock(PH);
-=======
-                                   bool RequiresScalarEpilogueCheck,
-                                   bool TailFolded, Loop *TheLoop) {
-  VPIRBasicBlock *Entry = new VPIRBasicBlock(TheLoop->getLoopPreheader());
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
-  VPBasicBlock *VecPreheader = new VPBasicBlock("vector.ph");
   auto Plan = std::make_unique<VPlan>(Entry, VecPreheader);
   Plan->TripCount =
       vputils::getOrCreateVPValueForSCEVExpr(*Plan, TripCount, SE);
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-  // Create empty VPRegionBlock, to be filled during processing later.
-  auto *TopRegion = new VPRegionBlock("vector loop", false /*isReplicator*/);
-=======
   // Create VPRegionBlock, with empty header and latch blocks, to be filled
   // during processing later.
   VPBasicBlock *HeaderVPBB = new VPBasicBlock("vector.body");
@@ -1066,7 +1056,6 @@ VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
   auto *TopRegion = new VPRegionBlock(HeaderVPBB, LatchVPBB, "vector loop",
                                       false /*isReplicator*/);
 
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   VPBlockUtils::insertBlockAfter(TopRegion, VecPreheader);
   VPBasicBlock *MiddleVPBB = new VPBasicBlock("middle.block");
   VPBlockUtils::insertBlockAfter(MiddleVPBB, TopRegion);
