@@ -1579,7 +1579,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
       return Cost * LT.first;
     break;
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case Intrinsic::vp_powi: {
     // Returning the same cost model for llvm.powi
@@ -1627,7 +1626,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   case Intrinsic::experimental_vp_popcount:
     return ST->getVectorToScalarBaseCost() + 1;
 #endif // SIFIVE_CUSTOMIZATION
-=======
   // vp integer arithmetic ops.
   case Intrinsic::vp_add:
   case Intrinsic::vp_and:
@@ -1654,7 +1652,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
       return getArithmeticInstrCost(*FOp, ICA.getReturnType(), CostKind);
     break;
   }
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
   }
 
   if (ST->hasVInstructions() && RetTy->isVectorTy()) {
