@@ -13,7 +13,9 @@
 
 #include "VPlanTransforms.h"
 #include "VPRecipeBuilder.h"
+#if SIFIVE_CUSTOMIZATION
 #include "VPlan.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "VPlanAnalysis.h"
 #include "VPlanCFG.h"
 #include "VPlanDominatorTree.h"
@@ -1639,7 +1641,7 @@ bool VPlanTransforms::tryAddExplicitVectorLength(VPlan &Plan) {
 #endif // SIFIVE_CUSTOMIZATION
 
   // Replace all uses of VPCanonicalIVPHIRecipe by
-  // VPEVLBasedIVPHIRecipe except for VPInstruction::CanonicalIVIncrement.
+  // VPEVLBasedIVPHIRecipe except for the canonical IV increment.
   CanonicalIVPHI->replaceAllUsesWith(EVLPhi);
 #if SIFIVE_CUSTOMIZATION
   CanonicalIVIncrement->replaceAllUsesWith(NextEVLIV);

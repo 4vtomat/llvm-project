@@ -351,8 +351,8 @@ void LoopVectorizeHints::setAlreadyVectorized() {
   MDNode *NewLoopID =
       makePostTransformationMetadata(Context, LoopID,
                                      {Twine(Prefix(), "vectorize.").str(),
-                                      Twine(Prefix(), "interleave.").str(),
 #if SIFIVE_CUSTOMIZATION
+                                      Twine(Prefix(), "interleave.").str(),
                                       LoopMetaData::NoScevChecks},
 #endif // SIFIVE_CUSTOMIZATION
                                      {IsVectorizedMD});
@@ -593,11 +593,11 @@ void LoopVectorizeHints::setHint(StringRef Name, Metadata *Arg) {
                    &IsVectorized, &Predicate,  &Scalable};
   for (auto *H : Hints) {
     if (Name == H->Name) {
+#if SIFIVE_CUSTOMIZATION
       if (H->validate(Val)) {
         H->Value = Val;
       } else {
         LLVM_DEBUG(dbgs() << "LV: ignoring invalid hint '" << Name << "'\n");
-#if SIFIVE_CUSTOMIZATION
         if (ReportInvalid) {
           ORE.emit([&]() {
             StringRef HintName = "<unknown>";
@@ -616,9 +616,14 @@ void LoopVectorizeHints::setHint(StringRef Name, Metadata *Arg) {
                        TheLoop->getStartLoc(), TheLoop->getHeader())
                    << "loop remark: ignoring invalid " << HintName << " value";
           });
-#endif // SIFIVE_CUSTOMIZATION
         }
       }
+#else
+      if (H->validate(Val))
+        H->Value = Val;
+      else
+        LLVM_DEBUG(dbgs() << "LV: ignoring invalid hint '" << Name << "'\n");
+#endif // SIFIVE_CUSTOMIZATION
       break;
     }
   }
@@ -804,7 +809,7 @@ LoopVectorizationLegality::isConsecutiveOrUnknownPtr(Type *AccessTy,
     return Stride;
   return 0;
 }
-#endif
+#endif // SIFIVE_CUSTOMIZATION
 
 bool LoopVectorizationLegality::isInvariant(Value *V) const {
   return LAI->isInvariant(V);
@@ -1065,10 +1070,12 @@ void LoopVectorizationLegality::addInductionPhi(
   LLVM_DEBUG(dbgs() << "LV: Found an induction variable.\n");
 }
 
+#if SIFIVE_CUSTOMIZATION
 void LoopVectorizationLegality::addMonotonic(const MonotonicDescriptor &MD) {
   for (PHINode *P : MD.getPhis())
     MonotonicPhis[P] = MD;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 bool LoopVectorizationLegality::setupOuterLoopInductions() {
   BasicBlock *Header = TheLoop->getHeader();
@@ -1946,9 +1953,7 @@ bool LoopVectorizationLegality::prepareToFoldTailByMasking() {
   for (const auto &Reduction : getReductionVars())
     ReductionLiveOuts.insert(Reduction.second.getLoopExitInstr());
 
-#if !SIFIVE_CUSTOMIZATION
-  // TODO: handle non-reduction outside users when tail is folded by masking.
-#else
+#if SIFIVE_CUSTOMIZATION
   // The limitations that LV has for masking loop body are not applicable to RVV
   // VLA vectorization as loop body is not masked.
   //
@@ -1960,23 +1965,25 @@ bool LoopVectorizationLegality::prepareToFoldTailByMasking() {
   // Need to modify TTI to return costs for unmasked operations and then not
   // call this function if we do RVV VLA vectorization.
   if (!useVLAVectorizer()) {
-    // TODO: handle non-reduction outside users when tail is folded by masking.
-    for (auto *AE : AllowedExit) {
-      // Check that all users of allowed exit values are inside the loop or
-      // are the live-out of a reduction.
-      if (ReductionLiveOuts.count(AE))
+#endif // SIFIVE_CUSTOMIZATION
+  // TODO: handle non-reduction outside users when tail is folded by masking.
+  for (auto *AE : AllowedExit) {
+    // Check that all users of allowed exit values are inside the loop or
+    // are the live-out of a reduction.
+    if (ReductionLiveOuts.count(AE))
+      continue;
+    for (User *U : AE->users()) {
+      Instruction *UI = cast<Instruction>(U);
+      if (TheLoop->contains(UI))
         continue;
-      for (User *U : AE->users()) {
-        Instruction *UI = cast<Instruction>(U);
-        if (TheLoop->contains(UI))
-          continue;
-        LLVM_DEBUG(
-            dbgs()
-            << "LV: Cannot fold tail by masking, loop has an outside user for "
-            << *UI << "\n");
-        return false;
-      }
+      LLVM_DEBUG(
+          dbgs()
+          << "LV: Cannot fold tail by masking, loop has an outside user for "
+          << *UI << "\n");
+      return false;
     }
+  }
+#if SIFIVE_CUSTOMIZATION
   }
 #endif // SIFIVE_CUSTOMIZATION
 

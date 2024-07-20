@@ -27,8 +27,10 @@
 #include "llvm/ADT/Twine.h"
 #include "llvm/Analysis/DomTreeUpdater.h"
 #include "llvm/Analysis/LoopInfo.h"
+#if SIFIVE_CUSTOMIZATION
 #include "llvm/Analysis/ScalarEvolution.h"
 #include "llvm/Analysis/ScalarEvolutionExpressions.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/CFG.h"
 #include "llvm/IR/IRBuilder.h"
@@ -70,6 +72,7 @@ extern cl::opt<uint64_t> LoopVectorizerVLUpperBound;
 #endif
 
 #define DEBUG_TYPE "vplan"
+
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 raw_ostream &llvm::operator<<(raw_ostream &OS, const VPValue &V) {
 #if SIFIVE_CUSTOMIZATION
@@ -878,6 +881,9 @@ void VPRegionBlock::execute(VPTransformState *State) {
 
   for (unsigned Part = 0, UF = State->UF; Part < UF; ++Part) {
     State->Instance->Part = Part;
+#if !SIFIVE_CUSTOMIZATION
+    assert(!State->VF.isScalable() && "VF is assumed to be non scalable.");
+#endif // SIFIVE_CUSTOMIZATION
     for (unsigned Lane = 0, VF = State->VF.getKnownMinValue(); Lane < VF;
          ++Lane) {
       State->Instance->Lane = VPLane(Lane, VPLane::Kind::First);
@@ -1162,6 +1168,7 @@ void VPlan::execute(VPTransformState *State) {
         (isa<VPReductionPHIRecipe>(PhiR) &&
          cast<VPReductionPHIRecipe>(PhiR)->isInLoop());
     unsigned LastPartForNewPhi = SinglePartNeeded ? 1 : State->UF;
+
     for (unsigned Part = 0; Part < LastPartForNewPhi; ++Part) {
       Value *Phi = State->get(PhiR, Part, NeedsScalar);
       Value *Val =

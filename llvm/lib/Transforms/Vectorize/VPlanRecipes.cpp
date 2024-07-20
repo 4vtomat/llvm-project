@@ -54,9 +54,9 @@ extern cl::opt<uint64_t> LoopVectorizerVLUpperBound;
 extern cl::opt<uint64_t> LoopVectorizerSpeculativeVLUpperBound;
 #endif
 
+#if SIFIVE_CUSTOMIZATION
 static Value *GetSetVL(VPTransformState &State, Value *EVL,
                        bool IsUncountable) {
-#if SIFIVE_CUSTOMIZATION
   if (!EVL) {
     // Set EVL to all ones to get vlmax, but clamp it if VLUpperBound is
     // specified
@@ -75,7 +75,6 @@ static Value *GetSetVL(VPTransformState &State, Value *EVL,
         State.Builder.getInt32Ty(), Intrinsic::experimental_get_vector_length,
         {EVL, VFArg, State.Builder.getTrue()});
   }
-#endif // SIFIVE_CUSTOMIZATION
   assert(EVL->getType()->isIntegerTy() &&
          "Requested vector length should be an integer.");
 
@@ -106,6 +105,7 @@ static Value *GetSetVL(VPTransformState &State, Value *EVL,
       {EVL, VFArg, State.Builder.getTrue()});
   return GVL;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 bool VPRecipeBase::mayWriteToMemory() const {
   switch (getVPDefID()) {
