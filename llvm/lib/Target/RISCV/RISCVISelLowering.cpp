@@ -17481,9 +17481,16 @@ static SDValue performVP_REVERSECombine(SDNode *N, SelectionDAG &DAG,
                                 DAG.getConstant(ElemWidthByte, DL, XLenVT));
     SDValue Base = DAG.getNode(ISD::ADD, DL, XLenVT, VPLoad->getBasePtr(), Temp2);
     SDValue Stride = DAG.getConstant(0 - ElemWidthByte, DL, XLenVT);
-    SDValue Ret = DAG.getStridedLoadVP(LoadVT, DL, VPLoad->getChain(),
-                                       Base, Stride, LoadMask, VPLoad->getVectorLength(),
-                                       VPLoad->getMemOperand(), VPLoad->isExpandingLoad());
+
+    MachineFunction &MF = DAG.getMachineFunction();
+    MachinePointerInfo PtrInfo(VPLoad->getAddressSpace());
+    MachineMemOperand *MMO = MF.getMachineMemOperand(
+        PtrInfo, VPLoad->getMemOperand()->getFlags(),
+        LocationSize::beforeOrAfterPointer(), VPLoad->getAlign());
+
+    SDValue Ret = DAG.getStridedLoadVP(
+        LoadVT, DL, VPLoad->getChain(), Base, Stride, LoadMask,
+        VPLoad->getVectorLength(), MMO, VPLoad->isExpandingLoad());
 
     DAG.ReplaceAllUsesOfValueWith(SDValue(VPLoad, 1), Ret.getValue(1));
 
@@ -17535,11 +17542,18 @@ static SDValue performVP_STORECombine(SDNode *N, SelectionDAG &DAG,
                                 DAG.getConstant(ElemWidthByte, DL, XLenVT));
     SDValue Base = DAG.getNode(ISD::ADD, DL, XLenVT, VPStore->getBasePtr(), Temp2);
     SDValue Stride = DAG.getConstant(0 - ElemWidthByte, DL, XLenVT);
-    return DAG.getStridedStoreVP(VPStore->getChain(), DL, VPReverse.getOperand(0),
-                                 Base, VPStore->getOffset(), Stride, StoreMask,
-                                 VPStore->getVectorLength(), VPStore->getMemoryVT(),
-                                 VPStore->getMemOperand(), VPStore->getAddressingMode(),
-                                 VPStore->isTruncatingStore(), VPStore->isCompressingStore());
+
+    MachineFunction &MF = DAG.getMachineFunction();
+    MachinePointerInfo PtrInfo(VPStore->getAddressSpace());
+    MachineMemOperand *MMO = MF.getMachineMemOperand(
+        PtrInfo, VPStore->getMemOperand()->getFlags(),
+        LocationSize::beforeOrAfterPointer(), VPStore->getAlign());
+
+    return DAG.getStridedStoreVP(
+        VPStore->getChain(), DL, VPReverse.getOperand(0), Base,
+        VPStore->getOffset(), Stride, StoreMask, VPStore->getVectorLength(),
+        VPStore->getMemoryVT(), MMO, VPStore->getAddressingMode(),
+        VPStore->isTruncatingStore(), VPStore->isCompressingStore());
   }
 
   return SDValue();
