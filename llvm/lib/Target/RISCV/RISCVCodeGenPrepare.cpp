@@ -39,7 +39,6 @@ class RISCVCodeGenPrepare : public FunctionPass,
   const DataLayout *DL;
   const DominatorTree *DT;
   const RISCVSubtarget *ST;
-  const DominatorTree *DT; // SIFIVE
 
 public:
   static char ID;

@@ -1142,10 +1142,9 @@ bool RISCVRegisterInfo::enableTargetInterference() const {
 bool RISCVRegisterInfo::needUpdateECSlot(const LiveRange &LR,
                                          LiveRange &newLR) const {
   bool Changed = false;
-  SlotIndexes SIs;
   for (LiveRange::Segment &Seg : newLR.segments) {
     SlotIndex Start = Seg.start;
-    const MachineInstr *CurrMI = SIs.getInstructionFromIndex(Start);
+    const MachineInstr *CurrMI = SlotIndexes::getInstructionFromIndex(Start);
     if (CurrMI == nullptr)
       continue;
     if (Start.isEarlyClobber() && needConstraintsMI(CurrMI)) {

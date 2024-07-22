@@ -394,7 +394,14 @@ class raw_ostream;
 
     /// Returns the instruction for the given index, or null if the given
     /// index has no instruction associated with it.
+#if SIFIVE_CUSTOMIZATION
+    // RISCVRegisterInfo.cpp needs this function but there is no way
+    // to obtain a SlotIndexes instance either via AnalysisManager or
+    // SlotIndexes(MachineFunction *), hence turning into a static function.
+    static MachineInstr *getInstructionFromIndex(SlotIndex index) {
+#else
     MachineInstr* getInstructionFromIndex(SlotIndex index) const {
+#endif // SIFIVE_CUSTOMIZATION
       return index.listEntry()->getInstr();
     }
 
