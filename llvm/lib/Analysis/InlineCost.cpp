@@ -93,6 +93,14 @@ static cl::opt<bool> InlineParamSize(
 static cl::opt<bool> InlineLeafThreshold(
     "inline-leaf-threshold", cl::Hidden, cl::init(false),
     cl::desc("Treat leaf functions with greater size theshold"));
+
+static cl::opt<int> InlineLeafThresholdLimit(
+    "inline-leaf-threshold-limit", cl::Hidden, cl::init(2),
+    cl::desc("Threshold multiplier for leaf inlining callsites"));
+
+cl::opt<bool> LoopConcatCanonicalize(
+    "loop-concat-canonicalize", cl::Hidden, cl::init(false),
+    cl::desc("Bypass Full Unrolling for strided loops and LC Canonicalize"));
 #endif // SIFIVE_CUSTOMIZATION
 
 static cl::opt<bool> InlineEnableCostBenefitAnalysis(
@@ -1942,18 +1950,21 @@ bool InlineCostCallAnalyzer::isColdCallSite(CallBase &Call,
 #if SIFIVE_CUSTOMIZATION
 bool InlineCostCallAnalyzer::isLeafFunction(Function &Callee) {
   // If enabled determine if this callee is a leaf function or not.
-  if (!InlineLeafThreshold)
+  if (!InlineLeafThreshold && !LoopConcatCanonicalize)
     return false;
 
   // FIXME: add Invoke to this evaluation for leaf detection.
   bool IsLeaf = true;
   for (BasicBlock &BB : Callee)
-    for (Instruction &I : BB)
-      if (isa<CallInst>(&I)) {
-        // TODO: check for artifacts that do not remain as calls.
+    for (Instruction &I : BB) {
+      if (I.isLifetimeStartOrEnd())
+        continue;
+
+      if (isa<CallBase>(&I)) {
         IsLeaf = false;
         break;
       }
+    }
 
   return IsLeaf;
 }
@@ -2092,12 +2103,12 @@ void InlineCostCallAnalyzer::updateThreshold(CallBase &Call, Function &Callee) {
         Threshold = MinIfValid(Threshold, Params.ColdThreshold);
 #if SIFIVE_CUSTOMIZATION
       } else if (isLeafFunction(Callee)) {
-        // Give leaf calls an extra budget where the multiplier is a modifier.
-        Threshold *= TTI.getInliningThresholdMultiplier();
+        // Give leaf calls an extra budget where the leaf limit is a modifier.
+        Threshold *= InlineLeafThresholdLimit;
       }
     } else if (isLeafFunction(Callee)) {
-      // Give leaf calls an extra budget where the multiplier is a modifier.
-      Threshold *= TTI.getInliningThresholdMultiplier();
+      // Give leaf calls an extra budget where the leaf limit is a modifier.
+      Threshold *= InlineLeafThresholdLimit;
     }
 #else
       }

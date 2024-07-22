@@ -1424,6 +1424,8 @@ tryToUnrollLoop(Loop *L, DominatorTree &DT, LoopInfo *LI, ScalarEvolution &SE,
 }
 
 #if SIFIVE_CUSTOMIZATION
+extern cl::opt<bool> LoopConcatCanonicalize;
+
 static bool HasReductionLoop(Loop *L) {
   for (auto &Phi : L->getHeader()->phis()) {
     if (Phi.getNumIncomingValues() == 1)

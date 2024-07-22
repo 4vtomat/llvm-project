@@ -58,9 +58,6 @@ static const char *LLVMLoopDisableLICM = "llvm.licm.disable";
 cl::opt<bool> llvm::EnableLoopDataLayout(
     "loop-data-layout-enable", cl::Hidden, cl::init(false),
     cl::desc("Discover Data Layout Opportunities in Loops"));
-cl::opt<bool> llvm::LoopConcatCanonicalize(
-    "loop-concat-canonicalize", cl::Hidden, cl::init(false),
-    cl::desc("Bypass Full Unrolling for strided loops and LC Canonicalize"));
 cl::opt<bool> llvm::EnableLoopDistributeAndPeel(
     "enable-loop-distribute-and-peel", cl::Hidden, cl::init(false),
     cl::desc("Enable Loop Distribution and Epilog Peeling together"));

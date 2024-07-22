@@ -26,12 +26,23 @@
 ///    1. The loops must be flow dependent, where one candidate dominates the
 ///       other.
 ///    2. The bounds must be joinable, i.e. the upper bound of the first
-///       candidate must be the lower bound of the second.
+///       candidate must be the lower bound of the second or the trip counts
+///       must be equivalent where canonicalization can create joinable
+///       scenarios.
 ///    3. The loops must be control flow equivalent (if one loop executes, the
 ///       other is guaranteed to execute).
-///    4. There cannot be any write dependencies between the loops.
+///    4. There cannot be any write dependencies between the loop candidates.
 ///    5. The loops must be identical in form and input except for some special
 ///       conditions where flow via PHIs is from one loop to the other.
+///    6. There cannot be any fence-like operations or memory stores which
+///       conflict with either candidate loop.
+///    7. All stores must be associated to local storage of the same type for
+///       candidate pairs.
+///    8. Any code that exists in the second candidates preheader must be
+///       managed as either hoistable or sinkable as we will be removing the
+///       second pair loop as a result and we want to preserve any side effect
+///       code.
+///
 /// If all of these conditions are satisfied, it is safe to concatenate the
 /// loops.
 ///
@@ -62,8 +73,11 @@
 #include "llvm/Analysis/PostDominators.h"
 #include "llvm/Analysis/ScalarEvolution.h"
 #include "llvm/Analysis/ScalarEvolutionExpressions.h"
+#include "llvm/Analysis/TargetLibraryInfo.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/IR/Function.h"
+#include "llvm/IR/IRBuilder.h"
+#include "llvm/IR/PatternMatch.h"
 #include "llvm/IR/Verifier.h"
 #include "llvm/Support/CommandLine.h"
 #include "llvm/Support/Debug.h"
@@ -75,6 +89,7 @@
 #include "llvm/Transforms/Utils/LoopUtils.h"
 
 using namespace llvm;
+using namespace llvm::PatternMatch;
 
 #define DEBUG_TYPE "loop-concat"
 
@@ -88,9 +103,13 @@ STATISTIC(InvalidLatch, "Loop has invalid latch");
 STATISTIC(InvalidLoop, "Loop is invalid");
 STATISTIC(AddressTakenBB, "Basic block has address taken");
 STATISTIC(MayThrowException, "Loop may throw an exception");
+STATISTIC(ContainsFencelikeOperation, "Loop contains fencelike operation");
 STATISTIC(ContainsVolatileAccess, "Loop contains a volatile access");
+STATISTIC(ContainsAtomicAccess, "Loop contains an atomic access");
 STATISTIC(NotSimplifiedForm, "Loop is not in simplified form");
 STATISTIC(NotSameLoopBodies, "Loops bodies not same for concatenation");
+STATISTIC(NoLocalStorageAssociation,
+    "Loops bodies do not use local storage for concatenation");
 STATISTIC(InvalidDependencies, "Dependencies prevent concatenation");
 STATISTIC(UnknownTripCount, "Loop has unknown trip count");
 STATISTIC(UncomputableTripCount, "SCEV cannot compute trip count of loop");
@@ -128,6 +147,8 @@ static cl::opt<ConcatDependenceAnalysisChoice> ConcatDependenceAnalysis(
 static cl::opt<bool>
     EnableLoopConcatenation("loop-concat", cl::Hidden, cl::init(false),
                             cl::desc("Enable Loop Concatenation"));
+
+extern cl::opt<bool> LoopConcatCanonicalize;
 
 #ifndef NDEBUG
 static cl::opt<bool> VerboseConcatDebugging(
@@ -208,19 +229,20 @@ struct ConcatCandidate {
           reportInvalidCandidate(MayThrowException);
           return;
         }
-        if (StoreInst *SI = dyn_cast<StoreInst>(&I)) {
-          if (SI->isVolatile()) {
-            invalidate();
-            reportInvalidCandidate(ContainsVolatileAccess);
-            return;
-          }
+        if (I.isFenceLike()) {
+          invalidate();
+          reportInvalidCandidate(ContainsFencelikeOperation);
+          return;
         }
-        if (LoadInst *LI = dyn_cast<LoadInst>(&I)) {
-          if (LI->isVolatile()) {
-            invalidate();
-            reportInvalidCandidate(ContainsVolatileAccess);
-            return;
-          }
+        if (I.isVolatile()) {
+          invalidate();
+          reportInvalidCandidate(ContainsVolatileAccess);
+          return;
+        }
+        if (I.isAtomic()) {
+          invalidate();
+          reportInvalidCandidate(ContainsAtomicAccess);
+          return;
         }
         if (I.mayWriteToMemory())
           MemWrites.push_back(&I);
@@ -306,7 +328,7 @@ struct ConcatCandidate {
   /// two loops together.
   bool isEligibleForConcatenation(ScalarEvolution &SE) const {
     if (!isValid()) {
-      LLVM_DEBUG(dbgs() << "FC has invalid CFG requirements!\n");
+      LLVM_DEBUG(dbgs() << "CC has invalid CFG requirements!\n");
       if (!Preheader)
         ++InvalidPreheader;
       if (!Header)
@@ -452,9 +474,9 @@ using ConcatCandidateCollection = SmallVector<ConcatCandidateSet, 4>;
 
 #if !defined(NDEBUG)
 static llvm::raw_ostream &operator<<(llvm::raw_ostream &OS,
-                                     const ConcatCandidate &FC) {
-  if (FC.isValid())
-    OS << FC.Preheader->getName();
+                                     const ConcatCandidate &CC) {
+  if (CC.isValid())
+    OS << CC.Preheader->getName();
   else
     OS << "<Invalid>";
 
@@ -563,17 +585,19 @@ private:
   ScalarEvolution &SE;
   PostDominatorTree &PDT;
   OptimizationRemarkEmitter &ORE;
+  const DataLayout &DL;
 
   SmallVector<Instruction *> LoopInsns;
   DenseMap<const Instruction *, int> CC0Map;
   DenseMap<const Instruction *, int> CC1Map;
+  SmallPtrSet<Instruction *, 10> MemFenceValues;
 
 public:
   LoopConcater(LoopInfo &LI, DominatorTree &DT, DependenceInfo &DI,
                ScalarEvolution &SE, PostDominatorTree &PDT,
                OptimizationRemarkEmitter &ORE, const DataLayout &DL)
       : LDT(LI), DTU(DT, PDT, DomTreeUpdater::UpdateStrategy::Lazy), LI(LI),
-        DT(DT), DI(DI), SE(SE), PDT(PDT), ORE(ORE) {}
+        DT(DT), DI(DI), SE(SE), PDT(PDT), ORE(ORE), DL(DL) {}
 
   /// This is the main entry point for loop concatenation. It will traverse the
   /// specified function and collect candidate loops to concatenate, starting
@@ -585,10 +609,15 @@ public:
     }
 #endif
 
+    for (BasicBlock &BB : F)
+      for (Instruction &I : BB)
+        if (I.isFenceLike() || I.mayWriteToMemory())
+          if (!I.isLifetimeStartOrEnd())
+            MemFenceValues.insert(&I);
+
     LLVM_DEBUG(dbgs() << "Performing Loop Concatenation on function "
                       << F.getName() << "\n");
     bool Changed = false;
-
     while (!LDT.empty()) {
       LLVM_DEBUG(dbgs() << "Got " << LDT.size() << " loop sets for depth "
                         << LDT.getDepth() << "\n";);
@@ -624,15 +653,18 @@ public:
       ConcatCandidates.clear();
     }
 
-    if (Changed)
+    if (Changed) {
       LLVM_DEBUG(dbgs() << "Function after Loop Concatenation: \n"; F.dump(););
 
 #ifndef NDEBUG
-    assert(DT.verify());
-    assert(PDT.verify());
-    LI.verify(DT);
-    SE.verify();
+      assert(DT.verify());
+      assert(PDT.verify());
+      SE.verify();
+      LI.verify(DT);
 #endif
+    }
+
+    MemFenceValues.clear();
 
     LLVM_DEBUG(dbgs() << "Loop Concatenation complete\n");
     return Changed;
@@ -662,13 +694,16 @@ private:
       if (!CurrCand.isEligibleForConcatenation(SE))
         continue;
 
+      // We will evaluate any MemWrites separately in Candidates.
+      for (Instruction *WriteInst : CurrCand.MemWrites)
+        MemFenceValues.erase(WriteInst);
+
       // Go through each list in ConcatCandidates and determine if L is control
       // flow equivalent with the first loop in that list. If it is, append LV.
       // If not, go to the next list.
       // If no suitable list is found, start another list and add it to
       // ConcatCandidates.
       bool FoundSet = false;
-
       for (auto &CurrCandSet : ConcatCandidates) {
         if (isControlFlowEquivalent(*CurrCandSet.begin(), CurrCand)) {
           // TODO: split correctness analysis before inserting
@@ -706,10 +741,11 @@ private:
     return true;
   }
 
-  /// Determine if two concatenation candidates have the joinable trip ranges.
-  ///
-  bool haveJoinableTripRange(const ConcatCandidate &CC0,
-                             const ConcatCandidate &CC1) const {
+  /// Determine if two concatenation candidates have either joinable
+  /// trip ranges or the same trip range.
+  bool examineTripRange(const ConcatCandidate &CC0,
+                        const ConcatCandidate &CC1,
+                        bool &HaveSameTripRange) const {
     const SCEV *TripCount0 = SE.getBackedgeTakenCount(CC0.L);
     if (isa<SCEVCouldNotCompute>(TripCount0)) {
       UncomputableTripCount++;
@@ -724,15 +760,19 @@ private:
       return false;
     }
 
-    // Now determine the following
+    // Now determine the following:
     // a.) Do both loops have the same iv step.
     // b.) The start and end of the first loop.
     // c.) The start and end of the second loop.
-    // d.) The end of the first loop is the start of the second loop.
+    // d.) The end of the first loop is the start of the second loop or
+    //     both start and end are the same for both candidates.
 
     PHINode *CC0_IV = CC0.L->getInductionVariable(SE);
     PHINode *CC1_IV = CC1.L->getInductionVariable(SE);
     if (CC0_IV && CC1_IV) {
+      if (CC0_IV->getNumIncomingValues() != CC1_IV->getNumIncomingValues())
+       return false;
+
       auto CC0_LB = Loop::LoopBounds::getBounds(*CC0.L, *CC0_IV, SE);
       if (!CC0_LB.has_value())
         return false;
@@ -741,17 +781,26 @@ private:
       if (!CC1_LB.has_value())
         return false;
 
-      if (CC0_LB->getDirection() == CC1_LB->getDirection() &&
-          CC0_LB->getStepValue() == CC1_LB->getStepValue()) {
+      // Only qualify loops that are upcounting with the same step.
+      Loop::LoopBounds::Direction D = CC0_LB->getDirection();
+      if ((D == CC1_LB->getDirection()) &&
+          (D == Loop::LoopBounds::Direction::Increasing) &&
+          (CC0_LB->getStepValue() == CC1_LB->getStepValue())) {
 
-        Value *InitIvVal = &CC1_LB->getInitialIVValue();
-        Value *FinalIvVal = &CC0_LB->getFinalIVValue();
+        Value *CC0InitIvVal = &CC0_LB->getInitialIVValue();
+        Value *CC0FinalIvVal = &CC0_LB->getFinalIVValue();
+        Value *CC1InitIvVal = &CC1_LB->getInitialIVValue();
+        Value *CC1FinalIvVal = &CC1_LB->getFinalIVValue();
+
+        if ((CC0InitIvVal == CC1InitIvVal) &&
+            (CC0FinalIvVal == CC1FinalIvVal))
+          HaveSameTripRange = true;
 
         // Must have divergent ranges
-        if (FinalIvVal == &CC1_LB->getFinalIVValue())
+        if (CC0FinalIvVal == CC1FinalIvVal)
           return false;
 
-        return (InitIvVal == FinalIvVal);
+        return (CC1InitIvVal == CC0FinalIvVal);
       }
     }
 
@@ -767,9 +816,12 @@ private:
   /// The original concatenation candidates are then removed, as they are no
   /// longer valid.
   bool concatCandidates() {
-    bool Concatenated = false;
+    bool Changed = false;
+
     LLVM_DEBUG(printConcatCandidates(ConcatCandidates));
     for (auto &CandidateSet : ConcatCandidates) {
+ReplaySet:
+      unsigned Concatenations = 0;
       if (CandidateSet.size() < 2)
         continue;
 
@@ -801,40 +853,74 @@ private:
 
           // Check if the candidates have joinable tripcounts where the upper
           // bound of CC0 is the lower bound of CC1 and both have the same
-          // step direction and size.
-          bool HasJoinableTripRange = haveJoinableTripRange(*CC0, *CC1);
-          if (!HasJoinableTripRange) {
+          // step direction and size, else detect if both loops have the same
+          // trip counts with the same step direction and size.
+          bool HaveSameTripRange = false;
+          bool HasJoinableTripRange =
+              examineTripRange(*CC0, *CC1, HaveSameTripRange);
+          if (!HasJoinableTripRange && !HaveSameTripRange) {
             LLVM_DEBUG(
                 dbgs()
                 << "Concatenation candidates do not have joinable ranges."
                 << "Not concatenating.\n");
             reportLoopConcatenation<OptimizationRemarkMissed>(
                 *CC0, *CC1, NonJoinableTripRange);
-            LLVM_DEBUG(dbgs() << "Loop trip ranges not joinable. "
+            LLVM_DEBUG(dbgs() << "Loop trip ranges not translatable. "
                               << "Not concatenating.\n");
           }
 
           // Check the dependencies across the loops and do not concatenate if
           // it would violate them even if the ranges are not joinable.
+          bool AllowInterCandidateDeps =
+              (HasJoinableTripRange || HaveSameTripRange);
           if (!dependencesAllowConcatenation(*CC0, *CC1,
-                                             HasJoinableTripRange)) {
+                                             AllowInterCandidateDeps)) {
             LLVM_DEBUG(dbgs() << "Memory dependencies do not allow "
                               << "concatenation!\n");
             reportLoopConcatenation<OptimizationRemarkMissed>(
                 *CC0, *CC1, InvalidDependencies);
             // This condition is special in that any candidate loop in the set
             // that posesses this attribute prevents a subsequent candidate
-            // from concatenating from CC0 to any other member of the set.
+            // from concatenating from CC0 to any forward ordered set member.
             break;
           }
 
           // Walk both loops to check for identity between CC0 and CC1
-          if (!compareAllowConcatenation(*CC0, *CC1, HasJoinableTripRange)) {
-            LLVM_DEBUG(dbgs() << "Loop Bodies are not equivlant to allow "
+          MapVector<AllocaInst *, AllocaInst *> OpMap;
+          MapVector<Value *, Value *> PnMap;
+          if (!compareAllowConcatenation(*CC0, *CC1,
+                                         AllowInterCandidateDeps,
+                                         HaveSameTripRange, OpMap, PnMap)) {
+            LLVM_DEBUG(dbgs() << "Loop Bodies are not equivalent to allow "
                               << "concatenation!\n");
             reportLoopConcatenation<OptimizationRemarkMissed>(
                 *CC0, *CC1, NotSameLoopBodies);
             continue;
+          }
+
+          if (!checkStoreAssociations(*CC0, *CC1, OpMap)) {
+            LLVM_DEBUG(dbgs() << "Loop Bodies do not associate to local "
+                              << "storage to allow concatenation!\n");
+            reportLoopConcatenation<OptimizationRemarkMissed>(
+                *CC0, *CC1, NoLocalStorageAssociation);
+            continue;
+          }
+
+          // If the canonicalizer is enabled and HaveSameTripRange
+          // is true, coalesce the two same sized storage regions
+          // and update all uses in CC1.
+          if (HaveSameTripRange && LoopConcatCanonicalize) {
+            // Find the size of the array from the mapped ops, both
+            // parts of the pair need to be replaced, however, the first
+            // member is name replacement only, the second is name and
+            // offset for address expressions.
+            if (AllowInterCandidateDeps) {
+              if (OpMap.empty())
+                continue;
+
+              Changed |= canonicalizeStorage(*CC0, *CC1, OpMap, PnMap);
+              HasJoinableTripRange = true;
+            }
           }
 
           if ((!CC0->GuardBranch && CC1->GuardBranch) ||
@@ -933,28 +1019,28 @@ private:
           // Notify the loop-depth-tree that these loops are not valid objects
           LDT.removeLoop(CC1->L);
 
-          CandidateSet.erase(CC0);
+          // We will keep CC0 as its identical to CC1 now except for range,
+          // which is why we destroy the old and provide a new ScalarEvolution
+          // object.
           CandidateSet.erase(CC1);
-
-          auto InsertPos = CandidateSet.insert(ConcatenatedCand);
-
-          assert(InsertPos.second &&
-                 "Unable to insert TargetCandidate in CandidateSet!");
-
-          // Reset CC0 and CC1 the new (concatenated) candidate. Subsequent
-          // iterations of the CC1 loop will attempt to concatenate the new
-          // (concatenated) loop with the remaining candidates in the current
-          // candidate set.
-          CC0 = CC1 = InsertPos.first;
 
           LLVM_DEBUG(dbgs() << "Candidate Set (after concatenation): "
                             << CandidateSet << "\n");
 
-          Concatenated = true;
+          Changed |= true;
+          Concatenations++;
+
+          // Try to find the next concatenation
+          break;
         }
       }
+
+      // Only replay if there exists a possibility of iterated concatenations.
+      if (Concatenations >= 2)
+        goto ReplaySet;
     }
-    return Concatenated;
+
+    return Changed;
   }
 
   // Returns true if the instruction \p I can be hoisted to the end of the
@@ -1037,6 +1123,22 @@ private:
           // should take place, loops should not concatenate
           return false;
         }
+      }
+    }
+
+    if (I.isLifetimeStartOrEnd()) {
+      if (auto *II = dyn_cast<IntrinsicInst>(&I)) {
+        Intrinsic::ID ID = II->getIntrinsicID();
+        // Check if this lifetime end is AllocaInst
+        // related, all the related Allocas have
+        // been managed during canonicalization.
+        if (LoopConcatCanonicalize)
+          if (ID == Intrinsic::lifetime_end) {
+            auto *Def = II->getArgOperand(1);
+            if (isa<AllocaInst>(Def))
+              return true;
+          }
+
       }
     }
 
@@ -1291,8 +1393,7 @@ private:
     LLVM_DEBUG(dbgs() << "Check if " << CC0 << " can be concatenated with "
                       << CC1 << "\n");
     assert(CC0.L->getLoopDepth() == CC1.L->getLoopDepth());
-    // If the candidates are not dominance ordered then we cannot
-    // analyze dependences.
+    // Skip candidates that are not dominance ordered.
     if (!DT.dominates(CC0.getEntryBlock(), CC1.getEntryBlock()))
       return false;
 
@@ -1304,6 +1405,58 @@ private:
           InvalidDependencies++;
           return false;
         }
+    }
+
+    // First determine if a given store has a control dependence relationship
+    // to CC0 and CC1.  Then look for memory dependence on that operation
+    // between it and stores in CC0 and CC1.  Also consider isFenceLike
+    // operations as potential memory conflicts.
+    for (Instruction *MemFenceInstr : MemFenceValues) {
+      auto *BB = MemFenceInstr->getParent();
+      BasicBlock *IDomBB = nullptr;
+      if (auto *DomNode = DT.getNode(BB)->getIDom())
+        IDomBB = DomNode->getBlock();
+
+      bool FlowRelated = false;
+      if (BB != CC0.getEntryBlock() &&
+          DT.dominates(CC0.getEntryBlock(), BB) &&
+          DT.dominates(BB, CC1.getEntryBlock()))
+        FlowRelated = true;
+      else if (IDomBB && IDomBB != CC0.getEntryBlock() &&
+                 DT.dominates(CC0.getEntryBlock(), IDomBB) &&
+                 DT.dominates(IDomBB, CC1.getEntryBlock()))
+        FlowRelated = true;
+
+      if (FlowRelated) {
+        if (MemFenceInstr->isFenceLike()) {
+          InvalidDependencies++;
+          return false;
+        }
+
+        for (Instruction *WriteL0 : CC0.MemWrites) {
+          auto DepResult = DI.depends(WriteL0, MemFenceInstr, true);
+          if (DepResult) {
+            InvalidDependencies++;
+            return false;
+          }
+        }
+
+        for (Instruction *WriteL1 : CC1.MemWrites) {
+          auto DepResult = DI.depends(MemFenceInstr, WriteL1, true);
+          if (DepResult) {
+            InvalidDependencies++;
+            return false;
+          }
+        }
+
+        for (Instruction *ReadL1 : CC1.MemReads) {
+          auto DepResult = DI.depends(MemFenceInstr, ReadL1, true);
+          if (DepResult) {
+            InvalidDependencies++;
+            return false;
+          }
+        }
+      }
     }
 
     // Walk through all uses in CC1. For each use, find the reaching def. If the
@@ -1349,12 +1502,118 @@ private:
     return true;
   }
 
+  const Value *peekThroughExtTrunc(const Value *Val) {
+    if (auto *ZI = dyn_cast<ZExtInst>(Val))
+      Val = ZI->getOperand(0);
+    else if (auto *SI = dyn_cast<SExtInst>(Val))
+      Val = SI->getOperand(0);
+    else if (auto *TI = dyn_cast<TruncInst>(Val))
+      Val = TI->getOperand(0);
+    return Val;
+  }
+
+  bool hasExpectedForm(AllocaInst *AI, AllocaInst *MapAI) {
+    auto *AITy = AI->getAllocatedType();
+    if ((AITy == MapAI->getAllocatedType()) &&
+        (AI->isStaticAlloca() && MapAI->isStaticAlloca())) {
+      TypeSize AISize = DL.getTypeSizeInBits(AITy);
+      if (AISize.isScalable())
+        return false;
+
+      if (AITy->isArrayTy()) {
+        unsigned Arity = 0;
+        Type *CurTy = AITy;
+        while (CurTy->isArrayTy()) {
+          ArrayType *ArrayTy = cast<ArrayType>(CurTy);
+          CurTy = ArrayTy->getElementType();
+          Arity++;
+        }
+        // Currently only support 2d arrays for Canonicalization.
+        if (Arity != 2)
+          return false;
+
+        return true;
+      }
+    }
+    return false;
+  }
+
+  Value *findAssociatedBasis(GetElementPtrInst *GEP,
+                             Value *Ptr, PHINode *CC1_IV,
+                             const ConcatCandidate &CC1) {
+    // In this case, we compare the arithmetic expression of
+    // the address that GEP creates related to Ptr.
+    auto CC1_LB = Loop::LoopBounds::getBounds(*CC1.L, *CC1_IV, SE);
+    Value *FinalVal = &CC1_LB->getFinalIVValue();
+    if ((GEP->getPointerOperand() == Ptr) &&
+        (GEP->getNumIndices() == 1)) {
+      const Value *ArithVal = peekThroughExtTrunc(GEP->getOperand(1));
+      // We need only to compare the final value of the loop
+      // with the effect of ArithVal upon its input.
+      // We can only do this for constant trip loops with
+      // known bounds.
+      if (auto *FinalCst = dyn_cast<ConstantInt>(FinalVal)) {
+        uint64_t ShiftAmt;
+        uint64_t MulAmt;
+        Value *Basis;
+        if (match(ArithVal, m_Shl(m_Value(Basis), m_ConstantInt(ShiftAmt)))) {
+          uint64_t CompareVal = 1ULL << ShiftAmt;
+          // FinalCst is the value of IV at time of loop exit.
+          if (FinalCst->getZExtValue() == CompareVal)
+            return Basis;
+        } else if (match(ArithVal, m_Mul(m_Value(Basis), m_ConstantInt(MulAmt)))) {
+          // FinalCst is the value of IV at time of loop exit.
+          // TODO: may have to dope with some kind of initial offset.
+          if (FinalCst->getZExtValue() == MulAmt)
+            return Basis;
+        }
+      }
+    } else if (auto *InitGEP = dyn_cast<GetElementPtrInst>(Ptr)) {
+      if ((GEP->getNumIndices() == InitGEP->getNumIndices()) &&
+          (GEP->getPointerOperand() == InitGEP->getPointerOperand()) &&
+          (GEP->getNumIndices() == 1)) {
+        // Configure the offset of InitGEP
+        const Value *ArithVal1 = peekThroughExtTrunc(InitGEP->getOperand(1));
+        Value *Basis1;
+        uint64_t ShiftAmt1, MulAmt1, Offset1;
+        if (match(ArithVal1, m_Shl(m_Value(Basis1), m_ConstantInt(ShiftAmt1)))) {
+          Offset1 = 1ULL << ShiftAmt1;
+        } else if (match(ArithVal1, m_Mul(m_Value(Basis1), m_ConstantInt(MulAmt1)))) {
+          Offset1 = MulAmt1;
+        }
+        // Configure the offset of GEP
+        const Value *ArithVal2 = peekThroughExtTrunc(GEP->getOperand(1));
+        Value *Basis2;
+        uint64_t ShiftAmt2, MulAmt2, Offset2;
+        if (match(ArithVal2, m_Shl(m_Value(Basis2), m_ConstantInt(ShiftAmt2)))) {
+          Offset2 = 1ULL<< ShiftAmt2;
+        } else if (match(ArithVal2, m_Mul(m_Value(Basis2), m_ConstantInt(MulAmt2)))) {
+          Offset2 = MulAmt2;
+        }
+        // Now compare the cases.
+        if (auto *FinalCst = dyn_cast<ConstantInt>(FinalVal)) {
+          if (FinalCst->getZExtValue() + Offset1 == Offset2) {
+            if (Basis1 == Basis2)
+              return Basis1;
+          }
+        }
+      }
+    }
+    return nullptr;
+  }
+
   /// Check if both candidate loops have identical code
   bool compareAllowConcatenation(const ConcatCandidate &CC0,
                                  const ConcatCandidate &CC1,
-                                 bool HasJoinableTripRange) {
-    // Only allow Candidates with joinable trip ranges to be checked.
-    if (!HasJoinableTripRange)
+                                 bool AllowInterCandidateDeps,
+                                 bool HaveSameTripRange,
+                                 MapVector<AllocaInst *, AllocaInst *> &OpMap,
+                                 MapVector<Value *, Value *> &PnMap) {
+    // Only allow Candidates with joinable or equivalent trip ranges to be checked.
+    if (!AllowInterCandidateDeps)
+      return false;
+
+    if (CC0.L->getNumBlocks() != CC1.L->getNumBlocks())
       return false;
 
     LLVM_DEBUG(dbgs() << "Check if " << CC0 << " is identical to " << CC1);
@@ -1385,6 +1644,9 @@ private:
         // Operand footprint needs to match
         if (I.getNumOperands() != CC0I->getNumOperands())
           return false;
+
+        if (I.getType() != CC0I->getType())
+          return false;
       }
 
     // Ensure the loop IV's are in the same place
@@ -1412,20 +1674,64 @@ private:
         auto *MapI = LoopInsns[CC1Map[&I]];
         // The majority of PHINode components will be evaluated in dependence
         // checks.  Here we evaluate only incoming edges that are not loop
-        // carried for values that do not originate from an Instruction.
+        // carried.
         if (auto *PN = dyn_cast<PHINode>(&I)) {
-          if (I.getType()->isPointerTy())
+          if (I.getType()->isPointerTy()) {
+            Value *BEVal = PN->getIncomingValueForBlock(Latch);
+            Value *InitVal = PN->getIncomingValueForBlock(CC1.Preheader);
+            Value *Basis = nullptr;
+            auto *MapPN = cast<PHINode>(MapI);
             for (unsigned It = 0, E = PN->getNumIncomingValues(); It != E;
                  ++It) {
               auto *InputVal = PN->getIncomingValue(It);
-              // Only evaluate non Instruction values here.
-              if (isa<Instruction>(InputVal))
-                continue;
+              Value *MapVal = MapPN->getIncomingValue(It);
+              if (auto *InputInst = dyn_cast<Instruction>(InputVal)) {
+                if (InputVal == BEVal) {
+                  if (Basis == nullptr)
+                    return false;
 
-              auto *MapPN = dyn_cast<PHINode>(MapI);
-              if (MapPN && MapPN->getIncomingValue(It) != InputVal)
+                  if (!isa<Instruction>(MapVal))
+                    return false;
+
+                  auto *MapInst = cast<Instruction>(MapVal);
+                  if (any_of(InputInst->operands(), [=](const Value *Op) {
+                        return (peekThroughExtTrunc(Op) == Basis);
+                      }))
+                    if (any_of(MapInst->operands(), [=](const Value *Op) {
+                          return (peekThroughExtTrunc(Op) == Basis);
+                        })) {
+                      // Later we can create a lcssa PHI to take the place of
+                      // PN's incoming PreHeader value. We can skip this if
+                      // CC1 is the only use of InitVal.
+                      if (!InitVal->hasOneUse())
+                        PnMap[PN] = MapVal;
+
+                      continue;
+                    }
+
+                  // The addresses of this pointer for CC1 is not
+                  // related by CC0's pointer step and iteration space.
+                  return false;
+
+                } else if (InputVal == InitVal) {
+                  if (auto *GEP = dyn_cast<GetElementPtrInst>(InputVal)) {
+                    if (isa<GetElementPtrInst, Argument>(MapVal))
+                      Basis = findAssociatedBasis(GEP, MapVal, CC1_IV, CC1);
+                  } else if (isa<PHINode>(InputInst) &&
+                             InputInst->getType()->isPointerTy()) {
+                    // LCSSA phi chains the InitVal or there is a direct
+                    // relationship.
+                    if (valueMayDefFromCandidate(CC0, InputInst))
+                      break;
+                  }
+                }
+                continue;
+              }
+
+              if (MapVal != InputVal)
                 return false;
             }
+          }
 
           continue;
         }
@@ -1434,9 +1740,7 @@ private:
           continue;
 
         if (LatchCmp == dyn_cast<ICmpInst>(&I)) {
-          auto *MapCmp = dyn_cast<ICmpInst>(MapI);
-          if (!MapCmp)
-            return false;
+          auto *MapCmp = cast<ICmpInst>(MapI);
 
           // Predicates must match.  TODO: or possibly equate...
           if (LatchCmp->getPredicate() != MapCmp->getPredicate())
@@ -1445,10 +1749,10 @@ private:
           continue;
         }
 
-        unsigned NumOps = I.getNumOperands();
         // We already know CC0 and CC1 are ordered the same, so we
         // can use this loops map index for obtaining the mapped CC0
         // instruction.
+        unsigned NumOps = I.getNumOperands();
         for (unsigned OpIdx = 0; OpIdx < NumOps; OpIdx++) {
           auto *Op = I.getOperand(OpIdx);
           auto *MapOp = MapI->getOperand(OpIdx);
@@ -1470,19 +1774,194 @@ private:
                 // Op and MapOp diverge
                 return false;
               }
-            } else if (Op != MapOp) {
-              // If Def is from outside its loop, both must match.
+            } else if (Op == MapOp) {
+              // If joinable trips, collect the map for Alloca if
+              // available.
+              if (!HaveSameTripRange) {
+                auto *ITy = I.getType();
+                if (ITy->isPointerTy())
+                  if (isa<AllocaInst>(Op) && isa<AllocaInst>(MapOp)) {
+                    auto *OpAI = cast<AllocaInst>(Op);
+                    auto *MapOpAI = cast<AllocaInst>(MapOp);
+                    if (hasExpectedForm(OpAI, MapOpAI)) {
+                      if (!OpMap[OpAI])
+                        OpMap[OpAI] = MapOpAI;
+
+                      assert(OpMap[OpAI] == MapOpAI &&
+                             "Alloca Ops should be equal");
+                    }
+                  }
+              }
+              continue;
+            } else if (peekThroughExtTrunc(Op) == peekThroughExtTrunc(MapOp)) {
+              continue;
+            } else {
+              if (LoopConcatCanonicalize && HaveSameTripRange) {
+                auto *ITy = I.getType();
+                if (ITy->isPointerTy())
+                  if (isa<AllocaInst>(Op) && isa<AllocaInst>(MapOp)) {
+                    auto *OpAI = cast<AllocaInst>(Op);
+                    auto *MapOpAI = cast<AllocaInst>(MapOp);
+                    if (hasExpectedForm(OpAI, MapOpAI)) {
+                      if (!OpMap[OpAI])
+                        OpMap[OpAI] = MapOpAI;
+
+                      assert(OpMap[OpAI] == MapOpAI &&
+                             "Alloca Ops should be equal");
+                      continue;
+                    }
+                  }
+
+              }
+
+              // Either Def is from outside its loop, and does not match or
+              // the loop is not in the expected form.
               return false;
             }
           } else if (ConstantInt *OpConst = dyn_cast<ConstantInt>(Op)) {
             // Both operands must be constants and the same
             if (OpConst != dyn_cast<ConstantInt>(MapOp))
               return false;
+          } else if (Op != MapOp) {
+            return false;
           }
         }
       }
 
     return true;
+  }
+
+  bool checkStoreAssociations(const ConcatCandidate &CC0,
+                              const ConcatCandidate &CC1,
+                              MapVector<AllocaInst *, AllocaInst *> &OpMap) {
+    auto AssociatedMemWrites = [&](const ConcatCandidate &CC,
+                                   bool FirstOfPair) {
+      for (Instruction *WriteInst : CC.MemWrites) {
+        if (!isa<StoreInst>(WriteInst))
+          continue;
+
+        // We must have complete associations for all stores.
+        auto *SI = cast<StoreInst>(WriteInst);
+        Value* Ptr = SI->getPointerOperand();
+
+        while (auto *GEP = dyn_cast<GetElementPtrInst>(Ptr))
+          Ptr = GEP->getPointerOperand();
+
+        bool FoundAssociation = false;
+        for (auto &ValuePair : OpMap) {
+          auto *MapAI = FirstOfPair ? ValuePair.first : ValuePair.second;
+          if (Ptr == MapAI) {
+            FoundAssociation = true;
+            break;
+          }
+        }
+        if (!FoundAssociation)
+          return false;
+      }
+      return true;
+    };
+
+    return AssociatedMemWrites(CC0, /*FirstOfPair*/ false) &&
+           AssociatedMemWrites(CC1, /*FirstOfPair*/ true);
+  }
+
+  bool canonicalizeStorage(const ConcatCandidate &CC0,
+                           const ConcatCandidate &CC1,
+                           MapVector<AllocaInst *, AllocaInst *> &OpMap,
+                           MapVector<Value *, Value *> &PnMap) {
+    bool Changed = false;
+    for (auto &ValuePair : OpMap) {
+      auto *AI = ValuePair.first;
+      auto *MapAI = ValuePair.second;
+      TypeSize MapAISize = DL.getTypeStoreSize(MapAI->getAllocatedType());
+      // We want to mutate the length of the outer type (column size)
+      // by 2x.  We will repurpose MapAI's storage and then
+      // update all of AI's uses to it with some adjustments.
+      ArrayType *ArrayTy = cast<ArrayType>(AI->getAllocatedType());
+      auto *OuterElTy = ArrayTy->getElementType();
+      unsigned OuterSize = ArrayTy->getNumElements();
+      auto *AltTy = ArrayType::get(OuterElTy, OuterSize*2);
+      auto *CurTy = MapAI->getAllocatedType();
+      MapAI->setAllocatedType(AltTy);
+      TypeSize NewMapAISize = DL.getTypeStoreSize(AltTy);
+      // Now update all the uses of MapAI that reference CurTy to AltTy
+      // TODO: Update this for PtrAdd once GEP goes away.
+      SmallVector<IntrinsicInst *, 10> RemoveWorklist;
+      for (User *U : MapAI->users()) {
+        if (auto *GEP = dyn_cast<GetElementPtrInst>(U))
+          if (GEP->getSourceElementType() == CurTy)
+            GEP->setSourceElementType(AltTy);
+        // Add MapAI's end of lifetime to remove.
+        if (auto *II = dyn_cast<IntrinsicInst>(U)) {
+          Intrinsic::ID ID = II->getIntrinsicID();
+          if (ID == Intrinsic::lifetime_end)
+            RemoveWorklist.push_back(II);
+          if (ID == Intrinsic::lifetime_start) {
+            Type *SizeTy = II->getArgOperand(0)->getType();
+            II->setArgOperand(0, ConstantInt::get(SizeTy, NewMapAISize));
+          }
+        }
+      }
+      SmallVector<IntrinsicInst *, 10> ReplaceWorklist;
+      for (User *U : AI->users()) {
+        if (auto *GEP = dyn_cast<GetElementPtrInst>(U))
+          if (GEP->getSourceElementType() == CurTy)
+            GEP->setSourceElementType(AltTy);
+        // Add AI's start lifetime to remove, also repurpose AI's end lifetime
+        // to be MapAI's end of lifetime.
+        if (auto *II = dyn_cast<IntrinsicInst>(U)) {
+          Intrinsic::ID ID = II->getIntrinsicID();
+          if (ID == Intrinsic::lifetime_start)
+            RemoveWorklist.push_back(II);
+          else if (ID == Intrinsic::lifetime_end)
+            ReplaceWorklist.push_back(II);
+        }
+      }
+      while (!RemoveWorklist.empty()) {
+        IntrinsicInst *II = RemoveWorklist.pop_back_val();
+        II->eraseFromParent();
+      }
+      while (!ReplaceWorklist.empty()) {
+        IntrinsicInst *II = ReplaceWorklist.pop_back_val();
+        // Now replace AI with MapAI
+        assert(II->getIntrinsicID() == Intrinsic::lifetime_end);
+        II->setArgOperand(1, MapAI);
+        Type *SizeTy = II->getArgOperand(0)->getType();
+        II->setArgOperand(0, ConstantInt::get(SizeTy, NewMapAISize));
+      }
+      IRBuilder<> IRB(AI);
+      IRB.SetInsertPointPastAllocas(MapAI->getParent()->getParent());
+      APInt AIOffset(64, MapAISize);
+      Value *NewAI = IRB.CreateInBoundsPtrAdd(MapAI, IRB.getInt(AIOffset));
+      AI->replaceAllUsesWith(NewAI);
+      AI->eraseFromParent();
+      // Now update the CC1's latch with lb from CC0 ub and assign a new UP to CC1.
+      updateLatch(CC0, CC1, true);
+      Changed |= true;
+    }
+
+    // Now fixup PHI inputs for CC1
+    for (PHINode &PN : CC1.Header->phis()) {
+      auto *PNTy = PN.getType();
+      if (PNTy->isPointerTy()) {
+        Value *InputVal = PnMap[&PN];
+        if (InputVal == nullptr)
+          continue;
+
+        // Create a lcssa PHI for InputVal to use as a transfer to
+        // replace the uses of incoming value for CC1.Preheader in this PN.
+        BasicBlock::iterator L0ExitIP = CC0.ExitBlock->begin();
+        PHINode *TransferPHI =
+            PHINode::Create(PNTy, 1, InputVal->getName() + ".lcssa", L0ExitIP);
+        TransferPHI->addIncoming(InputVal, CC0.Latch);
+        auto *OldInputInst =
+            cast<Instruction>(PN.getIncomingValueForBlock(CC1.Preheader));
+        // We can do this as CC0 is not guarded and will now provide this value.
+        OldInputInst->replaceAllUsesWith(TransferPHI);
+        OldInputInst->eraseFromParent();
+      }
+    }
+    return Changed;
   }
 
   bool isEmptyFlowEdge(const BasicBlock *BB) const { return BB->size() == 1; }
@@ -1559,23 +2038,42 @@ private:
 
   /// Fetch the upper bound of CC1.Latch and apply that to CC0.Latch
   /// as its upper bound.
-  void updateLatch(const ConcatCandidate &CC0, const ConcatCandidate &CC1) {
+  void updateLatch(const ConcatCandidate &CC0,
+                   const ConcatCandidate &CC1,
+                   bool CanonicalizeBounds) {
     PHINode *CC0_IV = CC0.L->getInductionVariable(SE);
     PHINode *CC1_IV = CC1.L->getInductionVariable(SE);
     auto CC0_LB = Loop::LoopBounds::getBounds(*CC0.L, *CC0_IV, SE);
     auto CC1_LB = Loop::LoopBounds::getBounds(*CC1.L, *CC1_IV, SE);
     Value *CC0FinalIvVal = &CC0_LB->getFinalIVValue();
+    Value *CC1InitIvVal = &CC1_LB->getInitialIVValue();
     Value *CC1FinalIvVal = &CC1_LB->getFinalIVValue();
-    BasicBlock *Latch = CC0.L->getLoopLatch();
+    BasicBlock *Latch = nullptr;
+    if (CanonicalizeBounds) {
+      assert(CC1_IV->getIncomingValueForBlock(CC1.Preheader) == CC1InitIvVal);
+      CC1_IV->setIncomingValueForBlock(CC1.Preheader, CC1FinalIvVal);
+      Latch = CC1.L->getLoopLatch();
+    } else {
+      Latch = CC0.L->getLoopLatch();
+    }
     auto *LatchBr = cast<BranchInst>(Latch->getTerminator());
     ICmpInst *LatchCmp = cast<ICmpInst>(LatchBr->getCondition());
     unsigned NumOps = LatchCmp->getNumOperands();
     for (unsigned OpIdx = 0; OpIdx < NumOps; OpIdx++) {
       auto *Op = LatchCmp->getOperand(OpIdx);
-      // Recall the loops are identical, so we can just
-      // substitute the upper bound from CC1 here.
-      if (Op == CC0FinalIvVal)
-        LatchCmp->setOperand(OpIdx, CC1FinalIvVal);
+      if (CanonicalizeBounds) {
+        if (Op == CC1FinalIvVal) {
+          // extend CC1FinalIvVal by 2x
+          IRBuilder<> IRB(LatchCmp);
+          Value *NewFinalIvVal = IRB.CreateAdd(CC1FinalIvVal, CC1FinalIvVal);
+          LatchCmp->setOperand(OpIdx, NewFinalIvVal);
+        }
+      } else {
+        // Recall the loops are identical, so we can just
+        // substitute the upper bound from CC1 here.
+        if (Op == CC0FinalIvVal)
+          LatchCmp->setOperand(OpIdx, CC1FinalIvVal);
+      }
     }
   }
 
@@ -1644,8 +2142,8 @@ private:
         // use at its site with the PHINode value.
         BasicBlock::iterator L1ExitIP = CC1.ExitBlock->begin();
         PHINode *L1ExitPHI = PHINode::Create(CC0MapI->getType(), 2,
-                                             CC0MapI->getName() + ".afterCC1");
-        L1ExitPHI->insertBefore(L1ExitIP);
+                                             CC0MapI->getName() + ".afterCC1",
+                                             L1ExitIP);
         L1ExitPHI->addIncoming(CC0MapI, CC0MapI->getParent());
         while (!Worklist.empty()) {
           auto *UseI = Worklist.pop_back_val();
@@ -1659,11 +2157,11 @@ private:
       }
 
     // Udpate CC0 with CC1's latch upper bounds
-    updateLatch(CC0, CC1);
-    SE.forgetLoop(CC0.L);
+    updateLatch(CC0, CC1, /* CanonicalizeBounds */ false);
 
     // Delete loop CC1.
     deleteDeadLoop(CC1.L, &DT, &SE, &LI);
+    SE.forgetAllLoops();
 
 #ifndef NDEBUG
     assert(!verifyFunction(*CC0.Header->getParent(), &errs()));
@@ -1754,8 +2252,8 @@ private:
         // use at its site with the PHINode value.
         BasicBlock::iterator L1ExitIP = CC1.ExitBlock->begin();
         PHINode *L1ExitPHI = PHINode::Create(CC0MapI->getType(), 2,
-                                             CC0MapI->getName() + ".afterCC1");
-        L1ExitPHI->insertBefore(L1ExitIP);
+                                             CC0MapI->getName() + ".afterCC1",
+                                             L1ExitIP);
         L1ExitPHI->addIncoming(CC0MapI, CC0MapI->getParent());
         while (!Worklist.empty()) {
           auto *UseI = Worklist.pop_back_val();
@@ -1768,12 +2266,12 @@ private:
         }
       }
 
-    // Udpate CC0 with CC1's latch upper bounds
-    updateLatch(CC0, CC1);
-    SE.forgetLoop(CC0.L);
+    // Udpate CC0 with CC1's latch upper bounds.
+    updateLatch(CC0, CC1, /* CanonicalizeBounds */ false);
 
     // Delete loop CC1.
     deleteDeadLoop(CC1.L, &DT, &SE, &LI);
+    SE.forgetAllLoops();
 
 #ifndef NDEBUG
     assert(!verifyFunction(*CC0.Header->getParent(), &errs()));
@@ -1801,7 +2299,7 @@ PreservedAnalyses LoopConcatPass::run(Function &F,
   auto &AC = AM.getResult<AssumptionAnalysis>(F);
   const DataLayout &DL = F.getDataLayout();
 
-  if (!EnableLoopConcatenation)
+  if (!EnableLoopConcatenation && !LoopConcatCanonicalize)
     return PreservedAnalyses::all();
 
   // Ensure loops are in simplifed form which is a pre-requisite for loop
@@ -1812,8 +2310,10 @@ PreservedAnalyses LoopConcatPass::run(Function &F,
     Changed |=
         simplifyLoop(L, &DT, &LI, &SE, &AC, nullptr, false /* PreserveLCSSA */);
   }
-  if (Changed)
+  if (Changed) {
+    DT.recalculate(F);
     PDT.recalculate(F);
+  }
 
   LoopConcater LF(LI, DT, DI, SE, PDT, ORE, DL);
   Changed |= LF.concatLoops(F);
