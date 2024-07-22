@@ -1041,6 +1041,13 @@ VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
   VPBlockUtils::insertBlockAfter(TopRegion, VecPreheader);
   VPBasicBlock *MiddleVPBB = new VPBasicBlock("middle.block");
   VPBlockUtils::insertBlockAfter(MiddleVPBB, TopRegion);
+
+  VPBasicBlock *HeaderVPBB = new VPBasicBlock("vector.body");
+  VPBasicBlock *LatchVPBB = new VPBasicBlock("vector.latch");
+  VPBlockUtils::insertBlockAfter(LatchVPBB, HeaderVPBB);
+  Plan->getVectorLoopRegion()->setEntry(HeaderVPBB);
+  Plan->getVectorLoopRegion()->setExiting(LatchVPBB);
+
   return Plan;
 }
 #else
