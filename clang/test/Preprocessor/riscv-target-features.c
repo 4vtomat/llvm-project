@@ -1578,6 +1578,14 @@
 // RUN: -march=rv64i_zve32x_xsfmmbase -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-XSFMMBASE %s
 // CHECK-XSFMMBASE: __riscv_xsfmmbase  6000{{$}}
+
+// RUN: %clang --target=riscv32 \
+// RUN: -march=rv32i_zve32f_xsfvfbfa -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-XSFVFBFA %s
+// RUN: %clang --target=riscv64 \
+// RUN: -march=rv64i_zve32f_xsfvfbfa -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-XSFVFBFA %s
+// CHECK-XSFVFBFA: __riscv_xsfvfbfa  1000{{$}}
 // end SIFIVE_CUSTOMIZATION
 
 // RUN: %clang --target=riscv32-unknown-linux-gnu \

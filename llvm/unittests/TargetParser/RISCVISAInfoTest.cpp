@@ -1077,6 +1077,7 @@ R"(All available -march extensions for RISC-V
     xsfpgflushdlone      0.1
     xsfpmpmt             0.1
     xsfvcp               1.0
+    xsfvfbfa             0.1
     xsfvfexpa            0.2
     xsfvfexpa64e         0.2
     xsfvfhbfmin          0.1

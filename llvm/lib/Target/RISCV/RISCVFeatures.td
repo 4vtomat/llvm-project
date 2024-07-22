@@ -1244,6 +1244,15 @@ def HasVendorXSfvqdotq : Predicate<"Subtarget->hasVendorXSfvqdotq()">,
                          AssemblerPredicate<(all_of FeatureVendorXSfvqdotq),
                          "'Xsfvqdotq' (SiFive Vector Quad-Widening 4D Dot Product Instructions)">;
 
+def FeatureVendorXSfvfbfa
+    : RISCVExtension<"xsfvfbfa", 0, 1,
+                     "'XSfvfbfa' (SiFive custom additional BF16 vector compute support)",
+                     [FeatureStdExtZve32f, FeatureStdExtZfbfmin]>;
+def HasVendorXSfvfbfa
+    : Predicate<"Subtarget->hasVendorXSfvfbfa()">,
+      AssemblerPredicate<(all_of FeatureVendorXSfvfbfa),
+                         "'XSfvfbfa' (SiFive custom additional BF16 vector compute support)">;
+
 def FeatureVendorXSfmm32ea
     : RISCVExtension<"xsfmm32ea", 0, 6,
                      "'XSfmm32ea' (TEW=32-bit accumulation) instructions: sf.vset*, sf.vtmv*, sf.mm.f.f (SEW=32), sf.vtzero",
