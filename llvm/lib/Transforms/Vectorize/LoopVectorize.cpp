@@ -6264,7 +6264,7 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
       // VFs, comparison to the scalar loop cost is flawed. For now, for
       // scalable vectors we assume that vectorization is always more profitable
       // than scalar loop.
-      InstructionCode C;
+      InstructionCost C;
       if (UseVPlanCostModel) {
         VPlanCostModel VPCM(getBestPlanFor(VF), *Legal, TTI, *TLI);
         C = VPCM.getCost(
@@ -6277,11 +6277,13 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
                           << " yields an invalid cost. Skipping\n");
         continue;
       }
-      VPCostContext Ctx{&TTI};
+
+      VPCostContext CostCtx(TTI, Legal->getWidestInductionType(),
+                            OrigLoop->getHeader()->getContext(), CM);
       InstructionCost Overhead = 0;
       if (Legal->useVLAVectorizer() &&
           !VectorizerDisableReduceOverheadEstimation && VF.isVector())
-        Overhead = getBestPlanFor(VF).overhead(VF, Ctx);
+        Overhead = getBestPlanFor(VF).overhead(VF, CostCtx);
       VectorizationFactor Candidate(VF, C, ScalarCost.ScalarCost, Overhead);
 #else
       InstructionCost C = CM.expectedCost(VF, &InvalidCosts);
@@ -7573,11 +7575,11 @@ InstructionCost LoopVectorizationCostModel::expectedCost(
     InstructionCost SLPCost = loopBodyCostWithSLP();
     if (SLPCost.isValid()) {
       LLVM_DEBUG(dbgs() << "LV: loop body cost with SLP = " << SLPCost
-                        << "; scalar loop cost = " << Cost.first << '\n');
-      if (SLPCost < Cost.first) {
+                        << "; scalar loop cost = " << Cost << '\n');
+      if (SLPCost < Cost) {
         LLVM_DEBUG(dbgs() << "LV: Override scalar cost of the loop body with "
                              "estimated cost by SLP vectorization\n");
-        Cost.first = SLPCost;
+        Cost = SLPCost;
       }
     }
   }

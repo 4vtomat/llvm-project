@@ -577,14 +577,6 @@ struct VPTransformState {
 #endif // SIFIVE_CUSTOMIZATION
 };
 
-#if SIFIVE_CUSTOMIZATION
-/// A struct to hold the context used during cost calculation.
-struct VPCostContext {
-  /// The TTI to query target costs
-  const TargetTransformInfo *TTI;
-};
-#endif // SIFIVE_CUSTOMIZATION
-
 /// VPBlockBase is the building block of the Hierarchical Control-Flow Graph.
 /// A VPBlockBase can be either a VPBasicBlock or a VPRegionBlock.
 class VPBlockBase {

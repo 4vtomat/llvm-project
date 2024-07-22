@@ -2547,34 +2547,34 @@ InstructionCost VPCSAHeaderPHIRecipe::overhead(ElementCount VF,
   // All True/False Mask
   // Expects a vmset.m for true mask and a vmclr.m for false mask
   IntrinsicCostAttributes ICA(Intrinsic::vp_icmp, MaskTy, {MaskTy, MaskTy});
-  C += Ctx.TTI->getIntrinsicInstrCost(ICA, CostKind);
-  C += Ctx.TTI->getIntrinsicInstrCost(ICA, CostKind);
+  C += Ctx.TTI.getIntrinsicInstrCost(ICA, CostKind);
+  C += Ctx.TTI.getIntrinsicInstrCost(ICA, CostKind);
 
   // CSAInitMask
-  C += Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
+  C += Ctx.TTI.getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
   // CSAInitData
-  C += Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
+  C += Ctx.TTI.getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
 
   // CSAExtractScalar
   // StepVector
   ArrayRef<Value *> Args;
   IntrinsicCostAttributes CostAttrs(Intrinsic::experimental_stepvector,
                                     Int32VecTy, Args);
-  C += Ctx.TTI->getIntrinsicInstrCost(CostAttrs, CostKind);
+  C += Ctx.TTI.getIntrinsicInstrCost(CostAttrs, CostKind);
   // NegOneSplat
-  C += Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, Int32VecTy);
+  C += Ctx.TTI.getShuffleCost(TargetTransformInfo::SK_Broadcast, Int32VecTy);
   // LastIdx
-  C += Ctx.TTI->getMinMaxReductionCost(Intrinsic::smax, Int32VecTy,
-                                       FastMathFlags(), CostKind);
+  C += Ctx.TTI.getMinMaxReductionCost(Intrinsic::smax, Int32VecTy,
+                                      FastMathFlags(), CostKind);
   // ExtractFromVec
-  C += Ctx.TTI->getArithmeticInstrCost(Instruction::ExtractElement, VectorTy,
-                                       CostKind);
+  C += Ctx.TTI.getArithmeticInstrCost(Instruction::ExtractElement, VectorTy,
+                                      CostKind);
   // LastIdxGeZero
-  C += Ctx.TTI->getArithmeticInstrCost(Instruction::ICmp, Int32VecTy, CostKind);
+  C += Ctx.TTI.getArithmeticInstrCost(Instruction::ICmp, Int32VecTy, CostKind);
   // ChooseFromVecOrInit
-  C += Ctx.TTI->getArithmeticInstrCost(Instruction::Select,
-                                       VectorTy->getScalarType(), CostKind);
-  return C * Ctx.TTI->getCSAOverheadFactor();
+  C += Ctx.TTI.getArithmeticInstrCost(Instruction::Select,
+                                      VectorTy->getScalarType(), CostKind);
+  return C * Ctx.TTI.getCSAOverheadFactor();
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
@@ -3100,7 +3100,7 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
   case RecurKind::FAdd:
   case RecurKind::FMul:
   case RecurKind::FMulAdd:
-    return Ctx.TTI->getArithmeticReductionCost(
+    return Ctx.TTI.getArithmeticReductionCost(
         RdxDesc.getOpcode(), VectorTy, RdxDesc.getFastMathFlags(), CostKind);
   case RecurKind::SMin:
   case RecurKind::SMax:
@@ -3111,8 +3111,8 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
   case RecurKind::FMinimum:
   case RecurKind::FMaximum: {
     Intrinsic::ID Id = getMinMaxReductionIntrinsicOp(RdxKind);
-    return Ctx.TTI->getMinMaxReductionCost(
-        Id, VectorTy, RdxDesc.getFastMathFlags(), CostKind);
+    return Ctx.TTI.getMinMaxReductionCost(Id, VectorTy,
+                                          RdxDesc.getFastMathFlags(), CostKind);
   }
   case RecurKind::IAnyOf:
   case RecurKind::FAnyOf: {
@@ -3120,27 +3120,27 @@ InstructionCost VPReductionPHIRecipe::overhead(ElementCount VF,
     // llvm::createAnyOfTargetReduction
     auto *VecCondTy = cast<VectorType>(CmpInst::makeCmpResultType(VectorTy));
     InstructionCost O =
-        Ctx.TTI->getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
-    O += Ctx.TTI->getCmpSelInstrCost(Instruction::ICmp, VectorTy, VecCondTy,
-                                     CmpInst::ICMP_NE, CostKind);
-    O += Ctx.TTI->getArithmeticReductionCost(
+        Ctx.TTI.getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
+    O += Ctx.TTI.getCmpSelInstrCost(Instruction::ICmp, VectorTy, VecCondTy,
+                                    CmpInst::ICMP_NE, CostKind);
+    O += Ctx.TTI.getArithmeticReductionCost(
         Instruction::Or, VecCondTy, RdxDesc.getFastMathFlags(), CostKind);
-    O += Ctx.TTI->getCmpSelInstrCost(Instruction::Select, ElementTy,
-                                     CmpInst::makeCmpResultType(ElementTy),
-                                     CmpInst::BAD_ICMP_PREDICATE, CostKind);
+    O += Ctx.TTI.getCmpSelInstrCost(Instruction::Select, ElementTy,
+                                    CmpInst::makeCmpResultType(ElementTy),
+                                    CmpInst::BAD_ICMP_PREDICATE, CostKind);
     return O;
   }
   case RecurKind::IFindLastIV:
   case RecurKind::FFindLastIV: {
     // Emit reduce.smax to get the last induction value
-    InstructionCost O = Ctx.TTI->getMinMaxReductionCost(
+    InstructionCost O = Ctx.TTI.getMinMaxReductionCost(
         Intrinsic::smax, VectorTy, FastMathFlags(), CostKind);
     // Sentinel value handling
-    O += Ctx.TTI->getCmpSelInstrCost(Instruction::ICmp, ElementTy, nullptr,
-                                     CmpInst::ICMP_NE, CostKind);
-    O += Ctx.TTI->getCmpSelInstrCost(Instruction::Select, ElementTy,
-                                     CmpInst::makeCmpResultType(ElementTy),
-                                     CmpInst::BAD_ICMP_PREDICATE, CostKind);
+    O += Ctx.TTI.getCmpSelInstrCost(Instruction::ICmp, ElementTy, nullptr,
+                                    CmpInst::ICMP_NE, CostKind);
+    O += Ctx.TTI.getCmpSelInstrCost(Instruction::Select, ElementTy,
+                                    CmpInst::makeCmpResultType(ElementTy),
+                                    CmpInst::BAD_ICMP_PREDICATE, CostKind);
     return O;
   }
   case RecurKind::None:
