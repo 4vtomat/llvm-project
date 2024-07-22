@@ -49,13 +49,13 @@ class raw_ostream;
 
 /// This class represents an entry in the slot index list held in the
 /// LiveValues pass.
-class IndexListEntry : public ilist_node<IndexListEntry> {
+class ValueIndexListEntry : public ilist_node<ValueIndexListEntry> {
   Value *V = nullptr;
   unsigned Index = EMPTY_INDEX;
 
 public:
-  IndexListEntry() = default;
-  IndexListEntry(Value *V, unsigned Index) : V(V), Index(Index) {}
+  ValueIndexListEntry() = default;
+  ValueIndexListEntry(Value *V, unsigned Index) : V(V), Index(Index) {}
 
   Value *getVal() const { return V; }
   void setVal(Value *V) { this->V = V; }
@@ -65,8 +65,8 @@ public:
 };
 
 template <>
-struct ilist_alloc_traits<IndexListEntry>
-    : public ilist_noalloc_traits<IndexListEntry> {};
+struct ilist_alloc_traits<ValueIndexListEntry>
+    : public ilist_noalloc_traits<ValueIndexListEntry> {};
 
 /// ValueSlotIndex - An opaque wrapper around value indexes.
 class ValueSlotIndex {
@@ -96,9 +96,9 @@ public:
   };
 
 private:
-  PointerIntPair<IndexListEntry *, 2, unsigned> lie;
+  PointerIntPair<ValueIndexListEntry *, 2, unsigned> lie;
 
-  IndexListEntry *listEntry() const {
+  ValueIndexListEntry *listEntry() const {
     assert(isValid() && "Attempt to compare reserved index.");
     return lie.getPointer();
   }
@@ -114,10 +114,10 @@ public:
   /// Construct an invalid index.
   ValueSlotIndex() = default;
 
-  // Creates a ValueSlotIndex from an IndexListEntry and a slot. Generally
+  // Creates a ValueSlotIndex from an ValueIndexListEntry and a slot. Generally
   // should not be used. This method is only public to facilitate writing
   // certain unit tests.
-  ValueSlotIndex(IndexListEntry *entry, unsigned slot) : lie(entry, slot) {
+  ValueSlotIndex(ValueIndexListEntry *entry, unsigned slot) : lie(entry, slot) {
     assert(isValid() && "Not a valid Value Slot Index");
   }
 

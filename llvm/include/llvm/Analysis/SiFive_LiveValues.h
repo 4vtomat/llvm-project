@@ -88,7 +88,7 @@ private:
   /// Instruction In sets.
   DenseMap<const Instruction *, SparseBitVector<>> InstrLiveIn;
   DenseMap<const Value *, ValueLiveInterval> LIs;
-  DenseMap<const Value *, IndexListEntry> Indices;
+  DenseMap<const Value *, ValueIndexListEntry> Indices;
   SmallPtrSet<const Value *, 10> ResidentValues;
   bool LiveValuesAvailable = false;
 
