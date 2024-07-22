@@ -70,7 +70,9 @@ inline static bool isValidLMUL(unsigned LMUL, bool Fractional) {
 }
 
 unsigned encodeVTYPE(RISCVII::VLMUL VLMUL, unsigned SEW, bool TailAgnostic,
-                     bool MaskAgnostic);
+#if SIFIVE_CUSTOMIZATION
+                     bool MaskAgnostic, bool IsAltfmt);
+#endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
 unsigned encodeMammothVType(unsigned SEW, unsigned Widen, bool Altfmt);
@@ -130,6 +132,10 @@ static inline bool isValidMammothVType(unsigned VTypeI) {
 inline static bool isTailAgnostic(unsigned VType) { return VType & 0x40; }
 
 inline static bool isMaskAgnostic(unsigned VType) { return VType & 0x80; }
+
+#if SIFIVE_CUSTOMIZATION
+inline static bool isAltfmt(unsigned VType) { return VType & 0x100; }
+#endif // SIFIVE_CUSTOMIZATION
 
 void printVType(unsigned VType, raw_ostream &OS);
 

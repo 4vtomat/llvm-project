@@ -208,7 +208,10 @@ void RISCVInstPrinter::printVTypeI(const MCInst *MI, unsigned OpNo,
   // Print the raw immediate for reserved values: vlmul[2:0]=4, vsew[2:0]=0b1xx,
   // or non-zero in bits 8 and above.
   if (RISCVVType::getVLMUL(Imm) == RISCVII::VLMUL::LMUL_RESERVED ||
-      RISCVVType::getSEW(Imm) > 64 || (Imm >> 8) != 0) {
+#if SIFIVE_CUSTOMIZATION
+      RISCVVType::getSEW(Imm) > 64 || (Imm >> 9) != 0 ||
+      ((Imm >> 8) == 1 && RISCVVType::getSEW(Imm) > 16)) {
+#endif // SIFIVE_CUSTOMIZATION
     O << formatImm(Imm);
     return;
   }

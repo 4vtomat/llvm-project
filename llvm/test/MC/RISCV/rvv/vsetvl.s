@@ -171,3 +171,17 @@ vsetvli a2, a0, e32, m1
 # CHECK-ENCODING: [0x57,0x76,0x05,0x01]
 # CHECK-ERROR: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32x' (Vector Extensions for Embedded Processors)
 # CHECK-UNKNOWN: 01057657 <unknown>
+
+#if SIFIVE_CUSTOMIZATION
+vsetvli a2, a0, e16alt, m1
+# CHECK-INST: vsetvli a2, a0, e16alt, m1, tu, mu
+# CHECK-ENCODING: [0x57,0x76,0x85,0x10]
+# CHECK-ERROR: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32x' (Vector Extensions for Embedded Processors)
+# CHECK-UNKNOWN: 10857657 <unknown>
+
+vsetvli a2, a0, e8alt, m1
+# CHECK-INST: vsetvli a2, a0, e8alt, m1, tu, mu
+# CHECK-ENCODING: [0x57,0x76,0x05,0x10]
+# CHECK-ERROR: instruction requires the following: 'V' (Vector Extension for Application Processors), 'Zve32x' (Vector Extensions for Embedded Processors)
+# CHECK-UNKNOWN: 10057657 <unknown>
+#endif // SIFIVE_CUSTOMIZATION
