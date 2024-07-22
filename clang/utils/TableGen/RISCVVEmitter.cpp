@@ -692,9 +692,7 @@ void RVVEmitter::createRVVIntrinsics(
             Name, SuffixStr, OverloadedName, OverloadedSuffixStr, MaskedIRName,
             /*IsMasked=*/true, HasMaskedOffOperand, HasVL, MaskedPolicyScheme,
             SupportOverloading, HasBuiltinAlias, ManualCodegen, *MaskTypes,
-<<<<<<< HEAD
-            IntrinsicTypes, RequiredFeatures, NF, DefaultPolicy,
-            HasFRMRoundModeOp));
+            IntrinsicTypes, NF, DefaultPolicy, HasFRMRoundModeOp));
 
 #if SIFIVE_CUSTOMIZATION
         std::optional<RVVTypes> NTLMaskTypes =
@@ -705,13 +703,9 @@ void RVVEmitter::createRVVIntrinsics(
               MaskedIRName,
               /*IsMasked=*/true, HasMaskedOffOperand, HasVL, MaskedPolicyScheme,
               SupportOverloading, HasBuiltinAlias, ManualCodegen, *NTLMaskTypes,
-              IntrinsicTypes, RequiredFeatures, NF, NonTemporalDefaultPolicy,
-              HasFRMRoundModeOp));
+              IntrinsicTypes, NF, NonTemporalDefaultPolicy, HasFRMRoundModeOp));
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
-            IntrinsicTypes, NF, DefaultPolicy, HasFRMRoundModeOp));
->>>>>>> 266a5a9cb9daa96c1eeaebc18e10f5a37d638734
         if (MaskedPolicyScheme == PolicyScheme::SchemeNone)
           continue;
         for (auto P : SupportedMaskedPolicies) {
