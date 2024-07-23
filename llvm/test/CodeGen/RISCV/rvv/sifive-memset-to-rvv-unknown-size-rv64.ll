@@ -5,6 +5,8 @@
 ; RUN:   -verify-machineinstrs < %s | FileCheck %s --check-prefixes=ALIGN
 ; RUN: llc -mtriple=riscv64 -mattr=+v -mcpu=sifive-x280 -riscv-mem-to-rvv=true -riscv-mem-to-rvv-dlen-align=true -riscv-mem-to-rvv-lmul=8 -O3 \
 ; RUN:   --riscv-v-vector-bits-max=512 -verify-machineinstrs < %s | FileCheck %s --check-prefixes=ALIGN-VLEN
+; RUN: llc -mtriple=riscv64 -mattr=+v -mcpu=sifive-p470 -riscv-mem-to-rvv=true -riscv-mem-to-rvv-dlen-align=true -riscv-mem-to-rvv-lmul=8 -O3 \
+; RUN:   -verify-machineinstrs < %s | FileCheck %s --check-prefixes=ALIGN-VLEN-MALLARD
 
 define void @UnKnownSize(i8* nocapture readonly %dst, i8 %val, i64 signext %n) {
 ; NOALIGN-LABEL: UnKnownSize:
@@ -70,6 +72,30 @@ define void @UnKnownSize(i8* nocapture readonly %dst, i8 %val, i64 signext %n) {
 ; ALIGN-VLEN-NEXT:    bnez a1, .LBB0_1
 ; ALIGN-VLEN-NEXT:  # %bb.2: # %memset-post-loop
 ; ALIGN-VLEN-NEXT:    ret
+;
+; ALIGN-VLEN-MALLARD-LABEL: UnKnownSize:
+; ALIGN-VLEN-MALLARD:       # %bb.0: # %entry
+; ALIGN-VLEN-MALLARD-NEXT:    vsetvli a3, zero, e8, m8, ta, ma
+; ALIGN-VLEN-MALLARD-NEXT:    minu a3, a3, a2
+; ALIGN-VLEN-MALLARD-NEXT:    vsetvli zero, a3, e8, m8, ta, ma
+; ALIGN-VLEN-MALLARD-NEXT:    vmv.v.x v8, a1
+; ALIGN-VLEN-MALLARD-NEXT:    andi a1, a0, 63
+; ALIGN-VLEN-MALLARD-NEXT:    li a3, 64
+; ALIGN-VLEN-MALLARD-NEXT:    sub a3, a3, a1
+; ALIGN-VLEN-MALLARD-NEXT:    minu a1, a3, a2
+; ALIGN-VLEN-MALLARD-NEXT:    vsetvli a3, a1, e8, m8, ta, ma
+; ALIGN-VLEN-MALLARD-NEXT:    vse8.v v8, (a0)
+; ALIGN-VLEN-MALLARD-NEXT:    sub a1, a2, a3
+; ALIGN-VLEN-MALLARD-NEXT:    add a0, a0, a3
+; ALIGN-VLEN-MALLARD-NEXT:  .LBB0_1: # %memset-forward-loop
+; ALIGN-VLEN-MALLARD-NEXT:    # =>This Inner Loop Header: Depth=1
+; ALIGN-VLEN-MALLARD-NEXT:    vsetvli a2, a1, e8, m8, ta, ma
+; ALIGN-VLEN-MALLARD-NEXT:    vse8.v v8, (a0)
+; ALIGN-VLEN-MALLARD-NEXT:    add a0, a0, a2
+; ALIGN-VLEN-MALLARD-NEXT:    sub a1, a1, a2
+; ALIGN-VLEN-MALLARD-NEXT:    bnez a1, .LBB0_1
+; ALIGN-VLEN-MALLARD-NEXT:  # %bb.2: # %memset-post-loop
+; ALIGN-VLEN-MALLARD-NEXT:    ret
 entry:
   tail call void @llvm.memset.p0i8.i8.i64(i8* align 1 %dst, i8 %val, i64 %n, i1 false)
   ret void
