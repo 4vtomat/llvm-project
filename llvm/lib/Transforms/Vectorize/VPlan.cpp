@@ -1025,40 +1025,27 @@ VPlan::~VPlan() {
 #endif // SIFIVE_CUSTOMIZATION
 }
 
-#if SIFIVE_CUSTOMIZATION
 VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
-                                   BasicBlock *PH, bool IsUncountable) {
-  VPIRBasicBlock *Preheader = new VPIRBasicBlock(PH);
+                                   bool RequiresScalarEpilogueCheck,
+                                   bool TailFolded,
+#if SIFIVE_CUSTOMIZATION
+                                   bool IsUncountable,
+#endif // SIFIVE_CUSTOMIZATION
+                                   Loop *TheLoop) {
+  VPIRBasicBlock *Entry = new VPIRBasicBlock(TheLoop->getLoopPreheader());
   VPBasicBlock *VecPreheader = new VPBasicBlock("vector.ph");
-  auto Plan = std::make_unique<VPlan>(Preheader, VecPreheader, IsUncountable);
+#if SIFIVE_CUSTOMIZATION
+  auto Plan = std::make_unique<VPlan>(Entry, VecPreheader, IsUncountable);
   assert((!IsUncountable || !TripCount) &&
          "Trip Count must not be set when loop is not countable");
   if (!IsUncountable)
     Plan->TripCount =
         vputils::getOrCreateVPValueForSCEVExpr(*Plan, TripCount, SE);
-  // Create empty VPRegionBlock, to be filled during processing later.
-  auto *TopRegion = new VPRegionBlock("vector loop", false /*isReplicator*/);
-  VPBlockUtils::insertBlockAfter(TopRegion, VecPreheader);
-  VPBasicBlock *MiddleVPBB = new VPBasicBlock("middle.block");
-  VPBlockUtils::insertBlockAfter(MiddleVPBB, TopRegion);
-
-  VPBasicBlock *HeaderVPBB = new VPBasicBlock("vector.body");
-  VPBasicBlock *LatchVPBB = new VPBasicBlock("vector.latch");
-  VPBlockUtils::insertBlockAfter(LatchVPBB, HeaderVPBB);
-  Plan->getVectorLoopRegion()->setEntry(HeaderVPBB);
-  Plan->getVectorLoopRegion()->setExiting(LatchVPBB);
-
-  return Plan;
-}
 #else
-VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
-                                   bool RequiresScalarEpilogueCheck,
-                                   bool TailFolded, Loop *TheLoop) {
-  VPIRBasicBlock *Entry = new VPIRBasicBlock(TheLoop->getLoopPreheader());
-  VPBasicBlock *VecPreheader = new VPBasicBlock("vector.ph");
   auto Plan = std::make_unique<VPlan>(Entry, VecPreheader);
   Plan->TripCount =
       vputils::getOrCreateVPValueForSCEVExpr(*Plan, TripCount, SE);
+#endif // SIFIVE_CUSTOMIZATION
   // Create VPRegionBlock, with empty header and latch blocks, to be filled
   // during processing later.
   VPBasicBlock *HeaderVPBB = new VPBasicBlock("vector.body");
@@ -1108,7 +1095,6 @@ VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
                        ScalarLatchTerm->getDebugLoc());
   return Plan;
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
                              Value *CanonicalIVStartValue,

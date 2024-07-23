@@ -4006,12 +4006,8 @@ public:
   MapVector<PHINode *, VPCSAState *> const &getCSAStates() const {
     return CSAStates;
   }
-  /// Create an initial VPlan with preheader and entry blocks. Creates a
-  /// VPExpandSCEVRecipe for \p TripCount and uses it as plan's trip count.
-  static VPlanPtr createInitialVPlan(const SCEV *TripCount,
-                                     ScalarEvolution &PSE, BasicBlock *PH,
-                                     bool IsUncountable);
-#else
+#endif // SIFIVE_CUSTOMIZATION
+
   /// Create initial VPlan, having an "entry" VPBasicBlock (wrapping
   /// original scalar pre-header ) which contains SCEV expansions that need
   /// to happen before the CFG is modified; a VPBasicBlock for the vector
@@ -4022,8 +4018,9 @@ public:
   static VPlanPtr createInitialVPlan(const SCEV *TripCount,
                                      ScalarEvolution &PSE,
                                      bool RequiresScalarEpilogueCheck,
-                                     bool TailFolded, Loop *TheLoop);
-#endif // SIFIVE_CUSTOMIZATION
+                                     bool TailFolded,
+                                     bool IsUncountable, // SIFIVE
+                                     Loop *TheLoop);
 
   /// Prepare the plan for execution, setting up the required live-in values.
   void prepareToExecute(Value *TripCount, Value *VectorTripCount,

@@ -3695,11 +3695,6 @@ PHINode *InnerLoopVectorizer::createInductionResumeValue(
   // Copy original phi DL over to the new one.
   BCResumeVal->setDebugLoc(OrigPhi->getDebugLoc());
 
-#if SIFIVE_CUSTOMIZATION
-  // Merge values coming from middle block for non-tail-folding cases.
-  if (!useVLAVectorizer() || Cost->requiresScalarEpilogue(VF.isVector()) ||
-      !Cost->foldTailByMasking())
-#endif // SIFIVE_CUSTOMIZATION
   // The new PHI merges the original incoming value, in case of a bypass,
   // or the value at the end of the vectorized loop.
   BCResumeVal->addIncoming(EndValue, LoopMiddleBlock);
@@ -9362,8 +9357,15 @@ VPlan &LoopVectorizationPlanner::getBestPlan() const {
 
   VPlan *BestPlan = &FirstPlan;
   ElementCount ScalarVF = ElementCount::getFixed(1);
-  assert(hasPlanWithVF(ScalarVF) &&
-         "More than a single plan/VF w/o any plan having scalar VF");
+#if SIFIVE_CUSTOMIZATION
+  // For EVL-vectorization in downstream compiler we don't expect scalar VPlan
+  // to be available.
+  // TODO: That needs to be fixed as scalar VPlan does not contain EVL-based
+  // recipes
+  if (!Legal->useVLAVectorizer())
+#endif
+    assert(hasPlanWithVF(ScalarVF) &&
+           "More than a single plan/VF w/o any plan having scalar VF");
 
   // TODO: Compute scalar cost using VPlan-based cost model.
   InstructionCost ScalarCost = CM.expectedCost(ScalarVF);
@@ -11147,9 +11149,9 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   if (!IsUncountable)
     TripCountSCEV =
         createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop);
-  VPlanPtr Plan =
-      VPlan::createInitialVPlan(TripCountSCEV, *PSE.getSE(),
-                                OrigLoop->getLoopPreheader(), IsUncountable);
+  VPlanPtr Plan = VPlan::createInitialVPlan(
+      TripCountSCEV, *PSE.getSE(), /*RequiresScalarEpilogueCheck=*/true,
+      /*TailFolded=*/true, IsUncountable, OrigLoop);
   if (IsUncountable) {
     Plan->createInitEVL();
   }
@@ -11502,9 +11504,9 @@ VPlanPtr LoopVectorizationPlanner::buildVPlan(VFRange &Range) {
       IsUncountable
           ? nullptr
           : createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop);
-  auto Plan =
-      VPlan::createInitialVPlan(TripCountSCEV, *PSE.getSE(),
-                                OrigLoop->getLoopPreheader(), IsUncountable);
+  auto Plan = VPlan::createInitialVPlan(
+      TripCountSCEV, *PSE.getSE(), /*RequiresScalarEpilogueCheck=*/true,
+      /*TailFolded=*/true, IsUncountable, OrigLoop);
 #else
   auto Plan = VPlan::createInitialVPlan(
       createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop),
