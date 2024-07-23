@@ -11143,6 +11143,12 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   // modified; a basic block for the vector pre-header, followed by a region for
   // the vector loop, followed by the middle basic block. The skeleton vector
   // loop region contains a header and latch basic blocks.
+  bool RequiresScalarEpilogueCheck =
+      LoopVectorizationPlanner::getDecisionAndClampRange(
+          [this](ElementCount VF) {
+            return !CM.requiresScalarEpilogue(VF.isVector());
+          },
+          Range);
 #if SIFIVE_CUSTOMIZATION
   const bool IsUncountable = Legal->isVectorizableUncountable();
   const SCEV *TripCountSCEV = nullptr;
@@ -11150,18 +11156,12 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     TripCountSCEV =
         createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop);
   VPlanPtr Plan = VPlan::createInitialVPlan(
-      TripCountSCEV, *PSE.getSE(), /*RequiresScalarEpilogueCheck=*/true,
-      /*TailFolded=*/true, IsUncountable, OrigLoop);
+      TripCountSCEV, *PSE.getSE(), RequiresScalarEpilogueCheck,
+      CM.foldTailByMasking(), IsUncountable, OrigLoop);
   if (IsUncountable) {
     Plan->createInitEVL();
   }
 #else
-  bool RequiresScalarEpilogueCheck =
-      LoopVectorizationPlanner::getDecisionAndClampRange(
-          [this](ElementCount VF) {
-            return !CM.requiresScalarEpilogue(VF.isVector());
-          },
-          Range);
   VPlanPtr Plan = VPlan::createInitialVPlan(
       createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop),
       *PSE.getSE(), RequiresScalarEpilogueCheck, CM.foldTailByMasking(),
@@ -11506,7 +11506,7 @@ VPlanPtr LoopVectorizationPlanner::buildVPlan(VFRange &Range) {
           : createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop);
   auto Plan = VPlan::createInitialVPlan(
       TripCountSCEV, *PSE.getSE(), /*RequiresScalarEpilogueCheck=*/true,
-      /*TailFolded=*/true, IsUncountable, OrigLoop);
+      /*TailFolded=*/false, IsUncountable, OrigLoop);
 #else
   auto Plan = VPlan::createInitialVPlan(
       createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop),
