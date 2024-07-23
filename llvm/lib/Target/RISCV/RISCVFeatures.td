@@ -1214,6 +1214,27 @@ def FeatureVendorXSfpmpmt
     : RISCVExtension<"xsfpmpmt", 0, 1,
                      "'Xsfpmpmt' (SiFive PMP-based Memory Types Extension)">;
 
+def FeatureVendorXSfvfbfexp16e
+    : RISCVExtension<"xsfvfbfexp16e", 0, 1,
+                     "'Xsfvfbfexp16e' (SiFive Vector Floating-Point Exponential Function Instruction, BFloat16)">;
+def HasVendorXSfvfbfexp16e : Predicate<"Subtarget->hasVendorXSfvfbfexp16e()">;
+
+def FeatureVendorXSfvfexp16e
+    : RISCVExtension<"xsfvfexp16e", 0, 1,
+                     "'Xsfvfexp16e' (SiFive Vector Floating-Point Exponential Function Instruction, Half Precision)",
+                     [FeatureStdExtZvfh]>;
+def HasVendorXSfvfexp16e : Predicate<"Subtarget->hasVendorXSfvfexp16e()">;
+
+def FeatureVendorXSfvfexp32e
+    : RISCVExtension<"xsfvfexp32e", 0, 1,
+                     "'Xsfvfexp32e' (SiFive Vector Floating-Point Exponential Function Instruction, Single Precision)",
+                     [FeatureStdExtZve32f]>;
+def HasVendorXSfvfexp32e : Predicate<"Subtarget->hasVendorXSfvfexp32e()">;
+
+def HasVendorXSfvfexpAny : Predicate<"Subtarget->hasVendorXSfvfbfexp16e() || Subtarget->hasVendorXSfvfexp16e() || Subtarget->hasVendorXSfvfexp32e()">,
+                           AssemblerPredicate<(any_of FeatureVendorXSfvfbfexp16e, FeatureVendorXSfvfexp16e, FeatureVendorXSfvfexp32e),
+                           "'Xsfvfbfexp16e/Xsfvfexp16e/Xsfvfexp32e' (SiFive Vector Floating-Point Exponential Function Instruction)">;
+
 def FeatureVendorXSfvfexpa
     : RISCVExtension<"xsfvfexpa", 0, 2,
                      "'Xsfvfexpa' (SiFive Vector Floating-Point Exponential Approximation Instruction)",
@@ -1224,7 +1245,7 @@ def HasVendorXSfvfexpa : Predicate<"Subtarget->hasVendorXSfvfexpa()">,
 
 def FeatureVendorXSfvfexpa64e
     : RISCVExtension<"xsfvfexpa64e", 0, 2,
-                     "'Xsfvfexpa64e' (SiFive Vector Floating-Point Exponential Approximation Instruction with Double-Percision)",
+                     "'Xsfvfexpa64e' (SiFive Vector Floating-Point Exponential Approximation Instruction with Double-Precision)",
                      [FeatureVendorXSfvfexpa, FeatureStdExtZve64d]>;
 def HasVendorXSfvfexpa64e : Predicate<"Subtarget->hasVendorXSfvfexpa64e()">;
 

@@ -36,6 +36,9 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+experimental-sswg %s -o - | FileCheck --check-prefixes=CHECK,RV32SSWG %s
 ; RUN: llc -mtriple=riscv32 -mattr=+experimental-ssnpm %s -o - | FileCheck --check-prefixes=CHECK,RV32SSNPM %s
 ; RUN: llc -mtriple=riscv32 -mattr=+xsfpmpmt %s -o - | FileCheck --check-prefixes=CHECK,RV32XSFPMPMT %s
+; RUN: llc -mtriple=riscv32 -mattr=+experimental-zvfbfmin -mattr=+xsfvfbfexp16e %s -o - | FileCheck --check-prefixes=CHECK,RV32XSFVFBFEXP16E %s
+; RUN: llc -mtriple=riscv32 -mattr=+xsfvfexp16e %s -o - | FileCheck --check-prefixes=CHECK,RV32XSFVFEXP16E %s
+; RUN: llc -mtriple=riscv32 -mattr=+xsfvfexp32e %s -o - | FileCheck --check-prefixes=CHECK,RV32XSFVFEXP32E %s
 ; RUN: llc -mtriple=riscv32 -mattr=+xsfvfexpa %s -o - | FileCheck --check-prefixes=CHECK,RV32XSFVFEXPA %s
 ; RUN: llc -mtriple=riscv32 -mattr=+xsfvfexpa64e %s -o - | FileCheck --check-prefixes=CHECK,RV32XSFVFEXPA64E %s
 ; RUN: llc -mtriple=riscv32 -mattr=+xsfpgflushdlone %s -o - | FileCheck --check-prefixes=CHECK,RV32XSFPGFLUSHDLONE %s
@@ -90,6 +93,9 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+experimental-sswg %s -o - | FileCheck --check-prefixes=CHECK,RV64SSWG %s
 ; RUN: llc -mtriple=riscv64 -mattr=+experimental-ssnpm %s -o - | FileCheck --check-prefixes=CHECK,RV64SSNPM %s
 ; RUN: llc -mtriple=riscv64 -mattr=+xsfpmpmt %s -o - | FileCheck --check-prefixes=CHECK,RV64XSFPMPMT %s
+; RUN: llc -mtriple=riscv64 -mattr=+experimental-zvfbfmin -mattr=+xsfvfbfexp16e %s -o - | FileCheck --check-prefixes=CHECK,RV64XSFVFBFEXP16E %s
+; RUN: llc -mtriple=riscv64 -mattr=+xsfvfexp16e %s -o - | FileCheck --check-prefixes=CHECK,RV64XSFVFEXP16E %s
+; RUN: llc -mtriple=riscv64 -mattr=+xsfvfexp32e %s -o - | FileCheck --check-prefixes=CHECK,RV64XSFVFEXP32E %s
 ; RUN: llc -mtriple=riscv64 -mattr=+xsfvfexpa %s -o - | FileCheck --check-prefixes=CHECK,RV64XSFVFEXPA %s
 ; RUN: llc -mtriple=riscv64 -mattr=+xsfvfexpa64e %s -o - | FileCheck --check-prefixes=CHECK,RV64XSFVFEXPA64E %s
 ; RUN: llc -mtriple=riscv64 -mattr=+xsfpgflushdlone %s -o - | FileCheck --check-prefixes=CHECK,RV64XSFPGFLUSHDLONE %s
@@ -154,6 +160,9 @@
 ; RV32SSWG: .attribute 5, "rv32i2p1_sswg0p3"
 ; RV32SSNPM: .attribute 5, "rv32i2p1_ssnpm1p0"
 ; RV32XSFPMPMT: .attribute 5, "rv32i2p1_xsfpmpmt0p1"
+; RV32XSFVFBFEXP16E: .attribute 5, "rv32i2p1_f2p2_zicsr2p0_zve32f1p0_zve32x1p0_zvfbfmin1p0_zvl32b1p0_xsfvfbfexp16e0p1"
+; RV32XSFVFEXP16E: .attribute 5, "rv32i2p1_f2p2_zicsr2p0_zfhmin1p0_zve32f1p0_zve32x1p0_zvfh1p0_zvfhmin1p0_zvl32b1p0_xsfvfexp16e0p1"
+; RV32XSFVFEXP32E: .attribute 5, "rv32i2p1_f2p2_zicsr2p0_zve32f1p0_zve32x1p0_zvl32b1p0_xsfvfexp32e0p1"
 ; RV32XSFVFEXPA: .attribute 5, "rv32i2p1_f2p2_zicsr2p0_zve32f1p0_zve32x1p0_zvl32b1p0_xsfvfexpa0p2"
 ; RV32XSFVFEXPA64E: .attribute 5, "rv32i2p1_f2p2_d2p2_zicsr2p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl32b1p0_zvl64b1p0_xsfvfexpa0p2_xsfvfexpa64e0p2"
 ; RV32XSFPGFLUSHDLONE: .attribute 5, "rv32i2p1_xsfpgflushdlone0p1"
@@ -208,6 +217,9 @@
 ; RV64SSWG: .attribute 5, "rv64i2p1_sswg0p3"
 ; RV64SSNPM: .attribute 5, "rv64i2p1_ssnpm1p0"
 ; RV64XSFPMPMT: .attribute 5, "rv64i2p1_xsfpmpmt0p1"
+; RV64XSFVFBFEXP16E: .attribute 5, "rv64i2p1_f2p2_zicsr2p0_zve32f1p0_zve32x1p0_zvfbfmin1p0_zvl32b1p0_xsfvfbfexp16e0p1"
+; RV64XSFVFEXP16E: .attribute 5, "rv64i2p1_f2p2_zicsr2p0_zfhmin1p0_zve32f1p0_zve32x1p0_zvfh1p0_zvfhmin1p0_zvl32b1p0_xsfvfexp16e0p1"
+; RV64XSFVFEXP32E: .attribute 5, "rv64i2p1_f2p2_zicsr2p0_zve32f1p0_zve32x1p0_zvl32b1p0_xsfvfexp32e0p1"
 ; RV64XSFVFEXPA: .attribute 5, "rv64i2p1_f2p2_zicsr2p0_zve32f1p0_zve32x1p0_zvl32b1p0_xsfvfexpa0p2"
 ; RV64XSFVFEXPA64E: .attribute 5, "rv64i2p1_f2p2_d2p2_zicsr2p0_zve32f1p0_zve32x1p0_zve64d1p0_zve64f1p0_zve64x1p0_zvl32b1p0_zvl64b1p0_xsfvfexpa0p2_xsfvfexpa64e0p2"
 ; RV64XSFPGFLUSHDLONE: .attribute 5, "rv64i2p1_xsfpgflushdlone0p1"

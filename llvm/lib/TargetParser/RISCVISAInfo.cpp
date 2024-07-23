@@ -945,6 +945,12 @@ Error RISCVISAInfo::checkDependency() {
                                "co-exist at the same time.");
     HasXSfmmTE = true;
   }
+
+  if (Exts.count("xsfvfbfexp16e") &&
+      !(Exts.count("zvfbfmin") || Exts.count("xsfvfbfa")))
+    return createStringError(errc::invalid_argument,
+                             "'xsfvfbfexp16e' requires 'zvfbfmin' or "
+                             "'xsfvfbfa' extension to also be specified");
 #endif // SIFIVE_CUSTOMIZATION
 
   if (Exts.count("zvbb") && !HasVector)
