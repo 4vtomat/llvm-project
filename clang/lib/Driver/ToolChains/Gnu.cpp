@@ -2186,9 +2186,24 @@ static void findRISCVMultilibs(const Driver &D,
       MultilibBuilder("lib64/lp64f").flag("-m64").flag("-mabi=lp64f");
   MultilibBuilder Lp64d =
       MultilibBuilder("lib64/lp64d").flag("-m64").flag("-mabi=lp64d");
+
+#if SIFIVE_CUSTOMIZATION
+  StringRef GCCPathForCFI =
+      "rv64imafdc_zicsr_zifencei_zicfilp_zicfiss/lp64d/cfi";
+  MultilibBuilder Lp64dCFI =
+      MultilibBuilder(GCCPathForCFI, "lib-cfi", GCCPathForCFI)
+          .flag("-m64")
+          .flag("-mabi=lp64d")
+          .flag("-fcf-protection=full");
+#endif // SIFIVE_CUSTOMIZATION
+
   MultilibSet RISCVMultilibs =
       MultilibSetBuilder()
+#if SIFIVE_CUSTOMIZATION
+          .Either({Ilp32, Ilp32f, Ilp32d, Lp64, Lp64f, Lp64d, Lp64dCFI})
+#else
           .Either({Ilp32, Ilp32f, Ilp32d, Lp64, Lp64f, Lp64d})
+#endif // SIFIVE_CUSTOMIZATION
           .makeMultilibSet()
           .FilterOut(NonExistent);
 
@@ -2204,6 +2219,12 @@ static void findRISCVMultilibs(const Driver &D,
   addMultilibFlag(ABIName == "lp64", "-mabi=lp64", Flags);
   addMultilibFlag(ABIName == "lp64f", "-mabi=lp64f", Flags);
   addMultilibFlag(ABIName == "lp64d", "-mabi=lp64d", Flags);
+#if SIFIVE_CUSTOMIZATION
+  bool CFProtectionFull =
+      Args.getLastArgValue(options::OPT_fcf_protection_EQ, "") == "full";
+
+  addMultilibFlag(CFProtectionFull, "-fcf-protection=full", Flags);
+#endif // SIFIVE_CUSTOMIZATION
 
   if (RISCVMultilibs.select(D, Flags, Result.SelectedMultilibs))
     Result.Multilibs = RISCVMultilibs;

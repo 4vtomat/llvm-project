@@ -215,6 +215,11 @@ static StringRef getOSLibDir(const llvm::Triple &Triple, const ArgList &Args) {
 
   if (Triple.getArch() == llvm::Triple::riscv32)
     return "lib32";
+#if SIFIVE_CUSTOMIZATION
+  if ((Triple.getArch() == llvm::Triple::riscv64) &&
+      (Args.getLastArgValue(options::OPT_fcf_protection_EQ, "") == "full"))
+    return "lib-cfi";
+#endif // SIFIVE_CUSTOMIZATION
 
   return Triple.isArch32Bit() ? "lib" : "lib64";
 }
@@ -579,6 +584,11 @@ std::string Linux::getDynamicLinker(const ArgList &Args) const {
     StringRef ArchName = llvm::Triple::getArchTypeName(Arch);
     StringRef ABIName = tools::riscv::getRISCVABI(Args, Triple);
     LibDir = "lib";
+#if SIFIVE_CUSTOMIZATION
+    if (Args.getLastArgValue(options::OPT_fcf_protection_EQ, "") == "full")
+      Loader = ("ld-linux-" + ArchName + "-" + ABIName + "-cfi.so.1").str();
+    else
+#endif // SIFIVE_CUSTOMIZATION
     Loader = ("ld-linux-" + ArchName + "-" + ABIName + ".so.1").str();
     break;
   }
