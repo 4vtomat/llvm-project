@@ -387,10 +387,9 @@
 // RV32-EXPERIMENTAL-NOFLAG: error: invalid arch name 'rv32izalasr'
 // RV32-EXPERIMENTAL-NOFLAG: requires '-menable-experimental-extensions'
 
-// RUN: not %clang --target=riscv32-unknown-elf -march=rv32izalasr -menable-experimental-extensions -### %s \
+// RUN: %clang --target=riscv32-unknown-elf -march=rv32izalasr -menable-experimental-extensions -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-NOVERS %s
-// RV32-EXPERIMENTAL-NOVERS: error: invalid arch name 'rv32izalasr'
-// RV32-EXPERIMENTAL-NOVERS: experimental extension requires explicit version number
+// RV32-EXPERIMENTAL-NOVERS: extension 'zalasr' is experimental and requires explicit version; assuming version '0.1'
 
 // RUN: not %clang --target=riscv32-unknown-elf -march=rv32izalasr0p7 -menable-experimental-extensions -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-BADVERS %s

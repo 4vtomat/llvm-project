@@ -83,18 +83,25 @@
 // CHECK-NEXT:     zvfh                 1.0       'Zvfh' (Vector Half-Precision Floating-Point)
 // CHECK-NEXT:     zvfhmin              1.0       'Zvfhmin' (Vector Half-Precision Floating-Point Minimal)
 // CHECK-NEXT:     zvkb                 1.0       'Zvkb' (Vector Bit-manipulation used in Cryptography)
+// CHECK-NEXT:     zvkb                 0.1       'Zvkb' (Vector Bit-manipulation used in Cryptography)
 // CHECK-NEXT:     zvkg                 1.0       'Zvkg' (Vector GCM instructions for Cryptography)
+// CHECK-NEXT:     zvkg                 0.1       'Zvkg' (Vector GCM instructions for Cryptography)
 // CHECK-NEXT:     zvkn                 1.0       'Zvkn' (shorthand for 'Zvkned', 'Zvknhb', 'Zvkb', and 'Zvkt')
 // CHECK-NEXT:     zvknc                1.0       'Zvknc' (shorthand for 'Zvknc' and 'Zvbc')
 // CHECK-NEXT:     zvkned               1.0       'Zvkned' (Vector AES Encryption & Decryption (Single Round))
 // CHECK-NEXT:     zvkng                1.0       'zvkng' (shorthand for 'Zvkn' and 'Zvkg')
 // CHECK-NEXT:     zvknha               1.0       'Zvknha' (Vector SHA-2 (SHA-256 only))
+// CHECK-NEXT:     zvknha               0.1       'Zvknha' (Vector SHA-2 (SHA-256 only))
 // CHECK-NEXT:     zvknhb               1.0       'Zvknhb' (Vector SHA-2 (SHA-256 and SHA-512))
+// CHECK-NEXT:     zvknhb               0.1       'Zvknhb' (Vector SHA-2 (SHA-256 and SHA-512))
+// CHECK-NEXT:     zvkns                0.1       'Zvkns' (Vector AES Encryption & Decryption (Single Round))
 // CHECK-NEXT:     zvks                 1.0       'Zvks' (shorthand for 'Zvksed', 'Zvksh', 'Zvkb', and 'Zvkt')
 // CHECK-NEXT:     zvksc                1.0       'Zvksc' (shorthand for 'Zvks' and 'Zvbc')
 // CHECK-NEXT:     zvksed               1.0       'Zvksed' (SM4 Block Cipher Instructions)
+// CHECK-NEXT:     zvksed               0.1       'Zvksed' (SM4 Block Cipher Instructions)
 // CHECK-NEXT:     zvksg                1.0       'Zvksg' (shorthand for 'Zvks' and 'Zvkg')
 // CHECK-NEXT:     zvksh                1.0       'Zvksh' (SM3 Hash Function Instructions)
+// CHECK-NEXT:     zvksh                0.1       'Zvksh' (SM3 Hash Function Instructions)
 // CHECK-NEXT:     zvkt                 1.0       'Zvkt' (Vector Data-Independent Execution Latency)
 // CHECK-NEXT:     zvl1024b             1.0       'Zvl' (Minimum Vector Length) 1024
 // CHECK-NEXT:     zvl128b              1.0       'Zvl' (Minimum Vector Length) 128
@@ -110,6 +117,8 @@
 // CHECK-NEXT:     zvl8192b             1.0       'Zvl' (Minimum Vector Length) 8192
 // CHECK-NEXT:     zhinx                1.0       'Zhinx' (Half Float in Integer)
 // CHECK-NEXT:     zhinxmin             1.0       'Zhinxmin' (Half Float in Integer Minimal)
+// CHECK-NEXT:     sdext                1.0       'Sdext' (External Debugging Extension)
+// CHECK-NEXT:     sdtrig               1.0       'Sdtrig' (Debugging Triggers)
 // CHECK-NEXT:     shcounterenw         1.0       'Shcounterenw' (Support writeable hcounteren enable bit for any hpmcounter that is not read-only zero)
 // CHECK-NEXT:     shgatpa              1.0       'Sgatpa' (SvNNx4 mode supported for all modes supported by satp, as well as Bare)
 // CHECK-NEXT:     shtvala              1.0       'Shtvala' (htval provides all needed values)
@@ -121,6 +130,8 @@
 // CHECK-NEXT:     smcsrind             1.0       'Smcsrind' (Indirect CSR Access Machine Level)
 // CHECK-NEXT:     smepmp               1.0       'Smepmp' (Enhanced Physical Memory Protection)
 // CHECK-NEXT:     smstateen            1.0       'Smstateen' (Machine-mode view of the state-enable extension)
+// CHECK-NEXT:     ss                   1.13      'Ss' (Supervisor Architecture)
+// CHECK-NEXT:     ss                   1.12      'Ss' (Supervisor Architecture)
 // CHECK-NEXT:     ssaia                1.0       'Ssaia' (Advanced Interrupt Architecture Supervisor Level)
 // CHECK-NEXT:     ssccfg               1.0       'Ssccfg' (Counter Configuration Supervisor Level)
 // CHECK-NEXT:     ssccptr              1.0       'Ssccptr' (Main memory supports page table reads)
@@ -146,13 +157,39 @@
 // CHECK-NEXT:     xcvmac               1.0       'XCVmac' (CORE-V Multiply-Accumulate)
 // CHECK-NEXT:     xcvmem               1.0       'XCVmem' (CORE-V Post-incrementing Load & Store)
 // CHECK-NEXT:     xcvsimd              1.0       'XCVsimd' (CORE-V SIMD ALU)
+// CHECK-NEXT:     xsfcease             0.1       'XSfcease' (SiFive sf.cease Instruction)
 // CHECK-NEXT:     xsfcease             1.0       'XSfcease' (SiFive sf.cease Instruction)
+// CHECK-NEXT:     xsfmm128t            0.6       'XSfmm128t' TE=128 configuration
+// CHECK-NEXT:     xsfmm16t             0.6       'XSfmm16t' TE=16 configuration
+// CHECK-NEXT:     xsfmm32a             0.6       'XSfmm32a' (TEW=32-bit accumulation) operands - int: 8b; float: fp16, bf16, fp32
+// CHECK-NEXT:     xsfmm32a16f          0.6       'XSfmm32a16f' (TEW=32-bit accumulation) operands - float: 16b, widen=2 (IEEE, BF)
+// CHECK-NEXT:     xsfmm32a32f          0.6       'XSfmm32a32f' (TEW=32-bit accumulation) operands - float: 32b
+// CHECK-NEXT:     xsfmm32a4i           0.6       'XSfmm32a4i' (TEW=32-bit accumulation) operands - int: 4b (packed)
+// CHECK-NEXT:     xsfmm32a8f           0.6       'XSfmm32a8f' (TEW=32-bit accumulation) operands - float: fp8
+// CHECK-NEXT:     xsfmm32a8i           0.6       'XSfmm32a8i' (TEW=32-bit accumulation) operands - int: 8b
+// CHECK-NEXT:     xsfmm32ea            0.6       'XSfmm32ea' (TEW=32-bit accumulation) instructions: sf.vset*, sf.vtmv*, sf.mm.f.f (SEW=32), sf.vtzero
+// CHECK-NEXT:     xsfmm32t             0.6       'XSfmm32t' TE=32 configuration
+// CHECK-NEXT:     xsfmm64a64f          0.6       'XSfmm64a64f' (TEW=64-bit accumulation) operands - float: fp64
+// CHECK-NEXT:     xsfmm64t             0.6       'XSfmm64t' TE=64 configuration
+// CHECK-NEXT:     xsfmmbase            0.6       'XSfmmbase' All non arithmetic instructions for all TEWs and sf.vtzero
+// CHECK-NEXT:     xsfpgflushdlone      0.1       'XSfpgflushdlone' (Cache Flush/Power Down Instructions)
+// CHECK-NEXT:     xsfpmpmt             0.1       'Xsfpmpmt' (SiFive PMP-based Memory Types Extension)
 // CHECK-NEXT:     xsfvcp               1.0       'XSfvcp' (SiFive Custom Vector Coprocessor Interface Instructions)
+// CHECK-NEXT:     xsfvfexpa            0.2       'Xsfvfexpa' (SiFive Vector Floating-Point Exponential Approximation Instruction)
+// CHECK-NEXT:     xsfvfexpa64e         0.2       'Xsfvfexpa64e' (SiFive Vector Floating-Point Exponential Approximation Instruction with Double-Percision)
+// CHECK-NEXT:     xsfvfhbfmin          0.1       'Xsfvfhbfmin' (SiFive custom minimal BF16 vector support)
 // CHECK-NEXT:     xsfvfnrclipxfqf      1.0       'XSfvfnrclipxfqf' (SiFive FP32-to-int8 Ranged Clip Instructions)
+// CHECK-NEXT:     xsfvfnrclipxfqf      0.1       'XSfvfnrclipxfqf' (SiFive FP32-to-int8 Ranged Clip Instructions)
 // CHECK-NEXT:     xsfvfwmaccqqq        1.0       'XSfvfwmaccqqq' (SiFive Matrix Multiply Accumulate Instruction and 4-by-4))
+// CHECK-NEXT:     xsfvfwmaccqqq        0.1       'XSfvfwmaccqqq' (SiFive Matrix Multiply Accumulate Instruction and 4-by-4))
+// CHECK-NEXT:     xsfvqdotq            0.1       'Xsfvqdotq' (SiFive Vector Quad-Widening 4D Dot Product Instructions)
 // CHECK-NEXT:     xsfvqmaccdod         1.0       'XSfvqmaccdod' (SiFive Int8 Matrix Multiplication Instructions (2-by-8 and 8-by-2))
+// CHECK-NEXT:     xsfvqmaccdod         0.1       'XSfvqmaccdod' (SiFive Int8 Matrix Multiplication Instructions (2-by-8 and 8-by-2))
 // CHECK-NEXT:     xsfvqmaccqoq         1.0       'XSfvqmaccqoq' (SiFive Int8 Matrix Multiplication Instructions (4-by-8 and 8-by-4))
+// CHECK-NEXT:     xsfvqmaccqoq         0.1       'XSfvqmaccqoq' (SiFive Int8 Matrix Multiplication Instructions (4-by-8 and 8-by-4))
+// CHECK-NEXT:     xsifivecdiscarddlone 0.1       'XSiFivecdiscarddlone' (SiFive sf.cdiscard.d.l1 Instruction)
 // CHECK-NEXT:     xsifivecdiscarddlone 1.0       'XSiFivecdiscarddlone' (SiFive sf.cdiscard.d.l1 Instruction)
+// CHECK-NEXT:     xsifivecflushdlone   0.1       'XSiFivecflushdlone' (SiFive sf.cflush.d.l1 Instruction)
 // CHECK-NEXT:     xsifivecflushdlone   1.0       'XSiFivecflushdlone' (SiFive sf.cflush.d.l1 Instruction)
 // CHECK-NEXT:     xtheadba             1.0       'xtheadba' (T-Head address calculation instructions)
 // CHECK-NEXT:     xtheadbb             1.0       'xtheadbb' (T-Head basic bit-manipulation instructions)
@@ -172,11 +209,16 @@
 // CHECK-NEXT:     zicfilp              0.4       'Zicfilp' (Landing pad)
 // CHECK-NEXT:     zicfiss              0.4       'Zicfiss' (Shadow stack)
 // CHECK-NEXT:     zalasr               0.1       'Zalasr' (Load-Acquire and Store-Release Instructions)
+// CHECK-NEXT:     zjid                 0.0       'Zjid' (Instruction/Data Cache Synchronization)
 // CHECK-NEXT:     smmpm                1.0       'Smmpm' (Machine-level Pointer Masking for M-mode)
 // CHECK-NEXT:     smnpm                1.0       'Smnpm' (Machine-level Pointer Masking for next lower privilege mode)
+// CHECK-NEXT:     smrnmi               0.5       'Smrnmi' (Resumable Non-Maskable Interrupts)
+// CHECK-NEXT:     smwg                 0.3       'Smwg' (The Smwg extension adds the mlwid CSR, which is an M-mode read-write CSR, whose least-significant bits set the WID to be used by lower-privilege modes.)
+// CHECK-NEXT:     smwgd                0.3       'Smwgd' (The Smwgd extension adds the mwiddeleg M-mode read-write CSR. The mwiddeleg register represents a set of WIDs as a bit vector with WID i represented by bit i of the register.)
 // CHECK-NEXT:     ssnpm                1.0       'Ssnpm' (Supervisor-level Pointer Masking for next lower privilege mode)
 // CHECK-NEXT:     sspm                 1.0       'Sspm' (Indicates Supervisor-mode Pointer Masking)
 // CHECK-NEXT:     ssqosid              1.0       'Ssqosid' (Quality-of-Service (QoS) Identifiers)
+// CHECK-NEXT:     sswg                 0.3       'Sswg' (The Sswg extension adds the [H]S-mode read-write slwid CSR, which sets the WID used for modes lower than [H]S-mode.)
 // CHECK-NEXT:     supm                 1.0       'Supm' (Indicates User-mode Pointer Masking)
 // CHECK-EMPTY:
 // CHECK-NEXT: Supported Profiles
@@ -186,6 +228,12 @@
 // CHECK-NEXT:     rva22u64
 // CHECK-NEXT:     rvi20u32
 // CHECK-NEXT:     rvi20u64
+// CHECK-NEXT:     sfa23
+// CHECK-NEXT:     sfb23
+// CHECK-NEXT:     sfe23
+// CHECK-NEXT:     sfp23
+// CHECK-NEXT:     sfs23
+// CHECK-NEXT:     sfx23
 // CHECK-EMPTY:
 // CHECK-NEXT: Experimental Profiles
 // CHECK-NEXT:     rva23s64
