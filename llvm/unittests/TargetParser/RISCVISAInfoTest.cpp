@@ -1066,6 +1066,7 @@ Experimental extensions
     zicfilp              0.4       This is a long dummy description
     zicfiss              0.4
     zalasr               0.1
+    zjid                 0.0
     smmpm                1.0
     smnpm                1.0
     smrnmi               0.5
