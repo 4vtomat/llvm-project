@@ -83,22 +83,18 @@ define <vscale x 1 x float> @foo2(<vscale x 1 x float> %a, i32 %b) {
 ; RV32-NEXT:    lui a1, 260096
 ; RV32-NEXT:    vsetvli a2, zero, e32, mf2, ta, ma
 ; RV32-NEXT:    vmv.v.x v8, a1
-; RV32-NEXT:    csrr a1, vlenb
-; RV32-NEXT:    srli a1, a1, 3
-; RV32-NEXT:    mv a2, a0
+; RV32-NEXT:    mv a1, a0
 ; RV32-NEXT:    j .LBB1_2
 ; RV32-NEXT:  .LBB1_1: # %powi-expansion-loop
 ; RV32-NEXT:    # in Loop: Header=BB1_2 Depth=1
-; RV32-NEXT:    srli a2, a2, 1
-; RV32-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
+; RV32-NEXT:    srli a1, a1, 1
 ; RV32-NEXT:    vfmul.vv v9, v9, v9
-; RV32-NEXT:    beqz a2, .LBB1_4
+; RV32-NEXT:    beqz a1, .LBB1_4
 ; RV32-NEXT:  .LBB1_2: # %powi-expansion-loop
 ; RV32-NEXT:    # =>This Inner Loop Header: Depth=1
-; RV32-NEXT:    andi a3, a2, 1
-; RV32-NEXT:    beqz a3, .LBB1_1
+; RV32-NEXT:    andi a2, a1, 1
+; RV32-NEXT:    beqz a2, .LBB1_1
 ; RV32-NEXT:  # %bb.3: # in Loop: Header=BB1_2 Depth=1
-; RV32-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; RV32-NEXT:    vfmul.vv v8, v8, v9
 ; RV32-NEXT:    j .LBB1_1
 ; RV32-NEXT:  .LBB1_4: # %powi-post-loop
@@ -117,22 +113,18 @@ define <vscale x 1 x float> @foo2(<vscale x 1 x float> %a, i32 %b) {
 ; RV64-NEXT:    lui a1, 260096
 ; RV64-NEXT:    vsetvli a2, zero, e32, mf2, ta, ma
 ; RV64-NEXT:    vmv.v.x v8, a1
-; RV64-NEXT:    csrr a1, vlenb
-; RV64-NEXT:    srli a1, a1, 3
-; RV64-NEXT:    mv a2, a0
+; RV64-NEXT:    mv a1, a0
 ; RV64-NEXT:    j .LBB1_2
 ; RV64-NEXT:  .LBB1_1: # %powi-expansion-loop
 ; RV64-NEXT:    # in Loop: Header=BB1_2 Depth=1
-; RV64-NEXT:    srliw a2, a2, 1
-; RV64-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
+; RV64-NEXT:    srliw a1, a1, 1
 ; RV64-NEXT:    vfmul.vv v9, v9, v9
-; RV64-NEXT:    beqz a2, .LBB1_4
+; RV64-NEXT:    beqz a1, .LBB1_4
 ; RV64-NEXT:  .LBB1_2: # %powi-expansion-loop
 ; RV64-NEXT:    # =>This Inner Loop Header: Depth=1
-; RV64-NEXT:    andi a3, a2, 1
-; RV64-NEXT:    beqz a3, .LBB1_1
+; RV64-NEXT:    andi a2, a1, 1
+; RV64-NEXT:    beqz a2, .LBB1_1
 ; RV64-NEXT:  # %bb.3: # in Loop: Header=BB1_2 Depth=1
-; RV64-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; RV64-NEXT:    vfmul.vv v8, v8, v9
 ; RV64-NEXT:    j .LBB1_1
 ; RV64-NEXT:  .LBB1_4: # %powi-post-loop

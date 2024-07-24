@@ -17,13 +17,13 @@ define half @vp_reduce_nxv1f16(half %s, <vscale x 1 x half> %v, i32 signext %evl
 ; RV32-NEXT:    beq a2, a1, .LBB0_4
 ; RV32-NEXT:  # %bb.3:
 ; RV32-NEXT:    clz a1, a0
+; RV32-NEXT:    lui a2, %hi(.LCPI0_0)
+; RV32-NEXT:    flh fa5, %lo(.LCPI0_0)(a2)
 ; RV32-NEXT:    neg a1, a1
 ; RV32-NEXT:    li a2, 1
 ; RV32-NEXT:    sll a1, a2, a1
-; RV32-NEXT:    lui a2, %hi(.LCPI0_0)
-; RV32-NEXT:    addi a2, a2, %lo(.LCPI0_0)
 ; RV32-NEXT:    vsetvli zero, a1, e16, mf4, ta, ma
-; RV32-NEXT:    vlse16.v v9, (a2), zero
+; RV32-NEXT:    vfmv.v.f v9, fa5
 ; RV32-NEXT:    vsetvli zero, a0, e16, mf4, tu, ma
 ; RV32-NEXT:    vmv.v.v v9, v8
 ; RV32-NEXT:    vmv1r.v v8, v9
@@ -57,14 +57,14 @@ define half @vp_reduce_nxv1f16(half %s, <vscale x 1 x half> %v, i32 signext %evl
 ; RV64-NEXT:    clzw a1, a0
 ; RV64-NEXT:    negw a1, a1
 ; RV64-NEXT:    li a2, 1
+; RV64-NEXT:    lui a3, %hi(.LCPI0_0)
+; RV64-NEXT:    flh fa5, %lo(.LCPI0_0)(a3)
+; RV64-NEXT:    slli a0, a0, 32
 ; RV64-NEXT:    sllw a1, a2, a1
 ; RV64-NEXT:    slli a2, a1, 32
 ; RV64-NEXT:    srli a2, a2, 32
-; RV64-NEXT:    lui a3, %hi(.LCPI0_0)
-; RV64-NEXT:    addi a3, a3, %lo(.LCPI0_0)
 ; RV64-NEXT:    vsetvli zero, a2, e16, mf4, ta, ma
-; RV64-NEXT:    vlse16.v v9, (a3), zero
-; RV64-NEXT:    slli a0, a0, 32
+; RV64-NEXT:    vfmv.v.f v9, fa5
 ; RV64-NEXT:    srli a0, a0, 32
 ; RV64-NEXT:    vsetvli zero, a0, e16, mf4, tu, ma
 ; RV64-NEXT:    vmv.v.v v9, v8
@@ -105,18 +105,17 @@ define half @vp_reduce2_nxv1f16(half %s, <vscale x 1 x half> %v, i32 signext %ev
 ; RV32-NEXT:    cpop a2, a0
 ; RV32-NEXT:    beq a2, a1, .LBB1_4
 ; RV32-NEXT:  # %bb.3:
-; RV32-NEXT:    clz a1, a0
-; RV32-NEXT:    neg a1, a1
-; RV32-NEXT:    li a2, 1
-; RV32-NEXT:    sll a1, a2, a1
-; RV32-NEXT:    lui a2, %hi(.LCPI1_0)
-; RV32-NEXT:    addi a2, a2, %lo(.LCPI1_0)
-; RV32-NEXT:    vsetvli zero, a1, e16, mf4, ta, ma
-; RV32-NEXT:    vlse16.v v9, (a2), zero
-; RV32-NEXT:    vsetvli zero, a0, e16, mf4, tu, ma
+; RV32-NEXT:    clz a0, a0
+; RV32-NEXT:    lui a1, %hi(.LCPI1_0)
+; RV32-NEXT:    flh fa5, %lo(.LCPI1_0)(a1)
+; RV32-NEXT:    neg a0, a0
+; RV32-NEXT:    li a1, 1
+; RV32-NEXT:    sll a0, a1, a0
+; RV32-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
+; RV32-NEXT:    vfmv.v.f v9, fa5
+; RV32-NEXT:    vsetvli a1, zero, e16, mf4, tu, ma
 ; RV32-NEXT:    vmv.v.v v9, v8
 ; RV32-NEXT:    vmv1r.v v8, v9
-; RV32-NEXT:    mv a0, a1
 ; RV32-NEXT:  .LBB1_4:
 ; RV32-NEXT:    li a1, 1
 ; RV32-NEXT:  .LBB1_5: # %loop
@@ -145,20 +144,19 @@ define half @vp_reduce2_nxv1f16(half %s, <vscale x 1 x half> %v, i32 signext %ev
 ; RV64-NEXT:    cpopw a2, a0
 ; RV64-NEXT:    beq a2, a1, .LBB1_4
 ; RV64-NEXT:  # %bb.3:
-; RV64-NEXT:    clzw a1, a0
-; RV64-NEXT:    negw a1, a1
-; RV64-NEXT:    li a2, 1
-; RV64-NEXT:    sllw a1, a2, a1
-; RV64-NEXT:    slli a2, a1, 32
-; RV64-NEXT:    srli a2, a2, 32
-; RV64-NEXT:    lui a3, %hi(.LCPI1_0)
-; RV64-NEXT:    addi a3, a3, %lo(.LCPI1_0)
-; RV64-NEXT:    vsetvli zero, a2, e16, mf4, ta, ma
-; RV64-NEXT:    vlse16.v v9, (a3), zero
-; RV64-NEXT:    vsetvli zero, a0, e16, mf4, tu, ma
+; RV64-NEXT:    clzw a0, a0
+; RV64-NEXT:    negw a0, a0
+; RV64-NEXT:    li a1, 1
+; RV64-NEXT:    lui a2, %hi(.LCPI1_0)
+; RV64-NEXT:    flh fa5, %lo(.LCPI1_0)(a2)
+; RV64-NEXT:    sllw a0, a1, a0
+; RV64-NEXT:    slli a1, a0, 32
+; RV64-NEXT:    srli a1, a1, 32
+; RV64-NEXT:    vsetvli zero, a1, e16, mf4, ta, ma
+; RV64-NEXT:    vfmv.v.f v9, fa5
+; RV64-NEXT:    vsetvli a1, zero, e16, mf4, tu, ma
 ; RV64-NEXT:    vmv.v.v v9, v8
 ; RV64-NEXT:    vmv1r.v v8, v9
-; RV64-NEXT:    mv a0, a1
 ; RV64-NEXT:  .LBB1_4:
 ; RV64-NEXT:    li a1, 1
 ; RV64-NEXT:  .LBB1_5: # %loop
@@ -278,17 +276,16 @@ define float @vp_reduce2_nxv1f32(float %s, <vscale x 1 x float> %v, i32 signext 
 ; RV32-NEXT:    cpop a2, a0
 ; RV32-NEXT:    beq a2, a1, .LBB3_4
 ; RV32-NEXT:  # %bb.3:
-; RV32-NEXT:    clz a1, a0
-; RV32-NEXT:    neg a1, a1
-; RV32-NEXT:    li a2, 1
-; RV32-NEXT:    sll a1, a2, a1
-; RV32-NEXT:    lui a2, 260096
-; RV32-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
-; RV32-NEXT:    vmv.v.x v9, a2
-; RV32-NEXT:    vsetvli zero, a0, e32, mf2, tu, ma
+; RV32-NEXT:    clz a0, a0
+; RV32-NEXT:    neg a0, a0
+; RV32-NEXT:    li a1, 1
+; RV32-NEXT:    sll a0, a1, a0
+; RV32-NEXT:    lui a1, 260096
+; RV32-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
+; RV32-NEXT:    vmv.v.x v9, a1
+; RV32-NEXT:    vsetvli a1, zero, e32, mf2, tu, ma
 ; RV32-NEXT:    vmv.v.v v9, v8
 ; RV32-NEXT:    vmv1r.v v8, v9
-; RV32-NEXT:    mv a0, a1
 ; RV32-NEXT:  .LBB3_4:
 ; RV32-NEXT:    li a1, 1
 ; RV32-NEXT:  .LBB3_5: # %loop
@@ -317,19 +314,18 @@ define float @vp_reduce2_nxv1f32(float %s, <vscale x 1 x float> %v, i32 signext 
 ; RV64-NEXT:    cpopw a2, a0
 ; RV64-NEXT:    beq a2, a1, .LBB3_4
 ; RV64-NEXT:  # %bb.3:
-; RV64-NEXT:    clzw a1, a0
-; RV64-NEXT:    negw a1, a1
-; RV64-NEXT:    li a2, 1
-; RV64-NEXT:    sllw a1, a2, a1
-; RV64-NEXT:    slli a2, a1, 32
-; RV64-NEXT:    srli a2, a2, 32
-; RV64-NEXT:    lui a3, 260096
-; RV64-NEXT:    vsetvli zero, a2, e32, mf2, ta, ma
-; RV64-NEXT:    vmv.v.x v9, a3
-; RV64-NEXT:    vsetvli zero, a0, e32, mf2, tu, ma
+; RV64-NEXT:    clzw a0, a0
+; RV64-NEXT:    negw a0, a0
+; RV64-NEXT:    li a1, 1
+; RV64-NEXT:    sllw a0, a1, a0
+; RV64-NEXT:    slli a1, a0, 32
+; RV64-NEXT:    srli a1, a1, 32
+; RV64-NEXT:    lui a2, 260096
+; RV64-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
+; RV64-NEXT:    vmv.v.x v9, a2
+; RV64-NEXT:    vsetvli a1, zero, e32, mf2, tu, ma
 ; RV64-NEXT:    vmv.v.v v9, v8
 ; RV64-NEXT:    vmv1r.v v8, v9
-; RV64-NEXT:    mv a0, a1
 ; RV64-NEXT:  .LBB3_4:
 ; RV64-NEXT:    li a1, 1
 ; RV64-NEXT:  .LBB3_5: # %loop
@@ -363,13 +359,13 @@ define double @vp_reduce_nxv1f64(double %s, <vscale x 1 x double> %v, i32 signex
 ; RV32-NEXT:    beq a2, a1, .LBB4_4
 ; RV32-NEXT:  # %bb.3:
 ; RV32-NEXT:    clz a1, a0
+; RV32-NEXT:    lui a2, %hi(.LCPI4_0)
+; RV32-NEXT:    fld fa5, %lo(.LCPI4_0)(a2)
 ; RV32-NEXT:    neg a1, a1
 ; RV32-NEXT:    li a2, 1
 ; RV32-NEXT:    sll a1, a2, a1
-; RV32-NEXT:    lui a2, %hi(.LCPI4_0)
-; RV32-NEXT:    addi a2, a2, %lo(.LCPI4_0)
 ; RV32-NEXT:    vsetvli zero, a1, e64, m1, ta, ma
-; RV32-NEXT:    vlse64.v v9, (a2), zero
+; RV32-NEXT:    vfmv.v.f v9, fa5
 ; RV32-NEXT:    vsetvli zero, a0, e64, m1, tu, ma
 ; RV32-NEXT:    vmv.v.v v9, v8
 ; RV32-NEXT:    vmv1r.v v8, v9
@@ -403,14 +399,14 @@ define double @vp_reduce_nxv1f64(double %s, <vscale x 1 x double> %v, i32 signex
 ; RV64-NEXT:    clzw a1, a0
 ; RV64-NEXT:    negw a1, a1
 ; RV64-NEXT:    li a2, 1
+; RV64-NEXT:    lui a3, %hi(.LCPI4_0)
+; RV64-NEXT:    fld fa5, %lo(.LCPI4_0)(a3)
+; RV64-NEXT:    slli a0, a0, 32
 ; RV64-NEXT:    sllw a1, a2, a1
 ; RV64-NEXT:    slli a2, a1, 32
 ; RV64-NEXT:    srli a2, a2, 32
-; RV64-NEXT:    lui a3, %hi(.LCPI4_0)
-; RV64-NEXT:    addi a3, a3, %lo(.LCPI4_0)
 ; RV64-NEXT:    vsetvli zero, a2, e64, m1, ta, ma
-; RV64-NEXT:    vlse64.v v9, (a3), zero
-; RV64-NEXT:    slli a0, a0, 32
+; RV64-NEXT:    vfmv.v.f v9, fa5
 ; RV64-NEXT:    srli a0, a0, 32
 ; RV64-NEXT:    vsetvli zero, a0, e64, m1, tu, ma
 ; RV64-NEXT:    vmv.v.v v9, v8
@@ -451,18 +447,17 @@ define double @vp_reduce2_nxv1f64(double %s, <vscale x 1 x double> %v, i32 signe
 ; RV32-NEXT:    cpop a2, a0
 ; RV32-NEXT:    beq a2, a1, .LBB5_4
 ; RV32-NEXT:  # %bb.3:
-; RV32-NEXT:    clz a1, a0
-; RV32-NEXT:    neg a1, a1
-; RV32-NEXT:    li a2, 1
-; RV32-NEXT:    sll a1, a2, a1
-; RV32-NEXT:    lui a2, %hi(.LCPI5_0)
-; RV32-NEXT:    addi a2, a2, %lo(.LCPI5_0)
-; RV32-NEXT:    vsetvli zero, a1, e64, m1, ta, ma
-; RV32-NEXT:    vlse64.v v9, (a2), zero
-; RV32-NEXT:    vsetvli zero, a0, e64, m1, tu, ma
+; RV32-NEXT:    clz a0, a0
+; RV32-NEXT:    lui a1, %hi(.LCPI5_0)
+; RV32-NEXT:    fld fa5, %lo(.LCPI5_0)(a1)
+; RV32-NEXT:    neg a0, a0
+; RV32-NEXT:    li a1, 1
+; RV32-NEXT:    sll a0, a1, a0
+; RV32-NEXT:    vsetvli zero, a0, e64, m1, ta, ma
+; RV32-NEXT:    vfmv.v.f v9, fa5
+; RV32-NEXT:    vsetvli a1, zero, e64, m1, tu, ma
 ; RV32-NEXT:    vmv.v.v v9, v8
 ; RV32-NEXT:    vmv1r.v v8, v9
-; RV32-NEXT:    mv a0, a1
 ; RV32-NEXT:  .LBB5_4:
 ; RV32-NEXT:    li a1, 1
 ; RV32-NEXT:  .LBB5_5: # %loop
@@ -491,20 +486,19 @@ define double @vp_reduce2_nxv1f64(double %s, <vscale x 1 x double> %v, i32 signe
 ; RV64-NEXT:    cpopw a2, a0
 ; RV64-NEXT:    beq a2, a1, .LBB5_4
 ; RV64-NEXT:  # %bb.3:
-; RV64-NEXT:    clzw a1, a0
-; RV64-NEXT:    negw a1, a1
-; RV64-NEXT:    li a2, 1
-; RV64-NEXT:    sllw a1, a2, a1
-; RV64-NEXT:    slli a2, a1, 32
-; RV64-NEXT:    srli a2, a2, 32
-; RV64-NEXT:    lui a3, %hi(.LCPI5_0)
-; RV64-NEXT:    addi a3, a3, %lo(.LCPI5_0)
-; RV64-NEXT:    vsetvli zero, a2, e64, m1, ta, ma
-; RV64-NEXT:    vlse64.v v9, (a3), zero
-; RV64-NEXT:    vsetvli zero, a0, e64, m1, tu, ma
+; RV64-NEXT:    clzw a0, a0
+; RV64-NEXT:    negw a0, a0
+; RV64-NEXT:    li a1, 1
+; RV64-NEXT:    lui a2, %hi(.LCPI5_0)
+; RV64-NEXT:    fld fa5, %lo(.LCPI5_0)(a2)
+; RV64-NEXT:    sllw a0, a1, a0
+; RV64-NEXT:    slli a1, a0, 32
+; RV64-NEXT:    srli a1, a1, 32
+; RV64-NEXT:    vsetvli zero, a1, e64, m1, ta, ma
+; RV64-NEXT:    vfmv.v.f v9, fa5
+; RV64-NEXT:    vsetvli a1, zero, e64, m1, tu, ma
 ; RV64-NEXT:    vmv.v.v v9, v8
 ; RV64-NEXT:    vmv1r.v v8, v9
-; RV64-NEXT:    mv a0, a1
 ; RV64-NEXT:  .LBB5_4:
 ; RV64-NEXT:    li a1, 1
 ; RV64-NEXT:  .LBB5_5: # %loop

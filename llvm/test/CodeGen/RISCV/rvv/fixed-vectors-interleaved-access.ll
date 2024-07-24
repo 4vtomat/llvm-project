@@ -10,17 +10,18 @@
 define {<3 x i32>, <3 x i32>} @load_factor2_v3(ptr %ptr) {
 ; RV32-LABEL: load_factor2_v3:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    lw a1, 8(a0)
+; RV32-NEXT:    lw a1, 0(a0)
+; RV32-NEXT:    lw a2, 8(a0)
+; RV32-NEXT:    lw a3, 16(a0)
 ; RV32-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; RV32-NEXT:    vlse32.v v8, (a0), zero
-; RV32-NEXT:    vslide1down.vx v8, v8, a1
-; RV32-NEXT:    lw a1, 16(a0)
-; RV32-NEXT:    addi a2, a0, 4
-; RV32-NEXT:    vlse32.v v9, (a2), zero
+; RV32-NEXT:    vmv.v.x v8, a1
+; RV32-NEXT:    vslide1down.vx v8, v8, a2
+; RV32-NEXT:    vslide1down.vx v8, v8, a3
+; RV32-NEXT:    lw a1, 4(a0)
 ; RV32-NEXT:    lw a2, 12(a0)
 ; RV32-NEXT:    lw a0, 20(a0)
-; RV32-NEXT:    vslide1down.vx v8, v8, a1
 ; RV32-NEXT:    vslidedown.vi v8, v8, 1
+; RV32-NEXT:    vmv.v.x v9, a1
 ; RV32-NEXT:    vslide1down.vx v9, v9, a2
 ; RV32-NEXT:    vslide1down.vx v9, v9, a0
 ; RV32-NEXT:    vslidedown.vi v9, v9, 1
@@ -30,17 +31,18 @@ define {<3 x i32>, <3 x i32>} @load_factor2_v3(ptr %ptr) {
 ; RV64:       # %bb.0:
 ; RV64-NEXT:    lw a1, 16(a0)
 ; RV64-NEXT:    lw a2, 8(a0)
-; RV64-NEXT:    lw a3, 20(a0)
+; RV64-NEXT:    lw a3, 0(a0)
+; RV64-NEXT:    lw a4, 20(a0)
+; RV64-NEXT:    lw a5, 12(a0)
+; RV64-NEXT:    lw a0, 4(a0)
 ; RV64-NEXT:    vsetivli zero, 4, e32, m1, ta, ma
-; RV64-NEXT:    vlse32.v v8, (a0), zero
-; RV64-NEXT:    lw a4, 12(a0)
-; RV64-NEXT:    addi a0, a0, 4
-; RV64-NEXT:    vlse32.v v9, (a0), zero
+; RV64-NEXT:    vmv.v.x v8, a3
 ; RV64-NEXT:    vslide1down.vx v8, v8, a2
 ; RV64-NEXT:    vslide1down.vx v8, v8, a1
 ; RV64-NEXT:    vslidedown.vi v8, v8, 1
+; RV64-NEXT:    vmv.v.x v9, a0
+; RV64-NEXT:    vslide1down.vx v9, v9, a5
 ; RV64-NEXT:    vslide1down.vx v9, v9, a4
-; RV64-NEXT:    vslide1down.vx v9, v9, a3
 ; RV64-NEXT:    vslidedown.vi v9, v9, 1
 ; RV64-NEXT:    ret
   %interleaved.vec = load <6 x i32>, ptr %ptr

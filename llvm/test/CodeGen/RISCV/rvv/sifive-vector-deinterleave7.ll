@@ -1501,58 +1501,58 @@ define {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
 ; RV32-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
-; RV32-NEXT:    vmv8r.v v8, v24
-; RV32-NEXT:    vrgather.vv v24, v8, v16
+; RV32-NEXT:    vrgather.vv v8, v24, v16
 ; RV32-NEXT:    csrr a0, vlenb
 ; RV32-NEXT:    li a1, 104
 ; RV32-NEXT:    mul a0, a0, a1
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
-; RV32-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
+; RV32-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
 ; RV32-NEXT:    vadd.vi v16, v16, 1
-; RV32-NEXT:    vrgather.vv v24, v0, v16
+; RV32-NEXT:    vrgather.vv v8, v0, v16
 ; RV32-NEXT:    csrr a0, vlenb
 ; RV32-NEXT:    li a1, 56
 ; RV32-NEXT:    mul a0, a0, a1
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
-; RV32-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
-; RV32-NEXT:    vrgather.vv v24, v8, v16
+; RV32-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
+; RV32-NEXT:    vrgather.vv v8, v24, v16
 ; RV32-NEXT:    csrr a0, vlenb
 ; RV32-NEXT:    li a1, 48
 ; RV32-NEXT:    mul a0, a0, a1
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
-; RV32-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
+; RV32-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
 ; RV32-NEXT:    vadd.vi v16, v16, 1
-; RV32-NEXT:    vrgather.vv v24, v0, v16
+; RV32-NEXT:    vrgather.vv v8, v0, v16
 ; RV32-NEXT:    csrr a0, vlenb
 ; RV32-NEXT:    li a1, 40
 ; RV32-NEXT:    mul a0, a0, a1
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
-; RV32-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
-; RV32-NEXT:    vrgather.vv v24, v8, v16
+; RV32-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
+; RV32-NEXT:    vrgather.vv v8, v24, v16
 ; RV32-NEXT:    csrr a0, vlenb
 ; RV32-NEXT:    li a1, 96
 ; RV32-NEXT:    mul a0, a0, a1
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
-; RV32-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
+; RV32-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
 ; RV32-NEXT:    vadd.vi v16, v16, 1
-; RV32-NEXT:    vrgather.vv v24, v0, v16
+; RV32-NEXT:    vrgather.vv v8, v0, v16
 ; RV32-NEXT:    csrr a0, vlenb
 ; RV32-NEXT:    li a1, 24
 ; RV32-NEXT:    mul a0, a0, a1
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
-; RV32-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
-; RV32-NEXT:    vrgather.vv v24, v8, v16
+; RV32-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
+; RV32-NEXT:    vrgather.vv v8, v24, v16
 ; RV32-NEXT:    csrr a0, vlenb
 ; RV32-NEXT:    slli a0, a0, 5
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
-; RV32-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
+; RV32-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
+; RV32-NEXT:    vmv8r.v v8, v24
 ; RV32-NEXT:    vadd.vi v24, v16, 1
 ; RV32-NEXT:    vrgather.vv v16, v0, v24
 ; RV32-NEXT:    csrr a0, vlenb
@@ -1560,14 +1560,14 @@ define {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
 ; RV32-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; RV32-NEXT:    vrgather.vv v16, v8, v24
+; RV32-NEXT:    vmv8r.v v16, v8
+; RV32-NEXT:    vrgather.vv v8, v16, v24
 ; RV32-NEXT:    csrr a0, vlenb
 ; RV32-NEXT:    li a1, 88
 ; RV32-NEXT:    mul a0, a0, a1
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
-; RV32-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; RV32-NEXT:    vmv8r.v v16, v8
+; RV32-NEXT:    vs8r.v v8, (a0) # Unknown-size Folded Spill
 ; RV32-NEXT:    vadd.vi v8, v24, 1
 ; RV32-NEXT:    vrgather.vv v24, v0, v8
 ; RV32-NEXT:    csrr a0, vlenb
@@ -1575,25 +1575,24 @@ define {<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
 ; RV32-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
-; RV32-NEXT:    vmv8r.v v24, v16
-; RV32-NEXT:    vrgather.vv v16, v24, v8
+; RV32-NEXT:    vrgather.vv v24, v16, v8
 ; RV32-NEXT:    csrr a0, vlenb
 ; RV32-NEXT:    li a1, 80
 ; RV32-NEXT:    mul a0, a0, a1
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
-; RV32-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
+; RV32-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
 ; RV32-NEXT:    vadd.vi v8, v8, 1
-; RV32-NEXT:    vrgather.vv v16, v0, v8
+; RV32-NEXT:    vrgather.vv v24, v0, v8
 ; RV32-NEXT:    addi a0, sp, 16
-; RV32-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
-; RV32-NEXT:    vrgather.vv v16, v24, v8
+; RV32-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
+; RV32-NEXT:    vrgather.vv v24, v16, v8
 ; RV32-NEXT:    csrr a0, vlenb
 ; RV32-NEXT:    li a1, 72
 ; RV32-NEXT:    mul a0, a0, a1
 ; RV32-NEXT:    add a0, sp, a0
 ; RV32-NEXT:    addi a0, a0, 16
-; RV32-NEXT:    vs8r.v v16, (a0) # Unknown-size Folded Spill
+; RV32-NEXT:    vs8r.v v24, (a0) # Unknown-size Folded Spill
 ; RV32-NEXT:    csrr a0, vlenb
 ; RV32-NEXT:    slli a0, a0, 6
 ; RV32-NEXT:    add a0, sp, a0

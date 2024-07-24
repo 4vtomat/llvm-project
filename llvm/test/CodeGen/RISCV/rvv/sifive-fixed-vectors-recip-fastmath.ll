@@ -6,12 +6,12 @@ define <2 x half> @recip_v2f16(<2 x half> %a) #0 {
 ; CHECK-LABEL: recip_v2f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI0_0)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI0_0)(a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e16, mf4, ta, ma
-; CHECK-NEXT:    vlse16.v v9, (a0), zero
-; CHECK-NEXT:    vfrec7.v v10, v8
-; CHECK-NEXT:    vfmadd.vv v8, v10, v9
-; CHECK-NEXT:    vfnmsub.vv v8, v10, v10
+; CHECK-NEXT:    vfrec7.v v9, v8
+; CHECK-NEXT:    vfmv.v.f v10, fa5
+; CHECK-NEXT:    vfmadd.vv v8, v9, v10
+; CHECK-NEXT:    vfnmsub.vv v8, v9, v9
 ; CHECK-NEXT:    ret
   %1 = fdiv fast <2 x half> <half 1.000000e+00, half 1.000000e+00>, %a
   ret <2 x half> %1
@@ -21,12 +21,12 @@ define <4 x half> @recip_v4f16(<4 x half> %a) #0 {
 ; CHECK-LABEL: recip_v4f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a0, %hi(.LCPI1_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI1_0)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI1_0)(a0)
 ; CHECK-NEXT:    vsetivli zero, 4, e16, mf2, ta, ma
-; CHECK-NEXT:    vlse16.v v9, (a0), zero
-; CHECK-NEXT:    vfrec7.v v10, v8
-; CHECK-NEXT:    vfmadd.vv v8, v10, v9
-; CHECK-NEXT:    vfnmsub.vv v8, v10, v10
+; CHECK-NEXT:    vfrec7.v v9, v8
+; CHECK-NEXT:    vfmv.v.f v10, fa5
+; CHECK-NEXT:    vfmadd.vv v8, v9, v10
+; CHECK-NEXT:    vfnmsub.vv v8, v9, v9
 ; CHECK-NEXT:    ret
   %1 = fdiv fast <4 x half> <half 1.000000e+00, half 1.000000e+00, half 1.000000e+00, half 1.000000e+00>, %a
   ret <4 x half> %1
@@ -36,12 +36,12 @@ define <8 x half> @recip_v8f16(<8 x half> %a) #0 {
 ; CHECK-LABEL: recip_v8f16:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a0, %hi(.LCPI2_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI2_0)
+; CHECK-NEXT:    flh fa5, %lo(.LCPI2_0)(a0)
 ; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
-; CHECK-NEXT:    vlse16.v v9, (a0), zero
-; CHECK-NEXT:    vfrec7.v v10, v8
-; CHECK-NEXT:    vfmadd.vv v8, v10, v9
-; CHECK-NEXT:    vfnmsub.vv v8, v10, v10
+; CHECK-NEXT:    vfrec7.v v9, v8
+; CHECK-NEXT:    vfmv.v.f v10, fa5
+; CHECK-NEXT:    vfmadd.vv v8, v9, v10
+; CHECK-NEXT:    vfnmsub.vv v8, v9, v9
 ; CHECK-NEXT:    ret
   %1 = fdiv fast <8 x half> <half 1.000000e+00, half 1.000000e+00, half 1.000000e+00, half 1.000000e+00, half 1.000000e+00, half 1.000000e+00, half 1.000000e+00, half 1.000000e+00>, %a
   ret <8 x half> %1
@@ -102,18 +102,18 @@ define <2 x double> @recip_v2f64(<2 x double> %a) #0 {
 ; CHECK-LABEL: recip_v2f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a0, %hi(.LCPI6_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI6_0)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI6_0)(a0)
 ; CHECK-NEXT:    vsetivli zero, 2, e64, m1, ta, ma
-; CHECK-NEXT:    vlse64.v v9, (a0), zero
-; CHECK-NEXT:    vfrec7.v v10, v8
-; CHECK-NEXT:    vmv.v.v v11, v10
-; CHECK-NEXT:    vfnmsub.vv v11, v8, v9
-; CHECK-NEXT:    vfmadd.vv v11, v10, v10
-; CHECK-NEXT:    vmv.v.v v10, v11
-; CHECK-NEXT:    vfnmsub.vv v10, v8, v9
-; CHECK-NEXT:    vfmadd.vv v10, v11, v11
-; CHECK-NEXT:    vfnmsub.vv v8, v10, v9
-; CHECK-NEXT:    vfmadd.vv v8, v10, v10
+; CHECK-NEXT:    vfrec7.v v9, v8
+; CHECK-NEXT:    vfmv.v.f v10, fa5
+; CHECK-NEXT:    vmv.v.v v11, v9
+; CHECK-NEXT:    vfnmsub.vv v11, v8, v10
+; CHECK-NEXT:    vfmadd.vv v11, v9, v9
+; CHECK-NEXT:    vmv.v.v v9, v11
+; CHECK-NEXT:    vfnmsub.vv v9, v8, v10
+; CHECK-NEXT:    vfmadd.vv v9, v11, v11
+; CHECK-NEXT:    vfnmsub.vv v8, v9, v10
+; CHECK-NEXT:    vfmadd.vv v8, v9, v9
 ; CHECK-NEXT:    ret
   %1 = fdiv fast <2 x double> <double 1.000000e+00, double 1.000000e+00>, %a
   ret <2 x double> %1
@@ -123,18 +123,18 @@ define <4 x double> @recip_v4f64(<4 x double> %a) #0 {
 ; CHECK-LABEL: recip_v4f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a0, %hi(.LCPI7_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI7_0)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI7_0)(a0)
 ; CHECK-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
-; CHECK-NEXT:    vlse64.v v10, (a0), zero
-; CHECK-NEXT:    vfrec7.v v12, v8
-; CHECK-NEXT:    vmv.v.v v14, v12
-; CHECK-NEXT:    vfnmsub.vv v14, v8, v10
-; CHECK-NEXT:    vfmadd.vv v14, v12, v12
-; CHECK-NEXT:    vmv.v.v v12, v14
-; CHECK-NEXT:    vfnmsub.vv v12, v8, v10
-; CHECK-NEXT:    vfmadd.vv v12, v14, v14
-; CHECK-NEXT:    vfnmsub.vv v8, v12, v10
-; CHECK-NEXT:    vfmadd.vv v8, v12, v12
+; CHECK-NEXT:    vfrec7.v v10, v8
+; CHECK-NEXT:    vfmv.v.f v12, fa5
+; CHECK-NEXT:    vmv.v.v v14, v10
+; CHECK-NEXT:    vfnmsub.vv v14, v8, v12
+; CHECK-NEXT:    vfmadd.vv v14, v10, v10
+; CHECK-NEXT:    vmv.v.v v10, v14
+; CHECK-NEXT:    vfnmsub.vv v10, v8, v12
+; CHECK-NEXT:    vfmadd.vv v10, v14, v14
+; CHECK-NEXT:    vfnmsub.vv v8, v10, v12
+; CHECK-NEXT:    vfmadd.vv v8, v10, v10
 ; CHECK-NEXT:    ret
   %1 = fdiv fast <4 x double> <double 1.000000e+00, double 1.000000e+00, double 1.000000e+00, double 1.000000e+00>, %a
   ret <4 x double> %1
@@ -144,18 +144,18 @@ define <8 x double> @recip_v8f64(<8 x double> %a) #0 {
 ; CHECK-LABEL: recip_v8f64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    lui a0, %hi(.LCPI8_0)
-; CHECK-NEXT:    addi a0, a0, %lo(.LCPI8_0)
+; CHECK-NEXT:    fld fa5, %lo(.LCPI8_0)(a0)
 ; CHECK-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
-; CHECK-NEXT:    vlse64.v v12, (a0), zero
-; CHECK-NEXT:    vfrec7.v v16, v8
-; CHECK-NEXT:    vmv.v.v v20, v16
-; CHECK-NEXT:    vfnmsub.vv v20, v8, v12
-; CHECK-NEXT:    vfmadd.vv v20, v16, v16
-; CHECK-NEXT:    vmv.v.v v16, v20
-; CHECK-NEXT:    vfnmsub.vv v16, v8, v12
-; CHECK-NEXT:    vfmadd.vv v16, v20, v20
-; CHECK-NEXT:    vfnmsub.vv v8, v16, v12
-; CHECK-NEXT:    vfmadd.vv v8, v16, v16
+; CHECK-NEXT:    vfrec7.v v12, v8
+; CHECK-NEXT:    vfmv.v.f v16, fa5
+; CHECK-NEXT:    vmv.v.v v20, v12
+; CHECK-NEXT:    vfnmsub.vv v20, v8, v16
+; CHECK-NEXT:    vfmadd.vv v20, v12, v12
+; CHECK-NEXT:    vmv.v.v v12, v20
+; CHECK-NEXT:    vfnmsub.vv v12, v8, v16
+; CHECK-NEXT:    vfmadd.vv v12, v20, v20
+; CHECK-NEXT:    vfnmsub.vv v8, v12, v16
+; CHECK-NEXT:    vfmadd.vv v8, v12, v12
 ; CHECK-NEXT:    ret
   %1 = fdiv fast <8 x double> <double 1.000000e+00, double 1.000000e+00, double 1.000000e+00, double 1.000000e+00, double 1.000000e+00, double 1.000000e+00, double 1.000000e+00, double 1.000000e+00>, %a
   ret <8 x double> %1

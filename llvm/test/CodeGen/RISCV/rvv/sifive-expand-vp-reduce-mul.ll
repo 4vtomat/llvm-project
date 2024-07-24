@@ -227,16 +227,15 @@ define i32 @vector_reduce(<vscale x 1 x i32> %v) {
 ; RV32-NEXT:    cpop a2, a0
 ; RV32-NEXT:    beq a2, a1, .LBB3_4
 ; RV32-NEXT:  # %bb.3:
-; RV32-NEXT:    clz a1, a0
-; RV32-NEXT:    neg a1, a1
-; RV32-NEXT:    li a2, 1
-; RV32-NEXT:    sll a1, a2, a1
-; RV32-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
+; RV32-NEXT:    clz a0, a0
+; RV32-NEXT:    neg a0, a0
+; RV32-NEXT:    li a1, 1
+; RV32-NEXT:    sll a0, a1, a0
+; RV32-NEXT:    vsetvli zero, a0, e32, mf2, ta, ma
 ; RV32-NEXT:    vmv.v.i v9, 1
-; RV32-NEXT:    vsetvli zero, a0, e32, mf2, tu, ma
+; RV32-NEXT:    vsetvli a1, zero, e32, mf2, tu, ma
 ; RV32-NEXT:    vmv.v.v v9, v8
 ; RV32-NEXT:    vmv1r.v v8, v9
-; RV32-NEXT:    mv a0, a1
 ; RV32-NEXT:  .LBB3_4:
 ; RV32-NEXT:    li a1, 1
 ; RV32-NEXT:  .LBB3_5: # %loop
@@ -266,18 +265,17 @@ define i32 @vector_reduce(<vscale x 1 x i32> %v) {
 ; RV64-NEXT:    cpopw a2, a0
 ; RV64-NEXT:    beq a2, a1, .LBB3_4
 ; RV64-NEXT:  # %bb.3:
-; RV64-NEXT:    clzw a1, a0
-; RV64-NEXT:    negw a1, a1
-; RV64-NEXT:    li a2, 1
-; RV64-NEXT:    sllw a1, a2, a1
-; RV64-NEXT:    slli a2, a1, 32
-; RV64-NEXT:    srli a2, a2, 32
-; RV64-NEXT:    vsetvli zero, a2, e32, mf2, ta, ma
+; RV64-NEXT:    clzw a0, a0
+; RV64-NEXT:    negw a0, a0
+; RV64-NEXT:    li a1, 1
+; RV64-NEXT:    sllw a0, a1, a0
+; RV64-NEXT:    slli a1, a0, 32
+; RV64-NEXT:    srli a1, a1, 32
+; RV64-NEXT:    vsetvli zero, a1, e32, mf2, ta, ma
 ; RV64-NEXT:    vmv.v.i v9, 1
-; RV64-NEXT:    vsetvli zero, a0, e32, mf2, tu, ma
+; RV64-NEXT:    vsetvli a1, zero, e32, mf2, tu, ma
 ; RV64-NEXT:    vmv.v.v v9, v8
 ; RV64-NEXT:    vmv1r.v v8, v9
-; RV64-NEXT:    mv a0, a1
 ; RV64-NEXT:  .LBB3_4:
 ; RV64-NEXT:    li a1, 1
 ; RV64-NEXT:  .LBB3_5: # %loop
