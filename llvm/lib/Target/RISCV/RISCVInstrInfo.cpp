@@ -1466,10 +1466,6 @@ unsigned RISCVInstrInfo::getInstSizeInBytes(const MachineInstr &MI) const {
   }
 
 #if SIFIVE_CUSTOMIZATION
-  const auto *MF = MI.getMF();
-  const auto &TM = static_cast<const RISCVTargetMachine &>(MF->getTarget());
-  const MCRegisterInfo &MRI = *TM.getMCRegisterInfo();
-
   // PseudoLIsimm32 breaks down to 2 instructions that can each be compressed.
   // Calculate the size taking that into account.
   // FIXME: Can we expand this before the BranchRelaxation pass so that we don't
@@ -1483,13 +1479,11 @@ unsigned RISCVInstrInfo::getInstSizeInBytes(const MachineInstr &MI) const {
       int64_t Lo = SignExtend64<12>(Val);
       assert(Hi != 0 && Lo != 0 && "Unexpected immediate");
       // Reduce by 2 bytes if we can use C.LUI.
-      if (MRI.getRegClass(RISCV::GPRNoX0X2RegClassID)
-              .contains(MI.getOperand(0).getReg()) &&
+      if (RISCV::GPRNoX0X2RegClass.contains(MI.getOperand(0).getReg()) &&
           (isUInt<5>(Hi) || (Hi >= 0xfffe0 && Hi <= 0xfffff)))
         Size -= 2;
       // Reduce by 2 bytes if we can use C.ADDI(W).
-      if (MRI.getRegClass(RISCV::GPRNoX0RegClassID)
-              .contains(MI.getOperand(0).getReg()) &&
+      if (RISCV::GPRNoX0RegClass.contains(MI.getOperand(0).getReg()) &&
           isInt<6>(Lo))
         Size -= 2;
     }
@@ -1499,12 +1493,8 @@ unsigned RISCVInstrInfo::getInstSizeInBytes(const MachineInstr &MI) const {
 
   if (!MI.memoperands_empty()) {
     MachineMemOperand *MMO = *(MI.memoperands_begin());
-#if SIFIVE_CUSTOMIZATION
-    const auto &ST = MF->getSubtarget<RISCVSubtarget>();
-#else
     const MachineFunction &MF = *MI.getParent()->getParent();
     const auto &ST = MF.getSubtarget<RISCVSubtarget>();
-#endif
     if (ST.hasStdExtZihintntl() && MMO->isNonTemporal()) {
       if (ST.hasStdExtCOrZca() && ST.enableRVCHintInstrs()) {
         if (isCompressibleInst(MI, STI))
