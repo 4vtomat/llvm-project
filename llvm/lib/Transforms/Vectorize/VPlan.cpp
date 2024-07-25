@@ -1084,6 +1084,17 @@ VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
   // different line numbers and we want to avoid awkward line stepping while
   // debugging. Eg. if the compare has got a line number inside the loop.
   VPBuilder Builder(MiddleVPBB);
+#if SIFIVE_CUSTOMIZATION
+  LLVMContext &Ctx =
+      IsUncountable ? SE.getContext() : TripCount->getType()->getContext();
+  VPValue *Cmp =
+      IsUncountable || TailFolded
+          ? Plan->getOrAddLiveIn(
+                ConstantInt::getTrue(IntegerType::getInt1Ty(Ctx)))
+          : Builder.createICmp(CmpInst::ICMP_EQ, Plan->getTripCount(),
+                               &Plan->getVectorTripCount(),
+                               ScalarLatchTerm->getDebugLoc(), "cmp.n");
+#else
   VPValue *Cmp =
       TailFolded
           ? Plan->getOrAddLiveIn(ConstantInt::getTrue(
@@ -1091,9 +1102,10 @@ VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
           : Builder.createICmp(CmpInst::ICMP_EQ, Plan->getTripCount(),
                                &Plan->getVectorTripCount(),
                                ScalarLatchTerm->getDebugLoc(), "cmp.n");
-  Builder.createNaryOp(VPInstruction::BranchOnCond, {Cmp},
-                       ScalarLatchTerm->getDebugLoc());
-  return Plan;
+#endif // SIFIVE_CUSTOMIZATION
+            Builder.createNaryOp(VPInstruction::BranchOnCond, {Cmp},
+                                 ScalarLatchTerm->getDebugLoc());
+            return Plan;
 }
 
 void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,

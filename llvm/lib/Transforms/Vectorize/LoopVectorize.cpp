@@ -6115,6 +6115,9 @@ static bool willGenerateVectors(VPlan &Plan, ElementCount VF,
       case VPDef::VPEVLBasedIVPHISC:
       case VPDef::VPPredInstPHISC:
       case VPDef::VPBranchOnMaskSC:
+#if SIFIVE_CUSTOMIZATION
+      case VPDef::VPMonotonicHeaderPHISC:
+#endif // SIFIVE_CUSTOMIZATION
         continue;
       case VPDef::VPReductionSC:
       case VPDef::VPActiveLaneMaskPHISC:
@@ -9117,6 +9120,9 @@ LoopVectorizationPlanner::plan(ElementCount UserVF, unsigned UserIC) {
       CM.invalidateCostModelingDecisions();
   }
 
+#if SIFIVE_CUSTOMIZATION
+  if (!Legal->useVLAVectorizer())
+#endif // SIFIVE_CUSTOMIZATION
   if (CM.foldTailByMasking())
     Legal->prepareToFoldTailByMasking();
 
@@ -9373,12 +9379,26 @@ VPlan &LoopVectorizationPlanner::getBestPlan() const {
 
   bool ForceVectorization = Hints.getForce() == LoopVectorizeHints::FK_Enabled;
   if (ForceVectorization) {
+#if SIFIVE_CUSTOMIZATION
+    if (Hints.isFixedVectorizationDisabled())
+#endif // SIFIVE_CUSTOMIZATION
     // Ignore scalar width, because the user explicitly wants vectorization.
     // Initialize cost to max so that VF = 2 is, at least, chosen during cost
     // evaluation.
     BestFactor.Cost = InstructionCost::getMax();
+#if SIFIVE_CUSTOMIZATION
+    LLVM_DEBUG(
+        dbgs()
+        << "LV: Changed scalar cost to Inf as user forced vectorization.\n");
+#endif
   }
 
+#if SIFIVE_CUSTOMIZATION
+  unsigned SmallestTypeSize, WidestTypeSize;
+  std::tie(SmallestTypeSize, WidestTypeSize) = CM.getSmallestAndWidestTypes();
+  const bool UseVPlanCostModel =
+      SiFiveLoopVectorizerUseVPlanBasedCostModel && Legal->useVLAVectorizer();
+#endif
   for (auto &P : VPlans) {
     for (ElementCount VF : P->vectorFactors()) {
       if (VF.isScalar())
@@ -9391,8 +9411,40 @@ VPlan &LoopVectorizationPlanner::getBestPlan() const {
         continue;
       }
 
+#if SIFIVE_CUSTOMIZATION
+      // Notice that the vector loop needs to be executed less times, so
+      // we need to divide the cost of the vector loops by the width of
+      // the vector elements.
+      // TODO: Note that for scalable vectors, VectorCost is actually VectorCost
+      // / vscale. While this is fine for comparing costs of different scalable
+      // VFs, comparison to the scalar loop cost is flawed. For now, for
+      // scalable vectors we assume that vectorization is always more profitable
+      // than scalar loop.
+      InstructionCost Cost;
+      if (UseVPlanCostModel) {
+        VPlanCostModel VPCM(getBestPlanFor(VF), *Legal, TTI, *TLI);
+        Cost = VPCM.getCost(
+            RVVPair::get(CM.WidestType, VF, PSE.getSE()->getDataLayout()));
+      } else {
+        Cost = cost(*P, VF);
+      }
+      if (!Cost.isValid()) {
+        LLVM_DEBUG(dbgs() << "LV: Vector loop of width " << VF
+                          << " yields an invalid cost. Skipping\n");
+        continue;
+      }
+
+      VPCostContext CostCtx(TTI, Legal->getWidestInductionType(),
+                            OrigLoop->getHeader()->getContext(), CM);
+      InstructionCost Overhead = 0;
+      if (Legal->useVLAVectorizer() &&
+          !VectorizerDisableReduceOverheadEstimation && VF.isVector())
+        Overhead = getBestPlanFor(VF).overhead(VF, CostCtx);
+      VectorizationFactor CurrentFactor(VF, Cost, ScalarCost, Overhead);
+#else
       InstructionCost Cost = cost(*P, VF);
       VectorizationFactor CurrentFactor(VF, Cost, ScalarCost);
+#endif // SIFIVE_CUSTOMIZATION
       if (isMoreProfitable(CurrentFactor, BestFactor)) {
         BestFactor = CurrentFactor;
         BestPlan = &*P;
@@ -13233,8 +13285,12 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         ElementCount Width = *BestPlan.vectorFactors().begin();
         LLVM_DEBUG(dbgs() << "VF picked by VPlan cost model: " << Width
                           << "\n");
+#if SIFIVE_CUSTOMIZATION
+        VF.Width = Width;
+#else
         assert(VF.Width == Width &&
                "VPlan cost model and legacy cost model disagreed");
+#endif // SIFIVE_CUSTOMIZATION
         LVP.executePlan(Width, IC, BestPlan, LB, DT, false);
         ++LoopsVectorized;
 

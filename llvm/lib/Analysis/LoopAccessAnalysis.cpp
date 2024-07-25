@@ -3147,6 +3147,9 @@ void LoopAccessInfoManager::clear() {
   // moment, that is loops requiring memory or SCEV runtime checks, as those cache
   // SCEVs, e.g. for pointer expressions.
   for (const auto &[L, LAI] : LoopAccessInfoMap) {
+#if SIFIVE_CUSTOMIZATION
+    if (LAI)
+#endif // SIFIVE_CUSTOMIZATION
     if (LAI->getRuntimePointerChecking()->getChecks().empty() &&
         LAI->getPSE().getPredicate().isAlwaysTrue())
       continue;
