@@ -53,6 +53,7 @@ public:
 
 private:
   bool tryReduceVL(MachineInstr &MI);
+  bool isCandidate(const MachineInstr &MI) const;
 };
 
 } // end anonymous namespace
@@ -1303,6 +1304,37 @@ static bool isVectorOpUsedAsScalarOp(MachineOperand &MO) {
   }
 }
 
+bool RISCVVLOptimizer::isCandidate(const MachineInstr &MI) const {
+  const MCInstrDesc &Desc = MI.getDesc();
+  if (!RISCVII::hasVLOp(Desc.TSFlags) || !RISCVII::hasSEWOp(Desc.TSFlags))
+    return false;
+
+  if (MI.getNumDefs() != 1)
+    return false;
+
+  unsigned VLOpNum = RISCVII::getVLOpNum(Desc);
+  const MachineOperand &VLOp = MI.getOperand(VLOpNum);
+  if (!VLOp.isImm() || VLOp.getImm() != RISCV::VLMaxSentinel)
+    return false;
+
+  // Some instructions that produce vectors have semantics that make it more
+  // difficult to determine whether the VL can be reduced. For example, some
+  // instructions, such as reductions, may write lanes past VL to a scalar
+  // register. Other instructions, such as some loads or stores, may write
+  // lower lanes using data from higher lanes. There may be other complex
+  // semantics not mentioned here that make it hard to determine whether
+  // the VL can be optimized. As a result, a white-list of supported
+  // instructions is used. Over time, more instructions cam be supported
+  // upon careful examination of their semantics under the logic in this
+  // optimization.
+  // TODO: Use a better approach than a white-list, such as adding
+  // properties to instructions using something like TSFlags.
+  if (!isSupportedInstr(MI))
+    return false;
+
+  return true;
+}
+
 bool RISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
   SetVector<MachineInstr *> Worklist;
   Worklist.insert(&OrigMI);
@@ -1393,19 +1425,7 @@ bool RISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
 
       MachineInstr *DefMI = MRI->getVRegDef(Op.getReg());
 
-      const MCInstrDesc &Desc = DefMI->getDesc();
-      if (!RISCVII::hasVLOp(Desc.TSFlags) || !RISCVII::hasSEWOp(Desc.TSFlags))
-        continue;
-
-      unsigned VLOpNum = RISCVII::getVLOpNum(Desc);
-      const MachineOperand &VLOp = DefMI->getOperand(VLOpNum);
-      if (!VLOp.isImm() || VLOp.getImm() != RISCV::VLMaxSentinel)
-        continue;
-
-      if (DefMI->getNumDefs() != 1)
-        continue;
-
-      if (!isSupportedInstr(*DefMI))
+      if (!isCandidate(*DefMI))
         continue;
 
       Worklist.insert(DefMI);
@@ -1430,36 +1450,7 @@ bool RISCVVLOptimizer::runOnMachineFunction(MachineFunction &MF) {
   for (MachineBasicBlock &MBB : MF) {
     // Visit instructions in reverse order.
     for (auto &MI : make_range(MBB.rbegin(), MBB.rend())) {
-      const MCInstrDesc &Desc = MI.getDesc();
-      if (!RISCVII::hasVLOp(Desc.TSFlags) || !RISCVII::hasSEWOp(Desc.TSFlags))
-        continue;
-
-      unsigned VLOpNum = RISCVII::getVLOpNum(Desc);
-      const MachineOperand &VLOp = MI.getOperand(VLOpNum);
-      if (!VLOp.isImm() || VLOp.getImm() != RISCV::VLMaxSentinel)
-        continue;
-
-      if (MI.getNumDefs() != 1)
-        continue;
-
-      // Only care about instructions that produce vectors.
-      const MachineOperand &Op0 = MI.getOperand(0);
-      if (!Op0.isReg() || !Op0.isDef() || !isVectorRegClass(Op0.getReg(), MRI))
-        continue;
-
-      // Some instructions that produce vectors have semantics that make it more
-      // difficult to determine whether the VL can be reduced. For example, some
-      // instructions, such as reductions, may write lanes past VL to a scalar
-      // register. Other instructions, such as some loads or stores, may write
-      // lower lanes using data from higher lanes. There may be other complex
-      // semantics not mentioned here that make it hard to determine whether
-      // the VL can be optimized. As a result, a white-list of supported
-      // instructions is used. Over time, more instructions cam be supported
-      // upon careful examination of their semantics under the logic in this
-      // optimization.
-      // TODO: Use a better approach than a white-list, such as adding
-      // properties to instructions using something like TSFlags.
-      if (!isSupportedInstr(MI))
+      if (!isCandidate(MI))
         continue;
 
       MadeChange |= tryReduceVL(MI);
