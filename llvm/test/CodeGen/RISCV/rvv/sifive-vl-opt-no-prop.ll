@@ -25,8 +25,9 @@ declare <vscale x 4 x i32> @llvm.riscv.vslide1down.nxv4i32.i32(
 define <vscale x 4 x i32> @vrgather(<vscale x 4 x i32> %passthru, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b, iXLen %vl1, iXLen %vl2) {
 ; CHECK-LABEL: vrgather:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
+; CHECK-NEXT:    vsetvli a1, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    vadd.vv v12, v10, v12
+; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    vrgather.vv v8, v12, v10
 ; CHECK-NEXT:    ret
   %v = add <vscale x 4 x i32> %a, %b
@@ -42,8 +43,9 @@ define <vscale x 4 x i32> @vrgather(<vscale x 4 x i32> %passthru, <vscale x 4 x 
 define <vscale x 4 x i32> @vslidedown(<vscale x 4 x i32> %0, <vscale x 4 x i32> %1, iXLen %2, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b) nounwind {
 ; CHECK-LABEL: vslidedown:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
+; CHECK-NEXT:    vsetvli a1, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    vadd.vv v10, v12, v14
+; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
 ; CHECK-NEXT:    vslidedown.vx v8, v10, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -61,8 +63,9 @@ entry:
 define <vscale x 4 x i32> @vslide1down(<vscale x 4 x i32> %0, i32 %1, iXLen %2, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b) nounwind {
 ; CHECK-LABEL: vslide1down:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a1, e32, m2, ta, ma
+; CHECK-NEXT:    vsetvli a2, zero, e32, m2, ta, ma
 ; CHECK-NEXT:    vadd.vv v8, v10, v12
+; CHECK-NEXT:    vsetvli zero, a1, e32, m2, ta, ma
 ; CHECK-NEXT:    vslide1down.vx v8, v8, a0
 ; CHECK-NEXT:    ret
 entry:
@@ -72,30 +75,6 @@ entry:
     <vscale x 4 x i32> %v,
     i32 %1,
     iXLen %2)
-
-  ret <vscale x 4 x i32> %w
-}
-
-declare <vscale x 4 x i32> @llvm.riscv.vcompress.nxv4i32(
-  <vscale x 4 x i32>,
-  <vscale x 4 x i32>,
-  <vscale x 4 x i1>,
-  iXLen);
-
-define <vscale x 4 x i32> @compress(<vscale x 4 x i32> %0, <vscale x 4 x i32> %1, <vscale x 4 x i1> %2, iXLen %3, <vscale x 4 x i32> %a, <vscale x 4 x i32> %b) nounwind {
-; CHECK-LABEL: compress:
-; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    vsetvli zero, a0, e32, m2, ta, ma
-; CHECK-NEXT:    vadd.vv v10, v12, v14
-; CHECK-NEXT:    vcompress.vm v8, v10, v0
-; CHECK-NEXT:    ret
-entry:
-  %v = add <vscale x 4 x i32> %a, %b
-  %w = call <vscale x 4 x i32> @llvm.riscv.vcompress.nxv4i32(
-    <vscale x 4 x i32> poison,
-    <vscale x 4 x i32> %v,
-    <vscale x 4 x i1> %2,
-    iXLen %3)
 
   ret <vscale x 4 x i32> %w
 }

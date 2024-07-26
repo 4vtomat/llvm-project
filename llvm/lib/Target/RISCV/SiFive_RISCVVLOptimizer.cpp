@@ -1304,6 +1304,32 @@ static bool isVectorOpUsedAsScalarOp(MachineOperand &MO) {
   }
 }
 
+bool safeToPropgateVL(const MachineInstr &MI) {
+  const RISCVVPseudosTable::PseudoInfo *RVV =
+      RISCVVPseudosTable::getPseudoInfo(MI.getOpcode());
+  if (!RVV)
+    return false;
+
+  switch (RVV->BaseInstr) {
+  // vslidedown instructions may use the higher part of the input operand beyond
+  // the VL.
+  case RISCV::VSLIDEDOWN_VI:
+  case RISCV::VSLIDEDOWN_VX:
+  case RISCV::VSLIDE1DOWN_VX:
+  case RISCV::VFSLIDE1DOWN_VF:
+
+  // vrgather instructions may index beyond the VL.
+  case RISCV::VRGATHER_VI:
+  case RISCV::VRGATHER_VV:
+  case RISCV::VRGATHER_VX:
+  case RISCV::VRGATHEREI16_VV:
+    return false;
+
+  default:
+    return true;
+  }
+}
+
 bool RISCVVLOptimizer::isCandidate(const MachineInstr &MI) const {
 
   LLVM_DEBUG(
@@ -1366,6 +1392,12 @@ bool RISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
       // does not impact the decision on whether to optimize VL.
       if (isVectorOpUsedAsScalarOp(UserOp))
         continue;
+
+      if (!safeToPropgateVL(UserMI)) {
+        LLVM_DEBUG(dbgs() << "    Abort due to used by unsafe instruction\n");
+        CanReduceVL = false;
+        break;
+      }
 
       // Tied operands might pass through.
       if (UserOp.isTied()) {
