@@ -1929,7 +1929,7 @@ static bool scanRISCVGCCMultilibConfig(const Driver &D,
 
   // Get current ABI, Arch, and code model.
   StringRef ABIName = tools::riscv::getRISCVABI(Args, TargetTriple);
-  StringRef MArch = tools::riscv::getRISCVArch(Args, TargetTriple);
+  std::string MArch = tools::riscv::getRISCVArch(Args, TargetTriple);
   StringRef CodeModel = tools::riscv::getRISCVCodeModel(Args);
 
   // Turns it into option style, to make it able to compare
