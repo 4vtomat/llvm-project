@@ -663,7 +663,8 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   case RISCV::VWADD_VV:
   case RISCV::VWADD_VX:
   case RISCV::VWSUB_VV:
-  case RISCV::VWSUB_VX: {
+  case RISCV::VWSUB_VX:
+  case RISCV::VWSLL_VI: {
     unsigned Log2EEW = IsMODef ? MILog2SEW + 1 : MILog2SEW;
     RISCVII::VLMUL EMUL = IsMODef ? twoTimesVLMUL(MIVLMul) : MIVLMul;
     return OperandInfo(EMUL, Log2EEW);
@@ -1261,6 +1262,7 @@ static bool isSupportedInstr(const MachineInstr &MI) {
   case RISCV::VNSRL_WI:
   case RISCV::VWADD_VV:
   case RISCV::VWADDU_VV:
+  case RISCV::VWSLL_VI:
     return true;
   }
 
