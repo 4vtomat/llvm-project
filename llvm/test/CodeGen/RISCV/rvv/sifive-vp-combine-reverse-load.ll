@@ -69,8 +69,9 @@ define <vscale x 2 x float> @test_load_mask_not_all_one(<vscale x 2 x float>* %p
 define <vscale x 2 x float> @test_differnet_evl(<vscale x 2 x float>* %ptr, i32 zeroext %evl1, i32 zeroext %evl2) {
 ; CHECK-LABEL: test_differnet_evl:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a3, zero, e8, mf4, ta, ma
+; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, ta, ma
 ; CHECK-NEXT:    vmv.v.i v8, 1
+; CHECK-NEXT:    vsetvli a3, zero, e8, mf4, ta, ma
 ; CHECK-NEXT:    vmv.v.i v9, 0
 ; CHECK-NEXT:    vsetivli zero, 2, e8, mf4, tu, ma
 ; CHECK-NEXT:    vslideup.vi v9, v8, 1
