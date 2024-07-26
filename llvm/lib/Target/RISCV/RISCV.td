@@ -69,6 +69,9 @@ include "SiFive_RISCVSchedSiFiveP800S.td"
 //===----------------------------------------------------------------------===//
 
 include "RISCVProcessors.td"
+#ifdef SIFIVE_CUSTOMIZATION
+include "SiFive_RISCVProcessorsSiFive.td"
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // Define the RISC-V target.

@@ -11,8 +11,8 @@
 ; RUN:   | FileCheck -check-prefixes=ALL,FAST,P650 %s
 ; RUN: llc -mtriple=riscv64 -mcpu=sifive-p670 -verify-machineinstrs < %s \
 ; RUN:   | FileCheck -check-prefixes=ALL,FAST,P670 %s
-; RUN: llc -mtriple=riscv64 -mcpu=sifive-p870s -verify-machineinstrs < %s \
-; RUN:   | FileCheck -check-prefixes=ALL,FAST,P870 %s
+; RUN: llc -mtriple=riscv64 -mcpu=sifive-cheetah -verify-machineinstrs < %s \
+; RUN:   | FileCheck -check-prefixes=ALL,FAST,CHEETAH %s
 
 ; A collection of cases showing codegen for unaligned loads and stores
 
@@ -457,4 +457,4 @@ define void @merge_stores_i32_i64(ptr %p) {
 ; P470: {{.*}}
 ; P650: {{.*}}
 ; P670: {{.*}}
-; P870: {{.*}}
+; CHEETAH: {{.*}}

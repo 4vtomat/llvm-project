@@ -210,7 +210,11 @@ static cl::opt<bool>
                        cl::desc("Run Partial inlinining pass"));
 
 static cl::opt<bool> ExtraVectorizerPasses(
+#if SIFIVE_CUSTOMIZATION
+    "extra-vectorizer-passes", cl::init(true), cl::Hidden,
+#else
     "extra-vectorizer-passes", cl::init(false), cl::Hidden,
+#endif // SIFIVE_CUSTOMIZATION
     cl::desc("Run cleanup optimization passes after vectorization"));
 
 static cl::opt<bool> RunNewGVN("enable-newgvn", cl::init(false), cl::Hidden,
@@ -1325,7 +1329,18 @@ void PassBuilder::addVectorPasses(OptimizationLevel Level,
   // Cleanup after the loop optimization passes.
   FPM.addPass(InstCombinePass());
 
+#if SIFIVE_CUSTOMIZATION
+  // To minimize compile time and codesize with O2 keep original behavior by
+  // expecting `extra-vectorizer-passes` to be passed via CL. For O3 enable it by
+  // default.
+  if (((Level.getSpeedupLevel() > 1 &&
+        ExtraVectorizerPasses.getNumOccurrences() > 0) ||
+       (Level.getSpeedupLevel() > 2 &&
+        ExtraVectorizerPasses.getNumOccurrences() == 0)) &&
+      ExtraVectorizerPasses) {
+#else
   if (Level.getSpeedupLevel() > 1 && ExtraVectorizerPasses) {
+#endif // SIFIVE_CUSTOMIZATION
     ExtraVectorPassManager ExtraPasses;
     // At higher optimization levels, try to clean up any runtime overlap and
     // alignment checks inserted by the vectorizer. We want to track correlated

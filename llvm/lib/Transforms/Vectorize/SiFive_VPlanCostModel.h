@@ -187,7 +187,7 @@ private:
 
   /// Return cost to use register type \p RegID. Return 0 if no
   /// spills/reload required
-  InstructionCost getRegisterPressureCost(const unsigned RegID, Type *Ty) const;
+  InstructionCost getRegisterPressureCost(const unsigned RegID, Type *Ty);
 
   /// Return individual cost of the VPMonotonicUpdateInstruction \p VPM for a
   /// given \p RVL

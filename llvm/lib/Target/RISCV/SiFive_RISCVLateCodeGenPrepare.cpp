@@ -93,6 +93,7 @@ class RISCVLateCodeGenPrepare
       public InstVisitor<RISCVLateCodeGenPrepare, bool> {
   const DataLayout *DL;
   const RISCVSubtarget *ST;
+  unsigned AlignBytes;
 
   SmallVector<MemIntrinsic *, 4> MemCalls;
 
@@ -573,8 +574,6 @@ void RISCVLateCodeGenPrepare::expandMemmoveUnknownSizeAligned(MemMoveInst *M) {
       ConstantInt::get(CopyLenType, RISCVVType::encodeLMUL(MemmoveLMUL, false));
   ConstantInt *Zero = ConstantInt::get(ILengthType, 0U);
 
-  unsigned AlignBytes = ST->getDLen() / 8;
-
   Builder.SetInsertPoint(BWPreLoopBB);
   Value *NewCopyLen, *SrcLastElemAddr, *DstLastElemAddr;
   // Backward pre-loop
@@ -966,8 +965,6 @@ void RISCVLateCodeGenPrepare::expandMemCpyUnknownSizewithAlign(MemCpyInst *M) {
   Value *LMUL =
       ConstantInt::get(CopyLenType, RISCVVType::encodeLMUL(MemcpyLMUL, false));
 
-  unsigned AlignBytes = ST->getDLen() / 8;
-
   Value *Addr = Builder.CreatePtrToInt(SrcAddr, ILengthType);
   Value *And =
       Builder.CreateAnd(Addr, ConstantInt::get(ILengthType, AlignBytes - 1));
@@ -1006,8 +1003,6 @@ void RISCVLateCodeGenPrepare::expandMemSetUnknownSizeAligned(MemSetInst *M) {
   Value *Val = M->getValue();
   Value *DstAddr = M->getRawDest();
   Value *CopyLen = M->getLength();
-
-  unsigned AlignBytes = ST->getDLen() / 8;
 
   Type *Int8Type = Type::getInt8Ty(PreLoopBB->getContext());
   ScalableVectorType *VTy = ScalableVectorType::get(
@@ -1398,6 +1393,12 @@ void RISCVLateCodeGenPrepare::getMemToRVVConfig() {
       errs()
           << "Invalid LMUL for memmove expansion, set to default lmul value.\n";
   }
+
+  if (ST->isSiFiveMallardCPU()) {
+    unsigned CacheLineSize = ST->getCacheLineSize();
+    AlignBytes = CacheLineSize ? CacheLineSize : 64;
+  } else if (ST->hasKnownDLen())
+    AlignBytes = ST->getDLen() / 8;
 
   // This is old threshold 8 * MemLMULLocal * MinVLenInBytes - 1
   UnrollThreshold = 8 * MemLMULLocal * (ST->getRealMinVLen() / 8) - 1;

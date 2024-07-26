@@ -775,6 +775,10 @@ TargetTransformInfo::getFeasibleMaxVFRange(RegisterKind K,
                                         MaxSafeRegisterWidth, RegWidthFactor,
                                         IsScalable);
 }
+
+bool TargetTransformInfo::sinkSplatOperands() const {
+  return TTIImpl->sinkSplatOperands();
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 std::optional<unsigned> TargetTransformInfo::getMaxVScale() const {
@@ -1394,6 +1398,10 @@ bool TargetTransformInfo::isLegalVectorInterleave(VectorType *VTy,
 }
 
 bool TargetTransformInfo::enableUncountableVectorization() const {
+  return TTIImpl->enableUncountableVectorization();
+}
+
+bool TargetTransformInfo::enableNonPower2SLPFPVectorization() const {
   return TTIImpl->enableUncountableVectorization();
 }
 

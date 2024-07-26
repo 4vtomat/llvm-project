@@ -524,6 +524,8 @@ public:
 
     return {LowerBoundVF, UpperBoundVF};
   }
+
+  bool sinkSplatOperands() const { return false; }
 #endif // SIFIVE_CUSTOMIZATION
 
   bool
@@ -1020,6 +1022,7 @@ public:
   unsigned getMaxNumArgs() const { return UINT_MAX; }
 #if SIFIVE_CUSTOMIZATION
   bool enableUncountableVectorization() const { return false; }
+  bool enableNonPower2SLPFPVectorization() const { return false; }
   bool enableCSAVectorization() const { return false; }
   unsigned getCSABodyFactor() const { return 1; }
   unsigned getCSAOverheadFactor() const { return 1; }

@@ -787,6 +787,8 @@ RISCVTTIImpl::getFeasibleMaxVFRange(TargetTransformInfo::RegisterKind K,
 
   return {LowerBoundVF, UpperBoundVF};
 }
+
+bool RISCVTTIImpl::sinkSplatOperands() const { return ST->sinkSplatOperands(); }
 #endif // SIFIVE_CUSTOMIZATION
 
 bool RISCVTTIImpl::shouldExpandReduction(const IntrinsicInst *II) const {
@@ -1607,6 +1609,21 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   }
   case Intrinsic::experimental_vp_popcount:
     return ST->getVectorToScalarBaseCost() + 1;
+  case Intrinsic::vector_interleave2:
+  case Intrinsic::experimental_vector_interleave3:
+  case Intrinsic::experimental_vector_interleave4:
+  case Intrinsic::experimental_vector_interleave5:
+  case Intrinsic::experimental_vector_interleave6:
+  case Intrinsic::experimental_vector_interleave7:
+  case Intrinsic::experimental_vector_interleave8:
+  case Intrinsic::vector_deinterleave2:
+  case Intrinsic::experimental_vector_deinterleave3:
+  case Intrinsic::experimental_vector_deinterleave4:
+  case Intrinsic::experimental_vector_deinterleave5:
+  case Intrinsic::experimental_vector_deinterleave6:
+  case Intrinsic::experimental_vector_deinterleave7:
+  case Intrinsic::experimental_vector_deinterleave8:
+    return 0;
 #endif // SIFIVE_CUSTOMIZATION
   // vp integer arithmetic ops.
   case Intrinsic::vp_add:

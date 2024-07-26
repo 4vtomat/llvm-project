@@ -24,6 +24,7 @@
 ; P470: VPlanCM: cost 64 for RVL (m1, i16) for VPInstruction: WIDEN ir<%div.us> = udiv ir<%add.us>, ir<255>
 ; P470: VPlanCM: cost 128 for RVL (m2, i16) for VPInstruction: WIDEN ir<%div.us> = udiv ir<%add.us>, ir<255>
 ; P470: VPlanCM: cost 256 for RVL (m4, i16) for VPInstruction: WIDEN ir<%div.us> = udiv ir<%add.us>, ir<255>
+; P470: VPlanCM: Spill and Reload of 4 registers is required. Cost increased by 64
 ; P470: VPlanCM: cost 512 for RVL (m8, i16) for VPInstruction: WIDEN ir<%div.us> = udiv ir<%add.us>, ir<255>
 
 ; P670: VPlanCM: cost 32 for RVL (m1, i16) for VPInstruction: WIDEN ir<%div.us> = udiv ir<%add.us>, ir<255>
@@ -31,6 +32,7 @@
 ; P670: VPlanCM: cost 32 for RVL (m1, i16) for VPInstruction: WIDEN ir<%div.us> = udiv ir<%add.us>, ir<255>
 ; P670: VPlanCM: cost 64 for RVL (m2, i16) for VPInstruction: WIDEN ir<%div.us> = udiv ir<%add.us>, ir<255>
 ; P670: VPlanCM: cost 128 for RVL (m4, i16) for VPInstruction: WIDEN ir<%div.us> = udiv ir<%add.us>, ir<255>
+; P670: VPlanCM: Spill and Reload of 4 registers is required. Cost increased by 64
 ; P670: VPlanCM: cost 256 for RVL (m8, i16) for VPInstruction: WIDEN ir<%div.us> = udiv ir<%add.us>, ir<255>
 
 define void @test(i32 %width, i32 %channels, ptr noalias %other_row, ptr noalias %this_row) {

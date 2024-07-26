@@ -15,7 +15,9 @@
 # CHECK: vsetvli a1, a0, 0x29
 .word 0x029575d7
 
+#if SIFIVE_CUSTOMIZATION
 # CHECK: vsetvli a1, a0, 0x110
+#endif // SIFIVE_CUSTOMIZATION
 .word 0x110575d7
 
 # CHECK: vsetvli a1, a0, e64, mf8, tu, mu
@@ -33,8 +35,16 @@
 # CHECK: vsetivli a1, 0x10, 0x38
 .word 0xc38875d7
 
-# CHECK: vsetivli a1, 0x10, 0x103
+#if SIFIVE_CUSTOMIZATION
+# CHECK: vsetivli a1, 0x10, e8alt, m8, tu, mu
+#endif // SIFIVE_CUSTOMIZATION
 .word 0xd03875d7
 
 # CHECK: vsetivli a1, 0x10, e8, mf4, tu, mu
 .word 0xc06875d7
+
+#if SIFIVE_CUSTOMIZATION
+# VTYPEI[9] == 1
+# CHECK: vsetvli a2, a0, 0x200
+.word 0x20057657
+#endif // SIFIVE_CUSTOMIZATION

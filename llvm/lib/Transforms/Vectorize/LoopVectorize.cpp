@@ -906,6 +906,7 @@ protected:
       ReductionResumeValues;
 };
 
+#if SIFIVE_CUSTOMIZATION
 class UncountableInnerLoopVectorizer final : public InnerLoopVectorizer {
 public:
   UncountableInnerLoopVectorizer(
@@ -931,6 +932,7 @@ public:
                     BasicBlock *MiddleBlock, BasicBlock *VectorHeader,
                     VPlan &Plan, VPTransformState &State) override;
 };
+#endif // SIFIVE_CUSTOMIZATION
 
 class InnerLoopUnroller : public InnerLoopVectorizer {
 public:
@@ -1252,8 +1254,7 @@ public:
                              InterleavedAccessInfo &IAI)
       : ScalarEpilogueStatus(SEL), TheLoop(L), PSE(PSE), LI(LI), Legal(Legal),
         TTI(TTI), TLI(TLI), DB(DB), AC(AC), ORE(ORE), TheFunction(F),
-        Hints(Hints), InterleaveInfo(IAI) {
-  }
+        Hints(Hints), InterleaveInfo(IAI) {}
 
   /// \return An upper bound for the vectorization factors (both fixed and
   /// scalable). If the factors are 0, vectorization and interleaving should be
@@ -2084,9 +2085,6 @@ public:
   /// All element types found in the loop.
   SmallPtrSet<Type *, 16> ElementTypesInLoop;
 
-  /// Profitable vector factors.
-  SmallVector<VectorizationFactor, 8> ProfitableVFs;
-
 #if SIFIVE_CUSTOMIZATION
   Type *SmallestType = nullptr;
   Type *WidestType = nullptr;
@@ -2142,11 +2140,12 @@ public:
   /// there is no vector code generation, the check blocks are removed
   /// completely.
   void Create(Loop *L, const LoopAccessInfo &LAI,
-              const SCEVPredicate &UnionPred, ElementCount VF, unsigned IC
 #if SIFIVE_CUSTOMIZATION
-              , bool ForceVectorization
+              const SCEVPredicate &UnionPred, ElementCount VF, unsigned IC,
+              bool ForceVectorization) {
+#else
+              const SCEVPredicate &UnionPred, ElementCount VF, unsigned IC) {
 #endif // SIFIVE_CUSTOMIZATION
-              ) {
 
     // Hard cutoff to limit compile-time increase in case a very large number of
     // runtime checks needs to be generated.
@@ -2455,11 +2454,12 @@ static bool useActiveLaneMaskForControlFlow(TailFoldingStyle Style) {
 static bool isExplicitVecOuterLoop(Loop *OuterLp,
                                    OptimizationRemarkEmitter *ORE) {
   assert(!OuterLp->isInnermost() && "This is not an outer loop");
-  LoopVectorizeHints Hints(OuterLp, true /*DisableInterleaving*/, *ORE
 #if SIFIVE_CUSTOMIZATION
-                           , true /* ReportInvalid */
+  LoopVectorizeHints Hints(OuterLp, true /*DisableInterleaving*/, *ORE ,
+                           true /* ReportInvalid */);
+#else
+  LoopVectorizeHints Hints(OuterLp, true /*DisableInterleaving*/, *ORE);
 #endif // SIFIVE_CUSTOMIZATION
-  );
 
   // Only outer loops with an explicit vectorization hint are supported.
   // Unannotated outer loops are ignored.
@@ -2728,6 +2728,9 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
   assert((!BlockInMask || !Group->isReverse()) &&
          "Reversed masked interleave-group not supported.");
 
+#if !SIFIVE_CUSTOMIZATION
+  Value *Idx;
+#endif // SIFIVE_CUSTOMIZATION
   // If the group is reverse, adjust the index to refer to the last vector lane
   // instead of the first. We adjust the index from the first vector lane,
   // rather than directly getting the pointer for lane VF - 1, because the
@@ -2755,7 +2758,6 @@ void InnerLoopVectorizer::vectorizeInterleaveGroup(
   }
   IndexVal = Builder.CreateNeg(IndexVal);
 #else
-  Value *Idx;
   if (Group->isReverse()) {
     Value *RuntimeVF = getRuntimeVF(Builder, Builder.getInt32Ty(), VF);
     Idx = Builder.CreateSub(RuntimeVF, Builder.getInt32(1));
@@ -3431,13 +3433,13 @@ Value *InnerLoopVectorizer::createBitOrPointerCast(Value *V, VectorType *DstVTy,
   auto *SrcVecTy = cast<VectorType>(V->getType());
   assert(VF == SrcVecTy->getElementCount() && "Vector dimensions do not match");
   Type *SrcElemTy = SrcVecTy->getElementType();
-  Type *DstElemTy = DstVTy->getElementType();
+  Type *DstElemTy = DstFVTy->getElementType();
   assert((DL.getTypeSizeInBits(SrcElemTy) == DL.getTypeSizeInBits(DstElemTy)) &&
          "Vector elements must have same size");
 
   // Do a direct cast if element types are castable.
   if (CastInst::isBitOrNoopPointerCastable(SrcElemTy, DstElemTy, DL)) {
-    return Builder.CreateBitOrPointerCast(V, DstVTy);
+    return Builder.CreateBitOrPointerCast(V, DstFVTy);
   }
   // V cannot be directly casted to desired vector type.
   // May happen when V is a floating point vector but DstVTy is a vector of
@@ -3451,7 +3453,7 @@ Value *InnerLoopVectorizer::createBitOrPointerCast(Value *V, VectorType *DstVTy,
       IntegerType::getIntNTy(V->getContext(), DL.getTypeSizeInBits(SrcElemTy));
   auto *VecIntTy = VectorType::get(IntTy, VF);
   Value *CastVal = Builder.CreateBitOrPointerCast(V, VecIntTy);
-  return Builder.CreateBitOrPointerCast(CastVal, DstVTy);
+  return Builder.CreateBitOrPointerCast(CastVal, DstFVTy);
 }
 
 void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
@@ -4569,7 +4571,7 @@ bool LoopVectorizationCostModel::isScalarWithPredication(
   case Instruction::UDiv:
   case Instruction::SDiv:
   case Instruction::SRem:
-  case Instruction::URem:
+  case Instruction::URem: {
 #if SIFIVE_CUSTOMIZATION
     if (Legal->useVLAVectorizer())
       return false;
@@ -4579,6 +4581,7 @@ bool LoopVectorizationCostModel::isScalarWithPredication(
     // scalable vectors as scalarization isn't legal.
     const auto [ScalarCost, SafeDivisorCost] = getDivRemSpeculationCost(I, VF);
     return isDivRemScalarWithPredication(ScalarCost, SafeDivisorCost);
+  }
   }
 }
 
@@ -4958,7 +4961,6 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
     if (isUniformMemOpUse(I))
       return true;
 #endif // SIFIVE_CUSTOMIZATION
-
 
     return (WideningDecision == CM_Widen ||
             WideningDecision == CM_Widen_Reverse ||
@@ -5605,8 +5607,10 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
   }
 
   switch (ScalarEpilogueStatus) {
-  case CM_ScalarEpilogueAllowed: {
+  case CM_ScalarEpilogueAllowed:
 #if SIFIVE_CUSTOMIZATION
+  {
+    // FIXME: Is this supposed to be MaxTC like upstream?
     FixedScalableVFPair MaxVF = computeFeasibleMaxVF(TC, UserVF, false);
     if (Hints->isFixedVectorizationDisabled() && !MaxVF)
       reportVectorizationFailure(
@@ -5617,8 +5621,7 @@ LoopVectorizationCostModel::computeMaxVF(ElementCount UserVF, unsigned UserIC) {
     return MaxVF;
   }
 #else
-  case CM_ScalarEpilogueAllowed:
-    return computeFeasibleMaxVF(TC, UserVF, false);
+    return computeFeasibleMaxVF(MaxTC, UserVF, false);
 #endif // SIFIVE_CUSTOMIZATION
   case CM_ScalarEpilogueNotAllowedUsePredicate:
     [[fallthrough]];
@@ -5881,6 +5884,7 @@ ElementCount LoopVectorizationCostModel::getMaximizedVFForTarget(
 
     // Select the largest VF which doesn't require more registers than existing
     // ones.
+#if SIFIVE_CUSTOMIZATION
     for (int I = RUs.size() - 1; I >= 0; --I) {
       const auto &MLU = RUs[I].MaxLocalUsers;
       if (llvm::all_of(MLU, [&](decltype(MLU.front()) &LU) {
@@ -5890,6 +5894,20 @@ ElementCount LoopVectorizationCostModel::getMaximizedVFForTarget(
         break;
       }
     }
+#else
+    for (int i = RUs.size() - 1; i >= 0; --i) {
+      bool Selected = true;
+      for (auto &pair : RUs[i].MaxLocalUsers) {
+        unsigned TargetNumRegisters = TTI.getNumberOfRegisters(pair.first);
+        if (pair.second > TargetNumRegisters)
+          Selected = false;
+      }
+      if (Selected) {
+        MaxVF = VFs[i];
+        break;
+      }
+    }
+#endif
     if (ElementCount MinVF =
             TTI.getMinimumVF(SmallestType, ComputeScalableMaxVF)) {
       if (ElementCount::isKnownLT(MaxVF, MinVF)) {
@@ -8265,7 +8283,7 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
       Instruction *PtrDef =
         dyn_cast_or_null<Instruction>(getLoadStorePointerOperand(&I));
       if (PtrDef && TheLoop->contains(PtrDef) &&
-          (getWideningDecision(&I, VF) != CM_GatherScatter))
+          getWideningDecision(&I, VF) != CM_GatherScatter)
         AddrDefs.insert(PtrDef);
     }
 
@@ -10708,7 +10726,7 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
       return Recipe;
 
     VPHeaderPHIRecipe *PhiRecipe = nullptr;
-#ifndef SIFIVE_CUSTOMIZATION
+#if !SIFIVE_CUSTOMIZATION
     assert((Legal->isReductionVariable(Phi) ||
             Legal->isFixedOrderRecurrence(Phi)) &&
            "can only widen reductions and fixed-order recurrences here");
@@ -10719,13 +10737,16 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
           Legal->getReductionVars().find(Phi)->second;
       assert(RdxDesc.getRecurrenceStartValue() ==
              Phi->getIncomingValueForBlock(OrigLoop->getLoopPreheader()));
+#if SIFIVE_CUSTOMIZATION
       PhiRecipe = new VPReductionPHIRecipe(
           Phi, RdxDesc, *StartV, CM.isInLoopReduction(Phi),
-          CM.useOrderedReductions(RdxDesc)
-#if SIFIVE_CUSTOMIZATION
-          , CM.postFixStartValue(RdxDesc, Phi)
+          CM.useOrderedReductions(RdxDesc),
+          CM.postFixStartValue(RdxDesc, Phi));
+#else
+      PhiRecipe = new VPReductionPHIRecipe(Phi, RdxDesc, *StartV,
+                                           CM.isInLoopReduction(Phi),
+                                           CM.useOrderedReductions(RdxDesc));
 #endif // SIFIVE_CUSTOMIZATION
-      );
 #if SIFIVE_CUSTOMIZATION
     } else if (Legal->isFixedOrderRecurrence(Phi)) {
 #else
@@ -11372,8 +11393,8 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
           Legal->isInvariantAddressOfReduction(SI->getPointerOperand()))
         continue;
 
-      VPRecipeBase *Recipe = RecipeBuilder.tryToCreateWidenRecipe(
-          Instr, Operands, Range, VPBB);
+      VPRecipeBase *Recipe =
+          RecipeBuilder.tryToCreateWidenRecipe(Instr, Operands, Range, VPBB);
 #if SIFIVE_CUSTOMIZATION
       if (&I == DataDepExitCond)
         VPDataDepExitCond = Recipe;
@@ -12492,7 +12513,7 @@ static bool processLoopInVPlanNativePath(
     LoopVectorizationRequirements &Requirements, bool IsLTOPreLink,
     BasicBlock *&IgnoreSCEVMemCheckBB) {
 #else
-    LoopVectorizationRequirements & Requirements) {
+    LoopVectorizationRequirements &Requirements) {
 #endif
 
   if (isa<SCEVCouldNotCompute>(PSE.getBackedgeTakenCount())) {
@@ -12508,7 +12529,6 @@ static bool processLoopInVPlanNativePath(
 
   LoopVectorizationCostModel CM(SEL, L, PSE, LI, LVL, *TTI, TLI, DB, AC, ORE, F,
                                 &Hints, IAI);
-
   // Use the planner for outer loop vectorization.
   // TODO: CM is not used at this point inside the planner. Turn CM into an
   // optional argument if we don't need it in the future.
@@ -12743,11 +12763,10 @@ bool LoopVectorizePass::processLoop(Loop *L) {
                     << L->getHeader()->getParent()->getName() << "' from "
                     << L->getLocStr() << "\n");
 
-  LoopVectorizeHints Hints(L, InterleaveOnlyWhenForced, *ORE,
 #if SIFIVE_CUSTOMIZATION
-                           true /* ReportInvalid */,
+  LoopVectorizeHints Hints(L, InterleaveOnlyWhenForced, *ORE,
+                           true /* ReportInvalid */, TTI);
 #endif // SIFIVE_CUSTOMIZATION
-                           TTI);
 
   LLVM_DEBUG(
       dbgs() << "LV: Loop hints:"
@@ -12906,8 +12925,12 @@ bool LoopVectorizePass::processLoop(Loop *L) {
                                                  ExactFPMathInst->getDebugLoc(),
                                                  ExactFPMathInst->getParent())
              << "loop not vectorized: cannot prove it is safe to reorder "
+#if SIFIVE_CUSTOMIZATION
                 "floating-point operations. Consider to use '#pragma clang fp "
                 "reassociate(on)' to enable vectorization";
+#else
+                "floating-point operations";
+#endif // SIFIVE_CUSTOMIZATION
     });
     LLVM_DEBUG(dbgs() << "LV: loop not vectorized: cannot prove it is safe to "
                          "reorder floating-point operations\n");
@@ -12918,7 +12941,6 @@ bool LoopVectorizePass::processLoop(Loop *L) {
   // Use the cost model.
   LoopVectorizationCostModel CM(SEL, L, PSE, LI, &LVL, *TTI, TLI, DB, AC, ORE,
                                 F, &Hints, IAI);
-
   // Use the planner for vectorization.
   LoopVectorizationPlanner LVP(L, LI, DT, TLI, *TTI, &LVL, CM, IAI, PSE, Hints,
 #if SIFIVE_CUSTOMIZATION
@@ -12968,9 +12990,11 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         !ForceVectorization &&
 #else
     if (VF.Width.isVector() || SelectedIC > 1)
-      Checks.Create(L, *LVL.getLAI(), PSE.getPredicate(), VF.Width, SelectedIC,
-                    ForceVectorization);
+      Checks.Create(L, *LVL.getLAI(), PSE.getPredicate(), VF.Width, SelectedIC);
 
+    // Check if it is profitable to vectorize with runtime checks.
+    bool ForceVectorization =
+        Hints.getForce() == LoopVectorizeHints::FK_Enabled;
     if (!ForceVectorization &&
 #endif // SIFIVE_CUSTOMIZATION
         !areRuntimeChecksProfitable(Checks, VF, getVScaleForTuning(L, *TTI), L,
@@ -13327,8 +13351,8 @@ bool LoopVectorizePass::processLoop(Loop *L) {
           DisableRuntimeUnroll = true;
       }
       // Report the vectorization decision.
-      ORE->emit([&]() {
 #if SIFIVE_CUSTOMIZATION
+      ORE->emit([&]() {
         const Module &M = *L->getHeader()->getModule();
         Triple TargetTriple(M.getTargetTriple());
         Triple::ArchType Arch = TargetTriple.getArch();
@@ -13357,13 +13381,15 @@ bool LoopVectorizePass::processLoop(Loop *L) {
                  << NV("VectorizationFactor", VFToLMULTypeSizePair(VF.Width))
                  << ")";
         }
-#endif // SIFIVE_CUSTOMIZATION
         return OptimizationRemark(LV_NAME, "Vectorized", L->getStartLoc(),
                                   L->getHeader())
                << "vectorized loop (vectorization width: "
                << NV("VectorizationFactor", VF.Width)
                << ", interleaved count: " << NV("InterleaveCount", IC) << ")";
       });
+#else
+      reportVectorization(ORE, L, VF, IC);
+#endif // SIFIVE_CUSTOMIZATION
     }
 
     if (ORE->allowExtraAnalysis(LV_NAME))

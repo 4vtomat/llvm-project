@@ -579,7 +579,7 @@ void RISCVDAGToDAGISel::selectVSETVLI(SDNode *Node) {
 #if SIFIVE_CUSTOMIZATION
   unsigned VTypeI = RISCVVType::encodeVTYPE(
       VLMul, SEW, /*TailAgnostic*/ !ForceTailUndisturbed,
-      /*MaskAgnostic*/ !ForceMaskUndisturbed);
+      /*MaskAgnostic*/ !ForceMaskUndisturbed, /*IsAltfmt*/ false);
 #endif // SIFIVE_CUSTOMIZATION
   SDValue VTypeIOp = CurDAG->getTargetConstant(VTypeI, DL, XLenVT);
 
@@ -3919,7 +3919,7 @@ bool RISCVDAGToDAGISel::doPeepholeLUIADDI(SDNode *N) {
 
   // Emulate LUI.
   Imm <<= 12;
-  Imm = SignExtend64(Imm, 32);
+  Imm = SignExtend64<32>(Imm);
 
   // Add the low immediate from ADDI/ADDIW.
   int64_t LoImm = cast<ConstantSDNode>(N->getOperand(1))->getSExtValue();
@@ -3928,7 +3928,7 @@ bool RISCVDAGToDAGISel::doPeepholeLUIADDI(SDNode *N) {
 
   // If this is an ADDIW or RV32, sign extend the result.
   if (Opc == RISCV::ADDIW || !Subtarget->is64Bit())
-    Imm = SignExtend64(Imm, 32);
+    Imm = SignExtend64<32>(Imm);
 
   // Final constant should be simm32.
   if (!isInt<32>(Imm))

@@ -174,6 +174,8 @@ public:
       unsigned WidestType, unsigned MaxSafeRegisterWidth = -1U,
       unsigned RegWidthFactor = 1, bool IsScalable = false) const;
 
+  bool sinkSplatOperands() const;
+
   bool useVLAVectorizer() const;
 
   /// Minimum loop trip count we consider profitable for vectorization.
@@ -527,6 +529,12 @@ public:
   /// \returns true if the loop vectorizer should vectorize uncountable
   /// loop for the target
   bool enableUncountableVectorization() const;
+
+  /// \returns true if the non-power-of-2 vectorization in SLP vectorizer for
+  /// float point is profitable.
+  bool enableNonPower2SLPFPVectorization() const {
+    return !ST->isSiFiveBulletCPU();
+  }
 
   /// \returns true if the loop vectorizer should vectorize conditional
   /// scalar assignments for the target.

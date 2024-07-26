@@ -38,8 +38,10 @@
 #include "llvm/Analysis/DomTreeUpdater.h"
 #include "llvm/Analysis/IVDescriptors.h"
 #include "llvm/Analysis/LoopInfo.h"
+#if SIFIVE_CUSTOMIZATION
 #include "llvm/Analysis/ScalarEvolution.h"
 #include "llvm/Analysis/ScalarEvolutionExpressions.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/Analysis/VectorUtils.h"
 #include "llvm/IR/DebugLoc.h"
 #include "llvm/IR/FMF.h"
@@ -1016,8 +1018,8 @@ public:
   /// Returns true if the recipe may have side-effects.
   bool mayHaveSideEffects() const;
 
-   /// Returns true for PHI-like recipes.
-   bool isPhi() const {
+  /// Returns true for PHI-like recipes.
+  bool isPhi() const {
     return getVPDefID() >= VPFirstPHISC && getVPDefID() <= VPLastPHISC;
   }
 
@@ -2112,11 +2114,11 @@ class VPWidenIntOrFpInductionRecipe : public VPHeaderPHIRecipe {
 
 public:
   VPWidenIntOrFpInductionRecipe(PHINode *IV, VPValue *Start, VPValue *Step,
-                                const InductionDescriptor &IndDesc,
 #if SIFIVE_CUSTOMIZATION
+                                const InductionDescriptor &IndDesc,
                                 bool IsUncountable = false)
 #else
-                                )
+                                const InductionDescriptor &IndDesc)
 #endif // SIFIVE_CUSTOMIZATION
       : VPHeaderPHIRecipe(VPDef::VPWidenIntOrFpInductionSC, IV, Start), IV(IV),
 #if SIFIVE_CUSTOMIZATION
@@ -2488,7 +2490,7 @@ public:
 #endif
 
   /// Returns true if the recipe only uses the first lane of operand \p Op.
-  virtual bool onlyFirstLaneUsed(const VPValue *Op) const override {
+  bool onlyFirstLaneUsed(const VPValue *Op) const override {
     assert(is_contained(operands(), Op) &&
            "Op must be an operand of the recipe");
     // Recursing through Blend recipes only, must terminate at header phi's the
@@ -4190,6 +4192,12 @@ public:
 
   /// Return the live-in VPValue for \p V, if there is one or nullptr otherwise.
   VPValue *getLiveIn(Value *V) const { return Value2VPValue.lookup(V); }
+
+#if SIFIVE_CUSTOMIZATION
+  const ArrayRef<VPValue *> getLiveIns() const {
+    return ArrayRef(VPLiveInsToFree);
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the live-ins of this VPlan to \p O.

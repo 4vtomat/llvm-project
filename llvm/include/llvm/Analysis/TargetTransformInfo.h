@@ -1170,6 +1170,8 @@ public:
       RegisterKind K, unsigned SmallestType, unsigned WidestType,
       unsigned MaxSafeRegisterWidth = -1U, unsigned RegWidthFactor = 1,
       bool IsScalable = false) const;
+
+  bool sinkSplatOperands() const;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// \return The maximum value of vscale if the target specifies an
@@ -1833,6 +1835,10 @@ public:
   /// loop vectorization for the target.
   bool enableUncountableVectorization() const;
 
+  /// \returns true if the non-power-of-2 vectorization in SLP vectorizer for
+  /// float point is profitable.
+  bool enableNonPower2SLPFPVectorization() const;
+
   /// \returns true if the loop vectorizer should vectorize conditional
   /// scalar assignments for the target.
   bool enableCSAVectorization() const;
@@ -2053,6 +2059,7 @@ public:
                         unsigned MaxSafeRegisterWidth = -1U,
                         unsigned RegWidthFactor = 1,
                         bool IsScalable = false) const = 0;
+  virtual bool sinkSplatOperands() const = 0;
 #endif // SIFIVE_CUSTOMIZATION
   virtual unsigned getMinVectorRegisterBitWidth() const = 0;
   virtual std::optional<unsigned> getMaxVScale() const = 0;
@@ -2265,6 +2272,7 @@ public:
   virtual unsigned getMaxNumArgs() const = 0;
 #if SIFIVE_CUSTOMIZATION
   virtual bool enableUncountableVectorization() const = 0;
+  virtual bool enableNonPower2SLPFPVectorization() const = 0;
   virtual bool enableCSAVectorization() const = 0;
   virtual unsigned getCSABodyFactor() const = 0;
   virtual unsigned getCSAOverheadFactor() const = 0;
@@ -2698,6 +2706,8 @@ public:
                                       MaxSafeRegisterWidth, RegWidthFactor,
                                       IsScalable);
   }
+
+  bool sinkSplatOperands() const override { return Impl.sinkSplatOperands(); }
 #endif // SIFIVE_CUSTOMIZATION
   std::optional<unsigned> getMaxVScale() const override {
     return Impl.getMaxVScale();
@@ -3088,6 +3098,10 @@ public:
 #if SIFIVE_CUSTOMIZATION
   bool enableUncountableVectorization() const override {
     return Impl.enableUncountableVectorization();
+  }
+
+  bool enableNonPower2SLPFPVectorization() const override {
+    return Impl.enableNonPower2SLPFPVectorization();
   }
 
   bool enableCSAVectorization() const override {

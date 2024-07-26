@@ -43,6 +43,13 @@ define i32 @read_only_loop_with_runtime_check(ptr noundef %array, i32 noundef %c
 ; CHECK-NEXT:    [[TMP7]] = tail call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[BIN_RDX]])
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N_VEC]], [[TMP0]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_CLEANUP]], label [[FOR_BODY_PREHEADER13]]
+<<<<<<< HEAD
+=======
+; CHECK:       for.body.preheader15:
+; CHECK-NEXT:    [[INDVARS_IV_PH:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER10]] ], [ [[N_VEC]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[SUM_07_PH:%.*]] = phi i32 [ 0, [[FOR_BODY_PREHEADER10]] ], [ [[TMP7]], [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
+>>>>>>> origin/sifive-dev
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    [[SUM_0_LCSSA:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ], [ [[TMP7]], [[MIDDLE_BLOCK]] ], [ [[ADD:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    ret i32 [[SUM_0_LCSSA]]
@@ -158,6 +165,13 @@ define dso_local noundef i32 @sum_prefix_with_sum(ptr %s.coerce0, i64 %s.coerce1
 ; CHECK-NEXT:    [[ADD]] = tail call i32 @llvm.vector.reduce.add.v4i32(<4 x i32> [[BIN_RDX]])
 ; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N_VEC]], [[N]]
 ; CHECK-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_CLEANUP]], label [[FOR_BODY_PREHEADER11]]
+<<<<<<< HEAD
+=======
+; CHECK:       for.body.preheader13:
+; CHECK-NEXT:    [[I_07_PH:%.*]] = phi i64 [ 0, [[ENTRY]] ], [ [[N_VEC]], [[SPAN_CHECKED_ACCESS_EXIT]] ]
+; CHECK-NEXT:    [[RET_0_LCSSA:%.*]] = phi i32 [ 0, [[ENTRY]] ], [ [[ADD]], [[SPAN_CHECKED_ACCESS_EXIT]] ]
+; CHECK-NEXT:    br label [[FOR_BODY1:%.*]]
+>>>>>>> origin/sifive-dev
 ; CHECK:       for.cond.cleanup:
 ; CHECK-NEXT:    [[RET_0_LCSSA1:%.*]] = phi i32 [ 0, [[ENTRY1:%.*]] ], [ [[ADD]], [[SPAN_CHECKED_ACCESS_EXIT]] ], [ [[ADD1:%.*]], [[FOR_BODY1]] ]
 ; CHECK-NEXT:    ret i32 [[RET_0_LCSSA1]]
