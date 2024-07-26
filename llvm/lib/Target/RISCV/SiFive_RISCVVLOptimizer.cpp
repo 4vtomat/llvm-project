@@ -1305,17 +1305,27 @@ static bool isVectorOpUsedAsScalarOp(MachineOperand &MO) {
 }
 
 bool RISCVVLOptimizer::isCandidate(const MachineInstr &MI) const {
+
+  LLVM_DEBUG(
+      dbgs() << "Check whether the instruction is a candidate for reducing VL:"
+             << MI << "\n");
+
   const MCInstrDesc &Desc = MI.getDesc();
-  if (!RISCVII::hasVLOp(Desc.TSFlags) || !RISCVII::hasSEWOp(Desc.TSFlags))
+  if (!RISCVII::hasVLOp(Desc.TSFlags) || !RISCVII::hasSEWOp(Desc.TSFlags)) {
+    LLVM_DEBUG(dbgs() << "  Not a candidate due to lack of vl op or sew op\n");
     return false;
+  }
 
-  if (MI.getNumDefs() != 1)
+  if (MI.getNumDefs() != 1) {
+    LLVM_DEBUG(dbgs() << " Not a candidate due to it def more than one\n");
     return false;
-
+  }
   unsigned VLOpNum = RISCVII::getVLOpNum(Desc);
   const MachineOperand &VLOp = MI.getOperand(VLOpNum);
-  if (!VLOp.isImm() || VLOp.getImm() != RISCV::VLMaxSentinel)
+  if (!VLOp.isImm() || VLOp.getImm() != RISCV::VLMaxSentinel) {
+    LLVM_DEBUG(dbgs() << "  Not a candidate due to VL is not VLMAX\n");
     return false;
+  }
 
   // Some instructions that produce vectors have semantics that make it more
   // difficult to determine whether the VL can be reduced. For example, some
@@ -1329,8 +1339,10 @@ bool RISCVVLOptimizer::isCandidate(const MachineInstr &MI) const {
   // optimization.
   // TODO: Use a better approach than a white-list, such as adding
   // properties to instructions using something like TSFlags.
-  if (!isSupportedInstr(MI))
+  if (!isSupportedInstr(MI)) {
+    LLVM_DEBUG(dbgs() << "  Not a candidate due to unsupported instruction\n");
     return false;
+  }
 
   return true;
 }
@@ -1342,11 +1354,12 @@ bool RISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
   bool MadeChange = false;
   while (!Worklist.empty()) {
     MachineInstr &MI = *Worklist.pop_back_val();
-
+    LLVM_DEBUG(dbgs() << "Try reduce VL for " << OrigMI << "\n");
     std::optional<Register> CommonVL;
     bool CanReduceVL = true;
     for (auto &UserOp : MRI->use_operands(MI.getOperand(0).getReg())) {
       const MachineInstr &UserMI = *UserOp.getParent();
+      LLVM_DEBUG(dbgs() << "  Check user: " << UserMI << "\n");
 
       // Instructions like reductions may use a vector register as a scalar
       // register. In this case, we should treat it like a scalar register which
@@ -1356,12 +1369,15 @@ bool RISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
 
       // Tied operands might pass through.
       if (UserOp.isTied()) {
+        LLVM_DEBUG(dbgs() << "    Abort due to user use it as tied operand\n");
         CanReduceVL = false;
         break;
       }
 
       const MCInstrDesc &Desc = UserMI.getDesc();
       if (!RISCVII::hasVLOp(Desc.TSFlags) || !RISCVII::hasSEWOp(Desc.TSFlags)) {
+        LLVM_DEBUG(dbgs() << "    Abort due to lack of VL or SEW, assume that"
+                             " use VLMAX.\n");
         CanReduceVL = false;
         break;
       }
@@ -1370,6 +1386,7 @@ bool RISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
       const MachineOperand &VLOp = UserMI.getOperand(VLOpNum);
       // Looking for a register VL that isn't X0.
       if (!VLOp.isReg() || VLOp.getReg() == RISCV::X0) {
+        LLVM_DEBUG(dbgs() << "    Abort due to user use X0 as VL.\n");
         CanReduceVL = false;
         break;
       }
@@ -1377,6 +1394,7 @@ bool RISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
       if (!CommonVL) {
         CommonVL = VLOp.getReg();
       } else if (*CommonVL != VLOp.getReg()) {
+        LLVM_DEBUG(dbgs() << "    Abort due to users have different VL!\n");
         CanReduceVL = false;
         break;
       }
@@ -1387,13 +1405,18 @@ bool RISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
       // EMUL, so there is no need to check that producer and consumer LMUL and
       // SEW match. We've already checked above that UserOp is a vector
       // register.
-      if (!isVectorRegClass(MI.getOperand(0).getReg(), MRI))
+      if (!isVectorRegClass(MI.getOperand(0).getReg(), MRI)) {
+        LLVM_DEBUG(dbgs() << "    Abort due to register class mismatch between "
+                             "USE and DEF\n");
         continue;
+      }
 
       OperandInfo ConsumerInfo = getOperandInfo(UserMI, UserOp, MRI);
       OperandInfo ProducerInfo = getOperandInfo(MI, MI.getOperand(0), MRI);
       if (ConsumerInfo.isUnknown() || ProducerInfo.isUnknown() ||
           !OperandInfo::EMULAndEEWAreEqual(ConsumerInfo, ProducerInfo)) {
+        LLVM_DEBUG(dbgs() << "    Abort due to incompatible or unknown "
+                             "information for EMUL or EEW.\n");
         CanReduceVL = false;
         break;
       }
@@ -1402,8 +1425,11 @@ bool RISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
     if (!CanReduceVL || !CommonVL)
       continue;
 
-    if (!CommonVL->isVirtual())
+    if (!CommonVL->isVirtual()) {
+      LLVM_DEBUG(
+          dbgs() << "    Abort due to new VL is not virtual register.\n");
       continue;
+    }
 
     const MachineInstr *VLMI = MRI->getVRegDef(*CommonVL);
     if (!MDT->dominates(VLMI, &MI))
