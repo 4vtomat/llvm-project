@@ -60,7 +60,7 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK:       scalar.ph:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ], [ 0, [[VECTOR_SCEVCHECK]] ], [ 0, [[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    [[BC_RESUME_VAL2:%.*]] = phi i32 [ [[IND_END1]], [[MIDDLE_BLOCK]] ], [ 1, [[ENTRY]] ], [ 1, [[VECTOR_SCEVCHECK]] ], [ 1, [[VECTOR_MEMCHECK]] ]
-; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ true, [[VECTOR_MEMCHECK]] ], [ false, [[VECTOR_SCEVCHECK]] ], [ true, [[ENTRY]] ], [ true, [[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[NO_SCEV_CHECK:%.*]] = phi i1 [ true, [[MIDDLE_BLOCK]] ], [ true, [[VECTOR_MEMCHECK]] ], [ false, [[VECTOR_SCEVCHECK]] ], [ true, [[ENTRY]] ]
 ; CHECK-NEXT:    [[TMP20:%.*]] = add i32 [[N]], -1
 ; CHECK-NEXT:    [[TMP21:%.*]] = sub i32 [[TMP20]], [[BC_RESUME_VAL2]]
 ; CHECK-NEXT:    [[TMP22:%.*]] = zext i32 [[TMP21]] to i64

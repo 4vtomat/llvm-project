@@ -3695,6 +3695,11 @@ PHINode *InnerLoopVectorizer::createInductionResumeValue(
   // Copy original phi DL over to the new one.
   BCResumeVal->setDebugLoc(OrigPhi->getDebugLoc());
 
+#if SIFIVE_CUSTOMIZATION
+  // Merge values coming from middle block for non-tail-folding cases.
+  if (!useVLAVectorizer() || Cost->requiresScalarEpilogue(VF.isVector()) ||
+      !Cost->foldTailByMasking())
+#endif // SIFIVE_CUSTOMIZATION
   // The new PHI merges the original incoming value, in case of a bypass,
   // or the value at the end of the vectorized loop.
   BCResumeVal->addIncoming(EndValue, LoopMiddleBlock);
@@ -11132,7 +11137,14 @@ static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
 /// if middle block branches to scalar preheader, by introducing ExtractFromEnd
 /// and ResumePhi recipes in each, respectively, and a VPLiveOut which uses the
 /// latter and corresponds to the scalar header.
+#if SIFIVE_CUSTOMIZATION
+static void
+addLiveOutsForFirstOrderRecurrences(VPlan &Plan,
+                                    LoopVectorizationLegality &Legal,
+                                    LoopVectorizationCostModel &CM) {
+#else
 static void addLiveOutsForFirstOrderRecurrences(VPlan &Plan) {
+#endif // SIFIVE_CUSTOMIZATION
   VPRegionBlock *VectorRegion = Plan.getVectorLoopRegion();
 
   // Start by finding out if middle block branches to scalar preheader, which is
@@ -11174,6 +11186,11 @@ static void addLiveOutsForFirstOrderRecurrences(VPlan &Plan) {
     auto *Resume = MiddleBuilder.createNaryOp(VPInstruction::ExtractFromEnd,
                                               {FOR->getBackedgeValue(), OneVPV},
                                               {}, "vector.recur.extract");
+#if SIFIVE_CUSTOMIZATION
+    // TODO: Upstream change to require scalar epilogue
+    if (Legal.useVLAVectorizer() && !CM.requiresScalarEpilogue(true))
+      continue;
+#endif // SIFIVE_CUSTOMIZATION
     auto *ResumePhiRecipe = ScalarPHBuilder.createNaryOp(
         VPInstruction::ResumePhi, {Resume, FOR->getStartValue()}, {},
         "scalar.recur.init");
@@ -11433,7 +11450,11 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
          "VPBasicBlock");
   RecipeBuilder.fixHeaderPhis();
 
+#if SIFIVE_CUSTOMIZATION
+  addLiveOutsForFirstOrderRecurrences(*Plan, *Legal, CM);
+#else
   addLiveOutsForFirstOrderRecurrences(*Plan);
+#endif // SIFIVE_CUSTOMIZATION
 
   // ---------------------------------------------------------------------------
   // Transform initial VPlan: Apply previously taken decisions, in order, to

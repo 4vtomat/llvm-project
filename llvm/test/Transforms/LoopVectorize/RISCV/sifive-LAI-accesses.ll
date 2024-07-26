@@ -46,7 +46,7 @@ define i32 @sct3313() {
 ; CHECK-NEXT:    [[TMP18:%.*]] = icmp eq <vscale x 4 x i64> [[TMP17]], shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 5, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP19:%.*]] = extractelement <vscale x 4 x i1> [[TMP18]], i32 0
 ; CHECK-NEXT:    br i1 [[TMP19]], label [[FOR_OUTER_CLEANUP2]], label [[FOR_PREHEADER1]]
-; CHECK:       for.outer.cleanup2:
+; CHECK:       vector.latch:
 ; CHECK-NEXT:    [[TMP20:%.*]] = add nuw nsw <vscale x 4 x i64> [[VEC_IND]], shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 1, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP21:%.*]] = icmp eq <vscale x 4 x i64> [[TMP20]], shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 23, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
@@ -126,7 +126,7 @@ define i32 @sct3313() {
 ; CHECK-VLA-NEXT:    [[TMP18:%.*]] = icmp eq <vscale x 4 x i64> [[TMP17]], shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 5, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer)
 ; CHECK-VLA-NEXT:    [[TMP19:%.*]] = extractelement <vscale x 4 x i1> [[TMP18]], i32 0
 ; CHECK-VLA-NEXT:    br i1 [[TMP19]], label [[FOR_OUTER_CLEANUP2]], label [[FOR_PREHEADER1]]
-; CHECK-VLA:       for.outer.cleanup2:
+; CHECK-VLA:       vector.latch:
 ; CHECK-VLA-NEXT:    [[TMP20:%.*]] = add nuw nsw <vscale x 4 x i64> [[VEC_IND]], shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 1, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer)
 ; CHECK-VLA-NEXT:    [[TMP21:%.*]] = icmp eq <vscale x 4 x i64> [[TMP20]], shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 23, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer)
 ; CHECK-VLA-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]

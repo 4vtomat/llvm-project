@@ -712,8 +712,8 @@ define i32 @non_const_strided_masked_3(i64 %n, ptr %a, ptr %cond1, ptr %cond2, i
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT37]] = add i64 [[TMP40]], [[EVL_BASED_IV19]]
 ; CHECK-NEXT:    [[TMP41:%.*]] = zext i32 [[TMP27]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT35:%.*]] = add i64 [[EVL_BASED_IV19]], [[TMP41]]
-; CHECK-NEXT:    [[TMP42:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT37]], [[N]]
-; CHECK-NEXT:    br i1 [[TMP42]], label [[MIDDLE_BLOCK13:%.*]], label [[VECTOR_BODY17]], !llvm.loop [[LOOP12:![0-9]+]]
+; CHECK-NEXT:    [[TMP54:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT37]], [[N]]
+; CHECK-NEXT:    br i1 [[TMP54]], label [[MIDDLE_BLOCK13:%.*]], label [[VECTOR_BODY17]], !llvm.loop [[LOOP12:![0-9]+]]
 ; CHECK:       middle.block12:
 ; CHECK-NEXT:    [[TMP43:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE36]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP21]])
 ; CHECK-NEXT:    [[TMP44:%.*]] = add i32 [[BC_MERGE_RDX]], [[TMP43]]
@@ -944,8 +944,8 @@ define i32 @non_const_strided_masked_3_non_power_of_two(i64 %n, ptr %a, ptr %con
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT40]] = add i64 [[TMP44]], [[EVL_BASED_IV21]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = zext i32 [[TMP30]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT38:%.*]] = add i64 [[EVL_BASED_IV21]], [[TMP45]]
-; CHECK-NEXT:    [[TMP46:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT40]], [[N]]
-; CHECK-NEXT:    br i1 [[TMP46]], label [[MIDDLE_BLOCK15:%.*]], label [[VECTOR_BODY19]], !llvm.loop [[LOOP15:![0-9]+]]
+; CHECK-NEXT:    [[TMP60:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT40]], [[N]]
+; CHECK-NEXT:    br i1 [[TMP60]], label [[MIDDLE_BLOCK15:%.*]], label [[VECTOR_BODY19]], !llvm.loop [[LOOP15:![0-9]+]]
 ; CHECK:       middle.block14:
 ; CHECK-NEXT:    [[TMP47:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE39]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP24]])
 ; CHECK-NEXT:    [[TMP48:%.*]] = add i32 [[BC_MERGE_RDX]], [[TMP47]]

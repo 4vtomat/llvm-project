@@ -71,33 +71,25 @@ define void @load_store_factor2_i32(ptr %p) {
 ; FIXED:       vector.ph:
 ; FIXED-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; FIXED:       vector.body:
-; FIXED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
-; FIXED-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; FIXED-NEXT:    [[TMP0:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
-; FIXED-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 8, i1 true)
-; FIXED-NEXT:    [[TMP2:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; FIXED-NEXT:    [[TMP3:%.*]] = shl i64 [[TMP2]], 1
-; FIXED-NEXT:    [[TMP4:%.*]] = getelementptr i32, ptr [[P:%.*]], i64 [[TMP3]]
-; FIXED-NEXT:    [[TMP5:%.*]] = getelementptr i32, ptr [[TMP4]], i32 0
-; FIXED-NEXT:    [[TMP6:%.*]] = mul nuw nsw i32 [[TMP1]], 2
-; FIXED-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <16 x i32> @llvm.vp.load.v16i32.p0(ptr align 4 [[TMP5]], <16 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 [[TMP6]])
-; FIXED-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <8 x i32>, <8 x i32> } @llvm.vector.deinterleave2.v16i32(<16 x i32> [[WIDE_MASKED_LOAD]])
-; FIXED-NEXT:    [[TMP7:%.*]] = extractvalue { <8 x i32>, <8 x i32> } [[DEINTERLEAVED_RESULTS]], 0
-; FIXED-NEXT:    [[TMP8:%.*]] = extractvalue { <8 x i32>, <8 x i32> } [[DEINTERLEAVED_RESULTS]], 1
-; FIXED-NEXT:    [[VP_OP:%.*]] = call <8 x i32> @llvm.vp.add.v8i32(<8 x i32> [[TMP7]], <8 x i32> <i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1>, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 [[TMP1]])
-; FIXED-NEXT:    [[TMP9:%.*]] = add i64 [[TMP3]], 1
-; FIXED-NEXT:    [[TMP10:%.*]] = getelementptr i32, ptr [[P]], i64 [[TMP9]]
-; FIXED-NEXT:    [[VP_OP1:%.*]] = call <8 x i32> @llvm.vp.add.v8i32(<8 x i32> [[TMP8]], <8 x i32> <i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2>, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 [[TMP1]])
-; FIXED-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[TMP10]], i32 -1
-; FIXED-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <16 x i32> @llvm.vector.interleave2.v16i32(<8 x i32> [[VP_OP]], <8 x i32> [[VP_OP1]])
-; FIXED-NEXT:    [[TMP12:%.*]] = mul nuw nsw i32 [[TMP1]], 2
-; FIXED-NEXT:    call void @llvm.vp.store.v16i32.p0(<16 x i32> [[INTERLEAVED_VEC]], ptr align 4 [[TMP11]], <16 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 [[TMP12]])
-; FIXED-NEXT:    [[TMP13:%.*]] = zext i32 [[TMP1]] to i64
-; FIXED-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP13]], [[EVL_BASED_IV]]
-; FIXED-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP1]] to i64
-; FIXED-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[EVL_BASED_IV]], [[TMP14]]
-; FIXED-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1024
-; FIXED-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; FIXED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; FIXED-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
+; FIXED-NEXT:    [[TMP1:%.*]] = shl i64 [[TMP0]], 1
+; FIXED-NEXT:    [[TMP2:%.*]] = getelementptr i32, ptr [[P:%.*]], i64 [[TMP1]]
+; FIXED-NEXT:    [[TMP3:%.*]] = getelementptr i32, ptr [[TMP2]], i32 0
+; FIXED-NEXT:    [[WIDE_VEC:%.*]] = load <16 x i32>, ptr [[TMP3]], align 4
+; FIXED-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <16 x i32> [[WIDE_VEC]], <16 x i32> poison, <8 x i32> <i32 0, i32 2, i32 4, i32 6, i32 8, i32 10, i32 12, i32 14>
+; FIXED-NEXT:    [[STRIDED_VEC1:%.*]] = shufflevector <16 x i32> [[WIDE_VEC]], <16 x i32> poison, <8 x i32> <i32 1, i32 3, i32 5, i32 7, i32 9, i32 11, i32 13, i32 15>
+; FIXED-NEXT:    [[TMP4:%.*]] = add <8 x i32> [[STRIDED_VEC]], <i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1>
+; FIXED-NEXT:    [[TMP5:%.*]] = add i64 [[TMP1]], 1
+; FIXED-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr [[P]], i64 [[TMP5]]
+; FIXED-NEXT:    [[TMP7:%.*]] = add <8 x i32> [[STRIDED_VEC1]], <i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2>
+; FIXED-NEXT:    [[TMP8:%.*]] = getelementptr i32, ptr [[TMP6]], i32 -1
+; FIXED-NEXT:    [[TMP9:%.*]] = shufflevector <8 x i32> [[TMP4]], <8 x i32> [[TMP7]], <16 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 8, i32 9, i32 10, i32 11, i32 12, i32 13, i32 14, i32 15>
+; FIXED-NEXT:    [[INTERLEAVED_VEC:%.*]] = shufflevector <16 x i32> [[TMP9]], <16 x i32> poison, <16 x i32> <i32 0, i32 8, i32 1, i32 9, i32 2, i32 10, i32 3, i32 11, i32 4, i32 12, i32 5, i32 13, i32 6, i32 14, i32 7, i32 15>
+; FIXED-NEXT:    store <16 x i32> [[INTERLEAVED_VEC]], ptr [[TMP8]], align 4
+; FIXED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 8
+; FIXED-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
+; FIXED-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; FIXED:       middle.block:
 ; FIXED-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; FIXED:       scalar.ph:
@@ -378,33 +370,25 @@ define void @load_store_factor2_i64(ptr %p) {
 ; FIXED:       vector.ph:
 ; FIXED-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; FIXED:       vector.body:
-; FIXED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
-; FIXED-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; FIXED-NEXT:    [[TMP0:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
-; FIXED-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 4, i1 true)
-; FIXED-NEXT:    [[TMP2:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; FIXED-NEXT:    [[TMP3:%.*]] = shl i64 [[TMP2]], 1
-; FIXED-NEXT:    [[TMP4:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[TMP3]]
-; FIXED-NEXT:    [[TMP5:%.*]] = getelementptr i64, ptr [[TMP4]], i32 0
-; FIXED-NEXT:    [[TMP6:%.*]] = mul nuw nsw i32 [[TMP1]], 2
-; FIXED-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <8 x i64> @llvm.vp.load.v8i64.p0(ptr align 8 [[TMP5]], <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 [[TMP6]])
-; FIXED-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <4 x i64>, <4 x i64> } @llvm.vector.deinterleave2.v8i64(<8 x i64> [[WIDE_MASKED_LOAD]])
-; FIXED-NEXT:    [[TMP7:%.*]] = extractvalue { <4 x i64>, <4 x i64> } [[DEINTERLEAVED_RESULTS]], 0
-; FIXED-NEXT:    [[TMP8:%.*]] = extractvalue { <4 x i64>, <4 x i64> } [[DEINTERLEAVED_RESULTS]], 1
-; FIXED-NEXT:    [[VP_OP:%.*]] = call <4 x i64> @llvm.vp.add.v4i64(<4 x i64> [[TMP7]], <4 x i64> <i64 1, i64 1, i64 1, i64 1>, <4 x i1> <i1 true, i1 true, i1 true, i1 true>, i32 [[TMP1]])
-; FIXED-NEXT:    [[TMP9:%.*]] = add i64 [[TMP3]], 1
-; FIXED-NEXT:    [[TMP10:%.*]] = getelementptr i64, ptr [[P]], i64 [[TMP9]]
-; FIXED-NEXT:    [[VP_OP1:%.*]] = call <4 x i64> @llvm.vp.add.v4i64(<4 x i64> [[TMP8]], <4 x i64> <i64 2, i64 2, i64 2, i64 2>, <4 x i1> <i1 true, i1 true, i1 true, i1 true>, i32 [[TMP1]])
-; FIXED-NEXT:    [[TMP11:%.*]] = getelementptr i64, ptr [[TMP10]], i32 -1
-; FIXED-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <8 x i64> @llvm.vector.interleave2.v8i64(<4 x i64> [[VP_OP]], <4 x i64> [[VP_OP1]])
-; FIXED-NEXT:    [[TMP12:%.*]] = mul nuw nsw i32 [[TMP1]], 2
-; FIXED-NEXT:    call void @llvm.vp.store.v8i64.p0(<8 x i64> [[INTERLEAVED_VEC]], ptr align 8 [[TMP11]], <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 [[TMP12]])
-; FIXED-NEXT:    [[TMP13:%.*]] = zext i32 [[TMP1]] to i64
-; FIXED-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP13]], [[EVL_BASED_IV]]
-; FIXED-NEXT:    [[TMP14:%.*]] = zext i32 [[TMP1]] to i64
-; FIXED-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[EVL_BASED_IV]], [[TMP14]]
-; FIXED-NEXT:    [[TMP15:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1024
-; FIXED-NEXT:    br i1 [[TMP15]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; FIXED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; FIXED-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
+; FIXED-NEXT:    [[TMP1:%.*]] = shl i64 [[TMP0]], 1
+; FIXED-NEXT:    [[TMP2:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[TMP1]]
+; FIXED-NEXT:    [[TMP3:%.*]] = getelementptr i64, ptr [[TMP2]], i32 0
+; FIXED-NEXT:    [[WIDE_VEC:%.*]] = load <8 x i64>, ptr [[TMP3]], align 8
+; FIXED-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <8 x i64> [[WIDE_VEC]], <8 x i64> poison, <4 x i32> <i32 0, i32 2, i32 4, i32 6>
+; FIXED-NEXT:    [[STRIDED_VEC1:%.*]] = shufflevector <8 x i64> [[WIDE_VEC]], <8 x i64> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
+; FIXED-NEXT:    [[TMP4:%.*]] = add <4 x i64> [[STRIDED_VEC]], <i64 1, i64 1, i64 1, i64 1>
+; FIXED-NEXT:    [[TMP5:%.*]] = add i64 [[TMP1]], 1
+; FIXED-NEXT:    [[TMP6:%.*]] = getelementptr i64, ptr [[P]], i64 [[TMP5]]
+; FIXED-NEXT:    [[TMP7:%.*]] = add <4 x i64> [[STRIDED_VEC1]], <i64 2, i64 2, i64 2, i64 2>
+; FIXED-NEXT:    [[TMP8:%.*]] = getelementptr i64, ptr [[TMP6]], i32 -1
+; FIXED-NEXT:    [[TMP9:%.*]] = shufflevector <4 x i64> [[TMP4]], <4 x i64> [[TMP7]], <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7>
+; FIXED-NEXT:    [[INTERLEAVED_VEC:%.*]] = shufflevector <8 x i64> [[TMP9]], <8 x i64> poison, <8 x i32> <i32 0, i32 4, i32 1, i32 5, i32 2, i32 6, i32 3, i32 7>
+; FIXED-NEXT:    store <8 x i64> [[INTERLEAVED_VEC]], ptr [[TMP8]], align 8
+; FIXED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
+; FIXED-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
+; FIXED-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; FIXED:       middle.block:
 ; FIXED-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; FIXED:       scalar.ph:
@@ -685,36 +669,30 @@ define void @load_store_factor3_i32(ptr %p) {
 ; FIXED:       vector.ph:
 ; FIXED-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; FIXED:       vector.body:
-; FIXED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
-; FIXED-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; FIXED-NEXT:    [[TMP0:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
-; FIXED-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 4, i1 true)
-; FIXED-NEXT:    [[TMP2:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; FIXED-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 3
-; FIXED-NEXT:    [[TMP4:%.*]] = getelementptr i32, ptr [[P:%.*]], i64 [[TMP3]]
-; FIXED-NEXT:    [[TMP5:%.*]] = getelementptr i32, ptr [[TMP4]], i32 0
-; FIXED-NEXT:    [[TMP6:%.*]] = mul nuw nsw i32 [[TMP1]], 3
-; FIXED-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <12 x i32> @llvm.vp.load.v12i32.p0(ptr align 4 [[TMP5]], <12 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 [[TMP6]])
-; FIXED-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <4 x i32>, <4 x i32>, <4 x i32> } @llvm.experimental.vector.deinterleave3.v12i32(<12 x i32> [[WIDE_MASKED_LOAD]])
-; FIXED-NEXT:    [[TMP7:%.*]] = extractvalue { <4 x i32>, <4 x i32>, <4 x i32> } [[DEINTERLEAVED_RESULTS]], 0
-; FIXED-NEXT:    [[TMP8:%.*]] = extractvalue { <4 x i32>, <4 x i32>, <4 x i32> } [[DEINTERLEAVED_RESULTS]], 1
-; FIXED-NEXT:    [[TMP9:%.*]] = extractvalue { <4 x i32>, <4 x i32>, <4 x i32> } [[DEINTERLEAVED_RESULTS]], 2
-; FIXED-NEXT:    [[VP_OP:%.*]] = call <4 x i32> @llvm.vp.add.v4i32(<4 x i32> [[TMP7]], <4 x i32> <i32 1, i32 1, i32 1, i32 1>, <4 x i1> <i1 true, i1 true, i1 true, i1 true>, i32 [[TMP1]])
-; FIXED-NEXT:    [[TMP10:%.*]] = add i64 [[TMP3]], 1
-; FIXED-NEXT:    [[VP_OP1:%.*]] = call <4 x i32> @llvm.vp.add.v4i32(<4 x i32> [[TMP8]], <4 x i32> <i32 2, i32 2, i32 2, i32 2>, <4 x i1> <i1 true, i1 true, i1 true, i1 true>, i32 [[TMP1]])
-; FIXED-NEXT:    [[TMP11:%.*]] = add i64 [[TMP10]], 1
-; FIXED-NEXT:    [[TMP12:%.*]] = getelementptr i32, ptr [[P]], i64 [[TMP11]]
-; FIXED-NEXT:    [[VP_OP2:%.*]] = call <4 x i32> @llvm.vp.add.v4i32(<4 x i32> [[TMP9]], <4 x i32> <i32 3, i32 3, i32 3, i32 3>, <4 x i1> <i1 true, i1 true, i1 true, i1 true>, i32 [[TMP1]])
-; FIXED-NEXT:    [[TMP13:%.*]] = getelementptr i32, ptr [[TMP12]], i32 -2
-; FIXED-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <12 x i32> @llvm.experimental.vector.interleave3.v12i32(<4 x i32> [[VP_OP]], <4 x i32> [[VP_OP1]], <4 x i32> [[VP_OP2]])
-; FIXED-NEXT:    [[TMP14:%.*]] = mul nuw nsw i32 [[TMP1]], 3
-; FIXED-NEXT:    call void @llvm.vp.store.v12i32.p0(<12 x i32> [[INTERLEAVED_VEC]], ptr align 4 [[TMP13]], <12 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 [[TMP14]])
-; FIXED-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP1]] to i64
-; FIXED-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP15]], [[EVL_BASED_IV]]
-; FIXED-NEXT:    [[TMP16:%.*]] = zext i32 [[TMP1]] to i64
-; FIXED-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[EVL_BASED_IV]], [[TMP16]]
-; FIXED-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1024
-; FIXED-NEXT:    br i1 [[TMP17]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
+; FIXED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; FIXED-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
+; FIXED-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 3
+; FIXED-NEXT:    [[TMP2:%.*]] = getelementptr i32, ptr [[P:%.*]], i64 [[TMP1]]
+; FIXED-NEXT:    [[TMP3:%.*]] = getelementptr i32, ptr [[TMP2]], i32 0
+; FIXED-NEXT:    [[WIDE_VEC:%.*]] = load <24 x i32>, ptr [[TMP3]], align 4
+; FIXED-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <24 x i32> [[WIDE_VEC]], <24 x i32> poison, <8 x i32> <i32 0, i32 3, i32 6, i32 9, i32 12, i32 15, i32 18, i32 21>
+; FIXED-NEXT:    [[STRIDED_VEC1:%.*]] = shufflevector <24 x i32> [[WIDE_VEC]], <24 x i32> poison, <8 x i32> <i32 1, i32 4, i32 7, i32 10, i32 13, i32 16, i32 19, i32 22>
+; FIXED-NEXT:    [[STRIDED_VEC2:%.*]] = shufflevector <24 x i32> [[WIDE_VEC]], <24 x i32> poison, <8 x i32> <i32 2, i32 5, i32 8, i32 11, i32 14, i32 17, i32 20, i32 23>
+; FIXED-NEXT:    [[TMP4:%.*]] = add <8 x i32> [[STRIDED_VEC]], <i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1>
+; FIXED-NEXT:    [[TMP5:%.*]] = add i64 [[TMP1]], 1
+; FIXED-NEXT:    [[TMP6:%.*]] = add <8 x i32> [[STRIDED_VEC1]], <i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2, i32 2>
+; FIXED-NEXT:    [[TMP7:%.*]] = add i64 [[TMP5]], 1
+; FIXED-NEXT:    [[TMP8:%.*]] = getelementptr i32, ptr [[P]], i64 [[TMP7]]
+; FIXED-NEXT:    [[TMP9:%.*]] = add <8 x i32> [[STRIDED_VEC2]], <i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3, i32 3>
+; FIXED-NEXT:    [[TMP10:%.*]] = getelementptr i32, ptr [[TMP8]], i32 -2
+; FIXED-NEXT:    [[TMP11:%.*]] = shufflevector <8 x i32> [[TMP4]], <8 x i32> [[TMP6]], <16 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 8, i32 9, i32 10, i32 11, i32 12, i32 13, i32 14, i32 15>
+; FIXED-NEXT:    [[TMP12:%.*]] = shufflevector <8 x i32> [[TMP9]], <8 x i32> poison, <16 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 poison, i32 poison, i32 poison, i32 poison, i32 poison, i32 poison, i32 poison, i32 poison>
+; FIXED-NEXT:    [[TMP13:%.*]] = shufflevector <16 x i32> [[TMP11]], <16 x i32> [[TMP12]], <24 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 8, i32 9, i32 10, i32 11, i32 12, i32 13, i32 14, i32 15, i32 16, i32 17, i32 18, i32 19, i32 20, i32 21, i32 22, i32 23>
+; FIXED-NEXT:    [[INTERLEAVED_VEC:%.*]] = shufflevector <24 x i32> [[TMP13]], <24 x i32> poison, <24 x i32> <i32 0, i32 8, i32 16, i32 1, i32 9, i32 17, i32 2, i32 10, i32 18, i32 3, i32 11, i32 19, i32 4, i32 12, i32 20, i32 5, i32 13, i32 21, i32 6, i32 14, i32 22, i32 7, i32 15, i32 23>
+; FIXED-NEXT:    store <24 x i32> [[INTERLEAVED_VEC]], ptr [[TMP10]], align 4
+; FIXED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 8
+; FIXED-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
+; FIXED-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; FIXED:       middle.block:
 ; FIXED-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; FIXED:       scalar.ph:
@@ -1030,36 +1008,30 @@ define void @load_store_factor3_i64(ptr %p) {
 ; FIXED:       vector.ph:
 ; FIXED-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; FIXED:       vector.body:
-; FIXED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
-; FIXED-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; FIXED-NEXT:    [[TMP0:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
-; FIXED-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
-; FIXED-NEXT:    [[TMP2:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; FIXED-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP2]], 3
-; FIXED-NEXT:    [[TMP4:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[TMP3]]
-; FIXED-NEXT:    [[TMP5:%.*]] = getelementptr i64, ptr [[TMP4]], i32 0
-; FIXED-NEXT:    [[TMP6:%.*]] = mul nuw nsw i32 [[TMP1]], 3
-; FIXED-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <6 x i64> @llvm.vp.load.v6i64.p0(ptr align 8 [[TMP5]], <6 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 [[TMP6]])
-; FIXED-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <2 x i64>, <2 x i64>, <2 x i64> } @llvm.experimental.vector.deinterleave3.v6i64(<6 x i64> [[WIDE_MASKED_LOAD]])
-; FIXED-NEXT:    [[TMP7:%.*]] = extractvalue { <2 x i64>, <2 x i64>, <2 x i64> } [[DEINTERLEAVED_RESULTS]], 0
-; FIXED-NEXT:    [[TMP8:%.*]] = extractvalue { <2 x i64>, <2 x i64>, <2 x i64> } [[DEINTERLEAVED_RESULTS]], 1
-; FIXED-NEXT:    [[TMP9:%.*]] = extractvalue { <2 x i64>, <2 x i64>, <2 x i64> } [[DEINTERLEAVED_RESULTS]], 2
-; FIXED-NEXT:    [[VP_OP:%.*]] = call <2 x i64> @llvm.vp.add.v2i64(<2 x i64> [[TMP7]], <2 x i64> <i64 1, i64 1>, <2 x i1> <i1 true, i1 true>, i32 [[TMP1]])
-; FIXED-NEXT:    [[TMP10:%.*]] = add i64 [[TMP3]], 1
-; FIXED-NEXT:    [[VP_OP1:%.*]] = call <2 x i64> @llvm.vp.add.v2i64(<2 x i64> [[TMP8]], <2 x i64> <i64 2, i64 2>, <2 x i1> <i1 true, i1 true>, i32 [[TMP1]])
-; FIXED-NEXT:    [[TMP11:%.*]] = add i64 [[TMP10]], 1
-; FIXED-NEXT:    [[TMP12:%.*]] = getelementptr i64, ptr [[P]], i64 [[TMP11]]
-; FIXED-NEXT:    [[VP_OP2:%.*]] = call <2 x i64> @llvm.vp.add.v2i64(<2 x i64> [[TMP9]], <2 x i64> <i64 3, i64 3>, <2 x i1> <i1 true, i1 true>, i32 [[TMP1]])
-; FIXED-NEXT:    [[TMP13:%.*]] = getelementptr i64, ptr [[TMP12]], i32 -2
-; FIXED-NEXT:    [[INTERLEAVED_VEC:%.*]] = call <6 x i64> @llvm.experimental.vector.interleave3.v6i64(<2 x i64> [[VP_OP]], <2 x i64> [[VP_OP1]], <2 x i64> [[VP_OP2]])
-; FIXED-NEXT:    [[TMP14:%.*]] = mul nuw nsw i32 [[TMP1]], 3
-; FIXED-NEXT:    call void @llvm.vp.store.v6i64.p0(<6 x i64> [[INTERLEAVED_VEC]], ptr align 8 [[TMP13]], <6 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 [[TMP14]])
-; FIXED-NEXT:    [[TMP15:%.*]] = zext i32 [[TMP1]] to i64
-; FIXED-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP15]], [[EVL_BASED_IV]]
-; FIXED-NEXT:    [[TMP16:%.*]] = zext i32 [[TMP1]] to i64
-; FIXED-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[EVL_BASED_IV]], [[TMP16]]
-; FIXED-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1024
-; FIXED-NEXT:    br i1 [[TMP17]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
+; FIXED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; FIXED-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
+; FIXED-NEXT:    [[TMP1:%.*]] = mul i64 [[TMP0]], 3
+; FIXED-NEXT:    [[TMP2:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[TMP1]]
+; FIXED-NEXT:    [[TMP3:%.*]] = getelementptr i64, ptr [[TMP2]], i32 0
+; FIXED-NEXT:    [[WIDE_VEC:%.*]] = load <12 x i64>, ptr [[TMP3]], align 8
+; FIXED-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <12 x i64> [[WIDE_VEC]], <12 x i64> poison, <4 x i32> <i32 0, i32 3, i32 6, i32 9>
+; FIXED-NEXT:    [[STRIDED_VEC1:%.*]] = shufflevector <12 x i64> [[WIDE_VEC]], <12 x i64> poison, <4 x i32> <i32 1, i32 4, i32 7, i32 10>
+; FIXED-NEXT:    [[STRIDED_VEC2:%.*]] = shufflevector <12 x i64> [[WIDE_VEC]], <12 x i64> poison, <4 x i32> <i32 2, i32 5, i32 8, i32 11>
+; FIXED-NEXT:    [[TMP4:%.*]] = add <4 x i64> [[STRIDED_VEC]], <i64 1, i64 1, i64 1, i64 1>
+; FIXED-NEXT:    [[TMP5:%.*]] = add i64 [[TMP1]], 1
+; FIXED-NEXT:    [[TMP6:%.*]] = add <4 x i64> [[STRIDED_VEC1]], <i64 2, i64 2, i64 2, i64 2>
+; FIXED-NEXT:    [[TMP7:%.*]] = add i64 [[TMP5]], 1
+; FIXED-NEXT:    [[TMP8:%.*]] = getelementptr i64, ptr [[P]], i64 [[TMP7]]
+; FIXED-NEXT:    [[TMP9:%.*]] = add <4 x i64> [[STRIDED_VEC2]], <i64 3, i64 3, i64 3, i64 3>
+; FIXED-NEXT:    [[TMP10:%.*]] = getelementptr i64, ptr [[TMP8]], i32 -2
+; FIXED-NEXT:    [[TMP11:%.*]] = shufflevector <4 x i64> [[TMP4]], <4 x i64> [[TMP6]], <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7>
+; FIXED-NEXT:    [[TMP12:%.*]] = shufflevector <4 x i64> [[TMP9]], <4 x i64> poison, <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 poison, i32 poison, i32 poison, i32 poison>
+; FIXED-NEXT:    [[TMP13:%.*]] = shufflevector <8 x i64> [[TMP11]], <8 x i64> [[TMP12]], <12 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 8, i32 9, i32 10, i32 11>
+; FIXED-NEXT:    [[INTERLEAVED_VEC:%.*]] = shufflevector <12 x i64> [[TMP13]], <12 x i64> poison, <12 x i32> <i32 0, i32 4, i32 8, i32 1, i32 5, i32 9, i32 2, i32 6, i32 10, i32 3, i32 7, i32 11>
+; FIXED-NEXT:    store <12 x i64> [[INTERLEAVED_VEC]], ptr [[TMP10]], align 8
+; FIXED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
+; FIXED-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
+; FIXED-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; FIXED:       middle.block:
 ; FIXED-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; FIXED:       scalar.ph:
@@ -1415,11 +1387,62 @@ define void @load_store_factor8(ptr %p) {
 ;
 ; FIXED-LABEL: @load_store_factor8(
 ; FIXED-NEXT:  entry:
+; FIXED-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; FIXED:       vector.ph:
+; FIXED-NEXT:    br label [[VECTOR_BODY:%.*]]
+; FIXED:       vector.body:
+; FIXED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; FIXED-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
+; FIXED-NEXT:    [[TMP1:%.*]] = shl i64 [[TMP0]], 3
+; FIXED-NEXT:    [[TMP2:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[TMP1]]
+; FIXED-NEXT:    [[TMP3:%.*]] = getelementptr i64, ptr [[TMP2]], i32 0
+; FIXED-NEXT:    [[WIDE_VEC:%.*]] = load <16 x i64>, ptr [[TMP3]], align 8
+; FIXED-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 0, i32 8>
+; FIXED-NEXT:    [[STRIDED_VEC1:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 1, i32 9>
+; FIXED-NEXT:    [[STRIDED_VEC2:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 2, i32 10>
+; FIXED-NEXT:    [[STRIDED_VEC3:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 3, i32 11>
+; FIXED-NEXT:    [[STRIDED_VEC4:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 4, i32 12>
+; FIXED-NEXT:    [[STRIDED_VEC5:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 5, i32 13>
+; FIXED-NEXT:    [[STRIDED_VEC6:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 6, i32 14>
+; FIXED-NEXT:    [[STRIDED_VEC7:%.*]] = shufflevector <16 x i64> [[WIDE_VEC]], <16 x i64> poison, <2 x i32> <i32 7, i32 15>
+; FIXED-NEXT:    [[TMP4:%.*]] = add <2 x i64> [[STRIDED_VEC]], <i64 1, i64 1>
+; FIXED-NEXT:    [[TMP5:%.*]] = add i64 [[TMP1]], 1
+; FIXED-NEXT:    [[TMP6:%.*]] = add <2 x i64> [[STRIDED_VEC1]], <i64 2, i64 2>
+; FIXED-NEXT:    [[TMP7:%.*]] = add i64 [[TMP5]], 1
+; FIXED-NEXT:    [[TMP8:%.*]] = add <2 x i64> [[STRIDED_VEC2]], <i64 3, i64 3>
+; FIXED-NEXT:    [[TMP9:%.*]] = add i64 [[TMP7]], 1
+; FIXED-NEXT:    [[TMP10:%.*]] = add <2 x i64> [[STRIDED_VEC3]], <i64 4, i64 4>
+; FIXED-NEXT:    [[TMP11:%.*]] = add i64 [[TMP9]], 1
+; FIXED-NEXT:    [[TMP12:%.*]] = add <2 x i64> [[STRIDED_VEC4]], <i64 5, i64 5>
+; FIXED-NEXT:    [[TMP13:%.*]] = add i64 [[TMP11]], 1
+; FIXED-NEXT:    [[TMP14:%.*]] = add <2 x i64> [[STRIDED_VEC5]], <i64 6, i64 6>
+; FIXED-NEXT:    [[TMP15:%.*]] = add i64 [[TMP13]], 1
+; FIXED-NEXT:    [[TMP16:%.*]] = add <2 x i64> [[STRIDED_VEC6]], <i64 7, i64 7>
+; FIXED-NEXT:    [[TMP17:%.*]] = add i64 [[TMP15]], 1
+; FIXED-NEXT:    [[TMP18:%.*]] = getelementptr i64, ptr [[P]], i64 [[TMP17]]
+; FIXED-NEXT:    [[TMP19:%.*]] = add <2 x i64> [[STRIDED_VEC7]], <i64 8, i64 8>
+; FIXED-NEXT:    [[TMP20:%.*]] = getelementptr i64, ptr [[TMP18]], i32 -7
+; FIXED-NEXT:    [[TMP21:%.*]] = shufflevector <2 x i64> [[TMP4]], <2 x i64> [[TMP6]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
+; FIXED-NEXT:    [[TMP22:%.*]] = shufflevector <2 x i64> [[TMP8]], <2 x i64> [[TMP10]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
+; FIXED-NEXT:    [[TMP23:%.*]] = shufflevector <2 x i64> [[TMP12]], <2 x i64> [[TMP14]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
+; FIXED-NEXT:    [[TMP24:%.*]] = shufflevector <2 x i64> [[TMP16]], <2 x i64> [[TMP19]], <4 x i32> <i32 0, i32 1, i32 2, i32 3>
+; FIXED-NEXT:    [[TMP25:%.*]] = shufflevector <4 x i64> [[TMP21]], <4 x i64> [[TMP22]], <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7>
+; FIXED-NEXT:    [[TMP26:%.*]] = shufflevector <4 x i64> [[TMP23]], <4 x i64> [[TMP24]], <8 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7>
+; FIXED-NEXT:    [[TMP27:%.*]] = shufflevector <8 x i64> [[TMP25]], <8 x i64> [[TMP26]], <16 x i32> <i32 0, i32 1, i32 2, i32 3, i32 4, i32 5, i32 6, i32 7, i32 8, i32 9, i32 10, i32 11, i32 12, i32 13, i32 14, i32 15>
+; FIXED-NEXT:    [[INTERLEAVED_VEC:%.*]] = shufflevector <16 x i64> [[TMP27]], <16 x i64> poison, <16 x i32> <i32 0, i32 2, i32 4, i32 6, i32 8, i32 10, i32 12, i32 14, i32 1, i32 3, i32 5, i32 7, i32 9, i32 11, i32 13, i32 15>
+; FIXED-NEXT:    store <16 x i64> [[INTERLEAVED_VEC]], ptr [[TMP20]], align 8
+; FIXED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
+; FIXED-NEXT:    [[TMP28:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
+; FIXED-NEXT:    br i1 [[TMP28]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
+; FIXED:       middle.block:
+; FIXED-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
+; FIXED:       scalar.ph:
+; FIXED-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1024, [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
 ; FIXED-NEXT:    br label [[LOOP:%.*]]
 ; FIXED:       loop:
-; FIXED-NEXT:    [[I:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
+; FIXED-NEXT:    [[I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[NEXTI:%.*]], [[LOOP]] ]
 ; FIXED-NEXT:    [[OFFSET0:%.*]] = shl i64 [[I]], 3
-; FIXED-NEXT:    [[Q0:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[OFFSET0]]
+; FIXED-NEXT:    [[Q0:%.*]] = getelementptr i64, ptr [[P]], i64 [[OFFSET0]]
 ; FIXED-NEXT:    [[X0:%.*]] = load i64, ptr [[Q0]], align 8
 ; FIXED-NEXT:    [[Y0:%.*]] = add i64 [[X0]], 1
 ; FIXED-NEXT:    store i64 [[Y0]], ptr [[Q0]], align 8
@@ -1460,7 +1483,7 @@ define void @load_store_factor8(ptr %p) {
 ; FIXED-NEXT:    store i64 [[Y7]], ptr [[Q7]], align 8
 ; FIXED-NEXT:    [[NEXTI]] = add i64 [[I]], 1
 ; FIXED-NEXT:    [[DONE:%.*]] = icmp eq i64 [[NEXTI]], 1024
-; FIXED-NEXT:    br i1 [[DONE]], label [[EXIT:%.*]], label [[LOOP]]
+; FIXED-NEXT:    br i1 [[DONE]], label [[EXIT]], label [[LOOP]], !llvm.loop [[LOOP11:![0-9]+]]
 ; FIXED:       exit:
 ; FIXED-NEXT:    ret void
 ;
@@ -1897,29 +1920,32 @@ define void @combine_load_factor2_i32(ptr noalias %p, ptr noalias %q) {
 ; FIXED:       vector.ph:
 ; FIXED-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; FIXED:       vector.body:
-; FIXED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
-; FIXED-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; FIXED-NEXT:    [[TMP0:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
-; FIXED-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 8, i1 true)
-; FIXED-NEXT:    [[TMP2:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; FIXED-NEXT:    [[TMP3:%.*]] = shl i64 [[TMP2]], 1
-; FIXED-NEXT:    [[TMP4:%.*]] = getelementptr i32, ptr [[P:%.*]], i64 [[TMP3]]
-; FIXED-NEXT:    [[TMP5:%.*]] = getelementptr i32, ptr [[TMP4]], i32 0
-; FIXED-NEXT:    [[TMP6:%.*]] = mul nuw nsw i32 [[TMP1]], 2
-; FIXED-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <16 x i32> @llvm.vp.load.v16i32.p0(ptr align 4 [[TMP5]], <16 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 [[TMP6]])
-; FIXED-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <8 x i32>, <8 x i32> } @llvm.vector.deinterleave2.v16i32(<16 x i32> [[WIDE_MASKED_LOAD]])
-; FIXED-NEXT:    [[TMP7:%.*]] = extractvalue { <8 x i32>, <8 x i32> } [[DEINTERLEAVED_RESULTS]], 0
-; FIXED-NEXT:    [[TMP8:%.*]] = extractvalue { <8 x i32>, <8 x i32> } [[DEINTERLEAVED_RESULTS]], 1
-; FIXED-NEXT:    [[VP_OP:%.*]] = call <8 x i32> @llvm.vp.add.v8i32(<8 x i32> [[TMP7]], <8 x i32> [[TMP8]], <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 [[TMP1]])
-; FIXED-NEXT:    [[TMP9:%.*]] = getelementptr i32, ptr [[Q:%.*]], i64 [[TMP2]]
-; FIXED-NEXT:    [[TMP10:%.*]] = getelementptr i32, ptr [[TMP9]], i32 0
-; FIXED-NEXT:    call void @llvm.vp.store.v8i32.p0(<8 x i32> [[VP_OP]], ptr align 4 [[TMP10]], <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 [[TMP1]])
-; FIXED-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP1]] to i64
-; FIXED-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP11]], [[EVL_BASED_IV]]
-; FIXED-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP1]] to i64
-; FIXED-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[EVL_BASED_IV]], [[TMP12]]
-; FIXED-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1024
-; FIXED-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
+; FIXED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; FIXED-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
+; FIXED-NEXT:    [[TMP1:%.*]] = add i64 [[INDEX]], 8
+; FIXED-NEXT:    [[TMP2:%.*]] = shl i64 [[TMP0]], 1
+; FIXED-NEXT:    [[TMP3:%.*]] = shl i64 [[TMP1]], 1
+; FIXED-NEXT:    [[TMP4:%.*]] = getelementptr i32, ptr [[P:%.*]], i64 [[TMP2]]
+; FIXED-NEXT:    [[TMP5:%.*]] = getelementptr i32, ptr [[P]], i64 [[TMP3]]
+; FIXED-NEXT:    [[TMP6:%.*]] = getelementptr i32, ptr [[TMP4]], i32 0
+; FIXED-NEXT:    [[TMP7:%.*]] = getelementptr i32, ptr [[TMP5]], i32 0
+; FIXED-NEXT:    [[WIDE_VEC:%.*]] = load <16 x i32>, ptr [[TMP6]], align 4
+; FIXED-NEXT:    [[WIDE_VEC1:%.*]] = load <16 x i32>, ptr [[TMP7]], align 4
+; FIXED-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <16 x i32> [[WIDE_VEC]], <16 x i32> poison, <8 x i32> <i32 0, i32 2, i32 4, i32 6, i32 8, i32 10, i32 12, i32 14>
+; FIXED-NEXT:    [[STRIDED_VEC2:%.*]] = shufflevector <16 x i32> [[WIDE_VEC1]], <16 x i32> poison, <8 x i32> <i32 0, i32 2, i32 4, i32 6, i32 8, i32 10, i32 12, i32 14>
+; FIXED-NEXT:    [[STRIDED_VEC3:%.*]] = shufflevector <16 x i32> [[WIDE_VEC]], <16 x i32> poison, <8 x i32> <i32 1, i32 3, i32 5, i32 7, i32 9, i32 11, i32 13, i32 15>
+; FIXED-NEXT:    [[STRIDED_VEC4:%.*]] = shufflevector <16 x i32> [[WIDE_VEC1]], <16 x i32> poison, <8 x i32> <i32 1, i32 3, i32 5, i32 7, i32 9, i32 11, i32 13, i32 15>
+; FIXED-NEXT:    [[TMP8:%.*]] = add <8 x i32> [[STRIDED_VEC]], [[STRIDED_VEC3]]
+; FIXED-NEXT:    [[TMP9:%.*]] = add <8 x i32> [[STRIDED_VEC2]], [[STRIDED_VEC4]]
+; FIXED-NEXT:    [[TMP10:%.*]] = getelementptr i32, ptr [[Q:%.*]], i64 [[TMP0]]
+; FIXED-NEXT:    [[TMP11:%.*]] = getelementptr i32, ptr [[Q]], i64 [[TMP1]]
+; FIXED-NEXT:    [[TMP12:%.*]] = getelementptr i32, ptr [[TMP10]], i32 0
+; FIXED-NEXT:    [[TMP13:%.*]] = getelementptr i32, ptr [[TMP10]], i32 8
+; FIXED-NEXT:    store <8 x i32> [[TMP8]], ptr [[TMP12]], align 4
+; FIXED-NEXT:    store <8 x i32> [[TMP9]], ptr [[TMP13]], align 4
+; FIXED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
+; FIXED-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
+; FIXED-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; FIXED:       middle.block:
 ; FIXED-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; FIXED:       scalar.ph:
@@ -1938,7 +1964,7 @@ define void @combine_load_factor2_i32(ptr noalias %p, ptr noalias %q) {
 ; FIXED-NEXT:    store i32 [[RES]], ptr [[DST]], align 4
 ; FIXED-NEXT:    [[NEXTI]] = add i64 [[I]], 1
 ; FIXED-NEXT:    [[DONE:%.*]] = icmp eq i64 [[NEXTI]], 1024
-; FIXED-NEXT:    br i1 [[DONE]], label [[EXIT]], label [[LOOP]], !llvm.loop [[LOOP11:![0-9]+]]
+; FIXED-NEXT:    br i1 [[DONE]], label [[EXIT]], label [[LOOP]], !llvm.loop [[LOOP13:![0-9]+]]
 ; FIXED:       exit:
 ; FIXED-NEXT:    ret void
 ;
@@ -2182,29 +2208,32 @@ define void @combine_load_factor2_i64(ptr noalias %p, ptr noalias %q) {
 ; FIXED:       vector.ph:
 ; FIXED-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; FIXED:       vector.body:
-; FIXED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
-; FIXED-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; FIXED-NEXT:    [[TMP0:%.*]] = sub i64 1024, [[EVL_BASED_IV]]
-; FIXED-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 4, i1 true)
-; FIXED-NEXT:    [[TMP2:%.*]] = add i64 [[EVL_BASED_IV]], 0
-; FIXED-NEXT:    [[TMP3:%.*]] = shl i64 [[TMP2]], 1
-; FIXED-NEXT:    [[TMP4:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[TMP3]]
-; FIXED-NEXT:    [[TMP5:%.*]] = getelementptr i64, ptr [[TMP4]], i32 0
-; FIXED-NEXT:    [[TMP6:%.*]] = mul nuw nsw i32 [[TMP1]], 2
-; FIXED-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <8 x i64> @llvm.vp.load.v8i64.p0(ptr align 8 [[TMP5]], <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, i32 [[TMP6]])
-; FIXED-NEXT:    [[DEINTERLEAVED_RESULTS:%.*]] = call { <4 x i64>, <4 x i64> } @llvm.vector.deinterleave2.v8i64(<8 x i64> [[WIDE_MASKED_LOAD]])
-; FIXED-NEXT:    [[TMP7:%.*]] = extractvalue { <4 x i64>, <4 x i64> } [[DEINTERLEAVED_RESULTS]], 0
-; FIXED-NEXT:    [[TMP8:%.*]] = extractvalue { <4 x i64>, <4 x i64> } [[DEINTERLEAVED_RESULTS]], 1
-; FIXED-NEXT:    [[VP_OP:%.*]] = call <4 x i64> @llvm.vp.add.v4i64(<4 x i64> [[TMP7]], <4 x i64> [[TMP8]], <4 x i1> <i1 true, i1 true, i1 true, i1 true>, i32 [[TMP1]])
-; FIXED-NEXT:    [[TMP9:%.*]] = getelementptr i64, ptr [[Q:%.*]], i64 [[TMP2]]
-; FIXED-NEXT:    [[TMP10:%.*]] = getelementptr i64, ptr [[TMP9]], i32 0
-; FIXED-NEXT:    call void @llvm.vp.store.v4i64.p0(<4 x i64> [[VP_OP]], ptr align 8 [[TMP10]], <4 x i1> <i1 true, i1 true, i1 true, i1 true>, i32 [[TMP1]])
-; FIXED-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP1]] to i64
-; FIXED-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP11]], [[EVL_BASED_IV]]
-; FIXED-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP1]] to i64
-; FIXED-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[EVL_BASED_IV]], [[TMP12]]
-; FIXED-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1024
-; FIXED-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
+; FIXED-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; FIXED-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
+; FIXED-NEXT:    [[TMP1:%.*]] = add i64 [[INDEX]], 4
+; FIXED-NEXT:    [[TMP2:%.*]] = shl i64 [[TMP0]], 1
+; FIXED-NEXT:    [[TMP3:%.*]] = shl i64 [[TMP1]], 1
+; FIXED-NEXT:    [[TMP4:%.*]] = getelementptr i64, ptr [[P:%.*]], i64 [[TMP2]]
+; FIXED-NEXT:    [[TMP5:%.*]] = getelementptr i64, ptr [[P]], i64 [[TMP3]]
+; FIXED-NEXT:    [[TMP6:%.*]] = getelementptr i64, ptr [[TMP4]], i32 0
+; FIXED-NEXT:    [[TMP7:%.*]] = getelementptr i64, ptr [[TMP5]], i32 0
+; FIXED-NEXT:    [[WIDE_VEC:%.*]] = load <8 x i64>, ptr [[TMP6]], align 8
+; FIXED-NEXT:    [[WIDE_VEC1:%.*]] = load <8 x i64>, ptr [[TMP7]], align 8
+; FIXED-NEXT:    [[STRIDED_VEC:%.*]] = shufflevector <8 x i64> [[WIDE_VEC]], <8 x i64> poison, <4 x i32> <i32 0, i32 2, i32 4, i32 6>
+; FIXED-NEXT:    [[STRIDED_VEC2:%.*]] = shufflevector <8 x i64> [[WIDE_VEC1]], <8 x i64> poison, <4 x i32> <i32 0, i32 2, i32 4, i32 6>
+; FIXED-NEXT:    [[STRIDED_VEC3:%.*]] = shufflevector <8 x i64> [[WIDE_VEC]], <8 x i64> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
+; FIXED-NEXT:    [[STRIDED_VEC4:%.*]] = shufflevector <8 x i64> [[WIDE_VEC1]], <8 x i64> poison, <4 x i32> <i32 1, i32 3, i32 5, i32 7>
+; FIXED-NEXT:    [[TMP8:%.*]] = add <4 x i64> [[STRIDED_VEC]], [[STRIDED_VEC3]]
+; FIXED-NEXT:    [[TMP9:%.*]] = add <4 x i64> [[STRIDED_VEC2]], [[STRIDED_VEC4]]
+; FIXED-NEXT:    [[TMP10:%.*]] = getelementptr i64, ptr [[Q:%.*]], i64 [[TMP0]]
+; FIXED-NEXT:    [[TMP11:%.*]] = getelementptr i64, ptr [[Q]], i64 [[TMP1]]
+; FIXED-NEXT:    [[TMP12:%.*]] = getelementptr i64, ptr [[TMP10]], i32 0
+; FIXED-NEXT:    [[TMP13:%.*]] = getelementptr i64, ptr [[TMP10]], i32 4
+; FIXED-NEXT:    store <4 x i64> [[TMP8]], ptr [[TMP12]], align 8
+; FIXED-NEXT:    store <4 x i64> [[TMP9]], ptr [[TMP13]], align 8
+; FIXED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 8
+; FIXED-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], 1024
+; FIXED-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
 ; FIXED:       middle.block:
 ; FIXED-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; FIXED:       scalar.ph:
@@ -2223,7 +2252,7 @@ define void @combine_load_factor2_i64(ptr noalias %p, ptr noalias %q) {
 ; FIXED-NEXT:    store i64 [[RES]], ptr [[DST]], align 8
 ; FIXED-NEXT:    [[NEXTI]] = add i64 [[I]], 1
 ; FIXED-NEXT:    [[DONE:%.*]] = icmp eq i64 [[NEXTI]], 1024
-; FIXED-NEXT:    br i1 [[DONE]], label [[EXIT]], label [[LOOP]], !llvm.loop [[LOOP13:![0-9]+]]
+; FIXED-NEXT:    br i1 [[DONE]], label [[EXIT]], label [[LOOP]], !llvm.loop [[LOOP15:![0-9]+]]
 ; FIXED:       exit:
 ; FIXED-NEXT:    ret void
 ;

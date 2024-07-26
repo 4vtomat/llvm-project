@@ -80,6 +80,10 @@ inline specific_intval<0> m_SpecificInt(uint64_t V) {
   return specific_intval<0>(APInt(64, V));
 }
 
+#if SIFIVE_CUSTOMIZATION
+inline specific_intval<1> m_True() { return specific_intval<1>(APInt(64, 1)); }
+#endif // SIFIVE_CUSTOMIZATION
+
 inline specific_intval<1> m_False() { return specific_intval<1>(APInt(64, 0)); }
 
 /// Matching combinators

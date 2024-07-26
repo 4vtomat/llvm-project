@@ -40,19 +40,16 @@ define void @test_first_ordered_recurr(ptr %_src, ptr %_dx, i32 %W)  {
 ; CHECK-NEXT:    [[TMP5:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT]], [[W]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP6:%.*]] = sub i32 [[TMP3]], 1
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 8 x i8> [[WIDE_MASKED_GATHER]], i32 [[TMP6]]
 ; CHECK-NEXT:    br label [[FOR_END_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i8 [ 0, [[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 0, [[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[J_04:%.*]] = phi i32 [ [[ADD:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
-; CHECK-NEXT:    [[SCALAR_RECUR:%.*]] = phi i8 [ [[TMP7:%.*]], [[FOR_BODY]] ], [ [[SCALAR_RECUR_INIT]], [[SCALAR_PH]] ]
+; CHECK-NEXT:    [[V0_03:%.*]] = phi i8 [ [[TMP6:%.*]], [[FOR_BODY]] ], [ 0, [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[ADD]] = add nuw nsw i32 [[J_04]], 1
-; CHECK-NEXT:    [[TMP7]] = load i8, ptr [[_SRC]], align 1
-; CHECK-NEXT:    [[CONV9:%.*]] = zext i8 [[SCALAR_RECUR]] to i16
+; CHECK-NEXT:    [[TMP6]] = load i8, ptr [[_SRC]], align 1
+; CHECK-NEXT:    [[CONV9:%.*]] = zext i8 [[V0_03]] to i16
 ; CHECK-NEXT:    store i16 [[CONV9]], ptr [[_DX]], align 2
 ; CHECK-NEXT:    [[CMP:%.*]] = icmp slt i32 [[ADD]], [[W]]
 ; CHECK-NEXT:    br i1 [[CMP]], label [[FOR_BODY]], label [[FOR_END_LOOPEXIT]], !llvm.loop [[LOOP8:![0-9]+]]

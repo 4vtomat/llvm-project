@@ -63,15 +63,12 @@ define i32 @recurrence_1(ptr nocapture readonly %a, ptr nocapture %b, i32 %n) {
 ; CHECK-NEXT:    [[TMP25:%.*]] = sub i32 [[EVL_BASED_IV3]], 1
 ; CHECK-NEXT:    [[VECTOR_RECUR_PREV_EXTRACT:%.*]] = extractelement <vscale x 2 x i32> [[VECTOR_RECUR]], i32 [[TMP25]]
 ; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT_FOR_PHI:%.*]] = select i1 [[TMP27]], i32 [[VECTOR_RECUR_PREV_EXTRACT]], i32 [[TMP26]]
-; CHECK-NEXT:    [[TMP23:%.*]] = sub i32 [[TMP11]], 1
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 2 x i32> [[VP_OP_LOAD]], i32 [[TMP23]]
 ; CHECK-NEXT:    br label %[[FOR_EXIT:.*]]
 ; CHECK:       [[SCALAR_PH]]:
-; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i32 [ [[PRE_LOAD]], %[[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    br label %[[SCALAR_BODY:.*]]
 ; CHECK:       [[SCALAR_BODY]]:
-; CHECK-NEXT:    [[SCALAR_RECUR:%.*]] = phi i32 [ [[SCALAR_RECUR_INIT]], %[[SCALAR_PH]] ], [ [[TMP24:%.*]], %[[SCALAR_BODY]] ]
+; CHECK-NEXT:    [[SCALAR_RECUR:%.*]] = phi i32 [ [[PRE_LOAD]], %[[SCALAR_PH]] ], [ [[TMP24:%.*]], %[[SCALAR_BODY]] ]
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[SCALAR_BODY]] ]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; CHECK-NEXT:    [[ARRAYIDX32:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[INDVARS_IV_NEXT]]
@@ -163,11 +160,8 @@ define i32 @recurrence_2(ptr nocapture readonly %a, i32 %n) {
 ; CHECK-NEXT:    br i1 [[TMP12]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
 ; CHECK-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.reduce.smin.nxv2i32(i32 2147483647, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP2]])
-; CHECK-NEXT:    [[TMP14:%.*]] = sub i32 [[TMP5]], 1
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 2 x i32> [[VP_OP_LOAD]], i32 [[TMP14]]
 ; CHECK-NEXT:    br label %[[FOR_COND_CLEANUP_LOOPEXIT:.*]]
 ; CHECK:       [[SCALAR_PH]]:
-; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i32 [ [[DOTPRE]], %[[FOR_PREHEADER]] ]
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[FOR_PREHEADER]] ]
 ; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ undef, %[[FOR_PREHEADER]] ]
 ; CHECK-NEXT:    br label %[[SCALAR_BODY:.*]]
@@ -178,7 +172,7 @@ define i32 @recurrence_2(ptr nocapture readonly %a, i32 %n) {
 ; CHECK-NEXT:    [[MINMAX_0_LCSSA:%.*]] = phi i32 [ undef, %[[ENTRY]] ], [ [[MINMAX_0_COND_LCSSA]], %[[FOR_COND_CLEANUP_LOOPEXIT]] ]
 ; CHECK-NEXT:    ret i32 [[MINMAX_0_LCSSA]]
 ; CHECK:       [[SCALAR_BODY]]:
-; CHECK-NEXT:    [[SCALAR_RECUR:%.*]] = phi i32 [ [[SCALAR_RECUR_INIT]], %[[SCALAR_PH]] ], [ [[TMP15:%.*]], %[[SCALAR_BODY]] ]
+; CHECK-NEXT:    [[SCALAR_RECUR:%.*]] = phi i32 [ [[DOTPRE]], %[[SCALAR_PH]] ], [ [[TMP15:%.*]], %[[SCALAR_BODY]] ]
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[SCALAR_BODY]] ]
 ; CHECK-NEXT:    [[MINMAX_028:%.*]] = phi i32 [ [[BC_MERGE_RDX]], %[[SCALAR_PH]] ], [ [[MINMAX_0_COND]], %[[SCALAR_BODY]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[INDVARS_IV]]
@@ -296,15 +290,12 @@ define void @recurrence_3(ptr nocapture readonly %a, ptr nocapture %b, i32 %n, f
 ; CHECK-NEXT:    [[TMP21:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP2]]
 ; CHECK-NEXT:    br i1 [[TMP21]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP11:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
-; CHECK-NEXT:    [[TMP22:%.*]] = sub i32 [[TMP12]], 1
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 1 x i16> [[VP_OP_LOAD]], i32 [[TMP22]]
 ; CHECK-NEXT:    br label %[[FOR_END_LOOPEXIT:.*]]
 ; CHECK:       [[SCALAR_PH]]:
-; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i16 [ [[TMP0]], %[[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 1, %[[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    br label %[[SCALAR_BODY:.*]]
 ; CHECK:       [[SCALAR_BODY]]:
-; CHECK-NEXT:    [[SCALAR_RECUR:%.*]] = phi i16 [ [[SCALAR_RECUR_INIT]], %[[SCALAR_PH]] ], [ [[TMP23:%.*]], %[[SCALAR_BODY]] ]
+; CHECK-NEXT:    [[SCALAR_RECUR:%.*]] = phi i16 [ [[TMP0]], %[[SCALAR_PH]] ], [ [[TMP23:%.*]], %[[SCALAR_BODY]] ]
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[IV_NEXT:%.*]], %[[SCALAR_BODY]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[ARRAYIDX5:%.*]] = getelementptr inbounds i16, ptr [[A]], i64 [[IV]]
 ; CHECK-NEXT:    [[TMP23]] = load i16, ptr [[ARRAYIDX5]], align 2
@@ -486,15 +477,12 @@ define void @sink_after(ptr %a, ptr %b, i64 %n) {
 ; CHECK-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
 ; CHECK-NEXT:    br i1 [[TMP16]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
-; CHECK-NEXT:    [[TMP17:%.*]] = sub i32 [[TMP6]], 1
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 2 x i16> [[VP_OP_LOAD]], i32 [[TMP17]]
 ; CHECK-NEXT:    br label %[[FOR_END:.*]]
 ; CHECK:       [[SCALAR_PH]]:
-; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i16 [ [[DOTPRE]], %[[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    br label %[[FOR_BODY:.*]]
 ; CHECK:       [[FOR_BODY]]:
-; CHECK-NEXT:    [[SCALAR_RECUR:%.*]] = phi i16 [ [[SCALAR_RECUR_INIT]], %[[SCALAR_PH]] ], [ [[TMP18:%.*]], %[[FOR_BODY]] ]
+; CHECK-NEXT:    [[SCALAR_RECUR:%.*]] = phi i16 [ [[DOTPRE]], %[[SCALAR_PH]] ], [ [[TMP18:%.*]], %[[FOR_BODY]] ]
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_BODY]] ]
 ; CHECK-NEXT:    [[CONV:%.*]] = sext i16 [[SCALAR_RECUR]] to i32
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1

@@ -53,22 +53,16 @@ define void @foo(ptr %b, ptr %a) {
 ; CHECK-NEXT:    [[TMP19:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 10000
 ; CHECK-NEXT:    br i1 [[TMP19]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
-; CHECK-NEXT:    [[TMP20:%.*]] = sub i32 [[TMP9]], 1
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 2 x float> [[VP_OP_LOAD]], i32 [[TMP20]]
-; CHECK-NEXT:    [[TMP21:%.*]] = sub i32 [[TMP9]], 1
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT8:%.*]] = extractelement <vscale x 2 x float> [[TMP13]], i32 [[TMP21]]
 ; CHECK-NEXT:    br label %[[FOR_COND_CLEANUP:.*]]
 ; CHECK:       [[SCALAR_PH]]:
-; CHECK-NEXT:    [[SCALAR_RECUR_INIT9:%.*]] = phi float [ [[TMP0]], %[[VECTOR_MEMCHECK]] ]
-; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi float [ [[X_0_PRE]], %[[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
 ; CHECK-NEXT:    br label %[[FOR_BODY:.*]]
 ; CHECK:       [[FOR_COND_CLEANUP]]:
 ; CHECK-NEXT:    ret void
 ; CHECK:       [[FOR_BODY]]:
-; CHECK-NEXT:    [[X_0:%.*]] = phi float [ [[SCALAR_RECUR_INIT]], %[[SCALAR_PH]] ], [ [[TMP1:%.*]], %[[FOR_BODY]] ]
+; CHECK-NEXT:    [[X_0:%.*]] = phi float [ [[X_0_PRE]], %[[SCALAR_PH]] ], [ [[TMP1:%.*]], %[[FOR_BODY]] ]
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], %[[FOR_BODY]] ]
-; CHECK-NEXT:    [[Y_022:%.*]] = phi float [ [[SCALAR_RECUR_INIT9]], %[[SCALAR_PH]] ], [ [[X_0]], %[[FOR_BODY]] ]
+; CHECK-NEXT:    [[Y_022:%.*]] = phi float [ [[TMP0]], %[[SCALAR_PH]] ], [ [[X_0]], %[[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ARRAYIDX5:%.*]] = getelementptr inbounds float, ptr [[B]], i64 [[INDVARS_IV]]
 ; CHECK-NEXT:    [[TMP1]] = load float, ptr [[ARRAYIDX5]], align 4
 ; CHECK-NEXT:    [[ADD:%.*]] = fadd fast float [[X_0]], [[Y_022]]

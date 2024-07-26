@@ -71,13 +71,13 @@ define void @Ppmd8_EncodeSymbol(ptr %p, i8 %0) {
 ; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 8 x i32> [[VP_CAST]], i32 [[TMP21]]
 ; CHECK-NEXT:    br label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i32 [ 0, [[DO_BODY220_PREHEADER]] ], [ [[VECTOR_RECUR_EXTRACT]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi ptr [ [[IND_END]], [[MIDDLE_BLOCK]] ], [ [[S180_06_LCSSA]], [[DO_BODY220_PREHEADER]] ]
 ; CHECK-NEXT:    [[BC_RESUME_VAL5:%.*]] = phi i32 [ [[IND_END4]], [[MIDDLE_BLOCK]] ], [ [[I182_0_LCSSA]], [[DO_BODY220_PREHEADER]] ]
+; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i32 [ [[VECTOR_RECUR_EXTRACT]], [[MIDDLE_BLOCK]] ], [ 0, [[DO_BODY220_PREHEADER]] ]
 ; CHECK-NEXT:    br label [[DO_BODY220:%.*]]
 ; CHECK:       do.body220:
 ; CHECK-NEXT:    [[S180_1:%.*]] = phi ptr [ [[INCDEC_PTR230:%.*]], [[DO_BODY220]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
-; CHECK-NEXT:    [[SCALAR_RECUR:%.*]] = phi i32 [ [[AND228:%.*]], [[DO_BODY220]] ], [ [[SCALAR_RECUR_INIT]], [[SCALAR_PH]] ]
+; CHECK-NEXT:    [[SUM181_1:%.*]] = phi i32 [ [[AND228:%.*]], [[DO_BODY220]] ], [ [[SCALAR_RECUR_INIT]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[I182_1:%.*]] = phi i32 [ [[DEC232:%.*]], [[DO_BODY220]] ], [ [[BC_RESUME_VAL5]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[FREQ221:%.*]] = getelementptr inbounds [[STRUCT_CPPMD_STATE_19_114_124_235_343_467_495_627_635_651_662_682_701_702_704_722_741_759_778]], ptr [[S180_1]], i64 0, i32 1
 ; CHECK-NEXT:    [[TMP22:%.*]] = load i8, ptr [[FREQ221]], align 1
@@ -87,7 +87,7 @@ define void @Ppmd8_EncodeSymbol(ptr %p, i8 %0) {
 ; CHECK-NEXT:    [[TOBOOL233_NOT:%.*]] = icmp eq i32 [[I182_1]], 0
 ; CHECK-NEXT:    br i1 [[TOBOOL233_NOT]], label [[DO_END234:%.*]], label [[DO_BODY220]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       do.end234:
-; CHECK-NEXT:    [[SUM181_1_LCSSA:%.*]] = phi i32 [ [[SCALAR_RECUR]], [[DO_BODY220]] ]
+; CHECK-NEXT:    [[SUM181_1_LCSSA:%.*]] = phi i32 [ [[SUM181_1]], [[DO_BODY220]] ]
 ; CHECK-NEXT:    store i32 [[SUM181_1_LCSSA]], ptr [[P:%.*]], align 8
 ; CHECK-NEXT:    ret void
 ; CHECK:       do.cond274:

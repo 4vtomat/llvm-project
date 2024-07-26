@@ -14,27 +14,18 @@ define void @widen_pointer_induction_update() {
 ; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP0]], i32 2, i1 true)
 ; CHECK-NEXT:    [[TMP2:%.*]] = sub i32 [[TMP1]], 1
 ; CHECK-NEXT:    [[VECTOR_RECUR_INIT:%.*]] = insertelement <vscale x 2 x i32> poison, i32 [[DOTPRE]], i32 [[TMP2]]
-; CHECK-NEXT:    [[TMP3:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP4:%.*]] = mul i64 [[TMP3]], 2
-; CHECK-NEXT:    [[TMP5:%.*]] = mul i64 [[TMP4]], 0
-; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 2 x i64> poison, i64 [[TMP5]], i64 0
-; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 2 x i64> [[DOTSPLATINSERT]], <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP6:%.*]] = call <vscale x 2 x i64> @llvm.experimental.stepvector.nxv2i64()
-; CHECK-NEXT:    [[TMP7:%.*]] = add <vscale x 2 x i64> [[DOTSPLAT]], [[TMP6]]
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
-; CHECK-NEXT:    [[POINTER_PHI:%.*]] = phi ptr [ @state, [[VECTOR_PH]] ], [ [[PTR_IND:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP21:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV2:%.*]] = phi i32 [ [[TMP1]], [[VECTOR_PH]] ], [ [[TMP11:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VECTOR_RECUR:%.*]] = phi <vscale x 2 x i32> [ [[VECTOR_RECUR_INIT]], [[VECTOR_PH]] ], [ [[VP_OP:%.*]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[VECTOR_GEP:%.*]] = mul <vscale x 2 x i64> [[TMP7]], shufflevector (<vscale x 2 x i64> insertelement (<vscale x 2 x i64> poison, i64 4, i64 0), <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer)
-; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <vscale x 2 x i64> [[VECTOR_GEP]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = sub i64 396, [[TMP21]]
 ; CHECK-NEXT:    [[TMP10:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP9]], i64 7)
 ; CHECK-NEXT:    [[TMP11]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP10]], i32 2, i1 true)
-; CHECK-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP11]] to i64
-; CHECK-NEXT:    [[TMP13:%.*]] = extractelement <vscale x 2 x ptr> [[TMP8]], i32 0
+; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[TMP21]], 4
+; CHECK-NEXT:    [[TMP6:%.*]] = add i64 [[OFFSET_IDX]], 0
+; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr i8, ptr @state, i64 [[TMP6]]
 ; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds i32, ptr [[TMP13]], i64 -227
 ; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr inbounds i32, ptr [[TMP13]], i64 1
 ; CHECK-NEXT:    [[TMP16:%.*]] = getelementptr inbounds i32, ptr [[TMP14]], i32 0
@@ -48,9 +39,6 @@ define void @widen_pointer_induction_update() {
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[EVL_BASED_IV]], [[TMP21]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = zext i32 [[TMP11]] to i64
 ; CHECK-NEXT:    [[INDEX_NEXT1:%.*]] = add i64 [[TMP21]], [[TMP33]]
-; CHECK-NEXT:    [[TMP22:%.*]] = mul i64 [[TMP12]], 1
-; CHECK-NEXT:    [[TMP23:%.*]] = mul i64 4, [[TMP22]]
-; CHECK-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP23]]
 ; CHECK-NEXT:    [[TMP24:%.*]] = icmp eq i64 [[INDEX_NEXT]], 396
 ; CHECK-NEXT:    br i1 [[TMP24]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
@@ -60,16 +48,13 @@ define void @widen_pointer_induction_update() {
 ; CHECK-NEXT:    [[TMP28:%.*]] = sub i32 [[EVL_BASED_IV2]], 1
 ; CHECK-NEXT:    [[VECTOR_RECUR_PREV_EXTRACT:%.*]] = extractelement <vscale x 2 x i32> [[VECTOR_RECUR]], i32 [[TMP28]]
 ; CHECK-NEXT:    [[TMP34:%.*]] = select i1 [[TMP27]], i32 [[VECTOR_RECUR_PREV_EXTRACT]], i32 [[TMP29]]
-; CHECK-NEXT:    [[TMP26:%.*]] = sub i32 [[TMP11]], 1
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 2 x i32> [[VP_OP]], i32 [[TMP26]]
 ; CHECK-NEXT:    br label [[FOR_END:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i32 [ [[DOTPRE]], [[ENTRY:%.*]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 396, [[ENTRY]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i32 [ 396, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    [[BC_RESUME_VAL1:%.*]] = phi ptr [ @state, [[ENTRY]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[SCALAR_RECUR:%.*]] = phi i32 [ [[SCALAR_RECUR_INIT]], [[SCALAR_PH]] ], [ [[TMP32:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[SCALAR_RECUR:%.*]] = phi i32 [ [[DOTPRE]], [[SCALAR_PH]] ], [ [[TMP32:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[DEC18:%.*]] = phi i32 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[DEC:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[P_017:%.*]] = phi ptr [ [[BC_RESUME_VAL1]], [[SCALAR_PH]] ], [ [[ARRAYIDX2:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[P_017]], i64 -227

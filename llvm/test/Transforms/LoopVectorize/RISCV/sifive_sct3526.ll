@@ -52,12 +52,9 @@ define void @test(ptr %a, ptr %b, i64 %stride) {
 ; CHECK-NEXT:    [[TMP21:%.*]] = sub i32 [[EVL_BASED_IV2]], 1
 ; CHECK-NEXT:    [[VECTOR_RECUR_PREV_EXTRACT:%.*]] = extractelement <vscale x 2 x double> [[VECTOR_RECUR]], i32 [[TMP21]]
 ; CHECK-NEXT:    [[TMP22:%.*]] = select i1 [[TMP20]], double [[VECTOR_RECUR_PREV_EXTRACT]], double [[TMP28]]
-; CHECK-NEXT:    [[TMP19:%.*]] = sub i32 [[TMP9]], 1
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 2 x double> [[VP_OP]], i32 [[TMP19]]
 ; CHECK-NEXT:    br label [[LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi double [ 0.000000e+00, [[ENTRY:%.*]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ]
 ; CHECK-NEXT:    [[BC_RESUME_VAL1:%.*]] = phi ptr [ [[B]], [[ENTRY]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       loopexit:
@@ -68,7 +65,7 @@ define void @test(ptr %a, ptr %b, i64 %stride) {
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ [[IV_NEXT:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[DELTA:%.*]] = phi ptr [ [[DELTA_NEXT:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL1]], [[SCALAR_PH]] ]
-; CHECK-NEXT:    [[SCALAR_RECUR]] = phi double [ [[TMP25:%.*]], [[FOR_BODY]] ], [ [[SCALAR_RECUR_INIT]], [[SCALAR_PH]] ]
+; CHECK-NEXT:    [[SCALAR_RECUR]] = phi double [ [[TMP25:%.*]], [[FOR_BODY]] ], [ 0.000000e+00, [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[ARRAYIDX197:%.*]] = getelementptr i8, ptr [[DELTA]], i64 8
 ; CHECK-NEXT:    [[TMP23:%.*]] = load float, ptr [[ARRAYIDX197]], align 4
 ; CHECK-NEXT:    [[CONV199:%.*]] = fpext float [[TMP23]] to double
@@ -126,11 +123,8 @@ define void @test(ptr %a, ptr %b, i64 %stride) {
 ; CHECK-VERSIONING-NEXT:    [[TMP16:%.*]] = sub i32 [[EVL_BASED_IV2]], 1
 ; CHECK-VERSIONING-NEXT:    [[VECTOR_RECUR_PREV_EXTRACT:%.*]] = extractelement <vscale x 2 x double> [[VECTOR_RECUR]], i32 [[TMP16]]
 ; CHECK-VERSIONING-NEXT:    [[TMP17:%.*]] = select i1 [[TMP15]], double [[VECTOR_RECUR_PREV_EXTRACT]], double [[TMP22]]
-; CHECK-VERSIONING-NEXT:    [[TMP14:%.*]] = sub i32 [[TMP6]], 1
-; CHECK-VERSIONING-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 2 x double> [[VP_OP]], i32 [[TMP14]]
 ; CHECK-VERSIONING-NEXT:    br label [[LOOPEXIT:%.*]]
 ; CHECK-VERSIONING:       scalar.ph:
-; CHECK-VERSIONING-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi double [ 0.000000e+00, [[VECTOR_SCEVCHECK]] ]
 ; CHECK-VERSIONING-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[VECTOR_SCEVCHECK]] ]
 ; CHECK-VERSIONING-NEXT:    [[BC_RESUME_VAL1:%.*]] = phi ptr [ [[B]], [[VECTOR_SCEVCHECK]] ]
 ; CHECK-VERSIONING-NEXT:    br label [[FOR_BODY:%.*]]
@@ -142,7 +136,7 @@ define void @test(ptr %a, ptr %b, i64 %stride) {
 ; CHECK-VERSIONING:       for.body:
 ; CHECK-VERSIONING-NEXT:    [[IV:%.*]] = phi i64 [ [[IV_NEXT:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
 ; CHECK-VERSIONING-NEXT:    [[DELTA:%.*]] = phi ptr [ [[DELTA_NEXT:%.*]], [[FOR_BODY]] ], [ [[BC_RESUME_VAL1]], [[SCALAR_PH]] ]
-; CHECK-VERSIONING-NEXT:    [[SCALAR_RECUR]] = phi double [ [[TMP20:%.*]], [[FOR_BODY]] ], [ [[SCALAR_RECUR_INIT]], [[SCALAR_PH]] ]
+; CHECK-VERSIONING-NEXT:    [[SCALAR_RECUR]] = phi double [ [[TMP20:%.*]], [[FOR_BODY]] ], [ 0.000000e+00, [[SCALAR_PH]] ]
 ; CHECK-VERSIONING-NEXT:    [[ARRAYIDX197:%.*]] = getelementptr i8, ptr [[DELTA]], i64 8
 ; CHECK-VERSIONING-NEXT:    [[TMP18:%.*]] = load float, ptr [[ARRAYIDX197]], align 4
 ; CHECK-VERSIONING-NEXT:    [[CONV199:%.*]] = fpext float [[TMP18]] to double

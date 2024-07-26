@@ -18,6 +18,7 @@
 
 #include "VPlan.h"
 #include "LoopVectorizationPlanner.h"
+#include "VPlanAnalysis.h"
 #include "VPlanCFG.h"
 #include "VPlanDominatorTree.h"
 #include "VPlanPatternMatch.h"
@@ -598,6 +599,18 @@ void VPIRBasicBlock::execute(VPTransformState *State) {
     // Set each forward successor here when it is created, excluding
     // backedges. A backward successor is set when the branch is created.
     const auto &PredVPSuccessors = PredVPBB->getHierarchicalSuccessors();
+#if SIFIVE_CUSTOMIZATION
+    // TODO: That has to be moved into transforms and proper representation of
+    // BranchOnCond. As of now, it's a quick hack to unblock pulldown
+    if (State->Plan->useVLAVectorizer() && PredVPBB->getTerminator() &&
+        match(PredVPBB->getTerminator(), m_BranchOnCond(m_True()))) {
+      if (PredVPSuccessors.front() == this) {
+        TermBr->setSuccessor(0, IRBB);
+        State->CFG.DTU.applyUpdates({{DominatorTree::Insert, PredBB, IRBB}});
+      }
+      return;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     unsigned idx = PredVPSuccessors.front() == this ? 0 : 1;
     assert(!TermBr->getSuccessor(idx) &&
            "Trying to reset an existing successor block.");
@@ -1103,9 +1116,9 @@ VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
                                &Plan->getVectorTripCount(),
                                ScalarLatchTerm->getDebugLoc(), "cmp.n");
 #endif // SIFIVE_CUSTOMIZATION
-            Builder.createNaryOp(VPInstruction::BranchOnCond, {Cmp},
-                                 ScalarLatchTerm->getDebugLoc());
-            return Plan;
+  Builder.createNaryOp(VPInstruction::BranchOnCond, {Cmp},
+                       ScalarLatchTerm->getDebugLoc());
+  return Plan;
 }
 
 void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,

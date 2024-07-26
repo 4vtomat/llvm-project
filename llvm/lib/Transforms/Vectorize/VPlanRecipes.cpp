@@ -13,9 +13,6 @@
 
 #include "VPlan.h"
 #include "VPlanAnalysis.h"
-#if SIFIVE_CUSTOMIZATION
-#include "SiFive_VPlanPredicatedInstructions.h"
-#endif // SIFIVE_CUSTOMIZATION
 #include "VPlanValue.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/SmallVector.h"
@@ -37,6 +34,11 @@
 #include "llvm/Transforms/Utils/LoopUtils.h"
 #include "llvm/Transforms/Utils/ScalarEvolutionExpander.h"
 #include <cassert>
+
+#if SIFIVE_CUSTOMIZATION
+#include "SiFive_VPlanPredicatedInstructions.h"
+#include "llvm/IR/PatternMatch.h"
+#endif // SIFIVE_CUSTOMIZATION
 
 using namespace llvm;
 
@@ -644,8 +646,15 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
     // Replace the temporary unreachable terminator with a new conditional
     // branch, hooking it up to backward destination for exiting blocks now and
     // to forward destination(s) later when they are created.
+#if SIFIVE_CUSTOMIZATION
     BranchInst *CondBr =
-        Builder.CreateCondBr(Cond, Builder.GetInsertBlock(), nullptr);
+        State.Plan->useVLAVectorizer() && match(Cond, PatternMatch::m_One())
+            ? Builder.CreateBr(Builder.GetInsertBlock())
+            : Builder.CreateCondBr(Cond, Builder.GetInsertBlock(), nullptr);
+#else
+    BranchInst *CondBr =
+            Builder.CreateCondBr(Cond, Builder.GetInsertBlock(), nullptr);
+#endif // SIFIVE_CUSTOMIZATION
     CondBr->setSuccessor(0, nullptr);
     Builder.GetInsertBlock()->getTerminator()->eraseFromParent();
 

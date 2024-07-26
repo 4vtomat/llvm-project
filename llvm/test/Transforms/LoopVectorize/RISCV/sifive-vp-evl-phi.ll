@@ -25,15 +25,12 @@ define void @test() {
 ; CHECK-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 100
 ; CHECK-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
-; CHECK-NEXT:    [[TMP7:%.*]] = sub i32 [[TMP3]], 1
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT:%.*]] = extractelement <vscale x 4 x i16> [[WIDE_MASKED_GATHER]], i32 [[TMP7]]
 ; CHECK-NEXT:    br label [[FOR_END_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
-; CHECK-NEXT:    [[SCALAR_RECUR_INIT:%.*]] = phi i16 [ 0, [[FOR_BODY_PREHEADER:%.*]] ]
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER]] ]
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_PREHEADER:%.*]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[SCALAR_RECUR:%.*]] = phi i16 [ [[SCALAR_RECUR_INIT]], [[SCALAR_PH]] ], [ [[TMP8:%.*]], [[FOR_BODY]] ]
+; CHECK-NEXT:    [[TMP7:%.*]] = phi i16 [ 0, [[SCALAR_PH]] ], [ [[TMP8:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; CHECK-NEXT:    [[TMP8]] = load i16, ptr null, align 2
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1

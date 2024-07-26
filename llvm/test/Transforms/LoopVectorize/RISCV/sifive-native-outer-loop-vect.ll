@@ -40,7 +40,7 @@ define void @sct3433(ptr %g) {
 ; CHECK-NEXT:    [[TMP16:%.*]] = icmp eq <vscale x 4 x i64> [[TMP15]], shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 7, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 4 x i1> [[TMP16]], i32 0
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[FOR_OUTER_CLEANUP2]], label [[FOR_BODY1]]
-; CHECK:       for.outer.cleanup2:
+; CHECK:       vector.latch:
 ; CHECK-NEXT:    [[TMP18:%.*]] = add nuw nsw <vscale x 4 x i64> [[VEC_IND]], shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 1, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[TMP19:%.*]] = icmp eq <vscale x 4 x i64> [[TMP18]], shufflevector (<vscale x 4 x i64> insertelement (<vscale x 4 x i64> poison, i64 23, i64 0), <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
