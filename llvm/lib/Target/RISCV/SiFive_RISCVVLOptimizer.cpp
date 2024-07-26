@@ -1258,6 +1258,9 @@ static bool isSupportedInstr(const MachineInstr &MI) {
   case RISCV::VZEXT_VF8:
   case RISCV::VMV_V_I:
   case RISCV::VMV_V_X:
+  case RISCV::VNSRL_WI:
+  case RISCV::VWADD_VV:
+  case RISCV::VWADDU_VV:
     return true;
   }
 
