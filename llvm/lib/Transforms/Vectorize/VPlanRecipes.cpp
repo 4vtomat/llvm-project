@@ -982,6 +982,13 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
   case VPInstruction::LogicalAnd: {
     Value *A = State.get(getOperand(0), Part);
     Value *B = State.get(getOperand(1), Part);
+#if SIFIVE_CUSTOMIZATION
+    if (State.Plan->useVLAVectorizer())
+      return Builder.CreateIntrinsic(
+          Intrinsic::vp_select, {B->getType()},
+          {A, B, ConstantInt::getNullValue(B->getType()),
+           State.get(State.EVL, Part, /*NeedsScalar=*/true)});
+#endif // SIFIVE_CUSTOMIZATION
     return Builder.CreateLogicalAnd(A, B, Name);
   }
   case VPInstruction::PtrAdd: {
