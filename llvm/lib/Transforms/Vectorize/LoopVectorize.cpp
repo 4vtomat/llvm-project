@@ -3844,8 +3844,6 @@ InnerLoopVectorizer::createVectorizedLoopSkeleton(
       ReplaceInstWithInst(OrigBr, Br);
       LoopBypassBlocks.erase(LoopBypassBlocks.begin() + PrevTCCheckBlockID);
       DT->changeImmediateDominator(LoopScalarPreHeader, Succ);
-      if (!Cost->requiresScalarEpilogue(VF.isVector()))
-        DT->changeImmediateDominator(LoopExitBlock, Succ);
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
