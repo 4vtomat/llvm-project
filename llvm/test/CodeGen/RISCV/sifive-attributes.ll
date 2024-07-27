@@ -36,7 +36,7 @@
 ; RUN: llc -mtriple=riscv32 -mattr=+experimental-sswg %s -o - | FileCheck --check-prefixes=CHECK,RV32SSWG %s
 ; RUN: llc -mtriple=riscv32 -mattr=+experimental-ssnpm %s -o - | FileCheck --check-prefixes=CHECK,RV32SSNPM %s
 ; RUN: llc -mtriple=riscv32 -mattr=+xsfpmpmt %s -o - | FileCheck --check-prefixes=CHECK,RV32XSFPMPMT %s
-; RUN: llc -mtriple=riscv32 -mattr=+experimental-zvfbfmin -mattr=+xsfvfbfexp16e %s -o - | FileCheck --check-prefixes=CHECK,RV32XSFVFBFEXP16E %s
+; RUN: llc -mtriple=riscv32 -mattr=+zvfbfmin -mattr=+xsfvfbfexp16e %s -o - | FileCheck --check-prefixes=CHECK,RV32XSFVFBFEXP16E %s
 ; RUN: llc -mtriple=riscv32 -mattr=+xsfvfexp16e %s -o - | FileCheck --check-prefixes=CHECK,RV32XSFVFEXP16E %s
 ; RUN: llc -mtriple=riscv32 -mattr=+xsfvfexp32e %s -o - | FileCheck --check-prefixes=CHECK,RV32XSFVFEXP32E %s
 ; RUN: llc -mtriple=riscv32 -mattr=+xsfvfexpa %s -o - | FileCheck --check-prefixes=CHECK,RV32XSFVFEXPA %s
@@ -93,7 +93,7 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+experimental-sswg %s -o - | FileCheck --check-prefixes=CHECK,RV64SSWG %s
 ; RUN: llc -mtriple=riscv64 -mattr=+experimental-ssnpm %s -o - | FileCheck --check-prefixes=CHECK,RV64SSNPM %s
 ; RUN: llc -mtriple=riscv64 -mattr=+xsfpmpmt %s -o - | FileCheck --check-prefixes=CHECK,RV64XSFPMPMT %s
-; RUN: llc -mtriple=riscv64 -mattr=+experimental-zvfbfmin -mattr=+xsfvfbfexp16e %s -o - | FileCheck --check-prefixes=CHECK,RV64XSFVFBFEXP16E %s
+; RUN: llc -mtriple=riscv64 -mattr=+zvfbfmin -mattr=+xsfvfbfexp16e %s -o - | FileCheck --check-prefixes=CHECK,RV64XSFVFBFEXP16E %s
 ; RUN: llc -mtriple=riscv64 -mattr=+xsfvfexp16e %s -o - | FileCheck --check-prefixes=CHECK,RV64XSFVFEXP16E %s
 ; RUN: llc -mtriple=riscv64 -mattr=+xsfvfexp32e %s -o - | FileCheck --check-prefixes=CHECK,RV64XSFVFEXP32E %s
 ; RUN: llc -mtriple=riscv64 -mattr=+xsfvfexpa %s -o - | FileCheck --check-prefixes=CHECK,RV64XSFVFEXPA %s

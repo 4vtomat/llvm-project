@@ -14,12 +14,12 @@
 # RUN:        | FileCheck %s --check-prefix=CHECK-INST
 # RUN: llvm-mc -triple=riscv64 -filetype=obj --mattr=+xsfvfexp16e %s \
 # RUN:        | llvm-objdump -d - | FileCheck %s --check-prefix=CHECK-UNKNOWN
-# RUN: llvm-mc -triple=riscv64 -show-encoding --mattr=+experimental-zvfbfmin,+xsfvfbfexp16e %s \
+# RUN: llvm-mc -triple=riscv64 -show-encoding --mattr=+zvfbfmin,+xsfvfbfexp16e %s \
 # RUN:        | FileCheck %s --check-prefixes=CHECK-ENCODING,CHECK-INST
-# RUN: llvm-mc -triple=riscv64 -filetype=obj --mattr=+experimental-zvfbfmin,+xsfvfbfexp16e %s \
+# RUN: llvm-mc -triple=riscv64 -filetype=obj --mattr=+zvfbfmin,+xsfvfbfexp16e %s \
 # RUN:        | llvm-objdump -d --mattr=+xsfvfbfexp16e - \
 # RUN:        | FileCheck %s --check-prefix=CHECK-INST
-# RUN: llvm-mc -triple=riscv64 -filetype=obj --mattr=+experimental-zvfbfmin,+xsfvfbfexp16e %s \
+# RUN: llvm-mc -triple=riscv64 -filetype=obj --mattr=+zvfbfmin,+xsfvfbfexp16e %s \
 # RUN:        | llvm-objdump -d - | FileCheck %s --check-prefix=CHECK-UNKNOWN
 
 sf.vfexp.v v2, v5, v0.t
