@@ -105,6 +105,9 @@ defvar TU_MU = 0;
 defvar TA_MA = 3;
 #ifdef SIFIVE_CUSTOMIZATION
 defvar VXRM_DYN = 4;
+defvar DONT_CARE_ALTFMT = 0;
+defvar IS_NOT_ALTFMT = 1;
+defvar IS_ALTFMT = 2;
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
@@ -138,6 +141,9 @@ class PseudoToVInst<string PseudoInst> {
                         ["_M8", ""],
                         ["_SE", ""],
                         ["_RM", ""]
+#ifdef SIFIVE_CUSTOMIZATION
+                        , ["_ALT", ""]
+#endif // SIFIVE_CUSTOMIZATION
                        ];
   string VInst = !foldl(PseudoInst, AffixSubsts, Acc, AffixSubst,
                         !subst(AffixSubst[0], AffixSubst[1], Acc));

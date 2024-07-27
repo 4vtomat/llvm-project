@@ -124,6 +124,14 @@ enum {
   // 3 -> widening case
   TargetOverlapConstraintTypeShift = UsesVXRMShift + 1,
   TargetOverlapConstraintTypeMask = 3ULL << TargetOverlapConstraintTypeShift,
+
+#if SIFIVE_CUSTOMIZATION
+  // 0 -> Don't care about altfmt bit in VTYPE.
+  // 1 -> Is not altfmt.
+  // 2 -> Is altfmt(BF16).
+  AltfmtTypeShift = TargetOverlapConstraintTypeShift + 2,
+  AltfmtTypeMask = 3ULL << AltfmtTypeShift,
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 // Helper functions to read TSFlags.
@@ -168,6 +176,13 @@ static inline bool usesMaskPolicy(uint64_t TSFlags) {
 static inline bool hasRoundModeOp(uint64_t TSFlags) {
   return TSFlags & HasRoundModeOpMask;
 }
+
+#if SIFIVE_CUSTOMIZATION
+enum class AltfmtType { DontCare, IsNotAltfmt, IsAltfmt };
+static inline AltfmtType getAltfmtType(uint64_t TSFlags) {
+  return static_cast<AltfmtType>((TSFlags & AltfmtTypeMask) >> AltfmtTypeShift);
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 /// \returns true if this instruction uses vxrm
 static inline bool usesVXRM(uint64_t TSFlags) { return TSFlags & UsesVXRMMask; }
