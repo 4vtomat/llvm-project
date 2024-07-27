@@ -15,21 +15,18 @@ def TuneSiFiveP400 : SubtargetFeature<"sifive-p400", "RISCVProcFamily", "SiFiveP
                                       [TuneNoDefaultUnroll,
                                        TuneConditionalCompressedMoveFusion,
                                        TuneLUIADDIFusion,
-                                       TuneNoOptimizedZeroStrideLoad,
                                        TuneAUIPCADDIFusion]>;
 def TuneSiFiveP500 : SubtargetFeature<"sifive-p500", "RISCVProcFamily", "SiFiveP500",
                                       "SiFive P500-Series processors",
                                       [TuneNoDefaultUnroll,
                                        TuneConditionalCompressedMoveFusion,
                                        TuneLUIADDIFusion,
-                                       TuneNoOptimizedZeroStrideLoad,
                                        TuneAUIPCADDIFusion]>;
 def TuneSiFiveP600 : SubtargetFeature<"sifive-p600", "RISCVProcFamily", "SiFiveP600",
                                       "SiFive P600-Series processors",
                                       [TuneNoDefaultUnroll,
                                        TuneConditionalCompressedMoveFusion,
                                        TuneLUIADDIFusion,
-                                       TuneNoOptimizedZeroStrideLoad,
                                        TuneAUIPCADDIFusion]>;
 
 def TuneSiFiveP800 : SubtargetFeature<"sifive-p800", "RISCVProcFamily", "SiFiveP800",
@@ -37,7 +34,6 @@ def TuneSiFiveP800 : SubtargetFeature<"sifive-p800", "RISCVProcFamily", "SiFiveP
                                       [TuneNoDefaultUnroll,
                                        TuneConditionalCompressedMoveFusion,
                                        TuneLUIADDIFusion,
-                                       TuneNoOptimizedZeroStrideLoad,
                                        TuneAUIPCADDIFusion]>;
 
 def SIFIVE_6 : RISCVTuneProcessorModel<"sifive-6-series", SiFive6Model,
@@ -466,7 +462,8 @@ def SIFIVE_X280 : RISCVProcessorModel<"sifive-x280", SiFive7VLEN512Model,
                                       [TuneSiFive7,
                                        FeaturePostRAScheduler,
                                        TuneDLenFactor2,
-                                       TuneDLen256b]>;
+                                       TuneDLen256b,
+                                       TuneOptimizedZeroStrideLoad]>;
 
 def SIFIVE_X280N :
   RISCVProcessorModel<"sifive-x280n", SiFive7NVLEN512Model,
@@ -493,6 +490,7 @@ def SIFIVE_X280N :
                        FeaturePostRAScheduler,
                        TuneDLenFactor2,
                        TuneDLen256b,
+                       TuneOptimizedZeroStrideLoad,
                        TunePseudoLIsimm32]>;
 
 def SIFIVE_X280O :
@@ -522,6 +520,7 @@ def SIFIVE_X280O :
                        FeaturePostRAScheduler,
                        TuneDLenFactor2,
                        TuneDLen256b,
+                       TuneOptimizedZeroStrideLoad,
                        TunePseudoLIsimm32]>;
 
 defvar SIFIVE_X390_Features = [
@@ -577,7 +576,8 @@ defvar SIFIVE_X390_TuneFeatures = [
   TuneFastLargeGather,
   FeaturePostRAScheduler,
   TuneDLenFactor2,
-  TuneDLen512b
+  TuneDLen512b,
+  TuneOptimizedZeroStrideLoad
 ];
 
 def SIFIVE_X390_SLOW_FP64
