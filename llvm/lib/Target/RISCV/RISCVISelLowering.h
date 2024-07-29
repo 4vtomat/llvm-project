@@ -276,10 +276,12 @@ enum NodeType : unsigned {
   AVGCEILU_VL,
 
 #if SIFIVE_CUSTOMIZATION
-  VAADD_VL,
-  VAADDU_VL,
-  VASUB_VL,
-  VASUBU_VL,
+  // Halving subtract. Corresponds to vasub(u) with RDN. Rounding mode filled in
+  // by tablegen similar to the AVG nodes above.
+  SHSUB_VL,
+  UHSUB_VL,
+
+  // Nodes with rounding modes.
   VSMUL_VL,
   VSSRL_VL,
   VSSRA_VL,
