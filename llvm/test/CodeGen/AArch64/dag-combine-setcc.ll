@@ -117,7 +117,7 @@ define i1 @combine_setcc_ne_vecreduce_or_v64i1(<64 x i8> %a) {
 ; CHECK:       // %bb.0:
 ; CHECK-NEXT:    orr v1.16b, v1.16b, v3.16b
 ; CHECK-NEXT:    orr v0.16b, v0.16b, v2.16b
-; CHECK-NEXT:    orr v0.16b, v0.16b, v1.16b
+; CHECK-NEXT:    orr v0.16b, v1.16b, v0.16b
 ; CHECK-NEXT:    cmtst v0.16b, v0.16b, v0.16b
 ; CHECK-NEXT:    umaxv b0, v0.16b
 ; CHECK-NEXT:    fmov w8, s0
@@ -177,7 +177,7 @@ define i1 @combine_setcc_eq_vecreduce_and_v64i1(<64 x i8> %a) {
 ; CHECK:       // %bb.0:
 ; CHECK-NEXT:    orr v1.16b, v1.16b, v3.16b
 ; CHECK-NEXT:    orr v0.16b, v0.16b, v2.16b
-; CHECK-NEXT:    orr v0.16b, v0.16b, v1.16b
+; CHECK-NEXT:    orr v0.16b, v1.16b, v0.16b
 ; CHECK-NEXT:    cmeq v0.16b, v0.16b, #0
 ; CHECK-NEXT:    uminv b0, v0.16b
 ; CHECK-NEXT:    fmov w8, s0

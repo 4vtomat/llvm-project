@@ -622,6 +622,9 @@ namespace {
     SDValue foldSextSetcc(SDNode *N);
     SDValue foldLogicOfSetCCs(bool IsAnd, SDValue N0, SDValue N1,
                               const SDLoc &DL);
+#if SIFIVE_CUSTOMIZATION
+    SDValue reassociateForFoldLogicOfSetCCs(SDNode *N);
+#endif // SIFIVE_CUSTOMIZATION
     SDValue foldSubToUSubSat(EVT DstVT, SDNode *N, const SDLoc &DL);
 #if SIFIVE_CUSTOMIZATION
     template <class MatchContextClass = EmptyMatchContext>
@@ -7060,6 +7063,36 @@ static SDValue foldLogicTreeOfShifts(SDNode *N, SDValue LeftHand,
   return DAG.getNode(LogicOpcode, DL, VT, CombinedShifts, W);
 }
 
+#if SIFIVE_CUSTOMIZATION
+// and (and a, (setcc b c)), (setcc d e) ->
+// and a, foldLogicOfSetCCs((and (setcc b c), (setcc d e))
+//
+// or (or a, (setcc b c)), (setcc d e) ->
+// or a, foldLogicOfSetCCs((or (setcc b c), (setcc d e))
+SDValue DAGCombiner::reassociateForFoldLogicOfSetCCs(SDNode *N) {
+  if (!sd_match(
+          N, m_And(m_And(m_Value(), m_Opc(ISD::SETCC)), m_Opc(ISD::SETCC))) &&
+      !sd_match(N, m_Or(m_Or(m_Value(), m_Opc(ISD::SETCC)), m_Opc(ISD::SETCC))))
+    return SDValue();
+
+  SDValue N0 = N->getOperand(0);
+  SDValue N1 = N->getOperand(1);
+  unsigned N0Opc = N0.getOpcode();
+  SDValue SetCC = N0Opc == ISD::SETCC ? N0 : N1;
+  SDValue LogicOp = N0Opc == ISD::SETCC ? N1 : N0;
+  SDValue LogicOp0 = LogicOp.getOperand(0);
+  SDValue LogicOp1 = LogicOp.getOperand(1);
+  SDValue InnerSetCC = LogicOp0.getOpcode() == ISD::SETCC ? LogicOp0 : LogicOp1;
+  SDValue A = LogicOp0.getOpcode() == ISD::SETCC ? LogicOp1 : LogicOp0;
+
+  if (SDValue V = foldLogicOfSetCCs(N->getOpcode() == ISD::AND, SetCC,
+                                    InnerSetCC, SDLoc(N)))
+    return DAG.getNode(N->getOpcode(), SDLoc(N), N->getValueType(0), A, V);
+
+  return SDValue();
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 SDValue DAGCombiner::visitAND(SDNode *N) {
   SDValue N0 = N->getOperand(0);
   SDValue N1 = N->getOperand(1);
@@ -7472,6 +7505,11 @@ SDValue DAGCombiner::visitAND(SDNode *N) {
   if (LegalOperations || VT.isVector())
     if (SDValue R = foldLogicTreeOfShifts(N, N0, N1, DAG))
       return R;
+
+#if SIFIVE_CUSTOMIZATION
+  if (SDValue V = reassociateForFoldLogicOfSetCCs(N))
+    return V;
+#endif // SIFIVE_CUSTOMIZATION
 
   return SDValue();
 }
@@ -8137,6 +8175,11 @@ SDValue DAGCombiner::visitOR(SDNode *N) {
   if (LegalOperations || VT.isVector())
     if (SDValue R = foldLogicTreeOfShifts(N, N0, N1, DAG))
       return R;
+
+#if SIFIVE_CUSTOMIZATION
+  if (SDValue V = reassociateForFoldLogicOfSetCCs(N))
+    return V;
+#endif // SIFIVE_CUSTOMIZATION
 
   return SDValue();
 }

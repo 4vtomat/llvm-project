@@ -14633,6 +14633,12 @@ static SDValue combineSelectAndUse(SDNode *N, SDValue Slct, SDValue OtherOp,
       return SDValue();
   }
 
+#if SIFIVE_CUSTOMIZATION
+  // Skip i1
+  if (VT == MVT::i1)
+    return SDValue();
+#endif // SIFIVE_CUSTOMIZATION
+
   if ((Slct.getOpcode() != ISD::SELECT &&
        Slct.getOpcode() != RISCVISD::SELECT_CC) ||
       !Slct.hasOneUse())

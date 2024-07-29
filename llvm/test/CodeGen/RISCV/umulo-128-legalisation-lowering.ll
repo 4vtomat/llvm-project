@@ -62,26 +62,24 @@ define { i128, i8 } @muloti_test(i128 %l, i128 %r) #0 {
 ; RISCV32-NEXT:    sltu t3, t4, s0
 ; RISCV32-NEXT:  .LBB0_2: # %start
 ; RISCV32-NEXT:    sltu s0, s2, s1
-; RISCV32-NEXT:    snez s1, t2
-; RISCV32-NEXT:    snez s2, a7
-; RISCV32-NEXT:    and s1, s2, s1
-; RISCV32-NEXT:    mulhu s2, a7, a5
-; RISCV32-NEXT:    snez s2, s2
-; RISCV32-NEXT:    or s1, s1, s2
-; RISCV32-NEXT:    mulhu t2, t2, t0
+; RISCV32-NEXT:    mulhu s1, a7, a5
+; RISCV32-NEXT:    mulhu s2, t2, t0
+; RISCV32-NEXT:    or s1, s2, s1
+; RISCV32-NEXT:    snez s1, s1
 ; RISCV32-NEXT:    snez t2, t2
-; RISCV32-NEXT:    or t2, s1, t2
+; RISCV32-NEXT:    snez s2, a7
+; RISCV32-NEXT:    and t2, s2, t2
+; RISCV32-NEXT:    or t2, t2, s1
 ; RISCV32-NEXT:    or t2, t2, s0
 ; RISCV32-NEXT:    sltu t5, t6, t5
-; RISCV32-NEXT:    snez t6, a2
-; RISCV32-NEXT:    snez s0, a3
-; RISCV32-NEXT:    and t6, s0, t6
-; RISCV32-NEXT:    mulhu s0, a3, a4
-; RISCV32-NEXT:    snez s0, s0
-; RISCV32-NEXT:    or t6, t6, s0
-; RISCV32-NEXT:    mulhu a2, a2, a6
+; RISCV32-NEXT:    mulhu t6, a3, a4
+; RISCV32-NEXT:    mulhu s0, a2, a6
+; RISCV32-NEXT:    or t6, s0, t6
+; RISCV32-NEXT:    snez t6, t6
 ; RISCV32-NEXT:    snez a2, a2
-; RISCV32-NEXT:    or a2, t6, a2
+; RISCV32-NEXT:    snez s0, a3
+; RISCV32-NEXT:    and a2, s0, a2
+; RISCV32-NEXT:    or a2, a2, t6
 ; RISCV32-NEXT:    or a2, a2, t5
 ; RISCV32-NEXT:    or a7, t0, a7
 ; RISCV32-NEXT:    snez a7, a7
