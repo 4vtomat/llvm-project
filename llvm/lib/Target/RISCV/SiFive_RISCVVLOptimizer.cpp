@@ -1441,7 +1441,7 @@ bool RISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
   bool MadeChange = false;
   while (!Worklist.empty()) {
     MachineInstr &MI = *Worklist.pop_back_val();
-    LLVM_DEBUG(dbgs() << "Try reduce VL for " << OrigMI << "\n");
+    LLVM_DEBUG(dbgs() << "Try reduce VL for " << MI << "\n");
     std::optional<VLInfo> CommonVL;
     bool CanReduceVL = true;
     for (auto &UserOp : MRI->use_operands(MI.getOperand(0).getReg())) {
