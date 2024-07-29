@@ -1098,6 +1098,19 @@ def FeatureStdExtSupm
                                  "'Supm' (Indicates User-mode Pointer Masking)">;
 
 #ifdef SIFIVE_CUSTOMIZATION
+def FeatureStdExtSmctr
+    : RISCVExtension<"smctr", 1, 0,
+                     "'Smctr' (Control Transfer Records Machine Level)",
+                     [FeatureStdExtSmcsrind]>;
+def FeatureStdExtSsctr
+    : RISCVExtension<"ssctr", 1, 0,
+                     "'Ssctr' (Control Transfer Records Supervisor Level)",
+                     [FeatureStdExtSscsrind]>;
+def HasStdExtSmctrOrSsctr : Predicate<"Subtarget->hasStdExtSmctrOrSsctr()">,
+                            AssemblerPredicate<(any_of FeatureStdExtSmctr, FeatureStdExtSsctr),
+                               "'Smctr' (Control Transfer Records Machine Level) or "
+                               "'Ssctr' (Control Transfer Records Supervisor Level)">;
+
 def FeatureStdExtZjid
     : RISCVExperimentalExtension<"zjid", 0, 0,
                                  "'Zjid' (Instruction/Data Cache Synchronization)">;

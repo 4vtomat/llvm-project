@@ -164,3 +164,72 @@ csrrs t2, 0x748, zero
 csrrs t1, slwid, zero
 # uimm12
 csrrs t2, 0x190, zero
+
+##################################
+# Control Transfer Records
+##################################
+
+# sctrctl
+# name
+# CHECK-INST: csrrs t1, sctrctl, zero
+# CHECK-ENC: encoding: [0x73,0x23,0xe0,0x14]
+# CHECK-INST-ALIAS: csrr t1, sctrctl
+# uimm12
+# CHECK-INST: csrrs t2, sctrctl, zero
+# CHECK-ENC: encoding: [0xf3,0x23,0xe0,0x14]
+# CHECK-INST-ALIAS: csrr t2, sctrctl
+csrrs t1, sctrctl, zero
+# uimm12
+csrrs t2, 0x14e, zero
+
+# sctrstatus
+# name
+# CHECK-INST: csrrs t1, sctrstatus, zero
+# CHECK-ENC: encoding: [0x73,0x23,0xf0,0x14]
+# CHECK-INST-ALIAS: csrr t1, sctrstatus
+# uimm12
+# CHECK-INST: csrrs t2, sctrstatus, zero
+# CHECK-ENC: encoding: [0xf3,0x23,0xf0,0x14]
+# CHECK-INST-ALIAS: csrr t2, sctrstatus
+csrrs t1, sctrstatus, zero
+# uimm12
+csrrs t2, 0x14f, zero
+
+# sctrdepth
+# name
+# CHECK-INST: csrrs t1, sctrdepth, zero
+# CHECK-ENC: encoding: [0x73,0x23,0xf0,0x15]
+# CHECK-INST-ALIAS: csrr t1, sctrdepth
+# uimm12
+# CHECK-INST: csrrs t2, sctrdepth, zero
+# CHECK-ENC: encoding: [0xf3,0x23,0xf0,0x15]
+# CHECK-INST-ALIAS: csrr t2, sctrdepth
+csrrs t1, sctrdepth, zero
+# uimm12
+csrrs t2, 0x15f, zero
+
+# vsctrctl
+# name
+# CHECK-INST: csrrs t1, vsctrctl, zero
+# CHECK-ENC: encoding: [0x73,0x23,0xe0,0x24]
+# CHECK-INST-ALIAS: csrr t1, vsctrctl
+# uimm12
+# CHECK-INST: csrrs t2, vsctrctl, zero
+# CHECK-ENC: encoding: [0xf3,0x23,0xe0,0x24]
+# CHECK-INST-ALIAS: csrr t2, vsctrctl
+csrrs t1, vsctrctl, zero
+# uimm12
+csrrs t2, 0x24e, zero
+
+# mctrctl
+# name
+# CHECK-INST: csrrs t1, mctrctl, zero
+# CHECK-ENC: encoding: [0x73,0x23,0xe0,0x34]
+# CHECK-INST-ALIAS: csrr t1, mctrctl
+# uimm12
+# CHECK-INST: csrrs t2, mctrctl, zero
+# CHECK-ENC: encoding: [0xf3,0x23,0xe0,0x34]
+# CHECK-INST-ALIAS: csrr t2, mctrctl
+csrrs t1, mctrctl, zero
+# uimm12
+csrrs t2, 0x34e, zero
