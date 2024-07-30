@@ -548,7 +548,8 @@ enum RVVRequire : uint32_t {
   RVV_REQ_Xsfvqdotq = 1 << 21,
   RVV_REQ_Xsfvfexpa = 1 << 22,
   RVV_REQ_Xsfvfexpa64e = 1 << 23,
-  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Xsfvfexpa64e)
+  RVV_REQ_Xsfvfbfa = 1 << 24,
+  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Xsfvfbfa)
 #else
   LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Experimental)
 #endif // SIFIVE_CUSTOMIZATION
