@@ -376,12 +376,6 @@
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-ZFHMIN %s
 // RV32-ZFHMIN: "-target-feature" "+zfhmin"
 
-// COM: SiFive specific logic: Disable version check for integration with FESDK.
-// COM: not %clang --target=riscv32-unknown-elf -march=rv32iztso -menable-experimental-extensions -### %s \
-// COM: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-NOVERS %s
-// COM-RV32-EXPERIMENTAL-NOVERS: error: invalid arch name 'rv32iztso'
-// COM-RV32-EXPERIMENTAL-NOVERS: experimental extension requires explicit version number
-
 // RUN: not %clang --target=riscv32-unknown-elf -march=rv32izalasr -### %s \
 // RUN: -fsyntax-only 2>&1 | FileCheck -check-prefix=RV32-EXPERIMENTAL-NOFLAG %s
 // RV32-EXPERIMENTAL-NOFLAG: error: invalid arch name 'rv32izalasr'
