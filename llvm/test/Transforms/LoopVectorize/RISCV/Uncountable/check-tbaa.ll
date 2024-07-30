@@ -24,11 +24,11 @@ define void @strlen(ptr %s) {
 ; CHECK-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; CHECK-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       vec.uncountable.middle.block:
-; CHECK-NEXT:    br label [[WHILE_END:%.*]]
+; CHECK-NEXT:    br i1 true, label [[WHILE_END:%.*]], label [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]]
 ; CHECK:       vec.uncountable.scalar.ph:
 ; CHECK-NEXT:    br label [[WHILE_COND:%.*]]
 ; CHECK:       while.cond:
-; CHECK-NEXT:    [[END_0:%.*]] = phi ptr [ [[S]], [[VEC_UNCOUNTABLE_SCALAR_PH:%.*]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
+; CHECK-NEXT:    [[END_0:%.*]] = phi ptr [ [[S]], [[VEC_UNCOUNTABLE_SCALAR_PH]] ], [ [[INCDEC_PTR:%.*]], [[WHILE_COND]] ]
 ; CHECK-NEXT:    [[TMP8:%.*]] = load i8, ptr [[END_0]], align 1, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    [[CMP_NOT:%.*]] = icmp eq i8 [[TMP8]], 0
 ; CHECK-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[END_0]], i64 1

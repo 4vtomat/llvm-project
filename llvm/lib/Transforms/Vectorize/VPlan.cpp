@@ -605,7 +605,8 @@ void VPIRBasicBlock::execute(VPTransformState *State) {
 #if SIFIVE_CUSTOMIZATION
     // TODO: That has to be moved into transforms and proper representation of
     // BranchOnCond. As of now, it's a quick hack to unblock pulldown
-    if (State->Plan->useVLAVectorizer() && PredVPBB->getTerminator() &&
+    if (State->Plan->useVLAVectorizer() && !State->Plan->isUncountable() &&
+        PredVPBB->getTerminator() &&
         match(PredVPBB->getTerminator(), m_BranchOnCond(m_True()))) {
       if (PredVPSuccessors.front() == this) {
         TermBr->setSuccessor(0, IRBB);

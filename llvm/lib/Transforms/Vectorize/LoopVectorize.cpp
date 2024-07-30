@@ -6138,6 +6138,10 @@ static bool willGenerateVectors(VPlan &Plan, ElementCount VF,
       case VPDef::VPBranchOnMaskSC:
 #if SIFIVE_CUSTOMIZATION
       case VPDef::VPMonotonicHeaderPHISC:
+      case VPRecipeBase::VPCSADataUpdateSC:
+      case VPRecipeBase::VPCSAExtractScalarSC:
+      case VPRecipeBase::VPCSAHeaderPHISC:
+      case VPRecipeBase::VPMonotonicUpdateSC:
 #endif // SIFIVE_CUSTOMIZATION
         continue;
       case VPDef::VPReductionSC:
