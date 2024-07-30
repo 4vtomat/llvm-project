@@ -302,8 +302,7 @@ public:
   bool hasVInstructionsF64() const { return HasStdExtZve64d; }
 #if SIFIVE_CUSTOMIZATION
   bool hasVInstructionsBF16() const {
-    return HasVendorXSfvfhbfmin || HasVendorXSfvfwmaccqqq ||
-           HasStdExtZvfbfmin || HasVendorXSfvfbfa;
+    return HasStdExtZvfbfmin || HasVendorXSfvfbfa;
   }
 #else
   bool hasVInstructionsBF16() const { return HasStdExtZvfbfmin; }
