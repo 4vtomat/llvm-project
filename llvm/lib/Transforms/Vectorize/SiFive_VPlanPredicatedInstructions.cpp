@@ -118,20 +118,6 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
   unsigned Opcode =
       Op ? Op->getOpcode() : cast<VPInstruction>(User).getOpcode();
 
-  auto &&CreateCast = [&](CastInst *CI) {
-    Value *SrcVal = State.get(User.getOperand(0), Part);
-    auto *SrcTy = cast<VectorType>(SrcVal->getType());
-    auto *DestTy = VectorType::get(CI->getType(), SrcTy->getElementCount());
-    // TODO: Whether instruction should be masked or unmasked has to be decided
-    // during VPlan construction by looking at the target and exceptions that
-    // are enabled.
-    // Since LV is targeting RVV, use all-true mask for conversions.
-    Builder.setMask(BuilderIR.getTrueVector(SrcTy->getElementCount()));
-    Builder.setEVL(State.get(EVL, Part, /*NeedsScalar=*/true));
-    return Builder.createVectorInstruction(CI->getOpcode(), DestTy, {SrcVal},
-                                           "vp.cast");
-  };
-
   switch (Opcode) {
   case VPInstruction::Not: {
     assert(!Op && "Expected with no-op only.");
@@ -172,77 +158,37 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
       IRBuilder<>::FastMathFlagGuard FMFG(BuilderIR);
       BuilderIR.setFastMathFlags(Cmp->getFastMathFlags());
       return Builder.createVectorInstruction(Opcode, OpTy, {A, B, PredArg},
-                                          "vp.op.fcmp");
+                                             "vp.op.fcmp");
     }
     return Builder.createVectorInstruction(Opcode, OpTy, {A, B, PredArg},
                                            "vp.op.icmp");
   }
   case Instruction::SExt:
   case Instruction::ZExt:
-  case Instruction::Trunc: {
-    //===------------------ Int-to-Int cast instructions ------------------===//
-    auto *CI = cast<CastInst>(Op);
-
-    assert(isa<IntegerType>(CI->getType()) && "Invalid destination Int type.");
-    IntegerType *DestElemTy = cast<IntegerType>(CI->getType());
-    IntegerType *SrcElemTy = cast<IntegerType>(CI->getOperand(0)->getType());
-    if (Opcode == Instruction::Trunc)
-      assert(DestElemTy->getBitWidth() < SrcElemTy->getBitWidth() &&
-             "Cannot truncate to a larger size.");
-    else
-      assert(DestElemTy->getBitWidth() > SrcElemTy->getBitWidth() &&
-             "Cannot extend to a smaller size.");
-    return CreateCast(CI);
-  }
+  case Instruction::Trunc:
   case Instruction::FPExt:
-  case Instruction::FPTrunc: {
-    //===------------------ Float-to-Float cast instructions --------------===//
-    auto *CI = cast<CastInst>(Op);
-    Type *DestElemTy = CI->getType();
-    Type *SrcElemTy = CI->getOperand(0)->getType();
-    assert(DestElemTy->isFloatingPointTy() && SrcElemTy->isFloatingPointTy() &&
-           "Invalid destination/source type for float extension.");
-    if (Opcode == Instruction::FPTrunc)
-      assert(DestElemTy->getTypeID() < SrcElemTy->getTypeID() &&
-             "Cannot extend to a larger size.");
-    else
-      assert(DestElemTy->getTypeID() > SrcElemTy->getTypeID() &&
-             "Cannot extend to a smaller size.");
-    return CreateCast(CI);
-  }
+  case Instruction::FPTrunc:
   case Instruction::FPToUI:
-  case Instruction::FPToSI: {
-    //===------------------ Float-to-Int cast instructions ----------------===//
-    auto *CI = cast<CastInst>(Op);
-    Type *DestElemTy = CI->getType();
-    Type *SrcElemTy = CI->getOperand(0)->getType();
-    assert(DestElemTy->isIntegerTy() && SrcElemTy->isFloatingPointTy() &&
-           "Invalid destination/source type for float to int cast.");
-    return CreateCast(CI);
-  }
+  case Instruction::FPToSI:
   case Instruction::UIToFP:
-  case Instruction::SIToFP: {
-    //===------------------ Int-to-Float cast instructions ----------------===//
-    auto *CI = cast<CastInst>(Op);
-    Type *DestElemTy = CI->getType();
-    Type *SrcElemTy = CI->getOperand(0)->getType();
-    assert(SrcElemTy->isIntegerTy() && DestElemTy->isFloatingPointTy() &&
-           "Invalid destination/source type for float to int cast.");
-    return CreateCast(CI);
-  }
+  case Instruction::SIToFP:
   case Instruction::IntToPtr:
   case Instruction::PtrToInt: {
-    //===------------------ Int-Ptr cast instructions ---------------------===//
-    auto *CI = cast<CastInst>(Op);
-    Type *DestElemTy = CI->getType();
-    Type *SrcElemTy = CI->getOperand(0)->getType();
-    if (Opcode == Instruction::IntToPtr)
-      assert(SrcElemTy->isIntegerTy() && DestElemTy->isPointerTy() &&
-             "Invalid destination/source type for int to ptr cast.");
-    else
-      assert(DestElemTy->isIntegerTy() && SrcElemTy->isPointerTy() &&
-             "Invalid destination/source type for ptr to int cast.");
-    return CreateCast(CI);
+    assert(isa<VPWidenCastRecipe>(Def) &&
+           "VPWidenCastRecipe is expected in CreateCast lambda");
+    Value *SrcVal = State.get(User.getOperand(0), Part);
+    auto *SrcTy = cast<VectorType>(SrcVal->getType());
+    auto *VPWC = cast<VPWidenCastRecipe>(Def);
+    Type *DestTy = VPWC->getResultType();
+    auto *DestVecTy = VectorType::get(DestTy, SrcTy->getElementCount());
+    // TODO: Whether instruction should be masked or unmasked has to be decided
+    // during VPlan construction by looking at the target and exceptions that
+    // are enabled.
+    // Since LV is targeting RVV, use all-true mask for conversions.
+    Builder.setMask(BuilderIR.getTrueVector(SrcTy->getElementCount()));
+    Builder.setEVL(State.get(EVL, Part, /*NeedsScalar=*/true));
+    return Builder.createVectorInstruction(VPWC->getOpcode(), DestVecTy,
+                                           {SrcVal}, "vp.cast");
   }
   default:
     break;

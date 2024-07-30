@@ -647,8 +647,11 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
     // branch, hooking it up to backward destination for exiting blocks now and
     // to forward destination(s) later when they are created.
 #if SIFIVE_CUSTOMIZATION
+    const bool UnconditionalBranch = State.Plan->useVLAVectorizer() &&
+                                     match(Cond, PatternMatch::m_One()) &&
+                                     !getParent()->isExiting();
     BranchInst *CondBr =
-        State.Plan->useVLAVectorizer() && match(Cond, PatternMatch::m_One())
+        UnconditionalBranch
             ? Builder.CreateBr(Builder.GetInsertBlock())
             : Builder.CreateCondBr(Cond, Builder.GetInsertBlock(), nullptr);
 #else
