@@ -149,10 +149,10 @@ INITIALIZE_PASS(RISCVSpillRewrite, DEBUG_TYPE, RISCV_SPILL_REWRITE_NAME, false,
 void RISCVSpillRewrite::getAnalysisUsage(AnalysisUsage &AU) const {
   AU.setPreservesCFG();
 
-  AU.addPreserved<LiveIntervals>();
-  AU.addRequired<LiveIntervals>();
-  AU.addPreserved<SlotIndexes>();
-  AU.addRequired<SlotIndexes>();
+  AU.addPreserved<LiveIntervalsWrapperPass>();
+  AU.addRequired<LiveIntervalsWrapperPass>();
+  AU.addPreserved<SlotIndexesWrapperPass>();
+  AU.addRequired<SlotIndexesWrapperPass>();
   AU.addPreserved<LiveDebugVariables>();
   AU.addPreserved<LiveStacks>();
 
@@ -341,7 +341,7 @@ bool RISCVSpillRewrite::runOnMachineFunction(MachineFunction &MF) {
   TII = ST->getInstrInfo();
   MRI = &MF.getRegInfo();
   MFI = &MF.getFrameInfo();
-  LIS = &getAnalysis<LiveIntervals>();
+  LIS = &getAnalysis<LiveIntervalsWrapperPass>().getLIS();
 
   // 1. If the MI is vector spill and need partial spill, record frame number
   // and the corresponding LMUL in SpillLMUL.
