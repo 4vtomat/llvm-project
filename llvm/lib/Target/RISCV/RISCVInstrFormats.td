@@ -223,6 +223,17 @@ class RVInstCommon<dag outs, dag ins, string opcodestr, string argstr,
   // 3 -> widening case
   bits<2> TargetOverlapConstraintType = 0;
   let TSFlags{22-21} = TargetOverlapConstraintType;
+
+#ifdef SIFIVE_CUSTOMIZATION
+  // 0 -> Don't care about altfmt bit in VTYPE.
+  // 1 -> Is not altfmt.
+  // 2 -> Is altfmt(BF16).
+  bits<2> AltfmtType = 0;
+  let TSFlags{24-23} = AltfmtType;
+
+  bit IsWiden = 0;
+  let TSFlags{25} = IsWiden;
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 class RVInst<dag outs, dag ins, string opcodestr, string argstr,

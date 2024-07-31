@@ -106,6 +106,9 @@ def SiFiveP600VEXQ0        : ProcResource<1>;
 def SiFiveP600VEXQ1        : ProcResource<1>;
 def SiFiveP600VectorArith  : ProcResGroup<[SiFiveP600VEXQ0, SiFiveP600VEXQ1]>;
 
+// Only VEXQ0 has mask unit.
+defvar SiFiveP600VectorMask = SiFiveP600VEXQ0;
+
 // In Baler has 2 pipeline for Load and Store.
 def SiFiveP600VLD          : ProcResource<1>;
 def SiFiveP600VST          : ProcResource<1>;
@@ -425,12 +428,12 @@ foreach mx = SchedMxList in {
     defm "" : LMULWriteResMX<"WriteVIALUX",   [SiFiveP600VectorArith], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIALUI",   [SiFiveP600VectorArith], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVExtV",    [SiFiveP600VectorArith], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVICALUV",  [SiFiveP600VectorArith], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVICALUX",  [SiFiveP600VectorArith], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVICALUI",  [SiFiveP600VectorArith], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVICmpV",   [SiFiveP600VectorArith], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVICmpX",   [SiFiveP600VectorArith], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVICmpI",   [SiFiveP600VectorArith], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVICALUV",  [SiFiveP600VectorMask],  mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVICALUX",  [SiFiveP600VectorMask],  mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVICALUI",  [SiFiveP600VectorMask],  mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVICmpV",   [SiFiveP600VectorMask],  mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVICmpX",   [SiFiveP600VectorMask],  mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVICmpI",   [SiFiveP600VectorMask],  mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMergeV", [SiFiveP600VectorArith], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMergeX", [SiFiveP600VectorArith], mx, IsWorstCase>;
     defm "" : LMULWriteResMX<"WriteVIMergeI", [SiFiveP600VectorArith], mx, IsWorstCase>;
@@ -549,8 +552,8 @@ foreach mx = SchedMxList in {
   let Latency = 3, ReleaseAtCycles = [LMulLat] in
   defm "" : LMULWriteResMX<"WriteVFCvtFToIV", [SiFiveP600VectorArith], mx, IsWorstCase>;
   let Latency = 2, ReleaseAtCycles = [LMulLat] in {
-    defm "" : LMULWriteResMX<"WriteVFCmpV",  [SiFiveP600VectorArith], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVFCmpF",  [SiFiveP600VectorArith], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVFCmpV",  [SiFiveP600VectorMask], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVFCmpF",  [SiFiveP600VectorMask], mx, IsWorstCase>;
   }
   let Latency = 2, ReleaseAtCycles = [LMulLat] in {
     defm "" : LMULWriteResMX<"WriteVFClassV",  [SiFiveP600VectorArith], mx, IsWorstCase>;
@@ -681,15 +684,15 @@ foreach mx = SchedMxListFWRed in {
 foreach mx = SchedMxList in {
   defvar IsWorstCase = SiFiveP600IsWorstCaseMX<mx, SchedMxList>.c;
   let Latency = 2, ReleaseAtCycles = [1] in {
-    defm "" : LMULWriteResMX<"WriteVMALUV", [SiFiveP600VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVMPopV", [SiFiveP600VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVMFFSV", [SiFiveP600VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVMSFSV", [SiFiveP600VEXQ0], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVMALUV", [SiFiveP600VectorMask], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVMPopV", [SiFiveP600VectorMask], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVMFFSV", [SiFiveP600VectorMask], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVMSFSV", [SiFiveP600VectorMask], mx, IsWorstCase>;
   }
   defvar LMulLat = SiFiveP600GetLMulCycles<mx>.c;
   let Latency = 2, ReleaseAtCycles = [LMulLat] in {
-    defm "" : LMULWriteResMX<"WriteVIotaV", [SiFiveP600VEXQ0], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVIdxV", [SiFiveP600VEXQ0], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVIotaV", [SiFiveP600VectorMask], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVIdxV", [SiFiveP600VectorMask], mx, IsWorstCase>;
   }
 }
 

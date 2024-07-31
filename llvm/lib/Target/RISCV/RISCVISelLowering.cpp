@@ -6472,7 +6472,7 @@ static bool hasMergeOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_RISCV_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-                    141 && // SIFIVE
+                    139 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
@@ -6498,7 +6498,7 @@ static bool hasMaskOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_RISCV_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-                    141 && // SIFIVE
+                    139 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
@@ -10094,33 +10094,26 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
   case Intrinsic::aarch64_neon_uhsub:
   case Intrinsic::aarch64_neon_urhadd: {
     unsigned Opc;
-    RISCVVXRndMode::RoundingMode RoundingMode;
     switch (IntNo) {
     default:
       llvm_unreachable("Unexpected intrinsic");
     case Intrinsic::aarch64_neon_shadd:
-      Opc = RISCVISD::VAADD_VL;
-      RoundingMode = RISCVVXRndMode::RDN;
+      Opc = RISCVISD::AVGFLOORS_VL;
       break;
     case Intrinsic::aarch64_neon_shsub:
-      Opc = RISCVISD::VASUB_VL;
-      RoundingMode = RISCVVXRndMode::RDN;
+      Opc = RISCVISD::SHSUB_VL;
       break;
     case Intrinsic::aarch64_neon_srhadd:
-      Opc = RISCVISD::VAADD_VL;
-      RoundingMode = RISCVVXRndMode::RNU;
+      Opc = RISCVISD::AVGCEILS_VL;
       break;
     case Intrinsic::aarch64_neon_uhadd:
-      Opc = RISCVISD::VAADDU_VL;
-      RoundingMode = RISCVVXRndMode::RDN;
+      Opc = RISCVISD::AVGFLOORU_VL;
       break;
     case Intrinsic::aarch64_neon_uhsub:
-      Opc = RISCVISD::VASUBU_VL;
-      RoundingMode = RISCVVXRndMode::RDN;
+      Opc = RISCVISD::UHSUB_VL;
       break;
     case Intrinsic::aarch64_neon_urhadd:
-      Opc = RISCVISD::VAADDU_VL;
-      RoundingMode = RISCVVXRndMode::RNU;
+      Opc = RISCVISD::AVGCEILU_VL;
       break;
     }
     MVT VT = Op.getSimpleValueType();
@@ -10132,10 +10125,9 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     SDValue Passthru = DAG.getUNDEF(VecVT);
     SDValue Mask, VL;
     std::tie(Mask, VL) = getDefaultVLOps(VT, VecVT, DL, DAG, Subtarget);
-    SDValue RM = DAG.getTargetConstant(RoundingMode, DL, XLenVT);
     return convertFromScalableVector(
-        VT, DAG.getNode(Opc, DL, VecVT, {Op0, Op1, Passthru, Mask, RM, VL}),
-        DAG, Subtarget);
+        VT, DAG.getNode(Opc, DL, VecVT, {Op0, Op1, Passthru, Mask, VL}), DAG,
+        Subtarget);
   }
   case Intrinsic::aarch64_neon_sqabs: {
     MVT VT = Op.getSimpleValueType();
@@ -14749,6 +14741,12 @@ static SDValue combineSelectAndUse(SDNode *N, SDValue Slct, SDValue OtherOp,
     if (VT.getSizeInBits() > Subtarget.getXLen())
       return SDValue();
   }
+
+#if SIFIVE_CUSTOMIZATION
+  // Skip i1
+  if (VT == MVT::i1)
+    return SDValue();
+#endif // SIFIVE_CUSTOMIZATION
 
   if ((Slct.getOpcode() != ISD::SELECT &&
        Slct.getOpcode() != RISCVISD::SELECT_CC) ||
@@ -23382,14 +23380,12 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(AVGFLOORU_VL)
   NODE_NAME_CASE(AVGCEILS_VL)
   NODE_NAME_CASE(AVGCEILU_VL)
+  NODE_NAME_CASE(SHSUB_VL) // SIFIVE
+  NODE_NAME_CASE(UHSUB_VL) // SIFIVE
   NODE_NAME_CASE(SADDSAT_VL)
   NODE_NAME_CASE(UADDSAT_VL)
   NODE_NAME_CASE(SSUBSAT_VL)
   NODE_NAME_CASE(USUBSAT_VL)
-  NODE_NAME_CASE(VAADD_VL)   // SIFIVE
-  NODE_NAME_CASE(VAADDU_VL)  // SIFIVE
-  NODE_NAME_CASE(VASUB_VL)   // SIFIVE
-  NODE_NAME_CASE(VASUBU_VL)  // SIFIVE
   NODE_NAME_CASE(VSMUL_VL)   // SIFIVE
   NODE_NAME_CASE(VSSRL_VL)   // SIFIVE
   NODE_NAME_CASE(VSSRA_VL)   // SIFIVE

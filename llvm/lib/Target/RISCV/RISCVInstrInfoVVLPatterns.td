@@ -139,16 +139,16 @@ def riscv_avgfloors_vl  : SDNode<"RISCVISD::AVGFLOORS_VL", SDT_RISCVIntBinOp_VL,
 def riscv_avgflooru_vl  : SDNode<"RISCVISD::AVGFLOORU_VL", SDT_RISCVIntBinOp_VL, [SDNPCommutative]>;
 def riscv_avgceils_vl   : SDNode<"RISCVISD::AVGCEILS_VL", SDT_RISCVIntBinOp_VL, [SDNPCommutative]>;
 def riscv_avgceilu_vl   : SDNode<"RISCVISD::AVGCEILU_VL", SDT_RISCVIntBinOp_VL, [SDNPCommutative]>;
+#ifdef SIFIVE_CUSTOMIZATION
+def riscv_shsub_vl      : SDNode<"RISCVISD::SHSUB_VL", SDT_RISCVIntBinOp_VL>;
+def riscv_uhsub_vl      : SDNode<"RISCVISD::UHSUB_VL", SDT_RISCVIntBinOp_VL>;
+#endif
 def riscv_saddsat_vl   : SDNode<"RISCVISD::SADDSAT_VL", SDT_RISCVIntBinOp_VL, [SDNPCommutative]>;
 def riscv_uaddsat_vl   : SDNode<"RISCVISD::UADDSAT_VL", SDT_RISCVIntBinOp_VL, [SDNPCommutative]>;
 def riscv_ssubsat_vl   : SDNode<"RISCVISD::SSUBSAT_VL", SDT_RISCVIntBinOp_VL>;
 def riscv_usubsat_vl   : SDNode<"RISCVISD::USUBSAT_VL", SDT_RISCVIntBinOp_VL>;
 
 #ifdef SIFIVE_CUSTOMIZATION
-def riscv_vaadd_vl  : SDNode<"RISCVISD::VAADD_VL", SDT_RISCVIntBinOp_RM_VL>;
-def riscv_vaaddu_vl : SDNode<"RISCVISD::VAADDU_VL", SDT_RISCVIntBinOp_RM_VL>;
-def riscv_vasub_vl  : SDNode<"RISCVISD::VASUB_VL", SDT_RISCVIntBinOp_RM_VL>;
-def riscv_vasubu_vl : SDNode<"RISCVISD::VASUBU_VL", SDT_RISCVIntBinOp_RM_VL>;
 def riscv_vsmul_vl  : SDNode<"RISCVISD::VSMUL_VL", SDT_RISCVIntBinOp_RM_VL>;
 def riscv_vssrl_vl : SDNode<"RISCVISD::VSSRL_VL", SDT_RISCVIntBinOp_RM_VL>;
 def riscv_vssra_vl : SDNode<"RISCVISD::VSSRA_VL", SDT_RISCVIntBinOp_RM_VL>;
@@ -2253,6 +2253,27 @@ multiclass VPatAVGADDVL_VV_VX_RM<SDNode vop, int vxrm, string suffix = ""> {
   }
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPatAVGSUBVL_VV_VX_RM<SDNode vop, int vxrm, string suffix = ""> {
+  foreach vti = AllIntegerVectors in {
+    let Predicates = GetVTypePredicates<vti>.Predicates in {
+      def : Pat<(vop (vti.Vector vti.RegClass:$rs1),
+                     (vti.Vector vti.RegClass:$rs2),
+                     vti.RegClass:$merge, (vti.Mask V0), VLOpFrag),
+                (!cast<Instruction>("PseudoVASUB"#suffix#"_VV_"#vti.LMul.MX#"_MASK")
+                  vti.RegClass:$merge, vti.RegClass:$rs1, vti.RegClass:$rs2,
+                  (vti.Mask V0), vxrm, GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
+      def : Pat<(vop (vti.Vector vti.RegClass:$rs1),
+                     (vti.Vector (SplatPat (XLenVT GPR:$rs2))),
+                     vti.RegClass:$merge, (vti.Mask V0), VLOpFrag),
+                (!cast<Instruction>("PseudoVASUB"#suffix#"_VX_"#vti.LMul.MX#"_MASK")
+                  vti.RegClass:$merge, vti.RegClass:$rs1, GPR:$rs2,
+                  (vti.Mask V0), vxrm, GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
+    }
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 //===----------------------------------------------------------------------===//
 // Patterns.
 //===----------------------------------------------------------------------===//
@@ -2534,13 +2555,9 @@ defm : VPatAVGADDVL_VV_VX_RM<riscv_avgfloors_vl, 0b10>;
 defm : VPatAVGADDVL_VV_VX_RM<riscv_avgflooru_vl, 0b10, suffix="U">;
 defm : VPatAVGADDVL_VV_VX_RM<riscv_avgceils_vl, 0b00>;
 defm : VPatAVGADDVL_VV_VX_RM<riscv_avgceilu_vl, 0b00, suffix="U">;
-
 #ifdef SIFIVE_CUSTOMIZATION
-// 12.2 Vector Single-Width Averaging Add and Subtract
-defm : VPatBinaryRM_VL_VV_VX<riscv_vaadd_vl, "PseudoVAADD">;
-defm : VPatBinaryRM_VL_VV_VX<riscv_vaaddu_vl, "PseudoVAADDU">;
-defm : VPatBinaryRM_VL_VV_VX<riscv_vasub_vl, "PseudoVASUB">;
-defm : VPatBinaryRM_VL_VV_VX<riscv_vasubu_vl, "PseudoVASUBU">;
+defm : VPatAVGSUBVL_VV_VX_RM<riscv_shsub_vl, 0b10>;
+defm : VPatAVGSUBVL_VV_VX_RM<riscv_uhsub_vl, 0b10, suffix="U">;
 
 // 12.3 Vector Single-Width Fractional Multiply with Rounding and Saturation
 defm : VPatBinaryRM_VL_VV_VX<riscv_vsmul_vl, "PseudoVSMUL">;

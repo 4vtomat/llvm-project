@@ -131,13 +131,13 @@ define amdgpu_kernel void @s_test_srem(ptr addrspace(1) %out, i64 %x, i64 %y) {
 ; GCN-IR-NEXT:    v_cmp_eq_u64_e64 s[12:13], s[2:3], 0
 ; GCN-IR-NEXT:    s_flbit_i32_b64 s10, s[4:5]
 ; GCN-IR-NEXT:    s_flbit_i32_b64 s18, s[2:3]
-; GCN-IR-NEXT:    s_or_b64 s[8:9], s[8:9], s[12:13]
+; GCN-IR-NEXT:    s_or_b64 s[14:15], s[8:9], s[12:13]
 ; GCN-IR-NEXT:    s_sub_u32 s12, s10, s18
 ; GCN-IR-NEXT:    s_subb_u32 s13, 0, 0
-; GCN-IR-NEXT:    v_cmp_gt_u64_e64 s[14:15], s[12:13], 63
-; GCN-IR-NEXT:    v_cmp_eq_u64_e64 s[16:17], s[12:13], 63
-; GCN-IR-NEXT:    s_or_b64 s[14:15], s[8:9], s[14:15]
-; GCN-IR-NEXT:    s_and_b64 s[8:9], s[14:15], exec
+; GCN-IR-NEXT:    v_cmp_gt_u64_e64 s[8:9], s[12:13], 63
+; GCN-IR-NEXT:    v_cmp_gt_u64_e64 s[16:17], s[12:13], 62
+; GCN-IR-NEXT:    s_or_b64 s[8:9], s[14:15], s[8:9]
+; GCN-IR-NEXT:    s_and_b64 s[8:9], s[8:9], exec
 ; GCN-IR-NEXT:    s_cselect_b32 s9, 0, s3
 ; GCN-IR-NEXT:    s_cselect_b32 s8, 0, s2
 ; GCN-IR-NEXT:    s_or_b64 s[14:15], s[14:15], s[16:17]
@@ -1068,14 +1068,14 @@ define amdgpu_kernel void @s_test_srem33_64(ptr addrspace(1) %out, i64 %x, i64 %
 ; GCN-IR-NEXT:    v_cmp_eq_u64_e64 s[14:15], s[2:3], 0
 ; GCN-IR-NEXT:    v_cmp_eq_u64_e64 s[6:7], s[8:9], 0
 ; GCN-IR-NEXT:    s_flbit_i32_b64 s12, s[8:9]
-; GCN-IR-NEXT:    s_or_b64 s[10:11], s[6:7], s[14:15]
+; GCN-IR-NEXT:    s_or_b64 s[16:17], s[6:7], s[14:15]
 ; GCN-IR-NEXT:    s_flbit_i32_b64 s20, s[2:3]
 ; GCN-IR-NEXT:    s_sub_u32 s14, s12, s20
 ; GCN-IR-NEXT:    s_subb_u32 s15, 0, 0
-; GCN-IR-NEXT:    v_cmp_gt_u64_e64 s[16:17], s[14:15], 63
-; GCN-IR-NEXT:    v_cmp_eq_u64_e64 s[18:19], s[14:15], 63
-; GCN-IR-NEXT:    s_or_b64 s[16:17], s[10:11], s[16:17]
-; GCN-IR-NEXT:    s_and_b64 s[10:11], s[16:17], exec
+; GCN-IR-NEXT:    v_cmp_gt_u64_e64 s[10:11], s[14:15], 63
+; GCN-IR-NEXT:    v_cmp_gt_u64_e64 s[18:19], s[14:15], 62
+; GCN-IR-NEXT:    s_or_b64 s[10:11], s[16:17], s[10:11]
+; GCN-IR-NEXT:    s_and_b64 s[10:11], s[10:11], exec
 ; GCN-IR-NEXT:    s_cselect_b32 s11, 0, s3
 ; GCN-IR-NEXT:    s_cselect_b32 s10, 0, s2
 ; GCN-IR-NEXT:    s_or_b64 s[16:17], s[16:17], s[18:19]
@@ -1213,14 +1213,14 @@ define amdgpu_kernel void @s_test_srem24_48(ptr addrspace(1) %out, i48 %x, i48 %
 ; GCN-IR-NEXT:    v_cmp_eq_u64_e64 s[8:9], s[6:7], 0
 ; GCN-IR-NEXT:    v_cmp_eq_u64_e64 s[10:11], s[4:5], 0
 ; GCN-IR-NEXT:    s_flbit_i32_b64 s12, s[6:7]
-; GCN-IR-NEXT:    s_or_b64 s[10:11], s[8:9], s[10:11]
+; GCN-IR-NEXT:    s_or_b64 s[16:17], s[8:9], s[10:11]
 ; GCN-IR-NEXT:    s_flbit_i32_b64 s20, s[4:5]
 ; GCN-IR-NEXT:    s_sub_u32 s14, s12, s20
 ; GCN-IR-NEXT:    s_subb_u32 s15, 0, 0
-; GCN-IR-NEXT:    v_cmp_gt_u64_e64 s[16:17], s[14:15], 63
-; GCN-IR-NEXT:    v_cmp_eq_u64_e64 s[18:19], s[14:15], 63
-; GCN-IR-NEXT:    s_or_b64 s[16:17], s[10:11], s[16:17]
-; GCN-IR-NEXT:    s_and_b64 s[10:11], s[16:17], exec
+; GCN-IR-NEXT:    v_cmp_gt_u64_e64 s[10:11], s[14:15], 63
+; GCN-IR-NEXT:    v_cmp_gt_u64_e64 s[18:19], s[14:15], 62
+; GCN-IR-NEXT:    s_or_b64 s[10:11], s[16:17], s[10:11]
+; GCN-IR-NEXT:    s_and_b64 s[10:11], s[10:11], exec
 ; GCN-IR-NEXT:    s_cselect_b32 s11, 0, s5
 ; GCN-IR-NEXT:    s_cselect_b32 s10, 0, s4
 ; GCN-IR-NEXT:    s_or_b64 s[16:17], s[16:17], s[18:19]

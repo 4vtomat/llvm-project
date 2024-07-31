@@ -678,6 +678,11 @@ PrototypeDescriptor::parsePrototypeDescriptor(
     case 'F':
       TM |= TypeModifier::Float;
       break;
+#if SIFIVE_CUSTOMIZATION
+    case 'Y':
+      TM |= TypeModifier::BFloat;
+      break;
+#endif // SIFIVE_CUSTOMIZATION
     case 'S':
       TM |= TypeModifier::LMUL1;
       break;

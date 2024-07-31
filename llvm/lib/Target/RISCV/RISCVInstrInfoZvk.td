@@ -546,7 +546,10 @@ let Predicates = [HasStdExtZvbb] in {
   defm PseudoVCLZ   : VPseudoVCLZ;
   defm PseudoVCTZ   : VPseudoVCTZ;
   defm PseudoVCPOP  : VPseudoVCPOP;
-  defm PseudoVWSLL : VPseudoVWSLL;
+#ifdef SIFIVE_CUSTOMIZATION
+  let IsWiden = 1 in
+    defm PseudoVWSLL : VPseudoVWSLL;
+#endif // SIFIVE_CUSTOMIZATION
 } // Predicates = [HasStdExtZvbb]
 
 #ifdef SIFIVE_CUSTOMIZATION

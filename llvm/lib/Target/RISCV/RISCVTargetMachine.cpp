@@ -128,6 +128,13 @@ static cl::opt<bool> EnableVSETVLIAfterRVVRegAlloc(
     cl::desc("Insert vsetvls after vector register allocation"),
     cl::init(true));
 
+#ifdef SIFIVE_CUSTOMIZATION
+static cl::opt<bool>
+    EnableRISCVSpillRewrite("enable-riscv-spill-rewrite", cl::Hidden,
+                            cl::init(false),
+                            cl::desc("Enable RISC-V Spill Rewrite pass"));
+#endif // SIFIVE_CUSTOMIZATION
+
 extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   RegisterTargetMachine<RISCVTargetMachine> X(getTheRISCV32Target());
   RegisterTargetMachine<RISCVTargetMachine> Y(getTheRISCV64Target());
@@ -154,6 +161,9 @@ extern "C" LLVM_EXTERNAL_VISIBILITY void LLVMInitializeRISCVTarget() {
   initializeRISCVExpandPseudoPass(*PR);
   initializeRISCVVectorPeepholePass(*PR);
   initializeRISCVInsertVSETVLIPass(*PR);
+#ifdef SIFIVE_CUSTOMIZATION
+  initializeRISCVSpillRewritePass(*PR);
+#endif // SIFIVE_CUSTOMIZATION
   initializeRISCVInsertReadWriteCSRPass(*PR);
   initializeRISCVInsertWriteVXRMPass(*PR);
   initializeRISCVDAGToDAGISelLegacyPass(*PR);
@@ -463,6 +473,10 @@ bool RISCVPassConfig::addRegAssignAndRewriteFast() {
 bool RISCVPassConfig::addRegAssignAndRewriteOptimized() {
   addPass(createRVVRegAllocPass(true));
   addPass(createVirtRegRewriter(false));
+#ifdef SIFIVE_CUSTOMIZATION
+  if (EnableRISCVSpillRewrite)
+    addPass(createRISCVSpillRewritePass());
+#endif // SIFIVE_CUSTOMIZATION
   if (EnableVSETVLIAfterRVVRegAlloc)
     addPass(createRISCVInsertVSETVLIPass());
   if (TM->getOptLevel() != CodeGenOptLevel::None &&
