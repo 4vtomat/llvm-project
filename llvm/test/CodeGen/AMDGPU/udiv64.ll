@@ -844,13 +844,8 @@ define amdgpu_kernel void @s_test_udiv24_i48(ptr addrspace(1) %out, i48 %x, i48 
 ; GCN-IR-NEXT:    s_and_b32 s1, s1, 0xffff
 ; GCN-IR-NEXT:    v_cmp_eq_u64_e64 s[4:5], s[0:1], 0
 ; GCN-IR-NEXT:    v_cmp_eq_u64_e64 s[6:7], s[8:9], 0
-<<<<<<< HEAD
 ; GCN-IR-NEXT:    s_flbit_i32_b64 s10, s[0:1]
-; GCN-IR-NEXT:    s_or_b64 s[6:7], s[4:5], s[6:7]
-=======
-; GCN-IR-NEXT:    s_flbit_i32_b64 s10, s[2:3]
 ; GCN-IR-NEXT:    s_or_b64 s[14:15], s[4:5], s[6:7]
->>>>>>> origin
 ; GCN-IR-NEXT:    s_flbit_i32_b64 s16, s[8:9]
 ; GCN-IR-NEXT:    s_sub_u32 s12, s10, s16
 ; GCN-IR-NEXT:    s_subb_u32 s13, 0, 0
