@@ -850,3 +850,21 @@ define <vscale x 1 x i64> @zero_strided_vadd.vx(<vscale x 1 x i64> %v, ptr %ptr)
   %w = add <vscale x 1 x i64> %v, %load
   ret <vscale x 1 x i64> %w
 }
+
+; SIFIVE_CUSTOMIZATION
+define <vscale x 1 x ptr> @zero_strided_unmasked_vpload_nxv1p0(ptr %ptr) {
+; CHECK-RV32-LABEL: zero_strided_unmasked_vpload_nxv1p0:
+; CHECK-RV32:       # %bb.0:
+; CHECK-RV32-NEXT:    vsetivli zero, 4, e32, mf2, ta, ma
+; CHECK-RV32-NEXT:    vlse32.v v8, (a0), zero
+; CHECK-RV32-NEXT:    ret
+;
+; CHECK-RV64-LABEL: zero_strided_unmasked_vpload_nxv1p0:
+; CHECK-RV64:       # %bb.0:
+; CHECK-RV64-NEXT:    vsetivli zero, 4, e64, m1, ta, ma
+; CHECK-RV64-NEXT:    vlse64.v v8, (a0), zero
+; CHECK-RV64-NEXT:    ret
+  %load = call <vscale x 1 x ptr> @llvm.experimental.vp.strided.load.nxv1p0.p0.i32(ptr %ptr, i32 0, <vscale x 1 x i1> splat (i1 true), i32 4)
+  ret <vscale x 1 x ptr> %load
+}
+; SIFIVE_CUSTOMIZATION

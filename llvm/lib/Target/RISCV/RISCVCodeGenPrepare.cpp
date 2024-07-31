@@ -384,6 +384,12 @@ bool RISCVCodeGenPrepare::expandVPStrideLoad(IntrinsicInst &II) {
 
   auto *VTy = cast<VectorType>(II.getType());
 
+#if SIFIVE_CUSTOMIZATION
+  // Pointer type is unknown for getEVT().
+  if (VTy->getScalarType()->isPointerTy())
+    return false;
+#endif // SIFIVE_CUSTOMIZATION
+
   IRBuilder<> Builder(&II);
 
   // Extend VL from i32 to XLen if needed.
