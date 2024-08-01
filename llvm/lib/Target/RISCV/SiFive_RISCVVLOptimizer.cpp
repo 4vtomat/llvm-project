@@ -142,15 +142,32 @@ struct OperandInfo {
            "an Unknown OperandInfo");
   }
 
-  bool isUnknown() { return S == State::Unknown; }
-  bool isKnown() { return S == State::Known; }
+  bool isUnknown() const { return S == State::Unknown; }
+  bool isKnown() const { return S == State::Known; }
 
-  static bool EMULAndEEWAreEqual(OperandInfo A, OperandInfo B) {
+  static bool EMULAndEEWAreEqual(const OperandInfo &A, const OperandInfo &B) {
     assert(A.isKnown() && B.isKnown() && "Both operands must be known");
     return A.Log2EEW == B.Log2EEW && A.EMUL.first == B.EMUL.first &&
            A.EMUL.second == B.EMUL.second;
   }
+
+  void print(raw_ostream &OS) const {
+    if (isUnknown()) {
+      OS << "Unknown";
+      return;
+    }
+    OS << "EMUL: ";
+    if (EMUL.second)
+      OS << "m";
+    OS << "f" << EMUL.first;
+    OS << ", EEW: " << (1 << Log2EEW);
+  }
 };
+
+static raw_ostream &operator<<(raw_ostream &OS, const OperandInfo &OI) {
+  OI.print(OS);
+  return OS;
+}
 
 /// Return the RISCVII::VLMUL that is two times VLMul.
 /// Precondition: VLMul is not LMUL_RESERVED or LMUL_8.
@@ -1513,6 +1530,8 @@ bool RISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
           !OperandInfo::EMULAndEEWAreEqual(ConsumerInfo, ProducerInfo)) {
         LLVM_DEBUG(dbgs() << "    Abort due to incompatible or unknown "
                              "information for EMUL or EEW.\n");
+        LLVM_DEBUG(dbgs() << "      ConsumerInfo is: " << ConsumerInfo << "\n");
+        LLVM_DEBUG(dbgs() << "      ProducerInfo is: " << ProducerInfo << "\n");
         CanReduceVL = false;
         break;
       }
