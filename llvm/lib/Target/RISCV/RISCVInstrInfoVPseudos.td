@@ -533,6 +533,17 @@ defset list<VTypeInfoToWide> AllWidenableBFloatToFloatVectors = {
   def : VTypeInfoToWide<VBF16M4, VF32M8>;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
+defset list<VTypeInfoToWide> AllWidenableIntToBFloatVectors = {
+  def : VTypeInfoToWide<VI8MF8, VBF16MF4>;
+  def : VTypeInfoToWide<VI8MF4, VBF16MF2>;
+  def : VTypeInfoToWide<VI8MF2, VBF16M1>;
+  def : VTypeInfoToWide<VI8M1, VBF16M2>;
+  def : VTypeInfoToWide<VI8M2, VBF16M4>;
+  def : VTypeInfoToWide<VI8M4, VBF16M8>;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 // This class holds the record of the RISCVVPseudoTable below.
 // This represents the information we need in codegen for each pseudo.
 // The definition should be consistent with `struct PseudoInfo` in
@@ -2551,10 +2562,15 @@ multiclass VPseudoVSQR_V_RM {
   }
 }
 
-multiclass VPseudoVRCP_V {
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoVRCP_V<bit IsBF16 = 0> {
+#endif // SIFIVE_CUSTOMIZATION
   foreach m = MxListF in {
     defvar mx = m.MX;
     foreach e = SchedSEWSet<mx, isF=1>.val in {
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(e, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       let VLMul = m.value in {
         def "_V_" # mx # "_E" # e
             : VPseudoUnaryNoMask<m.vrclass, m.vrclass>,
@@ -2568,10 +2584,15 @@ multiclass VPseudoVRCP_V {
   }
 }
 
-multiclass VPseudoVRCP_V_RM {
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoVRCP_V_RM<bit IsBF16 = 0> {
+#endif // SIFIVE_CUSTOMIZATION
   foreach m = MxListF in {
     defvar mx = m.MX;
     foreach e = SchedSEWSet<mx, isF=1>.val in {
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(e, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       let VLMul = m.value in {
         def "_V_" # mx # "_E" # e
             : VPseudoUnaryNoMaskRoundingMode<m.vrclass, m.vrclass>,
@@ -2814,9 +2835,14 @@ multiclass VPseudoVDIV_VV_VX {
   }
 }
 
-multiclass VPseudoVFMUL_VV_VF_RM {
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoVFMUL_VV_VF_RM<bit IsBF16 = 0> {
+#endif // SIFIVE_CUSTOMIZATION
   foreach m = MxListF in {
     foreach e = SchedSEWSet<m.MX, isF=1>.val in
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(e, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm "" : VPseudoBinaryFV_VV_RM<m, e>,
                 SchedBinary<"WriteVFMulV", "ReadVFMulV", "ReadVFMulV", m.MX, e,
                             forceMergeOpRead=true>;
@@ -2824,6 +2850,9 @@ multiclass VPseudoVFMUL_VV_VF_RM {
 
   foreach f = FPList in {
     foreach m = f.MxList in {
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(f.SEW, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm "" : VPseudoBinaryV_VF_RM<m, f, f.SEW>,
                 SchedBinary<"WriteVFMulF", "ReadVFMulV", "ReadVFMulF", m.MX,
                             f.SEW, forceMergeOpRead=true>;
@@ -2872,9 +2901,14 @@ multiclass VPseudoVALU_VV_VX {
   }
 }
 
-multiclass VPseudoVSGNJ_VV_VF {
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoVSGNJ_VV_VF<bit IsBF16 = 0> {
+#endif // SIFIVE_CUSTOMIZATION
   foreach m = MxListF in {
     foreach e = SchedSEWSet<m.MX, isF=1>.val in
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(e, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
     defm "" : VPseudoBinaryV_VV<m, sew=e>,
               SchedBinary<"WriteVFSgnjV", "ReadVFSgnjV", "ReadVFSgnjV", m.MX,
                           e, forceMergeOpRead=true>;
@@ -2882,6 +2916,9 @@ multiclass VPseudoVSGNJ_VV_VF {
 
   foreach f = FPList in {
     foreach m = f.MxList in {
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(f.SEW, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm "" : VPseudoBinaryV_VF<m, f, sew=f.SEW>,
                 SchedBinary<"WriteVFSgnjF", "ReadVFSgnjV", "ReadVFSgnjF", m.MX,
                             f.SEW, forceMergeOpRead=true>;
@@ -2889,9 +2926,14 @@ multiclass VPseudoVSGNJ_VV_VF {
   }
 }
 
-multiclass VPseudoVMAX_VV_VF {
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoVMAX_VV_VF<bit IsBF16 = 0> {
+#endif // SIFIVE_CUSTOMIZATION
   foreach m = MxListF in {
     foreach e = SchedSEWSet<m.MX, isF=1>.val in
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(e, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm "" : VPseudoBinaryV_VV<m, sew=e>,
                 SchedBinary<"WriteVFMinMaxV", "ReadVFMinMaxV", "ReadVFMinMaxV",
                             m.MX, e, forceMergeOpRead=true>;
@@ -2899,6 +2941,9 @@ multiclass VPseudoVMAX_VV_VF {
 
   foreach f = FPList in {
     foreach m = f.MxList in {
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(f.SEW, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm "" : VPseudoBinaryV_VF<m, f, sew=f.SEW>,
                 SchedBinary<"WriteVFMinMaxF", "ReadVFMinMaxV", "ReadVFMinMaxF",
                             m.MX, f.SEW, forceMergeOpRead=true>;
@@ -2906,9 +2951,14 @@ multiclass VPseudoVMAX_VV_VF {
   }
 }
 
-multiclass VPseudoVALU_VV_VF_RM {
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoVALU_VV_VF_RM<bit IsBF16 = 0> {
+#endif // SIFIVE_CUSTOMIZATION
   foreach m = MxListF in {
     foreach e = SchedSEWSet<m.MX, isF=1>.val in
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(e, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm "" : VPseudoBinaryFV_VV_RM<m, e>,
                 SchedBinary<"WriteVFALUV", "ReadVFALUV", "ReadVFALUV", m.MX, e,
                             forceMergeOpRead=true>;
@@ -2916,6 +2966,9 @@ multiclass VPseudoVALU_VV_VF_RM {
 
   foreach f = FPList in {
     foreach m = f.MxList in {
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(f.SEW, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm "" : VPseudoBinaryV_VF_RM<m, f, f.SEW>,
                 SchedBinary<"WriteVFALUF", "ReadVFALUV", "ReadVFALUF", m.MX,
                             f.SEW, forceMergeOpRead=true>;
@@ -2923,9 +2976,14 @@ multiclass VPseudoVALU_VV_VF_RM {
   }
 }
 
-multiclass VPseudoVALU_VF_RM {
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoVALU_VF_RM<bit IsBF16 = 0> {
+#endif // SIFIVE_CUSTOMIZATION
   foreach f = FPList in {
     foreach m = f.MxList in {
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(f.SEW, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm "" : VPseudoBinaryV_VF_RM<m, f, f.SEW>,
                 SchedBinary<"WriteVFALUF", "ReadVFALUV", "ReadVFALUF", m.MX,
                             f.SEW, forceMergeOpRead=true>;
@@ -2968,9 +3026,14 @@ multiclass VPseudoVWMUL_VV_VX<bit Commutable = 0> {
   }
 }
 
-multiclass VPseudoVWMUL_VV_VF_RM {
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoVWMUL_VV_VF_RM<bit IsBF16 = 0> {
+#endif // SIFIVE_CUSTOMIZATION
   foreach m = MxListFW in {
     foreach e = SchedSEWSet<m.MX, isF=1, isWidening=1>.val in
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(e, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
     defm "" : VPseudoBinaryW_VV_RM<m, sew=e>,
               SchedBinary<"WriteVFWMulV", "ReadVFWMulV", "ReadVFWMulV", m.MX,
                           e, forceMergeOpRead=true>;
@@ -2978,6 +3041,9 @@ multiclass VPseudoVWMUL_VV_VF_RM {
 
   foreach f = FPListW in {
     foreach m = f.MxListFW in {
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(f.SEW, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm "" : VPseudoBinaryW_VF_RM<m, f, sew=f.SEW>,
                 SchedBinary<"WriteVFWMulF", "ReadVFWMulV", "ReadVFWMulF", m.MX,
                           f.SEW, forceMergeOpRead=true>;
@@ -2997,9 +3063,14 @@ multiclass VPseudoVWALU_WV_WX {
   }
 }
 
-multiclass VPseudoVFWALU_VV_VF_RM {
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoVFWALU_VV_VF_RM<bit IsBF16 = 0> {
+#endif // SIFIVE_CUSTOMIZATION
   foreach m = MxListFW in {
     foreach e = SchedSEWSet<m.MX, isF=1, isWidening=1>.val in
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(e, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm "" : VPseudoBinaryW_VV_RM<m, sew=e>,
                 SchedBinary<"WriteVFWALUV", "ReadVFWALUV", "ReadVFWALUV", m.MX,
                             e, forceMergeOpRead=true>;
@@ -3014,15 +3085,23 @@ multiclass VPseudoVFWALU_VV_VF_RM {
   }
 }
 
-multiclass VPseudoVFWALU_WV_WF_RM {
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoVFWALU_WV_WF_RM<bit IsBF16 = 0> {
+#endif // SIFIVE_CUSTOMIZATION
   foreach m = MxListFW in {
     foreach e = SchedSEWSet<m.MX, isF=1, isWidening=1>.val in
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(e, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm "" : VPseudoBinaryW_WV_RM<m, sew=e>,
                 SchedBinary<"WriteVFWALUV", "ReadVFWALUV", "ReadVFWALUV", m.MX,
                             e, forceMergeOpRead=true>;
   }
   foreach f = FPListW in {
     foreach m = f.MxListFW in {
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(f.SEW, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm "" : VPseudoBinaryW_WF_RM<m, f, sew=f.SEW>,
                 SchedBinary<"WriteVFWALUF", "ReadVFWALUV", "ReadVFWALUF", m.MX,
                             f.SEW, forceMergeOpRead=true>;
@@ -3320,9 +3399,14 @@ multiclass VPseudoVMAC_VV_VX_AAXA {
   }
 }
 
-multiclass VPseudoVMAC_VV_VF_AAXA_RM {
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoVMAC_VV_VF_AAXA_RM<bit IsBF16 = 0> {
+#endif // SIFIVE_CUSTOMIZATION
   foreach m = MxListF in {
     foreach e = SchedSEWSet<m.MX, isF=1>.val in
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(e, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm "" : VPseudoTernaryV_VV_AAXA_RM<m, sew=e>,
                 SchedTernary<"WriteVFMulAddV", "ReadVFMulAddV", "ReadVFMulAddV",
                              "ReadVFMulAddV", m.MX, e>;
@@ -3330,6 +3414,9 @@ multiclass VPseudoVMAC_VV_VF_AAXA_RM {
 
   foreach f = FPList in {
     foreach m = f.MxList in {
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(f.SEW, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm "" : VPseudoTernaryV_VF_AAXA_RM<m, f, sew=f.SEW>,
                 SchedTernary<"WriteVFMulAddF", "ReadVFMulAddV", "ReadVFMulAddF",
                              "ReadVFMulAddV", m.MX, f.SEW>;
@@ -3369,9 +3456,14 @@ multiclass VPseudoVWMAC_VX {
   }
 }
 
-multiclass VPseudoVWMAC_VV_VF_RM {
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoVWMAC_VV_VF_RM<bit IsBF16 = 0> {
+#endif // SIFIVE_CUSTOMIZATION
   foreach m = MxListFW in {
     foreach e = SchedSEWSet<m.MX, isF=1, isWidening=1>.val in
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(e, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm "" : VPseudoTernaryW_VV_RM<m, sew=e>,
                 SchedTernary<"WriteVFWMulAddV", "ReadVFWMulAddV",
                              "ReadVFWMulAddV", "ReadVFWMulAddV", m.MX, e>;
@@ -3379,6 +3471,9 @@ multiclass VPseudoVWMAC_VV_VF_RM {
 
   foreach f = FPListW in {
     foreach m = f.MxListFW in {
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(f.SEW, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm "" : VPseudoTernaryW_VF_RM<m, f, sew=f.SEW>,
                 SchedTernary<"WriteVFWMulAddF", "ReadVFWMulAddV",
                              "ReadVFWMulAddF", "ReadVFWMulAddV", m.MX, f.SEW>;
@@ -3681,10 +3776,15 @@ multiclass VPseudoVWCVTI_RM_V {
   }
 }
 
-multiclass VPseudoVWCVTF_V {
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoVWCVTF_V<bit IsBF16 = 0> {
+#endif // SIFIVE_CUSTOMIZATION
   defvar constraint = "@earlyclobber $rd";
   foreach m = MxListW in {
     foreach e = SchedSEWSet<m.MX, isF=0, isWidening=1>.val in
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(e, 8)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm _V : VPseudoConversion<m.wvrclass, m.vrclass, m, constraint, sew=e,
                                   TargetConstraintType=3>,
                 SchedUnary<"WriteVFWCvtIToFV", "ReadVFWCvtIToFV", m.MX, e,
@@ -3692,10 +3792,15 @@ multiclass VPseudoVWCVTF_V {
   }
 }
 
-multiclass VPseudoVWCVTD_V {
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoVWCVTD_V<bit IsBF16 = 0> {
+#endif // SIFIVE_CUSTOMIZATION
   defvar constraint = "@earlyclobber $rd";
   foreach m = MxListFW in {
     foreach e = SchedSEWSet<m.MX, isF=1, isWidening=1>.val in
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(e, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm _V : VPseudoConversion<m.wvrclass, m.vrclass, m, constraint, sew=e,
                                   TargetConstraintType=3>,
                 SchedUnary<"WriteVFWCvtFToFV", "ReadVFWCvtFToFV", m.MX, e,
@@ -3755,10 +3860,15 @@ multiclass VPseudoVNCVTF_RM_W {
   }
 }
 
-multiclass VPseudoVNCVTD_W {
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoVNCVTD_W<bit IsBF16 = 0> {
+#endif // SIFIVE_CUSTOMIZATION
   defvar constraint = "@earlyclobber $rd";
   foreach m = MxListFW in {
     foreach e = SchedSEWSet<m.MX, isF=1, isWidening=1>.val in
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(e, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm _W : VPseudoConversion<m.vrclass, m.wvrclass, m, constraint, sew=e,
                                   TargetConstraintType=2>,
                 SchedUnary<"WriteVFNCvtFToFV", "ReadVFNCvtFToFV", m.MX, e,
@@ -3766,10 +3876,15 @@ multiclass VPseudoVNCVTD_W {
   }
 }
 
-multiclass VPseudoVNCVTD_W_RM {
+#ifdef SIFIVE_CUSTOMIZATION
+multiclass VPseudoVNCVTD_W_RM<bit IsBF16 = 0> {
+#endif // SIFIVE_CUSTOMIZATION
   defvar constraint = "@earlyclobber $rd";
   foreach m = MxListFW in {
     foreach e = SchedSEWSet<m.MX, isF=1, isWidening=1>.val in
+#ifdef SIFIVE_CUSTOMIZATION
+      if !or(!eq(IsBF16, 0), !eq(e, 16)) then
+#endif // SIFIVE_CUSTOMIZATION
       defm _W : VPseudoConversionRoundingMode<m.vrclass, m.wvrclass, m,
                                               constraint, sew=e,
                                               TargetConstraintType=2>,
@@ -5866,8 +5981,11 @@ multiclass VPatReductionW_VS_RM<string intrinsic, string instruction, bit IsFloa
 }
 
 multiclass VPatConversionVI_VF<string intrinsic,
-                               string instruction> {
-  foreach fvti = AllFloatVectors in {
+                               string instruction,
+#ifdef SIFIVE_CUSTOMIZATION
+                               bit IsBF16 = 0> {
+  foreach fvti = !if (IsBF16, AllBFloatVectors, AllFloatVectors) in {
+#endif // SIFIVE_CUSTOMIZATION
     defvar ivti = GetIntVTypeInfo<fvti>.Vti;
     let Predicates = !listconcat(GetVTypePredicates<fvti>.Predicates,
                                  GetVTypePredicates<ivti>.Predicates) in
@@ -5951,8 +6069,12 @@ multiclass VPatConversionWI_VF_RTZ<string intrinsic, string instruction> {
 }
 
 multiclass VPatConversionWF_VI<string intrinsic, string instruction,
-                               bit isSEWAware = 0> {
-  foreach vtiToWti = AllWidenableIntToFloatVectors in {
+                               bit isSEWAware = 0,
+#ifdef SIFIVE_CUSTOMIZATION
+                               bit IsBF16 = 0> {
+  foreach vtiToWti = !if (IsBF16, AllWidenableIntToBFloatVectors,
+                                     AllWidenableIntToFloatVectors) in {
+#endif // SIFIVE_CUSTOMIZATION
     defvar vti = vtiToWti.Vti;
     defvar fwti = vtiToWti.Wti;
     let Predicates = !listconcat(GetVTypePredicates<vti>.Predicates,
@@ -5964,8 +6086,12 @@ multiclass VPatConversionWF_VI<string intrinsic, string instruction,
 }
 
 multiclass VPatConversionWF_VF<string intrinsic, string instruction,
-                               bit isSEWAware = 0> {
-  foreach fvtiToFWti = AllWidenableFloatVectors in {
+                               bit isSEWAware = 0,
+#ifdef SIFIVE_CUSTOMIZATION
+                               bit IsBF16 = 0> {
+  foreach fvtiToFWti = !if (IsBF16, AllWidenableBFloatToFloatVectors,
+                                       AllWidenableFloatVectors) in {
+#endif // SIFIVE_CUSTOMIZATION
     defvar fvti = fvtiToFWti.Vti;
     defvar fwti = fvtiToFWti.Wti;
     // Define vfwcvt.f.f.v for f16 when Zvfhmin is enable.
@@ -5992,8 +6118,12 @@ multiclass VPatConversionWF_VF_BF<string intrinsic, string instruction,
   }
 }
 
-multiclass VPatConversionVI_WF<string intrinsic, string instruction> {
-  foreach vtiToWti = AllWidenableIntToFloatVectors in {
+multiclass VPatConversionVI_WF<string intrinsic, string instruction,
+#ifdef SIFIVE_CUSTOMIZATION
+                               bit IsBF16 = 0> {
+  foreach vtiToWti = !if (IsBF16, AllWidenableIntToBFloatVectors,
+                                     AllWidenableIntToFloatVectors) in {
+#endif // SIFIVE_CUSTOMIZATION
     defvar vti = vtiToWti.Vti;
     defvar fwti = vtiToWti.Wti;
     let Predicates = !listconcat(GetVTypePredicates<vti>.Predicates,
@@ -6004,8 +6134,12 @@ multiclass VPatConversionVI_WF<string intrinsic, string instruction> {
   }
 }
 
-multiclass VPatConversionVI_WF_RM <string intrinsic, string instruction> {
-  foreach vtiToWti = AllWidenableIntToFloatVectors in {
+multiclass VPatConversionVI_WF_RM <string intrinsic, string instruction,
+#ifdef SIFIVE_CUSTOMIZATION
+                                   bit IsBF16 = 0> {
+  foreach vtiToWti = !if (IsBF16, AllWidenableIntToBFloatVectors,
+                                     AllWidenableIntToFloatVectors) in {
+#endif // SIFIVE_CUSTOMIZATION
     defvar vti = vtiToWti.Vti;
     defvar fwti = vtiToWti.Wti;
     let Predicates = !listconcat(GetVTypePredicates<vti>.Predicates,
@@ -6043,8 +6177,12 @@ multiclass VPatConversionVF_WI_RM <string intrinsic, string instruction,
 }
 
 multiclass VPatConversionVF_WF<string intrinsic, string instruction,
-                               bit isSEWAware = 0> {
-  foreach fvtiToFWti = AllWidenableFloatVectors in {
+                               bit isSEWAware = 0,
+#ifdef SIFIVE_CUSTOMIZATION
+                               bit IsBF16 = 0> {
+  foreach fvtiToFWti = !if (IsBF16, AllWidenableBFloatToFloatVectors,
+                                       AllWidenableFloatVectors) in {
+#endif // SIFIVE_CUSTOMIZATION
     defvar fvti = fvtiToFWti.Vti;
     defvar fwti = fvtiToFWti.Wti;
     let Predicates = !listconcat(GetVTypePredicates<fvti>.Predicates,
@@ -6528,9 +6666,20 @@ let Predicates = [HasVInstructionsAnyF] in {
 // 13.2. Vector Single-Width Floating-Point Add/Subtract Instructions
 //===----------------------------------------------------------------------===//
 let mayRaiseFPException = true, hasPostISelHook = 1 in {
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_NOT_ALTFMT in {
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFADD  : VPseudoVALU_VV_VF_RM;
 defm PseudoVFSUB  : VPseudoVALU_VV_VF_RM;
 defm PseudoVFRSUB : VPseudoVALU_VF_RM;
+#ifdef SIFIVE_CUSTOMIZATION
+}
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in {
+defm PseudoVFADD_ALT : VPseudoVALU_VV_VF_RM<IsBF16=1>;
+defm PseudoVFSUB_ALT  : VPseudoVALU_VV_VF_RM<IsBF16=1>;
+defm PseudoVFRSUB_ALT : VPseudoVALU_VF_RM<IsBF16=1>;
+}
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 //===----------------------------------------------------------------------===//
@@ -6540,10 +6689,22 @@ defm PseudoVFRSUB : VPseudoVALU_VF_RM;
 let IsWiden = 1 in {
 #endif // SIFIVE_CUSTOMIZATION
 let mayRaiseFPException = true, hasSideEffects = 0, hasPostISelHook = 1 in {
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_NOT_ALTFMT in {
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFWADD : VPseudoVFWALU_VV_VF_RM;
 defm PseudoVFWSUB : VPseudoVFWALU_VV_VF_RM;
 defm PseudoVFWADD : VPseudoVFWALU_WV_WF_RM;
 defm PseudoVFWSUB : VPseudoVFWALU_WV_WF_RM;
+#ifdef SIFIVE_CUSTOMIZATION
+}
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in {
+defm PseudoVFWADD_ALT : VPseudoVFWALU_VV_VF_RM<IsBF16=1>;
+defm PseudoVFWSUB_ALT : VPseudoVFWALU_VV_VF_RM<IsBF16=1>;
+defm PseudoVFWADD_ALT : VPseudoVFWALU_WV_WF_RM<IsBF16=1>;
+defm PseudoVFWSUB_ALT : VPseudoVFWALU_WV_WF_RM<IsBF16=1>;
+}
+#endif // SIFIVE_CUSTOMIZATION
 }
 }
 
@@ -6551,7 +6712,14 @@ defm PseudoVFWSUB : VPseudoVFWALU_WV_WF_RM;
 // 13.4. Vector Single-Width Floating-Point Multiply/Divide Instructions
 //===----------------------------------------------------------------------===//
 let mayRaiseFPException = true, hasSideEffects = 0, hasPostISelHook = 1 in {
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_NOT_ALTFMT in
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFMUL  : VPseudoVFMUL_VV_VF_RM;
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in
+defm PseudoVFMUL_ALT : VPseudoVFMUL_VV_VF_RM<IsBF16=1>;
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFDIV  : VPseudoVFDIV_VV_VF_RM;
 defm PseudoVFRDIV : VPseudoVFRDIV_VF_RM;
 }
@@ -6563,7 +6731,14 @@ defm PseudoVFRDIV : VPseudoVFRDIV_VF_RM;
 let IsWiden = 1 in {
 #endif // SIFIVE_CUSTOMIZATION
 let mayRaiseFPException = true, hasSideEffects = 0 in {
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_NOT_ALTFMT in
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFWMUL : VPseudoVWMUL_VV_VF_RM;
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in
+defm PseudoVFWMUL_ALT : VPseudoVWMUL_VV_VF_RM<IsBF16=1>;
+#endif // SIFIVE_CUSTOMIZATION
 }
 }
 
@@ -6571,6 +6746,9 @@ defm PseudoVFWMUL : VPseudoVWMUL_VV_VF_RM;
 // 13.6. Vector Single-Width Floating-Point Fused Multiply-Add Instructions
 //===----------------------------------------------------------------------===//
 let mayRaiseFPException = true, hasSideEffects = 0, hasPostISelHook = 1 in {
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_NOT_ALTFMT in {
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFMACC  : VPseudoVMAC_VV_VF_AAXA_RM;
 defm PseudoVFNMACC : VPseudoVMAC_VV_VF_AAXA_RM;
 defm PseudoVFMSAC  : VPseudoVMAC_VV_VF_AAXA_RM;
@@ -6579,6 +6757,19 @@ defm PseudoVFMADD  : VPseudoVMAC_VV_VF_AAXA_RM;
 defm PseudoVFNMADD : VPseudoVMAC_VV_VF_AAXA_RM;
 defm PseudoVFMSUB  : VPseudoVMAC_VV_VF_AAXA_RM;
 defm PseudoVFNMSUB : VPseudoVMAC_VV_VF_AAXA_RM;
+#ifdef SIFIVE_CUSTOMIZATION
+}
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in {
+defm PseudoVFMACC_ALT  : VPseudoVMAC_VV_VF_AAXA_RM<IsBF16=1>;
+defm PseudoVFNMACC_ALT : VPseudoVMAC_VV_VF_AAXA_RM<IsBF16=1>;
+defm PseudoVFMSAC_ALT  : VPseudoVMAC_VV_VF_AAXA_RM<IsBF16=1>;
+defm PseudoVFNMSAC_ALT : VPseudoVMAC_VV_VF_AAXA_RM<IsBF16=1>;
+defm PseudoVFMADD_ALT  : VPseudoVMAC_VV_VF_AAXA_RM<IsBF16=1>;
+defm PseudoVFNMADD_ALT : VPseudoVMAC_VV_VF_AAXA_RM<IsBF16=1>;
+defm PseudoVFMSUB_ALT  : VPseudoVMAC_VV_VF_AAXA_RM<IsBF16=1>;
+defm PseudoVFNMSUB_ALT : VPseudoVMAC_VV_VF_AAXA_RM<IsBF16=1>;
+}
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 //===----------------------------------------------------------------------===//
@@ -6588,10 +6779,22 @@ defm PseudoVFNMSUB : VPseudoVMAC_VV_VF_AAXA_RM;
 let IsWiden = 1 in {
 #endif // SIFIVE_CUSTOMIZATION
 let mayRaiseFPException = true, hasSideEffects = 0, hasPostISelHook = 1 in {
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_NOT_ALTFMT in {
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFWMACC  : VPseudoVWMAC_VV_VF_RM;
 defm PseudoVFWNMACC : VPseudoVWMAC_VV_VF_RM;
 defm PseudoVFWMSAC  : VPseudoVWMAC_VV_VF_RM;
 defm PseudoVFWNMSAC : VPseudoVWMAC_VV_VF_RM;
+#ifdef SIFIVE_CUSTOMIZATION
+}
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in {
+defm PseudoVFWMACC_ALT  : VPseudoVWMAC_VV_VF_RM<IsBF16=1>;
+defm PseudoVFWNMACC_ALT : VPseudoVWMAC_VV_VF_RM<IsBF16=1>;
+defm PseudoVFWMSAC_ALT  : VPseudoVWMAC_VV_VF_RM<IsBF16=1>;
+defm PseudoVFWNMSAC_ALT : VPseudoVWMAC_VV_VF_RM<IsBF16=1>;
+}
+#endif // SIFIVE_CUSTOMIZATION
 let Predicates = [HasStdExtZvfbfwma] in
 defm PseudoVFWMACCBF16  : VPseudoVWMAC_VV_VF_BF_RM;
 }
@@ -6607,55 +6810,129 @@ defm PseudoVFSQRT : VPseudoVSQR_V_RM;
 // 13.9. Vector Floating-Point Reciprocal Square-Root Estimate Instruction
 //===----------------------------------------------------------------------===//
 let mayRaiseFPException = true in
+#ifdef SIFIVE_CUSTOMIZATION
+{
+let AltfmtType = IS_NOT_ALTFMT in
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFRSQRT7 : VPseudoVRCP_V;
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in
+defm PseudoVFRSQRT7_ALT : VPseudoVRCP_V<IsBF16=1>;
+#endif // SIFIVE_CUSTOMIZATION
+}
 
 //===----------------------------------------------------------------------===//
 // 13.10. Vector Floating-Point Reciprocal Estimate Instruction
 //===----------------------------------------------------------------------===//
 let mayRaiseFPException = true, hasSideEffects = 0 in
+#ifdef SIFIVE_CUSTOMIZATION
+{
+let AltfmtType = IS_NOT_ALTFMT in
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFREC7 : VPseudoVRCP_V_RM;
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in
+defm PseudoVFREC7_ALT : VPseudoVRCP_V_RM<IsBF16=1>;
+#endif // SIFIVE_CUSTOMIZATION
+}
 
 //===----------------------------------------------------------------------===//
 // 13.11. Vector Floating-Point Min/Max Instructions
 //===----------------------------------------------------------------------===//
 let mayRaiseFPException = true in {
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_NOT_ALTFMT in {
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFMIN : VPseudoVMAX_VV_VF;
 defm PseudoVFMAX : VPseudoVMAX_VV_VF;
+#ifdef SIFIVE_CUSTOMIZATION
+}
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in {
+defm PseudoVFMIN_ALT : VPseudoVMAX_VV_VF<IsBF16=1>;
+defm PseudoVFMAX_ALT : VPseudoVMAX_VV_VF<IsBF16=1>;
+}
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 //===----------------------------------------------------------------------===//
 // 13.12. Vector Floating-Point Sign-Injection Instructions
 //===----------------------------------------------------------------------===//
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_NOT_ALTFMT in {
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFSGNJ  : VPseudoVSGNJ_VV_VF;
 defm PseudoVFSGNJN : VPseudoVSGNJ_VV_VF;
 defm PseudoVFSGNJX : VPseudoVSGNJ_VV_VF;
+#ifdef SIFIVE_CUSTOMIZATION
+}
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in {
+defm PseudoVFSGNJ_ALT  : VPseudoVSGNJ_VV_VF<IsBF16=1>;
+defm PseudoVFSGNJN_ALT : VPseudoVSGNJ_VV_VF<IsBF16=1>;
+defm PseudoVFSGNJX_ALT : VPseudoVSGNJ_VV_VF<IsBF16=1>;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.13. Vector Floating-Point Compare Instructions
 //===----------------------------------------------------------------------===//
 let mayRaiseFPException = true in {
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_NOT_ALTFMT in {
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVMFEQ : VPseudoVCMPM_VV_VF;
 defm PseudoVMFNE : VPseudoVCMPM_VV_VF;
 defm PseudoVMFLT : VPseudoVCMPM_VV_VF;
 defm PseudoVMFLE : VPseudoVCMPM_VV_VF;
 defm PseudoVMFGT : VPseudoVCMPM_VF;
 defm PseudoVMFGE : VPseudoVCMPM_VF;
+#ifdef SIFIVE_CUSTOMIZATION
+}
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in {
+defm PseudoVMFEQ_ALT : VPseudoVCMPM_VV_VF;
+defm PseudoVMFNE_ALT : VPseudoVCMPM_VV_VF;
+defm PseudoVMFLT_ALT : VPseudoVCMPM_VV_VF;
+defm PseudoVMFLE_ALT : VPseudoVCMPM_VV_VF;
+defm PseudoVMFGT_ALT : VPseudoVCMPM_VF;
+defm PseudoVMFGE_ALT : VPseudoVCMPM_VF;
+}
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 //===----------------------------------------------------------------------===//
 // 13.14. Vector Floating-Point Classify Instruction
 //===----------------------------------------------------------------------===//
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_NOT_ALTFMT in
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFCLASS : VPseudoVCLS_V;
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in
+defm PseudoVFCLASS_ALT : VPseudoVCLS_V;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.15. Vector Floating-Point Merge Instruction
 //===----------------------------------------------------------------------===//
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_NOT_ALTFMT in
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFMERGE : VPseudoVMRG_FM;
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in
+defm PseudoVFMERGE_ALT : VPseudoVMRG_FM;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.16. Vector Floating-Point Move Instruction
 //===----------------------------------------------------------------------===//
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_NOT_ALTFMT in
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFMV_V : VPseudoVMV_F;
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in
+defm PseudoVFMV_V_ALT : VPseudoVMV_F;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.17. Single-Width Floating-Point/Integer Type-Convert Instructions
@@ -6698,10 +6975,28 @@ defm PseudoVFWCVT_RM_X_F   : VPseudoVWCVTI_RM_V;
 defm PseudoVFWCVT_RTZ_XU_F : VPseudoVWCVTI_V;
 defm PseudoVFWCVT_RTZ_X_F  : VPseudoVWCVTI_V;
 
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_NOT_ALTFMT in {
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFWCVT_F_XU     : VPseudoVWCVTF_V;
 defm PseudoVFWCVT_F_X      : VPseudoVWCVTF_V;
+#ifdef SIFIVE_CUSTOMIZATION
+}
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in {
+defm PseudoVFWCVT_F_XU_ALT : VPseudoVWCVTF_V<IsBF16=1>;
+defm PseudoVFWCVT_F_X_ALT  : VPseudoVWCVTF_V<IsBF16=1>;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_NOT_ALTFMT in
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFWCVT_F_F      : VPseudoVWCVTD_V;
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in
+defm PseudoVFWCVT_F_F_ALT  : VPseudoVWCVTD_V<IsBF16=1>;
+#endif // SIFIVE_CUSTOMIZATION
+
 defm PseudoVFWCVTBF16_F_F :  VPseudoVWCVTD_V;
 } // mayRaiseFPException = true
 }
@@ -6711,14 +7006,34 @@ defm PseudoVFWCVTBF16_F_F :  VPseudoVWCVTD_V;
 //===----------------------------------------------------------------------===//
 let mayRaiseFPException = true in {
 let hasSideEffects = 0, hasPostISelHook = 1 in {
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_NOT_ALTFMT in {
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFNCVT_XU_F     : VPseudoVNCVTI_W_RM;
 defm PseudoVFNCVT_X_F      : VPseudoVNCVTI_W_RM;
+#ifdef SIFIVE_CUSTOMIZATION
+}
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in {
+defm PseudoVFNCVT_XU_F_ALT : VPseudoVNCVTI_W_RM;
+defm PseudoVFNCVT_X_F_ALT  : VPseudoVNCVTI_W_RM;
+}
+#endif // SIFIVE_CUSTOMIZATION
 }
 defm PseudoVFNCVT_RM_XU_F  : VPseudoVNCVTI_RM_W;
 defm PseudoVFNCVT_RM_X_F   : VPseudoVNCVTI_RM_W;
 
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_NOT_ALTFMT in {
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFNCVT_RTZ_XU_F : VPseudoVNCVTI_W;
 defm PseudoVFNCVT_RTZ_X_F  : VPseudoVNCVTI_W;
+#ifdef SIFIVE_CUSTOMIZATION
+}
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in {
+defm PseudoVFNCVT_RTZ_XU_F_ALT : VPseudoVNCVTI_W;
+defm PseudoVFNCVT_RTZ_X_F_ALT  : VPseudoVNCVTI_W;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 let hasSideEffects = 0, hasPostISelHook = 1 in {
 defm PseudoVFNCVT_F_XU     : VPseudoVNCVTF_W_RM;
@@ -6728,10 +7043,27 @@ defm PseudoVFNCVT_RM_F_XU  : VPseudoVNCVTF_RM_W;
 defm PseudoVFNCVT_RM_F_X   : VPseudoVNCVTF_RM_W;
 
 let hasSideEffects = 0, hasPostISelHook = 1 in
+#ifdef SIFIVE_CUSTOMIZATION
+{
+let AltfmtType = IS_NOT_ALTFMT in
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFNCVT_F_F      : VPseudoVNCVTD_W_RM;
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in
+defm PseudoVFNCVT_F_F_ALT  : VPseudoVNCVTD_W_RM<IsBF16=1>;
+#endif // SIFIVE_CUSTOMIZATION
+}
+
 defm PseudoVFNCVTBF16_F_F :  VPseudoVNCVTD_W_RM;
 
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_NOT_ALTFMT in
+#endif // SIFIVE_CUSTOMIZATION
 defm PseudoVFNCVT_ROD_F_F  : VPseudoVNCVTD_W;
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in
+defm PseudoVFNCVT_ROD_F_F_ALT : VPseudoVNCVTD_W<IsBF16=1>;
+#endif // SIFIVE_CUSTOMIZATION
 } // mayRaiseFPException = true
 } // Predicates = [HasVInstructionsAnyF]
 
@@ -6887,6 +7219,9 @@ let mayLoad = 0, mayStore = 0, hasSideEffects = 0 in {
 //===----------------------------------------------------------------------===//
 
 let Predicates = [HasVInstructionsAnyF] in {
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_NOT_ALTFMT in {
+#endif // SIFIVE_CUSTOMIZATION
 let mayLoad = 0, mayStore = 0, hasSideEffects = 0 in {
   foreach f = FPList in {
     foreach m = f.MxList in {
@@ -6911,7 +7246,39 @@ let mayLoad = 0, mayStore = 0, hasSideEffects = 0 in {
     }
   }
 }
+#ifdef SIFIVE_CUSTOMIZATION
+}
+#endif // SIFIVE_CUSTOMIZATION
 } // Predicates = [HasVInstructionsAnyF]
+
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in {
+let mayLoad = 0, mayStore = 0, hasSideEffects = 0 in {
+  foreach f = FPList in {
+    foreach m = f.MxList in {
+      defvar mx = m.MX;
+      let VLMul = m.value in {
+        let HasSEWOp = 1, BaseInstr = VFMV_F_S in
+        def "PseudoVFMV_" # f.FX # "_S_ALT_" # mx :
+          Pseudo<(outs f.fprclass:$rd),
+                 (ins m.vrclass:$rs2, ixlenimm:$sew), []>,
+          Sched<[WriteVMovFS, ReadVMovFS]>,
+          RISCVVPseudo;
+        let HasVLOp = 1, HasSEWOp = 1, BaseInstr = VFMV_S_F,
+            Constraints = "$rd = $rs1" in
+        def "PseudoVFMV_S_" # f.FX # "_ALT_" # mx :
+                                          Pseudo<(outs m.vrclass:$rd),
+                                                 (ins m.vrclass:$rs1, f.fprclass:$rs2,
+                                                      AVL:$vl, ixlenimm:$sew),
+                                                 []>,
+          Sched<[WriteVMovSF, ReadVMovSF_V, ReadVMovSF_F]>,
+          RISCVVPseudo;
+      }
+    }
+  }
+}
+} // Predicates = [HasVendorXSfvfbfa]
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 16.3. Vector Slide Instructions
@@ -6924,8 +7291,18 @@ let Predicates = [HasVInstructions] in {
 } // Predicates = [HasVInstructions]
 
 let Predicates = [HasVInstructionsAnyF] in {
+#ifdef SIFIVE_CUSTOMIZATION
+let AltfmtType = IS_NOT_ALTFMT in {
+#endif // SIFIVE_CUSTOMIZATION
   defm PseudoVFSLIDE1UP  : VPseudoVSLD1_VF<"@earlyclobber $rd">;
   defm PseudoVFSLIDE1DOWN : VPseudoVSLD1_VF;
+#ifdef SIFIVE_CUSTOMIZATION
+}
+let AltfmtType = IS_ALTFMT, Predicates = [HasVendorXSfvfbfa] in {
+  defm PseudoVFSLIDE1UP_ALT   : VPseudoVSLD1_VF<"@earlyclobber $rd">;
+  defm PseudoVFSLIDE1DOWN_ALT : VPseudoVSLD1_VF;
+}
+#endif // SIFIVE_CUSTOMIZATION
 } // Predicates = [HasVInstructionsAnyF]
 
 //===----------------------------------------------------------------------===//
@@ -7222,6 +7599,14 @@ defm : VPatBinaryV_VV_VX_RM<"int_riscv_vfsub", "PseudoVFSUB", AllFloatVectors,
                             isSEWAware = 1>;
 defm : VPatBinaryV_VX_RM<"int_riscv_vfrsub", "PseudoVFRSUB", AllFloatVectors,
                          isSEWAware = 1>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatBinaryV_VV_VX_RM<"int_riscv_vfadd", "PseudoVFADD_ALT",
+                            AllBFloatVectors, isSEWAware = 1>;
+defm : VPatBinaryV_VV_VX_RM<"int_riscv_vfsub", "PseudoVFSUB_ALT",
+                            AllBFloatVectors, isSEWAware = 1>;
+defm : VPatBinaryV_VX_RM<"int_riscv_vfrsub", "PseudoVFRSUB_ALT",
+                         AllBFloatVectors, isSEWAware = 1>;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.3. Vector Widening Floating-Point Add/Subtract Instructions
@@ -7234,12 +7619,26 @@ defm : VPatBinaryW_WV_WX_RM<"int_riscv_vfwadd_w", "PseudoVFWADD",
                             AllWidenableFloatVectors, isSEWAware=1>;
 defm : VPatBinaryW_WV_WX_RM<"int_riscv_vfwsub_w", "PseudoVFWSUB",
                             AllWidenableFloatVectors, isSEWAware=1>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatBinaryW_VV_VX_RM<"int_riscv_vfwadd", "PseudoVFWADD_ALT",
+                            AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+defm : VPatBinaryW_VV_VX_RM<"int_riscv_vfwsub", "PseudoVFWSUB_ALT",
+                            AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+defm : VPatBinaryW_WV_WX_RM<"int_riscv_vfwadd_w", "PseudoVFWADD_ALT",
+                            AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+defm : VPatBinaryW_WV_WX_RM<"int_riscv_vfwsub_w", "PseudoVFWSUB_ALT",
+                            AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.4. Vector Single-Width Floating-Point Multiply/Divide Instructions
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryV_VV_VX_RM<"int_riscv_vfmul", "PseudoVFMUL",
                             AllFloatVectors, isSEWAware=1>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatBinaryV_VV_VX_RM<"int_riscv_vfmul", "PseudoVFMUL_ALT",
+                            AllBFloatVectors, isSEWAware=1>;
+#endif // SIFIVE_CUSTOMIZATION
 defm : VPatBinaryV_VV_VX_RM<"int_riscv_vfdiv", "PseudoVFDIV",
                             AllFloatVectors, isSEWAware=1>;
 defm : VPatBinaryV_VX_RM<"int_riscv_vfrdiv", "PseudoVFRDIV",
@@ -7250,6 +7649,10 @@ defm : VPatBinaryV_VX_RM<"int_riscv_vfrdiv", "PseudoVFRDIV",
 //===----------------------------------------------------------------------===//
 defm : VPatBinaryW_VV_VX_RM<"int_riscv_vfwmul", "PseudoVFWMUL",
                             AllWidenableFloatVectors, isSEWAware=1>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatBinaryW_VV_VX_RM<"int_riscv_vfwmul", "PseudoVFWMUL_ALT",
+                            AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.6. Vector Single-Width Floating-Point Fused Multiply-Add Instructions
@@ -7270,6 +7673,24 @@ defm : VPatTernaryV_VV_VX_AAXA_RM<"int_riscv_vfmsub", "PseudoVFMSUB",
                                   AllFloatVectors, isSEWAware=1>;
 defm : VPatTernaryV_VV_VX_AAXA_RM<"int_riscv_vfnmsub", "PseudoVFNMSUB",
                                   AllFloatVectors, isSEWAware=1>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatTernaryV_VV_VX_AAXA_RM<"int_riscv_vfmacc", "PseudoVFMACC_ALT",
+                                  AllBFloatVectors, isSEWAware=1>;
+defm : VPatTernaryV_VV_VX_AAXA_RM<"int_riscv_vfnmacc", "PseudoVFNMACC_ALT",
+                                  AllBFloatVectors, isSEWAware=1>;
+defm : VPatTernaryV_VV_VX_AAXA_RM<"int_riscv_vfmsac", "PseudoVFMSAC_ALT",
+                                  AllBFloatVectors, isSEWAware=1>;
+defm : VPatTernaryV_VV_VX_AAXA_RM<"int_riscv_vfnmsac", "PseudoVFNMSAC_ALT",
+                                  AllBFloatVectors, isSEWAware=1>;
+defm : VPatTernaryV_VV_VX_AAXA_RM<"int_riscv_vfmadd", "PseudoVFMADD_ALT",
+                                  AllBFloatVectors, isSEWAware=1>;
+defm : VPatTernaryV_VV_VX_AAXA_RM<"int_riscv_vfnmadd", "PseudoVFNMADD_ALT",
+                                  AllBFloatVectors, isSEWAware=1>;
+defm : VPatTernaryV_VV_VX_AAXA_RM<"int_riscv_vfmsub", "PseudoVFMSUB_ALT",
+                                  AllBFloatVectors, isSEWAware=1>;
+defm : VPatTernaryV_VV_VX_AAXA_RM<"int_riscv_vfnmsub", "PseudoVFNMSUB_ALT",
+                                  AllBFloatVectors, isSEWAware=1>;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.7. Vector Widening Floating-Point Fused Multiply-Add Instructions
@@ -7282,6 +7703,16 @@ defm : VPatTernaryW_VV_VX_RM<"int_riscv_vfwmsac", "PseudoVFWMSAC",
                              AllWidenableFloatVectors, isSEWAware=1>;
 defm : VPatTernaryW_VV_VX_RM<"int_riscv_vfwnmsac", "PseudoVFWNMSAC",
                              AllWidenableFloatVectors, isSEWAware=1>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatTernaryW_VV_VX_RM<"int_riscv_vfwmacc", "PseudoVFWMACC_ALT",
+                             AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+defm : VPatTernaryW_VV_VX_RM<"int_riscv_vfwnmacc", "PseudoVFWNMACC_ALT",
+                             AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+defm : VPatTernaryW_VV_VX_RM<"int_riscv_vfwmsac", "PseudoVFWMSAC_ALT",
+                             AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+defm : VPatTernaryW_VV_VX_RM<"int_riscv_vfwnmsac", "PseudoVFWNMSAC_ALT",
+                             AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+#endif // SIFIVE_CUSTOMIZATION
 let Predicates = [HasStdExtZvfbfwma] in
 defm : VPatTernaryW_VV_VX_RM<"int_riscv_vfwmaccbf16", "PseudoVFWMACCBF16",
                               AllWidenableBFloatToFloatVectors, isSEWAware=1>;
@@ -7295,11 +7726,19 @@ defm : VPatUnaryV_V_RM<"int_riscv_vfsqrt", "PseudoVFSQRT", AllFloatVectors, isSE
 // 13.9. Vector Floating-Point Reciprocal Square-Root Estimate Instruction
 //===----------------------------------------------------------------------===//
 defm : VPatUnaryV_V<"int_riscv_vfrsqrt7", "PseudoVFRSQRT7", AllFloatVectors, isSEWAware=1>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatUnaryV_V<"int_riscv_vfrsqrt7", "PseudoVFRSQRT7_ALT",
+                    AllBFloatVectors, isSEWAware=1>;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.10. Vector Floating-Point Reciprocal Estimate Instruction
 //===----------------------------------------------------------------------===//
 defm : VPatUnaryV_V_RM<"int_riscv_vfrec7", "PseudoVFREC7", AllFloatVectors, isSEWAware=1>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatUnaryV_V_RM<"int_riscv_vfrec7", "PseudoVFREC7_ALT",
+                       AllBFloatVectors, isSEWAware=1>;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.11. Vector Floating-Point Min/Max Instructions
@@ -7308,6 +7747,12 @@ defm : VPatBinaryV_VV_VX<"int_riscv_vfmin", "PseudoVFMIN", AllFloatVectors,
                          isSEWAware=1>;
 defm : VPatBinaryV_VV_VX<"int_riscv_vfmax", "PseudoVFMAX", AllFloatVectors,
                          isSEWAware=1>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatBinaryV_VV_VX<"int_riscv_vfmin", "PseudoVFMIN_ALT",
+                         AllBFloatVectors, isSEWAware=1>;
+defm : VPatBinaryV_VV_VX<"int_riscv_vfmax", "PseudoVFMAX_ALT",
+                         AllBFloatVectors, isSEWAware=1>;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.12. Vector Floating-Point Sign-Injection Instructions
@@ -7318,6 +7763,14 @@ defm : VPatBinaryV_VV_VX<"int_riscv_vfsgnjn", "PseudoVFSGNJN", AllFloatVectors,
                          isSEWAware=1>;
 defm : VPatBinaryV_VV_VX<"int_riscv_vfsgnjx", "PseudoVFSGNJX", AllFloatVectors,
                          isSEWAware=1>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatBinaryV_VV_VX<"int_riscv_vfsgnj", "PseudoVFSGNJ_ALT",
+                         AllBFloatVectors, isSEWAware=1>;
+defm : VPatBinaryV_VV_VX<"int_riscv_vfsgnjn", "PseudoVFSGNJN_ALT",
+                         AllBFloatVectors, isSEWAware=1>;
+defm : VPatBinaryV_VV_VX<"int_riscv_vfsgnjx", "PseudoVFSGNJX_ALT",
+                         AllBFloatVectors, isSEWAware=1>;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.13. Vector Floating-Point Compare Instructions
@@ -7330,11 +7783,24 @@ defm : VPatBinaryM_VX<"int_riscv_vmfgt", "PseudoVMFGT", AllFloatVectors>;
 defm : VPatBinaryM_VX<"int_riscv_vmfge", "PseudoVMFGE", AllFloatVectors>;
 defm : VPatBinarySwappedM_VV<"int_riscv_vmfgt", "PseudoVMFLT", AllFloatVectors>;
 defm : VPatBinarySwappedM_VV<"int_riscv_vmfge", "PseudoVMFLE", AllFloatVectors>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatBinaryM_VV_VX<"int_riscv_vmfeq", "PseudoVMFEQ_ALT", AllBFloatVectors>;
+defm : VPatBinaryM_VV_VX<"int_riscv_vmfle", "PseudoVMFLE_ALT", AllBFloatVectors>;
+defm : VPatBinaryM_VV_VX<"int_riscv_vmflt", "PseudoVMFLT_ALT", AllBFloatVectors>;
+defm : VPatBinaryM_VV_VX<"int_riscv_vmfne", "PseudoVMFNE_ALT", AllBFloatVectors>;
+defm : VPatBinaryM_VX<"int_riscv_vmfgt", "PseudoVMFGT_ALT", AllBFloatVectors>;
+defm : VPatBinaryM_VX<"int_riscv_vmfge", "PseudoVMFGE_ALT", AllBFloatVectors>;
+defm : VPatBinarySwappedM_VV<"int_riscv_vmfgt", "PseudoVMFLT_ALT", AllBFloatVectors>;
+defm : VPatBinarySwappedM_VV<"int_riscv_vmfge", "PseudoVMFLE_ALT", AllBFloatVectors>;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.14. Vector Floating-Point Classify Instruction
 //===----------------------------------------------------------------------===//
 defm : VPatConversionVI_VF<"int_riscv_vfclass", "PseudoVFCLASS">;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatConversionVI_VF<"int_riscv_vfclass", "PseudoVFCLASS_ALT", IsBF16=1>;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 13.15. Vector Floating-Point Merge Instruction
@@ -7362,6 +7828,18 @@ foreach vti = AllFloatVectors in {
                                  vti.RegClass, vti.ScalarRegClass>;
   }
 }
+
+#ifdef SIFIVE_CUSTOMIZATION
+foreach vti = AllBFloatVectors in {
+  let Predicates = GetVTypePredicates<vti>.Predicates in
+    defm : VPatBinaryCarryInTAIL<"int_riscv_vfmerge", "PseudoVFMERGE_ALT",
+                                 "V"#vti.ScalarSuffix#"M",
+                                 vti.Vector,
+                                 vti.Vector, vti.Scalar, vti.Mask,
+                                 vti.Log2SEW, vti.LMul, vti.RegClass,
+                                 vti.RegClass, vti.ScalarRegClass>;
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 foreach fvti = AllFloatVectors in {
   defvar instr = !cast<Instruction>("PseudoVMERGE_VIM_"#fvti.LMul.MX);
@@ -7401,8 +7879,18 @@ defm : VPatConversionWF_VI<"int_riscv_vfwcvt_f_xu_v", "PseudoVFWCVT_F_XU",
                            isSEWAware=1>;
 defm : VPatConversionWF_VI<"int_riscv_vfwcvt_f_x_v", "PseudoVFWCVT_F_X",
                            isSEWAware=1>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatConversionWF_VI<"int_riscv_vfwcvt_f_xu_v", "PseudoVFWCVT_F_XU_ALT",
+                           isSEWAware=1, IsBF16=1>;
+defm : VPatConversionWF_VI<"int_riscv_vfwcvt_f_x_v", "PseudoVFWCVT_F_X_ALT",
+                           isSEWAware=1, IsBF16=1>;
+#endif // SIFIVE_CUSTOMIZATION
 defm : VPatConversionWF_VF<"int_riscv_vfwcvt_f_f_v", "PseudoVFWCVT_F_F",
                            isSEWAware=1>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatConversionWF_VF<"int_riscv_vfwcvt_f_f_v", "PseudoVFWCVT_F_F_ALT",
+                           isSEWAware=1, IsBF16=1>;
+#endif // SIFIVE_CUSTOMIZATION
 defm : VPatConversionWF_VF_BF<"int_riscv_vfwcvtbf16_f_f_v",
                               "PseudoVFWCVTBF16_F_F", isSEWAware=1>;
 
@@ -7413,8 +7901,20 @@ defm : VPatConversionVI_WF_RTZ<"int_riscv_vfncvt_xu_f_w", "PseudoVFNCVT_RTZ_XU_F
 defm : VPatConversionVI_WF_RTZ<"int_riscv_vfncvt_x_f_w", "PseudoVFNCVT_RTZ_X_F">;
 defm : VPatConversionVI_WF_RM<"int_riscv_vfncvt_xu_f_w", "PseudoVFNCVT_XU_F">;
 defm : VPatConversionVI_WF_RM<"int_riscv_vfncvt_x_f_w", "PseudoVFNCVT_X_F">;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatConversionVI_WF_RM<"int_riscv_vfncvt_xu_f_w", "PseudoVFNCVT_XU_F_ALT",
+                              IsBF16=1>;
+defm : VPatConversionVI_WF_RM<"int_riscv_vfncvt_x_f_w", "PseudoVFNCVT_X_F_ALT",
+                              IsBF16=1>;
+#endif // SIFIVE_CUSTOMIZATION
 defm : VPatConversionVI_WF<"int_riscv_vfncvt_rtz_xu_f_w", "PseudoVFNCVT_RTZ_XU_F">;
 defm : VPatConversionVI_WF<"int_riscv_vfncvt_rtz_x_f_w", "PseudoVFNCVT_RTZ_X_F">;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatConversionVI_WF<"int_riscv_vfncvt_rtz_xu_f_w", "PseudoVFNCVT_RTZ_XU_F_ALT",
+                           IsBF16=1>;
+defm : VPatConversionVI_WF<"int_riscv_vfncvt_rtz_x_f_w", "PseudoVFNCVT_RTZ_X_F_ALT",
+                           IsBF16=1>;
+#endif // SIFIVE_CUSTOMIZATION
 defm : VPatConversionVF_WI_RM<"int_riscv_vfncvt_f_xu_w", "PseudoVFNCVT_F_XU",
                               isSEWAware=1>;
 defm : VPatConversionVF_WI_RM<"int_riscv_vfncvt_f_x_w", "PseudoVFNCVT_F_X",
@@ -7423,6 +7923,10 @@ defvar WidenableFloatVectorsExceptF16 = !filter(fvtiToFWti, AllWidenableFloatVec
                                                 !ne(fvtiToFWti.Vti.Scalar, f16));
 defm : VPatConversionVF_WF_RM<"int_riscv_vfncvt_f_f_w", "PseudoVFNCVT_F_F",
                            WidenableFloatVectorsExceptF16, isSEWAware=1>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatConversionVF_WF_RM<"int_riscv_vfncvt_f_f_w", "PseudoVFNCVT_F_F_ALT",
+                              AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+#endif // SIFIVE_CUSTOMIZATION
 // Define vfncvt.f.f.w for f16 when Zvfhmin is enable.
 defvar F16WidenableFloatVectors = !filter(fvtiToFWti, AllWidenableFloatVectors,
                                           !eq(fvtiToFWti.Vti.Scalar, f16));
@@ -7433,6 +7937,10 @@ defm : VPatConversionVF_WF_BF_RM<"int_riscv_vfncvtbf16_f_f_w",
                                  "PseudoVFNCVTBF16_F_F", isSEWAware=1>;
 defm : VPatConversionVF_WF<"int_riscv_vfncvt_rod_f_f_w", "PseudoVFNCVT_ROD_F_F",
                            isSEWAware=1>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatConversionVF_WF<"int_riscv_vfncvt_rod_f_f_w", "PseudoVFNCVT_ROD_F_F_ALT",
+                           isSEWAware=1, IsBF16=1>;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 14. Vector Reduction Operations
@@ -7553,6 +8061,10 @@ defm : VPatTernaryV_VX_VI<"int_riscv_vslideup", "PseudoVSLIDEUP", AllFloatVector
 defm : VPatTernaryV_VX_VI<"int_riscv_vslidedown", "PseudoVSLIDEDOWN", AllFloatVectors, uimm5>;
 defm : VPatBinaryV_VX<"int_riscv_vfslide1up", "PseudoVFSLIDE1UP", AllFloatVectors>;
 defm : VPatBinaryV_VX<"int_riscv_vfslide1down", "PseudoVFSLIDE1DOWN", AllFloatVectors>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm : VPatBinaryV_VX<"int_riscv_vfslide1up", "PseudoVFSLIDE1UP_ALT", AllBFloatVectors>;
+defm : VPatBinaryV_VX<"int_riscv_vfslide1down", "PseudoVFSLIDE1DOWN_ALT", AllBFloatVectors>;
+#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // 16.4. Vector Register Gather Instructions

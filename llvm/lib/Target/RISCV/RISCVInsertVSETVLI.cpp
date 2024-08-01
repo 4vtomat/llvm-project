@@ -231,6 +231,9 @@ struct DemandedFields {
   bool SEWLMULRatio = false;
   bool TailPolicy = false;
   bool MaskPolicy = false;
+#ifdef SIFIVE_CUSTOMIZATION
+  bool UseAltfmt = false;
+#endif // SIFIVE_CUSTOMIZATION
 
   // Return true if any part of VTYPE was used
   bool usedVTYPE() const {
@@ -249,6 +252,9 @@ struct DemandedFields {
     SEWLMULRatio = true;
     TailPolicy = true;
     MaskPolicy = true;
+#ifdef SIFIVE_CUSTOMIZATION
+    UseAltfmt = true;
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   // Mark all VL properties as demanded
@@ -273,6 +279,9 @@ struct DemandedFields {
     SEWLMULRatio |= B.SEWLMULRatio;
     TailPolicy |= B.TailPolicy;
     MaskPolicy |= B.MaskPolicy;
+#ifdef SIFIVE_CUSTOMIZATION
+    UseAltfmt |= B.UseAltfmt;
+#endif // SIFIVE_CUSTOMIZATION
   }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
@@ -388,6 +397,11 @@ static bool areCompatibleVTYPEs(uint64_t CurVType, uint64_t NewVType,
   if (Used.MaskPolicy && RISCVVType::isMaskAgnostic(CurVType) !=
                              RISCVVType::isMaskAgnostic(NewVType))
     return false;
+#ifdef SIFIVE_CUSTOMIZATION
+  if (Used.UseAltfmt == true &&
+      RISCVVType::isAltfmt(CurVType) != RISCVVType::isAltfmt(NewVType))
+    return false;
+#endif // SIFIVE_CUSTOMIZATION
   return true;
 }
 
@@ -513,6 +527,11 @@ DemandedFields getDemanded(const MachineInstr &MI, const RISCVSubtarget *ST) {
     }
   }
 
+#ifdef SIFIVE_CUSTOMIZATION
+  Res.UseAltfmt = RISCVII::getAltfmtType(MI.getDesc().TSFlags) !=
+                  RISCVII::AltfmtType::DontCare;
+#endif // SIFIVE_CUSTOMIZATION
+
   return Res;
 }
 
@@ -544,6 +563,9 @@ class VSETVLIInfo {
   uint8_t TailAgnostic : 1;
   uint8_t MaskAgnostic : 1;
   uint8_t SEWLMULRatioOnly : 1;
+#ifdef SIFIVE_CUSTOMIZATION
+  uint8_t IsAltfmt : 1;
+#endif // SIFIVE_CUSTOMIZATION
 
 public:
   VSETVLIInfo()
@@ -620,6 +642,9 @@ public:
   RISCVII::VLMUL getVLMUL() const { return VLMul; }
   bool getTailAgnostic() const { return TailAgnostic; }
   bool getMaskAgnostic() const { return MaskAgnostic; }
+#ifdef SIFIVE_CUSTOMIZATION
+  bool getIsAltfmt() const { return IsAltfmt; }
+#endif // SIFIVE_CUSTOMIZATION
 
   bool hasNonZeroAVL(const LiveIntervals *LIS) const {
     if (hasAVLImm())
@@ -685,14 +710,22 @@ public:
     SEW = RISCVVType::getSEW(VType);
     TailAgnostic = RISCVVType::isTailAgnostic(VType);
     MaskAgnostic = RISCVVType::isMaskAgnostic(VType);
+#if SIFIVE_CUSTOMIZATION
+    IsAltfmt = RISCVVType::isAltfmt(VType);
+#endif // SIFIVE_CUSTOMIZATION
   }
-  void setVTYPE(RISCVII::VLMUL L, unsigned S, bool TA, bool MA) {
+#if SIFIVE_CUSTOMIZATION
+  void setVTYPE(RISCVII::VLMUL L, unsigned S, bool TA, bool MA, bool Altfmt) {
+#endif // SIFIVE_CUSTOMIZATION
     assert(isValid() && !isUnknown() &&
            "Can't set VTYPE for uninitialized or unknown");
     VLMul = L;
     SEW = S;
     TailAgnostic = TA;
     MaskAgnostic = MA;
+#if SIFIVE_CUSTOMIZATION
+    IsAltfmt = Altfmt;
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   void setVLMul(RISCVII::VLMUL VLMul) { this->VLMul = VLMul; }
@@ -702,7 +735,7 @@ public:
            "Can't encode VTYPE for uninitialized or unknown");
 #if SIFIVE_CUSTOMIZATION
     return RISCVVType::encodeVTYPE(VLMul, SEW, TailAgnostic, MaskAgnostic,
-                                   /*IsAltfmt*/ false);
+                                   IsAltfmt);
 #endif // SIFIVE_CUSTOMIZATION
   }
 
@@ -715,9 +748,11 @@ public:
            "Can't compare VTYPE in unknown state");
     assert(!SEWLMULRatioOnly && !Other.SEWLMULRatioOnly &&
            "Can't compare when only LMUL/SEW ratio is valid.");
-    return std::tie(VLMul, SEW, TailAgnostic, MaskAgnostic) ==
+#if SIFIVE_CUSTOMIZATION
+    return std::tie(VLMul, SEW, TailAgnostic, MaskAgnostic, IsAltfmt) ==
            std::tie(Other.VLMul, Other.SEW, Other.TailAgnostic,
-                    Other.MaskAgnostic);
+                    Other.MaskAgnostic, Other.IsAltfmt);
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   unsigned getSEWLMULRatio() const {
@@ -1051,6 +1086,10 @@ RISCVInsertVSETVLI::computeInfoForInstr(const MachineInstr &MI) const {
 
   RISCVII::VLMUL VLMul = RISCVII::getLMul(TSFlags);
 
+#if SIFIVE_CUSTOMIZATION
+  bool IsAltfmt =
+      RISCVII::getAltfmtType(TSFlags) == RISCVII::AltfmtType::IsAltfmt;
+#endif // SIFIVE_CUSTOMIZATION
   unsigned Log2SEW = MI.getOperand(getSEWOpNum(MI)).getImm();
   // A Log2SEW of 0 is an operation on mask registers only.
   unsigned SEW = Log2SEW ? 1 << Log2SEW : 8;
@@ -1089,8 +1128,8 @@ RISCVInsertVSETVLI::computeInfoForInstr(const MachineInstr &MI) const {
   if (std::optional<unsigned> EEW = getEEWForLoadStore(MI)) {
     assert(SEW == EEW && "Initial SEW doesn't match expected EEW");
   }
-#endif
-  InstrInfo.setVTYPE(VLMul, SEW, TailAgnostic, MaskAgnostic);
+  InstrInfo.setVTYPE(VLMul, SEW, TailAgnostic, MaskAgnostic, IsAltfmt);
+#endif // SIFIVE_CUSTOMIZATION
 
   forwardVSETVLIAVL(InstrInfo);
 
@@ -1271,7 +1310,10 @@ void RISCVInsertVSETVLI::transferBefore(VSETVLIInfo &Info,
       (Demanded.TailPolicy ? IncomingInfo : Info).getTailAgnostic() ||
           IncomingInfo.getTailAgnostic(),
       (Demanded.MaskPolicy ? IncomingInfo : Info).getMaskAgnostic() ||
-          IncomingInfo.getMaskAgnostic());
+#if SIFIVE_CUSTOMIZATION
+          IncomingInfo.getMaskAgnostic(),
+      Demanded.UseAltfmt ? IncomingInfo.getIsAltfmt() : 0);
+#endif // SIFIVE_CUSTOMIZATION
 
   // If we only knew the sew/lmul ratio previously, replace the VTYPE but keep
   // the AVL.
