@@ -959,7 +959,7 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   case RISCV::VFWADD_WV:
   case RISCV::VFWSUB_WF:
   case RISCV::VFWSUB_WV: {
-    bool TwoTimes = IsMODef && MO.getOperandNo() == 1;
+    bool TwoTimes = IsMODef || MO.getOperandNo() == 1;
     unsigned Log2EEW = TwoTimes ? MILog2SEW + 1 : MILog2SEW;
     RISCVII::VLMUL EMUL = TwoTimes ? twoTimesVLMUL(MIVLMul) : MIVLMul;
     return OperandInfo(EMUL, Log2EEW);
