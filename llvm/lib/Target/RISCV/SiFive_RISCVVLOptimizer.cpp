@@ -860,9 +860,9 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   case RISCV::VWMACCUS_VX: {
     // Operand 0 is destination as a def and Operand 1 is destination as a use
     // due to SSA.
-    bool IsMODest = MO.getOperandNo() == 0 || MO.getOperandNo() == 1;
-    unsigned Log2EEW = IsMODest ? MILog2SEW + 1 : MILog2SEW;
-    RISCVII::VLMUL EMUL = IsMODest ? twoTimesVLMUL(MIVLMul) : MIVLMul;
+    bool TwoTimes = IsMODef || MO.getOperandNo() == 1;
+    unsigned Log2EEW = TwoTimes ? MILog2SEW + 1 : MILog2SEW;
+    RISCVII::VLMUL EMUL = TwoTimes ? twoTimesVLMUL(MIVLMul) : MIVLMul;
     return OperandInfo(EMUL, Log2EEW);
   }
   // 11.15. Vector Integer Merge Instructions
@@ -1013,9 +1013,9 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   case RISCV::VFWNMSAC_VV: {
     // Operand 0 is destination as a def and Operand 1 is destination as a use
     // due to SSA.
-    bool IsMODest = MO.getOperandNo() == 0 || MO.getOperandNo() == 1;
-    unsigned Log2EEW = IsMODest ? MILog2SEW + 1 : MILog2SEW;
-    RISCVII::VLMUL EMUL = IsMODest ? twoTimesVLMUL(MIVLMul) : MIVLMul;
+    bool TwoTimes = IsMODef || MO.getOperandNo() == 1;
+    unsigned Log2EEW = TwoTimes ? MILog2SEW + 1 : MILog2SEW;
+    RISCVII::VLMUL EMUL = TwoTimes ? twoTimesVLMUL(MIVLMul) : MIVLMul;
     return OperandInfo(EMUL, Log2EEW);
   }
   // 13.8. Vector Floating-Point Square-Root Instruction
