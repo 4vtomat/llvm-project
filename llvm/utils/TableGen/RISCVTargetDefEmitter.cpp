@@ -281,6 +281,33 @@ emitRISCVImpliedExtensionInfoJSON(const std::vector<Record *> &Extensions,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+#if SIFIVE_CUSTOMIZATION
+static void emitRISCVProfilesJSON(const std::vector<Record *> &Profiles,
+                                  raw_ostream &OS) {
+  OS << "{\n";
+  OS.indent(2) << "\"supported_profiles\": {\n";
+  ListSeparator profileSep(",\n");
+  for (const Record *Rec : Profiles) {
+    StringRef Name = Rec->getValueAsString("Name");
+    Name.consume_front("experimental-");
+    OS << profileSep;
+    OS.indent(4) << "\"" << Name << "\": {\n";
+    OS.indent(6) << "\"march\": \"";
+    printMArch(OS, Rec->getValueAsListOfDefs("Implies"));
+    OS << "\"";
+    if (Rec->getValueAsBit("Experimental") == true) {
+      OS << profileSep;
+      OS.indent(6) << "\"experimental\": true\n";
+    } else {
+      OS << "\n";
+    }
+    OS.indent(4) << "}";
+  }
+  OS << "\n  }\n";
+  OS << "}\n";
+}
+#endif
+
 static void EmitRISCVTargetDef(RecordKeeper &RK, raw_ostream &OS) {
   emitRISCVExtensions(RK, OS);
   emitRISCVProfiles(RK, OS);
@@ -299,6 +326,16 @@ static void EmitRISCVISAInfoJSON(RecordKeeper &RK, raw_ostream &OS) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+#if SIFIVE_CUSTOMIZATION
+static void EmitRISCVProfileJSON(RecordKeeper &RK, raw_ostream &OS) {
+  auto Profiles = RK.getAllDerivedDefinitionsIfDefined("RISCVProfile");
+
+  if (!Profiles.empty()) {
+    emitRISCVProfilesJSON(Profiles, OS);
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 static TableGen::Emitter::Opt X("gen-riscv-target-def", EmitRISCVTargetDef,
                                 "Generate the list of CPUs and extensions for "
                                 "RISC-V");
@@ -307,4 +344,8 @@ static TableGen::Emitter::Opt X("gen-riscv-target-def", EmitRISCVTargetDef,
 static TableGen::Emitter::Opt Y("gen-riscv-isa-info-json", EmitRISCVISAInfoJSON,
                                 "Generate the JSON file of supported extensions"
                                 " and implied rules for RISC-V.");
+
+static TableGen::Emitter::Opt Z("gen-riscv-profile-json", EmitRISCVProfileJSON,
+                                "Generate the JSON file of supported profiles"
+                                " for RISC-V.");
 #endif // SIFIVE_CUSTOMIZATION
