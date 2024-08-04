@@ -72,19 +72,10 @@
 // || `[0x2000000000, 0x23ffffffff]` || LowShadow  ||
 // || `[0x0000000000, 0x1fffffffff]` || LowMem     ||
 //
-<<<<<<< HEAD
-// Default Linux/RISCV64 Sv39 mapping with SHADOW_OFFSET == 0xd55550000;
-// (the exact location of SHADOW_OFFSET may vary depending the dynamic probing
-//  by __asan_shadow_memory_dynamic_address).
-//
-||||||| 266a5a9cb9da
-// Default Linux/RISCV64 Sv39 mapping:
-=======
 // Default Linux/RISCV64 Sv39 mapping with SHADOW_OFFSET == 0xd55550000;
 // (the exact location of SHADOW_OFFSET may vary depending the dynamic probing
 //  by FindDynamicShadowStart).
 //
->>>>>>> 721aa5db
 // || `[0x1555550000, 0x3fffffffff]` || HighMem    ||
 // || `[0x0fffffa000, 0x1555555fff]` || HighShadow ||
 // || `[0x0effffa000, 0x0fffff9fff]` || ShadowGap  ||
