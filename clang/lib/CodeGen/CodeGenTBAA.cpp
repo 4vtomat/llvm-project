@@ -234,66 +234,6 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
     return getChar();
 
   // Handle pointers and references.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  // The enclosed change is based on a pending upstream patch
-  // https://reviews.llvm.org/D122573 with its correctness issue addressed.
-  if (Ty->isPointerType() || Ty->isReferenceType()) {
-    llvm::MDNode *AnyPtr = createScalarTypeNode("any pointer", getChar(), Size);
-    if (CodeGenOpts.NewStructPathTBAA) {
-      // Compute the depth of the pointer and generate a tag of the form "p<depth>
-      // <base type tag>".
-      unsigned PtrDepth = 0;
-      do {
-        PtrDepth++;
-        Ty = Ty->getPointeeType().getTypePtr();
-      } while (Ty->isPointerType() || Ty->isReferenceType());
-      // Implement C++'s type "similarity" and consider dis-"similar"
-      // pointers distinct.
-      if (isa<BuiltinType>(Ty)) {
-        // Void/Char types are generic placeholders, use
-        // default functionality as these commonly alias.
-        if (Ty->isVoidType() || Ty->isCharType())
-          return AnyPtr;
-
-        llvm::MDNode *ScalarMD = getTypeInfoHelper(Ty);
-        StringRef Name =
-            cast<llvm::MDString>(ScalarMD->getOperand(2))->getString();
-        SmallString<256> OutName("p");
-        OutName += std::to_string(PtrDepth);
-        OutName += " ";
-        OutName += Name;
-        return createScalarTypeNode(OutName, AnyPtr, Size);
-      } else if (auto *TTy = dyn_cast<RecordType>(Ty)) {
-        bool IsClass;
-        if (isMayAliasType(TTy, IsClass, Context, PtrDepth))
-          return AnyPtr;
-
-        SmallString<256> OutName("p");
-        OutName += std::to_string(PtrDepth);
-        OutName += " ";
-        if (Features.CPlusPlus) {
-          SmallString<256> Name;
-          // Don't use the mangler for C code.
-          OutName += (IsClass) ? "class " : "struct ";
-          llvm::raw_svector_ostream Out(Name);
-          MContext.mangleCanonicalTypeName(QualType(Ty, 0), Out);
-          OutName += Name;
-        } else {
-          OutName += QualType(Ty, 0).getAsString(Context.getPrintingPolicy());
-        }
-        return createScalarTypeNode(OutName, AnyPtr, Size);
-      }
-    }
-    return AnyPtr;
-  }
-#endif //SIFIVE_CUSTOMIZATION
-||||||| 266a5a9cb9da
-  // TODO: Implement C++'s type "similarity" and consider dis-"similar"
-  // pointers distinct.
-  if (Ty->isPointerType() || Ty->isReferenceType())
-    return createScalarTypeNode("any pointer", getChar(), Size);
-=======
   //
   // C has a very strict rule for pointer aliasing. C23 6.7.6.1p2:
   //     For two pointer types to be compatible, both shall be identically
@@ -327,10 +267,17 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
     do {
       PtrDepth++;
       Ty = Ty->getPointeeType().getTypePtr();
-    } while (Ty->isPointerType());
+    } while (Ty->isPointerType() || Ty->isReferenceType());
     // TODO: Implement C++'s type "similarity" and consider dis-"similar"
     // pointers distinct for non-builtin types.
     if (isa<BuiltinType>(Ty)) {
+#if SIFIVE_CUSTOMIZATION
+      // Void/Char types are generic placeholders, use
+      // default functionality as these commonly alias.
+      if (Ty->isVoidType() || Ty->isCharType())
+        return AnyPtr;
+
+#endif //SIFIVE_CUSTOMIZATION
       llvm::MDNode *ScalarMD = getTypeInfoHelper(Ty);
       StringRef Name =
           cast<llvm::MDString>(
@@ -341,10 +288,30 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
       OutName += " ";
       OutName += Name;
       return createScalarTypeNode(OutName, AnyPtr, Size);
+#if SIFIVE_CUSTOMIZATION
+    } else if (auto *TTy = dyn_cast<RecordType>(Ty)) {
+      bool IsClass;
+      if (isMayAliasType(TTy, IsClass, Context, PtrDepth))
+        return AnyPtr;
+
+      SmallString<256> OutName("p");
+      OutName += std::to_string(PtrDepth);
+      OutName += " ";
+      if (Features.CPlusPlus) {
+        SmallString<256> Name;
+        // Don't use the mangler for C code.
+        OutName += (IsClass) ? "class " : "struct ";
+        llvm::raw_svector_ostream Out(Name);
+        MContext.mangleCanonicalTypeName(QualType(Ty, 0), Out);
+        OutName += Name;
+      } else {
+        OutName += QualType(Ty, 0).getAsString(Context.getPrintingPolicy());
+      }
+      return createScalarTypeNode(OutName, AnyPtr, Size);
+#endif //SIFIVE_CUSTOMIZATION
     }
     return AnyPtr;
   }
->>>>>>> 721aa5db
 
   // Accesses to arrays are accesses to objects of their element types.
   if (CodeGenOpts.NewStructPathTBAA && Ty->isArrayType())
