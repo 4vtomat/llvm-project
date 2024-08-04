@@ -10490,7 +10490,6 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_VOID(SDValue Op,
   switch (IntNo) {
   default:
     break;
-<<<<<<< HEAD
   case Intrinsic::riscv_masked_strided_store: {
     SDLoc DL(Op);
     MVT XLenVT = Subtarget.getXLenVT();
@@ -10544,7 +10543,6 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_VOID(SDValue Op,
         0);
   }
   // end SIFIVE
-||||||| 266a5a9cb9da
   case Intrinsic::riscv_masked_strided_store: {
     SDLoc DL(Op);
     MVT XLenVT = Subtarget.getXLenVT();
@@ -10586,8 +10584,6 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_VOID(SDValue Op,
                                    Ops, Store->getMemoryVT(),
                                    Store->getMemOperand());
   }
-=======
->>>>>>> 721aa5db
   case Intrinsic::riscv_seg2_store:
   case Intrinsic::riscv_seg3_store:
   case Intrinsic::riscv_seg4_store:
@@ -16922,7 +16918,6 @@ NodeExtensionHelper::getSupportedFoldings(const SDNode *Root) {
 }
 } // End anonymous namespace.
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static SDValue combineSelectAndBinOp(const SDNode *N, SelectionDAG &DAG) {
   assert(N != nullptr);
@@ -16987,12 +16982,7 @@ static SDValue combineSelectAndBinOp(const SDNode *N, SelectionDAG &DAG) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-/// Combine a binary operation to its equivalent VW or VW_W form.
-||||||| 266a5a9cb9da
-/// Combine a binary operation to its equivalent VW or VW_W form.
-=======
 /// Combine a binary or FMA operation to its equivalent VW or VW_W form.
->>>>>>> 721aa5db
 /// The supported combines are:
 /// add | add_vl | or disjoint -> vwadd(u) | vwadd(u)_w
 /// sub | sub_vl -> vwsub(u) | vwsub(u)_w
@@ -19769,17 +19759,11 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     break;
   }
   case RISCVISD::ADD_VL:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (SDValue Result = combineSelectAndBinOp(N, DAG))
       return Result;
 #endif // SIFIVE_CUSTOMIZATION
-    if (SDValue V = combineBinOp_VLToVWBinOp_VL(N, DCI, Subtarget))
-||||||| 266a5a9cb9da
-    if (SDValue V = combineBinOp_VLToVWBinOp_VL(N, DCI, Subtarget))
-=======
     if (SDValue V = combineOp_VLToVWOp_VL(N, DCI, Subtarget))
->>>>>>> 721aa5db
       return V;
     return combineToVWMACC(N, DAG, Subtarget);
   case RISCVISD::SUB_VL:
@@ -21785,9 +21769,8 @@ static ArrayRef<MCPhysReg> getFastCCArgGPRs(const RISCVABI::ABI ABI,
 
   // The GPRs used for passing arguments in the FastCC when using ILP32E/ILP64E.
   static const MCPhysReg FastCCEGPRs[] = {RISCV::X10, RISCV::X11, RISCV::X12,
-<<<<<<< HEAD
-                                          RISCV::X13, RISCV::X14, RISCV::X15,
-                                          RISCV::X7};
+                                          RISCV::X13, RISCV::X14, RISCV::X15};
+
 #if SIFIVE_CUSTOMIZATION
   // Cherry-picked form upstream #93321
   // Zicfilp needs x7(t2) as the landing pad label register.
@@ -21797,12 +21780,6 @@ static ArrayRef<MCPhysReg> getFastCCArgGPRs(const RISCVABI::ABI ABI,
 
   static const MCPhysReg FastCCEGPRsNonX7[] = {
       RISCV::X10, RISCV::X11, RISCV::X12, RISCV::X13, RISCV::X14, RISCV::X15};
-||||||| 266a5a9cb9da
-                                          RISCV::X13, RISCV::X14, RISCV::X15,
-                                          RISCV::X7};
-=======
-                                          RISCV::X13, RISCV::X14, RISCV::X15};
->>>>>>> 721aa5db
 
   if (ABI == RISCVABI::ABI_ILP32E || ABI == RISCVABI::ABI_LP64E)
     return HasZicfilp ? ArrayRef(FastCCEGPRsNonX7) : ArrayRef(FastCCEGPRs);
@@ -23396,17 +23373,11 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(UADDSAT_VL)
   NODE_NAME_CASE(SSUBSAT_VL)
   NODE_NAME_CASE(USUBSAT_VL)
-<<<<<<< HEAD
   NODE_NAME_CASE(VSMUL_VL)   // SIFIVE
   NODE_NAME_CASE(VSSRL_VL)   // SIFIVE
   NODE_NAME_CASE(VSSRA_VL)   // SIFIVE
   NODE_NAME_CASE(VNCLIP_VL)
   NODE_NAME_CASE(VNCLIPU_VL)
-||||||| 266a5a9cb9da
-  NODE_NAME_CASE(VNCLIP_VL)
-  NODE_NAME_CASE(VNCLIPU_VL)
-=======
->>>>>>> 721aa5db
   NODE_NAME_CASE(FADD_VL)
   NODE_NAME_CASE(FSUB_VL)
   NODE_NAME_CASE(FMUL_VL)

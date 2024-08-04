@@ -1037,7 +1037,6 @@ private:
   SDValue lowerLogicVPOp(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPExtMaskOp(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPSetCCMaskOp(SDValue Op, SelectionDAG &DAG) const;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   SDValue lowerVPMergeMask(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPFirst(SDValue Op, SelectionDAG &DAG) const;
@@ -1045,10 +1044,7 @@ private:
   SDValue lowerVPCompressExperimental(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPExpandExperimental(SDValue Op, SelectionDAG &DAG) const;
 #endif // SIFIVE_CUSTOMIZATION
-||||||| 266a5a9cb9da
-=======
   SDValue lowerVPSplatExperimental(SDValue Op, SelectionDAG &DAG) const;
->>>>>>> 721aa5db
   SDValue lowerVPSpliceExperimental(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPReverseExperimental(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPFPIntConvOp(SDValue Op, SelectionDAG &DAG) const;
