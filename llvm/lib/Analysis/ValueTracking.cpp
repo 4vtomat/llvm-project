@@ -1795,7 +1795,6 @@ static void computeKnownBitsFromOperator(const Operator *I,
       case Intrinsic::x86_sse42_crc32_64_64:
         Known.Zero.setBitsFrom(32);
         break;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       case Intrinsic::riscv_vcpop:
       case Intrinsic::riscv_vcpop_mask:
@@ -1805,8 +1804,6 @@ static void computeKnownBitsFromOperator(const Operator *I,
            Known.Zero.setBitsFrom(17);
          break;
 #endif
-||||||| 266a5a9cb9da
-=======
       case Intrinsic::x86_ssse3_phadd_d_128:
       case Intrinsic::x86_ssse3_phadd_w_128:
       case Intrinsic::x86_avx2_phadd_d:
@@ -1845,7 +1842,6 @@ static void computeKnownBitsFromOperator(const Operator *I,
                                                        Q, KnownBits::ssub_sat);
         break;
       }
->>>>>>> 721aa5db
       case Intrinsic::riscv_vsetvli:
       case Intrinsic::riscv_vsetvlimax: {
         bool HasAVL = II->getIntrinsicID() == Intrinsic::riscv_vsetvli;
@@ -4086,8 +4082,8 @@ static unsigned ComputeNumSignBitsImpl(const Value *V,
     case Instruction::Call: {
       if (const auto *II = dyn_cast<IntrinsicInst>(U)) {
         switch (II->getIntrinsicID()) {
-<<<<<<< HEAD
-        default: break;
+        default:
+          break;
 #if SIFIVE_CUSTOMIZATION
         case Intrinsic::riscv_vfirst:
         case Intrinsic::riscv_vfirst_mask:
@@ -4100,12 +4096,6 @@ static unsigned ComputeNumSignBitsImpl(const Value *V,
           // higher number of sign bits.
           return TyBits - 16;
 #endif
-||||||| 266a5a9cb9da
-        default: break;
-=======
-        default:
-          break;
->>>>>>> 721aa5db
         case Intrinsic::abs:
           Tmp =
               ComputeNumSignBits(U->getOperand(0), DemandedElts, Depth + 1, Q);
