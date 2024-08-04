@@ -599,7 +599,6 @@ Intrinsic::ID VPIntrinsic::getForOpcode(unsigned IROPC) {
   return Intrinsic::not_intrinsic;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 Intrinsic::ID VPIntrinsic::getVPIntrinsicID(Intrinsic::ID ID) {
   switch (ID) {
@@ -614,8 +613,6 @@ Intrinsic::ID VPIntrinsic::getVPIntrinsicID(Intrinsic::ID ID) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| 266a5a9cb9da
-=======
 constexpr static Intrinsic::ID getForIntrinsic(Intrinsic::ID Id) {
   if (::isVPIntrinsic(Id))
     return Id;
@@ -635,7 +632,6 @@ Intrinsic::ID VPIntrinsic::getForIntrinsic(Intrinsic::ID Id) {
   return ::getForIntrinsic(Id);
 }
 
->>>>>>> 721aa5db
 bool VPIntrinsic::canIgnoreVectorLengthParam() const {
   using namespace PatternMatch;
 
