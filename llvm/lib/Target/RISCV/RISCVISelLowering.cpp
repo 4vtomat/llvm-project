@@ -19689,7 +19689,7 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
 #if SIFIVE_CUSTOMIZATION
     if (SDValue Result = combineSelectAndBinOp(N, DAG))
       return Result;
-    return combineBinOp_VLToVWBinOp_VL(N, DCI, Subtarget);
+    return combineOp_VLToVWOp_VL(N, DCI, Subtarget);
   case RISCVISD::OR_VL:
   case RISCVISD::XOR_VL:
     return combineSelectAndBinOp(N, DAG);
