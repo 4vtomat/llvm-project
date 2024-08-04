@@ -1338,7 +1338,6 @@ Value *llvm::createSimpleTargetReduction(IRBuilderBase &Builder, Value *Src,
   }
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 Value *llvm::createSimpleTargetReduction(IRBuilderBase &Builder, Value *Src,
                                          RecurKind RdxKind, Value *EVL,
@@ -1380,8 +1379,6 @@ Value *llvm::createSimpleTargetReduction(IRBuilderBase &Builder, Value *Src,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| 266a5a9cb9da
-=======
 Value *llvm::createSimpleTargetReduction(VectorBuilder &VBuilder, Value *Src,
                                          const RecurrenceDescriptor &Desc) {
   RecurKind Kind = Desc.getRecurrenceKind();
@@ -1396,7 +1393,6 @@ Value *llvm::createSimpleTargetReduction(VectorBuilder &VBuilder, Value *Src,
   return VBuilder.createSimpleTargetReduction(Id, SrcTy, Ops);
 }
 
->>>>>>> 721aa5db
 Value *llvm::createTargetReduction(IRBuilderBase &B,
                                    const RecurrenceDescriptor &Desc, Value *Src,
                                    PHINode *OrigPhi) {
@@ -1453,7 +1449,6 @@ Value *llvm::createOrderedReduction(IRBuilderBase &B,
   return B.CreateFAddReduce(Start, Src);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 Value *llvm::createOrderedReduction(IRBuilderBase &B,
                                     const RecurrenceDescriptor &Desc,
@@ -1480,8 +1475,6 @@ Value *llvm::createSentinelValueHandling(IRBuilderBase &Builder,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| 266a5a9cb9da
-=======
 Value *llvm::createOrderedReduction(VectorBuilder &VBuilder,
                                     const RecurrenceDescriptor &Desc,
                                     Value *Src, Value *Start) {
@@ -1497,7 +1490,6 @@ Value *llvm::createOrderedReduction(VectorBuilder &VBuilder,
   return VBuilder.createSimpleTargetReduction(Id, SrcTy, Ops);
 }
 
->>>>>>> 721aa5db
 void llvm::propagateIRFlags(Value *I, ArrayRef<Value *> VL, Value *OpValue,
                             bool IncludeWrapFlags) {
   auto *VecOp = dyn_cast<Instruction>(I);
