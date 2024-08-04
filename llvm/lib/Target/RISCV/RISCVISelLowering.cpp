@@ -10192,19 +10192,19 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     default:
       llvm_unreachable("Unexpected intrinsic");
     case Intrinsic::aarch64_neon_sqrshrn:
-      Opc = RISCVISD::VNCLIP_VL;
+      Opc = RISCVISD::TRUNCATE_VECTOR_VL_SSAT;
       RoundingMode = RISCVVXRndMode::RNU;
       break;
     case Intrinsic::aarch64_neon_sqshrn:
-      Opc = RISCVISD::VNCLIP_VL;
+      Opc = RISCVISD::TRUNCATE_VECTOR_VL_SSAT;
       RoundingMode = RISCVVXRndMode::RDN;
       break;
     case Intrinsic::aarch64_neon_uqrshrn:
-      Opc = RISCVISD::VNCLIPU_VL;
+      Opc = RISCVISD::TRUNCATE_VECTOR_VL_USAT;
       RoundingMode = RISCVVXRndMode::RNU;
       break;
     case Intrinsic::aarch64_neon_uqshrn:
-      Opc = RISCVISD::VNCLIPU_VL;
+      Opc = RISCVISD::TRUNCATE_VECTOR_VL_USAT;
       RoundingMode = RISCVVXRndMode::RDN;
       break;
     }
@@ -10269,8 +10269,8 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     return convertFromScalableVector(
         VT,
         DAG.getNode(IntNo == Intrinsic::aarch64_neon_sqxtn
-                        ? RISCVISD::VNCLIP_VL
-                        : RISCVISD::VNCLIPU_VL,
+                        ? RISCVISD::TRUNCATE_VECTOR_VL_SSAT
+                        : RISCVISD::TRUNCATE_VECTOR_VL_USAT,
                     DL, VecVT, {Src, Zero, Passthru, Mask, RM, VL}),
         DAG, Subtarget);
   }
@@ -12311,7 +12311,8 @@ SDValue RISCVTargetLowering::lowerSHLSAT(const SDLoc &DL, MVT VT, SDValue LHS,
       // Every rounding modes produces same value if the shift amount is 0.
       SDValue RM = DAG.getTargetConstant(RISCVVXRndMode::DYN, DL, XLenVT);
       SDValue Nclip = DAG.getNode(
-          IsSigned ? RISCVISD::VNCLIP_VL : RISCVISD::VNCLIPU_VL, DL,
+          IsSigned ? RISCVISD::TRUNCATE_VECTOR_VL_SSAT :
+                     RISCVISD::TRUNCATE_VECTOR_VL_USAT, DL,
           ContainerVT,
           {WidenShl,
            DAG.getSplatVector(ContainerVT, DL, DAG.getConstant(0, DL, XLenVT)),
@@ -23376,8 +23377,6 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(VSMUL_VL)   // SIFIVE
   NODE_NAME_CASE(VSSRL_VL)   // SIFIVE
   NODE_NAME_CASE(VSSRA_VL)   // SIFIVE
-  NODE_NAME_CASE(VNCLIP_VL)
-  NODE_NAME_CASE(VNCLIPU_VL)
   NODE_NAME_CASE(FADD_VL)
   NODE_NAME_CASE(FSUB_VL)
   NODE_NAME_CASE(FMUL_VL)
