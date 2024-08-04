@@ -344,23 +344,6 @@ bool RISCVTTIImpl::getMemoryRefInfo(
     }
     return true;
   }
-  case Intrinsic::riscv_masked_strided_load:
-  case Intrinsic::riscv_masked_strided_store: {
-    bool IsWrite = IntNo == Intrinsic::riscv_masked_strided_store;
-    Type *Ty = II->getArgOperand(0)->getType();
-    Value *Stride = II->getOperand(2);
-    // Use the pointer alignment as the element alignment if the stride is a
-    // mutiple of the pointer alignment. Otherwise, the element alignment
-    // should be Align(1).
-    MaybeAlign Alignment = II->getArgOperand(1)->getPointerAlignment(DL);
-    unsigned PointerAlign = Alignment.valueOrOne().value();
-    if (!isa<ConstantInt>(Stride) ||
-        cast<ConstantInt>(Stride)->getZExtValue() % PointerAlign != 0)
-      Alignment = Align(1);
-    Value *Mask = II->getArgOperand(3);
-    Interesting.emplace_back(II, /* PtrOperandNo */ 1, IsWrite, Ty, Alignment,
-                             Mask, /* MaybeEVL */ nullptr, Stride);
-    return true;
   }
   return false;
 }
