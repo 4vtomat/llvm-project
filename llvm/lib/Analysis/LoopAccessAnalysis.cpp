@@ -3117,7 +3117,11 @@ void LoopAccessInfo::print(raw_ostream &OS, unsigned Depth) const {
 }
 
 const LoopAccessInfo &LoopAccessInfoManager::getInfo(Loop &L) {
+#if SIFIVE_CUSTOMIZATION
+  auto [It, Inserted] = LoopAccessInfoMap.insert({&L, nullptr});
+#else
   const auto &[It, Inserted] = LoopAccessInfoMap.insert({&L, nullptr});
+#endif
 
 #if SIFIVE_CUSTOMIZATION
   if (isRevectorizeWithoutStrideChecks(L) || isVectorizeWithoutStrideChecks(L))
