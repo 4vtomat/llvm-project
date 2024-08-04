@@ -15,15 +15,11 @@
 
 #include "llvm/Analysis/IVDescriptors.h"
 #include "llvm/Analysis/LoopAccessAnalysis.h"
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/Support/CommandLine.h"
 #endif // SIFIVE_CUSTOMIZATION
-||||||| 266a5a9cb9da
-=======
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/IR/VectorBuilder.h"
->>>>>>> 721aa5db
 #include "llvm/Transforms/Utils/ValueMapper.h"
 
 namespace llvm {
