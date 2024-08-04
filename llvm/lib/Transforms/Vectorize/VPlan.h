@@ -2659,15 +2659,6 @@ public:
              VPSlotTracker &SlotTracker) const override;
 #endif
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  const RecurrenceDescriptor getRecurrenceDescriptor() const {
-    return RdxDesc;
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
-||||||| 266a5a9cb9da
-=======
   /// Return the recurrence decriptor for the in-loop reduction.
   const RecurrenceDescriptor &getRecurrenceDescriptor() const {
     return RdxDesc;
@@ -2676,7 +2667,6 @@ public:
   bool isOrdered() const { return IsOrdered; };
   /// Return true if the in-loop reduction is conditional.
   bool isConditional() const { return IsConditional; };
->>>>>>> 721aa5db
   /// The VPValue of the scalar Chain being accumulated.
   VPValue *getChainOp() const { return getOperand(0); }
   /// The VPValue of the vector value to be reduced.
@@ -3200,29 +3190,17 @@ struct VPWidenLoadRecipe final : public VPWidenMemoryRecipe, public VPValue {
 /// using the address to load from, the explicit vector length and an optional
 /// mask.
 struct VPWidenLoadEVLRecipe final : public VPWidenMemoryRecipe, public VPValue {
-<<<<<<< HEAD
-  VPWidenLoadEVLRecipe(VPWidenLoadRecipe *L, VPValue *EVL, VPValue *Mask)
-      : VPWidenMemoryRecipe(VPDef::VPWidenLoadEVLSC, L->getIngredient(),
-#if SIFIVE_CUSTOMIZATION
-                            {L->getAddr(), EVL}, L->isConsecutive(),
-                            L->isReverse(), L->getDebugLoc(),
-                            L->isStrided() ? L->getStrideInBytes() : nullptr,
-                            L->isSpeculative(), L->isMonotonic()),
-#else
-                            {L->getAddr(), EVL}, L->isConsecutive(),
-                            L->isReverse(), L->getDebugLoc()),
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 266a5a9cb9da
-  VPWidenLoadEVLRecipe(VPWidenLoadRecipe *L, VPValue *EVL, VPValue *Mask)
-      : VPWidenMemoryRecipe(VPDef::VPWidenLoadEVLSC, L->getIngredient(),
-                            {L->getAddr(), EVL}, L->isConsecutive(),
-                            L->isReverse(), L->getDebugLoc()),
-=======
   VPWidenLoadEVLRecipe(VPWidenLoadRecipe &L, VPValue &EVL, VPValue *Mask)
       : VPWidenMemoryRecipe(VPDef::VPWidenLoadEVLSC, L.getIngredient(),
+#if SIFIVE_CUSTOMIZATION
+                            {L.getAddr(), &EVL}, L.isConsecutive(),
+                            L.isReverse(), L.getDebugLoc(),
+                            L.isStrided() ? L.getStrideInBytes() : nullptr,
+                            L.isSpeculative(), L.isMonotonic()),
+#else
                             {L.getAddr(), &EVL}, L.isConsecutive(),
                             L.isReverse(), L.getDebugLoc()),
->>>>>>> 721aa5db
+#endif // SIFIVE_CUSTOMIZATION
         VPValue(this, &getIngredient()) {
 #if SIFIVE_CUSTOMIZATION
     if (Speculative)
@@ -3329,31 +3307,17 @@ struct VPWidenStoreRecipe final : public VPWidenMemoryRecipe {
 /// using the value to store, the address to store to, the explicit vector
 /// length and an optional mask.
 struct VPWidenStoreEVLRecipe final : public VPWidenMemoryRecipe {
-<<<<<<< HEAD
-  VPWidenStoreEVLRecipe(VPWidenStoreRecipe *S, VPValue *EVL, VPValue *Mask)
-      : VPWidenMemoryRecipe(VPDef::VPWidenStoreEVLSC, S->getIngredient(),
-                            {S->getAddr(), S->getStoredValue(), EVL},
-#if SIFIVE_CUSTOMIZATION
-                            S->isConsecutive(), S->isReverse(),
-                            S->getDebugLoc(),
-                            S->isStrided() ? S->getStrideInBytes() : nullptr,
-                            S->isSpeculative(), S->isMonotonic()) {
-#else
-                            S->isConsecutive(), S->isReverse(),
-                            S->getDebugLoc()) {
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 266a5a9cb9da
-  VPWidenStoreEVLRecipe(VPWidenStoreRecipe *S, VPValue *EVL, VPValue *Mask)
-      : VPWidenMemoryRecipe(VPDef::VPWidenStoreEVLSC, S->getIngredient(),
-                            {S->getAddr(), S->getStoredValue(), EVL},
-                            S->isConsecutive(), S->isReverse(),
-                            S->getDebugLoc()) {
-=======
   VPWidenStoreEVLRecipe(VPWidenStoreRecipe &S, VPValue &EVL, VPValue *Mask)
       : VPWidenMemoryRecipe(VPDef::VPWidenStoreEVLSC, S.getIngredient(),
                             {S.getAddr(), S.getStoredValue(), &EVL},
+#if SIFIVE_CUSTOMIZATION
+                            S.isConsecutive(), S.isReverse(),
+                            S.getDebugLoc(),
+                            S.isStrided() ? S.getStrideInBytes() : nullptr,
+                            S.isSpeculative(), S.isMonotonic()) {
+#else
                             S.isConsecutive(), S.isReverse(), S.getDebugLoc()) {
->>>>>>> 721aa5db
+#endif // SIFIVE_CUSTOMIZATION
     setMask(Mask);
   }
 
@@ -4337,6 +4301,11 @@ public:
 
 #if SIFIVE_CUSTOMIZATION
   void addLiveOut(PHINode *PN, VPValue *V, bool onlyFirstLaneUsed = false);
+
+  void removeLiveOut(PHINode *PN) {
+    delete LiveOuts[PN];
+    LiveOuts.erase(PN);
+  }
 #else
   void addLiveOut(PHINode *PN, VPValue *V);
 #endif // SIFIVE_CUSTOMIZATION

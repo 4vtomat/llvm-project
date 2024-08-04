@@ -1943,7 +1943,6 @@ VPValue *vputils::getOrCreateVPValueForSCEVExpr(VPlan &Plan, const SCEV *Expr,
   return Expanded;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // FIXME: Represent CSA instructions through VPHeaderPHIRecipe
 bool vputils::isPhi(const VPRecipeBase &R) {
@@ -1974,12 +1973,7 @@ bool vputils::isHeaderPhi(const VPRecipeBase &R) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-bool vputils::isHeaderMask(VPValue *V, VPlan &Plan) {
-||||||| 266a5a9cb9da
-bool vputils::isHeaderMask(VPValue *V, VPlan &Plan) {
-=======
 bool vputils::isHeaderMask(const VPValue *V, VPlan &Plan) {
->>>>>>> 721aa5db
   if (isa<VPActiveLaneMaskPHIRecipe>(V))
     return true;
 

@@ -1075,44 +1075,6 @@ static void debugVectorizationMessage(const StringRef Prefix,
 /// \p PassName is the name of the pass (e.g. can be AlwaysPrint).  \p
 /// RemarkName is the identifier for the remark.  If \p I is passed it is an
 /// instruction that prevents vectorization.  Otherwise \p TheLoop is used for
-<<<<<<< HEAD
-/// the location of the remark.  \return the remark object that can be
-/// streamed to.
-#if SIFIVE_CUSTOMIZATION
-static OptimizationRemarkAnalysis createLVAnalysis(const char *PassName,
-                                                   StringRef RemarkName,
-                                                   Loop *TheLoop,
-                                                   Instruction *I) {
-#else
-static OptimizationRemarkAnalysis createLVAnalysis(const char *PassName,
-    StringRef RemarkName, Loop *TheLoop, Instruction *I) {
-#endif // SIFIVE_CUSTOMIZATION
-  Value *CodeRegion = TheLoop->getHeader();
-  DebugLoc DL = TheLoop->getStartLoc();
-
-  if (I) {
-    CodeRegion = I->getParent();
-    // If there is no debug location attached to the instruction, revert back to
-    // using the loop's.
-    if (I->getDebugLoc())
-      DL = I->getDebugLoc();
-  }
-||||||| 266a5a9cb9da
-/// the location of the remark.  \return the remark object that can be
-/// streamed to.
-static OptimizationRemarkAnalysis createLVAnalysis(const char *PassName,
-    StringRef RemarkName, Loop *TheLoop, Instruction *I) {
-  Value *CodeRegion = TheLoop->getHeader();
-  DebugLoc DL = TheLoop->getStartLoc();
-
-  if (I) {
-    CodeRegion = I->getParent();
-    // If there is no debug location attached to the instruction, revert back to
-    // using the loop's.
-    if (I->getDebugLoc())
-      DL = I->getDebugLoc();
-  }
-=======
 /// the location of the remark. If \p DL is passed, use it as debug location for
 /// the remark. \return the remark object that can be streamed to.
 static OptimizationRemarkAnalysis
@@ -1125,7 +1087,6 @@ createLVAnalysis(const char *PassName, StringRef RemarkName, Loop *TheLoop,
     DL = I->getDebugLoc();
   else if (!DL)
     DL = TheLoop->getStartLoc();
->>>>>>> 721aa5db
 
   return OptimizationRemarkAnalysis(PassName, RemarkName, DL, CodeRegion);
 }
@@ -5250,49 +5211,15 @@ ElementCount LoopVectorizationCostModel::getMaximizedVFForTarget(
 
     // Select the largest VF which doesn't require more registers than existing
     // ones.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    for (int I = RUs.size() - 1; I >= 0; --I) {
-      const auto &MLU = RUs[I].MaxLocalUsers;
-      if (llvm::all_of(MLU, [&](decltype(MLU.front()) &LU) {
-            return LU.second <= TTI.getNumberOfRegisters(LU.first);
-          })) {
-        MaxVF = VFs[I];
-        break;
-      }
-    }
-#else
-    for (int i = RUs.size() - 1; i >= 0; --i) {
-      bool Selected = true;
-      for (auto &pair : RUs[i].MaxLocalUsers) {
-        unsigned TargetNumRegisters = TTI.getNumberOfRegisters(pair.first);
-        if (pair.second > TargetNumRegisters)
-          Selected = false;
-      }
-      if (Selected) {
-        MaxVF = VFs[i];
-||||||| 266a5a9cb9da
-    for (int i = RUs.size() - 1; i >= 0; --i) {
-      bool Selected = true;
-      for (auto &pair : RUs[i].MaxLocalUsers) {
-        unsigned TargetNumRegisters = TTI.getNumberOfRegisters(pair.first);
-        if (pair.second > TargetNumRegisters)
-          Selected = false;
-      }
-      if (Selected) {
-        MaxVF = VFs[i];
-=======
     for (int I = RUs.size() - 1; I >= 0; --I) {
       const auto &MLU = RUs[I].MaxLocalUsers;
       if (all_of(MLU, [&](decltype(MLU.front()) &LU) {
             return LU.second <= TTI.getNumberOfRegisters(LU.first);
           })) {
         MaxVF = VFs[I];
->>>>>>> 721aa5db
         break;
       }
     }
-#endif
     if (ElementCount MinVF =
             TTI.getMinimumVF(SmallestType, ComputeScalableMaxVF)) {
       if (ElementCount::isKnownLT(MaxVF, MinVF)) {
@@ -5404,7 +5331,6 @@ bool LoopVectorizationPlanner::isMoreProfitable(
   return CmpFn(RTCostA, RTCostB);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static bool
 hasOnlyNonUnitStrideMemoryAccesses(Loop *L, LoopVectorizationLegality *Legal) {
@@ -5426,14 +5352,7 @@ hasOnlyNonUnitStrideMemoryAccesses(Loop *L, LoopVectorizationLegality *Legal) {
   return HasMemoryAccess;
 }
 #endif
-static void emitInvalidCostRemarks(SmallVector<InstructionVFPair> InvalidCosts,
-                                   OptimizationRemarkEmitter *ORE,
-                                   Loop *TheLoop) {
-||||||| 266a5a9cb9da
-static void emitInvalidCostRemarks(SmallVector<InstructionVFPair> InvalidCosts,
-                                   OptimizationRemarkEmitter *ORE,
-                                   Loop *TheLoop) {
-=======
+
 void LoopVectorizationPlanner::emitInvalidCostRemarks(
     OptimizationRemarkEmitter *ORE) {
   using RecipeVFPair = std::pair<VPRecipeBase *, ElementCount>;
@@ -5452,7 +5371,6 @@ void LoopVectorizationPlanner::emitInvalidCostRemarks(
       }
     }
   }
->>>>>>> 721aa5db
   if (InvalidCosts.empty())
     return;
 
@@ -5701,8 +5619,6 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
 #endif
   }
 
-<<<<<<< HEAD
-  SmallVector<InstructionVFPair> InvalidCosts;
 #if SIFIVE_CUSTOMIZATION
   unsigned SmallestTypeSize, WidestTypeSize;
   std::tie(SmallestTypeSize, WidestTypeSize) = CM.getSmallestAndWidestTypes();
@@ -5710,17 +5626,12 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
       SiFiveLoopVectorizerUseVPlanBasedCostModel && Legal->useVLAVectorizer();
 #endif
 
-||||||| 266a5a9cb9da
-  SmallVector<InstructionVFPair> InvalidCosts;
-=======
->>>>>>> 721aa5db
   for (auto &P : VPlans) {
     for (ElementCount VF : P->vectorFactors()) {
       // The cost for scalar VF=1 is already calculated, so ignore it.
       if (VF.isScalar())
         continue;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       // Notice that the vector loop needs to be executed less times, so
       // we need to divide the cost of the vector loops by the width of
@@ -5736,7 +5647,7 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
         C = VPCM.getCost(
             RVVPair::get(CM.WidestType, VF, PSE.getSE()->getDataLayout()));
       } else {
-        C = CM.expectedCost(VF, &InvalidCosts);
+        C = CM.expectedCost(VF);
       }
       if (!C.isValid()) {
         LLVM_DEBUG(dbgs() << "LV: Vector loop of width " << VF
@@ -5752,12 +5663,7 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
         Overhead = getBestPlanFor(VF).overhead(VF, CostCtx);
       VectorizationFactor Candidate(VF, C, ScalarCost.ScalarCost, Overhead);
 #else
-      InstructionCost C = CM.expectedCost(VF, &InvalidCosts);
-||||||| 266a5a9cb9da
-      InstructionCost C = CM.expectedCost(VF, &InvalidCosts);
-=======
       InstructionCost C = CM.expectedCost(VF);
->>>>>>> 721aa5db
       VectorizationFactor Candidate(VF, C, ScalarCost.ScalarCost);
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -6803,7 +6709,6 @@ InstructionCost LoopVectorizationCostModel::computePredInstDiscount(
   return Discount;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 InstructionCost LoopVectorizationCostModel::expectedOverhead(ElementCount VF) {
   // TODO: Reuse VPlan's overhead estimation instead of duplicating the logic
@@ -6984,14 +6889,7 @@ InstructionCost LoopVectorizationCostModel::loopBodyCostWithSLP() {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-InstructionCost LoopVectorizationCostModel::expectedCost(
-    ElementCount VF, SmallVectorImpl<InstructionVFPair> *Invalid) {
-||||||| 266a5a9cb9da
-InstructionCost LoopVectorizationCostModel::expectedCost(
-    ElementCount VF, SmallVectorImpl<InstructionVFPair> *Invalid) {
-=======
 InstructionCost LoopVectorizationCostModel::expectedCost(ElementCount VF) {
->>>>>>> 721aa5db
   InstructionCost Cost;
 
   // For each block.
@@ -8968,14 +8866,8 @@ ElementCount LoopVectorizationPlanner::getBestVF() const {
 #else
       InstructionCost Cost = cost(*P, VF);
       VectorizationFactor CurrentFactor(VF, Cost, ScalarCost);
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-      if (isMoreProfitable(CurrentFactor, BestFactor)) {
-||||||| 266a5a9cb9da
-      if (isMoreProfitable(CurrentFactor, BestFactor)) {
-=======
       if (isMoreProfitable(CurrentFactor, BestFactor))
->>>>>>> 721aa5db
         BestFactor = CurrentFactor;
     }
   }
@@ -10598,11 +10490,11 @@ addCSAPostprocessRecipes(VPRecipeBuilder &RecipeBuilder,
 
 // Add exit values to \p Plan. VPLiveOuts are added for each LCSSA phi in the
 // original exit block.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
-                                VPRecipeBuilder &Builder, VPlan &Plan,
-                                LoopVectorizationLegality *Legal) {
+static void addUsersInExitBlock(
+    Loop *OrigLoop, VPRecipeBuilder &Builder, VPlan &Plan,
+    const MapVector<PHINode *, InductionDescriptor> &Inductions,
+    LoopVectorizationLegality *Legal) {
   /// Cherry-pick from #88385
   BasicBlock *ExitBB, *ExitingBB;
 
@@ -10640,16 +10532,9 @@ static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
     return;
   }
 #else
-static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
-                                VPRecipeBuilder &Builder, VPlan &Plan) {
-||||||| 266a5a9cb9da
-static void addUsersInExitBlock(VPBasicBlock *HeaderVPBB, Loop *OrigLoop,
-                                VPRecipeBuilder &Builder, VPlan &Plan) {
-=======
 static void addUsersInExitBlock(
     Loop *OrigLoop, VPRecipeBuilder &Builder, VPlan &Plan,
     const MapVector<PHINode *, InductionDescriptor> &Inductions) {
->>>>>>> 721aa5db
   BasicBlock *ExitBB = OrigLoop->getUniqueExitBlock();
   BasicBlock *ExitingBB = OrigLoop->getExitingBlock();
   // Only handle single-exit loops with unique exit blocks for now.
@@ -10983,18 +10868,13 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     // and there is nothing to fix from vector loop; phis should have incoming
     // from scalar loop only.
   } else
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    addUsersInExitBlock(HeaderVPBB, OrigLoop, RecipeBuilder, *Plan, Legal);
+    addUsersInExitBlock(OrigLoop, RecipeBuilder, *Plan,
+                        Legal->getInductionVars(), Legal);
 #else
-    addUsersInExitBlock(HeaderVPBB, OrigLoop, RecipeBuilder, *Plan);
-#endif // SIFIVE_CUSTOMIZATION
-||||||| 266a5a9cb9da
-    addUsersInExitBlock(HeaderVPBB, OrigLoop, RecipeBuilder, *Plan);
-=======
     addUsersInExitBlock(OrigLoop, RecipeBuilder, *Plan,
                         Legal->getInductionVars());
->>>>>>> 721aa5db
+#endif // SIFIVE_CUSTOMIZATION
 
   assert(isa<VPRegionBlock>(Plan->getVectorLoopRegion()) &&
          !Plan->getVectorLoopRegion()->getEntryBasicBlock()->empty() &&
@@ -12695,17 +12575,11 @@ bool LoopVectorizePass::processLoop(Loop *L) {
       VPlan &BestPlan = LVP.getBestPlanFor(BestVF);
       // Consider vectorizing the epilogue too if it's profitable.
       VectorizationFactor EpilogueVF =
-<<<<<<< HEAD
-          LVP.selectEpilogueVectorizationFactor(VF.Width, IC);
+          LVP.selectEpilogueVectorizationFactor(BestVF, IC);
 #if SIFIVE_CUSTOMIZATION
       if (EpilogueVF != VectorizationFactor::Disabled() &&
           EpilogueVF.Width.isVector()) {
 #else
-||||||| 266a5a9cb9da
-          LVP.selectEpilogueVectorizationFactor(VF.Width, IC);
-=======
-          LVP.selectEpilogueVectorizationFactor(BestVF, IC);
->>>>>>> 721aa5db
       if (EpilogueVF.Width.isVector()) {
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -12833,38 +12707,10 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         InnerLoopVectorizer LB(L, PSE, LI, DT, TLI, TTI, AC, ORE, BestVF,
                                VF.MinProfitableTripCount, IC, &LVL, &CM, BFI,
                                PSI, Checks);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         SCEVBlockRAII SCEVRAII(LB, IgnoreSCEVMemCheckBB);
 #endif // SIFIVE_CUSTOMIZATION
-
-        VPlan &BestPlan = LVP.getBestPlan();
-        assert(size(BestPlan.vectorFactors()) == 1 &&
-               "Plan should have a single VF");
-        ElementCount Width = *BestPlan.vectorFactors().begin();
-        LLVM_DEBUG(dbgs() << "VF picked by VPlan cost model: " << Width
-                          << "\n");
-#if SIFIVE_CUSTOMIZATION
-        VF.Width = Width;
-#else
-        assert(VF.Width == Width &&
-               "VPlan cost model and legacy cost model disagreed");
-#endif // SIFIVE_CUSTOMIZATION
-        LVP.executePlan(Width, IC, BestPlan, LB, DT, false);
-||||||| 266a5a9cb9da
-
-        VPlan &BestPlan = LVP.getBestPlan();
-        assert(size(BestPlan.vectorFactors()) == 1 &&
-               "Plan should have a single VF");
-        ElementCount Width = *BestPlan.vectorFactors().begin();
-        LLVM_DEBUG(dbgs() << "VF picked by VPlan cost model: " << Width
-                          << "\n");
-        assert(VF.Width == Width &&
-               "VPlan cost model and legacy cost model disagreed");
-        LVP.executePlan(Width, IC, BestPlan, LB, DT, false);
-=======
         LVP.executePlan(BestVF, IC, BestPlan, LB, DT, false);
->>>>>>> 721aa5db
         ++LoopsVectorized;
 
 #if SIFIVE_CUSTOMIZATION

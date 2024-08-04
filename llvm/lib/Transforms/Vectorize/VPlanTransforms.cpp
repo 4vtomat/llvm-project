@@ -1562,20 +1562,6 @@ bool VPlanTransforms::tryAddExplicitVectorLength(VPlan &Plan) {
   // The transform updates all users of inductions to work based on EVL, instead
   // of the VF directly. At the moment, widened inductions cannot be updated, so
   // bail out if the plan contains any.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (!EnableEVLFuzzing)
-#endif // SIFIVE_CUSTOMIZATION
-  if (any_of(Header->phis(), [](VPRecipeBase &Phi) {
-        return (isa<VPWidenIntOrFpInductionRecipe>(&Phi) ||
-                isa<VPWidenPointerInductionRecipe>(&Phi));
-      }))
-||||||| 266a5a9cb9da
-  if (any_of(Header->phis(), [](VPRecipeBase &Phi) {
-        return (isa<VPWidenIntOrFpInductionRecipe>(&Phi) ||
-                isa<VPWidenPointerInductionRecipe>(&Phi));
-      }))
-=======
   bool ContainsWidenInductions = any_of(Header->phis(), [](VPRecipeBase &Phi) {
     return isa<VPWidenIntOrFpInductionRecipe, VPWidenPointerInductionRecipe>(
         &Phi);
@@ -1587,8 +1573,10 @@ bool VPlanTransforms::tryAddExplicitVectorLength(VPlan &Plan) {
         auto *R = dyn_cast<VPReductionPHIRecipe>(&Phi);
         return R && !R->isInLoop();
       });
+#if SIFIVE_CUSTOMIZATION
+  if (!EnableEVLFuzzing)
+#endif // SIFIVE_CUSTOMIZATION
   if (ContainsWidenInductions || ContainsOutloopReductions)
->>>>>>> 721aa5db
     return false;
 
   auto *CanonicalIVPHI = Plan.getCanonicalIV();
@@ -1646,12 +1634,12 @@ bool VPlanTransforms::tryAddExplicitVectorLength(VPlan &Plan) {
         continue;
       VPValue *OrigMask = MemR->getMask();
       if (auto *L = dyn_cast<VPWidenLoadRecipe>(MemR)) {
-        auto *N = new VPWidenLoadEVLRecipe(L, VPEVL, OrigMask);
+        auto *N = new VPWidenLoadEVLRecipe(*L, *VPEVL, OrigMask);
         N->insertBefore(L);
         L->replaceAllUsesWith(N);
         L->eraseFromParent();
       } else if (auto *S = dyn_cast<VPWidenStoreRecipe>(MemR)) {
-        auto *N = new VPWidenStoreEVLRecipe(S, VPEVL, OrigMask);
+        auto *N = new VPWidenStoreEVLRecipe(*S, *VPEVL, OrigMask);
         N->insertBefore(S);
         S->eraseFromParent();
       } else {
@@ -1791,7 +1779,7 @@ void VPlanTransforms::addExplicitVectorLengthUncountable(VPlan &Plan) {
     for (VPRecipeBase &Recipe : make_early_inc_range(*VPBB)) {
       // Check if the recipe updates EVL
       if (auto *R = dyn_cast<VPWidenLoadRecipe>(&Recipe)) {
-        auto *N = new VPWidenLoadEVLRecipe(R, VPEVL, R->getMask());
+        auto *N = new VPWidenLoadEVLRecipe(*R, *VPEVL, R->getMask());
         N->insertBefore(R);
         R->replaceAllUsesWith(N);
         R->eraseFromParent();
