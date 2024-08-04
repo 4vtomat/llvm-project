@@ -151,8 +151,7 @@ void RISCVTargetELFStreamer::finish() {
     llvm_unreachable("Improperly initialised target ABI");
   }
 
-<<<<<<< HEAD
-  MCA.setELFHeaderEFlags(EFlags);
+  W.setELFHeaderEFlags(EFlags);
 
 #if SIFIVE_CUSTOMIZATION
   // TODO: Also consider software control features right after having them.
@@ -164,11 +163,6 @@ void RISCVTargetELFStreamer::finish() {
     GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_ZICFISS;
   emitNoteSection(GNUNoteFlags);
 #endif // SIFIVE_CUSTOMIZATION
-||||||| 266a5a9cb9da
-  MCA.setELFHeaderEFlags(EFlags);
-=======
-  W.setELFHeaderEFlags(EFlags);
->>>>>>> 721aa5db
 }
 
 void RISCVTargetELFStreamer::reset() {

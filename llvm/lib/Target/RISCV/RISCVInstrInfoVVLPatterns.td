@@ -36,9 +36,8 @@ def SDT_RISCVIntBinOp_VL : SDTypeProfile<1, 5, [SDTCisSameAs<0, 1>,
                                                 SDTCisSameNumEltsAs<0, 4>,
                                                 SDTCisVT<5, XLenVT>]>;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-// Input: (vector, vector, merge, mask, roundmode, vl)
+// Input: (vector, vector, passthru, mask, roundmode, vl)
 def SDT_RISCVIntBinOp_RM_VL : SDTypeProfile<1, 6, [SDTCisVec<0>, SDTCisInt<0>,
                                                    SDTCisSameAs<0, 1>,
                                                    SDTCisSameAs<0, 2>,
@@ -49,12 +48,7 @@ def SDT_RISCVIntBinOp_RM_VL : SDTypeProfile<1, 6, [SDTCisVec<0>, SDTCisInt<0>,
                                                    SDTCisVT<6, XLenVT>]>;
 #endif // SIFIVE_CUSTOMIZATION
 
-// Input: (vector, vector/scalar, merge, mask, roundmode, vl)
-||||||| 266a5a9cb9da
-// Input: (vector, vector/scalar, merge, mask, roundmode, vl)
-=======
 // Input: (vector, vector/scalar, passthru, mask, roundmode, vl)
->>>>>>> 721aa5db
 def SDT_RISCVVNBinOp_RM_VL : SDTypeProfile<1, 6, [SDTCisVec<0>, SDTCisInt<0>,
                                                   SDTCisSameAs<0, 3>,
                                                   SDTCisSameNumEltsAs<0, 1>,
@@ -154,21 +148,12 @@ def riscv_uaddsat_vl   : SDNode<"RISCVISD::UADDSAT_VL", SDT_RISCVIntBinOp_VL, [S
 def riscv_ssubsat_vl   : SDNode<"RISCVISD::SSUBSAT_VL", SDT_RISCVIntBinOp_VL>;
 def riscv_usubsat_vl   : SDNode<"RISCVISD::USUBSAT_VL", SDT_RISCVIntBinOp_VL>;
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def riscv_vsmul_vl  : SDNode<"RISCVISD::VSMUL_VL", SDT_RISCVIntBinOp_RM_VL>;
 def riscv_vssrl_vl : SDNode<"RISCVISD::VSSRL_VL", SDT_RISCVIntBinOp_RM_VL>;
 def riscv_vssra_vl : SDNode<"RISCVISD::VSSRA_VL", SDT_RISCVIntBinOp_RM_VL>;
 #endif // SIFIVE_CUSTOMIZATION
-def riscv_vnclipu_vl : SDNode<"RISCVISD::VNCLIPU_VL", SDT_RISCVVNBinOp_RM_VL>;
-def riscv_vnclip_vl : SDNode<"RISCVISD::VNCLIP_VL", SDT_RISCVVNBinOp_RM_VL>;
 
-||||||| 266a5a9cb9da
-def riscv_vnclipu_vl : SDNode<"RISCVISD::VNCLIPU_VL", SDT_RISCVVNBinOp_RM_VL>;
-def riscv_vnclip_vl : SDNode<"RISCVISD::VNCLIP_VL", SDT_RISCVVNBinOp_RM_VL>;
-
-=======
->>>>>>> 721aa5db
 def riscv_fadd_vl  : SDNode<"RISCVISD::FADD_VL",  SDT_RISCVFPBinOp_VL, [SDNPCommutative]>;
 def riscv_fsub_vl  : SDNode<"RISCVISD::FSUB_VL",  SDT_RISCVFPBinOp_VL>;
 def riscv_fmul_vl  : SDNode<"RISCVISD::FMUL_VL",  SDT_RISCVFPBinOp_VL, [SDNPCommutative]>;

@@ -282,7 +282,6 @@ enum NodeType : unsigned {
   // Rounding averaging adds of unsigned integers.
   AVGCEILU_VL,
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Halving subtract. Corresponds to vasub(u) with RDN. Rounding mode filled in
   // by tablegen similar to the AVG nodes above.
@@ -295,17 +294,6 @@ enum NodeType : unsigned {
   VSSRA_VL,
 #endif // SIFIVE_CUSTOMIZATION
 
-  // Operands are (source, shift, merge, mask, roundmode, vl)
-  VNCLIPU_VL,
-  VNCLIP_VL,
-
-||||||| 266a5a9cb9da
-  // Operands are (source, shift, merge, mask, roundmode, vl)
-  VNCLIPU_VL,
-  VNCLIP_VL,
-
-=======
->>>>>>> 721aa5db
   MULHS_VL,
   MULHU_VL,
   FADD_VL,

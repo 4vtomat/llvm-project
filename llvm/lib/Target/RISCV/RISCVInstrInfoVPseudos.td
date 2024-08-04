@@ -3851,22 +3851,12 @@ multiclass VPseudoVNCVTF_RM_W {
   defvar constraint = "@earlyclobber $rd";
   foreach m = MxListFW in {
     foreach e = SchedSEWSet<m.MX, isF=1, isWidening=1>.val in
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
     defm _W : VPseudoConversionRM<m.vrclass, m.wvrclass, m, constraint, sew=e,
                                   TargetConstraintType=2>,
 #endif // SIFIVE_CUSTOMIZATION
               SchedUnary<"WriteVFNCvtIToFV", "ReadVFNCvtIToFV", m.MX, e,
-                         forceMergeOpRead=true>;
-||||||| 266a5a9cb9da
-      defm _W : VPseudoConversionRM<m.vrclass, m.wvrclass, m, constraint, sew=e>,
-                SchedUnary<"WriteVFNCvtIToFV", "ReadVFNCvtIToFV", m.MX, e,
-                           forceMergeOpRead=true>;
-=======
-      defm _W : VPseudoConversionRM<m.vrclass, m.wvrclass, m, constraint, sew=e>,
-                SchedUnary<"WriteVFNCvtIToFV", "ReadVFNCvtIToFV", m.MX, e,
-                           forcePassthruRead=true>;
->>>>>>> 721aa5db
+                         forcePassthruRead=true>;
   }
 }
 

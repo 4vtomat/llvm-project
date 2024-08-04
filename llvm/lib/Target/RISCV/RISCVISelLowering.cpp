@@ -1546,32 +1546,8 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
     setIndexedStoreAction(ISD::POST_INC, MVT::i32, Legal);
   }
 
-<<<<<<< HEAD
-  if (Subtarget.hasVendorXCValu()) {
-    setOperationAction(ISD::ABS, XLenVT, Legal);
-    setOperationAction(ISD::SMIN, XLenVT, Legal);
-    setOperationAction(ISD::UMIN, XLenVT, Legal);
-    setOperationAction(ISD::SMAX, XLenVT, Legal);
-    setOperationAction(ISD::UMAX, XLenVT, Legal);
-    setOperationAction(ISD::SIGN_EXTEND_INREG, MVT::i8, Legal);
-    setOperationAction(ISD::SIGN_EXTEND_INREG, MVT::i16, Legal);
-  }
-
   EnableExtLdPromotion = true; // SIFIVE
 
-||||||| 266a5a9cb9da
-  if (Subtarget.hasVendorXCValu()) {
-    setOperationAction(ISD::ABS, XLenVT, Legal);
-    setOperationAction(ISD::SMIN, XLenVT, Legal);
-    setOperationAction(ISD::UMIN, XLenVT, Legal);
-    setOperationAction(ISD::SMAX, XLenVT, Legal);
-    setOperationAction(ISD::UMAX, XLenVT, Legal);
-    setOperationAction(ISD::SIGN_EXTEND_INREG, MVT::i8, Legal);
-    setOperationAction(ISD::SIGN_EXTEND_INREG, MVT::i16, Legal);
-  }
-
-=======
->>>>>>> 721aa5db
   // Function alignments.
   const Align FunctionAlignment(Subtarget.hasStdExtCOrZca() ? 2 : 4);
   setMinFunctionAlignment(FunctionAlignment);

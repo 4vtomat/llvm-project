@@ -301,16 +301,10 @@ public:
   bool hasVInstructionsI64() const { return HasStdExtZve64x; }
   bool hasVInstructionsF16Minimal() const { return HasStdExtZvfhmin; }
   bool hasVInstructionsF16() const { return HasStdExtZvfh; }
-<<<<<<< HEAD
-||||||| 266a5a9cb9da
-  bool hasVInstructionsBF16() const { return HasStdExtZvfbfmin; }
-=======
-  bool hasVInstructionsBF16Minimal() const { return HasStdExtZvfbfmin; }
->>>>>>> 721aa5db
   bool hasVInstructionsF32() const { return HasStdExtZve32f; }
   bool hasVInstructionsF64() const { return HasStdExtZve64d; }
 #if SIFIVE_CUSTOMIZATION
-  bool hasVInstructionsBF16() const {
+  bool hasVInstructionsBF16Minimal() const {
     return HasStdExtZvfbfmin || HasVendorXSfvfbfa;
   }
 #else

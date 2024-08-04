@@ -3976,7 +3976,6 @@ RISCVInstrInfo::getSerializableMachineMemOperandTargetFlags() const {
   return ArrayRef(TargetFlags);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 ScheduleHazardRecognizer *
 RISCVInstrInfo::CreateTargetMIHazardRecognizer(const InstrItineraryData *II,
@@ -3990,15 +3989,12 @@ RISCVInstrInfo::CreateTargetMIHazardRecognizer(const InstrItineraryData *II,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| 266a5a9cb9da
-=======
 unsigned RISCVInstrInfo::getTailDuplicateSize(CodeGenOptLevel OptLevel) const {
   return OptLevel >= CodeGenOptLevel::Aggressive
              ? STI.getTailDupAggressiveThreshold()
              : 2;
 }
 
->>>>>>> 721aa5db
 // Returns true if this is the sext.w pattern, addiw rd, rs1, 0.
 bool RISCV::isSEXT_W(const MachineInstr &MI) {
   return MI.getOpcode() == RISCV::ADDIW && MI.getOperand(1).isReg() &&
