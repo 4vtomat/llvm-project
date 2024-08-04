@@ -335,11 +335,14 @@ VPBasicBlock::iterator VPBasicBlock::getFirstNonPhi() {
 VPTransformState::VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                                    DominatorTree *DT, IRBuilderBase &Builder,
                                    InnerLoopVectorizer *ILV, VPlan *Plan,
-                                   LLVMContext &Ctx, bool EnableRISCVCSA) // SIFIVE
+                                   LLVMContext &Ctx,
+                                   LoopVectorizationLegality *Legal,
+                                   bool EnableRISCVCSA) // SIFIVE
     : VF(VF), UF(UF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
       LVer(nullptr),
 #if SIFIVE_CUSTOMIZATION
       TypeAnalysis(Plan->getCanonicalIV()->getScalarType(), Ctx),
+      Legal(Legal),
       EnableRISCVCSA(EnableRISCVCSA) {}
 #endif // SIFIVE_CUSTOMIZATION
 

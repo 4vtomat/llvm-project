@@ -3013,20 +3013,47 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
 
   // Prepare for the new pointers.
   SmallVector<Value *, 2> AddrParts;
+#if SIFIVE_CUSTOMIZATION
+  Value *IndexVal = State.Builder.getInt32(Group->getIndex(Instr));
+#else
   unsigned Index = Group->getIndex(Instr);
+#endif // SIFIVE_CUSTOMIZATION
 
   // TODO: extend the masked interleaved-group support to reversed access.
   VPValue *BlockInMask = getMask();
   assert((!BlockInMask || !Group->isReverse()) &&
          "Reversed masked interleave-group not supported.");
 
+#if !SIFIVE_CUSTOMIZATION
   Value *Idx;
+#endif // SIFIVE_CUSTOMIZATION
   // If the group is reverse, adjust the index to refer to the last vector lane
   // instead of the first. We adjust the index from the first vector lane,
   // rather than directly getting the pointer for lane VF - 1, because the
   // pointer operand of the interleaved access is supposed to be uniform. For
   // uniform instructions, we're only required to generate a value for the
   // first vector lane in each unroll iteration.
+#if SIFIVE_CUSTOMIZATION
+  if (Group->isReverse()) {
+    if (State.Legal->useVLAVectorizer()) {
+      assert(State.EVL && "RuntimeVL must be initialized at this point");
+      Value *EVL = State.Builder.CreateZExtOrTrunc(
+          State.get(State.EVL, 0, /*NeedsScalar=*/true), State.Builder.getInt32Ty());
+      IndexVal = State.Builder.CreateAdd(
+          IndexVal,
+          State.Builder.CreateMul(State.Builder.CreateSub(EVL, State.Builder.getInt32(1), "",
+                                              /*NUW=*/true, /*NSW=*/true),
+                            State.Builder.getInt32(InterleaveFactor), "",
+                            /*NUW=*/true, /*NSW=*/true),
+          "", /*NUW=*/true, /*NSW=*/true);
+    } else {
+      IndexVal = State.Builder.CreateAdd(
+          IndexVal,
+          State.Builder.getInt32((State.VF.getKnownMinValue() - 1) * Group->getFactor()));
+    }
+  }
+  IndexVal = State.Builder.CreateNeg(IndexVal);
+#else
   if (Group->isReverse()) {
     Value *RuntimeVF =
         getRuntimeVF(State.Builder, State.Builder.getInt32Ty(), State.VF);
@@ -3037,6 +3064,7 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
     Idx = State.Builder.CreateNeg(Idx);
   } else
     Idx = State.Builder.getInt32(-Index);
+#endif // SIFIVE_CUSTOMIZATION
 
   VPValue *Addr = getAddr();
   for (unsigned Part = 0; Part < State.UF; Part++) {
@@ -3059,7 +3087,12 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
     bool InBounds = false;
     if (auto *gep = dyn_cast<GetElementPtrInst>(AddrPart->stripPointerCasts()))
       InBounds = gep->isInBounds();
+#if SIFIVE_CUSTOMIZATION
+    AddrPart = State.Builder.CreateGEP(ScalarTy, AddrPart, IndexVal,
+                                 "", InBounds);
+#else
     AddrPart = State.Builder.CreateGEP(ScalarTy, AddrPart, Idx, "", InBounds);
+#endif // SIFIVE_CUSTOMIZATION
     AddrParts.push_back(AddrPart);
   }
 
@@ -3093,19 +3126,264 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
                                                    ShuffledMask, MaskForGaps)
                        : ShuffledMask;
   };
+#if SIFIVE_CUSTOMIZATION
+  auto GetVectorInterleaveIntrinsic = [](const unsigned Factor) {
+#define INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(N)                                 \
+  case N:                                                                      \
+    return Intrinsic::experimental_vector_interleave##N;
 
+    switch (Factor) {
+    default:
+      llvm_unreachable("Unsupported interleave factor");
+    case 2:
+      return Intrinsic::vector_interleave2;
+      INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(3);
+      INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(4);
+      INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(5);
+      INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(6);
+      INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(7);
+      INTERLEAVE_FACTOR_VECTOR_INTERLEAVE(8);
+    }
+#undef INTERLEAVE_FACTOR_VECTOR_INTERLEAVE
+  };
+
+  auto GetVectorDeinterleaveIntrinsic = [](const unsigned Factor) {
+#define DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(N)                               \
+  case N:                                                                      \
+    return Intrinsic::experimental_vector_deinterleave##N;
+
+    switch (Factor) {
+    default:
+      llvm_unreachable("Unsupported interleave factor");
+    case 2:
+      return Intrinsic::vector_deinterleave2;
+      DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(3);
+      DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(4);
+      DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(5);
+      DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(6);
+      DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(7);
+      DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE(8);
+    }
+#undef DEINTERLEAVE_FACTOR_VECTOR_INTERLEAVE
+  };
+
+  // Given scalar/vector type, returns a type with element type as an integer
+  // type of the same width as the original type. For vectors, preserves
+  // element count.
   const DataLayout &DL = Instr->getDataLayout();
+  auto GetIntegerType = [DL](Type *Ty) -> Type * {
+    if (auto *VTy = dyn_cast<VectorType>(Ty))
+      return VectorType::getInteger(const_cast<VectorType *>(VTy));
+    unsigned BitWidth = DL.getTypeAllocSizeInBits(Ty);
+    assert(BitWidth && "BitWidth must be of a non-zero size");
+    return IntegerType::get(Ty->getContext(), BitWidth);
+  };
+
+  // Returns type Num times as wide the input integer type IntTy.
+  auto GetExtendedType = [](const IntegerType *IntTy,
+                            const unsigned Num) -> IntegerType * {
+    assert(Num > 0 && "The extended number must not be zero");
+    return Type::getIntNTy(IntTy->getContext(),
+                           Num * IntTy->getScalarSizeInBits());
+  };
+
+  // Like createBitMaskForGaps, but VF can be scalable.
+  auto CreateMaskForGaps =
+      [GetVectorInterleaveIntrinsic,
+       InterleaveFactor](IRBuilderBase &Builder, ElementCount VF,
+                         const InterleaveGroup<Instruction> &Group) -> Value * {
+    // Return nullptr if the the group is fully interleaved.
+    if (Group.getNumMembers() == InterleaveFactor)
+      return nullptr;
+
+    SmallVector<Value *> Masks;
+    for (unsigned I = 0; I < InterleaveFactor; ++I) {
+      Value *Mask = Group.getMember(I) ? Builder.getTrueVector(VF)
+                                       : Builder.getFalseVector(VF);
+      Masks.push_back(Mask);
+    }
+    Type *Types[] = {VectorType::get(Type::getInt1Ty(Builder.getContext()),
+                                     VF * InterleaveFactor)};
+    return Builder.CreateIntrinsic(
+        GetVectorInterleaveIntrinsic(InterleaveFactor), Types, Masks, nullptr,
+        "interleaved.gaps.mask");
+  };
+#endif // SIFIVE_CUSTOMIZATION
+
+#if !SIFIVE_CUSTOMIZATION
+  const DataLayout &DL = Instr->getDataLayout();
+#endif // SIFIVE_CUSTOMIZATION
   // Vectorize the interleaved load group.
   if (isa<LoadInst>(Instr)) {
     Value *MaskForGaps = nullptr;
     if (NeedsMaskForGaps) {
+#if SIFIVE_CUSTOMIZATION
+      if (State.Legal->useVLAVectorizer())
+        MaskForGaps = CreateMaskForGaps(State.Builder, State.VF, *Group);
+      else
+        MaskForGaps =
+            createBitMaskForGaps(State.Builder, State.VF.getKnownMinValue(), *Group);
+#else
       MaskForGaps = createBitMaskForGaps(State.Builder,
                                          State.VF.getKnownMinValue(), *Group);
+#endif // SIFIVE_CUSTOMIZATION
       assert(MaskForGaps && "Mask for Gaps is required but it is null");
     }
 
     // For each unroll part, create a wide load for the group.
     SmallVector<Value *, 2> NewLoads;
+#if SIFIVE_CUSTOMIZATION
+    ArrayRef<VPValue *> VPDefs = definedValues();
+    if (State.Legal->useVLAVectorizer()) {
+      for (unsigned Part = 0; Part < State.UF; ++Part) {
+        CallInst *WideLoad;
+        Value *GroupMask;
+        if (BlockInMask || MaskForGaps) {
+          if (!BlockInMask) {
+            assert(!Group->isStrided() &&
+                   "Non-const strided group with gaps is unsupported");
+            GroupMask = MaskForGaps;
+          } else {
+            Value *BlockInMaskPart = State.get(BlockInMask, Part);
+            if (Group->isStrided()) {
+              assert(!MaskForGaps &&
+                     "Non-const strided group with gaps is unsupported");
+              GroupMask = BlockInMaskPart;
+            } else {
+              SmallVector<Value *, 8> Operands(InterleaveFactor,
+                                               BlockInMaskPart);
+              Type *Types[] = {
+                  VectorType::get(Type::getInt1Ty(State.Builder.getContext()),
+                                  State.VF * InterleaveFactor)};
+              GroupMask = State.Builder.CreateIntrinsic(
+                  GetVectorInterleaveIntrinsic(InterleaveFactor), Types,
+                  Operands, nullptr, "interleaved.mask");
+              if (MaskForGaps) {
+                Value *EVL32 = State.Builder.CreateZExtOrTrunc(
+                    State.get(State.EVL, Part, /*NeedsScalar=*/true),
+                    State.Builder.getInt32Ty());
+                Value *InterleaveEVL = State.Builder.CreateMul(
+                    EVL32,
+                    ConstantInt::get(State.Builder.getInt32Ty(), InterleaveFactor),
+                    "", /*NUW=*/true, /*NSW=*/true);
+                GroupMask = State.Builder.CreateIntrinsic(
+                    Intrinsic::vp_select, {Types},
+                    {MaskForGaps, GroupMask, MaskForGaps, InterleaveEVL},
+                    nullptr, "interleaved.group.mask");
+              }
+            }
+          }
+        } else {
+          ElementCount EC = Group->isStrided() ? State.VF : State.VF * InterleaveFactor;
+          GroupMask = State.Builder.getTrueVector(EC);
+        }
+        assert(State.EVL &&
+               "RuntimeVL must be initialized at this point");
+        Value *EVL32 = State.Builder.CreateZExtOrTrunc(
+            State.get(State.EVL, Part, /*NeedsScalar=*/true),
+            State.Builder.getInt32Ty());
+        if (Group->isStrided()) {
+          // Generate the stride.
+          // The stride in InterleavedAccessInfo is represented in elements, but
+          // the stride in strided load/store intrinsics is represented in
+          // bytes. Therefore, the stride needs to be converted into bytes.
+          auto &DL = State.CFG.PrevBB->getModule()->getDataLayout();
+          ScalarEvolution *SE = State.SE;
+          uint64_t EltSize = DL.getTypeAllocSize(ScalarTy);
+          const SCEV *StrideScev = Group->getStride();
+          const SCEV *StrideInBytesScev = SE->getMulExpr(
+              SE->getConstant(StrideScev->getType(), EltSize), StrideScev);
+          SCEVExpander Exp(*SE, DL, "stride");
+          Instruction *InsertPoint = &*State.Builder.GetInsertPoint();
+          Value *StrideInBytes = Exp.expandCodeFor(
+              StrideInBytesScev, StrideInBytesScev->getType(), InsertPoint);
+          // Use an integer type with the same width as the element type for
+          // strided access. Mainly to support access of float types.
+          // TODO: Better to add specific intrinsics to handle strided
+          // interleaved group.
+          auto *ScalarTyInBits = cast<IntegerType>(GetIntegerType(ScalarTy));
+          // Get the combined vector type
+          auto *StridedVecTy = VectorType::get(
+              GetExtendedType(ScalarTyInBits, InterleaveFactor), State.VF);
+          // Use original EVL instead of EVL * factor
+          Value *Operands[] = {AddrParts[Part], StrideInBytes, GroupMask,
+                               EVL32};
+          Type *Types[] = {StridedVecTy, Operands[0]->getType(),
+                           StrideInBytes->getType()};
+          WideLoad = State.Builder.CreateIntrinsic(
+              Intrinsic::experimental_vp_strided_load, Types, Operands, nullptr,
+              "wide.strided.load");
+        } else {
+          Value *InterleaveEVL = State.Builder.CreateMul(
+              EVL32, ConstantInt::get(State.Builder.getInt32Ty(), InterleaveFactor),
+              "", /*NUW=*/true, /*NSW=*/true);
+          Value *Operands[] = {AddrParts[Part], GroupMask, InterleaveEVL};
+          Type *Types[] = {VecTy, Operands[0]->getType()};
+          WideLoad = State.Builder.CreateIntrinsic(
+              Intrinsic::vp_load, Types, Operands, nullptr, "wide.masked.load");
+        }
+
+        WideLoad->addParamAttr(
+            0, Attribute::getWithAlignment(WideLoad->getContext(),
+                                           Group->getAlign()));
+        Group->addMetadata(WideLoad);
+        NewLoads.push_back(WideLoad);
+      }
+
+      // Need bitcast if the group requires strided load
+      //   <VF x (elementTy * factor)> strided.load
+      //   bitcast <VF x (elementTy * factor)> to <(VF * factor) x elementTy>
+      if (Group->isStrided())
+        for (unsigned Part = 0; Part < State.UF; ++Part) {
+          if (ScalarTy->isPointerTy()) {
+            Type *IntTy =
+                State.Builder.getIntNTy(DL.getTypeAllocSizeInBits(ScalarTy));
+            auto *IntVecTy = VectorType::get(IntTy, VecTy->getElementCount());
+            NewLoads[Part] = State.Builder.CreateBitOrPointerCast(
+                NewLoads[Part], IntVecTy,
+                NewLoads[Part]->getName() + ".intcast");
+          }
+          NewLoads[Part] = State.Builder.CreateBitOrPointerCast(
+              NewLoads[Part], VecTy, NewLoads[Part]->getName() + ".cast");
+        }
+
+      // For each member in the group, shuffle out the appropriate data from the
+      // wide loads.
+      for (unsigned Part = 0; Part < State.UF; ++Part) {
+        SmallVector<Type *> Types = {NewLoads[Part]->getType()};
+
+        Value *DeinterleavedResults = State.Builder.CreateIntrinsic(
+            GetVectorDeinterleaveIntrinsic(InterleaveFactor), Types,
+            {NewLoads[Part]}, nullptr, "deinterleaved.results");
+
+        unsigned LoadIdx = 0;
+        for (unsigned I = 0; I < InterleaveFactor; ++I) {
+          Instruction *Member = Group->getMember(I);
+          if (!Member)
+            continue;
+
+          Value *Result = State.Builder.CreateExtractValue(DeinterleavedResults, I);
+          if (Group->isReverse()) {
+              Value *TrueVector = State.Builder.getTrueVector(State.VF);
+
+              Result = State.Builder.CreateIntrinsic(
+                  Intrinsic::experimental_vp_reverse, {Result->getType()},
+                  {Result, TrueVector,
+                   State.get(State.EVL, Part, /*NeedsScalar=*/true)},
+                  nullptr, "deinterleaved.result.reverse");
+          }
+          // If this member has different type, cast the result type.
+          if (Member->getType() != ScalarTy) {
+            VectorType *OtherVTy = VectorType::get(Member->getType(), State.VF);
+            Result = createBitOrPointerCast(State.Builder, Result, OtherVTy, DL);
+          }
+          State.set(VPDefs[LoadIdx], Result, Part);
+          ++LoadIdx;
+        }
+      }
+      return;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     for (unsigned Part = 0; Part < State.UF; Part++) {
       Instruction *NewLoad;
       if (BlockInMask || MaskForGaps) {
@@ -3120,7 +3398,9 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
       NewLoads.push_back(NewLoad);
     }
 
+#if !SIFIVE_CUSTOMIZATION
     ArrayRef<VPValue *> VPDefs = definedValues();
+#endif // SIFIVE_CUSTOMIZATION
     const DataLayout &DL = State.CFG.PrevBB->getDataLayout();
     if (VecTy->isScalableTy()) {
       assert(InterleaveFactor == 2 &&
@@ -3196,12 +3476,88 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
   // The sub vector type for current instruction.
   auto *SubVT = VectorType::get(ScalarTy, State.VF);
 
+#if SIFIVE_CUSTOMIZATION
+  assert(
+      !Group->isStrided() &&
+      "Interleaving for stores with non-const stride is not supported for VLA");
+
+  ArrayRef<VPValue *> StoredValues = getStoredValues();
+  if (State.Legal->useVLAVectorizer()) {
+    assert(Group->getFactor() == Group->getNumMembers() &&
+           "Interleaving for stores with gaps is not supported for VLA");
+    for (unsigned Part = 0; Part < State.UF; ++Part) {
+      Value *GroupMask;
+      if (BlockInMask) {
+        Value *BlockInMaskPart = State.get(BlockInMask, Part);
+        SmallVector<Value *> Operands(InterleaveFactor, BlockInMaskPart);
+
+        Type *Types[] = {VectorType::get(Type::getInt1Ty(State.Builder.getContext()),
+                                         State.VF * InterleaveFactor)};
+        GroupMask = State.Builder.CreateIntrinsic(
+            GetVectorInterleaveIntrinsic(InterleaveFactor), Types, Operands,
+            nullptr, "interleaved.mask");
+      } else {
+        GroupMask = State.Builder.getTrueVector(State.VF * InterleaveFactor);
+      }
+
+      // Interleave store values
+      SmallVector<Value *> Operands;
+      for (unsigned I = 0; I < InterleaveFactor; ++I) {
+        Value *StoredValue = State.get(StoredValues[I], Part);
+        if (Group->isReverse()) {
+          Value *TrueVector = State.Builder.getTrueVector(State.VF);
+
+          StoredValue = State.Builder.CreateIntrinsic(
+              Intrinsic::experimental_vp_reverse, {StoredValue->getType()},
+              {StoredValue, TrueVector,
+               State.get(State.EVL, Part, /*NeedsScalar=*/true)},
+              nullptr, "result.reverse");
+        }
+        if (StoredValue->getType() != SubVT)
+          StoredValue = createBitOrPointerCast(State.Builder, StoredValue, SubVT, DL);
+
+        Operands.push_back(StoredValue);
+      }
+
+      Value *StoredVal = nullptr;
+      // If same value is stored, broadcast it and do regular contiguous store
+      if (llvm::all_equal(Operands))
+        if (Value *Splat = getSplatValue(Operands.front()))
+          StoredVal = State.Builder.CreateVectorSplat(VecTy->getElementCount(),
+                                                      Splat, "wide.broadcast");
+
+      if (!StoredVal)
+        StoredVal = State.Builder.CreateIntrinsic(
+            GetVectorInterleaveIntrinsic(InterleaveFactor), {VecTy}, Operands,
+            nullptr, "interleaved.vec");
+
+      assert(State.EVL && "RuntimeVL must be initialized at this point");
+      Value *EVL32 = State.Builder.CreateZExtOrTrunc(
+          State.get(State.EVL, Part, /*NeedsScalar=*/true),
+          State.Builder.getInt32Ty());
+      Value *InterleaveEVL = State.Builder.CreateMul(
+          EVL32, ConstantInt::get(State.Builder.getInt32Ty(), InterleaveFactor), "",
+          /*NUW=*/true, /*NSW=*/true);
+      Operands = {StoredVal, AddrParts[Part], GroupMask, InterleaveEVL};
+      CallInst *WideStore = State.Builder.CreateIntrinsic(
+          Intrinsic::vp_store, {VecTy, AddrParts[Part]->getType()}, Operands,
+          nullptr);
+      WideStore->addParamAttr(
+          1, Attribute::getWithAlignment(WideStore->getContext(),
+                                         Group->getAlign()));
+      Group->addMetadata(WideStore);
+    }
+    return;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   // Vectorize the interleaved store group.
   Value *MaskForGaps =
       createBitMaskForGaps(State.Builder, State.VF.getKnownMinValue(), *Group);
   assert((!MaskForGaps || !State.VF.isScalable()) &&
          "masking gaps for scalable vectors is not yet supported.");
+#if !SIFIVE_CUSTOMIZATION
   ArrayRef<VPValue *> StoredValues = getStoredValues();
+#endif // SIFIVE_CUSTOMIZATION
   for (unsigned Part = 0; Part < State.UF; Part++) {
     // Collect the stored vector from each member.
     SmallVector<Value *, 4> StoredVecs;

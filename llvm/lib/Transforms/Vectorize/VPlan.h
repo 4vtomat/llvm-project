@@ -56,6 +56,7 @@
 #include "llvm/IR/ModuleSlotTracker.h"
 #include "llvm/IR/Type.h"
 #include "llvm/Support/InstructionCost.h"
+#include "llvm/Transforms/Vectorize/LoopVectorizationLegality.h"
 #endif // SIFIVE_CUSTOMIZATION
 
 namespace llvm {
@@ -337,6 +338,7 @@ struct VPTransformState {
   VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                    DominatorTree *DT, IRBuilderBase &Builder,
                    InnerLoopVectorizer *ILV, VPlan *Plan, LLVMContext &Ctx,
+                   LoopVectorizationLegality *Legal,
                    bool EnableRISCVCSA);
 #else
   VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
@@ -573,6 +575,9 @@ struct VPTransformState {
   VPTypeAnalysis TypeAnalysis;
 
 #if SIFIVE_CUSTOMIZATION
+  /// The legality analysis.
+  LoopVectorizationLegality *Legal;
+
   /// True if the RISCV specific implementation of CSA vectorization is
   /// enabled.
   bool EnableRISCVCSA;
