@@ -295,7 +295,15 @@
 // For such platforms build this code with -DSANITIZER_CAN_USE_ALLOCATOR64=0 or
 // change the definition of SANITIZER_CAN_USE_ALLOCATOR64 here.
 #ifndef SANITIZER_CAN_USE_ALLOCATOR64
+<<<<<<< HEAD
 #  if (!SIFIVE_CUSTOMIZATION && SANITIZER_RISCV64 && !SANITIZER_FUCHSIA) || SANITIZER_IOS || SANITIZER_DRIVERKIT
+||||||| 266a5a9cb9da
+#  if (SANITIZER_RISCV64 && !SANITIZER_FUCHSIA) || SANITIZER_IOS || \
+      SANITIZER_DRIVERKIT
+=======
+#  if (SANITIZER_RISCV64 && !SANITIZER_FUCHSIA && !SANITIZER_LINUX) || \
+      SANITIZER_IOS || SANITIZER_DRIVERKIT
+>>>>>>> 721aa5db
 #    define SANITIZER_CAN_USE_ALLOCATOR64 0
 #  elif defined(__mips64) || defined(__hexagon__)
 #    define SANITIZER_CAN_USE_ALLOCATOR64 0
@@ -321,11 +329,17 @@
 #  if SANITIZER_FUCHSIA
 #    define SANITIZER_MMAP_RANGE_SIZE (1ULL << 38)
 #  else
+<<<<<<< HEAD
 #    ifdef SIFIVE_CUSTOMIZATION
 #      define SANITIZER_MMAP_RANGE_SIZE FIRST_32_SECOND_64(1ULL << 32, 1ULL << 57)
 #    else
 #      define SANITIZER_MMAP_RANGE_SIZE FIRST_32_SECOND_64(1ULL << 32, 1ULL << 47)
 #    endif
+||||||| 266a5a9cb9da
+#    define SANITIZER_MMAP_RANGE_SIZE FIRST_32_SECOND_64(1ULL << 32, 1ULL << 47)
+=======
+#    define SANITIZER_MMAP_RANGE_SIZE FIRST_32_SECOND_64(1ULL << 32, 1ULL << 56)
+>>>>>>> 721aa5db
 #  endif
 #elif defined(__aarch64__)
 #  if SANITIZER_APPLE

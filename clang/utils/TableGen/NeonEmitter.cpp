@@ -966,7 +966,7 @@ std::string Intrinsic::getInstTypeCode(Type T, ClassKind CK) const {
   char typeCode = '\0';
   bool printNumber = true;
 
-  if (CK == ClassB && TargetGuard == "")
+  if (CK == ClassB && TargetGuard == "neon")
     return "";
 
   if (T.isBFloat16())
@@ -990,7 +990,7 @@ std::string Intrinsic::getInstTypeCode(Type T, ClassKind CK) const {
       break;
     }
   }
-  if (CK == ClassB && TargetGuard == "") {
+  if (CK == ClassB && TargetGuard == "neon") {
     typeCode = '\0';
   }
 
@@ -1092,7 +1092,7 @@ std::string Intrinsic::mangleName(std::string Name, ClassKind LocalCK) const {
     S += "_" + getInstTypeCode(InBaseType, LocalCK);
   }
 
-  if (LocalCK == ClassB && TargetGuard == "")
+  if (LocalCK == ClassB && TargetGuard == "neon")
     S += "_v";
 
   // Insert a 'q' before the first '_' character so that it ends up before

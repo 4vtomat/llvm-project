@@ -14,6 +14,7 @@
 #include "clang/Basic/PragmaKinds.h"
 #include "clang/Basic/TargetInfo.h"
 #include "clang/Lex/Preprocessor.h"
+#include "clang/Lex/PreprocessorOptions.h"
 #include "clang/Lex/Token.h"
 #include "clang/Parse/LoopHint.h"
 #include "clang/Parse/ParseDiagnostic.h"
@@ -411,6 +412,7 @@ private:
   Sema &Actions;
 };
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 struct PragmaRVVHandler final : public PragmaHandler {
   PragmaRVVHandler() : PragmaHandler("rvv") {}
@@ -419,6 +421,22 @@ struct PragmaRVVHandler final : public PragmaHandler {
 };
 #endif // SIFIVE_CUSTOMIZATION
 
+||||||| 266a5a9cb9da
+=======
+struct PragmaMCFuncHandler : public PragmaHandler {
+  PragmaMCFuncHandler(bool ReportError)
+      : PragmaHandler("mc_func"), ReportError(ReportError) {}
+  void HandlePragma(Preprocessor &PP, PragmaIntroducer Introducer,
+                    Token &Tok) override {
+    if (ReportError)
+      PP.Diag(Tok, diag::err_pragma_mc_func_not_supported);
+  }
+
+private:
+  bool ReportError = false;
+};
+
+>>>>>>> 721aa5db
 void markAsReinjectedForRelexing(llvm::MutableArrayRef<clang::Token> Toks) {
   for (auto &T : Toks)
     T.setFlag(clang::Token::IsReinjected);
@@ -581,6 +599,12 @@ void Parser::initializePragmaHandlers() {
     PP.AddPragmaHandler("clang", RVVPragmaHandler.get());
 #endif // SIFIVE_CUSTOMIZATION
   }
+
+  if (getTargetInfo().getTriple().isOSAIX()) {
+    MCFuncPragmaHandler = std::make_unique<PragmaMCFuncHandler>(
+        PP.getPreprocessorOpts().ErrorOnPragmaMcfuncOnAIX);
+    PP.AddPragmaHandler(MCFuncPragmaHandler.get());
+  }
 }
 
 void Parser::resetPragmaHandlers() {
@@ -719,6 +743,11 @@ void Parser::resetPragmaHandlers() {
     PP.RemovePragmaHandler("clang", RVVPragmaHandler.get());
     RVVPragmaHandler.reset();
 #endif // SIFIVE_CUSTOMIZATION
+  }
+
+  if (getTargetInfo().getTriple().isOSAIX()) {
+    PP.RemovePragmaHandler(MCFuncPragmaHandler.get());
+    MCFuncPragmaHandler.reset();
   }
 }
 

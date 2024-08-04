@@ -15,9 +15,15 @@
 
 #include "llvm/Analysis/IVDescriptors.h"
 #include "llvm/Analysis/LoopAccessAnalysis.h"
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/Support/CommandLine.h"
 #endif // SIFIVE_CUSTOMIZATION
+||||||| 266a5a9cb9da
+=======
+#include "llvm/Analysis/TargetTransformInfo.h"
+#include "llvm/IR/VectorBuilder.h"
+>>>>>>> 721aa5db
 #include "llvm/Transforms/Utils/ValueMapper.h"
 
 namespace llvm {
@@ -385,6 +391,10 @@ bool canSinkOrHoistInst(Instruction &I, AAResults *AA, DominatorTree *DT,
 #endif // SIFIVE_CUSTOMIZATION
                         OptimizationRemarkEmitter *ORE = nullptr);
 
+/// Returns the llvm.vector.reduce intrinsic that corresponds to the recurrence
+/// kind.
+constexpr Intrinsic::ID getReductionIntrinsicID(RecurKind RK);
+
 /// Returns the arithmetic instruction opcode used when expanding a reduction.
 unsigned getArithmeticReductionInstruction(Intrinsic::ID RdxID);
 
@@ -420,6 +430,7 @@ Value *getOrderedReduction(IRBuilderBase &Builder, Value *Acc, Value *Src,
 /// Generates a vector reduction using shufflevectors to reduce the value.
 /// Fast-math-flags are propagated using the IRBuilder's setting.
 Value *getShuffleReduction(IRBuilderBase &Builder, Value *Src, unsigned Op,
+                           TargetTransformInfo::ReductionShuffle RS,
                            RecurKind MinMaxKind = RecurKind::None);
 
 /// Create a target reduction of the given vector. The reduction operation
@@ -430,6 +441,10 @@ Value *getShuffleReduction(IRBuilderBase &Builder, Value *Src, unsigned Op,
 /// Fast-math-flags are propagated using the IRBuilder's setting.
 Value *createSimpleTargetReduction(IRBuilderBase &B, Value *Src,
                                    RecurKind RdxKind);
+/// Overloaded function to generate vector-predication intrinsics for target
+/// reduction.
+Value *createSimpleTargetReduction(VectorBuilder &VB, Value *Src,
+                                   const RecurrenceDescriptor &Desc);
 
 #if SIFIVE_CUSTOMIZATION
 Value *createSimpleTargetReduction(IRBuilderBase &B, Value *Src,
@@ -475,6 +490,11 @@ Value *createTargetReduction(IRBuilderBase &B, const RecurrenceDescriptor &Desc,
 /// Create an ordered reduction intrinsic using the given recurrence
 /// descriptor \p Desc.
 Value *createOrderedReduction(IRBuilderBase &B,
+                              const RecurrenceDescriptor &Desc, Value *Src,
+                              Value *Start);
+/// Overloaded function to generate vector-predication intrinsics for ordered
+/// reduction.
+Value *createOrderedReduction(VectorBuilder &VB,
                               const RecurrenceDescriptor &Desc, Value *Src,
                               Value *Start);
 

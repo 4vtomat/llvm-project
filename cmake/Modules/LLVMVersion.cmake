@@ -1,7 +1,13 @@
 # The LLVM Version number information
 
 if(NOT DEFINED LLVM_VERSION_MAJOR)
+<<<<<<< HEAD
   set(LLVM_VERSION_MAJOR 18) # SIFIVE
+||||||| 266a5a9cb9da
+  set(LLVM_VERSION_MAJOR 19)
+=======
+  set(LLVM_VERSION_MAJOR 20)
+>>>>>>> 721aa5db
 endif()
 if(NOT DEFINED LLVM_VERSION_MINOR)
   set(LLVM_VERSION_MINOR 9) # SIFIVE

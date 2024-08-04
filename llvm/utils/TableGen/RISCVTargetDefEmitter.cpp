@@ -11,6 +11,7 @@
 //
 //===----------------------------------------------------------------------===//
 
+#include "llvm/ADT/DenseSet.h"
 #include "llvm/Support/RISCVISAUtils.h"
 #include "llvm/TableGen/Record.h"
 #include "llvm/TableGen/TableGenBackend.h"
@@ -220,6 +221,7 @@ static void emitRISCVProcs(RecordKeeper &RK, raw_ostream &OS) {
   OS << "\n#undef TUNE_PROC\n";
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static void emitRISCVExtensionInfoJSON(const std::vector<Record *> &Extensions,
                                        raw_ostream &OS) {
@@ -281,10 +283,49 @@ emitRISCVImpliedExtensionInfoJSON(const std::vector<Record *> &Extensions,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+||||||| 266a5a9cb9da
+=======
+static void emitRISCVExtensionBitmask(RecordKeeper &RK, raw_ostream &OS) {
+
+  std::vector<Record *> Extensions =
+      RK.getAllDerivedDefinitionsIfDefined("RISCVExtensionBitmask");
+  llvm::sort(Extensions, [](const Record *Rec1, const Record *Rec2) {
+    return getExtensionName(Rec1) < getExtensionName(Rec2);
+  });
+
+#ifndef NDEBUG
+  llvm::DenseSet<std::pair<uint64_t, uint64_t>> Seen;
+#endif
+
+  OS << "#ifdef GET_RISCVExtensionBitmaskTable_IMPL\n";
+  OS << "static const RISCVExtensionBitmask ExtensionBitmask[]={\n";
+  for (const Record *Rec : Extensions) {
+    unsigned GroupIDVal = Rec->getValueAsInt("GroupID");
+    unsigned BitPosVal = Rec->getValueAsInt("BitPos");
+
+    StringRef ExtName = Rec->getValueAsString("Name");
+    ExtName.consume_front("experimental-");
+
+#ifndef NDEBUG
+    assert(Seen.insert(std::make_pair(GroupIDVal, BitPosVal)).second &&
+           "duplicated bitmask");
+#endif
+
+    OS << "    {"
+       << "\"" << ExtName << "\""
+       << ", " << GroupIDVal << ", " << BitPosVal << "ULL"
+       << "},\n";
+  }
+  OS << "};\n";
+  OS << "#endif\n";
+}
+
+>>>>>>> 721aa5db
 static void EmitRISCVTargetDef(RecordKeeper &RK, raw_ostream &OS) {
   emitRISCVExtensions(RK, OS);
   emitRISCVProfiles(RK, OS);
   emitRISCVProcs(RK, OS);
+  emitRISCVExtensionBitmask(RK, OS);
 }
 
 #if SIFIVE_CUSTOMIZATION

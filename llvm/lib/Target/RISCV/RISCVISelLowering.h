@@ -130,6 +130,7 @@ enum NodeType : unsigned {
   FROUND,
 
   FCLASS,
+  FSGNJX,
 
   // Floating point fmax and fmin matching the RISC-V instruction semantics.
   FMAX, FMIN,
@@ -183,6 +184,12 @@ enum NodeType : unsigned {
   // Truncates a RVV integer vector by one power-of-two. Carries both an extra
   // mask and VL operand.
   TRUNCATE_VECTOR_VL,
+  // Truncates a RVV integer vector by one power-of-two. If the value doesn't
+  // fit in the destination type, the result is saturated. These correspond to
+  // vnclip and vnclipu with a shift of 0. Carries both an extra mask and VL
+  // operand.
+  TRUNCATE_VECTOR_VL_SSAT,
+  TRUNCATE_VECTOR_VL_USAT,
   // Matches the semantics of vslideup/vslidedown. The first operand is the
   // pass-thru operand, the second is the source vector, the third is the XLenVT
   // index (either constant or non-constant), the fourth is the mask, the fifth
@@ -233,7 +240,7 @@ enum NodeType : unsigned {
   VECREDUCE_FMIN_VL,
   VECREDUCE_FMAX_VL,
 
-  // Vector binary ops with a merge as a third operand, a mask as a fourth
+  // Vector binary ops with a passthru as a third operand, a mask as a fourth
   // operand, and VL as a fifth operand.
   ADD_VL,
   AND_VL,
@@ -275,6 +282,7 @@ enum NodeType : unsigned {
   // Rounding averaging adds of unsigned integers.
   AVGCEILU_VL,
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Halving subtract. Corresponds to vasub(u) with RDN. Rounding mode filled in
   // by tablegen similar to the AVG nodes above.
@@ -291,6 +299,13 @@ enum NodeType : unsigned {
   VNCLIPU_VL,
   VNCLIP_VL,
 
+||||||| 266a5a9cb9da
+  // Operands are (source, shift, merge, mask, roundmode, vl)
+  VNCLIPU_VL,
+  VNCLIP_VL,
+
+=======
+>>>>>>> 721aa5db
   MULHS_VL,
   MULHU_VL,
   FADD_VL,
@@ -309,7 +324,7 @@ enum NodeType : unsigned {
   VFCLASS_VL,   // SIFIVE
   VFNMSAC_VL,   // SIFIVE
   FCLASS_VL,
-  FCOPYSIGN_VL, // Has a merge operand
+  FCOPYSIGN_VL, // Has a passthru operand
   VFCVT_RTZ_X_F_VL,
   VFCVT_RTZ_XU_F_VL,
   VFCVT_X_F_VL,
@@ -337,7 +352,7 @@ enum NodeType : unsigned {
   VFWMSUB_VL,
   VFWNMSUB_VL,
 
-  // Widening instructions with a merge value a third operand, a mask as a
+  // Widening instructions with a passthru value a third operand, a mask as a
   // fourth operand, and VL as a fifth operand.
   VWMUL_VL,
   VWMULU_VL,
@@ -1034,6 +1049,7 @@ private:
   SDValue lowerLogicVPOp(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPExtMaskOp(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPSetCCMaskOp(SDValue Op, SelectionDAG &DAG) const;
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   SDValue lowerVPMergeMask(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPFirst(SDValue Op, SelectionDAG &DAG) const;
@@ -1041,6 +1057,10 @@ private:
   SDValue lowerVPCompressExperimental(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPExpandExperimental(SDValue Op, SelectionDAG &DAG) const;
 #endif // SIFIVE_CUSTOMIZATION
+||||||| 266a5a9cb9da
+=======
+  SDValue lowerVPSplatExperimental(SDValue Op, SelectionDAG &DAG) const;
+>>>>>>> 721aa5db
   SDValue lowerVPSpliceExperimental(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPReverseExperimental(SDValue Op, SelectionDAG &DAG) const;
   SDValue lowerVPFPIntConvOp(SDValue Op, SelectionDAG &DAG) const;

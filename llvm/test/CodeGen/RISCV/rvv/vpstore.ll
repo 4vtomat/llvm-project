@@ -459,6 +459,7 @@ define void @vpstore_nxv17f64(<vscale x 17 x double> %val, ptr %ptr, <vscale x 1
   call void @llvm.vp.store.nxv17f64.p0(<vscale x 17 x double> %val, ptr %ptr, <vscale x 17 x i1> %m, i32 %evl)
   ret void
 }
+<<<<<<< HEAD
 
 define void @unaligned_vpstore_nxv1i64_allones_mask(<vscale x 1 x i64> %val, <vscale x 1 x i64>* %ptr, i32 zeroext %evl) {
 ; CHECK-LABEL: unaligned_vpstore_nxv1i64_allones_mask:
@@ -472,3 +473,17 @@ define void @unaligned_vpstore_nxv1i64_allones_mask(<vscale x 1 x i64> %val, <vs
   call void @llvm.vp.store.nxv1i64.p0(<vscale x 1 x i64> %val, <vscale x 1 x i64>* align 1 %ptr, <vscale x 1 x i1> %b, i32 %evl)
   ret void
 }
+||||||| 266a5a9cb9da
+=======
+
+define void @vpstore_all_active_nxv8i8(<vscale x 8 x i8> %val, ptr %ptr) {
+; CHECK-LABEL: vpstore_all_active_nxv8i8:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    vs1r.v v8, (a0)
+; CHECK-NEXT:    ret
+  %vscale = call i32 @llvm.vscale()
+  %evl = mul i32 %vscale, 8
+  call void @llvm.vp.store.nxv8i8.p0(<vscale x 8 x i8> %val, ptr %ptr, <vscale x 8 x i1> splat (i1 true), i32 %evl)
+  ret void
+}
+>>>>>>> 721aa5db

@@ -53,7 +53,7 @@
 #include "llvm/CodeGen/MachineMemOperand.h"
 #include "llvm/CodeGen/MachineOperand.h"
 #include "llvm/CodeGen/MachineRegisterInfo.h"
-#include "llvm/CodeGen/RuntimeLibcalls.h"
+#include "llvm/CodeGen/RuntimeLibcallUtil.h"
 #include "llvm/CodeGen/SelectionDAG.h"
 #include "llvm/CodeGen/SelectionDAGAddressAnalysis.h"
 #include "llvm/CodeGen/SelectionDAGNodes.h"
@@ -1204,7 +1204,8 @@ ARMTargetLowering::ARMTargetLowering(const TargetMachine &TM,
     setOperationAction(ISD::ROTR, VT, Expand);
   }
   setOperationAction(ISD::CTTZ,  MVT::i32, Custom);
-  setOperationAction(ISD::CTPOP, MVT::i32, Expand);
+  setOperationAction(ISD::CTPOP, MVT::i32, LibCall);
+  setOperationAction(ISD::CTPOP, MVT::i64, LibCall);
   if (!Subtarget->hasV5TOps() || Subtarget->isThumb1Only()) {
     setOperationAction(ISD::CTLZ, MVT::i32, Expand);
     setOperationAction(ISD::CTLZ_ZERO_UNDEF, MVT::i32, LibCall);

@@ -70,6 +70,7 @@
 ; CHECK-O23SZ-NEXT: Running pass: InstCombinePass
 ; CHECK-O23SZ-NEXT: Running pass: AggressiveInstCombinePass
 ; CHECK-EP-Peephole-NEXT: Running pass: NoOpFunctionPass
+; CHECK-O23SZ-NEXT: Running pass: ExpandVariadicsPass
 ; CHECK-O23SZ-NEXT: Running pass: ModuleInlinerWrapperPass
 ; CHECK-O23SZ-NEXT: Running analysis: InlineAdvisorAnalysis
 ; CHECK-O23SZ-NEXT: Running pass: InlinerPass

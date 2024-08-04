@@ -19,7 +19,7 @@
 #include "llvm/MC/MCAssembler.h"
 #include "llvm/MC/MCCodeEmitter.h"
 #include "llvm/MC/MCContext.h"
-#include "llvm/MC/MCObjectWriter.h"
+#include "llvm/MC/MCELFObjectWriter.h"
 #include "llvm/MC/MCSectionELF.h"
 #include "llvm/MC/MCSubtargetInfo.h"
 #include "llvm/MC/MCValue.h"
@@ -121,10 +121,10 @@ void RISCVTargetELFStreamer::emitNoteSection(unsigned Flags) {
 
 void RISCVTargetELFStreamer::finish() {
   RISCVTargetStreamer::finish();
-  MCAssembler &MCA = getStreamer().getAssembler();
+  ELFObjectWriter &W = getStreamer().getWriter();
   RISCVABI::ABI ABI = getTargetABI();
 
-  unsigned EFlags = MCA.getELFHeaderEFlags();
+  unsigned EFlags = W.getELFHeaderEFlags();
 
   if (hasRVC())
     EFlags |= ELF::EF_RISCV_RVC;
@@ -151,6 +151,7 @@ void RISCVTargetELFStreamer::finish() {
     llvm_unreachable("Improperly initialised target ABI");
   }
 
+<<<<<<< HEAD
   MCA.setELFHeaderEFlags(EFlags);
 
 #if SIFIVE_CUSTOMIZATION
@@ -163,6 +164,11 @@ void RISCVTargetELFStreamer::finish() {
     GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_ZICFISS;
   emitNoteSection(GNUNoteFlags);
 #endif // SIFIVE_CUSTOMIZATION
+||||||| 266a5a9cb9da
+  MCA.setELFHeaderEFlags(EFlags);
+=======
+  W.setELFHeaderEFlags(EFlags);
+>>>>>>> 721aa5db
 }
 
 void RISCVTargetELFStreamer::reset() {
@@ -177,7 +183,6 @@ void RISCVTargetELFStreamer::emitDirectiveVariantCC(MCSymbol &Symbol) {
 void RISCVELFStreamer::reset() {
   static_cast<RISCVTargetStreamer *>(getTargetStreamer())->reset();
   MCELFStreamer::reset();
-  MappingSymbolCounter = 0;
   LastMappingSymbols.clear();
   LastEMS = EMS_None;
 }
@@ -197,8 +202,7 @@ void RISCVELFStreamer::emitInstructionsMappingSymbol() {
 }
 
 void RISCVELFStreamer::emitMappingSymbol(StringRef Name) {
-  auto *Symbol = cast<MCSymbolELF>(getContext().getOrCreateSymbol(
-      Name + "." + Twine(MappingSymbolCounter++)));
+  auto *Symbol = cast<MCSymbolELF>(getContext().createLocalSymbol(Name));
   emitLabel(Symbol);
   Symbol->setType(ELF::STT_NOTYPE);
   Symbol->setBinding(ELF::STB_LOCAL);
