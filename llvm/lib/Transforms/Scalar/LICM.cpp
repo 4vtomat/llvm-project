@@ -3098,51 +3098,6 @@ static bool hoistMulAddAssociation(Instruction &I, Loop &L,
   return true;
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-static bool hoistArithmetics(Instruction &I, Loop &L,
-                             ICFLoopSafetyInfo &SafetyInfo,
-                             MemorySSAUpdater &MSSAU, AssumptionCache *AC,
-                             LiveValues *LV, TargetTransformInfo *TTI,
-                             DominatorTree *DT) {
-  // Optimize complex patterns, such as (x < INV1 && x < INV2), turning them
-  // into (x < min(INV1, INV2)), and hoisting the invariant part of this
-  // expression out of the loop.
-  if (hoistMinMax(I, L, SafetyInfo, MSSAU, LV, TTI, DT)) {
-    ++NumHoisted;
-    ++NumMinMaxHoisted;
-    return true;
-  }
-
-  // Try to hoist GEPs by reassociation.
-  if (hoistGEP(I, L, SafetyInfo, MSSAU, AC, LV, TTI, DT)) {
-    ++NumHoisted;
-    ++NumGEPsHoisted;
-    return true;
-  }
-
-  // Try to hoist add/sub's by reassociation.
-  if (hoistAddSub(I, L, SafetyInfo, MSSAU, AC, LV, TTI, DT)) {
-    ++NumHoisted;
-    ++NumAddSubHoisted;
-    return true;
-  }
-
-  bool IsInt = I.getType()->isIntOrIntVectorTy();
-  if (hoistMulAddAssociation(I, L, SafetyInfo, MSSAU, AC, LV, TTI, DT)) {
-    ++NumHoisted;
-    if (IsInt)
-      ++NumIntAssociationsHoisted;
-    else
-      ++NumFPAssociationsHoisted;
-    return true;
-  }
-
-  return false;
-}
-#else
-||||||| 266a5a9cb9da
-=======
 /// Reassociate associative binary expressions of the form
 ///
 /// 1. "(LV op C1) op C2" ==> "LV op (C1 op C2)"
@@ -3205,7 +3160,45 @@ static bool hoistBOAssociation(Instruction &I, Loop &L,
   return true;
 }
 
->>>>>>> 721aa5db
+#if SIFIVE_CUSTOMIZATION
+static bool hoistArithmetics(Instruction &I, Loop &L,
+                             ICFLoopSafetyInfo &SafetyInfo,
+                             MemorySSAUpdater &MSSAU, AssumptionCache *AC,
+                             LiveValues *LV, TargetTransformInfo *TTI,
+                             DominatorTree *DT) {
+  // Optimize complex patterns, such as (x < INV1 && x < INV2), turning them
+  // into (x < min(INV1, INV2)), and hoisting the invariant part of this
+  // expression out of the loop.
+  if (hoistMinMax(I, L, SafetyInfo, MSSAU, LV, TTI, DT)) {
+    ++NumHoisted;
+    ++NumMinMaxHoisted;
+    return true;
+  }
+
+  // Try to hoist GEPs by reassociation.
+  if (hoistGEP(I, L, SafetyInfo, MSSAU, AC, LV, TTI, DT)) {
+    ++NumHoisted;
+    ++NumGEPsHoisted;
+    return true;
+  }
+
+  // Try to hoist add/sub's by reassociation.
+  if (hoistAddSub(I, L, SafetyInfo, MSSAU, AC, LV, TTI, DT)) {
+    ++NumHoisted;
+    ++NumAddSubHoisted;
+    return true;
+  }
+
+  bool IsInt = I.getType()->isIntOrIntVectorTy();
+  if (hoistMulAddAssociation(I, L, SafetyInfo, MSSAU, AC, LV, TTI, DT)) {
+    ++NumHoisted;
+    if (IsInt)
+      ++NumIntAssociationsHoisted;
+    else
+      ++NumFPAssociationsHoisted;
+    return true;
+  }
+#else
 static bool hoistArithmetics(Instruction &I, Loop &L,
                              ICFLoopSafetyInfo &SafetyInfo,
                              MemorySSAUpdater &MSSAU, AssumptionCache *AC,
@@ -3242,6 +3235,7 @@ static bool hoistArithmetics(Instruction &I, Loop &L,
       ++NumFPAssociationsHoisted;
     return true;
   }
+#endif
 
   if (hoistBOAssociation(I, L, SafetyInfo, MSSAU, AC, DT)) {
     ++NumHoisted;
@@ -3251,7 +3245,6 @@ static bool hoistArithmetics(Instruction &I, Loop &L,
 
   return false;
 }
-#endif
 
 /// Little predicate that returns true if the specified basic block is in
 /// a subloop of the current one, not the current one itself.
