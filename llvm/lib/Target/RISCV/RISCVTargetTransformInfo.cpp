@@ -362,7 +362,6 @@ bool RISCVTTIImpl::getMemoryRefInfo(
                              Mask, /* MaybeEVL */ nullptr, Stride);
     return true;
   }
-  }
   return false;
 }
 
@@ -1814,23 +1813,9 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
   }
   case ISD::FP_TO_SINT:
   case ISD::FP_TO_UINT:
-    // For fp vector to mask, we use:
-    // vfncvt.rtz.x.f.w v9, v8
-    // vand.vi v8, v9, 1
-    // vmsne.vi v0, v8, 0
-    if (Dst->getScalarSizeInBits() == 1)
-      return 3;
-
-    if (std::abs(PowDiff) <= 1)
-      return 1;
-
-    // Counts of narrow/widen instructions.
-    return std::abs(PowDiff);
-
+#if SIFIVE_CUSTOMIZATION
   case ISD::SINT_TO_FP:
   case ISD::UINT_TO_FP:
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
       if (SrcEltSize == 1) {
         return DstLT.first * 3 * DstLMULCost;
       }
@@ -1858,38 +1843,26 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
       return SrcLT.first * PowDiffCost;
   }
 #else
-    if (Src->getScalarSizeInBits() == 1 || Dst->getScalarSizeInBits() == 1) {
-      // The cost of convert from or to mask vector is different from other
-      // cases. We could not use PowDiff to calculate it.
-      // For mask vector to fp, we should use the following instructions:
-      // vmv.v.i v8, 0
-      // vmerge.vim v8, v8, -1, v0
-      // vfcvt.f.x.v v8, v8
+    // For fp vector to mask, we use:
+    // vfncvt.rtz.x.f.w v9, v8
+    // vand.vi v8, v9, 1
+    // vmsne.vi v0, v8, 0
+    if (Dst->getScalarSizeInBits() == 1)
+      return 3;
 
-      // And for fp vector to mask, we use:
-      // vfncvt.rtz.x.f.w v9, v8
-      // vand.vi v8, v9, 1
-      // vmsne.vi v0, v8, 0
-||||||| 266a5a9cb9da
-    if (Src->getScalarSizeInBits() == 1 || Dst->getScalarSizeInBits() == 1) {
-      // The cost of convert from or to mask vector is different from other
-      // cases. We could not use PowDiff to calculate it.
-      // For mask vector to fp, we should use the following instructions:
-      // vmv.v.i v8, 0
-      // vmerge.vim v8, v8, -1, v0
-      // vfcvt.f.x.v v8, v8
+    if (std::abs(PowDiff) <= 1)
+      return 1;
 
-      // And for fp vector to mask, we use:
-      // vfncvt.rtz.x.f.w v9, v8
-      // vand.vi v8, v9, 1
-      // vmsne.vi v0, v8, 0
-=======
+    // Counts of narrow/widen instructions.
+    return std::abs(PowDiff);
+
+  case ISD::SINT_TO_FP:
+  case ISD::UINT_TO_FP:
     // For mask vector to fp, we should use the following instructions:
     // vmv.v.i v8, 0
     // vmerge.vim v8, v8, -1, v0
     // vfcvt.f.x.v v8, v8
     if (Src->getScalarSizeInBits() == 1)
->>>>>>> 721aa5db
       return 3;
 
     if (std::abs(PowDiff) <= 1)
@@ -2249,9 +2222,8 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
   InstructionCost Cost = 0;
   if (Opcode == Instruction::Store && OpInfo.isConstant())
     Cost += getStoreImmCost(Src, OpInfo, CostKind);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  // FIXME: Mege with upstream code?
+  // FIXME: Merge with upstream code?
   std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Src);
   if (!LT.second.isVector())
     return Cost + BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
@@ -2283,11 +2255,6 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
   InstructionCost BaseCost =
     BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
                            CostKind, OpInfo, I);
-||||||| 266a5a9cb9da
-  InstructionCost BaseCost =
-    BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
-                           CostKind, OpInfo, I);
-=======
 
   std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Src);
 
@@ -2310,7 +2277,6 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
                                   CostKind, OpInfo, I);
   }();
 
->>>>>>> 721aa5db
   // Assume memory ops cost scale with the number of vector registers
   // possible accessed by the instruction.  Note that BasicTTI already
   // handles the LT.first term for us.
