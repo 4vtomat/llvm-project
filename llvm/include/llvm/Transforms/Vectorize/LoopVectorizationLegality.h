@@ -473,7 +473,6 @@ public:
   /// loop. Do not use after invoking 'createVectorizedLoopSkeleton' (PR34965).
   int isConsecutivePtr(Type *AccessTy, Value *Ptr) const;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// This function resembles isConsecutivePtr but returns None when stride is
   /// unknown
@@ -481,15 +480,8 @@ public:
                                                    Value *Ptr) const;
 #endif
 
-  /// Returns true if value V is uniform across \p VF lanes, when \p VF is
-  /// provided, and otherwise if \p V is invariant across all loop iterations.
-||||||| 266a5a9cb9da
-  /// Returns true if value V is uniform across \p VF lanes, when \p VF is
-  /// provided, and otherwise if \p V is invariant across all loop iterations.
-=======
   /// Returns true if \p V is invariant across all loop iterations according to
   /// SCEV.
->>>>>>> 721aa5db
   bool isInvariant(Value *V) const;
 
   /// Returns true if value V is uniform across \p VF lanes, when \p VF is
