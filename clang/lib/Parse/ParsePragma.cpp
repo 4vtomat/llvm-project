@@ -412,7 +412,6 @@ private:
   Sema &Actions;
 };
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 struct PragmaRVVHandler final : public PragmaHandler {
   PragmaRVVHandler() : PragmaHandler("rvv") {}
@@ -421,8 +420,6 @@ struct PragmaRVVHandler final : public PragmaHandler {
 };
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| 266a5a9cb9da
-=======
 struct PragmaMCFuncHandler : public PragmaHandler {
   PragmaMCFuncHandler(bool ReportError)
       : PragmaHandler("mc_func"), ReportError(ReportError) {}
@@ -436,7 +433,6 @@ private:
   bool ReportError = false;
 };
 
->>>>>>> 721aa5db
 void markAsReinjectedForRelexing(llvm::MutableArrayRef<clang::Token> Toks) {
   for (auto &T : Toks)
     T.setFlag(clang::Token::IsReinjected);

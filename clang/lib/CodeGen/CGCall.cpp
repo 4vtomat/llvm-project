@@ -1357,37 +1357,12 @@ void CodeGenFunction::CreateCoercedStore(llvm::Value *Src, Address Dst,
     }
   }
 
-<<<<<<< HEAD
-  llvm::TypeSize SrcSize = CGF.CGM.getDataLayout().getTypeAllocSize(SrcTy);
-
-  if (llvm::StructType *DstSTy = dyn_cast<llvm::StructType>(DstTy)) {
-    Dst = EnterStructPointerForCoercedAccess(Dst, DstSTy,
-                                             SrcSize.getFixedValue(), CGF);
-    DstTy = Dst.getElementType();
-  }
-
-  llvm::PointerType *SrcPtrTy = llvm::dyn_cast<llvm::PointerType>(SrcTy);
-  llvm::PointerType *DstPtrTy = llvm::dyn_cast<llvm::PointerType>(DstTy);
-  if (SrcPtrTy && DstPtrTy &&
-      SrcPtrTy->getAddressSpace() != DstPtrTy->getAddressSpace()) {
-    Src = CGF.Builder.CreateAddrSpaceCast(Src, DstTy);
-    CGF.Builder.CreateStore(Src, Dst, DstIsVolatile);
-    return;
-  }
-
-  // If the source and destination are integer or pointer types, just do an
-  // extension or truncation to the desired type.
-  if ((isa<llvm::IntegerType>(SrcTy) || isa<llvm::PointerType>(SrcTy)) &&
-      (isa<llvm::IntegerType>(DstTy) || isa<llvm::PointerType>(DstTy))) {
-    Src = CoerceIntOrPtrToIntOrPtr(Src, DstTy, CGF);
-    CGF.Builder.CreateStore(Src, Dst, DstIsVolatile);
-    return;
-  }
-
 #if SIFIVE_CUSTOMIZATION
   // If coercing a fixed vector from a scalable vectro for ABI compatibility,
   // and the types match, use the llvm.vector.extract intrinsic to perform the
   // conversion.
+  llvm::Type *DstTy = Dst.getElementType();
+
   if (auto *FixedDst = dyn_cast<llvm::FixedVectorType>(DstTy)) {
     if (auto *ScalableSrc = dyn_cast<llvm::ScalableVectorType>(SrcTy)) {
       if (FixedDst->getElementType() == ScalableSrc->getElementType()) {
@@ -1399,51 +1374,6 @@ void CodeGenFunction::CreateCoercedStore(llvm::Value *Src, Address Dst,
     }
   }
 #endif
-
-  llvm::TypeSize DstSize = CGF.CGM.getDataLayout().getTypeAllocSize(DstTy);
-
-  // If store is legal, just bitcast the src pointer.
-  if (isa<llvm::ScalableVectorType>(SrcTy) ||
-      isa<llvm::ScalableVectorType>(DstTy) ||
-      SrcSize.getFixedValue() <= DstSize.getFixedValue()) {
-    Dst = Dst.withElementType(SrcTy);
-    CGF.EmitAggregateStore(Src, Dst, DstIsVolatile);
-||||||| 266a5a9cb9da
-  llvm::TypeSize SrcSize = CGF.CGM.getDataLayout().getTypeAllocSize(SrcTy);
-
-  if (llvm::StructType *DstSTy = dyn_cast<llvm::StructType>(DstTy)) {
-    Dst = EnterStructPointerForCoercedAccess(Dst, DstSTy,
-                                             SrcSize.getFixedValue(), CGF);
-    DstTy = Dst.getElementType();
-  }
-
-  llvm::PointerType *SrcPtrTy = llvm::dyn_cast<llvm::PointerType>(SrcTy);
-  llvm::PointerType *DstPtrTy = llvm::dyn_cast<llvm::PointerType>(DstTy);
-  if (SrcPtrTy && DstPtrTy &&
-      SrcPtrTy->getAddressSpace() != DstPtrTy->getAddressSpace()) {
-    Src = CGF.Builder.CreateAddrSpaceCast(Src, DstTy);
-    CGF.Builder.CreateStore(Src, Dst, DstIsVolatile);
-    return;
-  }
-
-  // If the source and destination are integer or pointer types, just do an
-  // extension or truncation to the desired type.
-  if ((isa<llvm::IntegerType>(SrcTy) || isa<llvm::PointerType>(SrcTy)) &&
-      (isa<llvm::IntegerType>(DstTy) || isa<llvm::PointerType>(DstTy))) {
-    Src = CoerceIntOrPtrToIntOrPtr(Src, DstTy, CGF);
-    CGF.Builder.CreateStore(Src, Dst, DstIsVolatile);
-    return;
-  }
-
-  llvm::TypeSize DstSize = CGF.CGM.getDataLayout().getTypeAllocSize(DstTy);
-
-  // If store is legal, just bitcast the src pointer.
-  if (isa<llvm::ScalableVectorType>(SrcTy) ||
-      isa<llvm::ScalableVectorType>(DstTy) ||
-      SrcSize.getFixedValue() <= DstSize.getFixedValue()) {
-    Dst = Dst.withElementType(SrcTy);
-    CGF.EmitAggregateStore(Src, Dst, DstIsVolatile);
-=======
   if (SrcSize.isScalable() || SrcSize <= DstSize) {
     if (SrcTy->isIntegerTy() && Dst.getElementType()->isPointerTy() &&
         SrcSize == CGM.getDataLayout().getTypeAllocSize(Dst.getElementType())) {
@@ -1467,7 +1397,6 @@ void CodeGenFunction::CreateCoercedStore(llvm::Value *Src, Address Dst,
     llvm::Type *DstIntTy = Builder.getIntNTy(DstSize.getFixedValue() * 8);
     Src = CoerceIntOrPtrToIntOrPtr(Src, DstIntTy, *this);
     Builder.CreateStore(Src, Dst.withElementType(DstIntTy), DstIsVolatile);
->>>>>>> 721aa5db
   } else {
     // Otherwise do coercion through memory. This is stupid, but
     // simple.

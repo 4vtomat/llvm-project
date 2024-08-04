@@ -21922,22 +21922,18 @@ Value *CodeGenFunction::EmitHexagonBuiltinExpr(unsigned BuiltinID,
 Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
                                              const CallExpr *E,
                                              ReturnValueSlot ReturnValue) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (BuiltinID >= NEON::LastTIBuiltin && BuiltinID < NEON::FirstTSBuiltin) {
     return EmitAArch64BuiltinExpr(BuiltinID, E, llvm::Triple::aarch64);
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-||||||| 266a5a9cb9da
-=======
 
   if (BuiltinID == Builtin::BI__builtin_cpu_supports)
     return EmitRISCVCpuSupports(E);
   if (BuiltinID == Builtin::BI__builtin_cpu_init)
     return EmitRISCVCpuInit();
 
->>>>>>> 721aa5db
   SmallVector<Value *, 4> Ops;
   llvm::Type *ResultType = ConvertType(E->getType());
 
