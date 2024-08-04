@@ -38,7 +38,7 @@ define half @vp_reduce_nxv1f16(half %s, <vscale x 1 x half> %v, i32 signext %evl
 ; RV32-NEXT:    vfmul.vv v8, v8, v9
 ; RV32-NEXT:    bne a0, a1, .LBB0_5
 ; RV32-NEXT:  .LBB0_6:
-; RV32-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
+; RV32-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; RV32-NEXT:    vfmv.f.s fa5, v8
 ; RV32-NEXT:    fmul.h fa0, fa5, fa0
 ; RV32-NEXT:  .LBB0_7:
@@ -80,7 +80,7 @@ define half @vp_reduce_nxv1f16(half %s, <vscale x 1 x half> %v, i32 signext %evl
 ; RV64-NEXT:    vfmul.vv v8, v8, v9
 ; RV64-NEXT:    bne a0, a1, .LBB0_5
 ; RV64-NEXT:  .LBB0_6:
-; RV64-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
+; RV64-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; RV64-NEXT:    vfmv.f.s fa5, v8
 ; RV64-NEXT:    fmul.h fa0, fa5, fa0
 ; RV64-NEXT:  .LBB0_7:
@@ -126,7 +126,7 @@ define half @vp_reduce2_nxv1f16(half %s, <vscale x 1 x half> %v, i32 signext %ev
 ; RV32-NEXT:    vfmul.vv v8, v8, v9
 ; RV32-NEXT:    bne a0, a1, .LBB1_5
 ; RV32-NEXT:  .LBB1_6:
-; RV32-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
+; RV32-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; RV32-NEXT:    vfmv.f.s fa5, v8
 ; RV32-NEXT:    fmul.h fa0, fa5, fa0
 ; RV32-NEXT:  .LBB1_7:
@@ -167,7 +167,7 @@ define half @vp_reduce2_nxv1f16(half %s, <vscale x 1 x half> %v, i32 signext %ev
 ; RV64-NEXT:    vfmul.vv v8, v8, v9
 ; RV64-NEXT:    bne a0, a1, .LBB1_5
 ; RV64-NEXT:  .LBB1_6:
-; RV64-NEXT:    vsetivli zero, 1, e16, mf4, ta, ma
+; RV64-NEXT:    vsetivli zero, 1, e16, m1, ta, ma
 ; RV64-NEXT:    vfmv.f.s fa5, v8
 ; RV64-NEXT:    fmul.h fa0, fa5, fa0
 ; RV64-NEXT:  .LBB1_7:
@@ -210,7 +210,7 @@ define float @vp_reduce_nxv1f32(float %s, <vscale x 1 x float> %v, i32 signext %
 ; RV32-NEXT:    vfmul.vv v8, v8, v9
 ; RV32-NEXT:    bne a0, a1, .LBB2_5
 ; RV32-NEXT:  .LBB2_6:
-; RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
+; RV32-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; RV32-NEXT:    vfmv.f.s fa5, v8
 ; RV32-NEXT:    fmul.s fa0, fa5, fa0
 ; RV32-NEXT:  .LBB2_7:
@@ -251,7 +251,7 @@ define float @vp_reduce_nxv1f32(float %s, <vscale x 1 x float> %v, i32 signext %
 ; RV64-NEXT:    vfmul.vv v8, v8, v9
 ; RV64-NEXT:    bne a0, a1, .LBB2_5
 ; RV64-NEXT:  .LBB2_6:
-; RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
+; RV64-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; RV64-NEXT:    vfmv.f.s fa5, v8
 ; RV64-NEXT:    fmul.s fa0, fa5, fa0
 ; RV64-NEXT:  .LBB2_7:
@@ -296,7 +296,7 @@ define float @vp_reduce2_nxv1f32(float %s, <vscale x 1 x float> %v, i32 signext 
 ; RV32-NEXT:    vfmul.vv v8, v8, v9
 ; RV32-NEXT:    bne a0, a1, .LBB3_5
 ; RV32-NEXT:  .LBB3_6:
-; RV32-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
+; RV32-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; RV32-NEXT:    vfmv.f.s fa5, v8
 ; RV32-NEXT:    fmul.s fa0, fa5, fa0
 ; RV32-NEXT:  .LBB3_7:
@@ -336,7 +336,7 @@ define float @vp_reduce2_nxv1f32(float %s, <vscale x 1 x float> %v, i32 signext 
 ; RV64-NEXT:    vfmul.vv v8, v8, v9
 ; RV64-NEXT:    bne a0, a1, .LBB3_5
 ; RV64-NEXT:  .LBB3_6:
-; RV64-NEXT:    vsetivli zero, 1, e32, mf2, ta, ma
+; RV64-NEXT:    vsetivli zero, 1, e32, m1, ta, ma
 ; RV64-NEXT:    vfmv.f.s fa5, v8
 ; RV64-NEXT:    fmul.s fa0, fa5, fa0
 ; RV64-NEXT:  .LBB3_7:

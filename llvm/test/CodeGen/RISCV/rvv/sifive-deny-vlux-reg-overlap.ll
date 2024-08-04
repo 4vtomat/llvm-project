@@ -9,7 +9,7 @@ define void @foo(ptr %input) {
 ; CHECK-X280-NEXT:    vid.v v8
 ; CHECK-X280-NEXT:    vsll.vi v8, v8, 6
 ; CHECK-X280-NEXT:    vluxei32.v v12, (a0), v8
-; CHECK-X280-NEXT:    vse32.v v12, (a0)
+; CHECK-X280-NEXT:    vs4r.v v12, (a0)
 ; CHECK-X280-NEXT:    ret
 ;
 ; CHECK-P470-LABEL: foo:
@@ -18,7 +18,7 @@ define void @foo(ptr %input) {
 ; CHECK-P470-NEXT:    vid.v v8
 ; CHECK-P470-NEXT:    vsll.vi v8, v8, 6
 ; CHECK-P470-NEXT:    vluxei32.v v8, (a0), v8
-; CHECK-P470-NEXT:    vse32.v v8, (a0)
+; CHECK-P470-NEXT:    vs4r.v v8, (a0)
 ; CHECK-P470-NEXT:    ret
 entry:
   %0 = tail call <vscale x 8 x i32> @llvm.riscv.vid.nxv8i32.i64(<vscale x 8 x i32> poison, i64 -1)

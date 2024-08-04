@@ -16,31 +16,32 @@ define void @_Z8rvv_slsrPKammPammm(i8* nocapture  readonly %A, i64  %M, i64  %K,
 ; CHECK-NEXT:    slli t1, a6, 9
 ; CHECK-NEXT:    add a0, a0, t0
 ; CHECK-NEXT:    add a3, a3, t1
+; CHECK-NEXT:    add t0, a2, a2
 ; CHECK-NEXT:    # implicit-def: $v8m2
 ; CHECK-NEXT:  .LBB0_4: # %for.cond2.preheader.us
 ; CHECK-NEXT:    # =>This Loop Header: Depth=1
 ; CHECK-NEXT:    # Child Loop BB0_5 Depth 2
-; CHECK-NEXT:    slli t3, a7, 2
-; CHECK-NEXT:    mul t1, t3, a2
-; CHECK-NEXT:    add t0, a0, t1
-; CHECK-NEXT:    add t2, t1, a2
-; CHECK-NEXT:    add t1, a0, t2
-; CHECK-NEXT:    add t2, t2, a2
+; CHECK-NEXT:    slli t4, a7, 2
+; CHECK-NEXT:    mul t3, t4, a2
+; CHECK-NEXT:    add t1, a0, t3
+; CHECK-NEXT:    add t2, t3, a2
 ; CHECK-NEXT:    add t2, a0, t2
-; CHECK-NEXT:    add t3, a3, t3
-; CHECK-NEXT:    mv t4, a6
+; CHECK-NEXT:    add t3, t3, t0
+; CHECK-NEXT:    add t3, a0, t3
+; CHECK-NEXT:    add t4, a3, t4
+; CHECK-NEXT:    mv t5, a6
 ; CHECK-NEXT:  .LBB0_5: # %for.body5.us65
 ; CHECK-NEXT:    # Parent Loop BB0_4 Depth=1
 ; CHECK-NEXT:    # => This Inner Loop Header: Depth=2
 ; CHECK-NEXT:    vsetvli zero, a4, e8, m2, tu, mu
-; CHECK-NEXT:    vle8.v v8, (t0), v0.t
-; CHECK-NEXT:    vle8.v v10, (t1), v0.t
-; CHECK-NEXT:    vle8.v v12, (t2), v0.t
+; CHECK-NEXT:    vle8.v v8, (t1), v0.t
+; CHECK-NEXT:    vle8.v v10, (t2), v0.t
+; CHECK-NEXT:    vle8.v v12, (t3), v0.t
 ; CHECK-NEXT:    vmv2r.v v14, v12
-; CHECK-NEXT:    addi t4, t4, -1
+; CHECK-NEXT:    addi t5, t5, -1
 ; CHECK-NEXT:    vsetvli zero, a5, e64, m2, ta, ma
-; CHECK-NEXT:    vsseg4e64.v v8, (t3)
-; CHECK-NEXT:    bnez t4, .LBB0_5
+; CHECK-NEXT:    vsseg4e64.v v8, (t4)
+; CHECK-NEXT:    bnez t5, .LBB0_5
 ; CHECK-NEXT:  # %bb.6: # %for.cond2.for.cond.cleanup4_crit_edge.split.us69
 ; CHECK-NEXT:    # in Loop: Header=BB0_4 Depth=1
 ; CHECK-NEXT:    addi a7, a7, 1

@@ -954,8 +954,7 @@ define <vscale x 1 x bfloat> @intrinsic_vluxei_v_nxv1bf16_nxv1bf16_nxv1i64(ptr %
 ; CHECK-LABEL: intrinsic_vluxei_v_nxv1bf16_nxv1bf16_nxv1i64:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a1, e16, mf4, ta, ma
-; CHECK-NEXT:    vluxei64.v v9, (a0), v8
-; CHECK-NEXT:    vmv1r.v v8, v9
+; CHECK-NEXT:    vluxei64.v v8, (a0), v8
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 1 x bfloat> @llvm.riscv.vluxei.nxv1bf16.nxv1i64(
@@ -1002,8 +1001,7 @@ define <vscale x 2 x bfloat> @intrinsic_vluxei_v_nxv2bf16_nxv2bf16_nxv2i64(ptr %
 ; CHECK-LABEL: intrinsic_vluxei_v_nxv2bf16_nxv2bf16_nxv2i64:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a1, e16, mf2, ta, ma
-; CHECK-NEXT:    vluxei64.v v10, (a0), v8
-; CHECK-NEXT:    vmv1r.v v8, v10
+; CHECK-NEXT:    vluxei64.v v8, (a0), v8
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 2 x bfloat> @llvm.riscv.vluxei.nxv2bf16.nxv2i64(
@@ -1050,8 +1048,7 @@ define <vscale x 4 x bfloat> @intrinsic_vluxei_v_nxv4bf16_nxv4bf16_nxv4i64(ptr %
 ; CHECK-LABEL: intrinsic_vluxei_v_nxv4bf16_nxv4bf16_nxv4i64:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a1, e16, m1, ta, ma
-; CHECK-NEXT:    vluxei64.v v12, (a0), v8
-; CHECK-NEXT:    vmv.v.v v8, v12
+; CHECK-NEXT:    vluxei64.v v8, (a0), v8
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 4 x bfloat> @llvm.riscv.vluxei.nxv4bf16.nxv4i64(
@@ -1098,8 +1095,7 @@ define <vscale x 8 x bfloat> @intrinsic_vluxei_v_nxv8bf16_nxv8bf16_nxv8i64(ptr %
 ; CHECK-LABEL: intrinsic_vluxei_v_nxv8bf16_nxv8bf16_nxv8i64:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a1, e16, m2, ta, ma
-; CHECK-NEXT:    vluxei64.v v16, (a0), v8
-; CHECK-NEXT:    vmv.v.v v8, v16
+; CHECK-NEXT:    vluxei64.v v8, (a0), v8
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x bfloat> @llvm.riscv.vluxei.nxv8bf16.nxv8i64(

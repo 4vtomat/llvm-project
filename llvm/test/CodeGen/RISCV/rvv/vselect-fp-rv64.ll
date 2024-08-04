@@ -390,34 +390,18 @@ define <vscale x 8 x double> @vfmerge_zv_nxv8f64(<vscale x 8 x double> %va, <vsc
 define <vscale x 16 x double> @vselect_combine_regression(<vscale x 16 x i64> %va, <vscale x 16 x double> %vb) {
 ; CHECK-LABEL: vselect_combine_regression:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    addi sp, sp, -16
-; CHECK-NEXT:    .cfi_def_cfa_offset 16
-; CHECK-NEXT:    csrr a1, vlenb
-; CHECK-NEXT:    slli a1, a1, 3
-; CHECK-NEXT:    sub sp, sp, a1
-; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0x08, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 8 * vlenb
-; CHECK-NEXT:    vmv8r.v v0, v8
+; CHECK-NEXT:    vmv8r.v v24, v16
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    slli a1, a1, 3
 ; CHECK-NEXT:    add a1, a0, a1
-; CHECK-NEXT:    vl8re64.v v8, (a1)
-; CHECK-NEXT:    addi a1, sp, 16
-; CHECK-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
-; CHECK-NEXT:    vl8re64.v v24, (a0)
-; CHECK-NEXT:    vsetvli a0, zero, e64, m8, ta, ma
-; CHECK-NEXT:    vmseq.vi v16, v16, 0
-; CHECK-NEXT:    vmseq.vi v0, v0, 0
+; CHECK-NEXT:    vsetvli a2, zero, e64, m8, ta, mu
+; CHECK-NEXT:    vmseq.vi v0, v8, 0
+; CHECK-NEXT:    vmv.v.i v16, 0
+; CHECK-NEXT:    vmseq.vi v24, v24, 0
 ; CHECK-NEXT:    vmv.v.i v8, 0
-; CHECK-NEXT:    vmerge.vvm v24, v8, v24, v0
-; CHECK-NEXT:    vmv1r.v v0, v16
-; CHECK-NEXT:    addi a0, sp, 16
-; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmerge.vvm v16, v8, v16, v0
-; CHECK-NEXT:    vmv.v.v v8, v24
-; CHECK-NEXT:    csrr a0, vlenb
-; CHECK-NEXT:    slli a0, a0, 3
-; CHECK-NEXT:    add sp, sp, a0
-; CHECK-NEXT:    addi sp, sp, 16
+; CHECK-NEXT:    vle64.v v8, (a0), v0.t
+; CHECK-NEXT:    vmv1r.v v0, v24
+; CHECK-NEXT:    vle64.v v16, (a1), v0.t
 ; CHECK-NEXT:    ret
   %cond = icmp eq <vscale x 16 x i64> %va, zeroinitializer
   %sel = select <vscale x 16 x i1> %cond, <vscale x 16 x double> %vb, <vscale x 16 x double> zeroinitializer
