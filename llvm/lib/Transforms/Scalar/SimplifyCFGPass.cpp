@@ -78,18 +78,14 @@ static cl::opt<bool> UserSinkCommonInsts(
     "sink-common-insts", cl::Hidden, cl::init(false),
     cl::desc("Sink common instructions (default = false)"));
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<bool>
     PreprocesssForSelect("preprocess-for-select", cl::Hidden, cl::init(false),
                          cl::desc("Preprocess of folding phis to selects"));
 #endif
-||||||| 266a5a9cb9da
-=======
 static cl::opt<bool> UserSpeculateUnpredictables(
     "speculate-unpredictables", cl::Hidden, cl::init(false),
     cl::desc("Speculate unpredictable branches (default = false)"));
->>>>>>> 721aa5db
 
 STATISTIC(NumSimpl, "Number of blocks simplified");
 
