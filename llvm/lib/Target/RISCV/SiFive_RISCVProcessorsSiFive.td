@@ -44,8 +44,6 @@ def SIFIVE_P400 : RISCVTuneProcessorModel<"sifive-p400-series", SiFiveP400Model,
 
 defvar SiFiveP500TuneFeatures = !listconcat([TuneSiFiveP500],
                                             SiFiveMallardTuneFeatures);
-def SIFIVE_8 : RISCVTuneProcessorModel<"sifive-8-series", SiFiveP500Model,
-                                       SiFiveP500TuneFeatures>;
 def SIFIVE_P500 : RISCVTuneProcessorModel<"sifive-p500-series", SiFiveP500Model,
                                           SiFiveP500TuneFeatures>;
 
