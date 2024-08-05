@@ -4360,6 +4360,18 @@ static void RenderDiagnosticsOptions(const Driver &D, const ArgList &Args,
 
   Args.addOptOutFlag(CmdArgs, options::OPT_fspell_checking,
                      options::OPT_fno_spell_checking);
+#if SIFIVE_CUSTOMIZATION
+  // Show iteration counts of loops by runtime profile.
+  if (Args.hasArg(options::OPT_fdiagnostics_show_profile_count)) {
+    // Profile count need information from runtime profile
+    if (!(Args.hasArg(options::OPT_fprofile_instr_use) ||
+          Args.hasArg(options::OPT_fprofile_instr_use_EQ))) {
+      D.getDiags().Report(diag::warn_drv_diagnostics_profile_count_requires_pgo)
+          << "-fdiagnostics-show-profile-count";
+    }
+    CmdArgs.append({"-mllvm", "-enable-profile-count-metadata"});
+  }
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 DwarfFissionKind tools::getDebugFissionKind(const Driver &D,

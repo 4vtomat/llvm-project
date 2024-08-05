@@ -122,6 +122,14 @@ private:
   /// Similar but use value from \p OptDiag and update hotness there.
   void computeHotness(DiagnosticInfoIROptimization &OptDiag);
 
+#if SIFIVE_CUSTOMIZATION
+  /// Compute profile count from IR value (currently assumed to be a block) if
+  /// PGO is available.
+  std::optional<uint64_t> getProfileCount(const Value *V);
+
+  /// Similar but use value from \p OptDiag and update profile count there.
+  void getProfileCount(DiagnosticInfoIROptimization &OptDiag);
+#endif // SIFIVE_CUSTOMIZATION
   /// Only allow verbose messages if we know we're filtering by hotness
   /// (BFI is only set in this case).
   bool shouldEmitVerbose() { return BFI != nullptr; }

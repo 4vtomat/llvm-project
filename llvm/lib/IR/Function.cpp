@@ -79,6 +79,12 @@ using ProfileCount = Function::ProfileCount;
 // are not in the public header file...
 template class llvm::SymbolTableListTraits<BasicBlock>;
 
+#if SIFIVE_CUSTOMIZATION
+// Prevent entry_count metadata appended in IR.
+cl::opt<bool> DisableProfMetadata("disable-prof-metadata", cl::Hidden,
+                                  cl::init(false),
+                                  cl::desc("Disable prof metadata in the IR."));
+#endif // SIFIVE_CUSTOMIZATION
 static cl::opt<int> NonGlobalValueMaxNameSize(
     "non-global-value-max-name-size", cl::Hidden, cl::init(1024),
     cl::desc("Maximum size for the name of non-global values."));
@@ -2136,10 +2142,16 @@ void Function::setEntryCount(ProfileCount Count,
   if (S == nullptr && ImportGUIDs.size())
     S = &ImportGUIDs;
 
+#if SIFIVE_CUSTOMIZATION
+  if (!DisableProfMetadata) {
+#endif // SIFIVE_CUSTOMIZATION
   MDBuilder MDB(getContext());
   setMetadata(
       LLVMContext::MD_prof,
       MDB.createFunctionEntryCount(Count.getCount(), Count.isSynthetic(), S));
+#if SIFIVE_CUSTOMIZATION
+  }
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 void Function::setEntryCount(uint64_t Count, Function::ProfileCountType Type,

@@ -1035,7 +1035,13 @@ void CodeGenFunction::EmitWhileStmt(const WhileStmt &S,
     if (!Weights && CGM.getCodeGenOpts().OptimizationLevel)
       BoolCondVal = emitCondLikelihoodViaExpectIntrinsic(
           BoolCondVal, Stmt::getLikelihood(S.getBody()));
+#if SIFIVE_CUSTOMIZATION
+    // Appending Branch_weight, Unpredictable and Profile_count metadata.
+    Builder.CreateCondBr(BoolCondVal, LoopBody, ExitBlock, Weights, nullptr,
+                         createProfileCount(getProfileCount(S.getBody())));
+#else
     Builder.CreateCondBr(BoolCondVal, LoopBody, ExitBlock, Weights);
+#endif // SIFIVE_CUSTOMIZATION
 
     if (ExitBlock != LoopExit.getBlock()) {
       EmitBlock(ExitBlock);
@@ -1148,9 +1154,17 @@ void CodeGenFunction::EmitDoStmt(const DoStmt &S,
   // As long as the condition is true, iterate the loop.
   if (EmitBoolCondBranch) {
     uint64_t BackedgeCount = getProfileCount(S.getBody()) - ParentCount;
+#if SIFIVE_CUSTOMIZATION
+    // Appending Branch_weight, Unpredictable and Profile_count metadata.
+    Builder.CreateCondBr(
+        BoolCondVal, LoopBody, LoopExit.getBlock(),
+        createProfileWeightsForLoop(S.getCond(), BackedgeCount), nullptr,
+        createProfileCount(getProfileCount(S.getBody())));
+#else
     Builder.CreateCondBr(
         BoolCondVal, LoopBody, LoopExit.getBlock(),
         createProfileWeightsForLoop(S.getCond(), BackedgeCount));
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   LoopStack.pop();
@@ -1251,7 +1265,13 @@ void CodeGenFunction::EmitForStmt(const ForStmt &S,
       BoolCondVal = emitCondLikelihoodViaExpectIntrinsic(
           BoolCondVal, Stmt::getLikelihood(S.getBody()));
 
+#if SIFIVE_CUSTOMIZATION
+    // Appending Branch_weight, Unpredictable and Profile_count metadata.
+    Builder.CreateCondBr(BoolCondVal, ForBody, ExitBlock, Weights, nullptr,
+                         createProfileCount(getProfileCount(S.getBody())));
+#else
     Builder.CreateCondBr(BoolCondVal, ForBody, ExitBlock, Weights);
+#endif // SIFIVE_CUSTOMIZATION
 
     if (ExitBlock != LoopExit.getBlock()) {
       EmitBlock(ExitBlock);
@@ -1353,7 +1373,13 @@ CodeGenFunction::EmitCXXForRangeStmt(const CXXForRangeStmt &S,
   if (!Weights && CGM.getCodeGenOpts().OptimizationLevel)
     BoolCondVal = emitCondLikelihoodViaExpectIntrinsic(
         BoolCondVal, Stmt::getLikelihood(S.getBody()));
+#if SIFIVE_CUSTOMIZATION
+  // Appending Branch_weight, Unpredictable and Profile_count metadata.
+  Builder.CreateCondBr(BoolCondVal, ForBody, ExitBlock, Weights, nullptr,
+                       createProfileCount(getProfileCount(S.getBody())));
+#else
   Builder.CreateCondBr(BoolCondVal, ForBody, ExitBlock, Weights);
+#endif // SIFIVE_CUSTOMIZATION
 
   if (ExitBlock != LoopExit.getBlock()) {
     EmitBlock(ExitBlock);

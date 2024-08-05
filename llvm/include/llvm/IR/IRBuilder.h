@@ -1124,11 +1124,20 @@ private:
   /// instruction.
   /// \returns The annotated instruction.
   template <typename InstTy>
+#if SIFIVE_CUSTOMIZATION
+  InstTy *addBranchMetadata(InstTy *I, MDNode *Weights, MDNode *Unpredictable,
+                            MDNode *ProfileCount) {
+#else
   InstTy *addBranchMetadata(InstTy *I, MDNode *Weights, MDNode *Unpredictable) {
+#endif // SIFIVE_CUSTOMIZATION
     if (Weights)
       I->setMetadata(LLVMContext::MD_prof, Weights);
     if (Unpredictable)
       I->setMetadata(LLVMContext::MD_unpredictable, Unpredictable);
+#if SIFIVE_CUSTOMIZATION
+    if (ProfileCount)
+      I->setMetadata(LLVMContext::MD_prof_count, ProfileCount);
+#endif // SIFIVE_CUSTOMIZATION
     return I;
   }
 
@@ -1166,9 +1175,19 @@ public:
   /// instruction.
   BranchInst *CreateCondBr(Value *Cond, BasicBlock *True, BasicBlock *False,
                            MDNode *BranchWeights = nullptr,
+#if SIFIVE_CUSTOMIZATION
+                           MDNode *Unpredictable = nullptr,
+                           MDNode *ProfileCount = nullptr) {
+#else
                            MDNode *Unpredictable = nullptr) {
+#endif // SIFIVE_CUSTOMIZATION
     return Insert(addBranchMetadata(BranchInst::Create(True, False, Cond),
+#if SIFIVE_CUSTOMIZATION
+                                    BranchWeights, Unpredictable,
+                                    ProfileCount));
+#else
                                     BranchWeights, Unpredictable));
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   /// Create a conditional 'br Cond, TrueDest, FalseDest'
@@ -1189,9 +1208,19 @@ public:
   /// allocation).
   SwitchInst *CreateSwitch(Value *V, BasicBlock *Dest, unsigned NumCases = 10,
                            MDNode *BranchWeights = nullptr,
+#if SIFIVE_CUSTOMIZATION
+                           MDNode *Unpredictable = nullptr,
+                           MDNode *ProfileCount = nullptr) {
+#else
                            MDNode *Unpredictable = nullptr) {
+#endif // SIFIVE_CUSTOMIZATION
     return Insert(addBranchMetadata(SwitchInst::Create(V, Dest, NumCases),
+#if SIFIVE_CUSTOMIZATION
+                                    BranchWeights, Unpredictable,
+                                    ProfileCount));
+#else
                                     BranchWeights, Unpredictable));
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   /// Create an indirect branch instruction with the specified address

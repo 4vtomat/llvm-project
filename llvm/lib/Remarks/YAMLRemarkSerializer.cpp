@@ -25,12 +25,18 @@ template <typename T>
 static void mapRemarkHeader(yaml::IO &io, T PassName, T RemarkName,
                             std::optional<RemarkLocation> RL, T FunctionName,
                             std::optional<uint64_t> Hotness,
+#if SIFIVE_CUSTOMIZATION
+                            std::optional<uint64_t> ProfileCount,
+#endif // SIFIVE_CUSTOMIZATION
                             ArrayRef<Argument> Args) {
   io.mapRequired("Pass", PassName);
   io.mapRequired("Name", RemarkName);
   io.mapOptional("DebugLoc", RL);
   io.mapRequired("Function", FunctionName);
   io.mapOptional("Hotness", Hotness);
+#if SIFIVE_CUSTOMIZATION
+  io.mapOptional("ProfileCount", ProfileCount);
+#endif // SIFIVE_CUSTOMIZATION
   io.mapOptional("Args", Args);
 }
 
@@ -66,10 +72,19 @@ template <> struct MappingTraits<remarks::Remark *> {
       unsigned NameID = StrTab.add(Remark->RemarkName).first;
       unsigned FunctionID = StrTab.add(Remark->FunctionName).first;
       mapRemarkHeader(io, PassID, NameID, Remark->Loc, FunctionID,
+#if SIFIVE_CUSTOMIZATION
+                      Remark->Hotness, Remark->ProfileCount, Remark->Args);
+#else
                       Remark->Hotness, Remark->Args);
+#endif // SIFIVE_CUSTOMIZATION
     } else {
       mapRemarkHeader(io, Remark->PassName, Remark->RemarkName, Remark->Loc,
+#if SIFIVE_CUSTOMIZATION
+                      Remark->FunctionName, Remark->Hotness,
+                      Remark->ProfileCount, Remark->Args);
+#else
                       Remark->FunctionName, Remark->Hotness, Remark->Args);
+#endif // SIFIVE_CUSTOMIZATION
     }
   }
 };

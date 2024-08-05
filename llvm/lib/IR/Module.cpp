@@ -56,6 +56,9 @@ using namespace llvm;
 
 extern cl::opt<bool> UseNewDbgInfoFormat;
 
+#if SIFIVE_CUSTOMIZATION
+extern cl::opt<bool> DisableProfMetadata;
+#endif // SIFIVE_CUSTOMIZATION
 //===----------------------------------------------------------------------===//
 // Methods to implement the globals and functions lists.
 //
@@ -668,10 +671,16 @@ void Module::setLargeDataThreshold(uint64_t Threshold) {
 }
 
 void Module::setProfileSummary(Metadata *M, ProfileSummary::Kind Kind) {
+#if SIFIVE_CUSTOMIZATION
+  if (!DisableProfMetadata) {
+#endif // SIFIVE_CUSTOMIZATION
   if (Kind == ProfileSummary::PSK_CSInstr)
     setModuleFlag(ModFlagBehavior::Error, "CSProfileSummary", M);
   else
     setModuleFlag(ModFlagBehavior::Error, "ProfileSummary", M);
+#if SIFIVE_CUSTOMIZATION
+  }
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 Metadata *Module::getProfileSummary(bool IsCS) const {

@@ -436,6 +436,11 @@ def warn_drv_empty_joined_argument : Warning<
 def warn_drv_diagnostics_hotness_requires_pgo : Warning<
   "argument '%0' requires profile-guided optimization information">,
   InGroup<UnusedCommandLineArgument>;
+#ifdef SIFIVE_CUSTOMIZATION
+def warn_drv_diagnostics_profile_count_requires_pgo : Warning<
+  "argument '%0' requires profile-guided optimization information">,
+  InGroup<UnusedCommandLineArgument>;
+#endif // SIFIVE_CUSTOMIZATION
 def warn_drv_diagnostics_misexpect_requires_pgo : Warning<
   "argument '%0' requires profile-guided optimization information">,
   InGroup<UnusedCommandLineArgument>;
