@@ -1061,6 +1061,10 @@ def FeatureStdExtSvpbmt
     : RISCVExtension<"svpbmt", 1, 0,
                      "'Svpbmt' (Page-Based Memory Types)">;
 
+def FeatureStdExtSvukte
+    : RISCVExperimentalExtension<"svukte", 0, 3,
+                                 "'Svukte' (Address-Independent Latency of User-Mode Faults to Supervisor Addresses)">;
+
 // Pointer Masking extensions
 
 // A supervisor-level extension that provides pointer masking for the next lower

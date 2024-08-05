@@ -2074,6 +2074,14 @@
 // RUN:   -o - | FileCheck --check-prefix=CHECK-SSQOSID-EXT %s
 // CHECK-SSQOSID-EXT: __riscv_ssqosid 1000000{{$}}
 
+// RUN: %clang --target=riscv32 -menable-experimental-extensions \
+// RUN:   -march=rv32i_svukte0p3 -E -dM %s \
+// RUN:   -o - | FileCheck --check-prefix=CHECK-SVUKTE-EXT %s
+// RUN: %clang --target=riscv64 -menable-experimental-extensions \
+// RUN:   -march=rv64i_svukte0p3 -E -dM %s \
+// RUN:   -o - | FileCheck --check-prefix=CHECK-SVUKTE-EXT %s
+// CHECK-SVUKTE-EXT: __riscv_svukte 3000{{$}}
+
 // Misaligned
 
 // RUN: %clang --target=riscv32-unknown-linux-gnu -march=rv32i -E -dM %s \
