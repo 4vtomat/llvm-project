@@ -292,6 +292,10 @@ enum NodeType : unsigned {
   VSMUL_VL,
   VSSRL_VL,
   VSSRA_VL,
+
+  // Operands are (source, shift, merge, mask, roundmode, vl)
+  VNCLIPU_VL,
+  VNCLIP_VL,
 #endif // SIFIVE_CUSTOMIZATION
 
   MULHS_VL,

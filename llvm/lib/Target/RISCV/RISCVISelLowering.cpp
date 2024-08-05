@@ -6476,7 +6476,7 @@ static bool hasPassthruOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_RISCV_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-                    139 && // SIFIVE
+                    141 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
@@ -6502,7 +6502,7 @@ static bool hasMaskOp(unsigned Opcode) {
          Opcode <= RISCVISD::LAST_RISCV_STRICTFP_OPCODE &&
          "not a RISC-V target specific op");
   static_assert(RISCVISD::LAST_VL_VECTOR_OP - RISCVISD::FIRST_VL_VECTOR_OP ==
-                    139 && // SIFIVE
+                    141 && // SIFIVE
                 RISCVISD::LAST_RISCV_STRICTFP_OPCODE -
                         ISD::FIRST_TARGET_STRICTFP_OPCODE ==
                     21 &&
@@ -10192,19 +10192,19 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     default:
       llvm_unreachable("Unexpected intrinsic");
     case Intrinsic::aarch64_neon_sqrshrn:
-      Opc = RISCVISD::TRUNCATE_VECTOR_VL_SSAT;
+      Opc = RISCVISD::VNCLIP_VL;
       RoundingMode = RISCVVXRndMode::RNU;
       break;
     case Intrinsic::aarch64_neon_sqshrn:
-      Opc = RISCVISD::TRUNCATE_VECTOR_VL_SSAT;
+      Opc = RISCVISD::VNCLIP_VL;
       RoundingMode = RISCVVXRndMode::RDN;
       break;
     case Intrinsic::aarch64_neon_uqrshrn:
-      Opc = RISCVISD::TRUNCATE_VECTOR_VL_USAT;
+      Opc = RISCVISD::VNCLIPU_VL;
       RoundingMode = RISCVVXRndMode::RNU;
       break;
     case Intrinsic::aarch64_neon_uqshrn:
-      Opc = RISCVISD::TRUNCATE_VECTOR_VL_USAT;
+      Opc = RISCVISD::VNCLIPU_VL;
       RoundingMode = RISCVVXRndMode::RDN;
       break;
     }
@@ -23258,6 +23258,8 @@ const char *RISCVTargetLowering::getTargetNodeName(unsigned Opcode) const {
   NODE_NAME_CASE(VSMUL_VL)   // SIFIVE
   NODE_NAME_CASE(VSSRL_VL)   // SIFIVE
   NODE_NAME_CASE(VSSRA_VL)   // SIFIVE
+  NODE_NAME_CASE(VNCLIP_VL)  // SIFIVE
+  NODE_NAME_CASE(VNCLIPU_VL) // SIFIVE
   NODE_NAME_CASE(FADD_VL)
   NODE_NAME_CASE(FSUB_VL)
   NODE_NAME_CASE(FMUL_VL)
