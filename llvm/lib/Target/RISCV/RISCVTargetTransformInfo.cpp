@@ -2813,11 +2813,14 @@ InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
   }
 
   InstructionCost InstrCost = getRISCVInstructionCost(Op, LT.second, CostKind);
+#if !SIFIVE_CUSTOMIZATION
+  // In downstream, we encapsulate this in getRISCVInstructionCost
   // We use BasicTTIImpl to calculate scalar costs, which assumes floating point
   // ops are twice as expensive as integer ops. Do the same for vectors so
   // scalar floating point ops aren't cheaper than their vector equivalents.
   if (Ty->isFPOrFPVectorTy())
     InstrCost *= 2;
+#endif // SIFIVE_CUSTOMIZATION
   return ConstantMatCost + LT.first * InstrCost;
 }
 
