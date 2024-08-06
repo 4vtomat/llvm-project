@@ -1381,7 +1381,7 @@ static bool isVectorOpUsedAsScalarOp(MachineOperand &MO) {
   }
 }
 
-bool safeToPropgateVL(const MachineInstr &MI) {
+static bool safeToPropgateVL(const MachineInstr &MI) {
   const RISCVVPseudosTable::PseudoInfo *RVV =
       RISCVVPseudosTable::getPseudoInfo(MI.getOpcode());
   if (!RVV)
