@@ -259,8 +259,13 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
   // allowing e.g. `int *` l-values to access `unsigned *` objects.
   if (Ty->isPointerType() || Ty->isReferenceType()) {
     llvm::MDNode *AnyPtr = createScalarTypeNode("any pointer", getChar(), Size);
+#if SIFIVE_CUSTOMIZATION
+    if (!CodeGenOpts.PointerTBAA && !CodeGenOpts.NewStructPathTBAA)
+      return AnyPtr;
+#else
     if (!CodeGenOpts.PointerTBAA)
       return AnyPtr;
+#endif
     // Compute the depth of the pointer and generate a tag of the form "p<depth>
     // <base type tag>".
     unsigned PtrDepth = 0;
@@ -274,8 +279,9 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
 #if SIFIVE_CUSTOMIZATION
       // Void/Char types are generic placeholders, use
       // default functionality as these commonly alias.
-      if (Ty->isVoidType() || Ty->isCharType())
-        return AnyPtr;
+      if (CodeGenOpts.NewStructPathTBAA)
+        if (Ty->isVoidType() || Ty->isCharType())
+          return AnyPtr;
 
 #endif //SIFIVE_CUSTOMIZATION
       llvm::MDNode *ScalarMD = getTypeInfoHelper(Ty);
@@ -290,24 +296,26 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
       return createScalarTypeNode(OutName, AnyPtr, Size);
 #if SIFIVE_CUSTOMIZATION
     } else if (auto *TTy = dyn_cast<RecordType>(Ty)) {
-      bool IsClass;
-      if (isMayAliasType(TTy, IsClass, Context, PtrDepth))
-        return AnyPtr;
+      if (CodeGenOpts.NewStructPathTBAA) {
+        bool IsClass;
+        if (isMayAliasType(TTy, IsClass, Context, PtrDepth))
+          return AnyPtr;
 
-      SmallString<256> OutName("p");
-      OutName += std::to_string(PtrDepth);
-      OutName += " ";
-      if (Features.CPlusPlus) {
-        SmallString<256> Name;
-        // Don't use the mangler for C code.
-        OutName += (IsClass) ? "class " : "struct ";
-        llvm::raw_svector_ostream Out(Name);
-        MContext.mangleCanonicalTypeName(QualType(Ty, 0), Out);
-        OutName += Name;
-      } else {
-        OutName += QualType(Ty, 0).getAsString(Context.getPrintingPolicy());
+        SmallString<256> OutName("p");
+        OutName += std::to_string(PtrDepth);
+        OutName += " ";
+        if (Features.CPlusPlus) {
+          SmallString<256> Name;
+          // Don't use the mangler for C code.
+          OutName += (IsClass) ? "class " : "struct ";
+          llvm::raw_svector_ostream Out(Name);
+          MContext.mangleCanonicalTypeName(QualType(Ty, 0), Out);
+          OutName += Name;
+        } else {
+          OutName += QualType(Ty, 0).getAsString(Context.getPrintingPolicy());
+        }
+        return createScalarTypeNode(OutName, AnyPtr, Size);
       }
-      return createScalarTypeNode(OutName, AnyPtr, Size);
 #endif //SIFIVE_CUSTOMIZATION
     }
     return AnyPtr;
