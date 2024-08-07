@@ -49,6 +49,14 @@ class SiFiveP800SGetCyclesSegmented<string mx, int sew> {
   );
 }
 
+class SiFiveP800SVSM3CCycles<string mx> {
+  // c = ceil(LMUL / 2)
+  int c = !cond(!eq(mx, "M2") : 1,
+                !eq(mx, "M4") : 2,
+                !eq(mx, "M8") : 4,
+                true : 1);
+}
+
 // SiFiveP800S machine model for scheduling and other instruction cost heuristics.
 def SiFiveP800SModel : SchedMachineModel {
   let IssueWidth = 6;         // 6 micro-ops are dispatched per cycle.
@@ -780,6 +788,63 @@ foreach mx = SchedMxList in {
   }
 }
 
+// Vector Crypto
+foreach mx = SchedMxList in {
+  defvar LMulLat = SiFiveP800SGetLMulCycles<mx>.c;
+  defvar IsWorstCase = SiFiveP800SIsWorstCaseMX<mx, SchedMxList>.c;
+  // Zvbb
+  let Latency = 2, ReleaseAtCycles = [LMulLat] in {
+    defm "" : LMULWriteResMX<"WriteVBREVV",   [SiFiveP800SVectorArith], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVCLZV",    [SiFiveP800SVectorArith], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVCPOPV",   [SiFiveP800SVectorArith], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVCTZV",    [SiFiveP800SVectorArith], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVWSLLV",   [SiFiveP800SVectorArith], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVWSLLX",   [SiFiveP800SVectorArith], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVWSLLI",   [SiFiveP800SVectorArith], mx, IsWorstCase>;
+  }
+  // Zvbc
+  let Latency = 2, ReleaseAtCycles = [LMulLat] in {
+    defm "" : LMULWriteResMX<"WriteVCLMULV", [SiFiveP800SVectorArith], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVCLMULX", [SiFiveP800SVectorArith], mx, IsWorstCase>;
+  }
+  // Zvkb
+  // VANDN uses WriteVIALU[V|X|I]
+  let Latency = 2, ReleaseAtCycles = [LMulLat] in {
+    defm "" : LMULWriteResMX<"WriteVBREV8V",  [SiFiveP800SVectorArith], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVREV8V",   [SiFiveP800SVectorArith], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVRotV",    [SiFiveP800SVectorArith], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVRotX",    [SiFiveP800SVectorArith], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVRotI",    [SiFiveP800SVectorArith], mx, IsWorstCase>;
+  }
+  // Zvkg
+  let Latency = 2, ReleaseAtCycles = [LMulLat] in {
+    defm "" : LMULWriteResMX<"WriteVGHSHV",   [SiFiveP800SVectorArith], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVGMULV",   [SiFiveP800SVectorArith], mx, IsWorstCase>;
+  }
+  // ZvknhaOrZvknhb
+  let Latency = 3, ReleaseAtCycles = [LMulLat] in {
+    defm "" : LMULWriteResMX<"WriteVSHA2CHV", [SiFiveP800SVEXQ0], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVSHA2CLV", [SiFiveP800SVEXQ0], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVSHA2MSV", [SiFiveP800SVEXQ0], mx, IsWorstCase>;
+  }
+  // Zvkned
+  let Latency = 2, ReleaseAtCycles = [LMulLat] in {
+    defm "" : LMULWriteResMX<"WriteVAESMVV",  [SiFiveP800SVectorArith], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVAESKF1V", [SiFiveP800SVectorArith], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVAESKF2V", [SiFiveP800SVectorArith], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVAESZV",   [SiFiveP800SVectorArith], mx, IsWorstCase>;
+  }
+  // Zvksed
+  let Latency = 3, ReleaseAtCycles = [SiFiveP800SVSM3CCycles<mx>.c] in
+  defm "" : LMULWriteResMX<"WriteVSM3CV",   [SiFiveP800SVEXQ0], mx, IsWorstCase>;
+  let Latency = 6, ReleaseAtCycles = [LMulLat] in
+  defm "" : LMULWriteResMX<"WriteVSM3MEV",  [SiFiveP800SVEXQ0], mx, IsWorstCase>;
+  let Latency = 3, ReleaseAtCycles = [LMulLat] in {
+    defm "" : LMULWriteResMX<"WriteVSM4KV",   [SiFiveP800SVEXQ0], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVSM4RV",   [SiFiveP800SVEXQ0], mx, IsWorstCase>;
+  }
+}
+
 // Others
 def : WriteRes<WriteCSR, [SiFiveP800SSYS]>;
 def : WriteRes<WriteNop, []>;
@@ -1060,6 +1125,42 @@ def : ReadAdvance<ReadVMov2V, 0>;
 def : ReadAdvance<ReadVMov4V, 0>;
 def : ReadAdvance<ReadVMov8V, 0>;
 
+// Vector Crypto Extensions
+// Zvbb
+defm "" : LMULReadAdvance<"ReadVBREVV", 0>;
+defm "" : LMULReadAdvance<"ReadVCLZV", 0>;
+defm "" : LMULReadAdvance<"ReadVCPOPV", 0>;
+defm "" : LMULReadAdvance<"ReadVCTZV", 0>;
+defm "" : LMULReadAdvance<"ReadVWSLLV", 0>;
+defm "" : LMULReadAdvance<"ReadVWSLLX", 0>;
+// Zvbc
+defm "" : LMULReadAdvance<"ReadVCLMULV", 0>;
+defm "" : LMULReadAdvance<"ReadVCLMULX", 0>;
+// Zvkb
+// VANDN uses ReadVIALU[V|X|I]
+defm "" : LMULReadAdvance<"ReadVBREV8V", 0>;
+defm "" : LMULReadAdvance<"ReadVREV8V", 0>;
+defm "" : LMULReadAdvance<"ReadVRotV", 0>;
+defm "" : LMULReadAdvance<"ReadVRotX", 0>;
+// Zvkg
+defm "" : LMULReadAdvance<"ReadVGHSHV", 0>;
+defm "" : LMULReadAdvance<"ReadVGMULV", 0>;
+// Zvknha or Zvknhb
+defm "" : LMULReadAdvance<"ReadVSHA2CHV", 0>;
+defm "" : LMULReadAdvance<"ReadVSHA2CLV", 0>;
+defm "" : LMULReadAdvance<"ReadVSHA2MSV", 0>;
+// Zvkned
+defm "" : LMULReadAdvance<"ReadVAESMVV", 0>;
+defm "" : LMULReadAdvance<"ReadVAESKF1V", 0>;
+defm "" : LMULReadAdvance<"ReadVAESKF2V", 0>;
+defm "" : LMULReadAdvance<"ReadVAESZV", 0>;
+// Zvksed
+defm "" : LMULReadAdvance<"ReadVSM4KV", 0>;
+defm "" : LMULReadAdvance<"ReadVSM4RV", 0>;
+// Zbksh
+defm "" : LMULReadAdvance<"ReadVSM3CV", 0>;
+defm "" : LMULReadAdvance<"ReadVSM3MEV", 0>;
+
 // Others
 def : ReadAdvance<ReadVMask, 0>;
 def : ReadAdvance<ReadVMergeOp_WorstCase, 0>;
@@ -1075,7 +1176,6 @@ defm : UnsupportedSchedZabha;
 defm : UnsupportedSchedZbc;
 defm : UnsupportedSchedZbkb;
 defm : UnsupportedSchedZbkx;
-defm : UnsupportedSchedZvk;
 defm : UnsupportedSchedSFB;
 defm : UnsupportedSchedXsfvcp;
 }
