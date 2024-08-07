@@ -303,6 +303,7 @@ bool RISCVTargetInfo::initFeatureMap(
 
 #if SIFIVE_CUSTOMIZATION
     if (getTargetOpts().SiFiveRecode == "neon") {
+      OverrideFeatures.push_back("+neon");
       OverrideFeatures.push_back("+dotprod");
       if (llvm::is_contained(OverrideFeatures, "+zfh") &&
           llvm::is_contained(OverrideFeatures, "+zvfh"))
@@ -328,6 +329,7 @@ bool RISCVTargetInfo::initFeatureMap(
 
 #if SIFIVE_CUSTOMIZATION
   if (getTargetOpts().SiFiveRecode == "neon") {
+    AllFeatures.push_back("+neon");
     AllFeatures.push_back("+dotprod");
     if (llvm::is_contained(AllFeatures, "+zfh") &&
         llvm::is_contained(AllFeatures, "+zvfh"))
