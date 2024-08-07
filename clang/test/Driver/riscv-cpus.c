@@ -275,13 +275,13 @@
 // MCPU-MARCH: "-nostdsysteminc" "-target-cpu" "sifive-e31" "-target-feature" "+m" "-target-feature" "+c"
 // MCPU-MARCH: "-target-abi" "ilp32"
 
-// RUN: %clang --target=riscv32 -### -c %s 2>&1 -mcpu=sifive-p470 -march=rv64imafdc_zicsr | FileCheck -check-prefix=MCPU-MARCH-P470 %s
+// RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-p470 -march=rv64imafdc_zicsr | FileCheck -check-prefix=MCPU-MARCH-P470 %s
 // MCPU-MARCH-P470: "-nostdsysteminc" "-target-cpu" "sifive-p470" "-target-feature" "+m" "-target-feature" "+a"
 // MCPU-MARCH-P470: "-target-feature" "+f" "-target-feature" "+d" "-target-feature" "+c" "-target-feature" "+zicsr"
 // MCPU-MARCH-P470: "-target-feature" "-zvkg"
 // MCPU-MARCH-P470: "-target-feature" "-zvkg0p1"
 
-// RUN: %clang --target=riscv32 -### -c %s 2>&1 -mcpu=sifive-p670 -march=rv64imafdc_zicsr | FileCheck -check-prefix=MCPU-MARCH-P670 %s
+// RUN: %clang --target=riscv64 -### -c %s 2>&1 -mcpu=sifive-p670 -march=rv64imafdc_zicsr | FileCheck -check-prefix=MCPU-MARCH-P670 %s
 // MCPU-MARCH-P670: "-nostdsysteminc" "-target-cpu" "sifive-p670" "-target-feature" "+m" "-target-feature" "+a"
 // MCPU-MARCH-P670: "-target-feature" "+f" "-target-feature" "+d" "-target-feature" "+c" "-target-feature" "+zicsr"
 // MCPU-MARCH-P670: "-target-feature" "-zvkg"
