@@ -34,7 +34,7 @@ define void @s172(i32 noundef %xa, i32 noundef %xb, ptr noundef %a, ptr noundef 
 ; CHECK-NEXT:    [[TMP10:%.*]] = add nsw i64 [[TMP5]], [[UMIN8]]
 ; CHECK-NEXT:    [[TMP11:%.*]] = add nsw i64 [[TMP10]], [[TMP0]]
 ; CHECK-NEXT:    [[TMP16:%.*]] = shl nsw i64 [[TMP11]], 2
-; CHECK-NEXT:    [[TMP17:%.*]] = add i64 [[TMP16]], 4
+; CHECK-NEXT:    [[TMP17:%.*]] = add nsw i64 [[TMP16]], 4
 ; CHECK-NEXT:    [[SCEVGEP4:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP17]]
 ; CHECK-NEXT:    [[SCEVGEP5:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP9]]
 ; CHECK-NEXT:    [[SCEVGEP6:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP17]]
