@@ -231,17 +231,18 @@ static void emitRISCVExtensionInfoJSON(const std::vector<Record *> &Extensions,
   //       "experimental": False
   //     }
   OS << "{\n";
-  OS << "  \"supported_extensions\": {";
+  OS.indent(2) << "\"supported_extensions\": {";
   ListSeparator extSep(",");
   for (const Record *R : Extensions) {
-    OS << extSep << "\n    \"" << getExtensionName(R) << "\": {\n";
-    OS << "      \"major_version\": " << R->getValueAsInt("MajorVersion")
+    OS << extSep << "\n";
+    OS.indent(4) << "\"" << getExtensionName(R) << "\": {\n";
+    OS.indent(6) << "\"major_version\": " << R->getValueAsInt("MajorVersion")
        << ",\n";
-    OS << "      \"minor_version\": " << R->getValueAsInt("MinorVersion")
+    OS.indent(6) << "\"minor_version\": " << R->getValueAsInt("MinorVersion")
        << ",\n";
-    OS << "      \"experimental\": "
+    OS.indent(6) << "\"experimental\": "
        << (R->getValueAsBit("Experimental") ? "true" : "false") << "\n";
-    OS << "    }";
+    OS.indent(4) << "}";
   }
   OS << "\n  },\n";
 }
@@ -258,14 +259,15 @@ emitRISCVImpliedExtensionInfoJSON(const std::vector<Record *> &Extensions,
   //      "v": ["zve64d", "zvl128b"]
   //   }
   // }
-  OS << "  \"implied_extensions\": {\n";
+  OS.indent(2) << "\"implied_extensions\": {\n";
   ListSeparator extSep(",\n");
   for (Record *Ext : Extensions) {
     auto ImpliesList = Ext->getValueAsListOfDefs("Implies");
     if (ImpliesList.empty())
       continue;
     StringRef Name = getExtensionName(Ext);
-    OS << extSep << "    \"" << Name << "\": [";
+    OS << extSep;
+    OS.indent(4) << "\"" << Name << "\": [";
     ListSeparator impliedSep(", ");
     for (auto *ImpliedExt : ImpliesList) {
       if (!ImpliedExt->isSubClassOf("RISCVExtension"))
@@ -276,7 +278,7 @@ emitRISCVImpliedExtensionInfoJSON(const std::vector<Record *> &Extensions,
   }
   if (!Extensions.empty())
     OS << "\n";
-  OS << "  }\n";
+  OS.indent(2) << "}\n";
   OS << "}\n";
 }
 #endif // SIFIVE_CUSTOMIZATION
