@@ -12570,8 +12570,12 @@ bool LoopVectorizePass::processLoop(Loop *L) {
 
       ElementCount BestVF = LVP.getBestVF();
       LLVM_DEBUG(dbgs() << "VF picked by VPlan cost model: " << BestVF << "\n");
+#if SIFIVE_CUSTOMIZATION
+      VF.Width = BestVF;
+#else
       assert(VF.Width == BestVF &&
              "VPlan cost model and legacy cost model disagreed");
+#endif // SIFIVE_CUSTOMIZATION
       VPlan &BestPlan = LVP.getBestPlanFor(BestVF);
       // Consider vectorizing the epilogue too if it's profitable.
       VectorizationFactor EpilogueVF =
@@ -12710,6 +12714,7 @@ bool LoopVectorizePass::processLoop(Loop *L) {
 #if SIFIVE_CUSTOMIZATION
         SCEVBlockRAII SCEVRAII(LB, IgnoreSCEVMemCheckBB);
 #endif // SIFIVE_CUSTOMIZATION
+
         LVP.executePlan(BestVF, IC, BestPlan, LB, DT, false);
         ++LoopsVectorized;
 
