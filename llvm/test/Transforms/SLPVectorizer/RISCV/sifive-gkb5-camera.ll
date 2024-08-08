@@ -81,28 +81,32 @@ define void @foo(ptr align 8 %array, [2 x i64] %black_point.coerce, [2 x i64] %w
 ; PROFITABLE-NEXT:    [[BLACK_POINT_COERCE_FCA_1_EXTRACT:%.*]] = extractvalue [2 x i64] [[BLACK_POINT_COERCE]], 1
 ; PROFITABLE-NEXT:    [[BLACK_POINT_SROA_2_0_EXTRACT_SHIFT:%.*]] = lshr i64 [[BLACK_POINT_COERCE_FCA_0_EXTRACT]], 32
 ; PROFITABLE-NEXT:    [[ARRAYIDX_0:%.*]] = getelementptr inbounds i8, ptr [[ARRAY]], i64 0
-; PROFITABLE-NEXT:    [[TMP1:%.*]] = insertelement <3 x i64> poison, i64 [[WHITE_POINT_COERCE_FCA_0_EXTRACT]], i32 0
-; PROFITABLE-NEXT:    [[TMP2:%.*]] = insertelement <3 x i64> [[TMP1]], i64 [[WHITE_POINT_SROA_2_0_EXTRACT_SHIFT]], i32 1
-; PROFITABLE-NEXT:    [[TMP3:%.*]] = insertelement <3 x i64> [[TMP2]], i64 [[TMP0]], i32 2
-; PROFITABLE-NEXT:    [[TMP4:%.*]] = trunc <3 x i64> [[TMP3]] to <3 x i32>
-; PROFITABLE-NEXT:    [[TMP5:%.*]] = bitcast <3 x i32> [[TMP4]] to <3 x float>
-; PROFITABLE-NEXT:    [[TMP6:%.*]] = insertelement <3 x i64> poison, i64 [[BLACK_POINT_COERCE_FCA_0_EXTRACT]], i32 0
-; PROFITABLE-NEXT:    [[TMP7:%.*]] = insertelement <3 x i64> [[TMP6]], i64 [[BLACK_POINT_SROA_2_0_EXTRACT_SHIFT]], i32 1
-; PROFITABLE-NEXT:    [[TMP8:%.*]] = insertelement <3 x i64> [[TMP7]], i64 [[BLACK_POINT_COERCE_FCA_1_EXTRACT]], i32 2
-; PROFITABLE-NEXT:    [[TMP9:%.*]] = trunc <3 x i64> [[TMP8]] to <3 x i32>
-; PROFITABLE-NEXT:    [[TMP10:%.*]] = bitcast <3 x i32> [[TMP9]] to <3 x float>
-; PROFITABLE-NEXT:    [[TMP11:%.*]] = fsub fast <3 x float> [[TMP5]], [[TMP10]]
-; PROFITABLE-NEXT:    [[TMP12:%.*]] = fdiv fast <3 x float> <float 1.000000e+00, float 1.000000e+00, float 1.000000e+00>, [[TMP11]]
-; PROFITABLE-NEXT:    [[TMP13:%.*]] = fmul fast <3 x float> [[TMP10]], <float 2.550000e+02, float 2.550000e+02, float 2.550000e+02>
-; PROFITABLE-NEXT:    [[TMP14:%.*]] = load <3 x i8>, ptr [[ARRAYIDX_0]], align 1
-; PROFITABLE-NEXT:    [[TMP15:%.*]] = uitofp <3 x i8> [[TMP14]] to <3 x float>
-; PROFITABLE-NEXT:    [[TMP16:%.*]] = fsub fast <3 x float> [[TMP15]], [[TMP13]]
-; PROFITABLE-NEXT:    [[TMP17:%.*]] = fmul fast <3 x float> [[TMP16]], [[TMP12]]
-; PROFITABLE-NEXT:    [[TMP18:%.*]] = fcmp fast olt <3 x float> [[TMP17]], zeroinitializer
-; PROFITABLE-NEXT:    [[TMP19:%.*]] = select <3 x i1> [[TMP18]], <3 x float> zeroinitializer, <3 x float> [[TMP17]]
-; PROFITABLE-NEXT:    [[TMP20:%.*]] = call fast <3 x float> @llvm.minnum.v3f32(<3 x float> [[TMP19]], <3 x float> <float 2.550000e+02, float 2.550000e+02, float 2.550000e+02>)
-; PROFITABLE-NEXT:    [[TMP21:%.*]] = fptoui <3 x float> [[TMP20]] to <3 x i8>
-; PROFITABLE-NEXT:    store <3 x i8> [[TMP21]], ptr [[ARRAYIDX_0]], align 1
+; PROFITABLE-NEXT:    [[TMP1:%.*]] = trunc i64 [[WHITE_POINT_COERCE_FCA_0_EXTRACT]] to i32
+; PROFITABLE-NEXT:    [[TMP2:%.*]] = insertelement <3 x i32> poison, i32 [[TMP1]], i32 0
+; PROFITABLE-NEXT:    [[TMP3:%.*]] = trunc i64 [[WHITE_POINT_SROA_2_0_EXTRACT_SHIFT]] to i32
+; PROFITABLE-NEXT:    [[TMP4:%.*]] = insertelement <3 x i32> [[TMP2]], i32 [[TMP3]], i32 1
+; PROFITABLE-NEXT:    [[TMP5:%.*]] = trunc i64 [[TMP0]] to i32
+; PROFITABLE-NEXT:    [[TMP6:%.*]] = insertelement <3 x i32> [[TMP4]], i32 [[TMP5]], i32 2
+; PROFITABLE-NEXT:    [[TMP7:%.*]] = bitcast <3 x i32> [[TMP6]] to <3 x float>
+; PROFITABLE-NEXT:    [[TMP8:%.*]] = trunc i64 [[BLACK_POINT_COERCE_FCA_0_EXTRACT]] to i32
+; PROFITABLE-NEXT:    [[TMP9:%.*]] = insertelement <3 x i32> poison, i32 [[TMP8]], i32 0
+; PROFITABLE-NEXT:    [[TMP10:%.*]] = trunc i64 [[BLACK_POINT_SROA_2_0_EXTRACT_SHIFT]] to i32
+; PROFITABLE-NEXT:    [[TMP11:%.*]] = insertelement <3 x i32> [[TMP9]], i32 [[TMP10]], i32 1
+; PROFITABLE-NEXT:    [[TMP12:%.*]] = trunc i64 [[BLACK_POINT_COERCE_FCA_1_EXTRACT]] to i32
+; PROFITABLE-NEXT:    [[TMP13:%.*]] = insertelement <3 x i32> [[TMP11]], i32 [[TMP12]], i32 2
+; PROFITABLE-NEXT:    [[TMP14:%.*]] = bitcast <3 x i32> [[TMP13]] to <3 x float>
+; PROFITABLE-NEXT:    [[TMP15:%.*]] = fsub fast <3 x float> [[TMP7]], [[TMP14]]
+; PROFITABLE-NEXT:    [[TMP16:%.*]] = fdiv fast <3 x float> <float 1.000000e+00, float 1.000000e+00, float 1.000000e+00>, [[TMP15]]
+; PROFITABLE-NEXT:    [[TMP17:%.*]] = fmul fast <3 x float> [[TMP14]], <float 2.550000e+02, float 2.550000e+02, float 2.550000e+02>
+; PROFITABLE-NEXT:    [[TMP18:%.*]] = load <3 x i8>, ptr [[ARRAYIDX_0]], align 1
+; PROFITABLE-NEXT:    [[TMP19:%.*]] = uitofp <3 x i8> [[TMP18]] to <3 x float>
+; PROFITABLE-NEXT:    [[TMP20:%.*]] = fsub fast <3 x float> [[TMP19]], [[TMP17]]
+; PROFITABLE-NEXT:    [[TMP21:%.*]] = fmul fast <3 x float> [[TMP20]], [[TMP16]]
+; PROFITABLE-NEXT:    [[TMP22:%.*]] = fcmp fast olt <3 x float> [[TMP21]], zeroinitializer
+; PROFITABLE-NEXT:    [[TMP23:%.*]] = select <3 x i1> [[TMP22]], <3 x float> zeroinitializer, <3 x float> [[TMP21]]
+; PROFITABLE-NEXT:    [[TMP24:%.*]] = call fast <3 x float> @llvm.minnum.v3f32(<3 x float> [[TMP23]], <3 x float> <float 2.550000e+02, float 2.550000e+02, float 2.550000e+02>)
+; PROFITABLE-NEXT:    [[TMP25:%.*]] = fptoui <3 x float> [[TMP24]] to <3 x i8>
+; PROFITABLE-NEXT:    store <3 x i8> [[TMP25]], ptr [[ARRAYIDX_0]], align 1
 ; PROFITABLE-NEXT:    ret void
 ;
 entry:
