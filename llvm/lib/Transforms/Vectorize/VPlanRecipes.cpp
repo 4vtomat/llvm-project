@@ -3035,7 +3035,7 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
   // first vector lane in each unroll iteration.
 #if SIFIVE_CUSTOMIZATION
   if (Group->isReverse()) {
-    if (State.Legal->useVLAVectorizer()) {
+    if (State.Plan->useVLAVectorizer()) {
       assert(State.EVL && "RuntimeVL must be initialized at this point");
       Value *EVL = State.Builder.CreateZExtOrTrunc(
           State.get(State.EVL, 0, /*NeedsScalar=*/true), State.Builder.getInt32Ty());
@@ -3218,7 +3218,7 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
     Value *MaskForGaps = nullptr;
     if (NeedsMaskForGaps) {
 #if SIFIVE_CUSTOMIZATION
-      if (State.Legal->useVLAVectorizer())
+      if (State.Plan->useVLAVectorizer())
         MaskForGaps = CreateMaskForGaps(State.Builder, State.VF, *Group);
       else
         MaskForGaps =
@@ -3234,7 +3234,7 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
     SmallVector<Value *, 2> NewLoads;
 #if SIFIVE_CUSTOMIZATION
     ArrayRef<VPValue *> VPDefs = definedValues();
-    if (State.Legal->useVLAVectorizer()) {
+    if (State.Plan->useVLAVectorizer()) {
       for (unsigned Part = 0; Part < State.UF; ++Part) {
         CallInst *WideLoad;
         Value *GroupMask;
@@ -3481,8 +3481,8 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
       !Group->isStrided() &&
       "Interleaving for stores with non-const stride is not supported for VLA");
 
-  ArrayRef<VPValue *> StoredValues = getStoredValues();
-  if (State.Legal->useVLAVectorizer()) {
+  if (State.Plan->useVLAVectorizer()) {
+    ArrayRef<VPValue *> StoredValues = getStoredValues();
     assert(Group->getFactor() == Group->getNumMembers() &&
            "Interleaving for stores with gaps is not supported for VLA");
     for (unsigned Part = 0; Part < State.UF; ++Part) {
@@ -3555,9 +3555,7 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
       createBitMaskForGaps(State.Builder, State.VF.getKnownMinValue(), *Group);
   assert((!MaskForGaps || !State.VF.isScalable()) &&
          "masking gaps for scalable vectors is not yet supported.");
-#if !SIFIVE_CUSTOMIZATION
   ArrayRef<VPValue *> StoredValues = getStoredValues();
-#endif // SIFIVE_CUSTOMIZATION
   for (unsigned Part = 0; Part < State.UF; Part++) {
     // Collect the stored vector from each member.
     SmallVector<Value *, 4> StoredVecs;

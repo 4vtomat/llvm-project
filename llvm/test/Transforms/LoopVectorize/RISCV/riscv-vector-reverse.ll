@@ -227,27 +227,27 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: Scalable vectorization is available
 ; CHECK-NEXT:  LV: The max safe fixed VF is: 67108864.
 ; CHECK-NEXT:  LV: The max safe scalable VF is: vscale x 4294967295.
-; CHECK-NEXT:  LV: Found uniform instruction: %cmp = icmp ugt i64 %indvars.iv, 1
-; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
-; CHECK-NEXT:  LV: Found uniform instruction: %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
-; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
-; CHECK-NEXT:  LV: Found uniform instruction: %idxprom = zext i32 %i.0 to i64
-; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
-; CHECK-NEXT:  LV: Found uniform instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
-; CHECK-NEXT:  LV: Found uniform instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
-; CHECK-NEXT:  LV: Found uniform instruction: %i.0 = add nsw i32 %i.0.in8, -1
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %i.0 = add nsw i32 %i.0.in8, -1
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %idxprom = zext i32 %i.0 to i64
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
-; CHECK-NEXT:  LV: Found an estimated cost of 13 for VF vscale x 4 For instruction: %1 = load float, ptr %arrayidx, align 4
-; CHECK-NEXT:  LV: Found an estimated cost of 4 for VF vscale x 4 For instruction: %conv1 = fadd float %1, 1.000000e+00
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
-; CHECK-NEXT:  LV: Found an estimated cost of 13 for VF vscale x 4 For instruction: store float %conv1, ptr %arrayidx3, align 4
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %cmp = icmp ugt i64 %indvars.iv, 1
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
+; CHECK-NEXT:  LV: Found uniform instruction:   %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found uniform instruction:   %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction:   %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found uniform instruction:   %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction:   %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found uniform instruction:   %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction:   %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found uniform instruction:   %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found uniform instruction:   %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction:   %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction:   %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction:   %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction:   %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction:   %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated cost of 13 for VF vscale x 4 For instruction:   %1 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated cost of 2 for VF vscale x 4 For instruction:   %conv1 = fadd float %1, 1.000000e+00
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction:   %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated cost of 13 for VF vscale x 4 For instruction:   store float %conv1, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction:   %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction:   %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction:   br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
 ; CHECK-NEXT:  LV: Using user VF vscale x 4.
 ; CHECK-NEXT:  LV: Loop does not require scalar epilogue
 ; CHECK-NEXT:  LV: Scalarizing: %i.0 = add nsw i32 %i.0.in8, -1
@@ -301,18 +301,18 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  scalar.ph:
 ; CHECK-NEXT:  No successors
 ; CHECK-NEXT:  }
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %i.0 = add nsw i32 %i.0.in8, -1
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %idxprom = zext i32 %i.0 to i64
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
-; CHECK-NEXT:  LV: Found an estimated cost of 13 for VF vscale x 4 For instruction: %1 = load float, ptr %arrayidx, align 4
-; CHECK-NEXT:  LV: Found an estimated cost of 4 for VF vscale x 4 For instruction: %conv1 = fadd float %1, 1.000000e+00
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
-; CHECK-NEXT:  LV: Found an estimated cost of 13 for VF vscale x 4 For instruction: store float %conv1, ptr %arrayidx3, align 4
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %cmp = icmp ugt i64 %indvars.iv, 1
-; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction: %indvars.iv.next = add nsw i64 %indvars.iv, -1
-; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction: br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction:   %indvars.iv = phi i64 [ %0, %for.body.preheader ], [ %indvars.iv.next, %for.body ]
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction:   %i.0.in8 = phi i32 [ %n, %for.body.preheader ], [ %i.0, %for.body ]
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction:   %i.0 = add nsw i32 %i.0.in8, -1
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction:   %idxprom = zext i32 %i.0 to i64
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction:   %arrayidx = getelementptr inbounds float, ptr %B, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated cost of 13 for VF vscale x 4 For instruction:   %1 = load float, ptr %arrayidx, align 4
+; CHECK-NEXT:  LV: Found an estimated cost of 2 for VF vscale x 4 For instruction:   %conv1 = fadd float %1, 1.000000e+00
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction:   %arrayidx3 = getelementptr inbounds float, ptr %A, i64 %idxprom
+; CHECK-NEXT:  LV: Found an estimated cost of 13 for VF vscale x 4 For instruction:   store float %conv1, ptr %arrayidx3, align 4
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction:   %cmp = icmp ugt i64 %indvars.iv, 1
+; CHECK-NEXT:  LV: Found an estimated cost of 1 for VF vscale x 4 For instruction:   %indvars.iv.next = add nsw i64 %indvars.iv, -1
+; CHECK-NEXT:  LV: Found an estimated cost of 0 for VF vscale x 4 For instruction:   br i1 %cmp, label %for.body, label %for.cond.cleanup.loopexit, !llvm.loop !0
 ; CHECK-NEXT:  LV(REG): Calculating max register usage:
 ; CHECK-NEXT:  LV(REG): At #0 Interval # 0
 ; CHECK-NEXT:  LV(REG): At #1 Interval # 1
@@ -333,7 +333,7 @@ define void @vector_reverse_f32(ptr nocapture noundef writeonly %A, ptr nocaptur
 ; CHECK-NEXT:  LV: The target has 31 registers of RISCV::GPRRC register class
 ; CHECK-NEXT:  LV: The target has 32 registers of RISCV::VRRC register class
 ; CHECK-NEXT:  LV: Loop does not require scalar epilogue
-; CHECK-NEXT:  LV: Loop cost is 34
+; CHECK-NEXT:  LV: Loop cost is 32
 ; CHECK-NEXT:  LV: IC is 1
 ; CHECK-NEXT:  LV: VF is vscale x 4
 ; CHECK-NEXT:  LV: Not Interleaving.

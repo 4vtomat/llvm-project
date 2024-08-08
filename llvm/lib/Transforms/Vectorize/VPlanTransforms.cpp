@@ -1629,21 +1629,39 @@ bool VPlanTransforms::tryAddExplicitVectorLength(VPlan &Plan) {
     // The recipes in the block are processed in reverse order, to catch chains
     // of dead recipes.
     for (VPRecipeBase &R : make_early_inc_range(reverse(*VPBB))) {
-      auto *MemR = dyn_cast<VPWidenMemoryRecipe>(&R);
-      if (!MemR)
-        continue;
-      VPValue *OrigMask = MemR->getMask();
-      if (auto *L = dyn_cast<VPWidenLoadRecipe>(MemR)) {
-        auto *N = new VPWidenLoadEVLRecipe(*L, *VPEVL, OrigMask);
-        N->insertBefore(L);
-        L->replaceAllUsesWith(N);
-        L->eraseFromParent();
-      } else if (auto *S = dyn_cast<VPWidenStoreRecipe>(MemR)) {
-        auto *N = new VPWidenStoreEVLRecipe(*S, *VPEVL, OrigMask);
-        N->insertBefore(S);
-        S->eraseFromParent();
-      } else {
-        llvm_unreachable("unsupported recipe");
+      VPRecipeBase *CurRecipe = &R;
+      VPRecipeBase *NewRecipe = nullptr;
+
+      auto GetNewMask = [&](VPValue *OrigMask) -> VPValue * {
+        return OrigMask;
+      };
+      if (auto *MemR = dyn_cast<VPWidenMemoryRecipe>(CurRecipe)) {
+        VPValue *NewMask = GetNewMask(MemR->getMask());
+        if (auto *L = dyn_cast<VPWidenLoadRecipe>(MemR))
+          NewRecipe = new VPWidenLoadEVLRecipe(*L, *VPEVL, NewMask);
+        else if (auto *S = dyn_cast<VPWidenStoreRecipe>(MemR))
+          NewRecipe = new VPWidenStoreEVLRecipe(*S, *VPEVL, NewMask);
+        else
+          llvm_unreachable("unsupported recipe");
+      } else if (auto *RedR = dyn_cast<VPReductionRecipe>(CurRecipe)) {
+        NewRecipe = new VPReductionEVLRecipe(*RedR, *VPEVL,
+                                             GetNewMask(RedR->getCondOp()));
+      }
+
+      if (NewRecipe) {
+        [[maybe_unused]] unsigned NumDefVal = NewRecipe->getNumDefinedValues();
+        assert(NumDefVal == CurRecipe->getNumDefinedValues() &&
+               "New recipe must define the same number of values as the "
+               "original.");
+        assert(
+            NumDefVal <= 1 &&
+            "Only supports recipes with a single definition or without users.");
+        NewRecipe->insertBefore(CurRecipe);
+        if (isa<VPSingleDefRecipe, VPWidenLoadEVLRecipe>(NewRecipe)) {
+          VPValue *CurVPV = CurRecipe->getVPSingleValue();
+          CurVPV->replaceAllUsesWith(NewRecipe->getVPSingleValue());
+        }
+        CurRecipe->eraseFromParent();
       }
     }
   }

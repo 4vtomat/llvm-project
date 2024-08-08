@@ -9024,7 +9024,7 @@ LoopVectorizationPlanner::executePlan(
   VPTransformState State{
       BestVF,        BestUF, LI,         DT,
       ILV.Builder,   &ILV,   &BestVPlan, OrigLoop->getHeader()->getContext(),
-      Legal, EnableRISCVCSA};
+      EnableRISCVCSA};
   BestVPlan.initializeMasks(State);
 #else
   VPTransformState State(BestVF, BestUF, LI, DT, ILV.Builder, &ILV, &BestVPlan,

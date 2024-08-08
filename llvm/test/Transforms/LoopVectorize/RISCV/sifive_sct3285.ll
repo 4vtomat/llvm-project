@@ -14,8 +14,9 @@ for.body:
   %cache2 = getelementptr %struct.b2SimplexCache, ptr %cache, i64 0, i32 2, i64 %iv
   store i8 0, ptr %cache2, align 1
   %0 = load i32, ptr null, align 4
+  %1 = trunc i32 %0 to i8
   %cache3 = getelementptr %struct.b2SimplexCache, ptr %cache, i64 0, i32 3, i64 %iv
-  store i8 0, ptr %cache3, align 1
+  store i8 %1, ptr %cache3, align 1
   %iv.next = add i64 %iv, 1
   %.not = icmp eq i64 %iv, %smax
   br i1 %.not, label %exit, label %for.body
