@@ -285,7 +285,6 @@ emitRISCVImpliedExtensionInfoJSON(const std::vector<Record *> &Extensions,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-<<<<<<< HEAD
 static void emitRISCVExtensionBitmask(RecordKeeper &RK, raw_ostream &OS) {
 
   std::vector<Record *> Extensions =
@@ -320,7 +319,7 @@ static void emitRISCVExtensionBitmask(RecordKeeper &RK, raw_ostream &OS) {
   OS << "};\n";
   OS << "#endif\n";
 }
-=======
+
 #if SIFIVE_CUSTOMIZATION
 static void emitRISCVProfilesJSON(const std::vector<Record *> &Profiles,
                                   raw_ostream &OS) {
@@ -347,7 +346,6 @@ static void emitRISCVProfilesJSON(const std::vector<Record *> &Profiles,
   OS << "}\n";
 }
 #endif
->>>>>>> sifive-dev
 
 static void EmitRISCVTargetDef(RecordKeeper &RK, raw_ostream &OS) {
   emitRISCVExtensions(RK, OS);
