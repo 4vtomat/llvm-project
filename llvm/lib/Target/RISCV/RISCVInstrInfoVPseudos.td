@@ -91,10 +91,6 @@ def AVL : RegisterOperand<GPRNoX0> {
 //  X0 |  X0 | Value in vl | Keep current vl, just change vtype.
 def VLOp : ComplexPattern<XLenVT, 1, "selectVLOp">;
 
-#ifdef SIFIVE_CUSTOMIZATION
-def timmu2 : TImmLeaf<XLenVT, [{return isUInt<2>(Imm);}]>;
-#endif // SIFIVE_CUSTOMIZATION
-
 def DecImm : SDNodeXForm<imm, [{
   return CurDAG->getTargetConstant(N->getSExtValue() - 1, SDLoc(N),
                                    N->getValueType(0));
