@@ -822,9 +822,9 @@ foreach mx = SchedMxList in {
   }
   // ZvknhaOrZvknhb
   let Latency = 3, ReleaseAtCycles = [LMulLat] in {
-    defm "" : LMULWriteResMX<"WriteVSHA2CHV", [SiFiveP600VectorArith], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVSHA2CLV", [SiFiveP600VectorArith], mx, IsWorstCase>;
-    defm "" : LMULWriteResMX<"WriteVSHA2MSV", [SiFiveP600VectorArith], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVSHA2CHV", [SiFiveP600VEXQ0], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVSHA2CLV", [SiFiveP600VEXQ0], mx, IsWorstCase>;
+    defm "" : LMULWriteResMX<"WriteVSHA2MSV", [SiFiveP600VEXQ0], mx, IsWorstCase>;
   }
   // Zvkned
   let Latency = 2, ReleaseAtCycles = [LMulLat] in {

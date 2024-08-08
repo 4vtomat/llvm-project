@@ -1111,6 +1111,10 @@ def FeatureStdExtSvpbmt
     : RISCVExtension<"svpbmt", 1, 0,
                      "'Svpbmt' (Page-Based Memory Types)">;
 
+def FeatureStdExtSvukte
+    : RISCVExperimentalExtension<"svukte", 0, 3,
+                                 "'Svukte' (Address-Independent Latency of User-Mode Faults to Supervisor Addresses)">;
+
 // Pointer Masking extensions
 
 // A supervisor-level extension that provides pointer masking for the next lower
@@ -1292,6 +1296,7 @@ def FeatureVendorXSfvfexp32e
                      [FeatureStdExtZve32f]>;
 def HasVendorXSfvfexp32e : Predicate<"Subtarget->hasVendorXSfvfexp32e()">;
 
+def HasVendorXSfvfexpAnyFloat : Predicate<"Subtarget->hasVendorXSfvfexp16e() || Subtarget->hasVendorXSfvfexp32e()">;
 def HasVendorXSfvfexpAny : Predicate<"Subtarget->hasVendorXSfvfbfexp16e() || Subtarget->hasVendorXSfvfexp16e() || Subtarget->hasVendorXSfvfexp32e()">,
                            AssemblerPredicate<(any_of FeatureVendorXSfvfbfexp16e, FeatureVendorXSfvfexp16e, FeatureVendorXSfvfexp32e),
                            "'Xsfvfbfexp16e/Xsfvfexp16e/Xsfvfexp32e' (SiFive Vector Floating-Point Exponential Function Instruction)">;

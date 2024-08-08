@@ -66,6 +66,17 @@ MDNode *MDBuilder::createBranchWeights(ArrayRef<uint32_t> Weights,
   return MDNode::get(Context, Vals);
 }
 
+#if SIFIVE_CUSTOMIZATION
+MDNode *MDBuilder::createProfileCount(uint64_t Count) {
+  Metadata *Vals[2];
+  Type *Int64Ty = Type::getInt64Ty(Context);
+
+  Vals[0] = createString("profile_count");
+  Vals[1] = createConstant(ConstantInt::get(Int64Ty, Count));
+
+  return MDNode::get(Context, Vals);
+}
+#endif // SIFIVE_CUSTOMIZATION
 MDNode *MDBuilder::createUnpredictable() {
   return MDNode::get(Context, std::nullopt);
 }

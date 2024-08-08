@@ -1284,7 +1284,12 @@ Value *IRBuilderBase::CreateSelect(Value *C, Value *True, Value *False,
   if (MDFrom) {
     MDNode *Prof = MDFrom->getMetadata(LLVMContext::MD_prof);
     MDNode *Unpred = MDFrom->getMetadata(LLVMContext::MD_unpredictable);
+#if SIFIVE_CUSTOMIZATION
+    MDNode *ProfileCount = MDFrom->getMetadata(LLVMContext::MD_prof_count);
+    Sel = addBranchMetadata(Sel, Prof, Unpred, ProfileCount);
+#else
     Sel = addBranchMetadata(Sel, Prof, Unpred);
+#endif // SIFIVE_CUSTOMIZATION
   }
   if (isa<FPMathOperator>(Sel))
     setFPAttrs(Sel, nullptr /* MDNode* */, FMF);

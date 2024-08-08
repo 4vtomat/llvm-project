@@ -232,17 +232,19 @@ static void emitRISCVExtensionInfoJSON(const std::vector<Record *> &Extensions,
   //       "experimental": False
   //     }
   OS << "{\n";
-  OS << "  \"supported_extensions\": {";
+  OS.indent(2) << "\"supported_extensions\": {";
   ListSeparator extSep(",");
   for (const Record *R : Extensions) {
-    OS << extSep << "\n    \"" << getExtensionName(R) << "\": {\n";
-    OS << "      \"major_version\": " << R->getValueAsInt("MajorVersion")
-       << ",\n";
-    OS << "      \"minor_version\": " << R->getValueAsInt("MinorVersion")
-       << ",\n";
-    OS << "      \"experimental\": "
-       << (R->getValueAsBit("Experimental") ? "true" : "false") << "\n";
-    OS << "    }";
+    OS << extSep << "\n";
+    OS.indent(4) << "\"" << getExtensionName(R) << "\": {\n";
+    OS.indent(6) << "\"major_version\": " << R->getValueAsInt("MajorVersion")
+                 << ",\n";
+    OS.indent(6) << "\"minor_version\": " << R->getValueAsInt("MinorVersion")
+                 << ",\n";
+    OS.indent(6) << "\"experimental\": "
+                 << (R->getValueAsBit("Experimental") ? "true" : "false")
+                 << "\n";
+    OS.indent(4) << "}";
   }
   OS << "\n  },\n";
 }
@@ -259,14 +261,15 @@ emitRISCVImpliedExtensionInfoJSON(const std::vector<Record *> &Extensions,
   //      "v": ["zve64d", "zvl128b"]
   //   }
   // }
-  OS << "  \"implied_extensions\": {\n";
+  OS.indent(2) << "\"implied_extensions\": {\n";
   ListSeparator extSep(",\n");
   for (Record *Ext : Extensions) {
     auto ImpliesList = Ext->getValueAsListOfDefs("Implies");
     if (ImpliesList.empty())
       continue;
     StringRef Name = getExtensionName(Ext);
-    OS << extSep << "    \"" << Name << "\": [";
+    OS << extSep;
+    OS.indent(4) << "\"" << Name << "\": [";
     ListSeparator impliedSep(", ");
     for (auto *ImpliedExt : ImpliesList) {
       if (!ImpliedExt->isSubClassOf("RISCVExtension"))
@@ -277,11 +280,12 @@ emitRISCVImpliedExtensionInfoJSON(const std::vector<Record *> &Extensions,
   }
   if (!Extensions.empty())
     OS << "\n";
-  OS << "  }\n";
+  OS.indent(2) << "}\n";
   OS << "}\n";
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+<<<<<<< HEAD
 static void emitRISCVExtensionBitmask(RecordKeeper &RK, raw_ostream &OS) {
 
   std::vector<Record *> Extensions =
@@ -316,6 +320,34 @@ static void emitRISCVExtensionBitmask(RecordKeeper &RK, raw_ostream &OS) {
   OS << "};\n";
   OS << "#endif\n";
 }
+=======
+#if SIFIVE_CUSTOMIZATION
+static void emitRISCVProfilesJSON(const std::vector<Record *> &Profiles,
+                                  raw_ostream &OS) {
+  OS << "{\n";
+  OS.indent(2) << "\"supported_profiles\": {\n";
+  ListSeparator profileSep(",\n");
+  for (const Record *Rec : Profiles) {
+    StringRef Name = Rec->getValueAsString("Name");
+    Name.consume_front("experimental-");
+    OS << profileSep;
+    OS.indent(4) << "\"" << Name << "\": {\n";
+    OS.indent(6) << "\"march\": \"";
+    printMArch(OS, Rec->getValueAsListOfDefs("Implies"));
+    OS << "\"";
+    if (Rec->getValueAsBit("Experimental") == true) {
+      OS << profileSep;
+      OS.indent(6) << "\"experimental\": true\n";
+    } else {
+      OS << "\n";
+    }
+    OS.indent(4) << "}";
+  }
+  OS << "\n  }\n";
+  OS << "}\n";
+}
+#endif
+>>>>>>> sifive-dev
 
 static void EmitRISCVTargetDef(RecordKeeper &RK, raw_ostream &OS) {
   emitRISCVExtensions(RK, OS);
@@ -336,6 +368,16 @@ static void EmitRISCVISAInfoJSON(RecordKeeper &RK, raw_ostream &OS) {
 }
 #endif // SIFIVE_CUSTOMIZATION
 
+#if SIFIVE_CUSTOMIZATION
+static void EmitRISCVProfileJSON(RecordKeeper &RK, raw_ostream &OS) {
+  auto Profiles = RK.getAllDerivedDefinitionsIfDefined("RISCVProfile");
+
+  if (!Profiles.empty()) {
+    emitRISCVProfilesJSON(Profiles, OS);
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 static TableGen::Emitter::Opt X("gen-riscv-target-def", EmitRISCVTargetDef,
                                 "Generate the list of CPUs and extensions for "
                                 "RISC-V");
@@ -344,4 +386,8 @@ static TableGen::Emitter::Opt X("gen-riscv-target-def", EmitRISCVTargetDef,
 static TableGen::Emitter::Opt Y("gen-riscv-isa-info-json", EmitRISCVISAInfoJSON,
                                 "Generate the JSON file of supported extensions"
                                 " and implied rules for RISC-V.");
+
+static TableGen::Emitter::Opt Z("gen-riscv-profile-json", EmitRISCVProfileJSON,
+                                "Generate the JSON file of supported profiles"
+                                " for RISC-V.");
 #endif // SIFIVE_CUSTOMIZATION

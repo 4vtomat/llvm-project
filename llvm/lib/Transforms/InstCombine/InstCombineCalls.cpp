@@ -3801,18 +3801,33 @@ Instruction *InstCombinerImpl::visitCallInst(CallInst &CI) {
     auto *ConstMask = dyn_cast<Constant>(II->getArgOperand(0));
     if (ConstMask && ConstMask->isAllOnesValue()) {
       Value *FalseV = II->getArgOperand(2);
-      Value *OtherMask, *OtherTrueV;
+      Value *OtherMask, *OtherTrueV, *OtherFalseV;
       if (match(TrueV, m_Intrinsic<Intrinsic::vp_select>(
                            m_Value(OtherMask), m_Value(OtherTrueV),
-                           m_Specific(FalseV), m_Specific(EVL)))) {
+                           m_Value(OtherFalseV), m_Specific(EVL)))) {
         Instruction *TrueI = cast<Instruction>(TrueV);
-        Builder.SetInsertPoint(TrueI);
-        Instruction *Call =
-            Builder.CreateIntrinsic(Intrinsic::vp_merge, {II->getType()},
-                                    {OtherMask, OtherTrueV, FalseV, EVL});
-        replaceInstUsesWith(*TrueI, Call);
-        eraseInstFromFunction(*TrueI);
-        return replaceInstUsesWith(CI, Call);
+        if (FalseV == OtherFalseV) {
+          Builder.SetInsertPoint(TrueI);
+          Instruction *Call =
+              Builder.CreateIntrinsic(Intrinsic::vp_merge, {II->getType()},
+                                      {OtherMask, OtherTrueV, FalseV, EVL});
+          replaceInstUsesWith(*TrueI, Call);
+          eraseInstFromFunction(*TrueI);
+          return replaceInstUsesWith(CI, Call);
+        }
+        // If we have a select with the operands swapped, invert the condition
+        // and fold into the merge.
+        // FIXME: Handle TrueI having another user like we do above?
+        if (FalseV == OtherTrueV && TrueI->hasOneUse()) {
+          Value *AllOnesMask = ConstantInt::getTrue(OtherMask->getType());
+          Instruction *Not = Builder.CreateIntrinsic(
+              Intrinsic::vp_xor, {OtherMask->getType()},
+              {OtherMask, AllOnesMask, AllOnesMask, EVL});
+          Instruction *Call =
+              Builder.CreateIntrinsic(Intrinsic::vp_merge, {II->getType()},
+                                      {Not, OtherFalseV, FalseV, EVL});
+          return replaceInstUsesWith(CI, Call);
+        }
       }
     }
     break;

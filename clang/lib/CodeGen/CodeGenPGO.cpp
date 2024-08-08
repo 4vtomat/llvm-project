@@ -27,6 +27,15 @@ namespace llvm {
 extern cl::opt<bool> EnableSingleByteCoverage;
 } // namespace llvm
 
+#if SIFIVE_CUSTOMIZATION
+static llvm::cl::opt<bool> ClEnableProfileCountMetadata(
+    "enable-profile-count-metadata",
+    llvm::cl::desc("Appending real executation count of loops from runtime"),
+    llvm::cl::Hidden, llvm::cl::init(false));
+
+// Disable prof metadata appended in IR to prevent automatically PGO.
+extern llvm::cl::opt<bool> DisableProfMetadata;
+#endif // SIFIVE_CUSTOMIZATION
 static llvm::cl::opt<bool>
     EnableValueProfiling("enable-value-profiling",
                          llvm::cl::desc("Enable value profiling"),
@@ -1452,6 +1461,13 @@ static uint32_t scaleBranchWeight(uint64_t Weight, uint64_t Scale) {
 
 llvm::MDNode *CodeGenFunction::createProfileWeights(uint64_t TrueCount,
                                                     uint64_t FalseCount) const {
+#if SIFIVE_CUSTOMIZATION
+  // Disable prof metadata which contains branch_weight in the IR.
+  // This will prevent automatically PGO when we compile programs with runtime
+  // profile.
+  if (DisableProfMetadata)
+    return nullptr;
+#endif // SIFIVE_CUSTOMIZATION
   // Check for empty weights.
   if (!TrueCount && !FalseCount)
     return nullptr;
@@ -1466,6 +1482,13 @@ llvm::MDNode *CodeGenFunction::createProfileWeights(uint64_t TrueCount,
 
 llvm::MDNode *
 CodeGenFunction::createProfileWeights(ArrayRef<uint64_t> Weights) const {
+#if SIFIVE_CUSTOMIZATION
+  // Disable prof metadata which contains branch_weight in the IR.
+  // This will prevent automatically PGO when we compile programs with runtime
+  // profile.
+  if (DisableProfMetadata)
+    return nullptr;
+#endif // SIFIVE_CUSTOMIZATION
   // We need at least two elements to create meaningful weights.
   if (Weights.size() < 2)
     return nullptr;
@@ -1498,3 +1521,11 @@ CodeGenFunction::createProfileWeightsForLoop(const Stmt *Cond,
   return createProfileWeights(LoopCount,
                               std::max(*CondCount, LoopCount) - LoopCount);
 }
+#if SIFIVE_CUSTOMIZATION
+llvm::MDNode *CodeGenFunction::createProfileCount(uint64_t Count) const {
+  if (!PGO.haveRegionCounts() || !ClEnableProfileCountMetadata)
+    return nullptr;
+  llvm::MDBuilder MDHelper(CGM.getLLVMContext());
+  return MDHelper.createProfileCount(Count);
+}
+#endif // SIFIVE_CUSTOMIZATION

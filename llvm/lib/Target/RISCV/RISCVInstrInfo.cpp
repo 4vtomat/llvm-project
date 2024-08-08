@@ -1481,22 +1481,30 @@ unsigned RISCVInstrInfo::getInstSizeInBytes(const MachineInstr &MI) const {
   // Calculate the size taking that into account.
   // FIXME: Can we expand this before the BranchRelaxation pass so that we don't
   // have to do this manually.
-  if (Opcode == RISCV::PseudoMovImm) {
-    unsigned Size = 8; // Worst case is 8 bytes.
-    if (MI.getOperand(1).isImm() && isInt<32>(MI.getOperand(1).getImm()) &&
-        STI.getFeatureBits()[RISCV::FeatureStdExtC]) {
-      int64_t Val = MI.getOperand(1).getImm();
-      int64_t Hi = ((Val + 0x800) >> 12) & 0xFFFFF;
-      int64_t Lo = SignExtend64<12>(Val);
-      assert(Hi != 0 && Lo != 0 && "Unexpected immediate");
-      // Reduce by 2 bytes if we can use C.LUI.
-      if (RISCV::GPRNoX0X2RegClass.contains(MI.getOperand(0).getReg()) &&
-          (isUInt<5>(Hi) || (Hi >= 0xfffe0 && Hi <= 0xfffff)))
-        Size -= 2;
-      // Reduce by 2 bytes if we can use C.ADDI(W).
-      if (RISCV::GPRNoX0RegClass.contains(MI.getOperand(0).getReg()) &&
-          isInt<6>(Lo))
-        Size -= 2;
+  if (Opcode == RISCV::PseudoMovImm && STI.hasStdExtCOrZca()) {
+    int64_t Val = MI.getOperand(1).getImm();
+    RISCVMatInt::InstSeq Seq = RISCVMatInt::generateInstSeq(Val, STI);
+    unsigned Size = 0;
+    for (const RISCVMatInt::Inst &Inst : Seq) {
+      unsigned InstSize = 4;
+      switch (Inst.getOpcode()) {
+      case RISCV::ADDI:
+      case RISCV::ADDIW:
+        if (RISCV::GPRNoX0RegClass.contains(MI.getOperand(0).getReg()) &&
+            isInt<6>(Inst.getImm()))
+          InstSize = 2;
+        break;
+      case RISCV::LUI: {
+        int64_t Imm = Inst.getImm();
+        assert(isUInt<20>(Imm));
+        if (RISCV::GPRNoX0X2RegClass.contains(MI.getOperand(0).getReg()) &&
+            (isUInt<5>(Imm) || (Imm >= 0xfffe0 && Imm <= 0xfffff))) {
+          InstSize = 2;
+        }
+        break;
+      }
+      }
+      Size += InstSize;
     }
     return Size;
   }

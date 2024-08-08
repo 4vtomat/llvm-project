@@ -77,6 +77,10 @@ static cl::opt<unsigned> StaticFuncStripDirNamePrefix(
     cl::desc("Strip specified level of directory name from source path in "
              "the profile counter name for static functions."));
 
+#if SIFIVE_CUSTOMIZATION
+// Disable prof metadata to prevent automatically PGO with runtime profile.
+extern llvm::cl::opt<bool> DisableProfMetadata;
+#endif // SIFIVE_CUSTOMIZATION
 static std::string getInstrProfErrString(instrprof_error Err,
                                          const std::string &ErrMsg = "") {
   std::string Msg;
@@ -1298,6 +1302,13 @@ void annotateValueSite(Module &M, Instruction &Inst,
                        uint32_t MaxMDCount) {
   if (VDs.empty())
     return;
+#if SIFIVE_CUSTOMIZATION
+  // Disable prof metadata which contains VP(Value profile) in IR.
+  // This will prevent automatically PGO when we compile programs with runtime
+  // profile.
+  if (DisableProfMetadata)
+    return;
+#endif // SIFIVE_CUSTOMIZATION
   LLVMContext &Ctx = M.getContext();
   MDBuilder MDHelper(Ctx);
   SmallVector<Metadata *, 3> Vals;

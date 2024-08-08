@@ -91,10 +91,6 @@ def AVL : RegisterOperand<GPRNoX0> {
 //  X0 |  X0 | Value in vl | Keep current vl, just change vtype.
 def VLOp : ComplexPattern<XLenVT, 1, "selectVLOp">;
 
-#ifdef SIFIVE_CUSTOMIZATION
-def timmu2 : TImmLeaf<XLenVT, [{return isUInt<2>(Imm);}]>;
-#endif // SIFIVE_CUSTOMIZATION
-
 def DecImm : SDNodeXForm<imm, [{
   return CurDAG->getTargetConstant(N->getSExtValue() - 1, SDLoc(N),
                                    N->getValueType(0));
@@ -151,12 +147,10 @@ class PseudoToVInst<string PseudoInst> {
 
 // This class describes information associated to the LMUL.
 class LMULInfo<int lmul, int oct, VReg regclass, VReg wregclass,
-               VReg f2regclass, VReg f4regclass, VReg f8regclass, string mx, // SIFIVE
-               VReg w2regclass> { // SIFIVE
+               VReg f2regclass, VReg f4regclass, VReg f8regclass, string mx> {
   bits<3> value = lmul; // This is encoded as the vlmul field of vtype.
   VReg vrclass = regclass;
   VReg wvrclass = wregclass;
-  VReg w2vrclass = w2regclass; // SIFIVE
   VReg f8vrclass = f8regclass;
   VReg f4vrclass = f4regclass;
   VReg f2vrclass = f2regclass;
@@ -165,16 +159,14 @@ class LMULInfo<int lmul, int oct, VReg regclass, VReg wregclass,
 }
 
 // Associate LMUL with tablegen records of register classes.
-#ifdef SIFIVE_CUSTOMIZATION
-def V_M1  : LMULInfo<0b000,  8,   VR,        VRM2,   VR,   VR, VR, "M1", VRM4>;
-def V_M2  : LMULInfo<0b001, 16, VRM2,        VRM4,   VR,   VR, VR, "M2", VRM8>;
-def V_M4  : LMULInfo<0b010, 32, VRM4,        VRM8, VRM2,   VR, VR, "M4", /*NoVReg*/VR>;
-def V_M8  : LMULInfo<0b011, 64, VRM8,/*NoVReg*/VR, VRM4, VRM2, VR, "M8", /*NoVReg*/VR>;
+def V_M1  : LMULInfo<0b000,  8,   VR,        VRM2,   VR,   VR, VR, "M1">;
+def V_M2  : LMULInfo<0b001, 16, VRM2,        VRM4,   VR,   VR, VR, "M2">;
+def V_M4  : LMULInfo<0b010, 32, VRM4,        VRM8, VRM2,   VR, VR, "M4">;
+def V_M8  : LMULInfo<0b011, 64, VRM8,/*NoVReg*/VR, VRM4, VRM2, VR, "M8">;
 
-def V_MF8 : LMULInfo<0b101, 1, VR, VR,/*NoVReg*/VR,/*NoVReg*/VR,/*NoVReg*/VR, "MF8", VR>;
-def V_MF4 : LMULInfo<0b110, 2, VR, VR,          VR,/*NoVReg*/VR,/*NoVReg*/VR, "MF4", VR>;
-def V_MF2 : LMULInfo<0b111, 4, VR, VR,          VR,          VR,/*NoVReg*/VR, "MF2", VRM2>;
-#endif // SIFIVE_CUSTOMIZATION
+def V_MF8 : LMULInfo<0b101, 1, VR, VR,/*NoVReg*/VR,/*NoVReg*/VR,/*NoVReg*/VR, "MF8">;
+def V_MF4 : LMULInfo<0b110, 2, VR, VR,          VR,/*NoVReg*/VR,/*NoVReg*/VR, "MF4">;
+def V_MF2 : LMULInfo<0b111, 4, VR, VR,          VR,          VR,/*NoVReg*/VR, "MF2">;
 
 // Used to iterate over all possible LMULs.
 defvar MxList = [V_MF8, V_MF4, V_MF2, V_M1, V_M2, V_M4, V_M8];

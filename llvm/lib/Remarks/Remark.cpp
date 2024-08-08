@@ -56,6 +56,10 @@ void Remark::print(raw_ostream &OS) const {
     OS << "Loc: " << Loc.value();
   if (Hotness)
     OS << "Hotness: " << Hotness;
+#if SIFIVE_CUSTOMIZATION
+  if (ProfileCount)
+    OS << "ProfileCount: " << ProfileCount;
+#endif // SIFIVE_CUSTOMIZATION
   if (!Args.empty()) {
     OS << "Args:\n";
     for (auto Arg : Args)

@@ -572,6 +572,18 @@ let Predicates = [HasVendorXSfvfnrclipxfqf] in {
   defm VFNRCLIP_X_F_QF : VPseudoSiFiveVFNRCLIP;
 }
 
+let Predicates = [HasVendorXSfvfbfexp16e], hasSideEffects = 0 in {
+  let AltfmtType = IS_ALTFMT in{
+    defm PseudoVFEXP_ALT : VPseudoVRCP_V<IsBF16=1>;
+  }
+}
+
+let Predicates = [HasVendorXSfvfexpAnyFloat], hasSideEffects = 0 in {
+  let AltfmtType = IS_NOT_ALTFMT in{
+    defm PseudoVFEXP : VPseudoVRCP_V;
+  }
+}
+
 let Predicates = [HasVendorXSfvfexpa] in {
   defm PseudoVFEXPA : VPseudoVRCP_V;
 }
@@ -1136,6 +1148,23 @@ let Predicates = [HasVendorXSfcease] in {
     let rs1 = 0b00000;
     let rd = 0b00000;
   }
+}
+
+let Predicates = [HasVendorXSfvfbfexp16e] in {
+  defm : VPatUnaryV_V<"int_riscv_sf_vfexp", "PseudoVFEXP_ALT",
+                      AllBFloatVectors,
+                      isSEWAware=1>;
+}
+
+let Predicates = [HasVendorXSfvfexp16e] in {
+  defm : VPatUnaryV_V<"int_riscv_sf_vfexp", "PseudoVFEXP",
+                      [VF16MF4, VF16MF2, VF16M1, VF16M2, VF16M4, VF16M8],
+                      isSEWAware=1>;
+}
+
+let Predicates = [HasVendorXSfvfexp32e] in {
+  defm : VPatUnaryV_V<"int_riscv_sf_vfexp", "PseudoVFEXP",
+                      [VF32MF2, VF32M1, VF32M2, VF32M4, VF32M8], isSEWAware=1>;
 }
 
 let Predicates = [HasVendorXSfvfexpa] in {

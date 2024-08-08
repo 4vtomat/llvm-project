@@ -691,6 +691,11 @@ void BackendConsumer::EmitOptimizationMessage(
   if (D.getHotness())
     MsgStream << " (hotness: " << *D.getHotness() << ")";
 
+#if SIFIVE_CUSTOMIZATION
+  if (D.getProfileCount()) {
+    MsgStream << " (ProfileCount: " << *D.getProfileCount() << ")";
+  }
+#endif // SIFIVE_CUSTOMIZATION
   Diags.Report(Loc, DiagID)
       << AddFlagValue(D.getPassName())
       << MsgStream.str();

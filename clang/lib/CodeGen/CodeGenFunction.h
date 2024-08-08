@@ -1624,6 +1624,10 @@ private:
   llvm::MDNode *createProfileWeights(ArrayRef<uint64_t> Weights) const;
   llvm::MDNode *createProfileWeightsForLoop(const Stmt *Cond,
                                             uint64_t LoopCount) const;
+#if SIFIVE_CUSTOMIZATION
+  /// Create MDNode constains {"profile_count", iteration_count} from PGO.
+  llvm::MDNode *createProfileCount(uint64_t Count) const;
+#endif // SIFIVE_CUSTOMIZATION
 
 public:
   /// Increment the profiler's counter for the given statement by \p StepV.

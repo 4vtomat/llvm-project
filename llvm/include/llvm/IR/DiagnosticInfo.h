@@ -481,6 +481,10 @@ public:
   std::string getMsg() const;
   std::optional<uint64_t> getHotness() const { return Hotness; }
   void setHotness(std::optional<uint64_t> H) { Hotness = H; }
+#if SIFIVE_CUSTOMIZATION
+  std::optional<uint64_t> getProfileCount() const { return ProfileCount; }
+  void setProfileCount(std::optional<uint64_t> Count) { ProfileCount = Count; }
+#endif // SIFIVE_CUSTOMIZATION
 
   bool isVerbose() const { return IsVerbose; }
 
@@ -523,6 +527,11 @@ protected:
   /// corresponding code was executed in a profile instrumentation run.
   std::optional<uint64_t> Hotness;
 
+#if SIFIVE_CUSTOMIZATION
+  /// If profile information is available, this is the REAL number of times the
+  /// corresponding code was executed in a profile instrumentation run.
+  std::optional<uint64_t> ProfileCount;
+#endif // SIFIVE_CUSTOMIZATION
   /// Arguments collected via the streaming interface.
   SmallVector<Argument, 4> Args;
 

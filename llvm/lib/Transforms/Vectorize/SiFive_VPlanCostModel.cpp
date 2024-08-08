@@ -641,7 +641,10 @@ InstructionCost VPlanCostModel::getMemoryOpCost(const Instruction *I, Type *Ty,
       Cost += TTI.getMemoryOpCost(I->getOpcode(), Ty, Alignment, AS, CostKind,
                                   OpInfo, I);
     }
-    if (IsReverse)
+    const StoreInst *SI = dyn_cast<StoreInst>(I);
+    bool IsLoopInvariantStoreValue =
+        SI && Legal.isInvariant(const_cast<StoreInst *>(SI)->getValueOperand());
+    if (IsReverse && !IsLoopInvariantStoreValue)
       Cost +=
           TTI.getShuffleCost(TargetTransformInfo::SK_Reverse,
                              cast<VectorType>(Ty), std::nullopt, CostKind, 0);

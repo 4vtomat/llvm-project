@@ -1083,6 +1083,7 @@ Experimental extensions
     ssqosid              1.0
     sswg                 0.3
     supm                 1.0
+    svukte               0.3
 
 Supported Profiles
     rva20s64
