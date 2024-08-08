@@ -237,11 +237,12 @@ static void emitRISCVExtensionInfoJSON(const std::vector<Record *> &Extensions,
     OS << extSep << "\n";
     OS.indent(4) << "\"" << getExtensionName(R) << "\": {\n";
     OS.indent(6) << "\"major_version\": " << R->getValueAsInt("MajorVersion")
-       << ",\n";
+                 << ",\n";
     OS.indent(6) << "\"minor_version\": " << R->getValueAsInt("MinorVersion")
-       << ",\n";
+                 << ",\n";
     OS.indent(6) << "\"experimental\": "
-       << (R->getValueAsBit("Experimental") ? "true" : "false") << "\n";
+                 << (R->getValueAsBit("Experimental") ? "true" : "false")
+                 << "\n";
     OS.indent(4) << "}";
   }
   OS << "\n  },\n";
