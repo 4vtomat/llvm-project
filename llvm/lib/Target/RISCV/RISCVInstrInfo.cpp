@@ -1104,10 +1104,15 @@ void RISCVInstrInfo::insertIndirectBranch(MachineBasicBlock &MBB,
                           .addMBB(&DestBB, RISCVII::MO_CALL);
 
   RS->enterBasicBlockEnd(MBB);
+#if SIFIVE_CUSTOMIZATION
+  const TargetRegisterClass *RC = &RISCV::GPRRegClass;
+  if (STI.hasStdExtZicfilp())
+    RC = &RISCV::GPRX7RegClass;
   Register TmpGPR =
-      RS->scavengeRegisterBackwards(RISCV::GPRRegClass, MI.getIterator(),
+      RS->scavengeRegisterBackwards(*RC, MI.getIterator(),
                                     /*RestoreAfter=*/false, /*SpAdj=*/0,
                                     /*AllowSpill=*/false);
+#endif // SIFIVE_CUSTOMIZATION
   if (TmpGPR != RISCV::NoRegister)
     RS->setRegUsed(TmpGPR);
   else {
@@ -1115,6 +1120,11 @@ void RISCVInstrInfo::insertIndirectBranch(MachineBasicBlock &MBB,
 
     // Pick s11 because it doesn't make a difference.
     TmpGPR = RISCV::X27;
+
+#if SIFIVE_CUSTOMIZATION
+    if (STI.hasStdExtZicfilp())
+      TmpGPR = RISCV::X7;
+#endif // SIFIVE_CUSTOMIZATION
 
     int FrameIndex = RVFI->getBranchRelaxationScratchFrameIndex();
     if (FrameIndex == -1)

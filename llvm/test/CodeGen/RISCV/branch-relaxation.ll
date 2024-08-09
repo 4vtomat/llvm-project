@@ -15,6 +15,10 @@
 ; RUN:   | FileCheck %s --check-prefixes=CHECK,CHECK-RV64
 ; RUN: llc -mtriple=riscv64 -relocation-model=pic -verify-machineinstrs < %s \
 ; RUN:   | FileCheck %s --check-prefixes=CHECK,CHECK-RV64
+; SIFIVE_CUSTOMIZATION
+; RUN: llc -mtriple=riscv64 -verify-machineinstrs -mattr=+experimental-zicfilp < %s \
+; RUN:   | FileCheck %s --check-prefixes=CHECK-ZICFILP
+; SIFIVE_CUSTOMIZATION
 
 define void @relax_bcc(i1 %a) nounwind {
 ; CHECK-LABEL: relax_bcc:
@@ -28,6 +32,19 @@ define void @relax_bcc(i1 %a) nounwind {
 ; CHECK-NEXT:    #NO_APP
 ; CHECK-NEXT:  .LBB0_2: # %tail
 ; CHECK-NEXT:    ret
+;
+; CHECK-ZICFILP-LABEL: relax_bcc:
+; CHECK-ZICFILP:       # %bb.0:
+; CHECK-ZICFILP-NEXT:    lpad 1
+; CHECK-ZICFILP-NEXT:    andi a0, a0, 1
+; CHECK-ZICFILP-NEXT:    bnez a0, .LBB0_1
+; CHECK-ZICFILP-NEXT:    j .LBB0_2
+; CHECK-ZICFILP-NEXT:  .LBB0_1: # %iftrue
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    .zero 4096
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:  .LBB0_2: # %tail
+; CHECK-ZICFILP-NEXT:    ret
   br i1 %a, label %iftrue, label %tail
 
 iftrue:
@@ -60,6 +77,29 @@ define i32 @relax_jal(i1 %a) nounwind {
 ; CHECK-NEXT:    li a0, 1
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
+;
+; CHECK-ZICFILP-LABEL: relax_jal:
+; CHECK-ZICFILP:       # %bb.0:
+; CHECK-ZICFILP-NEXT:    lpad 1
+; CHECK-ZICFILP-NEXT:    addi sp, sp, -16
+; CHECK-ZICFILP-NEXT:    andi a0, a0, 1
+; CHECK-ZICFILP-NEXT:    bnez a0, .LBB1_1
+; CHECK-ZICFILP-NEXT:  # %bb.4:
+; CHECK-ZICFILP-NEXT:    jump .LBB1_2, t2
+; CHECK-ZICFILP-NEXT:  .LBB1_1: # %iftrue
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    .zero 1048576
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    j .LBB1_3
+; CHECK-ZICFILP-NEXT:  .LBB1_2: # %jmp
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:  .LBB1_3: # %tail
+; CHECK-ZICFILP-NEXT:    li a0, 1
+; CHECK-ZICFILP-NEXT:    addi sp, sp, 16
+; CHECK-ZICFILP-NEXT:    ret
   br i1 %a, label %iftrue, label %jmp
 
 jmp:
@@ -536,6 +576,239 @@ define void @relax_jal_spill_32() {
 ; CHECK-RV64-NEXT:    ld s11, 24(sp) # 8-byte Folded Reload
 ; CHECK-RV64-NEXT:    addi sp, sp, 128
 ; CHECK-RV64-NEXT:    ret
+;
+; CHECK-ZICFILP-LABEL: relax_jal_spill_32:
+; CHECK-ZICFILP:       # %bb.0:
+; CHECK-ZICFILP-NEXT:    lpad 1
+; CHECK-ZICFILP-NEXT:    addi sp, sp, -128
+; CHECK-ZICFILP-NEXT:    .cfi_def_cfa_offset 128
+; CHECK-ZICFILP-NEXT:    sd ra, 120(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s0, 112(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s1, 104(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s2, 96(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s3, 88(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s4, 80(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s5, 72(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s6, 64(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s7, 56(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s8, 48(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s9, 40(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s10, 32(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s11, 24(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    .cfi_offset ra, -8
+; CHECK-ZICFILP-NEXT:    .cfi_offset s0, -16
+; CHECK-ZICFILP-NEXT:    .cfi_offset s1, -24
+; CHECK-ZICFILP-NEXT:    .cfi_offset s2, -32
+; CHECK-ZICFILP-NEXT:    .cfi_offset s3, -40
+; CHECK-ZICFILP-NEXT:    .cfi_offset s4, -48
+; CHECK-ZICFILP-NEXT:    .cfi_offset s5, -56
+; CHECK-ZICFILP-NEXT:    .cfi_offset s6, -64
+; CHECK-ZICFILP-NEXT:    .cfi_offset s7, -72
+; CHECK-ZICFILP-NEXT:    .cfi_offset s8, -80
+; CHECK-ZICFILP-NEXT:    .cfi_offset s9, -88
+; CHECK-ZICFILP-NEXT:    .cfi_offset s10, -96
+; CHECK-ZICFILP-NEXT:    .cfi_offset s11, -104
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li ra, 1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t0, 5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t1, 6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t2, 7
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s0, 8
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s1, 9
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a0, 10
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a1, 11
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a2, 12
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a3, 13
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a4, 14
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a5, 15
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a6, 16
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a7, 17
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s2, 18
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s3, 19
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s4, 20
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s5, 21
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s6, 22
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s7, 23
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s8, 24
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s9, 25
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s10, 26
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s11, 27
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t3, 28
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t4, 29
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t5, 30
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    sd t5, 16(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sext.w t5, t5
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t6, 31
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    sd t6, 8(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sext.w t6, t6
+; CHECK-ZICFILP-NEXT:    beq t5, t6, .LBB2_1
+; CHECK-ZICFILP-NEXT:  # %bb.3:
+; CHECK-ZICFILP-NEXT:    sd t2, 0(sp)
+; CHECK-ZICFILP-NEXT:    jump .LBB2_4, t2
+; CHECK-ZICFILP-NEXT:  .LBB2_1: # %branch_1
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    .zero 1048576
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    j .LBB2_2
+; CHECK-ZICFILP-NEXT:  .LBB2_4: # %branch_2
+; CHECK-ZICFILP-NEXT:    ld t2, 0(sp)
+; CHECK-ZICFILP-NEXT:  .LBB2_2: # %branch_2
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use ra
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t0
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t2
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s0
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a0
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a2
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a3
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a4
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a7
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s2
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s3
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s4
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s7
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s8
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s9
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s10
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s11
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t3
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t4
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    ld t5, 16(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    ld t6, 8(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    ld ra, 120(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s0, 112(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s1, 104(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s2, 96(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s3, 88(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s4, 80(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s5, 72(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s6, 64(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s7, 56(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s8, 48(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s9, 40(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s10, 32(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s11, 24(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    addi sp, sp, 128
+; CHECK-ZICFILP-NEXT:    ret
 
   %ra = call i32 asm sideeffect "addi ra, x0, 1", "={ra}"()
   %t0 = call i32 asm sideeffect "addi t0, x0, 5", "={t0}"()
@@ -1092,6 +1365,260 @@ define void @relax_jal_spill_32_adjust_spill_slot() {
 ; CHECK-RV64-NEXT:    ld s11, 1928(sp) # 8-byte Folded Reload
 ; CHECK-RV64-NEXT:    addi sp, sp, 2032
 ; CHECK-RV64-NEXT:    ret
+;
+; CHECK-ZICFILP-LABEL: relax_jal_spill_32_adjust_spill_slot:
+; CHECK-ZICFILP:       # %bb.0:
+; CHECK-ZICFILP-NEXT:    lpad 1
+; CHECK-ZICFILP-NEXT:    addi sp, sp, -2032
+; CHECK-ZICFILP-NEXT:    .cfi_def_cfa_offset 2032
+; CHECK-ZICFILP-NEXT:    sd ra, 2024(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s0, 2016(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s1, 2008(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s2, 2000(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s3, 1992(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s4, 1984(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s5, 1976(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s6, 1968(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s7, 1960(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s8, 1952(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s9, 1944(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s10, 1936(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s11, 1928(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    .cfi_offset ra, -8
+; CHECK-ZICFILP-NEXT:    .cfi_offset s0, -16
+; CHECK-ZICFILP-NEXT:    .cfi_offset s1, -24
+; CHECK-ZICFILP-NEXT:    .cfi_offset s2, -32
+; CHECK-ZICFILP-NEXT:    .cfi_offset s3, -40
+; CHECK-ZICFILP-NEXT:    .cfi_offset s4, -48
+; CHECK-ZICFILP-NEXT:    .cfi_offset s5, -56
+; CHECK-ZICFILP-NEXT:    .cfi_offset s6, -64
+; CHECK-ZICFILP-NEXT:    .cfi_offset s7, -72
+; CHECK-ZICFILP-NEXT:    .cfi_offset s8, -80
+; CHECK-ZICFILP-NEXT:    .cfi_offset s9, -88
+; CHECK-ZICFILP-NEXT:    .cfi_offset s10, -96
+; CHECK-ZICFILP-NEXT:    .cfi_offset s11, -104
+; CHECK-ZICFILP-NEXT:    addi s0, sp, 2032
+; CHECK-ZICFILP-NEXT:    .cfi_def_cfa s0, 0
+; CHECK-ZICFILP-NEXT:    lui a0, 2
+; CHECK-ZICFILP-NEXT:    addiw a0, a0, -2032
+; CHECK-ZICFILP-NEXT:    sub sp, sp, a0
+; CHECK-ZICFILP-NEXT:    srli a0, sp, 12
+; CHECK-ZICFILP-NEXT:    slli sp, a0, 12
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li ra, 1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t0, 5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t1, 6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t2, 7
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s0, 8
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s1, 9
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a0, 10
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a1, 11
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a2, 12
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a3, 13
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a4, 14
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a5, 15
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a6, 16
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a7, 17
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s2, 18
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s3, 19
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s4, 20
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s5, 21
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s6, 22
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s7, 23
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s8, 24
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s9, 25
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s10, 26
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s11, 27
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t3, 28
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t4, 29
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t5, 30
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    sd t0, 0(sp)
+; CHECK-ZICFILP-NEXT:    lui t0, 1
+; CHECK-ZICFILP-NEXT:    add t0, sp, t0
+; CHECK-ZICFILP-NEXT:    sd t5, -8(t0) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sext.w t5, t5
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t6, 31
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    lui t0, 1
+; CHECK-ZICFILP-NEXT:    add t0, sp, t0
+; CHECK-ZICFILP-NEXT:    sd t6, -16(t0) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    ld t0, 0(sp)
+; CHECK-ZICFILP-NEXT:    sext.w t6, t6
+; CHECK-ZICFILP-NEXT:    beq t5, t6, .LBB3_1
+; CHECK-ZICFILP-NEXT:  # %bb.3:
+; CHECK-ZICFILP-NEXT:    sd t2, 0(sp)
+; CHECK-ZICFILP-NEXT:    jump .LBB3_4, t2
+; CHECK-ZICFILP-NEXT:  .LBB3_1: # %branch_1
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    .zero 1048576
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    j .LBB3_2
+; CHECK-ZICFILP-NEXT:  .LBB3_4: # %branch_2
+; CHECK-ZICFILP-NEXT:    ld t2, 0(sp)
+; CHECK-ZICFILP-NEXT:  .LBB3_2: # %branch_2
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use ra
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t0
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t2
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s0
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a0
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a2
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a3
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a4
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a7
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s2
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s3
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s4
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s7
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s8
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s9
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s10
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s11
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t3
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t4
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    lui a0, 1
+; CHECK-ZICFILP-NEXT:    add a0, sp, a0
+; CHECK-ZICFILP-NEXT:    ld t5, -8(a0) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    lui a0, 1
+; CHECK-ZICFILP-NEXT:    add a0, sp, a0
+; CHECK-ZICFILP-NEXT:    ld t6, -16(a0) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    lui a0, 2
+; CHECK-ZICFILP-NEXT:    sub sp, s0, a0
+; CHECK-ZICFILP-NEXT:    addiw a0, a0, -2032
+; CHECK-ZICFILP-NEXT:    add sp, sp, a0
+; CHECK-ZICFILP-NEXT:    ld ra, 2024(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s0, 2016(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s1, 2008(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s2, 2000(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s3, 1992(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s4, 1984(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s5, 1976(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s6, 1968(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s7, 1960(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s8, 1952(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s9, 1944(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s10, 1936(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s11, 1928(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    addi sp, sp, 2032
+; CHECK-ZICFILP-NEXT:    ret
 
   ; If the stack is large and the offset of BranchRelaxationScratchFrameIndex
   ; is out the range of 12-bit signed integer, check whether the spill slot is
@@ -1723,6 +2250,233 @@ define void @relax_jal_spill_64() {
 ; CHECK-RV64-NEXT:    ld s11, 8(sp) # 8-byte Folded Reload
 ; CHECK-RV64-NEXT:    addi sp, sp, 112
 ; CHECK-RV64-NEXT:    ret
+;
+; CHECK-ZICFILP-LABEL: relax_jal_spill_64:
+; CHECK-ZICFILP:       # %bb.0:
+; CHECK-ZICFILP-NEXT:    lpad 1
+; CHECK-ZICFILP-NEXT:    addi sp, sp, -112
+; CHECK-ZICFILP-NEXT:    .cfi_def_cfa_offset 112
+; CHECK-ZICFILP-NEXT:    sd ra, 104(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s0, 96(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s1, 88(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s2, 80(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s3, 72(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s4, 64(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s5, 56(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s6, 48(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s7, 40(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s8, 32(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s9, 24(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s10, 16(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s11, 8(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    .cfi_offset ra, -8
+; CHECK-ZICFILP-NEXT:    .cfi_offset s0, -16
+; CHECK-ZICFILP-NEXT:    .cfi_offset s1, -24
+; CHECK-ZICFILP-NEXT:    .cfi_offset s2, -32
+; CHECK-ZICFILP-NEXT:    .cfi_offset s3, -40
+; CHECK-ZICFILP-NEXT:    .cfi_offset s4, -48
+; CHECK-ZICFILP-NEXT:    .cfi_offset s5, -56
+; CHECK-ZICFILP-NEXT:    .cfi_offset s6, -64
+; CHECK-ZICFILP-NEXT:    .cfi_offset s7, -72
+; CHECK-ZICFILP-NEXT:    .cfi_offset s8, -80
+; CHECK-ZICFILP-NEXT:    .cfi_offset s9, -88
+; CHECK-ZICFILP-NEXT:    .cfi_offset s10, -96
+; CHECK-ZICFILP-NEXT:    .cfi_offset s11, -104
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li ra, 1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t0, 5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t1, 6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t2, 7
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s0, 8
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s1, 9
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a0, 10
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a1, 11
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a2, 12
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a3, 13
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a4, 14
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a5, 15
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a6, 16
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a7, 17
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s2, 18
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s3, 19
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s4, 20
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s5, 21
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s6, 22
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s7, 23
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s8, 24
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s9, 25
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s10, 26
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s11, 27
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t3, 28
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t4, 29
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t5, 30
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t6, 31
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    beq t5, t6, .LBB4_1
+; CHECK-ZICFILP-NEXT:  # %bb.3:
+; CHECK-ZICFILP-NEXT:    sd t2, 0(sp)
+; CHECK-ZICFILP-NEXT:    jump .LBB4_4, t2
+; CHECK-ZICFILP-NEXT:  .LBB4_1: # %branch_1
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    .zero 1048576
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    j .LBB4_2
+; CHECK-ZICFILP-NEXT:  .LBB4_4: # %branch_2
+; CHECK-ZICFILP-NEXT:    ld t2, 0(sp)
+; CHECK-ZICFILP-NEXT:  .LBB4_2: # %branch_2
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use ra
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t0
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t2
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s0
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a0
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a2
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a3
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a4
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a7
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s2
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s3
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s4
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s7
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s8
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s9
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s10
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s11
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t3
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t4
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    ld ra, 104(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s0, 96(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s1, 88(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s2, 80(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s3, 72(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s4, 64(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s5, 56(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s6, 48(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s7, 40(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s8, 32(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s9, 24(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s10, 16(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s11, 8(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    addi sp, sp, 112
+; CHECK-ZICFILP-NEXT:    ret
 
   %ra = call i64 asm sideeffect "addi ra, x0, 1", "={ra}"()
   %t0 = call i64 asm sideeffect "addi t0, x0, 5", "={t0}"()
@@ -2579,6 +3333,244 @@ define void @relax_jal_spill_64_adjust_spill_slot() {
 ; CHECK-RV64-NEXT:    ld s11, 1928(sp) # 8-byte Folded Reload
 ; CHECK-RV64-NEXT:    addi sp, sp, 2032
 ; CHECK-RV64-NEXT:    ret
+;
+; CHECK-ZICFILP-LABEL: relax_jal_spill_64_adjust_spill_slot:
+; CHECK-ZICFILP:       # %bb.0:
+; CHECK-ZICFILP-NEXT:    lpad 1
+; CHECK-ZICFILP-NEXT:    addi sp, sp, -2032
+; CHECK-ZICFILP-NEXT:    .cfi_def_cfa_offset 2032
+; CHECK-ZICFILP-NEXT:    sd ra, 2024(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s0, 2016(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s1, 2008(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s2, 2000(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s3, 1992(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s4, 1984(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s5, 1976(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s6, 1968(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s7, 1960(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s8, 1952(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s9, 1944(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s10, 1936(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s11, 1928(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    .cfi_offset ra, -8
+; CHECK-ZICFILP-NEXT:    .cfi_offset s0, -16
+; CHECK-ZICFILP-NEXT:    .cfi_offset s1, -24
+; CHECK-ZICFILP-NEXT:    .cfi_offset s2, -32
+; CHECK-ZICFILP-NEXT:    .cfi_offset s3, -40
+; CHECK-ZICFILP-NEXT:    .cfi_offset s4, -48
+; CHECK-ZICFILP-NEXT:    .cfi_offset s5, -56
+; CHECK-ZICFILP-NEXT:    .cfi_offset s6, -64
+; CHECK-ZICFILP-NEXT:    .cfi_offset s7, -72
+; CHECK-ZICFILP-NEXT:    .cfi_offset s8, -80
+; CHECK-ZICFILP-NEXT:    .cfi_offset s9, -88
+; CHECK-ZICFILP-NEXT:    .cfi_offset s10, -96
+; CHECK-ZICFILP-NEXT:    .cfi_offset s11, -104
+; CHECK-ZICFILP-NEXT:    addi s0, sp, 2032
+; CHECK-ZICFILP-NEXT:    .cfi_def_cfa s0, 0
+; CHECK-ZICFILP-NEXT:    lui a0, 2
+; CHECK-ZICFILP-NEXT:    addiw a0, a0, -2032
+; CHECK-ZICFILP-NEXT:    sub sp, sp, a0
+; CHECK-ZICFILP-NEXT:    srli a0, sp, 12
+; CHECK-ZICFILP-NEXT:    slli sp, a0, 12
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li ra, 1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t0, 5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t1, 6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t2, 7
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s0, 8
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s1, 9
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a0, 10
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a1, 11
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a2, 12
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a3, 13
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a4, 14
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a5, 15
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a6, 16
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a7, 17
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s2, 18
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s3, 19
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s4, 20
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s5, 21
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s6, 22
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s7, 23
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s8, 24
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s9, 25
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s10, 26
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s11, 27
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t3, 28
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t4, 29
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t5, 30
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t6, 31
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    beq t5, t6, .LBB5_1
+; CHECK-ZICFILP-NEXT:  # %bb.3:
+; CHECK-ZICFILP-NEXT:    sd t2, 0(sp)
+; CHECK-ZICFILP-NEXT:    jump .LBB5_4, t2
+; CHECK-ZICFILP-NEXT:  .LBB5_1: # %branch_1
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    .zero 1048576
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    j .LBB5_2
+; CHECK-ZICFILP-NEXT:  .LBB5_4: # %branch_2
+; CHECK-ZICFILP-NEXT:    ld t2, 0(sp)
+; CHECK-ZICFILP-NEXT:  .LBB5_2: # %branch_2
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use ra
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t0
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t2
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s0
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a0
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a2
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a3
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a4
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a7
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s2
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s3
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s4
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s7
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s8
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s9
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s10
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s11
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t3
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t4
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    lui a0, 2
+; CHECK-ZICFILP-NEXT:    sub sp, s0, a0
+; CHECK-ZICFILP-NEXT:    addiw a0, a0, -2032
+; CHECK-ZICFILP-NEXT:    add sp, sp, a0
+; CHECK-ZICFILP-NEXT:    ld ra, 2024(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s0, 2016(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s1, 2008(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s2, 2000(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s3, 1992(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s4, 1984(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s5, 1976(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s6, 1968(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s7, 1960(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s8, 1952(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s9, 1944(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s10, 1936(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s11, 1928(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    addi sp, sp, 2032
+; CHECK-ZICFILP-NEXT:    ret
 
   ; If the stack is large and the offset of BranchRelaxationScratchFrameIndex
   ; is out the range of 12-bit signed integer, check whether the spill slot is
@@ -3144,6 +4136,259 @@ define void @relax_jal_spill_32_restore_block_correspondence() {
 ; CHECK-RV64-NEXT:    #NO_APP
 ; CHECK-RV64-NEXT:  # %bb.7: # %space
 ; CHECK-RV64-NEXT:    jump .LBB6_1, t5
+;
+; CHECK-ZICFILP-LABEL: relax_jal_spill_32_restore_block_correspondence:
+; CHECK-ZICFILP:       # %bb.0: # %entry
+; CHECK-ZICFILP-NEXT:    lpad 1
+; CHECK-ZICFILP-NEXT:    addi sp, sp, -128
+; CHECK-ZICFILP-NEXT:    .cfi_def_cfa_offset 128
+; CHECK-ZICFILP-NEXT:    sd ra, 120(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s0, 112(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s1, 104(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s2, 96(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s3, 88(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s4, 80(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s5, 72(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s6, 64(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s7, 56(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s8, 48(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s9, 40(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s10, 32(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sd s11, 24(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    .cfi_offset ra, -8
+; CHECK-ZICFILP-NEXT:    .cfi_offset s0, -16
+; CHECK-ZICFILP-NEXT:    .cfi_offset s1, -24
+; CHECK-ZICFILP-NEXT:    .cfi_offset s2, -32
+; CHECK-ZICFILP-NEXT:    .cfi_offset s3, -40
+; CHECK-ZICFILP-NEXT:    .cfi_offset s4, -48
+; CHECK-ZICFILP-NEXT:    .cfi_offset s5, -56
+; CHECK-ZICFILP-NEXT:    .cfi_offset s6, -64
+; CHECK-ZICFILP-NEXT:    .cfi_offset s7, -72
+; CHECK-ZICFILP-NEXT:    .cfi_offset s8, -80
+; CHECK-ZICFILP-NEXT:    .cfi_offset s9, -88
+; CHECK-ZICFILP-NEXT:    .cfi_offset s10, -96
+; CHECK-ZICFILP-NEXT:    .cfi_offset s11, -104
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li ra, 1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t0, 5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t1, 6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t2, 7
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s0, 8
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s1, 9
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a0, 10
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a1, 11
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a2, 12
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a3, 13
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a4, 14
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a5, 15
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a6, 16
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li a7, 17
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s2, 18
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s3, 19
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s4, 20
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s5, 21
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s6, 22
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s7, 23
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s8, 24
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s9, 25
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s10, 26
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li s11, 27
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t3, 28
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t4, 29
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t5, 30
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    li t6, 31
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    sd t6, 8(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sext.w t6, t6
+; CHECK-ZICFILP-NEXT:    sd t5, 16(sp) # 8-byte Folded Spill
+; CHECK-ZICFILP-NEXT:    sext.w t5, t5
+; CHECK-ZICFILP-NEXT:    bne t5, t6, .LBB6_2
+; CHECK-ZICFILP-NEXT:    j .LBB6_1
+; CHECK-ZICFILP-NEXT:  .LBB6_8: # %dest_1
+; CHECK-ZICFILP-NEXT:    ld t2, 0(sp)
+; CHECK-ZICFILP-NEXT:  .LBB6_1: # %dest_1
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # dest 1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    j .LBB6_3
+; CHECK-ZICFILP-NEXT:  .LBB6_2: # %cond_2
+; CHECK-ZICFILP-NEXT:    sext.w t5, t4
+; CHECK-ZICFILP-NEXT:    sext.w t6, t3
+; CHECK-ZICFILP-NEXT:    bne t6, t5, .LBB6_5
+; CHECK-ZICFILP-NEXT:  .LBB6_3: # %dest_2
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # dest 2
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:  .LBB6_4: # %dest_3
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # dest 3
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use ra
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t0
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t2
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s0
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a0
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a1
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a2
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a3
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a4
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use a7
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s2
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s3
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s4
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s7
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s8
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s9
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s10
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use s11
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t3
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t4
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    ld t5, 16(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t5
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    ld t6, 8(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    # reg use t6
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:    ld ra, 120(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s0, 112(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s1, 104(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s2, 96(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s3, 88(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s4, 80(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s5, 72(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s6, 64(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s7, 56(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s8, 48(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s9, 40(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s10, 32(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    ld s11, 24(sp) # 8-byte Folded Reload
+; CHECK-ZICFILP-NEXT:    addi sp, sp, 128
+; CHECK-ZICFILP-NEXT:    ret
+; CHECK-ZICFILP-NEXT:  .LBB6_5: # %cond_3
+; CHECK-ZICFILP-NEXT:    sext.w t5, t2
+; CHECK-ZICFILP-NEXT:    sext.w t6, t1
+; CHECK-ZICFILP-NEXT:    beq t6, t5, .LBB6_4
+; CHECK-ZICFILP-NEXT:  # %bb.6: # %space
+; CHECK-ZICFILP-NEXT:    #APP
+; CHECK-ZICFILP-NEXT:    .zero 1048576
+; CHECK-ZICFILP-NEXT:    #NO_APP
+; CHECK-ZICFILP-NEXT:  # %bb.7: # %space
+; CHECK-ZICFILP-NEXT:    sd t2, 0(sp)
+; CHECK-ZICFILP-NEXT:    jump .LBB6_8, t2
 entry:
   %ra = call i32 asm sideeffect "addi ra, x0, 1", "={ra}"()
   %t0 = call i32 asm sideeffect "addi t0, x0, 5", "={t0}"()
