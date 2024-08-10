@@ -104,36 +104,36 @@ define void @vpscatter_nxv2i16_truncstore_nxv2i8(<vscale x 2 x i16> %val, <vscal
 define void @vpscatter_nxv2i32_truncstore_nxv2i8(<vscale x 2 x i32> %val, <vscale x 2 x ptr> %ptrs, <vscale x 2 x i1> %m, i32 zeroext %evl) {
 ; RV32-LABEL: vpscatter_nxv2i32_truncstore_nxv2i8:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vsetvli a1, zero, e16, mf2, ta, ma
+; RV32-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; RV32-NEXT:    vnsrl.wi v8, v8, 0
-; RV32-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vnsrl.wi v8, v8, 0
 ; RV32-NEXT:    vsoxei32.v v8, (zero), v9, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: vpscatter_nxv2i32_truncstore_nxv2i8:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vsetvli a1, zero, e16, mf2, ta, ma
+; RV64-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; RV64-NEXT:    vnsrl.wi v8, v8, 0
-; RV64-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vnsrl.wi v8, v8, 0
 ; RV64-NEXT:    vsoxei64.v v8, (zero), v10, v0.t
 ; RV64-NEXT:    ret
 ;
 ; RV32ZVBB-LABEL: vpscatter_nxv2i32_truncstore_nxv2i8:
 ; RV32ZVBB:       # %bb.0:
-; RV32ZVBB-NEXT:    vsetvli a1, zero, e16, mf2, ta, ma
+; RV32ZVBB-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; RV32ZVBB-NEXT:    vnsrl.wi v8, v8, 0
-; RV32ZVBB-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV32ZVBB-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; RV32ZVBB-NEXT:    vnsrl.wi v8, v8, 0
 ; RV32ZVBB-NEXT:    vsoxei32.v v8, (zero), v9, v0.t
 ; RV32ZVBB-NEXT:    ret
 ;
 ; RV64ZVBB-LABEL: vpscatter_nxv2i32_truncstore_nxv2i8:
 ; RV64ZVBB:       # %bb.0:
-; RV64ZVBB-NEXT:    vsetvli a1, zero, e16, mf2, ta, ma
+; RV64ZVBB-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; RV64ZVBB-NEXT:    vnsrl.wi v8, v8, 0
-; RV64ZVBB-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV64ZVBB-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; RV64ZVBB-NEXT:    vnsrl.wi v8, v8, 0
 ; RV64ZVBB-NEXT:    vsoxei64.v v8, (zero), v10, v0.t
 ; RV64ZVBB-NEXT:    ret
@@ -145,44 +145,44 @@ define void @vpscatter_nxv2i32_truncstore_nxv2i8(<vscale x 2 x i32> %val, <vscal
 define void @vpscatter_nxv2i64_truncstore_nxv2i8(<vscale x 2 x i64> %val, <vscale x 2 x ptr> %ptrs, <vscale x 2 x i1> %m, i32 zeroext %evl) {
 ; RV32-LABEL: vpscatter_nxv2i64_truncstore_nxv2i8:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
+; RV32-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; RV32-NEXT:    vnsrl.wi v8, v8, 0
 ; RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; RV32-NEXT:    vnsrl.wi v8, v8, 0
-; RV32-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV32-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; RV32-NEXT:    vnsrl.wi v8, v8, 0
 ; RV32-NEXT:    vsoxei32.v v8, (zero), v10, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: vpscatter_nxv2i64_truncstore_nxv2i8:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
+; RV64-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; RV64-NEXT:    vnsrl.wi v8, v8, 0
 ; RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; RV64-NEXT:    vnsrl.wi v8, v8, 0
-; RV64-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV64-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; RV64-NEXT:    vnsrl.wi v8, v8, 0
 ; RV64-NEXT:    vsoxei64.v v8, (zero), v10, v0.t
 ; RV64-NEXT:    ret
 ;
 ; RV32ZVBB-LABEL: vpscatter_nxv2i64_truncstore_nxv2i8:
 ; RV32ZVBB:       # %bb.0:
-; RV32ZVBB-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
+; RV32ZVBB-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; RV32ZVBB-NEXT:    vnsrl.wi v8, v8, 0
 ; RV32ZVBB-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; RV32ZVBB-NEXT:    vnsrl.wi v8, v8, 0
-; RV32ZVBB-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV32ZVBB-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; RV32ZVBB-NEXT:    vnsrl.wi v8, v8, 0
 ; RV32ZVBB-NEXT:    vsoxei32.v v8, (zero), v10, v0.t
 ; RV32ZVBB-NEXT:    ret
 ;
 ; RV64ZVBB-LABEL: vpscatter_nxv2i64_truncstore_nxv2i8:
 ; RV64ZVBB:       # %bb.0:
-; RV64ZVBB-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
+; RV64ZVBB-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; RV64ZVBB-NEXT:    vnsrl.wi v8, v8, 0
 ; RV64ZVBB-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; RV64ZVBB-NEXT:    vnsrl.wi v8, v8, 0
-; RV64ZVBB-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
+; RV64ZVBB-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; RV64ZVBB-NEXT:    vnsrl.wi v8, v8, 0
 ; RV64ZVBB-NEXT:    vsoxei64.v v8, (zero), v10, v0.t
 ; RV64ZVBB-NEXT:    ret
@@ -412,36 +412,36 @@ define void @vpscatter_nxv2i32_truncstore_nxv2i16(<vscale x 2 x i32> %val, <vsca
 define void @vpscatter_nxv2i64_truncstore_nxv2i16(<vscale x 2 x i64> %val, <vscale x 2 x ptr> %ptrs, <vscale x 2 x i1> %m, i32 zeroext %evl) {
 ; RV32-LABEL: vpscatter_nxv2i64_truncstore_nxv2i16:
 ; RV32:       # %bb.0:
-; RV32-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
+; RV32-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; RV32-NEXT:    vnsrl.wi v8, v8, 0
-; RV32-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
+; RV32-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; RV32-NEXT:    vnsrl.wi v8, v8, 0
 ; RV32-NEXT:    vsoxei32.v v8, (zero), v10, v0.t
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: vpscatter_nxv2i64_truncstore_nxv2i16:
 ; RV64:       # %bb.0:
-; RV64-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
+; RV64-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; RV64-NEXT:    vnsrl.wi v8, v8, 0
-; RV64-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
+; RV64-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; RV64-NEXT:    vnsrl.wi v8, v8, 0
 ; RV64-NEXT:    vsoxei64.v v8, (zero), v10, v0.t
 ; RV64-NEXT:    ret
 ;
 ; RV32ZVBB-LABEL: vpscatter_nxv2i64_truncstore_nxv2i16:
 ; RV32ZVBB:       # %bb.0:
-; RV32ZVBB-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
+; RV32ZVBB-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; RV32ZVBB-NEXT:    vnsrl.wi v8, v8, 0
-; RV32ZVBB-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
+; RV32ZVBB-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; RV32ZVBB-NEXT:    vnsrl.wi v8, v8, 0
 ; RV32ZVBB-NEXT:    vsoxei32.v v8, (zero), v10, v0.t
 ; RV32ZVBB-NEXT:    ret
 ;
 ; RV64ZVBB-LABEL: vpscatter_nxv2i64_truncstore_nxv2i16:
 ; RV64ZVBB:       # %bb.0:
-; RV64ZVBB-NEXT:    vsetvli a1, zero, e32, m1, ta, ma
+; RV64ZVBB-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
 ; RV64ZVBB-NEXT:    vnsrl.wi v8, v8, 0
-; RV64ZVBB-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
+; RV64ZVBB-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
 ; RV64ZVBB-NEXT:    vnsrl.wi v8, v8, 0
 ; RV64ZVBB-NEXT:    vsoxei64.v v8, (zero), v10, v0.t
 ; RV64ZVBB-NEXT:    ret

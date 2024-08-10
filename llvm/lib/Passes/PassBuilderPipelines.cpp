@@ -128,6 +128,7 @@
 #include "llvm/Transforms/Scalar/SROA.h"
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/Transforms/Scalar/SiFive_LoopConcat.h"
+#include "llvm/Transforms/Scalar/LoopFuse.h"
 #include "llvm/Transforms/Scalar/SiFive_LoopReassociate.h"
 #include "llvm/Transforms/Scalar/SiFive_LoopReverse.h"
 #endif // SIFIVE_CUSTOMIZATION
@@ -159,6 +160,7 @@ static cl::opt<bool>
     ClEnableLoopProfiler("sifive-enable-loop-count-profiler",
                          cl::desc("Enable profile loop pass, default is false"),
                          cl::Hidden, cl::init(false));
+extern cl::opt<bool> LoopConcatCanonicalize;
 #endif // SIFIVE_CUSTOMIZATION
 static cl::opt<InliningAdvisorMode> UseInlineAdvisor(
     "enable-ml-inliner", cl::init(InliningAdvisorMode::Default), cl::Hidden,
@@ -542,7 +544,11 @@ PassBuilder::buildO1FunctionSimplificationPipeline(OptimizationLevel Level,
                                               /*UseBlockFrequencyInfo=*/false));
 
 #if SIFIVE_CUSTOMIZATION
-  FPM.addPass(LoopConcatPass());
+  if (LoopConcatCanonicalize) {
+    FPM.addPass(LoopConcatPass());
+    FPM.addPass(SimplifyCFGPass());
+    FPM.addPass(LoopFusePass());
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   // Delete small array after loop unroll.
@@ -748,7 +754,11 @@ PassBuilder::buildFunctionSimplificationPipeline(OptimizationLevel Level,
                                               /*UseBlockFrequencyInfo=*/false));
 
 #if SIFIVE_CUSTOMIZATION
-  FPM.addPass(LoopConcatPass());
+  if (LoopConcatCanonicalize) {
+    FPM.addPass(LoopConcatPass());
+    FPM.addPass(SimplifyCFGPass());
+    FPM.addPass(LoopFusePass());
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   // Delete small array after loop unroll.
@@ -1627,7 +1637,11 @@ PassBuilder::buildModuleOptimizationPipeline(OptimizationLevel Level,
       std::move(LPM), /*UseMemorySSA=*/false, /*UseBlockFrequencyInfo=*/false));
 
 #if SIFIVE_CUSTOMIZATION
-  OptimizePM.addPass(LoopConcatPass());
+  if (LoopConcatCanonicalize) {
+    OptimizePM.addPass(LoopConcatPass());
+    OptimizePM.addPass(SimplifyCFGPass());
+    OptimizePM.addPass(LoopFusePass());
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   // Distribute loops to allow partial vectorization.  I.e. isolate dependences
@@ -2176,7 +2190,11 @@ PassBuilder::buildLTODefaultPipeline(OptimizationLevel Level,
       std::move(LPM), /*UseMemorySSA=*/false, /*UseBlockFrequencyInfo=*/true));
 
 #if SIFIVE_CUSTOMIZATION
-  MainFPM.addPass(LoopConcatPass());
+  if (LoopConcatCanonicalize) {
+    MainFPM.addPass(LoopConcatPass());
+    MainFPM.addPass(SimplifyCFGPass());
+    MainFPM.addPass(LoopFusePass());
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   MainFPM.addPass(LoopDistributePass());

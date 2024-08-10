@@ -65,6 +65,9 @@
 #include "llvm/Transforms/Utils/CodeMoverUtils.h"
 #include "llvm/Transforms/Utils/LoopPeel.h"
 #include "llvm/Transforms/Utils/LoopSimplify.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Transforms/Utils/LoopUtils.h"
+#endif
 
 using namespace llvm;
 
@@ -119,10 +122,20 @@ static cl::opt<FusionDependenceAnalysisChoice> FusionDependenceAnalysis(
                           "Use all available analyses")),
     cl::Hidden, cl::init(FUSION_DEPENDENCE_ANALYSIS_ALL));
 
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool>
+    EnableLoopFusion("loop-fusion", cl::Hidden, cl::init(false),
+                     cl::desc("Enable Loop Fusion"));
+#endif
+
 static cl::opt<unsigned> FusionPeelMaxCount(
     "loop-fusion-peel-max-count", cl::init(0), cl::Hidden,
     cl::desc("Max number of iterations to be peeled from a loop, such that "
              "fusion can take place"));
+
+#if SIFIVE_CUSTOMIZATION
+extern cl::opt<bool> LoopConcatCanonicalize;
+#endif
 
 #ifndef NDEBUG
 static cl::opt<bool>
@@ -405,6 +418,17 @@ struct FusionCandidateCompare {
     assert(DT && LHS.PDT && "Expecting valid dominator tree");
 
     // Do this compare first so if LHS == RHS, function returns false.
+#if SIFIVE_CUSTOMIZATION
+    if (DT->dominates(RHSEntryBlock, LHSEntryBlock)) {
+      // Wrong order.
+      return false;
+    }
+
+    if (DT->dominates(LHSEntryBlock, RHSEntryBlock)) {
+      // Candidates ordered
+      return LHS.PDT->dominates(RHSEntryBlock, LHSEntryBlock);
+    }
+#else
     if (DT->dominates(RHSEntryBlock, LHSEntryBlock)) {
       // RHS dominates LHS
       // Verify LHS post-dominates RHS
@@ -417,6 +441,7 @@ struct FusionCandidateCompare {
       assert(LHS.PDT->dominates(RHSEntryBlock, LHSEntryBlock));
       return true;
     }
+#endif
 
     // If two FusionCandidates are in the same level of dominator tree,
     // they will not dominate each other, but may still be control flow
@@ -1054,6 +1079,23 @@ private:
           // of the FC1 loop will attempt to fuse the new (fused) loop with the
           // remaining candidates in the current candidate set.
           FC0 = FC1 = InsertPos.first;
+
+#if SIFIVE_CUSTOMIZATION
+          Loop *L = FC0->L;
+          // Mark reducing fused loops as already unrolled.
+          // We do this so that the vectorizer receives these
+          // loops in their current state.
+          for (auto &Phi : L->getHeader()->phis()) {
+            if (Phi.getNumIncomingValues() == 1)
+              continue;
+
+            RecurrenceDescriptor Rdx;
+            if (RecurrenceDescriptor::isReductionPHI(&Phi, L, Rdx)) {
+              L->setLoopAlreadyUnrolled();
+              break;
+            }
+          }
+#endif
 
           LLVM_DEBUG(dbgs() << "Candidate Set (after fusion): " << CandidateSet
                             << "\n");
@@ -2073,6 +2115,11 @@ PreservedAnalyses LoopFusePass::run(Function &F, FunctionAnalysisManager &AM) {
   auto &AC = AM.getResult<AssumptionAnalysis>(F);
   const TargetTransformInfo &TTI = AM.getResult<TargetIRAnalysis>(F);
   const DataLayout &DL = F.getDataLayout();
+
+#if SIFIVE_CUSTOMIZATION
+  if (!EnableLoopFusion && !LoopConcatCanonicalize)
+    return PreservedAnalyses::all();
+#endif
 
   // Ensure loops are in simplifed form which is a pre-requisite for loop fusion
   // pass. Added only for new PM since the legacy PM has already added

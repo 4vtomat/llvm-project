@@ -56,6 +56,41 @@ private:
   bool isCandidate(const MachineInstr &MI) const;
 };
 
+struct VLInfo {
+  VLInfo(const MachineOperand &VLOp) {
+    IsImm = VLOp.isImm();
+    if (IsImm) {
+      Imm = VLOp.getImm();
+    } else {
+      Reg = VLOp.getReg();
+    }
+  }
+  Register Reg;
+  int64_t Imm;
+  bool IsImm;
+  bool isCompatible(const MachineOperand &VLOp) const {
+    if (IsImm != VLOp.isImm())
+      return false;
+    if (IsImm)
+      return Imm == VLOp.getImm();
+    return Reg == VLOp.getReg();
+  }
+  bool isValid() const { return IsImm || Reg.isVirtual(); }
+  bool hasBenefit(const MachineOperand &VLOp) const {
+    if (IsImm && Imm == RISCV::VLMaxSentinel)
+      return false;
+
+    if (!IsImm || !VLOp.isImm())
+      return true;
+
+    if (VLOp.getImm() == RISCV::VLMaxSentinel)
+      return true;
+
+    // No benefit if the current VL is already smaller than the new one.
+    return Imm < VLOp.getImm();
+  }
+};
+
 } // end anonymous namespace
 
 char RISCVVLOptimizer::ID = 0;
@@ -107,15 +142,32 @@ struct OperandInfo {
            "an Unknown OperandInfo");
   }
 
-  bool isUnknown() { return S == State::Unknown; }
-  bool isKnown() { return S == State::Known; }
+  bool isUnknown() const { return S == State::Unknown; }
+  bool isKnown() const { return S == State::Known; }
 
-  static bool EMULAndEEWAreEqual(OperandInfo A, OperandInfo B) {
+  static bool EMULAndEEWAreEqual(const OperandInfo &A, const OperandInfo &B) {
     assert(A.isKnown() && B.isKnown() && "Both operands must be known");
     return A.Log2EEW == B.Log2EEW && A.EMUL.first == B.EMUL.first &&
            A.EMUL.second == B.EMUL.second;
   }
+
+  void print(raw_ostream &OS) const {
+    if (isUnknown()) {
+      OS << "Unknown";
+      return;
+    }
+    OS << "EMUL: ";
+    if (EMUL.second)
+      OS << "m";
+    OS << "f" << EMUL.first;
+    OS << ", EEW: " << (1 << Log2EEW);
+  }
 };
+
+static raw_ostream &operator<<(raw_ostream &OS, const OperandInfo &OI) {
+  OI.print(OS);
+  return OS;
+}
 
 /// Return the RISCVII::VLMUL that is two times VLMul.
 /// Precondition: VLMul is not LMUL_RESERVED or LMUL_8.
@@ -182,12 +234,23 @@ getEMULEqualsEEWDivSEWTimesLMUL(unsigned Log2EEW, const MachineInstr &MI) {
   return std::make_pair(Num > Denom ? Num : Denom, Denom > Num);
 }
 
+static bool isOpN(const MachineOperand &MO, unsigned OpN) {
+  const MachineInstr &MI = *MO.getParent();
+  bool HasPassthru = RISCVII::isFirstDefTiedToFirstUse(MI.getDesc());
+
+  if (HasPassthru)
+    return MO.getOperandNo() == OpN + 1;
+
+  return MO.getOperandNo() == OpN;
+}
+
 /// An index segment load or store operand has the form v.*seg<nf>ei<eeew>.v.
 /// Data has EEW=SEW, EMUL=LMUL. Index has EEW=<eew>, EMUL=(EEW/SEW)*LMUL. LMUL
 /// and SEW comes from TSFlags of MI.
-static OperandInfo
-getIndexSegmentLoadStoreOperandInfo(unsigned Log2EEW, const MachineInstr &MI,
-                                    const MachineOperand &MO) {
+static OperandInfo getIndexSegmentLoadStoreOperandInfo(unsigned Log2EEW,
+                                                       const MachineInstr &MI,
+                                                       const MachineOperand &MO,
+                                                       bool IsLoad) {
   // Operand 0 is data register
   // Data vector register group has EEW=SEW, EMUL=LMUL.
   if (MO.getOperandNo() == 0) {
@@ -200,7 +263,7 @@ getIndexSegmentLoadStoreOperandInfo(unsigned Log2EEW, const MachineInstr &MI,
   // Operand 1 is index vector register
   // v.*seg<nf>ei<eeew>.v
   // Index vector register group has EEW=<eew>, EMUL=(EEW/SEW)*LMUL.
-  if (MO.getOperandNo() == 2)
+  if (isOpN(MO, 1))
     return OperandInfo(getEMULEqualsEEWDivSEWTimesLMUL(Log2EEW, MI), Log2EEW);
 
   llvm_unreachable("Could not get OperandInfo for non-vector register of an "
@@ -251,16 +314,24 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   RISCVII::VLMUL MIVLMul = RISCVII::getLMul(MI.getDesc().TSFlags);
   unsigned MILog2SEW =
       MI.getOperand(RISCVII::getSEWOpNum(MI.getDesc())).getImm();
+
+  const bool HasPassthru = RISCVII::isFirstDefTiedToFirstUse(MI.getDesc());
+
+  // We bail out early for instructions that have passthru with non NoRegister,
+  // which means they are using TU policy. We are not interested in these
+  // since they must preserve the entire register content.
+  if (HasPassthru && MO.getOperandNo() == MI.getNumExplicitDefs() &&
+      (MO.getReg() != RISCV::NoRegister))
+    return OperandInfo(OperandInfo::State::Unknown);
+
   bool IsMODef = MO.getOperandNo() == 0;
+  bool IsOp1 = isOpN(MO, 1);
+  bool IsOp2 = isOpN(MO, 2);
+  bool IsOp3 = isOpN(MO, 3);
 
   // All mask operands have EEW=1, EMUL=(EEW/SEW)*LMUL
   if (isMaskOperand(MI, MO, MRI))
     return OperandInfo(getEMULEqualsEEWDivSEWTimesLMUL(0, MI), 0);
-
-  // TODO: Pseudos that end in _MASK or _TU can have a merge operand.
-  // We bail out early for instructions that have merge operands for now.
-  if (MO.getOperandNo() == MI.getNumExplicitDefs() && MO.isReg() && MO.isTied())
-    return OperandInfo(OperandInfo::State::Unknown);
 
   // switch against BaseInstr to reduce number of cases that need to be
   // considered.
@@ -507,6 +578,7 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   case RISCV::VLOXSEG6EI8_V:
   case RISCV::VLOXSEG7EI8_V:
   case RISCV::VLOXSEG8EI8_V:
+    return getIndexSegmentLoadStoreOperandInfo(3, MI, MO, /* IsLoad */ true);
   case RISCV::VSUXSEG2EI8_V:
   case RISCV::VSUXSEG3EI8_V:
   case RISCV::VSUXSEG4EI8_V:
@@ -521,7 +593,7 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   case RISCV::VSOXSEG6EI8_V:
   case RISCV::VSOXSEG7EI8_V:
   case RISCV::VSOXSEG8EI8_V:
-    return getIndexSegmentLoadStoreOperandInfo(3, MI, MO);
+    return getIndexSegmentLoadStoreOperandInfo(3, MI, MO, /* IsLoad */ false);
   case RISCV::VLUXSEG2EI16_V:
   case RISCV::VLUXSEG3EI16_V:
   case RISCV::VLUXSEG4EI16_V:
@@ -536,6 +608,7 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   case RISCV::VLOXSEG6EI16_V:
   case RISCV::VLOXSEG7EI16_V:
   case RISCV::VLOXSEG8EI16_V:
+    return getIndexSegmentLoadStoreOperandInfo(4, MI, MO, /* IsLoad */ true);
   case RISCV::VSUXSEG2EI16_V:
   case RISCV::VSUXSEG3EI16_V:
   case RISCV::VSUXSEG4EI16_V:
@@ -550,7 +623,7 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   case RISCV::VSOXSEG6EI16_V:
   case RISCV::VSOXSEG7EI16_V:
   case RISCV::VSOXSEG8EI16_V:
-    return getIndexSegmentLoadStoreOperandInfo(4, MI, MO);
+    return getIndexSegmentLoadStoreOperandInfo(4, MI, MO, /* IsLoad */ false);
   case RISCV::VLUXSEG2EI32_V:
   case RISCV::VLUXSEG3EI32_V:
   case RISCV::VLUXSEG4EI32_V:
@@ -565,6 +638,7 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   case RISCV::VLOXSEG6EI32_V:
   case RISCV::VLOXSEG7EI32_V:
   case RISCV::VLOXSEG8EI32_V:
+    return getIndexSegmentLoadStoreOperandInfo(5, MI, MO, /* IsLoad */ true);
   case RISCV::VSUXSEG2EI32_V:
   case RISCV::VSUXSEG3EI32_V:
   case RISCV::VSUXSEG4EI32_V:
@@ -579,7 +653,7 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   case RISCV::VSOXSEG6EI32_V:
   case RISCV::VSOXSEG7EI32_V:
   case RISCV::VSOXSEG8EI32_V:
-    return getIndexSegmentLoadStoreOperandInfo(5, MI, MO);
+    return getIndexSegmentLoadStoreOperandInfo(5, MI, MO, /* IsLoad */ false);
   case RISCV::VLUXSEG2EI64_V:
   case RISCV::VLUXSEG3EI64_V:
   case RISCV::VLUXSEG4EI64_V:
@@ -594,6 +668,7 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   case RISCV::VLOXSEG6EI64_V:
   case RISCV::VLOXSEG7EI64_V:
   case RISCV::VLOXSEG8EI64_V:
+    return getIndexSegmentLoadStoreOperandInfo(6, MI, MO, /* IsLoad */ true);
   case RISCV::VSUXSEG2EI64_V:
   case RISCV::VSUXSEG3EI64_V:
   case RISCV::VSUXSEG4EI64_V:
@@ -608,7 +683,7 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   case RISCV::VSOXSEG6EI64_V:
   case RISCV::VSOXSEG7EI64_V:
   case RISCV::VSOXSEG8EI64_V:
-    return getIndexSegmentLoadStoreOperandInfo(6, MI, MO);
+    return getIndexSegmentLoadStoreOperandInfo(6, MI, MO, /* IsLoad */ false);
 
   // 7.9. Vector Load/Store Whole Register Instructions
   // EMUL=nr. EEW=eew. Since in-register byte layouts are idential to in-memory
@@ -679,7 +754,7 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   case RISCV::VWADD_WX:
   case RISCV::VWSUB_WV:
   case RISCV::VWSUB_WX: {
-    bool TwoTimes = IsMODef || MO.getOperandNo() == 1;
+    bool TwoTimes = IsMODef || IsOp1;
     unsigned Log2EEW = TwoTimes ? MILog2SEW + 1 : MILog2SEW;
     RISCVII::VLMUL EMUL = TwoTimes ? twoTimesVLMUL(MIVLMul) : MIVLMul;
     return OperandInfo(EMUL, Log2EEW);
@@ -756,7 +831,7 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   case RISCV::VNSRA_WI:
   case RISCV::VNSRA_WV:
   case RISCV::VNSRA_WX: {
-    bool TwoTimes = MO.getOperandNo() == 1;
+    bool TwoTimes = IsOp1;
     unsigned Log2EEW = TwoTimes ? MILog2SEW + 1 : MILog2SEW;
     RISCVII::VLMUL EMUL = TwoTimes ? twoTimesVLMUL(MIVLMul) : MIVLMul;
     return OperandInfo(EMUL, Log2EEW);
@@ -860,7 +935,7 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   case RISCV::VWMACCUS_VX: {
     // Operand 0 is destination as a def and Operand 1 is destination as a use
     // due to SSA.
-    bool TwoTimes = IsMODef || MO.getOperandNo() == 1;
+    bool TwoTimes = IsMODef || IsOp1;
     unsigned Log2EEW = TwoTimes ? MILog2SEW + 1 : MILog2SEW;
     RISCVII::VLMUL EMUL = TwoTimes ? twoTimesVLMUL(MIVLMul) : MIVLMul;
     return OperandInfo(EMUL, Log2EEW);
@@ -929,7 +1004,7 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   case RISCV::VNCLIP_WI:
   case RISCV::VNCLIP_WV:
   case RISCV::VNCLIP_WX: {
-    bool TwoTimes = !IsMODef && MO.getOperandNo() == 1;
+    bool TwoTimes = !IsMODef && IsOp1;
     unsigned Log2EEW = TwoTimes ? MILog2SEW + 1 : MILog2SEW;
     RISCVII::VLMUL EMUL = TwoTimes ? twoTimesVLMUL(MIVLMul) : MIVLMul;
     return OperandInfo(EMUL, Log2EEW);
@@ -959,7 +1034,7 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   case RISCV::VFWADD_WV:
   case RISCV::VFWSUB_WF:
   case RISCV::VFWSUB_WV: {
-    bool TwoTimes = IsMODef || MO.getOperandNo() == 1;
+    bool TwoTimes = IsMODef || IsOp1;
     unsigned Log2EEW = TwoTimes ? MILog2SEW + 1 : MILog2SEW;
     RISCVII::VLMUL EMUL = TwoTimes ? twoTimesVLMUL(MIVLMul) : MIVLMul;
     return OperandInfo(EMUL, Log2EEW);
@@ -1013,7 +1088,7 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   case RISCV::VFWNMSAC_VV: {
     // Operand 0 is destination as a def and Operand 1 is destination as a use
     // due to SSA.
-    bool TwoTimes = IsMODef || MO.getOperandNo() == 1;
+    bool TwoTimes = IsMODef || IsOp1;
     unsigned Log2EEW = TwoTimes ? MILog2SEW + 1 : MILog2SEW;
     RISCVII::VLMUL EMUL = TwoTimes ? twoTimesVLMUL(MIVLMul) : MIVLMul;
     return OperandInfo(EMUL, Log2EEW);
@@ -1070,7 +1145,7 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   // EEW=SEW and EMUL=LMUL, except the mask operand has EEW=1 and EMUL=
   // (EEW/SEW)*LMUL.
   case RISCV::VFMERGE_VFM:
-    if (MO.getOperandNo() == 3)
+    if (IsOp3)
       return OperandInfo(getEMULEqualsEEWDivSEWTimesLMUL(0, MI), 0);
     return OperandInfo(MIVLMul, MILog2SEW);
 
@@ -1168,7 +1243,7 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   // 15.8. Vector Iota Instruction
   // Dest and Op1 EEW=SEW and EMUL=LMUL. Op2 EEW=1 and EMUL(EEW/SEW)*LMUL.
   case RISCV::VIOTA_M: {
-    bool IsDefOrOp1 = IsMODef || MO.getOperandNo() == 1;
+    bool IsDefOrOp1 = IsMODef || IsOp1;
     unsigned Log2EEW = IsDefOrOp1 ? 0 : MILog2SEW;
     if (IsDefOrOp1)
       return OperandInfo(MIVLMul, Log2EEW);
@@ -1213,7 +1288,7 @@ static OperandInfo getOperandInfo(const MachineInstr &MI,
   // Destination EMUL=LMUL and EEW=SEW. Op2 EEW=SEW and EMUL=LMUL. Op1 EEW=16
   // and EMUL=(16/SEW)*LMUL.
   case RISCV::VRGATHEREI16_VV: {
-    if (IsMODef || MO.getOperandNo() == 2)
+    if (IsMODef || IsOp2)
       return OperandInfo(MIVLMul, MILog2SEW);
     return OperandInfo(getEMULEqualsEEWDivSEWTimesLMUL(4, MI), 4);
   }
@@ -1299,14 +1374,14 @@ static bool isVectorOpUsedAsScalarOp(MachineOperand &MO) {
   case RISCV::VFREDUSUM_VS:
   case RISCV::VFWREDOSUM_VS:
   case RISCV::VFWREDUSUM_VS: {
-    return MO.getOperandNo() == 1;
+    return isOpN(MO, 1);
   }
   default:
     return false;
   }
 }
 
-bool safeToPropgateVL(const MachineInstr &MI) {
+static bool safeToPropgateVL(const MachineInstr &MI) {
   const RISCVVPseudosTable::PseudoInfo *RVV =
       RISCVVPseudosTable::getPseudoInfo(MI.getOpcode());
   if (!RVV)
@@ -1350,8 +1425,32 @@ bool RISCVVLOptimizer::isCandidate(const MachineInstr &MI) const {
   }
   unsigned VLOpNum = RISCVII::getVLOpNum(Desc);
   const MachineOperand &VLOp = MI.getOperand(VLOpNum);
-  if (!VLOp.isImm() || VLOp.getImm() != RISCV::VLMaxSentinel) {
-    LLVM_DEBUG(dbgs() << "  Not a candidate due to VL is not VLMAX\n");
+  if (((VLOp.isImm() && VLOp.getImm() != RISCV::VLMaxSentinel) ||
+       VLOp.isReg())) {
+    bool UseTAPolicy = false;
+    bool HasPassthru = RISCVII::isFirstDefTiedToFirstUse(Desc);
+    if (RISCVII::hasVecPolicyOp(Desc.TSFlags)) {
+      unsigned PolicyOpNum = RISCVII::getVecPolicyOpNum(Desc);
+      const MachineOperand &PolicyOp = MI.getOperand(PolicyOpNum);
+      uint64_t Policy = PolicyOp.getImm();
+      UseTAPolicy = (Policy & RISCVII::TAIL_AGNOSTIC) == RISCVII::TAIL_AGNOSTIC;
+      if (HasPassthru) {
+        unsigned PassthruOpIdx = MI.getNumExplicitDefs();
+        UseTAPolicy = UseTAPolicy || (MI.getOperand(PassthruOpIdx).getReg() ==
+                                      RISCV::NoRegister);
+      }
+    }
+    if (!UseTAPolicy) {
+      LLVM_DEBUG(
+          dbgs() << "  Not a candidate due to it uses tail-undisturbed policy"
+                    " with non-VLMAX VL\n");
+      return false;
+    }
+  }
+
+  // If the VL is 1, then there is no need to reduce it.
+  if (VLOp.isImm() && VLOp.getImm() == 1) {
+    LLVM_DEBUG(dbgs() << "  Not a candidate due to VL is already 1\n");
     return false;
   }
 
@@ -1382,8 +1481,8 @@ bool RISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
   bool MadeChange = false;
   while (!Worklist.empty()) {
     MachineInstr &MI = *Worklist.pop_back_val();
-    LLVM_DEBUG(dbgs() << "Try reduce VL for " << OrigMI << "\n");
-    std::optional<Register> CommonVL;
+    LLVM_DEBUG(dbgs() << "Try reduce VL for " << MI << "\n");
+    std::optional<VLInfo> CommonVL;
     bool CanReduceVL = true;
     for (auto &UserOp : MRI->use_operands(MI.getOperand(0).getReg())) {
       const MachineInstr &UserMI = *UserOp.getParent();
@@ -1418,17 +1517,20 @@ bool RISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
 
       unsigned VLOpNum = RISCVII::getVLOpNum(Desc);
       const MachineOperand &VLOp = UserMI.getOperand(VLOpNum);
+
       // Looking for a register VL that isn't X0.
-      if (!VLOp.isReg() || VLOp.getReg() == RISCV::X0) {
+      if (VLOp.isReg() && VLOp.getReg() == RISCV::X0) {
         LLVM_DEBUG(dbgs() << "    Abort due to user use X0 as VL.\n");
         CanReduceVL = false;
         break;
       }
 
       if (!CommonVL) {
-        CommonVL = VLOp.getReg();
-      } else if (*CommonVL != VLOp.getReg()) {
-        LLVM_DEBUG(dbgs() << "    Abort due to users have different VL!\n");
+        CommonVL = VLInfo(VLOp);
+        LLVM_DEBUG(dbgs() << "    User VL is: " << VLOp << "\n");
+      } else if (!CommonVL->isCompatible(VLOp)) {
+        LLVM_DEBUG(dbgs() << "    Abort due to users may have different VL!\n");
+
         CanReduceVL = false;
         break;
       }
@@ -1451,6 +1553,8 @@ bool RISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
           !OperandInfo::EMULAndEEWAreEqual(ConsumerInfo, ProducerInfo)) {
         LLVM_DEBUG(dbgs() << "    Abort due to incompatible or unknown "
                              "information for EMUL or EEW.\n");
+        LLVM_DEBUG(dbgs() << "      ConsumerInfo is: " << ConsumerInfo << "\n");
+        LLVM_DEBUG(dbgs() << "      ProducerInfo is: " << ProducerInfo << "\n");
         CanReduceVL = false;
         break;
       }
@@ -1459,20 +1563,35 @@ bool RISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
     if (!CanReduceVL || !CommonVL)
       continue;
 
-    if (!CommonVL->isVirtual()) {
-      LLVM_DEBUG(
-          dbgs() << "    Abort due to new VL is not virtual register.\n");
+    if (!CommonVL->isValid()) {
+      LLVM_DEBUG(dbgs() << "    Abort due to common VL is not valid.\n");
       continue;
     }
 
-    const MachineInstr *VLMI = MRI->getVRegDef(*CommonVL);
-    if (!MDT->dominates(VLMI, &MI))
-      continue;
-
-    // All our checks passed. We can reduce VL.
     unsigned VLOpNum = RISCVII::getVLOpNum(MI.getDesc());
     MachineOperand &VLOp = MI.getOperand(VLOpNum);
-    VLOp.ChangeToRegister(*CommonVL, false);
+
+    if (!CommonVL->hasBenefit(VLOp)) {
+      LLVM_DEBUG(dbgs() << "    Abort due to no benefit.\n");
+      continue;
+    }
+
+    if (CommonVL->IsImm) {
+      LLVM_DEBUG(dbgs() << "  Reduce VL from " << VLOp << " to "
+                        << CommonVL->Imm << " for " << MI << "\n");
+      VLOp.ChangeToImmediate(CommonVL->Imm);
+    } else {
+      const MachineInstr *VLMI = MRI->getVRegDef(CommonVL->Reg);
+      if (!MDT->dominates(VLMI, &MI))
+        continue;
+
+      LLVM_DEBUG(dbgs() << "  Reduce VL from " << VLOp << " to "
+                        << printReg(CommonVL->Reg, MRI->getTargetRegisterInfo())
+                        << " for " << MI << "\n");
+
+      // All our checks passed. We can reduce VL.
+      VLOp.ChangeToRegister(CommonVL->Reg, false);
+    }
     MadeChange = true;
 
     // Now add all inputs to this instruction to the worklist.
