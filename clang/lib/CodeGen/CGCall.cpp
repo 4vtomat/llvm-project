@@ -1357,23 +1357,6 @@ void CodeGenFunction::CreateCoercedStore(llvm::Value *Src, Address Dst,
     }
   }
 
-#if SIFIVE_CUSTOMIZATION
-  // If coercing a fixed vector from a scalable vectro for ABI compatibility,
-  // and the types match, use the llvm.vector.extract intrinsic to perform the
-  // conversion.
-  llvm::Type *DstTy = Dst.getElementType();
-
-  if (auto *FixedDst = dyn_cast<llvm::FixedVectorType>(DstTy)) {
-    if (auto *ScalableSrc = dyn_cast<llvm::ScalableVectorType>(SrcTy)) {
-      if (FixedDst->getElementType() == ScalableSrc->getElementType()) {
-        auto *Zero = llvm::Constant::getNullValue(CGM.Int64Ty);
-        Src = Builder.CreateExtractVector(DstTy, Src, Zero, "castFixedRVV");
-        Builder.CreateStore(Src, Dst, DstIsVolatile);
-        return;
-      }
-    }
-  }
-#endif
   if (SrcSize.isScalable() || SrcSize <= DstSize) {
     if (SrcTy->isIntegerTy() && Dst.getElementType()->isPointerTy() &&
         SrcSize == CGM.getDataLayout().getTypeAllocSize(Dst.getElementType())) {
