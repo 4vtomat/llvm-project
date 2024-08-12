@@ -1374,7 +1374,7 @@ static bool isVectorOpUsedAsScalarOp(MachineOperand &MO) {
   case RISCV::VFREDUSUM_VS:
   case RISCV::VFWREDOSUM_VS:
   case RISCV::VFWREDUSUM_VS: {
-    return isOpN(MO, 1);
+    return isOpN(MO, 2);
   }
   default:
     return false;
@@ -1491,8 +1491,14 @@ bool RISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
       // Instructions like reductions may use a vector register as a scalar
       // register. In this case, we should treat it like a scalar register which
       // does not impact the decision on whether to optimize VL.
-      if (isVectorOpUsedAsScalarOp(UserOp))
+      if (isVectorOpUsedAsScalarOp(UserOp)) {
+        [[maybe_unused]] Register R = UserOp.getReg();
+        [[maybe_unused]] const TargetRegisterClass *RC = MRI->getRegClass(R);
+        assert(RISCV::VRRegClass.hasSubClassEq(RC) &&
+               "Expect LMUL 1 register class for vector as scalar operands!");
+        LLVM_DEBUG(dbgs() << "    Use this operand as a scalar operand\n");
         continue;
+      }
 
       if (!safeToPropgateVL(UserMI)) {
         LLVM_DEBUG(dbgs() << "    Abort due to used by unsafe instruction\n");

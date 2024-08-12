@@ -10,8 +10,9 @@ define i32 @main() {
 ; CHECK-NEXT:    vmv.v.i v8, 0
 ; CHECK-NEXT:    vsetivli zero, 0, e32, m4, tu, mu
 ; CHECK-NEXT:    vssubu.vv v8, v12, v12, v0.t
-; CHECK-NEXT:    vsetivli zero, 1, e32, m4, ta, ma
+; CHECK-NEXT:    vsetivli zero, 2, e32, m4, ta, ma
 ; CHECK-NEXT:    vmul.vv v16, v12, v8
+; CHECK-NEXT:    vsetivli zero, 1, e32, m4, ta, ma
 ; CHECK-NEXT:    vfcvt.f.xu.v v8, v16
 ; CHECK-NEXT:    vsetvli a0, zero, e32, m1, ta, ma
 ; CHECK-NEXT:    vmv.v.i v20, 1
