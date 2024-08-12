@@ -260,10 +260,10 @@ static OperandInfo getIndexSegmentLoadStoreOperandInfo(unsigned Log2EEW,
     return OperandInfo(MIVLMul, MILog2SEW);
   }
 
-  // Operand 1 is index vector register
+  // Operand 2 is index vector register
   // v.*seg<nf>ei<eeew>.v
   // Index vector register group has EEW=<eew>, EMUL=(EEW/SEW)*LMUL.
-  if (isOpN(MO, 1))
+  if (isOpN(MO, 2))
     return OperandInfo(getEMULEqualsEEWDivSEWTimesLMUL(Log2EEW, MI), Log2EEW);
 
   llvm_unreachable("Could not get OperandInfo for non-vector register of an "
