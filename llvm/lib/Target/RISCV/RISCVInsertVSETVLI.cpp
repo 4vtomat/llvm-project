@@ -1128,6 +1128,8 @@ RISCVInsertVSETVLI::computeInfoForInstr(const MachineInstr &MI) const {
   if (std::optional<unsigned> EEW = getEEWForLoadStore(MI)) {
     assert(SEW == EEW && "Initial SEW doesn't match expected EEW");
   }
+#endif
+#if SIFIVE_CUSTOMIZATION
   InstrInfo.setVTYPE(VLMul, SEW, TailAgnostic, MaskAgnostic, IsAltfmt);
 #endif // SIFIVE_CUSTOMIZATION
 
