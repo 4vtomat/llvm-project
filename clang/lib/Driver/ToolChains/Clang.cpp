@@ -5777,6 +5777,13 @@ void Clang::ConstructJob(Compilation &C, const JobAction &JA,
           Triple.getArch() != llvm::Triple::aarch64_be)
         D.Diag(diag::err_drv_unsupported_opt_for_target)
             << Name << Triple.getArchName();
+#if SIFIVE_CUSTOMIZATION
+    } else if (Name == "SiFive_NF") {
+      // SiFive_NF library is compiled for rv64gcv
+      if (Triple.getArch() != llvm::Triple::riscv64)
+        D.Diag(diag::err_drv_unsupported_opt_for_target)
+            << Name << Triple.getArchName();
+#endif // SIFIVE_CUSTOMIZATION
     }
     A->render(Args, CmdArgs);
   }
@@ -6137,6 +6144,16 @@ void Clang::ConstructJob(Compilation &C, const JobAction &JA,
   }
 
   RenderTargetOptions(Triple, Args, KernelOrKext, CmdArgs);
+#if SIFIVE_CUSTOMIZATION
+  // Currently, SiFive_NF library is compiled in rv64gcv.
+  // We need to check if supported features are compatible with the NF library.
+  if (Arg *A = Args.getLastArg(options::OPT_fveclib)) {
+    StringRef Name = A->getValue();
+    if (Name == "SiFive_NF" && !llvm::is_contained(CmdArgs, StringRef("+v"))) {
+      CmdArgs.push_back(Args.MakeArgString("-fveclib=none"));
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   // Add clang-cl arguments.
   types::ID InputType = Input.getType();
