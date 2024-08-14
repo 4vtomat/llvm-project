@@ -933,18 +933,6 @@ Error RISCVISAInfo::checkDependency() {
         errc::invalid_argument,
         "smwgd requires smwg extension to also be specified");
 
-  bool HasXSfmmTE = false;
-  for (auto *TE : {"xsfmm16t", "xsfmm32t", "xsfmm64t", "xsfmm128t"}) {
-    if (!Exts.count(TE))
-      continue;
-
-    if (HasXSfmmTE)
-      return createStringError(errc::invalid_argument,
-                               "No more than one xsfmm[16|32|64|128]t can "
-                               "co-exist at the same time.");
-    HasXSfmmTE = true;
-  }
-
   if (Exts.count("xsfvfbfexp16e") &&
       !(Exts.count("zvfbfmin") || Exts.count("xsfvfbfa")))
     return createStringError(errc::invalid_argument,
