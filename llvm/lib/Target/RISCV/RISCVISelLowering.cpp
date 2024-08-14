@@ -19009,6 +19009,88 @@ static SDValue combineTruncToVnclip(SDNode *N, SelectionDAG &DAG,
   return Val;
 }
 
+#if SIFIVE_CUSTOMIZATION
+// Combine (truncate_vector_vl (vfcvt_rtz_xu_f_vl (vfmin_vl X, 255.0))) ->
+// (vnclipu_vl (vfcvt_rtz_xu_f_vl X)). The vfcvt will return MAX_UINT for values
+// out of range and for nans. The fmin would have returned 255.0 for nan. The
+// vnclipu will saturate large values to 255.
+static SDValue combineTruncOfFPToUIFMin(SDNode *N, SelectionDAG &DAG,
+                                        const RISCVSubtarget &Subtarget) {
+  assert(N->getOpcode() == RISCVISD::TRUNCATE_VECTOR_VL);
+
+  MVT VT = N->getSimpleValueType(0);
+  // FIXME: Support other types?
+  if (VT.getVectorElementType() != MVT::i8)
+    return SDValue();
+
+  SDValue Mask = N->getOperand(1);
+  SDValue VL = N->getOperand(2);
+
+  SDValue Src = N->getOperand(0);
+
+  // Look through multiple layers of truncates.
+  while (Src.getOpcode() == RISCVISD::TRUNCATE_VECTOR_VL &&
+         Src.getOperand(1) == Mask && Src.getOperand(2) == VL &&
+         Src.hasOneUse())
+    Src = Src.getOperand(0);
+
+  if (Src.getOpcode() != RISCVISD::VFCVT_RTZ_XU_F_VL || !Src.hasOneUse() ||
+      Src.getOperand(1) != Mask || Src.getOperand(2) != VL)
+    return SDValue();
+
+  SDValue Min = Src.getOperand(0);
+  if (Min.getOpcode() != RISCVISD::VFMIN_VL || !Min.hasOneUse() ||
+      !Min.getOperand(2).isUndef() || Min.getOperand(3) != Mask ||
+      Min.getOperand(4) != VL)
+    return SDValue();
+
+  SDValue Op = Min.getOperand(1);
+
+  // Peek through conversion between fixed and scalable vectors.
+  if (Op.getOpcode() == ISD::INSERT_SUBVECTOR && Op.getOperand(0).isUndef() &&
+      isNullConstant(Op.getOperand(2)) &&
+      Op.getOperand(1).getValueType().isFixedLengthVector() &&
+      Op.getOperand(1).getOpcode() == ISD::EXTRACT_SUBVECTOR &&
+      Op.getOperand(1).getOperand(0).getValueType() == Op.getValueType() &&
+      isNullConstant(Op.getOperand(1).getOperand(1)))
+    Op = Op.getOperand(1).getOperand(0);
+
+  bool Match = false;
+  ConstantFPSDNode *CFP = isConstOrConstSplatFP(Op);
+  if (CFP && CFP->isExactlyValue(255.0)) {
+    Match = true;
+  } else if (Op.getOpcode() == RISCVISD::VFMV_V_F_VL &&
+             Op.getOperand(0).isUndef() && Op.getOperand(2) == VL) {
+    if (auto *Op1 = dyn_cast<ConstantFPSDNode>(Op.getOperand(1))) {
+      if (Op1->isExactlyValue(255.0))
+        Match = true;
+    }
+  }
+  if (!Match)
+    return SDValue();
+
+  SDValue Val = DAG.getNode(RISCVISD::VFCVT_RTZ_XU_F_VL, SDLoc(Src),
+                            Src.getValueType(), Min.getOperand(0), Mask, VL);
+
+  MVT ValVT = Val.getSimpleValueType();
+
+  SDLoc DL(N);
+
+  do {
+    MVT ValEltVT = MVT::getIntegerVT(ValVT.getScalarSizeInBits() / 2);
+    ValVT = ValVT.changeVectorElementType(ValEltVT);
+    // Rounding mode here is arbitrary since we aren't shifting out any bits.
+    Val = DAG.getNode(
+        RISCVISD::VNCLIPU_VL, DL, ValVT,
+        {Val, DAG.getConstant(0, DL, ValVT), DAG.getUNDEF(VT), Mask,
+         DAG.getTargetConstant(RISCVVXRndMode::RNU, DL, Subtarget.getXLenVT()),
+         VL});
+  } while (ValVT != VT);
+
+  return Val;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
                                                DAGCombinerInfo &DCI) const {
   SelectionDAG &DAG = DCI.DAG;
@@ -19245,6 +19327,10 @@ SDValue RISCVTargetLowering::PerformDAGCombine(SDNode *N,
     }
     return SDValue();
   case RISCVISD::TRUNCATE_VECTOR_VL:
+#if SIFIVE_CUSTOMIZATION
+    if (SDValue V = combineTruncOfFPToUIFMin(N, DAG, Subtarget))
+      return V;
+#endif // SIFIVE_CUSTOMIZATION
     if (SDValue V = combineTruncOfSraSext(N, DAG))
       return V;
     return combineTruncToVnclip(N, DAG, Subtarget);
