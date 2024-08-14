@@ -534,11 +534,25 @@ Value *LoopIdiomVectorize::createPredicatedFindMismatch(
       Intrinsic::vp_icmp, {VectorLhsLoad->getType()},
       {VectorLhsLoad, VectorRhsLoad, Pred, AllTrueMask, VL}, nullptr,
       "mismatch.cmp");
+#if SIFIVE_CUSTOMIZATION
+  // vp.cttz.elts returns either VL or poison when there is no set bit.
+  // But RVV vfirst, on the other hand, generates -1 in that situation.
+  // Meaning we have to generate extra setcc to turn -1 into VL, which is
+  // actually not easy to eliminate in SelectionDAG for some reasons.
+  // So in our downstream code we use vp.first, which return -1 in absent of
+  // set bits.
+  Value *CTZ =
+      Builder.CreateIntrinsic(Intrinsic::vp_first, {VectorMatchCmp->getType()},
+                              {VectorMatchCmp, AllTrueMask, VL});
+  Value *MismatchFound =
+      Builder.CreateICmpSGE(CTZ, ConstantInt::get(CTZ->getType(), 0));
+#else
   Value *CTZ = Builder.CreateIntrinsic(
       Intrinsic::vp_cttz_elts, {ResType, VectorMatchCmp->getType()},
       {VectorMatchCmp, /*ZeroIsPoison=*/Builder.getInt1(false), AllTrueMask,
        VL});
   Value *MismatchFound = Builder.CreateICmpNE(CTZ, VL);
+#endif
   auto *VectorEarlyExit = BranchInst::Create(VectorLoopMismatchBlock,
                                              VectorLoopIncBlock, MismatchFound);
   Builder.Insert(VectorEarlyExit);
