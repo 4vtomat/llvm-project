@@ -83,6 +83,9 @@ public:
     SiFiveP500,
     SiFiveP600,
     SiFiveP800,
+    SiFiveLeopard,
+    SiFiveLion,
+    SiFiveCheetah,
 #endif // SIFIVE_CUSTOMIZATION
     VentanaVeyron,
   };
@@ -174,9 +177,12 @@ public:
     case RISCVProcFamilyEnum::SiFive6:
     case RISCVProcFamilyEnum::SiFive7:
     case RISCVProcFamilyEnum::SiFiveP400:
+    case RISCVProcFamilyEnum::SiFiveLeopard:
     case RISCVProcFamilyEnum::SiFiveP500:
     case RISCVProcFamilyEnum::SiFiveP600:
+    case RISCVProcFamilyEnum::SiFiveLion:
     case RISCVProcFamilyEnum::SiFiveP800:
+    case RISCVProcFamilyEnum::SiFiveCheetah:
       return true;
     default:
       return false;
@@ -186,9 +192,12 @@ public:
   bool isSiFiveMallardCPU() const {
     switch (RISCVProcFamily) {
     case RISCVProcFamilyEnum::SiFiveP400:
+    case RISCVProcFamilyEnum::SiFiveLeopard:
     case RISCVProcFamilyEnum::SiFiveP500:
     case RISCVProcFamilyEnum::SiFiveP600:
+    case RISCVProcFamilyEnum::SiFiveLion:
     case RISCVProcFamilyEnum::SiFiveP800:
+    case RISCVProcFamilyEnum::SiFiveCheetah:
       return true;
     default:
       return false;

@@ -359,9 +359,12 @@ RISCVTTIImpl::getBestVectorTypeForLoopIdiom(LLVMContext &Ctx) const {
   case RISCVSubtarget::SiFive6:
   case RISCVSubtarget::SiFive7:
   case RISCVSubtarget::SiFiveP400:
+  case RISCVSubtarget::SiFiveLeopard:
   case RISCVSubtarget::SiFiveP500:
   case RISCVSubtarget::SiFiveP600:
+  case RISCVSubtarget::SiFiveLion:
   case RISCVSubtarget::SiFiveP800:
+  case RISCVSubtarget::SiFiveCheetah:
     LMULExp = 1;
     break;
   }
@@ -2655,7 +2658,8 @@ InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
           NumDivideUnits = 2;
       } else if (EltTy->isIntegerTy(16) && Op2Info.isUniform() &&
                  Op2Info.isConstant() &&
-                 ST->getProcFamily() == RISCVSubtarget::SiFiveP600) {
+                 (ST->getProcFamily() == RISCVSubtarget::SiFiveP600 ||
+                  ST->getProcFamily() == RISCVSubtarget::SiFiveLion)) {
         // This will be converted to a magic multiply.
         // FIXME: At least one important benchmark regresses on p470 so we
         // restrict to p670 and i16 for now.
@@ -2739,7 +2743,8 @@ InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
     case ISD::FSUB:
     case ISD::FMUL:
     case ISD::FNEG: {
-      if (ST->getProcFamily() == RISCVSubtarget::SiFiveP400) {
+      if (ST->getProcFamily() == RISCVSubtarget::SiFiveP400 ||
+          ST->getProcFamily() == RISCVSubtarget::SiFiveLeopard) {
         // Make cost of the vector instruction the same as the cost of two
         // scalar FP instructions
         return ConstantMatCost + TLI->getLMULCost(LT.second) * LT.first * 4;
@@ -3054,7 +3059,11 @@ bool RISCVTTIImpl::enableUncountableVectorization() const {
     // revisit this when more loops are recognized
     return false;
   case RISCVSubtarget::SiFiveP400:
+  case RISCVSubtarget::SiFiveLeopard:
   case RISCVSubtarget::SiFiveP600:
+  case RISCVSubtarget::SiFiveLion:
+  case RISCVSubtarget::SiFiveP800:
+  case RISCVSubtarget::SiFiveCheetah:
     return true;
   }
 }

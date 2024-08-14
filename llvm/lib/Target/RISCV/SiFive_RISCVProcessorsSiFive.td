@@ -19,6 +19,13 @@ def TuneSiFiveP600 : SubtargetFeature<"sifive-p600", "RISCVProcFamily", "SiFiveP
 def TuneSiFiveP800 : SubtargetFeature<"sifive-p800", "RISCVProcFamily", "SiFiveP800",
                                       "SiFive P800-Series processors">;
 
+def TuneSiFiveLeopard : SubtargetFeature<"sifive-leopard", "RISCVProcFamily", "SiFiveLeopard",
+                                         "SiFive Leopard processors">;
+def TuneSiFiveLion : SubtargetFeature<"sifive-lion", "RISCVProcFamily", "SiFiveLion",
+                                      "SiFive Lion processors">;
+def TuneSiFiveCheetah : SubtargetFeature<"sifive-cheetah", "RISCVProcFamily", "SiFiveCheetah",
+                                         "SiFive Cheetah processors">;
+
 def SIFIVE_6 : RISCVTuneProcessorModel<"sifive-6-series", SiFive6Model,
                                        [TuneSiFive6]>;
 def SIFIVE_7M : RISCVTuneProcessorModel<"sifive-7m-series", SiFive7Model,
@@ -729,7 +736,8 @@ def SIFIVE_LEOPARD : RISCVProcessorModel<"sifive-leopard", SiFiveP400Model,
                                           FeatureStdExtZvksg,
                                           FeatureUnalignedScalarMem,
                                           FeatureUnalignedVectorMem],
-                                         !listconcat(SiFiveP400TuneFeatures,
+                                         !listconcat([TuneSiFiveLeopard],
+                                                     SiFiveMallardTuneFeatures,
                                                      [TuneDLen128b,
                                                       TuneNoSinkSplatOperands])>;
 
@@ -866,7 +874,8 @@ def SIFIVE_LION : RISCVProcessorModel<"sifive-lion", SiFiveP600Model,
                                        FeatureStdExtZvksg,
                                        FeatureUnalignedScalarMem,
                                        FeatureUnalignedVectorMem],
-                                      !listconcat(SiFiveP600TuneFeatures,
+                                      !listconcat([TuneSiFiveLion],
+                                                  SiFiveMallardTuneFeatures,
                                                   [TuneDLen128b,
                                                    TuneNoSinkSplatOperands])>;
 
@@ -919,7 +928,7 @@ def SIFIVE_CHEETAH : RISCVProcessorModel<"sifive-cheetah", SiFiveP800SModel,
                                           FeatureStdExtZvksg,
                                           FeatureUnalignedScalarMem,
                                           FeatureUnalignedVectorMem],
-                                         !listconcat([TuneSiFiveP800],
+                                         !listconcat([TuneSiFiveCheetah],
                                                      SiFiveMallardTuneFeatures,
                                                      [TuneDLen128b,
                                                       TuneNoSinkSplatOperands])>;

@@ -1403,7 +1403,8 @@ void RISCVLateCodeGenPrepare::getMemToRVVConfig() {
   // This is old threshold 8 * MemLMULLocal * MinVLenInBytes - 1
   UnrollThreshold = 8 * MemLMULLocal * (ST->getRealMinVLen() / 8) - 1;
   // FIXME: Tune this threshold for each sifive cpu.
-  if (ST->getProcFamily() == RISCVSubtarget::SiFiveP400 && ST->hasKnownDLen())
+  if ((ST->getProcFamily() == RISCVSubtarget::SiFiveP400 ||
+       ST->getProcFamily() == RISCVSubtarget::SiFiveLeopard) && ST->hasKnownDLen())
     UnrollThreshold = 4 * (ST->getDLen() / 8);
 
   // TODO: Maybe need specific options for memset/memcpy/memmove?
