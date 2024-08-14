@@ -5973,8 +5973,8 @@ multiclass VPatReductionW_VS_RM<string intrinsic, string instruction, bit IsFloa
 }
 
 multiclass VPatConversionVI_VF<string intrinsic,
-                               string instruction,
 #ifdef SIFIVE_CUSTOMIZATION
+                               string instruction,
                                bit IsBF16 = 0> {
   foreach fvti = !if (IsBF16, AllBFloatVectors, AllFloatVectors) in {
 #endif // SIFIVE_CUSTOMIZATION
@@ -6061,9 +6061,8 @@ multiclass VPatConversionWI_VF_RTZ<string intrinsic, string instruction> {
 }
 
 multiclass VPatConversionWF_VI<string intrinsic, string instruction,
-                               bit isSEWAware = 0,
 #ifdef SIFIVE_CUSTOMIZATION
-                               bit IsBF16 = 0> {
+                               bit isSEWAware = 0, bit IsBF16 = 0> {
   foreach vtiToWti = !if (IsBF16, AllWidenableIntToBFloatVectors,
                                      AllWidenableIntToFloatVectors) in {
 #endif // SIFIVE_CUSTOMIZATION
@@ -6078,9 +6077,8 @@ multiclass VPatConversionWF_VI<string intrinsic, string instruction,
 }
 
 multiclass VPatConversionWF_VF<string intrinsic, string instruction,
-                               bit isSEWAware = 0,
 #ifdef SIFIVE_CUSTOMIZATION
-                               bit IsBF16 = 0> {
+                               bit isSEWAware = 0, bit IsBF16 = 0> {
   foreach fvtiToFWti = !if (IsBF16, AllWidenableBFloatToFloatVectors,
                                        AllWidenableFloatVectors) in {
 #endif // SIFIVE_CUSTOMIZATION
@@ -6110,8 +6108,8 @@ multiclass VPatConversionWF_VF_BF<string intrinsic, string instruction,
   }
 }
 
-multiclass VPatConversionVI_WF<string intrinsic, string instruction,
 #ifdef SIFIVE_CUSTOMIZATION
+multiclass VPatConversionVI_WF<string intrinsic, string instruction,
                                bit IsBF16 = 0> {
   foreach vtiToWti = !if (IsBF16, AllWidenableIntToBFloatVectors,
                                      AllWidenableIntToFloatVectors) in {
@@ -6126,8 +6124,8 @@ multiclass VPatConversionVI_WF<string intrinsic, string instruction,
   }
 }
 
-multiclass VPatConversionVI_WF_RM <string intrinsic, string instruction,
 #ifdef SIFIVE_CUSTOMIZATION
+multiclass VPatConversionVI_WF_RM <string intrinsic, string instruction,
                                    bit IsBF16 = 0> {
   foreach vtiToWti = !if (IsBF16, AllWidenableIntToBFloatVectors,
                                      AllWidenableIntToFloatVectors) in {
@@ -6169,9 +6167,8 @@ multiclass VPatConversionVF_WI_RM <string intrinsic, string instruction,
 }
 
 multiclass VPatConversionVF_WF<string intrinsic, string instruction,
-                               bit isSEWAware = 0,
 #ifdef SIFIVE_CUSTOMIZATION
-                               bit IsBF16 = 0> {
+                               bit isSEWAware = 0, bit IsBF16 = 0> {
   foreach fvtiToFWti = !if (IsBF16, AllWidenableBFloatToFloatVectors,
                                        AllWidenableFloatVectors) in {
 #endif // SIFIVE_CUSTOMIZATION
