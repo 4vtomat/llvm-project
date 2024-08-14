@@ -355,6 +355,22 @@ bool RISCVSpillRewrite::runOnMachineFunction(MachineFunction &MF) {
   do {
     TempChanged = false;
     for (MachineBasicBlock &MBB : MF) {
+      // We are not able to insert vsetvli for inline assembly, so the
+      // following case will fail if the spill rewrite is presented:
+      // ```
+      // %0 = vadd.vv v8, v9 (e8, mf2)
+      // vs1r %0, %stack.0
+      // ...
+      // inline_asm("vsetvli 888, e8, m1")
+      // %1 = vl1r %stack.0
+      // inline_asm("vadd.vv %a, %b, %c", %a=v8, %b=%1, %c=%1)
+      // ```
+      // The vs1r %0, %stack.0 will be rewrite to vse8.v with lmul=mf2, then
+      // %1 will also reload lmul=mf2 elements which break the original
+      // context which need to be lmul=1.
+      if (any_of(MBB, [](const MachineInstr &MI) { return MI.isInlineAsm(); }))
+        continue;
+
       for (auto &MI : llvm::make_early_inc_range(MBB)) {
         int FI;
         if (hasSpillSlotObject(MFI, MI))
