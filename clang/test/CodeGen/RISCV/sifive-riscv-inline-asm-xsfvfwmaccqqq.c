@@ -11,7 +11,7 @@
 
 vfloat32m2_t test_sf_vfwmacc_4x4x4 (vbfloat16m1_t a, vint16m1_t b) {
 // CHECK-LABEL: define{{.*}} @test_sf_vfwmacc_4x4x4
-// CHECK: %0 = tail call <vscale x 4 x float> asm sideeffect "sf.vfwmacc.4x4x4 $0, $1, $2", "=&^vr,^vr,^vr"(<vscale x 4 x bfloat> %a, <vscale x 4 x i16> %b)
+// CHECK: %0 = tail call <vscale x 4 x float> asm sideeffect "sf.vfwmacc.4x4x4 $0, $1, $2", "=&^vr,^vr,^vr,~{vl},~{vtype}"(<vscale x 4 x bfloat> %a, <vscale x 4 x i16> %b)
 vfloat32m2_t ret;
   asm volatile ("sf.vfwmacc.4x4x4 %0, %1, %2" : "=&vr"(ret) : "vr"(a), "vr"(b));
   return ret;

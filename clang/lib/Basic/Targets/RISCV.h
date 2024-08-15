@@ -82,9 +82,11 @@ public:
   BuiltinVaListKind getBuiltinVaListKind() const override {
     return TargetInfo::VoidPtrBuiltinVaList;
   }
-
+#if SIFIVE_CUSTOMIZATION
+  std::string_view getClobbers() const override { return "~{vl},~{vtype}"; }
+#else
   std::string_view getClobbers() const override { return ""; }
-
+#endif
   StringRef getConstraintRegister(StringRef Constraint,
                                   StringRef Expression) const override {
     return Expression;

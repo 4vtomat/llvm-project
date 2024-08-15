@@ -11,7 +11,7 @@
 
 vuint8m1_t test_sf_vfnrclip_xu_f_qf (vfloat32m4_t a, float b) {
 // CHECK-LABEL: define{{.*}} @test_sf_vfnrclip_xu_f_qf
-// CHECK: %0 = tail call <vscale x 8 x i8> asm sideeffect "sf.vfnrclip.xu.f.qf $0, $1, $2", "=^vr,^vr,f"(<vscale x 8 x float> %a, float %b)
+// CHECK: %0 = tail call <vscale x 8 x i8> asm sideeffect "sf.vfnrclip.xu.f.qf $0, $1, $2", "=^vr,^vr,f,~{vl},~{vtype}"(<vscale x 8 x float> %a, float %b)
 vuint8m1_t ret;
   asm volatile ("sf.vfnrclip.xu.f.qf %0, %1, %2" : "=vr"(ret) : "vr"(a), "f"(b));
   return ret;
@@ -19,7 +19,7 @@ vuint8m1_t ret;
 
 vuint8m1_t test_sf_vfnrclip_xu_f_qf_m(vfloat32m4_t a, float b, vbool64_t m) {
   // CHECK-LABEL: @test_sf_vfnrclip_xu_f_qf_m
-  // CHECK: %0 = tail call <vscale x 8 x i8> asm sideeffect "sf.vfnrclip.xu.f.qf $0, $1, $2, $3", "=^vr,^vr,f,^vm"(<vscale x 8 x float> %a, float %b, <vscale x 1 x i1> %m)
+  // CHECK: %0 = tail call <vscale x 8 x i8> asm sideeffect "sf.vfnrclip.xu.f.qf $0, $1, $2, $3", "=^vr,^vr,f,^vm,~{vl},~{vtype}"(<vscale x 8 x float> %a, float %b, <vscale x 1 x i1> %m)
   vuint8m1_t ret;
   asm volatile("sf.vfnrclip.xu.f.qf %0, %1, %2, %3"
                : "=vr"(ret)
@@ -30,7 +30,7 @@ vuint8m1_t test_sf_vfnrclip_xu_f_qf_m(vfloat32m4_t a, float b, vbool64_t m) {
 
 vint8m1_t test_sf_vfnrclip_x_f_qf (vfloat32m4_t a, float b) {
 // CHECK-LABEL: define{{.*}} @test_sf_vfnrclip_x_f_qf
-// CHECK: %0 = tail call <vscale x 8 x i8> asm sideeffect "sf.vfnrclip.x.f.qf $0, $1, $2", "=^vr,^vr,f"(<vscale x 8 x float> %a, float %b)
+// CHECK: %0 = tail call <vscale x 8 x i8> asm sideeffect "sf.vfnrclip.x.f.qf $0, $1, $2", "=^vr,^vr,f,~{vl},~{vtype}"(<vscale x 8 x float> %a, float %b)
 vint8m1_t ret;
   asm volatile ("sf.vfnrclip.x.f.qf %0, %1, %2" : "=vr"(ret) : "vr"(a), "f"(b));
   return ret;
@@ -38,7 +38,7 @@ vint8m1_t ret;
 
 vint8m1_t test_sf_vfnrclip_x_f_qf_m(vfloat32m4_t a, float b, vbool64_t m) {
   // CHECK-LABEL: @test_sf_vfnrclip_x_f_qf_m
-  // CHECK: %0 = tail call <vscale x 8 x i8> asm sideeffect "sf.vfnrclip.x.f.qf $0, $1, $2, $3", "=^vr,^vr,f,^vm"(<vscale x 8 x float> %a, float %b, <vscale x 1 x i1> %m)
+  // CHECK: %0 = tail call <vscale x 8 x i8> asm sideeffect "sf.vfnrclip.x.f.qf $0, $1, $2, $3", "=^vr,^vr,f,^vm,~{vl},~{vtype}"(<vscale x 8 x float> %a, float %b, <vscale x 1 x i1> %m)
   vint8m1_t ret;
   asm volatile("sf.vfnrclip.x.f.qf %0, %1, %2, %3"
                : "=vr"(ret)
