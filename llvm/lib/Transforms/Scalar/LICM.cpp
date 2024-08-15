@@ -3109,10 +3109,18 @@ static bool hoistMulAddAssociation(Instruction &I, Loop &L,
 /// 2. "C1 op (C2 op LV)" ==> "(C1 op C2) op LV"
 /// 3. "(C1 op LV) op C2" ==> "LV op (C1 op C2)" if op is commutative
 /// 4. "C1 op (LV op C2)" ==> "(C1 op C2) op LV" if op is commutative
+#if SIFIVE_CUSTOMIZATION
+static bool hoistBOAssociation(Instruction &I, Loop &L,
+                               ICFLoopSafetyInfo &SafetyInfo,
+                               MemorySSAUpdater &MSSAU, AssumptionCache *AC,
+                               LiveValues *LiveVals, TargetTransformInfo *TTI,
+                               DominatorTree *DT) {
+#else
 static bool hoistBOAssociation(Instruction &I, Loop &L,
                                ICFLoopSafetyInfo &SafetyInfo,
                                MemorySSAUpdater &MSSAU, AssumptionCache *AC,
                                DominatorTree *DT) {
+#endif
   auto *BO = dyn_cast<BinaryOperator>(&I);
   if (!BO || !BO->isAssociative())
     return false;
@@ -3133,6 +3141,14 @@ static bool hoistBOAssociation(Instruction &I, Loop &L,
 
   if (L.isLoopInvariant(LV) || !L.isLoopInvariant(C1) || !L.isLoopInvariant(C2))
     return false;
+
+#if SIFIVE_CUSTOMIZATION
+  SmallPtrSet<const Value *, 4> IgnoreValues;
+  SmallVector<Use *> AddValues;
+  IgnoreValues.insert(LV);
+  if (maySpillForCandidate(&I, &L, LiveVals, TTI, DT, IgnoreValues, AddValues))
+    return false;
+#endif
 
   auto *Preheader = L.getLoopPreheader();
   assert(Preheader && "Loop is not in simplify form?");
@@ -3198,6 +3214,12 @@ static bool hoistArithmetics(Instruction &I, Loop &L,
       ++NumFPAssociationsHoisted;
     return true;
   }
+
+  if (hoistBOAssociation(I, L, SafetyInfo, MSSAU, AC, LV, TTI, DT)) {
+    ++NumHoisted;
+    ++NumBOAssociationsHoisted;
+    return true;
+  }
 #else
 static bool hoistArithmetics(Instruction &I, Loop &L,
                              ICFLoopSafetyInfo &SafetyInfo,
@@ -3235,13 +3257,13 @@ static bool hoistArithmetics(Instruction &I, Loop &L,
       ++NumFPAssociationsHoisted;
     return true;
   }
-#endif
 
   if (hoistBOAssociation(I, L, SafetyInfo, MSSAU, AC, DT)) {
     ++NumHoisted;
     ++NumBOAssociationsHoisted;
     return true;
   }
+#endif
 
   return false;
 }
