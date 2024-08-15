@@ -104,6 +104,7 @@ public:
 
 private:
 #if SIFIVE_CUSTOMIZATION
+  void emitNoteSection(unsigned Flags);
   void emitCompactStub();
 #endif // SIFIVE_CUSTOMIZATION
   void emitAttributes(const MCSubtargetInfo &SubtargetInfo);
@@ -477,6 +478,41 @@ void RISCVAsmPrinter::emitStartOfAsmFile(Module &M) {
     emitAttributes(SubtargetInfo);
 }
 
+#if SIFIVE_CUSTOMIZATION
+void RISCVAsmPrinter::emitNoteSection(unsigned Flags) {
+  if (Flags == 0)
+    return;
+
+  RISCVTargetStreamer &RTS =
+      static_cast<RISCVTargetStreamer &>(*OutStreamer->getTargetStreamer());
+  MCContext &Context = OutStreamer->getContext();
+  MCSectionELF *Nt = Context.getELFSection(".note.gnu.property", ELF::SHT_NOTE,
+                                           ELF::SHF_ALLOC);
+  MCSection *Cur = OutStreamer->getCurrentSectionOnly();
+  OutStreamer->switchSection(Nt);
+
+  // Emit the note header.
+  Align Alignment = RTS.isRV64() ? Align(8) : Align(4);
+  uint64_t DataSize = RTS.isRV64() ? 4 * 4: 3 * 4;
+  OutStreamer->emitValueToAlignment(Alignment);
+  OutStreamer->emitIntValue(4, 4);     // data size for note name
+  OutStreamer->emitIntValue(DataSize, 4); // data size
+  OutStreamer->emitIntValue(ELF::NT_GNU_PROPERTY_TYPE_0, 4); // note type
+  OutStreamer->emitBytes(StringRef("GNU", 4));               // note name
+
+  // Emit the CFI(ZICFILP/ZICFISS) properties.
+  OutStreamer->emitIntValue(ELF::GNU_PROPERTY_RISCV_FEATURE_1_AND,
+                            4);        // and property
+  OutStreamer->emitIntValue(4, 4);     // data size
+  OutStreamer->emitIntValue(Flags, 4); // data
+  if (RTS.isRV64())
+    OutStreamer->emitIntValue(0, 4);   // pad
+
+  OutStreamer->endSection(Nt);
+  OutStreamer->switchSection(Cur);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 void RISCVAsmPrinter::emitEndOfAsmFile(Module &M) {
   RISCVTargetStreamer &RTS =
       static_cast<RISCVTargetStreamer &>(*OutStreamer->getTargetStreamer());
@@ -484,6 +520,15 @@ void RISCVAsmPrinter::emitEndOfAsmFile(Module &M) {
 #if SIFIVE_CUSTOMIZATION
   if (TM.getCodeModel() == CodeModel::Compact)
     emitCompactStub();
+
+  // TODO: Also consider software control features right after having them.
+  unsigned GNUNoteFlags = 0;
+  if (RTS.hasZicfilp())
+    GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_ZICFILP;
+
+  if (RTS.hasZicfiss() && M.getModuleFlag("cf-protection-return"))
+    GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_ZICFISS;
+  emitNoteSection(GNUNoteFlags);
 #endif // SIFIVE_CUSTOMIZATION
 
   if (TM.getTargetTriple().isOSBinFormatELF())

@@ -85,40 +85,6 @@ void RISCVTargetELFStreamer::finishAttributeSection() {
                           ELF::SHT_RISCV_ATTRIBUTES, AttributeSection);
 }
 
-#if SIFIVE_CUSTOMIZATION
-void RISCVTargetELFStreamer::emitNoteSection(unsigned Flags) {
-  if (Flags == 0)
-    return;
-
-  MCStreamer &OutStreamer = getStreamer();
-  MCContext &Context = OutStreamer.getContext();
-  MCSectionELF *Nt = Context.getELFSection(".note.gnu.property", ELF::SHT_NOTE,
-                                           ELF::SHF_ALLOC);
-  MCSection *Cur = OutStreamer.getCurrentSectionOnly();
-  OutStreamer.switchSection(Nt);
-
-  // Emit the note header.
-  Align Alignment = isRV64() ? Align(8) : Align(4);
-  uint64_t DataSize = isRV64() ? 4 * 4: 3 * 4;
-  OutStreamer.emitValueToAlignment(Alignment);
-  OutStreamer.emitIntValue(4, 4);     // data size for note name
-  OutStreamer.emitIntValue(DataSize, 4); // data size
-  OutStreamer.emitIntValue(ELF::NT_GNU_PROPERTY_TYPE_0, 4); // note type
-  OutStreamer.emitBytes(StringRef("GNU", 4));               // note name
-
-  // Emit the CFI(ZICFILP/ZICFISS) properties.
-  OutStreamer.emitIntValue(ELF::GNU_PROPERTY_RISCV_FEATURE_1_AND,
-                           4);        // and property
-  OutStreamer.emitIntValue(4, 4);     // data size
-  OutStreamer.emitIntValue(Flags, 4); // data
-  if (isRV64())
-    OutStreamer.emitIntValue(0, 4);   // pad
-
-  OutStreamer.endSection(Nt);
-  OutStreamer.switchSection(Cur);
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 void RISCVTargetELFStreamer::finish() {
   RISCVTargetStreamer::finish();
   ELFObjectWriter &W = getStreamer().getWriter();
@@ -152,17 +118,6 @@ void RISCVTargetELFStreamer::finish() {
   }
 
   W.setELFHeaderEFlags(EFlags);
-
-#if SIFIVE_CUSTOMIZATION
-  // TODO: Also consider software control features right after having them.
-  unsigned GNUNoteFlags = 0;
-  if (hasZicfilp())
-    GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_ZICFILP;
-
-  if (hasZicfiss())
-    GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_ZICFISS;
-  emitNoteSection(GNUNoteFlags);
-#endif // SIFIVE_CUSTOMIZATION
 }
 
 void RISCVTargetELFStreamer::reset() {
