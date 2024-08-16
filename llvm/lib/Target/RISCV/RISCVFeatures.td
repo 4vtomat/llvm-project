@@ -1685,6 +1685,10 @@ def TuneFuseBFX
                        "bitfield">;
 def HasFuseBFX : Predicate<"Subtarget->hasFuseBFX()">;
 
+def TuneUseFixedPointInstructions
+    : SubtargetFeature<"use-fixed-point", "UseFixedPoint",
+                       "true", "Fixed point instructions should be used">;
+
 def TunePseudoLIsimm32
     : SubtargetFeature<"pseudo-li-simm32", "UsePseudoLIsimm32",
                        "true", "Enable treating LUI+ADDI(W) as a single macro instruction in some passes">;
