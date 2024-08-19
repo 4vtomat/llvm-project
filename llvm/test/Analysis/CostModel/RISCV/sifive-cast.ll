@@ -27,12 +27,12 @@ define void @ext() {
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %22 = zext <8 x i8> undef to <8 x i16>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %23 = sext <8 x i8> undef to <8 x i32>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %24 = zext <8 x i8> undef to <8 x i32>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %25 = sext <8 x i8> undef to <8 x i64>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %26 = zext <8 x i8> undef to <8 x i64>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %25 = sext <8 x i8> undef to <8 x i64>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %26 = zext <8 x i8> undef to <8 x i64>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %27 = sext <8 x i16> undef to <8 x i32>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %28 = zext <8 x i16> undef to <8 x i32>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %29 = sext <8 x i16> undef to <8 x i64>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %30 = zext <8 x i16> undef to <8 x i64>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %29 = sext <8 x i16> undef to <8 x i64>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %30 = zext <8 x i16> undef to <8 x i64>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %31 = sext <8 x i1> undef to <8 x i8>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %32 = zext <8 x i1> undef to <8 x i8>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %33 = sext <8 x i1> undef to <8 x i16>
@@ -89,60 +89,60 @@ define void @trunc() {
 ; RISCV64-LABEL: 'trunc'
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %s1i8i16 = trunc <vscale x 1 x i16> undef to <vscale x 1 x i8>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %s1i8i32 = trunc <vscale x 1 x i32> undef to <vscale x 1 x i8>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %s1i8i64 = trunc <vscale x 1 x i64> undef to <vscale x 1 x i8>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %s1i8i64 = trunc <vscale x 1 x i64> undef to <vscale x 1 x i8>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %s1i16i32 = trunc <vscale x 1 x i32> undef to <vscale x 1 x i16>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %s1i16i64 = trunc <vscale x 1 x i64> undef to <vscale x 1 x i16>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %s1i32i64 = trunc <vscale x 1 x i64> undef to <vscale x 1 x i32>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %s1i16i64 = trunc <vscale x 1 x i64> undef to <vscale x 1 x i16>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %s1i32i64 = trunc <vscale x 1 x i64> undef to <vscale x 1 x i32>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %s1i1i8 = trunc <vscale x 1 x i8> undef to <vscale x 1 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %s1i1i16 = trunc <vscale x 1 x i16> undef to <vscale x 1 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %s1i1i32 = trunc <vscale x 1 x i32> undef to <vscale x 1 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %s1i1i64 = trunc <vscale x 1 x i64> undef to <vscale x 1 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %s2i8i16 = trunc <vscale x 2 x i16> undef to <vscale x 2 x i8>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %s2i8i32 = trunc <vscale x 2 x i32> undef to <vscale x 2 x i8>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 7 for instruction: %s2i8i64 = trunc <vscale x 2 x i64> undef to <vscale x 2 x i8>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %s2i16i32 = trunc <vscale x 2 x i32> undef to <vscale x 2 x i16>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %s2i16i64 = trunc <vscale x 2 x i64> undef to <vscale x 2 x i16>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %s2i32i64 = trunc <vscale x 2 x i64> undef to <vscale x 2 x i32>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %s2i8i32 = trunc <vscale x 2 x i32> undef to <vscale x 2 x i8>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %s2i8i64 = trunc <vscale x 2 x i64> undef to <vscale x 2 x i8>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %s2i16i32 = trunc <vscale x 2 x i32> undef to <vscale x 2 x i16>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %s2i16i64 = trunc <vscale x 2 x i64> undef to <vscale x 2 x i16>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %s2i32i64 = trunc <vscale x 2 x i64> undef to <vscale x 2 x i32>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %s2i1i8 = trunc <vscale x 2 x i8> undef to <vscale x 2 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %s2i1i16 = trunc <vscale x 2 x i16> undef to <vscale x 2 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %s2i1i32 = trunc <vscale x 2 x i32> undef to <vscale x 2 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %s2i1i64 = trunc <vscale x 2 x i64> undef to <vscale x 2 x i1>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %s4i8i16 = trunc <vscale x 4 x i16> undef to <vscale x 4 x i8>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %s4i8i32 = trunc <vscale x 4 x i32> undef to <vscale x 4 x i8>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 14 for instruction: %s4i8i64 = trunc <vscale x 4 x i64> undef to <vscale x 4 x i8>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %s4i16i32 = trunc <vscale x 4 x i32> undef to <vscale x 4 x i16>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %s4i16i64 = trunc <vscale x 4 x i64> undef to <vscale x 4 x i16>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %s4i32i64 = trunc <vscale x 4 x i64> undef to <vscale x 4 x i32>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %s4i8i16 = trunc <vscale x 4 x i16> undef to <vscale x 4 x i8>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %s4i8i32 = trunc <vscale x 4 x i32> undef to <vscale x 4 x i8>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 7 for instruction: %s4i8i64 = trunc <vscale x 4 x i64> undef to <vscale x 4 x i8>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %s4i16i32 = trunc <vscale x 4 x i32> undef to <vscale x 4 x i16>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %s4i16i64 = trunc <vscale x 4 x i64> undef to <vscale x 4 x i16>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %s4i32i64 = trunc <vscale x 4 x i64> undef to <vscale x 4 x i32>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %s4i1i8 = trunc <vscale x 4 x i8> undef to <vscale x 4 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %s4i1i16 = trunc <vscale x 4 x i16> undef to <vscale x 4 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %s4i1i32 = trunc <vscale x 4 x i32> undef to <vscale x 4 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %s4i1i64 = trunc <vscale x 4 x i64> undef to <vscale x 4 x i1>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %s8i8i16 = trunc <vscale x 8 x i16> undef to <vscale x 8 x i8>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %s8i8i32 = trunc <vscale x 8 x i32> undef to <vscale x 8 x i8>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 28 for instruction: %s8i8i64 = trunc <vscale x 8 x i64> undef to <vscale x 8 x i8>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %s8i16i32 = trunc <vscale x 8 x i32> undef to <vscale x 8 x i16>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 24 for instruction: %s8i16i64 = trunc <vscale x 8 x i64> undef to <vscale x 8 x i16>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %s8i32i64 = trunc <vscale x 8 x i64> undef to <vscale x 8 x i32>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %s8i8i16 = trunc <vscale x 8 x i16> undef to <vscale x 8 x i8>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 6 for instruction: %s8i8i32 = trunc <vscale x 8 x i32> undef to <vscale x 8 x i8>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 14 for instruction: %s8i8i64 = trunc <vscale x 8 x i64> undef to <vscale x 8 x i8>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %s8i16i32 = trunc <vscale x 8 x i32> undef to <vscale x 8 x i16>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %s8i16i64 = trunc <vscale x 8 x i64> undef to <vscale x 8 x i16>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %s8i32i64 = trunc <vscale x 8 x i64> undef to <vscale x 8 x i32>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %s8i1i8 = trunc <vscale x 8 x i8> undef to <vscale x 8 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %s8i1i16 = trunc <vscale x 8 x i16> undef to <vscale x 8 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %s8i1i32 = trunc <vscale x 8 x i32> undef to <vscale x 8 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %s8i1i64 = trunc <vscale x 8 x i64> undef to <vscale x 8 x i1>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %s16i8i16 = trunc <vscale x 16 x i16> undef to <vscale x 16 x i8>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 24 for instruction: %s16i8i32 = trunc <vscale x 16 x i32> undef to <vscale x 16 x i8>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 57 for instruction: %s16i8i64 = trunc <vscale x 16 x i64> undef to <vscale x 16 x i8>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %s16i16i32 = trunc <vscale x 16 x i32> undef to <vscale x 16 x i16>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 49 for instruction: %s16i16i64 = trunc <vscale x 16 x i64> undef to <vscale x 16 x i16>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 33 for instruction: %s16i32i64 = trunc <vscale x 16 x i64> undef to <vscale x 16 x i32>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %s16i8i16 = trunc <vscale x 16 x i16> undef to <vscale x 16 x i8>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %s16i8i32 = trunc <vscale x 16 x i32> undef to <vscale x 16 x i8>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 29 for instruction: %s16i8i64 = trunc <vscale x 16 x i64> undef to <vscale x 16 x i8>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %s16i16i32 = trunc <vscale x 16 x i32> undef to <vscale x 16 x i16>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 25 for instruction: %s16i16i64 = trunc <vscale x 16 x i64> undef to <vscale x 16 x i16>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 17 for instruction: %s16i32i64 = trunc <vscale x 16 x i64> undef to <vscale x 16 x i32>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %s16i1i8 = trunc <vscale x 16 x i8> undef to <vscale x 16 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %s16i1i16 = trunc <vscale x 16 x i16> undef to <vscale x 16 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %s16i1i32 = trunc <vscale x 16 x i32> undef to <vscale x 16 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 65 for instruction: %s16i1i64 = trunc <vscale x 16 x i64> undef to <vscale x 16 x i1>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %s32i8i16 = trunc <vscale x 32 x i16> undef to <vscale x 32 x i8>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 49 for instruction: %s32i8i32 = trunc <vscale x 32 x i32> undef to <vscale x 32 x i8>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 115 for instruction: %s32i8i64 = trunc <vscale x 32 x i64> undef to <vscale x 32 x i8>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 33 for instruction: %s32i16i32 = trunc <vscale x 32 x i32> undef to <vscale x 32 x i16>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 99 for instruction: %s32i16i64 = trunc <vscale x 32 x i64> undef to <vscale x 32 x i16>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 66 for instruction: %s32i32i64 = trunc <vscale x 32 x i64> undef to <vscale x 32 x i32>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %s32i8i16 = trunc <vscale x 32 x i16> undef to <vscale x 32 x i8>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 25 for instruction: %s32i8i32 = trunc <vscale x 32 x i32> undef to <vscale x 32 x i8>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 59 for instruction: %s32i8i64 = trunc <vscale x 32 x i64> undef to <vscale x 32 x i8>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 17 for instruction: %s32i16i32 = trunc <vscale x 32 x i32> undef to <vscale x 32 x i16>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 51 for instruction: %s32i16i64 = trunc <vscale x 32 x i64> undef to <vscale x 32 x i16>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 34 for instruction: %s32i32i64 = trunc <vscale x 32 x i64> undef to <vscale x 32 x i32>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %s32i1i8 = trunc <vscale x 32 x i8> undef to <vscale x 32 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 32 for instruction: %s32i1i16 = trunc <vscale x 32 x i16> undef to <vscale x 32 x i1>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 65 for instruction: %s32i1i32 = trunc <vscale x 32 x i32> undef to <vscale x 32 x i1>
@@ -220,8 +220,8 @@ define void @trunc() {
 define void @fpext() {
 ; RISCV64-LABEL: 'fpext'
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %1 = fpext <8 x half> undef to <8 x float>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %2 = fpext <8 x half> undef to <8 x double>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %3 = fpext <8 x float> undef to <8 x double>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %2 = fpext <8 x half> undef to <8 x double>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %3 = fpext <8 x float> undef to <8 x double>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
   fpext <8 x half>  undef to <8 x float>
@@ -233,8 +233,8 @@ define void @fpext() {
 define void @ftrunc() {
 ; RISCV64-LABEL: 'ftrunc'
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %1 = fptrunc <8 x float> undef to <8 x half>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 3 for instruction: %2 = fptrunc <8 x double> undef to <8 x half>
-; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %3 = fptrunc <8 x double> undef to <8 x float>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %2 = fptrunc <8 x double> undef to <8 x half>
+; RISCV64-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %3 = fptrunc <8 x double> undef to <8 x float>
 ; RISCV64-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
   fptrunc <8 x float> undef to <8 x half>

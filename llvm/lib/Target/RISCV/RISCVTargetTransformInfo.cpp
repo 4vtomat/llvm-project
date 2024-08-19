@@ -1647,35 +1647,6 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
                                                TTI::CastContextHint CCH,
                                                TTI::TargetCostKind CostKind,
                                                const Instruction *I) {
-#if SIFIVE_CUSTOMIZATION
-  std::pair<InstructionCost, MVT> SrcLT = getTypeLegalizationCost(Src);
-  std::pair<InstructionCost, MVT> DstLT = getTypeLegalizationCost(Dst);
-  if (SrcLT.second.isVector() && DstLT.second.isVector()) {
-    if (SrcLT.first > 1 || DstLT.first > 1)
-      return BaseT::getCastInstrCost(Opcode, Dst, Src, CCH, CostKind, I);
-    const unsigned SrcEltSize = SrcLT.second.getScalarSizeInBits();
-    const unsigned DstEltSize = DstLT.second.getScalarSizeInBits();
-    InstructionCost SrcLMULCost = 1;
-    InstructionCost DstLMULCost = 1;
-    InstructionCost PowDiffCost = 1;
-    if (CostKind == TTI::TCK_RecipThroughput) {
-      SrcLMULCost = TLI->getLMULCost(SrcLT.second);
-      DstLMULCost = TLI->getLMULCost(DstLT.second);
-      PowDiffCost = 0;
-      unsigned SrcSize = SrcEltSize;
-      if (SrcSize != 1 && DstEltSize != 1) {
-        for (; SrcSize != DstEltSize;) {
-          MVT SrcMVT =
-              SrcLT.second.changeVectorElementType(MVT::getIntegerVT(SrcSize));
-          PowDiffCost += TLI->getLMULCost(SrcMVT);
-          if (SrcSize < DstEltSize)
-            SrcSize = SrcSize << 1;
-          else
-            SrcSize = SrcSize >> 1;
-        }
-      }
-    }
-#else
   bool IsVectorType = isa<VectorType>(Dst) && isa<VectorType>(Src);
   if (!IsVectorType)
     return BaseT::getCastInstrCost(Opcode, Dst, Src, CCH, CostKind, I);
@@ -1686,7 +1657,6 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
   if (!ST->hasVInstructions() || Src->getScalarSizeInBits() > ST->getELen() ||
       Dst->getScalarSizeInBits() > ST->getELen())
     return BaseT::getCastInstrCost(Opcode, Dst, Src, CCH, CostKind, I);
-#endif // SIFIVE_CUSTOMIZATION
 
   std::pair<InstructionCost, MVT> SrcLT = getTypeLegalizationCost(Src);
   std::pair<InstructionCost, MVT> DstLT = getTypeLegalizationCost(Dst);
@@ -1706,20 +1676,12 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
   int ISD = TLI->InstructionOpcodeToISD(Opcode);
   assert(ISD && "Invalid opcode");
 
-#if !SIFIVE_CUSTOMIZATION
   int PowDiff = (int)Log2_32(Dst->getScalarSizeInBits()) -
                 (int)Log2_32(Src->getScalarSizeInBits());
-#endif // SIFIVE_CUSTOMIZATION
   switch (ISD) {
   case ISD::SIGN_EXTEND:
   case ISD::ZERO_EXTEND: {
     const unsigned SrcEltSize = Src->getScalarSizeInBits();
-#if SIFIVE_CUSTOMIZATION
-    if (SrcEltSize == 1)
-      return DstLT.first * 2 * DstLMULCost;
-
-    return SrcLT.first * 1 * SrcLMULCost;
-#else
     if (SrcEltSize == 1) {
       // We do not use vsext/vzext to extend from mask vector.
       // Instead we use the following instructions to extend from mask vector:
@@ -1735,13 +1697,8 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
     unsigned Op =
         (ISD == ISD::SIGN_EXTEND) ? SExtOp[PowDiff - 1] : ZExtOp[PowDiff - 1];
     return getRISCVInstructionCost(Op, DstLT.second, CostKind);
-#endif // SIFIVE_CUSTOMIZATION
   }
   case ISD::TRUNCATE:
-#if SIFIVE_CUSTOMIZATION
-    if (DstEltSize == 1)
-      return SrcLT.first * 2 * SrcLMULCost;
-#else
     if (Dst->getScalarSizeInBits() == 1) {
       // We do not use several vncvt to truncate to mask vector. So we could
       // not use PowDiff to calculate it.
@@ -1751,13 +1708,9 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
       return getRISCVInstructionCost({RISCV::VAND_VI, RISCV::VMSNE_VI},
                                      SrcLT.second, CostKind);
     }
-#endif // SIFIVE_CUSTOMIZATION
     [[fallthrough]];
   case ISD::FP_EXTEND:
   case ISD::FP_ROUND: {
-#if SIFIVE_CUSTOMIZATION
-      return SrcLT.first * PowDiffCost;
-#else
     // Counts of narrow/widen instructions.
     unsigned SrcEltSize = Src->getScalarSizeInBits();
     unsigned DstEltSize = Dst->getScalarSizeInBits();
@@ -1776,13 +1729,34 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
       Cost += getRISCVInstructionCost(Op, DstMVT, CostKind);
     }
     return Cost;
-#endif // SIFIVE_CUSTOMIZATION
   }
   case ISD::FP_TO_SINT:
   case ISD::FP_TO_UINT:
-#if SIFIVE_CUSTOMIZATION
   case ISD::SINT_TO_FP:
   case ISD::UINT_TO_FP:
+#if SIFIVE_CUSTOMIZATION
+      const unsigned SrcEltSize = SrcLT.second.getScalarSizeInBits();
+      const unsigned DstEltSize = DstLT.second.getScalarSizeInBits();
+      InstructionCost SrcLMULCost = 1;
+      InstructionCost DstLMULCost = 1;
+      InstructionCost PowDiffCost = 1;
+      if (CostKind == TTI::TCK_RecipThroughput) {
+        SrcLMULCost = TLI->getLMULCost(SrcLT.second);
+        DstLMULCost = TLI->getLMULCost(DstLT.second);
+        PowDiffCost = 0;
+        unsigned SrcSize = SrcEltSize;
+        if (SrcSize != 1 && DstEltSize != 1) {
+          for (; SrcSize != DstEltSize;) {
+            MVT SrcMVT =
+                SrcLT.second.changeVectorElementType(MVT::getIntegerVT(SrcSize));
+            PowDiffCost += TLI->getLMULCost(SrcMVT);
+            if (SrcSize < DstEltSize)
+              SrcSize = SrcSize << 1;
+            else
+              SrcSize = SrcSize >> 1;
+          }
+        }
+      }
       if (SrcEltSize == 1) {
         return DstLT.first * 3 * DstLMULCost;
       }
@@ -1808,7 +1782,6 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
         }
       }
       return SrcLT.first * PowDiffCost;
-  }
 #else
     // For fp vector to mask, we use:
     // vfncvt.rtz.x.f.w v9, v8
@@ -1837,7 +1810,6 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
     // Backend could lower (v[sz]ext i8 to double) to vfcvt(v[sz]ext.f8 i8),
     // so it only need two conversion.
     return 2;
-  }
 #endif // SIFIVE_CUSTOMIZATION
   }
   return BaseT::getCastInstrCost(Opcode, Dst, Src, CCH, CostKind, I);
