@@ -16,6 +16,7 @@
 #include "RISCV.h"
 #include "RISCVTargetMachine.h"
 #include "llvm/Analysis/ValueTracking.h"
+#include "llvm/ADT/Statistic.h"
 #include "llvm/CodeGen/TargetPassConfig.h"
 #include "llvm/CodeGen/TargetSubtargetInfo.h"
 #include "llvm/IR/IRBuilder.h"
@@ -28,6 +29,22 @@
 
 #define DEBUG_TYPE "riscv-late-codegenprepare"
 #define PASS_NAME "RISC-V Late CodeGenPrepare"
+
+STATISTIC(NumUnknownSizeMemmove,
+          "Number of unknown size memmove call expanded");
+STATISTIC(NumUnknownSizeAlignedMemmove,
+          "Number of unknown size aligned memmove call expanded");
+STATISTIC(NumKnownSizeMemmove, "Number of known size memmove call expanded");
+STATISTIC(NumUnknownSizeMemcpy,
+          "Number of unknown size memcpy call expanded");
+STATISTIC(NumUnknownSizeAlignedMemcpy,
+          "Number of unknown size aligned memcpy call expanded");
+STATISTIC(NumKnownSizeMemcpy, "Number of known size memcpy call expanded");
+STATISTIC(NumUnknownSizeMemset,
+          "Number of unknown size memset call expanded");
+STATISTIC(NumUnknownSizeAlignedMemset,
+          "Number of unknown size aligned memset call expanded");
+STATISTIC(NumKnownSizeMemset, "Number of known size memset call expanded");
 
 #define CREATE_BASIC_BLOCKS_WO_BACKWARD(NAME)                                  \
   BasicBlock *PreLoopBB = M->getParent();                                      \
@@ -414,6 +431,7 @@ bool RISCVLateCodeGenPrepare::visitICmp(ICmpInst &ICmp) {
 }
 
 void RISCVLateCodeGenPrepare::expandMemCpyUnknownSize(MemCpyInst *M) {
+  ++NumUnknownSizeMemcpy;
   CREATE_BASIC_BLOCKS_WO_BACKWARD("memcpy")
 
   Value *SrcAddr = M->getRawSource();
@@ -444,6 +462,7 @@ void RISCVLateCodeGenPrepare::expandMemCpyUnknownSize(MemCpyInst *M) {
 }
 
 void RISCVLateCodeGenPrepare::expandMemSetUnknownSize(MemSetInst *M) {
+  ++NumUnknownSizeMemset;
   CREATE_BASIC_BLOCKS_WO_BACKWARD("memset")
 
   Value *Val = M->getValue();
@@ -458,6 +477,7 @@ void RISCVLateCodeGenPrepare::expandMemSetUnknownSize(MemSetInst *M) {
 }
 
 void RISCVLateCodeGenPrepare::expandMemmoveUnknownSize(MemMoveInst *M) {
+  ++NumUnknownSizeMemmove;
   CREATE_BASIC_BLOCKS("memmove")
 
   Value *SrcAddr = M->getRawSource();
@@ -507,6 +527,7 @@ void RISCVLateCodeGenPrepare::expandMemmoveUnknownSize(MemMoveInst *M) {
 // iteration. Thus the precalculation of the elements that are not aligned to
 // DLEN is beneficial in some cases.
 void RISCVLateCodeGenPrepare::expandMemmoveUnknownSizeAligned(MemMoveInst *M) {
+  ++NumUnknownSizeAlignedMemmove;
   CREATE_BASIC_BLOCKS("memmove")
 
   Value *SrcAddr = M->getRawSource();
@@ -644,6 +665,7 @@ void RISCVLateCodeGenPrepare::expandMemmoveUnknownSizeAligned(MemMoveInst *M) {
 }
 
 void RISCVLateCodeGenPrepare::expandMemmoveKnownSize(MemMoveInst *M) {
+  ++NumKnownSizeMemmove;
   CREATE_BASIC_BLOCKS_WO_BACKWARD("memmove")
 
   Value *SrcAddr = M->getRawSource();
@@ -871,6 +893,7 @@ void RISCVLateCodeGenPrepare::createMemcpyLoopBody(
 }
 
 void RISCVLateCodeGenPrepare::expandMemCpyKnownSize(MemCpyInst *M) {
+  ++NumKnownSizeMemcpy;
   CREATE_BASIC_BLOCKS_WO_BACKWARD("memcpy")
 
   Value *SrcAddr = M->getRawSource();
@@ -906,6 +929,7 @@ void RISCVLateCodeGenPrepare::expandMemCpyKnownSize(MemCpyInst *M) {
 }
 
 void RISCVLateCodeGenPrepare::expandMemSetKnownSize(MemSetInst *M) {
+  ++NumKnownSizeMemset;
   CREATE_BASIC_BLOCKS_WO_BACKWARD("memset")
 
   Value *Val = M->getValue();
@@ -924,6 +948,7 @@ void RISCVLateCodeGenPrepare::expandMemSetKnownSize(MemSetInst *M) {
 }
 
 void RISCVLateCodeGenPrepare::expandMemCpyUnknownSizewithAlign(MemCpyInst *M) {
+  ++NumUnknownSizeAlignedMemcpy;
   CREATE_BASIC_BLOCKS_WO_BACKWARD("memcpy")
 
   Value *SrcAddr = M->getRawSource();
@@ -998,6 +1023,7 @@ void RISCVLateCodeGenPrepare::expandMemCpyUnknownSizewithAlign(MemCpyInst *M) {
 }
 
 void RISCVLateCodeGenPrepare::expandMemSetUnknownSizeAligned(MemSetInst *M) {
+  ++NumUnknownSizeAlignedMemset;
   CREATE_BASIC_BLOCKS_WO_BACKWARD("memset")
 
   Value *Val = M->getValue();
