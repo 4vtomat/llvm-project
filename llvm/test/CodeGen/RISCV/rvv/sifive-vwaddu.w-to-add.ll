@@ -37,3 +37,34 @@ entry:
   %v2 = call <vscale x 1 x i32> @llvm.vp.add.nxv1i32(<vscale x 1 x i32> %v1, <vscale x 1 x i32> %bext, <vscale x 1 x i1> %onesmask, i32 %evl)
   ret <vscale x 1 x i32> %v2
 }
+
+define <vscale x 1 x i32> @add_splat_commuted(<vscale x 1 x i16> %a, <vscale x 1 x i16> %b, i32 %evl)
+; RV32-LABEL: add_splat_commuted:
+; RV32:       # %bb.0: # %entry
+; RV32-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
+; RV32-NEXT:    vwaddu.vv v10, v9, v8
+; RV32-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
+; RV32-NEXT:    vadd.vi v8, v10, 1
+; RV32-NEXT:    ret
+;
+; RV64-LABEL: add_splat_commuted:
+; RV64:       # %bb.0: # %entry
+; RV64-NEXT:    slli a0, a0, 32
+; RV64-NEXT:    srli a0, a0, 32
+; RV64-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
+; RV64-NEXT:    vwaddu.vv v10, v9, v8
+; RV64-NEXT:    vsetvli zero, zero, e32, mf2, ta, ma
+; RV64-NEXT:    vadd.vi v8, v10, 1
+; RV64-NEXT:    ret
+  nounwind {
+entry:
+  %splat = insertelement <vscale x 1 x i1> poison, i1 -1, i32 0
+  %onesmask = shufflevector <vscale x 1 x i1> %splat, <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer
+  %one = insertelement <vscale x 1 x i32> poison, i32 1, i32 0
+  %splatones = shufflevector <vscale x 1 x i32> %one, <vscale x 1 x i32> poison, <vscale x 1 x i32> zeroinitializer
+  %aext = call <vscale x 1 x i32> @llvm.vp.zext.nxv1i32.nxv1i16(<vscale x 1 x i16> %a, <vscale x 1 x i1> %onesmask, i32 %evl)
+  %v1 = call <vscale x 1 x i32> @llvm.vp.add.nxv1i32(<vscale x 1 x i32> %aext, <vscale x 1 x i32> %splatones, <vscale x 1 x i1> %onesmask, i32 %evl)
+  %bext = call <vscale x 1 x i32> @llvm.vp.zext.nxv1i32.nxv1i16(<vscale x 1 x i16> %b, <vscale x 1 x i1> %onesmask, i32 %evl)
+  %v2 = call <vscale x 1 x i32> @llvm.vp.add.nxv1i32(<vscale x 1 x i32> %v1, <vscale x 1 x i32> %bext, <vscale x 1 x i1> %onesmask, i32 %evl)
+  ret <vscale x 1 x i32> %v2
+}
