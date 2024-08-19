@@ -5613,6 +5613,8 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
   std::tie(SmallestTypeSize, WidestTypeSize) = CM.getSmallestAndWidestTypes();
   const bool UseVPlanCostModel =
       SiFiveLoopVectorizerUseVPlanBasedCostModel && Legal->useVLAVectorizer();
+  Type *WidestType = Legal->getWidestInductionType();
+  VPTypeAnalysis TypeInfo(WidestType, WidestType->getContext());
 #endif
 
   for (auto &P : VPlans) {
@@ -5632,7 +5634,7 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
       // than scalar loop.
       InstructionCost C;
       if (UseVPlanCostModel) {
-        VPlanCostModel VPCM(getBestPlanFor(VF), *Legal, TTI, *TLI);
+        VPlanCostModel VPCM(getBestPlanFor(VF), *Legal, TTI, *TLI, TypeInfo);
         C = VPCM.getCost(
             RVVPair::get(CM.WidestType, VF, PSE.getSE()->getDataLayout()));
       } else {
@@ -8830,6 +8832,8 @@ ElementCount LoopVectorizationPlanner::getBestVF() {
   std::tie(SmallestTypeSize, WidestTypeSize) = CM.getSmallestAndWidestTypes();
   const bool UseVPlanCostModel =
       SiFiveLoopVectorizerUseVPlanBasedCostModel && Legal->useVLAVectorizer();
+  Type *WidestType = Legal->getWidestInductionType();
+  VPTypeAnalysis TypeInfo(WidestType, WidestType->getContext());
 #endif
   for (auto &P : VPlans) {
     for (ElementCount VF : P->vectorFactors()) {
@@ -8854,7 +8858,7 @@ ElementCount LoopVectorizationPlanner::getBestVF() {
       // than scalar loop.
       InstructionCost Cost;
       if (UseVPlanCostModel) {
-        VPlanCostModel VPCM(getBestPlanFor(VF), *Legal, TTI, *TLI);
+        VPlanCostModel VPCM(getBestPlanFor(VF), *Legal, TTI, *TLI, TypeInfo);
         Cost = VPCM.getCost(
             RVVPair::get(CM.WidestType, VF, PSE.getSE()->getDataLayout()));
       } else {

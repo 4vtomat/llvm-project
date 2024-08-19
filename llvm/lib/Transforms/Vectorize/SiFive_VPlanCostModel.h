@@ -135,8 +135,9 @@ class VPlanCostModel {
 public:
   explicit VPlanCostModel(const VPlan &Plan, LoopVectorizationLegality &Legal,
                           const TargetTransformInfo &TTI,
-                          const TargetLibraryInfo &TLI)
-      : Plan(Plan), Legal(Legal), TTI(TTI), TLI(TLI) {}
+                          const TargetLibraryInfo &TLI,
+                          VPTypeAnalysis &TypeInfo)
+      : Plan(Plan), Legal(Legal), TTI(TTI), TLI(TLI), TypeInfo(TypeInfo) {}
 
   /// Return cost of the VPlan for a given \p RVL
   InstructionCost getCost(const RVVPair &RVL);
@@ -217,6 +218,8 @@ private:
 
   /// Target Library Info.
   const TargetLibraryInfo &TLI;
+
+  VPTypeAnalysis &TypeInfo;
 
   /// Use same cost kind in the cost model
   const TargetTransformInfo::TargetCostKind CostKind = TTI::TCK_RecipThroughput;

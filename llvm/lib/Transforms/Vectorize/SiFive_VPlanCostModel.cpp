@@ -743,6 +743,16 @@ InstructionCost VPlanCostModel::getInstructionCost(const VPInstruction *VPI,
                               cast<VectorType>(VectorTy), std::nullopt,
                               CostKind, /*Index*/ -1);
   }
+  case VPInstruction::Not: {
+    Type *ResultTy = TypeInfo.inferScalarType(VPI);
+    auto *VectorTy = getVectorType(ResultTy, RVL);
+    return TTI.getArithmeticInstrCost(Instruction::Xor, VectorTy, CostKind);
+  }
+  case VPInstruction::LogicalAnd: {
+    Type *ResultTy = TypeInfo.inferScalarType(VPI);
+    auto *VectorTy = getVectorType(ResultTy, RVL);
+    return TTI.getArithmeticInstrCost(Instruction::And, VectorTy, CostKind);
+  }
   case VPInstruction::BranchOnCount:
     return 0;
   default:
