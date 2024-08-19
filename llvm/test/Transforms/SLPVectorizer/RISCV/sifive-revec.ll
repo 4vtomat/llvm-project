@@ -31,3 +31,40 @@ entry:
   store <4 x float> %fmul1, ptr %getelementptr2, align 16
   ret void
 }
+
+define void @test2(ptr %s, i8 %0) {
+; CHECK-LABEL: @test2(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[TMP1:%.*]] = load i8, ptr null, align 1
+; CHECK-NEXT:    [[TMP2:%.*]] = insertelement <2 x i8> poison, i8 [[TMP1]], i32 0
+; CHECK-NEXT:    [[TMP3:%.*]] = shufflevector <2 x i8> [[TMP2]], <2 x i8> poison, <2 x i32> zeroinitializer
+; CHECK-NEXT:    [[ARRAYIDX11_I_2:%.*]] = getelementptr i8, ptr [[S:%.*]], i64 3
+; CHECK-NEXT:    [[TMP4:%.*]] = call <4 x i8> @llvm.experimental.vp.strided.load.v4i8.p0.i64(ptr align 1 [[ARRAYIDX11_I_2]], i64 -2, <4 x i1> <i1 true, i1 true, i1 true, i1 true>, i32 2)
+; CHECK-NEXT:    [[TMP5:%.*]] = shufflevector <4 x i8> [[TMP4]], <4 x i8> poison, <8 x i32> <i32 0, i32 1, i32 0, i32 1, i32 2, i32 3, i32 2, i32 3>
+; CHECK-NEXT:    [[TMP6:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 null, i64 4, <2 x i1> <i1 true, i1 true>, i32 2)
+; CHECK-NEXT:    [[TMP7:%.*]] = extractelement <2 x i8> [[TMP6]], i32 0
+; CHECK-NEXT:    [[TMP8:%.*]] = insertelement <2 x i8> [[TMP6]], i8 [[TMP0:%.*]], i32 1
+; CHECK-NEXT:    [[TMP9:%.*]] = call <8 x i8> @llvm.vector.insert.v8i8.v2i8(<8 x i8> poison, <2 x i8> zeroinitializer, i64 0)
+; CHECK-NEXT:    [[TMP10:%.*]] = call <8 x i8> @llvm.vector.insert.v8i8.v2i8(<8 x i8> [[TMP9]], <2 x i8> [[TMP6]], i64 2)
+; CHECK-NEXT:    [[TMP11:%.*]] = call <8 x i8> @llvm.vector.insert.v8i8.v2i8(<8 x i8> [[TMP10]], <2 x i8> [[TMP8]], i64 4)
+; CHECK-NEXT:    [[TMP12:%.*]] = call <8 x i8> @llvm.vector.insert.v8i8.v2i8(<8 x i8> [[TMP11]], <2 x i8> [[TMP3]], i64 6)
+; CHECK-NEXT:    [[TMP13:%.*]] = icmp eq <8 x i8> [[TMP12]], [[TMP5]]
+; CHECK-NEXT:    ret void
+;
+entry:
+  %arrayidx11.i = getelementptr i8, ptr %s, i64 1
+  %1 = load i8, ptr null, align 1
+  %2 = load <2 x i8>, ptr %arrayidx11.i, align 1
+  %3 = insertelement <2 x i8> poison, i8 %1, i32 0
+  %4 = shufflevector <2 x i8> %3, <2 x i8> poison, <2 x i32> zeroinitializer
+  %5 = icmp eq <2 x i8> %4, %2
+  %arrayidx11.i.2 = getelementptr i8, ptr %s, i64 3
+  %6 = load <2 x i8>, ptr %arrayidx11.i.2, align 1
+  %7 = icmp eq <2 x i8> zeroinitializer, %6
+  %8 = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 null, i64 4, <2 x i1> <i1 true, i1 true>, i32 2)
+  %9 = extractelement <2 x i8> %8, i32 0
+  %10 = insertelement <2 x i8> %8, i8 %0, i32 1
+  %11 = icmp eq <2 x i8> %10, %2
+  %12 = icmp eq <2 x i8> %8, %6
+  ret void
+}
