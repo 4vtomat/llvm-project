@@ -1470,10 +1470,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   VP_INTRINSIC(vp_uitofp, 1)                                                   \
   VP_INTRINSIC(vp_zext, 1)                                                     \
   VP_INTRINSIC(vp_fabs, 1)                                                     \
-  VP_INTRINSIC(vp_smax, 1)                                                     \
-  VP_INTRINSIC(vp_smin, 1)                                                     \
-  VP_INTRINSIC(vp_umax, 1)                                                     \
-  VP_INTRINSIC(vp_umin, 1)                                                     \
   VP_INTRINSIC(vp_sqrt, 1)                                                     \
   VP_INTRINSIC(vp_copysign, 1)                                                 \
   VP_INTRINSIC(vp_minnum, 1)                                                   \
@@ -1540,6 +1536,14 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
     break;
   }
 #if SIFIVE_CUSTOMIZATION
+  case Intrinsic::vp_smax:
+  case Intrinsic::vp_smin:
+  case Intrinsic::vp_umax:
+  case Intrinsic::vp_umin: {
+    auto LT = getTypeLegalizationCost(RetTy);
+    return LT.first *
+           getRISCVInstructionCost(RISCV::VMAXU_VV, LT.second, CostKind);
+  }
   case Intrinsic::vp_powi: {
     // Returning the same cost model for llvm.powi
     return BaseT::getIntrinsicInstrCost(
