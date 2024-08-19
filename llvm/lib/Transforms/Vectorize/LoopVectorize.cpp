@@ -6908,21 +6908,8 @@ InstructionCost LoopVectorizationCostModel::expectedCost(ElementCount VF) {
     // the predicated block, if it is an if-else block. Thus, scale the block's
     // cost by the probability of executing it. blockNeedsPredication from
     // Legal is used so as to not include all blocks in tail folded loops.
-#if SIFIVE_CUSTOMIZATION
-    if (VF.isScalar() && Legal->blockNeedsPredication(BB) &&
-        !Legal->useVLAVectorizer()) {
-      auto Scale = getReciprocalPredBlockProb();
-      // LLVM_DEBUG(dbgs() << "LV: Dividing cost of " << BlockCost << " by "
-      //                   << Scale << " due to branch probability\n");
-      BlockCost /= Scale;
-    }
-
-    // LLVM_DEBUG(dbgs() << "LV: Adding cost of " << BlockCost << " for VF "
-    //                   << VF << " in block " << BB->getName() << "\n");
-#else
     if (VF.isScalar() && Legal->blockNeedsPredication(BB))
       BlockCost /= getReciprocalPredBlockProb();
-#endif // SIFIVE_CUSTOMIZATION
 
     Cost += BlockCost;
   }
