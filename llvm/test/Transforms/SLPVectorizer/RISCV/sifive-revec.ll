@@ -35,12 +35,12 @@ entry:
 define void @test2(ptr %s, i8 %0) {
 ; CHECK-LABEL: @test2(
 ; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[ARRAYIDX11_I:%.*]] = getelementptr i8, ptr [[S:%.*]], i64 1
 ; CHECK-NEXT:    [[TMP1:%.*]] = load i8, ptr null, align 1
 ; CHECK-NEXT:    [[TMP2:%.*]] = insertelement <2 x i8> poison, i8 [[TMP1]], i32 0
 ; CHECK-NEXT:    [[TMP3:%.*]] = shufflevector <2 x i8> [[TMP2]], <2 x i8> poison, <2 x i32> zeroinitializer
-; CHECK-NEXT:    [[ARRAYIDX11_I_2:%.*]] = getelementptr i8, ptr [[S:%.*]], i64 3
-; CHECK-NEXT:    [[TMP4:%.*]] = call <4 x i8> @llvm.experimental.vp.strided.load.v4i8.p0.i64(ptr align 1 [[ARRAYIDX11_I_2]], i64 -2, <4 x i1> <i1 true, i1 true, i1 true, i1 true>, i32 2)
-; CHECK-NEXT:    [[TMP5:%.*]] = shufflevector <4 x i8> [[TMP4]], <4 x i8> poison, <8 x i32> <i32 0, i32 1, i32 0, i32 1, i32 2, i32 3, i32 2, i32 3>
+; CHECK-NEXT:    [[TMP4:%.*]] = load <4 x i8>, ptr [[ARRAYIDX11_I]], align 1
+; CHECK-NEXT:    [[TMP5:%.*]] = shufflevector <4 x i8> [[TMP4]], <4 x i8> poison, <8 x i32> <i32 2, i32 3, i32 2, i32 3, i32 0, i32 1, i32 0, i32 1>
 ; CHECK-NEXT:    [[TMP6:%.*]] = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr align 1 null, i64 4, <2 x i1> <i1 true, i1 true>, i32 2)
 ; CHECK-NEXT:    [[TMP7:%.*]] = extractelement <2 x i8> [[TMP6]], i32 0
 ; CHECK-NEXT:    [[TMP8:%.*]] = insertelement <2 x i8> [[TMP6]], i8 [[TMP0:%.*]], i32 1

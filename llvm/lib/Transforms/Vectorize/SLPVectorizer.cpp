@@ -8409,6 +8409,10 @@ void BoUpSLP::transformNodes() {
       if (E.State != TreeEntry::Vectorize)
         break;
       Type *ScalarTy = E.getMainOp()->getType();
+#if SIFIVE_CUSTOMIZATION
+      if (isa<FixedVectorType>(ScalarTy))
+        break;
+#endif // SIFIVE_CUSTOMIZATION
       auto *VecTy = getWidenedType(ScalarTy, E.Scalars.size());
       Align CommonAlignment = computeCommonAlignment<LoadInst>(E.Scalars);
       // Check if profitable to represent consecutive load + reverse as strided
