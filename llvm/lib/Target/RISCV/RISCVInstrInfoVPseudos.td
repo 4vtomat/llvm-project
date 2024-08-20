@@ -3845,19 +3845,10 @@ multiclass VPseudoVNCVTF_RM_W {
   defvar constraint = "@earlyclobber $rd";
   foreach m = MxListFW in {
     foreach e = SchedSEWSet<m.MX, isF=1, isWidening=1>.val in
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-    defm _W : VPseudoConversionRM<m.vrclass, m.wvrclass, m, constraint, sew=e,
-                                  TargetConstraintType=2>,
-#endif // SIFIVE_CUSTOMIZATION
-              SchedUnary<"WriteVFNCvtIToFV", "ReadVFNCvtIToFV", m.MX, e,
-                         forcePassthruRead=true>;
-=======
       defm _W : VPseudoConversionRM<m.vrclass, m.wvrclass, m, constraint, sew=e,
                                     TargetConstraintType=2>,
                 SchedUnary<"WriteVFNCvtIToFV", "ReadVFNCvtIToFV", m.MX, e,
                            forcePassthruRead=true>;
->>>>>>> ddda37a
   }
 }
 
@@ -7819,7 +7810,6 @@ foreach vti = AllFloatVectors in {
                                  vti.RegClass, vti.ScalarRegClass>;
 }
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 foreach vti = AllBFloatVectors in {
   let Predicates = GetVTypePredicates<vti>.Predicates in
@@ -7831,7 +7821,6 @@ foreach vti = AllBFloatVectors in {
                                  vti.RegClass, vti.ScalarRegClass>;
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
 foreach vti = AllBFloatVectors in
   let Predicates = [HasVInstructionsBF16Minimal] in
     defm : VPatBinaryCarryInTAIL<"int_riscv_vmerge", "PseudoVMERGE", "VVM",
@@ -7839,7 +7828,6 @@ foreach vti = AllBFloatVectors in
                                  vti.Vector, vti.Vector, vti.Mask,
                                  vti.Log2SEW, vti.LMul, vti.RegClass,
                                  vti.RegClass, vti.RegClass>;
->>>>>>> ddda37a
 
 foreach fvti = AllFloatVectors in {
   defvar instr = !cast<Instruction>("PseudoVMERGE_VIM_"#fvti.LMul.MX);
