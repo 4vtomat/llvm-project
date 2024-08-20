@@ -734,15 +734,11 @@ bool InterleavedAccessImpl::runOnFunction(Function &F) {
       if (II->getIntrinsicID() == Intrinsic::vector_deinterleave2)
 #endif // SIFIVE_CUSTOMIZATION
         Changed |= lowerDeinterleaveIntrinsic(II, DeadInsts);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-      if (getFactorFromVectorInterleaveIntrinsic(II) != 0)
+      else if (getFactorFromVectorInterleaveIntrinsic(II) != 0)
 #else
-      if (II->getIntrinsicID() == Intrinsic::vector_interleave2)
-#endif // SIFIVE_CUSTOMIZATION
-=======
       else if (II->getIntrinsicID() == Intrinsic::vector_interleave2)
->>>>>>> ddda37a
+#endif // SIFIVE_CUSTOMIZATION
         Changed |= lowerInterleaveIntrinsic(II, DeadInsts);
     }
   }
