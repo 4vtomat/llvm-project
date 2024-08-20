@@ -234,7 +234,8 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
       {"xsfvfexpa", RVV_REQ_Xsfvfexpa},
       {"xsfvfexpa64e", RVV_REQ_Xsfvfexpa64e},
       {"xsfvfhbfmin", RVV_REQ_Xsfvfhbfmin},
-      {"xsfvqdotq", RVV_REQ_Xsfvqdotq}};
+      {"xsfvqdotq", RVV_REQ_Xsfvqdotq},
+      {"", RVV_REQ_Zvfbfmin_Xsfvfbfa}};
 #else
       {"experimental", RVV_REQ_Experimental}};
 #endif // SIFIVE_CUSTOMIZATION
@@ -251,6 +252,11 @@ void RISCVIntrinsicManagerImpl::ConstructRVVIntrinsics(
 
     // Check requirements.
     if (llvm::any_of(FeatureCheckList, [&](const auto &Item) {
+#if SIFIVE_CUSTOMIZATION
+          if (Item.second == RVV_REQ_Zvfbfmin_Xsfvfbfa)
+            return (Record.RequiredExtensions & Item.second) == Item.second &&
+                   (!TI.hasFeature("zvfbfmin") && !TI.hasFeature("xsfvfbfa"));
+#endif // SIFIVE_CUSTOMIZATION
           return (Record.RequiredExtensions & Item.second) == Item.second &&
                  !TI.hasFeature(Item.first);
         }))

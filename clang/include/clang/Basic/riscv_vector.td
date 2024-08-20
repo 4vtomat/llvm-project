@@ -150,7 +150,9 @@ multiclass RVVIndexedLoad<string op> {
         defvar eew_type = eew_list[1];
         let Name = op # eew # "_v", IRName = op, MaskedIRName = op # "_mask",
             RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin"],
-                                   !if(!eq(type, "y"), ["Zvfbfmin"],
+#ifdef SIFIVE_CUSTOMIZATION
+                                   !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa"],
+#endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)) in {
           def: RVVOutOp1Builtin<"v", "vPCe" # eew_type # "Uv", type>;
             if !not(IsFloat<type>.val) then {
@@ -162,7 +164,9 @@ multiclass RVVIndexedLoad<string op> {
       defvar eew64_type = "(Log2EEW:6)";
       let Name = op # eew64 # "_v", IRName = op, MaskedIRName = op # "_mask",
           RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin", "RV64"],
-                                 !if(!eq(type, "y"), ["Zvfbfmin", "RV64"],
+#ifdef SIFIVE_CUSTOMIZATION
+                                 !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa", "RV64"],
+#endif // SIFIVE_CUSTOMIZATION
                                                  ["RV64"])) in {
           def: RVVOutOp1Builtin<"v", "vPCe" # eew64_type # "Uv", type>;
             if !not(IsFloat<type>.val) then {
@@ -293,7 +297,9 @@ multiclass RVVIndexedStore<string op> {
           defvar eew_type = eew_list[1];
           let Name = op # eew  # "_v", IRName = op, MaskedIRName = op # "_mask",
           RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin"],
-                                 !if(!eq(type, "y"), ["Zvfbfmin"],
+#ifdef SIFIVE_CUSTOMIZATION
+                                 !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa"],
+#endif // SIFIVE_CUSTOMIZATION
                                                  []<string>)) in  {
             def : RVVBuiltin<"v", "0Pe" # eew_type # "Uvv", type>;
             if !not(IsFloat<type>.val) then {
@@ -305,7 +311,9 @@ multiclass RVVIndexedStore<string op> {
         defvar eew64_type = "(Log2EEW:6)";
         let Name = op # eew64  # "_v", IRName = op, MaskedIRName = op # "_mask",
             RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin", "RV64"],
-                                   !if(!eq(type, "y"), ["Zvfbfmin", "RV64"],
+#ifdef SIFIVE_CUSTOMIZATION
+                                   !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa", "RV64"],
+#endif // SIFIVE_CUSTOMIZATION
                                                    ["RV64"])) in  {
           def : RVVBuiltin<"v", "0Pe" # eew64_type # "Uvv", type>;
           if !not(IsFloat<type>.val) then {
@@ -430,7 +438,9 @@ multiclass RVVNonTupleVCreateBuiltin<int dst_lmul, list<int> src_lmul_list> {
     def vcreate # src_v # dst_v : RVVBuiltin<src_v # dst_v,
                                              dst_v # src_s,
                                              "csilxfd">;
-    let RequiredFeatures = ["Zvfbfmin"] in
+#ifdef SIFIVE_CUSTOMIZATION
+    let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+#endif // SIFIVE_CUSTOMIZATION
       def vcreate_bf16 # src_v # dst_v : RVVBuiltin<src_v # dst_v,
                                                     dst_v # src_s,
                                                     "y", dst_v>;
@@ -809,7 +819,9 @@ defm vle8: RVVVLEBuiltin<["c"]>;
 defm vle16: RVVVLEBuiltin<["s"]>;
 let Name = "vle16_v", RequiredFeatures = ["Zvfhmin"] in
   defm vle16_h: RVVVLEBuiltin<["x"]>;
-let Name = "vle16_v", RequiredFeatures = ["Zvfbfmin"] in
+#ifdef SIFIVE_CUSTOMIZATION
+let Name = "vle16_v", RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+#endif // SIFIVE_CUSTOMIZATION
   defm vle16_bf16 : RVVVLEBuiltin<["y"]>;
 defm vle32: RVVVLEBuiltin<["i","f"]>;
 defm vle64: RVVVLEBuiltin<["l","d"]>;
@@ -819,7 +831,9 @@ defm vse8 : RVVVSEBuiltin<["c"]>;
 defm vse16: RVVVSEBuiltin<["s"]>;
 let Name = "vse16_v", RequiredFeatures = ["Zvfhmin"] in
   defm vse16_h: RVVVSEBuiltin<["x"]>;
-let Name = "vse16_v", RequiredFeatures = ["Zvfbfmin"] in
+#ifdef SIFIVE_CUSTOMIZATION
+let Name = "vse16_v", RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+#endif // SIFIVE_CUSTOMIZATION
   defm vse16_bf16: RVVVSEBuiltin<["y"]>;
 defm vse32: RVVVSEBuiltin<["i","f"]>;
 defm vse64: RVVVSEBuiltin<["l","d"]>;
@@ -829,7 +843,9 @@ defm vlse8: RVVVLSEBuiltin<["c"]>;
 defm vlse16: RVVVLSEBuiltin<["s"]>;
 let Name = "vlse16_v", RequiredFeatures = ["Zvfhmin"] in
   defm vlse16_h: RVVVLSEBuiltin<["x"]>;
-let Name = "vlse16_v", RequiredFeatures = ["Zvfbfmin"] in
+#ifdef SIFIVE_CUSTOMIZATION
+let Name = "vlse16_v", RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+#endif // SIFIVE_CUSTOMIZATION
   defm vlse16_bf16: RVVVLSEBuiltin<["y"]>;
 defm vlse32: RVVVLSEBuiltin<["i","f"]>;
 defm vlse64: RVVVLSEBuiltin<["l","d"]>;
@@ -838,7 +854,9 @@ defm vsse8 : RVVVSSEBuiltin<["c"]>;
 defm vsse16: RVVVSSEBuiltin<["s"]>;
 let Name = "vsse16_v", RequiredFeatures = ["Zvfhmin"] in
   defm vsse16_h: RVVVSSEBuiltin<["x"]>;
-let Name = "vsse16_v", RequiredFeatures = ["Zvfbfmin"] in
+#ifdef SIFIVE_CUSTOMIZATION
+let Name = "vsse16_v", RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+#endif // SIFIVE_CUSTOMIZATION
   defm vsse16_bf: RVVVSSEBuiltin<["y"]>;
 defm vsse32: RVVVSSEBuiltin<["i","f"]>;
 defm vsse64: RVVVSSEBuiltin<["l","d"]>;
@@ -855,7 +873,9 @@ defm vle8ff: RVVVLEFFBuiltin<["c"]>;
 defm vle16ff: RVVVLEFFBuiltin<["s"]>;
 let Name = "vle16ff_v", RequiredFeatures = ["Zvfhmin"] in
   defm vle16ff: RVVVLEFFBuiltin<["x"]>;
-let Name = "vle16ff_v", RequiredFeatures = ["Zvfbfmin"] in
+#ifdef SIFIVE_CUSTOMIZATION
+let Name = "vle16ff_v", RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+#endif // SIFIVE_CUSTOMIZATION
   defm vle16ff: RVVVLEFFBuiltin<["y"]>;
 defm vle32ff: RVVVLEFFBuiltin<["i", "f"]>;
 defm vle64ff: RVVVLEFFBuiltin<["l", "d"]>;
@@ -876,7 +896,9 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
             MaskedIRName = op # nf # "_mask",
             NF = nf,
             RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin"],
-                                   !if(!eq(type, "y"), ["Zvfbfmin"],
+#ifdef SIFIVE_CUSTOMIZATION
+                                   !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa"],
+#endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)),
             ManualCodegen = [{
     {
@@ -1018,7 +1040,9 @@ multiclass RVVUnitStridedSegStoreTuple<string op> {
           NF = nf,
           HasMaskedOffOperand = false,
           RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin"],
-                                 !if(!eq(type, "y"), ["Zvfbfmin"],
+#ifdef SIFIVE_CUSTOMIZATION
+                                 !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa"],
+#endif // SIFIVE_CUSTOMIZATION
                                                  []<string>)),
           ManualCodegen = [{
     {
@@ -1128,7 +1152,9 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
             MaskedIRName = op # nf # "ff_mask",
             NF = nf,
             RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin"],
-                                   !if(!eq(type, "y"), ["Zvfbfmin"],
+#ifdef SIFIVE_CUSTOMIZATION
+                                   !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa"],
+#endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)),
             ManualCodegen = [{
     {
@@ -1286,7 +1312,9 @@ multiclass RVVStridedSegLoadTuple<string op> {
             MaskedIRName = op # nf # "_mask",
             NF = nf,
             RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin"],
-                                   !if(!eq(type, "y"), ["Zvfbfmin"],
+#ifdef SIFIVE_CUSTOMIZATION
+                                   !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa"],
+#endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)),
             ManualCodegen = [{
     {
@@ -1432,7 +1460,9 @@ multiclass RVVStridedSegStoreTuple<string op> {
             HasMaskedOffOperand = false,
             MaskedPolicyScheme = NonePolicy,
             RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin"],
-                                   !if(!eq(type, "y"), ["Zvfbfmin"],
+#ifdef SIFIVE_CUSTOMIZATION
+                                   !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa"],
+#endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)),
             ManualCodegen = [{
     {
@@ -1537,7 +1567,9 @@ multiclass RVVIndexedSegLoadTuple<string op> {
             MaskedIRName = op # nf # "_mask",
             NF = nf,
             RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin"],
-                                   !if(!eq(type, "y"), ["Zvfbfmin"],
+#ifdef SIFIVE_CUSTOMIZATION
+                                   !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa"],
+#endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)),
             ManualCodegen = [{
     {
@@ -1681,7 +1713,9 @@ multiclass RVVIndexedSegStoreTuple<string op> {
             HasMaskedOffOperand = false,
             MaskedPolicyScheme = NonePolicy,
             RequiredFeatures = !if(!eq(type, "x"), ["Zvfhmin"],
-                                   !if(!eq(type, "y"), ["Zvfbfmin"],
+#ifdef SIFIVE_CUSTOMIZATION
+                                   !if(!eq(type, "y"), ["Zvfbfmin_Xsfvfbfa"],
+#endif // SIFIVE_CUSTOMIZATION
                                                    []<string>)),
             ManualCodegen = [{
     {
@@ -3327,7 +3361,9 @@ let HasMasked = false, HasVL = false, IRName = "" in {
       def vreinterpret_h_i : RVVBuiltin<"vFv", "Fvv", "s", "Fv">;
       def vreinterpret_h_u : RVVBuiltin<"UvFv", "FvUv", "s", "Fv">;
     }
-    let RequiredFeatures = ["Zvfbfmin"] in {
+#ifdef SIFIVE_CUSTOMIZATION
+    let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in {
+#endif // SIFIVE_CUSTOMIZATION
       def vreinterpret_i_bf16 : RVVBuiltin<"vIv", "Ivv", "y", "Iv">;
       def vreinterpret_u_bf16 : RVVBuiltin<"vUv", "Uvv", "y", "Uv">;
       def vreinterpret_bf16_i : RVVBuiltin<"Ivv", "vIv", "y", "v">;
@@ -3397,7 +3433,9 @@ let HasMasked = false, HasVL = false, IRName = "" in {
         return llvm::PoisonValue::get(ResultType);
       }] in {
     def vundefined : RVVBuiltin<"v", "v", "csilxfd">;
-    let RequiredFeatures = ["Zvfbfmin"] in
+#ifdef SIFIVE_CUSTOMIZATION
+    let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+#endif // SIFIVE_CUSTOMIZATION
       def vundefined_bf16 : RVVBuiltin<"v", "v", "y">;
     def vundefined_u : RVVBuiltin<"Uv", "Uv", "csil">;
     
@@ -3405,7 +3443,9 @@ let HasMasked = false, HasVL = false, IRName = "" in {
       let NF = nf in {
         defvar T = "(Tuple:" # nf # ")";
         def : RVVBuiltin<T # "v", T # "v", "csilxfd">;
-        let RequiredFeatures = ["Zvfbfmin"] in
+#ifdef SIFIVE_CUSTOMIZATION
+        let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+#endif // SIFIVE_CUSTOMIZATION
           def : RVVBuiltin<T # "v", T # "v", "y">;
         def : RVVBuiltin<T # "Uv", T # "Uv", "csil">;
       }
@@ -3425,7 +3465,9 @@ let HasMasked = false, HasVL = false, IRName = "" in {
                         "(SFixedLog2LMUL:0)", "(SFixedLog2LMUL:1)", "(SFixedLog2LMUL:2)"] in {
       def vlmul_trunc # dst_lmul : RVVBuiltin<"v" # dst_lmul # "v",
                                               dst_lmul # "vv", "csilxfd", dst_lmul # "v">;
-      let RequiredFeatures = ["Zvfbfmin"] in
+#ifdef SIFIVE_CUSTOMIZATION
+      let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+#endif // SIFIVE_CUSTOMIZATION
         def vlmul_trunc_bf16 # dst_lmul : RVVBuiltin<"v" # dst_lmul # "v",
                                                      dst_lmul # "vv", "y", dst_lmul # "v">;
       def vlmul_trunc_u # dst_lmul : RVVBuiltin<"Uv" # dst_lmul # "Uv",
@@ -3446,7 +3488,9 @@ let HasMasked = false, HasVL = false, IRName = "" in {
                         "(LFixedLog2LMUL:1)", "(LFixedLog2LMUL:2)", "(LFixedLog2LMUL:3)"] in {
       def vlmul_ext # dst_lmul : RVVBuiltin<"v" # dst_lmul # "v",
                                             dst_lmul # "vv", "csilxfd", dst_lmul # "v">;
-      let RequiredFeatures = ["Zvfbfmin"] in
+#ifdef SIFIVE_CUSTOMIZATION
+      let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+#endif // SIFIVE_CUSTOMIZATION
         def vlmul_ext_bf16 # dst_lmul : RVVBuiltin<"v" # dst_lmul # "v",
                                                    dst_lmul # "vv", "y", dst_lmul # "v">;
       def vlmul_ext_u # dst_lmul : RVVBuiltin<"Uv" # dst_lmul # "Uv",
@@ -3509,14 +3553,18 @@ let HasMasked = false, HasVL = false, IRName = "" in {
       }] in {
     foreach dst_lmul = ["(LFixedLog2LMUL:1)", "(LFixedLog2LMUL:2)", "(LFixedLog2LMUL:3)"] in {
       def : RVVBuiltin<"v" # dst_lmul # "v", dst_lmul # "v" # dst_lmul # "vKzv", "csilxfd">;
-      let RequiredFeatures = ["Zvfbfmin"] in
+#ifdef SIFIVE_CUSTOMIZATION
+      let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+#endif // SIFIVE_CUSTOMIZATION
         def : RVVBuiltin<"v" # dst_lmul # "v", dst_lmul # "v" # dst_lmul # "vKzv", "y">;
       def : RVVBuiltin<"Uv" # dst_lmul # "Uv", dst_lmul # "Uv" # dst_lmul #"UvKzUv", "csil">;
     }
     foreach nf = NFList in {
       defvar T = "(Tuple:" # nf # ")";
       def : RVVBuiltin<"v" # T # "v", T # "v" # T # "vKzv", "csilxfd">;
-      let RequiredFeatures = ["Zvfbfmin"] in
+#ifdef SIFIVE_CUSTOMIZATION
+      let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+#endif // SIFIVE_CUSTOMIZATION
         def : RVVBuiltin<"v" # T # "v", T # "v" # T # "vKzv", "y">;
       def : RVVBuiltin<"Uv" # T # "Uv", T # "Uv" # T # "UvKzUv", "csil">;
     }
@@ -3563,7 +3611,9 @@ let HasMasked = false, HasVL = false, IRName = "" in {
         defvar V = VString<nf, /*signed=*/true>.S;
         defvar UV = VString<nf, /*signed=*/false>.S;
         def : RVVBuiltin<T # "v", T # "v" # V, "csilxfdy">;
-        let RequiredFeatures = ["Zvfbfmin"] in
+#ifdef SIFIVE_CUSTOMIZATION
+        let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+#endif // SIFIVE_CUSTOMIZATION
           def : RVVBuiltin<T # "v", T # "v" # V, "y">;
         def : RVVBuiltin<T # "Uv", T # "Uv" # UV, "csil">;
       }
