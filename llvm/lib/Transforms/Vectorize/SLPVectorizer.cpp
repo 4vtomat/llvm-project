@@ -10319,13 +10319,7 @@ bool BoUpSLP::isFullyVectorizableTinyTree(bool ForReduction) const {
   // We only handle trees of heights 1 and 2.
   if (VectorizableTree.size() == 1 &&
       (VectorizableTree[0]->State == TreeEntry::Vectorize ||
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
        VectorizableTree[0]->State == TreeEntry::StridedVectorize ||
-#endif // SIFIVE_CUSTOMIZATION
-=======
-       VectorizableTree[0]->State == TreeEntry::StridedVectorize ||
->>>>>>> ddda37a
        (ForReduction &&
         AreVectorizableGathers(VectorizableTree[0].get(),
                                VectorizableTree[0]->Scalars.size()) &&
