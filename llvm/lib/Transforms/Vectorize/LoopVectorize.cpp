@@ -3891,11 +3891,7 @@ bool LoopVectorizationCostModel::isPredicatedInst(Instruction *I) const {
   if (!blockNeedsPredicationForAnyReason(I->getParent()) ||
       isSafeToSpeculativelyExecute(I) ||
       (isa<LoadInst, StoreInst, CallInst>(I) && !Legal->isMaskRequired(I)) ||
-<<<<<<< HEAD
-      isa<BranchInst, PHINode, AllocaInst>(I))
-=======
       isa<BranchInst, SwitchInst, PHINode, AllocaInst>(I))
->>>>>>> ddda37a
     return false;
 
   // If the instruction was executed conditionally in the original scalar loop,
@@ -9755,8 +9751,6 @@ void VPRecipeBuilder::createBlockInMask(BasicBlock *BB) {
   // All-one mask is modelled as no-mask following the convention for masked
   // load/store/gather/scatter. Initialize BlockMask to no-mask.
   VPValue *BlockMask = nullptr;
-<<<<<<< HEAD
-
 
 #if SIFIVE_CUSTOMIZATION
     VPBuilder::InsertPointGuard Guard(Builder);
@@ -9765,13 +9759,9 @@ void VPRecipeBuilder::createBlockInMask(BasicBlock *BB) {
     Builder.setInsertPoint(VPBB, VPBB->end());
 #endif // SIFIVE_CUSTOMIZATION
 
-  // This is the block mask. We OR all incoming edges.
-  for (auto *Predecessor : predecessors(BB)) {
-=======
   // This is the block mask. We OR all unique incoming edges.
   for (auto *Predecessor :
        SetVector<BasicBlock *>(pred_begin(BB), pred_end(BB))) {
->>>>>>> ddda37a
     VPValue *EdgeMask = createEdgeMask(Predecessor, BB);
     if (!EdgeMask) { // Mask of predecessor is all-one so mask of block is too.
       BlockMaskCache[BB] = EdgeMask;
@@ -10599,7 +10589,6 @@ static void addUsersInExitBlock(
     LoopVectorizationLegality *Legal) {
   /// Cherry-pick from #88385
   BasicBlock *ExitBB, *ExitingBB;
-
   if (Plan.isUncountable()) {
     ExitingBB = OrigLoop->getLoopLatch();
     ExitBB = OrigLoop->getLatchExitBlock();
@@ -10644,11 +10633,11 @@ static void addUsersInExitBlock(
   // from scalar loop only.
   if (MiddleVPBB->getNumSuccessors() != 2)
     return;
-#endif // SIFIVE_CUSTOMIZATION
   // Introduce VPUsers modeling the exit values.
   BasicBlock *ExitBB =
       cast<VPIRBasicBlock>(MiddleVPBB->getSuccessors()[0])->getIRBasicBlock();
   BasicBlock *ExitingBB = OrigLoop->getExitingBlock();
+#endif // SIFIVE_CUSTOMIZATION
   for (PHINode &ExitPhi : ExitBB->phis()) {
     Value *IncomingValue =
         ExitPhi.getIncomingValueForBlock(ExitingBB);
@@ -10970,12 +10959,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   // After here, VPBB should not be used.
   VPBB = nullptr;
 
-<<<<<<< HEAD
-  if (CM.requiresScalarEpilogue(Range)) {
-    // No edge from the middle block to the unique exit block has been inserted
-    // and there is nothing to fix from vector loop; phis should have incoming
-    // from scalar loop only.
-  } else
 #if SIFIVE_CUSTOMIZATION
     addUsersInExitBlock(OrigLoop, RecipeBuilder, *Plan,
                         Legal->getInductionVars(), Legal);
@@ -10983,10 +10966,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
     addUsersInExitBlock(OrigLoop, RecipeBuilder, *Plan,
                         Legal->getInductionVars());
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  addUsersInExitBlock(OrigLoop, RecipeBuilder, *Plan,
-                      Legal->getInductionVars());
->>>>>>> ddda37a
 
   assert(isa<VPRegionBlock>(Plan->getVectorLoopRegion()) &&
          !Plan->getVectorLoopRegion()->getEntryBasicBlock()->empty() &&
@@ -11489,114 +11468,6 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
   VPlanTransforms::clearReductionWrapFlags(*Plan);
 }
 
-<<<<<<< HEAD
-void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
-  assert(IndDesc.getKind() == InductionDescriptor::IK_PtrInduction &&
-         "Not a pointer induction according to InductionDescriptor!");
-  assert(cast<PHINode>(getUnderlyingInstr())->getType()->isPointerTy() &&
-         "Unexpected type.");
-  assert(!onlyScalarsGenerated(State.VF.isScalable()) &&
-         "Recipe should have been replaced");
-
-  auto *IVR = getParent()->getPlan()->getCanonicalIV();
-  PHINode *CanonicalIV = cast<PHINode>(State.get(IVR, 0, /*IsScalar*/ true));
-  Type *PhiType = IndDesc.getStep()->getType();
-
-  // Build a pointer phi
-  Value *ScalarStartValue = getStartValue()->getLiveInIRValue();
-  Type *ScStValueType = ScalarStartValue->getType();
-  PHINode *NewPointerPhi = PHINode::Create(ScStValueType, 2, "pointer.phi",
-                                           CanonicalIV->getIterator());
-
-  BasicBlock *VectorPH = State.CFG.getPreheaderBBFor(this);
-  NewPointerPhi->addIncoming(ScalarStartValue, VectorPH);
-
-  // A pointer induction, performed by using a gep
-  BasicBlock::iterator InductionLoc = State.Builder.GetInsertPoint();
-
-#if 0
-  const SCEV *ScalarStep = IndDesc.getStep();
-  SCEVExpander Exp(SE, DL, "induction");
-  Value *ScalarStepValue = Exp.expandCodeFor(ScalarStep, PhiType, InductionLoc);
-#endif
-  Value *ScalarStepValue = State.get(getOperand(1), VPIteration(0, 0));
-#if SIFIVE_CUSTOMIZATION
-  Value *RuntimeVF;
-  if (State.Plan->useVLAVectorizer()) {
-    // FIXME: Remove this code with a proper representation of pointer induction
-    // in a VPlan.
-    assert(!State.EVL &&
-           "Runtime VL is available, but code was not updated to use it.");
-    if (!State.EVLPlaceholder)
-      State.EVLPlaceholder = State.Builder.CreateLoad(PhiType,
-                                     UndefValue::get(PhiType->getPointerTo()));
-    RuntimeVF = State.Builder.CreateIntCast(State.EVLPlaceholder, PhiType,
-                                            /*IsSigned=*/false);
-  }
-  else
-    RuntimeVF = getRuntimeVF(State.Builder, PhiType, State.VF);
-#else
-  Value *RuntimeVF = getRuntimeVF(State.Builder, PhiType, State.VF);
-#endif // SIFIVE_CUSTOMIZATION
-  Value *NumUnrolledElems =
-      State.Builder.CreateMul(RuntimeVF, ConstantInt::get(PhiType, State.UF));
-  Value *InductionGEP = GetElementPtrInst::Create(
-      State.Builder.getInt8Ty(), NewPointerPhi,
-      State.Builder.CreateMul(ScalarStepValue, NumUnrolledElems), "ptr.ind",
-      InductionLoc);
-  // Add induction update using an incorrect block temporarily. The phi node
-  // will be fixed after VPlan execution. Note that at this point the latch
-  // block cannot be used, as it does not exist yet.
-  // TODO: Model increment value in VPlan, by turning the recipe into a
-  // multi-def and a subclass of VPHeaderPHIRecipe.
-  NewPointerPhi->addIncoming(InductionGEP, VectorPH);
-
-#if SIFIVE_CUSTOMIZATION
-  // To hoist the below calculation to preheader, we switch to vscale
-  if (State.Plan->useVLAVectorizer()) {
-    IRBuilder<>::InsertPointGuard Guard(State.Builder);
-    State.Builder.SetInsertPoint(VectorPH->getTerminator());
-    assert(State.UF == 1 && "interleaving should be disabled to use vscale");
-    RuntimeVF = getRuntimeVF(State.Builder, PhiType, State.VF);
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
-  // Create UF many actual address geps that use the pointer
-  // phi as base and a vectorized version of the step value
-  // (<step*0, ..., step*N>) as offset.
-  for (unsigned Part = 0; Part < State.UF; ++Part) {
-#if SIFIVE_CUSTOMIZATION
-    auto CurrIP = State.Builder.saveIP();
-    if (State.Plan->useVLAVectorizer())
-      State.Builder.SetInsertPoint(VectorPH->getTerminator());
-#endif // SIFIVE_CUSTOMIZATION
-    Type *VecPhiType = VectorType::get(PhiType, State.VF);
-    Value *StartOffsetScalar =
-        State.Builder.CreateMul(RuntimeVF, ConstantInt::get(PhiType, Part));
-    Value *StartOffset =
-        State.Builder.CreateVectorSplat(State.VF, StartOffsetScalar);
-    // Create a vector of consecutive numbers from zero to VF.
-    StartOffset = State.Builder.CreateAdd(
-        StartOffset, State.Builder.CreateStepVector(VecPhiType));
-#if SIFIVE_CUSTOMIZATION
-    if (State.Plan->useVLAVectorizer())
-      State.Builder.restoreIP(CurrIP);
-#endif // SIFIVE_CUSTOMIZATION
-
-    assert(ScalarStepValue == State.get(getOperand(1), VPIteration(Part, 0)) &&
-           "scalar step must be the same across all parts");
-    Value *GEP = State.Builder.CreateGEP(
-        State.Builder.getInt8Ty(), NewPointerPhi,
-        State.Builder.CreateMul(
-            StartOffset,
-            State.Builder.CreateVectorSplat(State.VF, ScalarStepValue),
-            "vector.gep"));
-    State.set(this, GEP, Part);
-  }
-}
-
-=======
->>>>>>> ddda37a
 void VPDerivedIVRecipe::execute(VPTransformState &State) {
   assert(!State.Instance && "VPDerivedIVRecipe being replicated.");
 
