@@ -731,13 +731,6 @@ bool GlobalMergeImpl::run(Module &M) {
 
 Pass *llvm::createGlobalMergePass(const TargetMachine *TM, unsigned Offset,
                                   bool OnlyOptimizeForSize,
-<<<<<<< HEAD
-                                  bool MergeExternalByDefault) {
-  bool MergeExternal = (EnableGlobalMergeOnExternal == cl::BOU_UNSET)
-                           ? MergeExternalByDefault
-                           : (EnableGlobalMergeOnExternal == cl::BOU_TRUE);
-  return new GlobalMerge(TM, Offset, OnlyOptimizeForSize, MergeExternal);
-=======
                                   bool MergeExternalByDefault,
                                   bool MergeConstantByDefault) {
   bool MergeExternal = (EnableGlobalMergeOnExternal == cl::BOU_UNSET) ?
@@ -745,6 +738,5 @@ Pass *llvm::createGlobalMergePass(const TargetMachine *TM, unsigned Offset,
   bool MergeConstant = EnableGlobalMergeOnConst || MergeConstantByDefault;
   return new GlobalMerge(TM, Offset, OnlyOptimizeForSize, MergeExternal,
                          MergeConstant);
->>>>>>> ddda37a
 }
 
