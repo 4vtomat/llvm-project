@@ -145,7 +145,6 @@ defvar RVM23U32Features = [Feature32Bit,
                            FeatureStdExtZimop,
                            FeatureStdExtZcmop];
 
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 defvar SFA23Features = !listconcat(RVA23S64Features,
                                    [FeatureStdExtZicfilp,
@@ -213,7 +212,7 @@ defvar SFB23Features = !listconcat(RVB23S64Features,
                                     FeatureStdExtZicfiss,
                                     FeatureStdExtSscofpmf]);
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 //===----------------------------------------------------------------------===//
 // Profile Definitions for ISA String
 //===----------------------------------------------------------------------===//
@@ -229,7 +228,6 @@ class RISCVExperimentalProfile<string name, list<SubtargetFeature> features>
     : RISCVProfile<"experimental-"#name, features> {
   let Experimental = true;
 }
->>>>>>> ddda37a
 
 def RVI20U32 : RISCVProfile<"rvi20u32", RVI20U32Features>;
 def RVI20U64 : RISCVProfile<"rvi20u64", RVI20U64Features>;
