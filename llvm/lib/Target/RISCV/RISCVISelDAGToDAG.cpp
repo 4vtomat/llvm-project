@@ -1262,7 +1262,6 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
     }
 
     unsigned LShAmt = Subtarget->getXLen() - TrailingOnes;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     if (Subtarget->hasFuseBFX()) {
       // Emit as a UBFX pseudoinstruction which will be expanded to a
@@ -1275,7 +1274,6 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
       return;
     }
 #endif // SIFIVE_CUSTOMIZATION
-=======
     if (Subtarget->hasVendorXTHeadBb()) {
       SDNode *THEXTU = CurDAG->getMachineNode(
           RISCV::TH_EXTU, DL, VT, N0->getOperand(0),
@@ -1285,7 +1283,6 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
       return;
     }
 
->>>>>>> ddda37a
     SDNode *SLLI =
         CurDAG->getMachineNode(RISCV::SLLI, DL, VT, N0->getOperand(0),
                                CurDAG->getTargetConstant(LShAmt, DL, VT));
