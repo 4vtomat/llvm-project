@@ -411,7 +411,6 @@ private:
   Sema &Actions;
 };
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 struct PragmaRVVHandler final : public PragmaHandler {
   PragmaRVVHandler() : PragmaHandler("rvv") {}
@@ -420,21 +419,6 @@ struct PragmaRVVHandler final : public PragmaHandler {
 };
 #endif // SIFIVE_CUSTOMIZATION
 
-struct PragmaMCFuncHandler : public PragmaHandler {
-  PragmaMCFuncHandler(bool ReportError)
-      : PragmaHandler("mc_func"), ReportError(ReportError) {}
-  void HandlePragma(Preprocessor &PP, PragmaIntroducer Introducer,
-                    Token &Tok) override {
-    if (ReportError)
-      PP.Diag(Tok, diag::err_pragma_mc_func_not_supported);
-  }
-
-private:
-  bool ReportError = false;
-};
-
-=======
->>>>>>> ddda37a
 void markAsReinjectedForRelexing(llvm::MutableArrayRef<clang::Token> Toks) {
   for (auto &T : Toks)
     T.setFlag(clang::Token::IsReinjected);
