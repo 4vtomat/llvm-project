@@ -107,17 +107,12 @@ void initializeEHContGuardCatchretPass(PassRegistry &);
 void initializeExpandLargeFpConvertLegacyPassPass(PassRegistry &);
 void initializeExpandLargeDivRemLegacyPassPass(PassRegistry &);
 void initializeExpandMemCmpLegacyPassPass(PassRegistry &);
-<<<<<<< HEAD
-void initializeExpandPostRAPass(PassRegistry&);
+void initializeExpandPostRAPass(PassRegistry &);
 #if SIFIVE_CUSTOMIZATION
 void initializeExpandPowiLegacyPassPass(PassRegistry &);
 void initializeExpandVPReductionLegacyPassPass(PassRegistry &);
 #endif // SIFIVE_CUSTOMIZATION
-void initializeExpandReductionsPass(PassRegistry&);
-=======
-void initializeExpandPostRAPass(PassRegistry &);
 void initializeExpandReductionsPass(PassRegistry &);
->>>>>>> ddda37a
 void initializeExpandVariadicsPass(PassRegistry &);
 void initializeExpandVectorPredicationPass(PassRegistry &);
 void initializeExternalAAWrapperPassPass(PassRegistry &);
@@ -169,20 +164,13 @@ void initializeLiveRegMatrixPass(PassRegistry &);
 void initializeLiveStacksPass(PassRegistry &);
 void initializeLiveVariablesWrapperPassPass(PassRegistry &);
 void initializeLoadStoreOptPass(PassRegistry &);
-<<<<<<< HEAD
-void initializeLoadStoreVectorizerLegacyPassPass(PassRegistry&);
-void initializeLocalStackSlotPassPass(PassRegistry&);
-void initializeLocalizerPass(PassRegistry&);
-void initializeLoopDataPrefetchLegacyPassPass(PassRegistry&);
-#if SIFIVE_CUSTOMIZATION
-void initializeLoopDataLayoutLegacyPassPass(PassRegistry &);
-#endif
-=======
 void initializeLoadStoreVectorizerLegacyPassPass(PassRegistry &);
 void initializeLocalStackSlotPassPass(PassRegistry &);
 void initializeLocalizerPass(PassRegistry &);
 void initializeLoopDataPrefetchLegacyPassPass(PassRegistry &);
->>>>>>> ddda37a
+#if SIFIVE_CUSTOMIZATION
+void initializeLoopDataLayoutLegacyPassPass(PassRegistry &);
+#endif
 void initializeLoopExtractorLegacyPassPass(PassRegistry &);
 void initializeLoopInfoWrapperPassPass(PassRegistry &);
 void initializeLoopPassPass(PassRegistry &);
