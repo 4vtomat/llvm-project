@@ -1266,13 +1266,10 @@ void DAGTypeLegalizer::SplitVectorResult(SDNode *N, unsigned ResNo) {
   case ISD::MUL: case ISD::VP_MUL:
   case ISD::MULHS:
   case ISD::MULHU:
-<<<<<<< HEAD
   case ISD::VP_MULHS: // SIFIVE
   case ISD::VP_MULHU: // SIFIVE
-=======
   case ISD::ABDS:
   case ISD::ABDU:
->>>>>>> ddda37a
   case ISD::AVGCEILS:
   case ISD::AVGCEILU:
   case ISD::AVGFLOORS:
@@ -4636,13 +4633,10 @@ void DAGTypeLegalizer::WidenVectorResult(SDNode *N, unsigned ResNo) {
   case ISD::MUL: case ISD::VP_MUL:
   case ISD::MULHS:
   case ISD::MULHU:
-<<<<<<< HEAD
   case ISD::VP_MULHS: // SIFIVE
   case ISD::VP_MULHU: // SIFIVE
-=======
   case ISD::ABDS:
   case ISD::ABDU:
->>>>>>> ddda37a
   case ISD::OR: case ISD::VP_OR:
   case ISD::SUB: case ISD::VP_SUB:
   case ISD::XOR: case ISD::VP_XOR:
