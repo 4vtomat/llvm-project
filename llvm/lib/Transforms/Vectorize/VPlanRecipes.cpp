@@ -2269,7 +2269,6 @@ void VPBlendRecipe::execute(VPTransformState &State) {
   //                      In0)))
   // Note that Mask0 is never used: lanes for which no path reaches this phi and
   // are essentially undef are taken from In0.
-<<<<<<< HEAD
  VectorParts Entry(State.UF);
  bool OnlyFirstLaneUsed = vputils::onlyFirstLaneUsed(this);
  for (unsigned In = 0; In < NumIncoming; ++In) {
@@ -2296,27 +2295,6 @@ void VPBlendRecipe::execute(VPTransformState &State) {
      }
    }
  }
-=======
-  VectorParts Entry(State.UF);
-  bool OnlyFirstLaneUsed = vputils::onlyFirstLaneUsed(this);
-  for (unsigned In = 0; In < NumIncoming; ++In) {
-    for (unsigned Part = 0; Part < State.UF; ++Part) {
-      // We might have single edge PHIs (blocks) - use an identity
-      // 'select' for the first PHI operand.
-      Value *In0 = State.get(getIncomingValue(In), Part, OnlyFirstLaneUsed);
-      if (In == 0)
-        Entry[Part] = In0; // Initialize with the first incoming value.
-      else {
-        // Select between the current value and the previous incoming edge
-        // based on the incoming mask.
-        Value *Cond = State.get(getMask(In), Part, OnlyFirstLaneUsed);
-        Entry[Part] =
-            State.Builder.CreateSelect(Cond, In0, Entry[Part], "predphi");
-      }
-    }
-  }
-
->>>>>>> ddda37a
   for (unsigned Part = 0; Part < State.UF; ++Part)
     State.set(this, Entry[Part], Part, OnlyFirstLaneUsed);
 }
@@ -3808,8 +3786,30 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
   // A pointer induction, performed by using a gep
   BasicBlock::iterator InductionLoc = State.Builder.GetInsertPoint();
 
+#if 0
+  const SCEV *ScalarStep = IndDesc.getStep();
+  SCEVExpander Exp(SE, DL, "induction");
+  Value *ScalarStepValue = Exp.expandCodeFor(ScalarStep, PhiType, InductionLoc);
+#endif
   Value *ScalarStepValue = State.get(getOperand(1), VPIteration(0, 0));
+#if SIFIVE_CUSTOMIZATION
+  Value *RuntimeVF;
+  if (State.Plan->useVLAVectorizer()) {
+    // FIXME: Remove this code with a proper representation of pointer induction
+    // in a VPlan.
+    assert(!State.EVL &&
+           "Runtime VL is available, but code was not updated to use it.");
+    if (!State.EVLPlaceholder)
+      State.EVLPlaceholder = State.Builder.CreateLoad(PhiType,
+                                     UndefValue::get(PhiType->getPointerTo()));
+    RuntimeVF = State.Builder.CreateIntCast(State.EVLPlaceholder, PhiType,
+                                            /*IsSigned=*/false);
+  }
+  else
+    RuntimeVF = getRuntimeVF(State.Builder, PhiType, State.VF);
+#else
   Value *RuntimeVF = getRuntimeVF(State.Builder, PhiType, State.VF);
+#endif // SIFIVE_CUSTOMIZATION
   Value *NumUnrolledElems =
       State.Builder.CreateMul(RuntimeVF, ConstantInt::get(PhiType, State.UF));
   Value *InductionGEP = GetElementPtrInst::Create(
@@ -3823,10 +3823,25 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
   // multi-def and a subclass of VPHeaderPHIRecipe.
   NewPointerPhi->addIncoming(InductionGEP, VectorPH);
 
+#if SIFIVE_CUSTOMIZATION
+  // To hoist the below calculation to preheader, we switch to vscale
+  if (State.Plan->useVLAVectorizer()) {
+    IRBuilder<>::InsertPointGuard Guard(State.Builder);
+    State.Builder.SetInsertPoint(VectorPH->getTerminator());
+    assert(State.UF == 1 && "interleaving should be disabled to use vscale");
+    RuntimeVF = getRuntimeVF(State.Builder, PhiType, State.VF);
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   // Create UF many actual address geps that use the pointer
   // phi as base and a vectorized version of the step value
   // (<step*0, ..., step*N>) as offset.
   for (unsigned Part = 0; Part < State.UF; ++Part) {
+#if SIFIVE_CUSTOMIZATION
+    auto CurrIP = State.Builder.saveIP();
+    if (State.Plan->useVLAVectorizer())
+      State.Builder.SetInsertPoint(VectorPH->getTerminator());
+#endif // SIFIVE_CUSTOMIZATION
     Type *VecPhiType = VectorType::get(PhiType, State.VF);
     Value *StartOffsetScalar =
         State.Builder.CreateMul(RuntimeVF, ConstantInt::get(PhiType, Part));
@@ -3835,6 +3850,10 @@ void VPWidenPointerInductionRecipe::execute(VPTransformState &State) {
     // Create a vector of consecutive numbers from zero to VF.
     StartOffset = State.Builder.CreateAdd(
         StartOffset, State.Builder.CreateStepVector(VecPhiType));
+#if SIFIVE_CUSTOMIZATION
+    if (State.Plan->useVLAVectorizer())
+      State.Builder.restoreIP(CurrIP);
+#endif // SIFIVE_CUSTOMIZATION
 
     assert(ScalarStepValue == State.get(getOperand(1), VPIteration(Part, 0)) &&
            "scalar step must be the same across all parts");
