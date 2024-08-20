@@ -2267,16 +2267,13 @@ namespace {
 
 /// Check whether BB's predecessors end with unconditional branches. If it is
 /// true, sink any common code from the predecessors to BB.
-<<<<<<< HEAD
-static bool SinkCommonCodeFromPredecessors(BasicBlock *BB,
+static bool sinkCommonCodeFromPredecessors(BasicBlock *BB,
 #if SIFIVE_CUSTOMIZATION
                                            DomTreeUpdater *DTU,
                                            const TargetTransformInfo &TTI) {
-#endif
-=======
-static bool sinkCommonCodeFromPredecessors(BasicBlock *BB,
+#else
                                            DomTreeUpdater *DTU) {
->>>>>>> ddda37a
+#endif
   // We support two situations:
   //   (1) all incoming arcs are unconditional
   //   (2) there are non-unconditional incoming arcs
@@ -7847,17 +7844,11 @@ bool SimplifyCFGOpt::simplifyOnce(BasicBlock *BB) {
     return true;
 
   if (SinkCommon && Options.SinkCommonInsts)
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    if (SinkCommonCodeFromPredecessors(BB, DTU, TTI) ||
+    if (sinkCommonCodeFromPredecessors(BB, DTU, TTI) ||
 #endif
-        MergeCompatibleInvokes(BB, DTU)) {
-      // SinkCommonCodeFromPredecessors() does not automatically CSE PHI's,
-=======
-    if (sinkCommonCodeFromPredecessors(BB, DTU) ||
         mergeCompatibleInvokes(BB, DTU)) {
       // sinkCommonCodeFromPredecessors() does not automatically CSE PHI's,
->>>>>>> ddda37a
       // so we may now how duplicate PHI's.
       // Let's rerun EliminateDuplicatePHINodes() first,
       // before foldTwoEntryPHINode() potentially converts them into select's,
