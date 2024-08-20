@@ -77,11 +77,10 @@ define <vscale x 2 x i8> @vaaddu_3(<vscale x 2 x i8> %x, <vscale x 2 x i8> %y, <
 ;
 ; NO_FIXED-LABEL: vaaddu_3:
 ; NO_FIXED:       # %bb.0:
-; NO_FIXED-NEXT:    li a1, 1
 ; NO_FIXED-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
-; NO_FIXED-NEXT:    vwaddu.vx v10, v8, a1, v0.t
-; NO_FIXED-NEXT:    vwaddu.wv v8, v10, v9, v0.t
+; NO_FIXED-NEXT:    vwaddu.vv v10, v9, v8, v0.t
 ; NO_FIXED-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; NO_FIXED-NEXT:    vadd.vi v8, v10, 1, v0.t
 ; NO_FIXED-NEXT:    vsrl.vi v8, v8, 1, v0.t
 ; NO_FIXED-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; NO_FIXED-NEXT:    vnsrl.wi v8, v8, 0, v0.t
@@ -105,11 +104,10 @@ define <vscale x 2 x i8> @vaaddu_4(<vscale x 2 x i8> %x, <vscale x 2 x i8> %y, <
 ;
 ; NO_FIXED-LABEL: vaaddu_4:
 ; NO_FIXED:       # %bb.0:
-; NO_FIXED-NEXT:    li a1, 1
 ; NO_FIXED-NEXT:    vsetvli zero, a0, e8, mf4, ta, ma
-; NO_FIXED-NEXT:    vwaddu.vx v10, v8, a1, v0.t
-; NO_FIXED-NEXT:    vwaddu.wv v8, v10, v9, v0.t
+; NO_FIXED-NEXT:    vwaddu.vv v10, v9, v8, v0.t
 ; NO_FIXED-NEXT:    vsetvli zero, zero, e16, mf2, ta, ma
+; NO_FIXED-NEXT:    vadd.vi v8, v10, 1, v0.t
 ; NO_FIXED-NEXT:    vsrl.vi v8, v8, 1, v0.t
 ; NO_FIXED-NEXT:    vsetvli zero, zero, e8, mf4, ta, ma
 ; NO_FIXED-NEXT:    vnsrl.wi v8, v8, 0, v0.t
