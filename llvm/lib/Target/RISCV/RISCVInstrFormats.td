@@ -224,6 +224,7 @@ class RVInstCommon<dag outs, dag ins, string opcodestr, string argstr,
   bits<2> TargetOverlapConstraintType = 0;
   let TSFlags{22-21} = TargetOverlapConstraintType;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
   // 0 -> Don't care about altfmt bit in VTYPE.
   // 1 -> Is not altfmt.
@@ -234,6 +235,10 @@ class RVInstCommon<dag outs, dag ins, string opcodestr, string argstr,
   bit IsWiden = 0;
   let TSFlags{25} = IsWiden;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  bit ActiveElementsAffectResult = 0;
+  let TSFlags{23} = ActiveElementsAffectResult;
+>>>>>>> ddda37a
 }
 
 class RVInst<dag outs, dag ins, string opcodestr, string argstr,

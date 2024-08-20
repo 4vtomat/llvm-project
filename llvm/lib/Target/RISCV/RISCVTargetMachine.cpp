@@ -625,9 +625,13 @@ void RISCVPassConfig::addPreEmitPass2() {
     // ensuring return instruction is detected correctly.
     addPass(createRISCVPushPopOptimizationPass());
   }
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   addPass(createRISCVIndirectBranchTrackingPass());
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  addPass(createRISCVIndirectBranchTrackingPass());
+>>>>>>> ddda37a
   addPass(createRISCVExpandPseudoPass());
 
   // Schedule the expansion of AMOs at the last possible moment, avoiding the
@@ -670,9 +674,13 @@ void RISCVPassConfig::addPreRegAlloc() {
 
   addPass(createRISCVInsertReadWriteCSRPass());
   addPass(createRISCVInsertWriteVXRMPass());
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   addPass(createRISCVLandingPadSetupPass());
 #endif
+=======
+  addPass(createRISCVLandingPadSetupPass());
+>>>>>>> ddda37a
 
   // Run RISCVInsertVSETVLI after PHI elimination. On O1 and above do it after
   // register coalescing so needVSETVLIPHI doesn't need to look through COPYs.

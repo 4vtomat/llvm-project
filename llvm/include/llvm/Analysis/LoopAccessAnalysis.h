@@ -490,6 +490,7 @@ public:
     Need = false;
     Pointers.clear();
     Checks.clear();
+    DiffChecks.clear();
   }
 
   /// Insert a pointer and calculate the start and end SCEVs.

@@ -1079,11 +1079,19 @@ define float @fadd_conditional(ptr noalias nocapture readonly %a, ptr noalias no
 ; CHECK-UNORDERED-NEXT:    [[TMP8:%.*]] = getelementptr inbounds float, ptr [[TMP7]], i32 0
 ; CHECK-UNORDERED-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x float>, ptr [[TMP8]], align 4
 ; CHECK-UNORDERED-NEXT:    [[TMP9:%.*]] = fcmp une <vscale x 4 x float> [[WIDE_LOAD]], zeroinitializer
+<<<<<<< HEAD
 ; CHECK-UNORDERED-NEXT:    [[TMP10:%.*]] = xor <vscale x 4 x i1> [[TMP9]], shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer)
 ; CHECK-UNORDERED-NEXT:    [[TMP11:%.*]] = getelementptr float, ptr [[A]], i64 [[TMP6]]
 ; CHECK-UNORDERED-NEXT:    [[TMP12:%.*]] = getelementptr float, ptr [[TMP11]], i32 0
 ; CHECK-UNORDERED-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 4 x float> @llvm.masked.load.nxv4f32.p0(ptr [[TMP12]], i32 4, <vscale x 4 x i1> [[TMP9]], <vscale x 4 x float> poison)
 ; CHECK-UNORDERED-NEXT:    [[PREDPHI:%.*]] = select <vscale x 4 x i1> [[TMP10]], <vscale x 4 x float> shufflevector (<vscale x 4 x float> insertelement (<vscale x 4 x float> poison, float 3.000000e+00, i64 0), <vscale x 4 x float> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x float> [[WIDE_MASKED_LOAD]]
+=======
+; CHECK-UNORDERED-NEXT:    [[TMP10:%.*]] = getelementptr float, ptr [[A]], i64 [[TMP6]]
+; CHECK-UNORDERED-NEXT:    [[TMP11:%.*]] = getelementptr float, ptr [[TMP10]], i32 0
+; CHECK-UNORDERED-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 4 x float> @llvm.masked.load.nxv4f32.p0(ptr [[TMP11]], i32 4, <vscale x 4 x i1> [[TMP9]], <vscale x 4 x float> poison)
+; CHECK-UNORDERED-NEXT:    [[TMP12:%.*]] = xor <vscale x 4 x i1> [[TMP9]], shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer)
+; CHECK-UNORDERED-NEXT:    [[PREDPHI:%.*]] = select <vscale x 4 x i1> [[TMP12]], <vscale x 4 x float> shufflevector (<vscale x 4 x float> insertelement (<vscale x 4 x float> poison, float 3.000000e+00, i64 0), <vscale x 4 x float> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x float> [[WIDE_MASKED_LOAD]]
+>>>>>>> ddda37a
 ; CHECK-UNORDERED-NEXT:    [[TMP13]] = fadd <vscale x 4 x float> [[VEC_PHI]], [[PREDPHI]]
 ; CHECK-UNORDERED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; CHECK-UNORDERED-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
@@ -1140,11 +1148,19 @@ define float @fadd_conditional(ptr noalias nocapture readonly %a, ptr noalias no
 ; CHECK-ORDERED-NEXT:    [[TMP8:%.*]] = getelementptr inbounds float, ptr [[TMP7]], i32 0
 ; CHECK-ORDERED-NEXT:    [[WIDE_LOAD:%.*]] = load <vscale x 4 x float>, ptr [[TMP8]], align 4
 ; CHECK-ORDERED-NEXT:    [[TMP9:%.*]] = fcmp une <vscale x 4 x float> [[WIDE_LOAD]], zeroinitializer
+<<<<<<< HEAD
 ; CHECK-ORDERED-NEXT:    [[TMP10:%.*]] = xor <vscale x 4 x i1> [[TMP9]], shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer)
 ; CHECK-ORDERED-NEXT:    [[TMP11:%.*]] = getelementptr float, ptr [[A]], i64 [[TMP6]]
 ; CHECK-ORDERED-NEXT:    [[TMP12:%.*]] = getelementptr float, ptr [[TMP11]], i32 0
 ; CHECK-ORDERED-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 4 x float> @llvm.masked.load.nxv4f32.p0(ptr [[TMP12]], i32 4, <vscale x 4 x i1> [[TMP9]], <vscale x 4 x float> poison)
 ; CHECK-ORDERED-NEXT:    [[PREDPHI:%.*]] = select <vscale x 4 x i1> [[TMP10]], <vscale x 4 x float> shufflevector (<vscale x 4 x float> insertelement (<vscale x 4 x float> poison, float 3.000000e+00, i64 0), <vscale x 4 x float> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x float> [[WIDE_MASKED_LOAD]]
+=======
+; CHECK-ORDERED-NEXT:    [[TMP10:%.*]] = getelementptr float, ptr [[A]], i64 [[TMP6]]
+; CHECK-ORDERED-NEXT:    [[TMP11:%.*]] = getelementptr float, ptr [[TMP10]], i32 0
+; CHECK-ORDERED-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 4 x float> @llvm.masked.load.nxv4f32.p0(ptr [[TMP11]], i32 4, <vscale x 4 x i1> [[TMP9]], <vscale x 4 x float> poison)
+; CHECK-ORDERED-NEXT:    [[TMP12:%.*]] = xor <vscale x 4 x i1> [[TMP9]], shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer)
+; CHECK-ORDERED-NEXT:    [[PREDPHI:%.*]] = select <vscale x 4 x i1> [[TMP12]], <vscale x 4 x float> shufflevector (<vscale x 4 x float> insertelement (<vscale x 4 x float> poison, float 3.000000e+00, i64 0), <vscale x 4 x float> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x float> [[WIDE_MASKED_LOAD]]
+>>>>>>> ddda37a
 ; CHECK-ORDERED-NEXT:    [[TMP13]] = call float @llvm.vector.reduce.fadd.nxv4f32(float [[VEC_PHI]], <vscale x 4 x float> [[PREDPHI]])
 ; CHECK-ORDERED-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; CHECK-ORDERED-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
@@ -1207,12 +1223,21 @@ define float @fadd_conditional(ptr noalias nocapture readonly %a, ptr noalias no
 ; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD:%.*]] = call <vscale x 4 x float> @llvm.masked.load.nxv4f32.p0(ptr [[TMP12]], i32 4, <vscale x 4 x i1> [[ACTIVE_LANE_MASK]], <vscale x 4 x float> poison)
 ; CHECK-ORDERED-TF-NEXT:    [[TMP13:%.*]] = fcmp une <vscale x 4 x float> [[WIDE_MASKED_LOAD]], zeroinitializer
 ; CHECK-ORDERED-TF-NEXT:    [[TMP14:%.*]] = select <vscale x 4 x i1> [[ACTIVE_LANE_MASK]], <vscale x 4 x i1> [[TMP13]], <vscale x 4 x i1> zeroinitializer
+<<<<<<< HEAD
 ; CHECK-ORDERED-TF-NEXT:    [[TMP15:%.*]] = xor <vscale x 4 x i1> [[TMP13]], shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer)
 ; CHECK-ORDERED-TF-NEXT:    [[TMP16:%.*]] = select <vscale x 4 x i1> [[ACTIVE_LANE_MASK]], <vscale x 4 x i1> [[TMP15]], <vscale x 4 x i1> zeroinitializer
 ; CHECK-ORDERED-TF-NEXT:    [[TMP17:%.*]] = getelementptr float, ptr [[A]], i64 [[TMP10]]
 ; CHECK-ORDERED-TF-NEXT:    [[TMP18:%.*]] = getelementptr float, ptr [[TMP17]], i32 0
 ; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD1:%.*]] = call <vscale x 4 x float> @llvm.masked.load.nxv4f32.p0(ptr [[TMP18]], i32 4, <vscale x 4 x i1> [[TMP14]], <vscale x 4 x float> poison)
 ; CHECK-ORDERED-TF-NEXT:    [[PREDPHI:%.*]] = select <vscale x 4 x i1> [[TMP16]], <vscale x 4 x float> shufflevector (<vscale x 4 x float> insertelement (<vscale x 4 x float> poison, float 3.000000e+00, i64 0), <vscale x 4 x float> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x float> [[WIDE_MASKED_LOAD1]]
+=======
+; CHECK-ORDERED-TF-NEXT:    [[TMP15:%.*]] = getelementptr float, ptr [[A]], i64 [[TMP10]]
+; CHECK-ORDERED-TF-NEXT:    [[TMP16:%.*]] = getelementptr float, ptr [[TMP15]], i32 0
+; CHECK-ORDERED-TF-NEXT:    [[WIDE_MASKED_LOAD1:%.*]] = call <vscale x 4 x float> @llvm.masked.load.nxv4f32.p0(ptr [[TMP16]], i32 4, <vscale x 4 x i1> [[TMP14]], <vscale x 4 x float> poison)
+; CHECK-ORDERED-TF-NEXT:    [[TMP17:%.*]] = xor <vscale x 4 x i1> [[TMP13]], shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer)
+; CHECK-ORDERED-TF-NEXT:    [[TMP18:%.*]] = select <vscale x 4 x i1> [[ACTIVE_LANE_MASK]], <vscale x 4 x i1> [[TMP17]], <vscale x 4 x i1> zeroinitializer
+; CHECK-ORDERED-TF-NEXT:    [[PREDPHI:%.*]] = select <vscale x 4 x i1> [[TMP18]], <vscale x 4 x float> shufflevector (<vscale x 4 x float> insertelement (<vscale x 4 x float> poison, float 3.000000e+00, i64 0), <vscale x 4 x float> poison, <vscale x 4 x i32> zeroinitializer), <vscale x 4 x float> [[WIDE_MASKED_LOAD1]]
+>>>>>>> ddda37a
 ; CHECK-ORDERED-TF-NEXT:    [[TMP19:%.*]] = select <vscale x 4 x i1> [[ACTIVE_LANE_MASK]], <vscale x 4 x float> [[PREDPHI]], <vscale x 4 x float> shufflevector (<vscale x 4 x float> insertelement (<vscale x 4 x float> poison, float -0.000000e+00, i64 0), <vscale x 4 x float> poison, <vscale x 4 x i32> zeroinitializer)
 ; CHECK-ORDERED-TF-NEXT:    [[TMP20]] = call float @llvm.vector.reduce.fadd.nxv4f32(float [[VEC_PHI]], <vscale x 4 x float> [[TMP19]])
 ; CHECK-ORDERED-TF-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP4]]

@@ -1074,7 +1074,7 @@ def : InstAlias<"sltu $rd, $rs1, $imm12",
 
 def : MnemonicAlias<"move", "mv">;
 
-// The SCALL and SBREAK instructions wererenamed to ECALL and EBREAK in
+// The SCALL and SBREAK instructions were renamed to ECALL and EBREAK in
 // version 2.1 of the user-level ISA. Like the GNU toolchain, we still accept
 // the old name for backwards compatibility.
 def : MnemonicAlias<"scall", "ecall">;
@@ -1224,16 +1224,13 @@ def assertsexti32 : PatFrag<(ops node:$src), (assertsext node:$src), [{
   return cast<VTSDNode>(N->getOperand(1))->getVT().bitsLE(MVT::i32);
 }]>;
 def sexti16 : ComplexPattern<XLenVT, 1, "selectSExtBits<16>">;
-def sexti16i32 : ComplexPattern<i32, 1, "selectSExtBits<16>">;
 def sexti32 : ComplexPattern<i64, 1, "selectSExtBits<32>">;
 def assertzexti32 : PatFrag<(ops node:$src), (assertzext node:$src), [{
   return cast<VTSDNode>(N->getOperand(1))->getVT().bitsLE(MVT::i32);
 }]>;
 def zexti32 : ComplexPattern<i64, 1, "selectZExtBits<32>">;
 def zexti16 : ComplexPattern<XLenVT, 1, "selectZExtBits<16>">;
-def zexti16i32 : ComplexPattern<i32, 1, "selectZExtBits<16>">;
 def zexti8 : ComplexPattern<XLenVT, 1, "selectZExtBits<8>">;
-def zexti8i32 : ComplexPattern<i32, 1, "selectZExtBits<8>">;
 
 def ext : PatFrags<(ops node:$A), [(sext node:$A), (zext node:$A)]>;
 
@@ -2026,6 +2023,7 @@ def : Pat<(binop_allwusers<add> GPR:$rs1, (AddiPair:$rs2)),
 }
 
 //===----------------------------------------------------------------------===//
+<<<<<<< HEAD
 // Experimental RV64 i32 legalization patterns.
 //===----------------------------------------------------------------------===//
 
@@ -2122,6 +2120,8 @@ def : Pat<(ones_filling_srl XLenVT:$src),
 #endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
+=======
+>>>>>>> ddda37a
 // Standard extensions
 //===----------------------------------------------------------------------===//
 

@@ -201,9 +201,26 @@ define i128 @scalar_i128(i128 %x, i128 %y, ptr %divdst) nounwind {
 ; X86-NEXT:    movl %ebx, %eax
 ; X86-NEXT:    bsrl %ebx, %ecx
 ; X86-NEXT:    xorl $31, %ecx
-; X86-NEXT:    addl $32, %ecx
+; X86-NEXT:    orl $32, %ecx
 ; X86-NEXT:    testl %edi, %edi
 ; X86-NEXT:    cmovnel %edx, %ecx
+<<<<<<< HEAD
+=======
+; X86-NEXT:    movl {{[0-9]+}}(%esp), %eax
+; X86-NEXT:    bsrl %eax, %edx
+; X86-NEXT:    xorl $31, %edx
+; X86-NEXT:    bsrl %ebp, %ebp
+; X86-NEXT:    movl %esi, %edi
+; X86-NEXT:    movl {{[0-9]+}}(%esp), %esi
+; X86-NEXT:    xorl $31, %ebp
+; X86-NEXT:    orl $32, %ebp
+; X86-NEXT:    testl %eax, %eax
+; X86-NEXT:    cmovnel %edx, %ebp
+; X86-NEXT:    orl $64, %ebp
+; X86-NEXT:    movl %edi, %edx
+; X86-NEXT:    orl %ebx, %edx
+; X86-NEXT:    cmovnel %ecx, %ebp
+>>>>>>> ddda37a
 ; X86-NEXT:    bsrl %esi, %edx
 ; X86-NEXT:    xorl $31, %edx
 ; X86-NEXT:    bsrl %ebp, %ebx
@@ -223,7 +240,7 @@ define i128 @scalar_i128(i128 %x, i128 %y, ptr %divdst) nounwind {
 ; X86-NEXT:    movl {{[0-9]+}}(%esp), %eax
 ; X86-NEXT:    bsrl %eax, %ecx
 ; X86-NEXT:    xorl $31, %ecx
-; X86-NEXT:    addl $32, %ecx
+; X86-NEXT:    orl $32, %ecx
 ; X86-NEXT:    testl %esi, %esi
 ; X86-NEXT:    movl %esi, %edi
 ; X86-NEXT:    cmovnel %edx, %ecx
@@ -232,6 +249,7 @@ define i128 @scalar_i128(i128 %x, i128 %y, ptr %divdst) nounwind {
 ; X86-NEXT:    xorl $31, %esi
 ; X86-NEXT:    bsrl {{[0-9]+}}(%esp), %edx
 ; X86-NEXT:    xorl $31, %edx
+<<<<<<< HEAD
 ; X86-NEXT:    addl $32, %edx
 ; X86-NEXT:    testl %ebp, %ebp
 ; X86-NEXT:    cmovnel %esi, %edx
@@ -239,6 +257,13 @@ define i128 @scalar_i128(i128 %x, i128 %y, ptr %divdst) nounwind {
 ; X86-NEXT:    movl %eax, %esi
 ; X86-NEXT:    orl %edi, %esi
 ; X86-NEXT:    movl %edi, %ebp
+=======
+; X86-NEXT:    orl $32, %edx
+; X86-NEXT:    testl %edi, %edi
+; X86-NEXT:    cmovnel %esi, %edx
+; X86-NEXT:    orl $64, %edx
+; X86-NEXT:    orl %ebx, %eax
+>>>>>>> ddda37a
 ; X86-NEXT:    cmovnel %ecx, %edx
 ; X86-NEXT:    subl %edx, %ebx
 ; X86-NEXT:    movl $0, %edi

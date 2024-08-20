@@ -54,7 +54,6 @@ private:
 #endif // SIFIVE_CUSTOMIZATION
   bool expandCCOp(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI,
                   MachineBasicBlock::iterator &NextMBBI);
-  bool expandVSetVL(MachineBasicBlock &MBB, MachineBasicBlock::iterator MBBI);
   bool expandVMSET_VMCLR(MachineBasicBlock &MBB,
                          MachineBasicBlock::iterator MBBI, unsigned Opcode);
 #if SIFIVE_CUSTOMIZATION
@@ -160,10 +159,6 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   case RISCV::PseudoCCORN:
   case RISCV::PseudoCCXNOR:
     return expandCCOp(MBB, MBBI, NextMBBI);
-  case RISCV::PseudoVSETVLI:
-  case RISCV::PseudoVSETVLIX0:
-  case RISCV::PseudoVSETIVLI:
-    return expandVSetVL(MBB, MBBI);
   case RISCV::PseudoVMCLR_M_B1:
   case RISCV::PseudoVMCLR_M_B2:
   case RISCV::PseudoVMCLR_M_B4:
@@ -291,6 +286,7 @@ bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
   return true;
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool RISCVExpandPseudo::expandMovImm(MachineBasicBlock &MBB,
                                      MachineBasicBlock::iterator MBBI) {
@@ -363,6 +359,8 @@ bool RISCVExpandPseudo::expandVSetVL(MachineBasicBlock &MBB,
   return true;
 }
 
+=======
+>>>>>>> ddda37a
 bool RISCVExpandPseudo::expandVMSET_VMCLR(MachineBasicBlock &MBB,
                                           MachineBasicBlock::iterator MBBI,
                                           unsigned Opcode) {

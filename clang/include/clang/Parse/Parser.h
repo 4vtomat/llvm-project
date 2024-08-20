@@ -222,8 +222,11 @@ class Parser : public CodeCompletionHandler {
   std::unique_ptr<PragmaHandler> MaxTokensHerePragmaHandler;
   std::unique_ptr<PragmaHandler> MaxTokensTotalPragmaHandler;
   std::unique_ptr<PragmaHandler> RISCVPragmaHandler;
+<<<<<<< HEAD
   std::unique_ptr<PragmaHandler> RVVPragmaHandler; // SIFIVE
   std::unique_ptr<PragmaHandler> MCFuncPragmaHandler;
+=======
+>>>>>>> ddda37a
 
   std::unique_ptr<CommentHandler> CommentSemaHandler;
 
@@ -3544,6 +3547,17 @@ private:
   ParseOpenMPExecutableDirective(ParsedStmtContext StmtCtx,
                                  OpenMPDirectiveKind DKind, SourceLocation Loc,
                                  bool ReadDirectiveWithinMetadirective);
+
+  /// Parses informational directive.
+  ///
+  /// \param StmtCtx The context in which we're parsing the directive.
+  /// \param DKind The kind of the informational directive.
+  /// \param Loc Source location of the beginning of the directive.
+  /// \param ReadDirectiveWithinMetadirective true if directive is within a
+  /// metadirective and therefore ends on the closing paren.
+  StmtResult ParseOpenMPInformationalDirective(
+      ParsedStmtContext StmtCtx, OpenMPDirectiveKind DKind, SourceLocation Loc,
+      bool ReadDirectiveWithinMetadirective);
 
   /// Parses clause of kind \a CKind for directive of a kind \a Kind.
   ///

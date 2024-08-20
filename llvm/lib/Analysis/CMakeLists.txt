@@ -46,7 +46,11 @@ add_llvm_component_library(LLVMAnalysis
   CostModel.cpp
   CodeMetrics.cpp
   ConstantFolding.cpp
+<<<<<<< HEAD
   SiFive_CSADescriptors.cpp
+=======
+  CtxProfAnalysis.cpp
+>>>>>>> ddda37a
   CycleAnalysis.cpp
   DDG.cpp
   DDGPrinter.cpp
@@ -61,6 +65,7 @@ add_llvm_component_library(LLVMAnalysis
   DomTreeUpdater.cpp
   DominanceFrontier.cpp
   DXILResource.cpp
+  DXILMetadataAnalysis.cpp
   FunctionPropertiesAnalysis.cpp
   GlobalsModRef.cpp
   GuardUtils.cpp

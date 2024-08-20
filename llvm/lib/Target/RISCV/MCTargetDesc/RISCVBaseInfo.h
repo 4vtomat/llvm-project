@@ -125,6 +125,7 @@ enum {
   TargetOverlapConstraintTypeShift = UsesVXRMShift + 1,
   TargetOverlapConstraintTypeMask = 3ULL << TargetOverlapConstraintTypeShift,
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // 0 -> Don't care about altfmt bit in VTYPE.
   // 1 -> Is not altfmt.
@@ -135,6 +136,10 @@ enum {
   IsWidenShift = AltfmtTypeShift + 2,
   IsWidenMask = 1 << IsWidenShift,
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  ActiveElementsAffectResultShift = TargetOverlapConstraintTypeShift + 2,
+  ActiveElementsAffectResultMask = 1ULL << ActiveElementsAffectResultShift,
+>>>>>>> ddda37a
 };
 
 // Helper functions to read TSFlags.
@@ -194,6 +199,12 @@ static inline AltfmtType getAltfmtType(uint64_t TSFlags) {
 
 /// \returns true if this instruction uses vxrm
 static inline bool usesVXRM(uint64_t TSFlags) { return TSFlags & UsesVXRMMask; }
+
+/// \returns true if the result isn't element-wise,
+/// e.g. vredsum.vs/vcompress.vm/viota.m
+static inline bool activeElementsAffectResult(uint64_t TSFlags) {
+  return TSFlags & ActiveElementsAffectResultMask;
+}
 
 static inline unsigned getVLOpNum(const MCInstrDesc &Desc) {
   const uint64_t TSFlags = Desc.TSFlags;
