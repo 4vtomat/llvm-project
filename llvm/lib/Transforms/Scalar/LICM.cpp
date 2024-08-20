@@ -3131,7 +3131,13 @@ static bool hoistBOAssociation(Instruction &I, Loop &L,
     return false;
 
   auto *BO0 = dyn_cast<BinaryOperator>(BO->getOperand(0));
+#if SIFIVE_CUSTOMIZATION
+  // This is cherry-picked from fc157522c5680b0ff982442bc8043c1e8c998161.
+  if (!BO0 || BO0->getOpcode() != Opcode || !BO0->isAssociative() ||
+      BO0->hasNUsesOrMore(3))
+#else
   if (!BO0 || BO0->getOpcode() != Opcode || !BO0->isAssociative())
+#endif
     return false;
 
   // Transform: "(LV op C1) op C2" ==> "LV op (C1 op C2)"
