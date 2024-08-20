@@ -540,26 +540,21 @@ enum RVVRequire : uint32_t {
   RVV_REQ_Zvksh = 1 << 15,
   RVV_REQ_Zvfbfwma = 1 << 16,
   RVV_REQ_Zvfbfmin = 1 << 17,
-<<<<<<< HEAD
-  RVV_REQ_Experimental = 1 << 18,
-#if SIFIVE_CUSTOMIZATION
-  RVV_REQ_HasBfloat16 = 1 << 19,
-  RVV_REQ_Xsfvfbfa = 1 << 20,
-  RVV_REQ_Xsfvfbfexp16e = 1 << 21,
-  RVV_REQ_Xsfvfexp16e = 1 << 22,
-  RVV_REQ_Xsfvfexp32e = 1 << 23,
-  RVV_REQ_Xsfvfexpa = 1 << 24,
-  RVV_REQ_Xsfvfexpa64e = 1 << 25,
-  RVV_REQ_Xsfvfhbfmin = 1 << 26,
-  RVV_REQ_Xsfvqdotq = 1 << 27,
-  RVV_REQ_Zvfbfmin_Xsfvfbfa = 1 << 28,
-  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Zvfbfmin_Xsfvfbfa)
-#else
-=======
   RVV_REQ_Zvfh = 1 << 18,
   RVV_REQ_Experimental = 1 << 19,
-
->>>>>>> ddda37a
+#if SIFIVE_CUSTOMIZATION
+  RVV_REQ_HasBfloat16 = 1 << 20,
+  RVV_REQ_Xsfvfbfa = 1 << 21,
+  RVV_REQ_Xsfvfbfexp16e = 1 << 22,
+  RVV_REQ_Xsfvfexp16e = 1 << 23,
+  RVV_REQ_Xsfvfexp32e = 1 << 24,
+  RVV_REQ_Xsfvfexpa = 1 << 25,
+  RVV_REQ_Xsfvfexpa64e = 1 << 26,
+  RVV_REQ_Xsfvfhbfmin = 1 << 27,
+  RVV_REQ_Xsfvqdotq = 1 << 28,
+  RVV_REQ_Zvfbfmin_Xsfvfbfa = 1 << 29,
+  LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Zvfbfmin_Xsfvfbfa)
+#else
   LLVM_MARK_AS_BITMASK_ENUM(RVV_REQ_Experimental)
 #endif // SIFIVE_CUSTOMIZATION
 };
