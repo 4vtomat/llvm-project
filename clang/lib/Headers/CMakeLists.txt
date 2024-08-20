@@ -398,12 +398,8 @@ endfunction(clang_generate_header)
 # Copy header files from the source directory to the build directory
 foreach( f ${files} ${cuda_wrapper_files} ${cuda_wrapper_bits_files}
            ${ppc_wrapper_files} ${openmp_wrapper_files} ${zos_wrapper_files} ${hlsl_files}
-<<<<<<< HEAD
-           ${llvm_libc_wrapper_files}
-           ${rvv_v0p10_compatible_header_file} ${rvv_v0p11_compatible_header_file}) # SIFIVE
-=======
-	   ${llvm_libc_wrapper_files} ${llvm_offload_wrapper_files})
->>>>>>> ddda37a
+           ${rvv_v0p10_compatible_header_file} ${rvv_v0p11_compatible_header_file} # SIFIVE
+           ${llvm_libc_wrapper_files} ${llvm_offload_wrapper_files})
   copy_header_to_output_dir(${CMAKE_CURRENT_SOURCE_DIR} ${f})
 endforeach( f )
 
