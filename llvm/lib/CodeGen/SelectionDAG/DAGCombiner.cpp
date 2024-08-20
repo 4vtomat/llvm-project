@@ -631,12 +631,9 @@ namespace {
 #if SIFIVE_CUSTOMIZATION
     template <class MatchContextClass = EmptyMatchContext>
     SDValue foldABSToABD(SDNode *N, const SDLoc &DL);
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-=======
     SDValue foldSelectToABD(SDValue LHS, SDValue RHS, SDValue True,
                             SDValue False, ISD::CondCode CC, const SDLoc &DL);
->>>>>>> ddda37a
     SDValue unfoldMaskedMerge(SDNode *N);
     SDValue unfoldExtremeBitClearingToShifts(SDNode *N);
     SDValue SimplifySetCC(EVT VT, SDValue N0, SDValue N1, ISD::CondCode Cond,
@@ -11090,14 +11087,10 @@ SDValue DAGCombiner::foldABSToABD(SDNode *N, const SDLoc &DL) {
 #endif // SIFIVE_CUSTOMIZATION
        Opc0 != ISD::SIGN_EXTEND_INREG)) {
     // fold (abs (sub nsw x, y)) -> abds(x, y)
-<<<<<<< HEAD
-    if (AbsOp1->getFlags().hasNoSignedWrap() &&
-#if SIFIVE_CUSTOMIZATION
-        matcher.isOperationLegalOrCustom(ISD::ABDS, VT, LegalOperations) &&
-=======
     // Don't fold this for unsupported types as we lose the NSW handling.
-    if (AbsOp1->getFlags().hasNoSignedWrap() && hasOperation(ISD::ABDS, VT) &&
->>>>>>> ddda37a
+#if SIFIVE_CUSTOMIZATION
+    if (AbsOp1->getFlags().hasNoSignedWrap() &&
+        matcher.isOperationLegalOrCustom(ISD::ABDS, VT, LegalOperations) &&
         TLI.preferABDSToABSWithNSW(VT)) {
       SDValue ABD = matcher.getNode(ISD::ABDS, DL, VT, Op0, Op1);
       return matcher.getZExtOrTrunc(ABD, DL, SrcVT);
@@ -11124,38 +11117,25 @@ SDValue DAGCombiner::foldABSToABD(SDNode *N, const SDLoc &DL) {
   EVT MaxVT = VT0.bitsGT(VT1) ? VT0 : VT1;
   if ((VT0 == MaxVT || Op0->hasOneUse()) &&
       (VT1 == MaxVT || Op1->hasOneUse()) &&
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-      matcher.isOperationLegalOrCustom(ABDOpcode, MaxVT, LegalOperations)) {
+      (!LegalTypes ||
+       matcher.isOperationLegalOrCustom(ABDOpcode, MaxVT, LegalOperations))) {
     SDValue ABD = matcher.getNode(
         ABDOpcode, DL, MaxVT, matcher.getNode(ISD::TRUNCATE, DL, MaxVT, Op0),
         matcher.getNode(ISD::TRUNCATE, DL, MaxVT, Op1));
     ABD = matcher.getNode(ISD::ZERO_EXTEND, DL, VT, ABD);
     return matcher.getZExtOrTrunc(ABD, DL, SrcVT);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-      (!LegalTypes || hasOperation(ABDOpcode, MaxVT))) {
-    SDValue ABD = DAG.getNode(ABDOpcode, DL, MaxVT,
-                              DAG.getNode(ISD::TRUNCATE, DL, MaxVT, Op0),
-                              DAG.getNode(ISD::TRUNCATE, DL, MaxVT, Op1));
-    ABD = DAG.getNode(ISD::ZERO_EXTEND, DL, VT, ABD);
-    return DAG.getZExtOrTrunc(ABD, DL, SrcVT);
->>>>>>> ddda37a
   }
 
   // fold abs(sext(x) - sext(y)) -> abds(sext(x), sext(y))
   // fold abs(zext(x) - zext(y)) -> abdu(zext(x), zext(y))
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  if (matcher.isOperationLegalOrCustom(ABDOpcode, VT, LegalOperations)) {
+  if (!LegalOperations ||
+      matcher.isOperationLegalOrCustom(ABDOpcode, VT, LegalOperations)) {
     SDValue ABD = matcher.getNode(ABDOpcode, DL, VT, Op0, Op1);
     return matcher.getZExtOrTrunc(ABD, DL, SrcVT);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  if (!LegalOperations || hasOperation(ABDOpcode, VT)) {
-    SDValue ABD = DAG.getNode(ABDOpcode, DL, VT, Op0, Op1);
-    return DAG.getZExtOrTrunc(ABD, DL, SrcVT);
->>>>>>> ddda37a
   }
 
   return SDValue();
