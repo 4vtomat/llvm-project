@@ -36,11 +36,8 @@ add_llvm_target(RISCVCodeGen
   RISCVExpandPseudoInsts.cpp
   RISCVFrameLowering.cpp
   RISCVGatherScatterLowering.cpp
-<<<<<<< HEAD
   SiFive_RISCVIndirectBranchTracking.cpp
-=======
   RISCVIndirectBranchTracking.cpp
->>>>>>> ddda37a
   RISCVInsertVSETVLI.cpp
 #if SIFIVE_CUSTOMIZATION
   SiFive_RISCVSpillRewrite.cpp
@@ -51,14 +48,11 @@ add_llvm_target(RISCVCodeGen
   SiFive_RISCVInstCombineIntrinsic.cpp
   RISCVISelDAGToDAG.cpp
   RISCVISelLowering.cpp
-<<<<<<< HEAD
   SiFive_RISCVLandingPadSetup.cpp
   SiFive_RISCVLateCodeGenPrepare.cpp
   SiFive_RISCVMachineConstProp.cpp
   SiFive_RISCVWidenReductionPHI.cpp
-=======
   RISCVLandingPadSetup.cpp
->>>>>>> ddda37a
   RISCVMachineFunctionInfo.cpp
   SiFive_RISCVMaskInstDAGMutation.cpp
   RISCVMergeBaseOffset.cpp
