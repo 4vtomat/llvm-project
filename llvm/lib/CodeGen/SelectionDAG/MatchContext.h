@@ -45,16 +45,13 @@ public:
                                 bool LegalOnly = false) const {
     return TLI.isOperationLegalOrCustom(Op, VT, LegalOnly);
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   SDValue getZExtOrTrunc(SDValue Op, const SDLoc &DL, EVT VT) {
     return DAG.getZExtOrTrunc(Op, DL, VT);
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
 
   unsigned getNumOperands(SDValue N) const { return N->getNumOperands(); }
->>>>>>> ddda37a
 };
 
 class VPMatchContext {
@@ -179,18 +176,15 @@ public:
     unsigned VPOp = ISD::getVPForBaseOpcode(Op);
     return TLI.isOperationLegalOrCustom(VPOp, VT, LegalOnly);
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   SDValue getZExtOrTrunc(SDValue Op, const SDLoc &DL, EVT VT) {
     return DAG.getVPZExtOrTrunc(DL, VT, Op, RootMaskOp, RootVectorLenOp);
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
 
   unsigned getNumOperands(SDValue N) const {
     return N->isVPOpcode() ? N->getNumOperands() - 2 : N->getNumOperands();
   }
->>>>>>> ddda37a
 };
 
 } // namespace llvm
