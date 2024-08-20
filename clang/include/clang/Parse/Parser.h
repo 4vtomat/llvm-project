@@ -222,11 +222,7 @@ class Parser : public CodeCompletionHandler {
   std::unique_ptr<PragmaHandler> MaxTokensHerePragmaHandler;
   std::unique_ptr<PragmaHandler> MaxTokensTotalPragmaHandler;
   std::unique_ptr<PragmaHandler> RISCVPragmaHandler;
-<<<<<<< HEAD
   std::unique_ptr<PragmaHandler> RVVPragmaHandler; // SIFIVE
-  std::unique_ptr<PragmaHandler> MCFuncPragmaHandler;
-=======
->>>>>>> ddda37a
 
   std::unique_ptr<CommentHandler> CommentSemaHandler;
 
