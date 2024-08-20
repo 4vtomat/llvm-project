@@ -29,7 +29,7 @@
 ; CHECK-P670-NEXT:   ir<%38> = load from index 2
 ; CHECK-P670-NEXT:   ir<%39> = load from index 3
 ; CHECK-P670-NEXT: VPlanCM: Current registers usage:	RISCV::VRRC = 30
-; CHECK-P670: VPlanCM: (mf2, float) vec_iter_cost = 229
+; CHECK-P670: VPlanCM: (mf2, float) vec_iter_cost = 203
 ; ...
 ; CHECK-p670: VPlanCM: Live-In ir<%dweight> will use 2 RISCV::VRRC registers
 ; CHECK-P670: VPlanCM: cost 5 for RVL (m1, float) for VPInstruction: INTERLEAVE-GROUP with factor 4 at %36, ir<%add.ptr53.i>
@@ -38,7 +38,7 @@
 ; CHECK-P670-NEXT:   ir<%38> = load from index 2
 ; CHECK-P670-NEXT:   ir<%39> = load from index 3
 ; CHECK-P670-NEXT: VPlanCM: Current registers usage:	RISCV::VRRC = 31
-; CHECK-P670: VPlanCM: (m1, float) vec_iter_cost = 269
+; CHECK-P670: VPlanCM: (m1, float) vec_iter_cost = 233
 
 define void @test(ptr %ei, ptr %dweight, ptr %tweight, ptr %arrayidx2.i, ptr %arrayidx7.i902, ptr %arrayidx12.i, ptr %tfweight, ptr %arrayidx36.i, ptr %arrayidx43.i, ptr %arrayidx50.i, i64 %0) {
 entry:

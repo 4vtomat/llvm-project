@@ -2,12 +2,14 @@
 ; REQUIRES: asserts
 ; RUN: opt -passes=loop-vectorize -mtriple riscv64 -vector-primary-lmul-max=3 -mcpu=sifive-x280 -debug-only=vplan-cost-model,vplan -disable-output %s 2>&1 | FileCheck %s
 ; RUN: opt -passes=loop-vectorize -mtriple riscv64 -vector-primary-lmul-max=3 -mcpu=sifive-p470 -debug-only=vplan-cost-model,vplan -disable-output %s 2>&1 | FileCheck %s
-; RUN: opt -passes=loop-vectorize -mtriple riscv64 -vector-primary-lmul-max=3 -mcpu=sifive-p670 -debug-only=vplan-cost-model,vplan -disable-output %s 2>&1 | FileCheck %s
+; RUN: opt -passes=loop-vectorize -mtriple riscv64 -vector-primary-lmul-max=3 -mcpu=sifive-p670 -debug-only=vplan-cost-model,vplan -disable-output %s 2>&1 | FileCheck %s -check-prefix=P670
 
 ; check cost of VPInstruction Not and LogicalAnd
 define void @foo(ptr %x, ptr %y, float %alpha, i32 %N) {
 ; CHECK: VPlanCM: cost 2 for RVL (m1, i32) for VPInstruction: EMIT vp<%7> = not ir<%cmp1>
 ; CHECK: VPlanCM: cost 2 for RVL (m1, i32) for VPInstruction: EMIT vp<%9> = logical-and vp<%7>, ir<%cmp8>
+; P670: VPlanCM: cost 1 for RVL (m1, i32) for VPInstruction: EMIT vp<%7> = not ir<%cmp1>
+; P670: VPlanCM: cost 1 for RVL (m1, i32) for VPInstruction: EMIT vp<%9> = logical-and vp<%7>, ir<%cmp8>
 
 entry:
   %cmp = icmp sgt i32 %N, 0
