@@ -286,7 +286,6 @@ bool RISCVExpandPseudo::expandCCOp(MachineBasicBlock &MBB,
   return true;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool RISCVExpandPseudo::expandMovImm(MachineBasicBlock &MBB,
                                      MachineBasicBlock::iterator MBBI) {
@@ -329,38 +328,6 @@ bool RISCVExpandPseudo::expandBitfieldExtract(
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-bool RISCVExpandPseudo::expandVSetVL(MachineBasicBlock &MBB,
-                                     MachineBasicBlock::iterator MBBI) {
-  assert(MBBI->getNumExplicitOperands() == 3 && MBBI->getNumOperands() >= 5 &&
-         "Unexpected instruction format");
-
-  DebugLoc DL = MBBI->getDebugLoc();
-
-  assert((MBBI->getOpcode() == RISCV::PseudoVSETVLI ||
-          MBBI->getOpcode() == RISCV::PseudoVSETVLIX0 ||
-          MBBI->getOpcode() == RISCV::PseudoVSETIVLI) &&
-         "Unexpected pseudo instruction");
-  unsigned Opcode;
-  if (MBBI->getOpcode() == RISCV::PseudoVSETIVLI)
-    Opcode = RISCV::VSETIVLI;
-  else
-    Opcode = RISCV::VSETVLI;
-  const MCInstrDesc &Desc = TII->get(Opcode);
-  assert(Desc.getNumOperands() == 3 && "Unexpected instruction format");
-
-  Register DstReg = MBBI->getOperand(0).getReg();
-  bool DstIsDead = MBBI->getOperand(0).isDead();
-  BuildMI(MBB, MBBI, DL, Desc)
-      .addReg(DstReg, RegState::Define | getDeadRegState(DstIsDead))
-      .add(MBBI->getOperand(1))  // VL
-      .add(MBBI->getOperand(2)); // VType
-
-  MBBI->eraseFromParent(); // The pseudo instruction is gone now.
-  return true;
-}
-
-=======
->>>>>>> ddda37a
 bool RISCVExpandPseudo::expandVMSET_VMCLR(MachineBasicBlock &MBB,
                                           MachineBasicBlock::iterator MBBI,
                                           unsigned Opcode) {
