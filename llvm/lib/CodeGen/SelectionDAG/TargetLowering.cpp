@@ -5155,8 +5155,7 @@ SDValue TargetLowering::SimplifySetCC(EVT VT, SDValue N0, SDValue N1,
           const APInt &AndRHSC = AndRHS->getAPIntValue();
           if (AndRHSC.isNegatedPowerOf2() && C1.isSubsetOf(AndRHSC)) {
             unsigned ShiftBits = AndRHSC.countr_zero();
-<<<<<<< HEAD
-            if (!TLI.shouldAvoidTransformToShift(ShValTy, ShiftBits)) {
+            if (!shouldAvoidTransformToShift(ShValTy, ShiftBits)) {
 #if SIFIVE_CUSTOMIZATION
               // If using an unsigned shift doesn't yield a legal compare
               // immediate, try using sra instead.
@@ -5174,9 +5173,6 @@ SDValue TargetLowering::SimplifySetCC(EVT VT, SDValue N0, SDValue N1,
                 }
               }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-            if (!shouldAvoidTransformToShift(ShValTy, ShiftBits)) {
->>>>>>> ddda37a
               SDValue Shift = DAG.getNode(
                   ISD::SRL, dl, ShValTy, N0.getOperand(0),
                   DAG.getShiftAmountConstant(ShiftBits, ShValTy, dl));
