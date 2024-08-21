@@ -10582,27 +10582,14 @@ addCSAPostprocessRecipes(VPRecipeBuilder &RecipeBuilder,
 
 // Add exit values to \p Plan. VPLiveOuts are added for each LCSSA phi in the
 // original exit block.
-#if SIFIVE_CUSTOMIZATION
 static void addUsersInExitBlock(
     Loop *OrigLoop, VPRecipeBuilder &Builder, VPlan &Plan,
+#if SIFIVE_CUSTOMIZATION
     const MapVector<PHINode *, InductionDescriptor> &Inductions,
     LoopVectorizationLegality *Legal) {
   /// Cherry-pick from #88385
-  BasicBlock *ExitBB, *ExitingBB;
   if (Plan.isUncountable()) {
-    ExitingBB = OrigLoop->getLoopLatch();
-    ExitBB = OrigLoop->getLatchExitBlock();
-  } else {
-    ExitBB = OrigLoop->getUniqueExitBlock();
-    ExitingBB = OrigLoop->getExitingBlock();
-    // Only handle single-exit loops with unique exit blocks for now.
-    if (!ExitBB || !ExitBB->getSinglePredecessor() || !ExitingBB)
-      if (!ExitBB || !ExitingBB ||
-          !isRevectorizeWithoutStrideChecks(*OrigLoop) ||
-          !ExitBB->hasNPredecessors(2))
-        return;
-  }
-  if (Plan.isUncountable()) {
+    BasicBlock *ExitBB = OrigLoop->getLatchExitBlock();
     // TODO: This whole LiveOut thing may not work properly when multiple
     // exiting blocks exist. Revisit this part later.
     // IV LiveOut can be deemed as only using the first lane in the vector loop.
@@ -10623,9 +10610,8 @@ static void addUsersInExitBlock(
     return;
   }
 #else
-static void addUsersInExitBlock(
-    Loop *OrigLoop, VPRecipeBuilder &Builder, VPlan &Plan,
     const MapVector<PHINode *, InductionDescriptor> &Inductions) {
+#endif // SIFIVE_CUSTOMIZATION
   auto MiddleVPBB =
       cast<VPBasicBlock>(Plan.getVectorLoopRegion()->getSingleSuccessor());
   // No edge from the middle block to the unique exit block has been inserted
@@ -10633,10 +10619,18 @@ static void addUsersInExitBlock(
   // from scalar loop only.
   if (MiddleVPBB->getNumSuccessors() != 2)
     return;
+
   // Introduce VPUsers modeling the exit values.
   BasicBlock *ExitBB =
       cast<VPIRBasicBlock>(MiddleVPBB->getSuccessors()[0])->getIRBasicBlock();
   BasicBlock *ExitingBB = OrigLoop->getExitingBlock();
+#if SIFIVE_CUSTOMIZATION
+  // Only handle single-exit loops with unique exit blocks for now.
+  if (!ExitBB || !ExitBB->getSinglePredecessor() || !ExitingBB)
+    if (!ExitBB || !ExitingBB ||
+        !isRevectorizeWithoutStrideChecks(*OrigLoop) ||
+        !ExitBB->hasNPredecessors(2))
+      return;
 #endif // SIFIVE_CUSTOMIZATION
   for (PHINode &ExitPhi : ExitBB->phis()) {
     Value *IncomingValue =
