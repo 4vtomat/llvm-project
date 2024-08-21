@@ -203,9 +203,6 @@ public:
 
   TargetTransformInfo::PopcntSupportKind getPopcntSupport(unsigned TyWidth);
 
-  bool shouldConsiderAddressTypePromotion(const Instruction &I,
-                                          bool &AllowPromotionWithoutCommonHeader);
-
   bool shouldExpandReduction(const IntrinsicInst *II) const;
   bool supportsScalableVectors() const { return ST->hasVInstructions(); }
   bool enableOrderedReductions() const { return true; }
