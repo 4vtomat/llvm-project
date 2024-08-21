@@ -3013,8 +3013,7 @@ let ManualCodegen = [{
           RVVConvBuiltinSet<"vfncvt_x_f_w", "si", [["Iv", "IvFwu"]]>;
       let OverloadedName = "vfncvt_xu" in
         defm :
-<<<<<<< HEAD
-          RVVConvBuiltinSet<"vfncvt_xu_f_w", "csi", [["Uv", "UvFwu"]]>;
+          RVVConvBuiltinSet<"vfncvt_xu_f_w", "si", [["Uv", "UvFwu"]]>;
 #ifdef SIFIVE_CUSTOMIZATION
       let RequiredFeatures = ["Xsfvfbfa"] in {
         let OverloadedName = "vfncvt_x" in
@@ -3023,8 +3022,6 @@ let ManualCodegen = [{
           defm : RVVConvBuiltinSet<"vfncvt_xu_f_w", "c", [["Yw", "UvYwu"]]>;
       }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-          RVVConvBuiltinSet<"vfncvt_xu_f_w", "si", [["Uv", "UvFwu"]]>;
       let RequiredFeatures = ["Zvfh"] in {
         let OverloadedName = "vfncvt_x" in
           defm :
@@ -3033,7 +3030,6 @@ let ManualCodegen = [{
           defm :
             RVVConvBuiltinSet<"vfncvt_xu_f_w", "c", [["Uv", "UvFwu"]]>;
       }
->>>>>>> ddda37a
       let OverloadedName = "vfncvt_f" in {
         defm :
           RVVConvBuiltinSet<"vfncvt_f_x_w", "xf", [["v", "vIwu"]]>;
@@ -3087,8 +3083,7 @@ let ManualCodegen = [{
         RVVConvBuiltinSet<"vfncvt_x_f_w", "si", [["Iv", "IvFw"]]>;
     let OverloadedName = "vfncvt_xu" in
       defm :
-<<<<<<< HEAD
-        RVVConvBuiltinSet<"vfncvt_xu_f_w", "csi", [["Uv", "UvFw"]]>;
+        RVVConvBuiltinSet<"vfncvt_xu_f_w", "si", [["Uv", "UvFw"]]>;
 #ifdef SIFIVE_CUSTOMIZATION
     let RequiredFeatures = ["Xsfvfbfa"] in {
       let OverloadedName = "vfncvt_x" in
@@ -3097,8 +3092,6 @@ let ManualCodegen = [{
         defm : RVVConvBuiltinSet<"vfncvt_xu_f_w", "c", [["Yw", "UvYw"]]>;
     }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-        RVVConvBuiltinSet<"vfncvt_xu_f_w", "si", [["Uv", "UvFw"]]>;
     let RequiredFeatures = ["Zvfh"] in {
       let OverloadedName = "vfncvt_x" in
         defm :
@@ -3107,7 +3100,6 @@ let ManualCodegen = [{
         defm :
           RVVConvBuiltinSet<"vfncvt_xu_f_w", "c", [["Uv", "UvFw"]]>;
     }
->>>>>>> ddda37a
     let OverloadedName = "vfncvt_f" in {
       defm :
         RVVConvBuiltinSet<"vfncvt_f_x_w", "xf", [["v", "vIw"]]>;
@@ -3682,15 +3674,12 @@ let HasMasked = false, HasVL = false, IRName = "" in {
         defvar T = "(Tuple:" # nf # ")";
         defvar V = VString<nf, /*signed=*/true>.S;
         defvar UV = VString<nf, /*signed=*/false>.S;
-<<<<<<< HEAD
-        def : RVVBuiltin<T # "v", T # "v" # V, "csilxfdy">;
+        def : RVVBuiltin<T # "v", T # "v" # V, "csilxfd">;
 #ifdef SIFIVE_CUSTOMIZATION
         let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
-#endif // SIFIVE_CUSTOMIZATION
-=======
-        def : RVVBuiltin<T # "v", T # "v" # V, "csilxfd">;
+#else
         let RequiredFeatures = ["Zvfbfmin"] in
->>>>>>> ddda37a
+#endif // SIFIVE_CUSTOMIZATION
           def : RVVBuiltin<T # "v", T # "v" # V, "y">;
         def : RVVBuiltin<T # "Uv", T # "Uv" # UV, "csil">;
       }
