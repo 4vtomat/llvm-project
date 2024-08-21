@@ -7557,7 +7557,7 @@ SDValue TargetLowering::getVPSqrtInputTest(SDValue Op, SDValue Mask, SDValue EVL
     // not the result.
 
     // Test = fabs(X) < SmallestNormal
-    const fltSemantics &FltSem = DAG.EVTToAPFloatSemantics(VT);
+    const fltSemantics &FltSem = VT.getFltSemantics();
     APFloat SmallestNorm = APFloat::getSmallestNormalized(FltSem);
     SDValue NormC = DAG.getConstantFP(SmallestNorm, DL, VT);
     SDValue Fabs = DAG.getNode(ISD::VP_FABS, DL, VT, Op, Mask, EVL);

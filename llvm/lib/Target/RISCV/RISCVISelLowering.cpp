@@ -9812,8 +9812,8 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     SDValue Op0 = Op.getOperand(1);
     SDValue Op1 = Op.getOperand(2);
     EVT VT = Op.getValueType();
-    SDValue TrueVal = DAG.getConstantFP(
-        APFloat::getQNaN(SelectionDAG::EVTToAPFloatSemantics(VT)), DL, VT);
+    SDValue TrueVal =
+        DAG.getConstantFP(APFloat::getQNaN(VT.getFltSemantics()), DL, VT);
     SDValue FalseVal = lowerToScalableOp(Op, DAG);
     EVT BoolVT = getSetCCResultType(DAG.getDataLayout(), *DAG.getContext(), VT);
     SDValue IsNaN0 = DAG.getSetCC(DL, BoolVT, Op0, Op0, ISD::SETUNE);
@@ -9844,8 +9844,8 @@ SDValue RISCVTargetLowering::LowerINTRINSIC_WO_CHAIN(SDValue Op,
     // 256 is signaling NaN.
     SDValue VFclassMask = DAG.getNode(ISD::AND, DL, VFclassOrVT, VFclassOr,
                                       DAG.getConstant(256, DL, VFclassOrVT));
-    SDValue TrueVal = DAG.getConstantFP(
-        APFloat::getQNaN(SelectionDAG::EVTToAPFloatSemantics(VT)), DL, VT);
+    SDValue TrueVal =
+        DAG.getConstantFP(APFloat::getQNaN(VT.getFltSemantics()), DL, VT);
     SDValue FalseVal = lowerToScalableOp(Op, DAG);
     return DAG.getSelectCC(DL, VFclassMask, DAG.getConstant(0, DL, VFclassOrVT),
                            TrueVal, FalseVal, ISD::SETNE);
