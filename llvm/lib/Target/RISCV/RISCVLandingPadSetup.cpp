@@ -52,6 +52,12 @@ bool RISCVLandingPadSetup::runOnMachineFunction(MachineFunction &MF) {
   if (!STI.hasStdExtZicfilp())
     return false;
 
+#if SIFIVE_CUSTOMIZATION
+  if (STI.getLandingPadMode() == RISCVLandingPad::Disable)
+    return false;
+#endif // SIFIVE_CUSTOMIZATION
+
+#ifndef SIFIVE_CUSTOMIZATION
   uint32_t Label = 0;
   if (PreferredLandingPadLabel.getNumOccurrences() > 0) {
     if (!isUInt<20>(PreferredLandingPadLabel))
@@ -63,6 +69,7 @@ bool RISCVLandingPadSetup::runOnMachineFunction(MachineFunction &MF) {
   // Zicfilp does not check X7 if landing pad label is zero.
   if (Label == 0)
     return false;
+#endif // SIFIVE_CUSTOMIZATION
 
   bool Changed = false;
   for (MachineBasicBlock &MBB : MF)
@@ -71,6 +78,23 @@ bool RISCVLandingPadSetup::runOnMachineFunction(MachineFunction &MF) {
           MI.getOpcode() != RISCV::PseudoCALLIndirectNonX7 &&
           MI.getOpcode() != RISCV::PseudoTAILIndirectNonX7)
         continue;
+#if SIFIVE_CUSTOMIZATION
+      int32_t Label = 1;
+      if (STI.getLandingPadMode() == RISCVLandingPad::Simple)
+        Label = 0;
+      if (PreferredLandingPadLabel.getNumOccurrences()) {
+        if (!isUInt<20>(PreferredLandingPadLabel))
+          report_fatal_error("riscv-landing-pad-label=<val>, <val> needs to fit in "
+                             "unsigned 20-bits");
+        Label = PreferredLandingPadLabel;
+      }
+      if (MI.getCFIType())
+        Label = MI.getCFIType();
+      // Use -1 as no landing pad mark.
+      // A label of 0 can never match.
+      if (Label == 0 || Label == -1)
+        continue;
+#endif // SIFIVE_CUSTOMIZATION
       BuildMI(MBB, MI, MI.getDebugLoc(), TII.get(RISCV::LUI), RISCV::X7)
           .addImm(Label);
       MachineInstrBuilder(MF, &MI).addUse(RISCV::X7, RegState::ImplicitKill);

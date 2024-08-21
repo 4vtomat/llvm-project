@@ -65,7 +65,17 @@ bool RISCVIndirectBranchTrackingPass::runOnMachineFunction(
   if (!Subtarget.hasStdExtZicfilp())
     return false;
 
+#if SIFIVE_CUSTOMIZATION
+  if (Subtarget.getLandingPadMode() == RISCVLandingPad::Disable)
+    return false;
+
+  int32_t FixedLabel = 1;
+  if (Subtarget.getLandingPadMode() == RISCVLandingPad::Simple)
+    FixedLabel = 0;
+#else
   uint32_t FixedLabel = 0;
+#endif // SIFIVE_CUSTOMIZATION
+
   if (PreferredLandingPadLabel.getNumOccurrences() > 0) {
     if (!isUInt<20>(PreferredLandingPadLabel))
       report_fatal_error("riscv-landing-pad-label=<val>, <val> needs to fit in "
@@ -82,7 +92,15 @@ bool RISCVIndirectBranchTrackingPass::runOnMachineFunction(
         continue;
 
       if (F.hasAddressTaken() || !F.hasLocalLinkage()) {
-        emitLpad(MBB, TII, FixedLabel);
+#if SIFIVE_CUSTOMIZATION
+        int32_t Label = FixedLabel;
+        if (auto *MD = F.getMetadata(LLVMContext::MD_riscv_cfi_type))
+          Label = mdconst::extract<ConstantInt>(MD->getOperand(0))->getZExtValue();
+        // Use -1 as no landing pad mark.
+        if (Label == -1)
+          continue;
+        emitLpad(MBB, TII, Label);
+#endif // SIFIVE_CUSTOMIZATION
         if (MF.getAlignment() < LpadAlign)
           MF.setAlignment(LpadAlign);
         Changed = true;

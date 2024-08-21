@@ -11,47 +11,49 @@
 define void @indirctbr(i32 %i, ptr %p) {
 ; RV32-LABEL: indirctbr:
 ; RV32:       # %bb.0: # %entry
-; RV32-NEXT:    lpad 0
+; RV32-NEXT:    lpad 1
 ; RV32-NEXT:    slli a0, a0, 2
 ; RV32-NEXT:    lui a2, %hi(.L__const.indirctbr.addr)
 ; RV32-NEXT:    addi a2, a2, %lo(.L__const.indirctbr.addr)
 ; RV32-NEXT:    add a0, a2, a0
 ; RV32-NEXT:    lw a0, 0(a0)
+; RV32-NEXT:    lui t2, 1
 ; RV32-NEXT:    jr a0
 ; RV32-NEXT:    .p2align 2
 ; RV32-NEXT:  .Ltmp3: # Block address taken
 ; RV32-NEXT:  .LBB0_1: # %labelA
-; RV32-NEXT:    lpad 0
+; RV32-NEXT:    lpad 1
 ; RV32-NEXT:    li a0, 1
 ; RV32-NEXT:    sw a0, 0(a1)
 ; RV32-NEXT:    .p2align 2
 ; RV32-NEXT:  .Ltmp4: # Block address taken
 ; RV32-NEXT:  .LBB0_2: # %labelB
-; RV32-NEXT:    lpad 0
+; RV32-NEXT:    lpad 1
 ; RV32-NEXT:    li a0, 2
 ; RV32-NEXT:    sw a0, 0(a1)
 ; RV32-NEXT:    ret
 ;
 ; RV64-LABEL: indirctbr:
 ; RV64:       # %bb.0: # %entry
-; RV64-NEXT:    lpad 0
+; RV64-NEXT:    lpad 1
 ; RV64-NEXT:    sext.w a0, a0
 ; RV64-NEXT:    slli a0, a0, 3
 ; RV64-NEXT:    lui a2, %hi(.L__const.indirctbr.addr)
 ; RV64-NEXT:    addi a2, a2, %lo(.L__const.indirctbr.addr)
 ; RV64-NEXT:    add a0, a2, a0
 ; RV64-NEXT:    ld a0, 0(a0)
+; RV64-NEXT:    lui t2, 1
 ; RV64-NEXT:    jr a0
 ; RV64-NEXT:    .p2align 2
 ; RV64-NEXT:  .Ltmp3: # Block address taken
 ; RV64-NEXT:  .LBB0_1: # %labelA
-; RV64-NEXT:    lpad 0
+; RV64-NEXT:    lpad 1
 ; RV64-NEXT:    li a0, 1
 ; RV64-NEXT:    sw a0, 0(a1)
 ; RV64-NEXT:    .p2align 2
 ; RV64-NEXT:  .Ltmp4: # Block address taken
 ; RV64-NEXT:  .LBB0_2: # %labelB
-; RV64-NEXT:    lpad 0
+; RV64-NEXT:    lpad 1
 ; RV64-NEXT:    li a0, 2
 ; RV64-NEXT:    sw a0, 0(a1)
 ; RV64-NEXT:    ret
@@ -122,7 +124,8 @@ labelB:                                           ; preds = %labelA, %entry
 define void @call(ptr %0) {
 ; CHECK-LABEL: call:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lpad 0
+; CHECK-NEXT:    lpad 1
+; CHECK-NEXT:    lui t2, 1
 ; CHECK-NEXT:    jr a0
 ;
 ; FIXED-ONE-LABEL: call:
@@ -139,12 +142,13 @@ declare dso_local i32 @__gxx_personality_v0(...)
 define void @invoke(ptr %f) personality ptr @__gxx_personality_v0 {
 ; RV32-LABEL: invoke:
 ; RV32:       # %bb.0: # %entry
-; RV32-NEXT:    lpad 0
+; RV32-NEXT:    lpad 1
 ; RV32-NEXT:    addi sp, sp, -16
 ; RV32-NEXT:    .cfi_def_cfa_offset 16
 ; RV32-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
 ; RV32-NEXT:    .cfi_offset ra, -4
 ; RV32-NEXT:  .Ltmp0:
+; RV32-NEXT:    lui t2, 1
 ; RV32-NEXT:    jalr a0
 ; RV32-NEXT:  .Ltmp1:
 ; RV32-NEXT:  .LBB2_1: # %try.cont
@@ -157,12 +161,13 @@ define void @invoke(ptr %f) personality ptr @__gxx_personality_v0 {
 ;
 ; RV64-LABEL: invoke:
 ; RV64:       # %bb.0: # %entry
-; RV64-NEXT:    lpad 0
+; RV64-NEXT:    lpad 1
 ; RV64-NEXT:    addi sp, sp, -16
 ; RV64-NEXT:    .cfi_def_cfa_offset 16
 ; RV64-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
 ; RV64-NEXT:    .cfi_offset ra, -8
 ; RV64-NEXT:  .Ltmp0:
+; RV64-NEXT:    lui t2, 1
 ; RV64-NEXT:    jalr a0
 ; RV64-NEXT:  .Ltmp1:
 ; RV64-NEXT:  .LBB2_1: # %try.cont
@@ -225,7 +230,7 @@ try.cont:
 define void @external() {
 ; CHECK-LABEL: external:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lpad 0
+; CHECK-NEXT:    lpad 1
 ; CHECK-NEXT:    ret
 ;
 ; FIXED-ONE-LABEL: external:
@@ -252,7 +257,7 @@ define internal void @internal() {
 define internal void @internal2() {
 ; CHECK-LABEL: internal2:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    lpad 0
+; CHECK-NEXT:    lpad 1
 ; CHECK-NEXT:    ret
 ;
 ; FIXED-ONE-LABEL: internal2:
