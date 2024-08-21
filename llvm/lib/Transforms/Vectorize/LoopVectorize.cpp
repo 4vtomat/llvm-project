@@ -3370,10 +3370,8 @@ void InnerLoopVectorizer::fixCSALiveOuts(VPTransformState &State, VPlan &Plan) {
       if (auto *Phi = dyn_cast<PHINode>(U);
           Phi && Phi->getParent() == LoopExitBlock)
         ToFix.insert(Phi);
-    for (PHINode *Phi : ToFix) {
+    for (PHINode *Phi : ToFix)
       Phi->addIncoming(ExtractedScalar, LoopMiddleBlock);
-      State.Plan->removeLiveOut(Phi);
-    }
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -10481,6 +10479,7 @@ addCSAPostprocessRecipes(VPRecipeBuilder &RecipeBuilder,
 static void addUsersInExitBlock(
     Loop *OrigLoop, VPRecipeBuilder &Builder, VPlan &Plan,
     const MapVector<PHINode *, InductionDescriptor> &Inductions,
+    const MapVector<PHINode *, CSADescriptor> &CSAs,
     LoopVectorizationLegality *Legal) {
   /// Cherry-pick from #88385
   BasicBlock *ExitBB, *ExitingBB;
@@ -10546,6 +10545,19 @@ static void addUsersInExitBlock(
            return P && Inductions.contains(P);
          })))
       continue;
+#if SIFIVE_CUSTOMIZATION
+    // Exit values for CSAs are computed and updated outside of VPlan and
+    // independent of CSA recipes.
+    // TODO: Compute CSA exit values in VPlan, use VPLiveOuts to update
+    // live-outs.
+    if (isa<VPCSADataUpdateRecipe>(V) &&
+        (isa<Instruction>(IncomingValue) &&
+         any_of(IncomingValue->users(), [&CSAs](User *U) {
+           auto *P = dyn_cast<PHINode>(U);
+           return P && CSAs.contains(P);
+         })))
+      continue;
+#endif // SIFIVE_CUSTOMIZATION
     Plan.addLiveOut(&ExitPhi, V);
   }
 }
@@ -10857,7 +10869,7 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   } else
 #if SIFIVE_CUSTOMIZATION
     addUsersInExitBlock(OrigLoop, RecipeBuilder, *Plan,
-                        Legal->getInductionVars(), Legal);
+                        Legal->getInductionVars(), Legal->getCSAs(), Legal);
 #else
     addUsersInExitBlock(OrigLoop, RecipeBuilder, *Plan,
                         Legal->getInductionVars());

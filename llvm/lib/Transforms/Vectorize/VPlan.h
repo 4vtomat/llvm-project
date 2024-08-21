@@ -2877,6 +2877,8 @@ public:
 
   ~VPCSADataUpdateRecipe() override = default;
 
+  VP_CLASSOF_IMPL(VPDef::VPCSADataUpdateSC)
+
   VPCSADataUpdateRecipe *clone() override {
     SmallVector<VPValue *> Ops(operands());
     return new VPCSADataUpdateRecipe(cast<SelectInst>(getUnderlyingInstr()),
