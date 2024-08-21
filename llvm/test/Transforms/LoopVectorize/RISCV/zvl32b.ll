@@ -4,15 +4,9 @@
 target datalayout = "e-m:e-p:64:64-i64:64-i128:128-n64-S128"
 target triple = "riscv64"
 
-<<<<<<< HEAD
 ; SIFIVE: we have different cost model, so different lowering.
-; We can't use scalable vectorization for Zvl32b due to RVVBitsPerBlock being
-; 64. Since our vscale value is vlen/RVVBitsPerBlock this makes vscale 0.
-; Make sure we fall back to fixed vectorization instead.
-=======
 ; We can't vectorize with Zvl32b due to RVVBitsPerBlock being 64. Since our
 ; vscale value is vlen/RVVBitsPerBlock this makes vscale 0.
->>>>>>> ddda37a
 define void @vector_add_i16(ptr noalias nocapture %a, i16 %v, i64 %n) {
 ; CHECK-LABEL: @vector_add_i16(
 ; CHECK-NEXT:  entry:

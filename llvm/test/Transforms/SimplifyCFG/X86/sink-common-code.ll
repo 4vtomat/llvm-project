@@ -1868,15 +1868,19 @@ join:
 
 define i64 @load_with_sunk_gep(i1 %cond, ptr %p, i64 %a, i64 %b) {
 ; CHECK-LABEL: @load_with_sunk_gep(
-; CHECK-NEXT:    br i1 [[COND:%.*]], label [[IF:%.*]], label [[JOIN:%.*]]
+; CHECK-NEXT:    br i1 [[COND:%.*]], label [[IF:%.*]], label [[ELSE:%.*]]
 ; CHECK:       if:
 ; CHECK-NEXT:    call void @dummy()
+; CHECK-NEXT:    [[GEP_A:%.*]] = getelementptr i8, ptr [[P:%.*]], i64 [[A:%.*]]
+; CHECK-NEXT:    [[V_A:%.*]] = load i64, ptr [[GEP_A]], align 8
+; CHECK-NEXT:    br label [[JOIN:%.*]]
+; CHECK:       else:
+; CHECK-NEXT:    [[GEP_B:%.*]] = getelementptr i8, ptr [[P]], i64 [[B:%.*]]
+; CHECK-NEXT:    [[V_B:%.*]] = load i64, ptr [[GEP_B]], align 8
 ; CHECK-NEXT:    br label [[JOIN]]
 ; CHECK:       join:
-; CHECK-NEXT:    [[B_SINK:%.*]] = phi i64 [ [[A:%.*]], [[IF]] ], [ [[B:%.*]], [[TMP0:%.*]] ]
-; CHECK-NEXT:    [[GEP_B:%.*]] = getelementptr i8, ptr [[P:%.*]], i64 [[B_SINK]]
-; CHECK-NEXT:    [[V_B:%.*]] = load i64, ptr [[GEP_B]], align 8
-; CHECK-NEXT:    ret i64 [[V_B]]
+; CHECK-NEXT:    [[V:%.*]] = phi i64 [ [[V_A]], [[IF]] ], [ [[V_B]], [[ELSE]] ]
+; CHECK-NEXT:    ret i64 [[V]]
 ;
   br i1 %cond, label %if, label %else
 
@@ -1902,14 +1906,15 @@ define i64 @load_with_non_sunk_gep_both(i1 %cond, ptr %p.a, ptr %p.b, i64 %a, i6
 ; CHECK:       if:
 ; CHECK-NEXT:    call void @dummy()
 ; CHECK-NEXT:    [[GEP_A:%.*]] = getelementptr i8, ptr [[P_A:%.*]], i64 [[A:%.*]]
+; CHECK-NEXT:    [[V_A:%.*]] = load i64, ptr [[GEP_A]], align 8
 ; CHECK-NEXT:    br label [[JOIN:%.*]]
 ; CHECK:       else:
 ; CHECK-NEXT:    [[GEP_B:%.*]] = getelementptr i8, ptr [[P_B:%.*]], i64 [[B:%.*]]
+; CHECK-NEXT:    [[V_B:%.*]] = load i64, ptr [[GEP_B]], align 8
 ; CHECK-NEXT:    br label [[JOIN]]
 ; CHECK:       join:
-; CHECK-NEXT:    [[GEP_B_SINK:%.*]] = phi ptr [ [[GEP_B]], [[ELSE]] ], [ [[GEP_A]], [[IF]] ]
-; CHECK-NEXT:    [[V_B:%.*]] = load i64, ptr [[GEP_B_SINK]], align 8
-; CHECK-NEXT:    ret i64 [[V_B]]
+; CHECK-NEXT:    [[V:%.*]] = phi i64 [ [[V_A]], [[IF]] ], [ [[V_B]], [[ELSE]] ]
+; CHECK-NEXT:    ret i64 [[V]]
 ;
   br i1 %cond, label %if, label %else
 
@@ -1934,14 +1939,15 @@ define i64 @load_with_non_sunk_gep_left(i1 %cond, ptr %p.a, ptr %p.b, i64 %b) {
 ; CHECK-NEXT:    br i1 [[COND:%.*]], label [[IF:%.*]], label [[ELSE:%.*]]
 ; CHECK:       if:
 ; CHECK-NEXT:    call void @dummy()
+; CHECK-NEXT:    [[V_A:%.*]] = load i64, ptr [[P_A:%.*]], align 8
 ; CHECK-NEXT:    br label [[JOIN:%.*]]
 ; CHECK:       else:
 ; CHECK-NEXT:    [[GEP_B:%.*]] = getelementptr i8, ptr [[P_B:%.*]], i64 [[B:%.*]]
+; CHECK-NEXT:    [[V_B:%.*]] = load i64, ptr [[GEP_B]], align 8
 ; CHECK-NEXT:    br label [[JOIN]]
 ; CHECK:       join:
-; CHECK-NEXT:    [[GEP_B_SINK:%.*]] = phi ptr [ [[GEP_B]], [[ELSE]] ], [ [[P_A:%.*]], [[IF]] ]
-; CHECK-NEXT:    [[V_B:%.*]] = load i64, ptr [[GEP_B_SINK]], align 8
-; CHECK-NEXT:    ret i64 [[V_B]]
+; CHECK-NEXT:    [[V:%.*]] = phi i64 [ [[V_A]], [[IF]] ], [ [[V_B]], [[ELSE]] ]
+; CHECK-NEXT:    ret i64 [[V]]
 ;
   br i1 %cond, label %if, label %else
 
@@ -1962,15 +1968,18 @@ join:
 
 define i64 @load_with_non_sunk_gep_right(i1 %cond, ptr %p.a, ptr %p.b, i64 %a) {
 ; CHECK-LABEL: @load_with_non_sunk_gep_right(
-; CHECK-NEXT:    br i1 [[COND:%.*]], label [[IF:%.*]], label [[JOIN:%.*]]
+; CHECK-NEXT:    br i1 [[COND:%.*]], label [[IF:%.*]], label [[ELSE:%.*]]
 ; CHECK:       if:
 ; CHECK-NEXT:    call void @dummy()
 ; CHECK-NEXT:    [[GEP_A:%.*]] = getelementptr i8, ptr [[P_A:%.*]], i64 [[A:%.*]]
+; CHECK-NEXT:    [[V_A:%.*]] = load i64, ptr [[GEP_A]], align 8
+; CHECK-NEXT:    br label [[JOIN:%.*]]
+; CHECK:       else:
+; CHECK-NEXT:    [[V_B:%.*]] = load i64, ptr [[P_B:%.*]], align 8
 ; CHECK-NEXT:    br label [[JOIN]]
 ; CHECK:       join:
-; CHECK-NEXT:    [[P_B_SINK:%.*]] = phi ptr [ [[GEP_A]], [[IF]] ], [ [[P_B:%.*]], [[TMP0:%.*]] ]
-; CHECK-NEXT:    [[V_B:%.*]] = load i64, ptr [[P_B_SINK]], align 8
-; CHECK-NEXT:    ret i64 [[V_B]]
+; CHECK-NEXT:    [[V:%.*]] = phi i64 [ [[V_A]], [[IF]] ], [ [[V_B]], [[ELSE]] ]
+; CHECK-NEXT:    ret i64 [[V]]
 ;
   br i1 %cond, label %if, label %else
 
@@ -1995,13 +2004,13 @@ define void @store_with_non_sunk_gep(i1 %cond, ptr %p.a, ptr %p.b, i64 %a, i64 %
 ; CHECK:       if:
 ; CHECK-NEXT:    call void @dummy()
 ; CHECK-NEXT:    [[GEP_A:%.*]] = getelementptr i8, ptr [[P_A:%.*]], i64 [[A:%.*]]
+; CHECK-NEXT:    store i64 0, ptr [[GEP_A]], align 8
 ; CHECK-NEXT:    br label [[JOIN:%.*]]
 ; CHECK:       else:
 ; CHECK-NEXT:    [[GEP_B:%.*]] = getelementptr i8, ptr [[P_B:%.*]], i64 [[B:%.*]]
+; CHECK-NEXT:    store i64 0, ptr [[GEP_B]], align 8
 ; CHECK-NEXT:    br label [[JOIN]]
 ; CHECK:       join:
-; CHECK-NEXT:    [[GEP_B_SINK:%.*]] = phi ptr [ [[GEP_B]], [[ELSE]] ], [ [[GEP_A]], [[IF]] ]
-; CHECK-NEXT:    store i64 0, ptr [[GEP_B_SINK]], align 8
 ; CHECK-NEXT:    ret void
 ;
   br i1 %cond, label %if, label %else
