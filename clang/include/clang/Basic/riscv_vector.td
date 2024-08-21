@@ -3581,14 +3581,22 @@ let HasMasked = false, HasVL = false, IRName = "" in {
       }] in {
     foreach dst_lmul = ["(SFixedLog2LMUL:0)", "(SFixedLog2LMUL:1)", "(SFixedLog2LMUL:2)"] in {
       def : RVVBuiltin<"v" # dst_lmul # "v", dst_lmul # "vvKz", "csilxfd", dst_lmul # "v">;
+#ifdef SIFIVE_CUSTOMIZATION
+      let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+#else
       let RequiredFeatures = ["Zvfbfmin"] in
+#endif // SIFIVE_CUSTOMIZATION
         def : RVVBuiltin<"v" # dst_lmul # "v", dst_lmul # "vvKz", "y", dst_lmul # "v">;
       def : RVVBuiltin<"Uv" # dst_lmul # "Uv", dst_lmul # "UvUvKz", "csil", dst_lmul # "Uv">;
     }
     foreach nf = NFList in {
       defvar T = "(Tuple:" # nf # ")";
       def : RVVBuiltin<T # "vv", "v" # T # "vKz", "csilxfd", "v">;
+#ifdef SIFIVE_CUSTOMIZATION
+      let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
+#else
       let RequiredFeatures = ["Zvfbfmin"] in
+#endif // SIFIVE_CUSTOMIZATION
         def : RVVBuiltin<T # "vv", "v" # T # "vKz", "y", "v">;
       def : RVVBuiltin<T # "UvUv", "Uv" # T # "UvKz", "csil", "Uv">;
     }
