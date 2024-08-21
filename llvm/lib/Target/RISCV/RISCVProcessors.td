@@ -219,6 +219,7 @@ def SIFIVE_U74 : RISCVProcessorModel<"sifive-u74",
                                       FeatureStdExtC],
                                      SiFive7TuneFeatures>;
 
+#ifndef SIFIVE_CUSTOMIZATION
 defvar SiFiveX280TuneFeatures = !listconcat(SiFive7TuneFeatures,
                                             [TuneDLenFactor2,
                                              TuneOptimizedZeroStrideLoad]);
@@ -291,6 +292,7 @@ def SIFIVE_P670 : RISCVProcessorModel<"sifive-p670", SiFiveP600Model,
                                        TuneAUIPCADDIFusion,
                                        TuneNoSinkSplatOperands,
                                        FeaturePostRAScheduler]>;
+#endif // SIFIVE_CUSTOMIZATION
 
 def SYNTACORE_SCR1_BASE : RISCVProcessorModel<"syntacore-scr1-base",
                                               SyntacoreSCR1Model,
