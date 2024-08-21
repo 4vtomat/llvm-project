@@ -4262,13 +4262,8 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
     assert(WideningDecision != CM_Unknown &&
            "Widening decision should be ready at this moment");
 
-#if SIFIVE_CUSTOMIZATION
-    if (isUniformMemOpUse(I) && !Hints->isFixedVectorizationDisabled())
-      return true;
-#else
     if (isUniformMemOpUse(I))
       return true;
-#endif // SIFIVE_CUSTOMIZATION
 
     return (WideningDecision == CM_Widen ||
             WideningDecision == CM_Widen_Reverse ||
@@ -4330,11 +4325,7 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
       if (!Ptr)
         continue;
 
-#if SIFIVE_CUSTOMIZATION
-      if (isUniformMemOpUse(&I) && !Hints->isFixedVectorizationDisabled())
-#else
       if (isUniformMemOpUse(&I))
-#endif // SIFIVE_CUSTOMIZATION
         addToWorklistIfAllowed(&I);
 
       if (isVectorizedMemAccessUse(&I, Ptr))
@@ -7464,11 +7455,7 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
       if (isa<StoreInst>(&I) && isScalarWithPredication(&I, VF))
         NumPredStores++;
 
-#if SIFIVE_CUSTOMIZATION
-      if (Legal->isUniformMemOp(I, VF) && !Hints->isFixedVectorizationDisabled()) {
-#else
       if (Legal->isUniformMemOp(I, VF)) {
-#endif // SIFIVE_CUSTOMIZATION
         auto isLegalToScalarize = [&]() {
           if (!VF.isScalable())
             // Scalarization of fixed length vectors "just works".
