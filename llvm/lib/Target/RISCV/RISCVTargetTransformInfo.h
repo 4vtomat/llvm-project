@@ -407,11 +407,33 @@ public:
   TargetTransformInfo::VPLegalization
   getVPLegalizationStrategy(const VPIntrinsic &PI) const {
     using VPLegalization = TargetTransformInfo::VPLegalization;
+#if SIFIVE_CUSTOMIZATION
+    auto isLegalElementSize = [this](VectorType *VecType) -> bool {
+      switch (VecType->getScalarSizeInBits()) {
+      case 1:
+        return true;
+      case 64:
+        if (!ST->hasVInstructionsI64())
+          return false;
+        [[fallthrough]];
+      case 8:
+      case 16:
+      case 32:
+        return isa<ScalableVectorType>(VecType);
+      default:
+        return false;
+      }
+    };
+    if (!ST->hasVInstructions() ||
+        (PI.getIntrinsicID() == Intrinsic::vp_reduce_mul &&
+         !isLegalElementSize(cast<VectorType>(PI.getArgOperand(1)->getType()))))
+#else
     if (!ST->hasVInstructions() ||
         (PI.getIntrinsicID() == Intrinsic::vp_reduce_mul &&
          cast<VectorType>(PI.getArgOperand(1)->getType())
                  ->getElementType()
                  ->getIntegerBitWidth() != 1))
+#endif
       return VPLegalization(VPLegalization::Discard, VPLegalization::Convert);
     return VPLegalization(VPLegalization::Legal, VPLegalization::Legal);
   }
