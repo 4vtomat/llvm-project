@@ -68,7 +68,6 @@ define void @indirctbr(i32 %i, ptr %p) {
 ; SIMPLE-RV32-NEXT:    addi a2, a2, %lo(.L__const.indirctbr.addr)
 ; SIMPLE-RV32-NEXT:    add a0, a2, a0
 ; SIMPLE-RV32-NEXT:    lw a0, 0(a0)
-; SIMPLE-RV32-NEXT:    lui t2, 0
 ; SIMPLE-RV32-NEXT:    jr a0
 ; SIMPLE-RV32-NEXT:    .p2align 2
 ; SIMPLE-RV32-NEXT:  .Ltmp3: # Block address taken
@@ -93,7 +92,6 @@ define void @indirctbr(i32 %i, ptr %p) {
 ; SIMPLE-RV64-NEXT:    addi a2, a2, %lo(.L__const.indirctbr.addr)
 ; SIMPLE-RV64-NEXT:    add a0, a2, a0
 ; SIMPLE-RV64-NEXT:    ld a0, 0(a0)
-; SIMPLE-RV64-NEXT:    lui t2, 0
 ; SIMPLE-RV64-NEXT:    jr a0
 ; SIMPLE-RV64-NEXT:    .p2align 2
 ; SIMPLE-RV64-NEXT:  .Ltmp3: # Block address taken
@@ -170,7 +168,6 @@ define void @call(ptr %0) {
 ; SIMPLE-LABEL: call:
 ; SIMPLE:       # %bb.0:
 ; SIMPLE-NEXT:    lpad 0
-; SIMPLE-NEXT:    lui t2, 0
 ; SIMPLE-NEXT:    jr a0
 ;
 ; DISABLE-LABEL: call:
@@ -229,7 +226,6 @@ define void @invoke(ptr %f) personality ptr @__gxx_personality_v0 {
 ; SIMPLE-RV32-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
 ; SIMPLE-RV32-NEXT:    .cfi_offset ra, -4
 ; SIMPLE-RV32-NEXT:  .Ltmp0:
-; SIMPLE-RV32-NEXT:    lui t2, 0
 ; SIMPLE-RV32-NEXT:    jalr a0
 ; SIMPLE-RV32-NEXT:  .Ltmp1:
 ; SIMPLE-RV32-NEXT:  .LBB2_1: # %try.cont
@@ -248,7 +244,6 @@ define void @invoke(ptr %f) personality ptr @__gxx_personality_v0 {
 ; SIMPLE-RV64-NEXT:    sd ra, 8(sp) # 8-byte Folded Spill
 ; SIMPLE-RV64-NEXT:    .cfi_offset ra, -8
 ; SIMPLE-RV64-NEXT:  .Ltmp0:
-; SIMPLE-RV64-NEXT:    lui t2, 0
 ; SIMPLE-RV64-NEXT:    jalr a0
 ; SIMPLE-RV64-NEXT:  .Ltmp1:
 ; SIMPLE-RV64-NEXT:  .LBB2_1: # %try.cont
@@ -374,13 +369,17 @@ define void @specific_label() !riscv_cfi_type !0 {
 
 ; Check not insert lpad when riscv_cfi_type operand is mimus one.
 define void @specific_label2() !riscv_cfi_type !1 {
-; RV32-LABEL: specific_label2:
-; RV32:       # %bb.0:
-; RV32-NEXT:    ret
+; CHECK-LABEL: specific_label2:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    ret
 ;
-; RV64-LABEL: specific_label2:
-; RV64:       # %bb.0:
-; RV64-NEXT:    ret
+; SIMPLE-LABEL: specific_label2:
+; SIMPLE:       # %bb.0:
+; SIMPLE-NEXT:    ret
+;
+; DISABLE-LABEL: specific_label2:
+; DISABLE:       # %bb.0:
+; DISABLE-NEXT:    ret
   ret void
 }
 
@@ -404,13 +403,17 @@ define internal void @call_specific_label(ptr %0) {
 
 ; Check not changed t2 when riscv_cfi operand is mimus one.
 define internal void @call_specific_label2(ptr %0) {
-; RV32-LABEL: call_specific_label2:
-; RV32:       # %bb.0:
-; RV32-NEXT:    jr a0
+; CHECK-LABEL: call_specific_label2:
+; CHECK:       # %bb.0:
+; CHECK-NEXT:    jr a0
 ;
-; RV64-LABEL: call_specific_label2:
-; RV64:       # %bb.0:
-; RV64-NEXT:    jr a0
+; SIMPLE-LABEL: call_specific_label2:
+; SIMPLE:       # %bb.0:
+; SIMPLE-NEXT:    jr a0
+;
+; DISABLE-LABEL: call_specific_label2:
+; DISABLE:       # %bb.0:
+; DISABLE-NEXT:    jr a0
   tail call void %0() ["riscv_cfi"(i32 -1)]
   ret void
 }

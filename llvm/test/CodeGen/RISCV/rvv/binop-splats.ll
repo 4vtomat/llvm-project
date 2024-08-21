@@ -77,15 +77,7 @@ define <vscale x 16 x i1> @nxv16i1(i1 %x, i1 %y) {
 ; CHECK-NEXT:    andi a0, a0, 1
 ; CHECK-NEXT:    vsetvli a1, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmv.v.x v8, a0
-<<<<<<< HEAD
-; CHECK-NEXT:    vmsne.vi v8, v8, 0
-; CHECK-NEXT:    andi a1, a1, 1
-; CHECK-NEXT:    vmv.v.x v10, a1
-; CHECK-NEXT:    vmsne.vi v9, v10, 0
-; CHECK-NEXT:    vmxor.mm v0, v8, v9
-=======
 ; CHECK-NEXT:    vmsne.vi v0, v8, 0
->>>>>>> ddda37a
 ; CHECK-NEXT:    ret
   %head.x = insertelement <vscale x 16 x i1> poison, i1 %x, i32 0
   %splat.x = shufflevector <vscale x 16 x i1> %head.x, <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer
@@ -102,15 +94,7 @@ define <vscale x 32 x i1> @nxv32i1(i1 %x, i1 %y) {
 ; CHECK-NEXT:    andi a0, a0, 1
 ; CHECK-NEXT:    vsetvli a1, zero, e8, m4, ta, ma
 ; CHECK-NEXT:    vmv.v.x v8, a0
-<<<<<<< HEAD
-; CHECK-NEXT:    vmsne.vi v8, v8, 0
-; CHECK-NEXT:    andi a1, a1, 1
-; CHECK-NEXT:    vmv.v.x v12, a1
-; CHECK-NEXT:    vmsne.vi v9, v12, 0
-; CHECK-NEXT:    vmxor.mm v0, v8, v9
-=======
 ; CHECK-NEXT:    vmsne.vi v0, v8, 0
->>>>>>> ddda37a
 ; CHECK-NEXT:    ret
   %head.x = insertelement <vscale x 32 x i1> poison, i1 %x, i32 0
   %splat.x = shufflevector <vscale x 32 x i1> %head.x, <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer
@@ -127,15 +111,7 @@ define <vscale x 64 x i1> @nxv64i1(i1 %x, i1 %y) {
 ; CHECK-NEXT:    andi a0, a0, 1
 ; CHECK-NEXT:    vsetvli a1, zero, e8, m8, ta, ma
 ; CHECK-NEXT:    vmv.v.x v8, a0
-<<<<<<< HEAD
-; CHECK-NEXT:    vmsne.vi v8, v8, 0
-; CHECK-NEXT:    andi a1, a1, 1
-; CHECK-NEXT:    vmv.v.x v16, a1
-; CHECK-NEXT:    vmsne.vi v9, v16, 0
-; CHECK-NEXT:    vmxor.mm v0, v8, v9
-=======
 ; CHECK-NEXT:    vmsne.vi v0, v8, 0
->>>>>>> ddda37a
 ; CHECK-NEXT:    ret
   %head.x = insertelement <vscale x 64 x i1> poison, i1 %x, i32 0
   %splat.x = shufflevector <vscale x 64 x i1> %head.x, <vscale x 64 x i1> poison, <vscale x 64 x i32> zeroinitializer

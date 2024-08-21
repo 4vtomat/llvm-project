@@ -12,11 +12,10 @@
 define i64 @g() {
 ; CHECK-LABEL: g:
 ; CHECK:       # %bb.0: # %entry
-; CHECK-NEXT:    lui a0, %hi(g+8)
-; CHECK-NEXT:    addi a0, a0, %lo(g+8)
-; CHECK-NEXT:    vsetivli zero, 4, e32, m4, ta, ma
-; CHECK-NEXT:    vmv.v.i v8, 0
-; CHECK-NEXT:    vse32.v v8, (a0)
+; CHECK-NEXT:    lui a0, %hi(g)
+; CHECK-NEXT:    addi a0, a0, %lo(g)
+; CHECK-NEXT:    sd zero, 16(a0)
+; CHECK-NEXT:    sd zero, 8(a0)
 ; CHECK-NEXT:    ret
 entry:
   tail call void @llvm.memset.p0.i64(ptr noundef nonnull align 8 dereferenceable(16) getelementptr inbounds (%struct.d, ptr @g, i64 0, i32 1), i8 0, i64 16, i1 false)

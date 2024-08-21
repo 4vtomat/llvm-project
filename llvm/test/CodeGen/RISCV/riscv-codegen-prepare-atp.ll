@@ -11,11 +11,11 @@ define void @promoteTwoOne(i32 %i, i32 %j, ptr %P1, ptr %P2 ) {
 ; CHECK-LABEL: define void @promoteTwoOne(
 ; CHECK-SAME: i32 [[I:%.*]], i32 [[J:%.*]], ptr [[P1:%.*]], ptr [[P2:%.*]]) {
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[S2:%.*]] = sext i32 [[I]] to i64
-; CHECK-NEXT:    [[PROMOTED2:%.*]] = sext i32 [[J]] to i64
-; CHECK-NEXT:    [[S:%.*]] = add nsw i64 [[S2]], [[PROMOTED2]]
+; CHECK-NEXT:    [[ADD:%.*]] = add nsw i32 [[I]], [[J]]
+; CHECK-NEXT:    [[S:%.*]] = sext i32 [[ADD]] to i64
 ; CHECK-NEXT:    [[ADDR1:%.*]] = getelementptr inbounds i64, ptr [[P1]], i64 [[S]]
 ; CHECK-NEXT:    store i64 [[S]], ptr [[ADDR1]], align 8
+; CHECK-NEXT:    [[S2:%.*]] = sext i32 [[I]] to i64
 ; CHECK-NEXT:    [[ADDR2:%.*]] = getelementptr inbounds i64, ptr [[P2]], i64 [[S2]]
 ; CHECK-NEXT:    store i64 [[S2]], ptr [[ADDR2]], align 8
 ; CHECK-NEXT:    ret void
@@ -36,13 +36,12 @@ define void @promoteTwoTwo(i32 %i, i32 %j, i32 %k, ptr %P1, ptr %P2) {
 ; CHECK-LABEL: define void @promoteTwoTwo(
 ; CHECK-SAME: i32 [[I:%.*]], i32 [[J:%.*]], i32 [[K:%.*]], ptr [[P1:%.*]], ptr [[P2:%.*]]) {
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[PROMOTED3:%.*]] = sext i32 [[J]] to i64
-; CHECK-NEXT:    [[PROMOTED4:%.*]] = sext i32 [[I]] to i64
-; CHECK-NEXT:    [[S:%.*]] = add nsw i64 [[PROMOTED3]], [[PROMOTED4]]
+; CHECK-NEXT:    [[ADD1:%.*]] = add nsw i32 [[J]], [[I]]
+; CHECK-NEXT:    [[S:%.*]] = sext i32 [[ADD1]] to i64
 ; CHECK-NEXT:    [[ADDR1:%.*]] = getelementptr inbounds i64, ptr [[P1]], i64 [[S]]
 ; CHECK-NEXT:    store i64 [[S]], ptr [[ADDR1]], align 8
-; CHECK-NEXT:    [[PROMOTED2:%.*]] = sext i32 [[K]] to i64
-; CHECK-NEXT:    [[S2:%.*]] = add nsw i64 [[PROMOTED3]], [[PROMOTED2]]
+; CHECK-NEXT:    [[ADD2:%.*]] = add nsw i32 [[J]], [[K]]
+; CHECK-NEXT:    [[S2:%.*]] = sext i32 [[ADD2]] to i64
 ; CHECK-NEXT:    [[ADDR2:%.*]] = getelementptr inbounds i64, ptr [[P2]], i64 [[S2]]
 ; CHECK-NEXT:    store i64 [[S2]], ptr [[ADDR2]], align 8
 ; CHECK-NEXT:    ret void

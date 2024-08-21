@@ -545,7 +545,6 @@ define <vscale x 1 x bfloat> @intrinsic_vmv.v.v_v_nxv1bf16_nxv1bf16(<vscale x 1 
 ; CHECK-LABEL: intrinsic_vmv.v.v_v_nxv1bf16_nxv1bf16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf4, ta, ma
-; CHECK-NEXT:    vmv.v.v v8, v8
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 1 x bfloat> @llvm.riscv.vmv.v.v.nxv1bf16(
@@ -565,7 +564,6 @@ define <vscale x 2 x bfloat> @intrinsic_vmv.v.v_v_nxv2bf16_nxv2bf16(<vscale x 2 
 ; CHECK-LABEL: intrinsic_vmv.v.v_v_nxv2bf16_nxv2bf16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
-; CHECK-NEXT:    vmv.v.v v8, v8
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 2 x bfloat> @llvm.riscv.vmv.v.v.nxv2bf16(
@@ -585,7 +583,6 @@ define <vscale x 4 x bfloat> @intrinsic_vmv.v.v_v_nxv4bf16_nxv4bf16(<vscale x 4 
 ; CHECK-LABEL: intrinsic_vmv.v.v_v_nxv4bf16_nxv4bf16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m1, ta, ma
-; CHECK-NEXT:    vmv.v.v v8, v8
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 4 x bfloat> @llvm.riscv.vmv.v.v.nxv4bf16(
@@ -605,7 +602,6 @@ define <vscale x 8 x bfloat> @intrinsic_vmv.v.v_v_nxv8bf16_nxv8bf16(<vscale x 8 
 ; CHECK-LABEL: intrinsic_vmv.v.v_v_nxv8bf16_nxv8bf16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m2, ta, ma
-; CHECK-NEXT:    vmv.v.v v8, v8
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 8 x bfloat> @llvm.riscv.vmv.v.v.nxv8bf16(
@@ -625,7 +621,6 @@ define <vscale x 16 x bfloat> @intrinsic_vmv.v.v_v_nxv16bf16_nxv16bf16(<vscale x
 ; CHECK-LABEL: intrinsic_vmv.v.v_v_nxv16bf16_nxv16bf16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
-; CHECK-NEXT:    vmv.v.v v8, v8
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 16 x bfloat> @llvm.riscv.vmv.v.v.nxv16bf16(
@@ -645,7 +640,6 @@ define <vscale x 32 x bfloat> @intrinsic_vmv.v.v_v_nxv32bf16_nxv32bf16(<vscale x
 ; CHECK-LABEL: intrinsic_vmv.v.v_v_nxv32bf16_nxv32bf16:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
-; CHECK-NEXT:    vmv.v.v v8, v8
 ; CHECK-NEXT:    ret
 entry:
   %a = call <vscale x 32 x bfloat> @llvm.riscv.vmv.v.v.nxv32bf16(
