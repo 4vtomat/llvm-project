@@ -36,10 +36,9 @@ static void printExtensionTable(raw_ostream &OS,
     if (R->getValueAsBit("Experimental") != Experimental)
       continue;
 
-<<<<<<< HEAD
-    OS << "    {\"" << getExtensionName(R) << "\", {"
-       << R->getValueAsInt("MajorVersion") << ", "
-       << R->getValueAsInt("MinorVersion") << "}},\n";
+    OS.indent(4) << "{\"" << getExtensionName(R) << "\", {"
+                 << R->getValueAsInt("MajorVersion") << ", "
+                 << R->getValueAsInt("MinorVersion") << "}},\n";
 
 #if SIFIVE_CUSTOMIZATION
     ListInit *AdditionalVersions = R->getValueAsListInit("AdditionalVersions");
@@ -51,11 +50,6 @@ static void printExtensionTable(raw_ostream &OS,
          << cast<IntInit>(VersionLI->getElement(1))->getValue() << "}},\n";
     }
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    OS.indent(4) << "{\"" << getExtensionName(R) << "\", {"
-                 << R->getValueAsInt("MajorVersion") << ", "
-                 << R->getValueAsInt("MinorVersion") << "}},\n";
->>>>>>> ddda37a
   }
 
   OS << "};\n\n";
