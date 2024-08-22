@@ -16,10 +16,7 @@
   entry:
     %isZeroLength = icmp eq i32 %N, 0
     br i1 %isZeroLength, label %loop.exit, label %loop.preheader
-<<<<<<< HEAD
-=======
 
->>>>>>> ddda37a
   loop.preheader:                                   ; preds = %entry
     %half_splat = tail call <32 x i32> @llvm.hexagon.V6.lvsplatw.128B(i32 1056964608)
     %one_splat = tail call <32 x i32> @llvm.hexagon.V6.lvsplatw.128B(i32 1065353216)
@@ -58,10 +55,7 @@ body:             |
   bb.0.entry:
     successors: %bb.2(0x30000000), %bb.1(0x50000000)
     liveins: $r0, $r1, $r2
-<<<<<<< HEAD
-=======
 
->>>>>>> ddda37a
     %0:intregs = COPY $r2
     %1:intregs = COPY $r1
     %2:intregs = COPY $r0
