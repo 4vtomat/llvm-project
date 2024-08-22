@@ -140,23 +140,26 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     //===------------------ compare instructions --------------------------===//
     // Widen compares. Generate vector compares.
     bool FCmp = (Opcode == Instruction::FCmp);
-    auto *Cmp = cast<CmpInst>(Op);
     Value *A = State.get(User.getOperand(0), Part);
     Value *B = State.get(User.getOperand(1), Part);
 
+    assert((Op || cast<VPInstruction>(Def)) && "Invalid recipe");
+    CmpInst::Predicate Pred = Op ? cast<CmpInst>(Op)->getPredicate()
+                                 : cast<VPInstruction>(Def)->getPredicate();
     VectorType *OpTy = cast<VectorType>(A->getType());
     Value *MaskArg = MaskValue(Part, OpTy->getElementCount());
     Builder.setMask(MaskArg);
     Value *EVLArg = State.get(EVL, Part, /*NeedsScalar=*/true);
     Builder.setEVL(EVLArg);
 
-    StringRef PredicateStr = CmpInst::getPredicateName(Cmp->getPredicate());
-    auto *PredicateMDS = MDString::get(Cmp->getContext(), PredicateStr);
-    Value *PredArg = MetadataAsValue::get(Cmp->getContext(), PredicateMDS);
+    StringRef PredicateStr = CmpInst::getPredicateName(Pred);
+    auto *PredicateMDS = MDString::get(A->getContext(), PredicateStr);
+    Value *PredArg = MetadataAsValue::get(A->getContext(), PredicateMDS);
 
     if (FCmp) {
       IRBuilder<>::FastMathFlagGuard FMFG(BuilderIR);
-      BuilderIR.setFastMathFlags(Cmp->getFastMathFlags());
+      if (Op)
+        BuilderIR.setFastMathFlags(Op->getFastMathFlags());
       return Builder.createVectorInstruction(Opcode, OpTy, {A, B, PredArg},
                                              "vp.op.fcmp");
     }
