@@ -413,6 +413,8 @@ std::vector<std::string> RISCVISAInfo::toFeatures(bool AddAllExtensions,
     std::set<std::string> AddedExts;
     for (const RISCVSupportedExtension &Ext : SupportedExtensions) {
       std::string ExtName = tryAppendVersionInfo(Ext.Name, Ext.Version);
+      if (ExtName == "i" && Exts.count("i"))
+        continue;
       if (!AddedExts.insert(ExtName).second)
         continue;
       if (llvm::is_contained(Features, "+" + ExtName))
