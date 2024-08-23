@@ -2408,9 +2408,6 @@ void LoopDataLayoutPass::printPipeline(
     raw_ostream &OS, function_ref<StringRef(StringRef)> MapClassName2PassName) {
   static_cast<PassInfoMixin<LoopDataLayoutPass> *>(this)->printPipeline(
       OS, MapClassName2PassName);
-
-  OS << "<";
-  OS << ">";
 }
 
 #endif // SIFIVE_CUSTOMIZATION
