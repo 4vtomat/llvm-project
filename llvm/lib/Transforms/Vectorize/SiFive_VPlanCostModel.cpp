@@ -154,7 +154,7 @@ InstructionCost VPlanCostModel::getCost(const RVVPair &RVL) {
       // Skip if it is not used in loop region, and has no vector use.
       bool HasAnyVectorUseInLoop = any_of(VPV->users(), [VPV](VPUser *U) {
         auto *R = dyn_cast<VPRecipeBase>(U);
-        if (!R->getParent()->getEnclosingLoopRegion())
+        if (!R || !R->getParent()->getEnclosingLoopRegion())
           return false;
         if (U->onlyFirstLaneUsed(VPV))
           return false;
