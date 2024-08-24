@@ -1,6 +1,7 @@
 // RUN: %clang_cc1 -U __rvv_0p11_compatible_intrinsics -triple riscv64 -target-feature +v -fsyntax-only -ffreestanding %s -verify
 // RUN: %clang_cc1 -U __rvv_0p11_compatible_intrinsics -triple riscv64 -target-feature +v -fsyntax-only -ffreestanding -flax-vector-conversions=none %s -verify
 
+#define __rvv_0p10_compatible_intrinsics
 #include <riscv_vector.h>
 
 void test_vlseg2e32_v_i32m1(vint32m1_t *v0, vint32m1_t *v1, const int32_t *base, size_t vl) {
