@@ -201,6 +201,17 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
     Builder.defineMacro("__riscv_v_elen_fp", Twine(MaxELenFp));
   }
 
+#if SIFIVE_CUSTOMIZATION
+  if (ISAInfo->hasExtension("xsfmm128t"))
+    Builder.defineMacro("__riscv_min_xsfmm_te", Twine(128));
+  else if (ISAInfo->hasExtension("xsfmm64t"))
+    Builder.defineMacro("__riscv_min_xsfmm_te", Twine(64));
+  else if (ISAInfo->hasExtension("xsfmm32t"))
+    Builder.defineMacro("__riscv_min_xsfmm_te", Twine(32));
+  else if (ISAInfo->hasExtension("xsfmm16t"))
+    Builder.defineMacro("__riscv_min_xsfmm_te", Twine(16));
+#endif // SIFIVE_CUSTOMIZATION
+
   if (ISAInfo->hasExtension("c"))
     Builder.defineMacro("__riscv_compressed");
 

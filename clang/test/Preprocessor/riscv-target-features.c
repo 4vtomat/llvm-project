@@ -1619,6 +1619,38 @@
 // RUN: -march=rv64i_zve32f_xsfvfbfa -x c -E -dM %s \
 // RUN: -o - | FileCheck --check-prefix=CHECK-XSFVFBFA %s
 // CHECK-XSFVFBFA: __riscv_xsfvfbfa  1000{{$}}
+
+// RUN: %clang --target=riscv32 \
+// RUN: -march=rv32iv_xsfmm128t -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-MIN-XSFMM-TE-128 %s
+// RUN: %clang --target=riscv64 \
+// RUN: -march=rv64iv_xsfmm128t -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-MIN-XSFMM-TE-128 %s
+// CHECK-MIN-XSFMM-TE-128: __riscv_min_xsfmm_te  128{{$}}
+
+// RUN: %clang --target=riscv32 \
+// RUN: -march=rv32iv_xsfmm64t -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-MIN-XSFMM-TE-64 %s
+// RUN: %clang --target=riscv64 \
+// RUN: -march=rv64iv_xsfmm64t -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-MIN-XSFMM-TE-64 %s
+// CHECK-MIN-XSFMM-TE-64: __riscv_min_xsfmm_te  64{{$}}
+
+// RUN: %clang --target=riscv32 \
+// RUN: -march=rv32iv_xsfmm32t -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-MIN-XSFMM-TE-32 %s
+// RUN: %clang --target=riscv64 \
+// RUN: -march=rv64iv_xsfmm32t -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-MIN-XSFMM-TE-32 %s
+// CHECK-MIN-XSFMM-TE-32: __riscv_min_xsfmm_te  32{{$}}
+
+// RUN: %clang --target=riscv32 \
+// RUN: -march=rv32iv_xsfmm16t -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-MIN-XSFMM-TE-16 %s
+// RUN: %clang --target=riscv64 \
+// RUN: -march=rv64iv_xsfmm16t -x c -E -dM %s \
+// RUN: -o - | FileCheck --check-prefix=CHECK-MIN-XSFMM-TE-16 %s
+// CHECK-MIN-XSFMM-TE-16: __riscv_min_xsfmm_te  16{{$}}
 // end SIFIVE_CUSTOMIZATION
 
 // RUN: %clang --target=riscv32-unknown-linux-gnu \
