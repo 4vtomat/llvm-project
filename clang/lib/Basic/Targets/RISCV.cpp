@@ -201,14 +201,23 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
     Builder.defineMacro("__riscv_v_elen_fp", Twine(MaxELenFp));
   }
 
+#if SIFIVE_CUSTOMIZATION
+  if (ISAInfo->hasExtension("xsfmm128t"))
+    Builder.defineMacro("__riscv_min_xsfmm_te", Twine(128));
+  else if (ISAInfo->hasExtension("xsfmm64t"))
+    Builder.defineMacro("__riscv_min_xsfmm_te", Twine(64));
+  else if (ISAInfo->hasExtension("xsfmm32t"))
+    Builder.defineMacro("__riscv_min_xsfmm_te", Twine(32));
+  else if (ISAInfo->hasExtension("xsfmm16t"))
+    Builder.defineMacro("__riscv_min_xsfmm_te", Twine(16));
+#endif // SIFIVE_CUSTOMIZATION
+
   if (ISAInfo->hasExtension("c"))
     Builder.defineMacro("__riscv_compressed");
 
   if (ISAInfo->hasExtension("zve32x")) {
     Builder.defineMacro("__riscv_vector");
 #if SIFIVE_CUSTOMIZATION
-    // Enable the inclusion of the compatible header by default.
-    Builder.defineMacro("__rvv_0p10_compatible_intrinsics");
     // Enable the inclusion for compatibility support of v0.11 intrinsics
     Builder.defineMacro("__rvv_0p11_compatible_intrinsics");
 #endif

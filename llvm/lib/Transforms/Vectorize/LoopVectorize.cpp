@@ -3371,10 +3371,8 @@ void InnerLoopVectorizer::fixCSALiveOuts(VPTransformState &State, VPlan &Plan) {
       if (auto *Phi = dyn_cast<PHINode>(U);
           Phi && Phi->getParent() == LoopExitBlock)
         ToFix.insert(Phi);
-    for (PHINode *Phi : ToFix) {
+    for (PHINode *Phi : ToFix)
       Phi->addIncoming(ExtractedScalar, LoopMiddleBlock);
-      State.Plan->removeLiveOut(Phi);
-    }
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -4261,13 +4259,8 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
     assert(WideningDecision != CM_Unknown &&
            "Widening decision should be ready at this moment");
 
-#if SIFIVE_CUSTOMIZATION
-    if (isUniformMemOpUse(I) && !Hints->isFixedVectorizationDisabled())
-      return true;
-#else
     if (isUniformMemOpUse(I))
       return true;
-#endif // SIFIVE_CUSTOMIZATION
 
     return (WideningDecision == CM_Widen ||
             WideningDecision == CM_Widen_Reverse ||
@@ -4329,11 +4322,7 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
       if (!Ptr)
         continue;
 
-#if SIFIVE_CUSTOMIZATION
-      if (isUniformMemOpUse(&I) && !Hints->isFixedVectorizationDisabled())
-#else
       if (isUniformMemOpUse(&I))
-#endif // SIFIVE_CUSTOMIZATION
         addToWorklistIfAllowed(&I);
 
       if (isVectorizedMemAccessUse(&I, Ptr))
@@ -7460,11 +7449,7 @@ void LoopVectorizationCostModel::setCostBasedWideningDecision(ElementCount VF) {
       if (isa<StoreInst>(&I) && isScalarWithPredication(&I, VF))
         NumPredStores++;
 
-#if SIFIVE_CUSTOMIZATION
-      if (Legal->isUniformMemOp(I, VF) && !Hints->isFixedVectorizationDisabled()) {
-#else
       if (Legal->isUniformMemOp(I, VF)) {
-#endif // SIFIVE_CUSTOMIZATION
         auto isLegalToScalarize = [&]() {
           if (!VF.isScalable())
             // Scalarization of fixed length vectors "just works".
@@ -10586,6 +10571,7 @@ static void addUsersInExitBlock(
     Loop *OrigLoop, VPRecipeBuilder &Builder, VPlan &Plan,
 #if SIFIVE_CUSTOMIZATION
     const MapVector<PHINode *, InductionDescriptor> &Inductions,
+    const MapVector<PHINode *, CSADescriptor> &CSAs,
     LoopVectorizationLegality *Legal) {
   /// Cherry-pick from #88385
   if (Plan.isUncountable()) {
@@ -10649,6 +10635,19 @@ static void addUsersInExitBlock(
            return P && Inductions.contains(P);
          })))
       continue;
+#if SIFIVE_CUSTOMIZATION
+    // Exit values for CSAs are computed and updated outside of VPlan and
+    // independent of CSA recipes.
+    // TODO: Compute CSA exit values in VPlan, use VPLiveOuts to update
+    // live-outs.
+    if (isa<VPCSADataUpdateRecipe>(V) &&
+        (isa<Instruction>(IncomingValue) &&
+         any_of(IncomingValue->users(), [&CSAs](User *U) {
+           auto *P = dyn_cast<PHINode>(U);
+           return P && CSAs.contains(P);
+         })))
+      continue;
+#endif // SIFIVE_CUSTOMIZATION
     Plan.addLiveOut(&ExitPhi, V);
   }
 }
@@ -10955,7 +10954,7 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
 
 #if SIFIVE_CUSTOMIZATION
     addUsersInExitBlock(OrigLoop, RecipeBuilder, *Plan,
-                        Legal->getInductionVars(), Legal);
+                        Legal->getInductionVars(), Legal->getCSAs(), Legal);
 #else
     addUsersInExitBlock(OrigLoop, RecipeBuilder, *Plan,
                         Legal->getInductionVars());
