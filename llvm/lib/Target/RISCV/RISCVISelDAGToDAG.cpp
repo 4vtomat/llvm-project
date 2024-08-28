@@ -1381,6 +1381,62 @@ void RISCVDAGToDAGISel::Select(SDNode *Node) {
     ReplaceNode(Node, SRAI);
     return;
   }
+#if SIFIVE_CUSTOMIZATION
+  case ISD::ADD: {
+    if (!Subtarget->hasStdExtZba())
+      break;
+
+    auto *N1C = dyn_cast<ConstantSDNode>(Node->getOperand(0));
+    if (N1C && isInt<12>(N1C->getSExtValue()))
+      break;
+
+    SDValue N0 = Node->getOperand(0);
+    SDValue N1 = Node->getOperand(1);
+
+    // Select (add (sign_extend_inreg (shl X, C), i32), Y) to shXadd X, Y if
+    // the upper bits of the result aren't used.
+    if (N0.getOpcode() == ISD::SIGN_EXTEND_INREG &&
+        cast<VTSDNode>(N0.getOperand(1))->getVT() == MVT::i32 &&
+        N0.hasOneUse()) {
+      SDValue N00 = N0.getOperand(0);
+      if (N00.getOpcode() == ISD::SHL &&
+          isa<ConstantSDNode>(N00.getOperand(1)) && N00.hasOneUse()) {
+        unsigned ShiftAmt = N00.getConstantOperandVal(1);
+        if (ShiftAmt > 0 && ShiftAmt < 3 && hasAllWUsers(Node)) {
+          unsigned Opc = ShiftAmt == 1   ? RISCV::SH1ADD
+                         : ShiftAmt == 2 ? RISCV::SH2ADD
+                                         : RISCV::SH3ADD;
+          SDNode *SHXADD =
+              CurDAG->getMachineNode(Opc, DL, VT, N00.getOperand(0), N1);
+          ReplaceNode(Node, SHXADD);
+          return;
+        }
+      }
+    }
+
+    // Add is commutative, check the other operand.
+    if (N1.getOpcode() == ISD::SIGN_EXTEND_INREG &&
+        cast<VTSDNode>(N1.getOperand(1))->getVT() == MVT::i32 &&
+        N1.hasOneUse()) {
+      SDValue N10 = N1.getOperand(0);
+      if (N10.getOpcode() == ISD::SHL &&
+          isa<ConstantSDNode>(N10.getOperand(1)) && N10.hasOneUse()) {
+        unsigned ShiftAmt = N10.getConstantOperandVal(1);
+        if (ShiftAmt > 0 && ShiftAmt < 3 && hasAllWUsers(Node)) {
+          unsigned Opc = ShiftAmt == 1   ? RISCV::SH1ADD
+                         : ShiftAmt == 2 ? RISCV::SH2ADD
+                                         : RISCV::SH3ADD;
+          SDNode *SHXADD =
+              CurDAG->getMachineNode(Opc, DL, VT, N10.getOperand(0), N0);
+          ReplaceNode(Node, SHXADD);
+          return;
+        }
+      }
+    }
+
+    break;
+  }
+#endif
   case ISD::OR:
   case ISD::XOR:
     if (tryShrinkShlLogicImm(Node))
