@@ -15155,6 +15155,58 @@ static SDValue combineBlendPattern(SDNode *N, SelectionDAG &DAG) {
   // N0 fits in 16 bits, We can drop the AND.
   return N0;
 }
+
+// Fold (and (srl (extload X), C2), C1) -> (and (srl (zextload X), C2), C1) if
+// using a zextload will allow us to use an ANDI.
+static SDValue combineANDSRLLoad(SDNode *N,
+                                 TargetLowering::DAGCombinerInfo &DCI,
+                                 const RISCVSubtarget &Subtarget) {
+  SelectionDAG &DAG = DCI.DAG;
+  EVT VT = N->getValueType(0);
+  if (VT != Subtarget.getXLenVT())
+    return SDValue();
+
+  auto *N1C = dyn_cast<ConstantSDNode>(N->getOperand(1));
+  if (!N1C || isInt<12>(N1C->getSExtValue()))
+    return SDValue();
+
+  SDValue N0 = N->getOperand(0);
+  if (N0.getOpcode() != ISD::SRL || !N0.hasOneUse() ||
+      !isa<ConstantSDNode>(N0.getOperand(1)))
+    return SDValue();
+
+  uint64_t C2 = N0.getConstantOperandVal(1);
+  // Guard against out of bound shifts.
+  if (C2 >= VT.getSizeInBits())
+    return SDValue();
+
+  SDValue N00 = N0.getOperand(0);
+  if (!ISD::isEXTLoad(N00.getNode()) || !N00.hasOneUse())
+    return SDValue();
+
+  auto *LN00 = cast<LoadSDNode>(N00);
+  EVT MemVT = LN00->getMemoryVT();
+  if (MemVT != MVT::i16 && MemVT != MVT::i32)
+    return SDValue();
+
+  uint64_t C1 = N1C->getZExtValue();
+
+  // Clear any bits that are implied 0 by the srl.
+  C1 &= maskTrailingOnes<uint64_t>(VT.getSizeInBits() - C2);
+
+  unsigned ActiveBits = llvm::bit_width(C1);
+  // Most active bit should come from the MSB of the load. This is where we will
+  // sign extend from.
+  if (ActiveBits + C2 != MemVT.getSizeInBits() ||
+      !isInt<12>(SignExtend64(C1, ActiveBits)))
+    return SDValue();
+
+  SDValue ExtLoad =
+      DAG.getExtLoad(ISD::ZEXTLOAD, SDLoc(N00), VT, LN00->getChain(),
+                     LN00->getBasePtr(), MemVT, LN00->getMemOperand());
+  DCI.CombineTo(LN00, ExtLoad, ExtLoad.getValue(1));
+  return SDValue(N, 0);
+}
 #endif
 
 // Combines two comparison operation and logic operation to one selection
@@ -15195,6 +15247,9 @@ static SDValue performANDCombine(SDNode *N,
 
 #if SIFIVE_CUSTOMIZATION
   if (SDValue V = combineBlendPattern(N, DAG))
+    return V;
+
+  if (SDValue V = combineANDSRLLoad(N, DCI, Subtarget))
     return V;
 #endif
 
