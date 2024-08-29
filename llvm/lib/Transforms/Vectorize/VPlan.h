@@ -1457,6 +1457,7 @@ public:
     // for all lanes, depending on its uses).
     PtrAdd,
 #if SIFIVE_CUSTOMIZATION
+    ComputeReductionResultWithMask,
     ExitingCond,
     CSAInitMask,
     CSAInitData,

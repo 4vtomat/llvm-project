@@ -8942,8 +8942,14 @@ static void createAndCollectMergePhiForReduction(
     DenseMap<const RecurrenceDescriptor *, Value *> &ReductionResumeValues,
     VPTransformState &State, Loop *OrigLoop, BasicBlock *LoopMiddleBlock,
     bool VectorizingEpilogue) {
+#if SIFIVE_CUSTOMIZATION
+  if (!RedResult ||
+      (RedResult->getOpcode() != VPInstruction::ComputeReductionResult &&
+       RedResult->getOpcode() != VPInstruction::ComputeReductionResultWithMask))
+#else
   if (!RedResult ||
       RedResult->getOpcode() != VPInstruction::ComputeReductionResult)
+#endif // SIFIVE_CUSTOMIZATION
     return;
 
   auto *PhiR = cast<VPReductionPHIRecipe>(RedResult->getOperand(0));
@@ -11401,8 +11407,15 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
           Builder.createSelect(Cond, OrigExitingVPV, PhiR, {}, "", FMFs);
       OrigExitingVPV->replaceUsesWithIf(NewExitingVPV, [](VPUser &U, unsigned) {
         return isa<VPInstruction>(&U) &&
+#if SIFIVE_CUSTOMIZATION
+               (cast<VPInstruction>(&U)->getOpcode() ==
+                    VPInstruction::ComputeReductionResult ||
+                cast<VPInstruction>(&U)->getOpcode() ==
+                    VPInstruction::ComputeReductionResultWithMask);
+#else
                cast<VPInstruction>(&U)->getOpcode() ==
                    VPInstruction::ComputeReductionResult;
+#endif // SIFIVE_CUSTOMIZATION
       });
       if (PreferPredicatedReductionSelect ||
 #if SIFIVE_CUSTOMIZATION
@@ -11446,6 +11459,25 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
     // debugging.
     DebugLoc ExitDL = OrigLoop->getLoopLatch()->getTerminator()->getDebugLoc();
 
+#if SIFIVE_CUSTOMIZATION
+    RecurKind Kind = RdxDesc.getRecurrenceKind();
+    if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(Kind)) {
+      Value *Iden = RdxDesc.getRecurrenceIdentity(Kind, PhiTy,
+                                                  RdxDesc.getFastMathFlags());
+      VPValue *IdenVPV = Plan->getOrAddLiveIn(cast<ConstantInt>(Iden));
+      auto *FinalReductionMask = new VPInstruction(
+          Instruction::ICmp, CmpInst::ICMP_NE, NewExitingVPV, IdenVPV, ExitDL);
+      auto *FinalReductionResult =
+          new VPInstruction(VPInstruction::ComputeReductionResultWithMask,
+                            {PhiR, NewExitingVPV, FinalReductionMask}, ExitDL);
+      FinalReductionResult->insertBefore(*MiddleVPBB, IP);
+      FinalReductionMask->insertBefore(FinalReductionResult);
+      OrigExitingVPV->replaceUsesWithIf(
+          FinalReductionResult,
+          [](VPUser &User, unsigned) { return isa<VPLiveOut>(&User); });
+      continue;
+    }
+#endif // SIFIVE_CUSTOMIZATION
     // TODO: At the moment ComputeReductionResult also drives creation of the
     // bc.merge.rdx phi nodes, hence it needs to be created unconditionally here
     // even for in-loop reductions, until the reduction resume value handling is

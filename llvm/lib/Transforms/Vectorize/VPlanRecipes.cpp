@@ -969,6 +969,114 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
 
     return ReducedPartRdx;
   }
+#if SIFIVE_CUSTOMIZATION
+  case VPInstruction::ComputeReductionResultWithMask: {
+    if (Part != 0)
+      return State.get(this, 0, /*IsScalar*/ true);
+
+    // FIXME: The cross-recipe dependency on VPReductionPHIRecipe is temporary.
+    // Remove the operand from VPReductionPHIRecipe after breaking up the recipe
+    // further.
+    auto *PhiR = cast<VPReductionPHIRecipe>(getOperand(0));
+    auto *OrigPhi = cast<PHINode>(PhiR->getUnderlyingValue());
+    assert(!PhiR->isInLoop() && "Unsupport in-loop reduction for FindLastIV");
+
+    // Get its reduction variable descriptor.
+    const RecurrenceDescriptor &RdxDesc = PhiR->getRecurrenceDescriptor();
+    RecurKind RK = RdxDesc.getRecurrenceKind();
+    assert(RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK) &&
+           "Unspported recurrence kind");
+
+    bool IsUseVLAVectorizer = State.Plan->useVLAVectorizer();
+    assert((!IsUseVLAVectorizer || State.UF == 1) &&
+           "Expected only UF == 1 when VLA vectorizing");
+
+    VPValue *LoopExitingDef = getOperand(1);
+    VectorParts RdxParts(State.UF);
+    for (unsigned Part = 0; Part < State.UF; ++Part)
+      RdxParts[Part] = State.get(LoopExitingDef, Part, false);
+
+    VPValue *ExitingMask = getOperand(2);
+    VectorParts MaskParts(State.UF);
+    for (unsigned Part = 0; Part < State.UF; ++Part)
+      MaskParts[Part] = State.get(ExitingMask, Part, false);
+
+    // If the vector reduction can be performed in a smaller type, we truncate
+    // then extend the loop exit value to enable InstCombine to evaluate the
+    // entire expression in the smaller type.
+    // TODO: Handle this in truncateToMinBW.
+    Type *PhiTy = OrigPhi->getType();
+    if (State.VF.isVector() && PhiTy != RdxDesc.getRecurrenceType()) {
+      Type *RdxVecTy = VectorType::get(RdxDesc.getRecurrenceType(), State.VF);
+      for (unsigned Part = 0; Part < State.UF; ++Part)
+        RdxParts[Part] = Builder.CreateTrunc(RdxParts[Part], RdxVecTy);
+    }
+
+    if (!IsUseVLAVectorizer) {
+      // Mask each part by select instruction.
+      // ?? Create a recipe for that?
+      Value *RdxOpIden = RdxDesc.getRecurrenceIdentity(
+          RK, RdxDesc.getRecurrenceType(), RdxDesc.getFastMathFlags());
+      if (State.VF.isVector())
+        RdxOpIden = Builder.CreateVectorSplat(State.VF, RdxOpIden);
+      for (unsigned Part = 0; Part < State.UF; ++Part)
+        RdxParts[Part] =
+            Builder.CreateSelect(MaskParts[Part], RdxParts[Part], RdxOpIden);
+    }
+
+    // Reduce all of the unrolled parts into a single vector.
+    Value *ReducedPartRdx = RdxParts[0];
+    Value *MaskPartRdx = MaskParts[0];
+    for (unsigned Part = 1; Part < State.UF; ++Part) {
+      ReducedPartRdx =
+          createFindLastIVOp(Builder, ReducedPartRdx, RdxParts[Part]);
+      MaskPartRdx =
+          Builder.CreateBinOp(Instruction::Or, MaskParts[Part], MaskPartRdx);
+    }
+
+    // Create the reduction after the loop.
+    if (State.VF.isVector()) {
+      if (IsUseVLAVectorizer) {
+        Value *InitEVL =
+            State.get(State.Plan->getInitEVL(), 0, /*NeedsScalar=*/true);
+        assert(InitEVL &&
+               "InitEVL must be initialized in emitIterationCountCheck when "
+               "using VP intrinsic to generate unordered reduction");
+        ReducedPartRdx = createTargetReduction(Builder, RdxDesc, ReducedPartRdx,
+                                               InitEVL, OrigPhi, MaskPartRdx);
+        MaskPartRdx = createSimpleTargetReduction(Builder, MaskPartRdx,
+                                                  RecurKind::Or, InitEVL);
+      } else {
+        ReducedPartRdx =
+            createTargetReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
+        MaskPartRdx =
+            createSimpleTargetReduction(Builder, MaskPartRdx, RecurKind::Or);
+      }
+      // If the reduction can be performed in a smaller type, we need to
+      // extend the reduction to the wider type before we branch to the
+      // original loop.
+      if (PhiTy != RdxDesc.getRecurrenceType())
+        ReducedPartRdx = RdxDesc.isSigned()
+                             ? Builder.CreateSExt(ReducedPartRdx, PhiTy)
+                             : Builder.CreateZExt(ReducedPartRdx, PhiTy);
+    }
+
+    // Mask the reduction result
+    Value *StartV = PhiR->getStartValue()->getLiveInIRValue();
+    ReducedPartRdx = Builder.CreateSelect(MaskPartRdx, ReducedPartRdx, StartV);
+
+    // If there were stores of the reduction value to a uniform memory address
+    // inside the loop, create the final store here.
+    // TODO: Create a recipe for intermediate store to avoid duplicate code.
+    if (StoreInst *SI = RdxDesc.IntermediateStore) {
+      auto *NewSI = Builder.CreateAlignedStore(
+          ReducedPartRdx, SI->getPointerOperand(), SI->getAlign());
+      propagateMetadata(NewSI, SI);
+    }
+
+    return ReducedPartRdx;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   case VPInstruction::ExtractFromEnd: {
 #if SIFIVE_CUSTOMIZATION
     if (State.EVL && State.VF.isVector()) {
@@ -1098,6 +1206,9 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
 
 bool VPInstruction::isVectorToScalar() const {
   return getOpcode() == VPInstruction::ExtractFromEnd ||
+#if SIFIVE_CUSTOMIZATION
+         getOpcode() == VPInstruction::ComputeReductionResultWithMask ||
+#endif // SIFIVE_CUSTOMIZATION
          getOpcode() == VPInstruction::ComputeReductionResult;
 }
 
@@ -1276,6 +1387,9 @@ void VPInstruction::print(raw_ostream &O, const Twine &Indent,
     O << "compute-reduction-result";
     break;
 #if SIFIVE_CUSTOMIZATION
+  case VPInstruction::ComputeReductionResultWithMask:
+    O << "compute-reduction-result-with-mask";
+    break;
   case VPInstruction::CSAInitMask:
     O << "csa-init-mask";
     break;

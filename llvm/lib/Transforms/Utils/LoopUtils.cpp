@@ -1283,14 +1283,13 @@ Value *llvm::createFindLastIVTargetReduction(IRBuilderBase &Builder,
   return Builder.CreateIntMaxReduce(Src, true);
 }
 
-Value *llvm::createFindLastIVTargetReduction(IRBuilderBase &Builder,
-                                             Value *Src,
+Value *llvm::createFindLastIVTargetReduction(IRBuilderBase &Builder, Value *Src,
                                              const RecurrenceDescriptor &Desc,
-                                             Value *EVL) {
+                                             Value *EVL, Value *Mask) {
   assert(RecurrenceDescriptor::isFindLastIVRecurrenceKind(
              Desc.getRecurrenceKind()) &&
          "Unexpected reduction kind");
-  return Builder.CreateIntMaxReduce(Src, EVL, true);
+  return Builder.CreateIntMaxReduce(Src, EVL, true, Mask);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -1425,10 +1424,8 @@ Value *llvm::createTargetReduction(IRBuilderBase &B,
     assert(!Mask && "Masked AnyOf recurrence is not supported");
     return createAnyOfTargetReduction(B, Src, Desc, OrigPhi, EVL);
   }
-  if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK)) {
-    assert(!Mask && "Masked FindLastIV recurrence is not supported");
-    return createFindLastIVTargetReduction(B, Src, Desc, EVL);
-  }
+  if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
+    return createFindLastIVTargetReduction(B, Src, Desc, EVL, Mask);
 
   return createSimpleTargetReduction(B, Src, RK, EVL, Mask);
 }

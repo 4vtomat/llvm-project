@@ -41,8 +41,10 @@ define i32 @select_icmp_const_truncated_iv_widened_exit(ptr %a, i32 %n) {
 ; CHECK-VF4IC1-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-VF4IC1-NEXT:    br i1 [[TMP5]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-VF4IC1:       middle.block:
-; CHECK-VF4IC1-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vector.reduce.smax.v4i32(<4 x i32> [[TMP4]])
-; CHECK-VF4IC1-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i32 [[TMP6]], -2147483648
+; CHECK-VF4IC1-NEXT:    [[TMP9:%.*]] = icmp ne <4 x i32> [[TMP4]], <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC1-NEXT:    [[TMP10:%.*]] = select <4 x i1> [[TMP9]], <4 x i32> [[TMP4]], <4 x i32> <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC1-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vector.reduce.smax.v4i32(<4 x i32> [[TMP10]])
+; CHECK-VF4IC1-NEXT:    [[RDX_SELECT_CMP:%.*]] = call i1 @llvm.vector.reduce.or.v4i1(<4 x i1> [[TMP9]])
 ; CHECK-VF4IC1-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i32 [[TMP6]], i32 331
 ; CHECK-VF4IC1-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[WIDE_TRIP_COUNT]], [[N_VEC]]
 ; CHECK-VF4IC1-NEXT:    br i1 [[CMP_N]], label [[EXIT_LOOPEXIT:%.*]], label [[SCALAR_PH]]
@@ -120,11 +122,22 @@ define i32 @select_icmp_const_truncated_iv_widened_exit(ptr %a, i32 %n) {
 ; CHECK-VF4IC4-NEXT:    [[TMP20:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-VF4IC4-NEXT:    br i1 [[TMP20]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-VF4IC4:       middle.block:
-; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[TMP16]], <4 x i32> [[TMP17]])
-; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX10:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[RDX_MINMAX]], <4 x i32> [[TMP18]])
-; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX11:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[RDX_MINMAX10]], <4 x i32> [[TMP19]])
+; CHECK-VF4IC4-NEXT:    [[TMP32:%.*]] = icmp ne <4 x i32> [[TMP16]], <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP33:%.*]] = icmp ne <4 x i32> [[TMP17]], <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP34:%.*]] = icmp ne <4 x i32> [[TMP18]], <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP24:%.*]] = icmp ne <4 x i32> [[TMP19]], <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP25:%.*]] = select <4 x i1> [[TMP32]], <4 x i32> [[TMP16]], <4 x i32> <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP26:%.*]] = select <4 x i1> [[TMP33]], <4 x i32> [[TMP17]], <4 x i32> <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP27:%.*]] = select <4 x i1> [[TMP34]], <4 x i32> [[TMP18]], <4 x i32> <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP28:%.*]] = select <4 x i1> [[TMP24]], <4 x i32> [[TMP19]], <4 x i32> <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[TMP25]], <4 x i32> [[TMP26]])
+; CHECK-VF4IC4-NEXT:    [[TMP29:%.*]] = or <4 x i1> [[TMP33]], [[TMP32]]
+; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX10:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[RDX_MINMAX]], <4 x i32> [[TMP27]])
+; CHECK-VF4IC4-NEXT:    [[TMP30:%.*]] = or <4 x i1> [[TMP34]], [[TMP29]]
+; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX11:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[RDX_MINMAX10]], <4 x i32> [[TMP28]])
+; CHECK-VF4IC4-NEXT:    [[TMP31:%.*]] = or <4 x i1> [[TMP24]], [[TMP30]]
 ; CHECK-VF4IC4-NEXT:    [[TMP21:%.*]] = call i32 @llvm.vector.reduce.smax.v4i32(<4 x i32> [[RDX_MINMAX11]])
-; CHECK-VF4IC4-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i32 [[TMP21]], -2147483648
+; CHECK-VF4IC4-NEXT:    [[RDX_SELECT_CMP:%.*]] = call i1 @llvm.vector.reduce.or.v4i1(<4 x i1> [[TMP31]])
 ; CHECK-VF4IC4-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i32 [[TMP21]], i32 331
 ; CHECK-VF4IC4-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[WIDE_TRIP_COUNT]], [[N_VEC]]
 ; CHECK-VF4IC4-NEXT:    br i1 [[CMP_N]], label [[EXIT_LOOPEXIT:%.*]], label [[SCALAR_PH]]
@@ -198,10 +211,20 @@ define i32 @select_icmp_const_truncated_iv_widened_exit(ptr %a, i32 %n) {
 ; CHECK-VF1IC4-NEXT:    [[TMP25:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; CHECK-VF1IC4-NEXT:    br i1 [[TMP25]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK-VF1IC4:       middle.block:
-; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX:%.*]] = call i32 @llvm.smax.i32(i32 [[TMP21]], i32 [[TMP22]])
-; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX4:%.*]] = call i32 @llvm.smax.i32(i32 [[RDX_MINMAX]], i32 [[TMP23]])
-; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX5:%.*]] = call i32 @llvm.smax.i32(i32 [[RDX_MINMAX4]], i32 [[TMP24]])
-; CHECK-VF1IC4-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i32 [[RDX_MINMAX5]], -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP36:%.*]] = icmp ne i32 [[TMP21]], -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP37:%.*]] = icmp ne i32 [[TMP22]], -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP28:%.*]] = icmp ne i32 [[TMP23]], -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP29:%.*]] = icmp ne i32 [[TMP24]], -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP30:%.*]] = select i1 [[TMP36]], i32 [[TMP21]], i32 -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP31:%.*]] = select i1 [[TMP37]], i32 [[TMP22]], i32 -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP32:%.*]] = select i1 [[TMP28]], i32 [[TMP23]], i32 -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP33:%.*]] = select i1 [[TMP29]], i32 [[TMP24]], i32 -2147483648
+; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX:%.*]] = call i32 @llvm.smax.i32(i32 [[TMP30]], i32 [[TMP31]])
+; CHECK-VF1IC4-NEXT:    [[TMP34:%.*]] = or i1 [[TMP37]], [[TMP36]]
+; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX4:%.*]] = call i32 @llvm.smax.i32(i32 [[RDX_MINMAX]], i32 [[TMP32]])
+; CHECK-VF1IC4-NEXT:    [[TMP35:%.*]] = or i1 [[TMP28]], [[TMP34]]
+; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX5:%.*]] = call i32 @llvm.smax.i32(i32 [[RDX_MINMAX4]], i32 [[TMP33]])
+; CHECK-VF1IC4-NEXT:    [[RDX_SELECT_CMP:%.*]] = or i1 [[TMP29]], [[TMP35]]
 ; CHECK-VF1IC4-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i32 [[RDX_MINMAX5]], i32 331
 ; CHECK-VF1IC4-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[WIDE_TRIP_COUNT]], [[N_VEC]]
 ; CHECK-VF1IC4-NEXT:    br i1 [[CMP_N]], label [[EXIT_LOOPEXIT:%.*]], label [[SCALAR_PH]]
@@ -284,8 +307,10 @@ define i32 @select_icmp_const_truncated_iv_const_exit(ptr %a) {
 ; CHECK-VF4IC1-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 20000
 ; CHECK-VF4IC1-NEXT:    br i1 [[TMP5]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK-VF4IC1:       middle.block:
-; CHECK-VF4IC1-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vector.reduce.smax.v4i32(<4 x i32> [[TMP4]])
-; CHECK-VF4IC1-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i32 [[TMP6]], -2147483648
+; CHECK-VF4IC1-NEXT:    [[TMP9:%.*]] = icmp ne <4 x i32> [[TMP4]], <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC1-NEXT:    [[TMP10:%.*]] = select <4 x i1> [[TMP9]], <4 x i32> [[TMP4]], <4 x i32> <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC1-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vector.reduce.smax.v4i32(<4 x i32> [[TMP10]])
+; CHECK-VF4IC1-NEXT:    [[RDX_SELECT_CMP:%.*]] = call i1 @llvm.vector.reduce.or.v4i1(<4 x i1> [[TMP9]])
 ; CHECK-VF4IC1-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i32 [[TMP6]], i32 331
 ; CHECK-VF4IC1-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-VF4IC1:       scalar.ph:
@@ -352,11 +377,22 @@ define i32 @select_icmp_const_truncated_iv_const_exit(ptr %a) {
 ; CHECK-VF4IC4-NEXT:    [[TMP20:%.*]] = icmp eq i64 [[INDEX_NEXT]], 20000
 ; CHECK-VF4IC4-NEXT:    br i1 [[TMP20]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK-VF4IC4:       middle.block:
-; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[TMP16]], <4 x i32> [[TMP17]])
-; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX10:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[RDX_MINMAX]], <4 x i32> [[TMP18]])
-; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX11:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[RDX_MINMAX10]], <4 x i32> [[TMP19]])
+; CHECK-VF4IC4-NEXT:    [[TMP32:%.*]] = icmp ne <4 x i32> [[TMP16]], <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP33:%.*]] = icmp ne <4 x i32> [[TMP17]], <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP34:%.*]] = icmp ne <4 x i32> [[TMP18]], <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP24:%.*]] = icmp ne <4 x i32> [[TMP19]], <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP25:%.*]] = select <4 x i1> [[TMP32]], <4 x i32> [[TMP16]], <4 x i32> <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP26:%.*]] = select <4 x i1> [[TMP33]], <4 x i32> [[TMP17]], <4 x i32> <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP27:%.*]] = select <4 x i1> [[TMP34]], <4 x i32> [[TMP18]], <4 x i32> <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP28:%.*]] = select <4 x i1> [[TMP24]], <4 x i32> [[TMP19]], <4 x i32> <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[TMP25]], <4 x i32> [[TMP26]])
+; CHECK-VF4IC4-NEXT:    [[TMP29:%.*]] = or <4 x i1> [[TMP33]], [[TMP32]]
+; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX10:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[RDX_MINMAX]], <4 x i32> [[TMP27]])
+; CHECK-VF4IC4-NEXT:    [[TMP30:%.*]] = or <4 x i1> [[TMP34]], [[TMP29]]
+; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX11:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[RDX_MINMAX10]], <4 x i32> [[TMP28]])
+; CHECK-VF4IC4-NEXT:    [[TMP31:%.*]] = or <4 x i1> [[TMP24]], [[TMP30]]
 ; CHECK-VF4IC4-NEXT:    [[TMP21:%.*]] = call i32 @llvm.vector.reduce.smax.v4i32(<4 x i32> [[RDX_MINMAX11]])
-; CHECK-VF4IC4-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i32 [[TMP21]], -2147483648
+; CHECK-VF4IC4-NEXT:    [[RDX_SELECT_CMP:%.*]] = call i1 @llvm.vector.reduce.or.v4i1(<4 x i1> [[TMP31]])
 ; CHECK-VF4IC4-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i32 [[TMP21]], i32 331
 ; CHECK-VF4IC4-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-VF4IC4:       scalar.ph:
@@ -419,10 +455,20 @@ define i32 @select_icmp_const_truncated_iv_const_exit(ptr %a) {
 ; CHECK-VF1IC4-NEXT:    [[TMP25:%.*]] = icmp eq i64 [[INDEX_NEXT]], 20000
 ; CHECK-VF1IC4-NEXT:    br i1 [[TMP25]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK-VF1IC4:       middle.block:
-; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX:%.*]] = call i32 @llvm.smax.i32(i32 [[TMP21]], i32 [[TMP22]])
-; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX4:%.*]] = call i32 @llvm.smax.i32(i32 [[RDX_MINMAX]], i32 [[TMP23]])
-; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX5:%.*]] = call i32 @llvm.smax.i32(i32 [[RDX_MINMAX4]], i32 [[TMP24]])
-; CHECK-VF1IC4-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i32 [[RDX_MINMAX5]], -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP36:%.*]] = icmp ne i32 [[TMP21]], -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP37:%.*]] = icmp ne i32 [[TMP22]], -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP28:%.*]] = icmp ne i32 [[TMP23]], -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP29:%.*]] = icmp ne i32 [[TMP24]], -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP30:%.*]] = select i1 [[TMP36]], i32 [[TMP21]], i32 -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP31:%.*]] = select i1 [[TMP37]], i32 [[TMP22]], i32 -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP32:%.*]] = select i1 [[TMP28]], i32 [[TMP23]], i32 -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP33:%.*]] = select i1 [[TMP29]], i32 [[TMP24]], i32 -2147483648
+; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX:%.*]] = call i32 @llvm.smax.i32(i32 [[TMP30]], i32 [[TMP31]])
+; CHECK-VF1IC4-NEXT:    [[TMP34:%.*]] = or i1 [[TMP37]], [[TMP36]]
+; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX4:%.*]] = call i32 @llvm.smax.i32(i32 [[RDX_MINMAX]], i32 [[TMP32]])
+; CHECK-VF1IC4-NEXT:    [[TMP35:%.*]] = or i1 [[TMP28]], [[TMP34]]
+; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX5:%.*]] = call i32 @llvm.smax.i32(i32 [[RDX_MINMAX4]], i32 [[TMP33]])
+; CHECK-VF1IC4-NEXT:    [[RDX_SELECT_CMP:%.*]] = or i1 [[TMP29]], [[TMP35]]
 ; CHECK-VF1IC4-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i32 [[RDX_MINMAX5]], i32 331
 ; CHECK-VF1IC4-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-VF1IC4:       scalar.ph:
@@ -489,8 +535,10 @@ define i32 @select_fcmp_max_valid_const_ub(ptr %a) {
 ; CHECK-VF4IC1-NEXT:    [[TMP5:%.*]] = icmp eq i64 [[INDEX_NEXT]], 2147483648
 ; CHECK-VF4IC1-NEXT:    br i1 [[TMP5]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CHECK-VF4IC1:       middle.block:
-; CHECK-VF4IC1-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vector.reduce.smax.v4i32(<4 x i32> [[TMP4]])
-; CHECK-VF4IC1-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i32 [[TMP6]], -2147483648
+; CHECK-VF4IC1-NEXT:    [[TMP9:%.*]] = icmp ne <4 x i32> [[TMP4]], <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC1-NEXT:    [[TMP10:%.*]] = select <4 x i1> [[TMP9]], <4 x i32> [[TMP4]], <4 x i32> <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC1-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vector.reduce.smax.v4i32(<4 x i32> [[TMP10]])
+; CHECK-VF4IC1-NEXT:    [[RDX_SELECT_CMP:%.*]] = call i1 @llvm.vector.reduce.or.v4i1(<4 x i1> [[TMP9]])
 ; CHECK-VF4IC1-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i32 [[TMP6]], i32 -1
 ; CHECK-VF4IC1-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-VF4IC1:       scalar.ph:
@@ -557,11 +605,22 @@ define i32 @select_fcmp_max_valid_const_ub(ptr %a) {
 ; CHECK-VF4IC4-NEXT:    [[TMP20:%.*]] = icmp eq i64 [[INDEX_NEXT]], 2147483648
 ; CHECK-VF4IC4-NEXT:    br i1 [[TMP20]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CHECK-VF4IC4:       middle.block:
-; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[TMP16]], <4 x i32> [[TMP17]])
-; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX10:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[RDX_MINMAX]], <4 x i32> [[TMP18]])
-; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX11:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[RDX_MINMAX10]], <4 x i32> [[TMP19]])
+; CHECK-VF4IC4-NEXT:    [[TMP32:%.*]] = icmp ne <4 x i32> [[TMP16]], <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP33:%.*]] = icmp ne <4 x i32> [[TMP17]], <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP34:%.*]] = icmp ne <4 x i32> [[TMP18]], <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP24:%.*]] = icmp ne <4 x i32> [[TMP19]], <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP25:%.*]] = select <4 x i1> [[TMP32]], <4 x i32> [[TMP16]], <4 x i32> <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP26:%.*]] = select <4 x i1> [[TMP33]], <4 x i32> [[TMP17]], <4 x i32> <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP27:%.*]] = select <4 x i1> [[TMP34]], <4 x i32> [[TMP18]], <4 x i32> <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[TMP28:%.*]] = select <4 x i1> [[TMP24]], <4 x i32> [[TMP19]], <4 x i32> <i32 -2147483648, i32 -2147483648, i32 -2147483648, i32 -2147483648>
+; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[TMP25]], <4 x i32> [[TMP26]])
+; CHECK-VF4IC4-NEXT:    [[TMP29:%.*]] = or <4 x i1> [[TMP33]], [[TMP32]]
+; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX10:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[RDX_MINMAX]], <4 x i32> [[TMP27]])
+; CHECK-VF4IC4-NEXT:    [[TMP30:%.*]] = or <4 x i1> [[TMP34]], [[TMP29]]
+; CHECK-VF4IC4-NEXT:    [[RDX_MINMAX11:%.*]] = call <4 x i32> @llvm.smax.v4i32(<4 x i32> [[RDX_MINMAX10]], <4 x i32> [[TMP28]])
+; CHECK-VF4IC4-NEXT:    [[TMP31:%.*]] = or <4 x i1> [[TMP24]], [[TMP30]]
 ; CHECK-VF4IC4-NEXT:    [[TMP21:%.*]] = call i32 @llvm.vector.reduce.smax.v4i32(<4 x i32> [[RDX_MINMAX11]])
-; CHECK-VF4IC4-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i32 [[TMP21]], -2147483648
+; CHECK-VF4IC4-NEXT:    [[RDX_SELECT_CMP:%.*]] = call i1 @llvm.vector.reduce.or.v4i1(<4 x i1> [[TMP31]])
 ; CHECK-VF4IC4-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i32 [[TMP21]], i32 -1
 ; CHECK-VF4IC4-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-VF4IC4:       scalar.ph:
@@ -624,10 +683,20 @@ define i32 @select_fcmp_max_valid_const_ub(ptr %a) {
 ; CHECK-VF1IC4-NEXT:    [[TMP25:%.*]] = icmp eq i64 [[INDEX_NEXT]], 2147483648
 ; CHECK-VF1IC4-NEXT:    br i1 [[TMP25]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CHECK-VF1IC4:       middle.block:
-; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX:%.*]] = call i32 @llvm.smax.i32(i32 [[TMP21]], i32 [[TMP22]])
-; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX4:%.*]] = call i32 @llvm.smax.i32(i32 [[RDX_MINMAX]], i32 [[TMP23]])
-; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX5:%.*]] = call i32 @llvm.smax.i32(i32 [[RDX_MINMAX4]], i32 [[TMP24]])
-; CHECK-VF1IC4-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i32 [[RDX_MINMAX5]], -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP36:%.*]] = icmp ne i32 [[TMP21]], -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP37:%.*]] = icmp ne i32 [[TMP22]], -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP28:%.*]] = icmp ne i32 [[TMP23]], -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP29:%.*]] = icmp ne i32 [[TMP24]], -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP30:%.*]] = select i1 [[TMP36]], i32 [[TMP21]], i32 -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP31:%.*]] = select i1 [[TMP37]], i32 [[TMP22]], i32 -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP32:%.*]] = select i1 [[TMP28]], i32 [[TMP23]], i32 -2147483648
+; CHECK-VF1IC4-NEXT:    [[TMP33:%.*]] = select i1 [[TMP29]], i32 [[TMP24]], i32 -2147483648
+; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX:%.*]] = call i32 @llvm.smax.i32(i32 [[TMP30]], i32 [[TMP31]])
+; CHECK-VF1IC4-NEXT:    [[TMP34:%.*]] = or i1 [[TMP37]], [[TMP36]]
+; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX4:%.*]] = call i32 @llvm.smax.i32(i32 [[RDX_MINMAX]], i32 [[TMP32]])
+; CHECK-VF1IC4-NEXT:    [[TMP35:%.*]] = or i1 [[TMP28]], [[TMP34]]
+; CHECK-VF1IC4-NEXT:    [[RDX_MINMAX5:%.*]] = call i32 @llvm.smax.i32(i32 [[RDX_MINMAX4]], i32 [[TMP33]])
+; CHECK-VF1IC4-NEXT:    [[RDX_SELECT_CMP:%.*]] = or i1 [[TMP29]], [[TMP35]]
 ; CHECK-VF1IC4-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i32 [[RDX_MINMAX5]], i32 -1
 ; CHECK-VF1IC4-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-VF1IC4:       scalar.ph:
