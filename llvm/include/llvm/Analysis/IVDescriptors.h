@@ -100,6 +100,21 @@ public:
     CastInsts.insert(CI.begin(), CI.end());
   }
 
+#if SIFIVE_CUSTOMIZATION
+  RecurrenceDescriptor(Value *Start, Instruction *Exit, StoreInst *Store,
+                       RecurKind K, FastMathFlags FMF, Instruction *ExactFP,
+                       Type *RT, bool Signed, bool Ordered,
+                       const SmallPtrSetImpl<Instruction *> &CI,
+                       unsigned MinWidthCastToRecurTy, Value *Sentinel)
+      : IntermediateStore(Store), StartValue(Start), LoopExitInstr(Exit),
+        Kind(K), FMF(FMF), ExactFPMathInst(ExactFP), RecurrenceType(RT),
+        IsSigned(Signed), IsOrdered(Ordered),
+        MinWidthCastToRecurrenceType(MinWidthCastToRecurTy),
+        SentinelValue(Sentinel) {
+    CastInsts.insert(CI.begin(), CI.end());
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   /// This POD struct holds information about a potential recurrence operation.
   class InstDesc {
   public:
@@ -111,6 +126,13 @@ public:
         : IsRecurrence(true), PatternLastInst(I), RecKind(K),
           ExactFPMathInst(ExactFP) {}
 
+#if SIFIVE_CUSTOMIZATION
+    InstDesc(Instruction *I, RecurKind K, Value *Sentinel,
+             Instruction *ExactFP = nullptr)
+        : IsRecurrence(true), PatternLastInst(I), RecKind(K),
+          ExactFPMathInst(ExactFP), SentinelValue(Sentinel) {}
+#endif // SIFIVE_CUSTOMIZATION
+
     bool isRecurrence() const { return IsRecurrence; }
 
     bool needsExactFPMath() const { return ExactFPMathInst != nullptr; }
@@ -120,6 +142,12 @@ public:
     RecurKind getRecKind() const { return RecKind; }
 
     Instruction *getPatternInst() const { return PatternLastInst; }
+
+#if SIFIVE_CUSTOMIZATION
+    bool needsSentinelValue() const { return SentinelValue != nullptr; }
+
+    Value *getSentinelValue() const { return SentinelValue; }
+#endif // SIFIVE_CUSTOMIZATION
 
   private:
     // Is this instruction a recurrence candidate.
@@ -131,6 +159,10 @@ public:
     RecurKind RecKind;
     // Recurrence does not allow floating-point reassociation.
     Instruction *ExactFPMathInst;
+#if SIFIVE_CUSTOMIZATION
+    /// FindLastIV recurrence needs sentinel value support.
+    Value *SentinelValue = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
   };
 
   /// Returns a struct describing if the instruction 'I' can be a recurrence
@@ -317,6 +349,13 @@ public:
   /// AddReductionVar method, this field will be assigned the last met store.
   StoreInst *IntermediateStore = nullptr;
 
+#if SIFIVE_CUSTOMIZATION
+  /// Return ture if the recurrence requires sentinel value support.
+  bool needsSentinelValue() const { return SentinelValue != nullptr; }
+
+  Value *getSentinelValue() const { return SentinelValue; }
+#endif // SIFIVE_CUSTOMIZATION
+
 private:
   // The starting value of the recurrence.
   // It does not have to be zero!
@@ -342,6 +381,10 @@ private:
   SmallPtrSet<Instruction *, 8> CastInsts;
   // The minimum width used by the recurrence.
   unsigned MinWidthCastToRecurrenceType;
+#if SIFIVE_CUSTOMIZATION
+  /// The value used to represent the starting value.
+  Value *SentinelValue = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 /// A struct for saving information about induction variables.

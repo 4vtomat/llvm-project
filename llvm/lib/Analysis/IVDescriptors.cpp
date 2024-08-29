@@ -293,6 +293,10 @@ bool RecurrenceDescriptor::AddReductionVar(
   // The first instruction in the use-def chain of the Phi node that requires
   // exact floating point operations.
   Instruction *ExactFPMathInst = nullptr;
+#if SIFIVE_CUSTOMIZATION
+  /// Record the sentinel value on demand.
+  Value *SentinelValue = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
 
   // A value in the reduction can be used:
   //  - By the reduction:
@@ -379,6 +383,10 @@ bool RecurrenceDescriptor::AddReductionVar(
       ReduxDesc =
 #if SIFIVE_CUSTOMIZATION
           isRecurrenceInstr(TheLoop, Phi, Cur, Kind, ReduxDesc, FuncFMF, SE);
+      if (ReduxDesc.needsSentinelValue()) {
+        assert(!SentinelValue && "SentinelValue can only be assigned once");
+        SentinelValue = ReduxDesc.getSentinelValue();
+      }
 #else
           isRecurrenceInstr(TheLoop, Phi, Cur, Kind, ReduxDesc, FuncFMF);
 #endif // SIFIVE_CUSTOMIZATION
@@ -623,9 +631,16 @@ bool RecurrenceDescriptor::AddReductionVar(
   // is saved as part of the RecurrenceDescriptor.
 
   // Save the description of this reduction variable.
+#if SIFIVE_CUSTOMIZATION
+  RecurrenceDescriptor RD(RdxStart, ExitInstruction, IntermediateStore, Kind,
+                          FMF, ExactFPMathInst, RecurrenceType, IsSigned,
+                          IsOrdered, CastInsts, MinWidthCastToRecurrenceType,
+                          SentinelValue);
+#else
   RecurrenceDescriptor RD(RdxStart, ExitInstruction, IntermediateStore, Kind,
                           FMF, ExactFPMathInst, RecurrenceType, IsSigned,
                           IsOrdered, CastInsts, MinWidthCastToRecurrenceType);
+#endif // SIFIVE_CUSTOMIZATION
   RedDes = RD;
 
   return true;
@@ -735,22 +750,21 @@ RecurrenceDescriptor::isFindLastIVPattern(PHINode *OrigPhi, Instruction *I,
   else
     return InstDesc(false, I);
 
-  auto IsIncreasingLoopInduction = [&](Value *V) {
+  auto GetSentinelIfIncreasing = [&](Value *V) -> std::optional<Value *> {
     if (!SE)
-      return false;
+      return std::nullopt;
 
     Type *Ty = V->getType();
     if (!SE->isSCEVable(Ty))
-      return false;
+      return std::nullopt;
 
     auto *AR = dyn_cast<SCEVAddRecExpr>(SE->getSCEV(V));
     if (!AR)
-      return false;
+      return std::nullopt;
 
     const SCEV *Step = AR->getStepRecurrence(*SE);
-    // TODO: Support for monotonically decreasing induction variable
     if (!SE->isKnownPositive(Step))
-      return false;
+      return std::nullopt;
 
     const ConstantRange IVRange = SE->getSignedRange(AR);
     unsigned NumBits = Ty->getIntegerBitWidth();
@@ -760,22 +774,40 @@ RecurrenceDescriptor::isFindLastIVPattern(PHINode *OrigPhi, Instruction *I,
     //   [<sentinel value> + 1, SignedMin(<recurrence type>))
     // TODO: This range restriction can be lifted by adding an additional
     // virtual OR reduction.
-    const APInt Sentinel = APInt::getSignedMinValue(NumBits);
-    const ConstantRange ValidRange =
-        ConstantRange::getFull(NumBits).difference(ConstantRange(Sentinel));
-    LLVM_DEBUG(dbgs() << "LV: FindLastIV valid range is " << ValidRange
-                      << ", and the signed range of " << *AR << " is "
-                      << IVRange << "\n");
-    return ValidRange.contains(IVRange);
+    auto GetValidSentinel =
+        [NumBits, IVRange, AR,
+         Ty](const APInt Sentinel) -> std::optional<Value *> {
+      ConstantRange ValidRange =
+          ConstantRange::getFull(NumBits).difference(ConstantRange(Sentinel));
+      LLVM_DEBUG(dbgs() << "LV: FindLastIV valid range is " << ValidRange
+                        << ", and the signed range of " << *AR << " is "
+                        << IVRange << "\n");
+      if (ValidRange.contains(IVRange))
+        return ConstantInt::get(Ty, Sentinel);
+      return std::nullopt;
+    };
+
+    // Confirm the minimum value of the recurrence type is able to be the
+    // sentinel value.
+    if (auto Sentinel = GetValidSentinel(APInt::getSignedMinValue(NumBits)))
+      return Sentinel;
+    // Try the maximum value as a sentinel value if the minimum value can't.
+    // The maximum acceptable range is
+    //   [SignedMin(<recurrence type>), <sentinel value>)
+    if (auto Sentinel = GetValidSentinel(APInt::getSignedMaxValue(NumBits)))
+      return Sentinel;
+    return std::nullopt;
   };
 
   // We are looking for selects of the form:
   //   select(cmp(), phi, loop_induction) or
   //   select(cmp(), loop_induction, phi)
-  if (IsIncreasingLoopInduction(NonRdxPhi))
-    return InstDesc(I, isa<ICmpInst>(I->getOperand(0))
-                           ? RecurKind::IFindLastIV
-                           : RecurKind::FFindLastIV);
+  // TODO: Support for monotonically decreasing induction variable
+  if (auto ValidSentinel = GetSentinelIfIncreasing(NonRdxPhi))
+    return InstDesc(I,
+                    isa<ICmpInst>(I->getOperand(0)) ? RecurKind::IFindLastIV
+                                                    : RecurKind::FFindLastIV,
+                    ValidSentinel.value());
 
   return InstDesc(false, I);
 }

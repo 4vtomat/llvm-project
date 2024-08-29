@@ -1462,9 +1462,9 @@ Value *llvm::createSentinelValueHandling(IRBuilderBase &Builder,
                                          const RecurrenceDescriptor &Desc,
                                          Value *Rdx) {
   Value *InitVal = Desc.getRecurrenceStartValue();
-  Value *Iden = Desc.getRecurrenceIdentity(
-      Desc.getRecurrenceKind(), Rdx->getType(), Desc.getFastMathFlags());
-  Value *Cmp = Builder.CreateCmp(CmpInst::ICMP_NE, Rdx, Iden, "rdx.select.cmp");
+  Value *SentinelVal = Desc.getSentinelValue();
+  Value *Cmp =
+      Builder.CreateCmp(CmpInst::ICMP_NE, Rdx, SentinelVal, "rdx.select.cmp");
   return Builder.CreateSelect(Cmp, Rdx, InitVal, "rdx.select");
 }
 #endif // SIFIVE_CUSTOMIZATION

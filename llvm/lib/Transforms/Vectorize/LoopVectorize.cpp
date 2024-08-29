@@ -11462,20 +11462,27 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
 #if SIFIVE_CUSTOMIZATION
     RecurKind Kind = RdxDesc.getRecurrenceKind();
     if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(Kind)) {
+      Value *Sentinel = RdxDesc.getSentinelValue();
       Value *Iden = RdxDesc.getRecurrenceIdentity(Kind, PhiTy,
                                                   RdxDesc.getFastMathFlags());
-      VPValue *IdenVPV = Plan->getOrAddLiveIn(cast<ConstantInt>(Iden));
-      auto *FinalReductionMask = new VPInstruction(
-          Instruction::ICmp, CmpInst::ICMP_NE, NewExitingVPV, IdenVPV, ExitDL);
-      auto *FinalReductionResult =
-          new VPInstruction(VPInstruction::ComputeReductionResultWithMask,
-                            {PhiR, NewExitingVPV, FinalReductionMask}, ExitDL);
-      FinalReductionResult->insertBefore(*MiddleVPBB, IP);
-      FinalReductionMask->insertBefore(FinalReductionResult);
-      OrigExitingVPV->replaceUsesWithIf(
-          FinalReductionResult,
-          [](VPUser &User, unsigned) { return isa<VPLiveOut>(&User); });
-      continue;
+      // Only need the masked reduction if the sentinel value is not identity,
+      // which is minimun value.
+      if (Sentinel != Iden) {
+        VPValue *SentinelVPV =
+            Plan->getOrAddLiveIn(cast<ConstantInt>(Sentinel));
+        auto *FinalReductionMask =
+            new VPInstruction(Instruction::ICmp, CmpInst::ICMP_NE,
+                              NewExitingVPV, SentinelVPV, ExitDL);
+        auto *FinalReductionResult = new VPInstruction(
+            VPInstruction::ComputeReductionResultWithMask,
+            {PhiR, NewExitingVPV, FinalReductionMask}, ExitDL);
+        FinalReductionResult->insertBefore(*MiddleVPBB, IP);
+        FinalReductionMask->insertBefore(FinalReductionResult);
+        OrigExitingVPV->replaceUsesWithIf(
+            FinalReductionResult,
+            [](VPUser &User, unsigned) { return isa<VPLiveOut>(&User); });
+        continue;
+      }
     }
 #endif // SIFIVE_CUSTOMIZATION
     // TODO: At the moment ComputeReductionResult also drives creation of the

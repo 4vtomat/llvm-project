@@ -64,31 +64,29 @@ define i32 @FmoGetLastCodedMBOfSliceGroup(i32 %SliceGroupID, ptr %MBAmap, i32 %P
 ; SCALABLE-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
 ; SCALABLE-NEXT:    br i1 [[TMP18]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; SCALABLE:       middle.block:
-; SCALABLE-NEXT:    [[TMP19:%.*]] = icmp ne <vscale x 4 x i32> [[TMP17]], shufflevector (<vscale x 4 x i32> insertelement (<vscale x 4 x i32> poison, i32 -2147483648, i64 0), <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer)
-; SCALABLE-NEXT:    [[TMP20:%.*]] = select <vscale x 4 x i1> [[TMP19]], <vscale x 4 x i32> [[TMP17]], <vscale x 4 x i32> shufflevector (<vscale x 4 x i32> insertelement (<vscale x 4 x i32> poison, i32 -2147483648, i64 0), <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer)
-; SCALABLE-NEXT:    [[TMP21:%.*]] = call i32 @llvm.vector.reduce.smax.nxv4i32(<vscale x 4 x i32> [[TMP20]])
-; SCALABLE-NEXT:    [[TMP22:%.*]] = call i1 @llvm.vector.reduce.or.nxv4i1(<vscale x 4 x i1> [[TMP19]])
-; SCALABLE-NEXT:    [[TMP23:%.*]] = select i1 [[TMP22]], i32 [[TMP21]], i32 -1
+; SCALABLE-NEXT:    [[TMP19:%.*]] = call i32 @llvm.vector.reduce.smax.nxv4i32(<vscale x 4 x i32> [[TMP17]])
+; SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i32 [[TMP19]], -2147483648
+; SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i32 [[TMP19]], i32 -1
 ; SCALABLE-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[WIDE_TRIP_COUNT]], [[N_VEC]]
 ; SCALABLE-NEXT:    br i1 [[CMP_N]], label [[FOR_END_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; SCALABLE:       scalar.ph:
 ; SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_BODY_LR_PH]] ]
-; SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP23]], [[MIDDLE_BLOCK]] ], [ -1, [[FOR_BODY_LR_PH]] ]
+; SCALABLE-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ], [ -1, [[FOR_BODY_LR_PH]] ]
 ; SCALABLE-NEXT:    br label [[FOR_BODY:%.*]]
 ; SCALABLE:       for.body:
 ; SCALABLE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; SCALABLE-NEXT:    [[LASTMB_06:%.*]] = phi i32 [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ]
 ; SCALABLE-NEXT:    [[ARRAYIDX_I:%.*]] = getelementptr inbounds i8, ptr [[MBAMAP]], i64 [[INDVARS_IV]]
-; SCALABLE-NEXT:    [[TMP24:%.*]] = load i8, ptr [[ARRAYIDX_I]], align 1
-; SCALABLE-NEXT:    [[CONV_I:%.*]] = zext i8 [[TMP24]] to i32
+; SCALABLE-NEXT:    [[TMP20:%.*]] = load i8, ptr [[ARRAYIDX_I]], align 1
+; SCALABLE-NEXT:    [[CONV_I:%.*]] = zext i8 [[TMP20]] to i32
 ; SCALABLE-NEXT:    [[CMP1:%.*]] = icmp eq i32 [[CONV_I]], [[SLICEGROUPID]]
-; SCALABLE-NEXT:    [[TMP25:%.*]] = trunc i64 [[INDVARS_IV]] to i32
-; SCALABLE-NEXT:    [[SPEC_SELECT]] = select i1 [[CMP1]], i32 [[TMP25]], i32 [[LASTMB_06]]
+; SCALABLE-NEXT:    [[TMP21:%.*]] = trunc i64 [[INDVARS_IV]] to i32
+; SCALABLE-NEXT:    [[SPEC_SELECT]] = select i1 [[CMP1]], i32 [[TMP21]], i32 [[LASTMB_06]]
 ; SCALABLE-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; SCALABLE-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
 ; SCALABLE-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; SCALABLE:       for.end.loopexit:
-; SCALABLE-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ], [ [[TMP23]], [[MIDDLE_BLOCK]] ]
+; SCALABLE-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; SCALABLE-NEXT:    br label [[FOR_END]]
 ; SCALABLE:       for.end:
 ; SCALABLE-NEXT:    [[LASTMB_0_LCSSA:%.*]] = phi i32 [ -1, [[ENTRY:%.*]] ], [ [[SPEC_SELECT_LCSSA]], [[FOR_END_LOOPEXIT]] ]
@@ -145,10 +143,9 @@ define i32 @FmoGetLastCodedMBOfSliceGroup(i32 %SliceGroupID, ptr %MBAmap, i32 %P
 ; VP-SCALABLE-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
 ; VP-SCALABLE-NEXT:    br i1 [[TMP16]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; VP-SCALABLE:       middle.block:
-; VP-SCALABLE-NEXT:    [[VP_OP_ICMP4:%.*]] = call <vscale x 4 x i1> @llvm.vp.icmp.nxv4i32(<vscale x 4 x i32> [[VP_OP_MERGE]], <vscale x 4 x i32> shufflevector (<vscale x 4 x i32> insertelement (<vscale x 4 x i32> poison, i32 -2147483648, i64 0), <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer), metadata !"ne", <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP1]])
-; VP-SCALABLE-NEXT:    [[TMP17:%.*]] = call i32 @llvm.vp.reduce.smax.nxv4i32(i32 -2147483648, <vscale x 4 x i32> [[VP_OP_MERGE]], <vscale x 4 x i1> [[VP_OP_ICMP4]], i32 [[TMP1]])
-; VP-SCALABLE-NEXT:    [[TMP18:%.*]] = call i1 @llvm.vp.reduce.or.nxv4i1(i1 false, <vscale x 4 x i1> [[VP_OP_ICMP4]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP1]])
-; VP-SCALABLE-NEXT:    [[TMP19:%.*]] = select i1 [[TMP18]], i32 [[TMP17]], i32 -1
+; VP-SCALABLE-NEXT:    [[TMP17:%.*]] = call i32 @llvm.vp.reduce.smax.nxv4i32(i32 -2147483648, <vscale x 4 x i32> [[VP_OP_MERGE]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP1]])
+; VP-SCALABLE-NEXT:    [[RDX_SELECT_CMP:%.*]] = icmp ne i32 [[TMP17]], -2147483648
+; VP-SCALABLE-NEXT:    [[RDX_SELECT:%.*]] = select i1 [[RDX_SELECT_CMP]], i32 [[TMP17]], i32 -1
 ; VP-SCALABLE-NEXT:    br label [[FOR_END_LOOPEXIT:%.*]]
 ; VP-SCALABLE:       scalar.ph:
 ; VP-SCALABLE-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, [[FOR_BODY_LR_PH]] ]
@@ -158,16 +155,16 @@ define i32 @FmoGetLastCodedMBOfSliceGroup(i32 %SliceGroupID, ptr %MBAmap, i32 %P
 ; VP-SCALABLE-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[LASTMB_06:%.*]] = phi i32 [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[SPEC_SELECT:%.*]], [[FOR_BODY]] ]
 ; VP-SCALABLE-NEXT:    [[ARRAYIDX_I:%.*]] = getelementptr inbounds i8, ptr [[MBAMAP]], i64 [[INDVARS_IV]]
-; VP-SCALABLE-NEXT:    [[TMP20:%.*]] = load i8, ptr [[ARRAYIDX_I]], align 1
-; VP-SCALABLE-NEXT:    [[CONV_I:%.*]] = zext i8 [[TMP20]] to i32
+; VP-SCALABLE-NEXT:    [[TMP18:%.*]] = load i8, ptr [[ARRAYIDX_I]], align 1
+; VP-SCALABLE-NEXT:    [[CONV_I:%.*]] = zext i8 [[TMP18]] to i32
 ; VP-SCALABLE-NEXT:    [[CMP1:%.*]] = icmp eq i32 [[CONV_I]], [[SLICEGROUPID]]
-; VP-SCALABLE-NEXT:    [[TMP21:%.*]] = trunc i64 [[INDVARS_IV]] to i32
-; VP-SCALABLE-NEXT:    [[SPEC_SELECT]] = select i1 [[CMP1]], i32 [[TMP21]], i32 [[LASTMB_06]]
+; VP-SCALABLE-NEXT:    [[TMP19:%.*]] = trunc i64 [[INDVARS_IV]] to i32
+; VP-SCALABLE-NEXT:    [[SPEC_SELECT]] = select i1 [[CMP1]], i32 [[TMP19]], i32 [[LASTMB_06]]
 ; VP-SCALABLE-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; VP-SCALABLE-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[WIDE_TRIP_COUNT]]
 ; VP-SCALABLE-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_END_LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; VP-SCALABLE:       for.end.loopexit:
-; VP-SCALABLE-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ], [ [[TMP19]], [[MIDDLE_BLOCK]] ]
+; VP-SCALABLE-NEXT:    [[SPEC_SELECT_LCSSA:%.*]] = phi i32 [ [[SPEC_SELECT]], [[FOR_BODY]] ], [ [[RDX_SELECT]], [[MIDDLE_BLOCK]] ]
 ; VP-SCALABLE-NEXT:    br label [[FOR_END]]
 ; VP-SCALABLE:       for.end:
 ; VP-SCALABLE-NEXT:    [[LASTMB_0_LCSSA:%.*]] = phi i32 [ -1, [[ENTRY:%.*]] ], [ [[SPEC_SELECT_LCSSA]], [[FOR_END_LOOPEXIT]] ]

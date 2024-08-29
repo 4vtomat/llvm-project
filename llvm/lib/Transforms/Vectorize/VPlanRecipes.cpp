@@ -4151,8 +4151,9 @@ void VPReductionPHIRecipe::execute(VPTransformState &State) {
     // TODO: The sentinel value is not always necessary. When the start value is
     // a constant, and smaller than the start value of the induction variable,
     // the start value can be directly used to initialize the reduction phi.
-    StartV = Iden = RdxDesc.getRecurrenceIdentity(RK, VecTy->getScalarType(),
-                                                  RdxDesc.getFastMathFlags());
+    assert(RdxDesc.needsSentinelValue() &&
+           "[I|F]FindLastIV idioms currently require sentinel value support.");
+    StartV = Iden = RdxDesc.getSentinelValue();
     if (!ScalarPHI) {
       IRBuilderBase::InsertPointGuard IPBuilder(Builder);
       Builder.SetInsertPoint(VectorPH->getTerminator());
