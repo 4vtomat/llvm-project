@@ -14873,6 +14873,42 @@ static SDValue combineSubShiftToOrcB(SDNode *N, SelectionDAG &DAG,
   return DAG.getNode(RISCVISD::ORC_B, SDLoc(N), VT, N1);
 }
 
+#if SIFIVE_CUSTOMIZATION
+// Combine (sub (and (shl X, 1), 65536), (and (srl X, 15), 65537)) ->
+// (sext_inreg (sub (shl (and (srl X, 15), 65537), 16), (and (srl X, 15),  65537)), i32)
+// This reduces the number of instructions but increases the path length.
+static SDValue combineSubAbs2(SDNode *N, SelectionDAG &DAG,
+                             const RISCVSubtarget &Subtarget) {
+  using namespace SDPatternMatch;
+
+  EVT VT = N->getValueType(0);
+
+  if (VT != MVT::i64 || !Subtarget.is64Bit())
+    return SDValue();
+
+  SDValue N0 = N->getOperand(0);
+  SDValue N1 = N->getOperand(1);
+
+  SDValue X;
+  if (!sd_match(N0,
+                m_OneUse(m_And(m_OneUse(m_Shl(m_Value(X), m_SpecificInt(1))),
+                               m_SpecificInt(65536)))))
+    return SDValue();
+
+  if (!sd_match(
+          N1, m_OneUse(m_And(m_OneUse(m_Srl(m_Specific(X), m_SpecificInt(15))),
+                             m_SpecificInt(65537)))))
+    return SDValue();
+
+  SDLoc DL(N);
+  SDValue Shl = DAG.getNode(ISD::SHL, DL, VT, N1,
+                            DAG.getShiftAmountConstant(16, VT, DL));
+  SDValue Sub = DAG.getNode(ISD::SUB, DL, VT, Shl, N1);
+  return DAG.getNode(ISD::SIGN_EXTEND_INREG, DL, VT,
+                     Sub, DAG.getValueType(MVT::i32));
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 static SDValue performSUBCombine(SDNode *N, SelectionDAG &DAG,
                                  const RISCVSubtarget &Subtarget) {
   if (SDValue V = combineSubOfBoolean(N, DAG))
@@ -14897,6 +14933,11 @@ static SDValue performSUBCombine(SDNode *N, SelectionDAG &DAG,
     return V;
   if (SDValue V = combineSubShiftToOrcB(N, DAG, Subtarget))
     return V;
+
+#if SIFIVE_CUSTOMIZATION
+  if (SDValue V = combineSubAbs2(N, DAG, Subtarget))
+    return V;
+#endif // SIFIVE_CUSTOMIZATION
 
   // fold (sub x, (select lhs, rhs, cc, 0, y)) ->
   //      (select lhs, rhs, cc, x, (sub x, y))
