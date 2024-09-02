@@ -362,6 +362,14 @@ public:
     if (DataTypeVT.isFixedLengthVector() && !ST->useRVVForFixedLengthVectors())
       return false;
 
+#if SIFIVE_CUSTOMIZATION
+    EVT PointerTypeVT = EVT(TLI->getPointerTy(DL));
+    // We also need to check if the vector of pointer in gather/scatter
+    // instruction is valid.
+    if (DataTypeVT.isScalableVector() &&
+        !TLI->isLegalElementTypeForRVV(PointerTypeVT))
+      return false;
+#endif // SIFIVE_CUSTOMIZATION
     EVT ElemType = DataTypeVT.getScalarType();
     if (!ST->enableUnalignedVectorMem() && Alignment < ElemType.getStoreSize())
       return false;

@@ -840,6 +840,10 @@ InstructionCost RISCVTTIImpl::getShuffleCost(TTI::ShuffleKind Kind,
   Kind = improveShuffleKindFromMask(Kind, Mask, Tp, Index, SubTp);
 
   std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Tp);
+#if SIFIVE_CUSTOMIZATION
+  if (!LT.first.isValid())
+    return InstructionCost::getInvalid();
+#endif // SIFIVE_CUSTOMIZATION
 
   // First, handle cases where having a fixed length vector enables us to
   // give a more accurate cost than falling back to generic scalable codegen.

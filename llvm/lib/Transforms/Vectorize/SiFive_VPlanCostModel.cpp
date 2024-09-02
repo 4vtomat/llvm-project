@@ -234,8 +234,16 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
                   AddOp = ID.getInductionOpcode();
                 return TTI.getArithmeticInstrCost(AddOp, VectorTy, CostKind);
               })
+          .Case<VPWidenPointerInductionRecipe>(
+              [&](const VPWidenPointerInductionRecipe *PIR) -> InstructionCost {
+                Type *PhiTy =
+                    PIR->getInductionDescriptor().getStep()->getType();
+                if (!TTI.isElementTypeLegalForScalableVector(PhiTy))
+                  return InstructionCost::getInvalid();
+                return 1;
+              })
           .Case<VPCanonicalIVPHIRecipe, VPScalarIVStepsRecipe,
-                VPReductionPHIRecipe, VPWidenPointerInductionRecipe>(
+                VPReductionPHIRecipe>(
               [&](const VPRecipeBase *IVR) -> InstructionCost { return 1; })
           .Case<VPReductionRecipe>([&](const VPReductionRecipe *VPR) {
             return getReductionCost(VPR, RVL);
