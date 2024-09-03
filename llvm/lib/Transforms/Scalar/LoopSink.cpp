@@ -39,6 +39,9 @@
 #include "llvm/Analysis/MemorySSA.h"
 #include "llvm/Analysis/MemorySSAUpdater.h"
 #include "llvm/Analysis/ScalarEvolution.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/Analysis/TargetLibraryInfo.h"
+#endif
 #include "llvm/IR/Dominators.h"
 #include "llvm/IR/Instructions.h"
 #include "llvm/Support/BranchProbability.h"
@@ -294,11 +297,20 @@ static bool sinkInstruction(
 
 /// Sinks instructions from loop's preheader to the loop body if the
 /// sum frequency of inserted copy is smaller than preheader's frequency.
+#if SIFIVE_CUSTOMIZATION
+static bool sinkLoopInvariantInstructions(Loop &L, AAResults &AA, LoopInfo &LI,
+                                          DominatorTree &DT,
+                                          BlockFrequencyInfo &BFI,
+                                          MemorySSA &MSSA,
+                                          TargetLibraryInfo &TLI,
+                                          ScalarEvolution *SE) {
+#else
 static bool sinkLoopInvariantInstructions(Loop &L, AAResults &AA, LoopInfo &LI,
                                           DominatorTree &DT,
                                           BlockFrequencyInfo &BFI,
                                           MemorySSA &MSSA,
                                           ScalarEvolution *SE) {
+#endif
   BasicBlock *Preheader = L.getLoopPreheader();
   assert(Preheader && "Expected loop to have preheader");
 
@@ -342,7 +354,7 @@ static bool sinkLoopInvariantInstructions(Loop &L, AAResults &AA, LoopInfo &LI,
     assert(L.hasLoopInvariantOperands(&I) &&
            "Insts in a loop's preheader should have loop invariant operands!");
 #if SIFIVE_CUSTOMIZATION
-    if (!canSinkOrHoistInst(I, &AA, &DT, &L, MSSAU, false, LICMFlags,
+    if (!canSinkOrHoistInst(I, &AA, &DT, &L, MSSAU, false, LICMFlags, &TLI,
                             /*NewStructTBAAPtrHoisting=*/false))
 #else
     if (!canSinkOrHoistInst(I, &AA, &DT, &L, MSSAU, false, LICMFlags))
@@ -374,6 +386,9 @@ PreservedAnalyses LoopSinkPass::run(Function &F, FunctionAnalysisManager &FAM) {
   DominatorTree &DT = FAM.getResult<DominatorTreeAnalysis>(F);
   BlockFrequencyInfo &BFI = FAM.getResult<BlockFrequencyAnalysis>(F);
   MemorySSA &MSSA = FAM.getResult<MemorySSAAnalysis>(F).getMSSA();
+#if SIFIVE_CUSTOMIZATION
+  TargetLibraryInfo &TLI = FAM.getResult<TargetLibraryAnalysis>(F);
+#endif
 
   // We want to do a postorder walk over the loops. Since loops are a tree this
   // is equivalent to a reversed preorder walk and preorder is easy to compute
@@ -393,8 +408,13 @@ PreservedAnalyses LoopSinkPass::run(Function &F, FunctionAnalysisManager &FAM) {
     // Note that we don't pass SCEV here because it is only used to invalidate
     // loops in SCEV and we don't preserve (or request) SCEV at all making that
     // unnecessary.
+#if SIFIVE_CUSTOMIZATION
+    Changed |= sinkLoopInvariantInstructions(L, AA, LI, DT, BFI, MSSA, TLI,
+                                             /*ScalarEvolution*/ nullptr);
+#else
     Changed |= sinkLoopInvariantInstructions(L, AA, LI, DT, BFI, MSSA,
                                              /*ScalarEvolution*/ nullptr);
+#endif
   } while (!PreorderLoops.empty());
 
   if (!Changed)

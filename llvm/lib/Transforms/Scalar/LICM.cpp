@@ -201,6 +201,7 @@ static bool pointerInvalidatedByLoop(MemorySSA *MSSA, MemoryUse *MU,
                                      Loop *CurLoop, Instruction &I,
 #if SIFIVE_CUSTOMIZATION
                                      bool NewStructTBAAPtrContext,
+                                     TargetLibraryInfo *TLI,
 #endif // SIFIVE_CUSTOMIZATION
                                      SinkAndHoistLICMFlags &Flags,
                                      bool InvariantGroup);
@@ -649,7 +650,7 @@ bool llvm::sinkRegion(DomTreeNode *N, AAResults *AA, LoopInfo *LI,
                                     SafetyInfo, TTI, FoldableInLoop,
                                     LoopNestMode) &&
 #if SIFIVE_CUSTOMIZATION
-          canSinkOrHoistInst(I, AA, DT, CurLoop, MSSAU, true, Flags,
+          canSinkOrHoistInst(I, AA, DT, CurLoop, MSSAU, true, Flags, TLI,
                              /* NewStructTBAAPtrHoisting */ false, ORE)) {
 #else
           canSinkOrHoistInst(I, AA, DT, CurLoop, MSSAU, true, Flags, ORE)) {
@@ -986,7 +987,7 @@ bool llvm::hoistRegion(DomTreeNode *N, AAResults *AA, LoopInfo *LI,
           (isGuaranteedToExecuteForEveryIteration(&I, CurLoop) &&
            AllowSpeculation);
       if (CurLoop->hasLoopInvariantOperands(&I) &&
-          canSinkOrHoistInst(I, AA, DT, CurLoop, MSSAU, true, Flags,
+          canSinkOrHoistInst(I, AA, DT, CurLoop, MSSAU, true, Flags, TLI,
                              NewStructTBAAPtrHoisting, ORE) &&
           isSafeToExecuteUnconditionally(
               I, DT, TLI, CurLoop, SafetyInfo, ORE,
@@ -1331,7 +1332,9 @@ bool llvm::canSinkOrHoistInst(Instruction &I, AAResults *AA, DominatorTree *DT,
                               bool TargetExecutesOncePerLoop,
                               SinkAndHoistLICMFlags &Flags,
 #if SIFIVE_CUSTOMIZATION
+                              TargetLibraryInfo *TLI,
                               bool NewStructTBAAPtrHoisting,
+
 #endif // SIFIVE_CUSTOMIZATION
                               OptimizationRemarkEmitter *ORE) {
   // If we don't understand the instruction, bail early.
@@ -1366,6 +1369,7 @@ bool llvm::canSinkOrHoistInst(Instruction &I, AAResults *AA, DominatorTree *DT,
         MSSA, MU, CurLoop, I,
 #if SIFIVE_CUSTOMIZATION
         isNewStructTBAAPointerCandidate(LI, CurLoop, NewStructTBAAPtrHoisting),
+        TLI,
 #endif // SIFIVE_CUSTOMIZATION
 	Flags, InvariantGroup);
     // Check loop-invariant address because this may also be a sinkable load
@@ -1425,6 +1429,7 @@ bool llvm::canSinkOrHoistInst(Instruction &I, AAResults *AA, DominatorTree *DT,
                   MSSA, cast<MemoryUse>(MSSA->getMemoryAccess(CI)), CurLoop, I,
 #if SIFIVE_CUSTOMIZATION
                   /*NewStructTBAAPtrContext=*/false,
+                  TLI,
 #endif // SIFIVE_CUSTOMIZATION
 		  Flags, /*InvariantGroup=*/false))
             return false;
@@ -2566,6 +2571,7 @@ static bool pointerInvalidatedByLoop(MemorySSA *MSSA, MemoryUse *MU,
                                      Loop *CurLoop, Instruction &I,
 #if SIFIVE_CUSTOMIZATION
                                      bool NewStructTBAAPtrContext,
+                                     TargetLibraryInfo *TLI,
 #endif // SIFIVE_CUSTOMIZATION
                                      SinkAndHoistLICMFlags &Flags,
                                      bool InvariantGroup) {
@@ -2591,6 +2597,30 @@ static bool pointerInvalidatedByLoop(MemorySSA *MSSA, MemoryUse *MU,
         return isa<MemoryDef>(Source);
       }
       return false;
+    } else if (auto *LI = dyn_cast<LoadInst>(&I)) {
+      for (auto *BB : CurLoop->getBlocks())
+        if (auto *Accesses = MSSA->getBlockAccesses(BB))
+          for (const auto &MA : *Accesses)
+            if (const auto *MD = dyn_cast<MemoryDef>(&MA))
+              if (auto *CI = dyn_cast<CallInst>(MD->getMemoryInst())) {
+                // Any call that mods ptr prevents a hoist or sync.
+                for (const auto &AI : llvm::enumerate(CI->args())) {
+                  const Value *Arg = AI.value();
+                  if (!Arg->getType()->isPointerTy())
+                    continue;
+                  MemoryLocation ArgLoc =
+                      MemoryLocation::getForArgument(CI, AI.index(), TLI);
+                  ModRefInfo MRI = BAA.getModRefInfo(CI, ArgLoc);
+                  // Only check for args that modify memory
+                  if (isModSet(MRI)) {
+                    AliasResult R = BAA.alias(ArgLoc, MemoryLocation::get(LI));
+                    // If we know it aliases then invalidate the pointer
+                    if ((R == AliasResult::MustAlias) ||
+                        (R == AliasResult::PartialAlias))
+                      return true;
+                  }
+                }
+              }
     }
 #endif // SIFIVE_CUSTOMIZATION
     return !MSSA->isLiveOnEntryDef(Source) &&
