@@ -295,8 +295,9 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
       OutName += " ";
       OutName += Name;
       return createScalarTypeNode(OutName, AnyPtr, Size);
+    }
 #if SIFIVE_CUSTOMIZATION
-    } else if (auto *TTy = dyn_cast<RecordType>(Ty)) {
+    if (auto *TTy = dyn_cast<RecordType>(Ty)) {
       if (CodeGenOpts.NewStructPathTBAA) {
         bool IsClass;
         if (isMayAliasType(TTy, IsClass, Context, PtrDepth))
@@ -310,15 +311,16 @@ llvm::MDNode *CodeGenTBAA::getTypeInfoHelper(const Type *Ty) {
           // Don't use the mangler for C code.
           OutName += (IsClass) ? "class " : "struct ";
           llvm::raw_svector_ostream Out(Name);
-          MContext.mangleCanonicalTypeName(QualType(Ty, 0), Out);
+          CGTypes.getCXXABI().getMangleContext().mangleCanonicalTypeName(
+              QualType(Ty, 0), Out);
           OutName += Name;
         } else {
           OutName += QualType(Ty, 0).getAsString(Context.getPrintingPolicy());
         }
         return createScalarTypeNode(OutName, AnyPtr, Size);
       }
-#endif //SIFIVE_CUSTOMIZATION
     }
+#endif //SIFIVE_CUSTOMIZATION
     return AnyPtr;
   }
 
