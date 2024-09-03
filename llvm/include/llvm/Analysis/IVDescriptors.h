@@ -26,7 +26,6 @@ namespace llvm {
 class AssumptionCache;
 class DemandedBits;
 class DominatorTree;
-class Instruction;
 class Loop;
 class PredicatedScalarEvolution;
 class ScalarEvolution;

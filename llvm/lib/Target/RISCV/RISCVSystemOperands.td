@@ -486,7 +486,10 @@ def : SysReg<"mnepc", 0x741>;
 def : SysReg<"mncause", 0x742>;
 def : SysReg<"mnstatus", 0x744>;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> b959532
 //===-----------------------------------------------
 // Control Transfer Records CSRs
 //===-----------------------------------------------
@@ -495,4 +498,7 @@ def : SysReg<"sctrstatus", 0x14f>;
 def : SysReg<"sctrdepth", 0x15f>;
 def : SysReg<"vsctrctl", 0x24e>;
 def : SysReg<"mctrctl", 0x34e>;
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> b959532

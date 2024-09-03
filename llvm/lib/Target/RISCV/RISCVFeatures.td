@@ -806,7 +806,18 @@ def HasStdExtZvbc : Predicate<"Subtarget->hasStdExtZvbc()">,
                     AssemblerPredicate<(all_of FeatureStdExtZvbc),
                         "'Zvbc' (Vector Carryless Multiplication)">;
 
+<<<<<<< HEAD
 let AdditionalVersions = [[0, 1]]  in // SIFIVE
+=======
+def FeatureStdExtZvbc32e
+    : RISCVExperimentalExtension<"zvbc32e", 0, 7,
+                                 "'Zvbc32e' (Vector Carryless Multiplication with 32-bits elements)">;
+
+def HasStdExtZvbcOrZvbc32e : Predicate<"Subtarget->hasStdExtZvbc() || Subtarget->hasStdExtZvbc32e()">,
+                             AssemblerPredicate<(any_of FeatureStdExtZvbc, FeatureStdExtZvbc32e),
+                             "'Zvbc' or 'Zvbc32e' (Vector Carryless Multiplication)">;
+
+>>>>>>> b959532
 def FeatureStdExtZvkg
     : RISCVExtension<"zvkg", 1, 0,
                      "'Zvkg' (Vector GCM instructions for Cryptography)">,
@@ -814,6 +825,14 @@ def FeatureStdExtZvkg
 def HasStdExtZvkg : Predicate<"Subtarget->hasStdExtZvkg()">,
                     AssemblerPredicate<(all_of FeatureStdExtZvkg),
                         "'Zvkg' (Vector GCM instructions for Cryptography)">;
+
+def FeatureStdExtZvkgs
+    : RISCVExperimentalExtension<"zvkgs", 0, 7,
+                                 "'Zvkgs' (Vector-Scalar GCM instructions for Cryptography)",
+                                 [FeatureStdExtZvkg]>;
+def HasStdExtZvkgs : Predicate<"Subtarget->hasStdExtZvkgs()">,
+                     AssemblerPredicate<(all_of FeatureStdExtZvkgs),
+                        "'Zvkgs' (Vector-Scalar GCM instructions for Cryptography)">;
 
 def FeatureStdExtZvkned
     : RISCVExtension<"zvkned", 1, 0,
@@ -835,8 +854,7 @@ def HasStdExtZvknha : Predicate<"Subtarget->hasStdExtZvknha()">,
 let AdditionalVersions = [[0, 1]]  in // SIFIVE
 def FeatureStdExtZvknhb
     : RISCVExtension<"zvknhb", 1, 0,
-                     "'Zvknhb' (Vector SHA-2 (SHA-256 and SHA-512))",
-                     [FeatureStdExtZve64x]>,
+                     "'Zvknhb' (Vector SHA-2 (SHA-256 and SHA-512))">,
       RISCVExtensionBitmask<0, 56>;
 def HasStdExtZvknhb : Predicate<"Subtarget->hasStdExtZvknhb()">,
                       AssemblerPredicate<(all_of FeatureStdExtZvknhb),
@@ -1059,9 +1077,9 @@ def FeatureStdExtSstc
     : RISCVExtension<"sstc", 1, 0,
                      "'Sstc' (Supervisor-mode timer interrupts)">;
 
-def FeaturesStdExtSsqosid
-    : RISCVExperimentalExtension<"ssqosid", 1, 0,
-                                 "'Ssqosid' (Quality-of-Service (QoS) Identifiers)">;
+def FeatureStdExtSsqosid
+    : RISCVExtension<"ssqosid", 1, 0,
+                     "'Ssqosid' (Quality-of-Service (QoS) Identifiers)">;
 
 def FeatureStdExtShtvala
     : RISCVExtension<"shtvala", 1, 0,
@@ -1149,6 +1167,7 @@ def FeatureStdExtSupm
     : RISCVExperimentalExtension<"supm", 1, 0,
                                  "'Supm' (Indicates User-mode Pointer Masking)">;
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 def FeatureStdExtSmctr
     : RISCVExtension<"smctr", 1, 0,
@@ -1158,11 +1177,22 @@ def FeatureStdExtSsctr
     : RISCVExtension<"ssctr", 1, 0,
                      "'Ssctr' (Control Transfer Records Supervisor Level)",
                      [FeatureStdExtSscsrind]>;
+=======
+def FeatureStdExtSmctr
+    : RISCVExperimentalExtension<"smctr", 1, 0,
+                                 "'Smctr' (Control Transfer Records Machine Level)",
+                                 [FeatureStdExtSscsrind]>;
+def FeatureStdExtSsctr
+    : RISCVExperimentalExtension<"ssctr" ,1, 0,
+                                 "'Ssctr' (Control Transfer Records Supervisor Level)",
+                                 [FeatureStdExtSscsrind]>;
+>>>>>>> b959532
 def HasStdExtSmctrOrSsctr : Predicate<"Subtarget->hasStdExtSmctrOrSsctr()">,
                             AssemblerPredicate<(any_of FeatureStdExtSmctr, FeatureStdExtSsctr),
                                "'Smctr' (Control Transfer Records Machine Level) or "
                                "'Ssctr' (Control Transfer Records Supervisor Level)">;
 
+<<<<<<< HEAD
 def FeatureStdExtZjid
     : RISCVExperimentalExtension<"zjid", 0, 0,
                                  "'Zjid' (Instruction/Data Cache Synchronization)">;
@@ -1171,6 +1201,8 @@ def HasStdExtZjid : Predicate<"Subtarget->hasStdExtZjid()">,
                     AssemblerPredicate<(all_of FeatureStdExtZjid),
                                         "'Zjid' (Instruction/Data Cache Synchronization)">;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> b959532
 //===----------------------------------------------------------------------===//
 // Vendor extensions
 //===----------------------------------------------------------------------===//
