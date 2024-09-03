@@ -20,6 +20,7 @@
 #include "llvm/IR/VFABIDemangler.h"
 #include "llvm/Support/CheckedArithmetic.h"
 #if SIFIVE_CUSTOMIZATION
+#include "llvm/Analysis/ScalarEvolutionExpressions.h"
 #include "llvm/Support/CommandLine.h"
 #endif // SIFIVE_CUSTOMIZATION
 
