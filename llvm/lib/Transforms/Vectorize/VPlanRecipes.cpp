@@ -3238,6 +3238,18 @@ void VPWidenStoreEVLRecipe::execute(VPTransformState &State) {
   } else {
     Mask = Builder.CreateVectorSplat(State.VF, Builder.getTrue());
   }
+#if SIFIVE_CUSTOMIZATION
+  if (auto *IMask = dyn_cast_if_present<VPInstruction>(getMask());
+      IMask && IMask->getOpcode() == CmpInst::ICMP_ULE)
+    Mask = Builder.CreateVectorSplat(State.VF, Builder.getTrue());
+  if (isStrided() || isMonotonic()) {
+    // Upstream compiler only handles EVL for consecutive load/store
+    // TODO: Move code from widenPredicatedMemoryInstruction into
+    // lowerStoreUsingVectorIntrinsics to simplify pulldown
+    NewSI = cast<CallInst>(
+        llvm::widenPredicatedMemoryInstruction(*this, State, 0, Mask));
+  } else {
+#endif // SIFIVE_CUSTOMIZATION
   Value *Addr = State.get(getAddr(), 0, !CreateScatter);
   if (CreateScatter) {
     NewSI = Builder.CreateIntrinsic(Type::getVoidTy(EVL->getContext()),
@@ -3250,6 +3262,10 @@ void VPWidenStoreEVLRecipe::execute(VPTransformState &State) {
         Instruction::Store, Type::getVoidTy(EVL->getContext()),
         {StoredVal, Addr}));
   }
+#if SIFIVE_CUSTOMIZATION
+  }
+  if (!isMonotonic())
+#endif // SIFIVE_CUSTOMIZATION
   NewSI->addParamAttr(
       1, Attribute::getWithAlignment(NewSI->getContext(), Alignment));
   State.addMetadata(NewSI, SI);

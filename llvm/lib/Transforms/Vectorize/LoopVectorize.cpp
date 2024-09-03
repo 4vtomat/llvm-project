@@ -432,11 +432,6 @@ cl::opt<bool> llvm::EnableLoopVectorization(
     "vectorize-loops", cl::init(true), cl::Hidden,
     cl::desc("Run the Loop vectorization passes"));
 
-<<<<<<< HEAD
-static cl::opt<bool> PrintVPlansInDotFormat(
-    "vplan-print-in-dot-format", cl::Hidden,
-    cl::desc("Use dot format instead of plain text when dumping VPlans"));
-
 #if SIFIVE_CUSTOMIZATION
 static cl::opt<int64_t>
     LoopVectorizationLimit("loop-vectorization-limit", cl::init(-1), cl::Hidden,
@@ -498,8 +493,6 @@ static cl::opt<bool> EnableSLPCostModelInLV(
         "body cost as if it's vectorized by SLP."));
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> b959532
 static cl::opt<cl::boolOrDefault> ForceSafeDivisor(
     "force-widen-divrem-via-safe-divisor", cl::Hidden,
     cl::desc(
@@ -5636,7 +5629,7 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
       // than scalar loop.
       InstructionCost C;
       if (UseVPlanCostModel) {
-        VPlanCostModel VPCM(getBestPlanFor(VF), *Legal, TTI, *TLI);
+        VPlanCostModel VPCM(getPlanFor(VF), *Legal, TTI, *TLI);
         C = VPCM.getCost(
             RVVPair::get(CM.WidestType, VF, PSE.getSE()->getDataLayout()));
       } else {
@@ -5648,12 +5641,12 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
         continue;
       }
 
-      VPCostContext CostCtx(TTI, Legal->getWidestInductionType(),
+      VPCostContext CostCtx(TTI, *TLI, Legal->getWidestInductionType(),
                             OrigLoop->getHeader()->getContext(), CM);
       InstructionCost Overhead = 0;
       if (Legal->useVLAVectorizer() &&
           !VectorizerDisableReduceOverheadEstimation && VF.isVector())
-        Overhead = getBestPlanFor(VF).overhead(VF, CostCtx);
+        Overhead = getPlanFor(VF).overhead(VF, CostCtx);
       VectorizationFactor Candidate(VF, C, ScalarCost.ScalarCost, Overhead);
 #else
       InstructionCost C = CM.expectedCost(VF);
@@ -8591,30 +8584,6 @@ void LoopVectorizationPlanner::plan(ElementCount UserVF, unsigned UserIC) {
 
   ElementCount MaxUserVF =
       UserVF.isScalable() ? MaxFactors.ScalableVF : MaxFactors.FixedVF;
-<<<<<<< HEAD
-  bool UserVFIsLegal = ElementCount::isKnownLE(UserVF, MaxUserVF);
-  if (!UserVF.isZero() && UserVFIsLegal) {
-    assert(isPowerOf2_32(UserVF.getKnownMinValue()) &&
-           "VF needs to be a power of two");
-    // Collect the instructions (and their associated costs) that will be more
-    // profitable to scalarize.
-    CM.collectInLoopReductions();
-    if (CM.selectUserVectorizationFactor(UserVF)) {
-      LLVM_DEBUG(dbgs() << "LV: Using user VF " << UserVF << ".\n");
-      CM.collectInLoopReductions();
-      buildVPlansWithVPRecipes(UserVF, UserVF);
-      if (!hasPlanWithVF(UserVF)) {
-        LLVM_DEBUG(dbgs() << "LV: No VPlan could be built for " << UserVF
-                          << ".\n");
-        return std::nullopt;
-      }
-
-      LLVM_DEBUG(printPlans(dbgs()));
-      return {{UserVF, 0, 0}};
-    } else
-      reportVectorizationInfo("UserVF ignored because of invalid costs.",
-                              "InvalidCost", ORE, OrigLoop);
-=======
   if (UserVF) {
     if (!ElementCount::isKnownLE(UserVF, MaxUserVF)) {
       reportVectorizationInfo(
@@ -8635,7 +8604,6 @@ void LoopVectorizationPlanner::plan(ElementCount UserVF, unsigned UserIC) {
         reportVectorizationInfo("UserVF ignored because of invalid costs.",
                                 "InvalidCost", ORE, OrigLoop);
     }
->>>>>>> b959532
   }
 
   // Collect the Vectorization Factor Candidates.
@@ -8964,7 +8932,7 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
       // than scalar loop.
       InstructionCost Cost;
       if (UseVPlanCostModel) {
-        VPlanCostModel VPCM(getBestPlanFor(VF), *Legal, TTI, *TLI);
+        VPlanCostModel VPCM(getPlanFor(VF), *Legal, TTI, *TLI);
         Cost = VPCM.getCost(
             RVVPair::get(CM.WidestType, VF, PSE.getSE()->getDataLayout()));
       } else {
@@ -8976,12 +8944,12 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
         continue;
       }
 
-      VPCostContext CostCtx(TTI, Legal->getWidestInductionType(),
+      VPCostContext CostCtx(TTI, *TLI, Legal->getWidestInductionType(),
                             OrigLoop->getHeader()->getContext(), CM);
       InstructionCost Overhead = 0;
       if (Legal->useVLAVectorizer() &&
           !VectorizerDisableReduceOverheadEstimation && VF.isVector())
-        Overhead = getBestPlanFor(VF).overhead(VF, CostCtx);
+        Overhead = getPlanFor(VF).overhead(VF, CostCtx);
       VectorizationFactor CurrentFactor(VF, Cost, ScalarCost, Overhead);
 #else
       InstructionCost Cost = cost(*P, VF);
@@ -9635,7 +9603,6 @@ void EpilogueVectorizerEpilogueLoop::printDebugTracesAtEnd() {
 iterator_range<mapped_iterator<Use *, std::function<VPValue *(Value *)>>>
 VPRecipeBuilder::mapToVPValues(User::op_range Operands) {
   std::function<VPValue *(Value *)> Fn = [this](Value *Op) {
-<<<<<<< HEAD
     if (auto *I = dyn_cast<Instruction>(Op)) {
       if (auto *R = Ingredient2Recipe.lookup(I))
 #if SIFIVE_CUSTOMIZATION
@@ -9650,10 +9617,7 @@ VPRecipeBuilder::mapToVPValues(User::op_range Operands) {
         return R->getVPSingleValue();
 #endif // SIFIVE_CUSTOMIZATION
     }
-    return Plan.getOrAddLiveIn(Op);
-=======
     return getVPValueOrAddLiveIn(Op);
->>>>>>> b959532
   };
   return map_range(Operands, Fn);
 }
@@ -10499,7 +10463,6 @@ static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, bool HasNUW,
                        {CanonicalIVIncrement, &Plan.getVectorTripCount()}, DL);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static void addCanonicalIVRecipesUncountable(VPlan &Plan, Type *IdxTy,
                                              bool HasNUW, DebugLoc DL) {
@@ -10522,6 +10485,7 @@ static void addCanonicalIVRecipesUncountable(VPlan &Plan, Type *IdxTy,
   VPBasicBlock *EB = TopRegion->getExitingBasicBlock();
   EB->appendRecipe(CanonicalIVIncrement);
 }
+
 /// Add CSA Recipes that can occur before each instruction in the input IR
 /// is processed and introduced into VPlan.
 static void
@@ -10654,22 +10618,23 @@ addCSAPostprocessRecipes(VPRecipeBuilder &RecipeBuilder,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-// Add exit values to \p Plan. VPLiveOuts are added for each LCSSA phi in the
-// original exit block.
-static void addUsersInExitBlock(
-=======
 // Collect (ExitPhi, ExitingValue) pairs phis in the original exit block that
 // are modeled in VPlan. Some exiting values are not modeled explicitly yet and
 // won't be included. Those are un-truncated VPWidenIntOrFpInductionRecipe,
 // VPWidenPointerInductionRecipe and induction increments.
 static MapVector<PHINode *, VPValue *> collectUsersInExitBlock(
->>>>>>> b959532
     Loop *OrigLoop, VPRecipeBuilder &Builder, VPlan &Plan,
 #if SIFIVE_CUSTOMIZATION
-    const MapVector<PHINode *, InductionDescriptor> &Inductions,
-    const MapVector<PHINode *, CSADescriptor> &CSAs,
     LoopVectorizationLegality *Legal) {
-  /// Cherry-pick from #88385
+#else
+    const MapVector<PHINode *, InductionDescriptor> &Inductions) {
+#endif // SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
+  const MapVector<PHINode *, InductionDescriptor> Inductions =
+      Legal->getInductionVars();
+  const MapVector<PHINode *, CSADescriptor> CSAs = Legal->getCSAs();
+
+  MapVector<PHINode *, VPValue *> ExitingValuesToFix;
   if (Plan.isUncountable()) {
     BasicBlock *ExitBB = OrigLoop->getLatchExitBlock();
     // TODO: This whole LiveOut thing may not work properly when multiple
@@ -10684,35 +10649,30 @@ static MapVector<PHINode *, VPValue *> collectUsersInExitBlock(
     for (BasicBlock *ExitingBB : ExitingBlocks) {
       for (PHINode &ExitPhi : ExitBB->phis()) {
           Value *IncomingValue = ExitPhi.getIncomingValueForBlock(ExitingBB);
-          VPValue *V =
-              Builder.getVPValueOrAddLiveIn(IncomingValue, Plan);
+          VPValue *V = Builder.getVPValueOrAddLiveIn(IncomingValue);
+
           Plan.addLiveOut(&ExitPhi, V, Legal->isInductionVariable(IncomingValue));
       }
     }
-    return;
+    return {};
   }
-#else
-    const MapVector<PHINode *, InductionDescriptor> &Inductions) {
 #endif // SIFIVE_CUSTOMIZATION
-  auto MiddleVPBB =
+  auto *MiddleVPBB =
       cast<VPBasicBlock>(Plan.getVectorLoopRegion()->getSingleSuccessor());
   // No edge from the middle block to the unique exit block has been inserted
   // and there is nothing to fix from vector loop; phis should have incoming
   // from scalar loop only.
   if (MiddleVPBB->getNumSuccessors() != 2)
     return {};
+#if SIFIVE_CUSTOMIZATION
+  if (!isRevectorizeWithoutStrideChecks(*OrigLoop))
+    return {};
+#else
   MapVector<PHINode *, VPValue *> ExitingValuesToFix;
+#endif // SIFIVE_CUSTOMIZATION
   BasicBlock *ExitBB =
       cast<VPIRBasicBlock>(MiddleVPBB->getSuccessors()[0])->getIRBasicBlock();
   BasicBlock *ExitingBB = OrigLoop->getExitingBlock();
-#if SIFIVE_CUSTOMIZATION
-  // Only handle single-exit loops with unique exit blocks for now.
-  if (!ExitBB || !ExitBB->getSinglePredecessor() || !ExitingBB)
-    if (!ExitBB || !ExitingBB ||
-        !isRevectorizeWithoutStrideChecks(*OrigLoop) ||
-        !ExitBB->hasNPredecessors(2))
-      return;
-#endif // SIFIVE_CUSTOMIZATION
   for (PHINode &ExitPhi : ExitBB->phis()) {
     Value *IncomingValue =
         ExitPhi.getIncomingValueForBlock(ExitingBB);
@@ -10730,7 +10690,6 @@ static MapVector<PHINode *, VPValue *> collectUsersInExitBlock(
            return P && Inductions.contains(P);
          })))
       continue;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     // Exit values for CSAs are computed and updated outside of VPlan and
     // independent of CSA recipes.
@@ -10744,23 +10703,6 @@ static MapVector<PHINode *, VPValue *> collectUsersInExitBlock(
          })))
       continue;
 #endif // SIFIVE_CUSTOMIZATION
-    Plan.addLiveOut(&ExitPhi, V);
-  }
-}
-
-/// Feed a resume value for every FOR from the vector loop to the scalar loop,
-/// if middle block branches to scalar preheader, by introducing ExtractFromEnd
-/// and ResumePhi recipes in each, respectively, and a VPLiveOut which uses the
-/// latter and corresponds to the scalar header.
-#if SIFIVE_CUSTOMIZATION
-static void
-addLiveOutsForFirstOrderRecurrences(VPlan &Plan,
-                                    LoopVectorizationLegality &Legal,
-                                    LoopVectorizationCostModel &CM) {
-#else
-static void addLiveOutsForFirstOrderRecurrences(VPlan &Plan) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
     ExitingValuesToFix.insert({&ExitPhi, V});
   }
   return ExitingValuesToFix;
@@ -10774,7 +10716,7 @@ addUsersInExitBlock(VPlan &Plan,
   if (ExitingValuesToFix.empty())
     return;
 
-  auto MiddleVPBB =
+  auto *MiddleVPBB =
       cast<VPBasicBlock>(Plan.getVectorLoopRegion()->getSingleSuccessor());
   BasicBlock *ExitBB =
       cast<VPIRBasicBlock>(MiddleVPBB->getSuccessors()[0])->getIRBasicBlock();
@@ -10805,9 +10747,14 @@ addUsersInExitBlock(VPlan &Plan,
 ///    VPLiveOut which uses the latter and corresponds to the scalar header.
 /// 2. Feed the penultimate value of recurrences to their LCSSA phi users in
 ///    the original exit block using a VPLiveOut.
+#if SIFIVE_CUSTOMIZATION
+static void addLiveOutsForFirstOrderRecurrences(
+    VPlan &Plan, MapVector<PHINode *, VPValue *> &ExitingValuesToFix,
+    LoopVectorizationLegality &Legal, LoopVectorizationCostModel &CM) {
+#else
 static void addLiveOutsForFirstOrderRecurrences(
     VPlan &Plan, MapVector<PHINode *, VPValue *> &ExitingValuesToFix) {
->>>>>>> b959532
+#endif // SIFIVE_CUSTOMIZATION
   VPRegionBlock *VectorRegion = Plan.getVectorLoopRegion();
 
   // Start by finding out if middle block branches to scalar preheader, which is
@@ -11196,36 +11143,26 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   // After here, VPBB should not be used.
   VPBB = nullptr;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    addUsersInExitBlock(OrigLoop, RecipeBuilder, *Plan,
-                        Legal->getInductionVars(), Legal->getCSAs(), Legal);
-#else
-    addUsersInExitBlock(OrigLoop, RecipeBuilder, *Plan,
-                        Legal->getInductionVars());
-#endif // SIFIVE_CUSTOMIZATION
-
-=======
->>>>>>> b959532
   assert(isa<VPRegionBlock>(Plan->getVectorLoopRegion()) &&
          !Plan->getVectorLoopRegion()->getEntryBasicBlock()->empty() &&
          "entry block must be set to a VPRegionBlock having a non-empty entry "
          "VPBasicBlock");
   RecipeBuilder.fixHeaderPhis();
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  addLiveOutsForFirstOrderRecurrences(*Plan, *Legal, CM);
+  MapVector<PHINode *, VPValue *> ExitingValuesToFix = collectUsersInExitBlock(
+      OrigLoop, RecipeBuilder, *Plan, Legal);
 #else
-  addLiveOutsForFirstOrderRecurrences(*Plan);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   MapVector<PHINode *, VPValue *> ExitingValuesToFix = collectUsersInExitBlock(
       OrigLoop, RecipeBuilder, *Plan, Legal->getInductionVars());
+#endif // SIFIVE_CUSTOMIZATION
 
+#if SIFIVE_CUSTOMIZATION
+  addLiveOutsForFirstOrderRecurrences(*Plan, ExitingValuesToFix, *Legal, CM);
+#else
   addLiveOutsForFirstOrderRecurrences(*Plan, ExitingValuesToFix);
+#endif // SIFIVE_CUSTOMIZATION
   addUsersInExitBlock(*Plan, ExitingValuesToFix);
->>>>>>> b959532
 
   // ---------------------------------------------------------------------------
   // Transform initial VPlan: Apply previously taken decisions, in order, to
@@ -11833,7 +11770,6 @@ void VPReplicateRecipe::execute(VPTransformState &State) {
       State.ILV->scalarizeInstruction(UI, this, VPIteration(Part, Lane), State);
 }
 
-<<<<<<< HEAD
 /// Use all-true mask for reverse rather than actual mask, as it avoids a
 /// dependence w/o affecting the result.
 static Instruction *createReverseEVL(IRBuilderBase &Builder, Value *Operand,
@@ -11845,157 +11781,6 @@ static Instruction *createReverseEVL(IRBuilderBase &Builder, Value *Operand,
                                  {Operand, AllTrueMask, EVL}, nullptr, Name);
 }
 
-void VPWidenLoadEVLRecipe::execute(VPTransformState &State) {
-  assert(State.UF == 1 && "Expected only UF == 1 when vectorizing with "
-                          "explicit vector length.");
-  auto *LI = cast<LoadInst>(&Ingredient);
-
-  Type *ScalarDataTy = getLoadStoreType(&Ingredient);
-  auto *DataTy = VectorType::get(ScalarDataTy, State.VF);
-  const Align Alignment = getLoadStoreAlignment(&Ingredient);
-  bool CreateGather = !isConsecutive();
-
-  auto &Builder = State.Builder;
-  State.setDebugLocFrom(getDebugLoc());
-  CallInst *NewLI;
-  Value *EVL = State.get(getEVL(), VPIteration(0, 0));
-#if SIFIVE_CUSTOMIZATION
-  Value *Addr = (isStrided() || isMonotonic())
-                    ? nullptr
-                    : State.get(getAddr(), 0, !CreateGather);
-#else
-  Value *Addr = State.get(getAddr(), 0, !CreateGather);
-#endif // SIFIVE_CUSTOMIZATION
-  Value *Mask = nullptr;
-  if (VPValue *VPMask = getMask()) {
-    Mask = State.get(VPMask, 0);
-    if (isReverse())
-      Mask = createReverseEVL(Builder, Mask, EVL, "vp.reverse.mask");
-  } else {
-    Mask = Builder.CreateVectorSplat(State.VF, Builder.getTrue());
-  }
-#if SIFIVE_CUSTOMIZATION
-  if (auto *IMask = dyn_cast_if_present<VPInstruction>(getMask());
-      IMask && IMask->getOpcode() == CmpInst::ICMP_ULE)
-    Mask = Builder.CreateVectorSplat(State.VF, Builder.getTrue());
-  if (isStrided() || isMonotonic()) {
-    // Upstream compiler only handles EVL for consecutive load/store
-    // TODO: Move code from widenPredicatedMemoryInstruction into
-    // lowerStoreUsingVectorIntrinsics to simplify pulldown
-    NewLI = cast<CallInst>(
-        llvm::widenPredicatedMemoryInstruction(*this, State, 0, Mask));
-  } else if (Speculative) {
-    assert(State.Plan->isUncountable() &&
-           "Speculative load is only allowed for uncountable loops");
-
-    NewLI = Builder.CreateIntrinsic(
-        Intrinsic::vp_load_ff, {DataTy, Addr->getType()}, {Addr, Mask, EVL},
-        nullptr, "vp.op.load.ff");
-
-  } else
-#endif // SIFIVE_CUSTOMIZATION
-
-  if (CreateGather) {
-    NewLI =
-        Builder.CreateIntrinsic(DataTy, Intrinsic::vp_gather, {Addr, Mask, EVL},
-                                nullptr, "wide.masked.gather");
-  } else {
-    VectorBuilder VBuilder(Builder);
-    VBuilder.setEVL(EVL).setMask(Mask);
-    NewLI = cast<CallInst>(VBuilder.createVectorInstruction(
-        Instruction::Load, DataTy, Addr, "vp.op.load"));
-  }
-#if SIFIVE_CUSTOMIZATION
-  if (!isMonotonic())
-#endif // SIFIVE_CUSTOMIZATION
-  NewLI->addParamAttr(
-      0, Attribute::getWithAlignment(NewLI->getContext(), Alignment));
-  State.addMetadata(NewLI, LI);
-  Instruction *Res = NewLI;
-  if (isReverse())
-    Res = createReverseEVL(Builder, Res, EVL, "vp.reverse");
-#if SIFIVE_CUSTOMIZATION
-  if (isSpeculative()) {
-    // For FFLoad, we'd like to generate something similar to the following.
-    // %a = call { <vscale x 8 x i8>, i32 } @llvm.vp.load.ff.nxv8i8.p0(
-    //   <vscale x 8 x i8>*, i32)
-    // %b = extractvalue { <vscale x 8 x i32>, i32 } %a, 0
-    // %c = extractvalue { <vscale x 8 x i32>, i32 } %a, 1
-    Value *VL = Builder.CreateExtractValue(Res, 1);
-    State.set(State.EVL, VL, 0, /*IsScalar=*/true);
-    Res = cast<Instruction>(Builder.CreateExtractValue(Res, 0));
-    State.set(getVPValue(0), Res, 0);
-    // NewVL is going to replace EVL which is i64 type,
-    // Here needs an unsigned extend
-    // TODO: Create a VPScalarCastRecipe for this
-    VL = Builder.CreateZExt(VL, Builder.getInt64Ty());
-    State.set(getVPValue(1), VL, 0, /*NeedsScalar=*/true);
-    return;
-  }
-#endif // SIFIVE_CUSTOMIZATION
-  State.set(this, Res, 0);
-}
-
-void VPWidenStoreEVLRecipe::execute(VPTransformState &State) {
-  assert(State.UF == 1 && "Expected only UF == 1 when vectorizing with "
-                          "explicit vector length.");
-  auto *SI = cast<StoreInst>(&Ingredient);
-
-  VPValue *StoredValue = getStoredValue();
-  bool CreateScatter = !isConsecutive();
-  const Align Alignment = getLoadStoreAlignment(&Ingredient);
-
-  auto &Builder = State.Builder;
-  State.setDebugLocFrom(getDebugLoc());
-
-  CallInst *NewSI = nullptr;
-  Value *StoredVal = State.get(StoredValue, 0);
-  Value *EVL = State.get(getEVL(), VPIteration(0, 0));
-  if (isReverse())
-    StoredVal = createReverseEVL(Builder, StoredVal, EVL, "vp.reverse");
-  Value *Mask = nullptr;
-  if (VPValue *VPMask = getMask()) {
-    Mask = State.get(VPMask, 0);
-    if (isReverse())
-      Mask = createReverseEVL(Builder, Mask, EVL, "vp.reverse.mask");
-  } else {
-    Mask = Builder.CreateVectorSplat(State.VF, Builder.getTrue());
-  }
-#if SIFIVE_CUSTOMIZATION
-  if (auto *IMask = dyn_cast_if_present<VPInstruction>(getMask());
-      IMask && IMask->getOpcode() == CmpInst::ICMP_ULE)
-    Mask = Builder.CreateVectorSplat(State.VF, Builder.getTrue());
-  if (isStrided() || isMonotonic()) {
-    // Upstream compiler only handles EVL for consecutive load/store
-    // TODO: Move code from widenPredicatedMemoryInstruction into
-    // lowerStoreUsingVectorIntrinsics to simplify pulldown
-    NewSI = cast<CallInst>(
-        llvm::widenPredicatedMemoryInstruction(*this, State, 0, Mask));
-  } else {
-#endif // SIFIVE_CUSTOMIZATION
-  Value *Addr = State.get(getAddr(), 0, !CreateScatter);
-  if (CreateScatter) {
-    NewSI = Builder.CreateIntrinsic(Type::getVoidTy(EVL->getContext()),
-                                    Intrinsic::vp_scatter,
-                                    {StoredVal, Addr, Mask, EVL});
-  } else {
-    VectorBuilder VBuilder(Builder);
-    VBuilder.setEVL(EVL).setMask(Mask);
-    NewSI = cast<CallInst>(VBuilder.createVectorInstruction(
-        Instruction::Store, Type::getVoidTy(EVL->getContext()),
-        {StoredVal, Addr}));
-  }
-#if SIFIVE_CUSTOMIZATION
-  }
-  if (!isMonotonic())
-#endif // SIFIVE_CUSTOMIZATION
-  NewSI->addParamAttr(
-      1, Attribute::getWithAlignment(NewSI->getContext(), Alignment));
-  State.addMetadata(NewSI, SI);
-}
-
-=======
->>>>>>> b959532
 // Determine how to lower the scalar epilogue, which depends on 1) optimising
 // for minimum code-size, 2) predicate compiler options, 3) loop hints forcing
 // predication, and 4) a TTI hook that analyses whether the loop is suitable
@@ -12757,29 +12542,14 @@ bool LoopVectorizePass::processLoop(Loop *L) {
     } else {
       // If we decided that it is *legal* to vectorize the loop, then do it.
 
-<<<<<<< HEAD
-      ElementCount BestVF = LVP.getBestVF();
-      LLVM_DEBUG(dbgs() << "VF picked by VPlan cost model: " << BestVF << "\n");
-#if SIFIVE_CUSTOMIZATION
-      VF.Width = BestVF;
-#else
-      assert(VF.Width == BestVF &&
-             "VPlan cost model and legacy cost model disagreed");
-#endif // SIFIVE_CUSTOMIZATION
-      VPlan &BestPlan = LVP.getBestPlanFor(BestVF);
-      // Consider vectorizing the epilogue too if it's profitable.
-      VectorizationFactor EpilogueVF =
-          LVP.selectEpilogueVectorizationFactor(BestVF, IC);
-#if SIFIVE_CUSTOMIZATION
-      if (EpilogueVF != VectorizationFactor::Disabled() &&
-          EpilogueVF.Width.isVector()) {
-#else
-=======
       VPlan &BestPlan = LVP.getPlanFor(VF.Width);
       // Consider vectorizing the epilogue too if it's profitable.
       VectorizationFactor EpilogueVF =
           LVP.selectEpilogueVectorizationFactor(VF.Width, IC);
->>>>>>> b959532
+#if SIFIVE_CUSTOMIZATION
+      if (EpilogueVF != VectorizationFactor::Disabled() &&
+          EpilogueVF.Width.isVector()) {
+#else
       if (EpilogueVF.Width.isVector()) {
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -12896,7 +12666,7 @@ bool LoopVectorizePass::processLoop(Loop *L) {
                                             VF.Width, VF.MinProfitableTripCount,
                                             IC, &LVL, &CM, BFI, PSI, Checks);
         SCEVBlockRAII SCEVRAII(UILV, IgnoreSCEVMemCheckBB);
-        VPlan &BestPlan = LVP.getBestPlanFor(VF.Width);
+        VPlan &BestPlan = LVP.getPlanFor(VF.Width);
         LVP.executePlan(VF.Width, IC, BestPlan, UILV, DT, false);
         ++LoopsVectorized;
         ++UncountableLoopsVectorized;
@@ -12907,15 +12677,11 @@ bool LoopVectorizePass::processLoop(Loop *L) {
         InnerLoopVectorizer LB(L, PSE, LI, DT, TLI, TTI, AC, ORE, VF.Width,
                                VF.MinProfitableTripCount, IC, &LVL, &CM, BFI,
                                PSI, Checks);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         SCEVBlockRAII SCEVRAII(LB, IgnoreSCEVMemCheckBB);
 #endif // SIFIVE_CUSTOMIZATION
 
-        LVP.executePlan(BestVF, IC, BestPlan, LB, DT, false);
-=======
         LVP.executePlan(VF.Width, IC, BestPlan, LB, DT, false);
->>>>>>> b959532
         ++LoopsVectorized;
 
 #if SIFIVE_CUSTOMIZATION
@@ -12942,7 +12708,7 @@ bool LoopVectorizePass::processLoop(Loop *L) {
           auto VFToLMULTypeSizePair = [&LVP, &M](const ElementCount &VF) {
             assert(VF.isVector() && "Cannot convert scalar type to LMUL");
             assert(VF.isScalable() && "Cannot convert fixed vector type to LMUL");
-            const VPlan &BestPlan = LVP.getBestPlanFor(VF);
+            const VPlan &BestPlan = LVP.getPlanFor(VF);
             unsigned LMULExp;
             Type *DType;
             std::tie(LMULExp, DType) = BestPlan.getLMULTypePairs()[0];

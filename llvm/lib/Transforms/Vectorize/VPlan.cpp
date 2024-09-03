@@ -70,15 +70,13 @@ namespace llvm {
 extern cl::opt<bool> EnableVPlanNativePath;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 extern cl::opt<uint64_t> LoopVectorizerVLUpperBound;
 #endif
-=======
+
 static cl::opt<bool> PrintVPlansInDotFormat(
     "vplan-print-in-dot-format", cl::Hidden,
     cl::desc("Use dot format instead of plain text when dumping VPlans"));
->>>>>>> b959532
 
 #define DEBUG_TYPE "vplan"
 
