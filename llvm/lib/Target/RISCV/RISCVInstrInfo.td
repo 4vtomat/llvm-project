@@ -847,10 +847,6 @@ def HLV_D   : HLoad_r<0b0110110, 0b00000, "hlv.d">, Sched<[]>;
 def HSV_D   : HStore_rr<0b0110111, "hsv.d">, Sched<[]>;
 }
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-=======
->>>>>>> b959532
 let Predicates = [HasStdExtSmctrOrSsctr] in {
 def SCTRCLR : Priv<"sctrclr", 0b0001000>, Sched<[]> {
   let rd = 0;
@@ -858,10 +854,6 @@ def SCTRCLR : Priv<"sctrclr", 0b0001000>, Sched<[]> {
   let rs2 = 0b00100;
 }
 }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> b959532
 
 //===----------------------------------------------------------------------===//
 // Debug instructions

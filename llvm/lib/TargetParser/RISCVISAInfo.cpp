@@ -932,7 +932,6 @@ Error RISCVISAInfo::checkDependency() {
   if (HasZvl && !HasVector)
     return getExtensionRequiresError("zvl*b", "v' or 'zve*");
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if ((Exts.count("zvkb") || Exts.count("zvkns")) &&
       !HasVector)
@@ -952,16 +951,11 @@ Error RISCVISAInfo::checkDependency() {
                              "'xsfvfbfa' extension to also be specified");
 #endif // SIFIVE_CUSTOMIZATION
 
-  if (Exts.count("zvbb") && !HasVector)
-    return getError(
-        "'zvbb' requires 'v' or 'zve*' extension to also be specified");
-=======
   if (!HasVector)
     for (auto Ext :
          {"zvbb", "zvbc32e", "zvkb", "zvkg", "zvkgs", "zvkned", "zvknha", "zvksed", "zvksh"})
       if (Exts.count(Ext))
         return getExtensionRequiresError(Ext, "v' or 'zve*");
->>>>>>> b959532
 
   if (!Exts.count("zve64x"))
     for (auto Ext : {"zvknhb", "zvbc"})

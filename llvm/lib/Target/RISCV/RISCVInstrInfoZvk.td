@@ -127,21 +127,10 @@ let Predicates = [HasStdExtZvbb] in {
   defm VWSLL_V  : VSHT_IV_V_X_I<"vwsll", 0b110101>;
 } // Predicates = [HasStdExtZvbb]
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-let Predicates = [HasStdExtZvbcOrZvkb0p1] in {
-#endif // SIFIVE_CUSTOMIZATION
-  defm VCLMUL_V  : VCLMUL_MV_V_X<"vclmul", 0b001100>;
-  defm VCLMULH_V : VCLMUL_MV_V_X<"vclmulh", 0b001101>;
-#ifdef SIFIVE_CUSTOMIZATION
-} // Predicates = [HasStdExtZvbcOrZvkb0p1]
-#endif // SIFIVE_CUSTOMIZATION
-=======
 let Predicates = [HasStdExtZvbcOrZvbc32e] in {
   defm VCLMUL_V  : VCLMUL_MV_V_X<"vclmul", 0b001100>;
   defm VCLMULH_V : VCLMUL_MV_V_X<"vclmulh", 0b001101>;
 } // Predicates = [HasStdExtZvbcOrZvbc32e]
->>>>>>> b959532
 
 #ifdef SIFIVE_CUSTOMIZATION
 let Predicates = [HasStdExtZvkb0p1], DecoderNamespace = "Zvk0p1" in

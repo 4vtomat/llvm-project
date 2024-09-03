@@ -806,9 +806,6 @@ def HasStdExtZvbc : Predicate<"Subtarget->hasStdExtZvbc()">,
                     AssemblerPredicate<(all_of FeatureStdExtZvbc),
                         "'Zvbc' (Vector Carryless Multiplication)">;
 
-<<<<<<< HEAD
-let AdditionalVersions = [[0, 1]]  in // SIFIVE
-=======
 def FeatureStdExtZvbc32e
     : RISCVExperimentalExtension<"zvbc32e", 0, 7,
                                  "'Zvbc32e' (Vector Carryless Multiplication with 32-bits elements)">;
@@ -817,7 +814,7 @@ def HasStdExtZvbcOrZvbc32e : Predicate<"Subtarget->hasStdExtZvbc() || Subtarget-
                              AssemblerPredicate<(any_of FeatureStdExtZvbc, FeatureStdExtZvbc32e),
                              "'Zvbc' or 'Zvbc32e' (Vector Carryless Multiplication)">;
 
->>>>>>> b959532
+let AdditionalVersions = [[0, 1]]  in // SIFIVE
 def FeatureStdExtZvkg
     : RISCVExtension<"zvkg", 1, 0,
                      "'Zvkg' (Vector GCM instructions for Cryptography)">,
@@ -1167,8 +1164,6 @@ def FeatureStdExtSupm
     : RISCVExperimentalExtension<"supm", 1, 0,
                                  "'Supm' (Indicates User-mode Pointer Masking)">;
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
 def FeatureStdExtSmctr
     : RISCVExtension<"smctr", 1, 0,
                      "'Smctr' (Control Transfer Records Machine Level)",
@@ -1177,22 +1172,12 @@ def FeatureStdExtSsctr
     : RISCVExtension<"ssctr", 1, 0,
                      "'Ssctr' (Control Transfer Records Supervisor Level)",
                      [FeatureStdExtSscsrind]>;
-=======
-def FeatureStdExtSmctr
-    : RISCVExperimentalExtension<"smctr", 1, 0,
-                                 "'Smctr' (Control Transfer Records Machine Level)",
-                                 [FeatureStdExtSscsrind]>;
-def FeatureStdExtSsctr
-    : RISCVExperimentalExtension<"ssctr" ,1, 0,
-                                 "'Ssctr' (Control Transfer Records Supervisor Level)",
-                                 [FeatureStdExtSscsrind]>;
->>>>>>> b959532
 def HasStdExtSmctrOrSsctr : Predicate<"Subtarget->hasStdExtSmctrOrSsctr()">,
                             AssemblerPredicate<(any_of FeatureStdExtSmctr, FeatureStdExtSsctr),
                                "'Smctr' (Control Transfer Records Machine Level) or "
                                "'Ssctr' (Control Transfer Records Supervisor Level)">;
 
-<<<<<<< HEAD
+#ifdef SIFIVE_CUSTOMIZATION
 def FeatureStdExtZjid
     : RISCVExperimentalExtension<"zjid", 0, 0,
                                  "'Zjid' (Instruction/Data Cache Synchronization)">;
@@ -1201,8 +1186,6 @@ def HasStdExtZjid : Predicate<"Subtarget->hasStdExtZjid()">,
                     AssemblerPredicate<(all_of FeatureStdExtZjid),
                                         "'Zjid' (Instruction/Data Cache Synchronization)">;
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> b959532
 //===----------------------------------------------------------------------===//
 // Vendor extensions
 //===----------------------------------------------------------------------===//

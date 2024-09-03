@@ -2948,27 +2948,6 @@ bool RISCVDAGToDAGISel::SelectAddrRegImm(SDValue Addr, SDValue &Base,
   MVT VT = Addr.getSimpleValueType();
 
   if (Addr.getOpcode() == RISCVISD::ADD_LO) {
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-    bool CanFold = true;
-    // Unconditionally fold if operand 1 is not a global address (e.g.
-    // externsymbol)
-    if (auto *GA = dyn_cast<GlobalAddressSDNode>(Addr.getOperand(1))) {
-      const DataLayout &DL = CurDAG->getDataLayout();
-      Align Alignment = commonAlignment(
-            GA->getGlobal()->getPointerAlignment(DL), GA->getOffset());
-      if (!areOffsetsWithinAlignment(Addr, Alignment))
-        CanFold = false;
-    }
-    if (CanFold) {
-#endif //SIFIVE_CUSTOMIZATION
-    Base = Addr.getOperand(0);
-    Offset = Addr.getOperand(1);
-    return true;
-#ifdef SIFIVE_CUSTOMIZATION
-    }
-#endif //SIFIVE_CUSTOMIZATION
-=======
     // If this is non RV32Zdinx we can always fold.
     if (!IsRV32Zdinx) {
       Base = Addr.getOperand(0);
@@ -2982,7 +2961,11 @@ bool RISCVDAGToDAGISel::SelectAddrRegImm(SDValue Addr, SDValue &Base,
       const DataLayout &DL = CurDAG->getDataLayout();
       Align Alignment = commonAlignment(
           GA->getGlobal()->getPointerAlignment(DL), GA->getOffset());
+#if SIFIVE_CUSTOMIZATION
+      if (Alignment > 4 || areOffsetsWithinAlignment(Addr, Alignment)) {
+#else
       if (Alignment > 4) {
+#endif // SIFIVE_CUSTOMIZATION
         Base = Addr.getOperand(0);
         Offset = Addr.getOperand(1);
         return true;
@@ -2996,7 +2979,6 @@ bool RISCVDAGToDAGISel::SelectAddrRegImm(SDValue Addr, SDValue &Base,
         return true;
       }
     }
->>>>>>> b959532
   }
 
   int64_t RV32ZdinxRange = IsRV32Zdinx ? 4 : 0;
@@ -3015,16 +2997,12 @@ bool RISCVDAGToDAGISel::SelectAddrRegImm(SDValue Addr, SDValue &Base,
           const DataLayout &DL = CurDAG->getDataLayout();
           Align Alignment = commonAlignment(
               GA->getGlobal()->getPointerAlignment(DL), GA->getOffset());
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
-          if (areOffsetsWithinAlignment(Base, Alignment)) {
+          if (areOffsetsWithinAlignment(Base, Alignment) && !IsRV32Zdinx) {
 #else
-          if ((CVal == 0 || Alignment > CVal)) {
-#endif
-=======
           if ((CVal == 0 || Alignment > CVal) &&
               (!IsRV32Zdinx || Alignment > (CVal + 4))) {
->>>>>>> b959532
+#endif
             int64_t CombinedOffset = CVal + GA->getOffset();
             Base = Base.getOperand(0);
             Offset = CurDAG->getTargetGlobalAddress(
