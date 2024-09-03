@@ -1005,17 +1005,18 @@ InstructionCost VPRegionBlock::overhead(ElementCount VF,
 InstructionCost VPBasicBlock::overhead(ElementCount VF,
                                        VPCostContext &Ctx) const {
   InstructionCost BlockOverhead;
-  VPSlotTracker Tracker(getPlan());
   for (const VPRecipeBase &Recipe : Recipes) {
     InstructionCost O = Recipe.overhead(VF, Ctx);
     BlockOverhead += O;
-    LLVM_DEBUG(dbgs() << "LV: Found an estimated overhead of " << O
+    LLVM_DEBUG(VPSlotTracker Tracker(getPlan());
+               dbgs() << "LV: Found an estimated overhead of " << O
                       << " for VF " << VF << " For recipe: ";
                Recipe.print(dbgs(), "", Tracker); dbgs() << '\n');
   }
   return BlockOverhead;
 }
 #endif // SIFIVE_CUSTOMIZATION
+
 VPlan::~VPlan() {
   for (auto &KV : LiveOuts)
     delete KV.second;
