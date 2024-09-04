@@ -1165,13 +1165,13 @@ def FeatureStdExtSupm
                                  "'Supm' (Indicates User-mode Pointer Masking)">;
 
 def FeatureStdExtSmctr
-    : RISCVExtension<"smctr", 1, 0,
-                     "'Smctr' (Control Transfer Records Machine Level)",
-                     [FeatureStdExtSmcsrind]>;
+    : RISCVExperimentalExtension<"smctr", 1, 0,
+                                 "'Smctr' (Control Transfer Records Machine Level)",
+                                 [FeatureStdExtSscsrind]>;
 def FeatureStdExtSsctr
-    : RISCVExtension<"ssctr", 1, 0,
-                     "'Ssctr' (Control Transfer Records Supervisor Level)",
-                     [FeatureStdExtSscsrind]>;
+    : RISCVExperimentalExtension<"ssctr" ,1, 0,
+                                 "'Ssctr' (Control Transfer Records Supervisor Level)",
+                                 [FeatureStdExtSscsrind]>;
 def HasStdExtSmctrOrSsctr : Predicate<"Subtarget->hasStdExtSmctrOrSsctr()">,
                             AssemblerPredicate<(any_of FeatureStdExtSmctr, FeatureStdExtSsctr),
                                "'Smctr' (Control Transfer Records Machine Level) or "

@@ -933,8 +933,7 @@ Error RISCVISAInfo::checkDependency() {
     return getExtensionRequiresError("zvl*b", "v' or 'zve*");
 
 #if SIFIVE_CUSTOMIZATION
-  if ((Exts.count("zvkb") || Exts.count("zvkns")) &&
-      !HasVector)
+  if (Exts.count("zvkns") && !HasVector)
     return createStringError(
         errc::invalid_argument,
         "'zvk*' requires 'v' or 'zve*' extension to also be specified");
