@@ -4711,12 +4711,6 @@ BoUpSLP::LoadsState BoUpSLP::canVectorizeLoads(
       calculateRtStride(PointerOps, ScalarTy, *DL, *SE, Order))
     return LoadsState::StridedVectorize;
 
-  if (!IsSorted && !all_of(PointerOps, [&](Value *P) {
-        return arePointersCompatible(P, PointerOps.front(), *TLI);
-<<<<<<< HEAD
-      }))
-    return LoadsState::Gather;
-
   if (IsSorted) {
     Value *Ptr0;
     Value *PtrN;
@@ -4734,6 +4728,9 @@ BoUpSLP::LoadsState BoUpSLP::canVectorizeLoads(
       return LoadsState::Vectorize;
     // Simple check if not a strided access - clear order.
     bool IsPossibleStrided = *Diff % (Sz - 1) == 0;
+#if SIFIVE_CUSTOMIZATION
+    IsPossibleStrided &= IsSourceScalarInstruction;
+#endif // SIFIVE_CUSTOMIZATION
     // Try to generate strided load node if:
     // 1. Target with strided load support is detected.
     // 2. The number of loads is greater than MinProfitableStridedLoads,
@@ -4753,70 +4750,21 @@ BoUpSLP::LoadsState BoUpSLP::canVectorizeLoads(
                    return !getTreeEntry(U) && !MustGather.contains(U);
                  });
         });
-    const unsigned AbsoluteDiff = std::abs(*Diff);
-    if (IsPossibleStrided &&
-        (IsAnyPointerUsedOutGraph ||
-         ((Sz > MinProfitableStridedLoads ||
-           (AbsoluteDiff <= MaxProfitableLoadStride * Sz &&
-            has_single_bit(AbsoluteDiff))) &&
-          AbsoluteDiff > Sz) ||
-=======
-      })) {
-    if (IsSorted) {
-      Value *Ptr0;
-      Value *PtrN;
-      if (Order.empty()) {
-        Ptr0 = PointerOps.front();
-        PtrN = PointerOps.back();
-      } else {
-        Ptr0 = PointerOps[Order.front()];
-        PtrN = PointerOps[Order.back()];
-      }
-      std::optional<int> Diff =
-          getPointersDiff(ScalarTy, Ptr0, ScalarTy, PtrN, *DL, *SE);
-      // Check that the sorted loads are consecutive.
-      if (static_cast<unsigned>(*Diff) == Sz - 1)
-        return LoadsState::Vectorize;
-      // Simple check if not a strided access - clear order.
-      bool IsPossibleStrided = *Diff % (Sz - 1) == 0;
+    if (IsPossibleStrided && (IsAnyPointerUsedOutGraph ||
+                              ((Sz > MinProfitableStridedLoads ||
+                                (static_cast<unsigned>(std::abs(*Diff)) <=
+                                     MaxProfitableLoadStride * Sz &&
+                                 isPowerOf2_32(std::abs(*Diff)))) &&
+                               static_cast<unsigned>(std::abs(*Diff)) > Sz) ||
 #if SIFIVE_CUSTOMIZATION
-      IsPossibleStrided &= IsSourceScalarInstruction;
-#endif // SIFIVE_CUSTOMIZATION
-      // Try to generate strided load node if:
-      // 1. Target with strided load support is detected.
-      // 2. The number of loads is greater than MinProfitableStridedLoads,
-      // or the potential stride <= MaxProfitableLoadStride and the
-      // potential stride is power-of-2 (to avoid perf regressions for the very
-      // small number of loads) and max distance > number of loads, or potential
-      // stride is -1.
-      // 3. The loads are ordered, or number of unordered loads <=
-      // MaxProfitableUnorderedLoads, or loads are in reversed order.
-      // (this check is to avoid extra costs for very expensive shuffles).
-      // 4. Any pointer operand is an instruction with the users outside of the
-      // current graph (for masked gathers extra extractelement instructions
-      // might be required).
-      auto IsAnyPointerUsedOutGraph =
-          IsPossibleStrided && any_of(PointerOps, [&](Value *V) {
-            return isa<Instruction>(V) && any_of(V->users(), [&](User *U) {
-                     return !getTreeEntry(U) && !MustGather.contains(U);
-                   });
-          });
-      if (IsPossibleStrided && (IsAnyPointerUsedOutGraph ||
-                                ((Sz > MinProfitableStridedLoads ||
-                                  (static_cast<unsigned>(std::abs(*Diff)) <=
-                                       MaxProfitableLoadStride * Sz &&
-                                   isPowerOf2_32(std::abs(*Diff)))) &&
-                                 static_cast<unsigned>(std::abs(*Diff)) > Sz) ||
->>>>>>> origin/sifive-dev
-#if SIFIVE_CUSTOMIZATION
-         *Diff == -(static_cast<int>(Sz) - 1) ||
-         any_of(PointerOps, [&](Value *V) {
-           return isa<Instruction>(V) && any_of(V->users(), [&](User *U) {
-                    return !getTreeEntry(U) && !MustGather.contains(U);
-                  });
-         }))) {
+       *Diff == -(static_cast<int>(Sz) - 1) ||
+       any_of(PointerOps, [&](Value *V) {
+         return isa<Instruction>(V) && any_of(V->users(), [&](User *U) {
+                  return !getTreeEntry(U) && !MustGather.contains(U);
+                });
+       }))) {
 #else
-         *Diff == -(static_cast<int>(Sz) - 1))) {
+       *Diff == -(static_cast<int>(Sz) - 1))) {
 #endif // SIFIVE_CUSTOMIZATION
       int Stride = *Diff / static_cast<int>(Sz - 1);
       if (*Diff == Stride * static_cast<int>(Sz - 1)) {
