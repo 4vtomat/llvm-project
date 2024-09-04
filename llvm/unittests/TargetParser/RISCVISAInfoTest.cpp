@@ -1083,11 +1083,7 @@ R"(All available -march extensions for RISC-V
     sscofpmf             1.0
     sscounterenw         1.0
     sscsrind             1.0
-<<<<<<< HEAD
-    ssctr                1.0
-=======
     ssqosid              1.0
->>>>>>> b959532
     ssstateen            1.0
     ssstrict             1.0
     sstc                 1.0
@@ -1164,18 +1160,6 @@ Experimental extensions
     zicfiss              1.0
     zacas                1.0
     zalasr               0.1
-<<<<<<< HEAD
-    zjid                 0.0
-    smmpm                1.0
-    smnpm                1.0
-    smrnmi               0.5
-    smwg                 0.3
-    smwgd                0.3
-    ssnpm                1.0
-    sspm                 1.0
-    ssqosid              1.0
-    sswg                 0.3
-=======
     zvbc32e              0.7
     zvkgs                0.7
     smctr                1.0
@@ -1184,7 +1168,6 @@ Experimental extensions
     ssctr                1.0
     ssnpm                1.0
     sspm                 1.0
->>>>>>> b959532
     supm                 1.0
     svukte               0.3
 
