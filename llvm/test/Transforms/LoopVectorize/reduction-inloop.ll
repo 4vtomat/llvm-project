@@ -1353,19 +1353,11 @@ define i32 @predicated_or_dominates_reduction(ptr %b) {
 ; CHECK-NEXT:    [[TMP43:%.*]] = phi <4 x i32> [ [[TMP37]], [[PRED_LOAD_CONTINUE4]] ], [ [[TMP42]], [[PRED_LOAD_IF5]] ]
 ; CHECK-NEXT:    [[TMP44:%.*]] = icmp ne <4 x i32> [[TMP43]], zeroinitializer
 ; CHECK-NEXT:    [[NOT_:%.*]] = xor <4 x i1> [[TMP19]], <i1 true, i1 true, i1 true, i1 true>
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP47:%.*]] = select <4 x i1> [[NOT_]], <4 x i1> <i1 true, i1 true, i1 true, i1 true>, <4 x i1> [[TMP44]]
-; CHECK-NEXT:    [[TMP48:%.*]] = bitcast <4 x i1> [[TMP47]] to i4
-; CHECK-NEXT:    [[TMP49:%.*]] = call range(i4 0, 5) i4 @llvm.ctpop.i4(i4 [[TMP48]])
-; CHECK-NEXT:    [[TMP50:%.*]] = zext nneg i4 [[TMP49]] to i32
-; CHECK-NEXT:    [[TMP51]] = add i32 [[VEC_PHI]], [[TMP50]]
-=======
 ; CHECK-NEXT:    [[DOTNOT7:%.*]] = select <4 x i1> [[NOT_]], <4 x i1> <i1 true, i1 true, i1 true, i1 true>, <4 x i1> [[TMP44]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = bitcast <4 x i1> [[DOTNOT7]] to i4
 ; CHECK-NEXT:    [[TMP46:%.*]] = call range(i4 0, 5) i4 @llvm.ctpop.i4(i4 [[TMP45]])
 ; CHECK-NEXT:    [[TMP47:%.*]] = zext nneg i4 [[TMP46]] to i32
 ; CHECK-NEXT:    [[TMP48]] = add i32 [[VEC_PHI]], [[TMP47]]
->>>>>>> b959532
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 4
 ; CHECK-NEXT:    [[TMP49:%.*]] = icmp eq i32 [[INDEX_NEXT]], 1000
 ; CHECK-NEXT:    br i1 [[TMP49]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP42:![0-9]+]]
