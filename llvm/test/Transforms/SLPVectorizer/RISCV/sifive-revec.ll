@@ -73,33 +73,12 @@ define void @test3(ptr %in_0, ptr %in_1, ptr %out) {
 ; CHECK-LABEL: @test3(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[GEP0:%.*]] = getelementptr inbounds i32, ptr [[IN_0:%.*]], i64 0
-; CHECK-NEXT:    [[GEP1:%.*]] = getelementptr inbounds i32, ptr [[IN_0]], i64 4
-; CHECK-NEXT:    [[GEP2:%.*]] = getelementptr inbounds i32, ptr [[IN_0]], i64 8
-; CHECK-NEXT:    [[GEP3:%.*]] = getelementptr inbounds i32, ptr [[IN_0]], i64 12
 ; CHECK-NEXT:    [[GEP4:%.*]] = getelementptr inbounds i32, ptr [[IN_1:%.*]], i64 0
-; CHECK-NEXT:    [[GEP5:%.*]] = getelementptr inbounds i32, ptr [[IN_1]], i64 4
-; CHECK-NEXT:    [[GEP6:%.*]] = getelementptr inbounds i32, ptr [[IN_1]], i64 8
-; CHECK-NEXT:    [[GEP7:%.*]] = getelementptr inbounds i32, ptr [[IN_1]], i64 12
-; CHECK-NEXT:    [[LOAD0:%.*]] = load <4 x float>, ptr [[GEP0]], align 4
-; CHECK-NEXT:    [[LOAD1:%.*]] = load <4 x float>, ptr [[GEP1]], align 4
-; CHECK-NEXT:    [[LOAD2:%.*]] = load <4 x float>, ptr [[GEP2]], align 4
-; CHECK-NEXT:    [[LOAD3:%.*]] = load <4 x float>, ptr [[GEP3]], align 4
-; CHECK-NEXT:    [[LOAD4:%.*]] = load <4 x float>, ptr [[GEP4]], align 4
-; CHECK-NEXT:    [[LOAD5:%.*]] = load <4 x float>, ptr [[GEP5]], align 4
-; CHECK-NEXT:    [[LOAD6:%.*]] = load <4 x float>, ptr [[GEP6]], align 4
-; CHECK-NEXT:    [[LOAD7:%.*]] = load <4 x float>, ptr [[GEP7]], align 4
-; CHECK-NEXT:    [[FMAX0:%.*]] = tail call <4 x float> @llvm.aarch64.neon.fmax.v4f32(<4 x float> [[LOAD0]], <4 x float> [[LOAD4]])
-; CHECK-NEXT:    [[FMAX1:%.*]] = tail call <4 x float> @llvm.aarch64.neon.fmax.v4f32(<4 x float> [[LOAD1]], <4 x float> [[LOAD5]])
-; CHECK-NEXT:    [[FMAX2:%.*]] = tail call <4 x float> @llvm.aarch64.neon.fmax.v4f32(<4 x float> [[LOAD2]], <4 x float> [[LOAD6]])
-; CHECK-NEXT:    [[FMAX3:%.*]] = tail call <4 x float> @llvm.aarch64.neon.fmax.v4f32(<4 x float> [[LOAD3]], <4 x float> [[LOAD7]])
 ; CHECK-NEXT:    [[GEP8:%.*]] = getelementptr inbounds i32, ptr [[OUT:%.*]], i64 0
-; CHECK-NEXT:    [[GEP9:%.*]] = getelementptr inbounds i32, ptr [[OUT]], i64 4
-; CHECK-NEXT:    [[GEP10:%.*]] = getelementptr inbounds i32, ptr [[OUT]], i64 8
-; CHECK-NEXT:    [[GEP11:%.*]] = getelementptr inbounds i32, ptr [[OUT]], i64 12
-; CHECK-NEXT:    store <4 x float> [[FMAX0]], ptr [[GEP8]], align 4
-; CHECK-NEXT:    store <4 x float> [[FMAX1]], ptr [[GEP9]], align 4
-; CHECK-NEXT:    store <4 x float> [[FMAX2]], ptr [[GEP10]], align 4
-; CHECK-NEXT:    store <4 x float> [[FMAX3]], ptr [[GEP11]], align 4
+; CHECK-NEXT:    [[TMP0:%.*]] = load <16 x float>, ptr [[GEP0]], align 4
+; CHECK-NEXT:    [[TMP1:%.*]] = load <16 x float>, ptr [[GEP4]], align 4
+; CHECK-NEXT:    [[TMP2:%.*]] = call <16 x float> @llvm.aarch64.neon.fmax.v16f32(<16 x float> [[TMP0]], <16 x float> [[TMP1]])
+; CHECK-NEXT:    store <16 x float> [[TMP2]], ptr [[GEP8]], align 4
 ; CHECK-NEXT:    ret void
 ;
 entry:
