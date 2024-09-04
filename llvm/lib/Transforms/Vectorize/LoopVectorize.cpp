@@ -8811,7 +8811,6 @@ InstructionCost LoopVectorizationPlanner::cost(VPlan &Plan,
 }
 
 #ifndef NDEBUG
-#if !SIFIVE_CUSTOMIZATION
 /// Return true if the original loop \ TheLoop contains any instructions that do
 /// not have corresponding recipes in \p Plan and are not marked to be ignored
 /// in \p CostCtx. This means the VPlan contains simplification that the legacy
@@ -8861,7 +8860,6 @@ planContainsAdditionalSimplifications(VPlan &Plan, ElementCount VF,
         });
       });
 }
-#endif // !SIFIVE_CUSTOMIZATION
 #endif
 
 VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
@@ -8870,6 +8868,13 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
   // If there is a single VPlan with a single VF, return it directly.
   VPlan &FirstPlan = *VPlans[0];
   if (VPlans.size() == 1 && size(FirstPlan.vectorFactors()) == 1)
+#if SIFIVE_CUSTOMIZATION
+    // For VLA vectorization scalar VPlan might not be available, however its
+    // cost might be computed therefore we still have to decide if vectorization
+    // is profitable or not
+    if (Hints.getForce() == LoopVectorizeHints::FK_Enabled ||
+        !Legal->useVLAVectorizer())
+#endif // SIFIVE_CUSTOMIZATION
     return {*FirstPlan.vectorFactors().begin(), 0, 0};
 
   ElementCount ScalarVF = ElementCount::getFixed(1);
@@ -8891,9 +8896,6 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
 
   bool ForceVectorization = Hints.getForce() == LoopVectorizeHints::FK_Enabled;
   if (ForceVectorization) {
-#if SIFIVE_CUSTOMIZATION
-    if (Hints.isFixedVectorizationDisabled())
-#endif // SIFIVE_CUSTOMIZATION
     // Ignore scalar width, because the user explicitly wants vectorization.
     // Initialize cost to max so that VF = 2 is, at least, chosen during cost
     // evaluation.
@@ -8991,14 +8993,13 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
                         LLVMCtx, CM);
   precomputeCosts(BestPlan, BestFactor.Width, CostCtx);
 #if SIFIVE_CUSTOMIZATION
-  (void)LegacyVF;
-#else
+  if (!Legal->useVLAVectorizer())
+#endif // !SIFIVE_CUSTOMIZATION
   assert((BestFactor.Width == LegacyVF.Width ||
           planContainsAdditionalSimplifications(getPlanFor(BestFactor.Width),
                                                 BestFactor.Width, CostCtx,
                                                 OrigLoop, CM)) &&
          " VPlan cost model and legacy cost model disagreed");
-#endif // !SIFIVE_CUSTOMIZATION
   assert((BestFactor.Width.isScalar() || BestFactor.ScalarCost > 0) &&
          "when vectorizing, the scalar cost must be computed.");
 #endif

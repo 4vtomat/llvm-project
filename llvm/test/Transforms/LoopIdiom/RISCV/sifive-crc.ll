@@ -6,7 +6,7 @@ define zeroext i16 @crcu8(i8 zeroext %data, i16 zeroext %crc) {
 ; CHECK-SAME: i8 zeroext [[DATA:%.*]], i16 zeroext [[CRC:%.*]]) {
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = zext i8 [[DATA]] to i16
-; CHECK-NEXT:    [[TMP1:%.*]] = xor i16 [[TMP0]], [[CRC]]
+; CHECK-NEXT:    [[TMP1:%.*]] = xor i16 [[CRC]], [[TMP0]]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[I_036:%.*]] = phi i8 [ 0, [[ENTRY:%.*]] ], [ [[INC:%.*]], [[FOR_BODY]] ]

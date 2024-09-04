@@ -549,13 +549,13 @@ define <vscale x 4 x i64> @test_vwsub(i32 %x, i32 %y) {
 define <vscale x 4 x i64> @test_vwaddu_w(i64 %x, i32 %y) {
 ; RV32-LABEL: @test_vwaddu_w(
 ; RV32-NEXT:    [[TMP1:%.*]] = zext i32 [[Y:%.*]] to i64
-; RV32-NEXT:    [[TMP2:%.*]] = add i64 [[TMP1]], [[X:%.*]]
+; RV32-NEXT:    [[TMP2:%.*]] = add i64 [[X:%.*]], [[TMP1]]
 ; RV32-NEXT:    [[C:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i32(<vscale x 4 x i64> undef, i64 [[TMP2]], i32 4)
 ; RV32-NEXT:    ret <vscale x 4 x i64> [[C]]
 ;
 ; RV64-LABEL: @test_vwaddu_w(
 ; RV64-NEXT:    [[TMP1:%.*]] = zext i32 [[Y:%.*]] to i64
-; RV64-NEXT:    [[TMP2:%.*]] = add i64 [[TMP1]], [[X:%.*]]
+; RV64-NEXT:    [[TMP2:%.*]] = add i64 [[X:%.*]], [[TMP1]]
 ; RV64-NEXT:    [[C:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP2]], i64 4)
 ; RV64-NEXT:    ret <vscale x 4 x i64> [[C]]
 ;
@@ -568,13 +568,13 @@ define <vscale x 4 x i64> @test_vwaddu_w(i64 %x, i32 %y) {
 define <vscale x 4 x i64> @test_vwadd_w(i64 %x, i32 %y) {
 ; RV32-LABEL: @test_vwadd_w(
 ; RV32-NEXT:    [[TMP1:%.*]] = sext i32 [[Y:%.*]] to i64
-; RV32-NEXT:    [[TMP2:%.*]] = add i64 [[TMP1]], [[X:%.*]]
+; RV32-NEXT:    [[TMP2:%.*]] = add i64 [[X:%.*]], [[TMP1]]
 ; RV32-NEXT:    [[C:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i32(<vscale x 4 x i64> undef, i64 [[TMP2]], i32 4)
 ; RV32-NEXT:    ret <vscale x 4 x i64> [[C]]
 ;
 ; RV64-LABEL: @test_vwadd_w(
 ; RV64-NEXT:    [[TMP1:%.*]] = sext i32 [[Y:%.*]] to i64
-; RV64-NEXT:    [[TMP2:%.*]] = add i64 [[TMP1]], [[X:%.*]]
+; RV64-NEXT:    [[TMP2:%.*]] = add i64 [[X:%.*]], [[TMP1]]
 ; RV64-NEXT:    [[C:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP2]], i64 4)
 ; RV64-NEXT:    ret <vscale x 4 x i64> [[C]]
 ;

@@ -14,14 +14,12 @@ define fastcc i64 @zot(float %arg, float %arg1, float %arg2, float %arg3, float 
 ; CHECK-NEXT:    [[VAL11:%.*]] = fmul fast float [[ARG3]], 1.000000e+00
 ; CHECK-NEXT:    [[VAL12:%.*]] = fadd fast float [[ARG3]], 1.000000e+00
 ; CHECK-NEXT:    [[VAL13:%.*]] = fadd fast float [[VAL12]], 2.000000e+00
-; CHECK-NEXT:    [[VAL14:%.*]] = fadd fast float 0.000000e+00, 0.000000e+00
-; CHECK-NEXT:    [[VAL15:%.*]] = fadd fast float [[VAL14]], 1.000000e+00
 ; CHECK-NEXT:    [[VAL16:%.*]] = fadd fast float [[ARG3]], 1.000000e+00
 ; CHECK-NEXT:    [[VAL17:%.*]] = fadd fast float [[ARG3]], 1.000000e+00
 ; CHECK-NEXT:    br i1 [[ARG6:%.*]], label [[BB18:%.*]], label [[BB57:%.*]]
 ; CHECK:       bb18:
 ; CHECK-NEXT:    [[VAL19:%.*]] = phi float [ [[VAL13]], [[BB:%.*]] ]
-; CHECK-NEXT:    [[VAL20:%.*]] = phi float [ [[VAL15]], [[BB]] ]
+; CHECK-NEXT:    [[VAL20:%.*]] = phi float [ 1.000000e+00, [[BB]] ]
 ; CHECK-NEXT:    [[VAL21:%.*]] = phi float [ [[VAL16]], [[BB]] ]
 ; CHECK-NEXT:    [[VAL22:%.*]] = phi float [ [[VAL17]], [[BB]] ]
 ; CHECK-NEXT:    [[VAL23:%.*]] = fmul fast float [[VAL16]], 2.000000e+00

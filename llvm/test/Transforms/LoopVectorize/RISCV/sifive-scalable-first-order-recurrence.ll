@@ -57,12 +57,8 @@ define i32 @recurrence_1(ptr nocapture readonly %a, ptr nocapture %b, i32 %n) {
 ; CHECK-NEXT:    [[TMP21:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP2]]
 ; CHECK-NEXT:    br i1 [[TMP21]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:
-; CHECK-NEXT:    [[TMP22:%.*]] = sub i32 [[TMP11]], 2
-; CHECK-NEXT:    [[TMP26:%.*]] = extractelement <vscale x 2 x i32> [[VP_OP_LOAD]], i32 [[TMP22]]
-; CHECK-NEXT:    [[TMP27:%.*]] = icmp eq i32 [[TMP11]], 1
-; CHECK-NEXT:    [[TMP25:%.*]] = sub i32 [[EVL_BASED_IV3]], 1
-; CHECK-NEXT:    [[VECTOR_RECUR_PREV_EXTRACT:%.*]] = extractelement <vscale x 2 x i32> [[VECTOR_RECUR]], i32 [[TMP25]]
-; CHECK-NEXT:    [[VECTOR_RECUR_EXTRACT_FOR_PHI:%.*]] = select i1 [[TMP27]], i32 [[VECTOR_RECUR_PREV_EXTRACT]], i32 [[TMP26]]
+; CHECK-NEXT:    [[TMP22:%.*]] = sub i32 [[TMP11]], 1
+; CHECK-NEXT:    [[TMP23:%.*]] = extractelement <vscale x 2 x i32> [[TMP16]], i32 [[TMP22]]
 ; CHECK-NEXT:    br label %[[FOR_EXIT:.*]]
 ; CHECK:       [[SCALAR_PH]]:
 ; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ 0, %[[VECTOR_MEMCHECK]] ]
@@ -80,7 +76,7 @@ define i32 @recurrence_1(ptr nocapture readonly %a, ptr nocapture %b, i32 %n) {
 ; CHECK-NEXT:    [[EXITCOND:%.*]] = icmp eq i32 [[LFTR_WIDEIV]], [[N]]
 ; CHECK-NEXT:    br i1 [[EXITCOND]], label %[[FOR_EXIT]], label %[[SCALAR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       [[FOR_EXIT]]:
-; CHECK-NEXT:    [[DOTLCSSA:%.*]] = phi i32 [ [[SCALAR_RECUR]], %[[SCALAR_BODY]] ], [ [[VECTOR_RECUR_EXTRACT_FOR_PHI]], %[[MIDDLE_BLOCK]] ]
+; CHECK-NEXT:    [[DOTLCSSA:%.*]] = phi i32 [ [[SCALAR_RECUR]], %[[SCALAR_BODY]] ], [ [[TMP23]], %[[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    ret i32 [[DOTLCSSA]]
 ;
 entry:

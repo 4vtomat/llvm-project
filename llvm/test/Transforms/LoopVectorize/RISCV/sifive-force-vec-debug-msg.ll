@@ -7,8 +7,6 @@
 ; RUN:   2>&1 | FileCheck %s
 
 ; CHECK: LV: Loop hints: force=enabled
-; CHECK: LV: Changed scalar cost to Inf as user forced vectorization.
-; CHECK: LV: Vectorization seems to be not beneficial, but was forced by a user.
 
 target datalayout = "e-m:e-p:64:64-i64:64-i128:128-n64-S128"
 target triple = "riscv64-unknown-unknown"

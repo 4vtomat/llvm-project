@@ -26,13 +26,13 @@ declare <vscale x 4 x float> @llvm.riscv.vfnmsub.nxv4f32.nxv4f32.iXLen(<vscale x
 define <vscale x 4 x i32> @test_vmacc(i32 %x, i32 %y, i32 %z) {
 ; RV32-LABEL: @test_vmacc(
 ; RV32-NEXT:    [[TMP1:%.*]] = mul i32 [[Y:%.*]], [[Z:%.*]]
-; RV32-NEXT:    [[TMP2:%.*]] = add i32 [[TMP1]], [[X:%.*]]
+; RV32-NEXT:    [[TMP2:%.*]] = add i32 [[X:%.*]], [[TMP1]]
 ; RV32-NEXT:    [[D:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i32(<vscale x 4 x i32> undef, i32 [[TMP2]], i32 4)
 ; RV32-NEXT:    ret <vscale x 4 x i32> [[D]]
 ;
 ; RV64-LABEL: @test_vmacc(
 ; RV64-NEXT:    [[TMP1:%.*]] = mul i32 [[Y:%.*]], [[Z:%.*]]
-; RV64-NEXT:    [[TMP2:%.*]] = add i32 [[TMP1]], [[X:%.*]]
+; RV64-NEXT:    [[TMP2:%.*]] = add i32 [[X:%.*]], [[TMP1]]
 ; RV64-NEXT:    [[D:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP2]], i64 4)
 ; RV64-NEXT:    ret <vscale x 4 x i32> [[D]]
 ;
@@ -66,13 +66,13 @@ define <vscale x 4 x i32> @test_vnmsac(i32 %x, i32 %y, i32 %z) {
 define <vscale x 4 x i32> @test_vmadd(i32 %x, i32 %y, i32 %z) {
 ; RV32-LABEL: @test_vmadd(
 ; RV32-NEXT:    [[TMP1:%.*]] = mul i32 [[Y:%.*]], [[X:%.*]]
-; RV32-NEXT:    [[TMP2:%.*]] = add i32 [[TMP1]], [[Z:%.*]]
+; RV32-NEXT:    [[TMP2:%.*]] = add i32 [[Z:%.*]], [[TMP1]]
 ; RV32-NEXT:    [[D:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i32(<vscale x 4 x i32> undef, i32 [[TMP2]], i32 4)
 ; RV32-NEXT:    ret <vscale x 4 x i32> [[D]]
 ;
 ; RV64-LABEL: @test_vmadd(
 ; RV64-NEXT:    [[TMP1:%.*]] = mul i32 [[Y:%.*]], [[X:%.*]]
-; RV64-NEXT:    [[TMP2:%.*]] = add i32 [[TMP1]], [[Z:%.*]]
+; RV64-NEXT:    [[TMP2:%.*]] = add i32 [[Z:%.*]], [[TMP1]]
 ; RV64-NEXT:    [[D:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP2]], i64 4)
 ; RV64-NEXT:    ret <vscale x 4 x i32> [[D]]
 ;
@@ -108,7 +108,7 @@ define <vscale x 4 x i64> @test_vwmaccu(i64 %x, i32 %y, i32 %z) {
 ; RV32-NEXT:    [[TMP1:%.*]] = zext i32 [[Y:%.*]] to i64
 ; RV32-NEXT:    [[TMP2:%.*]] = zext i32 [[Z:%.*]] to i64
 ; RV32-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP1]], [[TMP2]]
-; RV32-NEXT:    [[TMP4:%.*]] = add i64 [[TMP3]], [[X:%.*]]
+; RV32-NEXT:    [[TMP4:%.*]] = add i64 [[X:%.*]], [[TMP3]]
 ; RV32-NEXT:    [[D:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i32(<vscale x 4 x i64> undef, i64 [[TMP4]], i32 4)
 ; RV32-NEXT:    ret <vscale x 4 x i64> [[D]]
 ;
@@ -116,7 +116,7 @@ define <vscale x 4 x i64> @test_vwmaccu(i64 %x, i32 %y, i32 %z) {
 ; RV64-NEXT:    [[TMP1:%.*]] = zext i32 [[Y:%.*]] to i64
 ; RV64-NEXT:    [[TMP2:%.*]] = zext i32 [[Z:%.*]] to i64
 ; RV64-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP1]], [[TMP2]]
-; RV64-NEXT:    [[TMP4:%.*]] = add i64 [[TMP3]], [[X:%.*]]
+; RV64-NEXT:    [[TMP4:%.*]] = add i64 [[X:%.*]], [[TMP3]]
 ; RV64-NEXT:    [[D:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP4]], i64 4)
 ; RV64-NEXT:    ret <vscale x 4 x i64> [[D]]
 ;
@@ -132,7 +132,7 @@ define <vscale x 4 x i64> @test_vwmacc(i64 %x, i32 %y, i32 %z) {
 ; RV32-NEXT:    [[TMP1:%.*]] = sext i32 [[Y:%.*]] to i64
 ; RV32-NEXT:    [[TMP2:%.*]] = sext i32 [[Z:%.*]] to i64
 ; RV32-NEXT:    [[TMP3:%.*]] = mul nsw i64 [[TMP1]], [[TMP2]]
-; RV32-NEXT:    [[TMP4:%.*]] = add i64 [[TMP3]], [[X:%.*]]
+; RV32-NEXT:    [[TMP4:%.*]] = add i64 [[X:%.*]], [[TMP3]]
 ; RV32-NEXT:    [[D:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i32(<vscale x 4 x i64> undef, i64 [[TMP4]], i32 4)
 ; RV32-NEXT:    ret <vscale x 4 x i64> [[D]]
 ;
@@ -140,7 +140,7 @@ define <vscale x 4 x i64> @test_vwmacc(i64 %x, i32 %y, i32 %z) {
 ; RV64-NEXT:    [[TMP1:%.*]] = sext i32 [[Y:%.*]] to i64
 ; RV64-NEXT:    [[TMP2:%.*]] = sext i32 [[Z:%.*]] to i64
 ; RV64-NEXT:    [[TMP3:%.*]] = mul nsw i64 [[TMP1]], [[TMP2]]
-; RV64-NEXT:    [[TMP4:%.*]] = add i64 [[TMP3]], [[X:%.*]]
+; RV64-NEXT:    [[TMP4:%.*]] = add i64 [[X:%.*]], [[TMP3]]
 ; RV64-NEXT:    [[D:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP4]], i64 4)
 ; RV64-NEXT:    ret <vscale x 4 x i64> [[D]]
 ;
@@ -156,7 +156,7 @@ define <vscale x 4 x i64> @test_vwmaccsu(i64 %x, i32 %y, i32 %z) {
 ; RV32-NEXT:    [[TMP1:%.*]] = sext i32 [[Y:%.*]] to i64
 ; RV32-NEXT:    [[TMP2:%.*]] = zext i32 [[Z:%.*]] to i64
 ; RV32-NEXT:    [[TMP3:%.*]] = mul nsw i64 [[TMP1]], [[TMP2]]
-; RV32-NEXT:    [[TMP4:%.*]] = add i64 [[TMP3]], [[X:%.*]]
+; RV32-NEXT:    [[TMP4:%.*]] = add i64 [[X:%.*]], [[TMP3]]
 ; RV32-NEXT:    [[D:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i32(<vscale x 4 x i64> undef, i64 [[TMP4]], i32 4)
 ; RV32-NEXT:    ret <vscale x 4 x i64> [[D]]
 ;
@@ -164,7 +164,7 @@ define <vscale x 4 x i64> @test_vwmaccsu(i64 %x, i32 %y, i32 %z) {
 ; RV64-NEXT:    [[TMP1:%.*]] = sext i32 [[Y:%.*]] to i64
 ; RV64-NEXT:    [[TMP2:%.*]] = zext i32 [[Z:%.*]] to i64
 ; RV64-NEXT:    [[TMP3:%.*]] = mul nsw i64 [[TMP1]], [[TMP2]]
-; RV64-NEXT:    [[TMP4:%.*]] = add i64 [[TMP3]], [[X:%.*]]
+; RV64-NEXT:    [[TMP4:%.*]] = add i64 [[X:%.*]], [[TMP3]]
 ; RV64-NEXT:    [[D:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP4]], i64 4)
 ; RV64-NEXT:    ret <vscale x 4 x i64> [[D]]
 ;
@@ -180,7 +180,7 @@ define <vscale x 4 x i64> @test_vwmaccus(i64 %x, i32 %y, i32 %z) {
 ; RV32-NEXT:    [[TMP1:%.*]] = zext i32 [[Y:%.*]] to i64
 ; RV32-NEXT:    [[TMP2:%.*]] = sext i32 [[Z:%.*]] to i64
 ; RV32-NEXT:    [[TMP3:%.*]] = mul nsw i64 [[TMP1]], [[TMP2]]
-; RV32-NEXT:    [[TMP4:%.*]] = add i64 [[TMP3]], [[X:%.*]]
+; RV32-NEXT:    [[TMP4:%.*]] = add i64 [[X:%.*]], [[TMP3]]
 ; RV32-NEXT:    [[D:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i32(<vscale x 4 x i64> undef, i64 [[TMP4]], i32 4)
 ; RV32-NEXT:    ret <vscale x 4 x i64> [[D]]
 ;
@@ -188,7 +188,7 @@ define <vscale x 4 x i64> @test_vwmaccus(i64 %x, i32 %y, i32 %z) {
 ; RV64-NEXT:    [[TMP1:%.*]] = zext i32 [[Y:%.*]] to i64
 ; RV64-NEXT:    [[TMP2:%.*]] = sext i32 [[Z:%.*]] to i64
 ; RV64-NEXT:    [[TMP3:%.*]] = mul nsw i64 [[TMP1]], [[TMP2]]
-; RV64-NEXT:    [[TMP4:%.*]] = add i64 [[TMP3]], [[X:%.*]]
+; RV64-NEXT:    [[TMP4:%.*]] = add i64 [[X:%.*]], [[TMP3]]
 ; RV64-NEXT:    [[D:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP4]], i64 4)
 ; RV64-NEXT:    ret <vscale x 4 x i64> [[D]]
 ;
