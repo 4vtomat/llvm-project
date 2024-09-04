@@ -138,11 +138,8 @@
 // CHECK-NEXT:     sscofpmf             1.0       'Sscofpmf' (Count Overflow and Mode-Based Filtering)
 // CHECK-NEXT:     sscounterenw         1.0       'Sscounterenw' (Support writeable scounteren enable bit for any hpmcounter that is not read-only zero)
 // CHECK-NEXT:     sscsrind             1.0       'Sscsrind' (Indirect CSR Access Supervisor Level)
-<<<<<<< HEAD
 // CHECK-NEXT:     ssctr                1.0       'Ssctr' (Control Transfer Records Supervisor Level)
-=======
 // CHECK-NEXT:     ssqosid              1.0       'Ssqosid' (Quality-of-Service (QoS) Identifiers)
->>>>>>> b959532
 // CHECK-NEXT:     ssstateen            1.0       'Ssstateen' (Supervisor-mode view of the state-enable extension)
 // CHECK-NEXT:     ssstrict             1.0       'Ssstrict' (No non-conforming extensions are present)
 // CHECK-NEXT:     sstc                 1.0       'Sstc' (Supervisor-mode timer interrupts)
@@ -219,8 +216,9 @@
 // CHECK-NEXT:     zicfiss              1.0       'Zicfiss' (Shadow stack)
 // CHECK-NEXT:     zacas                1.0       'Zacas' (Atomic Compare-And-Swap Instructions)
 // CHECK-NEXT:     zalasr               0.1       'Zalasr' (Load-Acquire and Store-Release Instructions)
-<<<<<<< HEAD
 // CHECK-NEXT:     zjid                 0.0       'Zjid' (Instruction/Data Cache Synchronization)
+// CHECK-NEXT:     zvbc32e              0.7       'Zvbc32e' (Vector Carryless Multiplication with 32-bits elements)
+// CHECK-NEXT:     zvkgs                0.7       'Zvkgs' (Vector-Scalar GCM instructions for Cryptography)
 // CHECK-NEXT:     smmpm                1.0       'Smmpm' (Machine-level Pointer Masking for M-mode)
 // CHECK-NEXT:     smnpm                1.0       'Smnpm' (Machine-level Pointer Masking for next lower privilege mode)
 // CHECK-NEXT:     smrnmi               0.5       'Smrnmi' (Resumable Non-Maskable Interrupts)
@@ -228,18 +226,7 @@
 // CHECK-NEXT:     smwgd                0.3       'Smwgd' (The Smwgd extension adds the mwiddeleg M-mode read-write CSR. The mwiddeleg register represents a set of WIDs as a bit vector with WID i represented by bit i of the register.)
 // CHECK-NEXT:     ssnpm                1.0       'Ssnpm' (Supervisor-level Pointer Masking for next lower privilege mode)
 // CHECK-NEXT:     sspm                 1.0       'Sspm' (Indicates Supervisor-mode Pointer Masking)
-// CHECK-NEXT:     ssqosid              1.0       'Ssqosid' (Quality-of-Service (QoS) Identifiers)
 // CHECK-NEXT:     sswg                 0.3       'Sswg' (The Sswg extension adds the [H]S-mode read-write slwid CSR, which sets the WID used for modes lower than [H]S-mode.)
-=======
-// CHECK-NEXT:     zvbc32e              0.7       'Zvbc32e' (Vector Carryless Multiplication with 32-bits elements)
-// CHECK-NEXT:     zvkgs                0.7       'Zvkgs' (Vector-Scalar GCM instructions for Cryptography)
-// CHECK-NEXT:     smctr                1.0       'Smctr' (Control Transfer Records Machine Level)
-// CHECK-NEXT:     smmpm                1.0       'Smmpm' (Machine-level Pointer Masking for M-mode)
-// CHECK-NEXT:     smnpm                1.0       'Smnpm' (Machine-level Pointer Masking for next lower privilege mode)
-// CHECK-NEXT:     ssctr                1.0       'Ssctr' (Control Transfer Records Supervisor Level)
-// CHECK-NEXT:     ssnpm                1.0       'Ssnpm' (Supervisor-level Pointer Masking for next lower privilege mode)
-// CHECK-NEXT:     sspm                 1.0       'Sspm' (Indicates Supervisor-mode Pointer Masking)
->>>>>>> b959532
 // CHECK-NEXT:     supm                 1.0       'Supm' (Indicates User-mode Pointer Masking)
 // CHECK-NEXT:     svukte               0.3       'Svukte' (Address-Independent Latency of User-Mode Faults to Supervisor Addresses)
 // CHECK-EMPTY:
