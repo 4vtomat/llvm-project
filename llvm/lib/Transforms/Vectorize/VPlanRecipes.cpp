@@ -3110,7 +3110,13 @@ void VPWidenLoadEVLRecipe::execute(VPTransformState &State) {
   State.setDebugLocFrom(getDebugLoc());
   CallInst *NewLI;
   Value *EVL = State.get(getEVL(), VPIteration(0, 0));
+#if SIFIVE_CUSTOMIZATION
+  Value *Addr = (isStrided() || isMonotonic())
+                    ? nullptr
+                    : State.get(getAddr(), 0, !CreateGather);
+#else
   Value *Addr = State.get(getAddr(), 0, !CreateGather);
+#endif // SIFIVE_CUSTOMIZATION
   Value *Mask = nullptr;
   if (VPValue *VPMask = getMask()) {
     Mask = State.get(VPMask, 0);
@@ -3120,6 +3126,26 @@ void VPWidenLoadEVLRecipe::execute(VPTransformState &State) {
     Mask = Builder.CreateVectorSplat(State.VF, Builder.getTrue());
   }
 
+#if SIFIVE_CUSTOMIZATION
+  if (auto *IMask = dyn_cast_if_present<VPInstruction>(getMask());
+      IMask && IMask->getOpcode() == CmpInst::ICMP_ULE)
+    Mask = Builder.CreateVectorSplat(State.VF, Builder.getTrue());
+  if (isStrided() || isMonotonic()) {
+    // Upstream compiler only handles EVL for consecutive load/store
+    // TODO: Move code from widenPredicatedMemoryInstruction into
+    // lowerStoreUsingVectorIntrinsics to simplify pulldown
+    NewLI = cast<CallInst>(
+        llvm::widenPredicatedMemoryInstruction(*this, State, 0, Mask));
+  } else if (Speculative) {
+    assert(State.Plan->isUncountable() &&
+           "Speculative load is only allowed for uncountable loops");
+
+    NewLI = Builder.CreateIntrinsic(
+        Intrinsic::vp_load_ff, {DataTy, Addr->getType()}, {Addr, Mask, EVL},
+        nullptr, "vp.op.load.ff");
+
+  } else
+#endif // SIFIVE_CUSTOMIZATION
   if (CreateGather) {
     NewLI =
         Builder.CreateIntrinsic(DataTy, Intrinsic::vp_gather, {Addr, Mask, EVL},
@@ -3130,12 +3156,34 @@ void VPWidenLoadEVLRecipe::execute(VPTransformState &State) {
     NewLI = cast<CallInst>(VBuilder.createVectorInstruction(
         Instruction::Load, DataTy, Addr, "vp.op.load"));
   }
+#if SIFIVE_CUSTOMIZATION
+  if (!isMonotonic())
+#endif // SIFIVE_CUSTOMIZATION
   NewLI->addParamAttr(
       0, Attribute::getWithAlignment(NewLI->getContext(), Alignment));
   State.addMetadata(NewLI, LI);
   Instruction *Res = NewLI;
   if (isReverse())
     Res = createReverseEVL(Builder, Res, EVL, "vp.reverse");
+#if SIFIVE_CUSTOMIZATION
+  if (isSpeculative()) {
+    // For FFLoad, we'd like to generate something similar to the following.
+    // %a = call { <vscale x 8 x i8>, i32 } @llvm.vp.load.ff.nxv8i8.p0(
+    //   <vscale x 8 x i8>*, i32)
+    // %b = extractvalue { <vscale x 8 x i32>, i32 } %a, 0
+    // %c = extractvalue { <vscale x 8 x i32>, i32 } %a, 1
+    Value *VL = Builder.CreateExtractValue(Res, 1);
+    State.set(State.EVL, VL, 0, /*IsScalar=*/true);
+    Res = cast<Instruction>(Builder.CreateExtractValue(Res, 0));
+    State.set(getVPValue(0), Res, 0);
+    // NewVL is going to replace EVL which is i64 type,
+    // Here needs an unsigned extend
+    // TODO: Create a VPScalarCastRecipe for this
+    VL = Builder.CreateZExt(VL, Builder.getInt64Ty());
+    State.set(getVPValue(1), VL, 0, /*NeedsScalar=*/true);
+    return;
+  }
+#endif // SIFIVE_CUSTOMIZATION
   State.set(this, Res, 0);
 }
 
@@ -3149,6 +3197,12 @@ void VPWidenLoadEVLRecipe::print(raw_ostream &O, const Twine &Indent,
 #endif
   O << Indent << "WIDEN ";
   printAsOperand(O, SlotTracker);
+#if SIFIVE_CUSTOMIZATION
+  if (Speculative) {
+    O << ", ";
+    getVPValue(1)->printAsOperand(O, SlotTracker);
+  }
+#endif // SIFIVE_CUSTOMIZATION
   O << " = vp.load ";
   printOperands(O, SlotTracker);
 #if SIFIVE_CUSTOMIZATION

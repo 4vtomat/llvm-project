@@ -8811,6 +8811,7 @@ InstructionCost LoopVectorizationPlanner::cost(VPlan &Plan,
 }
 
 #ifndef NDEBUG
+#if !SIFIVE_CUSTOMIZATION
 /// Return true if the original loop \ TheLoop contains any instructions that do
 /// not have corresponding recipes in \p Plan and are not marked to be ignored
 /// in \p CostCtx. This means the VPlan contains simplification that the legacy
@@ -8860,6 +8861,7 @@ planContainsAdditionalSimplifications(VPlan &Plan, ElementCount VF,
         });
       });
 }
+#endif // !SIFIVE_CUSTOMIZATION
 #endif
 
 VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
@@ -8965,6 +8967,14 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
   }
 
 #ifndef NDEBUG
+#if SIFIVE_CUSTOMIZATION
+  // For EVL-vectorization in downstream compiler we don't expect scalar VPlan
+  // to be available.
+  // TODO: That needs to be fixed as scalar VPlan does not contain EVL-based
+  // recipes
+  if (Legal->useVLAVectorizer() && BestFactor.Width.isScalar())
+    return BestFactor;
+#endif
   // Select the optimal vectorization factor according to the legacy cost-model.
   // This is now only used to verify the decisions by the new VPlan-based
   // cost-model and will be retired once the VPlan-based cost-model is
@@ -8980,11 +8990,15 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
   VPCostContext CostCtx(CM.TTI, *CM.TLI, Legal->getWidestInductionType(),
                         LLVMCtx, CM);
   precomputeCosts(BestPlan, BestFactor.Width, CostCtx);
+#if SIFIVE_CUSTOMIZATION
+  (void)LegacyVF;
+#else
   assert((BestFactor.Width == LegacyVF.Width ||
           planContainsAdditionalSimplifications(getPlanFor(BestFactor.Width),
                                                 BestFactor.Width, CostCtx,
                                                 OrigLoop, CM)) &&
          " VPlan cost model and legacy cost model disagreed");
+#endif // !SIFIVE_CUSTOMIZATION
   assert((BestFactor.Width.isScalar() || BestFactor.ScalarCost > 0) &&
          "when vectorizing, the scalar cost must be computed.");
 #endif
@@ -10664,15 +10678,20 @@ static MapVector<PHINode *, VPValue *> collectUsersInExitBlock(
   // from scalar loop only.
   if (MiddleVPBB->getNumSuccessors() != 2)
     return {};
-#if SIFIVE_CUSTOMIZATION
-  if (!isRevectorizeWithoutStrideChecks(*OrigLoop))
-    return {};
-#else
+#if !SIFIVE_CUSTOMIZATION
   MapVector<PHINode *, VPValue *> ExitingValuesToFix;
 #endif // SIFIVE_CUSTOMIZATION
   BasicBlock *ExitBB =
       cast<VPIRBasicBlock>(MiddleVPBB->getSuccessors()[0])->getIRBasicBlock();
   BasicBlock *ExitingBB = OrigLoop->getExitingBlock();
+#if SIFIVE_CUSTOMIZATION
+  // Only handle single-exit loops with unique exit blocks for now.
+  if (!ExitBB || !ExitBB->getSinglePredecessor() || !ExitingBB)
+    if (!ExitBB || !ExitingBB ||
+        !isRevectorizeWithoutStrideChecks(*OrigLoop) ||
+        !ExitBB->hasNPredecessors(2))
+      return {};
+#endif // SIFIVE_CUSTOMIZATION
   for (PHINode &ExitPhi : ExitBB->phis()) {
     Value *IncomingValue =
         ExitPhi.getIncomingValueForBlock(ExitingBB);
@@ -10702,6 +10721,13 @@ static MapVector<PHINode *, VPValue *> collectUsersInExitBlock(
            return P && CSAs.contains(P);
          })))
       continue;
+    if (Legal->isMonotonicPhi(IncomingValue) ||
+        (isa<Instruction>(IncomingValue) &&
+         Legal->isMonotonicUpdate(cast<Instruction>(IncomingValue)))) {
+      // TODO: Remove this hack and avoid extract-from-end recipe for this case
+      Plan.addLiveOut(&ExitPhi, V);
+      continue;
+    }
 #endif // SIFIVE_CUSTOMIZATION
     ExitingValuesToFix.insert({&ExitPhi, V});
   }
@@ -10731,6 +10757,10 @@ addUsersInExitBlock(VPlan &Plan,
 
   // Introduce VPUsers modeling the exit values.
   for (const auto &[ExitPhi, V] : ExitingValuesToFix) {
+    if (V->isLiveIn()) {
+      Plan.addLiveOut(ExitPhi, V);
+      continue;
+    }
     VPValue *Ext = B.createNaryOp(
         VPInstruction::ExtractFromEnd,
         {V, Plan.getOrAddLiveIn(ConstantInt::get(
@@ -11770,17 +11800,6 @@ void VPReplicateRecipe::execute(VPTransformState &State) {
       State.ILV->scalarizeInstruction(UI, this, VPIteration(Part, Lane), State);
 }
 
-/// Use all-true mask for reverse rather than actual mask, as it avoids a
-/// dependence w/o affecting the result.
-static Instruction *createReverseEVL(IRBuilderBase &Builder, Value *Operand,
-                                     Value *EVL, const Twine &Name) {
-  VectorType *ValTy = cast<VectorType>(Operand->getType());
-  Value *AllTrueMask =
-      Builder.CreateVectorSplat(ValTy->getElementCount(), Builder.getTrue());
-  return Builder.CreateIntrinsic(ValTy, Intrinsic::experimental_vp_reverse,
-                                 {Operand, AllTrueMask, EVL}, nullptr, Name);
-}
-
 // Determine how to lower the scalar epilogue, which depends on 1) optimising
 // for minimum code-size, 2) predicate compiler options, 3) loop hints forcing
 // predication, and 4) a TTI hook that analyses whether the loop is suitable
@@ -12377,10 +12396,7 @@ bool LoopVectorizePass::processLoop(Loop *L) {
   // Identify the diagnostic messages that should be produced.
   std::pair<StringRef, std::string> VecDiagMsg, IntDiagMsg;
   bool VectorizeLoop = true, InterleaveLoop = true;
-#if SIFIVE_CUSTOMIZATION
-  if (VF == VectorizationFactor::Disabled() ||
-      (VF.Width.isScalar() && !Hints.isFixedVectorizationDisabled())) {
-#endif // SIFIVE_CUSTOMIZATION
+  if (VF.Width.isScalar()) {
     LLVM_DEBUG(dbgs() << "LV: Vectorization is possible but not beneficial.\n");
     VecDiagMsg = std::make_pair(
         "VectorizationNotBeneficial",
