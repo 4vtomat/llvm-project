@@ -11698,8 +11698,10 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
         FinalReductionResult->insertBefore(*MiddleVPBB, IP);
         FinalReductionMask->insertBefore(FinalReductionResult);
         OrigExitingVPV->replaceUsesWithIf(
-            FinalReductionResult,
-            [](VPUser &User, unsigned) { return isa<VPLiveOut>(&User); });
+            FinalReductionResult, [](VPUser &User, unsigned) {
+              return match(&User, m_Binary<VPInstruction::ExtractFromEnd>(
+                                      m_VPValue(), m_VPValue()));
+            });
         continue;
       }
     }

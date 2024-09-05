@@ -42,7 +42,6 @@ define i64 @select_non_const_iv_start_signed_guard(ptr %a, i64 %ii, i64 %iv_star
 ; CHECK-VF4IC1-NEXT:    [[TMP9:%.*]] = call i64 @llvm.vector.reduce.smax.v4i64(<4 x i64> [[TMP8]])
 ; CHECK-VF4IC1-NEXT:    [[TMP10:%.*]] = call i1 @llvm.vector.reduce.or.v4i1(<4 x i1> [[TMP7]])
 ; CHECK-VF4IC1-NEXT:    [[TMP11:%.*]] = select i1 [[TMP10]], i64 [[TMP9]], i64 [[II]]
-; CHECK-VF4IC1-NEXT:    [[TMP13:%.*]] = extractelement <4 x i64> [[TMP5]], i32 3
 ; CHECK-VF4IC1-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP12]], [[N_VEC]]
 ; CHECK-VF4IC1-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-VF4IC1:       scalar.ph:
@@ -60,7 +59,7 @@ define i64 @select_non_const_iv_start_signed_guard(ptr %a, i64 %ii, i64 %iv_star
 ; CHECK-VF4IC1-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
 ; CHECK-VF4IC1-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY1]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK-VF4IC1:       for.cond.cleanup.loopexit:
-; CHECK-VF4IC1-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY1]] ], [ [[TMP13]], [[MIDDLE_BLOCK]] ]
+; CHECK-VF4IC1-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY1]] ], [ [[TMP11]], [[MIDDLE_BLOCK]] ]
 ; CHECK-VF4IC1-NEXT:    br label [[FOR_COND_CLEANUP]]
 ; CHECK-VF4IC1:       for.cond.cleanup:
 ; CHECK-VF4IC1-NEXT:    [[IDX_0_LCSSA:%.*]] = phi i64 [ [[II]], [[ENTRY:%.*]] ], [ [[COND_LCSSA]], [[FOR_COND_CLEANUP_LOOPEXIT]] ]
@@ -140,7 +139,6 @@ define i64 @select_non_const_iv_start_signed_guard(ptr %a, i64 %ii, i64 %iv_star
 ; CHECK-VF4IC4-NEXT:    [[TMP33:%.*]] = call i64 @llvm.vector.reduce.smax.v4i64(<4 x i64> [[RDX_MINMAX11]])
 ; CHECK-VF4IC4-NEXT:    [[TMP34:%.*]] = call i1 @llvm.vector.reduce.or.v4i1(<4 x i1> [[TMP32]])
 ; CHECK-VF4IC4-NEXT:    [[TMP35:%.*]] = select i1 [[TMP34]], i64 [[TMP33]], i64 [[II]]
-; CHECK-VF4IC4-NEXT:    [[TMP37:%.*]] = extractelement <4 x i64> [[TMP20]], i32 3
 ; CHECK-VF4IC4-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[TMP36]], [[N_VEC]]
 ; CHECK-VF4IC4-NEXT:    br i1 [[CMP_N]], label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]], label [[SCALAR_PH]]
 ; CHECK-VF4IC4:       scalar.ph:
@@ -158,7 +156,7 @@ define i64 @select_non_const_iv_start_signed_guard(ptr %a, i64 %ii, i64 %iv_star
 ; CHECK-VF4IC4-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
 ; CHECK-VF4IC4-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY1]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK-VF4IC4:       for.cond.cleanup.loopexit:
-; CHECK-VF4IC4-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY1]] ], [ [[TMP37]], [[MIDDLE_BLOCK]] ]
+; CHECK-VF4IC4-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY1]] ], [ [[TMP35]], [[MIDDLE_BLOCK]] ]
 ; CHECK-VF4IC4-NEXT:    br label [[FOR_COND_CLEANUP]]
 ; CHECK-VF4IC4:       for.cond.cleanup:
 ; CHECK-VF4IC4-NEXT:    [[IDX_0_LCSSA:%.*]] = phi i64 [ [[II]], [[ENTRY:%.*]] ], [ [[COND_LCSSA]], [[FOR_COND_CLEANUP_LOOPEXIT]] ]
@@ -241,7 +239,7 @@ define i64 @select_non_const_iv_start_signed_guard(ptr %a, i64 %ii, i64 %iv_star
 ; CHECK-VF1IC4-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], [[N]]
 ; CHECK-VF1IC4-NEXT:    br i1 [[EXITCOND_NOT]], label [[FOR_COND_CLEANUP_LOOPEXIT]], label [[FOR_BODY1]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK-VF1IC4:       for.cond.cleanup.loopexit:
-; CHECK-VF1IC4-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY1]] ], [ [[TMP20]], [[MIDDLE_BLOCK]] ]
+; CHECK-VF1IC4-NEXT:    [[COND_LCSSA:%.*]] = phi i64 [ [[COND]], [[FOR_BODY1]] ], [ [[TMP33]], [[MIDDLE_BLOCK]] ]
 ; CHECK-VF1IC4-NEXT:    br label [[FOR_COND_CLEANUP]]
 ; CHECK-VF1IC4:       for.cond.cleanup:
 ; CHECK-VF1IC4-NEXT:    [[IDX_0_LCSSA:%.*]] = phi i64 [ [[II]], [[ENTRY:%.*]] ], [ [[COND_LCSSA]], [[FOR_COND_CLEANUP_LOOPEXIT]] ]
