@@ -215,9 +215,8 @@ define i32 @lower_global_nonload_use(i32 %a, i1 %c) nounwind {
 ; RV32I-SMALL-NEXT:    sw ra, 12(sp) # 4-byte Folded Spill
 ; RV32I-SMALL-NEXT:    sw s0, 8(sp) # 4-byte Folded Spill
 ; RV32I-SMALL-NEXT:    lui a0, %hi(G)
-; RV32I-SMALL-NEXT:    lw s0, %lo(G)(a0)
-; RV32I-SMALL-NEXT:    lui a0, %hi(G)
 ; RV32I-SMALL-NEXT:    addi a0, a0, %lo(G)
+; RV32I-SMALL-NEXT:    lw s0, 0(a0)
 ; RV32I-SMALL-NEXT:    call foo
 ; RV32I-SMALL-NEXT:    mv a0, s0
 ; RV32I-SMALL-NEXT:    lw ra, 12(sp) # 4-byte Folded Reload

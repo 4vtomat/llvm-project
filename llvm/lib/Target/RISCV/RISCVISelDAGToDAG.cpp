@@ -2950,9 +2950,27 @@ bool RISCVDAGToDAGISel::SelectAddrRegImm(SDValue Addr, SDValue &Base,
   if (Addr.getOpcode() == RISCVISD::ADD_LO) {
     // If this is non RV32Zdinx we can always fold.
     if (!IsRV32Zdinx) {
+#if SIFIVE_CUSTOMIZATION
+      bool CanFold = true;
+      // Unconditionally fold if operand 1 is not a global address (e.g.
+      // externsymbol)
+      if (auto *GA = dyn_cast<GlobalAddressSDNode>(Addr.getOperand(1))) {
+        const DataLayout &DL = CurDAG->getDataLayout();
+        Align Alignment = commonAlignment(
+              GA->getGlobal()->getPointerAlignment(DL), GA->getOffset());
+        if (!areOffsetsWithinAlignment(Addr, Alignment))
+          CanFold = false;
+      }
+      if (CanFold) {
+        Base = Addr.getOperand(0);
+        Offset = Addr.getOperand(1);
+        return true;
+      }
+#else
       Base = Addr.getOperand(0);
       Offset = Addr.getOperand(1);
       return true;
+#endif // SIFIVE_CUSTOMIZATION
     }
 
     // For RV32Zdinx we need to have more than 4 byte alignment so we can add 4
