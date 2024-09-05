@@ -4711,6 +4711,11 @@ BoUpSLP::LoadsState BoUpSLP::canVectorizeLoads(
       calculateRtStride(PointerOps, ScalarTy, *DL, *SE, Order))
     return LoadsState::StridedVectorize;
 
+  if (!IsSorted && !all_of(PointerOps, [&](Value *P) {
+        return arePointersCompatible(P, PointerOps.front(), *TLI);
+      }))
+    return LoadsState::Gather;
+
   if (IsSorted) {
     Value *Ptr0;
     Value *PtrN;
@@ -4756,16 +4761,7 @@ BoUpSLP::LoadsState BoUpSLP::canVectorizeLoads(
                                      MaxProfitableLoadStride * Sz &&
                                  isPowerOf2_32(std::abs(*Diff)))) &&
                                static_cast<unsigned>(std::abs(*Diff)) > Sz) ||
-#if SIFIVE_CUSTOMIZATION
-       *Diff == -(static_cast<int>(Sz) - 1) ||
-       any_of(PointerOps, [&](Value *V) {
-         return isa<Instruction>(V) && any_of(V->users(), [&](User *U) {
-                  return !getTreeEntry(U) && !MustGather.contains(U);
-                });
-       }))) {
-#else
-       *Diff == -(static_cast<int>(Sz) - 1))) {
-#endif // SIFIVE_CUSTOMIZATION
+                              *Diff == -(static_cast<int>(Sz) - 1))) {
       int Stride = *Diff / static_cast<int>(Sz - 1);
       if (*Diff == Stride * static_cast<int>(Sz - 1)) {
         Align Alignment =
