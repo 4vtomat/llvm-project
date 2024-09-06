@@ -5631,11 +5631,7 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
       // than scalar loop.
       InstructionCost C;
       if (UseVPlanCostModel) {
-<<<<<<< HEAD
-        VPlanCostModel VPCM(getPlanFor(VF), *Legal, TTI, *TLI);
-=======
-        VPlanCostModel VPCM(getBestPlanFor(VF), *Legal, TTI, *TLI, TypeInfo);
->>>>>>> origin/sifive-dev
+        VPlanCostModel VPCM(getPlanFor(VF), *Legal, TTI, *TLI, TypeInfo);
         C = VPCM.getCost(
             RVVPair::get(CM.WidestType, VF, PSE.getSE()->getDataLayout()));
       } else {
@@ -8931,11 +8927,7 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
       // than scalar loop.
       InstructionCost Cost;
       if (UseVPlanCostModel) {
-<<<<<<< HEAD
-        VPlanCostModel VPCM(getPlanFor(VF), *Legal, TTI, *TLI);
-=======
-        VPlanCostModel VPCM(getBestPlanFor(VF), *Legal, TTI, *TLI, TypeInfo);
->>>>>>> origin/sifive-dev
+        VPlanCostModel VPCM(getPlanFor(VF), *Legal, TTI, *TLI, TypeInfo);
         Cost = VPCM.getCost(
             RVVPair::get(CM.WidestType, VF, PSE.getSE()->getDataLayout()));
       } else {
