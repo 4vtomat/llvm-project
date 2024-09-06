@@ -102,6 +102,7 @@ private:
 
 #if SIFIVE_CUSTOMIZATION
   uint8_t VectorToScalarBaseCost = 1;
+  unsigned XSfmmTE = 0;
 #endif // SIFIVE_CUSTOMIZATION
   unsigned ZvlLen = 0;
   unsigned RVVVectorBitsMin;
