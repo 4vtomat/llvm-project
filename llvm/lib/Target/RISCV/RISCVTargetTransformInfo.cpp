@@ -395,6 +395,132 @@ static InstructionCost getSiFive7ReductionCost(unsigned VL) {
 
 #endif // SIFIVE_CUSTOMIZATION
 
+#if SIFIVE_CUSTOMIZATION
+static InstructionCost getRVVBaseCost(unsigned Op, MVT VT,
+                                      const RISCVTTIImpl *TTI,
+                                      const RISCVTargetLowering *TLI) {
+  InstructionCost LMULCost = TLI->getLMULCost(VT);
+  switch (Op) {
+  case RISCV::VRGATHER_VI:
+    return TLI->getVRGatherVICost(VT);
+  case RISCV::VRGATHER_VV:
+    return TLI->getVRGatherVVCost(VT);
+  case RISCV::VSLIDEUP_VI:
+  case RISCV::VSLIDEDOWN_VI:
+    return TLI->getVSlideVICost(VT);
+  case RISCV::VSLIDEUP_VX:
+  case RISCV::VSLIDEDOWN_VX:
+    return TLI->getVSlideVXCost(VT);
+  case RISCV::VREDMAX_VS:
+  case RISCV::VREDMIN_VS:
+  case RISCV::VREDMAXU_VS:
+  case RISCV::VREDMINU_VS:
+  case RISCV::VREDSUM_VS:
+  case RISCV::VREDAND_VS:
+  case RISCV::VREDOR_VS:
+  case RISCV::VREDXOR_VS:
+  case RISCV::VFREDMAX_VS:
+  case RISCV::VFREDMIN_VS:
+  case RISCV::VFREDUSUM_VS: {
+    unsigned VL = VT.getVectorMinNumElements();
+    if (!VT.isFixedLengthVector())
+      VL *= *(TTI->getVScaleForTuning());
+    return Log2_32_Ceil(VL);
+  }
+  case RISCV::VFREDOSUM_VS: {
+    unsigned VL = VT.getVectorMinNumElements();
+    if (!VT.isFixedLengthVector())
+      VL *= *(TTI->getVScaleForTuning());
+    return VL;
+  }
+  case RISCV::VMV_X_S:
+  case RISCV::VMV_S_X:
+  case RISCV::VFMV_F_S:
+  case RISCV::VFMV_S_F:
+  case RISCV::VMOR_MM:
+  case RISCV::VMXOR_MM:
+  case RISCV::VMAND_MM:
+  case RISCV::VMANDN_MM:
+  case RISCV::VMNAND_MM:
+  case RISCV::VCPOP_M:
+  case RISCV::VFIRST_M:
+    return 1;
+  default:
+    return LMULCost;
+  }
+}
+static InstructionCost getSiFiveP600RVVCost(ArrayRef<unsigned> OpCodes, MVT VT,
+                                            TTI::TargetCostKind CostKind,
+                                            const RISCVTTIImpl *TTI,
+                                            const RISCVTargetLowering *TLI) {
+  InstructionCost LMULCost = TLI->getLMULCost(VT);
+  // Based on the micro-arch characteristics:
+  //   1. The rename stage handles 4 uOps per cycle,
+  //   2. The register group needs to be free together,
+  //      the larger the register group the longer the occupancy it cause.
+  // Here add some penalty to discourage the use of m8 without hindering vector utilization
+  InstructionCost M8Penalty = (LMULCost / 8) * 5;
+  size_t NumInstr = OpCodes.size();
+  if ((CostKind != TTI::TCK_RecipThroughput) && (CostKind != TTI::TCK_Latency))
+    return LMULCost * NumInstr;
+  InstructionCost Cost = 0;
+  for (auto Op : OpCodes) {
+    switch (Op) {
+    case RISCV::VADD_VV:
+    case RISCV::VSLL_VV:
+    case RISCV::VAND_VV:
+    case RISCV::VAND_VI:
+    case RISCV::VMAXU_VV:
+    case RISCV::VSEXT_VF2:
+    case RISCV::VSEXT_VF4:
+    case RISCV::VSEXT_VF8:
+    case RISCV::VZEXT_VF2:
+    case RISCV::VZEXT_VF4:
+    case RISCV::VZEXT_VF8:
+    case RISCV::VMSNE_VI:
+    case RISCV::VNSRL_WI:
+    case RISCV::VFWCVT_F_F_V:
+    case RISCV::VFNCVT_F_F_W:
+      // Scalar has 4 pipes, vector has 2 pipes.
+      // Cost = NumDLen * ScalarPipe * ScalarCost / VectorPipe
+      //      = NumDLen * 4 * 1 / 2 = 2 * LMULCost
+      Cost += (LMULCost == 1) ? 4 : 2 * LMULCost + M8Penalty;
+      break;
+    case RISCV::VMUL_VV:
+      // Scalar has 2 pipes, vector has 2 pipes.
+      // Cost = NumDLen * ScalarPipe * ScalarCost / VectorPipe
+      //      = NumDLen * 2 * 1 / 2 = LMULCost
+      Cost += (LMULCost == 1) ? 2 : LMULCost + M8Penalty;
+      break;
+    case RISCV::VFADD_VV:
+    case RISCV::VFMUL_VV:
+    case RISCV::VFSGNJN_VV:
+      // Scalar has 2 pipes, vector has 2 pipes, Scalar Cost = 2
+      // Cost = NumDLen * ScalarPipe * ScalarCost / VectorPipe
+      //      = NumDLen * 2 * 2 / 2 = 2 * LMULCost
+      Cost += (LMULCost == 1) ? 4 : 2 * LMULCost + M8Penalty;
+      break;
+    case RISCV::VFDIV_VV:
+      // Scalar has 1 pipe, and vector has 1 pipe, Scalar Cost = 2
+      // Cost = NumDLen * ScalarPipe * ScalarCost / VectorPipe
+      //      = NumDLen * 1 * 2 / 1 = 2 * LMULCost
+      Cost += 2 * LMULCost + M8Penalty;
+      break;
+    case RISCV::VMV_X_S:
+    case RISCV::VFMV_F_S:
+    case RISCV::VCPOP_M:
+    case RISCV::VFIRST_M:
+      /* Vector-to-scalar communication */
+      Cost += 8;
+      break;
+    default:
+      Cost += getRVVBaseCost(Op, VT, TTI, TLI) + M8Penalty;
+      break;
+    }
+  }
+  return Cost;
+}
+#endif // SIFIVE_CUSTOMIZATION
 InstructionCost
 RISCVTTIImpl::getRISCVInstructionCost(ArrayRef<unsigned> OpCodes, MVT VT,
                                       TTI::TargetCostKind CostKind) {
@@ -404,6 +530,14 @@ RISCVTTIImpl::getRISCVInstructionCost(ArrayRef<unsigned> OpCodes, MVT VT,
   size_t NumInstr = OpCodes.size();
   if (CostKind == TTI::TCK_CodeSize)
     return NumInstr;
+
+#if SIFIVE_CUSTOMIZATION
+  // FIXME: Need to refactor this into a function pointer to reduce the check in every call
+  if ((ST->getProcFamily() == RISCVSubtarget::SiFiveP600) ||
+      (ST->getProcFamily() == RISCVSubtarget::SiFiveLion))
+    return getSiFiveP600RVVCost(OpCodes, VT, CostKind, this, TLI);
+#endif // SIFIVE_CUSTOMIZATION
+
   InstructionCost LMULCost = TLI->getLMULCost(VT);
   if ((CostKind != TTI::TCK_RecipThroughput) && (CostKind != TTI::TCK_Latency))
     return LMULCost * NumInstr;
@@ -1479,10 +1613,6 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   VP_INTRINSIC(vp_uitofp, 1)                                                   \
   VP_INTRINSIC(vp_zext, 1)                                                     \
   VP_INTRINSIC(vp_fabs, 1)                                                     \
-  VP_INTRINSIC(vp_smax, 1)                                                     \
-  VP_INTRINSIC(vp_smin, 1)                                                     \
-  VP_INTRINSIC(vp_umax, 1)                                                     \
-  VP_INTRINSIC(vp_umin, 1)                                                     \
   VP_INTRINSIC(vp_sqrt, 1)                                                     \
   VP_INTRINSIC(vp_copysign, 1)                                                 \
   VP_INTRINSIC(vp_minnum, 1)                                                   \
@@ -1549,6 +1679,14 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
     break;
   }
 #if SIFIVE_CUSTOMIZATION
+  case Intrinsic::vp_smax:
+  case Intrinsic::vp_smin:
+  case Intrinsic::vp_umax:
+  case Intrinsic::vp_umin: {
+    auto LT = getTypeLegalizationCost(RetTy);
+    return LT.first *
+           getRISCVInstructionCost(RISCV::VMAXU_VV, LT.second, CostKind);
+  }
   case Intrinsic::vp_powi: {
     // Returning the same cost model for llvm.powi
     return BaseT::getIntrinsicInstrCost(
@@ -1656,35 +1794,6 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
                                                TTI::CastContextHint CCH,
                                                TTI::TargetCostKind CostKind,
                                                const Instruction *I) {
-#if SIFIVE_CUSTOMIZATION
-  std::pair<InstructionCost, MVT> SrcLT = getTypeLegalizationCost(Src);
-  std::pair<InstructionCost, MVT> DstLT = getTypeLegalizationCost(Dst);
-  if (SrcLT.second.isVector() && DstLT.second.isVector()) {
-    if (SrcLT.first > 1 || DstLT.first > 1)
-      return BaseT::getCastInstrCost(Opcode, Dst, Src, CCH, CostKind, I);
-    const unsigned SrcEltSize = SrcLT.second.getScalarSizeInBits();
-    const unsigned DstEltSize = DstLT.second.getScalarSizeInBits();
-    InstructionCost SrcLMULCost = 1;
-    InstructionCost DstLMULCost = 1;
-    InstructionCost PowDiffCost = 1;
-    if (CostKind == TTI::TCK_RecipThroughput) {
-      SrcLMULCost = TLI->getLMULCost(SrcLT.second);
-      DstLMULCost = TLI->getLMULCost(DstLT.second);
-      PowDiffCost = 0;
-      unsigned SrcSize = SrcEltSize;
-      if (SrcSize != 1 && DstEltSize != 1) {
-        for (; SrcSize != DstEltSize;) {
-          MVT SrcMVT =
-              SrcLT.second.changeVectorElementType(MVT::getIntegerVT(SrcSize));
-          PowDiffCost += TLI->getLMULCost(SrcMVT);
-          if (SrcSize < DstEltSize)
-            SrcSize = SrcSize << 1;
-          else
-            SrcSize = SrcSize >> 1;
-        }
-      }
-    }
-#else
   bool IsVectorType = isa<VectorType>(Dst) && isa<VectorType>(Src);
   if (!IsVectorType)
     return BaseT::getCastInstrCost(Opcode, Dst, Src, CCH, CostKind, I);
@@ -1695,7 +1804,6 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
   if (!ST->hasVInstructions() || Src->getScalarSizeInBits() > ST->getELen() ||
       Dst->getScalarSizeInBits() > ST->getELen())
     return BaseT::getCastInstrCost(Opcode, Dst, Src, CCH, CostKind, I);
-#endif // SIFIVE_CUSTOMIZATION
 
   std::pair<InstructionCost, MVT> SrcLT = getTypeLegalizationCost(Src);
   std::pair<InstructionCost, MVT> DstLT = getTypeLegalizationCost(Dst);
@@ -1715,6 +1823,7 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
   int ISD = TLI->InstructionOpcodeToISD(Opcode);
   assert(ISD && "Invalid opcode");
 
+<<<<<<< HEAD
 #if !SIFIVE_CUSTOMIZATION
   int PowDiff = (int)Log2_32(DstLT.second.getScalarSizeInBits()) -
                 (int)Log2_32(SrcLT.second.getScalarSizeInBits());
@@ -1729,6 +1838,15 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
     return SrcLT.first * 1 * SrcLMULCost;
 #else
     if (Src->getScalarSizeInBits() == 1) {
+=======
+  int PowDiff = (int)Log2_32(Dst->getScalarSizeInBits()) -
+                (int)Log2_32(Src->getScalarSizeInBits());
+  switch (ISD) {
+  case ISD::SIGN_EXTEND:
+  case ISD::ZERO_EXTEND: {
+    const unsigned SrcEltSize = Src->getScalarSizeInBits();
+    if (SrcEltSize == 1) {
+>>>>>>> origin/sifive-dev
       // We do not use vsext/vzext to extend from mask vector.
       // Instead we use the following instructions to extend from mask vector:
       // vmv.v.i v8, 0
@@ -1743,13 +1861,8 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
     unsigned Op =
         (ISD == ISD::SIGN_EXTEND) ? SExtOp[PowDiff - 1] : ZExtOp[PowDiff - 1];
     return getRISCVInstructionCost(Op, DstLT.second, CostKind);
-#endif // SIFIVE_CUSTOMIZATION
   }
   case ISD::TRUNCATE:
-#if SIFIVE_CUSTOMIZATION
-    if (DstEltSize == 1)
-      return SrcLT.first * 2 * SrcLMULCost;
-#else
     if (Dst->getScalarSizeInBits() == 1) {
       // We do not use several vncvt to truncate to mask vector. So we could
       // not use PowDiff to calculate it.
@@ -1759,13 +1872,9 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
       return getRISCVInstructionCost({RISCV::VAND_VI, RISCV::VMSNE_VI},
                                      SrcLT.second, CostKind);
     }
-#endif // SIFIVE_CUSTOMIZATION
     [[fallthrough]];
   case ISD::FP_EXTEND:
   case ISD::FP_ROUND: {
-#if SIFIVE_CUSTOMIZATION
-      return SrcLT.first * PowDiffCost;
-#else
     // Counts of narrow/widen instructions.
     unsigned SrcEltSize = SrcLT.second.getScalarSizeInBits();
     unsigned DstEltSize = DstLT.second.getScalarSizeInBits();
@@ -1784,13 +1893,34 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
       Cost += getRISCVInstructionCost(Op, DstMVT, CostKind);
     }
     return Cost;
-#endif // SIFIVE_CUSTOMIZATION
   }
   case ISD::FP_TO_SINT:
   case ISD::FP_TO_UINT:
-#if SIFIVE_CUSTOMIZATION
   case ISD::SINT_TO_FP:
   case ISD::UINT_TO_FP:
+#if SIFIVE_CUSTOMIZATION
+      const unsigned SrcEltSize = SrcLT.second.getScalarSizeInBits();
+      const unsigned DstEltSize = DstLT.second.getScalarSizeInBits();
+      InstructionCost SrcLMULCost = 1;
+      InstructionCost DstLMULCost = 1;
+      InstructionCost PowDiffCost = 1;
+      if (CostKind == TTI::TCK_RecipThroughput) {
+        SrcLMULCost = TLI->getLMULCost(SrcLT.second);
+        DstLMULCost = TLI->getLMULCost(DstLT.second);
+        PowDiffCost = 0;
+        unsigned SrcSize = SrcEltSize;
+        if (SrcSize != 1 && DstEltSize != 1) {
+          for (; SrcSize != DstEltSize;) {
+            MVT SrcMVT =
+                SrcLT.second.changeVectorElementType(MVT::getIntegerVT(SrcSize));
+            PowDiffCost += TLI->getLMULCost(SrcMVT);
+            if (SrcSize < DstEltSize)
+              SrcSize = SrcSize << 1;
+            else
+              SrcSize = SrcSize >> 1;
+          }
+        }
+      }
       if (SrcEltSize == 1) {
         return DstLT.first * 3 * DstLMULCost;
       }
@@ -1816,7 +1946,6 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
         }
       }
       return SrcLT.first * PowDiffCost;
-  }
 #else
     // For fp vector to mask, we use:
     // vfncvt.rtz.x.f.w v9, v8
@@ -1845,7 +1974,6 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
     // Backend could lower (v[sz]ext i8 to double) to vfcvt(v[sz]ext.f8 i8),
     // so it only need two conversion.
     return 2;
-  }
 #endif // SIFIVE_CUSTOMIZATION
   }
   return BaseT::getCastInstrCost(Opcode, Dst, Src, CCH, CostKind, I);
@@ -2709,7 +2837,9 @@ InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
 
 #if SIFIVE_CUSTOMIZATION
   // FIXME: move the customization to getRISCVInstructionCost.
-  if (ST->isSiFiveCPU()) {
+  bool HasCustomCost = (ST->getProcFamily() == RISCVSubtarget::SiFiveP600) ||
+                       (ST->getProcFamily() == RISCVSubtarget::SiFiveLion);
+  if (ST->isSiFiveCPU() && !HasCustomCost) {
     switch (TLI->InstructionOpcodeToISD(Opcode)) {
     case ISD::ADD:
     case ISD::SUB:
@@ -2741,10 +2871,6 @@ InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
       if (ST->getProcFamily() == RISCVSubtarget::SiFive7)
         return ConstantMatCost + (TLI->getLMULCost(LT.second) - 1) +
                LT.first * 6;
-      // P670 and the rest SiFive cores fall into this case.
-      // P670 has two FP pipes so we make the vector cost higher than P470
-      // Make cost of the vector instruction the same as the cost of three
-      // scalar FP instructions
       return ConstantMatCost + (TLI->getLMULCost(LT.second)) * LT.first * 6;
     }
     default:

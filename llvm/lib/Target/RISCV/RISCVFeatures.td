@@ -1423,25 +1423,25 @@ def HasVendorXSfmm32eaOrXSfmm32a16fOrXSfmm32a32fOrXSfmm64a64f
                                            FeatureVendorXSfmm64a64f),
                     "XSfmm32ea/XSfmm32a16f/XSfmm32a32f/XSfmm64a64f">;
 
-def FeatureVendorXSfmm128t
-    : RISCVExtension<"xsfmm128t", 0, 6,
-                     "'XSfmm128t' TE=128 configuration",
-                     [FeatureVendorXSfmmbase]>;
-
 def FeatureVendorXSfmm16t
     : RISCVExtension<"xsfmm16t", 0, 6,
                      "'XSfmm16t' TE=16 configuration",
-                     [FeatureVendorXSfmmbase]>;
+                     [FeatureVendorXSfmmbase], "XSfmmTE", "16">;
 
 def FeatureVendorXSfmm32t
     : RISCVExtension<"xsfmm32t", 0, 6,
                      "'XSfmm32t' TE=32 configuration",
-                     [FeatureVendorXSfmmbase]>;
+                     [FeatureVendorXSfmmbase], "XSfmmTE", "32">;
 
 def FeatureVendorXSfmm64t
     : RISCVExtension<"xsfmm64t", 0, 6,
                      "'XSfmm64t' TE=64 configuration",
-                     [FeatureVendorXSfmmbase]>;
+                     [FeatureVendorXSfmmbase], "XSfmmTE", "64">;
+
+def FeatureVendorXSfmm128t
+    : RISCVExtension<"xsfmm128t", 0, 6,
+                     "'XSfmm128t' TE=128 configuration",
+                     [FeatureVendorXSfmmbase], "XSfmmTE", "128">;
 #endif // SIFIVE_CUSTOMIZATION
 
 let AdditionalVersions = [[0, 1]]  in // SIFIVE

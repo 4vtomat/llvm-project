@@ -5610,6 +5610,8 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
   std::tie(SmallestTypeSize, WidestTypeSize) = CM.getSmallestAndWidestTypes();
   const bool UseVPlanCostModel =
       SiFiveLoopVectorizerUseVPlanBasedCostModel && Legal->useVLAVectorizer();
+  Type *WidestType = Legal->getWidestInductionType();
+  VPTypeAnalysis TypeInfo(WidestType, WidestType->getContext());
 #endif
 
   for (auto &P : VPlans) {
@@ -5629,7 +5631,11 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
       // than scalar loop.
       InstructionCost C;
       if (UseVPlanCostModel) {
+<<<<<<< HEAD
         VPlanCostModel VPCM(getPlanFor(VF), *Legal, TTI, *TLI);
+=======
+        VPlanCostModel VPCM(getBestPlanFor(VF), *Legal, TTI, *TLI, TypeInfo);
+>>>>>>> origin/sifive-dev
         C = VPCM.getCost(
             RVVPair::get(CM.WidestType, VF, PSE.getSE()->getDataLayout()));
       } else {
@@ -6902,21 +6908,8 @@ InstructionCost LoopVectorizationCostModel::expectedCost(ElementCount VF) {
     // the predicated block, if it is an if-else block. Thus, scale the block's
     // cost by the probability of executing it. blockNeedsPredication from
     // Legal is used so as to not include all blocks in tail folded loops.
-#if SIFIVE_CUSTOMIZATION
-    if (VF.isScalar() && Legal->blockNeedsPredication(BB) &&
-        !Legal->useVLAVectorizer()) {
-      auto Scale = getReciprocalPredBlockProb();
-      // LLVM_DEBUG(dbgs() << "LV: Dividing cost of " << BlockCost << " by "
-      //                   << Scale << " due to branch probability\n");
-      BlockCost /= Scale;
-    }
-
-    // LLVM_DEBUG(dbgs() << "LV: Adding cost of " << BlockCost << " for VF "
-    //                   << VF << " in block " << BB->getName() << "\n");
-#else
     if (VF.isScalar() && Legal->blockNeedsPredication(BB))
       BlockCost /= getReciprocalPredBlockProb();
-#endif // SIFIVE_CUSTOMIZATION
 
     Cost += BlockCost;
   }
@@ -8912,6 +8905,8 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
   std::tie(SmallestTypeSize, WidestTypeSize) = CM.getSmallestAndWidestTypes();
   const bool UseVPlanCostModel =
       SiFiveLoopVectorizerUseVPlanBasedCostModel && Legal->useVLAVectorizer();
+  Type *WidestType = Legal->getWidestInductionType();
+  VPTypeAnalysis TypeInfo(WidestType, WidestType->getContext());
 #endif
   for (auto &P : VPlans) {
     for (ElementCount VF : P->vectorFactors()) {
@@ -8936,7 +8931,11 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
       // than scalar loop.
       InstructionCost Cost;
       if (UseVPlanCostModel) {
+<<<<<<< HEAD
         VPlanCostModel VPCM(getPlanFor(VF), *Legal, TTI, *TLI);
+=======
+        VPlanCostModel VPCM(getBestPlanFor(VF), *Legal, TTI, *TLI, TypeInfo);
+>>>>>>> origin/sifive-dev
         Cost = VPCM.getCost(
             RVVPair::get(CM.WidestType, VF, PSE.getSE()->getDataLayout()));
       } else {
