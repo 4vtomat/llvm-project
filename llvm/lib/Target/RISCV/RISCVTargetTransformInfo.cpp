@@ -1823,22 +1823,6 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
   int ISD = TLI->InstructionOpcodeToISD(Opcode);
   assert(ISD && "Invalid opcode");
 
-<<<<<<< HEAD
-#if !SIFIVE_CUSTOMIZATION
-  int PowDiff = (int)Log2_32(DstLT.second.getScalarSizeInBits()) -
-                (int)Log2_32(SrcLT.second.getScalarSizeInBits());
-#endif // !SIFIVE_CUSTOMIZATION
-  switch (ISD) {
-  case ISD::SIGN_EXTEND:
-  case ISD::ZERO_EXTEND: {
-#if SIFIVE_CUSTOMIZATION
-    if (SrcEltSize == 1)
-      return DstLT.first * 2 * DstLMULCost;
-
-    return SrcLT.first * 1 * SrcLMULCost;
-#else
-    if (Src->getScalarSizeInBits() == 1) {
-=======
   int PowDiff = (int)Log2_32(Dst->getScalarSizeInBits()) -
                 (int)Log2_32(Src->getScalarSizeInBits());
   switch (ISD) {
@@ -1846,7 +1830,6 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
   case ISD::ZERO_EXTEND: {
     const unsigned SrcEltSize = Src->getScalarSizeInBits();
     if (SrcEltSize == 1) {
->>>>>>> origin/sifive-dev
       // We do not use vsext/vzext to extend from mask vector.
       // Instead we use the following instructions to extend from mask vector:
       // vmv.v.i v8, 0
