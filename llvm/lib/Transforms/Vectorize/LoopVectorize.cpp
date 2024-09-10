@@ -8852,6 +8852,20 @@ planContainsAdditionalSimplifications(VPlan &Plan, ElementCount VF,
 #endif
 
 VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
+#if SIFIVE_CUSTOMIZATION
+  // Within SiFive, we have AOS to SOA transformation that is only effective
+  // during LTO phase. The LoopVectorizer is executed both in pre-link and LTO.
+  // However we don't want vectorization to potententially scramble the code and
+  // paralyze AOS to SOA transformation. This adhoc approach is driven by
+  // SCT-1716, we seek to skip the vectorizer when when all memory accesses are
+  // non-unit strides during the pre-link stage.
+  if (EnableLoopDataLayout && IsLTOPreLink &&
+      hasOnlyNonUnitStrideMemoryAccesses(OrigLoop, Legal)) {
+    LLVM_DEBUG(dbgs() << "LV: Bail out in pre-link stage when there is only "
+                         "non-unit stride memory accesses.\n");
+    return VectorizationFactor::Disabled();
+  }
+#endif
   if (VPlans.empty())
     return VectorizationFactor::Disabled();
   // If there is a single VPlan with a single VF, return it directly.
