@@ -1455,17 +1455,3 @@ foreach vti = NoGroupFloatVectors in {
   def : Pat<(vti.Scalar (extractelt (vti.Vector vti.RegClass:$rs2), 0)),
             (vfmv_f_s_inst vti.RegClass:$rs2, vti.Log2SEW)>;
 }
-
-#ifdef SIFIVE_CUSTOMIZATION
-foreach vti = AllBFloatVectors in {
-  defvar vmv_f_s_inst = !cast<Instruction>(!strconcat("PseudoVFMV_",
-                                                       vti.ScalarSuffix,
-                                                       "_S_ALT_", vti.LMul.MX));
-  // Only pattern-match extract-element operations where the index is 0. Any
-  // other index will have been custom-lowered to slide the vector correctly
-  // into place.
-  let Predicates = GetVTypePredicates<vti>.Predicates in
-  def : Pat<(vti.Scalar (extractelt (vti.Vector vti.RegClass:$rs2), 0)),
-            (vmv_f_s_inst vti.RegClass:$rs2, vti.Log2SEW)>;
-}
-#endif // SIFIVE_CUSTOMIZATION

@@ -172,6 +172,13 @@ static cl::opt<size_t>
                        cl::desc("Do not inline functions with a stack size "
                                 "that exceeds the specified limit"));
 
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool> AllowInlineRecursiveFuncs(
+    "allow-inline-recursive-funcs", cl::Hidden,
+    cl::desc("Allow inlining recursive function calls "
+             "to some extent"));
+#endif
+
 static cl::opt<size_t> RecurStackSizeThreshold(
     "recursive-inline-max-stacksize", cl::Hidden,
     cl::init(InlineConstants::TotalAllocaSizeRecursiveCaller),
@@ -3291,6 +3298,12 @@ InlineParams llvm::getInlineParams(int Threshold) {
   // Set the ColdCallSiteThreshold knob from the
   // -inline-cold-callsite-threshold.
   Params.ColdCallSiteThreshold = ColdCallSiteThreshold;
+
+#if SIFIVE_CUSTOMIZATION
+  // Set the AllowRecursiveCall knob from the -allow-inline-recursive-funcs.
+  if (AllowInlineRecursiveFuncs.getNumOccurrences() > 0)
+    Params.AllowRecursiveCall = AllowInlineRecursiveFuncs;
+#endif
 
   // Set the OptMinSizeThreshold and OptSizeThreshold params only if the
   // -inlinehint-threshold commandline option is not explicitly given. If that

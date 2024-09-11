@@ -382,6 +382,7 @@ bool canSinkOrHoistInst(Instruction &I, AAResults *AA, DominatorTree *DT,
                         bool TargetExecutesOncePerLoop,
                         SinkAndHoistLICMFlags &LICMFlags,
 #if SIFIVE_CUSTOMIZATION
+                        TargetLibraryInfo *TLI,
                         bool NewStructTBAAPtrHoisting,
 #endif // SIFIVE_CUSTOMIZATION
                         OptimizationRemarkEmitter *ORE = nullptr);

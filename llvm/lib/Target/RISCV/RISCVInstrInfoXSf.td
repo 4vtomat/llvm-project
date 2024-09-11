@@ -1461,4 +1461,324 @@ let hasSideEffects = 0, mayLoad = 0, mayStore = 0 in {
                            "sf.p2mm."#a.Name#"."#b.Name, "$rd, $vs2, $vs1">;
 }
 } // Predicates = [HasVendorXSfmm32a4i]
+
+//===----------------------------------------------------------------------===//
+// Xsfvfbfa instructions
+//===----------------------------------------------------------------------===//
+// TODO: Currently we mark all floating type other than bf16 as IS_NOT_ALTFMT,
+//       however only f16 should be marked as IS_NOT_ALTFMT. However if we want
+//       to get it correct and more precisely, we need to add another set of
+//       PseudoInst to represent those that are f16 as we did for bf16, it might
+//       add much complexity for refactoring.
+
+let Predicates = [HasVendorXSfvfbfa] in {
+let AltfmtType = IS_ALTFMT in {
+//===----------------------------------------------------------------------===//
+// 13.2. Vector Single-Width Floating-Point Add/Subtract Instructions
+//===----------------------------------------------------------------------===//
+let mayRaiseFPException = true, hasPostISelHook = 1 in {
+defm PseudoVFADD_ALT : VPseudoVALU_VV_VF_RM<IsBF16=1>;
+defm PseudoVFSUB_ALT  : VPseudoVALU_VV_VF_RM<IsBF16=1>;
+defm PseudoVFRSUB_ALT : VPseudoVALU_VF_RM<IsBF16=1>;
+}
+
+//===----------------------------------------------------------------------===//
+// 13.3. Vector Widening Floating-Point Add/Subtract Instructions
+//===----------------------------------------------------------------------===//
+let IsWiden = 1 in {
+let mayRaiseFPException = true, hasSideEffects = 0, hasPostISelHook = 1 in {
+defm PseudoVFWADD_ALT : VPseudoVFWALU_VV_VF_RM<IsBF16=1>;
+defm PseudoVFWSUB_ALT : VPseudoVFWALU_VV_VF_RM<IsBF16=1>;
+defm PseudoVFWADD_ALT : VPseudoVFWALU_WV_WF_RM<IsBF16=1>;
+defm PseudoVFWSUB_ALT : VPseudoVFWALU_WV_WF_RM<IsBF16=1>;
+}
+}
+
+//===----------------------------------------------------------------------===//
+// 13.4. Vector Single-Width Floating-Point Multiply/Divide Instructions
+//===----------------------------------------------------------------------===//
+let mayRaiseFPException = true, hasSideEffects = 0, hasPostISelHook = 1 in
+defm PseudoVFMUL_ALT : VPseudoVFMUL_VV_VF_RM<IsBF16=1>;
+
+//===----------------------------------------------------------------------===//
+// 13.5. Vector Widening Floating-Point Multiply
+//===----------------------------------------------------------------------===//
+let IsWiden = 1 in
+let mayRaiseFPException = true, hasSideEffects = 0 in
+defm PseudoVFWMUL_ALT : VPseudoVWMUL_VV_VF_RM<IsBF16=1>;
+
+//===----------------------------------------------------------------------===//
+// 13.6. Vector Single-Width Floating-Point Fused Multiply-Add Instructions
+//===----------------------------------------------------------------------===//
+let mayRaiseFPException = true, hasSideEffects = 0, hasPostISelHook = 1 in {
+defm PseudoVFMACC_ALT  : VPseudoVMAC_VV_VF_AAXA_RM<IsBF16=1>;
+defm PseudoVFNMACC_ALT : VPseudoVMAC_VV_VF_AAXA_RM<IsBF16=1>;
+defm PseudoVFMSAC_ALT  : VPseudoVMAC_VV_VF_AAXA_RM<IsBF16=1>;
+defm PseudoVFNMSAC_ALT : VPseudoVMAC_VV_VF_AAXA_RM<IsBF16=1>;
+defm PseudoVFMADD_ALT  : VPseudoVMAC_VV_VF_AAXA_RM<IsBF16=1>;
+defm PseudoVFNMADD_ALT : VPseudoVMAC_VV_VF_AAXA_RM<IsBF16=1>;
+defm PseudoVFMSUB_ALT  : VPseudoVMAC_VV_VF_AAXA_RM<IsBF16=1>;
+defm PseudoVFNMSUB_ALT : VPseudoVMAC_VV_VF_AAXA_RM<IsBF16=1>;
+}
+
+//===----------------------------------------------------------------------===//
+// 13.7. Vector Widening Floating-Point Fused Multiply-Add Instructions
+//===----------------------------------------------------------------------===//
+let IsWiden = 1 in {
+let mayRaiseFPException = true, hasSideEffects = 0, hasPostISelHook = 1 in {
+defm PseudoVFWMACC_ALT  : VPseudoVWMAC_VV_VF_RM<IsBF16=1>;
+defm PseudoVFWNMACC_ALT : VPseudoVWMAC_VV_VF_RM<IsBF16=1>;
+defm PseudoVFWMSAC_ALT  : VPseudoVWMAC_VV_VF_RM<IsBF16=1>;
+defm PseudoVFWNMSAC_ALT : VPseudoVWMAC_VV_VF_RM<IsBF16=1>;
+}
+}
+
+//===----------------------------------------------------------------------===//
+// 13.9. Vector Floating-Point Reciprocal Square-Root Estimate Instruction
+//===----------------------------------------------------------------------===//
+let mayRaiseFPException = true in
+defm PseudoVFRSQRT7_ALT : VPseudoVRCP_V<IsBF16=1>;
+
+//===----------------------------------------------------------------------===//
+// 13.10. Vector Floating-Point Reciprocal Estimate Instruction
+//===----------------------------------------------------------------------===//
+let mayRaiseFPException = true, hasSideEffects = 0 in
+defm PseudoVFREC7_ALT : VPseudoVRCP_V_RM<IsBF16=1>;
+
+//===----------------------------------------------------------------------===//
+// 13.11. Vector Floating-Point Min/Max Instructions
+//===----------------------------------------------------------------------===//
+let mayRaiseFPException = true in {
+defm PseudoVFMIN_ALT : VPseudoVMAX_VV_VF<IsBF16=1>;
+defm PseudoVFMAX_ALT : VPseudoVMAX_VV_VF<IsBF16=1>;
+}
+
+//===----------------------------------------------------------------------===//
+// 13.12. Vector Floating-Point Sign-Injection Instructions
+//===----------------------------------------------------------------------===//
+defm PseudoVFSGNJ_ALT  : VPseudoVSGNJ_VV_VF<IsBF16=1>;
+defm PseudoVFSGNJN_ALT : VPseudoVSGNJ_VV_VF<IsBF16=1>;
+defm PseudoVFSGNJX_ALT : VPseudoVSGNJ_VV_VF<IsBF16=1>;
+
+//===----------------------------------------------------------------------===//
+// 13.13. Vector Floating-Point Compare Instructions
+//===----------------------------------------------------------------------===//
+let mayRaiseFPException = true in {
+defm PseudoVMFEQ_ALT : VPseudoVCMPM_VV_VF;
+defm PseudoVMFNE_ALT : VPseudoVCMPM_VV_VF;
+defm PseudoVMFLT_ALT : VPseudoVCMPM_VV_VF;
+defm PseudoVMFLE_ALT : VPseudoVCMPM_VV_VF;
+defm PseudoVMFGT_ALT : VPseudoVCMPM_VF;
+defm PseudoVMFGE_ALT : VPseudoVCMPM_VF;
+}
+
+//===----------------------------------------------------------------------===//
+// 13.14. Vector Floating-Point Classify Instruction
+//===----------------------------------------------------------------------===//
+defm PseudoVFCLASS_ALT : VPseudoVCLS_V;
+
+//===----------------------------------------------------------------------===//
+// 13.15. Vector Floating-Point Merge Instruction
+//===----------------------------------------------------------------------===//
+defm PseudoVFMERGE_ALT : VPseudoVMRG_FM;
+
+//===----------------------------------------------------------------------===//
+// 13.16. Vector Floating-Point Move Instruction
+//===----------------------------------------------------------------------===//
+defm PseudoVFMV_V_ALT : VPseudoVMV_F;
+
+//===----------------------------------------------------------------------===//
+// 13.18. Widening Floating-Point/Integer Type-Convert Instructions
+//===----------------------------------------------------------------------===//
+let IsWiden = 1 in {
+let mayRaiseFPException = true in {
+defm PseudoVFWCVT_F_XU_ALT : VPseudoVWCVTF_V<IsBF16=1>;
+defm PseudoVFWCVT_F_X_ALT  : VPseudoVWCVTF_V<IsBF16=1>;
+
+defm PseudoVFWCVT_F_F_ALT  : VPseudoVWCVTD_V<IsBF16=1>;
+} // mayRaiseFPException = true
+}
+
+//===----------------------------------------------------------------------===//
+// 13.19. Narrowing Floating-Point/Integer Type-Convert Instructions
+//===----------------------------------------------------------------------===//
+let mayRaiseFPException = true in {
+let hasSideEffects = 0, hasPostISelHook = 1 in {
+defm PseudoVFNCVT_XU_F_ALT : VPseudoVNCVTI_W_RM;
+defm PseudoVFNCVT_X_F_ALT  : VPseudoVNCVTI_W_RM;
+}
+
+defm PseudoVFNCVT_RTZ_XU_F_ALT : VPseudoVNCVTI_W;
+defm PseudoVFNCVT_RTZ_X_F_ALT  : VPseudoVNCVTI_W;
+
+defm PseudoVFNCVT_F_F_ALT  : VPseudoVNCVTD_W_RM<IsBF16=1>;
+
+defm PseudoVFNCVT_ROD_F_F_ALT : VPseudoVNCVTD_W<IsBF16=1>;
+} // mayRaiseFPException = true
+
+//===----------------------------------------------------------------------===//
+// 16.3. Vector Slide Instructions
+//===----------------------------------------------------------------------===//
+let mayLoad = 0, mayStore = 0, hasSideEffects = 0 in {
+  foreach f = FPList in {
+    foreach m = f.MxList in {
+      defvar mx = m.MX;
+      let VLMul = m.value in {
+        let HasSEWOp = 1, BaseInstr = VFMV_F_S in
+        def "PseudoVFMV_" # f.FX # "_S_ALT_" # mx :
+          Pseudo<(outs f.fprclass:$rd),
+                 (ins m.vrclass:$rs2, ixlenimm:$sew), []>,
+          Sched<[WriteVMovFS, ReadVMovFS]>,
+          RISCVVPseudo;
+        let HasVLOp = 1, HasSEWOp = 1, BaseInstr = VFMV_S_F,
+            Constraints = "$rd = $rs1" in
+        def "PseudoVFMV_S_" # f.FX # "_ALT_" # mx :
+                                          Pseudo<(outs m.vrclass:$rd),
+                                                 (ins m.vrclass:$rs1, f.fprclass:$rs2,
+                                                      AVL:$vl, ixlenimm:$sew),
+                                                 []>,
+          Sched<[WriteVMovSF, ReadVMovSF_V, ReadVMovSF_F]>,
+          RISCVVPseudo;
+      }
+    }
+  }
+}
+
+//===----------------------------------------------------------------------===//
+// 16.3. Vector Slide Instructions
+//===----------------------------------------------------------------------===//
+defm PseudoVFSLIDE1UP_ALT   : VPseudoVSLD1_VF<"@earlyclobber $rd">;
+defm PseudoVFSLIDE1DOWN_ALT : VPseudoVSLD1_VF;
+}
+
+defm : VPatBinaryV_VV_VX_RM<"int_riscv_vfadd", "PseudoVFADD_ALT",
+                            AllBFloatVectors, isSEWAware = 1>;
+defm : VPatBinaryV_VV_VX_RM<"int_riscv_vfsub", "PseudoVFSUB_ALT",
+                            AllBFloatVectors, isSEWAware = 1>;
+defm : VPatBinaryV_VX_RM<"int_riscv_vfrsub", "PseudoVFRSUB_ALT",
+                         AllBFloatVectors, isSEWAware = 1>;
+defm : VPatBinaryW_VV_VX_RM<"int_riscv_vfwadd", "PseudoVFWADD_ALT",
+                            AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+defm : VPatBinaryW_VV_VX_RM<"int_riscv_vfwsub", "PseudoVFWSUB_ALT",
+                            AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+defm : VPatBinaryW_WV_WX_RM<"int_riscv_vfwadd_w", "PseudoVFWADD_ALT",
+                            AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+defm : VPatBinaryW_WV_WX_RM<"int_riscv_vfwsub_w", "PseudoVFWSUB_ALT",
+                            AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+defm : VPatBinaryV_VV_VX_RM<"int_riscv_vfmul", "PseudoVFMUL_ALT",
+                            AllBFloatVectors, isSEWAware=1>;
+defm : VPatBinaryW_VV_VX_RM<"int_riscv_vfwmul", "PseudoVFWMUL_ALT",
+                            AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+defm : VPatTernaryV_VV_VX_AAXA_RM<"int_riscv_vfmacc", "PseudoVFMACC_ALT",
+                                  AllBFloatVectors, isSEWAware=1>;
+defm : VPatTernaryV_VV_VX_AAXA_RM<"int_riscv_vfnmacc", "PseudoVFNMACC_ALT",
+                                  AllBFloatVectors, isSEWAware=1>;
+defm : VPatTernaryV_VV_VX_AAXA_RM<"int_riscv_vfmsac", "PseudoVFMSAC_ALT",
+                                  AllBFloatVectors, isSEWAware=1>;
+defm : VPatTernaryV_VV_VX_AAXA_RM<"int_riscv_vfnmsac", "PseudoVFNMSAC_ALT",
+                                  AllBFloatVectors, isSEWAware=1>;
+defm : VPatTernaryV_VV_VX_AAXA_RM<"int_riscv_vfmadd", "PseudoVFMADD_ALT",
+                                  AllBFloatVectors, isSEWAware=1>;
+defm : VPatTernaryV_VV_VX_AAXA_RM<"int_riscv_vfnmadd", "PseudoVFNMADD_ALT",
+                                  AllBFloatVectors, isSEWAware=1>;
+defm : VPatTernaryV_VV_VX_AAXA_RM<"int_riscv_vfmsub", "PseudoVFMSUB_ALT",
+                                  AllBFloatVectors, isSEWAware=1>;
+defm : VPatTernaryV_VV_VX_AAXA_RM<"int_riscv_vfnmsub", "PseudoVFNMSUB_ALT",
+                                  AllBFloatVectors, isSEWAware=1>;
+defm : VPatTernaryW_VV_VX_RM<"int_riscv_vfwmacc", "PseudoVFWMACC_ALT",
+                             AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+defm : VPatTernaryW_VV_VX_RM<"int_riscv_vfwnmacc", "PseudoVFWNMACC_ALT",
+                             AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+defm : VPatTernaryW_VV_VX_RM<"int_riscv_vfwmsac", "PseudoVFWMSAC_ALT",
+                             AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+defm : VPatTernaryW_VV_VX_RM<"int_riscv_vfwnmsac", "PseudoVFWNMSAC_ALT",
+                             AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+defm : VPatUnaryV_V<"int_riscv_vfrsqrt7", "PseudoVFRSQRT7_ALT",
+                    AllBFloatVectors, isSEWAware=1>;
+defm : VPatUnaryV_V_RM<"int_riscv_vfrec7", "PseudoVFREC7_ALT",
+                       AllBFloatVectors, isSEWAware=1>;
+defm : VPatBinaryV_VV_VX<"int_riscv_vfmin", "PseudoVFMIN_ALT",
+                         AllBFloatVectors, isSEWAware=1>;
+defm : VPatBinaryV_VV_VX<"int_riscv_vfmax", "PseudoVFMAX_ALT",
+                         AllBFloatVectors, isSEWAware=1>;
+defm : VPatBinaryV_VV_VX<"int_riscv_vfsgnj", "PseudoVFSGNJ_ALT",
+                         AllBFloatVectors, isSEWAware=1>;
+defm : VPatBinaryV_VV_VX<"int_riscv_vfsgnjn", "PseudoVFSGNJN_ALT",
+                         AllBFloatVectors, isSEWAware=1>;
+defm : VPatBinaryV_VV_VX<"int_riscv_vfsgnjx", "PseudoVFSGNJX_ALT",
+                         AllBFloatVectors, isSEWAware=1>;
+defm : VPatBinaryM_VV_VX<"int_riscv_vmfeq", "PseudoVMFEQ_ALT", AllBFloatVectors>;
+defm : VPatBinaryM_VV_VX<"int_riscv_vmfle", "PseudoVMFLE_ALT", AllBFloatVectors>;
+defm : VPatBinaryM_VV_VX<"int_riscv_vmflt", "PseudoVMFLT_ALT", AllBFloatVectors>;
+defm : VPatBinaryM_VV_VX<"int_riscv_vmfne", "PseudoVMFNE_ALT", AllBFloatVectors>;
+defm : VPatBinaryM_VX<"int_riscv_vmfgt", "PseudoVMFGT_ALT", AllBFloatVectors>;
+defm : VPatBinaryM_VX<"int_riscv_vmfge", "PseudoVMFGE_ALT", AllBFloatVectors>;
+defm : VPatBinarySwappedM_VV<"int_riscv_vmfgt", "PseudoVMFLT_ALT", AllBFloatVectors>;
+defm : VPatBinarySwappedM_VV<"int_riscv_vmfge", "PseudoVMFLE_ALT", AllBFloatVectors>;
+defm : VPatConversionVI_VF<"int_riscv_vfclass", "PseudoVFCLASS_ALT", IsBF16=1>;
+foreach vti = AllBFloatVectors in {
+  let Predicates = GetVTypePredicates<vti>.Predicates in
+    defm : VPatBinaryCarryInTAIL<"int_riscv_vfmerge", "PseudoVFMERGE_ALT",
+                                 "V"#vti.ScalarSuffix#"M",
+                                 vti.Vector,
+                                 vti.Vector, vti.Scalar, vti.Mask,
+                                 vti.Log2SEW, vti.LMul, vti.RegClass,
+                                 vti.RegClass, vti.ScalarRegClass>;
+}
+defm : VPatConversionWF_VI<"int_riscv_vfwcvt_f_xu_v", "PseudoVFWCVT_F_XU_ALT",
+                           isSEWAware=1, IsBF16=1>;
+defm : VPatConversionWF_VI<"int_riscv_vfwcvt_f_x_v", "PseudoVFWCVT_F_X_ALT",
+                           isSEWAware=1, IsBF16=1>;
+defm : VPatConversionWF_VF<"int_riscv_vfwcvt_f_f_v", "PseudoVFWCVT_F_F_ALT",
+                           isSEWAware=1, IsBF16=1>;
+defm : VPatConversionVI_WF_RM<"int_riscv_vfncvt_xu_f_w", "PseudoVFNCVT_XU_F_ALT",
+                              IsBF16=1>;
+defm : VPatConversionVI_WF_RM<"int_riscv_vfncvt_x_f_w", "PseudoVFNCVT_X_F_ALT",
+                              IsBF16=1>;
+defm : VPatConversionVI_WF<"int_riscv_vfncvt_rtz_xu_f_w", "PseudoVFNCVT_RTZ_XU_F_ALT",
+                           IsBF16=1>;
+defm : VPatConversionVI_WF<"int_riscv_vfncvt_rtz_x_f_w", "PseudoVFNCVT_RTZ_X_F_ALT",
+                           IsBF16=1>;
+defm : VPatConversionVF_WF_RM<"int_riscv_vfncvt_f_f_w", "PseudoVFNCVT_F_F_ALT",
+                              AllWidenableBFloatToFloatVectors, isSEWAware=1>;
+defm : VPatConversionVF_WF<"int_riscv_vfncvt_rod_f_f_w", "PseudoVFNCVT_ROD_F_F_ALT",
+                           isSEWAware=1, IsBF16=1>;
+defm : VPatBinaryV_VX<"int_riscv_vfslide1up", "PseudoVFSLIDE1UP_ALT", AllBFloatVectors>;
+defm : VPatBinaryV_VX<"int_riscv_vfslide1down", "PseudoVFSLIDE1DOWN_ALT", AllBFloatVectors>;
+
+foreach fvti = AllBFloatVectors in {
+  let Predicates = GetVTypePredicates<fvti>.Predicates in {
+    def : Pat<(fvti.Vector (riscv_vfmv_v_f_vl
+                           fvti.Vector:$passthru, (fvti.Scalar fvti.ScalarRegClass:$rs2), VLOpFrag)),
+              (!cast<Instruction>("PseudoVFMV_V_ALT_" # fvti.ScalarSuffix # "_" #
+                                  fvti.LMul.MX)
+               $passthru, (fvti.Scalar fvti.ScalarRegClass:$rs2),
+               GPR:$vl, fvti.Log2SEW, TU_MU)>;
+  }
+}
+
+foreach vti = AllBFloatVectors in {
+  let Predicates = GetVTypePredicates<vti>.Predicates in {
+    def : Pat<(vti.Vector (riscv_vfmv_s_f_vl (vti.Vector vti.RegClass:$merge),
+                                             vti.ScalarRegClass:$rs1,
+                                             VLOpFrag)),
+              (!cast<Instruction>("PseudoVFMV_S_"#vti.ScalarSuffix#"_ALT_"#vti.LMul.MX)
+                  vti.RegClass:$merge,
+                  (vti.Scalar vti.ScalarRegClass:$rs1), GPR:$vl, vti.Log2SEW)>;
+  }
+}
+
+foreach vti = AllBFloatVectors in {
+  defvar vmv_f_s_inst = !cast<Instruction>(!strconcat("PseudoVFMV_",
+                                                       vti.ScalarSuffix,
+                                                       "_S_ALT_", vti.LMul.MX));
+  // Only pattern-match extract-element operations where the index is 0. Any
+  // other index will have been custom-lowered to slide the vector correctly
+  // into place.
+  let Predicates = GetVTypePredicates<vti>.Predicates in
+  def : Pat<(vti.Scalar (extractelt (vti.Vector vti.RegClass:$rs2), 0)),
+            (vmv_f_s_inst vti.RegClass:$rs2, vti.Log2SEW)>;
+}
+
+} // Predicates = [HasVendorXSfvfbfa]
 #endif // SIFIVE_CUSTOMIZATION

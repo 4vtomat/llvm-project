@@ -20,6 +20,7 @@
 #include "RISCVMachineFunctionInfo.h"
 #include "RISCVSubtarget.h"
 #include "llvm/ADT/SetVector.h"
+#include "llvm/ADT/Statistic.h"
 #include "llvm/CodeGen/MachineDominators.h"
 #include "llvm/CodeGen/MachineFunctionPass.h"
 #include "llvm/InitializePasses.h"
@@ -29,6 +30,8 @@
 using namespace llvm;
 
 #define DEBUG_TYPE "riscv-vl-optimizer"
+
+STATISTIC(NumVLReduced, "Number of VLs that were reduced");
 
 namespace {
 
@@ -1599,6 +1602,7 @@ bool RISCVVLOptimizer::tryReduceVL(MachineInstr &OrigMI) {
       VLOp.ChangeToRegister(CommonVL->Reg, false);
     }
     MadeChange = true;
+    NumVLReduced++;
 
     // Now add all inputs to this instruction to the worklist.
     for (auto &Op : MI.operands()) {

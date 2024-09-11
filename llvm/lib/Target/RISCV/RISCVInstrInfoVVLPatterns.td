@@ -2864,19 +2864,6 @@ foreach fvti = AllFloatVectors in {
   }
 }
 
-#ifdef SIFIVE_CUSTOMIZATION
-foreach fvti = AllBFloatVectors in {
-  let Predicates = GetVTypePredicates<fvti>.Predicates in {
-    def : Pat<(fvti.Vector (riscv_vfmv_v_f_vl
-                           fvti.Vector:$passthru, (fvti.Scalar fvti.ScalarRegClass:$rs2), VLOpFrag)),
-              (!cast<Instruction>("PseudoVFMV_V_ALT_" # fvti.ScalarSuffix # "_" #
-                                  fvti.LMul.MX)
-               $passthru, (fvti.Scalar fvti.ScalarRegClass:$rs2),
-               GPR:$vl, fvti.Log2SEW, TU_MU)>;
-  }
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 // 13.17. Vector Single-Width Floating-Point/Integer Type-Convert Instructions
 defm : VPatConvertFP2IVL_V_RM<riscv_vfcvt_xu_f_vl, "PseudoVFCVT_XU_F_V">;
 defm : VPatConvertFP2IVL_V_RM<riscv_vfcvt_x_f_vl, "PseudoVFCVT_X_F_V">;
@@ -3243,19 +3230,6 @@ foreach vti = AllFloatVectors in {
                    (vti.Mask V0), GPR:$vl, vti.Log2SEW, TAIL_AGNOSTIC)>;
   }
 }
-
-#ifdef SIFIVE_CUSTOMIZATION
-foreach vti = AllBFloatVectors in {
-  let Predicates = GetVTypePredicates<vti>.Predicates in {
-    def : Pat<(vti.Vector (riscv_vfmv_s_f_vl (vti.Vector vti.RegClass:$merge),
-                                             vti.ScalarRegClass:$rs1,
-                                             VLOpFrag)),
-              (!cast<Instruction>("PseudoVFMV_S_"#vti.ScalarSuffix#"_ALT_"#vti.LMul.MX)
-                  vti.RegClass:$merge,
-                  (vti.Scalar vti.ScalarRegClass:$rs1), GPR:$vl, vti.Log2SEW)>;
-  }
-}
-#endif // SIFIVE_CUSTOMIZATION
 
 //===----------------------------------------------------------------------===//
 // Miscellaneous RISCVISD SDNodes

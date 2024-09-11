@@ -458,6 +458,40 @@ MemDepResult MemoryDependenceResults::getSimplePointerDependencyFrom(
           return MemDepResult::getDef(II);
         continue;
       }
+#if SIFIVE_CUSTOMIZATION
+      case Intrinsic::memmove:
+      case Intrinsic::memcpy: {
+        MemoryLocation SrcLoc;
+        // First the src component, which is a reference
+        SrcLoc = MemoryLocation::getForArgument(II, 1, TLI);
+        MemoryLocation DstLoc;
+        // Now the Dst operand which is in effect a store.
+        DstLoc = MemoryLocation::getForArgument(II, 0, TLI);
+
+        // First evaluate the Dst/Src relationship
+        AliasResult R = BatchAA.alias(DstLoc, SrcLoc);
+        if (R == AliasResult::NoAlias) {
+          // Now check the Dst/MemLoc relationship
+          R = BatchAA.alias(DstLoc, MemLoc);
+          if (R == AliasResult::NoAlias)
+            continue;
+
+          // Alias Precisely
+          if (R == AliasResult::MustAlias)
+            return MemDepResult::getDef(II);
+
+          // Partial or May Alias
+          return MemDepResult::getClobber(II);
+        } else {
+          // Alias precisely
+          if (R == AliasResult::MustAlias)
+            return MemDepResult::getDef(II);
+
+          // Partial or May Alias
+          return MemDepResult::getClobber(II);
+        }
+      }
+#endif
       case Intrinsic::masked_load:
       case Intrinsic::masked_store: {
         MemoryLocation Loc;
