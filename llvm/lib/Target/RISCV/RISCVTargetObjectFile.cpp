@@ -17,6 +17,12 @@
 
 using namespace llvm;
 
+#if SIFIVE_CUSTOMIZATION
+static cl::opt<bool> EnableSmallReadOnlyDataSection(
+    "riscv-enable-small-rodata-section", cl::Hidden,
+    cl::desc("Enable small read-only data section for RISC-V"), cl::init(true));
+#endif // SIFIVE_CUSTOMIZATION
+
 unsigned RISCVELFTargetObjectFile::getTextSectionAlignment() const {
   return RISCVMCObjectFileInfo::getTextSectionAlignment(
       *getContext().getSubtargetInfo());
@@ -138,6 +144,10 @@ MCSection *RISCVELFTargetObjectFile::getSectionForConstant(
     const DataLayout &DL, SectionKind Kind, const Constant *C,
     Align &Alignment) const {
   if (isConstantInSmallSection(DL, C)) {
+#if SIFIVE_CUSTOMIZATION
+    if (!EnableSmallReadOnlyDataSection)
+      return SmallDataSection;
+#endif // SIFIVE_CUSTOMIZATION
     if (Kind.isMergeableConst4())
       return SmallROData4Section;
     if (Kind.isMergeableConst8())
