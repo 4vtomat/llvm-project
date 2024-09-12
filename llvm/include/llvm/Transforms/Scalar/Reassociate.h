@@ -111,6 +111,9 @@ public:
   PreservedAnalyses run(Function &F, FunctionAnalysisManager &);
 
 private:
+#if SIFIVE_CUSTOMIZATION
+  void runImpl(Function &F, ReversePostOrderTraversal<Function *> &RPOT);
+#endif
   void BuildRankMap(Function &F, ReversePostOrderTraversal<Function *> &RPOT);
   unsigned getRank(Value *V);
   void canonicalizeOperands(Instruction *I);
