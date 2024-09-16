@@ -138,8 +138,8 @@ define <vscale x 4 x i32> @test_vadd_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i32> @test_vadd_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vadd_scalar(
-; CHECK-NEXT:    [[TMP1:%.*]] = add i32 [[Y:%.*]], [[X:%.*]]
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP1]], i64 4)
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vadd.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
@@ -170,8 +170,8 @@ define <vscale x 4 x i32> @test_vand_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i32> @test_vand_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vand_scalar(
-; CHECK-NEXT:    [[TMP1:%.*]] = and i32 [[Y:%.*]], [[X:%.*]]
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP1]], i64 4)
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vand.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
@@ -246,8 +246,8 @@ define <vscale x 4 x i32> @test_vmax_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i32> @test_vmax_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vmax_scalar(
-; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.smax.i32(i32 [[Y:%.*]], i32 [[X:%.*]])
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP1]], i64 4)
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmax.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
@@ -278,8 +278,8 @@ define <vscale x 4 x i32> @test_vmaxu_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i32> @test_vmaxu_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vmaxu_scalar(
-; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.umax.i32(i32 [[Y:%.*]], i32 [[X:%.*]])
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP1]], i64 4)
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmaxu.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
@@ -310,8 +310,8 @@ define <vscale x 4 x i32> @test_vmin_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i32> @test_vmin_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vmin_scalar(
-; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.smin.i32(i32 [[Y:%.*]], i32 [[X:%.*]])
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP1]], i64 4)
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmin.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
@@ -342,8 +342,8 @@ define <vscale x 4 x i32> @test_vminu_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i32> @test_vminu_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vminu_scalar(
-; CHECK-NEXT:    [[TMP1:%.*]] = call i32 @llvm.umin.i32(i32 [[Y:%.*]], i32 [[X:%.*]])
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP1]], i64 4)
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vminu.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
@@ -374,8 +374,8 @@ define <vscale x 4 x i32> @test_vmul_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i32> @test_vmul_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vmul_scalar(
-; CHECK-NEXT:    [[TMP1:%.*]] = mul i32 [[Y:%.*]], [[X:%.*]]
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP1]], i64 4)
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmul.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
@@ -406,12 +406,8 @@ define <vscale x 4 x i32> @test_vmulh_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i32> @test_vmulh_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vmulh_scalar(
-; CHECK-NEXT:    [[TMP1:%.*]] = sext i32 [[Y:%.*]] to i64
-; CHECK-NEXT:    [[TMP2:%.*]] = sext i32 [[X:%.*]] to i64
-; CHECK-NEXT:    [[TMP3:%.*]] = mul nsw i64 [[TMP1]], [[TMP2]]
-; CHECK-NEXT:    [[TMP4:%.*]] = lshr i64 [[TMP3]], 32
-; CHECK-NEXT:    [[TMP5:%.*]] = trunc nuw i64 [[TMP4]] to i32
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP5]], i64 4)
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmulh.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
@@ -442,12 +438,8 @@ define <vscale x 4 x i32> @test_vmulhu_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i32> @test_vmulhu_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vmulhu_scalar(
-; CHECK-NEXT:    [[TMP1:%.*]] = zext i32 [[Y:%.*]] to i64
-; CHECK-NEXT:    [[TMP2:%.*]] = zext i32 [[X:%.*]] to i64
-; CHECK-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP1]], [[TMP2]]
-; CHECK-NEXT:    [[TMP4:%.*]] = lshr i64 [[TMP3]], 32
-; CHECK-NEXT:    [[TMP5:%.*]] = trunc nuw i64 [[TMP4]] to i32
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP5]], i64 4)
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmulhu.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
@@ -500,8 +492,8 @@ define <vscale x 4 x i32> @test_vor_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i32> @test_vor_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vor_scalar(
-; CHECK-NEXT:    [[TMP1:%.*]] = or i32 [[Y:%.*]], [[X:%.*]]
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP1]], i64 4)
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vor.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
@@ -718,8 +710,8 @@ define <vscale x 4 x i32> @test_vsub_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i32> @test_vsub_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vsub_scalar(
-; CHECK-NEXT:    [[TMP1:%.*]] = sub i32 [[Y:%.*]], [[X:%.*]]
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP1]], i64 4)
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vsub.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
@@ -750,10 +742,8 @@ define <vscale x 4 x i64> @test_vwadd_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i64> @test_vwadd_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vwadd_scalar(
-; CHECK-NEXT:    [[TMP1:%.*]] = sext i32 [[Y:%.*]] to i64
-; CHECK-NEXT:    [[TMP2:%.*]] = sext i32 [[X:%.*]] to i64
-; CHECK-NEXT:    [[TMP3:%.*]] = add nsw i64 [[TMP1]], [[TMP2]]
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP3]], i64 4)
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vwadd.nxv4i64.nxv4i32.i32.i64(<vscale x 4 x i64> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i64> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
@@ -794,10 +784,8 @@ define <vscale x 4 x i64> @test_vwaddu_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i64> @test_vwaddu_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vwaddu_scalar(
-; CHECK-NEXT:    [[TMP1:%.*]] = zext i32 [[Y:%.*]] to i64
-; CHECK-NEXT:    [[TMP2:%.*]] = zext i32 [[X:%.*]] to i64
-; CHECK-NEXT:    [[TMP3:%.*]] = add nuw nsw i64 [[TMP1]], [[TMP2]]
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP3]], i64 4)
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vwaddu.nxv4i64.nxv4i32.i32.i64(<vscale x 4 x i64> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i64> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
@@ -838,10 +826,8 @@ define <vscale x 4 x i64> @test_vwmul_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i64> @test_vwmul_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vwmul_scalar(
-; CHECK-NEXT:    [[TMP1:%.*]] = sext i32 [[Y:%.*]] to i64
-; CHECK-NEXT:    [[TMP2:%.*]] = sext i32 [[X:%.*]] to i64
-; CHECK-NEXT:    [[TMP3:%.*]] = mul nsw i64 [[TMP1]], [[TMP2]]
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP3]], i64 4)
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vwmul.nxv4i64.nxv4i32.i32.i64(<vscale x 4 x i64> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i64> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
@@ -894,10 +880,8 @@ define <vscale x 4 x i64> @test_vwmulu_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i64> @test_vwmulu_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vwmulu_scalar(
-; CHECK-NEXT:    [[TMP1:%.*]] = zext i32 [[Y:%.*]] to i64
-; CHECK-NEXT:    [[TMP2:%.*]] = zext i32 [[X:%.*]] to i64
-; CHECK-NEXT:    [[TMP3:%.*]] = mul nuw i64 [[TMP1]], [[TMP2]]
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vmv.v.x.nxv4i64.i64(<vscale x 4 x i64> undef, i64 [[TMP3]], i64 4)
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i64> @llvm.riscv.vwmulu.nxv4i64.nxv4i32.i32.i64(<vscale x 4 x i64> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i64> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
@@ -992,8 +976,8 @@ define <vscale x 4 x i32> @test_vxor_lhs(<vscale x 4 x i32> %x, i32 %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x i32> @test_vxor_scalar(i32 %x, i32 %y) {
 ; CHECK-LABEL: @test_vxor_scalar(
-; CHECK-NEXT:    [[TMP1:%.*]] = xor i32 [[Y:%.*]], [[X:%.*]]
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[TMP1]], i64 4)
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 [[Y:%.*]], i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x i32> @llvm.riscv.vxor.nxv4i32.i32.i64(<vscale x 4 x i32> undef, <vscale x 4 x i32> [[A]], i32 [[X:%.*]], i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x i32> [[B]]
 ;
   %a = call <vscale x 4 x i32> @llvm.riscv.vmv.v.x.nxv4i32.i64(<vscale x 4 x i32> undef, i32 %y, i64 4)
@@ -1024,8 +1008,8 @@ define <vscale x 4 x float> @test_vfadd_lhs(<vscale x 4 x float> %x, float %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x float> @test_vfadd_scalar(float %x, float %y) {
 ; CHECK-LABEL: @test_vfadd_scalar(
-; CHECK-NEXT:    [[TMP1:%.*]] = fadd float [[Y:%.*]], [[X:%.*]]
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float [[TMP1]], i64 4)
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float [[Y:%.*]], i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x float> @llvm.riscv.vfadd.nxv4f32.f32.i64(<vscale x 4 x float> undef, <vscale x 4 x float> [[A]], float [[X:%.*]], i64 7, i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x float> [[B]]
 ;
   %a = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float %y, i64 4)
@@ -1120,8 +1104,8 @@ define <vscale x 4 x float> @test_vfmul_lhs(<vscale x 4 x float> %x, float %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x float> @test_vfmul_scalar(float %x, float %y) {
 ; CHECK-LABEL: @test_vfmul_scalar(
-; CHECK-NEXT:    [[TMP1:%.*]] = fmul float [[Y:%.*]], [[X:%.*]]
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float [[TMP1]], i64 4)
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float [[Y:%.*]], i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x float> @llvm.riscv.vfmul.nxv4f32.f32.i64(<vscale x 4 x float> undef, <vscale x 4 x float> [[A]], float [[X:%.*]], i64 7, i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x float> [[B]]
 ;
   %a = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float %y, i64 4)
@@ -1184,8 +1168,8 @@ define <vscale x 4 x float> @test_vfsub_lhs(<vscale x 4 x float> %x, float %y) {
 ; Negative test. We already have a scalar. We can't have another.
 define <vscale x 4 x float> @test_vfsub_scalar(float %x, float %y) {
 ; CHECK-LABEL: @test_vfsub_scalar(
-; CHECK-NEXT:    [[TMP1:%.*]] = fsub float [[Y:%.*]], [[X:%.*]]
-; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float [[TMP1]], i64 4)
+; CHECK-NEXT:    [[A:%.*]] = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float [[Y:%.*]], i64 4)
+; CHECK-NEXT:    [[B:%.*]] = call <vscale x 4 x float> @llvm.riscv.vfsub.nxv4f32.f32.i64(<vscale x 4 x float> undef, <vscale x 4 x float> [[A]], float [[X:%.*]], i64 7, i64 4)
 ; CHECK-NEXT:    ret <vscale x 4 x float> [[B]]
 ;
   %a = call <vscale x 4 x float> @llvm.riscv.vfmv.v.f.nxv4f32.i64(<vscale x 4 x float> undef, float %y, i64 4)
