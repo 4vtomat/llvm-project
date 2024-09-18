@@ -31,7 +31,6 @@ using namespace llvm;
 
 #define DEBUG_TYPE "vplan-cost-model"
 
-#if SIFIVE_CUSTOMIZATION
 static cl::opt<bool> SiFiveEstimateRegisterPressure(
     "sifive-vplan-cost-model-estimate-regpressure", cl::init(true), cl::Hidden,
     cl::desc(
@@ -41,7 +40,6 @@ static cl::opt<bool> SiFiveEstimateLiveInRegisterPressure(
     cl::Hidden,
     cl::desc("Control whether cost model should estimate register pressure "
              "from livein values or not"));
-#endif // SIFIVE_CUSTOMIZATION
 
 static ElementCount getElementCount(const std::pair<unsigned, bool> LMUL,
                                     const unsigned SEW) {

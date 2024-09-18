@@ -8,6 +8,44 @@ define i32 @test(i32 %n, ptr  %x, ptr %y) {
 ; CHECK-NEXT:    br i1 [[CMP21]], label [[FOR_PH:%.*]], label [[FOR_COND_CLEANUP:%.*]]
 ; CHECK:       for.ph:
 ; CHECK-NEXT:    [[WIDE_TRIP_COUNT:%.*]] = zext i32 [[N]] to i64
+; CHECK-NEXT:    [[TMP0:%.*]] = add nsw i64 [[WIDE_TRIP_COUNT]], -1
+; CHECK-NEXT:    [[UMIN:%.*]] = call i64 @llvm.umin.i64(i64 [[TMP0]], i64 11)
+; CHECK-NEXT:    [[TMP1:%.*]] = add nuw nsw i64 [[UMIN]], 1
+; CHECK-NEXT:    [[TMP2:%.*]] = icmp ule i64 [[TMP1]], 1
+; CHECK-NEXT:    [[PROF_MIN_ITERS_CHECK:%.*]] = icmp ule i64 [[TMP1]], 12
+; CHECK-NEXT:    [[TMP3:%.*]] = or i1 [[TMP2]], [[PROF_MIN_ITERS_CHECK]]
+; CHECK-NEXT:    br i1 [[TMP3]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; CHECK:       vector.ph:
+; CHECK-NEXT:    [[N_VEC:%.*]] = sub i64 [[TMP1]], 1
+; CHECK-NEXT:    [[TMP4:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[N_VEC]], i32 2, i1 true)
+; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
+; CHECK:       vector.body:
+; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ [[TMP4]], [[VECTOR_PH]] ], [ [[TMP6:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[VEC_PHI:%.*]] = phi <vscale x 2 x i32> [ zeroinitializer, [[VECTOR_PH]] ], [ [[VP_OP_MERGE:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[TMP5:%.*]] = sub i64 [[N_VEC]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP6]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP5]], i32 2, i1 true)
+; CHECK-NEXT:    [[TMP7:%.*]] = add i64 [[EVL_BASED_IV]], 0
+; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, ptr [[X:%.*]], i64 [[TMP7]]
+; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds i32, ptr [[TMP8]], i32 0
+; CHECK-NEXT:    [[VP_OP_LOAD:%.*]] = call <vscale x 2 x i32> @llvm.vp.load.nxv2i32.p0(ptr align 4 [[TMP9]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP6]])
+; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i32> [[VEC_PHI]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP6]])
+; CHECK-NEXT:    [[VP_OP2:%.*]] = call <vscale x 2 x i32> @llvm.vp.add.nxv2i32(<vscale x 2 x i32> [[VP_OP]], <vscale x 2 x i32> [[VP_OP_LOAD]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP6]])
+; CHECK-NEXT:    [[VP_OP_MERGE]] = call <vscale x 2 x i32> @llvm.vp.merge.nxv2i32(<vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), <vscale x 2 x i32> [[VP_OP2]], <vscale x 2 x i32> [[VEC_PHI]], i32 [[TMP6]])
+; CHECK-NEXT:    [[TMP10:%.*]] = zext i32 [[TMP6]] to i64
+; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP10]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP11:%.*]] = zext i32 [[TMP6]] to i64
+; CHECK-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP11]]
+; CHECK-NEXT:    [[TMP12:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N_VEC]]
+; CHECK-NEXT:    br i1 [[TMP12]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK:       middle.block:
+; CHECK-NEXT:    [[TMP13:%.*]] = call i32 @llvm.vp.reduce.add.nxv2i32(i32 0, <vscale x 2 x i32> [[VP_OP_MERGE]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP4]])
+; CHECK-NEXT:    [[TMP14:%.*]] = add i32 0, [[TMP13]]
+; CHECK-NEXT:    br label [[SCALAR_PH]]
+; CHECK:       scalar.ph:
+; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_PH]] ]
+; CHECK-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[TMP14]], [[MIDDLE_BLOCK]] ], [ 0, [[FOR_PH]] ]
 ; CHECK-NEXT:    br label [[FOR_BODY:%.*]]
 ; CHECK:       loopexit:
 ; CHECK-NEXT:    [[ADD3_LCSSA:%.*]] = phi i32 [ [[ADD3:%.*]], [[FOR_BODY_EXIT:%.*]] ]
@@ -16,8 +54,8 @@ define i32 @test(i32 %n, ptr  %x, ptr %y) {
 ; CHECK-NEXT:    [[RET_0_LCSSA:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ], [ [[ADD3_LCSSA]], [[LOOPEXIT:%.*]] ]
 ; CHECK-NEXT:    ret i32 [[RET_0_LCSSA]]
 ; CHECK:       for.body:
-; CHECK-NEXT:    [[I:%.*]] = phi i64 [ 0, [[FOR_PH]] ], [ [[I_NEXT:%.*]], [[FOR_BODY_EXIT]] ]
-; CHECK-NEXT:    [[RET_022:%.*]] = phi i32 [ 0, [[FOR_PH]] ], [ [[ADD3]], [[FOR_BODY_EXIT]] ]
+; CHECK-NEXT:    [[I:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[I_NEXT:%.*]], [[FOR_BODY_EXIT]] ]
+; CHECK-NEXT:    [[RET_022:%.*]] = phi i32 [ [[BC_MERGE_RDX]], [[SCALAR_PH]] ], [ [[ADD3]], [[FOR_BODY_EXIT]] ]
 ; CHECK-NEXT:    [[NOT:%.*]] = icmp eq i64 [[I]], 11
 ; CHECK-NEXT:    br i1 [[NOT]], label [[IF_TRUE:%.*]], label [[FOR_EXIT:%.*]]
 ; CHECK:       if.true:
@@ -28,15 +66,15 @@ define i32 @test(i32 %n, ptr  %x, ptr %y) {
 ; CHECK:       if.true14:
 ; CHECK-NEXT:    unreachable
 ; CHECK:       for.body.exit:
-; CHECK-NEXT:    [[TMP0:%.*]] = getelementptr inbounds i32, ptr [[X:%.*]], i64 [[I]]
-; CHECK-NEXT:    [[TMP1:%.*]] = load i32, ptr [[TMP0]], align 4
-; CHECK-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[Y:%.*]], i64 [[I]]
-; CHECK-NEXT:    [[TMP3:%.*]] = load i32, ptr [[TMP2]], align 4
-; CHECK-NEXT:    [[ADD:%.*]] = add i32 [[TMP1]], [[RET_022]]
-; CHECK-NEXT:    [[ADD3]] = add i32 [[ADD]], [[TMP1]]
+; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr inbounds i32, ptr [[X]], i64 [[I]]
+; CHECK-NEXT:    [[TMP16:%.*]] = load i32, ptr [[TMP15]], align 4
+; CHECK-NEXT:    [[TMP17:%.*]] = getelementptr inbounds i32, ptr [[Y:%.*]], i64 [[I]]
+; CHECK-NEXT:    [[TMP18:%.*]] = load i32, ptr [[TMP17]], align 4
+; CHECK-NEXT:    [[ADD:%.*]] = add i32 [[TMP16]], [[RET_022]]
+; CHECK-NEXT:    [[ADD3]] = add i32 [[ADD]], [[TMP16]]
 ; CHECK-NEXT:    [[I_NEXT]] = add nuw nsw i64 [[I]], 1
 ; CHECK-NEXT:    [[NOT28:%.*]] = icmp eq i64 [[I_NEXT]], [[WIDE_TRIP_COUNT]]
-; CHECK-NEXT:    br i1 [[NOT28]], label [[LOOPEXIT]], label [[FOR_BODY]]
+; CHECK-NEXT:    br i1 [[NOT28]], label [[LOOPEXIT]], label [[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
 ;
 entry:
   %cmp21 = icmp sgt i32 %n, 0
