@@ -2947,16 +2947,12 @@ void tools::addMCModel(const Driver &D, const llvm::opt::ArgList &Args,
         CM = "small";
       else if (CM == "medany")
         CM = "medium";
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-      Ok = CM == "small" || CM == "medium" || CM == "compact";
+      Ok = CM == "small" || CM == "medium" || CM == "compact" ||
 #else
-      Ok = CM == "small" || CM == "medium";
-#endif // SIFIVE_CUSTOMIZATION
-=======
       Ok = CM == "small" || CM == "medium" ||
+#endif // SIFIVE_CUSTOMIZATION
            (CM == "large" && Triple.isRISCV64());
->>>>>>> c970e96
     } else if (Triple.getArch() == llvm::Triple::x86_64) {
       Ok = llvm::is_contained({"small", "kernel", "medium", "large", "tiny"},
                               CM);
