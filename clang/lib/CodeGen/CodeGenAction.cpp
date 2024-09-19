@@ -691,18 +691,12 @@ void BackendConsumer::EmitOptimizationMessage(
   if (D.getHotness())
     MsgStream << " (hotness: " << *D.getHotness() << ")";
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (D.getProfileCount()) {
     MsgStream << " (ProfileCount: " << *D.getProfileCount() << ")";
   }
 #endif // SIFIVE_CUSTOMIZATION
-  Diags.Report(Loc, DiagID)
-      << AddFlagValue(D.getPassName())
-      << MsgStream.str();
-=======
   Diags.Report(Loc, DiagID) << AddFlagValue(D.getPassName()) << Msg;
->>>>>>> c970e96
 
   if (BadDebugInfo)
     // If we were not able to translate the file:line:col information
