@@ -902,7 +902,6 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
                                                    []<string>)),
             ManualCodegen = [{
     {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       // In our downstream toolchain, for smooth transition from the v0.11
       // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
@@ -956,16 +955,11 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
       if(IsNontemporal)
         NTLNode = createNTLNode();
 #endif // SIFIVE_CUSTOMIZATION
-      llvm::Type *ElementVectorType = cast<StructType>(ResultType)->elements()[0];
-      IntrinsicTypes = {ElementVectorType, Ops.back()->getType()};
-      SmallVector<llvm::Value*, 12> Operands;
-=======
       if (IsMasked)
         IntrinsicTypes = {ResultType, Ops[0]->getType(), Ops.back()->getType()};
       else
         IntrinsicTypes = {ResultType, Ops.back()->getType()};
       SmallVector<llvm::Value*, 6> Operands;
->>>>>>> c970e96
 
       bool NoPassthru =
         (IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) |
@@ -1103,18 +1097,14 @@ multiclass RVVUnitStridedSegStoreTuple<string op> {
       Operands.push_back(Ops[Offset + 2]); // VL
       Operands.push_back(ConstantInt::get(Ops.back()->getType(), SegInstSEW));
 
-<<<<<<< HEAD
-      IntrinsicTypes = {Operands[0]->getType(), Operands.back()->getType()};
-#if SIFIVE_CUSTOMIZATION
-      if(IsNontemporal)
-        return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
-#endif // SIFIVE_CUSTOMIZATION
-=======
       if (IsMasked)
         IntrinsicTypes = {Operands[0]->getType(), Ops[0]->getType(), Operands.back()->getType()};
       else
         IntrinsicTypes = {Operands[0]->getType(), Operands.back()->getType()};
->>>>>>> c970e96
+#if SIFIVE_CUSTOMIZATION
+      if(IsNontemporal)
+        return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
+#endif // SIFIVE_CUSTOMIZATION
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
       return Builder.CreateCall(F, Operands, "");
    }
@@ -1170,7 +1160,6 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
                                                    []<string>)),
             ManualCodegen = [{
     {
-<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
       // In our downstream toolchain, for smooth transition from the v0.11
       // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
@@ -1226,16 +1215,11 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
       if(IsNontemporal)
         NTLNode = createNTLNode();
 #endif // SIFIVE_CUSTOMIZATION
-      llvm::Type *ElementVectorType = cast<StructType>(ResultType)->elements()[0];
-      IntrinsicTypes = {ElementVectorType, Ops.back()->getType()};
-      SmallVector<llvm::Value*, 12> Operands;
-=======
       if (IsMasked)
         IntrinsicTypes = {ResultType, Ops.back()->getType(), Ops[0]->getType()};
       else
         IntrinsicTypes = {ResultType, Ops.back()->getType()};
       SmallVector<llvm::Value*, 6> Operands;
->>>>>>> c970e96
 
       bool NoPassthru =
         (IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) |
@@ -1334,7 +1318,6 @@ multiclass RVVStridedSegLoadTuple<string op> {
                                                    []<string>)),
             ManualCodegen = [{
     {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       // In our downstream toolchain, for smooth transition from the v0.11
       // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
@@ -1390,16 +1373,11 @@ multiclass RVVStridedSegLoadTuple<string op> {
       if(IsNontemporal)
         NTLNode = createNTLNode();
 #endif // SIFIVE_CUSTOMIZATION
-      llvm::Type *ElementVectorType = cast<StructType>(ResultType)->elements()[0];
-      IntrinsicTypes = {ElementVectorType, Ops.back()->getType()};
-      SmallVector<llvm::Value*, 12> Operands;
-=======
       if (IsMasked)
         IntrinsicTypes = {ResultType, Ops.back()->getType(), Ops[0]->getType()};
       else
         IntrinsicTypes = {ResultType, Ops.back()->getType()};
       SmallVector<llvm::Value*, 7> Operands;
->>>>>>> c970e96
 
       bool NoPassthru =
         (IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) |
@@ -1539,18 +1517,14 @@ multiclass RVVStridedSegStoreTuple<string op> {
       Operands.push_back(Ops[Offset + 3]); // VL
       Operands.push_back(ConstantInt::get(Ops.back()->getType(), SegInstSEW));
 
-<<<<<<< HEAD
-      IntrinsicTypes = {Operands[0]->getType(), Operands.back()->getType()};
-#if SIFIVE_CUSTOMIZATION
-      if(IsNontemporal)
-        return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
-#endif // SIFIVE_CUSTOMIZATION
-=======
       if (IsMasked)
         IntrinsicTypes = {Operands[0]->getType(), Operands.back()->getType(), Ops[0]->getType()};
       else
         IntrinsicTypes = {Operands[0]->getType(), Operands.back()->getType()};
->>>>>>> c970e96
+#if SIFIVE_CUSTOMIZATION
+      if(IsNontemporal)
+        return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
+#endif // SIFIVE_CUSTOMIZATION
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
       return Builder.CreateCall(F, Operands, "");
     }
@@ -1601,7 +1575,6 @@ multiclass RVVIndexedSegLoadTuple<string op> {
                                                    []<string>)),
             ManualCodegen = [{
     {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       // In our downstream toolchain, for smooth transition from the v0.11
       // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
@@ -1657,12 +1630,7 @@ multiclass RVVIndexedSegLoadTuple<string op> {
       if(IsNontemporal)
         NTLNode = createNTLNode();
 #endif // SIFIVE_CUSTOMIZATION
-      llvm::Type *ElementVectorType = cast<StructType>(ResultType)->elements()[0];
-      IntrinsicTypes = {ElementVectorType, Ops.back()->getType()};
-      SmallVector<llvm::Value*, 12> Operands;
-=======
       SmallVector<llvm::Value*, 7> Operands;
->>>>>>> c970e96
 
       bool NoPassthru =
         (IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) |
@@ -1807,14 +1775,6 @@ multiclass RVVIndexedSegStoreTuple<string op> {
       Operands.push_back(Ops[Offset + 3]); // VL
       Operands.push_back(ConstantInt::get(Ops.back()->getType(), SegInstSEW));
 
-<<<<<<< HEAD
-      IntrinsicTypes = {Operands[0]->getType(), Ops[Offset + 1]->getType(),
-                        Operands.back()->getType()};
-#if SIFIVE_CUSTOMIZATION
-      if(IsNontemporal)
-        return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
-#endif // SIFIVE_CUSTOMIZATION
-=======
       if (IsMasked)
         IntrinsicTypes = {Operands[0]->getType(), Ops[Offset + 1]->getType(),
                           Ops[0]->getType(),
@@ -1822,7 +1782,10 @@ multiclass RVVIndexedSegStoreTuple<string op> {
       else
         IntrinsicTypes = {Operands[0]->getType(), Ops[Offset + 1]->getType(),
                           Operands.back()->getType()};
->>>>>>> c970e96
+#if SIFIVE_CUSTOMIZATION
+      if(IsNontemporal)
+        return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
+#endif // SIFIVE_CUSTOMIZATION
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
       return Builder.CreateCall(F, Operands, "");
     }
