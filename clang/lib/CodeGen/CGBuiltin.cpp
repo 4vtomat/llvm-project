@@ -22285,7 +22285,8 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   constexpr unsigned RVV_VMA = 0x2;
   int PolicyAttrs = 0;
   bool IsMasked = false;
-<<<<<<< HEAD
+  // This is used by segment load/store to determine it's llvm type.
+  unsigned SegInstSEW = 8;
 #if SIFIVE_CUSTOMIZATION
   bool IsNontemporal = false;
 
@@ -22313,10 +22314,6 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
     return NTLCall;
   };
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  // This is used by segment load/store to determine it's llvm type.
-  unsigned SegInstSEW = 8;
->>>>>>> c970e96
 
   // Required for overloaded intrinsics.
   llvm::SmallVector<llvm::Type *, 2> IntrinsicTypes;
