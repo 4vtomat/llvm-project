@@ -77,7 +77,6 @@ public:
 };
 } // end anonymous namespace
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool RISCVABIInfo::isHomogeneousAggregateBaseType(QualType Ty) const {
   if (const VectorType *VT = Ty->getAs<VectorType>())
@@ -97,7 +96,7 @@ bool RISCVABIInfo::isHomogeneousAggregateSmallEnough(const Type *Base,
   return false;
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
 void RISCVABIInfo::appendAttributeMangling(TargetClonesAttr *Attr,
                                            unsigned Index,
                                            raw_ostream &Out) const {
@@ -135,7 +134,6 @@ void RISCVABIInfo::appendAttributeMangling(StringRef AttrStr,
     Out << "_" << Feat;
   }
 }
->>>>>>> c970e96
 
 void RISCVABIInfo::computeInfo(CGFunctionInfo &FI) const {
   QualType RetTy = FI.getReturnType();
