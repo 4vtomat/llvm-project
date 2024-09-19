@@ -130,6 +130,7 @@ struct RISCVRegisterInfo : public RISCVGenRegisterInfo {
                              const MachineFunction &MF, const VirtRegMap *VRM,
                              const LiveRegMatrix *Matrix) const override;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool enableTargetInterference() const override;
 
@@ -169,6 +170,8 @@ struct RISCVRegisterInfo : public RISCVGenRegisterInfo {
     return isVRRegClass(RC);
   }
 
+=======
+>>>>>>> c970e96
   static bool isVRRegClass(const TargetRegisterClass *RC) {
     return RISCVRI::isVRegClass(RC->TSFlags) &&
            RISCVRI::getNF(RC->TSFlags) == 1;

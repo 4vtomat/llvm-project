@@ -179,7 +179,7 @@ class RVInstVCCustom2<bits<4> funct6_hi4, bits<3> funct3, dag outs, dag ins,
 
   let Uses = [VTYPE, VL];
   let RVVConstraint = NoConstraint;
-  let ActiveElementsAffectResult = 1;
+  let ElementsDependOn = EltDepsVLMask;
 }
 
 class RVInstVCFCustom2<bits<4> funct6_hi4, bits<3> funct3, dag outs, dag ins,
@@ -203,7 +203,7 @@ class RVInstVCFCustom2<bits<4> funct6_hi4, bits<3> funct3, dag outs, dag ins,
 
   let Uses = [VTYPE, VL];
   let RVVConstraint = NoConstraint;
-  let ActiveElementsAffectResult = 1;
+  let ElementsDependOn = EltDepsVLMask;
 }
 
 class VCIXInfo<string suffix, VCIXType type, DAGOperand TyRd,
@@ -305,6 +305,7 @@ let Predicates = [HasVendorXSfvcp], mayLoad = 0, mayStore = 0,
   defm FVW : CustomSiFiveVCIX<"fvw", VCIX_XVW, VR,    VR,    FPR32>, Sched<[]>;
 }
 
+<<<<<<< HEAD
 let mayLoad = 0, mayStore = 0, hasSideEffects = 0,
     Predicates = [HasVendorXSfvfexpAny], DecoderNamespace = "XSfvfexp" in {
   def VFEXP_V : VALUVs2<0b010011, 0b00111, OPFVV, "sf.vfexp.v">;
@@ -316,20 +317,26 @@ let mayLoad = 0, mayStore = 0, hasSideEffects = 0,
 }
 
 let Predicates = [HasVendorXSfvqmaccdod], DecoderNamespace = "XSfvqmaccdod" in {
+=======
+let Predicates = [HasVendorXSfvqmaccdod], DecoderNamespace = "XSfvqmaccdod",
+    DestEEW = EEWSEWx4 in {
+>>>>>>> c970e96
   def VQMACCU_2x8x2  : CustomSiFiveVMACC<0b101100, OPMVV, "sf.vqmaccu.2x8x2">;
   def VQMACC_2x8x2   : CustomSiFiveVMACC<0b101101, OPMVV, "sf.vqmacc.2x8x2">;
   def VQMACCUS_2x8x2 : CustomSiFiveVMACC<0b101110, OPMVV, "sf.vqmaccus.2x8x2">;
   def VQMACCSU_2x8x2 : CustomSiFiveVMACC<0b101111, OPMVV, "sf.vqmaccsu.2x8x2">;
 }
 
-let Predicates = [HasVendorXSfvqmaccqoq], DecoderNamespace = "XSfvqmaccqoq" in {
+let Predicates = [HasVendorXSfvqmaccqoq], DecoderNamespace = "XSfvqmaccqoq",
+    DestEEW = EEWSEWx4 in {
   def VQMACCU_4x8x4  : CustomSiFiveVMACC<0b111100, OPMVV, "sf.vqmaccu.4x8x4">;
   def VQMACC_4x8x4   : CustomSiFiveVMACC<0b111101, OPMVV, "sf.vqmacc.4x8x4">;
   def VQMACCUS_4x8x4 : CustomSiFiveVMACC<0b111110, OPMVV, "sf.vqmaccus.4x8x4">;
   def VQMACCSU_4x8x4 : CustomSiFiveVMACC<0b111111, OPMVV, "sf.vqmaccsu.4x8x4">;
 }
 
-let Predicates = [HasVendorXSfvfwmaccqqq], DecoderNamespace = "XSfvfwmaccqqq" in {
+let Predicates = [HasVendorXSfvfwmaccqqq], DecoderNamespace = "XSfvfwmaccqqq",
+    DestEEW = EEWSEWx2 in {
   def VFWMACC_4x4x4 : CustomSiFiveVMACC<0b111100, OPFVV, "sf.vfwmacc.4x4x4">;
 }
 
@@ -422,7 +429,7 @@ class VPseudoVC_V_XVV<Operand OpClass, VReg RDClass, VReg RS2Class,
 multiclass VPseudoVC_X<LMULInfo m, DAGOperand RS1Class,
                        Operand OpClass = payload2> {
   let VLMul = m.value in {
-    let Defs = [VCIX_STATE], Uses = [VCIX_STATE] in {
+    let Defs = [SF_VCIX_STATE], Uses = [SF_VCIX_STATE] in {
       def "PseudoVC_" # NAME # "_SE_" # m.MX
         : VPseudoVC_X<OpClass, RS1Class>,
           Sched<[!cast<SchedWrite>("WriteVC_" # NAME # "_" # m.MX)]>;
@@ -439,7 +446,7 @@ multiclass VPseudoVC_X<LMULInfo m, DAGOperand RS1Class,
 multiclass VPseudoVC_XV<LMULInfo m, DAGOperand RS1Class,
                         Operand OpClass = payload2> {
   let VLMul = m.value in {
-    let Defs = [VCIX_STATE], Uses = [VCIX_STATE] in {
+    let Defs = [SF_VCIX_STATE], Uses = [SF_VCIX_STATE] in {
       def "PseudoVC_" # NAME # "_SE_" # m.MX
         : VPseudoVC_XV<OpClass, m.vrclass, RS1Class>,
           Sched<[!cast<SchedWrite>("WriteVC_" # NAME # "_" # m.MX)]>;
@@ -456,7 +463,7 @@ multiclass VPseudoVC_XV<LMULInfo m, DAGOperand RS1Class,
 multiclass VPseudoVC_XVV<LMULInfo m, DAGOperand RS1Class,
                          Operand OpClass = payload2> {
   let VLMul = m.value in {
-    let Defs = [VCIX_STATE], Uses = [VCIX_STATE] in {
+    let Defs = [SF_VCIX_STATE], Uses = [SF_VCIX_STATE] in {
       def "PseudoVC_" # NAME # "_SE_" # m.MX
         : VPseudoVC_XVV<OpClass, m.vrclass, m.vrclass, RS1Class>,
           Sched<[!cast<SchedWrite>("WriteVC_" # NAME # "_" # m.MX)]>;
@@ -473,12 +480,12 @@ multiclass VPseudoVC_XVV<LMULInfo m, DAGOperand RS1Class,
 multiclass VPseudoVC_XVW<LMULInfo m, DAGOperand RS1Class,
                          Operand OpClass = payload2> {
   let VLMul = m.value in {
-    let Defs = [VCIX_STATE], Uses = [VCIX_STATE] in
+    let Defs = [SF_VCIX_STATE], Uses = [SF_VCIX_STATE] in
     def "PseudoVC_" # NAME # "_SE_" # m.MX
       : VPseudoVC_XVV<OpClass, m.wvrclass, m.vrclass, RS1Class>,
         Sched<[!cast<SchedWrite>("WriteVC_" # NAME # "_" # m.MX)]>;
     let Constraints = "@earlyclobber $rd, $rd = $rs3" in {
-      let Defs = [VCIX_STATE], Uses = [VCIX_STATE] in
+      let Defs = [SF_VCIX_STATE], Uses = [SF_VCIX_STATE] in
       def "PseudoVC_V_" # NAME # "_SE_" # m.MX
         : VPseudoVC_V_XVV<OpClass, m.wvrclass, m.vrclass, RS1Class>,
           Sched<[!cast<SchedWrite>("WriteVC_V_" # NAME # "_" # m.MX)]>;

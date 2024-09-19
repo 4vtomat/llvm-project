@@ -355,6 +355,7 @@ public:
     VPBranchOnMaskSC,
     VPDerivedIVSC,
     VPExpandSCEVSC,
+    VPIRInstructionSC,
     VPInstructionSC,
     VPInterleaveSC,
     VPReductionEVLSC,
@@ -372,6 +373,7 @@ public:
     VPWidenStoreEVLSC,
     VPWidenStoreSC,
     VPWidenSC,
+    VPWidenEVLSC,
     VPWidenSelectSC,
     VPBlendSC,
 #if SIFIVE_CUSTOMIZATION

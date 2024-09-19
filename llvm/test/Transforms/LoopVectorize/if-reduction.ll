@@ -680,7 +680,12 @@ for.end:                                          ; preds = %for.inc, %entry
 ; CHECK: %[[C22:.*]] = select <4 x i1> %[[C11]], <4 x i1> %[[C21]], <4 x i1> zeroinitializer
 ; CHECK-DAG: %[[SUB:.*]] = fsub fast <4 x float>
 ; CHECK-DAG: %[[ADD:.*]] = fadd fast <4 x float>
+<<<<<<< HEAD
 ; CHECK: %[[S1:.*]] = select <4 x i1> %[[C12]], <4 x float> %[[SUB]], <4 x float> %[[ADD]]
+=======
+; CHECK-DAG: %[[C22:.*]] = select <4 x i1> %[[C11]], <4 x i1> %[[C21]], <4 x i1> zeroinitializer
+; CHECK: %[[S1:.*]] = select <4 x i1> %[[C1]], <4 x float> %[[ADD]], <4 x float> %[[SUB]]
+>>>>>>> c970e96
 ; CHECK: %[[S2:.*]] = select <4 x i1> %[[C22]], {{.*}} <4 x float> %[[S1]]
 define float @fcmp_fadd_fsub(ptr nocapture readonly %a, i32 %n) nounwind readonly {
 entry:

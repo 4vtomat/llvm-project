@@ -406,6 +406,7 @@ RecurKind getMinMaxReductionRecurKind(Intrinsic::ID RdxID);
 /// Returns the comparison predicate used when expanding a min/max reduction.
 CmpInst::Predicate getMinMaxReductionPredicate(RecurKind RK);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 /// See RecurrenceDescriptor::isFindLastIVPattern for a description of the
 /// pattern we are trying to match. In this pattern, since the selected set of
@@ -413,6 +414,15 @@ CmpInst::Predicate getMinMaxReductionPredicate(RecurKind RK);
 /// \p Left and \p Right.
 Value *createFindLastIVOp(IRBuilderBase &Builder, Value *Left, Value *Right);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+/// Given information about an @llvm.vector.reduce.* intrinsic, return
+/// the identity value for the reduction.
+Value *getReductionIdentity(Intrinsic::ID RdxID, Type *Ty, FastMathFlags FMF);
+
+/// Given information about an recurrence kind, return the identity
+/// for the @llvm.vector.reduce.* used to generate it.
+Value *getRecurrenceIdentity(RecurKind K, Type *Tp, FastMathFlags FMF);
+>>>>>>> c970e96
 
 /// Returns a Min/Max operation corresponding to MinMaxRecurrenceKind.
 /// The Builder's fast-math-flags must be set to propagate the expected values.
@@ -429,19 +439,18 @@ Value *getShuffleReduction(IRBuilderBase &Builder, Value *Src, unsigned Op,
                            TargetTransformInfo::ReductionShuffle RS,
                            RecurKind MinMaxKind = RecurKind::None);
 
-/// Create a target reduction of the given vector. The reduction operation
+/// Create a reduction of the given vector. The reduction operation
 /// is described by the \p Opcode parameter. min/max reductions require
 /// additional information supplied in \p RdxKind.
-/// The target is queried to determine if intrinsics or shuffle sequences are
-/// required to implement the reduction.
 /// Fast-math-flags are propagated using the IRBuilder's setting.
-Value *createSimpleTargetReduction(IRBuilderBase &B, Value *Src,
-                                   RecurKind RdxKind);
-/// Overloaded function to generate vector-predication intrinsics for target
+Value *createSimpleReduction(IRBuilderBase &B, Value *Src,
+                             RecurKind RdxKind);
+/// Overloaded function to generate vector-predication intrinsics for
 /// reduction.
-Value *createSimpleTargetReduction(VectorBuilder &VB, Value *Src,
-                                   const RecurrenceDescriptor &Desc);
+Value *createSimpleReduction(VectorBuilder &VB, Value *Src,
+                             const RecurrenceDescriptor &Desc);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 Value *createSimpleTargetReduction(IRBuilderBase &B, Value *Src,
                                    RecurKind RdxKind, Value *EVL,
@@ -449,12 +458,16 @@ Value *createSimpleTargetReduction(IRBuilderBase &B, Value *Src,
 #endif // SIFIVE_CUSTOMIZATION
 
 /// Create a target reduction of the given vector \p Src for a reduction of the
+=======
+/// Create a reduction of the given vector \p Src for a reduction of the
+>>>>>>> c970e96
 /// kind RecurKind::IAnyOf or RecurKind::FAnyOf. The reduction operation is
 /// described by \p Desc.
-Value *createAnyOfTargetReduction(IRBuilderBase &B, Value *Src,
-                                  const RecurrenceDescriptor &Desc,
-                                  PHINode *OrigPhi);
+Value *createAnyOfReduction(IRBuilderBase &B, Value *Src,
+                            const RecurrenceDescriptor &Desc,
+                            PHINode *OrigPhi);
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 Value *createAnyOfTargetReduction(IRBuilderBase &B, Value *Src,
                                   const RecurrenceDescriptor &Desc,
@@ -483,6 +496,12 @@ Value *createTargetReduction(IRBuilderBase &B, const RecurrenceDescriptor &Desc,
 #endif // SIFIVE_CUSTOMIZATION
 Value *createTargetReduction(IRBuilderBase &B, const RecurrenceDescriptor &Desc,
                              Value *Src, PHINode *OrigPhi = nullptr);
+=======
+/// Create a generic reduction using a recurrence descriptor \p Desc
+/// Fast-math-flags are propagated using the RecurrenceDescriptor.
+Value *createReduction(IRBuilderBase &B, const RecurrenceDescriptor &Desc,
+                       Value *Src, PHINode *OrigPhi = nullptr);
+>>>>>>> c970e96
 
 /// Create an ordered reduction intrinsic using the given recurrence
 /// descriptor \p Desc.

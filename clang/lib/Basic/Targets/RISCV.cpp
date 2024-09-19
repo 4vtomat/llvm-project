@@ -146,10 +146,15 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
     Builder.defineMacro("__riscv_cmodel_medlow");
   else if (CodeModel == "medium")
     Builder.defineMacro("__riscv_cmodel_medany");
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   else if (CodeModel == "compact")
     Builder.defineMacro("__riscv_cmodel_compact");
 #endif
+=======
+  else if (CodeModel == "large")
+    Builder.defineMacro("__riscv_cmodel_large");
+>>>>>>> c970e96
 
   StringRef ABIName = getABI();
   if (ABIName == "ilp32f" || ABIName == "lp64f")
@@ -295,6 +300,7 @@ bool RISCVTargetInfo::initFeatureMap(
     Features["32bit"] = true;
   }
 
+<<<<<<< HEAD
   // If a target attribute specified a full arch string, override all the ISA
   // extension target features.
   const auto I = llvm::find(FeaturesVec, "__RISCV_TargetAttrNeedOverride");
@@ -324,6 +330,8 @@ bool RISCVTargetInfo::initFeatureMap(
   }
 
   // Otherwise, parse the features and add any implied extensions.
+=======
+>>>>>>> c970e96
   std::vector<std::string> AllFeatures = FeaturesVec;
   auto ParseResult = llvm::RISCVISAInfo::parseFeatures(XLen, FeaturesVec);
   if (!ParseResult) {
@@ -452,17 +460,29 @@ void RISCVTargetInfo::fillValidTuneCPUList(
   llvm::RISCV::fillValidTuneCPUArchList(Values, Is64Bit);
 }
 
+static void populateNegativeRISCVFeatures(std::vector<std::string> &Features) {
+  auto RII = llvm::RISCVISAInfo::parseArchString(
+      "rv64i", /* EnableExperimentalExtension */ true);
+
+  if (llvm::errorToBool(RII.takeError()))
+    llvm_unreachable("unsupport rv64i");
+
+  std::vector<std::string> FeatStrings =
+      (*RII)->toFeatures(/* AddAllExtensions */ true);
+  Features.insert(Features.end(), FeatStrings.begin(), FeatStrings.end());
+}
+
 static void handleFullArchString(StringRef FullArchStr,
                                  std::vector<std::string> &Features) {
-  Features.push_back("__RISCV_TargetAttrNeedOverride");
   auto RII = llvm::RISCVISAInfo::parseArchString(
       FullArchStr, /* EnableExperimentalExtension */ true);
   if (llvm::errorToBool(RII.takeError())) {
     // Forward the invalid FullArchStr.
-    Features.push_back("+" + FullArchStr.str());
+    Features.push_back(FullArchStr.str());
   } else {
     // Append a full list of features, including any negative extensions so that
     // we override the CPU's features.
+    populateNegativeRISCVFeatures(Features);
     std::vector<std::string> FeatStrings =
         (*RII)->toFeatures(/* AddAllExtensions */ true);
     Features.insert(Features.end(), FeatStrings.begin(), FeatStrings.end());
@@ -527,6 +547,8 @@ ParsedTargetAttr RISCVTargetInfo::parseTargetAttr(StringRef Features) const {
         Ret.Duplicate = "tune=";
 
       Ret.Tune = AttrString;
+    } else if (Feature.starts_with("priority")) {
+      // Skip because it only use for FMV.
     }
   }
   return Ret;
@@ -547,4 +569,8 @@ bool RISCVTargetInfo::validateCpuSupports(StringRef Feature) const {
   // Only allow extensions we have a known bit position for in the
   // __riscv_feature_bits structure.
   return -1 != llvm::RISCVISAInfo::getRISCVFeaturesBitsInfo(Feature).second;
+}
+
+bool RISCVTargetInfo::isValidFeatureName(StringRef Name) const {
+  return llvm::RISCVISAInfo::isSupportedExtensionFeature(Name);
 }

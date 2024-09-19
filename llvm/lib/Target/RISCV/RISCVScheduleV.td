@@ -9,10 +9,16 @@
 //===----------------------------------------------------------------------===//
 /// Define scheduler resources associated with def operands.
 
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 // This predicate is true when the rs2 operand is x0, false otherwise.
 def VLDSX0Pred : MCSchedPredicate<CheckRegOperand<3, X0>>;
 #endif // SIFIVE_CUSTOMIZATION
+=======
+// This predicate is true when the rs2 operand of vlse or vsse is x0, false
+// otherwise.
+def VLDSX0Pred : MCSchedPredicate<CheckRegOperand<3, X0>>;
+>>>>>>> c970e96
 
 defvar SchedMxList = ["MF8", "MF4", "MF2", "M1", "M2", "M4", "M8"];
 // Used for widening and narrowing instructions as it doesn't contain M8.

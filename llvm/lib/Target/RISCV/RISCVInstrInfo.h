@@ -206,9 +206,11 @@ public:
   bool shouldOutlineFromFunctionByDefault(MachineFunction &MF) const override;
 
   // Calculate target-specific information for a set of outlining candidates.
-  std::optional<outliner::OutlinedFunction> getOutliningCandidateInfo(
+  std::optional<std::unique_ptr<outliner::OutlinedFunction>>
+  getOutliningCandidateInfo(
       const MachineModuleInfo &MMI,
-      std::vector<outliner::Candidate> &RepeatedSequenceLocs) const override;
+      std::vector<outliner::Candidate> &RepeatedSequenceLocs,
+      unsigned MinRepeats) const override;
 
   // Return if/how a given MachineInstr should be outlined.
   virtual outliner::InstrType
@@ -299,6 +301,7 @@ public:
 
   unsigned getTailDuplicateSize(CodeGenOptLevel OptLevel) const override;
 
+<<<<<<< HEAD
   unsigned getUndefInitOpcode(unsigned RegClassID) const override {
     switch (RegClassID) {
     case RISCV::VRRegClassID:
@@ -320,6 +323,8 @@ public:
                                  const ScheduleDAGMI *DAG) const override;
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+>>>>>>> c970e96
 protected:
   const RISCVSubtarget &STI;
 
@@ -365,6 +370,10 @@ std::optional<unsigned> getVectorLowDemandedScalarBits(uint16_t Opcode,
 
 // Returns the MC opcode of RVV pseudo instruction.
 unsigned getRVVMCOpcode(unsigned RVVPseudoOpcode);
+
+// For a (non-pseudo) RVV instruction \p Desc and the given \p Log2SEW, returns
+// the log2 EEW of the destination operand.
+unsigned getDestLog2EEW(const MCInstrDesc &Desc, unsigned Log2SEW);
 
 // Special immediate for AVL operand of V pseudo instructions to indicate VLMax.
 static constexpr int64_t VLMaxSentinel = -1LL;

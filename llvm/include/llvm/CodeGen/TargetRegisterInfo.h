@@ -1207,6 +1207,7 @@ public:
   virtual bool isNonallocatableRegisterCalleeSave(MCRegister Reg) const {
     return false;
   }
+<<<<<<< HEAD
 
 #if SIFIVE_CUSTOMIZATION
   virtual bool enableTargetInterference() const { return false; }
@@ -1244,6 +1245,8 @@ public:
   doesRegClassHavePseudoInitUndef(const TargetRegisterClass *RC) const {
     return false;
   }
+=======
+>>>>>>> c970e96
 };
 
 //===----------------------------------------------------------------------===//

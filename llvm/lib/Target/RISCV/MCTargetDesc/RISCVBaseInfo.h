@@ -125,6 +125,7 @@ enum {
   TargetOverlapConstraintTypeShift = UsesVXRMShift + 1,
   TargetOverlapConstraintTypeMask = 3ULL << TargetOverlapConstraintTypeShift,
 
+<<<<<<< HEAD
   ActiveElementsAffectResultShift = TargetOverlapConstraintTypeShift + 2,
   ActiveElementsAffectResultMask = 1ULL << ActiveElementsAffectResultShift,
 
@@ -138,6 +139,21 @@ enum {
   IsWidenShift = AltfmtTypeShift + 2,
   IsWidenMask = 1ULL << IsWidenShift,
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  ElementsDependOnVLShift = TargetOverlapConstraintTypeShift + 2,
+  ElementsDependOnVLMask = 1ULL << ElementsDependOnVLShift,
+
+  ElementsDependOnMaskShift = ElementsDependOnVLShift + 1,
+  ElementsDependOnMaskMask = 1ULL << ElementsDependOnMaskShift,
+
+  // Indicates the EEW of a vector instruction's destination operand.
+  // 0 -> 1
+  // 1 -> SEW
+  // 2 -> SEW * 2
+  // 3 -> SEW * 4
+  DestEEWShift = ElementsDependOnMaskShift + 1,
+  DestEEWMask = 3ULL << DestEEWShift,
+>>>>>>> c970e96
 };
 
 // Helper functions to read TSFlags.
@@ -198,10 +214,16 @@ static inline AltfmtType getAltfmtType(uint64_t TSFlags) {
 /// \returns true if this instruction uses vxrm
 static inline bool usesVXRM(uint64_t TSFlags) { return TSFlags & UsesVXRMMask; }
 
-/// \returns true if the result isn't element-wise,
-/// e.g. vredsum.vs/vcompress.vm/viota.m
-static inline bool activeElementsAffectResult(uint64_t TSFlags) {
-  return TSFlags & ActiveElementsAffectResultMask;
+/// \returns true if the elements in the body are affected by VL,
+/// e.g. vslide1down.vx/vredsum.vs/viota.m
+static inline bool elementsDependOnVL(uint64_t TSFlags) {
+  return TSFlags & ElementsDependOnVLMask;
+}
+
+/// \returns true if the elements in the body are affected by the mask,
+/// e.g. vredsum.vs/viota.m
+static inline bool elementsDependOnMask(uint64_t TSFlags) {
+  return TSFlags & ElementsDependOnMaskMask;
 }
 
 static inline unsigned getVLOpNum(const MCInstrDesc &Desc) {
