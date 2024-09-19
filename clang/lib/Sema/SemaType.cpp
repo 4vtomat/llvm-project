@@ -8865,14 +8865,12 @@ static void processTypeAttrs(TypeProcessingState &state, QualType &type,
       attr.setUsedAsTypeAttr();
       break;
     }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-    case ParsedAttr::AT_NeonStructType:
+    case ParsedAttr::AT_NeonStructType: {
       attr.setUsedAsTypeAttr();
       break;
+    }
 #endif // SIFIVE_CUSTOMIZATION
-      break;
-=======
     case ParsedAttr::AT_HLSLResourceClass:
     case ParsedAttr::AT_HLSLROV:
     case ParsedAttr::AT_HLSLRawBuffer:
@@ -8885,7 +8883,6 @@ static void processTypeAttrs(TypeProcessingState &state, QualType &type,
         attr.setUsedAsTypeAttr();
       break;
     }
->>>>>>> c970e96
     }
 
     // Handle attributes that are defined in a macro. We do not want this to be
