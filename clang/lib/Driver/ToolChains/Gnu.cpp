@@ -1070,18 +1070,14 @@ static bool isMSP430(llvm::Triple::ArchType Arch) {
   return Arch == llvm::Triple::msp430;
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static Multilib makeMultilib(StringRef commonSuffix) {
   return Multilib(commonSuffix, commonSuffix, commonSuffix);
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-static bool findMipsCsMultilibs(const Multilib::flags_list &Flags,
-=======
 static bool findMipsCsMultilibs(const Driver &D,
                                 const Multilib::flags_list &Flags,
->>>>>>> c970e96
                                 FilterNonExistent &NonExistent,
                                 DetectedMultilibs &Result) {
   // Check for Code Sourcery toolchain multilibs
