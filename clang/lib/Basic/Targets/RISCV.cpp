@@ -146,15 +146,12 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
     Builder.defineMacro("__riscv_cmodel_medlow");
   else if (CodeModel == "medium")
     Builder.defineMacro("__riscv_cmodel_medany");
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   else if (CodeModel == "compact")
     Builder.defineMacro("__riscv_cmodel_compact");
 #endif
-=======
   else if (CodeModel == "large")
     Builder.defineMacro("__riscv_cmodel_large");
->>>>>>> c970e96
 
   StringRef ABIName = getABI();
   if (ABIName == "ilp32f" || ABIName == "lp64f")
@@ -300,7 +297,6 @@ bool RISCVTargetInfo::initFeatureMap(
     Features["32bit"] = true;
   }
 
-<<<<<<< HEAD
   // If a target attribute specified a full arch string, override all the ISA
   // extension target features.
   const auto I = llvm::find(FeaturesVec, "__RISCV_TargetAttrNeedOverride");
@@ -330,8 +326,6 @@ bool RISCVTargetInfo::initFeatureMap(
   }
 
   // Otherwise, parse the features and add any implied extensions.
-=======
->>>>>>> c970e96
   std::vector<std::string> AllFeatures = FeaturesVec;
   auto ParseResult = llvm::RISCVISAInfo::parseFeatures(XLen, FeaturesVec);
   if (!ParseResult) {
