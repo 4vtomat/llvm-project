@@ -125,21 +125,9 @@ enum {
   TargetOverlapConstraintTypeShift = UsesVXRMShift + 1,
   TargetOverlapConstraintTypeMask = 3ULL << TargetOverlapConstraintTypeShift,
 
-<<<<<<< HEAD
   ActiveElementsAffectResultShift = TargetOverlapConstraintTypeShift + 2,
   ActiveElementsAffectResultMask = 1ULL << ActiveElementsAffectResultShift,
 
-#if SIFIVE_CUSTOMIZATION
-  // 0 -> Don't care about altfmt bit in VTYPE.
-  // 1 -> Is not altfmt.
-  // 2 -> Is altfmt(BF16).
-  AltfmtTypeShift = ActiveElementsAffectResultShift + 1,
-  AltfmtTypeMask = 3ULL << AltfmtTypeShift,
-
-  IsWidenShift = AltfmtTypeShift + 2,
-  IsWidenMask = 1ULL << IsWidenShift,
-#endif // SIFIVE_CUSTOMIZATION
-=======
   ElementsDependOnVLShift = TargetOverlapConstraintTypeShift + 2,
   ElementsDependOnVLMask = 1ULL << ElementsDependOnVLShift,
 
@@ -153,7 +141,16 @@ enum {
   // 3 -> SEW * 4
   DestEEWShift = ElementsDependOnMaskShift + 1,
   DestEEWMask = 3ULL << DestEEWShift,
->>>>>>> c970e96
+#if SIFIVE_CUSTOMIZATION
+  // 0 -> Don't care about altfmt bit in VTYPE.
+  // 1 -> Is not altfmt.
+  // 2 -> Is altfmt(BF16).
+  AltfmtTypeShift = DestEEWShift + 1,
+  AltfmtTypeMask = 3ULL << AltfmtTypeShift,
+
+  IsWidenShift = AltfmtTypeShift + 2,
+  IsWidenMask = 1ULL << IsWidenShift,
+#endif // SIFIVE_CUSTOMIZATION
 };
 
 // Helper functions to read TSFlags.
