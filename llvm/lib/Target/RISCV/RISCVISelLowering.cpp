@@ -1480,16 +1480,12 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         setOperationAction(
             {ISD::MLOAD, ISD::MSTORE, ISD::MGATHER, ISD::MSCATTER}, VT, Custom);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
         setOperationAction(ISD::SETCC, VT, Custom);
 #endif
 
         setOperationAction({ISD::VP_LOAD, ISD::VP_STORE,
                             ISD::EXPERIMENTAL_VP_STRIDED_LOAD,
-=======
-        setOperationAction({ISD::EXPERIMENTAL_VP_STRIDED_LOAD,
->>>>>>> c970e96
                             ISD::EXPERIMENTAL_VP_STRIDED_STORE, ISD::VP_GATHER,
                             ISD::VP_SCATTER},
                            VT, Custom);
@@ -7999,7 +7995,6 @@ static SDValue getTargetNode(JumpTableSDNode *N, const SDLoc &DL, EVT Ty,
   return DAG.getTargetJumpTable(N->getIndex(), Ty, Flags);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static SDValue getTargetNode(ExternalSymbolSDNode *N, SDLoc DL, EVT Ty,
                              SelectionDAG &DAG, unsigned Flags) {
@@ -8065,7 +8060,6 @@ SDValue RISCVTargetLowering::getCompactAddr(NodeTy *N, SelectionDAG &DAG,
   return DAG.getLoad(Ty, DL, DAG.getEntryNode(), MNAddLo, MemOp);
 }
 #endif // SIFIVE_CUSTOMIZATION
-=======
 static SDValue getLargeGlobalAddress(GlobalAddressSDNode *N, const SDLoc &DL,
                                      EVT Ty, SelectionDAG &DAG) {
   RISCVConstantPoolValue *CPV = RISCVConstantPoolValue::Create(N->getGlobal());
@@ -8086,7 +8080,6 @@ static SDValue getLargeExternalSymbol(ExternalSymbolSDNode *N, const SDLoc &DL,
       Ty, DL, DAG.getEntryNode(), LC,
       MachinePointerInfo::getConstantPool(DAG.getMachineFunction()));
 }
->>>>>>> c970e96
 
 template <class NodeTy>
 SDValue RISCVTargetLowering::getAddr(NodeTy *N, SelectionDAG &DAG,
@@ -8159,7 +8152,6 @@ SDValue RISCVTargetLowering::getAddr(NodeTy *N, SelectionDAG &DAG,
     // expands to (addi (auipc %pcrel_hi(sym)) %pcrel_lo(auipc)).
     return DAG.getNode(RISCVISD::LLA, DL, Ty, Addr);
   }
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case CodeModel::Compact: {
     // Generate a sequence for accessing the whole 64-bit address space,
@@ -8169,7 +8161,6 @@ SDValue RISCVTargetLowering::getAddr(NodeTy *N, SelectionDAG &DAG,
     return getCompactAddr(N, DAG, RISCVII::MO_GOT_GPREL_HI);
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
   case CodeModel::Large: {
     if (GlobalAddressSDNode *G = dyn_cast<GlobalAddressSDNode>(N))
       return getLargeGlobalAddress(G, DL, Ty, DAG);
@@ -8178,7 +8169,6 @@ SDValue RISCVTargetLowering::getAddr(NodeTy *N, SelectionDAG &DAG,
     SDValue Addr = getTargetNode(N, DL, Ty, DAG, 0);
     return DAG.getNode(RISCVISD::LLA, DL, Ty, Addr);
   }
->>>>>>> c970e96
   }
 }
 
@@ -22896,8 +22886,12 @@ SDValue RISCVTargetLowering::LowerCall(CallLoweringInfo &CLI,
   // If the callee is a GlobalAddress/ExternalSymbol node, turn it into a
   // TargetGlobalAddress/TargetExternalSymbol node so that legalize won't
   // split it and then direct call can be matched by PseudoCALL.
-<<<<<<< HEAD
-  if (GlobalAddressSDNode *S = dyn_cast<GlobalAddressSDNode>(Callee)) {
+  if (getTargetMachine().getCodeModel() == CodeModel::Large) {
+    if (auto *S = dyn_cast<GlobalAddressSDNode>(Callee))
+      Callee = getLargeGlobalAddress(S, DL, PtrVT, DAG);
+    else if (auto *S = dyn_cast<ExternalSymbolSDNode>(Callee))
+      Callee = getLargeExternalSymbol(S, DL, PtrVT, DAG);
+  } else if (GlobalAddressSDNode *S = dyn_cast<GlobalAddressSDNode>(Callee)) {
 #if SIFIVE_CUSTOMIZATION
     if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
       Callee = lowerGlobalAddress(Callee, DAG);
@@ -22905,17 +22899,10 @@ SDValue RISCVTargetLowering::LowerCall(CallLoweringInfo &CLI,
       const GlobalValue *GV = S->getGlobal();
       Callee = DAG.getTargetGlobalAddress(GV, DL, PtrVT, 0, RISCVII::MO_CALL);
     }
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  if (getTargetMachine().getCodeModel() == CodeModel::Large) {
-    if (auto *S = dyn_cast<GlobalAddressSDNode>(Callee))
-      Callee = getLargeGlobalAddress(S, DL, PtrVT, DAG);
-    else if (auto *S = dyn_cast<ExternalSymbolSDNode>(Callee))
-      Callee = getLargeExternalSymbol(S, DL, PtrVT, DAG);
-  } else if (GlobalAddressSDNode *S = dyn_cast<GlobalAddressSDNode>(Callee)) {
+#else
     const GlobalValue *GV = S->getGlobal();
     Callee = DAG.getTargetGlobalAddress(GV, DL, PtrVT, 0, RISCVII::MO_CALL);
->>>>>>> c970e96
+#endif // SIFIVE_CUSTOMIZATION
   } else if (ExternalSymbolSDNode *S = dyn_cast<ExternalSymbolSDNode>(Callee)) {
 #if SIFIVE_CUSTOMIZATION
     if (getTargetMachine().getCodeModel() == CodeModel::Compact) {
@@ -22923,6 +22910,8 @@ SDValue RISCVTargetLowering::LowerCall(CallLoweringInfo &CLI,
     } else {
       Callee = DAG.getTargetExternalSymbol(S->getSymbol(), PtrVT, RISCVII::MO_CALL);
     }
+#else
+    Callee = DAG.getTargetExternalSymbol(S->getSymbol(), PtrVT, RISCVII::MO_CALL);
 #endif // SIFIVE_CUSTOMIZATION
   }
 
