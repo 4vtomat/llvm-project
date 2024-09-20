@@ -990,14 +990,11 @@ private:
   SDValue SplitVecOp_CMP(SDNode *N);
   SDValue SplitVecOp_FP_TO_XINT_SAT(SDNode *N);
   SDValue SplitVecOp_VP_CttzElements(SDNode *N);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   SDValue SplitVecOp_VP_FIRST(SDNode *N);
   SDValue SplitVecOp_VP_POPCOUNT(SDNode *N, unsigned OpNo);
 #endif
-=======
   SDValue SplitVecOp_VECTOR_HISTOGRAM(SDNode *N);
->>>>>>> c970e96
 
   //===--------------------------------------------------------------------===//
   // Vector Widening Support: LegalizeVectorTypes.cpp
