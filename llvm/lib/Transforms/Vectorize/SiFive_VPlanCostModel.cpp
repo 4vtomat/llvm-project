@@ -789,15 +789,17 @@ VPlanCostModel::getInterleavedMemoryOpCost(const VPInterleaveRecipe *VPI,
                             "implemented for scalable vectors");
   const unsigned RegID = TTI.getRegisterClassForType(true /*vector*/, VectorTy);
 
-  InstructionCost Cost = TTI.getInterleavedMemoryOpCost(
-      I->getOpcode(), WideVecTy, InterleaveFactor, /*Indices=*/{},
-      Group->getAlign(), AS, CostKind, IsMasked, /*UseMaskForGaps=*/false);
+  InstructionCost Cost;
 
-  if (Group->isStrided()) {
-    Cost *= InterleaveFactor;
-    Cost *= 2; // TODO: Move this into TTI. For now it mimics cost of
-               // transpose buffer
-  }
+  if (Group->isStrided())
+    Cost = TTI.getStridedInterleavedMemoryOpCost(
+        I->getOpcode(), WideVecTy, InterleaveFactor, /*Stride=*/nullptr,
+        /*Indices=*/{}, Group->getAlign(), AS, CostKind, IsMasked,
+        /*UseMaskForGaps=*/false);
+  else
+    Cost = TTI.getInterleavedMemoryOpCost(
+        I->getOpcode(), WideVecTy, InterleaveFactor, /*Indices=*/{},
+        Group->getAlign(), AS, CostKind, IsMasked, /*UseMaskForGaps=*/false);
 
   for (const VPValue *VPV : VPI->definedValues()) {
     const unsigned NumUsedRegs = TTI.getRegUsageForType(VectorTy);

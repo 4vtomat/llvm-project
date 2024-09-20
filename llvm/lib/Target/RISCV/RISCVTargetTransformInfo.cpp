@@ -1359,6 +1359,65 @@ InstructionCost RISCVTTIImpl::getInterleavedMemoryOpCost(
   return MemCost + ShuffleCost;
 }
 
+#if SIFIVE_CUSTOMIZATION
+InstructionCost RISCVTTIImpl::getStridedInterleavedMemoryOpCost(
+    unsigned Opcode, Type *VecTy, unsigned Factor, Value *Stride,
+    ArrayRef<unsigned> Indices, Align Alignment, unsigned AddressSpace,
+    TTI::TargetCostKind CostKind, bool UseMaskForCond, bool UseMaskForGaps) {
+
+  if (!useVLAVectorizer() || !isa<ScalableVectorType>(VecTy) ||
+      UseMaskForGaps || Factor > TLI->getMaxSupportedInterleaveFactor() ||
+      (CostKind != TTI::TCK_RecipThroughput && CostKind != TTI::TCK_Latency))
+    return InstructionCost::getInvalid();
+
+  auto *SVTy = cast<ScalableVectorType>(VecTy);
+  ElementCount VF = SVTy->getElementCount().divideCoefficientBy(Factor);
+  VectorType *SubVecTy = VectorType::get(SVTy->getElementType(), VF);
+  if (!TLI->isLegalInterleavedAccessType(SubVecTy, Factor, Alignment,
+                                         AddressSpace, DL))
+    return InstructionCost::getInvalid();
+
+  const unsigned VL = getEstimatedVLFor(SubVecTy);
+
+  switch (ST->getProcFamily()) {
+  case RISCVSubtarget::SiFiveP400:
+  case RISCVSubtarget::SiFiveP600:
+  case RISCVSubtarget::SiFiveP800:
+    // Old implementation of strided and indexed segmented instructions does 1
+    // element per cycle
+    return 2 * Factor * VL;
+  default:
+    // Optimistically assume new other generations implement these
+    // instructions better
+    break;
+  }
+
+  std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(SubVecTy);
+  const unsigned Sew = LT.second.getScalarSizeInBits();
+  if (ST->getProcFamily() == RISCVSubtarget::SiFive7) {
+    InstructionCost Cost = 0;
+    // Strided segment loads and stores operate at up to one segment per cycle
+    // if the segment fits within one aligned memory beat.
+    if (ST->hasKnownDLen()) {
+      const unsigned DLen = ST->getDLen();
+      if (Alignment < Align(DLen / 8))
+        Cost += Factor;
+      if (Factor * Sew > DLen)
+        return Cost + ((Factor * Sew) / DLen) * VL;
+    } else {
+      return 2 * Factor * VL;
+    }
+    return VL + Cost;
+  }
+
+  // See SPARTAOPEN-222 for details
+  const unsigned Overhead = 6 + 3;
+  const unsigned LSUCost = 2 * VL; // Assume worst-case scenario
+  const unsigned BalerCost = divideCeil(VL * Sew, ST->getRealMinVLen());
+  return Overhead + LSUCost + BalerCost * Factor;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 InstructionCost RISCVTTIImpl::getGatherScatterOpCost(
     unsigned Opcode, Type *DataTy, const Value *Ptr, bool VariableMask,
     Align Alignment, TTI::TargetCostKind CostKind, const Instruction *I) {

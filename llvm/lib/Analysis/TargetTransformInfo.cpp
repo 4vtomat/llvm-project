@@ -1140,6 +1140,18 @@ InstructionCost TargetTransformInfo::getInterleavedMemoryOpCost(
   return Cost;
 }
 
+#if SIFIVE_CUSTOMIZATION
+InstructionCost TargetTransformInfo::getStridedInterleavedMemoryOpCost(
+    unsigned Opcode, Type *VecTy, unsigned Factor, Value *Stride,
+    ArrayRef<unsigned> Indices, Align Alignment, unsigned AddressSpace,
+    TTI::TargetCostKind CostKind, bool UseMaskForCond,
+    bool UseMaskForGaps) const {
+  return TTIImpl->getStridedInterleavedMemoryOpCost(
+      Opcode, VecTy, Factor, Stride, Indices, Alignment, AddressSpace, CostKind,
+      UseMaskForCond, UseMaskForGaps);
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 InstructionCost
 TargetTransformInfo::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
                                            TTI::TargetCostKind CostKind) const {

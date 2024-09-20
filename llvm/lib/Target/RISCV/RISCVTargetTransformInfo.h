@@ -267,6 +267,14 @@ public:
       Align Alignment, unsigned AddressSpace, TTI::TargetCostKind CostKind,
       bool UseMaskForCond = false, bool UseMaskForGaps = false);
 
+#if SIFIVE_CUSTOMIZATION
+  InstructionCost getStridedInterleavedMemoryOpCost(
+      unsigned Opcode, Type *VecTy, unsigned Factor, Value *Stride,
+      ArrayRef<unsigned> Indices, Align Alignment, unsigned AddressSpace,
+      TTI::TargetCostKind CostKind, bool UseMaskForCond = false,
+      bool UseMaskForGaps = false);
+#endif // SIFIVE_CUSTOMIZATION
+
   InstructionCost getGatherScatterOpCost(unsigned Opcode, Type *DataTy,
                                          const Value *Ptr, bool VariableMask,
                                          Align Alignment,
