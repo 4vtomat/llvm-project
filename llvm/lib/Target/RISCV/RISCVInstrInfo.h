@@ -301,30 +301,12 @@ public:
 
   unsigned getTailDuplicateSize(CodeGenOptLevel OptLevel) const override;
 
-<<<<<<< HEAD
-  unsigned getUndefInitOpcode(unsigned RegClassID) const override {
-    switch (RegClassID) {
-    case RISCV::VRRegClassID:
-      return RISCV::PseudoRVVInitUndefM1;
-    case RISCV::VRM2RegClassID:
-      return RISCV::PseudoRVVInitUndefM2;
-    case RISCV::VRM4RegClassID:
-      return RISCV::PseudoRVVInitUndefM4;
-    case RISCV::VRM8RegClassID:
-      return RISCV::PseudoRVVInitUndefM8;
-    default:
-      llvm_unreachable("Unexpected register class.");
-    }
-  }
-
 #if SIFIVE_CUSTOMIZATION
   ScheduleHazardRecognizer *
   CreateTargetMIHazardRecognizer(const InstrItineraryData *II,
                                  const ScheduleDAGMI *DAG) const override;
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> c970e96
 protected:
   const RISCVSubtarget &STI;
 
