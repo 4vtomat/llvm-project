@@ -1914,10 +1914,7 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
     return Cost;
   }
   case ISD::FP_TO_SINT:
-<<<<<<< HEAD
-  case ISD::FP_TO_UINT:
-  case ISD::SINT_TO_FP:
-  case ISD::UINT_TO_FP:
+  case ISD::FP_TO_UINT: {
 #if SIFIVE_CUSTOMIZATION
       const unsigned SrcEltSize = SrcLT.second.getScalarSizeInBits();
       const unsigned DstEltSize = DstLT.second.getScalarSizeInBits();
@@ -1967,113 +1964,139 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
       }
       return SrcLT.first * PowDiffCost;
 #else
-    // For fp vector to mask, we use:
-    // vfncvt.rtz.x.f.w v9, v8
-    // vand.vi v8, v9, 1
-    // vmsne.vi v0, v8, 0
-    if (Dst->getScalarSizeInBits() == 1)
-      return 3;
-
-    if (std::abs(PowDiff) <= 1)
-      return 1;
-
-    // Counts of narrow/widen instructions.
-    return std::abs(PowDiff);
-
-=======
-  case ISD::FP_TO_UINT: {
-    unsigned IsSigned = ISD == ISD::FP_TO_SINT;
-    unsigned FCVT = IsSigned ? RISCV::VFCVT_RTZ_X_F_V : RISCV::VFCVT_RTZ_XU_F_V;
-    unsigned FWCVT =
-        IsSigned ? RISCV::VFWCVT_RTZ_X_F_V : RISCV::VFWCVT_RTZ_XU_F_V;
-    unsigned FNCVT =
-        IsSigned ? RISCV::VFNCVT_RTZ_X_F_W : RISCV::VFNCVT_RTZ_XU_F_W;
-    unsigned SrcEltSize = Src->getScalarSizeInBits();
-    unsigned DstEltSize = Dst->getScalarSizeInBits();
-    InstructionCost Cost = 0;
-    if ((SrcEltSize == 16) &&
-        (!ST->hasVInstructionsF16() || ((DstEltSize / 2) > SrcEltSize))) {
-      // If the target only supports zvfhmin or it is fp16-to-i64 conversion
-      // pre-widening to f32 and then convert f32 to integer
-      VectorType *VecF32Ty =
-          VectorType::get(Type::getFloatTy(Dst->getContext()),
-                          cast<VectorType>(Dst)->getElementCount());
-      std::pair<InstructionCost, MVT> VecF32LT =
-          getTypeLegalizationCost(VecF32Ty);
-      Cost +=
-          VecF32LT.first * getRISCVInstructionCost(RISCV::VFWCVT_F_F_V,
-                                                   VecF32LT.second, CostKind);
-      Cost += getCastInstrCost(Opcode, Dst, VecF32Ty, CCH, CostKind, I);
-      return Cost;
-    }
-    if (DstEltSize == SrcEltSize)
-      Cost += getRISCVInstructionCost(FCVT, DstLT.second, CostKind);
-    else if (DstEltSize > SrcEltSize)
-      Cost += getRISCVInstructionCost(FWCVT, DstLT.second, CostKind);
-    else { // (SrcEltSize > DstEltSize)
-      // First do a narrowing conversion to an integer half the size, then
-      // truncate if needed.
-      MVT ElementVT = MVT::getIntegerVT(SrcEltSize / 2);
-      MVT VecVT = DstLT.second.changeVectorElementType(ElementVT);
-      Cost += getRISCVInstructionCost(FNCVT, VecVT, CostKind);
-      if ((SrcEltSize / 2) > DstEltSize) {
-        Type *VecTy = EVT(VecVT).getTypeForEVT(Dst->getContext());
-        Cost +=
-            getCastInstrCost(Instruction::Trunc, Dst, VecTy, CCH, CostKind, I);
-      }
-    }
-    return Cost;
+     unsigned IsSigned = ISD == ISD::FP_TO_SINT;
+     unsigned FCVT = IsSigned ? RISCV::VFCVT_RTZ_X_F_V : RISCV::VFCVT_RTZ_XU_F_V;
+     unsigned FWCVT =
+         IsSigned ? RISCV::VFWCVT_RTZ_X_F_V : RISCV::VFWCVT_RTZ_XU_F_V;
+     unsigned FNCVT =
+         IsSigned ? RISCV::VFNCVT_RTZ_X_F_W : RISCV::VFNCVT_RTZ_XU_F_W;
+     unsigned SrcEltSize = Src->getScalarSizeInBits();
+     unsigned DstEltSize = Dst->getScalarSizeInBits();
+     InstructionCost Cost = 0;
+     if ((SrcEltSize == 16) &&
+         (!ST->hasVInstructionsF16() || ((DstEltSize / 2) > SrcEltSize))) {
+       // If the target only supports zvfhmin or it is fp16-to-i64 conversion
+       // pre-widening to f32 and then convert f32 to integer
+       VectorType *VecF32Ty =
+           VectorType::get(Type::getFloatTy(Dst->getContext()),
+                           cast<VectorType>(Dst)->getElementCount());
+       std::pair<InstructionCost, MVT> VecF32LT =
+           getTypeLegalizationCost(VecF32Ty);
+       Cost +=
+           VecF32LT.first * getRISCVInstructionCost(RISCV::VFWCVT_F_F_V,
+                                                    VecF32LT.second, CostKind);
+       Cost += getCastInstrCost(Opcode, Dst, VecF32Ty, CCH, CostKind, I);
+       return Cost;
+     }
+     if (DstEltSize == SrcEltSize)
+       Cost += getRISCVInstructionCost(FCVT, DstLT.second, CostKind);
+     else if (DstEltSize > SrcEltSize)
+       Cost += getRISCVInstructionCost(FWCVT, DstLT.second, CostKind);
+     else { // (SrcEltSize > DstEltSize)
+       // First do a narrowing conversion to an integer half the size, then
+       // truncate if needed.
+       MVT ElementVT = MVT::getIntegerVT(SrcEltSize / 2);
+       MVT VecVT = DstLT.second.changeVectorElementType(ElementVT);
+       Cost += getRISCVInstructionCost(FNCVT, VecVT, CostKind);
+       if ((SrcEltSize / 2) > DstEltSize) {
+         Type *VecTy = EVT(VecVT).getTypeForEVT(Dst->getContext());
+         Cost +=
+             getCastInstrCost(Instruction::Trunc, Dst, VecTy, CCH, CostKind, I);
+       }
+     }
+     return Cost;
+#endif
   }
->>>>>>> c970e96
   case ISD::SINT_TO_FP:
   case ISD::UINT_TO_FP: {
-    unsigned IsSigned = ISD == ISD::SINT_TO_FP;
-    unsigned FCVT = IsSigned ? RISCV::VFCVT_F_X_V : RISCV::VFCVT_F_XU_V;
-    unsigned FWCVT = IsSigned ? RISCV::VFWCVT_F_X_V : RISCV::VFWCVT_F_XU_V;
-    unsigned FNCVT = IsSigned ? RISCV::VFNCVT_F_X_W : RISCV::VFNCVT_F_XU_W;
-    unsigned SrcEltSize = Src->getScalarSizeInBits();
-    unsigned DstEltSize = Dst->getScalarSizeInBits();
-
-<<<<<<< HEAD
-    if (std::abs(PowDiff) <= 1)
-      return 1;
-    // Backend could lower (v[sz]ext i8 to double) to vfcvt(v[sz]ext.f8 i8),
-    // so it only need two conversion.
-    return 2;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-    InstructionCost Cost = 0;
-    if ((DstEltSize == 16) &&
-        (!ST->hasVInstructionsF16() || ((SrcEltSize / 2) > DstEltSize))) {
-      // If the target only supports zvfhmin or it is i64-to-fp16 conversion
-      // it is converted to f32 and then converted to f16
-      VectorType *VecF32Ty =
-          VectorType::get(Type::getFloatTy(Dst->getContext()),
-                          cast<VectorType>(Dst)->getElementCount());
-      std::pair<InstructionCost, MVT> VecF32LT =
-          getTypeLegalizationCost(VecF32Ty);
-      Cost += getCastInstrCost(Opcode, VecF32Ty, Src, CCH, CostKind, I);
-      Cost += VecF32LT.first * getRISCVInstructionCost(RISCV::VFNCVT_F_F_W,
-                                                       DstLT.second, CostKind);
-      return Cost;
-    }
-
-    if (DstEltSize == SrcEltSize)
-      Cost += getRISCVInstructionCost(FCVT, DstLT.second, CostKind);
-    else if (DstEltSize > SrcEltSize) {
-      if ((DstEltSize / 2) > SrcEltSize) {
-        VectorType *VecTy =
-            VectorType::get(IntegerType::get(Dst->getContext(), DstEltSize / 2),
-                            cast<VectorType>(Dst)->getElementCount());
-        unsigned Op = IsSigned ? Instruction::SExt : Instruction::ZExt;
-        Cost += getCastInstrCost(Op, VecTy, Src, CCH, CostKind, I);
+#if SIFIVE_CUSTOMIZATION
+      const unsigned SrcEltSize = SrcLT.second.getScalarSizeInBits();
+      const unsigned DstEltSize = DstLT.second.getScalarSizeInBits();
+      InstructionCost SrcLMULCost = 1;
+      InstructionCost DstLMULCost = 1;
+      InstructionCost PowDiffCost = 1;
+      if (CostKind == TTI::TCK_RecipThroughput) {
+        SrcLMULCost = TLI->getLMULCost(SrcLT.second);
+        DstLMULCost = TLI->getLMULCost(DstLT.second);
+        PowDiffCost = 0;
+        unsigned SrcSize = SrcEltSize;
+        if (SrcSize != 1 && DstEltSize != 1) {
+          for (; SrcSize != DstEltSize;) {
+            MVT SrcMVT =
+                SrcLT.second.changeVectorElementType(MVT::getIntegerVT(SrcSize));
+            PowDiffCost += TLI->getLMULCost(SrcMVT);
+            if (SrcSize < DstEltSize)
+              SrcSize = SrcSize << 1;
+            else
+              SrcSize = SrcSize >> 1;
+          }
+        }
       }
-      Cost += getRISCVInstructionCost(FWCVT, DstLT.second, CostKind);
-    } else
-      Cost += getRISCVInstructionCost(FNCVT, DstLT.second, CostKind);
-    return Cost;
+      if (SrcEltSize == 1) {
+        return DstLT.first * 3 * DstLMULCost;
+      }
+      if (DstEltSize == 1) {
+        return SrcLT.first * 3 * SrcLMULCost;
+      }
+      int PowDiff =
+          std::abs((int)Log2_32(DstEltSize) - (int)Log2_32(SrcEltSize));
+      if (PowDiff <= 1)
+        return SrcLT.first * SrcLMULCost;
+      // Backend could lower (v[sz]ext i8 to double) to vfcvt(v[sz]ext.f8 i8),
+      // so it only need two conversion.
+      if (SrcLT.second.isInteger() && (SrcEltSize < DstEltSize)) {
+        if (CostKind != TTI::TCK_RecipThroughput) {
+          return 2;
+        } else {
+          InstructionCost ExtendCost = SrcLMULCost;
+          unsigned ExtendSize = SrcEltSize << (PowDiff - 1);
+          MVT ExtendMVT = SrcLT.second.changeVectorElementType(
+              MVT::getIntegerVT(ExtendSize));
+          InstructionCost FcvtCost = TLI->getLMULCost(ExtendMVT);
+          return SrcLT.first * (ExtendCost + FcvtCost);
+        }
+      }
+      return SrcLT.first * PowDiffCost;
+#else
+     unsigned IsSigned = ISD == ISD::SINT_TO_FP;
+     unsigned FCVT = IsSigned ? RISCV::VFCVT_F_X_V : RISCV::VFCVT_F_XU_V;
+     unsigned FWCVT = IsSigned ? RISCV::VFWCVT_F_X_V : RISCV::VFWCVT_F_XU_V;
+     unsigned FNCVT = IsSigned ? RISCV::VFNCVT_F_X_W : RISCV::VFNCVT_F_XU_W;
+     unsigned SrcEltSize = Src->getScalarSizeInBits();
+     unsigned DstEltSize = Dst->getScalarSizeInBits();
+
+     InstructionCost Cost = 0;
+     if ((DstEltSize == 16) &&
+         (!ST->hasVInstructionsF16() || ((SrcEltSize / 2) > DstEltSize))) {
+       // If the target only supports zvfhmin or it is i64-to-fp16 conversion
+       // it is converted to f32 and then converted to f16
+       VectorType *VecF32Ty =
+           VectorType::get(Type::getFloatTy(Dst->getContext()),
+                           cast<VectorType>(Dst)->getElementCount());
+       std::pair<InstructionCost, MVT> VecF32LT =
+           getTypeLegalizationCost(VecF32Ty);
+       Cost += getCastInstrCost(Opcode, VecF32Ty, Src, CCH, CostKind, I);
+       Cost += VecF32LT.first * getRISCVInstructionCost(RISCV::VFNCVT_F_F_W,
+                                                        DstLT.second, CostKind);
+       return Cost;
+     }
+
+     if (DstEltSize == SrcEltSize)
+       Cost += getRISCVInstructionCost(FCVT, DstLT.second, CostKind);
+     else if (DstEltSize > SrcEltSize) {
+       if ((DstEltSize / 2) > SrcEltSize) {
+         VectorType *VecTy =
+             VectorType::get(IntegerType::get(Dst->getContext(), DstEltSize / 2),
+                             cast<VectorType>(Dst)->getElementCount());
+         unsigned Op = IsSigned ? Instruction::SExt : Instruction::ZExt;
+         Cost += getCastInstrCost(Op, VecTy, Src, CCH, CostKind, I);
+       }
+       Cost += getRISCVInstructionCost(FWCVT, DstLT.second, CostKind);
+     } else
+       Cost += getRISCVInstructionCost(FNCVT, DstLT.second, CostKind);
+     return Cost;
+#endif
   }
->>>>>>> c970e96
   }
   return BaseT::getCastInstrCost(Opcode, Dst, Src, CCH, CostKind, I);
 }
@@ -2672,7 +2695,6 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
   if (LT.second.isScalableVector() && !LT.first.isValid())
     return LT.first;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // TODO: Remove this and update InsertElement cost
   if (!isTypeLegal(Val) && Opcode != Instruction::ExtractElement)
@@ -2682,8 +2704,6 @@ InstructionCost RISCVTTIImpl::getVectorInstrCost(unsigned Opcode, Type *Val,
     return BaseT::getVectorInstrCost(Opcode, Val, CostKind, Index, Op0, Op1);
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> c970e96
   // Mask vector extract/insert is expanded via e8.
   if (Val->getScalarSizeInBits() == 1) {
     VectorType *WideTy =
