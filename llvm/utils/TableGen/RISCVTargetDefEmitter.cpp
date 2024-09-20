@@ -221,7 +221,6 @@ static void emitRISCVProcs(const RecordKeeper &RK, raw_ostream &OS) {
   OS << "\n#undef TUNE_PROC\n";
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static void emitRISCVExtensionInfoJSON(const std::vector<Record *> &Extensions,
                                        raw_ostream &OS) {
@@ -286,13 +285,8 @@ emitRISCVImpliedExtensionInfoJSON(const std::vector<Record *> &Extensions,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-static void emitRISCVExtensionBitmask(RecordKeeper &RK, raw_ostream &OS) {
-
-  std::vector<Record *> Extensions =
-=======
 static void emitRISCVExtensionBitmask(const RecordKeeper &RK, raw_ostream &OS) {
   std::vector<const Record *> Extensions =
->>>>>>> c970e96
       RK.getAllDerivedDefinitionsIfDefined("RISCVExtensionBitmask");
   llvm::sort(Extensions, [](const Record *Rec1, const Record *Rec2) {
     return getExtensionName(Rec1) < getExtensionName(Rec2);
@@ -325,7 +319,6 @@ static void emitRISCVExtensionBitmask(const RecordKeeper &RK, raw_ostream &OS) {
   OS << "#endif\n";
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static void emitRISCVProfilesJSON(const std::vector<Record *> &Profiles,
                                   raw_ostream &OS) {
@@ -353,10 +346,7 @@ static void emitRISCVProfilesJSON(const std::vector<Record *> &Profiles,
 }
 #endif
 
-static void EmitRISCVTargetDef(RecordKeeper &RK, raw_ostream &OS) {
-=======
 static void EmitRISCVTargetDef(const RecordKeeper &RK, raw_ostream &OS) {
->>>>>>> c970e96
   emitRISCVExtensions(RK, OS);
   emitRISCVProfiles(RK, OS);
   emitRISCVProcs(RK, OS);
