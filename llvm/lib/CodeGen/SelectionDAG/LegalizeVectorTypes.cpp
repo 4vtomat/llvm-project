@@ -3491,7 +3491,6 @@ bool DAGTypeLegalizer::SplitVectorOperand(SDNode *N, unsigned OpNo) {
   case ISD::VP_CTTZ_ELTS_ZERO_UNDEF:
     Res = SplitVecOp_VP_CttzElements(N);
     break;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case ISD::VP_FIRST:
     Res = SplitVecOp_VP_FIRST(N);
@@ -3500,11 +3499,9 @@ bool DAGTypeLegalizer::SplitVectorOperand(SDNode *N, unsigned OpNo) {
     Res = SplitVecOp_VP_POPCOUNT(N, OpNo);
     break;
 #endif
-=======
   case ISD::EXPERIMENTAL_VECTOR_HISTOGRAM:
     Res = SplitVecOp_VECTOR_HISTOGRAM(N);
     break;
->>>>>>> c970e96
   }
 
   // If the result is null, the sub-method took care of registering results etc.
@@ -4538,7 +4535,6 @@ SDValue DAGTypeLegalizer::SplitVecOp_VP_CttzElements(SDNode *N) {
                        DAG.getNode(ISD::ADD, DL, ResVT, VLo, ResHi));
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 SDValue DAGTypeLegalizer::SplitVecOp_VP_FIRST(SDNode *N) {
   EVT ResVT = N->getValueType(0);
@@ -4595,7 +4591,6 @@ SDValue DAGTypeLegalizer::SplitVecOp_VP_POPCOUNT(SDNode *N, unsigned OpNo) {
 }
 #endif
 
-=======
 SDValue DAGTypeLegalizer::SplitVecOp_VECTOR_HISTOGRAM(SDNode *N) {
   MaskedHistogramSDNode *HG = cast<MaskedHistogramSDNode>(N);
   SDLoc DL(HG);
@@ -4618,7 +4613,6 @@ SDValue DAGTypeLegalizer::SplitVecOp_VECTOR_HISTOGRAM(SDNode *N) {
                                 MMO, IndexType);
 }
 
->>>>>>> c970e96
 //===----------------------------------------------------------------------===//
 //  Result Vector Widening
 //===----------------------------------------------------------------------===//
