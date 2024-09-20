@@ -1202,7 +1202,7 @@ bool RecurrenceDescriptor::isFixedOrderRecurrence(PHINode *Phi, Loop *TheLoop,
   return true;
 }
 
-<<<<<<< HEAD
+#if SIFIVE_CUSTOMIZATION
 /// This function returns the identity element (or neutral element) for
 /// the operation K.
 Value *RecurrenceDescriptor::getRecurrenceIdentity(RecurKind K, Type *Tp,
@@ -1259,18 +1259,15 @@ Value *RecurrenceDescriptor::getRecurrenceIdentity(RecurKind K, Type *Tp,
   case RecurKind::FAnyOf:
     return getRecurrenceStartValue();
     break;
-#if SIFIVE_CUSTOMIZATION
   case RecurKind::IFindLastIV:
   case RecurKind::FFindLastIV:
     return getRecurrenceIdentity(RecurKind::SMax, Tp, FMF);
-#endif // SIFIVE_CUSTOMIZATION
   default:
     llvm_unreachable("Unknown recurrence kind");
   }
 }
+#endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> c970e96
 unsigned RecurrenceDescriptor::getOpcode(RecurKind Kind) {
   switch (Kind) {
   case RecurKind::Add:
