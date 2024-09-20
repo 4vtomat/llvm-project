@@ -241,20 +241,6 @@ class RVInstCommon<dag outs, dag ins, string opcodestr, string argstr,
   bits<2> TargetOverlapConstraintType = 0;
   let TSFlags{22-21} = TargetOverlapConstraintType;
 
-<<<<<<< HEAD
-  bit ActiveElementsAffectResult = 0;
-  let TSFlags{23} = ActiveElementsAffectResult;
-#ifdef SIFIVE_CUSTOMIZATION
-  // 0 -> Don't care about altfmt bit in VTYPE.
-  // 1 -> Is not altfmt.
-  // 2 -> Is altfmt(BF16).
-  bits<2> AltfmtType = 0;
-  let TSFlags{25-24} = AltfmtType;
-
-  bit IsWiden = 0;
-  let TSFlags{26} = IsWiden;
-#endif // SIFIVE_CUSTOMIZATION
-=======
   // Most vector instructions are elementwise, but some may depend on the value
   // of VL (e.g. vslide1down.vx), and others may depend on the VL and mask
   // (e.g. vredsum.vs, viota.m). Mark these instructions so that peepholes avoid
@@ -266,7 +252,16 @@ class RVInstCommon<dag outs, dag ins, string opcodestr, string argstr,
   // Indicates the EEW of a vector instruction's destination operand.
   EEW DestEEW = EEWSEWx1;
   let TSFlags{26-25} = DestEEW.Value;
->>>>>>> c970e96
+#ifdef SIFIVE_CUSTOMIZATION
+  // 0 -> Don't care about altfmt bit in VTYPE.
+  // 1 -> Is not altfmt.
+  // 2 -> Is altfmt(BF16).
+  bits<2> AltfmtType = 0;
+  let TSFlags{28-27} = AltfmtType;
+
+  bit IsWiden = 0;
+  let TSFlags{29} = IsWiden;
+#endif // SIFIVE_CUSTOMIZATION
 }
 
 class RVInst<dag outs, dag ins, string opcodestr, string argstr,
