@@ -2994,12 +2994,7 @@ bool RISCVDAGToDAGISel::SelectAddrRegImm(SDValue Addr, SDValue &Base,
           if (areOffsetsWithinAlignment(Base, Alignment) && !IsRV32Zdinx) {
 #else
           if ((CVal == 0 || Alignment > CVal) &&
-<<<<<<< HEAD
-              (!IsRV32Zdinx || Alignment > (CVal + 4))) {
-#endif
-=======
               (!IsRV32Zdinx || commonAlignment(Alignment, CVal) > 4)) {
->>>>>>> c970e96
             int64_t CombinedOffset = CVal + GA->getOffset();
             Base = Base.getOperand(0);
             Offset = CurDAG->getTargetGlobalAddress(
