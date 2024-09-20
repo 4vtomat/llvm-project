@@ -553,18 +553,13 @@ bool RISCVVectorPeephole::ensureDominates(const MachineOperand &MO,
   if (Def->getParent() == Src.getParent() && !dominates(Def, Src)) {
     if (!isSafeToMove(Src, *Def->getNextNode()))
       return false;
-<<<<<<< HEAD
     // FIXME: Update V0Defs
-=======
->>>>>>> c970e96
     Src.moveBefore(Def->getNextNode());
   }
 
   return true;
 }
 
-<<<<<<< HEAD
-=======
 /// If a PseudoVMV_V_V's passthru is undef then we can replace it with its input
 bool RISCVVectorPeephole::foldUndefPassthruVMV_V_V(MachineInstr &MI) {
   if (RISCV::getRVVMCOpcode(MI.getOpcode()) != RISCV::VMV_V_V)
@@ -596,7 +591,6 @@ bool RISCVVectorPeephole::foldUndefPassthruVMV_V_V(MachineInstr &MI) {
   return true;
 }
 
->>>>>>> c970e96
 /// If a PseudoVMV_V_V is the only user of its input, fold its passthru and VL
 /// into it.
 ///
