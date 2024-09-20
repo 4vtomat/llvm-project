@@ -2831,11 +2831,7 @@ static bool hoistAdd(ICmpInst::Predicate Pred, Value *VariantLHS,
                      Value *InvariantRHS, ICmpInst &ICmp, Loop &L,
                      ICFLoopSafetyInfo &SafetyInfo, MemorySSAUpdater &MSSAU,
                      AssumptionCache *AC, DominatorTree *DT) {
-<<<<<<< HEAD
 #endif
-  assert(ICmpInst::isSigned(Pred) && "Not supported yet!");
-=======
->>>>>>> c970e96
   assert(!L.isLoopInvariant(VariantLHS) && "Precondition.");
   assert(L.isLoopInvariant(InvariantRHS) && "Precondition.");
 
@@ -2904,11 +2900,7 @@ static bool hoistSub(ICmpInst::Predicate Pred, Value *VariantLHS,
                      Value *InvariantRHS, ICmpInst &ICmp, Loop &L,
                      ICFLoopSafetyInfo &SafetyInfo, MemorySSAUpdater &MSSAU,
                      AssumptionCache *AC, DominatorTree *DT) {
-<<<<<<< HEAD
 #endif
-  assert(ICmpInst::isSigned(Pred) && "Not supported yet!");
-=======
->>>>>>> c970e96
   assert(!L.isLoopInvariant(VariantLHS) && "Precondition.");
   assert(L.isLoopInvariant(InvariantRHS) && "Precondition.");
 
@@ -3163,14 +3155,9 @@ static bool hoistMulAddAssociation(Instruction &I, Loop &L,
 /// 3. "C2 op (C1 op LV)" ==> "LV op (C1 op C2)"
 /// 4. "C2 op (LV op C1)" ==> "LV op (C1 op C2)"
 ///
-<<<<<<< HEAD
-/// where op is an associative binary op, LV is a loop variant, and C1 and C2
-/// are loop invariants that we want to hoist.
-///
-/// TODO: This can be extended to more cases such as
-/// 2. "C1 op (C2 op LV)" ==> "(C1 op C2) op LV"
-/// 3. "(C1 op LV) op C2" ==> "LV op (C1 op C2)" if op is commutative
-/// 4. "C1 op (LV op C2)" ==> "(C1 op C2) op LV" if op is commutative
+/// where op is an associative BinOp, LV is a loop variant, and C1 and C2 are
+/// loop invariants that we want to hoist, noting that associativity implies
+/// commutativity.
 #if SIFIVE_CUSTOMIZATION
 static bool hoistBOAssociation(Instruction &I, Loop &L,
                                ICFLoopSafetyInfo &SafetyInfo,
@@ -3178,11 +3165,6 @@ static bool hoistBOAssociation(Instruction &I, Loop &L,
                                LiveValues *LiveVals, TargetTransformInfo *TTI,
                                DominatorTree *DT) {
 #else
-=======
-/// where op is an associative BinOp, LV is a loop variant, and C1 and C2 are
-/// loop invariants that we want to hoist, noting that associativity implies
-/// commutativity.
->>>>>>> c970e96
 static bool hoistBOAssociation(Instruction &I, Loop &L,
                                ICFLoopSafetyInfo &SafetyInfo,
                                MemorySSAUpdater &MSSAU, AssumptionCache *AC,
