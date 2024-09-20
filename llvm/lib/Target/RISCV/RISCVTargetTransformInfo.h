@@ -362,23 +362,12 @@ public:
     if (DataTypeVT.isFixedLengthVector() && !ST->useRVVForFixedLengthVectors())
       return false;
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    EVT PointerTypeVT = EVT(TLI->getPointerTy(DL));
-    // We also need to check if the vector of pointer in gather/scatter
-    // instruction is valid.
-    if (DataTypeVT.isScalableVector() &&
-        !TLI->isLegalElementTypeForRVV(PointerTypeVT))
-      return false;
-#endif // SIFIVE_CUSTOMIZATION
-=======
     // We also need to check if the vector of address is valid.
     EVT PointerTypeVT = EVT(TLI->getPointerTy(DL));
     if (DataTypeVT.isScalableVector() &&
         !TLI->isLegalElementTypeForRVV(PointerTypeVT))
       return false;
 
->>>>>>> c970e96
     EVT ElemType = DataTypeVT.getScalarType();
     if (!ST->enableUnalignedVectorMem() && Alignment < ElemType.getStoreSize())
       return false;
