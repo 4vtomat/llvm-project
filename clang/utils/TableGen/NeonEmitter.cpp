@@ -459,7 +459,6 @@ public:
     return any_of(Types, [](const Type &T) { return T.isImmediate(); });
   }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   /// Return true if the intrinsic has poly type.
   bool hasPolyType() const {
@@ -467,17 +466,9 @@ public:
   }
 #endif
 
-  /// Return the parameter index of the immediate operand.
-  unsigned getImmediateIdx() const {
-    for (unsigned Idx = 0; Idx < Types.size(); ++Idx)
-      if (Types[Idx].isImmediate())
-        return Idx - 1;
-    llvm_unreachable("Intrinsic has no immediate");
-=======
   // Return if the supplied argument is an immediate
   bool isArgImmediate(unsigned idx) const {
     return Types[idx + 1].isImmediate();
->>>>>>> c970e96
   }
 
   unsigned getNumParams() const { return Types.size() - 1; }
@@ -617,21 +608,12 @@ public:
   /// Called by Intrinsic - returns a globally-unique number.
   unsigned getUniqueNumber() { return UniqueNumber++; }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  NeonEmitter(RecordKeeper &R, bool Recode = false)
+  NeonEmitter(const RecordKeeper &R, bool Recode = false)
       : Records(R), UniqueNumber(0), RecodeMode(Recode) {
-#endif
-    Record *SI = R.getClass("SInst");
-    Record *II = R.getClass("IInst");
-    Record *WI = R.getClass("WInst");
-    Record *SOpI = R.getClass("SOpInst");
-    Record *IOpI = R.getClass("IOpInst");
-    Record *WOpI = R.getClass("WOpInst");
-    Record *LOpI = R.getClass("LOpInst");
-    Record *NoTestOpI = R.getClass("NoTestOpInst");
-=======
+#else
   NeonEmitter(const RecordKeeper &R) : Records(R), UniqueNumber(0) {
+#endif
     const Record *SI = R.getClass("SInst");
     const Record *II = R.getClass("IInst");
     const Record *WI = R.getClass("WInst");
@@ -640,7 +622,6 @@ public:
     const Record *WOpI = R.getClass("WOpInst");
     const Record *LOpI = R.getClass("LOpInst");
     const Record *NoTestOpI = R.getClass("NoTestOpInst");
->>>>>>> c970e96
 
     ClassMap[SI] = ClassS;
     ClassMap[II] = ClassI;
@@ -2922,31 +2903,21 @@ void clang::EmitNeon(const RecordKeeper &Records, raw_ostream &OS) {
   NeonEmitter(Records).run(OS);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-void clang::EmitRecodeNeon(RecordKeeper &Records, raw_ostream &OS) {
+void clang::EmitRecodeNeon(const RecordKeeper &Records, raw_ostream &OS) {
   NeonEmitter(Records, true).run(OS);
 }
-#endif
 
-void clang::EmitFP16(RecordKeeper &Records, raw_ostream &OS) {
-  NeonEmitter(Records).runFP16(OS);
-}
-
-#if SIFIVE_CUSTOMIZATION
-void clang::EmitRecodeFP16(RecordKeeper &Records, raw_ostream &OS) {
+void clang::EmitRecodeFP16(const RecordKeeper &Records, raw_ostream &OS) {
   NeonEmitter(Records, true).runFP16(OS);
 }
 #endif
 
-void clang::EmitBF16(RecordKeeper &Records, raw_ostream &OS) {
-=======
 void clang::EmitFP16(const RecordKeeper &Records, raw_ostream &OS) {
   NeonEmitter(Records).runFP16(OS);
 }
 
 void clang::EmitBF16(const RecordKeeper &Records, raw_ostream &OS) {
->>>>>>> c970e96
   NeonEmitter(Records).runBF16(OS);
 }
 
