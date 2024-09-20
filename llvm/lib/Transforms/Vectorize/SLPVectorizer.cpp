@@ -4791,21 +4791,12 @@ BoUpSLP::LoadsState BoUpSLP::canVectorizeLoads(
                    return !getTreeEntry(U) && !MustGather.contains(U);
                  });
         });
-<<<<<<< HEAD
-    if (IsPossibleStrided && (IsAnyPointerUsedOutGraph ||
-                              ((Sz > MinProfitableStridedLoads ||
-                                (static_cast<unsigned>(std::abs(*Diff)) <=
-                                     MaxProfitableLoadStride * Sz &&
-                                 isPowerOf2_32(std::abs(*Diff)))) &&
-                               static_cast<unsigned>(std::abs(*Diff)) > Sz) ||
-=======
     const unsigned AbsoluteDiff = std::abs(*Diff);
     if (IsPossibleStrided && (IsAnyPointerUsedOutGraph ||
                               ((Sz > MinProfitableStridedLoads ||
                                 (AbsoluteDiff <= MaxProfitableLoadStride * Sz &&
                                  has_single_bit(AbsoluteDiff))) &&
                                AbsoluteDiff > Sz) ||
->>>>>>> c970e96
                               *Diff == -(static_cast<int>(Sz) - 1))) {
       int Stride = *Diff / static_cast<int>(Sz - 1);
       if (*Diff == Stride * static_cast<int>(Sz - 1)) {
@@ -13939,12 +13930,7 @@ Value *BoUpSLP::vectorizeTree(TreeEntry *E, bool PostponedPHIs) {
       if (VecValue->getType() != VecTy)
         VecValue =
             Builder.CreateIntCast(VecValue, VecTy, GetOperandSignedness(0));
-<<<<<<< HEAD
-
-      VecValue = FinalShuffle(VecValue, E, VecTy);
-=======
       VecValue = FinalShuffle(VecValue, E);
->>>>>>> c970e96
 
       Value *Ptr = SI->getPointerOperand();
       Instruction *ST;
