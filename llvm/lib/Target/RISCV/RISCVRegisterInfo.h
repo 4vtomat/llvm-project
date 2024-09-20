@@ -130,7 +130,6 @@ struct RISCVRegisterInfo : public RISCVGenRegisterInfo {
                              const MachineFunction &MF, const VirtRegMap *VRM,
                              const LiveRegMatrix *Matrix) const override;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool enableTargetInterference() const override;
 
@@ -152,26 +151,6 @@ struct RISCVRegisterInfo : public RISCVGenRegisterInfo {
 
 #endif // SIFIVE_CUSTOMIZATION
 
-  const TargetRegisterClass *
-  getLargestSuperClass(const TargetRegisterClass *RC) const override {
-    if (RISCV::VRM8RegClass.hasSubClassEq(RC))
-      return &RISCV::VRM8RegClass;
-    if (RISCV::VRM4RegClass.hasSubClassEq(RC))
-      return &RISCV::VRM4RegClass;
-    if (RISCV::VRM2RegClass.hasSubClassEq(RC))
-      return &RISCV::VRM2RegClass;
-    if (RISCV::VRRegClass.hasSubClassEq(RC))
-      return &RISCV::VRRegClass;
-    return RC;
-  }
-
-  bool doesRegClassHavePseudoInitUndef(
-      const TargetRegisterClass *RC) const override {
-    return isVRRegClass(RC);
-  }
-
-=======
->>>>>>> c970e96
   static bool isVRRegClass(const TargetRegisterClass *RC) {
     return RISCVRI::isVRegClass(RC->TSFlags) &&
            RISCVRI::getNF(RC->TSFlags) == 1;
