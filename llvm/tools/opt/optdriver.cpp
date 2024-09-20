@@ -375,14 +375,11 @@ static bool shouldPinPassToLegacyPM(StringRef Pass) {
       "fix-irreducible",
       "expand-large-fp-convert",
       "callbrprepare",
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       "expand-powi",
       "expand-vp-reduce",
 #endif // SIFIVE_CUSTOMIZATION
-=======
       "scalarizer",
->>>>>>> c970e96
   };
   for (const auto &P : PassNamePrefix)
     if (Pass.starts_with(P))
