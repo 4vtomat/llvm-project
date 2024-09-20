@@ -564,8 +564,7 @@ bool InterleavedAccessImpl::lowerInterleavedStore(
 }
 
 bool InterleavedAccessImpl::lowerDeinterleaveIntrinsic(
-<<<<<<< HEAD
-    IntrinsicInst *DI, SmallVector<Instruction *, 32> &DeadInsts) {
+    IntrinsicInst *DI, SmallVectorImpl<Instruction *> &DeadInsts) {
 #if SIFIVE_CUSTOMIZATION
   unsigned Factor = getFactorFromVectorDeInterleaveIntrinsic(DI);
   if (Factor == 0) {
@@ -642,10 +641,6 @@ bool InterleavedAccessImpl::lowerDeinterleaveIntrinsic(
     }
   }
 #endif // SIFIVE_CUSTOMIZATION
-
-=======
-    IntrinsicInst *DI, SmallVectorImpl<Instruction *> &DeadInsts) {
->>>>>>> c970e96
   LoadInst *LI = dyn_cast<LoadInst>(DI->getOperand(0));
 
   if (!LI || !LI->hasOneUse() || !LI->isSimple())
