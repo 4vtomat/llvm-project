@@ -669,17 +669,13 @@ void RVVEmitter::createRVVIntrinsics(
         BasicPrototype, /*IsMasked=*/false,
         /*HasMaskedOffOperand=*/false, HasVL, NF, UnMaskedPolicyScheme,
         DefaultPolicy, IsTuple);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     auto NTLPrototype = RVVIntrinsic::computeBuiltinTypes(
         BasicPrototype, /*IsMasked=*/false,
         /*HasMaskedOffOperand=*/false, HasVL, NF, UnMaskedPolicyScheme,
         NonTemporalDefaultPolicy, IsTuple);
 #endif // SIFIVE_CUSTOMIZATION
-    llvm::SmallVector<PrototypeDescriptor> MaskedPrototype;
-=======
     SmallVector<PrototypeDescriptor> MaskedPrototype;
->>>>>>> c970e96
     if (HasMasked)
       MaskedPrototype = RVVIntrinsic::computeBuiltinTypes(
           BasicPrototype, /*IsMasked=*/true, HasMaskedOffOperand, HasVL, NF,
