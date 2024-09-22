@@ -902,7 +902,7 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
                                                    []<string>)),
             ManualCodegen = [{
     {
-#if SIFIVE_CUSTOMIZATION
+#if 0 // SIFIVE_CUSTOMIZATION
       // In our downstream toolchain, for smooth transition from the v0.11
       // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
       // now.
@@ -984,6 +984,9 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
 
 #if SIFIVE_CUSTOMIZATION
+      llvm::MDNode *NTLNode;
+      if(IsNontemporal)
+        NTLNode = createNTLNode();
       llvm::Value *LoadValue;
       if (IsNontemporal)
         LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
@@ -1048,7 +1051,7 @@ multiclass RVVUnitStridedSegStoreTuple<string op> {
                                                  []<string>)),
           ManualCodegen = [{
     {
-#if SIFIVE_CUSTOMIZATION
+#if 0 // SIFIVE_CUSTOMIZATION
       // In our downstream toolchain, for smooth transition from the v0.11
       // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
       // now.
@@ -1102,6 +1105,9 @@ multiclass RVVUnitStridedSegStoreTuple<string op> {
       else
         IntrinsicTypes = {Operands[0]->getType(), Operands.back()->getType()};
 #if SIFIVE_CUSTOMIZATION
+      llvm::MDNode *NTLNode;
+      if(IsNontemporal)
+        NTLNode = createNTLNode();
       if(IsNontemporal)
         return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
 #endif // SIFIVE_CUSTOMIZATION
@@ -1160,7 +1166,7 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
                                                    []<string>)),
             ManualCodegen = [{
     {
-#ifdef SIFIVE_CUSTOMIZATION
+#if 0 // SIFIVE_CUSTOMIZATION
       // In our downstream toolchain, for smooth transition from the v0.11
       // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
       // now.
@@ -1244,6 +1250,9 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
 
 #ifdef SIFIVE_CUSTOMIZATION
+      llvm::MDNode *NTLNode;
+      if(IsNontemporal)
+        NTLNode = createNTLNode();
       llvm::Value *LoadValue;
       if (IsNontemporal)
         LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
@@ -1318,7 +1327,7 @@ multiclass RVVStridedSegLoadTuple<string op> {
                                                    []<string>)),
             ManualCodegen = [{
     {
-#if SIFIVE_CUSTOMIZATION
+#if 0 // SIFIVE_CUSTOMIZATION
       // In our downstream toolchain, for smooth transition from the v0.11
       // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
       // now.
@@ -1402,6 +1411,9 @@ multiclass RVVStridedSegLoadTuple<string op> {
 
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
 #if SIFIVE_CUSTOMIZATION
+      llvm::MDNode *NTLNode;
+      if(IsNontemporal)
+        NTLNode = createNTLNode();
       llvm::Value *LoadValue;
       if (IsNontemporal)
         LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
@@ -1468,7 +1480,7 @@ multiclass RVVStridedSegStoreTuple<string op> {
                                                    []<string>)),
             ManualCodegen = [{
     {
-#if SIFIVE_CUSTOMIZATION
+#if 0 // SIFIVE_CUSTOMIZATION
       // In our downstream toolchain, for smooth transition from the v0.11
       // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
       // now.
@@ -1522,6 +1534,9 @@ multiclass RVVStridedSegStoreTuple<string op> {
       else
         IntrinsicTypes = {Operands[0]->getType(), Operands.back()->getType()};
 #if SIFIVE_CUSTOMIZATION
+      llvm::MDNode *NTLNode;
+      if(IsNontemporal)
+        NTLNode = createNTLNode();
       if(IsNontemporal)
         return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
 #endif // SIFIVE_CUSTOMIZATION
@@ -1575,7 +1590,7 @@ multiclass RVVIndexedSegLoadTuple<string op> {
                                                    []<string>)),
             ManualCodegen = [{
     {
-#if SIFIVE_CUSTOMIZATION
+#if 0 // SIFIVE_CUSTOMIZATION
       // In our downstream toolchain, for smooth transition from the v0.11
       // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
       // now.
@@ -1662,6 +1677,9 @@ multiclass RVVIndexedSegLoadTuple<string op> {
                           Ops.back()->getType()};
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
 #if SIFIVE_CUSTOMIZATION
+      llvm::MDNode *NTLNode;
+      if(IsNontemporal)
+        NTLNode = createNTLNode();
       llvm::Value *LoadValue;
       if (IsNontemporal)
         LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
@@ -1724,7 +1742,7 @@ multiclass RVVIndexedSegStoreTuple<string op> {
                                                    []<string>)),
             ManualCodegen = [{
     {
-#if SIFIVE_CUSTOMIZATION
+#if 0 // SIFIVE_CUSTOMIZATION
       // In our downstream toolchain, for smooth transition from the v0.11
       // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
       // now.
@@ -1783,6 +1801,9 @@ multiclass RVVIndexedSegStoreTuple<string op> {
         IntrinsicTypes = {Operands[0]->getType(), Ops[Offset + 1]->getType(),
                           Operands.back()->getType()};
 #if SIFIVE_CUSTOMIZATION
+      llvm::MDNode *NTLNode;
+      if(IsNontemporal)
+        NTLNode = createNTLNode();
       if(IsNontemporal)
         return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
 #endif // SIFIVE_CUSTOMIZATION
