@@ -43,6 +43,36 @@ inline bool isUniformAfterVectorization(const VPValue *VPV) {
   return false;
 }
 
+#if SIFIVE_CUSTOMIZATION
+// FIXME: Represent CSA instructions through VPHeaderPHIRecipe
+inline bool isPhi(const VPRecipeBase &R) {
+  if (R.isPhi())
+    return true;
+  if (auto *VPInst = dyn_cast<VPInstruction>(&R))
+    return VPInst->getOpcode() == VPInstruction::CSAMaskPhi ||
+           VPInst->getOpcode() == VPInstruction::CSAVLPhi;
+  return false;
+}
+
+inline bool isPhiThatGeneratesBackedge(const VPRecipeBase &R) {
+  if (isa<VPWidenPHIRecipe, VPCSAHeaderPHIRecipe>(&R))
+    return true;
+  if (auto *VPInst = dyn_cast<VPInstruction>(&R))
+    return VPInst->getOpcode() == VPInstruction::CSAMaskPhi ||
+           VPInst->getOpcode() == VPInstruction::CSAVLPhi;
+  return false;
+}
+
+inline bool isHeaderPhi(const VPRecipeBase &R) {
+  if (isa<VPHeaderPHIRecipe>(&R))
+    return true;
+  if (auto *VPInst = dyn_cast<VPInstruction>(&R))
+    return VPInst->getOpcode() == VPInstruction::CSAMaskPhi ||
+           VPInst->getOpcode() == VPInstruction::CSAVLPhi;
+  return false;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 /// Return true if \p V is a header mask in \p Plan.
 bool isHeaderMask(const VPValue *V, VPlan &Plan);
 } // end namespace llvm::vputils

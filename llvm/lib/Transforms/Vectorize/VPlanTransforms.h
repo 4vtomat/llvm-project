@@ -58,14 +58,10 @@ struct VPlanTransforms {
   /// Apply VPlan-to-VPlan optimizations to \p Plan, including induction recipe
   /// optimizations, dead recipe removal, replicate region optimizations and
   /// block merging.
-<<<<<<< HEAD
-  static void optimize(VPlan &Plan, ScalarEvolution &SE);
+  static void optimize(VPlan &Plan);
 #if SIFIVE_CUSTOMIZATION
   static void optimizeUncountable(VPlan &Plan, ScalarEvolution &SE);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  static void optimize(VPlan &Plan);
->>>>>>> c970e96
 
   /// Wrap predicated VPReplicateRecipes with a mask operand in an if-then
   /// region block and remove the mask operand. Optimize the created regions by
@@ -130,9 +126,7 @@ struct VPlanTransforms {
   static void addExplicitVectorLengthUncountable(VPlan &Plan);
 #else
   static bool tryAddExplicitVectorLength(VPlan &Plan);
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-=======
 
   // For each Interleave Group in \p InterleaveGroups replace the Recipes
   // widening its memory instructions with a single VPInterleaveRecipe at its
@@ -140,7 +134,6 @@ struct VPlanTransforms {
   static void createInterleaveGroups(
       const SmallPtrSetImpl<const InterleaveGroup<Instruction> *> &InterleaveGroups,
       VPRecipeBuilder &RecipeBuilder, bool ScalarEpilogueAllowed);
->>>>>>> c970e96
 };
 
 } // namespace llvm

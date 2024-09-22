@@ -1242,8 +1242,42 @@ Value *llvm::createAnyOfReduction(IRBuilderBase &Builder, Value *Src,
   return Builder.CreateSelect(AnyOf, NewVal, InitVal, "rdx.select");
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+Value *llvm::createAnyOfTargetReduction(IRBuilderBase &Builder, Value *Src,
+                                        const RecurrenceDescriptor &Desc,
+                                        PHINode *OrigPhi) {
+  assert(
+      RecurrenceDescriptor::isAnyOfRecurrenceKind(Desc.getRecurrenceKind()) &&
+      "Unexpected reduction kind");
+  Value *InitVal = Desc.getRecurrenceStartValue();
+  Value *NewVal = nullptr;
+
+  // First use the original phi to determine the new value we're trying to
+  // select from in the loop.
+  SelectInst *SI = nullptr;
+  for (auto *U : OrigPhi->users()) {
+    if ((SI = dyn_cast<SelectInst>(U)))
+      break;
+  }
+  assert(SI && "One user of the original phi should be a select");
+
+  if (SI->getTrueValue() == OrigPhi)
+    NewVal = SI->getFalseValue();
+  else {
+    assert(SI->getFalseValue() == OrigPhi &&
+           "At least one input to the select should be the original Phi");
+    NewVal = SI->getTrueValue();
+  }
+
+  // If any predicate is true it means that we want to select the new value.
+  Value *AnyOf =
+      Src->getType()->isVectorTy() ? Builder.CreateOrReduce(Src) : Src;
+  // The compares in the loop may yield poison, which propagates through the
+  // bitwise ORs. Freeze it here before the condition is used.
+  AnyOf = Builder.CreateFreeze(AnyOf);
+  return Builder.CreateSelect(AnyOf, NewVal, InitVal, "rdx.select");
+}
+
 Value *llvm::createAnyOfTargetReduction(IRBuilderBase &Builder,
                                         Value *Src,
                                         const RecurrenceDescriptor &Desc,
@@ -1294,9 +1328,6 @@ Value *llvm::createFindLastIVTargetReduction(IRBuilderBase &Builder, Value *Src,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-Value *llvm::createSimpleTargetReduction(IRBuilderBase &Builder, Value *Src,
-                                         RecurKind RdxKind) {
-=======
 Value *llvm::getReductionIdentity(Intrinsic::ID RdxID, Type *Ty,
                                   FastMathFlags Flags) {
   bool Negative = false;
@@ -1349,7 +1380,6 @@ Value *llvm::getRecurrenceIdentity(RecurKind K, Type *Tp, FastMathFlags FMF) {
 
 Value *llvm::createSimpleReduction(IRBuilderBase &Builder, Value *Src,
                                    RecurKind RdxKind) {
->>>>>>> c970e96
   auto *SrcVecEltTy = cast<VectorType>(Src->getType())->getElementType();
   auto getIdentity = [&]() {
     return getRecurrenceIdentity(RdxKind, SrcVecEltTy,
@@ -1380,8 +1410,48 @@ Value *llvm::createSimpleReduction(IRBuilderBase &Builder, Value *Src,
   }
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
+Value *llvm::createSimpleTargetReduction(IRBuilderBase &Builder, Value *Src,
+                                         RecurKind RdxKind) {
+  auto *SrcVecEltTy = cast<VectorType>(Src->getType())->getElementType();
+  switch (RdxKind) {
+  case RecurKind::Add:
+    return Builder.CreateAddReduce(Src);
+  case RecurKind::Mul:
+    return Builder.CreateMulReduce(Src);
+  case RecurKind::And:
+    return Builder.CreateAndReduce(Src);
+  case RecurKind::Or:
+    return Builder.CreateOrReduce(Src);
+  case RecurKind::Xor:
+    return Builder.CreateXorReduce(Src);
+  case RecurKind::FMulAdd:
+  case RecurKind::FAdd:
+    return Builder.CreateFAddReduce(ConstantFP::getNegativeZero(SrcVecEltTy),
+                                    Src);
+  case RecurKind::FMul:
+    return Builder.CreateFMulReduce(ConstantFP::get(SrcVecEltTy, 1.0), Src);
+  case RecurKind::SMax:
+    return Builder.CreateIntMaxReduce(Src, true);
+  case RecurKind::SMin:
+    return Builder.CreateIntMinReduce(Src, true);
+  case RecurKind::UMax:
+    return Builder.CreateIntMaxReduce(Src, false);
+  case RecurKind::UMin:
+    return Builder.CreateIntMinReduce(Src, false);
+  case RecurKind::FMax:
+    return Builder.CreateFPMaxReduce(Src);
+  case RecurKind::FMin:
+    return Builder.CreateFPMinReduce(Src);
+  case RecurKind::FMinimum:
+    return Builder.CreateFPMinimumReduce(Src);
+  case RecurKind::FMaximum:
+    return Builder.CreateFPMaximumReduce(Src);
+  default:
+    llvm_unreachable("Unhandled opcode");
+  }
+}
+
 Value *llvm::createSimpleTargetReduction(IRBuilderBase &Builder, Value *Src,
                                          RecurKind RdxKind, Value *EVL,
                                          Value *Mask) {
@@ -1422,12 +1492,8 @@ Value *llvm::createSimpleTargetReduction(IRBuilderBase &Builder, Value *Src,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-Value *llvm::createSimpleTargetReduction(VectorBuilder &VBuilder, Value *Src,
-                                         const RecurrenceDescriptor &Desc) {
-=======
 Value *llvm::createSimpleReduction(VectorBuilder &VBuilder, Value *Src,
                                    const RecurrenceDescriptor &Desc) {
->>>>>>> c970e96
   RecurKind Kind = Desc.getRecurrenceKind();
   assert(!RecurrenceDescriptor::isAnyOfRecurrenceKind(Kind) &&
          "AnyOf reduction is not supported.");
@@ -1450,20 +1516,34 @@ Value *llvm::createReduction(IRBuilderBase &B,
 
   RecurKind RK = Desc.getRecurrenceKind();
   if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK))
-<<<<<<< HEAD
-    return createAnyOfTargetReduction(B, Src, Desc, OrigPhi);
+    return createAnyOfReduction(B, Src, Desc, OrigPhi);
 #if SIFIVE_CUSTOMIZATION
   if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
     return createFindLastIVTargetReduction(B, Src, Desc);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-    return createAnyOfReduction(B, Src, Desc, OrigPhi);
->>>>>>> c970e96
 
   return createSimpleReduction(B, Src, RK);
 }
 
 #if SIFIVE_CUSTOMIZATION
+Value *llvm::createTargetReduction(IRBuilderBase &B,
+                                   const RecurrenceDescriptor &Desc, Value *Src,
+                                   PHINode *OrigPhi) {
+  // TODO: Support in-order reductions based on the recurrence descriptor.
+  // All ops in the reduction inherit fast-math-flags from the recurrence
+  // descriptor.
+  IRBuilderBase::FastMathFlagGuard FMFGuard(B);
+  B.setFastMathFlags(Desc.getFastMathFlags());
+
+  RecurKind RK = Desc.getRecurrenceKind();
+  if (RecurrenceDescriptor::isAnyOfRecurrenceKind(RK))
+    return createAnyOfTargetReduction(B, Src, Desc, OrigPhi);
+  if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(RK))
+    return createFindLastIVTargetReduction(B, Src, Desc);
+
+  return createSimpleTargetReduction(B, Src, RK);
+}
+
 Value *llvm::createTargetReduction(IRBuilderBase &B,
                                    const RecurrenceDescriptor &Desc, Value *Src,
                                    Value *EVL, PHINode *OrigPhi, Value *Mask) {

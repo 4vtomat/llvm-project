@@ -340,21 +340,13 @@ VPBasicBlock::iterator VPBasicBlock::getFirstNonPhi() {
 
 VPTransformState::VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                                    DominatorTree *DT, IRBuilderBase &Builder,
-<<<<<<< HEAD
                                    InnerLoopVectorizer *ILV, VPlan *Plan,
-                                   LLVMContext &Ctx,
                                    bool EnableRISCVCSA) // SIFIVE
     : VF(VF), UF(UF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
-      LVer(nullptr),
+      LVer(nullptr), TypeAnalysis(Plan->getCanonicalIV()->getScalarType()),
 #if SIFIVE_CUSTOMIZATION
-      TypeAnalysis(Plan->getCanonicalIV()->getScalarType(), Ctx),
       EnableRISCVCSA(EnableRISCVCSA) {}
 #endif // SIFIVE_CUSTOMIZATION
-=======
-                                   InnerLoopVectorizer *ILV, VPlan *Plan)
-    : VF(VF), UF(UF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
-      LVer(nullptr), TypeAnalysis(Plan->getCanonicalIV()->getScalarType()) {}
->>>>>>> c970e96
 
 Value *VPTransformState::get(VPValue *Def, const VPIteration &Instance) {
   if (Def->isLiveIn())
@@ -1072,17 +1064,12 @@ static VPIRBasicBlock *createVPIRBasicBlockFor(BasicBlock *BB) {
 
 VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
                                    bool RequiresScalarEpilogueCheck,
-<<<<<<< HEAD
                                    bool TailFolded,
 #if SIFIVE_CUSTOMIZATION
                                    bool IsUncountable,
 #endif // SIFIVE_CUSTOMIZATION
                                    Loop *TheLoop) {
-  VPIRBasicBlock *Entry = new VPIRBasicBlock(TheLoop->getLoopPreheader());
-=======
-                                   bool TailFolded, Loop *TheLoop) {
   VPIRBasicBlock *Entry = createVPIRBasicBlockFor(TheLoop->getLoopPreheader());
->>>>>>> c970e96
   VPBasicBlock *VecPreheader = new VPBasicBlock("vector.ph");
 #if SIFIVE_CUSTOMIZATION
   auto Plan = std::make_unique<VPlan>(Entry, VecPreheader, IsUncountable);
@@ -1161,13 +1148,10 @@ VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
 void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
                              Value *CanonicalIVStartValue,
                              VPTransformState &State) {
-<<<<<<< HEAD
+  Type *TCTy = TripCountV->getType();
 #if SIFIVE_CUSTOMIZATION
   if (!isUncountable()) {
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  Type *TCTy = TripCountV->getType();
->>>>>>> c970e96
   // Check if the backedge taken count is needed, and if so build it.
   if (BackedgeTakenCount && BackedgeTakenCount->getNumUsers()) {
     IRBuilder<> Builder(State.CFG.PrevBB->getTerminator());
@@ -1183,13 +1167,6 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
 
   IRBuilder<> Builder(State.CFG.PrevBB->getTerminator());
   // FIXME: Model VF * UF computation completely in VPlan.
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  if (VFxUF.getNumUsers() > 0)
-#endif // SIFIVE_CUSTOMIZATION
-  VFxUF.setUnderlyingValue(
-      createStepForVF(Builder, TripCountV->getType(), State.VF, State.UF));
-=======
   assert(VFxUF.getNumUsers() && "VFxUF expected to always have users");
   if (VF.getNumUsers()) {
     Value *RuntimeVF = getRuntimeVF(Builder, TCTy, State.VF);
@@ -1202,7 +1179,6 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
     VFxUF.setUnderlyingValue(
         createStepForVF(Builder, TCTy, State.VF, State.UF));
   }
->>>>>>> c970e96
 
   // When vectorizing the epilogue loop, the canonical induction start value
   // needs to be changed from zero to the value after the main vector loop.
@@ -1969,86 +1945,6 @@ std::string VPSlotTracker::getOrCreateName(const VPValue *V) const {
   return "<badref>";
 }
 
-<<<<<<< HEAD
-bool vputils::onlyFirstLaneUsed(const VPValue *Def) {
-  return all_of(Def->users(),
-                [Def](const VPUser *U) { return U->onlyFirstLaneUsed(Def); });
-}
-
-bool vputils::onlyFirstPartUsed(const VPValue *Def) {
-  return all_of(Def->users(),
-                [Def](const VPUser *U) { return U->onlyFirstPartUsed(Def); });
-}
-
-VPValue *vputils::getOrCreateVPValueForSCEVExpr(VPlan &Plan, const SCEV *Expr,
-                                                ScalarEvolution &SE) {
-  if (auto *Expanded = Plan.getSCEVExpansion(Expr))
-    return Expanded;
-  VPValue *Expanded = nullptr;
-  if (auto *E = dyn_cast<SCEVConstant>(Expr))
-    Expanded = Plan.getOrAddLiveIn(E->getValue());
-  else if (auto *E = dyn_cast<SCEVUnknown>(Expr))
-    Expanded = Plan.getOrAddLiveIn(E->getValue());
-  else {
-    Expanded = new VPExpandSCEVRecipe(Expr, SE);
-    Plan.getPreheader()->appendRecipe(Expanded->getDefiningRecipe());
-  }
-  Plan.addSCEVExpansion(Expr, Expanded);
-  return Expanded;
-}
-
-#if SIFIVE_CUSTOMIZATION
-// FIXME: Represent CSA instructions through VPHeaderPHIRecipe
-bool vputils::isPhi(const VPRecipeBase &R) {
-  if (R.isPhi())
-    return true;
-  if (auto *VPInst = dyn_cast<VPInstruction>(&R))
-    return VPInst->getOpcode() == VPInstruction::CSAMaskPhi ||
-           VPInst->getOpcode() == VPInstruction::CSAVLPhi;
-  return false;
-}
-
-bool vputils::isPhiThatGeneratesBackedge(const VPRecipeBase &R) {
-  if (isa<VPWidenPHIRecipe, VPCSAHeaderPHIRecipe>(&R))
-    return true;
-  if (auto *VPInst = dyn_cast<VPInstruction>(&R))
-    return VPInst->getOpcode() == VPInstruction::CSAMaskPhi ||
-           VPInst->getOpcode() == VPInstruction::CSAVLPhi;
-  return false;
-}
-
-bool vputils::isHeaderPhi(const VPRecipeBase &R) {
-  if (isa<VPHeaderPHIRecipe>(&R))
-    return true;
-  if (auto *VPInst = dyn_cast<VPInstruction>(&R))
-    return VPInst->getOpcode() == VPInstruction::CSAMaskPhi ||
-           VPInst->getOpcode() == VPInstruction::CSAVLPhi;
-  return false;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
-bool vputils::isHeaderMask(const VPValue *V, VPlan &Plan) {
-  if (isa<VPActiveLaneMaskPHIRecipe>(V))
-    return true;
-
-  auto IsWideCanonicalIV = [](VPValue *A) {
-    return isa<VPWidenCanonicalIVRecipe>(A) ||
-           (isa<VPWidenIntOrFpInductionRecipe>(A) &&
-            cast<VPWidenIntOrFpInductionRecipe>(A)->isCanonical());
-  };
-
-  VPValue *A, *B;
-  if (match(V, m_ActiveLaneMask(m_VPValue(A), m_VPValue(B))))
-    return B == Plan.getTripCount() &&
-           (match(A, m_ScalarIVSteps(m_CanonicalIV(), m_SpecificInt(1))) ||
-            IsWideCanonicalIV(A));
-
-  return match(V, m_Binary<Instruction::ICmp>(m_VPValue(A), m_VPValue(B))) &&
-         IsWideCanonicalIV(A) && B == Plan.getOrCreateBackedgeTakenCount();
-}
-
-=======
->>>>>>> c970e96
 bool LoopVectorizationPlanner::getDecisionAndClampRange(
     const std::function<bool(ElementCount)> &Predicate, VFRange &Range) {
   assert(!Range.isEmpty() && "Trying to test an empty VF range.");

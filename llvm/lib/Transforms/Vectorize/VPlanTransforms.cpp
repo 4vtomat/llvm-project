@@ -13,13 +13,7 @@
 
 #include "VPlanTransforms.h"
 #include "VPRecipeBuilder.h"
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
 #include "VPlan.h"
-#endif // SIFIVE_CUSTOMIZATION
-=======
-#include "VPlan.h"
->>>>>>> c970e96
 #include "VPlanAnalysis.h"
 #include "VPlanCFG.h"
 #include "VPlanDominatorTree.h"
@@ -1252,7 +1246,7 @@ void VPlanTransforms::optimize(VPlan &Plan) {
 // Here provides basic passes for uncountable loops
 // TODO: Merge with VPlanTransforms::optimize if more optimization are needed
 void VPlanTransforms::optimizeUncountable(VPlan &Plan, ScalarEvolution &SE) {
-  legalizeAndOptimizeInductions(Plan, SE);
+  legalizeAndOptimizeInductions(Plan);
   removeDeadRecipes(Plan);
 
   mergeBlocksIntoPredecessors(Plan);
@@ -1441,6 +1435,7 @@ void VPlanTransforms::addActiveLaneMask(
     HeaderMask->replaceAllUsesWith(LaneMask);
 }
 
+#ifndef SIFIVE_CUSTOMIZATION
 /// Replace recipes with their EVL variants.
 static void transformRecipestoEVLRecipes(VPlan &Plan, VPValue &EVL) {
   SmallVector<VPValue *> HeaderMasks = collectAllHeaderMasks(Plan);
@@ -1497,6 +1492,7 @@ static void transformRecipestoEVLRecipes(VPlan &Plan, VPValue &EVL) {
     recursivelyDeleteDeadRecipes(HeaderMask);
   }
 }
+#endif
 
 /// Add a VPEVLBasedIVPHIRecipe and related recipes to \p Plan and
 /// replaces all uses except the canonical IV increment of
@@ -1585,7 +1581,6 @@ bool VPlanTransforms::tryAddExplicitVectorLength(VPlan &Plan) {
   NextEVLIV->insertBefore(CanonicalIVIncrement);
   EVLPhi->addOperand(NextEVLIV);
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (PrevEVLPhi) {
     Plan.setPrevEVL(PrevEVLPhi);
@@ -1635,54 +1630,9 @@ bool VPlanTransforms::tryAddExplicitVectorLength(VPlan &Plan) {
     }
   }
 #else
-  for (VPValue *HeaderMask : collectAllHeaderMasks(Plan)) {
-    for (VPUser *U : collectUsersRecursively(HeaderMask)) {
-      VPRecipeBase *NewRecipe = nullptr;
-      auto *CurRecipe = dyn_cast<VPRecipeBase>(U);
-      if (!CurRecipe)
-        continue;
-
-      auto GetNewMask = [&](VPValue *OrigMask) -> VPValue * {
-        assert(OrigMask && "Unmasked recipe when folding tail");
-        return HeaderMask == OrigMask ? nullptr : OrigMask;
-      };
-      if (auto *MemR = dyn_cast<VPWidenMemoryRecipe>(CurRecipe)) {
-        VPValue *NewMask = GetNewMask(MemR->getMask());
-        if (auto *L = dyn_cast<VPWidenLoadRecipe>(MemR))
-          NewRecipe = new VPWidenLoadEVLRecipe(*L, *VPEVL, NewMask);
-        else if (auto *S = dyn_cast<VPWidenStoreRecipe>(MemR))
-          NewRecipe = new VPWidenStoreEVLRecipe(*S, *VPEVL, NewMask);
-        else
-          llvm_unreachable("unsupported recipe");
-      } else if (auto *RedR = dyn_cast<VPReductionRecipe>(CurRecipe)) {
-        NewRecipe = new VPReductionEVLRecipe(*RedR, *VPEVL,
-                                             GetNewMask(RedR->getCondOp()));
-      }
-
-      if (NewRecipe) {
-        [[maybe_unused]] unsigned NumDefVal = NewRecipe->getNumDefinedValues();
-        assert(NumDefVal == CurRecipe->getNumDefinedValues() &&
-               "New recipe must define the same number of values as the "
-               "original.");
-        assert(
-            NumDefVal <= 1 &&
-            "Only supports recipes with a single definition or without users.");
-        NewRecipe->insertBefore(CurRecipe);
-        if (isa<VPSingleDefRecipe, VPWidenLoadEVLRecipe>(NewRecipe)) {
-          VPValue *CurVPV = CurRecipe->getVPSingleValue();
-          CurVPV->replaceAllUsesWith(NewRecipe->getVPSingleValue());
-        }
-        CurRecipe->eraseFromParent();
-      }
-    }
-    recursivelyDeleteDeadRecipes(HeaderMask);
-  }
+  transformRecipestoEVLRecipes(Plan, *VPEVL);
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
-  transformRecipestoEVLRecipes(Plan, *VPEVL);
-
->>>>>>> c970e96
   // Replace all uses of VPCanonicalIVPHIRecipe by
   // VPEVLBasedIVPHIRecipe except for the canonical IV increment.
   CanonicalIVPHI->replaceAllUsesWith(EVLPhi);

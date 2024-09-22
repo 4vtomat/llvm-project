@@ -2087,15 +2087,11 @@ public:
   /// un-linked from the IR and is added back during vector code generation. If
   /// there is no vector code generation, the check blocks are removed
   /// completely.
-<<<<<<< HEAD
-  void Create(Loop *L, const LoopAccessInfo &LAI,
+  void create(Loop *L, const LoopAccessInfo &LAI,
 #if SIFIVE_CUSTOMIZATION
               const SCEVPredicate &UnionPred, ElementCount VF, unsigned IC,
               bool ForceVectorization) {
 #else
-=======
-  void create(Loop *L, const LoopAccessInfo &LAI,
->>>>>>> c970e96
               const SCEVPredicate &UnionPred, ElementCount VF, unsigned IC) {
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -3334,8 +3330,7 @@ LoopVectorizationCostModel::getVectorIntrinsicCost(CallInst *CI,
   SmallVector<Type *> ParamTys;
   std::transform(FTy->param_begin(), FTy->param_end(),
                  std::back_inserter(ParamTys),
-<<<<<<< HEAD
-                 [&](Type *Ty) { return MaybeVectorizeType(Ty, VF); });
+                 [&](Type *Ty) { return maybeVectorizeType(Ty, VF); });
 #if SIFIVE_CUSTOMIZATION
   if (VPIntrinsic::isVPIntrinsic(ID)) {
     // VLA Vectorizer may using VP intrinsics, that will require dummy mask and
@@ -3349,9 +3344,6 @@ LoopVectorizationCostModel::getVectorIntrinsicCost(CallInst *CI,
     ParamTys.push_back(VLType);
   }
 #endif
-=======
-                 [&](Type *Ty) { return maybeVectorizeType(Ty, VF); });
->>>>>>> c970e96
 
   IntrinsicCostAttributes CostAttrs(ID, RetTy, Arguments, ParamTys, FMF,
                                     dyn_cast<IntrinsicInst>(CI));
@@ -4225,7 +4217,7 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
     for (BasicBlock *E : Exiting) {
       auto *Cmp = dyn_cast<Instruction>(E->getTerminator()->getOperand(0));
       if (Cmp && TheLoop->contains(Cmp) && Cmp->hasOneUse())
-        addToWorklistIfAllowed(Cmp);
+        AddToWorklistIfAllowed(Cmp);
     }
 #else
   for (BasicBlock *E : Exiting) {
@@ -4350,22 +4342,16 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
   // Expand Worklist in topological order: whenever a new instruction
   // is added , its users should be already inside Worklist.  It ensures
   // a uniform instruction will only be used by uniform instructions.
-<<<<<<< HEAD
-  unsigned idx = 0;
+  unsigned Idx = 0;
 #if SIFIVE_CUSTOMIZATION
   SmallVector<BasicBlock *> ExitingBlocks;
   TheLoop->getExitingBlocks(ExitingBlocks);
 #endif // SIFIVE_CUSTOMIZATION
-  while (idx != Worklist.size()) {
-    Instruction *I = Worklist[idx++];
-=======
-  unsigned Idx = 0;
   while (Idx != Worklist.size()) {
     Instruction *I = Worklist[Idx++];
->>>>>>> c970e96
 
     for (auto *OV : I->operand_values()) {
-      // isOutOfScope operands cannot be uniform instructions.
+      // IsOutOfScope operands cannot be uniform instructions.
       if (IsOutOfScope(OV))
         continue;
       // First order recurrence Phi's should typically be considered
@@ -4378,9 +4364,8 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
       auto *OI = cast<Instruction>(OV);
       if (llvm::all_of(OI->users(), [&](User *U) -> bool {
             auto *J = cast<Instruction>(U);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-            if (isOutOfScope(J))
+            if (IsOutOfScope(J))
               return false;
             // TODO: Support more han one use and mixed type of uses (vector +
             // uniform).
@@ -4394,16 +4379,13 @@ void LoopVectorizationCostModel::collectLoopUniforms(ElementCount VF) {
                   llvm::is_contained(ExitingBlocks, JU->getParent()))
                 return true;
 
-              if (Worklist.count(JU) || isVectorizedMemAccessUse(JU, J) ||
+              if (Worklist.count(JU) || IsVectorizedMemAccessUse(JU, J) ||
                   Legal->isInductionVariable(JU))
                 return true;
             }
 
 #endif // SIFIVE_CUSTOMIZATION
-            return Worklist.count(J) || isVectorizedMemAccessUse(J, OI);
-=======
             return Worklist.count(J) || IsVectorizedMemAccessUse(J, OI);
->>>>>>> c970e96
           }))
         AddToWorklistIfAllowed(OI);
     }
@@ -5625,7 +5607,7 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
   const bool UseVPlanCostModel =
       SiFiveLoopVectorizerUseVPlanBasedCostModel && Legal->useVLAVectorizer();
   Type *WidestType = Legal->getWidestInductionType();
-  VPTypeAnalysis TypeInfo(WidestType, WidestType->getContext());
+  VPTypeAnalysis TypeInfo(WidestType);
 #endif
 
   for (auto &P : VPlans) {
@@ -5657,8 +5639,7 @@ VectorizationFactor LoopVectorizationPlanner::selectVectorizationFactor() {
         continue;
       }
 
-      VPCostContext CostCtx(TTI, *TLI, Legal->getWidestInductionType(),
-                            OrigLoop->getHeader()->getContext(), CM);
+      VPCostContext CostCtx(TTI, *TLI, Legal->getWidestInductionType(), CM);
       InstructionCost Overhead = 0;
       if (Legal->useVLAVectorizer() &&
           !VectorizerDisableReduceOverheadEstimation && VF.isVector())
@@ -8966,7 +8947,7 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
   const bool UseVPlanCostModel =
       SiFiveLoopVectorizerUseVPlanBasedCostModel && Legal->useVLAVectorizer();
   Type *WidestType = Legal->getWidestInductionType();
-  VPTypeAnalysis TypeInfo(WidestType, WidestType->getContext());
+  VPTypeAnalysis TypeInfo(WidestType);
 #endif
   for (auto &P : VPlans) {
     for (ElementCount VF : P->vectorFactors()) {
@@ -9003,8 +8984,7 @@ VectorizationFactor LoopVectorizationPlanner::computeBestVF() {
         continue;
       }
 
-      VPCostContext CostCtx(TTI, *TLI, Legal->getWidestInductionType(),
-                            OrigLoop->getHeader()->getContext(), CM);
+      VPCostContext CostCtx(TTI, *TLI, Legal->getWidestInductionType(), CM);
       InstructionCost Overhead = 0;
       if (Legal->useVLAVectorizer() &&
           !VectorizerDisableReduceOverheadEstimation && VF.isVector())
@@ -9198,20 +9178,14 @@ LoopVectorizationPlanner::executePlan(
   LLVM_DEBUG(BestVPlan.dump());
 
   // Perform the actual loop transformation.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   VPTransformState State{
       BestVF,        BestUF, LI,         DT,
-      ILV.Builder,   &ILV,   &BestVPlan, OrigLoop->getHeader()->getContext(),
-      EnableRISCVCSA};
+      ILV.Builder,   &ILV,   &BestVPlan, EnableRISCVCSA};
   BestVPlan.initializeMasks(State);
 #else
-  VPTransformState State(BestVF, BestUF, LI, DT, ILV.Builder, &ILV, &BestVPlan,
-                         OrigLoop->getHeader()->getContext());
-#endif // SIFIVE_CUSTOMIZATION
-=======
   VPTransformState State(BestVF, BestUF, LI, DT, ILV.Builder, &ILV, &BestVPlan);
->>>>>>> c970e96
+#endif // SIFIVE_CUSTOMIZATION
 
   // 0. Generate SCEV-dependent code into the preheader, including TripCount,
   // before making any changes to the CFG.
@@ -10488,10 +10462,9 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
       if (!Plan->hasVF(ElementCount::getFixed(1)) && !Plan->isUncountable())
 #else
       if (!Plan->hasVF(ElementCount::getFixed(1)))
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-        VPlanTransforms::truncateToMinimalBitwidths(
-            *Plan, CM.getMinimalBitwidths(), PSE.getSE()->getContext());
+        VPlanTransforms::truncateToMinimalBitwidths(*Plan,
+                                                    CM.getMinimalBitwidths());
 #if SIFIVE_CUSTOMIZATION
       if (Legal->useVLAVectorizer()) {
         if (Plan->isUncountable()) {
@@ -10501,22 +10474,17 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
           VPlanTransforms::optimizeGEPs(*Plan);
           VPlanTransforms::optimizeUncountable(*Plan, *PSE.getSE());
         } else {
-          VPlanTransforms::optimize(*Plan, *PSE.getSE());
+          VPlanTransforms::optimize(*Plan);
           VPlanTransforms::tryAddExplicitVectorLength(
               *Plan,
               /*EnableEVLFuzzing*/ true);
-          VPlanTransforms::optimize(*Plan, *PSE.getSE());
+          VPlanTransforms::optimize(*Plan);
           VPlanTransforms::optimizeGEPs(*Plan);
-          VPlanTransforms::optimize(*Plan, *PSE.getSE());
+          VPlanTransforms::optimize(*Plan);
         }
       } else {
 #endif // SIFIVE_CUSTOMIZATION
-      VPlanTransforms::optimize(*Plan, *PSE.getSE());
-=======
-        VPlanTransforms::truncateToMinimalBitwidths(*Plan,
-                                                    CM.getMinimalBitwidths());
       VPlanTransforms::optimize(*Plan);
->>>>>>> c970e96
       // TODO: try to put it close to addActiveLaneMask().
       if (CM.foldTailWithEVL() &&
           !VPlanTransforms::tryAddExplicitVectorLength(*Plan))
@@ -10556,7 +10524,6 @@ static void addCanonicalIVRecipes(VPlan &Plan, Type *IdxTy, bool HasNUW,
                        {CanonicalIVIncrement, &Plan.getVectorTripCount()}, DL);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 static void addCanonicalIVRecipesUncountable(VPlan &Plan, Type *IdxTy,
                                              bool HasNUW, DebugLoc DL) {
@@ -10712,32 +10679,23 @@ addCSAPostprocessRecipes(VPRecipeBuilder &RecipeBuilder,
 }
 #endif // SIFIVE_CUSTOMIZATION
 
-// Collect (ExitPhi, ExitingValue) pairs phis in the original exit block that
-// are modeled in VPlan. Some exiting values are not modeled explicitly yet and
-// won't be included. Those are un-truncated VPWidenIntOrFpInductionRecipe,
-// VPWidenPointerInductionRecipe and induction increments.
-static MapVector<PHINode *, VPValue *> collectUsersInExitBlock(
-=======
 // Collect VPIRInstructions for phis in the original exit block that are modeled
 // in VPlan and add the exiting VPValue as operand. Some exiting values are not
 // modeled explicitly yet and won't be included. Those are un-truncated
 // VPWidenIntOrFpInductionRecipe, VPWidenPointerInductionRecipe and induction
 // increments.
-static SetVector<VPIRInstruction *> collectUsersInExitBlock(
->>>>>>> c970e96
-    Loop *OrigLoop, VPRecipeBuilder &Builder, VPlan &Plan,
 #if SIFIVE_CUSTOMIZATION
+static SetVector<VPIRInstruction *> collectUsersInExitBlock(
+    Loop *OrigLoop, VPRecipeBuilder &Builder, VPlan &Plan,
+    const MapVector<PHINode *, InductionDescriptor> &Inductions,
+    const MapVector<PHINode *, CSADescriptor> &CSAs,
     LoopVectorizationLegality *Legal) {
 #else
+static SetVector<VPIRInstruction *> collectUsersInExitBlock(
+    Loop *OrigLoop, VPRecipeBuilder &Builder, VPlan &Plan,
     const MapVector<PHINode *, InductionDescriptor> &Inductions) {
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
 #if SIFIVE_CUSTOMIZATION
-  const MapVector<PHINode *, InductionDescriptor> Inductions =
-      Legal->getInductionVars();
-  const MapVector<PHINode *, CSADescriptor> CSAs = Legal->getCSAs();
-
-  MapVector<PHINode *, VPValue *> ExitingValuesToFix;
   if (Plan.isUncountable()) {
     BasicBlock *ExitBB = OrigLoop->getLatchExitBlock();
     // TODO: This whole LiveOut thing may not work properly when multiple
@@ -10748,20 +10706,16 @@ static SetVector<VPIRInstruction *> collectUsersInExitBlock(
     // optimization is not applied to reduction-like PHIs.
     SmallVector<BasicBlock *, 8> ExitingBlocks;
     OrigLoop->getExitingBlocks(ExitingBlocks);
-
     for (BasicBlock *ExitingBB : ExitingBlocks) {
       for (PHINode &ExitPhi : ExitBB->phis()) {
-          Value *IncomingValue = ExitPhi.getIncomingValueForBlock(ExitingBB);
-          VPValue *V = Builder.getVPValueOrAddLiveIn(IncomingValue);
-
-          Plan.addLiveOut(&ExitPhi, V, Legal->isInductionVariable(IncomingValue));
+        Value *IncomingValue = ExitPhi.getIncomingValueForBlock(ExitingBB);
+        VPValue *V = Builder.getVPValueOrAddLiveIn(IncomingValue);
+        Plan.addLiveOut(&ExitPhi, V, Legal->isInductionVariable(IncomingValue));
       }
     }
     return {};
   }
 #endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> c970e96
   auto *MiddleVPBB =
       cast<VPBasicBlock>(Plan.getVectorLoopRegion()->getSingleSuccessor());
   // No edge from the middle block to the unique exit block has been inserted
@@ -10769,28 +10723,18 @@ static SetVector<VPIRInstruction *> collectUsersInExitBlock(
   // from scalar loop only.
   if (MiddleVPBB->getNumSuccessors() != 2)
     return {};
-<<<<<<< HEAD
-#if !SIFIVE_CUSTOMIZATION
-  MapVector<PHINode *, VPValue *> ExitingValuesToFix;
-#endif // SIFIVE_CUSTOMIZATION
-  BasicBlock *ExitBB =
-      cast<VPIRBasicBlock>(MiddleVPBB->getSuccessors()[0])->getIRBasicBlock();
-  BasicBlock *ExitingBB = OrigLoop->getExitingBlock();
-#if SIFIVE_CUSTOMIZATION
-  // Only handle single-exit loops with unique exit blocks for now.
-  if (!ExitBB || !ExitBB->getSinglePredecessor() || !ExitingBB)
-    if (!ExitBB || !ExitingBB ||
-        !isRevectorizeWithoutStrideChecks(*OrigLoop) ||
-        !ExitBB->hasNPredecessors(2))
-      return {};
-#endif // SIFIVE_CUSTOMIZATION
-  for (PHINode &ExitPhi : ExitBB->phis()) {
-    Value *IncomingValue =
-        ExitPhi.getIncomingValueForBlock(ExitingBB);
-=======
+
   SetVector<VPIRInstruction *> ExitUsersToFix;
   VPBasicBlock *ExitVPBB = cast<VPIRBasicBlock>(MiddleVPBB->getSuccessors()[0]);
   BasicBlock *ExitingBB = OrigLoop->getExitingBlock();
+#if SIFIVE_CUSTOMIZATION
+  // Only handle single-exit loops with unique exit blocks for now.
+  if (!ExitVPBB || !ExitVPBB->getSinglePredecessor() || !ExitingBB)
+    if (!ExitVPBB || !ExitingBB ||
+        !isRevectorizeWithoutStrideChecks(*OrigLoop) ||
+        ExitVPBB->getNumPredecessors() != 2)
+      return {};
+#endif // SIFIVE_CUSTOMIZATION
   for (VPRecipeBase &R : *ExitVPBB) {
     auto *ExitIRI = dyn_cast<VPIRInstruction>(&R);
     if (!ExitIRI)
@@ -10799,7 +10743,6 @@ static SetVector<VPIRInstruction *> collectUsersInExitBlock(
     if (!ExitPhi)
       break;
     Value *IncomingValue = ExitPhi->getIncomingValueForBlock(ExitingBB);
->>>>>>> c970e96
     VPValue *V = Builder.getVPValueOrAddLiveIn(IncomingValue);
     // Exit values for inductions are computed and updated outside of VPlan and
     // independent of induction recipes.
@@ -10815,7 +10758,6 @@ static SetVector<VPIRInstruction *> collectUsersInExitBlock(
            return P && Inductions.contains(P);
          })))
       continue;
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     // Exit values for CSAs are computed and updated outside of VPlan and
     // independent of CSA recipes.
@@ -10832,15 +10774,12 @@ static SetVector<VPIRInstruction *> collectUsersInExitBlock(
         (isa<Instruction>(IncomingValue) &&
          Legal->isMonotonicUpdate(cast<Instruction>(IncomingValue)))) {
       // TODO: Remove this hack and avoid extract-from-end recipe for this case
-      Plan.addLiveOut(&ExitPhi, V);
+      Plan.addLiveOut(ExitPhi, V);
       continue;
     }
 #endif // SIFIVE_CUSTOMIZATION
-    ExitingValuesToFix.insert({&ExitPhi, V});
-=======
     ExitUsersToFix.insert(ExitIRI);
     ExitIRI->addOperand(V);
->>>>>>> c970e96
   }
   return ExitUsersToFix;
 }
@@ -10857,8 +10796,8 @@ addUsersInExitBlock(VPlan &Plan,
       cast<VPBasicBlock>(Plan.getVectorLoopRegion()->getSingleSuccessor());
   BasicBlock *ExitBB =
       cast<VPIRBasicBlock>(MiddleVPBB->getSuccessors()[0])->getIRBasicBlock();
-  VPBuilder B(MiddleVPBB, MiddleVPBB->getFirstNonPhi());
 
+  VPBuilder B(MiddleVPBB, MiddleVPBB->getFirstNonPhi());
   // Introduce extract for exiting values and update the VPIRInstructions
   // modeling the corresponding LCSSA phis.
   for (VPIRInstruction *ExitIRI : ExitUsersToFix) {
@@ -10867,15 +10806,6 @@ addUsersInExitBlock(VPlan &Plan,
     if (V->isLiveIn())
       continue;
 
-<<<<<<< HEAD
-  // Introduce VPUsers modeling the exit values.
-  for (const auto &[ExitPhi, V] : ExitingValuesToFix) {
-    if (V->isLiveIn()) {
-      Plan.addLiveOut(ExitPhi, V);
-      continue;
-    }
-=======
->>>>>>> c970e96
     VPValue *Ext = B.createNaryOp(
         VPInstruction::ExtractFromEnd,
         {V, Plan.getOrAddLiveIn(ConstantInt::get(
@@ -10894,16 +10824,12 @@ addUsersInExitBlock(VPlan &Plan,
 ///    the original exit block using a VPLiveOut.
 #if SIFIVE_CUSTOMIZATION
 static void addLiveOutsForFirstOrderRecurrences(
-    VPlan &Plan, MapVector<PHINode *, VPValue *> &ExitingValuesToFix,
+    VPlan &Plan, SetVector<VPIRInstruction *> &ExitUsersToFix,
     LoopVectorizationLegality &Legal, LoopVectorizationCostModel &CM) {
 #else
 static void addLiveOutsForFirstOrderRecurrences(
-<<<<<<< HEAD
-    VPlan &Plan, MapVector<PHINode *, VPValue *> &ExitingValuesToFix) {
-#endif // SIFIVE_CUSTOMIZATION
-=======
     VPlan &Plan, SetVector<VPIRInstruction *> &ExitUsersToFix) {
->>>>>>> c970e96
+#endif // SIFIVE_CUSTOMIZATION
   VPRegionBlock *VectorRegion = Plan.getVectorLoopRegion();
 
   // Start by finding out if middle block branches to scalar preheader, which is
@@ -11132,15 +11058,11 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   // placeholders for its members' Recipes which we'll be replacing with a
   // single VPInterleaveRecipe.
   for (InterleaveGroup<Instruction> *IG : IAI.getInterleaveGroups()) {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     assert(!Legal->isVectorizableUncountable() &&
            "Interleaving is not supported for uncountable loops yet");
 #endif
-    auto applyIG = [IG, this](ElementCount VF) -> bool {
-=======
     auto ApplyIG = [IG, this](ElementCount VF) -> bool {
->>>>>>> c970e96
       bool Result = (VF.isVector() && // Query is illegal for VF == 1
                      CM.getWideningDecision(IG->getInsertPos(), VF) ==
                          LoopVectorizationCostModel::CM_Interleave);
@@ -11280,27 +11202,17 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
          "VPBasicBlock");
   RecipeBuilder.fixHeaderPhis();
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
-  MapVector<PHINode *, VPValue *> ExitingValuesToFix = collectUsersInExitBlock(
-      OrigLoop, RecipeBuilder, *Plan, Legal);
+  SetVector<VPIRInstruction *> ExitUsersToFix = collectUsersInExitBlock(
+      OrigLoop, RecipeBuilder, *Plan, Legal->getInductionVars(),
+      Legal->getCSAs(), Legal);
+  addLiveOutsForFirstOrderRecurrences(*Plan, ExitUsersToFix, *Legal, CM);
 #else
-  MapVector<PHINode *, VPValue *> ExitingValuesToFix = collectUsersInExitBlock(
-      OrigLoop, RecipeBuilder, *Plan, Legal->getInductionVars());
-#endif // SIFIVE_CUSTOMIZATION
-
-#if SIFIVE_CUSTOMIZATION
-  addLiveOutsForFirstOrderRecurrences(*Plan, ExitingValuesToFix, *Legal, CM);
-#else
-  addLiveOutsForFirstOrderRecurrences(*Plan, ExitingValuesToFix);
-#endif // SIFIVE_CUSTOMIZATION
-  addUsersInExitBlock(*Plan, ExitingValuesToFix);
-=======
   SetVector<VPIRInstruction *> ExitUsersToFix = collectUsersInExitBlock(
       OrigLoop, RecipeBuilder, *Plan, Legal->getInductionVars());
   addLiveOutsForFirstOrderRecurrences(*Plan, ExitUsersToFix);
+#endif // SIFIVE_CUSTOMIZATION
   addUsersInExitBlock(*Plan, ExitUsersToFix);
->>>>>>> c970e96
 
   // ---------------------------------------------------------------------------
   // Transform initial VPlan: Apply previously taken decisions, in order, to
@@ -12444,7 +12356,7 @@ bool LoopVectorizePass::processLoop(Loop *L) {
     //  TODO: RTC for uncountable loops
     if ((!LVL.useVLAVectorizer() || !LVL.isVectorizableUncountable()) &&
         (VF.Width.isVector() || SelectedIC > 1))
-      Checks.Create(L, *LVL.getLAI(), PSE.getPredicate(), VF.Width, SelectedIC,
+      Checks.create(L, *LVL.getLAI(), PSE.getPredicate(), VF.Width, SelectedIC,
                     ForceVectorization);
 
     if ((!LVL.useVLAVectorizer() || !LVL.isVectorizableUncountable()) &&

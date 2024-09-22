@@ -13,11 +13,7 @@
 
 #include "VPlan.h"
 #include "VPlanAnalysis.h"
-<<<<<<< HEAD
-#include "VPlanValue.h"
-=======
 #include "VPlanUtils.h"
->>>>>>> c970e96
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/ADT/SmallVector.h"
 #include "llvm/ADT/Twine.h"
@@ -952,12 +948,8 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
       }
 #else
       ReducedPartRdx =
-<<<<<<< HEAD
-          createTargetReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
-#endif // SIFIVE_CUSTOMIZATION
-=======
           createReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
->>>>>>> c970e96
+#endif // SIFIVE_CUSTOMIZATION
       // If the reduction can be performed in a smaller type, we need to extend
       // the reduction to the wider type before we branch to the original loop.
       if (PhiTy != RdxDesc.getRecurrenceType())
@@ -2714,7 +2706,6 @@ void VPReductionRecipe::execute(VPTransformState &State) {
       NextInChain = NewRed;
     } else {
       PrevInChain = State.get(getChainOp(), Part, /*IsScalar*/ true);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
       if (EVLPart)
         NewRed = createTargetReduction(State.Builder, RdxDesc, NewVecOp,
@@ -2724,7 +2715,6 @@ void VPReductionRecipe::execute(VPTransformState &State) {
 #else
       NewRed = createTargetReduction(State.Builder, RdxDesc, NewVecOp);
 #endif // SIFIVE_CUSTOMIZATION
-=======
       NewRed = createReduction(State.Builder, RdxDesc, NewVecOp);
       if (RecurrenceDescriptor::isMinMaxRecurrenceKind(Kind))
         NextInChain = createMinMaxOp(State.Builder, RdxDesc.getRecurrenceKind(),
@@ -2733,7 +2723,6 @@ void VPReductionRecipe::execute(VPTransformState &State) {
         NextInChain = State.Builder.CreateBinOp(
             (Instruction::BinaryOps)RdxDesc.getOpcode(Kind), NewRed,
             PrevInChain);
->>>>>>> c970e96
     }
     State.set(this, NextInChain, Part, /*IsScalar*/ true);
   }
@@ -2980,7 +2969,7 @@ InstructionCost VPCSAHeaderPHIRecipe::overhead(ElementCount VF,
   // CSAExtractScalar
   // StepVector
   ArrayRef<Value *> Args;
-  IntrinsicCostAttributes CostAttrs(Intrinsic::experimental_stepvector,
+  IntrinsicCostAttributes CostAttrs(Intrinsic::stepvector,
                                     Int32VecTy, Args);
   C += Ctx.TTI.getIntrinsicInstrCost(CostAttrs, CostKind);
   // NegOneSplat

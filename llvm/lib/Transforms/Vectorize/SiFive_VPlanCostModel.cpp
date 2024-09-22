@@ -25,6 +25,7 @@
 #include "SiFive_VPlanCostModel.h"
 #include "VPlan.h"
 #include "VPlanCFG.h"
+#include "VPlanUtils.h"
 #include "VPlanValue.h"
 
 using namespace llvm;

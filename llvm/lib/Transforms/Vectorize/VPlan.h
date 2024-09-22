@@ -337,17 +337,13 @@ struct VPTransformState {
 #if SIFIVE_CUSTOMIZATION
   VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                    DominatorTree *DT, IRBuilderBase &Builder,
-                   InnerLoopVectorizer *ILV, VPlan *Plan, LLVMContext &Ctx,
+                   InnerLoopVectorizer *ILV, VPlan *Plan,
                    bool EnableRISCVCSA);
 #else
   VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                    DominatorTree *DT, IRBuilderBase &Builder,
-<<<<<<< HEAD
-                   InnerLoopVectorizer *ILV, VPlan *Plan, LLVMContext &Ctx);
-#endif // SIFIVE_CUSTOMIZATION
-=======
                    InnerLoopVectorizer *ILV, VPlan *Plan);
->>>>>>> c970e96
+#endif // SIFIVE_CUSTOMIZATION
 
   /// The chosen Vectorization and Unroll Factors of the loop being vectorized.
   ElementCount VF;
@@ -1125,15 +1121,12 @@ public:
 #endif
       return true;
     case VPRecipeBase::VPBranchOnMaskSC:
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
     case VPRecipeBase::VPCSAHeaderPHISC:
     case VPRecipeBase::VPMonotonicHeaderPHISC:
 #endif
-=======
     case VPRecipeBase::VPInterleaveSC:
     case VPRecipeBase::VPIRInstructionSC:
->>>>>>> c970e96
     case VPRecipeBase::VPWidenLoadEVLSC:
     case VPRecipeBase::VPWidenLoadSC:
     case VPRecipeBase::VPWidenStoreEVLSC:
@@ -2249,16 +2242,13 @@ class VPWidenIntOrFpInductionRecipe : public VPHeaderPHIRecipe {
 
 public:
   VPWidenIntOrFpInductionRecipe(PHINode *IV, VPValue *Start, VPValue *Step,
-<<<<<<< HEAD
+		                VPValue *VF,
 #if SIFIVE_CUSTOMIZATION
                                 const InductionDescriptor &IndDesc,
                                 bool IsUncountable = false)
 #else
                                 const InductionDescriptor &IndDesc)
 #endif // SIFIVE_CUSTOMIZATION
-=======
-                                VPValue *VF, const InductionDescriptor &IndDesc)
->>>>>>> c970e96
       : VPHeaderPHIRecipe(VPDef::VPWidenIntOrFpInductionSC, IV, Start), IV(IV),
 #if SIFIVE_CUSTOMIZATION
         Trunc(nullptr), IndDesc(IndDesc), IsUncountable(IsUncountable) {
@@ -2270,14 +2260,10 @@ public:
   }
 
   VPWidenIntOrFpInductionRecipe(PHINode *IV, VPValue *Start, VPValue *Step,
-<<<<<<< HEAD
-                                const InductionDescriptor &IndDesc,
+                                VPValue *VF, const InductionDescriptor &IndDesc,
 #if SIFIVE_CUSTOMIZATION
                                 TruncInst *Trunc, bool IsUncountable = false)
 #else
-=======
-                                VPValue *VF, const InductionDescriptor &IndDesc,
->>>>>>> c970e96
                                 TruncInst *Trunc)
 #endif // SIFIVE_CUSTOMIZATION
       : VPHeaderPHIRecipe(VPDef::VPWidenIntOrFpInductionSC, Trunc, Start),
@@ -4779,63 +4765,7 @@ public:
   /// Return true if all visited instruction can be combined.
   bool isCompletelySLP() const { return CompletelySLP; }
 };
-<<<<<<< HEAD
 
-namespace vputils {
-
-/// Returns true if only the first lane of \p Def is used.
-bool onlyFirstLaneUsed(const VPValue *Def);
-
-/// Returns true if only the first part of \p Def is used.
-bool onlyFirstPartUsed(const VPValue *Def);
-
-/// Get or create a VPValue that corresponds to the expansion of \p Expr. If \p
-/// Expr is a SCEVConstant or SCEVUnknown, return a VPValue wrapping the live-in
-/// value. Otherwise return a VPExpandSCEVRecipe to expand \p Expr. If \p Plan's
-/// pre-header already contains a recipe expanding \p Expr, return it. If not,
-/// create a new one.
-VPValue *getOrCreateVPValueForSCEVExpr(VPlan &Plan, const SCEV *Expr,
-                                       ScalarEvolution &SE);
-
-/// Returns true if \p VPV is uniform after vectorization.
-inline bool isUniformAfterVectorization(const VPValue *VPV) {
-  // A value defined outside the vector region must be uniform after
-  // vectorization inside a vector region.
-  if (VPV->isDefinedOutsideVectorRegions())
-    return true;
-  const VPRecipeBase *Def = VPV->getDefiningRecipe();
-  assert(Def && "Must have definition for value defined inside vector region");
-  if (auto Rep = dyn_cast<VPReplicateRecipe>(Def))
-    return Rep->isUniform();
-  if (auto *GEP = dyn_cast<VPWidenGEPRecipe>(Def))
-    return all_of(GEP->operands(), isUniformAfterVectorization);
-#if SIFIVE_CUSTOMIZATION
-  if (isa<VPMonotonicUpdateInstruction, VPMonotonicHeaderPHIRecipe>(Def))
-    return true;
-#endif // SIFIVE_CUSTOMIZATION
-  if (auto *VPI = dyn_cast<VPInstruction>(Def))
-    return VPI->isSingleScalar() || VPI->isVectorToScalar();
-  return false;
-}
-#if SIFIVE_CUSTOMIZATION
-
-/// Returns true for PHI-like recipes.
-bool isPhi(const VPRecipeBase &R);
-
-/// Returns true for PHI-like recipes that generate their own backedge
-bool isPhiThatGeneratesBackedge(const VPRecipeBase &R);
-
-/// Returns true for PHI-like recipes that exists in vector loop header basic
-/// block
-bool isHeaderPhi(const VPRecipeBase &R);
-#endif // SIFIVE_CUSTOMIZATION
-
-/// Return true if \p V is a header mask in \p Plan.
-bool isHeaderMask(const VPValue *V, VPlan &Plan);
-} // end namespace vputils
-
-=======
->>>>>>> c970e96
 } // end namespace llvm
 
 #endif // LLVM_TRANSFORMS_VECTORIZE_VPLAN_H

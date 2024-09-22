@@ -448,6 +448,15 @@ Value *createSimpleReduction(VectorBuilder &VB, Value *Src,
                              const RecurrenceDescriptor &Desc);
 
 #if SIFIVE_CUSTOMIZATION
+/// Create a target reduction of the given vector. The reduction operation
+/// is described by the \p Opcode parameter. min/max reductions require
+/// additional information supplied in \p RdxKind.
+/// The target is queried to determine if intrinsics or shuffle sequences are
+/// required to implement the reduction.
+/// Fast-math-flags are propagated using the IRBuilder's setting.
+Value *createSimpleTargetReduction(IRBuilderBase &B, Value *Src,
+                                   RecurKind RdxKind);
+
 Value *createSimpleTargetReduction(IRBuilderBase &B, Value *Src,
                                    RecurKind RdxKind, Value *EVL,
                                    Value *Mask = nullptr);
@@ -461,6 +470,10 @@ Value *createAnyOfReduction(IRBuilderBase &B, Value *Src,
                             PHINode *OrigPhi);
 
 #if SIFIVE_CUSTOMIZATION
+Value *createAnyOfTargetReduction(IRBuilderBase &Builder, Value *Src,
+                                  const RecurrenceDescriptor &Desc,
+                                  PHINode *OrigPhi);
+
 Value *createAnyOfTargetReduction(IRBuilderBase &B, Value *Src,
                                   const RecurrenceDescriptor &Desc,
                                   PHINode *OrigPhi, Value *EVL);
