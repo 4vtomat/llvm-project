@@ -8283,7 +8283,7 @@ bool CodeGenPrepare::performSimpleCSEAwareReassociation(BasicBlock &BB) {
       continue;
 
     // TODO: Consider the commutative of fadd.
-    auto &Insts = Candidates.getOrInsertDefault(std::make_pair(C, M));
+    auto &Insts = Candidates[{C,M}];
     // It's unlikely someone will use _both_ VP and non-VP way to process
     // the same set of vectors. But we never know.
     assert(Insts.empty() || Insts.front()->getOpcode() == I.getOpcode());
