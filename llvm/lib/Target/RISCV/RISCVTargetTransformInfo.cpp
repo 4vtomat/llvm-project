@@ -1591,27 +1591,16 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   // the IsVPIntrinsic getter, so build the list manually from
   // IntrinsicEnums.inc.
 #define VP_INTRINSIC_LIST                                                      \
-  VP_INTRINSIC(vp_fcmp, 1)                                                     \
   VP_INTRINSIC(vp_fma, 1)                                                      \
   VP_INTRINSIC(vp_fneg, 1)                                                     \
-  VP_INTRINSIC(vp_fpext, 1)                                                    \
-  VP_INTRINSIC(vp_fptosi, 1)                                                   \
-  VP_INTRINSIC(vp_fptoui, 1)                                                   \
-  VP_INTRINSIC(vp_fptrunc, 1)                                                  \
   VP_INTRINSIC(vp_gather, 1)                                                   \
-  VP_INTRINSIC(vp_icmp, 1)                                                     \
   VP_INTRINSIC(vp_inttoptr, 1)                                                 \
   VP_INTRINSIC(vp_load, 1)                                                     \
   VP_INTRINSIC(vp_ptrtoint, 1)                                                 \
   VP_INTRINSIC(vp_scatter, 1)                                                  \
   VP_INTRINSIC(vp_select, 1)                                                   \
   VP_INTRINSIC(vp_merge, 1)                                                    \
-  VP_INTRINSIC(vp_sext, 1)                                                     \
-  VP_INTRINSIC(vp_sitofp, 1)                                                   \
   VP_INTRINSIC(vp_store, 1)                                                    \
-  VP_INTRINSIC(vp_trunc, 1)                                                    \
-  VP_INTRINSIC(vp_uitofp, 1)                                                   \
-  VP_INTRINSIC(vp_zext, 1)                                                     \
   VP_INTRINSIC(vp_fabs, 1)                                                     \
   VP_INTRINSIC(vp_sqrt, 1)                                                     \
   VP_INTRINSIC(vp_copysign, 1)                                                 \
