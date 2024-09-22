@@ -305,6 +305,16 @@ let Predicates = [HasVendorXSfvcp], mayLoad = 0, mayStore = 0,
   defm FVW : CustomSiFiveVCIX<"fvw", VCIX_XVW, VR,    VR,    FPR32>, Sched<[]>;
 }
 
+let mayLoad = 0, mayStore = 0, hasSideEffects = 0,
+    Predicates = [HasVendorXSfvfexpAny], DecoderNamespace = "XSfvfexp" in {
+  def VFEXP_V : VALUVs2<0b010011, 0b00111, OPFVV, "sf.vfexp.v">;
+}
+
+let mayLoad = 0, mayStore = 0, hasSideEffects = 0,
+    Predicates = [HasVendorXSfvfexpa], DecoderNamespace = "XSfvfexpa" in {
+  def VFEXPA_V : VALUVs2<0b010011, 0b00110, OPFVV, "sf.vfexpa.v">;
+}
+
 let Predicates = [HasVendorXSfvqmaccdod], DecoderNamespace = "XSfvqmaccdod",
     DestEEW = EEWSEWx4 in {
   def VQMACCU_2x8x2  : CustomSiFiveVMACC<0b101100, OPMVV, "sf.vqmaccu.2x8x2">;
