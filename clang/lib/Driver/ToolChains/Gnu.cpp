@@ -2028,7 +2028,7 @@ static bool scanRISCVGCCMultilibConfig(const Driver &D,
                  "/../../../../riscv32-unknown-elf/lib" + M.gccSuffix()});
           });
 
-  selectRISCVMultilib(RISCVMultilibs, MArch, Flags, Result.SelectedMultilibs);
+  selectRISCVMultilib(D, RISCVMultilibs, MArch, Flags, Result.SelectedMultilibs);
 
   Result.Multilibs = RISCVMultilibs;
 
