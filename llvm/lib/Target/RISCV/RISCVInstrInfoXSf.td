@@ -305,6 +305,7 @@ let Predicates = [HasVendorXSfvcp], mayLoad = 0, mayStore = 0,
   defm FVW : CustomSiFiveVCIX<"fvw", VCIX_XVW, VR,    VR,    FPR32>, Sched<[]>;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
 let mayLoad = 0, mayStore = 0, hasSideEffects = 0,
     Predicates = [HasVendorXSfvfexpAny], DecoderNamespace = "XSfvfexp" in {
   def VFEXP_V : VALUVs2<0b010011, 0b00111, OPFVV, "sf.vfexp.v">;
@@ -314,6 +315,7 @@ let mayLoad = 0, mayStore = 0, hasSideEffects = 0,
     Predicates = [HasVendorXSfvfexpa], DecoderNamespace = "XSfvfexpa" in {
   def VFEXPA_V : VALUVs2<0b010011, 0b00110, OPFVV, "sf.vfexpa.v">;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 let Predicates = [HasVendorXSfvqmaccdod], DecoderNamespace = "XSfvqmaccdod",
     DestEEW = EEWSEWx4 in {
@@ -539,10 +541,12 @@ let Predicates = [HasVendorXSfvcp] in {
   }
   foreach f = FPList in {
     foreach m = f.MxList in {
+#ifdef SIFIVE_CUSTOMIZATION
       let AltfmtType = IS_NOT_ALTFMT in {
         defm f.FX # "V" : VPseudoVC_XV<m, f.fprclass, payload1>;
         defm f.FX # "VV" : VPseudoVC_XVV<m, f.fprclass, payload1>;
       }
+#endif // SIFIVE_CUSTOMIZATION
     }
   }
   foreach m = MxListW in {
@@ -552,8 +556,10 @@ let Predicates = [HasVendorXSfvcp] in {
   }
   foreach f = FPListW in {
     foreach m = f.MxList in
+#ifdef SIFIVE_CUSTOMIZATION
       let AltfmtType = IS_NOT_ALTFMT in
         defm f.FX # "VW" : VPseudoVC_XVW<m, f.fprclass, payload1>;
+#endif // SIFIVE_CUSTOMIZATION
   }
 }
 
@@ -580,6 +586,7 @@ let Predicates = [HasVendorXSfvfnrclipxfqf] in {
   defm VFNRCLIP_X_F_QF : VPseudoSiFiveVFNRCLIP;
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
 let Predicates = [HasVendorXSfvfbfexp16e], hasSideEffects = 0 in {
   let AltfmtType = IS_ALTFMT in{
     defm PseudoVFEXP_ALT : VPseudoVRCP_V<IsBF16=1>;
@@ -595,6 +602,7 @@ let Predicates = [HasVendorXSfvfexpAnyFloat], hasSideEffects = 0 in {
 let Predicates = [HasVendorXSfvfexpa] in {
   defm PseudoVFEXPA : VPseudoVRCP_V;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 // SDNode
 def SDT_SF_VC_V_X : SDTypeProfile<1, 4, [SDTCisVec<0>,
@@ -1158,6 +1166,7 @@ let Predicates = [HasVendorXSfcease] in {
   }
 }
 
+#ifdef SIFIVE_CUSTOMIZATION
 let Predicates = [HasVendorXSfvfbfexp16e] in {
   defm : VPatUnaryV_V<"int_riscv_sf_vfexp", "PseudoVFEXP_ALT",
                       AllBFloatVectors,
@@ -1190,6 +1199,7 @@ let Predicates = [HasVendorXSfvfexpa64e] in {
   defm : VPatUnaryV_V<"int_riscv_sf_vfexpa", "PseudoVFEXPA",
                       [VF64M1, VF64M2, VF64M4, VF64M8], isSEWAware=1>;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 #ifdef SIFIVE_CUSTOMIZATION
 def MammothVTypeAsmOperand : AsmOperandClass {
