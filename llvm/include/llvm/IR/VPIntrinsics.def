@@ -121,17 +121,6 @@
 #endif
 #endif // SIFIVE_CUSTOMIZATION
 
-// This VP Intrinsic is a memory operation
-// The pointer arg is at POINTERPOS and the data arg is at DATAPOS.
-#ifndef VP_PROPERTY_MEMOP
-#define VP_PROPERTY_MEMOP(POINTERPOS, DATAPOS)
-#endif
-
-// Map this VP reduction intrinsic to its reduction operand positions.
-#ifndef VP_PROPERTY_REDUCTION
-#define VP_PROPERTY_REDUCTION(STARTPOS, VECTORPOS)
-#endif
-
 // This VP Intrinsic has no functionally-equivalent non-VP opcode or intrinsic.
 #ifndef VP_PROPERTY_NO_FUNCTIONAL
 #define VP_PROPERTY_NO_FUNCTIONAL
@@ -718,7 +707,6 @@ BEGIN_REGISTER_VP_INTRINSIC(vp_load_ff, 1, 2)
 // val,chain = VP_LOAD_FF chain,base,offset,mask,evl
 BEGIN_REGISTER_VP_SDNODE(VP_LOAD_FF, -1, vp_load_ff, 2, 3)
 HELPER_MAP_VPID_TO_VPSD(vp_load_ff, VP_LOAD_FF)
-VP_PROPERTY_MEMOP(0, std::nullopt)
 VP_PROPERTY_FUNCTIONAL_INTRINSIC(vp_load_ff)
 END_REGISTER_VP(vp_load_ff, VP_LOAD_FF)
 #endif // SIFIVE_CUSTOMIZATION
@@ -752,7 +740,6 @@ END_REGISTER_VP(vp_gather, VP_GATHER)
   BEGIN_REGISTER_VP(VPID, 2, 3, VPSD, 1)                                       \
   VP_PROPERTY_FUNCTIONAL_INTRINSIC(INTRIN)                                     \
   VP_PROPERTY_FUNCTIONAL_SDOPC(SDOPC)                                          \
-  VP_PROPERTY_REDUCTION(0, 1)                                                  \
   END_REGISTER_VP(VPID, VPSD)
 
 // llvm.vp.reduce.add(start,x,mask,vlen)
@@ -822,13 +809,11 @@ HELPER_REGISTER_REDUCTION_VP(vp_reduce_fminimum, VP_REDUCE_FMINIMUM,
 #define HELPER_REGISTER_REDUCTION_SEQ_VP(VPID, VPSD, SEQ_VPSD, SDOPC, SEQ_SDOPC, INTRIN) \
   BEGIN_REGISTER_VP_INTRINSIC(VPID, 2, 3)                                      \
   BEGIN_REGISTER_VP_SDNODE(VPSD, 1, VPID, 2, 3)                                \
-  VP_PROPERTY_REDUCTION(0, 1)                                                  \
   VP_PROPERTY_FUNCTIONAL_SDOPC(SDOPC)                                          \
   END_REGISTER_VP_SDNODE(VPSD)                                                 \
   BEGIN_REGISTER_VP_SDNODE(SEQ_VPSD, 1, VPID, 2, 3)                            \
   HELPER_MAP_VPID_TO_VPSD(VPID, SEQ_VPSD)                                      \
   VP_PROPERTY_FUNCTIONAL_SDOPC(SEQ_SDOPC)                                      \
-  VP_PROPERTY_REDUCTION(0, 1)                                                  \
   END_REGISTER_VP_SDNODE(SEQ_VPSD)                                             \
   VP_PROPERTY_FUNCTIONAL_INTRINSIC(INTRIN)                                     \
   END_REGISTER_VP_INTRINSIC(VPID)
@@ -919,8 +904,6 @@ END_REGISTER_VP(experimental_vp_splat, EXPERIMENTAL_VP_SPLAT)
 #undef VP_PROPERTY_FUNCTIONAL_OPC
 #undef VP_PROPERTY_FUNCTIONAL_SDOPC
 #undef VP_PROPERTY_NO_FUNCTIONAL
-#undef VP_PROPERTY_MEMOP
-#undef VP_PROPERTY_REDUCTION
 
 #if SIFIVE_CUSTOMIZATION
 #undef VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK

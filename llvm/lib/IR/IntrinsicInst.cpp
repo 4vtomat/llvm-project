@@ -484,6 +484,9 @@ VPIntrinsic::getMemoryPointerParamPos(Intrinsic::ID VPID) {
   case Intrinsic::vp_scatter:
   case Intrinsic::experimental_vp_strided_store:
     return 1;
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::vp_load_ff:
+#endif
   case Intrinsic::vp_load:
   case Intrinsic::vp_gather:
   case Intrinsic::experimental_vp_strided_load:
