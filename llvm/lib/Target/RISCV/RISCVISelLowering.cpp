@@ -1484,8 +1484,7 @@ RISCVTargetLowering::RISCVTargetLowering(const TargetMachine &TM,
         setOperationAction(ISD::SETCC, VT, Custom);
 #endif
 
-        setOperationAction({ISD::VP_LOAD, ISD::VP_STORE,
-                            ISD::EXPERIMENTAL_VP_STRIDED_LOAD,
+        setOperationAction({ISD::EXPERIMENTAL_VP_STRIDED_LOAD,
                             ISD::EXPERIMENTAL_VP_STRIDED_STORE, ISD::VP_GATHER,
                             ISD::VP_SCATTER},
                            VT, Custom);
@@ -8060,6 +8059,7 @@ SDValue RISCVTargetLowering::getCompactAddr(NodeTy *N, SelectionDAG &DAG,
   return DAG.getLoad(Ty, DL, DAG.getEntryNode(), MNAddLo, MemOp);
 }
 #endif // SIFIVE_CUSTOMIZATION
+
 static SDValue getLargeGlobalAddress(GlobalAddressSDNode *N, const SDLoc &DL,
                                      EVT Ty, SelectionDAG &DAG) {
   RISCVConstantPoolValue *CPV = RISCVConstantPoolValue::Create(N->getGlobal());
