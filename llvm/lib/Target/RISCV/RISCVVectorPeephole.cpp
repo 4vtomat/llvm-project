@@ -553,7 +553,6 @@ bool RISCVVectorPeephole::ensureDominates(const MachineOperand &MO,
   if (Def->getParent() == Src.getParent() && !dominates(Def, Src)) {
     if (!isSafeToMove(Src, *Def->getNextNode()))
       return false;
-    // FIXME: Update V0Defs
     Src.moveBefore(Def->getNextNode());
   }
 
