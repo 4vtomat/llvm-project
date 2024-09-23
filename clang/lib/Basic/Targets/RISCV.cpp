@@ -297,35 +297,6 @@ bool RISCVTargetInfo::initFeatureMap(
     Features["32bit"] = true;
   }
 
-  // If a target attribute specified a full arch string, override all the ISA
-  // extension target features.
-  const auto I = llvm::find(FeaturesVec, "__RISCV_TargetAttrNeedOverride");
-  if (I != FeaturesVec.end()) {
-    std::vector<std::string> OverrideFeatures(std::next(I), FeaturesVec.end());
-
-    // Add back any non ISA extension features, e.g. +relax.
-    auto IsNonISAExtFeature = [](StringRef Feature) {
-      assert(Feature.size() > 1 && (Feature[0] == '+' || Feature[0] == '-'));
-      StringRef Ext = Feature.substr(1); // drop the +/-
-      return !llvm::RISCVISAInfo::isSupportedExtensionFeature(Ext);
-    };
-    llvm::copy_if(llvm::make_range(FeaturesVec.begin(), I),
-                  std::back_inserter(OverrideFeatures), IsNonISAExtFeature);
-
-#if SIFIVE_CUSTOMIZATION
-    if (getTargetOpts().SiFiveRecode == "neon") {
-      OverrideFeatures.push_back("+neon");
-      OverrideFeatures.push_back("+dotprod");
-      if (llvm::is_contained(OverrideFeatures, "+zfh") &&
-          llvm::is_contained(OverrideFeatures, "+zvfh"))
-        OverrideFeatures.push_back("+fullfp16");
-    }
-#endif
-
-    return TargetInfo::initFeatureMap(Features, Diags, CPU, OverrideFeatures);
-  }
-
-  // Otherwise, parse the features and add any implied extensions.
   std::vector<std::string> AllFeatures = FeaturesVec;
   auto ParseResult = llvm::RISCVISAInfo::parseFeatures(XLen, FeaturesVec);
   if (!ParseResult) {
