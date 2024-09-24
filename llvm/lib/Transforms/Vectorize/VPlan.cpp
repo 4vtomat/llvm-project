@@ -1167,7 +1167,12 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
 
   IRBuilder<> Builder(State.CFG.PrevBB->getTerminator());
   // FIXME: Model VF * UF computation completely in VPlan.
+#if SIFIVE_CUSTOMIZATION
+  assert((useVLAVectorizer() || VFxUF.getNumUsers()) &&
+         "VFxUF expected to always have users");
+#else
   assert(VFxUF.getNumUsers() && "VFxUF expected to always have users");
+#endif // SIFIVE_CUSTOMIZATION
   if (VF.getNumUsers()) {
     Value *RuntimeVF = getRuntimeVF(Builder, TCTy, State.VF);
     VF.setUnderlyingValue(RuntimeVF);
