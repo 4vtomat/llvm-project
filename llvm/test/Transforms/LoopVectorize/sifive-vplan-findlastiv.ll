@@ -6,6 +6,7 @@
 
 define i64 @findlastiv(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK: VPlan 'Initial VPlan for VF={4},UF>=1' {
+; CHECK-NEXT: Live-in vp<[[VF:%[0-9]+]]> = VF
 ; CHECK-NEXT: Live-in vp<[[VFUF:%[0-9]+]]> = VF * UF
 ; CHECK-NEXT: Live-in vp<[[VTC:%[0-9]+]]> = vector-trip-count
 ; CHECK-NEXT: Live-in ir<[[OTC:%n]]> = original trip-count
@@ -41,12 +42,11 @@ define i64 @findlastiv(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-NEXT: Successor(s): ir-bb<exit>, scalar.ph
 ; CHECK-EMPTY:
 ; CHECK-NEXT: ir-bb<exit>:
+; CHECK-NEXT: IR   %cond.lcssa = phi i64 [ %cond, %for.body ] (extra operand: vp<[[EXT]]>)
 ; CHECK-NEXT: No successors
 ; CHECK-EMPTY:
 ; CHECK-NEXT: scalar.ph:
 ; CHECK-NEXT: No successors
-; CHECK-EMPTY:
-; CHECK-NEXT: Live-out i64 %cond.lcssa = vp<[[EXT]]>
 ; CHECK-NEXT: }
 ;
 entry:
@@ -71,6 +71,7 @@ exit:                                             ; preds = %for.body
 
 define i64 @findlastiv_need_mask(ptr %a, ptr %b, i64 %ii, i64 %iv_start, i64 %n) {
 ; CHECK: VPlan 'Initial VPlan for VF={4},UF>=1' {
+; CHECK-NEXT: Live-in vp<[[VF:%[0-9]+]]> = VF
 ; CHECK-NEXT: Live-in vp<[[VFUF:%[0-9]+]]> = VF * UF
 ; CHECK-NEXT: Live-in vp<[[VTC:%[0-9]+]]> = vector-trip-count
 ; CHECK-NEXT: vp<[[OTC:%[0-9]+]]> = original trip-count
@@ -112,12 +113,11 @@ define i64 @findlastiv_need_mask(ptr %a, ptr %b, i64 %ii, i64 %iv_start, i64 %n)
 ; CHECK-NEXT: Successor(s): ir-bb<exit.loopexit>, scalar.ph
 ; CHECK-EMPTY:
 ; CHECK-NEXT: ir-bb<exit.loopexit>:
+; CHECK-NEXT:   IR   %cond.lcssa1 = phi i64 [ %cond, %for.body ] (extra operand: vp<[[EXT]]>)
 ; CHECK-NEXT: No successors
 ; CHECK-EMPTY:
 ; CHECK-NEXT: scalar.ph:
 ; CHECK-NEXT: No successors
-; CHECK-EMPTY:
-; CHECK-NEXT: Live-out i64 %cond.lcssa1 = vp<[[EXT]]>
 ; CHECK-NEXT: }
 ;
 entry:

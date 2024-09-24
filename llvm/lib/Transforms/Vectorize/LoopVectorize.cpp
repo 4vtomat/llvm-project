@@ -11674,8 +11674,8 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
     RecurKind Kind = RdxDesc.getRecurrenceKind();
     if (RecurrenceDescriptor::isFindLastIVRecurrenceKind(Kind)) {
       Value *Sentinel = RdxDesc.getSentinelValue();
-      Value *Iden = RdxDesc.getRecurrenceIdentity(Kind, PhiTy,
-                                                  RdxDesc.getFastMathFlags());
+      Value *Iden =
+          llvm::getRecurrenceIdentity(Kind, PhiTy, RdxDesc.getFastMathFlags());
       // Only need the masked reduction if the sentinel value is not identity,
       // which is minimun value.
       if (Sentinel != Iden) {

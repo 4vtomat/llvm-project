@@ -454,12 +454,8 @@ Value *createSimpleReduction(VectorBuilder &VB, Value *Src,
 /// The target is queried to determine if intrinsics or shuffle sequences are
 /// required to implement the reduction.
 /// Fast-math-flags are propagated using the IRBuilder's setting.
-Value *createSimpleTargetReduction(IRBuilderBase &B, Value *Src,
-                                   RecurKind RdxKind);
-
-Value *createSimpleTargetReduction(IRBuilderBase &B, Value *Src,
-                                   RecurKind RdxKind, Value *EVL,
-                                   Value *Mask = nullptr);
+Value *createSimpleReduction(IRBuilderBase &B, Value *Src, RecurKind RdxKind,
+                             Value *EVL, Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
 
 /// Create a reduction of the given vector \p Src for a reduction of the
@@ -495,12 +491,10 @@ Value *createFindLastIVTargetReduction(IRBuilderBase &B, Value *Src,
 /// required to implement the reduction.
 /// Fast-math-flags are propagated using the RecurrenceDescriptor.
 #if SIFIVE_CUSTOMIZATION
-Value *createTargetReduction(IRBuilderBase &B, const RecurrenceDescriptor &Desc,
-                             Value *Src, Value *EVL, PHINode *OrigPhi = nullptr,
-                             Value *Mask = nullptr);
+Value *createReduction(IRBuilderBase &B, const RecurrenceDescriptor &Desc,
+                       Value *Src, Value *EVL, PHINode *OrigPhi = nullptr,
+                       Value *Mask = nullptr);
 #endif // SIFIVE_CUSTOMIZATION
-Value *createTargetReduction(IRBuilderBase &B, const RecurrenceDescriptor &Desc,
-                             Value *Src, PHINode *OrigPhi = nullptr);
 /// Create a generic reduction using a recurrence descriptor \p Desc
 /// Fast-math-flags are propagated using the RecurrenceDescriptor.
 Value *createReduction(IRBuilderBase &B, const RecurrenceDescriptor &Desc,

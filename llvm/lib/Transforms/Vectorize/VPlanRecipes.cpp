@@ -927,11 +927,11 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
         assert(InitEVL &&
                "InitEVL must be initialized in emitIterationCountCheck when "
                "using VP intrinsic to generate unordered reduction");
-        ReducedPartRdx = createTargetReduction(Builder, RdxDesc, ReducedPartRdx,
-                                               InitEVL, OrigPhi);
+        ReducedPartRdx =
+            createReduction(Builder, RdxDesc, ReducedPartRdx, InitEVL, OrigPhi);
       } else {
         ReducedPartRdx =
-            createTargetReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
+            createReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
       }
       // Adjust the final scalar result after the loop if the target prefers
       // that.
@@ -1019,7 +1019,7 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
     if (!IsUseVLAVectorizer) {
       // Mask each part by select instruction.
       // ?? Create a recipe for that?
-      Value *RdxOpIden = RdxDesc.getRecurrenceIdentity(
+      Value *RdxOpIden = llvm::getRecurrenceIdentity(
           RK, RdxDesc.getRecurrenceType(), RdxDesc.getFastMathFlags());
       if (State.VF.isVector())
         RdxOpIden = Builder.CreateVectorSplat(State.VF, RdxOpIden);
@@ -1046,15 +1046,15 @@ Value *VPInstruction::generatePerPart(VPTransformState &State, unsigned Part) {
         assert(InitEVL &&
                "InitEVL must be initialized in emitIterationCountCheck when "
                "using VP intrinsic to generate unordered reduction");
-        ReducedPartRdx = createTargetReduction(Builder, RdxDesc, ReducedPartRdx,
-                                               InitEVL, OrigPhi, MaskPartRdx);
-        MaskPartRdx = createSimpleTargetReduction(Builder, MaskPartRdx,
-                                                  RecurKind::Or, InitEVL);
+        ReducedPartRdx = createReduction(Builder, RdxDesc, ReducedPartRdx,
+                                         InitEVL, OrigPhi, MaskPartRdx);
+        MaskPartRdx =
+            createSimpleReduction(Builder, MaskPartRdx, RecurKind::Or, InitEVL);
       } else {
         ReducedPartRdx =
-            createTargetReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
+            createReduction(Builder, RdxDesc, ReducedPartRdx, OrigPhi);
         MaskPartRdx =
-            createSimpleTargetReduction(Builder, MaskPartRdx, RecurKind::Or);
+            createSimpleReduction(Builder, MaskPartRdx, RecurKind::Or);
       }
       // If the reduction can be performed in a smaller type, we need to
       // extend the reduction to the wider type before we branch to the
@@ -2708,12 +2708,12 @@ void VPReductionRecipe::execute(VPTransformState &State) {
       PrevInChain = State.get(getChainOp(), Part, /*IsScalar*/ true);
 #if SIFIVE_CUSTOMIZATION
       if (EVLPart)
-        NewRed = createTargetReduction(State.Builder, RdxDesc, NewVecOp,
-                                       EVLPart, nullptr, NewCond);
+        NewRed = createReduction(State.Builder, RdxDesc, NewVecOp, EVLPart,
+                                 nullptr, NewCond);
       else
-        NewRed = createTargetReduction(State.Builder, RdxDesc, NewVecOp);
+        NewRed = createReduction(State.Builder, RdxDesc, NewVecOp);
 #else
-      NewRed = createTargetReduction(State.Builder, RdxDesc, NewVecOp);
+      NewRed = createReduction(State.Builder, RdxDesc, NewVecOp);
 #endif // SIFIVE_CUSTOMIZATION
       NewRed = createReduction(State.Builder, RdxDesc, NewVecOp);
       if (RecurrenceDescriptor::isMinMaxRecurrenceKind(Kind))
