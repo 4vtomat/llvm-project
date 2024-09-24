@@ -145,7 +145,7 @@ enum {
   // 0 -> Don't care about altfmt bit in VTYPE.
   // 1 -> Is not altfmt.
   // 2 -> Is altfmt(BF16).
-  AltfmtTypeShift = DestEEWShift + 1,
+  AltfmtTypeShift = DestEEWShift + 2,
   AltfmtTypeMask = 3ULL << AltfmtTypeShift,
 
   IsWidenShift = AltfmtTypeShift + 2,
