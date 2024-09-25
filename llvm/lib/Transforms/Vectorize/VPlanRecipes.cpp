@@ -2711,9 +2711,6 @@ void VPReductionRecipe::execute(VPTransformState &State) {
         NewRed = createReduction(State.Builder, RdxDesc, NewVecOp, EVLPart,
                                  nullptr, NewCond);
       else
-        NewRed = createReduction(State.Builder, RdxDesc, NewVecOp);
-#else
-      NewRed = createReduction(State.Builder, RdxDesc, NewVecOp);
 #endif // SIFIVE_CUSTOMIZATION
       NewRed = createReduction(State.Builder, RdxDesc, NewVecOp);
       if (RecurrenceDescriptor::isMinMaxRecurrenceKind(Kind))
