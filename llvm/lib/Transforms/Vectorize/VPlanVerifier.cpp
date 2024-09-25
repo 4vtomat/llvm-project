@@ -188,6 +188,13 @@ bool VPlanVerifier::verifyEVLRecipe(const VPInstruction &EVL) const {
                }
                return true;
              })
+#if SIFIVE_CUSTOMIZATION
+             .Case<VPEVLBasedIVPHIRecipe>(
+                 [&](const VPEVLBasedIVPHIRecipe *EVLPhi) {
+		   // For previous EVL
+                   return VerifyEVLUse(*EVLPhi, 1);
+                 })
+#endif // SIFIVE_CUSTOMIZATION
              .Default([&](const VPUser *U) {
                errs() << "EVL has unexpected user\n";
                return false;
