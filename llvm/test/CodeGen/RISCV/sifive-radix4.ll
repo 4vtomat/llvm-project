@@ -8,55 +8,71 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280:       # %bb.0: # %entry
 ; X280-NEXT:    addi sp, sp, -16
 ; X280-NEXT:    csrr t0, vlenb
-; X280-NEXT:    slli t0, t0, 2
+; X280-NEXT:    slli t0, t0, 3
 ; X280-NEXT:    sub sp, sp, t0
 ; X280-NEXT:    vsetvli t3, zero, e32, m2, tu, ma
 ; X280-NEXT:    vlseg2e32.v v8, (a0)
-; X280-NEXT:    csrr t1, vlenb
-; X280-NEXT:    addi a0, sp, 16
+; X280-NEXT:    csrr a0, vlenb
 ; X280-NEXT:    li t0, 0
+; X280-NEXT:    csrr t1, vlenb
+; X280-NEXT:    sh2add a0, a0, sp
+; X280-NEXT:    addi a0, a0, 16
 ; X280-NEXT:    slli t1, t1, 1
-; X280-NEXT:    vlseg2e32.v v12, (a1)
+; X280-NEXT:    vlseg2e32.v v16, (a2)
 ; X280-NEXT:    vs2r.v v8, (a0) # Unknown-size Folded Spill
 ; X280-NEXT:    add a0, a0, t1
 ; X280-NEXT:    vs2r.v v10, (a0) # Unknown-size Folded Spill
+; X280-NEXT:    addi a0, sp, 16
+; X280-NEXT:    vlseg2e32.v v8, (a1)
+; X280-NEXT:    csrr a1, vlenb
+; X280-NEXT:    slli a1, a1, 1
+; X280-NEXT:    vs2r.v v8, (a0) # Unknown-size Folded Spill
+; X280-NEXT:    add a0, a0, a1
+; X280-NEXT:    vs2r.v v10, (a0) # Unknown-size Folded Spill
 ; X280-NEXT:    csrr a0, vlenb
-; X280-NEXT:    vlseg2e32.v v16, (a2)
-; X280-NEXT:    sh2add a0, a0, sp
+; X280-NEXT:    sh3add a0, a0, sp
 ; X280-NEXT:    ld t1, 40(a0)
 ; X280-NEXT:    csrr a0, vlenb
-; X280-NEXT:    sh2add a0, a0, sp
+; X280-NEXT:    sh3add a0, a0, sp
 ; X280-NEXT:    ld t2, 32(a0)
 ; X280-NEXT:    csrr a0, vlenb
-; X280-NEXT:    sh2add a0, a0, sp
+; X280-NEXT:    sh3add a0, a0, sp
 ; X280-NEXT:    ld a2, 24(a0)
 ; X280-NEXT:    csrr a0, vlenb
-; X280-NEXT:    sh2add a0, a0, sp
+; X280-NEXT:    sh3add a0, a0, sp
 ; X280-NEXT:    ld a1, 16(a0)
 ; X280-NEXT:    slli a0, t3, 3
 ; X280-NEXT:    bgeu zero, t1, .LBB0_2
 ; X280-NEXT:  .LBB0_1: # %for.body
 ; X280-NEXT:    # =>This Inner Loop Header: Depth=1
+; X280-NEXT:    csrr t3, vlenb
 ; X280-NEXT:    vlseg2e32.v v22, (a4)
 ; X280-NEXT:    csrr t4, vlenb
-; X280-NEXT:    addi t3, sp, 16
 ; X280-NEXT:    addi t0, t0, 1
 ; X280-NEXT:    add a4, a4, a0
+; X280-NEXT:    sh2add t3, t3, sp
+; X280-NEXT:    addi t3, t3, 16
 ; X280-NEXT:    slli t4, t4, 1
 ; X280-NEXT:    vl2r.v v8, (t3) # Unknown-size Folded Reload
 ; X280-NEXT:    add t3, t3, t4
+; X280-NEXT:    csrr t4, vlenb
 ; X280-NEXT:    vl2r.v v10, (t3) # Unknown-size Folded Reload
+; X280-NEXT:    addi t3, sp, 16
 ; X280-NEXT:    vfmul.vv v20, v22, v8
+; X280-NEXT:    slli t4, t4, 1
 ; X280-NEXT:    vlseg2e32.v v26, (a5)
 ; X280-NEXT:    add a5, a5, a0
-; X280-NEXT:    vfmul.vv v22, v22, v10
+; X280-NEXT:    vfmul.vv v30, v22, v10
 ; X280-NEXT:    vfnmsac.vv v20, v24, v10
+; X280-NEXT:    vl2r.v v12, (t3) # Unknown-size Folded Reload
+; X280-NEXT:    add t3, t3, t4
+; X280-NEXT:    vfmacc.vv v30, v24, v8
+; X280-NEXT:    vl2r.v v14, (t3) # Unknown-size Folded Reload
+; X280-NEXT:    vfmul.vv v22, v26, v12
 ; X280-NEXT:    vlseg2e32.v v2, (a6)
 ; X280-NEXT:    add a6, a6, a0
-; X280-NEXT:    vfmacc.vv v22, v24, v8
-; X280-NEXT:    vfmul.vv v30, v26, v12
 ; X280-NEXT:    vfmul.vv v24, v26, v14
-; X280-NEXT:    vfnmsac.vv v30, v28, v14
+; X280-NEXT:    vfnmsac.vv v22, v28, v14
 ; X280-NEXT:    vfmacc.vv v24, v28, v12
 ; X280-NEXT:    vfmul.vv v26, v2, v16
 ; X280-NEXT:    vfmul.vv v28, v2, v18
@@ -64,34 +80,34 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280-NEXT:    add a3, a3, a0
 ; X280-NEXT:    vfnmsac.vv v26, v4, v18
 ; X280-NEXT:    vfmacc.vv v28, v4, v16
-; X280-NEXT:    vfadd.vv v6, v0, v30
+; X280-NEXT:    vfadd.vv v6, v0, v22
 ; X280-NEXT:    vfadd.vv v4, v2, v24
-; X280-NEXT:    vfsub.vv v30, v0, v30
-; X280-NEXT:    vfsub.vv v24, v2, v24
-; X280-NEXT:    vfadd.vv v2, v20, v26
-; X280-NEXT:    vfadd.vv v0, v22, v28
-; X280-NEXT:    vfsub.vv v22, v22, v28
-; X280-NEXT:    vfadd.vv v8, v6, v2
-; X280-NEXT:    vfadd.vv v10, v4, v0
+; X280-NEXT:    vfsub.vv v0, v0, v22
+; X280-NEXT:    vfsub.vv v22, v2, v24
+; X280-NEXT:    vfadd.vv v24, v20, v26
+; X280-NEXT:    vfadd.vv v2, v30, v28
+; X280-NEXT:    vfsub.vv v28, v30, v28
 ; X280-NEXT:    vfsub.vv v20, v20, v26
-; X280-NEXT:    vfadd.vv v26, v30, v22
+; X280-NEXT:    vfadd.vv v8, v6, v24
+; X280-NEXT:    vfadd.vv v10, v4, v2
+; X280-NEXT:    vfadd.vv v12, v0, v28
+; X280-NEXT:    vfadd.vv v14, v22, v20
 ; X280-NEXT:    vsseg2e32.v v8, (a7)
 ; X280-NEXT:    add a7, a7, a0
-; X280-NEXT:    vfadd.vv v28, v24, v20
-; X280-NEXT:    vfsub.vv v8, v6, v2
-; X280-NEXT:    vfsub.vv v10, v4, v0
-; X280-NEXT:    vsseg2e32.v v26, (a1)
+; X280-NEXT:    vfsub.vv v8, v6, v24
+; X280-NEXT:    vfsub.vv v10, v4, v2
+; X280-NEXT:    vsseg2e32.v v12, (a1)
 ; X280-NEXT:    add a1, a1, a0
-; X280-NEXT:    vfsub.vv v22, v30, v22
-; X280-NEXT:    vfsub.vv v24, v24, v20
+; X280-NEXT:    vfsub.vv v12, v0, v28
+; X280-NEXT:    vfsub.vv v14, v22, v20
 ; X280-NEXT:    vsseg2e32.v v8, (a2)
 ; X280-NEXT:    add a2, a2, a0
-; X280-NEXT:    vsseg2e32.v v22, (t2)
+; X280-NEXT:    vsseg2e32.v v12, (t2)
 ; X280-NEXT:    add t2, t2, a0
 ; X280-NEXT:    bltu t0, t1, .LBB0_1
 ; X280-NEXT:  .LBB0_2: # %for.cond.cleanup
 ; X280-NEXT:    csrr a0, vlenb
-; X280-NEXT:    sh2add sp, a0, sp
+; X280-NEXT:    sh3add sp, a0, sp
 ; X280-NEXT:    addi sp, sp, 16
 ; X280-NEXT:    ret
 ;
@@ -99,55 +115,71 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280N:       # %bb.0: # %entry
 ; X280N-NEXT:    addi sp, sp, -16
 ; X280N-NEXT:    csrr t0, vlenb
-; X280N-NEXT:    slli t0, t0, 2
+; X280N-NEXT:    slli t0, t0, 3
 ; X280N-NEXT:    sub sp, sp, t0
 ; X280N-NEXT:    vsetvli t3, zero, e32, m2, tu, ma
 ; X280N-NEXT:    vlseg2e32.v v8, (a0)
-; X280N-NEXT:    csrr t1, vlenb
-; X280N-NEXT:    addi a0, sp, 16
+; X280N-NEXT:    csrr a0, vlenb
 ; X280N-NEXT:    li t0, 0
+; X280N-NEXT:    csrr t1, vlenb
+; X280N-NEXT:    sh2add a0, a0, sp
+; X280N-NEXT:    addi a0, a0, 16
 ; X280N-NEXT:    slli t1, t1, 1
-; X280N-NEXT:    vlseg2e32.v v12, (a1)
+; X280N-NEXT:    vlseg2e32.v v16, (a2)
 ; X280N-NEXT:    vs2r.v v8, (a0) # Unknown-size Folded Spill
 ; X280N-NEXT:    add a0, a0, t1
 ; X280N-NEXT:    vs2r.v v10, (a0) # Unknown-size Folded Spill
+; X280N-NEXT:    addi a0, sp, 16
+; X280N-NEXT:    vlseg2e32.v v8, (a1)
+; X280N-NEXT:    csrr a1, vlenb
+; X280N-NEXT:    slli a1, a1, 1
+; X280N-NEXT:    vs2r.v v8, (a0) # Unknown-size Folded Spill
+; X280N-NEXT:    add a0, a0, a1
+; X280N-NEXT:    vs2r.v v10, (a0) # Unknown-size Folded Spill
 ; X280N-NEXT:    csrr a0, vlenb
-; X280N-NEXT:    vlseg2e32.v v16, (a2)
-; X280N-NEXT:    sh2add a0, a0, sp
+; X280N-NEXT:    sh3add a0, a0, sp
 ; X280N-NEXT:    ld t1, 40(a0)
 ; X280N-NEXT:    csrr a0, vlenb
-; X280N-NEXT:    sh2add a0, a0, sp
+; X280N-NEXT:    sh3add a0, a0, sp
 ; X280N-NEXT:    ld t2, 32(a0)
 ; X280N-NEXT:    csrr a0, vlenb
-; X280N-NEXT:    sh2add a0, a0, sp
+; X280N-NEXT:    sh3add a0, a0, sp
 ; X280N-NEXT:    ld a2, 24(a0)
 ; X280N-NEXT:    csrr a0, vlenb
-; X280N-NEXT:    sh2add a0, a0, sp
+; X280N-NEXT:    sh3add a0, a0, sp
 ; X280N-NEXT:    ld a1, 16(a0)
 ; X280N-NEXT:    slli a0, t3, 3
 ; X280N-NEXT:    bgeu zero, t1, .LBB0_2
 ; X280N-NEXT:  .LBB0_1: # %for.body
 ; X280N-NEXT:    # =>This Inner Loop Header: Depth=1
+; X280N-NEXT:    csrr t3, vlenb
 ; X280N-NEXT:    vlseg2e32.v v22, (a4)
 ; X280N-NEXT:    csrr t4, vlenb
-; X280N-NEXT:    addi t3, sp, 16
 ; X280N-NEXT:    addi t0, t0, 1
 ; X280N-NEXT:    add a4, a4, a0
+; X280N-NEXT:    sh2add t3, t3, sp
+; X280N-NEXT:    addi t3, t3, 16
 ; X280N-NEXT:    slli t4, t4, 1
 ; X280N-NEXT:    vl2r.v v8, (t3) # Unknown-size Folded Reload
 ; X280N-NEXT:    add t3, t3, t4
+; X280N-NEXT:    csrr t4, vlenb
 ; X280N-NEXT:    vl2r.v v10, (t3) # Unknown-size Folded Reload
+; X280N-NEXT:    addi t3, sp, 16
 ; X280N-NEXT:    vfmul.vv v20, v22, v8
+; X280N-NEXT:    slli t4, t4, 1
 ; X280N-NEXT:    vlseg2e32.v v26, (a5)
 ; X280N-NEXT:    add a5, a5, a0
-; X280N-NEXT:    vfmul.vv v22, v22, v10
+; X280N-NEXT:    vfmul.vv v30, v22, v10
 ; X280N-NEXT:    vfnmsac.vv v20, v24, v10
+; X280N-NEXT:    vl2r.v v12, (t3) # Unknown-size Folded Reload
+; X280N-NEXT:    add t3, t3, t4
+; X280N-NEXT:    vfmacc.vv v30, v24, v8
+; X280N-NEXT:    vl2r.v v14, (t3) # Unknown-size Folded Reload
+; X280N-NEXT:    vfmul.vv v22, v26, v12
 ; X280N-NEXT:    vlseg2e32.v v2, (a6)
 ; X280N-NEXT:    add a6, a6, a0
-; X280N-NEXT:    vfmacc.vv v22, v24, v8
-; X280N-NEXT:    vfmul.vv v30, v26, v12
 ; X280N-NEXT:    vfmul.vv v24, v26, v14
-; X280N-NEXT:    vfnmsac.vv v30, v28, v14
+; X280N-NEXT:    vfnmsac.vv v22, v28, v14
 ; X280N-NEXT:    vfmacc.vv v24, v28, v12
 ; X280N-NEXT:    vfmul.vv v26, v2, v16
 ; X280N-NEXT:    vfmul.vv v28, v2, v18
@@ -155,47 +187,47 @@ define dso_local void @radix4(ptr noalias noundef %twi1, ptr noalias noundef %tw
 ; X280N-NEXT:    add a3, a3, a0
 ; X280N-NEXT:    vfnmsac.vv v26, v4, v18
 ; X280N-NEXT:    vfmacc.vv v28, v4, v16
-; X280N-NEXT:    vfadd.vv v6, v0, v30
+; X280N-NEXT:    vfadd.vv v6, v0, v22
 ; X280N-NEXT:    vfadd.vv v4, v2, v24
-; X280N-NEXT:    vfsub.vv v30, v0, v30
-; X280N-NEXT:    vfsub.vv v24, v2, v24
-; X280N-NEXT:    vfadd.vv v2, v20, v26
-; X280N-NEXT:    vfadd.vv v0, v22, v28
-; X280N-NEXT:    vfsub.vv v22, v22, v28
-; X280N-NEXT:    vfadd.vv v8, v6, v2
-; X280N-NEXT:    vfadd.vv v10, v4, v0
+; X280N-NEXT:    vfsub.vv v0, v0, v22
+; X280N-NEXT:    vfsub.vv v22, v2, v24
+; X280N-NEXT:    vfadd.vv v24, v20, v26
+; X280N-NEXT:    vfadd.vv v2, v30, v28
+; X280N-NEXT:    vfsub.vv v28, v30, v28
 ; X280N-NEXT:    vfsub.vv v20, v20, v26
-; X280N-NEXT:    vfadd.vv v26, v30, v22
+; X280N-NEXT:    vfadd.vv v8, v6, v24
+; X280N-NEXT:    vfadd.vv v10, v4, v2
+; X280N-NEXT:    vfadd.vv v12, v0, v28
+; X280N-NEXT:    vfadd.vv v14, v22, v20
 ; X280N-NEXT:    vsseg2e32.v v8, (a7)
 ; X280N-NEXT:    add a7, a7, a0
-; X280N-NEXT:    vfadd.vv v28, v24, v20
-; X280N-NEXT:    vfsub.vv v8, v6, v2
-; X280N-NEXT:    vfsub.vv v10, v4, v0
-; X280N-NEXT:    vsseg2e32.v v26, (a1)
+; X280N-NEXT:    vfsub.vv v8, v6, v24
+; X280N-NEXT:    vfsub.vv v10, v4, v2
+; X280N-NEXT:    vsseg2e32.v v12, (a1)
 ; X280N-NEXT:    add a1, a1, a0
-; X280N-NEXT:    vfsub.vv v22, v30, v22
-; X280N-NEXT:    vfsub.vv v24, v24, v20
+; X280N-NEXT:    vfsub.vv v12, v0, v28
+; X280N-NEXT:    vfsub.vv v14, v22, v20
 ; X280N-NEXT:    vsseg2e32.v v8, (a2)
 ; X280N-NEXT:    add a2, a2, a0
-; X280N-NEXT:    vsseg2e32.v v22, (t2)
+; X280N-NEXT:    vsseg2e32.v v12, (t2)
 ; X280N-NEXT:    add t2, t2, a0
 ; X280N-NEXT:    bltu t0, t1, .LBB0_1
 ; X280N-NEXT:  .LBB0_2: # %for.cond.cleanup
 ; X280N-NEXT:    csrr a0, vlenb
-; X280N-NEXT:    sh2add sp, a0, sp
+; X280N-NEXT:    sh3add sp, a0, sp
 ; X280N-NEXT:    addi sp, sp, 16
 ; X280N-NEXT:    ret
 entry:
   %i = call i64 @llvm.riscv.vsetvlimax.i64(i64 2, i64 1)
-  %i1 = call { <vscale x 4 x float>, <vscale x 4 x float> } @llvm.riscv.vlseg2.nxv4f32.i64(<vscale x 4 x float> poison, <vscale x 4 x float> poison, ptr %twi1, i64 %i)
-  %i2 = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } %i1, 0
-  %i3 = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } %i1, 1
-  %i4 = call { <vscale x 4 x float>, <vscale x 4 x float> } @llvm.riscv.vlseg2.nxv4f32.i64(<vscale x 4 x float> poison, <vscale x 4 x float> poison, ptr %twi2, i64 %i)
-  %i5 = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } %i4, 0
-  %i6 = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } %i4, 1
-  %i7 = call { <vscale x 4 x float>, <vscale x 4 x float> } @llvm.riscv.vlseg2.nxv4f32.i64(<vscale x 4 x float> poison, <vscale x 4 x float> poison, ptr %twi3, i64 %i)
-  %i8 = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } %i7, 0
-  %i9 = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } %i7, 1
+  %i1 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 2) @llvm.riscv.vlseg2.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) poison, ptr %twi1, i64 %i, i64 5)
+  %i2 = call <vscale x 4 x float> @llvm.riscv.tuple.extract.nxv4f32.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i1, i32 0)
+  %i3 = call <vscale x 4 x float> @llvm.riscv.tuple.extract.nxv4f32.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i1, i32 1)
+  %i4 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 2) @llvm.riscv.vlseg2.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) poison, ptr %twi2, i64 %i, i64 5)
+  %i5 = call <vscale x 4 x float> @llvm.riscv.tuple.extract.nxv4f32.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i4, i32 0)
+  %i6 = call <vscale x 4 x float> @llvm.riscv.tuple.extract.nxv4f32.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i4, i32 1)
+  %i7 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 2) @llvm.riscv.vlseg2.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) poison, ptr %twi3, i64 %i, i64 5)
+  %i8 = call <vscale x 4 x float> @llvm.riscv.tuple.extract.nxv4f32.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i7, i32 0)
+  %i9 = call <vscale x 4 x float> @llvm.riscv.tuple.extract.nxv4f32.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i7, i32 1)
   br label %for.cond
 
 for.cond:                                         ; preds = %for.inc, %entry
@@ -215,18 +247,18 @@ for.cond.cleanup:                                 ; preds = %for.cond
   br label %for.end
 
 for.body:                                         ; preds = %for.cond
-  %i10 = call { <vscale x 4 x float>, <vscale x 4 x float> } @llvm.riscv.vlseg2.nxv4f32.i64(<vscale x 4 x float> poison, <vscale x 4 x float> poison, ptr %x0.addr.0, i64 %i)
-  %i11 = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } %i10, 0
-  %i12 = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } %i10, 1
-  %i13 = call { <vscale x 4 x float>, <vscale x 4 x float> } @llvm.riscv.vlseg2.nxv4f32.i64(<vscale x 4 x float> poison, <vscale x 4 x float> poison, ptr %x1.addr.0, i64 %i)
-  %i14 = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } %i13, 0
-  %i15 = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } %i13, 1
-  %i16 = call { <vscale x 4 x float>, <vscale x 4 x float> } @llvm.riscv.vlseg2.nxv4f32.i64(<vscale x 4 x float> poison, <vscale x 4 x float> poison, ptr %x2.addr.0, i64 %i)
-  %i17 = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } %i16, 0
-  %i18 = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } %i16, 1
-  %i19 = call { <vscale x 4 x float>, <vscale x 4 x float> } @llvm.riscv.vlseg2.nxv4f32.i64(<vscale x 4 x float> poison, <vscale x 4 x float> poison, ptr %x3.addr.0, i64 %i)
-  %i20 = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } %i19, 0
-  %i21 = extractvalue { <vscale x 4 x float>, <vscale x 4 x float> } %i19, 1
+  %i10 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 2) @llvm.riscv.vlseg2.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) poison, ptr %x0.addr.0, i64 %i, i64 5)
+  %i11 = call <vscale x 4 x float> @llvm.riscv.tuple.extract.nxv4f32.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i10, i32 0)
+  %i12 = call <vscale x 4 x float> @llvm.riscv.tuple.extract.nxv4f32.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i10, i32 1)
+  %i13 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 2) @llvm.riscv.vlseg2.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) poison, ptr %x1.addr.0, i64 %i, i64 5)
+  %i14 = call <vscale x 4 x float> @llvm.riscv.tuple.extract.nxv4f32.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i13, i32 0)
+  %i15 = call <vscale x 4 x float> @llvm.riscv.tuple.extract.nxv4f32.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i13, i32 1)
+  %i16 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 2) @llvm.riscv.vlseg2.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) poison, ptr %x2.addr.0, i64 %i, i64 5)
+  %i17 = call <vscale x 4 x float> @llvm.riscv.tuple.extract.nxv4f32.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i16, i32 0)
+  %i18 = call <vscale x 4 x float> @llvm.riscv.tuple.extract.nxv4f32.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i16, i32 1)
+  %i19 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 2) @llvm.riscv.vlseg2.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) poison, ptr %x3.addr.0, i64 %i, i64 5)
+  %i20 = call <vscale x 4 x float> @llvm.riscv.tuple.extract.nxv4f32.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i19, i32 0)
+  %i21 = call <vscale x 4 x float> @llvm.riscv.tuple.extract.nxv4f32.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i19, i32 1)
   %i22 = call fast <vscale x 4 x float> @llvm.riscv.vfmul.nxv4f32.nxv4f32.i64(<vscale x 4 x float> undef, <vscale x 4 x float> %i14, <vscale x 4 x float> %i2, i64 7, i64 %i)
   %i23 = call fast <vscale x 4 x float> @llvm.riscv.vfnmsac.nxv4f32.nxv4f32.i64(<vscale x 4 x float> %i22, <vscale x 4 x float> %i15, <vscale x 4 x float> %i3, i64 7, i64 %i, i64 0)
   %i24 = call fast <vscale x 4 x float> @llvm.riscv.vfmul.nxv4f32.nxv4f32.i64(<vscale x 4 x float> undef, <vscale x 4 x float> %i14, <vscale x 4 x float> %i3, i64 7, i64 %i)
@@ -255,10 +287,18 @@ for.body:                                         ; preds = %for.cond
   %i47 = call fast <vscale x 4 x float> @llvm.riscv.vfadd.nxv4f32.nxv4f32.i64(<vscale x 4 x float> undef, <vscale x 4 x float> %i37, <vscale x 4 x float> %i40, i64 7, i64 %i)
   %i48 = call fast <vscale x 4 x float> @llvm.riscv.vfsub.nxv4f32.nxv4f32.i64(<vscale x 4 x float> undef, <vscale x 4 x float> %i36, <vscale x 4 x float> %i41, i64 7, i64 %i)
   %i49 = call fast <vscale x 4 x float> @llvm.riscv.vfsub.nxv4f32.nxv4f32.i64(<vscale x 4 x float> undef, <vscale x 4 x float> %i37, <vscale x 4 x float> %i40, i64 7, i64 %i)
-  call void @llvm.riscv.vsseg2.nxv4f32.i64(<vscale x 4 x float> %i42, <vscale x 4 x float> %i43, ptr %y0.addr.0, i64 %i)
-  call void @llvm.riscv.vsseg2.nxv4f32.i64(<vscale x 4 x float> %i46, <vscale x 4 x float> %i47, ptr %y1.addr.0, i64 %i)
-  call void @llvm.riscv.vsseg2.nxv4f32.i64(<vscale x 4 x float> %i44, <vscale x 4 x float> %i45, ptr %y2.addr.0, i64 %i)
-  call void @llvm.riscv.vsseg2.nxv4f32.i64(<vscale x 4 x float> %i48, <vscale x 4 x float> %i49, ptr %y3.addr.0, i64 %i)
+  %i50 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv16i8_4t.nxv4f32(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) poison, <vscale x 4 x float> %i42, i32 0)
+  %i51 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv16i8_4t.nxv4f32(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i50, <vscale x 4 x float> %i43, i32 1)
+  call void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i51, ptr %y0.addr.0, i64 %i, i64 5)
+  %i52 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv16i8_4t.nxv4f32(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) poison, <vscale x 4 x float> %i46, i32 0)
+  %i53 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv16i8_4t.nxv4f32(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i52, <vscale x 4 x float> %i47, i32 1)
+  call void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i53, ptr %y1.addr.0, i64 %i, i64 5)
+  %i54 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv16i8_4t.nxv4f32(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) poison, <vscale x 4 x float> %i44, i32 0)
+  %i55 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv16i8_4t.nxv4f32(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i54, <vscale x 4 x float> %i45, i32 1)
+  call void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i55, ptr %y2.addr.0, i64 %i, i64 5)
+  %i56 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv16i8_4t.nxv4f32(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) poison, <vscale x 4 x float> %i48, i32 0)
+  %i57 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv16i8_4t.nxv4f32(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i56, <vscale x 4 x float> %i49, i32 1)
+  call void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %i57, ptr %y3.addr.0, i64 %i, i64 5)
   %mul = mul i64 2, %i
   %add.ptr = getelementptr inbounds float, ptr %x0.addr.0, i64 %mul
   %mul1 = mul i64 2, %i
@@ -291,9 +331,6 @@ declare void @llvm.lifetime.start.p0(i64 immarg, ptr nocapture)
 ; Function Attrs: nounwind
 declare i64 @llvm.riscv.vsetvlimax.i64(i64 immarg, i64 immarg)
 
-; Function Attrs: nocallback nofree nosync nounwind willreturn memory(read)
-declare { <vscale x 4 x float>, <vscale x 4 x float> } @llvm.riscv.vlseg2.nxv4f32.i64(<vscale x 4 x float>, <vscale x 4 x float>, ptr nocapture, i64)
-
 ; Function Attrs: nocallback nofree nosync nounwind willreturn memory(none)
 declare <vscale x 4 x float> @llvm.riscv.vfmul.nxv4f32.nxv4f32.i64(<vscale x 4 x float>, <vscale x 4 x float>, <vscale x 4 x float>, i64, i64)
 
@@ -308,9 +345,6 @@ declare <vscale x 4 x float> @llvm.riscv.vfadd.nxv4f32.nxv4f32.i64(<vscale x 4 x
 
 ; Function Attrs: nocallback nofree nosync nounwind willreturn memory(none)
 declare <vscale x 4 x float> @llvm.riscv.vfsub.nxv4f32.nxv4f32.i64(<vscale x 4 x float>, <vscale x 4 x float>, <vscale x 4 x float>, i64, i64)
-
-; Function Attrs: nocallback nofree nosync nounwind willreturn memory(write)
-declare void @llvm.riscv.vsseg2.nxv4f32.i64(<vscale x 4 x float>, <vscale x 4 x float>, ptr nocapture, i64)
 
 ; Function Attrs: nocallback nofree nosync nounwind willreturn memory(argmem: readwrite)
 declare void @llvm.lifetime.end.p0(i64 immarg, ptr nocapture)
