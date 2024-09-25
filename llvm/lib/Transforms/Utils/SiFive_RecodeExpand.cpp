@@ -622,28 +622,47 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
         static const Intrinsic::ID Vlsseg[3] = {Intrinsic::riscv_vlsseg2,
                                                 Intrinsic::riscv_vlsseg3,
                                                 Intrinsic::riscv_vlsseg4};
+
         Type *ScalableStructElementType =
             TTI.getScalableVectorFromFixed(StructElementType);
-        SmallVector<Value *, 6> Ops;
-        for (unsigned i = 0; i != StructNumElements; ++i)
-          Ops.push_back(PoisonValue::get(ScalableStructElementType));
+
+        unsigned SEW =
+            DL.getTypeSizeInBits(StructElementType->getElementType());
+        unsigned NumElts = cast<ScalableVectorType>(ScalableStructElementType)
+                               ->getElementCount()
+                               .getKnownMinValue();
+        Type *VecTupTy = TargetExtType::get(
+            II->getContext(), "riscv.vector.tuple",
+            ScalableVectorType::get(Type::getInt8Ty(II->getContext()),
+                                    NumElts * SEW / 8),
+            StructNumElements);
+
+        SmallVector<Value *, 5> Ops;
+        Ops.push_back(PoisonValue::get(VecTupTy));
         Ops.push_back(II->getArgOperand(0));
         if (IsDup)
           Ops.push_back(Builder.getIntN(XLEN, 0));
         ConstantInt *VL = Builder.getIntN(XLEN, VectorNumElements);
         Ops.push_back(VL);
-        CallInst *NewLoad = Builder.CreateIntrinsic(
-            IsDup ? Vlsseg[StructNumElements - 2]
-                  : Vlseg[StructNumElements - 2],
-            {ScalableStructElementType, VL->getType()}, Ops);
+        Ops.push_back(Builder.getIntN(XLEN, Log2_32(SEW)));
+        CallInst *NewLoad =
+            Builder.CreateIntrinsic(IsDup ? Vlsseg[StructNumElements - 2]
+                                          : Vlseg[StructNumElements - 2],
+                                    {VecTupTy, VL->getType()}, Ops);
+
         Value *NewDes = PoisonValue::get(DesTy);
-        for (unsigned i = 0; i != StructNumElements; ++i)
+        Function *TupExtractFunc = Intrinsic::getDeclaration(
+            II->getModule(), Intrinsic::riscv_tuple_extract,
+            {ScalableStructElementType, VecTupTy});
+        for (unsigned i = 0; i != StructNumElements; ++i) {
+          Value *TupExtract = Builder.CreateCall(
+              TupExtractFunc, {NewLoad, Builder.getInt32(i)});
           NewDes = Builder.CreateInsertValue(
               NewDes,
-              Builder.CreateExtractVector(
-                  StructElementType, Builder.CreateExtractValue(NewLoad, i),
-                  Builder.getInt64(0)),
+              Builder.CreateExtractVector(StructElementType, TupExtract,
+                                          Builder.getInt64(0)),
               i);
+        }
         II->replaceAllUsesWith(NewDes);
         break;
       }
@@ -917,18 +936,44 @@ PreservedAnalyses SiFiveRecodePass::run(Function &F,
       case Intrinsic::aarch64_neon_st3:
       case Intrinsic::aarch64_neon_st4: {
         unsigned StructNumElements = II->arg_size() - 1;
-        unsigned VectorNumElements =
-            cast<FixedVectorType>(II->getArgOperand(0)->getType())
-                ->getNumElements();
+        FixedVectorType *StructElementType =
+            cast<FixedVectorType>(II->getArgOperand(0)->getType());
+        unsigned VectorNumElements = StructElementType->getNumElements();
         static const Intrinsic::ID Vsseg[3] = {Intrinsic::riscv_vsseg2,
                                                Intrinsic::riscv_vsseg3,
                                                Intrinsic::riscv_vsseg4};
+
+        Type *ScalableStructElementType =
+            TTI.getScalableVectorFromFixed(StructElementType);
+
+        unsigned SEW =
+            DL.getTypeSizeInBits(StructElementType->getElementType());
+        unsigned NumElts = cast<ScalableVectorType>(ScalableStructElementType)
+                               ->getElementCount()
+                               .getKnownMinValue();
+        Type *VecTupTy = TargetExtType::get(
+            II->getContext(), "riscv.vector.tuple",
+            ScalableVectorType::get(Type::getInt8Ty(II->getContext()),
+                                    NumElts * SEW / 8),
+            StructNumElements);
+
+        Function *VecInsertFunc = Intrinsic::getDeclaration(
+            II->getModule(), Intrinsic::riscv_tuple_insert,
+            {VecTupTy, ScalableStructElementType});
+        Value *StoredVal = PoisonValue::get(VecTupTy);
+        for (unsigned i = 0; i < StructNumElements; ++i) {
+          Value *ScalableVec =
+              toScalableVector(TTI, Builder, II->getArgOperand(i));
+          StoredVal = Builder.CreateCall(
+              VecInsertFunc, {StoredVal, ScalableVec, Builder.getInt32(i)});
+        }
+
         SmallVector<Value *, 6> Ops;
-        for (unsigned i = 0; i != StructNumElements; ++i)
-          Ops.push_back(toScalableVector(TTI, Builder, II->getArgOperand(i)));
+        Ops.push_back(StoredVal);
         Ops.push_back(II->getArgOperand(StructNumElements));
         ConstantInt *VL = Builder.getIntN(XLEN, VectorNumElements);
         Ops.push_back(VL);
+        Ops.push_back(Builder.getIntN(XLEN, Log2_32(SEW)));
         II->replaceAllUsesWith(
             Builder.CreateIntrinsic(Vsseg[StructNumElements - 2],
                                     {Ops[0]->getType(), VL->getType()}, Ops));
