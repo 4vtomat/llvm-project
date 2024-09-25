@@ -169,19 +169,9 @@ define <vscale x 32 x bfloat> @vfmerge_vv_nxv32bf16(<vscale x 32 x bfloat> %va, 
 define <vscale x 32 x bfloat> @vfmerge_fv_nxv32bf16(<vscale x 32 x bfloat> %va, bfloat %b, <vscale x 32 x i1> %cond) {
 ; CHECK-LABEL: vfmerge_fv_nxv32bf16:
 ; CHECK:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-NEXT:    fcvt.s.bf16 fa5, fa0
-; CHECK-NEXT:    vsetvli a0, zero, e32, m8, ta, ma
-; CHECK-NEXT:    vfmv.v.f v16, fa5
-; CHECK-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v16, v16
-; CHECK-NEXT:    vmv.v.v v20, v16
-; CHECK-NEXT:    vsetvli a0, zero, e16, m8, ta, ma
-=======
 ; CHECK-NEXT:    fmv.x.h a0, fa0
 ; CHECK-NEXT:    vsetvli a1, zero, e16, m8, ta, ma
 ; CHECK-NEXT:    vmv.v.x v16, a0
->>>>>>> c970e96
 ; CHECK-NEXT:    vmerge.vvm v8, v8, v16, v0
 ; CHECK-NEXT:    ret
   %head = insertelement <vscale x 32 x bfloat> poison, bfloat %b, i32 0

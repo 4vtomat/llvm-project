@@ -29,28 +29,6 @@ define <vscale x 1 x i1> @vpmerge_nxv1i1(<vscale x 1 x i1> %va, <vscale x 1 x i1
   ret <vscale x 1 x i1> %v
 }
 
-declare <vscale x 16 x i1> @llvm.vp.merge.nxv16i1(<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, i32)
-
-define <vscale x 16 x i1> @vpmerge_nxv16i1(<vscale x 16 x i1> %va, <vscale x 16 x i1> %vb, <vscale x 16 x i1> %m, i32 zeroext %evl) {
-; CHECK-LABEL: vpmerge_nxv16i1:
-; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetvli a1, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vmv.v.i v10, 0
-; CHECK-NEXT:    vsetvli zero, a0, e8, m2, ta, ma
-; CHECK-NEXT:    vmerge.vim v12, v10, 1, v0
-; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vsetvli a1, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vmerge.vim v10, v10, 1, v0
-; CHECK-NEXT:    vmv1r.v v0, v9
-; CHECK-NEXT:    vsetvli zero, a0, e8, m2, tu, ma
-; CHECK-NEXT:    vmerge.vvm v10, v10, v12, v0
-; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vmsne.vi v0, v10, 0
-; CHECK-NEXT:    ret
-  %v = call <vscale x 16 x i1> @llvm.vp.merge.nxv16i1(<vscale x 16 x i1> %m, <vscale x 16 x i1> %va, <vscale x 16 x i1> %vb, i32 %evl)
-  ret <vscale x 16 x i1> %v
-}
-
 declare <vscale x 1 x i8> @llvm.vp.merge.nxv1i8(<vscale x 1 x i1>, <vscale x 1 x i8>, <vscale x 1 x i8>, i32)
 
 define <vscale x 1 x i8> @vpmerge_vv_nxv1i8(<vscale x 1 x i8> %va, <vscale x 1 x i8> %vb, <vscale x 1 x i1> %m, i32 zeroext %evl) {
@@ -394,10 +372,10 @@ define <vscale x 128 x i8> @vpmerge_vv_nxv128i8(<vscale x 128 x i8> %va, <vscale
 ; CHECK-NEXT:    and a2, a4, a2
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m8, tu, ma
 ; CHECK-NEXT:    vmerge.vvm v16, v16, v24, v0
-; CHECK-NEXT:    bltu a3, a1, .LBB29_2
+; CHECK-NEXT:    bltu a3, a1, .LBB28_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    mv a3, a1
-; CHECK-NEXT:  .LBB29_2:
+; CHECK-NEXT:  .LBB28_2:
 ; CHECK-NEXT:    vmv1r.v v0, v7
 ; CHECK-NEXT:    addi a0, sp, 16
 ; CHECK-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
@@ -426,10 +404,10 @@ define <vscale x 128 x i8> @vpmerge_vx_nxv128i8(i8 %a, <vscale x 128 x i8> %vb, 
 ; CHECK-NEXT:    and a3, a4, a3
 ; CHECK-NEXT:    vsetvli zero, a3, e8, m8, tu, ma
 ; CHECK-NEXT:    vmerge.vxm v16, v16, a0, v0
-; CHECK-NEXT:    bltu a2, a1, .LBB30_2
+; CHECK-NEXT:    bltu a2, a1, .LBB29_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    mv a2, a1
-; CHECK-NEXT:  .LBB30_2:
+; CHECK-NEXT:  .LBB29_2:
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m8, tu, ma
 ; CHECK-NEXT:    vmerge.vxm v8, v8, a0, v0
@@ -454,10 +432,10 @@ define <vscale x 128 x i8> @vpmerge_vi_nxv128i8(<vscale x 128 x i8> %vb, <vscale
 ; CHECK-NEXT:    and a2, a3, a2
 ; CHECK-NEXT:    vsetvli zero, a2, e8, m8, tu, ma
 ; CHECK-NEXT:    vmerge.vim v16, v16, 2, v0
-; CHECK-NEXT:    bltu a1, a0, .LBB31_2
+; CHECK-NEXT:    bltu a1, a0, .LBB30_2
 ; CHECK-NEXT:  # %bb.1:
 ; CHECK-NEXT:    mv a1, a0
-; CHECK-NEXT:  .LBB31_2:
+; CHECK-NEXT:  .LBB30_2:
 ; CHECK-NEXT:    vmv1r.v v0, v24
 ; CHECK-NEXT:    vsetvli zero, a1, e8, m8, tu, ma
 ; CHECK-NEXT:    vmerge.vim v8, v8, 2, v0
@@ -1312,39 +1290,19 @@ define <vscale x 32 x half> @vpmerge_vf_nxv32f16(half %a, <vscale x 32 x half> %
 ;
 ; RV32ZVFHMIN-LABEL: vpmerge_vf_nxv32f16:
 ; RV32ZVFHMIN:       # %bb.0:
-<<<<<<< HEAD
-; RV32ZVFHMIN-NEXT:    fcvt.s.h fa5, fa0
-; RV32ZVFHMIN-NEXT:    vsetvli a1, zero, e32, m8, ta, ma
-; RV32ZVFHMIN-NEXT:    vfmv.v.f v16, fa5
-; RV32ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
-; RV32ZVFHMIN-NEXT:    vfncvt.f.f.w v16, v16
-; RV32ZVFHMIN-NEXT:    vmv.v.v v20, v16
-; RV32ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m8, tu, ma
-=======
 ; RV32ZVFHMIN-NEXT:    fmv.x.h a1, fa0
 ; RV32ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
 ; RV32ZVFHMIN-NEXT:    vmv.v.x v16, a1
 ; RV32ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m8, tu, ma
->>>>>>> c970e96
 ; RV32ZVFHMIN-NEXT:    vmerge.vvm v8, v8, v16, v0
 ; RV32ZVFHMIN-NEXT:    ret
 ;
 ; RV64ZVFHMIN-LABEL: vpmerge_vf_nxv32f16:
 ; RV64ZVFHMIN:       # %bb.0:
-<<<<<<< HEAD
-; RV64ZVFHMIN-NEXT:    fcvt.s.h fa5, fa0
-; RV64ZVFHMIN-NEXT:    vsetvli a1, zero, e32, m8, ta, ma
-; RV64ZVFHMIN-NEXT:    vfmv.v.f v16, fa5
-; RV64ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
-; RV64ZVFHMIN-NEXT:    vfncvt.f.f.w v16, v16
-; RV64ZVFHMIN-NEXT:    vmv.v.v v20, v16
-; RV64ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m8, tu, ma
-=======
 ; RV64ZVFHMIN-NEXT:    fmv.x.h a1, fa0
 ; RV64ZVFHMIN-NEXT:    vsetvli zero, a0, e16, m8, ta, ma
 ; RV64ZVFHMIN-NEXT:    vmv.v.x v16, a1
 ; RV64ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m8, tu, ma
->>>>>>> c970e96
 ; RV64ZVFHMIN-NEXT:    vmerge.vvm v8, v8, v16, v0
 ; RV64ZVFHMIN-NEXT:    ret
   %elt.head = insertelement <vscale x 32 x half> poison, half %a, i32 0

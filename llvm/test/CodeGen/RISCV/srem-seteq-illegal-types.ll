@@ -663,25 +663,12 @@ define void @test_srem_vec(ptr %X) nounwind {
 ; RV32MV-NEXT:    addi a2, sp, 32
 ; RV32MV-NEXT:    vl2r.v v10, (a2) # Unknown-size Folded Reload
 ; RV32MV-NEXT:    vsetivli zero, 8, e32, m2, ta, ma
-<<<<<<< HEAD
-; RV32MV-NEXT:    vslide1down.vx v8, v8, a0
-; RV32MV-NEXT:    vslide1down.vx v8, v8, a1
-; RV32MV-NEXT:    vslidedown.vi v8, v8, 2
-; RV32MV-NEXT:    li a0, 511
-; RV32MV-NEXT:    vsetvli zero, zero, e16, m1, ta, ma
-; RV32MV-NEXT:    vmv.v.x v10, a0
-; RV32MV-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; RV32MV-NEXT:    vsext.vf4 v12, v10
-; RV32MV-NEXT:    vand.vv v8, v8, v12
-; RV32MV-NEXT:    vsetivli zero, 3, e8, mf2, ta, ma
-=======
 ; RV32MV-NEXT:    vslide1down.vx v10, v10, a0
 ; RV32MV-NEXT:    vslide1down.vx v10, v10, a1
 ; RV32MV-NEXT:    vslidedown.vi v10, v10, 2
 ; RV32MV-NEXT:    vsetivli zero, 4, e64, m2, ta, ma
 ; RV32MV-NEXT:    vand.vv v8, v10, v8
-; RV32MV-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
->>>>>>> c970e96
+; RV32MV-NEXT:    vsetivli zero, 3, e8, mf2, ta, ma
 ; RV32MV-NEXT:    vmv.v.i v10, 1
 ; RV32MV-NEXT:    vsetivli zero, 8, e8, mf2, ta, ma
 ; RV32MV-NEXT:    vmv.v.i v11, 0

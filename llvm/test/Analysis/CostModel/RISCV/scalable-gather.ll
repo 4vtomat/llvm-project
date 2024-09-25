@@ -3,13 +3,7 @@
 ; RUN: opt -passes="print<cost-model>" 2>&1 -disable-output -mtriple=riscv64 -mattr=+v,+f,+d,+zfh,+zvfhmin < %s | FileCheck %s --check-prefixes=CHECK,GENERIC,GENERICZVFHMIN
 ; RUN: opt -passes="print<cost-model>" 2>&1 -disable-output -mtriple=riscv64 -mattr=+v,+f,+d,+zfh,+zvfh -riscv-v-vector-bits-max=256 < %s | FileCheck %s --check-prefixes=CHECK,MAX256
 ; RUN: opt -passes="print<cost-model>" 2>&1 -disable-output -mtriple=riscv64 < %s | FileCheck %s --check-prefixes=CHECK,UNSUPPORTED
-<<<<<<< HEAD
-; SIFIVE
 ; RUN: opt -passes="print<cost-model>" 2>&1 -disable-output -mtriple=riscv64 -mattr=+zve32f,+zvl128b,+f,+d,+zfh,+zvfh < %s | FileCheck %s --check-prefixes=CHECK,UNSUPPORTED
-; end SIFIVE
-=======
-; RUN: opt -passes="print<cost-model>" 2>&1 -disable-output -mtriple=riscv64 -mattr=+zve32f,+zvl128b,+f,+d,+zfh,+zvfh < %s | FileCheck %s --check-prefixes=CHECK,UNSUPPORTED
->>>>>>> c970e96
 
 define void @masked_gather_aligned() {
 ; GENERIC-LABEL: 'masked_gather_aligned'

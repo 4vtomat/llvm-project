@@ -230,19 +230,9 @@ define <vscale x 32 x half> @vfmerge_fv_nxv32f16(<vscale x 32 x half> %va, half 
 ;
 ; CHECK-ZVFHMIN-LABEL: vfmerge_fv_nxv32f16:
 ; CHECK-ZVFHMIN:       # %bb.0:
-<<<<<<< HEAD
-; CHECK-ZVFHMIN-NEXT:    fcvt.s.h fa5, fa0
-; CHECK-ZVFHMIN-NEXT:    vsetvli a0, zero, e32, m8, ta, ma
-; CHECK-ZVFHMIN-NEXT:    vfmv.v.f v16, fa5
-; CHECK-ZVFHMIN-NEXT:    vsetvli zero, zero, e16, m4, ta, ma
-; CHECK-ZVFHMIN-NEXT:    vfncvt.f.f.w v16, v16
-; CHECK-ZVFHMIN-NEXT:    vmv.v.v v20, v16
-; CHECK-ZVFHMIN-NEXT:    vsetvli a0, zero, e16, m8, ta, ma
-=======
 ; CHECK-ZVFHMIN-NEXT:    fmv.x.h a0, fa0
 ; CHECK-ZVFHMIN-NEXT:    vsetvli a1, zero, e16, m8, ta, ma
 ; CHECK-ZVFHMIN-NEXT:    vmv.v.x v16, a0
->>>>>>> c970e96
 ; CHECK-ZVFHMIN-NEXT:    vmerge.vvm v8, v8, v16, v0
 ; CHECK-ZVFHMIN-NEXT:    ret
   %head = insertelement <vscale x 32 x half> poison, half %b, i32 0

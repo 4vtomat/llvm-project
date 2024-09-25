@@ -3,7 +3,6 @@
 
 target datalayout = "e-p:64:64:64-i1:8:8-i8:8:8-i16:16:16-i32:32:32-i64:64:64-f32:32:32-f64:64:64-v64:64:64-v128:128:128-a0:0:64-s0:64:64-f80:128:128-n8:16:32:64-S128"
 
-; SIFIVE: checks have been updated to combine (add (zext (add X, -1)), 1) to (zext X)
 define i32 @foo(ptr nocapture %A, ptr nocapture %B, i32 %n) {
 ; CHECK-LABEL: @foo(
 ; CHECK-NEXT:  entry:
@@ -34,22 +33,11 @@ define i32 @foo(ptr nocapture %A, ptr nocapture %B, i32 %n) {
 ; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i32, ptr [[B]], i64 [[INDEX]]
 ; CHECK-NEXT:    [[WIDE_LOAD2:%.*]] = load <4 x i32>, ptr [[TMP6]], align 4, !alias.scope [[META3]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = icmp sgt <4 x i32> [[WIDE_LOAD]], [[WIDE_LOAD2]]
-<<<<<<< HEAD
-; CHECK-NEXT:    [[TMP8:%.*]] = icmp sgt <4 x i32> [[WIDE_LOAD]], <i32 19, i32 19, i32 19, i32 19>
-; CHECK-NEXT:    [[TMP9:%.*]] = xor <4 x i1> [[TMP8]], <i1 true, i1 true, i1 true, i1 true>
-; CHECK-NEXT:    [[TMP10:%.*]] = and <4 x i1> [[TMP7]], [[TMP9]]
-; CHECK-NEXT:    [[TMP11:%.*]] = and <4 x i1> [[TMP7]], [[TMP8]]
-; CHECK-NEXT:    [[TMP12:%.*]] = icmp slt <4 x i32> [[WIDE_LOAD2]], <i32 4, i32 4, i32 4, i32 4>
-; CHECK-NEXT:    [[TMP13:%.*]] = select <4 x i1> [[TMP12]], <4 x i32> <i32 4, i32 4, i32 4, i32 4>, <4 x i32> <i32 5, i32 5, i32 5, i32 5>
-; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP11]], <4 x i32> <i32 3, i32 3, i32 3, i32 3>, <4 x i32> <i32 9, i32 9, i32 9, i32 9>
-; CHECK-NEXT:    [[PREDPHI3:%.*]] = select <4 x i1> [[TMP10]], <4 x i32> [[TMP13]], <4 x i32> [[PREDPHI]]
-=======
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp slt <4 x i32> [[WIDE_LOAD]], <i32 20, i32 20, i32 20, i32 20>
 ; CHECK-NEXT:    [[TMP9:%.*]] = icmp slt <4 x i32> [[WIDE_LOAD2]], <i32 4, i32 4, i32 4, i32 4>
 ; CHECK-NEXT:    [[TMP10:%.*]] = select <4 x i1> [[TMP9]], <4 x i32> <i32 4, i32 4, i32 4, i32 4>, <4 x i32> <i32 5, i32 5, i32 5, i32 5>
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP8]], <4 x i32> [[TMP10]], <4 x i32> <i32 3, i32 3, i32 3, i32 3>
 ; CHECK-NEXT:    [[PREDPHI3:%.*]] = select <4 x i1> [[TMP7]], <4 x i32> [[PREDPHI]], <4 x i32> <i32 9, i32 9, i32 9, i32 9>
->>>>>>> c970e96
 ; CHECK-NEXT:    store <4 x i32> [[PREDPHI3]], ptr [[TMP5]], align 4, !alias.scope [[META0]], !noalias [[META3]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-NEXT:    [[TMP11:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
@@ -155,14 +143,14 @@ define i32 @multi_variable_if_nest(ptr nocapture %A, ptr nocapture %B, i32 %n) {
 ; CHECK-NEXT:    [[TMP8:%.*]] = icmp sgt <4 x i32> [[WIDE_LOAD]], <i32 19, i32 19, i32 19, i32 19>
 ; CHECK-NEXT:    [[TMP9:%.*]] = xor <4 x i1> [[TMP8]], <i1 true, i1 true, i1 true, i1 true>
 ; CHECK-NEXT:    [[TMP10:%.*]] = and <4 x i1> [[TMP7]], [[TMP9]]
-; CHECK-NEXT:    [[TMP11:%.*]] = icmp slt <4 x i32> [[WIDE_LOAD2]], <i32 4, i32 4, i32 4, i32 4>
-; CHECK-NEXT:    [[TMP12:%.*]] = select <4 x i1> [[TMP11]], <4 x i32> <i32 4, i32 4, i32 4, i32 4>, <4 x i32> <i32 5, i32 5, i32 5, i32 5>
-; CHECK-NEXT:    [[TMP13:%.*]] = select <4 x i1> [[TMP11]], <4 x i32> <i32 6, i32 6, i32 6, i32 6>, <4 x i32> <i32 11, i32 11, i32 11, i32 11>
-; CHECK-NEXT:    [[TMP14:%.*]] = and <4 x i1> [[TMP7]], [[TMP8]]
-; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP14]], <4 x i32> <i32 3, i32 3, i32 3, i32 3>, <4 x i32> <i32 9, i32 9, i32 9, i32 9>
-; CHECK-NEXT:    [[PREDPHI3:%.*]] = select <4 x i1> [[TMP10]], <4 x i32> [[TMP12]], <4 x i32> [[PREDPHI]]
-; CHECK-NEXT:    [[PREDPHI4:%.*]] = select <4 x i1> [[TMP14]], <4 x i32> <i32 7, i32 7, i32 7, i32 7>, <4 x i32> <i32 18, i32 18, i32 18, i32 18>
-; CHECK-NEXT:    [[PREDPHI5:%.*]] = select <4 x i1> [[TMP10]], <4 x i32> [[TMP13]], <4 x i32> [[PREDPHI4]]
+; CHECK-NEXT:    [[TMP11:%.*]] = and <4 x i1> [[TMP7]], [[TMP8]]
+; CHECK-NEXT:    [[TMP12:%.*]] = icmp slt <4 x i32> [[WIDE_LOAD2]], <i32 4, i32 4, i32 4, i32 4>
+; CHECK-NEXT:    [[TMP13:%.*]] = select <4 x i1> [[TMP12]], <4 x i32> <i32 4, i32 4, i32 4, i32 4>, <4 x i32> <i32 5, i32 5, i32 5, i32 5>
+; CHECK-NEXT:    [[TMP14:%.*]] = select <4 x i1> [[TMP12]], <4 x i32> <i32 6, i32 6, i32 6, i32 6>, <4 x i32> <i32 11, i32 11, i32 11, i32 11>
+; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP11]], <4 x i32> <i32 3, i32 3, i32 3, i32 3>, <4 x i32> <i32 9, i32 9, i32 9, i32 9>
+; CHECK-NEXT:    [[PREDPHI3:%.*]] = select <4 x i1> [[TMP10]], <4 x i32> [[TMP13]], <4 x i32> [[PREDPHI]]
+; CHECK-NEXT:    [[PREDPHI4:%.*]] = select <4 x i1> [[TMP11]], <4 x i32> <i32 7, i32 7, i32 7, i32 7>, <4 x i32> <i32 18, i32 18, i32 18, i32 18>
+; CHECK-NEXT:    [[PREDPHI5:%.*]] = select <4 x i1> [[TMP10]], <4 x i32> [[TMP14]], <4 x i32> [[PREDPHI4]]
 ; CHECK-NEXT:    store <4 x i32> [[PREDPHI3]], ptr [[TMP5]], align 4, !alias.scope [[META9]], !noalias [[META12]]
 ; CHECK-NEXT:    store <4 x i32> [[PREDPHI5]], ptr [[TMP6]], align 4, !alias.scope [[META12]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
