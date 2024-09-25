@@ -611,9 +611,9 @@ define <vscale x 64 x bfloat> @vector_interleave_nxv64bf16_nxv32bf16(<vscale x 3
 ; CHECK-NEXT:    vwaddu.vv v8, v24, v16
 ; CHECK-NEXT:    li a0, -1
 ; CHECK-NEXT:    vwmaccu.vx v8, a0, v16
-; CHECK-NEXT:    vwaddu.vv v0, v28, v20
-; CHECK-NEXT:    vwmaccu.vx v0, a0, v20
-; CHECK-NEXT:    vmv8r.v v16, v0
+; CHECK-NEXT:    vwaddu.vv v24, v28, v20
+; CHECK-NEXT:    vwmaccu.vx v24, a0, v20
+; CHECK-NEXT:    vmv8r.v v16, v24
 ; CHECK-NEXT:    ret
 ;
 ; ZVBB-LABEL: vector_interleave_nxv64bf16_nxv32bf16:
@@ -622,9 +622,8 @@ define <vscale x 64 x bfloat> @vector_interleave_nxv64bf16_nxv32bf16(<vscale x 3
 ; ZVBB-NEXT:    vsetvli a0, zero, e16, m4, ta, ma
 ; ZVBB-NEXT:    vwsll.vi v8, v16, 16
 ; ZVBB-NEXT:    vwaddu.wv v8, v8, v24
-; ZVBB-NEXT:    vwsll.vi v0, v20, 16
-; ZVBB-NEXT:    vwaddu.wv v0, v0, v28
-; ZVBB-NEXT:    vmv8r.v v16, v0
+; ZVBB-NEXT:    vwsll.vi v16, v20, 16
+; ZVBB-NEXT:    vwaddu.wv v16, v16, v28
 ; ZVBB-NEXT:    ret
   %res = call <vscale x 64 x bfloat> @llvm.vector.interleave2.nxv64bf16(<vscale x 32 x bfloat> %a, <vscale x 32 x bfloat> %b)
   ret <vscale x 64 x bfloat> %res

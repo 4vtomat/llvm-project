@@ -534,15 +534,17 @@ define double @foo14(ptr nocapture %p) nounwind {
 ; RV32ZDINX-LABEL: foo14:
 ; RV32ZDINX:       # %bb.0: # %entry
 ; RV32ZDINX-NEXT:    lui a0, %hi(f)
-; RV32ZDINX-NEXT:    lw a1, %lo(f+12)(a0)
-; RV32ZDINX-NEXT:    lw a0, %lo(f+8)(a0)
+; RV32ZDINX-NEXT:    addi a0, a0, %lo(f)
+; RV32ZDINX-NEXT:    lw a1, 12(a0)
+; RV32ZDINX-NEXT:    lw a0, 8(a0)
 ; RV32ZDINX-NEXT:    ret
 ;
 ; RV32ZDINXUALIGNED-LABEL: foo14:
 ; RV32ZDINXUALIGNED:       # %bb.0: # %entry
 ; RV32ZDINXUALIGNED-NEXT:    lui a0, %hi(f)
-; RV32ZDINXUALIGNED-NEXT:    lw a1, %lo(f+12)(a0)
-; RV32ZDINXUALIGNED-NEXT:    lw a0, %lo(f+8)(a0)
+; RV32ZDINXUALIGNED-NEXT:    addi a0, a0, %lo(f)
+; RV32ZDINXUALIGNED-NEXT:    lw a1, 12(a0)
+; RV32ZDINXUALIGNED-NEXT:    lw a0, 8(a0)
 ; RV32ZDINXUALIGNED-NEXT:    ret
 ;
 ; RV64ZDINX-LABEL: foo14:

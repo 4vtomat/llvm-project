@@ -12,9 +12,9 @@ define <vscale x 2 x bfloat> @vsitofp_nxv2bf16_nxv2i7(<vscale x 2 x i7> %va, <vs
 ; CHECK-NEXT:    vsra.vi v8, v8, 1
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    vsext.vf2 v9, v8, v0.t
-; CHECK-NEXT:    vfwcvt.f.x.v v10, v9, v0.t
+; CHECK-NEXT:    vfwcvt.f.x.v v8, v9, v0.t
 ; CHECK-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v10
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %v = call <vscale x 2 x bfloat> @llvm.vp.sitofp.nxv2bf16.nxv2i7(<vscale x 2 x i7> %va, <vscale x 2 x i1> %m, i32 %evl)
   ret <vscale x 2 x bfloat> %v
@@ -27,9 +27,9 @@ define <vscale x 2 x bfloat> @vsitofp_nxv2bf16_nxv2i8(<vscale x 2 x i8> %va, <vs
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    vsext.vf2 v9, v8, v0.t
-; CHECK-NEXT:    vfwcvt.f.x.v v10, v9, v0.t
+; CHECK-NEXT:    vfwcvt.f.x.v v8, v9, v0.t
 ; CHECK-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v10
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %v = call <vscale x 2 x bfloat> @llvm.vp.sitofp.nxv2bf16.nxv2i8(<vscale x 2 x i8> %va, <vscale x 2 x i1> %m, i32 %evl)
   ret <vscale x 2 x bfloat> %v
@@ -40,9 +40,9 @@ define <vscale x 2 x bfloat> @vsitofp_nxv2bf16_nxv2i8_unmasked(<vscale x 2 x i8>
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e16, mf2, ta, ma
 ; CHECK-NEXT:    vsext.vf2 v9, v8
-; CHECK-NEXT:    vfwcvt.f.x.v v10, v9
+; CHECK-NEXT:    vfwcvt.f.x.v v8, v9
 ; CHECK-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v10
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %v = call <vscale x 2 x bfloat> @llvm.vp.sitofp.nxv2bf16.nxv2i8(<vscale x 2 x i8> %va, <vscale x 2 x i1> splat (i1 true), i32 %evl)
   ret <vscale x 2 x bfloat> %v
@@ -80,9 +80,9 @@ define <vscale x 2 x bfloat> @vsitofp_nxv2bf16_nxv2i32(<vscale x 2 x i32> %va, <
 ; CHECK-LABEL: vsitofp_nxv2bf16_nxv2i32:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; CHECK-NEXT:    vfcvt.f.x.v v9, v8, v0.t
+; CHECK-NEXT:    vfcvt.f.x.v v8, v8, v0.t
 ; CHECK-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v9
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %v = call <vscale x 2 x bfloat> @llvm.vp.sitofp.nxv2bf16.nxv2i32(<vscale x 2 x i32> %va, <vscale x 2 x i1> %m, i32 %evl)
   ret <vscale x 2 x bfloat> %v
@@ -92,9 +92,9 @@ define <vscale x 2 x bfloat> @vsitofp_nxv2bf16_nxv2i32_unmasked(<vscale x 2 x i3
 ; CHECK-LABEL: vsitofp_nxv2bf16_nxv2i32_unmasked:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; CHECK-NEXT:    vfcvt.f.x.v v9, v8
+; CHECK-NEXT:    vfcvt.f.x.v v8, v8
 ; CHECK-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v9
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %v = call <vscale x 2 x bfloat> @llvm.vp.sitofp.nxv2bf16.nxv2i32(<vscale x 2 x i32> %va, <vscale x 2 x i1> splat (i1 true), i32 %evl)
   ret <vscale x 2 x bfloat> %v
@@ -106,9 +106,9 @@ define <vscale x 2 x bfloat> @vsitofp_nxv2bf16_nxv2i64(<vscale x 2 x i64> %va, <
 ; CHECK-LABEL: vsitofp_nxv2bf16_nxv2i64:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; CHECK-NEXT:    vfncvt.f.x.w v10, v8, v0.t
+; CHECK-NEXT:    vfncvt.f.x.w v8, v8, v0.t
 ; CHECK-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v10
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %v = call <vscale x 2 x bfloat> @llvm.vp.sitofp.nxv2bf16.nxv2i64(<vscale x 2 x i64> %va, <vscale x 2 x i1> %m, i32 %evl)
   ret <vscale x 2 x bfloat> %v
@@ -118,9 +118,9 @@ define <vscale x 2 x bfloat> @vsitofp_nxv2bf16_nxv2i64_unmasked(<vscale x 2 x i6
 ; CHECK-LABEL: vsitofp_nxv2bf16_nxv2i64_unmasked:
 ; CHECK:       # %bb.0:
 ; CHECK-NEXT:    vsetvli zero, a0, e32, m1, ta, ma
-; CHECK-NEXT:    vfncvt.f.x.w v10, v8
+; CHECK-NEXT:    vfncvt.f.x.w v8, v8
 ; CHECK-NEXT:    vsetvli a0, zero, e16, mf2, ta, ma
-; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v10
+; CHECK-NEXT:    vfncvtbf16.f.f.w v8, v8
 ; CHECK-NEXT:    ret
   %v = call <vscale x 2 x bfloat> @llvm.vp.sitofp.nxv2bf16.nxv2i64(<vscale x 2 x i64> %va, <vscale x 2 x i1> splat (i1 true), i32 %evl)
   ret <vscale x 2 x bfloat> %v

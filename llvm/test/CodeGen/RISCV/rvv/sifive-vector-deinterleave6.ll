@@ -255,28 +255,28 @@ define {<vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16 x i1>, <vscale x 16
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vmsne.vi v10, v24, 0
+; CHECK-NEXT:    vmsne.vi v15, v24, 0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 72
 ; CHECK-NEXT:    mul a0, a0, a1
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    vl8r.v v24, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmsne.vi v11, v24, 0
-; CHECK-NEXT:    vmsne.vi v12, v16, 0
-; CHECK-NEXT:    vmsne.vi v14, v8, 0
+; CHECK-NEXT:    vmsne.vi v10, v24, 0
+; CHECK-NEXT:    vmsne.vi v11, v16, 0
+; CHECK-NEXT:    vmsne.vi v13, v8, 0
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 6
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    vl8r.v v16, (a0) # Unknown-size Folded Reload
-; CHECK-NEXT:    vmsne.vi v15, v16, 0
-; CHECK-NEXT:    vmsne.vi v13, v0, 0
+; CHECK-NEXT:    vmsne.vi v14, v16, 0
+; CHECK-NEXT:    vmsne.vi v12, v0, 0
+; CHECK-NEXT:    vmv1r.v v0, v15
 ; CHECK-NEXT:    vmv1r.v v8, v10
 ; CHECK-NEXT:    vmv1r.v v9, v11
-; CHECK-NEXT:    vmv1r.v v10, v12
+; CHECK-NEXT:    vmv1r.v v10, v13
 ; CHECK-NEXT:    vmv1r.v v11, v14
-; CHECK-NEXT:    vmv1r.v v12, v15
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 96
 ; CHECK-NEXT:    mul a0, a0, a1

@@ -340,8 +340,20 @@ define <16 x i64> @exact_vlen_i64_m8(ptr %p) vscale_range(2,2) {
 define <6 x bfloat> @load_v6bf16(ptr %p) {
 ; CHECK-LABEL: load_v6bf16:
 ; CHECK:       # %bb.0:
-; CHECK-NEXT:    vsetivli zero, 6, e16, m1, ta, ma
-; CHECK-NEXT:    vle16.v v8, (a0)
+; CHECK-NEXT:    lh a1, 10(a0)
+; CHECK-NEXT:    lh a2, 8(a0)
+; CHECK-NEXT:    lh a3, 0(a0)
+; CHECK-NEXT:    lh a4, 2(a0)
+; CHECK-NEXT:    lh a5, 4(a0)
+; CHECK-NEXT:    lh a0, 6(a0)
+; CHECK-NEXT:    vsetivli zero, 8, e16, m1, ta, ma
+; CHECK-NEXT:    vmv.v.x v8, a3
+; CHECK-NEXT:    vslide1down.vx v8, v8, a4
+; CHECK-NEXT:    vslide1down.vx v8, v8, a5
+; CHECK-NEXT:    vslide1down.vx v8, v8, a0
+; CHECK-NEXT:    vslide1down.vx v8, v8, a2
+; CHECK-NEXT:    vslide1down.vx v8, v8, a1
+; CHECK-NEXT:    vslidedown.vi v8, v8, 2
 ; CHECK-NEXT:    ret
   %x = load <6 x bfloat>, ptr %p
   ret <6 x bfloat> %x

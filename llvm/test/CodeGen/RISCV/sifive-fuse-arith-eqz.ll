@@ -12,8 +12,7 @@ define void @xor_snez(i32 signext %0, i32 signext %1) {
 ; NOFUSION:       # %bb.0:
 ; NOFUSION-NEXT:    xor a2, a0, a1
 ; NOFUSION-NEXT:    mulw a1, a1, a0
-; NOFUSION-NEXT:    snez a2, a2
-; NOFUSION-NEXT:    mv a0, a2
+; NOFUSION-NEXT:    snez a0, a2
 ; NOFUSION-NEXT:    tail bar
 ;
 ; FUSION-LABEL: xor_snez:
@@ -34,8 +33,7 @@ define void @xor_seqz(i32 signext %0, i32 signext %1) {
 ; NOFUSION:       # %bb.0:
 ; NOFUSION-NEXT:    xor a2, a0, a1
 ; NOFUSION-NEXT:    mulw a1, a1, a0
-; NOFUSION-NEXT:    seqz a2, a2
-; NOFUSION-NEXT:    mv a0, a2
+; NOFUSION-NEXT:    seqz a0, a2
 ; NOFUSION-NEXT:    tail bar
 ;
 ; FUSION-LABEL: xor_seqz:
@@ -56,8 +54,7 @@ define void @addi_seqz(i32 signext %0, i32 signext %1) {
 ; NOFUSION:       # %bb.0:
 ; NOFUSION-NEXT:    addi a2, a0, -5
 ; NOFUSION-NEXT:    mulw a1, a1, a0
-; NOFUSION-NEXT:    seqz a2, a2
-; NOFUSION-NEXT:    mv a0, a2
+; NOFUSION-NEXT:    seqz a0, a2
 ; NOFUSION-NEXT:    tail bar
 ;
 ; FUSION-LABEL: addi_seqz:
@@ -78,8 +75,7 @@ define void @addi_snez(i32 signext %0, i32 signext %1) {
 ; NOFUSION:       # %bb.0:
 ; NOFUSION-NEXT:    addi a2, a0, -5
 ; NOFUSION-NEXT:    mulw a1, a1, a0
-; NOFUSION-NEXT:    snez a2, a2
-; NOFUSION-NEXT:    mv a0, a2
+; NOFUSION-NEXT:    snez a0, a2
 ; NOFUSION-NEXT:    tail bar
 ;
 ; FUSION-LABEL: addi_snez:
