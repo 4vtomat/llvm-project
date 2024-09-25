@@ -4590,21 +4590,26 @@ class VPatTernaryNoMaskWithPolicy<string intrinsic,
                                   ValueType result_type,
                                   ValueType op1_type,
                                   ValueType op2_type,
-                                  int sew,
+                                  int log2sew, // SIFIVE_CUSTOMIZATION
                                   LMULInfo vlmul,
                                   VReg result_reg_class,
                                   RegisterClass op1_reg_class,
-                                  DAGOperand op2_kind> :
+                                  DAGOperand op2_kind,
+                                  bit sew_aware = false> : // SIFIVE_CUSTOMIZATION
   Pat<(result_type (!cast<Intrinsic>(intrinsic)
                     (result_type result_reg_class:$rs3),
                     (op1_type op1_reg_class:$rs1),
                     (op2_type op2_kind:$rs2),
                     VLOpFrag, (XLenVT timm:$policy))),
+#ifdef SIFIVE_CUSTOMIZATION
+                   (!cast<Instruction>(inst#"_"#kind#"_"#vlmul.MX#!if(sew_aware, "_E"#!shl(1, log2sew), ""))
+#else
                    (!cast<Instruction>(inst#"_"#kind#"_"#vlmul.MX)
+#endif
                     result_reg_class:$rs3,
                     (op1_type op1_reg_class:$rs1),
                     op2_kind:$rs2,
-                    GPR:$vl, sew, (XLenVT timm:$policy))>;
+                    GPR:$vl, log2sew, (XLenVT timm:$policy))>; // SIFIVE_CUSTOMIZATION
 
 class VPatTernaryNoMaskWithPolicyRoundingMode<string intrinsic,
                                   string inst,

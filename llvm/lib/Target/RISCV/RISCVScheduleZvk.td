@@ -36,7 +36,11 @@ defm "" : LMULSchedWrites<"WriteVGMULV">;
 /// Zvknha or Zvknhb extensions
 defm "" : LMULSchedWrites<"WriteVSHA2CHV">;
 defm "" : LMULSchedWrites<"WriteVSHA2CLV">;
+#ifdef SIFIVE_CUSTOMIZATION
+defm "" : LMULSEWSchedWrites<"WriteVSHA2MSV">;
+#else
 defm "" : LMULSchedWrites<"WriteVSHA2MSV">;
+#endif
 
 /// Zvkned extension
 defm "" : LMULSchedWrites<"WriteVAESMVV">;
@@ -79,7 +83,11 @@ defm "" : LMULSchedReads<"ReadVGMULV">;
 /// Zvknha or Zvknhb extensions
 defm "" : LMULSchedReads<"ReadVSHA2CHV">;
 defm "" : LMULSchedReads<"ReadVSHA2CLV">;
+#ifdef SIFIVE_CUSTOMIZATION
+defm "" : LMULSEWSchedReads<"ReadVSHA2MSV">;
+#else
 defm "" : LMULSchedReads<"ReadVSHA2MSV">;
+#endif
 
 /// Zvkned extension
 defm "" : LMULSchedReads<"ReadVAESMVV">;
@@ -153,11 +161,19 @@ multiclass UnsupportedSchedZvknhaOrZvknhb {
 let Unsupported = true in {
 defm "" : LMULWriteRes<"WriteVSHA2CHV", []>;
 defm "" : LMULWriteRes<"WriteVSHA2CLV", []>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm "" : LMULSEWWriteRes<"WriteVSHA2MSV", []>;
+#else
 defm "" : LMULWriteRes<"WriteVSHA2MSV", []>;
+#endif
 
 defm "" : LMULReadAdvance<"ReadVSHA2CHV", 0>;
 defm "" : LMULReadAdvance<"ReadVSHA2CLV", 0>;
+#ifdef SIFIVE_CUSTOMIZATION
+defm "" : LMULSEWReadAdvance<"ReadVSHA2MSV", 0>;
+#else
 defm "" : LMULReadAdvance<"ReadVSHA2MSV", 0>;
+#endif
 }
 }
 
