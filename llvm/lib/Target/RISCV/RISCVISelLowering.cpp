@@ -24425,6 +24425,26 @@ bool RISCVTargetLowering::isIntDivCheap(EVT VT, AttributeList Attr) const {
 }
 
 #if SIFIVE_CUSTOMIZATION
+bool RISCVTargetLowering::shouldReduceLoadWidth(SDNode *Load,
+                                                ISD::LoadExtType ExtTy,
+                                                EVT NewVT) const {
+  assert(cast<LoadSDNode>(Load)->isSimple() && "illegal to narrow");
+
+  // Try the default checks first.
+  if (!TargetLowering::shouldReduceLoadWidth(Load, ExtTy, NewVT))
+    return false;
+
+  // Don't shrink MO_GOT_GPREL_LO loads. These may be relaxed by the linker
+  // which expects the load to be pointer sized.
+  SDValue BasePtr = cast<LoadSDNode>(Load)->getBasePtr();
+  if (BasePtr.getOpcode() == RISCVISD::ADD_LO)
+    if (auto *GA = dyn_cast<GlobalAddressSDNode>(BasePtr.getOperand(1)))
+      if (GA->getTargetFlags() == RISCVII::MO_GOT_GPREL_LO)
+        return false;
+
+  return true;
+}
+
 bool RISCVTargetLowering::canMergeStoresTo(unsigned AddressSpace, EVT MemVT,
                                            const MachineFunction &MF) const {
   // Disable merging to vector store on SiFive cores.

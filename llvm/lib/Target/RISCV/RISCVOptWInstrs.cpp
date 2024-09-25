@@ -610,6 +610,15 @@ static bool isSignExtendedW(Register SrcReg, const RISCVSubtarget &ST,
     case RISCV::LWU:
     case RISCV::MUL:
     case RISCV::SUB:
+#if SIFIVE_CUSTOMIZATION
+      // Don't shrink compact code model loads than can be relaxed by the
+      // linker.
+      if (MI->getOpcode() == RISCV::LD) {
+        MachineOperand &ImmOp = MI->getOperand(2);
+        if (ImmOp.getTargetFlags() == RISCVII::MO_GOT_GPREL_LO)
+          return false;
+      }
+#endif
       if (hasAllWUsers(*MI, ST, MRI)) {
         FixableDef.insert(MI);
         break;

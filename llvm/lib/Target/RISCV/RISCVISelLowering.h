@@ -557,6 +557,11 @@ public:
   bool isIntDivCheap(EVT VT, AttributeList Attr) const override;
 
 #if SIFIVE_CUSTOMIZATION
+  /// Return true if we believe it is correct and profitable to reduce the
+  /// load node to a smaller type.
+  bool shouldReduceLoadWidth(SDNode *Load, ISD::LoadExtType ExtTy,
+                             EVT NewVT) const override;
+
   bool canMergeStoresTo(unsigned AddressSpace, EVT MemVT,
                         const MachineFunction &MF) const override;
 #endif // SIFIVE_CUSTOMIZATION
