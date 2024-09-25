@@ -11772,13 +11772,22 @@ SDValue RISCVTargetLowering::lowerVECTOR_INTERLEAVE(SDValue Op,
         Intrinsic::riscv_vsseg8,
     };
 
-    SmallVector<SDValue, 13> Ops;
-    Ops.push_back(DAG.getEntryNode());
-    Ops.push_back(DAG.getTargetConstant(IntrIds[Factor - 2], DL, XLenVT));
-    for (unsigned i = 0; i != Factor; ++i)
-      Ops.push_back(Op.getOperand(i));
-    Ops.push_back(StackPtr);
-    Ops.push_back(VL);
+    unsigned Sz = Factor * VecVT.getVectorMinNumElements() *
+                  VecVT.getScalarSizeInBits();
+    EVT VecTupTy = MVT::getRISCVVectorTupleVT(Sz, Factor);
+
+    SDValue StoredVal = DAG.getUNDEF(VecTupTy);
+    for (unsigned i = 0; i < Factor; i++)
+      StoredVal = DAG.getNode(RISCVISD::TUPLE_INSERT, DL, VecTupTy, StoredVal,
+                              Op.getOperand(i), DAG.getConstant(i, DL, XLenVT));
+
+    SDValue Ops[] = {
+      DAG.getEntryNode(),
+      DAG.getTargetConstant(IntrIds[Factor - 2], DL, XLenVT),
+      StoredVal,
+      StackPtr,
+      VL,
+      DAG.getTargetConstant(Log2_64(VecVT.getScalarSizeInBits()), DL, XLenVT)};
 
     SDValue Chain = DAG.getMemIntrinsicNode(
         ISD::INTRINSIC_VOID, DL, DAG.getVTList(MVT::Other), Ops,

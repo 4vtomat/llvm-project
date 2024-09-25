@@ -12,40 +12,38 @@ define <vscale x 96 x i1> @vector_interleave_nxv96i1_nxv16i1(<vscale x 16 x i1> 
 ; CHECK-NEXT:    li a1, 12
 ; CHECK-NEXT:    mul a0, a0, a1
 ; CHECK-NEXT:    sub sp, sp, a0
-; CHECK-NEXT:    vmv1r.v v13, v0
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
-; CHECK-NEXT:    vmv.v.i v18, 0
-; CHECK-NEXT:    vmv1r.v v0, v12
-; CHECK-NEXT:    vmerge.vim v14, v18, 1, v0
-; CHECK-NEXT:    vmv1r.v v0, v11
-; CHECK-NEXT:    vmerge.vim v16, v18, 1, v0
-; CHECK-NEXT:    vmv1r.v v0, v10
-; CHECK-NEXT:    vmerge.vim v10, v18, 1, v0
-; CHECK-NEXT:    vmv1r.v v0, v9
-; CHECK-NEXT:    vmerge.vim v20, v18, 1, v0
+; CHECK-NEXT:    vmv.v.i v20, 0
+; CHECK-NEXT:    vmerge.vim v14, v20, 1, v0
 ; CHECK-NEXT:    vmv1r.v v0, v8
-; CHECK-NEXT:    vmerge.vim v8, v18, 1, v0
-; CHECK-NEXT:    vmv1r.v v0, v13
-; CHECK-NEXT:    vmerge.vim v22, v18, 1, v0
-; CHECK-NEXT:    vmv1r.v v24, v9
-; CHECK-NEXT:    vmv1r.v v25, v21
-; CHECK-NEXT:    vmv1r.v v26, v11
-; CHECK-NEXT:    vmv1r.v v27, v17
-; CHECK-NEXT:    vmv1r.v v28, v15
+; CHECK-NEXT:    vmerge.vim v22, v20, 1, v0
+; CHECK-NEXT:    vmv1r.v v0, v9
+; CHECK-NEXT:    vmv1r.v v16, v23
+; CHECK-NEXT:    vmerge.vim v8, v20, 1, v0
+; CHECK-NEXT:    vmv1r.v v0, v10
+; CHECK-NEXT:    vmv1r.v v17, v9
+; CHECK-NEXT:    vmerge.vim v24, v20, 1, v0
+; CHECK-NEXT:    vmv1r.v v0, v11
+; CHECK-NEXT:    vmv1r.v v18, v25
+; CHECK-NEXT:    vmerge.vim v10, v20, 1, v0
+; CHECK-NEXT:    vmv1r.v v0, v12
+; CHECK-NEXT:    vmv1r.v v19, v11
+; CHECK-NEXT:    vmerge.vim v12, v20, 1, v0
+; CHECK-NEXT:    vmv1r.v v20, v13
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    li a1, 6
 ; CHECK-NEXT:    mul a0, a0, a1
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    vsetvli a1, zero, e8, m1, ta, ma
-; CHECK-NEXT:    vsseg6e8.v v23, (a0)
-; CHECK-NEXT:    vmv1r.v v23, v8
-; CHECK-NEXT:    vmv1r.v v24, v20
-; CHECK-NEXT:    vmv1r.v v25, v10
-; CHECK-NEXT:    vmv1r.v v26, v16
-; CHECK-NEXT:    vmv1r.v v27, v14
+; CHECK-NEXT:    vsseg6e8.v v15, (a0)
+; CHECK-NEXT:    vmv1r.v v15, v22
+; CHECK-NEXT:    vmv1r.v v16, v8
+; CHECK-NEXT:    vmv1r.v v17, v24
+; CHECK-NEXT:    vmv1r.v v18, v10
+; CHECK-NEXT:    vmv1r.v v19, v12
 ; CHECK-NEXT:    addi a1, sp, 16
-; CHECK-NEXT:    vsseg6e8.v v22, (a1)
+; CHECK-NEXT:    vsseg6e8.v v14, (a1)
 ; CHECK-NEXT:    vl1r.v v8, (a0)
 ; CHECK-NEXT:    csrr a2, vlenb
 ; CHECK-NEXT:    add a0, a0, a2
