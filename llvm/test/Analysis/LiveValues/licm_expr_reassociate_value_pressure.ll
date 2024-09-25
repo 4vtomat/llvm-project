@@ -35,6 +35,7 @@ define void @innermost_loop_1d_shouldhoist(i32 %i, i64 %d1, i64 %delta, ptr %cel
 ; LICM_CONSTRAINED-LABEL: define void @innermost_loop_1d_shouldhoist
 ; LICM_CONSTRAINED-SAME: (i32 [[I:%.*]], i64 [[D1:%.*]], i64 [[DELTA:%.*]], ptr [[CELLS:%.*]], ptr [[CELLS2:%.*]]) {
 ; LICM_CONSTRAINED-NEXT:  entry:
+; LICM_CONSTRAINED-NEXT:    [[INVARIANT_OP:%.*]] = mul i64 [[D1]], [[DELTA]]
 ; LICM_CONSTRAINED-NEXT:    br label [[FOR_COND:%.*]]
 ; LICM_CONSTRAINED:       for.cond:
 ; LICM_CONSTRAINED-NEXT:    [[J:%.*]] = phi i32 [ 0, [[ENTRY:%.*]] ], [ [[ADD_J_1:%.*]], [[FOR_BODY:%.*]] ]
@@ -45,12 +46,11 @@ define void @innermost_loop_1d_shouldhoist(i32 %i, i64 %d1, i64 %delta, ptr %cel
 ; LICM_CONSTRAINED-NEXT:    [[IDXPROM_J_1:%.*]] = zext i32 [[ADD_J_1]] to i64
 ; LICM_CONSTRAINED-NEXT:    [[ARRAYIDX_J_1:%.*]] = getelementptr inbounds i64, ptr [[CELLS]], i64 [[IDXPROM_J_1]]
 ; LICM_CONSTRAINED-NEXT:    [[CELL_1:%.*]] = load i64, ptr [[ARRAYIDX_J_1]], align 8
-; LICM_CONSTRAINED-NEXT:    [[FMUL_1:%.*]] = mul i64 [[D1]], [[CELL_1]]
-; LICM_CONSTRAINED-NEXT:    [[FMUL_2:%.*]] = mul i64 [[FMUL_1]], [[DELTA]]
+; LICM_CONSTRAINED-NEXT:    [[FMUL_2_REASS:%.*]] = mul i64 [[CELL_1]], [[INVARIANT_OP]]
 ; LICM_CONSTRAINED-NEXT:    [[IDXPROM_J:%.*]] = zext i32 [[J]] to i64
 ; LICM_CONSTRAINED-NEXT:    [[ARRAYIDX_J:%.*]] = getelementptr inbounds i64, ptr [[CELLS]], i64 [[IDXPROM_J]]
 ; LICM_CONSTRAINED-NEXT:    [[ARRAYIDX_J_2:%.*]] = getelementptr inbounds i64, ptr [[CELLS2]], i64 [[IDXPROM_J]]
-; LICM_CONSTRAINED-NEXT:    store i64 [[FMUL_2]], ptr [[ARRAYIDX_J]], align 8
+; LICM_CONSTRAINED-NEXT:    store i64 [[FMUL_2_REASS]], ptr [[ARRAYIDX_J]], align 8
 ; LICM_CONSTRAINED-NEXT:    store i64 [[DELTA]], ptr [[ARRAYIDX_J_2]], align 8
 ; LICM_CONSTRAINED-NEXT:    br label [[FOR_COND]]
 ; LICM_CONSTRAINED:       for.end:
@@ -70,11 +70,11 @@ define void @innermost_loop_1d_shouldhoist(i32 %i, i64 %d1, i64 %delta, ptr %cel
 ; LICM_UNCONSTRAINED-NEXT:    [[IDXPROM_J_1:%.*]] = zext i32 [[ADD_J_1]] to i64
 ; LICM_UNCONSTRAINED-NEXT:    [[ARRAYIDX_J_1:%.*]] = getelementptr inbounds i64, ptr [[CELLS]], i64 [[IDXPROM_J_1]]
 ; LICM_UNCONSTRAINED-NEXT:    [[CELL_1:%.*]] = load i64, ptr [[ARRAYIDX_J_1]], align 8
-; LICM_UNCONSTRAINED-NEXT:    [[FMUL_1:%.*]] = mul i64 [[FACTOR_OP_MUL]], [[CELL_1]]
+; LICM_UNCONSTRAINED-NEXT:    [[FMUL_1_REASS:%.*]] = mul i64 [[FACTOR_OP_MUL]], [[CELL_1]]
 ; LICM_UNCONSTRAINED-NEXT:    [[IDXPROM_J:%.*]] = zext i32 [[J]] to i64
 ; LICM_UNCONSTRAINED-NEXT:    [[ARRAYIDX_J:%.*]] = getelementptr inbounds i64, ptr [[CELLS]], i64 [[IDXPROM_J]]
 ; LICM_UNCONSTRAINED-NEXT:    [[ARRAYIDX_J_2:%.*]] = getelementptr inbounds i64, ptr [[CELLS2]], i64 [[IDXPROM_J]]
-; LICM_UNCONSTRAINED-NEXT:    store i64 [[FMUL_1]], ptr [[ARRAYIDX_J]], align 8
+; LICM_UNCONSTRAINED-NEXT:    store i64 [[FMUL_1_REASS]], ptr [[ARRAYIDX_J]], align 8
 ; LICM_UNCONSTRAINED-NEXT:    store i64 [[DELTA]], ptr [[ARRAYIDX_J_2]], align 8
 ; LICM_UNCONSTRAINED-NEXT:    br label [[FOR_COND]]
 ; LICM_UNCONSTRAINED:       for.end:

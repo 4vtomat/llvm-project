@@ -538,11 +538,11 @@ define void @nearbyint_fp16() {
 ; ZVFH-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %3 = call <4 x half> @llvm.nearbyint.v4f16(<4 x half> undef)
 ; ZVFH-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %4 = call <8 x half> @llvm.nearbyint.v8f16(<8 x half> undef)
 ; ZVFH-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %5 = call <16 x half> @llvm.nearbyint.v16f16(<16 x half> undef)
-; ZVFH-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %6 = call <vscale x 1 x half> @llvm.nearbyint.nxv1f16(<vscale x 1 x half> undef)
-; ZVFH-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %7 = call <vscale x 2 x half> @llvm.nearbyint.nxv2f16(<vscale x 2 x half> undef)
-; ZVFH-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %8 = call <vscale x 4 x half> @llvm.nearbyint.nxv4f16(<vscale x 4 x half> undef)
-; ZVFH-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %9 = call <vscale x 8 x half> @llvm.nearbyint.nxv8f16(<vscale x 8 x half> undef)
-; ZVFH-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %10 = call <vscale x 16 x half> @llvm.nearbyint.nxv16f16(<vscale x 16 x half> undef)
+; ZVFH-NEXT:  Cost Model: Invalid cost for instruction: %6 = call <vscale x 1 x half> @llvm.nearbyint.nxv1f16(<vscale x 1 x half> undef)
+; ZVFH-NEXT:  Cost Model: Invalid cost for instruction: %7 = call <vscale x 2 x half> @llvm.nearbyint.nxv2f16(<vscale x 2 x half> undef)
+; ZVFH-NEXT:  Cost Model: Invalid cost for instruction: %8 = call <vscale x 4 x half> @llvm.nearbyint.nxv4f16(<vscale x 4 x half> undef)
+; ZVFH-NEXT:  Cost Model: Invalid cost for instruction: %9 = call <vscale x 8 x half> @llvm.nearbyint.nxv8f16(<vscale x 8 x half> undef)
+; ZVFH-NEXT:  Cost Model: Invalid cost for instruction: %10 = call <vscale x 16 x half> @llvm.nearbyint.nxv16f16(<vscale x 16 x half> undef)
 ; ZVFH-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
 ; ZVFHMIN-LABEL: 'nearbyint_fp16'
@@ -551,11 +551,11 @@ define void @nearbyint_fp16() {
 ; ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %3 = call <4 x half> @llvm.nearbyint.v4f16(<4 x half> undef)
 ; ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %4 = call <8 x half> @llvm.nearbyint.v8f16(<8 x half> undef)
 ; ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %5 = call <16 x half> @llvm.nearbyint.v16f16(<16 x half> undef)
-; ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %6 = call <vscale x 1 x half> @llvm.nearbyint.nxv1f16(<vscale x 1 x half> undef)
-; ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %7 = call <vscale x 2 x half> @llvm.nearbyint.nxv2f16(<vscale x 2 x half> undef)
-; ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %8 = call <vscale x 4 x half> @llvm.nearbyint.nxv4f16(<vscale x 4 x half> undef)
-; ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %9 = call <vscale x 8 x half> @llvm.nearbyint.nxv8f16(<vscale x 8 x half> undef)
-; ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %10 = call <vscale x 16 x half> @llvm.nearbyint.nxv16f16(<vscale x 16 x half> undef)
+; ZVFHMIN-NEXT:  Cost Model: Invalid cost for instruction: %6 = call <vscale x 1 x half> @llvm.nearbyint.nxv1f16(<vscale x 1 x half> undef)
+; ZVFHMIN-NEXT:  Cost Model: Invalid cost for instruction: %7 = call <vscale x 2 x half> @llvm.nearbyint.nxv2f16(<vscale x 2 x half> undef)
+; ZVFHMIN-NEXT:  Cost Model: Invalid cost for instruction: %8 = call <vscale x 4 x half> @llvm.nearbyint.nxv4f16(<vscale x 4 x half> undef)
+; ZVFHMIN-NEXT:  Cost Model: Invalid cost for instruction: %9 = call <vscale x 8 x half> @llvm.nearbyint.nxv8f16(<vscale x 8 x half> undef)
+; ZVFHMIN-NEXT:  Cost Model: Invalid cost for instruction: %10 = call <vscale x 16 x half> @llvm.nearbyint.nxv16f16(<vscale x 16 x half> undef)
 ; ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
   call half @llvm.nearbyint.f16(half undef)
@@ -1268,11 +1268,11 @@ define void @vp_nearbyint_f16() {
 ; ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %2 = call <4 x half> @llvm.vp.nearbyint.v4f16(<4 x half> undef, <4 x i1> undef, i32 undef)
 ; ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %3 = call <8 x half> @llvm.vp.nearbyint.v8f16(<8 x half> undef, <8 x i1> undef, i32 undef)
 ; ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %4 = call <16 x half> @llvm.vp.nearbyint.v16f16(<16 x half> undef, <16 x i1> undef, i32 undef)
-; ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %5 = call <vscale x 1 x half> @llvm.vp.nearbyint.nxv1f16(<vscale x 1 x half> undef, <vscale x 1 x i1> undef, i32 undef)
-; ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %6 = call <vscale x 2 x half> @llvm.vp.nearbyint.nxv2f16(<vscale x 2 x half> undef, <vscale x 2 x i1> undef, i32 undef)
-; ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %7 = call <vscale x 4 x half> @llvm.vp.nearbyint.nxv4f16(<vscale x 4 x half> undef, <vscale x 4 x i1> undef, i32 undef)
-; ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %8 = call <vscale x 8 x half> @llvm.vp.nearbyint.nxv8f16(<vscale x 8 x half> undef, <vscale x 8 x i1> undef, i32 undef)
-; ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %9 = call <vscale x 16 x half> @llvm.vp.nearbyint.nxv16f16(<vscale x 16 x half> undef, <vscale x 16 x i1> undef, i32 undef)
+; ZVFHMIN-NEXT:  Cost Model: Invalid cost for instruction: %5 = call <vscale x 1 x half> @llvm.vp.nearbyint.nxv1f16(<vscale x 1 x half> undef, <vscale x 1 x i1> undef, i32 undef)
+; ZVFHMIN-NEXT:  Cost Model: Invalid cost for instruction: %6 = call <vscale x 2 x half> @llvm.vp.nearbyint.nxv2f16(<vscale x 2 x half> undef, <vscale x 2 x i1> undef, i32 undef)
+; ZVFHMIN-NEXT:  Cost Model: Invalid cost for instruction: %7 = call <vscale x 4 x half> @llvm.vp.nearbyint.nxv4f16(<vscale x 4 x half> undef, <vscale x 4 x i1> undef, i32 undef)
+; ZVFHMIN-NEXT:  Cost Model: Invalid cost for instruction: %8 = call <vscale x 8 x half> @llvm.vp.nearbyint.nxv8f16(<vscale x 8 x half> undef, <vscale x 8 x i1> undef, i32 undef)
+; ZVFHMIN-NEXT:  Cost Model: Invalid cost for instruction: %9 = call <vscale x 16 x half> @llvm.vp.nearbyint.nxv16f16(<vscale x 16 x half> undef, <vscale x 16 x i1> undef, i32 undef)
 ; ZVFHMIN-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
   call <2 x half> @llvm.vp.nearbyint.v2f16(<2 x half> undef, <2 x i1> undef, i32 undef)
