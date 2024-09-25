@@ -10,13 +10,13 @@ target datalayout = "e-m:e-p:64:64-i64:64-i128:128-n64-S128"
 @a = global i32 4
 
 define i32 @inner() {
-; CHECK_LEAF-LABEL: define i32 @inner(
+; CHECK_LEAF-LABEL: define range(i32 0, -1) i32 @inner(
 ; CHECK_LEAF-SAME: ) local_unnamed_addr #[[ATTR0:[0-9]+]] {
 ; CHECK_LEAF-NEXT:    [[A1:%.*]] = load volatile i32, ptr @a, align 4
 ; CHECK_LEAF-NEXT:    [[X1:%.*]] = shl i32 [[A1]], 1
 ; CHECK_LEAF-NEXT:    ret i32 [[X1]]
 ;
-; CHECK_NOLEAF-LABEL: define i32 @inner(
+; CHECK_NOLEAF-LABEL: define range(i32 0, -1) i32 @inner(
 ; CHECK_NOLEAF-SAME: ) local_unnamed_addr #[[ATTR0:[0-9]+]] {
 ; CHECK_NOLEAF-NEXT:    [[A1:%.*]] = load volatile i32, ptr @a, align 4
 ; CHECK_NOLEAF-NEXT:    [[X1:%.*]] = shl i32 [[A1]], 1

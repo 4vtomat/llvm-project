@@ -23,7 +23,7 @@ define void @WriteProfile(i32* nocapture readnone %M, float*** nocapture readnon
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call fast <vscale x 4 x float> @llvm.vp.fadd.nxv4f32(<vscale x 4 x float> [[VEC_PHI]], <vscale x 4 x float> [[BROADCAST_SPLAT7]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i32 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP10]])
 ; CHECK-NEXT:    [[EVL_SPLATINSERT:%.*]] = insertelement <vscale x 4 x i32> poison, i32 [[TMP10]], i64 0
 ; CHECK-NEXT:    [[EVL_SPLAT:%.*]] = shufflevector <vscale x 4 x i32> [[EVL_SPLATINSERT]], <vscale x 4 x i32> poison, <vscale x 4 x i32> zeroinitializer
-; CHECK-NEXT:    [[STEP_VEC:%.*]] = call <vscale x 4 x i32> @llvm.experimental.stepvector.nxv4i32()
+; CHECK-NEXT:    [[STEP_VEC:%.*]] = call <vscale x 4 x i32> @llvm.stepvector.nxv4i32()
 ; CHECK-NEXT:    [[EVL_MASK:%.*]] = icmp ult <vscale x 4 x i32> [[STEP_VEC]], [[EVL_SPLAT]]
 ; CHECK-NEXT:    [[TMP11]] = select <vscale x 4 x i1> [[EVL_MASK]], <vscale x 4 x float> [[VP_OP]], <vscale x 4 x float> [[VEC_PHI]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], [[TMP9]]

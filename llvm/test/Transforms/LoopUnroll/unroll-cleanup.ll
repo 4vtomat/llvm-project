@@ -52,7 +52,6 @@ define void @_Z3fn1v(ptr %r, ptr %a) #0 {
 ; CHECK-NEXT:    [[LCMP_MOD_NOT:%.*]] = icmp eq i32 [[XTRAITER]], 0
 ; CHECK-NEXT:    br i1 [[LCMP_MOD_NOT]], label %[[FOR_BODY3_PROL_LOOPEXIT]], label %[[FOR_BODY3_PROL:.*]]
 ; CHECK:       [[FOR_BODY3_PROL]]:
-; CHECK-NEXT:    [[DEC18_PROL:%.*]] = add nsw i32 [[TMP2]], -1
 ; CHECK-NEXT:    [[TMP3_PROL:%.*]] = load i8, ptr [[A_021]], align 1
 ; CHECK-NEXT:    [[CMP_PROL:%.*]] = icmp eq i8 [[TMP3_PROL]], 0
 ; CHECK-NEXT:    br i1 [[CMP_PROL]], label %[[IF_THEN_PROL:.*]], label %[[FOR_INC_PROL:.*]]
@@ -69,7 +68,7 @@ define void @_Z3fn1v(ptr %r, ptr %a) #0 {
 ; CHECK-NEXT:    br label %[[FOR_BODY3_PROL_LOOPEXIT]]
 ; CHECK:       [[FOR_BODY3_PROL_LOOPEXIT]]:
 ; CHECK-NEXT:    [[ADD_PTR_LCSSA_UNR]] = phi ptr [ poison, %[[FOR_BODY3_PREHEADER]] ], [ [[ADD_PTR_PROL]], %[[FOR_INC_PROL]] ]
-; CHECK-NEXT:    [[DEC18_IN_UNR:%.*]] = phi i32 [ [[TMP2]], %[[FOR_BODY3_PREHEADER]] ], [ [[DEC18_PROL]], %[[FOR_INC_PROL]] ]
+; CHECK-NEXT:    [[DEC18_IN_UNR:%.*]] = phi i32 [ [[TMP2]], %[[FOR_BODY3_PREHEADER]] ], [ [[TMP0]], %[[FOR_INC_PROL]] ]
 ; CHECK-NEXT:    [[R_117_UNR:%.*]] = phi ptr [ [[R_022]], %[[FOR_BODY3_PREHEADER]] ], [ [[ADD_PTR_PROL]], %[[FOR_INC_PROL]] ]
 ; CHECK-NEXT:    [[A_116_UNR:%.*]] = phi ptr [ [[A_021]], %[[FOR_BODY3_PREHEADER]] ], [ [[INCDEC_PTR_PROL]], %[[FOR_INC_PROL]] ]
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq i32 [[TMP0]], 0
