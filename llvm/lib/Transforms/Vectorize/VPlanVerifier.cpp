@@ -176,6 +176,21 @@ bool VPlanVerifier::verifyEVLRecipe(const VPInstruction &EVL) const {
                      << "EVL is used as an operand in non-VPInstruction::Add\n";
                  return false;
                }
+#if SIFIVE_CUSTOMIZATION
+               if (any_of(I->users(), [](VPUser *U) {
+                     return !isa<VPCanonicalIVPHIRecipe, VPEVLBasedIVPHIRecipe,
+                                 VPInstruction>(U) ||
+                            (isa<VPInstruction>(U) &&
+                             cast<VPInstruction>(U)->getOpcode() !=
+                                 VPInstruction::BranchOnCount);
+                   })) {
+                 errs() << "Result of VPInstruction::Add with EVL operand is "
+                           "not used by VPEVLBasedIVPHIRecipe, "
+                           "VPCanonicalIVPHIRecipe, or "
+                           "VPInstruction::BranchOnCount\n";
+                 return false;
+               }
+#else
                if (I->getNumUsers() != 1) {
                  errs() << "EVL is used in VPInstruction:Add with multiple "
                            "users\n";
@@ -186,6 +201,7 @@ bool VPlanVerifier::verifyEVLRecipe(const VPInstruction &EVL) const {
                            "not used by VPEVLBasedIVPHIRecipe\n";
                  return false;
                }
+#endif // SIFIVE_CUSTOMIZATION
                return true;
              })
 #if SIFIVE_CUSTOMIZATION
