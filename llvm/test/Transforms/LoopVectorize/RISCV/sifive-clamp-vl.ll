@@ -23,10 +23,8 @@ define void @test(ptr %A) {
 ; VL0-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> [[VP_OP]], ptr align 4 [[TMP4]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP1]])
 ; VL0-NEXT:    [[TMP5:%.*]] = zext i32 [[TMP1]] to i64
 ; VL0-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP5]], [[EVL_BASED_IV]]
-; VL0-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP1]] to i64
-; VL0-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP6]]
-; VL0-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1000
-; VL0-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; VL0-NEXT:    [[TMP6:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1000
+; VL0-NEXT:    br i1 [[TMP6]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; VL0:       middle.block:
 ; VL0-NEXT:    br label [[FOR_COND_CLEANUP:%.*]]
 ; VL0:       scalar.ph:
@@ -37,8 +35,8 @@ define void @test(ptr %A) {
 ; VL0:       for.body:
 ; VL0-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; VL0-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[INDVARS_IV]]
-; VL0-NEXT:    [[TMP8:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
-; VL0-NEXT:    [[ADD:%.*]] = add nsw i32 [[TMP8]], 1
+; VL0-NEXT:    [[TMP7:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; VL0-NEXT:    [[ADD:%.*]] = add nsw i32 [[TMP7]], 1
 ; VL0-NEXT:    store i32 [[ADD]], ptr [[ARRAYIDX]], align 4
 ; VL0-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; VL0-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 1000
@@ -63,10 +61,8 @@ define void @test(ptr %A) {
 ; VL1-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> [[VP_OP]], ptr align 4 [[TMP5]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP2]])
 ; VL1-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP2]] to i64
 ; VL1-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP6]], [[EVL_BASED_IV]]
-; VL1-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP2]] to i64
-; VL1-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP7]]
-; VL1-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1000
-; VL1-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; VL1-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1000
+; VL1-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; VL1:       middle.block:
 ; VL1-NEXT:    br label [[FOR_COND_CLEANUP:%.*]]
 ; VL1:       scalar.ph:
@@ -77,8 +73,8 @@ define void @test(ptr %A) {
 ; VL1:       for.body:
 ; VL1-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; VL1-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[INDVARS_IV]]
-; VL1-NEXT:    [[TMP9:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
-; VL1-NEXT:    [[ADD:%.*]] = add nsw i32 [[TMP9]], 1
+; VL1-NEXT:    [[TMP8:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; VL1-NEXT:    [[ADD:%.*]] = add nsw i32 [[TMP8]], 1
 ; VL1-NEXT:    store i32 [[ADD]], ptr [[ARRAYIDX]], align 4
 ; VL1-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; VL1-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 1000
@@ -103,10 +99,8 @@ define void @test(ptr %A) {
 ; VL4-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> [[VP_OP]], ptr align 4 [[TMP5]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP2]])
 ; VL4-NEXT:    [[TMP6:%.*]] = zext i32 [[TMP2]] to i64
 ; VL4-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP6]], [[EVL_BASED_IV]]
-; VL4-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP2]] to i64
-; VL4-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP7]]
-; VL4-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1000
-; VL4-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; VL4-NEXT:    [[TMP7:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 1000
+; VL4-NEXT:    br i1 [[TMP7]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; VL4:       middle.block:
 ; VL4-NEXT:    br label [[FOR_COND_CLEANUP:%.*]]
 ; VL4:       scalar.ph:
@@ -117,8 +111,8 @@ define void @test(ptr %A) {
 ; VL4:       for.body:
 ; VL4-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_BODY]] ]
 ; VL4-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[INDVARS_IV]]
-; VL4-NEXT:    [[TMP9:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
-; VL4-NEXT:    [[ADD:%.*]] = add nsw i32 [[TMP9]], 1
+; VL4-NEXT:    [[TMP8:%.*]] = load i32, ptr [[ARRAYIDX]], align 4
+; VL4-NEXT:    [[ADD:%.*]] = add nsw i32 [[TMP8]], 1
 ; VL4-NEXT:    store i32 [[ADD]], ptr [[ARRAYIDX]], align 4
 ; VL4-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 1
 ; VL4-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[INDVARS_IV_NEXT]], 1000

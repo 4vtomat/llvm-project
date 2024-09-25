@@ -52,7 +52,7 @@ define dso_local noundef signext i32 @f(ptr noundef writeonly %c, ptr noundef re
 ; VEC-NEXT:    [[TMP15:%.*]] = mul i64 [[TMP14]], 0
 ; VEC-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 2 x i64> poison, i64 [[TMP15]], i64 0
 ; VEC-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 2 x i64> [[DOTSPLATINSERT]], <vscale x 2 x i64> poison, <vscale x 2 x i32> zeroinitializer
-; VEC-NEXT:    [[TMP16:%.*]] = call <vscale x 2 x i64> @llvm.experimental.stepvector.nxv2i64()
+; VEC-NEXT:    [[TMP16:%.*]] = call <vscale x 2 x i64> @llvm.stepvector.nxv2i64()
 ; VEC-NEXT:    [[TMP17:%.*]] = add <vscale x 2 x i64> [[DOTSPLAT]], [[TMP16]]
 ; VEC-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 2 x ptr> poison, ptr [[ADD_PTR2]], i64 0
 ; VEC-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 2 x ptr> [[BROADCAST_SPLATINSERT]], <vscale x 2 x ptr> poison, <vscale x 2 x i32> zeroinitializer
@@ -79,13 +79,11 @@ define dso_local noundef signext i32 @f(ptr noundef writeonly %c, ptr noundef re
 ; VEC-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> [[PREDPHI]], ptr align 4 [[TMP25]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP20]])
 ; VEC-NEXT:    [[TMP26:%.*]] = zext i32 [[TMP20]] to i64
 ; VEC-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP26]], [[EVL_BASED_IV]]
-; VEC-NEXT:    [[TMP27:%.*]] = zext i32 [[TMP20]] to i64
-; VEC-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP27]]
-; VEC-NEXT:    [[TMP28:%.*]] = mul i64 [[TMP21]], 1
-; VEC-NEXT:    [[TMP29:%.*]] = mul i64 4, [[TMP28]]
-; VEC-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP29]]
-; VEC-NEXT:    [[TMP30:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP6]]
-; VEC-NEXT:    br i1 [[TMP30]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; VEC-NEXT:    [[TMP27:%.*]] = mul i64 [[TMP21]], 1
+; VEC-NEXT:    [[TMP28:%.*]] = mul i64 4, [[TMP27]]
+; VEC-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP28]]
+; VEC-NEXT:    [[TMP29:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP6]]
+; VEC-NEXT:    br i1 [[TMP29]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; VEC:       middle.block:
 ; VEC-NEXT:    br label [[FOR_END_LOOPEXIT:%.*]]
 ; VEC:       scalar.ph:
@@ -98,10 +96,10 @@ define dso_local noundef signext i32 @f(ptr noundef writeonly %c, ptr noundef re
 ; VEC-NEXT:    [[CMP3:%.*]] = icmp ult ptr [[A_ADDR_011]], [[ADD_PTR2]]
 ; VEC-NEXT:    br i1 [[CMP3]], label [[IF_THEN:%.*]], label [[FOR_INC]]
 ; VEC:       if.then:
-; VEC-NEXT:    [[TMP31:%.*]] = load i32, ptr [[A_ADDR_011]], align 4
+; VEC-NEXT:    [[TMP30:%.*]] = load i32, ptr [[A_ADDR_011]], align 4
 ; VEC-NEXT:    br label [[FOR_INC]]
 ; VEC:       for.inc:
-; VEC-NEXT:    [[STOREMERGE:%.*]] = phi i32 [ [[TMP31]], [[IF_THEN]] ], [ 0, [[FOR_BODY]] ]
+; VEC-NEXT:    [[STOREMERGE:%.*]] = phi i32 [ [[TMP30]], [[IF_THEN]] ], [ 0, [[FOR_BODY]] ]
 ; VEC-NEXT:    store i32 [[STOREMERGE]], ptr [[C_ADDR_012]], align 4
 ; VEC-NEXT:    [[INCDEC_PTR]] = getelementptr inbounds i8, ptr [[A_ADDR_011]], i64 4
 ; VEC-NEXT:    [[INCDEC_PTR4]] = getelementptr inbounds i8, ptr [[C_ADDR_012]], i64 4
