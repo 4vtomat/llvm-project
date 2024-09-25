@@ -3,68 +3,12 @@
 ; RUN: opt -riscv-use-vla-vectorizer=false -passes=loop-vectorize -mtriple riscv64 -mattr=+v,+zvfbfmin -debug-only=loop-vectorize -riscv-v-register-bit-width-lmul=1 -S < %s 2>&1 | FileCheck %s
 
 define void @add(ptr noalias nocapture readonly %src1, ptr noalias nocapture readonly %src2, i32 signext %size, ptr noalias nocapture writeonly %result) {
-; CHECK-LABEL: define void @add(
-; CHECK-SAME: ptr noalias nocapture readonly [[SRC1:%.*]], ptr noalias nocapture readonly [[SRC2:%.*]], i32 signext [[SIZE:%.*]], ptr noalias nocapture writeonly [[RESULT:%.*]]) #[[ATTR0:[0-9]+]] {
-; CHECK-NEXT:  [[ENTRY:.*:]]
-; CHECK-NEXT:    [[CONV:%.*]] = zext i32 [[SIZE]] to i64
-; CHECK-NEXT:    [[CMP10_NOT:%.*]] = icmp eq i32 [[SIZE]], 0
-; CHECK-NEXT:    br i1 [[CMP10_NOT]], label %[[FOR_COND_CLEANUP:.*]], label %[[FOR_BODY_PREHEADER:.*]]
-; CHECK:       [[FOR_BODY_PREHEADER]]:
-; CHECK-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[CONV]], 16
-; CHECK-NEXT:    br i1 [[MIN_ITERS_CHECK]], label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
-; CHECK:       [[VECTOR_PH]]:
-; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = urem i64 [[CONV]], 16
-; CHECK-NEXT:    [[TMP0:%.*]] = sub i64 [[CONV]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    br label %[[VECTOR_BODY:.*]]
-; CHECK:       [[VECTOR_BODY]]:
-; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, %[[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], %[[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP2:%.*]] = add i64 [[INDEX]], 0
-; CHECK-NEXT:    [[TMP1:%.*]] = add i64 [[INDEX]], 8
-; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr inbounds bfloat, ptr [[SRC1]], i64 [[TMP2]]
-; CHECK-NEXT:    [[TMP14:%.*]] = getelementptr inbounds bfloat, ptr [[SRC1]], i64 [[TMP1]]
-; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr inbounds bfloat, ptr [[TMP3]], i32 0
-; CHECK-NEXT:    [[TMP17:%.*]] = getelementptr inbounds bfloat, ptr [[TMP3]], i32 8
-; CHECK-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x bfloat>, ptr [[TMP4]], align 4
-; CHECK-NEXT:    [[WIDE_LOAD1:%.*]] = load <8 x bfloat>, ptr [[TMP17]], align 4
-; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr inbounds bfloat, ptr [[SRC2]], i64 [[TMP2]]
-; CHECK-NEXT:    [[TMP18:%.*]] = getelementptr inbounds bfloat, ptr [[SRC2]], i64 [[TMP1]]
-; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr inbounds bfloat, ptr [[TMP5]], i32 0
-; CHECK-NEXT:    [[TMP9:%.*]] = getelementptr inbounds bfloat, ptr [[TMP5]], i32 8
-; CHECK-NEXT:    [[WIDE_LOAD2:%.*]] = load <8 x bfloat>, ptr [[TMP6]], align 4
-; CHECK-NEXT:    [[WIDE_LOAD3:%.*]] = load <8 x bfloat>, ptr [[TMP9]], align 4
-; CHECK-NEXT:    [[TMP10:%.*]] = fadd <8 x bfloat> [[WIDE_LOAD]], [[WIDE_LOAD2]]
-; CHECK-NEXT:    [[TMP19:%.*]] = fadd <8 x bfloat> [[WIDE_LOAD1]], [[WIDE_LOAD3]]
-; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr inbounds bfloat, ptr [[RESULT]], i64 [[TMP2]]
-; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr inbounds bfloat, ptr [[RESULT]], i64 [[TMP1]]
-; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds bfloat, ptr [[TMP7]], i32 0
-; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr inbounds bfloat, ptr [[TMP7]], i32 8
-; CHECK-NEXT:    store <8 x bfloat> [[TMP10]], ptr [[TMP8]], align 4
-; CHECK-NEXT:    store <8 x bfloat> [[TMP19]], ptr [[TMP15]], align 4
-; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
-; CHECK-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[TMP0]]
-; CHECK-NEXT:    br i1 [[TMP16]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
-; CHECK:       [[MIDDLE_BLOCK]]:
-; CHECK-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[CONV]], [[TMP0]]
-; CHECK-NEXT:    br i1 [[CMP_N]], label %[[FOR_COND_CLEANUP_LOOPEXIT:.*]], label %[[SCALAR_PH]]
-; CHECK:       [[SCALAR_PH]]:
-; CHECK-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[TMP0]], %[[MIDDLE_BLOCK]] ], [ 0, %[[FOR_BODY_PREHEADER]] ]
-; CHECK-NEXT:    br label %[[FOR_BODY:.*]]
-; CHECK:       [[FOR_COND_CLEANUP_LOOPEXIT]]:
-; CHECK-NEXT:    br label %[[FOR_COND_CLEANUP]]
-; CHECK:       [[FOR_COND_CLEANUP]]:
-; CHECK-NEXT:    ret void
-; CHECK:       [[FOR_BODY]]:
-; CHECK-NEXT:    [[I_011:%.*]] = phi i64 [ [[ADD4:%.*]], %[[FOR_BODY]] ], [ [[BC_RESUME_VAL]], %[[SCALAR_PH]] ]
-; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds bfloat, ptr [[SRC1]], i64 [[I_011]]
-; CHECK-NEXT:    [[TMP11:%.*]] = load bfloat, ptr [[ARRAYIDX]], align 4
-; CHECK-NEXT:    [[ARRAYIDX2:%.*]] = getelementptr inbounds bfloat, ptr [[SRC2]], i64 [[I_011]]
-; CHECK-NEXT:    [[TMP12:%.*]] = load bfloat, ptr [[ARRAYIDX2]], align 4
-; CHECK-NEXT:    [[ADD:%.*]] = fadd bfloat [[TMP11]], [[TMP12]]
-; CHECK-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds bfloat, ptr [[RESULT]], i64 [[I_011]]
-; CHECK-NEXT:    store bfloat [[ADD]], ptr [[ARRAYIDX3]], align 4
-; CHECK-NEXT:    [[ADD4]] = add nuw nsw i64 [[I_011]], 1
-; CHECK-NEXT:    [[EXITCOND_NOT:%.*]] = icmp eq i64 [[ADD4]], [[CONV]]
-; CHECK-NEXT:    br i1 [[EXITCOND_NOT]], label %[[FOR_COND_CLEANUP_LOOPEXIT]], label %[[FOR_BODY]], !llvm.loop [[LOOP3:![0-9]+]]
+; CHECK-LABEL: add
+; CHECK:       LV(REG): Found max usage: 2 item
+; CHECK-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 2 registers
+; CHECK-NEXT:  LV(REG): RegisterClass: RISCV::VRRC, 4 registers
+; CHECK-NEXT:  LV(REG): Found invariant usage: 1 item
+; CHECK-NEXT:  LV(REG): RegisterClass: RISCV::GPRRC, 1 registers
 ;
 
 entry:
@@ -88,9 +32,3 @@ for.body:
   %exitcond.not = icmp eq i64 %add4, %conv
   br i1 %exitcond.not, label %for.cond.cleanup, label %for.body
 }
-;.
-; CHECK: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
-; CHECK: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
-; CHECK: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
-; CHECK: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
-;.
