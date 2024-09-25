@@ -1638,6 +1638,7 @@ bool VPlanTransforms::tryAddExplicitVectorLength(VPlan &Plan) {
   CanonicalIVPHI->replaceAllUsesWith(EVLPhi);
 #if SIFIVE_CUSTOMIZATION
   CanonicalIVIncrement->replaceAllUsesWith(NextEVLIV);
+  CanonicalIVIncrement->eraseFromParent();
   Plan.getVFxUF().replaceAllUsesWith(VPEVL);
   Plan.setUseVLAVectorizer(true);
 #else
