@@ -3190,6 +3190,14 @@ InstructionCost VPWidenMemoryRecipe::computeCost(ElementCount VF,
     const Value *Ptr = getLoadStorePointerOperand(&Ingredient);
     assert(!Reverse &&
            "Inconsecutive memory access should not have the order.");
+#if SIFIVE_CUSTOMIZATION
+    // Align to the legacy cost model.
+    if ((isa<StoreInst>(Ingredient) &&
+         !Ctx.TTI.isLegalMaskedStore(Ty, Alignment)) ||
+        (isa<LoadInst>(Ingredient) &&
+         !Ctx.TTI.isLegalMaskedLoad(Ty, Alignment)))
+      return InstructionCost::getInvalid();
+#endif // SIFIVE_CUSTOMIZATION
     return Ctx.TTI.getAddressComputationCost(Ty) +
            Ctx.TTI.getGatherScatterOpCost(Ingredient.getOpcode(), Ty, Ptr,
                                           IsMasked, Alignment, CostKind,
