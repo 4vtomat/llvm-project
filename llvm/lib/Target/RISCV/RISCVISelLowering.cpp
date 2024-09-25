@@ -25083,9 +25083,17 @@ bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
       Intrinsic::riscv_vlsseg8,
   };
 
-  Value *PoisonVal = PoisonValue::get(ResTy);
-  SmallVector<Value *> Operands(Factor, PoisonVal);
-  Operands.append({BasePtr, Stride});
+  unsigned SEW = DL.getTypeSizeInBits(ResTy->getElementType());
+  unsigned NumElts = ResTy->getElementCount().getKnownMinValue();
+  Type *VecTupTy = TargetExtType::get(
+      StridedLoad->getContext(), "riscv.vector.tuple",
+      ScalableVectorType::get(Type::getInt8Ty(StridedLoad->getContext()),
+                              NumElts * SEW / 8),
+      Factor);
+
+  Value *PoisonVal = PoisonValue::get(VecTupTy);
+  SmallVector<Value *, 7> Operands;
+  Operands.append({PoisonVal, BasePtr, Stride});
 
   Intrinsic::ID VlssegNID = IntrIds[Factor - 2];
   bool IsMasked = !match(Mask, m_AllOnes());
@@ -25101,10 +25109,32 @@ bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
   if (IsMasked)
     Operands.push_back(ConstantInt::get(XLenTy, 3));
 
-  Function *VlssegNFunc = Intrinsic::getDeclaration(
-      StridedLoad->getModule(), VlssegNID, {ResTy, EVL->getType()});
+  Operands.push_back(ConstantInt::get(XLenTy, Log2_64(SEW)));
+
+  Function *VlssegNFunc;
+  if (IsMasked) {
+    VlssegNFunc =
+        Intrinsic::getDeclaration(StridedLoad->getModule(), VlssegNID,
+                                  {VecTupTy, EVL->getType(), Mask->getType()});
+  } else {
+    VlssegNFunc = Intrinsic::getDeclaration(StridedLoad->getModule(), VlssegNID,
+                                            {VecTupTy, EVL->getType()});
+  }
   CallInst *VlssegN = Builder.CreateCall(VlssegNFunc, Operands);
-  DI->replaceAllUsesWith(VlssegN);
+
+  SmallVector<Type *, 8> AggrTypes{Factor, ResTy};
+  Value *Return =
+      PoisonValue::get(StructType::get(StridedLoad->getContext(), AggrTypes));
+  Function *VecExtractFunc = Intrinsic::getDeclaration(
+      StridedLoad->getModule(), Intrinsic::riscv_tuple_extract,
+      {ResTy, VecTupTy});
+  for (unsigned i = 0; i < Factor; ++i) {
+    Value *VecExtract =
+        Builder.CreateCall(VecExtractFunc, {VlssegN, Builder.getInt32(i)});
+    Return = Builder.CreateInsertValue(Return, VecExtract, i);
+  }
+
+  DI->replaceAllUsesWith(Return);
 
   return true;
 }
