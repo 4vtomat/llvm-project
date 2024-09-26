@@ -63,10 +63,8 @@ define void @widget(ptr %a, i64 %n) {
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv2f64.p0(<vscale x 2 x double> [[INTERLEAVED_VEC]], ptr align 8 [[TMP25]], <vscale x 2 x i1> shufflevector (<vscale x 2 x i1> insertelement (<vscale x 2 x i1> poison, i1 true, i64 0), <vscale x 2 x i1> poison, <vscale x 2 x i32> zeroinitializer), i32 [[TMP28]])
 ; CHECK-NEXT:    [[TMP29:%.*]] = zext i32 [[TMP6]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP29]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP30:%.*]] = zext i32 [[TMP6]] to i64
-; CHECK-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP30]]
-; CHECK-NEXT:    [[TMP31:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP1]]
-; CHECK-NEXT:    br i1 [[TMP31]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; CHECK-NEXT:    [[TMP30:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP1]]
+; CHECK-NEXT:    br i1 [[TMP30]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[EXIT:%.*]]
 ; CHECK:       scalar.ph:
@@ -75,21 +73,21 @@ define void @widget(ptr %a, i64 %n) {
 ; CHECK-NEXT:    [[BC_RESUME_VAL4:%.*]] = phi ptr [ [[B]], [[PH]] ]
 ; CHECK-NEXT:    br label [[LOOP:%.*]]
 ; CHECK:       loop:
-; CHECK-NEXT:    [[TMP32:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV:%.*]], [[LOOP]] ]
-; CHECK-NEXT:    [[TMP33:%.*]] = phi ptr [ [[BC_RESUME_VAL2]], [[SCALAR_PH]] ], [ [[TMP35:%.*]], [[LOOP]] ]
-; CHECK-NEXT:    [[TMP34:%.*]] = phi ptr [ [[BC_RESUME_VAL4]], [[SCALAR_PH]] ], [ [[TMP36:%.*]], [[LOOP]] ]
+; CHECK-NEXT:    [[TMP31:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[IV:%.*]], [[LOOP]] ]
+; CHECK-NEXT:    [[TMP32:%.*]] = phi ptr [ [[BC_RESUME_VAL2]], [[SCALAR_PH]] ], [ [[TMP34:%.*]], [[LOOP]] ]
+; CHECK-NEXT:    [[TMP33:%.*]] = phi ptr [ [[BC_RESUME_VAL4]], [[SCALAR_PH]] ], [ [[TMP35:%.*]], [[LOOP]] ]
+; CHECK-NEXT:    [[TMP34]] = getelementptr inbounds [[STRUCT]], ptr [[TMP32]], i64 -1
 ; CHECK-NEXT:    [[TMP35]] = getelementptr inbounds [[STRUCT]], ptr [[TMP33]], i64 -1
-; CHECK-NEXT:    [[TMP36]] = getelementptr inbounds [[STRUCT]], ptr [[TMP34]], i64 -1
-; CHECK-NEXT:    [[TMP37:%.*]] = getelementptr [[STRUCT]], ptr [[TMP34]], i64 -1, i32 0
-; CHECK-NEXT:    [[TMP38:%.*]] = load ptr, ptr [[TMP37]], align 8
-; CHECK-NEXT:    [[TMP39:%.*]] = getelementptr [[STRUCT]], ptr [[TMP33]], i64 -2, i32 0
-; CHECK-NEXT:    store ptr [[TMP38]], ptr [[TMP39]], align 8
-; CHECK-NEXT:    [[TMP40:%.*]] = getelementptr [[STRUCT]], ptr [[TMP34]], i64 -1, i32 1
-; CHECK-NEXT:    [[TMP41:%.*]] = load double, ptr [[TMP40]], align 8
-; CHECK-NEXT:    [[TMP42:%.*]] = getelementptr [[STRUCT]], ptr [[TMP33]], i64 -2, i32 1
-; CHECK-NEXT:    store double [[TMP41]], ptr [[TMP42]], align 8
-; CHECK-NEXT:    [[IV]] = add nsw i64 [[TMP32]], -1
-; CHECK-NEXT:    [[COND:%.*]] = icmp ugt i64 [[TMP32]], 1
+; CHECK-NEXT:    [[TMP36:%.*]] = getelementptr [[STRUCT]], ptr [[TMP33]], i64 -1, i32 0
+; CHECK-NEXT:    [[TMP37:%.*]] = load ptr, ptr [[TMP36]], align 8
+; CHECK-NEXT:    [[TMP38:%.*]] = getelementptr [[STRUCT]], ptr [[TMP32]], i64 -2, i32 0
+; CHECK-NEXT:    store ptr [[TMP37]], ptr [[TMP38]], align 8
+; CHECK-NEXT:    [[TMP39:%.*]] = getelementptr [[STRUCT]], ptr [[TMP33]], i64 -1, i32 1
+; CHECK-NEXT:    [[TMP40:%.*]] = load double, ptr [[TMP39]], align 8
+; CHECK-NEXT:    [[TMP41:%.*]] = getelementptr [[STRUCT]], ptr [[TMP32]], i64 -2, i32 1
+; CHECK-NEXT:    store double [[TMP40]], ptr [[TMP41]], align 8
+; CHECK-NEXT:    [[IV]] = add nsw i64 [[TMP31]], -1
+; CHECK-NEXT:    [[COND:%.*]] = icmp ugt i64 [[TMP31]], 1
 ; CHECK-NEXT:    br i1 [[COND]], label [[LOOP]], label [[EXIT]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    ret void

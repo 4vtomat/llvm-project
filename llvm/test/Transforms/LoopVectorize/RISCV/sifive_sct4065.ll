@@ -14,7 +14,6 @@ define fastcc i32 @S_unpack_rec(i64 %0) {
 ; CHECK-NEXT:    [[TMP3:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[TMP2]], i32 4, i1 true)
 ; CHECK-NEXT:    store i64 0, ptr null, align 8
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i32 [[TMP3]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[INDEX_NEXT:%.*]] = add i32 [[EVL_BASED_IV]], [[TMP3]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT]], 536870912
 ; CHECK-NEXT:    br i1 [[TMP4]], label %[[MIDDLE_BLOCK:.*]], label %[[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       [[MIDDLE_BLOCK]]:

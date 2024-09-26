@@ -60,10 +60,8 @@ define void @convert_to_ssa(ptr %0, ptr %elms.i159, ptr %1) {
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv8i64.p0.i64(<vscale x 8 x i64> [[VP_STRIDED_LOAD22]], ptr align 8 [[TMP8]], i64 64, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP4]]), !alias.scope [[META5]], !noalias [[META7]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = zext i32 [[TMP4]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP12]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP13:%.*]] = zext i32 [[TMP4]] to i64
-; CHECK-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP13]]
-; CHECK-NEXT:    [[TMP14:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 4294967295
-; CHECK-NEXT:    br i1 [[TMP14]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
+; CHECK-NEXT:    [[TMP13:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], 4294967295
+; CHECK-NEXT:    br i1 [[TMP13]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[SCALAR_PH]]
 ; CHECK:       scalar.ph:
@@ -79,18 +77,18 @@ define void @convert_to_ssa(ptr %0, ptr %elms.i159, ptr %1) {
 ; CHECK-NEXT:    [[NITER_I:%.*]] = phi i32 [ [[NITER_NEXT_7_I:%.*]], [[FOR_BODY_I172]] ], [ [[BC_RESUME_VAL14]], [[SCALAR_PH]] ]
 ; CHECK-NEXT:    [[INCDEC_PTR_5_I3:%.*]] = getelementptr inbounds i64, ptr [[AP_08_I]], i64 6
 ; CHECK-NEXT:    [[INCDEC_PTR_6_I:%.*]] = getelementptr inbounds i64, ptr [[AP_08_I]], i64 7
-; CHECK-NEXT:    [[TMP15:%.*]] = load i64, ptr [[ELMS_I159]], align 8
+; CHECK-NEXT:    [[TMP14:%.*]] = load i64, ptr [[ELMS_I159]], align 8
 ; CHECK-NEXT:    [[INCDEC_PTR7_6_I:%.*]] = getelementptr inbounds i64, ptr [[BP_09_I2]], i64 7
-; CHECK-NEXT:    [[TMP16:%.*]] = load i64, ptr [[TMP0]], align 8
-; CHECK-NEXT:    [[TMP17:%.*]] = load i64, ptr [[CP_010_I]], align 8
-; CHECK-NEXT:    [[AND_6_I:%.*]] = and i64 [[TMP16]], [[TMP17]]
-; CHECK-NEXT:    [[OR_6_I:%.*]] = or i64 [[AND_6_I]], [[TMP15]]
+; CHECK-NEXT:    [[TMP15:%.*]] = load i64, ptr [[TMP0]], align 8
+; CHECK-NEXT:    [[TMP16:%.*]] = load i64, ptr [[CP_010_I]], align 8
+; CHECK-NEXT:    [[AND_6_I:%.*]] = and i64 [[TMP15]], [[TMP16]]
+; CHECK-NEXT:    [[OR_6_I:%.*]] = or i64 [[AND_6_I]], [[TMP14]]
 ; CHECK-NEXT:    store i64 [[OR_6_I]], ptr [[INCDEC_PTR_5_I3]], align 8
 ; CHECK-NEXT:    [[INCDEC_PTR_7_I]] = getelementptr inbounds i64, ptr [[AP_08_I]], i64 8
 ; CHECK-NEXT:    [[INCDEC_PTR7_7_I]] = getelementptr inbounds i64, ptr [[BP_09_I2]], i64 8
-; CHECK-NEXT:    [[TMP18:%.*]] = load i64, ptr [[INCDEC_PTR7_6_I]], align 8
+; CHECK-NEXT:    [[TMP17:%.*]] = load i64, ptr [[INCDEC_PTR7_6_I]], align 8
 ; CHECK-NEXT:    [[INCDEC_PTR8_7_I]] = getelementptr inbounds i64, ptr [[CP_010_I]], i64 8
-; CHECK-NEXT:    store i64 [[TMP18]], ptr [[INCDEC_PTR_6_I]], align 8
+; CHECK-NEXT:    store i64 [[TMP17]], ptr [[INCDEC_PTR_6_I]], align 8
 ; CHECK-NEXT:    [[NITER_NEXT_7_I]] = add i32 [[NITER_I]], 1
 ; CHECK-NEXT:    [[NITER_NCMP_7_NOT_I:%.*]] = icmp eq i32 [[NITER_NEXT_7_I]], 0
 ; CHECK-NEXT:    br i1 [[NITER_NCMP_7_NOT_I]], label [[FOR_END_LOOPEXIT_UNR_LCSSA_I177_LOOPEXIT:%.*]], label [[FOR_BODY_I172]], !llvm.loop [[LOOP13:![0-9]+]]

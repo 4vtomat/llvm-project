@@ -128,10 +128,8 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; VEC-M1-NEXT:    call void @llvm.vp.store.nxv6f64.p0(<vscale x 6 x double> [[INTERLEAVED_VEC]], ptr align 8 [[TMP53]], <vscale x 6 x i1> shufflevector (<vscale x 6 x i1> insertelement (<vscale x 6 x i1> poison, i1 true, i64 0), <vscale x 6 x i1> poison, <vscale x 6 x i32> zeroinitializer), i32 [[TMP54]])
 ; VEC-M1-NEXT:    [[TMP55:%.*]] = zext i32 [[TMP32]] to i64
 ; VEC-M1-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP55]], [[EVL_BASED_IV]]
-; VEC-M1-NEXT:    [[TMP56:%.*]] = zext i32 [[TMP32]] to i64
-; VEC-M1-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP56]]
-; VEC-M1-NEXT:    [[TMP57:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
-; VEC-M1-NEXT:    br i1 [[TMP57]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
+; VEC-M1-NEXT:    [[TMP56:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
+; VEC-M1-NEXT:    br i1 [[TMP56]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; VEC-M1:       middle.block:
 ; VEC-M1-NEXT:    br label [[EXIT:%.*]]
 ; VEC-M1:       scalar.ph:
@@ -308,10 +306,8 @@ define void @eo_fermion_force(ptr %a, ptr %b, double %s, i64 %n) {
 ; VEC-M4-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VP_OP43]], ptr align 8 [[TMP44]], i64 48, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP32]]), !alias.scope [[META0]], !noalias [[META3]]
 ; VEC-M4-NEXT:    [[TMP46:%.*]] = zext i32 [[TMP32]] to i64
 ; VEC-M4-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP46]], [[EVL_BASED_IV]]
-; VEC-M4-NEXT:    [[TMP47:%.*]] = zext i32 [[TMP32]] to i64
-; VEC-M4-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP47]]
-; VEC-M4-NEXT:    [[TMP48:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
-; VEC-M4-NEXT:    br i1 [[TMP48]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
+; VEC-M4-NEXT:    [[TMP47:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[N]]
+; VEC-M4-NEXT:    br i1 [[TMP47]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; VEC-M4:       middle.block:
 ; VEC-M4-NEXT:    br label [[EXIT:%.*]]
 ; VEC-M4:       scalar.ph:

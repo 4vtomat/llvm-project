@@ -15,7 +15,6 @@ define void @test() {
 ; CHECK-NEXT:    [[VP_OP:%.*]] = call <vscale x 8 x i8> @llvm.vp.and.nxv8i8(<vscale x 8 x i8> zeroinitializer, <vscale x 8 x i8> zeroinitializer, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP1]])
 ; CHECK-NEXT:    call void @llvm.vp.scatter.nxv8i8.nxv8p0(<vscale x 8 x i8> [[VP_OP]], <vscale x 8 x ptr> align 1 zeroinitializer, <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP1]])
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i32 [[TMP1]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[INDEX_NEXT:%.*]] = add i32 [[EVL_BASED_IV]], [[TMP1]]
 ; CHECK-NEXT:    [[TMP2:%.*]] = icmp eq i32 [[INDEX_EVL_NEXT]], 100
 ; CHECK-NEXT:    br i1 [[TMP2]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; CHECK:       middle.block:

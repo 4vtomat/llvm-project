@@ -1,0 +1,204 @@
+
+LV: Checking a loop in 'test' from <stdin>
+LV: Loop hints: force=? width=vscale x 0 interleave=0
+LV: Found a loop: for.body
+LV: Found an induction variable.
+LV: We can vectorize this loop (with a runtime bound check)!
+LV: Loop does not require scalar epilogue
+LV: Found trip count: 0
+LV: vector predicate hint/switch found.
+LV: Not allowing scalar epilogue, creating predicated vector loop.
+LV: The Smallest and Widest types: 8 / 32 bits.
+LV: The Widest register safe to use is: 64 bits.
+LV(REG): Calculating max register usage:
+LV: Found uniform instruction:   %exitcond = icmp eq i32 %wideiv, %start
+LV: Found uniform instruction:   %arrayidx28 = getelementptr float, ptr %errors, i64 %iv
+LV: Found uniform instruction:   %arrayidx30 = getelementptr i8, ptr %bql17, i64 %iv
+LV: Found uniform instruction:   %arrayidx32 = getelementptr i8, ptr %bql_mod19, i64 %iv
+LV: Found uniform instruction:   %wideiv = trunc i64 %iv.next to i32
+LV: Found uniform instruction:   %iv = phi i64 [ 0, %entry ], [ %iv.next, %for.body ]
+LV: Found uniform instruction:   %iv.next = add i64 %iv, 1
+LV(REG): At #0 Interval # 0
+LV(REG): At #1 Interval # 1
+LV(REG): At #3 Interval # 1
+LV(REG): At #5 Interval # 1
+LV(REG): At #7 Interval # 1
+LV(REG): At #8 Interval # 1
+LV(REG): At #9 Interval # 1
+LV(REG): VF = vscale x 1
+LV(REG): Found max usage: 1 item
+LV(REG): RegisterClass: RISCV::GPRRC, 1 registers
+LV(REG): Found invariant usage: 1 item
+LV(REG): RegisterClass: RISCV::GPRRC, 3 registers
+LV: calculated MaxVF(vscale x 1), MaxVFUpperBound(vscale x 1)
+LV: Found uniform instruction:   %exitcond = icmp eq i32 %wideiv, %start
+LV: Found uniform instruction:   %arrayidx28 = getelementptr float, ptr %errors, i64 %iv
+LV: Found uniform instruction:   %arrayidx30 = getelementptr i8, ptr %bql17, i64 %iv
+LV: Found uniform instruction:   %arrayidx32 = getelementptr i8, ptr %bql_mod19, i64 %iv
+LV: Found uniform instruction:   %wideiv = trunc i64 %iv.next to i32
+LV: Found uniform instruction:   %iv = phi i64 [ 0, %entry ], [ %iv.next, %for.body ]
+LV: Found uniform instruction:   %iv.next = add i64 %iv, 1
+LV: Loop does not require scalar epilogue
+LV: Scalarizing:  %arrayidx28 = getelementptr float, ptr %errors, i64 %iv
+LV: Scalarizing:  %arrayidx30 = getelementptr i8, ptr %bql17, i64 %iv
+LV: Scalarizing:  %arrayidx32 = getelementptr i8, ptr %bql_mod19, i64 %iv
+LV: Scalarizing:  %iv.next = add i64 %iv, 1
+LV: Scalarizing:  %wideiv = trunc i64 %iv.next to i32
+LV: Scalarizing:  %exitcond = icmp eq i32 %wideiv, %start
+VPlan 'Initial VPlan for VF={vscale x 1},UF={1}' {
+Live-in vp<%0> = vector-trip-count
+vp<%1> = original trip-count
+
+ir-bb<entry>:
+  IR   %errors = getelementptr ptr, ptr %tmpbuf, i32 4
+  IR   %bql17 = getelementptr ptr, ptr %tmpbuf, i32 5
+  IR   %bql_mod19 = getelementptr ptr, ptr %tmpbuf, i32 6
+  EMIT vp<%1> = EXPAND SCEV (1 + (zext i32 (-1 + %start) to i64))<nuw><nsw>
+No successors
+
+vector.ph:
+Successor(s): vector loop
+
+<x1> vector loop: {
+  vector.body:
+    EMIT vp<%2> = CANONICAL-INDUCTION ir<0>, vp<%10>
+    EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%3> = phi ir<0>, vp<%10>
+    EMIT vp<%4> = EXPLICIT-VECTOR-LENGTH vp<%3>, vp<%0>
+    vp<%5> = SCALAR-STEPS vp<%3>, ir<1>
+    CLONE ir<%arrayidx28> = getelementptr ir<%errors>, vp<%5>
+    vp<%6> = vector-pointer ir<%arrayidx28>
+    WIDEN vp.store vp<%6>, ir<0.000000e+00>, vp<%4>	unit-strided
+    CLONE ir<%arrayidx30> = getelementptr ir<%bql17>, vp<%5>
+    vp<%7> = vector-pointer ir<%arrayidx30>
+    WIDEN vp.store vp<%7>, ir<0>, vp<%4>	unit-strided
+    CLONE ir<%arrayidx32> = getelementptr ir<%bql_mod19>, vp<%5>
+    vp<%8> = vector-pointer ir<%arrayidx32>
+    WIDEN vp.store vp<%8>, ir<0>, vp<%4>	unit-strided
+    SCALAR-CAST vp<%9> = zext vp<%4> to i64
+    EMIT vp<%10> = add vp<%9>, vp<%3>
+    EMIT branch-on-count vp<%10>, vp<%0>
+  No successors
+}
+Successor(s): middle.block
+
+middle.block:
+  EMIT branch-on-cond ir<true>
+Successor(s): ir-bb<loopexit>, scalar.ph
+
+ir-bb<loopexit>:
+No successors
+
+scalar.ph:
+No successors
+}
+LV: Found an estimated cost of 0 for VF 1 For instruction:   %iv = phi i64 [ 0, %entry ], [ %iv.next, %for.body ]
+LV: Found an estimated cost of 0 for VF 1 For instruction:   %arrayidx28 = getelementptr float, ptr %errors, i64 %iv
+LV: Found an estimated cost of 1 for VF 1 For instruction:   store float 0.000000e+00, ptr %arrayidx28, align 4
+LV: Found an estimated cost of 0 for VF 1 For instruction:   %arrayidx30 = getelementptr i8, ptr %bql17, i64 %iv
+LV: Found an estimated cost of 1 for VF 1 For instruction:   store i8 0, ptr %arrayidx30, align 1
+LV: Found an estimated cost of 0 for VF 1 For instruction:   %arrayidx32 = getelementptr i8, ptr %bql_mod19, i64 %iv
+LV: Found an estimated cost of 1 for VF 1 For instruction:   store i8 0, ptr %arrayidx32, align 1
+LV: Found an estimated cost of 1 for VF 1 For instruction:   %iv.next = add i64 %iv, 1
+LV: Found an estimated cost of 0 for VF 1 For instruction:   %wideiv = trunc i64 %iv.next to i32
+LV: Found an estimated cost of 1 for VF 1 For instruction:   %exitcond = icmp eq i32 %wideiv, %start
+LV: Found an estimated cost of 0 for VF 1 For instruction:   br i1 %exitcond, label %loopexit, label %for.body
+LV: Scalar loop costs: 5.
+LV: Found an estimated cost of 0 for VF 1 For instruction:   %iv = phi i64 [ 0, %entry ], [ %iv.next, %for.body ]
+LV: Found an estimated cost of 0 for VF 1 For instruction:   %arrayidx28 = getelementptr float, ptr %errors, i64 %iv
+LV: Found an estimated cost of 1 for VF 1 For instruction:   store float 0.000000e+00, ptr %arrayidx28, align 4
+LV: Found an estimated cost of 0 for VF 1 For instruction:   %arrayidx30 = getelementptr i8, ptr %bql17, i64 %iv
+LV: Found an estimated cost of 1 for VF 1 For instruction:   store i8 0, ptr %arrayidx30, align 1
+LV: Found an estimated cost of 0 for VF 1 For instruction:   %arrayidx32 = getelementptr i8, ptr %bql_mod19, i64 %iv
+LV: Found an estimated cost of 1 for VF 1 For instruction:   store i8 0, ptr %arrayidx32, align 1
+LV: Found an estimated cost of 1 for VF 1 For instruction:   %iv.next = add i64 %iv, 1
+LV: Found an estimated cost of 0 for VF 1 For instruction:   %wideiv = trunc i64 %iv.next to i32
+LV: Found an estimated cost of 1 for VF 1 For instruction:   %exitcond = icmp eq i32 %wideiv, %start
+LV: Found an estimated cost of 0 for VF 1 For instruction:   br i1 %exitcond, label %loopexit, label %for.body
+LV: Scalar loop costs: 5.
+LV: Vector loop of width vscale x 1 costs: 1 (assuming a minimum vscale of 8).
+LV: Selecting VF: vscale x 1.
+Cost of 1 for VF vscale x 1: induction instruction   %iv.next = add i64 %iv, 1
+Cost of 0 for VF vscale x 1: induction instruction   %iv = phi i64 [ 0, %entry ], [ %iv.next, %for.body ]
+Cost of 1 for VF vscale x 1: exit condition instruction   %exitcond = icmp eq i32 %wideiv, %start
+Cost of 0 for VF vscale x 1: exit condition instruction   %wideiv = trunc i64 %iv.next to i32
+Calculating cost of runtime checks:
+  1  for   %0 = add i32 %start, -1
+  1  for   %1 = zext i32 %0 to i64
+  1  for   %2 = shl nuw nsw i64 %1, 2
+  1  for   %3 = add nuw nsw i64 %2, 36
+  1  for   %scevgep = getelementptr i8, ptr %tmpbuf, i64 %3
+  1  for   %4 = add nuw nsw i64 %1, 41
+  1  for   %scevgep1 = getelementptr i8, ptr %tmpbuf, i64 %4
+  1  for   %5 = add nuw nsw i64 %1, 49
+  1  for   %scevgep2 = getelementptr i8, ptr %tmpbuf, i64 %5
+  1  for   %bound0 = icmp ult ptr %errors, %scevgep1
+  1  for   %bound1 = icmp ult ptr %bql17, %scevgep
+  1  for   %found.conflict = and i1 %bound0, %bound1
+  1  for   %bound03 = icmp ult ptr %errors, %scevgep2
+  1  for   %bound14 = icmp ult ptr %bql_mod19, %scevgep
+  1  for   %found.conflict5 = and i1 %bound03, %bound14
+  1  for   %conflict.rdx = or i1 %found.conflict, %found.conflict5
+  1  for   %bound06 = icmp ult ptr %bql17, %scevgep2
+  1  for   %bound17 = icmp ult ptr %bql_mod19, %scevgep1
+  1  for   %found.conflict8 = and i1 %bound06, %bound17
+  1  for   %conflict.rdx9 = or i1 %conflict.rdx, %found.conflict8
+Total cost of runtime checks: 20
+LV: Minimum required TC for runtime checks to be profitable:40
+LV: Interleaving is not beneficial.
+LV: Found a vectorizable loop (vscale x 1) in <stdin>
+LEV: Unable to vectorize epilogue because no epilogue is allowed.
+Executing best plan with VF=vscale x 1, UF=1
+VPlan 'Final VPlan for VF={vscale x 1},UF={1}' {
+Live-in vp<%0> = vector-trip-count
+vp<%1> = original trip-count
+
+ir-bb<entry>:
+  IR   %errors = getelementptr ptr, ptr %tmpbuf, i32 4
+  IR   %bql17 = getelementptr ptr, ptr %tmpbuf, i32 5
+  IR   %bql_mod19 = getelementptr ptr, ptr %tmpbuf, i32 6
+  EMIT vp<%1> = EXPAND SCEV (1 + (zext i32 (-1 + %start) to i64))<nuw><nsw>
+No successors
+
+vector.ph:
+Successor(s): vector loop
+
+<x1> vector loop: {
+  vector.body:
+    EMIT vp<%2> = CANONICAL-INDUCTION ir<0>, vp<%10>
+    EXPLICIT-VECTOR-LENGTH-BASED-IV-PHI vp<%3> = phi ir<0>, vp<%10>
+    EMIT vp<%4> = EXPLICIT-VECTOR-LENGTH vp<%3>, vp<%0>
+    vp<%5> = SCALAR-STEPS vp<%3>, ir<1>
+    CLONE ir<%arrayidx28> = getelementptr ir<%errors>, vp<%5>
+    vp<%6> = vector-pointer ir<%arrayidx28>
+    WIDEN vp.store vp<%6>, ir<0.000000e+00>, vp<%4>	unit-strided
+    CLONE ir<%arrayidx30> = getelementptr ir<%bql17>, vp<%5>
+    vp<%7> = vector-pointer ir<%arrayidx30>
+    WIDEN vp.store vp<%7>, ir<0>, vp<%4>	unit-strided
+    CLONE ir<%arrayidx32> = getelementptr ir<%bql_mod19>, vp<%5>
+    vp<%8> = vector-pointer ir<%arrayidx32>
+    WIDEN vp.store vp<%8>, ir<0>, vp<%4>	unit-strided
+    SCALAR-CAST vp<%9> = zext vp<%4> to i64
+    EMIT vp<%10> = add vp<%9>, vp<%3>
+    EMIT branch-on-count vp<%10>, vp<%0>
+  No successors
+}
+Successor(s): middle.block
+
+middle.block:
+  EMIT branch-on-cond ir<true>
+Successor(s): ir-bb<loopexit>, scalar.ph
+
+ir-bb<loopexit>:
+No successors
+
+scalar.ph:
+No successors
+}
+LV: Loop does not require scalar epilogue
+LV: Loop does not require scalar epilogue
+LV: Loop does not require scalar epilogue
+LV: Loop does not require scalar epilogue
+LV: Loop does not require scalar epilogue
+LV: Executing plan with MaxSafeVectorWidthInBits=64, MaxSafeNumElems=2
+LV: Interleaving disabled by the pass manager
+LV: Loop does not require scalar epilogue
