@@ -523,29 +523,6 @@ static bool hasIrregularType(Type *Ty, const DataLayout &DL) {
   return DL.getTypeAllocSizeInBits(Ty) != DL.getTypeSizeInBits(Ty);
 }
 
-#if SIFIVE_CUSTOMIZATION
-/// Returns "known" trip count for the specified loop \p L as defined by
-/// the following procedure:
-///   1) Returns exact trip count if it is known.
-///   2) Returns expected trip count according to profile data if any.
-///   3) Returns std::nullopt if all of the above failed.
-/// That is, the main difference of this function and getSmallBestKnownTC is
-/// absence of max trip count estimation, which might not be needed in certain
-/// cases.
-static std::optional<unsigned> getBestKnownTC(ScalarEvolution &SE, Loop *L) {
-  // Check if exact trip count is known.
-  if (unsigned ExpectedTC = SE.getSmallConstantTripCount(L))
-    return ExpectedTC;
-
-  // Check if there is an expected trip count available from profile data.
-  if (LoopVectorizeWithBlockFrequency)
-    if (auto EstimatedTC = getLoopEstimatedTripCount(L))
-      return *EstimatedTC;
-
-  return std::nullopt;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 /// Returns "best known" trip count for the specified loop \p L as defined by
 /// the following procedure:
 ///   1) Returns exact trip count if it is known.
@@ -2857,10 +2834,9 @@ void InnerLoopVectorizer::emitIterationCountCheck(BasicBlock *Bypass) {
         Cost->Hints->getForce() == LoopVectorizeHints::FK_Enabled;
     std::optional<uint64_t> ProfitableVectorTripCount =
         Cost->getProfitableVectorTripCount();
-    std::optional<uint64_t> ExpectedTC = getBestKnownTC(*PSE.getSE(), OrigLoop);
     bool EnableProfitableCheck = !VectorizerDisableProfitableTripCountRTCheck &&
                                  !ForceVectorization &&
-                                 ProfitableVectorTripCount && !ExpectedTC;
+                                 ProfitableVectorTripCount;
 
     if (EnableProfitableCheck) {
       // TODO: Build runtime checks into vplan to model their costs.
@@ -5349,8 +5325,11 @@ hasOnlyNonUnitStrideMemoryAccesses(Loop *L, LoopVectorizationLegality *Legal) {
       Value *Ptr = getLoadStorePointerOperand(&I);
       if (!Ptr)
         continue;
-      auto SAI = Legal->computeStrideAccessInfo(&I);
-      if (!SAI || SAI.isUnitStrided())
+      std::optional<int64_t> Stride =
+          Legal->isConsecutiveOrUnknownPtr(getLoadStoreType(&I), Ptr);
+      if (!Stride.has_value())
+        continue;
+      if (Stride.value() != 0)
         return false;
       HasMemoryAccess = true;
     }
@@ -12479,6 +12458,28 @@ bool LoopVectorizePass::processLoop(Loop *L) {
 
   // Override IC if user provided an interleave count.
   IC = UserIC > 0 ? UserIC : IC;
+
+#if SIFIVE_CUSTOMIZATION
+  // Do not vectorize loops with small trip count and reductions.
+  if (ExpectedTC && LVL.useVLAVectorizer())
+    if (auto ProfitableVectorTripCount = CM.getProfitableVectorTripCount())
+      if (*ExpectedTC <=
+          *ProfitableVectorTripCount * LVL.getReductionVars().size() * IC) {
+        LLVM_DEBUG(dbgs() << "LV: Found a loop with a very small trip count.");
+        if (Hints.getForce() == LoopVectorizeHints::FK_Enabled)
+          LLVM_DEBUG(dbgs() << " But vectorizing was explicitly forced.\n");
+        else {
+          LLVM_DEBUG(dbgs() << " But the target considers the trip count too "
+                               "small to consider vectorizing.\n");
+          reportVectorizationFailure(
+              "The trip count is below the minimal threshold value.",
+              "loop trip count is too low, avoiding vectorization",
+              "LowTripCount", ORE, L);
+          Hints.emitRemarkWithHints();
+          return false;
+        }
+      }
+#endif // SIFIVE_CUSTOMIZATION
 
   // Emit diagnostic messages, if any.
   const char *VAPassName = Hints.vectorizeAnalysisPassName();
