@@ -14,6 +14,10 @@
 #ifndef LLVM_CLANG_BASIC_LANGOPTIONS_H
 #define LLVM_CLANG_BASIC_LANGOPTIONS_H
 
+#if SIFIVE_CUSTOMIZATION
+// cherry-picked from 9f33eb861a3d17fd92163ee894f7cd9f256d03fb
+#include "clang/Basic/CFProtectionOptions.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "clang/Basic/CommentOptions.h"
 #include "clang/Basic/LLVM.h"
 #include "clang/Basic/LangStandard.h"
@@ -73,6 +77,10 @@ class LangOptionsBase {
 public:
   using Visibility = clang::Visibility;
   using RoundingMode = llvm::RoundingMode;
+#if SIFIVE_CUSTOMIZATION
+// cherry-picked from 9f33eb861a3d17fd92163ee894f7cd9f256d03fb
+  using CFBranchLabelSchemeKind = clang::CFBranchLabelSchemeKind;
+#endif // SIFIVE_CUSTOMIZATION
 
   enum GCMode { NonGC, GCOnly, HybridGC };
   enum StackProtectorMode { SSPOff, SSPOn, SSPStrong, SSPReq };

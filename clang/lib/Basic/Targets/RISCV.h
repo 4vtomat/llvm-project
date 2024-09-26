@@ -132,6 +132,22 @@ public:
   bool useFP16ConversionIntrinsics() const override {
     return false;
   }
+
+  bool isValidCPUName(StringRef Name) const override;
+  void fillValidCPUList(SmallVectorImpl<StringRef> &Values) const override;
+  bool isValidTuneCPUName(StringRef Name) const override;
+  void fillValidTuneCPUList(SmallVectorImpl<StringRef> &Values) const override;
+  bool supportsTargetAttributeTune() const override { return true; }
+  ParsedTargetAttr parseTargetAttr(StringRef Str) const override;
+
+  std::pair<unsigned, unsigned> hardwareInterferenceSizes() const override {
+    return std::make_pair(32, 32);
+  }
+
+  bool supportsCpuSupports() const override { return getTriple().isOSLinux(); }
+  bool supportsCpuInit() const override { return getTriple().isOSLinux(); }
+  bool validateCpuSupports(StringRef Feature) const override;
+
 #if SIFIVE_CUSTOMIZATION
   bool
   checkCFProtectionReturnSupported(DiagnosticsEngine &Diags) const override {
@@ -148,20 +164,24 @@ public:
   };
 #endif // SIFIVE_CUSTOMIZATION
 
-  bool isValidCPUName(StringRef Name) const override;
-  void fillValidCPUList(SmallVectorImpl<StringRef> &Values) const override;
-  bool isValidTuneCPUName(StringRef Name) const override;
-  void fillValidTuneCPUList(SmallVectorImpl<StringRef> &Values) const override;
-  bool supportsTargetAttributeTune() const override { return true; }
-  ParsedTargetAttr parseTargetAttr(StringRef Str) const override;
-
-  std::pair<unsigned, unsigned> hardwareInterferenceSizes() const override {
-    return std::make_pair(32, 32);
+#ifdef SIFIVE_CUSTOMIZATION
+// cherry-picked from 9f33eb861a3d17fd92163ee894f7cd9f256d03fb
+  CFBranchLabelSchemeKind getDefaultCFBranchLabelScheme() const override {
+    return CFBranchLabelSchemeKind::FuncSig;
   }
 
-  bool supportsCpuSupports() const override { return getTriple().isOSLinux(); }
-  bool supportsCpuInit() const override { return getTriple().isOSLinux(); }
-  bool validateCpuSupports(StringRef Feature) const override;
+  bool
+  checkCFBranchLabelSchemeSupported(const CFBranchLabelSchemeKind Scheme,
+                                    DiagnosticsEngine &Diags) const override {
+    switch (Scheme) {
+    case CFBranchLabelSchemeKind::Default:
+    case CFBranchLabelSchemeKind::Unlabeled:
+    case CFBranchLabelSchemeKind::FuncSig:
+      return true;
+    }
+    return TargetInfo::checkCFBranchLabelSchemeSupported(Scheme, Diags);
+  }
+#endif // SIFIVE_CUSTOMIZATION
 };
 class LLVM_LIBRARY_VISIBILITY RISCV32TargetInfo : public RISCVTargetInfo {
 public:
