@@ -68,6 +68,8 @@ public:
                         IntrinsicInst *II) const;
 
   VectorType *getBestVectorTypeForLoopIdiom(LLVMContext &Ctx) const;
+
+  bool hasFlattenControlFlowPenalty() const;
 #endif // SIFIVE_CUSTOMIZATION
 
   bool areInlineCompatible(const Function *Caller,

@@ -10440,6 +10440,9 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
           VPlanTransforms::optimize(*Plan, *PSE.getSE());
           VPlanTransforms::optimizeGEPs(*Plan);
           VPlanTransforms::optimize(*Plan, *PSE.getSE());
+
+          VPlanTransforms::optimizeConditionalRecipes(
+              *Plan, *Legal, TTI, *TLI);
         }
       } else {
 #endif // SIFIVE_CUSTOMIZATION

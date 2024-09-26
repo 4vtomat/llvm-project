@@ -403,6 +403,8 @@ public:
   VectorType *getBestVectorTypeForLoopIdiom(LLVMContext &Context) const {
     return nullptr;
   }
+
+  bool hasFlattenControlFlowPenalty() const { return false; }
 #endif // SIFIVE_CUSTOMIZATION
 
   bool enableSelectOptimize() const { return true; }

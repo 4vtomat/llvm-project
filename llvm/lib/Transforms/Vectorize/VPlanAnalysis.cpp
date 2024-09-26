@@ -56,6 +56,12 @@ Type *VPTypeAnalysis::inferScalarTypeForRecipe(const VPInstruction *R) {
     return ResTy;
   }
   case Instruction::ICmp:
+#if SIFIVE_CUSTOMIZATION
+    // There is no reason for ICmp to produce type similar to type of its
+    // operand. More over, this will lead to crash in this analysis if its
+    // result is later or-ed with i1
+    return IntegerType::get(Ctx, 1);
+#endif // SIFIVE_CUSTOMIZATION
   case VPInstruction::ActiveLaneMask:
     return inferScalarType(R->getOperand(1));
   case VPInstruction::FirstOrderRecurrenceSplice:

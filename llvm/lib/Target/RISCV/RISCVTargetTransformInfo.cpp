@@ -9,11 +9,13 @@
 #include "RISCVTargetTransformInfo.h"
 #include "MCTargetDesc/RISCVMatInt.h"
 #include "RISCVISelLowering.h"
+#include "RISCVSubtarget.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/CodeGen/BasicTTIImpl.h"
 #include "llvm/CodeGen/CostTable.h"
 #include "llvm/CodeGen/TargetLowering.h"
+#include "llvm/IR/DerivedTypes.h"
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/TargetParser/RISCVTargetParser.h"
 #endif // SIFIVE_CUSTOMIZATION
@@ -89,6 +91,10 @@ static cl::opt<unsigned>
     CustomizeXZLoopIdiomLMUL("riscv-loop-idiom-customize-lmul", cl::Hidden,
                              cl::init(1), llvm::cl::Optional,
                              cl::desc("Customize LMUL for vector loop."));
+static cl::opt<bool> HasVectorFlattenControlFlowPenalty(
+    "riscv-has-vector-flatten-control-flow-penalty",
+    cl::desc("Specifies if target won't benefit from control flow flattening."),
+    cl::init(false), cl::Hidden);
 #endif
 
 #if SIFIVE_CUSTOMIZATION
@@ -379,6 +385,18 @@ RISCVTTIImpl::getBestVectorTypeForLoopIdiom(LLVMContext &Ctx) const {
   ElementCount EC = ElementCount::getScalable(VF);
   return VectorType::get(Type::getInt8Ty(Ctx), EC);
 }
+
+bool RISCVTTIImpl::hasFlattenControlFlowPenalty() const {
+  if (HasVectorFlattenControlFlowPenalty.getNumOccurrences() > 0)
+    return HasVectorFlattenControlFlowPenalty.getValue();
+
+  switch (ST->getProcFamily()) {
+    case RISCVSubtarget::SiFiveP400:
+      return true;
+    default:
+      return false;
+  }
+}
 #endif
 
 #if SIFIVE_CUSTOMIZATION
@@ -392,8 +410,7 @@ static InstructionCost getSiFive7ReductionCost(unsigned VL) {
   unsigned LookUpSiFive7ReduceLatency[] = {0, 20, 27, 32, 34, 38, 40, 41, 42};
   if (VL <= 32)
     return LookUpSiFive7ReduceLatency[(VL + 3) >> 2];
-  else
-    return 6 + 7 * Log2_32_Ceil(VL);
+  return 6 + 7 * Log2_32_Ceil(VL);
 }
 
 #endif // SIFIVE_CUSTOMIZATION

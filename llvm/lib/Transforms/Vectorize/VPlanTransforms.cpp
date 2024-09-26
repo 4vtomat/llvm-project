@@ -12,7 +12,11 @@
 //===----------------------------------------------------------------------===//
 
 #include "VPlanTransforms.h"
+#include "LoopVectorizationPlanner.h"
 #include "VPRecipeBuilder.h"
+#include "llvm/Analysis/TargetLibraryInfo.h"
+#include "llvm/Analysis/TargetTransformInfo.h"
+#include "llvm/Transforms/Vectorize/LoopVectorizationLegality.h"
 #if SIFIVE_CUSTOMIZATION
 #include "VPlan.h"
 #endif // SIFIVE_CUSTOMIZATION
@@ -30,6 +34,7 @@
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/ADT/DenseMap.h"
 #include "llvm/ADT/SmallPtrSet.h"
+#include "llvm/ADT/TypeSwitch.h"
 #include <queue>
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -625,6 +630,139 @@ void VPlanTransforms::simplifyMonotonics(VPlan &Plan) {
       for (VPRecipeBase *RR : ToRemove)
         RR->eraseFromParent();
     }
+}
+
+static bool properlyDominates(const VPRecipeBase *A, const VPRecipeBase *B,
+                              VPDominatorTree &VPDT);
+
+void VPlanTransforms::optimizeConditionalRecipes(
+    VPlan &Plan, LoopVectorizationLegality &Legal,
+    const TargetTransformInfo &TTI, const TargetLibraryInfo &TLI) {
+
+  if (!TTI.hasFlattenControlFlowPenalty())
+    // No need to do anything if target won't benefit from introduction of
+    // control flow
+    return;
+  VPDominatorTree VPDT;
+  VPDT.recalculate(Plan);
+
+  // Due to lost predication information on arithmetic, current algorithm fully
+  // relies on going bottom-up from stores and adding recipes to the list for
+  // which VPConditionalRegionBlock will be constructed.
+  // TODO: Change algorithm or add optimization to combine constructed IfBlocks
+  // when possible. Currently it's not done as it requires to check dependencies
+  // as affected recipes will be moved
+  auto GetMask = [](VPRecipeBase *R) {
+    return TypeSwitch<VPRecipeBase *, VPValue *>(R)
+        .Case<VPWidenStoreEVLRecipe>(
+            [&](VPWidenStoreEVLRecipe *S) { return S->getMask(); })
+        .Default([](VPRecipeBase *R) { return nullptr; });
+  };
+  ReversePostOrderTraversal<VPBlockDeepTraversalWrapper<VPBlockBase *>> RPOT(
+      Plan.getEntry());
+  SmallVector<std::pair<VPRecipeBase *, VPValue *>> MaskedLeafRecipes;
+  for (VPBasicBlock *VPBB : VPBlockUtils::blocksOnly<VPBasicBlock>(RPOT))
+    for (VPRecipeBase &R : *VPBB)
+      if (VPValue *M = GetMask(&R))
+        MaskedLeafRecipes.emplace_back(&R, M);
+
+  DenseSet<VPRecipeBase *> Candidates;
+  auto AddOperandsToCandidates = [&Candidates](VPRecipeBase *R) {
+    for (VPValue *Op : R->operands())
+      if (VPRecipeBase *OpR = Op->getDefiningRecipe())
+        Candidates.insert(OpR);
+  };
+
+  SmallVector<SetVector<VPRecipeBase *>> Tries;
+  while (!MaskedLeafRecipes.empty()) {
+    auto [LR, M] = MaskedLeafRecipes.pop_back_val();
+    Candidates.clear();
+    AddOperandsToCandidates(LR);
+
+    SetVector<VPRecipeBase *> CurrentTree;
+    CurrentTree.insert(LR);
+
+    auto End = M->hasDefiningRecipe()
+                   ? M->getDefiningRecipe()->getReverseIterator()
+                   : LR->getParent()->getFirstNonPhi()->getReverseIterator();
+    // Greedily add all recipes that are used to compute stored value to the
+    // tree. All users of the added recipe must dominate the store recipe.
+    for (VPRecipeBase &R : make_range(LR->getReverseIterator(), End)) {
+      // Recipe is not a part of the tree
+      if (!Candidates.contains(&R))
+        continue;
+
+      if (any_of(R.definedValues(), [&LR = LR, &VPDT](VPValue *Def) {
+            for (VPUser *U : Def->users()) {
+              if (auto *UR = dyn_cast<VPRecipeBase>(U)) {
+                if (UR == LR || properlyDominates(UR, LR, VPDT))
+                  continue;
+              }
+              return true;
+            }
+            return false;
+          }))
+        continue;
+
+      CurrentTree.insert(&R);
+      AddOperandsToCandidates(&R);
+    }
+
+    // Previous traversal could add recipes that are used by non-added recipes,
+    // thus need to be removed from the list.
+    DenseSet<VPRecipeBase *> ToRemove;
+    bool Changed;
+    do {
+      Changed = false;
+      for (VPRecipeBase *R : CurrentTree) {
+        if (ToRemove.contains(R))
+          continue;
+        if (any_of(R->definedValues(), [&](VPValue *Def) {
+              for (VPUser *U : Def->users()) {
+                if (auto *UR = dyn_cast<VPRecipeBase>(U))
+                  if (!CurrentTree.contains(UR) || ToRemove.contains(UR))
+                    return true;
+              }
+              return false;
+            })) {
+          Changed = true;
+          ToRemove.insert(R);
+        }
+      }
+    } while (Changed);
+
+    for (VPRecipeBase *R : ToRemove)
+      CurrentTree.remove(R);
+
+    if (CurrentTree.size() > 1)
+      Tries.push_back(CurrentTree);
+  }
+  for (const auto &List : Tries) {
+    VPRecipeBase *LR = List.front();
+    VPValue *M = GetMask(LR);
+    assert(M && "Mask VPValue must exist at this point");
+    auto Recipes = reverse(List.getArrayRef());
+
+    // 1. Split current basic block at LR point so that VPConditionalRegionBlock can be added
+    // inbetween
+    VPBasicBlock *ParentBB = LR->getParent();
+    VPBasicBlock *ContBB = ParentBB->splitAt(LR->getIterator());
+
+    // 2. Create VPBB, VPConditionalRegionBlock and insert it inbetween of ParentBB and ContBB
+    VPBasicBlock *IfBB = new VPBasicBlock("vector.if.bb");
+    VPConditionalRegionBlock *IfBlock = new VPConditionalRegionBlock(*M, IfBB, IfBB);
+    VPBlockUtils::insertBlockAfter(IfBlock, ParentBB);
+    if (ContBB->getNumSuccessors() == 0)
+      ParentBB->getEnclosingLoopRegion()->setExiting(ContBB);
+
+    // 3. Move recipes into IfBB
+    for (VPRecipeBase *R : Recipes)
+      R->moveBefore(*IfBB, IfBB->end());
+
+    // 4. Add unconditional branch to IfBB
+    auto *Br = new VPBranchOnMaskRecipe(nullptr, ContBB);
+    Br->insertBefore(*IfBB, IfBB->end());
+  }
 }
 #endif // SIFIVE_CUSTOMIZATION
 

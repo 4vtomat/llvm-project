@@ -13,8 +13,11 @@
 #ifndef LLVM_TRANSFORMS_VECTORIZE_VPLANTRANSFORMS_H
 #define LLVM_TRANSFORMS_VECTORIZE_VPLANTRANSFORMS_H
 
+#include "LoopVectorizationPlanner.h"
 #include "VPlan.h"
 #include "llvm/ADT/STLFunctionalExtras.h"
+#include "llvm/Analysis/TargetTransformInfo.h"
+#include "llvm/Transforms/Vectorize/LoopVectorizationLegality.h"
 
 namespace llvm {
 
@@ -76,6 +79,16 @@ struct VPlanTransforms {
   /// Simplify usage of monotonics within a VPlan by removing unnecessary blends
   /// if HCFG has been flattened
   static void simplifyMonotonics(VPlan &Plan);
+
+  /// Generates controlflow for masked recipes and their operands when possible.
+  /// This helps to improve execution time for certain OoO targets with one VEX
+  /// when mask rarely has one active element set.
+  /// TODO: The decision of whether such control flow needs to be generated or not
+  /// depends on call to cost model
+  static void optimizeConditionalRecipes(VPlan &Plan,
+                                         LoopVectorizationLegality &Legal,
+                                         const TargetTransformInfo &TTI,
+                                         const TargetLibraryInfo &TLI);
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Replace (ICMP_ULE, wide canonical IV, backedge-taken-count) checks with an

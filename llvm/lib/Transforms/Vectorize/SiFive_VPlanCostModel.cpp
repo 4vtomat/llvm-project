@@ -41,6 +41,14 @@ static cl::opt<bool> SiFiveEstimateLiveInRegisterPressure(
     cl::Hidden,
     cl::desc("Control whether cost model should estimate register pressure "
              "from livein values or not"));
+
+static cl::opt<unsigned> SiFiveVectorConditionFrequency(
+    "sifive-vplan-cost-model-vector-condition-frequency", cl::init(2),
+    cl::Hidden,
+    cl::desc("Control heuristic of how frequent vector condition of "
+             "VPConditionalRegionBlock is executed. The value `N` represents "
+             "that cost model will assume that vector condition is true each "
+             "`N`-th vector iteration."));
 #endif // SIFIVE_CUSTOMIZATION
 
 static ElementCount getElementCount(const std::pair<unsigned, bool> LMUL,
@@ -181,7 +189,7 @@ InstructionCost VPlanCostModel::getCost(const RVVPair &RVL) {
     }
 
   InstructionCost VectorIterCost = 0;
-  for (const VPBlockBase *Block : vp_depth_first_deep(Plan.getEntry()))
+  for (const VPBlockBase *Block : vp_depth_first_shallow(Plan.getEntry()))
     VectorIterCost += getCost(Block, RVL);
 
   if (!VectorIterCost.isValid())
@@ -203,7 +211,35 @@ InstructionCost VPlanCostModel::getCost(const VPBlockBase *Block,
           Cost += getCost(&Recipe, RVL);
         return Cost;
       })
-      .Default([&](const VPBlockBase *BBlock) -> InstructionCost { return 0; });
+      .Case<VPConditionalRegionBlock>([&](const VPConditionalRegionBlock *IfBlock) {
+        InstructionCost Cost = 0;
+        for (const VPBlockBase *Block :
+             vp_depth_first_shallow(IfBlock->getEntry()))
+          Cost += getCost(Block, RVL);
+        // Denominator represents number of vector iterations when condition is
+        // true, therefore requires execution of the nested vector code.
+        LLVM_DEBUG(dbgs() << "Adjust cost of the VPConditionalRegionBlock from " << Cost);
+        Cost /= std::max(SiFiveVectorConditionFrequency.getValue(), 1U);
+        LLVM_DEBUG(dbgs() << " to " << Cost);
+
+        Type *CondTy = TypeInfo.inferScalarType(IfBlock->getCondition());
+        auto *VectorTy = cast<VectorType>(getVectorType(CondTy, RVL));
+        Type *VLTy = getVLType(RVL);
+        Cost += getIntrinsicCost(Intrinsic::vp_first, CondTy,
+                         {PoisonValue::get(VectorTy), PoisonValue::get(VLTy)},
+                         FastMathFlags());
+        return Cost;
+      })
+      .Case<VPRegionBlock>([&](const VPRegionBlock *RegionBlock) {
+        InstructionCost Cost = 0;
+        for (const VPBlockBase *Block :
+             vp_depth_first_shallow(RegionBlock->getEntry()))
+          Cost += getCost(Block, RVL);
+        return Cost;
+      })
+      .Default([&](const VPBlockBase *BBlock) -> InstructionCost {
+        llvm_unreachable("Missed support of the VPBlockBase");
+      });
 }
 
 InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
@@ -505,8 +541,8 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
     }
   }
 
-  RVVPair VPRecipeRVL = getRecipeType(Recipe)
-                            ? RVVPair::getWithType(getRecipeType(Recipe), RVL)
+  [[maybe_unused]] RVVPair VPRecipeRVL =
+      getRecipeType(Recipe) ? RVVPair::getWithType(getRecipeType(Recipe), RVL)
                             : RVL;
   LLVM_DEBUG(dbgs() << "VPlanCM: cost " << Cost << " for RVL " << VPRecipeRVL
                     << " for VPInstruction: ";

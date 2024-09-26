@@ -219,6 +219,7 @@ private:
   /// Target Library Info.
   const TargetLibraryInfo &TLI;
 
+  /// Type information of VPRecipes
   VPTypeAnalysis &TypeInfo;
 
   /// Use same cost kind in the cost model

@@ -639,7 +639,16 @@ public:
   /// that are actually instantiated. Values of this enumeration are kept in the
   /// SubclassID field of the VPBlockBase objects. They are used for concrete
   /// type identification.
+#if SIFIVE_CUSTOMIZATION
+  using VPBlockTy = enum {
+    VPRegionBlockSC,
+    VPBasicBlockSC,
+    VPIRBasicBlockSC,
+    VPConditionalRegionBlockSC,
+  };
+#else
   using VPBlockTy = enum { VPRegionBlockSC, VPBasicBlockSC, VPIRBasicBlockSC };
+#endif // SIFIVE_CUSTOMIZATION
 
   using VPBlocksTy = SmallVectorImpl<VPBlockBase *>;
 
@@ -2815,12 +2824,30 @@ public:
 
 /// A recipe for generating conditional branches on the bits of a mask.
 class VPBranchOnMaskRecipe : public VPRecipeBase {
+#if SIFIVE_CUSTOMIZATION
+  VPBlockBase *TrueBB = nullptr;
+  VPBlockBase *FalseBB = nullptr;
+#endif // SIFIVE_CUSTOMIZATION
 public:
   VPBranchOnMaskRecipe(VPValue *BlockInMask)
       : VPRecipeBase(VPDef::VPBranchOnMaskSC, {}) {
     if (BlockInMask) // nullptr means all-one mask.
       addOperand(BlockInMask);
   }
+#if SIFIVE_CUSTOMIZATION
+  VPBranchOnMaskRecipe(VPValue *Cond, VPBlockBase *TrueBB,
+                       VPBlockBase *FalseBB = nullptr)
+      : VPRecipeBase(VPDef::VPBranchOnMaskSC, {}), TrueBB(TrueBB),
+        FalseBB(FalseBB) {
+    if (Cond) {
+      assert(TrueBB && FalseBB && "Both successors BBs should be provided");
+      addOperand(Cond);
+    } else {
+      assert(TrueBB && !FalseBB &&
+             "Only first successor BB should be provided");
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   VPBranchOnMaskRecipe *clone() override {
     return new VPBranchOnMaskRecipe(getOperand(0));
@@ -2841,6 +2868,12 @@ public:
       Mask->printAsOperand(O, SlotTracker);
     else
       O << " All-One";
+#if SIFIVE_CUSTOMIZATION
+    if (TrueBB)
+      O << ", " << TrueBB->getName();
+    if (FalseBB)
+      O << ", " << FalseBB->getName();
+#endif // SIFIVE_CUSTOMIZATION
   }
 #endif
 
@@ -3876,6 +3909,18 @@ class VPRegionBlock : public VPBlockBase {
   /// instances of output IR corresponding to its VPBlockBases.
   bool IsReplicator;
 
+#if SIFIVE_CUSTOMIZATION
+protected:
+  VPRegionBlock(unsigned RegionOpc, VPBlockBase *Entry, VPBlockBase *Exiting,
+                const std::string &Name = "", bool IsReplicator = false)
+      : VPBlockBase(RegionOpc, Name), Entry(Entry), Exiting(Exiting),
+        IsReplicator(IsReplicator) {
+    assert(Entry->getPredecessors().empty() && "Entry block has predecessors.");
+    assert(Exiting->getSuccessors().empty() && "Exit block has successors.");
+    Entry->setParent(this);
+    Exiting->setParent(this);
+  }
+#endif // SIFIVE_CUSTOMIZATION
 public:
   VPRegionBlock(VPBlockBase *Entry, VPBlockBase *Exiting,
                 const std::string &Name = "", bool IsReplicator = false)
@@ -3900,7 +3945,13 @@ public:
 
   /// Method to support type inquiry through isa, cast, and dyn_cast.
   static inline bool classof(const VPBlockBase *V) {
+#if SIFIVE_CUSTOMIZATION
+    return V->getVPBlockID() == VPBlockBase::VPRegionBlockSC ||
+           V->getVPBlockID() == VPBlockBase::VPConditionalRegionBlockSC;
+    ;
+#else
     return V->getVPBlockID() == VPBlockBase::VPRegionBlockSC;
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   const VPBlockBase *getEntry() const { return Entry; }
@@ -3966,6 +4017,52 @@ public:
   /// their recipes without updating the operands of the cloned recipes.
   VPRegionBlock *clone() override;
 };
+
+#if SIFIVE_CUSTOMIZATION
+/// VPConditionalRegionBlock hierarchically represents if-like control flow in a VPlan.
+/// Vector code generation will construct CFG that is similar to
+///  if (Cond) {
+///    <VPBBEntry>
+///    ...
+///    <VPBBExit>
+///    br Exit
+///  }
+///  <VPConditionalRegionBlockSuccessor>
+class VPConditionalRegionBlock : public VPRegionBlock {
+  VPValue *Cond = nullptr;
+
+public:
+  explicit VPConditionalRegionBlock(VPValue &Cond, VPBlockBase *Entry,
+                                    VPBlockBase *Exit)
+      : VPRegionBlock(VPConditionalRegionBlockSC, Entry, Exit), Cond(&Cond) {}
+
+  VPValue *getCondition() { return Cond; }
+  const VPValue *getCondition() const { return Cond; }
+
+  /// The method which generates the output IR instructions that correspond to
+  /// this VPRegionBlock, thereby "executing" the VPlan.
+  void execute(VPTransformState *State) final;
+
+  InstructionCost overhead(ElementCount VF, VPCostContext &Ctx) const override {
+    return 0;
+  };
+
+  /// Method to support type inquiry through isa, cast, and dyn_cast.
+  static inline bool classof(const VPBlockBase *V) {
+    return V->getVPBlockID() == VPBlockBase::VPConditionalRegionBlockSC;
+  }
+
+#if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
+  void print(raw_ostream &O, const Twine &Indent,
+             VPSlotTracker &SlotTracker) const override;
+#endif
+
+  VPConditionalRegionBlock *clone() final {
+    llvm_unreachable(
+        "clone function is not implemented for VPConditionalRegionBlock");
+  }
+};
+#endif // SIFIVE_CUSTOMIZATION
 
 /// VPlan models a candidate for vectorization, encoding various decisions take
 /// to produce efficient output IR, including which branches, basic-blocks and
@@ -4694,6 +4791,12 @@ bool isHeaderPhi(const VPRecipeBase &R);
 
 /// Return true if \p V is a header mask in \p Plan.
 bool isHeaderMask(const VPValue *V, VPlan &Plan);
+
+/// Returns true if \p Recipe is located in the loop. Returns false otherwise
+/// TODO: VPBaiscBlock::getEnclosingLoopRegion should be fixed to properly
+/// handle HCFG.
+/// TODO: Provide dedicate object to represent loops in the VPlan.
+bool isInLoopRegion(const VPRecipeBase &Recipe, const VPlan &Plan);
 } // end namespace vputils
 
 } // end namespace llvm

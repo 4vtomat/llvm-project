@@ -151,9 +151,7 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     Builder.setMask(MaskArg);
 
     Value *EVLArg;
-    VPRegionBlock *DefRegion =
-        Def->getDefiningRecipe()->getParent()->getParent();
-    if (DefRegion != State.Plan->getVectorLoopRegion()) {
+    if (!vputils::isInLoopRegion(*Def->getDefiningRecipe(), *State.Plan)) {
       Value *InitEVL =
           State.get(State.Plan->getInitEVL(), 0, /*NeedsScalar=*/true);
       assert(InitEVL && "InitEVL must be initialized before use");

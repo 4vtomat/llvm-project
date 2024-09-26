@@ -969,6 +969,10 @@ public:
 
   // Return the optimal vector type for loop idiom.
   VectorType *getBestVectorTypeForLoopIdiom(LLVMContext &Context) const;
+
+  /// Returns true if target will benefit more from scalar execution of a
+  /// control flow rather than flatten vector code.
+  bool hasFlattenControlFlowPenalty() const;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Should the Select Optimization pass be enabled and ran.
@@ -2033,6 +2037,8 @@ public:
 
   virtual VectorType *
   getBestVectorTypeForLoopIdiom(LLVMContext &Context) const = 0;
+
+  virtual bool hasFlattenControlFlowPenalty() const = 0;
 #endif // SIFIVE_CUSTOMIZATION
   virtual bool enableSelectOptimize() = 0;
   virtual bool shouldTreatInstructionLikeSelect(const Instruction *I) = 0;
@@ -2634,6 +2640,10 @@ public:
   VectorType *
   getBestVectorTypeForLoopIdiom(LLVMContext &Context) const override {
     return Impl.getBestVectorTypeForLoopIdiom(Context);
+  }
+
+  bool hasFlattenControlFlowPenalty() const override {
+    return Impl.hasFlattenControlFlowPenalty();
   }
 #endif // SIFIVE_CUSTOMIZATION
 

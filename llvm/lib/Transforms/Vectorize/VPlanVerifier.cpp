@@ -217,6 +217,19 @@ bool VPlanVerifier::verifyBlock(const VPBlockBase *VPB) {
       return false;
     }
   }
+#if SIFIVE_CUSTOMIZATION
+  if (auto *IfB = dyn_cast<VPConditionalRegionBlock>(VPB)) {
+    if (IfB->getNumSuccessors() != 1) {
+      errs() << "VPConditionalRegionBlock must have one immediate successor\n";
+      return false;
+    }
+    if (IfB->getNumPredecessors() != 1) {
+      errs()
+          << "VPConditionalRegionBlock must have one immediate predecessor\n";
+      return false;
+    }
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   // Check block's successors.
   const auto &Successors = VPB->getSuccessors();

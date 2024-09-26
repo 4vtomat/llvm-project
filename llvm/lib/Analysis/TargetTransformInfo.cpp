@@ -633,6 +633,10 @@ VectorType *
 TargetTransformInfo::getBestVectorTypeForLoopIdiom(LLVMContext &Context) const {
   return TTIImpl->getBestVectorTypeForLoopIdiom(Context);
 }
+
+bool TargetTransformInfo::hasFlattenControlFlowPenalty() const {
+  return TTIImpl->hasFlattenControlFlowPenalty();
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 bool TargetTransformInfo::enableSelectOptimize() const {

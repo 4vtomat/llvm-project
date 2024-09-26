@@ -2954,14 +2954,21 @@ InstructionCost VPMonotonicHeaderPHIRecipe::overhead(ElementCount VF,
 #endif // SIFIVE_CUSTOMIZATION
 
 void VPBranchOnMaskRecipe::execute(VPTransformState &State) {
+#if !SIFIVE_CUSTOMIZATION
   assert(State.Instance && "Branch on Mask works only on single instance.");
 
   unsigned Part = State.Instance->Part;
   unsigned Lane = State.Instance->Lane.getKnownLane();
+#endif // SIFIVE_CUSTOMIZATION
 
   Value *ConditionBit = nullptr;
   VPValue *BlockInMask = getMask();
   if (BlockInMask) {
+#if SIFIVE_CUSTOMIZATION
+    assert(State.Instance && "Branch on Mask works only on single instance.");
+    unsigned Part = State.Instance->Part;
+    unsigned Lane = State.Instance->Lane.getKnownLane();
+#endif // SIFIVE_CUSTOMIZATION
     ConditionBit = State.get(BlockInMask, Part);
     if (ConditionBit->getType()->isVectorTy())
       ConditionBit = State.Builder.CreateExtractElement(
@@ -2974,7 +2981,15 @@ void VPBranchOnMaskRecipe::execute(VPTransformState &State) {
   auto *CurrentTerminator = State.CFG.PrevBB->getTerminator();
   assert(isa<UnreachableInst>(CurrentTerminator) &&
          "Expected to replace unreachable terminator with conditional branch.");
+#if SIFIVE_CUSTOMIZATION
+  BranchInst *CondBr;
+  if (TrueBB && !FalseBB)
+    CondBr = BranchInst::Create(State.CFG.PrevBB);
+  else
+    CondBr = BranchInst::Create(State.CFG.PrevBB, nullptr, ConditionBit);
+#else
   auto *CondBr = BranchInst::Create(State.CFG.PrevBB, nullptr, ConditionBit);
+#endif // SIFIVE_CUSTOMIZATION
   CondBr->setSuccessor(0, nullptr);
   ReplaceInstWithInst(CurrentTerminator, CondBr);
 }
