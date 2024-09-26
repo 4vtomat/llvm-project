@@ -97,7 +97,11 @@ for.body5.us65:                                   ; preds = %for.cond2.preheader
   %7 = bitcast <vscale x 16 x i8> %4 to <vscale x 2 x i64>
   %8 = bitcast <vscale x 16 x i8> %5 to <vscale x 2 x i64>
   %9 = bitcast <vscale x 16 x i8> %6 to <vscale x 2 x i64>
-  tail call void @llvm.riscv.vsseg4.nxv2i64.i64(<vscale x 2 x i64> %7, <vscale x 2 x i64> %8, <vscale x 2 x i64> %9, <vscale x 2 x i64> %9, i64* %3, i64 %K_block_rem)
+  %v_0 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 4) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv16i8_2t.nxv2i64(target("riscv.vector.tuple", <vscale x 16 x i8>, 4) poison, <vscale x 2 x i64> %7, i32 0)
+  %v_1 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 4) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv16i8_2t.nxv2i64(target("riscv.vector.tuple", <vscale x 16 x i8>, 4) %v_0, <vscale x 2 x i64> %8, i32 1)
+  %v_2 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 4) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv16i8_2t.nxv2i64(target("riscv.vector.tuple", <vscale x 16 x i8>, 4) %v_1, <vscale x 2 x i64> %9, i32 2)
+  %v_3 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 4) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv16i8_2t.nxv2i64(target("riscv.vector.tuple", <vscale x 16 x i8>, 4) %v_2, <vscale x 2 x i64> %9, i32 3)
+  tail call void @llvm.riscv.vsseg4.triscv.vector.tuple_nxv16i8_4t(target("riscv.vector.tuple", <vscale x 16 x i8>, 4) %v_3, i64* %3, i64 %K_block_rem, i64 6) #2
   %inc.us67 = add nuw i64 %kbs.052.us66, 1
   %exitcond.not = icmp eq i64 %inc.us67, %num_full_K_block_sets
   br i1 %exitcond.not, label %for.cond2.for.cond.cleanup4_crit_edge.split.us69, label %for.body5.us65
@@ -112,4 +116,4 @@ for.cond.cleanup:                                 ; preds = %for.cond2.for.cond.
 }
 
 declare <vscale x 16 x i8> @llvm.riscv.vle.mask.nxv16i8.i64(<vscale x 16 x i8>, <vscale x 16 x i8>* nocapture, <vscale x 16 x i1>, i64, i64 immarg) #1
-declare void @llvm.riscv.vsseg4.nxv2i64.i64(<vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>, <vscale x 2 x i64>, i64* nocapture, i64) #2
+declare void @llvm.riscv.vsseg4.triscv.vector.tuple_nxv16i8_4t(target("riscv.vector.tuple", <vscale x 16 x i8>, 4), i64* nocapture, i64, i64) #2

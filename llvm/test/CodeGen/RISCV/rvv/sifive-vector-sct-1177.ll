@@ -20,16 +20,16 @@ define dso_local void @main() local_unnamed_addr {
 ; CHECK-NEXT:    .cfi_escape 0x0f, 0x0d, 0x72, 0x00, 0x11, 0x20, 0x22, 0x11, 0x10, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 32 + 16 * vlenb
 ; CHECK-NEXT:    li a0, 55
 ; CHECK-NEXT:    vsetvli zero, a0, e16, m4, ta, ma
-; CHECK-NEXT:    vloxseg2ei32.v v16, (a0), v8
+; CHECK-NEXT:    vloxseg2ei16.v v12, (a1), v8
 ; CHECK-NEXT:    csrr a0, vlenb
 ; CHECK-NEXT:    slli a0, a0, 3
 ; CHECK-NEXT:    add a0, sp, a0
 ; CHECK-NEXT:    addi a0, a0, 16
 ; CHECK-NEXT:    csrr a1, vlenb
 ; CHECK-NEXT:    slli a1, a1, 2
-; CHECK-NEXT:    vs4r.v v16, (a0) # Unknown-size Folded Spill
+; CHECK-NEXT:    vs4r.v v12, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    add a0, a0, a1
-; CHECK-NEXT:    vs4r.v v20, (a0) # Unknown-size Folded Spill
+; CHECK-NEXT:    vs4r.v v16, (a0) # Unknown-size Folded Spill
 ; CHECK-NEXT:    vsetvli a0, zero, e8, m2, ta, ma
 ; CHECK-NEXT:    vmclr.m v0
 ; CHECK-NEXT:    li s0, 36
@@ -55,8 +55,8 @@ define dso_local void @main() local_unnamed_addr {
 ; CHECK-NEXT:    vfdiv.vv v8, v24, v8, v0.t
 ; CHECK-NEXT:    vse32.v v8, (a0)
 entry:
-  %0 = call { <vscale x 16 x half>, <vscale x 16 x half> } @llvm.riscv.vloxseg2.nxv16f16.nxv16i32.i64(<vscale x 16 x half> undef, <vscale x 16 x half> undef, half* nonnull undef, <vscale x 16 x i32> undef, i64 55)
-  %1 = extractvalue { <vscale x 16 x half>, <vscale x 16 x half> } %0, 0
+  %0 = tail call target("riscv.vector.tuple", <vscale x 32 x i8>, 2) @llvm.riscv.vloxseg2.triscv.vector.tuple_nxv32i8_2t.nxv16f16(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) undef, half* nonnull undef, <vscale x 16 x i16> undef, i64 55, i64 4)
+  %1 = call <vscale x 16 x half> @llvm.riscv.tuple.extract.nxv16f16.triscv.vector.tuple_nxv32i8_2t(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) %0, i32 0)
   %2 = call <vscale x 16 x float> @llvm.riscv.vfwadd.mask.nxv16f32.nxv16f16.nxv16f16.i64(<vscale x 16 x float> undef, <vscale x 16 x half> undef, <vscale x 16 x half> undef, <vscale x 16 x i1> zeroinitializer, i64 7, i64 36, i64 0)
   call void @_Z5checkIjEbPKT_S2_m()
   %3 = call <vscale x 16 x i16> @llvm.riscv.vrgather.vv.mask.nxv16i16.i64(<vscale x 16 x i16> undef, <vscale x 16 x i16> undef, <vscale x 16 x i16> undef, <vscale x 16 x i1> undef, i64 32, i64 0)
@@ -67,7 +67,7 @@ entry:
   unreachable
 }
 
-declare { <vscale x 16 x half>, <vscale x 16 x half> } @llvm.riscv.vloxseg2.nxv16f16.nxv16i32.i64(<vscale x 16 x half>, <vscale x 16 x half>, half* nocapture, <vscale x 16 x i32>, i64)
+declare target("riscv.vector.tuple", <vscale x 32 x i8>, 2) @llvm.riscv.vloxseg2.triscv.vector.tuple_nxv32i8_2t.nxv16f16(target("riscv.vector.tuple", <vscale x 32 x i8>, 2), half* nonnull, <vscale x 16 x i16>, i64, i64)
 
 declare <vscale x 16 x float> @llvm.riscv.vfwadd.mask.nxv16f32.nxv16f16.nxv16f16.i64(<vscale x 16 x float>, <vscale x 16 x half>, <vscale x 16 x half>, <vscale x 16 x i1>, i64, i64, i64 immarg)
 

@@ -11,56 +11,41 @@ define void @main() {
 ; CHECK-LABEL: main:
 ; CHECK:       # %bb.0: # %entry
 ; CHECK-NEXT:    vsetivli zero, 0, e64, m4, ta, ma
-; CHECK-NEXT:    vmacc.vv v12, v8, v8
+; CHECK-NEXT:    vmacc.vv v16, v8, v8
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_0)
 ; CHECK-NEXT:    ld a0, %lo(.LCPI0_0)(a0)
 ; CHECK-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
-; CHECK-NEXT:    vmclr.m v28
+; CHECK-NEXT:    vmclr.m v0
 ; CHECK-NEXT:    li a1, 108
-; CHECK-NEXT:    vmv1r.v v9, v28
-; CHECK-NEXT:    vmv1r.v v0, v28
 ; CHECK-NEXT:    vsetivli zero, 0, e8, mf2, ta, mu
-; CHECK-NEXT:    vmsne.vx v9, v8, a1, v0.t
+; CHECK-NEXT:    vmsne.vx v0, v8, a1, v0.t
 ; CHECK-NEXT:    lui a1, %hi(.LCPI0_1)
 ; CHECK-NEXT:    ld a1, %lo(.LCPI0_1)(a1)
 ; CHECK-NEXT:    vsetvli a2, zero, e64, m4, ta, ma
-; CHECK-NEXT:    vmv.v.i v16, 0
+; CHECK-NEXT:    vmv.v.i v20, 0
 ; CHECK-NEXT:    vsetivli zero, 0, e64, m4, ta, ma
-; CHECK-NEXT:    vand.vx v20, v16, a0
-; CHECK-NEXT:    vmv1r.v v0, v9
+; CHECK-NEXT:    vand.vx v8, v20, a0
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
-; CHECK-NEXT:    vnot.v v16, v12, v0.t
-; CHECK-NEXT:    vxor.vx v20, v16, a1, v0.t
-; CHECK-NEXT:    vmv4r.v v24, v20
+; CHECK-NEXT:    vnot.v v20, v16, v0.t
+; CHECK-NEXT:    vxor.vx v8, v20, a1, v0.t
+; CHECK-NEXT:    vmv4r.v v12, v8
 ; CHECK-NEXT:    lui a0, %hi(__const.main.var_272)
 ; CHECK-NEXT:    addi a0, a0, %lo(__const.main.var_272)
-; CHECK-NEXT:    vmv4r.v v12, v20
-; CHECK-NEXT:    vmv4r.v v16, v24
-; CHECK-NEXT:    vluxseg2ei8.v v12, (a0), v10, v0.t
-; CHECK-NEXT:    vmv4r.v v4, v12
-; CHECK-NEXT:    vmv4r.v v8, v16
-; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
-; CHECK-NEXT:    vle64.v v16, (zero)
+; CHECK-NEXT:    vmv8r.v v24, v8
+; CHECK-NEXT:    vluxseg2ei8.v v24, (a0), v16, v0.t
 ; CHECK-NEXT:    lui a0, %hi(.LCPI0_2)
 ; CHECK-NEXT:    ld a0, %lo(.LCPI0_2)(a0)
-; CHECK-NEXT:    vaaddu.vv v12, v4, v20
 ; CHECK-NEXT:    lui a1, %hi(.LCPI0_3)
 ; CHECK-NEXT:    ld a1, %lo(.LCPI0_3)(a1)
-; CHECK-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
-; CHECK-NEXT:    vremu.vx v12, v8, a0, v0.t
-; CHECK-NEXT:    vmv1r.v v0, v28
-; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vnsrl.wi v8, v20, 0, v0.t
-; CHECK-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
-; CHECK-NEXT:    vmadd.vx v12, a1, v8, v0.t
-; CHECK-NEXT:    lui a0, 854558
-; CHECK-NEXT:    addi a0, a0, 733
-; CHECK-NEXT:    vsetvli zero, zero, e32, m2, tu, mu
-; CHECK-NEXT:    vnmsac.vx v8, a0, v8, v0.t
 ; CHECK-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
-; CHECK-NEXT:    vsseg2e64.v v12, (a0)
-; CHECK-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; CHECK-NEXT:    vsseg2e32.v v8, (a0)
+; CHECK-NEXT:    vle64.v v20, (zero)
+; CHECK-NEXT:    vaaddu.vv v16, v24, v8
+; CHECK-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
+; CHECK-NEXT:    vremu.vx v16, v8, a0, v0.t
+; CHECK-NEXT:    vmadd.vx v16, a1, v8, v0.t
+; CHECK-NEXT:    vsseg2e64.v v16, (a0)
+; CHECK-NEXT:    vsetivli zero, 0, e64, m2, ta, ma
+; CHECK-NEXT:    vsseg2e64.v v8, (a0)
 ;
 ; SUBREG_LIVENESS-LABEL: main:
 ; SUBREG_LIVENESS:       # %bb.0: # %entry
@@ -69,50 +54,38 @@ define void @main() {
 ; SUBREG_LIVENESS-NEXT:    lui a0, %hi(.LCPI0_0)
 ; SUBREG_LIVENESS-NEXT:    ld a0, %lo(.LCPI0_0)(a0)
 ; SUBREG_LIVENESS-NEXT:    vsetvli a1, zero, e8, mf2, ta, ma
-; SUBREG_LIVENESS-NEXT:    vmclr.m v8
+; SUBREG_LIVENESS-NEXT:    vmclr.m v0
 ; SUBREG_LIVENESS-NEXT:    li a1, 108
-; SUBREG_LIVENESS-NEXT:    vmv1r.v v9, v8
-; SUBREG_LIVENESS-NEXT:    vmv1r.v v0, v8
 ; SUBREG_LIVENESS-NEXT:    vsetivli zero, 0, e8, mf2, ta, mu
-; SUBREG_LIVENESS-NEXT:    vmsne.vx v9, v8, a1, v0.t
+; SUBREG_LIVENESS-NEXT:    vmsne.vx v0, v8, a1, v0.t
 ; SUBREG_LIVENESS-NEXT:    lui a1, %hi(.LCPI0_1)
 ; SUBREG_LIVENESS-NEXT:    ld a1, %lo(.LCPI0_1)(a1)
 ; SUBREG_LIVENESS-NEXT:    vsetvli a2, zero, e64, m4, ta, ma
 ; SUBREG_LIVENESS-NEXT:    vmv.v.i v16, 0
 ; SUBREG_LIVENESS-NEXT:    vsetivli zero, 0, e64, m4, ta, ma
-; SUBREG_LIVENESS-NEXT:    vand.vx v20, v16, a0
-; SUBREG_LIVENESS-NEXT:    vmv1r.v v0, v9
+; SUBREG_LIVENESS-NEXT:    vand.vx v8, v16, a0
 ; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
 ; SUBREG_LIVENESS-NEXT:    vnot.v v16, v12, v0.t
-; SUBREG_LIVENESS-NEXT:    vxor.vx v20, v16, a1, v0.t
-; SUBREG_LIVENESS-NEXT:    vmv4r.v v24, v20
+; SUBREG_LIVENESS-NEXT:    vxor.vx v8, v16, a1, v0.t
+; SUBREG_LIVENESS-NEXT:    vmv4r.v v12, v8
 ; SUBREG_LIVENESS-NEXT:    lui a0, %hi(__const.main.var_272)
 ; SUBREG_LIVENESS-NEXT:    addi a0, a0, %lo(__const.main.var_272)
-; SUBREG_LIVENESS-NEXT:    vmv4r.v v12, v20
-; SUBREG_LIVENESS-NEXT:    vmv4r.v v16, v24
-; SUBREG_LIVENESS-NEXT:    vluxseg2ei8.v v12, (a0), v10, v0.t
-; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
-; SUBREG_LIVENESS-NEXT:    vle64.v v16, (zero)
+; SUBREG_LIVENESS-NEXT:    vmv4r.v v20, v8
+; SUBREG_LIVENESS-NEXT:    vmv4r.v v24, v12
+; SUBREG_LIVENESS-NEXT:    vluxseg2ei8.v v20, (a0), v16, v0.t
 ; SUBREG_LIVENESS-NEXT:    lui a0, %hi(.LCPI0_2)
 ; SUBREG_LIVENESS-NEXT:    ld a0, %lo(.LCPI0_2)(a0)
-; SUBREG_LIVENESS-NEXT:    vaaddu.vv v12, v12, v20
 ; SUBREG_LIVENESS-NEXT:    lui a1, %hi(.LCPI0_3)
 ; SUBREG_LIVENESS-NEXT:    ld a1, %lo(.LCPI0_3)(a1)
-; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
-; SUBREG_LIVENESS-NEXT:    vremu.vx v12, v8, a0, v0.t
-; SUBREG_LIVENESS-NEXT:    vmv1r.v v0, v8
-; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; SUBREG_LIVENESS-NEXT:    vnsrl.wi v8, v20, 0, v0.t
-; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
-; SUBREG_LIVENESS-NEXT:    vmadd.vx v12, a1, v8, v0.t
-; SUBREG_LIVENESS-NEXT:    lui a0, 854558
-; SUBREG_LIVENESS-NEXT:    addi a0, a0, 733
-; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e32, m2, tu, mu
-; SUBREG_LIVENESS-NEXT:    vnmsac.vx v8, a0, v8, v0.t
 ; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, ta, ma
-; SUBREG_LIVENESS-NEXT:    vsseg2e64.v v12, (a0)
-; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e32, m2, ta, ma
-; SUBREG_LIVENESS-NEXT:    vsseg2e32.v v8, (a0)
+; SUBREG_LIVENESS-NEXT:    vle64.v v12, (zero)
+; SUBREG_LIVENESS-NEXT:    vaaddu.vv v8, v20, v8
+; SUBREG_LIVENESS-NEXT:    vsetvli zero, zero, e64, m4, tu, mu
+; SUBREG_LIVENESS-NEXT:    vremu.vx v8, v8, a0, v0.t
+; SUBREG_LIVENESS-NEXT:    vmadd.vx v8, a1, v8, v0.t
+; SUBREG_LIVENESS-NEXT:    vsseg2e64.v v8, (a0)
+; SUBREG_LIVENESS-NEXT:    vsetivli zero, 0, e64, m2, ta, ma
+; SUBREG_LIVENESS-NEXT:    vsseg2e64.v v8, (a0)
 entry:
   %0 = tail call <vscale x 4 x i64> @llvm.riscv.vle.nxv4i64.i64(<vscale x 4 x i64> undef, <vscale x 4 x i64>* nonnull null, i64 0)
   %1 = tail call <vscale x 4 x i64> @llvm.riscv.vle.nxv4i64.i64(<vscale x 4 x i64> undef, <vscale x 4 x i64>* nonnull undef, i64 0)
@@ -121,8 +94,10 @@ entry:
   %4 = tail call <vscale x 4 x i1> @llvm.riscv.vmsne.mask.nxv4i8.i8.i64(<vscale x 4 x i1> zeroinitializer, <vscale x 4 x i8> undef, i8 108, <vscale x 4 x i1> zeroinitializer, i64 0)
   %5 = tail call <vscale x 4 x i64> @llvm.riscv.vxor.mask.nxv4i64.i64.i64(<vscale x 4 x i64> zeroinitializer, <vscale x 4 x i64> %2, i64 -1, <vscale x 4 x i1> %4, i64 0, i64 0)
   %6 = tail call <vscale x 4 x i64> @llvm.riscv.vxor.mask.nxv4i64.i64.i64(<vscale x 4 x i64> %3, <vscale x 4 x i64> %5, i64 -5080950929949460471, <vscale x 4 x i1> %4, i64 0, i64 0)
-  %7 = tail call { <vscale x 4 x i64>, <vscale x 4 x i64> } @llvm.riscv.vluxseg2.mask.nxv4i64.nxv4i8.i64(<vscale x 4 x i64> %6, <vscale x 4 x i64> %6, i64* getelementptr inbounds ([123 x i64], [123 x i64]* @__const.main.var_272, i64 0, i64 0), <vscale x 4 x i8> undef, <vscale x 4 x i1> %4, i64 0, i64 0)
-  %8 = extractvalue { <vscale x 4 x i64>, <vscale x 4 x i64> } %7, 0
+  %v_0 = call target("riscv.vector.tuple", <vscale x 32 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv32i8_2t.nxv4i64(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) poison, <vscale x 4 x i64> %6, i32 0)
+  %v_1 = call target("riscv.vector.tuple", <vscale x 32 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv32i8_2t.nxv4i64(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) %v_0, <vscale x 4 x i64> %6, i32 1)
+  %7 = call target("riscv.vector.tuple", <vscale x 32 x i8>, 2) @llvm.riscv.vluxseg2.mask.triscv.vector.tuple_nxv32i8_2t.nxv4i64.nxv4i1(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) %v_1, i64* getelementptr inbounds ([123 x i64], [123 x i64]* @__const.main.var_272, i64 0, i64 0), <vscale x 4 x i8> poison, <vscale x 4 x i1> %4, i64 0, i64 0, i64 6)
+  %8 = call <vscale x 4 x i64> @llvm.riscv.tuple.extract.nxv4i64.triscv.vector.tuple_nxv32i8_2t(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) %7,         i32 0)
   %9 = tail call <vscale x 4 x i64> @llvm.riscv.vaaddu.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> undef, <vscale x 4 x i64> %8, <vscale x 4 x i64> %6, i64 7, i64 0)
   %10 = tail call <vscale x 4 x i64> @llvm.riscv.vssrl.mask.nxv4i64.i64.i64(<vscale x 4 x i64> undef, <vscale x 4 x i64> %3, i64 10, <vscale x 4 x i1> %4, i64 7, i64 0, i64 0)
   %11 = tail call <vscale x 4 x i64> @llvm.riscv.vremu.mask.nxv4i64.i64.i64(<vscale x 4 x i64> %9, <vscale x 4 x i64> undef, i64 1965442527733090436, <vscale x 4 x i1> undef, i64 0, i64 0)
@@ -130,8 +105,12 @@ entry:
   %13 = tail call <vscale x 4 x i64> @llvm.riscv.vaaddu.mask.nxv4i64.nxv4i64.i64(<vscale x 4 x i64> %10, <vscale x 4 x i64> %1, <vscale x 4 x i64> undef, <vscale x 4 x i1> undef, i64 7, i64 0, i64 0)
   %14 = tail call <vscale x 4 x i64> @llvm.riscv.vmadd.mask.nxv4i64.i64.i64(<vscale x 4 x i64> %11, i64 -7906839184643601134, <vscale x 4 x i64> undef, <vscale x 4 x i1> undef, i64 0, i64 0)
   %15 = tail call <vscale x 4 x i32> @llvm.riscv.vnmsac.mask.nxv4i32.i32.i64(<vscale x 4 x i32> %12, i32 -794696995, <vscale x 4 x i32> undef, <vscale x 4 x i1> undef, i64 0, i64 0)
-  call void @llvm.riscv.vsseg2.nxv4i64.i64(<vscale x 4 x i64> %14, <vscale x 4 x i64> %0, i64* nonnull undef, i64 0)
-  call void @llvm.riscv.vsseg2.nxv4i32.i64(<vscale x 4 x i32> %15, <vscale x 4 x i32> undef, i32* nonnull undef, i64 0)
+  %data0_0 = call target("riscv.vector.tuple", <vscale x 32 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv32i8_2t.nxv4i64(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) poison, <vscale x 4 x i64> %14, i32 0)
+  %data0_1 = call target("riscv.vector.tuple", <vscale x 32 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv32i8_2t.nxv4i64(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) %data0_0, <vscale x 4 x i64> %0, i32 1)
+  tail call void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv32i8_2t(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) %data0_1, i64* nonnull undef, i64 0, i64 6)
+  %data1_0 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv16i8_2t.nxv4i32(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) poison, <vscale x 4 x i32> %15, i32 0)
+  %data1_1 = call target("riscv.vector.tuple", <vscale x 16 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv16i8_2t.nxv4i32(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) poison, <vscale x 4 x i32> undef, i32 1)
+  tail call void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2) %data1_1, i32* nonnull undef, i64 0, i64 6)
   unreachable
 }
 
@@ -140,13 +119,13 @@ declare <vscale x 4 x i64> @llvm.riscv.vmacc.nxv4i64.nxv4i64.i64(<vscale x 4 x i
 declare <vscale x 4 x i64> @llvm.riscv.vand.nxv4i64.i64.i64(<vscale x 4 x i64>, <vscale x 4 x i64>, i64, i64)
 declare <vscale x 4 x i1> @llvm.riscv.vmsne.mask.nxv4i8.i8.i64(<vscale x 4 x i1>, <vscale x 4 x i8>, i8, <vscale x 4 x i1>, i64)
 declare <vscale x 4 x i64> @llvm.riscv.vxor.mask.nxv4i64.i64.i64(<vscale x 4 x i64>, <vscale x 4 x i64>, i64, <vscale x 4 x i1>, i64, i64 immarg)
-declare { <vscale x 4 x i64>, <vscale x 4 x i64> } @llvm.riscv.vluxseg2.mask.nxv4i64.nxv4i8.i64(<vscale x 4 x i64>, <vscale x 4 x i64>, i64* nocapture, <vscale x 4 x i8>, <vscale x 4 x i1>, i64, i64 immarg)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vluxseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv4i64.nxv4i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 2), ptr, <vscale x 4 x i64>, <vscale x 4 x i1>, i64, i64, i64)
 declare <vscale x 4 x i64> @llvm.riscv.vaaddu.nxv4i64.nxv4i64.i64(<vscale x 4 x i64>, <vscale x 4 x i64>, <vscale x 4 x i64>, i64, i64)
 declare <vscale x 4 x i64> @llvm.riscv.vssrl.mask.nxv4i64.i64.i64(<vscale x 4 x i64>, <vscale x 4 x i64>, i64, <vscale x 4 x i1>, i64, i64, i64 immarg)
 declare <vscale x 4 x i64> @llvm.riscv.vremu.mask.nxv4i64.i64.i64(<vscale x 4 x i64>, <vscale x 4 x i64>, i64, <vscale x 4 x i1>, i64, i64 immarg)
 declare <vscale x 4 x i32> @llvm.riscv.vnsrl.mask.nxv4i32.nxv4i64.i64.i64(<vscale x 4 x i32>, <vscale x 4 x i64>, i64, <vscale x 4 x i1>, i64, i64 immarg)
-declare void @llvm.riscv.vsseg2.nxv4i64.i64(<vscale x 4 x i64>, <vscale x 4 x i64>, i64* nocapture, i64)
+declare void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv32i8_2t(target("riscv.vector.tuple", <vscale x 32 x i8>, 2), i64* nocapture, i64, i64)
 declare <vscale x 4 x i64> @llvm.riscv.vaaddu.mask.nxv4i64.nxv4i64.i64(<vscale x 4 x i64>, <vscale x 4 x i64>, <vscale x 4 x i64>, <vscale x 4 x i1>, i64, i64, i64 immarg)
 declare <vscale x 4 x i64> @llvm.riscv.vmadd.mask.nxv4i64.i64.i64(<vscale x 4 x i64>, i64, <vscale x 4 x i64>, <vscale x 4 x i1>, i64, i64 immarg)
 declare <vscale x 4 x i32> @llvm.riscv.vnmsac.mask.nxv4i32.i32.i64(<vscale x 4 x i32>, i32, <vscale x 4 x i32>, <vscale x 4 x i1>, i64, i64 immarg)
-declare void @llvm.riscv.vsseg2.nxv4i32.i64(<vscale x 4 x i32>, <vscale x 4 x i32>, i32* nocapture, i64)
+declare void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv16i8_2t(target("riscv.vector.tuple", <vscale x 16 x i8>, 2), i32* nocapture, i64, i64)

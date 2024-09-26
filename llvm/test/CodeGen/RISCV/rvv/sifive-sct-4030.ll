@@ -20,12 +20,15 @@ define void @foo() {
 ; CHECK-NEXT:    addi sp, sp, 16
 ; CHECK-NEXT:    ret
 entry:
-  %0 = call { <vscale x 8 x i8>, <vscale x 8 x i8> } @llvm.riscv.vluxseg2.nxv8i8.nxv8i32.i64(<vscale x 8 x i8> zeroinitializer, <vscale x 8 x i8> zeroinitializer, ptr null, <vscale x 8 x i32> zeroinitializer, i64 2)
-  %1 = extractvalue { <vscale x 8 x i8>, <vscale x 8 x i8> } %0, 0
+  %v_0 = call target("riscv.vector.tuple", <vscale x 8 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_2t.nxv8i8(target("riscv.vector.tuple", <vscale x 8 x i8>, 2) poison, <vscale x 8 x i8> zeroinitializer, i32 0)
+  %v_1 = call target("riscv.vector.tuple", <vscale x 8 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_2t.nxv8i8(target("riscv.vector.tuple", <vscale x 8 x i8>, 2) %v_0, <vscale x 8 x i8> zeroinitializer, i32 1)
+  ;%0 = call { <vscale x 8 x i8>, <vscale x 8 x i8> } @llvm.riscv.vluxseg2.nxv8i8.nxv8i32.i64(<vscale x 8 x i8> zeroinitializer, <vscale x 8 x i8> zeroinitializer, ptr null, <vscale x 8 x i32> zeroinitializer, i64 2)
+  %0 = call target("riscv.vector.tuple", <vscale x 8 x i8>, 2) @llvm.riscv.vluxseg2.triscv.vector.tuple_nxv8i8_2t.nxv8i32(target("riscv.vector.tuple", <vscale x 8 x i8>, 2) %v_1, ptr null, <vscale x 8 x i32> zeroinitializer, i64 2, i64 3)
+  %1 = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_2t(target("riscv.vector.tuple", <vscale x 8 x i8>, 2) %0, i32 0)
   %call41 = call <vscale x 8 x float> @bar(<vscale x 8 x i8> %1)
   ret void
 }
 
-declare { <vscale x 8 x i8>, <vscale x 8 x i8> } @llvm.riscv.vluxseg2.nxv8i8.nxv8i32.i64(<vscale x 8 x i8>, <vscale x 8 x i8>, ptr nocapture, <vscale x 8 x i32>, i64)
+declare target("riscv.vector.tuple", <vscale x 8 x i8>, 2) @llvm.riscv.vluxseg2.triscv.vector.tuple_nxv8i8_2t.nxv8i32(target("riscv.vector.tuple", <vscale x 8 x i8>, 2), ptr, <vscale x 8 x i32>, i64, i64)
 
 declare <vscale x 8 x float> @bar(<vscale x 8 x i8>)

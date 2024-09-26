@@ -31,7 +31,9 @@ entry:
   %2 = call <vscale x 8 x float> @llvm.riscv.vfcvt.f.xu.v.nxv8f32.nxv8i32.i64(<vscale x 8 x float> poison, <vscale x 8 x i32> %1, i64 7, i64 1)
   %3 = call <vscale x 2 x i32> @llvm.riscv.vredmaxu.nxv2i32.nxv8i32.i64(<vscale x 2 x i32> zeroinitializer, <vscale x 8 x i32> %1, <vscale x 2 x i32> shufflevector (<vscale x 2 x i32> insertelement (<vscale x 2 x i32> poison, i32 1, i64 0), <vscale x 2 x i32> poison, <vscale x 2 x i32> zeroinitializer), i64 2)
   call void @llvm.riscv.vse.nxv2i32.i64(<vscale x 2 x i32> %3, ptr null, i64 0)
-  call void @llvm.riscv.vsseg2.nxv8f32.i64(<vscale x 8 x float> %2, <vscale x 8 x float> zeroinitializer, ptr null, i64 0)
+  %data0 = call target("riscv.vector.tuple", <vscale x 32 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv32i8_2t.nxv8i32(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) poison, <vscale x 8 x float> %2, i32 0)
+  %data1 = call target("riscv.vector.tuple", <vscale x 32 x i8>, 2) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv32i8_2t.nxv8i32(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) %data0, <vscale x 8 x float> zeroinitializer, i32 1)
+  call void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv32i8_2t(target("riscv.vector.tuple", <vscale x 32 x i8>, 2) %data1, i64* null, i64 0, i64 5)
   ret i32 0
 }
 
@@ -43,6 +45,6 @@ declare <vscale x 8 x float> @llvm.riscv.vfcvt.f.xu.v.nxv8f32.nxv8i32.i64(<vscal
 
 declare <vscale x 2 x i32> @llvm.riscv.vredmaxu.nxv2i32.nxv8i32.i64(<vscale x 2 x i32>, <vscale x 8 x i32>, <vscale x 2 x i32>, i64)
 
-declare void @llvm.riscv.vsseg2.nxv8f32.i64(<vscale x 8 x float>, <vscale x 8 x float>, ptr nocapture, i64)
+declare void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv32i8_2t(target("riscv.vector.tuple", <vscale x 32 x i8>, 2), i64*, i64, i64)
 
 declare void @llvm.riscv.vse.nxv2i32.i64(<vscale x 2 x i32>, ptr nocapture, i64)
