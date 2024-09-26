@@ -53,7 +53,7 @@ define dso_local nofpclass(nan inf) float @s352(ptr nocapture noundef %func_args
 ; CHECK-NEXT:    [[ARRAYIDX37_3:%.*]] = getelementptr inbounds [32000 x float], ptr [[B]], i64 0, i64 [[I11_3]]
 ; CHECK-NEXT:    [[I13_3:%.*]] = load float, ptr [[ARRAYIDX37_3]], align 4
 ; CHECK-NEXT:    [[MUL38_3:%.*]] = fmul fast float [[I13_3]], [[I12_3]]
-; CHECK-NEXT:    [[TMP3:%.*]] = call fast float @llvm.vector.reduce.fadd.v16f32(float -0.000000e+00, <16 x float> [[TMP2]])
+; CHECK-NEXT:    [[TMP3:%.*]] = call fast float @llvm.vector.reduce.fadd.v16f32(float 0.000000e+00, <16 x float> [[TMP2]])
 ; CHECK-NEXT:    [[OP_RDX:%.*]] = fadd fast float [[TMP3]], [[MUL14_3]]
 ; CHECK-NEXT:    [[OP_RDX1:%.*]] = fadd fast float [[MUL22_3]], [[MUL30_3]]
 ; CHECK-NEXT:    [[OP_RDX2:%.*]] = fadd fast float [[MUL38_3]], [[DOT_160]]

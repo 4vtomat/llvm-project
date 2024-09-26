@@ -120,7 +120,7 @@ define internal fastcc float @foo(ptr nocapture noundef nonnull readonly align 8
 ; CHECK-NEXT:    [[MUL_20_I:%.*]] = fmul fast float [[SUB35_20_I]], [[SUB35_20_I]]
 ; CHECK-NEXT:    [[ADD_PTR_I223:%.*]] = getelementptr inbounds float, ptr [[ARRAYIDX_I_I209]], i64 [[IDX_EXT_I]]
 ; CHECK-NEXT:    [[ADD_PTR40_I:%.*]] = getelementptr inbounds float, ptr [[ARRAYIDX_I76_I]], i64 [[IDX_EXT_I]]
-; CHECK-NEXT:    [[TMP4:%.*]] = call fast float @llvm.vector.reduce.fadd.v16f32(float -0.000000e+00, <16 x float> [[TMP3]])
+; CHECK-NEXT:    [[TMP4:%.*]] = call fast float @llvm.vector.reduce.fadd.v16f32(float 0.000000e+00, <16 x float> [[TMP3]])
 ; CHECK-NEXT:    [[OP_RDX:%.*]] = fadd fast float [[TMP4]], [[MUL_16_I]]
 ; CHECK-NEXT:    [[OP_RDX1:%.*]] = fadd fast float [[MUL_17_I]], [[MUL_18_I]]
 ; CHECK-NEXT:    [[OP_RDX2:%.*]] = fadd fast float [[MUL_19_I]], [[MUL_20_I]]
@@ -162,7 +162,7 @@ define internal fastcc float @foo(ptr nocapture noundef nonnull readonly align 8
 ; CHECK-NEXT:    [[MUL_20_I_1:%.*]] = fmul fast float [[SUB35_20_I_1]], [[SUB35_20_I_1]]
 ; CHECK-NEXT:    [[ADD_PTR_I223_1:%.*]] = getelementptr inbounds float, ptr [[ADD_PTR_I223]], i64 [[IDX_EXT_I]]
 ; CHECK-NEXT:    [[ADD_PTR40_I_1:%.*]] = getelementptr inbounds float, ptr [[ADD_PTR40_I]], i64 [[IDX_EXT_I]]
-; CHECK-NEXT:    [[TMP9:%.*]] = call fast float @llvm.vector.reduce.fadd.v16f32(float -0.000000e+00, <16 x float> [[TMP8]])
+; CHECK-NEXT:    [[TMP9:%.*]] = call fast float @llvm.vector.reduce.fadd.v16f32(float 0.000000e+00, <16 x float> [[TMP8]])
 ; CHECK-NEXT:    [[OP_RDX_1:%.*]] = fadd fast float [[TMP9]], [[MUL_16_I_1]]
 ; CHECK-NEXT:    [[OP_RDX1_1:%.*]] = fadd fast float [[MUL_17_I_1]], [[MUL_18_I_1]]
 ; CHECK-NEXT:    [[OP_RDX2_1:%.*]] = fadd fast float [[MUL_19_I_1]], [[MUL_20_I_1]]
@@ -205,7 +205,7 @@ define internal fastcc float @foo(ptr nocapture noundef nonnull readonly align 8
 ; CHECK-NEXT:    [[MUL_20_I_2:%.*]] = fmul fast float [[SUB35_20_I_2]], [[SUB35_20_I_2]]
 ; CHECK-NEXT:    [[ADD_PTR_I223_2:%.*]] = getelementptr inbounds float, ptr [[ADD_PTR_I223_1]], i64 [[IDX_EXT_I]]
 ; CHECK-NEXT:    [[ADD_PTR40_I_2:%.*]] = getelementptr inbounds float, ptr [[ADD_PTR40_I_1]], i64 [[IDX_EXT_I]]
-; CHECK-NEXT:    [[TMP14:%.*]] = call fast float @llvm.vector.reduce.fadd.v16f32(float -0.000000e+00, <16 x float> [[TMP13]])
+; CHECK-NEXT:    [[TMP14:%.*]] = call fast float @llvm.vector.reduce.fadd.v16f32(float 0.000000e+00, <16 x float> [[TMP13]])
 ; CHECK-NEXT:    [[OP_RDX_2:%.*]] = fadd fast float [[TMP14]], [[MUL_16_I_2]]
 ; CHECK-NEXT:    [[OP_RDX1_2:%.*]] = fadd fast float [[MUL_17_I_2]], [[MUL_18_I_2]]
 ; CHECK-NEXT:    [[OP_RDX2_2:%.*]] = fadd fast float [[MUL_19_I_2]], [[MUL_20_I_2]]
@@ -248,7 +248,7 @@ define internal fastcc float @foo(ptr nocapture noundef nonnull readonly align 8
 ; CHECK-NEXT:    [[MUL_20_I_3:%.*]] = fmul fast float [[SUB35_20_I_3]], [[SUB35_20_I_3]]
 ; CHECK-NEXT:    [[ADD_PTR_I223_3:%.*]] = getelementptr inbounds float, ptr [[ADD_PTR_I223_2]], i64 [[IDX_EXT_I]]
 ; CHECK-NEXT:    [[ADD_PTR40_I_3:%.*]] = getelementptr inbounds float, ptr [[ADD_PTR40_I_2]], i64 [[IDX_EXT_I]]
-; CHECK-NEXT:    [[TMP19:%.*]] = call fast float @llvm.vector.reduce.fadd.v16f32(float -0.000000e+00, <16 x float> [[TMP18]])
+; CHECK-NEXT:    [[TMP19:%.*]] = call fast float @llvm.vector.reduce.fadd.v16f32(float 0.000000e+00, <16 x float> [[TMP18]])
 ; CHECK-NEXT:    [[OP_RDX_3:%.*]] = fadd fast float [[TMP19]], [[MUL_16_I_3]]
 ; CHECK-NEXT:    [[OP_RDX1_3:%.*]] = fadd fast float [[MUL_17_I_3]], [[MUL_18_I_3]]
 ; CHECK-NEXT:    [[OP_RDX2_3:%.*]] = fadd fast float [[MUL_19_I_3]], [[MUL_20_I_3]]
@@ -291,7 +291,7 @@ define internal fastcc float @foo(ptr nocapture noundef nonnull readonly align 8
 ; CHECK-NEXT:    [[MUL_20_I_4:%.*]] = fmul fast float [[SUB35_20_I_4]], [[SUB35_20_I_4]]
 ; CHECK-NEXT:    [[ADD_PTR_I223_4:%.*]] = getelementptr inbounds float, ptr [[ADD_PTR_I223_3]], i64 [[IDX_EXT_I]]
 ; CHECK-NEXT:    [[ADD_PTR40_I_4:%.*]] = getelementptr inbounds float, ptr [[ADD_PTR40_I_3]], i64 [[IDX_EXT_I]]
-; CHECK-NEXT:    [[TMP24:%.*]] = call fast float @llvm.vector.reduce.fadd.v16f32(float -0.000000e+00, <16 x float> [[TMP23]])
+; CHECK-NEXT:    [[TMP24:%.*]] = call fast float @llvm.vector.reduce.fadd.v16f32(float 0.000000e+00, <16 x float> [[TMP23]])
 ; CHECK-NEXT:    [[OP_RDX_4:%.*]] = fadd fast float [[TMP24]], [[MUL_16_I_4]]
 ; CHECK-NEXT:    [[OP_RDX1_4:%.*]] = fadd fast float [[MUL_17_I_4]], [[MUL_18_I_4]]
 ; CHECK-NEXT:    [[OP_RDX2_4:%.*]] = fadd fast float [[MUL_19_I_4]], [[MUL_20_I_4]]
@@ -334,7 +334,7 @@ define internal fastcc float @foo(ptr nocapture noundef nonnull readonly align 8
 ; CHECK-NEXT:    [[MUL_20_I_5:%.*]] = fmul fast float [[SUB35_20_I_5]], [[SUB35_20_I_5]]
 ; CHECK-NEXT:    [[ADD_PTR_I223_5:%.*]] = getelementptr inbounds float, ptr [[ADD_PTR_I223_4]], i64 [[IDX_EXT_I]]
 ; CHECK-NEXT:    [[ADD_PTR40_I_5:%.*]] = getelementptr inbounds float, ptr [[ADD_PTR40_I_4]], i64 [[IDX_EXT_I]]
-; CHECK-NEXT:    [[TMP29:%.*]] = call fast float @llvm.vector.reduce.fadd.v16f32(float -0.000000e+00, <16 x float> [[TMP28]])
+; CHECK-NEXT:    [[TMP29:%.*]] = call fast float @llvm.vector.reduce.fadd.v16f32(float 0.000000e+00, <16 x float> [[TMP28]])
 ; CHECK-NEXT:    [[OP_RDX_5:%.*]] = fadd fast float [[TMP29]], [[MUL_16_I_5]]
 ; CHECK-NEXT:    [[OP_RDX1_5:%.*]] = fadd fast float [[MUL_17_I_5]], [[MUL_18_I_5]]
 ; CHECK-NEXT:    [[OP_RDX2_5:%.*]] = fadd fast float [[MUL_19_I_5]], [[MUL_20_I_5]]
@@ -375,7 +375,7 @@ define internal fastcc float @foo(ptr nocapture noundef nonnull readonly align 8
 ; CHECK-NEXT:    [[F112_6:%.*]] = load float, ptr [[ARRAYIDX34_20_I_6]], align 4, !tbaa [[TBAA16]]
 ; CHECK-NEXT:    [[SUB35_20_I_6:%.*]] = fsub fast float [[F111_6]], [[F112_6]]
 ; CHECK-NEXT:    [[MUL_20_I_6:%.*]] = fmul fast float [[SUB35_20_I_6]], [[SUB35_20_I_6]]
-; CHECK-NEXT:    [[TMP34:%.*]] = call fast float @llvm.vector.reduce.fadd.v16f32(float -0.000000e+00, <16 x float> [[TMP33]])
+; CHECK-NEXT:    [[TMP34:%.*]] = call fast float @llvm.vector.reduce.fadd.v16f32(float 0.000000e+00, <16 x float> [[TMP33]])
 ; CHECK-NEXT:    [[OP_RDX_6:%.*]] = fadd fast float [[TMP34]], [[MUL_16_I_6]]
 ; CHECK-NEXT:    [[OP_RDX1_6:%.*]] = fadd fast float [[MUL_17_I_6]], [[MUL_18_I_6]]
 ; CHECK-NEXT:    [[OP_RDX2_6:%.*]] = fadd fast float [[MUL_19_I_6]], [[MUL_20_I_6]]

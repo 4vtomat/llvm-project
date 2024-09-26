@@ -108,7 +108,7 @@ define float @foo(ptr nocapture noundef readonly %a, ptr nocapture noundef reado
 ; PROFITABLE-NEXT:    [[TMP5:%.*]] = load <4 x float>, ptr [[VAR_ADDR_082]], align 4
 ; PROFITABLE-NEXT:    [[TMP6:%.*]] = fmul fast <4 x float> [[TMP4]], [[TMP4]]
 ; PROFITABLE-NEXT:    [[TMP7:%.*]] = fmul fast <4 x float> [[TMP6]], [[TMP5]]
-; PROFITABLE-NEXT:    [[TMP8:%.*]] = call fast float @llvm.vector.reduce.fadd.v4f32(float -0.000000e+00, <4 x float> [[TMP7]])
+; PROFITABLE-NEXT:    [[TMP8:%.*]] = call fast float @llvm.vector.reduce.fadd.v4f32(float 0.000000e+00, <4 x float> [[TMP7]])
 ; PROFITABLE-NEXT:    [[SUB40]] = fsub fast float [[D_ADDR_081]], [[TMP8]]
 ; PROFITABLE-NEXT:    [[ADD_PTR]] = getelementptr inbounds float, ptr [[A_ADDR_084]], i64 4
 ; PROFITABLE-NEXT:    [[ADD_PTR41]] = getelementptr inbounds float, ptr [[B_ADDR_083]], i64 4
