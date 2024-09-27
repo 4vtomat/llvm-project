@@ -4,7 +4,7 @@
 ; RUN: cat %t | FileCheck %s --check-prefix=CHECK-DEBUG
 
 ; CHECK-DEBUG-LABEL: LV: Checking a loop in 'select_icmp'
-; CHECK-DEBUG: LV: Found an estimated overhead of 5 for VF vscale x 1 For recipe: WIDEN-REDUCTION-PHI ir<%idx.09> = phi ir<%ii>, vp<%10>
+; CHECK-DEBUG: LV: Found an estimated overhead of 5 for VF vscale x 1 For recipe: WIDEN-REDUCTION-PHI ir<%idx.09> = phi ir<%ii>, vp<%11>
 
 define i64 @select_icmp(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-LABEL: define i64 @select_icmp(
@@ -97,7 +97,7 @@ exit:                                             ; preds = %for.body
 }
 
 ; CHECK-DEBUG-LABEL: LV: Checking a loop in 'select_fcmp'
-; CHECK-DEBUG: LV: Found an estimated overhead of 5 for VF vscale x 1 For recipe: WIDEN-REDUCTION-PHI ir<%idx.09> = phi ir<%ii>, vp<%10>
+; CHECK-DEBUG: LV: Found an estimated overhead of 5 for VF vscale x 1 For recipe: WIDEN-REDUCTION-PHI ir<%idx.09> = phi ir<%ii>, vp<%11>
 
 define i64 @select_fcmp(ptr %a, ptr %b, i64 %ii, i64 %n) {
 ; CHECK-LABEL: define i64 @select_fcmp(

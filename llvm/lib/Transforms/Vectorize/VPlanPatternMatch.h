@@ -186,8 +186,16 @@ struct BinaryRecipe_match {
   bool match(const VPRecipeBase *R) {
     if (!detail::MatchRecipeAndOpcode<Opcode, RecipeTys...>::match(R))
       return false;
+#if SIFIVE_CUSTOMIZATION
+    assert((R->getNumOperands() == 2 ||
+            (R->getNumOperands() == 3 && isa<VPInstruction>(R->getOperand(2)) &&
+             cast<VPInstruction>(R->getOperand(2))->getOpcode() ==
+                 VPInstruction::ExplicitVectorLength)) &&
+           "recipe with matched opcode does not have 2 operands");
+#else
     assert(R->getNumOperands() == 2 &&
            "recipe with matched opcode does not have 2 operands");
+#endif // SIFIVE_CUSTOMIZATION
     if (Op0.match(R->getOperand(0)) && Op1.match(R->getOperand(1)))
       return true;
     return Commutative && Op0.match(R->getOperand(1)) &&
