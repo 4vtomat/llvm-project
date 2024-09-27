@@ -1464,12 +1464,6 @@ static const CostTblEntry VectorIntrinsicCostTable[]{
     {Intrinsic::vp_cttz, MVT::i16, 23},
     {Intrinsic::vp_cttz, MVT::i32, 24},
     {Intrinsic::vp_cttz, MVT::i64, 25},
-#if SIFIVE_CUSTOMIZATION
-// This is not ideal, but upstream does not support getIntrinsicInstrCost
-// for vp_icmp without an instruction. This is used by CSA. It can be
-// removed once it is supported upstream.
-    {Intrinsic::vp_icmp, MVT::i1, 1},
-#endif // SIFIVE_CUSTOMIZATION
 };
 
 static unsigned getISDForVPIntrinsicID(Intrinsic::ID ID) {

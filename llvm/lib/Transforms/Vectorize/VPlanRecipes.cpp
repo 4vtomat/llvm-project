@@ -2954,9 +2954,10 @@ InstructionCost VPCSAHeaderPHIRecipe::overhead(ElementCount VF,
 
   // All True/False Mask
   // Expects a vmset.m for true mask and a vmclr.m for false mask
-  IntrinsicCostAttributes ICA(Intrinsic::vp_icmp, MaskTy, {MaskTy, MaskTy});
-  C += Ctx.TTI.getIntrinsicInstrCost(ICA, CostKind);
-  C += Ctx.TTI.getIntrinsicInstrCost(ICA, CostKind);
+  C += Ctx.TTI.getCmpSelInstrCost(Instruction::ICmp, MaskTy, MaskTy,
+                                  CmpInst::ICMP_EQ, CostKind);
+  C += Ctx.TTI.getCmpSelInstrCost(Instruction::ICmp, MaskTy, MaskTy,
+                                  CmpInst::ICMP_EQ, CostKind);
 
   // CSAInitMask
   C += Ctx.TTI.getShuffleCost(TargetTransformInfo::SK_Broadcast, VectorTy);
