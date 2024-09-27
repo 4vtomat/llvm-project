@@ -237,6 +237,8 @@ void emitCodeGenSwitchBody(const RVVIntrinsic *RVVI, raw_ostream &OS) {
     OS << "IsMasked = " << (RVVI->isMasked() ? "true" : "false") << ";\n";
 #if SIFIVE_CUSTOMIZATION
     OS << "  IsNontemporal = " << RVVI->getPolicyAttrs().isNTLPolicy() << ";\n";
+    if (RVVI->getNF() >= 2)
+      OS << "  NF = " + utostr(RVVI->getNF()) + ";\n";
 #endif // SIFIVE_CUSTOMIZATION
     OS << RVVI->getManualCodegen();
     OS << "break;\n";

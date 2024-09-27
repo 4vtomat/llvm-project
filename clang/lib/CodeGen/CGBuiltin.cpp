@@ -22289,6 +22289,7 @@ Value *CodeGenFunction::EmitRISCVBuiltinExpr(unsigned BuiltinID,
   unsigned SegInstSEW = 8;
 #if SIFIVE_CUSTOMIZATION
   bool IsNontemporal = false;
+  unsigned NF = 1;
 
   auto createNTLNode = [&Ops, this]() {
     // Create NTL node from args

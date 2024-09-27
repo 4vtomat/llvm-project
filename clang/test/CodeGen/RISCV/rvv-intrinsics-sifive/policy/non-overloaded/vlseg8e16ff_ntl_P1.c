@@ -14,25 +14,34 @@
 #include <riscv_ntlh.h>
 // CHECK-LABEL: @test_vlseg8e16ff_v_f16mf4_tu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } @llvm.riscv.vlseg8ff.nxv1f16.i64(<vscale x 1 x half> [[MASKEDOFF0:%.*]], <vscale x 1 x half> [[MASKEDOFF1:%.*]], <vscale x 1 x half> [[MASKEDOFF2:%.*]], <vscale x 1 x half> [[MASKEDOFF3:%.*]], <vscale x 1 x half> [[MASKEDOFF4:%.*]], <vscale x 1 x half> [[MASKEDOFF5:%.*]], <vscale x 1 x half> [[MASKEDOFF6:%.*]], <vscale x 1 x half> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6:![0-9]+]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) poison, <vscale x 1 x half> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP0]], <vscale x 1 x half> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP1]], <vscale x 1 x half> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP2]], <vscale x 1 x half> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP3]], <vscale x 1 x half> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP4]], <vscale x 1 x half> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP5]], <vscale x 1 x half> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP6]], <vscale x 1 x half> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.triscv.vector.tuple_nxv2i8_8t.i64(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6:![0-9]+]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_f16mf4_tu_ntl_P1(vfloat16mf4_t *v0, vfloat16mf4_t *v1, vfloat16mf4_t *v2, vfloat16mf4_t *v3, vfloat16mf4_t *v4, vfloat16mf4_t *v5, vfloat16mf4_t *v6, vfloat16mf4_t *v7, vfloat16mf4_t maskedoff0, vfloat16mf4_t maskedoff1, vfloat16mf4_t maskedoff2, vfloat16mf4_t maskedoff3, vfloat16mf4_t maskedoff4, vfloat16mf4_t maskedoff5, vfloat16mf4_t maskedoff6, vfloat16mf4_t maskedoff7, const _Float16 *base, size_t *new_vl, size_t vl, int domain) {
@@ -41,25 +50,34 @@ void test_vlseg8e16ff_v_f16mf4_tu_ntl_P1(vfloat16mf4_t *v0, vfloat16mf4_t *v1, v
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_f16mf2_tu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } @llvm.riscv.vlseg8ff.nxv2f16.i64(<vscale x 2 x half> [[MASKEDOFF0:%.*]], <vscale x 2 x half> [[MASKEDOFF1:%.*]], <vscale x 2 x half> [[MASKEDOFF2:%.*]], <vscale x 2 x half> [[MASKEDOFF3:%.*]], <vscale x 2 x half> [[MASKEDOFF4:%.*]], <vscale x 2 x half> [[MASKEDOFF5:%.*]], <vscale x 2 x half> [[MASKEDOFF6:%.*]], <vscale x 2 x half> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) poison, <vscale x 2 x half> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP0]], <vscale x 2 x half> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP1]], <vscale x 2 x half> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP2]], <vscale x 2 x half> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP3]], <vscale x 2 x half> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP4]], <vscale x 2 x half> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP5]], <vscale x 2 x half> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP6]], <vscale x 2 x half> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.triscv.vector.tuple_nxv4i8_8t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_f16mf2_tu_ntl_P1(vfloat16mf2_t *v0, vfloat16mf2_t *v1, vfloat16mf2_t *v2, vfloat16mf2_t *v3, vfloat16mf2_t *v4, vfloat16mf2_t *v5, vfloat16mf2_t *v6, vfloat16mf2_t *v7, vfloat16mf2_t maskedoff0, vfloat16mf2_t maskedoff1, vfloat16mf2_t maskedoff2, vfloat16mf2_t maskedoff3, vfloat16mf2_t maskedoff4, vfloat16mf2_t maskedoff5, vfloat16mf2_t maskedoff6, vfloat16mf2_t maskedoff7, const _Float16 *base, size_t *new_vl, size_t vl, int domain) {
@@ -68,25 +86,34 @@ void test_vlseg8e16ff_v_f16mf2_tu_ntl_P1(vfloat16mf2_t *v0, vfloat16mf2_t *v1, v
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_f16m1_tu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } @llvm.riscv.vlseg8ff.nxv4f16.i64(<vscale x 4 x half> [[MASKEDOFF0:%.*]], <vscale x 4 x half> [[MASKEDOFF1:%.*]], <vscale x 4 x half> [[MASKEDOFF2:%.*]], <vscale x 4 x half> [[MASKEDOFF3:%.*]], <vscale x 4 x half> [[MASKEDOFF4:%.*]], <vscale x 4 x half> [[MASKEDOFF5:%.*]], <vscale x 4 x half> [[MASKEDOFF6:%.*]], <vscale x 4 x half> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) poison, <vscale x 4 x half> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP0]], <vscale x 4 x half> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP1]], <vscale x 4 x half> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP2]], <vscale x 4 x half> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP3]], <vscale x 4 x half> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP4]], <vscale x 4 x half> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP5]], <vscale x 4 x half> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP6]], <vscale x 4 x half> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.triscv.vector.tuple_nxv8i8_8t.i64(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_f16m1_tu_ntl_P1(vfloat16m1_t *v0, vfloat16m1_t *v1, vfloat16m1_t *v2, vfloat16m1_t *v3, vfloat16m1_t *v4, vfloat16m1_t *v5, vfloat16m1_t *v6, vfloat16m1_t *v7, vfloat16m1_t maskedoff0, vfloat16m1_t maskedoff1, vfloat16m1_t maskedoff2, vfloat16m1_t maskedoff3, vfloat16m1_t maskedoff4, vfloat16m1_t maskedoff5, vfloat16m1_t maskedoff6, vfloat16m1_t maskedoff7, const _Float16 *base, size_t *new_vl, size_t vl, int domain) {
@@ -95,25 +122,34 @@ void test_vlseg8e16ff_v_f16m1_tu_ntl_P1(vfloat16m1_t *v0, vfloat16m1_t *v1, vflo
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_i16mf4_tu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } @llvm.riscv.vlseg8ff.nxv1i16.i64(<vscale x 1 x i16> [[MASKEDOFF0:%.*]], <vscale x 1 x i16> [[MASKEDOFF1:%.*]], <vscale x 1 x i16> [[MASKEDOFF2:%.*]], <vscale x 1 x i16> [[MASKEDOFF3:%.*]], <vscale x 1 x i16> [[MASKEDOFF4:%.*]], <vscale x 1 x i16> [[MASKEDOFF5:%.*]], <vscale x 1 x i16> [[MASKEDOFF6:%.*]], <vscale x 1 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) poison, <vscale x 1 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP0]], <vscale x 1 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP1]], <vscale x 1 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP2]], <vscale x 1 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP3]], <vscale x 1 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP4]], <vscale x 1 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP5]], <vscale x 1 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP6]], <vscale x 1 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.triscv.vector.tuple_nxv2i8_8t.i64(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_i16mf4_tu_ntl_P1(vint16mf4_t *v0, vint16mf4_t *v1, vint16mf4_t *v2, vint16mf4_t *v3, vint16mf4_t *v4, vint16mf4_t *v5, vint16mf4_t *v6, vint16mf4_t *v7, vint16mf4_t maskedoff0, vint16mf4_t maskedoff1, vint16mf4_t maskedoff2, vint16mf4_t maskedoff3, vint16mf4_t maskedoff4, vint16mf4_t maskedoff5, vint16mf4_t maskedoff6, vint16mf4_t maskedoff7, const int16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -122,25 +158,34 @@ void test_vlseg8e16ff_v_i16mf4_tu_ntl_P1(vint16mf4_t *v0, vint16mf4_t *v1, vint1
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_i16mf2_tu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } @llvm.riscv.vlseg8ff.nxv2i16.i64(<vscale x 2 x i16> [[MASKEDOFF0:%.*]], <vscale x 2 x i16> [[MASKEDOFF1:%.*]], <vscale x 2 x i16> [[MASKEDOFF2:%.*]], <vscale x 2 x i16> [[MASKEDOFF3:%.*]], <vscale x 2 x i16> [[MASKEDOFF4:%.*]], <vscale x 2 x i16> [[MASKEDOFF5:%.*]], <vscale x 2 x i16> [[MASKEDOFF6:%.*]], <vscale x 2 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) poison, <vscale x 2 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP0]], <vscale x 2 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP1]], <vscale x 2 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP2]], <vscale x 2 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP3]], <vscale x 2 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP4]], <vscale x 2 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP5]], <vscale x 2 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP6]], <vscale x 2 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.triscv.vector.tuple_nxv4i8_8t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_i16mf2_tu_ntl_P1(vint16mf2_t *v0, vint16mf2_t *v1, vint16mf2_t *v2, vint16mf2_t *v3, vint16mf2_t *v4, vint16mf2_t *v5, vint16mf2_t *v6, vint16mf2_t *v7, vint16mf2_t maskedoff0, vint16mf2_t maskedoff1, vint16mf2_t maskedoff2, vint16mf2_t maskedoff3, vint16mf2_t maskedoff4, vint16mf2_t maskedoff5, vint16mf2_t maskedoff6, vint16mf2_t maskedoff7, const int16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -149,25 +194,34 @@ void test_vlseg8e16ff_v_i16mf2_tu_ntl_P1(vint16mf2_t *v0, vint16mf2_t *v1, vint1
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_i16m1_tu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } @llvm.riscv.vlseg8ff.nxv4i16.i64(<vscale x 4 x i16> [[MASKEDOFF0:%.*]], <vscale x 4 x i16> [[MASKEDOFF1:%.*]], <vscale x 4 x i16> [[MASKEDOFF2:%.*]], <vscale x 4 x i16> [[MASKEDOFF3:%.*]], <vscale x 4 x i16> [[MASKEDOFF4:%.*]], <vscale x 4 x i16> [[MASKEDOFF5:%.*]], <vscale x 4 x i16> [[MASKEDOFF6:%.*]], <vscale x 4 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) poison, <vscale x 4 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP0]], <vscale x 4 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP1]], <vscale x 4 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP2]], <vscale x 4 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP3]], <vscale x 4 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP4]], <vscale x 4 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP5]], <vscale x 4 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP6]], <vscale x 4 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.triscv.vector.tuple_nxv8i8_8t.i64(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_i16m1_tu_ntl_P1(vint16m1_t *v0, vint16m1_t *v1, vint16m1_t *v2, vint16m1_t *v3, vint16m1_t *v4, vint16m1_t *v5, vint16m1_t *v6, vint16m1_t *v7, vint16m1_t maskedoff0, vint16m1_t maskedoff1, vint16m1_t maskedoff2, vint16m1_t maskedoff3, vint16m1_t maskedoff4, vint16m1_t maskedoff5, vint16m1_t maskedoff6, vint16m1_t maskedoff7, const int16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -176,25 +230,34 @@ void test_vlseg8e16ff_v_i16m1_tu_ntl_P1(vint16m1_t *v0, vint16m1_t *v1, vint16m1
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_u16mf4_tu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } @llvm.riscv.vlseg8ff.nxv1i16.i64(<vscale x 1 x i16> [[MASKEDOFF0:%.*]], <vscale x 1 x i16> [[MASKEDOFF1:%.*]], <vscale x 1 x i16> [[MASKEDOFF2:%.*]], <vscale x 1 x i16> [[MASKEDOFF3:%.*]], <vscale x 1 x i16> [[MASKEDOFF4:%.*]], <vscale x 1 x i16> [[MASKEDOFF5:%.*]], <vscale x 1 x i16> [[MASKEDOFF6:%.*]], <vscale x 1 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) poison, <vscale x 1 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP0]], <vscale x 1 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP1]], <vscale x 1 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP2]], <vscale x 1 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP3]], <vscale x 1 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP4]], <vscale x 1 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP5]], <vscale x 1 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP6]], <vscale x 1 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.triscv.vector.tuple_nxv2i8_8t.i64(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_u16mf4_tu_ntl_P1(vuint16mf4_t *v0, vuint16mf4_t *v1, vuint16mf4_t *v2, vuint16mf4_t *v3, vuint16mf4_t *v4, vuint16mf4_t *v5, vuint16mf4_t *v6, vuint16mf4_t *v7, vuint16mf4_t maskedoff0, vuint16mf4_t maskedoff1, vuint16mf4_t maskedoff2, vuint16mf4_t maskedoff3, vuint16mf4_t maskedoff4, vuint16mf4_t maskedoff5, vuint16mf4_t maskedoff6, vuint16mf4_t maskedoff7, const uint16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -203,25 +266,34 @@ void test_vlseg8e16ff_v_u16mf4_tu_ntl_P1(vuint16mf4_t *v0, vuint16mf4_t *v1, vui
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_u16mf2_tu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } @llvm.riscv.vlseg8ff.nxv2i16.i64(<vscale x 2 x i16> [[MASKEDOFF0:%.*]], <vscale x 2 x i16> [[MASKEDOFF1:%.*]], <vscale x 2 x i16> [[MASKEDOFF2:%.*]], <vscale x 2 x i16> [[MASKEDOFF3:%.*]], <vscale x 2 x i16> [[MASKEDOFF4:%.*]], <vscale x 2 x i16> [[MASKEDOFF5:%.*]], <vscale x 2 x i16> [[MASKEDOFF6:%.*]], <vscale x 2 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) poison, <vscale x 2 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP0]], <vscale x 2 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP1]], <vscale x 2 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP2]], <vscale x 2 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP3]], <vscale x 2 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP4]], <vscale x 2 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP5]], <vscale x 2 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP6]], <vscale x 2 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.triscv.vector.tuple_nxv4i8_8t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_u16mf2_tu_ntl_P1(vuint16mf2_t *v0, vuint16mf2_t *v1, vuint16mf2_t *v2, vuint16mf2_t *v3, vuint16mf2_t *v4, vuint16mf2_t *v5, vuint16mf2_t *v6, vuint16mf2_t *v7, vuint16mf2_t maskedoff0, vuint16mf2_t maskedoff1, vuint16mf2_t maskedoff2, vuint16mf2_t maskedoff3, vuint16mf2_t maskedoff4, vuint16mf2_t maskedoff5, vuint16mf2_t maskedoff6, vuint16mf2_t maskedoff7, const uint16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -230,25 +302,34 @@ void test_vlseg8e16ff_v_u16mf2_tu_ntl_P1(vuint16mf2_t *v0, vuint16mf2_t *v1, vui
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_u16m1_tu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } @llvm.riscv.vlseg8ff.nxv4i16.i64(<vscale x 4 x i16> [[MASKEDOFF0:%.*]], <vscale x 4 x i16> [[MASKEDOFF1:%.*]], <vscale x 4 x i16> [[MASKEDOFF2:%.*]], <vscale x 4 x i16> [[MASKEDOFF3:%.*]], <vscale x 4 x i16> [[MASKEDOFF4:%.*]], <vscale x 4 x i16> [[MASKEDOFF5:%.*]], <vscale x 4 x i16> [[MASKEDOFF6:%.*]], <vscale x 4 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], i64 [[VL:%.*]]), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) poison, <vscale x 4 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP0]], <vscale x 4 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP1]], <vscale x 4 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP2]], <vscale x 4 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP3]], <vscale x 4 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP4]], <vscale x 4 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP5]], <vscale x 4 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP6]], <vscale x 4 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.triscv.vector.tuple_nxv8i8_8t.i64(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_u16m1_tu_ntl_P1(vuint16m1_t *v0, vuint16m1_t *v1, vuint16m1_t *v2, vuint16m1_t *v3, vuint16m1_t *v4, vuint16m1_t *v5, vuint16m1_t *v6, vuint16m1_t *v7, vuint16m1_t maskedoff0, vuint16m1_t maskedoff1, vuint16m1_t maskedoff2, vuint16m1_t maskedoff3, vuint16m1_t maskedoff4, vuint16m1_t maskedoff5, vuint16m1_t maskedoff6, vuint16m1_t maskedoff7, const uint16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -257,25 +338,34 @@ void test_vlseg8e16ff_v_u16m1_tu_ntl_P1(vuint16m1_t *v0, vuint16m1_t *v1, vuint1
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_f16mf4_tum_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } @llvm.riscv.vlseg8ff.mask.nxv1f16.i64(<vscale x 1 x half> [[MASKEDOFF0:%.*]], <vscale x 1 x half> [[MASKEDOFF1:%.*]], <vscale x 1 x half> [[MASKEDOFF2:%.*]], <vscale x 1 x half> [[MASKEDOFF3:%.*]], <vscale x 1 x half> [[MASKEDOFF4:%.*]], <vscale x 1 x half> [[MASKEDOFF5:%.*]], <vscale x 1 x half> [[MASKEDOFF6:%.*]], <vscale x 1 x half> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) poison, <vscale x 1 x half> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP0]], <vscale x 1 x half> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP1]], <vscale x 1 x half> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP2]], <vscale x 1 x half> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP3]], <vscale x 1 x half> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP4]], <vscale x 1 x half> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP5]], <vscale x 1 x half> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP6]], <vscale x 1 x half> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv2i8_8t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_f16mf4_tum_ntl_P1(vfloat16mf4_t *v0, vfloat16mf4_t *v1, vfloat16mf4_t *v2, vfloat16mf4_t *v3, vfloat16mf4_t *v4, vfloat16mf4_t *v5, vfloat16mf4_t *v6, vfloat16mf4_t *v7, vbool64_t mask, vfloat16mf4_t maskedoff0, vfloat16mf4_t maskedoff1, vfloat16mf4_t maskedoff2, vfloat16mf4_t maskedoff3, vfloat16mf4_t maskedoff4, vfloat16mf4_t maskedoff5, vfloat16mf4_t maskedoff6, vfloat16mf4_t maskedoff7, const _Float16 *base, size_t *new_vl, size_t vl, int domain) {
@@ -284,25 +374,34 @@ void test_vlseg8e16ff_v_f16mf4_tum_ntl_P1(vfloat16mf4_t *v0, vfloat16mf4_t *v1, 
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_f16mf2_tum_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } @llvm.riscv.vlseg8ff.mask.nxv2f16.i64(<vscale x 2 x half> [[MASKEDOFF0:%.*]], <vscale x 2 x half> [[MASKEDOFF1:%.*]], <vscale x 2 x half> [[MASKEDOFF2:%.*]], <vscale x 2 x half> [[MASKEDOFF3:%.*]], <vscale x 2 x half> [[MASKEDOFF4:%.*]], <vscale x 2 x half> [[MASKEDOFF5:%.*]], <vscale x 2 x half> [[MASKEDOFF6:%.*]], <vscale x 2 x half> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) poison, <vscale x 2 x half> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP0]], <vscale x 2 x half> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP1]], <vscale x 2 x half> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP2]], <vscale x 2 x half> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP3]], <vscale x 2 x half> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP4]], <vscale x 2 x half> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP5]], <vscale x 2 x half> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP6]], <vscale x 2 x half> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv4i8_8t.i64.nxv2i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_f16mf2_tum_ntl_P1(vfloat16mf2_t *v0, vfloat16mf2_t *v1, vfloat16mf2_t *v2, vfloat16mf2_t *v3, vfloat16mf2_t *v4, vfloat16mf2_t *v5, vfloat16mf2_t *v6, vfloat16mf2_t *v7, vbool32_t mask, vfloat16mf2_t maskedoff0, vfloat16mf2_t maskedoff1, vfloat16mf2_t maskedoff2, vfloat16mf2_t maskedoff3, vfloat16mf2_t maskedoff4, vfloat16mf2_t maskedoff5, vfloat16mf2_t maskedoff6, vfloat16mf2_t maskedoff7, const _Float16 *base, size_t *new_vl, size_t vl, int domain) {
@@ -311,25 +410,34 @@ void test_vlseg8e16ff_v_f16mf2_tum_ntl_P1(vfloat16mf2_t *v0, vfloat16mf2_t *v1, 
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_f16m1_tum_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } @llvm.riscv.vlseg8ff.mask.nxv4f16.i64(<vscale x 4 x half> [[MASKEDOFF0:%.*]], <vscale x 4 x half> [[MASKEDOFF1:%.*]], <vscale x 4 x half> [[MASKEDOFF2:%.*]], <vscale x 4 x half> [[MASKEDOFF3:%.*]], <vscale x 4 x half> [[MASKEDOFF4:%.*]], <vscale x 4 x half> [[MASKEDOFF5:%.*]], <vscale x 4 x half> [[MASKEDOFF6:%.*]], <vscale x 4 x half> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) poison, <vscale x 4 x half> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP0]], <vscale x 4 x half> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP1]], <vscale x 4 x half> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP2]], <vscale x 4 x half> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP3]], <vscale x 4 x half> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP4]], <vscale x 4 x half> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP5]], <vscale x 4 x half> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP6]], <vscale x 4 x half> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv8i8_8t.i64.nxv4i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_f16m1_tum_ntl_P1(vfloat16m1_t *v0, vfloat16m1_t *v1, vfloat16m1_t *v2, vfloat16m1_t *v3, vfloat16m1_t *v4, vfloat16m1_t *v5, vfloat16m1_t *v6, vfloat16m1_t *v7, vbool16_t mask, vfloat16m1_t maskedoff0, vfloat16m1_t maskedoff1, vfloat16m1_t maskedoff2, vfloat16m1_t maskedoff3, vfloat16m1_t maskedoff4, vfloat16m1_t maskedoff5, vfloat16m1_t maskedoff6, vfloat16m1_t maskedoff7, const _Float16 *base, size_t *new_vl, size_t vl, int domain) {
@@ -338,25 +446,34 @@ void test_vlseg8e16ff_v_f16m1_tum_ntl_P1(vfloat16m1_t *v0, vfloat16m1_t *v1, vfl
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_i16mf4_tum_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } @llvm.riscv.vlseg8ff.mask.nxv1i16.i64(<vscale x 1 x i16> [[MASKEDOFF0:%.*]], <vscale x 1 x i16> [[MASKEDOFF1:%.*]], <vscale x 1 x i16> [[MASKEDOFF2:%.*]], <vscale x 1 x i16> [[MASKEDOFF3:%.*]], <vscale x 1 x i16> [[MASKEDOFF4:%.*]], <vscale x 1 x i16> [[MASKEDOFF5:%.*]], <vscale x 1 x i16> [[MASKEDOFF6:%.*]], <vscale x 1 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) poison, <vscale x 1 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP0]], <vscale x 1 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP1]], <vscale x 1 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP2]], <vscale x 1 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP3]], <vscale x 1 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP4]], <vscale x 1 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP5]], <vscale x 1 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP6]], <vscale x 1 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv2i8_8t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_i16mf4_tum_ntl_P1(vint16mf4_t *v0, vint16mf4_t *v1, vint16mf4_t *v2, vint16mf4_t *v3, vint16mf4_t *v4, vint16mf4_t *v5, vint16mf4_t *v6, vint16mf4_t *v7, vbool64_t mask, vint16mf4_t maskedoff0, vint16mf4_t maskedoff1, vint16mf4_t maskedoff2, vint16mf4_t maskedoff3, vint16mf4_t maskedoff4, vint16mf4_t maskedoff5, vint16mf4_t maskedoff6, vint16mf4_t maskedoff7, const int16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -365,25 +482,34 @@ void test_vlseg8e16ff_v_i16mf4_tum_ntl_P1(vint16mf4_t *v0, vint16mf4_t *v1, vint
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_i16mf2_tum_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } @llvm.riscv.vlseg8ff.mask.nxv2i16.i64(<vscale x 2 x i16> [[MASKEDOFF0:%.*]], <vscale x 2 x i16> [[MASKEDOFF1:%.*]], <vscale x 2 x i16> [[MASKEDOFF2:%.*]], <vscale x 2 x i16> [[MASKEDOFF3:%.*]], <vscale x 2 x i16> [[MASKEDOFF4:%.*]], <vscale x 2 x i16> [[MASKEDOFF5:%.*]], <vscale x 2 x i16> [[MASKEDOFF6:%.*]], <vscale x 2 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) poison, <vscale x 2 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP0]], <vscale x 2 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP1]], <vscale x 2 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP2]], <vscale x 2 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP3]], <vscale x 2 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP4]], <vscale x 2 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP5]], <vscale x 2 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP6]], <vscale x 2 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv4i8_8t.i64.nxv2i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_i16mf2_tum_ntl_P1(vint16mf2_t *v0, vint16mf2_t *v1, vint16mf2_t *v2, vint16mf2_t *v3, vint16mf2_t *v4, vint16mf2_t *v5, vint16mf2_t *v6, vint16mf2_t *v7, vbool32_t mask, vint16mf2_t maskedoff0, vint16mf2_t maskedoff1, vint16mf2_t maskedoff2, vint16mf2_t maskedoff3, vint16mf2_t maskedoff4, vint16mf2_t maskedoff5, vint16mf2_t maskedoff6, vint16mf2_t maskedoff7, const int16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -392,25 +518,34 @@ void test_vlseg8e16ff_v_i16mf2_tum_ntl_P1(vint16mf2_t *v0, vint16mf2_t *v1, vint
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_i16m1_tum_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } @llvm.riscv.vlseg8ff.mask.nxv4i16.i64(<vscale x 4 x i16> [[MASKEDOFF0:%.*]], <vscale x 4 x i16> [[MASKEDOFF1:%.*]], <vscale x 4 x i16> [[MASKEDOFF2:%.*]], <vscale x 4 x i16> [[MASKEDOFF3:%.*]], <vscale x 4 x i16> [[MASKEDOFF4:%.*]], <vscale x 4 x i16> [[MASKEDOFF5:%.*]], <vscale x 4 x i16> [[MASKEDOFF6:%.*]], <vscale x 4 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) poison, <vscale x 4 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP0]], <vscale x 4 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP1]], <vscale x 4 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP2]], <vscale x 4 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP3]], <vscale x 4 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP4]], <vscale x 4 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP5]], <vscale x 4 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP6]], <vscale x 4 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv8i8_8t.i64.nxv4i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_i16m1_tum_ntl_P1(vint16m1_t *v0, vint16m1_t *v1, vint16m1_t *v2, vint16m1_t *v3, vint16m1_t *v4, vint16m1_t *v5, vint16m1_t *v6, vint16m1_t *v7, vbool16_t mask, vint16m1_t maskedoff0, vint16m1_t maskedoff1, vint16m1_t maskedoff2, vint16m1_t maskedoff3, vint16m1_t maskedoff4, vint16m1_t maskedoff5, vint16m1_t maskedoff6, vint16m1_t maskedoff7, const int16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -419,25 +554,34 @@ void test_vlseg8e16ff_v_i16m1_tum_ntl_P1(vint16m1_t *v0, vint16m1_t *v1, vint16m
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_u16mf4_tum_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } @llvm.riscv.vlseg8ff.mask.nxv1i16.i64(<vscale x 1 x i16> [[MASKEDOFF0:%.*]], <vscale x 1 x i16> [[MASKEDOFF1:%.*]], <vscale x 1 x i16> [[MASKEDOFF2:%.*]], <vscale x 1 x i16> [[MASKEDOFF3:%.*]], <vscale x 1 x i16> [[MASKEDOFF4:%.*]], <vscale x 1 x i16> [[MASKEDOFF5:%.*]], <vscale x 1 x i16> [[MASKEDOFF6:%.*]], <vscale x 1 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) poison, <vscale x 1 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP0]], <vscale x 1 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP1]], <vscale x 1 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP2]], <vscale x 1 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP3]], <vscale x 1 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP4]], <vscale x 1 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP5]], <vscale x 1 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP6]], <vscale x 1 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv2i8_8t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_u16mf4_tum_ntl_P1(vuint16mf4_t *v0, vuint16mf4_t *v1, vuint16mf4_t *v2, vuint16mf4_t *v3, vuint16mf4_t *v4, vuint16mf4_t *v5, vuint16mf4_t *v6, vuint16mf4_t *v7, vbool64_t mask, vuint16mf4_t maskedoff0, vuint16mf4_t maskedoff1, vuint16mf4_t maskedoff2, vuint16mf4_t maskedoff3, vuint16mf4_t maskedoff4, vuint16mf4_t maskedoff5, vuint16mf4_t maskedoff6, vuint16mf4_t maskedoff7, const uint16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -446,25 +590,34 @@ void test_vlseg8e16ff_v_u16mf4_tum_ntl_P1(vuint16mf4_t *v0, vuint16mf4_t *v1, vu
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_u16mf2_tum_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } @llvm.riscv.vlseg8ff.mask.nxv2i16.i64(<vscale x 2 x i16> [[MASKEDOFF0:%.*]], <vscale x 2 x i16> [[MASKEDOFF1:%.*]], <vscale x 2 x i16> [[MASKEDOFF2:%.*]], <vscale x 2 x i16> [[MASKEDOFF3:%.*]], <vscale x 2 x i16> [[MASKEDOFF4:%.*]], <vscale x 2 x i16> [[MASKEDOFF5:%.*]], <vscale x 2 x i16> [[MASKEDOFF6:%.*]], <vscale x 2 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) poison, <vscale x 2 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP0]], <vscale x 2 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP1]], <vscale x 2 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP2]], <vscale x 2 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP3]], <vscale x 2 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP4]], <vscale x 2 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP5]], <vscale x 2 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP6]], <vscale x 2 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv4i8_8t.i64.nxv2i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_u16mf2_tum_ntl_P1(vuint16mf2_t *v0, vuint16mf2_t *v1, vuint16mf2_t *v2, vuint16mf2_t *v3, vuint16mf2_t *v4, vuint16mf2_t *v5, vuint16mf2_t *v6, vuint16mf2_t *v7, vbool32_t mask, vuint16mf2_t maskedoff0, vuint16mf2_t maskedoff1, vuint16mf2_t maskedoff2, vuint16mf2_t maskedoff3, vuint16mf2_t maskedoff4, vuint16mf2_t maskedoff5, vuint16mf2_t maskedoff6, vuint16mf2_t maskedoff7, const uint16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -473,25 +626,34 @@ void test_vlseg8e16ff_v_u16mf2_tum_ntl_P1(vuint16mf2_t *v0, vuint16mf2_t *v1, vu
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_u16m1_tum_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } @llvm.riscv.vlseg8ff.mask.nxv4i16.i64(<vscale x 4 x i16> [[MASKEDOFF0:%.*]], <vscale x 4 x i16> [[MASKEDOFF1:%.*]], <vscale x 4 x i16> [[MASKEDOFF2:%.*]], <vscale x 4 x i16> [[MASKEDOFF3:%.*]], <vscale x 4 x i16> [[MASKEDOFF4:%.*]], <vscale x 4 x i16> [[MASKEDOFF5:%.*]], <vscale x 4 x i16> [[MASKEDOFF6:%.*]], <vscale x 4 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) poison, <vscale x 4 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP0]], <vscale x 4 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP1]], <vscale x 4 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP2]], <vscale x 4 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP3]], <vscale x 4 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP4]], <vscale x 4 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP5]], <vscale x 4 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP6]], <vscale x 4 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv8i8_8t.i64.nxv4i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 2, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_u16m1_tum_ntl_P1(vuint16m1_t *v0, vuint16m1_t *v1, vuint16m1_t *v2, vuint16m1_t *v3, vuint16m1_t *v4, vuint16m1_t *v5, vuint16m1_t *v6, vuint16m1_t *v7, vbool16_t mask, vuint16m1_t maskedoff0, vuint16m1_t maskedoff1, vuint16m1_t maskedoff2, vuint16m1_t maskedoff3, vuint16m1_t maskedoff4, vuint16m1_t maskedoff5, vuint16m1_t maskedoff6, vuint16m1_t maskedoff7, const uint16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -500,25 +662,34 @@ void test_vlseg8e16ff_v_u16m1_tum_ntl_P1(vuint16m1_t *v0, vuint16m1_t *v1, vuint
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_f16mf4_tumu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } @llvm.riscv.vlseg8ff.mask.nxv1f16.i64(<vscale x 1 x half> [[MASKEDOFF0:%.*]], <vscale x 1 x half> [[MASKEDOFF1:%.*]], <vscale x 1 x half> [[MASKEDOFF2:%.*]], <vscale x 1 x half> [[MASKEDOFF3:%.*]], <vscale x 1 x half> [[MASKEDOFF4:%.*]], <vscale x 1 x half> [[MASKEDOFF5:%.*]], <vscale x 1 x half> [[MASKEDOFF6:%.*]], <vscale x 1 x half> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) poison, <vscale x 1 x half> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP0]], <vscale x 1 x half> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP1]], <vscale x 1 x half> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP2]], <vscale x 1 x half> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP3]], <vscale x 1 x half> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP4]], <vscale x 1 x half> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP5]], <vscale x 1 x half> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP6]], <vscale x 1 x half> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv2i8_8t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_f16mf4_tumu_ntl_P1(vfloat16mf4_t *v0, vfloat16mf4_t *v1, vfloat16mf4_t *v2, vfloat16mf4_t *v3, vfloat16mf4_t *v4, vfloat16mf4_t *v5, vfloat16mf4_t *v6, vfloat16mf4_t *v7, vbool64_t mask, vfloat16mf4_t maskedoff0, vfloat16mf4_t maskedoff1, vfloat16mf4_t maskedoff2, vfloat16mf4_t maskedoff3, vfloat16mf4_t maskedoff4, vfloat16mf4_t maskedoff5, vfloat16mf4_t maskedoff6, vfloat16mf4_t maskedoff7, const _Float16 *base, size_t *new_vl, size_t vl, int domain) {
@@ -527,25 +698,34 @@ void test_vlseg8e16ff_v_f16mf4_tumu_ntl_P1(vfloat16mf4_t *v0, vfloat16mf4_t *v1,
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_f16mf2_tumu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } @llvm.riscv.vlseg8ff.mask.nxv2f16.i64(<vscale x 2 x half> [[MASKEDOFF0:%.*]], <vscale x 2 x half> [[MASKEDOFF1:%.*]], <vscale x 2 x half> [[MASKEDOFF2:%.*]], <vscale x 2 x half> [[MASKEDOFF3:%.*]], <vscale x 2 x half> [[MASKEDOFF4:%.*]], <vscale x 2 x half> [[MASKEDOFF5:%.*]], <vscale x 2 x half> [[MASKEDOFF6:%.*]], <vscale x 2 x half> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) poison, <vscale x 2 x half> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP0]], <vscale x 2 x half> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP1]], <vscale x 2 x half> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP2]], <vscale x 2 x half> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP3]], <vscale x 2 x half> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP4]], <vscale x 2 x half> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP5]], <vscale x 2 x half> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP6]], <vscale x 2 x half> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv4i8_8t.i64.nxv2i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_f16mf2_tumu_ntl_P1(vfloat16mf2_t *v0, vfloat16mf2_t *v1, vfloat16mf2_t *v2, vfloat16mf2_t *v3, vfloat16mf2_t *v4, vfloat16mf2_t *v5, vfloat16mf2_t *v6, vfloat16mf2_t *v7, vbool32_t mask, vfloat16mf2_t maskedoff0, vfloat16mf2_t maskedoff1, vfloat16mf2_t maskedoff2, vfloat16mf2_t maskedoff3, vfloat16mf2_t maskedoff4, vfloat16mf2_t maskedoff5, vfloat16mf2_t maskedoff6, vfloat16mf2_t maskedoff7, const _Float16 *base, size_t *new_vl, size_t vl, int domain) {
@@ -554,25 +734,34 @@ void test_vlseg8e16ff_v_f16mf2_tumu_ntl_P1(vfloat16mf2_t *v0, vfloat16mf2_t *v1,
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_f16m1_tumu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } @llvm.riscv.vlseg8ff.mask.nxv4f16.i64(<vscale x 4 x half> [[MASKEDOFF0:%.*]], <vscale x 4 x half> [[MASKEDOFF1:%.*]], <vscale x 4 x half> [[MASKEDOFF2:%.*]], <vscale x 4 x half> [[MASKEDOFF3:%.*]], <vscale x 4 x half> [[MASKEDOFF4:%.*]], <vscale x 4 x half> [[MASKEDOFF5:%.*]], <vscale x 4 x half> [[MASKEDOFF6:%.*]], <vscale x 4 x half> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) poison, <vscale x 4 x half> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP0]], <vscale x 4 x half> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP1]], <vscale x 4 x half> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP2]], <vscale x 4 x half> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP3]], <vscale x 4 x half> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP4]], <vscale x 4 x half> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP5]], <vscale x 4 x half> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP6]], <vscale x 4 x half> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv8i8_8t.i64.nxv4i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_f16m1_tumu_ntl_P1(vfloat16m1_t *v0, vfloat16m1_t *v1, vfloat16m1_t *v2, vfloat16m1_t *v3, vfloat16m1_t *v4, vfloat16m1_t *v5, vfloat16m1_t *v6, vfloat16m1_t *v7, vbool16_t mask, vfloat16m1_t maskedoff0, vfloat16m1_t maskedoff1, vfloat16m1_t maskedoff2, vfloat16m1_t maskedoff3, vfloat16m1_t maskedoff4, vfloat16m1_t maskedoff5, vfloat16m1_t maskedoff6, vfloat16m1_t maskedoff7, const _Float16 *base, size_t *new_vl, size_t vl, int domain) {
@@ -581,25 +770,34 @@ void test_vlseg8e16ff_v_f16m1_tumu_ntl_P1(vfloat16m1_t *v0, vfloat16m1_t *v1, vf
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_i16mf4_tumu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } @llvm.riscv.vlseg8ff.mask.nxv1i16.i64(<vscale x 1 x i16> [[MASKEDOFF0:%.*]], <vscale x 1 x i16> [[MASKEDOFF1:%.*]], <vscale x 1 x i16> [[MASKEDOFF2:%.*]], <vscale x 1 x i16> [[MASKEDOFF3:%.*]], <vscale x 1 x i16> [[MASKEDOFF4:%.*]], <vscale x 1 x i16> [[MASKEDOFF5:%.*]], <vscale x 1 x i16> [[MASKEDOFF6:%.*]], <vscale x 1 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) poison, <vscale x 1 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP0]], <vscale x 1 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP1]], <vscale x 1 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP2]], <vscale x 1 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP3]], <vscale x 1 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP4]], <vscale x 1 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP5]], <vscale x 1 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP6]], <vscale x 1 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv2i8_8t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_i16mf4_tumu_ntl_P1(vint16mf4_t *v0, vint16mf4_t *v1, vint16mf4_t *v2, vint16mf4_t *v3, vint16mf4_t *v4, vint16mf4_t *v5, vint16mf4_t *v6, vint16mf4_t *v7, vbool64_t mask, vint16mf4_t maskedoff0, vint16mf4_t maskedoff1, vint16mf4_t maskedoff2, vint16mf4_t maskedoff3, vint16mf4_t maskedoff4, vint16mf4_t maskedoff5, vint16mf4_t maskedoff6, vint16mf4_t maskedoff7, const int16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -608,25 +806,34 @@ void test_vlseg8e16ff_v_i16mf4_tumu_ntl_P1(vint16mf4_t *v0, vint16mf4_t *v1, vin
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_i16mf2_tumu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } @llvm.riscv.vlseg8ff.mask.nxv2i16.i64(<vscale x 2 x i16> [[MASKEDOFF0:%.*]], <vscale x 2 x i16> [[MASKEDOFF1:%.*]], <vscale x 2 x i16> [[MASKEDOFF2:%.*]], <vscale x 2 x i16> [[MASKEDOFF3:%.*]], <vscale x 2 x i16> [[MASKEDOFF4:%.*]], <vscale x 2 x i16> [[MASKEDOFF5:%.*]], <vscale x 2 x i16> [[MASKEDOFF6:%.*]], <vscale x 2 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) poison, <vscale x 2 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP0]], <vscale x 2 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP1]], <vscale x 2 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP2]], <vscale x 2 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP3]], <vscale x 2 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP4]], <vscale x 2 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP5]], <vscale x 2 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP6]], <vscale x 2 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv4i8_8t.i64.nxv2i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_i16mf2_tumu_ntl_P1(vint16mf2_t *v0, vint16mf2_t *v1, vint16mf2_t *v2, vint16mf2_t *v3, vint16mf2_t *v4, vint16mf2_t *v5, vint16mf2_t *v6, vint16mf2_t *v7, vbool32_t mask, vint16mf2_t maskedoff0, vint16mf2_t maskedoff1, vint16mf2_t maskedoff2, vint16mf2_t maskedoff3, vint16mf2_t maskedoff4, vint16mf2_t maskedoff5, vint16mf2_t maskedoff6, vint16mf2_t maskedoff7, const int16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -635,25 +842,34 @@ void test_vlseg8e16ff_v_i16mf2_tumu_ntl_P1(vint16mf2_t *v0, vint16mf2_t *v1, vin
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_i16m1_tumu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } @llvm.riscv.vlseg8ff.mask.nxv4i16.i64(<vscale x 4 x i16> [[MASKEDOFF0:%.*]], <vscale x 4 x i16> [[MASKEDOFF1:%.*]], <vscale x 4 x i16> [[MASKEDOFF2:%.*]], <vscale x 4 x i16> [[MASKEDOFF3:%.*]], <vscale x 4 x i16> [[MASKEDOFF4:%.*]], <vscale x 4 x i16> [[MASKEDOFF5:%.*]], <vscale x 4 x i16> [[MASKEDOFF6:%.*]], <vscale x 4 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) poison, <vscale x 4 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP0]], <vscale x 4 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP1]], <vscale x 4 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP2]], <vscale x 4 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP3]], <vscale x 4 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP4]], <vscale x 4 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP5]], <vscale x 4 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP6]], <vscale x 4 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv8i8_8t.i64.nxv4i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_i16m1_tumu_ntl_P1(vint16m1_t *v0, vint16m1_t *v1, vint16m1_t *v2, vint16m1_t *v3, vint16m1_t *v4, vint16m1_t *v5, vint16m1_t *v6, vint16m1_t *v7, vbool16_t mask, vint16m1_t maskedoff0, vint16m1_t maskedoff1, vint16m1_t maskedoff2, vint16m1_t maskedoff3, vint16m1_t maskedoff4, vint16m1_t maskedoff5, vint16m1_t maskedoff6, vint16m1_t maskedoff7, const int16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -662,25 +878,34 @@ void test_vlseg8e16ff_v_i16m1_tumu_ntl_P1(vint16m1_t *v0, vint16m1_t *v1, vint16
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_u16mf4_tumu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } @llvm.riscv.vlseg8ff.mask.nxv1i16.i64(<vscale x 1 x i16> [[MASKEDOFF0:%.*]], <vscale x 1 x i16> [[MASKEDOFF1:%.*]], <vscale x 1 x i16> [[MASKEDOFF2:%.*]], <vscale x 1 x i16> [[MASKEDOFF3:%.*]], <vscale x 1 x i16> [[MASKEDOFF4:%.*]], <vscale x 1 x i16> [[MASKEDOFF5:%.*]], <vscale x 1 x i16> [[MASKEDOFF6:%.*]], <vscale x 1 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) poison, <vscale x 1 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP0]], <vscale x 1 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP1]], <vscale x 1 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP2]], <vscale x 1 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP3]], <vscale x 1 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP4]], <vscale x 1 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP5]], <vscale x 1 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP6]], <vscale x 1 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv2i8_8t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_u16mf4_tumu_ntl_P1(vuint16mf4_t *v0, vuint16mf4_t *v1, vuint16mf4_t *v2, vuint16mf4_t *v3, vuint16mf4_t *v4, vuint16mf4_t *v5, vuint16mf4_t *v6, vuint16mf4_t *v7, vbool64_t mask, vuint16mf4_t maskedoff0, vuint16mf4_t maskedoff1, vuint16mf4_t maskedoff2, vuint16mf4_t maskedoff3, vuint16mf4_t maskedoff4, vuint16mf4_t maskedoff5, vuint16mf4_t maskedoff6, vuint16mf4_t maskedoff7, const uint16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -689,25 +914,34 @@ void test_vlseg8e16ff_v_u16mf4_tumu_ntl_P1(vuint16mf4_t *v0, vuint16mf4_t *v1, v
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_u16mf2_tumu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } @llvm.riscv.vlseg8ff.mask.nxv2i16.i64(<vscale x 2 x i16> [[MASKEDOFF0:%.*]], <vscale x 2 x i16> [[MASKEDOFF1:%.*]], <vscale x 2 x i16> [[MASKEDOFF2:%.*]], <vscale x 2 x i16> [[MASKEDOFF3:%.*]], <vscale x 2 x i16> [[MASKEDOFF4:%.*]], <vscale x 2 x i16> [[MASKEDOFF5:%.*]], <vscale x 2 x i16> [[MASKEDOFF6:%.*]], <vscale x 2 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) poison, <vscale x 2 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP0]], <vscale x 2 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP1]], <vscale x 2 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP2]], <vscale x 2 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP3]], <vscale x 2 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP4]], <vscale x 2 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP5]], <vscale x 2 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP6]], <vscale x 2 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv4i8_8t.i64.nxv2i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_u16mf2_tumu_ntl_P1(vuint16mf2_t *v0, vuint16mf2_t *v1, vuint16mf2_t *v2, vuint16mf2_t *v3, vuint16mf2_t *v4, vuint16mf2_t *v5, vuint16mf2_t *v6, vuint16mf2_t *v7, vbool32_t mask, vuint16mf2_t maskedoff0, vuint16mf2_t maskedoff1, vuint16mf2_t maskedoff2, vuint16mf2_t maskedoff3, vuint16mf2_t maskedoff4, vuint16mf2_t maskedoff5, vuint16mf2_t maskedoff6, vuint16mf2_t maskedoff7, const uint16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -716,25 +950,34 @@ void test_vlseg8e16ff_v_u16mf2_tumu_ntl_P1(vuint16mf2_t *v0, vuint16mf2_t *v1, v
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_u16m1_tumu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } @llvm.riscv.vlseg8ff.mask.nxv4i16.i64(<vscale x 4 x i16> [[MASKEDOFF0:%.*]], <vscale x 4 x i16> [[MASKEDOFF1:%.*]], <vscale x 4 x i16> [[MASKEDOFF2:%.*]], <vscale x 4 x i16> [[MASKEDOFF3:%.*]], <vscale x 4 x i16> [[MASKEDOFF4:%.*]], <vscale x 4 x i16> [[MASKEDOFF5:%.*]], <vscale x 4 x i16> [[MASKEDOFF6:%.*]], <vscale x 4 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) poison, <vscale x 4 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP0]], <vscale x 4 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP1]], <vscale x 4 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP2]], <vscale x 4 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP3]], <vscale x 4 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP4]], <vscale x 4 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP5]], <vscale x 4 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP6]], <vscale x 4 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv8i8_8t.i64.nxv4i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 0, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_u16m1_tumu_ntl_P1(vuint16m1_t *v0, vuint16m1_t *v1, vuint16m1_t *v2, vuint16m1_t *v3, vuint16m1_t *v4, vuint16m1_t *v5, vuint16m1_t *v6, vuint16m1_t *v7, vbool16_t mask, vuint16m1_t maskedoff0, vuint16m1_t maskedoff1, vuint16m1_t maskedoff2, vuint16m1_t maskedoff3, vuint16m1_t maskedoff4, vuint16m1_t maskedoff5, vuint16m1_t maskedoff6, vuint16m1_t maskedoff7, const uint16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -743,25 +986,34 @@ void test_vlseg8e16ff_v_u16m1_tumu_ntl_P1(vuint16m1_t *v0, vuint16m1_t *v1, vuin
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_f16mf4_mu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } @llvm.riscv.vlseg8ff.mask.nxv1f16.i64(<vscale x 1 x half> [[MASKEDOFF0:%.*]], <vscale x 1 x half> [[MASKEDOFF1:%.*]], <vscale x 1 x half> [[MASKEDOFF2:%.*]], <vscale x 1 x half> [[MASKEDOFF3:%.*]], <vscale x 1 x half> [[MASKEDOFF4:%.*]], <vscale x 1 x half> [[MASKEDOFF5:%.*]], <vscale x 1 x half> [[MASKEDOFF6:%.*]], <vscale x 1 x half> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 1 x half> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, <vscale x 1 x half>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) poison, <vscale x 1 x half> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP0]], <vscale x 1 x half> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP1]], <vscale x 1 x half> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP2]], <vscale x 1 x half> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP3]], <vscale x 1 x half> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP4]], <vscale x 1 x half> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP5]], <vscale x 1 x half> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1f16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP6]], <vscale x 1 x half> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv2i8_8t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_f16mf4_mu_ntl_P1(vfloat16mf4_t *v0, vfloat16mf4_t *v1, vfloat16mf4_t *v2, vfloat16mf4_t *v3, vfloat16mf4_t *v4, vfloat16mf4_t *v5, vfloat16mf4_t *v6, vfloat16mf4_t *v7, vbool64_t mask, vfloat16mf4_t maskedoff0, vfloat16mf4_t maskedoff1, vfloat16mf4_t maskedoff2, vfloat16mf4_t maskedoff3, vfloat16mf4_t maskedoff4, vfloat16mf4_t maskedoff5, vfloat16mf4_t maskedoff6, vfloat16mf4_t maskedoff7, const _Float16 *base, size_t *new_vl, size_t vl, int domain) {
@@ -770,25 +1022,34 @@ void test_vlseg8e16ff_v_f16mf4_mu_ntl_P1(vfloat16mf4_t *v0, vfloat16mf4_t *v1, v
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_f16mf2_mu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } @llvm.riscv.vlseg8ff.mask.nxv2f16.i64(<vscale x 2 x half> [[MASKEDOFF0:%.*]], <vscale x 2 x half> [[MASKEDOFF1:%.*]], <vscale x 2 x half> [[MASKEDOFF2:%.*]], <vscale x 2 x half> [[MASKEDOFF3:%.*]], <vscale x 2 x half> [[MASKEDOFF4:%.*]], <vscale x 2 x half> [[MASKEDOFF5:%.*]], <vscale x 2 x half> [[MASKEDOFF6:%.*]], <vscale x 2 x half> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 2 x half> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, <vscale x 2 x half>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) poison, <vscale x 2 x half> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP0]], <vscale x 2 x half> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP1]], <vscale x 2 x half> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP2]], <vscale x 2 x half> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP3]], <vscale x 2 x half> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP4]], <vscale x 2 x half> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP5]], <vscale x 2 x half> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2f16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP6]], <vscale x 2 x half> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv4i8_8t.i64.nxv2i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_f16mf2_mu_ntl_P1(vfloat16mf2_t *v0, vfloat16mf2_t *v1, vfloat16mf2_t *v2, vfloat16mf2_t *v3, vfloat16mf2_t *v4, vfloat16mf2_t *v5, vfloat16mf2_t *v6, vfloat16mf2_t *v7, vbool32_t mask, vfloat16mf2_t maskedoff0, vfloat16mf2_t maskedoff1, vfloat16mf2_t maskedoff2, vfloat16mf2_t maskedoff3, vfloat16mf2_t maskedoff4, vfloat16mf2_t maskedoff5, vfloat16mf2_t maskedoff6, vfloat16mf2_t maskedoff7, const _Float16 *base, size_t *new_vl, size_t vl, int domain) {
@@ -797,25 +1058,34 @@ void test_vlseg8e16ff_v_f16mf2_mu_ntl_P1(vfloat16mf2_t *v0, vfloat16mf2_t *v1, v
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_f16m1_mu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } @llvm.riscv.vlseg8ff.mask.nxv4f16.i64(<vscale x 4 x half> [[MASKEDOFF0:%.*]], <vscale x 4 x half> [[MASKEDOFF1:%.*]], <vscale x 4 x half> [[MASKEDOFF2:%.*]], <vscale x 4 x half> [[MASKEDOFF3:%.*]], <vscale x 4 x half> [[MASKEDOFF4:%.*]], <vscale x 4 x half> [[MASKEDOFF5:%.*]], <vscale x 4 x half> [[MASKEDOFF6:%.*]], <vscale x 4 x half> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 4 x half> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, <vscale x 4 x half>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) poison, <vscale x 4 x half> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP0]], <vscale x 4 x half> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP1]], <vscale x 4 x half> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP2]], <vscale x 4 x half> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP3]], <vscale x 4 x half> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP4]], <vscale x 4 x half> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP5]], <vscale x 4 x half> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4f16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP6]], <vscale x 4 x half> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv8i8_8t.i64.nxv4i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_f16m1_mu_ntl_P1(vfloat16m1_t *v0, vfloat16m1_t *v1, vfloat16m1_t *v2, vfloat16m1_t *v3, vfloat16m1_t *v4, vfloat16m1_t *v5, vfloat16m1_t *v6, vfloat16m1_t *v7, vbool16_t mask, vfloat16m1_t maskedoff0, vfloat16m1_t maskedoff1, vfloat16m1_t maskedoff2, vfloat16m1_t maskedoff3, vfloat16m1_t maskedoff4, vfloat16m1_t maskedoff5, vfloat16m1_t maskedoff6, vfloat16m1_t maskedoff7, const _Float16 *base, size_t *new_vl, size_t vl, int domain) {
@@ -824,25 +1094,34 @@ void test_vlseg8e16ff_v_f16m1_mu_ntl_P1(vfloat16m1_t *v0, vfloat16m1_t *v1, vflo
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_i16mf4_mu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } @llvm.riscv.vlseg8ff.mask.nxv1i16.i64(<vscale x 1 x i16> [[MASKEDOFF0:%.*]], <vscale x 1 x i16> [[MASKEDOFF1:%.*]], <vscale x 1 x i16> [[MASKEDOFF2:%.*]], <vscale x 1 x i16> [[MASKEDOFF3:%.*]], <vscale x 1 x i16> [[MASKEDOFF4:%.*]], <vscale x 1 x i16> [[MASKEDOFF5:%.*]], <vscale x 1 x i16> [[MASKEDOFF6:%.*]], <vscale x 1 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) poison, <vscale x 1 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP0]], <vscale x 1 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP1]], <vscale x 1 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP2]], <vscale x 1 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP3]], <vscale x 1 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP4]], <vscale x 1 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP5]], <vscale x 1 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP6]], <vscale x 1 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv2i8_8t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_i16mf4_mu_ntl_P1(vint16mf4_t *v0, vint16mf4_t *v1, vint16mf4_t *v2, vint16mf4_t *v3, vint16mf4_t *v4, vint16mf4_t *v5, vint16mf4_t *v6, vint16mf4_t *v7, vbool64_t mask, vint16mf4_t maskedoff0, vint16mf4_t maskedoff1, vint16mf4_t maskedoff2, vint16mf4_t maskedoff3, vint16mf4_t maskedoff4, vint16mf4_t maskedoff5, vint16mf4_t maskedoff6, vint16mf4_t maskedoff7, const int16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -851,25 +1130,34 @@ void test_vlseg8e16ff_v_i16mf4_mu_ntl_P1(vint16mf4_t *v0, vint16mf4_t *v1, vint1
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_i16mf2_mu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } @llvm.riscv.vlseg8ff.mask.nxv2i16.i64(<vscale x 2 x i16> [[MASKEDOFF0:%.*]], <vscale x 2 x i16> [[MASKEDOFF1:%.*]], <vscale x 2 x i16> [[MASKEDOFF2:%.*]], <vscale x 2 x i16> [[MASKEDOFF3:%.*]], <vscale x 2 x i16> [[MASKEDOFF4:%.*]], <vscale x 2 x i16> [[MASKEDOFF5:%.*]], <vscale x 2 x i16> [[MASKEDOFF6:%.*]], <vscale x 2 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) poison, <vscale x 2 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP0]], <vscale x 2 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP1]], <vscale x 2 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP2]], <vscale x 2 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP3]], <vscale x 2 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP4]], <vscale x 2 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP5]], <vscale x 2 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP6]], <vscale x 2 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv4i8_8t.i64.nxv2i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_i16mf2_mu_ntl_P1(vint16mf2_t *v0, vint16mf2_t *v1, vint16mf2_t *v2, vint16mf2_t *v3, vint16mf2_t *v4, vint16mf2_t *v5, vint16mf2_t *v6, vint16mf2_t *v7, vbool32_t mask, vint16mf2_t maskedoff0, vint16mf2_t maskedoff1, vint16mf2_t maskedoff2, vint16mf2_t maskedoff3, vint16mf2_t maskedoff4, vint16mf2_t maskedoff5, vint16mf2_t maskedoff6, vint16mf2_t maskedoff7, const int16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -878,25 +1166,34 @@ void test_vlseg8e16ff_v_i16mf2_mu_ntl_P1(vint16mf2_t *v0, vint16mf2_t *v1, vint1
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_i16m1_mu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } @llvm.riscv.vlseg8ff.mask.nxv4i16.i64(<vscale x 4 x i16> [[MASKEDOFF0:%.*]], <vscale x 4 x i16> [[MASKEDOFF1:%.*]], <vscale x 4 x i16> [[MASKEDOFF2:%.*]], <vscale x 4 x i16> [[MASKEDOFF3:%.*]], <vscale x 4 x i16> [[MASKEDOFF4:%.*]], <vscale x 4 x i16> [[MASKEDOFF5:%.*]], <vscale x 4 x i16> [[MASKEDOFF6:%.*]], <vscale x 4 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) poison, <vscale x 4 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP0]], <vscale x 4 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP1]], <vscale x 4 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP2]], <vscale x 4 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP3]], <vscale x 4 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP4]], <vscale x 4 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP5]], <vscale x 4 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP6]], <vscale x 4 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv8i8_8t.i64.nxv4i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_i16m1_mu_ntl_P1(vint16m1_t *v0, vint16m1_t *v1, vint16m1_t *v2, vint16m1_t *v3, vint16m1_t *v4, vint16m1_t *v5, vint16m1_t *v6, vint16m1_t *v7, vbool16_t mask, vint16m1_t maskedoff0, vint16m1_t maskedoff1, vint16m1_t maskedoff2, vint16m1_t maskedoff3, vint16m1_t maskedoff4, vint16m1_t maskedoff5, vint16m1_t maskedoff6, vint16m1_t maskedoff7, const int16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -905,25 +1202,34 @@ void test_vlseg8e16ff_v_i16m1_mu_ntl_P1(vint16m1_t *v0, vint16m1_t *v1, vint16m1
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_u16mf4_mu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } @llvm.riscv.vlseg8ff.mask.nxv1i16.i64(<vscale x 1 x i16> [[MASKEDOFF0:%.*]], <vscale x 1 x i16> [[MASKEDOFF1:%.*]], <vscale x 1 x i16> [[MASKEDOFF2:%.*]], <vscale x 1 x i16> [[MASKEDOFF3:%.*]], <vscale x 1 x i16> [[MASKEDOFF4:%.*]], <vscale x 1 x i16> [[MASKEDOFF5:%.*]], <vscale x 1 x i16> [[MASKEDOFF6:%.*]], <vscale x 1 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 1 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, <vscale x 1 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) poison, <vscale x 1 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP0]], <vscale x 1 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP1]], <vscale x 1 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP2]], <vscale x 1 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP3]], <vscale x 1 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP4]], <vscale x 1 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP5]], <vscale x 1 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 2 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv2i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP6]], <vscale x 1 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv2i8_8t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 1 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 2 x i8> @llvm.riscv.tuple.extract.nxv2i8.triscv.vector.tuple_nxv2i8_8t(target("riscv.vector.tuple", <vscale x 2 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 2 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 2 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_u16mf4_mu_ntl_P1(vuint16mf4_t *v0, vuint16mf4_t *v1, vuint16mf4_t *v2, vuint16mf4_t *v3, vuint16mf4_t *v4, vuint16mf4_t *v5, vuint16mf4_t *v6, vuint16mf4_t *v7, vbool64_t mask, vuint16mf4_t maskedoff0, vuint16mf4_t maskedoff1, vuint16mf4_t maskedoff2, vuint16mf4_t maskedoff3, vuint16mf4_t maskedoff4, vuint16mf4_t maskedoff5, vuint16mf4_t maskedoff6, vuint16mf4_t maskedoff7, const uint16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -932,25 +1238,34 @@ void test_vlseg8e16ff_v_u16mf4_mu_ntl_P1(vuint16mf4_t *v0, vuint16mf4_t *v1, vui
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_u16mf2_mu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } @llvm.riscv.vlseg8ff.mask.nxv2i16.i64(<vscale x 2 x i16> [[MASKEDOFF0:%.*]], <vscale x 2 x i16> [[MASKEDOFF1:%.*]], <vscale x 2 x i16> [[MASKEDOFF2:%.*]], <vscale x 2 x i16> [[MASKEDOFF3:%.*]], <vscale x 2 x i16> [[MASKEDOFF4:%.*]], <vscale x 2 x i16> [[MASKEDOFF5:%.*]], <vscale x 2 x i16> [[MASKEDOFF6:%.*]], <vscale x 2 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 2 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, <vscale x 2 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) poison, <vscale x 2 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP0]], <vscale x 2 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP1]], <vscale x 2 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP2]], <vscale x 2 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP3]], <vscale x 2 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP4]], <vscale x 2 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP5]], <vscale x 2 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv4i8_8t.nxv2i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP6]], <vscale x 2 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv4i8_8t.i64.nxv2i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 2 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 4 x i8> @llvm.riscv.tuple.extract.nxv4i8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 4 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 4 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_u16mf2_mu_ntl_P1(vuint16mf2_t *v0, vuint16mf2_t *v1, vuint16mf2_t *v2, vuint16mf2_t *v3, vuint16mf2_t *v4, vuint16mf2_t *v5, vuint16mf2_t *v6, vuint16mf2_t *v7, vbool32_t mask, vuint16mf2_t maskedoff0, vuint16mf2_t maskedoff1, vuint16mf2_t maskedoff2, vuint16mf2_t maskedoff3, vuint16mf2_t maskedoff4, vuint16mf2_t maskedoff5, vuint16mf2_t maskedoff6, vuint16mf2_t maskedoff7, const uint16_t *base, size_t *new_vl, size_t vl, int domain) {
@@ -959,25 +1274,34 @@ void test_vlseg8e16ff_v_u16mf2_mu_ntl_P1(vuint16mf2_t *v0, vuint16mf2_t *v1, vui
 
 // CHECK-LABEL: @test_vlseg8e16ff_v_u16m1_mu_ntl_P1(
 // CHECK-NEXT:  entry:
-// CHECK-NEXT:    [[TMP0:%.*]] = call { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } @llvm.riscv.vlseg8ff.mask.nxv4i16.i64(<vscale x 4 x i16> [[MASKEDOFF0:%.*]], <vscale x 4 x i16> [[MASKEDOFF1:%.*]], <vscale x 4 x i16> [[MASKEDOFF2:%.*]], <vscale x 4 x i16> [[MASKEDOFF3:%.*]], <vscale x 4 x i16> [[MASKEDOFF4:%.*]], <vscale x 4 x i16> [[MASKEDOFF5:%.*]], <vscale x 4 x i16> [[MASKEDOFF6:%.*]], <vscale x 4 x i16> [[MASKEDOFF7:%.*]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1), !nontemporal [[META6]]
-// CHECK-NEXT:    [[TMP1:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 0
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP1]], ptr [[V0:%.*]], align 2
-// CHECK-NEXT:    [[TMP2:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 1
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP2]], ptr [[V1:%.*]], align 2
-// CHECK-NEXT:    [[TMP3:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 2
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP3]], ptr [[V2:%.*]], align 2
-// CHECK-NEXT:    [[TMP4:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 3
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP4]], ptr [[V3:%.*]], align 2
-// CHECK-NEXT:    [[TMP5:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 4
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP5]], ptr [[V4:%.*]], align 2
-// CHECK-NEXT:    [[TMP6:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 5
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP6]], ptr [[V5:%.*]], align 2
-// CHECK-NEXT:    [[TMP7:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 6
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP7]], ptr [[V6:%.*]], align 2
-// CHECK-NEXT:    [[TMP8:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 7
-// CHECK-NEXT:    store <vscale x 4 x i16> [[TMP8]], ptr [[V7:%.*]], align 2
-// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, <vscale x 4 x i16>, i64 } [[TMP0]], 8
-// CHECK-NEXT:    store i64 [[TMP9]], ptr [[NEW_VL:%.*]], align 2
+// CHECK-NEXT:    [[TMP0:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) poison, <vscale x 4 x i16> [[MASKEDOFF0:%.*]], i32 0)
+// CHECK-NEXT:    [[TMP1:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP0]], <vscale x 4 x i16> [[MASKEDOFF1:%.*]], i32 1)
+// CHECK-NEXT:    [[TMP2:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP1]], <vscale x 4 x i16> [[MASKEDOFF2:%.*]], i32 2)
+// CHECK-NEXT:    [[TMP3:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP2]], <vscale x 4 x i16> [[MASKEDOFF3:%.*]], i32 3)
+// CHECK-NEXT:    [[TMP4:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP3]], <vscale x 4 x i16> [[MASKEDOFF4:%.*]], i32 4)
+// CHECK-NEXT:    [[TMP5:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP4]], <vscale x 4 x i16> [[MASKEDOFF5:%.*]], i32 5)
+// CHECK-NEXT:    [[TMP6:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP5]], <vscale x 4 x i16> [[MASKEDOFF6:%.*]], i32 6)
+// CHECK-NEXT:    [[TMP7:%.*]] = call target("riscv.vector.tuple", <vscale x 8 x i8>, 8) @llvm.riscv.tuple.insert.triscv.vector.tuple_nxv8i8_8t.nxv4i16(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP6]], <vscale x 4 x i16> [[MASKEDOFF7:%.*]], i32 7)
+// CHECK-NEXT:    [[TMP8:%.*]] = call { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } @llvm.riscv.vlseg8ff.mask.triscv.vector.tuple_nxv8i8_8t.i64.nxv4i1(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP7]], ptr [[BASE:%.*]], <vscale x 4 x i1> [[MASK:%.*]], i64 [[VL:%.*]], i64 1, i64 2), !nontemporal [[META6]]
+// CHECK-NEXT:    [[TMP9:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 0
+// CHECK-NEXT:    [[TMP10:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 0)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP10]], ptr [[V0:%.*]], align 2
+// CHECK-NEXT:    [[TMP11:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 1)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP11]], ptr [[V1:%.*]], align 2
+// CHECK-NEXT:    [[TMP12:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 2)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP12]], ptr [[V2:%.*]], align 2
+// CHECK-NEXT:    [[TMP13:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 3)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP13]], ptr [[V3:%.*]], align 2
+// CHECK-NEXT:    [[TMP14:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 4)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP14]], ptr [[V4:%.*]], align 2
+// CHECK-NEXT:    [[TMP15:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 5)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP15]], ptr [[V5:%.*]], align 2
+// CHECK-NEXT:    [[TMP16:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 6)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP16]], ptr [[V6:%.*]], align 2
+// CHECK-NEXT:    [[TMP17:%.*]] = call <vscale x 8 x i8> @llvm.riscv.tuple.extract.nxv8i8.triscv.vector.tuple_nxv8i8_8t(target("riscv.vector.tuple", <vscale x 8 x i8>, 8) [[TMP9]], i32 7)
+// CHECK-NEXT:    store <vscale x 8 x i8> [[TMP17]], ptr [[V7:%.*]], align 2
+// CHECK-NEXT:    [[TMP18:%.*]] = extractvalue { target("riscv.vector.tuple", <vscale x 8 x i8>, 8), i64 } [[TMP8]], 1
+// CHECK-NEXT:    store i64 [[TMP18]], ptr [[NEW_VL:%.*]], align 2
 // CHECK-NEXT:    ret void
 //
 void test_vlseg8e16ff_v_u16m1_mu_ntl_P1(vuint16m1_t *v0, vuint16m1_t *v1, vuint16m1_t *v2, vuint16m1_t *v3, vuint16m1_t *v4, vuint16m1_t *v5, vuint16m1_t *v6, vuint16m1_t *v7, vbool16_t mask, vuint16m1_t maskedoff0, vuint16m1_t maskedoff1, vuint16m1_t maskedoff2, vuint16m1_t maskedoff3, vuint16m1_t maskedoff4, vuint16m1_t maskedoff5, vuint16m1_t maskedoff6, vuint16m1_t maskedoff7, const uint16_t *base, size_t *new_vl, size_t vl, int domain) {

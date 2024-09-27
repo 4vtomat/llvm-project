@@ -902,28 +902,45 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
                                                    []<string>)),
             ManualCodegen = [{
     {
-#if 0 // SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
       // In our downstream toolchain, for smooth transition from the v0.11
       // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
       // now.
-      if (!isa<StructType>(ResultType)) { // Deal with v0.11 interface
+      if (!isa<TargetExtType>(ResultType)) { // Deal with v0.11 interface
         llvm::MDNode *NTLNode;
         if(IsNontemporal)
           NTLNode = createNTLNode();
-        ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
-        IntrinsicTypes = {ResultType, Ops.back()->getType()};
-        SmallVector<llvm::Value*, 12> Operands;
 
+        ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
+
+        unsigned EltWidth = cast<ScalableVectorType>(ResultType)->getElementType()->getScalarSizeInBits();
+        unsigned NumElts = cast<ScalableVectorType>(ResultType)->getMinNumElements() * EltWidth / 8;
+        LLVMContext &Context = CGM.getLLVMContext();
+        llvm::Type *ScalType = ScalableVectorType::get(Builder.getInt8Ty(), NumElts);
+        llvm::Type *TupType = TargetExtType::get(Context, "riscv.vector.tuple", ScalType, NF);
+        IntrinsicTypes = {TupType, ResultType};
+        llvm::Function *TupleInsertFunc = CGM.getIntrinsic(Intrinsic::riscv_tuple_insert, IntrinsicTypes);
+        llvm::Value *TupVal = PoisonValue::get(TupType);
+        unsigned PassthruStartIdx = 0;
         // Please refer to comment under 'defvar NFList' in this file
-        if ((IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ||
-            (!IsMasked && PolicyAttrs & RVV_VTA))
-          Operands.append(NF, llvm::PoisonValue::get(ResultType));
-        else {
+        if (!(IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) &&
+            !(!IsMasked && PolicyAttrs & RVV_VTA)) {
           if (IsMasked)
-            Operands.append(Ops.begin() + NF + 1, Ops.begin() + 2 * NF + 1);
+            PassthruStartIdx = NF + 1;
           else // Unmasked
-            Operands.append(Ops.begin() + NF, Ops.begin() + 2 * NF);
+            PassthruStartIdx = NF;
         }
+
+        if (PassthruStartIdx != 0)
+          for (unsigned i = PassthruStartIdx; i < PassthruStartIdx + NF; ++i)
+            TupVal = Builder.CreateCall(TupleInsertFunc, {TupVal, Ops[i], Builder.getInt32(i - PassthruStartIdx)}, "");
+
+        if (IsMasked)
+          IntrinsicTypes = {TupType, Ops[NF]->getType(), Ops.back()->getType()};
+        else
+          IntrinsicTypes = {TupType, Ops.back()->getType()};
+        SmallVector<llvm::Value*, 12> Operands = {TupVal};
+
         unsigned PtrOperandIdx = IsMasked ?
           ((PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ? NF + 1 : 2 * NF + 1 :
           (PolicyAttrs & RVV_VTA) ? NF : 2 * NF;
@@ -935,6 +952,7 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
         Operands.push_back(VLOperand);
         if (IsMasked)
           Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
+        Operands.push_back(ConstantInt::get(Ops.back()->getType(), EltWidth >> 3));
 
         llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
         llvm::Value *LoadValue;
@@ -945,8 +963,10 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
         clang::CharUnits Align =
             CGM.getNaturalPointeeTypeAlignment(E->getArg(0)->getType());
         llvm::Value *V;
+        IntrinsicTypes = {ScalType, TupType};
+        llvm::Function *TupleExtractFunc = CGM.getIntrinsic(Intrinsic::riscv_tuple_extract, IntrinsicTypes);
         for (unsigned I = 0; I < NF; ++I) {
-          llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {I});
+          llvm::Value *Val = Builder.CreateCall(TupleExtractFunc, {LoadValue, Builder.getInt32(I)}, "");
           V = Builder.CreateStore(Val, Address(Ops[I], Val->getType(), Align));
         }
         return V;
@@ -984,9 +1004,6 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
 
 #if SIFIVE_CUSTOMIZATION
-      llvm::MDNode *NTLNode;
-      if(IsNontemporal)
-        NTLNode = createNTLNode();
       llvm::Value *LoadValue;
       if (IsNontemporal)
         LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
@@ -1051,7 +1068,7 @@ multiclass RVVUnitStridedSegStoreTuple<string op> {
                                                  []<string>)),
           ManualCodegen = [{
     {
-#if 0 // SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
       // In our downstream toolchain, for smooth transition from the v0.11
       // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
       // now.
@@ -1060,25 +1077,39 @@ multiclass RVVUnitStridedSegStoreTuple<string op> {
         llvm::MDNode *NTLNode;
         if(IsNontemporal)
           NTLNode = createNTLNode();
+
+        unsigned EltWidth = cast<ScalableVectorType>(Ops[2]->getType())->getElementType()->getScalarSizeInBits();
+        unsigned NumElts = cast<ScalableVectorType>(Ops[2]->getType())->getMinNumElements() * EltWidth / 8;
+        LLVMContext &Context = CGM.getLLVMContext();
+        llvm::Type *ScalType = ScalableVectorType::get(Builder.getInt8Ty(), NumElts);
+        llvm::Type *TupType = TargetExtType::get(Context, "riscv.vector.tuple", ScalType, NF);
+        IntrinsicTypes = {TupType, Ops[2]->getType()};
+        llvm::Function *TupleInsertFunc = CGM.getIntrinsic(Intrinsic::riscv_tuple_insert, IntrinsicTypes);
+        llvm::Value *TupVal = PoisonValue::get(TupType);
+        unsigned ValOffset = IsMasked ? 2 : 1;
+        for (unsigned i = 0; i < NF; ++i)
+          TupVal = Builder.CreateCall(TupleInsertFunc, {TupVal, Ops[i + ValOffset], Builder.getInt32(i)}, "");
+
+        SmallVector<llvm::Value*, 5> Operands = {TupVal};
+
         if (IsMasked) {
           // Builtin: (mask, ptr, val0, val1, ..., vl)
           // Intrinsic: (val0, val1, ..., ptr, mask, vl)
-          std::rotate(Ops.begin(), Ops.begin() + 2, Ops.end() - 1);
-          std::swap(Ops[NF], Ops[NF + 1]);
-          IntrinsicTypes = {Ops[0]->getType(), Ops[NF + 2]->getType()};
-          assert(Ops.size() == NF + 3);
+          Operands.append({Ops[1], Ops[0], Ops[NF + 2]});
+          IntrinsicTypes = {TupType, Ops[0]->getType(), Ops[NF + 2]->getType()};
         } else {
           // Builtin: (ptr, val0, val1, ..., vl)
           // Intrinsic: (val0, val1, ..., ptr, vl)
-          std::rotate(Ops.begin(), Ops.begin() + 1, Ops.end() - 1);
-          IntrinsicTypes = {Ops[0]->getType(), Ops[NF + 1]->getType()};
-          assert(Ops.size() == NF + 2);
+          Operands.append({Ops[0], Ops[NF + 1]});
+          IntrinsicTypes = {TupType, Ops[NF + 1]->getType()};
         }
+        Operands.push_back(ConstantInt::get(Ops.back()->getType(), EltWidth >> 3));
+
         if(IsNontemporal)
-          return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
+          return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
 
         llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
-        return Builder.CreateCall(F, Ops, "");
+        return Builder.CreateCall(F, Operands, "");
       }
       llvm::MDNode *NTLNode;
       if(IsNontemporal)
@@ -1105,9 +1136,6 @@ multiclass RVVUnitStridedSegStoreTuple<string op> {
       else
         IntrinsicTypes = {Operands[0]->getType(), Operands.back()->getType()};
 #if SIFIVE_CUSTOMIZATION
-      llvm::MDNode *NTLNode;
-      if(IsNontemporal)
-        NTLNode = createNTLNode();
       if(IsNontemporal)
         return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
 #endif // SIFIVE_CUSTOMIZATION
@@ -1166,28 +1194,46 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
                                                    []<string>)),
             ManualCodegen = [{
     {
-#if 0 // SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
       // In our downstream toolchain, for smooth transition from the v0.11
       // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
       // now.
-      if (!isa<StructType>(ResultType)) { // Deal with v0.11 interface
+      if (!isa<TargetExtType>(ResultType)) { // Deal with v0.11 interface
         llvm::MDNode *NTLNode;
         if(IsNontemporal)
           NTLNode = createNTLNode();
-        ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
-        IntrinsicTypes = {ResultType, Ops.back()->getType()};
-        SmallVector<llvm::Value*, 12> Operands;
 
+        ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
+
+        unsigned EltWidth = cast<ScalableVectorType>(ResultType)->getElementType()->getScalarSizeInBits();
+        unsigned NumElts = cast<ScalableVectorType>(ResultType)->getMinNumElements() * EltWidth / 8;
+        LLVMContext &Context = CGM.getLLVMContext();
+        llvm::Type *ScalType = ScalableVectorType::get(Builder.getInt8Ty(), NumElts);
+        llvm::Type *TupType = TargetExtType::get(Context, "riscv.vector.tuple", ScalType, NF);
+        IntrinsicTypes = {TupType, ResultType};
+        llvm::Function *TupleInsertFunc = CGM.getIntrinsic(Intrinsic::riscv_tuple_insert, IntrinsicTypes);
+        llvm::Value *TupVal = PoisonValue::get(TupType);
+        unsigned PassthruStartIdx = 0;
         // Please refer to comment under 'defvar NFList' in this file
-        if ((IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ||
-            (!IsMasked && PolicyAttrs & RVV_VTA))
-          Operands.append(NF, llvm::PoisonValue::get(ResultType));
-        else {
+        if (!(IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) &&
+            !(!IsMasked && PolicyAttrs & RVV_VTA)) {
           if (IsMasked)
-            Operands.append(Ops.begin() + NF + 1, Ops.begin() + 2 * NF + 1);
+            PassthruStartIdx = NF + 1;
           else // Unmasked
-            Operands.append(Ops.begin() + NF, Ops.begin() + 2 * NF);
+            PassthruStartIdx = NF;
         }
+
+        if (PassthruStartIdx != 0)
+          for (unsigned i = PassthruStartIdx; i < PassthruStartIdx + NF; ++i)
+            TupVal = Builder.CreateCall(TupleInsertFunc, {TupVal, Ops[i], Builder.getInt32(i - PassthruStartIdx)}, "");
+
+        // llvm::Type *RetType = StructType::get(Context, {});
+        if (IsMasked)
+          IntrinsicTypes = {TupType, Ops.back()->getType(), Ops[NF]->getType()};
+        else
+          IntrinsicTypes = {TupType, Ops.back()->getType()};
+        SmallVector<llvm::Value*, 12> Operands = {TupVal};
+
         unsigned PtrOperandIdx = IsMasked ?
           ((PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ? NF + 1 : 2 * NF + 1 :
           (PolicyAttrs & RVV_VTA) ? NF : 2 * NF;
@@ -1200,6 +1246,7 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
         Operands.push_back(VLOperand);
         if (IsMasked)
           Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
+        Operands.push_back(ConstantInt::get(Ops.back()->getType(), EltWidth >> 3));
 
         llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
         llvm::Value *LoadValue;
@@ -1207,14 +1254,17 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
           LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
         else
           LoadValue = Builder.CreateCall(F, Operands, "");
+        TupVal = Builder.CreateExtractValue(LoadValue, {0});
         clang::CharUnits Align =
             CGM.getNaturalPointeeTypeAlignment(E->getArg(0)->getType());
+        IntrinsicTypes = {ScalType, TupType};
+        llvm::Function *TupleExtractFunc = CGM.getIntrinsic(Intrinsic::riscv_tuple_extract, IntrinsicTypes);
         for (unsigned I = 0; I < NF; ++I) {
-          llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {I});
+          llvm::Value *Val = Builder.CreateCall(TupleExtractFunc, {TupVal, Builder.getInt32(I)}, "");
           Builder.CreateStore(Val, Address(Ops[I], Val->getType(), Align));
         }
         // Store new_vl.
-        llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {NF});
+        llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {1});
         return Builder.CreateStore(Val, Address(NewVLOperand, Val->getType(), Align));
       }
       llvm::MDNode *NTLNode;
@@ -1250,9 +1300,6 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
 
 #ifdef SIFIVE_CUSTOMIZATION
-      llvm::MDNode *NTLNode;
-      if(IsNontemporal)
-        NTLNode = createNTLNode();
       llvm::Value *LoadValue;
       if (IsNontemporal)
         LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
@@ -1327,28 +1374,45 @@ multiclass RVVStridedSegLoadTuple<string op> {
                                                    []<string>)),
             ManualCodegen = [{
     {
-#if 0 // SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
       // In our downstream toolchain, for smooth transition from the v0.11
       // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
       // now.
-      if (!isa<StructType>(ResultType)) { // Deal with v0.11 interface
+      if (!isa<TargetExtType>(ResultType)) { // Deal with v0.11 interface
         llvm::MDNode *NTLNode;
         if(IsNontemporal)
           NTLNode = createNTLNode();
-        ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
-        IntrinsicTypes = {ResultType, Ops.back()->getType()};
-        SmallVector<llvm::Value*, 12> Operands;
 
+        ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
+
+        unsigned EltWidth = cast<ScalableVectorType>(ResultType)->getElementType()->getScalarSizeInBits();
+        unsigned NumElts = cast<ScalableVectorType>(ResultType)->getMinNumElements() * EltWidth / 8;
+        LLVMContext &Context = CGM.getLLVMContext();
+        llvm::Type *ScalType = ScalableVectorType::get(Builder.getInt8Ty(), NumElts);
+        llvm::Type *TupType = TargetExtType::get(Context, "riscv.vector.tuple", ScalType, NF);
+        IntrinsicTypes = {TupType, ResultType};
+        llvm::Function *TupleInsertFunc = CGM.getIntrinsic(Intrinsic::riscv_tuple_insert, IntrinsicTypes);
+        llvm::Value *TupVal = PoisonValue::get(TupType);
+        unsigned PassthruStartIdx = 0;
         // Please refer to comment under 'defvar NFList' in this file
-        if ((IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ||
-            (!IsMasked && PolicyAttrs & RVV_VTA))
-          Operands.append(NF, llvm::PoisonValue::get(ResultType));
-        else {
+        if (!(IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) &&
+            !(!IsMasked && PolicyAttrs & RVV_VTA)) {
           if (IsMasked)
-            Operands.append(Ops.begin() + NF + 1, Ops.begin() + 2 * NF + 1);
+            PassthruStartIdx = NF + 1;
           else // Unmasked
-            Operands.append(Ops.begin() + NF, Ops.begin() + 2 * NF);
+            PassthruStartIdx = NF;
         }
+
+        if (PassthruStartIdx != 0)
+          for (unsigned i = PassthruStartIdx; i < PassthruStartIdx + NF; ++i)
+            TupVal = Builder.CreateCall(TupleInsertFunc, {TupVal, Ops[i], Builder.getInt32(i - PassthruStartIdx)}, "");
+
+        if (IsMasked)
+          IntrinsicTypes = {TupType, Ops.back()->getType(), Ops[NF]->getType()};
+        else
+          IntrinsicTypes = {TupType, Ops.back()->getType()};
+        SmallVector<llvm::Value*, 12> Operands = {TupVal};
+
         unsigned PtrOperandIdx = IsMasked ?
           ((PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ? NF + 1 : 2 * NF + 1 :
           (PolicyAttrs & RVV_VTA) ? NF : 2 * NF;
@@ -1362,6 +1426,7 @@ multiclass RVVStridedSegLoadTuple<string op> {
         Operands.push_back(VLOperand);
         if (IsMasked)
           Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
+        Operands.push_back(ConstantInt::get(Ops.back()->getType(), EltWidth >> 3));
 
         llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
         llvm::Value *LoadValue;
@@ -1372,8 +1437,10 @@ multiclass RVVStridedSegLoadTuple<string op> {
         clang::CharUnits Align =
             CGM.getNaturalPointeeTypeAlignment(E->getArg(0)->getType());
         llvm::Value *V;
+        IntrinsicTypes = {ScalType, TupType};
+        llvm::Function *TupleExtractFunc = CGM.getIntrinsic(Intrinsic::riscv_tuple_extract, IntrinsicTypes);
         for (unsigned I = 0; I < NF; ++I) {
-          llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {I});
+          llvm::Value *Val = Builder.CreateCall(TupleExtractFunc, {LoadValue, Builder.getInt32(I)}, "");
           V = Builder.CreateStore(Val, Address(Ops[I], Val->getType(), Align));
         }
         return V;
@@ -1411,9 +1478,6 @@ multiclass RVVStridedSegLoadTuple<string op> {
 
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
 #if SIFIVE_CUSTOMIZATION
-      llvm::MDNode *NTLNode;
-      if(IsNontemporal)
-        NTLNode = createNTLNode();
       llvm::Value *LoadValue;
       if (IsNontemporal)
         LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
@@ -1480,7 +1544,7 @@ multiclass RVVStridedSegStoreTuple<string op> {
                                                    []<string>)),
             ManualCodegen = [{
     {
-#if 0 // SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
       // In our downstream toolchain, for smooth transition from the v0.11
       // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
       // now.
@@ -1489,24 +1553,40 @@ multiclass RVVStridedSegStoreTuple<string op> {
         llvm::MDNode *NTLNode;
         if(IsNontemporal)
           NTLNode = createNTLNode();
+
+        unsigned EltWidth = cast<ScalableVectorType>(Ops[3]->getType())->getElementType()->getScalarSizeInBits();
+        unsigned NumElts = cast<ScalableVectorType>(Ops[3]->getType())->getMinNumElements() * EltWidth / 8;
+        LLVMContext &Context = CGM.getLLVMContext();
+        llvm::Type *ScalType = ScalableVectorType::get(Builder.getInt8Ty(), NumElts);
+        llvm::Type *TupType = TargetExtType::get(Context, "riscv.vector.tuple", ScalType, NF);
+        IntrinsicTypes = {TupType, Ops[3]->getType()};
+        llvm::Function *TupleInsertFunc = CGM.getIntrinsic(Intrinsic::riscv_tuple_insert, IntrinsicTypes);
+        llvm::Value *TupVal = PoisonValue::get(TupType);
+        unsigned ValOffset = IsMasked ? 3 : 2;
+        for (unsigned i = 0; i < NF; ++i)
+          TupVal = Builder.CreateCall(TupleInsertFunc, {TupVal, Ops[i + ValOffset], Builder.getInt32(i)}, "");
+
+        SmallVector<llvm::Value*, 5> Operands = {TupVal};
+
         if (IsMasked) {
-          // Builtin: (mask, ptr, stride, val0, val1, ..., vl).
+          // Builtin: (mask, ptr, stride, val0, val1, ..., vl)
           // Intrinsic: (val0, val1, ..., ptr, stride, mask, vl)
-          std::rotate(Ops.begin(), Ops.begin() + 3, Ops.end() - 1);
-          std::rotate(Ops.begin() + NF, Ops.begin() + NF + 1, Ops.begin() + NF + 3);
-          assert(Ops.size() == NF + 4);
+          Operands.append({Ops[1], Ops[2], Ops[0], Ops[NF + 3]});
+          IntrinsicTypes = {TupType, Ops[NF + 3]->getType(), Ops[0]->getType()};
         } else {
-          // Builtin: (ptr, stride, val0, val1, ..., vl).
+          // Builtin: (ptr, stride, val0, val1, ..., vl)
           // Intrinsic: (val0, val1, ..., ptr, stride, vl)
-          std::rotate(Ops.begin(), Ops.begin() + 2, Ops.end() - 1);
-          assert(Ops.size() == NF + 3);
+          Operands.append({Ops[0], Ops[1], Ops[NF + 2]});
+          IntrinsicTypes = {TupType, Ops[NF + 2]->getType()};
         }
-        IntrinsicTypes = {Ops[0]->getType(), Ops[NF + 1]->getType()};
+
+        Operands.push_back(ConstantInt::get(Ops.back()->getType(), EltWidth >> 3));
+
         if(IsNontemporal)
-          return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
+          return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
 
         llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
-        return Builder.CreateCall(F, Ops, "");
+        return Builder.CreateCall(F, Operands, "");
       }
       llvm::MDNode *NTLNode;
       if(IsNontemporal)
@@ -1534,9 +1614,6 @@ multiclass RVVStridedSegStoreTuple<string op> {
       else
         IntrinsicTypes = {Operands[0]->getType(), Operands.back()->getType()};
 #if SIFIVE_CUSTOMIZATION
-      llvm::MDNode *NTLNode;
-      if(IsNontemporal)
-        NTLNode = createNTLNode();
       if(IsNontemporal)
         return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
 #endif // SIFIVE_CUSTOMIZATION
@@ -1590,27 +1667,41 @@ multiclass RVVIndexedSegLoadTuple<string op> {
                                                    []<string>)),
             ManualCodegen = [{
     {
-#if 0 // SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
       // In our downstream toolchain, for smooth transition from the v0.11
       // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
       // now.
-      if (!isa<StructType>(ResultType)) { // Deal with v0.11 interface
+      if (!isa<TargetExtType>(ResultType)) { // Deal with v0.11 interface
         llvm::MDNode *NTLNode;
         if(IsNontemporal)
           NTLNode = createNTLNode();
-        ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
-        SmallVector<llvm::Value*, 12> Operands;
 
+        ResultType = ConvertType(E->getArg(0)->getType()->getPointeeType());
+
+        unsigned EltWidth = cast<ScalableVectorType>(ResultType)->getElementType()->getScalarSizeInBits();
+        unsigned NumElts = cast<ScalableVectorType>(ResultType)->getMinNumElements() * EltWidth / 8;
+        LLVMContext &Context = CGM.getLLVMContext();
+        llvm::Type *ScalType = ScalableVectorType::get(Builder.getInt8Ty(), NumElts);
+        llvm::Type *TupType = TargetExtType::get(Context, "riscv.vector.tuple", ScalType, NF);
+        IntrinsicTypes = {TupType, ResultType};
+        llvm::Function *TupleInsertFunc = CGM.getIntrinsic(Intrinsic::riscv_tuple_insert, IntrinsicTypes);
+        llvm::Value *TupVal = PoisonValue::get(TupType);
+        unsigned PassthruStartIdx = 0;
         // Please refer to comment under 'defvar NFList' in this file
-        if ((IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ||
-            (!IsMasked && PolicyAttrs & RVV_VTA))
-          Operands.append(NF, llvm::PoisonValue::get(ResultType));
-        else {
+        if (!(IsMasked && (PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) &&
+            !(!IsMasked && PolicyAttrs & RVV_VTA)) {
           if (IsMasked)
-            Operands.append(Ops.begin() + NF + 1, Ops.begin() + 2 * NF + 1);
+            PassthruStartIdx = NF + 1;
           else // Unmasked
-            Operands.append(Ops.begin() + NF, Ops.begin() + 2 * NF);
+            PassthruStartIdx = NF;
         }
+
+        if (PassthruStartIdx != 0)
+          for (unsigned i = PassthruStartIdx; i < PassthruStartIdx + NF; ++i)
+            TupVal = Builder.CreateCall(TupleInsertFunc, {TupVal, Ops[i], Builder.getInt32(i - PassthruStartIdx)}, "");
+
+        SmallVector<llvm::Value*, 12> Operands = {TupVal};
+
         unsigned PtrOperandIdx = IsMasked ?
           ((PolicyAttrs & RVV_VTA) && (PolicyAttrs & RVV_VMA)) ? NF + 1 : 2 * NF + 1 :
           (PolicyAttrs & RVV_VTA) ? NF : 2 * NF;
@@ -1624,8 +1715,12 @@ multiclass RVVIndexedSegLoadTuple<string op> {
         Operands.push_back(VLOperand);
         if (IsMasked)
           Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
-        IntrinsicTypes = {ResultType, IndexOperand->getType(), Ops.back()->getType()};
+        Operands.push_back(ConstantInt::get(Ops.back()->getType(), EltWidth >> 3));
 
+        if (IsMasked)
+          IntrinsicTypes = {TupType, IndexOperand->getType(), Ops[NF]->getType(), Ops.back()->getType()};
+        else
+          IntrinsicTypes = {TupType, IndexOperand->getType(), Ops.back()->getType()};
         llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
         llvm::Value *LoadValue;
         if (IsNontemporal)
@@ -1635,8 +1730,10 @@ multiclass RVVIndexedSegLoadTuple<string op> {
         clang::CharUnits Align =
             CGM.getNaturalPointeeTypeAlignment(E->getArg(0)->getType());
         llvm::Value *V;
+        IntrinsicTypes = {ScalType, TupType};
+        llvm::Function *TupleExtractFunc = CGM.getIntrinsic(Intrinsic::riscv_tuple_extract, IntrinsicTypes);
         for (unsigned I = 0; I < NF; ++I) {
-          llvm::Value *Val = Builder.CreateExtractValue(LoadValue, {I});
+          llvm::Value *Val = Builder.CreateCall(TupleExtractFunc, {LoadValue, Builder.getInt32(I)}, "");
           V = Builder.CreateStore(Val, Address(Ops[I], Val->getType(), Align));
         }
         return V;
@@ -1677,9 +1774,6 @@ multiclass RVVIndexedSegLoadTuple<string op> {
                           Ops.back()->getType()};
       llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
 #if SIFIVE_CUSTOMIZATION
-      llvm::MDNode *NTLNode;
-      if(IsNontemporal)
-        NTLNode = createNTLNode();
       llvm::Value *LoadValue;
       if (IsNontemporal)
         LoadValue = createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
@@ -1742,7 +1836,7 @@ multiclass RVVIndexedSegStoreTuple<string op> {
                                                    []<string>)),
             ManualCodegen = [{
     {
-#if 0 // SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
       // In our downstream toolchain, for smooth transition from the v0.11
       // interfaces to v1.0, we allow both intrinsic interfaces to co-exist
       // now.
@@ -1751,26 +1845,40 @@ multiclass RVVIndexedSegStoreTuple<string op> {
         llvm::MDNode *NTLNode;
         if(IsNontemporal)
           NTLNode = createNTLNode();
+
+        unsigned EltWidth = cast<ScalableVectorType>(Ops[3]->getType())->getElementType()->getScalarSizeInBits();
+        unsigned NumElts = cast<ScalableVectorType>(Ops[3]->getType())->getMinNumElements() * EltWidth / 8;
+        LLVMContext &Context = CGM.getLLVMContext();
+        llvm::Type *ScalType = ScalableVectorType::get(Builder.getInt8Ty(), NumElts);
+        llvm::Type *TupType = TargetExtType::get(Context, "riscv.vector.tuple", ScalType, NF);
+        IntrinsicTypes = {TupType, Ops[3]->getType()};
+        llvm::Function *TupleInsertFunc = CGM.getIntrinsic(Intrinsic::riscv_tuple_insert, IntrinsicTypes);
+        llvm::Value *TupVal = PoisonValue::get(TupType);
+        unsigned ValOffset = IsMasked ? 3 : 2;
+        for (unsigned i = 0; i < NF; ++i)
+          TupVal = Builder.CreateCall(TupleInsertFunc, {TupVal, Ops[i + ValOffset], Builder.getInt32(i)}, "");
+
+        SmallVector<llvm::Value*, 5> Operands = {TupVal};
+
         if (IsMasked) {
           // Builtin: (mask, ptr, index, val0, val1, ..., vl)
           // Intrinsic: (val0, val1, ..., ptr, index, mask, vl)
-          std::rotate(Ops.begin(), Ops.begin() + 3, Ops.end() - 1);
-          std::rotate(Ops.begin() + NF, Ops.begin() + NF + 1, Ops.begin() + NF + 3);
-          IntrinsicTypes = {Ops[0]->getType(),
-                            Ops[NF + 1]->getType(), Ops[NF + 3]->getType()};
-          assert(Ops.size() == NF + 4);
+          Operands.append({Ops[1], Ops[2], Ops[0], Ops[NF + 3]});
+          IntrinsicTypes = {TupType, Ops[2]->getType(), Ops[0]->getType(), Ops[NF + 3]->getType()};
         } else {
           // Builtin: (ptr, index, val0, val1, ..., vl)
           // Intrinsic: (val0, val1, ..., ptr, index, vl)
-          std::rotate(Ops.begin(), Ops.begin() + 2, Ops.end() - 1);
-          IntrinsicTypes = {Ops[0]->getType(),
-                            Ops[NF + 1]->getType(), Ops[NF + 2]->getType()};
-          assert(Ops.size() == NF + 3);
+          Operands.append({Ops[0], Ops[1], Ops[NF + 2]});
+          IntrinsicTypes = {TupType, Ops[1]->getType(), Ops[NF + 2]->getType()};
         }
+
+        Operands.push_back(ConstantInt::get(Ops.back()->getType(), EltWidth >> 3));
+
+
         if(IsNontemporal)
-          return createNTLCall(Ops, ID, IntrinsicTypes, NTLNode);
+          return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
         llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
-        return Builder.CreateCall(F, Ops, "");
+        return Builder.CreateCall(F, Operands, "");
       }
       llvm::MDNode *NTLNode;
       if(IsNontemporal)
@@ -1801,9 +1909,6 @@ multiclass RVVIndexedSegStoreTuple<string op> {
         IntrinsicTypes = {Operands[0]->getType(), Ops[Offset + 1]->getType(),
                           Operands.back()->getType()};
 #if SIFIVE_CUSTOMIZATION
-      llvm::MDNode *NTLNode;
-      if(IsNontemporal)
-        NTLNode = createNTLNode();
       if(IsNontemporal)
         return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
 #endif // SIFIVE_CUSTOMIZATION
