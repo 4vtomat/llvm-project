@@ -43,11 +43,10 @@ define i32 @reduction(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-OUTLOOP-NEXT:    CLONE ir<[[GEP1:%.+]]> = getelementptr inbounds ir<%a>, vp<[[ST]]>
 ; IF-EVL-OUTLOOP-NEXT:    vp<[[PTR1:%[0-9]+]]> = vector-pointer ir<[[GEP1]]>
 ; IF-EVL-OUTLOOP-NEXT:    WIDEN ir<[[LD1:%.+]]> = vp.load vp<[[PTR1]]>, vp<[[EVL]]>
-; IF-EVL-OUTLOOP-NEXT:    WIDEN ir<[[ADD:%.+]]> = add ir<[[LD1]]>, ir<[[RDX_PHI]]>
+; IF-EVL-OUTLOOP-NEXT:    WIDEN-VP ir<[[ADD:%.+]]> = add ir<[[LD1]]>, ir<[[RDX_PHI]]>
 ; IF-EVL-OUTLOOP-NEXT:    EMIT vp<[[RDX_SELECT]]> = select  vp<[[ALL_TRUE:%.+]]> ir<[[ADD]]> ir<[[RDX_PHI]]> tail policy = undisturbed
 ; IF-EVL-OUTLOOP-NEXT:    SCALAR-CAST vp<[[CAST:%[0-9]+]]> = zext vp<[[EVL]]> to i64
 ; IF-EVL-OUTLOOP-NEXT:    EMIT vp<[[IV_NEXT_EXIT:%[0-9]+]]> = add vp<[[CAST]]>, vp<[[EVL_PHI]]>
-; IF-EVL-OUTLOOP-NEXT:    EMIT vp<[[TMP:%[0-9]+]]> = add vp<[[EVL_PHI]]>, vp<[[EVL]]>
 ; IF-EVL-OUTLOOP-NEXT:    EMIT branch-on-count  vp<[[IV_NEXT_EXIT]]>, vp<[[VTC]]>
 ; IF-EVL-OUTLOOP-NEXT:  No successors
 ; IF-EVL-OUTLOOP-NEXT: }
@@ -60,12 +59,11 @@ define i32 @reduction(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-OUTLOOP-NEXT: Successor(s): ir-bb<for.end>, scalar.ph
 ; IF-EVL-OUTLOOP-EMPTY:
 ; IF-EVL-OUTLOOP-NEXT: ir-bb<for.end>:
+; IF-EVL-OUTLOOP-NEXT:   IR   %add.lcssa = phi i32 [ %add, %for.body ] (extra operand: vp<[[EXT]]>)
 ; IF-EVL-OUTLOOP-NEXT: No successors
 ; IF-EVL-OUTLOOP-EMPTY:
 ; IF-EVL-OUTLOOP-NEXT: scalar.ph:
 ; IF-EVL-OUTLOOP-NEXT: No successors
-; IF-EVL-OUTLOOP-EMPTY:
-; IF-EVL-OUTLOOP-NEXT: Live-out i32 %add.lcssa = vp<[[EXT]]>
 ; IF-EVL-OUTLOOP-NEXT: }
 ;
 
@@ -90,7 +88,6 @@ define i32 @reduction(ptr %a, i64 %n, i32 %start) {
 ; IF-EVL-INLOOP-NEXT:    REDUCE ir<[[ADD:%.+]]> = ir<[[RDX_PHI]]> + vp.reduce.add (ir<[[LD1]]>, vp<[[EVL]]>)
 ; IF-EVL-INLOOP-NEXT:    SCALAR-CAST vp<[[CAST:%[0-9]+]]> = zext vp<[[EVL]]> to i64
 ; IF-EVL-INLOOP-NEXT:    EMIT vp<[[IV_NEXT_EXIT:%[0-9]+]]> = add vp<[[CAST]]>, vp<[[EVL_PHI]]>
-; IF-EVL-INLOOP-NEXT:    EMIT vp<[[TMP:%[0-9]+]]> = add vp<[[EVL_PHI]]>, vp<[[EVL]]>
 ; IF-EVL-INLOOP-NEXT:    EMIT branch-on-count  vp<[[IV_NEXT_EXIT]]>, vp<[[VTC]]>
 ; IF-EVL-INLOOP-NEXT:  No successors
 ; IF-EVL-INLOOP-NEXT: }
