@@ -5478,6 +5478,8 @@ static bool willGenerateVectors(VPlan &Plan, ElementCount VF,
       case VPRecipeBase::VPCSAExtractScalarSC:
       case VPRecipeBase::VPCSAHeaderPHISC:
       case VPRecipeBase::VPMonotonicUpdateSC:
+      // FIXME: upstream this
+      case VPDef::VPWidenEVLSC:
 #endif // SIFIVE_CUSTOMIZATION
         continue;
       case VPDef::VPReductionSC:
