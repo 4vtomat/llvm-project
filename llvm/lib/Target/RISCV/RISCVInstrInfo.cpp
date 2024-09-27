@@ -443,6 +443,12 @@ void RISCVInstrInfo::copyPhysRegVector(
       MIB.addReg(RISCV::VL, RegState::Implicit);
       MIB.addReg(RISCV::VTYPE, RegState::Implicit);
     }
+#if SIFIVE_CUSTOMIZATION
+    // Add an implicit read of the original source to silence the verifier.
+    // FIXME: Why are copies from subregisters with undefined parts being
+    // created?
+    MIB.addReg(SrcReg, RegState::Implicit);
+#endif
 
     // If we are copying reversely, we should decrease the encoding.
     SrcEncoding += (ReversedCopy ? -NumCopied : NumCopied);
