@@ -28,10 +28,8 @@ define dso_local void @int_to_float(i32 noundef signext %n, ptr noalias nocaptur
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv2f32.p0(<vscale x 2 x float> [[VP_CAST]], ptr align 4 [[TMP6]], <vscale x 2 x i1> [[PRED_NOT]], i32 [[TMP1]]), !tbaa [[TBAA4:![0-9]+]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP1]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP7]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP1]] to i64
-; CHECK-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP8]]
-; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
-; CHECK-NEXT:    br i1 [[TMP9]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
+; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
+; CHECK-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
@@ -44,11 +42,11 @@ define dso_local void @int_to_float(i32 noundef signext %n, ptr noalias nocaptur
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_INC:%.*]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[A]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[TMP10:%.*]] = load i32, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA0]]
-; CHECK-NEXT:    [[CMP1_NOT:%.*]] = icmp eq i32 [[TMP10]], 0
+; CHECK-NEXT:    [[TMP9:%.*]] = load i32, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA0]]
+; CHECK-NEXT:    [[CMP1_NOT:%.*]] = icmp eq i32 [[TMP9]], 0
 ; CHECK-NEXT:    br i1 [[CMP1_NOT]], label [[FOR_INC]], label [[IF_THEN:%.*]]
 ; CHECK:       if.then:
-; CHECK-NEXT:    [[CONV:%.*]] = sitofp i32 [[TMP10]] to float
+; CHECK-NEXT:    [[CONV:%.*]] = sitofp i32 [[TMP9]] to float
 ; CHECK-NEXT:    [[ARRAYIDX5:%.*]] = getelementptr inbounds float, ptr [[OUT]], i64 [[INDVARS_IV]]
 ; CHECK-NEXT:    store float [[CONV]], ptr [[ARRAYIDX5]], align 4, !tbaa [[TBAA4]]
 ; CHECK-NEXT:    br label [[FOR_INC]]
@@ -120,10 +118,8 @@ define dso_local void @float_to_int(i32 noundef signext %n, ptr noalias nocaptur
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv2i32.p0(<vscale x 2 x i32> [[VP_CAST]], ptr align 4 [[TMP7]], <vscale x 2 x i1> [[PRED_NOT]], i32 [[TMP1]]), !tbaa [[TBAA0]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP1]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP8]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP9:%.*]] = zext i32 [[TMP1]] to i64
-; CHECK-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP9]]
-; CHECK-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
-; CHECK-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
+; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
+; CHECK-NEXT:    br i1 [[TMP9]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
@@ -136,13 +132,13 @@ define dso_local void @float_to_int(i32 noundef signext %n, ptr noalias nocaptur
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_INC:%.*]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds i32, ptr [[OUT]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[TMP11:%.*]] = load i32, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA0]]
-; CHECK-NEXT:    [[CMP1_NOT:%.*]] = icmp eq i32 [[TMP11]], 0
+; CHECK-NEXT:    [[TMP10:%.*]] = load i32, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA0]]
+; CHECK-NEXT:    [[CMP1_NOT:%.*]] = icmp eq i32 [[TMP10]], 0
 ; CHECK-NEXT:    br i1 [[CMP1_NOT]], label [[FOR_INC]], label [[IF_THEN:%.*]]
 ; CHECK:       if.then:
 ; CHECK-NEXT:    [[ARRAYIDX3:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[TMP12:%.*]] = load float, ptr [[ARRAYIDX3]], align 4, !tbaa [[TBAA4]]
-; CHECK-NEXT:    [[CONV:%.*]] = fptosi float [[TMP12]] to i32
+; CHECK-NEXT:    [[TMP11:%.*]] = load float, ptr [[ARRAYIDX3]], align 4, !tbaa [[TBAA4]]
+; CHECK-NEXT:    [[CONV:%.*]] = fptosi float [[TMP11]] to i32
 ; CHECK-NEXT:    store i32 [[CONV]], ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    br label [[FOR_INC]]
 ; CHECK:       for.inc:

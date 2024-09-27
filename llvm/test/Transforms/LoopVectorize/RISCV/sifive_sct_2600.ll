@@ -51,10 +51,8 @@ define void @_ZN5clang22MicrosoftVTableContext31computeVTableRelatedInformationE
 ; CHECK-NEXT:    call void @llvm.vp.scatter.nxv1p0.nxv1p0(<vscale x 1 x ptr> zeroinitializer, <vscale x 1 x ptr> align 8 [[BROADCAST_SPLAT]], <vscale x 1 x i1> [[PRED_NOT]], i32 [[TMP9]]), !alias.scope [[META0:![0-9]+]], !noalias [[META3:![0-9]+]]
 ; CHECK-NEXT:    [[TMP16:%.*]] = zext i32 [[TMP9]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP16]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP17:%.*]] = zext i32 [[TMP9]] to i64
-; CHECK-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP17]]
-; CHECK-NEXT:    [[TMP18:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP3]]
-; CHECK-NEXT:    br i1 [[TMP18]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
+; CHECK-NEXT:    [[TMP17:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[TMP3]]
+; CHECK-NEXT:    br i1 [[TMP17]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP5:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_I_I_I_I_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
@@ -64,13 +62,13 @@ define void @_ZN5clang22MicrosoftVTableContext31computeVTableRelatedInformationE
 ; CHECK-NEXT:    ret void
 ; CHECK:       for.body.i.i.i.i:
 ; CHECK-NEXT:    [[P_048_I_I_I_I1:%.*]] = phi ptr [ [[INCDEC_PTR_I_I_I_I:%.*]], [[FOR_INC_I_I_I_I:%.*]] ], [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ]
-; CHECK-NEXT:    [[TMP19:%.*]] = load ptr, ptr [[P_048_I_I_I_I1]], align 8
-; CHECK-NEXT:    [[CMP_I_I41_I_I_I_I:%.*]] = icmp eq ptr [[TMP19]], null
+; CHECK-NEXT:    [[TMP18:%.*]] = load ptr, ptr [[P_048_I_I_I_I1]], align 8
+; CHECK-NEXT:    [[CMP_I_I41_I_I_I_I:%.*]] = icmp eq ptr [[TMP18]], null
 ; CHECK-NEXT:    [[BASEOFFSET_I_I_I_I_I_I:%.*]] = getelementptr %"class.clang::BaseSubobject", ptr [[P_048_I_I_I_I1]], i64 0, i32 1
-; CHECK-NEXT:    [[TMP20:%.*]] = load i64, ptr [[BASEOFFSET_I_I_I_I_I_I]], align 8
-; CHECK-NEXT:    [[CMP_I_I_I_I_I_I_I:%.*]] = icmp eq i64 [[TMP20]], 0
-; CHECK-NEXT:    [[TMP21:%.*]] = select i1 [[CMP_I_I41_I_I_I_I]], i1 [[CMP_I_I_I_I_I_I_I]], i1 false
-; CHECK-NEXT:    br i1 [[TMP21]], label [[FOR_INC_I_I_I_I]], label [[IF_THEN20_I_I_I_I:%.*]]
+; CHECK-NEXT:    [[TMP19:%.*]] = load i64, ptr [[BASEOFFSET_I_I_I_I_I_I]], align 8
+; CHECK-NEXT:    [[CMP_I_I_I_I_I_I_I:%.*]] = icmp eq i64 [[TMP19]], 0
+; CHECK-NEXT:    [[TMP20:%.*]] = select i1 [[CMP_I_I41_I_I_I_I]], i1 [[CMP_I_I_I_I_I_I_I]], i1 false
+; CHECK-NEXT:    br i1 [[TMP20]], label [[FOR_INC_I_I_I_I]], label [[IF_THEN20_I_I_I_I:%.*]]
 ; CHECK:       if.then20.i.i.i.i:
 ; CHECK-NEXT:    store ptr null, ptr [[TMP0]], align 8
 ; CHECK-NEXT:    br label [[FOR_INC_I_I_I_I]]

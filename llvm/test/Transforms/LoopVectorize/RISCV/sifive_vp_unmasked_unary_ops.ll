@@ -27,10 +27,8 @@ define dso_local void @fneg(i32 noundef signext %n, ptr noalias nocapture nounde
 ; CHECK-NEXT:    call void @llvm.vp.store.nxv2f32.p0(<vscale x 2 x float> [[VP_OP]], ptr align 4 [[TMP6]], <vscale x 2 x i1> [[VP_OP_FCMP]], i32 [[TMP1]]), !tbaa [[TBAA0]]
 ; CHECK-NEXT:    [[TMP7:%.*]] = zext i32 [[TMP1]] to i64
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT]] = add i64 [[TMP7]], [[EVL_BASED_IV]]
-; CHECK-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP1]] to i64
-; CHECK-NEXT:    [[INDEX_NEXT:%.*]] = add i64 [[EVL_BASED_IV]], [[TMP8]]
-; CHECK-NEXT:    [[TMP9:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
-; CHECK-NEXT:    br i1 [[TMP9]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; CHECK-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_EVL_NEXT]], [[WIDE_TRIP_COUNT]]
+; CHECK-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; CHECK:       middle.block:
 ; CHECK-NEXT:    br label [[FOR_COND_CLEANUP_LOOPEXIT:%.*]]
 ; CHECK:       scalar.ph:
@@ -43,11 +41,11 @@ define dso_local void @fneg(i32 noundef signext %n, ptr noalias nocapture nounde
 ; CHECK:       for.body:
 ; CHECK-NEXT:    [[INDVARS_IV:%.*]] = phi i64 [ [[BC_RESUME_VAL]], [[SCALAR_PH]] ], [ [[INDVARS_IV_NEXT:%.*]], [[FOR_INC:%.*]] ]
 ; CHECK-NEXT:    [[ARRAYIDX:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[INDVARS_IV]]
-; CHECK-NEXT:    [[TMP10:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA0]]
-; CHECK-NEXT:    [[CMP1:%.*]] = fcmp fast ogt float [[TMP10]], 1.000000e+00
+; CHECK-NEXT:    [[TMP9:%.*]] = load float, ptr [[ARRAYIDX]], align 4, !tbaa [[TBAA0]]
+; CHECK-NEXT:    [[CMP1:%.*]] = fcmp fast ogt float [[TMP9]], 1.000000e+00
 ; CHECK-NEXT:    br i1 [[CMP1]], label [[IF_THEN:%.*]], label [[FOR_INC]]
 ; CHECK:       if.then:
-; CHECK-NEXT:    [[FNEG:%.*]] = fneg fast float [[TMP10]]
+; CHECK-NEXT:    [[FNEG:%.*]] = fneg fast float [[TMP9]]
 ; CHECK-NEXT:    [[ARRAYIDX5:%.*]] = getelementptr inbounds float, ptr [[OUT]], i64 [[INDVARS_IV]]
 ; CHECK-NEXT:    store float [[FNEG]], ptr [[ARRAYIDX5]], align 4, !tbaa [[TBAA0]]
 ; CHECK-NEXT:    br label [[FOR_INC]]
