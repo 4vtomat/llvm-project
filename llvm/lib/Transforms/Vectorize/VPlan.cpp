@@ -1173,10 +1173,26 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
 #if SIFIVE_CUSTOMIZATION
   assert((useVLAVectorizer() || VFxUF.getNumUsers()) &&
          "VFxUF expected to always have users");
-  if (VFxUF.getNumUsers()) {
 #else
   assert(VFxUF.getNumUsers() && "VFxUF expected to always have users");
 #endif // SIFIVE_CUSTOMIZATION
+#if SIFIVE_CUSTOMIZATION
+  Value *RuntimeVF=nullptr;
+  if (VF.getNumUsers()) {
+    RuntimeVF = getRuntimeVF(Builder, TCTy, State.VF);
+    VF.setUnderlyingValue(RuntimeVF);
+  }
+  if (VFxUF.getNumUsers()) {
+    if (RuntimeVF)
+      VFxUF.setUnderlyingValue(
+          State.UF > 1
+              ? Builder.CreateMul(RuntimeVF, ConstantInt::get(TCTy, State.UF))
+              : RuntimeVF);
+    else
+      VFxUF.setUnderlyingValue(
+          createStepForVF(Builder, TCTy, State.VF, State.UF));
+  }
+#else
   if (VF.getNumUsers()) {
     Value *RuntimeVF = getRuntimeVF(Builder, TCTy, State.VF);
     VF.setUnderlyingValue(RuntimeVF);
@@ -1187,8 +1203,6 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
   } else {
     VFxUF.setUnderlyingValue(
         createStepForVF(Builder, TCTy, State.VF, State.UF));
-  }
-#if SIFIVE_CUSTOMIZATION
   }
 #endif // SIFIVE_CUSTOMIZATION
 
