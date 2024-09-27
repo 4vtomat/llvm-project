@@ -10475,12 +10475,11 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
           VPlanTransforms::optimizeUncountable(*Plan, *PSE.getSE());
         } else {
           VPlanTransforms::optimize(*Plan);
+          VPlanTransforms::optimizeGEPs(*Plan);
+          VPlanTransforms::optimize(*Plan);
           VPlanTransforms::tryAddExplicitVectorLength(
               *Plan,
               /*EnableEVLFuzzing*/ true);
-          VPlanTransforms::optimize(*Plan);
-          VPlanTransforms::optimizeGEPs(*Plan);
-          VPlanTransforms::optimize(*Plan);
         }
       } else {
 #endif // SIFIVE_CUSTOMIZATION
