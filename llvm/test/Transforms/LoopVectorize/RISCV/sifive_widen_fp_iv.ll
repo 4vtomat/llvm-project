@@ -14,14 +14,14 @@ define void @test(i32 %input, ptr %0) {
 ; CHECK-NEXT:    [[DOTCAST:%.*]] = sitofp i32 [[TMP1]] to double
 ; CHECK-NEXT:    [[TMP2:%.*]] = fmul reassoc double 1.000000e+00, [[DOTCAST]]
 ; CHECK-NEXT:    [[IND_END:%.*]] = fadd reassoc double 0.000000e+00, [[TMP2]]
-; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 4 x i64> @llvm.experimental.stepvector.nxv4i64()
+; CHECK-NEXT:    [[TMP7:%.*]] = call i32 @llvm.vscale.i32()
+; CHECK-NEXT:    [[TMP8:%.*]] = mul i32 [[TMP7]], 4
+; CHECK-NEXT:    [[TMP3:%.*]] = call <vscale x 4 x i64> @llvm.stepvector.nxv4i64()
 ; CHECK-NEXT:    [[TMP4:%.*]] = uitofp <vscale x 4 x i64> [[TMP3]] to <vscale x 4 x double>
 ; CHECK-NEXT:    [[TMP5:%.*]] = fadd reassoc <vscale x 4 x double> [[TMP4]], zeroinitializer
 ; CHECK-NEXT:    [[TMP6:%.*]] = fmul reassoc <vscale x 4 x double> [[TMP5]], shufflevector (<vscale x 4 x double> insertelement (<vscale x 4 x double> poison, double 1.000000e+00, i64 0), <vscale x 4 x double> poison, <vscale x 4 x i32> zeroinitializer)
 ; CHECK-NEXT:    [[INDUCTION:%.*]] = fadd reassoc <vscale x 4 x double> zeroinitializer, [[TMP6]]
-; CHECK-NEXT:    [[TMP7:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP8:%.*]] = mul i64 [[TMP7]], 4
-; CHECK-NEXT:    [[TMP9:%.*]] = uitofp i64 [[TMP8]] to double
+; CHECK-NEXT:    [[TMP9:%.*]] = uitofp i32 [[TMP8]] to double
 ; CHECK-NEXT:    [[TMP10:%.*]] = fmul reassoc double 1.000000e+00, [[TMP9]]
 ; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <vscale x 4 x double> poison, double [[TMP10]], i64 0
 ; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <vscale x 4 x double> [[DOTSPLATINSERT]], <vscale x 4 x double> poison, <vscale x 4 x i32> zeroinitializer
@@ -37,7 +37,6 @@ define void @test(i32 %input, ptr %0) {
 ; CHECK-NEXT:    [[TMP15:%.*]] = getelementptr [[POINT:%.*]], ptr [[TMP0]], i64 [[TMP14]], i32 0, i32 0, i64 2
 ; CHECK-NEXT:    call void @llvm.experimental.vp.strided.store.nxv4f64.p0.i64(<vscale x 4 x double> [[VEC_IND]], ptr align 8 [[TMP15]], i64 24, <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP12]])
 ; CHECK-NEXT:    [[INDEX_EVL_NEXT1]] = add i32 [[TMP12]], [[EVL_BASED_IV1]]
-; CHECK-NEXT:    [[INDEX_NEXT:%.*]] = add i32 [[EVL_BASED_IV1]], [[TMP12]]
 ; CHECK-NEXT:    [[TMP18:%.*]] = uitofp i32 [[TMP12]] to double
 ; CHECK-NEXT:    [[TMP17:%.*]] = fmul reassoc double 1.000000e+00, [[TMP18]]
 ; CHECK-NEXT:    [[DOTSPLATINSERT2:%.*]] = insertelement <vscale x 4 x double> poison, double [[TMP17]], i64 0
