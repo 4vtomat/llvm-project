@@ -867,19 +867,9 @@ public:
 class VPLiveOut : public VPUser {
   PHINode *Phi;
 
-#if SIFIVE_CUSTOMIZATION
-  bool OnlyFirstLaneUsed;
-#endif
-
 public:
-#if SIFIVE_CUSTOMIZATION
-  VPLiveOut(PHINode *Phi, VPValue *Op, bool OnlyFirstLaneUsed = false)
-      : VPUser({Op}, VPUser::VPUserID::LiveOut), Phi(Phi),
-        OnlyFirstLaneUsed(OnlyFirstLaneUsed) {}
-#else
   VPLiveOut(PHINode *Phi, VPValue *Op)
       : VPUser({Op}, VPUser::VPUserID::LiveOut), Phi(Phi) {}
-#endif // SIFIVE_CUSTOMIZATION
 
   static inline bool classof(const VPUser *U) {
     return U->getVPUserID() == VPUser::VPUserID::LiveOut;
@@ -897,15 +887,6 @@ public:
            "Op must be an operand of the recipe");
     return true;
   }
-
-#if SIFIVE_CUSTOMIZATION
-  /// Returns true if the VPUser only uses the first lane of operand \p Op.
-  bool onlyFirstLaneUsed(const VPValue *Op) const override {
-    assert(is_contained(operands(), Op) &&
-           "Op must be an operand of the recipe");
-    return OnlyFirstLaneUsed;
-  }
-#endif // SIFIVE_CUSTOMIZATION
 
   PHINode *getPhi() const { return Phi; }
 
@@ -4417,16 +4398,7 @@ public:
     return cast<VPCanonicalIVPHIRecipe>(&*EntryVPBB->begin());
   }
 
-#if SIFIVE_CUSTOMIZATION
-  void addLiveOut(PHINode *PN, VPValue *V, bool onlyFirstLaneUsed = false);
-
-  void removeLiveOut(PHINode *PN) {
-    delete LiveOuts[PN];
-    LiveOuts.erase(PN);
-  }
-#else
   void addLiveOut(PHINode *PN, VPValue *V);
-#endif // SIFIVE_CUSTOMIZATION
 
   const MapVector<PHINode *, VPLiveOut *> &getLiveOuts() const {
     return LiveOuts;

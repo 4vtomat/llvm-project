@@ -3629,7 +3629,6 @@ void UncountableInnerLoopVectorizer::fixupIVUsers(
     // don't already have an incoming value for the middle block.
     if (PHI->getBasicBlockIndex(MiddleBlock) == -1) {
       PHI->addIncoming(I.second, MiddleBlock);
-      Plan.removeLiveOut(PHI);
     }
   }
 }
@@ -10658,27 +10657,6 @@ static MapVector<PHINode *, VPValue *> collectUsersInExitBlock(
   const MapVector<PHINode *, CSADescriptor> CSAs = Legal->getCSAs();
 
   MapVector<PHINode *, VPValue *> ExitingValuesToFix;
-  if (Plan.isUncountable()) {
-    BasicBlock *ExitBB = OrigLoop->getLatchExitBlock();
-    // TODO: This whole LiveOut thing may not work properly when multiple
-    // exiting blocks exist. Revisit this part later.
-    // IV LiveOut can be deemed as only using the first lane in the vector loop.
-    // After exiting the vector loop, the IV needs to be compensated by the
-    // number of scalar iterations performed by the last vector iteration. This
-    // optimization is not applied to reduction-like PHIs.
-    SmallVector<BasicBlock *, 8> ExitingBlocks;
-    OrigLoop->getExitingBlocks(ExitingBlocks);
-
-    for (BasicBlock *ExitingBB : ExitingBlocks) {
-      for (PHINode &ExitPhi : ExitBB->phis()) {
-          Value *IncomingValue = ExitPhi.getIncomingValueForBlock(ExitingBB);
-          VPValue *V = Builder.getVPValueOrAddLiveIn(IncomingValue);
-
-          Plan.addLiveOut(&ExitPhi, V, Legal->isInductionVariable(IncomingValue));
-      }
-    }
-    return {};
-  }
 #endif // SIFIVE_CUSTOMIZATION
   auto *MiddleVPBB =
       cast<VPBasicBlock>(Plan.getVectorLoopRegion()->getSingleSuccessor());

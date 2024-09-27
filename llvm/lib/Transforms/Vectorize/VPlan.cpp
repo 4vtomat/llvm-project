@@ -1557,17 +1557,10 @@ LLVM_DUMP_METHOD
 void VPlan::dump() const { print(dbgs()); }
 #endif
 
-#if SIFIVE_CUSTOMIZATION
-void VPlan::addLiveOut(PHINode *PN, VPValue *V, bool onlyFirstLaneUsed) {
-  assert(LiveOuts.count(PN) == 0 && "an exit value for PN already exists");
-  LiveOuts.insert({PN, new VPLiveOut(PN, V, onlyFirstLaneUsed)});
-}
-#else
 void VPlan::addLiveOut(PHINode *PN, VPValue *V) {
   assert(LiveOuts.count(PN) == 0 && "an exit value for PN already exists");
   LiveOuts.insert({PN, new VPLiveOut(PN, V)});
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 static void remapOperands(VPBlockBase *Entry, VPBlockBase *NewEntry,
                           DenseMap<VPValue *, VPValue *> &Old2NewVPValues) {
