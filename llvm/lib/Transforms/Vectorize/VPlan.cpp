@@ -1148,9 +1148,12 @@ VPlanPtr VPlan::createInitialVPlan(const SCEV *TripCount, ScalarEvolution &SE,
 void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
                              Value *CanonicalIVStartValue,
                              VPTransformState &State) {
-  Type *TCTy = TripCountV->getType();
 #if SIFIVE_CUSTOMIZATION
+  Type *TCTy;
   if (!isUncountable()) {
+    TCTy = TripCountV->getType();
+#else
+  Type *TCTy = TripCountV->getType();
 #endif // SIFIVE_CUSTOMIZATION
   // Check if the backedge taken count is needed, and if so build it.
   if (BackedgeTakenCount && BackedgeTakenCount->getNumUsers()) {
