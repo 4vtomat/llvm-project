@@ -1923,6 +1923,7 @@ static bool scanRISCVGCCMultilibConfig(const Driver &D,
   llvm::StringSet<> AllABI;
   llvm::StringSet<> AllArch;
   llvm::StringSet<> AllMCmodel;
+  llvm::StringSet<> AllCFProtection;
   Multilib::flags_list Flags;
 
   FilterNonExistent NonExistent(Path, "/crtbegin.o", D.getVFS());
@@ -1940,6 +1941,11 @@ static bool scanRISCVGCCMultilibConfig(const Driver &D,
                                       .Case("medium", "mcmodel=medany")
                                       .Case("compact", "mcmodel=compact")
                                       .Default("mcmodel=medlow");
+
+  std::string CurrentCFProtection = "fcf-protection=none";
+  if (Arg *A = Args.getLastArg(options::OPT_fcf_protection_EQ)) {
+    CurrentCFProtection = (Twine("fcf-protection=") + A->getValue()).str();
+  }
 
   llvm::ErrorOr<std::unique_ptr<llvm::MemoryBuffer>> File =
       D.getVFS().getBufferForFile(MultilibOutput);
@@ -2002,6 +2008,12 @@ static bool scanRISCVGCCMultilibConfig(const Driver &D,
           addMultilibFlag(CurrentMCmodelOpt == Option,
                           Twine("-", Option.str()).str(), Flags);
         }
+      } else if (Option.starts_with("fcf-protection=")) {
+        if (!AllCFProtection.contains(Option)) {
+	  AllCFProtection.insert(Option);
+          addMultilibFlag(CurrentCFProtection == Option,
+                          Twine("-", Option.str()).str(), Flags);
+	}
       } else {
         // Got unrecognized option in multi-lib config, fallback.
         D.Diag(diag::warn_drv_multilib_fallback) << Option;
