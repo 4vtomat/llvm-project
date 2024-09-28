@@ -945,6 +945,9 @@ Function *CodeExtractor::constructFunction(const ValueSet &inputs,
       case Attribute::OptimizeForSize:
       case Attribute::SafeStack:
       case Attribute::ShadowCallStack:
+#if SIFIVE_CUSTOMIZATION
+      case Attribute::HWShadowStack:
+#endif // SIFIVE_CUSTOMIZATION
       case Attribute::SanitizeAddress:
       case Attribute::SanitizeMemory:
       case Attribute::SanitizeNumericalStability:
