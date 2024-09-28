@@ -110,10 +110,11 @@ bool RISCVTTIImpl::getMemoryRefInfo(
 
   auto getSegNum = [](const IntrinsicInst *II, unsigned PtrOperandNo,
                       bool IsWrite) -> int64_t {
+    if (auto *TarExtTy =
+            dyn_cast<TargetExtType>(II->getArgOperand(0)->getType()))
+      return TarExtTy->getIntParameter(0);
     if (IsWrite)
       return PtrOperandNo;
-    if (auto *STy = dyn_cast<StructType>(II->getType()))
-      return STy->getNumElements();
     return 1;
   };
 
@@ -155,9 +156,16 @@ bool RISCVTTIImpl::getMemoryRefInfo(
     bool IsWrite = II->getType()->isVoidTy();
     Type *Ty = IsWrite ? II->getArgOperand(0)->getType() : II->getType();
 
-    // The results of segment loads are struct type.
-    if (auto *STy = dyn_cast<StructType>(Ty))
-      Ty = STy->getTypeAtIndex(0U);
+    // The results of segment loads are TargetExtType.
+    if (auto *TarExtTy = dyn_cast<TargetExtType>(Ty)) {
+      unsigned SEW =
+          1 << cast<ConstantInt>(II->getArgOperand(II->arg_size() - 1))
+                   ->getZExtValue();
+      Ty = TarExtTy->getTypeParameter(0U);
+      Ty = ScalableVectorType::get(
+          IntegerType::get(C, SEW),
+          cast<ScalableVectorType>(Ty)->getMinNumElements() * 8 / SEW);
+    }
     const auto *RVVIInfo = RISCVVIntrinsicsTable::getRISCVVIntrinsicInfo(IntNo);
     unsigned VLIndex = RVVIInfo->VLOperand;
     unsigned PtrOperandNo = VLIndex - 1 - HasMask;
@@ -218,9 +226,16 @@ bool RISCVTTIImpl::getMemoryRefInfo(
   case Intrinsic::riscv_vssseg8: {
     bool IsWrite = II->getType()->isVoidTy();
     Type *Ty = IsWrite ? II->getArgOperand(0)->getType() : II->getType();
-    // The results of segment loads are struct type.
-    if (auto *STy = dyn_cast<StructType>(Ty))
-      Ty = STy->getTypeAtIndex(0U);
+    // The results of segment loads are TargetExtType.
+    if (auto *TarExtTy = dyn_cast<TargetExtType>(Ty)) {
+      unsigned SEW =
+          1 << cast<ConstantInt>(II->getArgOperand(II->arg_size() - 1))
+                   ->getZExtValue();
+      Ty = TarExtTy->getTypeParameter(0U);
+      Ty = ScalableVectorType::get(
+          IntegerType::get(C, SEW),
+          cast<ScalableVectorType>(Ty)->getMinNumElements() * 8 / SEW);
+    }
     const auto *RVVIInfo = RISCVVIntrinsicsTable::getRISCVVIntrinsicInfo(IntNo);
     unsigned VLIndex = RVVIInfo->VLOperand;
     unsigned PtrOperandNo = VLIndex - 2 - HasMask;
@@ -320,9 +335,16 @@ bool RISCVTTIImpl::getMemoryRefInfo(
   case Intrinsic::riscv_vsuxseg8: {
     bool IsWrite = II->getType()->isVoidTy();
     Type *Ty = IsWrite ? II->getArgOperand(0)->getType() : II->getType();
-    // The results of segment loads are struct type.
-    if (auto *STy = dyn_cast<StructType>(Ty))
-      Ty = STy->getTypeAtIndex(0U);
+    // The results of segment loads are TargetExtType.
+    if (auto *TarExtTy = dyn_cast<TargetExtType>(Ty)) {
+      unsigned SEW =
+          1 << cast<ConstantInt>(II->getArgOperand(II->arg_size() - 1))
+                   ->getZExtValue();
+      Ty = TarExtTy->getTypeParameter(0U);
+      Ty = ScalableVectorType::get(
+          IntegerType::get(C, SEW),
+          cast<ScalableVectorType>(Ty)->getMinNumElements() * 8 / SEW);
+    }
     const auto *RVVIInfo = RISCVVIntrinsicsTable::getRISCVVIntrinsicInfo(IntNo);
     unsigned VLIndex = RVVIInfo->VLOperand;
     unsigned PtrOperandNo = VLIndex - 2 - HasMask;

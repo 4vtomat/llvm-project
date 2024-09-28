@@ -171,10 +171,11 @@ entry:
   ret void
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg2.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>, ptr , i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg2.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i1>, i64, i64)
 
-define <vscale x 1 x i32> @test_vlseg2_nxv1i32(ptr align 4 %base, i64 %vl) sanitize_address {
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vlseg2.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2), ptr, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vlseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 2), ptr, <vscale x 1 x i1>, i64, i64, i64)
+
+define <vscale x 1 x i32> @test_vlseg2_nxv1i32(ptr %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlseg2_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -192,7 +193,7 @@ define <vscale x 1 x i32> @test_vlseg2_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 8
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -216,7 +217,7 @@ define <vscale x 1 x i32> @test_vlseg2_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 8
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -225,17 +226,17 @@ define <vscale x 1 x i32> @test_vlseg2_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK:       .split1.split:
 ; CHECK-NEXT:    br label [[TMP23]]
 ; CHECK:       23:
-; CHECK-NEXT:    [[TMP24:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlseg2.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP25:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP24]], 1
+; CHECK-NEXT:    [[TMP24:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vlseg2.triscv.vector.tuple_nxv4i8_2t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) undef, ptr [[BASE]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP25:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) [[TMP24]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP25]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg2.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vlseg2.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) undef, ptr %base, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vlseg2_mask_nxv1i32(ptr align 4 %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vlseg2_mask_nxv1i32(ptr %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlseg2_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -253,7 +254,7 @@ define <vscale x 1 x i32> @test_vlseg2_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 8
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -277,7 +278,7 @@ define <vscale x 1 x i32> @test_vlseg2_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 8
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -286,20 +287,21 @@ define <vscale x 1 x i32> @test_vlseg2_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK:       .split1.split:
 ; CHECK-NEXT:    br label [[TMP23]]
 ; CHECK:       23:
-; CHECK-NEXT:    [[TMP24:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlseg2.mask.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP25:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP24]], 0
+; CHECK-NEXT:    [[TMP24:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vlseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) undef, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP25:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) [[TMP24]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP25]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg2.mask.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 0
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vlseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) undef, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg3.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr , i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg3.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i1>, i64, i64)
 
-define <vscale x 1 x i32> @test_vlseg3_nxv1i32(ptr align 4 %base, i64 %vl) sanitize_address {
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vlseg3.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3), ptr, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vlseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 3), ptr, <vscale x 1 x i1>, i64, i64, i64)
+
+define <vscale x 1 x i32> @test_vlseg3_nxv1i32(ptr %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlseg3_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -317,7 +319,7 @@ define <vscale x 1 x i32> @test_vlseg3_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 12
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -341,7 +343,7 @@ define <vscale x 1 x i32> @test_vlseg3_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 12
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -365,7 +367,7 @@ define <vscale x 1 x i32> @test_vlseg3_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 12
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -374,17 +376,17 @@ define <vscale x 1 x i32> @test_vlseg3_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK:       .split3.split:
 ; CHECK-NEXT:    br label [[TMP35]]
 ; CHECK:       35:
-; CHECK-NEXT:    [[TMP36:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlseg3.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP37:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP36]], 1
+; CHECK-NEXT:    [[TMP36:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vlseg3.triscv.vector.tuple_nxv4i8_3t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) undef, ptr [[BASE]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP37:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) [[TMP36]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP37]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg3.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vlseg3.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) undef, ptr %base, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vlseg3_mask_nxv1i32(ptr align 4 %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vlseg3_mask_nxv1i32(ptr %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlseg3_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -402,7 +404,7 @@ define <vscale x 1 x i32> @test_vlseg3_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 12
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -426,7 +428,7 @@ define <vscale x 1 x i32> @test_vlseg3_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 12
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -450,7 +452,7 @@ define <vscale x 1 x i32> @test_vlseg3_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 12
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -459,20 +461,21 @@ define <vscale x 1 x i32> @test_vlseg3_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK:       .split3.split:
 ; CHECK-NEXT:    br label [[TMP35]]
 ; CHECK:       35:
-; CHECK-NEXT:    [[TMP36:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlseg3.mask.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP37:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP36]], 0
+; CHECK-NEXT:    [[TMP36:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vlseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) undef, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP37:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) [[TMP36]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP37]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg3.mask.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 0
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vlseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) undef, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg4.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr , i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg4.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i1>, i64, i64)
 
-define <vscale x 1 x i32> @test_vlseg4_nxv1i32(ptr align 4 %base, i64 %vl) sanitize_address {
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vlseg4.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4), ptr, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vlseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 4), ptr, <vscale x 1 x i1>, i64, i64, i64)
+
+define <vscale x 1 x i32> @test_vlseg4_nxv1i32(ptr %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlseg4_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -490,7 +493,7 @@ define <vscale x 1 x i32> @test_vlseg4_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 16
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -514,7 +517,7 @@ define <vscale x 1 x i32> @test_vlseg4_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 16
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -538,7 +541,7 @@ define <vscale x 1 x i32> @test_vlseg4_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 16
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -562,7 +565,7 @@ define <vscale x 1 x i32> @test_vlseg4_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 16
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -571,17 +574,17 @@ define <vscale x 1 x i32> @test_vlseg4_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK:       .split5.split:
 ; CHECK-NEXT:    br label [[TMP47]]
 ; CHECK:       47:
-; CHECK-NEXT:    [[TMP48:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlseg4.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP49:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP48]], 1
+; CHECK-NEXT:    [[TMP48:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vlseg4.triscv.vector.tuple_nxv4i8_4t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) undef, ptr [[BASE]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP49:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) [[TMP48]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP49]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg4.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vlseg4.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) undef, ptr %base, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vlseg4_mask_nxv1i32(ptr align 4 %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vlseg4_mask_nxv1i32(ptr %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlseg4_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -599,7 +602,7 @@ define <vscale x 1 x i32> @test_vlseg4_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 16
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -623,7 +626,7 @@ define <vscale x 1 x i32> @test_vlseg4_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 16
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -647,7 +650,7 @@ define <vscale x 1 x i32> @test_vlseg4_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 16
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -671,7 +674,7 @@ define <vscale x 1 x i32> @test_vlseg4_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 16
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -680,20 +683,21 @@ define <vscale x 1 x i32> @test_vlseg4_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK:       .split5.split:
 ; CHECK-NEXT:    br label [[TMP47]]
 ; CHECK:       47:
-; CHECK-NEXT:    [[TMP48:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlseg4.mask.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP49:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP48]], 0
+; CHECK-NEXT:    [[TMP48:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vlseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) undef, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP49:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) [[TMP48]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP49]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg4.mask.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 0
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vlseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) undef, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg5.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr , i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg5.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i1>, i64, i64)
 
-define <vscale x 1 x i32> @test_vlseg5_nxv1i32(ptr align 4 %base, i64 %vl) sanitize_address {
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vlseg5.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5), ptr, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vlseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 5), ptr, <vscale x 1 x i1>, i64, i64, i64)
+
+define <vscale x 1 x i32> @test_vlseg5_nxv1i32(ptr %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlseg5_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -711,7 +715,7 @@ define <vscale x 1 x i32> @test_vlseg5_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 20
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -735,7 +739,7 @@ define <vscale x 1 x i32> @test_vlseg5_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 20
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -759,7 +763,7 @@ define <vscale x 1 x i32> @test_vlseg5_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 20
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -783,7 +787,7 @@ define <vscale x 1 x i32> @test_vlseg5_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 20
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -807,7 +811,7 @@ define <vscale x 1 x i32> @test_vlseg5_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 20
 ; CHECK-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[TMP48]], i64 [[TMP55]]
 ; CHECK-NEXT:    [[TMP57:%.*]] = ptrtoint ptr [[TMP56]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP57]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP57]], i64 4)
 ; CHECK-NEXT:    br label [[TMP58]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[IV8_NEXT]] = add nuw nsw i64 [[IV8]], 1
@@ -816,17 +820,17 @@ define <vscale x 1 x i32> @test_vlseg5_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK:       .split7.split:
 ; CHECK-NEXT:    br label [[TMP59]]
 ; CHECK:       59:
-; CHECK-NEXT:    [[TMP60:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlseg5.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP61:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP60]], 1
+; CHECK-NEXT:    [[TMP60:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vlseg5.triscv.vector.tuple_nxv4i8_5t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) undef, ptr [[BASE]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP61:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) [[TMP60]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP61]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg5.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vlseg5.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) undef, ptr %base, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vlseg5_mask_nxv1i32(ptr align 4 %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vlseg5_mask_nxv1i32(ptr %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlseg5_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -844,7 +848,7 @@ define <vscale x 1 x i32> @test_vlseg5_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 20
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -868,7 +872,7 @@ define <vscale x 1 x i32> @test_vlseg5_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 20
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -892,7 +896,7 @@ define <vscale x 1 x i32> @test_vlseg5_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 20
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -916,7 +920,7 @@ define <vscale x 1 x i32> @test_vlseg5_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 20
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -940,7 +944,7 @@ define <vscale x 1 x i32> @test_vlseg5_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 20
 ; CHECK-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[TMP48]], i64 [[TMP55]]
 ; CHECK-NEXT:    [[TMP57:%.*]] = ptrtoint ptr [[TMP56]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP57]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP57]], i64 4)
 ; CHECK-NEXT:    br label [[TMP58]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[IV8_NEXT]] = add nuw nsw i64 [[IV8]], 1
@@ -949,20 +953,21 @@ define <vscale x 1 x i32> @test_vlseg5_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK:       .split7.split:
 ; CHECK-NEXT:    br label [[TMP59]]
 ; CHECK:       59:
-; CHECK-NEXT:    [[TMP60:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlseg5.mask.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP61:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP60]], 0
+; CHECK-NEXT:    [[TMP60:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vlseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) undef, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP61:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) [[TMP60]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP61]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg5.mask.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 0
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vlseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) undef, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg6.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr , i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg6.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i1>, i64, i64)
 
-define <vscale x 1 x i32> @test_vlseg6_nxv1i32(ptr align 4 %base, i64 %vl) sanitize_address {
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vlseg6.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6), ptr, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vlseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 6), ptr, <vscale x 1 x i1>, i64, i64, i64)
+
+define <vscale x 1 x i32> @test_vlseg6_nxv1i32(ptr %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlseg6_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -980,7 +985,7 @@ define <vscale x 1 x i32> @test_vlseg6_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 24
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -1004,7 +1009,7 @@ define <vscale x 1 x i32> @test_vlseg6_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 24
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -1028,7 +1033,7 @@ define <vscale x 1 x i32> @test_vlseg6_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 24
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -1052,7 +1057,7 @@ define <vscale x 1 x i32> @test_vlseg6_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 24
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -1076,7 +1081,7 @@ define <vscale x 1 x i32> @test_vlseg6_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 24
 ; CHECK-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[TMP48]], i64 [[TMP55]]
 ; CHECK-NEXT:    [[TMP57:%.*]] = ptrtoint ptr [[TMP56]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP57]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP57]], i64 4)
 ; CHECK-NEXT:    br label [[TMP58]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[IV8_NEXT]] = add nuw nsw i64 [[IV8]], 1
@@ -1100,7 +1105,7 @@ define <vscale x 1 x i32> @test_vlseg6_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], 24
 ; CHECK-NEXT:    [[TMP68:%.*]] = getelementptr i8, ptr [[TMP60]], i64 [[TMP67]]
 ; CHECK-NEXT:    [[TMP69:%.*]] = ptrtoint ptr [[TMP68]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP69]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP69]], i64 4)
 ; CHECK-NEXT:    br label [[TMP70]]
 ; CHECK:       70:
 ; CHECK-NEXT:    [[IV10_NEXT]] = add nuw nsw i64 [[IV10]], 1
@@ -1109,17 +1114,17 @@ define <vscale x 1 x i32> @test_vlseg6_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK:       .split9.split:
 ; CHECK-NEXT:    br label [[TMP71]]
 ; CHECK:       71:
-; CHECK-NEXT:    [[TMP72:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlseg6.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP73:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP72]], 1
+; CHECK-NEXT:    [[TMP72:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vlseg6.triscv.vector.tuple_nxv4i8_6t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) undef, ptr [[BASE]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP73:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) [[TMP72]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP73]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg6.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vlseg6.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) undef, ptr %base, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vlseg6_mask_nxv1i32(ptr align 4 %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vlseg6_mask_nxv1i32(ptr %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlseg6_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -1137,7 +1142,7 @@ define <vscale x 1 x i32> @test_vlseg6_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 24
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -1161,7 +1166,7 @@ define <vscale x 1 x i32> @test_vlseg6_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 24
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -1185,7 +1190,7 @@ define <vscale x 1 x i32> @test_vlseg6_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 24
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -1209,7 +1214,7 @@ define <vscale x 1 x i32> @test_vlseg6_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 24
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -1233,7 +1238,7 @@ define <vscale x 1 x i32> @test_vlseg6_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 24
 ; CHECK-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[TMP48]], i64 [[TMP55]]
 ; CHECK-NEXT:    [[TMP57:%.*]] = ptrtoint ptr [[TMP56]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP57]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP57]], i64 4)
 ; CHECK-NEXT:    br label [[TMP58]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[IV8_NEXT]] = add nuw nsw i64 [[IV8]], 1
@@ -1257,7 +1262,7 @@ define <vscale x 1 x i32> @test_vlseg6_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], 24
 ; CHECK-NEXT:    [[TMP68:%.*]] = getelementptr i8, ptr [[TMP60]], i64 [[TMP67]]
 ; CHECK-NEXT:    [[TMP69:%.*]] = ptrtoint ptr [[TMP68]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP69]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP69]], i64 4)
 ; CHECK-NEXT:    br label [[TMP70]]
 ; CHECK:       70:
 ; CHECK-NEXT:    [[IV10_NEXT]] = add nuw nsw i64 [[IV10]], 1
@@ -1266,20 +1271,21 @@ define <vscale x 1 x i32> @test_vlseg6_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK:       .split9.split:
 ; CHECK-NEXT:    br label [[TMP71]]
 ; CHECK:       71:
-; CHECK-NEXT:    [[TMP72:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlseg6.mask.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP73:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP72]], 0
+; CHECK-NEXT:    [[TMP72:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vlseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) undef, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP73:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) [[TMP72]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP73]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg6.mask.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 0
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vlseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) undef, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg7.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr , i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg7.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i1>, i64, i64)
 
-define <vscale x 1 x i32> @test_vlseg7_nxv1i32(ptr align 4 %base, i64 %vl) sanitize_address {
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vlseg7.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7), ptr, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vlseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 7), ptr, <vscale x 1 x i1>, i64, i64, i64)
+
+define <vscale x 1 x i32> @test_vlseg7_nxv1i32(ptr %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlseg7_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -1297,7 +1303,7 @@ define <vscale x 1 x i32> @test_vlseg7_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 28
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -1321,7 +1327,7 @@ define <vscale x 1 x i32> @test_vlseg7_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 28
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -1345,7 +1351,7 @@ define <vscale x 1 x i32> @test_vlseg7_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 28
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -1369,7 +1375,7 @@ define <vscale x 1 x i32> @test_vlseg7_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 28
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -1393,7 +1399,7 @@ define <vscale x 1 x i32> @test_vlseg7_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 28
 ; CHECK-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[TMP48]], i64 [[TMP55]]
 ; CHECK-NEXT:    [[TMP57:%.*]] = ptrtoint ptr [[TMP56]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP57]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP57]], i64 4)
 ; CHECK-NEXT:    br label [[TMP58]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[IV8_NEXT]] = add nuw nsw i64 [[IV8]], 1
@@ -1417,7 +1423,7 @@ define <vscale x 1 x i32> @test_vlseg7_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], 28
 ; CHECK-NEXT:    [[TMP68:%.*]] = getelementptr i8, ptr [[TMP60]], i64 [[TMP67]]
 ; CHECK-NEXT:    [[TMP69:%.*]] = ptrtoint ptr [[TMP68]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP69]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP69]], i64 4)
 ; CHECK-NEXT:    br label [[TMP70]]
 ; CHECK:       70:
 ; CHECK-NEXT:    [[IV10_NEXT]] = add nuw nsw i64 [[IV10]], 1
@@ -1441,7 +1447,7 @@ define <vscale x 1 x i32> @test_vlseg7_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP79:%.*]] = mul i64 [[IV12]], 28
 ; CHECK-NEXT:    [[TMP80:%.*]] = getelementptr i8, ptr [[TMP72]], i64 [[TMP79]]
 ; CHECK-NEXT:    [[TMP81:%.*]] = ptrtoint ptr [[TMP80]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP81]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP81]], i64 4)
 ; CHECK-NEXT:    br label [[TMP82]]
 ; CHECK:       82:
 ; CHECK-NEXT:    [[IV12_NEXT]] = add nuw nsw i64 [[IV12]], 1
@@ -1450,17 +1456,17 @@ define <vscale x 1 x i32> @test_vlseg7_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK:       .split11.split:
 ; CHECK-NEXT:    br label [[TMP83]]
 ; CHECK:       83:
-; CHECK-NEXT:    [[TMP84:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlseg7.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP85:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP84]], 1
+; CHECK-NEXT:    [[TMP84:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vlseg7.triscv.vector.tuple_nxv4i8_7t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) undef, ptr [[BASE]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP85:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) [[TMP84]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP85]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg7.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vlseg7.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) undef, ptr %base, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vlseg7_mask_nxv1i32(ptr align 4 %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vlseg7_mask_nxv1i32(ptr %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlseg7_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -1478,7 +1484,7 @@ define <vscale x 1 x i32> @test_vlseg7_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 28
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -1502,7 +1508,7 @@ define <vscale x 1 x i32> @test_vlseg7_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 28
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -1526,7 +1532,7 @@ define <vscale x 1 x i32> @test_vlseg7_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 28
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -1550,7 +1556,7 @@ define <vscale x 1 x i32> @test_vlseg7_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 28
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -1574,7 +1580,7 @@ define <vscale x 1 x i32> @test_vlseg7_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 28
 ; CHECK-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[TMP48]], i64 [[TMP55]]
 ; CHECK-NEXT:    [[TMP57:%.*]] = ptrtoint ptr [[TMP56]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP57]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP57]], i64 4)
 ; CHECK-NEXT:    br label [[TMP58]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[IV8_NEXT]] = add nuw nsw i64 [[IV8]], 1
@@ -1598,7 +1604,7 @@ define <vscale x 1 x i32> @test_vlseg7_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], 28
 ; CHECK-NEXT:    [[TMP68:%.*]] = getelementptr i8, ptr [[TMP60]], i64 [[TMP67]]
 ; CHECK-NEXT:    [[TMP69:%.*]] = ptrtoint ptr [[TMP68]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP69]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP69]], i64 4)
 ; CHECK-NEXT:    br label [[TMP70]]
 ; CHECK:       70:
 ; CHECK-NEXT:    [[IV10_NEXT]] = add nuw nsw i64 [[IV10]], 1
@@ -1622,7 +1628,7 @@ define <vscale x 1 x i32> @test_vlseg7_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP79:%.*]] = mul i64 [[IV12]], 28
 ; CHECK-NEXT:    [[TMP80:%.*]] = getelementptr i8, ptr [[TMP72]], i64 [[TMP79]]
 ; CHECK-NEXT:    [[TMP81:%.*]] = ptrtoint ptr [[TMP80]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP81]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP81]], i64 4)
 ; CHECK-NEXT:    br label [[TMP82]]
 ; CHECK:       82:
 ; CHECK-NEXT:    [[IV12_NEXT]] = add nuw nsw i64 [[IV12]], 1
@@ -1631,20 +1637,21 @@ define <vscale x 1 x i32> @test_vlseg7_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK:       .split11.split:
 ; CHECK-NEXT:    br label [[TMP83]]
 ; CHECK:       83:
-; CHECK-NEXT:    [[TMP84:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlseg7.mask.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP85:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP84]], 0
+; CHECK-NEXT:    [[TMP84:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vlseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) undef, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP85:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) [[TMP84]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP85]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg7.mask.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 0
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vlseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) undef, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg8.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr , i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg8.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i1>, i64, i64)
 
-define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr align 4 %base, i64 %vl) sanitize_address {
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vlseg8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8), ptr, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vlseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8), ptr, <vscale x 1 x i1>, i64, i64, i64)
+
+define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlseg8_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -1662,7 +1669,7 @@ define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 32
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -1686,7 +1693,7 @@ define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 32
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -1710,7 +1717,7 @@ define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 32
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -1734,7 +1741,7 @@ define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 32
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -1758,7 +1765,7 @@ define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 32
 ; CHECK-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[TMP48]], i64 [[TMP55]]
 ; CHECK-NEXT:    [[TMP57:%.*]] = ptrtoint ptr [[TMP56]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP57]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP57]], i64 4)
 ; CHECK-NEXT:    br label [[TMP58]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[IV8_NEXT]] = add nuw nsw i64 [[IV8]], 1
@@ -1782,7 +1789,7 @@ define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], 32
 ; CHECK-NEXT:    [[TMP68:%.*]] = getelementptr i8, ptr [[TMP60]], i64 [[TMP67]]
 ; CHECK-NEXT:    [[TMP69:%.*]] = ptrtoint ptr [[TMP68]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP69]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP69]], i64 4)
 ; CHECK-NEXT:    br label [[TMP70]]
 ; CHECK:       70:
 ; CHECK-NEXT:    [[IV10_NEXT]] = add nuw nsw i64 [[IV10]], 1
@@ -1806,7 +1813,7 @@ define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP79:%.*]] = mul i64 [[IV12]], 32
 ; CHECK-NEXT:    [[TMP80:%.*]] = getelementptr i8, ptr [[TMP72]], i64 [[TMP79]]
 ; CHECK-NEXT:    [[TMP81:%.*]] = ptrtoint ptr [[TMP80]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP81]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP81]], i64 4)
 ; CHECK-NEXT:    br label [[TMP82]]
 ; CHECK:       82:
 ; CHECK-NEXT:    [[IV12_NEXT]] = add nuw nsw i64 [[IV12]], 1
@@ -1830,7 +1837,7 @@ define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK-NEXT:    [[TMP91:%.*]] = mul i64 [[IV14]], 32
 ; CHECK-NEXT:    [[TMP92:%.*]] = getelementptr i8, ptr [[TMP84]], i64 [[TMP91]]
 ; CHECK-NEXT:    [[TMP93:%.*]] = ptrtoint ptr [[TMP92]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP93]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP93]], i64 4)
 ; CHECK-NEXT:    br label [[TMP94]]
 ; CHECK:       94:
 ; CHECK-NEXT:    [[IV14_NEXT]] = add nuw nsw i64 [[IV14]], 1
@@ -1839,17 +1846,17 @@ define <vscale x 1 x i32> @test_vlseg8_nxv1i32(ptr align 4 %base, i64 %vl) sanit
 ; CHECK:       .split13.split:
 ; CHECK-NEXT:    br label [[TMP95]]
 ; CHECK:       95:
-; CHECK-NEXT:    [[TMP96:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlseg8.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP97:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP96]], 1
+; CHECK-NEXT:    [[TMP96:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vlseg8.triscv.vector.tuple_nxv4i8_8t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) undef, ptr [[BASE]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP97:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP96]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP97]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg8.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef ,<vscale x 1 x i32> undef ,<vscale x 1 x i32> undef, <vscale x 1 x i32> undef ,<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vlseg8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) undef, ptr %base, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vlseg8_mask_nxv1i32(ptr align 4 %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vlseg8_mask_nxv1i32(ptr %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vlseg8_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -1867,7 +1874,7 @@ define <vscale x 1 x i32> @test_vlseg8_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 32
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -1891,7 +1898,7 @@ define <vscale x 1 x i32> @test_vlseg8_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 32
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -1915,7 +1922,7 @@ define <vscale x 1 x i32> @test_vlseg8_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 32
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -1939,7 +1946,7 @@ define <vscale x 1 x i32> @test_vlseg8_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 32
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -1963,7 +1970,7 @@ define <vscale x 1 x i32> @test_vlseg8_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 32
 ; CHECK-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[TMP48]], i64 [[TMP55]]
 ; CHECK-NEXT:    [[TMP57:%.*]] = ptrtoint ptr [[TMP56]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP57]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP57]], i64 4)
 ; CHECK-NEXT:    br label [[TMP58]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[IV8_NEXT]] = add nuw nsw i64 [[IV8]], 1
@@ -1987,7 +1994,7 @@ define <vscale x 1 x i32> @test_vlseg8_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], 32
 ; CHECK-NEXT:    [[TMP68:%.*]] = getelementptr i8, ptr [[TMP60]], i64 [[TMP67]]
 ; CHECK-NEXT:    [[TMP69:%.*]] = ptrtoint ptr [[TMP68]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP69]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP69]], i64 4)
 ; CHECK-NEXT:    br label [[TMP70]]
 ; CHECK:       70:
 ; CHECK-NEXT:    [[IV10_NEXT]] = add nuw nsw i64 [[IV10]], 1
@@ -2011,7 +2018,7 @@ define <vscale x 1 x i32> @test_vlseg8_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP79:%.*]] = mul i64 [[IV12]], 32
 ; CHECK-NEXT:    [[TMP80:%.*]] = getelementptr i8, ptr [[TMP72]], i64 [[TMP79]]
 ; CHECK-NEXT:    [[TMP81:%.*]] = ptrtoint ptr [[TMP80]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP81]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP81]], i64 4)
 ; CHECK-NEXT:    br label [[TMP82]]
 ; CHECK:       82:
 ; CHECK-NEXT:    [[IV12_NEXT]] = add nuw nsw i64 [[IV12]], 1
@@ -2035,7 +2042,7 @@ define <vscale x 1 x i32> @test_vlseg8_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK-NEXT:    [[TMP91:%.*]] = mul i64 [[IV14]], 32
 ; CHECK-NEXT:    [[TMP92:%.*]] = getelementptr i8, ptr [[TMP84]], i64 [[TMP91]]
 ; CHECK-NEXT:    [[TMP93:%.*]] = ptrtoint ptr [[TMP92]] to i64
-; CHECK-NEXT:    call void @__asan_load4(i64 [[TMP93]])
+; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP93]], i64 4)
 ; CHECK-NEXT:    br label [[TMP94]]
 ; CHECK:       94:
 ; CHECK-NEXT:    [[IV14_NEXT]] = add nuw nsw i64 [[IV14]], 1
@@ -2044,20 +2051,21 @@ define <vscale x 1 x i32> @test_vlseg8_mask_nxv1i32(ptr align 4 %base, i64 %vl, 
 ; CHECK:       .split13.split:
 ; CHECK-NEXT:    br label [[TMP95]]
 ; CHECK:       95:
-; CHECK-NEXT:    [[TMP96:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlseg8.mask.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP97:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP96]], 0
+; CHECK-NEXT:    [[TMP96:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vlseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) undef, ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP97:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP96]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP97]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlseg8.mask.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef ,<vscale x 1 x i32> undef ,<vscale x 1 x i32> undef, <vscale x 1 x i32> undef ,<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 0
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vlseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) undef, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare void @llvm.riscv.vsseg2.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>, ptr , i64)
-declare void @llvm.riscv.vsseg2.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i1>, i64)
 
-define void @test_vsseg2_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2), ptr, i64, i64)
+declare void @llvm.riscv.vsseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 2), ptr, <vscale x 1 x i1>, i64, i64)
+
+define void @test_vsseg2_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %val, ptr %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg2_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -2075,7 +2083,7 @@ define void @test_vsseg2_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 8
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -2099,7 +2107,7 @@ define void @test_vsseg2_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 8
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -2108,15 +2116,15 @@ define void @test_vsseg2_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK:       .split1.split:
 ; CHECK-NEXT:    br label [[TMP23]]
 ; CHECK:       23:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsseg2.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv4i8_2t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) [[VAL:%.*]], ptr [[BASE]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsseg2.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %vl)
+  tail call void @llvm.riscv.vsseg2.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %val, ptr %base, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsseg2_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsseg2_mask_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %val, ptr %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsseg2_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -2134,7 +2142,7 @@ define void @test_vsseg2_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 8
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -2158,7 +2166,7 @@ define void @test_vsseg2_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 8
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -2167,18 +2175,19 @@ define void @test_vsseg2_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK:       .split1.split:
 ; CHECK-NEXT:    br label [[TMP23]]
 ; CHECK:       23:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsseg2.mask.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsseg2.mask.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %val, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vsseg3.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr , i64)
-declare void @llvm.riscv.vsseg3.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i1>, i64)
 
-define void @test_vsseg3_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsseg3.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3), ptr, i64, i64)
+declare void @llvm.riscv.vsseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 3), ptr, <vscale x 1 x i1>, i64, i64)
+
+define void @test_vsseg3_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %val, ptr %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg3_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -2196,7 +2205,7 @@ define void @test_vsseg3_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 12
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -2220,7 +2229,7 @@ define void @test_vsseg3_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 12
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -2244,7 +2253,7 @@ define void @test_vsseg3_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 12
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -2253,15 +2262,15 @@ define void @test_vsseg3_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK:       .split3.split:
 ; CHECK-NEXT:    br label [[TMP35]]
 ; CHECK:       35:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsseg3.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsseg3.triscv.vector.tuple_nxv4i8_3t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) [[VAL:%.*]], ptr [[BASE]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsseg3.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %vl)
+  tail call void @llvm.riscv.vsseg3.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %val, ptr %base, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsseg3_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsseg3_mask_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %val, ptr %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsseg3_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -2279,7 +2288,7 @@ define void @test_vsseg3_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 12
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -2303,7 +2312,7 @@ define void @test_vsseg3_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 12
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -2327,7 +2336,7 @@ define void @test_vsseg3_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 12
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -2336,18 +2345,19 @@ define void @test_vsseg3_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK:       .split3.split:
 ; CHECK-NEXT:    br label [[TMP35]]
 ; CHECK:       35:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsseg3.mask.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsseg3.mask.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %val, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vsseg4.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr , i64)
-declare void @llvm.riscv.vsseg4.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i1>, i64)
 
-define void @test_vsseg4_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsseg4.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4), ptr, i64, i64)
+declare void @llvm.riscv.vsseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 4), ptr, <vscale x 1 x i1>, i64, i64)
+
+define void @test_vsseg4_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %val, ptr %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg4_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -2365,7 +2375,7 @@ define void @test_vsseg4_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 16
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -2389,7 +2399,7 @@ define void @test_vsseg4_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 16
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -2413,7 +2423,7 @@ define void @test_vsseg4_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 16
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -2437,7 +2447,7 @@ define void @test_vsseg4_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 16
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -2446,15 +2456,15 @@ define void @test_vsseg4_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK:       .split5.split:
 ; CHECK-NEXT:    br label [[TMP47]]
 ; CHECK:       47:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsseg4.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsseg4.triscv.vector.tuple_nxv4i8_4t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) [[VAL:%.*]], ptr [[BASE]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsseg4.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %vl)
+  tail call void @llvm.riscv.vsseg4.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %val, ptr %base, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsseg4_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsseg4_mask_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %val, ptr %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsseg4_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -2472,7 +2482,7 @@ define void @test_vsseg4_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 16
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -2496,7 +2506,7 @@ define void @test_vsseg4_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 16
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -2520,7 +2530,7 @@ define void @test_vsseg4_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 16
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -2544,7 +2554,7 @@ define void @test_vsseg4_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 16
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -2553,18 +2563,19 @@ define void @test_vsseg4_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK:       .split5.split:
 ; CHECK-NEXT:    br label [[TMP47]]
 ; CHECK:       47:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsseg4.mask.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsseg4.mask.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %val, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vsseg5.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr , i64)
-declare void @llvm.riscv.vsseg5.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i1>, i64)
 
-define void @test_vsseg5_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsseg5.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5), ptr, i64, i64)
+declare void @llvm.riscv.vsseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 5), ptr, <vscale x 1 x i1>, i64, i64)
+
+define void @test_vsseg5_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %val, ptr %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg5_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -2582,7 +2593,7 @@ define void @test_vsseg5_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 20
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -2606,7 +2617,7 @@ define void @test_vsseg5_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 20
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -2630,7 +2641,7 @@ define void @test_vsseg5_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 20
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -2654,7 +2665,7 @@ define void @test_vsseg5_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 20
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -2678,7 +2689,7 @@ define void @test_vsseg5_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 20
 ; CHECK-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[TMP48]], i64 [[TMP55]]
 ; CHECK-NEXT:    [[TMP57:%.*]] = ptrtoint ptr [[TMP56]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP57]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP57]], i64 4)
 ; CHECK-NEXT:    br label [[TMP58]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[IV8_NEXT]] = add nuw nsw i64 [[IV8]], 1
@@ -2687,15 +2698,15 @@ define void @test_vsseg5_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK:       .split7.split:
 ; CHECK-NEXT:    br label [[TMP59]]
 ; CHECK:       59:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsseg5.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsseg5.triscv.vector.tuple_nxv4i8_5t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) [[VAL:%.*]], ptr [[BASE]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsseg5.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %vl)
+  tail call void @llvm.riscv.vsseg5.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %val, ptr %base, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsseg5_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsseg5_mask_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %val, ptr %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsseg5_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -2713,7 +2724,7 @@ define void @test_vsseg5_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 20
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -2737,7 +2748,7 @@ define void @test_vsseg5_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 20
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -2761,7 +2772,7 @@ define void @test_vsseg5_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 20
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -2785,7 +2796,7 @@ define void @test_vsseg5_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 20
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -2809,7 +2820,7 @@ define void @test_vsseg5_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 20
 ; CHECK-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[TMP48]], i64 [[TMP55]]
 ; CHECK-NEXT:    [[TMP57:%.*]] = ptrtoint ptr [[TMP56]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP57]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP57]], i64 4)
 ; CHECK-NEXT:    br label [[TMP58]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[IV8_NEXT]] = add nuw nsw i64 [[IV8]], 1
@@ -2818,18 +2829,19 @@ define void @test_vsseg5_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK:       .split7.split:
 ; CHECK-NEXT:    br label [[TMP59]]
 ; CHECK:       59:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsseg5.mask.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsseg5.mask.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %val, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vsseg6.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr , i64)
-declare void @llvm.riscv.vsseg6.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i1>, i64)
 
-define void @test_vsseg6_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsseg6.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6), ptr, i64, i64)
+declare void @llvm.riscv.vsseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 6), ptr, <vscale x 1 x i1>, i64, i64)
+
+define void @test_vsseg6_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %val, ptr %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg6_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -2847,7 +2859,7 @@ define void @test_vsseg6_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 24
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -2871,7 +2883,7 @@ define void @test_vsseg6_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 24
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -2895,7 +2907,7 @@ define void @test_vsseg6_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 24
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -2919,7 +2931,7 @@ define void @test_vsseg6_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 24
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -2943,7 +2955,7 @@ define void @test_vsseg6_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 24
 ; CHECK-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[TMP48]], i64 [[TMP55]]
 ; CHECK-NEXT:    [[TMP57:%.*]] = ptrtoint ptr [[TMP56]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP57]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP57]], i64 4)
 ; CHECK-NEXT:    br label [[TMP58]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[IV8_NEXT]] = add nuw nsw i64 [[IV8]], 1
@@ -2967,7 +2979,7 @@ define void @test_vsseg6_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], 24
 ; CHECK-NEXT:    [[TMP68:%.*]] = getelementptr i8, ptr [[TMP60]], i64 [[TMP67]]
 ; CHECK-NEXT:    [[TMP69:%.*]] = ptrtoint ptr [[TMP68]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP69]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP69]], i64 4)
 ; CHECK-NEXT:    br label [[TMP70]]
 ; CHECK:       70:
 ; CHECK-NEXT:    [[IV10_NEXT]] = add nuw nsw i64 [[IV10]], 1
@@ -2976,15 +2988,15 @@ define void @test_vsseg6_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK:       .split9.split:
 ; CHECK-NEXT:    br label [[TMP71]]
 ; CHECK:       71:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsseg6.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsseg6.triscv.vector.tuple_nxv4i8_6t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) [[VAL:%.*]], ptr [[BASE]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsseg6.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %vl)
+  tail call void @llvm.riscv.vsseg6.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %val, ptr %base, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsseg6_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsseg6_mask_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %val, ptr %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsseg6_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -3002,7 +3014,7 @@ define void @test_vsseg6_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 24
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -3026,7 +3038,7 @@ define void @test_vsseg6_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 24
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -3050,7 +3062,7 @@ define void @test_vsseg6_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 24
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -3074,7 +3086,7 @@ define void @test_vsseg6_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 24
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -3098,7 +3110,7 @@ define void @test_vsseg6_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 24
 ; CHECK-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[TMP48]], i64 [[TMP55]]
 ; CHECK-NEXT:    [[TMP57:%.*]] = ptrtoint ptr [[TMP56]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP57]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP57]], i64 4)
 ; CHECK-NEXT:    br label [[TMP58]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[IV8_NEXT]] = add nuw nsw i64 [[IV8]], 1
@@ -3122,7 +3134,7 @@ define void @test_vsseg6_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], 24
 ; CHECK-NEXT:    [[TMP68:%.*]] = getelementptr i8, ptr [[TMP60]], i64 [[TMP67]]
 ; CHECK-NEXT:    [[TMP69:%.*]] = ptrtoint ptr [[TMP68]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP69]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP69]], i64 4)
 ; CHECK-NEXT:    br label [[TMP70]]
 ; CHECK:       70:
 ; CHECK-NEXT:    [[IV10_NEXT]] = add nuw nsw i64 [[IV10]], 1
@@ -3131,18 +3143,19 @@ define void @test_vsseg6_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK:       .split9.split:
 ; CHECK-NEXT:    br label [[TMP71]]
 ; CHECK:       71:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsseg6.mask.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsseg6.mask.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %val, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vsseg7.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr , i64)
-declare void @llvm.riscv.vsseg7.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i1>, i64)
 
-define void @test_vsseg7_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsseg7.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7), ptr, i64, i64)
+declare void @llvm.riscv.vsseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 7), ptr, <vscale x 1 x i1>, i64, i64)
+
+define void @test_vsseg7_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %val, ptr %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg7_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -3160,7 +3173,7 @@ define void @test_vsseg7_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 28
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -3184,7 +3197,7 @@ define void @test_vsseg7_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 28
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -3208,7 +3221,7 @@ define void @test_vsseg7_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 28
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -3232,7 +3245,7 @@ define void @test_vsseg7_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 28
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -3256,7 +3269,7 @@ define void @test_vsseg7_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 28
 ; CHECK-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[TMP48]], i64 [[TMP55]]
 ; CHECK-NEXT:    [[TMP57:%.*]] = ptrtoint ptr [[TMP56]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP57]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP57]], i64 4)
 ; CHECK-NEXT:    br label [[TMP58]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[IV8_NEXT]] = add nuw nsw i64 [[IV8]], 1
@@ -3280,7 +3293,7 @@ define void @test_vsseg7_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], 28
 ; CHECK-NEXT:    [[TMP68:%.*]] = getelementptr i8, ptr [[TMP60]], i64 [[TMP67]]
 ; CHECK-NEXT:    [[TMP69:%.*]] = ptrtoint ptr [[TMP68]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP69]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP69]], i64 4)
 ; CHECK-NEXT:    br label [[TMP70]]
 ; CHECK:       70:
 ; CHECK-NEXT:    [[IV10_NEXT]] = add nuw nsw i64 [[IV10]], 1
@@ -3304,7 +3317,7 @@ define void @test_vsseg7_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP79:%.*]] = mul i64 [[IV12]], 28
 ; CHECK-NEXT:    [[TMP80:%.*]] = getelementptr i8, ptr [[TMP72]], i64 [[TMP79]]
 ; CHECK-NEXT:    [[TMP81:%.*]] = ptrtoint ptr [[TMP80]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP81]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP81]], i64 4)
 ; CHECK-NEXT:    br label [[TMP82]]
 ; CHECK:       82:
 ; CHECK-NEXT:    [[IV12_NEXT]] = add nuw nsw i64 [[IV12]], 1
@@ -3313,15 +3326,15 @@ define void @test_vsseg7_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK:       .split11.split:
 ; CHECK-NEXT:    br label [[TMP83]]
 ; CHECK:       83:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsseg7.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsseg7.triscv.vector.tuple_nxv4i8_7t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) [[VAL:%.*]], ptr [[BASE]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsseg7.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %vl)
+  tail call void @llvm.riscv.vsseg7.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %val, ptr %base, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsseg7_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsseg7_mask_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %val, ptr %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsseg7_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -3339,7 +3352,7 @@ define void @test_vsseg7_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 28
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -3363,7 +3376,7 @@ define void @test_vsseg7_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 28
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -3387,7 +3400,7 @@ define void @test_vsseg7_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 28
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -3411,7 +3424,7 @@ define void @test_vsseg7_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 28
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -3435,7 +3448,7 @@ define void @test_vsseg7_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 28
 ; CHECK-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[TMP48]], i64 [[TMP55]]
 ; CHECK-NEXT:    [[TMP57:%.*]] = ptrtoint ptr [[TMP56]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP57]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP57]], i64 4)
 ; CHECK-NEXT:    br label [[TMP58]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[IV8_NEXT]] = add nuw nsw i64 [[IV8]], 1
@@ -3459,7 +3472,7 @@ define void @test_vsseg7_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], 28
 ; CHECK-NEXT:    [[TMP68:%.*]] = getelementptr i8, ptr [[TMP60]], i64 [[TMP67]]
 ; CHECK-NEXT:    [[TMP69:%.*]] = ptrtoint ptr [[TMP68]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP69]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP69]], i64 4)
 ; CHECK-NEXT:    br label [[TMP70]]
 ; CHECK:       70:
 ; CHECK-NEXT:    [[IV10_NEXT]] = add nuw nsw i64 [[IV10]], 1
@@ -3483,7 +3496,7 @@ define void @test_vsseg7_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP79:%.*]] = mul i64 [[IV12]], 28
 ; CHECK-NEXT:    [[TMP80:%.*]] = getelementptr i8, ptr [[TMP72]], i64 [[TMP79]]
 ; CHECK-NEXT:    [[TMP81:%.*]] = ptrtoint ptr [[TMP80]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP81]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP81]], i64 4)
 ; CHECK-NEXT:    br label [[TMP82]]
 ; CHECK:       82:
 ; CHECK-NEXT:    [[IV12_NEXT]] = add nuw nsw i64 [[IV12]], 1
@@ -3492,18 +3505,19 @@ define void @test_vsseg7_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK:       .split11.split:
 ; CHECK-NEXT:    br label [[TMP83]]
 ; CHECK:       83:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsseg7.mask.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsseg7.mask.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %val, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vsseg8.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr , i64)
-declare void @llvm.riscv.vsseg8.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i1>, i64)
 
-define void @test_vsseg8_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsseg8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8), ptr, i64, i64)
+declare void @llvm.riscv.vsseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8), ptr, <vscale x 1 x i1>, i64, i64)
+
+define void @test_vsseg8_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %val, ptr %base, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsseg8_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -3521,7 +3535,7 @@ define void @test_vsseg8_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 32
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -3545,7 +3559,7 @@ define void @test_vsseg8_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 32
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -3569,7 +3583,7 @@ define void @test_vsseg8_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 32
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -3593,7 +3607,7 @@ define void @test_vsseg8_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 32
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -3617,7 +3631,7 @@ define void @test_vsseg8_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 32
 ; CHECK-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[TMP48]], i64 [[TMP55]]
 ; CHECK-NEXT:    [[TMP57:%.*]] = ptrtoint ptr [[TMP56]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP57]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP57]], i64 4)
 ; CHECK-NEXT:    br label [[TMP58]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[IV8_NEXT]] = add nuw nsw i64 [[IV8]], 1
@@ -3641,7 +3655,7 @@ define void @test_vsseg8_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], 32
 ; CHECK-NEXT:    [[TMP68:%.*]] = getelementptr i8, ptr [[TMP60]], i64 [[TMP67]]
 ; CHECK-NEXT:    [[TMP69:%.*]] = ptrtoint ptr [[TMP68]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP69]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP69]], i64 4)
 ; CHECK-NEXT:    br label [[TMP70]]
 ; CHECK:       70:
 ; CHECK-NEXT:    [[IV10_NEXT]] = add nuw nsw i64 [[IV10]], 1
@@ -3665,7 +3679,7 @@ define void @test_vsseg8_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP79:%.*]] = mul i64 [[IV12]], 32
 ; CHECK-NEXT:    [[TMP80:%.*]] = getelementptr i8, ptr [[TMP72]], i64 [[TMP79]]
 ; CHECK-NEXT:    [[TMP81:%.*]] = ptrtoint ptr [[TMP80]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP81]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP81]], i64 4)
 ; CHECK-NEXT:    br label [[TMP82]]
 ; CHECK:       82:
 ; CHECK-NEXT:    [[IV12_NEXT]] = add nuw nsw i64 [[IV12]], 1
@@ -3689,7 +3703,7 @@ define void @test_vsseg8_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK-NEXT:    [[TMP91:%.*]] = mul i64 [[IV14]], 32
 ; CHECK-NEXT:    [[TMP92:%.*]] = getelementptr i8, ptr [[TMP84]], i64 [[TMP91]]
 ; CHECK-NEXT:    [[TMP93:%.*]] = ptrtoint ptr [[TMP92]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP93]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP93]], i64 4)
 ; CHECK-NEXT:    br label [[TMP94]]
 ; CHECK:       94:
 ; CHECK-NEXT:    [[IV14_NEXT]] = add nuw nsw i64 [[IV14]], 1
@@ -3698,15 +3712,15 @@ define void @test_vsseg8_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, i64
 ; CHECK:       .split13.split:
 ; CHECK-NEXT:    br label [[TMP95]]
 ; CHECK:       95:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsseg8.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsseg8.triscv.vector.tuple_nxv4i8_8t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[VAL:%.*]], ptr [[BASE]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsseg8.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %vl)
+  tail call void @llvm.riscv.vsseg8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %val, ptr %base, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsseg8_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsseg8_mask_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %val, ptr %base, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsseg8_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -3724,7 +3738,7 @@ define void @test_vsseg8_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], 32
 ; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[BASE:%.*]], i64 [[TMP7]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = ptrtoint ptr [[TMP8]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP9]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP9]], i64 4)
 ; CHECK-NEXT:    br label [[TMP10]]
 ; CHECK:       10:
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i64 [[IV]], 1
@@ -3748,7 +3762,7 @@ define void @test_vsseg8_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], 32
 ; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr i8, ptr [[TMP12]], i64 [[TMP19]]
 ; CHECK-NEXT:    [[TMP21:%.*]] = ptrtoint ptr [[TMP20]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP21]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP21]], i64 4)
 ; CHECK-NEXT:    br label [[TMP22]]
 ; CHECK:       22:
 ; CHECK-NEXT:    [[IV2_NEXT]] = add nuw nsw i64 [[IV2]], 1
@@ -3772,7 +3786,7 @@ define void @test_vsseg8_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], 32
 ; CHECK-NEXT:    [[TMP32:%.*]] = getelementptr i8, ptr [[TMP24]], i64 [[TMP31]]
 ; CHECK-NEXT:    [[TMP33:%.*]] = ptrtoint ptr [[TMP32]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP33]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP33]], i64 4)
 ; CHECK-NEXT:    br label [[TMP34]]
 ; CHECK:       34:
 ; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
@@ -3796,7 +3810,7 @@ define void @test_vsseg8_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], 32
 ; CHECK-NEXT:    [[TMP44:%.*]] = getelementptr i8, ptr [[TMP36]], i64 [[TMP43]]
 ; CHECK-NEXT:    [[TMP45:%.*]] = ptrtoint ptr [[TMP44]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP45]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP45]], i64 4)
 ; CHECK-NEXT:    br label [[TMP46]]
 ; CHECK:       46:
 ; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
@@ -3820,7 +3834,7 @@ define void @test_vsseg8_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], 32
 ; CHECK-NEXT:    [[TMP56:%.*]] = getelementptr i8, ptr [[TMP48]], i64 [[TMP55]]
 ; CHECK-NEXT:    [[TMP57:%.*]] = ptrtoint ptr [[TMP56]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP57]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP57]], i64 4)
 ; CHECK-NEXT:    br label [[TMP58]]
 ; CHECK:       58:
 ; CHECK-NEXT:    [[IV8_NEXT]] = add nuw nsw i64 [[IV8]], 1
@@ -3844,7 +3858,7 @@ define void @test_vsseg8_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], 32
 ; CHECK-NEXT:    [[TMP68:%.*]] = getelementptr i8, ptr [[TMP60]], i64 [[TMP67]]
 ; CHECK-NEXT:    [[TMP69:%.*]] = ptrtoint ptr [[TMP68]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP69]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP69]], i64 4)
 ; CHECK-NEXT:    br label [[TMP70]]
 ; CHECK:       70:
 ; CHECK-NEXT:    [[IV10_NEXT]] = add nuw nsw i64 [[IV10]], 1
@@ -3868,7 +3882,7 @@ define void @test_vsseg8_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP79:%.*]] = mul i64 [[IV12]], 32
 ; CHECK-NEXT:    [[TMP80:%.*]] = getelementptr i8, ptr [[TMP72]], i64 [[TMP79]]
 ; CHECK-NEXT:    [[TMP81:%.*]] = ptrtoint ptr [[TMP80]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP81]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP81]], i64 4)
 ; CHECK-NEXT:    br label [[TMP82]]
 ; CHECK:       82:
 ; CHECK-NEXT:    [[IV12_NEXT]] = add nuw nsw i64 [[IV12]], 1
@@ -3892,7 +3906,7 @@ define void @test_vsseg8_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK-NEXT:    [[TMP91:%.*]] = mul i64 [[IV14]], 32
 ; CHECK-NEXT:    [[TMP92:%.*]] = getelementptr i8, ptr [[TMP84]], i64 [[TMP91]]
 ; CHECK-NEXT:    [[TMP93:%.*]] = ptrtoint ptr [[TMP92]] to i64
-; CHECK-NEXT:    call void @__asan_store4(i64 [[TMP93]])
+; CHECK-NEXT:    call void @__asan_storeN(i64 [[TMP93]], i64 4)
 ; CHECK-NEXT:    br label [[TMP94]]
 ; CHECK:       94:
 ; CHECK-NEXT:    [[IV14_NEXT]] = add nuw nsw i64 [[IV14]], 1
@@ -3901,13 +3915,14 @@ define void @test_vsseg8_mask_nxv1i32(<vscale x 1 x i32> %val, ptr align 4 %base
 ; CHECK:       .split13.split:
 ; CHECK-NEXT:    br label [[TMP95]]
 ; CHECK:       95:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsseg8.mask.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsseg8.mask.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %val, ptr %base, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
+
 
 ; Test stride load
 declare <vscale x 1 x i32> @llvm.riscv.vlse.nxv1i32(
@@ -4100,8 +4115,9 @@ entry:
   ret void
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg2.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg2.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vlsseg2.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2), ptr, i64, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vlsseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 2), ptr, i64, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vlsseg2_nxv1i32(ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg2_nxv1i32(
@@ -4154,13 +4170,13 @@ define <vscale x 1 x i32> @test_vlsseg2_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK:       .split1.split:
 ; CHECK-NEXT:    br label [[TMP23]]
 ; CHECK:       23:
-; CHECK-NEXT:    [[TMP24:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg2.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP25:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP24]], 1
+; CHECK-NEXT:    [[TMP24:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vlsseg2.triscv.vector.tuple_nxv4i8_2t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP25:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) [[TMP24]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP25]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg2.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %offset, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vlsseg2.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) undef, ptr %base, i64 %offset, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
@@ -4176,7 +4192,7 @@ define <vscale x 1 x i32> @test_vlsseg2_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> [[MASK:%.*]], i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -4200,7 +4216,7 @@ define <vscale x 1 x i32> @test_vlsseg2_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -4215,69 +4231,19 @@ define <vscale x 1 x i32> @test_vlsseg2_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK:       .split1.split:
 ; CHECK-NEXT:    br label [[TMP23]]
 ; CHECK:       23:
-; CHECK-NEXT:    [[TMP24:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg2.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP25:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP24]], 0
-; CHECK-NEXT:    [[TMP26:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP26]], label [[TMP27:%.*]], label [[TMP36:%.*]]
-; CHECK:       27:
-; CHECK-NEXT:    [[TMP28:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP29:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP28]])
-; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
-; CHECK:       .split3:
-; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP27]] ], [ [[IV4_NEXT:%.*]], [[TMP35:%.*]] ]
-; CHECK-NEXT:    [[TMP30:%.*]] = extractelement <vscale x 1 x i1> [[MASK:%.*]], i64 [[IV4]]
-; CHECK-NEXT:    br i1 [[TMP30]], label [[TMP31:%.*]], label [[TMP35]]
-; CHECK:       31:
-; CHECK-NEXT:    [[TMP32:%.*]] = mul i64 [[IV4]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP33:%.*]] = getelementptr i8, ptr [[BASE]], i64 [[TMP32]]
-; CHECK-NEXT:    [[TMP34:%.*]] = ptrtoint ptr [[TMP33]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP34]], i64 4)
-; CHECK-NEXT:    br label [[TMP35]]
-; CHECK:       35:
-; CHECK-NEXT:    [[IV4_NEXT]] = add nuw nsw i64 [[IV4]], 1
-; CHECK-NEXT:    [[IV4_CHECK:%.*]] = icmp eq i64 [[IV4_NEXT]], [[TMP29]]
-; CHECK-NEXT:    br i1 [[IV4_CHECK]], label [[DOTSPLIT3_SPLIT:%.*]], label [[DOTSPLIT3]]
-; CHECK:       .split3.split:
-; CHECK-NEXT:    br label [[TMP36]]
-; CHECK:       36:
-; CHECK-NEXT:    [[TMP37:%.*]] = getelementptr i8, ptr [[BASE]], i64 4
-; CHECK-NEXT:    [[TMP38:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP38]], label [[TMP39:%.*]], label [[TMP48:%.*]]
-; CHECK:       39:
-; CHECK-NEXT:    [[TMP40:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP41:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP40]])
-; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
-; CHECK:       .split5:
-; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP39]] ], [ [[IV6_NEXT:%.*]], [[TMP47:%.*]] ]
-; CHECK-NEXT:    [[TMP42:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV6]]
-; CHECK-NEXT:    br i1 [[TMP42]], label [[TMP43:%.*]], label [[TMP47]]
-; CHECK:       43:
-; CHECK-NEXT:    [[TMP44:%.*]] = mul i64 [[IV6]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP45:%.*]] = getelementptr i8, ptr [[TMP37]], i64 [[TMP44]]
-; CHECK-NEXT:    [[TMP46:%.*]] = ptrtoint ptr [[TMP45]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP46]], i64 4)
-; CHECK-NEXT:    br label [[TMP47]]
-; CHECK:       47:
-; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
-; CHECK-NEXT:    [[IV6_CHECK:%.*]] = icmp eq i64 [[IV6_NEXT]], [[TMP41]]
-; CHECK-NEXT:    br i1 [[IV6_CHECK]], label [[DOTSPLIT5_SPLIT:%.*]], label [[DOTSPLIT5]]
-; CHECK:       .split5.split:
-; CHECK-NEXT:    br label [[TMP48]]
-; CHECK:       48:
-; CHECK-NEXT:    [[TMP49:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg2.mask.nxv1i32.i64(<vscale x 1 x i32> [[TMP25]], <vscale x 1 x i32> [[TMP25]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP50:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP49]], 1
-; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP50]]
+; CHECK-NEXT:    [[TMP24:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vlsseg2.mask.triscv.vector.tuple_nxv4i8_2t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) undef, ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP25:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) [[TMP24]], i32 1)
+; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP25]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg2.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %offset, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 0
-  %2 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg2.mask.nxv1i32(<vscale x 1 x i32> %1,<vscale x 1 x i32> %1, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %3 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>} %2, 1
-  ret <vscale x 1 x i32> %3
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vlsseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) undef, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %0, i32 1)
+  ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg3.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg3.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vlsseg3.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3), ptr, i64, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vlsseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 3), ptr, i64, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vlsseg3_nxv1i32(ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg3_nxv1i32(
@@ -4354,13 +4320,13 @@ define <vscale x 1 x i32> @test_vlsseg3_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK:       .split3.split:
 ; CHECK-NEXT:    br label [[TMP35]]
 ; CHECK:       35:
-; CHECK-NEXT:    [[TMP36:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg3.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP37:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP36]], 1
+; CHECK-NEXT:    [[TMP36:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vlsseg3.triscv.vector.tuple_nxv4i8_3t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP37:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) [[TMP36]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP37]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg3.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %offset, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vlsseg3.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) undef, ptr %base, i64 %offset, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
@@ -4376,7 +4342,7 @@ define <vscale x 1 x i32> @test_vlsseg3_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> [[MASK:%.*]], i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -4400,7 +4366,7 @@ define <vscale x 1 x i32> @test_vlsseg3_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -4424,7 +4390,7 @@ define <vscale x 1 x i32> @test_vlsseg3_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], [[OFFSET]]
@@ -4439,93 +4405,19 @@ define <vscale x 1 x i32> @test_vlsseg3_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK:       .split3.split:
 ; CHECK-NEXT:    br label [[TMP35]]
 ; CHECK:       35:
-; CHECK-NEXT:    [[TMP36:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg3.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP37:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP36]], 0
-; CHECK-NEXT:    [[TMP38:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP38]], label [[TMP39:%.*]], label [[TMP48:%.*]]
-; CHECK:       39:
-; CHECK-NEXT:    [[TMP40:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP41:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP40]])
-; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
-; CHECK:       .split5:
-; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP39]] ], [ [[IV6_NEXT:%.*]], [[TMP47:%.*]] ]
-; CHECK-NEXT:    [[TMP42:%.*]] = extractelement <vscale x 1 x i1> [[MASK:%.*]], i64 [[IV6]]
-; CHECK-NEXT:    br i1 [[TMP42]], label [[TMP43:%.*]], label [[TMP47]]
-; CHECK:       43:
-; CHECK-NEXT:    [[TMP44:%.*]] = mul i64 [[IV6]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP45:%.*]] = getelementptr i8, ptr [[BASE]], i64 [[TMP44]]
-; CHECK-NEXT:    [[TMP46:%.*]] = ptrtoint ptr [[TMP45]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP46]], i64 4)
-; CHECK-NEXT:    br label [[TMP47]]
-; CHECK:       47:
-; CHECK-NEXT:    [[IV6_NEXT]] = add nuw nsw i64 [[IV6]], 1
-; CHECK-NEXT:    [[IV6_CHECK:%.*]] = icmp eq i64 [[IV6_NEXT]], [[TMP41]]
-; CHECK-NEXT:    br i1 [[IV6_CHECK]], label [[DOTSPLIT5_SPLIT:%.*]], label [[DOTSPLIT5]]
-; CHECK:       .split5.split:
-; CHECK-NEXT:    br label [[TMP48]]
-; CHECK:       48:
-; CHECK-NEXT:    [[TMP49:%.*]] = getelementptr i8, ptr [[BASE]], i64 4
-; CHECK-NEXT:    [[TMP50:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP50]], label [[TMP51:%.*]], label [[TMP60:%.*]]
-; CHECK:       51:
-; CHECK-NEXT:    [[TMP52:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP53:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP52]])
-; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
-; CHECK:       .split7:
-; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP51]] ], [ [[IV8_NEXT:%.*]], [[TMP59:%.*]] ]
-; CHECK-NEXT:    [[TMP54:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV8]]
-; CHECK-NEXT:    br i1 [[TMP54]], label [[TMP55:%.*]], label [[TMP59]]
-; CHECK:       55:
-; CHECK-NEXT:    [[TMP56:%.*]] = mul i64 [[IV8]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP57:%.*]] = getelementptr i8, ptr [[TMP49]], i64 [[TMP56]]
-; CHECK-NEXT:    [[TMP58:%.*]] = ptrtoint ptr [[TMP57]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP58]], i64 4)
-; CHECK-NEXT:    br label [[TMP59]]
-; CHECK:       59:
-; CHECK-NEXT:    [[IV8_NEXT]] = add nuw nsw i64 [[IV8]], 1
-; CHECK-NEXT:    [[IV8_CHECK:%.*]] = icmp eq i64 [[IV8_NEXT]], [[TMP53]]
-; CHECK-NEXT:    br i1 [[IV8_CHECK]], label [[DOTSPLIT7_SPLIT:%.*]], label [[DOTSPLIT7]]
-; CHECK:       .split7.split:
-; CHECK-NEXT:    br label [[TMP60]]
-; CHECK:       60:
-; CHECK-NEXT:    [[TMP61:%.*]] = getelementptr i8, ptr [[BASE]], i64 8
-; CHECK-NEXT:    [[TMP62:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP62]], label [[TMP63:%.*]], label [[TMP72:%.*]]
-; CHECK:       63:
-; CHECK-NEXT:    [[TMP64:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP65:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP64]])
-; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
-; CHECK:       .split9:
-; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP63]] ], [ [[IV10_NEXT:%.*]], [[TMP71:%.*]] ]
-; CHECK-NEXT:    [[TMP66:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV10]]
-; CHECK-NEXT:    br i1 [[TMP66]], label [[TMP67:%.*]], label [[TMP71]]
-; CHECK:       67:
-; CHECK-NEXT:    [[TMP68:%.*]] = mul i64 [[IV10]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP69:%.*]] = getelementptr i8, ptr [[TMP61]], i64 [[TMP68]]
-; CHECK-NEXT:    [[TMP70:%.*]] = ptrtoint ptr [[TMP69]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP70]], i64 4)
-; CHECK-NEXT:    br label [[TMP71]]
-; CHECK:       71:
-; CHECK-NEXT:    [[IV10_NEXT]] = add nuw nsw i64 [[IV10]], 1
-; CHECK-NEXT:    [[IV10_CHECK:%.*]] = icmp eq i64 [[IV10_NEXT]], [[TMP65]]
-; CHECK-NEXT:    br i1 [[IV10_CHECK]], label [[DOTSPLIT9_SPLIT:%.*]], label [[DOTSPLIT9]]
-; CHECK:       .split9.split:
-; CHECK-NEXT:    br label [[TMP72]]
-; CHECK:       72:
-; CHECK-NEXT:    [[TMP73:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg3.mask.nxv1i32.i64(<vscale x 1 x i32> [[TMP37]], <vscale x 1 x i32> [[TMP37]], <vscale x 1 x i32> [[TMP37]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP74:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP73]], 1
-; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP74]]
+; CHECK-NEXT:    [[TMP36:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vlsseg3.mask.triscv.vector.tuple_nxv4i8_3t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) undef, ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP37:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) [[TMP36]], i32 1)
+; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP37]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg3.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %offset, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 0
-  %2 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg3.mask.nxv1i32(<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %3 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %2, 1
-  ret <vscale x 1 x i32> %3
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vlsseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) undef, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %0, i32 1)
+  ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg4.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg4.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vlsseg4.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4), ptr, i64, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vlsseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 4), ptr, i64, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vlsseg4_nxv1i32(ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg4_nxv1i32(
@@ -4626,13 +4518,13 @@ define <vscale x 1 x i32> @test_vlsseg4_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK:       .split5.split:
 ; CHECK-NEXT:    br label [[TMP47]]
 ; CHECK:       47:
-; CHECK-NEXT:    [[TMP48:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg4.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP49:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP48]], 1
+; CHECK-NEXT:    [[TMP48:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vlsseg4.triscv.vector.tuple_nxv4i8_4t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP49:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) [[TMP48]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP49]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg4.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %offset, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vlsseg4.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) undef, ptr %base, i64 %offset, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
@@ -4648,7 +4540,7 @@ define <vscale x 1 x i32> @test_vlsseg4_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> [[MASK:%.*]], i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -4672,7 +4564,7 @@ define <vscale x 1 x i32> @test_vlsseg4_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -4696,7 +4588,7 @@ define <vscale x 1 x i32> @test_vlsseg4_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], [[OFFSET]]
@@ -4720,7 +4612,7 @@ define <vscale x 1 x i32> @test_vlsseg4_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], [[OFFSET]]
@@ -4735,117 +4627,19 @@ define <vscale x 1 x i32> @test_vlsseg4_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK:       .split5.split:
 ; CHECK-NEXT:    br label [[TMP47]]
 ; CHECK:       47:
-; CHECK-NEXT:    [[TMP48:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg4.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP49:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP48]], 0
-; CHECK-NEXT:    [[TMP50:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP50]], label [[TMP51:%.*]], label [[TMP60:%.*]]
-; CHECK:       51:
-; CHECK-NEXT:    [[TMP52:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP53:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP52]])
-; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
-; CHECK:       .split7:
-; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP51]] ], [ [[IV8_NEXT:%.*]], [[TMP59:%.*]] ]
-; CHECK-NEXT:    [[TMP54:%.*]] = extractelement <vscale x 1 x i1> [[MASK:%.*]], i64 [[IV8]]
-; CHECK-NEXT:    br i1 [[TMP54]], label [[TMP55:%.*]], label [[TMP59]]
-; CHECK:       55:
-; CHECK-NEXT:    [[TMP56:%.*]] = mul i64 [[IV8]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP57:%.*]] = getelementptr i8, ptr [[BASE]], i64 [[TMP56]]
-; CHECK-NEXT:    [[TMP58:%.*]] = ptrtoint ptr [[TMP57]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP58]], i64 4)
-; CHECK-NEXT:    br label [[TMP59]]
-; CHECK:       59:
-; CHECK-NEXT:    [[IV8_NEXT]] = add nuw nsw i64 [[IV8]], 1
-; CHECK-NEXT:    [[IV8_CHECK:%.*]] = icmp eq i64 [[IV8_NEXT]], [[TMP53]]
-; CHECK-NEXT:    br i1 [[IV8_CHECK]], label [[DOTSPLIT7_SPLIT:%.*]], label [[DOTSPLIT7]]
-; CHECK:       .split7.split:
-; CHECK-NEXT:    br label [[TMP60]]
-; CHECK:       60:
-; CHECK-NEXT:    [[TMP61:%.*]] = getelementptr i8, ptr [[BASE]], i64 4
-; CHECK-NEXT:    [[TMP62:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP62]], label [[TMP63:%.*]], label [[TMP72:%.*]]
-; CHECK:       63:
-; CHECK-NEXT:    [[TMP64:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP65:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP64]])
-; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
-; CHECK:       .split9:
-; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP63]] ], [ [[IV10_NEXT:%.*]], [[TMP71:%.*]] ]
-; CHECK-NEXT:    [[TMP66:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV10]]
-; CHECK-NEXT:    br i1 [[TMP66]], label [[TMP67:%.*]], label [[TMP71]]
-; CHECK:       67:
-; CHECK-NEXT:    [[TMP68:%.*]] = mul i64 [[IV10]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP69:%.*]] = getelementptr i8, ptr [[TMP61]], i64 [[TMP68]]
-; CHECK-NEXT:    [[TMP70:%.*]] = ptrtoint ptr [[TMP69]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP70]], i64 4)
-; CHECK-NEXT:    br label [[TMP71]]
-; CHECK:       71:
-; CHECK-NEXT:    [[IV10_NEXT]] = add nuw nsw i64 [[IV10]], 1
-; CHECK-NEXT:    [[IV10_CHECK:%.*]] = icmp eq i64 [[IV10_NEXT]], [[TMP65]]
-; CHECK-NEXT:    br i1 [[IV10_CHECK]], label [[DOTSPLIT9_SPLIT:%.*]], label [[DOTSPLIT9]]
-; CHECK:       .split9.split:
-; CHECK-NEXT:    br label [[TMP72]]
-; CHECK:       72:
-; CHECK-NEXT:    [[TMP73:%.*]] = getelementptr i8, ptr [[BASE]], i64 8
-; CHECK-NEXT:    [[TMP74:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP74]], label [[TMP75:%.*]], label [[TMP84:%.*]]
-; CHECK:       75:
-; CHECK-NEXT:    [[TMP76:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP77:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP76]])
-; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
-; CHECK:       .split11:
-; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP75]] ], [ [[IV12_NEXT:%.*]], [[TMP83:%.*]] ]
-; CHECK-NEXT:    [[TMP78:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV12]]
-; CHECK-NEXT:    br i1 [[TMP78]], label [[TMP79:%.*]], label [[TMP83]]
-; CHECK:       79:
-; CHECK-NEXT:    [[TMP80:%.*]] = mul i64 [[IV12]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP81:%.*]] = getelementptr i8, ptr [[TMP73]], i64 [[TMP80]]
-; CHECK-NEXT:    [[TMP82:%.*]] = ptrtoint ptr [[TMP81]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP82]], i64 4)
-; CHECK-NEXT:    br label [[TMP83]]
-; CHECK:       83:
-; CHECK-NEXT:    [[IV12_NEXT]] = add nuw nsw i64 [[IV12]], 1
-; CHECK-NEXT:    [[IV12_CHECK:%.*]] = icmp eq i64 [[IV12_NEXT]], [[TMP77]]
-; CHECK-NEXT:    br i1 [[IV12_CHECK]], label [[DOTSPLIT11_SPLIT:%.*]], label [[DOTSPLIT11]]
-; CHECK:       .split11.split:
-; CHECK-NEXT:    br label [[TMP84]]
-; CHECK:       84:
-; CHECK-NEXT:    [[TMP85:%.*]] = getelementptr i8, ptr [[BASE]], i64 12
-; CHECK-NEXT:    [[TMP86:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP86]], label [[TMP87:%.*]], label [[TMP96:%.*]]
-; CHECK:       87:
-; CHECK-NEXT:    [[TMP88:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP89:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP88]])
-; CHECK-NEXT:    br label [[DOTSPLIT13:%.*]]
-; CHECK:       .split13:
-; CHECK-NEXT:    [[IV14:%.*]] = phi i64 [ 0, [[TMP87]] ], [ [[IV14_NEXT:%.*]], [[TMP95:%.*]] ]
-; CHECK-NEXT:    [[TMP90:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV14]]
-; CHECK-NEXT:    br i1 [[TMP90]], label [[TMP91:%.*]], label [[TMP95]]
-; CHECK:       91:
-; CHECK-NEXT:    [[TMP92:%.*]] = mul i64 [[IV14]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP93:%.*]] = getelementptr i8, ptr [[TMP85]], i64 [[TMP92]]
-; CHECK-NEXT:    [[TMP94:%.*]] = ptrtoint ptr [[TMP93]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP94]], i64 4)
-; CHECK-NEXT:    br label [[TMP95]]
-; CHECK:       95:
-; CHECK-NEXT:    [[IV14_NEXT]] = add nuw nsw i64 [[IV14]], 1
-; CHECK-NEXT:    [[IV14_CHECK:%.*]] = icmp eq i64 [[IV14_NEXT]], [[TMP89]]
-; CHECK-NEXT:    br i1 [[IV14_CHECK]], label [[DOTSPLIT13_SPLIT:%.*]], label [[DOTSPLIT13]]
-; CHECK:       .split13.split:
-; CHECK-NEXT:    br label [[TMP96]]
-; CHECK:       96:
-; CHECK-NEXT:    [[TMP97:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg4.mask.nxv1i32.i64(<vscale x 1 x i32> [[TMP49]], <vscale x 1 x i32> [[TMP49]], <vscale x 1 x i32> [[TMP49]], <vscale x 1 x i32> [[TMP49]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP98:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP97]], 1
-; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP98]]
+; CHECK-NEXT:    [[TMP48:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vlsseg4.mask.triscv.vector.tuple_nxv4i8_4t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) undef, ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP49:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) [[TMP48]], i32 1)
+; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP49]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg4.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %offset, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 0
-  %2 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg4.mask.nxv1i32(<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %3 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %2, 1
-  ret <vscale x 1 x i32> %3
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vlsseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) undef, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %0, i32 1)
+  ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg5.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg5.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vlsseg5.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5), ptr, i64, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vlsseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 5), ptr, i64, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vlsseg5_nxv1i32(ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg5_nxv1i32(
@@ -4970,13 +4764,13 @@ define <vscale x 1 x i32> @test_vlsseg5_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK:       .split7.split:
 ; CHECK-NEXT:    br label [[TMP59]]
 ; CHECK:       59:
-; CHECK-NEXT:    [[TMP60:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg5.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP61:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP60]], 1
+; CHECK-NEXT:    [[TMP60:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vlsseg5.triscv.vector.tuple_nxv4i8_5t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP61:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) [[TMP60]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP61]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg5.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %offset, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vlsseg5.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) undef, ptr %base, i64 %offset, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
@@ -4992,7 +4786,7 @@ define <vscale x 1 x i32> @test_vlsseg5_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> [[MASK:%.*]], i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -5016,7 +4810,7 @@ define <vscale x 1 x i32> @test_vlsseg5_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -5040,7 +4834,7 @@ define <vscale x 1 x i32> @test_vlsseg5_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], [[OFFSET]]
@@ -5064,7 +4858,7 @@ define <vscale x 1 x i32> @test_vlsseg5_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], [[OFFSET]]
@@ -5088,7 +4882,7 @@ define <vscale x 1 x i32> @test_vlsseg5_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], [[OFFSET]]
@@ -5103,141 +4897,19 @@ define <vscale x 1 x i32> @test_vlsseg5_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK:       .split7.split:
 ; CHECK-NEXT:    br label [[TMP59]]
 ; CHECK:       59:
-; CHECK-NEXT:    [[TMP60:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg5.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP61:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP60]], 0
-; CHECK-NEXT:    [[TMP62:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP62]], label [[TMP63:%.*]], label [[TMP72:%.*]]
-; CHECK:       63:
-; CHECK-NEXT:    [[TMP64:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP65:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP64]])
-; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
-; CHECK:       .split9:
-; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP63]] ], [ [[IV10_NEXT:%.*]], [[TMP71:%.*]] ]
-; CHECK-NEXT:    [[TMP66:%.*]] = extractelement <vscale x 1 x i1> [[MASK:%.*]], i64 [[IV10]]
-; CHECK-NEXT:    br i1 [[TMP66]], label [[TMP67:%.*]], label [[TMP71]]
-; CHECK:       67:
-; CHECK-NEXT:    [[TMP68:%.*]] = mul i64 [[IV10]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP69:%.*]] = getelementptr i8, ptr [[BASE]], i64 [[TMP68]]
-; CHECK-NEXT:    [[TMP70:%.*]] = ptrtoint ptr [[TMP69]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP70]], i64 4)
-; CHECK-NEXT:    br label [[TMP71]]
-; CHECK:       71:
-; CHECK-NEXT:    [[IV10_NEXT]] = add nuw nsw i64 [[IV10]], 1
-; CHECK-NEXT:    [[IV10_CHECK:%.*]] = icmp eq i64 [[IV10_NEXT]], [[TMP65]]
-; CHECK-NEXT:    br i1 [[IV10_CHECK]], label [[DOTSPLIT9_SPLIT:%.*]], label [[DOTSPLIT9]]
-; CHECK:       .split9.split:
-; CHECK-NEXT:    br label [[TMP72]]
-; CHECK:       72:
-; CHECK-NEXT:    [[TMP73:%.*]] = getelementptr i8, ptr [[BASE]], i64 4
-; CHECK-NEXT:    [[TMP74:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP74]], label [[TMP75:%.*]], label [[TMP84:%.*]]
-; CHECK:       75:
-; CHECK-NEXT:    [[TMP76:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP77:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP76]])
-; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
-; CHECK:       .split11:
-; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP75]] ], [ [[IV12_NEXT:%.*]], [[TMP83:%.*]] ]
-; CHECK-NEXT:    [[TMP78:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV12]]
-; CHECK-NEXT:    br i1 [[TMP78]], label [[TMP79:%.*]], label [[TMP83]]
-; CHECK:       79:
-; CHECK-NEXT:    [[TMP80:%.*]] = mul i64 [[IV12]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP81:%.*]] = getelementptr i8, ptr [[TMP73]], i64 [[TMP80]]
-; CHECK-NEXT:    [[TMP82:%.*]] = ptrtoint ptr [[TMP81]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP82]], i64 4)
-; CHECK-NEXT:    br label [[TMP83]]
-; CHECK:       83:
-; CHECK-NEXT:    [[IV12_NEXT]] = add nuw nsw i64 [[IV12]], 1
-; CHECK-NEXT:    [[IV12_CHECK:%.*]] = icmp eq i64 [[IV12_NEXT]], [[TMP77]]
-; CHECK-NEXT:    br i1 [[IV12_CHECK]], label [[DOTSPLIT11_SPLIT:%.*]], label [[DOTSPLIT11]]
-; CHECK:       .split11.split:
-; CHECK-NEXT:    br label [[TMP84]]
-; CHECK:       84:
-; CHECK-NEXT:    [[TMP85:%.*]] = getelementptr i8, ptr [[BASE]], i64 8
-; CHECK-NEXT:    [[TMP86:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP86]], label [[TMP87:%.*]], label [[TMP96:%.*]]
-; CHECK:       87:
-; CHECK-NEXT:    [[TMP88:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP89:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP88]])
-; CHECK-NEXT:    br label [[DOTSPLIT13:%.*]]
-; CHECK:       .split13:
-; CHECK-NEXT:    [[IV14:%.*]] = phi i64 [ 0, [[TMP87]] ], [ [[IV14_NEXT:%.*]], [[TMP95:%.*]] ]
-; CHECK-NEXT:    [[TMP90:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV14]]
-; CHECK-NEXT:    br i1 [[TMP90]], label [[TMP91:%.*]], label [[TMP95]]
-; CHECK:       91:
-; CHECK-NEXT:    [[TMP92:%.*]] = mul i64 [[IV14]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP93:%.*]] = getelementptr i8, ptr [[TMP85]], i64 [[TMP92]]
-; CHECK-NEXT:    [[TMP94:%.*]] = ptrtoint ptr [[TMP93]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP94]], i64 4)
-; CHECK-NEXT:    br label [[TMP95]]
-; CHECK:       95:
-; CHECK-NEXT:    [[IV14_NEXT]] = add nuw nsw i64 [[IV14]], 1
-; CHECK-NEXT:    [[IV14_CHECK:%.*]] = icmp eq i64 [[IV14_NEXT]], [[TMP89]]
-; CHECK-NEXT:    br i1 [[IV14_CHECK]], label [[DOTSPLIT13_SPLIT:%.*]], label [[DOTSPLIT13]]
-; CHECK:       .split13.split:
-; CHECK-NEXT:    br label [[TMP96]]
-; CHECK:       96:
-; CHECK-NEXT:    [[TMP97:%.*]] = getelementptr i8, ptr [[BASE]], i64 12
-; CHECK-NEXT:    [[TMP98:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP98]], label [[TMP99:%.*]], label [[TMP108:%.*]]
-; CHECK:       99:
-; CHECK-NEXT:    [[TMP100:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP101:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP100]])
-; CHECK-NEXT:    br label [[DOTSPLIT15:%.*]]
-; CHECK:       .split15:
-; CHECK-NEXT:    [[IV16:%.*]] = phi i64 [ 0, [[TMP99]] ], [ [[IV16_NEXT:%.*]], [[TMP107:%.*]] ]
-; CHECK-NEXT:    [[TMP102:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV16]]
-; CHECK-NEXT:    br i1 [[TMP102]], label [[TMP103:%.*]], label [[TMP107]]
-; CHECK:       103:
-; CHECK-NEXT:    [[TMP104:%.*]] = mul i64 [[IV16]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP105:%.*]] = getelementptr i8, ptr [[TMP97]], i64 [[TMP104]]
-; CHECK-NEXT:    [[TMP106:%.*]] = ptrtoint ptr [[TMP105]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP106]], i64 4)
-; CHECK-NEXT:    br label [[TMP107]]
-; CHECK:       107:
-; CHECK-NEXT:    [[IV16_NEXT]] = add nuw nsw i64 [[IV16]], 1
-; CHECK-NEXT:    [[IV16_CHECK:%.*]] = icmp eq i64 [[IV16_NEXT]], [[TMP101]]
-; CHECK-NEXT:    br i1 [[IV16_CHECK]], label [[DOTSPLIT15_SPLIT:%.*]], label [[DOTSPLIT15]]
-; CHECK:       .split15.split:
-; CHECK-NEXT:    br label [[TMP108]]
-; CHECK:       108:
-; CHECK-NEXT:    [[TMP109:%.*]] = getelementptr i8, ptr [[BASE]], i64 16
-; CHECK-NEXT:    [[TMP110:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP110]], label [[TMP111:%.*]], label [[TMP120:%.*]]
-; CHECK:       111:
-; CHECK-NEXT:    [[TMP112:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP113:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP112]])
-; CHECK-NEXT:    br label [[DOTSPLIT17:%.*]]
-; CHECK:       .split17:
-; CHECK-NEXT:    [[IV18:%.*]] = phi i64 [ 0, [[TMP111]] ], [ [[IV18_NEXT:%.*]], [[TMP119:%.*]] ]
-; CHECK-NEXT:    [[TMP114:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV18]]
-; CHECK-NEXT:    br i1 [[TMP114]], label [[TMP115:%.*]], label [[TMP119]]
-; CHECK:       115:
-; CHECK-NEXT:    [[TMP116:%.*]] = mul i64 [[IV18]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP117:%.*]] = getelementptr i8, ptr [[TMP109]], i64 [[TMP116]]
-; CHECK-NEXT:    [[TMP118:%.*]] = ptrtoint ptr [[TMP117]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP118]], i64 4)
-; CHECK-NEXT:    br label [[TMP119]]
-; CHECK:       119:
-; CHECK-NEXT:    [[IV18_NEXT]] = add nuw nsw i64 [[IV18]], 1
-; CHECK-NEXT:    [[IV18_CHECK:%.*]] = icmp eq i64 [[IV18_NEXT]], [[TMP113]]
-; CHECK-NEXT:    br i1 [[IV18_CHECK]], label [[DOTSPLIT17_SPLIT:%.*]], label [[DOTSPLIT17]]
-; CHECK:       .split17.split:
-; CHECK-NEXT:    br label [[TMP120]]
-; CHECK:       120:
-; CHECK-NEXT:    [[TMP121:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg5.mask.nxv1i32.i64(<vscale x 1 x i32> [[TMP61]], <vscale x 1 x i32> [[TMP61]], <vscale x 1 x i32> [[TMP61]], <vscale x 1 x i32> [[TMP61]], <vscale x 1 x i32> [[TMP61]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP122:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP121]], 1
-; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP122]]
+; CHECK-NEXT:    [[TMP60:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vlsseg5.mask.triscv.vector.tuple_nxv4i8_5t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) undef, ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP61:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) [[TMP60]], i32 1)
+; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP61]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg5.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %offset, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 0
-  %2 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg5.mask.nxv1i32(<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %3 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %2, 1
-  ret <vscale x 1 x i32> %3
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vlsseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) undef, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %0, i32 1)
+  ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg6.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg6.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vlsseg6.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6), ptr, i64, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vlsseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 6), ptr, i64, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vlsseg6_nxv1i32(ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg6_nxv1i32(
@@ -5386,13 +5058,13 @@ define <vscale x 1 x i32> @test_vlsseg6_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK:       .split9.split:
 ; CHECK-NEXT:    br label [[TMP71]]
 ; CHECK:       71:
-; CHECK-NEXT:    [[TMP72:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg6.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP73:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP72]], 1
+; CHECK-NEXT:    [[TMP72:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vlsseg6.triscv.vector.tuple_nxv4i8_6t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP73:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) [[TMP72]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP73]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg6.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %offset, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vlsseg6.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) undef, ptr %base, i64 %offset, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
@@ -5408,7 +5080,7 @@ define <vscale x 1 x i32> @test_vlsseg6_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> [[MASK:%.*]], i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -5432,7 +5104,7 @@ define <vscale x 1 x i32> @test_vlsseg6_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -5456,7 +5128,7 @@ define <vscale x 1 x i32> @test_vlsseg6_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], [[OFFSET]]
@@ -5480,7 +5152,7 @@ define <vscale x 1 x i32> @test_vlsseg6_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], [[OFFSET]]
@@ -5504,7 +5176,7 @@ define <vscale x 1 x i32> @test_vlsseg6_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], [[OFFSET]]
@@ -5528,7 +5200,7 @@ define <vscale x 1 x i32> @test_vlsseg6_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP62]] ], [ [[IV10_NEXT:%.*]], [[TMP70:%.*]] ]
-; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP65]], label [[TMP66:%.*]], label [[TMP70]]
 ; CHECK:       66:
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], [[OFFSET]]
@@ -5543,165 +5215,19 @@ define <vscale x 1 x i32> @test_vlsseg6_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK:       .split9.split:
 ; CHECK-NEXT:    br label [[TMP71]]
 ; CHECK:       71:
-; CHECK-NEXT:    [[TMP72:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg6.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP73:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP72]], 0
-; CHECK-NEXT:    [[TMP74:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP74]], label [[TMP75:%.*]], label [[TMP84:%.*]]
-; CHECK:       75:
-; CHECK-NEXT:    [[TMP76:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP77:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP76]])
-; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
-; CHECK:       .split11:
-; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP75]] ], [ [[IV12_NEXT:%.*]], [[TMP83:%.*]] ]
-; CHECK-NEXT:    [[TMP78:%.*]] = extractelement <vscale x 1 x i1> [[MASK:%.*]], i64 [[IV12]]
-; CHECK-NEXT:    br i1 [[TMP78]], label [[TMP79:%.*]], label [[TMP83]]
-; CHECK:       79:
-; CHECK-NEXT:    [[TMP80:%.*]] = mul i64 [[IV12]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP81:%.*]] = getelementptr i8, ptr [[BASE]], i64 [[TMP80]]
-; CHECK-NEXT:    [[TMP82:%.*]] = ptrtoint ptr [[TMP81]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP82]], i64 4)
-; CHECK-NEXT:    br label [[TMP83]]
-; CHECK:       83:
-; CHECK-NEXT:    [[IV12_NEXT]] = add nuw nsw i64 [[IV12]], 1
-; CHECK-NEXT:    [[IV12_CHECK:%.*]] = icmp eq i64 [[IV12_NEXT]], [[TMP77]]
-; CHECK-NEXT:    br i1 [[IV12_CHECK]], label [[DOTSPLIT11_SPLIT:%.*]], label [[DOTSPLIT11]]
-; CHECK:       .split11.split:
-; CHECK-NEXT:    br label [[TMP84]]
-; CHECK:       84:
-; CHECK-NEXT:    [[TMP85:%.*]] = getelementptr i8, ptr [[BASE]], i64 4
-; CHECK-NEXT:    [[TMP86:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP86]], label [[TMP87:%.*]], label [[TMP96:%.*]]
-; CHECK:       87:
-; CHECK-NEXT:    [[TMP88:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP89:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP88]])
-; CHECK-NEXT:    br label [[DOTSPLIT13:%.*]]
-; CHECK:       .split13:
-; CHECK-NEXT:    [[IV14:%.*]] = phi i64 [ 0, [[TMP87]] ], [ [[IV14_NEXT:%.*]], [[TMP95:%.*]] ]
-; CHECK-NEXT:    [[TMP90:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV14]]
-; CHECK-NEXT:    br i1 [[TMP90]], label [[TMP91:%.*]], label [[TMP95]]
-; CHECK:       91:
-; CHECK-NEXT:    [[TMP92:%.*]] = mul i64 [[IV14]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP93:%.*]] = getelementptr i8, ptr [[TMP85]], i64 [[TMP92]]
-; CHECK-NEXT:    [[TMP94:%.*]] = ptrtoint ptr [[TMP93]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP94]], i64 4)
-; CHECK-NEXT:    br label [[TMP95]]
-; CHECK:       95:
-; CHECK-NEXT:    [[IV14_NEXT]] = add nuw nsw i64 [[IV14]], 1
-; CHECK-NEXT:    [[IV14_CHECK:%.*]] = icmp eq i64 [[IV14_NEXT]], [[TMP89]]
-; CHECK-NEXT:    br i1 [[IV14_CHECK]], label [[DOTSPLIT13_SPLIT:%.*]], label [[DOTSPLIT13]]
-; CHECK:       .split13.split:
-; CHECK-NEXT:    br label [[TMP96]]
-; CHECK:       96:
-; CHECK-NEXT:    [[TMP97:%.*]] = getelementptr i8, ptr [[BASE]], i64 8
-; CHECK-NEXT:    [[TMP98:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP98]], label [[TMP99:%.*]], label [[TMP108:%.*]]
-; CHECK:       99:
-; CHECK-NEXT:    [[TMP100:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP101:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP100]])
-; CHECK-NEXT:    br label [[DOTSPLIT15:%.*]]
-; CHECK:       .split15:
-; CHECK-NEXT:    [[IV16:%.*]] = phi i64 [ 0, [[TMP99]] ], [ [[IV16_NEXT:%.*]], [[TMP107:%.*]] ]
-; CHECK-NEXT:    [[TMP102:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV16]]
-; CHECK-NEXT:    br i1 [[TMP102]], label [[TMP103:%.*]], label [[TMP107]]
-; CHECK:       103:
-; CHECK-NEXT:    [[TMP104:%.*]] = mul i64 [[IV16]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP105:%.*]] = getelementptr i8, ptr [[TMP97]], i64 [[TMP104]]
-; CHECK-NEXT:    [[TMP106:%.*]] = ptrtoint ptr [[TMP105]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP106]], i64 4)
-; CHECK-NEXT:    br label [[TMP107]]
-; CHECK:       107:
-; CHECK-NEXT:    [[IV16_NEXT]] = add nuw nsw i64 [[IV16]], 1
-; CHECK-NEXT:    [[IV16_CHECK:%.*]] = icmp eq i64 [[IV16_NEXT]], [[TMP101]]
-; CHECK-NEXT:    br i1 [[IV16_CHECK]], label [[DOTSPLIT15_SPLIT:%.*]], label [[DOTSPLIT15]]
-; CHECK:       .split15.split:
-; CHECK-NEXT:    br label [[TMP108]]
-; CHECK:       108:
-; CHECK-NEXT:    [[TMP109:%.*]] = getelementptr i8, ptr [[BASE]], i64 12
-; CHECK-NEXT:    [[TMP110:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP110]], label [[TMP111:%.*]], label [[TMP120:%.*]]
-; CHECK:       111:
-; CHECK-NEXT:    [[TMP112:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP113:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP112]])
-; CHECK-NEXT:    br label [[DOTSPLIT17:%.*]]
-; CHECK:       .split17:
-; CHECK-NEXT:    [[IV18:%.*]] = phi i64 [ 0, [[TMP111]] ], [ [[IV18_NEXT:%.*]], [[TMP119:%.*]] ]
-; CHECK-NEXT:    [[TMP114:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV18]]
-; CHECK-NEXT:    br i1 [[TMP114]], label [[TMP115:%.*]], label [[TMP119]]
-; CHECK:       115:
-; CHECK-NEXT:    [[TMP116:%.*]] = mul i64 [[IV18]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP117:%.*]] = getelementptr i8, ptr [[TMP109]], i64 [[TMP116]]
-; CHECK-NEXT:    [[TMP118:%.*]] = ptrtoint ptr [[TMP117]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP118]], i64 4)
-; CHECK-NEXT:    br label [[TMP119]]
-; CHECK:       119:
-; CHECK-NEXT:    [[IV18_NEXT]] = add nuw nsw i64 [[IV18]], 1
-; CHECK-NEXT:    [[IV18_CHECK:%.*]] = icmp eq i64 [[IV18_NEXT]], [[TMP113]]
-; CHECK-NEXT:    br i1 [[IV18_CHECK]], label [[DOTSPLIT17_SPLIT:%.*]], label [[DOTSPLIT17]]
-; CHECK:       .split17.split:
-; CHECK-NEXT:    br label [[TMP120]]
-; CHECK:       120:
-; CHECK-NEXT:    [[TMP121:%.*]] = getelementptr i8, ptr [[BASE]], i64 16
-; CHECK-NEXT:    [[TMP122:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP122]], label [[TMP123:%.*]], label [[TMP132:%.*]]
-; CHECK:       123:
-; CHECK-NEXT:    [[TMP124:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP125:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP124]])
-; CHECK-NEXT:    br label [[DOTSPLIT19:%.*]]
-; CHECK:       .split19:
-; CHECK-NEXT:    [[IV20:%.*]] = phi i64 [ 0, [[TMP123]] ], [ [[IV20_NEXT:%.*]], [[TMP131:%.*]] ]
-; CHECK-NEXT:    [[TMP126:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV20]]
-; CHECK-NEXT:    br i1 [[TMP126]], label [[TMP127:%.*]], label [[TMP131]]
-; CHECK:       127:
-; CHECK-NEXT:    [[TMP128:%.*]] = mul i64 [[IV20]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP129:%.*]] = getelementptr i8, ptr [[TMP121]], i64 [[TMP128]]
-; CHECK-NEXT:    [[TMP130:%.*]] = ptrtoint ptr [[TMP129]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP130]], i64 4)
-; CHECK-NEXT:    br label [[TMP131]]
-; CHECK:       131:
-; CHECK-NEXT:    [[IV20_NEXT]] = add nuw nsw i64 [[IV20]], 1
-; CHECK-NEXT:    [[IV20_CHECK:%.*]] = icmp eq i64 [[IV20_NEXT]], [[TMP125]]
-; CHECK-NEXT:    br i1 [[IV20_CHECK]], label [[DOTSPLIT19_SPLIT:%.*]], label [[DOTSPLIT19]]
-; CHECK:       .split19.split:
-; CHECK-NEXT:    br label [[TMP132]]
-; CHECK:       132:
-; CHECK-NEXT:    [[TMP133:%.*]] = getelementptr i8, ptr [[BASE]], i64 20
-; CHECK-NEXT:    [[TMP134:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP134]], label [[TMP135:%.*]], label [[TMP144:%.*]]
-; CHECK:       135:
-; CHECK-NEXT:    [[TMP136:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP137:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP136]])
-; CHECK-NEXT:    br label [[DOTSPLIT21:%.*]]
-; CHECK:       .split21:
-; CHECK-NEXT:    [[IV22:%.*]] = phi i64 [ 0, [[TMP135]] ], [ [[IV22_NEXT:%.*]], [[TMP143:%.*]] ]
-; CHECK-NEXT:    [[TMP138:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV22]]
-; CHECK-NEXT:    br i1 [[TMP138]], label [[TMP139:%.*]], label [[TMP143]]
-; CHECK:       139:
-; CHECK-NEXT:    [[TMP140:%.*]] = mul i64 [[IV22]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP141:%.*]] = getelementptr i8, ptr [[TMP133]], i64 [[TMP140]]
-; CHECK-NEXT:    [[TMP142:%.*]] = ptrtoint ptr [[TMP141]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP142]], i64 4)
-; CHECK-NEXT:    br label [[TMP143]]
-; CHECK:       143:
-; CHECK-NEXT:    [[IV22_NEXT]] = add nuw nsw i64 [[IV22]], 1
-; CHECK-NEXT:    [[IV22_CHECK:%.*]] = icmp eq i64 [[IV22_NEXT]], [[TMP137]]
-; CHECK-NEXT:    br i1 [[IV22_CHECK]], label [[DOTSPLIT21_SPLIT:%.*]], label [[DOTSPLIT21]]
-; CHECK:       .split21.split:
-; CHECK-NEXT:    br label [[TMP144]]
-; CHECK:       144:
-; CHECK-NEXT:    [[TMP145:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg6.mask.nxv1i32.i64(<vscale x 1 x i32> [[TMP73]], <vscale x 1 x i32> [[TMP73]], <vscale x 1 x i32> [[TMP73]], <vscale x 1 x i32> [[TMP73]], <vscale x 1 x i32> [[TMP73]], <vscale x 1 x i32> [[TMP73]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP146:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP145]], 1
-; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP146]]
+; CHECK-NEXT:    [[TMP72:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vlsseg6.mask.triscv.vector.tuple_nxv4i8_6t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) undef, ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP73:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) [[TMP72]], i32 1)
+; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP73]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg6.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %offset, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 0
-  %2 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg6.mask.nxv1i32(<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %3 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %2, 1
-  ret <vscale x 1 x i32> %3
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vlsseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) undef, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %0, i32 1)
+  ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg7.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg7.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vlsseg7.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7), ptr, i64, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vlsseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 7), ptr, i64, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vlsseg7_nxv1i32(ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg7_nxv1i32(
@@ -5874,13 +5400,13 @@ define <vscale x 1 x i32> @test_vlsseg7_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK:       .split11.split:
 ; CHECK-NEXT:    br label [[TMP83]]
 ; CHECK:       83:
-; CHECK-NEXT:    [[TMP84:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg7.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP85:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP84]], 1
+; CHECK-NEXT:    [[TMP84:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vlsseg7.triscv.vector.tuple_nxv4i8_7t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP85:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) [[TMP84]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP85]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg7.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %offset, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vlsseg7.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) undef, ptr %base, i64 %offset, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
@@ -5896,7 +5422,7 @@ define <vscale x 1 x i32> @test_vlsseg7_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> [[MASK:%.*]], i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -5920,7 +5446,7 @@ define <vscale x 1 x i32> @test_vlsseg7_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -5944,7 +5470,7 @@ define <vscale x 1 x i32> @test_vlsseg7_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], [[OFFSET]]
@@ -5968,7 +5494,7 @@ define <vscale x 1 x i32> @test_vlsseg7_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], [[OFFSET]]
@@ -5992,7 +5518,7 @@ define <vscale x 1 x i32> @test_vlsseg7_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], [[OFFSET]]
@@ -6016,7 +5542,7 @@ define <vscale x 1 x i32> @test_vlsseg7_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP62]] ], [ [[IV10_NEXT:%.*]], [[TMP70:%.*]] ]
-; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP65]], label [[TMP66:%.*]], label [[TMP70]]
 ; CHECK:       66:
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], [[OFFSET]]
@@ -6040,7 +5566,7 @@ define <vscale x 1 x i32> @test_vlsseg7_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
 ; CHECK:       .split11:
 ; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP74]] ], [ [[IV12_NEXT:%.*]], [[TMP82:%.*]] ]
-; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV12]]
+; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV12]]
 ; CHECK-NEXT:    br i1 [[TMP77]], label [[TMP78:%.*]], label [[TMP82]]
 ; CHECK:       78:
 ; CHECK-NEXT:    [[TMP79:%.*]] = mul i64 [[IV12]], [[OFFSET]]
@@ -6055,189 +5581,19 @@ define <vscale x 1 x i32> @test_vlsseg7_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK:       .split11.split:
 ; CHECK-NEXT:    br label [[TMP83]]
 ; CHECK:       83:
-; CHECK-NEXT:    [[TMP84:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg7.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP85:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP84]], 0
-; CHECK-NEXT:    [[TMP86:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP86]], label [[TMP87:%.*]], label [[TMP96:%.*]]
-; CHECK:       87:
-; CHECK-NEXT:    [[TMP88:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP89:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP88]])
-; CHECK-NEXT:    br label [[DOTSPLIT13:%.*]]
-; CHECK:       .split13:
-; CHECK-NEXT:    [[IV14:%.*]] = phi i64 [ 0, [[TMP87]] ], [ [[IV14_NEXT:%.*]], [[TMP95:%.*]] ]
-; CHECK-NEXT:    [[TMP90:%.*]] = extractelement <vscale x 1 x i1> [[MASK:%.*]], i64 [[IV14]]
-; CHECK-NEXT:    br i1 [[TMP90]], label [[TMP91:%.*]], label [[TMP95]]
-; CHECK:       91:
-; CHECK-NEXT:    [[TMP92:%.*]] = mul i64 [[IV14]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP93:%.*]] = getelementptr i8, ptr [[BASE]], i64 [[TMP92]]
-; CHECK-NEXT:    [[TMP94:%.*]] = ptrtoint ptr [[TMP93]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP94]], i64 4)
-; CHECK-NEXT:    br label [[TMP95]]
-; CHECK:       95:
-; CHECK-NEXT:    [[IV14_NEXT]] = add nuw nsw i64 [[IV14]], 1
-; CHECK-NEXT:    [[IV14_CHECK:%.*]] = icmp eq i64 [[IV14_NEXT]], [[TMP89]]
-; CHECK-NEXT:    br i1 [[IV14_CHECK]], label [[DOTSPLIT13_SPLIT:%.*]], label [[DOTSPLIT13]]
-; CHECK:       .split13.split:
-; CHECK-NEXT:    br label [[TMP96]]
-; CHECK:       96:
-; CHECK-NEXT:    [[TMP97:%.*]] = getelementptr i8, ptr [[BASE]], i64 4
-; CHECK-NEXT:    [[TMP98:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP98]], label [[TMP99:%.*]], label [[TMP108:%.*]]
-; CHECK:       99:
-; CHECK-NEXT:    [[TMP100:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP101:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP100]])
-; CHECK-NEXT:    br label [[DOTSPLIT15:%.*]]
-; CHECK:       .split15:
-; CHECK-NEXT:    [[IV16:%.*]] = phi i64 [ 0, [[TMP99]] ], [ [[IV16_NEXT:%.*]], [[TMP107:%.*]] ]
-; CHECK-NEXT:    [[TMP102:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV16]]
-; CHECK-NEXT:    br i1 [[TMP102]], label [[TMP103:%.*]], label [[TMP107]]
-; CHECK:       103:
-; CHECK-NEXT:    [[TMP104:%.*]] = mul i64 [[IV16]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP105:%.*]] = getelementptr i8, ptr [[TMP97]], i64 [[TMP104]]
-; CHECK-NEXT:    [[TMP106:%.*]] = ptrtoint ptr [[TMP105]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP106]], i64 4)
-; CHECK-NEXT:    br label [[TMP107]]
-; CHECK:       107:
-; CHECK-NEXT:    [[IV16_NEXT]] = add nuw nsw i64 [[IV16]], 1
-; CHECK-NEXT:    [[IV16_CHECK:%.*]] = icmp eq i64 [[IV16_NEXT]], [[TMP101]]
-; CHECK-NEXT:    br i1 [[IV16_CHECK]], label [[DOTSPLIT15_SPLIT:%.*]], label [[DOTSPLIT15]]
-; CHECK:       .split15.split:
-; CHECK-NEXT:    br label [[TMP108]]
-; CHECK:       108:
-; CHECK-NEXT:    [[TMP109:%.*]] = getelementptr i8, ptr [[BASE]], i64 8
-; CHECK-NEXT:    [[TMP110:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP110]], label [[TMP111:%.*]], label [[TMP120:%.*]]
-; CHECK:       111:
-; CHECK-NEXT:    [[TMP112:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP113:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP112]])
-; CHECK-NEXT:    br label [[DOTSPLIT17:%.*]]
-; CHECK:       .split17:
-; CHECK-NEXT:    [[IV18:%.*]] = phi i64 [ 0, [[TMP111]] ], [ [[IV18_NEXT:%.*]], [[TMP119:%.*]] ]
-; CHECK-NEXT:    [[TMP114:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV18]]
-; CHECK-NEXT:    br i1 [[TMP114]], label [[TMP115:%.*]], label [[TMP119]]
-; CHECK:       115:
-; CHECK-NEXT:    [[TMP116:%.*]] = mul i64 [[IV18]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP117:%.*]] = getelementptr i8, ptr [[TMP109]], i64 [[TMP116]]
-; CHECK-NEXT:    [[TMP118:%.*]] = ptrtoint ptr [[TMP117]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP118]], i64 4)
-; CHECK-NEXT:    br label [[TMP119]]
-; CHECK:       119:
-; CHECK-NEXT:    [[IV18_NEXT]] = add nuw nsw i64 [[IV18]], 1
-; CHECK-NEXT:    [[IV18_CHECK:%.*]] = icmp eq i64 [[IV18_NEXT]], [[TMP113]]
-; CHECK-NEXT:    br i1 [[IV18_CHECK]], label [[DOTSPLIT17_SPLIT:%.*]], label [[DOTSPLIT17]]
-; CHECK:       .split17.split:
-; CHECK-NEXT:    br label [[TMP120]]
-; CHECK:       120:
-; CHECK-NEXT:    [[TMP121:%.*]] = getelementptr i8, ptr [[BASE]], i64 12
-; CHECK-NEXT:    [[TMP122:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP122]], label [[TMP123:%.*]], label [[TMP132:%.*]]
-; CHECK:       123:
-; CHECK-NEXT:    [[TMP124:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP125:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP124]])
-; CHECK-NEXT:    br label [[DOTSPLIT19:%.*]]
-; CHECK:       .split19:
-; CHECK-NEXT:    [[IV20:%.*]] = phi i64 [ 0, [[TMP123]] ], [ [[IV20_NEXT:%.*]], [[TMP131:%.*]] ]
-; CHECK-NEXT:    [[TMP126:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV20]]
-; CHECK-NEXT:    br i1 [[TMP126]], label [[TMP127:%.*]], label [[TMP131]]
-; CHECK:       127:
-; CHECK-NEXT:    [[TMP128:%.*]] = mul i64 [[IV20]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP129:%.*]] = getelementptr i8, ptr [[TMP121]], i64 [[TMP128]]
-; CHECK-NEXT:    [[TMP130:%.*]] = ptrtoint ptr [[TMP129]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP130]], i64 4)
-; CHECK-NEXT:    br label [[TMP131]]
-; CHECK:       131:
-; CHECK-NEXT:    [[IV20_NEXT]] = add nuw nsw i64 [[IV20]], 1
-; CHECK-NEXT:    [[IV20_CHECK:%.*]] = icmp eq i64 [[IV20_NEXT]], [[TMP125]]
-; CHECK-NEXT:    br i1 [[IV20_CHECK]], label [[DOTSPLIT19_SPLIT:%.*]], label [[DOTSPLIT19]]
-; CHECK:       .split19.split:
-; CHECK-NEXT:    br label [[TMP132]]
-; CHECK:       132:
-; CHECK-NEXT:    [[TMP133:%.*]] = getelementptr i8, ptr [[BASE]], i64 16
-; CHECK-NEXT:    [[TMP134:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP134]], label [[TMP135:%.*]], label [[TMP144:%.*]]
-; CHECK:       135:
-; CHECK-NEXT:    [[TMP136:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP137:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP136]])
-; CHECK-NEXT:    br label [[DOTSPLIT21:%.*]]
-; CHECK:       .split21:
-; CHECK-NEXT:    [[IV22:%.*]] = phi i64 [ 0, [[TMP135]] ], [ [[IV22_NEXT:%.*]], [[TMP143:%.*]] ]
-; CHECK-NEXT:    [[TMP138:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV22]]
-; CHECK-NEXT:    br i1 [[TMP138]], label [[TMP139:%.*]], label [[TMP143]]
-; CHECK:       139:
-; CHECK-NEXT:    [[TMP140:%.*]] = mul i64 [[IV22]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP141:%.*]] = getelementptr i8, ptr [[TMP133]], i64 [[TMP140]]
-; CHECK-NEXT:    [[TMP142:%.*]] = ptrtoint ptr [[TMP141]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP142]], i64 4)
-; CHECK-NEXT:    br label [[TMP143]]
-; CHECK:       143:
-; CHECK-NEXT:    [[IV22_NEXT]] = add nuw nsw i64 [[IV22]], 1
-; CHECK-NEXT:    [[IV22_CHECK:%.*]] = icmp eq i64 [[IV22_NEXT]], [[TMP137]]
-; CHECK-NEXT:    br i1 [[IV22_CHECK]], label [[DOTSPLIT21_SPLIT:%.*]], label [[DOTSPLIT21]]
-; CHECK:       .split21.split:
-; CHECK-NEXT:    br label [[TMP144]]
-; CHECK:       144:
-; CHECK-NEXT:    [[TMP145:%.*]] = getelementptr i8, ptr [[BASE]], i64 20
-; CHECK-NEXT:    [[TMP146:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP146]], label [[TMP147:%.*]], label [[TMP156:%.*]]
-; CHECK:       147:
-; CHECK-NEXT:    [[TMP148:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP149:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP148]])
-; CHECK-NEXT:    br label [[DOTSPLIT23:%.*]]
-; CHECK:       .split23:
-; CHECK-NEXT:    [[IV24:%.*]] = phi i64 [ 0, [[TMP147]] ], [ [[IV24_NEXT:%.*]], [[TMP155:%.*]] ]
-; CHECK-NEXT:    [[TMP150:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV24]]
-; CHECK-NEXT:    br i1 [[TMP150]], label [[TMP151:%.*]], label [[TMP155]]
-; CHECK:       151:
-; CHECK-NEXT:    [[TMP152:%.*]] = mul i64 [[IV24]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP153:%.*]] = getelementptr i8, ptr [[TMP145]], i64 [[TMP152]]
-; CHECK-NEXT:    [[TMP154:%.*]] = ptrtoint ptr [[TMP153]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP154]], i64 4)
-; CHECK-NEXT:    br label [[TMP155]]
-; CHECK:       155:
-; CHECK-NEXT:    [[IV24_NEXT]] = add nuw nsw i64 [[IV24]], 1
-; CHECK-NEXT:    [[IV24_CHECK:%.*]] = icmp eq i64 [[IV24_NEXT]], [[TMP149]]
-; CHECK-NEXT:    br i1 [[IV24_CHECK]], label [[DOTSPLIT23_SPLIT:%.*]], label [[DOTSPLIT23]]
-; CHECK:       .split23.split:
-; CHECK-NEXT:    br label [[TMP156]]
-; CHECK:       156:
-; CHECK-NEXT:    [[TMP157:%.*]] = getelementptr i8, ptr [[BASE]], i64 24
-; CHECK-NEXT:    [[TMP158:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP158]], label [[TMP159:%.*]], label [[TMP168:%.*]]
-; CHECK:       159:
-; CHECK-NEXT:    [[TMP160:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP161:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP160]])
-; CHECK-NEXT:    br label [[DOTSPLIT25:%.*]]
-; CHECK:       .split25:
-; CHECK-NEXT:    [[IV26:%.*]] = phi i64 [ 0, [[TMP159]] ], [ [[IV26_NEXT:%.*]], [[TMP167:%.*]] ]
-; CHECK-NEXT:    [[TMP162:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV26]]
-; CHECK-NEXT:    br i1 [[TMP162]], label [[TMP163:%.*]], label [[TMP167]]
-; CHECK:       163:
-; CHECK-NEXT:    [[TMP164:%.*]] = mul i64 [[IV26]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP165:%.*]] = getelementptr i8, ptr [[TMP157]], i64 [[TMP164]]
-; CHECK-NEXT:    [[TMP166:%.*]] = ptrtoint ptr [[TMP165]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP166]], i64 4)
-; CHECK-NEXT:    br label [[TMP167]]
-; CHECK:       167:
-; CHECK-NEXT:    [[IV26_NEXT]] = add nuw nsw i64 [[IV26]], 1
-; CHECK-NEXT:    [[IV26_CHECK:%.*]] = icmp eq i64 [[IV26_NEXT]], [[TMP161]]
-; CHECK-NEXT:    br i1 [[IV26_CHECK]], label [[DOTSPLIT25_SPLIT:%.*]], label [[DOTSPLIT25]]
-; CHECK:       .split25.split:
-; CHECK-NEXT:    br label [[TMP168]]
-; CHECK:       168:
-; CHECK-NEXT:    [[TMP169:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg7.mask.nxv1i32.i64(<vscale x 1 x i32> [[TMP85]], <vscale x 1 x i32> [[TMP85]], <vscale x 1 x i32> [[TMP85]], <vscale x 1 x i32> [[TMP85]], <vscale x 1 x i32> [[TMP85]], <vscale x 1 x i32> [[TMP85]], <vscale x 1 x i32> [[TMP85]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP170:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP169]], 1
-; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP170]]
+; CHECK-NEXT:    [[TMP84:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vlsseg7.mask.triscv.vector.tuple_nxv4i8_7t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) undef, ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP85:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) [[TMP84]], i32 1)
+; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP85]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg7.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %offset, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 0
-  %2 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg7.mask.nxv1i32(<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %3 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %2, 1
-  ret <vscale x 1 x i32> %3
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vlsseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) undef, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %0, i32 1)
+  ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg8.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg8.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vlsseg8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8), ptr, i64, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vlsseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8), ptr, i64, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vlsseg8_nxv1i32(ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vlsseg8_nxv1i32(
@@ -6434,13 +5790,13 @@ define <vscale x 1 x i32> @test_vlsseg8_nxv1i32(ptr %base, i64 %offset, i64 %vl)
 ; CHECK:       .split13.split:
 ; CHECK-NEXT:    br label [[TMP95]]
 ; CHECK:       95:
-; CHECK-NEXT:    [[TMP96:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg8.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP97:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP96]], 1
+; CHECK-NEXT:    [[TMP96:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vlsseg8.triscv.vector.tuple_nxv4i8_8t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP97:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP96]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP97]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg8.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef ,<vscale x 1 x i32> undef ,<vscale x 1 x i32> undef, <vscale x 1 x i32> undef ,<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %offset, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vlsseg8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) undef, ptr %base, i64 %offset, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
@@ -6456,7 +5812,7 @@ define <vscale x 1 x i32> @test_vlsseg8_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT:%.*]]
 ; CHECK:       .split:
 ; CHECK-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[TMP2]] ], [ [[IV_NEXT:%.*]], [[TMP10:%.*]] ]
-; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV]]
+; CHECK-NEXT:    [[TMP5:%.*]] = extractelement <vscale x 1 x i1> [[MASK:%.*]], i64 [[IV]]
 ; CHECK-NEXT:    br i1 [[TMP5]], label [[TMP6:%.*]], label [[TMP10]]
 ; CHECK:       6:
 ; CHECK-NEXT:    [[TMP7:%.*]] = mul i64 [[IV]], [[OFFSET:%.*]]
@@ -6480,7 +5836,7 @@ define <vscale x 1 x i32> @test_vlsseg8_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT1:%.*]]
 ; CHECK:       .split1:
 ; CHECK-NEXT:    [[IV2:%.*]] = phi i64 [ 0, [[TMP14]] ], [ [[IV2_NEXT:%.*]], [[TMP22:%.*]] ]
-; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV2]]
+; CHECK-NEXT:    [[TMP17:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV2]]
 ; CHECK-NEXT:    br i1 [[TMP17]], label [[TMP18:%.*]], label [[TMP22]]
 ; CHECK:       18:
 ; CHECK-NEXT:    [[TMP19:%.*]] = mul i64 [[IV2]], [[OFFSET]]
@@ -6504,7 +5860,7 @@ define <vscale x 1 x i32> @test_vlsseg8_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT3:%.*]]
 ; CHECK:       .split3:
 ; CHECK-NEXT:    [[IV4:%.*]] = phi i64 [ 0, [[TMP26]] ], [ [[IV4_NEXT:%.*]], [[TMP34:%.*]] ]
-; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV4]]
+; CHECK-NEXT:    [[TMP29:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV4]]
 ; CHECK-NEXT:    br i1 [[TMP29]], label [[TMP30:%.*]], label [[TMP34]]
 ; CHECK:       30:
 ; CHECK-NEXT:    [[TMP31:%.*]] = mul i64 [[IV4]], [[OFFSET]]
@@ -6528,7 +5884,7 @@ define <vscale x 1 x i32> @test_vlsseg8_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT5:%.*]]
 ; CHECK:       .split5:
 ; CHECK-NEXT:    [[IV6:%.*]] = phi i64 [ 0, [[TMP38]] ], [ [[IV6_NEXT:%.*]], [[TMP46:%.*]] ]
-; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV6]]
+; CHECK-NEXT:    [[TMP41:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV6]]
 ; CHECK-NEXT:    br i1 [[TMP41]], label [[TMP42:%.*]], label [[TMP46]]
 ; CHECK:       42:
 ; CHECK-NEXT:    [[TMP43:%.*]] = mul i64 [[IV6]], [[OFFSET]]
@@ -6552,7 +5908,7 @@ define <vscale x 1 x i32> @test_vlsseg8_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT7:%.*]]
 ; CHECK:       .split7:
 ; CHECK-NEXT:    [[IV8:%.*]] = phi i64 [ 0, [[TMP50]] ], [ [[IV8_NEXT:%.*]], [[TMP58:%.*]] ]
-; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV8]]
+; CHECK-NEXT:    [[TMP53:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV8]]
 ; CHECK-NEXT:    br i1 [[TMP53]], label [[TMP54:%.*]], label [[TMP58]]
 ; CHECK:       54:
 ; CHECK-NEXT:    [[TMP55:%.*]] = mul i64 [[IV8]], [[OFFSET]]
@@ -6576,7 +5932,7 @@ define <vscale x 1 x i32> @test_vlsseg8_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT9:%.*]]
 ; CHECK:       .split9:
 ; CHECK-NEXT:    [[IV10:%.*]] = phi i64 [ 0, [[TMP62]] ], [ [[IV10_NEXT:%.*]], [[TMP70:%.*]] ]
-; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV10]]
+; CHECK-NEXT:    [[TMP65:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV10]]
 ; CHECK-NEXT:    br i1 [[TMP65]], label [[TMP66:%.*]], label [[TMP70]]
 ; CHECK:       66:
 ; CHECK-NEXT:    [[TMP67:%.*]] = mul i64 [[IV10]], [[OFFSET]]
@@ -6600,7 +5956,7 @@ define <vscale x 1 x i32> @test_vlsseg8_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT11:%.*]]
 ; CHECK:       .split11:
 ; CHECK-NEXT:    [[IV12:%.*]] = phi i64 [ 0, [[TMP74]] ], [ [[IV12_NEXT:%.*]], [[TMP82:%.*]] ]
-; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV12]]
+; CHECK-NEXT:    [[TMP77:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV12]]
 ; CHECK-NEXT:    br i1 [[TMP77]], label [[TMP78:%.*]], label [[TMP82]]
 ; CHECK:       78:
 ; CHECK-NEXT:    [[TMP79:%.*]] = mul i64 [[IV12]], [[OFFSET]]
@@ -6624,7 +5980,7 @@ define <vscale x 1 x i32> @test_vlsseg8_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK-NEXT:    br label [[DOTSPLIT13:%.*]]
 ; CHECK:       .split13:
 ; CHECK-NEXT:    [[IV14:%.*]] = phi i64 [ 0, [[TMP86]] ], [ [[IV14_NEXT:%.*]], [[TMP94:%.*]] ]
-; CHECK-NEXT:    [[TMP89:%.*]] = extractelement <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i64 [[IV14]]
+; CHECK-NEXT:    [[TMP89:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV14]]
 ; CHECK-NEXT:    br i1 [[TMP89]], label [[TMP90:%.*]], label [[TMP94]]
 ; CHECK:       90:
 ; CHECK-NEXT:    [[TMP91:%.*]] = mul i64 [[IV14]], [[OFFSET]]
@@ -6639,215 +5995,21 @@ define <vscale x 1 x i32> @test_vlsseg8_mask_nxv1i32(ptr %base, i64 %offset, i64
 ; CHECK:       .split13.split:
 ; CHECK-NEXT:    br label [[TMP95]]
 ; CHECK:       95:
-; CHECK-NEXT:    [[TMP96:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg8.nxv1i32.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP97:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP96]], 0
-; CHECK-NEXT:    [[TMP98:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP98]], label [[TMP99:%.*]], label [[TMP108:%.*]]
-; CHECK:       99:
-; CHECK-NEXT:    [[TMP100:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP101:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP100]])
-; CHECK-NEXT:    br label [[DOTSPLIT15:%.*]]
-; CHECK:       .split15:
-; CHECK-NEXT:    [[IV16:%.*]] = phi i64 [ 0, [[TMP99]] ], [ [[IV16_NEXT:%.*]], [[TMP107:%.*]] ]
-; CHECK-NEXT:    [[TMP102:%.*]] = extractelement <vscale x 1 x i1> [[MASK:%.*]], i64 [[IV16]]
-; CHECK-NEXT:    br i1 [[TMP102]], label [[TMP103:%.*]], label [[TMP107]]
-; CHECK:       103:
-; CHECK-NEXT:    [[TMP104:%.*]] = mul i64 [[IV16]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP105:%.*]] = getelementptr i8, ptr [[BASE]], i64 [[TMP104]]
-; CHECK-NEXT:    [[TMP106:%.*]] = ptrtoint ptr [[TMP105]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP106]], i64 4)
-; CHECK-NEXT:    br label [[TMP107]]
-; CHECK:       107:
-; CHECK-NEXT:    [[IV16_NEXT]] = add nuw nsw i64 [[IV16]], 1
-; CHECK-NEXT:    [[IV16_CHECK:%.*]] = icmp eq i64 [[IV16_NEXT]], [[TMP101]]
-; CHECK-NEXT:    br i1 [[IV16_CHECK]], label [[DOTSPLIT15_SPLIT:%.*]], label [[DOTSPLIT15]]
-; CHECK:       .split15.split:
-; CHECK-NEXT:    br label [[TMP108]]
-; CHECK:       108:
-; CHECK-NEXT:    [[TMP109:%.*]] = getelementptr i8, ptr [[BASE]], i64 4
-; CHECK-NEXT:    [[TMP110:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP110]], label [[TMP111:%.*]], label [[TMP120:%.*]]
-; CHECK:       111:
-; CHECK-NEXT:    [[TMP112:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP113:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP112]])
-; CHECK-NEXT:    br label [[DOTSPLIT17:%.*]]
-; CHECK:       .split17:
-; CHECK-NEXT:    [[IV18:%.*]] = phi i64 [ 0, [[TMP111]] ], [ [[IV18_NEXT:%.*]], [[TMP119:%.*]] ]
-; CHECK-NEXT:    [[TMP114:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV18]]
-; CHECK-NEXT:    br i1 [[TMP114]], label [[TMP115:%.*]], label [[TMP119]]
-; CHECK:       115:
-; CHECK-NEXT:    [[TMP116:%.*]] = mul i64 [[IV18]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP117:%.*]] = getelementptr i8, ptr [[TMP109]], i64 [[TMP116]]
-; CHECK-NEXT:    [[TMP118:%.*]] = ptrtoint ptr [[TMP117]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP118]], i64 4)
-; CHECK-NEXT:    br label [[TMP119]]
-; CHECK:       119:
-; CHECK-NEXT:    [[IV18_NEXT]] = add nuw nsw i64 [[IV18]], 1
-; CHECK-NEXT:    [[IV18_CHECK:%.*]] = icmp eq i64 [[IV18_NEXT]], [[TMP113]]
-; CHECK-NEXT:    br i1 [[IV18_CHECK]], label [[DOTSPLIT17_SPLIT:%.*]], label [[DOTSPLIT17]]
-; CHECK:       .split17.split:
-; CHECK-NEXT:    br label [[TMP120]]
-; CHECK:       120:
-; CHECK-NEXT:    [[TMP121:%.*]] = getelementptr i8, ptr [[BASE]], i64 8
-; CHECK-NEXT:    [[TMP122:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP122]], label [[TMP123:%.*]], label [[TMP132:%.*]]
-; CHECK:       123:
-; CHECK-NEXT:    [[TMP124:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP125:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP124]])
-; CHECK-NEXT:    br label [[DOTSPLIT19:%.*]]
-; CHECK:       .split19:
-; CHECK-NEXT:    [[IV20:%.*]] = phi i64 [ 0, [[TMP123]] ], [ [[IV20_NEXT:%.*]], [[TMP131:%.*]] ]
-; CHECK-NEXT:    [[TMP126:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV20]]
-; CHECK-NEXT:    br i1 [[TMP126]], label [[TMP127:%.*]], label [[TMP131]]
-; CHECK:       127:
-; CHECK-NEXT:    [[TMP128:%.*]] = mul i64 [[IV20]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP129:%.*]] = getelementptr i8, ptr [[TMP121]], i64 [[TMP128]]
-; CHECK-NEXT:    [[TMP130:%.*]] = ptrtoint ptr [[TMP129]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP130]], i64 4)
-; CHECK-NEXT:    br label [[TMP131]]
-; CHECK:       131:
-; CHECK-NEXT:    [[IV20_NEXT]] = add nuw nsw i64 [[IV20]], 1
-; CHECK-NEXT:    [[IV20_CHECK:%.*]] = icmp eq i64 [[IV20_NEXT]], [[TMP125]]
-; CHECK-NEXT:    br i1 [[IV20_CHECK]], label [[DOTSPLIT19_SPLIT:%.*]], label [[DOTSPLIT19]]
-; CHECK:       .split19.split:
-; CHECK-NEXT:    br label [[TMP132]]
-; CHECK:       132:
-; CHECK-NEXT:    [[TMP133:%.*]] = getelementptr i8, ptr [[BASE]], i64 12
-; CHECK-NEXT:    [[TMP134:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP134]], label [[TMP135:%.*]], label [[TMP144:%.*]]
-; CHECK:       135:
-; CHECK-NEXT:    [[TMP136:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP137:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP136]])
-; CHECK-NEXT:    br label [[DOTSPLIT21:%.*]]
-; CHECK:       .split21:
-; CHECK-NEXT:    [[IV22:%.*]] = phi i64 [ 0, [[TMP135]] ], [ [[IV22_NEXT:%.*]], [[TMP143:%.*]] ]
-; CHECK-NEXT:    [[TMP138:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV22]]
-; CHECK-NEXT:    br i1 [[TMP138]], label [[TMP139:%.*]], label [[TMP143]]
-; CHECK:       139:
-; CHECK-NEXT:    [[TMP140:%.*]] = mul i64 [[IV22]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP141:%.*]] = getelementptr i8, ptr [[TMP133]], i64 [[TMP140]]
-; CHECK-NEXT:    [[TMP142:%.*]] = ptrtoint ptr [[TMP141]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP142]], i64 4)
-; CHECK-NEXT:    br label [[TMP143]]
-; CHECK:       143:
-; CHECK-NEXT:    [[IV22_NEXT]] = add nuw nsw i64 [[IV22]], 1
-; CHECK-NEXT:    [[IV22_CHECK:%.*]] = icmp eq i64 [[IV22_NEXT]], [[TMP137]]
-; CHECK-NEXT:    br i1 [[IV22_CHECK]], label [[DOTSPLIT21_SPLIT:%.*]], label [[DOTSPLIT21]]
-; CHECK:       .split21.split:
-; CHECK-NEXT:    br label [[TMP144]]
-; CHECK:       144:
-; CHECK-NEXT:    [[TMP145:%.*]] = getelementptr i8, ptr [[BASE]], i64 16
-; CHECK-NEXT:    [[TMP146:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP146]], label [[TMP147:%.*]], label [[TMP156:%.*]]
-; CHECK:       147:
-; CHECK-NEXT:    [[TMP148:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP149:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP148]])
-; CHECK-NEXT:    br label [[DOTSPLIT23:%.*]]
-; CHECK:       .split23:
-; CHECK-NEXT:    [[IV24:%.*]] = phi i64 [ 0, [[TMP147]] ], [ [[IV24_NEXT:%.*]], [[TMP155:%.*]] ]
-; CHECK-NEXT:    [[TMP150:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV24]]
-; CHECK-NEXT:    br i1 [[TMP150]], label [[TMP151:%.*]], label [[TMP155]]
-; CHECK:       151:
-; CHECK-NEXT:    [[TMP152:%.*]] = mul i64 [[IV24]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP153:%.*]] = getelementptr i8, ptr [[TMP145]], i64 [[TMP152]]
-; CHECK-NEXT:    [[TMP154:%.*]] = ptrtoint ptr [[TMP153]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP154]], i64 4)
-; CHECK-NEXT:    br label [[TMP155]]
-; CHECK:       155:
-; CHECK-NEXT:    [[IV24_NEXT]] = add nuw nsw i64 [[IV24]], 1
-; CHECK-NEXT:    [[IV24_CHECK:%.*]] = icmp eq i64 [[IV24_NEXT]], [[TMP149]]
-; CHECK-NEXT:    br i1 [[IV24_CHECK]], label [[DOTSPLIT23_SPLIT:%.*]], label [[DOTSPLIT23]]
-; CHECK:       .split23.split:
-; CHECK-NEXT:    br label [[TMP156]]
-; CHECK:       156:
-; CHECK-NEXT:    [[TMP157:%.*]] = getelementptr i8, ptr [[BASE]], i64 20
-; CHECK-NEXT:    [[TMP158:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP158]], label [[TMP159:%.*]], label [[TMP168:%.*]]
-; CHECK:       159:
-; CHECK-NEXT:    [[TMP160:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP161:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP160]])
-; CHECK-NEXT:    br label [[DOTSPLIT25:%.*]]
-; CHECK:       .split25:
-; CHECK-NEXT:    [[IV26:%.*]] = phi i64 [ 0, [[TMP159]] ], [ [[IV26_NEXT:%.*]], [[TMP167:%.*]] ]
-; CHECK-NEXT:    [[TMP162:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV26]]
-; CHECK-NEXT:    br i1 [[TMP162]], label [[TMP163:%.*]], label [[TMP167]]
-; CHECK:       163:
-; CHECK-NEXT:    [[TMP164:%.*]] = mul i64 [[IV26]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP165:%.*]] = getelementptr i8, ptr [[TMP157]], i64 [[TMP164]]
-; CHECK-NEXT:    [[TMP166:%.*]] = ptrtoint ptr [[TMP165]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP166]], i64 4)
-; CHECK-NEXT:    br label [[TMP167]]
-; CHECK:       167:
-; CHECK-NEXT:    [[IV26_NEXT]] = add nuw nsw i64 [[IV26]], 1
-; CHECK-NEXT:    [[IV26_CHECK:%.*]] = icmp eq i64 [[IV26_NEXT]], [[TMP161]]
-; CHECK-NEXT:    br i1 [[IV26_CHECK]], label [[DOTSPLIT25_SPLIT:%.*]], label [[DOTSPLIT25]]
-; CHECK:       .split25.split:
-; CHECK-NEXT:    br label [[TMP168]]
-; CHECK:       168:
-; CHECK-NEXT:    [[TMP169:%.*]] = getelementptr i8, ptr [[BASE]], i64 24
-; CHECK-NEXT:    [[TMP170:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP170]], label [[TMP171:%.*]], label [[TMP180:%.*]]
-; CHECK:       171:
-; CHECK-NEXT:    [[TMP172:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP173:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP172]])
-; CHECK-NEXT:    br label [[DOTSPLIT27:%.*]]
-; CHECK:       .split27:
-; CHECK-NEXT:    [[IV28:%.*]] = phi i64 [ 0, [[TMP171]] ], [ [[IV28_NEXT:%.*]], [[TMP179:%.*]] ]
-; CHECK-NEXT:    [[TMP174:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV28]]
-; CHECK-NEXT:    br i1 [[TMP174]], label [[TMP175:%.*]], label [[TMP179]]
-; CHECK:       175:
-; CHECK-NEXT:    [[TMP176:%.*]] = mul i64 [[IV28]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP177:%.*]] = getelementptr i8, ptr [[TMP169]], i64 [[TMP176]]
-; CHECK-NEXT:    [[TMP178:%.*]] = ptrtoint ptr [[TMP177]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP178]], i64 4)
-; CHECK-NEXT:    br label [[TMP179]]
-; CHECK:       179:
-; CHECK-NEXT:    [[IV28_NEXT]] = add nuw nsw i64 [[IV28]], 1
-; CHECK-NEXT:    [[IV28_CHECK:%.*]] = icmp eq i64 [[IV28_NEXT]], [[TMP173]]
-; CHECK-NEXT:    br i1 [[IV28_CHECK]], label [[DOTSPLIT27_SPLIT:%.*]], label [[DOTSPLIT27]]
-; CHECK:       .split27.split:
-; CHECK-NEXT:    br label [[TMP180]]
-; CHECK:       180:
-; CHECK-NEXT:    [[TMP181:%.*]] = getelementptr i8, ptr [[BASE]], i64 28
-; CHECK-NEXT:    [[TMP182:%.*]] = icmp ne i64 [[VL]], 0
-; CHECK-NEXT:    br i1 [[TMP182]], label [[TMP183:%.*]], label [[TMP192:%.*]]
-; CHECK:       183:
-; CHECK-NEXT:    [[TMP184:%.*]] = call i64 @llvm.vscale.i64()
-; CHECK-NEXT:    [[TMP185:%.*]] = call i64 @llvm.umin.i64(i64 [[VL]], i64 [[TMP184]])
-; CHECK-NEXT:    br label [[DOTSPLIT29:%.*]]
-; CHECK:       .split29:
-; CHECK-NEXT:    [[IV30:%.*]] = phi i64 [ 0, [[TMP183]] ], [ [[IV30_NEXT:%.*]], [[TMP191:%.*]] ]
-; CHECK-NEXT:    [[TMP186:%.*]] = extractelement <vscale x 1 x i1> [[MASK]], i64 [[IV30]]
-; CHECK-NEXT:    br i1 [[TMP186]], label [[TMP187:%.*]], label [[TMP191]]
-; CHECK:       187:
-; CHECK-NEXT:    [[TMP188:%.*]] = mul i64 [[IV30]], [[OFFSET]]
-; CHECK-NEXT:    [[TMP189:%.*]] = getelementptr i8, ptr [[TMP181]], i64 [[TMP188]]
-; CHECK-NEXT:    [[TMP190:%.*]] = ptrtoint ptr [[TMP189]] to i64
-; CHECK-NEXT:    call void @__asan_loadN(i64 [[TMP190]], i64 4)
-; CHECK-NEXT:    br label [[TMP191]]
-; CHECK:       191:
-; CHECK-NEXT:    [[IV30_NEXT]] = add nuw nsw i64 [[IV30]], 1
-; CHECK-NEXT:    [[IV30_CHECK:%.*]] = icmp eq i64 [[IV30_NEXT]], [[TMP185]]
-; CHECK-NEXT:    br i1 [[IV30_CHECK]], label [[DOTSPLIT29_SPLIT:%.*]], label [[DOTSPLIT29]]
-; CHECK:       .split29.split:
-; CHECK-NEXT:    br label [[TMP192]]
-; CHECK:       192:
-; CHECK-NEXT:    [[TMP193:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vlsseg8.mask.nxv1i32.i64(<vscale x 1 x i32> [[TMP97]], <vscale x 1 x i32> [[TMP97]], <vscale x 1 x i32> [[TMP97]], <vscale x 1 x i32> [[TMP97]], <vscale x 1 x i32> [[TMP97]], <vscale x 1 x i32> [[TMP97]], <vscale x 1 x i32> [[TMP97]], <vscale x 1 x i32> [[TMP97]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP194:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP193]], 1
-; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP194]]
+; CHECK-NEXT:    [[TMP96:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vlsseg8.mask.triscv.vector.tuple_nxv4i8_8t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) undef, ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP97:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP96]], i32 1)
+; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP97]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg8.nxv1i32(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef ,<vscale x 1 x i32> undef ,<vscale x 1 x i32> undef, <vscale x 1 x i32> undef ,<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, i64 %offset, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 0
-  %2 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vlsseg8.mask.nxv1i32(<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1,<vscale x 1 x i32> %1, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %3 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %2, 1
-  ret <vscale x 1 x i32> %3
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vlsseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) undef, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %0, i32 1)
+  ret <vscale x 1 x i32> %1
 }
 
-declare void @llvm.riscv.vssseg2.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, i64)
-declare void @llvm.riscv.vssseg2.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, <vscale x 1 x i1>, i64)
 
-define void @test_vssseg2_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vssseg2.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2), ptr, i64, i64, i64)
+declare void @llvm.riscv.vssseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 2), ptr, i64, <vscale x 1 x i1>, i64, i64)
+
+define void @test_vssseg2_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg2_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -6898,15 +6060,15 @@ define void @test_vssseg2_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offse
 ; CHECK:       .split1.split:
 ; CHECK-NEXT:    br label [[TMP23]]
 ; CHECK:       23:
-; CHECK-NEXT:    tail call void @llvm.riscv.vssseg2.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vssseg2.triscv.vector.tuple_nxv4i8_2t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) [[VAL:%.*]], ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vssseg2.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl)
+  tail call void @llvm.riscv.vssseg2.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %val, ptr %base, i64 %offset, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vssseg2_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vssseg2_mask_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %val, ptr %base, i64 %offset, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vssseg2_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -6957,18 +6119,19 @@ define void @test_vssseg2_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %
 ; CHECK:       .split1.split:
 ; CHECK-NEXT:    br label [[TMP23]]
 ; CHECK:       23:
-; CHECK-NEXT:    tail call void @llvm.riscv.vssseg2.mask.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vssseg2.mask.triscv.vector.tuple_nxv4i8_2t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) [[VAL:%.*]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vssseg2.mask.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vssseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vssseg3.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, i64)
-declare void @llvm.riscv.vssseg3.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, <vscale x 1 x i1>, i64)
 
-define void @test_vssseg3_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vssseg3.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3), ptr, i64, i64, i64)
+declare void @llvm.riscv.vssseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 3), ptr, i64, <vscale x 1 x i1>, i64, i64)
+
+define void @test_vssseg3_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg3_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -7043,15 +6206,15 @@ define void @test_vssseg3_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offse
 ; CHECK:       .split3.split:
 ; CHECK-NEXT:    br label [[TMP35]]
 ; CHECK:       35:
-; CHECK-NEXT:    tail call void @llvm.riscv.vssseg3.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vssseg3.triscv.vector.tuple_nxv4i8_3t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) [[VAL:%.*]], ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vssseg3.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl)
+  tail call void @llvm.riscv.vssseg3.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %val, ptr %base, i64 %offset, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vssseg3_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vssseg3_mask_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %val, ptr %base, i64 %offset, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vssseg3_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -7126,18 +6289,19 @@ define void @test_vssseg3_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %
 ; CHECK:       .split3.split:
 ; CHECK-NEXT:    br label [[TMP35]]
 ; CHECK:       35:
-; CHECK-NEXT:    tail call void @llvm.riscv.vssseg3.mask.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vssseg3.mask.triscv.vector.tuple_nxv4i8_3t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) [[VAL:%.*]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vssseg3.mask.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vssseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vssseg4.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, i64)
-declare void @llvm.riscv.vssseg4.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, <vscale x 1 x i1>, i64)
 
-define void @test_vssseg4_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vssseg4.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4), ptr, i64, i64, i64)
+declare void @llvm.riscv.vssseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 4), ptr, i64, <vscale x 1 x i1>, i64, i64)
+
+define void @test_vssseg4_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg4_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -7236,15 +6400,15 @@ define void @test_vssseg4_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offse
 ; CHECK:       .split5.split:
 ; CHECK-NEXT:    br label [[TMP47]]
 ; CHECK:       47:
-; CHECK-NEXT:    tail call void @llvm.riscv.vssseg4.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vssseg4.triscv.vector.tuple_nxv4i8_4t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) [[VAL:%.*]], ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vssseg4.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl)
+  tail call void @llvm.riscv.vssseg4.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %val, ptr %base, i64 %offset, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vssseg4_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vssseg4_mask_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %val, ptr %base, i64 %offset, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vssseg4_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -7343,18 +6507,19 @@ define void @test_vssseg4_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %
 ; CHECK:       .split5.split:
 ; CHECK-NEXT:    br label [[TMP47]]
 ; CHECK:       47:
-; CHECK-NEXT:    tail call void @llvm.riscv.vssseg4.mask.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vssseg4.mask.triscv.vector.tuple_nxv4i8_4t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) [[VAL:%.*]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vssseg4.mask.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vssseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vssseg5.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, i64)
-declare void @llvm.riscv.vssseg5.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, <vscale x 1 x i1>, i64)
 
-define void @test_vssseg5_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vssseg5.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5), ptr, i64, i64, i64)
+declare void @llvm.riscv.vssseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 5), ptr, i64, <vscale x 1 x i1>, i64, i64)
+
+define void @test_vssseg5_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg5_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -7477,15 +6642,15 @@ define void @test_vssseg5_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offse
 ; CHECK:       .split7.split:
 ; CHECK-NEXT:    br label [[TMP59]]
 ; CHECK:       59:
-; CHECK-NEXT:    tail call void @llvm.riscv.vssseg5.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vssseg5.triscv.vector.tuple_nxv4i8_5t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) [[VAL:%.*]], ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vssseg5.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl)
+  tail call void @llvm.riscv.vssseg5.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %val, ptr %base, i64 %offset, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vssseg5_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vssseg5_mask_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %val, ptr %base, i64 %offset, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vssseg5_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -7608,18 +6773,19 @@ define void @test_vssseg5_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %
 ; CHECK:       .split7.split:
 ; CHECK-NEXT:    br label [[TMP59]]
 ; CHECK:       59:
-; CHECK-NEXT:    tail call void @llvm.riscv.vssseg5.mask.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vssseg5.mask.triscv.vector.tuple_nxv4i8_5t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) [[VAL:%.*]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vssseg5.mask.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vssseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vssseg6.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, i64)
-declare void @llvm.riscv.vssseg6.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, <vscale x 1 x i1>, i64)
 
-define void @test_vssseg6_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vssseg6.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6), ptr, i64, i64, i64)
+declare void @llvm.riscv.vssseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 6), ptr, i64, <vscale x 1 x i1>, i64, i64)
+
+define void @test_vssseg6_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg6_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -7766,15 +6932,15 @@ define void @test_vssseg6_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offse
 ; CHECK:       .split9.split:
 ; CHECK-NEXT:    br label [[TMP71]]
 ; CHECK:       71:
-; CHECK-NEXT:    tail call void @llvm.riscv.vssseg6.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vssseg6.triscv.vector.tuple_nxv4i8_6t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) [[VAL:%.*]], ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vssseg6.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl)
+  tail call void @llvm.riscv.vssseg6.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %val, ptr %base, i64 %offset, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vssseg6_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vssseg6_mask_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %val, ptr %base, i64 %offset, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vssseg6_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -7921,18 +7087,19 @@ define void @test_vssseg6_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %
 ; CHECK:       .split9.split:
 ; CHECK-NEXT:    br label [[TMP71]]
 ; CHECK:       71:
-; CHECK-NEXT:    tail call void @llvm.riscv.vssseg6.mask.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vssseg6.mask.triscv.vector.tuple_nxv4i8_6t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) [[VAL:%.*]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vssseg6.mask.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vssseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vssseg7.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, i64)
-declare void @llvm.riscv.vssseg7.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, <vscale x 1 x i1>, i64)
 
-define void @test_vssseg7_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vssseg7.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7), ptr, i64, i64, i64)
+declare void @llvm.riscv.vssseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 7), ptr, i64, <vscale x 1 x i1>, i64, i64)
+
+define void @test_vssseg7_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg7_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -8103,15 +7270,15 @@ define void @test_vssseg7_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offse
 ; CHECK:       .split11.split:
 ; CHECK-NEXT:    br label [[TMP83]]
 ; CHECK:       83:
-; CHECK-NEXT:    tail call void @llvm.riscv.vssseg7.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vssseg7.triscv.vector.tuple_nxv4i8_7t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) [[VAL:%.*]], ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vssseg7.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl)
+  tail call void @llvm.riscv.vssseg7.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %val, ptr %base, i64 %offset, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vssseg7_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vssseg7_mask_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %val, ptr %base, i64 %offset, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vssseg7_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -8282,18 +7449,19 @@ define void @test_vssseg7_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %
 ; CHECK:       .split11.split:
 ; CHECK-NEXT:    br label [[TMP83]]
 ; CHECK:       83:
-; CHECK-NEXT:    tail call void @llvm.riscv.vssseg7.mask.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vssseg7.mask.triscv.vector.tuple_nxv4i8_7t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) [[VAL:%.*]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vssseg7.mask.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vssseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vssseg8.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, i64)
-declare void @llvm.riscv.vssseg8.mask.nxv1i32(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, i64, <vscale x 1 x i1>, i64)
 
-define void @test_vssseg8_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vssseg8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8), ptr, i64, i64, i64)
+declare void @llvm.riscv.vssseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8), ptr, i64, <vscale x 1 x i1>, i64, i64)
+
+define void @test_vssseg8_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %val, ptr %base, i64 %offset, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vssseg8_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -8488,15 +7656,15 @@ define void @test_vssseg8_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offse
 ; CHECK:       .split13.split:
 ; CHECK-NEXT:    br label [[TMP95]]
 ; CHECK:       95:
-; CHECK-NEXT:    tail call void @llvm.riscv.vssseg8.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vssseg8.triscv.vector.tuple_nxv4i8_8t.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[VAL:%.*]], ptr [[BASE]], i64 [[OFFSET]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vssseg8.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %offset, i64 %vl)
+  tail call void @llvm.riscv.vssseg8.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %val, ptr %base, i64 %offset, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vssseg8_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vssseg8_mask_nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %val, ptr %base, i64 %offset, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vssseg8_mask_nxv1i32(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -8691,13 +7859,14 @@ define void @test_vssseg8_mask_nxv1i32(<vscale x 1 x i32> %val, ptr %base, i64 %
 ; CHECK:       .split13.split:
 ; CHECK-NEXT:    br label [[TMP95]]
 ; CHECK:       95:
-; CHECK-NEXT:    tail call void @llvm.riscv.vssseg8.mask.nxv1i32.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vssseg8.mask.triscv.vector.tuple_nxv4i8_8t.i64.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[VAL:%.*]], ptr [[BASE]], i64 [[OFFSET]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vssseg8.mask.nxv1i32(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vssseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %val, ptr %base, i64 %offset, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
+
 
 ; Test stride value is a multiple of pointer alignment.
 define <vscale x 1 x i32> @intrinsic_vlse_v_nxv1i32_nxv1i32_align(<vscale x 1 x i32>* align 4 %0, i64 %1, i64 %2) sanitize_address {
@@ -9173,8 +8342,9 @@ entry:
   ret void
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg2.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg2.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vloxseg2.triscv.vector.tuple_nxv4i8_2t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 2), ptr, <vscale x 1 x i16>, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vloxseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 2), ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vloxseg2_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg2_nxv1i32_nxv1i16(
@@ -9228,17 +8398,17 @@ define <vscale x 1 x i32> @test_vloxseg2_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK:       .split1.split:
 ; CHECK-NEXT:    br label [[TMP24]]
 ; CHECK:       24:
-; CHECK-NEXT:    [[TMP25:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vloxseg2.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP26:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP25]], 1
+; CHECK-NEXT:    [[TMP25:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vloxseg2.triscv.vector.tuple_nxv4i8_2t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP26:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) [[TMP25]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP26]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg2.nxv1i32.nxv1i16(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vloxseg2.triscv.vector.tuple_nxv4i8_2t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vloxseg2_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vloxseg2_mask_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg2_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -9290,18 +8460,19 @@ define <vscale x 1 x i32> @test_vloxseg2_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK:       .split1.split:
 ; CHECK-NEXT:    br label [[TMP24]]
 ; CHECK:       24:
-; CHECK-NEXT:    [[TMP25:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vloxseg2.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP26:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP25]], 1
+; CHECK-NEXT:    [[TMP25:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vloxseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP26:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) [[TMP25]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP26]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg2.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vloxseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv4i1.nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) undef, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg3.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg3.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vloxseg3.triscv.vector.tuple_nxv4i8_3t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 3), ptr, <vscale x 1 x i16>, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vloxseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 3), ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vloxseg3_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg3_nxv1i32_nxv1i16(
@@ -9379,17 +8550,17 @@ define <vscale x 1 x i32> @test_vloxseg3_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK:       .split3.split:
 ; CHECK-NEXT:    br label [[TMP36]]
 ; CHECK:       36:
-; CHECK-NEXT:    [[TMP37:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vloxseg3.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP38:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP37]], 1
+; CHECK-NEXT:    [[TMP37:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vloxseg3.triscv.vector.tuple_nxv4i8_3t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP38:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) [[TMP37]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP38]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg3.nxv1i32.nxv1i16(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vloxseg3.triscv.vector.tuple_nxv4i8_3t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vloxseg3_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vloxseg3_mask_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg3_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -9465,18 +8636,19 @@ define <vscale x 1 x i32> @test_vloxseg3_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK:       .split3.split:
 ; CHECK-NEXT:    br label [[TMP36]]
 ; CHECK:       36:
-; CHECK-NEXT:    [[TMP37:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vloxseg3.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP38:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP37]], 1
+; CHECK-NEXT:    [[TMP37:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vloxseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP38:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) [[TMP37]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP38]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg3.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vloxseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv4i1.nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) undef, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg4.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg4.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vloxseg4.triscv.vector.tuple_nxv4i8_4t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 4), ptr, <vscale x 1 x i16>, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vloxseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 4), ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vloxseg4_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg4_nxv1i32_nxv1i16(
@@ -9578,17 +8750,17 @@ define <vscale x 1 x i32> @test_vloxseg4_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK:       .split5.split:
 ; CHECK-NEXT:    br label [[TMP48]]
 ; CHECK:       48:
-; CHECK-NEXT:    [[TMP49:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vloxseg4.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP50:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP49]], 1
+; CHECK-NEXT:    [[TMP49:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vloxseg4.triscv.vector.tuple_nxv4i8_4t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP50:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) [[TMP49]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP50]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg4.nxv1i32.nxv1i16(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vloxseg4.triscv.vector.tuple_nxv4i8_4t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vloxseg4_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vloxseg4_mask_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg4_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -9688,18 +8860,19 @@ define <vscale x 1 x i32> @test_vloxseg4_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK:       .split5.split:
 ; CHECK-NEXT:    br label [[TMP48]]
 ; CHECK:       48:
-; CHECK-NEXT:    [[TMP49:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vloxseg4.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP50:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP49]], 1
+; CHECK-NEXT:    [[TMP49:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vloxseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP50:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) [[TMP49]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP50]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg4.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vloxseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv4i1.nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) undef, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg5.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg5.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vloxseg5.triscv.vector.tuple_nxv4i8_5t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 5), ptr, <vscale x 1 x i16>, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vloxseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 5), ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vloxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg5_nxv1i32_nxv1i16(
@@ -9825,17 +8998,17 @@ define <vscale x 1 x i32> @test_vloxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK:       .split7.split:
 ; CHECK-NEXT:    br label [[TMP60]]
 ; CHECK:       60:
-; CHECK-NEXT:    [[TMP61:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vloxseg5.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP62:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP61]], 1
+; CHECK-NEXT:    [[TMP61:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vloxseg5.triscv.vector.tuple_nxv4i8_5t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP62:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) [[TMP61]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP62]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg5.nxv1i32.nxv1i16(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vloxseg5.triscv.vector.tuple_nxv4i8_5t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vloxseg5_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vloxseg5_mask_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg5_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -9959,18 +9132,19 @@ define <vscale x 1 x i32> @test_vloxseg5_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK:       .split7.split:
 ; CHECK-NEXT:    br label [[TMP60]]
 ; CHECK:       60:
-; CHECK-NEXT:    [[TMP61:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vloxseg5.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP62:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP61]], 1
+; CHECK-NEXT:    [[TMP61:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vloxseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP62:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) [[TMP61]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP62]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg5.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vloxseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv4i1.nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) undef, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg6.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg6.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vloxseg6.triscv.vector.tuple_nxv4i8_6t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 6), ptr, <vscale x 1 x i16>, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vloxseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 6), ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vloxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg6_nxv1i32_nxv1i16(
@@ -10120,17 +9294,17 @@ define <vscale x 1 x i32> @test_vloxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK:       .split9.split:
 ; CHECK-NEXT:    br label [[TMP72]]
 ; CHECK:       72:
-; CHECK-NEXT:    [[TMP73:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vloxseg6.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP74:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP73]], 1
+; CHECK-NEXT:    [[TMP73:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vloxseg6.triscv.vector.tuple_nxv4i8_6t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP74:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) [[TMP73]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP74]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg6.nxv1i32.nxv1i16(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vloxseg6.triscv.vector.tuple_nxv4i8_6t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vloxseg6_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vloxseg6_mask_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg6_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -10278,18 +9452,19 @@ define <vscale x 1 x i32> @test_vloxseg6_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK:       .split9.split:
 ; CHECK-NEXT:    br label [[TMP72]]
 ; CHECK:       72:
-; CHECK-NEXT:    [[TMP73:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vloxseg6.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP74:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP73]], 1
+; CHECK-NEXT:    [[TMP73:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vloxseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP74:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) [[TMP73]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP74]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg6.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vloxseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv4i1.nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) undef, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg7.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg7.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vloxseg7.triscv.vector.tuple_nxv4i8_7t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 7), ptr, <vscale x 1 x i16>, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vloxseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 7), ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vloxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg7_nxv1i32_nxv1i16(
@@ -10463,17 +9638,17 @@ define <vscale x 1 x i32> @test_vloxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK:       .split11.split:
 ; CHECK-NEXT:    br label [[TMP84]]
 ; CHECK:       84:
-; CHECK-NEXT:    [[TMP85:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vloxseg7.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP86:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP85]], 1
+; CHECK-NEXT:    [[TMP85:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vloxseg7.triscv.vector.tuple_nxv4i8_7t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP86:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) [[TMP85]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP86]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg7.nxv1i32.nxv1i16(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vloxseg7.triscv.vector.tuple_nxv4i8_7t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vloxseg7_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vloxseg7_mask_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg7_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -10645,18 +9820,19 @@ define <vscale x 1 x i32> @test_vloxseg7_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK:       .split11.split:
 ; CHECK-NEXT:    br label [[TMP84]]
 ; CHECK:       84:
-; CHECK-NEXT:    [[TMP85:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vloxseg7.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP86:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP85]], 1
+; CHECK-NEXT:    [[TMP85:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vloxseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP86:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) [[TMP85]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP86]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg7.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vloxseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv4i1.nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) undef, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg8.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg8.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vloxseg8.triscv.vector.tuple_nxv4i8_8t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 8), ptr, <vscale x 1 x i16>, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vloxseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8), ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vloxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg8_nxv1i32_nxv1i16(
@@ -10854,17 +10030,17 @@ define <vscale x 1 x i32> @test_vloxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK:       .split13.split:
 ; CHECK-NEXT:    br label [[TMP96]]
 ; CHECK:       96:
-; CHECK-NEXT:    [[TMP97:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vloxseg8.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP98:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP97]], 1
+; CHECK-NEXT:    [[TMP97:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vloxseg8.triscv.vector.tuple_nxv4i8_8t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP98:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP97]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP98]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg8.nxv1i32.nxv1i16(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef ,<vscale x 1 x i32> undef ,<vscale x 1 x i32> undef, <vscale x 1 x i32> undef ,<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vloxseg8.triscv.vector.tuple_nxv4i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vloxseg8_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vloxseg8_mask_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vloxseg8_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -11060,18 +10236,19 @@ define <vscale x 1 x i32> @test_vloxseg8_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK:       .split13.split:
 ; CHECK-NEXT:    br label [[TMP96]]
 ; CHECK:       96:
-; CHECK-NEXT:    [[TMP97:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vloxseg8.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP98:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP97]], 1
+; CHECK-NEXT:    [[TMP97:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vloxseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP98:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP97]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP98]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vloxseg8.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vloxseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv4i1.nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) undef, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg2.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg2.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vluxseg2.triscv.vector.tuple_nxv4i8_2t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 2), ptr, <vscale x 1 x i16>, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vluxseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 2), ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vluxseg2_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg2_nxv1i32_nxv1i16(
@@ -11125,17 +10302,17 @@ define <vscale x 1 x i32> @test_vluxseg2_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK:       .split1.split:
 ; CHECK-NEXT:    br label [[TMP24]]
 ; CHECK:       24:
-; CHECK-NEXT:    [[TMP25:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg2.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP26:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP25]], 1
+; CHECK-NEXT:    [[TMP25:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vluxseg2.triscv.vector.tuple_nxv4i8_2t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP26:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) [[TMP25]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP26]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg2.nxv1i32.nxv1i16(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vluxseg2.triscv.vector.tuple_nxv4i8_2t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vluxseg2_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vluxseg2_mask_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg2_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -11187,18 +10364,19 @@ define <vscale x 1 x i32> @test_vluxseg2_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK:       .split1.split:
 ; CHECK-NEXT:    br label [[TMP24]]
 ; CHECK:       24:
-; CHECK-NEXT:    [[TMP25:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg2.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP26:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP25]], 1
+; CHECK-NEXT:    [[TMP25:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vluxseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP26:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) [[TMP25]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP26]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg2.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 2) @llvm.riscv.vluxseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv4i1.nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) undef, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_2t(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg3.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg3.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vluxseg3.triscv.vector.tuple_nxv4i8_3t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 3), ptr, <vscale x 1 x i16>, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vluxseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 3), ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vluxseg3_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg3_nxv1i32_nxv1i16(
@@ -11276,17 +10454,17 @@ define <vscale x 1 x i32> @test_vluxseg3_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK:       .split3.split:
 ; CHECK-NEXT:    br label [[TMP36]]
 ; CHECK:       36:
-; CHECK-NEXT:    [[TMP37:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg3.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP38:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP37]], 1
+; CHECK-NEXT:    [[TMP37:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vluxseg3.triscv.vector.tuple_nxv4i8_3t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP38:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) [[TMP37]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP38]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg3.nxv1i32.nxv1i16(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vluxseg3.triscv.vector.tuple_nxv4i8_3t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vluxseg3_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vluxseg3_mask_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg3_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -11362,18 +10540,19 @@ define <vscale x 1 x i32> @test_vluxseg3_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK:       .split3.split:
 ; CHECK-NEXT:    br label [[TMP36]]
 ; CHECK:       36:
-; CHECK-NEXT:    [[TMP37:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg3.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP38:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP37]], 1
+; CHECK-NEXT:    [[TMP37:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vluxseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP38:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) [[TMP37]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP38]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg3.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 3) @llvm.riscv.vluxseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv4i1.nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) undef, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_3t(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg4.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg4.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vluxseg4.triscv.vector.tuple_nxv4i8_4t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 4), ptr, <vscale x 1 x i16>, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vluxseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 4), ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vluxseg4_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg4_nxv1i32_nxv1i16(
@@ -11475,17 +10654,17 @@ define <vscale x 1 x i32> @test_vluxseg4_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK:       .split5.split:
 ; CHECK-NEXT:    br label [[TMP48]]
 ; CHECK:       48:
-; CHECK-NEXT:    [[TMP49:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg4.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP50:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP49]], 1
+; CHECK-NEXT:    [[TMP49:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vluxseg4.triscv.vector.tuple_nxv4i8_4t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP50:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) [[TMP49]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP50]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg4.nxv1i32.nxv1i16(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vluxseg4.triscv.vector.tuple_nxv4i8_4t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vluxseg4_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vluxseg4_mask_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg4_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -11585,18 +10764,19 @@ define <vscale x 1 x i32> @test_vluxseg4_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK:       .split5.split:
 ; CHECK-NEXT:    br label [[TMP48]]
 ; CHECK:       48:
-; CHECK-NEXT:    [[TMP49:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg4.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP50:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP49]], 1
+; CHECK-NEXT:    [[TMP49:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vluxseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP50:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) [[TMP49]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP50]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg4.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 4) @llvm.riscv.vluxseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv4i1.nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) undef, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_4t(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg5.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg5.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vluxseg5.triscv.vector.tuple_nxv4i8_5t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 5), ptr, <vscale x 1 x i16>, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vluxseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 5), ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vluxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg5_nxv1i32_nxv1i16(
@@ -11722,17 +10902,17 @@ define <vscale x 1 x i32> @test_vluxseg5_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK:       .split7.split:
 ; CHECK-NEXT:    br label [[TMP60]]
 ; CHECK:       60:
-; CHECK-NEXT:    [[TMP61:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg5.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP62:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP61]], 1
+; CHECK-NEXT:    [[TMP61:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vluxseg5.triscv.vector.tuple_nxv4i8_5t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP62:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) [[TMP61]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP62]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg5.nxv1i32.nxv1i16(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vluxseg5.triscv.vector.tuple_nxv4i8_5t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vluxseg5_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vluxseg5_mask_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg5_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -11856,18 +11036,19 @@ define <vscale x 1 x i32> @test_vluxseg5_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK:       .split7.split:
 ; CHECK-NEXT:    br label [[TMP60]]
 ; CHECK:       60:
-; CHECK-NEXT:    [[TMP61:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg5.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP62:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP61]], 1
+; CHECK-NEXT:    [[TMP61:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vluxseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP62:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) [[TMP61]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP62]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg5.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 5) @llvm.riscv.vluxseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv4i1.nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) undef, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_5t(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg6.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg6.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vluxseg6.triscv.vector.tuple_nxv4i8_6t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 6), ptr, <vscale x 1 x i16>, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vluxseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 6), ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vluxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg6_nxv1i32_nxv1i16(
@@ -12017,17 +11198,17 @@ define <vscale x 1 x i32> @test_vluxseg6_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK:       .split9.split:
 ; CHECK-NEXT:    br label [[TMP72]]
 ; CHECK:       72:
-; CHECK-NEXT:    [[TMP73:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg6.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP74:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP73]], 1
+; CHECK-NEXT:    [[TMP73:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vluxseg6.triscv.vector.tuple_nxv4i8_6t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP74:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) [[TMP73]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP74]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg6.nxv1i32.nxv1i16(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vluxseg6.triscv.vector.tuple_nxv4i8_6t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vluxseg6_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vluxseg6_mask_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg6_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -12175,18 +11356,19 @@ define <vscale x 1 x i32> @test_vluxseg6_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK:       .split9.split:
 ; CHECK-NEXT:    br label [[TMP72]]
 ; CHECK:       72:
-; CHECK-NEXT:    [[TMP73:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg6.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP74:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP73]], 1
+; CHECK-NEXT:    [[TMP73:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vluxseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP74:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) [[TMP73]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP74]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg6.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 6) @llvm.riscv.vluxseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv4i1.nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) undef, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_6t(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg7.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg7.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vluxseg7.triscv.vector.tuple_nxv4i8_7t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 7), ptr, <vscale x 1 x i16>, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vluxseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 7), ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vluxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg7_nxv1i32_nxv1i16(
@@ -12360,17 +11542,17 @@ define <vscale x 1 x i32> @test_vluxseg7_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK:       .split11.split:
 ; CHECK-NEXT:    br label [[TMP84]]
 ; CHECK:       84:
-; CHECK-NEXT:    [[TMP85:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg7.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP86:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP85]], 1
+; CHECK-NEXT:    [[TMP85:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vluxseg7.triscv.vector.tuple_nxv4i8_7t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP86:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) [[TMP85]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP86]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg7.nxv1i32.nxv1i16(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vluxseg7.triscv.vector.tuple_nxv4i8_7t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vluxseg7_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vluxseg7_mask_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg7_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -12542,18 +11724,19 @@ define <vscale x 1 x i32> @test_vluxseg7_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK:       .split11.split:
 ; CHECK-NEXT:    br label [[TMP84]]
 ; CHECK:       84:
-; CHECK-NEXT:    [[TMP85:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg7.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP86:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP85]], 1
+; CHECK-NEXT:    [[TMP85:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vluxseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP86:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) [[TMP85]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP86]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg7.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 7) @llvm.riscv.vluxseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv4i1.nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) undef, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_7t(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg8.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg8.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64)
+
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vluxseg8.triscv.vector.tuple_nxv4i8_8t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 8), ptr, <vscale x 1 x i16>, i64, i64)
+declare target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vluxseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8), ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64, i64, i64)
 
 define <vscale x 1 x i32> @test_vluxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg8_nxv1i32_nxv1i16(
@@ -12751,17 +11934,17 @@ define <vscale x 1 x i32> @test_vluxseg8_nxv1i32_nxv1i16(ptr %base, <vscale x 1 
 ; CHECK:       .split13.split:
 ; CHECK-NEXT:    br label [[TMP96]]
 ; CHECK:       96:
-; CHECK-NEXT:    [[TMP97:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg8.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
-; CHECK-NEXT:    [[TMP98:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP97]], 1
+; CHECK-NEXT:    [[TMP97:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vluxseg8.triscv.vector.tuple_nxv4i8_8t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
+; CHECK-NEXT:    [[TMP98:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP97]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP98]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg8.nxv1i32.nxv1i16(<vscale x 1 x i32> undef, <vscale x 1 x i32> undef ,<vscale x 1 x i32> undef ,<vscale x 1 x i32> undef, <vscale x 1 x i32> undef ,<vscale x 1 x i32> undef, <vscale x 1 x i32> undef, <vscale x 1 x i32> undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vluxseg8.triscv.vector.tuple_nxv4i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) undef, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-define <vscale x 1 x i32> @test_vluxseg8_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
+define <vscale x 1 x i32> @test_vluxseg8_mask_nxv1i32_nxv1i16(ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vluxseg8_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -12957,20 +12140,21 @@ define <vscale x 1 x i32> @test_vluxseg8_mask_nxv1i32_nxv1i16(<vscale x 1 x i32>
 ; CHECK:       .split13.split:
 ; CHECK-NEXT:    br label [[TMP96]]
 ; CHECK:       96:
-; CHECK-NEXT:    [[TMP97:%.*]] = tail call { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } @llvm.riscv.vluxseg8.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1)
-; CHECK-NEXT:    [[TMP98:%.*]] = extractvalue { <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32>, <vscale x 1 x i32> } [[TMP97]], 1
+; CHECK-NEXT:    [[TMP97:%.*]] = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vluxseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) undef, ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 1, i64 5)
+; CHECK-NEXT:    [[TMP98:%.*]] = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[TMP97]], i32 1)
 ; CHECK-NEXT:    ret <vscale x 1 x i32> [[TMP98]]
 ;
 entry:
-  %0 = tail call {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} @llvm.riscv.vluxseg8.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1)
-  %1 = extractvalue {<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>} %0, 1
+  %0 = tail call target("riscv.vector.tuple", <vscale x 4 x i8>, 8) @llvm.riscv.vluxseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv4i1.nxv1i32(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) undef, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 1, i64 5)
+  %1 = call <vscale x 1 x i32> @llvm.riscv.tuple.extract.nxv1i32.triscv.vector.tuple_nxv4i8_8t(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %0, i32 1)
   ret <vscale x 1 x i32> %1
 }
 
-declare void @llvm.riscv.vsoxseg2.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare void @llvm.riscv.vsoxseg2.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64)
 
-define void @test_vsoxseg2_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsoxseg2.triscv.vector.tuple_nxv4i8_2t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 2), ptr, <vscale x 4 x i8>, i64, i64)
+declare void @llvm.riscv.vsoxseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv4i8.nxv4i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 2), ptr, <vscale x 4 x i8>, <vscale x 4 x i1>, i64, i64)
+
+define void @test_vsoxseg2_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg2_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -13022,15 +12206,15 @@ define void @test_vsoxseg2_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK:       .split1.split:
 ; CHECK-NEXT:    br label [[TMP24]]
 ; CHECK:       24:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg2.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg2.triscv.vector.tuple_nxv4i8_2t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsoxseg2.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg2.triscv.vector.tuple_nxv4i8_2t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsoxseg2_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsoxseg2_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg2_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -13082,18 +12266,19 @@ define void @test_vsoxseg2_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK:       .split1.split:
 ; CHECK-NEXT:    br label [[TMP24]]
 ; CHECK:       24:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg2.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsoxseg2.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vsoxseg3.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare void @llvm.riscv.vsoxseg3.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64)
 
-define void @test_vsoxseg3_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsoxseg3.triscv.vector.tuple_nxv4i8_3t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 3), ptr, <vscale x 4 x i8>, i64, i64)
+declare void @llvm.riscv.vsoxseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv4i8.nxv4i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 3), ptr, <vscale x 4 x i8>, <vscale x 4 x i1>, i64, i64)
+
+define void @test_vsoxseg3_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg3_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -13169,15 +12354,15 @@ define void @test_vsoxseg3_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK:       .split3.split:
 ; CHECK-NEXT:    br label [[TMP36]]
 ; CHECK:       36:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg3.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg3.triscv.vector.tuple_nxv4i8_3t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsoxseg3.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg3.triscv.vector.tuple_nxv4i8_3t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsoxseg3_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsoxseg3_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg3_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -13253,18 +12438,19 @@ define void @test_vsoxseg3_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK:       .split3.split:
 ; CHECK-NEXT:    br label [[TMP36]]
 ; CHECK:       36:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg3.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsoxseg3.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vsoxseg4.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare void @llvm.riscv.vsoxseg4.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64)
 
-define void @test_vsoxseg4_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsoxseg4.triscv.vector.tuple_nxv4i8_4t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 4), ptr, <vscale x 4 x i8>, i64, i64)
+declare void @llvm.riscv.vsoxseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv4i8.nxv4i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 4), ptr, <vscale x 4 x i8>, <vscale x 4 x i1>, i64, i64)
+
+define void @test_vsoxseg4_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg4_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -13364,15 +12550,15 @@ define void @test_vsoxseg4_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK:       .split5.split:
 ; CHECK-NEXT:    br label [[TMP48]]
 ; CHECK:       48:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg4.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg4.triscv.vector.tuple_nxv4i8_4t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsoxseg4.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg4.triscv.vector.tuple_nxv4i8_4t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsoxseg4_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsoxseg4_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg4_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -13472,18 +12658,19 @@ define void @test_vsoxseg4_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK:       .split5.split:
 ; CHECK-NEXT:    br label [[TMP48]]
 ; CHECK:       48:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg4.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsoxseg4.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vsoxseg5.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare void @llvm.riscv.vsoxseg5.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64)
 
-define void @test_vsoxseg5_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsoxseg5.triscv.vector.tuple_nxv4i8_5t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 5), ptr, <vscale x 4 x i8>, i64, i64)
+declare void @llvm.riscv.vsoxseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv4i8.nxv4i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 5), ptr, <vscale x 4 x i8>, <vscale x 4 x i1>, i64, i64)
+
+define void @test_vsoxseg5_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg5_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -13607,15 +12794,15 @@ define void @test_vsoxseg5_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK:       .split7.split:
 ; CHECK-NEXT:    br label [[TMP60]]
 ; CHECK:       60:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg5.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg5.triscv.vector.tuple_nxv4i8_5t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsoxseg5.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg5.triscv.vector.tuple_nxv4i8_5t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsoxseg5_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsoxseg5_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg5_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -13739,18 +12926,19 @@ define void @test_vsoxseg5_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK:       .split7.split:
 ; CHECK-NEXT:    br label [[TMP60]]
 ; CHECK:       60:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg5.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsoxseg5.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vsoxseg6.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare void @llvm.riscv.vsoxseg6.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64)
 
-define void @test_vsoxseg6_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsoxseg6.triscv.vector.tuple_nxv4i8_6t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 6), ptr, <vscale x 4 x i8>, i64, i64)
+declare void @llvm.riscv.vsoxseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv4i8.nxv4i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 6), ptr, <vscale x 4 x i8>, <vscale x 4 x i1>, i64, i64)
+
+define void @test_vsoxseg6_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg6_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -13898,15 +13086,15 @@ define void @test_vsoxseg6_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK:       .split9.split:
 ; CHECK-NEXT:    br label [[TMP72]]
 ; CHECK:       72:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg6.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg6.triscv.vector.tuple_nxv4i8_6t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsoxseg6.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg6.triscv.vector.tuple_nxv4i8_6t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsoxseg6_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsoxseg6_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg6_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -14054,18 +13242,19 @@ define void @test_vsoxseg6_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK:       .split9.split:
 ; CHECK-NEXT:    br label [[TMP72]]
 ; CHECK:       72:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg6.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsoxseg6.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vsoxseg7.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare void @llvm.riscv.vsoxseg7.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64)
 
-define void @test_vsoxseg7_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsoxseg7.triscv.vector.tuple_nxv4i8_7t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 7), ptr, <vscale x 4 x i8>, i64, i64)
+declare void @llvm.riscv.vsoxseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv4i8.nxv4i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 7), ptr, <vscale x 4 x i8>, <vscale x 4 x i1>, i64, i64)
+
+define void @test_vsoxseg7_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg7_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -14237,15 +13426,15 @@ define void @test_vsoxseg7_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK:       .split11.split:
 ; CHECK-NEXT:    br label [[TMP84]]
 ; CHECK:       84:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg7.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg7.triscv.vector.tuple_nxv4i8_7t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsoxseg7.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg7.triscv.vector.tuple_nxv4i8_7t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsoxseg7_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsoxseg7_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg7_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -14417,18 +13606,19 @@ define void @test_vsoxseg7_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK:       .split11.split:
 ; CHECK-NEXT:    br label [[TMP84]]
 ; CHECK:       84:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg7.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsoxseg7.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vsoxseg8.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare void @llvm.riscv.vsoxseg8.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64)
 
-define void @test_vsoxseg8_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsoxseg8.triscv.vector.tuple_nxv4i8_8t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 8), ptr, <vscale x 4 x i8>, i64, i64)
+declare void @llvm.riscv.vsoxseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv4i8.nxv4i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8), ptr, <vscale x 4 x i8>, <vscale x 4 x i1>, i64, i64)
+
+define void @test_vsoxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg8_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -14624,15 +13814,15 @@ define void @test_vsoxseg8_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK:       .split13.split:
 ; CHECK-NEXT:    br label [[TMP96]]
 ; CHECK:       96:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg8.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg8.triscv.vector.tuple_nxv4i8_8t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsoxseg8.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg8.triscv.vector.tuple_nxv4i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsoxseg8_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsoxseg8_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsoxseg8_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -14828,18 +14018,19 @@ define void @test_vsoxseg8_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK:       .split13.split:
 ; CHECK-NEXT:    br label [[TMP96]]
 ; CHECK:       96:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg8.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsoxseg8.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vsuxseg2.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare void @llvm.riscv.vsuxseg2.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64)
 
-define void @test_vsuxseg2_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsuxseg2.triscv.vector.tuple_nxv4i8_2t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 2), ptr, <vscale x 4 x i8>, i64, i64)
+declare void @llvm.riscv.vsuxseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv4i8.nxv4i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 2), ptr, <vscale x 4 x i8>, <vscale x 4 x i1>, i64, i64)
+
+define void @test_vsuxseg2_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg2_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -14891,15 +14082,15 @@ define void @test_vsuxseg2_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK:       .split1.split:
 ; CHECK-NEXT:    br label [[TMP24]]
 ; CHECK:       24:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg2.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg2.triscv.vector.tuple_nxv4i8_2t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsuxseg2.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
+  tail call void @llvm.riscv.vsuxseg2.triscv.vector.tuple_nxv4i8_2t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsuxseg2_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsuxseg2_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg2_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -14951,18 +14142,19 @@ define void @test_vsuxseg2_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK:       .split1.split:
 ; CHECK-NEXT:    br label [[TMP24]]
 ; CHECK:       24:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg2.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsuxseg2.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg2.mask.triscv.vector.tuple_nxv4i8_2t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 2) %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vsuxseg3.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare void @llvm.riscv.vsuxseg3.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64)
 
-define void @test_vsuxseg3_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsuxseg3.triscv.vector.tuple_nxv4i8_3t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 3), ptr, <vscale x 4 x i8>, i64, i64)
+declare void @llvm.riscv.vsuxseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv4i8.nxv4i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 3), ptr, <vscale x 4 x i8>, <vscale x 4 x i1>, i64, i64)
+
+define void @test_vsuxseg3_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg3_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -15038,15 +14230,15 @@ define void @test_vsuxseg3_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK:       .split3.split:
 ; CHECK-NEXT:    br label [[TMP36]]
 ; CHECK:       36:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg3.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg3.triscv.vector.tuple_nxv4i8_3t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsuxseg3.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
+  tail call void @llvm.riscv.vsuxseg3.triscv.vector.tuple_nxv4i8_3t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsuxseg3_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsuxseg3_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg3_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -15122,18 +14314,19 @@ define void @test_vsuxseg3_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK:       .split3.split:
 ; CHECK-NEXT:    br label [[TMP36]]
 ; CHECK:       36:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg3.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsuxseg3.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg3.mask.triscv.vector.tuple_nxv4i8_3t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 3) %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vsuxseg4.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare void @llvm.riscv.vsuxseg4.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64)
 
-define void @test_vsuxseg4_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsuxseg4.triscv.vector.tuple_nxv4i8_4t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 4), ptr, <vscale x 4 x i8>, i64, i64)
+declare void @llvm.riscv.vsuxseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv4i8.nxv4i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 4), ptr, <vscale x 4 x i8>, <vscale x 4 x i1>, i64, i64)
+
+define void @test_vsuxseg4_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg4_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -15233,15 +14426,15 @@ define void @test_vsuxseg4_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK:       .split5.split:
 ; CHECK-NEXT:    br label [[TMP48]]
 ; CHECK:       48:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg4.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg4.triscv.vector.tuple_nxv4i8_4t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsuxseg4.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
+  tail call void @llvm.riscv.vsuxseg4.triscv.vector.tuple_nxv4i8_4t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsuxseg4_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsuxseg4_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg4_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -15341,18 +14534,19 @@ define void @test_vsuxseg4_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK:       .split5.split:
 ; CHECK-NEXT:    br label [[TMP48]]
 ; CHECK:       48:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg4.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsuxseg4.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg4.mask.triscv.vector.tuple_nxv4i8_4t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 4) %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vsuxseg5.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare void @llvm.riscv.vsuxseg5.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64)
 
-define void @test_vsuxseg5_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsuxseg5.triscv.vector.tuple_nxv4i8_5t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 5), ptr, <vscale x 4 x i8>, i64, i64)
+declare void @llvm.riscv.vsuxseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv4i8.nxv4i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 5), ptr, <vscale x 4 x i8>, <vscale x 4 x i1>, i64, i64)
+
+define void @test_vsuxseg5_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg5_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -15476,15 +14670,15 @@ define void @test_vsuxseg5_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK:       .split7.split:
 ; CHECK-NEXT:    br label [[TMP60]]
 ; CHECK:       60:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg5.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg5.triscv.vector.tuple_nxv4i8_5t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsuxseg5.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
+  tail call void @llvm.riscv.vsuxseg5.triscv.vector.tuple_nxv4i8_5t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsuxseg5_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsuxseg5_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg5_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -15608,18 +14802,19 @@ define void @test_vsuxseg5_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK:       .split7.split:
 ; CHECK-NEXT:    br label [[TMP60]]
 ; CHECK:       60:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg5.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsuxseg5.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg5.mask.triscv.vector.tuple_nxv4i8_5t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 5) %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vsuxseg6.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare void @llvm.riscv.vsuxseg6.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64)
 
-define void @test_vsuxseg6_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsuxseg6.triscv.vector.tuple_nxv4i8_6t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 6), ptr, <vscale x 4 x i8>, i64, i64)
+declare void @llvm.riscv.vsuxseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv4i8.nxv4i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 6), ptr, <vscale x 4 x i8>, <vscale x 4 x i1>, i64, i64)
+
+define void @test_vsuxseg6_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg6_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -15767,15 +14962,15 @@ define void @test_vsuxseg6_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK:       .split9.split:
 ; CHECK-NEXT:    br label [[TMP72]]
 ; CHECK:       72:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg6.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg6.triscv.vector.tuple_nxv4i8_6t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsuxseg6.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
+  tail call void @llvm.riscv.vsuxseg6.triscv.vector.tuple_nxv4i8_6t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsuxseg6_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsuxseg6_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg6_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -15923,18 +15118,19 @@ define void @test_vsuxseg6_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK:       .split9.split:
 ; CHECK-NEXT:    br label [[TMP72]]
 ; CHECK:       72:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg6.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsuxseg6.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg6.mask.triscv.vector.tuple_nxv4i8_6t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 6) %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vsuxseg7.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare void @llvm.riscv.vsuxseg7.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64)
 
-define void @test_vsuxseg7_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsuxseg7.triscv.vector.tuple_nxv4i8_7t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 7), ptr, <vscale x 4 x i8>, i64, i64)
+declare void @llvm.riscv.vsuxseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv4i8.nxv4i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 7), ptr, <vscale x 4 x i8>, <vscale x 4 x i1>, i64, i64)
+
+define void @test_vsuxseg7_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg7_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -16106,15 +15302,15 @@ define void @test_vsuxseg7_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK:       .split11.split:
 ; CHECK-NEXT:    br label [[TMP84]]
 ; CHECK:       84:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg7.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg7.triscv.vector.tuple_nxv4i8_7t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsuxseg7.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
+  tail call void @llvm.riscv.vsuxseg7.triscv.vector.tuple_nxv4i8_7t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsuxseg7_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsuxseg7_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg7_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -16286,18 +15482,19 @@ define void @test_vsuxseg7_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK:       .split11.split:
 ; CHECK-NEXT:    br label [[TMP84]]
 ; CHECK:       84:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg7.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsuxseg7.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg7.mask.triscv.vector.tuple_nxv4i8_7t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 7) %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
 
-declare void @llvm.riscv.vsuxseg8.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, i64)
-declare void @llvm.riscv.vsuxseg8.mask.nxv1i32.nxv1i16(<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>,<vscale x 1 x i32>, ptr, <vscale x 1 x i16>, <vscale x 1 x i1>, i64)
 
-define void @test_vsuxseg8_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
+declare void @llvm.riscv.vsuxseg8.triscv.vector.tuple_nxv4i8_8t.nxv4i8(target("riscv.vector.tuple", <vscale x 4 x i8>, 8), ptr, <vscale x 4 x i8>, i64, i64)
+declare void @llvm.riscv.vsuxseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv4i8.nxv4i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8), ptr, <vscale x 4 x i8>, <vscale x 4 x i1>, i64, i64)
+
+define void @test_vsuxseg8_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg8_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -16493,15 +15690,15 @@ define void @test_vsuxseg8_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <
 ; CHECK:       .split13.split:
 ; CHECK-NEXT:    br label [[TMP96]]
 ; CHECK:       96:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg8.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg8.triscv.vector.tuple_nxv4i8_8t.nxv1i16.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsuxseg8.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl)
+  tail call void @llvm.riscv.vsuxseg8.triscv.vector.tuple_nxv4i8_8t.nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, i64 5)
   ret void
 }
 
-define void @test_vsuxseg8_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl) sanitize_address {
+define void @test_vsuxseg8_mask_nxv1i32_nxv1i16(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %val, ptr %base, <vscale x 1 x i16> %index, i64 %vl, <vscale x 1 x i1> %mask) sanitize_address {
 ; CHECK-LABEL: @test_vsuxseg8_mask_nxv1i32_nxv1i16(
 ; CHECK-NEXT:  entry:
 ; CHECK-NEXT:    [[TMP0:%.*]] = load i64, ptr @__asan_shadow_memory_dynamic_address, align 8
@@ -16697,10 +15894,11 @@ define void @test_vsuxseg8_mask_nxv1i32_nxv1i16(<vscale x 1 x i32> %val, ptr %ba
 ; CHECK:       .split13.split:
 ; CHECK-NEXT:    br label [[TMP96]]
 ; CHECK:       96:
-; CHECK-NEXT:    tail call void @llvm.riscv.vsuxseg8.mask.nxv1i32.nxv1i16.i64(<vscale x 1 x i32> [[VAL:%.*]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], <vscale x 1 x i32> [[VAL]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]])
+; CHECK-NEXT:    tail call void @llvm.riscv.vsoxseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv1i16.nxv1i1.i64(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) [[VAL:%.*]], ptr [[BASE]], <vscale x 1 x i16> [[INDEX]], <vscale x 1 x i1> [[MASK]], i64 [[VL]], i64 5)
 ; CHECK-NEXT:    ret void
 ;
 entry:
-  tail call void @llvm.riscv.vsuxseg8.mask.nxv1i32.nxv1i16(<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val,<vscale x 1 x i32> %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl)
+  tail call void @llvm.riscv.vsoxseg8.mask.triscv.vector.tuple_nxv4i8_8t.nxv1i16.nxv1i1(target("riscv.vector.tuple", <vscale x 4 x i8>, 8) %val, ptr %base, <vscale x 1 x i16> %index, <vscale x 1 x i1> %mask, i64 %vl, i64 5)
   ret void
 }
+
