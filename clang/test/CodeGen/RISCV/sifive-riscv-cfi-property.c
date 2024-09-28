@@ -1,45 +1,56 @@
-// RUN: %clang --target=riscv32 -menable-experimental-extensions -march=rv32g_zicfilp -c %s -o - \
+// RUN: %clang --target=riscv32 -menable-experimental-extensions -march=rv32g_zicfilp -fcf-protection=branch -c %s -o - \
 // RUN:     | llvm-readelf -x .note.gnu.property - \
 // RUN:     | FileCheck --check-prefix=ZICFILP-RV32 %s 
-// RUN: %clang --target=riscv32 -menable-experimental-extensions -march=rv32g_zicfilp -c %s -o - \
+// RUN: %clang --target=riscv32 -menable-experimental-extensions -march=rv32g_zicfilp -fcf-protection=branch -c %s -o - \
 // RUN:     | llvm-readobj -n - | FileCheck --check-prefix=ZICFILP-NOTE %s 
-// RUN: %clang --target=riscv32 -menable-experimental-extensions -march=rv32g_zicfiss -fsanitize=shadow-call-stack \
+// RUN: %clang --target=riscv32 -menable-experimental-extensions -march=rv32g_zicfiss -fcf-protection=return \
 // RUN:     -c %s -o - | llvm-readelf -x .note.gnu.property - \
 // RUN:     | FileCheck --check-prefix=ZICFISS-RV32 %s
-// RUN: %clang --target=riscv32 -menable-experimental-extensions -march=rv32g_zicfiss -fsanitize=shadow-call-stack \
+// RUN: %clang --target=riscv32 -menable-experimental-extensions -march=rv32g_zicfiss -fcf-protection=return \
 // RUN:     -c %s -o - | llvm-readobj -n - | FileCheck --check-prefix=ZICFISS-NOTE %s
-// RUN: %clang --target=riscv32 -menable-experimental-extensions -march=rv32g_zicfilp_zicfiss -fsanitize=shadow-call-stack \
+// RUN: %clang --target=riscv32 -menable-experimental-extensions -march=rv32g_zicfilp_zicfiss -fcf-protection=full \
 // RUN:     -c %s -o - | llvm-readelf -x .note.gnu.property - \
 // RUN:     | FileCheck --check-prefix=ZICFILPSS-RV32 %s
-// RUN: %clang --target=riscv32 -menable-experimental-extensions -march=rv32g_zicfilp_zicfiss -fsanitize=shadow-call-stack \
+// RUN: %clang --target=riscv32 -menable-experimental-extensions -march=rv32g_zicfilp_zicfiss -fcf-protection=full \
 // RUN:     -c %s -o - | llvm-readobj -n - | FileCheck --check-prefix=ZICFILPSS-NOTE %s
 //
-// RUN: %clang --target=riscv64 -menable-experimental-extensions -march=rv64g_zicfilp -c %s -o - \
+// RUN: %clang --target=riscv64 -menable-experimental-extensions -march=rv64g_zicfilp -fcf-protection=branch -c %s -o - \
 // RUN:     | llvm-readelf -x .note.gnu.property - \
 // RUN:     | FileCheck --check-prefix=ZICFILP-RV64 %s
-// RUN: %clang --target=riscv64 -menable-experimental-extensions -march=rv64g_zicfilp -c %s -o - \
+// RUN: %clang --target=riscv64 -menable-experimental-extensions -march=rv64g_zicfilp -fcf-protection=branch -c %s -o - \
 // RUN:     | llvm-readobj -n - | FileCheck --check-prefix=ZICFILP-NOTE %s
-// RUN: %clang --target=riscv64 -menable-experimental-extensions -march=rv64g_zicfiss -fsanitize=shadow-call-stack \
+// RUN: %clang --target=riscv64 -menable-experimental-extensions -march=rv64g_zicfiss -fcf-protection=return \
 // RUN:     -c %s -o - | llvm-readelf -x .note.gnu.property - \
 // RUN:     | FileCheck --check-prefix=ZICFISS-RV64 %s
-// RUN: %clang --target=riscv64 -menable-experimental-extensions -march=rv64g_zicfiss -fsanitize=shadow-call-stack \
+// RUN: %clang --target=riscv64 -menable-experimental-extensions -march=rv64g_zicfiss -fcf-protection=return \
 // RUN:     -c %s -o - | llvm-readobj -n - | FileCheck --check-prefix=ZICFISS-NOTE %s
-// RUN: %clang --target=riscv64 -menable-experimental-extensions -march=rv64g_zicfilp_zicfiss -fsanitize=shadow-call-stack \
+// RUN: %clang --target=riscv64 -menable-experimental-extensions -march=rv64g_zicfilp_zicfiss -fcf-protection=full \
 // RUN:     -c %s -o - | llvm-readelf -x .note.gnu.property - \
 // RUN:     | FileCheck --check-prefix=ZICFILPSS-RV64 %s
-// RUN: %clang --target=riscv64 -menable-experimental-extensions -march=rv64g_zicfilp_zicfiss -fsanitize=shadow-call-stack \
+// RUN: %clang --target=riscv64 -menable-experimental-extensions -march=rv64g_zicfilp_zicfiss -fcf-protection=full \
 // RUN:     -c %s -o - | llvm-readobj -n - | FileCheck --check-prefix=ZICFILPSS-NOTE %s
 //
 // RUN: %clang --target=riscv32 -menable-experimental-extensions -march=rv32g_zicfilp_zicfiss \
-// RUN:     -c %s -o - | llvm-readelf -x .note.gnu.property - \
+// RUN:     -fcf-protection=branch -c %s -o - | llvm-readelf -x .note.gnu.property - \
 // RUN:     | FileCheck --check-prefix=ZICFILP-RV32 %s
 // RUN: %clang --target=riscv32 -menable-experimental-extensions -march=rv32g_zicfilp_zicfiss \
-// RUN:     -c %s -o - | llvm-readobj -n - | FileCheck --check-prefix=ZICFILP-NOTE %s
+// RUN:     -fcf-protection=branch -c %s -o - | llvm-readobj -n - | FileCheck --check-prefix=ZICFILP-NOTE %s
 // RUN: %clang --target=riscv64 -menable-experimental-extensions -march=rv64g_zicfilp_zicfiss \
-// RUN:     -c %s -o - | llvm-readelf -x .note.gnu.property - \
+// RUN:     -fcf-protection=branch -c %s -o - | llvm-readelf -x .note.gnu.property - \
 // RUN:     | FileCheck --check-prefix=ZICFILP-RV64 %s
 // RUN: %clang --target=riscv64 -menable-experimental-extensions -march=rv64g_zicfilp_zicfiss \
-// RUN:     -c %s -o - | llvm-readobj -n - | FileCheck --check-prefix=ZICFILP-NOTE %s
+// RUN:     -fcf-protection=branch -c %s -o - | llvm-readobj -n - | FileCheck --check-prefix=ZICFILP-NOTE %s
+//
+// RUN: %clang --target=riscv32 -menable-experimental-extensions -march=rv32g_zicfilp_zicfiss \
+// RUN:     -fcf-protection=return -c %s -o - | llvm-readelf -x .note.gnu.property - \
+// RUN:     | FileCheck --check-prefix=ZICFISS-RV32 %s
+// RUN: %clang --target=riscv32 -menable-experimental-extensions -march=rv32g_zicfilp_zicfiss \
+// RUN:     -fcf-protection=return -c %s -o - | llvm-readobj -n - | FileCheck --check-prefix=ZICFISS-NOTE %s
+// RUN: %clang --target=riscv64 -menable-experimental-extensions -march=rv64g_zicfilp_zicfiss \
+// RUN:     -fcf-protection=return -c %s -o - | llvm-readelf -x .note.gnu.property - \
+// RUN:     | FileCheck --check-prefix=ZICFISS-RV64 %s
+// RUN: %clang --target=riscv64 -menable-experimental-extensions -march=rv64g_zicfilp_zicfiss \
+// RUN:     -fcf-protection=return -c %s -o - | llvm-readobj -n - | FileCheck --check-prefix=ZICFISS-NOTE %s
 
 void foo() {}
 

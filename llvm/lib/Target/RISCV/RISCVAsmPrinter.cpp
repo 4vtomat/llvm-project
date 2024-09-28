@@ -530,9 +530,8 @@ void RISCVAsmPrinter::emitEndOfAsmFile(Module &M) {
   if (TM.getCodeModel() == CodeModel::Compact)
     emitCompactStub();
 
-  // TODO: Also consider software control features right after having them.
   unsigned GNUNoteFlags = 0;
-  if (RTS.hasZicfilp())
+  if (RTS.hasZicfilp() && M.getModuleFlag("cf-protection-branch"))
     GNUNoteFlags |= ELF::GNU_PROPERTY_RISCV_FEATURE_1_ZICFILP;
 
   if (RTS.hasZicfiss() && M.getModuleFlag("cf-protection-return"))
