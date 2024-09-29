@@ -1149,15 +1149,6 @@ void CodeGenModule::Release() {
                                 CodeGenOpts.PatchableFunctionEntryOffset);
   }
 
-#if SIFIVE_CUSTOMIZATION
-  if (LangOpts.Sanitize.has(SanitizerKind::ShadowCallStack)) {
-    if (T.isRISCV())
-      // Indicate that we want to instrument return control flow protection.
-      getModule().addModuleFlag(llvm::Module::Min, "cf-protection-return",
-                                1);
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
   if (CodeGenOpts.CFProtectionReturn &&
       Target.checkCFProtectionReturnSupported(getDiags())) {
     // Indicate that we want to instrument return control flow protection.
