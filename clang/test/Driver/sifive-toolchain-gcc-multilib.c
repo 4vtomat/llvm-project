@@ -30,6 +30,7 @@
 // C-RV64-GCC-MULTI-LIB: rv32iac/ilp32;@march=rv32iac@mabi=ilp32
 // C-RV64-GCC-MULTI-LIB-NEXT: rv32imafc/ilp32f;@march=rv32iac@mabi=ilp32f
 // C-RV64-GCC-MULTI-LIB-NEXT: rv64imafdc/lp64d;@march=rv64imafdc@mabi=lp64d
+// C-RV64-GCC-MULTI-LIB-NEXT: rv64imafdc_zicfiss_zicfilp/lp64d/cfi;@march=rv64imafdc_zicfiss_zicfilp@mabi=lp64d@fcf-protection=full
 // C-RV64-GCC-MULTI-LIB-NOT:  {{^.+$}}
 
 // RUN: %clang %s \
@@ -40,6 +41,7 @@
 // C-RV64-GCC-MULTI-LIB-V: Candidate multilib: rv32iac/ilp32;@march=rv32iac@mabi=ilp32
 // C-RV64-GCC-MULTI-LIB-V-NEXT: Candidate multilib: rv32imafc/ilp32f;@march=rv32iac@mabi=ilp32f
 // C-RV64-GCC-MULTI-LIB-V-NEXT: Candidate multilib: rv64imafdc/lp64d;@march=rv64imafdc@mabi=lp64d
+// C-RV64-GCC-MULTI-LIB-V-NEXT: Candidate multilib: rv64imafdc_zicfiss_zicfilp/lp64d/cfi;@march=rv64imafdc_zicfiss_zicfilp@mabi=lp64d@fcf-protection=full
 
 // RUN: %clang %s \
 // RUN:   -target riscv64-unknown-elf \

@@ -79,6 +79,9 @@ inline bool isHeaderPhi(const VPRecipeBase &R) {
 
 /// Return true if \p V is a header mask in \p Plan.
 bool isHeaderMask(const VPValue *V, VPlan &Plan);
+
+bool isInLoopRegion(const VPRecipeBase &Recipe, const VPlan &Plan);
+
 } // end namespace llvm::vputils
 
 #endif

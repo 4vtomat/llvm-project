@@ -60,3 +60,13 @@ bool vputils::isHeaderMask(const VPValue *V, VPlan &Plan) {
   return match(V, m_Binary<Instruction::ICmp>(m_VPValue(A), m_VPValue(B))) &&
          IsWideCanonicalIV(A) && B == Plan.getOrCreateBackedgeTakenCount();
 }
+
+bool vputils::isInLoopRegion(const VPRecipeBase &Recipe, const VPlan &Plan) {
+  const VPBlockBase *Parent = Recipe.getParent();
+  while (Parent) {
+    if (Parent == Plan.getVectorLoopRegion())
+      return true;
+    Parent = Parent->getParent();
+  }
+  return false;
+}

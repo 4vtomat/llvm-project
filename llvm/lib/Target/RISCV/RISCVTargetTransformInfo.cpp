@@ -9,16 +9,21 @@
 #include "RISCVTargetTransformInfo.h"
 #include "MCTargetDesc/RISCVMatInt.h"
 #include "RISCVISelLowering.h"
+#include "RISCVSubtarget.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/CodeGen/BasicTTIImpl.h"
 #include "llvm/CodeGen/CostTable.h"
 #include "llvm/CodeGen/TargetLowering.h"
+#include "llvm/IR/DerivedTypes.h"
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/TargetParser/RISCVTargetParser.h"
 #endif // SIFIVE_CUSTOMIZATION
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Instructions.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/IR/IntrinsicsAArch64.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/IR/PatternMatch.h"
 #include <cmath>
 #include <optional>
@@ -86,6 +91,10 @@ static cl::opt<unsigned>
     CustomizeXZLoopIdiomLMUL("riscv-loop-idiom-customize-lmul", cl::Hidden,
                              cl::init(1), llvm::cl::Optional,
                              cl::desc("Customize LMUL for vector loop."));
+static cl::opt<bool> HasVectorFlattenControlFlowPenalty(
+    "riscv-has-vector-flatten-control-flow-penalty",
+    cl::desc("Specifies if target won't benefit from control flow flattening."),
+    cl::init(false), cl::Hidden);
 #endif
 
 #if SIFIVE_CUSTOMIZATION
@@ -376,6 +385,18 @@ RISCVTTIImpl::getBestVectorTypeForLoopIdiom(LLVMContext &Ctx) const {
   ElementCount EC = ElementCount::getScalable(VF);
   return VectorType::get(Type::getInt8Ty(Ctx), EC);
 }
+
+bool RISCVTTIImpl::hasFlattenControlFlowPenalty() const {
+  if (HasVectorFlattenControlFlowPenalty.getNumOccurrences() > 0)
+    return HasVectorFlattenControlFlowPenalty.getValue();
+
+  switch (ST->getProcFamily()) {
+    case RISCVSubtarget::SiFiveP400:
+      return true;
+    default:
+      return false;
+  }
+}
 #endif
 
 #if SIFIVE_CUSTOMIZATION
@@ -389,8 +410,7 @@ static InstructionCost getSiFive7ReductionCost(unsigned VL) {
   unsigned LookUpSiFive7ReduceLatency[] = {0, 20, 27, 32, 34, 38, 40, 41, 42};
   if (VL <= 32)
     return LookUpSiFive7ReduceLatency[(VL + 3) >> 2];
-  else
-    return 6 + 7 * Log2_32_Ceil(VL);
+  return 6 + 7 * Log2_32_Ceil(VL);
 }
 
 #endif // SIFIVE_CUSTOMIZATION
@@ -1356,6 +1376,65 @@ InstructionCost RISCVTTIImpl::getInterleavedMemoryOpCost(
   return MemCost + ShuffleCost;
 }
 
+#if SIFIVE_CUSTOMIZATION
+InstructionCost RISCVTTIImpl::getStridedInterleavedMemoryOpCost(
+    unsigned Opcode, Type *VecTy, unsigned Factor, Value *Stride,
+    ArrayRef<unsigned> Indices, Align Alignment, unsigned AddressSpace,
+    TTI::TargetCostKind CostKind, bool UseMaskForCond, bool UseMaskForGaps) {
+
+  if (!useVLAVectorizer() || !isa<ScalableVectorType>(VecTy) ||
+      UseMaskForGaps || Factor > TLI->getMaxSupportedInterleaveFactor() ||
+      (CostKind != TTI::TCK_RecipThroughput && CostKind != TTI::TCK_Latency))
+    return InstructionCost::getInvalid();
+
+  auto *SVTy = cast<ScalableVectorType>(VecTy);
+  ElementCount VF = SVTy->getElementCount().divideCoefficientBy(Factor);
+  VectorType *SubVecTy = VectorType::get(SVTy->getElementType(), VF);
+  if (!TLI->isLegalInterleavedAccessType(SubVecTy, Factor, Alignment,
+                                         AddressSpace, DL))
+    return InstructionCost::getInvalid();
+
+  const unsigned VL = getEstimatedVLFor(SubVecTy);
+
+  switch (ST->getProcFamily()) {
+  case RISCVSubtarget::SiFiveP400:
+  case RISCVSubtarget::SiFiveP600:
+  case RISCVSubtarget::SiFiveP800:
+    // Old implementation of strided and indexed segmented instructions does 1
+    // element per cycle
+    return 2 * Factor * VL;
+  default:
+    // Optimistically assume new other generations implement these
+    // instructions better
+    break;
+  }
+
+  std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(SubVecTy);
+  const unsigned Sew = LT.second.getScalarSizeInBits();
+  if (ST->getProcFamily() == RISCVSubtarget::SiFive7) {
+    InstructionCost Cost = 0;
+    // Strided segment loads and stores operate at up to one segment per cycle
+    // if the segment fits within one aligned memory beat.
+    if (ST->hasKnownDLen()) {
+      const unsigned DLen = ST->getDLen();
+      if (Alignment < Align(DLen / 8))
+        Cost += Factor;
+      if (Factor * Sew > DLen)
+        return Cost + ((Factor * Sew) / DLen) * VL;
+    } else {
+      return 2 * Factor * VL;
+    }
+    return VL + Cost;
+  }
+
+  // See SPARTAOPEN-222 for details
+  const unsigned Overhead = 6 + 3;
+  const unsigned LSUCost = 2 * VL; // Assume worst-case scenario
+  const unsigned BalerCost = divideCeil(VL * Sew, ST->getRealMinVLen());
+  return Overhead + LSUCost + BalerCost * Factor;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 InstructionCost RISCVTTIImpl::getGatherScatterOpCost(
     unsigned Opcode, Type *DataTy, const Value *Ptr, bool VariableMask,
     Align Alignment, TTI::TargetCostKind CostKind, const Instruction *I) {
@@ -1736,6 +1815,304 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   case Intrinsic::experimental_vector_deinterleave7:
   case Intrinsic::experimental_vector_deinterleave8:
     return 0;
+  case Intrinsic::aarch64_neon_fmax:
+  case Intrinsic::aarch64_neon_fmin: {
+    auto LT = getTypeLegalizationCost(RetTy);
+    assert(LT.second.isFixedLengthVector() &&
+           "Only fixed length vector is supported.");
+    // vmfne.vv v10, v8, v8
+    // lui a0, %hi(label)
+    // flh fa5, %lo(label)(a0)
+    // vmfne.vv v11, v9, v9
+    // vmor.mm v0, v11, v10
+    // vfmax.vv v8, v9, v8
+    // vfmerge.vfm v8, v8, fa5, v0
+    return LT.first * getRISCVInstructionCost({RISCV::VMFNE_VV, RISCV::VMFNE_VV,
+                                               RISCV::VMOR_MM, RISCV::VFMAX_VV,
+                                               RISCV::VFMERGE_VFM},
+                                              LT.second, CostKind);
+  }
+  case Intrinsic::aarch64_neon_fmaxnm:
+  case Intrinsic::aarch64_neon_fminnm: {
+    auto LT = getTypeLegalizationCost(RetTy);
+    assert(LT.second.isFixedLengthVector() &&
+           "Only fixed length vector is supported.");
+    // vfclass.v v10, v8
+    // vfclass.v v11, v9
+    // vor.vv v10, v10, v11
+    // li a0, 256
+    // lui a1, %hi(label)
+    // flh fa5, %lo(label)(a1)
+    // vand.vx v10, v10, a0
+    // vmsne.vi v0, v10, 0
+    // vfmax.vv v8, v8, v9
+    // vfmerge.vfm v8, v8, fa5, v0
+    return LT.first * getRISCVInstructionCost(
+                          {RISCV::VFCLASS_V, RISCV::VFCLASS_V, RISCV::VOR_VV,
+                           RISCV::VAND_VX, RISCV::VMSNE_VI, RISCV::VFMAX_VV,
+                           RISCV::VFMERGE_VFM},
+                          LT.second, CostKind);
+  }
+  case Intrinsic::aarch64_neon_rshrn: {
+    auto LT = getTypeLegalizationCost(RetTy);
+    assert(LT.second.isFixedLengthVector() &&
+           "Only fixed length vector is supported.");
+    // @llvm.aarch64.neon.rshrn(<N x Ty>, i32)
+    // csrwi vxrm, 0
+    // vssrl.vi v8, v8, operand1
+    // vnsrl.wi v8, v8, 0
+    auto SrcLT = getTypeLegalizationCost(ICA.getArgTypes()[0]);
+    return SrcLT.first * getRISCVInstructionCost(RISCV::VSSRL_VI, SrcLT.second,
+                                                 CostKind) +
+           LT.first *
+               getRISCVInstructionCost(RISCV::VNSRL_WI, LT.second, CostKind);
+  }
+  case Intrinsic::aarch64_neon_shadd:
+  case Intrinsic::aarch64_neon_shsub:
+  case Intrinsic::aarch64_neon_srhadd:
+  case Intrinsic::aarch64_neon_uhadd:
+  case Intrinsic::aarch64_neon_uhsub:
+  case Intrinsic::aarch64_neon_urhadd: {
+    auto LT = getTypeLegalizationCost(RetTy);
+    assert(LT.second.isFixedLengthVector() &&
+           "Only fixed length vector is supported.");
+    // csrwi vxrm, 0 or 2
+    // vaadd.vv v8, v8, v9
+    return LT.first *
+           getRISCVInstructionCost(RISCV::VAADD_VV, LT.second, CostKind);
+  }
+  case Intrinsic::aarch64_neon_sqabs: {
+    auto LT = getTypeLegalizationCost(RetTy);
+    assert(LT.second.isFixedLengthVector() &&
+           "Only fixed length vector is supported.");
+    // vmsle.vi v0, v8, -1
+    // li a0, -1
+    // slli a0, a0, 63
+    // csrwi vxrm, 2
+    // vsmul.vx v8, v8, a0, v0.t
+    return LT.first *
+           getRISCVInstructionCost({RISCV::VMSLE_VI, RISCV::VSMUL_VX},
+                                   LT.second, CostKind);
+  }
+  case Intrinsic::aarch64_neon_sqneg: {
+    auto LT = getTypeLegalizationCost(RetTy);
+    assert(LT.second.isFixedLengthVector() &&
+           "Only fixed length vector is supported.");
+    // li a0, -1
+    // slli a0, a0, 63
+    // csrwi vxrm, 2
+    // vsmul.vx v8, v8, a0
+    return LT.first *
+           getRISCVInstructionCost(RISCV::VSMUL_VX, LT.second, CostKind);
+  }
+  case Intrinsic::aarch64_neon_sqrshrn:
+  case Intrinsic::aarch64_neon_sqshrn:
+  case Intrinsic::aarch64_neon_uqrshrn:
+  case Intrinsic::aarch64_neon_uqshrn: {
+    auto LT = getTypeLegalizationCost(RetTy);
+    assert(LT.second.isFixedLengthVector() &&
+           "Only fixed length vector is supported.");
+    // @llvm.aarch64.neon.sqrshrn(<N x Ty>, i32)
+    // csrwi vxrm, 0
+    // vnclip.wi v8, v8, operand1
+    return LT.first *
+           getRISCVInstructionCost(RISCV::VNCLIP_WI, LT.second, CostKind);
+  }
+  case Intrinsic::aarch64_neon_sqrshl:
+  case Intrinsic::aarch64_neon_sqshl:
+  case Intrinsic::aarch64_neon_srshl:
+  case Intrinsic::aarch64_neon_uqrshl:
+  case Intrinsic::aarch64_neon_uqshl:
+  case Intrinsic::aarch64_neon_urshl: {
+    auto LT = getTypeLegalizationCost(RetTy);
+    assert(isa<VectorType>(RetTy) && "Return type is not a VectorType.");
+    auto WideningLT = getTypeLegalizationCost(
+        VectorType::getExtendedElementVectorType(cast<VectorType>(RetTy)));
+    assert(LT.second.isFixedLengthVector() &&
+           "Only fixed length vector is supported.");
+    uint64_t Size = LT.second.getScalarSizeInBits();
+    SmallVector<unsigned> Opcodes;
+    SmallVector<unsigned> WideningOpcodes;
+    switch (ICA.getID()) {
+    default:
+      llvm_unreachable("Unsupported intrinsic.");
+    case Intrinsic::aarch64_neon_sqrshl:
+      switch (Size) {
+      default:
+        llvm_unreachable("Unsupported size.");
+      case 8:
+        Opcodes = {RISCV::VMSGTU_VX, RISCV::VRSUB_VI,   RISCV::VMSGTU_VI,
+                   RISCV::VSSRA_VV,  RISCV::VMERGE_VIM, RISCV::VMINU_VX,
+                   RISCV::VNCLIP_WI, RISCV::VMV_V_V,    RISCV::VMERGE_VVM};
+        WideningOpcodes = {RISCV::VZEXT_VF2, RISCV::VSEXT_VF2, RISCV::VSLL_VV};
+        break;
+      case 16:
+      case 32:
+        Opcodes = {RISCV::VAND_VX,  RISCV::VRSUB_VX,   RISCV::VMSGTU_VI,
+                   RISCV::VSSRA_VV, RISCV::VMERGE_VIM, RISCV::VMSGTU_VX,
+                   RISCV::VMINU_VX, RISCV::VNCLIP_WI,  RISCV::VMERGE_VVM};
+        WideningOpcodes = {RISCV::VZEXT_VF2, RISCV::VSEXT_VF2, RISCV::VSLL_VV};
+        break;
+      case 64:
+        Opcodes = {RISCV::VMSLE_VI,   RISCV::VMV_V_X,    RISCV::VAND_VX,
+                   RISCV::VMINU_VX,   RISCV::VMINU_VX,   RISCV::VMSGTU_VX,
+                   RISCV::VMSNE_VI,   RISCV::VMAND_MM,   RISCV::VSLL_VV,
+                   RISCV::VSRA_VV,    RISCV::VMSNE_VV,   RISCV::VMOR_MM,
+                   RISCV::VMERGE_VXM, RISCV::VMV_V_V,    RISCV::VMERGE_VVM,
+                   RISCV::VRSUB_VX,   RISCV::VMSGTU_VX,  RISCV::VSSRA_VV,
+                   RISCV::VMSGTU_VX,  RISCV::VMERGE_VIM, RISCV::VMV_V_V,
+                   RISCV::VMERGE_VVM};
+        break;
+      }
+      break;
+    case Intrinsic::aarch64_neon_sqshl:
+      switch (Size) {
+      default:
+        llvm_unreachable("Unsupported size.");
+      case 8:
+        Opcodes = {RISCV::VMSGTU_VX, RISCV::VRSUB_VI,  RISCV::VMINU_VX,
+                   RISCV::VMINU_VX,  RISCV::VNCLIP_WI, RISCV::VSRA_VV,
+                   RISCV::VMV_V_V};
+        WideningOpcodes = {RISCV::VZEXT_VF2, RISCV::VSEXT_VF2, RISCV::VSLL_VV};
+        break;
+      case 16:
+      case 32:
+        Opcodes = {RISCV::VAND_VX,  RISCV::VMSGTU_VX, RISCV::VRSUB_VX,
+                   RISCV::VMINU_VX, RISCV::VMINU_VX,  RISCV::VNCLIP_WI,
+                   RISCV::VSRA_VV,  RISCV::VMV_V_V};
+        WideningOpcodes = {RISCV::VZEXT_VF2, RISCV::VSEXT_VF2, RISCV::VSLL_VV};
+        break;
+      case 64:
+        Opcodes = {RISCV::VMSLE_VI,   RISCV::VMV_V_X,  RISCV::VAND_VX,
+                   RISCV::VMINU_VX,   RISCV::VMINU_VX, RISCV::VMSGTU_VX,
+                   RISCV::VMSNE_VI,   RISCV::VMAND_MM, RISCV::VSLL_VV,
+                   RISCV::VSRA_VV,    RISCV::VMSNE_VV, RISCV::VMOR_MM,
+                   RISCV::VMERGE_VXM, RISCV::VMV_V_V,  RISCV::VMERGE_VVM,
+                   RISCV::VMSGTU_VX,  RISCV::VRSUB_VX, RISCV::VMINU_VX,
+                   RISCV::VSRA_VV,    RISCV::VMV_V_V};
+        break;
+      }
+      break;
+    case Intrinsic::aarch64_neon_srshl:
+      switch (Size) {
+      default:
+        llvm_unreachable("Unsupported size.");
+      case 8:
+        Opcodes = {RISCV::VMSGTU_VX,  RISCV::VMSGTU_VI,  RISCV::VSLL_VV,
+                   RISCV::VMERGE_VIM, RISCV::VRSUB_VI,   RISCV::VMSGTU_VI,
+                   RISCV::VSSRA_VV,   RISCV::VMERGE_VIM, RISCV::VMV_V_V,
+                   RISCV::VMERGE_VVM};
+        break;
+      case 16:
+      case 32:
+      case 64:
+        Opcodes = {RISCV::VAND_VX,    RISCV::VMSGTU_VI, RISCV::VSLL_VV,
+                   RISCV::VMERGE_VIM, RISCV::VRSUB_VX,  RISCV::VSSRA_VV,
+                   RISCV::VMSGTU_VI,  RISCV::VMSGTU_VX, RISCV::VMERGE_VIM,
+                   RISCV::VMV_V_V,    RISCV::VMERGE_VVM};
+        break;
+      }
+      break;
+    case Intrinsic::aarch64_neon_uqrshl:
+      switch (Size) {
+      default:
+        llvm_unreachable("Unsupported size.");
+      case 8:
+        Opcodes = {RISCV::VMSGTU_VX,  RISCV::VRSUB_VI,   RISCV::VSSRL_VV,
+                   RISCV::VMSEQ_VI,   RISCV::VMSGTU_VI,  RISCV::VSRL_VI,
+                   RISCV::VMV_V_V,    RISCV::VMERGE_VIM, RISCV::VMINU_VX,
+                   RISCV::VNCLIPU_WI, RISCV::VMV_V_V,    RISCV::VMERGE_VVM};
+        WideningOpcodes = {RISCV::VZEXT_VF2, RISCV::VZEXT_VF2, RISCV::VSLL_VV};
+        break;
+      case 16:
+      case 32:
+        Opcodes = {RISCV::VAND_VX,  RISCV::VRSUB_VX,   RISCV::VMSEQ_VX,
+                   RISCV::VSSRL_VV, RISCV::VMSGTU_VX,  RISCV::VSRL_VI,
+                   RISCV::VMV_V_V,  RISCV::VMERGE_VIM, RISCV::VMSGTU_VX,
+                   RISCV::VMINU_VX, RISCV::VNCLIPU_WI, RISCV::VMERGE_VVM};
+        WideningOpcodes = {RISCV::VZEXT_VF2, RISCV::VZEXT_VF2, RISCV::VSLL_VV};
+        break;
+      case 64:
+        Opcodes = {RISCV::VAND_VX,    RISCV::VRSUB_VX,   RISCV::VMSEQ_VX,
+                   RISCV::VSSRL_VV,   RISCV::VMSGTU_VX,  RISCV::VSRL_VX,
+                   RISCV::VMV_V_V,    RISCV::VMERGE_VIM, RISCV::VMINU_VX,
+                   RISCV::VMINU_VX,   RISCV::VSLL_VV,    RISCV::VSRL_VV,
+                   RISCV::VMSNE_VV,   RISCV::VMSGTU_VX,  RISCV::VMSNE_VI,
+                   RISCV::VMAND_MM,   RISCV::VMOR_MM,    RISCV::VMSGTU_VX,
+                   RISCV::VMERGE_VIM, RISCV::VMV_V_V,    RISCV::VMERGE_VVM};
+        break;
+      }
+      break;
+    case Intrinsic::aarch64_neon_uqshl:
+      switch (Size) {
+      default:
+        llvm_unreachable("Unsupported size.");
+      case 8:
+        Opcodes = {RISCV::VMSGTU_VX,  RISCV::VRSUB_VI,   RISCV::VMSGTU_VI,
+                   RISCV::VSRL_VV,    RISCV::VMERGE_VIM, RISCV::VMINU_VX,
+                   RISCV::VNCLIPU_WI, RISCV::VMV_V_V,    RISCV::VMERGE_VVM};
+        WideningOpcodes = {RISCV::VZEXT_VF2, RISCV::VZEXT_VF2, RISCV::VSLL_VV};
+        break;
+      case 16:
+      case 32:
+        Opcodes = {RISCV::VAND_VX,  RISCV::VRSUB_VX,   RISCV::VMSGTU_VI,
+                   RISCV::VSRL_VV,  RISCV::VMERGE_VIM, RISCV::VMSGTU_VX,
+                   RISCV::VMINU_VX, RISCV::VNCLIPU_WI, RISCV::VMERGE_VVM};
+        WideningOpcodes = {RISCV::VZEXT_VF2, RISCV::VZEXT_VF2, RISCV::VSLL_VV};
+        break;
+      case 64:
+        Opcodes = {RISCV::VAND_VX,    RISCV::VRSUB_VX,   RISCV::VMSGTU_VX,
+                   RISCV::VSRL_VV,    RISCV::VMERGE_VIM, RISCV::VMINU_VX,
+                   RISCV::VMINU_VX,   RISCV::VSLL_VV,    RISCV::VSRL_VV,
+                   RISCV::VMSNE_VV,   RISCV::VMSGTU_VX,  RISCV::VMSNE_VI,
+                   RISCV::VMAND_MM,   RISCV::VMOR_MM,    RISCV::VMSGTU_VX,
+                   RISCV::VMERGE_VIM, RISCV::VMV_V_V,    RISCV::VMERGE_VVM};
+        break;
+      }
+      break;
+    case Intrinsic::aarch64_neon_urshl:
+      switch (Size) {
+      default:
+        llvm_unreachable("Unsupported size.");
+      case 8:
+        Opcodes = {RISCV::VMSGTU_VX,  RISCV::VMSGTU_VI,  RISCV::VSLL_VV,
+                   RISCV::VMERGE_VIM, RISCV::VRSUB_VI,   RISCV::VSSRL_VV,
+                   RISCV::VMSEQ_VI,   RISCV::VMSGTU_VI,  RISCV::VSRL_VI,
+                   RISCV::VMV_V_V,    RISCV::VMERGE_VIM, RISCV::VMV_V_V,
+                   RISCV::VMERGE_VVM};
+        break;
+      case 16:
+      case 32:
+      case 64:
+        Opcodes = {RISCV::VAND_VX,    RISCV::VMSGTU_VI,  RISCV::VSLL_VV,
+                   RISCV::VMERGE_VIM, RISCV::VRSUB_VX,   RISCV::VMSEQ_VX,
+                   RISCV::VSSRL_VV,   RISCV::VSRL_VI,    RISCV::VMSGTU_VX,
+                   RISCV::VMSGTU_VX,  RISCV::VMERGE_VIM, RISCV::VMV_V_V,
+                   RISCV::VMERGE_VVM};
+        break;
+      }
+      break;
+    }
+    InstructionCost Cost =
+        LT.first * getRISCVInstructionCost(Opcodes, LT.second, CostKind);
+    if (!WideningOpcodes.empty()) {
+      assert(WideningLT.second.isFixedLengthVector() &&
+             "Widening instructions are not supported.");
+      Cost +=
+          WideningLT.first *
+          getRISCVInstructionCost(WideningOpcodes, WideningLT.second, CostKind);
+    }
+    return Cost;
+  }
+  case Intrinsic::aarch64_neon_sqxtn:
+  case Intrinsic::aarch64_neon_uqxtn: {
+    auto LT = getTypeLegalizationCost(RetTy);
+    assert(LT.second.isFixedLengthVector() &&
+           "Only fixed length vector is supported.");
+    // vnclip.wi v8, v8, 0
+    return LT.first *
+           getRISCVInstructionCost(RISCV::VNCLIP_WI, LT.second, CostKind);
+  }
 #endif // SIFIVE_CUSTOMIZATION
   // vp integer arithmetic ops.
   case Intrinsic::vp_add:

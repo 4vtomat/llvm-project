@@ -23,6 +23,9 @@
 #include "llvm/IR/Constants.h"
 #include "llvm/IR/DerivedTypes.h"
 #include "llvm/IR/IRBuilder.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/IR/IntrinsicsAArch64.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/IR/MemoryModelRelaxationAnnotations.h"
 #include "llvm/IR/PatternMatch.h"
 #include "llvm/IR/Value.h"
@@ -112,6 +115,33 @@ bool llvm::isTriviallyVectorizable(Intrinsic::ID ID) {
   case Intrinsic::llrint:
   case Intrinsic::ucmp:
   case Intrinsic::scmp:
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::aarch64_neon_fmax:
+  case Intrinsic::aarch64_neon_fmin:
+  case Intrinsic::aarch64_neon_fmaxnm:
+  case Intrinsic::aarch64_neon_fminnm:
+  case Intrinsic::aarch64_neon_rshrn:
+  case Intrinsic::aarch64_neon_shadd:
+  case Intrinsic::aarch64_neon_shsub:
+  case Intrinsic::aarch64_neon_srhadd:
+  case Intrinsic::aarch64_neon_uhadd:
+  case Intrinsic::aarch64_neon_uhsub:
+  case Intrinsic::aarch64_neon_urhadd:
+  case Intrinsic::aarch64_neon_sqabs:
+  case Intrinsic::aarch64_neon_sqneg:
+  case Intrinsic::aarch64_neon_sqrshrn:
+  case Intrinsic::aarch64_neon_sqshrn:
+  case Intrinsic::aarch64_neon_uqrshrn:
+  case Intrinsic::aarch64_neon_uqshrn:
+  case Intrinsic::aarch64_neon_sqrshl:
+  case Intrinsic::aarch64_neon_sqshl:
+  case Intrinsic::aarch64_neon_srshl:
+  case Intrinsic::aarch64_neon_uqrshl:
+  case Intrinsic::aarch64_neon_uqshl:
+  case Intrinsic::aarch64_neon_urshl:
+  case Intrinsic::aarch64_neon_sqxtn:
+  case Intrinsic::aarch64_neon_uqxtn:
+#endif // SIFIVE_CUSTOMIZATION
     return true;
   default:
     return false;
@@ -132,6 +162,11 @@ bool llvm::isVectorIntrinsicWithScalarOpAtArg(Intrinsic::ID ID,
   case Intrinsic::vp_ctlz:
   case Intrinsic::vp_cttz:
   case Intrinsic::vp_powi:
+  case Intrinsic::aarch64_neon_rshrn:
+  case Intrinsic::aarch64_neon_sqrshrn:
+  case Intrinsic::aarch64_neon_sqshrn:
+  case Intrinsic::aarch64_neon_uqrshrn:
+  case Intrinsic::aarch64_neon_uqshrn:
 #endif // SIFIVE_CUSTOMIZATION
     return (ScalarOpdIdx == 1);
   case Intrinsic::smul_fix:

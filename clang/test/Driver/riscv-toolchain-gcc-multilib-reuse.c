@@ -116,3 +116,42 @@
 // RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV64IMAFC-LP64-COMPACT %s
 // GCC-MULTI-LIB-REUSE-RV64IMAFC-LP64-COMPACT: rv64imac/lp64/compact
 // GCC-MULTI-LIB-REUSE-RV64IMAFC-LP64-COMPACT-NOT: {{^.+$}}
+
+// RUN: %clang %s \
+// RUN:   -target riscv64-unknown-elf \
+// RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk \
+// RUN:   --print-multi-directory \
+// RUN:   -march=rv64imafdc_zicfilp_zicfiss -mabi=lp64d -fcf-protection \
+// RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP_ZICFISS-LP64D-CFI %s
+
+// RUN: %clang %s \
+// RUN:   -target riscv64-unknown-elf \
+// RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk \
+// RUN:   --print-multi-directory \
+// RUN:   -march=rv64imafdc_zicfilp_zicfiss -mabi=lp64d -fcf-protection=full \
+// RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP_ZICFISS-LP64D-CFI %s
+// GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP_ZICFISS-LP64D-CFI: rv64imafdc_zicfiss_zicfilp/lp64d/cfi
+// GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP_ZICFISS-LP64D-CFI-NOT: {{^.+$}}
+
+// RUN: %clang %s \
+// RUN:   -target riscv64-unknown-elf \
+// RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk \
+// RUN:   --print-multi-directory \
+// RUN:   -march=rv64imafdc_zicfilp_zicfiss -mabi=lp64d -fcf-protection=branch \
+// RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP_ZICFISS-LP64D-NONE-CFI %s
+
+// RUN: %clang %s \
+// RUN:   -target riscv64-unknown-elf \
+// RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk \
+// RUN:   --print-multi-directory \
+// RUN:   -march=rv64imafdc_zicfilp_zicfiss -mabi=lp64d -fcf-protection=return \
+// RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP_ZICFISS-LP64D-NONE-CFI %s
+
+// RUN: %clang %s \
+// RUN:   -target riscv64-unknown-elf \
+// RUN:   --gcc-toolchain=%S/Inputs/multilib_riscv64_elf_sdk \
+// RUN:   --print-multi-directory \
+// RUN:   -march=rv64imafdc_zicfilp_zicfiss -mabi=lp64d -fcf-protection=none \
+// RUN:   | FileCheck -check-prefix=GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP_ZICFISS-LP64D-NONE-CFI %s
+// GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP_ZICFISS-LP64D-NONE-CFI: rv64imafdc/lp64d
+// GCC-MULTI-LIB-REUSE-RV64IMAFDC_ZICFILP_ZICFISS-LP64D-NONE-CFI-NOT: {{^.+$}}

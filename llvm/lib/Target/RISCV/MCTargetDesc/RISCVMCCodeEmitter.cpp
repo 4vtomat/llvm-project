@@ -568,8 +568,8 @@ unsigned RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
       RelaxCandidate = true;
       break;
     case RISCVMCExpr::VK_RISCV_GOT_GPREL_LO:
-      if (MIFrm == RISCVII::InstFormatS)
-        llvm_unreachable("VK_RISCV_GOT_GPREL_LO used with unexpected instruction format");
+      assert(MIFrm == RISCVII::InstFormatI &&
+             "VK_RISCV_GOT_GPREL_LO used with unexpected instruction format");
       FixupKind = RISCV::fixup_riscv_got_gprel_lo12_i;
       RelaxCandidate = true;
       break;
@@ -577,16 +577,18 @@ unsigned RISCVMCCodeEmitter::getImmOpValue(const MCInst &MI, unsigned OpNo,
       FixupKind = RISCV::fixup_riscv_tls_got_gprel_hi20;
       break;
     case RISCVMCExpr::VK_RISCV_TLS_GOT_GPREL_LO:
-      if (MIFrm == RISCVII::InstFormatS)
-        llvm_unreachable("VK_RISCV_TLS_GOT_GPREL_LO used with unexpected instruction format");
+      assert(
+          MIFrm == RISCVII::InstFormatI &&
+          "VK_RISCV_TLS_GOT_GPREL_LO used with unexpected instruction format");
       FixupKind = RISCV::fixup_riscv_tls_got_gprel_lo12_i;
       break;
     case RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_HI:
       FixupKind = RISCV::fixup_riscv_tls_gd_gprel_hi20;
       break;
     case RISCVMCExpr::VK_RISCV_TLS_GD_GPREL_LO:
-      if (MIFrm == RISCVII::InstFormatS)
-        llvm_unreachable("VK_RISCV_TLS_GD_GPREL_LO used with unexpected instruction format");
+      assert(
+          MIFrm == RISCVII::InstFormatI &&
+          "VK_RISCV_TLS_GD_GPREL_LO used with unexpected instruction format");
       FixupKind = RISCV::fixup_riscv_tls_gd_gprel_lo12_i;
       break;
 #endif // SIFIVE_CUSTOMIZATION

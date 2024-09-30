@@ -491,3 +491,29 @@ bb6:
 exit:
   ret void
 }
+
+define signext i32 @test_ptrtoint_ext() {
+; PIC-LABEL: test_ptrtoint_ext:
+; PIC:       # %bb.0: # %entry
+; PIC-NEXT:  .Lpcrel_hi10:
+; PIC-NEXT:    auipc a0, %pcrel_hi(__global_pointer__)
+; PIC-NEXT:    addi a0, a0, %pcrel_lo(.Lpcrel_hi10)
+; PIC-NEXT:    ld a1, 0(a0)
+; PIC-NEXT:    add a0, a0, a1
+; PIC-NEXT:    lui a1, %got_gprel_hi(src)
+; PIC-NEXT:    add a0, a1, a0, %got_gprel(src)
+; PIC-NEXT:    ld a0, %got_gprel_lo(src)(a0)
+; PIC-NEXT:    sext.w a0, a0
+; PIC-NEXT:    ret
+;
+; NoPIC-LABEL: test_ptrtoint_ext:
+; NoPIC:       # %bb.0: # %entry
+; NoPIC-NEXT:    lui a0, %got_gprel_hi(src)
+; NoPIC-NEXT:    add a0, a0, gp, %got_gprel(src)
+; NoPIC-NEXT:    ld a0, %got_gprel_lo(src)(a0)
+; NoPIC-NEXT:    sext.w a0, a0
+; NoPIC-NEXT:    ret
+entry:
+  %0 = ptrtoint ptr @src to i32
+  ret i32 %0
+}

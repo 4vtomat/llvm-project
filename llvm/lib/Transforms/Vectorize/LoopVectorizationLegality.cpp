@@ -2289,6 +2289,9 @@ bool LoopVectorizationLegality::canVectorizeUncountableLoop(
       CouldNotComputeExitingBlock = ExitingBB;
   }
 
+  if (!CouldNotComputeExitingBlock)
+    return false;
+
   // Exclude integer induction variables first.
   // TODO: Support signed and unsigned induction variables.
   for (const std::pair<PHINode *, InductionDescriptor> &InductionEntry :

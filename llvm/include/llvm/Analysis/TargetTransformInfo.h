@@ -969,6 +969,10 @@ public:
 
   // Return the optimal vector type for loop idiom.
   VectorType *getBestVectorTypeForLoopIdiom(LLVMContext &Context) const;
+
+  /// Returns true if target will benefit more from scalar execution of a
+  /// control flow rather than flatten vector code.
+  bool hasFlattenControlFlowPenalty() const;
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Should the Select Optimization pass be enabled and ran.
@@ -1501,6 +1505,13 @@ public:
       Align Alignment, unsigned AddressSpace,
       TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput,
       bool UseMaskForCond = false, bool UseMaskForGaps = false) const;
+#if SIFIVE_CUSTOMIZATION
+  InstructionCost getStridedInterleavedMemoryOpCost(
+      unsigned Opcode, Type *VecTy, unsigned Factor, Value *Stride,
+      ArrayRef<unsigned> Indices, Align Alignment, unsigned AddressSpace,
+      TTI::TargetCostKind CostKind, bool UseMaskForCond = false,
+      bool UseMaskForGaps = false) const;
+#endif // SIFIVE_CUSTOMIZATION
 
   /// A helper function to determine the type of reduction algorithm used
   /// for a given \p Opcode and set of FastMathFlags \p FMF.
@@ -2026,6 +2037,8 @@ public:
 
   virtual VectorType *
   getBestVectorTypeForLoopIdiom(LLVMContext &Context) const = 0;
+
+  virtual bool hasFlattenControlFlowPenalty() const = 0;
 #endif // SIFIVE_CUSTOMIZATION
   virtual bool enableSelectOptimize() = 0;
   virtual bool shouldTreatInstructionLikeSelect(const Instruction *I) = 0;
@@ -2187,6 +2200,13 @@ public:
       unsigned Opcode, Type *VecTy, unsigned Factor, ArrayRef<unsigned> Indices,
       Align Alignment, unsigned AddressSpace, TTI::TargetCostKind CostKind,
       bool UseMaskForCond = false, bool UseMaskForGaps = false) = 0;
+#if SIFIVE_CUSTOMIZATION
+  virtual InstructionCost getStridedInterleavedMemoryOpCost(
+      unsigned Opcode, Type *VecTy, unsigned Factor, Value *Stride,
+      ArrayRef<unsigned> Indices, Align Alignment, unsigned AddressSpace,
+      TTI::TargetCostKind CostKind, bool UseMaskForCond = false,
+      bool UseMaskForGaps = false) = 0;
+#endif // SIFIVE_CUSTOMIZATION
   virtual InstructionCost
   getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
                              std::optional<FastMathFlags> FMF,
@@ -2621,6 +2641,10 @@ public:
   getBestVectorTypeForLoopIdiom(LLVMContext &Context) const override {
     return Impl.getBestVectorTypeForLoopIdiom(Context);
   }
+
+  bool hasFlattenControlFlowPenalty() const override {
+    return Impl.hasFlattenControlFlowPenalty();
+  }
 #endif // SIFIVE_CUSTOMIZATION
 
   bool enableSelectOptimize() override {
@@ -2915,6 +2939,17 @@ public:
                                            Alignment, AddressSpace, CostKind,
                                            UseMaskForCond, UseMaskForGaps);
   }
+#if SIFIVE_CUSTOMIZATION
+  InstructionCost getStridedInterleavedMemoryOpCost(
+      unsigned Opcode, Type *VecTy, unsigned Factor, Value *Stride,
+      ArrayRef<unsigned> Indices, Align Alignment, unsigned AddressSpace,
+      TTI::TargetCostKind CostKind, bool UseMaskForCond = false,
+      bool UseMaskForGaps = false) final {
+    return Impl.getStridedInterleavedMemoryOpCost(
+        Opcode, VecTy, Factor, Stride, Indices, Alignment, AddressSpace,
+        CostKind, UseMaskForCond, UseMaskForGaps);
+  }
+#endif // SIFIVE_CUSTOMIZATION
   InstructionCost
   getArithmeticReductionCost(unsigned Opcode, VectorType *Ty,
                              std::optional<FastMathFlags> FMF,

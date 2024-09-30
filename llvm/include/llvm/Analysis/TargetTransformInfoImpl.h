@@ -409,6 +409,8 @@ public:
   VectorType *getBestVectorTypeForLoopIdiom(LLVMContext &Context) const {
     return nullptr;
   }
+
+  bool hasFlattenControlFlowPenalty() const { return false; }
 #endif // SIFIVE_CUSTOMIZATION
 
   bool enableSelectOptimize() const { return true; }
@@ -769,6 +771,15 @@ public:
       bool UseMaskForCond, bool UseMaskForGaps) const {
     return 1;
   }
+#if SIFIVE_CUSTOMIZATION
+  InstructionCost getStridedInterleavedMemoryOpCost(
+      unsigned Opcode, Type *VecTy, unsigned Factor, Value *Stride,
+      ArrayRef<unsigned> Indices, Align Alignment, unsigned AddressSpace,
+      TTI::TargetCostKind CostKind, bool UseMaskForCond = false,
+      bool UseMaskForGaps = false) const {
+    return 1;
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   InstructionCost getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
                                         TTI::TargetCostKind CostKind) const {

@@ -14,6 +14,7 @@
 #include "SiFive_VPlanPredicatedInstructions.h"
 #include "VPlan.h"
 #include "VPlanValue.h"
+#include "VPlanUtils.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Intrinsics.h"
@@ -151,9 +152,7 @@ Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
     Builder.setMask(MaskArg);
 
     Value *EVLArg;
-    VPRegionBlock *DefRegion =
-        Def->getDefiningRecipe()->getParent()->getParent();
-    if (DefRegion != State.Plan->getVectorLoopRegion()) {
+    if (!vputils::isInLoopRegion(*Def->getDefiningRecipe(), *State.Plan)) {
       Value *InitEVL =
           State.get(State.Plan->getInitEVL(), 0, /*NeedsScalar=*/true);
       assert(InitEVL && "InitEVL must be initialized before use");

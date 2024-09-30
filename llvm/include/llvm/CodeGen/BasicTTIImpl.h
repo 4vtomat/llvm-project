@@ -1573,6 +1573,18 @@ public:
     return Cost;
   }
 
+#if SIFIVE_CUSTOMIZATION
+  InstructionCost getStridedInterleavedMemoryOpCost(
+      unsigned Opcode, Type *VecTy, unsigned Factor, Value *Stride,
+      ArrayRef<unsigned> Indices, Align Alignment, unsigned AddressSpace,
+      TTI::TargetCostKind CostKind, bool UseMaskForCond = false,
+      bool UseMaskForGaps = false) {
+    return getInterleavedMemoryOpCost(Opcode, VecTy, Factor, Indices, Alignment,
+                                      AddressSpace, CostKind, UseMaskForCond,
+                                      UseMaskForGaps);
+  }
+#endif // SIFIVE_CUSTOMIZATION
+
   /// Get intrinsic cost based on arguments.
   InstructionCost getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
                                         TTI::TargetCostKind CostKind) {

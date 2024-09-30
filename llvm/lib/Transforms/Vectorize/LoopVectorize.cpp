@@ -3628,7 +3628,6 @@ void UncountableInnerLoopVectorizer::fixupIVUsers(
     // don't already have an incoming value for the middle block.
     if (PHI->getBasicBlockIndex(MiddleBlock) == -1) {
       PHI->addIncoming(I.second, MiddleBlock);
-      Plan.removeLiveOut(PHI);
     }
   }
 }
@@ -10482,6 +10481,9 @@ void LoopVectorizationPlanner::buildVPlansWithVPRecipes(ElementCount MinVF,
           VPlanTransforms::optimize(*Plan);
           VPlanTransforms::optimizeGEPs(*Plan);
           VPlanTransforms::optimize(*Plan);
+
+          VPlanTransforms::optimizeConditionalRecipes(
+              *Plan, *Legal, TTI, *TLI);
         }
       } else {
 #endif // SIFIVE_CUSTOMIZATION
@@ -10711,7 +10713,7 @@ static SetVector<VPIRInstruction *> collectUsersInExitBlock(
       for (PHINode &ExitPhi : ExitBB->phis()) {
         Value *IncomingValue = ExitPhi.getIncomingValueForBlock(ExitingBB);
         VPValue *V = Builder.getVPValueOrAddLiveIn(IncomingValue);
-        Plan.addLiveOut(&ExitPhi, V, Legal->isInductionVariable(IncomingValue));
+        Plan.addLiveOut(&ExitPhi, V);
       }
     }
     return {};

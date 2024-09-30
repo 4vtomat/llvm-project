@@ -68,3 +68,47 @@ entry:
   %12 = icmp eq <2 x i8> %8, %6
   ret void
 }
+
+define void @test3(ptr %in_0, ptr %in_1, ptr %out) {
+; CHECK-LABEL: @test3(
+; CHECK-NEXT:  entry:
+; CHECK-NEXT:    [[GEP0:%.*]] = getelementptr inbounds i32, ptr [[IN_0:%.*]], i64 0
+; CHECK-NEXT:    [[GEP4:%.*]] = getelementptr inbounds i32, ptr [[IN_1:%.*]], i64 0
+; CHECK-NEXT:    [[GEP8:%.*]] = getelementptr inbounds i32, ptr [[OUT:%.*]], i64 0
+; CHECK-NEXT:    [[TMP0:%.*]] = load <16 x float>, ptr [[GEP0]], align 4
+; CHECK-NEXT:    [[TMP1:%.*]] = load <16 x float>, ptr [[GEP4]], align 4
+; CHECK-NEXT:    [[TMP2:%.*]] = call <16 x float> @llvm.aarch64.neon.fmax.v16f32(<16 x float> [[TMP0]], <16 x float> [[TMP1]])
+; CHECK-NEXT:    store <16 x float> [[TMP2]], ptr [[GEP8]], align 4
+; CHECK-NEXT:    ret void
+;
+entry:
+  %gep0 = getelementptr inbounds i32, ptr %in_0, i64 0
+  %gep1 = getelementptr inbounds i32, ptr %in_0, i64 4
+  %gep2 = getelementptr inbounds i32, ptr %in_0, i64 8
+  %gep3 = getelementptr inbounds i32, ptr %in_0, i64 12
+  %gep4 = getelementptr inbounds i32, ptr %in_1, i64 0
+  %gep5 = getelementptr inbounds i32, ptr %in_1, i64 4
+  %gep6 = getelementptr inbounds i32, ptr %in_1, i64 8
+  %gep7 = getelementptr inbounds i32, ptr %in_1, i64 12
+  %load0 = load <4 x float>, ptr %gep0, align 4
+  %load1 = load <4 x float>, ptr %gep1, align 4
+  %load2 = load <4 x float>, ptr %gep2, align 4
+  %load3 = load <4 x float>, ptr %gep3, align 4
+  %load4 = load <4 x float>, ptr %gep4, align 4
+  %load5 = load <4 x float>, ptr %gep5, align 4
+  %load6 = load <4 x float>, ptr %gep6, align 4
+  %load7 = load <4 x float>, ptr %gep7, align 4
+  %fmax0 = tail call <4 x float> @llvm.aarch64.neon.fmax.v4f32(<4 x float> %load0, <4 x float> %load4)
+  %fmax1 = tail call <4 x float> @llvm.aarch64.neon.fmax.v4f32(<4 x float> %load1, <4 x float> %load5)
+  %fmax2 = tail call <4 x float> @llvm.aarch64.neon.fmax.v4f32(<4 x float> %load2, <4 x float> %load6)
+  %fmax3 = tail call <4 x float> @llvm.aarch64.neon.fmax.v4f32(<4 x float> %load3, <4 x float> %load7)
+  %gep8 = getelementptr inbounds i32, ptr %out, i64 0
+  %gep9 = getelementptr inbounds i32, ptr %out, i64 4
+  %gep10 = getelementptr inbounds i32, ptr %out, i64 8
+  %gep11 = getelementptr inbounds i32, ptr %out, i64 12
+  store <4 x float> %fmax0, ptr %gep8, align 4
+  store <4 x float> %fmax1, ptr %gep9, align 4
+  store <4 x float> %fmax2, ptr %gep10, align 4
+  store <4 x float> %fmax3, ptr %gep11, align 4
+  ret void
+}

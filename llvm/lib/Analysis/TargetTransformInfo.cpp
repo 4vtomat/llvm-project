@@ -633,6 +633,10 @@ VectorType *
 TargetTransformInfo::getBestVectorTypeForLoopIdiom(LLVMContext &Context) const {
   return TTIImpl->getBestVectorTypeForLoopIdiom(Context);
 }
+
+bool TargetTransformInfo::hasFlattenControlFlowPenalty() const {
+  return TTIImpl->hasFlattenControlFlowPenalty();
+}
 #endif // SIFIVE_CUSTOMIZATION
 
 bool TargetTransformInfo::enableSelectOptimize() const {
@@ -1139,6 +1143,18 @@ InstructionCost TargetTransformInfo::getInterleavedMemoryOpCost(
   assert(Cost >= 0 && "TTI should not produce negative costs!");
   return Cost;
 }
+
+#if SIFIVE_CUSTOMIZATION
+InstructionCost TargetTransformInfo::getStridedInterleavedMemoryOpCost(
+    unsigned Opcode, Type *VecTy, unsigned Factor, Value *Stride,
+    ArrayRef<unsigned> Indices, Align Alignment, unsigned AddressSpace,
+    TTI::TargetCostKind CostKind, bool UseMaskForCond,
+    bool UseMaskForGaps) const {
+  return TTIImpl->getStridedInterleavedMemoryOpCost(
+      Opcode, VecTy, Factor, Stride, Indices, Alignment, AddressSpace, CostKind,
+      UseMaskForCond, UseMaskForGaps);
+}
+#endif // SIFIVE_CUSTOMIZATION
 
 InstructionCost
 TargetTransformInfo::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,

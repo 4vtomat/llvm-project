@@ -3,3 +3,4 @@
 print("rv32iac/ilp32;@march=rv32iac@mabi=ilp32")
 print("rv32imafc/ilp32f;@march=rv32iac@mabi=ilp32f")
 print("rv64imafdc/lp64d;@march=rv64imafdc@mabi=lp64d")
+print("rv64imafdc_zicfiss_zicfilp/lp64d/cfi;@march=rv64imafdc_zicfiss_zicfilp@mabi=lp64d@fcf-protection=full")

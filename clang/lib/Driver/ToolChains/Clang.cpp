@@ -2134,6 +2134,55 @@ void Clang::AddPPCTargetArgs(const ArgList &Args,
   }
 }
 
+#if SIFIVE_CUSTOMIZATION
+static bool isRISCVBareMetal(const llvm::Triple &Triple) {
+  if (!Triple.isRISCV())
+    return false;
+
+  if (Triple.getVendor() != llvm::Triple::UnknownVendor)
+    return false;
+
+  if (Triple.getOS() != llvm::Triple::UnknownOS)
+    return false;
+
+  return Triple.getEnvironmentName() == "elf";
+}
+
+static void SetRISCVSmallDataLimit(const ToolChain &TC, const ArgList &Args,
+                                   ArgStringList &CmdArgs) {
+  const llvm::Triple &Triple = TC.getTriple();
+  if (Arg *A = Args.getLastArg(options::OPT_G)) {
+    // Forward the -msmall-data-limit= option.
+    CmdArgs.push_back("-msmall-data-limit");
+    CmdArgs.push_back(A->getValue());
+    return;
+  }
+
+  // Default to 8 for baremetal.
+  if (!isRISCVBareMetal(Triple))
+    return;
+
+  // Unless -shared is used.
+  if (Args.hasArg(options::OPT_shared))
+    return;
+
+  // Or PIC/PIE is used.
+  Arg *LastPICArg = Args.getLastArg(options::OPT_fPIC, options::OPT_fno_PIC,
+                                    options::OPT_fpic, options::OPT_fno_pic,
+                                    options::OPT_fPIE, options::OPT_fno_PIE,
+                                    options::OPT_fpie, options::OPT_fno_pie);
+  if (LastPICArg) {
+    Option O = LastPICArg->getOption();
+    if (O.matches(options::OPT_fPIC) || O.matches(options::OPT_fpic) ||
+        O.matches(options::OPT_fPIE) || O.matches(options::OPT_fpie))
+      return;
+  }
+
+  CmdArgs.push_back("-msmall-data-limit");
+  CmdArgs.push_back("8");
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 void Clang::AddRISCVTargetArgs(const ArgList &Args,
                                ArgStringList &CmdArgs) const {
   const llvm::Triple &Triple = getToolChain().getTriple();
@@ -2142,10 +2191,9 @@ void Clang::AddRISCVTargetArgs(const ArgList &Args,
   CmdArgs.push_back("-target-abi");
   CmdArgs.push_back(ABIName.data());
 
-  if (Arg *A = Args.getLastArg(options::OPT_G)) {
-    CmdArgs.push_back("-msmall-data-limit");
-    CmdArgs.push_back(A->getValue());
-  }
+#if SIFIVE_CUSTOMIZATION
+  SetRISCVSmallDataLimit(getToolChain(), Args, CmdArgs);
+#endif // SIFIVE_CUSTOMIZATION
 
   if (!Args.hasFlag(options::OPT_mimplicit_float,
                     options::OPT_mno_implicit_float, true))

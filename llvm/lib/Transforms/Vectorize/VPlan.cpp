@@ -34,6 +34,7 @@
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/Analysis/ScalarEvolution.h"
 #include "llvm/Analysis/ScalarEvolutionExpressions.h"
+#include "llvm/IR/InstrTypes.h"
 #endif // SIFIVE_CUSTOMIZATION
 #include "llvm/IR/BasicBlock.h"
 #include "llvm/IR/CFG.h"
@@ -141,7 +142,7 @@ static void moveStepComputationsToIVUpdate(VPTransformState *State,
     Value *SplatV = nullptr;
     if (VPAdd->getOperand(3)->getType() != State->EVLPlaceholder->getType()) {
         I = cast<Instruction>(VPAdd->getOperand(3));
-        Value *V = MatchEVLPlaceholder(I);
+        [[maybe_unused]] Value *V = MatchEVLPlaceholder(I);
         assert((V && V == State->EVLPlaceholder) &&
                "EVL parameter of a vp intrinsic does not use EVL Placeholder");
         InstructionsToMove.push_back(I);
@@ -162,7 +163,7 @@ static void moveStepComputationsToIVUpdate(VPTransformState *State,
     InstructionsToMove.push_back(I);
     I = cast<Instruction>(I->getOperand(1));
   }
-  Value *V = MatchEVLPlaceholder(I);
+  [[maybe_unused]] Value *V = MatchEVLPlaceholder(I);
   assert((V && V == State->EVLPlaceholder) &&
          "Multiplication does not use EVL Placeholder");
   InstructionsToMove.push_back(I);
@@ -563,7 +564,12 @@ VPBasicBlock::createEmptyBasicBlock(VPTransformState::CFGState &CFG) {
     LLVM_DEBUG(dbgs() << "LV: draw edge from" << PredBB->getName() << '\n');
 
     auto *TermBr = dyn_cast<BranchInst>(PredBBTerminator);
+#if SIFIVE_CUSTOMIZATION
+    if (isa<UnreachableInst>(PredBBTerminator) &&
+        !isa<VPConditionalRegionBlock>(PredVPSuccessors[0])) {
+#else
     if (isa<UnreachableInst>(PredBBTerminator)) {
+#endif // SIFIVE_CUSTOMIZATION
       assert(PredVPSuccessors.size() == 1 &&
              "Predecessor ending w/o branch must have single successor.");
       DebugLoc DL = PredBBTerminator->getDebugLoc();
@@ -576,12 +582,42 @@ VPBasicBlock::createEmptyBasicBlock(VPTransformState::CFGState &CFG) {
       // Set each forward successor here when it is created, excluding
       // backedges. A backward successor is set when the branch is created.
       unsigned idx = PredVPSuccessors.front() == this ? 0 : 1;
+#if SIFIVE_CUSTOMIZATION
+      if (PredVPSuccessors.size() == 1)
+        if (auto *Region = dyn_cast<VPRegionBlock>(PredVPSuccessors[0]))
+          idx = Region->getEntry() == this ? 0 : 1;
+#endif // SIFIVE_CUSTOMIZATION
       assert(!TermBr->getSuccessor(idx) &&
              "Trying to reset an existing successor block.");
       TermBr->setSuccessor(idx, NewBB);
     }
     CFG.DTU.applyUpdates({{DominatorTree::Insert, PredBB, NewBB}});
   }
+#if SIFIVE_CUSTOMIZATION
+  // Extra adjustment is needed when predecessor is VPConditionalRegionBlock, since loop above
+  // does not cover immediate successor (if condition was false) to that BB
+  for (VPBlockBase *PredVPBlock : getHierarchicalPredecessors()) {
+    if (!isa<VPConditionalRegionBlock>(PredVPBlock))
+      continue;
+
+    // TODO: Support multiple predecessors
+    auto *PredVPBB =
+        cast<VPBasicBlock>(PredVPBlock->getSingleHierarchicalPredecessor());
+    BasicBlock *PredBB = CFG.VPBB2IRBB[PredVPBB];
+
+    assert(PredBB && "Predecessor basic-block not found building successor.");
+    auto *PredBBTerminator = PredBB->getTerminator();
+    LLVM_DEBUG(dbgs() << "LV: draw edge from" << PredBB->getName() << '\n');
+
+    auto *TermBr = cast<BranchInst>(PredBBTerminator);
+    const unsigned Idx = 1; // Always assume successor of a region should
+                            // correspond to that index in a branch instruction
+    assert(!TermBr->getSuccessor(Idx) &&
+           "Trying to reset an existing successor block.");
+    TermBr->setSuccessor(Idx, NewBB);
+    CFG.DTU.applyUpdates({{DominatorTree::Insert, PredBB, NewBB}});
+  }
+#endif // SIFIVE_CUSTOMIZATION
   return NewBB;
 }
 
@@ -972,6 +1008,47 @@ InstructionCost VPRegionBlock::cost(ElementCount VF, VPCostContext &Ctx) {
   return ThenCost;
 }
 
+#if SIFIVE_CUSTOMIZATION
+void VPConditionalRegionBlock::execute(VPTransformState *State) {
+  VPValue *VPCond = getCondition();
+  if (VPCond->hasDefiningRecipe())
+    State->setDebugLocFrom(VPCond->getDefiningRecipe()->getDebugLoc());
+
+  IRBuilderBase &Builder = State->Builder;
+  // TODO: Support multiple predecessors
+  // TODO: Verify single predecessor
+  BasicBlock *PredBB =
+      State->CFG.VPBB2IRBB[cast<VPBasicBlock>(this->getSinglePredecessor())];
+  Builder.SetInsertPoint(PredBB->getTerminator());
+
+  Value *Cond = State->get(VPCond, 0);
+  Value *VFirst =
+      Builder.CreateIntrinsic(Intrinsic::vp_first, {Cond->getType()},
+                              {Cond, State->Builder.getTrueVector(State->VF),
+                               State->get(State->EVL, 0, /*IsScalar*/ true)});
+  Value *Cmp = Builder.CreateCmp(CmpInst::ICMP_NE, VFirst,
+                                 ConstantInt::get(VFirst->getType(), -1));
+  Instruction *Unreachable = PredBB->getTerminator();
+  assert(isa<UnreachableInst>(Unreachable) && "UnreachableInst is expected");
+
+  BranchInst *CondBr =
+      Builder.CreateCondBr(Cmp, Builder.GetInsertBlock(), nullptr);
+  CondBr->setSuccessor(0, nullptr);
+
+  Unreachable->eraseFromParent();
+
+  // VPRegionBlock::execute is not used here, because it will allocate new Loop
+  // for basic blocks within the if, which is not needed
+  ReversePostOrderTraversal<VPBlockShallowTraversalWrapper<VPBlockBase *>> RPOT(
+      getEntry());
+  // Visit the VPBlocks connected to "this", starting from it.
+  for (VPBlockBase *Block : RPOT) {
+    LLVM_DEBUG(dbgs() << "LV: VPBlock in RPO " << Block->getName() << '\n');
+    Block->execute(State);
+  }
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
 void VPRegionBlock::print(raw_ostream &O, const Twine &Indent,
                           VPSlotTracker &SlotTracker) const {
@@ -985,6 +1062,22 @@ void VPRegionBlock::print(raw_ostream &O, const Twine &Indent,
 
   printSuccessors(O, Indent);
 }
+#if SIFIVE_CUSTOMIZATION
+void VPConditionalRegionBlock::print(raw_ostream &O, const Twine &Indent,
+                                     VPSlotTracker &SlotTracker) const {
+  O << Indent << "if (";
+  getCondition()->printAsOperand(O, SlotTracker);
+  O << " != 0) {";
+  auto NewIndent = Indent + "  ";
+  for (auto *BlockBase : vp_depth_first_shallow(getEntry())) {
+    O << '\n';
+    BlockBase->print(O, NewIndent, SlotTracker);
+  }
+  O << Indent << "}\n";
+
+  printSuccessors(O, Indent);
+}
+#endif // SIFIVE_CUSTOMIZATION
 #endif
 
 #if SIFIVE_CUSTOMIZATION
@@ -1514,17 +1607,10 @@ LLVM_DUMP_METHOD
 void VPlan::dump() const { print(dbgs()); }
 #endif
 
-#if SIFIVE_CUSTOMIZATION
-void VPlan::addLiveOut(PHINode *PN, VPValue *V, bool onlyFirstLaneUsed) {
-  assert(LiveOuts.count(PN) == 0 && "an exit value for PN already exists");
-  LiveOuts.insert({PN, new VPLiveOut(PN, V, onlyFirstLaneUsed)});
-}
-#else
 void VPlan::addLiveOut(PHINode *PN, VPValue *V) {
   assert(LiveOuts.count(PN) == 0 && "an exit value for PN already exists");
   LiveOuts.insert({PN, new VPLiveOut(PN, V)});
 }
-#endif // SIFIVE_CUSTOMIZATION
 
 static void remapOperands(VPBlockBase *Entry, VPBlockBase *NewEntry,
                           DenseMap<VPValue *, VPValue *> &Old2NewVPValues) {

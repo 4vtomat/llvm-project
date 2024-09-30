@@ -480,15 +480,23 @@ MemDepResult MemoryDependenceResults::getSimplePointerDependencyFrom(
           if (R == AliasResult::MustAlias)
             return MemDepResult::getDef(II);
 
-          // Partial or May Alias
-          return MemDepResult::getClobber(II);
+          if (R == AliasResult::PartialAlias)
+            return MemDepResult::getClobber(II);
+
+          // Let AliasResult::MayAlias get additional eval
+          // on Dst/MemLoc.
+          break;
         } else {
           // Alias precisely
           if (R == AliasResult::MustAlias)
             return MemDepResult::getDef(II);
 
-          // Partial or May Alias
-          return MemDepResult::getClobber(II);
+          if (R == AliasResult::PartialAlias)
+            return MemDepResult::getClobber(II);
+
+          // Let AliasResult::MayAlias get additional eval
+          // on Dst/Src.
+          break;
         }
       }
 #endif
