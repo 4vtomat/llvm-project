@@ -4909,10 +4909,8 @@ def mno_forced_sw_shadow_stack : Flag<["-"], "mno-forced-sw-shadow-stack">, Grou
   HelpText<"Not force using software shadow stack when shadow-stack enabled">;
 // SIFIVE_CUSTOMIZATION
 def mcfi_ss : Flag<["-"], "mcfi-ss">, Group<m_Group>,
-  Alias<fsanitize_EQ>, AliasArgs<["shadow-call-stack"]>,
   HelpText<"Enable Zicfiss shadow stack feature.">;
 def mno_cfi_ss : Flag<["-"], "mno-cfi-ss">, Group<m_Group>,
-  Alias<fno_sanitize_EQ>, AliasArgs<["shadow-call-stack"]>,
   HelpText<"Disable Zicfiss shadow stack feature.">;
 def mcfi_lp_EQ : Joined<["-"], "mcfi-lp=">, Group<m_Group>,
   HelpText<"Set Zicfilp landing pad mode">;
