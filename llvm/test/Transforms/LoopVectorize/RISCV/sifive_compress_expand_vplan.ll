@@ -8,6 +8,7 @@
 ; CHECK-NEXT: vp<%1> = original trip-count
 ; CHECK-EMPTY:
 ; CHECK-NEXT: ir-bb<for.body.preheader>:
+; CHECK-NEXT:   IR  %wide.trip.count = zext i32 %n to i64
 ; CHECK-NEXT:   EMIT vp<%1> = EXPAND SCEV (zext i32 %n to i64)
 ; CHECK-NEXT: No successors
 ; CHECK-EMPTY:
@@ -72,6 +73,7 @@ for.inc:
 ; CHECK-NEXT: vp<%1> = original trip-count
 ; CHECK-EMPTY:
 ; CHECK-NEXT: ir-bb<for.body.preheader>:
+; CHECK-NEXT:   IR  %wide.trip.count = zext nneg i32 %n to i64
 ; CHECK-NEXT:   EMIT vp<%1> = EXPAND SCEV (zext i32 %n to i64)
 ; CHECK-NEXT: No successors
 ; CHECK-EMPTY:

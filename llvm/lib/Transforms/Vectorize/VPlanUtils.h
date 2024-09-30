@@ -38,6 +38,10 @@ inline bool isUniformAfterVectorization(const VPValue *VPV) {
     return Rep->isUniform();
   if (auto *GEP = dyn_cast<VPWidenGEPRecipe>(Def))
     return all_of(GEP->operands(), isUniformAfterVectorization);
+#if SIFIVE_CUSTOMIZATION
+  if (isa<VPMonotonicUpdateInstruction, VPMonotonicHeaderPHIRecipe>(Def))
+    return true;
+#endif // SIFIVE_CUSTOMIZATION
   if (auto *VPI = dyn_cast<VPInstruction>(Def))
     return VPI->isSingleScalar() || VPI->isVectorToScalar();
   return false;
