@@ -167,7 +167,7 @@ public:
 #ifdef SIFIVE_CUSTOMIZATION
 // cherry-picked from 9f33eb861a3d17fd92163ee894f7cd9f256d03fb
   CFBranchLabelSchemeKind getDefaultCFBranchLabelScheme() const override {
-    return CFBranchLabelSchemeKind::FuncSig;
+    return CFBranchLabelSchemeKind::FixedOne; // SIFIVE
   }
 
   bool
@@ -176,6 +176,7 @@ public:
     switch (Scheme) {
     case CFBranchLabelSchemeKind::Default:
     case CFBranchLabelSchemeKind::Unlabeled:
+    case CFBranchLabelSchemeKind::FixedOne: // SIFIVE
     case CFBranchLabelSchemeKind::FuncSig:
       return true;
     }

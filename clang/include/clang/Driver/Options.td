@@ -2843,7 +2843,7 @@ def fcf_protection : Flag<["-"], "fcf-protection">, Group<f_Group>,
 def mcf_branch_label_scheme_EQ : Joined<["-"], "mcf-branch-label-scheme=">,
   Visibility<[ClangOption, CC1Option]>, Group<m_Group>,
   HelpText<"Select label scheme for branch control-flow architecture protection">,
-  Values<"unlabeled,func-sig">;
+  Values<"unlabeled,fixed-one,func-sig">; // SIFIVE
 #endif // SIFIVE_CUSTOMIZATION
 def mfunction_return_EQ : Joined<["-"], "mfunction-return=">,
   Group<m_Group>, Visibility<[ClangOption, CLOption, CC1Option]>,
