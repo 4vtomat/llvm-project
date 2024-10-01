@@ -268,6 +268,9 @@ void RISCVTargetInfo::getTargetDefines(const LangOptions &Opts,
     case CFBranchLabelSchemeKind::Unlabeled:
       Builder.defineMacro("__riscv_landing_pad_unlabeled", "1");
       break;
+    case CFBranchLabelSchemeKind::FixedOne: // SIFIVE
+      Builder.defineMacro("__riscv_landing_pad_fixed_one", "1"); // SIFIVE
+      break; // SIFIVE
     case CFBranchLabelSchemeKind::FuncSig:
       Builder.defineMacro("__riscv_landing_pad_func_sig", "1");
       break;
