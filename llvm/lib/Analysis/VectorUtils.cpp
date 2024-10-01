@@ -180,6 +180,10 @@ bool llvm::isVectorIntrinsicWithOverloadTypeAtArg(Intrinsic::ID ID,
   case Intrinsic::fptoui_sat:
   case Intrinsic::lrint:
   case Intrinsic::llrint:
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::vp_lrint:
+  case Intrinsic::vp_llrint:
+#endif // SIFIVE_CUSTOMIZATION
     return OpdIdx == -1 || OpdIdx == 0;
   case Intrinsic::is_fpclass:
     return OpdIdx == 0;
