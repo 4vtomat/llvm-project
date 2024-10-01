@@ -24860,22 +24860,12 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
       WideVTy->getScalarType()));
   if (!isLegalInterleavedAccessType(
           VTy, Factor, Alignment,
-<<<<<<< HEAD
-          VPLoad->getArgOperand(0)->getType()->getPointerAddressSpace(), DL))
-    return false;
-
-  IRBuilder<> Builder(VPLoad);
-  Value *WideEVL = VPLoad->getArgOperand(2);
-  auto *XLenTy = Type::getIntNTy(VPLoad->getContext(), Subtarget.getXLen());
-=======
-          Load->getOperand(0)->getType()->getPointerAddressSpace(),
-          Load->getModule()->getDataLayout()))
+          Load->getArgOperand(0)->getType()->getPointerAddressSpace(), DL))
     return false;
 
   IRBuilder<> Builder(Load);
   Value *WideEVL = Load->getArgOperand(2);
   auto *XLenTy = Type::getIntNTy(Load->getContext(), Subtarget.getXLen());
->>>>>>> origin/sifive-dev
   Value *EVL = Builder.CreateZExtOrTrunc(
       Builder.CreateUDiv(WideEVL, ConstantInt::get(WideEVL->getType(), Factor)),
       XLenTy);
@@ -24891,12 +24881,6 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
       Intrinsic::riscv_vlseg5, Intrinsic::riscv_vlseg6, Intrinsic::riscv_vlseg7,
       Intrinsic::riscv_vlseg8,
   };
-<<<<<<< HEAD
-=======
-  Value *UndefVal = UndefValue::get(VTy);
-  SmallVector<Value *> Operands(Factor, UndefVal);
-  Operands.push_back(Load->getArgOperand(0));
->>>>>>> origin/sifive-dev
 
   unsigned SEW = DL.getTypeSizeInBits(VTy->getElementType());
   unsigned NumElts = VTy->getElementCount().getKnownMinValue();
@@ -24908,7 +24892,7 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
 
   Value *PoisonVal = PoisonValue::get(VecTupTy);
   SmallVector<Value *> Operands;
-  Operands.append({PoisonVal, VPLoad->getArgOperand(0)});
+  Operands.append({PoisonVal, Load->getArgOperand(0)});
 
   Function *VlsegNFunc;
   if (Mask) {
@@ -24927,13 +24911,8 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
   if (Mask)
     Operands.push_back(ConstantInt::get(XLenTy, 1));
 
-<<<<<<< HEAD
   Operands.push_back(ConstantInt::get(XLenTy, Log2_64(SEW)));
 
-=======
-  Function *VlsegNFunc = Intrinsic::getDeclaration(Load->getModule(), VlsegNID,
-                                                   {VTy, EVL->getType()});
->>>>>>> origin/sifive-dev
   CallInst *VlsegN = Builder.CreateCall(VlsegNFunc, Operands);
 
   SmallVector<Type *, 8> AggrTypes{Factor, VTy};
@@ -25033,29 +25012,19 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
   Align Alignment = Align(DL.getTypeStoreSize(VTy->getScalarType()));
   if (!isLegalInterleavedAccessType(
           VTy, Factor, Alignment,
-          Store->getOperand(1)->getType()->getPointerAddressSpace(), DL))
+          Store->getArgOperand(1)->getType()->getPointerAddressSpace(), DL))
     return false;
 
   if (Factor == 2)
-<<<<<<< HEAD
     if (Value *BC = foldInterleaved2OfConstSplats(InterleaveIntrin, VTy, this,
-                                                  VPStore)) {
-=======
-    if (Value *BC = foldInterleaved2OfConstSplats(Operands, VTy, this, Store)) {
->>>>>>> origin/sifive-dev
+                                                  Store)) {
       InterleaveIntrin->replaceAllUsesWith(BC);
       return true;
     }
 
-<<<<<<< HEAD
-  IRBuilder<> Builder(VPStore);
-  Value *WideEVL = VPStore->getArgOperand(3);
-  auto *XLenTy = Type::getIntNTy(VPStore->getContext(), Subtarget.getXLen());
-=======
   IRBuilder<> Builder(Store);
   Value *WideEVL = Store->getArgOperand(3);
   auto *XLenTy = Type::getIntNTy(Store->getContext(), Subtarget.getXLen());
->>>>>>> origin/sifive-dev
   Value *EVL = Builder.CreateZExtOrTrunc(
       Builder.CreateUDiv(WideEVL, ConstantInt::get(WideEVL->getType(), Factor)),
       XLenTy);
@@ -25072,7 +25041,6 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
       Intrinsic::riscv_vsseg8,
   };
 
-<<<<<<< HEAD
   unsigned SEW = DL.getTypeSizeInBits(VTy->getElementType());
   unsigned NumElts = VTy->getElementCount().getKnownMinValue();
   Type *VecTupTy = TargetExtType::get(
@@ -25091,30 +25059,21 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
 
   SmallVector<Value *, 5> Operands;
   Operands.push_back(StoredVal);
-  Operands.push_back(VPStore->getOperand(1));
-=======
-  Intrinsic::ID VssegNID = IntrIds[Factor - 2];
   Operands.push_back(Store->getArgOperand(1));
->>>>>>> origin/sifive-dev
 
   Function *VssegNFunc;
   if (Mask) {
     VssegNFunc =
-        Intrinsic::getDeclaration(VPStore->getModule(), IntrMaskIds[Factor - 2],
+        Intrinsic::getDeclaration(Store->getModule(), IntrMaskIds[Factor - 2],
                                   {VecTupTy, Mask->getType(), EVL->getType()});
     Operands.push_back(Mask);
   } else {
     VssegNFunc = Intrinsic::getDeclaration(
-        VPStore->getModule(), IntrIds[Factor - 2], {VecTupTy, EVL->getType()});
+        Store->getModule(), IntrIds[Factor - 2], {VecTupTy, EVL->getType()});
   }
 
   Operands.push_back(EVL);
-<<<<<<< HEAD
   Operands.push_back(ConstantInt::get(XLenTy, Log2_64(SEW)));
-=======
-  Function *VssegNFunc = Intrinsic::getDeclaration(Store->getModule(), VssegNID,
-                                                   {VTy, EVL->getType()});
->>>>>>> origin/sifive-dev
 
   Builder.CreateCall(VssegNFunc, Operands);
   return true;
