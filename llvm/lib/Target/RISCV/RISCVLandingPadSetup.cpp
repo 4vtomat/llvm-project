@@ -17,6 +17,9 @@
 #include "llvm/CodeGen/MachineFunctionPass.h"
 #include "llvm/CodeGen/MachineInstrBuilder.h"
 #include "llvm/InitializePasses.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/IR/Module.h"
+#endif // SIFIVE_CUSTOMIZATION
 
 using namespace llvm;
 
@@ -53,7 +56,14 @@ bool RISCVLandingPadSetup::runOnMachineFunction(MachineFunction &MF) {
     return false;
 
 #if SIFIVE_CUSTOMIZATION
-  if (STI.getLandingPadMode() == RISCVLandingPad::Disable)
+  const Module *M = MF.getFunction().getParent();
+  if (!M->getModuleFlag("cf-protection-branch"))
+    return false;
+
+  /* cf-branch-label-scheme must always present */
+  const MDString *LabelScheme =
+          dyn_cast_or_null<MDString>(M->getModuleFlag("cf-branch-label-scheme"));
+  if (!LabelScheme)
     return false;
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -79,9 +89,16 @@ bool RISCVLandingPadSetup::runOnMachineFunction(MachineFunction &MF) {
           MI.getOpcode() != RISCV::PseudoTAILIndirectNonX7)
         continue;
 #if SIFIVE_CUSTOMIZATION
-      int32_t Label = 1;
-      if (STI.getLandingPadMode() == RISCVLandingPad::Simple)
+
+      int32_t Label = 0;
+      if (LabelScheme->getString() == "unlabeled")
         Label = 0;
+      else if (LabelScheme->getString() == "fixed-one")
+        Label = 1;
+      // FIXME: implement function signature label
+      else if (LabelScheme->getString() == "func-sig")
+        Label = 1;
+
       if (PreferredLandingPadLabel.getNumOccurrences()) {
         if (!isUInt<20>(PreferredLandingPadLabel))
           report_fatal_error("riscv-landing-pad-label=<val>, <val> needs to fit in "

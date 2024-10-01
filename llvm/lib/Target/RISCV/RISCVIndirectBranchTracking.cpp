@@ -20,6 +20,9 @@
 #include "llvm/CodeGen/MachineFunctionPass.h"
 #include "llvm/CodeGen/MachineInstrBuilder.h"
 #include "llvm/CodeGen/MachineModuleInfo.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/IR/Module.h"
+#endif // SIFIVE_CUSTOMIZATION
 
 using namespace llvm;
 
@@ -66,12 +69,26 @@ bool RISCVIndirectBranchTrackingPass::runOnMachineFunction(
     return false;
 
 #if SIFIVE_CUSTOMIZATION
-  if (Subtarget.getLandingPadMode() == RISCVLandingPad::Disable)
+  const Module *M = MF.getFunction().getParent();
+  if (!M->getModuleFlag("cf-protection-branch"))
     return false;
 
-  int32_t FixedLabel = 1;
-  if (Subtarget.getLandingPadMode() == RISCVLandingPad::Simple)
+  int32_t FixedLabel = 0;
+  const MDString *LabelScheme =
+      dyn_cast_or_null<MDString>(M->getModuleFlag("cf-branch-label-scheme"));
+  /* cf-branch-label-scheme must always present */
+  if (!LabelScheme)
+    return false;
+
+  if (LabelScheme->getString() == "unlabeled")
     FixedLabel = 0;
+  else if (LabelScheme->getString() == "fixed-one")
+    FixedLabel = 1;
+  /* FIXME: implement function signature label */
+  else if (LabelScheme->getString() == "func-sig")
+    FixedLabel = 1;
+  else
+    return false;
 #else
   uint32_t FixedLabel = 0;
 #endif // SIFIVE_CUSTOMIZATION
