@@ -899,7 +899,7 @@ void CodeGenFunction::StartFunction(GlobalDecl GD, QualType RetTy,
 #if SIFIVE_CUSTOMIZATION
   // Add control flow integrity attributes.
   if (CodeGenOpts.CFProtectionReturn)
-    Fn->addFnAttr(llvm::Attribute::HWShadowStack);
+    Fn->addFnAttr("hw-shadow-stack");
 #endif // SIFIVE_CUSTOMIZATION
 
   // Apply xray attributes to the function (as a string, for now)
