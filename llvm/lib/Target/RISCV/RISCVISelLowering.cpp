@@ -24782,11 +24782,10 @@ bool RISCVTargetLowering::lowerInterleaveIntrinsicToStore(
 /// NOTE: the deinterleave2 intrinsic won't be touched and is expected to be
 /// removed by the caller
 bool RISCVTargetLowering::lowerInterleavedScalableLoad(
-    Instruction *Load, Value *Mask, IntrinsicInst *DeinterleaveIntrin,
+    VPIntrinsic *Load, Value *Mask, IntrinsicInst *DeinterleaveIntrin,
     unsigned Factor) const {
-  auto *VPLoad = dyn_cast<IntrinsicInst>(Load);
-  if (!VPLoad || VPLoad->getIntrinsicID() != Intrinsic::vp_load)
-    return false;
+  assert(Load->getIntrinsicID() == Intrinsic::vp_load &&
+         "Unexpected intrinsic");
 
   auto *WideVTy = cast<VectorType>(Load->getType());
   unsigned WideNumElements = WideVTy->getElementCount().getKnownMinValue();
@@ -24801,13 +24800,13 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
       WideVTy->getScalarType()));
   if (!isLegalInterleavedAccessType(
           VTy, Factor, Alignment,
-          VPLoad->getOperand(0)->getType()->getPointerAddressSpace(),
+          Load->getOperand(0)->getType()->getPointerAddressSpace(),
           Load->getModule()->getDataLayout()))
     return false;
 
-  IRBuilder<> Builder(VPLoad);
-  Value *WideEVL = VPLoad->getOperand(2);
-  auto *XLenTy = Type::getIntNTy(VPLoad->getContext(), Subtarget.getXLen());
+  IRBuilder<> Builder(Load);
+  Value *WideEVL = Load->getArgOperand(2);
+  auto *XLenTy = Type::getIntNTy(Load->getContext(), Subtarget.getXLen());
   Value *EVL = Builder.CreateZExtOrTrunc(
       Builder.CreateUDiv(WideEVL, ConstantInt::get(WideEVL->getType(), Factor)),
       XLenTy);
@@ -24825,7 +24824,7 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
   };
   Value *UndefVal = UndefValue::get(VTy);
   SmallVector<Value *> Operands(Factor, UndefVal);
-  Operands.push_back(VPLoad->getOperand(0));
+  Operands.push_back(Load->getArgOperand(0));
 
   Intrinsic::ID VlsegNID = IntrIds[Factor-2];
   if (Mask) {
@@ -24839,8 +24838,8 @@ bool RISCVTargetLowering::lowerInterleavedScalableLoad(
   if (Mask)
     Operands.push_back(ConstantInt::get(XLenTy, 1));
 
-  Function *VlsegNFunc = Intrinsic::getDeclaration(
-      VPLoad->getModule(), VlsegNID, {VTy, EVL->getType()});
+  Function *VlsegNFunc = Intrinsic::getDeclaration(Load->getModule(), VlsegNID,
+                                                   {VTy, EVL->getType()});
   CallInst *VlsegN = Builder.CreateCall(VlsegNFunc, Operands);
   DeinterleaveIntrin->replaceAllUsesWith(VlsegN);
 
@@ -24911,11 +24910,10 @@ static Value *foldInterleaved2OfConstSplats(ArrayRef<Value *> Operands,
 ///                               %mask,
 ///                               i64 %rvl)
 bool RISCVTargetLowering::lowerInterleavedScalableStore(
-    Instruction *Store, Value *Mask, IntrinsicInst *InterleaveIntrin,
+    VPIntrinsic *Store, Value *Mask, IntrinsicInst *InterleaveIntrin,
     unsigned Factor) const {
-  auto *VPStore = dyn_cast<IntrinsicInst>(Store);
-  if (!VPStore || VPStore->getIntrinsicID() != Intrinsic::vp_store)
-    return false;
+  assert(Store->getIntrinsicID() == Intrinsic::vp_store &&
+         "Unexpected intrinsic");
 
   // Start to build operands for the segmented-store instructions
   SmallVector<Value *> Operands;
@@ -24935,15 +24933,14 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
     return false;
 
   if (Factor == 2)
-    if (Value *BC =
-            foldInterleaved2OfConstSplats(Operands, VTy, this, VPStore)) {
+    if (Value *BC = foldInterleaved2OfConstSplats(Operands, VTy, this, Store)) {
       InterleaveIntrin->replaceAllUsesWith(BC);
       return true;
     }
 
-  IRBuilder<> Builder(VPStore);
-  Value *WideEVL = VPStore->getOperand(3);
-  auto *XLenTy = Type::getIntNTy(VPStore->getContext(), Subtarget.getXLen());
+  IRBuilder<> Builder(Store);
+  Value *WideEVL = Store->getArgOperand(3);
+  auto *XLenTy = Type::getIntNTy(Store->getContext(), Subtarget.getXLen());
   Value *EVL = Builder.CreateZExtOrTrunc(
       Builder.CreateUDiv(WideEVL, ConstantInt::get(WideEVL->getType(), Factor)),
       XLenTy);
@@ -24961,7 +24958,7 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
   };
 
   Intrinsic::ID VssegNID = IntrIds[Factor - 2];
-  Operands.push_back(VPStore->getOperand(1));
+  Operands.push_back(Store->getArgOperand(1));
 
   if (Mask) {
     VssegNID = IntrMaskIds[Factor - 2];
@@ -24969,8 +24966,8 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
   }
 
   Operands.push_back(EVL);
-  Function *VssegNFunc = Intrinsic::getDeclaration(
-      VPStore->getModule(), VssegNID, {VTy, EVL->getType()});
+  Function *VssegNFunc = Intrinsic::getDeclaration(Store->getModule(), VssegNID,
+                                                   {VTy, EVL->getType()});
 
   Builder.CreateCall(VssegNFunc, Operands);
   return true;
@@ -25004,7 +25001,7 @@ bool RISCVTargetLowering::lowerInterleavedScalableStore(
 /// NOTE: the deinterleave2 intrinsic and the bitcast instruction won't be
 /// touched and is expected to be removed by the caller
 bool RISCVTargetLowering::lowerDeinterleaveIntrinsicToStridedLoad(
-    Instruction *StridedLoad, IntrinsicInst *DI, unsigned Factor) const {
+    VPIntrinsic *StridedLoad, IntrinsicInst *DI, unsigned Factor) const {
   using namespace llvm::PatternMatch;
   Value *BasePtr, *Stride, *Mask, *EVL;
   if (!match(StridedLoad, m_Intrinsic<Intrinsic::experimental_vp_strided_load>(

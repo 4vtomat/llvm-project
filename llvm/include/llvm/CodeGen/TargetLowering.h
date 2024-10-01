@@ -94,6 +94,9 @@ class TargetRegisterClass;
 class TargetRegisterInfo;
 class TargetTransformInfo;
 class Value;
+#if SIFIVE_CUSTOMIZATION
+class VPIntrinsic;
+#endif // SIFIVE_CUSTOMIZATION
 
 namespace Sched {
 
@@ -3156,25 +3159,24 @@ public:
   /// Lower an interleaved load to target specific intrinsics. Return
   /// true on success.
   ///
-  /// \p Load is the generic load instruction
+  /// \p Load is a vp.load instruction.
   /// \p Mask is a mask value
   /// \p ExtractValues is a list of ExtractValueInst from a deinterleave
   /// \p Factor is the interleave factor.
-  virtual bool
-  lowerInterleavedScalableLoad(Instruction *Load, Value *Mask,
-                               IntrinsicInst *DeinterleaveIntrin,
-                               unsigned Factor) const {
+  virtual bool lowerInterleavedScalableLoad(VPIntrinsic *Load, Value *Mask,
+                                            IntrinsicInst *DeinterleaveIntrin,
+                                            unsigned Factor) const {
     return false;
   }
 
   /// Lower an interleaved store to target specific intrinsics. Return
   /// true on success.
   ///
-  /// \p Store is the generic store instruction.
+  /// \p Store is the vp.store instruction.
   /// \p Mask is a mask value
   /// \p InterleaveIntrin is vector.interleave intrinsic
   /// \p Factor is the interleave factor.
-  virtual bool lowerInterleavedScalableStore(Instruction *Store, Value *Mask,
+  virtual bool lowerInterleavedScalableStore(VPIntrinsic *Store, Value *Mask,
                                              IntrinsicInst *InterleaveIntrin,
                                              unsigned Factor) const {
     return false;
@@ -3183,10 +3185,10 @@ public:
   /// Lower a deinterleave intrinsic to a target specific strided load
   /// intrinsic. Return true on success.
   ///
-  /// \p StridedLoad is the strided load instruction.
+  /// \p StridedLoad is the vp.strided.load instruction.
   /// \p DI is the deinterleave intrinsic.
   /// \p Factor is the interleave factor.
-  virtual bool lowerDeinterleaveIntrinsicToStridedLoad(Instruction *StridedLoad,
+  virtual bool lowerDeinterleaveIntrinsicToStridedLoad(VPIntrinsic *StridedLoad,
                                                        IntrinsicInst *DI,
                                                        unsigned Factor) const {
     return false;
