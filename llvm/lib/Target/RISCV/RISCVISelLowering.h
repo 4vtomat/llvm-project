@@ -927,16 +927,15 @@ public:
       SmallVectorImpl<Instruction *> &DeadInsts) const override;
 
 #if SIFIVE_CUSTOMIZATION
-  bool lowerInterleavedScalableLoad(Instruction *Load, Value *Mask,
+  bool lowerInterleavedScalableLoad(VPIntrinsic *Load, Value *Mask,
                                     IntrinsicInst *DeinterleaveIntrin,
                                     unsigned Factor) const override;
 
-  bool lowerInterleavedScalableStore(Instruction *Store, Value *Mask,
-
+  bool lowerInterleavedScalableStore(VPIntrinsic *Store, Value *Mask,
                                      IntrinsicInst *InterleaveIntrin,
                                      unsigned Factor) const override;
 
-  bool lowerDeinterleaveIntrinsicToStridedLoad(Instruction *StridedLoad,
+  bool lowerDeinterleaveIntrinsicToStridedLoad(VPIntrinsic *StridedLoad,
                                                IntrinsicInst *DI,
                                                unsigned Factor) const override;
 #endif // SIFIVE_CUSTOMIZATION

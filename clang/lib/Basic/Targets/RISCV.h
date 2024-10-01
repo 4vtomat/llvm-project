@@ -132,6 +132,21 @@ public:
   bool useFP16ConversionIntrinsics() const override {
     return false;
   }
+#if SIFIVE_CUSTOMIZATION
+  bool
+  checkCFProtectionReturnSupported(DiagnosticsEngine &Diags) const override {
+    if (ISAInfo->hasExtension("zicfiss"))
+      return true;
+    return TargetInfo::checkCFProtectionReturnSupported(Diags);
+  };
+
+  bool
+  checkCFProtectionBranchSupported(DiagnosticsEngine &Diags) const override {
+    if (ISAInfo->hasExtension("zicfilp"))
+      return true;
+    return TargetInfo::checkCFProtectionBranchSupported(Diags);
+  };
+#endif // SIFIVE_CUSTOMIZATION
 
   bool isValidCPUName(StringRef Name) const override;
   void fillValidCPUList(SmallVectorImpl<StringRef> &Values) const override;

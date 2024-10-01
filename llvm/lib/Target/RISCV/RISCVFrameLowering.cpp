@@ -58,7 +58,13 @@ static const std::pair<MCPhysReg, int8_t> FixedCSRFIMap[] = {
 static void emitSCSPrologue(MachineFunction &MF, MachineBasicBlock &MBB,
                             MachineBasicBlock::iterator MI,
                             const DebugLoc &DL) {
-  if (!MF.getFunction().hasFnAttribute(Attribute::ShadowCallStack))
+#if SIFIVE_CUSTOMIZATION
+  bool HasHWShadowStack =
+      MF.getFunction().hasFnAttribute(Attribute::HWShadowStack);
+  bool HasSWShadowStack =
+      MF.getFunction().hasFnAttribute(Attribute::ShadowCallStack);
+  if (!HasHWShadowStack || !HasSWShadowStack)
+#endif // SIFIVE_CUSTOMIZATION
     return;
 
   const auto &STI = MF.getSubtarget<RISCVSubtarget>();
@@ -73,7 +79,11 @@ static void emitSCSPrologue(MachineFunction &MF, MachineBasicBlock &MBB,
     return;
 
   const RISCVInstrInfo *TII = STI.getInstrInfo();
-  if (!STI.hasForcedSWShadowStack() && STI.hasStdExtZicfiss()) {
+#if SIFIVE_CUSTOMIZATION
+  // FIXME: We should specify the behavior if SW & HW shadow stack attribute
+  // co-exist. Let HW always shadows SW for now
+  if (HasHWShadowStack && STI.hasStdExtZicfiss()) {
+#endif // SIFIVE_CUSTOMIZATION
     BuildMI(MBB, MI, DL, TII->get(RISCV::SSPUSH)).addReg(RAReg);
     return;
   }
@@ -120,7 +130,13 @@ static void emitSCSPrologue(MachineFunction &MF, MachineBasicBlock &MBB,
 static void emitSCSEpilogue(MachineFunction &MF, MachineBasicBlock &MBB,
                             MachineBasicBlock::iterator MI,
                             const DebugLoc &DL) {
-  if (!MF.getFunction().hasFnAttribute(Attribute::ShadowCallStack))
+#if SIFIVE_CUSTOMIZATION
+  bool HasHWShadowStack =
+      MF.getFunction().hasFnAttribute(Attribute::HWShadowStack);
+  bool HasSWShadowStack =
+      MF.getFunction().hasFnAttribute(Attribute::ShadowCallStack);
+  if (!HasHWShadowStack || !HasSWShadowStack)
+#endif // SIFIVE_CUSTOMIZATION
     return;
 
   const auto &STI = MF.getSubtarget<RISCVSubtarget>();
@@ -133,7 +149,11 @@ static void emitSCSEpilogue(MachineFunction &MF, MachineBasicBlock &MBB,
     return;
 
   const RISCVInstrInfo *TII = STI.getInstrInfo();
-  if (!STI.hasForcedSWShadowStack() && STI.hasStdExtZicfiss()) {
+#if SIFIVE_CUSTOMIZATION
+  // FIXME: We should specify the behavior if SW & HW shadow stack attribute
+  // co-exist. Let HW always shadows SW for now
+  if (HasHWShadowStack && STI.hasStdExtZicfiss()) {
+#endif // SIFIVE_CUSTOMIZATION
     BuildMI(MBB, MI, DL, TII->get(RISCV::SSPOPCHK)).addReg(RAReg);
     return;
   }

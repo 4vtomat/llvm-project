@@ -762,7 +762,13 @@ enum AttributeKindCodes {
   ATTR_KIND_HYBRID_PATCHABLE = 95,
   ATTR_KIND_SANITIZE_REALTIME = 96,
   ATTR_KIND_NO_SANITIZE_REALTIME = 97,
+<<<<<<< HEAD
   ATTR_KIND_CORO_ELIDE_SAFE = 98,
+=======
+#if SIFIVE_CUSTOMIZATION
+  ATTR_KIND_HWSHADOWSTACK = 98,
+#endif // SIFIVE_CUSTOMIZATION
+>>>>>>> origin/sifive-dev
 };
 
 enum ComdatSelectionKindCodes {

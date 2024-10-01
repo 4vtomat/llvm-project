@@ -254,6 +254,9 @@ def SafeStack : EnumAttr<"safestack", [FnAttr]>;
 /// Shadow Call Stack protection.
 def ShadowCallStack : EnumAttr<"shadowcallstack", [FnAttr]>;
 
+/// Hardware Shadow Stack protection. // SIFIVE
+def HWShadowStack : EnumAttr<"hwshadowstack", [FnAttr]>; // SIFIVE
+
 /// Sign extended before/after call.
 def SExt : EnumAttr<"signext", [ParamAttr, RetAttr]>;
 
