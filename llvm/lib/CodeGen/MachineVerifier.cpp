@@ -2920,7 +2920,8 @@ void MachineVerifier::checkLiveness(const MachineOperand *MO, unsigned MONum) {
               Bad = false;
 
 #ifdef SIFIVE_CUSTOMIZATION
-            if (all_of(TRI->regunits(Reg), [&](const MCRegUnit RegUnit) {
+            if (TM->getTargetTriple().isRISCV() &&
+                all_of(TRI->regunits(Reg), [&](const MCRegUnit RegUnit) {
                   return llvm::is_contained(TRI->regunits(MOP.getReg()),
                                             RegUnit);
                 }))
