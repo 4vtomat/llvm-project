@@ -238,9 +238,11 @@ void widenPredicatedCall(CallInst *CI, VPValue *Def, VPTransformState &State,
   IRBuilderBase &Builder = State.Builder;
   auto *Recipe = cast<VPWidenCallRecipe>(Def);
   Function *CalledScalarFn = Recipe->getCalledScalarFunction();
-  Type *RetTy = CalledScalarFn->getReturnType();
-  auto *DestTy = VectorType::get(RetTy->getScalarType(), State.VF);
-  SmallVector<Type *, 2> TysForDecl = {DestTy};
+  SmallVector<Type *, 2> TysForDecl;
+  // Add return type if intrinsic is overloaded on it.
+  if (isVectorIntrinsicWithOverloadTypeAtArg(VPID, -1))
+    TysForDecl.push_back(VectorType::get(
+        CalledScalarFn->getReturnType()->getScalarType(), State.VF));
   SmallVector<Value *, 4> Args;
   for (auto I : enumerate(Recipe->arg_operands())) {
     Value *Arg;
