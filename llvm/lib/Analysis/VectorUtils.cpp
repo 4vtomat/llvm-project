@@ -217,7 +217,7 @@ Intrinsic::ID llvm::getVectorIntrinsicIDForCall(const CallInst *CI,
 
 #if SIFIVE_CUSTOMIZATION
   if (PreferVPOps)
-    if (Intrinsic::ID VPID = VPIntrinsic::getVPIntrinsicID(ID))
+    if (Intrinsic::ID VPID = VPIntrinsic::getForIntrinsic(ID))
       return VPID;
 #endif // SIFIVE_CUSTOMIZATION
 

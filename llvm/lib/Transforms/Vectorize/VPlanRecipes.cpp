@@ -1439,7 +1439,7 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
 #if SIFIVE_CUSTOMIZATION
   if (State.Plan->useVLAVectorizer()) {
     // Skip if CI doesn't have vp form.
-    if (Intrinsic::ID VPID = VPIntrinsic::getVPIntrinsicID(VectorIntrinsicID);
+    if (Intrinsic::ID VPID = VPIntrinsic::getForIntrinsic(VectorIntrinsicID);
         VPIntrinsic::isVPIntrinsic(VPID)) {
       auto *CI = cast_or_null<CallInst>(getUnderlyingInstr());
       for (unsigned Part = 0; Part < State.UF; ++Part) {
