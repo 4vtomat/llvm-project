@@ -952,7 +952,7 @@ multiclass RVVUnitStridedSegLoadTuple<string op> {
         Operands.push_back(VLOperand);
         if (IsMasked)
           Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
-        Operands.push_back(ConstantInt::get(Ops.back()->getType(), EltWidth >> 3));
+        Operands.push_back(ConstantInt::get(Ops.back()->getType(), log2(EltWidth)));
 
         llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
         llvm::Value *LoadValue;
@@ -1103,7 +1103,7 @@ multiclass RVVUnitStridedSegStoreTuple<string op> {
           Operands.append({Ops[0], Ops[NF + 1]});
           IntrinsicTypes = {TupType, Ops[NF + 1]->getType()};
         }
-        Operands.push_back(ConstantInt::get(Ops.back()->getType(), EltWidth >> 3));
+        Operands.push_back(ConstantInt::get(Ops.back()->getType(), log2(EltWidth)));
 
         if(IsNontemporal)
           return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
@@ -1246,7 +1246,7 @@ multiclass RVVUnitStridedSegLoadFFTuple<string op> {
         Operands.push_back(VLOperand);
         if (IsMasked)
           Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
-        Operands.push_back(ConstantInt::get(Ops.back()->getType(), EltWidth >> 3));
+        Operands.push_back(ConstantInt::get(Ops.back()->getType(), log2(EltWidth)));
 
         llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
         llvm::Value *LoadValue;
@@ -1426,7 +1426,7 @@ multiclass RVVStridedSegLoadTuple<string op> {
         Operands.push_back(VLOperand);
         if (IsMasked)
           Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
-        Operands.push_back(ConstantInt::get(Ops.back()->getType(), EltWidth >> 3));
+        Operands.push_back(ConstantInt::get(Ops.back()->getType(), log2(EltWidth)));
 
         llvm::Function *F = CGM.getIntrinsic(ID, IntrinsicTypes);
         llvm::Value *LoadValue;
@@ -1580,7 +1580,7 @@ multiclass RVVStridedSegStoreTuple<string op> {
           IntrinsicTypes = {TupType, Ops[NF + 2]->getType()};
         }
 
-        Operands.push_back(ConstantInt::get(Ops.back()->getType(), EltWidth >> 3));
+        Operands.push_back(ConstantInt::get(Ops.back()->getType(), log2(EltWidth)));
 
         if(IsNontemporal)
           return createNTLCall(Operands, ID, IntrinsicTypes, NTLNode);
@@ -1715,7 +1715,7 @@ multiclass RVVIndexedSegLoadTuple<string op> {
         Operands.push_back(VLOperand);
         if (IsMasked)
           Operands.push_back(ConstantInt::get(Ops.back()->getType(), PolicyAttrs));
-        Operands.push_back(ConstantInt::get(Ops.back()->getType(), EltWidth >> 3));
+        Operands.push_back(ConstantInt::get(Ops.back()->getType(), log2(EltWidth)));
 
         if (IsMasked)
           IntrinsicTypes = {TupType, IndexOperand->getType(), Ops[NF]->getType(), Ops.back()->getType()};
@@ -1872,7 +1872,7 @@ multiclass RVVIndexedSegStoreTuple<string op> {
           IntrinsicTypes = {TupType, Ops[1]->getType(), Ops[NF + 2]->getType()};
         }
 
-        Operands.push_back(ConstantInt::get(Ops.back()->getType(), EltWidth >> 3));
+        Operands.push_back(ConstantInt::get(Ops.back()->getType(), log2(EltWidth)));
 
 
         if(IsNontemporal)
