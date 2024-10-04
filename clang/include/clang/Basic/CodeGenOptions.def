@@ -110,6 +110,11 @@ CODEGENOPT(CFProtectionReturn , 1, 0) ///< if -fcf-protection is
                                       ///< set to full or return.
 CODEGENOPT(CFProtectionBranch , 1, 0) ///< if -fcf-protection is
                                       ///< set to full or branch.
+#ifdef SIFIVE_CUSTOMIZATION
+// cherry-picked from 9f33eb861a3d17fd92163ee894f7cd9f256d03fb
+ENUM_CODEGENOPT(CFBranchLabelScheme, CFBranchLabelSchemeKind, 2,
+    CFBranchLabelSchemeKind::Default) ///< if -mcf-branch-label-scheme is set.
+#endif // SIFIVE_CUSTOMIZATION
 CODEGENOPT(FunctionReturnThunks, 1, 0) ///< -mfunction-return={keep|thunk-extern}
 CODEGENOPT(IndirectBranchCSPrefix, 1, 0) ///< if -mindirect-branch-cs-prefix
                                          ///< is set.

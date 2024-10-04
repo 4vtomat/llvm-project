@@ -2231,15 +2231,20 @@ void Clang::AddRISCVTargetArgs(const ArgList &Args,
     CmdArgs.append({"-mllvm", "-scalable-vectorization=off"});
   }
 
+  /* FIXME: -mcfi-ss/lp should be removed in 4.0 release */
+  if (const Arg *A = Args.getLastArg(options::OPT_mcfi_ss)) {
+    getToolChain().getDriver().Diag(diag::warn_drv_deprecated_arg)
+        << A->getSpelling() << true << "-fcf-protection=return";
+  }
+
+  if (const Arg *A = Args.getLastArg(options::OPT_mno_cfi_ss)) {
+    getToolChain().getDriver().Diag(diag::warn_drv_deprecated_arg)
+        << A->getSpelling() << true << "-fcf-protection=return";
+  }
+
   if (const Arg *A = Args.getLastArg(options::OPT_mcfi_lp_EQ)) {
-    StringRef Mode = A->getValue();
-    // TODO: Support function-signature mode in the future.
-    if (Mode == "simple" || Mode == "fixed-one" || Mode == "disable")
-      CmdArgs.append(
-          {"-mllvm", Args.MakeArgString("-riscv-prefer-landing-pad=" + Mode)});
-    else
-      getToolChain().getDriver().Diag(diag::err_drv_unsupported_option_argument)
-          << A->getSpelling() << Mode;
+    getToolChain().getDriver().Diag(diag::warn_drv_deprecated_arg)
+        << A->getSpelling() << true << "-fcf-protection=branch and -mcf-branch-label-scheme";
   }
 #endif // SIFIVE_CUSTOMIZATION
   // Handle -mrvv-vector-bits=<bits>
@@ -7141,6 +7146,13 @@ void Clang::ConstructJob(Compilation &C, const JobAction &JA,
   if (Arg *A = Args.getLastArg(options::OPT_fcf_protection_EQ)) {
     CmdArgs.push_back(
         Args.MakeArgString(Twine("-fcf-protection=") + A->getValue()));
+
+#ifdef SIFIVE_CUSTOMIZATION
+// cherry-picked from 9f33eb861a3d17fd92163ee894f7cd9f256d03fb
+    if (Arg *SA = Args.getLastArg(options::OPT_mcf_branch_label_scheme_EQ))
+      CmdArgs.push_back(Args.MakeArgString(Twine("-mcf-branch-label-scheme=") +
+                                           SA->getValue()));
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   if (Arg *A = Args.getLastArg(options::OPT_mfunction_return_EQ))

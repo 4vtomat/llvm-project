@@ -614,20 +614,6 @@ Intrinsic::ID VPIntrinsic::getForOpcode(unsigned IROPC) {
   return Intrinsic::not_intrinsic;
 }
 
-#if SIFIVE_CUSTOMIZATION
-Intrinsic::ID VPIntrinsic::getVPIntrinsicID(Intrinsic::ID ID) {
-  switch (ID) {
-  default:
-    break;
-#define BEGIN_REGISTER_VP_INTRINSIC(VPID, ...) break;
-#define VP_PROPERTY_FUNCTIONAL_INTRINSIC_UNMASK(ID) case Intrinsic::ID:
-#define END_REGISTER_VP_INTRINSIC(VPID) return Intrinsic::VPID;
-#include "llvm/IR/VPIntrinsics.def"
-  }
-  return Intrinsic::not_intrinsic;
-}
-#endif // SIFIVE_CUSTOMIZATION
-
 constexpr static Intrinsic::ID getForIntrinsic(Intrinsic::ID Id) {
   if (::isVPIntrinsic(Id))
     return Id;

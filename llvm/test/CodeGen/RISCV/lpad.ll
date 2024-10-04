@@ -278,3 +278,9 @@ define void @interrupt() "interrupt"="user" {
 ; FIXED-ONE-NEXT:    mret
   ret void
 }
+
+; SIFIVE_CUSTOMIZATION
+!llvm.module.flags = !{!0, !1}
+!0 = !{i32 8, !"cf-protection-branch", i32 1}
+!1 = !{i32 1, !"cf-branch-label-scheme", !"fixed-one"}
+; SIFIVE_CUSTOMIZATION

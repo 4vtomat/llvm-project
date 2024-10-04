@@ -8,7 +8,7 @@
 ; RUN: llc -mtriple=riscv64 -mattr=+experimental-zicfiss < %s \
 ; RUN:   -verify-machineinstrs | FileCheck %s --check-prefix=RV64-ZICFISS
 
-define void @f1() hwshadowstack shadowcallstack {
+define void @f1() "hw-shadow-stack" shadowcallstack {
 ; RV32-LABEL: f1:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    ret
@@ -29,7 +29,7 @@ define void @f1() hwshadowstack shadowcallstack {
 
 declare void @foo()
 
-define void @f2() hwshadowstack shadowcallstack {
+define void @f2() "hw-shadow-stack" shadowcallstack {
 ; RV32-LABEL: f2:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    tail foo
@@ -51,7 +51,7 @@ define void @f2() hwshadowstack shadowcallstack {
 
 declare i32 @bar()
 
-define i32 @f3() hwshadowstack shadowcallstack {
+define i32 @f3() "hw-shadow-stack" shadowcallstack {
 ; RV32-LABEL: f3:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    addi gp, gp, 4
@@ -116,7 +116,7 @@ define i32 @f3() hwshadowstack shadowcallstack {
   ret i32 %res
 }
 
-define i32 @f4() hwshadowstack shadowcallstack {
+define i32 @f4() "hw-shadow-stack" shadowcallstack {
 ; RV32-LABEL: f4:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    addi gp, gp, 4
@@ -258,7 +258,7 @@ define i32 @f4() hwshadowstack shadowcallstack {
   ret i32 %res1234
 }
 
-define i32 @f5() hwshadowstack shadowcallstack nounwind {
+define i32 @f5() "hw-shadow-stack" shadowcallstack nounwind {
 ; RV32-LABEL: f5:
 ; RV32:       # %bb.0:
 ; RV32-NEXT:    addi gp, gp, 4

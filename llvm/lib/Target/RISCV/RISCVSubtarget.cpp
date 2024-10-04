@@ -71,18 +71,6 @@ static cl::opt<unsigned> RISCVMinimumJumpTableEntries(
     "riscv-min-jump-table-entries", cl::Hidden,
     cl::desc("Set minimum number of entries to use a jump table on RISCV"));
 
-#if SIFIVE_CUSTOMIZATION
-static cl::opt<RISCVLandingPad::Mode> PreferLandingPadMode(
-    "riscv-prefer-landing-pad", cl::init(RISCVLandingPad::FixedOne), cl::Hidden,
-    cl::desc("Set preferred landing pad mode"),
-    cl::values(
-        clEnumValN(RISCVLandingPad::Disable, "disable", "Disable landing pad."),
-        clEnumValN(RISCVLandingPad::Simple, "simple", "Set label to zero."),
-        clEnumValN(RISCVLandingPad::FixedOne, "fixed-one", "Set label to one."),
-        clEnumValN(RISCVLandingPad::FunctionSignature, "function-signature",
-                   "Set landing pad label by function signature.")));
-#endif // SIFIVE_CUSTOMIZATION
-
 void RISCVSubtarget::anchor() {}
 
 RISCVSubtarget &
@@ -268,11 +256,3 @@ unsigned RISCVSubtarget::getMinimumJumpTableEntries() const {
              ? RISCVMinimumJumpTableEntries
              : TuneInfo->MinimumJumpTableEntries;
 }
-
-#if SIFIVE_CUSTOMIZATION
-RISCVLandingPad::Mode RISCVSubtarget::getLandingPadMode() const {
-  if (PreferLandingPadMode.getNumOccurrences() > 0)
-    return PreferLandingPadMode;
-  return RISCVLandingPad::FixedOne;
-}
-#endif // SIFIVE_CUSTOMIZATION

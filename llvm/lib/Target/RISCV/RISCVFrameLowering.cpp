@@ -60,7 +60,7 @@ static void emitSCSPrologue(MachineFunction &MF, MachineBasicBlock &MBB,
                             const DebugLoc &DL) {
 #if SIFIVE_CUSTOMIZATION
   bool HasHWShadowStack =
-      MF.getFunction().hasFnAttribute(Attribute::HWShadowStack);
+      MF.getFunction().hasFnAttribute("hw-shadow-stack");
   bool HasSWShadowStack =
       MF.getFunction().hasFnAttribute(Attribute::ShadowCallStack);
   if (!HasHWShadowStack || !HasSWShadowStack)
@@ -132,7 +132,7 @@ static void emitSCSEpilogue(MachineFunction &MF, MachineBasicBlock &MBB,
                             const DebugLoc &DL) {
 #if SIFIVE_CUSTOMIZATION
   bool HasHWShadowStack =
-      MF.getFunction().hasFnAttribute(Attribute::HWShadowStack);
+      MF.getFunction().hasFnAttribute("hw-shadow-stack");
   bool HasSWShadowStack =
       MF.getFunction().hasFnAttribute(Attribute::ShadowCallStack);
   if (!HasHWShadowStack || !HasSWShadowStack)

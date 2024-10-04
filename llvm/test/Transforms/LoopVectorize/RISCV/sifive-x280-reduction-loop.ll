@@ -25,7 +25,7 @@ define float @foo(ptr nocapture noundef readonly %ptr) {
 ; CHECK-REMARK-10: remark: <unknown>:0:0: loop not vectorized
 ; CHECK-REMARK-48: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m1, float))
 ; CHECK-REMARK-56: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m4, float))
-; CHECK-REMARK-128: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m8, float))
+; CHECK-REMARK-128: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m4, float))
 ; CHECK-REMARK-160: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m4, float))
 ; CHECK-REMARK-512: remark: <unknown>:0:0: vectorized loop ((lmul, type): (m8, float))
 entry:

@@ -161,6 +161,7 @@ bool llvm::isVectorIntrinsicWithScalarOpAtArg(Intrinsic::ID ID,
   case Intrinsic::vp_abs:
   case Intrinsic::vp_ctlz:
   case Intrinsic::vp_cttz:
+  case Intrinsic::vp_is_fpclass:
   case Intrinsic::vp_powi:
   case Intrinsic::aarch64_neon_rshrn:
   case Intrinsic::aarch64_neon_sqrshrn:
@@ -196,6 +197,9 @@ bool llvm::isVectorIntrinsicWithOverloadTypeAtArg(Intrinsic::ID ID,
 #endif // SIFIVE_CUSTOMIZATION
     return OpdIdx == -1 || OpdIdx == 0;
   case Intrinsic::is_fpclass:
+#if SIFIVE_CUSTOMIZATION
+  case Intrinsic::vp_is_fpclass:
+#endif // SIFIVE_CUSTOMIZATION
     return OpdIdx == 0;
   case Intrinsic::powi:
 #if SIFIVE_CUSTOMIZATION
@@ -223,7 +227,7 @@ Intrinsic::ID llvm::getVectorIntrinsicIDForCall(const CallInst *CI,
 
 #if SIFIVE_CUSTOMIZATION
   if (PreferVPOps)
-    if (Intrinsic::ID VPID = VPIntrinsic::getVPIntrinsicID(ID))
+    if (Intrinsic::ID VPID = VPIntrinsic::getForIntrinsic(ID))
       return VPID;
 #endif // SIFIVE_CUSTOMIZATION
 

@@ -52,20 +52,4 @@
 // RELAX-ZCMT: "--relax-zcmt"
 // NO-RELAX-ZCMT-NOT: "--relax-zcmt"
 
-// -[m,mno-]cfi-ss
-// RUN: %clang -target riscv64-unknown-elf -mcfi-ss -### %s 2>&1 | FileCheck %s --check-prefix=MCFI-SS
-// RUN: %clang -target riscv64-unknown-elf -mcfi-ss -mno-cfi-ss -### %s 2>&1 | FileCheck %s --check-prefix=MNO-CFI-SS
-// MCFI-SS: "-fsanitize=shadow-call-stack"
-// MNO-CFI-SS-NOT: "-fsanitize=shadow-call-stack"
-
-// -mcfi-lp
-// RUN: %clang --target=riscv64-unknown-elf -mcfi-lp -### %s 2>&1 | FileCheck %s --check-prefix=MCFI_LP
-// RUN: %clang --target=riscv64-unknown-elf -mno-cfi-lp -### %s 2>&1 | FileCheck %s --check-prefix=MNO_CFI_LP
-// RUN: %clang --target=riscv64-unknown-elf -mcfi-lp=simple -### %s 2>&1 | FileCheck %s --check-prefix=MCFI_LP_SIMPLE
-// RUN: %clang --target=riscv64-unknown-elf -mcfi-lp=fixed-one -### %s 2>&1 | FileCheck %s --check-prefix=MCFI_LP_FIXED_ONE
-// MCFI_LP: "-mllvm" "-riscv-prefer-landing-pad=fixed-one"
-// MNO_CFI_LP: "-mllvm" "-riscv-prefer-landing-pad=disable"
-// MCFI_LP_SIMPLE: "-mllvm" "-riscv-prefer-landing-pad=simple"
-// MCFI_LP_FIXED_ONE: "-mllvm" "-riscv-prefer-landing-pad=fixed-one"
-
 int main() { return 0; }

@@ -2870,6 +2870,15 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
       (ST->hasKnownDLen() && Alignment.value() < Align(ST->getDLen() / 8)))
     Cost += 1;
 
+  // Load/store instructions with large lmul will run out of outstandings which
+  // may drop the performance.
+  // We only have 18 outstanding memory ops on x280, and a m8 vector
+  // load/store will occupy 16 outstandings.
+  if (ST->getProcFamily() == RISCVSubtarget::SiFive7 &&
+      ST->getRealMinVLen() == 512 && LT.second.getScalarSizeInBits() >= 16) {
+    Cost += (TLI->getLMULCost(LT.second) / 16) * 2;
+  }
+
   return Cost;
 #else
   InstructionCost BaseCost =
