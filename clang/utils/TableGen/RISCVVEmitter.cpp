@@ -171,6 +171,7 @@ static VectorTypeModifier getTupleVTM(unsigned NF) {
       static_cast<uint8_t>(VectorTypeModifier::Tuple2) + (NF - 2));
 }
 
+#if SIFIVE_CUSTOMIZATION
 static unsigned getIndexedLoadStorePtrIdx(const RVVIntrinsic *RVVI) {
   // We need a special rule for segment load/store since the data width is not
   // encoded in the instrinsic name itself.
@@ -190,16 +191,19 @@ static unsigned getIndexedLoadStorePtrIdx(const RVVIntrinsic *RVVI) {
 
   return (unsigned)-1;
 }
+#endif // SIFIVE_CUSTOMIZATION
 
 // This function is used to get the log2SEW of each segment load/store, this
 // prevent to add a member to RVVIntrinsic.
 static unsigned getSegInstLog2SEW(StringRef InstName) {
   // clang-format off
+#if SIFIVE_CUSTOMIZATION
   // We need a special rule for indexed segment load/store since the data width
   // is not encoded in the instrinsic name itself.
   if (InstName.starts_with("vloxseg") || InstName.starts_with("vluxseg") ||
       InstName.starts_with("vsoxseg") || InstName.starts_with("vsuxseg"))
     return (unsigned)-1;
+#endif // SIFIVE_CUSTOMIZATION
 
 #define KEY_VAL(KEY, VAL) {#KEY, VAL}
 #define KEY_VAL_ALL_W_POLICY(KEY, VAL) \
@@ -209,6 +213,7 @@ static unsigned getSegInstLog2SEW(StringRef InstName) {
   KEY_VAL(KEY ## _tumu, VAL),          \
   KEY_VAL(KEY ## _mu, VAL)
 
+#if SIFIVE_CUSTOMIZATION
 #define KEY_VAL_ALL_NF_BASE(MACRO_NAME, NAME, SEW, LOG2SEW, FF) \
   MACRO_NAME(NAME ## 2e ## SEW ## FF, LOG2SEW), \
   MACRO_NAME(NAME ## 3e ## SEW ## FF, LOG2SEW), \
@@ -217,12 +222,15 @@ static unsigned getSegInstLog2SEW(StringRef InstName) {
   MACRO_NAME(NAME ## 6e ## SEW ## FF, LOG2SEW), \
   MACRO_NAME(NAME ## 7e ## SEW ## FF, LOG2SEW), \
   MACRO_NAME(NAME ## 8e ## SEW ## FF, LOG2SEW)
+#endif // SIFIVE_CUSTOMIZATION
 
 #define KEY_VAL_ALL_NF(NAME, SEW, LOG2SEW) \
   KEY_VAL_ALL_NF_BASE(KEY_VAL_ALL_W_POLICY, NAME, SEW, LOG2SEW,)
 
+#if SIFIVE_CUSTOMIZATION
 #define KEY_VAL_FF_ALL_NF(NAME, SEW, LOG2SEW) \
   KEY_VAL_ALL_NF_BASE(KEY_VAL_ALL_W_POLICY, NAME, SEW, LOG2SEW, ff)
+#endif // SIFIVE_CUSTOMIZATION
 
 #define KEY_VAL_ALL_NF_SEW_BASE(MACRO_NAME, NAME) \
   MACRO_NAME(NAME, 8, 3),  \
@@ -263,7 +271,6 @@ void emitCodeGenSwitchBody(const RVVIntrinsic *RVVI, raw_ostream &OS) {
     OS << "  IsNontemporal = " << RVVI->getPolicyAttrs().isNTLPolicy() << ";\n";
     if (RVVI->getNF() >= 2)
       OS << "  NF = " + utostr(RVVI->getNF()) + ";\n";
-#endif // SIFIVE_CUSTOMIZATION
 
     // Skip the non-indexed load/store and compatible header load/store.
     OS << "if (SegInstSEW == (unsigned)-1 &&\n";
@@ -276,6 +283,7 @@ void emitCodeGenSwitchBody(const RVVIntrinsic *RVVI, raw_ostream &OS) {
        << "      )->getType()->getPointeeType();\n";
     OS << "  SegInstSEW = "
           "      llvm::Log2_64(getContext().getTypeSize(PointeeType));\n}\n";
+#endif // SIFIVE_CUSTOMIZATION
     OS << RVVI->getManualCodegen();
     OS << "break;\n";
     return;
