@@ -181,9 +181,11 @@ static unsigned getIndexedLoadStorePtrIdx(const RVVIntrinsic *RVVI) {
 
   if (IRName.starts_with("vloxseg") || IRName.starts_with("vluxseg")) {
     bool NoPassthru =
-        (RVVI->isMasked() && (RVVI->getPolicyAttrsBits() & RVV_VTA) &&
-         (RVVI->getPolicyAttrsBits() & RVV_VMA)) |
-        (!RVVI->isMasked() && (RVVI->getPolicyAttrsBits() & RVV_VTA));
+        (RVVI->isMasked() &&
+	 ((RVVI->getPolicyAttrsBits() & RVV_VTA) == RVV_VTA) &&
+         ((RVVI->getPolicyAttrsBits() & RVV_VMA) == RVV_VMA)) ||
+        (!RVVI->isMasked() &&
+	 ((RVVI->getPolicyAttrsBits() & RVV_VTA) == RVV_VTA));
     return RVVI->isMasked() ? NoPassthru ? 1 : 2 : NoPassthru ? 0 : 1;
   }
   if (IRName.starts_with("vsoxseg") || IRName.starts_with("vsuxseg"))
