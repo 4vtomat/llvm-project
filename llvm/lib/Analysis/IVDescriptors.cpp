@@ -733,6 +733,13 @@ RecurrenceDescriptor::isAnyOfPattern(Loop *Loop, PHINode *OrigPhi,
 RecurrenceDescriptor::InstDesc
 RecurrenceDescriptor::isFindLastIVPattern(PHINode *OrigPhi, Instruction *I,
                                           ScalarEvolution *SE) {
+  // TODO: Support the vectorization of FindLastIV when the reduction phi is
+  // used by more than one select instruction. This vectorization is only
+  // performed when the SCEV of each increasing induction variable used by the
+  // select instructions is identical.
+  if (!OrigPhi->hasOneUse())
+    return InstDesc(false, I);
+
   // Only match select with single use cmp condition.
   // TODO: Only handle single use for now.
   CmpInst::Predicate Pred;
