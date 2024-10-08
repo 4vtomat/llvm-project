@@ -421,6 +421,9 @@ class VPseudoVC_V_XVV<Operand OpClass, VReg RDClass, VReg RS2Class,
   let HasVLOp = 1;
   let HasSEWOp = 1;
   let hasSideEffects = 0;
+#ifdef SIFIVE_CUSTOMIZATION
+  let Constraints = "$rd = $rs3";
+#endif // SIFIVE_CUSTOMIZATION
   let BaseInstr = !cast<Instruction>(PseudoToVInst<NAME>.VInst);
 }
 
