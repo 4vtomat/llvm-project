@@ -118,7 +118,11 @@ static cl::opt<bool>
                         cl::desc("Run the SLP vectorization passes"));
 
 static cl::opt<bool>
+#if SIFIVE_CUSTOMIZATION
+    SLPReVec("slp-revec", cl::init(true), cl::Hidden,
+#else
     SLPReVec("slp-revec", cl::init(false), cl::Hidden,
+#endif // SIFIVE_CUSTOMIZATION
              cl::desc("Enable vectorization for wider vector utilization"));
 
 static cl::opt<int>
