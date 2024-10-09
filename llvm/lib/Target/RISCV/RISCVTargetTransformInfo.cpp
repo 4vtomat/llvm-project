@@ -8,18 +8,11 @@
 
 #include "RISCVTargetTransformInfo.h"
 #include "MCTargetDesc/RISCVMatInt.h"
-#include "RISCVISelLowering.h"
-#include "RISCVSubtarget.h"
 #include "llvm/ADT/STLExtras.h"
 #include "llvm/Analysis/TargetTransformInfo.h"
 #include "llvm/CodeGen/BasicTTIImpl.h"
 #include "llvm/CodeGen/CostTable.h"
 #include "llvm/CodeGen/TargetLowering.h"
-#include "llvm/IR/DerivedTypes.h"
-#if SIFIVE_CUSTOMIZATION
-#include "llvm/TargetParser/RISCVTargetParser.h"
-#endif // SIFIVE_CUSTOMIZATION
-#include "llvm/IR/IRBuilder.h"
 #include "llvm/IR/Instructions.h"
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/IR/IntrinsicsAArch64.h"
@@ -2254,13 +2247,14 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
   int ISD = TLI->InstructionOpcodeToISD(Opcode);
   assert(ISD && "Invalid opcode");
 
+#if SIFIVE_CUSTOMIZATION
   int PowDiff = (int)Log2_32(Dst->getScalarSizeInBits()) -
                 (int)Log2_32(Src->getScalarSizeInBits());
+#endif // SIFIVE_CUSTOMIZATION
   switch (ISD) {
   case ISD::SIGN_EXTEND:
   case ISD::ZERO_EXTEND: {
-    const unsigned SrcEltSize = Src->getScalarSizeInBits();
-    if (SrcEltSize == 1) {
+    if (Src->getScalarSizeInBits() == 1) {
       // We do not use vsext/vzext to extend from mask vector.
       // Instead we use the following instructions to extend from mask vector:
       // vmv.v.i v8, 0
@@ -2532,7 +2526,8 @@ RISCVTTIImpl::getMinMaxReductionCost(Intrinsic::ID IID, VectorType *Ty,
     //   vector_reduce_{smax,umin}(<n x i1>) --> vector_reduce_and(<n x i1>)
     if (IID == Intrinsic::umax || IID == Intrinsic::smin)
       return getArithmeticReductionCost(Instruction::Or, Ty, FMF, CostKind);
-    return getArithmeticReductionCost(Instruction::And, Ty, FMF, CostKind);
+    else
+      return getArithmeticReductionCost(Instruction::And, Ty, FMF, CostKind);
   }
 
   // IR Reduction is composed by two vmv and one rvv reduction instruction.
@@ -3736,7 +3731,7 @@ unsigned RISCVTTIImpl::getCSAOverheadFactor() const {
 bool RISCVTTIImpl::enableMonotonicsVectorization() const {
   return ST->hasVInstructions();
 }
-#endif
+#endif // SIFIVE_CUSTOMIZATION
 
 bool RISCVTTIImpl::isLegalMaskedCompressStore(Type *DataTy, Align Alignment) {
   auto *VTy = dyn_cast<VectorType>(DataTy);

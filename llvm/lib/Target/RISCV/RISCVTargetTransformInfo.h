@@ -315,7 +315,7 @@ public:
 
   InstructionCost getCmpSelInstrCost(unsigned Opcode, Type *ValTy, Type *CondTy,
                                      CmpInst::Predicate VecPred,
-                                     TTI::TargetCostKind CostKind = TTI::TCK_RecipThroughput,
+                                     TTI::TargetCostKind CostKind,
                                      const Instruction *I = nullptr);
 
   InstructionCost getCFInstrCost(unsigned Opcode, TTI::TargetCostKind CostKind,
