@@ -150,6 +150,16 @@ enum {
 
   IsWidenShift = AltfmtTypeShift + 2,
   IsWidenMask = 1ULL << IsWidenShift,
+
+  // Mammoth
+  HasTWidenOpShift = IsWidenShift + 1,
+  HasTWidenOpMask = 1ULL << HasTWidenOpShift,
+
+  HasTMOpShift = HasTWidenOpShift + 1,
+  HasTMOpMask = 1ULL << HasTMOpShift,
+
+  HasTKOpShift = HasTMOpShift + 1,
+  HasTKOpMask = 1ULL << HasTKOpShift,
 #endif // SIFIVE_CUSTOMIZATION
 };
 
@@ -223,11 +233,48 @@ static inline bool elementsDependOnMask(uint64_t TSFlags) {
   return TSFlags & ElementsDependOnMaskMask;
 }
 
+#if SIFIVE_CUSTOMIZATION
+// Mammoth
+static inline bool hasTWidenOp(uint64_t TSFlags) {
+  return TSFlags & HasTWidenOpMask;
+}
+
+static inline bool hasTMOp(uint64_t TSFlags) { return TSFlags & HasTMOpMask; }
+
+static inline bool hasTKOp(uint64_t TSFlags) { return TSFlags & HasTKOpMask; }
+
+static inline unsigned getTNOpNum(const MCInstrDesc &Desc) {
+  const uint64_t TSFlags = Desc.TSFlags;
+  assert(hasTWidenOp(TSFlags) && hasVLOp(TSFlags));
+  unsigned Offset = 3;
+  if (hasTMOp(TSFlags))
+    Offset = 4;
+  return Desc.getNumOperands() - Offset;
+}
+
+static inline unsigned getTMOpNum(const MCInstrDesc &Desc) {
+  const uint64_t TSFlags = Desc.TSFlags;
+  assert(hasTWidenOp(TSFlags) && hasTMOp(TSFlags));
+  return Desc.getNumOperands() - 5;
+}
+
+static inline unsigned getTKOpNum(const MCInstrDesc &Desc) {
+  const uint64_t TSFlags = Desc.TSFlags;
+  assert(hasTWidenOp(TSFlags) && hasTKOp(TSFlags));
+  return Desc.getNumOperands() - 3;
+}
+#endif // SIFIVE_CUSTOMIZATION
+
 static inline unsigned getVLOpNum(const MCInstrDesc &Desc) {
   const uint64_t TSFlags = Desc.TSFlags;
   // This method is only called if we expect to have a VL operand, and all
   // instructions with VL also have SEW.
   assert(hasSEWOp(TSFlags) && hasVLOp(TSFlags));
+#if SIFIVE_CUSTOMIZATION
+  // In Mammoth, TN is alias to VL, so here we use the same TSFlags bit.
+  if (hasTWidenOp(TSFlags))
+    return getTNOpNum(Desc);
+#endif // SIFIVE_CUSTOMIZATION
   unsigned Offset = 2;
   if (hasVecPolicyOp(TSFlags))
     Offset = 3;
@@ -238,7 +285,9 @@ static inline unsigned getSEWOpNum(const MCInstrDesc &Desc) {
   const uint64_t TSFlags = Desc.TSFlags;
   assert(hasSEWOp(TSFlags));
   unsigned Offset = 1;
-  if (hasVecPolicyOp(TSFlags))
+#if SIFIVE_CUSTOMIZATION
+  if (hasVecPolicyOp(TSFlags) || hasTWidenOp(TSFlags))
+#endif // SIFIVE_CUSTOMIZATION
     Offset = 2;
   return Desc.getNumOperands() - Offset;
 }
@@ -402,6 +451,9 @@ enum OperandType : unsigned {
   OPERAND_RVKRNUM_0_7,
   OPERAND_RVKRNUM_1_10,
   OPERAND_RVKRNUM_2_14,
+#if SIFIVE_CUSTOMIZATION
+  OPERAND_MAMMOTHVTYPE,
+#endif // SIFIVE_CUSTOMIZATION
   OPERAND_SPIMM,
   OPERAND_LAST_RISCV_IMM = OPERAND_SPIMM,
   // Operand is either a register or uimm5, this is used by V extension pseudo

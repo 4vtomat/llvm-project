@@ -261,6 +261,16 @@ class RVInstCommon<dag outs, dag ins, string opcodestr, string argstr,
 
   bit IsWiden = 0;
   let TSFlags{29} = IsWiden;
+
+  // Mammoth.
+  bit HasTWidenOp = 0;
+  let TSFlags{30} = HasTWidenOp;
+
+  bit HasTmOp = 0;
+  let TSFlags{31} = HasTmOp;
+
+  bit HasTkOp = 0;
+  let TSFlags{32} = HasTkOp;
 #endif // SIFIVE_CUSTOMIZATION
 }
 

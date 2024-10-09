@@ -2607,6 +2607,11 @@ bool RISCVInstrInfo::verifyInstruction(const MachineInstr &MI,
         case RISCVOp::OPERAND_SPIMM:
           Ok = (Imm & 0xf) == 0;
           break;
+#if SIFIVE_CUSTOMIZATION
+        case RISCVOp::OPERAND_MAMMOTHVTYPE:
+          Ok = RISCVVType::isValidMammothVType(Imm);
+          break;
+#endif // SIFIVE_CUSTOMIZATION
         }
         if (!Ok) {
           ErrInfo = "Invalid immediate";
