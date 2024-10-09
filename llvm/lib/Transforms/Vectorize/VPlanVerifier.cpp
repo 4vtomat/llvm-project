@@ -16,7 +16,9 @@
 #include "VPlan.h"
 #include "VPlanCFG.h"
 #include "VPlanDominatorTree.h"
+#if SIFIVE_CUSTOMIZATION
 #include "VPlanUtils.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/ADT/DepthFirstIterator.h"
 #include "llvm/ADT/SmallPtrSet.h"
 #include "llvm/ADT/TypeSwitch.h"
@@ -207,7 +209,7 @@ bool VPlanVerifier::verifyEVLRecipe(const VPInstruction &EVL) const {
 #if SIFIVE_CUSTOMIZATION
              .Case<VPEVLBasedIVPHIRecipe>(
                  [&](const VPEVLBasedIVPHIRecipe *EVLPhi) {
-		   // For previous EVL
+                   // For previous EVL
                    return VerifyEVLUse(*EVLPhi, 1);
                  })
 #endif // SIFIVE_CUSTOMIZATION
