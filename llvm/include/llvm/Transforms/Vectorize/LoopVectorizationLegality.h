@@ -555,7 +555,20 @@ public:
   unsigned getNumStores() const { return LAI->getNumStores(); }
   unsigned getNumLoads() const { return LAI->getNumLoads(); }
 
-<<<<<<< HEAD
+  /// Returns a HistogramInfo* for the given instruction if it was determined
+  /// to be part of a load -> update -> store sequence where multiple lanes
+  /// may be working on the same memory address.
+  std::optional<const HistogramInfo *> getHistogramInfo(Instruction *I) const {
+    for (const HistogramInfo &HGram : Histograms)
+      if (HGram.Load == I || HGram.Update == I || HGram.Store == I)
+        return &HGram;
+
+    return std::nullopt;
+  }
+
+  /// Returns a list of all known histogram operations in the loop.
+  bool hasHistograms() const { return !Histograms.empty(); }
+
 #if SIFIVE_CUSTOMIZATION
   /// Returns true if TTI says useVLAVectorizer() is enabled for the target.
   bool useVLAVectorizer() const;
@@ -592,21 +605,6 @@ public:
   StrideAccessInfo computeStrideAccessInfo(Instruction *I) const;
 
 #endif // SIFIVE_CUSTOMIZATION
-=======
-  /// Returns a HistogramInfo* for the given instruction if it was determined
-  /// to be part of a load -> update -> store sequence where multiple lanes
-  /// may be working on the same memory address.
-  std::optional<const HistogramInfo *> getHistogramInfo(Instruction *I) const {
-    for (const HistogramInfo &HGram : Histograms)
-      if (HGram.Load == I || HGram.Update == I || HGram.Store == I)
-        return &HGram;
-
-    return std::nullopt;
-  }
-
-  /// Returns a list of all known histogram operations in the loop.
-  bool hasHistograms() const { return !Histograms.empty(); }
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 
   PredicatedScalarEvolution *getPredicatedScalarEvolution() const {
     return &PSE;
