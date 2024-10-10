@@ -222,8 +222,9 @@ static void emitRISCVProcs(const RecordKeeper &RK, raw_ostream &OS) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-static void emitRISCVExtensionInfoJSON(const std::vector<Record *> &Extensions,
-                                       raw_ostream &OS) {
+static void
+emitRISCVExtensionInfoJSON(const std::vector<const Record *> &Extensions,
+                           raw_ostream &OS) {
   // Dump supported RISC-V extensions like the following format:
   // {
   //   "supported_extensions": {
@@ -252,7 +253,7 @@ static void emitRISCVExtensionInfoJSON(const std::vector<Record *> &Extensions,
 
 #if SIFIVE_CUSTOMIZATION
 static void
-emitRISCVImpliedExtensionInfoJSON(const std::vector<Record *> &Extensions,
+emitRISCVImpliedExtensionInfoJSON(const std::vector<const Record *> &Extensions,
                                   raw_ostream &OS) {
   // Dump implied RISC-V extensions like the following format:
   //  "implied_extensions": {
@@ -263,7 +264,7 @@ emitRISCVImpliedExtensionInfoJSON(const std::vector<Record *> &Extensions,
   // }
   OS.indent(2) << "\"implied_extensions\": {\n";
   ListSeparator extSep(",\n");
-  for (Record *Ext : Extensions) {
+  for (const Record *Ext : Extensions) {
     auto ImpliesList = Ext->getValueAsListOfDefs("Implies");
     if (ImpliesList.empty())
       continue;
@@ -320,7 +321,7 @@ static void emitRISCVExtensionBitmask(const RecordKeeper &RK, raw_ostream &OS) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-static void emitRISCVProfilesJSON(const std::vector<Record *> &Profiles,
+static void emitRISCVProfilesJSON(const std::vector<const Record *> &Profiles,
                                   raw_ostream &OS) {
   OS << "{\n";
   OS.indent(2) << "\"supported_profiles\": {\n";
@@ -354,8 +355,8 @@ static void EmitRISCVTargetDef(const RecordKeeper &RK, raw_ostream &OS) {
 }
 
 #if SIFIVE_CUSTOMIZATION
-static void EmitRISCVISAInfoJSON(RecordKeeper &RK, raw_ostream &OS) {
-  std::vector<Record *> Extensions =
+static void EmitRISCVISAInfoJSON(const RecordKeeper &RK, raw_ostream &OS) {
+  std::vector<const Record *> Extensions =
       RK.getAllDerivedDefinitions("RISCVExtension");
   llvm::sort(Extensions, [](const Record *Rec1, const Record *Rec2) {
     return getExtensionName(Rec1) < getExtensionName(Rec2);
@@ -366,7 +367,7 @@ static void EmitRISCVISAInfoJSON(RecordKeeper &RK, raw_ostream &OS) {
 #endif // SIFIVE_CUSTOMIZATION
 
 #if SIFIVE_CUSTOMIZATION
-static void EmitRISCVProfileJSON(RecordKeeper &RK, raw_ostream &OS) {
+static void EmitRISCVProfileJSON(const RecordKeeper &RK, raw_ostream &OS) {
   auto Profiles = RK.getAllDerivedDefinitionsIfDefined("RISCVProfile");
 
   if (!Profiles.empty()) {
