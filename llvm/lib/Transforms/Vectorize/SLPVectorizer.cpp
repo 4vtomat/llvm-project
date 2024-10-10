@@ -4847,9 +4847,11 @@ BoUpSLP::canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
   // If ScalarTy is a VectorType (when REVEC is enabled), it is hard for being
   // strided load.
   bool IsSourceScalarInstruction = !isa<VectorType>(VL[0]->getType());
-  if (IsSourceScalarInstruction)
 #endif // SIFIVE_CUSTOMIZATION
   if (!IsSorted) {
+#if SIFIVE_CUSTOMIZATION
+    if (IsSourceScalarInstruction)
+#endif // SIFIVE_CUSTOMIZATION
     if (Sz > MinProfitableStridedLoads && TTI->isTypeLegal(VecTy)) {
       if (TTI->isLegalStridedLoadStore(VecTy, CommonAlignment) &&
           calculateRtStride(PointerOps, ScalarTy, *DL, *SE, Order))

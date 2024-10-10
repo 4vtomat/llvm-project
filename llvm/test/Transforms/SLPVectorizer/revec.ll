@@ -4,18 +4,8 @@
 define void @test1(ptr %a, ptr %b, ptr %c) {
 ; CHECK-LABEL: @test1(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP8:%.*]] = insertelement <4 x ptr> poison, ptr [[A:%.*]], i32 0
-; CHECK-NEXT:    [[TMP11:%.*]] = shufflevector <4 x ptr> [[TMP8]], <4 x ptr> poison, <4 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr i32, <4 x ptr> [[TMP11]], <4 x i64> <i64 0, i64 4, i64 8, i64 12>
-; CHECK-NEXT:    [[TMP3:%.*]] = insertelement <4 x ptr> poison, ptr [[B:%.*]], i32 0
-; CHECK-NEXT:    [[TMP4:%.*]] = shufflevector <4 x ptr> [[TMP3]], <4 x ptr> poison, <4 x i32> zeroinitializer
-; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i32, <4 x ptr> [[TMP4]], <4 x i64> <i64 0, i64 4, i64 8, i64 12>
-; CHECK-NEXT:    [[TMP6:%.*]] = shufflevector <4 x ptr> [[TMP12]], <4 x ptr> poison, <16 x i32> <i32 0, i32 0, i32 0, i32 0, i32 1, i32 1, i32 1, i32 1, i32 2, i32 2, i32 2, i32 2, i32 3, i32 3, i32 3, i32 3>
-; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i32, <16 x ptr> [[TMP6]], <16 x i64> <i64 0, i64 1, i64 2, i64 3, i64 0, i64 1, i64 2, i64 3, i64 0, i64 1, i64 2, i64 3, i64 0, i64 1, i64 2, i64 3>
-; CHECK-NEXT:    [[TMP0:%.*]] = call <16 x i32> @llvm.masked.gather.v16i32.v16p0(<16 x ptr> [[TMP7]], i32 4, <16 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, <16 x i32> poison)
-; CHECK-NEXT:    [[TMP9:%.*]] = shufflevector <4 x ptr> [[TMP5]], <4 x ptr> poison, <16 x i32> <i32 0, i32 0, i32 0, i32 0, i32 1, i32 1, i32 1, i32 1, i32 2, i32 2, i32 2, i32 2, i32 3, i32 3, i32 3, i32 3>
-; CHECK-NEXT:    [[TMP10:%.*]] = getelementptr i32, <16 x ptr> [[TMP9]], <16 x i64> <i64 0, i64 1, i64 2, i64 3, i64 0, i64 1, i64 2, i64 3, i64 0, i64 1, i64 2, i64 3, i64 0, i64 1, i64 2, i64 3>
-; CHECK-NEXT:    [[TMP1:%.*]] = call <16 x i32> @llvm.masked.gather.v16i32.v16p0(<16 x ptr> [[TMP10]], i32 4, <16 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, <16 x i32> poison)
+; CHECK-NEXT:    [[TMP0:%.*]] = load <16 x i32>, ptr [[A:%.*]], align 4
+; CHECK-NEXT:    [[TMP1:%.*]] = load <16 x i32>, ptr [[B:%.*]], align 4
 ; CHECK-NEXT:    [[TMP2:%.*]] = add <16 x i32> [[TMP1]], [[TMP0]]
 ; CHECK-NEXT:    store <16 x i32> [[TMP2]], ptr [[C:%.*]], align 4
 ; CHECK-NEXT:    ret void
@@ -52,12 +42,7 @@ entry:
 define void @test2(ptr %in, ptr %out) {
 ; CHECK-LABEL: @test2(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr i16, ptr [[IN:%.*]], i64 8
-; CHECK-NEXT:    [[TMP6:%.*]] = insertelement <2 x ptr> poison, ptr [[IN]], i32 0
-; CHECK-NEXT:    [[TMP2:%.*]] = insertelement <2 x ptr> [[TMP6]], ptr [[TMP5]], i32 1
-; CHECK-NEXT:    [[TMP3:%.*]] = shufflevector <2 x ptr> [[TMP2]], <2 x ptr> poison, <16 x i32> <i32 0, i32 0, i32 0, i32 0, i32 0, i32 0, i32 0, i32 0, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1, i32 1>
-; CHECK-NEXT:    [[TMP4:%.*]] = getelementptr i16, <16 x ptr> [[TMP3]], <16 x i64> <i64 0, i64 1, i64 2, i64 3, i64 4, i64 5, i64 6, i64 7, i64 0, i64 1, i64 2, i64 3, i64 4, i64 5, i64 6, i64 7>
-; CHECK-NEXT:    [[TMP0:%.*]] = call <16 x i16> @llvm.masked.gather.v16i16.v16p0(<16 x ptr> [[TMP4]], i32 2, <16 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, <16 x i16> poison)
+; CHECK-NEXT:    [[TMP0:%.*]] = load <16 x i16>, ptr [[IN:%.*]], align 2
 ; CHECK-NEXT:    [[TMP1:%.*]] = call <16 x i16> @llvm.sadd.sat.v16i16(<16 x i16> [[TMP0]], <16 x i16> [[TMP0]])
 ; CHECK-NEXT:    store <16 x i16> [[TMP1]], ptr [[OUT:%.*]], align 2
 ; CHECK-NEXT:    ret void
@@ -77,20 +62,11 @@ entry:
 define void @test3(ptr %x, ptr %y, ptr %z) {
 ; CHECK-LABEL: @test3(
 ; CHECK-NEXT:  entry:
-; CHECK-NEXT:    [[TMP8:%.*]] = getelementptr inbounds i32, ptr [[X:%.*]], i64 4
-; CHECK-NEXT:    [[TMP13:%.*]] = getelementptr inbounds i32, ptr [[Y:%.*]], i64 4
-; CHECK-NEXT:    [[TMP0:%.*]] = insertelement <2 x ptr> poison, ptr [[X]], i32 0
-; CHECK-NEXT:    [[TMP1:%.*]] = insertelement <2 x ptr> [[TMP0]], ptr [[Y]], i32 1
+; CHECK-NEXT:    [[TMP0:%.*]] = insertelement <2 x ptr> poison, ptr [[X:%.*]], i32 0
+; CHECK-NEXT:    [[TMP1:%.*]] = insertelement <2 x ptr> [[TMP0]], ptr [[Y:%.*]], i32 1
 ; CHECK-NEXT:    [[TMP2:%.*]] = icmp eq <2 x ptr> [[TMP1]], zeroinitializer
-; CHECK-NEXT:    [[TMP14:%.*]] = insertelement <2 x ptr> [[TMP1]], ptr [[TMP8]], i32 1
-; CHECK-NEXT:    [[TMP15:%.*]] = shufflevector <2 x ptr> [[TMP14]], <2 x ptr> poison, <8 x i32> <i32 0, i32 0, i32 0, i32 0, i32 1, i32 1, i32 1, i32 1>
-; CHECK-NEXT:    [[TMP7:%.*]] = getelementptr i32, <8 x ptr> [[TMP15]], <8 x i64> <i64 0, i64 1, i64 2, i64 3, i64 0, i64 1, i64 2, i64 3>
-; CHECK-NEXT:    [[TMP3:%.*]] = call <8 x i32> @llvm.masked.gather.v8i32.v8p0(<8 x ptr> [[TMP7]], i32 4, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, <8 x i32> poison)
-; CHECK-NEXT:    [[TMP9:%.*]] = shufflevector <2 x ptr> [[TMP1]], <2 x ptr> poison, <2 x i32> <i32 1, i32 poison>
-; CHECK-NEXT:    [[TMP10:%.*]] = insertelement <2 x ptr> [[TMP9]], ptr [[TMP13]], i32 1
-; CHECK-NEXT:    [[TMP11:%.*]] = shufflevector <2 x ptr> [[TMP10]], <2 x ptr> poison, <8 x i32> <i32 0, i32 0, i32 0, i32 0, i32 1, i32 1, i32 1, i32 1>
-; CHECK-NEXT:    [[TMP12:%.*]] = getelementptr i32, <8 x ptr> [[TMP11]], <8 x i64> <i64 0, i64 1, i64 2, i64 3, i64 0, i64 1, i64 2, i64 3>
-; CHECK-NEXT:    [[TMP4:%.*]] = call <8 x i32> @llvm.masked.gather.v8i32.v8p0(<8 x ptr> [[TMP12]], i32 4, <8 x i1> <i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true, i1 true>, <8 x i32> poison)
+; CHECK-NEXT:    [[TMP3:%.*]] = load <8 x i32>, ptr [[X]], align 4
+; CHECK-NEXT:    [[TMP4:%.*]] = load <8 x i32>, ptr [[Y]], align 4
 ; CHECK-NEXT:    [[TMP5:%.*]] = shufflevector <2 x i1> [[TMP2]], <2 x i1> poison, <8 x i32> <i32 0, i32 0, i32 0, i32 0, i32 1, i32 1, i32 1, i32 1>
 ; CHECK-NEXT:    [[TMP6:%.*]] = select <8 x i1> [[TMP5]], <8 x i32> [[TMP3]], <8 x i32> [[TMP4]]
 ; CHECK-NEXT:    store <8 x i32> [[TMP6]], ptr [[Z:%.*]], align 4
