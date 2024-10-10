@@ -837,12 +837,6 @@ protected:
   /// Structure to hold information about generated runtime checks, responsible
   /// for cleaning the checks, if vectorization turns out unprofitable.
   GeneratedRTChecks &RTChecks;
-<<<<<<< HEAD
-
-  // Holds the resume values for reductions in the loops, used to set the
-  // correct start value of reduction PHIs when vectorizing the epilogue.
-  SmallMapVector<const RecurrenceDescriptor *, PHINode *, 4>
-      ReductionResumeValues;
 };
 
 #if SIFIVE_CUSTOMIZATION
@@ -873,23 +867,6 @@ public:
 };
 #endif // SIFIVE_CUSTOMIZATION
 
-class InnerLoopUnroller : public InnerLoopVectorizer {
-public:
-  InnerLoopUnroller(Loop *OrigLoop, PredicatedScalarEvolution &PSE,
-                    LoopInfo *LI, DominatorTree *DT,
-                    const TargetLibraryInfo *TLI,
-                    const TargetTransformInfo *TTI, AssumptionCache *AC,
-                    OptimizationRemarkEmitter *ORE, unsigned UnrollFactor,
-                    LoopVectorizationLegality *LVL,
-                    LoopVectorizationCostModel *CM, BlockFrequencyInfo *BFI,
-                    ProfileSummaryInfo *PSI, GeneratedRTChecks &Check)
-      : InnerLoopVectorizer(OrigLoop, PSE, LI, DT, TLI, TTI, AC, ORE,
-                            ElementCount::getFixed(1),
-                            ElementCount::getFixed(1), UnrollFactor, LVL, CM,
-                            BFI, PSI, Check) {}
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
-};
 
 /// Encapsulate information regarding vectorization of a loop and its epilogue.
 /// This information is meant to be updated and used across two stages of
@@ -3383,18 +3360,12 @@ void InnerLoopVectorizer::fixVectorizedLoop(VPTransformState &State,
     // Fix-up external users of the induction variables.
     for (const auto &Entry : Legal->getInductionVars())
       fixupIVUsers(Entry.first, Entry.second,
-<<<<<<< HEAD
-                   getOrCreateVectorTripCount(VectorLoop->getLoopPreheader()),
-                   IVEndValues[Entry.first], LoopMiddleBlock,
-                   VectorLoop->getHeader(), Plan, State);
+                   getOrCreateVectorTripCount(nullptr),
+                   IVEndValues[Entry.first], LoopMiddleBlock, Plan, State);
 
 #if SIFIVE_CUSTOMIZATION
     fixCSALiveOuts(State, Plan);
 #endif // SIFIVE_CUSTOMIZATION
-=======
-                   getOrCreateVectorTripCount(nullptr),
-                   IVEndValues[Entry.first], LoopMiddleBlock, Plan, State);
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   }
 
   // Fix live-out phis not already fixed earlier.
@@ -9195,16 +9166,14 @@ DenseMap<const SCEV *, Value *> LoopVectorizationPlanner::executePlan(
       "expanded SCEVs to reuse can only be used during epilogue vectorization");
   (void)IsEpilogueVectorization;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   if (!BestVPlan.isUncountable())
 #endif
-=======
+
   // TODO: Move to VPlan transform stage once the transition to the VPlan-based
   // cost model is complete for better cost estimates.
   VPlanTransforms::unrollByUF(BestVPlan, BestUF,
                               OrigLoop->getHeader()->getModule()->getContext());
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   VPlanTransforms::optimizeForVFAndUF(BestVPlan, BestVF, BestUF, PSE);
 
   LLVM_DEBUG(dbgs() << "Executing best plan with VF=" << BestVF
@@ -10452,7 +10421,10 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
   if (auto *CI = dyn_cast<CallInst>(Instr))
     return tryToWidenCall(CI, Operands, Range);
 
-<<<<<<< HEAD
+  if (StoreInst *SI = dyn_cast<StoreInst>(Instr))
+    if (auto HistInfo = Legal->getHistogramInfo(SI))
+      return tryToWidenHistogram(*HistInfo, Operands);
+
 #if SIFIVE_CUSTOMIZATION
   if (isa<LoadInst, StoreInst>(Instr)) {
     if (Legal->useVLAVectorizer()) {
@@ -10477,12 +10449,6 @@ VPRecipeBuilder::tryToCreateWidenRecipe(Instruction *Instr,
                                             Instr->getDebugLoc(), *MD);
   }
 #else
-=======
-  if (StoreInst *SI = dyn_cast<StoreInst>(Instr))
-    if (auto HistInfo = Legal->getHistogramInfo(SI))
-      return tryToWidenHistogram(*HistInfo, Operands);
-
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   if (isa<LoadInst>(Instr) || isa<StoreInst>(Instr))
     return tryToWidenMemory(Instr, Operands, Range);
 #endif // SIFIVE_CUSTOMIZATION
@@ -11034,7 +11000,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
             return !CM.requiresScalarEpilogue(VF.isVector());
           },
           Range);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   const bool IsUncountable = Legal->isVectorizableUncountable();
   const SCEV *TripCountSCEV = nullptr;
@@ -11258,8 +11223,6 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   }
 
 #if SIFIVE_CUSTOMIZATION
-  VPBasicBlock *MiddleVPBB =
-      cast<VPBasicBlock>(Plan->getVectorLoopRegion()->getSingleSuccessor());
   addCSAPostprocessRecipes(RecipeBuilder, Legal->getCSAs(), MiddleVPBB, DL,
                            Range, *Plan);
 #endif // SIFIVE_CUSTOMIZATION
@@ -11581,12 +11544,7 @@ void LoopVectorizationPlanner::adjustRecipesForReductions(
   Builder.setInsertPoint(LatchVPBB, LatchVPBB->begin());
 #else
   Builder.setInsertPoint(&*LatchVPBB->begin());
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-  VPBasicBlock *MiddleVPBB =
-      cast<VPBasicBlock>(VectorLoopRegion->getSingleSuccessor());
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   VPBasicBlock::iterator IP = MiddleVPBB->getFirstNonPhi();
   for (VPRecipeBase &R :
        Plan->getVectorLoopRegion()->getEntryBasicBlock()->phis()) {
@@ -11786,12 +11744,8 @@ void VPReplicateRecipe::execute(VPTransformState &State) {
     // Insert scalar instance packing it into a vector.
     if (State.VF.isVector() && shouldPack()) {
       // If we're constructing lane 0, initialize to start from poison.
-<<<<<<< HEAD
-      if (State.Instance->Lane.isFirstLane()) {
-=======
       if (State.Lane->isFirstLane()) {
         assert(!State.VF.isScalable() && "VF is assumed to be non scalable.");
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
         Value *Poison = PoisonValue::get(
             VectorType::get(UI->getType(), State.VF));
         State.set(this, Poison);
