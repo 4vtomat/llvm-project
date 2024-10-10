@@ -67,11 +67,19 @@ protected:
     assert(!verifyFunction(F) && "input function must be valid");
     doAnalysis(F);
 
+<<<<<<< HEAD
     auto Plan = VPlan::createInitialVPlan(
         SE->getBackedgeTakenCount(LI->getLoopFor(LoopHeader)), *SE, true, false,
         /*IsUncountable=*/false, // SIFIVE
         LI->getLoopFor(LoopHeader));
     VPlanHCFGBuilder HCFGBuilder(LI->getLoopFor(LoopHeader), LI.get(), *Plan);
+=======
+    Loop *L = LI->getLoopFor(LoopHeader);
+    PredicatedScalarEvolution PSE(*SE, *L);
+    auto Plan = VPlan::createInitialVPlan(IntegerType::get(*Ctx, 64), PSE, true,
+                                          false, L);
+    VPlanHCFGBuilder HCFGBuilder(L, LI.get(), *Plan);
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
     HCFGBuilder.buildHierarchicalCFG();
     return Plan;
   }
@@ -82,11 +90,19 @@ protected:
     assert(!verifyFunction(F) && "input function must be valid");
     doAnalysis(F);
 
+<<<<<<< HEAD
     auto Plan = VPlan::createInitialVPlan(
         SE->getBackedgeTakenCount(LI->getLoopFor(LoopHeader)), *SE, true, false,
         /*IsUncountable=*/false, // SIFIVE
         LI->getLoopFor(LoopHeader));
     VPlanHCFGBuilder HCFGBuilder(LI->getLoopFor(LoopHeader), LI.get(), *Plan);
+=======
+    Loop *L = LI->getLoopFor(LoopHeader);
+    PredicatedScalarEvolution PSE(*SE, *L);
+    auto Plan = VPlan::createInitialVPlan(IntegerType::get(*Ctx, 64), PSE, true,
+                                          false, L);
+    VPlanHCFGBuilder HCFGBuilder(L, LI.get(), *Plan);
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
     HCFGBuilder.buildPlainCFG();
     return Plan;
   }

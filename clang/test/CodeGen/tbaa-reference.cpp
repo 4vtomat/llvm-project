@@ -1,5 +1,12 @@
+<<<<<<< HEAD
 // RUN: %clang_cc1 -triple x86_64-linux -O1 -disable-llvm-passes %s -emit-llvm -o - | FileCheck %s  -check-prefixes=CHECKA,OLD-PATH
 // RUN: %clang_cc1 -triple x86_64-linux -O1 -disable-llvm-passes %s -emit-llvm -new-struct-path-tbaa -o - | FileCheck %s -check-prefixes=CHECKB,NEW-PATH
+=======
+// RUN: %clang_cc1 -triple x86_64-linux -O1 -disable-llvm-passes %s -emit-llvm -o - | FileCheck %s  -check-prefixes=CHECK,OLD-PATH
+// RUN: %clang_cc1 -triple x86_64-linux -O1 -disable-llvm-passes -pointer-tbaa %s -emit-llvm -o - | FileCheck %s  -check-prefixes=CHECK,OLD-PATH
+// RUN: %clang_cc1 -triple x86_64-linux -O1 -disable-llvm-passes %s -emit-llvm -new-struct-path-tbaa -o - | FileCheck %s -check-prefixes=CHECK,NEW-PATH
+// RUN: %clang_cc1 -triple x86_64-linux -O1 -disable-llvm-passes %s -pointer-tbaa -emit-llvm -new-struct-path-tbaa -o - | FileCheck %s -check-prefixes=CHECK,NEW-PATH
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 //
 // Check that we generate correct TBAA information for reference accesses.
 

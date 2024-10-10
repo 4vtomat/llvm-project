@@ -747,6 +747,7 @@ define void @abs() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
 ; TYPEBASED-LABEL: 'abs'
+<<<<<<< HEAD
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %1 = call <2 x i8> @llvm.vp.abs.v2i8(<2 x i8> undef, i1 false, <2 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %2 = call <2 x i8> @llvm.abs.v2i8(<2 x i8> undef, i1 false)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %3 = call <4 x i8> @llvm.vp.abs.v4i8(<4 x i8> undef, i1 false, <4 x i1> undef, i32 undef)
@@ -756,6 +757,17 @@ define void @abs() {
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %7 = call <16 x i8> @llvm.vp.abs.v16i8(<16 x i8> undef, i1 false, <16 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %8 = call <16 x i8> @llvm.abs.v16i8(<16 x i8> undef, i1 false)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %9 = call <2 x i64> @llvm.vp.abs.v2i64(<2 x i64> undef, i1 false, <2 x i1> undef, i32 undef)
+=======
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 14 for instruction: %1 = call <2 x i8> @llvm.vp.abs.v2i8(<2 x i8> undef, i1 false, <2 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %2 = call <2 x i8> @llvm.abs.v2i8(<2 x i8> undef, i1 false)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 30 for instruction: %3 = call <4 x i8> @llvm.vp.abs.v4i8(<4 x i8> undef, i1 false, <4 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %4 = call <4 x i8> @llvm.abs.v4i8(<4 x i8> undef, i1 false)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 62 for instruction: %5 = call <8 x i8> @llvm.vp.abs.v8i8(<8 x i8> undef, i1 false, <8 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %6 = call <8 x i8> @llvm.abs.v8i8(<8 x i8> undef, i1 false)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 126 for instruction: %7 = call <16 x i8> @llvm.vp.abs.v16i8(<16 x i8> undef, i1 false, <16 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %8 = call <16 x i8> @llvm.abs.v16i8(<16 x i8> undef, i1 false)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 14 for instruction: %9 = call <2 x i64> @llvm.vp.abs.v2i64(<2 x i64> undef, i1 false, <2 x i1> undef, i32 undef)
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %10 = call <2 x i64> @llvm.abs.v2i64(<2 x i64> undef, i1 false)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %11 = call <4 x i64> @llvm.vp.abs.v4i64(<4 x i64> undef, i1 false, <4 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %12 = call <4 x i64> @llvm.abs.v4i64(<4 x i64> undef, i1 false)
@@ -863,11 +875,19 @@ define void @load() {
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %t7 = load <16 x i8>, ptr undef, align 16
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %t8 = call <2 x i64> @llvm.vp.load.v2i64.p0(ptr undef, <2 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %t9 = load <2 x i64>, ptr undef, align 16
+<<<<<<< HEAD
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %t10 = call <4 x i64> @llvm.vp.load.v4i64.p0(ptr undef, <4 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %t12 = load <4 x i64>, ptr undef, align 32
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %t13 = call <8 x i64> @llvm.vp.load.v8i64.p0(ptr undef, <8 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %t14 = load <8 x i64>, ptr undef, align 64
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %t15 = call <16 x i64> @llvm.vp.load.v16i64.p0(ptr undef, <16 x i1> undef, i32 undef)
+=======
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %t10 = call <4 x i64> @llvm.vp.load.v4i64.p0(ptr undef, <4 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %t12 = load <4 x i64>, ptr undef, align 32
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %t13 = call <8 x i64> @llvm.vp.load.v8i64.p0(ptr undef, <8 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %t14 = load <8 x i64>, ptr undef, align 64
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %t15 = call <16 x i64> @llvm.vp.load.v16i64.p0(ptr undef, <16 x i1> undef, i32 undef)
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %t16 = load <16 x i64>, ptr undef, align 128
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %t17 = call <vscale x 2 x i8> @llvm.vp.load.nxv2i8.p0(ptr undef, <vscale x 2 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %t18 = load <vscale x 2 x i8>, ptr undef, align 2
@@ -875,6 +895,7 @@ define void @load() {
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %t20 = load <vscale x 4 x i8>, ptr undef, align 4
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %t21 = call <vscale x 8 x i8> @llvm.vp.load.nxv8i8.p0(ptr undef, <vscale x 8 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %t22 = load <vscale x 8 x i8>, ptr undef, align 8
+<<<<<<< HEAD
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %t23 = call <vscale x 16 x i8> @llvm.vp.load.nxv16i8.p0(ptr undef, <vscale x 16 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %t24 = load <vscale x 16 x i8>, ptr undef, align 16
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %t25 = call <vscale x 2 x i64> @llvm.vp.load.nxv2i64.p0(ptr undef, <vscale x 2 x i1> undef, i32 undef)
@@ -884,6 +905,17 @@ define void @load() {
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %t29 = call <vscale x 8 x i64> @llvm.vp.load.nxv8i64.p0(ptr undef, <vscale x 8 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %t30 = load <vscale x 8 x i64>, ptr undef, align 64
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: %t31 = call <vscale x 16 x i64> @llvm.vp.load.nxv16i64.p0(ptr undef, <vscale x 16 x i1> undef, i32 undef)
+=======
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %t23 = call <vscale x 16 x i8> @llvm.vp.load.nxv16i8.p0(ptr undef, <vscale x 16 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %t24 = load <vscale x 16 x i8>, ptr undef, align 16
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %t25 = call <vscale x 2 x i64> @llvm.vp.load.nxv2i64.p0(ptr undef, <vscale x 2 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %t26 = load <vscale x 2 x i64>, ptr undef, align 16
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %t27 = call <vscale x 4 x i64> @llvm.vp.load.nxv4i64.p0(ptr undef, <vscale x 4 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %t28 = load <vscale x 4 x i64>, ptr undef, align 32
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %t29 = call <vscale x 8 x i64> @llvm.vp.load.nxv8i64.p0(ptr undef, <vscale x 8 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %t30 = load <vscale x 8 x i64>, ptr undef, align 64
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %t31 = call <vscale x 16 x i64> @llvm.vp.load.nxv16i64.p0(ptr undef, <vscale x 16 x i1> undef, i32 undef)
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: %t32 = load <vscale x 16 x i64>, ptr undef, align 128
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
@@ -969,11 +1001,19 @@ define void @store() {
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <16 x i8> undef, ptr undef, align 16
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: call void @llvm.vp.store.v2i64.p0(<2 x i64> undef, ptr undef, <2 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <2 x i64> undef, ptr undef, align 16
+<<<<<<< HEAD
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: call void @llvm.vp.store.v4i64.p0(<4 x i64> undef, ptr undef, <4 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <4 x i64> undef, ptr undef, align 32
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: call void @llvm.vp.store.v8i64.p0(<8 x i64> undef, ptr undef, <8 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: store <8 x i64> undef, ptr undef, align 64
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: call void @llvm.vp.store.v16i64.p0(<16 x i64> undef, ptr undef, <16 x i1> undef, i32 undef)
+=======
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: call void @llvm.vp.store.v4i64.p0(<4 x i64> undef, ptr undef, <4 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <4 x i64> undef, ptr undef, align 32
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: call void @llvm.vp.store.v8i64.p0(<8 x i64> undef, ptr undef, <8 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: store <8 x i64> undef, ptr undef, align 64
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: call void @llvm.vp.store.v16i64.p0(<16 x i64> undef, ptr undef, <16 x i1> undef, i32 undef)
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: store <16 x i64> undef, ptr undef, align 128
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: call void @llvm.vp.store.nxv2i8.p0(<vscale x 2 x i8> undef, ptr undef, <vscale x 2 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <vscale x 2 x i8> undef, ptr undef, align 2
@@ -981,6 +1021,7 @@ define void @store() {
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <vscale x 4 x i8> undef, ptr undef, align 4
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: call void @llvm.vp.store.nxv8i8.p0(<vscale x 8 x i8> undef, ptr undef, <vscale x 8 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: store <vscale x 8 x i8> undef, ptr undef, align 8
+<<<<<<< HEAD
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: call void @llvm.vp.store.nxv16i8.p0(<vscale x 16 x i8> undef, ptr undef, <vscale x 16 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <vscale x 16 x i8> undef, ptr undef, align 16
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: call void @llvm.vp.store.nxv2i64.p0(<vscale x 2 x i64> undef, ptr undef, <vscale x 2 x i1> undef, i32 undef)
@@ -990,6 +1031,17 @@ define void @store() {
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: call void @llvm.vp.store.nxv8i64.p0(<vscale x 8 x i64> undef, ptr undef, <vscale x 8 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: store <vscale x 8 x i64> undef, ptr undef, align 64
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 1 for instruction: call void @llvm.vp.store.nxv16i64.p0(<vscale x 16 x i64> undef, ptr undef, <vscale x 16 x i1> undef, i32 undef)
+=======
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: call void @llvm.vp.store.nxv16i8.p0(<vscale x 16 x i8> undef, ptr undef, <vscale x 16 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <vscale x 16 x i8> undef, ptr undef, align 16
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: call void @llvm.vp.store.nxv2i64.p0(<vscale x 2 x i64> undef, ptr undef, <vscale x 2 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: store <vscale x 2 x i64> undef, ptr undef, align 16
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: call void @llvm.vp.store.nxv4i64.p0(<vscale x 4 x i64> undef, ptr undef, <vscale x 4 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: store <vscale x 4 x i64> undef, ptr undef, align 32
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: call void @llvm.vp.store.nxv8i64.p0(<vscale x 8 x i64> undef, ptr undef, <vscale x 8 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: store <vscale x 8 x i64> undef, ptr undef, align 64
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: call void @llvm.vp.store.nxv16i64.p0(<vscale x 16 x i64> undef, ptr undef, <vscale x 16 x i1> undef, i32 undef)
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 16 for instruction: store <vscale x 16 x i64> undef, ptr undef, align 128
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
@@ -1030,6 +1082,10 @@ define void @store() {
 
 define void @strided_load() {
 ; CHECK-LABEL: 'strided_load'
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 9 for instruction: %ti1_2 = call <2 x i1> @llvm.experimental.vp.strided.load.v2i1.p0.i64(ptr undef, i64 undef, <2 x i1> undef, i32 undef)
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 17 for instruction: %ti1_4 = call <4 x i1> @llvm.experimental.vp.strided.load.v4i1.p0.i64(ptr undef, i64 undef, <4 x i1> undef, i32 undef)
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 33 for instruction: %ti1_8 = call <8 x i1> @llvm.experimental.vp.strided.load.v8i1.p0.i64(ptr undef, i64 undef, <8 x i1> undef, i32 undef)
+; CHECK-NEXT:  Cost Model: Found an estimated cost of 65 for instruction: %ti1_16 = call <16 x i1> @llvm.experimental.vp.strided.load.v16i1.p0.i64(ptr undef, i64 undef, <16 x i1> undef, i32 undef)
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 2 for instruction: %t0 = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr undef, i64 undef, <2 x i1> undef, i32 undef)
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 4 for instruction: %t2 = call <4 x i8> @llvm.experimental.vp.strided.load.v4i8.p0.i64(ptr undef, i64 undef, <4 x i1> undef, i32 undef)
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 8 for instruction: %t4 = call <8 x i8> @llvm.experimental.vp.strided.load.v8i8.p0.i64(ptr undef, i64 undef, <8 x i1> undef, i32 undef)
@@ -1053,15 +1109,19 @@ define void @strided_load() {
 ; CHECK-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
 ; TYPEBASED-LABEL: 'strided_load'
-; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %t0 = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr undef, i64 undef, <2 x i1> undef, i32 undef)
-; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 26 for instruction: %t2 = call <4 x i8> @llvm.experimental.vp.strided.load.v4i8.p0.i64(ptr undef, i64 undef, <4 x i1> undef, i32 undef)
-; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 54 for instruction: %t4 = call <8 x i8> @llvm.experimental.vp.strided.load.v8i8.p0.i64(ptr undef, i64 undef, <8 x i1> undef, i32 undef)
-; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 110 for instruction: %t6 = call <16 x i8> @llvm.experimental.vp.strided.load.v16i8.p0.i64(ptr undef, i64 undef, <16 x i1> undef, i32 undef)
-; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %t8.a = call <2 x i64> @llvm.experimental.vp.strided.load.v2i64.p0.i64(ptr align 8 undef, i64 undef, <2 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 13 for instruction: %ti1_2 = call <2 x i1> @llvm.experimental.vp.strided.load.v2i1.p0.i64(ptr undef, i64 undef, <2 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 25 for instruction: %ti1_4 = call <4 x i1> @llvm.experimental.vp.strided.load.v4i1.p0.i64(ptr undef, i64 undef, <4 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 49 for instruction: %ti1_8 = call <8 x i1> @llvm.experimental.vp.strided.load.v8i1.p0.i64(ptr undef, i64 undef, <8 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 97 for instruction: %ti1_16 = call <16 x i1> @llvm.experimental.vp.strided.load.v16i1.p0.i64(ptr undef, i64 undef, <16 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 11 for instruction: %t0 = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.p0.i64(ptr undef, i64 undef, <2 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 23 for instruction: %t2 = call <4 x i8> @llvm.experimental.vp.strided.load.v4i8.p0.i64(ptr undef, i64 undef, <4 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 47 for instruction: %t4 = call <8 x i8> @llvm.experimental.vp.strided.load.v8i8.p0.i64(ptr undef, i64 undef, <8 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 95 for instruction: %t6 = call <16 x i8> @llvm.experimental.vp.strided.load.v16i8.p0.i64(ptr undef, i64 undef, <16 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 11 for instruction: %t8.a = call <2 x i64> @llvm.experimental.vp.strided.load.v2i64.p0.i64(ptr align 8 undef, i64 undef, <2 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 26 for instruction: %t10.a = call <4 x i64> @llvm.experimental.vp.strided.load.v4i64.p0.i64(ptr align 8 undef, i64 undef, <4 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 54 for instruction: %t13.a = call <8 x i64> @llvm.experimental.vp.strided.load.v8i64.p0.i64(ptr align 8 undef, i64 undef, <8 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 110 for instruction: %t15.a = call <16 x i64> @llvm.experimental.vp.strided.load.v16i64.p0.i64(ptr align 8 undef, i64 undef, <16 x i1> undef, i32 undef)
-; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 12 for instruction: %t8 = call <2 x i64> @llvm.experimental.vp.strided.load.v2i64.p0.i64(ptr undef, i64 undef, <2 x i1> undef, i32 undef)
+; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 11 for instruction: %t8 = call <2 x i64> @llvm.experimental.vp.strided.load.v2i64.p0.i64(ptr undef, i64 undef, <2 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 26 for instruction: %t10 = call <4 x i64> @llvm.experimental.vp.strided.load.v4i64.p0.i64(ptr undef, i64 undef, <4 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 54 for instruction: %t13 = call <8 x i64> @llvm.experimental.vp.strided.load.v8i64.p0.i64(ptr undef, i64 undef, <8 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 110 for instruction: %t15 = call <16 x i64> @llvm.experimental.vp.strided.load.v16i64.p0.i64(ptr undef, i64 undef, <16 x i1> undef, i32 undef)
@@ -1075,6 +1135,10 @@ define void @strided_load() {
 ; TYPEBASED-NEXT:  Cost Model: Invalid cost for instruction: %t31 = call <vscale x 16 x i64> @llvm.experimental.vp.strided.load.nxv16i64.p0.i64(ptr undef, i64 undef, <vscale x 16 x i1> undef, i32 undef)
 ; TYPEBASED-NEXT:  Cost Model: Found an estimated cost of 0 for instruction: ret void
 ;
+  %ti1_2 = call <2 x i1> @llvm.experimental.vp.strided.load.v2i1.i64(ptr undef, i64 undef, <2 x i1> undef, i32 undef)
+  %ti1_4 = call <4 x i1> @llvm.experimental.vp.strided.load.v4i1.i64(ptr undef, i64 undef, <4 x i1> undef, i32 undef)
+  %ti1_8 = call <8 x i1> @llvm.experimental.vp.strided.load.v8i1.i64(ptr undef, i64 undef, <8 x i1> undef, i32 undef)
+  %ti1_16 = call <16 x i1> @llvm.experimental.vp.strided.load.v16i1.i64(ptr undef, i64 undef, <16 x i1> undef, i32 undef)
   %t0 = call <2 x i8> @llvm.experimental.vp.strided.load.v2i8.i64(ptr undef, i64 undef, <2 x i1> undef, i32 undef)
   %t2 = call <4 x i8> @llvm.experimental.vp.strided.load.v4i8.i64(ptr undef, i64 undef, <4 x i1> undef, i32 undef)
   %t4 = call <8 x i8> @llvm.experimental.vp.strided.load.v8i8.i64(ptr undef, i64 undef, <8 x i1> undef, i32 undef)

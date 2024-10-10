@@ -16,10 +16,14 @@
 
 #include "clang/Basic/AddressSpaces.h"
 #include "clang/Basic/BitmaskEnum.h"
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // cherry-picked from 9f33eb861a3d17fd92163ee894f7cd9f256d03fb
 #include "clang/Basic/CFProtectionOptions.h"
 #endif // SIFIVE_CUSTOMIZATION
+=======
+#include "clang/Basic/CFProtectionOptions.h"
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 #include "clang/Basic/CodeGenOptions.h"
 #include "clang/Basic/LLVM.h"
 #include "clang/Basic/LangOptions.h"
@@ -1739,15 +1743,21 @@ public:
   virtual bool
   checkCFProtectionBranchSupported(DiagnosticsEngine &Diags) const;
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 // cherry-picked from 9f33eb861a3d17fd92163ee894f7cd9f256d03fb
+=======
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   /// Get the target default CFBranchLabelScheme scheme
   virtual CFBranchLabelSchemeKind getDefaultCFBranchLabelScheme() const;
 
   virtual bool
   checkCFBranchLabelSchemeSupported(const CFBranchLabelSchemeKind Scheme,
                                     DiagnosticsEngine &Diags) const;
+<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 
   /// Check if the target supports CFProtection return.
   virtual bool

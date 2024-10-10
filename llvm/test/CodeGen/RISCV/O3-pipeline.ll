@@ -28,6 +28,7 @@
 ; CHECK-NEXT:       Expand powi functions
 ; CHECK-NEXT:       Expand vp.reduce functions
 ; CHECK-NEXT:       Expand Atomic instructions
+; CHECK-NEXT:       RISC-V Zacas ABI fix 
 ; CHECK-NEXT:       Dominator Tree Construction
 ; CHECK-NEXT:       Natural Loop Information
 ; CHECK-NEXT:       Canonicalize natural loops

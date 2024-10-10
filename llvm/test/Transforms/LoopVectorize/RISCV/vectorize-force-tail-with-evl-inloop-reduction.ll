@@ -105,6 +105,39 @@ define i32 @mul(ptr %a, i64 %n, i32 %start) {
 ;
 ; NO-VP-LABEL: @mul(
 ; NO-VP-NEXT:  entry:
+<<<<<<< HEAD
+=======
+; NO-VP-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N:%.*]], 8
+; NO-VP-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; NO-VP:       vector.ph:
+; NO-VP-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N]], 8
+; NO-VP-NEXT:    [[N_VEC:%.*]] = sub i64 [[N]], [[N_MOD_VF]]
+; NO-VP-NEXT:    br label [[VECTOR_BODY:%.*]]
+; NO-VP:       vector.body:
+; NO-VP-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; NO-VP-NEXT:    [[VEC_PHI:%.*]] = phi i32 [ [[START:%.*]], [[VECTOR_PH]] ], [ [[TMP7:%.*]], [[VECTOR_BODY]] ]
+; NO-VP-NEXT:    [[VEC_PHI1:%.*]] = phi i32 [ 1, [[VECTOR_PH]] ], [ [[TMP9:%.*]], [[VECTOR_BODY]] ]
+; NO-VP-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
+; NO-VP-NEXT:    [[TMP2:%.*]] = getelementptr inbounds i32, ptr [[A:%.*]], i64 [[TMP0]]
+; NO-VP-NEXT:    [[TMP4:%.*]] = getelementptr inbounds i32, ptr [[TMP2]], i32 0
+; NO-VP-NEXT:    [[TMP5:%.*]] = getelementptr inbounds i32, ptr [[TMP2]], i32 4
+; NO-VP-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x i32>, ptr [[TMP4]], align 4
+; NO-VP-NEXT:    [[WIDE_LOAD2:%.*]] = load <4 x i32>, ptr [[TMP5]], align 4
+; NO-VP-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vector.reduce.mul.v4i32(<4 x i32> [[WIDE_LOAD]])
+; NO-VP-NEXT:    [[TMP7]] = mul i32 [[TMP6]], [[VEC_PHI]]
+; NO-VP-NEXT:    [[TMP8:%.*]] = call i32 @llvm.vector.reduce.mul.v4i32(<4 x i32> [[WIDE_LOAD2]])
+; NO-VP-NEXT:    [[TMP9]] = mul i32 [[TMP8]], [[VEC_PHI1]]
+; NO-VP-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 8
+; NO-VP-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
+; NO-VP-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
+; NO-VP:       middle.block:
+; NO-VP-NEXT:    [[BIN_RDX:%.*]] = mul i32 [[TMP9]], [[TMP7]]
+; NO-VP-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N]], [[N_VEC]]
+; NO-VP-NEXT:    br i1 [[CMP_N]], label [[FOR_END:%.*]], label [[SCALAR_PH]]
+; NO-VP:       scalar.ph:
+; NO-VP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; NO-VP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi i32 [ [[BIN_RDX]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ]
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; NO-VP-NEXT:    br label [[FOR_BODY:%.*]]
 ; NO-VP:       for.body:
 ; NO-VP-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
@@ -760,6 +793,39 @@ define float @fmul(ptr %a, i64 %n, float %start) {
 ;
 ; NO-VP-LABEL: @fmul(
 ; NO-VP-NEXT:  entry:
+<<<<<<< HEAD
+=======
+; NO-VP-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N:%.*]], 8
+; NO-VP-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; NO-VP:       vector.ph:
+; NO-VP-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N]], 8
+; NO-VP-NEXT:    [[N_VEC:%.*]] = sub i64 [[N]], [[N_MOD_VF]]
+; NO-VP-NEXT:    br label [[VECTOR_BODY:%.*]]
+; NO-VP:       vector.body:
+; NO-VP-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; NO-VP-NEXT:    [[VEC_PHI:%.*]] = phi float [ [[START:%.*]], [[VECTOR_PH]] ], [ [[TMP7:%.*]], [[VECTOR_BODY]] ]
+; NO-VP-NEXT:    [[VEC_PHI1:%.*]] = phi float [ 1.000000e+00, [[VECTOR_PH]] ], [ [[TMP9:%.*]], [[VECTOR_BODY]] ]
+; NO-VP-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
+; NO-VP-NEXT:    [[TMP2:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[TMP0]]
+; NO-VP-NEXT:    [[TMP4:%.*]] = getelementptr inbounds float, ptr [[TMP2]], i32 0
+; NO-VP-NEXT:    [[TMP5:%.*]] = getelementptr inbounds float, ptr [[TMP2]], i32 4
+; NO-VP-NEXT:    [[WIDE_LOAD:%.*]] = load <4 x float>, ptr [[TMP4]], align 4
+; NO-VP-NEXT:    [[WIDE_LOAD2:%.*]] = load <4 x float>, ptr [[TMP5]], align 4
+; NO-VP-NEXT:    [[TMP6:%.*]] = call reassoc float @llvm.vector.reduce.fmul.v4f32(float 1.000000e+00, <4 x float> [[WIDE_LOAD]])
+; NO-VP-NEXT:    [[TMP7]] = fmul reassoc float [[TMP6]], [[VEC_PHI]]
+; NO-VP-NEXT:    [[TMP8:%.*]] = call reassoc float @llvm.vector.reduce.fmul.v4f32(float 1.000000e+00, <4 x float> [[WIDE_LOAD2]])
+; NO-VP-NEXT:    [[TMP9]] = fmul reassoc float [[TMP8]], [[VEC_PHI1]]
+; NO-VP-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 8
+; NO-VP-NEXT:    [[TMP10:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
+; NO-VP-NEXT:    br i1 [[TMP10]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP22:![0-9]+]]
+; NO-VP:       middle.block:
+; NO-VP-NEXT:    [[BIN_RDX:%.*]] = fmul reassoc float [[TMP9]], [[TMP7]]
+; NO-VP-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N]], [[N_VEC]]
+; NO-VP-NEXT:    br i1 [[CMP_N]], label [[FOR_END:%.*]], label [[SCALAR_PH]]
+; NO-VP:       scalar.ph:
+; NO-VP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; NO-VP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ [[BIN_RDX]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ]
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; NO-VP-NEXT:    br label [[FOR_BODY:%.*]]
 ; NO-VP:       for.body:
 ; NO-VP-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
@@ -966,6 +1032,40 @@ define float @fminimum(ptr %a, i64 %n, float %start) {
 ;
 ; NO-VP-LABEL: @fminimum(
 ; NO-VP-NEXT:  entry:
+<<<<<<< HEAD
+=======
+; NO-VP-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N:%.*]], 16
+; NO-VP-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; NO-VP:       vector.ph:
+; NO-VP-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N]], 16
+; NO-VP-NEXT:    [[N_VEC:%.*]] = sub i64 [[N]], [[N_MOD_VF]]
+; NO-VP-NEXT:    [[MINMAX_IDENT_SPLATINSERT:%.*]] = insertelement <8 x float> poison, float [[START:%.*]], i64 0
+; NO-VP-NEXT:    [[MINMAX_IDENT_SPLAT:%.*]] = shufflevector <8 x float> [[MINMAX_IDENT_SPLATINSERT]], <8 x float> poison, <8 x i32> zeroinitializer
+; NO-VP-NEXT:    br label [[VECTOR_BODY:%.*]]
+; NO-VP:       vector.body:
+; NO-VP-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; NO-VP-NEXT:    [[VEC_PHI:%.*]] = phi <8 x float> [ [[MINMAX_IDENT_SPLAT]], [[VECTOR_PH]] ], [ [[TMP6:%.*]], [[VECTOR_BODY]] ]
+; NO-VP-NEXT:    [[VEC_PHI1:%.*]] = phi <8 x float> [ [[MINMAX_IDENT_SPLAT]], [[VECTOR_PH]] ], [ [[TMP7:%.*]], [[VECTOR_BODY]] ]
+; NO-VP-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
+; NO-VP-NEXT:    [[TMP2:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[TMP0]]
+; NO-VP-NEXT:    [[TMP4:%.*]] = getelementptr inbounds float, ptr [[TMP2]], i32 0
+; NO-VP-NEXT:    [[TMP5:%.*]] = getelementptr inbounds float, ptr [[TMP2]], i32 8
+; NO-VP-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x float>, ptr [[TMP4]], align 4
+; NO-VP-NEXT:    [[WIDE_LOAD2:%.*]] = load <8 x float>, ptr [[TMP5]], align 4
+; NO-VP-NEXT:    [[TMP6]] = call <8 x float> @llvm.minimum.v8f32(<8 x float> [[VEC_PHI]], <8 x float> [[WIDE_LOAD]])
+; NO-VP-NEXT:    [[TMP7]] = call <8 x float> @llvm.minimum.v8f32(<8 x float> [[VEC_PHI1]], <8 x float> [[WIDE_LOAD2]])
+; NO-VP-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
+; NO-VP-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
+; NO-VP-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP28:![0-9]+]]
+; NO-VP:       middle.block:
+; NO-VP-NEXT:    [[RDX_MINMAX:%.*]] = call <8 x float> @llvm.minimum.v8f32(<8 x float> [[TMP6]], <8 x float> [[TMP7]])
+; NO-VP-NEXT:    [[TMP9:%.*]] = call float @llvm.vector.reduce.fminimum.v8f32(<8 x float> [[RDX_MINMAX]])
+; NO-VP-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N]], [[N_VEC]]
+; NO-VP-NEXT:    br i1 [[CMP_N]], label [[FOR_END:%.*]], label [[SCALAR_PH]]
+; NO-VP:       scalar.ph:
+; NO-VP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; NO-VP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ [[TMP9]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ]
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; NO-VP-NEXT:    br label [[FOR_BODY:%.*]]
 ; NO-VP:       for.body:
 ; NO-VP-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]
@@ -1016,6 +1116,40 @@ define float @fmaximum(ptr %a, i64 %n, float %start) {
 ;
 ; NO-VP-LABEL: @fmaximum(
 ; NO-VP-NEXT:  entry:
+<<<<<<< HEAD
+=======
+; NO-VP-NEXT:    [[MIN_ITERS_CHECK:%.*]] = icmp ult i64 [[N:%.*]], 16
+; NO-VP-NEXT:    br i1 [[MIN_ITERS_CHECK]], label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
+; NO-VP:       vector.ph:
+; NO-VP-NEXT:    [[N_MOD_VF:%.*]] = urem i64 [[N]], 16
+; NO-VP-NEXT:    [[N_VEC:%.*]] = sub i64 [[N]], [[N_MOD_VF]]
+; NO-VP-NEXT:    [[MINMAX_IDENT_SPLATINSERT:%.*]] = insertelement <8 x float> poison, float [[START:%.*]], i64 0
+; NO-VP-NEXT:    [[MINMAX_IDENT_SPLAT:%.*]] = shufflevector <8 x float> [[MINMAX_IDENT_SPLATINSERT]], <8 x float> poison, <8 x i32> zeroinitializer
+; NO-VP-NEXT:    br label [[VECTOR_BODY:%.*]]
+; NO-VP:       vector.body:
+; NO-VP-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
+; NO-VP-NEXT:    [[VEC_PHI:%.*]] = phi <8 x float> [ [[MINMAX_IDENT_SPLAT]], [[VECTOR_PH]] ], [ [[TMP6:%.*]], [[VECTOR_BODY]] ]
+; NO-VP-NEXT:    [[VEC_PHI1:%.*]] = phi <8 x float> [ [[MINMAX_IDENT_SPLAT]], [[VECTOR_PH]] ], [ [[TMP7:%.*]], [[VECTOR_BODY]] ]
+; NO-VP-NEXT:    [[TMP0:%.*]] = add i64 [[INDEX]], 0
+; NO-VP-NEXT:    [[TMP2:%.*]] = getelementptr inbounds float, ptr [[A:%.*]], i64 [[TMP0]]
+; NO-VP-NEXT:    [[TMP4:%.*]] = getelementptr inbounds float, ptr [[TMP2]], i32 0
+; NO-VP-NEXT:    [[TMP5:%.*]] = getelementptr inbounds float, ptr [[TMP2]], i32 8
+; NO-VP-NEXT:    [[WIDE_LOAD:%.*]] = load <8 x float>, ptr [[TMP4]], align 4
+; NO-VP-NEXT:    [[WIDE_LOAD2:%.*]] = load <8 x float>, ptr [[TMP5]], align 4
+; NO-VP-NEXT:    [[TMP6]] = call <8 x float> @llvm.maximum.v8f32(<8 x float> [[VEC_PHI]], <8 x float> [[WIDE_LOAD]])
+; NO-VP-NEXT:    [[TMP7]] = call <8 x float> @llvm.maximum.v8f32(<8 x float> [[VEC_PHI1]], <8 x float> [[WIDE_LOAD2]])
+; NO-VP-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 16
+; NO-VP-NEXT:    [[TMP8:%.*]] = icmp eq i64 [[INDEX_NEXT]], [[N_VEC]]
+; NO-VP-NEXT:    br i1 [[TMP8]], label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP30:![0-9]+]]
+; NO-VP:       middle.block:
+; NO-VP-NEXT:    [[RDX_MINMAX:%.*]] = call <8 x float> @llvm.maximum.v8f32(<8 x float> [[TMP6]], <8 x float> [[TMP7]])
+; NO-VP-NEXT:    [[TMP9:%.*]] = call float @llvm.vector.reduce.fmaximum.v8f32(<8 x float> [[RDX_MINMAX]])
+; NO-VP-NEXT:    [[CMP_N:%.*]] = icmp eq i64 [[N]], [[N_VEC]]
+; NO-VP-NEXT:    br i1 [[CMP_N]], label [[FOR_END:%.*]], label [[SCALAR_PH]]
+; NO-VP:       scalar.ph:
+; NO-VP-NEXT:    [[BC_RESUME_VAL:%.*]] = phi i64 [ [[N_VEC]], [[MIDDLE_BLOCK]] ], [ 0, [[ENTRY:%.*]] ]
+; NO-VP-NEXT:    [[BC_MERGE_RDX:%.*]] = phi float [ [[TMP9]], [[MIDDLE_BLOCK]] ], [ [[START]], [[ENTRY]] ]
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; NO-VP-NEXT:    br label [[FOR_BODY:%.*]]
 ; NO-VP:       for.body:
 ; NO-VP-NEXT:    [[IV:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[IV_NEXT:%.*]], [[FOR_BODY]] ]

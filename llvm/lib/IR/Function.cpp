@@ -33,24 +33,6 @@
 #include "llvm/IR/Instruction.h"
 #include "llvm/IR/IntrinsicInst.h"
 #include "llvm/IR/Intrinsics.h"
-#include "llvm/IR/IntrinsicsAArch64.h"
-#include "llvm/IR/IntrinsicsAMDGPU.h"
-#include "llvm/IR/IntrinsicsARM.h"
-#include "llvm/IR/IntrinsicsBPF.h"
-#include "llvm/IR/IntrinsicsDirectX.h"
-#include "llvm/IR/IntrinsicsHexagon.h"
-#include "llvm/IR/IntrinsicsLoongArch.h"
-#include "llvm/IR/IntrinsicsMips.h"
-#include "llvm/IR/IntrinsicsNVPTX.h"
-#include "llvm/IR/IntrinsicsPowerPC.h"
-#include "llvm/IR/IntrinsicsR600.h"
-#include "llvm/IR/IntrinsicsRISCV.h"
-#include "llvm/IR/IntrinsicsS390.h"
-#include "llvm/IR/IntrinsicsSPIRV.h"
-#include "llvm/IR/IntrinsicsVE.h"
-#include "llvm/IR/IntrinsicsWebAssembly.h"
-#include "llvm/IR/IntrinsicsX86.h"
-#include "llvm/IR/IntrinsicsXCore.h"
 #include "llvm/IR/LLVMContext.h"
 #include "llvm/IR/MDBuilder.h"
 #include "llvm/IR/Metadata.h"
@@ -372,6 +354,10 @@ void Argument::removeAttrs(const AttributeMask &AM) {
 }
 
 bool Argument::hasAttribute(Attribute::AttrKind Kind) const {
+  return getParent()->hasParamAttribute(getArgNo(), Kind);
+}
+
+bool Argument::hasAttribute(StringRef Kind) const {
   return getParent()->hasParamAttribute(getArgNo(), Kind);
 }
 
@@ -762,6 +748,10 @@ bool Function::hasParamAttribute(unsigned ArgNo,
   return AttributeSets.hasParamAttr(ArgNo, Kind);
 }
 
+bool Function::hasParamAttribute(unsigned ArgNo, StringRef Kind) const {
+  return AttributeSets.hasParamAttr(ArgNo, Kind);
+}
+
 Attribute Function::getAttributeAtIndex(unsigned i,
                                         Attribute::AttrKind Kind) const {
   return AttributeSets.getAttributeAtIndex(i, Kind);
@@ -945,66 +935,8 @@ void Function::setOnlyAccessesInaccessibleMemOrArgMem() {
                    MemoryEffects::inaccessibleOrArgMemOnly());
 }
 
-/// Table of string intrinsic names indexed by enum value.
-static const char * const IntrinsicNameTable[] = {
-  "not_intrinsic",
-#define GET_INTRINSIC_NAME_TABLE
-#include "llvm/IR/IntrinsicImpl.inc"
-#undef GET_INTRINSIC_NAME_TABLE
-};
-
-/// Table of per-target intrinsic name tables.
-#define GET_INTRINSIC_TARGET_DATA
-#include "llvm/IR/IntrinsicImpl.inc"
-#undef GET_INTRINSIC_TARGET_DATA
-
-bool Function::isTargetIntrinsic(Intrinsic::ID IID) {
-  return IID > TargetInfos[0].Count;
-}
-
 bool Function::isTargetIntrinsic() const {
-  return isTargetIntrinsic(IntID);
-}
-
-/// Find the segment of \c IntrinsicNameTable for intrinsics with the same
-/// target as \c Name, or the generic table if \c Name is not target specific.
-///
-/// Returns the relevant slice of \c IntrinsicNameTable
-static ArrayRef<const char *> findTargetSubtable(StringRef Name) {
-  assert(Name.starts_with("llvm."));
-
-  ArrayRef<IntrinsicTargetInfo> Targets(TargetInfos);
-  // Drop "llvm." and take the first dotted component. That will be the target
-  // if this is target specific.
-  StringRef Target = Name.drop_front(5).split('.').first;
-  auto It = partition_point(
-      Targets, [=](const IntrinsicTargetInfo &TI) { return TI.Name < Target; });
-  // We've either found the target or just fall back to the generic set, which
-  // is always first.
-  const auto &TI = It != Targets.end() && It->Name == Target ? *It : Targets[0];
-  return ArrayRef(&IntrinsicNameTable[1] + TI.Offset, TI.Count);
-}
-
-/// This does the actual lookup of an intrinsic ID which
-/// matches the given function name.
-Intrinsic::ID Function::lookupIntrinsicID(StringRef Name) {
-  ArrayRef<const char *> NameTable = findTargetSubtable(Name);
-  int Idx = Intrinsic::lookupLLVMIntrinsicByName(NameTable, Name);
-  if (Idx == -1)
-    return Intrinsic::not_intrinsic;
-
-  // Intrinsic IDs correspond to the location in IntrinsicNameTable, but we have
-  // an index into a sub-table.
-  int Adjust = NameTable.data() - IntrinsicNameTable;
-  Intrinsic::ID ID = static_cast<Intrinsic::ID>(Idx + Adjust);
-
-  // If the intrinsic is not overloaded, require an exact match. If it is
-  // overloaded, require either exact or prefix match.
-  const auto MatchSize = strlen(NameTable[Idx]);
-  assert(Name.size() >= MatchSize && "Expected either exact or prefix match");
-  bool IsExactMatch = Name.size() == MatchSize;
-  return IsExactMatch || Intrinsic::isOverloaded(ID) ? ID
-                                                     : Intrinsic::not_intrinsic;
+  return Intrinsic::isTargetIntrinsic(IntID);
 }
 
 void Function::updateAfterNameChange() {
@@ -1016,6 +948,7 @@ void Function::updateAfterNameChange() {
     return;
   }
   HasLLVMReservedName = true;
+<<<<<<< HEAD
   IntID = lookupIntrinsicID(Name);
 }
 
@@ -2005,6 +1938,9 @@ std::optional<Function *> Intrinsic::remangleIntrinsicFunction(Function *F) {
   assert(NewDecl->getFunctionType() == F->getFunctionType() &&
          "Shouldn't change the signature");
   return NewDecl;
+=======
+  IntID = Intrinsic::lookupIntrinsicID(Name);
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 }
 
 /// hasAddressTaken - returns true if there are any uses of this function

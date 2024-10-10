@@ -56,11 +56,18 @@ private:
                   MachineBasicBlock::iterator &NextMBBI);
   bool expandVMSET_VMCLR(MachineBasicBlock &MBB,
                          MachineBasicBlock::iterator MBBI, unsigned Opcode);
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   bool removeRedundantVMV(MachineBasicBlock &MBB,
                           MachineBasicBlock::iterator MBBI);
 #endif // SIFIVE_CUSTOMIZATION
 
+=======
+  bool expandMV_FPR16INX(MachineBasicBlock &MBB,
+                         MachineBasicBlock::iterator MBBI);
+  bool expandMV_FPR32INX(MachineBasicBlock &MBB,
+                         MachineBasicBlock::iterator MBBI);
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   bool expandRV32ZdinxStore(MachineBasicBlock &MBB,
                             MachineBasicBlock::iterator MBBI);
   bool expandRV32ZdinxLoad(MachineBasicBlock &MBB,
@@ -117,6 +124,7 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   // expanded instructions for each pseudo is correct in the Size field of the
   // tablegen definition for the pseudo.
   switch (MBBI->getOpcode()) {
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   case RISCV::PseudoMovImm:
     return expandMovImm(MBB, MBBI);
@@ -125,6 +133,12 @@ bool RISCVExpandPseudo::expandMI(MachineBasicBlock &MBB,
   case RISCV::PseudoSBFX:
     return expandBitfieldExtract(MBB, MBBI, RISCV::SRAI);
 #endif // SIFIVE_CUSTOMIZATION
+=======
+  case RISCV::PseudoMV_FPR16INX:
+    return expandMV_FPR16INX(MBB, MBBI);
+  case RISCV::PseudoMV_FPR32INX:
+    return expandMV_FPR32INX(MBB, MBBI);
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   case RISCV::PseudoRV32ZdinxSD:
     return expandRV32ZdinxStore(MBB, MBBI);
   case RISCV::PseudoRV32ZdinxLD:
@@ -341,6 +355,7 @@ bool RISCVExpandPseudo::expandVMSET_VMCLR(MachineBasicBlock &MBB,
   return true;
 }
 
+<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 bool RISCVExpandPseudo::removeRedundantVMV(MachineBasicBlock &MBB,
                                            MachineBasicBlock::iterator MBBI) {
@@ -352,6 +367,41 @@ bool RISCVExpandPseudo::removeRedundantVMV(MachineBasicBlock &MBB,
   return false;
 }
 #endif // SIFIVE_CUSTOMIZATION
+=======
+bool RISCVExpandPseudo::expandMV_FPR16INX(MachineBasicBlock &MBB,
+                                          MachineBasicBlock::iterator MBBI) {
+  DebugLoc DL = MBBI->getDebugLoc();
+  const TargetRegisterInfo *TRI = STI->getRegisterInfo();
+  Register DstReg = TRI->getMatchingSuperReg(
+      MBBI->getOperand(0).getReg(), RISCV::sub_16, &RISCV::GPRRegClass);
+  Register SrcReg = TRI->getMatchingSuperReg(
+      MBBI->getOperand(1).getReg(), RISCV::sub_16, &RISCV::GPRRegClass);
+
+  BuildMI(MBB, MBBI, DL, TII->get(RISCV::ADDI), DstReg)
+      .addReg(SrcReg, getKillRegState(MBBI->getOperand(1).isKill()))
+      .addImm(0);
+
+  MBBI->eraseFromParent(); // The pseudo instruction is gone now.
+  return true;
+}
+
+bool RISCVExpandPseudo::expandMV_FPR32INX(MachineBasicBlock &MBB,
+                                          MachineBasicBlock::iterator MBBI) {
+  DebugLoc DL = MBBI->getDebugLoc();
+  const TargetRegisterInfo *TRI = STI->getRegisterInfo();
+  Register DstReg = TRI->getMatchingSuperReg(
+      MBBI->getOperand(0).getReg(), RISCV::sub_32, &RISCV::GPRRegClass);
+  Register SrcReg = TRI->getMatchingSuperReg(
+      MBBI->getOperand(1).getReg(), RISCV::sub_32, &RISCV::GPRRegClass);
+
+  BuildMI(MBB, MBBI, DL, TII->get(RISCV::ADDI), DstReg)
+      .addReg(SrcReg, getKillRegState(MBBI->getOperand(1).isKill()))
+      .addImm(0);
+
+  MBBI->eraseFromParent(); // The pseudo instruction is gone now.
+  return true;
+}
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 
 // This function expands the PseudoRV32ZdinxSD for storing a double-precision
 // floating-point value into memory by generating an equivalent instruction

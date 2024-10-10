@@ -100,11 +100,12 @@ define void @integer_induction_wraps_scev_predicate_known(i32 %x, ptr %call, ptr
 ; CHECK-NEXT:    [[TMP2:%.*]] = mul i64 [[TMP0]], 4
 ; CHECK-NEXT:    [[DOTSPLATINSERT:%.*]] = insertelement <4 x i64> poison, i64 [[TMP0]], i64 0
 ; CHECK-NEXT:    [[DOTSPLAT:%.*]] = shufflevector <4 x i64> [[DOTSPLATINSERT]], <4 x i64> poison, <4 x i32> zeroinitializer
-; CHECK-NEXT:    [[VECTOR_GEP:%.*]] = mul <4 x i64> <i64 0, i64 1, i64 2, i64 3>, [[DOTSPLAT]]
-; CHECK-NEXT:    [[TMP3:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <4 x i64> [[VECTOR_GEP]]
+; CHECK-NEXT:    [[TMP3:%.*]] = mul <4 x i64> <i64 0, i64 1, i64 2, i64 3>, [[DOTSPLAT]]
+; CHECK-NEXT:    [[VECTOR_GEP:%.*]] = getelementptr i8, ptr [[POINTER_PHI]], <4 x i64> [[TMP3]]
 ; CHECK-NEXT:    [[DOTCAST:%.*]] = trunc i64 [[INDEX]] to i32
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = add i32 30, [[DOTCAST]]
 ; CHECK-NEXT:    [[TMP4:%.*]] = add i32 [[OFFSET_IDX]], 0
+<<<<<<< HEAD
 ; CHECK-NEXT:    [[TMP5:%.*]] = add i32 [[OFFSET_IDX]], 1
 ; CHECK-NEXT:    [[TMP6:%.*]] = add i32 [[OFFSET_IDX]], 2
 ; CHECK-NEXT:    [[TMP7:%.*]] = add i32 [[OFFSET_IDX]], 3
@@ -120,6 +121,11 @@ define void @integer_induction_wraps_scev_predicate_known(i32 %x, ptr %call, ptr
 ; CHECK-NEXT:    store ptr [[TMP14]], ptr [[TMP10]], align 4
 ; CHECK-NEXT:    [[TMP15:%.*]] = extractelement <4 x ptr> [[TMP3]], i32 3
 ; CHECK-NEXT:    store ptr [[TMP15]], ptr [[TMP11]], align 4
+=======
+; CHECK-NEXT:    [[TMP5:%.*]] = getelementptr ptr, ptr [[CALL]], i32 [[TMP4]]
+; CHECK-NEXT:    [[TMP6:%.*]] = getelementptr ptr, ptr [[TMP5]], i32 0
+; CHECK-NEXT:    store <4 x ptr> [[VECTOR_GEP]], ptr [[TMP6]], align 4
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4
 ; CHECK-NEXT:    [[PTR_IND]] = getelementptr i8, ptr [[POINTER_PHI]], i64 [[TMP2]]
 ; CHECK-NEXT:    [[TMP16:%.*]] = icmp eq i64 [[INDEX_NEXT]], 4294967264

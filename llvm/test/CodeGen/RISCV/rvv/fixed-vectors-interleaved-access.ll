@@ -524,6 +524,7 @@ define {<8 x i64>, <8 x i64>, <8 x i64>, <8 x i64>, <8 x i64>, <8 x i64>} @load_
 ;
 ; RV64-LABEL: load_factor6_too_big:
 ; RV64:       # %bb.0:
+<<<<<<< HEAD
 ; RV64-NEXT:    addi sp, sp, -448
 ; RV64-NEXT:    .cfi_def_cfa_offset 448
 ; RV64-NEXT:    sd ra, 440(sp) # 8-byte Folded Spill
@@ -551,6 +552,32 @@ define {<8 x i64>, <8 x i64>, <8 x i64>, <8 x i64>, <8 x i64>, <8 x i64>} @load_
 ; RV64-NEXT:    sd a2, 0(sp)
 ; RV64-NEXT:    ld a2, 344(a1)
 ; RV64-NEXT:    mv a3, sp
+=======
+; RV64-NEXT:    addi sp, sp, -16
+; RV64-NEXT:    .cfi_def_cfa_offset 16
+; RV64-NEXT:    csrr a2, vlenb
+; RV64-NEXT:    slli a3, a2, 6
+; RV64-NEXT:    add a2, a3, a2
+; RV64-NEXT:    sub sp, sp, a2
+; RV64-NEXT:    .cfi_escape 0x0f, 0x0e, 0x72, 0x00, 0x11, 0x10, 0x22, 0x11, 0xc1, 0x00, 0x92, 0xa2, 0x38, 0x00, 0x1e, 0x22 # sp + 16 + 65 * vlenb
+; RV64-NEXT:    addi a2, a1, 256
+; RV64-NEXT:    vsetivli zero, 16, e64, m8, ta, ma
+; RV64-NEXT:    vle64.v v16, (a2)
+; RV64-NEXT:    csrr a2, vlenb
+; RV64-NEXT:    li a3, 21
+; RV64-NEXT:    mul a2, a2, a3
+; RV64-NEXT:    add a2, sp, a2
+; RV64-NEXT:    addi a2, a2, 16
+; RV64-NEXT:    vs8r.v v16, (a2) # Unknown-size Folded Spill
+; RV64-NEXT:    addi a2, a1, 128
+; RV64-NEXT:    vle64.v v8, (a1)
+; RV64-NEXT:    csrr a1, vlenb
+; RV64-NEXT:    li a3, 57
+; RV64-NEXT:    mul a1, a1, a3
+; RV64-NEXT:    add a1, sp, a1
+; RV64-NEXT:    addi a1, a1, 16
+; RV64-NEXT:    vs8r.v v8, (a1) # Unknown-size Folded Spill
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; RV64-NEXT:    vsetivli zero, 8, e64, m4, ta, ma
 ; RV64-NEXT:    vle64.v v8, (a3)
 ; RV64-NEXT:    sd a2, 120(sp)
@@ -653,10 +680,18 @@ define {<8 x i64>, <8 x i64>, <8 x i64>, <8 x i64>, <8 x i64>, <8 x i64>} @load_
 ; RV64-NEXT:    addi a1, a0, 64
 ; RV64-NEXT:    vse64.v v12, (a1)
 ; RV64-NEXT:    vse64.v v8, (a0)
+<<<<<<< HEAD
 ; RV64-NEXT:    addi sp, s0, -448
 ; RV64-NEXT:    ld ra, 440(sp) # 8-byte Folded Reload
 ; RV64-NEXT:    ld s0, 432(sp) # 8-byte Folded Reload
 ; RV64-NEXT:    addi sp, sp, 448
+=======
+; RV64-NEXT:    csrr a0, vlenb
+; RV64-NEXT:    slli a1, a0, 6
+; RV64-NEXT:    add a0, a1, a0
+; RV64-NEXT:    add sp, sp, a0
+; RV64-NEXT:    addi sp, sp, 16
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 ; RV64-NEXT:    ret
   %interleaved.vec = load <48 x i64>, ptr %ptr
   %v0 = shufflevector <48 x i64> %interleaved.vec, <48 x i64> poison, <8 x i32> <i32 0, i32 6, i32 12, i32 18, i32 24, i32 30, i32 36, i32 42>

@@ -52,6 +52,7 @@ include "RISCVSchedRocket.td"
 //include "RISCVSchedSiFiveP600.td" // SIFIVE
 include "RISCVSchedSyntacoreSCR1.td"
 include "RISCVSchedSyntacoreSCR345.td"
+include "RISCVSchedSyntacoreSCR7.td"
 include "RISCVSchedXiangShanNanHu.td"
 #ifdef SIFIVE_CUSTOMIZATION
 include "SiFive_RISCVSchedBullet.td"

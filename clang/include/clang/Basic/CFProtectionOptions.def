@@ -9,9 +9,12 @@
 
 #ifdef CF_BRANCH_LABEL_SCHEME
 CF_BRANCH_LABEL_SCHEME(Unlabeled, unlabeled)
+<<<<<<< HEAD
 #ifdef SIFIVE_CUSTOMIZATION
 CF_BRANCH_LABEL_SCHEME(FixedOne, fixed-one)
 #endif // SIFIVE_CUSTOMIZATION
+=======
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 CF_BRANCH_LABEL_SCHEME(FuncSig, func-sig)
 
 #undef CF_BRANCH_LABEL_SCHEME

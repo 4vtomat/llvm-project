@@ -528,7 +528,8 @@ declare void @llvm.dbg.value(metadata, metadata, metadata)
 !11 = !DILocation(line: 1, column: 14, scope: !8)
 
 
-; The load should be commoned.
+; The load should not be commoned, as it will get separated from the GEP
+; instruction producing the address.
 define i32 @test15(i1 zeroext %flag, i32 %w, i32 %x, i32 %y, ptr %s) {
 ; CHECK-LABEL: @test15(
 ; CHECK-NEXT:  entry:

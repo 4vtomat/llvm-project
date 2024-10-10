@@ -364,9 +364,20 @@ if config.host_ldflags.find("-m32") < 0 and any(
     config.available_features.add("llvm-64-bits")
 
 config.available_features.add("host-byteorder-" + sys.byteorder + "-endian")
+<<<<<<< HEAD
 # if SIFIVE_CUSTOMIZATION
 config.available_features.add("sifive-customization")
 # end SIFIVE_CUSTOMIZATION
+=======
+if config.target_triple:
+    if re.match(
+        r"(aarch64_be|arc|armeb|bpfeb|lanai|m68k|mips|mips64|powerpc|powerpc64|sparc|sparcv9|s390x|s390|tce|thumbeb)-.*",
+        config.target_triple,
+    ):
+        config.available_features.add("target-byteorder-big-endian")
+    else:
+        config.available_features.add("target-byteorder-little-endian")
+>>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 
 if sys.platform in ["win32"]:
     # ExecutionEngine, no weak symbols in COFF.
