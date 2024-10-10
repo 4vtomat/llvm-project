@@ -68,13 +68,10 @@ add_llvm_target(RISCVCodeGen
   RISCVTargetObjectFile.cpp
   RISCVTargetTransformInfo.cpp
   RISCVVectorPeephole.cpp
-<<<<<<< HEAD
+  RISCVZacasABIFix.cpp
   SiFive_RISCVTypePromotion.cpp
   SiFive_RISCVVLOptimizer.cpp
   SiFive_RISCVHazardRecognizer.cpp
-=======
-  RISCVZacasABIFix.cpp
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   GISel/RISCVCallLowering.cpp
   GISel/RISCVInstructionSelector.cpp
   GISel/RISCVLegalizerInfo.cpp
