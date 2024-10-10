@@ -1422,8 +1422,9 @@ define dso_local void @masked_strided2(ptr noalias nocapture readonly %p, ptr no
 ; ENABLED_MASKED_STRIDED-NEXT:    [[TMP4:%.*]] = call <8 x i8> @llvm.smax.v8i8(<8 x i8> [[STRIDED_VEC]], <8 x i8> [[STRIDED_VEC1]])
 ; ENABLED_MASKED_STRIDED-NEXT:    [[TMP6:%.*]] = getelementptr i8, ptr [[Q:%.*]], i32 [[TMP1]]
 ; ENABLED_MASKED_STRIDED-NEXT:    [[TMP5:%.*]] = sub <8 x i8> zeroinitializer, [[TMP4]]
+; ENABLED_MASKED_STRIDED-NEXT:    [[TMP7:%.*]] = getelementptr i8, ptr [[TMP6]], i32 -1
 ; ENABLED_MASKED_STRIDED-NEXT:    [[INTERLEAVED_VEC:%.*]] = shufflevector <8 x i8> [[TMP4]], <8 x i8> [[TMP5]], <16 x i32> <i32 0, i32 8, i32 1, i32 9, i32 2, i32 10, i32 3, i32 11, i32 4, i32 12, i32 5, i32 13, i32 6, i32 14, i32 7, i32 15>
-; ENABLED_MASKED_STRIDED-NEXT:    call void @llvm.masked.store.v16i8.p0(<16 x i8> [[INTERLEAVED_VEC]], ptr [[TMP6]], i32 1, <16 x i1> [[INTERLEAVED_MASK]])
+; ENABLED_MASKED_STRIDED-NEXT:    call void @llvm.masked.store.v16i8.p0(<16 x i8> [[INTERLEAVED_VEC]], ptr [[TMP7]], i32 1, <16 x i1> [[INTERLEAVED_MASK]])
 ; ENABLED_MASKED_STRIDED-NEXT:    [[INDEX_NEXT]] = add nuw i32 [[INDEX]], 8
 ; ENABLED_MASKED_STRIDED-NEXT:    [[VEC_IND_NEXT]] = add <8 x i32> [[VEC_IND]], <i32 8, i32 8, i32 8, i32 8, i32 8, i32 8, i32 8, i32 8>
 ; ENABLED_MASKED_STRIDED-NEXT:    [[TMP8:%.*]] = icmp eq i32 [[INDEX_NEXT]], 1024
@@ -2556,8 +2557,9 @@ define dso_local void @masked_strided2_unknown_tc(ptr noalias nocapture readonly
 ; ENABLED_MASKED_STRIDED-NEXT:    [[TMP6:%.*]] = call <8 x i8> @llvm.smax.v8i8(<8 x i8> [[STRIDED_VEC]], <8 x i8> [[STRIDED_VEC3]])
 ; ENABLED_MASKED_STRIDED-NEXT:    [[TMP8:%.*]] = getelementptr i8, ptr [[Q:%.*]], i32 [[TMP2]]
 ; ENABLED_MASKED_STRIDED-NEXT:    [[TMP7:%.*]] = sub <8 x i8> zeroinitializer, [[TMP6]]
+; ENABLED_MASKED_STRIDED-NEXT:    [[TMP9:%.*]] = getelementptr i8, ptr [[TMP8]], i32 -1
 ; ENABLED_MASKED_STRIDED-NEXT:    [[INTERLEAVED_VEC:%.*]] = shufflevector <8 x i8> [[TMP6]], <8 x i8> [[TMP7]], <16 x i32> <i32 0, i32 8, i32 1, i32 9, i32 2, i32 10, i32 3, i32 11, i32 4, i32 12, i32 5, i32 13, i32 6, i32 14, i32 7, i32 15>
-; ENABLED_MASKED_STRIDED-NEXT:    call void @llvm.masked.store.v16i8.p0(<16 x i8> [[INTERLEAVED_VEC]], ptr [[TMP8]], i32 1, <16 x i1> [[INTERLEAVED_MASK]])
+; ENABLED_MASKED_STRIDED-NEXT:    call void @llvm.masked.store.v16i8.p0(<16 x i8> [[INTERLEAVED_VEC]], ptr [[TMP9]], i32 1, <16 x i1> [[INTERLEAVED_MASK]])
 ; ENABLED_MASKED_STRIDED-NEXT:    [[INDEX_NEXT]] = add i32 [[INDEX]], 8
 ; ENABLED_MASKED_STRIDED-NEXT:    [[VEC_IND_NEXT]] = add <8 x i32> [[VEC_IND]], <i32 8, i32 8, i32 8, i32 8, i32 8, i32 8, i32 8, i32 8>
 ; ENABLED_MASKED_STRIDED-NEXT:    [[TMP10:%.*]] = icmp eq i32 [[INDEX_NEXT]], [[N_VEC]]
@@ -2988,8 +2990,9 @@ define dso_local void @unconditional_masked_strided2_unknown_tc(ptr noalias noca
 ; ENABLED_MASKED_STRIDED-NEXT:    [[TMP4:%.*]] = call <8 x i8> @llvm.smax.v8i8(<8 x i8> [[STRIDED_VEC]], <8 x i8> [[STRIDED_VEC3]])
 ; ENABLED_MASKED_STRIDED-NEXT:    [[TMP6:%.*]] = getelementptr inbounds i8, ptr [[Q:%.*]], i32 [[TMP1]]
 ; ENABLED_MASKED_STRIDED-NEXT:    [[TMP5:%.*]] = sub <8 x i8> zeroinitializer, [[TMP4]]
+; ENABLED_MASKED_STRIDED-NEXT:    [[TMP7:%.*]] = getelementptr inbounds i8, ptr [[TMP6]], i32 -1
 ; ENABLED_MASKED_STRIDED-NEXT:    [[INTERLEAVED_VEC:%.*]] = shufflevector <8 x i8> [[TMP4]], <8 x i8> [[TMP5]], <16 x i32> <i32 0, i32 8, i32 1, i32 9, i32 2, i32 10, i32 3, i32 11, i32 4, i32 12, i32 5, i32 13, i32 6, i32 14, i32 7, i32 15>
-; ENABLED_MASKED_STRIDED-NEXT:    call void @llvm.masked.store.v16i8.p0(<16 x i8> [[INTERLEAVED_VEC]], ptr [[TMP6]], i32 1, <16 x i1> [[INTERLEAVED_MASK]])
+; ENABLED_MASKED_STRIDED-NEXT:    call void @llvm.masked.store.v16i8.p0(<16 x i8> [[INTERLEAVED_VEC]], ptr [[TMP7]], i32 1, <16 x i1> [[INTERLEAVED_MASK]])
 ; ENABLED_MASKED_STRIDED-NEXT:    [[INDEX_NEXT]] = add i32 [[INDEX]], 8
 ; ENABLED_MASKED_STRIDED-NEXT:    [[TMP8:%.*]] = icmp eq i32 [[INDEX_NEXT]], [[N_VEC]]
 ; ENABLED_MASKED_STRIDED-NEXT:    br i1 [[TMP8]], label [[FOR_END]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
