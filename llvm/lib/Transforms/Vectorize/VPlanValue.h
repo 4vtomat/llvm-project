@@ -374,13 +374,10 @@ public:
     VPWidenEVLSC,
     VPWidenSelectSC,
     VPBlendSC,
-<<<<<<< HEAD
+    VPHistogramSC,
 #if SIFIVE_CUSTOMIZATION
     VPMonotonicUpdateSC,
 #endif
-=======
-    VPHistogramSC,
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
     // START: Phi-like recipes. Need to be kept together.
 #if SIFIVE_CUSTOMIZATION
     VPCSADataUpdateSC,
