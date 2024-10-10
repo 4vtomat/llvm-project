@@ -399,8 +399,14 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
               const unsigned NumUsedRegs = TTI.getRegUsageForType(VectorTy);
               addRegisterUsage(Recipe->getVPSingleValue(), RegID, NumUsedRegs);
               InstructionCost Cost = getRegisterPressureCost(RegID, VectorTy);
-              return Cost + TTI.getCmpSelInstrCost(I->getOpcode(), VectorTy,
-                                                   CondTy, Pred, CostKind, I);
+              return Cost +
+                     TTI.getCmpSelInstrCost(I->getOpcode(), VectorTy, CondTy,
+                                            Pred, CostKind,
+                                            {TargetTransformInfo::OK_AnyValue,
+                                             TargetTransformInfo::OP_None},
+                                            {TargetTransformInfo::OK_AnyValue,
+                                             TargetTransformInfo::OP_None},
+                                            I);
             }
             case Instruction::ICmp:
             case Instruction::FCmp: {
@@ -414,7 +420,12 @@ InstructionCost VPlanCostModel::getCost(const VPRecipeBase *Recipe,
               InstructionCost Cost = getRegisterPressureCost(RegID, VectorTy);
               return Cost + TTI.getCmpSelInstrCost(
                                 I->getOpcode(), VectorTy, nullptr,
-                                cast<CmpInst>(I)->getPredicate(), CostKind, I);
+                                cast<CmpInst>(I)->getPredicate(), CostKind,
+                                {TargetTransformInfo::OK_AnyValue,
+                                 TargetTransformInfo::OP_None},
+                                {TargetTransformInfo::OK_AnyValue,
+                                 TargetTransformInfo::OP_None},
+                                I);
             }
             case Instruction::BitCast:
               if (I->getType()->isPointerTy())
