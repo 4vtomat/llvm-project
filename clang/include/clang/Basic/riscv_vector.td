@@ -3779,6 +3779,7 @@ let HasMasked = false, HasVL = false, IRName = "" in {
     foreach dst_lmul = ["(LFixedLog2LMUL:1)", "(LFixedLog2LMUL:2)", "(LFixedLog2LMUL:3)"] in {
       def : RVVBuiltin<"v" # dst_lmul # "v", dst_lmul # "v" # dst_lmul # "vKzv", "csilfd">;
       let RequiredFeatures = ["Zvfhmin"] in
+        def : RVVBuiltin<"v" # dst_lmul # "v", dst_lmul # "v" # dst_lmul # "vKzv", "x">;
 #ifdef SIFIVE_CUSTOMIZATION
       let RequiredFeatures = ["Zvfbfmin_Xsfvfbfa"] in
 #endif // SIFIVE_CUSTOMIZATION
