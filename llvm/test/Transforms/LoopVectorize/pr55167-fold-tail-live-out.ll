@@ -22,9 +22,9 @@ define i32 @test(i32 %a, i1 %c.1, i1 %c.2 ) #0 {
 ; CHECK-NEXT:    [[TMP0:%.*]] = add <2 x i32> [[VEC_PHI]], <i32 10, i32 10>
 ; CHECK-NEXT:    [[TMP6:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT4]], <i1 true, i1 true>
 ; CHECK-NEXT:    [[TMP7:%.*]] = select <2 x i1> [[TMP4]], <2 x i1> [[TMP6]], <2 x i1> zeroinitializer
+; CHECK-NEXT:    [[TMP5:%.*]] = select <2 x i1> [[TMP4]], <2 x i1> [[BROADCAST_SPLAT4]], <2 x i1> zeroinitializer
 ; CHECK-NEXT:    [[TMP1:%.*]] = add <2 x i32> [[TMP0]], <i32 20, i32 20>
 ; CHECK-NEXT:    [[TMP3:%.*]] = add <2 x i32> [[TMP1]], [[TMP2]]
-; CHECK-NEXT:    [[TMP5:%.*]] = select <2 x i1> [[TMP4]], <2 x i1> [[BROADCAST_SPLAT4]], <2 x i1> zeroinitializer
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[TMP5]], <2 x i32> <i32 9, i32 9>, <2 x i32> [[VEC_IND]]
 ; CHECK-NEXT:    [[PREDPHI5:%.*]] = select <2 x i1> [[TMP7]], <2 x i32> <i32 9, i32 9>, <2 x i32> [[PREDPHI]]
 ; CHECK-NEXT:    [[PREDPHI6:%.*]] = select <2 x i1> [[TMP5]], <2 x i32> [[TMP0]], <2 x i32> [[VEC_PHI]]
@@ -58,7 +58,7 @@ define i32 @test(i32 %a, i1 %c.1, i1 %c.2 ) #0 {
 ; CHECK-NEXT:    [[P_2]] = phi i32 [ [[V_2]], [[LOOP_HEADER]] ], [ [[V_2_ADD]], [[BODY_1]] ], [ [[ADD_2]], [[BODY_2]] ]
 ; CHECK-NEXT:    [[IV_NEXT]] = add nuw nsw i32 [[IV]], 1
 ; CHECK-NEXT:    [[EC:%.*]] = icmp ult i32 [[IV]], 181
-; CHECK-NEXT:    br i1 [[EC]], label [[LOOP_HEADER]], label [[EXIT]], !llvm.loop [[LOOP2:![0-9]+]]
+; CHECK-NEXT:    br i1 [[EC]], label [[LOOP_HEADER]], label [[EXIT]], !llvm.loop [[LOOP3:![0-9]+]]
 ; CHECK:       exit:
 ; CHECK-NEXT:    [[E_1:%.*]] = phi i32 [ [[P_1]], [[LOOP_LATCH]] ], [ [[TMP9]], [[MIDDLE_BLOCK]] ]
 ; CHECK-NEXT:    [[E_2:%.*]] = phi i32 [ [[P_2]], [[LOOP_LATCH]] ], [ [[TMP10]], [[MIDDLE_BLOCK]] ]

@@ -272,6 +272,10 @@ define void @test_exit_branch_cost(ptr %dst, i64 %x, i32 %y, ptr %dst.1, i1 %c.4
 ; CHECK-NEXT:    [[TMP19:%.*]] = select <2 x i1> [[TMP5]], <2 x i1> [[BROADCAST_SPLAT41]], <2 x i1> zeroinitializer
 ; CHECK-NEXT:    [[TMP20:%.*]] = select <2 x i1> [[TMP18]], <2 x i1> [[BROADCAST_SPLAT57]], <2 x i1> zeroinitializer
 ; CHECK-NEXT:    [[TMP21:%.*]] = select <2 x i1> [[TMP19]], <2 x i1> [[BROADCAST_SPLAT57]], <2 x i1> zeroinitializer
+; CHECK-NEXT:    [[TMP32:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT57]], <i1 true, i1 true>
+; CHECK-NEXT:    [[TMP33:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT57]], <i1 true, i1 true>
+; CHECK-NEXT:    [[TMP34:%.*]] = select <2 x i1> [[TMP18]], <2 x i1> [[TMP32]], <2 x i1> zeroinitializer
+; CHECK-NEXT:    [[TMP35:%.*]] = select <2 x i1> [[TMP19]], <2 x i1> [[TMP33]], <2 x i1> zeroinitializer
 ; CHECK-NEXT:    [[TMP22:%.*]] = or <2 x i1> [[TMP47]], [[TMP20]]
 ; CHECK-NEXT:    [[TMP23:%.*]] = or <2 x i1> [[TMP47]], [[TMP21]]
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <2 x i1> [[TMP20]], <2 x i64> zeroinitializer, <2 x i64> <i64 1, i64 1>
@@ -304,38 +308,34 @@ define void @test_exit_branch_cost(ptr %dst, i64 %x, i32 %y, ptr %dst.1, i1 %c.4
 ; CHECK-NEXT:    store i64 [[TMP31]], ptr [[DST_2]], align 8, !alias.scope [[META17]], !noalias [[META18]]
 ; CHECK-NEXT:    br label %[[PRED_STORE_CONTINUE66]]
 ; CHECK:       [[PRED_STORE_CONTINUE66]]:
-; CHECK-NEXT:    [[TMP32:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT57]], <i1 true, i1 true>
-; CHECK-NEXT:    [[TMP33:%.*]] = xor <2 x i1> [[BROADCAST_SPLAT57]], <i1 true, i1 true>
-; CHECK-NEXT:    [[TMP34:%.*]] = select <2 x i1> [[TMP18]], <2 x i1> [[TMP32]], <2 x i1> zeroinitializer
-; CHECK-NEXT:    [[TMP35:%.*]] = select <2 x i1> [[TMP19]], <2 x i1> [[TMP33]], <2 x i1> zeroinitializer
 ; CHECK-NEXT:    [[TMP36:%.*]] = or <2 x i1> [[TMP22]], [[TMP34]]
 ; CHECK-NEXT:    [[TMP37:%.*]] = or <2 x i1> [[TMP23]], [[TMP35]]
 ; CHECK-NEXT:    [[TMP38:%.*]] = extractelement <2 x i1> [[TMP36]], i32 0
 ; CHECK-NEXT:    br i1 [[TMP38]], label %[[PRED_STORE_IF67:.*]], label %[[PRED_STORE_CONTINUE68:.*]]
 ; CHECK:       [[PRED_STORE_IF67]]:
-; CHECK-NEXT:    [[TMP39:%.*]] = load i64, ptr [[SRC]], align 8, !alias.scope [[META19:![0-9]+]]
-; CHECK-NEXT:    store i64 [[TMP39]], ptr [[DST]], align 8, !alias.scope [[META20:![0-9]+]], !noalias [[META19]]
+; CHECK-NEXT:    [[TMP45:%.*]] = load i64, ptr [[SRC]], align 8, !alias.scope [[META19:![0-9]+]]
+; CHECK-NEXT:    store i64 [[TMP45]], ptr [[DST]], align 8, !alias.scope [[META20:![0-9]+]], !noalias [[META19]]
 ; CHECK-NEXT:    br label %[[PRED_STORE_CONTINUE68]]
 ; CHECK:       [[PRED_STORE_CONTINUE68]]:
 ; CHECK-NEXT:    [[TMP40:%.*]] = extractelement <2 x i1> [[TMP36]], i32 1
 ; CHECK-NEXT:    br i1 [[TMP40]], label %[[PRED_STORE_IF69:.*]], label %[[PRED_STORE_CONTINUE70:.*]]
 ; CHECK:       [[PRED_STORE_IF69]]:
-; CHECK-NEXT:    [[TMP41:%.*]] = load i64, ptr [[SRC]], align 8, !alias.scope [[META19]]
-; CHECK-NEXT:    store i64 [[TMP41]], ptr [[DST]], align 8, !alias.scope [[META20]], !noalias [[META19]]
+; CHECK-NEXT:    [[TMP39:%.*]] = load i64, ptr [[SRC]], align 8, !alias.scope [[META19]]
+; CHECK-NEXT:    store i64 [[TMP39]], ptr [[DST]], align 8, !alias.scope [[META20]], !noalias [[META19]]
 ; CHECK-NEXT:    br label %[[PRED_STORE_CONTINUE70]]
 ; CHECK:       [[PRED_STORE_CONTINUE70]]:
 ; CHECK-NEXT:    [[TMP42:%.*]] = extractelement <2 x i1> [[TMP37]], i32 0
 ; CHECK-NEXT:    br i1 [[TMP42]], label %[[PRED_STORE_IF71:.*]], label %[[PRED_STORE_CONTINUE72:.*]]
 ; CHECK:       [[PRED_STORE_IF71]]:
-; CHECK-NEXT:    [[TMP43:%.*]] = load i64, ptr [[SRC]], align 8, !alias.scope [[META19]]
-; CHECK-NEXT:    store i64 [[TMP43]], ptr [[DST]], align 8, !alias.scope [[META20]], !noalias [[META19]]
+; CHECK-NEXT:    [[TMP41:%.*]] = load i64, ptr [[SRC]], align 8, !alias.scope [[META19]]
+; CHECK-NEXT:    store i64 [[TMP41]], ptr [[DST]], align 8, !alias.scope [[META20]], !noalias [[META19]]
 ; CHECK-NEXT:    br label %[[PRED_STORE_CONTINUE72]]
 ; CHECK:       [[PRED_STORE_CONTINUE72]]:
 ; CHECK-NEXT:    [[TMP44:%.*]] = extractelement <2 x i1> [[TMP37]], i32 1
 ; CHECK-NEXT:    br i1 [[TMP44]], label %[[PRED_STORE_IF73:.*]], label %[[PRED_STORE_CONTINUE74]]
 ; CHECK:       [[PRED_STORE_IF73]]:
-; CHECK-NEXT:    [[TMP45:%.*]] = load i64, ptr [[SRC]], align 8, !alias.scope [[META19]]
-; CHECK-NEXT:    store i64 [[TMP45]], ptr [[DST]], align 8, !alias.scope [[META20]], !noalias [[META19]]
+; CHECK-NEXT:    [[TMP43:%.*]] = load i64, ptr [[SRC]], align 8, !alias.scope [[META19]]
+; CHECK-NEXT:    store i64 [[TMP43]], ptr [[DST]], align 8, !alias.scope [[META20]], !noalias [[META19]]
 ; CHECK-NEXT:    br label %[[PRED_STORE_CONTINUE74]]
 ; CHECK:       [[PRED_STORE_CONTINUE74]]:
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4

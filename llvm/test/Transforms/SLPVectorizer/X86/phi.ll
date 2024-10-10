@@ -153,13 +153,11 @@ define float @foo3(ptr nocapture readonly %A) #0 {
 ; CHECK-NEXT:    [[ARRAYIDX14:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[TMP6]]
 ; CHECK-NEXT:    [[INDVARS_IV_NEXT]] = add nuw nsw i64 [[INDVARS_IV]], 3
 ; CHECK-NEXT:    [[ARRAYIDX19:%.*]] = getelementptr inbounds float, ptr [[A]], i64 [[INDVARS_IV_NEXT]]
+; CHECK-NEXT:    [[TMP8:%.*]] = load <3 x float>, ptr [[ARRAYIDX14]], align 4
 ; CHECK-NEXT:    [[TMP7]] = load <2 x float>, ptr [[ARRAYIDX19]], align 4
-; CHECK-NEXT:    [[TMP8:%.*]] = load <2 x float>, ptr [[ARRAYIDX14]], align 4
-; CHECK-NEXT:    [[TMP9:%.*]] = shufflevector <2 x float> [[TMP8]], <2 x float> poison, <4 x i32> <i32 poison, i32 0, i32 1, i32 poison>
+; CHECK-NEXT:    [[TMP9:%.*]] = shufflevector <3 x float> [[TMP8]], <3 x float> poison, <4 x i32> <i32 poison, i32 0, i32 1, i32 2>
 ; CHECK-NEXT:    [[TMP10:%.*]] = shufflevector <2 x float> [[TMP4]], <2 x float> poison, <4 x i32> <i32 0, i32 1, i32 poison, i32 poison>
-; CHECK-NEXT:    [[TMP11:%.*]] = shufflevector <4 x float> [[TMP9]], <4 x float> [[TMP10]], <4 x i32> <i32 5, i32 1, i32 2, i32 poison>
-; CHECK-NEXT:    [[TMP12:%.*]] = shufflevector <2 x float> [[TMP7]], <2 x float> poison, <4 x i32> <i32 0, i32 1, i32 poison, i32 poison>
-; CHECK-NEXT:    [[TMP13:%.*]] = shufflevector <4 x float> [[TMP11]], <4 x float> [[TMP12]], <4 x i32> <i32 0, i32 1, i32 2, i32 5>
+; CHECK-NEXT:    [[TMP13:%.*]] = shufflevector <4 x float> [[TMP9]], <4 x float> [[TMP10]], <4 x i32> <i32 5, i32 1, i32 2, i32 3>
 ; CHECK-NEXT:    [[TMP14:%.*]] = fmul <4 x float> [[TMP13]], <float 8.000000e+00, float 9.000000e+00, float 1.000000e+01, float 1.100000e+01>
 ; CHECK-NEXT:    [[TMP15]] = fadd <4 x float> [[TMP3]], [[TMP14]]
 ; CHECK-NEXT:    [[TMP16:%.*]] = trunc i64 [[INDVARS_IV_NEXT]] to i32
