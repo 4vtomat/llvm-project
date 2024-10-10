@@ -1688,11 +1688,6 @@ void CompilerInvocationBase::GenerateCodeGenArgs(const CodeGenOptions &Opts,
   else if (Opts.CFProtectionBranch)
     GenerateArg(Consumer, OPT_fcf_protection_EQ, "branch");
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-// cherry-picked from 9f33eb861a3d17fd92163ee894f7cd9f256d03fb
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   if (Opts.CFProtectionBranch) {
     switch (Opts.getCFBranchLabelScheme()) {
     case CFBranchLabelSchemeKind::Default:
@@ -1704,10 +1699,6 @@ void CompilerInvocationBase::GenerateCodeGenArgs(const CodeGenOptions &Opts,
 #include "clang/Basic/CFProtectionOptions.def"
     }
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 
   if (Opts.FunctionReturnThunks)
     GenerateArg(Consumer, OPT_mfunction_return_EQ, "thunk-extern");
@@ -2043,11 +2034,6 @@ bool CompilerInvocation::ParseCodeGenArgs(CodeGenOptions &Opts, ArgList &Args,
       Diags.Report(diag::err_drv_invalid_value) << A->getAsString(Args) << Name;
   }
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-// cherry-picked from 9f33eb861a3d17fd92163ee894f7cd9f256d03fb
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   if (Opts.CFProtectionBranch && T.isRISCV()) {
     if (const Arg *A = Args.getLastArg(OPT_mcf_branch_label_scheme_EQ)) {
       const auto Scheme =
@@ -2063,10 +2049,6 @@ bool CompilerInvocation::ParseCodeGenArgs(CodeGenOptions &Opts, ArgList &Args,
             << A->getAsString(Args) << A->getValue();
     }
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 
   if (const Arg *A = Args.getLastArg(OPT_mfunction_return_EQ)) {
     auto Val = llvm::StringSwitch<llvm::FunctionReturnThunksKind>(A->getValue())
@@ -4001,11 +3983,6 @@ bool CompilerInvocation::ParseLangArgs(LangOptions &Opts, ArgList &Args,
     }
   }
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-// cherry-picked from 9f33eb861a3d17fd92163ee894f7cd9f256d03fb
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   if (Opts.CFProtectionBranch) {
     if (const Arg *A = Args.getLastArg(OPT_mcf_branch_label_scheme_EQ)) {
       const auto Scheme =
@@ -4017,10 +3994,6 @@ bool CompilerInvocation::ParseLangArgs(LangOptions &Opts, ArgList &Args,
       Opts.setCFBranchLabelScheme(Scheme);
     }
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 
   if ((Args.hasArg(OPT_fsycl_is_device) || Args.hasArg(OPT_fsycl_is_host)) &&
       !Args.hasArg(OPT_sycl_std_EQ)) {

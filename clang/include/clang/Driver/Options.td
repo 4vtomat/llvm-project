@@ -2859,20 +2859,10 @@ def fcf_protection : Flag<["-"], "fcf-protection">, Group<f_Group>,
   Visibility<[ClangOption, CLOption, CC1Option]>,
   Alias<fcf_protection_EQ>, AliasArgs<["full"]>,
   HelpText<"Enable cf-protection in 'full' mode">;
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-// cherry-picked from 9f33eb861a3d17fd92163ee894f7cd9f256d03fb
-def mcf_branch_label_scheme_EQ : Joined<["-"], "mcf-branch-label-scheme=">,
-  Visibility<[ClangOption, CC1Option]>, Group<m_Group>,
-  HelpText<"Select label scheme for branch control-flow architecture protection">,
-  Values<"unlabeled,fixed-one,func-sig">; // SIFIVE
-#endif // SIFIVE_CUSTOMIZATION
-=======
 def mcf_branch_label_scheme_EQ : Joined<["-"], "mcf-branch-label-scheme=">,
   Visibility<[ClangOption, CC1Option]>, Group<m_Group>,
   HelpText<"Select label scheme for branch control-flow architecture protection">,
   Values<"unlabeled,func-sig">;
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 def mfunction_return_EQ : Joined<["-"], "mfunction-return=">,
   Group<m_Group>, Visibility<[ClangOption, CLOption, CC1Option]>,
   HelpText<"Replace returns with jumps to ``__x86_return_thunk`` (x86 only, error otherwise)">,

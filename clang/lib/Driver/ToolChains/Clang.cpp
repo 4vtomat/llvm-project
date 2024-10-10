@@ -7162,18 +7162,9 @@ void Clang::ConstructJob(Compilation &C, const JobAction &JA,
     CmdArgs.push_back(
         Args.MakeArgString(Twine("-fcf-protection=") + A->getValue()));
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-// cherry-picked from 9f33eb861a3d17fd92163ee894f7cd9f256d03fb
     if (Arg *SA = Args.getLastArg(options::OPT_mcf_branch_label_scheme_EQ))
       CmdArgs.push_back(Args.MakeArgString(Twine("-mcf-branch-label-scheme=") +
                                            SA->getValue()));
-#endif // SIFIVE_CUSTOMIZATION
-=======
-    if (Arg *SA = Args.getLastArg(options::OPT_mcf_branch_label_scheme_EQ))
-      CmdArgs.push_back(Args.MakeArgString(Twine("-mcf-branch-label-scheme=") +
-                                           SA->getValue()));
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   }
 
   if (Arg *A = Args.getLastArg(options::OPT_mfunction_return_EQ))

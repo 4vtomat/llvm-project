@@ -1165,11 +1165,6 @@ void CodeGenModule::Release() {
     getModule().addModuleFlag(llvm::Module::Min, "cf-protection-branch",
                               1);
 
-<<<<<<< HEAD
-#ifdef SIFIVE_CUSTOMIZATION
-// cherry-picked from 9f33eb861a3d17fd92163ee894f7cd9f256d03fb
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
     auto Scheme = CodeGenOpts.getCFBranchLabelScheme();
     if (Target.checkCFBranchLabelSchemeSupported(Scheme, getDiags())) {
       if (Scheme == CFBranchLabelSchemeKind::Default)
@@ -1179,10 +1174,6 @@ void CodeGenModule::Release() {
           llvm::MDString::get(getLLVMContext(),
                               getCFBranchLabelSchemeFlagVal(Scheme)));
     }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   }
 
   if (CodeGenOpts.FunctionReturnThunks)

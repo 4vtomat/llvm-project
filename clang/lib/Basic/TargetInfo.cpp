@@ -198,11 +198,6 @@ TargetInfo::checkCFProtectionBranchSupported(DiagnosticsEngine &Diags) const {
   return false;
 }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-// cherry-picked from 9f33eb861a3d17fd92163ee894f7cd9f256d03fb
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 CFBranchLabelSchemeKind TargetInfo::getDefaultCFBranchLabelScheme() const {
   // if this hook is called, the target should override it to return a
   // non-default scheme
@@ -218,10 +213,6 @@ bool TargetInfo::checkCFBranchLabelSchemeSupported(
                .str();
   return false;
 }
-<<<<<<< HEAD
-#endif
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 
 bool
 TargetInfo::checkCFProtectionReturnSupported(DiagnosticsEngine &Diags) const {

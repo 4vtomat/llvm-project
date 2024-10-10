@@ -149,7 +149,9 @@ public:
   bool validateCpuSupports(StringRef Feature) const override;
   bool isValidFeatureName(StringRef Name) const override;
 
-<<<<<<< HEAD
+  bool validateGlobalRegisterVariable(StringRef RegName, unsigned RegSize,
+                                      bool &HasSizeMismatch) const override;
+
 #if SIFIVE_CUSTOMIZATION
   bool
   checkCFProtectionReturnSupported(DiagnosticsEngine &Diags) const override {
@@ -157,32 +159,29 @@ public:
       return true;
     return TargetInfo::checkCFProtectionReturnSupported(Diags);
   };
+#endif // SIFIVE_CUSTOMIZATION
 
+#if SIFIVE_CUSTOMIZATION
   bool
   checkCFProtectionBranchSupported(DiagnosticsEngine &Diags) const override {
+    // TODO: Don't need require zicfilp in future release
     if (ISAInfo->hasExtension("zicfilp"))
       return true;
     return TargetInfo::checkCFProtectionBranchSupported(Diags);
-  };
-#endif // SIFIVE_CUSTOMIZATION
-
-#ifdef SIFIVE_CUSTOMIZATION
-// cherry-picked from 9f33eb861a3d17fd92163ee894f7cd9f256d03fb
-  CFBranchLabelSchemeKind getDefaultCFBranchLabelScheme() const override {
-    return CFBranchLabelSchemeKind::FixedOne; // SIFIVE
-=======
-  bool validateGlobalRegisterVariable(StringRef RegName, unsigned RegSize,
-                                      bool &HasSizeMismatch) const override;
-
+#else
   bool checkCFProtectionBranchSupported(DiagnosticsEngine &) const override {
     // Always generate Zicfilp lpad insns
     // Non-zicfilp CPUs would read them as NOP
     return true;
+#endif // SIFIVE_CUSTOMIZATION
   }
 
   CFBranchLabelSchemeKind getDefaultCFBranchLabelScheme() const override {
+#ifdef SIFIVE_CUSTOMIZATION
+    return CFBranchLabelSchemeKind::FixedOne;
+#else
     return CFBranchLabelSchemeKind::FuncSig;
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
+#endif
   }
 
   bool
@@ -191,19 +190,14 @@ public:
     switch (Scheme) {
     case CFBranchLabelSchemeKind::Default:
     case CFBranchLabelSchemeKind::Unlabeled:
-<<<<<<< HEAD
-    case CFBranchLabelSchemeKind::FixedOne: // SIFIVE
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
+#ifdef SIFIVE_CUSTOMIZATION
+    case CFBranchLabelSchemeKind::FixedOne:
+#endif // SIFIVE_CUSTOMIZATION
     case CFBranchLabelSchemeKind::FuncSig:
       return true;
     }
     return TargetInfo::checkCFBranchLabelSchemeSupported(Scheme, Diags);
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 };
 class LLVM_LIBRARY_VISIBILITY RISCV32TargetInfo : public RISCVTargetInfo {
 public:
