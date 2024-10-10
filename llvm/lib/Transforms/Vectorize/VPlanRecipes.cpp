@@ -609,17 +609,14 @@ Value *VPInstruction::generate(VPTransformState &State) {
   }
   case VPInstruction::ExplicitVectorLength: {
 #if SIFIVE_CUSTOMIZATION
-    Value *EVL = nullptr;
+    Value *AVL = nullptr;
     if (!State.Plan->isUncountable()) {
       assert(getNumOperands() != 0 &&
-             "Countable loop vectorization must use EVL");
-      // Compute VTC - IV as the EVL(requested vector length).
-      Value *Index = State.get(getOperand(0), /*IsScalar*/ true);
-      Value *VectorTripCount = State.get(getOperand(1), VPLane(0));
-      EVL = State.Builder.CreateSub(VectorTripCount, Index);
+             "Countable loop vectorization must use AVL");
+      AVL = State.get(getOperand(0), /*IsScalar*/ true);
     }
     // Set VLMAX if EVL is nullptr
-    EVL = GetSetVL(State, EVL, State.Plan->isUncountable());
+    Value *EVL = GetSetVL(State, AVL, State.Plan->isUncountable());
     assert(!State.EVL && "multiple EVL recipes");
     State.EVL = this;
 #else
