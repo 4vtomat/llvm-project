@@ -1345,10 +1345,10 @@ define float @fcmp_fadd_fsub(ptr nocapture readonly %a, i32 %n) nounwind readonl
 ; CHECK-NEXT:    [[TMP3:%.*]] = fcmp ogt <4 x float> [[WIDE_LOAD]], <float 1.000000e+00, float 1.000000e+00, float 1.000000e+00, float 1.000000e+00>
 ; CHECK-NEXT:    [[TMP4:%.*]] = xor <4 x i1> [[TMP3]], <i1 true, i1 true, i1 true, i1 true>
 ; CHECK-NEXT:    [[TMP5:%.*]] = fcmp olt <4 x float> [[WIDE_LOAD]], <float 3.000000e+00, float 3.000000e+00, float 3.000000e+00, float 3.000000e+00>
-; CHECK-NEXT:    [[TMP6:%.*]] = fsub fast <4 x float> [[VEC_PHI]], [[WIDE_LOAD]]
-; CHECK-NEXT:    [[TMP7:%.*]] = fadd fast <4 x float> [[WIDE_LOAD]], [[VEC_PHI]]
 ; CHECK-NEXT:    [[TMP8:%.*]] = xor <4 x i1> [[TMP5]], <i1 true, i1 true, i1 true, i1 true>
 ; CHECK-NEXT:    [[TMP9:%.*]] = select <4 x i1> [[TMP4]], <4 x i1> [[TMP8]], <4 x i1> zeroinitializer
+; CHECK-NEXT:    [[TMP6:%.*]] = fsub fast <4 x float> [[VEC_PHI]], [[WIDE_LOAD]]
+; CHECK-NEXT:    [[TMP7:%.*]] = fadd fast <4 x float> [[WIDE_LOAD]], [[VEC_PHI]]
 ; CHECK-NEXT:    [[PREDPHI:%.*]] = select <4 x i1> [[TMP3]], <4 x float> [[TMP7]], <4 x float> [[TMP6]]
 ; CHECK-NEXT:    [[PREDPHI1]] = select <4 x i1> [[TMP9]], <4 x float> [[VEC_PHI]], <4 x float> [[PREDPHI]]
 ; CHECK-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 4

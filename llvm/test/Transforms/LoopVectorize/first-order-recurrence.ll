@@ -3739,7 +3739,7 @@ define i32 @recurence_uniform_load(ptr %src, ptr noalias %dst) {
 ; UNROLL-NO-VF-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; UNROLL-NO-VF-NEXT:    [[VECTOR_RECUR:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[TMP0:%.*]], [[VECTOR_BODY]] ]
 ; UNROLL-NO-VF-NEXT:    [[TMP0]] = load i32, ptr [[SRC:%.*]], align 4
-; UNROLL-NO-VF-NEXT:    [[INDEX_NEXT]] = add nuw i64 [[INDEX]], 2
+; UNROLL-NO-VF-NEXT:    [[INDEX_NEXT]] = add i64 [[INDEX]], 2
 ; UNROLL-NO-VF-NEXT:    br i1 true, label [[MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP38:![0-9]+]]
 ; UNROLL-NO-VF:       middle.block:
 ; UNROLL-NO-VF-NEXT:    br i1 true, label [[EXIT:%.*]], label [[SCALAR_PH]]
