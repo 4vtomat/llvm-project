@@ -6051,11 +6051,13 @@ SDValue DAGTypeLegalizer::WidenVecRes_LOAD(SDNode *N) {
     SDValue Mask = DAG.getAllOnesConstant(DL, WideMaskVT);
     SDValue EVL = DAG.getElementCount(DL, TLI.getVPExplicitVectorLengthTy(),
                                       LdVT.getVectorElementCount());
-    const auto *MMO = LD->getMemOperand();
+#if SIFIVE_CUSTOMIZATION
+    // SIFIVE cherry-pick from 93baa018e09bb3d4d5f4da0232321aff204caaeb
     SDValue NewLoad =
-        DAG.getLoadVP(WideVT, DL, LD->getChain(), LD->getBasePtr(), Mask, EVL,
-                      MMO->getPointerInfo(), MMO->getAlign(), MMO->getFlags(),
-                      MMO->getAAInfo());
+        DAG.getLoadVP(LD->getAddressingMode(), ISD::NON_EXTLOAD, WideVT, DL,
+                      LD->getChain(), LD->getBasePtr(), LD->getOffset(), Mask,
+                      EVL, LD->getMemoryVT(), LD->getMemOperand());
+#endif // SIFIVE_CUSTOMIZATION
 
     // Modified the chain - switch anything that used the old chain to use
     // the new one.
