@@ -1217,6 +1217,9 @@ VPlanPtr VPlan::createInitialVPlan(Type *InductionTy,
   // uncountable exits whilst also ensuring the symbolic maximum and known
   // back-edge taken count remain identical for loops with countable exits.
   const SCEV *BackedgeTakenCountSCEV = PSE.getSymbolicMaxBackedgeTakenCount();
+#if SIFIVE_CUSTOMIZATION
+  if (!IsUncountable)
+#endif
   assert((!isa<SCEVCouldNotCompute>(BackedgeTakenCountSCEV) &&
           BackedgeTakenCountSCEV == PSE.getBackedgeTakenCount()) &&
          "Invalid loop count");

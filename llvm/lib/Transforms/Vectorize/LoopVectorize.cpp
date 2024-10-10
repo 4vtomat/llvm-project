@@ -862,8 +862,8 @@ public:
   /// Set up the values of the IVs correctly when exiting the vector loop.
   void fixupIVUsers(PHINode *OrigPhi, const InductionDescriptor &II,
                     Value *VectorTripCount, Value *EndValue,
-                    BasicBlock *MiddleBlock, BasicBlock *VectorHeader,
-                    VPlan &Plan, VPTransformState &State) override;
+                    BasicBlock *MiddleBlock, VPlan &Plan,
+                    VPTransformState &State);
 };
 #endif // SIFIVE_CUSTOMIZATION
 
@@ -3505,7 +3505,7 @@ void InnerLoopVectorizer::fixNonInductionPHIs(VPlan &Plan,
 /// Set up the values of IVs when exiting the vector loop.
 void UncountableInnerLoopVectorizer::fixupIVUsers(
     PHINode *OrigPhi, const InductionDescriptor &II, Value *VectorTripCount,
-    Value *EndValue, BasicBlock *MiddleBlock, BasicBlock *VectorHeader,
+    Value *EndValue, BasicBlock *MiddleBlock,
     VPlan &Plan, VPTransformState &State) {
 
   assert(Legal->isVectorizableUncountable() && "Not an uncountable loop");
@@ -3516,7 +3516,7 @@ void UncountableInnerLoopVectorizer::fixupIVUsers(
   // FIXME: This only works on strlen(). When loop exits normally (not early),
   // the vfirst is -1 and cannot be used.
   Value *CanonicalIVPHI =
-      State.get(Plan.getCanonicalIV(), 0, /*NeedsScalar=*/true);
+      State.get(Plan.getCanonicalIV(), /*NeedsScalar=*/true);
 
   // ATM, all IVs in uncountable loops have their exiting values routed to the
   // penultimate value (the value that feeds into the phi from the loop latch).
@@ -3549,7 +3549,7 @@ void UncountableInnerLoopVectorizer::fixupIVUsers(
                : VFirst;
     VPValue *StepVPV = Plan.getSCEVExpansion(II.getStep());
     Value *Step = StepVPV->isLiveIn() ? StepVPV->getLiveInIRValue()
-                                      : State.get(StepVPV, {0, 0});
+                                      : State.get(StepVPV, VPLane(0));
     if (LastValidVL->getType() != CanonicalIVPHI->getType())
       LastValidVL = B.CreateZExtOrTrunc(LastValidVL, CanonicalIVPHI->getType());
     Value *Count = B.CreateAdd(CanonicalIVPHI, LastValidVL);
@@ -11002,27 +11002,19 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
           Range);
 #if SIFIVE_CUSTOMIZATION
   const bool IsUncountable = Legal->isVectorizableUncountable();
-  const SCEV *TripCountSCEV = nullptr;
-  if (!IsUncountable)
-    TripCountSCEV =
-        createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop);
-  VPlanPtr Plan = VPlan::createInitialVPlan(
-      TripCountSCEV, *PSE.getSE(), RequiresScalarEpilogueCheck,
-      CM.foldTailByMasking(), IsUncountable, OrigLoop);
+  VPlanPtr Plan = VPlan::createInitialVPlan(Legal->getWidestInductionType(),
+                                            PSE, RequiresScalarEpilogueCheck,
+                                            CM.foldTailByMasking(),
+					    IsUncountable, OrigLoop);
   if (IsUncountable) {
     Plan->createInitEVL();
   }
 #else
-  VPlanPtr Plan = VPlan::createInitialVPlan(
-      createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop),
-      *PSE.getSE(), RequiresScalarEpilogueCheck, CM.foldTailByMasking(),
-      OrigLoop);
-#endif
-=======
   VPlanPtr Plan = VPlan::createInitialVPlan(Legal->getWidestInductionType(),
                                             PSE, RequiresScalarEpilogueCheck,
                                             CM.foldTailByMasking(), OrigLoop);
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
+
+#endif
 
 #if SIFIVE_CUSTOMIZATION
   BasicBlock *CouldNotComputeExitingBB =
@@ -11338,25 +11330,14 @@ VPlanPtr LoopVectorizationPlanner::buildVPlan(VFRange &Range) {
   assert(EnableVPlanNativePath && "VPlan-native path is not enabled.");
 
   // Create new empty VPlan
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   const bool IsUncountable = Legal->isVectorizableUncountable();
-  const SCEV *TripCountSCEV =
-      IsUncountable
-          ? nullptr
-          : createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop);
-  auto Plan = VPlan::createInitialVPlan(
-      TripCountSCEV, *PSE.getSE(), /*RequiresScalarEpilogueCheck=*/true,
-      /*TailFolded=*/false, IsUncountable, OrigLoop);
+  auto Plan = VPlan::createInitialVPlan(Legal->getWidestInductionType(), PSE,
+                                        true, false, IsUncountable, OrigLoop);
 #else
-  auto Plan = VPlan::createInitialVPlan(
-      createTripCountSCEV(Legal->getWidestInductionType(), PSE, OrigLoop),
-      *PSE.getSE(), true, false, OrigLoop);
-#endif // SIFIVE_CUSTOMIZATION
-=======
   auto Plan = VPlan::createInitialVPlan(Legal->getWidestInductionType(), PSE,
                                         true, false, OrigLoop);
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
+#endif // SIFIVE_CUSTOMIZATION
 
   // Build hierarchical CFG
   VPlanHCFGBuilder HCFGBuilder(OrigLoop, LI, *Plan);
