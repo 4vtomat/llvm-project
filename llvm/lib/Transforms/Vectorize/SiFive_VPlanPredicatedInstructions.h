@@ -18,24 +18,23 @@
 
 namespace llvm {
 Value *widenPredicatedInstruction(Instruction *Op, VPValue *Def, VPUser &User,
-                                  VPTransformState &State, VPValue *BlockInMask,
-                                  unsigned Part);
+                                  VPTransformState &State, VPValue *BlockInMask);
 
 void widenPredicatedCall(CallInst *CI, VPValue *Def, VPTransformState &State,
-                         Intrinsic::ID VPID, unsigned Part);
+                         Intrinsic::ID VPID);
 
 /// Build and return either `vp.gather`/`vp.scatter` or
 /// `vp.strided_load`/`vp.strided_store` if previous analysis indicated it's
 /// possible to be used
 Instruction *
 widenPredicatedMemoryInstruction(VPWidenMemoryRecipe &VPWMIR,
-                                 VPTransformState &State, unsigned Part,
-                                 ArrayRef<Value *> BlockInMaskParts);
+                                 VPTransformState &State,
+                                 Value *BlockInMaskPart);
 
 /// Build and return vp-intrinsic that corresponds to arithmetic operation \p
 /// Op.
 Instruction *widenPredicatedArithmeticOp(VPTransformState &State, unsigned Op,
-                                         ArrayRef<Value *> Ops, unsigned Part,
+                                         ArrayRef<Value *> Ops,
                                          Value *Mask = nullptr,
                                          const Twine &Name = "");
 } // namespace llvm
