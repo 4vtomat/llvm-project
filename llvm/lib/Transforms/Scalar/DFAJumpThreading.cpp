@@ -206,30 +206,19 @@ void unfold(DomTreeUpdater *DTU, LoopInfo *LI, SelectInstToUnfold SIToUnfold,
   SelectInst *SI = SIToUnfold.getInst();
   PHINode *SIUse = SIToUnfold.getUse();
   BasicBlock *StartBlock = SI->getParent();
+  BasicBlock *EndBlock = SIUse->getParent();
   BranchInst *StartBlockTerm =
       dyn_cast<BranchInst>(StartBlock->getTerminator());
 
   assert(StartBlockTerm && StartBlockTerm->isUnconditional());
   assert(SI->hasOneUse());
 
-<<<<<<< HEAD
   // These are the new basic blocks for the conditional branch.
   // At least one will become an actual new basic block.
   BasicBlock *TrueBlock = nullptr;
   BasicBlock *FalseBlock = nullptr;
   BranchInst *TrueBranch = nullptr;
   BranchInst *FalseBranch = nullptr;
-=======
-  if (StartBlockTerm->isUnconditional()) {
-    BasicBlock *EndBlock = StartBlock->getUniqueSuccessor();
-    // Arbitrarily choose the 'false' side for a new input value to the PHI.
-    BasicBlock *NewBlock = BasicBlock::Create(
-        SI->getContext(), Twine(SI->getName(), ".si.unfold.false"),
-        EndBlock->getParent(), EndBlock);
-    NewBBs->push_back(NewBlock);
-    BranchInst::Create(EndBlock, NewBlock);
-    DTU->applyUpdates({{DominatorTree::Insert, NewBlock, EndBlock}});
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 
   // Sink select instructions to be able to unfold them later.
   if (SelectInst *SIOp = dyn_cast<SelectInst>(SI->getTrueValue())) {
@@ -286,7 +275,6 @@ void unfold(DomTreeUpdater *DTU, LoopInfo *LI, SelectInstToUnfold SIToUnfold,
     Value *SIOp1 = SI->getTrueValue();
     Value *SIOp2 = SI->getFalseValue();
 
-<<<<<<< HEAD
     // A triangle pointing right.
     if (!TrueBlock) {
       NewBlock = FalseBlock;
@@ -312,122 +300,6 @@ void unfold(DomTreeUpdater *DTU, LoopInfo *LI, SelectInstToUnfold SIToUnfold,
       if (Phi != SIUse)
         Phi->addIncoming(Phi->getIncomingValueForBlock(StartBlock), NewBlock);
     }
-=======
-    PHINode *NewPhi = PHINode::Create(SIUse->getType(), 1,
-                                      Twine(SIOp2->getName(), ".si.unfold.phi"),
-                                      NewBlock->getFirstInsertionPt());
-    NewPhi->addIncoming(SIOp2, StartBlock);
-
-    // Update any other PHI nodes in EndBlock.
-    for (PHINode &Phi : EndBlock->phis()) {
-      if (SIUse == &Phi)
-        continue;
-      Phi.addIncoming(Phi.getIncomingValueForBlock(StartBlock), NewBlock);
-    }
-
-    // Update the phi node of SI, which is its only use.
-    if (EndBlock == SIUse->getParent()) {
-      SIUse->addIncoming(NewPhi, NewBlock);
-      SIUse->replaceUsesOfWith(SI, SIOp1);
-    } else {
-      PHINode *EndPhi = PHINode::Create(SIUse->getType(), pred_size(EndBlock),
-                                        Twine(SI->getName(), ".si.unfold.phi"),
-                                        EndBlock->getFirstInsertionPt());
-      for (BasicBlock *Pred : predecessors(EndBlock)) {
-        if (Pred != StartBlock && Pred != NewBlock)
-          EndPhi->addIncoming(EndPhi, Pred);
-      }
-
-      EndPhi->addIncoming(SIOp1, StartBlock);
-      EndPhi->addIncoming(NewPhi, NewBlock);
-      SIUse->replaceUsesOfWith(SI, EndPhi);
-      SIUse = EndPhi;
-    }
-
-    if (auto *OpSi = dyn_cast<SelectInst>(SIOp1))
-      NewSIsToUnfold->push_back(SelectInstToUnfold(OpSi, SIUse));
-    if (auto *OpSi = dyn_cast<SelectInst>(SIOp2))
-      NewSIsToUnfold->push_back(SelectInstToUnfold(OpSi, NewPhi));
-
-    // Insert the real conditional branch based on the original condition.
-    StartBlockTerm->eraseFromParent();
-    BranchInst::Create(EndBlock, NewBlock, SI->getCondition(), StartBlock);
-    DTU->applyUpdates({{DominatorTree::Insert, StartBlock, EndBlock},
-                       {DominatorTree::Insert, StartBlock, NewBlock}});
-  } else {
-    BasicBlock *EndBlock = SIUse->getParent();
-    BasicBlock *NewBlockT = BasicBlock::Create(
-        SI->getContext(), Twine(SI->getName(), ".si.unfold.true"),
-        EndBlock->getParent(), EndBlock);
-    BasicBlock *NewBlockF = BasicBlock::Create(
-        SI->getContext(), Twine(SI->getName(), ".si.unfold.false"),
-        EndBlock->getParent(), EndBlock);
-
-    NewBBs->push_back(NewBlockT);
-    NewBBs->push_back(NewBlockF);
-
-    // Def only has one use in EndBlock.
-    // Before transformation:
-    // StartBlock(Def)
-    //   |      \
-    // EndBlock  OtherBlock
-    //  (Use)
-    //
-    // After transformation:
-    // StartBlock(Def)
-    //   |      \
-    //   |       OtherBlock
-    // NewBlockT
-    //   |     \
-    //   |   NewBlockF
-    //   |      /
-    //   |     /
-    // EndBlock
-    //  (Use)
-    BranchInst::Create(EndBlock, NewBlockF);
-    // Insert the real conditional branch based on the original condition.
-    BranchInst::Create(EndBlock, NewBlockF, SI->getCondition(), NewBlockT);
-    DTU->applyUpdates({{DominatorTree::Insert, NewBlockT, NewBlockF},
-                       {DominatorTree::Insert, NewBlockT, EndBlock},
-                       {DominatorTree::Insert, NewBlockF, EndBlock}});
-
-    Value *TrueVal = SI->getTrueValue();
-    Value *FalseVal = SI->getFalseValue();
-
-    PHINode *NewPhiT = PHINode::Create(
-        SIUse->getType(), 1, Twine(TrueVal->getName(), ".si.unfold.phi"),
-        NewBlockT->getFirstInsertionPt());
-    PHINode *NewPhiF = PHINode::Create(
-        SIUse->getType(), 1, Twine(FalseVal->getName(), ".si.unfold.phi"),
-        NewBlockF->getFirstInsertionPt());
-    NewPhiT->addIncoming(TrueVal, StartBlock);
-    NewPhiF->addIncoming(FalseVal, NewBlockT);
-
-    if (auto *TrueSI = dyn_cast<SelectInst>(TrueVal))
-      NewSIsToUnfold->push_back(SelectInstToUnfold(TrueSI, NewPhiT));
-    if (auto *FalseSi = dyn_cast<SelectInst>(FalseVal))
-      NewSIsToUnfold->push_back(SelectInstToUnfold(FalseSi, NewPhiF));
-
-    SIUse->addIncoming(NewPhiT, NewBlockT);
-    SIUse->addIncoming(NewPhiF, NewBlockF);
-    SIUse->removeIncomingValue(StartBlock);
-
-    // Update any other PHI nodes in EndBlock.
-    for (PHINode &Phi : EndBlock->phis()) {
-      if (SIUse == &Phi)
-        continue;
-      Phi.addIncoming(Phi.getIncomingValueForBlock(StartBlock), NewBlockT);
-      Phi.addIncoming(Phi.getIncomingValueForBlock(StartBlock), NewBlockF);
-      Phi.removeIncomingValue(StartBlock);
-    }
-
-    // Update the appropriate successor of the start block to point to the new
-    // unfolded block.
-    unsigned SuccNum = StartBlockTerm->getSuccessor(1) == EndBlock ? 1 : 0;
-    StartBlockTerm->setSuccessor(SuccNum, NewBlockT);
-    DTU->applyUpdates({{DominatorTree::Delete, StartBlock, EndBlock},
-                       {DominatorTree::Insert, StartBlock, NewBlockT}});
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   }
   StartBlockTerm->eraseFromParent();
   BranchInst::Create(TT, FT, SI->getCondition(), StartBlock);
