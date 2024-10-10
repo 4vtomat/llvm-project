@@ -84,20 +84,18 @@ inline bool isHeaderPhi(const VPRecipeBase &R) {
            VPInst->getOpcode() == VPInstruction::CSAVLPhi;
   return false;
 }
+
+bool isInLoopRegion(const VPRecipeBase &Recipe, const VPlan &Plan);
 #endif // SIFIVE_CUSTOMIZATION
 
 /// Return true if \p V is a header mask in \p Plan.
 bool isHeaderMask(const VPValue *V, VPlan &Plan);
 
-<<<<<<< HEAD
-bool isInLoopRegion(const VPRecipeBase &Recipe, const VPlan &Plan);
-=======
 /// Checks if \p V is uniform across all VF lanes and UF parts. It is considered
 /// as such if it is either loop invariant (defined outside the vector region)
 /// or its operand is known to be uniform across all VFs and UFs (e.g.
 /// VPDerivedIV or VPCanonicalIVPHI).
 bool isUniformAcrossVFsAndUFs(VPValue *V);
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 
 } // end namespace llvm::vputils
 

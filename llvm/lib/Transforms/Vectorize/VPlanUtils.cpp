@@ -62,16 +62,6 @@ bool vputils::isHeaderMask(const VPValue *V, VPlan &Plan) {
          IsWideCanonicalIV(A) && B == Plan.getOrCreateBackedgeTakenCount();
 }
 
-<<<<<<< HEAD
-bool vputils::isInLoopRegion(const VPRecipeBase &Recipe, const VPlan &Plan) {
-  const VPBlockBase *Parent = Recipe.getParent();
-  while (Parent) {
-    if (Parent == Plan.getVectorLoopRegion())
-      return true;
-    Parent = Parent->getParent();
-  }
-  return false;
-=======
 const SCEV *vputils::getSCEVExprForVPValue(VPValue *V, ScalarEvolution &SE) {
   if (V->isLiveIn())
     return SE.getSCEV(V->getLiveInIRValue());
@@ -124,5 +114,16 @@ bool vputils::isUniformAcrossVFsAndUFs(VPValue *V) {
                                           // unless proven otherwise.
         return false;
       });
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 }
+
+#if SIFIVE_CUSTOMIZATION
+bool vputils::isInLoopRegion(const VPRecipeBase &Recipe, const VPlan &Plan) {
+  const VPBlockBase *Parent = Recipe.getParent();
+  while (Parent) {
+    if (Parent == Plan.getVectorLoopRegion())
+      return true;
+    Parent = Parent->getParent();
+  }
+  return false;
+}
+#endif // SIFIVE_CUSTOMIZATION
