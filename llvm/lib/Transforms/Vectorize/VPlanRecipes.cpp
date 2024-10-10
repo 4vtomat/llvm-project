@@ -702,62 +702,46 @@ Value *VPInstruction::generate(VPTransformState &State) {
   }
 #if SIFIVE_CUSTOMIZATION
   case VPInstruction::CSAInitMask: {
-    if (Part == 0) {
-      Value *InitMask = State.get(getOperand(0), 0);
-      State.set(this, InitMask, Part);
-      return InitMask;
-    }
-    Value *V = State.get(this, Part - 1);
-    return V;
+    Value *InitMask = State.get(getOperand(0));
+    State.set(this, InitMask);
+    return InitMask;
   }
   case VPInstruction::CSAInitData: {
-    if (Part == 0) {
-      Type *ElemTyp = getOperand(0)->getUnderlyingValue()->getType();
-      Value *InitData = PoisonValue::get(VectorType::get(ElemTyp, State.VF));
-      State.set(this, InitData, Part);
-      return InitData;
-    }
-    Value *V = State.get(this, Part - 1);
-    return V;
+    Type *ElemTyp = getOperand(0)->getUnderlyingValue()->getType();
+    Value *InitData = PoisonValue::get(VectorType::get(ElemTyp, State.VF));
+    State.set(this, InitData);
+    return InitData;
   }
   case VPInstruction::CSAMaskPhi: {
-    if (Part == 0) {
-      IRBuilder<>::InsertPointGuard Guard(State.Builder);
-      State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHI());
-      BasicBlock *PreheaderBB = State.CFG.getPreheaderBBFor(this);
-      Value *InitMask = State.get(getOperand(0), Part);
-      PHINode *MaskPhi =
-          State.Builder.CreatePHI(InitMask->getType(), 2, "csa.mask.phi");
-      MaskPhi->addIncoming(InitMask, PreheaderBB);
-      State.set(this, MaskPhi, Part);
-      return MaskPhi;
-    }
-    Value *V =State.get(this, Part - 1);
-    return V;
+    IRBuilder<>::InsertPointGuard Guard(State.Builder);
+    State.Builder.SetInsertPoint(State.CFG.PrevBB->getFirstNonPHI());
+    BasicBlock *PreheaderBB = State.CFG.getPreheaderBBFor(this);
+    Value *InitMask = State.get(getOperand(0));
+    PHINode *MaskPhi =
+        State.Builder.CreatePHI(InitMask->getType(), 2, "csa.mask.phi");
+    MaskPhi->addIncoming(InitMask, PreheaderBB);
+    State.set(this, MaskPhi);
+    return MaskPhi;
   }
   case VPInstruction::CSAMaskSel: {
     if (!State.EnableRISCVCSA) {
-      Value *WidenedCond = State.get(getOperand(0), Part);
-      Value *MaskPhi = State.get(getOperand(1), Part);
-      Value *AnyActive = State.get(getOperand(4), Part, /*NeedsScalar=*/true);
-      // If not the first Part, use the mask from the previous unrolled Part
-      Value *OldMask = Part == 0 ? MaskPhi : State.get(this, Part - 1);
+      Value *WidenedCond = State.get(getOperand(0));
+      Value *MaskPhi = State.get(getOperand(1));
+      Value *AnyActive = State.get(getOperand(4), /*NeedsScalar=*/true);
+      Value *OldMask = MaskPhi;
       Value *MaskSel = State.Builder.CreateSelect(AnyActive, WidenedCond,
                                                   OldMask, "csa.mask.sel");
-      // MaskPhi wants to use the most recently updated mask. That's the one
-      // that corresponds to the last Part.
-      if (Part == State.UF - 1)
-        cast<PHINode>(MaskPhi)->addIncoming(MaskSel, State.CFG.PrevBB);
+      cast<PHINode>(MaskPhi)->addIncoming(MaskSel, State.CFG.PrevBB);
       return MaskSel;
     }
 
     // NewMask can be calculated as (vmsbf(NewMask) & OldMask) | NewMask
-    Value *WidenedCond = State.get(getOperand(0), Part);
-    Value *AllTrue = State.get(getOperand(2), Part);
-    Value *AllFalse = State.get(getOperand(3), Part);
+    Value *WidenedCond = State.get(getOperand(0));
+    Value *AllTrue = State.get(getOperand(2));
+    Value *AllFalse = State.get(getOperand(3));
     Value *EVL =
         State.Plan->useVLAVectorizer()
-            ? State.get(State.EVL, Part, /*NeedsScalar=*/true)
+            ? State.get(State.EVL, /*NeedsScalar=*/true)
             : getRuntimeVF(Builder, State.Builder.getInt32Ty(), State.VF);
 
     Value *UndistCond = State.Builder.CreateIntrinsic(
@@ -766,7 +750,7 @@ Value *VPInstruction::generate(VPTransformState &State) {
 
     Value *InitEVL =
         State.Plan->useVLAVectorizer()
-            ? State.get(State.Plan->getInitEVL(), Part, /*NeedsScalar=*/true)
+            ? State.get(State.Plan->getInitEVL(), /*NeedsScalar=*/true)
             : getRuntimeVF(Builder, State.Builder.getInt32Ty(), State.VF);
 
     Value *InitEVL64 =
@@ -774,8 +758,8 @@ Value *VPInstruction::generate(VPTransformState &State) {
     Value *SBF = State.Builder.CreateIntrinsic(WidenedCond->getType(),
                                                Intrinsic::riscv_vmsbf,
                                                {UndistCond, InitEVL64});
-    Value *MaskPhi = State.get(getOperand(1), Part);
-    Value *OldMask = Part == 0 ? MaskPhi : State.get(this, Part - 1);
+    Value *MaskPhi = State.get(getOperand(1));
+    Value *OldMask = MaskPhi;
     Value *InitEVL32 =
         State.Builder.CreateZExtOrTrunc(InitEVL, State.Builder.getInt32Ty());
     Value *VAnd =
@@ -785,21 +769,18 @@ Value *VPInstruction::generate(VPTransformState &State) {
         State.Builder.CreateIntrinsic(WidenedCond->getType(), Intrinsic::vp_or,
                                       {VAnd, UndistCond, AllTrue, InitEVL32});
 
-    // MaskPhi wants to use the most recently updated mask. That's the one
-    // that corresponds to the last Part.
-    if (Part == State.UF - 1)
-      cast<PHINode>(MaskPhi)->addIncoming(NewMask, State.CFG.PrevBB);
+    cast<PHINode>(MaskPhi)->addIncoming(NewMask, State.CFG.PrevBB);
 
-    State.set(this, NewMask, Part);
+    State.set(this, NewMask);
     return NewMask;
   }
   case VPInstruction::CSAAnyActive: {
-    Value *WidenedCond = State.get(getOperand(0), Part);
-    Value *AllOnesMask = State.get(getOperand(1), Part);
+    Value *WidenedCond = State.get(getOperand(0));
+    Value *AllOnesMask = State.get(getOperand(1));
 
     Value *EVL =
         State.Plan->useVLAVectorizer()
-            ? State.get(State.EVL, Part, /*NeedsScalar=*/true)
+            ? State.get(State.EVL, /*NeedsScalar=*/true)
             : getRuntimeVF(Builder, State.Builder.getInt32Ty(), State.VF);
 
     Value *StartValue =
@@ -823,11 +804,11 @@ Value *VPInstruction::generate(VPTransformState &State) {
     return VLPhi;
   }
   case VPInstruction::CSAVLSel: {
-    Value *AnyActive = State.get(getOperand(0), Part, /*NeedsScalar=*/true);
-    Value *VLPhi = State.get(getOperand(1), Part, /*NeedsScalar=*/true);
+    Value *AnyActive = State.get(getOperand(0), /*NeedsScalar=*/true);
+    Value *VLPhi = State.get(getOperand(1), /*NeedsScalar=*/true);
     Value *EVL =
         State.Plan->useVLAVectorizer()
-            ? State.get(State.EVL, Part, /*NeedsScalar=*/true)
+            ? State.get(State.EVL, /*NeedsScalar=*/true)
             : getRuntimeVF(Builder, State.Builder.getInt32Ty(), State.VF);
 
     Value *VLSel =
@@ -2916,9 +2897,7 @@ void VPCSAHeaderPHIRecipe::execute(VPTransformState &State) {
   BasicBlock *PreheaderBB = State.CFG.getPreheaderBBFor(this);
   DataPhi->addIncoming(InitData, PreheaderBB);
 
-  // Use the same DataPhi for all Parts
-  for (unsigned Part = 0; Part < State.UF; ++Part)
-    State.set(this, DataPhi, Part);
+  State.set(this, DataPhi);
 }
 
 InstructionCost VPCSAHeaderPHIRecipe::overhead(ElementCount VF,
@@ -2986,49 +2965,40 @@ void VPCSADataUpdateRecipe::print(raw_ostream &O, const Twine &Indent,
 
 void VPCSADataUpdateRecipe::execute(VPTransformState &State) {
   if (!State.EnableRISCVCSA) {
-    for (unsigned Part = 0; Part < State.UF; ++Part) {
-      Value *AnyActive =
-          State.get(getVPAnyActive(), Part, /*NeedsScalar=*/true);
-      Value *DataUpdate = getVPDataPhi() == getVPTrue()
-                              ? State.get(getVPFalse(), Part)
-                              : State.get(getVPTrue(), Part);
-      PHINode *DataPhi = cast<PHINode>(State.get(getVPDataPhi(), Part));
-      // If not the first Part, use the mask from the previous unrolled Part
-      Value *OldData = Part == 0 ? DataPhi : State.get(this, Part - 1);
-      Value *DataSel = State.Builder.CreateSelect(AnyActive, DataUpdate,
-                                                  OldData, "csa.data.sel");
+    Value *AnyActive =
+        State.get(getVPAnyActive(), /*NeedsScalar=*/true);
+    Value *DataUpdate = getVPDataPhi() == getVPTrue()
+                            ? State.get(getVPFalse())
+                            : State.get(getVPTrue());
+    PHINode *DataPhi = cast<PHINode>(State.get(getVPDataPhi(), 0));
+    Value *DataSel = State.Builder.CreateSelect(AnyActive, DataUpdate,
+                                                DataPhi, "csa.data.sel");
 
-      if (Part == State.UF - 1)
-        DataPhi->addIncoming(DataSel, State.CFG.PrevBB);
-      State.set(this, DataSel, Part);
-    }
+    DataPhi->addIncoming(DataSel, State.CFG.PrevBB);
+    State.set(this, DataSel);
     return;
   }
 
-  for (unsigned Part = 0; Part < State.UF; ++Part) {
-    // We can't use the NewMask to update the data. We must use the condition
-    // vector since it is possible that condition vector is all false but
-    // lanes from a prior iteration on 0..EVL are active in NewMask.
-    Value *Cond = State.get(getVPCondToUse(), Part);
-    Value *DataPhi = State.get(getVPDataPhi(), Part);
-    Value *UndistData = getVPDataPhi() == getVPTrue()
-                            ? State.get(getVPFalse(), Part)
-                            : State.get(getVPTrue(), Part);
-    Value *EVL =
-        State.Plan->useVLAVectorizer()
-            ? State.get(State.EVL, Part, /*NeedsScalar=*/true)
-            : getRuntimeVF(State.Builder, State.Builder.getInt32Ty(), State.VF);
-    Value *EVL32 =
-        State.Builder.CreateZExtOrTrunc(EVL, State.Builder.getInt32Ty());
+  // We can't use the NewMask to update the data. We must use the condition
+  // vector since it is possible that condition vector is all false but
+  // lanes from a prior iteration on 0..EVL are active in NewMask.
+  Value *Cond = State.get(getVPCondToUse());
+  Value *DataPhi = State.get(getVPDataPhi());
+  Value *UndistData = getVPDataPhi() == getVPTrue()
+                          ? State.get(getVPFalse())
+                          : State.get(getVPTrue());
+  Value *EVL =
+      State.Plan->useVLAVectorizer()
+          ? State.get(State.EVL, /*NeedsScalar=*/true)
+          : getRuntimeVF(State.Builder, State.Builder.getInt32Ty(), State.VF);
+  Value *EVL32 =
+      State.Builder.CreateZExtOrTrunc(EVL, State.Builder.getInt32Ty());
 
-    Value *OldData = Part == 0 ? DataPhi : State.get(this, Part - 1);
-    Value *NewData = State.Builder.CreateIntrinsic(
-        DataPhi->getType(), Intrinsic::vp_merge,
-        {Cond, UndistData, OldData, EVL32});
-    if (Part == State.UF - 1)
-      cast<PHINode>(DataPhi)->addIncoming(NewData, State.CFG.PrevBB);
-    State.set(this, NewData, Part);
-  }
+  Value *NewData = State.Builder.CreateIntrinsic(
+      DataPhi->getType(), Intrinsic::vp_merge,
+      {Cond, UndistData, DataPhi, EVL32});
+  cast<PHINode>(DataPhi)->addIncoming(NewData, State.CFG.PrevBB);
+  State.set(this, NewData);
 }
 
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
@@ -3045,18 +3015,17 @@ void VPCSAExtractScalarRecipe::execute(VPTransformState &State) {
   IRBuilder<>::InsertPointGuard Guard(State.Builder);
   State.Builder.SetInsertPoint(State.CFG.ExitBB->getFirstNonPHI());
 
-  unsigned LastPart = State.UF - 1;
-  Value *MaskSel = State.get(getVPMaskSel(), LastPart);
-  Value *DataSel = State.get(getVPDataSel(), LastPart);
+  Value *MaskSel = State.get(getVPMaskSel());
+  Value *DataSel = State.get(getVPDataSel());
   Value *InitEVL =
       State.Plan->useVLAVectorizer()
-          ? State.get(State.Plan->getInitEVL(), 0, /*NeedsScalar=*/true)
+          ? State.get(State.Plan->getInitEVL(), /*NeedsScalar=*/true)
           : getRuntimeVF(State.Builder, State.Builder.getInt32Ty(), State.VF);
   Value *InitEVL32 =
       State.Builder.CreateZExtOrTrunc(InitEVL, State.Builder.getInt32Ty());
 
   Value *VLToUse = State.EnableRISCVCSA ? InitEVL32
-                                        : State.get(getVPCSAVLSel(), LastPart,
+                                        : State.get(getVPCSAVLSel(),
                                                     /*NeedsScalar=*/true);
   Value *InitScalar = getVPInitScalar()->getLiveInIRValue();
 
@@ -3072,7 +3041,7 @@ void VPCSAExtractScalarRecipe::execute(VPTransformState &State) {
   Value *LastIdxGEZero = State.Builder.CreateICmpSGE(LastIdx, Zero);
   Value *ChooseFromVecOrInit =
       State.Builder.CreateSelect(LastIdxGEZero, ExtractFromVec, InitScalar);
-  State.set(this, ChooseFromVecOrInit, 0, /*IsScalar=*/true);
+  State.set(this, ChooseFromVecOrInit, /*IsScalar=*/true);
 }
 
 InstructionCost VPMonotonicHeaderPHIRecipe::overhead(ElementCount VF,
