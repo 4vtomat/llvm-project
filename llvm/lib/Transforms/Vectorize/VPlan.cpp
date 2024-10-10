@@ -1302,6 +1302,9 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
   assert(VFxUF.getNumUsers() && "VFxUF expected to always have users");
 #endif // SIFIVE_CUSTOMIZATION
   unsigned UF = getUF();
+#if SIFIVE_CUSTOMIZATION
+  if (!isUncountable()) {
+#endif // SIFIVE_CUSTOMIZATION
   if (VF.getNumUsers()) {
     Value *RuntimeVF = getRuntimeVF(Builder, TCTy, State.VF);
     VF.setUnderlyingValue(RuntimeVF);
@@ -1311,6 +1314,9 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
   } else {
     VFxUF.setUnderlyingValue(createStepForVF(Builder, TCTy, State.VF, UF));
   }
+#if SIFIVE_CUSTOMIZATION
+  }
+#endif // SIFIVE_CUSTOMIZATION
 
   // When vectorizing the epilogue loop, the canonical induction start value
   // needs to be changed from zero to the value after the main vector loop.

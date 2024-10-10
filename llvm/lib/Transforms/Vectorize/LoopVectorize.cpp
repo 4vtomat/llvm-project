@@ -11005,7 +11005,7 @@ LoopVectorizationPlanner::tryToBuildVPlanWithVPRecipes(VFRange &Range) {
   VPlanPtr Plan = VPlan::createInitialVPlan(Legal->getWidestInductionType(),
                                             PSE, RequiresScalarEpilogueCheck,
                                             CM.foldTailByMasking(),
-					    IsUncountable, OrigLoop);
+                                            IsUncountable, OrigLoop);
   if (IsUncountable) {
     Plan->createInitEVL();
   }

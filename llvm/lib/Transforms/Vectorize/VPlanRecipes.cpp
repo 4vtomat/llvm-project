@@ -491,7 +491,11 @@ Value *VPInstruction::generate(VPTransformState &State) {
     Value *A = State.get(getOperand(0), OnlyFirstLaneUsed);
     Value *B = State.get(getOperand(1), OnlyFirstLaneUsed);
 #if SIFIVE_CUSTOMIZATION
-    if (State.Plan->useVLAVectorizer() && A->getType()->isVectorTy())
+    VPRegionBlock *LoopRegion = State.Plan->getVectorLoopRegion();
+    VPBasicBlock *Preheader =
+        cast<VPBasicBlock>(LoopRegion->getSinglePredecessor());
+    if (getParent() != Preheader && State.Plan->useVLAVectorizer() &&
+        A->getType()->isVectorTy())
       return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
                                               nullptr);
     // FIXME: Remove with a proper representation of VFxUF in a VPlan. Currently
@@ -516,7 +520,11 @@ Value *VPInstruction::generate(VPTransformState &State) {
   case VPInstruction::Not: {
     Value *A = State.get(getOperand(0));
 #if SIFIVE_CUSTOMIZATION
-    if (State.Plan->useVLAVectorizer() && A->getType()->isVectorTy())
+    VPRegionBlock *LoopRegion = State.Plan->getVectorLoopRegion();
+    VPBasicBlock *Preheader =
+        cast<VPBasicBlock>(LoopRegion->getSinglePredecessor());
+    if (getParent() != Preheader && State.Plan->useVLAVectorizer() &&
+        A->getType()->isVectorTy())
       return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
                                               nullptr);
 #endif // SIFIVE_CUSTOMIZATION
@@ -526,7 +534,11 @@ Value *VPInstruction::generate(VPTransformState &State) {
     bool OnlyFirstLaneUsed = vputils::onlyFirstLaneUsed(this);
     Value *A = State.get(getOperand(0), OnlyFirstLaneUsed);
 #if SIFIVE_CUSTOMIZATION
-    if (State.Plan->useVLAVectorizer() && A->getType()->isVectorTy())
+    VPRegionBlock *LoopRegion = State.Plan->getVectorLoopRegion();
+    VPBasicBlock *Preheader =
+        cast<VPBasicBlock>(LoopRegion->getSinglePredecessor());
+    if (getParent() != Preheader && State.Plan->useVLAVectorizer() &&
+        A->getType()->isVectorTy())
       return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
                                               nullptr);
 #endif // SIFIVE_CUSTOMIZATION
@@ -538,7 +550,11 @@ Value *VPInstruction::generate(VPTransformState &State) {
     Value *Op1 = State.get(getOperand(1));
     Value *Op2 = State.get(getOperand(2));
 #if SIFIVE_CUSTOMIZATION
-    if (State.Plan->useVLAVectorizer() && Cond->getType()->isVectorTy())
+    VPRegionBlock *LoopRegion = State.Plan->getVectorLoopRegion();
+    VPBasicBlock *Preheader =
+        cast<VPBasicBlock>(LoopRegion->getSinglePredecessor());
+    if (getParent() != Preheader && State.Plan->useVLAVectorizer() &&
+        Cond->getType()->isVectorTy())
       return llvm::widenPredicatedInstruction(nullptr, this, *this, State,
                                               nullptr);
 
@@ -1436,7 +1452,10 @@ void VPWidenCallRecipe::execute(VPTransformState &State) {
   State.setDebugLocFrom(getDebugLoc());
 
 #if SIFIVE_CUSTOMIZATION
-  if (State.Plan->useVLAVectorizer()) {
+  VPRegionBlock *LoopRegion = State.Plan->getVectorLoopRegion();
+  VPBasicBlock *Preheader =
+      cast<VPBasicBlock>(LoopRegion->getSinglePredecessor());
+  if (getParent() != Preheader && State.Plan->useVLAVectorizer()) {
     // Skip if CI doesn't have vp form.
     if (Intrinsic::ID VPID = VPIntrinsic::getForIntrinsic(VectorIntrinsicID);
         VPIntrinsic::isVPIntrinsic(VPID)) {
@@ -1758,7 +1777,11 @@ void VPWidenSelectRecipe::execute(VPTransformState &State) {
   Value *Op1 = State.get(getOperand(2));
 #if SIFIVE_CUSTOMIZATION
   Value *Sel;
-  if (State.Plan->useVLAVectorizer() && Cond->getType()->isVectorTy()) {
+  VPRegionBlock *LoopRegion = State.Plan->getVectorLoopRegion();
+  VPBasicBlock *Preheader =
+      cast<VPBasicBlock>(LoopRegion->getSinglePredecessor());
+  if (getParent() != Preheader && State.Plan->useVLAVectorizer() &&
+      Cond->getType()->isVectorTy()) {
     Value *EVLArg = State.get(State.EVL, /*NeedsScalar=*/true);
     Sel = State.Builder.CreateIntrinsic(Intrinsic::vp_select, {Op0->getType()},
                                         {Cond, Op0, Op1, EVLArg}, nullptr,
@@ -1826,8 +1849,11 @@ void VPRecipeWithIRFlags::printFlags(raw_ostream &O) const {
 void VPWidenRecipe::execute(VPTransformState &State) {
   State.setDebugLocFrom(getDebugLoc());
 #if SIFIVE_CUSTOMIZATION
+  VPRegionBlock *LoopRegion = State.Plan->getVectorLoopRegion();
+  VPBasicBlock *Preheader =
+      cast<VPBasicBlock>(LoopRegion->getSinglePredecessor());
   auto *I = cast_or_null<Instruction>(getUnderlyingValue());
-  if (I && State.Plan->useVLAVectorizer() &&
+  if (getParent() != Preheader && I && State.Plan->useVLAVectorizer() &&
       State.get(getOperand(0), 0)->getType()->isVectorTy() &&
       !isa<BitCastInst>(I) && !isa<FreezeInst>(I)) {
     // Bitcasts are not supported.
@@ -2058,8 +2084,11 @@ void VPWidenEVLRecipe::print(raw_ostream &O, const Twine &Indent,
 void VPWidenCastRecipe::execute(VPTransformState &State) {
   State.setDebugLocFrom(getDebugLoc());
 #if SIFIVE_CUSTOMIZATION
+  VPRegionBlock *LoopRegion = State.Plan->getVectorLoopRegion();
+  VPBasicBlock *Preheader =
+      cast<VPBasicBlock>(LoopRegion->getSinglePredecessor());
   auto *I = cast_or_null<Instruction>(getUnderlyingValue());
-  if (I && State.Plan->useVLAVectorizer() &&
+  if (getParent() != Preheader && I && State.Plan->useVLAVectorizer() &&
       State.get(getOperand(0), 0)->getType()->isVectorTy() &&
       !isa<BitCastInst>(I) && !isa<FreezeInst>(I)) {
     Value *V = llvm::widenPredicatedInstruction(I, this, *this, State,
@@ -3937,7 +3966,7 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
       // Need bitcast if the group requires strided load
       //   <VF x (elementTy * factor)> strided.load
       //   bitcast <VF x (elementTy * factor)> to <(VF * factor) x elementTy>
-      if (Group->isStrided())
+      if (Group->isStrided()) {
         if (ScalarTy->isPointerTy()) {
           Type *IntTy =
               State.Builder.getIntNTy(DL.getTypeAllocSizeInBits(ScalarTy));
@@ -3948,6 +3977,7 @@ void VPInterleaveRecipe::execute(VPTransformState &State) {
         }
         NewLoad = cast<Instruction>(State.Builder.CreateBitOrPointerCast(
             NewLoad, VecTy, NewLoad->getName() + ".cast"));
+      }
 
       // For each member in the group, shuffle out the appropriate data from the
       // wide loads.

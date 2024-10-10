@@ -1240,6 +1240,10 @@ static void licm(VPlan &Plan) {
           }))
         continue;
       R.moveBefore(*Preheader, Preheader->end());
+#if SIFIVE_CUSTOMIZATION
+    if (Plan.useVLAVectorizer() && !Plan.getInitEVL())
+      Plan.createInitEVL();
+#endif // SIFIVE_CUSTOMIZATION
     }
   }
 }
@@ -1762,7 +1766,12 @@ bool VPlanTransforms::tryAddExplicitVectorLength(VPlan &Plan) {
   ReversePostOrderTraversal<VPBlockDeepTraversalWrapper<VPBlockBase *>> RPOT(
       Plan.getEntry());
 
+  VPRegionBlock *LoopRegion = Plan.getVectorLoopRegion();
+  VPBasicBlock *Preheader =
+      cast<VPBasicBlock>(LoopRegion->getSinglePredecessor());
   for (VPBasicBlock *VPBB : VPBlockUtils::blocksOnly<VPBasicBlock>(RPOT)) {
+    if (VPBB == Preheader)
+      continue;
     // The recipes in the block are processed in reverse order, to catch chains
     // of dead recipes.
     for (VPRecipeBase &R : make_early_inc_range(reverse(*VPBB))) {
