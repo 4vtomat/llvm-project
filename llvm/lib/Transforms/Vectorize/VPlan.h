@@ -250,23 +250,6 @@ public:
   }
 };
 
-<<<<<<< HEAD
-/// VPIteration represents a single point in the iteration space of the output
-/// (vectorized and/or unrolled) IR loop.
-struct VPIteration {
-  /// in [0..UF)
-  unsigned Part;
-
-  VPLane Lane;
-
-  VPIteration(unsigned Part, unsigned Lane,
-              VPLane::Kind Kind = VPLane::Kind::First)
-      : Part(Part), Lane(Lane, Kind) {}
-
-  VPIteration(unsigned Part, const VPLane &Lane) : Part(Part), Lane(Lane) {}
-
-  bool isFirstIteration() const { return Part == 0 && Lane.isFirstLane(); }
-};
 
 #if SIFIVE_CUSTOMIZATION
 class VPInstruction;
@@ -330,8 +313,6 @@ public:
 };
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 /// VPTransformState holds information passed down when "executing" a VPlan,
 /// needed for generating the output IR.
 struct VPTransformState {
@@ -349,7 +330,6 @@ struct VPTransformState {
   /// The chosen Vectorization Factor of the loop being vectorized.
   ElementCount VF;
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   unsigned SEW = 0;
 
@@ -371,9 +351,6 @@ struct VPTransformState {
 #endif // SIFIVE_CUSTOMIZATION
 
   /// Hold the indices to generate specific scalar instructions. Null indicates
-=======
-  /// Hold the index to generate specific scalar instructions. Null indicates
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   /// that all instances are to be generated, using either scalar or vector
   /// instructions.
   std::optional<VPLane> Lane;
@@ -395,21 +372,9 @@ struct VPTransformState {
 
   bool hasVectorValue(VPValue *Def) { return Data.VPV2Vector.contains(Def); }
 
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-  bool hasAnyVectorValue(VPValue *Def) const {
-    return Data.PerPartOutput.contains(Def);
-  }
-#endif // SIFIVE_CUSTOMIZATION
-
-  bool hasScalarValue(VPValue *Def, VPIteration Instance) {
-    auto I = Data.PerPartScalars.find(Def);
-    if (I == Data.PerPartScalars.end())
-=======
   bool hasScalarValue(VPValue *Def, VPLane Lane) {
     auto I = Data.VPV2Scalars.find(Def);
     if (I == Data.VPV2Scalars.end())
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
       return false;
     unsigned CacheIdx = Lane.mapToCacheIndex(VF);
     return CacheIdx < I->second.size() && I->second[CacheIdx];
@@ -2425,8 +2390,12 @@ public:
 #endif // SIFIVE_CUSTOMIZATION
       : VPHeaderPHIRecipe(VPDef::VPWidenPointerInductionSC, Phi),
         IndDesc(IndDesc),
+#if SIFIVE_CUSTOMIZATION
         IsScalarAfterVectorization(IsScalarAfterVectorization),
         IsUncountable(IsUncountable) {
+#else
+        IsScalarAfterVectorization(IsScalarAfterVectorization) {
+#endif // SIFIVE_CUSTOMIZATION
     addOperand(Start);
     addOperand(Step);
   }
@@ -2456,7 +2425,13 @@ public:
   /// Returns the induction descriptor for the recipe.
   const InductionDescriptor &getInductionDescriptor() const { return IndDesc; }
 
-<<<<<<< HEAD
+  /// Returns the VPValue representing the value of this induction at
+  /// the first unrolled part, if it exists. Returns itself if unrolling did not
+  /// take place.
+  VPValue *getFirstUnrolledPartOperand() {
+    return getUnrollPart(*this) == 0 ? this : getOperand(2);
+  }
+
 #if SIFIVE_CUSTOMIZATION
   /// Returns true if only scalar values will be generated.
   bool onlyFirstLaneUsed(const VPValue *Op) const override {
@@ -2475,15 +2450,6 @@ public:
   }
 #endif // SIFIVE_CUSTOMIZATION
 
-=======
-  /// Returns the VPValue representing the value of this induction at
-  /// the first unrolled part, if it exists. Returns itself if unrolling did not
-  /// take place.
-  VPValue *getFirstUnrolledPartOperand() {
-    return getUnrollPart(*this) == 0 ? this : getOperand(2);
-  }
-
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 #if !defined(NDEBUG) || defined(LLVM_ENABLE_DUMP)
   /// Print the recipe.
   void print(raw_ostream &O, const Twine &Indent,

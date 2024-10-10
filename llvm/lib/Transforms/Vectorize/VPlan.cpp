@@ -341,19 +341,16 @@ VPBasicBlock::iterator VPBasicBlock::getFirstNonPhi() {
 
 VPTransformState::VPTransformState(ElementCount VF, unsigned UF, LoopInfo *LI,
                                    DominatorTree *DT, IRBuilderBase &Builder,
-<<<<<<< HEAD
                                    InnerLoopVectorizer *ILV, VPlan *Plan,
-                                   bool EnableRISCVCSA) // SIFIVE
-    : VF(VF), UF(UF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
-      LVer(nullptr), TypeAnalysis(Plan->getCanonicalIV()->getScalarType()),
-#if SIFIVE_CUSTOMIZATION
-      EnableRISCVCSA(EnableRISCVCSA) {}
-#endif // SIFIVE_CUSTOMIZATION
-=======
-                                   InnerLoopVectorizer *ILV, VPlan *Plan)
+                                   bool EnableRISCVCSA) // SIFIVE)
     : VF(VF), CFG(DT), LI(LI), Builder(Builder), ILV(ILV), Plan(Plan),
-      LVer(nullptr), TypeAnalysis(Plan->getCanonicalIV()->getScalarType()) {}
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
+      LVer(nullptr), TypeAnalysis(Plan->getCanonicalIV()->getScalarType())
+#if SIFIVE_CUSTOMIZATION
+      ,
+      EnableRISCVCSA(EnableRISCVCSA)
+#endif // SIFIVE_CUSTOMIZATION
+{
+}
 
 Value *VPTransformState::get(VPValue *Def, const VPLane &Lane) {
   if (Def->isLiveIn())
@@ -377,22 +374,17 @@ Value *VPTransformState::get(VPValue *Def, const VPLane &Lane) {
     return VecPart;
   }
   // TODO: Cache created scalar values.
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // EVL indicates that we have RVV VLA vectorization. When the first lane
   // (0-based) needs to be extracted, there's nothing special needed for RVV
   // VLA, however when the last lane needs to be extracted, we need to use
   // RuntimeVL (EVL) to extract that element
-  Value *Lane =
-      Instance.Lane.getAsRuntimeExpr(Builder, VF, EVL ? get(EVL, 0, /*IsScalar*/ true) : nullptr);
+  Value *LaneV = Lane.getAsRuntimeExpr(
+      Builder, VF, EVL ? get(EVL, /*IsScalar*/ true) : nullptr);
 #else
-  Value *Lane = Instance.Lane.getAsRuntimeExpr(Builder, VF);
-#endif // SIFIVE_CUSTOMIZATION
-  auto *Extract = Builder.CreateExtractElement(VecPart, Lane);
-=======
   Value *LaneV = Lane.getAsRuntimeExpr(Builder, VF);
+#endif // SIFIVE_CUSTOMIZATION
   auto *Extract = Builder.CreateExtractElement(VecPart, LaneV);
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   // set(Def, Extract, Instance);
   return Extract;
 }
@@ -959,24 +951,9 @@ void VPRegionBlock::execute(VPTransformState *State) {
   assert(!State->Lane && "Replicating a Region with non-null instance.");
 
   // Enter replicating mode.
-<<<<<<< HEAD
-  State->Instance = VPIteration(0, 0);
-
-  for (unsigned Part = 0, UF = State->UF; Part < UF; ++Part) {
-    State->Instance->Part = Part;
 #if !SIFIVE_CUSTOMIZATION
-    assert(!State->VF.isScalable() && "VF is assumed to be non scalable.");
-#endif // SIFIVE_CUSTOMIZATION
-    for (unsigned Lane = 0, VF = State->VF.getKnownMinValue(); Lane < VF;
-         ++Lane) {
-      State->Instance->Lane = VPLane(Lane, VPLane::Kind::First);
-      // Visit the VPBlocks connected to \p this, starting from it.
-      for (VPBlockBase *Block : RPOT) {
-        LLVM_DEBUG(dbgs() << "LV: VPBlock in RPO " << Block->getName() << '\n');
-        Block->execute(State);
-      }
-=======
   assert(!State->VF.isScalable() && "VF is assumed to be non scalable.");
+#endif // SIFIVE_CUSTOMIZATION
   State->Lane = VPLane(0);
   for (unsigned Lane = 0, VF = State->VF.getKnownMinValue(); Lane < VF;
        ++Lane) {
@@ -985,7 +962,6 @@ void VPRegionBlock::execute(VPTransformState *State) {
     for (VPBlockBase *Block : RPOT) {
       LLVM_DEBUG(dbgs() << "LV: VPBlock in RPO " << Block->getName() << '\n');
       Block->execute(State);
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
     }
   }
 
@@ -1054,7 +1030,7 @@ void VPConditionalRegionBlock::execute(VPTransformState *State) {
   Value *VFirst =
       Builder.CreateIntrinsic(Intrinsic::vp_first, {Cond->getType()},
                               {Cond, State->Builder.getTrueVector(State->VF),
-                               State->get(State->EVL, 0, /*IsScalar*/ true)});
+                               State->get(State->EVL, /*IsScalar*/ true)});
   Value *Cmp = Builder.CreateCmp(CmpInst::ICMP_NE, VFirst,
                                  ConstantInt::get(VFirst->getType(), -1));
   Instruction *Unreachable = PredBB->getTerminator();
@@ -1187,28 +1163,20 @@ VPIRBasicBlock *VPIRBasicBlock::fromBasicBlock(BasicBlock *IRBB) {
 VPlanPtr VPlan::createInitialVPlan(Type *InductionTy,
                                    PredicatedScalarEvolution &PSE,
                                    bool RequiresScalarEpilogueCheck,
-<<<<<<< HEAD
                                    bool TailFolded,
+
 #if SIFIVE_CUSTOMIZATION
                                    bool IsUncountable,
 #endif // SIFIVE_CUSTOMIZATION
                                    Loop *TheLoop) {
-  VPIRBasicBlock *Entry = createVPIRBasicBlockFor(TheLoop->getLoopPreheader());
-=======
-                                   bool TailFolded, Loop *TheLoop) {
   VPIRBasicBlock *Entry =
       VPIRBasicBlock::fromBasicBlock(TheLoop->getLoopPreheader());
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   VPBasicBlock *VecPreheader = new VPBasicBlock("vector.ph");
 #if SIFIVE_CUSTOMIZATION
   auto Plan = std::make_unique<VPlan>(Entry, VecPreheader, IsUncountable);
-  assert((!IsUncountable || !TripCount) &&
-         "Trip Count must not be set when loop is not countable");
-  if (!IsUncountable)
-    Plan->TripCount =
-        vputils::getOrCreateVPValueForSCEVExpr(*Plan, TripCount, SE);
 #else
   auto Plan = std::make_unique<VPlan>(Entry, VecPreheader);
+#endif // SIFIVE_CUSTOMIZATION
 
   // Create SCEV and VPValue for the trip count.
 
@@ -1224,15 +1192,22 @@ VPlanPtr VPlan::createInitialVPlan(Type *InductionTy,
           BackedgeTakenCountSCEV == PSE.getBackedgeTakenCount()) &&
          "Invalid loop count");
   ScalarEvolution &SE = *PSE.getSE();
+#if SIFIVE_CUSTOMIZATION
+  const SCEV *TripCount =
+      IsUncountable ? nullptr
+                    : SE.getTripCountFromExitCount(BackedgeTakenCountSCEV,
+                                                   InductionTy, TheLoop);
+
+  if (!IsUncountable)
+    Plan->TripCount =
+        vputils::getOrCreateVPValueForSCEVExpr(*Plan, TripCount, SE);
+#else
   const SCEV *TripCount = SE.getTripCountFromExitCount(BackedgeTakenCountSCEV,
                                                        InductionTy, TheLoop);
+
   Plan->TripCount =
       vputils::getOrCreateVPValueForSCEVExpr(*Plan, TripCount, SE);
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-=======
-
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   // Create VPRegionBlock, with empty header and latch blocks, to be filled
   // during processing later.
   VPBasicBlock *HeaderVPBB = new VPBasicBlock("vector.body");
@@ -1325,28 +1300,8 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
          "VFxUF expected to always have users");
 #else
   assert(VFxUF.getNumUsers() && "VFxUF expected to always have users");
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-#if SIFIVE_CUSTOMIZATION
-  Value *RuntimeVF=nullptr;
-  if (VF.getNumUsers()) {
-    RuntimeVF = getRuntimeVF(Builder, TCTy, State.VF);
-    VF.setUnderlyingValue(RuntimeVF);
-  }
-  if (VFxUF.getNumUsers()) {
-    if (RuntimeVF)
-      VFxUF.setUnderlyingValue(
-          State.UF > 1
-              ? Builder.CreateMul(RuntimeVF, ConstantInt::get(TCTy, State.UF))
-              : RuntimeVF);
-    else
-      VFxUF.setUnderlyingValue(
-          createStepForVF(Builder, TCTy, State.VF, State.UF));
-  }
-#else
-=======
   unsigned UF = getUF();
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   if (VF.getNumUsers()) {
     Value *RuntimeVF = getRuntimeVF(Builder, TCTy, State.VF);
     VF.setUnderlyingValue(RuntimeVF);
@@ -1356,7 +1311,6 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
   } else {
     VFxUF.setUnderlyingValue(createStepForVF(Builder, TCTy, State.VF, UF));
   }
-#endif // SIFIVE_CUSTOMIZATION
 
   // When vectorizing the epilogue loop, the canonical induction start value
   // needs to be changed from zero to the value after the main vector loop.
@@ -1382,13 +1336,11 @@ void VPlan::prepareToExecute(Value *TripCountV, Value *VectorTripCountV,
 void VPlan::initializeMasks(VPTransformState &State) {
   if (AllTrueMask && AllTrueMask->getNumUsers()) {
     Value *True = State.Builder.getTrueVector(State.VF);
-    for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
-      State.set(AllTrueMask, True, Part);
+    State.set(AllTrueMask, True);
   }
   if (AllFalseMask && AllFalseMask->getNumUsers()) {
     Value *False = State.Builder.getFalseVector(State.VF);
-    for (unsigned Part = 0, UF = State.UF; Part < UF; ++Part)
-      State.set(AllFalseMask, False, Part);
+    State.set(AllFalseMask, False);
   }
 }
 #endif // SIFIVE_CUSTOMIZATION
@@ -1496,16 +1448,14 @@ void VPlan::execute(VPTransformState *State) {
       // consistent placement of all induction updates.
       Instruction *Inc = cast<Instruction>(Phi->getIncomingValue(1));
       Inc->moveBefore(VectorLatchBB->getTerminator()->getPrevNode());
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-      moveStepComputationsToIVUpdate(State, R, Inc);
-#endif // SIFIVE_CUSTOMIZATION
-=======
 
       // Use the steps for the last part as backedge value for the induction.
       if (auto *IV = dyn_cast<VPWidenIntOrFpInductionRecipe>(&R))
         Inc->setOperand(0, State->get(IV->getLastUnrolledPartOperand()));
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
+
+#if SIFIVE_CUSTOMIZATION
+      moveStepComputationsToIVUpdate(State, R, Inc);
+#endif // SIFIVE_CUSTOMIZATION
       continue;
     }
 
@@ -1518,35 +1468,23 @@ void VPlan::execute(VPTransformState *State) {
 #endif // SIFIVE_CUSTOMIZATION
         (isa<VPReductionPHIRecipe>(PhiR) &&
          cast<VPReductionPHIRecipe>(PhiR)->isInLoop());
-<<<<<<< HEAD
-    unsigned LastPartForNewPhi = SinglePartNeeded ? 1 : State->UF;
-
-    for (unsigned Part = 0; Part < LastPartForNewPhi; ++Part) {
-      Value *Phi = State->get(PhiR, Part, NeedsScalar);
-      Value *Val =
-          State->get(PhiR->getBackedgeValue(),
-                     SinglePartNeeded ? State->UF - 1 : Part, NeedsScalar);
-#if SIFIVE_CUSTOMIZATION
-      if (Val->getType()->isIntegerTy()) {
-        IRBuilder<>::InsertPointGuard Guard(State->Builder);
-        State->Builder.SetInsertPoint(
-            cast<PHINode>(Phi)->getParent()->getTerminator());
-        Val = State->Builder.CreateZExtOrTrunc(Val, Phi->getType());
-      }
-#endif // SIFIVE_CUSTOMIZATION
-      cast<PHINode>(Phi)->addIncoming(Val, VectorLatchBB);
-    }
-=======
     Value *Phi = State->get(PhiR, NeedsScalar);
     Value *Val = State->get(PhiR->getBackedgeValue(), NeedsScalar);
+#if SIFIVE_CUSTOMIZATION
+    if (Val->getType()->isIntegerTy()) {
+      IRBuilder<>::InsertPointGuard Guard(State->Builder);
+      State->Builder.SetInsertPoint(
+          cast<PHINode>(Phi)->getParent()->getTerminator());
+      Val = State->Builder.CreateZExtOrTrunc(Val, Phi->getType());
+    }
+#endif // SIFIVE_CUSTOMIZATION
     cast<PHINode>(Phi)->addIncoming(Val, VectorLatchBB);
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   }
 
 #if SIFIVE_CUSTOMIZATION
   if (Value *EVLPlaceholder = State->EVLPlaceholder) {
     assert(State->EVL && "EVL must be available after VPlan is executed");
-    Value *EVL = State->get(State->EVL, 0, /*IsScalar*/ true);
+    Value *EVL = State->get(State->EVL, /*IsScalar*/ true);
     IRBuilder<>::InsertPointGuard Guard(State->Builder);
     State->Builder.SetInsertPoint(
         *cast<Instruction>(EVL)->getInsertionPointAfterDef());
