@@ -66,7 +66,6 @@ MDNode *MDBuilder::createBranchWeights(ArrayRef<uint32_t> Weights,
   return MDNode::get(Context, Vals);
 }
 
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
 MDNode *MDBuilder::createProfileCount(uint64_t Count) {
   Metadata *Vals[2];
@@ -78,12 +77,8 @@ MDNode *MDBuilder::createProfileCount(uint64_t Count) {
   return MDNode::get(Context, Vals);
 }
 #endif // SIFIVE_CUSTOMIZATION
-MDNode *MDBuilder::createUnpredictable() {
-  return MDNode::get(Context, std::nullopt);
-}
-=======
+
 MDNode *MDBuilder::createUnpredictable() { return MDNode::get(Context, {}); }
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 
 MDNode *MDBuilder::createFunctionEntryCount(
     uint64_t Count, bool Synthetic,
