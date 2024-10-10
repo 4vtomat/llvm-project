@@ -13,6 +13,9 @@
 #include "llvm/CodeGen/BasicTTIImpl.h"
 #include "llvm/CodeGen/CostTable.h"
 #include "llvm/CodeGen/TargetLowering.h"
+#if SIFIVE_CUSTOMIZATION
+#include "llvm/TargetParser/RISCVTargetParser.h"
+#endif // SIFIVE_CUSTOMIZATION
 #include "llvm/IR/Instructions.h"
 #if SIFIVE_CUSTOMIZATION
 #include "llvm/IR/IntrinsicsAArch64.h"
@@ -1796,12 +1799,9 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   VP_INTRINSIC(vp_fneg, 1)                                                     \
   VP_INTRINSIC(vp_gather, 1)                                                   \
   VP_INTRINSIC(vp_inttoptr, 1)                                                 \
-  VP_INTRINSIC(vp_load, 1)                                                     \
   VP_INTRINSIC(vp_ptrtoint, 1)                                                 \
   VP_INTRINSIC(vp_scatter, 1)                                                  \
-  VP_INTRINSIC(vp_select, 1)                                                   \
   VP_INTRINSIC(vp_merge, 1)                                                    \
-  VP_INTRINSIC(vp_store, 1)                                                    \
   VP_INTRINSIC(vp_fabs, 1)                                                     \
   VP_INTRINSIC(vp_sqrt, 1)                                                     \
   VP_INTRINSIC(vp_copysign, 1)                                                 \
@@ -2286,27 +2286,12 @@ RISCVTTIImpl::getIntrinsicInstrCost(const IntrinsicCostAttributes &ICA,
   case Intrinsic::vp_fcmp: {
     Intrinsic::ID IID = ICA.getID();
     std::optional<unsigned> FOp = VPIntrinsic::getFunctionalOpcodeForVP(IID);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-    if (!ICA.getInst())
-      break;
-    assert(FOp);
-    auto *UI = cast<VPCmpIntrinsic>(ICA.getInst());
-#else
-    auto *UI = dyn_cast<VPCmpIntrinsic>(ICA.getInst());
-
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
     // We can only handle vp_cmp intrinsics with underlying instructions.
     if (!ICA.getInst())
       break;
 
     assert(FOp);
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
     auto *UI = cast<VPCmpIntrinsic>(ICA.getInst());
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
     return getCmpSelInstrCost(*FOp, ICA.getArgTypes()[0], ICA.getReturnType(),
                               UI->getPredicate(), CostKind);
   }
@@ -2421,18 +2406,8 @@ InstructionCost RISCVTTIImpl::getCastInstrCost(unsigned Opcode, Type *Dst,
   // The split cost is handled by the base getCastInstrCost
   assert((SrcLT.first == 1) && (DstLT.first == 1) && "Illegal type");
 
-<<<<<<< HEAD
-  int ISD = TLI->InstructionOpcodeToISD(Opcode);
-  assert(ISD && "Invalid opcode");
-
-#if SIFIVE_CUSTOMIZATION
-  int PowDiff = (int)Log2_32(Dst->getScalarSizeInBits()) -
-                (int)Log2_32(Src->getScalarSizeInBits());
-#endif // SIFIVE_CUSTOMIZATION
-=======
   int PowDiff = (int)Log2_32(DstLT.second.getScalarSizeInBits()) -
                 (int)Log2_32(SrcLT.second.getScalarSizeInBits());
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   switch (ISD) {
   case ISD::SIGN_EXTEND:
   case ISD::ZERO_EXTEND: {
@@ -3045,9 +3020,6 @@ InstructionCost RISCVTTIImpl::getMemoryOpCost(unsigned Opcode, Type *Src,
 
   return Cost;
 #else
-  InstructionCost BaseCost =
-    BaseT::getMemoryOpCost(Opcode, Src, Alignment, AddressSpace,
-                           CostKind, OpInfo, I);
 
   std::pair<InstructionCost, MVT> LT = getTypeLegalizationCost(Src);
 
@@ -3684,12 +3656,8 @@ InstructionCost RISCVTTIImpl::getArithmeticInstrCost(
   // scalar floating point ops aren't cheaper than their vector equivalents.
   if (Ty->isFPOrFPVectorTy())
     InstrCost *= 2;
-<<<<<<< HEAD
 #endif // SIFIVE_CUSTOMIZATION
-  return ConstantMatCost + LT.first * InstrCost;
-=======
   return CastCost + ConstantMatCost + LT.first * InstrCost;
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 }
 
 // TODO: Deduplicate from TargetTransformInfoImplCRTPBase.
