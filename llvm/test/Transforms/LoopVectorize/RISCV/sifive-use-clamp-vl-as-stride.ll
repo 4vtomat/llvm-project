@@ -20,6 +20,7 @@ define void @widget(ptr %a, i64 %n) {
 ; CHECK-NEXT:    [[IND_END1:%.*]] = getelementptr i8, ptr [[A]], i64 [[TMP2]]
 ; CHECK-NEXT:    [[TMP3:%.*]] = mul i64 [[TMP1]], -16
 ; CHECK-NEXT:    [[IND_END3:%.*]] = getelementptr i8, ptr [[B]], i64 [[TMP3]]
+; CHECK-NEXT:    [[TMP42:%.*]] = call i64 @llvm.vscale.i64()
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -48,7 +49,7 @@ define void @widget(ptr %a, i64 %n) {
 ; CHECK-NEXT:    [[DEINTERLEAVED_RESULT_REVERSE7:%.*]] = call <vscale x 1 x ptr> @llvm.experimental.vp.reverse.nxv1p0(<vscale x 1 x ptr> [[TMP17]], <vscale x 1 x i1> shufflevector (<vscale x 1 x i1> insertelement (<vscale x 1 x i1> poison, i1 true, i64 0), <vscale x 1 x i1> poison, <vscale x 1 x i32> zeroinitializer), i32 [[TMP6]])
 ; CHECK-NEXT:    [[TMP18:%.*]] = ptrtoint <vscale x 1 x ptr> [[DEINTERLEAVED_RESULT_REVERSE7]] to <vscale x 1 x i64>
 ; CHECK-NEXT:    [[TMP19:%.*]] = bitcast <vscale x 1 x i64> [[TMP18]] to <vscale x 1 x double>
-; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr [[STRUCT]], ptr [[NEXT_GEP]], i64 -2, i32 1
+; CHECK-NEXT:    [[TMP20:%.*]] = getelementptr [[STRUCT]], ptr [[NEXT_GEP]], i64 -2, i32 0
 ; CHECK-NEXT:    [[TMP21:%.*]] = sub nuw nsw i32 [[TMP6]], 1
 ; CHECK-NEXT:    [[TMP22:%.*]] = mul nuw nsw i32 [[TMP21]], 2
 ; CHECK-NEXT:    [[TMP23:%.*]] = add nuw nsw i32 1, [[TMP22]]

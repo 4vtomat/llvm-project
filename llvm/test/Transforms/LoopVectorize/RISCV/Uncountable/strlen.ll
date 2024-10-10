@@ -25,6 +25,8 @@ declare i8 @unknown(i8, i8)
 define i64 @strlen_i8(ptr %start) {
 ; DEFAULT-LABEL: @strlen_i8(
 ; DEFAULT-NEXT:  entry:
+; DEFAULT-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; DEFAULT-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; DEFAULT-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -41,7 +43,6 @@ define i64 @strlen_i8(ptr %start) {
 ; DEFAULT-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; DEFAULT-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; DEFAULT-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; DEFAULT:       vec.uncountable.middle.block:
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -65,6 +66,8 @@ define i64 @strlen_i8(ptr %start) {
 ;
 ; ON-LABEL: @strlen_i8(
 ; ON-NEXT:  entry:
+; ON-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; ON-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
 ; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -81,7 +84,6 @@ define i64 @strlen_i8(ptr %start) {
 ; ON-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; ON-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; ON-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; ON-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
 ; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -137,6 +139,8 @@ define i64 @strlen_i8(ptr %start) {
 ;
 ; stress-LABEL: @strlen_i8(
 ; stress-NEXT:  entry:
+; stress-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; stress-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
 ; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -153,7 +157,6 @@ define i64 @strlen_i8(ptr %start) {
 ; stress-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; stress-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; stress-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; stress-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
 ; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -193,6 +196,8 @@ define i64 @strlen_i8(ptr %start) {
 ;
 ; IF0-LABEL: @strlen_i8(
 ; IF0-NEXT:  entry:
+; IF0-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; IF0-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; IF0-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF0:       vector.body:
 ; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -209,7 +214,6 @@ define i64 @strlen_i8(ptr %start) {
 ; IF0-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF0-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF0-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF0-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; IF0:       vec.uncountable.middle.block:
 ; IF0-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -233,6 +237,8 @@ define i64 @strlen_i8(ptr %start) {
 ;
 ; IF1-LABEL: @strlen_i8(
 ; IF1-NEXT:  entry:
+; IF1-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; IF1-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; IF1-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF1:       vector.body:
 ; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -249,7 +255,6 @@ define i64 @strlen_i8(ptr %start) {
 ; IF1-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF1-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF1-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF1-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; IF1:       vec.uncountable.middle.block:
 ; IF1-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -273,6 +278,8 @@ define i64 @strlen_i8(ptr %start) {
 ;
 ; IF2-LABEL: @strlen_i8(
 ; IF2-NEXT:  entry:
+; IF2-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; IF2-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; IF2-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF2:       vector.body:
 ; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -289,7 +296,6 @@ define i64 @strlen_i8(ptr %start) {
 ; IF2-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF2-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF2-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF2-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP0:![0-9]+]]
 ; IF2:       vec.uncountable.middle.block:
 ; IF2-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -332,6 +338,8 @@ for.end:
 define i64 @strlen_i16(ptr %start) {
 ; DEFAULT-LABEL: @strlen_i16(
 ; DEFAULT-NEXT:  entry:
+; DEFAULT-NEXT:    [[TMP12:%.*]] = call i16 @llvm.vscale.i16()
+; DEFAULT-NEXT:    [[TMP13:%.*]] = mul i16 [[TMP12]], 16
 ; DEFAULT-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -349,7 +357,6 @@ define i64 @strlen_i16(ptr %start) {
 ; DEFAULT-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP3]])
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; DEFAULT-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; DEFAULT-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; DEFAULT:       vec.uncountable.middle.block:
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -375,6 +382,8 @@ define i64 @strlen_i16(ptr %start) {
 ;
 ; ON-LABEL: @strlen_i16(
 ; ON-NEXT:  entry:
+; ON-NEXT:    [[TMP12:%.*]] = call i16 @llvm.vscale.i16()
+; ON-NEXT:    [[TMP13:%.*]] = mul i16 [[TMP12]], 16
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
 ; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -392,7 +401,6 @@ define i64 @strlen_i16(ptr %start) {
 ; ON-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP3]])
 ; ON-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; ON-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; ON-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
 ; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -452,6 +460,8 @@ define i64 @strlen_i16(ptr %start) {
 ;
 ; stress-LABEL: @strlen_i16(
 ; stress-NEXT:  entry:
+; stress-NEXT:    [[TMP12:%.*]] = call i16 @llvm.vscale.i16()
+; stress-NEXT:    [[TMP13:%.*]] = mul i16 [[TMP12]], 16
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
 ; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -469,7 +479,6 @@ define i64 @strlen_i16(ptr %start) {
 ; stress-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP3]])
 ; stress-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; stress-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; stress-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
 ; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -512,6 +521,8 @@ define i64 @strlen_i16(ptr %start) {
 ;
 ; IF0-LABEL: @strlen_i16(
 ; IF0-NEXT:  entry:
+; IF0-NEXT:    [[TMP12:%.*]] = call i16 @llvm.vscale.i16()
+; IF0-NEXT:    [[TMP13:%.*]] = mul i16 [[TMP12]], 16
 ; IF0-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF0:       vector.body:
 ; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -529,7 +540,6 @@ define i64 @strlen_i16(ptr %start) {
 ; IF0-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF0-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF0-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF0-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; IF0:       vec.uncountable.middle.block:
 ; IF0-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -555,6 +565,8 @@ define i64 @strlen_i16(ptr %start) {
 ;
 ; IF1-LABEL: @strlen_i16(
 ; IF1-NEXT:  entry:
+; IF1-NEXT:    [[TMP12:%.*]] = call i16 @llvm.vscale.i16()
+; IF1-NEXT:    [[TMP13:%.*]] = mul i16 [[TMP12]], 16
 ; IF1-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF1:       vector.body:
 ; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -572,7 +584,6 @@ define i64 @strlen_i16(ptr %start) {
 ; IF1-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF1-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF1-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF1-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; IF1:       vec.uncountable.middle.block:
 ; IF1-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -598,6 +609,8 @@ define i64 @strlen_i16(ptr %start) {
 ;
 ; IF2-LABEL: @strlen_i16(
 ; IF2-NEXT:  entry:
+; IF2-NEXT:    [[TMP12:%.*]] = call i16 @llvm.vscale.i16()
+; IF2-NEXT:    [[TMP13:%.*]] = mul i16 [[TMP12]], 16
 ; IF2-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF2:       vector.body:
 ; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -615,7 +628,6 @@ define i64 @strlen_i16(ptr %start) {
 ; IF2-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv16i1(<vscale x 16 x i1> [[VP_OP_ICMP]], <vscale x 16 x i1> shufflevector (<vscale x 16 x i1> insertelement (<vscale x 16 x i1> poison, i1 true, i64 0), <vscale x 16 x i1> poison, <vscale x 16 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF2-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF2-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF2-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP4:![0-9]+]]
 ; IF2:       vec.uncountable.middle.block:
 ; IF2-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -661,6 +673,8 @@ for.end:
 define i64 @strlen_i32(ptr %start) {
 ; DEFAULT-LABEL: @strlen_i32(
 ; DEFAULT-NEXT:  entry:
+; DEFAULT-NEXT:    [[TMP12:%.*]] = call i32 @llvm.vscale.i32()
+; DEFAULT-NEXT:    [[TMP13:%.*]] = mul i32 [[TMP12]], 8
 ; DEFAULT-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -678,7 +692,6 @@ define i64 @strlen_i32(ptr %start) {
 ; DEFAULT-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP3]])
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; DEFAULT-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; DEFAULT-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; DEFAULT:       vec.uncountable.middle.block:
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -704,6 +717,8 @@ define i64 @strlen_i32(ptr %start) {
 ;
 ; ON-LABEL: @strlen_i32(
 ; ON-NEXT:  entry:
+; ON-NEXT:    [[TMP12:%.*]] = call i32 @llvm.vscale.i32()
+; ON-NEXT:    [[TMP13:%.*]] = mul i32 [[TMP12]], 8
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
 ; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -721,7 +736,6 @@ define i64 @strlen_i32(ptr %start) {
 ; ON-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP3]])
 ; ON-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; ON-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; ON-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
 ; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -781,6 +795,8 @@ define i64 @strlen_i32(ptr %start) {
 ;
 ; stress-LABEL: @strlen_i32(
 ; stress-NEXT:  entry:
+; stress-NEXT:    [[TMP12:%.*]] = call i32 @llvm.vscale.i32()
+; stress-NEXT:    [[TMP13:%.*]] = mul i32 [[TMP12]], 8
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
 ; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -798,7 +814,6 @@ define i64 @strlen_i32(ptr %start) {
 ; stress-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP3]])
 ; stress-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; stress-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; stress-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
 ; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -841,6 +856,8 @@ define i64 @strlen_i32(ptr %start) {
 ;
 ; IF0-LABEL: @strlen_i32(
 ; IF0-NEXT:  entry:
+; IF0-NEXT:    [[TMP12:%.*]] = call i32 @llvm.vscale.i32()
+; IF0-NEXT:    [[TMP13:%.*]] = mul i32 [[TMP12]], 8
 ; IF0-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF0:       vector.body:
 ; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -858,7 +875,6 @@ define i64 @strlen_i32(ptr %start) {
 ; IF0-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF0-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF0-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF0-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; IF0:       vec.uncountable.middle.block:
 ; IF0-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -884,6 +900,8 @@ define i64 @strlen_i32(ptr %start) {
 ;
 ; IF1-LABEL: @strlen_i32(
 ; IF1-NEXT:  entry:
+; IF1-NEXT:    [[TMP12:%.*]] = call i32 @llvm.vscale.i32()
+; IF1-NEXT:    [[TMP13:%.*]] = mul i32 [[TMP12]], 8
 ; IF1-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF1:       vector.body:
 ; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -901,7 +919,6 @@ define i64 @strlen_i32(ptr %start) {
 ; IF1-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF1-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF1-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF1-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; IF1:       vec.uncountable.middle.block:
 ; IF1-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -927,6 +944,8 @@ define i64 @strlen_i32(ptr %start) {
 ;
 ; IF2-LABEL: @strlen_i32(
 ; IF2-NEXT:  entry:
+; IF2-NEXT:    [[TMP12:%.*]] = call i32 @llvm.vscale.i32()
+; IF2-NEXT:    [[TMP13:%.*]] = mul i32 [[TMP12]], 8
 ; IF2-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF2:       vector.body:
 ; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -944,7 +963,6 @@ define i64 @strlen_i32(ptr %start) {
 ; IF2-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv8i1(<vscale x 8 x i1> [[VP_OP_ICMP]], <vscale x 8 x i1> shufflevector (<vscale x 8 x i1> insertelement (<vscale x 8 x i1> poison, i1 true, i64 0), <vscale x 8 x i1> poison, <vscale x 8 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF2-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF2-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF2-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP6:![0-9]+]]
 ; IF2:       vec.uncountable.middle.block:
 ; IF2-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -990,6 +1008,8 @@ for.end:
 define i64 @strlen_i64(ptr %start) {
 ; DEFAULT-LABEL: @strlen_i64(
 ; DEFAULT-NEXT:  entry:
+; DEFAULT-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vscale.i64()
+; DEFAULT-NEXT:    [[TMP13:%.*]] = mul i64 [[TMP12]], 4
 ; DEFAULT-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -1007,7 +1027,6 @@ define i64 @strlen_i64(ptr %start) {
 ; DEFAULT-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP3]])
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; DEFAULT-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; DEFAULT-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; DEFAULT:       vec.uncountable.middle.block:
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -1033,6 +1052,8 @@ define i64 @strlen_i64(ptr %start) {
 ;
 ; ON-LABEL: @strlen_i64(
 ; ON-NEXT:  entry:
+; ON-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vscale.i64()
+; ON-NEXT:    [[TMP13:%.*]] = mul i64 [[TMP12]], 4
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
 ; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -1050,7 +1071,6 @@ define i64 @strlen_i64(ptr %start) {
 ; ON-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP3]])
 ; ON-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; ON-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; ON-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
 ; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -1110,6 +1130,8 @@ define i64 @strlen_i64(ptr %start) {
 ;
 ; stress-LABEL: @strlen_i64(
 ; stress-NEXT:  entry:
+; stress-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vscale.i64()
+; stress-NEXT:    [[TMP13:%.*]] = mul i64 [[TMP12]], 4
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
 ; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -1127,7 +1149,6 @@ define i64 @strlen_i64(ptr %start) {
 ; stress-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP3]])
 ; stress-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; stress-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; stress-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
 ; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -1170,6 +1191,8 @@ define i64 @strlen_i64(ptr %start) {
 ;
 ; IF0-LABEL: @strlen_i64(
 ; IF0-NEXT:  entry:
+; IF0-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vscale.i64()
+; IF0-NEXT:    [[TMP13:%.*]] = mul i64 [[TMP12]], 4
 ; IF0-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF0:       vector.body:
 ; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -1187,7 +1210,6 @@ define i64 @strlen_i64(ptr %start) {
 ; IF0-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF0-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF0-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF0-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; IF0:       vec.uncountable.middle.block:
 ; IF0-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -1213,6 +1235,8 @@ define i64 @strlen_i64(ptr %start) {
 ;
 ; IF1-LABEL: @strlen_i64(
 ; IF1-NEXT:  entry:
+; IF1-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vscale.i64()
+; IF1-NEXT:    [[TMP13:%.*]] = mul i64 [[TMP12]], 4
 ; IF1-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF1:       vector.body:
 ; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -1230,7 +1254,6 @@ define i64 @strlen_i64(ptr %start) {
 ; IF1-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF1-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF1-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF1-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; IF1:       vec.uncountable.middle.block:
 ; IF1-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -1256,6 +1279,8 @@ define i64 @strlen_i64(ptr %start) {
 ;
 ; IF2-LABEL: @strlen_i64(
 ; IF2-NEXT:  entry:
+; IF2-NEXT:    [[TMP12:%.*]] = call i64 @llvm.vscale.i64()
+; IF2-NEXT:    [[TMP13:%.*]] = mul i64 [[TMP12]], 4
 ; IF2-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF2:       vector.body:
 ; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -1273,7 +1298,6 @@ define i64 @strlen_i64(ptr %start) {
 ; IF2-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv4i1(<vscale x 4 x i1> [[VP_OP_ICMP]], <vscale x 4 x i1> shufflevector (<vscale x 4 x i1> insertelement (<vscale x 4 x i1> poison, i1 true, i64 0), <vscale x 4 x i1> poison, <vscale x 4 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF2-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF2-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF2-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP8:![0-9]+]]
 ; IF2:       vec.uncountable.middle.block:
 ; IF2-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -1320,6 +1344,8 @@ for.end:
 define i64 @SingleBlock0(ptr %start) {
 ; DEFAULT-LABEL: @SingleBlock0(
 ; DEFAULT-NEXT:  entry:
+; DEFAULT-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; DEFAULT-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; DEFAULT-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -1337,7 +1363,6 @@ define i64 @SingleBlock0(ptr %start) {
 ; DEFAULT-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; DEFAULT-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; DEFAULT-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; DEFAULT:       vec.uncountable.middle.block:
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -1362,6 +1387,8 @@ define i64 @SingleBlock0(ptr %start) {
 ;
 ; ON-LABEL: @SingleBlock0(
 ; ON-NEXT:  entry:
+; ON-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; ON-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
 ; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -1379,7 +1406,6 @@ define i64 @SingleBlock0(ptr %start) {
 ; ON-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; ON-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; ON-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; ON-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
 ; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -1438,6 +1464,8 @@ define i64 @SingleBlock0(ptr %start) {
 ;
 ; stress-LABEL: @SingleBlock0(
 ; stress-NEXT:  entry:
+; stress-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; stress-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
 ; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -1455,7 +1483,6 @@ define i64 @SingleBlock0(ptr %start) {
 ; stress-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; stress-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; stress-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; stress-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
 ; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -1497,6 +1524,8 @@ define i64 @SingleBlock0(ptr %start) {
 ;
 ; IF0-LABEL: @SingleBlock0(
 ; IF0-NEXT:  entry:
+; IF0-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; IF0-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; IF0-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF0:       vector.body:
 ; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -1514,7 +1543,6 @@ define i64 @SingleBlock0(ptr %start) {
 ; IF0-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF0-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF0-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF0-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; IF0:       vec.uncountable.middle.block:
 ; IF0-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -1539,6 +1567,8 @@ define i64 @SingleBlock0(ptr %start) {
 ;
 ; IF1-LABEL: @SingleBlock0(
 ; IF1-NEXT:  entry:
+; IF1-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; IF1-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; IF1-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF1:       vector.body:
 ; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -1556,7 +1586,6 @@ define i64 @SingleBlock0(ptr %start) {
 ; IF1-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF1-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF1-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF1-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; IF1:       vec.uncountable.middle.block:
 ; IF1-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -1581,6 +1610,8 @@ define i64 @SingleBlock0(ptr %start) {
 ;
 ; IF2-LABEL: @SingleBlock0(
 ; IF2-NEXT:  entry:
+; IF2-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; IF2-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; IF2-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF2:       vector.body:
 ; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -1598,7 +1629,6 @@ define i64 @SingleBlock0(ptr %start) {
 ; IF2-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF2-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF2-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF2-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP10:![0-9]+]]
 ; IF2:       vec.uncountable.middle.block:
 ; IF2-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -2166,6 +2196,8 @@ for.end:
 define i64 @SingleBlock4(ptr %start) {
 ; DEFAULT-LABEL: @SingleBlock4(
 ; DEFAULT-NEXT:  entry:
+; DEFAULT-NEXT:    [[TMP12:%.*]] = call i8 @llvm.vscale.i8()
+; DEFAULT-NEXT:    [[TMP13:%.*]] = mul i8 [[TMP12]], 32
 ; DEFAULT-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -2182,7 +2214,6 @@ define i64 @SingleBlock4(ptr %start) {
 ; DEFAULT-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; DEFAULT-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; DEFAULT-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; DEFAULT:       vec.uncountable.middle.block:
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = add i32 [[TMP6]], 1
@@ -2207,6 +2238,8 @@ define i64 @SingleBlock4(ptr %start) {
 ;
 ; ON-LABEL: @SingleBlock4(
 ; ON-NEXT:  entry:
+; ON-NEXT:    [[TMP12:%.*]] = call i8 @llvm.vscale.i8()
+; ON-NEXT:    [[TMP13:%.*]] = mul i8 [[TMP12]], 32
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
 ; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -2223,7 +2256,6 @@ define i64 @SingleBlock4(ptr %start) {
 ; ON-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; ON-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; ON-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; ON-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
 ; ON-NEXT:    [[TMP8:%.*]] = add i32 [[TMP6]], 1
@@ -2280,6 +2312,8 @@ define i64 @SingleBlock4(ptr %start) {
 ;
 ; stress-LABEL: @SingleBlock4(
 ; stress-NEXT:  entry:
+; stress-NEXT:    [[TMP12:%.*]] = call i8 @llvm.vscale.i8()
+; stress-NEXT:    [[TMP13:%.*]] = mul i8 [[TMP12]], 32
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
 ; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -2296,7 +2330,6 @@ define i64 @SingleBlock4(ptr %start) {
 ; stress-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; stress-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; stress-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; stress-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
 ; stress-NEXT:    [[TMP8:%.*]] = add i32 [[TMP6]], 1
@@ -2337,6 +2370,8 @@ define i64 @SingleBlock4(ptr %start) {
 ;
 ; IF0-LABEL: @SingleBlock4(
 ; IF0-NEXT:  entry:
+; IF0-NEXT:    [[TMP12:%.*]] = call i8 @llvm.vscale.i8()
+; IF0-NEXT:    [[TMP13:%.*]] = mul i8 [[TMP12]], 32
 ; IF0-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF0:       vector.body:
 ; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -2353,7 +2388,6 @@ define i64 @SingleBlock4(ptr %start) {
 ; IF0-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF0-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF0-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF0-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; IF0:       vec.uncountable.middle.block:
 ; IF0-NEXT:    [[TMP8:%.*]] = add i32 [[TMP6]], 1
@@ -2378,6 +2412,8 @@ define i64 @SingleBlock4(ptr %start) {
 ;
 ; IF1-LABEL: @SingleBlock4(
 ; IF1-NEXT:  entry:
+; IF1-NEXT:    [[TMP12:%.*]] = call i8 @llvm.vscale.i8()
+; IF1-NEXT:    [[TMP13:%.*]] = mul i8 [[TMP12]], 32
 ; IF1-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF1:       vector.body:
 ; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -2394,7 +2430,6 @@ define i64 @SingleBlock4(ptr %start) {
 ; IF1-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF1-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF1-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF1-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; IF1:       vec.uncountable.middle.block:
 ; IF1-NEXT:    [[TMP8:%.*]] = add i32 [[TMP6]], 1
@@ -2419,6 +2454,8 @@ define i64 @SingleBlock4(ptr %start) {
 ;
 ; IF2-LABEL: @SingleBlock4(
 ; IF2-NEXT:  entry:
+; IF2-NEXT:    [[TMP12:%.*]] = call i8 @llvm.vscale.i8()
+; IF2-NEXT:    [[TMP13:%.*]] = mul i8 [[TMP12]], 32
 ; IF2-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF2:       vector.body:
 ; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -2435,7 +2472,6 @@ define i64 @SingleBlock4(ptr %start) {
 ; IF2-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF2-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF2-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF2-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP12:![0-9]+]]
 ; IF2:       vec.uncountable.middle.block:
 ; IF2-NEXT:    [[TMP8:%.*]] = add i32 [[TMP6]], 1
@@ -2480,6 +2516,8 @@ for.end:
 define i64 @SingleBlock5(ptr %start) {
 ; DEFAULT-LABEL: @SingleBlock5(
 ; DEFAULT-NEXT:  entry:
+; DEFAULT-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; DEFAULT-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; DEFAULT-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -2496,7 +2534,6 @@ define i64 @SingleBlock5(ptr %start) {
 ; DEFAULT-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; DEFAULT-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; DEFAULT-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
 ; DEFAULT:       vec.uncountable.middle.block:
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -2520,6 +2557,8 @@ define i64 @SingleBlock5(ptr %start) {
 ;
 ; ON-LABEL: @SingleBlock5(
 ; ON-NEXT:  entry:
+; ON-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; ON-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
 ; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -2536,7 +2575,6 @@ define i64 @SingleBlock5(ptr %start) {
 ; ON-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; ON-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; ON-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; ON-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
 ; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -2592,6 +2630,8 @@ define i64 @SingleBlock5(ptr %start) {
 ;
 ; stress-LABEL: @SingleBlock5(
 ; stress-NEXT:  entry:
+; stress-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; stress-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
 ; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -2608,7 +2648,6 @@ define i64 @SingleBlock5(ptr %start) {
 ; stress-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; stress-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; stress-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; stress-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
 ; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -2648,6 +2687,8 @@ define i64 @SingleBlock5(ptr %start) {
 ;
 ; IF0-LABEL: @SingleBlock5(
 ; IF0-NEXT:  entry:
+; IF0-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; IF0-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; IF0-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF0:       vector.body:
 ; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -2664,7 +2705,6 @@ define i64 @SingleBlock5(ptr %start) {
 ; IF0-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF0-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF0-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF0-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
 ; IF0:       vec.uncountable.middle.block:
 ; IF0-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -2688,6 +2728,8 @@ define i64 @SingleBlock5(ptr %start) {
 ;
 ; IF1-LABEL: @SingleBlock5(
 ; IF1-NEXT:  entry:
+; IF1-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; IF1-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; IF1-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF1:       vector.body:
 ; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -2704,7 +2746,6 @@ define i64 @SingleBlock5(ptr %start) {
 ; IF1-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF1-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF1-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF1-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
 ; IF1:       vec.uncountable.middle.block:
 ; IF1-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -2728,6 +2769,8 @@ define i64 @SingleBlock5(ptr %start) {
 ;
 ; IF2-LABEL: @SingleBlock5(
 ; IF2-NEXT:  entry:
+; IF2-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; IF2-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; IF2-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF2:       vector.body:
 ; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -2744,7 +2787,6 @@ define i64 @SingleBlock5(ptr %start) {
 ; IF2-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF2-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF2-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF2-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP14:![0-9]+]]
 ; IF2:       vec.uncountable.middle.block:
 ; IF2-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -3250,6 +3292,8 @@ for.end:
 define i64 @SingleBlock9(ptr %start) {
 ; DEFAULT-LABEL: @SingleBlock9(
 ; DEFAULT-NEXT:  entry:
+; DEFAULT-NEXT:    [[TMP12:%.*]] = call i8 @llvm.vscale.i8()
+; DEFAULT-NEXT:    [[TMP13:%.*]] = mul i8 [[TMP12]], 32
 ; DEFAULT-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -3267,7 +3311,6 @@ define i64 @SingleBlock9(ptr %start) {
 ; DEFAULT-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; DEFAULT-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; DEFAULT-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
 ; DEFAULT:       vec.uncountable.middle.block:
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -3292,6 +3335,8 @@ define i64 @SingleBlock9(ptr %start) {
 ;
 ; ON-LABEL: @SingleBlock9(
 ; ON-NEXT:  entry:
+; ON-NEXT:    [[TMP12:%.*]] = call i8 @llvm.vscale.i8()
+; ON-NEXT:    [[TMP13:%.*]] = mul i8 [[TMP12]], 32
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
 ; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -3309,7 +3354,6 @@ define i64 @SingleBlock9(ptr %start) {
 ; ON-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; ON-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; ON-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; ON-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
 ; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -3368,6 +3412,8 @@ define i64 @SingleBlock9(ptr %start) {
 ;
 ; stress-LABEL: @SingleBlock9(
 ; stress-NEXT:  entry:
+; stress-NEXT:    [[TMP12:%.*]] = call i8 @llvm.vscale.i8()
+; stress-NEXT:    [[TMP13:%.*]] = mul i8 [[TMP12]], 32
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
 ; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -3385,7 +3431,6 @@ define i64 @SingleBlock9(ptr %start) {
 ; stress-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; stress-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; stress-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; stress-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
 ; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -3427,6 +3472,8 @@ define i64 @SingleBlock9(ptr %start) {
 ;
 ; IF0-LABEL: @SingleBlock9(
 ; IF0-NEXT:  entry:
+; IF0-NEXT:    [[TMP12:%.*]] = call i8 @llvm.vscale.i8()
+; IF0-NEXT:    [[TMP13:%.*]] = mul i8 [[TMP12]], 32
 ; IF0-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF0:       vector.body:
 ; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -3444,7 +3491,6 @@ define i64 @SingleBlock9(ptr %start) {
 ; IF0-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF0-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF0-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF0-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
 ; IF0:       vec.uncountable.middle.block:
 ; IF0-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -3469,6 +3515,8 @@ define i64 @SingleBlock9(ptr %start) {
 ;
 ; IF1-LABEL: @SingleBlock9(
 ; IF1-NEXT:  entry:
+; IF1-NEXT:    [[TMP12:%.*]] = call i8 @llvm.vscale.i8()
+; IF1-NEXT:    [[TMP13:%.*]] = mul i8 [[TMP12]], 32
 ; IF1-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF1:       vector.body:
 ; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -3486,7 +3534,6 @@ define i64 @SingleBlock9(ptr %start) {
 ; IF1-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF1-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF1-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF1-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
 ; IF1:       vec.uncountable.middle.block:
 ; IF1-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -3511,6 +3558,8 @@ define i64 @SingleBlock9(ptr %start) {
 ;
 ; IF2-LABEL: @SingleBlock9(
 ; IF2-NEXT:  entry:
+; IF2-NEXT:    [[TMP12:%.*]] = call i8 @llvm.vscale.i8()
+; IF2-NEXT:    [[TMP13:%.*]] = mul i8 [[TMP12]], 32
 ; IF2-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF2:       vector.body:
 ; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -3528,7 +3577,6 @@ define i64 @SingleBlock9(ptr %start) {
 ; IF2-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[VP_OP_ICMP]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF2-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF2-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF2-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP16:![0-9]+]]
 ; IF2:       vec.uncountable.middle.block:
 ; IF2-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -3709,6 +3757,8 @@ return:
 define ptr @SingleBlock11(ptr %s) {
 ; DEFAULT-LABEL: @SingleBlock11(
 ; DEFAULT-NEXT:  entry:
+; DEFAULT-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; DEFAULT-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; DEFAULT-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; DEFAULT:       vector.body:
 ; DEFAULT-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -3726,7 +3776,6 @@ define ptr @SingleBlock11(ptr %s) {
 ; DEFAULT-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[PRED_NOT]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; DEFAULT-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; DEFAULT-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
 ; DEFAULT:       vec.uncountable.middle.block:
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -3747,6 +3796,8 @@ define ptr @SingleBlock11(ptr %s) {
 ;
 ; ON-LABEL: @SingleBlock11(
 ; ON-NEXT:  entry:
+; ON-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; ON-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; ON:       vector.body:
 ; ON-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -3764,7 +3815,6 @@ define ptr @SingleBlock11(ptr %s) {
 ; ON-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[PRED_NOT]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; ON-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; ON-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; ON-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
 ; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -3811,6 +3861,8 @@ define ptr @SingleBlock11(ptr %s) {
 ;
 ; stress-LABEL: @SingleBlock11(
 ; stress-NEXT:  entry:
+; stress-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; stress-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; stress:       vector.body:
 ; stress-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -3828,7 +3880,6 @@ define ptr @SingleBlock11(ptr %s) {
 ; stress-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[PRED_NOT]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; stress-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; stress-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; stress-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
 ; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -3862,6 +3913,8 @@ define ptr @SingleBlock11(ptr %s) {
 ;
 ; IF0-LABEL: @SingleBlock11(
 ; IF0-NEXT:  entry:
+; IF0-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; IF0-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; IF0-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF0:       vector.body:
 ; IF0-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -3879,7 +3932,6 @@ define ptr @SingleBlock11(ptr %s) {
 ; IF0-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[PRED_NOT]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF0-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF0-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF0-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
 ; IF0:       vec.uncountable.middle.block:
 ; IF0-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -3900,6 +3952,8 @@ define ptr @SingleBlock11(ptr %s) {
 ;
 ; IF1-LABEL: @SingleBlock11(
 ; IF1-NEXT:  entry:
+; IF1-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; IF1-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; IF1-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF1:       vector.body:
 ; IF1-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -3917,7 +3971,6 @@ define ptr @SingleBlock11(ptr %s) {
 ; IF1-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[PRED_NOT]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF1-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF1-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF1-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
 ; IF1:       vec.uncountable.middle.block:
 ; IF1-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -3938,6 +3991,8 @@ define ptr @SingleBlock11(ptr %s) {
 ;
 ; IF2-LABEL: @SingleBlock11(
 ; IF2-NEXT:  entry:
+; IF2-NEXT:    [[TMP11:%.*]] = call i8 @llvm.vscale.i8()
+; IF2-NEXT:    [[TMP12:%.*]] = mul i8 [[TMP11]], 32
 ; IF2-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; IF2:       vector.body:
 ; IF2-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[ENTRY:%.*]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
@@ -3955,7 +4010,6 @@ define ptr @SingleBlock11(ptr %s) {
 ; IF2-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[PRED_NOT]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF2-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF2-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF2-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP18:![0-9]+]]
 ; IF2:       vec.uncountable.middle.block:
 ; IF2-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -5183,6 +5237,8 @@ for.end.loopexit:
 define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; DEFAULT-LABEL: @SingleBlock19(
 ; DEFAULT-NEXT:  entry:
+; DEFAULT-NEXT:    [[TMP12:%.*]] = call i8 @llvm.vscale.i8()
+; DEFAULT-NEXT:    [[TMP13:%.*]] = mul i8 [[TMP12]], 32
 ; DEFAULT-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 32 x i8> poison, i8 [[N:%.*]], i64 0
 ; DEFAULT-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 32 x i8> [[BROADCAST_SPLATINSERT]], <vscale x 32 x i8> poison, <vscale x 32 x i32> zeroinitializer
 ; DEFAULT-NEXT:    br label [[VECTOR_BODY:%.*]]
@@ -5204,7 +5260,6 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; DEFAULT-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[PRED_NOT]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; DEFAULT-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; DEFAULT-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; DEFAULT-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; DEFAULT-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
 ; DEFAULT:       vec.uncountable.middle.block:
 ; DEFAULT-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -5227,6 +5282,8 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ;
 ; ON-LABEL: @SingleBlock19(
 ; ON-NEXT:  entry:
+; ON-NEXT:    [[TMP12:%.*]] = call i8 @llvm.vscale.i8()
+; ON-NEXT:    [[TMP13:%.*]] = mul i8 [[TMP12]], 32
 ; ON-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 32 x i8> poison, i8 [[N:%.*]], i64 0
 ; ON-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 32 x i8> [[BROADCAST_SPLATINSERT]], <vscale x 32 x i8> poison, <vscale x 32 x i32> zeroinitializer
 ; ON-NEXT:    br label [[VECTOR_BODY:%.*]]
@@ -5248,7 +5305,6 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; ON-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[PRED_NOT]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; ON-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; ON-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; ON-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; ON-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
 ; ON:       vec.uncountable.middle.block:
 ; ON-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -5301,6 +5357,8 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ;
 ; stress-LABEL: @SingleBlock19(
 ; stress-NEXT:  entry:
+; stress-NEXT:    [[TMP12:%.*]] = call i8 @llvm.vscale.i8()
+; stress-NEXT:    [[TMP13:%.*]] = mul i8 [[TMP12]], 32
 ; stress-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 32 x i8> poison, i8 [[N:%.*]], i64 0
 ; stress-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 32 x i8> [[BROADCAST_SPLATINSERT]], <vscale x 32 x i8> poison, <vscale x 32 x i32> zeroinitializer
 ; stress-NEXT:    br label [[VECTOR_BODY:%.*]]
@@ -5322,7 +5380,6 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; stress-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[PRED_NOT]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; stress-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; stress-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; stress-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; stress-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
 ; stress:       vec.uncountable.middle.block:
 ; stress-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -5360,6 +5417,8 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ;
 ; IF0-LABEL: @SingleBlock19(
 ; IF0-NEXT:  entry:
+; IF0-NEXT:    [[TMP12:%.*]] = call i8 @llvm.vscale.i8()
+; IF0-NEXT:    [[TMP13:%.*]] = mul i8 [[TMP12]], 32
 ; IF0-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 32 x i8> poison, i8 [[N:%.*]], i64 0
 ; IF0-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 32 x i8> [[BROADCAST_SPLATINSERT]], <vscale x 32 x i8> poison, <vscale x 32 x i32> zeroinitializer
 ; IF0-NEXT:    br label [[VECTOR_BODY:%.*]]
@@ -5381,7 +5440,6 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; IF0-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[PRED_NOT]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF0-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF0-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF0-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF0-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
 ; IF0:       vec.uncountable.middle.block:
 ; IF0-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -5404,6 +5462,8 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ;
 ; IF1-LABEL: @SingleBlock19(
 ; IF1-NEXT:  entry:
+; IF1-NEXT:    [[TMP12:%.*]] = call i8 @llvm.vscale.i8()
+; IF1-NEXT:    [[TMP13:%.*]] = mul i8 [[TMP12]], 32
 ; IF1-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 32 x i8> poison, i8 [[N:%.*]], i64 0
 ; IF1-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 32 x i8> [[BROADCAST_SPLATINSERT]], <vscale x 32 x i8> poison, <vscale x 32 x i32> zeroinitializer
 ; IF1-NEXT:    br label [[VECTOR_BODY:%.*]]
@@ -5425,7 +5485,6 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; IF1-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[PRED_NOT]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF1-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF1-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF1-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF1-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
 ; IF1:       vec.uncountable.middle.block:
 ; IF1-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64
@@ -5448,6 +5507,8 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ;
 ; IF2-LABEL: @SingleBlock19(
 ; IF2-NEXT:  entry:
+; IF2-NEXT:    [[TMP12:%.*]] = call i8 @llvm.vscale.i8()
+; IF2-NEXT:    [[TMP13:%.*]] = mul i8 [[TMP12]], 32
 ; IF2-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 32 x i8> poison, i8 [[N:%.*]], i64 0
 ; IF2-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 32 x i8> [[BROADCAST_SPLATINSERT]], <vscale x 32 x i8> poison, <vscale x 32 x i32> zeroinitializer
 ; IF2-NEXT:    br label [[VECTOR_BODY:%.*]]
@@ -5469,7 +5530,6 @@ define ptr @SingleBlock19(ptr %src, i8 %N) {
 ; IF2-NEXT:    [[TMP6:%.*]] = call i32 @llvm.vp.first.nxv32i1(<vscale x 32 x i1> [[PRED_NOT]], <vscale x 32 x i1> shufflevector (<vscale x 32 x i1> insertelement (<vscale x 32 x i1> poison, i1 true, i64 0), <vscale x 32 x i1> poison, <vscale x 32 x i32> zeroinitializer), i32 [[TMP3]])
 ; IF2-NEXT:    [[TMP7:%.*]] = icmp sge i32 [[TMP6]], 0
 ; IF2-NEXT:    [[INDEX_EVL_NEXT]] = add nuw i64 [[TMP5]], [[EVL_BASED_IV]]
-; IF2-NEXT:    [[INDEX_NEXT:%.*]] = add nuw i64 [[INDEX]], [[TMP5]]
 ; IF2-NEXT:    br i1 [[TMP7]], label [[VEC_UNCOUNTABLE_MIDDLE_BLOCK:%.*]], label [[VECTOR_BODY]], !llvm.loop [[LOOP20:![0-9]+]]
 ; IF2:       vec.uncountable.middle.block:
 ; IF2-NEXT:    [[TMP8:%.*]] = zext i32 [[TMP6]] to i64

@@ -25,7 +25,7 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK-NEXT:    [[TMP8:%.*]] = add nuw nsw i64 [[TMP7]], 4
 ; CHECK-NEXT:    [[SCEVGEP:%.*]] = getelementptr i8, ptr [[K]], i64 [[TMP8]]
 ; CHECK-NEXT:    [[BOUND0:%.*]] = icmp ult ptr @m, [[SCEVGEP]]
-; CHECK-NEXT:    [[BOUND1:%.*]] = icmp ult ptr [[K]], getelementptr inbounds (i8, ptr @m, i64 4)
+; CHECK-NEXT:    [[BOUND1:%.*]] = icmp ult ptr [[K]], getelementptr inbounds nuw (i8, ptr @m, i64 4)
 ; CHECK-NEXT:    [[FOUND_CONFLICT:%.*]] = and i1 [[BOUND0]], [[BOUND1]]
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT]], label [[SCALAR_PH]], label [[VECTOR_PH:%.*]]
 ; CHECK:       vector.ph:
@@ -33,11 +33,13 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK-NEXT:    [[IND_END:%.*]] = mul i64 [[N_VEC]], [[TMP0]]
 ; CHECK-NEXT:    [[DOTCAST:%.*]] = trunc i64 [[N_VEC]] to i32
 ; CHECK-NEXT:    [[IND_END1:%.*]] = add i32 1, [[DOTCAST]]
+; CHECK-NEXT:    [[TMP17:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    [[TMP41:%.*]] = mul i64 [[TMP17]], 2
 ; CHECK-NEXT:    br label [[VECTOR_BODY:%.*]]
 ; CHECK:       vector.body:
 ; CHECK-NEXT:    [[INDEX:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i64 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT]], [[VECTOR_BODY]] ]
-; CHECK-NEXT:    [[TMP11:%.*]] = sub i64 [[N_VEC]], [[EVL_BASED_IV]]
+; CHECK-NEXT:    [[TMP11:%.*]] = sub i64 [[TMP3]], [[EVL_BASED_IV]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = call i32 @llvm.experimental.get.vector.length.i64(i64 [[TMP11]], i32 2, i1 true)
 ; CHECK-NEXT:    [[OFFSET_IDX:%.*]] = mul i64 [[EVL_BASED_IV]], [[TMP0]]
 ; CHECK-NEXT:    [[TMP9:%.*]] = mul i64 0, [[TMP0]]
@@ -80,7 +82,7 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK-NEXT:    [[UMAX:%.*]] = select i1 [[TMP32]], ptr [[SCEVGEP4]], ptr [[SCEVGEP5]]
 ; CHECK-NEXT:    [[SCEVGEP6:%.*]] = getelementptr i8, ptr [[UMAX]], i64 4
 ; CHECK-NEXT:    [[BOUND07:%.*]] = icmp ult ptr @m, [[SCEVGEP6]]
-; CHECK-NEXT:    [[BOUND18:%.*]] = icmp ult ptr [[UMIN]], getelementptr inbounds (i8, ptr @m, i64 4)
+; CHECK-NEXT:    [[BOUND18:%.*]] = icmp ult ptr [[UMIN]], getelementptr inbounds nuw (i8, ptr @m, i64 4)
 ; CHECK-NEXT:    [[FOUND_CONFLICT9:%.*]] = and i1 [[BOUND07]], [[BOUND18]]
 ; CHECK-NEXT:    br i1 [[FOUND_CONFLICT9]], label [[SCALAR_PH11]], label [[VECTOR_PH12:%.*]]
 ; CHECK:       vector.ph12:
@@ -88,6 +90,8 @@ define void @_Z3fn1v(i32 %n, ptr %k, i32 %l) {
 ; CHECK-NEXT:    [[IND_END13:%.*]] = add i64 [[BC_RESUME_VAL]], [[TMP33]]
 ; CHECK-NEXT:    [[DOTCAST15:%.*]] = trunc i64 [[TMP23]] to i32
 ; CHECK-NEXT:    [[IND_END16:%.*]] = add i32 [[BC_RESUME_VAL2]], [[DOTCAST15]]
+; CHECK-NEXT:    [[TMP45:%.*]] = call i64 @llvm.vscale.i64()
+; CHECK-NEXT:    [[TMP46:%.*]] = mul i64 [[TMP45]], 2
 ; CHECK-NEXT:    [[TMP34:%.*]] = shl nsw i64 [[TMP0]], 3
 ; CHECK-NEXT:    br label [[VECTOR_BODY18:%.*]]
 ; CHECK:       vector.body18:

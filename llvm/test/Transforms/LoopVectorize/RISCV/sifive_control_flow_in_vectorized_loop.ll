@@ -21,6 +21,8 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; X280-NEXT:    [[TMP1:%.*]] = or i64 [[SHL]], [[TMP0]]
 ; X280-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; X280:       [[VECTOR_PH]]:
+; X280-NEXT:    [[TMP8:%.*]] = call i64 @llvm.vscale.i64()
+; X280-NEXT:    [[TMP13:%.*]] = mul i64 [[TMP8]], 4
 ; X280-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[TMP1]], i64 0
 ; X280-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 4 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer
 ; X280-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[SHL11]], i64 0
@@ -86,6 +88,8 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; P470-NEXT:    [[TMP1:%.*]] = or i64 [[SHL]], [[TMP0]]
 ; P470-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; P470:       [[VECTOR_PH]]:
+; P470-NEXT:    [[TMP10:%.*]] = call i64 @llvm.vscale.i64()
+; P470-NEXT:    [[TMP15:%.*]] = mul i64 [[TMP10]], 4
 ; P470-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[TMP1]], i64 0
 ; P470-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 4 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer
 ; P470-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[SHL11]], i64 0
@@ -157,6 +161,8 @@ define void @test(i32 %control1, i32 %control2, i32 %target, i32 %reg.4.val, ptr
 ; P670-NEXT:    [[TMP1:%.*]] = or i64 [[SHL]], [[TMP0]]
 ; P670-NEXT:    br i1 false, label %[[SCALAR_PH:.*]], label %[[VECTOR_PH:.*]]
 ; P670:       [[VECTOR_PH]]:
+; P670-NEXT:    [[TMP8:%.*]] = call i64 @llvm.vscale.i64()
+; P670-NEXT:    [[TMP13:%.*]] = mul i64 [[TMP8]], 4
 ; P670-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[TMP1]], i64 0
 ; P670-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 4 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 4 x i64> poison, <vscale x 4 x i32> zeroinitializer
 ; P670-NEXT:    [[BROADCAST_SPLATINSERT1:%.*]] = insertelement <vscale x 4 x i64> poison, i64 [[SHL11]], i64 0
@@ -245,3 +251,19 @@ for.end.loopexit:
 for.end:
   ret void
 }
+;.
+; X280: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; X280: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
+; X280: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
+; X280: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+;.
+; P470: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; P470: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
+; P470: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
+; P470: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+;.
+; P670: [[LOOP0]] = distinct !{[[LOOP0]], [[META1:![0-9]+]], [[META2:![0-9]+]]}
+; P670: [[META1]] = !{!"llvm.loop.isvectorized", i32 1}
+; P670: [[META2]] = !{!"llvm.loop.unroll.runtime.disable"}
+; P670: [[LOOP3]] = distinct !{[[LOOP3]], [[META2]], [[META1]]}
+;.

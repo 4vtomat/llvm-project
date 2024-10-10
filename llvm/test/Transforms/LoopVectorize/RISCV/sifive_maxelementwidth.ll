@@ -12,6 +12,7 @@ define void @foo(i64* %x, i64 %n, i64 %y) {
 ; V:       for.body.preheader:
 ; V-NEXT:    br i1 false, label [[SCALAR_PH:%.*]], label [[VECTOR_PH:%.*]]
 ; V:       vector.ph:
+; V-NEXT:    [[TMP8:%.*]] = call i64 @llvm.vscale.i64()
 ; V-NEXT:    [[BROADCAST_SPLATINSERT:%.*]] = insertelement <vscale x 1 x i64> poison, i64 [[Y:%.*]], i64 0
 ; V-NEXT:    [[BROADCAST_SPLAT:%.*]] = shufflevector <vscale x 1 x i64> [[BROADCAST_SPLATINSERT]], <vscale x 1 x i64> poison, <vscale x 1 x i32> zeroinitializer
 ; V-NEXT:    br label [[VECTOR_BODY:%.*]]

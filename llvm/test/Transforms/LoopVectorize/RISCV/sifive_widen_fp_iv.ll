@@ -30,6 +30,7 @@ define void @test(i32 %input, ptr %0) {
 ; CHECK-NEXT:    [[EVL_BASED_IV:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT1:%.*]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[EVL_BASED_IV1:%.*]] = phi i32 [ 0, [[VECTOR_PH]] ], [ [[INDEX_EVL_NEXT1]], [[VECTOR_BODY]] ]
 ; CHECK-NEXT:    [[VEC_IND:%.*]] = phi <vscale x 4 x double> [ [[INDUCTION]], [[VECTOR_PH]] ], [ [[VEC_IND_NEXT:%.*]], [[VECTOR_BODY]] ]
+; CHECK-NEXT:    [[VEC_IND_NEXT1:%.*]] = fadd reassoc <vscale x 4 x double> [[VEC_IND]], [[DOTSPLAT]]
 ; CHECK-NEXT:    [[TMP13:%.*]] = sub i32 [[TMP1]], [[EVL_BASED_IV1]]
 ; CHECK-NEXT:    [[TMP12:%.*]] = call i32 @llvm.experimental.get.vector.length.i32(i32 [[TMP13]], i32 4, i1 true)
 ; CHECK-NEXT:    [[TMP11:%.*]] = add i32 [[EVL_BASED_IV1]], 0
