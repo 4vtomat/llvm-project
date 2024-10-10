@@ -2159,7 +2159,7 @@ bool LoopVectorizationLegality::canVectorize(bool UseVPlanNativePath) {
       return false;
   }
 
-<<<<<<< HEAD
+
 #if SIFIVE_CUSTOMIZATION
   // Countable vs uncountable loops
   const SCEV *ExitCount = PSE.getBackedgeTakenCount();
@@ -2191,8 +2191,9 @@ bool LoopVectorizationLegality::canVectorize(bool UseVPlanNativePath) {
   // Memory safety analysis has a separate pipeline for uncountable loops.
   // Skip the countable loop one.
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   HasUncountableEarlyExit = false;
+
   if (isa<SCEVCouldNotCompute>(PSE.getBackedgeTakenCount())) {
     if (!isVectorizableEarlyExitLoop()) {
       if (DoExtraAnalysis)
@@ -2203,7 +2204,6 @@ bool LoopVectorizationLegality::canVectorize(bool UseVPlanNativePath) {
       HasUncountableEarlyExit = true;
   }
 
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   // Go over each instruction and look at memory deps.
   if (!canVectorizeMemory()) {
     LLVM_DEBUG(dbgs() << "LV: Can't vectorize due to memory conflicts\n");
