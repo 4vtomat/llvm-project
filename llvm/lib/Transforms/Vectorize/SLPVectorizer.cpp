@@ -4843,25 +4843,18 @@ BoUpSLP::canVectorizeLoads(ArrayRef<Value *> VL, const Value *VL0,
 
   auto *VecTy = getWidenedType(ScalarTy, Sz);
   Align CommonAlignment = computeCommonAlignment<LoadInst>(VL);
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // If ScalarTy is a VectorType (when REVEC is enabled), it is hard for being
   // strided load.
   bool IsSourceScalarInstruction = !isa<VectorType>(VL[0]->getType());
   if (IsSourceScalarInstruction)
 #endif // SIFIVE_CUSTOMIZATION
-  if (!IsSorted && Sz > MinProfitableStridedLoads && TTI->isTypeLegal(VecTy) &&
-      TTI->isLegalStridedLoadStore(VecTy, CommonAlignment) &&
-      calculateRtStride(PointerOps, ScalarTy, *DL, *SE, Order))
-    return LoadsState::StridedVectorize;
-=======
   if (!IsSorted) {
     if (Sz > MinProfitableStridedLoads && TTI->isTypeLegal(VecTy)) {
       if (TTI->isLegalStridedLoadStore(VecTy, CommonAlignment) &&
           calculateRtStride(PointerOps, ScalarTy, *DL, *SE, Order))
         return LoadsState::StridedVectorize;
     }
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 
     if (!TTI->isLegalMaskedGather(VecTy, CommonAlignment) ||
         TTI->forceScalarizeMaskedGather(VecTy, CommonAlignment))
@@ -11258,7 +11251,6 @@ bool BoUpSLP::isLoadCombineCandidate(ArrayRef<Value *> Stores) const {
 }
 
 bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
-<<<<<<< HEAD
 #if SIFIVE_CUSTOMIZATION
   // Disable 3 elements vectorization of GB5.209.Camera benchmark for X280.
   Triple TargetTriple(F->getEntryBlock().getModule()->getTargetTriple());
@@ -11272,11 +11264,10 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
       }))
     return true;
 #endif // SIFIVE_CUSTOMIZATION
-=======
+
   if (!DebugCounter::shouldExecute(VectorizedGraphs))
     return true;
 
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   // No need to vectorize inserts of gathered values.
   if (VectorizableTree.size() == 2 &&
       isa<InsertElementInst>(VectorizableTree[0]->Scalars[0]) &&
@@ -11675,13 +11666,7 @@ InstructionCost BoUpSLP::getTreeCost(ArrayRef<Value *> VectorizedVals) {
   DenseSet<std::pair<const TreeEntry *, Type *>> VectorCasts;
   std::optional<DenseMap<Value *, unsigned>> ValueToExtUses;
   DenseMap<const TreeEntry *, DenseSet<Value *>> ExtractsCount;
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
   SmallPtrSet<Value *, 4> ScalarOpsFromCasts;
-#endif // SIFIVE_CUSTOMIZATION
-=======
-  SmallPtrSet<Value *, 4> ScalarOpsFromCasts;
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   for (ExternalUser &EU : ExternalUses) {
     // Uses by ephemeral values are free (because the ephemeral value will be
     // removed prior to code generation, and so the extraction will be
@@ -11942,10 +11927,6 @@ InstructionCost BoUpSLP::getTreeCost(ArrayRef<Value *> VectorizedVals) {
           ExtraCost = ScalarCost;
           if (!IsPhiInLoop(EU))
             ExtractsCount[Entry].insert(Inst);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
           if (CanBeUsedAsScalarCast) {
             ScalarOpsFromCasts.insert(Inst->getOperand(0));
             // Update the users of the operands of the cast operand to avoid
@@ -11960,20 +11941,12 @@ InstructionCost BoUpSLP::getTreeCost(ArrayRef<Value *> VectorizedVals) {
               });
             }
           }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
         }
       }
     }
 
     ExtractCost += ExtraCost;
   }
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   // Insert externals for extract of operands of casts to be emitted as scalars
   // instead of extractelement.
   for (Value *V : ScalarOpsFromCasts) {
@@ -11982,10 +11955,6 @@ InstructionCost BoUpSLP::getTreeCost(ArrayRef<Value *> VectorizedVals) {
       ExternalUses.emplace_back(V, nullptr, E->findLaneForValue(V));
     }
   }
-<<<<<<< HEAD
-#endif // SIFIVE_CUSTOMIZATION
-=======
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
   // Add reduced value cost, if resized.
   if (!VectorizedVals.empty()) {
     const TreeEntry &Root = *VectorizableTree.front();
@@ -13301,15 +13270,8 @@ public:
       UniqueBases.insert(VecBase);
       // If the only one use is vectorized - can delete the extractelement
       // itself.
-<<<<<<< HEAD
-      if (!EI->hasOneUse() || (NumParts != 1 && count(E->Scalars, EI) > 1) ||
-#if SIFIVE_CUSTOMIZATION
-          R.ExternalUsesAsOriginalScalar.contains(EI) ||
-#endif // SIFIVE_CUSTOMIZATION
-=======
       if (!EI->hasOneUse() || R.ExternalUsesAsOriginalScalar.contains(EI) ||
           (NumParts != 1 && count(E->Scalars, EI) > 1) ||
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
           any_of(EI->users(), [&](User *U) {
             const TreeEntry *UTE = R.getTreeEntry(U);
             return !UTE || R.MultiNodeScalars.contains(U) ||
