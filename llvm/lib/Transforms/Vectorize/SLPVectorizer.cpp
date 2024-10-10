@@ -10877,25 +10877,24 @@ BoUpSLP::getEntryCost(const TreeEntry *E, ArrayRef<Value *> VectorizedVals,
     auto *LI0 = cast<LoadInst>(VL0);
     auto GetVectorCost = [&](InstructionCost CommonCost) {
       InstructionCost VecLdCost;
-        if (E->State == TreeEntry::Vectorize) {
-          VecLdCost = TTI->getMemoryOpCost(
-              Instruction::Load, VecTy, LI0->getAlign(),
-              LI0->getPointerAddressSpace(), CostKind, TTI::OperandValueInfo());
-        } else if (E->State == TreeEntry::StridedVectorize) {
-          Align CommonAlignment =
-              computeCommonAlignment<LoadInst>(UniqueValues.getArrayRef());
-          VecLdCost = TTI->getStridedMemoryOpCost(
-              Instruction::Load, VecTy, LI0->getPointerOperand(),
-              /*VariableMask=*/false, CommonAlignment, CostKind);
-        } else {
-          assert(E->State == TreeEntry::ScatterVectorize &&
-                 "Unknown EntryState");
-          Align CommonAlignment =
-              computeCommonAlignment<LoadInst>(UniqueValues.getArrayRef());
-          VecLdCost = TTI->getGatherScatterOpCost(
-              Instruction::Load, VecTy, LI0->getPointerOperand(),
-              /*VariableMask=*/false, CommonAlignment, CostKind);
-        }
+      if (E->State == TreeEntry::Vectorize) {
+        VecLdCost = TTI->getMemoryOpCost(
+            Instruction::Load, VecTy, LI0->getAlign(),
+            LI0->getPointerAddressSpace(), CostKind, TTI::OperandValueInfo());
+      } else if (E->State == TreeEntry::StridedVectorize) {
+        Align CommonAlignment =
+            computeCommonAlignment<LoadInst>(UniqueValues.getArrayRef());
+        VecLdCost = TTI->getStridedMemoryOpCost(
+            Instruction::Load, VecTy, LI0->getPointerOperand(),
+            /*VariableMask=*/false, CommonAlignment, CostKind);
+      } else {
+        assert(E->State == TreeEntry::ScatterVectorize && "Unknown EntryState");
+        Align CommonAlignment =
+            computeCommonAlignment<LoadInst>(UniqueValues.getArrayRef());
+        VecLdCost = TTI->getGatherScatterOpCost(
+            Instruction::Load, VecTy, LI0->getPointerOperand(),
+            /*VariableMask=*/false, CommonAlignment, CostKind);
+      }
       return VecLdCost + CommonCost;
     };
 
@@ -11315,10 +11314,8 @@ bool BoUpSLP::isTreeTinyAndNotFullyVectorizable(bool ForReduction) const {
         return TE->isGather() && all_of(TE->Scalars, [&](Value *V) {
                  return isa<ExtractElementInst, UndefValue>(V) ||
                         (IsAllowedSingleBVNode &&
-                         (!V->hasNUsesOrMore(UsesLimit) &&
-                          any_of(V->users(), [](User *U) {
-                            return isa<InsertElementInst>(U);
-                          })));
+                         !V->hasNUsesOrMore(UsesLimit) &&
+                         any_of(V->users(), IsaPred<InsertElementInst>));
                });
       }))
     return false;
