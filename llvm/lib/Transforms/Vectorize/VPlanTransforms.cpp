@@ -1719,30 +1719,22 @@ bool VPlanTransforms::tryAddExplicitVectorLength(VPlan &Plan) {
   // Create the ExplicitVectorLengthPhi recipe in the main loop.
   auto *EVLPhi = new VPEVLBasedIVPHIRecipe(StartV, DebugLoc());
   EVLPhi->insertAfter(CanonicalIVPHI);
-<<<<<<< HEAD
+  // TODO: Add support for MaxSafeDist for correct loop emission.
+  // Compute original TC - IV as the AVL (application vector length).
+  auto *AVL = new VPInstruction(Instruction::Sub, {Plan.getTripCount(), EVLPhi},
+                                DebugLoc(), "avl");
+  AVL->insertBefore(*Header, Header->getFirstNonPhi());
+
 #if SIFIVE_CUSTOMIZATION
   VPEVLBasedIVPHIRecipe *PrevEVLPhi = nullptr;
   if (Plan.getInitEVL()) {
     PrevEVLPhi = new VPEVLBasedIVPHIRecipe(Plan.getInitEVL(), DebugLoc());
     PrevEVLPhi->insertAfter(EVLPhi);
   }
-  auto *VPEVL = new VPInstruction(VPInstruction::ExplicitVectorLength,
-                                  {EVLPhi, &Plan.getVectorTripCount()});
-#else
-  auto *VPEVL = new VPInstruction(VPInstruction::ExplicitVectorLength,
-                                  {EVLPhi, Plan.getTripCount()});
 #endif // SIFIVE_CUSTOMIZATION
-  VPEVL->insertBefore(*Header, Header->getFirstNonPhi());
-=======
-  // TODO: Add support for MaxSafeDist for correct loop emission.
-  // Compute original TC - IV as the AVL (application vector length).
-  auto *AVL = new VPInstruction(Instruction::Sub, {Plan.getTripCount(), EVLPhi},
-                                DebugLoc(), "avl");
-  AVL->insertBefore(*Header, Header->getFirstNonPhi());
   auto *VPEVL =
       new VPInstruction(VPInstruction::ExplicitVectorLength, AVL, DebugLoc());
   VPEVL->insertAfter(AVL);
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
 
   auto *CanonicalIVIncrement =
       cast<VPInstruction>(CanonicalIVPHI->getBackedgeValue());
