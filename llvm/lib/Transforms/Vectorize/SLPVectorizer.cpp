@@ -11802,8 +11802,6 @@ InstructionCost BoUpSLP::getTreeCost(ArrayRef<Value *> VectorizedVals) {
       // Can use original instruction, if no operands vectorized or they are
       // marked as externally used already.
       auto *Inst = cast<Instruction>(EU.Scalar);
-<<<<<<< HEAD
-#if SIFIVE_CUSTOMIZATION
       InstructionCost ScalarCost = TTI->getInstructionCost(Inst, CostKind);
       auto OperandIsScalar = [&](Value *V) {
         if (!getTreeEntry(V)) {
@@ -11831,47 +11829,7 @@ InstructionCost BoUpSLP::getTreeCost(ArrayRef<Value *> VectorizedVals) {
           }
         }
       }
-#else
-      bool CanBeUsedAsScalar = all_of(Inst->operands(), [&](Value *V) {
-=======
-      InstructionCost ScalarCost = TTI->getInstructionCost(Inst, CostKind);
-      auto OperandIsScalar = [&](Value *V) {
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
-        if (!getTreeEntry(V)) {
-          // Some extractelements might be not vectorized, but
-          // transformed into shuffle and removed from the function,
-          // consider it here.
-          if (auto *EE = dyn_cast<ExtractElementInst>(V))
-            return !EE->hasOneUse() || !MustGather.contains(EE);
-          return true;
-        }
-        return ValueToExtUses->contains(V);
-<<<<<<< HEAD
-      });
-#endif // SIFIVE_CUSTOMIZATION
       if (CanBeUsedAsScalar) {
-#if !defined(SIFIVE_CUSTOMIZATION)
-        InstructionCost ScalarCost = TTI->getInstructionCost(Inst, CostKind);
-#endif // SIFIVE_CUSTOMIZATION
-=======
-      };
-      bool CanBeUsedAsScalar = all_of(Inst->operands(), OperandIsScalar);
-      bool CanBeUsedAsScalarCast = false;
-      if (auto *CI = dyn_cast<CastInst>(Inst); CI && !CanBeUsedAsScalar) {
-        if (auto *Op = dyn_cast<Instruction>(CI->getOperand(0));
-            Op && all_of(Op->operands(), OperandIsScalar)) {
-          InstructionCost OpCost =
-              (getTreeEntry(Op) && !ValueToExtUses->contains(Op))
-                  ? TTI->getInstructionCost(Op, CostKind)
-                  : 0;
-          if (ScalarCost + OpCost <= ExtraCost) {
-            CanBeUsedAsScalar = CanBeUsedAsScalarCast = true;
-            ScalarCost += OpCost;
-          }
-        }
-      }
-      if (CanBeUsedAsScalar) {
->>>>>>> d8a656ffaf735ed689856daa5dc13a9274358072
         bool KeepScalar = ScalarCost <= ExtraCost;
         // Try to keep original scalar if the user is the phi node from the same
         // block as the root phis, currently vectorized. It allows to keep
