@@ -35,13 +35,13 @@ vmsof.m v8, v4
 
 # CHECK:      Iterations:        100
 # CHECK-NEXT: Instructions:      2500
-# CHECK-NEXT: Total Cycles:      2405
+# CHECK-NEXT: Total Cycles:      2605
 # CHECK-NEXT: Total uOps:        2500
 
 # CHECK:      Dispatch Width:    4
-# CHECK-NEXT: uOps Per Cycle:    1.04
-# CHECK-NEXT: IPC:               1.04
-# CHECK-NEXT: Block RThroughput: 24.0
+# CHECK-NEXT: uOps Per Cycle:    0.96
+# CHECK-NEXT: IPC:               0.96
+# CHECK-NEXT: Block RThroughput: 26.0
 
 # CHECK:      Instruction Info:
 # CHECK-NEXT: [1]: #uOps
@@ -71,8 +71,8 @@ vmsof.m v8, v4
 # CHECK-NEXT:  1      2     1.00                        vmfne.vv	v8, v4, v20
 # CHECK-NEXT:  1      2     1.00                        vmadc.vv	v8, v4, v20
 # CHECK-NEXT:  1      2     1.00                        vmsbc.vv	v8, v4, v20
-# CHECK-NEXT:  1      2     1.00                        vfirst.m	a2, v4
-# CHECK-NEXT:  1      2     1.00                        vcpop.m	a2, v4
+# CHECK-NEXT:  1      2     2.00                        vfirst.m	a2, v4
+# CHECK-NEXT:  1      2     2.00                        vcpop.m	a2, v4
 # CHECK-NEXT:  1      2     1.00                        viota.m	v8, v4
 # CHECK-NEXT:  1      2     1.00                        vmsbf.m	v8, v4
 # CHECK-NEXT:  1      2     1.00                        vmsif.m	v8, v4
@@ -98,7 +98,7 @@ vmsof.m v8, v4
 
 # CHECK:      Resource pressure per iteration:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8.0]  [8.1]  [9]    [10]   [11]   [12]   [13]   [14]
-# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -     24.00   -      -      -      -
+# CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -     26.00   -      -      -      -
 
 # CHECK:      Resource pressure by instruction:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8.0]  [8.1]  [9]    [10]   [11]   [12]   [13]   [14]   Instructions:
@@ -121,8 +121,8 @@ vmsof.m v8, v4
 # CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     1.00    -      -      -      -     vmfne.vv	v8, v4, v20
 # CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     1.00    -      -      -      -     vmadc.vv	v8, v4, v20
 # CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     1.00    -      -      -      -     vmsbc.vv	v8, v4, v20
-# CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     1.00    -      -      -      -     vfirst.m	a2, v4
-# CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     1.00    -      -      -      -     vcpop.m	a2, v4
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     2.00    -      -      -      -     vfirst.m	a2, v4
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     2.00    -      -      -      -     vcpop.m	a2, v4
 # CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     1.00    -      -      -      -     viota.m	v8, v4
 # CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     1.00    -      -      -      -     vmsbf.m	v8, v4
 # CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     1.00    -      -      -      -     vmsif.m	v8, v4

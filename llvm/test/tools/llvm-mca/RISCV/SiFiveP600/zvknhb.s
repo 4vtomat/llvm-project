@@ -45,13 +45,13 @@ vsha2cl.vv v8, v16, v24
 
 # CHECK:      Iterations:        1
 # CHECK-NEXT: Instructions:      32
-# CHECK-NEXT: Total Cycles:      102
+# CHECK-NEXT: Total Cycles:      108
 # CHECK-NEXT: Total uOps:        32
 
 # CHECK:      Dispatch Width:    4
-# CHECK-NEXT: uOps Per Cycle:    0.31
-# CHECK-NEXT: IPC:               0.31
-# CHECK-NEXT: Block RThroughput: 90.0
+# CHECK-NEXT: uOps Per Cycle:    0.30
+# CHECK-NEXT: IPC:               0.30
+# CHECK-NEXT: Block RThroughput: 97.0
 
 # CHECK:      Instruction Info:
 # CHECK-NEXT: [1]: #uOps
@@ -83,15 +83,15 @@ vsha2cl.vv v8, v16, v24
 # CHECK-NEXT:  1      3     1.00                        vsha2ch.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     1.00                        vsha2cl.vv	v4, v8, v12
 # CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e64, m2, tu, mu
-# CHECK-NEXT:  1      3     2.00                        vsha2ms.vv	v4, v8, v12
+# CHECK-NEXT:  1      3     3.00                        vsha2ms.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     2.00                        vsha2ch.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     2.00                        vsha2cl.vv	v4, v8, v12
 # CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e64, m4, tu, mu
-# CHECK-NEXT:  1      3     4.00                        vsha2ms.vv	v4, v8, v12
+# CHECK-NEXT:  1      3     6.00                        vsha2ms.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     4.00                        vsha2ch.vv	v4, v8, v12
 # CHECK-NEXT:  1      3     4.00                        vsha2cl.vv	v4, v8, v12
 # CHECK-NEXT:  1      1     1.00                  U     vsetvli	zero, zero, e64, m8, tu, mu
-# CHECK-NEXT:  1      3     8.00                        vsha2ms.vv	v8, v16, v24
+# CHECK-NEXT:  1      3     12.00                       vsha2ms.vv	v8, v16, v24
 # CHECK-NEXT:  1      3     8.00                        vsha2ch.vv	v8, v16, v24
 # CHECK-NEXT:  1      3     8.00                        vsha2cl.vv	v8, v16, v24
 
@@ -115,7 +115,7 @@ vsha2cl.vv v8, v16, v24
 
 # CHECK:      Resource pressure per iteration:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8.0]  [8.1]  [9]    [10]   [11]   [12]   [13]   [14]
-# CHECK-NEXT:  -      -      -      -     8.00    -      -      -      -      -      -     90.00   -      -      -      -
+# CHECK-NEXT:  -      -      -      -     8.00    -      -      -      -      -      -     97.00   -      -      -      -
 
 # CHECK:      Resource pressure by instruction:
 # CHECK-NEXT: [0]    [1]    [2]    [3]    [4]    [5]    [6]    [7]    [8.0]  [8.1]  [9]    [10]   [11]   [12]   [13]   [14]   Instructions:
@@ -140,14 +140,14 @@ vsha2cl.vv v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     1.00    -      -      -      -     vsha2ch.vv	v4, v8, v12
 # CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     1.00    -      -      -      -     vsha2cl.vv	v4, v8, v12
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -      -      -      -      -      -     vsetvli	zero, zero, e64, m2, tu, mu
-# CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     2.00    -      -      -      -     vsha2ms.vv	v4, v8, v12
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     3.00    -      -      -      -     vsha2ms.vv	v4, v8, v12
 # CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     2.00    -      -      -      -     vsha2ch.vv	v4, v8, v12
 # CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     2.00    -      -      -      -     vsha2cl.vv	v4, v8, v12
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -      -      -      -      -      -     vsetvli	zero, zero, e64, m4, tu, mu
-# CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     4.00    -      -      -      -     vsha2ms.vv	v4, v8, v12
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     6.00    -      -      -      -     vsha2ms.vv	v4, v8, v12
 # CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     4.00    -      -      -      -     vsha2ch.vv	v4, v8, v12
 # CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     4.00    -      -      -      -     vsha2cl.vv	v4, v8, v12
 # CHECK-NEXT:  -      -      -      -     1.00    -      -      -      -      -      -      -      -      -      -      -     vsetvli	zero, zero, e64, m8, tu, mu
-# CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     8.00    -      -      -      -     vsha2ms.vv	v8, v16, v24
+# CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     12.00   -      -      -      -     vsha2ms.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     8.00    -      -      -      -     vsha2ch.vv	v8, v16, v24
 # CHECK-NEXT:  -      -      -      -      -      -      -      -      -      -      -     8.00    -      -      -      -     vsha2cl.vv	v8, v16, v24
