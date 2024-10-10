@@ -117,6 +117,12 @@ inline static unsigned getSEW(unsigned VType) {
 }
 
 #if SIFIVE_CUSTOMIZATION
+inline static unsigned decodeTWiden(unsigned TWiden) {
+  assert((TWiden == 1 || TWiden == 2 || TWiden == 3) &&
+         "Unexpected TWiden value");
+  return 1 << (TWiden - 1);
+}
+
 inline static bool hasMammothWiden(unsigned VType) {
   unsigned TWiden = (VType >> 9) & 0x3;
   return TWiden != 0;

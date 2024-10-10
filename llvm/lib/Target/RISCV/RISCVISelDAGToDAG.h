@@ -163,6 +163,9 @@ public:
   void selectVSXSEG(SDNode *Node, unsigned NF, bool IsMasked, bool IsOrdered);
 
   void selectVSETVLI(SDNode *Node);
+#if SIFIVE_CUSTOMIZATION
+  void selectMammothVSET(SDNode *Node);
+#endif // SIFIVE_CUSTOMIZATION
 
   void selectSF_VC_X_SE(SDNode *Node);
 
